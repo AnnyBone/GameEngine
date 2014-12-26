@@ -1,7 +1,7 @@
 /*	Copyright (C) 2011-2015 OldTimes Software
 */
 #include "server_main.h"
-
+#include "server_weapon.h"
 /*
 	Item handling code, including inventory crap!
 */
@@ -291,7 +291,7 @@ void Item_Touch(edict_t *eItem,edict_t *eOther)
 		Entity_Remove(eItem);
 	}
 
-	Weapon_SetActive(Weapon_GetWeapon(eOther->v.iActiveWeapon), eOther, false);
+	Weapon_UpdateCurrentAmmo(Weapon_GetWeapon(eOther->v.iActiveWeapon), eOther);
 }
 
 // [14/7/2012] Renamed to Item_Spawn and heavily revised ~hogsy

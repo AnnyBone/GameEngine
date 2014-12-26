@@ -283,6 +283,64 @@ void Weapon_BulletProjectile(edict_t *eEntity,float fSpread,int iDamage,vec_t *v
 	}
 }
 
+void Weapon_UpdateCurrentAmmo(Weapon_t *wWeapon, edict_t *eEntity)
+{
+	// [4/7/2012] Set ammo by type ~hogsy
+	switch (wWeapon->iPrimaryType)
+	{
+#ifdef OPENKATANA
+		// [12/8/2012] Added in AM_IONS ~hogsy
+	case AM_IONS:
+		eEntity->v.iPrimaryAmmo = eEntity->local.ionblaster_ammo;
+		break;
+	case AM_ROCKET:
+		eEntity->v.iPrimaryAmmo = eEntity->local.sidewinder_ammo;
+		break;
+	case AM_DISCUS:
+		eEntity->v.iPrimaryAmmo = eEntity->local.discus_ammo;
+		break;
+	case AM_BULLET:
+		eEntity->v.iPrimaryAmmo = eEntity->local.glock_ammo;
+		break;
+	case AM_SHELL:
+		eEntity->v.iPrimaryAmmo = eEntity->local.shotcycler_ammo;
+		break;
+	case AM_LASER:
+		eEntity->v.iPrimaryAmmo = eEntity->local.shockwave_ammo;
+		break;
+	case AM_C4BOMB:
+		eEntity->v.iPrimaryAmmo = eEntity->local.iC4Ammo;
+		break;
+#elif GAME_ADAMAS
+	case AM_BULLET:
+		eEntity->v.iPrimaryAmmo = eEntity->local.iBulletAmmo;
+		break;
+#endif
+	case AM_MELEE:
+	case AM_SWITCH:
+	case AM_NONE:
+		eEntity->v.iPrimaryAmmo = 1;
+		break;
+	default:
+		Engine.Con_Warning("Failed to set primary ammo! (%i)\n", wWeapon->iPrimaryType);
+
+		eEntity->v.iPrimaryAmmo = 0;
+		}
+
+	// [4/7/2012] Set ammo by type ~hogsy
+	switch (wWeapon->iSecondaryType)
+	{
+	case AM_MELEE:
+	case AM_SWITCH:
+	case AM_NONE:
+		eEntity->v.iSecondaryAmmo = 1;
+		break;
+	default:
+		Engine.Con_Warning("Failed to set secondary ammo! (%i)\n", wWeapon->iSecondaryType);
+		eEntity->v.iSecondaryAmmo = 0;
+	}
+};
+
 /*	Sets an active weapon for the specified entity.
 */
 void Weapon_SetActive(Weapon_t *wWeapon,edict_t *eEntity, bool bDeploy)
@@ -300,67 +358,7 @@ void Weapon_SetActive(Weapon_t *wWeapon,edict_t *eEntity, bool bDeploy)
 	if(!bPrimaryAmmo && !bSecondaryAmmo)
 		return;
 
-	if(bPrimaryAmmo)
-	{
-		// [4/7/2012] Set ammo by type ~hogsy
-		switch(wWeapon->iPrimaryType)
-		{
-#ifdef OPENKATANA
-		// [12/8/2012] Added in AM_IONS ~hogsy
-		case AM_IONS:
-			eEntity->v.iPrimaryAmmo = eEntity->local.ionblaster_ammo;
-			break;
-		case AM_ROCKET:
-			eEntity->v.iPrimaryAmmo = eEntity->local.sidewinder_ammo;
-			break;
-		case AM_DISCUS:
-			eEntity->v.iPrimaryAmmo = eEntity->local.discus_ammo;
-			break;
-		case AM_BULLET:
-			eEntity->v.iPrimaryAmmo = eEntity->local.glock_ammo;
-			break;
-		case AM_SHELL:
-			eEntity->v.iPrimaryAmmo = eEntity->local.shotcycler_ammo;
-			break;
-		case AM_LASER:
-			eEntity->v.iPrimaryAmmo = eEntity->local.shockwave_ammo;
-			break;
-		case AM_C4BOMB:
-			eEntity->v.iPrimaryAmmo = eEntity->local.iC4Ammo;
-			break;
-#elif GAME_ADAMAS
-		case AM_BULLET:
-			eEntity->v.iPrimaryAmmo = eEntity->local.iBulletAmmo;
-			break;
-#endif
-		case AM_MELEE:
-		case AM_SWITCH:
-		case AM_NONE:
-			eEntity->v.iPrimaryAmmo = 1;
-			break;
-		default:
-			Engine.Con_Warning("Failed to set primary ammo! (%i)\n",wWeapon->iPrimaryType);
-
-			eEntity->v.iPrimaryAmmo = 0;
-		}
-	}
-
-	if(bSecondaryAmmo)
-	{
-		// [4/7/2012] Set ammo by type ~hogsy
-		switch(wWeapon->iSecondaryType)
-		{
-		case AM_MELEE:
-		case AM_SWITCH:
-		case AM_NONE:
-			eEntity->v.iSecondaryAmmo = 1;
-			break;
-		default:
-			Engine.Con_Warning("Failed to set secondary ammo! (%i)\n",wWeapon->iSecondaryType);
-
-			eEntity->v.iSecondaryAmmo = 0;
-		}
-	}
+	Weapon_UpdateCurrentAmmo(wWeapon, eEntity);
 
 	eEntity->v.iActiveWeapon	= wWeapon->iItem;
 	eEntity->v.cViewModel		= wWeapon->model;
