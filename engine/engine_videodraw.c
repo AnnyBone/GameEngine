@@ -153,6 +153,10 @@ void Draw_ExternPic(char *path,float alpha,int x,int y,int w,int h)
 			break;
 		}
 
+	Video_ResetCapabilities(false);
+	Video_EnableCapabilities(VIDEO_BLEND);
+	Video_DisableCapabilities(VIDEO_DEPTH_TEST);
+
 	{
 		VideoObject_t	voPicture[4] = { 0 };
 
@@ -188,6 +192,8 @@ void Draw_ExternPic(char *path,float alpha,int x,int y,int w,int h)
 		// Throw it off to the rendering pipeline.
 		Video_DrawFill(voPicture);
 	}
+
+	Video_ResetCapabilities(true);
 }
 //==================================================================
 
@@ -361,6 +367,9 @@ void Draw_Character(int x,int y,int num)
 
 		Video_ResetCapabilities(false);
 
+		Video_EnableCapabilities(VIDEO_ALPHA_TEST);
+		Video_DisableCapabilities(VIDEO_DEPTH_TEST);
+
 		Video_SetTexture(gCharTexture);
 		Video_DrawFill(voCharacter);
 
@@ -453,7 +462,7 @@ void Draw_Fill(int x,int y,int w,int h,float r,float g,float b,float alpha)
 
     Video_ResetCapabilities(false);
     Video_EnableCapabilities(VIDEO_BLEND);
-    Video_DisableCapabilities(VIDEO_ALPHA_TEST|VIDEO_TEXTURE_2D);
+    Video_DisableCapabilities(VIDEO_DEPTH_TEST|VIDEO_TEXTURE_2D);
 	Video_DrawFill(voFill);
 	Video_ResetCapabilities(true);
 }
@@ -579,9 +588,6 @@ void Draw_ResetCanvas(void)
 	currentcanvas = (canvastype)-1;
 
 	GL_SetCanvas(CANVAS_DEFAULT);
-
-	Video_DisableCapabilities(VIDEO_BLEND|VIDEO_CULL_FACE|VIDEO_DEPTH_TEST);
-	Video_EnableCapabilities(VIDEO_ALPHA_TEST);
 
 	glColor4f(1.0f,1.0f,1.0f,1.0f);
 }

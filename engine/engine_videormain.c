@@ -612,7 +612,6 @@ void R_RenderScene(void)
 		else
 			glDisable(GL_CULL_FACE);
 
-        Video_DisableCapabilities(VIDEO_BLEND|VIDEO_ALPHA_TEST);
         Video_EnableCapabilities(VIDEO_DEPTH_TEST);
 	}
 

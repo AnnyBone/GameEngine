@@ -369,6 +369,7 @@ void Video_CreateWindow(void)
 #endif
 	}
 
+	// Default states.
 	Video_EnableCapabilities(VIDEO_TEXTURE_2D|VIDEO_NORMALIZE);
 	Video_SetBlend(VIDEO_BLEND_TWO,VIDEO_DEPTH_IGNORE);
 

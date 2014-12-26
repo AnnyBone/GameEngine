@@ -47,8 +47,6 @@ void Material_Initialize(void)
 	mMaterials = Hunk_AllocName(MATERIALS_MAX_ALLOCATED*sizeof(Material_t),"materials");
 	if (!mMaterials)
 		Sys_Error("Failed to allocate material array!\n");
-
-	Con_DPrintf("DONE!\n");
 #endif
 
 	// Must be set to initialized before anything else.
@@ -75,8 +73,6 @@ void Material_Initialize(void)
 		mDummy->msSkin[0].iTextureHeight		= notexture->height;
 		mDummy->msSkin[0].iTextureWidth			= notexture->width;
 	}
-
-	Con_DPrintf("DONE!\n");
 }
 
 Material_t *Material_Allocate(void)
@@ -413,7 +409,7 @@ MaterialKey_t	mkMaterialFunctions[]=
 {
 	{	"SetType",				_Material_SetType				},	// Sets the type of material.
 	{	"SetDiffuseTexture",	_Material_SetDiffuseTexture		},	// Sets the diffuse texture.
-	{ "SetSpecularTexture", _Material_SetSpecularTexture },		// Sets the specular map.
+	{	"SetSpecularTexture",	_Material_SetSpecularTexture	},	// Sets the specular map.
 	{	"SetSphereTexture",		_Material_SetSphereTexture		},	// Sets the spheremap texture.
 	{	"SetFullbrightTexture",	_Material_SetFullbrightTexture	},	// Sets the fullbright texture.
 	{	"SetFlags",				_Material_SetFlags				},	// Sets seperate flags for the material; e.g. persist etc.

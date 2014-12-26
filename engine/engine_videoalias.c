@@ -262,8 +262,7 @@ void Alias_DrawModelFrame(MD2_t *mModel,entity_t *eEntity,lerpdata_t lLerpData)
 	vec3_t				scale1,
                         scale2;
 
-	// [20/8/2012] Quick fix ~hogsy
-	// [24/8/2012] Moved ~hogsy
+	// Make sure that entity scale is valid.
 	if(currententity->scale < 0.1f)
 		currententity->scale = 1.0f;
 
@@ -271,12 +270,9 @@ void Alias_DrawModelFrame(MD2_t *mModel,entity_t *eEntity,lerpdata_t lLerpData)
 	mfFirst		= (MD2Frame_t*)((uint8_t*)mModel+mModel->ofs_frames+(mModel->framesize*currententity->draw_lastpose));
 	mfSecond	= (MD2Frame_t*)((uint8_t*)mModel+mModel->ofs_frames+(mModel->framesize*currententity->draw_pose));
 
-	Math_VectorCopy(mfFirst->scale,scale1);
-	Math_VectorCopy(mfSecond->scale,scale2);
-
-	// [24/8/2012] Probably not the best way, but it's better than my other method ~hogsy
-	Math_VectorScale(scale1,currententity->scale,scale1);
-	Math_VectorScale(scale2,currententity->scale,scale2);
+	// Apply entity scaling for the model.
+	Math_VectorScale(mfFirst->scale, currententity->scale, scale1);
+	Math_VectorScale(mfSecond->scale, currententity->scale, scale2);
 
 	fAlpha = ENTALPHA_DECODE(currententity->alpha);
 
@@ -289,8 +285,8 @@ void Alias_DrawModelFrame(MD2_t *mModel,entity_t *eEntity,lerpdata_t lLerpData)
         {
             for(j = 0; j < 3; j++)
             {
-                voModel[iVert].vVertex[j]	=	(mtvVertices[mtTriangles->index_xyz[k]].v[j]*scale1[j]+mfFirst->translate[j])*(1.0f-lLerpData.blend)+
-												(mtvLerpVerts[mtTriangles->index_xyz[k]].v[j]*scale2[j]+mfSecond->translate[j])*lLerpData.blend;
+                voModel[iVert].vVertex[j] =	(mtvVertices[mtTriangles->index_xyz[k]].v[j]*scale1[j]+mfFirst->translate[j])*(1.0f-lLerpData.blend)+
+											(mtvLerpVerts[mtTriangles->index_xyz[k]].v[j]*scale2[j]+mfSecond->translate[j])*lLerpData.blend;
 
                 if(bShading)
 					voModel[iVert].vColour[j] = (shadedots[mtvVertices[mtTriangles->index_xyz[k]].lightnormalindex])/2.0f;

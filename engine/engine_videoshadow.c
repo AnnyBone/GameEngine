@@ -151,7 +151,6 @@ void Draw_Particles(void)
 
     Video_SetBlend(VIDEO_BLEND_IGNORE,VIDEO_DEPTH_FALSE);
     Video_EnableCapabilities(VIDEO_BLEND);
-    Video_DisableCapabilities(VIDEO_ALPHA_TEST);
 
 	for(pParticle = active_particles; pParticle; pParticle = pParticle->next)
 	{
@@ -256,7 +255,6 @@ void Draw_Shadow(entity_t *ent)
 		glPushMatrix();
 
 		Video_EnableCapabilities(VIDEO_BLEND);
-		Video_DisableCapabilities(VIDEO_ALPHA_TEST);
 
 		Video_SetBlend(VIDEO_BLEND_IGNORE,VIDEO_DEPTH_FALSE);
 

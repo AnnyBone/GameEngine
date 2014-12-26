@@ -394,7 +394,7 @@ void View_PolyBlend(void)
 
     Video_ResetCapabilities(false);
 
-	Video_DisableCapabilities(VIDEO_DEPTH_TEST|VIDEO_ALPHA_TEST|VIDEO_TEXTURE_2D);
+	Video_DisableCapabilities(VIDEO_DEPTH_TEST|VIDEO_TEXTURE_2D);
 	Video_EnableCapabilities(VIDEO_BLEND);
 
 	glMatrixMode(GL_PROJECTION);
