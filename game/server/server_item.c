@@ -239,7 +239,6 @@ void Item_Touch(edict_t *eItem,edict_t *eOther)
 	/* Episode 1 */
 	case WEAPON_IONBLASTER:
 		eOther->local.ionblaster_ammo += 25;
-
 		Item_AddInventory(iItem,eOther);
 		break;
 	case WEAPON_C4VIZATERGO:
@@ -292,7 +291,7 @@ void Item_Touch(edict_t *eItem,edict_t *eOther)
 		Entity_Remove(eItem);
 	}
 
-	//WEAPON_SetCurrentAmmo(other);
+	Weapon_SetActive(Weapon_GetWeapon(eOther->v.iActiveWeapon), eOther, false);
 }
 
 // [14/7/2012] Renamed to Item_Spawn and heavily revised ~hogsy

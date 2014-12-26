@@ -285,7 +285,7 @@ void Weapon_BulletProjectile(edict_t *eEntity,float fSpread,int iDamage,vec_t *v
 
 /*	Sets an active weapon for the specified entity.
 */
-void Weapon_SetActive(Weapon_t *wWeapon,edict_t *eEntity)
+void Weapon_SetActive(Weapon_t *wWeapon,edict_t *eEntity, bool bDeploy)
 {
 	bool	bPrimaryAmmo,bSecondaryAmmo;
 
@@ -368,7 +368,7 @@ void Weapon_SetActive(Weapon_t *wWeapon,edict_t *eEntity)
 	eEntity->local.iFireMode		=
 	eEntity->local.iWeaponIdleFrame	= 0;
 
-	if(wWeapon->Deploy)
+	if(wWeapon->Deploy && bDeploy)
 		wWeapon->Deploy(eEntity);
 }
 
@@ -547,7 +547,7 @@ void Weapon_Cycle(edict_t *eEntity,bool bForward)
 			if(!Weapon_CheckPrimaryAmmo(wNext,eEntity) && !Weapon_CheckSecondaryAmmo(wNext,eEntity))
 				goto NEXTWEAPON;
 
-			Weapon_SetActive(wNext,eEntity);
+			Weapon_SetActive(wNext, eEntity, true);
 
 			eEntity->local.dAttackFinished = Server.dTime+0.3;
 		}
@@ -616,7 +616,7 @@ void Weapon_CheatCommand(edict_t *eEntity)
 
 	wWeapon = Weapon_GetWeapon(WEAPON_DAIKATANA);
 	if(wWeapon)
-		Weapon_SetActive(wWeapon,eEntity);
+		Weapon_SetActive(wWeapon, eEntity, true);
 #endif
 
 	eEntity->v.impulse = 0;
@@ -684,7 +684,7 @@ void Weapon_CheckInput(edict_t *eEntity)
 					Engine.Sound(eEntity,CHAN_AUTO,"misc/deny.wav",255,ATTN_NORM);
 				}
 				else
-					Weapon_SetActive(wWeapon,eEntity);
+					Weapon_SetActive(wWeapon, eEntity, true);
 			}
 		}
 	}
