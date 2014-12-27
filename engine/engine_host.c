@@ -28,7 +28,6 @@
 #include "engine_physics.h"
 #include "engine_client.h"
 #include "engine_audio.h"
-#include "engine_videomaterial.h"
 
 #include "shared_server.h"
 

@@ -111,7 +111,7 @@ void DrawGLPoly(glpoly_t *p)
 		Math_VectorCopy(v,voObject[i].vVertex);
 	}
 
-	Video_DrawObject(voObject,VIDEO_PRIMITIVE_TRIANGLE_FAN,p->numverts);
+	Video_DrawObject(voObject,VIDEO_PRIMITIVE_TRIANGLE_FAN,p->numverts,NULL,0);
 }
 
 /*
@@ -144,8 +144,6 @@ void R_DrawSequentialPoly(msurface_t *s)
 
 			glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
 		}
-
-		Video_SetTexture(tAnimation->gltexture);
 
 		DrawGLPoly(s->polys);
 
@@ -185,7 +183,10 @@ void R_DrawSequentialPoly(msurface_t *s)
 	}
 	else
 	{
-        float   *fVert;
+		Material_t	*mBrushMat;
+        float		*fVert;
+
+		mBrushMat = Material_Get(tAnimation->iAssignedMaterial);
 
         if(fAlpha < 1.0f)
 		{
@@ -194,26 +195,24 @@ void R_DrawSequentialPoly(msurface_t *s)
 
 			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 		}
+#if 0
 		else
             Video_EnableCapabilities(VIDEO_ALPHA_TEST);
+#endif
 
-        Video_SetTexture(tAnimation->gltexture);
+		mBrushMat->msSkin[0].gLightmapTexture = lightmap_textures[s->lightmaptexturenum];
 
-        Video_SelectTexture(1);
-        Video_EnableCapabilities(VIDEO_TEXTURE_2D);
-        Video_SetTexture(lightmap_textures[s->lightmaptexturenum]);
+		Video_SelectTexture(1);
 
+#if 0
         R_RenderDynamicLightmaps(s);
         R_UploadLightmap(s->lightmaptexturenum);
+#endif
 
-        glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_COMBINE);
-        glTexEnvi(GL_TEXTURE_ENV,GL_COMBINE_RGB,GL_MODULATE);
-        glTexEnvi(GL_TEXTURE_ENV,GL_SOURCE0_RGB,GL_PREVIOUS);
-        glTexEnvi(GL_TEXTURE_ENV,GL_SOURCE1_RGB,GL_TEXTURE);
-        glTexEnvi(GL_TEXTURE_ENV,GL_RGB_SCALE,4);
+		Video_SelectTexture(0);
 
 		{
-			VideoObject_t voBrush[64];
+			VideoObject_t voBrush[64] = { 0 };
 
 			fVert = s->polys->verts[0];
 			for(i = 0; i < s->polys->numverts; i++,fVert += VERTEXSIZE)
@@ -226,9 +225,9 @@ void R_DrawSequentialPoly(msurface_t *s)
 				voBrush[i].vColour[3] = fAlpha;
 			}
 
-			Video_DrawObject(voBrush,VIDEO_PRIMITIVE_TRIANGLE_FAN,s->polys->numverts);
+			Video_DrawObject(voBrush, VIDEO_PRIMITIVE_TRIANGLE_FAN, s->polys->numverts, Material_Get(tAnimation->iAssignedMaterial), currententity->frame);
 
-#if 1
+#if 0
 			if (fAlpha == 1.0f && cvVideoAlphaTrick.bValue)
 			{
 				Video_SelectTexture(0);
@@ -246,20 +245,12 @@ void R_DrawSequentialPoly(msurface_t *s)
 				Video_DisableCapabilities(VIDEO_ALPHA_TEST);
 				bVideoIgnoreCapabilities = false;
 
-				Video_DrawObject(voBrush, VIDEO_PRIMITIVE_TRIANGLE_FAN, s->polys->numverts);
+				Video_DrawObject(voBrush, VIDEO_PRIMITIVE_TRIANGLE_FAN, s->polys->numverts, Material_Get(tAnimation->iAssignedMaterial), currententity->frame);
 
 				Video_SelectTexture(1);
 			}
 #endif
 		}
-
-        glTexEnvf(GL_TEXTURE_ENV,GL_RGB_SCALE,1.0f);
-        glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_DECAL);
-
-        Video_SelectTexture(0);
-
-        if(fAlpha < 1.0f)
-			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,GL_REPLACE);
 
         rs_brushpasses++;
 	}

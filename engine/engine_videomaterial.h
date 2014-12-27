@@ -3,8 +3,6 @@
 
 #include "quakedef.h"
 
-#include "engine_video.h"
-
 typedef enum
 {
 	MATERIAL_TYPE_NONE,		// No assigned property, used as default.
@@ -28,6 +26,10 @@ typedef enum
 } MaterialProperty_t;
 
 #define	MATERIAL_FLAG_PRESERVE	1	// Preserves the material during clear outs.
+#define	MATERIAL_FLAG_ALPHA		2	// Declares that the given texture has an alpha channel.
+#define	MATERIAL_FLAG_BLEND		4	// Ditto to the above, but tells us to use blending rather than alpha-test.
+#define	MATERIAL_FLAG_ANIMATED	8	// This is a global flag; tells the material system to scroll through all skins.
+#define	MATERIAL_FLAG_MIRROR	16	// Declares that the skin is a mirror.
 
 typedef struct
 {
@@ -39,18 +41,21 @@ typedef struct
 typedef struct
 {
 	struct gltexture_s	*gDiffuseTexture,		// Diffuse texture.
-						*gFullbrightTexture,	// Texture used for fullbright layer.
-						*gSpecularTexture,		// Texture used for specular map.
-						*gSphereTexture;		// Texture used for sphere mapping.
+						*gLightmapTexture,		// Lightmap is usually automatically assigned to materials.
+						*gDetailTexture,		// Detail map.
+						*gFullbrightTexture,	// Fullbright map.
+						*gSpecularTexture,		// Specular map.
+						*gSphereTexture;		// Sphere map.
 
-	unsigned int	iTextureWidth,iTextureHeight;	// Size of the skin.
+	unsigned int	iTextureWidth, iTextureHeight,	// Size of the skin.
+					iFlags,							// Flags assigned for the current skin, affects how it's displayed/loaded.
+					iType;							// Type of surface, e.g. wood, cement etc.
 } MaterialSkin_t;
 
 typedef struct
 {
 	int		iIdentification,
-			iFlags,				// Flags for the material.
-			iType,				// The type of properties.
+			iFlags,				// Global material flags, flags that take priority over all additional skins.
 			iSkins;				// Number of skins provided by this material.
 
 	char	cPath[PLATFORM_MAX_PATH],	// Path of the material.
@@ -64,11 +69,13 @@ typedef struct
 extern Material_t	mMaterials[MATERIALS_MAX_ALLOCATED];	// Global array.
 
 void Material_Initialize(void);
-void Material_Draw(Material_t *mMaterial, int iSkin, VideoObject_t *voObject, int iSize);
+//void Material_PreDraw(Material_t *mMaterial, int iSkin, VideoObject_t *voObject, int iSize);
+//void Material_PostDraw(Material_t *mMaterial, int iSkin, VideoObject_t *voObject, int iSize);
 
 Material_t *Material_Load(/*const */char *ccPath);
 Material_t *Material_Get(int iMaterialID);
 Material_t *Material_GetByPath(const char *ccPath);
+Material_t *Material_GetByName(const char *ccMaterialName);
 Material_t *Material_GetDummy(void);
 
 #endif // __ENGINEMATERIAL__

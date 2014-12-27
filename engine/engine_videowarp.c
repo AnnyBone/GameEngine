@@ -249,7 +249,7 @@ void Warp_DrawWaterPoly(glpoly_t *p)
 		Math_VectorCopy(vWave,voWaterPoly[i].vVertex);
 	}
 
-	Video_DrawObject(voWaterPoly,VIDEO_PRIMITIVE_TRIANGLE_FAN,p->numverts);
+	Video_DrawObject(voWaterPoly,VIDEO_PRIMITIVE_TRIANGLE_FAN,p->numverts,NULL,0);
 
 	free(voWaterPoly);
 }
@@ -264,6 +264,7 @@ void Warp_DrawWaterPoly(glpoly_t *p)
 */
 void R_UpdateWarpTextures (void)
 {
+#if 0
 	texture_t *tx;
 	int i;
 	float x, y, x2, warptess;
@@ -308,4 +309,5 @@ void R_UpdateWarpTextures (void)
 
 	//if viewsize is less than 100, we need to redraw the frame around the viewport
 	scr_tileclear_updates = 0;
+#endif
 }

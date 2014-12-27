@@ -132,7 +132,7 @@ void Light_Draw(void)
 				voLight[c].vColour[3] = 0.5f;
 			}
 
-			Video_DrawObject(voLight,VIDEO_PRIMITIVE_TRIANGLE_FAN,17);
+			Video_DrawObject(voLight,VIDEO_PRIMITIVE_TRIANGLE_FAN,17,NULL,0);
 		}
 	}
 

@@ -6,6 +6,8 @@
 #include <SDL.h>
 #include <SDL_syswm.h>
 
+#include "engine_videomaterial.h"
+
 extern cvar_t	cvVideoDrawModels,	// Should we draw models?
 				cvWidth,			// The width of our window (not reliable).
 				cvHeight,			// The height of our window (not reliable).
@@ -118,8 +120,8 @@ void Video_EnableCapabilities(unsigned int iCapabilities);
 void Video_DisableCapabilities(unsigned int iCapabilities);
 void Video_ResetCapabilities(bool bClearActive);
 void Video_Process(void);
-void Video_DrawFill(VideoObject_t *voFill);
-void Video_DrawObject(VideoObject_t *voObject,VideoPrimitive_t vpPrimitiveType,unsigned int uiVerts);
+void Video_DrawFill(VideoObject_t *voFill,Material_t *mMaterial);
+void Video_DrawObject(VideoObject_t *voObject, VideoPrimitive_t vpPrimitiveType, unsigned int uiVerts, Material_t *mMaterial, int iSkin);
 void Video_Shutdown(void);
 
 /*

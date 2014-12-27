@@ -178,7 +178,7 @@ void Draw_Particles(void)
 		voParticle[3].vTextureCoord[0][0]	= 0;
 		voParticle[3].vTextureCoord[0][1]	= 1.0f;
 
-		Video_DrawFill(voParticle);
+		Video_DrawFill(voParticle,NULL);
 
 		rs_particles++;
 	}
@@ -261,7 +261,7 @@ void Draw_Shadow(entity_t *ent)
 		glTranslatef(ent->origin[0],ent->origin[1],ent->origin[2]);
 		glTranslatef(0,0,-lheight+0.1f);
 
-		Video_DrawFill(voShadow);
+		Video_DrawFill(voShadow,NULL);
 
 		glTranslatef(0,0,lheight+0.1);
 		glPopMatrix();

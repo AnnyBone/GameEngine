@@ -617,14 +617,16 @@ void Video_DrawTerrain(VideoObject_t *voTerrain)
 
 /*  Draw a simple rectangle.
 */
-void Video_DrawFill(VideoObject_t *voFill)
+void Video_DrawFill(VideoObject_t *voFill,Material_t *mMaterial)
 {
-	Video_DrawObject(voFill,VIDEO_PRIMITIVE_TRIANGLE_FAN,4);
+	Video_DrawObject(voFill,VIDEO_PRIMITIVE_TRIANGLE_FAN,4,mMaterial,0);
 }
 
 /*	Draw 3D object.
 */
-void Video_DrawObject(VideoObject_t *voObject,VideoPrimitive_t vpPrimitiveType,unsigned int	uiVerts)
+void Video_DrawObject(
+	VideoObject_t *voObject,VideoPrimitive_t vpPrimitiveType,unsigned int	uiVerts,
+	Material_t *mMaterial,int iSkin)
 {
 	unsigned int	i,j;
     GLenum			gPrimitive;
@@ -641,6 +643,8 @@ void Video_DrawObject(VideoObject_t *voObject,VideoPrimitive_t vpPrimitiveType,u
 		Sys_Error("Invalid number of vertices for video object! (%i)\n", uiVerts);
 		return;
 	}
+
+	Material_PreDraw(mMaterial, iSkin, voObject, uiVerts);
 
 	if(bVideoDebug)
 		Console_WriteToLog(cvVideoDebugLog.string,"Video: Drawing object (%i) (%i)\n",uiVerts,vpPrimitiveType);
@@ -725,19 +729,19 @@ void Video_DrawObject(VideoObject_t *voObject,VideoPrimitive_t vpPrimitiveType,u
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 
-#if 0
 	if(r_showtris.bValue)
 	{
 		glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
 
 		for (i = 0; i < VIDEO_MAX_UNITS; i++)
-			if (i == 0 || (iSavedCapabilites[j][VIDEO_STATE_ENABLE] & VIDEO_TEXTURE_2D))
+			if (i == 0 || (iSavedCapabilites[i][VIDEO_STATE_ENABLE] & VIDEO_TEXTURE_2D))
 			{
 				Video_SelectTexture(i);
 				Video_EnableCapabilities(VIDEO_TEXTURE_2D);
 			}
 	}
-#endif
+
+	Material_PostDraw(mMaterial, iSkin, voObject, uiVerts);
 
 	bVideoIgnoreCapabilities = false;
 }
@@ -846,14 +850,14 @@ void Video_ResetCapabilities(bool bClearActive)
 
         // [7/5/2014] Disable/Enable old states by unit... Ugh ~hogsy
 		// Go through each TMU that we support.
-		for(i = 0; i < VIDEO_MAX_UNITS; i++)
+		for(i = 0; i < VIDEO_MAX_UNITS+1; i++)
 		{
 			Video_SelectTexture(i);
 			Video_DisableCapabilities(iSavedCapabilites[i][VIDEO_STATE_ENABLE]);
 			Video_EnableCapabilities(iSavedCapabilites[i][VIDEO_STATE_DISABLE]);
 
 			// Set this back too...
-			glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
+			glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_REPLACE);
 		}
 
         if(sbVideoIgnoreDepth)

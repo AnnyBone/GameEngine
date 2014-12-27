@@ -24,6 +24,7 @@
 */
 
 #include "engine_video.h"
+#include "engine_videomaterial.h"
 
 extern cvar_t gl_fullbrights, r_drawflat, gl_overbright, r_oldwater, r_oldskyleaf, r_showtris; //johnfitz
 
@@ -176,8 +177,10 @@ void R_CullSurfaces (void)
 			{
 				s->culled = false;
 				rs_brushpolys++; //count wpolys here
+#if 0
 				if (s->texinfo->texture->warpimage)
 					s->texinfo->texture->update_warp = true;
+#endif
 			}
 		}
 	}
@@ -272,6 +275,7 @@ void R_DrawTextureChains_Drawflat (void)
 
 void R_DrawTextureChains_Glow (void)
 {
+#if 0
 	int			i;
 	msurface_t	*s;
 	texture_t	*t;
@@ -305,6 +309,7 @@ void R_DrawTextureChains_Glow (void)
 				rs_brushpasses++;
 			}
 	}
+#endif
 }
 
 /*	Draws surfs whose textures were missing from the BSP
@@ -431,6 +436,7 @@ void World_DrawWaterTextureChains(void)
 				}
 		}
 	}
+#if 0
 	else
 	{
 		for (i=0 ; i<cl.worldmodel->numtextures ; i++)
@@ -457,6 +463,7 @@ void World_DrawWaterTextureChains(void)
 				}
 		}
 	}
+#endif
 
 	glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_REPLACE);
 
@@ -563,123 +570,82 @@ void World_Draw(void)
 		return;
 	}
 
-	R_DrawTextureChains_NoTexture();
+	//R_DrawTextureChains_NoTexture();
 
-	if(Video.bTextureEnvCombine)
+	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
+	glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
+	glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 4);
+
 	{
-		Video_SelectTexture(1);
-		Video_EnableCapabilities(VIDEO_TEXTURE_2D);
+		int			i, j;
+		msurface_t	*s;
+		texture_t	*t;
+		float		*v;
+		bool		bBound;
 
-		glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_COMBINE);
-		glTexEnvi(GL_TEXTURE_ENV,GL_COMBINE_RGB,GL_MODULATE);
-		glTexEnvi(GL_TEXTURE_ENV,GL_RGB_SCALE,4);
-
-		Video_SelectTexture(0);
-
+		for(i = 0; i < cl.worldmodel->numtextures; i++)
 		{
-			int			i, j;
-			msurface_t	*s;
-			texture_t	*t;
-			float		*v;
-			bool		bBound;
+			t = cl.worldmodel->textures[i];
+			if(!t || !t->texturechain || t->texturechain->flags & (SURF_DRAWTILED | SURF_NOTEXTURE))
+				continue;
 
-			for(i = 0; i < cl.worldmodel->numtextures; i++)
-			{
-				t = cl.worldmodel->textures[i];
-				if(!t || !t->texturechain || t->texturechain->flags & (SURF_DRAWTILED | SURF_NOTEXTURE))
-					continue;
-
-				bBound = false;
-				for(s = t->texturechain; s; s = s->texturechain)
-					if(!s->culled)
+			bBound = false;
+			for(s = t->texturechain; s; s = s->texturechain)
+				if(!s->culled)
+				{
+					if(!bBound) //only bind once we are sure we need this texture
 					{
-						if(!bBound) //only bind once we are sure we need this texture
-						{
-							Video_SetTexture((R_TextureAnimation(t,0))->gltexture);
-							Video_SelectTexture(1);
-							Video_EnableCapabilities(VIDEO_TEXTURE_2D);
+						Video_SetTexture((R_TextureAnimation(t,0))->gltexture);
+						Video_SelectTexture(1);
+						Video_EnableCapabilities(VIDEO_TEXTURE_2D);
 
-							bBound = true;
-						}
-
-						R_RenderDynamicLightmaps(s);
-
-						Video_SetTexture(lightmap_textures[s->lightmaptexturenum]);
-
-						R_UploadLightmap(s->lightmaptexturenum);
-
-#if 1
-						glBegin(GL_TRIANGLE_FAN);
-
-						v = s->polys->verts[0];
-						for(j = 0; j < s->polys->numverts; j++,v += VERTEXSIZE)
-						{
-							glMultiTexCoord2fv(VIDEO_TEXTURE0,v+3);
-							glMultiTexCoord2fv(VIDEO_TEXTURE1,v+5);
-							glVertex3fv(v);
-						}
-
-						glEnd();
-#else
-						{
-							VideoObject_t	voWorld[32];
-
-							v = s->polys->verts[0];
-							for(j = 0; j < s->polys->numverts; j++,v += VERTEXSIZE)
-							{
-								Math_Vector2Copy((v+3),voWorld[i].vTextureCoord[0]);
-								Math_Vector2Copy((v+5),voWorld[i].vTextureCoord[1]);
-								Math_VectorCopy(v,voWorld[i].vVertex);
-								Math_Vector4Set(1.0f,voWorld[i].vColour);
-							}
-
-							Video_DrawObject(voWorld,VIDEO_PRIMITIVE_TRIANGLE_FAN,s->polys->numverts);
-						}
-#endif
-
-						rs_brushpasses++;
+						bBound = true;
 					}
 
-				Video_SelectTexture(0);
-			}
+					R_RenderDynamicLightmaps(s);
+
+					Video_SetTexture(lightmap_textures[s->lightmaptexturenum]);
+
+					R_UploadLightmap(s->lightmaptexturenum);
+
+#if 1
+					glBegin(GL_TRIANGLE_FAN);
+
+					v = s->polys->verts[0];
+					for(j = 0; j < s->polys->numverts; j++,v += VERTEXSIZE)
+					{
+						glMultiTexCoord2fv(VIDEO_TEXTURE0,v+3);
+						glMultiTexCoord2fv(VIDEO_TEXTURE1,v+5);
+						glVertex3fv(v);
+					}
+
+					glEnd();
+#else
+					{
+						VideoObject_t voWorld[64] = { 0 };
+
+						v = s->polys->verts[0];
+						for (j = 0; j < s->polys->numverts; j++, v += VERTEXSIZE)
+						{
+							Math_Vector2Copy((v + 3), voWorld[i].vTextureCoord[0]);
+							Math_Vector2Copy((v + 5), voWorld[i].vTextureCoord[1]);
+							Math_VectorCopy(v, voWorld[i].vVertex);
+							Math_Vector4Set(1.0f, voWorld[i].vColour);
+						}
+
+						Video_DrawObject(voWorld, VIDEO_PRIMITIVE_TRIANGLE_FAN, s->polys->numverts, NULL, 0);
+					}
+#endif
+
+					rs_brushpasses++;
+				}
+
+			Video_SelectTexture(0);
 		}
 
 		Video_SelectTexture(0);
 
 		glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_REPLACE);
-	}
-	else
-	{
-		//to make fog work with multipass lightmapping, need to do one pass
-		//with no fog, one modulate pass with black fog, and one additive
-		//pass with black geometry and normal fog
-		Fog_DisableGFog();
-
-		R_DrawTextureChains_TextureOnly();
-
-		Fog_EnableGFog();
-
-		Video_EnableCapabilities(VIDEO_BLEND);
-		Video_SetBlend(VIDEO_BLEND_THREE,VIDEO_DEPTH_FALSE);
-
-		Fog_StartAdditive();
-
-		R_DrawLightmapChains();
-
-		Fog_StopAdditive();
-
-		if(Fog_GetDensity() > 0)
-		{
-			Video_SetBlend(VIDEO_BLEND_ONE,VIDEO_DEPTH_IGNORE);
-
-			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-			glColor3f(0,0,0);
-
-			R_DrawTextureChains_TextureOnly();
-
-			glColor3f(1,1,1);
-			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-		}
 	}
 
 	Video_ResetCapabilities(true);

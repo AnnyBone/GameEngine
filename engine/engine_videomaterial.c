@@ -3,6 +3,7 @@
 #include "quakedef.h"
 
 #include "engine_videomaterial.h"
+#include "engine_video.h"
 
 #include "engine_script.h"
 
@@ -26,7 +27,8 @@ MaterialType_t	MaterialTypes[]=
 
 int	iMaterialCount = 0;
 
-cvar_t	cvMaterialDraw = { "material_draw", "1", false, false, "Enables and disables the drawing of materials." };
+cvar_t	cvMaterialDraw			= { "material_draw",		"1", false, false, "Enables and disables the drawing of materials."		},
+		cvMaterialDrawDetail	= {	"material_drawdetail",	"1", false, false, "Enables and disables the drawing of detail maps."	};
 
 Material_t *Material_Allocate(void);
 
@@ -40,39 +42,22 @@ void Material_Initialize(void)
 	Con_Printf("Initializing material system...\n");
 
 	Cvar_RegisterVariable(&cvMaterialDraw, NULL);
-
-#if 0
-	Con_DPrintf(" Allocating materials array... ");
-
-	mMaterials = Hunk_AllocName(MATERIALS_MAX_ALLOCATED*sizeof(Material_t),"materials");
-	if (!mMaterials)
-		Sys_Error("Failed to allocate material array!\n");
-#endif
+	Cvar_RegisterVariable(&cvMaterialDrawDetail, NULL);
 
 	// Must be set to initialized before anything else.
 	bInitialized = true;
 
-	Con_DPrintf(" Creating dummy material... ");
-
-	{
-		// Add dummy material.
-		mDummy = Material_Allocate();
-		if (!mDummy)
-			Sys_Error("Failed to create dummy material!\n");
+	// Add dummy material.
+	mDummy = Material_Load("engine/notexture");
+	if (!mDummy)
+		Sys_Error("Failed to create dummy material!\n");
 
 #ifdef _MSC_VER // This is false, since the function above shuts us down, but MSC doesn't understand that.
 #pragma warning(suppress: 6011)
 #endif
-		sprintf(mDummy->cName, "dummy");
-		mDummy->iSkins							= 1;
-		mDummy->iType							= MATERIAL_TYPE_NONE;
-		mDummy->iFlags							= MATERIAL_FLAG_PRESERVE;
-		mDummy->msSkin[0].gDiffuseTexture		= notexture;
-		mDummy->msSkin[0].gFullbrightTexture	= NULL;
-		mDummy->msSkin[0].gSphereTexture		= NULL;
-		mDummy->msSkin[0].iTextureHeight		= notexture->height;
-		mDummy->msSkin[0].iTextureWidth			= notexture->width;
-	}
+	// Change the material name to dummy, just so it can be easily accessed.
+	sprintf(mDummy->cName, "dummy");
+	mDummy->iFlags = MATERIAL_FLAG_PRESERVE;
 }
 
 Material_t *Material_Allocate(void)
@@ -203,42 +188,58 @@ Material_t *Material_GetByPath(const char *ccPath)
 
 extern cvar_t gl_fullbrights;
 
-/*	Routine for applying each of our materials.
-*/
-void Material_Draw(Material_t *mMaterial, int iSkin, VideoObject_t *voObject, int iSize)
+void Material_PreDraw(Material_t *mMaterial, int iSkin, VideoObject_t *voObject, int iSize)
 {
-	int				i,iLayers = 1;
+	int				i, iLayers = 1;
 	MaterialSkin_t	*msCurrentSkin;
 
-	if (!cvMaterialDraw.bValue)
+	if (!cvMaterialDraw.bValue || !mMaterial)
 		return;
-	else if(!mMaterial)
-	{
-		Con_Warning("Invalid material, either not found or wasn't cached!\n");
-		return;
-	}
 	// If we're drawing flat, then don't apply textures.
-	else if(r_drawflat_cheatsafe)
+	else if (r_drawflat_cheatsafe)
 	{
 		Video_DisableCapabilities(VIDEO_TEXTURE_2D);
 		return;
 	}
 
-	msCurrentSkin = Material_GetSkin(mMaterial,iSkin);
-	if(!msCurrentSkin)
+	msCurrentSkin = Material_GetSkin(mMaterial, iSkin);
+	if (!msCurrentSkin)
 	{
 		Video_SetTexture(notexture);
 		return;
 	}
 
+	// Set the diffuse texture first.
 	Video_SetTexture(msCurrentSkin->gDiffuseTexture);
+
+	if (msCurrentSkin->gLightmapTexture)
+	{
+		Video_SelectTexture(iLayers);
+		Video_EnableCapabilities(VIDEO_TEXTURE_2D);
+		Video_SetTexture(msCurrentSkin->gLightmapTexture);
+
+		// Overbrights
+#if 1
+		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
+		glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
+		glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_PREVIOUS);
+		glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_TEXTURE);
+		glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 4);
+#else
+		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
+		glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
+		glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 4);
+#endif
+
+		iLayers++;
+	}
 
 #if 0	// TODO: Finish implementing this at some point... Meh ~hogsy
 	if (msCurrentSkin->gSpecularTexture)
 	{
 		Video_SelectTexture(iLayers);
 		Video_SetTexture(msCurrentSkin->gSpecularTexture);
-		Video_EnableCapabilities(VIDEO_TEXTURE_2D|VIDEO_BLEND);
+		Video_EnableCapabilities(VIDEO_TEXTURE_2D | VIDEO_BLEND);
 
 		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 		glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_TEXTURE);
@@ -247,7 +248,53 @@ void Material_Draw(Material_t *mMaterial, int iSkin, VideoObject_t *voObject, in
 	}
 #endif
 
-	if(msCurrentSkin->gSphereTexture)
+	// Detail map layer.
+	if (msCurrentSkin->gDetailTexture && cvMaterialDrawDetail.bValue)
+	{
+		// TODO: Check distance from camera before proceeding.
+
+		Video_SelectTexture(iLayers);
+		Video_EnableCapabilities(VIDEO_TEXTURE_2D | VIDEO_BLEND);
+		Video_SetTexture(msCurrentSkin->gDetailTexture);
+
+		if (voObject)
+			for (i = 0; i < iSize; i++)
+			{
+				// Copy over original texture coords.
+				voObject[i].vTextureCoord[iLayers][0] = voObject[i].vTextureCoord[0][0]*8;
+				voObject[i].vTextureCoord[iLayers][1] = voObject[i].vTextureCoord[0][1]*8;
+
+				// TODO: Modify them to the appropriate scale.
+
+			}
+
+		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+
+		iLayers++;
+	}
+
+	// Fullbright map.
+	if (msCurrentSkin->gFullbrightTexture && gl_fullbrights.bValue)
+	{
+		Video_SelectTexture(iLayers);
+		Video_EnableCapabilities(VIDEO_TEXTURE_2D | VIDEO_BLEND);
+		Video_SetTexture(msCurrentSkin->gFullbrightTexture);
+
+		if (voObject)
+			for (i = 0; i < iSize; i++)
+			{
+				// Texture coordinates remain the same for fullbright layers.
+				voObject[i].vTextureCoord[iLayers][0] = voObject[i].vTextureCoord[0][0];
+				voObject[i].vTextureCoord[iLayers][1] = voObject[i].vTextureCoord[0][1];
+			}
+
+		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_ADD);
+
+		iLayers++;
+	}
+
+	// Sphere map.
+	if (msCurrentSkin->gSphereTexture)
 	{
 		Video_SelectTexture(iLayers);
 		Video_SetTexture(msCurrentSkin->gSphereTexture);
@@ -263,29 +310,58 @@ void Material_Draw(Material_t *mMaterial, int iSkin, VideoObject_t *voObject, in
 
 		iLayers++;
 	}
+}
 
-	if(msCurrentSkin->gFullbrightTexture && gl_fullbrights.bValue)
-	{
-		Video_SelectTexture(iLayers);
-		Video_EnableCapabilities(VIDEO_TEXTURE_2D|VIDEO_BLEND);
-		Video_SetTexture(msCurrentSkin->gFullbrightTexture);
+void Material_PostDraw(Material_t *mMaterial, int iSkin, VideoObject_t *voObject, unsigned int uiSize)
+{
+	MaterialSkin_t	*msCurrentSkin;
 
-		for (i = 0; i < iSize; i++)
-		{
-			// Texture coordinates remain the same for fullbright layers.
-			voObject[i].vTextureCoord[iLayers][0] = voObject[i].vTextureCoord[0][0];
-			voObject[i].vTextureCoord[iLayers][1] = voObject[i].vTextureCoord[0][1];
-		}
+	if (!cvMaterialDraw.bValue || !mMaterial)
+		return;
+	// If we're drawing flat, then don't apply textures.
+	else if (r_drawflat_cheatsafe)
+		return;
 
-		glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_ADD);
-
-		iLayers++;
-	}
+	msCurrentSkin = Material_GetSkin(mMaterial, iSkin);
+	if (!msCurrentSkin)
+		return;
 }
 
 /*
 	Scripting
 */
+
+// Utility functions...
+
+gltexture_t *Material_LoadTexture(MaterialSkin_t *mCurrentSkin, char *cArg)
+{
+	byte		*bTextureMap;
+
+	// Check if it's trying to use a built-in texture.
+	if (!Q_strcmp(cArg, "notexture"))
+		return notexture;
+
+	bTextureMap = Image_LoadImage(cArg,
+		&mCurrentSkin->iTextureWidth,
+		&mCurrentSkin->iTextureHeight);
+	if (bTextureMap)
+	{
+		// Warn about incorrect sizes.
+		if ((mCurrentSkin->iTextureWidth & 15) || (mCurrentSkin->iTextureHeight & 15))
+			Con_Warning("Texture is not 16 aligned! (%ix%i)\n", mCurrentSkin->iTextureWidth, mCurrentSkin->iTextureHeight);
+
+		return TexMgr_LoadImage(NULL,cArg,
+			mCurrentSkin->iTextureWidth,
+			mCurrentSkin->iTextureHeight,
+			SRC_RGBA,bTextureMap,cArg,0,TEXPREF_ALPHA);
+	}
+		
+	Con_Warning("Failed to load texture %s!\n", cArg);
+
+	return notexture;
+}
+
+// Everything else...
 
 void _Material_SetType(Material_t *mCurrentMaterial,char *cArg)
 {
@@ -295,107 +371,53 @@ void _Material_SetType(Material_t *mCurrentMaterial,char *cArg)
 	if((iMaterialType < MATERIAL_TYPE_NONE) || (iMaterialType >= MATERIAL_TYPE_MAX))
 		Con_Warning("Invalid material type! (%i)\n",iMaterialType);
 
-	mCurrentMaterial->iType = iMaterialType;
+	mCurrentMaterial->msSkin[mCurrentMaterial->iSkins-1].iType = iMaterialType;
 }
 
 void _Material_SetDiffuseTexture(Material_t *mCurrentMaterial,char *cArg)
 {
-	byte *bDiffuseMap = Image_LoadImage(cArg,
-		&mCurrentMaterial->msSkin[mCurrentMaterial->iSkins-1].iTextureWidth,
-		&mCurrentMaterial->msSkin[mCurrentMaterial->iSkins-1].iTextureHeight);
-	if (bDiffuseMap)
-		mCurrentMaterial->msSkin[mCurrentMaterial->iSkins-1].gDiffuseTexture = TexMgr_LoadImage(
-		NULL,
-		cArg,
-		mCurrentMaterial->msSkin[mCurrentMaterial->iSkins-1].iTextureWidth,
-		mCurrentMaterial->msSkin[mCurrentMaterial->iSkins-1].iTextureHeight,
-		SRC_RGBA,
-		bDiffuseMap,
-		cArg,
-		0,
-		TEXPREF_ALPHA);
-	else
-	{
-		Con_Warning("Failed to load texture %s!\n", cArg);
-
-		mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1].gDiffuseTexture = notexture;
-	}
+	mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1].gDiffuseTexture = Material_LoadTexture(&mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1], cArg);
 }
 
 void _Material_SetFullbrightTexture(Material_t *mCurrentMaterial,char *cArg)
 {
-	byte *bFullbrightMap = Image_LoadImage(cArg,
-		&mCurrentMaterial->msSkin[mCurrentMaterial->iSkins-1].iTextureWidth,
-		&mCurrentMaterial->msSkin[mCurrentMaterial->iSkins-1].iTextureHeight);
-	if(bFullbrightMap)
-		mCurrentMaterial->msSkin[mCurrentMaterial->iSkins-1].gFullbrightTexture = TexMgr_LoadImage(
-		NULL,
-		cArg,
-		mCurrentMaterial->msSkin[mCurrentMaterial->iSkins-1].iTextureWidth,
-		mCurrentMaterial->msSkin[mCurrentMaterial->iSkins-1].iTextureHeight,
-		SRC_RGBA,
-		bFullbrightMap,
-		cArg,
-		0,
-		TEXPREF_ALPHA);
-	else
-	{
-		Con_Warning("Failed to load texture %s!\n", cArg);
-
-		mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1].gFullbrightTexture = notexture;
-	}
+	mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1].gFullbrightTexture = Material_LoadTexture(&mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1], cArg);
 }
 
 void _Material_SetSphereTexture(Material_t *mCurrentMaterial,char *cArg)
 {
-	byte *bSphereMap = Image_LoadImage(cArg,
-		&mCurrentMaterial->msSkin[mCurrentMaterial->iSkins-1].iTextureWidth,
-		&mCurrentMaterial->msSkin[mCurrentMaterial->iSkins-1].iTextureHeight);
-	if(bSphereMap)
-		mCurrentMaterial->msSkin[mCurrentMaterial->iSkins-1].gSphereTexture = TexMgr_LoadImage(
-		NULL,
-		cArg,
-		mCurrentMaterial->msSkin[mCurrentMaterial->iSkins-1].iTextureWidth,
-		mCurrentMaterial->msSkin[mCurrentMaterial->iSkins-1].iTextureHeight,
-		SRC_RGBA,
-		bSphereMap,
-		cArg,
-		0,
-		TEXPREF_ALPHA);
-	else
-	{
-		Con_Warning("Failed to load texture %s!\n", cArg);
-
-		mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1].gSphereTexture = notexture;
-	}
+	mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1].gSphereTexture = Material_LoadTexture(&mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1], cArg);
 }
 
 void _Material_SetSpecularTexture(Material_t *mCurrentMaterial, char *cArg)
 {
-	byte *bSpecularMap = Image_LoadImage(cArg,
-		&mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1].iTextureWidth,
-		&mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1].iTextureHeight);
-	if (bSpecularMap)
-		mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1].gSpecularTexture = TexMgr_LoadImage(
-		NULL,
-		cArg,
-		mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1].iTextureWidth,
-		mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1].iTextureHeight,
-		SRC_RGBA,
-		bSpecularMap,
-		cArg,
-		0,
-		TEXPREF_ALPHA);
-	else
-	{
-		Con_Warning("Failed to load texture %s!\n", cArg);
-
-		mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1].gSpecularTexture = notexture;
-	}
+	mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1].gSpecularTexture = Material_LoadTexture(&mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1], cArg);
 }
 
+void _Material_SetDetailTexture(Material_t *mCurrentMaterial, char *cArg)
+{
+	mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1].gDetailTexture = Material_LoadTexture(&mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1], cArg);
+}
+
+typedef struct
+{
+	int	iFlag;
+
+	const	char	*ccName;
+} MaterialFlag_t;
+
+MaterialFlag_t	mfMaterialFlags[] =
+{
+	{ MATERIAL_FLAG_PRESERVE, "PRESERVE" },
+	{ MATERIAL_FLAG_ALPHA, "ALPHA" },
+	{ MATERIAL_FLAG_BLEND, "BLEND" }
+};
+
+/*	Set flags for the material, that either apply for the texture or material.
+*/
 void _Material_SetFlags(Material_t *mCurrentMaterial,char *cArg)
 {
+
 }
 
 typedef struct
@@ -412,6 +434,7 @@ MaterialKey_t	mkMaterialFunctions[]=
 	{	"SetSpecularTexture",	_Material_SetSpecularTexture	},	// Sets the specular map.
 	{	"SetSphereTexture",		_Material_SetSphereTexture		},	// Sets the spheremap texture.
 	{	"SetFullbrightTexture",	_Material_SetFullbrightTexture	},	// Sets the fullbright texture.
+	{	"SetDetailTexture",		_Material_SetDetailTexture		},	// Sets the detail texture.
 	{	"SetFlags",				_Material_SetFlags				},	// Sets seperate flags for the material; e.g. persist etc.
 
 	{	0	}
@@ -425,6 +448,8 @@ Material_t *Material_Load(/*const */char *ccPath)
     Material_t  *mNewMaterial;
 	byte        *cData;
 	char		cPath[PLATFORM_MAX_PATH];
+
+	Con_DPrintf("Loading material: %s\n", ccPath);
 
 	if(!bInitialized)
 	{

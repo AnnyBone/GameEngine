@@ -190,7 +190,7 @@ void Draw_ExternPic(char *path,float alpha,int x,int y,int w,int h)
 		voPicture[3].vTextureCoord[0][1]	= 1.0f;
 
 		// Throw it off to the rendering pipeline.
-		Video_DrawFill(voPicture);
+		Video_DrawFill(voPicture,NULL);
 	}
 
 	Video_ResetCapabilities(true);
@@ -371,7 +371,7 @@ void Draw_Character(int x,int y,int num)
 		Video_DisableCapabilities(VIDEO_DEPTH_TEST);
 
 		Video_SetTexture(gCharTexture);
-		Video_DrawFill(voCharacter);
+		Video_DrawFill(voCharacter,NULL);
 
 		Video_ResetCapabilities(true);
 	}
@@ -398,7 +398,7 @@ void Draw_Pic(int x,int y,qpic_t *pic)
 			{	{	x,		        y+pic->height,  0	},	{	{	0,		1.0f	}	},	{	1.0f,	1.0f,	1.0f,	1.0f	}	}
 		};
 
-        Video_DrawFill(voPicture);
+        Video_DrawFill(voPicture,NULL);
     }
 }
 
@@ -463,7 +463,7 @@ void Draw_Fill(int x,int y,int w,int h,float r,float g,float b,float alpha)
     Video_ResetCapabilities(false);
     Video_EnableCapabilities(VIDEO_BLEND);
     Video_DisableCapabilities(VIDEO_DEPTH_TEST|VIDEO_TEXTURE_2D);
-	Video_DrawFill(voFill);
+	Video_DrawFill(voFill,NULL);
 	Video_ResetCapabilities(true);
 }
 
@@ -479,7 +479,7 @@ void Draw_FadeScreen (void)
 
 	GL_SetCanvas(CANVAS_DEFAULT);
 
-	Video_DrawFill(voFade);
+	Video_DrawFill(voFade,NULL);
 }
 
 /*	Draws the little blue disc in the corner of the screen.

@@ -419,7 +419,7 @@ void View_PolyBlend(void)
 		voScreenPoly[2].vVertex[1]	=
 		voScreenPoly[3].vVertex[1]	= 1.0f;
 
-		Video_DrawFill(voScreenPoly);
+		Video_DrawFill(voScreenPoly,NULL);
 	}
 
 	Video_ResetCapabilities(true);

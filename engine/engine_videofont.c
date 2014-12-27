@@ -105,7 +105,7 @@ void Font_Draw(Font_t *fFont,const char *ccMessage,vec3_t vPos,vec3_t vColour)
 	voFont[2].vVertex[1]	+= sFontSurface->h;
 	voFont[3].vVertex[1]	+= sFontSurface->h;
 
-	Video_DrawFill(voFont);
+	Video_DrawFill(voFont,NULL);
 }
 
 void Font_Shutdown(void)

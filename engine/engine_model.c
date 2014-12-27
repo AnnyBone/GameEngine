@@ -26,7 +26,7 @@
 
 #include "engine_console.h"
 #include "engine_script.h"
-#include "engine_videomaterial.h"
+#include "engine_video.h"
 
 model_t	*loadmodel;
 char	loadname[32];	// for hunk tags
@@ -282,260 +282,65 @@ byte	*mod_base;
 
 void Model_LoadBSPTextures(BSPLump_t *blLump)
 {
-	int				i,j,num,max,altmax,
-					nummiptex,mark;
-	unsigned int	fwidth,fheight;
-	miptex_t		*mt;
-	texture_t		*tx,*tx2,
-					*anims[10],*altanims[10];
-	dmiptexlump_t	*m;
-	char			texturename[64],
-					filename[MAX_OSPATH],filename2[MAX_OSPATH],
-					mapname[MAX_OSPATH];
-	byte			*data;
-	extern byte		*hunk_base;
+	miptex_t		*mpTexture;
+	dmiptexlump_t	*mLump;
+	char			cMaterialName[PLATFORM_MAX_PATH];
+	int				i, iTextures, iMark;
 
-	//johnfitz -- don't return early if no textures; still need to create dummy texture
+	// Don't bother loading textures for dedicated servers.
+	if (bIsDedicated)
+		return;
+
 	if(!blLump->iFileLength)
 	{
-		Con_Printf("No textures in BSP file...\n");
-		nummiptex = 0;
+		Con_Warning("No textures in BSP file!\n");
 
-		// [18/8/2012] Keep the compiler happy :S ~hogsy
-		m = NULL;
+		iTextures = 0;
 	}
 	else
 	{
-		m = (dmiptexlump_t *)(mod_base+blLump->iFileOffset);
-		m->nummiptex = LittleLong (m->nummiptex);
-		nummiptex = m->nummiptex;
+		mLump = (dmiptexlump_t*)(mod_base + blLump->iFileOffset);
+		mLump->nummiptex = LittleLong(mLump->nummiptex);
+		
+		iTextures = mLump->nummiptex;
 	}
-	//johnfitz
+	
+	loadmodel->numtextures	= iTextures;
+	loadmodel->textures		= (texture_t**)Hunk_AllocName(loadmodel->numtextures*sizeof(*loadmodel->textures), loadname);
 
-	loadmodel->numtextures	= nummiptex+2; //johnfitz -- need 2 dummy texture chains for missing textures
-	loadmodel->textures		= (texture_t**)Hunk_AllocName(loadmodel->numtextures*sizeof(*loadmodel->textures),loadname);
-
-	for(i = 0; i < nummiptex; i++)
+	for(i = 0; i < iTextures; i++)
 	{
-		m->dataofs[i] = LittleLong(m->dataofs[i]);
-		if (m->dataofs[i] == -1)
+		texture_t	*tTexture;
+		Material_t	*mAssignedMaterial;
+
+		mLump->dataofs[i] = LittleLong(mLump->dataofs[i]);
+		if(mLump->dataofs[i] == -1)
 			continue;
 
-		mt = (miptex_t *)((byte*)m + m->dataofs[i]);
-		mt->width	= LittleLong(mt->width);
-		mt->height	= LittleLong(mt->height);
-		if((mt->width & 15) || (mt->height & 15))
-		{
-			Console_ErrorMessage(false,mt->name,va("Texture is not 16 aligned (%ix%i)!",mt->width,mt->height));
-			return;
-		}
+		// Get built-in texture scale. (this will eventually be made obsolete! ~hogsy)
+		mpTexture = (miptex_t*)((byte*)mLump+mLump->dataofs[i]);
+		mpTexture->width	= LittleLong(mpTexture->width);
+		mpTexture->height	= LittleLong(mpTexture->height);
 
-		tx = (texture_t*)Hunk_AllocName(sizeof(texture_t),loadname);
-		loadmodel->textures[i] = tx;
+		tTexture = (texture_t*)Hunk_AllocName(sizeof(texture_t), loadname);
+		loadmodel->textures[i] = tTexture;
 
-		memcpy (tx->name, mt->name, sizeof(tx->name));
-		tx->width	= mt->width;
-		tx->height	= mt->height;
+		memcpy(tTexture->name, mpTexture->name, sizeof(tTexture->name));
+		tTexture->width		= mpTexture->width;
+		tTexture->height	= mpTexture->height;
 
-		// the pixels immediately follow the structures
-		memcpy(tx+1,mt+1,sizeof(miptex_t));
+		// Scales are checked automatically by material system, so that original check has been removed.
 
-		tx->update_warp	= false; //johnfitz
-		tx->warpimage	= NULL; //johnfitz
-		tx->fullbright	= NULL; //johnfitz
+		iMark = Hunk_LowMark();
 
-		//johnfitz -- lots of changes
-		if(!bIsDedicated) //no texture uploading for dedicated server
-		{
-			if(tx->name[0] == '*' || tx->name[0] == '#') //warping texture
-			{
-				//external textures -- first look in "textures/mapname/" then look in "textures/"
-				mark = Hunk_LowMark();
-				COM_StripExtension(loadmodel->name+5,mapname);
-				sprintf (filename, "%s%s/#%s",Global.cTexturePath, mapname, tx->name+1); //this also replaces the '*' with a '#'
 
-				data = Image_LoadImage(filename,&fwidth,&fheight);
-				if(!data)
-				{
-					sprintf (filename, "%s#%s",Global.cTexturePath, tx->name+1);
-					data = Image_LoadImage (filename, &fwidth, &fheight);
-					if(!data)
-						Con_Warning("Failed to load %s\n",filename);
-				}
-
-				// Now load whatever we found
-				if(data)
-				{
-					strcpy(texturename,filename);
-
-					// [11/7/2012] No point allowing alpha for water textures ~hogsy
-					tx->gltexture = TexMgr_LoadImage(loadmodel,texturename,fwidth,fheight,SRC_RGBA,data,filename,0,TEXPREF_MIPMAP);
-				}
-
-				// Now create the warpimage, using dummy data from the hunk to create the initial image
-				Hunk_Alloc(gl_warpimagesize*gl_warpimagesize*4); //make sure hunk is big enough so we don't reach an illegal address
-				Hunk_FreeToLowMark(mark);
-				sprintf(texturename,"%s_warp",texturename);
-				tx->warpimage = TexMgr_LoadImage(loadmodel,texturename,gl_warpimagesize,
-					gl_warpimagesize, SRC_RGBA, hunk_base, "", (unsigned)hunk_base,TEXPREF_NOPICMIP | TEXPREF_WARPIMAGE);
-				tx->update_warp = true;
-			}
-			else //regular texture
-			{
-				//external textures -- first look in "textures/mapname/" then look in "textures/"
-				mark = Hunk_LowMark();
-
-				COM_StripExtension(loadmodel->name+5,mapname);
-
-				sprintf(filename,"%s%s/%s",Global.cTexturePath,mapname,tx->name);
-
-				data = Image_LoadImage(filename,&fwidth,&fheight);
-				if(!data)
-				{
-					sprintf(filename,"%s%s",Global.cTexturePath,tx->name);
-					data = Image_LoadImage(filename,&fwidth,&fheight);
-					if(!data)
-						Con_Warning("Failed to load %s\n",filename);
-				}
-
-				//now load whatever we found
-				if (data) //load external image
-				{
-					tx->gltexture = TexMgr_LoadImage(
-						loadmodel,
-						filename,
-						fwidth,fheight,
-						SRC_RGBA,
-						data,
-						filename,
-						0,
-						TEXPREF_MIPMAP|TEXPREF_ALPHA);
-
-					//now try to load glow image from the same place
-					Hunk_FreeToLowMark (mark);
-					// [1/3/2014] Updated to _fbr, from _glow, to match usage for models; consistent and less confusing. ~hogsy
-					sprintf (filename2, "%s_fbr", filename);
-					data = Image_LoadImage(filename2,&fwidth,&fheight);
-					if(data)
-						tx->fullbright = TexMgr_LoadImage(
-							loadmodel,
-							filename2,
-							fwidth,fheight,
-							SRC_RGBA,
-							data,
-							filename,
-							0,
-							TEXPREF_MIPMAP|TEXPREF_ALPHA);
-				}
-
-				Hunk_FreeToLowMark (mark);
-			}
-		}
-		//johnfitz
-	}
-
-	//johnfitz -- last 2 slots in array should be filled with dummy textures
-	loadmodel->textures[loadmodel->numtextures-2] = r_notexture_mip; //for lightmapped surfs
-	loadmodel->textures[loadmodel->numtextures-1] = r_notexture_mip2; //for SURF_DRAWTILED surfs
-
-	// sequence the animations
-	for (i=0 ; i<nummiptex ; i++)
-	{
-		tx = loadmodel->textures[i];
-		if (!tx || tx->name[0] != '+')
-			continue;
-
-		// already sequenced
-		if (tx->anim_next)
-			continue;
-
-		// find the number of frames in the animation
-		memset (anims, 0, sizeof(anims));
-		memset (altanims, 0, sizeof(altanims));
-
-		max = tx->name[1];
-		altmax = 0;
-		if (max >= 'a' && max <= 'z')
-			max -= 'a' - 'A';
-		if (max >= '0' && max <= '9')
-		{
-			max -= '0';
-			altmax = 0;
-			anims[max] = tx;
-			max++;
-		}
-		else if (max >= 'A' && max <= 'J')
-		{
-			altmax = max - 'A';
-			max = 0;
-			altanims[altmax] = tx;
-			altmax++;
-		}
+		mAssignedMaterial = Material_Load("fuck");
+		if (mAssignedMaterial)
+			tTexture->iAssignedMaterial = mAssignedMaterial->iIdentification;
 		else
-			Sys_Error("Bad animating texture %s", tx->name);
+			tTexture->iAssignedMaterial = Material_GetDummy()->iIdentification;
 
-		for (j=i+1 ; j<nummiptex ; j++)
-		{
-			tx2 = loadmodel->textures[j];
-			if (!tx2 || tx2->name[0] != '+')
-				continue;
-			if (strcmp (tx2->name+2, tx->name+2))
-				continue;
-
-			num = tx2->name[1];
-			if (num >= 'a' && num <= 'z')
-				num -= 'a' - 'A';
-			if (num >= '0' && num <= '9')
-			{
-				num -= '0';
-				anims[num] = tx2;
-				if (num+1 > max)
-					max = num + 1;
-			}
-			else if (num >= 'A' && num <= 'J')
-			{
-				num = num - 'A';
-				altanims[num] = tx2;
-				if (num+1 > altmax)
-					altmax = num+1;
-			}
-			else
-				Sys_Error ("Bad animating texture %s", tx->name);
-		}
-
-#define	ANIM_CYCLE	2
-		// link them all together
-		for (j=0 ; j<max ; j++)
-		{
-			tx2 = anims[j];
-			if (!tx2)
-			{
-				Con_Warning("Missing frame %i of %s",j, tx->name);
-				return;
-			}
-			tx2->anim_total = max * ANIM_CYCLE;
-			tx2->anim_min = j * ANIM_CYCLE;
-			tx2->anim_max = (j+1) * ANIM_CYCLE;
-			tx2->anim_next = anims[ (j+1)%max ];
-			if (altmax)
-				tx2->alternate_anims = altanims[0];
-		}
-		for (j=0 ; j<altmax ; j++)
-		{
-			tx2 = altanims[j];
-			if (!tx2)
-			{
-				Con_Warning("Missing frame %i of %s",j, tx->name);
-				return;
-			}
-
-			tx2->anim_total = altmax*ANIM_CYCLE;
-			tx2->anim_min	= j*ANIM_CYCLE;
-			tx2->anim_max	= (j+1)*ANIM_CYCLE;
-			tx2->anim_next	= altanims[ (j+1)%altmax ];
-			if(max)
-				tx2->alternate_anims = anims[0];
-		}
+		Hunk_FreeToLowMark(iMark);
 	}
 }
 

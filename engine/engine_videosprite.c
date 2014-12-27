@@ -116,7 +116,7 @@ void Sprite_Draw(entity_t *eEntity)
 		Math_VectorMA(voSprite[1].vVertex,sSprite->fScale,vright,voSprite[2].vVertex);
 		Math_VectorMA(sSprite->vOrigin,sSprite->fScale,vright,voSprite[3].vVertex);
 		
-		Video_DrawFill(voSprite);
+		//Video_DrawFill(voSprite);
 	}
 
 	Video_ResetCapabilities(true);

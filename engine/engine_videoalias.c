@@ -8,7 +8,6 @@
 
 #include "engine_videoshadow.h"
 #include "engine_video.h"
-#include "engine_videomaterial.h"
 
 extern cvar_t r_drawflat, gl_fullbrights, r_lerpmodels, r_lerpmove; //johnfitz
 
@@ -303,11 +302,7 @@ void Alias_DrawModelFrame(MD2_t *mModel,entity_t *eEntity,lerpdata_t lLerpData)
 			iVert++;
         }
 
-	if (bShading)
-		// Deal with materials...
-		Material_Draw(Material_Get(eEntity->model->iAssignedMaterials[0]), eEntity->skinnum, voModel, iVert);
-
-	Video_DrawObject(voModel,VIDEO_PRIMITIVE_TRIANGLES,iVert);
+	Video_DrawObject(voModel, VIDEO_PRIMITIVE_TRIANGLES, iVert, Material_Get(eEntity->model->iAssignedMaterials[0]), eEntity->skinnum);
 }
 
 void Alias_SetupFrame(MD2_t *mModel,lerpdata_t *ldLerp)

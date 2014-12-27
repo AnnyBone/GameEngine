@@ -59,10 +59,9 @@ typedef struct texture_s
 	char				name[16];
 	unsigned			width, height;
 	struct gltexture_s	*gltexture; //johnfitz -- pointer to gltexture
-	struct gltexture_s	*detail;
-	struct gltexture_s	*fullbright; //johnfitz -- fullbright mask texture
-	struct gltexture_s	*warpimage; //johnfitz -- for water animation
-	bool				update_warp; //johnfitz -- update warp this frame
+
+	int					iAssignedMaterial;	// HACKY!!!!!
+
 	struct msurface_s	*texturechain;	// for texture chains
 	int					anim_total;				// total tenths in sequence ( 0 = no)
 	int					anim_min, anim_max;		// time for this frame min <=time< max
@@ -92,6 +91,7 @@ typedef struct
 	float		vecs[2][4];
 	float		mipadjust;
 	texture_t	*texture;
+
 	int			flags;
 } mtexinfo_t;
 

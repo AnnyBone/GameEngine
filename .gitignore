@@ -40,3 +40,6 @@ editor_legacy/Debug/RCa07736
 *.map
 *.layout
 *.exe
+/Debug (OpenKatana)/Menu.lib
+/Debug (OpenKatana)/Game.lib
+/engine/Release
