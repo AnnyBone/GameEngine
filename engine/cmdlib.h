@@ -22,7 +22,6 @@ int	FileTime (char *path);
 extern	char		qdir[1024];
 extern	char		gamedir[1024];
 char *ExpandPath (char *path);
-char *ExpandPathAndArchive (char *path);
 
 double I_FloatTime (void);
 
@@ -65,8 +64,6 @@ char *copystring(char *s);
 void CRC_Init(unsigned short *crcvalue);
 void CRC_ProcessByte(unsigned short *crcvalue, byte data);
 unsigned short CRC_Value(unsigned short crcvalue);
-
-void CreatePath (char *path);
 
 extern	bool		archive;
 extern	char		archivedir[1024];

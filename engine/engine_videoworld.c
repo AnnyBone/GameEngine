@@ -532,6 +532,8 @@ void R_DrawLightmapChains (void)
 
 void World_Draw(void)
 {
+	VideoObject_t	*voWorld;
+
 	if(!r_drawworld_cheatsafe)
 		return;
 
@@ -574,10 +576,6 @@ void World_Draw(void)
 
 	//R_DrawTextureChains_NoTexture();
 
-	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
-	glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
-	glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 4);
-
 	{
 		int			i, j;
 		msurface_t	*s;
@@ -597,59 +595,43 @@ void World_Draw(void)
 				{
 					Material_t *mMaterial = Material_Get(R_TextureAnimation(t, 0)->iAssignedMaterial);
 
+#if 0
 					if(!bBound) //only bind once we are sure we need this texture
 					{
-						Video_SetTexture(Material_Get((R_TextureAnimation(t, 0))->iAssignedMaterial)->msSkin[0].gDiffuseTexture);
+						Video_SetTexture(mMaterial->msSkin[0].gDiffuseTexture);
 						Video_SelectTexture(1);
 						Video_EnableCapabilities(VIDEO_TEXTURE_2D);
 
 						bBound = true;
 					}
+#endif
 
+#if 0
 					R_RenderDynamicLightmaps(s);
 
 					Video_SetTexture(lightmap_textures[s->lightmaptexturenum]);
 
 					R_UploadLightmap(s->lightmaptexturenum);
-
-#if 0
-					glBegin(GL_TRIANGLE_FAN);
-
-					v = s->polys->verts[0];
-					for(j = 0; j < s->polys->numverts; j++,v += VERTEXSIZE)
-					{
-						glMultiTexCoord2fv(VIDEO_TEXTURE0,v+3);
-						glMultiTexCoord2fv(VIDEO_TEXTURE1,v+5);
-						glVertex3fv(v);
-					}
-
-					glEnd();
-#else
-					{
-						VideoObject_t voWorld[512] = { 0 };
-
-						v = s->polys->verts[0];
-						for (j = 0; j < s->polys->numverts; j++, v += VERTEXSIZE)
-						{
-//							Math_Vector2Copy((v + 3), voWorld[i].vTextureCoord[0]);
-//							Math_Vector2Copy((v + 5), voWorld[i].vTextureCoord[1]);
-							Math_VectorCopy(v, voWorld[i].vVertex);
-							Math_Vector4Set(1.0f, voWorld[i].vColour);
-						}
-
-						Video_DrawObject(voWorld, VIDEO_PRIMITIVE_TRIANGLE_FAN, s->polys->numverts, NULL, 0);
-					}
 #endif
+
+					voWorld = (VideoObject_t*)Hunk_TempAlloc(s->polys->numverts*sizeof(VideoObject_t));
+					if (!voWorld)
+						Sys_Error("Failed to allocate world object!\n");
+						
+					v = s->polys->verts[0];
+					for (j = 0; j < s->polys->numverts; j++, v += VERTEXSIZE)
+					{
+						Math_Vector2Copy((v + 3), voWorld[j].vTextureCoord[0]);
+						Math_Vector2Copy((v + 5), voWorld[j].vTextureCoord[1]);
+						Math_VectorCopy(v, voWorld[j].vVertex);
+						Math_Vector4Set(1.0f, voWorld[j].vColour);
+					}
+
+					Video_DrawObject(voWorld, VIDEO_PRIMITIVE_TRIANGLE_FAN, s->polys->numverts, mMaterial, 0);
 
 					rs_brushpasses++;
 				}
-
-			Video_SelectTexture(0);
 		}
-
-		Video_SelectTexture(0);
-
-		glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_REPLACE);
 	}
 
 	Video_ResetCapabilities(true);

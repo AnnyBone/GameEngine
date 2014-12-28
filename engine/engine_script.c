@@ -114,63 +114,64 @@ void Script_StartTokenParsing(char *cData)
 	cScriptParse	= cData;
 }
 
+/*	Copied from hmap2, since the original was pretty fucked up.
+*/
 bool Script_GetToken(bool bCrossline)
 {
-	char *cTokenParse;
+	char *cTokenParse,*cTemp;
 
-SKIPSPACE:
-	while(*cScriptParse <= 32)
+	// Return something, even if the caller ignores a return false.
+	cToken[0] = 0;
+
+	for (;;)
 	{
-		if(!*cScriptParse)
-		{
-			if(!bCrossline)
-				Error("Line is incomplete! (%i)",iScriptLine);
-
+		if (*cScriptParse == 0)
 			return false;
-		}
-
-		if(*cScriptParse++ == '\n')
+		else if (*cScriptParse == '\n')
 		{
-			if(!bCrossline)
-				Error("Line is incomplete! (%i)",iScriptLine);
+			if (!bCrossline)
+				return false;
 
+			cScriptParse++;
 			iScriptLine++;
 		}
-	}
+		else if (*cScriptParse <= ' ')
+			cScriptParse++;
+		else if (cScriptParse[0] == '/' && cScriptParse[1] == '/')
+		{
+			while (*cScriptParse && (*cScriptParse != '\n'))
+				cScriptParse++;
+		}
+		else if (cScriptParse[0] == '/' && cScriptParse[1] == '*')
+		{
+			cTemp = cScriptParse;
 
-	// [2/4/2013] Standard comments ~hogsy
-	if(cScriptParse[0] == '/' && cScriptParse[1] == '/')
-	{
-		if(bCrossline)
-			Error("Line is incomplete! (%i)",iScriptLine);
-
-		while(*cScriptParse++ != '\n')
-			if(!*cScriptParse)
+			for (;;)
 			{
-				if(!bCrossline)
-					Error("Line is incomplete! (%i)",iScriptLine);
+				if (*cScriptParse == 0)
+					break;
+				else if (cScriptParse[0] == '*' && cScriptParse[1] == '/')
+				{
+					cScriptParse += 2;
+					break;
+				}
+				else if (*cScriptParse == '\n')
+				{
+					if (!bCrossline)
+					{
+						cScriptParse = cTemp;
+						return false;
+					}
 
-				return false;
+					cScriptParse++;
+					iScriptLine++;
+				}
+				else
+					cScriptParse++;
 			}
-
-		goto SKIPSPACE;
-	}
-	// [2/4/2013] Multiple line comments ~hogsy
-	else if((cScriptParse[0] == '/') && (cScriptParse[1] == '*'))
-	{
-		if(bCrossline)
-			Error("Line is incomplete! (%i)",iScriptLine);
-
-		while((*cScriptParse++ != '*'))	//cScriptParse[0] && !(cScriptParse[0] == '*' && cScriptParse[1] == '/'))
-			if(!*cScriptParse)
-			{
-				if(!bCrossline)
-					Error("Line is incomplete! (%i)",iScriptLine);
-
-				return false;
-			}
-
-		goto SKIPSPACE;
+		}
+		else
+			break;
 	}
 
 	cTokenParse = cToken;
@@ -194,6 +195,18 @@ SKIPSPACE:
 	else if(*cScriptParse == '(')
 	{
 		cScriptParse++;
+
+		while (*cScriptParse != ')')
+		{
+			if (!*cScriptParse)
+				Error("End of field inside quoted token! (%i)", iScriptLine);
+
+			*cTokenParse++ = *cScriptParse++;
+
+			if (cTokenParse == &cToken[MAXTOKEN])
+				Error("Token too large! (%i)\n", iScriptLine);
+		}
+
 		cScriptParse++;
 	}
 	else while(*cScriptParse > 32)

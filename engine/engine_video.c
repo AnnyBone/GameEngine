@@ -34,18 +34,18 @@ static unsigned int	iSavedCapabilites[VIDEO_MAX_UNITS+1][2];
 #define VIDEO_STATE_ENABLE   0
 #define VIDEO_STATE_DISABLE  1
 
-cvar_t	cvMultisampleSamples	= {	"video_multisamplesamples",		"0",			true,   false,  "Changes the number of samples."									},
-		cvMultisampleMaxSamples = { "video_multisamplemaxsamples",	"16",			true,	false,	"Sets the maximum number of allowed samples."						},
-		cvFullscreen			= {	"video_fullscreen",				"0",			true,   false,  "1: Fullscreen, 0: Windowed"										},
-		cvWidth					= {	"video_width",					"640",			true,   false,  "Sets the width of the window."										},
-		cvHeight				= {	"video_height",					"480",			true,   false,  "Sets the height of the window."									},
-		cvVerticalSync			= {	"video_verticalsync",			"0",			true																				},
-		cvVideoDraw				= {	"video_draw",					"1",			false,	false,	"If disabled, nothing is drawn."									},
-		cvVideoDrawModels		= {	"video_drawmodels",				"1",			false,  false,  "Toggles models."													},
-		cvVideoDrawDepth		= {	"video_drawdepth",				"0",			false,	false,	"If enabled, previews the debth buffer."							},
-		cvVideoAlphaTrick		= { "video_alphatrick",				"1",			true,	false,	"If enabled, draws alpha-tested surfaces twice for extra quality."	},
-		cvVideoFinish			= { "video_finish",					"0",			true,	false,	"If enabled, calls glFinish at the end of the frame."				},
-		cvVideoDebugLog			= {	"video_debuglog",				"log_video",	true,	false,	"The name of the output log for video debugging."					};
+cvar_t	cvMultisampleSamples		= {	"video_multisamplesamples",		"0",			true,   false,  "Changes the number of samples."															},
+		cvMultisampleMaxSamples		= { "video_multisamplemaxsamples",	"16",			true,	false,	"Sets the maximum number of allowed samples."												},
+		cvFullscreen				= {	"video_fullscreen",				"0",			true,   false,  "1: Fullscreen, 0: Windowed"																},
+		cvWidth						= {	"video_width",					"640",			true,   false,  "Sets the width of the window."																},
+		cvHeight					= {	"video_height",					"480",			true,   false,  "Sets the height of the window."															},
+		cvVerticalSync				= {	"video_verticalsync",			"0",			true																										},
+		cvVideoDraw					= {	"video_draw",					"1",			false,	false,	"If disabled, nothing is drawn."															},
+		cvVideoDrawModels			= {	"video_drawmodels",				"1",			false,  false,  "Toggles models."																			},
+		cvVideoDrawDepth			= {	"video_drawdepth",				"0",			false,	false,	"If enabled, previews the debth buffer."													},
+		cvVideoAlphaTrick			= { "video_alphatrick",				"1",			true,	false,	"If enabled, draws alpha-tested surfaces twice for extra quality."							},
+		cvVideoFinish				= { "video_finish",					"0",			true,	false,	"If enabled, calls glFinish at the end of the frame."										},
+		cvVideoDebugLog				= {	"video_debuglog",				"log_video",	true,	false,	"The name of the output log for video debugging."											};
 
 #define VIDEO_MIN_WIDTH		640
 #define VIDEO_MIN_HEIGHT	480

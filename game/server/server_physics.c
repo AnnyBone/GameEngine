@@ -69,7 +69,7 @@ void Physics_CheckWaterTransition(edict_t *eEntity)
 		eEntity->v.waterlevel	= (float)iCont;
 	}
 	
-	Sound(eEntity,CHAN_AUTO,PHYSICS_SOUND_BODY,15,ATTN_NORM);
+	//Sound(eEntity, CHAN_AUTO, PHYSICS_SOUND_BODY, 15, ATTN_NORM);
 }
 
 // [5/7/2012] Was SV_Impact ~hogsy

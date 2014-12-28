@@ -183,10 +183,7 @@ void R_DrawSequentialPoly(msurface_t *s)
 	}
 	else
 	{
-		Material_t	*mBrushMat;
-        float		*fVert;
-
-		mBrushMat = Material_Get(tAnimation->iAssignedMaterial);
+        float	*fVert;
 
         if(fAlpha < 1.0f)
 		{
@@ -195,12 +192,8 @@ void R_DrawSequentialPoly(msurface_t *s)
 
 			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 		}
-#if 0
-		else
-            Video_EnableCapabilities(VIDEO_ALPHA_TEST);
-#endif
 
-		mBrushMat->msSkin[0].gLightmapTexture = lightmap_textures[s->lightmaptexturenum];
+		//mBrushMat->msSkin[0].gLightmapTexture = lightmap_textures[s->lightmaptexturenum];
 
 #if 0
 		Video_SelectTexture(1);
@@ -212,44 +205,25 @@ void R_DrawSequentialPoly(msurface_t *s)
 #endif
 
 		{
-			VideoObject_t voBrush[64] = { 0 };
+			VideoObject_t *voBrush;
+
+			voBrush = (VideoObject_t*)Hunk_TempAlloc(s->polys->numverts*sizeof(VideoObject_t));
+			if (!voBrush)
+				Sys_Error("Failed to allocate brush object!\n");
 
 			fVert = s->polys->verts[0];
 			for(i = 0; i < s->polys->numverts; i++,fVert += VERTEXSIZE)
 			{
+#pragma warning(suppress: 6011)
 				Math_VectorCopy(fVert,voBrush[i].vVertex);
 				Math_Vector2Copy((fVert+3),voBrush[i].vTextureCoord[0]);
 				Math_Vector2Copy((fVert+5),voBrush[i].vTextureCoord[1]);
-
 				Math_VectorSet(1.0f,voBrush[i].vColour);
+
 				voBrush[i].vColour[3] = fAlpha;
 			}
 
 			Video_DrawObject(voBrush, VIDEO_PRIMITIVE_TRIANGLE_FAN, s->polys->numverts, Material_Get(tAnimation->iAssignedMaterial), currententity->frame);
-
-#if 0
-			if (fAlpha == 1.0f && cvVideoAlphaTrick.bValue)
-			{
-				Video_SelectTexture(0);
-
-				Video_SetBlend(VIDEO_BLEND_IGNORE, VIDEO_DEPTH_FALSE);
-
-				Video_EnableCapabilities(VIDEO_BLEND);
-
-				/*	HACKY
-					We enabled this above, so after resetting we would normally then disable this,
-					but disabling it here undoes that and then causes the pipeline to instead enable
-					it again. Not wanted behaviour, so we just ignore it.
-				*/
-				bVideoIgnoreCapabilities = true;
-				Video_DisableCapabilities(VIDEO_ALPHA_TEST);
-				bVideoIgnoreCapabilities = false;
-
-				Video_DrawObject(voBrush, VIDEO_PRIMITIVE_TRIANGLE_FAN, s->polys->numverts, Material_Get(tAnimation->iAssignedMaterial), currententity->frame);
-
-				Video_SelectTexture(1);
-			}
-#endif
 		}
 
         rs_brushpasses++;

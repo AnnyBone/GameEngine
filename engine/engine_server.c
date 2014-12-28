@@ -113,6 +113,7 @@ void Server_ParseEntityField(char *cKey,char *cValue,edict_t *eEntity)
 						((float*)((byte*)eEntity+eField->iOffset))[2] = 0;
 						break;
 					default:
+#pragma warning(suppress: 6031)
 						sscanf(cValue,"%f %f %f",&vVector[0],&vVector[1],&vVector[2]);
 						((float*)((byte*)eEntity+eField->iOffset))[0] = vVector[0];
 						((float*)((byte*)eEntity+eField->iOffset))[1] = vVector[1];
@@ -120,6 +121,7 @@ void Server_ParseEntityField(char *cKey,char *cValue,edict_t *eEntity)
 					}
 					break;
 				case EV_VECTOR4:
+#pragma warning(suppress: 6031)
 					sscanf(cValue,"%f %f %f %f",&vVector[0],&vVector[1],&vVector[2],&vVector[3]);
 					((float*)((byte*)eEntity+eField->iOffset))[0] = vVector[0];
 					((float*)((byte*)eEntity+eField->iOffset))[1] = vVector[1];

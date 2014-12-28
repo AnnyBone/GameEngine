@@ -69,36 +69,6 @@ char *ExpandPath (char *path)
 	return full;
 }
 
-/*	Used to archive source files
-*/
-void Q_CopyFile(char *from,char *to)
-{
-	void	*buffer;
-	int		length;
-
-	length = LoadFile (from, &buffer);
-	CreatePath (to);
-	SaveFile (to, buffer, length);
-	free (buffer);
-}
-
-char *ExpandPathAndArchive (char *path)
-{
-	char	*expanded;
-	char	archivename[1024];
-
-	expanded = ExpandPath (path);
-
-	if(archive)
-	{
-		sprintf(archivename,"%s/%s",archivedir,path);
-
-		// [1/8/2013] Renamed to avoid conflict with Window libraries ~hogsy
-		Q_CopyFile(expanded,archivename);
-	}
-	return expanded;
-}
-
 char *copystring(char *s)
 {
 	char	*b;
@@ -529,24 +499,3 @@ float   (*BigFloat) (float l);
 float   (*LittleFloat) (float l);
 */
 //=============================================================================
-
-void CreatePath(char *path)
-{
-	char *ofs, c;
-
-	for(ofs = path+1; *ofs; ofs++)
-	{
-		c = *ofs;
-		if(c == '/' || c == '\\')
-		{
-			// Create the directory
-			*ofs = 0;
-#ifdef _WIN32
-			_mkdir(path);
-#else
-            mkdir(path,0777);
-#endif
-			*ofs = c;
-		}
-	}
-}

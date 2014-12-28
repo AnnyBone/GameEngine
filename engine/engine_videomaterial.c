@@ -55,9 +55,6 @@ void Material_Initialize(void)
 #ifdef _MSC_VER // This is false, since the function above shuts us down, but MSC doesn't understand that.
 #pragma warning(suppress: 6011)
 #endif
-	// Change the material name to dummy, just so it can be easily accessed.
-	sprintf(mDummy->cName, "dummy");
-	mDummy->iFlags = MATERIAL_FLAG_PRESERVE;
 }
 
 Material_t *Material_Allocate(void)
@@ -69,9 +66,10 @@ Material_t *Material_Allocate(void)
 		if (!(mMaterials[i].iFlags & MATERIAL_FLAG_PRESERVE))
 			if (!mMaterials[i].iIdentification || !mMaterials[i].iSkins)
 			{
-				//memset(mMaterial, 0, sizeof(*mMaterial));
-
-				mMaterials[i].iIdentification = i + 1;
+				// Set our new material with defaults.
+				mMaterials[i].iIdentification	= i;
+				mMaterials[i].iSkins			= 0;
+				mMaterials[i].iFlags			= 0;
 
 				iMaterialCount++;
 
@@ -209,6 +207,9 @@ void Material_PreDraw(Material_t *mMaterial, int iSkin, VideoObject_t *voObject,
 		return;
 	}
 
+	if (msCurrentSkin->iFlags & MATERIAL_FLAG_ALPHA)
+		Video_EnableCapabilities(VIDEO_ALPHA_TEST);
+
 	// Set the diffuse texture first.
 	Video_SetTexture(msCurrentSkin->gDiffuseTexture);
 
@@ -253,8 +254,6 @@ void Material_PreDraw(Material_t *mMaterial, int iSkin, VideoObject_t *voObject,
 				// TODO: Modify them to the appropriate scale.
 
 			}
-
-		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
 		iLayers++;
 	}
@@ -325,17 +324,41 @@ void Material_PostDraw(Material_t *mMaterial, int iSkin, VideoObject_t *voObject
 	msCurrentSkin = Material_GetSkin(mMaterial, iSkin);
 	if (!msCurrentSkin)
 		return;
+
+	if ((msCurrentSkin->iFlags & MATERIAL_FLAG_ALPHA) && cvVideoAlphaTrick.bValue)
+	{
+		Video_SelectTexture(0);
+
+		Video_SetBlend(VIDEO_BLEND_IGNORE, VIDEO_DEPTH_FALSE);
+
+		Video_EnableCapabilities(VIDEO_BLEND);
+
+		/*	HACKY
+			We enabled this above, so after resetting we would normally then disable this,
+			but disabling it here undoes that and then causes the pipeline to instead enable
+			it again. Not wanted behaviour, so we just ignore it.
+		*/
+		bVideoIgnoreCapabilities = true;
+		Video_DisableCapabilities(VIDEO_ALPHA_TEST);
+		bVideoIgnoreCapabilities = false;
+
+		// Draw the object again (don't bother passing material).
+		Video_DrawObject(voObject, VIDEO_PRIMITIVE_TRIANGLE_FAN, uiSize, NULL, 0);
+	}
 }
 
 /*
 	Scripting
 */
 
+bool	bMaterialGlobal;	// Indicates that any settings applied are global.
+
 // Utility functions...
 
-gltexture_t *Material_LoadTexture(MaterialSkin_t *mCurrentSkin, char *cArg)
+gltexture_t *Material_LoadTexture(Material_t *mMaterial,MaterialSkin_t *mCurrentSkin, char *cArg)
 {
-	byte		*bTextureMap;
+	int		iTextureFlags = TEXPREF_ALPHA;
+	byte	*bTextureMap;
 
 	// Check if it's trying to use a built-in texture.
 	if (!Q_strcmp(cArg, "notexture"))
@@ -350,10 +373,13 @@ gltexture_t *Material_LoadTexture(MaterialSkin_t *mCurrentSkin, char *cArg)
 		if ((mCurrentSkin->iTextureWidth & 15) || (mCurrentSkin->iTextureHeight & 15))
 			Con_Warning("Texture is not 16 aligned! (%ix%i)\n", mCurrentSkin->iTextureWidth, mCurrentSkin->iTextureHeight);
 
+		if (mMaterial->iFlags & MATERIAL_FLAG_PRESERVE)
+			iTextureFlags |= TEXPREF_PERSIST;
+
 		return TexMgr_LoadImage(NULL,cArg,
 			mCurrentSkin->iTextureWidth,
 			mCurrentSkin->iTextureHeight,
-			SRC_RGBA,bTextureMap,cArg,0,TEXPREF_ALPHA);
+			SRC_RGBA,bTextureMap,cArg,0,iTextureFlags);
 	}
 		
 	Con_Warning("Failed to load texture %s!\n", cArg);
@@ -376,27 +402,27 @@ void _Material_SetType(Material_t *mCurrentMaterial,char *cArg)
 
 void _Material_SetDiffuseTexture(Material_t *mCurrentMaterial,char *cArg)
 {
-	mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1].gDiffuseTexture = Material_LoadTexture(&mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1], cArg);
+	mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1].gDiffuseTexture = Material_LoadTexture(mCurrentMaterial,&mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1], cArg);
 }
 
 void _Material_SetFullbrightTexture(Material_t *mCurrentMaterial,char *cArg)
 {
-	mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1].gFullbrightTexture = Material_LoadTexture(&mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1], cArg);
+	mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1].gFullbrightTexture = Material_LoadTexture(mCurrentMaterial,&mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1], cArg);
 }
 
 void _Material_SetSphereTexture(Material_t *mCurrentMaterial,char *cArg)
 {
-	mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1].gSphereTexture = Material_LoadTexture(&mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1], cArg);
+	mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1].gSphereTexture = Material_LoadTexture(mCurrentMaterial,&mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1], cArg);
 }
 
 void _Material_SetSpecularTexture(Material_t *mCurrentMaterial, char *cArg)
 {
-	mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1].gSpecularTexture = Material_LoadTexture(&mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1], cArg);
+	mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1].gSpecularTexture = Material_LoadTexture(mCurrentMaterial,&mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1], cArg);
 }
 
 void _Material_SetDetailTexture(Material_t *mCurrentMaterial, char *cArg)
 {
-	mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1].gDetailTexture = Material_LoadTexture(&mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1], cArg);
+	mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1].gDetailTexture = Material_LoadTexture(mCurrentMaterial,&mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1], cArg);
 }
 
 typedef struct
@@ -408,16 +434,26 @@ typedef struct
 
 MaterialFlag_t	mfMaterialFlags[] =
 {
-	{ MATERIAL_FLAG_PRESERVE, "PRESERVE" },
-	{ MATERIAL_FLAG_ALPHA, "ALPHA" },
-	{ MATERIAL_FLAG_BLEND, "BLEND" }
+	{ MATERIAL_FLAG_PRESERVE,	"PRESERVE"	},
+	{ MATERIAL_FLAG_ALPHA,		"ALPHA"		},
+	{ MATERIAL_FLAG_BLEND,		"BLEND"		}
 };
 
-/*	Set flags for the material, that either apply for the texture or material.
+/*	Set flags for the material.
 */
 void _Material_SetFlags(Material_t *mCurrentMaterial,char *cArg)
 {
+	int	i;
 
+	// Search through and copy each flag into the materials list of flags.
+	for (i = 0; i < pARRAYELEMENTS(mfMaterialFlags); i++)
+		if (strstr(cArg, mfMaterialFlags[i].ccName))
+		{
+			if (bMaterialGlobal)
+				mCurrentMaterial->iFlags |= mfMaterialFlags[i].iFlag;
+			else
+				mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1].iFlags |= mfMaterialFlags[i].iFlag;
+		}
 }
 
 typedef struct
@@ -440,6 +476,22 @@ MaterialKey_t	mkMaterialFunctions[]=
 	{	0	}
 };
 
+void Material_CheckFunctions(Material_t *mNewMaterial)
+{
+	MaterialKey_t *mKey;
+
+	// Find the related function.
+	for (mKey = mkMaterialFunctions; mKey->cKey; mKey++)
+		// Remain case sensitive.
+		if (!Q_strcasecmp(mKey->cKey, cToken + 1))
+		{
+			Script_GetToken(false);
+
+			mKey->Function(mNewMaterial, cToken);
+			break;
+		}
+}
+
 /*	Loads and parses material.
 	Returns false on complete failure.
 */
@@ -447,10 +499,11 @@ Material_t *Material_Load(/*const */char *ccPath)
 {
     Material_t  *mNewMaterial;
 	byte        *cData;
-	char		cPath[PLATFORM_MAX_PATH];
+	char		cPath[PLATFORM_MAX_PATH],
+				cMaterialName[64] = { 0 };
 
 	// Ensure that the given material names are correct!
-	if (cPath[0] == ' ')
+	if (ccPath[0] == ' ')
 		Sys_Error("Invalid texture name! (%s)\n", ccPath);
 
 	Con_DPrintf("Loading material: %s\n", ccPath);
@@ -458,7 +511,7 @@ Material_t *Material_Load(/*const */char *ccPath)
 	if(!bInitialized)
 	{
 		Con_Warning("Attempted to load material, before initialization! (%s)\n",ccPath);
-		return false;
+		return NULL;
 	}
 
 	// Update the given path with the base path plus extension.
@@ -473,24 +526,61 @@ Material_t *Material_Load(/*const */char *ccPath)
 	if(!cData)
 	{
 		Con_Warning("Failed to load material! (%s) (%s)\n", cPath, ccPath);
-		return false;
+		return NULL;
 	}
 
 	Script_StartTokenParsing((char*)cData);
 
+	bMaterialGlobal = true;
+
 	if(!Script_GetToken(true))
 	{
 		Con_Warning("Failed to get initial token! (%s) (%i)\n",ccPath,iScriptLine);
-		return false;
+		return NULL;
 	}
-	else if(cToken[0] != '{')
+	else if (cToken[0] != '{')
 	{
-		Con_Warning("Missing '{'! (%s) (%i)\n",ccPath,iScriptLine);
-		return false;
+		// Copy over the given name.
+		strncpy(cMaterialName, cToken, sizeof(cMaterialName));
+
+		// Check if it's been cached already...
+		mNewMaterial = Material_GetByName(cMaterialName);
+		if (mNewMaterial)
+		{
+			Con_Warning("Attempted to load duplicate material! (%s) (%s) vs (%s) (%s)\n",
+				ccPath, cMaterialName,
+				mNewMaterial->cPath, mNewMaterial->cName);
+			return mNewMaterial;
+		}
+
+		if (cMaterialName[0])
+		{
+			Script_GetToken(true);
+			if (cToken[0] != '{')
+			{
+				Con_Warning("Missing '{'! (%s) (%i)\n", ccPath, iScriptLine);
+				return NULL;
+			}
+		}
+		else
+		{
+			Con_Warning("Invalid material name! (%s) (%i)\n", ccPath, iScriptLine);
+			return NULL;
+		}
 	}
 
 	// Assume that the material hasn't been cached yet, so allocate a new copy of one.
 	mNewMaterial = Material_Allocate();
+
+	if (cMaterialName[0])
+		// Copy the name over.
+		strncpy(mNewMaterial->cName, cMaterialName, sizeof(mNewMaterial->cName));
+	else
+		// Otherwise just use the filename.
+		ExtractFileBase(ccPath, mNewMaterial->cName);
+
+	// Copy the path over.
+	strncpy(mNewMaterial->cPath, ccPath, sizeof(mNewMaterial->cPath));
 
 	while(true)
 	{
@@ -501,11 +591,15 @@ Material_t *Material_Load(/*const */char *ccPath)
 		}
 
 		// End
-		if(cToken[0] == '}')
+		if (cToken[0] == '}')
 			break;
 		// Start
+		else if (cToken[0] == SCRIPT_SYMBOL_FUNCTION)
+			Material_CheckFunctions(mNewMaterial);
 		else if(cToken[0] == '{')
 		{
+			bMaterialGlobal = false;
+
 			mNewMaterial->iSkins++;
 
 			while(true)
@@ -516,24 +610,11 @@ Material_t *Material_Load(/*const */char *ccPath)
 					break;
 				}
 
-				if(cToken[0] == '}')
+				if (cToken[0] == '}')
 					break;
 				// '$' declares that the following is a function.
-				else if(cToken[0] == SCRIPT_SYMBOL_FUNCTION)
-				{
-					MaterialKey_t *mKey;
-
-					// Find the related function.
-					for(mKey = mkMaterialFunctions; mKey->cKey; mKey++)
-						// Remain case sensitive.
-						if(!Q_strcasecmp(mKey->cKey,cToken+1))
-						{
-							Script_GetToken(false);
-
-							mKey->Function(mNewMaterial,cToken);
-							break;
-						}
-				}
+				else if (cToken[0] == SCRIPT_SYMBOL_FUNCTION)
+					Material_CheckFunctions(mNewMaterial);
 				// '%' declares that the following is a variable.
 				else if(cToken[0] == SCRIPT_SYMBOL_VARIABLE)
 				{
@@ -561,7 +642,7 @@ Material_t *Material_GetDummy(void)
 {
 	Material_t *mDummy;
 
-	mDummy = Material_GetByName("dummy");
+	mDummy = Material_GetByName("notexture");
 	if (!mDummy)
 		Sys_Error("Failed to assign dummy material!\n");
 

@@ -321,12 +321,10 @@ void Model_LoadBSPTextures(BSPLump_t *blLump)
 		// Don't bother loading textures for dedicated servers.
 		if (!bIsDedicated)
 		{
-#if 0
-			mAssignedMaterial = Material_Load(mpTexture->name);
+			mAssignedMaterial = Material_Load("shit");
 			if (mAssignedMaterial)
 				tTexture->iAssignedMaterial = mAssignedMaterial->iIdentification;
 			else
-#endif
 				tTexture->iAssignedMaterial = Material_GetDummy()->iIdentification;
 		}
 	}

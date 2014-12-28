@@ -182,6 +182,7 @@ void Fog_ParseWorldspawn (void)
 		strcpy(value, com_token);
 
 		if (!strcmp("fog", key))
+#pragma warning(suppress: 6031)
 			sscanf(value, "%f %f %f %f", &fog_density, &fog_red, &fog_green, &fog_blue);
 	}
 }

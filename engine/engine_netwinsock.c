@@ -477,6 +477,7 @@ int WINS_StringToAddr (char *string, struct qsockaddr *addr)
 	int ha1, ha2, ha3, ha4, hp;
 	int ipaddr;
 
+#pragma warning(suppress: 6031)
 	sscanf(string, "%d.%d.%d.%d:%d", &ha1, &ha2, &ha3, &ha4, &hp);
 	ipaddr = (ha1 << 24) | (ha2 << 16) | (ha3 << 8) | ha4;
 

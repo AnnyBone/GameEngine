@@ -47,6 +47,8 @@ typedef struct
 						*gSpecularTexture,		// Specular map.
 						*gSphereTexture;		// Sphere map.
 
+	float	fTextureScroll[2];	// If set, the texture will scroll by the given coordinates.
+
 	unsigned int	iTextureWidth, iTextureHeight,	// Size of the skin.
 					iFlags,							// Flags assigned for the current skin, affects how it's displayed/loaded.
 					iType;							// Type of surface, e.g. wood, cement etc.
@@ -54,12 +56,12 @@ typedef struct
 
 typedef struct
 {
-	int		iIdentification,
+	int		iIdentification,	// Unique ID for the material.
 			iFlags,				// Global material flags, flags that take priority over all additional skins.
 			iSkins;				// Number of skins provided by this material.
 
 	char	cPath[PLATFORM_MAX_PATH],	// Path of the material.
-			cName[128];					// Name of the material.
+			cName[64];					// Name of the material.
 
 	MaterialSkin_t	msSkin[MODEL_MAX_TEXTURES];
 } Material_t;

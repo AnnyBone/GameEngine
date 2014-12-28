@@ -109,7 +109,7 @@ void SubdividePolygon (int numverts, float *verts)
 	float	*v;
 	vec3_t	front[64], back[64];
 	int		f, b;
-	float	dist[64];
+	float	dist[64] = { 0 };
 	float	frac;
 	glpoly_t	*poly;
 	float	s, t;
