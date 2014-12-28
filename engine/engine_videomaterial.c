@@ -219,7 +219,7 @@ void Material_PreDraw(Material_t *mMaterial, int iSkin, VideoObject_t *voObject,
 		Video_SetTexture(msCurrentSkin->gLightmapTexture);
 
 		// Overbrights
-#if 1
+#if 0
 		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
 		glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
 		glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_PREVIOUS);
@@ -230,6 +230,31 @@ void Material_PreDraw(Material_t *mMaterial, int iSkin, VideoObject_t *voObject,
 		glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
 		glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 4);
 #endif
+
+		iLayers++;
+	}
+
+	// Detail map layer.
+	if (msCurrentSkin->gDetailTexture && cvMaterialDrawDetail.bValue)
+	{
+		// TODO: Check distance from camera before proceeding.
+
+		Video_SelectTexture(iLayers);
+		Video_EnableCapabilities(VIDEO_TEXTURE_2D | VIDEO_BLEND);
+		Video_SetTexture(msCurrentSkin->gDetailTexture);
+
+		if (voObject)
+			for (i = 0; i < iSize; i++)
+			{
+				// Copy over original texture coords.
+				voObject[i].vTextureCoord[iLayers][0] = voObject[i].vTextureCoord[0][0] * 8;
+				voObject[i].vTextureCoord[iLayers][1] = voObject[i].vTextureCoord[0][1] * 8;
+
+				// TODO: Modify them to the appropriate scale.
+
+			}
+
+		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
 		iLayers++;
 	}
@@ -248,36 +273,11 @@ void Material_PreDraw(Material_t *mMaterial, int iSkin, VideoObject_t *voObject,
 	}
 #endif
 
-	// Detail map layer.
-	if (msCurrentSkin->gDetailTexture && cvMaterialDrawDetail.bValue)
-	{
-		// TODO: Check distance from camera before proceeding.
-
-		Video_SelectTexture(iLayers);
-		Video_EnableCapabilities(VIDEO_TEXTURE_2D | VIDEO_BLEND);
-		Video_SetTexture(msCurrentSkin->gDetailTexture);
-
-		if (voObject)
-			for (i = 0; i < iSize; i++)
-			{
-				// Copy over original texture coords.
-				voObject[i].vTextureCoord[iLayers][0] = voObject[i].vTextureCoord[0][0]*8;
-				voObject[i].vTextureCoord[iLayers][1] = voObject[i].vTextureCoord[0][1]*8;
-
-				// TODO: Modify them to the appropriate scale.
-
-			}
-
-		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-
-		iLayers++;
-	}
-
 	// Fullbright map.
 	if (msCurrentSkin->gFullbrightTexture && gl_fullbrights.bValue)
 	{
 		Video_SelectTexture(iLayers);
-		Video_EnableCapabilities(VIDEO_TEXTURE_2D | VIDEO_BLEND);
+		Video_EnableCapabilities(VIDEO_TEXTURE_2D);
 		Video_SetTexture(msCurrentSkin->gFullbrightTexture);
 
 		if (voObject)
@@ -449,6 +449,10 @@ Material_t *Material_Load(/*const */char *ccPath)
 	byte        *cData;
 	char		cPath[PLATFORM_MAX_PATH];
 
+	// Ensure that the given material names are correct!
+	if (cPath[0] == ' ')
+		Sys_Error("Invalid texture name! (%s)\n", ccPath);
+
 	Con_DPrintf("Loading material: %s\n", ccPath);
 
 	if(!bInitialized)
@@ -530,7 +534,7 @@ Material_t *Material_Load(/*const */char *ccPath)
 							break;
 						}
 				}
-				// '%' declares that the following is a function.
+				// '%' declares that the following is a variable.
 				else if(cToken[0] == SCRIPT_SYMBOL_VARIABLE)
 				{
 					/*	TODO:

@@ -285,7 +285,7 @@ void R_UpdateWarpTextures (void)
 
 		//render warp
 		GL_SetCanvas (CANVAS_WARPIMAGE);
-		Video_SetTexture(tx->gltexture);
+		Video_SetTexture(Material_Get(tx->iAssignedMaterial));
 		for (x=0.0; x<128.0; x=x2)
 		{
 			x2 = x + warptess;

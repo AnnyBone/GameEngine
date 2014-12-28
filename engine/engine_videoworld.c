@@ -316,6 +316,7 @@ void R_DrawTextureChains_Glow (void)
 */
 void R_DrawTextureChains_NoTexture (void)
 {
+#if 0
 	int			i;
 	bool		bTextureBound;
 	msurface_t	*s;
@@ -335,7 +336,7 @@ void R_DrawTextureChains_NoTexture (void)
 			{
 				if(!bTextureBound) //only bind once we are sure we need this texture
 				{
-					Video_SetTexture(t->gltexture);
+					Video_SetTexture(Material_Get(t->iAssignedTexture)->msSkin[0].gDiffuseTexture);
 
 					bTextureBound = true;
 				}
@@ -345,6 +346,7 @@ void R_DrawTextureChains_NoTexture (void)
 				rs_brushpasses++;
 			}
 	}
+#endif
 }
 
 void R_DrawTextureChains_TextureOnly (void)
@@ -368,7 +370,7 @@ void R_DrawTextureChains_TextureOnly (void)
 			{
 				if(!bTextureBound) //only bind once we are sure we need this texture
 				{
-					Video_SetTexture((R_TextureAnimation(t,0))->gltexture);
+					Video_SetTexture(Material_Get((R_TextureAnimation(t,0))->iAssignedMaterial)->msSkin[0].gDiffuseTexture);
 
 					bTextureBound = true;
 				}
@@ -423,7 +425,7 @@ void World_DrawWaterTextureChains(void)
 					if(!bTextureBound)
 					{
 						// Only bind once we are sure we need this texture
-						Video_SetTexture(t->gltexture);
+						Video_SetTexture(Material_Get(t->iAssignedMaterial)->msSkin[0].gDiffuseTexture);
 
 						bTextureBound = true;
 					}
@@ -487,7 +489,7 @@ void R_DrawTextureChains_White (void)
 		for (s = t->texturechain; s; s = s->texturechain)
 			if (!s->culled)
 			{
-				Video_SetTexture((R_TextureAnimation(t,0))->gltexture);
+				Video_SetTexture(Material_Get((R_TextureAnimation(t,0))->iAssignedMaterial)->msSkin[0].gDiffuseTexture);
 				DrawGLPoly (s->polys);
 				rs_brushpasses++;
 			}
@@ -593,9 +595,11 @@ void World_Draw(void)
 			for(s = t->texturechain; s; s = s->texturechain)
 				if(!s->culled)
 				{
+					Material_t *mMaterial = Material_Get(R_TextureAnimation(t, 0)->iAssignedMaterial);
+
 					if(!bBound) //only bind once we are sure we need this texture
 					{
-						Video_SetTexture((R_TextureAnimation(t,0))->gltexture);
+						Video_SetTexture(Material_Get((R_TextureAnimation(t, 0))->iAssignedMaterial)->msSkin[0].gDiffuseTexture);
 						Video_SelectTexture(1);
 						Video_EnableCapabilities(VIDEO_TEXTURE_2D);
 
@@ -608,7 +612,7 @@ void World_Draw(void)
 
 					R_UploadLightmap(s->lightmaptexturenum);
 
-#if 1
+#if 0
 					glBegin(GL_TRIANGLE_FAN);
 
 					v = s->polys->verts[0];
@@ -622,13 +626,13 @@ void World_Draw(void)
 					glEnd();
 #else
 					{
-						VideoObject_t voWorld[64] = { 0 };
+						VideoObject_t voWorld[512] = { 0 };
 
 						v = s->polys->verts[0];
 						for (j = 0; j < s->polys->numverts; j++, v += VERTEXSIZE)
 						{
-							Math_Vector2Copy((v + 3), voWorld[i].vTextureCoord[0]);
-							Math_Vector2Copy((v + 5), voWorld[i].vTextureCoord[1]);
+//							Math_Vector2Copy((v + 3), voWorld[i].vTextureCoord[0]);
+//							Math_Vector2Copy((v + 5), voWorld[i].vTextureCoord[1]);
 							Math_VectorCopy(v, voWorld[i].vVertex);
 							Math_Vector4Set(1.0f, voWorld[i].vColour);
 						}

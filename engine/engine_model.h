@@ -60,7 +60,7 @@ typedef struct texture_s
 	unsigned			width, height;
 	struct gltexture_s	*gltexture; //johnfitz -- pointer to gltexture
 
-	int					iAssignedMaterial;	// HACKY!!!!!
+	int	iAssignedMaterial;	// HACKY!!!!!
 
 	struct msurface_s	*texturechain;	// for texture chains
 	int					anim_total;				// total tenths in sequence ( 0 = no)

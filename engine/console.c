@@ -428,9 +428,11 @@ void Con_DPrintf(char *fmt,...)
 	va_end(argptr);
 
 	// Don't confuse non-developers with techie stuff...
+#ifdef _DEBUG
 	if(!developer.value)
 		Console_WriteToLog("log.txt","%s",msg);
 	else
+#endif
 		Con_SafePrintf("%s",msg); //johnfitz -- was Con_Printf
 }
 

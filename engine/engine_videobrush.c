@@ -167,7 +167,7 @@ void R_DrawSequentialPoly(msurface_t *s)
 			glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
 		}
 
-        Video_SetTexture(s->texinfo->texture->gltexture);
+        Video_SetTexture(Material_Get(s->texinfo->texture->iAssignedMaterial)->msSkin[0].gDiffuseTexture);
 
         for(pBrushPoly = s->polys->next; pBrushPoly; pBrushPoly = pBrushPoly->next)
         {
@@ -202,14 +202,14 @@ void R_DrawSequentialPoly(msurface_t *s)
 
 		mBrushMat->msSkin[0].gLightmapTexture = lightmap_textures[s->lightmaptexturenum];
 
+#if 0
 		Video_SelectTexture(1);
 
-#if 0
         R_RenderDynamicLightmaps(s);
         R_UploadLightmap(s->lightmaptexturenum);
-#endif
 
 		Video_SelectTexture(0);
+#endif
 
 		{
 			VideoObject_t voBrush[64] = { 0 };

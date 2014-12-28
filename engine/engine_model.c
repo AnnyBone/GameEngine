@@ -282,21 +282,14 @@ byte	*mod_base;
 
 void Model_LoadBSPTextures(BSPLump_t *blLump)
 {
+	texture_t		*tTexture;
+	Material_t		*mAssignedMaterial;
 	miptex_t		*mpTexture;
-	dmiptexlump_t	*mLump;
-	char			cMaterialName[PLATFORM_MAX_PATH];
-	int				i, iTextures, iMark;
-
-	// Don't bother loading textures for dedicated servers.
-	if (bIsDedicated)
-		return;
+	dmiptexlump_t	*mLump = NULL;
+	int				i, iTextures = 0;
 
 	if(!blLump->iFileLength)
-	{
 		Con_Warning("No textures in BSP file!\n");
-
-		iTextures = 0;
-	}
 	else
 	{
 		mLump = (dmiptexlump_t*)(mod_base + blLump->iFileOffset);
@@ -305,43 +298,41 @@ void Model_LoadBSPTextures(BSPLump_t *blLump)
 		iTextures = mLump->nummiptex;
 	}
 	
-	loadmodel->numtextures	= iTextures;
+	loadmodel->numtextures	= iTextures+2;
 	loadmodel->textures		= (texture_t**)Hunk_AllocName(loadmodel->numtextures*sizeof(*loadmodel->textures), loadname);
 
 	for(i = 0; i < iTextures; i++)
 	{
-		texture_t	*tTexture;
-		Material_t	*mAssignedMaterial;
-
 		mLump->dataofs[i] = LittleLong(mLump->dataofs[i]);
 		if(mLump->dataofs[i] == -1)
 			continue;
 
-		// Get built-in texture scale. (this will eventually be made obsolete! ~hogsy)
 		mpTexture = (miptex_t*)((byte*)mLump+mLump->dataofs[i]);
-		mpTexture->width	= LittleLong(mpTexture->width);
-		mpTexture->height	= LittleLong(mpTexture->height);
+
+		// Scales are checked automatically by material system, so that original check has been removed.
 
 		tTexture = (texture_t*)Hunk_AllocName(sizeof(texture_t), loadname);
 		loadmodel->textures[i] = tTexture;
 
 		memcpy(tTexture->name, mpTexture->name, sizeof(tTexture->name));
-		tTexture->width		= mpTexture->width;
-		tTexture->height	= mpTexture->height;
+		tTexture->width		= LittleLong(mpTexture->width);
+		tTexture->height	= LittleLong(mpTexture->height);
 
-		// Scales are checked automatically by material system, so that original check has been removed.
-
-		iMark = Hunk_LowMark();
-
-
-		mAssignedMaterial = Material_Load("fuck");
-		if (mAssignedMaterial)
-			tTexture->iAssignedMaterial = mAssignedMaterial->iIdentification;
-		else
-			tTexture->iAssignedMaterial = Material_GetDummy()->iIdentification;
-
-		Hunk_FreeToLowMark(iMark);
+		// Don't bother loading textures for dedicated servers.
+		if (!bIsDedicated)
+		{
+#if 0
+			mAssignedMaterial = Material_Load(mpTexture->name);
+			if (mAssignedMaterial)
+				tTexture->iAssignedMaterial = mAssignedMaterial->iIdentification;
+			else
+#endif
+				tTexture->iAssignedMaterial = Material_GetDummy()->iIdentification;
+		}
 	}
+
+	loadmodel->textures[loadmodel->numtextures - 2] = r_notexture_mip;	//for lightmapped surfs
+	loadmodel->textures[loadmodel->numtextures - 1] = r_notexture_mip2; //for SURF_DRAWTILED surfs
 }
 
 void Model_LoadBSPLighting(BSPLump_t *blLump)

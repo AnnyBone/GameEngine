@@ -857,7 +857,7 @@ void Video_ResetCapabilities(bool bClearActive)
 			Video_EnableCapabilities(iSavedCapabilites[i][VIDEO_STATE_DISABLE]);
 
 			// Set this back too...
-			glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_REPLACE);
+			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 		}
 
         if(sbVideoIgnoreDepth)
