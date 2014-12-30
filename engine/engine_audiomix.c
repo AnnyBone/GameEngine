@@ -104,7 +104,7 @@ void S_TransferPaintBuffer(int endtime)
 	int 	*p;
 	int 	step;
 	int		val;
-	int		snd_vol;
+//	int		snd_vol;
 	DWORD	*pbuf;
 
 	if (shm->samplebits == 16 && shm->channels == 2)

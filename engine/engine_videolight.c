@@ -302,7 +302,8 @@ loc0:
 			ds -= surf->texturemins[0];
 			dt -= surf->texturemins[1];
 
-			if (ds > surf->extents[0] || dt > surf->extents[1])
+			// Changed to >= on LordHavoc's suggestion; http://forums.inside3d.com/viewtopic.php?p=42053&sid=0ac1068afbe6572365d3ba2b9a62d411#p42053
+			if (ds >= surf->extents[0] || dt >= surf->extents[1])
 				continue;
 
 			if (surf->samples)

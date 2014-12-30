@@ -621,6 +621,7 @@ void World_Draw(void)
 					v = s->polys->verts[0];
 					for (j = 0; j < s->polys->numverts; j++, v += VERTEXSIZE)
 					{
+#pragma warning(suppress: 6011)	// We already checked this!
 						Math_Vector2Copy((v + 3), voWorld[j].vTextureCoord[0]);
 						Math_Vector2Copy((v + 5), voWorld[j].vTextureCoord[1]);
 						Math_VectorCopy(v, voWorld[j].vVertex);

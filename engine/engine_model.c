@@ -440,20 +440,6 @@ void Model_LoadBSPTextureInfo(BSPLump_t *blLump)
 		len1 = Math_Length(out->vecs[0]);
 		len2 = Math_Length(out->vecs[1]);
 		len1 = (len1 + len2)/2;
-		if (len1 < 0.32)
-			out->mipadjust = 4;
-		else if (len1 < 0.49)
-			out->mipadjust = 3;
-		else if (len1 < 0.99)
-			out->mipadjust = 2;
-		else
-			out->mipadjust = 1;
-#if 0
-		if (len1 + len2 < 0.001)
-			out->mipadjust = 1;		// don't crash
-		else
-			out->mipadjust = 1 / floor( (len1+len2)/2 + 0.1 );
-#endif
 
 		miptex = LittleLong (in->iMipTex);
 		out->flags = LittleLong (in->iFlags);

@@ -1003,7 +1003,7 @@ void Host_Savegame_f (void)
 
 void Host_Loadgame_f (void)
 {
-	char	name[MAX_OSPATH];
+	char	name[PLATFORM_MAX_PATH];
 	FILE	*f;
 	char	mapname[MAX_QPATH];
 	float	time, tfloat;

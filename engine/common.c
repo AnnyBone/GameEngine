@@ -1335,7 +1335,7 @@ pack_t *FileSystem_LoadPackage(char *packfile)
 	int                             numpackfiles;
 	pack_t                  *pack;
 	int                             packhandle;
-	dpackfile_t             info[MAX_FILES_IN_PACK];
+	dpackfile_t             *info;
 	unsigned short          crc;
 
     // [10/3/2014] Switch the path to lowercase ~hogsy
@@ -1358,6 +1358,10 @@ pack_t *FileSystem_LoadPackage(char *packfile)
 	newfiles = (packfile_t*)Z_Malloc(numpackfiles*sizeof(packfile_t));
 	//johnfitz
 
+	info = (dpackfile_t*)malloc(MAX_FILES_IN_PACK);
+	if (!info)
+		Sys_Error("Failed to allocate array!\n");
+
 	Sys_FileSeek (packhandle, header.dirofs);
 	Sys_FileRead (packhandle, (void *)info, header.dirlen);
 
@@ -1369,6 +1373,7 @@ pack_t *FileSystem_LoadPackage(char *packfile)
 	// parse the directory
 	for (i = 0; i < numpackfiles ; i++)
 	{
+#pragma warning(suppress: 6011)	// We checked this already!
 		strcpy (newfiles[i].name, info[i].name);
 		newfiles[i].filepos = LittleLong(info[i].filepos);
 		newfiles[i].filelen = LittleLong(info[i].filelen);
@@ -1382,6 +1387,8 @@ pack_t *FileSystem_LoadPackage(char *packfile)
 	pack->handle = packhandle;
 	pack->numfiles = numpackfiles;
 	pack->files = newfiles;
+
+	free(info);
 
 	return pack;
 }

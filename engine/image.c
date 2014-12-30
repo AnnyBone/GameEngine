@@ -29,14 +29,13 @@ char loadfilename[MAX_OSPATH]; //file scope so that error messages can use it
 */
 byte *Image_LoadImage(char *name, unsigned int *width, unsigned int *height)
 {
+	byte	*bImage;
 	FILE	*f;
 
 	sprintf(loadfilename,"%s.tga",name);
 	COM_FOpenFile(loadfilename,&f);
 	if(f)
 	{
-		byte	*bImage;
-
 		bImage = Image_LoadTGA(f,width,height);
 		if(bImage)
 			return bImage;
@@ -50,12 +49,15 @@ byte *Image_LoadImage(char *name, unsigned int *width, unsigned int *height)
 	COM_FOpenFile(loadfilename,&f);
 	if(f)
 	{
-		unsigned	int	uiDecode;
-		byte			*bImage;
+		unsigned int	uiDecode;
+		
+		uiDecode = lodepng_decode32_file(&bImage,width,height,va("%s/%s",com_gamedir,loadfilename));
+		if (!uiDecode)
+		{
+			fclose(f);
 
-		uiDecode = lodepng_decode32_file(&bImage,(uint32_t*)width,(uint32_t*)height,va("%s/%s",com_gamedir,loadfilename));
-		if(!uiDecode)
 			return bImage;
+		}
 
 		Con_Warning("Failed to load PNG! (%s) (%s)\n",loadfilename,lodepng_error_text(uiDecode));
 	}

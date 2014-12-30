@@ -441,7 +441,7 @@ void Client_PrecacheResource(int iType,char *cResource)
 				gEffectTexture[i] = TexMgr_LoadImage(NULL,cResource,w,h,SRC_RGBA,bData,cPath,0,TEXPREF_ALPHA);
 				return;
 			}
-			else if(!strcmp(cPath,gEffectTexture[i]->name))
+			else if (!strcmp(gEffectTexture[i]->name,cResource))
 				return;
 
 		Console_ErrorMessage(false,cPath,"Overflow!");

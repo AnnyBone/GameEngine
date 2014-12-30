@@ -283,7 +283,7 @@ void Material_PreDraw(Material_t *mMaterial, int iSkin, VideoObject_t *voObject,
 			for (i = 0; i < iSize; i++)
 			{
 				// Texture coordinates remain the same for fullbright layers.
-				voObject[i].vTextureCoord[iLayers][0] = voObject[i].vTextureCoord[0][0];
+				voObject[i].vTextureCoord[iLayers][0] = voObject[i].vTextureCoord[0][0] + (host_framecount);
 				voObject[i].vTextureCoord[iLayers][1] = voObject[i].vTextureCoord[0][1];
 			}
 

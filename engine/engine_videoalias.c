@@ -253,7 +253,7 @@ void Alias_DrawModelFrame(MD2_t *mModel,entity_t *eEntity,lerpdata_t lLerpData)
 {
 	int					i,j,k,iVert;
 	float               fAlpha;
-	VideoObject_t		voModel[MD2_MAX_VERTICES] = { 0 };
+	VideoObject_t		*voModel;
 	MD2TriangleVertex_t	*mtvVertices,
 						*mtvLerpVerts;
 	MD2Triangle_t		*mtTriangles;
@@ -277,6 +277,8 @@ void Alias_DrawModelFrame(MD2_t *mModel,entity_t *eEntity,lerpdata_t lLerpData)
 
 	mtvVertices		= &mfFirst->verts[0];
 	mtvLerpVerts	= &mfSecond->verts[0];
+
+	voModel = (VideoObject_t*)Hunk_TempAlloc(mModel->num_glcmds*sizeof(VideoObject_t));
 
 	mtTriangles	= (MD2Triangle_t*)((uint8_t*)mModel+mModel->ofs_tris);
 	for(iVert = 0,i = 0; i < mModel->numtris; i++,mtTriangles++)
@@ -302,7 +304,7 @@ void Alias_DrawModelFrame(MD2_t *mModel,entity_t *eEntity,lerpdata_t lLerpData)
 			iVert++;
         }
 
-	Video_DrawObject(voModel, VIDEO_PRIMITIVE_TRIANGLES, iVert, Material_Get(eEntity->model->iAssignedMaterials[0]), eEntity->skinnum);
+	Video_DrawObject(voModel, VIDEO_PRIMITIVE_TRIANGLES, mModel->num_glcmds, Material_Get(eEntity->model->iAssignedMaterials[0]), eEntity->skinnum);
 }
 
 void Alias_SetupFrame(MD2_t *mModel,lerpdata_t *ldLerp)
