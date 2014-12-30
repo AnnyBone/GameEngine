@@ -32,6 +32,8 @@ cvar_t	cvMaterialDraw			= { "material_draw",		"1", false, false, "Enables and di
 
 Material_t *Material_Allocate(void);
 
+void Material_List(void);
+
 void Material_Initialize(void)
 {
 	Material_t *mDummy;
@@ -44,6 +46,8 @@ void Material_Initialize(void)
 	Cvar_RegisterVariable(&cvMaterialDraw, NULL);
 	Cvar_RegisterVariable(&cvMaterialDrawDetail, NULL);
 
+	Cmd_AddCommand("material_list", Material_List);
+
 	// Must be set to initialized before anything else.
 	bInitialized = true;
 
@@ -55,6 +59,28 @@ void Material_Initialize(void)
 #ifdef _MSC_VER // This is false, since the function above shuts us down, but MSC doesn't understand that.
 #pragma warning(suppress: 6011)
 #endif
+}
+
+/*	Lists all the currently active materials.
+*/
+void Material_List(void)
+{
+	int i,iSkins = 0;
+
+	Con_Printf("Listing materials...\n");
+
+	for (i = 0; i < MATERIALS_MAX_ALLOCATED; i++)
+	{
+		// Probably the end, just break.
+		if (!mMaterials[i].iSkins)
+			break;
+
+		iSkins += mMaterials[i].iSkins;
+
+		Con_Printf(" %s (%s) (%i)\n", mMaterials[i].cName, mMaterials[i].cPath, mMaterials[i].iSkins);
+	}
+
+	Con_Printf("\nListed %i active materials with %i skins in total!\n", i,iSkins);
 }
 
 Material_t *Material_Allocate(void)
@@ -283,7 +309,7 @@ void Material_PreDraw(Material_t *mMaterial, int iSkin, VideoObject_t *voObject,
 			for (i = 0; i < iSize; i++)
 			{
 				// Texture coordinates remain the same for fullbright layers.
-				voObject[i].vTextureCoord[iLayers][0] = voObject[i].vTextureCoord[0][0] + (host_framecount);
+				voObject[i].vTextureCoord[iLayers][0] = voObject[i].vTextureCoord[0][0];
 				voObject[i].vTextureCoord[iLayers][1] = voObject[i].vTextureCoord[0][1];
 			}
 
