@@ -344,6 +344,12 @@ void Player_CheckWater(edict_t *ePlayer)
 			ePlayer->local.dPainFinished = Server.dTime + 1;
 		}
 	}
+
+	if (!(ePlayer->v.flags & FL_WATERJUMP))
+	{
+		for (int i = 0; i < 3; i++)
+			ePlayer->v.velocity[i] -= 0.8f * ePlayer->v.waterlevel * (float)Server.dHostFrameTime * ePlayer->v.velocity[i];
+	}
 }
 
 void Player_PostThink(edict_t *ePlayer)
@@ -492,6 +498,7 @@ void Player_PreThink(edict_t *ePlayer)
 				ePlayer->v.flags		|= FL_WATERJUMP;
 				ePlayer->v.flags		-= (ePlayer->v.flags & FL_JUMPRELEASED);
 				ePlayer->v.velocity[pZ]	= 225.0f;
+				ePlayer->v.teleport_time = (float)Server.dTime + 2.0f;
 			}
 		}
 	}
