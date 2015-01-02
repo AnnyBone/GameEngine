@@ -47,11 +47,12 @@ byte *Image_LoadImage(char *name, unsigned int *width, unsigned int *height)
 			// The following, is really really dumb...
 			
 			// Allocate bImage, before we copy it.
-			bImage = (byte*)Hunk_Alloc(sBufferSize*(width[0]+height[0]));
+			bImage = (byte*)Hunk_Alloc(sizeof(byte)*sBufferSize);
 			if (!bImage)
 				Sys_Error("Failed to allocate PNG image!\n");
 
-			memcpy(bImage, bPNG, sBufferSize*(width[0] + height[0]));
+			// Copy bPNG into bImage, so we can clear it the same way as everything else.
+			memcpy(bImage, bPNG, sBufferSize);
 
 			// Free bPNG.
 			free(bPNG);

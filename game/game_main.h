@@ -18,6 +18,12 @@
 
 #include "game_resources.h"
 
+#ifdef GAME_OPENKATANA
+#define	GAME_NAME	"OpenKatana Multiplayer Alpha"
+#else
+#define	GAME_NAME	"Katana"
+#endif
+
 extern ModuleImport_t	Engine;
 
 typedef struct
@@ -55,12 +61,6 @@ typedef struct
 
 GameServer_t Server;
 GameClient_t Client;
-
-#ifdef GAME_OPENKATANA
-#define	GAME_NAME	"OpenKatana Multiplayer Alpha"
-#else
-#define	GAME_NAME	"Katana"
-#endif
 
 // [29/7/2013] Moved mode types into server_mode.h ~hogsy
 
