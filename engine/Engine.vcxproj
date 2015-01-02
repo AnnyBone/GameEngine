@@ -605,7 +605,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\external\glee\GLee.c" />
-    <ClCompile Include="..\external\lodepng-master\lodepng.c" />
     <ClCompile Include="engine_clientchase.c" />
     <ClCompile Include="engine_clientdemo.c" />
     <ClCompile Include="cl_input.c" />
@@ -667,6 +666,7 @@
     <ClCompile Include="image.c" />
     <ClCompile Include="engine_videoshadow.c" />
     <ClCompile Include="keys.c" />
+    <ClCompile Include="lodepng\lodepng.c" />
     <ClCompile Include="menu.c" />
     <ClCompile Include="engine_netdgrm.c" />
     <ClCompile Include="engine_netloop.c" />
@@ -686,7 +686,6 @@
     <ClCompile Include="zone.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\external\lodepng-master\lodepng.h" />
     <ClInclude Include="..\shared\shared_client.h" />
     <ClInclude Include="..\shared\shared_editor.h" />
     <ClInclude Include="..\shared\shared_engine.h" />
@@ -728,6 +727,7 @@
     <ClInclude Include="KatAlias.h" />
     <ClInclude Include="engine_videoshadow.h" />
     <ClInclude Include="keys.h" />
+    <ClInclude Include="lodepng\lodepng.h" />
     <ClInclude Include="menu.h" />
     <ClInclude Include="engine_net.h" />
     <ClInclude Include="engine_netdgrm.h" />

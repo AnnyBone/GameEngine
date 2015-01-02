@@ -30,6 +30,7 @@ typedef enum
 #define	MATERIAL_FLAG_BLEND		4	// Ditto to the above, but tells us to use blending rather than alpha-test.
 #define	MATERIAL_FLAG_ANIMATED	8	// This is a global flag; tells the material system to scroll through all skins.
 #define	MATERIAL_FLAG_MIRROR	16	// Declares that the skin is a mirror.
+#define	MATERIAL_FLAG_LIGHTMAP	24	// Delcares that this material supports a lightmap.
 
 typedef struct
 {
@@ -69,6 +70,8 @@ typedef struct
 #define	MATERIALS_MAX_ALLOCATED	2048
 
 extern Material_t	mMaterials[MATERIALS_MAX_ALLOCATED];	// Global array.
+
+bool	bMaterialLightmap;	// Hacky way of supporting lightmaps, I'm gay ~hogsy
 
 void Material_Initialize(void);
 //void Material_PreDraw(Material_t *mMaterial, int iSkin, VideoObject_t *voObject, int iSize);

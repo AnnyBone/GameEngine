@@ -13,6 +13,7 @@ extern cvar_t	cvVideoDrawModels,	// Should we draw models?
 				cvHeight,			// The height of our window (not reliable).
 				cvFullscreen,		// Should we be fullscreen?
 				cvVideoAlphaTrick,
+				gl_overbright,		// Enable overbrights?
 				cvLitParticles;		// Should particles be lit or not?
 
 #define	VIDEO_MAX_UNITS	4

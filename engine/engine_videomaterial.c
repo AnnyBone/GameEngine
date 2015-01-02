@@ -214,7 +214,7 @@ extern cvar_t gl_fullbrights;
 
 void Material_PreDraw(Material_t *mMaterial, int iSkin, VideoObject_t *voObject, int iSize)
 {
-	int				i, iLayers = 1;
+	int				i, iLayers = 2;
 	MaterialSkin_t	*msCurrentSkin;
 
 	if (!cvMaterialDraw.bValue || !mMaterial)
@@ -233,33 +233,39 @@ void Material_PreDraw(Material_t *mMaterial, int iSkin, VideoObject_t *voObject,
 		return;
 	}
 
-	if (msCurrentSkin->iFlags & MATERIAL_FLAG_ALPHA)
+	if ((mMaterial->iFlags & MATERIAL_FLAG_ALPHA) || (msCurrentSkin->iFlags & MATERIAL_FLAG_ALPHA))
 		Video_EnableCapabilities(VIDEO_ALPHA_TEST);
 
 	// Set the diffuse texture first.
 	Video_SetTexture(msCurrentSkin->gDiffuseTexture);
 
-	if (msCurrentSkin->gLightmapTexture)
+	// Lightmap always uses the same slot.
+	if (bMaterialLightmap)
 	{
-		Video_SelectTexture(iLayers);
+		Video_SelectTexture(1);
 		Video_EnableCapabilities(VIDEO_TEXTURE_2D);
-		Video_SetTexture(msCurrentSkin->gLightmapTexture);
 
 		// Overbrights
-#if 0
-		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
-		glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
-		glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_PREVIOUS);
-		glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_TEXTURE);
-		glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 4);
+		if (gl_overbright.bValue)
+		{
+#if 1
+			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
+			glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
+			glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_PREVIOUS);
+			glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_TEXTURE);
+			glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 4);
 #else
-		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
-		glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
-		glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 4);
+			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
+			glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
+			glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 4);
 #endif
+		}
 
-		iLayers++;
+		// Don't retain this.
+		msCurrentSkin->gLightmapTexture = 0;
 	}
+
+#if 0
 
 	// Detail map layer.
 	if (msCurrentSkin->gDetailTexture && cvMaterialDrawDetail.bValue)
@@ -283,20 +289,6 @@ void Material_PreDraw(Material_t *mMaterial, int iSkin, VideoObject_t *voObject,
 
 		iLayers++;
 	}
-
-#if 0	// TODO: Finish implementing this at some point... Meh ~hogsy
-	if (msCurrentSkin->gSpecularTexture)
-	{
-		Video_SelectTexture(iLayers);
-		Video_SetTexture(msCurrentSkin->gSpecularTexture);
-		Video_EnableCapabilities(VIDEO_TEXTURE_2D | VIDEO_BLEND);
-
-		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-		glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_TEXTURE);
-
-		iLayers++;
-	}
-#endif
 
 	// Fullbright map.
 	if (msCurrentSkin->gFullbrightTexture && gl_fullbrights.bValue)
@@ -326,15 +318,15 @@ void Material_PreDraw(Material_t *mMaterial, int iSkin, VideoObject_t *voObject,
 		Video_GenerateSphereCoordinates();
 		Video_EnableCapabilities(VIDEO_TEXTURE_2D | VIDEO_BLEND | VIDEO_TEXTURE_GEN_S | VIDEO_TEXTURE_GEN_T);
 
-#if 0
-		if (msCurrentSkin->gSpecularTexture)
-			Video_SetBlend(VIDEO_BLEND_ONE, VIDEO_DEPTH_IGNORE);
-#endif
-
 		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
 
 		iLayers++;
 	}
+
+#endif
+
+	if (iLayers > VIDEO_MAX_UNITS)
+		Sys_Error("Hit max TMU limit!\nCheck your materials.");
 }
 
 void Material_PostDraw(Material_t *mMaterial, int iSkin, VideoObject_t *voObject, unsigned int uiSize)
@@ -351,7 +343,15 @@ void Material_PostDraw(Material_t *mMaterial, int iSkin, VideoObject_t *voObject
 	if (!msCurrentSkin)
 		return;
 
-	if ((msCurrentSkin->iFlags & MATERIAL_FLAG_ALPHA) && cvVideoAlphaTrick.bValue)
+	if(bMaterialLightmap)
+	{
+		Video_SelectTexture(1);
+
+		if (gl_overbright.bValue)
+			glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, 1.0f);
+	}
+
+	if (((msCurrentSkin->iFlags & MATERIAL_FLAG_ALPHA) || (mMaterial->iFlags & MATERIAL_FLAG_ALPHA)) && cvVideoAlphaTrick.bValue)
 	{
 		Video_SelectTexture(0);
 
@@ -460,9 +460,10 @@ typedef struct
 
 MaterialFlag_t	mfMaterialFlags[] =
 {
-	{ MATERIAL_FLAG_PRESERVE,	"PRESERVE"	},
-	{ MATERIAL_FLAG_ALPHA,		"ALPHA"		},
-	{ MATERIAL_FLAG_BLEND,		"BLEND"		}
+	{	MATERIAL_FLAG_PRESERVE,	"PRESERVE"	},
+	{	MATERIAL_FLAG_ALPHA,	"ALPHA"		},
+	{	MATERIAL_FLAG_ANIMATED,	"ANIMATED"	},
+	{	MATERIAL_FLAG_BLEND,	"BLEND"		}
 };
 
 /*	Set flags for the material.
@@ -530,13 +531,13 @@ Material_t *Material_Load(/*const */char *ccPath)
 
 	// Ensure that the given material names are correct!
 	if (ccPath[0] == ' ')
-		Sys_Error("Invalid texture name! (%s)\n", ccPath);
+		Sys_Error("Invalid material name! (%s)\n", ccPath);
 
 	Con_DPrintf("Loading material: %s\n", ccPath);
 
-	if(!bInitialized)
+	if (!bInitialized)
 	{
-		Con_Warning("Attempted to load material, before initialization! (%s)\n",ccPath);
+		Con_Warning("Attempted to load material, before initialization! (%s)\n", ccPath);
 		return NULL;
 	}
 

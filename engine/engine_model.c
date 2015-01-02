@@ -321,7 +321,7 @@ void Model_LoadBSPTextures(BSPLump_t *blLump)
 		// Don't bother loading textures for dedicated servers.
 		if (!bIsDedicated)
 		{
-			mAssignedMaterial = Material_Load("ff");
+			mAssignedMaterial = Material_Load("ss");// tTexture->name);
 			if (mAssignedMaterial)
 				tTexture->iAssignedMaterial = mAssignedMaterial->iIdentification;
 			else
@@ -1390,9 +1390,7 @@ void Model_LoadMD2(model_t *mModel,void *Buffer)
 		mMD2Model->num_skins*MAX_QPATH
 	);
 
-#if 0
 	Model_LoadTextures(mModel);
-#endif
 
 #if 1
 	for (i=0; i<3;i++)

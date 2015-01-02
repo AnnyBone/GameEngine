@@ -106,7 +106,6 @@ void R_MarkSurfaces (void)
 
 	// rebuild chains
 
-#if 1
 	//iterate through surfaces one node at a time to rebuild chains
 	//need to do it this way if we want to work with tyrann's skip removal tool
 	//becuase his tool doesn't actually remove the surfaces from the bsp surfaces lump
@@ -118,18 +117,6 @@ void R_MarkSurfaces (void)
 				surf->texturechain = surf->texinfo->texture->texturechain;
 				surf->texinfo->texture->texturechain = surf;
 			}
-#else
-	//the old way
-	surf = &cl.worldmodel->surfaces[cl.worldmodel->firstmodelsurface];
-	for (i=0 ; i<cl.worldmodel->nummodelsurfaces ; i++, surf++)
-	{
-		if (surf->visframe == r_visframecount)
-		{
-			surf->texturechain = surf->texinfo->texture->texturechain;
-			surf->texinfo->texture->texturechain = surf;
-		}
-	}
-#endif
 }
 
 bool R_BackFaceCull (msurface_t *surf)
@@ -177,10 +164,6 @@ void R_CullSurfaces (void)
 			{
 				s->culled = false;
 				rs_brushpolys++; //count wpolys here
-#if 0
-				if (s->texinfo->texture->warpimage)
-					s->texinfo->texture->update_warp = true;
-#endif
 			}
 		}
 	}
@@ -583,6 +566,8 @@ void World_Draw(void)
 		float		*v;
 		bool		bBound;
 
+		bMaterialLightmap = true;
+
 		for(i = 0; i < cl.worldmodel->numtextures; i++)
 		{
 			t = cl.worldmodel->textures[i];
@@ -606,13 +591,13 @@ void World_Draw(void)
 					}
 #endif
 
-#if 0
+					Video_SelectTexture(1);
+
 					R_RenderDynamicLightmaps(s);
-
 					Video_SetTexture(lightmap_textures[s->lightmaptexturenum]);
-
 					R_UploadLightmap(s->lightmaptexturenum);
-#endif
+
+					Video_SelectTexture(0);
 
 					voWorld = (VideoObject_t*)Hunk_TempAlloc(s->polys->numverts*sizeof(VideoObject_t));
 					if (!voWorld)
@@ -633,6 +618,8 @@ void World_Draw(void)
 					rs_brushpasses++;
 				}
 		}
+
+		bMaterialLightmap = false;
 	}
 
 	Video_ResetCapabilities(true);

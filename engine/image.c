@@ -21,7 +21,7 @@
 
 #include "platform_filesystem.h"
 
-#include "external/lodepng-master/lodepng.h"
+#include "lodepng/lodepng.h"
 
 char loadfilename[MAX_OSPATH]; //file scope so that error messages can use it
 
@@ -37,31 +37,11 @@ byte *Image_LoadImage(char *name, unsigned int *width, unsigned int *height)
 	COM_FOpenFile(loadfilename, &f);
 	if (f)
 	{
-		size_t			sBufferSize;
-		byte			*bPNG;
 		unsigned int	uiDecode;
 
-		uiDecode = lodepng_decode_file2(f, &bPNG, width, height, LCT_RGBA, 8, &sBufferSize);
+		uiDecode = lodepng_decode_file2(f, &bImage, width, height, LCT_RGBA, 8);
 		if (!uiDecode)
-		{
-			// The following, is really really dumb...
-			
-			// Allocate bImage, before we copy it.
-			bImage = (byte*)Hunk_Alloc(sizeof(byte)*sBufferSize);
-			if (!bImage)
-				Sys_Error("Failed to allocate PNG image!\n");
-
-			// Copy bPNG into bImage, so we can clear it the same way as everything else.
-			memcpy(bImage, bPNG, sBufferSize);
-
-			// Free bPNG.
-			free(bPNG);
-
-			// Close the file.
-			fclose(f);
-
 			return bImage;
-		}
 
 		Con_Warning("Failed to load PNG! (%s) (%s)\n", loadfilename, lodepng_error_text(uiDecode));
 	}
@@ -78,7 +58,9 @@ byte *Image_LoadImage(char *name, unsigned int *width, unsigned int *height)
 		Con_Warning("Failed to load TGA! (%s)\n",loadfilename);
 	}
 
-	// [26/1/2014] TODO: JPEG support! ~hogsy
+	// If the file was loaded, but we failed, we still need to close it!
+	if (f)
+		fclose(f);
 
 	return NULL;
 }

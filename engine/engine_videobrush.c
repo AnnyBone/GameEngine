@@ -183,7 +183,8 @@ void R_DrawSequentialPoly(msurface_t *s)
 	}
 	else
 	{
-        float	*fVert;
+		Material_t	*mMaterial = Material_Get(tAnimation->iAssignedMaterial);
+        float		*fVert;
 
         if(fAlpha < 1.0f)
 		{
@@ -193,16 +194,16 @@ void R_DrawSequentialPoly(msurface_t *s)
 			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 		}
 
-		//mBrushMat->msSkin[0].gLightmapTexture = lightmap_textures[s->lightmaptexturenum];
-
-#if 0
 		Video_SelectTexture(1);
+		Video_SetTexture(lightmap_textures[s->lightmaptexturenum]);
 
         R_RenderDynamicLightmaps(s);
         R_UploadLightmap(s->lightmaptexturenum);
 
 		Video_SelectTexture(0);
-#endif
+
+		// We're going to support lightmaps for this pass!
+		bMaterialLightmap = true;
 
 		{
 			VideoObject_t *voBrush;
@@ -223,11 +224,13 @@ void R_DrawSequentialPoly(msurface_t *s)
 				voBrush[i].vColour[3] = fAlpha;
 			}
 
-			Video_DrawObject(voBrush, VIDEO_PRIMITIVE_TRIANGLE_FAN, s->polys->numverts, Material_Get(tAnimation->iAssignedMaterial), currententity->frame);
+			Video_DrawObject(voBrush, VIDEO_PRIMITIVE_TRIANGLE_FAN, s->polys->numverts, mMaterial, currententity->frame);
 		}
 
         rs_brushpasses++;
 	}
+
+	bMaterialLightmap = false;
 
 	Video_ResetCapabilities(true);
 }
@@ -338,60 +341,6 @@ void Brush_Draw(entity_t *e)
 
 	if(r_drawflat_cheatsafe)
         Video_EnableCapabilities(VIDEO_TEXTURE_2D);
-}
-
-void R_DrawBrushModel_ShowTris (entity_t *e)
-{
-	unsigned int	i;
-	msurface_t		*psurf;
-	float			dot;
-	mplane_t		*pplane;
-	model_t			*clmodel;
-	glpoly_t		*p;
-
-	if (R_CullModelForEntity(e))
-		return;
-
-	currententity = e;
-	clmodel = e->model;
-
-	Math_VectorSubtract (r_refdef.vieworg, e->origin, modelorg);
-	if (e->angles[0] || e->angles[1] || e->angles[2])
-	{
-		vec3_t	temp;
-		vec3_t	forward, right, up;
-
-		Math_VectorCopy (modelorg, temp);
-		Math_AngleVectors(e->angles, forward, right, up);
-		modelorg[0] = Math_DotProduct (temp, forward);
-		modelorg[1] = -Math_DotProduct (temp, right);
-		modelorg[2] = Math_DotProduct (temp, up);
-	}
-
-	psurf = &clmodel->surfaces[clmodel->firstmodelsurface];
-
-	glPushMatrix ();
-	e->angles[0] = -e->angles[0];	// stupid quake bug
-	R_RotateForEntity (e->origin, e->angles);
-	e->angles[0] = -e->angles[0];	// stupid quake bug
-
-	// draw it
-	for (i=0 ; i<clmodel->nummodelsurfaces ; i++, psurf++)
-	{
-		pplane = psurf->plane;
-		dot = Math_DotProduct(modelorg, pplane->normal) - pplane->dist;
-		if (((psurf->flags & SURF_PLANEBACK) && (dot < -BACKFACE_EPSILON)) ||
-			(!(psurf->flags & SURF_PLANEBACK) && (dot > BACKFACE_EPSILON)))
-		{
-			if ((psurf->flags & SURF_DRAWTURB) && r_oldwater.value)
-				for (p = psurf->polys->next; p; p = p->next)
-					DrawGLPoly(p);
-			else
-				DrawGLPoly(psurf->polys);
-		}
-	}
-
-	glPopMatrix ();
 }
 
 /*

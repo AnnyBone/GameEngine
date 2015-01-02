@@ -4697,14 +4697,18 @@ unsigned lodepng_decode(unsigned char** out, unsigned* w, unsigned* h,
 unsigned lodepng_decode_memory(unsigned char** out, unsigned* w, unsigned* h, const unsigned char* in,
                                size_t insize, LodePNGColorType colortype, unsigned bitdepth)
 {
-  unsigned error;
-  LodePNGState state;
-  lodepng_state_init(&state);
-  state.info_raw.colortype = colortype;
-  state.info_raw.bitdepth = bitdepth;
-  error = lodepng_decode(out, w, h, &state, in, insize);
-  lodepng_state_cleanup(&state);
-  return error;
+	unsigned		error;
+	LodePNGState	state;
+
+	lodepng_state_init(&state);
+	state.info_raw.colortype = colortype;
+	state.info_raw.bitdepth = bitdepth;
+
+	error = lodepng_decode(out, w, h, &state, in, insize);
+
+	lodepng_state_cleanup(&state);
+
+	return error;
 }
 
 unsigned lodepng_decode32(unsigned char** out, unsigned* w, unsigned* h, const unsigned char* in, size_t insize)
@@ -4730,14 +4734,15 @@ unsigned lodepng_decode_file(unsigned char** out, unsigned* w, unsigned* h, cons
   return error;
 }
 
-unsigned int lodepng_decode_file2(FILE *fFile, unsigned char** out, unsigned int *w, unsigned int *h, LodePNGColorType colortype, unsigned int bitdepth,size_t *buffersize)
+unsigned int lodepng_decode_file2(FILE *fFile, unsigned char** out, unsigned int *w, unsigned int *h, LodePNGColorType colortype, unsigned int bitdepth)
 {
-	unsigned char* buffer;
-	unsigned error;
+	unsigned char	*buffer;
+	unsigned int	error;
+	size_t			sBufferSize;
 
-	error = lodepng_load(fFile, &buffer, buffersize);
+	error = lodepng_load(fFile, &buffer, &sBufferSize);
 	if (!error) 
-		error = lodepng_decode_memory(out, w, h, buffer, buffersize, colortype, bitdepth);
+		error = lodepng_decode_memory(out, w, h, buffer, sBufferSize, colortype, bitdepth);
 
 	lodepng_free(buffer);
 

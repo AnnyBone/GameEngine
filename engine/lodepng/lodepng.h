@@ -132,7 +132,7 @@ unsigned lodepng_decode_file(unsigned char** out, unsigned* w, unsigned* h,
                              const char* filename,
                              LodePNGColorType colortype, unsigned bitdepth);
 
-unsigned int lodepng_decode_file2(FILE *fFile, unsigned char** out, unsigned int *w, unsigned int *h, LodePNGColorType colortype, unsigned int bitdepth, size_t *buffersize);
+unsigned int lodepng_decode_file2(FILE *fFile, unsigned char** out, unsigned int *w, unsigned int *h, LodePNGColorType colortype, unsigned int bitdepth);
 
 /*Same as lodepng_decode_file, but always decodes to 32-bit RGBA raw image.*/
 unsigned lodepng_decode32_file(unsigned char** out, unsigned* w, unsigned* h,
