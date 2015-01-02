@@ -1,11 +1,11 @@
-/*	Copyright (C) 2013-2014 OldTimes Software
+/*	Copyright (C) 2013-2015 OldTimes Software
 */
 #ifndef __PLATFORM__
 #define __PLATFORM__
 
 /*
 	Platform Library
-	Version 0.7
+	Version 0.8
 
 	This library includes standard platform headers,
 	gives you some standard functions to interact with

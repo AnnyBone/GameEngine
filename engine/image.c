@@ -21,7 +21,7 @@
 
 #include "platform_filesystem.h"
 
-#include "shared_png.h"
+#include "external/lodepng-master/lodepng.h"
 
 char loadfilename[MAX_OSPATH]; //file scope so that error messages can use it
 
@@ -31,6 +31,39 @@ byte *Image_LoadImage(char *name, unsigned int *width, unsigned int *height)
 {
 	byte	*bImage;
 	FILE	*f;
+
+	// [26/1/2014] PNG support ~hogsy
+	sprintf(loadfilename, "%s.png", name);
+	COM_FOpenFile(loadfilename, &f);
+	if (f)
+	{
+		size_t			sBufferSize;
+		byte			*bPNG;
+		unsigned int	uiDecode;
+
+		uiDecode = lodepng_decode_file2(f, &bPNG, width, height, LCT_RGBA, 8, &sBufferSize);
+		if (!uiDecode)
+		{
+			// The following, is really really dumb...
+			
+			// Allocate bImage, before we copy it.
+			bImage = (byte*)Hunk_Alloc(sBufferSize*(width[0]+height[0]));
+			if (!bImage)
+				Sys_Error("Failed to allocate PNG image!\n");
+
+			memcpy(bImage, bPNG, sBufferSize*(width[0] + height[0]));
+
+			// Free bPNG.
+			free(bPNG);
+
+			// Close the file.
+			fclose(f);
+
+			return bImage;
+		}
+
+		Con_Warning("Failed to load PNG! (%s) (%s)\n", loadfilename, lodepng_error_text(uiDecode));
+	}
 
 	sprintf(loadfilename,"%s.tga",name);
 	COM_FOpenFile(loadfilename,&f);
@@ -42,24 +75,6 @@ byte *Image_LoadImage(char *name, unsigned int *width, unsigned int *height)
 
 		// If we failed to load, warn us, then carry on and try PNG instead.
 		Con_Warning("Failed to load TGA! (%s)\n",loadfilename);
-	}
-
-	// [26/1/2014] PNG support ~hogsy
-	sprintf(loadfilename,"%s.png",name);
-	COM_FOpenFile(loadfilename,&f);
-	if(f)
-	{
-		unsigned int	uiDecode;
-		
-		uiDecode = lodepng_decode32_file(&bImage,width,height,va("%s/%s",com_gamedir,loadfilename));
-		if (!uiDecode)
-		{
-			fclose(f);
-
-			return bImage;
-		}
-
-		Con_Warning("Failed to load PNG! (%s) (%s)\n",loadfilename,lodepng_error_text(uiDecode));
 	}
 
 	// [26/1/2014] TODO: JPEG support! ~hogsy

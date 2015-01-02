@@ -1,4 +1,4 @@
-/*	Copyright (C) 2013-2014 OldTimes Software
+/*	Copyright (C) 2013-2015 OldTimes Software
 */
 #ifndef __PLATFORMMODULE__
 #define __PLATFORMMODULE__

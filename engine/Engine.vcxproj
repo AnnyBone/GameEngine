@@ -605,7 +605,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\external\glee\GLee.c" />
-    <ClCompile Include="..\shared\shared_png.c" />
+    <ClCompile Include="..\external\lodepng-master\lodepng.c" />
     <ClCompile Include="engine_clientchase.c" />
     <ClCompile Include="engine_clientdemo.c" />
     <ClCompile Include="cl_input.c" />
@@ -686,6 +686,7 @@
     <ClCompile Include="zone.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\external\lodepng-master\lodepng.h" />
     <ClInclude Include="..\shared\shared_client.h" />
     <ClInclude Include="..\shared\shared_editor.h" />
     <ClInclude Include="..\shared\shared_engine.h" />
@@ -695,7 +696,6 @@
     <ClInclude Include="..\shared\shared_input.h" />
     <ClInclude Include="..\shared\shared_menu.h" />
     <ClInclude Include="..\shared\shared_module.h" />
-    <ClInclude Include="..\shared\shared_png.h" />
     <ClInclude Include="..\shared\shared_server.h" />
     <ClInclude Include="client.h" />
     <ClInclude Include="cmd.h" />

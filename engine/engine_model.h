@@ -267,7 +267,7 @@ typedef struct model_s
 	cache_user_t	cache;		// only access through Mod_Extradat
 
 	// Material System
-	int	iAssignedMaterials[BSP_MAX_TEXINFO];	// ID for assigned material, per-surface.
+	int	iAssignedMaterials;
 } model_t;
 
 //============================================================================

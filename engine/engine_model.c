@@ -321,7 +321,7 @@ void Model_LoadBSPTextures(BSPLump_t *blLump)
 		// Don't bother loading textures for dedicated servers.
 		if (!bIsDedicated)
 		{
-			mAssignedMaterial = Material_Load("shit");
+			mAssignedMaterial = Material_Load("ff");
 			if (mAssignedMaterial)
 				tTexture->iAssignedMaterial = mAssignedMaterial->iIdentification;
 			else
@@ -1175,12 +1175,12 @@ void Model_LoadTextures(model_t *mModel)
 		Con_Warning("Failed to load material for model! (%s) (%s)\n",mModel->name,cOutName);
 
 		// Set us up to just use the dummy material instead.
-		mModel->iAssignedMaterials[0] = Material_GetDummy()->iIdentification;
+		mModel->iAssignedMaterials = Material_GetDummy()->iIdentification;
 
 		return;
 	}
 	
-	mModel->iAssignedMaterials[0] = mAssignedMaterial->iIdentification;
+	mModel->iAssignedMaterials = mAssignedMaterial->iIdentification;
 }
 
 /*	Calculate bounds of alias model for nonrotated, yawrotated, and fullrotated cases
@@ -1390,7 +1390,9 @@ void Model_LoadMD2(model_t *mModel,void *Buffer)
 		mMD2Model->num_skins*MAX_QPATH
 	);
 
+#if 0
 	Model_LoadTextures(mModel);
+#endif
 
 #if 1
 	for (i=0; i<3;i++)

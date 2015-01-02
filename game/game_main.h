@@ -56,6 +56,12 @@ typedef struct
 GameServer_t Server;
 GameClient_t Client;
 
+#ifdef GAME_OPENKATANA
+#define	GAME_NAME	"OpenKatana Multiplayer Alpha"
+#else
+#define	GAME_NAME	"Katana"
+#endif
+
 // [29/7/2013] Moved mode types into server_mode.h ~hogsy
 
 // [28/7/2013] Moved door states into sv_area.c ~hogsy
@@ -81,11 +87,11 @@ GameClient_t Client;
 #define	WEAPON_SHOTCYCLER	6		// Futuristic shotgun
 #define	WEAPON_SIDEWINDER	7		// Explosive projectile weapon (+)
 #define	WEAPON_SHOCKWAVE	8		// Powerful Shockwave Rifle
-#define	AMMO_IONBALLS		9
-#define	AMMO_C4BOMBS		10
-#define	AMMO_SLUGS			11
-#define	AMMO_WINDROCKET		12
-#define	AMMO_SHOCKWAVE		13
+#define	AMMO_IONBALLS		9		// Used for the Ion Blaster
+#define	AMMO_C4BOMBS		10		// Used for the C4 Vizatergo
+#define	AMMO_SLUGS			11		// Used for the ShotCycler
+#define	AMMO_WINDROCKET		12		// Used for the Sidewinder
+#define	AMMO_SHOCKWAVE		13		// Used for the Shockwave Rifle
 #define	ITEM_ATTACKBOOST	14
 #define	ITEM_POWERBOOST		15
 #define	ITEM_VITABOOST		16

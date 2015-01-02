@@ -10,17 +10,23 @@
     <Filter Include="Legacy">
       <UniqueIdentifier>{e00778df-b576-4da4-ada2-0e2b7435e56d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Video">
-      <UniqueIdentifier>{77ea4c2d-fc29-4aeb-bb27-3c33e9606552}</UniqueIdentifier>
-    </Filter>
     <Filter Include="External">
       <UniqueIdentifier>{43e61e0d-c696-4895-b21b-f30edea514ab}</UniqueIdentifier>
     </Filter>
+    <Filter Include="External\LodePNG">
+      <UniqueIdentifier>{79a9638e-d2c3-43be-90c1-e7a655767b19}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Client">
+      <UniqueIdentifier>{f0ccfc9a-bab0-4174-9895-f5246a8ab4fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Client\Audio">
+      <UniqueIdentifier>{08d41959-b691-4200-8939-61ac28b06306}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Client\Video">
+      <UniqueIdentifier>{77ea4c2d-fc29-4aeb-bb27-3c33e9606552}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\shared\shared_png.c">
-      <Filter>Shared</Filter>
-    </ClCompile>
     <ClCompile Include="engine_loader.c" />
     <ClCompile Include="engine_main.c" />
     <ClCompile Include="image.c">
@@ -57,7 +63,7 @@
       <Filter>Console</Filter>
     </ClCompile>
     <ClCompile Include="gl_texmgr.c">
-      <Filter>Video</Filter>
+      <Filter>Client\Video</Filter>
     </ClCompile>
     <ClCompile Include="engine_script.c" />
     <ClCompile Include="engine_editor.c" />
@@ -73,25 +79,13 @@
     <ClCompile Include="cl_main.c">
       <Filter>Legacy</Filter>
     </ClCompile>
-    <ClCompile Include="engine_clientchase.c" />
-    <ClCompile Include="engine_clientdemo.c" />
-    <ClCompile Include="engine_clientparse.c" />
-    <ClCompile Include="engine_clienttent.c" />
-    <ClCompile Include="engine_clientview.c" />
-    <ClCompile Include="engine_client.c" />
     <ClCompile Include="snd_win.c">
       <Filter>Legacy</Filter>
     </ClCompile>
-    <ClCompile Include="engine_audiomix.c" />
-    <ClCompile Include="engine_audiomem.c" />
-    <ClCompile Include="engine_audiodma.c" />
-    <ClCompile Include="engine_audio.c" />
-    <ClCompile Include="engine_clientinput.c" />
     <ClCompile Include="cl_input.c">
       <Filter>Legacy</Filter>
     </ClCompile>
     <ClCompile Include="engine_videodraw.c" />
-    <ClCompile Include="engine_video.c" />
     <ClCompile Include="engine_videosprite.c" />
     <ClCompile Include="engine_videoscreen.c" />
     <ClCompile Include="engine_videomaterial.c" />
@@ -126,6 +120,45 @@
     <ClCompile Include="engine_model.c" />
     <ClCompile Include="engine_physics.c" />
     <ClCompile Include="engine_host.c" />
+    <ClCompile Include="..\external\lodepng-master\lodepng.c">
+      <Filter>External\LodePNG</Filter>
+    </ClCompile>
+    <ClCompile Include="engine_video.c">
+      <Filter>Client\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="engine_audiomix.c">
+      <Filter>Client\Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="engine_audiomem.c">
+      <Filter>Client\Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="engine_audiodma.c">
+      <Filter>Client\Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="engine_audio.c">
+      <Filter>Client\Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="engine_client.c">
+      <Filter>Client</Filter>
+    </ClCompile>
+    <ClCompile Include="engine_clientchase.c">
+      <Filter>Client</Filter>
+    </ClCompile>
+    <ClCompile Include="engine_clientparse.c">
+      <Filter>Client</Filter>
+    </ClCompile>
+    <ClCompile Include="engine_clientview.c">
+      <Filter>Client</Filter>
+    </ClCompile>
+    <ClCompile Include="engine_clienttent.c">
+      <Filter>Client</Filter>
+    </ClCompile>
+    <ClCompile Include="engine_clientinput.c">
+      <Filter>Client</Filter>
+    </ClCompile>
+    <ClCompile Include="engine_clientdemo.c">
+      <Filter>Client</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\shared\shared_client.h">
@@ -153,9 +186,6 @@
       <Filter>Shared</Filter>
     </ClInclude>
     <ClInclude Include="..\shared\shared_module.h">
-      <Filter>Shared</Filter>
-    </ClInclude>
-    <ClInclude Include="..\shared\shared_png.h">
       <Filter>Shared</Filter>
     </ClInclude>
     <ClInclude Include="..\shared\shared_server.h">
@@ -229,7 +259,7 @@
       <Filter>Console</Filter>
     </ClInclude>
     <ClInclude Include="gl_texmgr.h">
-      <Filter>Video</Filter>
+      <Filter>Client\Video</Filter>
     </ClInclude>
     <ClInclude Include="cmd.h">
       <Filter>Console</Filter>
@@ -251,9 +281,6 @@
     <ClInclude Include="client.h">
       <Filter>Legacy</Filter>
     </ClInclude>
-    <ClInclude Include="engine_client.h" />
-    <ClInclude Include="engine_audio.h" />
-    <ClInclude Include="engine_clientinput.h" />
     <ClInclude Include="render.h">
       <Filter>Legacy</Filter>
     </ClInclude>
@@ -273,6 +300,18 @@
     <ClInclude Include="engine_model.h" />
     <ClInclude Include="engine_physics.h" />
     <ClInclude Include="engine_edict.h" />
+    <ClInclude Include="..\external\lodepng-master\lodepng.h">
+      <Filter>External\LodePNG</Filter>
+    </ClInclude>
+    <ClInclude Include="engine_audio.h">
+      <Filter>Client\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="engine_client.h">
+      <Filter>Client</Filter>
+    </ClInclude>
+    <ClInclude Include="engine_clientinput.h">
+      <Filter>Client</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="engine.rc">

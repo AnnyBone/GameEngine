@@ -236,23 +236,13 @@ pMODULE_EXPORT GameExport_t *Game_Main(ModuleImport_t *Import)
 	Engine.Server_GetLevelName		= Import->Server_GetLevelName;
 	Engine.Server_GetFrameTime		= Import->Server_GetFrameTime;
 
-	Export.iVersion = GAME_VERSION;
-#ifdef GAME_OPENKATANA
-	Export.Name							= "OpenKatana";
-#elif GAME_ADAMAS
-	Export.Name							= "Adamas";
-#elif GAME_CLASP
-	Export.Name							= "Clasp";
-#elif GAME_ICTUS
-	Export.Name							= "Ictus";
-#else
-	Export.Name							= "Katana";
-#endif
-	Export.ChangeYaw					= ChangeYaw;
-	Export.SetSize						= Entity_SetSize;
-	Export.Draw							= Client_Draw;
-	Export.Game_Init					= Game_Init;
-	Export.Shutdown						= Game_Shutdown;
+	Export.iVersion		= GAME_VERSION;
+	Export.Name			= GAME_NAME;
+	Export.ChangeYaw	= ChangeYaw;
+	Export.SetSize		= Entity_SetSize;
+	Export.Draw			= Client_Draw;
+	Export.Game_Init	= Game_Init;
+	Export.Shutdown		= Game_Shutdown;
 
 	// Client
 	Export.Client_RelinkEntities		= Client_RelinkEntities;

@@ -65,10 +65,22 @@ pINSTANCE pModule_Load(const char *ccPath)
 	if(!iModule)
 	{
 		pError_Set("Failed to load library! (%s)\n%s", cUpdatedPath, pError_SystemGet());
-
 		pError_SystemReset();
 
-		return NULL;
+		// Attempt to load under a different directory.
+		sprintf(cUpdatedPath, PLATFORM_CPU"/%s"pMODULE_EXTENSION, PLATFORM_CPU, ccPath);
+		iModule = 
+#ifdef _WIN32
+			LoadLibrary(cUpdatedPath);
+#else
+			dlopen(cUpdatedPath, RTLD_NOW);
+#endif
+		if (!iModule)
+		{
+			pError_Set("Failed to load library! (%s)\n%s", cUpdatedPath, pError_SystemGet());
+			pError_SystemReset();
+			return NULL;
+		}
 	}
 	
 	return iModule;
@@ -87,17 +99,7 @@ void *pModule_LoadInterface(pINSTANCE hModule,const char *cPath,const char *cEnt
 
 	hModule = pModule_Load(cUpdatedPath);
 	if(!hModule)
-	{
-#if 0	// Dealt with by pModule_Load.
-		pError_Set("Failed to load library! (%s)\n",
-#ifdef _WIN32
-			cUpdatedPath);
-#else
-			dlerror());
-#endif
-#endif
 		return NULL;
-	}
 
 	vMain = (void*(*)(void*))pModule_FindFunction(hModule,cEntryFunction);
 	if(!vMain)

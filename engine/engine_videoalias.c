@@ -304,7 +304,7 @@ void Alias_DrawModelFrame(MD2_t *mModel,entity_t *eEntity,lerpdata_t lLerpData)
 			iVert++;
         }
 
-	Video_DrawObject(voModel, VIDEO_PRIMITIVE_TRIANGLES, mModel->num_glcmds, Material_Get(eEntity->model->iAssignedMaterials[0]), eEntity->skinnum);
+	Video_DrawObject(voModel, VIDEO_PRIMITIVE_TRIANGLES, mModel->num_glcmds, Material_Get(eEntity->model->iAssignedMaterials), eEntity->skinnum);
 }
 
 void Alias_SetupFrame(MD2_t *mModel,lerpdata_t *ldLerp)

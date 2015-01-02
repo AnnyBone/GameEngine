@@ -550,31 +550,11 @@ static void Server_PushRotate(edict_t *pusher,float movetime)
 		org2[2] = Math_DotProduct(org,up);
 		Math_VectorSubtract (org2,org,move);
 
+		check->v.angles[YAW] += pusher->v.avelocity[YAW] * movetime;
+
 		// try moving the contacted entity
 		pusher->Physics.iSolid = SOLID_NOT;
 		SV_PushEntity (check, move);
-	//@@TODO: do we ever want to do anybody's angles?  maybe just yaw???
-		if(check->monster.iType != 1)
-		{
-#if 0
-			vec3_t	vYaw;
-			
-			vYaw[YAW] = Math_AngleMod(pusher->v.angles[YAW]+check->v.angles[YAW]);
-
-			Con_Printf("%i %i\n",(int)check->v.angles[YAW],(int)vYaw[YAW]);
-			//check->v.angles[YAW] = vYaw[YAW];
-			//check->v.angles[YAW] = Math_AngleMod(vYaw[YAW]);
-#endif
-			// move back any entities we already moved
-			for (i = 0; i < num_moved; i++)
-			{
-				Math_VectorAdd(moved_edict[i]->v.angles, amove, moved_edict[i]->v.angles);
-				moved_edict[i]->v.angles[YAW] += amove[YAW]/2.0f;
-
-				SV_LinkEdict(moved_edict[i],false);
-			}
-		}
-
 		pusher->Physics.iSolid = SOLID_BSP;
 
 		// If it is still inside the pusher, block

@@ -597,6 +597,11 @@ Material_t *Material_Load(/*const */char *ccPath)
 
 	// Assume that the material hasn't been cached yet, so allocate a new copy of one.
 	mNewMaterial = Material_Allocate();
+	if (!mNewMaterial)
+	{
+		Con_Warning("Failed to allocate material! (%s)\n",ccPath);
+		return NULL;
+	}
 
 	if (cMaterialName[0])
 		// Copy the name over.
