@@ -44,8 +44,6 @@ extern float load_subdivide_size; //johnfitz -- remember what subdivide_size val
 
 extern cvar_t gl_subdivide_size; //johnfitz -- moved here from gl_model.c
 
-gltexture_t *playertextures[MAX_SCOREBOARD]; //johnfitz
-
 void GL_BeginRendering(int *x,int *y,int *width,int *height)
 {
 	*x = *y = 0;

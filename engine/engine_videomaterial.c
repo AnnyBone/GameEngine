@@ -2,6 +2,15 @@
 */
 #include "quakedef.h"
 
+/*
+	Material System
+	This is pretty much written from scratch without using anything else for reference,
+	more just for inspiration. This has been a pretty weird learning experience for me
+	since I've never written anything out like this before but it works and does the job
+	it was designed to do.
+	~hogsy
+*/
+
 #include "engine_videomaterial.h"
 #include "engine_video.h"
 
