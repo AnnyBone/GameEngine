@@ -202,6 +202,9 @@ void R_DrawSequentialPoly(msurface_t *s)
 
 		Video_SelectTexture(0);
 
+		if (r_lightmap_cheatsafe)
+			Video_DisableCapabilities(VIDEO_TEXTURE_2D);
+
 		// We're going to support lightmaps for this pass!
 		bMaterialLightmap = true;
 

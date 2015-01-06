@@ -318,10 +318,13 @@ void Model_LoadBSPTextures(BSPLump_t *blLump)
 		tTexture->width		= LittleLong(mpTexture->width);
 		tTexture->height	= LittleLong(mpTexture->height);
 
+		if (tTexture->name[0] == '*')
+			sprintf(tTexture->name, tTexture->name + 1);
+
 		// Don't bother loading textures for dedicated servers.
 		if (!bIsDedicated)
 		{
-			mAssignedMaterial = Material_Load("ss");// tTexture->name);
+			mAssignedMaterial = Material_Load(tTexture->name);
 			if (mAssignedMaterial)
 				tTexture->iAssignedMaterial = mAssignedMaterial->iIdentification;
 			else
@@ -601,6 +604,7 @@ void GL_SubdivideSurface(msurface_t *fa);
 
 void Model_LoadBSPFaces(BSPLump_t *blLump)
 {
+	Material_t	*mMaterial;
 	BSPFace_t	*in;
 	msurface_t 	*out;
 	int			i, count, surfnum;
@@ -629,7 +633,7 @@ void Model_LoadBSPFaces(BSPLump_t *blLump)
 	{
 		out->firstedge	= LittleLong(in->iFirstEdge);
 		out->numedges	= LittleLong(in->iNumEdges);
-		out->flags = 0;
+		out->flags		= 0;
 
 		planenum = LittleLong(in->iPlaneNum);
 
@@ -655,13 +659,17 @@ void Model_LoadBSPFaces(BSPLump_t *blLump)
 		else
 			out->samples = loadmodel->lightdata+(i*3); //johnfitz -- lit support via lordhavoc (was "+ i")
 
+		mMaterial = Material_Get(out->texinfo->texture->iAssignedMaterial);
+		if (!mMaterial)
+			Sys_Error("Failed to assign a material to BSP surface! (%s)\n",out->texinfo->texture->name);
+
 		//johnfitz -- this section rewritten
-		if(!Q_strncasecmp(out->texinfo->texture->name,"sky",3)) // sky surface //also note -- was Q_strncmp, changed to match qbsp
+		if(!Q_strncasecmp(mMaterial->cName,"sky",3)) // sky surface //also note -- was Q_strncmp, changed to match qbsp
 		{
 			out->flags |= (SURF_DRAWSKY | SURF_DRAWTILED);
 			Mod_PolyForUnlitSurface (out); //no more subdivision
 		}
-		else if (out->texinfo->texture->name[0] == '*') // warp surface
+		else if (mMaterial->iFlags & MATERIAL_FLAG_WATER) // warp surface
 		{
 			out->flags |= (SURF_DRAWTURB | SURF_DRAWTILED);
 
@@ -670,6 +678,8 @@ void Model_LoadBSPFaces(BSPLump_t *blLump)
 
 			GL_SubdivideSurface (out);
 		}
+		else if (mMaterial->iFlags & MATERIAL_FLAG_MIRROR)
+			out->flags |= SURFACE_MIRROR;
 		else if(out->texinfo->flags & BSP_TEXTURE_MISSING) // texture is missing from bsp
 		{
 			if(out->samples) //lightmapped

@@ -219,8 +219,14 @@ Material_t *Material_GetByPath(const char *ccPath)
 	return NULL;
 }
 
+/*
+	Drawing
+*/
+
 extern cvar_t gl_fullbrights;
 
+/*	Called before the object is drawn.
+*/
 void Material_PreDraw(Material_t *mMaterial, int iSkin, VideoObject_t *voObject, int iSize)
 {
 	int				i, iLayers = 2;
@@ -255,7 +261,7 @@ void Material_PreDraw(Material_t *mMaterial, int iSkin, VideoObject_t *voObject,
 		Video_EnableCapabilities(VIDEO_TEXTURE_2D);
 
 		// Overbrights
-		if (gl_overbright.bValue)
+		if (gl_overbright.bValue && !r_lightmap_cheatsafe)
 		{
 #if 1
 			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
@@ -274,15 +280,13 @@ void Material_PreDraw(Material_t *mMaterial, int iSkin, VideoObject_t *voObject,
 		msCurrentSkin->gLightmapTexture = 0;
 	}
 
-#if 0
-
 	// Detail map layer.
 	if (msCurrentSkin->gDetailTexture && cvMaterialDrawDetail.bValue)
 	{
 		// TODO: Check distance from camera before proceeding.
 
 		Video_SelectTexture(iLayers);
-		Video_EnableCapabilities(VIDEO_TEXTURE_2D | VIDEO_BLEND);
+		Video_EnableCapabilities(VIDEO_TEXTURE_2D);
 		Video_SetTexture(msCurrentSkin->gDetailTexture);
 
 		if (voObject)
@@ -295,6 +299,10 @@ void Material_PreDraw(Material_t *mMaterial, int iSkin, VideoObject_t *voObject,
 				// TODO: Modify them to the appropriate scale.
 
 			}
+
+		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
+		glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
+		glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 2);
 
 		iLayers++;
 	}
@@ -319,6 +327,7 @@ void Material_PreDraw(Material_t *mMaterial, int iSkin, VideoObject_t *voObject,
 		iLayers++;
 	}
 
+#if 0
 	// Sphere map.
 	if (msCurrentSkin->gSphereTexture)
 	{
@@ -338,7 +347,11 @@ void Material_PreDraw(Material_t *mMaterial, int iSkin, VideoObject_t *voObject,
 		Sys_Error("Hit max TMU limit!\nCheck your materials.");
 }
 
-void Material_PostDraw(Material_t *mMaterial, int iSkin, VideoObject_t *voObject, unsigned int uiSize)
+/*	Called after the object is drawn.
+*/
+void Material_PostDraw(
+	Material_t *mMaterial, int iSkin, 
+	VideoObject_t *voObject, VideoPrimitive_t vpPrimitiveType, unsigned int uiSize)
 {
 	MaterialSkin_t	*msCurrentSkin;
 
@@ -378,7 +391,7 @@ void Material_PostDraw(Material_t *mMaterial, int iSkin, VideoObject_t *voObject
 		bVideoIgnoreCapabilities = false;
 
 		// Draw the object again (don't bother passing material).
-		Video_DrawObject(voObject, VIDEO_PRIMITIVE_TRIANGLE_FAN, uiSize, NULL, 0);
+		Video_DrawObject(voObject, vpPrimitiveType, uiSize, NULL, 0);
 	}
 }
 
@@ -406,7 +419,12 @@ gltexture_t *Material_LoadTexture(Material_t *mMaterial,MaterialSkin_t *mCurrent
 	{
 		// Warn about incorrect sizes.
 		if ((mCurrentSkin->iTextureWidth & 15) || (mCurrentSkin->iTextureHeight & 15))
+		{
 			Con_Warning("Texture is not 16 aligned! (%ix%i)\n", mCurrentSkin->iTextureWidth, mCurrentSkin->iTextureHeight);
+		
+			// Pad the image.
+			iTextureFlags |= TEXPREF_PAD;
+		}
 
 		if (mMaterial->iFlags & MATERIAL_FLAG_PRESERVE)
 			iTextureFlags |= TEXPREF_PERSIST;
@@ -465,14 +483,18 @@ typedef struct
 	int	iFlag;
 
 	const	char	*ccName;
+
+	bool	bGlobal;
 } MaterialFlag_t;
 
 MaterialFlag_t	mfMaterialFlags[] =
 {
-	{	MATERIAL_FLAG_PRESERVE,	"PRESERVE"	},
-	{	MATERIAL_FLAG_ALPHA,	"ALPHA"		},
-	{	MATERIAL_FLAG_ANIMATED,	"ANIMATED"	},
-	{	MATERIAL_FLAG_BLEND,	"BLEND"		}
+	{	MATERIAL_FLAG_PRESERVE,	"PRESERVE",	true	},
+	{	MATERIAL_FLAG_ALPHA,	"ALPHA",	false	},
+	{	MATERIAL_FLAG_ANIMATED,	"ANIMATED",	true	},
+	{	MATERIAL_FLAG_MIRROR,	"MIRROR",	true	},
+	{	MATERIAL_FLAG_WATER,	"WATER",	true	},
+	{	MATERIAL_FLAG_BLEND,	"BLEND",	false	}
 };
 
 /*	Set flags for the material.
@@ -488,7 +510,12 @@ void _Material_SetFlags(Material_t *mCurrentMaterial,char *cArg)
 			if (bMaterialGlobal)
 				mCurrentMaterial->iFlags |= mfMaterialFlags[i].iFlag;
 			else
-				mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1].iFlags |= mfMaterialFlags[i].iFlag;
+			{
+				if (mfMaterialFlags[i].bGlobal)
+					Con_Warning("Attempted to set a global flag to a skin! (%s) (%s)", mCurrentMaterial->cName, mfMaterialFlags[i].ccName);
+				else
+					mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1].iFlags |= mfMaterialFlags[i].iFlag;
+			}
 		}
 }
 
@@ -531,10 +558,10 @@ void Material_CheckFunctions(Material_t *mNewMaterial)
 /*	Loads and parses material.
 	Returns false on complete failure.
 */
-Material_t *Material_Load(/*const */char *ccPath)
+Material_t *Material_Load(const char *ccPath)
 {
     Material_t  *mNewMaterial;
-	byte        *cData;
+	void        *cData;
 	char		cPath[PLATFORM_MAX_PATH],
 				cMaterialName[64] = { 0 };
 
@@ -558,7 +585,7 @@ Material_t *Material_Load(/*const */char *ccPath)
 	if(mNewMaterial)
 		return mNewMaterial;
 	
-	cData = COM_LoadTempFile(cPath);
+	cData = COM_LoadFile(cPath,0);
 	if(!cData)
 	{
 		Con_Warning("Failed to load material! (%s) (%s)\n", cPath, ccPath);
@@ -586,6 +613,9 @@ Material_t *Material_Load(/*const */char *ccPath)
 			Con_Warning("Attempted to load duplicate material! (%s) (%s) vs (%s) (%s)\n",
 				ccPath, cMaterialName,
 				mNewMaterial->cPath, mNewMaterial->cName);
+
+			Z_Free(cData);
+
 			return mNewMaterial;
 		}
 
@@ -595,13 +625,15 @@ Material_t *Material_Load(/*const */char *ccPath)
 			if (cToken[0] != '{')
 			{
 				Con_Warning("Missing '{'! (%s) (%i)\n", ccPath, iScriptLine);
-				return NULL;
+
+				goto MATERIAL_LOAD_ERROR;
 			}
 		}
 		else
 		{
 			Con_Warning("Invalid material name! (%s) (%i)\n", ccPath, iScriptLine);
-			return NULL;
+
+			goto MATERIAL_LOAD_ERROR;
 		}
 	}
 
@@ -610,7 +642,8 @@ Material_t *Material_Load(/*const */char *ccPath)
 	if (!mNewMaterial)
 	{
 		Con_Warning("Failed to allocate material! (%s)\n",ccPath);
-		return NULL;
+
+		goto MATERIAL_LOAD_ERROR;
 	}
 
 	if (cMaterialName[0])
@@ -628,12 +661,13 @@ Material_t *Material_Load(/*const */char *ccPath)
 		if(!Script_GetToken(true))
 		{
 			Con_Warning("End of field without closing brace! (%s) (%i)\n",ccPath,iScriptLine);
-			break;
+
+			goto MATERIAL_LOAD_ERROR;
 		}
 
 		// End
 		if (cToken[0] == '}')
-			break;
+			return mNewMaterial;
 		// Start
 		else if (cToken[0] == SCRIPT_SYMBOL_FUNCTION)
 			Material_CheckFunctions(mNewMaterial);
@@ -674,7 +708,10 @@ Material_t *Material_Load(/*const */char *ccPath)
 		}
 	}
 
-	return mNewMaterial;
+MATERIAL_LOAD_ERROR:
+	Z_Free(cData);
+
+	return NULL;
 }
 
 /*	Returns default dummy material.

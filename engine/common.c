@@ -1251,7 +1251,7 @@ byte *COM_LoadFile (char *path, int usehunk)
 	len = COM_OpenFile (path, &h);
 	if (h == -1)
 		return NULL;
-
+	
 	// extract the filename base name for hunk tag
 	COM_FileBase (path, base);
 

@@ -75,7 +75,7 @@ typedef struct texture_s
 #define SURF_DRAWSPRITE		8
 #define SURF_DRAWTURB		0x10
 #define SURF_DRAWTILED		0x20
-#define SURF_DRAWBACKGROUND	0x40
+#define SURFACE_MIRROR		0x40
 #define SURF_UNDERWATER		0x80
 #define SURF_NOTEXTURE		0x100 //johnfitz
 

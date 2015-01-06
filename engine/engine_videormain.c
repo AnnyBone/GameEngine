@@ -55,7 +55,6 @@ mleaf_t		*r_viewleaf,*r_oldviewleaf;
 
 int		d_lightstylevalue[256];	// 8.8 fraction of base light value
 
-bool		bMirror;
 mplane_t	*mpMirrorPlane;
 
 cvar_t	r_norefresh				= {	"r_norefresh",			"0"					};
@@ -264,7 +263,7 @@ void R_Mirror(void)
 	float		d;
 	entity_t	*eEntity;
 
-	if(!bMirror)
+	if (!cvVideoMirror.bValue)
 		return;
 
 	memcpy(r_base_world_matrix,r_world_matrix,sizeof(r_base_world_matrix));
@@ -586,7 +585,7 @@ void R_RenderScene(void)
 
 		GL_SetFrustum(r_fovx,r_fovy); //johnfitz -- use r_fov* vars
 
-		if(bMirror)
+		if(cvVideoMirror.bValue)
 		{
 			if(mpMirrorPlane->normal[2])
 				glScalef(1,-1,1);

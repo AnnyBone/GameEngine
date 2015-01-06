@@ -317,12 +317,8 @@ bool Script_Load(/*const */char *ccPath)
 
 	if(!LoadFile(ccPath,&cData))
 	{
-		cData = COM_LoadTempFile(ccPath);
-		if(!cData)
-		{
-			Con_Warning("Failed to load script! (%s)\n",ccPath);
-			return false;
-		}
+		Con_Warning("Failed to load script! (%s)\n",ccPath);
+		return false;
 	}
 
 	Script_StartTokenParsing((char*)cData);

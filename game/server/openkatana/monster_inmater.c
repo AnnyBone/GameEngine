@@ -82,6 +82,7 @@ void Inmater_Die(edict_t *eInmater,edict_t *eOther)
 		// [13/9/2012] Updated paths ~hogsy
 		for(i = 0; i < iGibs; i++)
 		{
+			char	cModel[64];
 			int		j;
 			vec3_t	vOrigin,vGibVelocity;
 
@@ -92,7 +93,9 @@ void Inmater_Die(edict_t *eInmater,edict_t *eOther)
 			Math_VectorCopy(eInmater->v.velocity,vGibVelocity);
 			Math_VectorAddValue(vGibVelocity,(float)(rand()%5),vGibVelocity);
 
-			ThrowGib(vOrigin,vGibVelocity,va("models/gibs/metal_gibs%i.md2",rand()%3+1),(float)eInmater->v.iHealth*-1,true);
+			PHYSICS_MODEL_METAL(cModel);
+
+			ThrowGib(vOrigin, vGibVelocity, cModel, (float)eInmater->v.iHealth*-1, true);
 		}
 
 		Engine.Particle(eInmater->v.origin,eInmater->v.velocity,10.0f,"blood",20);
