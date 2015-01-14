@@ -183,57 +183,18 @@ void R_DrawSequentialPoly(msurface_t *s)
 	}
 	else
 	{
-		Material_t	*mMaterial = Material_Get(tAnimation->iAssignedMaterial);
-        float		*fVert;
-
-        if(fAlpha < 1.0f)
+		if (fAlpha < 1.0f)
 		{
-            Video_SetBlend(VIDEO_BLEND_IGNORE,VIDEO_DEPTH_FALSE);
-            Video_EnableCapabilities(VIDEO_BLEND);
+			Video_SetBlend(VIDEO_BLEND_IGNORE, VIDEO_DEPTH_FALSE);
+			Video_EnableCapabilities(VIDEO_BLEND);
 
 			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 		}
 
-		Video_SelectTexture(1);
-		Video_SetTexture(lightmap_textures[s->lightmaptexturenum]);
+		Video_DrawSurface(s,fAlpha, Material_Get(tAnimation->iAssignedMaterial), 0);
 
-        R_RenderDynamicLightmaps(s);
-        R_UploadLightmap(s->lightmaptexturenum);
-
-		Video_SelectTexture(0);
-
-		if (r_lightmap_cheatsafe)
-			Video_DisableCapabilities(VIDEO_TEXTURE_2D);
-
-		// We're going to support lightmaps for this pass!
-		bMaterialLightmap = true;
-
-		{
-			VideoObject_t *voBrush;
-
-			voBrush = (VideoObject_t*)Hunk_TempAlloc(s->polys->numverts*sizeof(VideoObject_t));
-			if (!voBrush)
-				Sys_Error("Failed to allocate brush object!\n");
-
-			fVert = s->polys->verts[0];
-			for(i = 0; i < s->polys->numverts; i++,fVert += VERTEXSIZE)
-			{
-#pragma warning(suppress: 6011)
-				Math_VectorCopy(fVert,voBrush[i].vVertex);
-				Math_Vector2Copy((fVert+3),voBrush[i].vTextureCoord[0]);
-				Math_Vector2Copy((fVert+5),voBrush[i].vTextureCoord[1]);
-				Math_VectorSet(1.0f,voBrush[i].vColour);
-
-				voBrush[i].vColour[3] = fAlpha;
-			}
-
-			Video_DrawObject(voBrush, VIDEO_PRIMITIVE_TRIANGLE_FAN, s->polys->numverts, mMaterial, currententity->frame);
-		}
-
-        rs_brushpasses++;
+		rs_brushpasses++;
 	}
-
-	bMaterialLightmap = false;
 
 	Video_ResetCapabilities(true);
 }

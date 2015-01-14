@@ -200,7 +200,7 @@ bool Monster_MoveStep(edict_t *ent,vec3_t move,bool bRelink)
 				Math_VectorCopy(trace.endpos,ent->v.origin);
 
 				if(bRelink)
-					Engine.LinkEntity(ent,true);
+					Entity_Link(ent, true);
 
 				return true;
 			}
@@ -236,7 +236,7 @@ bool Monster_MoveStep(edict_t *ent,vec3_t move,bool bRelink)
 			Math_VectorAdd(ent->v.origin,move,ent->v.origin);
 
 			if(bRelink)
-				Engine.LinkEntity(ent,true);
+				Entity_Link(ent, true);
 
 			ent->v.flags &= ~FL_ONGROUND;
 
@@ -259,7 +259,7 @@ bool Monster_MoveStep(edict_t *ent,vec3_t move,bool bRelink)
 				it and is trying to correct
 			*/
 			if(bRelink)
-				Engine.LinkEntity(ent,true);
+				Entity_Link(ent, true);
 
 			return true;
 		}
@@ -275,7 +275,7 @@ bool Monster_MoveStep(edict_t *ent,vec3_t move,bool bRelink)
 	ent->v.groundentity = trace.ent;
 
 	if(bRelink)
-		Engine.LinkEntity(ent,true);
+		Entity_Link(ent, true);
 
 	return true;
 }
@@ -301,11 +301,11 @@ bool Monster_StepDirection(edict_t *ent,float yaw,float dist)
 		if(delta > 45 && delta < 315)
 			Math_VectorCopy(oldorg,ent->v.origin);
 
-		Engine.LinkEntity(ent,true);
+		Entity_Link(ent, true);
 		return true;
 	}
 
-	Engine.LinkEntity(ent,true);
+	Entity_Link(ent, true);
 	return false;
 }
 

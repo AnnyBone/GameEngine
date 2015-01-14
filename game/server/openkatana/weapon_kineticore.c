@@ -62,7 +62,8 @@ void projectile_iceball(edict_t *ent, vec3_t orig)
 
 	ionball->v.cClassname	= "iceball";
 	ionball->v.movetype		= MOVETYPE_FLYBOUNCE;
-	ionball->Physics.iSolid		= SOLID_BBOX;
+
+	ionball->Physics.iSolid	= SOLID_BBOX;
 
 	ionball->local.eOwner = ent;
 
@@ -78,9 +79,7 @@ void projectile_iceball(edict_t *ent, vec3_t orig)
 	Math_MVToVector(Math_VectorToAngles(ionball->v.velocity),ionball->v.angles);
 
 	Entity_SetSize(ionball,0,0,0,0,0,0);
-	SetOrigin(ionball, orig);
-
-	Engine.LinkEntity(ionball,false);
+	Entity_SetOrigin(ionball, orig);
 
 	ionball->v.TouchFunction	= IceballTouch;
 	ionball->v.dNextThink		= Server.dTime+3.0;

@@ -251,6 +251,7 @@ void R_SetupModelLighting(vec3_t vOrigin)
 
 void Alias_DrawModelFrame(MD2_t *mModel,entity_t *eEntity,lerpdata_t lLerpData)
 {
+#if 0	// Broken
 	int					i,j,k,iVert;
 	float               fAlpha;
 	VideoObject_t		*voModel;
@@ -305,6 +306,100 @@ void Alias_DrawModelFrame(MD2_t *mModel,entity_t *eEntity,lerpdata_t lLerpData)
         }
 
 	Video_DrawObject(voModel, VIDEO_PRIMITIVE_TRIANGLES, mModel->num_glcmds, Material_Get(eEntity->model->iAssignedMaterials), eEntity->skinnum);
+#else
+	float				ilerp;
+	int					*order, count;
+	MD2TriangleVertex_t	*verts1, *verts2;
+	MD2Frame_t			*frame1, *frame2;
+	vec3_t				scale1, translate1, scale2, translate2;
+	Material_t			*mModelMat;
+
+	mModelMat = Material_Get(eEntity->model->iAssignedMaterials);
+
+	ilerp = 1.0f - lLerpData.blend;
+
+	//new version by muff - fixes bug, easier to read, faster (well slightly)
+	frame1 = (MD2Frame_t*)((int)mModel + mModel->ofs_frames + (mModel->framesize*currententity->draw_lastpose));
+	frame2 = (MD2Frame_t*)((int)mModel + mModel->ofs_frames + (mModel->framesize*currententity->draw_pose));
+
+	Math_VectorCopy(frame1->scale, scale1);
+	Math_VectorCopy(frame1->translate, translate1);
+	Math_VectorCopy(frame2->scale, scale2);
+	Math_VectorCopy(frame2->translate, translate2);
+
+	// [20/8/2012] Quick fix ~hogsy
+	// [24/8/2012] Moved ~hogsy
+	if (currententity->scale < 0.1f)
+		currententity->scale = 1.0f;
+
+	// [24/8/2012] Probably not the best way, but it's better than my other method ~hogsy
+	Math_VectorScale(scale1, currententity->scale, scale1);
+	Math_VectorScale(scale2, currententity->scale, scale2);
+
+	verts1 = &frame1->verts[0];
+	verts2 = &frame2->verts[0];
+
+	order = (int*)((int)mModel + mModel->ofs_glcmds);
+
+	Video_DrawMaterial(mModelMat, eEntity->skinnum, NULL, 0, 0, false);
+
+	while (1)
+	{
+		count = *order++;
+
+		if (!count)
+			break;		// done
+
+		glBegin(GL_TRIANGLE_FAN);
+
+		do
+		{
+#if 0
+			// [20/8/2012] Don't use multitexture crap when we only have ONE texture ~hogsy
+			if (mModel->fbtextures[currententity->skinnum])
+			{
+				// [24/8/2012] Let us switch between ARB and the built-in equivalent ~hogsy
+				if (mtexenabled)
+				{
+					glMultiTexCoord2fARB(TEXTURE0, ((float*)order)[0], ((float*)order)[1]);
+					glMultiTexCoord2fARB(TEXTURE1, ((float*)order)[0], ((float*)order)[1]);
+				}
+				else
+				{
+					glMultiTexCoord2f(TEXTURE0, ((float*)order)[0], ((float*)order)[1]);
+					glMultiTexCoord2f(TEXTURE1, ((float*)order)[0], ((float*)order)[1]);
+				}
+			}
+			else
+#endif
+				glTexCoord2f(((float*)order)[0], ((float*)order)[1]);
+
+			if (bShading)
+			{
+				if (r_drawflat_cheatsafe)
+				{
+					srand(count*(unsigned int)order);
+					glColor3f(rand() % 256 / 255.0, rand() % 256 / 255.0, rand() % 256 / 255.0);
+				}
+				else
+					glColor4f((shadedots[verts1->lightnormalindex] * ilerp + shadedots[verts2->lightnormalindex] * lLerpData.blend),
+					(shadedots[verts1->lightnormalindex] * ilerp + shadedots[verts2->lightnormalindex] * lLerpData.blend),
+					(shadedots[verts1->lightnormalindex] * ilerp + shadedots[verts2->lightnormalindex] * lLerpData.blend),
+					entalpha);
+			}
+
+			glVertex3f((verts1[order[2]].v[0] * scale1[0] + translate1[0])*ilerp + (verts2[order[2]].v[0] * scale2[0] + translate2[0])*lLerpData.blend,
+				(verts1[order[2]].v[1] * scale1[1] + translate1[1])*ilerp + (verts2[order[2]].v[1] * scale2[1] + translate2[1])*lLerpData.blend,
+				(verts1[order[2]].v[2] * scale1[2] + translate1[2])*ilerp + (verts2[order[2]].v[2] * scale2[2] + translate2[2])*lLerpData.blend);
+
+			order += 3;
+		} while (--count);
+
+		glEnd();
+	}
+
+	Video_DrawMaterial(mModelMat, eEntity->skinnum, NULL, 0, 0, true);
+#endif
 }
 
 void Alias_SetupFrame(MD2_t *mModel,lerpdata_t *ldLerp)

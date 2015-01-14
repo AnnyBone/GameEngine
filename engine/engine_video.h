@@ -17,9 +17,20 @@ extern cvar_t	cvVideoDrawModels,	// Should we draw models?
 				gl_overbright,		// Enable overbrights?
 				cvLitParticles;		// Should particles be lit or not?
 
-#define	VIDEO_MAX_UNITS	4
-
 extern bool	bVideoIgnoreCapabilities;
+
+enum
+{
+	VIDEO_TEXTURE_DIFFUSE,
+	VIDEO_TEXTURE_LIGHT,
+	VIDEO_TEXTURE_DETAIL,
+	VIDEO_TEXTURE_FULLBRIGHT,
+	VIDEO_TEXTURE_SPHERE,
+
+	VIDEO_TEXTURE_MAX
+};
+
+#define	VIDEO_MAX_UNITS	VIDEO_TEXTURE_MAX
 
 typedef struct
 {
@@ -53,7 +64,7 @@ typedef struct
 {
 	vec3_t	vVertex;
 
-	vec2_t	vTextureCoord[VIDEO_MAX_UNITS+1];	// Texture coordinates by texture unit.
+	vec2_t	vTextureCoord[VIDEO_MAX_UNITS];		// Texture coordinates by texture unit.
 
 	vec4_t	vColour;							// RGBA
 
@@ -74,11 +85,6 @@ extern SDL_Window	*sMainWindow;
 #define	VIDEO_CULL_FACE		64	// Automatically cull faces.
 #define	VIDEO_STENCIL_TEST	128	// Stencil-testing
 #define	VIDEO_NORMALIZE		256	// Normalization for scaled models that are lit.
-
-#define VIDEO_TEXTURE0	0x84C0	// TMU0
-#define VIDEO_TEXTURE1	0x84C1	// TMU1
-#define	VIDEO_TEXTURE2	0x84C2	// TMU2
-#define	VIDEO_TEXTURE3	0x84C3	// TMU3
 
 // Primitive Types
 typedef enum
@@ -122,8 +128,13 @@ void Video_EnableCapabilities(unsigned int iCapabilities);
 void Video_DisableCapabilities(unsigned int iCapabilities);
 void Video_ResetCapabilities(bool bClearActive);
 void Video_Process(void);
+void Video_TextureCoordinate(VideoObject_t *voObject, float S, float T);
+void Video_VertexCoordinate(VideoObject_t *voObject, float X, float Y, float Z);
+void Video_NormalCoordinate(VideoObject_t *voObject, float X, float Y, float Z);
 void Video_DrawFill(VideoObject_t *voFill,Material_t *mMaterial);
+void Video_DrawSurface(msurface_t *mSurface,float fAlpha,Material_t *mMaterial, unsigned int uiSkin);
 void Video_DrawObject(VideoObject_t *voObject, VideoPrimitive_t vpPrimitiveType, unsigned int uiVerts, Material_t *mMaterial, int iSkin);
+void Video_DrawMaterial(Material_t *mMaterial, int iSkin, VideoObject_t *voObject, VideoPrimitive_t vpPrimitiveType, unsigned int uiSize, bool bPost);
 void Video_Shutdown(void);
 
 /*

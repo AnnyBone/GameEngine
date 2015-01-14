@@ -647,9 +647,9 @@ void Point_PropSpawn(edict_t *eEntity)
 				Engine.Server_PrecacheResource(RESOURCE_SOUND,PHYSICS_SOUND_METAL0);
 				Engine.Server_PrecacheResource(RESOURCE_SOUND,PHYSICS_SOUND_METAL1);
 				Engine.Server_PrecacheResource(RESOURCE_SOUND,PHYSICS_SOUND_METAL2);
-				Engine.Server_PrecacheResource(RESOURCE_MODEL,"models/gibs/metal_gibs1.md2");
-				Engine.Server_PrecacheResource(RESOURCE_MODEL,"models/gibs/metal_gibs2.md2");
-				Engine.Server_PrecacheResource(RESOURCE_MODEL,"models/gibs/metal_gibs3.md2");
+				Engine.Server_PrecacheResource(RESOURCE_MODEL,PHYSICS_MODEL_METAL0);
+				Engine.Server_PrecacheResource(RESOURCE_MODEL, PHYSICS_MODEL_METAL1);
+				Engine.Server_PrecacheResource(RESOURCE_MODEL, PHYSICS_MODEL_METAL2);
 				break;
 			default:
 				// [4/8/2013] Updated for consistency ~hogsy

@@ -35,7 +35,7 @@ void SetAngle(edict_t *ent,vec3_t vAngle)
 	// [21/3/2012] Updated ~hogsy
 	Math_VectorCopy(vAngle,ent->v.angles);
 
-	Engine.LinkEntity(ent,false);
+	Entity_Link(ent,false);
 }
 
 // [8/2/2012] Brought ChangeYaw over from the engine ~hogsy

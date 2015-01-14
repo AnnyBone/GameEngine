@@ -118,13 +118,11 @@ void Discus_SpawnProjectile(edict_t *ent,vec3_t org)
 
 	Math_MVToVector(Math_VectorToAngles(discus->v.velocity),discus->v.angles);
 
+	discus->v.TouchFunction = Discus_ProjectileTouch;
+
 	Entity_SetModel(discus,"models/w_daedalus.md2");
 	Entity_SetSizeVector(discus,mv3Origin,mv3Origin);
 	Entity_SetOrigin(discus, org);
-
-	Engine.LinkEntity(discus,false);
-
-	discus->v.TouchFunction = Discus_ProjectileTouch;
 
 	Sound(ent,CHAN_WEAPON,"weapons/discus/discusthrow.wav",255,ATTN_NORM);
 }

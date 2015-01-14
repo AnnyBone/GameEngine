@@ -197,7 +197,7 @@ void SideWinder_SpawnMissle(edict_t *ent,float fSpeed,float ox)
 	eMissile->v.think			= SideWinder_Think;
 
 	// [4/8/2012] Moved so we do this last! ~hogsy
-	Engine.LinkEntity(eMissile,false);
+	Entity_Link(eMissile,false);
 }
 
 // [4/8/2012] Renamed to SideWinder_PrimaryAttack ~hogsy

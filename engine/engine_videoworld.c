@@ -522,6 +522,7 @@ void World_Draw(void)
 
     Video_ResetCapabilities(false);
 
+#if 0
 	if(r_drawflat_cheatsafe)
 	{
 		Video_DisableCapabilities(VIDEO_TEXTURE_2D);
@@ -558,15 +559,14 @@ void World_Draw(void)
 	}
 
 	//R_DrawTextureChains_NoTexture();
+#endif
 
 	{
+		Material_t *mMaterial;
 		int			i, j;
 		msurface_t	*s;
 		texture_t	*t;
 		float		*v;
-		bool		bBound;
-
-		bMaterialLightmap = true;
 
 		for(i = 0; i < cl.worldmodel->numtextures; i++)
 		{
@@ -574,52 +574,19 @@ void World_Draw(void)
 			if(!t || !t->texturechain || t->texturechain->flags & (SURF_DRAWTILED | SURF_NOTEXTURE))
 				continue;
 
-			bBound = false;
+			mMaterial = Material_Get(t->iAssignedMaterial);
+
 			for(s = t->texturechain; s; s = s->texturechain)
 				if(!s->culled)
 				{
-					Material_t *mMaterial = Material_Get(R_TextureAnimation(t, 0)->iAssignedMaterial);
+					if (!mMaterial->bBind) //only bind once we are sure we need this texture
+						mMaterial->bBind = false;
 
-#if 0
-					if(!bBound) //only bind once we are sure we need this texture
-					{
-						Video_SetTexture(mMaterial->msSkin[0].gDiffuseTexture);
-						Video_SelectTexture(1);
-						Video_EnableCapabilities(VIDEO_TEXTURE_2D);
-
-						bBound = true;
-					}
-#endif
-
-					Video_SelectTexture(1);
-
-					R_RenderDynamicLightmaps(s);
-					Video_SetTexture(lightmap_textures[s->lightmaptexturenum]);
-					R_UploadLightmap(s->lightmaptexturenum);
-
-					Video_SelectTexture(0);
-
-					voWorld = (VideoObject_t*)Hunk_TempAlloc(s->polys->numverts*sizeof(VideoObject_t));
-					if (!voWorld)
-						Sys_Error("Failed to allocate world object!\n");
-						
-					v = s->polys->verts[0];
-					for (j = 0; j < s->polys->numverts; j++, v += VERTEXSIZE)
-					{
-#pragma warning(suppress: 6011)	// We already checked this!
-						Math_Vector2Copy((v + 3), voWorld[j].vTextureCoord[0]);
-						Math_Vector2Copy((v + 5), voWorld[j].vTextureCoord[1]);
-						Math_VectorCopy(v, voWorld[j].vVertex);
-						Math_Vector4Set(1.0f, voWorld[j].vColour);
-					}
-
-					Video_DrawObject(voWorld, VIDEO_PRIMITIVE_TRIANGLE_FAN, s->polys->numverts, mMaterial, 0);
+					Video_DrawSurface(s,1.0f, mMaterial, 0);
 
 					rs_brushpasses++;
 				}
 		}
-
-		bMaterialLightmap = false;
 	}
 
 	Video_ResetCapabilities(true);

@@ -318,6 +318,7 @@ void Model_LoadBSPTextures(BSPLump_t *blLump)
 		tTexture->width		= LittleLong(mpTexture->width);
 		tTexture->height	= LittleLong(mpTexture->height);
 
+		// Remove special characters.
 		if (tTexture->name[0] == '*')
 			sprintf(tTexture->name, tTexture->name + 1);
 

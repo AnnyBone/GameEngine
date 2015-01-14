@@ -130,9 +130,7 @@ void C4Vizatergo_Think(edict_t *ent)
 	Sound(ent,CHAN_AUTO,"weapons/c4/c4beep.wav",120,ATTN_NORM);
 
 	if(!ent->local.eOwner && ent->local.hit)
-	{
 		ent->v.movetype = MOVETYPE_BOUNCE;
-	}
 
 	ent->v.dNextThink = Server.dTime+2.5;
 #endif
@@ -177,15 +175,13 @@ void C4Vizatergo_PrimaryAttack(edict_t *eOwner)
 	Math_MVToVector(Math_VectorToAngles(c4ball->v.velocity),c4ball->v.angles);
 	Math_VectorCopy(eOwner->v.origin,vOrigin);
 
+	c4ball->v.TouchFunction = C4Vizatergo_C4BallTouch;
+	c4ball->v.think = C4Vizatergo_Think;
+	c4ball->v.dNextThink = Server.dTime + 2.5;
+
 	Entity_SetModel(c4ball,"models/c4ammo.md2");
 	Entity_SetSizeVector(c4ball,mv3Origin,mv3Origin);
 	Entity_SetOrigin(c4ball,vOrigin);
-
-	c4ball->v.TouchFunction	= C4Vizatergo_C4BallTouch;
-	c4ball->v.think			= C4Vizatergo_Think;
-	c4ball->v.dNextThink	= Server.dTime+2.5;
-
-	Engine.LinkEntity(c4ball,false);
 
 	if(eOwner->local.attackb_finished > Server.dTime)	// No attack boost...
 		eOwner->local.dAttackFinished = Server.dTime+0.6;

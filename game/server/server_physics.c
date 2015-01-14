@@ -96,9 +96,8 @@ trace_t	Physics_PushEntity(edict_t *eEntity,vec3_t vPush)
 	else
 		trace = Engine.Server_Move(eEntity->v.origin,eEntity->v.mins,eEntity->v.maxs,end,MOVE_NORMAL,eEntity);
 
-	Math_VectorCopy(trace.endpos,eEntity->v.origin);
-
-	Engine.LinkEntity(eEntity,true);
+	// Use SetOrigin since it automatically links.
+	Entity_SetOrigin(eEntity, trace.endpos);
 
 	if(trace.ent)
 		Physics_EntityImpact(eEntity,trace.ent);

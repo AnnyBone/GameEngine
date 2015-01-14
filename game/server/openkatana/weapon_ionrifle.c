@@ -1,4 +1,4 @@
-/*	Copyright (C) 2013-2014 OldTimes Software
+/*	Copyright (C) 2013-2015 OldTimes Software
 */
 #include "server_weapon.h"
 
@@ -127,6 +127,8 @@ void IonRifle_Deploy(edict_t *eOwner)
 */
 void IonRifle_PrimaryAttack(edict_t *eOwner)
 {
+	edict_t	*eIonBall;
+
 	switch(eOwner->local.iFireMode)
 	{
 	case 1:
@@ -170,7 +172,7 @@ void IonRifle_PrimaryAttack(edict_t *eOwner)
 					Math_VectorCopy(vAim,eIonBall->v.angles);
 				}
 
-				Engine.LinkEntity(eIonBall,false);
+				Entity_Link(eIonBall,false);
 			}
 		}
 
@@ -211,7 +213,7 @@ void IonRifle_PrimaryAttack(edict_t *eOwner)
 			eOwner->local.iBarrelCount = 0;
 
 		{
-			edict_t	*eIonBall = Entity_Spawn();
+			eIonBall = Entity_Spawn();
 			if(eIonBall)
 			{
 				vec3_t	vOrigin;
@@ -244,7 +246,7 @@ void IonRifle_PrimaryAttack(edict_t *eOwner)
 					Math_VectorCopy(vAim,eIonBall->v.avelocity);
 				}
 
-				Engine.LinkEntity(eIonBall,false);
+				Entity_Link(eIonBall,false);
 			}
 		}
 

@@ -10,13 +10,14 @@
 */
 edict_t *Entity_Spawn(void)
 {
-#if 0
+	edict_t	*eSpawn = Engine.Spawn();
+
 	// [30/5/2013] Set physics properties to their defaults! ~hogsy
 	eSpawn->Physics.fMass		= 1.0f;
-	eSpawn->Physics.fGravity	= 600.0f;
-#endif
+	eSpawn->Physics.fFriction	= 1.0f;
+	eSpawn->Physics.fGravity	= SERVER_GRAVITY;
 
-	return Engine.Spawn();
+	return eSpawn;
 }
 
 /*	Alternative to SetOrigin.
@@ -35,7 +36,7 @@ void Entity_SetOrigin(edict_t *eEntity,vec3_t vOrigin)
 {
 	Math_VectorCopy(vOrigin,eEntity->v.origin);
 
-	Engine.LinkEntity(eEntity,false);
+	Entity_Link(eEntity, false);
 }
 
 /*	Alternative to SetModel.
@@ -66,7 +67,7 @@ void Entity_SetSizeVector(edict_t *eEntity,vec3_t vMin,vec3_t vMax)
 	Math_VectorCopy(vMax,eEntity->v.maxs);
 	Math_VectorSubtract(vMax,vMin,eEntity->v.size);
 
-	Engine.LinkEntity(eEntity,false);
+	Entity_Link(eEntity, false);
 }
 
 /*	Set the size of the bounding box for the entity.
@@ -211,6 +212,18 @@ void Entity_RadiusDamage(edict_t *eInflictor,float fRadius,int iDamage,int iDama
 	while(eTarget);
 }
 
+/*	Link an entity.
+*/
+void Entity_Link(edict_t *eEntity,bool bTouchTriggers)
+{
+	Engine.LinkEntity(eEntity, bTouchTriggers);
+}
+
+void Entity_Unlink(edict_t *eEntity)
+{
+	Engine.UnlinkEntity(eEntity);
+}
+
 /*	Remove an entity from the world.
 */
 void Entity_Remove(edict_t *eEntity)
@@ -311,3 +324,7 @@ bool Entity_IsMonster(edict_t *eEntity)
 
 	return false;
 }
+
+/*
+	IO System
+*/

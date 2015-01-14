@@ -50,12 +50,10 @@ void GreekFire_Throw(edict_t *ent)
 	Entity_SetModel(greekfire,"models/w_greekfire.md2");
 	Math_MVToVector(Math_VectorToAngles(greekfire->v.velocity),greekfire->v.angles);
 
-	// [4/7/2012] Simplified ~hogsy
-	Math_VectorCopy(ent->v.origin,greekfire->v.origin);
+	// Use SetOrigin since it automatically links.
+	Entity_SetOrigin(greekfire, ent->v.origin);
 
 	Entity_SetSizeVector(greekfire,mv3Origin,mv3Origin);
-
-	Engine.LinkEntity(greekfire,false);
 
 	greekfire->v.TouchFunction = GreekfireTouch;
 }

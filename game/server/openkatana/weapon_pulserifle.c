@@ -117,15 +117,12 @@ void throw_cordite(edict_t *ent)
 
 	Entity_SetSize(greekfire,0,0,0,0,0,0);
 
-	// [25/6/2012] Simplified ~hogsy
-	Math_VectorCopy(ent->v.origin,greekfire->v.origin);
+	greekfire->v.think			= CorditeExplode;
+	greekfire->v.dNextThink		= Server.dTime + 3.0;
+	greekfire->v.TouchFunction	= CorditeTouch;
 
-	greekfire->v.think		= CorditeExplode;
-	greekfire->v.dNextThink	= Server.dTime+3.0;
-
-	Engine.LinkEntity(greekfire,false);
-
-	greekfire->v.TouchFunction = CorditeTouch;
+	// SetOrigin automatically links.
+	Entity_SetOrigin(greekfire, ent->v.origin);
 }
 
 void PulseRifle_SecondaryAttack(edict_t *ent)

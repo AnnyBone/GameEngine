@@ -133,10 +133,10 @@ float *Game_Aim(edict_t *ent)
 	start[2] += 20;
 
 	// try sending a trace straight
-	Math_VectorCopy(pr_global_struct.v_forward,dir);
+	Math_VectorCopy(ent->v.vForward, dir);
 	Math_VectorMA(start,2048.0f,dir,end);
 
-#if 1
+#if 0
 	// [5/3/2013] BUG: Results in fucked up aim vectors ~hogsy
 	tr = SV_Move(start,mv3Origin,mv3Origin,end,false,ent);
 	if(tr.ent && tr.ent->v.bTakeDamage	&&

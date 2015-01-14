@@ -3,9 +3,8 @@
 
 #define	SERVER_GRAVITY	600.0f
 
-/*	Server->client type
-	defines. Currently these
-	are all still engine-side
+/*	Server->Client type	defines. 
+	Currently these	are all still engine-side
 	so it's wise not to touch!
 
 	TODO:

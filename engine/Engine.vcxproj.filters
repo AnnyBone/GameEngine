@@ -85,21 +85,6 @@
     <ClCompile Include="cl_input.c">
       <Filter>Legacy</Filter>
     </ClCompile>
-    <ClCompile Include="engine_videodraw.c" />
-    <ClCompile Include="engine_videosprite.c" />
-    <ClCompile Include="engine_videoscreen.c" />
-    <ClCompile Include="engine_videolight.c" />
-    <ClCompile Include="engine_videofont.c" />
-    <ClCompile Include="engine_videoalias.c" />
-    <ClCompile Include="engine_videoworld.c" />
-    <ClCompile Include="engine_videobrush.c" />
-    <ClCompile Include="engine_videosky.c" />
-    <ClCompile Include="engine_videomisc.c" />
-    <ClCompile Include="engine_videormain.c" />
-    <ClCompile Include="engine_videorefrag.c" />
-    <ClCompile Include="engine_videofog.c" />
-    <ClCompile Include="engine_videowarp.c" />
-    <ClCompile Include="engine_videoshadow.c" />
     <ClCompile Include="gl_vidnt.c">
       <Filter>Legacy</Filter>
     </ClCompile>
@@ -159,6 +144,51 @@
       <Filter>Client\Video\LodePNG</Filter>
     </ClCompile>
     <ClCompile Include="engine_videomaterial.c">
+      <Filter>Client\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="engine_videoalias.c">
+      <Filter>Client\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="engine_videofog.c">
+      <Filter>Client\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="engine_videolight.c">
+      <Filter>Client\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="engine_videormain.c">
+      <Filter>Client\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="engine_videosky.c">
+      <Filter>Client\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="engine_videoworld.c">
+      <Filter>Client\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="engine_videowarp.c">
+      <Filter>Client\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="engine_videosprite.c">
+      <Filter>Client\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="engine_videoshadow.c">
+      <Filter>Client\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="engine_videobrush.c">
+      <Filter>Client\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="engine_videodraw.c">
+      <Filter>Client\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="engine_videofont.c">
+      <Filter>Client\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="engine_videomisc.c">
+      <Filter>Client\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="engine_videorefrag.c">
+      <Filter>Client\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="engine_videoscreen.c">
       <Filter>Client\Video</Filter>
     </ClCompile>
   </ItemGroup>
@@ -286,8 +316,6 @@
     <ClInclude Include="render.h">
       <Filter>Legacy</Filter>
     </ClInclude>
-    <ClInclude Include="engine_video.h" />
-    <ClInclude Include="engine_videoshadow.h" />
     <ClInclude Include="glquake.h">
       <Filter>Legacy</Filter>
     </ClInclude>
@@ -314,6 +342,12 @@
       <Filter>Client\Video\LodePNG</Filter>
     </ClInclude>
     <ClInclude Include="engine_videomaterial.h">
+      <Filter>Client\Video</Filter>
+    </ClInclude>
+    <ClInclude Include="engine_video.h">
+      <Filter>Client\Video</Filter>
+    </ClInclude>
+    <ClInclude Include="engine_videoshadow.h">
       <Filter>Client\Video</Filter>
     </ClInclude>
   </ItemGroup>

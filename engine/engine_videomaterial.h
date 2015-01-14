@@ -40,7 +40,6 @@ typedef struct
 typedef struct
 {
 	struct gltexture_s	*gDiffuseTexture,		// Diffuse texture.
-						*gLightmapTexture,		// Lightmap is usually automatically assigned to materials.
 						*gDetailTexture,		// Detail map.
 						*gFullbrightTexture,	// Fullbright map.
 						*gSpecularTexture,		// Specular map.
@@ -63,22 +62,22 @@ typedef struct
 			cName[64];					// Name of the material.
 
 	MaterialSkin_t	msSkin[MODEL_MAX_TEXTURES];
+
+	bool	bBind;
 } Material_t;
 
 #define	MATERIALS_MAX_ALLOCATED	2048
 
 extern Material_t	mMaterials[MATERIALS_MAX_ALLOCATED];	// Global array.
 
-bool	bMaterialLightmap;	// Hacky way of supporting lightmaps, I'm gay ~hogsy
-
 void Material_Initialize(void);
-//void Material_PreDraw(Material_t *mMaterial, int iSkin, VideoObject_t *voObject, int iSize);
-//void Material_PostDraw(Material_t *mMaterial, int iSkin, VideoObject_t *voObject, int iSize);
 
 Material_t *Material_Load(const char *ccPath);
 Material_t *Material_Get(int iMaterialID);
 Material_t *Material_GetByPath(const char *ccPath);
 Material_t *Material_GetByName(const char *ccMaterialName);
 Material_t *Material_GetDummy(void);
+
+MaterialSkin_t *Material_GetSkin(Material_t *mMaterial, int iSkin);
 
 #endif // __ENGINEMATERIAL__

@@ -12,7 +12,6 @@
 */
 
 #include "engine_videomaterial.h"
-#include "engine_video.h"
 
 #include "engine_script.h"
 
@@ -36,9 +35,6 @@ MaterialType_t	MaterialTypes[]=
 
 int	iMaterialCount = 0;
 
-cvar_t	cvMaterialDraw			= { "material_draw",		"1", false, false, "Enables and disables the drawing of materials."		},
-		cvMaterialDrawDetail	= {	"material_drawdetail",	"1", false, false, "Enables and disables the drawing of detail maps."	};
-
 Material_t *Material_Allocate(void);
 
 void Material_List(void);
@@ -51,9 +47,6 @@ void Material_Initialize(void)
 		return;
 
 	Con_Printf("Initializing material system...\n");
-
-	Cvar_RegisterVariable(&cvMaterialDraw, NULL);
-	Cvar_RegisterVariable(&cvMaterialDrawDetail, NULL);
 
 	Cmd_AddCommand("material_list", Material_List);
 
@@ -92,6 +85,10 @@ void Material_List(void)
 	Con_Printf("\nListed %i active materials with %i skins in total!\n", i,iSkins);
 }
 
+/*
+	Management
+*/
+
 Material_t *Material_Allocate(void)
 {
 	int	i;
@@ -105,6 +102,7 @@ Material_t *Material_Allocate(void)
 				mMaterials[i].iIdentification	= i;
 				mMaterials[i].iSkins			= 0;
 				mMaterials[i].iFlags			= 0;
+				mMaterials[i].bBind				= true;
 
 				iMaterialCount++;
 
@@ -112,6 +110,18 @@ Material_t *Material_Allocate(void)
 			}
 
 	return NULL;
+}
+
+/*	Clears all the currently active materials.
+*/
+void Material_ClearActive(void)
+{
+	int	i;
+
+	for (i = 0; i < MATERIALS_MAX_ALLOCATED; i++)
+	{
+
+	}
 }
 
 MaterialSkin_t *Material_GetSkin(Material_t *mMaterial,int iSkin)
@@ -173,8 +183,12 @@ Material_t *Material_Get(int iMaterialID)
 	}
 
 	for (i = 0; i < iMaterialCount; i++)
-		if(mMaterials[i].iIdentification == iMaterialID)
+		if (mMaterials[i].iIdentification == iMaterialID)
+		{
+			mMaterials[i].bBind = true;
+
 			return &mMaterials[i];
+		}
 
 	return NULL;
 }
@@ -217,182 +231,6 @@ Material_t *Material_GetByPath(const char *ccPath)
 				return &mMaterials[i];
 
 	return NULL;
-}
-
-/*
-	Drawing
-*/
-
-extern cvar_t gl_fullbrights;
-
-/*	Called before the object is drawn.
-*/
-void Material_PreDraw(Material_t *mMaterial, int iSkin, VideoObject_t *voObject, int iSize)
-{
-	int				i, iLayers = 2;
-	MaterialSkin_t	*msCurrentSkin;
-
-	if (!cvMaterialDraw.bValue || !mMaterial)
-		return;
-	// If we're drawing flat, then don't apply textures.
-	else if (r_drawflat_cheatsafe)
-	{
-		Video_DisableCapabilities(VIDEO_TEXTURE_2D);
-		return;
-	}
-
-	msCurrentSkin = Material_GetSkin(mMaterial, iSkin);
-	if (!msCurrentSkin)
-	{
-		Video_SetTexture(notexture);
-		return;
-	}
-
-	if ((mMaterial->iFlags & MATERIAL_FLAG_ALPHA) || (msCurrentSkin->iFlags & MATERIAL_FLAG_ALPHA))
-		Video_EnableCapabilities(VIDEO_ALPHA_TEST);
-
-	// Set the diffuse texture first.
-	Video_SetTexture(msCurrentSkin->gDiffuseTexture);
-
-	// Lightmap always uses the same slot.
-	if (bMaterialLightmap)
-	{
-		Video_SelectTexture(1);
-		Video_EnableCapabilities(VIDEO_TEXTURE_2D);
-
-		// Overbrights
-		if (gl_overbright.bValue && !r_lightmap_cheatsafe)
-		{
-#if 1
-			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
-			glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
-			glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_PREVIOUS);
-			glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_TEXTURE);
-			glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 4);
-#else
-			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
-			glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
-			glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 4);
-#endif
-		}
-
-		// Don't retain this.
-		msCurrentSkin->gLightmapTexture = 0;
-	}
-
-	// Detail map layer.
-	if (msCurrentSkin->gDetailTexture && cvMaterialDrawDetail.bValue)
-	{
-		// TODO: Check distance from camera before proceeding.
-
-		Video_SelectTexture(iLayers);
-		Video_EnableCapabilities(VIDEO_TEXTURE_2D);
-		Video_SetTexture(msCurrentSkin->gDetailTexture);
-
-		if (voObject)
-			for (i = 0; i < iSize; i++)
-			{
-				// Copy over original texture coords.
-				voObject[i].vTextureCoord[iLayers][0] = voObject[i].vTextureCoord[0][0] * 8;
-				voObject[i].vTextureCoord[iLayers][1] = voObject[i].vTextureCoord[0][1] * 8;
-
-				// TODO: Modify them to the appropriate scale.
-
-			}
-
-		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
-		glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
-		glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 2);
-
-		iLayers++;
-	}
-
-	// Fullbright map.
-	if (msCurrentSkin->gFullbrightTexture && gl_fullbrights.bValue)
-	{
-		Video_SelectTexture(iLayers);
-		Video_EnableCapabilities(VIDEO_TEXTURE_2D);
-		Video_SetTexture(msCurrentSkin->gFullbrightTexture);
-
-		if (voObject)
-			for (i = 0; i < iSize; i++)
-			{
-				// Texture coordinates remain the same for fullbright layers.
-				voObject[i].vTextureCoord[iLayers][0] = voObject[i].vTextureCoord[0][0];
-				voObject[i].vTextureCoord[iLayers][1] = voObject[i].vTextureCoord[0][1];
-			}
-
-		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_ADD);
-
-		iLayers++;
-	}
-
-#if 0
-	// Sphere map.
-	if (msCurrentSkin->gSphereTexture)
-	{
-		Video_SelectTexture(iLayers);
-		Video_SetTexture(msCurrentSkin->gSphereTexture);
-		Video_GenerateSphereCoordinates();
-		Video_EnableCapabilities(VIDEO_TEXTURE_2D | VIDEO_BLEND | VIDEO_TEXTURE_GEN_S | VIDEO_TEXTURE_GEN_T);
-
-		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
-
-		iLayers++;
-	}
-
-#endif
-
-	if (iLayers > VIDEO_MAX_UNITS)
-		Sys_Error("Hit max TMU limit!\nCheck your materials.");
-}
-
-/*	Called after the object is drawn.
-*/
-void Material_PostDraw(
-	Material_t *mMaterial, int iSkin, 
-	VideoObject_t *voObject, VideoPrimitive_t vpPrimitiveType, unsigned int uiSize)
-{
-	MaterialSkin_t	*msCurrentSkin;
-
-	if (!cvMaterialDraw.bValue || !mMaterial)
-		return;
-	// If we're drawing flat, then don't apply textures.
-	else if (r_drawflat_cheatsafe)
-		return;
-
-	msCurrentSkin = Material_GetSkin(mMaterial, iSkin);
-	if (!msCurrentSkin)
-		return;
-
-	if(bMaterialLightmap)
-	{
-		Video_SelectTexture(1);
-
-		if (gl_overbright.bValue)
-			glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, 1.0f);
-	}
-
-	if (((msCurrentSkin->iFlags & MATERIAL_FLAG_ALPHA) || (mMaterial->iFlags & MATERIAL_FLAG_ALPHA)) && cvVideoAlphaTrick.bValue)
-	{
-		Video_SelectTexture(0);
-
-		Video_SetBlend(VIDEO_BLEND_IGNORE, VIDEO_DEPTH_FALSE);
-
-		Video_EnableCapabilities(VIDEO_BLEND);
-
-		/*	HACKY
-			We enabled this above, so after resetting we would normally then disable this,
-			but disabling it here undoes that and then causes the pipeline to instead enable
-			it again. Not wanted behaviour, so we just ignore it.
-		*/
-		bVideoIgnoreCapabilities = true;
-		Video_DisableCapabilities(VIDEO_ALPHA_TEST);
-		bVideoIgnoreCapabilities = false;
-
-		// Draw the object again (don't bother passing material).
-		Video_DrawObject(voObject, vpPrimitiveType, uiSize, NULL, 0);
-	}
 }
 
 /*
@@ -489,11 +327,14 @@ typedef struct
 
 MaterialFlag_t	mfMaterialFlags[] =
 {
+	// Global
 	{	MATERIAL_FLAG_PRESERVE,	"PRESERVE",	true	},
-	{	MATERIAL_FLAG_ALPHA,	"ALPHA",	false	},
 	{	MATERIAL_FLAG_ANIMATED,	"ANIMATED",	true	},
 	{	MATERIAL_FLAG_MIRROR,	"MIRROR",	true	},
 	{	MATERIAL_FLAG_WATER,	"WATER",	true	},
+
+	// Local
+	{	MATERIAL_FLAG_ALPHA,	"ALPHA",	false	},
 	{	MATERIAL_FLAG_BLEND,	"BLEND",	false	}
 };
 
@@ -508,11 +349,16 @@ void _Material_SetFlags(Material_t *mCurrentMaterial,char *cArg)
 		if (strstr(cArg, mfMaterialFlags[i].ccName))
 		{
 			if (bMaterialGlobal)
-				mCurrentMaterial->iFlags |= mfMaterialFlags[i].iFlag;
+			{
+				if (!mfMaterialFlags[i].bGlobal)
+					Con_Warning("Attempted to set a skin flag globally! (%s) (%s)\n", mCurrentMaterial->cName, mfMaterialFlags[i].ccName);
+				else
+					mCurrentMaterial->iFlags |= mfMaterialFlags[i].iFlag;
+			}
 			else
 			{
 				if (mfMaterialFlags[i].bGlobal)
-					Con_Warning("Attempted to set a global flag to a skin! (%s) (%s)", mCurrentMaterial->cName, mfMaterialFlags[i].ccName);
+					Con_Warning("Attempted to set a global flag to a skin! (%s) (%s)\n", mCurrentMaterial->cName, mfMaterialFlags[i].ccName);
 				else
 					mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1].iFlags |= mfMaterialFlags[i].iFlag;
 			}

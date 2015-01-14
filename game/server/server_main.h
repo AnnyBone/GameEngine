@@ -60,13 +60,14 @@ void Entity_Remove(edict_t *eEntity);
 void Entity_CheckFrames(edict_t *eEntity);
 void Entity_ResetAnimation(edict_t *eEntity);
 void Entity_Animate(edict_t *eEntity,EntityFrame_t *efAnimation);
+void Entity_Link(edict_t *eEntity, bool bTouchTriggers);
+void Entity_Unlink(edict_t *eEntity);
 
 #define	ENTITY_REMOVE(a)	{	Entity_Remove(a);	return;	}
 
 // Defines for legacy functions
 #define	RemoveEntity(a)	Entity_Remove(a)
 #define SetOrigin(a,b)	Entity_SetOrigin(a,b)
-//#define	Spawn()		Entity_Spawn()	[1/1/2013] Left out since these differ in how they work right now... ~hogsy
 
 edict_t	*Entity_SpawnPoint(edict_t *eEntity,int iType);
 

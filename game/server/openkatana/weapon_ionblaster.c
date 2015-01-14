@@ -186,8 +186,6 @@ void IonBlaster_PrimaryAttack(edict_t *ent)
 		dir = Engine.Aim(ent);
 		// [26/8/2012] Simplified ~hogsy
 		Math_VectorScale(dir,IONBLASTER_MAX_RANGE,eIonBall->v.velocity);
-		// [26/8/2012] Start us off facing in the direction we're being fired from ~hogsy
-		Math_VectorCopy(dir,eIonBall->v.avelocity);
 
 		Math_VectorCopy(ent->v.angles,eIonBall->v.angles);
 		Math_VectorCopy(ent->v.origin,orig);
@@ -202,7 +200,7 @@ void IonBlaster_PrimaryAttack(edict_t *ent)
 		eIonBall->v.dNextThink		= Server.dTime+3.0;
 		eIonBall->v.think			= IonBlaster_IonBallExplode;
 
-		Engine.LinkEntity(eIonBall,false);
+		Entity_Link(eIonBall, false);
 	}
 
 	if(ent->local.attackb_finished > Server.dTime)	// No attack boost...

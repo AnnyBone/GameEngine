@@ -149,7 +149,7 @@ bool DropToFloor(edict_t *ent)
 	trace = Engine.Server_Move(ent->v.origin,ent->v.mins,ent->v.maxs,end,false,ent);
 	if(trace.fraction == 1 || trace.bAllSolid)
 	{
-		Engine.Con_Warning("%s is stuck (%i %i %i)!\n",ent->v.cClassname,
+		Engine.Con_Warning("Entity is stuck in world! (%s) (%i %i %i)\n",ent->v.cClassname,
 			// [17/11/2013] Give us integers instead ~hogsy
 			(int)ent->v.origin[0],
 			(int)ent->v.origin[1],
@@ -157,9 +157,8 @@ bool DropToFloor(edict_t *ent)
 		return false;
 	}
 
-	Math_VectorCopy(trace.endpos,ent->v.origin);
-
-	Engine.LinkEntity(ent,false);
+	// Use SetOrigin so that it's automatically linked.
+	Entity_SetOrigin(ent, trace.endpos);
 
 	ent->v.flags		|= FL_ONGROUND;
 	ent->v.groundentity = trace.ent;
