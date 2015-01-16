@@ -171,12 +171,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="menu_button.c" />
-    <ClCompile Include="menu_hud.c" />
-    <ClCompile Include="menu_input.c" />
-    <ClCompile Include="menu_main.c" />
-    <ClCompile Include="menu_script.c">
+    <ClCompile Include="menu_button.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (OpenKatana)|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="menu_hud.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (OpenKatana)|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="menu_input.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (OpenKatana)|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="menu_main.cpp" />
+    <ClCompile Include="menu_script.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (OpenKatana)|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (Devastator)|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (Ictus)|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (Adamas)|Win32'">false</ExcludedFromBuild>
@@ -186,9 +192,11 @@
     <ClInclude Include="..\Shared\shared_client.h" />
     <ClInclude Include="..\Shared\shared_menu.h" />
     <ClInclude Include=".\menu_main.h" />
-    <ClInclude Include="menu_button.h" />
-    <ClInclude Include="menu_script.h">
+    <ClInclude Include="menu_button.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (OpenKatana)|Win32'">false</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="menu_script.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (OpenKatana)|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (Devastator)|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (Ictus)|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (Adamas)|Win32'">false</ExcludedFromBuild>

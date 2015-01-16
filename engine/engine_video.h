@@ -19,7 +19,7 @@ extern cvar_t	cvVideoDrawModels,	// Should we draw models?
 
 extern bool	bVideoIgnoreCapabilities;
 
-enum
+enum VideoUnits_e
 {
 	VIDEO_TEXTURE_DIFFUSE,
 	VIDEO_TEXTURE_LIGHT,
@@ -50,10 +50,12 @@ typedef struct
 					bVerticalSync,		// Sync the swap interval to the refresh rate?
 					bActive,			// Is the window active or not?
 					bSkipUpdate,		// Skip screen update.
+					bColourOverride,	// Override any applied colour for the object.
 					bUnlocked;			// Can we change the window settings or not?
 
 	// OpenGL Extensions
 	bool	bFogCoord,					// EXT_fog_coord
+			bVertexBufferObject,		// ARB_vertex_buffer_object
 			bTextureEnvAdd,				// ARB_texture_env_add
 			bTextureEnvCombine;			// ARB_texture_env_combine
 
@@ -62,14 +64,22 @@ typedef struct
 
 typedef struct
 {
-	vec3_t	vVertex;
+	MathVector3_t	vVertex;
 
-	vec2_t	vTextureCoord[VIDEO_MAX_UNITS];		// Texture coordinates by texture unit.
+	MathVector2_t	vTextureCoord[VIDEO_MAX_UNITS];		// Texture coordinates by texture unit.
 
-	vec4_t	vColour;							// RGBA
+	MathVector4_t	vColour;							// RGBA
 
-	vec3_t	vNormal;							// Vertex normals.
+	MathVector3_t	vNormal;							// Vertex normals.
 } VideoObject_t;
+
+// Replacement Video Object
+typedef struct
+{
+	MathVector_t	*vVertex;
+
+	unsigned	int	uiIndeces;
+} VideoObject2_t;
 
 Video_t	Video;
 
@@ -128,9 +138,11 @@ void Video_EnableCapabilities(unsigned int iCapabilities);
 void Video_DisableCapabilities(unsigned int iCapabilities);
 void Video_ResetCapabilities(bool bClearActive);
 void Video_Process(void);
-void Video_TextureCoordinate(VideoObject_t *voObject, float S, float T);
-void Video_VertexCoordinate(VideoObject_t *voObject, float X, float Y, float Z);
-void Video_NormalCoordinate(VideoObject_t *voObject, float X, float Y, float Z);
+void Video_ObjectTexture(VideoObject_t *voObject, unsigned int uiTextureUnit, float S, float T);
+void Video_ObjectVertex(VideoObject_t *voObject, float X, float Y, float Z);
+void Video_ObjectNormal(VideoObject_t *voObject, float X, float Y, float Z);
+void Video_ObjectColour(VideoObject_t *voObject, float R, float G, float B, float A);
+void Video_SetColour(float R, float G, float B, float A);
 void Video_DrawFill(VideoObject_t *voFill,Material_t *mMaterial);
 void Video_DrawSurface(msurface_t *mSurface,float fAlpha,Material_t *mMaterial, unsigned int uiSkin);
 void Video_DrawObject(VideoObject_t *voObject, VideoPrimitive_t vpPrimitiveType, unsigned int uiVerts, Material_t *mMaterial, int iSkin);

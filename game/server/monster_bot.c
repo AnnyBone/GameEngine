@@ -236,6 +236,8 @@ void Bot_Spawn(edict_t *eBot)
 
 void Bot_Think(edict_t *eBot)
 {
+	Weapon_t	*wActiveWeapon;
+
 	// If the bot isn't dead, then add animations.
 	if(eBot->monster.iState != STATE_DEAD)
 	{
@@ -260,18 +262,18 @@ void Bot_Think(edict_t *eBot)
 	switch(eBot->monster.iThink)
 	{
 	case THINK_IDLE:
-#if 1
+	{
 		// Add some random movement. ~hogsy
-		if(rand()%120 == 0)
+		if(rand()%50 == 0)
 		{
-			int	iResult = rand()%3;
+			int	iResult = rand()%2;
 
 			if(iResult == 0)
 				eBot->v.velocity[0] += BOT_MIN_SPEED;
 			else if(iResult == 1)
 				eBot->v.velocity[0] -= BOT_MIN_SPEED;
 
-			iResult = rand()%3;
+			iResult = rand()%2;
 			if(iResult == 0)
 				eBot->v.velocity[1] += BOT_MIN_SPEED;
 			else if(iResult == 1)
@@ -279,20 +281,82 @@ void Bot_Think(edict_t *eBot)
 
 			eBot->v.angles[1] = Math_VectorToYaw(eBot->v.velocity);
 		}
-		else if(rand()%150 == 0)
+		else if (rand() % 150 == 0)
 		{
-			Monster_Jump(eBot,200.0f);
+			Monster_Jump(eBot, 200.0f);
 
-			Entity_Animate(eBot,PlayerAnimation_Jump);
+			Entity_Animate(eBot, PlayerAnimation_Jump);
 		}
+		else if (rand()%250 == 0)
+			eBot->v.angles[1] = (float)(rand() % 360);
+	}
+	break;
+	case THINK_ATTACKING:
+	{
+		if (eBot->monster.eTarget->v.iHealth <= 0)
+			Monster_SetThink(eBot, THINK_WANDERING);
+
+		wActiveWeapon = Weapon_GetCurrentWeapon(eBot);
+		if (!wActiveWeapon)
+			Monster_SetThink(eBot, THINK_FLEEING);
+
+#if 1
+		// Add some random movement. ~hogsy
+		if (rand() % 50 == 0)
+		{
+			int	iResult = rand() % 2;
+
+			if (iResult == 0)
+				eBot->v.velocity[0] += BOT_MIN_SPEED;
+			if (iResult == 1)
+				eBot->v.velocity[0] -= BOT_MIN_SPEED;
+
+			iResult = rand() % 2;
+			if (iResult == 0)
+				eBot->v.velocity[1] += BOT_MIN_SPEED;
+			if (iResult == 1)
+				eBot->v.velocity[1] -= BOT_MIN_SPEED;
+
+			eBot->v.angles[1] = Math_VectorToYaw(eBot->v.velocity);
+		}
+		else if (rand() % 150 == 0)
+		{
+			Monster_Jump(eBot, 200.0f);
+
+			Entity_Animate(eBot, PlayerAnimation_Jump);
+		}
+
+		if (rand()%500 == 0)
+			wActiveWeapon->Primary(eBot);
 #endif
-		break;
+	}
+	break;
+	case THINK_FLEEING:
+	{
+		// Add some random movement. ~hogsy
+		if (rand() % 50 == 0)
+		{
+			int	iResult = rand() % 2;
+
+			if (iResult == 0)
+				eBot->v.velocity[0] += BOT_MAX_SPEED;
+			else if (iResult == 1)
+				eBot->v.velocity[0] -= BOT_MAX_SPEED;
+
+			iResult = rand() % 2;
+			if (iResult == 0)
+				eBot->v.velocity[1] += BOT_MAX_SPEED;
+			else if (iResult == 1)
+				eBot->v.velocity[1] -= BOT_MAX_SPEED;
+
+			eBot->v.angles[1] = Math_VectorToYaw(eBot->v.velocity);
+		}
+	}
+	break;
 	case THINK_WANDERING:
 		{
 			edict_t		*eTarget;
 			Waypoint_t	*wPoint;
-//			Weapon_t	*wMyWeapon;
-//			vec3_t		vAngle;
 
 			eTarget = Monster_GetTarget(eBot);
 			if(eTarget)
@@ -305,19 +369,17 @@ void Bot_Think(edict_t *eBot)
 				}
 			}
 
-			if(!eBot->monster.vTarget)
+			// [28/7/2012] TODO: Find specific waypoint such as an item ~hogsy
+			wPoint = Waypoint_GetByVisibility(eBot->v.origin);
+			if(wPoint)
 			{
-				// [28/7/2012] TODO: Find specific waypoint such as an item ~hogsy
-				wPoint = Waypoint_GetByVisibility(eBot->v.origin);
-				if(wPoint)
+				if(wPoint->bOpen)
 				{
-					if(wPoint->bOpen)
-					{
-						// [22/3/2013] TODO: Tell that current entity it's time to move... ~hogsy
-					}
-
-					Math_VectorCopy(wPoint->position,eBot->monster.vTarget);
+					// [22/3/2013] TODO: Tell that current entity it's time to move... ~hogsy
 				}
+
+				if (eBot->monster.vTarget != wPoint->position)
+					Math_VectorCopy(wPoint->position,eBot->monster.vTarget);
 			}
 
 #if 0

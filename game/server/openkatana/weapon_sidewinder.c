@@ -176,9 +176,11 @@ void SideWinder_SpawnMissle(edict_t *ent,float fSpeed,float ox)
 		eMissile->v.vForward,
 		eMissile->local.vRight,
 		eMissile->local.vUp);
-	Math_VectorCopy(ent->v.v_angle,eMissile->v.angles);
 
 	Entity_SetModel(eMissile,"models/sidewinder_missile.md2");
+
+	// Copy the angles over so we're facing the right way.
+	Math_VectorCopy(ent->v.angles, eMissile->v.angles);
 
 	Math_VectorCopy(ent->v.origin,vOrg);
 

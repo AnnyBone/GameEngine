@@ -124,7 +124,6 @@ void DrawGLPoly(glpoly_t *p)
 
 void R_DrawSequentialPoly(msurface_t *s)
 {
-    int         i;
     float       fAlpha;
     texture_t   *tAnimation;
 

@@ -297,7 +297,6 @@ void Draw_Shadow(entity_t *ent)
 		fShadowMatrix[8] = vDistance[0]/100.0f;
 		fShadowMatrix[9] = vDistance[1]/100.0f;
 
-		// [30/7/2013] Went over this and cleaned it up. Several major oversights when I originally revised it ~hogsy
 		glPushMatrix();
 
 		Video_ResetCapabilities(false);
@@ -307,7 +306,7 @@ void Draw_Shadow(entity_t *ent)
 		Video_SetBlend(VIDEO_BLEND_IGNORE,VIDEO_DEPTH_FALSE);
 
 		glStencilFunc(GL_EQUAL,1,2);
-		glColor4f(0,0,0,fShadowAlpha);
+		Video_SetColour(0, 0, 0, fShadowAlpha);
 		glTranslatef(ent->origin[0],ent->origin[1],ent->origin[2]);
 		glTranslatef(0,0,-lheight);
 		glMultMatrixf(fShadowMatrix);
@@ -317,9 +316,7 @@ void Draw_Shadow(entity_t *ent)
 		glRotatef(ent->angles[2],1,0,0);
 		glStencilOp(GL_KEEP,GL_KEEP,GL_INCR);
 
-		Alias_DrawModelFrame(pmd2,ent,lerpdata);
-
-		glColor3f(1.0f,1.0f,1.0f);
+		Alias_DrawFrame(pmd2, ent, lerpdata);
 
 		glPopMatrix();
 

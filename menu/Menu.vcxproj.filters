@@ -17,16 +17,16 @@
     <ClCompile Include="menu_script.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="menu_main.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="menu_button.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="menu_input.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="menu_hud.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="menu_main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="menu_button.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

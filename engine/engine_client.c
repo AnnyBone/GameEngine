@@ -379,13 +379,6 @@ void Client_ClearEffects(void)
 		particles[i].next = &particles[i+1];
 
 	particles[MAX_PARTICLES-1].next = NULL;
-
-/*
-	free_flares=&flares[0];
-	active_flares=NULL;
-	for(i=0;i<MAX_FLARES;i++)
-		flares[i].next=&flares[i+1];
-	flares[MAX_FLARES-1].next=NULL;*/
 }
 
 // [30/7/2013] "Fixed" so that VS doesn't give us any trouble ~hogsy

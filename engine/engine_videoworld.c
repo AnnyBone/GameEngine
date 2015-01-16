@@ -515,79 +515,52 @@ void R_DrawLightmapChains (void)
 
 void World_Draw(void)
 {
-	VideoObject_t	*voWorld;
+	Material_t *mMaterial;
+	int			i;
+	msurface_t	*s;
+	texture_t	*t;
 
 	if(!r_drawworld_cheatsafe)
 		return;
 
     Video_ResetCapabilities(false);
 
-#if 0
-	if(r_drawflat_cheatsafe)
+	for(i = 0; i < cl.worldmodel->numtextures; i++)
 	{
-		Video_DisableCapabilities(VIDEO_TEXTURE_2D);
+		t = cl.worldmodel->textures[i];
+		if(!t || !t->texturechain || t->texturechain->flags & (SURF_DRAWTILED | SURF_NOTEXTURE))
+			continue;
 
-		R_DrawTextureChains_Drawflat();
+		mMaterial = Material_Get(t->iAssignedMaterial);
 
-		Video_ResetCapabilities(true);
-		return;
-	}
-	else if(r_fullbright_cheatsafe)
-	{
-		R_DrawTextureChains_TextureOnly ();
-
-        Video_EnableCapabilities(VIDEO_BLEND);
-		Video_SetBlend(VIDEO_BLEND_ONE,VIDEO_DEPTH_FALSE);
-
-		Fog_StartAdditive();
-
-		R_DrawTextureChains_Glow();
-
-		Fog_StopAdditive();
-
-		Video_ResetCapabilities(true);
-		return;
-	}
-	else if(r_lightmap_cheatsafe)
-	{
-		R_BuildLightmapChains();
-		R_DrawLightmapChains();
-		R_DrawTextureChains_White();
-
-		Video_ResetCapabilities(true);
-		return;
-	}
-
-	//R_DrawTextureChains_NoTexture();
-#endif
-
-	{
-		Material_t *mMaterial;
-		int			i, j;
-		msurface_t	*s;
-		texture_t	*t;
-		float		*v;
-
-		for(i = 0; i < cl.worldmodel->numtextures; i++)
-		{
-			t = cl.worldmodel->textures[i];
-			if(!t || !t->texturechain || t->texturechain->flags & (SURF_DRAWTILED | SURF_NOTEXTURE))
-				continue;
-
-			mMaterial = Material_Get(t->iAssignedMaterial);
-
-			for(s = t->texturechain; s; s = s->texturechain)
-				if(!s->culled)
+		for(s = t->texturechain; s; s = s->texturechain)
+			if(!s->culled)
+			{
+				if (mMaterial->bBind)
 				{
-					if (!mMaterial->bBind) //only bind once we are sure we need this texture
-						mMaterial->bBind = false;
+					Video_SelectTexture(VIDEO_TEXTURE_LIGHT);
+					Video_EnableCapabilities(VIDEO_TEXTURE_2D);
 
-					Video_DrawSurface(s,1.0f, mMaterial, 0);
-
-					rs_brushpasses++;
+					mMaterial->bBind = false;
 				}
-		}
+
+				Video_SelectTexture(VIDEO_TEXTURE_LIGHT);
+				Video_SetTexture(lightmap_textures[s->lightmaptexturenum]);
+
+				R_RenderDynamicLightmaps(s);
+				R_UploadLightmap(s->lightmaptexturenum);
+
+				Video_SelectTexture(VIDEO_TEXTURE_DIFFUSE);
+
+				Video_DrawSurface(s, 1.0f, mMaterial, 0);
+
+				rs_brushpasses++;
+			}
 	}
+
+	Video_SelectTexture(VIDEO_TEXTURE_LIGHT);
+
+	glDisable(GL_TEXTURE_2D);
 
 	Video_ResetCapabilities(true);
 }

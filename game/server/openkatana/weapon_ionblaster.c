@@ -139,7 +139,6 @@ void IonBlaster_IonBallTouch(edict_t *eIonBall,edict_t *other)
 
 			Engine.Particle(eIonBall->v.origin,vInversed,5.0f,"spark2",25);
 
-			// [26/8/2012] TODO: Keep the direction we're facing updated! ~hogsy
 			return;
 		}
 	}

@@ -42,9 +42,6 @@ typedef struct
 
 	int	iLastGameMode,	// The last active gamemode.
 		iClients,		// Number of connected clients.
-#ifdef GAME_ADAMAS
-		iLives,			// Players current number of lives (shared).
-#endif
 		iMonsters;		// Number of monsters within the level.
 
 	// Gamemode
@@ -105,9 +102,6 @@ GameClient_t Client;
 #define	WEAPON_GLOCK		50		// Standard pistol
 // Universal
 #define	WEAPON_IONRIFLE		70		// Talon Brave's weapon
-#elif GAME_ADAMAS
-#define WEAPON_BLAZER		1		// Basic tracer-based weapon
-#define	ITEM_LIFE			2		// Allows the player to respawn
 #endif
 #define ITEM_FLAG			1000	// Neutral flag for CTF
 #define	ITEM_REDFLAG		1001	// Red flag for CTF

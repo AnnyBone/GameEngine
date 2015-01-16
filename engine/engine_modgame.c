@@ -136,16 +136,14 @@ float *Game_Aim(edict_t *ent)
 	Math_VectorCopy(ent->v.vForward, dir);
 	Math_VectorMA(start,2048.0f,dir,end);
 
-#if 0
 	// [5/3/2013] BUG: Results in fucked up aim vectors ~hogsy
 	tr = SV_Move(start,mv3Origin,mv3Origin,end,false,ent);
 	if(tr.ent && tr.ent->v.bTakeDamage	&&
 	(!teamplay.value || ent->local.pTeam <= 0 || ent->local.pTeam != tr.ent->local.pTeam) )
 	{
-		Math_VectorCopy(pr_global_struct.v_forward,result);
+		Math_VectorCopy(ent->v.vForward, result);
 		return result;
 	}
-#endif
 
 	// try all possible entities
 	Math_VectorCopy (dir, bestdir);
@@ -568,6 +566,7 @@ void Game_Initialize(void)
 		// [4/5/2013] Oops forgot to put this here ~hogsy
 		pModule_Unload(hGameInstance);
 
+	// Server
 	Import.Con_Printf				= Con_Printf;
 	Import.Con_DPrintf				= Con_DPrintf;
 	Import.Con_Warning				= Con_Warning;
@@ -598,7 +597,7 @@ void Game_Initialize(void)
 	Import.WriteEntity				= Game_WriteEntity;
 	Import.SetMessageEntity			= Game_SetMessageEntity;
 
-	// [6/5/2012] Client-side functions ~hogsy
+	// Client
 	Import.Client_AllocateDlight	= Client_AllocDlight;
 	Import.Client_AllocateParticle	= Client_AllocateParticle;
 	Import.Client_PrecacheResource	= Client_PrecacheResource;

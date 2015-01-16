@@ -23,8 +23,7 @@ extern	cvar_t	cvShowMenu,
 				cvShowCrosshair,
 				cvCrosshairScale;
 
-int	iMenuState,				// Global menu state.
-	iMenuWidth,iMenuHeight;	// Menu scale.
+extern int	iMenuState;				// Global menu state.
 
 void	Menu_AddState(int iState);
 void	Menu_SetState(int iState);
@@ -32,5 +31,23 @@ void	Menu_RemoveState(int iState);
 void	Menu_GetScreenSize(void);
 
 char *va(char *format,...);	// Temporary convenience function, please don't get comfortable with this :(
+
+class CMenu
+{
+public:
+	CMenu();
+	~CMenu();
+
+	virtual void	Initialize();
+
+	virtual	unsigned int	GetWidth()	{ return uiWidth; }
+	virtual unsigned int	GetHeight() { return uiHeight; }
+
+private:
+
+	unsigned	int	uiWidth, uiHeight;	// Global width/height of the menu.
+};
+
+extern CMenu	*mGlobal;
 
 #endif

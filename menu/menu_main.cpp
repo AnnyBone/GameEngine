@@ -10,6 +10,8 @@
 // Platform library
 #include "platform_module.h"
 
+CMenu	*mGlobal;
+
 /*	TODO:
 		#	Get menu elements to be handled like objects.
 		#	Let us handle models (for 3D menu interface).
@@ -23,77 +25,16 @@
 		etc
 */
 
-enum
-{
-	MENU_MAIN,										// Main Menu
-		MENU_NEW,									// New Game
-			MENU_NEW_EPISODE1,
-			MENU_NEW_EPISODE2,
-			MENU_NEW_EPISODE3,
-			MENU_NEW_EPISODE4,
-		MENU_NEW_END,
-
-		MENU_LOAD,
-		MENU_LOAD_END,
-
-		MENU_MULTI,									// Multiplayer
-			MENU_MULTI_JOIN,						// Join Game
-				MENU_MULTI_JOIN_NETWORK,			// Network
-				MENU_MULTI_JOIN_INTERNET,			// Internet
-				MENU_MULTI_JOIN_MODEM,				// Modem
-				MENU_MULTI_JOIN_DIRECT,				// Direct Connect
-			MENU_MULTI_NEW,							// New Game
-				MENU_MULTI_NEW_NETWORK,				// Network
-				MENU_MULTI_NEW_MODEM,				// Modem
-				MENU_MULTI_NEW_DIRECT,				// Direct Connect
-			MENU_MULTI_SETUP,						// Player Setup
-				MENU_MULTI_SETUP_GAME,				// Game Name
-				MENU_MULTI_SETUP_NAME,				// Player Name
-				MENU_MULTI_SETUP_PORT,				// Network Port
-		MENU_MULTI_END,
-
-		MENU_OPTIONS,								// Options
-			MENU_OPTIONS_SOUND,						// Options / Sound Volume
-			MENU_OPTIONS_CD,						// Options / CD Volume
-			MENU_OPTIONS_CONTROL,					// Options / Customize Control
-			MENU_OPTIONS_MOUSE,						// Mouse Config
-			MENU_OPTIONS_VIDEO,						// Video Mode
-			MENU_OPTIONS_MISC,						// Misc Settings
-				MENU_OPTIONS_MISC_SCREEN,			// Screen Size
-				MENU_OPTIONS_MISC_CROSSHAIR,		// Options / Misc / Crosshair
-				MENU_OPTIONS_MISC_CROSSHAIR_SCALE,	// Options / Misc / Crosshair Scale
-				MENU_OPTIONS_MISC_BRIGHTNESS,		// Brightness
-				MENU_OPTIONS_MISC_RUN,				// Always Run
-				MENU_OPTIONS_MISC_LOOKSPRING,		// Lookspring
-				MENU_OPTIONS_MISC_LOOKSTRAFE,		// Lookstrafe
-		MENU_OPTIONS_END,
-
-		MENU_QUIT,
-	MENU_MAIN_END
-};
-
 MenuExport_t	Export;
 ModuleImport_t	Engine;
 
-Menu_t	*mMenuElements;
+int	iMenuState				= 0;
 
-int	iMenuElements,
-	iMenuAllocated			= 512,
-	iMenuState				= 0,
-	iMenuDisplaySelection	= MENU_NEW;
-
-cvar_t	cvShowMenu			= {	"menu_show",			"1",    false,  false,  "Toggle the display of any menu elements."	        },
-		cvShowHealth		= {	"menu_showhealth",		"2",	true,   false,  "Toggle the health HUD."	                        },
-		cvShowCrosshair		= {	"menu_showcrosshair",	"1",	true,	false,	"Toggle the display of the crosshair."				},
-		cvShowAmmo			= {	"menu_showammo",		"2",	true,	false,  "Toggle the ammo HUD."                              },
-		cvDebugMenu			= { "menu_debug",			"0",    false,  false,  "Toggle the display of any debugging information."  },
-		cvCrosshairScale	= { "menu_crosshair_scale",	"1",	true,	false,	"Changes the scale of the crosshair."				};
+cvar_t	cvShowMenu = { "menu_show", "1", false, false, "Toggle the display of any menu elements." },
+cvDebugMenu = { "menu_debug", "0", false, false, "Toggle the display of any debugging information." };
 
 // [13/8/2013] Fixed ~hogsy
 int	iMousePosition[2];
-
-bool	bInventoryOpen	= false,
-		bScoreboardOpen	= false;
 
 // [2/8/2012] TODO: Why are we doing this!? Should be using the one from the lib ~hogsy
 char *va(char *format,...)
@@ -108,219 +49,41 @@ char *va(char *format,...)
 	return string;
 }
 
-void Input_ToggleMenu(void);		// menu_input.c
-void Input_ToggleScoreboard(void);	// menu_input.c
+CMenu::CMenu()
+{
+	uiWidth	= 0;
+	uiHeight = 0;
+}
 
-void Menu_GetScreenSize(void);
+CMenu::~CMenu()
+{
+}
+
+void CMenu::Initialize()
+{
+	Engine.Con_Printf("Initializing menu...\n");
+
+	// Set the width and height.
+	uiWidth = Engine.GetScreenWidth();
+	uiHeight = Engine.GetScreenHeight();
+}
 
 void Menu_Initialize(void)
 {
-	int	i;
+	mGlobal = new CMenu;
+	if (!mGlobal)
+		Engine.Sys_Error("Failed to initialize global menu class!\n");
 
-	Engine.Con_Printf("Initializing menu...\n");
+	// Initialize the global menu class.
+	mGlobal->Initialize();
 
-	Engine.Cvar_RegisterVariable(&cvShowMenu,NULL);
-	// [5/5/2012] Added cvar menu_showhealth and menu_showammo ~hogsy
-	Engine.Cvar_RegisterVariable(&cvShowHealth,NULL);
-	Engine.Cvar_RegisterVariable(&cvShowAmmo,NULL);
-	Engine.Cvar_RegisterVariable(&cvShowCrosshair,NULL);
-	// [2/8/2012] Added menu_debug ~hogsy
-	Engine.Cvar_RegisterVariable(&cvDebugMenu,NULL);
-	Engine.Cvar_RegisterVariable(&cvCrosshairScale,NULL);
-
-	Engine.Cmd_AddCommand("menu_togglescores",Input_ToggleScoreboard);
-	Engine.Cmd_AddCommand("menu_toggle",Input_ToggleMenu);
-
-//	Script_Initialize();
-
-#ifdef GAME_OPENKATANA
-	Engine.Client_PrecacheResource(RESOURCE_TEXTURE,MENU_BASE_PATH"topbar");
-	Engine.Client_PrecacheResource(RESOURCE_TEXTURE,MENU_BASE_PATH"topclose");
-	Engine.Client_PrecacheResource(RESOURCE_TEXTURE,MENU_BASE_PATH"loading");
-	Engine.Client_PrecacheResource(RESOURCE_TEXTURE,MENU_BASE_PATH"paused");
-	Engine.Client_PrecacheResource(RESOURCE_TEXTURE,MENU_HUD_PATH"ammo");
-	Engine.Client_PrecacheResource(RESOURCE_TEXTURE,MENU_HUD_PATH"health");
-	Engine.Client_PrecacheResource(RESOURCE_TEXTURE,MENU_HUD_PATH"messenger");
-	Engine.Client_PrecacheResource(RESOURCE_TEXTURE,MENU_HUD_PATH"inventory");
-	Engine.Client_PrecacheResource(RESOURCE_TEXTURE,MENU_HUD_PATH"cross");
-	Engine.Client_PrecacheResource(RESOURCE_TEXTURE,MENU_HUD_PATH"armor");
-	Engine.Client_PrecacheResource(RESOURCE_TEXTURE,MENU_HUD_PATH"crosshair0");
-	Engine.Client_PrecacheResource(RESOURCE_TEXTURE,MENU_HUD_PATH"crosshair1");
-#elif GAME_ADAMAS
-    Engine.Client_PrecacheResource(RESOURCE_TEXTURE,MENU_HUD_PATH"health");
-	Engine.Client_PrecacheResource(RESOURCE_TEXTURE,MENU_HUD_PATH"ammo");
-	Engine.Client_PrecacheResource(RESOURCE_TEXTURE,MENU_HUD_PATH"armor");
-	Engine.Client_PrecacheResource(RESOURCE_TEXTURE,MENU_HUD_PATH"crosshair");
-#endif
-
-	// Allocate global elements.
-	mMenuElements = (Menu_t*)malloc(iMenuAllocated*sizeof(Menu_t));
-	if(!mMenuElements)
-	{
-		Engine.Sys_Error("Failed to allocate menu elements!\n");
-		return;
-	}
-
-	// [2/8/2012] Precache all the HUD digits ~hogsy
-	for(i = 0; i < 10; i++)
-		Engine.Client_PrecacheResource(RESOURCE_TEXTURE,va(MENU_HUD_PATH"num%i",i));
-
-	Menu_GetScreenSize();
-
-#if 0
-	{
-		Menu_t	mHealth,
-				mTestWindow;
-
-		mTestWindow.bActive			= true;
-		mTestWindow.cContent		= 0;
-		mTestWindow.cName			= "testwindow";
-		mTestWindow.cResource		= 0;
-		mTestWindow.fAlpha			= 1.0f;
-		mTestWindow.iPosition[X]	= 320;
-		mTestWindow.iPosition[Y]	= 320;
-		mTestWindow.iScale[WIDTH]	= 512;
-		mTestWindow.iScale[HEIGHT]	= 512;
-		mTestWindow.mMenuType		= MENU_WINDOW;
-		mTestWindow.mParent			= 0;
-
-		mHealth.bActive			= false;
-		mHealth.cContent		= "";
-		mHealth.cName			= "health";
-		mHealth.cResource		= "models/hud/hud_health.md2";
-		mHealth.fAlpha			= 1.0f;
-		mHealth.iPosition[0]	= 0;
-		mHealth.iPosition[1]	= 0;
-		mHealth.iScale[0]		= 0;
-		mHealth.iScale[1]		= 0;
-		mHealth.mMenuType		= MENU_MODEL;
-		mHealth.mParent			= NULL;
-
-		// [3/8/2012] Add it to the array ~hogsy
-		Menu_Add(mTestWindow);
-		Menu_Add(mHealth);
-	}
-#endif
-
-	// [3/8/2012] Automatically precache images being used by each element ~hogsy
-	for(i = 0; i < iMenuElements; i++)
-	{
-		if(!&mMenuElements[i] || !mMenuElements[i].cResource)
-			// Break, don't return in-case we want to do here later.
-			break;
-
-		switch(mMenuElements[i].mMenuType)
-		{
-		default:    // [13/8/2013] By default precache it as an image ~hogsy
-			Engine.Client_PrecacheResource(RESOURCE_TEXTURE,mMenuElements[i].cResource);
-			break;
-		case MENU_MODEL:
-			Engine.Client_PrecacheResource(RESOURCE_MODEL,mMenuElements[i].cResource);
-		}
-	}
+	for (int i = 0; i < 10; i++)
+		Engine.Client_PrecacheResource(RESOURCE_TEXTURE, va(MENU_HUD_PATH"num%i", i));
 }
-
-// [29/8/2012] Temporary function to deal with screensize changes. Should add Menu_UpdateState (called from engine upon display change). ~hogsy
-void Menu_GetScreenSize(void)
-{
-	iMenuWidth	= Engine.GetScreenWidth();
-	iMenuHeight	= Engine.GetScreenHeight();
-}
-
-/*
-	GUI System
-*/
-
-// Elements
-#include "menu_button.h"
-
-// [2/8/2012] Dynamic allocation, which is based on this: http://fydo.net/gamedev/dynamic-arrays ~hogsy
-void Menu_Add(Menu_t mWindow)
-{
-	/*	Stages...
-		
-		#1	Check that we've been given a name.
-		#2	Parse a script to check that it's been initialized there. (if not then discontinue)
-		#3	
-	*/
-	
-	if(!mWindow.cName)
-	{
-		Engine.Con_Warning("Attempted to add menu without given name!\n");
-		return;
-	}
-
-	iMenuElements++;
-
-#if 0
-	// [17/4/2013] Add to this first so we allocate the correct amount! ~hogsy
-	iMenuElements++;
-
-	{
-		void *Temp = realloc(mMenuElements,(iMenuElements*sizeof(Menu_t)));
-		if(!Temp)
-		{
-			Engine.Con_Warning("Failed to reallocate memory for menu (%s)!\n",mWindow.cName);
-
-			iMenuElements--;
-
-			return;
-		}
-
-		mMenuElements = (Menu_t*)Temp;
-	}
-
-	mMenuElements[iMenuElements] = mWindow;
-#endif
-}
-
-void Menu_AddButton(Menu_t *mParent,MenuButton_t mButton)
-{
-	if(!mParent)
-	{
-		Engine.Con_Warning("Button parent hasn't been allocated!\n");
-		return;
-	}
-}
-
-/**/
-
-void Menu_DrawSlider(Menu_t menu,float range)
-{
-	if(range < 0)
-		range = 0;
-	else if(range > 1.0f)
-		range = 1.0f;
-
-	Engine.DrawPic(MENU_BASE_PATH"i_indicator3",1.0f,menu.iPosition[WIDTH],menu.iPosition[HEIGHT],160,32);
-	Engine.DrawPic(MENU_BASE_PATH"i_sliderbar2",1.0f,(menu.iPosition[WIDTH]+27)+90*(int)range,menu.iPosition[HEIGHT]+2,16,30);
-}
-
-void Menu_DrawCheckBox(int x,int y,bool bOn)
-{
-	if(bOn)
-		Engine.DrawString(x,y,"[X]");
-	else
-		Engine.DrawString(x,y,"[ ]");
-}
-
-// [4/8/2012] Added Menu_IsMouseOver ~hogsy
-// [13/8/2013] Fixed ~hogsy
-bool Menu_IsMouseOver(int iPosition[2],int fWidth,int fHeight)
-{
-	if(	iMousePosition[0] >= iPosition[pX] &&
-		iMousePosition[0] <= (iPosition[pX]+fWidth) &&
-		iMousePosition[1] >= iPosition[pY] &&
-		iMousePosition[1] <= (iPosition[pY]+fHeight))
-		return true;
-
-	return false;
-}
-
-void HUD_Draw(void);
 
 void Menu_Draw(void)
 {
+#if 0
 	/*	TODO:
 			Draw inactive windows last.
 
@@ -350,8 +113,10 @@ void Menu_Draw(void)
 		return;
 	}
 
-	if((iMenuState & MENU_STATE_HUD) && (!(iMenuState & MENU_STATE_SCOREBOARD) && !(iMenuState & MENU_STATE_MENU)))
-		HUD_Draw();
+	if ((iMenuState & MENU_STATE_HUD) && (!(iMenuState & MENU_STATE_SCOREBOARD) && !(iMenuState & MENU_STATE_MENU)))
+	{
+
+	}
 
 	if(iMenuState & MENU_STATE_SCOREBOARD && !(iMenuState & MENU_STATE_MENU))
 	{
@@ -564,56 +329,7 @@ void Menu_Draw(void)
 		}
 	}
 #endif
-}
-
-int iLastOption = 0;
-
-void Menu_AdjustSliders(int iMenu,int iOption,int iDirection)
-{
-	if(!iMenu || !iOption)
-	{
-		Engine.Con_Warning("Unknown menu or option!\n");
-		return;
-	}
-
-	if(iLastOption > iOption)
-	{
-		// [8/5/2013] TODO: Play client-side sound ~hogsy
-	}
-	else
-	{
-		// [8/5/2013] TODO: Play client-side sound ~hogsy
-	}
-
-	switch(iMenu)
-	{
-	case MENU_OPTIONS:
-		switch(iOption)
-		{
-		case MENU_OPTIONS_SOUND:
-			Engine.Cvar_SetValue("volume",1.0f);
-			break;
-		case MENU_OPTIONS_CD:
-			Engine.Cvar_SetValue("bgmvolume",1.0f);
-		}
-		break;
-	}
-
-	switch(iMenu)
-	{
-	case MENU_OPTIONS:
-		switch(iOption)
-		{
-		case MENU_OPTIONS_MISC_CROSSHAIR_SCALE:
-			cvCrosshairScale.value += iDirection*1.0f;
-			if(cvCrosshairScale.value < 0.1f)
-				cvCrosshairScale.value = 0.1f;
-			else if(cvCrosshairScale.value > 5.0f)
-				cvCrosshairScale.value = 5.0f;
-			Engine.Cvar_SetValue(cvCrosshairScale.name,cvCrosshairScale.value);
-			break;
-		}
-	}
+#endif
 }
 
 /*	Called by the engine.
@@ -656,19 +372,22 @@ int Menu_GetState(void)
 	return iMenuState;
 }
 
-// [3/8/2012] Called by the engine (see host.c) ~hogsy
+/*	Called by the engine.
+	Shuts down the menu system.
+*/
 void Menu_Shutdown(void)
 {
-	// [3/8/2012] Let us know that the menu module is being unloaded ~hogsy
 	Engine.Con_Printf("Shutting down menu...\n");
 
-	// [2/8/2012] Deallocate our array ~hogsy
-	free(mMenuElements);
+	delete mGlobal;
 }
 
-void Input_Key(int iKey);
+void Input_Key(int iKey)
+{
 
-pMODULE_EXPORT MenuExport_t *Menu_Main(ModuleImport_t *Import)
+}
+
+extern "C" pMODULE_EXPORT MenuExport_t *Menu_Main(ModuleImport_t *Import)
 {
 	Engine.Con_DPrintf				= Import->Con_DPrintf;
 	Engine.Con_Printf				= Import->Con_Printf;
