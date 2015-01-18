@@ -61,10 +61,6 @@
 		<Unit filename="../shared/shared_flags.h" />
 		<Unit filename="../shared/shared_game.h" />
 		<Unit filename="../shared/shared_input.h" />
-		<Unit filename="../shared/shared_math.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../shared/shared_math.h" />
 		<Unit filename="../shared/shared_menu.h" />
 		<Unit filename="../shared/shared_module.h" />
 		<Unit filename="../shared/shared_server.h" />

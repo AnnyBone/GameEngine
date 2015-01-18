@@ -333,6 +333,8 @@ void Player_CheckFootsteps(edict_t *ePlayer)
 
 void Player_CheckWater(edict_t *ePlayer)
 {
+    int i;
+
 	// [2/8/2014] Basic Drowning... ~eukos
 	if(ePlayer->v.waterlevel != 3)
 		ePlayer->local.dAirFinished = Server.dTime + 12;
@@ -346,10 +348,8 @@ void Player_CheckWater(edict_t *ePlayer)
 	}
 
 	if (!(ePlayer->v.flags & FL_WATERJUMP))
-	{
-		for (int i = 0; i < 3; i++)
+		for (i = 0; i < 3; i++)
 			ePlayer->v.velocity[i] -= 0.8f * ePlayer->v.waterlevel * (float)Server.dHostFrameTime * ePlayer->v.velocity[i];
-	}
 }
 
 void Player_PostThink(edict_t *ePlayer)

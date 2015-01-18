@@ -70,7 +70,7 @@ pINSTANCE pModule_Load(const char *ccPath)
 
 		return NULL;
 	}
-	
+
 	return iModule;
 }
 
