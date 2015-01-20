@@ -192,14 +192,20 @@ void R_DrawSequentialPoly(msurface_t *s)
 		}
 
 		Video_SelectTexture(VIDEO_TEXTURE_LIGHT);
-		Video_SetTexture(lightmap_textures[s->lightmaptexturenum]);
 
 		R_RenderDynamicLightmaps(s);
+		Video_SetTexture(lightmap_textures[s->lightmaptexturenum]);
 		R_UploadLightmap(s->lightmaptexturenum);
+
+		Video_EnableCapabilities(VIDEO_TEXTURE_2D);
 
 		Video_SelectTexture(VIDEO_TEXTURE_DIFFUSE);
 
 		Video_DrawSurface(s, fAlpha, mAssignedMaterial, 0);
+
+		Video_SelectTexture(VIDEO_TEXTURE_LIGHT);
+
+		glDisable(GL_TEXTURE_2D);
 
 		rs_brushpasses++;
 	}

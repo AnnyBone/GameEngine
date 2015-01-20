@@ -24,7 +24,6 @@ typedef struct
 
 #define MONSTER_MIKIKO      50  // Added for sanity sake.
 #define MONSTER_SUPERFLY    51  // Added for sanity sake.
-#define MONSTER_
 #elif GAME_ADAMAS
 #define MONSTER_HURLER	    3
 #endif

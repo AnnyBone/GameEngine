@@ -1,4 +1,4 @@
-/*	Copyright (C) 2011-2014 OldTimes Software
+/*	Copyright (C) 2011-2015 OldTimes Software
 */
 #ifndef __SERVERMAIN__
 #define __SERVERMAIN__
@@ -51,9 +51,10 @@ bool Entity_CanDamage(edict_t *eEntity,edict_t *eTarget,int iDamageType);
 bool Entity_IsPlayer(edict_t *eEntity);
 bool Entity_IsMonster(edict_t *eEntity);
 
-void Entity_SetOrigin(edict_t *eEntity,vec3_t vOrigin);
+void Entity_SetOrigin(edict_t *eEntity, MathVector3_t vOrigin);
+void Entity_SetAngles(edict_t *eEntity, MathVector3_t vAngles);
 void Entity_SetModel(edict_t *eEntity,char *cModelPath);
-void Entity_SetSizeVector(edict_t *eEntity,vec3_t vMin,vec3_t vMax);
+void Entity_SetSizeVector(edict_t *eEntity, MathVector3_t vMin, MathVector3_t vMax);
 void Entity_SetSize(edict_t *eEntity,float fMinA,float fMinB,float fMinC,float fMaxA,float fMaxB,float fMaxC);
 void Entity_RadiusDamage(edict_t *eInflictor,float fRadius,int iDamage,int iDamageType);
 void Entity_Remove(edict_t *eEntity);

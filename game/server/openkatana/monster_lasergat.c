@@ -218,7 +218,6 @@ void LaserGat_Spawn(edict_t *eLaserGat)
 
 	Entity_SetModel(eLaserGat,LASERGAT_MODEL_HEAD);
 	Entity_SetSize(eLaserGat,-6.20f,-18.70f,-8.0f,19.46f,18.71f,7.53f);
-	Entity_SetOrigin(eLaserGat,eLaserGat->v.origin);
 
 	Monster_SetState(eLaserGat,STATE_AWAKE);
 	Monster_SetThink(eLaserGat,THINK_IDLE);
@@ -245,6 +244,7 @@ void LaserGat_Spawn(edict_t *eLaserGat)
 
 			Entity_SetModel(eBase,LASERGAT_MODEL_BASE);
 			Entity_SetSize(eBase,-22.70f,-19.60f,-18.70f,19.66f,19.28f,3.71f);
+			Entity_SetAngles(eBase, eLaserGat->v.angles);
 			Entity_SetOrigin(eBase,eLaserGat->v.origin);
 
 			eLaserGat->v.origin[2] -= 30.0f;

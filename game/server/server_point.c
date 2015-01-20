@@ -38,6 +38,9 @@ void Point_MonsterSpawn(edict_t *eMonster)
 
 	Server.iMonsters++;
 
+	Entity_SetOrigin(eMonster, eMonster->v.origin);
+	Entity_SetAngles(eMonster, eMonster->v.angles);
+
 	switch(eMonster->local.style)
 	{
 #ifdef GAME_OPENKATANA
@@ -69,7 +72,7 @@ void Point_MonsterSpawn(edict_t *eMonster)
 	}
 }
 
-#ifdef KATANA_GAME_ICTUS
+#ifdef GAME_ICTUS
 void Rover_Spawn(edict_t *eRover);
 #endif
 
@@ -77,7 +80,7 @@ void Point_VehicleSpawn(edict_t *eVehicle)
 {
 	switch(eVehicle->local.style)
 	{
-#ifdef KATANA_GAME_ICTUS
+#ifdef GAME_ICTUS
 	case VEHICLE_TYPE_ROVER:
 		Rover_Spawn(eVehicle);
 		break;
@@ -107,7 +110,7 @@ void Point_Start(edict_t *ent)
 			ENTITY_REMOVE(ent);
         }
 
-#ifdef OPENKATANA
+#ifdef GAME_OPENKATANA
         if(ent->local.style == INFO_PLAYER_SUPERFLY)
         {
             ent->local.style = BOT_SUPERFLY;

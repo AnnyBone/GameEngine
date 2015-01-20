@@ -32,23 +32,35 @@ edict_t *Entity_Spawn(void)
 	object is spawned, and then only
 	if it is teleported.
 */
-void Entity_SetOrigin(edict_t *eEntity,vec3_t vOrigin)
+void Entity_SetOrigin(edict_t *eEntity, MathVector3_t vOrigin)
 {
 	Math_VectorCopy(vOrigin,eEntity->v.origin);
 
 	Entity_Link(eEntity, false);
 }
 
-/*	Alternative to SetModel.
+/*	Sets the angle of the given entity.
+	Alternative to SetAngle.
+*/
+void Entity_SetAngles(edict_t *eEntity, MathVector3_t vAngles)
+{
+	Math_VectorCopy(vAngles, eEntity->v.angles);
+
+	// TODO: Link?
+}
+
+/*	Sets the model of the given entity.
+	Alternative to SetModel.
 */
 void Entity_SetModel(edict_t *eEntity,char *cModelPath)
 {
 	Engine.SetModel(eEntity,cModelPath);
 }
 
-/*	Alternative to SetSize.
+/*	Sets the size of the given entity; requires that the model has been applied first.
+	Alternative to SetSize.
 */
-void Entity_SetSizeVector(edict_t *eEntity,vec3_t vMin,vec3_t vMax)
+void Entity_SetSizeVector(edict_t *eEntity, MathVector3_t vMin, MathVector3_t vMax)
 {
 	int	i;
 

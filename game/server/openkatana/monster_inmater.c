@@ -162,7 +162,6 @@ void Inmater_Spawn(edict_t *eInmater)
 	Entity_SetModel(eInmater,INMATER_MODEL_BODY);
 	Entity_SetSize(eInmater,-16.0f,-16.0f,-24.0f,16.0f,16.0f,32.0f);
 	Entity_SetOrigin(eInmater,eInmater->v.origin);
-	SetAngle(eInmater,eInmater->v.angles);
 
 	DropToFloor(eInmater);
 }
