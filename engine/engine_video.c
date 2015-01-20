@@ -108,10 +108,10 @@ void Video_Initialize(void)
 	// [9/7/2013] TEMP: Should honestly be called from the launcher (in a perfect world) ~hogsy
 	Video_CreateWindow();
 
-#ifdef _WIN32   // BUG: This fails on Linux, for me anyway. Only used on Windows though, so it's no biggy... ~hogsy
+	SDL_GetVersion(&Video.sSystemInfo.version);
+
 	if (!SDL_GetWindowWMInfo(sMainWindow, &Video.sSystemInfo))
 		Sys_Error("Failed to get WM information!\n%s",SDL_GetError());
-#endif
 
 	SDL_DisableScreenSaver();
 
