@@ -628,7 +628,7 @@ void Game_Initialize(void)
 
 	Game = (GameExport_t*)pModule_LoadInterface(hGameInstance, va("%s/"MODULE_GAME, com_gamedir), "Game_Main", &Import);
 	if(!Game)
-		Con_Warning("Failed to find %s/"MODULE_GAME"!\n",com_gamedir,MODULE_GAME);
+		Con_Warning(pError_Get(),com_gamedir,MODULE_GAME);
 	else if (Game->iVersion != GAME_VERSION)
 		Con_Warning("Size mismatch (recieved %i, expected %i)!\n", Game->iVersion, GAME_VERSION);
 	else

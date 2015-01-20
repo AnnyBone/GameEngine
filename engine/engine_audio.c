@@ -81,6 +81,7 @@ AudioSound_t *Audio_LoadSound(sfx_t *sSoundEffect)
 */
 void Audio_Process(void)
 {
+#if 0
 	vec3_t	vPosition,
 			vOrientation;
 
@@ -96,6 +97,7 @@ void Audio_Process(void)
 	}
 
 	// [5/8/2013] Update listener position ~hogsy
+#endif
 }
 
 void Audio_Shutdown(void)

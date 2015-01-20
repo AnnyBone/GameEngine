@@ -272,3 +272,9 @@
 	"server_item.h"
 	"server_player.h"
 
+1421610874 source:/home/hogsy/KatanaEngine/game/client/client_effects.c
+	"client_main.h"
+
+1421610874 source:/home/hogsy/KatanaEngine/game/client/client_view.c
+	"client_main.h"
+
