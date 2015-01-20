@@ -294,10 +294,10 @@ void Alias_DrawModelFrame(MD2_t *mModel,entity_t *eEntity,lerpdata_t lLerpData)
 					// Otherwise give us a default colour of white.
 					voModel[iVert].vColour[j] = 1.0f;
             }
-
+#if 0
 			voModel[iVert].vTextureCoord[0][0] = (float)mModel->mtcTextureCoord[mtTriangles->index_st[k]].S / (float)mModel->skinwidth;
 			voModel[iVert].vTextureCoord[0][1] = (float)mModel->mtcTextureCoord[mtTriangles->index_st[k]].T / (float)mModel->skinheight;
-
+#endif
 			voModel[iVert].vColour[3] = fAlpha;
 
 			iVert++;

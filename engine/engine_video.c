@@ -83,7 +83,7 @@ void Video_Initialize(void)
 	Video.bUnlocked				= true;		// Video mode is initially locked.
 
 	Video_AllocateArrays(uiVideoArraySize);
-	
+
 	Cvar_RegisterVariable(&cvMultisampleSamples,NULL);
 	Cvar_RegisterVariable(&cvVideoDrawModels,NULL);
 	Cvar_RegisterVariable(&cvFullscreen,NULL);
@@ -108,8 +108,10 @@ void Video_Initialize(void)
 	// [9/7/2013] TEMP: Should honestly be called from the launcher (in a perfect world) ~hogsy
 	Video_CreateWindow();
 
+#ifdef _WIN32   // BUG: This fails on Linux, for me anyway. Only used on Windows though, so it's no biggy... ~hogsy
 	if (!SDL_GetWindowWMInfo(sMainWindow, &Video.sSystemInfo))
-		Sys_Error("Failed to get WM information!\n");
+		Sys_Error("Failed to get WM information!\n%s",SDL_GetError());
+#endif
 
 	SDL_DisableScreenSaver();
 
@@ -271,7 +273,7 @@ void Video_CreateWindow(void)
 	SDL_GL_SetAttribute(SDL_GL_ACCUM_GREEN_SIZE,8);
 	SDL_GL_SetAttribute(SDL_GL_ACCUM_BLUE_SIZE,8);
 	SDL_GL_SetAttribute(SDL_GL_ACCUM_ALPHA_SIZE,8);
-	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+	//SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
 	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE,24);
 	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE,8);
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER,1);
@@ -296,7 +298,7 @@ void Video_CreateWindow(void)
 		iFlags);
 	if(!sMainWindow)
 		Sys_Error("Failed to create window!\n%s\n",SDL_GetError());
-	
+
 	// [6/2/2014] Set the icon for the window ~hogsy
 	// [25/3/2014] Grab the icon from our game directory ~hogsy
 	sIcon = SDL_LoadBMP(va("%s/icon.bmp",com_gamedir));
@@ -601,7 +603,7 @@ void Video_AllocateArrays(int iSize)
 
 	if(!vVideoColourArray || !vVideoTextureArray || !vVideoVertexArray)
 		Sys_Error("Failed to allocate video arrays!\n");
-	
+
 	// Keep this up to date.
 	uiVideoArraySize = iSize;
 }
@@ -664,7 +666,7 @@ void Video_DrawObject(VideoObject_t *voObject,VideoPrimitive_t vpPrimitiveType,u
 			for (j = 0; j < VIDEO_MAX_UNITS; j++)
 				if (j == 0 || (iSavedCapabilites[j][VIDEO_STATE_ENABLE] & VIDEO_TEXTURE_2D))
 					Math_Vector2Copy(voObject[i].vTextureCoord[j], vVideoTextureArray[j][i]);
-		}		
+		}
 		else
 			Math_Vector4Set(1.0f,vVideoColourArray[i]);
 
