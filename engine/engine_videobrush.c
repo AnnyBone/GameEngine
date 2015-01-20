@@ -46,9 +46,7 @@ int			allocated[MAX_LIGHTMAPS][BLOCK_WIDTH];
 // main memory so texsubimage can update properly
 byte		lightmaps[LIGHTMAP_BYTES*MAX_LIGHTMAPS*BLOCK_WIDTH*BLOCK_HEIGHT];
 
-void R_RenderDynamicLightmaps (msurface_t *fa);
 void R_BuildLightMap (msurface_t *surf, byte *dest, int stride);
-void R_UploadLightmap (int lmap);
 
 /*	johnfitz -- added "frame" param to eliminate use of "currententity" global
 */
@@ -126,6 +124,9 @@ void R_DrawSequentialPoly(msurface_t *s)
 {
     float       fAlpha;
     texture_t   *tAnimation;
+	Material_t	*mAssignedMaterial;
+
+	mAssignedMaterial = Material_Get(s->texinfo->texture->iAssignedMaterial);
 
     fAlpha      = ENTALPHA_DECODE(currententity->alpha);
     tAnimation  = R_TextureAnimation(s->texinfo->texture,currententity->frame);
@@ -166,7 +167,7 @@ void R_DrawSequentialPoly(msurface_t *s)
 			glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
 		}
 
-        Video_SetTexture(Material_Get(s->texinfo->texture->iAssignedMaterial)->msSkin[0].gDiffuseTexture);
+		Video_SetTexture(mAssignedMaterial->msSkin[0].gDiffuseTexture);
 
         for(pBrushPoly = s->polys->next; pBrushPoly; pBrushPoly = pBrushPoly->next)
         {
@@ -190,7 +191,15 @@ void R_DrawSequentialPoly(msurface_t *s)
 			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 		}
 
-		Video_DrawSurface(s,fAlpha, Material_Get(tAnimation->iAssignedMaterial), 0);
+		Video_SelectTexture(VIDEO_TEXTURE_LIGHT);
+		Video_SetTexture(lightmap_textures[s->lightmaptexturenum]);
+
+		R_RenderDynamicLightmaps(s);
+		R_UploadLightmap(s->lightmaptexturenum);
+
+		Video_SelectTexture(VIDEO_TEXTURE_DIFFUSE);
+
+		Video_DrawSurface(s, fAlpha, mAssignedMaterial, 0);
 
 		rs_brushpasses++;
 	}

@@ -438,7 +438,7 @@ void TextureManager_Initialize(void)
 	numgltextures = 0;
 
 	Cvar_RegisterVariable (&gl_max_size, NULL);
-	Cvar_RegisterVariable (&gl_picmip, NULL);
+	Cvar_RegisterVariable(&gl_picmip, &TexMgr_ReloadImages);
 	Cvar_RegisterVariable (&gl_texture_anisotropy, &TexMgr_Anisotropy_f);
 	Cmd_AddCommand ("gl_texturemode", &TexMgr_TextureMode_f);
 	Cmd_AddCommand ("gl_describetexturemodes", &TexMgr_DescribeTextureModes_f);
@@ -477,7 +477,7 @@ int TexMgr_Pad (int s)
 
 /*	Return a size with hardware and user prefs in mind
 */
-int TexMgr_SafeTextureSize (int s)
+unsigned int TexMgr_SafeTextureSize (int s)
 {
 	s = TexMgr_Pad(s);
 	if ((int)gl_max_size.value > 0)

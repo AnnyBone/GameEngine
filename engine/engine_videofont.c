@@ -9,17 +9,21 @@
 
 #include "engine_video.h"
 
+#ifdef KATANA_TTF
 #ifdef _WIN32
 #include "SDL_ttf.h"
 #else
 #include <SDL/SDL_ttf.h>
 #endif
+#endif
 
 typedef struct
 {
+#ifdef KATANA_TTF
 	TTF_Font	*tfFont;
 
 	gltexture_t	*gFontTexture;
+#endif
 
 	char		*cName;
 } Font_t;
@@ -30,8 +34,10 @@ void Font_Load(const char *ccName,int iSize);
 
 void Font_Initialize(void)
 {
+#ifdef KATANA_TTF
 	if(!TTF_Init())
 		Sys_Error("Failed to initialize SDL_ttf!\n%s\n",TTF_GetError());
+#endif
 
 	// Load a basic set of fonts...
 	Font_Load("Xolonium-Regular",24);
@@ -43,6 +49,7 @@ void Font_Initialize(void)
 */
 void Font_Load(const char *ccName,int iSize)
 {
+#ifdef KATANA_TTF
 	char		cPath[MAX_OSPATH];
 	int			i;
 
@@ -68,17 +75,41 @@ void Font_Load(const char *ccName,int iSize)
 			}
 			break;
 		}
+#else
+#ifdef _WIN32
+	HFONT	hFont;
+
+	hFont = CreateFont(
+		-24,
+		0,
+		0,
+		0,
+		FW_NORMAL,
+		FALSE,
+		FALSE,
+		FALSE,
+		ANSI_CHARSET,
+		OUT_TT_PRECIS,
+		CLIP_DEFAULT_PRECIS,
+		ANTIALIASED_QUALITY,
+		FF_DONTCARE | DEFAULT_PITCH,
+		ccName);
+	if (!hFont)
+	{
+		Con_Warning("Failed to load font! (%s)\n");
+		return;
+	}
+
+	wglUseFontBitmaps(NULL, 32, 96, glGenLists(96));
+#endif
+#endif
 }
 
 /*	Basic routine for drawing fonts onto the screen.
 */
 void Font_Draw(Font_t *fFont,const char *ccMessage,vec3_t vPos,vec3_t vColour)
 {
-	SDL_Colour		sColour = {1,1,1};
-	SDL_Surface		*sFontSurface;
 	VideoObject_t	voFont[4];
-
-	sFontSurface = TTF_RenderText_Blended(fFont->tfFont,ccMessage,sColour);
 
 	/*	todo:
 			need to reserve bind slot.
@@ -112,7 +143,9 @@ void Font_Shutdown(void)
 {
 	int i;
 
+#ifdef KATANA_TTF
 	for(i = 0; i < sizeof(fFonts); i++)
 		if(fFonts[i].tfFont)
 			TTF_CloseFont(fFonts[i].tfFont);
+#endif
 }

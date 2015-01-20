@@ -180,6 +180,9 @@ MathVector_t Light_GetSample(vec3_t vPoint);
 
 DynamicLight_t *Light_GetDynamic(vec3_t vPoint);
 
+void R_RenderDynamicLightmaps(msurface_t *fa);
+void R_UploadLightmap(int lmap);
+
 /*
 	World
 */
@@ -192,6 +195,8 @@ void World_DrawWaterTextureChains(void);
 */
 
 void Brush_Draw(entity_t *e);
+
+void DrawGLPoly(glpoly_t *p);
 
 /*
 	Warp

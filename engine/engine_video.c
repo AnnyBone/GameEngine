@@ -564,7 +564,7 @@ bool bMultitextureEnabled = false;
 
 unsigned int Video_GetGLUnit(unsigned int uiTarget)
 {
-	unsigned int uiUnit;
+	unsigned int uiUnit = 0;
 
 	switch (uiTarget)
 	{
@@ -795,7 +795,7 @@ void Video_DrawMaterial(
 			Video_SetTexture(msCurrentSkin->gDetailTexture);
 
 			if (voObject)
-				for (int i = 0; i < uiSize; i++)
+				for (unsigned int i = 0; i < uiSize; i++)
 				{
 					// Copy over original texture coords.
 					voObject[i].vTextureCoord[VIDEO_TEXTURE_DETAIL][0] = 
@@ -826,7 +826,7 @@ void Video_DrawMaterial(
 			Video_SetTexture(msCurrentSkin->gFullbrightTexture);
 
 			if (voObject)
-				for (int i = 0; i < uiSize; i++)
+				for (unsigned int i = 0; i < uiSize; i++)
 				{
 					// Texture coordinates remain the same for fullbright layers.
 					voObject[i].vTextureCoord[VIDEO_TEXTURE_FULLBRIGHT][0]
@@ -892,7 +892,7 @@ void Video_DrawObject(
 	Material_t *mMaterial,int iSkin)
 {
 	unsigned int	i,j;
-    GLenum			gPrimitive;
+    GLenum			gPrimitive = 0;
 
 	if(!cvVideoDraw.bValue)
 		return;

@@ -99,7 +99,7 @@ void Input_OpenTweakMenu(void);
 */
 void Editor_Launch(void)
 {
-	// [27/11/2013] Don't let us launch again ~hogsy
+	// Don't allow us to launch again.
 	if(Editor.bEnabled)
 		return;
 
