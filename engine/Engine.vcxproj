@@ -616,6 +616,7 @@
     <ClCompile Include="conproc.c" />
     <ClCompile Include="console.c" />
     <ClCompile Include="crc.c" />
+    <ClCompile Include="engine_particle.c" />
     <ClCompile Include="engine_videoalias.c" />
     <ClCompile Include="engine_audio.c" />
     <ClCompile Include="engine_client.c" />
@@ -710,6 +711,7 @@
     <ClInclude Include="engine_console.h" />
     <ClInclude Include="engine_edict.h" />
     <ClInclude Include="engine_editor.h" />
+    <ClInclude Include="engine_particle.h" />
     <ClInclude Include="engine_videomaterial.h" />
     <ClInclude Include="engine_modgame.h" />
     <ClInclude Include="engine_clientinput.h" />

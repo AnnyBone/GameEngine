@@ -259,7 +259,7 @@ void CL_AdjustAngles (void)
 
 /*	Send the intended movement message to the server
 */
-void CL_BaseMove (usercmd_t *cmd)
+void CL_BaseMove(ClientCommand_t *cmd)
 {
 	if (cls.signon != SIGNONS)
 		return;
@@ -297,7 +297,7 @@ void CL_BaseMove (usercmd_t *cmd)
 	}
 }
 
-void CL_SendMove (usercmd_t *cmd)
+void CL_SendMove(ClientCommand_t *cmd)
 {
 	int		i;
 	int		bits;

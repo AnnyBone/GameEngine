@@ -664,7 +664,7 @@ void SCR_BeginLoadingPlaque (void)
 
 	Menu->AddState(MENU_STATE_LOADING);
 
-	Video_Process();
+	Video_Frame();
 
 	Menu->RemoveState(MENU_STATE_LOADING);
 
@@ -729,7 +729,7 @@ int SCR_ModalMessage (char *text, float timeout) //johnfitz -- timeout
 
 	// draw a fresh screen
 	bDrawDialog = true;
-	Video_Process();
+	Video_Frame();
 	bDrawDialog = false;
 
 	S_ClearBuffer ();		// so dma doesn't loop current sound
@@ -741,7 +741,7 @@ int SCR_ModalMessage (char *text, float timeout) //johnfitz -- timeout
 	{
 		key_count = -1;		// wait for a key down and up
 
-		Input_Process();
+		Input_Frame();
 
 		if (timeout)
 			time2 = System_DoubleTime (); //johnfitz -- zero timeout means wait forever.

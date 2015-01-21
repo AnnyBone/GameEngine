@@ -27,7 +27,7 @@ typedef struct flare_s
 } flare_t;
 flare_t	*active_flares,*free_flares,*flares;
 
-void	R_InitExperimental(void);
+void	Shadow_Initialize(void);
 void	R_DrawString(int x,int y,char *msg);
 void	Draw_Shadow(entity_t *ent);
 void	R_DrawFlares(void);

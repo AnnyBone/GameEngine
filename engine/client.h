@@ -26,7 +26,7 @@ typedef struct
 	float	forwardmove;
 	float	sidemove;
 	float	upmove;
-} usercmd_t;
+} ClientCommand_t;
 
 typedef struct
 {
@@ -132,7 +132,7 @@ typedef struct
 								// throw out the first couple, so the player
 								// doesn't accidentally do something the
 								// first frame
-	usercmd_t	cmd;			// last command sent to the server
+	ClientCommand_t	cmd;			// last command sent to the server
 
 	// information for local display
 	int				stats[STAT_NONE];	// health, etc
@@ -283,7 +283,7 @@ extern 	kbutton_t 	in_speed;
 
 void CL_InitInput (void);
 void CL_SendCmd (void);
-void CL_SendMove (usercmd_t *cmd);
+void CL_SendMove(ClientCommand_t *cmd);
 
 void CL_ParseTEnt (void);
 void CL_UpdateTEnts (void);
@@ -292,8 +292,8 @@ void CL_ClearState (void);
 
 
 int  CL_ReadFromServer (void);
-void CL_WriteToServer (usercmd_t *cmd);
-void CL_BaseMove (usercmd_t *cmd);
+void CL_WriteToServer(ClientCommand_t *cmd);
+void CL_BaseMove(ClientCommand_t *cmd);
 
 
 float CL_KeyState (kbutton_t *key);

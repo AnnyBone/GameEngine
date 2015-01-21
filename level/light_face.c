@@ -62,6 +62,64 @@ typedef struct
 
 static bool ranout = false; // FIXME: do this some other way?
 
+/*
+	AO / Dirty
+*/
+
+#define	DIRT_CONE_ANGLE				88
+#define	DIRT_NUM_ANGLE_STEPS		16
+#define	DIRT_NUM_ELEVATION_STEPS	3
+#define	DIRT_NUM_VECTORS			(DIRT_NUM_ANGLE_STEPS*DIRT_NUM_ELEVATION_STEPS)
+
+static vec3_t	vDirtVectors[DIRT_NUM_VECTORS];
+
+static int	iDirtVectors = 0;
+
+/*	Sets up AO.
+*/
+void LightFace_SetupDirt(void)
+{
+	int		i, j;
+	float	fAngle, fElevation, fAngleStep, fElevationStep;
+
+	printf("--- LightFace_SetupDirt --- \n");
+
+	// Calculate angular steps...
+	fAngleStep = DEG2RAD(360.0f / DIRT_NUM_ANGLE_STEPS);
+	fElevationStep = DEG2RAD(DIRT_CONE_ANGLE / DIRT_NUM_ELEVATION_STEPS);
+
+	// Iterate angle...
+	for (i = 0, fAngle = 0; i < DIRT_NUM_ANGLE_STEPS; i++, fAngle += fAngleStep)
+	{
+		for (j = 0, fElevation = fElevationStep*0.5f; j < DIRT_NUM_ELEVATION_STEPS; j++, fElevation += fElevationStep)
+		{
+			vDirtVectors[iDirtVectors][0] = sin(fElevation)*cos(fAngle);
+			vDirtVectors[iDirtVectors][1] = sin(fElevation)*sin(fAngle);
+			vDirtVectors[iDirtVectors][2] = cos(fElevation);
+
+			iDirtVectors++;
+		}
+	}
+
+	printf("%9d dirtmap vectors\n", iDirtVectors);
+}
+
+bool LightFace_DirtTrace(const vec3_t vStart, const vec3_t vStop, const BSPModel_t *bmSelf, vec3_t vHitPointOut)
+{
+	const BSPModel_t *const *bmModel;
+	
+	if (bmSelf)
+	{
+	}
+}
+
+static void LightFace_Dirt(void)
+{
+
+}
+
+/**/
+
 /*	Fills in texorg, worldtotex. and textoworld
 */
 static void CalcFaceVectors( lightinfo_t *l, const vec3_t faceorg )

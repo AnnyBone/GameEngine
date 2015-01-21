@@ -191,6 +191,9 @@
     <ClCompile Include="engine_videoscreen.c">
       <Filter>Client\Video</Filter>
     </ClCompile>
+    <ClCompile Include="engine_particle.c">
+      <Filter>Client</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\shared\shared_client.h">
@@ -349,6 +352,9 @@
     </ClInclude>
     <ClInclude Include="engine_videoshadow.h">
       <Filter>Client\Video</Filter>
+    </ClInclude>
+    <ClInclude Include="engine_particle.h">
+      <Filter>Client</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

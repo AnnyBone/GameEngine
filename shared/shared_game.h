@@ -210,32 +210,35 @@ typedef struct
 
 	int		iType;
 
-	// Think functions
+	// Think functions (obsolete)
 //	void	(*think_stand)(edict_t *ent);
 //	void	(*think_run)(edict_t *ent);
 //	void	(*think_attack)(edict_t *ent);
 	void	(*think_die)(edict_t *ent,edict_t *other);
 	void	(*think_pain)(edict_t *ent,edict_t *other);
-//	void	(*think_walk)(edict_t *ent);
 
-	void	(*Think)(edict_t *ent);	// Called per-frame for the specific handling of states for each monster.
+	void(*Think)(edict_t *eMonster);	// Called per-frame for the specific handling of states for each monster.
+
+	// State Functions
+	void(*Idle)(edict_t *eMonster);
+	void(*Jump)(edict_t *eMonster);
 
 	// Current thought state
 	int		iState,					// Primary physical state.
 			iThink;					// Primary thought state.
 	int		iCommandList[64];		// List of sub-commands for the monster to execute.
-	float	fEmotion[10],			// Current emotion states.
+	float	fEmotion[11],			// Current emotion states.
 			fAffect;				// Chance counter which helps determine an action based on the emotion.
 
 	float	fViewDistance;			// Distance in which a monster can detect a target within.
 
 	// Targets
-	edict_t	*eEnemy,
-			*eOldEnemy;
-	edict_t	*eFriend,
-			*eOldFriend;
-	edict_t	*eTarget,
-			*eOldTarget;
+	edict_t	*eEnemy,		// Current enemy.
+			*eOldEnemy;		// Last enemy.
+	edict_t	*eFriend,		// Current friend.
+			*eOldFriend;	// Last friend.
+	edict_t	*eTarget,		// Current target.
+			*eOldTarget;	// Last target.
 } MonsterVariables_t;
 
 /*	Variables used for vehicles.

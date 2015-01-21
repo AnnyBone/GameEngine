@@ -1164,7 +1164,7 @@ void Video_ProcessShader(int iType)
 /*	Main rendering loop.
 	Unfinished
 */
-void Video_Process(void)
+void Video_Frame(void)
 {
     if(bVideoDebug)
         Console_WriteToLog(cvVideoDebugLog.string,"Video: Start of frame\n");

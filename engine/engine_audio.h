@@ -29,7 +29,7 @@ typedef struct Audio_e
 Audio_t	Audio;
 
 void Audio_Initialize(void);
-void Audio_Process(void);
+void Audio_Frame(void);
 void Audio_Shutdown(void);
 
 #endif

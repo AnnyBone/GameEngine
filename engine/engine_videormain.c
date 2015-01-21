@@ -23,6 +23,7 @@
 #include "engine_console.h"
 #include "engine_videoshadow.h"
 #include "engine_video.h"
+#include "engine_particle.h"
 #include "KatAlias.h"
 
 vec3_t		modelorg, r_entorigin;
@@ -418,7 +419,7 @@ void R_DrawViewModel(void)
 {
 	if(!cvVideoDrawModels.value || !r_drawviewmodel.value || !r_drawentities.value || chase_active.value || bEnvironmentMap)
 		return;
-	else if(cl.items & IT_INVISIBILITY || cl.stats[STAT_HEALTH] <= 0)
+	else if(cl.stats[STAT_HEALTH] <= 0)
 		return;
 
 	currententity = &cl.viewent;
@@ -626,8 +627,7 @@ void R_RenderScene(void)
 	R_DrawEntitiesOnList(false);
 	World_DrawWaterTextureChains();
 	R_DrawEntitiesOnList(true);
-	Draw_Particles();
-	R_DrawFlares();
+	Particle_Draw();
 	Light_Draw();
 
 	Fog_DisableGFog();

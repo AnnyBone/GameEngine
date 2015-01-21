@@ -46,16 +46,16 @@ void Client_ParseTemporaryEntity(void)
 				if(!pExplosion)
 					return;
 
-				pExplosion->texture		= Engine.Client_GetEffect(va("smoke%i",rand()%4));
-				pExplosion->scale		= 30.0f;
-				pExplosion->die			= (float)(Client.time+5.0);
-				pExplosion->ramp		= (float)(rand()&3);
+				pExplosion->iMaterial	= Engine.Client_GetEffect(va("smoke%i",rand()%4));
+				pExplosion->fScale		= 30.0f;
+				pExplosion->fDie		= (float)(Client.time+5.0);
+				pExplosion->fRamp		= (float)(rand()&3);
 				pExplosion->pBehaviour	= PARTICLE_EXPLODE2;
 
 				for(j = 0; j < 3; j++)
 				{
-					pExplosion->org[j]	= vPosition[j]+((rand()&32)-16);
-					pExplosion->vel[j]	= (float)((rand()%512)-256);
+					pExplosion->vOrigin[j]		= vPosition[j]+((rand()&32)-16);
+					pExplosion->vVelocity[j]	= (float)((rand()%512)-256);
 				}
 			}
 
@@ -93,17 +93,17 @@ void Client_ParseTemporaryEntity(void)
 				// Keep the textures random.
 				PARTICLE_BLOOD(cBlood);
 
-				Math_VectorSet(1.0f,pBloodSpray->color);
-				Math_VectorCopy(vPosition,pBloodSpray->org);
+				Math_VectorSet(1.0f,pBloodSpray->vColour);
+				Math_VectorCopy(vPosition,pBloodSpray->vOrigin);
 
-				pBloodSpray->die		= (float)(Client.time+5.0);
+				pBloodSpray->fDie		= (float)(Client.time+5.0);
 				pBloodSpray->pBehaviour	= PARTICLE_BEHAVIOUR_SLOWGRAVITY;
-				pBloodSpray->ramp		= (float)(rand()&3);
-				pBloodSpray->scale		= (float)(rand()%8+1);
-				pBloodSpray->texture	= Engine.Client_GetEffect(cBlood);
+				pBloodSpray->fRamp		= (float)(rand()&3);
+				pBloodSpray->fScale		= (float)(rand()%8+1);
+				pBloodSpray->iMaterial	= Engine.Client_GetEffect(cBlood);
 				
 				for(j = 0; j < 3; j++)
-					pBloodSpray->vel[j] = (float)((rand()%512)-256);
+					pBloodSpray->vVelocity[j] = (float)((rand()%512)-256);
 			}
 		}
 		break;
@@ -144,17 +144,17 @@ void Client_RelinkEntities(entity_t *eClient,int i,double dTime)
 			if(!pParticle)
 				return;
 
-			pParticle->texture		= Engine.Client_GetEffect(va("smoke%i",rand()%4));
-			pParticle->ramp			= (float)(rand()&3);
-			pParticle->scale		= ((float)(rand()%20)*2);
-			pParticle->die			= (float)(Client.time+(rand()%5));
-			pParticle->pBehaviour	= PARTICLE_SMOKE;
+			pParticle->iMaterial	= Engine.Client_GetEffect(va("smoke%i",rand()%4));
+			pParticle->fRamp		= (float)(rand()&3);
+			pParticle->fScale		= ((float)(rand()%20)*2);
+			pParticle->fDie			= (float)(Client.time+(rand()%5));
+			pParticle->pBehaviour	= PARTICLE_BEHAVIOUR_SMOKE;
 			
 			// [5/9/2012] TODO: Simplify this ~hogsy
 			for(j = 0; j < 3; j++)
-				pParticle->org[j] = eClient->origin[j]+((rand()&15)-5.0f);
+				pParticle->vOrigin[j] = eClient->origin[j]+((rand()&15)-5.0f);
 
-			Math_VectorClear(pParticle->vel);
+			Math_VectorClear(pParticle->vVelocity);
 		}
 	}
 
@@ -173,16 +173,16 @@ void Client_RelinkEntities(entity_t *eClient,int i,double dTime)
 			// Keep the textures random.
 			PARTICLE_BLOOD(cBlood);
 
-			pParticle->texture		= Engine.Client_GetEffect(cBlood);
-			pParticle->ramp			= (float)(rand()&4);
-			pParticle->scale		= (float)(rand()%2+2);
-			pParticle->die			= (float)(Client.time+0.3*(rand()%5));
+			pParticle->iMaterial	= Engine.Client_GetEffect(cBlood);
+			pParticle->fRamp		= (float)(rand()&4);
+			pParticle->fScale		= (float)(rand()%2+2);
+			pParticle->fDie			= (float)(Client.time+0.3*(rand()%5));
 			pParticle->pBehaviour	= PARTICLE_BEHAVIOUR_GRAVITY;
 			
 			for(j = 0; j < 3; j++)
-				pParticle->org[j] = eClient->origin[j]+((rand()&15)-5.0f);
+				pParticle->vOrigin[j] = eClient->origin[j]+((rand()&15)-5.0f);
 
-			pParticle->vel[2] = 15.0f;
+			pParticle->vVelocity[2] = 15.0f;
 			//Math_VectorScale(eClient->angles,15.0f,pParticle->vel);
 		}
 	}
@@ -209,17 +209,17 @@ void Client_RelinkEntities(entity_t *eClient,int i,double dTime)
 			if(!pParticle)
 				return;
 
-			pParticle->texture		= Engine.Client_GetEffect("spark2");
-			pParticle->ramp			= (float)(rand()&3);
-			pParticle->scale		= 0.5f+(float)(rand()%15/10);
-			pParticle->die			= (float)(Client.time+(double)(rand()%2));
+			pParticle->iMaterial	= Engine.Client_GetEffect("spark2");
+			pParticle->fRamp		= (float)(rand()&3);
+			pParticle->fScale		= 0.5f+(float)(rand()%15/10);
+			pParticle->fDie			= (float)(Client.time+(double)(rand()%2));
 			pParticle->pBehaviour	= PARTICLE_BEHAVIOUR_SLOWGRAVITY;
 			
 			// [5/9/2012] TODO: Simplify this ~hogsy
 			for(j = 0; j < 3; j++)
-				pParticle->org[j] = eClient->origin[j]+((rand()&15)-5.0f);
+				pParticle->vOrigin[j] = eClient->origin[j]+((rand()&15)-5.0f);
 
-			Math_VectorClear(pParticle->vel);
+			Math_VectorClear(pParticle->vVelocity);
 		}
 	}
 

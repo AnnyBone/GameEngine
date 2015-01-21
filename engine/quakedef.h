@@ -52,8 +52,6 @@
 
 #define	SAVEGAME_COMMENT_LENGTH	39
 
-#define	IT_INVISIBILITY		524288
-
 #define	MAX_SCOREBOARD		64
 
 #include "shared_flags.h"

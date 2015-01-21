@@ -23,7 +23,8 @@
 	Client-side Temporary Entities
 */
 
-#include "engine_videoshadow.h"
+#include "engine_client.h"
+#include "engine_particle.h"
 
 int			num_temp_entities;
 entity_t	cl_temp_entities[MAX_TEMP_ENTITIES];
@@ -54,20 +55,20 @@ void CL_ParseTEnt (void)
 
 		for(i = 0; i < 1024; i++)
 		{
-			pParticle = Client_AllocateParticle();
+			pParticle = Particle_Allocate();
 			if(!pParticle)
 				return;
 
-			pParticle->texture		= iParticleTexture;
-			pParticle->scale		= 30.0f;
-			pParticle->die			= cl.time+10.0f;
-			pParticle->ramp			= rand()&3;
-			pParticle->pBehaviour	= PARTICLE_SMOKE;
+			pParticle->iMaterial	= iParticleTexture;
+			pParticle->fScale		= 30.0f;
+			pParticle->fDie			= cl.time+10.0f;
+			pParticle->fRamp		= rand()&3;
+			pParticle->pBehaviour	= PARTICLE_BEHAVIOUR_SMOKE;
 
 			for(j = 0; j < 3; j++)
 			{
-				pParticle->org[j]	= pos[j]+((rand()&32)-16);
-				pParticle->vel[j]	= (rand()%128)-256;
+				pParticle->vOrigin[j]	= pos[j]+((rand()&32)-16);
+				pParticle->vVelocity[j]	= (rand()%128)-256;
 			}
 		}
 
@@ -99,7 +100,7 @@ void CL_ParseTEnt (void)
 			for(j = -16; j < 16; j++)
 				for(k = 0; k < 1; k++)
 				{
-					pParticle = Client_AllocateParticle();
+					pParticle = Particle_Allocate();
 					if(!pParticle)
 						return;
 
@@ -107,18 +108,18 @@ void CL_ParseTEnt (void)
 					vDirection[1]	= i*8.0f+(rand()&7);
 					vDirection[2]	= 256;
 
-					pParticle->texture		= iParticleTexture;
-					pParticle->scale		= 7.0f;
-					pParticle->die			= cl.time+2.0f+(rand()&31)*0.02f;
+					pParticle->iMaterial	= iParticleTexture;
+					pParticle->fScale		= 7.0f;
+					pParticle->fDie			= cl.time+2.0f+(rand()&31)*0.02f;
 					pParticle->pBehaviour	= PARTICLE_BEHAVIOUR_SLOWGRAVITY;
-					pParticle->org[0]		= pos[0]+vDirection[0];
-					pParticle->org[1]		= pos[1]+vDirection[1];
-					pParticle->org[2]		= pos[2]+(rand()&63);
+					pParticle->vOrigin[0]	= pos[0]+vDirection[0];
+					pParticle->vOrigin[1]	= pos[1]+vDirection[1];
+					pParticle->vOrigin[2]	= pos[2]+(rand()&63);
 
 					fVelocity	= 50+(rand()&63);
 
 					Math_VectorNormalize(vDirection);
-					Math_VectorScale(vDirection,fVelocity,pParticle->vel);
+					Math_VectorScale(vDirection,fVelocity,pParticle->vVelocity);
 				}
 		break;
 	case TE_TELEPORT:
@@ -133,7 +134,7 @@ void CL_ParseTEnt (void)
 			for(j = -16; j < 16; j += 4)
 				for(k = -24; k < 32; k += 4)
 				{
-					pParticle = Client_AllocateParticle();
+					pParticle = Particle_Allocate();
 					if(!pParticle)
 						return;
 
@@ -141,18 +142,18 @@ void CL_ParseTEnt (void)
 					vDirection[1]	= i*8.0f;
 					vDirection[2]	= k*8.0f;
 
-					pParticle->texture		= iParticleTexture;
-					pParticle->scale		= 7.0f;
-					pParticle->die			= cl.time+2.0f+(rand()&7)*0.02f;
+					pParticle->iMaterial	= iParticleTexture;
+					pParticle->fScale		= 7.0f;
+					pParticle->fDie			= cl.time+2.0f+(rand()&7)*0.02f;
 					pParticle->pBehaviour	= PARTICLE_BEHAVIOUR_SLOWGRAVITY;
-					pParticle->org[0]		= pos[0]+i+(rand()&3);
-					pParticle->org[1]		= pos[1]+j+(rand()&3);
-					pParticle->org[2]		= pos[2]+k+(rand()&3);
+					pParticle->vOrigin[0]	= pos[0]+i+(rand()&3);
+					pParticle->vOrigin[1]	= pos[1]+j+(rand()&3);
+					pParticle->vOrigin[2]	= pos[2]+k+(rand()&3);
 
 					fVelocity	= 50+(rand()&63);
 
 					Math_VectorNormalize(vDirection);
-					Math_VectorScale(vDirection,fVelocity,pParticle->vel);
+					Math_VectorScale(vDirection,fVelocity,pParticle->vVelocity);
 				}
 		break;
 	default:

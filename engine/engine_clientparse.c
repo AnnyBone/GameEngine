@@ -26,6 +26,7 @@
 #include "engine_client.h"
 #include "engine_console.h"
 #include "engine_modmenu.h"
+#include "engine_particle.h"
 
 #include "shared_server.h"
 
@@ -248,8 +249,6 @@ void Client_ParseServerInfo(void)
 	}
 
 	cl.protocol = i;
-
-	Con_DPrintf(" PROTOCOL %i\n",i);
 
 	// Parse maxclients
 	cl.maxclients = MSG_ReadByte ();
@@ -497,7 +496,7 @@ void CL_ParseUpdate(int bits)
 	Math_VectorCopy(ent->msg_angles[0],ent->msg_angles[1]);
 
 	if(bits & U_ORIGIN1)
-		ent->msg_origins[0][0] = MSG_ReadCoord ();
+		ent->msg_origins[0][0] = MSG_ReadCoord();
 	else
 		ent->msg_origins[0][0] = ent->baseline.origin[0];
 
@@ -507,7 +506,7 @@ void CL_ParseUpdate(int bits)
 		ent->msg_angles[0][0] = ent->baseline.angles[0];
 
 	if(bits & U_ORIGIN2)
-		ent->msg_origins[0][1] = MSG_ReadCoord ();
+		ent->msg_origins[0][1] = MSG_ReadCoord();
 	else
 		ent->msg_origins[0][1] = ent->baseline.origin[1];
 
@@ -517,7 +516,7 @@ void CL_ParseUpdate(int bits)
 		ent->msg_angles[0][1] = ent->baseline.angles[1];
 
 	if(bits & U_ORIGIN3)
-		ent->msg_origins[0][2] = MSG_ReadCoord ();
+		ent->msg_origins[0][2] = MSG_ReadCoord();
 	else
 		ent->msg_origins[0][2] = ent->baseline.origin[2];
 
@@ -600,7 +599,7 @@ void CL_ParseBaseline (entity_t *ent, int version) //johnfitz -- added argument
 
 	for(i = 0; i < 3; i++)
 	{
-		ent->baseline.origin[i] = MSG_ReadCoord ();
+		ent->baseline.origin[i] = MSG_ReadCoord();
 		ent->baseline.angles[i] = MSG_ReadAngle ();
 	}
 
@@ -934,7 +933,7 @@ void CL_ParseServerMessage(void)
 			cl.scores[i].colors = MSG_ReadByte ();
 			break;
 		case SVC_PARTICLE:
-			Client_ParseParticleEffect();
+			Particle_Parse();
 			break;
 		case SVC_FLARE:
 			Client_ParseFlareEffect();

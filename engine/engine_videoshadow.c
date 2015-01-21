@@ -15,7 +15,6 @@
 #include "engine_video.h"	// [7/8/2013] TODO: Remove ~hogsy
 
 cvar_t	cvDrawFlares	= {	"video_flares",			"1",					    true,   false,  "Toggles the rendering of environmental flares."	        },
-		cvDrawParticles	= {	"video_particles",		"1",                        true,   false,  "Toggles the rendering of particles."                       },
 		cvLitParticles	= {	"video_particles_lit",	"0",	                    true,   false,  "Sets whether or not particles are lit by dynamic lights."	},
 		cvShadowPath	= {	"video_shadows_path",	"textures/engine/shadow",   false,  false,  "Changes the texture path used for blob shadows."	        };
 
@@ -24,17 +23,15 @@ gltexture_t	/**gRenderTarget,*/*gShadow;
 extern vec3_t	lightspot;
 extern entity_t *currententity;
 
-void R_InitExperimental(void)
+void Shadow_Initialize(void)
 {
 	unsigned    int	iWidth,iHeight;
 	byte            *bShadowData;
 
-	Cvar_RegisterVariable(&cvDrawParticles,NULL);
 	Cvar_RegisterVariable(&cvLitParticles,NULL);
 	Cvar_RegisterVariable(&cvDrawFlares,NULL);
 	Cvar_RegisterVariable(&cvShadowPath,NULL);
 
-	particles	= (Particle_t*)Hunk_AllocName(MAX_PARTICLES*sizeof(Particle_t),"particles");
 	flares		= (flare_t*)Hunk_AllocName(MAX_FLARES*sizeof(flare_t),"flares");
 
 	bShadowData = Image_LoadImage(cvShadowPath.string,&iWidth,&iHeight);
@@ -44,148 +41,10 @@ void R_InitExperimental(void)
 		Con_Warning("Failed to load %s!\n",cvShadowPath.string);
 }
 
-void R_RocketTrail(vec3_t start, vec3_t end, int type)
-{
-	vec3_t		vec;
-	float		len;
-	int			j;
-	Particle_t	*p;
-	int			dec;
-	static int	tracercount;
-
-	Math_VectorSubtract (end, start, vec);
-	len = Math_VectorNormalize (vec);
-	if (type < 128)
-		dec = 3;
-	else
-	{
-		dec = 1;
-		type -= 128;
-	}
-
-	while (len > 0)
-	{
-		len -= dec;
-
-		p = Client_AllocateParticle();
-
-		Math_VectorCopy (mv3Origin, p->vel);
-		p->die = cl.time + 2;
-
-		switch (type)
-		{
-			case 0:	// rocket trail
-				p->ramp			= (rand()&3);
-				p->pBehaviour	= PARTICLE_BEHAVIOUR_FIRE;
-
-				for (j=0 ; j<3 ; j++)
-					p->org[j] = start[j] + ((rand()%6)-3);
-				break;
-			case 1:	// smoke smoke
-				p->ramp			= (rand()&3) + 2;
-				p->pBehaviour	= PARTICLE_BEHAVIOUR_FIRE;
-
-				for (j=0 ; j<3 ; j++)
-					p->org[j] = start[j] + ((rand()%6)-3);
-				break;
-			case 2:	// blood
-				p->pBehaviour = PARTICLE_BEHAVIOUR_GRAVITY;
-				for(j = 0; j < 3; j++)
-					p->org[j] = start[j] + ((rand()%6)-3);
-				break;
-			case 3:
-			case 5:	// tracer
-				p->die			= cl.time + 0.5;
-				p->pBehaviour	= PARTICLE_BEHAVIOUR_STATIC;
-
-				Math_VectorCopy(start,p->org);
-
-				tracercount++;
-				if(tracercount & 1)
-				{
-					p->vel[0] = 30*vec[1];
-					p->vel[1] = 30*-vec[0];
-				}
-				else
-				{
-					p->vel[0] = 30*-vec[1];
-					p->vel[1] = 30*vec[0];
-				}
-				break;
-			case 4:	// slight blood
-				p->pBehaviour = PARTICLE_BEHAVIOUR_GRAVITY;
-
-				for (j=0 ; j<3 ; j++)
-					p->org[j] = start[j] + ((rand()%6)-3);
-
-				len -= 3;
-				break;
-			case 6:	// voor trail
-				p->pBehaviour	= PARTICLE_BEHAVIOUR_STATIC;
-				p->die			= cl.time+0.3f;
-
-				for (j=0 ; j<3 ; j++)
-					p->org[j] = start[j] + ((rand()&15)-8);
-				break;
-		}
-		Math_VectorAdd (start, vec, start);
-	}
-}
-
 void R_DrawFlares(void)
 {
 	if(!active_flares || !cvDrawFlares.value)
 		return;
-}
-
-void Draw_Particles(void)
-{
-	Particle_t	*pParticle;
-
-	if(!active_particles || !cvDrawParticles.value)
-		return;
-
-    Video_ResetCapabilities(false);
-
-    glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
-
-    Video_SetBlend(VIDEO_BLEND_IGNORE,VIDEO_DEPTH_FALSE);
-    Video_EnableCapabilities(VIDEO_BLEND);
-
-	for(pParticle = active_particles; pParticle; pParticle = pParticle->next)
-	{
-		VideoObject_t	voParticle[4];
-
-		if(!r_showtris.value)
-			Video_SetTexture(gEffectTexture[pParticle->texture]);
-
-		Math_VectorCopy(pParticle->org,voParticle[0].vVertex);
-		Math_Vector4Copy(pParticle->color,voParticle[0].vColour);
-		voParticle[0].vTextureCoord[0][0] = voParticle[0].vTextureCoord[0][1] = 0;
-
-		Math_VectorMA(pParticle->org,pParticle->scale,vup,voParticle[1].vVertex);
-		Math_Vector4Copy(pParticle->color,voParticle[1].vColour);
-		voParticle[1].vTextureCoord[0][0]	= 1.0f;
-		voParticle[1].vTextureCoord[0][1]	= 0;
-
-		Math_VectorMA(voParticle[1].vVertex,pParticle->scale,vright,voParticle[2].vVertex);
-		Math_Vector4Copy(pParticle->color,voParticle[2].vColour);
-		voParticle[2].vTextureCoord[0][0]	= 1.0f;
-		voParticle[2].vTextureCoord[0][1]	= 1.0f;
-
-		Math_VectorMA(pParticle->org,pParticle->scale,vright,voParticle[3].vVertex);
-		Math_Vector4Copy(pParticle->color,voParticle[3].vColour);
-		voParticle[3].vTextureCoord[0][0]	= 0;
-		voParticle[3].vTextureCoord[0][1]	= 1.0f;
-
-		Video_DrawFill(voParticle,NULL);
-
-		rs_particles++;
-	}
-
-    glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_REPLACE);
-
-	Video_ResetCapabilities(true);
 }
 
 void R_DrawString(int x,int y,char *msg)

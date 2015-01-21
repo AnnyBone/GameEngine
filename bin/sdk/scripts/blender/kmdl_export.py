@@ -17,13 +17,13 @@
 # ***** END GPL LICENCE BLOCK *****
 
 bl_info = {
-    "name": "Export .kdml",
-    "description": "Export to Quake2 file format, applies modifiers (.kdml)",
+    "name": "Export .model",
+    "description": "Export to Quake2 file format, applies modifiers (.model)",
     "author": "Sebastian Lieberknecht, Dao Nguyen, Bernd Meyer and Marion Koelle metaio GmbH (based on Damien Thebault and Erwan Mathieu's Blender2.4x exporter)",
     "version": (1, 7),
     "blender": (2, 6, 3),
     "api": 46461,
-    "location": "File > Export > kdml",
+    "location": "File > Export > model",
     "warning": '', # used for warning icon and text in addons panel
     "wiki_url": "http://metaio.com", 
     "tracker_url": "http://metaio.com",
@@ -646,8 +646,8 @@ class ObjectInfo:
 		
 class Export_MD2(bpy.types.Operator, ExportHelper):
 	"""Export selection to Quake2 file format (.md2)"""
-	bl_idname = "export_quake.kdml"
-	bl_label = "Export selection to Quake2 file format (.kdml)"
+	bl_idname = "export_quake.model"
+	bl_label = "Export selection to Quake2 file format (.model)"
 
 	filename = StringProperty(name="File Path",
 		description="Filepath used for processing the script",
@@ -772,7 +772,7 @@ class Export_MD2(bpy.types.Operator, ExportHelper):
 
 
 def menuCB(self, context):
-	self.layout.operator(Export_MD2.bl_idname, text="Katana Model Format (.kdml)")
+	self.layout.operator(Export_MD2.bl_idname, text="Katana Model Format (.model)")
  
 def register():
 	bpy.utils.register_module(__name__)

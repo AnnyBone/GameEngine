@@ -44,7 +44,6 @@ vec3_t	vTextureReflectivity[BSP_MAX_TEXINFO];
 // [22/7/2012] Taken from Quake 2's BSP tools ~hogsy
 void Light_CalculateTextureReflectivity(void)
 {
-#if 0
 	vec3_t		vColor;
 	int			i,j,k,texels,texel;
 	char		path[1024];
@@ -56,17 +55,17 @@ void Light_CalculateTextureReflectivity(void)
 
 	for(i = 0; i < numtexinfo; i++)
 	{
+#if 0
 		for(j = 0; j < i; j++)
 			if(!strcmp(miptex[i],miptex[j]))
 			{
 				VectorCopy(vTextureReflectivity[j],vTextureReflectivity[i]);
 				break;
 			}
+#endif
 
 		if(j != i)
 			continue;
-
-		// [1/8/2012] TODO: Load our texture ~hogsy
 
 		texels = LittleLong(mt->width)*LittleLong(mt->height);
 
@@ -75,10 +74,11 @@ void Light_CalculateTextureReflectivity(void)
 		// [1/8/2012] TODO: How to do for 32bpp images :/ ~hogsy
 		for(j = 0; j < texels; j++)
 		{
-			mt->
+#if 0
 			texel = ((byte*)mt)[LittleLong(mt->offsets[o])+j];
 			for(k = 0; k < 3; k++)
 				vColor[k] += palette
+#endif
 		}
 
 		for(j = 0; j < 3; j++)
@@ -87,7 +87,6 @@ void Light_CalculateTextureReflectivity(void)
 			vTextureReflectivity[i][j] = r;
 		}
 
-		// [1/8/2012] TODO: Add in our math library ~hogsy
 		scale = Math_ColorNormalize(vTextureReflectivity[i],vTextureReflectivity[i]);
 		if(scale < 0.5f)
 		{
@@ -95,7 +94,6 @@ void Light_CalculateTextureReflectivity(void)
 			VectorScale(vTextureReflectivity[i],scale,vTextureReflectivity[i]);
 		}
 	}
-#endif
 }
 
 int LightStyleForTargetname( char *targetname )

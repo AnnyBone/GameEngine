@@ -79,7 +79,7 @@ AudioSound_t *Audio_LoadSound(sfx_t *sSoundEffect)
 
 /*	Called per-frame to update listener position and more!
 */
-void Audio_Process(void)
+void Audio_Frame(void)
 {
 	vec3_t	vPosition,
 			vOrientation;

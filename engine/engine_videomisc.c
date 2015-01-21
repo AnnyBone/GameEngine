@@ -22,6 +22,7 @@
 #include "engine_videoshadow.h"
 #include "engine_video.h"
 #include "engine_client.h"
+#include "engine_particle.h"
 
 extern cvar_t r_stereo;
 extern cvar_t r_stereodepth;
@@ -179,7 +180,8 @@ void R_Init (void)
 	Cvar_RegisterVariable (&r_lerpmove, NULL);
 	Cvar_RegisterVariable (&gl_subdivide_size, NULL);
 
-	R_InitExperimental();
+	Shadow_Initialize();
+	Particle_Initialize();
 
 	Sky_Init();
 	Fog_Init();
@@ -199,7 +201,7 @@ void R_NewMap (void)
 
 	r_viewleaf = NULL;
 
-	Client_ClearEffects();
+	Particle_ClearAll();
 
 	GL_BuildLightmaps ();
 

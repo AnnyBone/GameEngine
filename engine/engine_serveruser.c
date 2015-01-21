@@ -42,7 +42,7 @@ float	*angles,
 
 bool	bIsOnGround;
 
-usercmd_t	cmd;
+ClientCommand_t	cmd;
 
 cvar_t	sv_idealpitchscale	= {	"sv_idealpitchscale",	"0.8"			};
 cvar_t	sv_altnoclip		= {	"sv_altnoclip",			"1",	true	}; //johnfitz
@@ -317,7 +317,7 @@ void SV_ClientThink (void)
 	//johnfitz
 }
 
-void SV_ReadClientMove (usercmd_t *move)
+void SV_ReadClientMove (ClientCommand_t *move)
 {
 	int		i;
 	vec3_t	angle;

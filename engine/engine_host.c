@@ -28,6 +28,7 @@
 #include "engine_physics.h"
 #include "engine_client.h"
 #include "engine_audio.h"
+#include "engine_particle.h"
 
 #include "shared_server.h"
 
@@ -551,7 +552,7 @@ void _Host_Frame (float time)
 	if(!Host_FilterTime (time))
 		return;			// don't run too fast, or packets will flood out
 
-	Input_Process();
+	Input_Frame();
 
 	// Process console commands
 	Cbuf_Execute();
@@ -590,14 +591,15 @@ void _Host_Frame (float time)
 	if(cls.state == ca_connected)
 	{
 		CL_ReadFromServer();
-		Client_ProcessParticles(); //johnfitz -- seperated from rendering
+
+		Particle_Frame(); //johnfitz -- seperated from rendering
 	}
 
 	if(host_speeds.value)
 		time1 = System_DoubleTime();
 
-	Video_Process();
-	Audio_Process();
+	Video_Frame();
+	Audio_Frame();
 
 	if(host_speeds.value)
 		time2 = System_DoubleTime ();

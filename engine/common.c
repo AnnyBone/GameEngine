@@ -521,7 +521,11 @@ void MSG_WriteCoord32f (sizebuf_t *sb, float f)
 
 void MSG_WriteCoord (sizebuf_t *sb, float f)
 {
+#if 0
 	MSG_WriteCoord16 (sb, f);
+#else
+	MSG_WriteCoord32f(sb, f);
+#endif
 }
 
 void MSG_WriteAngle (sizebuf_t *sb, float f)
@@ -679,7 +683,11 @@ float MSG_ReadCoord32f (void)
 
 float MSG_ReadCoord (void)
 {
+#if 0
 	return MSG_ReadCoord16();
+#else
+	return MSG_ReadCoord32f();
+#endif
 }
 
 float MSG_ReadAngle (void)

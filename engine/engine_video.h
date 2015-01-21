@@ -137,7 +137,7 @@ void Video_SelectTexture(unsigned int uiTarget);
 void Video_EnableCapabilities(unsigned int iCapabilities);
 void Video_DisableCapabilities(unsigned int iCapabilities);
 void Video_ResetCapabilities(bool bClearActive);
-void Video_Process(void);
+void Video_Frame(void);
 void Video_ObjectTexture(VideoObject_t *voObject, unsigned int uiTextureUnit, float S, float T);
 void Video_ObjectVertex(VideoObject_t *voObject, float X, float Y, float Z);
 void Video_ObjectNormal(VideoObject_t *voObject, float X, float Y, float Z);
@@ -153,7 +153,6 @@ void Video_Shutdown(void);
 	Draw
 */
 
-void Draw_Particles(void);
 void Draw_ResetCanvas(void);
 
 /*

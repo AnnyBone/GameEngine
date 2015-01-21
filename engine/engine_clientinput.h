@@ -6,8 +6,8 @@
 extern bool bMouseActive;
 
 void Input_Initialize(void);
-void Input_Process(void);
-void Input_ProcessClient(usercmd_t *ucCommand);
+void Input_Frame(void);
+void Input_ClientFrame(ClientCommand_t *ucCommand);
 void Input_ActivateMouse(void);
 void Input_DeactivateMouse(void);
 void Input_Shutdown(void);

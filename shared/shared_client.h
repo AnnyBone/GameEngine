@@ -148,15 +148,15 @@ typedef struct entity_s
 //////////////////////////////////////////////////////////////////////////
 typedef enum
 {
-	PARTICLE_BEHAVIOUR_STATIC,
-	PARTICLE_BEHAVIOUR_GRAVITY,
-	PARTICLE_BEHAVIOUR_SLOWGRAVITY,
-	PARTICLE_BEHAVIOUR_FIRE,
-	PARTICLE_BEHAVIOUR_EXPLODE,
-	PARTICLE_EXPLODE2,
+	PARTICLE_BEHAVIOUR_STATIC,			// Sprite
+	PARTICLE_BEHAVIOUR_GRAVITY,			// Gravity
+	PARTICLE_BEHAVIOUR_SLOWGRAVITY,		// Slow Gravity
+	PARTICLE_BEHAVIOUR_FIRE,			// Fire
+	PARTICLE_BEHAVIOUR_EXPLODE,			// Explosion
+	PARTICLE_EXPLODE2,					
 	PARTICLE_BLOB,
 	PARTICLE_BLOB2,
-	PARTICLE_SMOKE
+	PARTICLE_BEHAVIOUR_SMOKE			// Smoke
 } ParticleBehaviour_t;
 
 typedef enum
@@ -168,18 +168,21 @@ typedef enum
 
 typedef struct particle_s
 {
-	vec3_t					org;		// The origin of the particle.
-	vec3_t					vel;
-	vec4_t					color;		// RGBA colour of the particle.
+	MathVector3_t		vOrigin,		// The origin of the particle.
+						vVelocity;		// Velocity of the particle.
 
-	int						texture;	// The texture id of the particle.
+	MathVector4_t		vColour;		// RGBA colour of the particle.
+
+	int	iMaterial,						// The material ID of the particle.
+		iFrame;							// Frame of animation.
+
 	ParticleBehaviour_t		pBehaviour;	// Type of behaviour.
 
 	struct		particle_s	*next;
 
-	float					ramp,
-							die,
-							scale;		// Size/scale of the particle.
+	float					fRamp,
+							fDie,
+							fScale;		// Size/scale of the particle.
 } Particle_t;
 //////////////////////////////////////////////////////////////////////////
 

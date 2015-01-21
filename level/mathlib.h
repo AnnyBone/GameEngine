@@ -62,6 +62,8 @@ typedef struct
 
 #define	Q_PI			3.14159265358979323846
 
+#define	DEG2RAD(a)	((a)*((2*Q_PI)/360.0))
+
 #ifndef PLANE_X
 
 // 0-2 are axial planes

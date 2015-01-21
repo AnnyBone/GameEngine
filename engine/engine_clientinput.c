@@ -49,8 +49,6 @@ extern SDL_Window	*sMainWindow;
 
 SDL_Event	sEvent;
 
-void Input_OpenTweakMenu(void);
-
 void Input_Initialize(void)
 {
 	int i;
@@ -235,7 +233,7 @@ static int InputMouseRemap[18]=
 	K_MWHEELDOWN
 };
 
-void Input_Process(void)
+void Input_Frame(void)
 {
 	static	bool sbOldMouseState = false;
 
@@ -347,7 +345,7 @@ extern cvar_t	cl_maxpitch,
 /*	Process client-specific movement which
 	will be sent to the server.
 */
-void Input_ProcessClient(usercmd_t *ucCommand)
+void Input_ClientFrame(ClientCommand_t *ccInput)
 {
 	// [16/7/2013] Don't bother if the application isn't active ~hogsy
 	if(!bMouseActive)
@@ -369,9 +367,9 @@ void Input_ProcessClient(usercmd_t *ucCommand)
 	{
 		// [13/7/2013] Copied from Raynorpat's code ~hogsy
 		if(in_strafe.state & 1)
-			ucCommand->sidemove += m_side.value*iMousePosition[pX];
+			ccInput->sidemove += m_side.value*iMousePosition[pX];
 
-		ucCommand->forwardmove -= m_forward.value*iMousePosition[pY];
+		ccInput->forwardmove -= m_forward.value*iMousePosition[pY];
 	}
 	else
 	{

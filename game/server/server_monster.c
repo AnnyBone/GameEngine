@@ -390,8 +390,6 @@ void Monster_NewChaseDirection(edict_t *ent,vec3_t target,float dist)
 		ent->v.flags |= FL_PARTIALGROUND;
 }
 
-// [26/7/2012] Added Monster_SetState to deal with conflicting states ~hogsy
-// [8/2/2013] Revised and simplified ~hogsy
 bool Monster_SetThink(edict_t *eMonster,MonsterThink_t mtThink)
 {
 	if(eMonster->monster.iThink == mtThink)
@@ -695,33 +693,6 @@ bool Monster_IsVisible(edict_t *ent,edict_t *target)
 	return false;
 }
 
-/*	Checks our relationship against a table and returns how	we'll
-	treat the current target.
-*/
-int	Monster_GetRelationship(edict_t *eMonster,edict_t *eTarget)
-{
-	int	i;
-
-	if(!eMonster->monster.iType)
-	{
-		Engine.Con_Warning("Attempted to get a relationship, but no monster type set! (%s)\n",eMonster->v.cClassname);
-		return RELATIONSHIP_NEUTRAL;
-	}
-
-	for(i = 0; i < sizeof(MonsterRelationship); i++)
-	{
-		if(!MonsterRelationship[i].iFirstType)
-			break;
-
-		// [15/12/2013] Fixed a little mistake here ~hogsy
-		if( (eMonster->monster.iType == MonsterRelationship[i].iFirstType)	&&
-			(eTarget->monster.iType == MonsterRelationship[i].iSecondType))
-			return MonsterRelationship[i].iRelationship;
-	}
-
-	return RELATIONSHIP_NEUTRAL;
-}
-
 /*	Returns view target.
 	TODO:
 		- Base this on if we're currently facing a target or not.
@@ -776,35 +747,9 @@ void Monster_SetTargets(edict_t *eMonster)
 	}
 }
 
-/*	Sets the current targetted entity and checks if it's a valid enemy then
-	updates eEnemy and eOldTarget.
-	eTarget needs to be set first!
-	Assumes that the target is visible...
-	~hogsy
-*/
-bool Monster_SetEnemy(edict_t *eMonster)
-{
-	if(eMonster->monster.eTarget == eMonster)
-		return false;
+#if 0
+double dMonsterEmotionUpdate = 0;
 
-	if(eMonster->monster.eTarget != eMonster->monster.eOldTarget)
-	{
-		if(!eMonster->monster.eTarget->v.iHealth)
-			return false;
-
-		if(Monster_GetRelationship(eMonster,eMonster->monster.eTarget) == RELATIONSHIP_HATE)
-		{
-			eMonster->monster.eEnemy		=
-			eMonster->monster.eOldTarget	= eMonster->monster.eTarget;
-			eMonster->monster.eTarget		= NULL;
-			return true;
-		}
-	}
-
-	return false;
-}
-
-// [6/8/2012] Rewrite of the below functions ~hogsy
 /*	Used to go over each monster state then update it, and then calls the monsters
 	assigned think function.
 */
@@ -893,6 +838,7 @@ void Monster_Frame(edict_t *eMonster)
 	if(eMonster->monster.Think)
 		eMonster->monster.Think(eMonster);
 }
+#endif
 
 // [30/7/2012] Added Monster_WalkMove ~hogsy
 bool Monster_WalkMove(edict_t *ent,float yaw,float dist)
@@ -911,41 +857,111 @@ bool Monster_WalkMove(edict_t *ent,float yaw,float dist)
 	return Monster_MoveStep(ent,move,true);
 }
 
+/////////////////////////////////////////////////////////////////////////////
+//	NEW IMPLEMENTATION
+/////////////////////////////////////////////////////////////////////////////
+
+/*	Used to go over each monster state then update it, and then calls the monsters
+	assigned think function.
+*/
+void Monster_Frame(edict_t *eMonster)
+{
+	// The following is only valid for actual monsters.
+	if (!Entity_IsMonster(eMonster))
+		return;
+
+	Entity_CheckFrames(eMonster);
+
+	if (eMonster->monster.Think)
+		eMonster->monster.Think(eMonster);
+}
+
+/*
+	States
+*/
+
+/*
+	Emotions
+*/
+
+/*
+	Relationships
+*/
+
+/*	Checks our relationship against a table and returns how	we'll
+	treat the current target.
+*/
+int	Monster_GetRelationship(edict_t *eMonster, edict_t *eTarget)
+{
+	int	i;
+
+	if (!eMonster->monster.iType)
+	{
+		Engine.Con_Warning("Attempted to get a relationship, but no monster type set! (%s)\n", eMonster->v.cClassname);
+		return RELATIONSHIP_NEUTRAL;
+	}
+
+	// Run through the relationship table...
+	for (i = 0; i < sizeof(MonsterRelationship); i++)
+	{
+		// If the first type returns 0, then assume we've reached the end.
+		if (!MonsterRelationship[i].iFirstType)
+			break;
+
+		// [15/12/2013] Fixed a little mistake here ~hogsy
+		if ((eMonster->monster.iType == MonsterRelationship[i].iFirstType) &&
+			(eTarget->monster.iType == MonsterRelationship[i].iSecondType))
+			return MonsterRelationship[i].iRelationship;
+	}
+
+	return RELATIONSHIP_NEUTRAL;
+}
+
 /*
 	Movement
 */
 
+/*	Move the monster forwards.
+*/
 void Monster_MoveForward(edict_t *eMonster)
-{
-	if(!(eMonster->v.flags & FL_ONGROUND))
-		return;
-}
-
-void Monster_MoveBackward(void)
 {}
 
-void Monster_MoveLeft(void)
+/*	Move the monster backwards.
+*/
+void Monster_MoveBackward(edict_t *eMonster)
 {}
 
-void Monster_MoveRight(void)
+/*	Strafe right.
+*/
+void Monster_MoveLeft(edict_t *eMonster)
+{}
+
+/*	Strafe left.
+*/
+void Monster_MoveRight(edict_t *eMonster)
+{}
+
+/*	Turn left on the spot.
+*/
+void Monster_TurnLeft(edict_t *eMonster)
+{}
+
+/*	Turn right on the spot.
+*/
+void Monster_TurnRight(edict_t *eMonster)
 {}
 
 /*	Allows a monster to jump with the given velocity.
 */
 void Monster_Jump(edict_t *eMonster,float fVelocity)
 {
-	/*	TODO: Check if where we're
-		jumping into is safe or
-		that it's a reasonable
-		height that doesn't kill
-		us
-	*/
 	if(eMonster->v.iHealth <= 0 || eMonster->v.velocity[2] || !(eMonster->v.flags & FL_ONGROUND))
 		return;
+	
+	// Allow the monster to add additional sounds/movement if required.
+	if (eMonster->monster.Jump)
+		eMonster->monster.Jump(eMonster);
 
 	eMonster->v.flags		-= FL_ONGROUND;
 	eMonster->v.velocity[2]	= fVelocity;
 }
-
-/*
-*/

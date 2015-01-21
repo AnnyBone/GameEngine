@@ -512,7 +512,7 @@ int CL_ReadFromServer (void)
 
 void CL_SendCmd(void)
 {
-	usercmd_t	cmd;
+	ClientCommand_t	cmd;
 
 	if(cls.state != ca_connected)
 		return;
@@ -522,8 +522,8 @@ void CL_SendCmd(void)
 		// Get basic movement from keyboard
 		CL_BaseMove (&cmd);
 
-		// [10/7/2013] Process client input ~hogsy
-		Input_ProcessClient(&cmd);
+		// Process client input.
+		Input_ClientFrame(&cmd);
 
 		// Send the unreliable message
 		CL_SendMove (&cmd);

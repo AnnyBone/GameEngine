@@ -72,7 +72,7 @@ typedef struct client_s
 
 	struct qsocket_s *netconnection;	// communications handle
 
-	usercmd_t		cmd;				// movement
+	ClientCommand_t		cmd;				// movement
 	vec3_t			wishdir;			// intended motion calced from cmd
 
 	sizebuf_t		message;			// can be added to at any time,

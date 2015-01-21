@@ -10,6 +10,7 @@
 #include "engine_videoshadow.h"			// [23/9/2013] TODO: Rename to engine_draw.h? ~hogsy
 #include "engine_modmenu.h"
 #include "engine_server.h"
+#include "engine_particle.h"
 
 #include "shared_module.h"
 
@@ -599,7 +600,7 @@ void Game_Initialize(void)
 
 	// Client
 	Import.Client_AllocateDlight	= Client_AllocDlight;
-	Import.Client_AllocateParticle	= Client_AllocateParticle;
+	Import.Client_AllocateParticle	= Particle_Allocate;
 	Import.Client_PrecacheResource	= Client_PrecacheResource;
 	Import.Client_GetStat			= Client_GetStat;
 	Import.Client_GetEffect			= Client_GetEffect;

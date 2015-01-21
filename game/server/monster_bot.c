@@ -466,7 +466,6 @@ void Bot_Pain(edict_t *ent,edict_t *other)
 		// [14/9/2012] We see you!! ~hogsy
 		if(Monster_IsVisible(ent,other))
 		{
-			Monster_SetEnemy(other);
 			Monster_SetThink(ent,THINK_ATTACKING);
 			return;
 		}

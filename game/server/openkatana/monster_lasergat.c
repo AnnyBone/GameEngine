@@ -83,15 +83,16 @@ void LaserGat_Think(edict_t *eLaserGat)
 			eLaserGat->monster.eTarget = Monster_GetTarget(eLaserGat);
 			if(eLaserGat->monster.eTarget)
 			{
+#if 0
 				// [11/6/2013] Try setting the target as an enemy... ~hogsy
-				if(Monster_SetEnemy(eLaserGat))
+				if (Monster_GetRelationship(eLaserGat, eLaserGat->monster.eTarget) == RELATIONSHIP_HATE)
 				{
 					// [6/4/2013] Set think and state for next frame ~hogsy
 					Monster_SetThink(eLaserGat,THINK_ATTACKING);
 					Monster_SetState(eLaserGat,STATE_AWAKE);
 					return;
 				}
-				else
+#endif
 				{
 					eLaserGat->monster.eOldTarget	= eLaserGat->monster.eTarget;
 					eLaserGat->monster.eTarget		= NULL;
