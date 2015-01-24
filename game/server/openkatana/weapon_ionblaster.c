@@ -135,7 +135,7 @@ void IonBlaster_IonBallTouch(edict_t *eIonBall,edict_t *other)
 
 			eIonBall->v.angles[1] -= 180.0f;
 
-			Sound(eIonBall,CHAN_ITEM,"weapons/ionblaster/ionwallbounce.wav",255,ATTN_NORM);
+			Sound(eIonBall,CHAN_ITEM,"weapons/ionblaster/bounce.wav",255,ATTN_NORM);
 
 			Engine.Particle(eIonBall->v.origin,vInversed,5.0f,"spark2",25);
 

@@ -99,6 +99,7 @@ Material_t *Material_Allocate(void)
 			if (!mMaterials[i].iIdentification || !mMaterials[i].iSkins)
 			{
 				// Set our new material with defaults.
+				mMaterials[i].cName[0]			= 0;
 				mMaterials[i].iIdentification	= i;
 				mMaterials[i].iSkins			= 0;
 				mMaterials[i].iFlags			= 0;
@@ -120,7 +121,8 @@ void Material_ClearActive(void)
 
 	for (i = 0; i < MATERIALS_MAX_ALLOCATED; i++)
 	{
-
+		if (!(mMaterials[i].iFlags & MATERIAL_FLAG_PRESERVE))
+		{ }
 	}
 }
 
@@ -495,9 +497,11 @@ Material_t *Material_Load(const char *ccPath)
 	if (cMaterialName[0])
 		// Copy the name over.
 		strncpy(mNewMaterial->cName, cMaterialName, sizeof(mNewMaterial->cName));
+#if 0
 	else
 		// Otherwise just use the filename.
 		ExtractFileBase(ccPath, mNewMaterial->cName);
+#endif
 
 	// Copy the path over.
 	strncpy(mNewMaterial->cPath, ccPath, sizeof(mNewMaterial->cPath));

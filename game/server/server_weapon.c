@@ -201,7 +201,7 @@ void Weapon_Precache(void)
 	Engine.Server_PrecacheResource(RESOURCE_SOUND,"weapons/ionblaster/ionfire.wav");
 	Engine.Server_PrecacheResource(RESOURCE_SOUND,"weapons/ionblaster/ionflyby.wav");
 	Engine.Server_PrecacheResource(RESOURCE_SOUND,"weapons/ionblaster/ionready.wav");
-	Engine.Server_PrecacheResource(RESOURCE_SOUND,"weapons/ionblaster/ionwallbounce.wav");
+	Engine.Server_PrecacheResource(RESOURCE_SOUND,"weapons/ionblaster/bounce.wav");
 	Engine.Server_PrecacheResource(RESOURCE_MODEL,"models/ionball.md2");
 
 	// Shockwave

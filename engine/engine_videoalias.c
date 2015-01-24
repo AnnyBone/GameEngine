@@ -184,16 +184,16 @@ float	entalpha; //johnfitz
 bool	bOverbright,
 		bShading;		//johnfitz -- if false, disable vertex shading for various reasons (fullbright, r_lightmap, showtris, etc)
 
+MathVector3_t	vLightOrigin,
+				vLightColour;
+
 void R_SetupModelLighting(vec3_t vOrigin)
 {
-	vec3_t			vLightColour,vLightOrigin;
 	DynamicLight_t	*dlLightSource;
 	float			fDistance;
 
 	if(!bShading)
 		return;
-
-	Math_MVToVector(Light_GetSample(vOrigin), vLightColour);
 
 	// Check to see if we can grab the light source, for directional information.
 	dlLightSource = Light_GetDynamic(vOrigin);
@@ -203,8 +203,12 @@ void R_SetupModelLighting(vec3_t vOrigin)
 		Math_VectorCopy(dlLightSource->origin,vLightOrigin);
 	}
 	else
+	{
+		Math_MVToVector(Light_GetSample(vOrigin), vLightColour);
+
 		// Default light origin to our current origin.
 		Math_VectorCopy(vOrigin, vLightOrigin);
+	}
 
 	// Minimum light value on players (8)
 	if(currententity > cl_entities && currententity <= cl_entities + cl.maxclients)
@@ -294,12 +298,7 @@ void Alias_DrawFrame(MD2_t *mModel,entity_t *eEntity,lerpdata_t lLerpData)
 	frame1 = (MD2Frame_t*)((int)mModel + mModel->ofs_frames + (mModel->framesize*currententity->draw_lastpose));
 	frame2 = (MD2Frame_t*)((int)mModel + mModel->ofs_frames + (mModel->framesize*currententity->draw_pose));
 
-	// [20/8/2012] Quick fix ~hogsy
-	// [24/8/2012] Moved ~hogsy
-	if (currententity->scale < 0.1f)
-		currententity->scale = 1.0f;
-
-	if(currententity->scale != 1.0f)
+	if((currententity->scale != 1.0f) && (currententity->scale > 0.1f))
 		glScalef(currententity->scale, currententity->scale, currententity->scale);
 
 	verts1 = &frame1->verts[0];
@@ -333,16 +332,25 @@ void Alias_DrawFrame(MD2_t *mModel,entity_t *eEntity,lerpdata_t lLerpData)
 				
 				if (bShading)
 				{
-				//	Video_ObjectColour(&voModel[uiVerts],
-				//		(shadedots[verts1->lightnormalindex] * ilerp + shadedots[verts2->lightnormalindex] * lLerpData.blend),
-				//		(shadedots[verts1->lightnormalindex] * ilerp + shadedots[verts2->lightnormalindex] * lLerpData.blend),
-				//		(shadedots[verts1->lightnormalindex] * ilerp + shadedots[verts2->lightnormalindex] * lLerpData.blend),
-				//		entalpha);
-
+#if 0
+					Video_ObjectColour(&voModel[uiVerts],
+						(shadedots[verts1->lightnormalindex] * ilerp + shadedots[verts2->lightnormalindex] * lLerpData.blend),
+						(shadedots[verts1->lightnormalindex] * ilerp + shadedots[verts2->lightnormalindex] * lLerpData.blend),
+						(shadedots[verts1->lightnormalindex] * ilerp + shadedots[verts2->lightnormalindex] * lLerpData.blend),
+						entalpha);
+#endif
 					// Calculate relative to normals...
+
+					// Is this working right... ?
+
+					Video_ObjectColour(&voModel[uiVerts],
+						vLightColour[RED], vLightColour[GREEN], vLightColour[BLUE],
+						entalpha);
+
+					// BUG: Colour isn't blending correctly with texturemap, ugh...
 				}
 				else
-					Video_ObjectColour(&voModel[uiVerts], 0, 0, 0, 1.0f);
+					Video_ObjectColour(&voModel[uiVerts], 1.0f, 1.0f, 1.0f, 1.0f);
 
 				uiVerts++;
 

@@ -118,11 +118,6 @@ extern	cvar_t	gl_max_size;
 extern	int			mirrortexturenum;	// quake texturenum, not gltexturenum
 extern	mplane_t	*mpMirrorPlane;
 
-extern	const char *gl_vendor;
-extern	const char *gl_renderer;
-extern	const char *gl_version;
-extern	const char *gl_extensions;
-
 #define OFFSET_NONE		0
 #define OFFSET_DECAL	-1
 #define OFFSET_FOG		-2

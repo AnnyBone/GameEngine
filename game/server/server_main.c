@@ -244,10 +244,18 @@ void Server_Spawn(edict_t *ent)
 
 #ifdef GAME_OPENKATANA	// [22/4/2013] OpenKatana specific stuff is now here instead ~hogsy
 	// Player
-	Engine.Server_PrecacheResource(RESOURCE_SOUND, "player/jump0.wav");
-	Engine.Server_PrecacheResource(RESOURCE_SOUND, "player/jump1.wav");
-	Engine.Server_PrecacheResource(RESOURCE_SOUND, "player/jump2.wav");
-	Engine.Server_PrecacheResource(RESOURCE_SOUND, "player/jump3.wav");
+	Engine.Server_PrecacheResource(RESOURCE_SOUND, PLAYER_SOUND_JUMP0);
+	Engine.Server_PrecacheResource(RESOURCE_SOUND, PLAYER_SOUND_JUMP1);
+	Engine.Server_PrecacheResource(RESOURCE_SOUND, PLAYER_SOUND_JUMP2);
+	Engine.Server_PrecacheResource(RESOURCE_SOUND, PLAYER_SOUND_JUMP3);
+	Engine.Server_PrecacheResource(RESOURCE_SOUND, PLAYER_SOUND_PAIN0);
+	Engine.Server_PrecacheResource(RESOURCE_SOUND, PLAYER_SOUND_PAIN1);
+	Engine.Server_PrecacheResource(RESOURCE_SOUND, PLAYER_SOUND_PAIN2);
+	Engine.Server_PrecacheResource(RESOURCE_SOUND, PLAYER_SOUND_PAIN3);
+	Engine.Server_PrecacheResource(RESOURCE_SOUND, PLAYER_SOUND_PAIN4);
+	Engine.Server_PrecacheResource(RESOURCE_SOUND, PLAYER_SOUND_PAIN5);
+	Engine.Server_PrecacheResource(RESOURCE_SOUND, PLAYER_SOUND_PAIN6);
+	Engine.Server_PrecacheResource(RESOURCE_SOUND, PLAYER_SOUND_PAIN7);
 
 	Engine.Server_PrecacheResource(RESOURCE_MODEL,"models/blip.md2");
 

@@ -62,9 +62,9 @@ gltexture_t	*gDepthTexture;
 bool	bVideoIgnoreCapabilities	= false,
 		bVideoDebug					= false;
 
-vec2_t	**vVideoTextureArray;
-vec3_t	*vVideoVertexArray;
-vec4_t	*vVideoColourArray;
+MathVector2_t	**vVideoTextureArray;
+MathVector3_t	*vVideoVertexArray;
+MathVector4_t	*vVideoColourArray;
 
 unsigned int	uiVideoArraySize = 32768;
 
@@ -113,6 +113,8 @@ void Video_Initialize(void)
 	if(SDL_VideoInit(NULL) < 0)
 		Sys_Error("Failed to initialize video!\n%s\n",SDL_GetError());
 
+	SDL_DisableScreenSaver();
+
 	Video.bInitialized = true;
 
 	// [9/7/2013] TEMP: Should honestly be called from the launcher (in a perfect world) ~hogsy
@@ -120,11 +122,6 @@ void Video_Initialize(void)
 
 	if (!SDL_GetWindowWMInfo(sMainWindow, &Video.sSystemInfo))
 		Sys_Error("Failed to get WM information!\n");
-
-	SDL_DisableScreenSaver();
-
-	// [31/10/2013] Get hardware capabilities ~hogsy
-	glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT,&Video.fMaxAnisotropy);
 }
 
 /*
@@ -328,63 +325,49 @@ void Video_CreateWindow(void)
 	if(iSupportedUnits < VIDEO_MAX_UNITS)
 		Sys_Error("Your system doesn't support the required number of TMUs! (%i)",iSupportedUnits);
 
+	glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &Video.fMaxAnisotropy);
+
 	SDL_GL_SetSwapInterval(0);
 
-	// [13/8/2012] Get any information that will be presented later ~hogsy
-	gl_vendor		= (char*)glGetString(GL_VENDOR);
-	gl_renderer		= (char*)glGetString(GL_RENDERER);
-	gl_version		= (char*)glGetString(GL_VERSION);
-	gl_extensions	= (char*)glGetString(GL_EXTENSIONS);
+	// Get any information that will be presented later.
+	Video.ccGLVendor		= (char*)glGetString(GL_VENDOR);
+	Video.ccGLRenderer		= (char*)glGetString(GL_RENDERER);
+	Video.ccGLVersion		= (char*)glGetString(GL_VERSION);
+	Video.ccGLExtensions	= (char*)glGetString(GL_EXTENSIONS);
 
 	// [3/6/2013] Added to fix a bug on some systems when calling wglGetExtensionString* ~hogsy
 	GLeeInit();
 
-	// [13/8/2012] Do we want to check for extensions? ~hogsy
-	if(!COM_CheckParm("-noextensions"))
-	{
-		Con_DPrintf(" Checking for extensions...\n");
+	Con_DPrintf(" Checking for extensions...\n");
 
-		// Multitexturing MUST be supported.
-		if(!GLEE_ARB_multitexture)
-			Sys_Error("Video hardware incapable of multi-texturing!\n");
+	// Check that multitextuing support is there.
+	if(!GLEE_ARB_multitexture)
+		Sys_Error("Video hardware incapable of multi-texturing!\n");
 
-		if(!COM_CheckParm("-nocombine"))
-			if(GLEE_ARB_texture_env_combine || GLEE_EXT_texture_env_combine)
-			{
-				Con_DPrintf("  ARB/EXT_texture_env_combine\n");
+	if (GLEE_ARB_texture_env_combine || GLEE_EXT_texture_env_combine)
+		Video.bTextureEnvCombine = true;
+	else
+		Con_Warning("ARB/EXT_texture_env_combine isn't supported by your hardware!\n");
 
-				Video.bTextureEnvCombine = true;
-			}
+	if (GLEE_ARB_texture_env_add || GLEE_EXT_texture_env_add)
+		Video.bTextureEnvAdd = true;
+	else
+		Con_Warning("ARB/EXT_texture_env_add isn't supported by your hardware!\n");
 
-		if(!COM_CheckParm("-noadd"))
-			if(GLEE_ARB_texture_env_add || GLEE_EXT_texture_env_add)
-			{
-				Con_DPrintf("  ARB/EXT_texture_env_add\n");
+	if (GLEE_EXT_fog_coord)
+		Video.bFogCoord = true;
+	else
+		Con_Warning("EXT_fog_coord isn't supported by your hardware!\n");
 
-				Video.bTextureEnvAdd = true;
-			}
-
-		// [5/9/2013] For future volumetric fog implementation? ~hogsy
-		if(!COM_CheckParm("-nofogcoord"))
-			if(GLEE_EXT_fog_coord)
-			{
-				Con_DPrintf("  EXT_fog_coord\n");
-
-				Video.bFogCoord = true;
-			}
-
-		if (GLEE_ARB_vertex_buffer_object)
-		{
-			Con_DPrintf("  ARB_vertex_buffer_object\n");
-
-			Video.bVertexBufferObject = true;
-		}
+	if (GLEE_ARB_vertex_buffer_object)
+		Video.bVertexBufferObject = true;
+	else
+		Con_Warning("ARB_vertex_buffer_object isn't supported by your hardware!\n");
 
 #ifdef KATANA_VIDEO_NEXT
-		if(!GLEE_ARB_vertex_program || !GLEE_ARB_fragment_program)
-			Sys_Error("Unsupported video hardware!\n");
+	if(!GLEE_ARB_vertex_program || !GLEE_ARB_fragment_program)
+		Sys_Error("Unsupported video hardware!\n");
 #endif
-	}
 
 	// Set the default states...
 
@@ -399,15 +382,13 @@ void Video_CreateWindow(void)
 	glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
 	glShadeModel(GL_SMOOTH);
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT,GL_NICEST);
+	glDepthRange(0,1);
+	glDepthFunc(GL_LEQUAL);
 
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-	glDepthRange(0,1);
-	glDepthFunc(GL_LEQUAL);
 
 	Video_SelectTexture(VIDEO_TEXTURE_LIGHT);
 
@@ -423,6 +404,8 @@ void Video_CreateWindow(void)
 	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
 
 	Video_SelectTexture(VIDEO_TEXTURE_DIFFUSE);
+
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 
 	vid.conwidth		= (scr_conwidth.value > 0)?(int)scr_conwidth.value:(scr_conscale.value > 0)?(int)(Video.iWidth/scr_conscale.value) : Video.iWidth;
 	vid.conwidth		= Math_Clamp(320,vid.conwidth,Video.iWidth);

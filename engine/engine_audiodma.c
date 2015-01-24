@@ -61,16 +61,13 @@ int			num_sfx;
 
 sfx_t		*ambient_sfx[BSP_AMBIENT_END];
 
-int 		desired_speed = AUDIO_SAMPLE_RATE;
-int 		desired_bits = 16;
-int			sound_started=0;
+int	sound_started=0;
 
 cvar_t bgmvolume			= {"bgmvolume", "1", TRUE};
 cvar_t volume				= {"volume", "0.7", TRUE};
 cvar_t nosound				= {"nosound", "0"};
 cvar_t precache				= {"precache", "1"};
 cvar_t loadas8bit			= {"loadas8bit", "0"};
-cvar_t bgmbuffer			= {"bgmbuffer", "4096"};
 cvar_t ambient_level		= {"ambient_level", "0.3"};
 cvar_t ambient_fade			= {"ambient_fade", "100"};
 cvar_t snd_noextraupdate	= {"snd_noextraupdate", "0"};
@@ -162,7 +159,6 @@ void S_Init (void)
 	Cvar_RegisterVariable(&precache, NULL);
 	Cvar_RegisterVariable(&loadas8bit, NULL);
 	Cvar_RegisterVariable(&bgmvolume, NULL);
-	Cvar_RegisterVariable(&bgmbuffer, NULL);
 	Cvar_RegisterVariable(&ambient_level, NULL);
 	Cvar_RegisterVariable(&ambient_fade, NULL);
 	Cvar_RegisterVariable(&snd_noextraupdate, NULL);

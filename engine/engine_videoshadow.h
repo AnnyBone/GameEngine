@@ -30,6 +30,5 @@ flare_t	*active_flares,*free_flares,*flares;
 void	Shadow_Initialize(void);
 void	R_DrawString(int x,int y,char *msg);
 void	Draw_Shadow(entity_t *ent);
-void	R_DrawFlares(void);
 
 #endif

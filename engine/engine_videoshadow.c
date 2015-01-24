@@ -41,12 +41,6 @@ void Shadow_Initialize(void)
 		Con_Warning("Failed to load %s!\n",cvShadowPath.string);
 }
 
-void R_DrawFlares(void)
-{
-	if(!active_flares || !cvDrawFlares.value)
-		return;
-}
-
 void R_DrawString(int x,int y,char *msg)
 {
 	if(y <= -8)

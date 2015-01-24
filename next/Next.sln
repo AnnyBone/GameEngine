@@ -9,6 +9,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OALClient", "openal_client\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XAudioClient", "XAudioClient\XAudioClient.vcxproj", "{FF587C57-D551-4E99-B35F-2719DA10C17C}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "JavaClient", "JavaClient\JavaClient.vcxproj", "{0853EEE9-6BFB-4847-AC2C-AF07EDD721CB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Adamas|Win32 = Adamas|Win32
@@ -78,6 +80,21 @@ Global
 		{FF587C57-D551-4E99-B35F-2719DA10C17C}.Release|Win32.ActiveCfg = Release|Win32
 		{FF587C57-D551-4E99-B35F-2719DA10C17C}.Release|Win32.Build.0 = Release|Win32
 		{FF587C57-D551-4E99-B35F-2719DA10C17C}.Release|x64.ActiveCfg = Release|Win32
+		{0853EEE9-6BFB-4847-AC2C-AF07EDD721CB}.Adamas|Win32.ActiveCfg = Release|Win32
+		{0853EEE9-6BFB-4847-AC2C-AF07EDD721CB}.Adamas|Win32.Build.0 = Release|Win32
+		{0853EEE9-6BFB-4847-AC2C-AF07EDD721CB}.Adamas|x64.ActiveCfg = Release|Win32
+		{0853EEE9-6BFB-4847-AC2C-AF07EDD721CB}.Debug|Win32.ActiveCfg = Debug|Win32
+		{0853EEE9-6BFB-4847-AC2C-AF07EDD721CB}.Debug|Win32.Build.0 = Debug|Win32
+		{0853EEE9-6BFB-4847-AC2C-AF07EDD721CB}.Debug|x64.ActiveCfg = Debug|Win32
+		{0853EEE9-6BFB-4847-AC2C-AF07EDD721CB}.Editor|Win32.ActiveCfg = Release|Win32
+		{0853EEE9-6BFB-4847-AC2C-AF07EDD721CB}.Editor|Win32.Build.0 = Release|Win32
+		{0853EEE9-6BFB-4847-AC2C-AF07EDD721CB}.Editor|x64.ActiveCfg = Release|Win32
+		{0853EEE9-6BFB-4847-AC2C-AF07EDD721CB}.OpenKatana|Win32.ActiveCfg = Release|Win32
+		{0853EEE9-6BFB-4847-AC2C-AF07EDD721CB}.OpenKatana|Win32.Build.0 = Release|Win32
+		{0853EEE9-6BFB-4847-AC2C-AF07EDD721CB}.OpenKatana|x64.ActiveCfg = Release|Win32
+		{0853EEE9-6BFB-4847-AC2C-AF07EDD721CB}.Release|Win32.ActiveCfg = Release|Win32
+		{0853EEE9-6BFB-4847-AC2C-AF07EDD721CB}.Release|Win32.Build.0 = Release|Win32
+		{0853EEE9-6BFB-4847-AC2C-AF07EDD721CB}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

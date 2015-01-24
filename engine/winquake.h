@@ -22,6 +22,13 @@
 
 #include <windows.h>
 
+#include <dsound.h>
+
+extern LPDIRECTSOUND pDS;
+extern LPDIRECTSOUNDBUFFER pDSBuf;
+
+extern DWORD gSndBufSize;
+
 extern bool	winsock_lib_initialized;
 
 extern HANDLE	hinput, houtput;

@@ -34,6 +34,12 @@ enum VideoUnits_e
 
 typedef struct
 {
+	// OpenGL Information
+	const	char	*ccGLVendor,
+					*ccGLRenderer,
+					*ccGLVersion,
+					*ccGLExtensions;
+
 	float			fMaxAnisotropy,		        // Max anisotropy amount allowed by the hardware.
 					fBitsPerPixel;
 
