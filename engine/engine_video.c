@@ -718,7 +718,10 @@ void Video_DrawMaterial(
 	if (!mMaterial)
 		return;
 
-	msCurrentSkin = Material_GetSkin(mMaterial, iSkin);
+	if (mMaterial->iFlags & MATERIAL_FLAG_ANIMATED)
+		msCurrentSkin = Material_GetAnimatedSkin(mMaterial);
+	else
+		msCurrentSkin = Material_GetSkin(mMaterial, iSkin);
 	if (!msCurrentSkin)
 	{
 		Video_SetTexture(notexture);

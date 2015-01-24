@@ -59,15 +59,17 @@ typedef struct
 			iFlags,				// Global material flags, flags that take priority over all additional skins.
 			iSkins;				// Number of skins provided by this material.
 
-	int	iAnimationSpeed,	// Speed to scroll through skins, if animation is enabled.
-		iAnimationFrame;	// Current frame of the animation.
-
 	char	cPath[PLATFORM_MAX_PATH],	// Path of the material.
-			cName[64];					// Name of the material.
+		cName[64];					// Name of the material.
 
 	MaterialSkin_t	msSkin[MATERIAL_MAX_SKINS];
 
 	bool	bBind;
+
+	// Animation
+	float	fAnimationSpeed;	// Speed to scroll through skins, if animation is enabled.
+	double	dAnimationTime;		// Time until we animate again.
+	int		iAnimationFrame;	// Current frame of the animation.
 } Material_t;
 
 void Material_Initialize(void);
@@ -79,5 +81,6 @@ Material_t *Material_GetByName(const char *ccMaterialName);
 Material_t *Material_GetDummy(void);
 
 MaterialSkin_t *Material_GetSkin(Material_t *mMaterial, int iSkin);
+MaterialSkin_t *Material_GetAnimatedSkin(Material_t *mMaterial);
 
 #endif // __ENGINEMATERIAL__

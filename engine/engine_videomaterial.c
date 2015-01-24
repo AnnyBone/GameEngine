@@ -129,47 +129,33 @@ void Material_ClearActive(void)
 
 MaterialSkin_t *Material_GetSkin(Material_t *mMaterial,int iSkin)
 {
-	// Don't let us spam the console; silly but whatever.
-	static	int	iPasses = 0;
-
 	if(iSkin < 0 || iSkin > MODEL_MAX_TEXTURES)
-	{
-		if (iPasses < 50)
-		{
-			Con_Warning("Invalid skin identification, should be greater than 0 and less than %i! (%i)\n", MODEL_MAX_TEXTURES, iSkin);
-			iPasses++;
-		}
-		return NULL;
-	}
-	else if(!mMaterial)
-	{
-		if (iPasses < 50)
-		{
-			Con_Warning("Invalid material!\n");
-			iPasses++;
-		}
-		return NULL;
-	}
+		Sys_Error("Invalid skin identification, should be greater than 0 and less than %i! (%i)\n", MODEL_MAX_TEXTURES, iSkin);
 	else if(!mMaterial->iSkins)
-	{
-		if (iPasses < 50)
-		{
-			Con_Warning("Material with no valid skins! (%s)\n", mMaterial->cName);
-			iPasses++;
-		}
-		return NULL;
-	}
+		Sys_Error("Material with no valid skins! (%s)\n", mMaterial->cName);
 	else if (iSkin > (mMaterial->iSkins - 1))
-	{
-		if (iPasses < 50)
-		{
-			Con_Warning("Attempted to get an invalid skin! (%i) (%s)\n", iSkin, mMaterial->cName);
-			iPasses++;
-		}
-		return NULL;
-	}
+		Sys_Error("Attempted to get an invalid skin! (%i) (%s)\n", iSkin, mMaterial->cName);
 
 	return &mMaterial->msSkin[iSkin];
+}
+
+/*	Get an animated skin.
+*/
+MaterialSkin_t *Material_GetAnimatedSkin(Material_t *mMaterial)
+{
+	if (mMaterial->dAnimationTime < cl.time)
+	{
+		// Increment current frame...
+		mMaterial->iAnimationFrame++;
+
+		// If we're beyond the frame count, step back to 0...
+		if (mMaterial->iAnimationFrame >= mMaterial->iSkins)
+			mMaterial->iAnimationFrame = 0;
+
+		mMaterial->dAnimationTime = cl.time + ((double)mMaterial->fAnimationSpeed);
+	}
+
+	return Material_GetSkin(mMaterial,mMaterial->iAnimationFrame);
 }
 
 /*	Returns a material from the given ID.
@@ -326,7 +312,7 @@ void _Material_SetDetailTexture(Material_t *mCurrentMaterial, char *cArg)
 
 void _Material_SetAnimationSpeed(Material_t *mCurrentMaterial, char *cArg)
 {
-	mCurrentMaterial->iAnimationSpeed = atoi(cArg);
+	mCurrentMaterial->fAnimationSpeed = strtof(cArg,NULL);
 }
 
 typedef struct
@@ -364,14 +350,22 @@ void _Material_SetFlags(Material_t *mCurrentMaterial,char *cArg)
 			if (bMaterialGlobal)
 			{
 				if (!mfMaterialFlags[i].bGlobal)
-					Con_Warning("Attempted to set a skin flag globally! (%s) (%s)\n", mCurrentMaterial->cName, mfMaterialFlags[i].ccName);
+					Con_Warning("Attempted to set a local flag globally! (%s) (%s)\n", mCurrentMaterial->cName, mfMaterialFlags[i].ccName);
 				else
+				{
+					if (mfMaterialFlags[i].iFlag == MATERIAL_FLAG_ANIMATED)
+					{
+						mCurrentMaterial->iAnimationFrame = 0;
+						mCurrentMaterial->dAnimationTime = 0;
+					}
+
 					mCurrentMaterial->iFlags |= mfMaterialFlags[i].iFlag;
+				}
 			}
 			else
 			{
 				if (mfMaterialFlags[i].bGlobal)
-					Con_Warning("Attempted to set a global flag to a skin! (%s) (%s)\n", mCurrentMaterial->cName, mfMaterialFlags[i].ccName);
+					Con_Warning("Attempted to set a global flag locally! (%s) (%s)\n", mCurrentMaterial->cName, mfMaterialFlags[i].ccName);
 				else
 					mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1].iFlags |= mfMaterialFlags[i].iFlag;
 			}
@@ -395,9 +389,17 @@ MaterialKey_t	mkMaterialFunctions[]=
 	{	"SetDetailTexture",		_Material_SetDetailTexture		},	// Sets the detail texture.
 	{	"SetFlags",				_Material_SetFlags				},	// Sets seperate flags for the material; e.g. persist etc.
 
-	// (closer to Quake III naming conventions)
+	// (closer to Quake III naming conventions)...
+
+	{ "flags", _Material_SetFlags },
+	{ "type", _Material_SetType },
+
 	{ "detail", _Material_SetDetailTexture },
-	{ "map", _Material_SetDiffuseTexture },
+	{ "diffuse", _Material_SetDiffuseTexture },
+	{ "sphere", _Material_SetSphereTexture },
+	{ "fullbright", _Material_SetFullbrightTexture },
+
+	// Animation
 	{ "animation_speed", _Material_SetAnimationSpeed },
 
 	{	0	}
