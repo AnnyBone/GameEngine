@@ -25,7 +25,7 @@ typedef enum
 #define	MATERIAL_FLAG_BLEND		4	// Ditto to the above, but tells us to use blending rather than alpha-test.
 #define	MATERIAL_FLAG_ANIMATED	8	// This is a global flag; tells the material system to scroll through all skins.
 #define	MATERIAL_FLAG_MIRROR	16	// Must be GLOBAL!
-#define	MATERIAL_FLAG_SKY		32	// Must be GLOBAL!
+#define	MATERIAL_FLAG_UNUSED	32
 #define	MATERIAL_FLAG_WATER		64	// Must be GLOBAL!
 
 typedef struct

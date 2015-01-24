@@ -246,6 +246,7 @@ model_t *Model_Load(model_t *mModel)
 
 	switch(LittleLong(*(unsigned*)buf))
 	{
+	case KMDL_HEADER:
 	case MD2_HEADER:
 		Model_LoadMD2(mModel,buf);
 		break;
@@ -662,10 +663,10 @@ void Model_LoadBSPFaces(BSPLump_t *blLump)
 
 		mMaterial = Material_Get(out->texinfo->texture->iAssignedMaterial);
 		if (!mMaterial)
-			Sys_Error("Failed to assign a material to BSP surface! (%s)\n",out->texinfo->texture->name);
+			Sys_Error("Failed to get a material for BSP surface! (%s)\n",out->texinfo->texture->name);
 
 		//johnfitz -- this section rewritten
-		if(!Q_strncasecmp(mMaterial->cName,"sky",3)) // sky surface //also note -- was Q_strncmp, changed to match qbsp
+		if(!Q_strncmp(mMaterial->cName,"sky",3)) // sky surface //also note -- was Q_strncmp, changed to match qbsp
 		{
 			out->flags |= (SURF_DRAWSKY | SURF_DRAWTILED);
 			Mod_PolyForUnlitSurface (out); //no more subdivision
@@ -1170,7 +1171,36 @@ void Model_LoadBSP(model_t *mod,void *buffer)
 }
 
 /*
-	ALIAS MODELS
+	IQM Models
+*/
+
+// [21/8/2012] TODO: Finish ~hogsy
+void Model_LoadIQM(model_t *mModel, void *Buffer)
+{
+#if 0
+	IQMHeader_t	hHeader;
+
+	// [14/9/2012] Checks ~hogsy
+	if (hHeader.uiFileSize <= 0 || hHeader.uiFileSize >= MD2_MAX_SIZE)
+		Sys_Error("%s is not a valid model", mModel->name);
+	else if (hHeader.uiVersion != IQM_VERSION)
+		Sys_Error("%s is an invalid version (expected %i, recieved %i)", IQM_VERSION, hHeader.uiVersion);
+	else if (hHeader.uiNumTriangles < 1 || hHeader.uiNumTriangles > MD2_MAX_TRIANGLES)
+		Sys_Error("%s has invalid number of triangles (%i)", mModel->name, hHeader.uiNumTriangles);
+	else if (hHeader.uiNumVertexes < 1 || hHeader.uiNumVertexes > MD2_MAX_VERTICES)
+		Sys_Error("%s has invalid number of vertices (%i)", mModel->name, hHeader.uiNumVertexes);
+	// [14/9/2012] We'll check anims here instead of frames... ~hogsy
+	else if (hHeader.uiNumAnims < 1 || hHeader.uiNumAnims > MD2_MAX_FRAMES)
+		Sys_Error("%s has invalid number of animations (%i)", mModel->name, hHeader.uiNumAnims);
+	// [14/9/2012] TODO: IQM models use multiple textures, check those! ~hogsy
+#endif
+
+	mModel->mType = MODEL_TYPE_IQM;
+	mModel->flags = 0;
+}
+
+/*
+	MD2 Models
 */
 
 void Model_LoadTextures(model_t *mModel)
@@ -1247,31 +1277,6 @@ void Mod_CalcAliasBounds(aliashdr_t *a)
 }
 #endif
 
-// [21/8/2012] TODO: Finish ~hogsy
-void Model_LoadIQM(model_t *mModel,void *Buffer)
-{
-#if 0
-	IQMHeader_t	hHeader;
-
-	// [14/9/2012] Checks ~hogsy
-	if(hHeader.uiFileSize <= 0 || hHeader.uiFileSize >= MD2_MAX_SIZE)
-		Sys_Error("%s is not a valid model",mModel->name);
-	else if(hHeader.uiVersion != IQM_VERSION)
-		Sys_Error("%s is an invalid version (expected %i, recieved %i)",IQM_VERSION,hHeader.uiVersion);
-	else if(hHeader.uiNumTriangles < 1 || hHeader.uiNumTriangles > MD2_MAX_TRIANGLES)
-		Sys_Error("%s has invalid number of triangles (%i)",mModel->name,hHeader.uiNumTriangles);
-	else if(hHeader.uiNumVertexes < 1 || hHeader.uiNumVertexes > MD2_MAX_VERTICES)
-		Sys_Error("%s has invalid number of vertices (%i)",mModel->name,hHeader.uiNumVertexes);
-	// [14/9/2012] We'll check anims here instead of frames... ~hogsy
-	else if(hHeader.uiNumAnims < 1 || hHeader.uiNumAnims > MD2_MAX_FRAMES)
-		Sys_Error("%s has invalid number of animations (%i)",mModel->name,hHeader.uiNumAnims);
-	// [14/9/2012] TODO: IQM models use multiple textures, check those! ~hogsy
-#endif
-
-	mModel->mType	= MODEL_TYPE_IQM;
-	mModel->flags	= 0;
-}
-
 void Model_LoadMD2(model_t *mModel,void *Buffer)
 {
 	int						i,j,
@@ -1287,9 +1292,9 @@ void Model_LoadMD2(model_t *mModel,void *Buffer)
 	pinmodel = (MD2_t*)Buffer;
 
 	iVersion = LittleLong(pinmodel->version);
-	if(iVersion != MD2_VERSION)
+	if((iVersion != MD2_VERSION) && (iVersion != KMDL_VERSION))
 	{
-		Con_Error("%s has wrong version number (%i should be %i)\n",mModel->name,iVersion,MD2_VERSION);
+		Con_Error("%s has wrong version number (%i should be %i or %i)\n", mModel->name, iVersion, MD2_VERSION, KMDL_VERSION);
 		return;
 	}
 

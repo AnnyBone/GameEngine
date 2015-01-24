@@ -331,6 +331,7 @@ MaterialFlag_t	mfMaterialFlags[] =
 	{	MATERIAL_FLAG_ANIMATED,	"ANIMATED",	true	},
 	{	MATERIAL_FLAG_MIRROR,	"MIRROR",	true	},
 	{	MATERIAL_FLAG_WATER,	"WATER",	true	},
+	//{	MATERIAL_FLAG_SKY,		"SKY",		true	},
 
 	// Local
 	{	MATERIAL_FLAG_ALPHA,	"ALPHA",	false	},

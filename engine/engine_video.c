@@ -766,8 +766,6 @@ void Video_DrawMaterial(
 		}
 	}
 
-#if 1
-
 	// Detail map layer.
 	if (msCurrentSkin->gDetailTexture && cvVideoDrawDetail.bValue)
 	{
@@ -841,8 +839,6 @@ void Video_DrawMaterial(
 		else
 			Video_DisableCapabilities(VIDEO_TEXTURE_2D | VIDEO_BLEND | VIDEO_TEXTURE_GEN_S | VIDEO_TEXTURE_GEN_T);
 	}
-
-#endif
 }
 
 /*	Surfaces

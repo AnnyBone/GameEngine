@@ -20,13 +20,16 @@ typedef enum
 	Extension of the already existing MD2 format.
 */
 
+#define KMDL_HEADER		(('L'<<24)+('D'<<16)+('M'<<8)+'K')
 #define	KMDL_VERSION	9
+#define	KMDL_EXTENSION	".model"
 
 typedef struct
 {
-	vec3_t	index_xyz[3],
-			index_st[3];
-} KMDLTriangle_t;
+	MathVector3_t	v;
+
+	byte			bLightNormalIndex;
+} KMDLTriangleVertex_t;
 
 /*
 	MD2 Format
