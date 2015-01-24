@@ -300,9 +300,9 @@ EntityFrame_t PlayerAnimation_KatanaDeath1[] =
 
 void Player_CheckFootsteps(edict_t *ePlayer)
 {
-	float	fForce;
-	double	dDelay;
-	vec2_t	vStep;
+	float			fForce;
+	double			dDelay;
+	MathVector2_t	vStep;
 
 	// [8/6/2013] Also check movetype so we don't do steps while noclipping/flying ~hogsy
 	if((ePlayer->v.movetype == MOVETYPE_WALK) && ePlayer->v.flags & FL_ONGROUND)
@@ -743,28 +743,6 @@ void Player_Spawn(edict_t *ePlayer)
 				}
 			}
 		}
-#elif GAME_ADAMAS
-		{
-			Item_t *iBlazer = Item_GetItem(WEAPON_BLAZER);
-
-			if(iBlazer)
-			{
-				Weapon_t *wStartWeapon;
-
-				Item_AddInventory(iBlazer,ePlayer);
-
-				// Give us some ammo too! ~hogsy
-				ePlayer->local.iBulletAmmo = 250;
-
-				wStartWeapon = Weapon_GetWeapon(WEAPON_BLAZER);
-				if(wStartWeapon)
-					Weapon_SetActive(wStartWeapon,ePlayer);
-			}
-		}
-
-		// On our first life, notify the player on how to play. ~hogsy
-		if(Server.iLives == 2)
-			Engine.CenterPrint(ePlayer,"Walk forwards to begin the round!\nDon't get killed.");
 #endif
 	}
 
@@ -794,9 +772,8 @@ void Player_Spawn(edict_t *ePlayer)
 
 	Entity_SetModel(ePlayer,ePlayer->v.model);
 	Entity_SetSize(ePlayer,-16.0f,-16.0f,-24.0f,16.0f,16.0f,40.0f);
-	// [25/8/2012] Moved down here ~hogsy
+	Entity_SetAngles(ePlayer, ePlayer->v.angles);
 	Entity_SetOrigin(ePlayer,ePlayer->v.origin);
-	SetAngle(ePlayer,ePlayer->v.angles);
 
 	iPlayerModelIndex = ePlayer->v.modelindex;
 }
@@ -858,7 +835,7 @@ void Player_Jump(edict_t *ePlayer)
 	{
 		ePlayer->v.velocity[2] += 250.0f;
 
-		sprintf(cJumpSound,"player/jump%i.wav",rand()%4);
+		PLAYER_SOUND_JUMP(cJumpSound);
 	}
 
 	Sound(ePlayer,CHAN_VOICE,cJumpSound,255,ATTN_NORM);
@@ -1010,18 +987,6 @@ void Player_DeathThink(edict_t *ent)
 
 		if(!ent->local.fSpawnDelay)
 		{
-#ifdef GAME_ADAMAS
-			if(!Server.iLives)
-				Engine.Server_Restart();
-			else
-			{
-				Server.iLives--;
-
-				Engine.CenterPrint(ent,va("You have %i lives remaining!\n",Server.iLives));
-
-				Player_Spawn(ent);
-			}
-#else
 			// [25/8/2012] We don't respawn in singleplayer ~hogsy
 			// [23/3/2013] Oops! Fixed, we were checking for the wrong case here :) ~hogsy
 			if(bIsMultiplayer)
@@ -1032,7 +997,6 @@ void Player_DeathThink(edict_t *ent)
 				Engine.Server_Restart();
 				return;
 			}
-#endif
 		}
 	}
 

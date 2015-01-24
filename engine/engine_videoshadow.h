@@ -12,21 +12,6 @@
 
 struct	gltexture_s	*gEffectTexture[MAX_EFFECTS];
 
-/*	TODO:
-		Merge with sprite stuff?	*/
-typedef struct flare_s
-{
-	vec3_t	org;
-	float	scale;
-	float	r;
-	float	g;
-	float	b;
-	float	alpha;
-	int		texture;
-	struct	flare_s	*next;
-} flare_t;
-flare_t	*active_flares,*free_flares,*flares;
-
 void	Shadow_Initialize(void);
 void	R_DrawString(int x,int y,char *msg);
 void	Draw_Shadow(entity_t *ent);

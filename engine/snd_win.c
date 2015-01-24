@@ -640,7 +640,7 @@ how many sample are required to fill it up.
 int SNDDMA_GetDMAPos(void)
 {
 	MMTIME	mmtime;
-	int		s;
+	int		s = 0;
 	DWORD	dwWrite;
 
 	if (dsound_init)
@@ -650,9 +650,7 @@ int SNDDMA_GetDMAPos(void)
 		s = mmtime.u.sample - mmstarttime.u.sample;
 	}
 	else if (wav_init)
-	{
 		s = snd_sent * WAV_BUFFER_SIZE;
-	}
 
 
 	s >>= sample16;

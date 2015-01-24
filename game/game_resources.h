@@ -6,7 +6,7 @@
 /*	MODEL:	models/player/
 	SOUND:	player/
 */
-#define	PLAYER_SOUND_PAIN(a)	sprintf(a,"player/pain%i.wav",rand()%7)
+#define	PLAYER_SOUND_PAIN(a)	sprintf(a,"player/pain%i.wav",rand()%8)
 #define	PLAYER_SOUND_PAIN0		"player/pain0.wav"
 #define	PLAYER_SOUND_PAIN1		"player/pain1.wav"
 #define	PLAYER_SOUND_PAIN2		"player/pain2.wav"
@@ -15,7 +15,7 @@
 #define	PLAYER_SOUND_PAIN5		"player/pain5.wav"
 #define	PLAYER_SOUND_PAIN6		"player/pain6.wav"
 #define	PLAYER_SOUND_PAIN7		"player/pain7.wav"
-#define	PLAYER_SOUND_JUMP(a)	sprintf(a,"player/jump%i.wav",rand()%3);
+#define	PLAYER_SOUND_JUMP(a)	sprintf(a,"player/jump%i.wav",rand()%4);
 #define	PLAYER_SOUND_JUMP0		"player/jump0.wav"
 #define	PLAYER_SOUND_JUMP1		"player/jump1.wav"
 #define	PLAYER_SOUND_JUMP2		"player/jump2.wav"

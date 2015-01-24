@@ -17,7 +17,7 @@
 
 bool	bInitialized = false;
 
-Material_t	mMaterials[MATERIALS_MAX_ALLOCATED];	// Global array.
+Material_t	mMaterials[MATERIAL_MAX];	// Global array.
 
 MaterialType_t	MaterialTypes[]=
 {
@@ -30,6 +30,7 @@ MaterialType_t	MaterialTypes[]=
 	{	MATERIAL_TYPE_RUBBER,	"rubber"	},
 	{	MATERIAL_TYPE_WATER,	"water"		},
 	{	MATERIAL_TYPE_FLESH,	"flesh"		},
+	{	MATERIAL_TYPE_SNOW,		"snow"		},
 	{	MATERIAL_TYPE_MUD,		"mud"		}
 };
 
@@ -71,7 +72,7 @@ void Material_List(void)
 
 	Con_Printf("Listing materials...\n");
 
-	for (i = 0; i < MATERIALS_MAX_ALLOCATED; i++)
+	for (i = 0; i < MATERIAL_MAX; i++)
 	{
 		// Probably the end, just break.
 		if (!mMaterials[i].iSkins)
@@ -94,7 +95,7 @@ Material_t *Material_Allocate(void)
 	int	i;
 
 	// In the case of allocation, we go through the entire array.
-	for (i = 0; i < MATERIALS_MAX_ALLOCATED; i++)
+	for (i = 0; i < MATERIAL_MAX; i++)
 		if (!(mMaterials[i].iFlags & MATERIAL_FLAG_PRESERVE))
 			if (!mMaterials[i].iIdentification || !mMaterials[i].iSkins)
 			{
@@ -119,7 +120,7 @@ void Material_ClearActive(void)
 {
 	int	i;
 
-	for (i = 0; i < MATERIALS_MAX_ALLOCATED; i++)
+	for (i = 0; i < MATERIAL_MAX; i++)
 	{
 		if (!(mMaterials[i].iFlags & MATERIAL_FLAG_PRESERVE))
 		{ }
@@ -178,7 +179,7 @@ Material_t *Material_Get(int iMaterialID)
 	int i;
 
 	// The identification would never be less than 0, and never more than our maximum.
-	if(iMaterialID < 0 || iMaterialID > MATERIALS_MAX_ALLOCATED)
+	if (iMaterialID < 0 || iMaterialID > MATERIAL_MAX)
 	{
 		Con_Warning("Invalid material ID! (%i)\n",iMaterialID);
 		return NULL;
@@ -249,8 +250,13 @@ gltexture_t *Material_LoadTexture(Material_t *mMaterial,MaterialSkin_t *mCurrent
 	byte	*bTextureMap;
 
 	// Check if it's trying to use a built-in texture.
-	if (!Q_strcmp(cArg, "notexture"))
-		return notexture;
+	if (cArg[0] == '@')
+	{
+		if (!stricmp(cArg, "@notexture"))
+			return notexture;
+		else
+			Sys_Error("Attempted to set invalid internal texture! (%s)\n", mMaterial->cPath);
+	}
 
 	bTextureMap = Image_LoadImage(cArg,
 		&mCurrentSkin->iTextureWidth,
@@ -260,7 +266,7 @@ gltexture_t *Material_LoadTexture(Material_t *mMaterial,MaterialSkin_t *mCurrent
 		// Warn about incorrect sizes.
 		if ((mCurrentSkin->iTextureWidth & 15) || (mCurrentSkin->iTextureHeight & 15))
 		{
-			Con_Warning("Texture is not 16 aligned! (%ix%i)\n", mCurrentSkin->iTextureWidth, mCurrentSkin->iTextureHeight);
+			Con_Warning("Texture is not 16 aligned! (%s) (%ix%i)\n", cArg, mCurrentSkin->iTextureWidth, mCurrentSkin->iTextureHeight);
 		
 			// Pad the image.
 			iTextureFlags |= TEXPREF_PAD;
@@ -316,6 +322,11 @@ void _Material_SetSpecularTexture(Material_t *mCurrentMaterial, char *cArg)
 void _Material_SetDetailTexture(Material_t *mCurrentMaterial, char *cArg)
 {
 	mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1].gDetailTexture = Material_LoadTexture(mCurrentMaterial,&mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1], cArg);
+}
+
+void _Material_SetAnimationSpeed(Material_t *mCurrentMaterial, char *cArg)
+{
+	mCurrentMaterial->iAnimationSpeed = atoi(cArg);
 }
 
 typedef struct
@@ -383,6 +394,11 @@ MaterialKey_t	mkMaterialFunctions[]=
 	{	"SetFullbrightTexture",	_Material_SetFullbrightTexture	},	// Sets the fullbright texture.
 	{	"SetDetailTexture",		_Material_SetDetailTexture		},	// Sets the detail texture.
 	{	"SetFlags",				_Material_SetFlags				},	// Sets seperate flags for the material; e.g. persist etc.
+
+	// (closer to Quake III naming conventions)
+	{ "detail", _Material_SetDetailTexture },
+	{ "map", _Material_SetDiffuseTexture },
+	{ "animation_speed", _Material_SetAnimationSpeed },
 
 	{	0	}
 };
@@ -497,7 +513,7 @@ Material_t *Material_Load(const char *ccPath)
 	if (cMaterialName[0])
 		// Copy the name over.
 		strncpy(mNewMaterial->cName, cMaterialName, sizeof(mNewMaterial->cName));
-#if 0
+#if 0	// This can end up causing unnecessary conflicts, don't bother.
 	else
 		// Otherwise just use the filename.
 		ExtractFileBase(ccPath, mNewMaterial->cName);

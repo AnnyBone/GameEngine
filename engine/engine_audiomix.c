@@ -34,9 +34,6 @@ int		snd_scaletable[32][256];
 int 	*snd_p, snd_linear_count, snd_vol;
 short	*snd_out;
 
-void Snd_WriteLinearBlastStereo16(void);
-
-//#if	!id386 //johnfitz -- removing ASM code from fitzquake
 void Snd_WriteLinearBlastStereo16(void)
 {
 	int		i;
@@ -61,7 +58,6 @@ void Snd_WriteLinearBlastStereo16(void)
 			snd_out[i + 1] = val;
 	}
 }
-//#endif  //!id386 //johnfitz -- removing ASM code from fitzquake
 
 void S_TransferStereo16(int endtime)
 {
@@ -70,7 +66,7 @@ void S_TransferStereo16(int endtime)
 	DWORD	*pbuf;
 #ifdef _WIN32
 	int		reps;
-	DWORD	dwSize, dwSize2;
+	DWORD	dwSize = 0, dwSize2;
 	DWORD	*pbuf2;
 	HRESULT	hresult;
 #endif
@@ -149,7 +145,7 @@ void S_TransferPaintBuffer(int endtime)
 	DWORD	*pbuf;
 #ifdef _WIN32
 	int		reps;
-	DWORD	dwSize, dwSize2;
+	DWORD	dwSize = 0, dwSize2;
 	DWORD	*pbuf2;
 	HRESULT	hresult;
 #endif
@@ -341,9 +337,6 @@ void SND_InitScaletable(void)
 			snd_scaletable[i][j] = ((signed char)j) * i * 8;
 }
 
-
-//#if	!id386//johnfitz -- removing ASM code from fitzquake
-
 void SND_PaintChannelFrom8(channel_t *ch, sfxcache_t *sc, int count)
 {
 	int 	data;
@@ -358,7 +351,7 @@ void SND_PaintChannelFrom8(channel_t *ch, sfxcache_t *sc, int count)
 
 	lscale = snd_scaletable[ch->leftvol >> 3];
 	rscale = snd_scaletable[ch->rightvol >> 3];
-	sfx = (signed char *)sc->data + ch->pos;
+	sfx = (unsigned char *)sc->data + ch->pos;
 
 	for (i = 0; i<count; i++)
 	{
@@ -369,9 +362,6 @@ void SND_PaintChannelFrom8(channel_t *ch, sfxcache_t *sc, int count)
 
 	ch->pos += count;
 }
-
-//#endif	// !id386//johnfitz -- removing ASM code from fitzquake
-
 
 void SND_PaintChannelFrom16(channel_t *ch, sfxcache_t *sc, int count)
 {

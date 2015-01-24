@@ -2,14 +2,34 @@
 */
 #include "quakedef.h"
 
-/*
-	Particle System
-*/
-
 #include "engine_particle.h"
 
 #include "engine_video.h"
 #include "engine_videoshadow.h"
+
+#if 0
+/*
+	Particle System
+*/
+
+class CSprite
+{
+public:
+protected:
+private:
+};
+
+class CParticle : public CSprite
+{
+public:
+protected:
+private:
+};
+#endif
+
+/*
+	Legacy Particle System
+*/
 
 Particle_t	*pActiveParticles,
 			*pFreeParticles,

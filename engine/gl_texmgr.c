@@ -200,7 +200,6 @@ void TexMgr_Imagedump_f(void)
 	char		tganame[MAX_OSPATH],tempname[MAX_OSPATH],dirname[MAX_OSPATH];
 	gltexture_t	*glt;
 	byte		*buffer;
-	char		*c;
 
 	// Create directory
 	sprintf(dirname, "%s/imagedump", com_gamedir);
@@ -211,9 +210,12 @@ void TexMgr_Imagedump_f(void)
 	for (glt=active_gltextures; glt; glt=glt->next)
 	{
 		Q_strcpy(tempname, glt->name);
+
+#if 0	// Is this even needed anymore?
 		while ((c = strchr(tempname, ':'))) *c = '_';
 		while ((c = strchr(tempname, '/'))) *c = '_';
 		while ((c = strchr(tempname, '*'))) *c = '#';
+#endif
 
 		sprintf(tganame, "imagedump/%s.tga", tempname);
 
@@ -468,9 +470,9 @@ void TextureManager_Initialize(void)
 
 /*  Return smallest power of two greater than or equal to s.
 */
-int TexMgr_Pad (int s)
+unsigned int TexMgr_Pad (unsigned int s)
 {
-	int i;
+	unsigned int i;
 	for (i = 1; i < s; i<<=1);
 	return i;
 }
@@ -488,7 +490,7 @@ unsigned int TexMgr_SafeTextureSize (int s)
 
 /*	Only pad if a texture of that size would be padded. (used for tex coords)
 */
-int TexMgr_PadConditional (int s)
+unsigned int TexMgr_PadConditional (unsigned int s)
 {
 	if (s < TexMgr_SafeTextureSize(s))
 		return TexMgr_Pad(s);

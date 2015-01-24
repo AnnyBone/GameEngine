@@ -171,8 +171,8 @@ void R_CullSurfaces (void)
 
 void R_BuildLightmapChains (void)
 {
-	msurface_t *s;
-	int i;
+	msurface_t		*s;
+	unsigned int	i;
 
 	// clear lightmap chains (already done in r_marksurfaces, but clearing them here to be safe becuase of r_stereo)
 	memset (lightmap_polys, 0, sizeof(lightmap_polys));

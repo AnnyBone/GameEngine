@@ -32,8 +32,6 @@ void Shadow_Initialize(void)
 	Cvar_RegisterVariable(&cvDrawFlares,NULL);
 	Cvar_RegisterVariable(&cvShadowPath,NULL);
 
-	flares		= (flare_t*)Hunk_AllocName(MAX_FLARES*sizeof(flare_t),"flares");
-
 	bShadowData = Image_LoadImage(cvShadowPath.string,&iWidth,&iHeight);
 	if(bShadowData)
 		gShadow	= TexMgr_LoadImage(NULL,cvShadowPath.string,iWidth,iHeight,SRC_RGBA,bShadowData,cvShadowPath.string,0,TEXPREF_ALPHA|TEXPREF_PERSIST);
@@ -73,12 +71,7 @@ void Draw_Shadow(entity_t *ent)
 	if(ENTALPHA_DECODE(ent->alpha) <= 0)
 		return;
 
-#if 0
-	fShadowScale[0] = ent->model->maxs[0]-15;
-	fShadowScale[1] = ent->model->maxs[1]-15;
-#else
 	fShadowScale[0] = fShadowScale[1] = 20.0f;
-#endif
 
 	if(ent == &cl.viewent || R_CullModelForEntity(ent) || (!fShadowScale[0] || !fShadowScale[1]))
 		return;
@@ -93,13 +86,7 @@ void Draw_Shadow(entity_t *ent)
 	lheight = ent->origin[2]-lightspot[2];
 
 	{
-		VideoObject_t voShadow[4]=
-		{
-			{	{	-fShadowScale[0],	fShadowScale[1],	0	},	{	{	0,		0,		}	},	{	1.0f,	1.0f,	1.0f,	1.0f	}	},
-			{	{	fShadowScale[0],	fShadowScale[1],	0	},	{	{	1.0f,	0		}	},	{	1.0f,	1.0f,	1.0f,	1.0f	}	},
-			{	{	fShadowScale[0],	-fShadowScale[1],	0	},	{	{	1.0f,	1.0f	}	},	{	1.0f,	1.0f,	1.0f,	1.0f	}	},
-			{	{	-fShadowScale[0],	-fShadowScale[1],	0	},	{	{	0,		1.0f	}	},	{	1.0f,	1.0f,	1.0f,	1.0f	}	}
-		};
+		VideoObject_t voShadow[4] = { 0 };
 
 		Video_ResetCapabilities(false);
 
@@ -113,6 +100,20 @@ void Draw_Shadow(entity_t *ent)
 
 		glTranslatef(ent->origin[0],ent->origin[1],ent->origin[2]);
 		glTranslatef(0,0,-lheight+0.1f);
+
+		Video_SetColour(1.0f, 1.0f, 1.0f, 1.0f);
+
+		Video_ObjectVertex(&voShadow[0], -fShadowScale[0], fShadowScale[1], 0);
+		Video_ObjectTexture(&voShadow[0], VIDEO_TEXTURE_DIFFUSE, 0, 0);
+
+		Video_ObjectVertex(&voShadow[1], fShadowScale[0], fShadowScale[1], 0);
+		Video_ObjectTexture(&voShadow[1], VIDEO_TEXTURE_DIFFUSE, 1.0f, 0);
+
+		Video_ObjectVertex(&voShadow[2], fShadowScale[0], -fShadowScale[1], 0);
+		Video_ObjectTexture(&voShadow[2], VIDEO_TEXTURE_DIFFUSE, 1.0f, 1.0f);
+
+		Video_ObjectVertex(&voShadow[3], -fShadowScale[0], -fShadowScale[1], 0);
+		Video_ObjectTexture(&voShadow[3], VIDEO_TEXTURE_DIFFUSE, 0, 1.0f);
 
 		Video_DrawFill(voShadow,NULL);
 

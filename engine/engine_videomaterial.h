@@ -1,8 +1,6 @@
 #ifndef __ENGINEMATERIAL__
 #define __ENGINEMATERIAL__
 
-#include "quakedef.h"
-
 typedef enum
 {
 	MATERIAL_TYPE_NONE,		// No assigned property, used as default.
@@ -52,23 +50,25 @@ typedef struct
 					iType;							// Type of surface, e.g. wood, cement etc.
 } MaterialSkin_t;
 
+#define	MATERIAL_MAX		2048
+#define	MATERIAL_MAX_SKINS	64
+
 typedef struct
 {
 	int		iIdentification,	// Unique ID for the material.
 			iFlags,				// Global material flags, flags that take priority over all additional skins.
 			iSkins;				// Number of skins provided by this material.
 
+	int	iAnimationSpeed,	// Speed to scroll through skins, if animation is enabled.
+		iAnimationFrame;	// Current frame of the animation.
+
 	char	cPath[PLATFORM_MAX_PATH],	// Path of the material.
 			cName[64];					// Name of the material.
 
-	MaterialSkin_t	msSkin[MODEL_MAX_TEXTURES];
+	MaterialSkin_t	msSkin[MATERIAL_MAX_SKINS];
 
 	bool	bBind;
 } Material_t;
-
-#define	MATERIALS_MAX_ALLOCATED	2048
-
-extern Material_t	mMaterials[MATERIALS_MAX_ALLOCATED];	// Global array.
 
 void Material_Initialize(void);
 

@@ -1,6 +1,6 @@
 /*	Copyright (C) 1996-2001 Id Software, Inc.
 	Copyright (C) 2002-2009 John Fitzgibbons and others
-	Copyright (C) 2011-2013 OldTimes Software
+	Copyright (C) 2011-2015 OldTimes Software
 
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License
@@ -116,7 +116,9 @@ int CL_GetMessage (void)
 		net_message.cursize = LittleLong (net_message.cursize);
 		if (net_message.cursize > MAX_MSGLEN)
 			Sys_Error ("Demo message > MAX_MSGLEN");
+#ifdef _MSC_VER
 #pragma warning(suppress: 6029)	// This was checked just above.
+#endif
 		r = fread (net_message.data, net_message.cursize, 1, cls.demofile);
 		if (r != 1)
 		{
@@ -296,7 +298,7 @@ void CL_FinishTimeDemo (void)
 	int		frames;
 	float	time;
 
-	cls.timedemo = FALSE;
+	cls.timedemo = false;
 
 // the first frame didn't count
 	frames = (host_framecount - cls.td_startframe) - 1;
@@ -322,7 +324,7 @@ void CL_TimeDemo_f (void)
 // cls.td_starttime will be grabbed at the second frame of the demo, so
 // all the loading time doesn't get counted
 
-	cls.timedemo = TRUE;
+	cls.timedemo = true;
 	cls.td_startframe = host_framecount;
 	cls.td_lastframe = -1;		// get a new message this frame
 }

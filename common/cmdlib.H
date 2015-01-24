@@ -41,6 +41,7 @@ void	SaveFile (char *filename, void *buffer, int count);
 
 void 	DefaultExtension (char *path, char *extension);
 void 	DefaultPath (char *path, char *basepath);
+void	CreatePath(char *path);
 void 	StripFilename (char *path);
 void 	StripExtension (char *path);
 

@@ -14,6 +14,5 @@ void Game_Initialize(void);
 void Server_Flare(vec3_t org,float r,float g,float b,float a,float scale,char *texture);
 
 /*	Client-side functions	*/
-void Client_ParseFlareEffect(void);
 
 #endif

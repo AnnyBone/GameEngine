@@ -89,6 +89,6 @@ gltexture_t *TexMgr_LoadImage (model_t *owner, char *name, int width, int height
 void TexMgr_ReloadImage (gltexture_t *glt, int shirt, int pants);
 void TexMgr_ReloadImages (void);
 
-int TexMgr_Pad(int s);
+unsigned int TexMgr_Pad(unsigned int s);
 unsigned int TexMgr_SafeTextureSize (int s);
-int TexMgr_PadConditional (int s);
+unsigned int TexMgr_PadConditional (int s);

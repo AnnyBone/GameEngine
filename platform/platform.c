@@ -15,6 +15,11 @@
 char	cErrorMessage[MAX_ERROR_LENGTH]		= "null",
 		cLastFunction[MAX_FUNCTION_LENGTH]	= "null";
 
+void pPlatform_Initialize(void)
+{
+
+}
+
 /*	Sets the name of the currently entered function.
 */
 void pError_SetFunction(const char *ccFunction,...)

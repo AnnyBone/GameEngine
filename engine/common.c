@@ -1381,7 +1381,9 @@ pack_t *FileSystem_LoadPackage(char *packfile)
 	// parse the directory
 	for (i = 0; i < numpackfiles ; i++)
 	{
+#ifdef _MSC_VER
 #pragma warning(suppress: 6011)	// We checked this already!
+#endif
 		strcpy (newfiles[i].name, info[i].name);
 		newfiles[i].filepos = LittleLong(info[i].filepos);
 		newfiles[i].filelen = LittleLong(info[i].filelen);

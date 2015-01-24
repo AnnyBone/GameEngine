@@ -857,7 +857,9 @@ void Video_DrawSurface(msurface_t *mSurface,float fAlpha, Material_t *mMaterial,
 	fVert = mSurface->polys->verts[0];
 	for (i = 0; i < mSurface->polys->numverts; i++, fVert += VERTEXSIZE)
 	{
+#ifdef _MSC_VER
 #pragma warning(suppress: 6011)
+#endif
 		Video_ObjectVertex(&voSurface[i], fVert[0], fVert[1], fVert[2]);
 		Video_ObjectTexture(&voSurface[i], VIDEO_TEXTURE_DIFFUSE, fVert[3], fVert[4]);
 		Video_ObjectTexture(&voSurface[i], VIDEO_TEXTURE_LIGHT, fVert[5], fVert[6]);

@@ -351,18 +351,28 @@ void Draw_Character(int x,int y,int num)
 	size = 0.0625f;
 
 	{
-		VideoObject_t	voCharacter[]=
-		{
-			{	{	x,		y,		0	},	{	{	fcol,		frow		}	},	{	1.0f,	1.0f,	1.0f,	1.0f	}	},
-			{	{	x+8,	y,		0	},	{	{	fcol+size,	frow		}	},	{	1.0f,	1.0f,	1.0f,	1.0f	}	},
-			{	{	x+8,	y+8,	0	},	{	{	fcol+size,	frow+size	}	},	{	1.0f,	1.0f,	1.0f,	1.0f	}	},
-			{	{	x,		y+8,	0	},	{	{	fcol,		frow+size	}	},	{	1.0f,	1.0f,	1.0f,	1.0f	}	}
-		};
+		VideoObject_t	voCharacter[4] = { 0 };
 
 		Video_ResetCapabilities(false);
 
 		Video_EnableCapabilities(VIDEO_ALPHA_TEST);
 		Video_DisableCapabilities(VIDEO_DEPTH_TEST);
+
+		Video_ObjectVertex(&voCharacter[0], x, y, 0);
+		Video_ObjectColour(&voCharacter[0], 1.0f, 1.0f, 1.0f, 1.0f);
+		Video_ObjectTexture(&voCharacter[0], VIDEO_TEXTURE_DIFFUSE, fcol, frow);
+
+		Video_ObjectVertex(&voCharacter[1], x+8, y, 0);
+		Video_ObjectColour(&voCharacter[1], 1.0f, 1.0f, 1.0f, 1.0f);
+		Video_ObjectTexture(&voCharacter[1], VIDEO_TEXTURE_DIFFUSE, fcol+size, frow);
+
+		Video_ObjectVertex(&voCharacter[2], x+8, y+8, 0);
+		Video_ObjectColour(&voCharacter[2], 1.0f, 1.0f, 1.0f, 1.0f);
+		Video_ObjectTexture(&voCharacter[2], VIDEO_TEXTURE_DIFFUSE, fcol+size, frow+size);
+
+		Video_ObjectVertex(&voCharacter[3], x, y+8, 0);
+		Video_ObjectColour(&voCharacter[3], 1.0f, 1.0f, 1.0f, 1.0f);
+		Video_ObjectTexture(&voCharacter[3], VIDEO_TEXTURE_DIFFUSE, fcol, frow+size);
 
 		Video_SetTexture(gCharTexture);
 		Video_DrawFill(voCharacter,NULL);
@@ -373,12 +383,15 @@ void Draw_Character(int x,int y,int num)
 
 void Draw_Pic(int x,int y,qpic_t *pic)
 {
+#if 0
 	glpic_t	*gl;
 
 	if(scrap_dirty)
 		Scrap_Upload ();
 
 	gl = (glpic_t*)pic->data;
+
+	Video_ResetCapabilities(false);
 
 	Video_SetTexture(gl->gltexture);
 
@@ -394,6 +407,9 @@ void Draw_Pic(int x,int y,qpic_t *pic)
 
         Video_DrawFill(voPicture,NULL);
     }
+
+	Video_ResetCapabilities(true);
+#endif
 }
 
 void Draw_ConsoleBackground(void)
@@ -440,13 +456,7 @@ void Draw_TileClear (int x, int y, int w, int h)
 void Draw_Fill(int x,int y,int w,int h,float r,float g,float b,float alpha)
 {
 	vec4_t			vColour;
-	VideoObject_t	voFill[]=
-	{
-		{	{	x,		y,		0	}	},
-		{	{	x+w,	y,		0	}	},
-		{	{	x+w,	y+h,	0	}	},
-		{	{	x,		y+h,	0	}	}
-	};
+	VideoObject_t	voFill[4] = { 0 };
 
 	vColour[0] = r; vColour[1] = g; vColour[2] = b; vColour[3] = alpha;
 	Math_Vector4Copy(vColour,voFill[0].vColour);
@@ -455,25 +465,46 @@ void Draw_Fill(int x,int y,int w,int h,float r,float g,float b,float alpha)
 	Math_Vector4Copy(vColour,voFill[3].vColour);
 
     Video_ResetCapabilities(false);
+
     Video_EnableCapabilities(VIDEO_BLEND);
     Video_DisableCapabilities(VIDEO_DEPTH_TEST|VIDEO_TEXTURE_2D);
+
+	Video_ObjectVertex(&voFill[0], x, y, 0);
+
+	Video_ObjectVertex(&voFill[1], x+w, y, 0);
+
+	Video_ObjectVertex(&voFill[2], x+w, y+h, 0);
+
+	Video_ObjectVertex(&voFill[3], x, y+h, 0);
+
 	Video_DrawFill(voFill,NULL);
+
 	Video_ResetCapabilities(true);
 }
 
 void Draw_FadeScreen (void)
 {
-	VideoObject_t	voFade[]=
-	{
-		{	{	0,			0,			0,	},	{{0}},	{	1.0f,	1.0f,	1.0f,	0.5f	}	},
-		{	{	glwidth,	0,			0,	},	{{0}},	{	1.0f,	1.0f,	1.0f,	0.5f	}	},
-		{	{	glwidth,	glheight,	0,	},	{{0}},	{	1.0f,	1.0f,	1.0f,	0.5f	}	},
-		{	{	0,			glheight,	0,	},	{{0}},	{	1.0f,	1.0f,	1.0f,	0.5f	}	},
-	};
+	VideoObject_t	voFade[4] = { 0 };
 
 	GL_SetCanvas(CANVAS_DEFAULT);
 
+	Video_ResetCapabilities(false);
+
+	Video_ObjectVertex(&voFade[0], 0, 0, 0);
+	Video_ObjectColour(&voFade[0], 1.0f, 1.0f, 1.0f, 0.5f);
+
+	Video_ObjectVertex(&voFade[1], glwidth, 0, 0);
+	Video_ObjectColour(&voFade[1], 1.0f, 1.0f, 1.0f, 0.5f);
+
+	Video_ObjectVertex(&voFade[2], glwidth, glheight, 0);
+	Video_ObjectColour(&voFade[2], 1.0f, 1.0f, 1.0f, 0.5f);
+
+	Video_ObjectVertex(&voFade[3], 0, glheight, 0);
+	Video_ObjectColour(&voFade[3], 1.0f, 1.0f, 1.0f, 0.5f);
+
 	Video_DrawFill(voFade,NULL);
+
+	Video_ResetCapabilities(true);
 }
 
 /*	Draws the little blue disc in the corner of the screen.

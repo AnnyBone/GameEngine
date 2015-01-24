@@ -137,6 +137,7 @@ float *Game_Aim(edict_t *ent)
 	Math_VectorCopy(ent->v.vForward, dir);
 	Math_VectorMA(start,2048.0f,dir,end);
 
+#if 0
 	// [5/3/2013] BUG: Results in fucked up aim vectors ~hogsy
 	tr = SV_Move(start,mv3Origin,mv3Origin,end,false,ent);
 	if(tr.ent && tr.ent->v.bTakeDamage	&&
@@ -145,6 +146,7 @@ float *Game_Aim(edict_t *ent)
 		Math_VectorCopy(ent->v.vForward, result);
 		return result;
 	}
+#endif
 
 	// try all possible entities
 	Math_VectorCopy (dir, bestdir);
@@ -373,53 +375,6 @@ void Server_Flare(vec3_t org,float r,float g,float b,float a,float scale,char *t
 				MSG_WriteByte(&sv.datagram,i);
 				break;
 			}
-}
-
-void Client_RunFlareEffect(vec3_t org,int scale,float r,float g,float b,float a,int texture)
-{
-	int		i;
-	flare_t *f;
-
-	if(!free_flares)
-		return;
-	f = free_flares;
-	free_flares = f->next;
-	f->next = active_flares;
-	active_flares = f;
-
-	f->texture = texture;
-	if(f->scale)
-		f->scale = scale*2;
-	else
-		f->scale = 1.0;
-	for(i=0;i<3;i++)
-		f->org[i] = org[i];
-	if(r || g || b || a)
-	{
-		f->r = r;
-		f->g = g;
-		f->b = b;
-		f->alpha = a;
-	}
-}
-
-void Client_ParseFlareEffect(void)
-{
-	vec3_t	org;
-	int		i,texture,scale;
-	float	r,g,b,a;
-
-	for(i=0;i<3;i++)
-		org[i] = MSG_ReadCoord();
-
-	r		= MSG_ReadFloat();
-	g		= MSG_ReadFloat();
-	b		= MSG_ReadFloat();
-	a		= MSG_ReadFloat();
-	scale	= MSG_ReadFloat();
-	texture = MSG_ReadByte();
-
-	Client_RunFlareEffect(org,scale,r,g,b,a,texture);
 }
 
 /*

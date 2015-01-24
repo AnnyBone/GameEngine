@@ -23,6 +23,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "quakedef.h"
 #include "winquake.h"
 
+#include "platform_module.h"
+
 extern cvar_t hostname;
 
 #define MAXHOSTNAMELEN		256
@@ -117,16 +119,16 @@ void WINS_GetLocalAddress()
 
 int WINS_Init (void)
 {
-	int		i;
-	char	buff[MAXHOSTNAMELEN];
-	char	*p;
-	int		r;
-	WORD	wVersionRequested;
-	HINSTANCE hInst;
+	int			i;
+	char		buff[MAXHOSTNAMELEN];
+	char		*p;
+	int			r;
+	WORD		wVersionRequested;
+	pINSTANCE	hInst;
 
 // initialize the Winsock function vectors (we do this instead of statically linking
 // so we can run on Win 3.1, where there isn't necessarily Winsock)
-    hInst = LoadLibrary("wsock32.dll");
+    hInst = pModule_Load("wsock32.dll");
 	if (hInst == NULL)
 	{
 		Con_SafePrintf ("Failed to load winsock.dll\n");
@@ -136,19 +138,19 @@ int WINS_Init (void)
 
 	winsock_lib_initialized = TRUE;
 
-    pWSAStartup = (void *)GetProcAddress(hInst, "WSAStartup");
-    pWSACleanup = (void *)GetProcAddress(hInst, "WSACleanup");
-    pWSAGetLastError = (void *)GetProcAddress(hInst, "WSAGetLastError");
-    psocket = (void *)GetProcAddress(hInst, "socket");
-    pioctlsocket = (void *)GetProcAddress(hInst, "ioctlsocket");
-    psetsockopt = (void *)GetProcAddress(hInst, "setsockopt");
-    precvfrom = (void *)GetProcAddress(hInst, "recvfrom");
-    psendto = (void *)GetProcAddress(hInst, "sendto");
-    pclosesocket = (void *)GetProcAddress(hInst, "closesocket");
-    pgethostname = (void *)GetProcAddress(hInst, "gethostname");
-    pgethostbyname = (void *)GetProcAddress(hInst, "gethostbyname");
-    pgethostbyaddr = (void *)GetProcAddress(hInst, "gethostbyaddr");
-    pgetsockname = (void *)GetProcAddress(hInst, "getsockname");
+    pWSAStartup = (void *)pModule_FindFunction(hInst, "WSAStartup");
+	pWSACleanup = (void *)pModule_FindFunction(hInst, "WSACleanup");
+	pWSAGetLastError = (void *)pModule_FindFunction(hInst, "WSAGetLastError");
+	psocket = (void *)pModule_FindFunction(hInst, "socket");
+	pioctlsocket = (void *)pModule_FindFunction(hInst, "ioctlsocket");
+	psetsockopt = (void *)pModule_FindFunction(hInst, "setsockopt");
+	precvfrom = (void *)pModule_FindFunction(hInst, "recvfrom");
+	psendto = (void *)pModule_FindFunction(hInst, "sendto");
+	pclosesocket = (void *)pModule_FindFunction(hInst, "closesocket");
+	pgethostname = (void *)pModule_FindFunction(hInst, "gethostname");
+	pgethostbyname = (void *)pModule_FindFunction(hInst, "gethostbyname");
+	pgethostbyaddr = (void *)pModule_FindFunction(hInst, "gethostbyaddr");
+	pgetsockname = (void *)pModule_FindFunction(hInst, "getsockname");
 
     if (!pWSAStartup || !pWSACleanup || !pWSAGetLastError ||
 		!psocket || !pioctlsocket || !psetsockopt ||
@@ -246,7 +248,7 @@ int WINS_Init (void)
 
 void WINS_Shutdown (void)
 {
-	WINS_Listen (FALSE);
+	WINS_Listen (false);
 	WINS_CloseSocket (net_controlsocket);
 	if (--winsock_initialized == 0)
 		pWSACleanup ();
@@ -397,7 +399,7 @@ int WINS_Read (int socket, byte *buf, int len, struct qsockaddr *addr)
 	int addrlen = sizeof (struct qsockaddr);
 	int ret;
 
-	ret = precvfrom(socket, buf, len, 0, (struct sockaddr *)addr, &addrlen);
+	ret = precvfrom(socket,(char*) buf, len, 0, (struct sockaddr *)addr, &addrlen);
 	if (ret == -1)
 	{
 		int err = pWSAGetLastError();
@@ -477,7 +479,9 @@ int WINS_StringToAddr (char *string, struct qsockaddr *addr)
 	int ha1, ha2, ha3, ha4, hp;
 	int ipaddr;
 
+#ifdef _MSC_VER
 #pragma warning(suppress: 6031)
+#endif
 	sscanf(string, "%d.%d.%d.%d:%d", &ha1, &ha2, &ha3, &ha4, &hp);
 	ipaddr = (ha1 << 24) | (ha2 << 16) | (ha3 << 8) | ha4;
 

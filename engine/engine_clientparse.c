@@ -935,9 +935,6 @@ void CL_ParseServerMessage(void)
 		case SVC_PARTICLE:
 			Particle_Parse();
 			break;
-		case SVC_FLARE:
-			Client_ParseFlareEffect();
-			break;
 		case svc_spawnbaseline:
 			i = MSG_ReadShort ();
 			// must use CL_EntityNum() to force cl.num_entities up
