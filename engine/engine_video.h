@@ -21,6 +21,8 @@ extern bool	bVideoIgnoreCapabilities;
 
 enum VideoUnits_e
 {
+	VIDEO_TEXTURE_MIN = -1,
+
 	VIDEO_TEXTURE_DIFFUSE,
 	VIDEO_TEXTURE_LIGHT,
 	VIDEO_TEXTURE_DETAIL,

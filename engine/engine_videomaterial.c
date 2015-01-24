@@ -104,6 +104,7 @@ Material_t *Material_Allocate(void)
 				mMaterials[i].iIdentification	= i;
 				mMaterials[i].iSkins			= 0;
 				mMaterials[i].iFlags			= 0;
+				mMaterials[i].fAlpha = 1.0f;
 				mMaterials[i].bBind				= true;
 
 				iMaterialCount++;
@@ -315,6 +316,11 @@ void _Material_SetAnimationSpeed(Material_t *mCurrentMaterial, char *cArg)
 	mCurrentMaterial->fAnimationSpeed = strtof(cArg,NULL);
 }
 
+void _Material_SetAlpha(Material_t *mCurrentMaterial, char *cArg)
+{
+	mCurrentMaterial->fAlpha = strtof(cArg, NULL);
+}
+
 typedef struct
 {
 	int	iFlag;
@@ -331,7 +337,6 @@ MaterialFlag_t	mfMaterialFlags[] =
 	{	MATERIAL_FLAG_ANIMATED,	"ANIMATED",	true	},
 	{	MATERIAL_FLAG_MIRROR,	"MIRROR",	true	},
 	{	MATERIAL_FLAG_WATER,	"WATER",	true	},
-	//{	MATERIAL_FLAG_SKY,		"SKY",		true	},
 
 	// Local
 	{	MATERIAL_FLAG_ALPHA,	"ALPHA",	false	},
@@ -394,6 +399,7 @@ MaterialKey_t	mkMaterialFunctions[]=
 
 	{ "flags", _Material_SetFlags },
 	{ "type", _Material_SetType },
+	{ "alpha", _Material_SetAlpha },
 
 	{ "detail", _Material_SetDetailTexture },
 	{ "diffuse", _Material_SetDiffuseTexture },

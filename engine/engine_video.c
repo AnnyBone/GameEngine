@@ -543,8 +543,6 @@ void Video_SetBlend(VideoBlend_t voBlendMode, VideoDepth_t vdDepthMode)
     Multitexturing Management
 */
 
-bool bMultitextureEnabled = false;
-
 unsigned int Video_GetGLUnit(unsigned int uiTarget)
 {
 	unsigned int uiUnit = 0;
@@ -575,17 +573,13 @@ unsigned int Video_GetGLUnit(unsigned int uiTarget)
 
 void Video_SelectTexture(unsigned int uiTarget)
 {
-	unsigned int uiUnit;
-
 	if(uiTarget == Video.uiActiveUnit)
         return;
 
-	if(uiTarget > VIDEO_MAX_UNITS)
+	if (uiTarget > VIDEO_TEXTURE_MAX)
 		Sys_Error("Invalid texture unit! (%i)\n",uiTarget);
 
-	uiUnit = Video_GetGLUnit(uiTarget);
-
-	glActiveTexture(uiUnit);
+	glActiveTexture(Video_GetGLUnit(uiTarget));
 
 	Video.uiActiveUnit = uiTarget;
 
@@ -766,6 +760,7 @@ void Video_DrawMaterial(
 		}
 	}
 
+#if 0
 	// Detail map layer.
 	if (msCurrentSkin->gDetailTexture && cvVideoDrawDetail.bValue)
 	{
@@ -774,7 +769,7 @@ void Video_DrawMaterial(
 		// TODO: Check distance from camera before proceeding.
 		if (!bPost)
 		{
-			glEnable(GL_TEXTURE_2D);
+			Video_EnableCapabilities(VIDEO_TEXTURE_2D);
 
 			Video_SetTexture(msCurrentSkin->gDetailTexture);
 
@@ -782,10 +777,9 @@ void Video_DrawMaterial(
 				for (unsigned int i = 0; i < uiSize; i++)
 				{
 					// Copy over original texture coords.
-					voObject[i].vTextureCoord[VIDEO_TEXTURE_DETAIL][0] = 
-						voObject[i].vTextureCoord[VIDEO_TEXTURE_DIFFUSE][0] * cvVideoDetailScale.value;
-					voObject[i].vTextureCoord[VIDEO_TEXTURE_DETAIL][1] = 
-						voObject[i].vTextureCoord[VIDEO_TEXTURE_DIFFUSE][1] * cvVideoDetailScale.value;
+					Video_ObjectTexture(&voObject[i], VIDEO_TEXTURE_DETAIL,
+						voObject[i].vTextureCoord[VIDEO_TEXTURE_DIFFUSE][0] * cvVideoDetailScale.value,
+						voObject[i].vTextureCoord[VIDEO_TEXTURE_DIFFUSE][1] * cvVideoDetailScale.value);
 
 					// TODO: Modify them to the appropriate scale.
 
@@ -796,8 +790,9 @@ void Video_DrawMaterial(
 			glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 2);
 		}
 		else
-			glDisable(GL_TEXTURE_2D);
+			Video_DisableCapabilities(VIDEO_TEXTURE_2D);
 	}
+#endif
 
 	// Fullbright map.
 	if (msCurrentSkin->gFullbrightTexture && gl_fullbrights.bValue)
@@ -806,23 +801,23 @@ void Video_DrawMaterial(
 
 		if (!bPost)
 		{
-			glEnable(GL_TEXTURE_2D);
+			Video_EnableCapabilities(VIDEO_TEXTURE_2D);
+
 			Video_SetTexture(msCurrentSkin->gFullbrightTexture);
 
 			if (voObject)
 				for (unsigned int i = 0; i < uiSize; i++)
 				{
 					// Texture coordinates remain the same for fullbright layers.
-					voObject[i].vTextureCoord[VIDEO_TEXTURE_FULLBRIGHT][0]
-						= voObject[i].vTextureCoord[VIDEO_TEXTURE_DIFFUSE][0];
-					voObject[i].vTextureCoord[VIDEO_TEXTURE_FULLBRIGHT][1]
-						= voObject[i].vTextureCoord[VIDEO_TEXTURE_DIFFUSE][1];
+					Video_ObjectTexture(&voObject[i], VIDEO_TEXTURE_FULLBRIGHT, 
+						voObject[i].vTextureCoord[VIDEO_TEXTURE_DIFFUSE][0],
+						voObject[i].vTextureCoord[VIDEO_TEXTURE_DIFFUSE][1]);
 				}
 
 			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_ADD);
 		}
 		else
-			glDisable(GL_TEXTURE_2D);
+			Video_DisableCapabilities(VIDEO_TEXTURE_2D);
 	}
 
 	// Sphere map.
@@ -872,13 +867,13 @@ void Video_DrawSurface(msurface_t *mSurface,float fAlpha, Material_t *mMaterial,
 	TODO: Add support for VBOs ?
 */
 void Video_DrawObject(
-	VideoObject_t *voObject,VideoPrimitive_t vpPrimitiveType,unsigned int	uiVerts,
-	Material_t *mMaterial,int iSkin)
+	VideoObject_t *voObject, VideoPrimitive_t vpPrimitiveType, unsigned int	uiVerts,
+	Material_t *mMaterial, int iSkin)
 {
-	unsigned int	i,j;
-    GLenum			gPrimitive = 0;
+	unsigned int	i, j;
+	GLenum			gPrimitive = 0;
 
-	if(!cvVideoDraw.bValue)
+	if (!cvVideoDraw.bValue)
 		return;
 	else if (!voObject)
 	{
@@ -891,36 +886,38 @@ void Video_DrawObject(
 		return;
 	}
 
-	if(bVideoDebug)
-		Console_WriteToLog(cvVideoDebugLog.string,"Video: Drawing object (%i) (%i)\n",uiVerts,vpPrimitiveType);
+	if (bVideoDebug)
+		Console_WriteToLog(cvVideoDebugLog.string, "Video: Drawing object (%i) (%i)\n", uiVerts, vpPrimitiveType);
 
 	bVideoIgnoreCapabilities = true;
 
 	// Vertices count is too high for this object, bump up array sizes to manage it.
-	if(uiVerts > uiVideoArraySize)
+	if (uiVerts > uiVideoArraySize)
 		// Double the array size to cope.
-		Video_AllocateArrays(uiVerts*2);
+		Video_AllocateArrays(uiVerts * 2);
 
 	// Copy everything over...
-	for(i = 0; i < uiVerts; i++)
+	for (i = 0; i < uiVerts; i++)
 	{
-		if(!r_showtris.value)
+		if (!r_showtris.value)
 		{
 			// Allow us to override the colour if we want/need to.
 			if (Video.bColourOverride)
 				Math_Vector4Copy(mvVideoGlobalColour, vVideoColourArray[i]);
 			else
-				Math_Vector4Copy(voObject[i].vColour,vVideoColourArray[i]);
+				Math_Vector4Copy(voObject[i].vColour, vVideoColourArray[i]);
+
+			Math_Vector2Copy(voObject[i].vTextureCoord[VIDEO_TEXTURE_DIFFUSE], vVideoTextureArray[VIDEO_TEXTURE_DIFFUSE][i]);
 
 			// Copy over coords for each active TMU.
-			for (j = 0; j < VIDEO_MAX_UNITS; j++)
-				if (j == 0 || (iSavedCapabilites[j][VIDEO_STATE_ENABLE] & VIDEO_TEXTURE_2D))
+			for (j = 1; j < VIDEO_MAX_UNITS; j++)
+				if (iSavedCapabilites[j][VIDEO_STATE_ENABLE] & VIDEO_TEXTURE_2D)
 					Math_Vector2Copy(voObject[i].vTextureCoord[j], vVideoTextureArray[j][i]);
-		}		
+		}
 		else
-			Math_Vector4Set(1.0f,vVideoColourArray[i]);
+			Math_Vector4Set(1.0f, vVideoColourArray[i]);
 
-		Math_VectorCopy(voObject[i].vVertex,vVideoVertexArray[i]);
+		Math_VectorCopy(voObject[i].vVertex, vVideoVertexArray[i]);
 	}
 
 	Video_DrawMaterial(mMaterial, iSkin, voObject, vpPrimitiveType, uiVerts, false);
@@ -946,31 +943,34 @@ void Video_DrawObject(
 	}
 
 	glEnableClientState(GL_VERTEX_ARRAY);
-	glVertexPointer(3,GL_FLOAT,0,vVideoVertexArray);
+	glVertexPointer(3, GL_FLOAT, 0, vVideoVertexArray);
 
 	glEnableClientState(GL_COLOR_ARRAY);
-	glColorPointer(4,GL_FLOAT,0,vVideoColourArray);
+	glColorPointer(4, GL_FLOAT, 0, vVideoColourArray);
 
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-
-	for (i = 0; i < VIDEO_MAX_UNITS; i++)
+	if (!r_showtris.bValue)
 	{
-		if (i == 0 || (iSavedCapabilites[i][VIDEO_STATE_ENABLE] & VIDEO_TEXTURE_2D))
-		{
-			if (!r_showtris.bValue)
+		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+		glClientActiveTexture(Video_GetGLUnit(VIDEO_TEXTURE_DIFFUSE));
+		glTexCoordPointer(2, GL_FLOAT, 0, vVideoTextureArray[VIDEO_TEXTURE_DIFFUSE]);
+
+		for (i = 1; i < VIDEO_MAX_UNITS; i++)
+			if (iSavedCapabilites[i][VIDEO_STATE_ENABLE] & VIDEO_TEXTURE_2D)
 			{
 				glClientActiveTexture(Video_GetGLUnit(i));
 
 				glTexCoordPointer(2, GL_FLOAT, 0, vVideoTextureArray[i]);
 			}
-		}
 	}
 
 	glDrawArrays(gPrimitive,0,uiVerts);
 
 	glDisableClientState(GL_COLOR_ARRAY);
 	glDisableClientState(GL_VERTEX_ARRAY);
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+
+	if (!r_showtris.bValue)
+		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 
 	if(r_showtris.bValue)
 		glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);

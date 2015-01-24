@@ -163,9 +163,15 @@ void R_DrawSequentialPoly(msurface_t *s)
 		{
             Video_SetBlend(VIDEO_BLEND_IGNORE,VIDEO_DEPTH_FALSE);
             Video_EnableCapabilities(VIDEO_BLEND);
-
-			glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
 		}
+
+#if 1
+		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
+		glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
+		glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_TEXTURE);
+		glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_PRIMARY_COLOR);
+		glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 4);
+#endif
 
 		Video_SetTexture(mAssignedMaterial->msSkin[0].gDiffuseTexture);
 
@@ -178,8 +184,9 @@ void R_DrawSequentialPoly(msurface_t *s)
 
         rs_brushpasses++;
 
-		if(fAlpha < 1.0f)
-			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,GL_REPLACE);
+#if 1
+		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+#endif
 	}
 	else
 	{

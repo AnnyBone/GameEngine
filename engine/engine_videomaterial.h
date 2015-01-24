@@ -60,11 +60,13 @@ typedef struct
 			iSkins;				// Number of skins provided by this material.
 
 	char	cPath[PLATFORM_MAX_PATH],	// Path of the material.
-		cName[64];					// Name of the material.
+			cName[64];					// Name of the material.
 
 	MaterialSkin_t	msSkin[MATERIAL_MAX_SKINS];
 
 	bool	bBind;
+
+	float	fAlpha;	// Alpha override.
 
 	// Animation
 	float	fAnimationSpeed;	// Speed to scroll through skins, if animation is enabled.
