@@ -184,12 +184,12 @@ float	entalpha; //johnfitz
 bool	bOverbright,
 		bShading;		//johnfitz -- if false, disable vertex shading for various reasons (fullbright, r_lightmap, showtris, etc)
 
-MathVector3_t	vLightOrigin,
-				vLightColour;
+MathVector3_t	vLightColour;
+
+DynamicLight_t	*dlLightSource;
 
 void R_SetupModelLighting(vec3_t vOrigin)
 {
-	DynamicLight_t	*dlLightSource;
 	float			fDistance;
 
 	if(!bShading)
@@ -198,17 +198,9 @@ void R_SetupModelLighting(vec3_t vOrigin)
 	// Check to see if we can grab the light source, for directional information.
 	dlLightSource = Light_GetDynamic(vOrigin);
 	if(dlLightSource)
-	{
 		Math_VectorCopy(dlLightSource->color,vLightColour);
-		Math_VectorCopy(dlLightSource->origin,vLightOrigin);
-	}
 	else
-	{
 		Math_MVToVector(Light_GetSample(vOrigin), vLightColour);
-
-		// Default light origin to our current origin.
-		Math_VectorCopy(vOrigin, vLightOrigin);
-	}
 
 	// Minimum light value on players (8)
 	if(currententity > cl_entities && currententity <= cl_entities + cl.maxclients)
@@ -339,15 +331,11 @@ void Alias_DrawFrame(MD2_t *mModel,entity_t *eEntity,lerpdata_t lLerpData)
 						(shadedots[verts1->lightnormalindex] * ilerp + shadedots[verts2->lightnormalindex] * lLerpData.blend),
 						entalpha);
 #endif
-					// Calculate relative to normals...
-
-					// Is this working right... ?
-
 					Video_ObjectColour(&voModel[uiVerts],
-						vLightColour[RED], vLightColour[GREEN], vLightColour[BLUE],
+						vLightColour[pRED],
+						vLightColour[pGREEN],
+						vLightColour[pBLUE],
 						entalpha);
-
-					// BUG: Colour isn't blending correctly with texturemap, ugh...
 				}
 				else
 					Video_ObjectColour(&voModel[uiVerts], 1.0f, 1.0f, 1.0f, 1.0f);
@@ -496,6 +484,9 @@ void Alias_Draw(entity_t *eEntity)
 	R_SetupModelLighting(eEntity->origin);
 
     Video_ResetCapabilities(false);
+
+	// Let lighting stand out more...
+	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
 
 	Alias_DrawFrame(mModel, eEntity, lLerpData);
 

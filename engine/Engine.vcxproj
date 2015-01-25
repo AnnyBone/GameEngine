@@ -625,7 +625,7 @@
     <ClCompile Include="engine_consolevar.c" />
     <ClCompile Include="engine_editor.c" />
     <ClCompile Include="engine_videofont.c">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="engine_modgame.c" />
     <ClCompile Include="engine_clientinput.c" />

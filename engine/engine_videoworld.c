@@ -386,13 +386,11 @@ void World_DrawWaterTextureChains(void)
 		Video_SetBlend(VIDEO_BLEND_IGNORE,VIDEO_DEPTH_FALSE);
 	}
 
-#if 1
 	glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_COMBINE);
-	glTexEnvi(GL_TEXTURE_ENV,GL_COMBINE_RGB,GL_MODULATE);
+	glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
 	glTexEnvi(GL_TEXTURE_ENV,GL_SOURCE0_RGB,GL_TEXTURE);
 	glTexEnvi(GL_TEXTURE_ENV,GL_SOURCE1_RGB,GL_PRIMARY_COLOR);
 	glTexEnvi(GL_TEXTURE_ENV,GL_RGB_SCALE,4);
-#endif
 
 	if (r_oldwater.value)
 	{
@@ -423,10 +421,6 @@ void World_DrawWaterTextureChains(void)
 				}
 		}
 	}
-
-#if 1
-	glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_REPLACE);
-#endif
 
 	Video_ResetCapabilities(true);
 }
@@ -536,7 +530,7 @@ void World_Draw(void)
 
 	Video_SelectTexture(VIDEO_TEXTURE_LIGHT);
 
-	glDisable(GL_TEXTURE_2D);
+	Video_DisableCapabilities(VIDEO_TEXTURE_2D);
 
 	Video_ResetCapabilities(true);
 }

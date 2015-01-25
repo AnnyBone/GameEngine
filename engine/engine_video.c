@@ -547,6 +547,9 @@ unsigned int Video_GetGLUnit(unsigned int uiTarget)
 {
 	unsigned int uiUnit = 0;
 
+	if (bVideoDebug)
+		Console_WriteToLog(cvVideoDebugLog.string, "Video: Attempting to get TMU target %i\n", uiTarget);
+
 	switch (uiTarget)
 	{
 	case VIDEO_TEXTURE_DIFFUSE:
@@ -1165,6 +1168,8 @@ void Video_Frame(void)
     if(bVideoDebug)
     {
         Console_WriteToLog(cvVideoDebugLog.string,"Video: End of frame\n");
+
+		// TODO: End of frame states (number of calls to video_draw etc)
 
 		bVideoDebug = false;
     }
