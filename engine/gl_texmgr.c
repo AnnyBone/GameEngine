@@ -281,6 +281,20 @@ gltexture_t *TexMgr_FindTexture (model_t *owner, char *name)
 	return NULL;
 }
 
+gltexture_t *TexMgr_GetTexture(const char *ccPath)
+{
+	gltexture_t	*glt;
+
+	if (ccPath[0] == ' ')
+		Sys_Error("Invalid texture path!\n");
+
+	for (glt = active_gltextures; glt; glt = glt->next)
+		if (!strcmp(glt->source_file, ccPath))
+			return glt;
+
+	return NULL;
+}
+
 gltexture_t *TexMgr_NewTexture (void)
 {
 	gltexture_t *glt;

@@ -2,7 +2,7 @@
 LodePNG version 20141130
 
 Copyright (c) 2005-2014 Lode Vandevenne
-Copyright (C) 2015 Mark Sowden (additional changes)
+Copyright (C) 2015 OldTimes Software (additional changes)
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages

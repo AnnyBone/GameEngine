@@ -558,12 +558,15 @@ void R_DrawShadows (void)
 	for(i = 0; i < cl_numvisedicts; i++)
 	{
 		currententity = cl_visedicts[i];
-
 		if(currententity == &cl.viewent)
 			return;
 
 		Draw_Shadow(currententity);
 	}
+
+	// Allow us to also render the players own shadow too.
+	if (cvVideoPlayerShadow.bValue)
+		Draw_Shadow(&cl_entities[cl.viewentity]);
 }
 
 void R_RenderScene(void)

@@ -86,7 +86,12 @@ void Draw_Shadow(entity_t *ent)
 	lheight = ent->origin[2]-lightspot[2];
 
 	{
-		VideoObject_t voShadow[4] = { 0 };
+		/*	TODO:
+			Trace down to get plane and set angles to that
+			clip based on surface extents?
+		*/
+
+		VideoObject_t	voShadow[4] = { 0 };
 
 		Video_ResetCapabilities(false);
 
@@ -123,57 +128,59 @@ void Draw_Shadow(entity_t *ent)
 		Video_ResetCapabilities(true);
 	}
 
-	if((r_shadows.value >= 2) && (ent->model->mType == MODEL_TYPE_MD2))
-	{
-		MD2_t			*pmd2;
-		DynamicLight_t	*dlLight;
-		vec3_t			vDistance;
+	// Player doesn't get animated, so don't bother with planar shadows for him.
+	if (ent != &cl_entities[cl.viewentity])
+		if((r_shadows.value >= 2) && (ent->model->mType == MODEL_TYPE_MD2))
+		{
+			MD2_t			*pmd2;
+			DynamicLight_t	*dlLight;
+			vec3_t			vDistance;
 
-		pmd2 = (MD2_t*)Mod_Extradata(ent->model);
+			pmd2 = (MD2_t*)Mod_Extradata(ent->model);
 
-		Alias_SetupFrame(pmd2,&lerpdata);
+			Alias_SetupFrame(pmd2,&lerpdata);
 
-		bShading = false;
+			bShading = false;
 
-		fShadowMatrix[8] =
-		fShadowMatrix[9] = 0;
+			fShadowMatrix[8] =
+			fShadowMatrix[9] = 0;
 
-		dlLight = Light_GetDynamic(ent->origin);
-		if(!dlLight)
-			return;
+			dlLight = Light_GetDynamic(ent->origin);
+			if(!dlLight)
+				return;
 
-		Math_VectorSubtract(ent->origin,dlLight->origin,vDistance);
+			Math_VectorSubtract(ent->origin,dlLight->origin,vDistance);
 
-		fShadowAlpha = (dlLight->radius-Math_Length(vDistance))/100.0f;
-		if(fShadowAlpha <= 0)
-			return;
+			fShadowAlpha = (dlLight->radius-Math_Length(vDistance))/100.0f;
+			if(fShadowAlpha <= 0)
+				return;
 
-		fShadowMatrix[8] = vDistance[0]/100.0f;
-		fShadowMatrix[9] = vDistance[1]/100.0f;
+			fShadowMatrix[8] = vDistance[0]/100.0f;
+			fShadowMatrix[9] = vDistance[1]/100.0f;
 
-		glPushMatrix();
+			glPushMatrix();
 
-		Video_ResetCapabilities(false);
+			Video_ResetCapabilities(false);
 
-		Video_EnableCapabilities(VIDEO_BLEND|VIDEO_STENCIL_TEST);
-		Video_DisableCapabilities(VIDEO_TEXTURE_2D);
-		Video_SetBlend(VIDEO_BLEND_IGNORE,VIDEO_DEPTH_FALSE);
+			Video_EnableCapabilities(VIDEO_BLEND|VIDEO_STENCIL_TEST);
+			Video_DisableCapabilities(VIDEO_TEXTURE_2D);
+			Video_SetBlend(VIDEO_BLEND_IGNORE,VIDEO_DEPTH_FALSE);
 
-		glStencilFunc(GL_EQUAL,1,2);
-		Video_SetColour(0, 0, 0, fShadowAlpha);
-		glTranslatef(ent->origin[0],ent->origin[1],ent->origin[2]);
-		glTranslatef(0,0,-lheight);
-		glMultMatrixf(fShadowMatrix);
-		glTranslatef(0,0,lheight);
-		glRotatef(ent->angles[1],0,0,1);
-		glRotatef(ent->angles[0],0,1,0);
-		glRotatef(ent->angles[2],1,0,0);
-		glStencilOp(GL_KEEP,GL_KEEP,GL_INCR);
+			glStencilFunc(GL_EQUAL,1,2);
+			Video_SetColour(0, 0, 0, fShadowAlpha);
+			glTranslatef(ent->origin[0],ent->origin[1],ent->origin[2]);
+			glTranslatef(0,0,-lheight);
+			glMultMatrixf(fShadowMatrix);
+			glTranslatef(0,0,lheight);
+			glRotatef(ent->angles[1],0,0,1);
+			glRotatef(ent->angles[0],0,1,0);
+			glRotatef(ent->angles[2],1,0,0);
+			glStencilOp(GL_KEEP,GL_KEEP,GL_INCR);
 
-		Alias_DrawFrame(pmd2, ent, lerpdata);
+			Alias_DrawFrame(pmd2, ent, lerpdata);
 
-		glPopMatrix();
+			glPopMatrix();
 
-		Video_ResetCapabilities(true);
-	}
+			Video_ResetCapabilities(true);
+		}
 }

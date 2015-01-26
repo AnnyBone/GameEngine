@@ -24,7 +24,7 @@
 */
 
 #include "engine_video.h"
-#include "engine_videomaterial.h"
+#include "engine_material.h"
 
 extern cvar_t gl_fullbrights, r_drawflat, gl_overbright, r_oldwater, r_oldskyleaf, r_showtris; //johnfitz
 
@@ -190,181 +190,10 @@ void R_BuildLightmapChains (void)
 //
 //==============================================================================
 
-void R_DrawTextureChains_ShowTris (void)
-{
-	int			i;
-	msurface_t	*s;
-	texture_t	*t;
-	glpoly_t	*p;
-
-	for (i=0 ; i<cl.worldmodel->numtextures ; i++)
-	{
-		t = cl.worldmodel->textures[i];
-		if (!t)
-			continue;
-
-		if (r_oldwater.value && t->texturechain && (t->texturechain->flags & SURF_DRAWTURB))
-		{
-			for (s = t->texturechain; s; s = s->texturechain)
-				if (!s->culled)
-					for (p = s->polys->next; p; p = p->next)
-						DrawGLPoly (p);
-		}
-		else
-		{
-			for (s = t->texturechain; s; s = s->texturechain)
-				if (!s->culled)
-					DrawGLPoly (s->polys);
-		}
-	}
-}
-
 void R_DrawTextureChains_Drawflat (void)
 {
-	int			i;
-	msurface_t	*s;
-	texture_t	*t;
-	glpoly_t	*p;
-
-	for (i=0 ; i<cl.worldmodel->numtextures ; i++)
-	{
-		t = cl.worldmodel->textures[i];
-		if (!t)
-			continue;
-
-		if (r_oldwater.value && t->texturechain && (t->texturechain->flags & SURF_DRAWTURB))
-		{
-			for (s = t->texturechain; s; s = s->texturechain)
-				if (!s->culled)
-					for (p = s->polys->next; p; p = p->next)
-					{
-						DrawGLPoly (p);
-						rs_brushpasses++;
-					}
-		}
-		else
-		{
-			for (s = t->texturechain; s; s = s->texturechain)
-				if (!s->culled)
-				{
-					DrawGLPoly (s->polys);
-					rs_brushpasses++;
-				}
-		}
-	}
 	glColor3f (1,1,1);
 	srand ((int) (cl.time * 1000));
-}
-
-void R_DrawTextureChains_Glow (void)
-{
-#if 0
-	int			i;
-	msurface_t	*s;
-	texture_t	*t;
-	gltexture_t	*glt;
-	bool		bBound;
-
-	for(i = 0; i < cl.worldmodel->numtextures; i++)
-	{
-		t = cl.worldmodel->textures[i];
-
-		if (!t || !t->texturechain)
-			continue;
-
-		glt = R_TextureAnimation(t,0)->fullbright;
-		if(!glt)
-			continue;
-
-		bBound = false;
-
-		for(s = t->texturechain; s; s = s->texturechain)
-			if(!s->culled)
-			{
-				if(!bBound) // only bind once we are sure we need this texture
-				{
-					Video_SetTexture(glt);
-					bBound = true;
-				}
-
-				DrawGLPoly(s->polys);
-
-				rs_brushpasses++;
-			}
-	}
-#endif
-}
-
-/*	Draws surfs whose textures were missing from the BSP
-*/
-void R_DrawTextureChains_NoTexture (void)
-{
-#if 0
-	int			i;
-	bool		bTextureBound;
-	msurface_t	*s;
-	texture_t	*t;
-
-	for (i=0 ; i<cl.worldmodel->numtextures ; i++)
-	{
-		t = cl.worldmodel->textures[i];
-
-		if (!t || !t->texturechain || !(t->texturechain->flags & SURF_NOTEXTURE))
-			continue;
-
-		bTextureBound = false;
-
-		for (s = t->texturechain; s; s = s->texturechain)
-			if (!s->culled)
-			{
-				if(!bTextureBound) //only bind once we are sure we need this texture
-				{
-					Video_SetTexture(Material_Get(t->iAssignedTexture)->msSkin[0].gDiffuseTexture);
-
-					bTextureBound = true;
-				}
-
-				DrawGLPoly(s->polys);
-
-				rs_brushpasses++;
-			}
-	}
-#endif
-}
-
-void R_DrawTextureChains_TextureOnly (void)
-{
-	int			i;
-	bool		bTextureBound;
-	msurface_t	*s;
-	texture_t	*t;
-
-	for (i=0 ; i<cl.worldmodel->numtextures ; i++)
-	{
-		t = cl.worldmodel->textures[i];
-
-		if (!t || !t->texturechain || t->texturechain->flags & (SURF_DRAWTURB | SURF_DRAWSKY))
-			continue;
-
-		bTextureBound = false;
-
-		for (s = t->texturechain; s; s = s->texturechain)
-			if (!s->culled)
-			{
-				if(!bTextureBound) //only bind once we are sure we need this texture
-				{
-					Video_SetTexture(Material_Get((R_TextureAnimation(t,0))->iAssignedMaterial)->msSkin[0].gDiffuseTexture);
-
-					bTextureBound = true;
-				}
-
-				R_RenderDynamicLightmaps(s); //adds to lightmap chain
-
-				DrawGLPoly(s->polys);
-
-				rs_brushpasses++;
-			}
-	}
 }
 
 void World_DrawWaterTextureChains(void)
@@ -382,8 +211,8 @@ void World_DrawWaterTextureChains(void)
 
 	if (r_wateralpha.value < 1.0)
 	{
+		Video_SetBlend(VIDEO_BLEND_IGNORE, VIDEO_DEPTH_FALSE);
 		Video_EnableCapabilities(VIDEO_BLEND);
-		Video_SetBlend(VIDEO_BLEND_IGNORE,VIDEO_DEPTH_FALSE);
 	}
 
 	glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_COMBINE);
@@ -392,62 +221,35 @@ void World_DrawWaterTextureChains(void)
 	glTexEnvi(GL_TEXTURE_ENV,GL_SOURCE1_RGB,GL_PRIMARY_COLOR);
 	glTexEnvi(GL_TEXTURE_ENV,GL_RGB_SCALE,4);
 
-	if (r_oldwater.value)
+	for (i = 0; i < cl.worldmodel->numtextures; i++)
 	{
-		for (i=0 ; i<cl.worldmodel->numtextures ; i++)
-		{
-			t = cl.worldmodel->textures[i];
-			if (!t || !t->texturechain || !(t->texturechain->flags & SURF_DRAWTURB))
-				continue;
+		t = cl.worldmodel->textures[i];
+		if (!t || !t->texturechain || !(t->texturechain->flags & SURF_DRAWTURB))
+			continue;
 
-			bTextureBound = false;
+		bTextureBound = false;
 
-			for (s = t->texturechain; s; s = s->texturechain)
-				if(!s->culled)
+		for (s = t->texturechain; s; s = s->texturechain)
+			if(!s->culled)
+			{
+				if(!bTextureBound)
 				{
-					if(!bTextureBound)
-					{
-						// Only bind once we are sure we need this texture
-						Video_SetTexture(Material_Get(t->iAssignedMaterial)->msSkin[0].gDiffuseTexture);
+					// Only bind once we are sure we need this texture
+					Video_SetTexture(Material_Get(t->iAssignedMaterial)->msSkin[0].gDiffuseTexture);
 
-						bTextureBound = true;
-					}
-
-					for(p = s->polys->next; p; p = p->next)
-					{
-						Warp_DrawWaterPoly(p);
-						rs_brushpasses++;
-					}
+					bTextureBound = true;
 				}
-		}
+
+				for(p = s->polys->next; p; p = p->next)
+				{
+					Warp_DrawWaterPoly(p);
+
+					rs_brushpasses++;
+				}
+			}
 	}
 
 	Video_ResetCapabilities(true);
-}
-
-void R_DrawTextureChains_White (void)
-{
-	int			i;
-	msurface_t	*s;
-	texture_t	*t;
-
-	glDisable (GL_TEXTURE_2D);
-	for (i=0 ; i<cl.worldmodel->numtextures ; i++)
-	{
-		t = cl.worldmodel->textures[i];
-
-		if (!t || !t->texturechain || !(t->texturechain->flags & SURF_DRAWTILED))
-			continue;
-
-		for (s = t->texturechain; s; s = s->texturechain)
-			if (!s->culled)
-			{
-				Video_SetTexture(Material_Get((R_TextureAnimation(t,0))->iAssignedMaterial)->msSkin[0].gDiffuseTexture);
-				DrawGLPoly (s->polys);
-				rs_brushpasses++;
-			}
-	}
-	glEnable (GL_TEXTURE_2D);
 }
 
 void R_DrawLightmapChains (void)
@@ -528,8 +330,8 @@ void World_Draw(void)
 			}
 	}
 
+	// Disable light texture
 	Video_SelectTexture(VIDEO_TEXTURE_LIGHT);
-
 	Video_DisableCapabilities(VIDEO_TEXTURE_2D);
 
 	Video_ResetCapabilities(true);

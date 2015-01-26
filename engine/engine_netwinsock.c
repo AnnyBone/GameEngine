@@ -128,7 +128,7 @@ int WINS_Init (void)
 
 // initialize the Winsock function vectors (we do this instead of statically linking
 // so we can run on Win 3.1, where there isn't necessarily Winsock)
-    hInst = pModule_Load("wsock32.dll");
+    hInst = pModule_Load("wsock32");
 	if (hInst == NULL)
 	{
 		Con_SafePrintf ("Failed to load winsock.dll\n");

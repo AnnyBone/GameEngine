@@ -179,8 +179,6 @@ void R_DrawSequentialPoly(msurface_t *s)
 
             rs_brushpasses++;
         }
-
-        rs_brushpasses++;
 	}
 	else
 	{

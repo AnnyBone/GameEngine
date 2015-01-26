@@ -3,6 +3,7 @@
 #include "shared_editor.h"
 
 bool	lightvis,
+		bLightDirty,
 		relight,
 		verbose;
 
@@ -44,6 +45,7 @@ vec3_t	vTextureReflectivity[BSP_MAX_TEXINFO];
 // [22/7/2012] Taken from Quake 2's BSP tools ~hogsy
 void Light_CalculateTextureReflectivity(void)
 {
+#if 0
 	vec3_t		vColor;
 	int			i,j,k,texels,texel;
 	char		path[1024];
@@ -55,14 +57,12 @@ void Light_CalculateTextureReflectivity(void)
 
 	for(i = 0; i < numtexinfo; i++)
 	{
-#if 0
 		for(j = 0; j < i; j++)
 			if(!strcmp(miptex[i],miptex[j]))
 			{
 				VectorCopy(vTextureReflectivity[j],vTextureReflectivity[i]);
 				break;
 			}
-#endif
 
 		if(j != i)
 			continue;
@@ -74,11 +74,9 @@ void Light_CalculateTextureReflectivity(void)
 		// [1/8/2012] TODO: How to do for 32bpp images :/ ~hogsy
 		for(j = 0; j < texels; j++)
 		{
-#if 0
 			texel = ((byte*)mt)[LittleLong(mt->offsets[o])+j];
 			for(k = 0; k < 3; k++)
 				vColor[k] += palette
-#endif
 		}
 
 		for(j = 0; j < 3; j++)
@@ -94,6 +92,7 @@ void Light_CalculateTextureReflectivity(void)
 			VectorScale(vTextureReflectivity[i],scale,vTextureReflectivity[i]);
 		}
 	}
+#endif
 }
 
 int LightStyleForTargetname( char *targetname )
@@ -507,6 +506,8 @@ void LightWorld( void )
 	printf( "c_occluded: %i\n", c_occluded );
 }
 
+void LightFace_SetupDirt(void);
+
 int Light_Main( int argc, char **argv )
 {
 	double start, end;
@@ -514,6 +515,7 @@ int Light_Main( int argc, char **argv )
 
 	extrasamplesbit         = 0;
 	lightvis                = true;
+	bLightDirty				=
 	relight                 = false;
 	globallightscale        = 1.0;
 	globallightradiusscale  = 1.0;
@@ -533,9 +535,15 @@ int Light_Main( int argc, char **argv )
 			extrasamplesbit = atoi(argv[i]);
 			printf("Antialiased lighting enabled (mode %i)\n",extrasamplesbit);
 		}
+		else if (!strcmp(argv[i], "-dirty"))
+		{
+			bLightDirty = true;
+
+			printf("Dirty lighting enabled\n");
+		}
 		else if( !strcmp( argv[i],"-nolightvis" ) )
 		{
-			printf( "use of vis data to optimize lighting disabled\n" );
+			printf( "VIS optimization disabled\n" );
 			lightvis = false;
 		}
 		else if( !strcmp( argv[i],"-intensity" ) )
@@ -592,7 +600,7 @@ int Light_Main( int argc, char **argv )
 		else if( !strcmp( argv[i],"-harshshade" ) )
 		{
 			harshshade = 1;
-			printf( "harsh shading enabled\n" );
+			printf( "Harsh shading enabled\n" );
 		}
 		else if( argv[i][0] == '-' )
 			Error( "Unknown option \"%s\"", argv[i] );
@@ -658,6 +666,8 @@ int Light_Main( int argc, char **argv )
 	printf( "%i entities read\n", num_entities );
 
 	ParseLightEntities ();
+
+	LightFace_SetupDirt();
 
 	LightWorld ();
 

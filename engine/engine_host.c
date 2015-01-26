@@ -443,6 +443,7 @@ void Host_ClearMemory(void)
 {
 	Con_DPrintf("Clearing memory\n");
 
+	Material_ClearAll();	// Clear out all active materials.
 	Model_ClearAll();
 
 	if(host_hunklevel)

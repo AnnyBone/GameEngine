@@ -416,7 +416,9 @@ void LoadBSPFile(char *filename)
 	SB_Free(&sb);
 }
 
-// Ripped from RMQ ~hogsy
+/*	Removes surfaces marked as "nodraw" from the BSP.
+	Ripped from RMQ.
+*/
 void BSP_RemoveSkipSurfaces(void)
 {
 	int					i, skipcount;
@@ -424,11 +426,11 @@ void BSP_RemoveSkipSurfaces(void)
 	BSPLeaf_t			*leaf;
 	BSPFace_t			*face;
 	BSPTextureInfo_t	*ti;
+	BSPModel_t			*model;
+	BSPFace_t			*modfaces;
 	miptex_t			*textures, *texture;
 	char				*name;
 	dmiptexlump_t		*miptexlump;
-	BSPModel_t			*model;
-	BSPFace_t			*modfaces;
 
 	miptexlump = (dmiptexlump_t *) dtexdata;
 	textures = (miptex_t *) dtexdata;
@@ -691,6 +693,11 @@ void WriteBSPFile (char *filename)
 	SB_WriteData (&sb, dentdata, entdatasize);
 	lump->iFileLength = SB_Tell(&sb) - lump->iFileOffset;
 	SB_ZeroFill (&sb, ((lump->iFileLength + 3) & ~3) - lump->iFileLength);
+
+	// Save the entities output to a text file for later analysis.
+	f = SafeOpenWrite("entities.txt");
+	SafeWrite(f, (void*)dentdata, (entdatasize-1));
+	fclose(f);
 
 	lump = &lumps[LUMP_TEXTURES];
 	lump->iFileOffset = SB_Tell (&sb);

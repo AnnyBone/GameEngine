@@ -248,7 +248,7 @@ void WriteMiptex (void)
 			// try prepending each -wadpath on the commandline to the wad name
 			for (i = 1;i < myargc;i++)
 			{
-				if(!Q_strcasecmp("-wadpath", myargv[i]))
+				if(!strcmp("-wadpath", myargv[i]))	// Originally used Q_strcasecmp or whatever, switched around to reflect everything else.
 				{
 					i++;
 					if(i < myargc)
@@ -293,7 +293,7 @@ void WriteMiptex (void)
 
 	printf("Loading textures...\n");
 
-	AddAnimatingTextures();
+	//AddAnimatingTextures();
 
 	miptex_lumps            = (dmiptexlump_t *)dtexdata;
 	miptex_data             = (byte *)&miptex_lumps->dataofs[nummiptex];

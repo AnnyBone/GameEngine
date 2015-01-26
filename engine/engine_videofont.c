@@ -30,7 +30,7 @@ void Font_Initialize(void)
 */
 void Font_Load(const char *ccName,int iSize)
 {
-#ifdef _WIN32
+#ifdef _WIN32	// TODO: Move this over to platform.
 	HFONT	hFont;
 
 	hFont = CreateFontA(
@@ -80,10 +80,10 @@ void Font_Draw(Font_t *fFont,const char *ccMessage,vec3_t vPos,vec3_t vColour)
 	Math_VectorCopy(vPos,voFont[3].vVertex);
 
 #if 0
-	voFont[1].vVertex[0]	+= sFontSurface->w;
-	voFont[2].vVertex[0]	+= sFontSurface->w;
-	voFont[2].vVertex[1]	+= sFontSurface->h;
-	voFont[3].vVertex[1]	+= sFontSurface->h;
+	voFont[1].vVertex[0] += sFontSurface->w;
+	voFont[2].vVertex[0] += sFontSurface->w;
+	voFont[2].vVertex[1] += sFontSurface->h;
+	voFont[3].vVertex[1] += sFontSurface->h;
 #endif
 
 	Video_DrawFill(voFont,NULL);
@@ -91,8 +91,6 @@ void Font_Draw(Font_t *fFont,const char *ccMessage,vec3_t vPos,vec3_t vColour)
 
 void Font_Shutdown(void)
 {
-	int i;
-
 	/*	todo:
 			unload all loaded fonts.
 	*/

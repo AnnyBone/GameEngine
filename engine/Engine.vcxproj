@@ -636,7 +636,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (Ictus)|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="engine_videomaterial.c">
+    <ClCompile Include="engine_material.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="engine_modmenu.c" />
@@ -712,7 +712,7 @@
     <ClInclude Include="engine_edict.h" />
     <ClInclude Include="engine_editor.h" />
     <ClInclude Include="engine_particle.h" />
-    <ClInclude Include="engine_videomaterial.h" />
+    <ClInclude Include="engine_material.h" />
     <ClInclude Include="engine_modgame.h" />
     <ClInclude Include="engine_clientinput.h" />
     <ClInclude Include="engine_loader.h" />

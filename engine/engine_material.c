@@ -11,7 +11,7 @@
 	~hogsy
 */
 
-#include "engine_videomaterial.h"
+#include "engine_material.h"
 
 #include "engine_script.h"
 
@@ -100,12 +100,12 @@ Material_t *Material_Allocate(void)
 			if (!mMaterials[i].iIdentification || !mMaterials[i].iSkins)
 			{
 				// Set our new material with defaults.
-				mMaterials[i].cName[0]			= 0;
-				mMaterials[i].iIdentification	= i;
-				mMaterials[i].iSkins			= 0;
-				mMaterials[i].iFlags			= 0;
+				mMaterials[i].cName[0] = 0;
+				mMaterials[i].iIdentification = i;
+				mMaterials[i].iSkins = 0;
+				mMaterials[i].iFlags = 0;
 				mMaterials[i].fAlpha = 1.0f;
-				mMaterials[i].bBind				= true;
+				mMaterials[i].bBind	= true;
 
 				iMaterialCount++;
 
@@ -116,16 +116,20 @@ Material_t *Material_Allocate(void)
 }
 
 /*	Clears all the currently active materials.
+	TODO: 
+		Reorganise list!!!!!!!!!
 */
-void Material_ClearActive(void)
+void Material_ClearAll(void)
 {
 	int	i;
 
 	for (i = 0; i < MATERIAL_MAX; i++)
-	{
 		if (!(mMaterials[i].iFlags & MATERIAL_FLAG_PRESERVE))
-		{ }
-	}
+		{
+			memset(&mMaterials[i], 0, sizeof(Material_t));
+
+			// iMaterialCount--;
+		}
 }
 
 MaterialSkin_t *Material_GetSkin(Material_t *mMaterial,int iSkin)
@@ -233,16 +237,29 @@ bool	bMaterialGlobal;	// Indicates that any settings applied are global.
 
 gltexture_t *Material_LoadTexture(Material_t *mMaterial,MaterialSkin_t *mCurrentSkin, char *cArg)
 {
-	int		iTextureFlags = TEXPREF_ALPHA;
-	byte	*bTextureMap;
+	int			iTextureFlags = TEXPREF_ALPHA;
+	byte		*bTextureMap;
 
 	// Check if it's trying to use a built-in texture.
 	if (cArg[0] == '@')
 	{
-		if (!stricmp(cArg, "@notexture"))
+		cArg++;
+
+		if (!stricmp(cArg, "notexture"))
 			return notexture;
+#if 0
+		else if (!stricmp(cArg, "shadow"))
+			return generated_shadow;
+#endif
 		else
 			Sys_Error("Attempted to set invalid internal texture! (%s)\n", mMaterial->cPath);
+	}
+
+	{
+		// Ensure we haven't loaded the texture in already...
+		gltexture_t *gTexture = TexMgr_GetTexture(cArg);
+		if (gTexture)
+			return gTexture;
 	}
 
 	bTextureMap = Image_LoadImage(cArg,
@@ -262,7 +279,7 @@ gltexture_t *Material_LoadTexture(Material_t *mMaterial,MaterialSkin_t *mCurrent
 		if (mMaterial->iFlags & MATERIAL_FLAG_PRESERVE)
 			iTextureFlags |= TEXPREF_PERSIST;
 
-		return TexMgr_LoadImage(NULL,cArg,
+		return TexMgr_LoadImage(NULL, cArg,
 			mCurrentSkin->iTextureWidth,
 			mCurrentSkin->iTextureHeight,
 			SRC_RGBA,bTextureMap,cArg,0,iTextureFlags);
@@ -275,7 +292,7 @@ gltexture_t *Material_LoadTexture(Material_t *mMaterial,MaterialSkin_t *mCurrent
 
 // Everything else...
 
-void _Material_SetType(Material_t *mCurrentMaterial,char *cArg)
+void _Material_SetType(Material_t *mCurrentMaterial,bool bGlobal,char *cArg)
 {
 	int	iMaterialType = Q_atoi(cArg);
 
@@ -286,39 +303,63 @@ void _Material_SetType(Material_t *mCurrentMaterial,char *cArg)
 	mCurrentMaterial->msSkin[mCurrentMaterial->iSkins-1].iType = iMaterialType;
 }
 
-void _Material_SetDiffuseTexture(Material_t *mCurrentMaterial,char *cArg)
+void _Material_SetDiffuseTexture(Material_t *mCurrentMaterial, bool bGlobal, char *cArg)
 {
-	mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1].gDiffuseTexture = Material_LoadTexture(mCurrentMaterial,&mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1], cArg);
+	if (bGlobal)
+		Sys_Error("Attempted to set diffuse texture globally! (%s)\n", mCurrentMaterial->cPath);
+
+	mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1].gDiffuseTexture = 
+		Material_LoadTexture(mCurrentMaterial,&mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1], cArg);
 }
 
-void _Material_SetFullbrightTexture(Material_t *mCurrentMaterial,char *cArg)
+void _Material_SetFullbrightTexture(Material_t *mCurrentMaterial, bool bGlobal, char *cArg)
 {
-	mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1].gFullbrightTexture = Material_LoadTexture(mCurrentMaterial,&mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1], cArg);
+	if (bGlobal)
+		Sys_Error("Attempted to set fullbright texture globally! (%s)\n", mCurrentMaterial->cPath);
+
+	mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1].gFullbrightTexture = 
+		Material_LoadTexture(mCurrentMaterial,&mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1], cArg);
 }
 
-void _Material_SetSphereTexture(Material_t *mCurrentMaterial,char *cArg)
+void _Material_SetSphereTexture(Material_t *mCurrentMaterial, bool bGlobal, char *cArg)
 {
-	mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1].gSphereTexture = Material_LoadTexture(mCurrentMaterial,&mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1], cArg);
+	if (bGlobal)
+		Sys_Error("Attempted to set sphere texture globally! (%s)\n", mCurrentMaterial->cPath);
+
+	mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1].gSphereTexture = 
+		Material_LoadTexture(mCurrentMaterial,&mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1], cArg);
 }
 
-void _Material_SetSpecularTexture(Material_t *mCurrentMaterial, char *cArg)
+void _Material_SetSpecularTexture(Material_t *mCurrentMaterial, bool bGlobal, char *cArg)
 {
-	mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1].gSpecularTexture = Material_LoadTexture(mCurrentMaterial,&mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1], cArg);
+	mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1].gSpecularTexture = 
+		Material_LoadTexture(mCurrentMaterial,&mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1], cArg);
 }
 
-void _Material_SetDetailTexture(Material_t *mCurrentMaterial, char *cArg)
+void _Material_SetDetailTexture(Material_t *mCurrentMaterial, bool bGlobal, char *cArg)
 {
-	mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1].gDetailTexture = Material_LoadTexture(mCurrentMaterial,&mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1], cArg);
+	mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1].gDetailTexture = 
+		Material_LoadTexture(mCurrentMaterial,&mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1], cArg);
 }
 
-void _Material_SetAnimationSpeed(Material_t *mCurrentMaterial, char *cArg)
+void _Material_SetAnimationSpeed(Material_t *mCurrentMaterial, bool bGlobal, char *cArg)
 {
 	mCurrentMaterial->fAnimationSpeed = strtof(cArg,NULL);
 }
 
-void _Material_SetAlpha(Material_t *mCurrentMaterial, char *cArg)
+void _Material_SetAlpha(Material_t *mCurrentMaterial, bool bGlobal, char *cArg)
 {
 	mCurrentMaterial->fAlpha = strtof(cArg, NULL);
+}
+
+void _Material_SetScrollX(Material_t *mCurrentMaterial, bool bGlobal, char *cArg)
+{
+	mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1].fTextureScroll[0] = strtof(cArg, NULL);
+}
+
+void _Material_SetScrollY(Material_t *mCurrentMaterial, bool bGlobal, char *cArg)
+{
+	mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1].fTextureScroll[1] = strtof(cArg, NULL);
 }
 
 typedef struct
@@ -345,7 +386,7 @@ MaterialFlag_t	mfMaterialFlags[] =
 
 /*	Set flags for the material.
 */
-void _Material_SetFlags(Material_t *mCurrentMaterial,char *cArg)
+void _Material_SetFlags(Material_t *mCurrentMaterial, bool bGlobal, char *cArg)
 {
 	int	i;
 
@@ -353,7 +394,7 @@ void _Material_SetFlags(Material_t *mCurrentMaterial,char *cArg)
 	for (i = 0; i < pARRAYELEMENTS(mfMaterialFlags); i++)
 		if (strstr(cArg, mfMaterialFlags[i].ccName))
 		{
-			if (bMaterialGlobal)
+			if (bGlobal)
 			{
 				if (!mfMaterialFlags[i].bGlobal)
 					Con_Warning("Attempted to set a local flag globally! (%s) (%s)\n", mCurrentMaterial->cName, mfMaterialFlags[i].ccName);
@@ -382,11 +423,12 @@ typedef struct
 {
 	char	*cKey;
 
-	void	(*Function)(Material_t *mCurrentMaterial,char *cArg);
+	void	(*Function)(Material_t *mCurrentMaterial, bool bGlobal, char *cArg);
 } MaterialKey_t;
 
 MaterialKey_t	mkMaterialFunctions[]=
 {
+	// All these are obsolete...
 	{	"SetType",				_Material_SetType				},	// Sets the type of material.
 	{	"SetDiffuseTexture",	_Material_SetDiffuseTexture		},	// Sets the diffuse texture.
 	{	"SetSpecularTexture",	_Material_SetSpecularTexture	},	// Sets the specular map.
@@ -401,13 +443,18 @@ MaterialKey_t	mkMaterialFunctions[]=
 	{ "type", _Material_SetType },
 	{ "alpha", _Material_SetAlpha },
 
-	{ "detail", _Material_SetDetailTexture },
-	{ "diffuse", _Material_SetDiffuseTexture },
-	{ "sphere", _Material_SetSphereTexture },
-	{ "fullbright", _Material_SetFullbrightTexture },
+	// Layers
+	{ "map_detail", _Material_SetDetailTexture },
+	{ "map_diffuse", _Material_SetDiffuseTexture },
+	{ "map_sphere", _Material_SetSphereTexture },
+	{ "map_fullbright", _Material_SetFullbrightTexture },
 
 	// Animation
 	{ "animation_speed", _Material_SetAnimationSpeed },
+
+	// Scrolling
+	{ "scroll_x", _Material_SetScrollX },
+	{ "scroll_y", _Material_SetScrollY },
 
 	{	0	}
 };
@@ -423,7 +470,7 @@ void Material_CheckFunctions(Material_t *mNewMaterial)
 		{
 			Script_GetToken(false);
 
-			mKey->Function(mNewMaterial, cToken);
+			mKey->Function(mNewMaterial, bMaterialGlobal, cToken);
 			break;
 		}
 }

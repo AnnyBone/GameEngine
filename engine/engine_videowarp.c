@@ -207,51 +207,51 @@ void Warp_DrawWaterPoly(glpoly_t *p)
 {
 	VideoObject_t	*voWaterPoly;
 	vec3_t			vWave,vLightColour;
-	float			*v;
+	float			*fVert,fWaterAlpha;
 	int				i;
 
-	voWaterPoly = malloc(p->numverts*sizeof(VideoObject_t));
+	voWaterPoly = Hunk_TempAlloc(p->numverts*sizeof(VideoObject_t));
 	if(!voWaterPoly)
 	{
 		Sys_Error("Failed to allocate water poly!\n");
 		return;
 	}
 
-	v = p->verts[0];
+	fWaterAlpha = Math_Clamp(0, r_wateralpha.value, 1.0f);
 
-	for(i = 0; i < p->numverts; i++,v += VERTEXSIZE)
+	fVert = p->verts[0];
+	for (i = 0; i < p->numverts; i++, fVert += VERTEXSIZE)
 	{
-		voWaterPoly[i].vTextureCoord[0][0]	= WARPCALC(v[3],v[4]);
-		voWaterPoly[i].vTextureCoord[0][1]	= WARPCALC(v[4],v[3]);
-		voWaterPoly[i].vColour[3] = Math_Clamp(0, r_wateralpha.value, 1.0f);
+		MathVector_t	mvLightColour;
 
-		Math_VectorCopy(v,vWave);
+		voWaterPoly[i].vTextureCoord[0][0] = WARPCALC(fVert[3], fVert[4]);
+		voWaterPoly[i].vTextureCoord[0][1] = WARPCALC(fVert[4], fVert[3]);
 
-		// Shitty lit water, use dynamic light points in the future...
-		{
-			MathVector_t	mvLightColour;
+		Math_VectorCopy(fVert, vWave);
 
-			// Use vWave position BEFORE we move it, otherwise the water will flicker.
-			mvLightColour = Light_GetSample(vWave);
+#if 1	// Shitty lit water, use dynamic light points in the future...
+		// Use vWave position BEFORE we move it, otherwise the water will flicker.
+		mvLightColour = Light_GetSample(vWave);
 
-			Math_MVToVector(mvLightColour,vLightColour);
-			Math_VectorScale(vLightColour,1.0f/200.0f,vLightColour);
-			Math_VectorDivide(vLightColour,0.2f,vLightColour);
-		}
+		Math_MVToVector(mvLightColour,vLightColour);
+		Math_VectorScale(vLightColour,1.0f/200.0f,vLightColour);
+		Math_VectorDivide(vLightColour,0.2f,vLightColour);
 
-		Math_VectorCopy(vLightColour,voWaterPoly[i].vColour);
+		Video_ObjectColour(&voWaterPoly[i],
+			vLightColour[0],vLightColour[1],vLightColour[2],fWaterAlpha);
+#else
+		Video_ObjectColour(&voWaterPoly[i], 1.0f, 1.0f, 1.0f, fWaterAlpha);
+#endif
 
-		// [20/1/2013] Added in subtle water bobbing, based on this code http://www.quake-1.com/docs/quakesrc.org/26.html ~hogsy
-		vWave[2] =	v[2]+
-					2.0f*(float)sin(v[0]*0.025f+cl.time)*(float)sin(v[2]*0.05f+cl.time)+
-					2.0f*(float)sin(v[1]*0.025f+cl.time*2.0f)*(float)sin(v[2]*0.05f+cl.time);
+		// Subtle water bobbing, based on this code http://www.quake-1.com/docs/quakesrc.org/26.html
+		vWave[2] =	fVert[2]+
+			2.0f*(float)sin(fVert[0] * 0.025f + cl.time)*(float)sin(fVert[2] * 0.05f + cl.time) +
+			2.0f*(float)sin(fVert[1] * 0.025f + cl.time*2.0f)*(float)sin(fVert[2] * 0.05f + cl.time);
 
 		Math_VectorCopy(vWave,voWaterPoly[i].vVertex);
 	}
 
 	Video_DrawObject(voWaterPoly,VIDEO_PRIMITIVE_TRIANGLE_FAN,p->numverts,NULL,0);
-
-	free(voWaterPoly);
 }
 
 //==============================================================================

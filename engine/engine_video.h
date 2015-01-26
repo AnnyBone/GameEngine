@@ -6,16 +6,17 @@
 #include <SDL.h>
 #include <SDL_syswm.h>
 
-#include "engine_videomaterial.h"
+#include "engine_material.h"
 
-extern cvar_t	cvVideoDrawModels,	// Should we draw models?
-				cvWidth,			// The width of our window (not reliable).
-				cvHeight,			// The height of our window (not reliable).
-				cvFullscreen,		// Should we be fullscreen?
+extern cvar_t	cvVideoDrawModels,		// Should we draw models?
+				cvWidth,				// The width of our window (not reliable).
+				cvHeight,				// The height of our window (not reliable).
+				cvFullscreen,			// Should we be fullscreen?
 				cvVideoAlphaTrick,
-				cvVideoMirror,		// Toggles mirrors.
-				gl_overbright,		// Enable overbrights?
-				cvLitParticles;		// Should particles be lit or not?
+				cvVideoMirror,			// Toggles mirrors.
+				cvVideoPlayerShadow,	// Render players shadow.
+				gl_overbright,			// Enable overbrights?
+				cvLitParticles;			// Should particles be lit or not?
 
 extern bool	bVideoIgnoreCapabilities;
 
@@ -62,10 +63,7 @@ typedef struct
 					bUnlocked;			// Can we change the window settings or not?
 
 	// OpenGL Extensions
-	bool	bFogCoord,					// EXT_fog_coord
-			bVertexBufferObject,		// ARB_vertex_buffer_object
-			bTextureEnvAdd,				// ARB_texture_env_add
-			bTextureEnvCombine;			// ARB_texture_env_combine
+	bool	bVertexBufferObject;		// ARB_vertex_buffer_object
 
 	SDL_SysWMinfo	sSystemInfo;
 } Video_t;

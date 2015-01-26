@@ -77,6 +77,7 @@ unsigned int d_8to24table_pants[256];
 // TEXTURE MANAGER
 float TexMgr_FrameUsage (void);
 gltexture_t *TexMgr_FindTexture (model_t *owner, char *name);
+gltexture_t *TexMgr_GetTexture(const char *ccPath);
 gltexture_t *TexMgr_NewTexture (void);
 void TexMgr_FreeTexture (gltexture_t *kill);
 void	TextureManager_FreeTextures(unsigned int flags,unsigned int mask);

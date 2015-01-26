@@ -26,9 +26,9 @@ typedef enum
 
 typedef struct
 {
-	MathVector3_t	v;
+	vec3_t	v;
 
-	byte			bLightNormalIndex;
+	byte	bLightNormalIndex;
 } KMDLTriangleVertex_t;
 
 /*
@@ -223,7 +223,8 @@ typedef struct
 	LVL	Format
 */
 
-#define LVL_HEADER      (('4'<<24)+('L'<<16)+('V'<<8)+'L')
+#define LVL_HEADER		"LEVEL"
+#define	LVL_VERSION		5
 #define	LVL_EXTENSION	".level"
 
 /*
@@ -231,7 +232,6 @@ typedef struct
 */
 
 #define	BSP_VERSION	4
-#define	BSP_VERSION_4	// Enable support for version 4 feature set.
 
 #define	BSP_HEADER		(('4'<<24)+('L'<<16)+('V'<<8)+'L')	// For easy identification.
 #define	BSP_HEADER_SIZE	8									// "BSP" followed by version number.
@@ -245,14 +245,14 @@ typedef struct
 #define	BSP_MAX_VERTS			65535			//0x100000
 #define	BSP_MAX_MODELS			4096
 #define	BSP_MAX_BRUSHES			32768			//0x100000
-#define	BSP_MAX_ENTSTRING		0x100000		//0x400000
+#define	BSP_MAX_ENTSTRING		0x400000
 #define	BSP_MAX_PLANES			65536			//0x200000
 #define	BSP_MAX_NODES			32767			//0x200000
 #define	BSP_MAX_CLIPNODES		32767			//0x800000
 #define	BSP_MAX_FACES			65536			//0x200000
-#define	BSP_MAX_MARKSURFACES	65535			//0x400000
+#define	BSP_MAX_MARKSURFACES	0x400000
 #define	BSP_MAX_TEXINFO			BSP_MAX_FACES	//0x100000
-#define	BSP_MAX_EDGES			0x100000		//0x400000
+#define	BSP_MAX_EDGES			0x400000
 #define	BSP_MAX_SURFEDGES		0x200000		//0x800000
 #define	BSP_MAX_MIPTEX			0x800000		//0x1000000
 #define	BSP_MAX_LIGHTING		0x400000		//0x1000000

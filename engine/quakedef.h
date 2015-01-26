@@ -20,8 +20,10 @@
 #ifndef QUAKEDEF_H
 #define QUAKEDEF_H
 
+// Platform Library
 #include "platform.h"
 #include "platform_math.h"
+#include "platform_window.h"
 
 #ifdef _MSC_VER
 #pragma warning(disable:4115)

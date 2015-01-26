@@ -10,8 +10,8 @@ int				*planemapping;
 */
 int FindFinalPlane( vec3_t normal, vec_t dist, int type )
 {
-	int			i;
-	BSPPlane_t	*dplane;
+	unsigned int	i;
+	BSPPlane_t		*dplane;
 
 	for( i = 0, dplane = dplanes; i < numplanes; i++, dplane++ ) {
 		if( dplane->iType != type
@@ -180,7 +180,8 @@ void EmitDrawNodes_r( node_t *node )
 			n->iChildren[i] = -1;
 
 			if( node->children[i]->contents != BSP_CONTENTS_SOLID ) {
-				n->iChildren[i] = -(numleafs + 1);
+				int	iLeafs = numleafs;
+				n->iChildren[i] = -(iLeafs + 1);
 				EmitLeaf( node->children[i] );
 			}
 		} 

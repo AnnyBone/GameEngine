@@ -68,7 +68,8 @@ int FindMiptex( char *name )
 */
 int	FindTexinfo( BSPTextureInfo_t *t )
 {
-	int					i, j;
+	unsigned int		i;
+	int					j;
 	BSPTextureInfo_t	*tex;
 
 	// set the special flag

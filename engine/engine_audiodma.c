@@ -143,7 +143,7 @@ void S_Init (void)
 	if (COM_CheckParm("-nosound"))
 		return;
 
-	Con_Printf("Sound Initialization\n");
+	Con_Printf("Initializing sound...\n");
 
 	if (COM_CheckParm("-simsound"))
 		fakedma = TRUE;

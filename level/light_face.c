@@ -71,6 +71,10 @@ static bool ranout = false; // FIXME: do this some other way?
 #define	DIRT_NUM_ELEVATION_STEPS	3
 #define	DIRT_NUM_VECTORS			(DIRT_NUM_ANGLE_STEPS*DIRT_NUM_ELEVATION_STEPS)
 
+#define	DIRT_DEPTH					128.0f
+#define	DIRT_GAIN					1.0f
+#define	DIRT_SCALE					1.0f
+
 static vec3_t	vDirtVectors[DIRT_NUM_VECTORS];
 
 static int	iDirtVectors = 0;
@@ -80,30 +84,27 @@ static int	iDirtVectors = 0;
 void LightFace_SetupDirt(void)
 {
 	int		i, j;
-	float	fAngle, fElevation, fAngleStep, fElevationStep;
-
-	printf("--- LightFace_SetupDirt --- \n");
+	vec_t	vAngle, vElevation, vAngleStep, vElevationStep;
 
 	// Calculate angular steps...
-	fAngleStep = DEG2RAD(360.0f / DIRT_NUM_ANGLE_STEPS);
-	fElevationStep = DEG2RAD(DIRT_CONE_ANGLE / DIRT_NUM_ELEVATION_STEPS);
+	vAngleStep = DEG2RAD(360.0 / DIRT_NUM_ANGLE_STEPS);
+	vElevationStep = DEG2RAD(DIRT_CONE_ANGLE / DIRT_NUM_ELEVATION_STEPS);
 
 	// Iterate angle...
-	for (i = 0, fAngle = 0; i < DIRT_NUM_ANGLE_STEPS; i++, fAngle += fAngleStep)
+	for (i = 0, vAngle = 0; i < DIRT_NUM_ANGLE_STEPS; i++, vAngle += vAngleStep)
 	{
-		for (j = 0, fElevation = fElevationStep*0.5f; j < DIRT_NUM_ELEVATION_STEPS; j++, fElevation += fElevationStep)
+		for (j = 0, vElevation = vElevationStep*0.5; j < DIRT_NUM_ELEVATION_STEPS; j++, vElevation += vElevationStep)
 		{
-			vDirtVectors[iDirtVectors][0] = sin(fElevation)*cos(fAngle);
-			vDirtVectors[iDirtVectors][1] = sin(fElevation)*sin(fAngle);
-			vDirtVectors[iDirtVectors][2] = cos(fElevation);
+			vDirtVectors[iDirtVectors][0] = sin(vElevation)*cos(vAngle);
+			vDirtVectors[iDirtVectors][1] = sin(vElevation)*sin(vAngle);
+			vDirtVectors[iDirtVectors][2] = cos(vElevation);
 
 			iDirtVectors++;
 		}
 	}
-
-	printf("%9d dirtmap vectors\n", iDirtVectors);
 }
 
+// unfinished
 bool LightFace_DirtTrace(const vec3_t vStart, const vec3_t vStop, const BSPModel_t *bmSelf, vec3_t vHitPointOut)
 {
 	const BSPModel_t *const *bmModel;
@@ -111,11 +112,113 @@ bool LightFace_DirtTrace(const vec3_t vStart, const vec3_t vStop, const BSPModel
 	if (bmSelf)
 	{
 	}
+
+	return false;
 }
 
-static void LightFace_Dirt(void)
+static vec_t LightFace_DirtForSample(const BSPModel_t *bModel, const vec3_t vOrigin, const vec3_t vNormal)
 {
+	int		i;
+	float	fGatherDirt, fOutDirt, fooDepth;
+	vec3_t	vWorldUp, vMyUp, vMyRt, vDirection, vDisplacement,
+			vTraceEnd,vTraceHitPoint;
 
+	fGatherDirt = 0;
+	fooDepth = 1.0f / DIRT_DEPTH;
+
+	if ((vNormal[0] == 0) && (vNormal[1] == 0))
+	{
+		if (vNormal[2] == 1.0f)
+		{
+			VectorSet(vMyRt, 1.0f, 0.0f, 0.0f);
+			VectorSet(vMyUp, 0.0f, 1.0f, 0.0f);
+		}
+		else if (vNormal[2] == -1.0f)
+		{
+			VectorSet(vMyRt, -1.0f, 0.0f, 0.0f);
+			VectorSet(vMyUp, 0.0f, 1.0f, 0.0f);
+		}
+	}
+	else
+	{
+		VectorSet(vWorldUp, 0.0f, 0.0f, 1.0f);
+		CrossProduct(vNormal, vWorldUp, vMyRt);
+		VectorNormalize(vMyRt);
+		CrossProduct(vMyRt, vNormal, vMyUp);
+		VectorNormalize(vMyUp);
+	}
+
+	for (i = 0; i < iDirtVectors; i++)
+	{
+		vDirection[0] = vMyRt[0] * vDirtVectors[i][0] + vMyUp[0] * vDirtVectors[i][1] + vNormal[0] * vDirtVectors[i][2];
+		vDirection[1] = vMyRt[1] * vDirtVectors[i][0] + vMyUp[1] * vDirtVectors[i][1] + vNormal[1] * vDirtVectors[i][2];
+		vDirection[2] = vMyRt[2] * vDirtVectors[i][0] + vMyUp[2] * vDirtVectors[i][1] + vNormal[2] * vDirtVectors[i][2];
+
+		VectorMA(vOrigin, DIRT_DEPTH, vDirection, vTraceEnd);
+
+		if (LightFace_DirtTrace(vOrigin, vTraceEnd, bModel, vTraceHitPoint))
+		{
+			VectorSubtract(vTraceHitPoint, vOrigin, vDisplacement);
+
+			fGatherDirt += 1.0f - fooDepth*VectorLength(vDisplacement);
+		}
+	}
+
+	// Direct ray
+	VectorMA(vOrigin, DIRT_DEPTH, vNormal, vTraceEnd);
+
+	// Trace
+	if (LightFace_DirtTrace(vOrigin, vTraceEnd, bModel, vTraceHitPoint))
+	{
+		VectorSubtract(vTraceHitPoint, vOrigin, vDisplacement);
+
+		fGatherDirt += 1.0f - fooDepth*VectorLength(vDisplacement);
+	}
+
+	// Early out
+	if (fGatherDirt <= 0.0f)
+		return 1.0f;
+
+	// Apply gain
+	fOutDirt = pow(fGatherDirt / (iDirtVectors + 1), DIRT_GAIN);
+	if (fOutDirt > 1.0f)
+		fOutDirt = 1.0f;
+
+	// Apply scale
+	fOutDirt *= DIRT_SCALE;
+	if (fOutDirt > 1.0f)
+		fOutDirt = 1.0f;
+
+	// Return to sender
+	return 1.0f - fOutDirt;
+}
+
+// unfinished
+static void LightFace_Dirt(const directlight_t *light, lightinfo_t *l)
+{
+#if 0
+	int				i, mapnum;
+	vec_t			add, dist, idist, dist2, f, iradius;
+	vec3_t			incoming;
+	lightpoint_t	*point;
+	lightsample_t	*sample;
+	lightTrace_t	tr;
+
+	for (i = 0, point = l->point; i < l->numpoints; i++, point++)
+	{
+#if 0
+		vec_t	vDirt = LightFace_DirtForSample(point->v, l->facenormal);
+
+		Light_TraceLine(&tr, point->v, light->origin, false);
+		if (tr.startcontents == BSP_CONTENTS_SOLID || tr.fraction < 1)
+			continue;
+
+		// accumulate the lighting
+		sample = &l->sample[mapnum][point->samplepos];
+		VectorScale(sample->c, vDirt, sample->c);
+#endif
+	}
+#endif
 }
 
 /**/
@@ -417,6 +520,10 @@ static void SingleLightFace( const directlight_t *light, lightinfo_t *l )
 		SingleLightFace_Sun( light, l );
 		return;
 	}
+
+	// Check if we're using AO/Dirty lighting.
+	if (bLightDirty)
+		LightFace_Dirt(light,l);
 
 	dist = DotProduct( light->origin, l->facenormal ) - l->facedist;
 	if( dist < 0 )

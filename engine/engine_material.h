@@ -75,6 +75,7 @@ typedef struct
 } Material_t;
 
 void Material_Initialize(void);
+void Material_ClearAll(void);
 
 Material_t *Material_Load(const char *ccPath);
 Material_t *Material_Get(int iMaterialID);

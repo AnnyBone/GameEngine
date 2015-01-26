@@ -143,9 +143,6 @@
     <ClCompile Include="lodepng\lodepng.c">
       <Filter>Client\Video\LodePNG</Filter>
     </ClCompile>
-    <ClCompile Include="engine_videomaterial.c">
-      <Filter>Client\Video</Filter>
-    </ClCompile>
     <ClCompile Include="engine_videoalias.c">
       <Filter>Client\Video</Filter>
     </ClCompile>
@@ -193,6 +190,9 @@
     </ClCompile>
     <ClCompile Include="engine_particle.c">
       <Filter>Client</Filter>
+    </ClCompile>
+    <ClCompile Include="engine_material.c">
+      <Filter>Client\Video</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -344,9 +344,6 @@
     <ClInclude Include="lodepng\lodepng.h">
       <Filter>Client\Video\LodePNG</Filter>
     </ClInclude>
-    <ClInclude Include="engine_videomaterial.h">
-      <Filter>Client\Video</Filter>
-    </ClInclude>
     <ClInclude Include="engine_video.h">
       <Filter>Client\Video</Filter>
     </ClInclude>
@@ -355,6 +352,9 @@
     </ClInclude>
     <ClInclude Include="engine_particle.h">
       <Filter>Client</Filter>
+    </ClInclude>
+    <ClInclude Include="engine_material.h">
+      <Filter>Client\Video</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

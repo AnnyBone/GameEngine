@@ -457,8 +457,9 @@ static int EmitFaceEdge( vec3_t p1, vec3_t p2, face_t *f )
 
 		if( v1 == edge->v[1] && v2 == edge->v[0] && !edgefaces[i][1]
 			&& edgefaces[i][0]->contents[0] == f->contents[0] ) {
+			int	k = i;
 			edgefaces[i][1] = f;
-			return -i;
+			return -k;
 		}
 	}
 

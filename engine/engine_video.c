@@ -9,7 +9,6 @@
 	If not then do give me some serious scolding.
 
 	TODO:
-		- Get our desktop width and height, set initial settings to that.
 		- Move all/most API-specific code here.
 */
 
@@ -17,12 +16,7 @@
 #include "engine_video.h"
 
 #include "engine_modgame.h"
-#include "engine_clientinput.h"
-#include "engine_modmenu.h"
 #include "engine_console.h"
-
-// Platform library
-#include "platform_window.h"
 
 #include <SDL_syswm.h>
 
@@ -50,6 +44,7 @@ cvar_t	cvMultisampleSamples		= {	"video_multisamplesamples",		"0",			true,   fal
 		cvVideoAlphaTrick			= { "video_alphatrick",				"1",			true,	false,	"If enabled, draws alpha-tested surfaces twice for extra quality."	},
 		cvVideoFinish				= { "video_finish",					"0",			true,	false,	"If enabled, calls glFinish at the end of the frame."				},
 		cvVideoVBO					= { "video_vbo",					"0",			true,	false,	"Enables support of Vertex Buffer Objects."							},
+		cvVideoPlayerShadow			= { "video_playershadow",			"1",			true,	false,	"If enabled, the players own shadow will be drawn."					},
 		cvVideoDebugLog				= {	"video_debuglog",				"log_video",	true,	false,	"The name of the output log for video debugging."					};
 
 #define VIDEO_MIN_WIDTH		640
@@ -71,6 +66,8 @@ unsigned int	uiVideoArraySize = 32768;
 void Video_DebugCommand(void);
 void Video_AllocateArrays(int iSize);
 
+SDL_DisplayMode	sDisplayMode;
+
 /*	Initialize the renderer
 */
 void Video_Initialize(void)
@@ -82,9 +79,7 @@ void Video_Initialize(void)
 
 	// [23/7/2013] Set default values ~hogsy
 	Video.iCurrentTexture		= (unsigned int)-1;	// [29/8/2012] "To avoid unnecessary texture sets" ~hogsy
-	Video.bTextureEnvCombine	=
-	Video.bVertexBufferObject	=
-	Video.bFogCoord				= false;
+	Video.bVertexBufferObject	= false;
 	Video.bActive				=			// Window is intially assumed active.
 	Video.bUnlocked				= true;		// Video mode is initially locked.
 
@@ -105,6 +100,7 @@ void Video_Initialize(void)
 	Cvar_RegisterVariable(&cvVideoDrawMaterials, NULL);
 	Cvar_RegisterVariable(&cvVideoDrawDetail, NULL);
 	Cvar_RegisterVariable(&cvVideoDetailScale, NULL);
+	Cvar_RegisterVariable(&cvVideoPlayerShadow, NULL);
 
 	Cmd_AddCommand("video_restart",Video_UpdateWindow);
 	Cmd_AddCommand("video_debug",Video_DebugCommand);
@@ -114,6 +110,10 @@ void Video_Initialize(void)
 		Sys_Error("Failed to initialize video!\n%s\n",SDL_GetError());
 
 	SDL_DisableScreenSaver();
+
+	// Get display information.
+	if (SDL_GetCurrentDisplayMode(0, &sDisplayMode) != 0)
+		Sys_Error("Failed to get current display information!\n%s\n", SDL_GetError());
 
 	Video.bInitialized = true;
 
@@ -184,6 +184,7 @@ void Video_DrawDepthBuffer(void)
 	if(!cvVideoDrawDepth.bValue)
 		return;
 
+	// Create our depth texture.
 	if(!gDepthTexture)
 		gDepthTexture = TexMgr_NewTexture();
 
@@ -218,20 +219,30 @@ void Video_GetGamma(unsigned short *usRamp,int iRampSize)
 		Con_Warning("Failed to get gamma level!\n");
 }
 
+/*	Get the current displays width.
+*/
+unsigned int Video_GetDesktopWidth(void)
+{
+	return sDisplayMode.w;
+}
+
+/*	Get the current displays height.
+*/
+unsigned int Video_GetDesktopHeight(void)
+{
+	return sDisplayMode.h;
+}
+
 /*	Create our window.
 */
 void Video_CreateWindow(void)
 {
 	int			iFlags =
-		SDL_WINDOW_RESIZABLE	|
 		SDL_WINDOW_SHOWN		|
 		SDL_WINDOW_OPENGL		|
 		SDL_WINDOW_FULLSCREEN,
 				iSupportedUnits;
 	SDL_Surface	*sIcon;
-
-	// [2/12/2012] Normal window can't be resized ~hogsy
-	iFlags &= ~SDL_WINDOW_RESIZABLE;
 
 	if(!Video.bInitialized)
 		Sys_Error("Attempted to create window before video initialization!\n");
@@ -265,7 +276,7 @@ void Video_CreateWindow(void)
 	if(!Video.bFullscreen)
 		iFlags &= ~SDL_WINDOW_FULLSCREEN;
 
-#ifdef KATANA_VIDEO_NEXT
+#if 0
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,SDL_GL_CONTEXT_PROFILE_CORE);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION,3);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION,2);
@@ -284,7 +295,7 @@ void Video_CreateWindow(void)
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER,1);
 	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE,24);
 
-	// [1/7/2012] Ugh... ~hogsy
+	// Ensure the given width and height are within reasonable bounds.
 	if(	Video.iWidth	< VIDEO_MIN_WIDTH	||
 		Video.iHeight	< VIDEO_MIN_HEIGHT)
 	{
@@ -292,6 +303,14 @@ void Video_CreateWindow(void)
 
 		Video.iWidth	= VIDEO_MIN_WIDTH;
 		Video.iHeight	= VIDEO_MIN_HEIGHT;
+	}
+	// If we're not fullscreen, then constrain our window size to the size of the desktop.
+	else if (!Video.bFullscreen && ((Video.iWidth > Video_GetDesktopWidth()) || (Video.iHeight > Video_GetDesktopHeight())))
+	{
+		Con_Warning("Attempted to set resolution beyond scope of desktop!\n");
+
+		Video.iWidth = Video_GetDesktopWidth();
+		Video.iHeight = Video_GetDesktopHeight();
 	}
 
 	sMainWindow = SDL_CreateWindow(
@@ -340,24 +359,15 @@ void Video_CreateWindow(void)
 
 	Con_DPrintf(" Checking for extensions...\n");
 
-	// Check that multitextuing support is there.
+	// Check that the required capabilities are supported.
 	if(!GLEE_ARB_multitexture)
 		Sys_Error("Video hardware incapable of multi-texturing!\n");
-
-	if (GLEE_ARB_texture_env_combine || GLEE_EXT_texture_env_combine)
-		Video.bTextureEnvCombine = true;
-	else
-		Con_Warning("ARB/EXT_texture_env_combine isn't supported by your hardware!\n");
-
-	if (GLEE_ARB_texture_env_add || GLEE_EXT_texture_env_add)
-		Video.bTextureEnvAdd = true;
-	else
-		Con_Warning("ARB/EXT_texture_env_add isn't supported by your hardware!\n");
-
-	if (GLEE_EXT_fog_coord)
-		Video.bFogCoord = true;
-	else
-		Con_Warning("EXT_fog_coord isn't supported by your hardware!\n");
+	else if (!GLEE_ARB_texture_env_combine && !GLEE_EXT_texture_env_combine)
+		Sys_Error("ARB/EXT_texture_env_combine isn't supported by your hardware!\n");
+	else if (!GLEE_ARB_texture_env_add && !GLEE_EXT_texture_env_add)
+		Sys_Error("ARB/EXT_texture_env_add isn't supported by your hardware!\n");
+	else if (!GLEE_EXT_fog_coord)
+		Sys_Error("EXT_fog_coord isn't supported by your hardware!\n");
 
 	if (GLEE_ARB_vertex_buffer_object)
 		Video.bVertexBufferObject = true;
@@ -543,6 +553,8 @@ void Video_SetBlend(VideoBlend_t voBlendMode, VideoDepth_t vdDepthMode)
     Multitexturing Management
 */
 
+/*	Conversion between our TMU selection and OpenGL.
+*/
 unsigned int Video_GetGLUnit(unsigned int uiTarget)
 {
 	unsigned int uiUnit = 0;
@@ -761,9 +773,31 @@ void Video_DrawMaterial(
 			else
 				glDisable(GL_BLEND);
 		}
+
+		// Allow us to scroll the texture.
+		if ((msCurrentSkin->fTextureScroll[0] > 0) || (msCurrentSkin->fTextureScroll[0] < 0) ||
+			(msCurrentSkin->fTextureScroll[1] > 0) || (msCurrentSkin->fTextureScroll[1] < 0))
+		{
+			if (!bPost)
+			{
+				glMatrixMode(GL_TEXTURE);
+				glLoadIdentity();
+				glTranslatef(
+					msCurrentSkin->fTextureScroll[0] + cl.time,
+					msCurrentSkin->fTextureScroll[1] + cl.time,
+					0);
+				glMatrixMode(GL_MODELVIEW);
+			}
+			else
+			{
+				glMatrixMode(GL_TEXTURE);
+				glLoadIdentity();
+				glTranslatef(0,0,0);
+				glMatrixMode(GL_MODELVIEW);
+			}
+		}
 	}
 
-#if 0
 	// Detail map layer.
 	if (msCurrentSkin->gDetailTexture && cvVideoDrawDetail.bValue)
 	{
@@ -795,7 +829,6 @@ void Video_DrawMaterial(
 		else
 			Video_DisableCapabilities(VIDEO_TEXTURE_2D);
 	}
-#endif
 
 	// Fullbright map.
 	if (msCurrentSkin->gFullbrightTexture && gl_fullbrights.bValue)
@@ -899,6 +932,8 @@ void Video_DrawObject(
 		// Double the array size to cope.
 		Video_AllocateArrays(uiVerts * 2);
 
+	Video_DrawMaterial(mMaterial, iSkin, voObject, vpPrimitiveType, uiVerts, false);
+
 	// Copy everything over...
 	for (i = 0; i < uiVerts; i++)
 	{
@@ -922,8 +957,6 @@ void Video_DrawObject(
 
 		Math_VectorCopy(voObject[i].vVertex, vVideoVertexArray[i]);
 	}
-
-	Video_DrawMaterial(mMaterial, iSkin, voObject, vpPrimitiveType, uiVerts, false);
 
 	// Handle different primitive types...
 	switch (vpPrimitiveType)
