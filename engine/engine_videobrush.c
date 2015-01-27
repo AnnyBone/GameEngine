@@ -191,9 +191,9 @@ void R_DrawSequentialPoly(msurface_t *s)
 		}
 
 		Video_SelectTexture(VIDEO_TEXTURE_LIGHT);
+		Video_SetTexture(lightmap_textures[s->lightmaptexturenum]);
 
 		R_RenderDynamicLightmaps(s);
-		Video_SetTexture(lightmap_textures[s->lightmaptexturenum]);
 		R_UploadLightmap(s->lightmaptexturenum);
 
 		Video_EnableCapabilities(VIDEO_TEXTURE_2D);
@@ -258,7 +258,7 @@ void Brush_Draw(entity_t *e)
 
 		for(k = 0; k < MAX_DLIGHTS; k++)
 		{
-			if(((cl_dlights[k].die < cl.time) && cl_dlights[k].die) || (!cl_dlights[k].radius && !cl_dlights[k].bLightmap))
+			if ((cl_dlights[k].bLightmap == false) || ((cl_dlights[k].die < cl.time) && cl_dlights[k].die))
 				continue;
 
 			cl_dlights[k].transformed[0] =

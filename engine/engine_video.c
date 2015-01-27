@@ -3,6 +3,8 @@
 #include "quakedef.h"
 
 /*
+	Video System
+
 	This is our future renderer code, I imagine most of this
 	will be fairly incomplete before OpenKatana's release but the
 	base should at least be finished by then just so it's stable...
@@ -123,26 +125,6 @@ void Video_Initialize(void)
 	if (!SDL_GetWindowWMInfo(sMainWindow, &Video.sSystemInfo))
 		Sys_Error("Failed to get WM information!\n");
 }
-
-/*
-	OpenGL Initialization
-*/
-
-#if 0
-#include "platform_module.h"
-
-pINSTANCE	iVideoGLModule;
-
-/*	Load module, bind functions, blah blah blah
-	TODO: Implement me...
-*/
-void Video_InitializeOpenGL(void)
-{
-	iVideoGLModule = pModule_Load("OpenGL32");
-	if(!iVideoGLModule)
-		Sys_Error("Failed to load OpenGL module!\n%s",pError_Get());
-}
-#endif
 
 /*
 	Video Commands

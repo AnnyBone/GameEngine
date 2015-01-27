@@ -1,4 +1,4 @@
-/*	Copyright (C) 2013-2014 OldTimes Software
+/*	Copyright (C) 2013-2015 OldTimes Software
 */
 #include "platform_filesystem.h"
 
@@ -79,7 +79,7 @@ void pFileSystem_GetUserName(char *cOut)
 #endif
 	{
 		int	i		= 0,
-			iLength = strlen(cUser);
+			iLength = (int)strlen(cUser);
 
 		// [11/5/2013] Quick fix for spaces ~hogsy
 		while(i < iLength)
