@@ -122,13 +122,15 @@ void CreateHulls (void)
 	// create the hulls sequentially
 	printf("building hulls sequentially...\n");
 
-	hullinfo.numhulls	= 3;
+	hullinfo.numhulls	=
 	hullinfo.filehulls	= BSP_MAX_HULLS;
 
-	VectorSet(hullinfo.hullsizes[1][0],-16,-16,-24);
-	VectorSet(hullinfo.hullsizes[1][1],16,16,32);
-	VectorSet(hullinfo.hullsizes[2][0],-32,-32,-24);
-	VectorSet(hullinfo.hullsizes[2][1],32,32,64);
+	VectorSet(hullinfo.hullsizes[1][0], -16, -16, -36);
+	VectorSet(hullinfo.hullsizes[1][1], 16, 16, 36);
+	VectorSet(hullinfo.hullsizes[2][0], -32, -32, -32);
+	VectorSet(hullinfo.hullsizes[2][1], 32, 32, 32);
+	VectorSet(hullinfo.hullsizes[3][0], -16, -16, -18);
+	VectorSet(hullinfo.hullsizes[3][1], 16, 16, 18);
 
 	for(i = 1; i < hullinfo.numhulls; i++)
 		CreateSingleHull(i);

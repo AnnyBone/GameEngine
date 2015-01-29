@@ -385,24 +385,20 @@ DynamicLight_t *Light_GetDynamic(vec3_t vPoint)
 	DynamicLight_t	*dlClosestLight = NULL;
 	vec3_t			vLightColour;
 
-#if 0
 	Math_MVToVector(Light_GetSample(vPoint),vLightColour);
 
 	// [30/10/2013] Check that we're actually being effected by a lightsource before anything else ~hogsy
 	fLightAmount = (vLightColour[0]+vLightColour[1]+vLightColour[2])/200.0f;
 	if(fLightAmount < 0.2f)
 		bStaticLights = false;
-#endif
 
 	for(i = 0; i < MAX_DLIGHTS; i++)
 	{
-#if 0
 		// [24/2/2014] If we're not being effected by the lightmap then ignore static light sources ~hogsy
-		if ((cl_dlights[i].bLightmap == false))
+		if (bStaticLights && (cl_dlights[i].bLightmap == false))
 			continue;
-#endif
 
-		if(cl_dlights[i].die >= cl.time || cl_dlights[i].bLightmap)
+		if(cl_dlights[i].die >= cl.time)
 		{
 			float	fDistance[2];
 			vec3_t	vDistance;

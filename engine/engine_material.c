@@ -13,6 +13,7 @@
 
 #include "engine_material.h"
 
+#include "engine_video.h"
 #include "engine_script.h"
 
 bool	bInitialized = false;
@@ -42,8 +43,6 @@ void Material_List(void);
 
 void Material_Initialize(void)
 {
-	Material_t *mDummy;
-
 	if(bInitialized)
 		return;
 
@@ -54,10 +53,9 @@ void Material_Initialize(void)
 	// Must be set to initialized before anything else.
 	bInitialized = true;
 
-	// Add dummy material.
-	mDummy = Material_Load("engine/notexture");
-	if (!mDummy)
-		Sys_Error("Failed to create dummy material!\n");
+	// Load base materials.
+	Material_Load("engine/notexture");
+	Material_Load("engine/conchars");
 
 #ifdef _MSC_VER // This is false, since the function above shuts us down, but MSC doesn't understand that.
 #pragma warning(suppress: 6011)
@@ -134,11 +132,13 @@ void Material_ClearAll(void)
 
 MaterialSkin_t *Material_GetSkin(Material_t *mMaterial,int iSkin)
 {
-	if(iSkin < 0 || iSkin > MODEL_MAX_TEXTURES)
-		Sys_Error("Invalid skin identification, should be greater than 0 and less than %i! (%i)\n", MODEL_MAX_TEXTURES, iSkin);
+	if (iSkin < 0 || iSkin > MATERIAL_MAX_SKINS)
+		Sys_Error("Invalid skin identification, should be greater than 0 and less than %i! (%i)\n", MATERIAL_MAX_SKINS, iSkin);
+#if 0
 	else if(!mMaterial->iSkins)
 		Sys_Error("Material with no valid skins! (%s)\n", mMaterial->cName);
-	else if (iSkin > (mMaterial->iSkins - 1))
+#endif
+	else if (iSkin > mMaterial->iSkins)
 		Sys_Error("Attempted to get an invalid skin! (%i) (%s)\n", iSkin, mMaterial->cName);
 
 	return &mMaterial->msSkin[iSkin];
@@ -227,18 +227,12 @@ Material_t *Material_GetByPath(const char *ccPath)
 	return NULL;
 }
 
-/*
-	Scripting
-*/
-
-bool	bMaterialGlobal;	// Indicates that any settings applied are global.
-
-// Utility functions...
-
-gltexture_t *Material_LoadTexture(Material_t *mMaterial,MaterialSkin_t *mCurrentSkin, char *cArg)
+gltexture_t *Material_LoadTexture(Material_t *mMaterial, MaterialSkin_t *mCurrentSkin, char *cArg)
 {
 	int			iTextureFlags = TEXPREF_ALPHA;
 	byte		*bTextureMap;
+
+	Con_DPrintf("Loading material texture...\n");
 
 	// Check if it's trying to use a built-in texture.
 	if (cArg[0] == '@')
@@ -247,6 +241,11 @@ gltexture_t *Material_LoadTexture(Material_t *mMaterial,MaterialSkin_t *mCurrent
 
 		if (!stricmp(cArg, "notexture"))
 			return notexture;
+		else if (!stricmp(cArg, "lightmap"))
+		{
+			mCurrentSkin->mtTexture[mCurrentSkin->uiTextures].mttType = MATERIAL_TEXTURE_LIGHTMAP;
+			return lightmap_textures[0];
+		}
 #if 0
 		else if (!stricmp(cArg, "shadow"))
 			return generated_shadow;
@@ -263,15 +262,17 @@ gltexture_t *Material_LoadTexture(Material_t *mMaterial,MaterialSkin_t *mCurrent
 	}
 
 	bTextureMap = Image_LoadImage(cArg,
-		&mCurrentSkin->iTextureWidth,
-		&mCurrentSkin->iTextureHeight);
+		&mCurrentSkin->mtTexture[mCurrentSkin->uiTextures].uiWidth,
+		&mCurrentSkin->mtTexture[mCurrentSkin->uiTextures].uiHeight);
 	if (bTextureMap)
 	{
 		// Warn about incorrect sizes.
-		if ((mCurrentSkin->iTextureWidth & 15) || (mCurrentSkin->iTextureHeight & 15))
+		if ((mCurrentSkin->mtTexture[mCurrentSkin->uiTextures].uiWidth & 15) || (mCurrentSkin->mtTexture[mCurrentSkin->uiTextures].uiHeight & 15))
 		{
-			Con_Warning("Texture is not 16 aligned! (%s) (%ix%i)\n", cArg, mCurrentSkin->iTextureWidth, mCurrentSkin->iTextureHeight);
-		
+			Con_Warning("Texture is not 16 aligned! (%s) (%ix%i)\n", cArg,
+				mCurrentSkin->mtTexture[mCurrentSkin->uiTextures].uiWidth,
+				mCurrentSkin->mtTexture[mCurrentSkin->uiTextures].uiHeight);
+
 			// Pad the image.
 			iTextureFlags |= TEXPREF_PAD;
 		}
@@ -280,87 +281,238 @@ gltexture_t *Material_LoadTexture(Material_t *mMaterial,MaterialSkin_t *mCurrent
 			iTextureFlags |= TEXPREF_PERSIST;
 
 		return TexMgr_LoadImage(NULL, cArg,
-			mCurrentSkin->iTextureWidth,
-			mCurrentSkin->iTextureHeight,
-			SRC_RGBA,bTextureMap,cArg,0,iTextureFlags);
+			mCurrentSkin->mtTexture[mCurrentSkin->uiTextures].uiWidth,
+			mCurrentSkin->mtTexture[mCurrentSkin->uiTextures].uiHeight,
+			SRC_RGBA, bTextureMap, cArg, 0, iTextureFlags);
 	}
-		
+
 	Con_Warning("Failed to load texture %s!\n", cArg);
 
 	return notexture;
 }
 
-// Everything else...
+/*
+	Scripting
+*/
 
-void _Material_SetType(Material_t *mCurrentMaterial,bool bGlobal,char *cArg)
+typedef enum
 {
-	int	iMaterialType = Q_atoi(cArg);
+	MATERIAL_FUNCTION_NONE,
 
-	// Ensure that the given type is valid.
-	if((iMaterialType < MATERIAL_TYPE_NONE) || (iMaterialType >= MATERIAL_TYPE_MAX))
-		Con_Warning("Invalid material type! (%i)\n",iMaterialType);
+	MATERIAL_FUNCTION_MATERIAL,
+	MATERIAL_FUNCTION_SKIN,
+	MATERIAL_FUNCTION_TEXTURE,
+	MATERIAL_FUNCTION_UNIVERSAL
+} MaterialFunctionType_t;
 
-	mCurrentMaterial->msSkin[mCurrentMaterial->iSkins-1].iType = iMaterialType;
+MaterialFunctionType_t	mftMaterialState;	// Indicates that any settings applied are global.
+
+void Material_CheckFunctions(Material_t *mNewMaterial);
+
+// Material Functions...
+
+typedef struct
+{
+	const char	*ccName;
+
+	MaterialTextureType_t	mttType;
+} MaterialTextureTypeX_t;
+
+MaterialTextureTypeX_t mttMaterialTypes[] =
+{
+	{ "diffuse", MATERIAL_TEXTURE_DIFFUSE },
+	{ "detail", MATERIAL_TEXTURE_DETAIL },
+	{ "sphere", MATERIAL_TEXTURE_SPHERE },
+	{ "fullbright", MATERIAL_TEXTURE_FULLBRIGHT },
+	{ "lightmap", MATERIAL_TEXTURE_LIGHTMAP }
+};
+
+void _Material_SetType(Material_t *mCurrentMaterial, MaterialFunctionType_t mftContext, char *cArg)
+{
+	switch (mftContext)
+	{
+	case MATERIAL_FUNCTION_SKIN:
+	{
+		int	iMaterialType = Q_atoi(cArg);
+
+		// Ensure that the given type is valid.
+		if ((iMaterialType < MATERIAL_TYPE_NONE) || (iMaterialType >= MATERIAL_TYPE_MAX))
+			Con_Warning("Invalid material type! (%i)\n", iMaterialType);
+
+		mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1].uiType = iMaterialType;
+	}
+	case MATERIAL_FUNCTION_TEXTURE:
+	{
+		int	i;
+
+		// Search through and copy each flag into the materials list of flags.
+		for (i = 0; i < pARRAYELEMENTS(mttMaterialTypes); i++)
+			if (strstr(cArg, mttMaterialTypes[i].ccName))
+				mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1].uiType = mttMaterialTypes[i].mttType;
+	}
+	}
 }
 
-void _Material_SetDiffuseTexture(Material_t *mCurrentMaterial, bool bGlobal, char *cArg)
+void _Material_SetAnimationSpeed(Material_t *mCurrentMaterial, MaterialFunctionType_t mftContext, char *cArg)
 {
-	if (bGlobal)
-		Sys_Error("Attempted to set diffuse texture globally! (%s)\n", mCurrentMaterial->cPath);
-
-	mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1].gDiffuseTexture = 
-		Material_LoadTexture(mCurrentMaterial,&mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1], cArg);
+	mCurrentMaterial->fAnimationSpeed = strtof(cArg, NULL);
 }
 
-void _Material_SetFullbrightTexture(Material_t *mCurrentMaterial, bool bGlobal, char *cArg)
-{
-	if (bGlobal)
-		Sys_Error("Attempted to set fullbright texture globally! (%s)\n", mCurrentMaterial->cPath);
+// Skin Functions...
 
-	mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1].gFullbrightTexture = 
-		Material_LoadTexture(mCurrentMaterial,&mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1], cArg);
+void _Material_AddSkin(Material_t *mCurrentMaterial, MaterialFunctionType_t mftContext, char *cArg)
+{
+	Con_DPrintf("Adding material skin...\n");
+
+	// Proceed to the next line.
+	Script_GetToken(true);
+
+	if (cToken[0] == '{')
+	{
+		while (true)
+		{
+			if (!Script_GetToken(true))
+			{
+				Con_Warning("End of field without closing brace! (%s) (%i)\n", mCurrentMaterial->cPath, iScriptLine);
+				break;
+			}
+
+			mftMaterialState = MATERIAL_FUNCTION_SKIN;
+
+			if (cToken[0] == '}')
+			{
+				mCurrentMaterial->iSkins++;
+				break;
+			}
+			// '$' declares that the following is a function.
+			else if (cToken[0] == SCRIPT_SYMBOL_FUNCTION)
+				Material_CheckFunctions(mCurrentMaterial);
+			// '%' declares that the following is a variable.
+			else if (cToken[0] == SCRIPT_SYMBOL_VARIABLE)
+			{
+				/*	TODO:
+				* Collect variable
+				* Check it against internal solutions
+				* Otherwise declare it, figure out where/how it's used
+				*/
+			}
+			else
+			{
+				Con_Warning("Invalid field! (%s) (%i)\n", mCurrentMaterial->cPath, iScriptLine);
+				break;
+			}
+		}
+	}
+	else
+		Con_Warning("Invalid skin, no opening brace! (%s) (%i)\n", mCurrentMaterial->cPath, iScriptLine);
 }
 
-void _Material_SetSphereTexture(Material_t *mCurrentMaterial, bool bGlobal, char *cArg)
-{
-	if (bGlobal)
-		Sys_Error("Attempted to set sphere texture globally! (%s)\n", mCurrentMaterial->cPath);
+// Texture Functions...
 
-	mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1].gSphereTexture = 
-		Material_LoadTexture(mCurrentMaterial,&mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1], cArg);
+void _Material_AddTexture(Material_t *mCurrentMaterial, MaterialFunctionType_t mftContext, char *cArg)
+{
+	MaterialSkin_t	*msSkin;
+
+	Con_DPrintf("Adding material texture...\n");
+
+	msSkin = Material_GetSkin(mCurrentMaterial, mCurrentMaterial->iSkins);
+	if (!msSkin)
+		Sys_Error("Failed to get skin!\n");
+
+	msSkin->mtTexture[msSkin->uiTextures].bManipulation = false;
+	msSkin->mtTexture[msSkin->uiTextures].fRotate = 0;
+	msSkin->mtTexture[msSkin->uiTextures].mttType = MATERIAL_TEXTURE_DIFFUSE;
+	msSkin->mtTexture[msSkin->uiTextures].vScroll[0] = 0;
+	msSkin->mtTexture[msSkin->uiTextures].vScroll[1] = 0;
+	msSkin->mtTexture[msSkin->uiTextures].gMap = Material_LoadTexture(mCurrentMaterial, msSkin, cArg);
+
+	// Get following line.
+	Script_GetToken(true);
+
+	if (cToken[0] == '{')
+	{
+		while (true)
+		{
+			if (!Script_GetToken(true))
+			{
+				Con_Warning("End of field without closing brace! (%s) (%i)\n", mCurrentMaterial->cPath, iScriptLine);
+				break;
+			}
+
+			// Update state.
+			mftMaterialState = MATERIAL_FUNCTION_TEXTURE;
+
+			if (cToken[0] == '}')
+			{
+				msSkin->uiTextures++;
+				break;
+			}
+			// '$' declares that the following is a function.
+			else if (cToken[0] == SCRIPT_SYMBOL_FUNCTION)
+				Material_CheckFunctions(mCurrentMaterial);
+			// '%' declares that the following is a variable.
+			else if (cToken[0] == SCRIPT_SYMBOL_VARIABLE)
+			{
+				/*	TODO:
+				* Collect variable
+				* Check it against internal solutions
+				* Otherwise declare it, figure out where/how it's used
+				*/
+			}
+			else
+			{
+				Con_Warning("Invalid field! (%s) (%i)\n", mCurrentMaterial->cPath, iScriptLine);
+				break;
+			}
+		}
+	}
+	else
+		Con_Warning("Invalid skin, no opening brace! (%s) (%i)\n", mCurrentMaterial->cPath, iScriptLine);
 }
 
-void _Material_SetSpecularTexture(Material_t *mCurrentMaterial, bool bGlobal, char *cArg)
+void _Material_SetTextureType(Material_t *mCurrentMaterial, MaterialFunctionType_t mftContext, char *cArg)
 {
-	mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1].gSpecularTexture = 
-		Material_LoadTexture(mCurrentMaterial,&mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1], cArg);
 }
 
-void _Material_SetDetailTexture(Material_t *mCurrentMaterial, bool bGlobal, char *cArg)
+void _Material_SetTextureScroll(Material_t *mCurrentMaterial, MaterialFunctionType_t mftContext, char *cArg)
 {
-	mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1].gDetailTexture = 
-		Material_LoadTexture(mCurrentMaterial,&mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1], cArg);
+	MaterialSkin_t	*msSkin;
+	MathVector2_t	vScroll;
+
+	sscanf(cArg, "%f %f", &vScroll[0], &vScroll[1]);
+
+	msSkin = Material_GetSkin(mCurrentMaterial, mCurrentMaterial->iSkins);
+	msSkin->mtTexture[msSkin->uiTextures].vScroll[0] = vScroll[0];
+	msSkin->mtTexture[msSkin->uiTextures].vScroll[1] = vScroll[1];
 }
 
-void _Material_SetAnimationSpeed(Material_t *mCurrentMaterial, bool bGlobal, char *cArg)
+#if 0
+void _Material_SetScrollX(Material_t *mCurrentMaterial, MaterialFunctionType_t mftContext, char *cArg)
 {
-	mCurrentMaterial->fAnimationSpeed = strtof(cArg,NULL);
+	MaterialSkin_t	*msSkin;
+
+	msSkin = Material_GetSkin(mCurrentMaterial, mCurrentMaterial->iSkins);
+	msSkin->mtTexture[msSkin->uiTextures].vScroll[0] = strtof(cArg, NULL);
 }
 
-void _Material_SetAlpha(Material_t *mCurrentMaterial, bool bGlobal, char *cArg)
+void _Material_SetScrollY(Material_t *mCurrentMaterial, MaterialFunctionType_t mftContext, char *cArg)
 {
-	mCurrentMaterial->fAlpha = strtof(cArg, NULL);
+	MaterialSkin_t	*msSkin;
+
+	msSkin = Material_GetSkin(mCurrentMaterial, mCurrentMaterial->iSkins);
+	msSkin->mtTexture[msSkin->uiTextures].vScroll[1] = strtof(cArg, NULL);
+}
+#endif
+
+void _Material_SetRotate(Material_t *mCurrentMaterial, MaterialFunctionType_t mftContext, char *cArg)
+{
+	MaterialSkin_t	*msSkin;
+
+	msSkin = Material_GetSkin(mCurrentMaterial, mCurrentMaterial->iSkins);
+	msSkin->mtTexture[msSkin->uiTextures].fRotate = strtof(cArg, NULL);
 }
 
-void _Material_SetScrollX(Material_t *mCurrentMaterial, bool bGlobal, char *cArg)
-{
-	mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1].fTextureScroll[0] = strtof(cArg, NULL);
-}
-
-void _Material_SetScrollY(Material_t *mCurrentMaterial, bool bGlobal, char *cArg)
-{
-	mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1].fTextureScroll[1] = strtof(cArg, NULL);
-}
+// Universal Functions...
 
 typedef struct
 {
@@ -368,93 +520,84 @@ typedef struct
 
 	const	char	*ccName;
 
-	bool	bGlobal;
+	MaterialFunctionType_t	mftContext;
 } MaterialFlag_t;
 
 MaterialFlag_t	mfMaterialFlags[] =
 {
 	// Global
-	{	MATERIAL_FLAG_PRESERVE,	"PRESERVE",	true	},
-	{	MATERIAL_FLAG_ANIMATED,	"ANIMATED",	true	},
-	{	MATERIAL_FLAG_MIRROR,	"MIRROR",	true	},
-	{	MATERIAL_FLAG_WATER,	"WATER",	true	},
+	{ MATERIAL_FLAG_PRESERVE, "PRESERVE", MATERIAL_FUNCTION_MATERIAL },
+	{ MATERIAL_FLAG_ANIMATED, "ANIMATED", MATERIAL_FUNCTION_MATERIAL },
+	{ MATERIAL_FLAG_MIRROR, "MIRROR", MATERIAL_FUNCTION_MATERIAL },
+	{ MATERIAL_FLAG_WATER, "WATER", MATERIAL_FUNCTION_MATERIAL },
 
 	// Local
-	{	MATERIAL_FLAG_ALPHA,	"ALPHA",	false	},
-	{	MATERIAL_FLAG_BLEND,	"BLEND",	false	}
+	{ MATERIAL_FLAG_ALPHA, "ALPHA", MATERIAL_FUNCTION_SKIN },
+	{ MATERIAL_FLAG_BLEND, "BLEND", MATERIAL_FUNCTION_SKIN }
 };
 
 /*	Set flags for the material.
 */
-void _Material_SetFlags(Material_t *mCurrentMaterial, bool bGlobal, char *cArg)
+void _Material_SetFlags(Material_t *mCurrentMaterial, MaterialFunctionType_t mftContext, char *cArg)
 {
 	int	i;
 
+	Con_DPrintf("Setting material flags...\n");
+
 	// Search through and copy each flag into the materials list of flags.
 	for (i = 0; i < pARRAYELEMENTS(mfMaterialFlags); i++)
+	{
 		if (strstr(cArg, mfMaterialFlags[i].ccName))
 		{
-			if (bGlobal)
-			{
-				if (!mfMaterialFlags[i].bGlobal)
-					Con_Warning("Attempted to set a local flag globally! (%s) (%s)\n", mCurrentMaterial->cName, mfMaterialFlags[i].ccName);
-				else
-				{
-					if (mfMaterialFlags[i].iFlag == MATERIAL_FLAG_ANIMATED)
-					{
-						mCurrentMaterial->iAnimationFrame = 0;
-						mCurrentMaterial->dAnimationTime = 0;
-					}
+			if (mfMaterialFlags[i].mftContext != mftContext)
+				continue;
 
-					mCurrentMaterial->iFlags |= mfMaterialFlags[i].iFlag;
-				}
-			}
-			else
+			switch (mftContext)
 			{
-				if (mfMaterialFlags[i].bGlobal)
-					Con_Warning("Attempted to set a global flag locally! (%s) (%s)\n", mCurrentMaterial->cName, mfMaterialFlags[i].ccName);
-				else
-					mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1].iFlags |= mfMaterialFlags[i].iFlag;
+			case MATERIAL_FUNCTION_MATERIAL:
+				if (mfMaterialFlags[i].iFlag == MATERIAL_FLAG_ANIMATED)
+				{
+					mCurrentMaterial->iAnimationFrame = 0;
+					mCurrentMaterial->dAnimationTime = 0;
+				}
+
+				mCurrentMaterial->iFlags |= mfMaterialFlags[i].iFlag;
+				break;
+			case MATERIAL_FUNCTION_SKIN:
+				mCurrentMaterial->msSkin[mCurrentMaterial->iSkins - 1].uiFlags |= mfMaterialFlags[i].iFlag;
+				break;
+			default:
+				Con_Warning("Invalid context! (%s) (%s)\n", mCurrentMaterial->cName, mfMaterialFlags[i].ccName);
 			}
 		}
+	}
 }
 
 typedef struct
 {
 	char	*cKey;
 
-	void	(*Function)(Material_t *mCurrentMaterial, bool bGlobal, char *cArg);
+	void	(*Function)(Material_t *mCurrentMaterial, MaterialFunctionType_t mftContext, char *cArg);
+
+	MaterialFunctionType_t	mftType;
 } MaterialKey_t;
 
 MaterialKey_t	mkMaterialFunctions[]=
 {
-	// All these are obsolete...
-	{	"SetType",				_Material_SetType				},	// Sets the type of material.
-	{	"SetDiffuseTexture",	_Material_SetDiffuseTexture		},	// Sets the diffuse texture.
-	{	"SetSpecularTexture",	_Material_SetSpecularTexture	},	// Sets the specular map.
-	{	"SetSphereTexture",		_Material_SetSphereTexture		},	// Sets the spheremap texture.
-	{	"SetFullbrightTexture",	_Material_SetFullbrightTexture	},	// Sets the fullbright texture.
-	{	"SetDetailTexture",		_Material_SetDetailTexture		},	// Sets the detail texture.
-	{	"SetFlags",				_Material_SetFlags				},	// Sets seperate flags for the material; e.g. persist etc.
+	// Universal
+	{ "flags", _Material_SetFlags, MATERIAL_FUNCTION_UNIVERSAL },
+	{ "type", _Material_SetType, MATERIAL_FUNCTION_UNIVERSAL },
 
-	// (closer to Quake III naming conventions)...
+	// Material
+	{ "animation_speed", _Material_SetAnimationSpeed, MATERIAL_FUNCTION_MATERIAL },
+	{ "skin", _Material_AddSkin, MATERIAL_FUNCTION_MATERIAL },
 
-	{ "flags", _Material_SetFlags },
-	{ "type", _Material_SetType },
-	{ "alpha", _Material_SetAlpha },
+	// Skin
+	{ "map", _Material_AddTexture, MATERIAL_FUNCTION_SKIN },
 
-	// Layers
-	{ "map_detail", _Material_SetDetailTexture },
-	{ "map_diffuse", _Material_SetDiffuseTexture },
-	{ "map_sphere", _Material_SetSphereTexture },
-	{ "map_fullbright", _Material_SetFullbrightTexture },
-
-	// Animation
-	{ "animation_speed", _Material_SetAnimationSpeed },
-
-	// Scrolling
-	{ "scroll_x", _Material_SetScrollX },
-	{ "scroll_y", _Material_SetScrollY },
+	// Texture
+	{ "scroll", _Material_SetTextureScroll, MATERIAL_FUNCTION_TEXTURE },
+	{ "rotate", _Material_SetRotate, MATERIAL_FUNCTION_TEXTURE },
 
 	{	0	}
 };
@@ -468,11 +611,19 @@ void Material_CheckFunctions(Material_t *mNewMaterial)
 		// Remain case sensitive.
 		if (!Q_strcasecmp(mKey->cKey, cToken + 1))
 		{
+			/*	todo
+				account for texture slots etc
+			*/
+			if ((mKey->mftType != MATERIAL_FUNCTION_UNIVERSAL) && (mftMaterialState != mKey->mftType))
+				Sys_Error("Attempted to call a function within the wrong context! (%s) (%s) (%i)\n", cToken, mNewMaterial->cPath, iScriptLine);
+
 			Script_GetToken(false);
 
-			mKey->Function(mNewMaterial, bMaterialGlobal, cToken);
-			break;
+			mKey->Function(mNewMaterial, mftMaterialState, cToken);
+			return;
 		}
+
+	Con_Warning("Unknown function! (%s) (%s) (%i)\n", cToken, mNewMaterial->cPath, iScriptLine);
 }
 
 /*	Loads and parses material.
@@ -481,21 +632,22 @@ void Material_CheckFunctions(Material_t *mNewMaterial)
 Material_t *Material_Load(const char *ccPath)
 {
     Material_t  *mNewMaterial;
+	int			iMaterialVersion = 0;
 	void        *cData;
 	char		cPath[PLATFORM_MAX_PATH],
 				cMaterialName[64] = { 0 };
 
 	// Ensure that the given material names are correct!
 	if (ccPath[0] == ' ')
-		Sys_Error("Invalid material name! (%s)\n", ccPath);
-
-	Con_DPrintf("Loading material: %s\n", ccPath);
+		Sys_Error("Invalid material path! (%s)\n", ccPath);
 
 	if (!bInitialized)
 	{
 		Con_Warning("Attempted to load material, before initialization! (%s)\n", ccPath);
 		return NULL;
 	}
+
+	Con_DPrintf("Loading material: %s\n", ccPath);
 
 	// Update the given path with the base path plus extension.
 	sprintf(cPath,"%s%s.material",Global.cMaterialPath,ccPath);
@@ -514,8 +666,6 @@ Material_t *Material_Load(const char *ccPath)
 
 	Script_StartTokenParsing((char*)cData);
 
-	bMaterialGlobal = true;
-
 	if(!Script_GetToken(true))
 	{
 		Con_Warning("Failed to get initial token! (%s) (%i)\n",ccPath,iScriptLine);
@@ -523,35 +673,38 @@ Material_t *Material_Load(const char *ccPath)
 	}
 	else if (cToken[0] != '{')
 	{
-		// Copy over the given name.
-		strncpy(cMaterialName, cToken, sizeof(cMaterialName));
-
-		// Check if it's been cached already...
-		mNewMaterial = Material_GetByName(cMaterialName);
-		if (mNewMaterial)
+		if (!Q_strcmp(cToken, "material_version"))
 		{
-			Con_Warning("Attempted to load duplicate material! (%s) (%s) vs (%s) (%s)\n",
-				ccPath, cMaterialName,
-				mNewMaterial->cPath, mNewMaterial->cName);
+			Script_GetToken(false);
 
-			Z_Free(cData);
-
-			return mNewMaterial;
+			iMaterialVersion = atoi(cToken);
 		}
-
-		if (cMaterialName[0])
+		else	// Probably a name...
 		{
-			Script_GetToken(true);
-			if (cToken[0] != '{')
-			{
-				Con_Warning("Missing '{'! (%s) (%i)\n", ccPath, iScriptLine);
+			// Copy over the given name.
+			strncpy(cMaterialName, cToken, sizeof(cMaterialName));
+			if (cMaterialName[0] == ' ')
+				Sys_Error("Invalid material name!\n");
 
-				goto MATERIAL_LOAD_ERROR;
+			// Check if it's been cached already...
+			mNewMaterial = Material_GetByName(cMaterialName);
+			if (mNewMaterial)
+			{
+				Con_Warning("Attempted to load duplicate material! (%s) (%s) vs (%s) (%s)\n",
+					ccPath, cMaterialName,
+					mNewMaterial->cPath, mNewMaterial->cName);
+
+				Z_Free(cData);
+
+				return mNewMaterial;
 			}
 		}
-		else
+
+		Script_GetToken(true);
+
+		if (cToken[0] != '{')
 		{
-			Con_Warning("Invalid material name! (%s) (%i)\n", ccPath, iScriptLine);
+			Con_Warning("Missing '{'! (%s) (%i)\n", ccPath, iScriptLine);
 
 			goto MATERIAL_LOAD_ERROR;
 		}
@@ -587,66 +740,20 @@ Material_t *Material_Load(const char *ccPath)
 			goto MATERIAL_LOAD_ERROR;
 		}
 
+		mftMaterialState = MATERIAL_FUNCTION_MATERIAL;
+
 		// End
 		if (cToken[0] == '}')
 			return mNewMaterial;
 		// Start
 		else if (cToken[0] == SCRIPT_SYMBOL_FUNCTION)
 			Material_CheckFunctions(mNewMaterial);
-		else if(cToken[0] == '{')
-		{
-			bMaterialGlobal = false;
-
-			mNewMaterial->iSkins++;
-
-			while(true)
-			{
-				if(!Script_GetToken(true))
-				{
-					Con_Warning("End of field without closing brace! (%s) (%i)\n",ccPath,iScriptLine);
-					break;
-				}
-
-				if (cToken[0] == '}')
-					break;
-				// '$' declares that the following is a function.
-				else if (cToken[0] == SCRIPT_SYMBOL_FUNCTION)
-					Material_CheckFunctions(mNewMaterial);
-				// '%' declares that the following is a variable.
-				else if(cToken[0] == SCRIPT_SYMBOL_VARIABLE)
-				{
-					/*	TODO:
-							* Collect variable
-							* Check it against internal solutions
-							* Otherwise declare it, figure out where/how it's used
-					*/
-				}
-				else
-				{
-					Con_Warning("Invalid field! (%s) (%i)\n", ccPath, iScriptLine);
-					break;
-				}
-			}
-		}
 	}
 
 MATERIAL_LOAD_ERROR:
 	Z_Free(cData);
 
 	return NULL;
-}
-
-/*	Returns default dummy material.
-*/
-Material_t *Material_GetDummy(void)
-{
-	Material_t *mDummy;
-
-	mDummy = Material_GetByName("notexture");
-	if (!mDummy)
-		Sys_Error("Failed to assign dummy material!\n");
-
-	return mDummy;
 }
 
 /**/

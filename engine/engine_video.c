@@ -397,7 +397,7 @@ void Video_CreateWindow(void)
 
 	Video_SelectTexture(VIDEO_TEXTURE_DIFFUSE);
 
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+	
 
 	vid.conwidth		= (scr_conwidth.value > 0)?(int)scr_conwidth.value:(scr_conscale.value > 0)?(int)(Video.iWidth/scr_conscale.value) : Video.iWidth;
 	vid.conwidth		= Math_Clamp(320,vid.conwidth,Video.iWidth);
@@ -687,26 +687,15 @@ extern cvar_t gl_fullbrights;
 /*	Called before the object is drawn.
 */
 void Video_DrawMaterial(
-	Material_t *mMaterial, int iSkin, 
+	Material_t *mMaterial, int iSkin,
 	VideoObject_t *voObject, VideoPrimitive_t vpPrimitiveType, unsigned int uiSize,
 	bool bPost)
 {
+	unsigned int	i;
 	MaterialSkin_t	*msCurrentSkin;
-
-	Video_SelectTexture(VIDEO_TEXTURE_DIFFUSE);
 
 	// If we're drawing flat, then don't apply textures.
 	if (r_lightmap_cheatsafe || r_drawflat_cheatsafe || r_showtris.bValue || !cvVideoDrawMaterials.bValue)
-	{
-		if (!bPost)
-			glDisable(GL_TEXTURE_2D);
-		else
-			glEnable(GL_TEXTURE_2D);
-
-		return;
-	}
-
-	if (!mMaterial)
 		return;
 
 	if (mMaterial->iFlags & MATERIAL_FLAG_ANIMATED)
@@ -714,143 +703,157 @@ void Video_DrawMaterial(
 	else
 		msCurrentSkin = Material_GetSkin(mMaterial, iSkin);
 	if (!msCurrentSkin)
-	{
-		Video_SetTexture(notexture);
-		return;
-	}
+		Sys_Error("Failed to get valid skin!\n");
 
-	if (msCurrentSkin->gDiffuseTexture /*&& mMaterial->bBind*/)
+	for (i = 0; i < msCurrentSkin->uiTextures; i++)
 	{
+		// Lightmap is a special case.
+		if (msCurrentSkin->mtTexture[i].mttType == MATERIAL_TEXTURE_LIGHTMAP)
+			continue;
+
+		// Select the given texture.
+		Video_SelectTexture(i);
+
 		if (!bPost)
-			// Set the diffuse texture first.
-			Video_SetTexture(msCurrentSkin->gDiffuseTexture);
-
-		if (msCurrentSkin->iFlags & MATERIAL_FLAG_ALPHA)
 		{
-			if (!bPost)
-				glEnable(GL_ALPHA_TEST);
-			else
-			{
-				glDisable(GL_ALPHA_TEST);
+			// Enable it.
+			Video_EnableCapabilities(VIDEO_TEXTURE_2D);
 
-				if (cvVideoAlphaTrick.bValue && (uiSize > 0))
-				{
-					Video_SetBlend(VIDEO_BLEND_IGNORE, VIDEO_DEPTH_FALSE);
+			// Bind it.
+			Video_SetTexture(msCurrentSkin->mtTexture[i].gMap);
 
-					glEnable(GL_BLEND);
-
-					// Draw the object again (don't bother passing material).
-					Video_DrawObject(voObject, vpPrimitiveType, uiSize, NULL, 0);
-
-					glDisable(GL_BLEND);
-
-					Video_SetBlend(VIDEO_BLEND_IGNORE, VIDEO_DEPTH_TRUE);
-				}
-			}
-		}
-		else if (msCurrentSkin->iFlags & MATERIAL_FLAG_BLEND)
-		{
-			if (!bPost)
-				glEnable(GL_BLEND);
-			else
-				glDisable(GL_BLEND);
-		}
-
-		// Allow us to scroll the texture.
-		if ((msCurrentSkin->fTextureScroll[0] > 0) || (msCurrentSkin->fTextureScroll[0] < 0) ||
-			(msCurrentSkin->fTextureScroll[1] > 0) || (msCurrentSkin->fTextureScroll[1] < 0))
-		{
-			if (!bPost)
-			{
-				glMatrixMode(GL_TEXTURE);
-				glLoadIdentity();
+			// Allow us to manipulate the texture.
+			glMatrixMode(GL_TEXTURE);
+			glLoadIdentity();
+			if ((msCurrentSkin->mtTexture[i].vScroll[0] > 0) || (msCurrentSkin->mtTexture[i].vScroll[0] < 0) ||
+				(msCurrentSkin->mtTexture[i].vScroll[1] > 0) || (msCurrentSkin->mtTexture[i].vScroll[1] < 0))
 				glTranslatef(
-					msCurrentSkin->fTextureScroll[0] + cl.time,
-					msCurrentSkin->fTextureScroll[1] + cl.time,
-					0);
-				glMatrixMode(GL_MODELVIEW);
+				msCurrentSkin->mtTexture[i].vScroll[0] + cl.time,
+				msCurrentSkin->mtTexture[i].vScroll[1] + cl.time,
+				0);
+			if ((msCurrentSkin->mtTexture[i].fRotate > 0) || (msCurrentSkin->mtTexture[i].fRotate < 0))
+				glRotatef(msCurrentSkin->mtTexture[i].fRotate*cl.time, 0, 0, 1.0f);
+			glMatrixMode(GL_MODELVIEW);
+		}
+
+		// Check our specific type.
+		switch (msCurrentSkin->mtTexture[i].mttType)
+		{
+		default:
+		case MATERIAL_TEXTURE_DIFFUSE:
+			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+
+			if (msCurrentSkin->uiFlags & MATERIAL_FLAG_ALPHA)
+			{
+				if (!bPost)
+					glEnable(GL_ALPHA_TEST);
+				else
+				{
+					glDisable(GL_ALPHA_TEST);
+
+					if (cvVideoAlphaTrick.bValue && (uiSize > 0))
+					{
+						Video_SetBlend(VIDEO_BLEND_IGNORE, VIDEO_DEPTH_FALSE);
+
+						glEnable(GL_BLEND);
+
+						// Draw the object again (don't bother passing material).
+						Video_DrawObject(voObject, vpPrimitiveType, uiSize, NULL, 0);
+
+						glDisable(GL_BLEND);
+
+						Video_SetBlend(VIDEO_BLEND_IGNORE, VIDEO_DEPTH_TRUE);
+					}
+				}
+			}
+			else if (msCurrentSkin->uiFlags & MATERIAL_FLAG_BLEND)
+			{
+				if (!bPost)
+					glEnable(GL_BLEND);
+				else
+					glDisable(GL_BLEND);
+			}
+			break;
+		case MATERIAL_TEXTURE_DETAIL:
+			if (!cvVideoDrawDetail.bValue)
+				break;
+
+			if (!bPost)
+			{
+				glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
+				glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
+				glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 2);
+
+				// Check if we've been given a video object to use...
+				if (voObject)
+				{
+					unsigned int j;
+
+					// Go through the whole object.
+					for (j = 0; j < uiSize; j++)
+					{
+						// Copy over original texture coords.
+						Video_ObjectTexture(&voObject[j], i,
+							// Use base texture coordinates as a reference.
+							voObject[j].vTextureCoord[0][0] * cvVideoDetailScale.value,
+							voObject[j].vTextureCoord[0][1] * cvVideoDetailScale.value);
+
+						// TODO: Modify them to the appropriate scale.
+
+					}
+				}
+			}
+			break;
+		case MATERIAL_TEXTURE_FULLBRIGHT:
+			if (!gl_fullbrights.bValue)
+				break;
+
+			if (!bPost)
+			{
+				if (voObject)
+				{
+					unsigned int j;
+
+					for (j = 0; j < uiSize; i++)
+					{
+						// Texture coordinates remain the same for fullbright layers.
+						Video_ObjectTexture(&voObject[j], i,
+							// Use base texture coordinates as a reference.
+							voObject[j].vTextureCoord[0][0],
+							voObject[j].vTextureCoord[0][1]);
+					}
+				}
+
+				glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_ADD);
+			}
+			break;
+		case MATERIAL_TEXTURE_SPHERE:
+			if (!bPost)
+			{
+				Video_GenerateSphereCoordinates();
+				Video_EnableCapabilities(VIDEO_BLEND | VIDEO_TEXTURE_GEN_S | VIDEO_TEXTURE_GEN_T);
 			}
 			else
-			{
-				glMatrixMode(GL_TEXTURE);
-				glLoadIdentity();
-				glTranslatef(0,0,0);
-				glMatrixMode(GL_MODELVIEW);
-			}
+				Video_DisableCapabilities(VIDEO_BLEND | VIDEO_TEXTURE_GEN_S | VIDEO_TEXTURE_GEN_T);
+			break;
 		}
-	}
 
-	// Detail map layer.
-	if (msCurrentSkin->gDetailTexture && cvVideoDrawDetail.bValue)
-	{
-		Video_SelectTexture(VIDEO_TEXTURE_DETAIL);
-
-		// TODO: Check distance from camera before proceeding.
-		if (!bPost)
+		if (bPost)
 		{
-			Video_EnableCapabilities(VIDEO_TEXTURE_2D);
+			// Reset any manipulation within the matrix.
+			glMatrixMode(GL_TEXTURE);
+			glLoadIdentity();
+			glTranslatef(0, 0, 0);
+			glRotatef(0, 0, 0, 0);
+			glMatrixMode(GL_MODELVIEW);
 
-			Video_SetTexture(msCurrentSkin->gDetailTexture);
+			// Reset texture env changes...
+			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+			glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 1);
 
-			if (voObject)
-				for (unsigned int i = 0; i < uiSize; i++)
-				{
-					// Copy over original texture coords.
-					Video_ObjectTexture(&voObject[i], VIDEO_TEXTURE_DETAIL,
-						voObject[i].vTextureCoord[VIDEO_TEXTURE_DIFFUSE][0] * cvVideoDetailScale.value,
-						voObject[i].vTextureCoord[VIDEO_TEXTURE_DIFFUSE][1] * cvVideoDetailScale.value);
-
-					// TODO: Modify them to the appropriate scale.
-
-				}
-
-			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
-			glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
-			glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 2);
-		}
-		else
+			// Disable the texture.
 			Video_DisableCapabilities(VIDEO_TEXTURE_2D);
-	}
-
-	// Fullbright map.
-	if (msCurrentSkin->gFullbrightTexture && gl_fullbrights.bValue)
-	{
-		Video_SelectTexture(VIDEO_TEXTURE_FULLBRIGHT);
-
-		if (!bPost)
-		{
-			Video_EnableCapabilities(VIDEO_TEXTURE_2D);
-
-			Video_SetTexture(msCurrentSkin->gFullbrightTexture);
-
-			if (voObject)
-				for (unsigned int i = 0; i < uiSize; i++)
-				{
-					// Texture coordinates remain the same for fullbright layers.
-					Video_ObjectTexture(&voObject[i], VIDEO_TEXTURE_FULLBRIGHT, 
-						voObject[i].vTextureCoord[VIDEO_TEXTURE_DIFFUSE][0],
-						voObject[i].vTextureCoord[VIDEO_TEXTURE_DIFFUSE][1]);
-				}
-
-			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_ADD);
 		}
-		else
-			Video_DisableCapabilities(VIDEO_TEXTURE_2D);
-	}
-
-	// Sphere map.
-	if (msCurrentSkin->gSphereTexture)
-	{
-		Video_SelectTexture(VIDEO_TEXTURE_SPHERE);
-
-		if (!bPost)
-		{
-			Video_SetTexture(msCurrentSkin->gSphereTexture);
-			Video_GenerateSphereCoordinates();
-			Video_EnableCapabilities(VIDEO_TEXTURE_2D | VIDEO_BLEND | VIDEO_TEXTURE_GEN_S | VIDEO_TEXTURE_GEN_T);
-		}
-		else
-			Video_DisableCapabilities(VIDEO_TEXTURE_2D | VIDEO_BLEND | VIDEO_TEXTURE_GEN_S | VIDEO_TEXTURE_GEN_T);
 	}
 }
 
@@ -914,7 +917,8 @@ void Video_DrawObject(
 		// Double the array size to cope.
 		Video_AllocateArrays(uiVerts * 2);
 
-	Video_DrawMaterial(mMaterial, iSkin, voObject, vpPrimitiveType, uiVerts, false);
+	if (mMaterial)
+		Video_DrawMaterial(mMaterial, iSkin, voObject, vpPrimitiveType, uiVerts, false);
 
 	// Copy everything over...
 	for (i = 0; i < uiVerts; i++)
@@ -993,7 +997,8 @@ void Video_DrawObject(
 	if(r_showtris.bValue)
 		glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
 
-	Video_DrawMaterial(mMaterial, iSkin, voObject, vpPrimitiveType, uiVerts, true);
+	if (mMaterial)
+		Video_DrawMaterial(mMaterial, iSkin, voObject, vpPrimitiveType, uiVerts, true);
 
 	bVideoIgnoreCapabilities = false;
 }

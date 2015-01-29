@@ -504,13 +504,13 @@ void Player_PreThink(edict_t *ePlayer)
 
 	if(ePlayer->v.button[1])
 	{
-		Entity_SetSize(ePlayer,-16.0f,-16.0f,-24.0f,16.0f,16.0f,35.0f);
+		Entity_SetSize(ePlayer,-16.0f,-16.0f,-18.0f,16.0f,16.0f,18.0f);
 		ePlayer->v.view_ofs[2]	= 10.0f;
 	}
 	else
 	{
-		Entity_SetSize(ePlayer,-16.0f,-16.0f,-24.0f,16.0f,16.0f,40.0f);
-		ePlayer->v.view_ofs[2]	= 30.0f;
+		Entity_SetSize(ePlayer,-16.0f,-16.0f,-36.0f,16.0f,16.0f,36.0f);
+		ePlayer->v.view_ofs[2]	= 22.0f;
 	}
 
 	if(cvServerWaypointSpawn.value && (Server.dTime >= Server.dWaypointSpawnDelay))
@@ -653,7 +653,7 @@ void Player_Spawn(edict_t *ePlayer)
 	Math_VectorClear(ePlayer->v.view_ofs);
 
 	ePlayer->v.fixangle		= true;
-	ePlayer->v.view_ofs[2]	= 30.0f; // [10/05/2013] Was 22.0f ~eukos
+	ePlayer->v.view_ofs[2]	= 28.0f;
 
 	ePlayer->monster.iState		= STATE_AWAKE;	// TODO: Is this necessary? ~hogsy
 	ePlayer->monster.think_die	= Player_Die;
@@ -664,7 +664,7 @@ void Player_Spawn(edict_t *ePlayer)
 	if(bIsMultiplayer)
 	{
 #ifdef GAME_OPENKATANA
-		switch((int)cvServerGameMode.value)
+		switch(cvServerGameMode.iValue)
 		{
 		// TODO: Check what model this player has set in a cvar
 		// TODO: Set texture function for team based skins?
@@ -771,7 +771,7 @@ void Player_Spawn(edict_t *ePlayer)
 	Entity_ResetAnimation(ePlayer);
 
 	Entity_SetModel(ePlayer,ePlayer->v.model);
-	Entity_SetSize(ePlayer,-16.0f,-16.0f,-24.0f,16.0f,16.0f,40.0f);
+	Entity_SetSize(ePlayer,-16.0f,-16.0f,-36.0f,16.0f,16.0f,36.0f);
 	Entity_SetAngles(ePlayer, ePlayer->v.angles);
 	Entity_SetOrigin(ePlayer,ePlayer->v.origin);
 

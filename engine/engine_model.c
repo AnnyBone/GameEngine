@@ -330,7 +330,7 @@ void Model_LoadBSPTextures(BSPLump_t *blLump)
 			if (mAssignedMaterial)
 				tTexture->iAssignedMaterial = mAssignedMaterial->iIdentification;
 			else
-				tTexture->iAssignedMaterial = Material_GetDummy()->iIdentification;
+				tTexture->iAssignedMaterial = Material_GetByName("notexture")->iIdentification;
 		}
 	}
 
@@ -826,10 +826,10 @@ void Model_LoadBSPClipNodes(BSPLump_t *blLump)
 	hull->planes = loadmodel->planes;
 	hull->clip_mins[0] = -16;
 	hull->clip_mins[1] = -16;
-	hull->clip_mins[2] = -24;
+	hull->clip_mins[2] = -36;
 	hull->clip_maxs[0] = 16;
 	hull->clip_maxs[1] = 16;
-	hull->clip_maxs[2] = 32;
+	hull->clip_maxs[2] = 36;
 
 	hull = &loadmodel->hulls[2];
 	hull->clipnodes = out;
@@ -838,10 +838,22 @@ void Model_LoadBSPClipNodes(BSPLump_t *blLump)
 	hull->planes = loadmodel->planes;
 	hull->clip_mins[0] = -32;
 	hull->clip_mins[1] = -32;
-	hull->clip_mins[2] = -24;
+	hull->clip_mins[2] = -32;
 	hull->clip_maxs[0] = 32;
 	hull->clip_maxs[1] = 32;
-	hull->clip_maxs[2] = 64;
+	hull->clip_maxs[2] = 32;
+
+	hull = &loadmodel->hulls[3];
+	hull->clipnodes = out;
+	hull->firstclipnode = 0;
+	hull->lastclipnode = count - 1;
+	hull->planes = loadmodel->planes;
+	hull->clip_mins[0] = -16;
+	hull->clip_mins[1] = -16;
+	hull->clip_mins[2] = -18;
+	hull->clip_maxs[0] = 16;
+	hull->clip_maxs[1] = 16;
+	hull->clip_maxs[2] = 18;
 
 	for (i=0 ; i<count ; i++, out++, in++)
 	{
@@ -1216,7 +1228,7 @@ void Model_LoadTextures(model_t *mModel)
 		Con_Warning("Failed to load material for model! (%s) (%s)\n",mModel->name,cOutName);
 
 		// Set us up to just use the dummy material instead.
-		mModel->iAssignedMaterials = Material_GetDummy()->iIdentification;
+		mModel->iAssignedMaterials = Material_GetByName("notexture")->iIdentification;
 
 		return;
 	}

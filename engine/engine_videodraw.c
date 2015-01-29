@@ -29,11 +29,8 @@
 
 cvar_t		cvConsoleAlpha		= { "screen_consolealpha",	"0.7",						true,	false,  "Sets the alpha value for the console background."  }; //johnfitz
 cvar_t		cvConsoleBackground	= { "screen_consoleback",	"",							true,	false,  "Sets the path for the console background."         };
-cvar_t		cvConsoleChars		= { "screen_consolechars",	"textures/engine/conchars",	true,   false,  "Sets the path for the console font."	            };
 
 qpic_t	*draw_backtile;
-
-gltexture_t *gCharTexture; //johnfitz
 
 typedef struct
 {
@@ -270,18 +267,6 @@ qpic_t *Draw_MakePic (char *name, int width, int height, byte *data)
 //
 //==============================================================================
 
-void Draw_LoadPics (void)
-{
-	unsigned int	w,h;
-	byte		    *data;
-
-	data = Image_LoadImage(cvConsoleChars.string,&w,&h);
-	if(!data)
-		Sys_Error("Failed to load %s!",cvConsoleChars.string);
-
-	gCharTexture = TexMgr_LoadImage(NULL,cvConsoleChars.string,w,h,SRC_RGBA,data,cvConsoleChars.string,0,TEXPREF_NEAREST|TEXPREF_ALPHA);
-}
-
 void Draw_NewGame (void)
 {
 	cachepic_t	*pic;
@@ -296,9 +281,6 @@ void Draw_NewGame (void)
 	gEffectTexture[0] = notexture;
 
 	Scrap_Upload (); //creates 2 empty gltextures
-
-	// reload wad pics
-	Draw_LoadPics();
 
 	// empty lmp cache
 	for (pic = menu_cachepics, i = 0; i < menu_numcachepics; pic++, i++)
@@ -320,9 +302,6 @@ void Draw_Init (void)
 	memset(&scrap_allocated, 0, sizeof(scrap_allocated));
 	memset(&scrap_texels, 255, sizeof(scrap_texels));
 	Scrap_Upload (); //creates 2 empty textures
-
-	// load game pics
-	Draw_LoadPics();
 }
 
 //==============================================================================
@@ -374,7 +353,7 @@ void Draw_Character(int x,int y,int num)
 		Video_ObjectColour(&voCharacter[3], 1.0f, 1.0f, 1.0f, 1.0f);
 		Video_ObjectTexture(&voCharacter[3], VIDEO_TEXTURE_DIFFUSE, fcol, frow+size);
 
-		Video_SetTexture(gCharTexture);
+		Video_SetTexture(Material_GetByName("conchars")->msSkin[0].mtTexture[0].gMap);
 		Video_DrawFill(voCharacter,NULL);
 
 		Video_ResetCapabilities(true);

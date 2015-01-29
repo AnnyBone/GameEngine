@@ -220,22 +220,14 @@ typedef struct
 } IQMBounds_t;
 
 /*
-	LVL	Format
-*/
-
-#define LVL_HEADER		"LEVEL"
-#define	LVL_VERSION		5
-#define	LVL_EXTENSION	".level"
-
-/*
 	BSP Format
 */
 
-#define	BSP_VERSION	4
-
 #define	BSP_HEADER		(('4'<<24)+('L'<<16)+('V'<<8)+'L')	// For easy identification.
 #define	BSP_HEADER_SIZE	8									// "BSP" followed by version number.
-#define	BSP_EXTENSION	".bsp"
+
+#define	BSP_VERSION		5
+#define	BSP_EXTENSION	".level"
 
 #define	BSP_MIP_LEVELS	4
 

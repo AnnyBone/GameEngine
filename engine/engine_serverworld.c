@@ -158,7 +158,12 @@ hull_t *SV_HullForEntity (edict_t *ent, vec3_t mins, vec3_t maxs, vec3_t offset)
 		if (size[0] < 3)
 			hull = &model->hulls[0];
 		else if (size[0] <= 32)
-			hull = &model->hulls[1];
+		{
+			if (size[2] < 54.0f)
+				hull = &model->hulls[3];
+			else
+				hull = &model->hulls[1];
+		}
 		else
 			hull = &model->hulls[2];
 

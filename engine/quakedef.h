@@ -91,6 +91,8 @@
 #include "crc.h"
 #include "glquake.h"
 
+#include "engine_material.h"
+
 //=============================================================================
 
 // the host system specifies the base of the directory tree, the

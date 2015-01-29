@@ -24,7 +24,6 @@
 */
 
 #include "engine_video.h"
-#include "engine_material.h"
 
 extern cvar_t gl_fullbrights, r_drawflat, gl_overbright, r_oldwater, r_oldskyleaf, r_showtris; //johnfitz
 
@@ -235,7 +234,7 @@ void World_DrawWaterTextureChains(void)
 				if(!bTextureBound)
 				{
 					// Only bind once we are sure we need this texture
-					Video_SetTexture(Material_Get(t->iAssignedMaterial)->msSkin[0].gDiffuseTexture);
+					Video_SetTexture(Material_Get(t->iAssignedMaterial)->msSkin[0].mtTexture[0].gMap);
 
 					bTextureBound = true;
 				}

@@ -171,7 +171,7 @@ void R_DrawSequentialPoly(msurface_t *s)
 		glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_PRIMARY_COLOR);
 		glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 4);
 
-		Video_SetTexture(mAssignedMaterial->msSkin[0].gDiffuseTexture);
+		Video_SetTexture(mAssignedMaterial->msSkin[0].mtTexture[0].gMap);
 
         for(pBrushPoly = s->polys->next; pBrushPoly; pBrushPoly = pBrushPoly->next)
         {

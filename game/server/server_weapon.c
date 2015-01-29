@@ -690,10 +690,12 @@ void Weapon_CheckInput(edict_t *eEntity)
 	}
 	else if(eEntity->v.impulse == 65)
 		Weapon_CheatCommand(eEntity);
+#if 0
 	else if(eEntity->v.impulse == 10)
 		Weapon_Cycle(eEntity,true);		// Forwards cycling
 	else if(eEntity->v.impulse == 12)
 		Weapon_Cycle(eEntity,false);	// Backwards cycling
+#endif
 	else if(eEntity->v.impulse == 66)
 		Player_Use(eEntity);
 

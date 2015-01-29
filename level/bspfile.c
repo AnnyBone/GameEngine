@@ -224,12 +224,14 @@ void LoadBSPFile(char *filename)
 	VectorClear (hullinfo.hullsizes[0][0]);
 	VectorClear (hullinfo.hullsizes[0][1]);
 
-	hullinfo.numhulls	= 3;
-	hullinfo.filehulls	= BSP_MAX_HULLS;
-	VectorSet (hullinfo.hullsizes[1][0], -16, -16, -24);
-	VectorSet (hullinfo.hullsizes[1][1], 16, 16, 32);
-	VectorSet (hullinfo.hullsizes[2][0], -32, -32, -24);
-	VectorSet (hullinfo.hullsizes[2][1], 32, 32, 64);
+	hullinfo.numhulls =
+	hullinfo.filehulls = BSP_MAX_HULLS;
+	VectorSet(hullinfo.hullsizes[1][0], -16, -16, -36);
+	VectorSet(hullinfo.hullsizes[1][1], 16, 16, 36);
+	VectorSet(hullinfo.hullsizes[2][0], -32, -32, -32);
+	VectorSet(hullinfo.hullsizes[2][1], 32, 32, 32);
+	VectorSet(hullinfo.hullsizes[3][0], -16, -16, -18);
+	VectorSet(hullinfo.hullsizes[3][1], 16, 16, 18);
 
 	// parse extended header (up to 128 lumps) by keeping track of first offset
 	headerend = 4+sizeof(lumps);

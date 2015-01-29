@@ -92,4 +92,4 @@ void TexMgr_ReloadImages (void);
 
 unsigned int TexMgr_Pad(unsigned int s);
 unsigned int TexMgr_SafeTextureSize (int s);
-unsigned int TexMgr_PadConditional (int s);
+unsigned int TexMgr_PadConditional (unsigned int s);

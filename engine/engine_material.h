@@ -35,23 +35,44 @@ typedef struct
 	const char *ccName;
 } MaterialType_t;
 
+typedef enum
+{
+	MATERIAL_TEXTURE_DIFFUSE,		// Basic diffuse layer.
+	MATERIAL_TEXTURE_SPHERE,		// Spherical mapping.
+	MATERIAL_TEXTURE_FULLBRIGHT,	// Adds highlights to the texture.
+	MATERIAL_TEXTURE_DETAIL,		// Detail map is blended with other layers to make textures appear more detailed.
+	MATERIAL_TEXTURE_LIGHTMAP,		// Lightmap is automated, gets skipped.
+
+	MATERIAL_TEXTURE_MAX
+} MaterialTextureType_t;
+
 typedef struct
 {
-	struct gltexture_s	*gDiffuseTexture,		// Diffuse texture.
-						*gDetailTexture,		// Detail map.
-						*gFullbrightTexture,	// Fullbright map.
-						*gSpecularTexture,		// Specular map.
-						*gSphereTexture;		// Sphere map.
+	struct gltexture_s	*gMap;
 
-	float	fTextureScroll[2];	// If set, the texture will scroll by the given coordinates.
+	bool	bManipulation;
 
-	unsigned int	iTextureWidth, iTextureHeight,	// Size of the skin.
-					iFlags,							// Flags assigned for the current skin, affects how it's displayed/loaded.
-					iType;							// Type of surface, e.g. wood, cement etc.
+	MathVector2_t	vScroll;
+
+	float	fRotate;
+
+	unsigned int uiWidth, uiHeight;	// Size of the texture.
+
+	MaterialTextureType_t	mttType;	// Sphere, fullbright, or what have you.
+} MaterialTexture_t;
+
+typedef struct
+{
+	MaterialTexture_t	mtTexture[8];
+
+	unsigned int
+		uiFlags,	// Flags assigned for the current skin, affects how it's displayed/loaded.
+		uiTextures,	// Num of textures assigned within the skin.
+		uiType;		// Type of surface, e.g. wood, cement etc.
 } MaterialSkin_t;
 
-#define	MATERIAL_MAX		2048
-#define	MATERIAL_MAX_SKINS	64
+#define	MATERIAL_MAX		2048	// Should ALWAYS be below the maximum texture allowance.
+#define	MATERIAL_MAX_SKINS	128		// These also count as frames for animation.
 
 typedef struct
 {
@@ -81,7 +102,6 @@ Material_t *Material_Load(const char *ccPath);
 Material_t *Material_Get(int iMaterialID);
 Material_t *Material_GetByPath(const char *ccPath);
 Material_t *Material_GetByName(const char *ccMaterialName);
-Material_t *Material_GetDummy(void);
 
 MaterialSkin_t *Material_GetSkin(Material_t *mMaterial, int iSkin);
 MaterialSkin_t *Material_GetAnimatedSkin(Material_t *mMaterial);
