@@ -26,9 +26,9 @@ typedef enum
 
 typedef struct
 {
-	vec3_t	v;
+	float	v[3];
 
-	byte	bLightNormalIndex;
+	pBYTE	bLightNormalIndex;
 } KMDLTriangleVertex_t;
 
 /*
@@ -54,8 +54,8 @@ typedef struct
 
 typedef struct
 {
-	byte	v[3];			// scaled byte to fit in frame mins/maxs
-	byte	lightnormalindex;
+	pBYTE	v[3];			// scaled byte to fit in frame mins/maxs
+	pBYTE	lightnormalindex;
 } MD2TriangleVertex_t;
 
 typedef struct
@@ -231,7 +231,19 @@ typedef struct
 
 #define	BSP_MIP_LEVELS	4
 
-#define	BSP_MAX_HULLS			4
+enum
+{
+	BSP_HULL_EMPTY,
+	BSP_HULL_STAND,
+	BSP_HULL_LARGE,
+	BSP_HULL_CROUCH,
+
+	BSP_HULL_MAX
+};
+
+extern float	vHullSizes[BSP_HULL_MAX][2][3];
+
+#define	BSP_MAX_HULLS			BSP_HULL_MAX
 #define	BSP_MAX_LEAFS			32768			//0x400000
 #define	BSP_MAX_ENTITIES		32768
 #define	BSP_MAX_VERTS			65535			//0x100000
@@ -393,7 +405,7 @@ typedef struct
 	unsigned	int		uiFirstMarkSurface,
 						uiNumMarkSurfaces;
 
-	byte				bAmbientLevel[BSP_AMBIENT_END];
+	pBYTE				bAmbientLevel[BSP_AMBIENT_END];
 } BSPLeaf_t;
 
 // Obsolete

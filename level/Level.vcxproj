@@ -327,7 +327,7 @@
       <PrecompiledHeaderOutputFile>.\Release\hmap2.pch</PrecompiledHeaderOutputFile>
       <ObjectFileName>.\Release\</ObjectFileName>
       <ProgramDataBaseFileName>.\Release\</ProgramDataBaseFileName>
-      <AdditionalIncludeDirectories>..\external;..\shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\external;..\shared;..\platform\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <FloatingPointModel>Precise</FloatingPointModel>
     </ClCompile>
     <Midl>
@@ -660,6 +660,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\shared\shared_formats.c" />
     <ClCompile Include="brush.c" />
     <ClCompile Include="bsp2prt.c" />
     <ClCompile Include="bspfile.c" />

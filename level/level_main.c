@@ -124,13 +124,11 @@ void CreateHulls (void)
 
 	hullinfo.numhulls	=
 	hullinfo.filehulls	= BSP_MAX_HULLS;
-
-	VectorSet(hullinfo.hullsizes[1][0], -16, -16, -36);
-	VectorSet(hullinfo.hullsizes[1][1], 16, 16, 36);
-	VectorSet(hullinfo.hullsizes[2][0], -32, -32, -32);
-	VectorSet(hullinfo.hullsizes[2][1], 32, 32, 32);
-	VectorSet(hullinfo.hullsizes[3][0], -16, -16, -18);
-	VectorSet(hullinfo.hullsizes[3][1], 16, 16, 18);
+	for (i = 1; i < BSP_MAX_HULLS; i++)
+	{
+		VectorCopy(vHullSizes[i][0], hullinfo.hullsizes[i][0]);
+		VectorCopy(vHullSizes[i][1], hullinfo.hullsizes[i][1]);
+	}
 
 	for(i = 1; i < hullinfo.numhulls; i++)
 		CreateSingleHull(i);

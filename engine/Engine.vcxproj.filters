@@ -194,6 +194,9 @@
     <ClCompile Include="engine_material.c">
       <Filter>Client\Video</Filter>
     </ClCompile>
+    <ClCompile Include="..\shared\shared_formats.c">
+      <Filter>Shared</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\shared\shared_client.h">

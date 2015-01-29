@@ -819,41 +819,17 @@ void Model_LoadBSPClipNodes(BSPLump_t *blLump)
 	loadmodel->clipnodes = out;
 	loadmodel->numclipnodes = count;
 
-	hull = &loadmodel->hulls[1];
-	hull->clipnodes = out;
-	hull->firstclipnode = 0;
-	hull->lastclipnode = count-1;
-	hull->planes = loadmodel->planes;
-	hull->clip_mins[0] = -16;
-	hull->clip_mins[1] = -16;
-	hull->clip_mins[2] = -36;
-	hull->clip_maxs[0] = 16;
-	hull->clip_maxs[1] = 16;
-	hull->clip_maxs[2] = 36;
+	for (i = 1; i < BSP_MAX_HULLS; i++)
+	{
+		hull = &loadmodel->hulls[i];
+		hull->clipnodes = out;
+		hull->firstclipnode = 0;
+		hull->lastclipnode = count - 1;
+		hull->planes = loadmodel->planes;
 
-	hull = &loadmodel->hulls[2];
-	hull->clipnodes = out;
-	hull->firstclipnode = 0;
-	hull->lastclipnode = count-1;
-	hull->planes = loadmodel->planes;
-	hull->clip_mins[0] = -32;
-	hull->clip_mins[1] = -32;
-	hull->clip_mins[2] = -32;
-	hull->clip_maxs[0] = 32;
-	hull->clip_maxs[1] = 32;
-	hull->clip_maxs[2] = 32;
-
-	hull = &loadmodel->hulls[3];
-	hull->clipnodes = out;
-	hull->firstclipnode = 0;
-	hull->lastclipnode = count - 1;
-	hull->planes = loadmodel->planes;
-	hull->clip_mins[0] = -16;
-	hull->clip_mins[1] = -16;
-	hull->clip_mins[2] = -18;
-	hull->clip_maxs[0] = 16;
-	hull->clip_maxs[1] = 16;
-	hull->clip_maxs[2] = 18;
+		Math_VectorCopy(vHullSizes[i][0], hull->clip_mins);
+		Math_VectorCopy(vHullSizes[i][1], hull->clip_maxs);
+	}
 
 	for (i=0 ; i<count ; i++, out++, in++)
 	{

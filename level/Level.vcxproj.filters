@@ -28,6 +28,9 @@
     <ClCompile Include="winding.c" />
     <ClCompile Include="writebsp.c" />
     <ClCompile Include="level_main.c" />
+    <ClCompile Include="..\shared\shared_formats.c">
+      <Filter>Shared</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="bsp5.h" />

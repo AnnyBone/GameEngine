@@ -605,6 +605,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\external\glee\GLee.c" />
+    <ClCompile Include="..\shared\shared_formats.c" />
     <ClCompile Include="engine_clientchase.c" />
     <ClCompile Include="engine_clientdemo.c" />
     <ClCompile Include="cl_input.c" />
