@@ -657,10 +657,6 @@ void Weapon_CheckInput(edict_t *eEntity)
 		case 7:
 			iNewWeapon = WEAPON_IONRIFLE;
 			break;
-#elif GAME_ADAMAS
-		case 1:
-			iNewWeapon = WEAPON_BLAZER;
-			break;
 #endif
 		default:
 			iNewWeapon = WEAPON_NONE;
@@ -690,7 +686,7 @@ void Weapon_CheckInput(edict_t *eEntity)
 	}
 	else if(eEntity->v.impulse == 65)
 		Weapon_CheatCommand(eEntity);
-#if 0
+#if 0	// TODO: undo this once cycling is implemented, otherwise it has the potential to break things.
 	else if(eEntity->v.impulse == 10)
 		Weapon_Cycle(eEntity,true);		// Forwards cycling
 	else if(eEntity->v.impulse == 12)

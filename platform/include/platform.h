@@ -9,7 +9,7 @@
 
 	This library includes standard platform headers,
 	gives you some standard functions to interact with
-	the system and defines for basic data-types that
+	the system and includes defines for basic data-types that
 	you can use in your applications for easier multi-platform
 	support.
 */

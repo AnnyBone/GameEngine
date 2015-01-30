@@ -54,8 +54,17 @@ void Material_Initialize(void)
 	bInitialized = true;
 
 	// Load base materials.
-	Material_Load("engine/notexture");
-	Material_Load("engine/conchars");
+	{
+		Material_t *mBase;
+
+		mBase = Material_Load("engine/notexture");
+		if (!mBase)
+			Sys_Error("Failed to load notexture material!\n");
+
+		mBase = Material_Load("engine/conchars");
+		if (!mBase)
+			Sys_Error("Failed to load conchars material!\n");
+	}
 
 #ifdef _MSC_VER // This is false, since the function above shuts us down, but MSC doesn't understand that.
 #pragma warning(suppress: 6011)
