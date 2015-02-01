@@ -279,10 +279,7 @@ void Alias_DrawFrame(MD2_t *mModel,entity_t *eEntity,lerpdata_t lLerpData)
 	int					*order, count;
 	MD2TriangleVertex_t	*verts1, *verts2;
 	MD2Frame_t			*frame1, *frame2;
-	Material_t			*mModelMat;
 	VideoObject_t		*voModel;
-
-	mModelMat = Material_Get(eEntity->model->iAssignedMaterials);
 
 	ilerp = 1.0f - lLerpData.blend;
 
@@ -345,7 +342,7 @@ void Alias_DrawFrame(MD2_t *mModel,entity_t *eEntity,lerpdata_t lLerpData)
 				order += 3;
 			} while (--count);
 
-			Video_DrawObject(voModel, VIDEO_PRIMITIVE_TRIANGLE_FAN, uiVerts, mModelMat, eEntity->skinnum);
+			Video_DrawObject(voModel, VIDEO_PRIMITIVE_TRIANGLE_FAN, uiVerts, eEntity->model->mAssignedMaterials, eEntity->skinnum);
 		}
 	}
 #endif

@@ -15,8 +15,7 @@
 #include "engine_video.h"	// [7/8/2013] TODO: Remove ~hogsy
 
 cvar_t	cvDrawFlares	= {	"video_flares",			"1",					    true,   false,  "Toggles the rendering of environmental flares."	        },
-		cvLitParticles	= {	"video_particles_lit",	"0",	                    true,   false,  "Sets whether or not particles are lit by dynamic lights."	},
-		cvShadowPath	= {	"video_shadows_path",	"textures/engine/shadow",   false,  false,  "Changes the texture path used for blob shadows."	        };
+		cvLitParticles	= {	"video_particles_lit",	"0",	                    true,   false,  "Sets whether or not particles are lit by dynamic lights."	};
 
 gltexture_t	/**gRenderTarget,*/*gShadow;
 
@@ -25,18 +24,8 @@ extern entity_t *currententity;
 
 void Shadow_Initialize(void)
 {
-	unsigned    int	iWidth,iHeight;
-	byte            *bShadowData;
-
 	Cvar_RegisterVariable(&cvLitParticles,NULL);
 	Cvar_RegisterVariable(&cvDrawFlares,NULL);
-	Cvar_RegisterVariable(&cvShadowPath,NULL);
-
-	bShadowData = Image_LoadImage(cvShadowPath.string,&iWidth,&iHeight);
-	if(bShadowData)
-		gShadow	= TexMgr_LoadImage(NULL,cvShadowPath.string,iWidth,iHeight,SRC_RGBA,bShadowData,cvShadowPath.string,0,TEXPREF_ALPHA|TEXPREF_PERSIST);
-	else
-		Con_Warning("Failed to load %s!\n",cvShadowPath.string);
 }
 
 void R_DrawString(int x,int y,char *msg)
@@ -99,8 +88,6 @@ void Draw_Shadow(entity_t *ent)
 
 		glPushMatrix();
 
-		Video_EnableCapabilities(VIDEO_BLEND);
-
 		Video_SetBlend(VIDEO_BLEND_IGNORE,VIDEO_DEPTH_FALSE);
 
 		glTranslatef(ent->origin[0],ent->origin[1],ent->origin[2]);
@@ -120,7 +107,7 @@ void Draw_Shadow(entity_t *ent)
 		Video_ObjectVertex(&voShadow[3], -fShadowScale[0], -fShadowScale[1], 0);
 		Video_ObjectTexture(&voShadow[3], VIDEO_TEXTURE_DIFFUSE, 0, 1.0f);
 
-		Video_DrawFill(voShadow,NULL);
+		Video_DrawFill(voShadow,mBlobShadow);
 
 		glTranslatef(0,0,lheight+0.1);
 		glPopMatrix();

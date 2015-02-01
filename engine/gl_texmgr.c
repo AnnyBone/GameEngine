@@ -512,7 +512,7 @@ unsigned int TexMgr_PadConditional (unsigned int s)
 		return s;
 }
 
-unsigned *TexMgr_MipMapW (unsigned *data, int width, int height)
+byte *TexMgr_MipMapW (byte *data, int width, int height)
 {
 	int		i, size;
 	byte	*out, *in;
@@ -531,7 +531,7 @@ unsigned *TexMgr_MipMapW (unsigned *data, int width, int height)
 	return data;
 }
 
-unsigned *TexMgr_MipMapH (unsigned *data, int width, int height)
+byte *TexMgr_MipMapH (byte *data, int width, int height)
 {
 	int		i, j;
 	byte	*out, *in;
@@ -552,16 +552,15 @@ unsigned *TexMgr_MipMapH (unsigned *data, int width, int height)
 	return data;
 }
 
-unsigned *TexMgr_ResampleTexture(unsigned *in,int inwidth,int inheight,bool alpha)
+byte *TexMgr_ResampleTexture(byte *in,int inwidth,int inheight,bool alpha)
 {
-	byte		*nwpx,*nepx,*swpx,*sepx,
-				*dest;
+	byte		*nwpx, *nepx, *swpx, *sepx,
+		*dest, *out;
 	unsigned	xfrac,yfrac,
 				x,y,
 				modx,mody,
 				imodx,imody,
-				injump,outjump,
-				*out;
+				injump,outjump;
 	int			i,j,
 				outwidth,outheight;
 
@@ -571,7 +570,7 @@ unsigned *TexMgr_ResampleTexture(unsigned *in,int inwidth,int inheight,bool alph
 	outwidth	= TexMgr_Pad(inwidth);
 	outheight	= TexMgr_Pad(inheight);
 
-	out = (unsigned int*)Hunk_Alloc(outwidth*outheight*4);
+	out = (byte*)Hunk_Alloc(outwidth*outheight*4);
 
 	xfrac = ((inwidth-1) << 16) / (outwidth-1);
 	yfrac = ((inheight-1) << 16) / (outheight-1);
@@ -796,7 +795,7 @@ byte *TexMgr_PadImageH (byte *in, int width, int height, byte padbyte)
 	return data;
 }
 
-void TexMgr_LoadImage32 (gltexture_t *glt, unsigned *data)
+void TexMgr_LoadImage32 (gltexture_t *glt, byte *data)
 {
 	int				internalformat,	miplevel, picmip;
 	unsigned	int	mipwidth, mipheight;
@@ -929,7 +928,7 @@ void TexMgr_LoadImage8 (gltexture_t *glt, byte *data)
 	}
 
 	// upload it
-	TexMgr_LoadImage32 (glt, (unsigned *)data);
+	TexMgr_LoadImage32 (glt, data);
 }
 
 void TexMgr_LoadLightmap(gltexture_t *glt,byte *data)
@@ -1007,7 +1006,7 @@ gltexture_t *TexMgr_LoadImage(model_t *owner,char *name,int width,int height,enu
 			TexMgr_LoadLightmap (glt, data);
 			break;
 		case SRC_RGBA:
-			TexMgr_LoadImage32(glt,(unsigned *)data);
+			TexMgr_LoadImage32(glt,data);
 			break;
 	}
 
@@ -1116,7 +1115,7 @@ invalid:
 			TexMgr_LoadLightmap (glt, data);
 			break;
 		case SRC_RGBA:
-			TexMgr_LoadImage32 (glt, (unsigned *)data);
+			TexMgr_LoadImage32 (glt, data);
 			break;
 	}
 

@@ -2,6 +2,9 @@
 */
 #include "menu_main.h"
 
+#include "menu_hud.h"
+
+#if 0
 void HUD_Draw(void)
 {
 	if(cvShowMenu.value <= 0)
@@ -216,3 +219,4 @@ void HUD_Draw(void)
 	}
 #endif
 }
+#endif

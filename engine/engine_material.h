@@ -41,14 +41,14 @@ typedef enum
 	MATERIAL_TEXTURE_SPHERE,		// Spherical mapping.
 	MATERIAL_TEXTURE_FULLBRIGHT,	// Adds highlights to the texture.
 	MATERIAL_TEXTURE_DETAIL,		// Detail map is blended with other layers to make textures appear more detailed.
-	MATERIAL_TEXTURE_LIGHTMAP,		// Lightmap is automated, gets skipped.
+	//MATERIAL_TEXTURE_LIGHTMAP,		// Lightmap is automated, gets skipped.
 
 	MATERIAL_TEXTURE_MAX
 } MaterialTextureType_t;
 
 typedef struct
 {
-	struct gltexture_s	*gMap;
+	gltexture_t	*gMap;
 
 	bool	bManipulation;
 
@@ -74,7 +74,7 @@ typedef struct
 #define	MATERIAL_MAX		2048	// Should ALWAYS be below the maximum texture allowance.
 #define	MATERIAL_MAX_SKINS	128		// These also count as frames for animation.
 
-typedef struct
+typedef struct Material_s
 {
 	int		iIdentification,	// Unique ID for the material.
 			iFlags,				// Global material flags, flags that take priority over all additional skins.
@@ -94,6 +94,12 @@ typedef struct
 	double	dAnimationTime;		// Time until we animate again.
 	int		iAnimationFrame;	// Current frame of the animation.
 } Material_t;
+
+// Global materials
+extern Material_t	
+	*mNoTexture,	// Used for materials that are missing.
+	*mBlobShadow,	// Self explanitory.
+	*mConChars;		// Used for the console font.
 
 void Material_Initialize(void);
 void Material_ClearAll(void);

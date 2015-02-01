@@ -12,6 +12,9 @@
     <Filter Include="Source Files\Shared">
       <UniqueIdentifier>{15016726-7ce8-4272-a3df-d8cfbc48da54}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\OpenKatana">
+      <UniqueIdentifier>{b4625e43-10dd-4efd-95a4-73afddb7b97c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="menu_script.c">
@@ -20,13 +23,16 @@
     <ClCompile Include="menu_input.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="menu_hud.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="menu_main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="menu_button.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="openkatana\openkatana_hud.cpp">
+      <Filter>Source Files\OpenKatana</Filter>
+    </ClCompile>
+    <ClCompile Include="menu_hud.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -45,6 +51,9 @@
     </ClInclude>
     <ClInclude Include="..\Shared\shared_client.h">
       <Filter>Source Files\Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="menu_hud.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

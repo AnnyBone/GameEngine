@@ -353,8 +353,7 @@ void Draw_Character(int x,int y,int num)
 		Video_ObjectColour(&voCharacter[3], 1.0f, 1.0f, 1.0f, 1.0f);
 		Video_ObjectTexture(&voCharacter[3], VIDEO_TEXTURE_DIFFUSE, fcol, frow+size);
 
-		Video_SetTexture(Material_GetByName("conchars")->msSkin[0].mtTexture[0].gMap);
-		Video_DrawFill(voCharacter,NULL);
+		Video_DrawFill(voCharacter, mConChars);
 
 		Video_ResetCapabilities(true);
 	}

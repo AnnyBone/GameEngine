@@ -234,7 +234,7 @@ void World_DrawWaterTextureChains(void)
 				if(!bTextureBound)
 				{
 					// Only bind once we are sure we need this texture
-					Video_SetTexture(Material_Get(t->iAssignedMaterial)->msSkin[0].mtTexture[0].gMap);
+					Video_SetTexture(t->mAssignedMaterial->msSkin[0].mtTexture[0].gMap);
 
 					bTextureBound = true;
 				}
@@ -286,7 +286,6 @@ void R_DrawLightmapChains (void)
 
 void World_Draw(void)
 {
-	Material_t *mMaterial;
 	int			i;
 	msurface_t	*s;
 	texture_t	*t;
@@ -302,28 +301,28 @@ void World_Draw(void)
 		if(!t || !t->texturechain || t->texturechain->flags & (SURF_DRAWTILED | SURF_NOTEXTURE))
 			continue;
 
-		mMaterial = Material_Get(t->iAssignedMaterial);
+		t->mAssignedMaterial->bBind = true;
 
 		for(s = t->texturechain; s; s = s->texturechain)
 			if(!s->culled)
 			{
-				if (mMaterial->bBind)
+				if (t->mAssignedMaterial->bBind)
 				{
 					Video_SelectTexture(VIDEO_TEXTURE_LIGHT);
 					Video_EnableCapabilities(VIDEO_TEXTURE_2D);
 
-					mMaterial->bBind = false;
+					t->mAssignedMaterial->bBind = false;
 				}
 
 				Video_SelectTexture(VIDEO_TEXTURE_LIGHT);
-				Video_SetTexture(lightmap_textures[s->lightmaptexturenum]);
 
+				Video_SetTexture(lightmap_textures[s->lightmaptexturenum]);
 				R_RenderDynamicLightmaps(s);
 				R_UploadLightmap(s->lightmaptexturenum);
 
 				Video_SelectTexture(VIDEO_TEXTURE_DIFFUSE);
-
-				Video_DrawSurface(s, 1.0f, mMaterial, 0);
+				
+				Video_DrawSurface(s, 1.0f, t->mAssignedMaterial, 0);
 
 				rs_brushpasses++;
 			}

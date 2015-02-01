@@ -197,7 +197,7 @@ void Weapon_Precache(void)
 	Engine.Server_PrecacheResource(RESOURCE_SOUND,"weapons/c4/c4stick.wav");
 
 	// Ion Blaster
-	Engine.Server_PrecacheResource(RESOURCE_SOUND,"weapons/ionblaster/ionexplode3.wav");
+	Engine.Server_PrecacheResource(RESOURCE_SOUND,"weapons/ionblaster/explode.wav");
 	Engine.Server_PrecacheResource(RESOURCE_SOUND,"weapons/ionblaster/ionfire.wav");
 	Engine.Server_PrecacheResource(RESOURCE_SOUND,"weapons/ionblaster/ionflyby.wav");
 	Engine.Server_PrecacheResource(RESOURCE_SOUND,"weapons/ionblaster/ionready.wav");

@@ -328,9 +328,9 @@ void Model_LoadBSPTextures(BSPLump_t *blLump)
 		{
 			mAssignedMaterial = Material_Load(tTexture->name);
 			if (mAssignedMaterial)
-				tTexture->iAssignedMaterial = mAssignedMaterial->iIdentification;
+				tTexture->mAssignedMaterial = mAssignedMaterial;
 			else
-				tTexture->iAssignedMaterial = Material_GetByName("notexture")->iIdentification;
+				tTexture->mAssignedMaterial = mNoTexture;
 		}
 	}
 
@@ -661,7 +661,7 @@ void Model_LoadBSPFaces(BSPLump_t *blLump)
 		else
 			out->samples = loadmodel->lightdata+(i*3); //johnfitz -- lit support via lordhavoc (was "+ i")
 
-		mMaterial = Material_Get(out->texinfo->texture->iAssignedMaterial);
+		mMaterial = out->texinfo->texture->mAssignedMaterial;
 		if (!mMaterial)
 			Sys_Error("Failed to get a material for BSP surface! (%s)\n",out->texinfo->texture->name);
 
@@ -1193,23 +1193,18 @@ void Model_LoadIQM(model_t *mModel, void *Buffer)
 
 void Model_LoadTextures(model_t *mModel)
 {
-	Material_t	*mAssignedMaterial;
-	char		cOutName[MAX_OSPATH];
+	char cOutName[MAX_OSPATH];
 
 	COM_StripExtension(mModel->name,cOutName);
 
-	mAssignedMaterial = Material_Load(cOutName);
-	if(!mAssignedMaterial)
+	mModel->mAssignedMaterials = Material_Load(cOutName);
+	if (!mModel->mAssignedMaterials)
 	{
 		Con_Warning("Failed to load material for model! (%s) (%s)\n",mModel->name,cOutName);
 
 		// Set us up to just use the dummy material instead.
-		mModel->iAssignedMaterials = Material_GetByName("notexture")->iIdentification;
-
-		return;
+		mModel->mAssignedMaterials = mNoTexture;
 	}
-	
-	mModel->iAssignedMaterials = mAssignedMaterial->iIdentification;
 }
 
 /*	Calculate bounds of alias model for nonrotated, yawrotated, and fullrotated cases

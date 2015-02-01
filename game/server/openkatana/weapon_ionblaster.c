@@ -88,7 +88,7 @@ void IonBlaster_IonBallExplode(edict_t *ent)
 	Math_VectorCopy(ent->v.velocity,vel);
 	Math_VectorInverse(vel);
 
-	Sound(ent,CHAN_ITEM,"weapons/ionblaster/ionexplode3.wav",255,ATTN_NORM);
+	Sound(ent,CHAN_ITEM,"weapons/ionblaster/explode.wav",255,ATTN_NORM);
 
 	Engine.Particle(ent->v.origin,vel,3.0f,"spark2",20);
 
@@ -143,7 +143,7 @@ void IonBlaster_IonBallTouch(edict_t *eIonBall,edict_t *other)
 		}
 	}
 
-//	Sound(ent,CHAN_ITEM,"weapons/ionblaster/ionexplode3.wav",255,ATTN_NORM);
+	Sound(eIonBall, CHAN_ITEM, "weapons/ionblaster/explode.wav", 255, ATTN_NORM);
 
 	Engine.Particle(eIonBall->v.origin,vInversed,5.0f,"spark2",17);
 

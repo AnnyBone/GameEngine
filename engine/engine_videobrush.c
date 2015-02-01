@@ -124,9 +124,6 @@ void R_DrawSequentialPoly(msurface_t *s)
 {
     float       fAlpha;
     texture_t   *tAnimation;
-	Material_t	*mAssignedMaterial;
-
-	mAssignedMaterial = Material_Get(s->texinfo->texture->iAssignedMaterial);
 
     fAlpha      = ENTALPHA_DECODE(currententity->alpha);
     tAnimation  = R_TextureAnimation(s->texinfo->texture,currententity->frame);
@@ -171,7 +168,8 @@ void R_DrawSequentialPoly(msurface_t *s)
 		glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_PRIMARY_COLOR);
 		glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 4);
 
-		Video_SetTexture(mAssignedMaterial->msSkin[0].mtTexture[0].gMap);
+		// Jesus Christ this is fucking stupid...
+		Video_SetTexture(s->texinfo->texture->mAssignedMaterial->msSkin[0].mtTexture[0].gMap);
 
         for(pBrushPoly = s->polys->next; pBrushPoly; pBrushPoly = pBrushPoly->next)
         {
@@ -200,7 +198,7 @@ void R_DrawSequentialPoly(msurface_t *s)
 
 		Video_SelectTexture(VIDEO_TEXTURE_DIFFUSE);
 
-		Video_DrawSurface(s, fAlpha, mAssignedMaterial, 0);
+		Video_DrawSurface(s, fAlpha, s->texinfo->texture->mAssignedMaterial, 0);
 
 		Video_SelectTexture(VIDEO_TEXTURE_LIGHT);
 

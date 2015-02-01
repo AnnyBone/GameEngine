@@ -42,7 +42,7 @@ cvar_t	cvMultisampleSamples		= {	"video_multisamplesamples",		"0",			true,   fal
 		cvVideoDrawDepth			= {	"video_drawdepth",				"0",			false,	false,	"If enabled, previews the debth buffer."							},
 		cvVideoDrawDetail			= {	"video_drawdetail",				"1",			true,	false,	"If enabled, detail maps are drawn."								},
 		cvVideoDrawMaterials		= {	"video_drawmaterials",			"1",			true,	false,	"If enabled, materials are drawn."									},
-		cvVideoDetailScale			= { "video_detailscale",			"8",			true,	false,	"Changes the scaling used for detail maps."							},
+		cvVideoDetailScale			= { "video_detailscale",			"4",			true,	false,	"Changes the scaling used for detail maps."							},
 		cvVideoAlphaTrick			= { "video_alphatrick",				"1",			true,	false,	"If enabled, draws alpha-tested surfaces twice for extra quality."	},
 		cvVideoFinish				= { "video_finish",					"0",			true,	false,	"If enabled, calls glFinish at the end of the frame."				},
 		cvVideoVBO					= { "video_vbo",					"0",			true,	false,	"Enables support of Vertex Buffer Objects."							},
@@ -391,13 +391,7 @@ void Video_CreateWindow(void)
 	glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_TEXTURE);
 	glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 4);
 
-	Video_SelectTexture(VIDEO_TEXTURE_SPHERE);
-
-	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
-
-	Video_SelectTexture(VIDEO_TEXTURE_DIFFUSE);
-
-	
+	Video_SelectTexture(0);
 
 	vid.conwidth		= (scr_conwidth.value > 0)?(int)scr_conwidth.value:(scr_conscale.value > 0)?(int)(Video.iWidth/scr_conscale.value) : Video.iWidth;
 	vid.conwidth		= Math_Clamp(320,vid.conwidth,Video.iWidth);
@@ -675,13 +669,6 @@ void Video_DrawTerrain(VideoObject_t *voTerrain)
 		Sys_Error("Invalid video object!\n");
 }
 
-/*  Draw a simple rectangle.
-*/
-void Video_DrawFill(VideoObject_t *voFill,Material_t *mMaterial)
-{
-	Video_DrawObject(voFill,VIDEO_PRIMITIVE_TRIANGLE_FAN,4,mMaterial,0);
-}
-
 extern cvar_t gl_fullbrights;
 
 /*	Called before the object is drawn.
@@ -707,41 +694,17 @@ void Video_DrawMaterial(
 
 	for (i = 0; i < msCurrentSkin->uiTextures; i++)
 	{
-		// Lightmap is a special case.
-		if (msCurrentSkin->mtTexture[i].mttType == MATERIAL_TEXTURE_LIGHTMAP)
-			continue;
-
-		// Select the given texture.
-		Video_SelectTexture(i);
-
-		if (!bPost)
-		{
-			// Enable it.
-			Video_EnableCapabilities(VIDEO_TEXTURE_2D);
-
-			// Bind it.
-			Video_SetTexture(msCurrentSkin->mtTexture[i].gMap);
-
-			// Allow us to manipulate the texture.
-			glMatrixMode(GL_TEXTURE);
-			glLoadIdentity();
-			if ((msCurrentSkin->mtTexture[i].vScroll[0] > 0) || (msCurrentSkin->mtTexture[i].vScroll[0] < 0) ||
-				(msCurrentSkin->mtTexture[i].vScroll[1] > 0) || (msCurrentSkin->mtTexture[i].vScroll[1] < 0))
-				glTranslatef(
-				msCurrentSkin->mtTexture[i].vScroll[0] + cl.time,
-				msCurrentSkin->mtTexture[i].vScroll[1] + cl.time,
-				0);
-			if ((msCurrentSkin->mtTexture[i].fRotate > 0) || (msCurrentSkin->mtTexture[i].fRotate < 0))
-				glRotatef(msCurrentSkin->mtTexture[i].fRotate*cl.time, 0, 0, 1.0f);
-			glMatrixMode(GL_MODELVIEW);
-		}
+		Video_SelectTexture(0);
 
 		// Check our specific type.
 		switch (msCurrentSkin->mtTexture[i].mttType)
 		{
-		default:
 		case MATERIAL_TEXTURE_DIFFUSE:
-			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+			// Select the given texture.
+			Video_SelectTexture(VIDEO_TEXTURE_DIFFUSE);
+
+			if (!bPost)
+				glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 
 			if (msCurrentSkin->uiFlags & MATERIAL_FLAG_ALPHA)
 			{
@@ -778,6 +741,9 @@ void Video_DrawMaterial(
 			if (!cvVideoDrawDetail.bValue)
 				break;
 
+			// Select the given texture.
+			Video_SelectTexture(VIDEO_TEXTURE_DETAIL);
+
 			if (!bPost)
 			{
 				glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
@@ -793,7 +759,7 @@ void Video_DrawMaterial(
 					for (j = 0; j < uiSize; j++)
 					{
 						// Copy over original texture coords.
-						Video_ObjectTexture(&voObject[j], i,
+						Video_ObjectTexture(&voObject[j], VIDEO_TEXTURE_DETAIL,
 							// Use base texture coordinates as a reference.
 							voObject[j].vTextureCoord[0][0] * cvVideoDetailScale.value,
 							voObject[j].vTextureCoord[0][1] * cvVideoDetailScale.value);
@@ -808,37 +774,72 @@ void Video_DrawMaterial(
 			if (!gl_fullbrights.bValue)
 				break;
 
+			// Select the given texture.
+			Video_SelectTexture(VIDEO_TEXTURE_FULLBRIGHT);
+
 			if (!bPost)
 			{
+				Video_EnableCapabilities(VIDEO_BLEND);
+
+				glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_ADD);
+
 				if (voObject)
 				{
 					unsigned int j;
 
-					for (j = 0; j < uiSize; i++)
+					for (j = 0; j < uiSize; j++)
 					{
 						// Texture coordinates remain the same for fullbright layers.
-						Video_ObjectTexture(&voObject[j], i,
+						Video_ObjectTexture(&voObject[j], VIDEO_TEXTURE_FULLBRIGHT,
 							// Use base texture coordinates as a reference.
 							voObject[j].vTextureCoord[0][0],
 							voObject[j].vTextureCoord[0][1]);
 					}
 				}
-
-				glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_ADD);
 			}
+			else
+				Video_DisableCapabilities(VIDEO_BLEND);
 			break;
 		case MATERIAL_TEXTURE_SPHERE:
+			// Select the given texture.
+			Video_SelectTexture(VIDEO_TEXTURE_SPHERE);
+
 			if (!bPost)
 			{
+				glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
+
 				Video_GenerateSphereCoordinates();
 				Video_EnableCapabilities(VIDEO_BLEND | VIDEO_TEXTURE_GEN_S | VIDEO_TEXTURE_GEN_T);
 			}
 			else
 				Video_DisableCapabilities(VIDEO_BLEND | VIDEO_TEXTURE_GEN_S | VIDEO_TEXTURE_GEN_T);
 			break;
+		default:
+			Sys_Error("Invalid texture type for material! (%s) (%i)\n", mMaterial->cPath, msCurrentSkin->mtTexture[i].mttType);
 		}
 
-		if (bPost)
+		if (!bPost)
+		{
+			// Enable it.
+			Video_EnableCapabilities(VIDEO_TEXTURE_2D);
+
+			// Bind it.
+			Video_SetTexture(msCurrentSkin->mtTexture[i].gMap);
+
+			// Allow us to manipulate the texture.
+			glMatrixMode(GL_TEXTURE);
+			glLoadIdentity();
+			if ((msCurrentSkin->mtTexture[i].vScroll[0] > 0) || (msCurrentSkin->mtTexture[i].vScroll[0] < 0) ||
+				(msCurrentSkin->mtTexture[i].vScroll[1] > 0) || (msCurrentSkin->mtTexture[i].vScroll[1] < 0))
+				glTranslatef(
+				msCurrentSkin->mtTexture[i].vScroll[0] * cl.time,
+				msCurrentSkin->mtTexture[i].vScroll[1] * cl.time,
+				0);
+			if ((msCurrentSkin->mtTexture[i].fRotate > 0) || (msCurrentSkin->mtTexture[i].fRotate < 0))
+				glRotatef(msCurrentSkin->mtTexture[i].fRotate*cl.time, 0, 0, 1.0f);
+			glMatrixMode(GL_MODELVIEW);
+		}
+		else
 		{
 			// Reset any manipulation within the matrix.
 			glMatrixMode(GL_TEXTURE);
@@ -855,6 +856,13 @@ void Video_DrawMaterial(
 			Video_DisableCapabilities(VIDEO_TEXTURE_2D);
 		}
 	}
+}
+
+/*  Draw a simple rectangle.
+*/
+void Video_DrawFill(VideoObject_t *voFill,Material_t *mMaterial)
+{
+	Video_DrawObject(voFill,VIDEO_PRIMITIVE_TRIANGLE_FAN,4,mMaterial,0);
 }
 
 /*	Surfaces
@@ -910,15 +918,15 @@ void Video_DrawObject(
 	if (bVideoDebug)
 		Console_WriteToLog(cvVideoDebugLog.string, "Video: Drawing object (%i) (%i)\n", uiVerts, vpPrimitiveType);
 
+	if (mMaterial)
+		Video_DrawMaterial(mMaterial, iSkin, voObject, vpPrimitiveType, uiVerts, false);
+
 	bVideoIgnoreCapabilities = true;
 
 	// Vertices count is too high for this object, bump up array sizes to manage it.
 	if (uiVerts > uiVideoArraySize)
 		// Double the array size to cope.
 		Video_AllocateArrays(uiVerts * 2);
-
-	if (mMaterial)
-		Video_DrawMaterial(mMaterial, iSkin, voObject, vpPrimitiveType, uiVerts, false);
 
 	// Copy everything over...
 	for (i = 0; i < uiVerts; i++)

@@ -60,7 +60,7 @@ typedef struct texture_s
 	unsigned			width, height;
 	struct gltexture_s	*gltexture; //johnfitz -- pointer to gltexture
 
-	int	iAssignedMaterial;	// HACKY!!!!!
+	struct Material_s	*mAssignedMaterial;
 
 	struct msurface_s	*texturechain;	// for texture chains
 	int					anim_total;				// total tenths in sequence ( 0 = no)
@@ -267,7 +267,7 @@ typedef struct model_s
 	cache_user_t	cache;		// only access through Mod_Extradat
 
 	// Material System
-	int	iAssignedMaterials;
+	struct Material_s	*mAssignedMaterials;
 } model_t;
 
 //============================================================================
