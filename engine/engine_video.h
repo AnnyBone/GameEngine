@@ -6,6 +6,8 @@
 #include <SDL.h>
 #include <SDL_syswm.h>
 
+#include "shared_video.h"
+
 extern cvar_t	cvVideoDrawModels,		// Should we draw models?
 				cvWidth,				// The width of our window (not reliable).
 				cvHeight,				// The height of our window (not reliable).
@@ -30,8 +32,6 @@ enum VideoUnits_e
 
 	VIDEO_TEXTURE_MAX
 };
-
-#define	VIDEO_MAX_UNITS	VIDEO_TEXTURE_MAX
 
 typedef struct
 {
@@ -65,17 +65,6 @@ typedef struct
 
 	SDL_SysWMinfo	sSystemInfo;
 } Video_t;
-
-typedef struct
-{
-	MathVector3_t	vVertex;
-
-	MathVector2_t	vTextureCoord[VIDEO_MAX_UNITS];		// Texture coordinates by texture unit.
-
-	MathVector4_t	vColour;							// RGBA
-
-	MathVector3_t	vNormal;							// Vertex normals.
-} VideoObject_t;
 
 // Replacement Video Object
 typedef struct

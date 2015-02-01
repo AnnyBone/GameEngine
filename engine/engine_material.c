@@ -77,7 +77,7 @@ void Material_Initialize(void)
 */
 void Material_List(void)
 {
-	int i, j,iSkins = 0;
+	int i, j;
 
 	Con_Printf("Listing materials...\n");
 

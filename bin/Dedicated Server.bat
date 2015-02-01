@@ -1,3 +1,4 @@
 echo OFF
 cls
-@"Launcher.x86.exe" -dedicated
+@"OpenKatana.x86.exe" -dedicated
+pause

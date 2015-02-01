@@ -5,6 +5,8 @@
 
 /*
 	Font Management
+	TODO:
+		Move into menu.
 */
 
 #include "engine_video.h"
@@ -12,6 +14,8 @@
 typedef struct
 {
 	char		*cName;
+
+	unsigned int	uiCharacters;
 } Font_t;
 
 Font_t	fFonts[32];
@@ -30,6 +34,10 @@ void Font_Initialize(void)
 */
 void Font_Load(const char *ccName,int iSize)
 {
+	char cPath[PLATFORM_MAX_PATH];
+
+	sprintf(cPath, "%s/%s", Global.cFontPath, ccName);
+
 #ifdef _WIN32	// TODO: Move this over to platform.
 	HFONT	hFont;
 
@@ -54,7 +62,9 @@ void Font_Load(const char *ccName,int iSize)
 		return;
 	}
 
-	wglUseFontBitmaps(NULL, 32, 96, glGenLists(96));
+	wglUseFontBitmapsA(NULL, 32, 96, glGenLists(96));
+
+	DeleteObject(hFont);
 #endif
 }
 

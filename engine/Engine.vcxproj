@@ -625,7 +625,7 @@
     <ClCompile Include="engine_console.c" />
     <ClCompile Include="engine_consolevar.c" />
     <ClCompile Include="engine_editor.c" />
-    <ClCompile Include="engine_videofont.c">
+    <ClCompile Include="engine_font.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="engine_modgame.c" />
@@ -698,6 +698,7 @@
     <ClInclude Include="..\shared\shared_menu.h" />
     <ClInclude Include="..\shared\shared_module.h" />
     <ClInclude Include="..\shared\shared_server.h" />
+    <ClInclude Include="..\shared\shared_video.h" />
     <ClInclude Include="client.h" />
     <ClInclude Include="cmd.h" />
     <ClInclude Include="cmdlib.h" />

@@ -176,9 +176,6 @@
     <ClCompile Include="engine_videodraw.c">
       <Filter>Client\Video</Filter>
     </ClCompile>
-    <ClCompile Include="engine_videofont.c">
-      <Filter>Client\Video</Filter>
-    </ClCompile>
     <ClCompile Include="engine_videomisc.c">
       <Filter>Client\Video</Filter>
     </ClCompile>
@@ -196,6 +193,9 @@
     </ClCompile>
     <ClCompile Include="..\shared\shared_formats.c">
       <Filter>Shared</Filter>
+    </ClCompile>
+    <ClCompile Include="engine_font.c">
+      <Filter>Client\Video</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -358,6 +358,9 @@
     </ClInclude>
     <ClInclude Include="engine_material.h">
       <Filter>Client\Video</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\shared_video.h">
+      <Filter>Shared</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

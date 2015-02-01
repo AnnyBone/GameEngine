@@ -19,16 +19,16 @@ typedef enum
 	CANVAS_CROSSHAIR,
 	CANVAS_BOTTOMLEFT,
 	CANVAS_BOTTOMRIGHT,
-	CANVAS_TOPRIGHT,
+	CANVAS_TOPRIGHT
 } canvastype;
 
 // [12/10/2012] Engine import functions ~hogsy
 typedef struct
 {
-	bool    (*Initialize)(int argc,char *argv[]);                   // Initializes the engine.
-    bool    (*CreateWindow)(int X,int Y,int iWidth,int iHeight);    // Creates a new window.
+	bool    (*Initialize)(int argc,char *argv[]);					// Initializes the engine.
+    bool    (*CreateDisplay)(int X,int Y,int iWidth,int iHeight);	// Creates a new window.
 
-    char    *(*GetGamePath)(void);  // Gets the currently active game path.
+    char    *(*GetGamePath)(void);									// Gets the currently active game path.
 
     void    (*Shutdown)(void);
 

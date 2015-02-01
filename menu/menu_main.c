@@ -10,8 +10,6 @@
 // Platform library
 #include "platform_module.h"
 
-CMenu	*mGlobal;
-
 /*	TODO:
 		#	Get menu elements to be handled like objects.
 		#	Let us handle models (for 3D menu interface).
@@ -28,13 +26,18 @@ CMenu	*mGlobal;
 MenuExport_t	Export;
 ModuleImport_t	Engine;
 
-int	iMenuState				= 0;
+int	iMenuState = 0;
 
 cvar_t	cvShowMenu = { "menu_show", "1", false, false, "Toggle the display of any menu elements." },
-cvDebugMenu = { "menu_debug", "0", false, false, "Toggle the display of any debugging information." };
+		cvDebugMenu = { "menu_debug", "0", false, false, "Toggle the display of any debugging information." };
+cvar_t	cvMenuDisclaimer = { "menu_disclaimer", "1", false, true, "Toggles the display of disclaimer." };
 
 // [13/8/2013] Fixed ~hogsy
 int	iMousePosition[2];
+
+int 
+	iMenuWidth = 0,
+	iMenuHeight = 0;
 
 // [2/8/2012] TODO: Why are we doing this!? Should be using the one from the lib ~hogsy
 char *va(char *format,...)
@@ -49,48 +52,40 @@ char *va(char *format,...)
 	return string;
 }
 
-CMenu::CMenu()
-{
-	uiWidth	= 0;
-	uiHeight = 0;
-}
-
-CMenu::~CMenu()
-{
-}
-
-void CMenu::Initialize()
-{
-	Engine.Con_Printf("Initializing menu...\n");
-
-	// Set the width and height.
-	uiWidth = Engine.GetScreenWidth();
-	uiHeight = Engine.GetScreenHeight();
-}
-
 void Menu_Initialize(void)
 {
-	mGlobal = new CMenu;
-	if (!mGlobal)
-		Engine.Sys_Error("Failed to initialize global menu class!\n");
+	Engine.Con_Printf("Initializing Menu...\n");
 
-	// Initialize the global menu class.
-	mGlobal->Initialize();
+	// Get the current screen size.
+	Menu_UpdateScreenSize();
+
+	Engine.Cvar_RegisterVariable(&cvShowMenu, NULL);
+	Engine.Cvar_RegisterVariable(&cvMenuDisclaimer, NULL);
 
 	for (int i = 0; i < 10; i++)
 		Engine.Client_PrecacheResource(RESOURCE_TEXTURE, va(MENU_HUD_PATH"num%i", i));
 }
 
+void Menu_UpdateScreenSize(void)
+{
+	iMenuWidth = Engine.GetScreenWidth();
+	iMenuHeight = Engine.GetScreenHeight();
+}
+
+void Menu_DrawMouse(void)
+{
+	Engine.DrawPic(MENU_BASE_PATH"cursor", 1.0f, iMousePosition[0]-16, iMousePosition[1]-16, 16, 16);
+}
+
 void Menu_Draw(void)
 {
-#if 0
 	/*	TODO:
 			Draw inactive windows last.
 
 		~hogsy
 	*/
 
-	if(cvShowMenu.value <= 0)
+	if(!cvShowMenu.bValue)
 		return;
 
 	// [17/9/2013] Set the canvas to the default ~hogsy
@@ -99,6 +94,15 @@ void Menu_Draw(void)
 	// [3/8/2012] Find out the current position of our mouse on each frame ~hogsy
 	// [3/10/2012] Updated to use what's provided by the engine instead ~hogsy
 	Engine.GetCursorPosition(&iMousePosition[pX],&iMousePosition[pY]);
+
+	// Disclaimer.
+	if (cvMenuDisclaimer.bValue)
+	{
+		Engine.DrawString(30, 30, "This is an early pre-alpha build of OpenKatana");
+		Engine.DrawString(30, 40, "that's intended to focus purely on the multiplayer");
+		Engine.DrawString(30, 50, "component of the game. As such is unfinished and certain");
+		Engine.DrawString(30, 60, "portions of the game will not be implemented or functional.");
+	}
 
 #if 1
 	if(iMenuState & MENU_STATE_LOADING)
@@ -135,6 +139,7 @@ void Menu_Draw(void)
 		Engine.DrawString(110,80,">");
 		Engine.DrawString(190,80,"<");
 
+#if 0
 		switch(iMenuDisplaySelection)
 		{
 		case MENU_MAIN:
@@ -152,7 +157,10 @@ void Menu_Draw(void)
 			// Do we even need to draw anything for this? ~hogsy
 			break;
 		}
+#endif
 	}
+
+	Menu_DrawMouse();
 #if 0
 	for(i = 0; i < iMenuElements; i++)
 	{
@@ -329,7 +337,6 @@ void Menu_Draw(void)
 		}
 	}
 #endif
-#endif
 }
 
 /*	Called by the engine.
@@ -378,8 +385,6 @@ int Menu_GetState(void)
 void Menu_Shutdown(void)
 {
 	Engine.Con_Printf("Shutting down menu...\n");
-
-	delete mGlobal;
 }
 
 void Input_Key(int iKey)
@@ -387,7 +392,7 @@ void Input_Key(int iKey)
 
 }
 
-extern "C" pMODULE_EXPORT MenuExport_t *Menu_Main(ModuleImport_t *Import)
+pMODULE_EXPORT MenuExport_t *Menu_Main(ModuleImport_t *Import)
 {
 	Engine.Con_DPrintf				= Import->Con_DPrintf;
 	Engine.Con_Printf				= Import->Con_Printf;

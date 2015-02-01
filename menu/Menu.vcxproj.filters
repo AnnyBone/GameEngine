@@ -23,17 +23,17 @@
     <ClCompile Include="menu_input.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="menu_main.cpp">
+    <ClCompile Include="menu_main.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="menu_button.cpp">
+    <ClCompile Include="menu_hud.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="openkatana\openkatana_hud.cpp">
+    <ClCompile Include="menu_button.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="openkatana\openkatana_hud.c">
       <Filter>Source Files\OpenKatana</Filter>
-    </ClCompile>
-    <ClCompile Include="menu_hud.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

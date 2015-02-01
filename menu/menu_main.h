@@ -7,6 +7,7 @@
 #include "platform_math.h"
 
 #include "shared_flags.h"
+#include "shared_video.h"
 #include "shared_menu.h"
 #include "shared_module.h"
 #include "shared_engine.h"
@@ -25,29 +26,11 @@ extern	cvar_t	cvShowMenu,
 
 extern int	iMenuState;				// Global menu state.
 
+void	Menu_UpdateScreenSize(void);
 void	Menu_AddState(int iState);
 void	Menu_SetState(int iState);
 void	Menu_RemoveState(int iState);
-void	Menu_GetScreenSize(void);
 
 char *va(char *format,...);	// Temporary convenience function, please don't get comfortable with this :(
-
-class CMenu
-{
-public:
-	CMenu();
-	~CMenu();
-
-	virtual void	Initialize();
-
-	virtual	unsigned int	GetWidth()	{ return uiWidth; }
-	virtual unsigned int	GetHeight() { return uiHeight; }
-
-private:
-
-	unsigned	int	uiWidth, uiHeight;	// Global width/height of the menu.
-};
-
-extern CMenu	*mGlobal;
 
 #endif

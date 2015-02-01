@@ -1466,6 +1466,11 @@ void _FileSystem_SetLevelPath(char *cArg)
 	Q_strncpy(Global.cLevelPath,cArg,PLATFORM_MAX_PATH);
 }
 
+void _FileSystem_SetFontPath(char *cArg)
+{
+	Q_strncpy(Global.cFontPath, cArg, PLATFORM_MAX_PATH);
+}
+
 void _FileSystem_SetScreenshotPath(char *cArg)
 {
 	Q_strncpy(Global.cScreenshotPath,cArg,PLATFORM_MAX_PATH);
@@ -1543,6 +1548,11 @@ void FileSystem_Initialize(void)
 	{
 		Con_Warning("Sounds path wasn't set in paths script!\n");
 		sprintf(Global.cSoundPath,"sounds/");
+	}
+	else if (Global.cFontPath[0] == ' ')
+	{
+		Con_Warning("Sounds path wasn't set in paths script!\n");
+		sprintf(Global.cFontPath, "fonts/");
 	}
 	else if(Global.cTexturePath[0] == ' ')
 	{

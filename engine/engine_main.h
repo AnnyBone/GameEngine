@@ -15,6 +15,7 @@ typedef struct
 			cTexturePath[PLATFORM_MAX_PATH],
 			cLevelPath[PLATFORM_MAX_PATH],
 			cScreenshotPath[PLATFORM_MAX_PATH],
+			cFontPath[PLATFORM_MAX_PATH],
 			cSoundPath[PLATFORM_MAX_PATH];
 } Global_t;
 
