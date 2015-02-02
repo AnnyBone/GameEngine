@@ -395,10 +395,10 @@ DynamicLight_t *Light_GetDynamic(vec3_t vPoint)
 	for(i = 0; i < MAX_DLIGHTS; i++)
 	{
 		// [24/2/2014] If we're not being effected by the lightmap then ignore static light sources ~hogsy
-		if (bStaticLights && (cl_dlights[i].bLightmap == false))
+		if (!bStaticLights && (cl_dlights[i].bLightmap == false))
 			continue;
 
-		if(cl_dlights[i].die >= cl.time)
+		if((cl_dlights[i].die >= cl.time) || cl_dlights[i].bLightmap)
 		{
 			float	fDistance[2];
 			vec3_t	vDistance;

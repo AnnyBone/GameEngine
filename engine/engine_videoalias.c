@@ -279,16 +279,17 @@ void Alias_DrawFrame(MD2_t *mModel,entity_t *eEntity,lerpdata_t lLerpData)
 	int					*order, count;
 	MD2TriangleVertex_t	*verts1, *verts2;
 	MD2Frame_t			*frame1, *frame2;
+	Material_t			*mMat;
 	VideoObject_t		*voModel;
 
 	ilerp = 1.0f - lLerpData.blend;
 
 	//new version by muff - fixes bug, easier to read, faster (well slightly)
-	frame1 = (MD2Frame_t*)((int)mModel + mModel->ofs_frames + (mModel->framesize*currententity->draw_lastpose));
-	frame2 = (MD2Frame_t*)((int)mModel + mModel->ofs_frames + (mModel->framesize*currententity->draw_pose));
+	frame1 = (MD2Frame_t*)((int)mModel + mModel->ofs_frames + (mModel->framesize*eEntity->draw_lastpose));
+	frame2 = (MD2Frame_t*)((int)mModel + mModel->ofs_frames + (mModel->framesize*eEntity->draw_pose));
 
-	if((currententity->scale != 1.0f) && (currententity->scale > 0.1f))
-		glScalef(currententity->scale, currententity->scale, currententity->scale);
+	if ((eEntity->scale != 1.0f) && (eEntity->scale > 0.1f))
+		glScalef(eEntity->scale, eEntity->scale, eEntity->scale);
 
 	verts1 = &frame1->verts[0];
 	verts2 = &frame2->verts[0];
@@ -296,6 +297,11 @@ void Alias_DrawFrame(MD2_t *mModel,entity_t *eEntity,lerpdata_t lLerpData)
 	order = (int*)((int)mModel + mModel->ofs_glcmds);
 
 	voModel = (VideoObject_t*)Hunk_TempAlloc(4*sizeof(VideoObject_t));
+	
+	if (bShading)
+		mMat = eEntity->model->mAssignedMaterials;
+	else
+		mMat = NULL;
 
 	{
 		unsigned int	uiVerts = 0;
@@ -342,7 +348,7 @@ void Alias_DrawFrame(MD2_t *mModel,entity_t *eEntity,lerpdata_t lLerpData)
 				order += 3;
 			} while (--count);
 
-			Video_DrawObject(voModel, VIDEO_PRIMITIVE_TRIANGLE_FAN, uiVerts, eEntity->model->mAssignedMaterials, eEntity->skinnum);
+			Video_DrawObject(voModel, VIDEO_PRIMITIVE_TRIANGLE_FAN, uiVerts, mMat, eEntity->skinnum);
 		}
 	}
 #endif

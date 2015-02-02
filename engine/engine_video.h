@@ -20,7 +20,7 @@ extern cvar_t	cvVideoDrawModels,		// Should we draw models?
 
 extern bool	bVideoIgnoreCapabilities;
 
-enum VideoUnits_e
+typedef enum VideoUnits_e
 {
 	VIDEO_TEXTURE_MIN = -1,
 
@@ -31,7 +31,7 @@ enum VideoUnits_e
 	VIDEO_TEXTURE_SPHERE,
 
 	VIDEO_TEXTURE_MAX
-};
+} VideoUnits_t;
 
 typedef struct
 {
@@ -52,13 +52,14 @@ typedef struct
 	unsigned	int	uiMSAASamples,	// Number of AA samples.
 					iWidth,iHeight;
 
-	bool			bInitialized,		// Is the video system started?
-					bFullscreen,		// Is the window fullscreen or not?
-					bVerticalSync,		// Sync the swap interval to the refresh rate?
-					bActive,			// Is the window active or not?
-					bSkipUpdate,		// Skip screen update.
-					bColourOverride,	// Override any applied colour for the object.
-					bUnlocked;			// Can we change the window settings or not?
+	bool			bInitialized,					// Is the video system started?
+					bFullscreen,					// Is the window fullscreen or not?
+					bVerticalSync,					// Sync the swap interval to the refresh rate?
+					bActive,						// Is the window active or not?
+					bSkipUpdate,					// Skip screen update.
+					bColourOverride,				// Override any applied colour for the object.
+					bUnitState[VIDEO_MAX_UNITS],	// The state of each individual TMU.
+					bUnlocked;						// Can we change the window settings or not?
 
 	// OpenGL Extensions
 	bool	bVertexBufferObject;		// ARB_vertex_buffer_object

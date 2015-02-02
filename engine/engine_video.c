@@ -74,6 +74,8 @@ SDL_DisplayMode	sDisplayMode;
 */
 void Video_Initialize(void)
 {
+	int i;
+
 	if(Video.bInitialized)
 		return;
 
@@ -84,6 +86,10 @@ void Video_Initialize(void)
 	Video.bVertexBufferObject	= false;
 	Video.bActive				=			// Window is intially assumed active.
 	Video.bUnlocked				= true;		// Video mode is initially locked.
+
+	// All units are initially disabled.
+	for (i = 0; i < VIDEO_MAX_UNITS; i++)
+		Video.bUnitState[i] = false;
 
 	Video_AllocateArrays(uiVideoArraySize);
 	
@@ -939,10 +945,10 @@ void Video_DrawObject(
 			else
 				Math_Vector4Copy(voObject[i].vColour, vVideoColourArray[i]);
 
-			Math_Vector2Copy(voObject[i].vTextureCoord[VIDEO_TEXTURE_DIFFUSE], vVideoTextureArray[VIDEO_TEXTURE_DIFFUSE][i]);
+			//Math_Vector2Copy(voObject[i].vTextureCoord[VIDEO_TEXTURE_DIFFUSE], vVideoTextureArray[VIDEO_TEXTURE_DIFFUSE][i]);
 
 			// Copy over coords for each active TMU.
-			for (j = 1; j < VIDEO_MAX_UNITS; j++)
+			for (j = 0; j < VIDEO_MAX_UNITS; j++)
 				if (iSavedCapabilites[j][VIDEO_STATE_ENABLE] & VIDEO_TEXTURE_2D)
 					Math_Vector2Copy(voObject[i].vTextureCoord[j], vVideoTextureArray[j][i]);
 		}
@@ -982,14 +988,13 @@ void Video_DrawObject(
 	{
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
-		glClientActiveTexture(Video_GetGLUnit(VIDEO_TEXTURE_DIFFUSE));
-		glTexCoordPointer(2, GL_FLOAT, 0, vVideoTextureArray[VIDEO_TEXTURE_DIFFUSE]);
+		//glClientActiveTexture(Video_GetGLUnit(VIDEO_TEXTURE_DIFFUSE));
+		//glTexCoordPointer(2, GL_FLOAT, 0, vVideoTextureArray[VIDEO_TEXTURE_DIFFUSE]);
 
-		for (i = 1; i < VIDEO_MAX_UNITS; i++)
-			if (iSavedCapabilites[i][VIDEO_STATE_ENABLE] & VIDEO_TEXTURE_2D)
+		for (i = 0; i < VIDEO_MAX_UNITS; i++)
+			if (Video.bUnitState[i])
 			{
 				glClientActiveTexture(Video_GetGLUnit(i));
-
 				glTexCoordPointer(2, GL_FLOAT, 0, vVideoTextureArray[i]);
 			}
 	}
@@ -1053,6 +1058,9 @@ void Video_EnableCapabilities(unsigned int iCapabilities)
         if(!vcCapabilityList[i].uiFirst)
             break;
 
+		if (iCapabilities & VIDEO_TEXTURE_2D)
+			Video.bUnitState[Video.uiActiveUnit] = true;
+
 		if(iCapabilities & vcCapabilityList[i].uiFirst)
 		{
             if(bVideoDebug)
@@ -1080,6 +1088,9 @@ void Video_DisableCapabilities(unsigned int iCapabilities)
 	{
         if(!vcCapabilityList[i].uiFirst)
             break;
+
+		if (iCapabilities & VIDEO_TEXTURE_2D)
+			Video.bUnitState[Video.uiActiveUnit] = false;
 
 		if(iCapabilities & vcCapabilityList[i].uiFirst)
 		{
