@@ -8,7 +8,6 @@
 
 #include "engine_console.h"
 #include "engine_videoshadow.h"
-#include "engine_video.h"	// [7/8/2013] Included for cvLitParticles ~hogsy
 
 #include "shared_server.h"
 #include "shared_menu.h"

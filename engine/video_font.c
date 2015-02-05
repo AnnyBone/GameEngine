@@ -9,7 +9,7 @@
 		Move into menu.
 */
 
-#include "engine_video.h"
+#include "video.h"
 
 typedef struct
 {
@@ -72,7 +72,7 @@ void Font_Load(const char *ccName,int iSize)
 */
 void Font_Draw(Font_t *fFont,const char *ccMessage,vec3_t vPos,vec3_t vColour)
 {
-	VideoObject_t	voFont[4] = { 0 };
+	VideoObject_t voFont[4] = { 0 };
 
 	/*	todo:
 			need to reserve bind slot.

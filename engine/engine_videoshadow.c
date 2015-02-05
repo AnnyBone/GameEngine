@@ -12,10 +12,10 @@
 #include "engine_editor.h"
 #include "engine_console.h"
 #include "engine_client.h"
-#include "engine_video.h"	// [7/8/2013] TODO: Remove ~hogsy
+#include "video.h"	// [7/8/2013] TODO: Remove ~hogsy
 
-cvar_t	cvDrawFlares	= {	"video_flares",			"1",					    true,   false,  "Toggles the rendering of environmental flares."	        },
-		cvLitParticles	= {	"video_particles_lit",	"0",	                    true,   false,  "Sets whether or not particles are lit by dynamic lights."	};
+cvar_t	cvDrawFlares	= {	"video_flares",			"1",	true,   false,  "Toggles the rendering of environmental flares."	        },
+		cvLitParticles	= {	"video_particles_lit",	"0",	true,   false,  "Sets whether or not particles are lit by dynamic lights."	};
 
 gltexture_t	/**gRenderTarget,*/*gShadow;
 
@@ -79,7 +79,6 @@ void Draw_Shadow(entity_t *ent)
 			Trace down to get plane and set angles to that
 			clip based on surface extents?
 		*/
-
 		VideoObject_t	voShadow[4] = { 0 };
 
 		Video_ResetCapabilities(false);
@@ -94,7 +93,7 @@ void Draw_Shadow(entity_t *ent)
 		glTranslatef(0,0,-lheight+0.1f);
 
 		Video_SetColour(1.0f, 1.0f, 1.0f, 1.0f);
-
+		
 		Video_ObjectVertex(&voShadow[0], -fShadowScale[0], fShadowScale[1], 0);
 		Video_ObjectTexture(&voShadow[0], VIDEO_TEXTURE_DIFFUSE, 0, 0);
 

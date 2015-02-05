@@ -1,7 +1,6 @@
 /*	Copyright (C) 2011-2015 OldTimes Software
 */
 #include "engine_main.h"
-#include "engine_video.h"
 
 #include "platform_module.h"
 

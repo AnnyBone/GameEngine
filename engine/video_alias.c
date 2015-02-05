@@ -7,7 +7,7 @@
 */
 
 #include "engine_videoshadow.h"
-#include "engine_video.h"
+#include "video.h"
 
 extern cvar_t r_drawflat, gl_fullbrights, r_lerpmodels, r_lerpmove; //johnfitz
 
@@ -188,7 +188,7 @@ MathVector3_t	vLightColour;
 
 DynamicLight_t	*dlLightSource;
 
-void R_SetupModelLighting(vec3_t vOrigin)
+void R_SetupModelLighting(MathVector3_t vOrigin)
 {
 	float			fDistance;
 
@@ -197,8 +197,10 @@ void R_SetupModelLighting(vec3_t vOrigin)
 
 	// Check to see if we can grab the light source, for directional information.
 	dlLightSource = Light_GetDynamic(vOrigin);
-	if(dlLightSource)
-		Math_VectorCopy(dlLightSource->color,vLightColour);
+	if (dlLightSource)
+	{
+		Math_VectorCopy(dlLightSource->color, vLightColour);
+	}
 	else
 		Math_MVToVector(Light_GetSample(vOrigin), vLightColour);
 
@@ -299,8 +301,10 @@ void Alias_DrawFrame(MD2_t *mModel,entity_t *eEntity,lerpdata_t lLerpData)
 	voModel = (VideoObject_t*)Hunk_TempAlloc(4*sizeof(VideoObject_t));
 	
 	if (bShading)
+		// If we're lit etc, then apply our material.
 		mMat = eEntity->model->mAssignedMaterials;
 	else
+		// This is dirty, but it stops the material system from applying materials for shadows.
 		mMat = NULL;
 
 	{

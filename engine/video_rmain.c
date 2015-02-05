@@ -22,7 +22,7 @@
 #include "engine_editor.h"
 #include "engine_console.h"
 #include "engine_videoshadow.h"
-#include "engine_video.h"
+#include "video.h"
 #include "engine_particle.h"
 #include "KatAlias.h"
 

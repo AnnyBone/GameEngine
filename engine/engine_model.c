@@ -26,7 +26,7 @@
 
 #include "engine_console.h"
 #include "engine_script.h"
-#include "engine_video.h"
+#include "video.h"
 
 model_t	*loadmodel;
 char	loadname[32];	// for hunk tags

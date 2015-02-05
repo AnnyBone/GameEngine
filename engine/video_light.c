@@ -19,7 +19,7 @@
 */
 #include "quakedef.h"
 
-#include "engine_video.h"
+#include "video.h"
 #include "engine_editor.h"
 
 int	r_dlightframecount;
@@ -380,7 +380,7 @@ MathVector_t Light_GetSample(vec3_t vPoint)
 DynamicLight_t *Light_GetDynamic(vec3_t vPoint)
 {
 	int				i;
-	bool			bStaticLights = true;
+	bool			bStaticLights;
 	float			fLightAmount;
 	DynamicLight_t	*dlClosestLight = NULL;
 	vec3_t			vLightColour;
@@ -389,16 +389,18 @@ DynamicLight_t *Light_GetDynamic(vec3_t vPoint)
 
 	// [30/10/2013] Check that we're actually being effected by a lightsource before anything else ~hogsy
 	fLightAmount = (vLightColour[0]+vLightColour[1]+vLightColour[2])/200.0f;
-	if(fLightAmount < 0.2f)
+	if (fLightAmount < 0.2f)
 		bStaticLights = false;
+	else
+		bStaticLights = true;
 
 	for(i = 0; i < MAX_DLIGHTS; i++)
 	{
 		// [24/2/2014] If we're not being effected by the lightmap then ignore static light sources ~hogsy
-		if (!bStaticLights && (cl_dlights[i].bLightmap == false))
+		if (!bStaticLights && !cl_dlights[i].bLightmap)
 			continue;
 
-		if((cl_dlights[i].die >= cl.time) || cl_dlights[i].bLightmap)
+		if((cl_dlights[i].die >= cl.time) || (!cl_dlights[i].bLightmap && cl_dlights[i].radius))
 		{
 			float	fDistance[2];
 			vec3_t	vDistance;

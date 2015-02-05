@@ -13,7 +13,7 @@
 
 #include "engine_material.h"
 
-#include "engine_video.h"
+#include "video.h"
 #include "engine_script.h"
 
 bool	bInitialized = false;
@@ -77,7 +77,7 @@ void Material_Initialize(void)
 */
 void Material_List(void)
 {
-	int i, j;
+	int i;
 
 	Con_Printf("Listing materials...\n");
 
@@ -531,8 +531,8 @@ MaterialFlag_t	mfMaterialFlags[] =
 	{ MATERIAL_FLAG_WATER, "WATER", MATERIAL_FUNCTION_MATERIAL },
 
 	// Local
-	{ MATERIAL_FLAG_ALPHA, "ALPHA", MATERIAL_FUNCTION_SKIN },
-	{ MATERIAL_FLAG_BLEND, "BLEND", MATERIAL_FUNCTION_SKIN }
+	{ MATERIAL_FLAG_ALPHA, "ALPHA", MATERIAL_FUNCTION_TEXTURE },
+	{ MATERIAL_FLAG_BLEND, "BLEND", MATERIAL_FUNCTION_TEXTURE }
 };
 
 /*	Set flags for the material.
@@ -565,6 +565,9 @@ void _Material_SetFlags(Material_t *mCurrentMaterial, MaterialFunctionType_t mft
 			case MATERIAL_FUNCTION_SKIN:
 				mCurrentMaterial->msSkin[mCurrentMaterial->iSkins].uiFlags |= mfMaterialFlags[i].iFlag;
 				break;
+			case MATERIAL_FUNCTION_TEXTURE:
+				mCurrentMaterial->msSkin[mCurrentMaterial->iSkins].mtTexture
+					[mCurrentMaterial->msSkin[mCurrentMaterial->iSkins].uiTextures].uiFlags |= mfMaterialFlags[i].iFlag;
 			default:
 				Con_Warning("Invalid context! (%s) (%s)\n", mCurrentMaterial->cName, mfMaterialFlags[i].ccName);
 			}

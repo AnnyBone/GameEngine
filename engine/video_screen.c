@@ -25,7 +25,7 @@
 #include "engine_editor.h"
 #include "engine_videoshadow.h"
 
-#include "engine_video.h"
+#include "video.h"
 #include "engine_clientinput.h"
 
 /*
@@ -88,7 +88,7 @@ cvar_t	scr_conwidth		= {"scr_conwidth", "0", TRUE};
 cvar_t	scr_conscale		= {"scr_conscale", "1", true};
 cvar_t	scr_crosshairscale	= {"scr_crosshairscale", "1", TRUE};
 cvar_t	scr_showfps			= {"scr_showfps", "0"};
-cvar_t	scr_fps_rate		= { "scr_fps_rate","0.37",TRUE};
+cvar_t	scr_fps_rate		= { "scr_fps_rate","0.37", true, false, "Changes the rate at which the FPS counter is updated." };
 cvar_t	scr_clock			= { "scr_clock", "0"};
 cvar_t	scr_viewsize		= { "viewsize","120", true};
 cvar_t	scr_fov				= {	"fov",	"90",	true	};	// 10 - 170

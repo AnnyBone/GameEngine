@@ -17,7 +17,7 @@
 	of the map in view...
 */
 
-#include "engine_video.h"
+#include "video.h"
 #include "engine_clientinput.h"
 #include "engine_videoshadow.h"			// [14/10/2013] TODO: Obsolete! ~hogsy
 #include "engine_console.h"

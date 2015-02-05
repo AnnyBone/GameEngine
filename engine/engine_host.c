@@ -24,10 +24,10 @@
 #include "engine_modmenu.h"
 #include "engine_editor.h"
 #include "engine_clientinput.h"
-#include "engine_video.h"
+#include "video.h"
 #include "engine_physics.h"
 #include "engine_client.h"
-#include "engine_audio.h"
+#include "audio.h"
 #include "engine_particle.h"
 
 #include "shared_server.h"

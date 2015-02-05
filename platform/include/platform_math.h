@@ -152,6 +152,26 @@ vec_t	Math_DotProduct(vec3_t a, vec3_t b);
 
 MathVector_t	Math_VectorToAngles(vec3_t vValue);
 
+float Math_Linear(float x);
+float Math_InPow(float x, float p);
+float Math_OutPow(float x, float p);
+float Math_InOutPow(float x, float p);
+float Math_InSin(float x);
+float Math_OutSin(float x);
+float Math_InOutSin(float x);
+float Math_InExp(float x);
+float Math_OutExp(float x);
+float Math_InOutExp(float x);
+float Math_InCirc(float x);
+float Math_OutCirc(float x);
+float Math_InOutCirc(float x);
+float Math_Rebound(float x);
+float Math_InBack(float x);
+float Math_OutBack(float x);
+float Math_InOutBack(float x);
+float Math_Impulse(float x, float k);
+float Math_ExpPulse(float x, float k, float n);
+
 #ifdef __cplusplus
 }
 #endif

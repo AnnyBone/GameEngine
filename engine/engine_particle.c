@@ -4,7 +4,7 @@
 
 #include "engine_particle.h"
 
-#include "engine_video.h"
+#include "video.h"
 #include "engine_videoshadow.h"
 
 #if 0
@@ -468,7 +468,7 @@ void Particle_Draw(void)
 	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
 	Video_SetBlend(VIDEO_BLEND_IGNORE, VIDEO_DEPTH_FALSE);
-	Video_EnableCapabilities(VIDEO_BLEND);
+	Video_EnableCapabilities(VIDEO_BLEND | VIDEO_TEXTURE_2D);
 
 	for (pParticle = pActiveParticles; pParticle; pParticle = pParticle->next)
 	{

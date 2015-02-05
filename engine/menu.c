@@ -1,6 +1,6 @@
 #include "quakedef.h"
 
-#include "engine_video.h"
+#include "video.h"
 #include "engine_modgame.h"
 #include "engine_modmenu.h"
 

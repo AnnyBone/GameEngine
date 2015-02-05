@@ -41,7 +41,7 @@
 
 #include "engine_editor.h"
 #include "engine_console.h"
-#include "engine_video.h"
+#include "video.h"
 
 #define MAXIMUM_MEMORY		0x8000000	// 128MB
 

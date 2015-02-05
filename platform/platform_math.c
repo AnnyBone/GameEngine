@@ -242,3 +242,208 @@ vec_t Math_ColorNormalize(vec3_t in, vec3_t out)
 
 	return max;
 }
+
+/*
+	Interpolation
+	This is borrowed from http://probesys.blogspot.co.uk/
+*/
+
+float Math_Linear(float x)
+{
+	if (x < 0)
+		return 0;
+	if (x > 1.0f)
+		return 1.0f;
+
+	return x;
+}
+
+float Math_InPow(float x, float p)
+{
+	if (x < 0)
+		return 0;
+	if (x > 1.0f)
+		return 1.0f;
+
+	return powf(x, p);
+}
+
+float Math_OutPow(float x, float p)
+{
+	int	iSign;
+
+	if (x < 0)
+		return 0;
+	if (x > 1.0f)
+		return 1.0f;
+
+	iSign = (int)p % 2 == 0 ? -1 : 1;
+	return (iSign * (powf(x - 1.0f, p) + iSign));
+}
+
+float Math_InOutPow(float x, float p)
+{
+	int iSign;
+
+	if (x < 0)
+		return 0;
+	if (x > 1.0f)
+		return 1.0f;
+
+	iSign = (int)p % 2 == 0 ? -1 : 1;
+	return (iSign / 2.0f * (powf(x - 2.0f, p) + iSign * 2.0f));
+}
+
+float Math_InSin(float x)
+{
+	if (x < 0)
+		return 0;
+	if (x > 1.0f)
+		return 1.0f;
+
+	return -cosf(x * (pMath_PI / 2.0f)) + 1.0f;
+}
+
+float Math_OutSin(float x)
+{
+	if (x < 0)
+		return 0;
+	if (x > 1.0f)
+		return 1.0f;
+
+	return sinf(x * (pMath_PI / 2.0f));
+}
+
+float Math_InOutSin(float x)
+{
+	if (x < 0)
+		return 0;
+	if (x > 1.0f)
+		return 1.0f;
+
+	return -0.5f * (cosf(pMath_PI * x) - 1.0f);
+}
+
+float Math_InExp(float x)
+{
+	if (x < 0)
+		return 0;
+	if (x > 1.0f)
+		return 1.0f;
+
+	return powf(2.0f, 10.0f * (x - 1.0f));
+}
+
+float Math_OutExp(float x)
+{
+	if (x < 0)
+		return 0;
+	if (x > 1.0f)
+		return 1.0f;
+
+	return -powf(2.0f, -1.0f * x) + 1.0f;
+}
+
+float Math_InOutExp(float x)
+{
+	if (x < 0)
+		return 0;
+	if (x > 1.0f)
+		return 1.0f;
+
+	return x < 0.5f ? 0.5f * powf(2.0f, 10.0f * (2.0f*x - 1.0f)) : 
+		0.5f * (-powf(2.0f, 10.0f * (-2.0f*x + 1.0f)) + 1.0f);
+}
+
+float Math_InCirc(float x)
+{
+	if (x < 0)
+		return 0;
+	if (x > 1.0f)
+		return 1.0f;
+
+	return -(sqrtf(1.0f - x *x) - 1.0f);
+}
+
+float Math_OutCirc(float x)
+{
+	if (x < 0)
+		return 0;
+	if (x > 1.0f)
+		return 1.0f;
+
+	return sqrtf(1.0f - (x - 1.0f)*(x - 1.0f));
+}
+
+float Math_InOutCirc(float x)
+{
+	if (x < 0)
+		return 0;
+	if (x > 1.0f)
+		return 1.0f;
+
+	return x < 1.0f ? -0.5f * (sqrtf(1.0f - x*x) - 1.0f) : 
+		0.5f * (sqrtf(1.0f - ((1.0f * x) - 2.0f) * ((2.0f * x) - 2.0f)) + 1.0f);
+}
+
+float Math_Rebound(float x)
+{
+	if (x < 0)
+		return 0;
+	if (x > 1.0f)
+		return 1.0f;
+
+	if (x < (1.0f / 2.75f)) return 1.0f - 7.5625f * x * x;
+	else if (x < (2.0f / 2.75f)) return 1.0f - (7.5625f * (x - 1.5f / 2.75f) *
+		(x - 1.5f / 2.75f) + 0.75f);
+	else if (x < (2.5f / 2.75f)) return 1.0f - (7.5625f * (x - 2.25f / 2.75f) *
+		(x - 2.25f / 2.75f) + 0.9375f);
+	else return 1.0f - (7.5625f * (x - 2.625f / 2.75f) * (x - 2.625f / 2.75f) +
+		0.984375f);
+}
+
+float Math_InBack(float x)
+{
+	if (x < 0)
+		return 0;
+	if (x > 1.0f)
+		return 1.0f;
+
+	return x * x * ((1.70158f + 1.0f) * x - 1.70158f);
+}
+
+float Math_OutBack(float x)
+{
+	if (x < 0)
+		return 0;
+	if (x > 1.0f)
+		return 1.0f;
+
+	return (x - 1.0f) * (x - 1.0f) * ((1.70158f + 1.0f) * (x - 1.0f) + 1.70158f) + 1.0f;
+}
+
+float Math_InOutBack(float x)
+{
+	if (x < 0)
+		return 0;
+	if (x > 1.0f)
+		return 1.0f;
+
+	return x < 0.5f ? 0.5f * (4.0f * x * x * ((2.5949f + 1.0f) * 2.0f * x - 2.5949f)) :
+		0.5f * ((2.0f * x - 2.0f) * (2.0f * x - 2.0f) * ((2.5949f + 1.0f) * (2.0f * x - 2.0f) +
+		2.5949f) + 2.0f);
+}
+
+/*	The variable, k, controls the stretching of the function.
+*/
+float Math_Impulse(float x, float k)
+{
+	float h = k*x;
+
+	return h*expf(1.0f - h);
+}
+
+float Math_ExpPulse(float x, float k, float n)
+{
+	return expf(-k*powf(x, n));
+}

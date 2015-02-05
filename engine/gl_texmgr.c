@@ -27,7 +27,7 @@
 #include "platform_filesystem.h"
 
 #include "engine_console.h"
-#include "engine_video.h"
+#include "video.h"
 
 cvar_t		gl_texture_anisotropy	= {	"gl_texture_anisotropy",	"16",	true	};
 cvar_t		gl_max_size				= {	"gl_max_size",				"0"				};
@@ -460,6 +460,7 @@ void TextureManager_Initialize(void)
 	Cmd_AddCommand ("gl_describetexturemodes", &TexMgr_DescribeTextureModes_f);
 	Cmd_AddCommand ("imagelist", &TexMgr_Imagelist_f);
 	Cmd_AddCommand ("imagedump", &TexMgr_Imagedump_f);
+	Cmd_AddCommand("image_reloadtextures", &TexMgr_ReloadImages);
 
 	// poll max size from hardware
 	glGetIntegerv (GL_MAX_TEXTURE_SIZE, &gl_hardware_maxsize);

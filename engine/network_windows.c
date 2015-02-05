@@ -64,7 +64,7 @@ net_driver_t net_drivers[MAX_NET_DRIVERS] =
 int net_numdrivers = 2;
 
 
-#include "engine_netwinsock.h"
+#include "network_winsock.h"
 
 net_landriver_t	net_landrivers[MAX_NET_DRIVERS] =
 {

@@ -15,7 +15,7 @@
 */
 
 // Main header
-#include "engine_video.h"
+#include "video.h"
 
 #include "engine_modgame.h"
 #include "engine_console.h"
@@ -539,11 +539,10 @@ void Video_SetBlend(VideoBlend_t voBlendMode, VideoDepth_t vdDepthMode)
 */
 unsigned int Video_GetGLUnit(unsigned int uiTarget)
 {
-	unsigned int uiUnit = 0;
-
 	if (bVideoDebug)
 		Console_WriteToLog(cvVideoDebugLog.string, "Video: Attempting to get TMU target %i\n", uiTarget);
 
+#if 0
 	switch (uiTarget)
 	{
 	case VIDEO_TEXTURE_DIFFUSE:
@@ -564,8 +563,12 @@ unsigned int Video_GetGLUnit(unsigned int uiTarget)
 	default:
 		Sys_Error("Unknown texture unit! (%i)\n", uiTarget);
 	}
+#endif
 
-	return uiUnit;
+	if (bVideoDebug)
+		Console_WriteToLog(cvVideoDebugLog.string, "Video: Returning TMU %i\n", GL_TEXTURE0 + uiTarget);
+
+	return GL_TEXTURE0 + uiTarget;
 }
 
 void Video_SelectTexture(unsigned int uiTarget)
@@ -684,7 +687,7 @@ void Video_DrawMaterial(
 	VideoObject_t *voObject, VideoPrimitive_t vpPrimitiveType, unsigned int uiSize,
 	bool bPost)
 {
-	unsigned int	i;
+	unsigned int	i,uiUnit;
 	MaterialSkin_t	*msCurrentSkin;
 
 	// If we're drawing flat, then don't apply textures.
@@ -698,21 +701,43 @@ void Video_DrawMaterial(
 	if (!msCurrentSkin)
 		Sys_Error("Failed to get valid skin!\n");
 
-	for (i = 0; i < msCurrentSkin->uiTextures; i++)
+	for (i = 0,uiUnit = 0; i < msCurrentSkin->uiTextures; i++, uiUnit++)
 	{
-		Video_SelectTexture(0);
+		if (uiUnit == VIDEO_TEXTURE_LIGHT)
+			uiUnit++;
+
+		// Select the given texture.
+		Video_SelectTexture(uiUnit);
 
 		// Check our specific type.
 		switch (msCurrentSkin->mtTexture[i].mttType)
 		{
 		case MATERIAL_TEXTURE_DIFFUSE:
-			// Select the given texture.
-			Video_SelectTexture(VIDEO_TEXTURE_DIFFUSE);
-
 			if (!bPost)
-				glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+			{
+				if (uiUnit > 0)
+					glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+				else
+					glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 
-			if (msCurrentSkin->uiFlags & MATERIAL_FLAG_ALPHA)
+				// Check if we've been given a video object to use...
+				if (voObject)
+				{
+					unsigned int j;
+
+					// Go through the whole object.
+					for (j = 0; j < uiSize; j++)
+					{
+						// Copy over original texture coords.
+						Video_ObjectTexture(&voObject[j], uiUnit,
+							// Use base texture coordinates as a reference.
+							voObject[j].vTextureCoord[0][0],
+							voObject[j].vTextureCoord[0][1]);
+					}
+				}
+			}
+
+			if (msCurrentSkin->mtTexture[i].uiFlags & MATERIAL_FLAG_ALPHA)
 			{
 				if (!bPost)
 					glEnable(GL_ALPHA_TEST);
@@ -735,7 +760,7 @@ void Video_DrawMaterial(
 					}
 				}
 			}
-			else if (msCurrentSkin->uiFlags & MATERIAL_FLAG_BLEND)
+			else if (msCurrentSkin->mtTexture[i].uiFlags & MATERIAL_FLAG_BLEND)
 			{
 				if (!bPost)
 					glEnable(GL_BLEND);
@@ -748,7 +773,7 @@ void Video_DrawMaterial(
 				break;
 
 			// Select the given texture.
-			Video_SelectTexture(VIDEO_TEXTURE_DETAIL);
+			//Video_SelectTexture(VIDEO_TEXTURE_DETAIL);
 
 			if (!bPost)
 			{
@@ -765,7 +790,7 @@ void Video_DrawMaterial(
 					for (j = 0; j < uiSize; j++)
 					{
 						// Copy over original texture coords.
-						Video_ObjectTexture(&voObject[j], VIDEO_TEXTURE_DETAIL,
+						Video_ObjectTexture(&voObject[j], uiUnit,
 							// Use base texture coordinates as a reference.
 							voObject[j].vTextureCoord[0][0] * cvVideoDetailScale.value,
 							voObject[j].vTextureCoord[0][1] * cvVideoDetailScale.value);
@@ -781,7 +806,7 @@ void Video_DrawMaterial(
 				break;
 
 			// Select the given texture.
-			Video_SelectTexture(VIDEO_TEXTURE_FULLBRIGHT);
+			//Video_SelectTexture(VIDEO_TEXTURE_FULLBRIGHT);
 
 			if (!bPost)
 			{
@@ -796,7 +821,7 @@ void Video_DrawMaterial(
 					for (j = 0; j < uiSize; j++)
 					{
 						// Texture coordinates remain the same for fullbright layers.
-						Video_ObjectTexture(&voObject[j], VIDEO_TEXTURE_FULLBRIGHT,
+						Video_ObjectTexture(&voObject[j], uiUnit,
 							// Use base texture coordinates as a reference.
 							voObject[j].vTextureCoord[0][0],
 							voObject[j].vTextureCoord[0][1]);
@@ -808,7 +833,7 @@ void Video_DrawMaterial(
 			break;
 		case MATERIAL_TEXTURE_SPHERE:
 			// Select the given texture.
-			Video_SelectTexture(VIDEO_TEXTURE_SPHERE);
+			//Video_SelectTexture(VIDEO_TEXTURE_SPHERE);
 
 			if (!bPost)
 			{
@@ -924,10 +949,10 @@ void Video_DrawObject(
 	if (bVideoDebug)
 		Console_WriteToLog(cvVideoDebugLog.string, "Video: Drawing object (%i) (%i)\n", uiVerts, vpPrimitiveType);
 
+	bVideoIgnoreCapabilities = true;
+
 	if (mMaterial)
 		Video_DrawMaterial(mMaterial, iSkin, voObject, vpPrimitiveType, uiVerts, false);
-
-	bVideoIgnoreCapabilities = true;
 
 	// Vertices count is too high for this object, bump up array sizes to manage it.
 	if (uiVerts > uiVideoArraySize)
@@ -949,7 +974,7 @@ void Video_DrawObject(
 
 			// Copy over coords for each active TMU.
 			for (j = 0; j < VIDEO_MAX_UNITS; j++)
-				if (iSavedCapabilites[j][VIDEO_STATE_ENABLE] & VIDEO_TEXTURE_2D)
+				if (Video.bUnitState[j])
 					Math_Vector2Copy(voObject[i].vTextureCoord[j], vVideoTextureArray[j][i]);
 		}
 		else

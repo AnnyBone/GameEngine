@@ -37,7 +37,7 @@ byte *Image_LoadImage(char *name, unsigned int *width, unsigned int *height)
 	COM_FOpenFile(loadfilename, &f);
 	if (f)
 	{
-		unsigned int	uiDecode;
+		unsigned int uiDecode;
 
 		uiDecode = lodepng_decode_file2(f, &bImage, width, height, LCT_RGBA, 8);
 		if (!uiDecode)

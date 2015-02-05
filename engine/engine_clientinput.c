@@ -12,7 +12,7 @@
 	Credits to raynorpat for his example.
 */
 
-#include "engine_video.h"
+#include "video.h"
 #include "engine_modmenu.h"
 
 #define INPUT_MAX_CONTROLLERS	3

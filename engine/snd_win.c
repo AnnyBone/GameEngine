@@ -1,29 +1,28 @@
-/*
-Copyright (C) 1996-2001 Id Software, Inc.
-Copyright (C) 2002-2009 John Fitzgibbons and others
-Copyright (C) 2011-2015 OldTimes Software
+/*	Copyright (C) 1996-2001 Id Software, Inc.
+	Copyright (C) 2002-2009 John Fitzgibbons and others
+	Copyright (C) 2011-2015 OldTimes Software
 
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
+	This program is free software; you can redistribute it and/or
+	modify it under the terms of the GNU General Public License
+	as published by the Free Software Foundation; either version 2
+	of the License, or (at your option) any later version.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-See the GNU General Public License for more details.
+	See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 #include "quakedef.h"
 #include "winquake.h"
 
-#include "engine_audio.h"
-#include "engine_video.h"
+#include "audio.h"
+#include "video.h"
 
 #define iDirectSoundCreate(a,b,c)	pDirectSoundCreate(a,b,c)
 
@@ -74,12 +73,6 @@ HINSTANCE hInstDS;
 sndinitstat SNDDMA_InitDirect(void);
 bool SNDDMA_InitWav(void);
 
-
-/*
-==================
-S_BlockSound
-==================
-*/
 void S_BlockSound(void)
 {
 
@@ -95,12 +88,6 @@ void S_BlockSound(void)
 	}
 }
 
-
-/*
-==================
-S_UnblockSound
-==================
-*/
 void S_UnblockSound(void)
 {
 
@@ -111,12 +98,6 @@ void S_UnblockSound(void)
 	}
 }
 
-
-/*
-==================
-FreeSound
-==================
-*/
 void FreeSound(void)
 {
 	int		i;
@@ -177,13 +158,7 @@ void FreeSound(void)
 	wav_init = false;
 }
 
-
-/*
-==================
-SNDDMA_InitDirect
-
-Direct-Sound support
-==================
+/*	Direct-Sound support
 */
 sndinitstat SNDDMA_InitDirect(void)
 {
@@ -417,12 +392,7 @@ sndinitstat SNDDMA_InitDirect(void)
 }
 
 
-/*
-==================
-SNDDM_InitWav
-
-Crappy windows multimedia base
-==================
+/*	Crappy windows multimedia base
 */
 bool SNDDMA_InitWav(void)
 {
@@ -550,15 +520,9 @@ bool SNDDMA_InitWav(void)
 	return true;
 }
 
-/*
-==================
-SNDDMA_Init
-
-Try to find a sound device to mix for.
-Returns false if nothing is found.
-==================
+/*	Try to find a sound device to mix for.
+	Returns false if nothing is found.
 */
-
 int SNDDMA_Init(void)
 {
 	sndinitstat	stat;
@@ -660,12 +624,7 @@ int SNDDMA_GetDMAPos(void)
 	return s;
 }
 
-/*
-==============
-SNDDMA_Submit
-
-Send sound to device if buffer isn't really the dma buffer
-===============
+/*	Send sound to device if buffer isn't really the dma buffer
 */
 void SNDDMA_Submit(void)
 {
@@ -718,12 +677,7 @@ void SNDDMA_Submit(void)
 	}
 }
 
-/*
-==============
-SNDDMA_Shutdown
-
-Reset the sound device for exiting
-===============
+/*	Reset the sound device for exiting
 */
 void SNDDMA_Shutdown(void)
 {

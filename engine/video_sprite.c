@@ -2,7 +2,7 @@
 */
 #include "quakedef.h"
 
-#include "engine_video.h"
+#include "video.h"
 
 /*
 	Sprite Management

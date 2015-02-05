@@ -1,6 +1,6 @@
 /*	Copyright (C) 1996-2001 Id Software, Inc.
 	Copyright (C) 2002-2009 John Fitzgibbons and others
-	Copyright (C) 2011-2013 OldTimes Software
+	Copyright (C) 2011-2015 OldTimes Software
 
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License
@@ -23,7 +23,7 @@
 	Warping animation support.
 */
 
-#include "engine_video.h"
+#include "video.h"
 
 extern cvar_t r_drawflat;
 
@@ -224,8 +224,7 @@ void Warp_DrawWaterPoly(glpoly_t *p)
 	{
 		MathVector_t	mvLightColour;
 
-		voWaterPoly[i].vTextureCoord[0][0] = WARPCALC(fVert[3], fVert[4]);
-		voWaterPoly[i].vTextureCoord[0][1] = WARPCALC(fVert[4], fVert[3]);
+		Video_ObjectTexture(&voWaterPoly[i], 0, WARPCALC(fVert[3], fVert[4]), WARPCALC(fVert[4], fVert[3]));
 
 		Math_VectorCopy(fVert, vWave);
 
@@ -235,7 +234,7 @@ void Warp_DrawWaterPoly(glpoly_t *p)
 
 		Math_MVToVector(mvLightColour,vLightColour);
 		Math_VectorScale(vLightColour,1.0f/200.0f,vLightColour);
-		Math_VectorDivide(vLightColour,0.2f,vLightColour);
+		Math_VectorDivide(vLightColour,0.4f,vLightColour);
 
 		Video_ObjectColour(&voWaterPoly[i],
 			vLightColour[0],vLightColour[1],vLightColour[2],fWaterAlpha);

@@ -23,7 +23,7 @@
 	Brush model rendering.
 */
 
-#include "engine_video.h"
+#include "video.h"
 
 extern cvar_t gl_fullbrights, r_drawflat, gl_overbright, r_oldwater; //johnfitz
 
@@ -167,6 +167,8 @@ void R_DrawSequentialPoly(msurface_t *s)
 		glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_TEXTURE);
 		glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_PRIMARY_COLOR);
 		glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 4);
+
+		Video_EnableCapabilities(VIDEO_TEXTURE_2D);
 
 		// Jesus Christ this is fucking stupid...
 		Video_SetTexture(s->texinfo->texture->mAssignedMaterial->msSkin[0].mtTexture[0].gMap);

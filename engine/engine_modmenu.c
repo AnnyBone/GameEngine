@@ -2,7 +2,7 @@
 */
 #include "engine_modmenu.h"
 
-#include "engine_video.h"
+#include "video.h"
 #include "engine_client.h"
 #include "engine_videoshadow.h"
 

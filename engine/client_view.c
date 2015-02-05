@@ -8,7 +8,7 @@
 	when crossing a water boundary.
 */
 
-#include "engine_video.h"
+#include "video.h"
 #include "engine_modgame.h"
 
 cvar_t	scr_ofsx			= { "scr_ofsx",				"0",		false													};

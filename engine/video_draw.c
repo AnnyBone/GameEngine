@@ -21,7 +21,7 @@
 
 #include "engine_videoshadow.h"
 #include "engine_console.h"
-#include "engine_video.h"
+#include "video.h"
 #include "engine_client.h"	// [28/7/2013] Added for precache functions ~hogsy
 
 #define	BLOCK_WIDTH		256

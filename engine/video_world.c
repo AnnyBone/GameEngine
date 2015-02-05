@@ -23,7 +23,7 @@
 	World
 */
 
-#include "engine_video.h"
+#include "video.h"
 
 extern cvar_t gl_fullbrights, r_drawflat, gl_overbright, r_oldwater, r_oldskyleaf, r_showtris; //johnfitz
 
@@ -207,6 +207,8 @@ void World_DrawWaterTextureChains(void)
 		return;
 
 	Video_ResetCapabilities(false);
+
+	Video_EnableCapabilities(VIDEO_TEXTURE_2D);
 
 	if (r_wateralpha.value < 1.0)
 	{
