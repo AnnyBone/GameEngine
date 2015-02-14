@@ -717,11 +717,11 @@ void Video_DrawMaterial(
 			if (!bPost)
 			{
 				if (uiUnit > 0)
-					glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+					glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
 				else if (Video_GetCapability(VIDEO_BLEND))
 					glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
 				else
-					glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+					glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 
 				// Check if we've been given a video object to use...
 				if (voObject)
@@ -934,7 +934,7 @@ void Video_DrawObject(
 {
 	unsigned int	i, j;
 	GLenum			gPrimitive = 0;
-
+	//
 	if (!cvVideoDraw.bValue)
 		return;
 	else if (!voObject)
@@ -1140,14 +1140,14 @@ bool Video_GetCapability(unsigned int iCapability)
 	int	i;
 
 	if (!iCapability)
-		return;
+		return false;
 
 	for (i = 0; i < sizeof(vcCapabilityList); i++)
 	{
 		if (!vcCapabilityList[i].uiFirst)
 			break;
 
-		if (iCapability & vcCapabilityList[i].uiFirst)
+		if (iCapability & iSavedCapabilites[Video.uiActiveUnit][VIDEO_STATE_ENABLE])
 			return true;
 	}
 
