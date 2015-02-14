@@ -763,7 +763,6 @@ void Video_DrawMaterial(
 					}
 				}
 			}
-#if 0
 			else if (msCurrentSkin->mtTexture[i].uiFlags & MATERIAL_FLAG_BLEND)
 			{
 				if (!bPost)
@@ -771,7 +770,6 @@ void Video_DrawMaterial(
 				else
 					glDisable(GL_BLEND);
 			}
-#endif
 			break;
 		case MATERIAL_TEXTURE_DETAIL:
 			if (!cvVideoDrawDetail.bValue)
