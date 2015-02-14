@@ -143,6 +143,8 @@ void Video_DrawObject(VideoObject_t *voObject, VideoPrimitive_t vpPrimitiveType,
 void Video_DrawMaterial(Material_t *mMaterial, int iSkin, VideoObject_t *voObject, VideoPrimitive_t vpPrimitiveType, unsigned int uiSize, bool bPost);
 void Video_Shutdown(void);
 
+bool Video_GetCapability(unsigned int iCapability);
+
 /*
 	Draw
 */

@@ -138,6 +138,18 @@ void Item_RemoveInventory(Item_t *iItem,edict_t *eEntity)
 	}
 }
 
+/*	Clears out the players current inventory.
+*/
+void Item_ClearInventory(edict_t *eEntity)
+{
+	// Clear out the inventory array.
+	memset(&eEntity->v.iInventory[0], 0, sizeof(eEntity->v.iInventory));
+}
+
+/*
+	Spawnables
+*/
+
 void Item_Respawn(edict_t *ent)
 {
 	Entity_SetModel(ent,ent->local.cOldModel);
@@ -291,8 +303,28 @@ void Item_Touch(edict_t *eItem,edict_t *eOther)
 
 		Entity_Remove(eItem);
 	}
+}
 
-	//WEAPON_SetCurrentAmmo(other);
+/*	Go through the list of items and precache everything.
+	This must ONLY be used for multiplayer.
+*/
+void Item_Precache(void)
+{
+	int i;
+
+	if (cvServerGameMode.iValue == MODE_SINGLEPLAYER)
+		return;
+
+	Engine.Server_PrecacheResource(RESOURCE_MODEL, "models/blip.md2");
+
+	for (i = 0; i < sizeof(Items); i++)
+	{
+		if (Items[i].cModel[0])
+			Engine.Server_PrecacheResource(RESOURCE_MODEL, Items[i].cModel);
+
+		if (Items[i].cSound[0])
+			Engine.Server_PrecacheResource(RESOURCE_SOUND, Items[i].cSound);
+	}
 }
 
 // [14/7/2012] Renamed to Item_Spawn and heavily revised ~hogsy
@@ -318,9 +350,11 @@ void Item_Spawn(edict_t *eItem)
 	else
 		eItem->v.effects = EF_MOTION_ROTATE|EF_MOTION_FLOAT;
 
-	Engine.Server_PrecacheResource(RESOURCE_SOUND,iItem->cSound);
-	Engine.Server_PrecacheResource(RESOURCE_MODEL,iItem->cModel);
-	Engine.Server_PrecacheResource(RESOURCE_MODEL,"models/blip.md2");
+	if (cvServerGameMode.iValue == MODE_SINGLEPLAYER)
+	{
+		Engine.Server_PrecacheResource(RESOURCE_SOUND, iItem->cSound);
+		Engine.Server_PrecacheResource(RESOURCE_MODEL, iItem->cModel);
+	}
 
 	Entity_SetModel(eItem,iItem->cModel);
 	Entity_SetSize(eItem,-16.0f,-16.0f,-24.0f,16.0f,16.0f,32.0f);

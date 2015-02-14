@@ -659,6 +659,9 @@ void Player_Spawn(edict_t *ePlayer)
 	ePlayer->monster.think_die	= Player_Die;
 	ePlayer->monster.think_pain = Player_Pain;
 
+	// Clear out the players inventory.
+	Item_ClearInventory(ePlayer);
+
 	Server.bPlayersSpawned = true;
 
 	if(bIsMultiplayer)
@@ -728,7 +731,6 @@ void Player_Spawn(edict_t *ePlayer)
 		Server_UpdateClientMenu(ePlayer,MENU_STATE_HUD,true);
 
 #ifdef GAME_OPENKATANA
-		// [18/5/2013] Initial weapon should be the IonBlaster ? Mainly for testing ~hogsy
 		{
 			Item_t	*iDaikatana = Item_GetItem(WEAPON_DAIKATANA);
 

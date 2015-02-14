@@ -2,6 +2,8 @@
 */
 #include "server_main.h"
 
+#include "platform_filesystem.h"
+
 /*
 	This is where most functions between the Game and Engine can be found along
 	with the main list of entities that's parsed upon spawning a server.
@@ -155,7 +157,7 @@ void Server_Initialize(void)
 
 /*	Used just for GIPL shit... Bleh...
 */
-void Server_PrecachePlayerModel(const char *ccFile)
+void Server_PrecachePlayerModel(char *ccFile)
 {
 	Engine.Con_Printf("EX: %s\n",ccFile);
 
@@ -194,6 +196,9 @@ void Server_Spawn(edict_t *ent)
 		// [5/9/2013] Ooooopsey!!!! Round always starts on singleplayer from spawn ~hogsy
 		Server.bRoundStarted = true;
 	}
+
+	Item_Precache();
+	Weapon_Precache();
 
 	Engine.Server_PrecacheResource(RESOURCE_SOUND,"misc/deny.wav");
 	Engine.Server_PrecacheResource(RESOURCE_SOUND,BASE_SOUND_TALK0);
@@ -293,10 +298,8 @@ void Server_Spawn(edict_t *ent)
 
 		// [31/7/2013] Precache custom player models ~hogsy
 		// [31/7/2013] TODO: Get actual current game directory from the engine ~hogsy
-		//gFileSystem_ScanDirectory("data/models/player/*.md2",Server_PrecachePlayerModel);
+		pFileSystem_ScanDirectory("data/models/player/", ".md2", Server_PrecachePlayerModel);
 	}
-
-	Weapon_Precache();
 
 	Engine.LightStyle(0,"m");
 	Engine.LightStyle(1,"mmnmmommommnonmmonqnmmo");

@@ -198,7 +198,6 @@ void R_DrawTextureChains_Drawflat (void)
 void World_DrawWaterTextureChains(void)
 {
 	int			i;
-	bool		bTextureBound;
 	msurface_t	*s;
 	texture_t	*t;
 	glpoly_t	*p;
@@ -216,30 +215,21 @@ void World_DrawWaterTextureChains(void)
 		Video_EnableCapabilities(VIDEO_BLEND);
 	}
 
-	glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_COMBINE);
-	glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
-	glTexEnvi(GL_TEXTURE_ENV,GL_SOURCE0_RGB,GL_TEXTURE);
-	glTexEnvi(GL_TEXTURE_ENV,GL_SOURCE1_RGB,GL_PRIMARY_COLOR);
-	glTexEnvi(GL_TEXTURE_ENV,GL_RGB_SCALE,4);
-
 	for (i = 0; i < cl.worldmodel->numtextures; i++)
 	{
 		t = cl.worldmodel->textures[i];
 		if (!t || !t->texturechain || !(t->texturechain->flags & SURF_DRAWTURB))
 			continue;
 
-		bTextureBound = false;
-
 		for (s = t->texturechain; s; s = s->texturechain)
 			if(!s->culled)
 			{
-				if(!bTextureBound)
-				{
-					// Only bind once we are sure we need this texture
-					Video_SetTexture(t->mAssignedMaterial->msSkin[0].mtTexture[0].gMap);
+				Video_DrawMaterial(t->mAssignedMaterial, 0, 0, 0, 0, false);
 
-					bTextureBound = true;
-				}
+				// This is really dumb...
+				glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_TEXTURE);
+				glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_PRIMARY_COLOR);
+				glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 4);
 
 				for(p = s->polys->next; p; p = p->next)
 				{
@@ -247,6 +237,8 @@ void World_DrawWaterTextureChains(void)
 
 					rs_brushpasses++;
 				}
+
+				Video_DrawMaterial(t->mAssignedMaterial, 0, 0, 0, 0, true);
 			}
 	}
 

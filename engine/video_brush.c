@@ -134,20 +134,9 @@ void R_DrawSequentialPoly(msurface_t *s)
 		return;
     else if(s->flags & SURF_NOTEXTURE)
 	{
-		if(fAlpha < 1.0f)
-		{
-            Video_SetBlend(VIDEO_DEPTH_FALSE,VIDEO_BLEND_IGNORE);
-            Video_EnableCapabilities(VIDEO_BLEND);
-
-			glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
-		}
-
 		DrawGLPoly(s->polys);
 
 		rs_brushpasses++;
-
-		if(fAlpha < 1.0f)
-			glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_REPLACE);
 	}
     else if(s->flags & SURF_DRAWTURB)
 	{
@@ -168,10 +157,7 @@ void R_DrawSequentialPoly(msurface_t *s)
 		glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_PRIMARY_COLOR);
 		glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 4);
 
-		Video_EnableCapabilities(VIDEO_TEXTURE_2D);
-
-		// Jesus Christ this is fucking stupid...
-		Video_SetTexture(s->texinfo->texture->mAssignedMaterial->msSkin[0].mtTexture[0].gMap);
+		Video_DrawMaterial(s->texinfo->texture->mAssignedMaterial, 0, 0, 0, 0, false);
 
         for(pBrushPoly = s->polys->next; pBrushPoly; pBrushPoly = pBrushPoly->next)
         {
@@ -179,6 +165,8 @@ void R_DrawSequentialPoly(msurface_t *s)
 
             rs_brushpasses++;
         }
+
+		Video_DrawMaterial(s->texinfo->texture->mAssignedMaterial, 0, 0, 0, 0, true);
 	}
 	else
 	{

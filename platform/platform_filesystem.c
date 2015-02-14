@@ -102,32 +102,64 @@ void pFileSystem_GetUserName(char *cOut)
 		Better error management.
 		Finish Linux implementation.
 */
-void pFileSystem_ScanDirectory(const char *ccPath,void (*vFunction)(const char *ccFile))
+void pFileSystem_ScanDirectory(const char *ccPath,const char *ccExtension,void (*vFunction)(char *cFile))
 {
+	char cFileString[PLATFORM_MAX_PATH];
+
+	pERROR_UPDATE;
+
+	if (ccPath[0] == ' ')
+	{
+		pError_Set("Invalid path!\n");
+		return;
+	}
+
 #ifdef _WIN32
-	WIN32_FIND_DATA	wfdData;
-	HANDLE			hFile;
-
-	hFile = FindFirstFile(ccPath,&wfdData);
-	if(hFile == INVALID_HANDLE_VALUE)
 	{
-		pError_Set("Recieved invalid handle! (%s)\n",ccPath);
-		return;
+		WIN32_FIND_DATA	wfdData;
+		HANDLE			hFile;
+
+		sprintf(cFileString, "%s*%s", ccPath, ccExtension);
+
+		hFile = FindFirstFile(cFileString, &wfdData);
+		if (hFile == INVALID_HANDLE_VALUE)
+		{
+			pError_Set("Recieved invalid handle! (%s)\n", cFileString);
+			return;
+		}
+		else if (GetLastError() == ERROR_FILE_NOT_FOUND)
+		{
+			pError_Set("Failed to find first file! (%s)\n", cFileString);
+			return;
+		}
+
+		do
+		{
+			// [31/7/2013] Send the file we've found! ~hogsy
+			vFunction(wfdData.cFileName);
+		} while (FindNextFile(hFile, &wfdData));
+
+		FindClose(hFile);
 	}
-	else if(GetLastError() == ERROR_FILE_NOT_FOUND)
+#else	// Linux (todo)
 	{
-		pError_Set("Failed to find first file! (%s)\n",ccPath);
-		return;
+		DIR             *dDirectory;
+		struct  dirent  *dEntry;
+
+		dDirectory = opendir(ccPath);
+		if (dDirectory)
+		{
+			while ((dEntry = readdir(dDirectory)))
+			{
+				if (strstr(dEntry->d_name, ccExtension))
+				{
+					vFunction(wfdData.cFileName);
+				}
+			}
+
+			closedir(dDirectory);
+		}
 	}
-
-	do
-	{
-		// [31/7/2013] Send the file we've found! ~hogsy
-		vFunction(wfdData.cFileName);
-	} while(FindNextFile(hFile,&wfdData));
-
-	FindClose(hFile);
-#else	// Linux
 #endif
 }
 

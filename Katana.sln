@@ -38,6 +38,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Game", "game\Game.vcxproj",
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Common", "common\Common.vcxproj", "{8BC6DCE8-9BD9-48A1-A5D5-F405A1DA3BAB}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Generator", "generator\generator.vcxproj", "{3B3C7922-523E-4B2F-891D-D91898058A95}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug (Adamas)|Win32 = Debug (Adamas)|Win32
@@ -183,6 +185,24 @@ Global
 		{8BC6DCE8-9BD9-48A1-A5D5-F405A1DA3BAB}.Release|Win32.ActiveCfg = Release|Win32
 		{8BC6DCE8-9BD9-48A1-A5D5-F405A1DA3BAB}.Release|Win32.Build.0 = Release|Win32
 		{8BC6DCE8-9BD9-48A1-A5D5-F405A1DA3BAB}.Release|x64.ActiveCfg = Release|Win32
+		{3B3C7922-523E-4B2F-891D-D91898058A95}.Debug (Adamas)|Win32.ActiveCfg = Debug|Win32
+		{3B3C7922-523E-4B2F-891D-D91898058A95}.Debug (Adamas)|Win32.Build.0 = Debug|Win32
+		{3B3C7922-523E-4B2F-891D-D91898058A95}.Debug (Adamas)|x64.ActiveCfg = Debug|Win32
+		{3B3C7922-523E-4B2F-891D-D91898058A95}.Debug (Devastator)|Win32.ActiveCfg = Debug|Win32
+		{3B3C7922-523E-4B2F-891D-D91898058A95}.Debug (Devastator)|Win32.Build.0 = Debug|Win32
+		{3B3C7922-523E-4B2F-891D-D91898058A95}.Debug (Devastator)|x64.ActiveCfg = Debug|Win32
+		{3B3C7922-523E-4B2F-891D-D91898058A95}.Debug (Ictus)|Win32.ActiveCfg = Debug|Win32
+		{3B3C7922-523E-4B2F-891D-D91898058A95}.Debug (Ictus)|Win32.Build.0 = Debug|Win32
+		{3B3C7922-523E-4B2F-891D-D91898058A95}.Debug (Ictus)|x64.ActiveCfg = Debug|Win32
+		{3B3C7922-523E-4B2F-891D-D91898058A95}.Debug (OpenKatana)|Win32.ActiveCfg = Debug|Win32
+		{3B3C7922-523E-4B2F-891D-D91898058A95}.Debug (OpenKatana)|Win32.Build.0 = Debug|Win32
+		{3B3C7922-523E-4B2F-891D-D91898058A95}.Debug (OpenKatana)|x64.ActiveCfg = Debug|Win32
+		{3B3C7922-523E-4B2F-891D-D91898058A95}.Debug|Win32.ActiveCfg = Debug|Win32
+		{3B3C7922-523E-4B2F-891D-D91898058A95}.Debug|Win32.Build.0 = Debug|Win32
+		{3B3C7922-523E-4B2F-891D-D91898058A95}.Debug|x64.ActiveCfg = Debug|Win32
+		{3B3C7922-523E-4B2F-891D-D91898058A95}.Release|Win32.ActiveCfg = Release|Win32
+		{3B3C7922-523E-4B2F-891D-D91898058A95}.Release|Win32.Build.0 = Release|Win32
+		{3B3C7922-523E-4B2F-891D-D91898058A95}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -194,5 +214,6 @@ Global
 		{5A2253BD-BDF0-4F0C-A53F-382D3EB5C4BE} = {C752AD1B-A414-4403-A927-1F6D033C9418}
 		{6BA71186-7156-4A79-ABAD-FC46D4492EA0} = {C752AD1B-A414-4403-A927-1F6D033C9418}
 		{8BC6DCE8-9BD9-48A1-A5D5-F405A1DA3BAB} = {C752AD1B-A414-4403-A927-1F6D033C9418}
+		{3B3C7922-523E-4B2F-891D-D91898058A95} = {F8F2B76F-AEE3-4130-9A78-94BF985EACC2}
 	EndGlobalSection
 EndGlobal

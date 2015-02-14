@@ -1915,6 +1915,7 @@ void Host_InitCommands (void)
 	Cmd_AddCommand("notarget",Host_Notarget_f);
 	Cmd_AddCommand("fly",Host_Fly_f);
 	Cmd_AddCommand("map",Host_Map_f);
+	Cmd_AddCommand("level", Host_Map_f);
 	Cmd_AddCommand("restart",Host_Restart_f);
 	Cmd_AddCommand("changelevel",Host_Changelevel_f);
 	Cmd_AddCommand("connect",Host_Connect_f);

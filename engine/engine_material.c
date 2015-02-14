@@ -121,21 +121,49 @@ Material_t *Material_Allocate(void)
 	return NULL;
 }
 
+/*	Clears out the specific skin.
+*/
+void Material_ClearSkin(Material_t *mMaterial, int iSkin)
+{
+	unsigned int	i;
+	MaterialSkin_t	*mSkin;
+
+	mSkin = Material_GetSkin(mMaterial, iSkin);
+	if (mSkin)
+		if (mSkin->uiTextures > 0)
+			for (i = 0; i < mSkin->uiTextures; i++)
+				TexMgr_FreeTexture(mSkin->mtTexture[i].gMap);
+}
+
 /*	Clears all the currently active materials.
 	TODO: 
 		Reorganise list!!!!!!!!!
 */
 void Material_ClearAll(void)
 {
-	int	i;
+	int	i,j;
+
+	Con_DPrintf("Clearing materials...\n");
 
 	for (i = 0; i < MATERIAL_MAX; i++)
+	{
+		Con_DPrintf("\n %s (%s) : ", mMaterials[i].cPath, mMaterials[i].cName);
+
 		if (!(mMaterials[i].iFlags & MATERIAL_FLAG_PRESERVE))
 		{
+			if (mMaterials[i].iSkins > 0)
+				for (j = 0; j < MATERIAL_MAX_SKINS; j++)
+					Material_ClearSkin(&mMaterials[i], j);
+
 			memset(&mMaterials[i], 0, sizeof(Material_t));
 
-			// iMaterialCount--;
+			Con_DPrintf("DONE");
+
+			iMaterialCount--;
 		}
+		else
+			Con_DPrintf("SKIPPED");
+	}
 }
 
 MaterialSkin_t *Material_GetSkin(Material_t *mMaterial,int iSkin)
@@ -245,15 +273,6 @@ gltexture_t *Material_LoadTexture(Material_t *mMaterial, MaterialSkin_t *mCurren
 
 		if (!stricmp(cArg, "notexture"))
 			return notexture;
-#if 0
-		else if (!stricmp(cArg, "lightmap"))
-		{
-			mCurrentSkin->mtTexture[mCurrentSkin->uiTextures].mttType = MATERIAL_TEXTURE_LIGHTMAP;
-			return NULL;
-		}
-		else if (!stricmp(cArg, "shadow"))
-			return generated_shadow;
-#endif
 		else
 		{
 			Con_Warning("Attempted to set invalid internal texture! (%s)\n", mMaterial->cPath);
@@ -276,12 +295,18 @@ gltexture_t *Material_LoadTexture(Material_t *mMaterial, MaterialSkin_t *mCurren
 		// Warn about incorrect sizes.
 		if ((mCurrentSkin->mtTexture[mCurrentSkin->uiTextures].uiWidth & 15) || (mCurrentSkin->mtTexture[mCurrentSkin->uiTextures].uiHeight & 15))
 		{
+#if 0
 			Con_Warning("Texture is not 16 aligned! (%s) (%ix%i)\n", cArg,
 				mCurrentSkin->mtTexture[mCurrentSkin->uiTextures].uiWidth,
 				mCurrentSkin->mtTexture[mCurrentSkin->uiTextures].uiHeight);
 
 			// Pad the image.
 			iTextureFlags |= TEXPREF_PAD;
+#else
+			Sys_Error("Texture is not 16 aligned! (%s) (%ix%i)\n", cArg,
+				mCurrentSkin->mtTexture[mCurrentSkin->uiTextures].uiWidth,
+				mCurrentSkin->mtTexture[mCurrentSkin->uiTextures].uiHeight);
+#endif
 		}
 
 		if (mMaterial->iFlags & MATERIAL_FLAG_PRESERVE)
@@ -327,13 +352,10 @@ typedef struct
 
 MaterialTextureTypeX_t mttMaterialTypes[] =
 {
-	{ "diffuse", MATERIAL_TEXTURE_DIFFUSE },
-	{ "detail", MATERIAL_TEXTURE_DETAIL },
-	{ "sphere", MATERIAL_TEXTURE_SPHERE },
-	{ "fullbright", MATERIAL_TEXTURE_FULLBRIGHT }
-#if 0
-	{ "lightmap", MATERIAL_TEXTURE_LIGHTMAP }
-#endif
+	{ "diffuse", MATERIAL_TEXTURE_DIFFUSE },		// Default
+	{ "detail", MATERIAL_TEXTURE_DETAIL },			// Detail map
+	{ "sphere", MATERIAL_TEXTURE_SPHERE },			// Sphere map
+	{ "fullbright", MATERIAL_TEXTURE_FULLBRIGHT }	// Fullbright map
 };
 
 void _Material_SetTextureType(Material_t *mCurrentMaterial, MaterialFunctionType_t mftContext, char *cArg);
@@ -427,7 +449,7 @@ void _Material_AddTexture(Material_t *mCurrentMaterial, MaterialFunctionType_t m
 	if (!msSkin)
 		Sys_Error("Failed to get skin!\n");
 
-	msSkin->mtTexture[msSkin->uiTextures].bManipulation = false;
+	msSkin->mtTexture[msSkin->uiTextures].bManipulated = false;
 	msSkin->mtTexture[msSkin->uiTextures].fRotate = 0;
 	msSkin->mtTexture[msSkin->uiTextures].mttType = MATERIAL_TEXTURE_DIFFUSE;
 	msSkin->mtTexture[msSkin->uiTextures].vScroll[0] = 0;
@@ -501,6 +523,8 @@ void _Material_SetTextureScroll(Material_t *mCurrentMaterial, MaterialFunctionTy
 	msSkin = Material_GetSkin(mCurrentMaterial, mCurrentMaterial->iSkins);
 	msSkin->mtTexture[msSkin->uiTextures].vScroll[0] = vScroll[0];
 	msSkin->mtTexture[msSkin->uiTextures].vScroll[1] = vScroll[1];
+
+	msSkin->mtTexture[msSkin->uiTextures].bManipulated = true;
 }
 
 void _Material_SetRotate(Material_t *mCurrentMaterial, MaterialFunctionType_t mftContext, char *cArg)
@@ -509,6 +533,8 @@ void _Material_SetRotate(Material_t *mCurrentMaterial, MaterialFunctionType_t mf
 
 	msSkin = Material_GetSkin(mCurrentMaterial, mCurrentMaterial->iSkins);
 	msSkin->mtTexture[msSkin->uiTextures].fRotate = strtof(cArg, NULL);
+
+	msSkin->mtTexture[msSkin->uiTextures].bManipulated = true;
 }
 
 // Universal Functions...
@@ -568,8 +594,9 @@ void _Material_SetFlags(Material_t *mCurrentMaterial, MaterialFunctionType_t mft
 			case MATERIAL_FUNCTION_TEXTURE:
 				mCurrentMaterial->msSkin[mCurrentMaterial->iSkins].mtTexture
 					[mCurrentMaterial->msSkin[mCurrentMaterial->iSkins].uiTextures].uiFlags |= mfMaterialFlags[i].iFlag;
+				break;
 			default:
-				Con_Warning("Invalid context! (%s) (%s)\n", mCurrentMaterial->cName, mfMaterialFlags[i].ccName);
+				Con_Warning("Invalid context! (%s) (%s) (%i)\n", mCurrentMaterial->cName, mfMaterialFlags[i].ccName, mftContext);
 			}
 		}
 	}

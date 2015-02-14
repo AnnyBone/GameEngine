@@ -50,7 +50,7 @@ typedef struct
 {
 	gltexture_t	*gMap;
 
-	bool	bManipulation;
+	bool	bManipulated;
 
 	MathVector2_t	vScroll;
 

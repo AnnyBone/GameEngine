@@ -67,13 +67,13 @@ void Editor_Initialize(void)
 
 	Cvar_RegisterVariable(&cvEditorLightPreview,NULL);
 
-	if(COM_CheckParm("-editor"))
+	if (COM_CheckParm("-editor"))
 		Editor_Launch();
 }
 
 /*  Load a texture, which will be later used for displaying in our level.
 */
-void Editor_LoadTexture(const char *ccTexture)
+void Editor_LoadTexture(char *ccTexture)
 {
 	Con_Printf("   %s\n",ccTexture);
 }
@@ -110,7 +110,7 @@ void Editor_Launch(void)
 	{
 		Con_Printf(" Loading textures: \n");
 
-		pFileSystem_ScanDirectory(va("./%s/textures/",com_gamedir),Editor_LoadTexture);
+		pFileSystem_ScanDirectory(va("./%s/textures/",com_gamedir),".png",Editor_LoadTexture);
 	}
 
 	Input_ActivateMouse();

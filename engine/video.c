@@ -703,6 +703,7 @@ void Video_DrawMaterial(
 
 	for (i = 0,uiUnit = 0; i < msCurrentSkin->uiTextures; i++, uiUnit++)
 	{
+		// Skip the lightmap, since it's manually handled.
 		if (uiUnit == VIDEO_TEXTURE_LIGHT)
 			uiUnit++;
 
@@ -717,6 +718,8 @@ void Video_DrawMaterial(
 			{
 				if (uiUnit > 0)
 					glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+				else if (Video_GetCapability(VIDEO_BLEND))
+					glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
 				else
 					glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 
@@ -760,6 +763,7 @@ void Video_DrawMaterial(
 					}
 				}
 			}
+#if 0
 			else if (msCurrentSkin->mtTexture[i].uiFlags & MATERIAL_FLAG_BLEND)
 			{
 				if (!bPost)
@@ -767,13 +771,11 @@ void Video_DrawMaterial(
 				else
 					glDisable(GL_BLEND);
 			}
+#endif
 			break;
 		case MATERIAL_TEXTURE_DETAIL:
 			if (!cvVideoDrawDetail.bValue)
 				break;
-
-			// Select the given texture.
-			//Video_SelectTexture(VIDEO_TEXTURE_DETAIL);
 
 			if (!bPost)
 			{
@@ -805,9 +807,6 @@ void Video_DrawMaterial(
 			if (!gl_fullbrights.bValue)
 				break;
 
-			// Select the given texture.
-			//Video_SelectTexture(VIDEO_TEXTURE_FULLBRIGHT);
-
 			if (!bPost)
 			{
 				Video_EnableCapabilities(VIDEO_BLEND);
@@ -832,9 +831,6 @@ void Video_DrawMaterial(
 				Video_DisableCapabilities(VIDEO_BLEND);
 			break;
 		case MATERIAL_TEXTURE_SPHERE:
-			// Select the given texture.
-			//Video_SelectTexture(VIDEO_TEXTURE_SPHERE);
-
 			if (!bPost)
 			{
 				glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
@@ -858,26 +854,32 @@ void Video_DrawMaterial(
 			Video_SetTexture(msCurrentSkin->mtTexture[i].gMap);
 
 			// Allow us to manipulate the texture.
-			glMatrixMode(GL_TEXTURE);
-			glLoadIdentity();
-			if ((msCurrentSkin->mtTexture[i].vScroll[0] > 0) || (msCurrentSkin->mtTexture[i].vScroll[0] < 0) ||
-				(msCurrentSkin->mtTexture[i].vScroll[1] > 0) || (msCurrentSkin->mtTexture[i].vScroll[1] < 0))
-				glTranslatef(
-				msCurrentSkin->mtTexture[i].vScroll[0] * cl.time,
-				msCurrentSkin->mtTexture[i].vScroll[1] * cl.time,
-				0);
-			if ((msCurrentSkin->mtTexture[i].fRotate > 0) || (msCurrentSkin->mtTexture[i].fRotate < 0))
-				glRotatef(msCurrentSkin->mtTexture[i].fRotate*cl.time, 0, 0, 1.0f);
-			glMatrixMode(GL_MODELVIEW);
+			if (msCurrentSkin->mtTexture[i].bManipulated)
+			{
+				glMatrixMode(GL_TEXTURE);
+				glLoadIdentity();
+				if ((msCurrentSkin->mtTexture[i].vScroll[0] > 0) || (msCurrentSkin->mtTexture[i].vScroll[0] < 0) ||
+					(msCurrentSkin->mtTexture[i].vScroll[1] > 0) || (msCurrentSkin->mtTexture[i].vScroll[1] < 0))
+					glTranslatef(
+					msCurrentSkin->mtTexture[i].vScroll[0] * cl.time,
+					msCurrentSkin->mtTexture[i].vScroll[1] * cl.time,
+					0);
+				if ((msCurrentSkin->mtTexture[i].fRotate > 0) || (msCurrentSkin->mtTexture[i].fRotate < 0))
+					glRotatef(msCurrentSkin->mtTexture[i].fRotate*cl.time, 0, 0, 1.0f);
+				glMatrixMode(GL_MODELVIEW);
+			}
 		}
 		else
 		{
 			// Reset any manipulation within the matrix.
-			glMatrixMode(GL_TEXTURE);
-			glLoadIdentity();
-			glTranslatef(0, 0, 0);
-			glRotatef(0, 0, 0, 0);
-			glMatrixMode(GL_MODELVIEW);
+			if (msCurrentSkin->mtTexture[i].bManipulated)
+			{
+				glMatrixMode(GL_TEXTURE);
+				glLoadIdentity();
+				glTranslatef(0, 0, 0);
+				glRotatef(0, 0, 0, 0);
+				glMatrixMode(GL_MODELVIEW);
+			}
 
 			// Reset texture env changes...
 			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
@@ -1129,6 +1131,27 @@ void Video_DisableCapabilities(unsigned int iCapabilities)
 			glDisable(vcCapabilityList[i].uiSecond);
 		}
     }
+}
+
+/*	Checks if the given capability is enabled or not.
+*/
+bool Video_GetCapability(unsigned int iCapability)
+{
+	int	i;
+
+	if (!iCapability)
+		return;
+
+	for (i = 0; i < sizeof(vcCapabilityList); i++)
+	{
+		if (!vcCapabilityList[i].uiFirst)
+			break;
+
+		if (iCapability & vcCapabilityList[i].uiFirst)
+			return true;
+	}
+
+	return false;
 }
 
 /*	Resets our capabilities.

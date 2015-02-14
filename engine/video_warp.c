@@ -246,8 +246,7 @@ void Warp_DrawWaterPoly(glpoly_t *p)
 		vWave[2] =	fVert[2]+
 			2.0f*(float)sin(fVert[0] * 0.025f + cl.time)*(float)sin(fVert[2] * 0.05f + cl.time) +
 			2.0f*(float)sin(fVert[1] * 0.025f + cl.time*2.0f)*(float)sin(fVert[2] * 0.05f + cl.time);
-
-		Math_VectorCopy(vWave,voWaterPoly[i].vVertex);
+		Video_ObjectVertex(&voWaterPoly[i], vWave[0], vWave[1], vWave[2]);
 	}
 
 	Video_DrawObject(voWaterPoly,VIDEO_PRIMITIVE_TRIANGLE_FAN,p->numverts,NULL,0);
