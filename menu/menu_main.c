@@ -74,7 +74,11 @@ void Menu_UpdateScreenSize(void)
 
 void Menu_DrawMouse(void)
 {
-	Engine.DrawPic(MENU_BASE_PATH"cursor", 1.0f, iMousePosition[0]-16, iMousePosition[1]-16, 16, 16);
+	Engine.Client_SetMenuCanvas(CANVAS_DEFAULT);
+
+	Engine.GetCursorPosition(&iMousePosition[0], &iMousePosition[1]);
+
+	Engine.DrawPic(MENU_BASE_PATH"cursor", 1.0f, iMousePosition[0], iMousePosition[1], 16, 16);
 }
 
 void Menu_Draw(void)
@@ -88,12 +92,7 @@ void Menu_Draw(void)
 	if(!cvShowMenu.bValue)
 		return;
 
-	// [17/9/2013] Set the canvas to the default ~hogsy
-	Engine.Client_SetMenuCanvas(CANVAS_DEFAULT);
-
-	// [3/8/2012] Find out the current position of our mouse on each frame ~hogsy
-	// [3/10/2012] Updated to use what's provided by the engine instead ~hogsy
-	Engine.GetCursorPosition(&iMousePosition[pX],&iMousePosition[pY]);
+	Engine.Client_SetMenuCanvas(CANVAS_MENU);
 
 	// Disclaimer.
 	if (cvMenuDisclaimer.bValue)
@@ -133,8 +132,6 @@ void Menu_Draw(void)
 	if(iMenuState & MENU_STATE_MENU)
 	{
 		Engine.DrawFill(0,0,iMenuWidth,iMenuHeight,0,0,0,0.8f);
-
-		Engine.Client_SetMenuCanvas(CANVAS_MENU);
 
 		Engine.DrawString(110,80,">");
 		Engine.DrawString(190,80,"<");

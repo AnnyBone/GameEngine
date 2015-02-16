@@ -37,12 +37,14 @@ void Menu_Initialize(void)
 	mImport.GetScreenWidth			= Menu_GetScreenWidth;
 	mImport.GetScreenHeight			= Menu_GetScreenHeight;
 	mImport.ShowCursor				= gWindow_ShowCursor;
-	mImport.GetCursorPosition		= gWindow_GetCursorPosition;
+	mImport.GetCursorPosition = SDL_GetMouseState;	//gWindow_GetCursorPosition;
 	mImport.Cmd_AddCommand			= Game_AddCommand;
 
 	mImport.Client_GetStat			= Client_GetStat;
 	mImport.Client_PrecacheResource	= Client_PrecacheResource;
 	mImport.Client_SetMenuCanvas	= GL_SetCanvas;
+
+	mImport.Material_Precache = Material_Precache;
 
 	Menu = (MenuExport_t*)pModule_LoadInterface(hMenuInstance,va("%s/%s",com_gamedir,MODULE_MENU),"Menu_Main",&mImport);
 	if(!Menu)

@@ -102,6 +102,7 @@ void Client_PrecacheResource(int iType,char *cResource)
 
 		Console_ErrorMessage(false,cPath,"Overflow!");
 		break;
+#if 0
 	case RESOURCE_TEXTURE:
 		for(i = 0; i < sizeof(gMenuTexture); i++)
 			if(!gMenuTexture[i])
@@ -121,6 +122,7 @@ void Client_PrecacheResource(int iType,char *cResource)
 
 		Console_ErrorMessage(false,cResource,"Overflow!");
 		break;
+#endif
 	default:
 		Con_Warning("Attempted to precache an undefined type! (%s)\n",cResource);
 	}

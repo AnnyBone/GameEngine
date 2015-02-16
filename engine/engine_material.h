@@ -105,6 +105,8 @@ extern Material_t
 void Material_Initialize(void);
 void Material_ClearAll(void);
 
+bool Material_Precache(const char *ccPath);
+
 Material_t *Material_Load(const char *ccPath);
 Material_t *Material_Get(int iMaterialID);
 Material_t *Material_GetByPath(const char *ccPath);

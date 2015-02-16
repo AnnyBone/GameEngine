@@ -131,6 +131,33 @@ void Scrap_Upload (void)
 
 extern gltexture_t	*gMenuTexture[128];
 
+void Draw_MaterialSurface(
+	const char *ccMaterial,
+	float fAlpha,
+	int x, int y, int s, int t,
+	int w, int h)
+{
+	VideoObject_t voSurface[4];
+
+	Video_ResetCapabilities(false);
+
+	// If alpha is set less than 1.0/255, then blend it (otherwise this is done via the material).
+	if (fAlpha < 1.0f)
+		Video_EnableCapabilities(VIDEO_BLEND);
+
+	// Disable depth testing.
+	Video_DisableCapabilities(VIDEO_DEPTH_TEST);
+
+	// Set the colour.
+	Video_ObjectColour(&voSurface[0], 1.0f, 1.0f, 1.0f, fAlpha);
+	Video_ObjectColour(&voSurface[1], 1.0f, 1.0f, 1.0f, fAlpha);
+	Video_ObjectColour(&voSurface[2], 1.0f, 1.0f, 1.0f, fAlpha);
+	Video_ObjectColour(&voSurface[3], 1.0f, 1.0f, 1.0f, fAlpha);
+
+	// Set the texture coords.
+	Video_ObjectTexture(&voSurface[0], 0, 0, 0);
+}
+
 /*	TODO: Make me obsolete!
 */
 void Draw_ExternPic(char *path,float alpha,int x,int y,int w,int h)
@@ -290,7 +317,9 @@ void Draw_NewGame (void)
 
 void Draw_PrecacheConsoleBackground(void)
 {
+#if 0
 	Client_PrecacheResource(RESOURCE_TEXTURE,cvConsoleBackground.string);
+#endif
 }
 
 void Draw_Init (void)
@@ -334,7 +363,6 @@ void Draw_Character(int x,int y,int num)
 
 		Video_ResetCapabilities(false);
 
-		Video_EnableCapabilities(VIDEO_ALPHA_TEST);
 		Video_DisableCapabilities(VIDEO_DEPTH_TEST);
 
 		Video_ObjectVertex(&voCharacter[0], x, y, 0);
@@ -544,9 +572,9 @@ void GL_SetCanvas (int newcanvas)
 		glViewport (glx, gly, glwidth, glheight);
 		break;
 	case CANVAS_MENU:
-		s = Math_Min((float)glwidth / 320.0, (float)glheight / 200.0);
+		s = Math_Min((float)glwidth / 640.0, (float)glheight / 480.0);
 		s = Math_Clamp(1.0, scr_menuscale.value, s);
-		glOrtho (0, 320, 200, 0, -99999, 99999);
+		glOrtho (0, 640, 480, 0, -99999, 99999);
 		glViewport (glx, gly, glwidth, glheight);
 		break;
 	case CANVAS_SBAR:

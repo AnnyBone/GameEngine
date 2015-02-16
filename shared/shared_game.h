@@ -507,6 +507,8 @@ typedef struct
 	// Global
 	vec_t			*(*GetLightSample)(vec3_t vOrigin);						// Gets the current lightmap sample for the specified entity.
 
+	bool(*Material_Precache)(const char *ccPath);
+
 	// Pre 9/4/2012 (Update all these)
 	void	(*Con_Printf)(char *fmt,...);	// Appears to client in console. Standard message.
 	void	(*Con_DPrintf)(char *fmt,...);	// Only appears if launched/running in developer mode.

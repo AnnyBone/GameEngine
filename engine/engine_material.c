@@ -780,6 +780,20 @@ MATERIAL_LOAD_ERROR:
 	return NULL;
 }
 
+bool Material_Precache(const char *ccPath)
+{
+	Material_t *mNewMaterial;
+
+	mNewMaterial = Material_Load(ccPath);
+	if (!mNewMaterial)
+	{
+		Con_Warning("Failed to load material! (%s)\n", ccPath);
+		return false;
+	}
+
+	return true;
+}
+
 /*
 	Editor
 */

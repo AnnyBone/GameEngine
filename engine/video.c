@@ -37,7 +37,6 @@ cvar_t	cvMultisampleSamples		= {	"video_multisamplesamples",		"0",			true,   fal
 		cvHeight					= {	"video_height",					"480",			true,   false,  "Sets the height of the window."									},
 		cvVerticalSync				= {	"video_verticalsync",			"0",			true																				},
 		cvVideoMirror				= {	"video_drawmirror",				"1",			true,	false,	"Enables and disables the rendering of mirror surfaces."			},
-		cvVideoDraw					= {	"video_draw",					"1",			false,	false,	"If disabled, nothing is drawn."									},
 		cvVideoDrawModels			= {	"video_drawmodels",				"1",			false,  false,  "Toggles models."													},
 		cvVideoDrawDepth			= {	"video_drawdepth",				"0",			false,	false,	"If enabled, previews the debth buffer."							},
 		cvVideoDrawDetail			= {	"video_drawdetail",				"1",			true,	false,	"If enabled, detail maps are drawn."								},
@@ -100,7 +99,6 @@ void Video_Initialize(void)
 	Cvar_RegisterVariable(&cvHeight,NULL);
 	Cvar_RegisterVariable(&cvVerticalSync,NULL);
 	Cvar_RegisterVariable(&cvVideoDebugLog,NULL);
-	Cvar_RegisterVariable(&cvVideoDraw,NULL);
 	Cvar_RegisterVariable(&cvVideoDrawDepth,NULL);
 	Cvar_RegisterVariable(&cvVideoFinish, NULL);
 	Cvar_RegisterVariable(&cvVideoAlphaTrick, NULL);
@@ -337,10 +335,10 @@ void Video_CreateWindow(void)
 	SDL_GL_SetSwapInterval(0);
 
 	// Get any information that will be presented later.
-	Video.ccGLVendor		= (char*)glGetString(GL_VENDOR);
-	Video.ccGLRenderer		= (char*)glGetString(GL_RENDERER);
-	Video.ccGLVersion		= (char*)glGetString(GL_VERSION);
-	Video.ccGLExtensions	= (char*)glGetString(GL_EXTENSIONS);
+	Video.cGLVendor		= (char*)glGetString(GL_VENDOR);
+	Video.cGLRenderer	= (char*)glGetString(GL_RENDERER);
+	Video.cGLVersion	= (char*)glGetString(GL_VERSION);
+	Video.cGLExtensions	= (char*)glGetString(GL_EXTENSIONS);
 
 	// [3/6/2013] Added to fix a bug on some systems when calling wglGetExtensionString* ~hogsy
 	GLeeInit();
@@ -936,10 +934,8 @@ void Video_DrawObject(
 {
 	unsigned int	i, j;
 	GLenum			gPrimitive = 0;
-	//
-	if (!cvVideoDraw.bValue)
-		return;
-	else if (!voObject)
+
+	if (!voObject)
 	{
 		Sys_Error("Invalid video object!\n");
 		return;
@@ -973,8 +969,6 @@ void Video_DrawObject(
 				Math_Vector4Copy(mvVideoGlobalColour, vVideoColourArray[i]);
 			else
 				Math_Vector4Copy(voObject[i].vColour, vVideoColourArray[i]);
-
-			//Math_Vector2Copy(voObject[i].vTextureCoord[VIDEO_TEXTURE_DIFFUSE], vVideoTextureArray[VIDEO_TEXTURE_DIFFUSE][i]);
 
 			// Copy over coords for each active TMU.
 			for (j = 0; j < VIDEO_MAX_UNITS; j++)
@@ -1016,9 +1010,6 @@ void Video_DrawObject(
 	if (!r_showtris.bValue)
 	{
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-
-		//glClientActiveTexture(Video_GetGLUnit(VIDEO_TEXTURE_DIFFUSE));
-		//glTexCoordPointer(2, GL_FLOAT, 0, vVideoTextureArray[VIDEO_TEXTURE_DIFFUSE]);
 
 		for (i = 0; i < VIDEO_MAX_UNITS; i++)
 			if (Video.bUnitState[i])

@@ -37,7 +37,7 @@ pMODULE_EXPORT EngineExport_t *Engine_Main(EngineImport_t *mImport)
 {
 	Launcher.iVersion	= mImport->iVersion;
 
-	eExport.Initialize	= System_Main;
+	eExport.Initialize = System_Main;
 	eExport.iVersion = ENGINE_VERSION;
 
 	return &eExport;
