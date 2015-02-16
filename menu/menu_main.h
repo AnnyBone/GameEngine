@@ -13,8 +13,8 @@
 #include "shared_engine.h"
 #include "shared_game.h"
 
-#define	MENU_BASE_PATH	"textures/interface/"
-#define MENU_HUD_PATH	"textures/interface/hud/"
+#define	MENU_BASE_PATH	"menu/"
+#define MENU_HUD_PATH	"menu/hud/"
 
 extern ModuleImport_t	Engine;
 

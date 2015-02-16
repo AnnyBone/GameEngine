@@ -445,6 +445,8 @@ void TextureManager_Initialize(void)
 
 	extern texture_t *r_notexture_mip, *r_notexture_mip2;
 
+	Con_Printf("Initializing texture manager...\n");
+
 	// init texture list
 	free_gltextures = (gltexture_t *) Hunk_AllocName (MAX_GLTEXTURES * sizeof(gltexture_t), "gltextures");
 	active_gltextures = NULL;

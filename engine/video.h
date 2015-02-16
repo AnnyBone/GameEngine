@@ -8,6 +8,8 @@
 
 #include "shared_video.h"
 
+//#define	VIDEO_ENABLE_SHADERS
+
 extern cvar_t	cvVideoDrawModels,		// Should we draw models?
 				cvWidth,				// The width of our window (not reliable).
 				cvHeight,				// The height of our window (not reliable).
@@ -33,6 +35,8 @@ typedef enum VideoUnits_e
 	VIDEO_TEXTURE_MAX
 } VideoUnits_t;
 
+#define	VIDEO_MAX_FRAMEBUFFFERS	1
+
 typedef struct
 {
 	// OpenGL Information
@@ -50,6 +54,7 @@ typedef struct
                     uiSecondaryUnit;					// Current/last secondary texture.
 
 	unsigned	int	uiMSAASamples,	// Number of AA samples.
+					uiFrameBuffer[VIDEO_MAX_FRAMEBUFFFERS],
 					iWidth,iHeight;
 
 	bool			bInitialized,					// Is the video system started?
@@ -117,8 +122,11 @@ typedef enum VideoDepth_e
 } VideoDepth_t;
 
 // Shader Types
-#define VIDEO_SHADER_VERTEX     0
-#define VIDEO_SHADER_FRAGMENT   1
+typedef enum VideoShaderType_e
+{
+	VIDEO_SHADER_VERTEX,
+	VIDEO_SHADER_FRAGMENT
+} VideoShaderType_t;
 
 void Video_Initialize(void);
 void Video_CreateWindow(void);

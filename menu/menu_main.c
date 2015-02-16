@@ -54,7 +54,7 @@ char *va(char *format,...)
 
 void Menu_Initialize(void)
 {
-	Engine.Con_Printf("Initializing Menu...\n");
+	Engine.Con_Printf("Initializing menu...\n");
 
 	// Get the current screen size.
 	Menu_UpdateScreenSize();

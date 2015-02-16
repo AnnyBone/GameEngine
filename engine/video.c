@@ -399,6 +399,10 @@ void Video_CreateWindow(void)
 
 	Video_SelectTexture(0);
 
+#ifdef VIDEO_ENABLE_SHADERS
+	glGenFramebuffers(VIDEO_MAX_FRAMEBUFFFERS, &Video.uiFrameBuffer);
+#endif
+
 	vid.conwidth		= (scr_conwidth.value > 0)?(int)scr_conwidth.value:(scr_conscale.value > 0)?(int)(Video.iWidth/scr_conscale.value) : Video.iWidth;
 	vid.conwidth		= Math_Clamp(320,vid.conwidth,Video.iWidth);
 	vid.conwidth		&= 0xFFFFFFF8;
@@ -1200,20 +1204,36 @@ void Video_ResetCapabilities(bool bClearActive)
     Unfinished!
 */
 
+unsigned int Video_ShaderConvertType(VideoShaderType_t vstType)
+{
+	switch (vstType)
+	{
+	case VIDEO_SHADER_FRAGMENT:
+		return GL_FRAGMENT_SHADER;
+	case VIDEO_SHADER_VERTEX:
+		return GL_VERTEX_SHADER;
+	}
+
+	return 0;
+}
+
 /*  Simple whipped up function to demo shader processing
     then simple error management. Replace this...
 */
-void Video_ProcessShader(int iType)
+void Video_ShaderLoad(const char *ccPath,VideoShaderType_t vstType)
 {
+#ifdef VIDEO_ENABLE_SHADERS
     int             iState;
     unsigned int    uiShader;
+	char			*cShaderSource;
 
-    if(iType == VIDEO_SHADER_FRAGMENT)
-        uiShader = glCreateShader(GL_VERTEX_SHADER);
-    else
-        uiShader = glCreateShader(GL_FRAGMENT_SHADER);
+	if (!LoadFile(ccPath, &cShaderSource))
+	{
+	}
 
-//    glShaderSource(uiShader,1,&uiShader,NULL);
+	uiShader = glCreateShader(Video_ShaderConvertType(vstType));
+
+	glShaderSource(uiShader, 1, &cShaderSource, NULL);
     glCompileShader(uiShader);
 
     glGetShaderiv(uiShader,GL_COMPILE_STATUS,&iState);
@@ -1224,11 +1244,12 @@ void Video_ProcessShader(int iType)
         glGetShaderInfoLog(uiShader,512,NULL,cLog);
 
         // [12/3/2014] Spit a log out to the console ~hogsy
-        Con_Warning("Failed to compile shader! (%s)\n",cLog);
+        Con_Warning("Failed to compile shader!\n%s",cLog);
         return;
     }
 
 //    glShaderSource()
+#endif
 }
 
 /**/
@@ -1240,6 +1261,10 @@ void Video_Frame(void)
 {
     if(bVideoDebug)
         Console_WriteToLog(cvVideoDebugLog.string,"Video: Start of frame\n");
+
+#ifdef VIDEO_ENABLE_SHADERS
+	glBindFramebuffer(GL_FRAMEBUFFER, Video.uiFrameBuffer);
+#endif
 
 	SCR_UpdateScreen();
 

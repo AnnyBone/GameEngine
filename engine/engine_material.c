@@ -147,23 +147,28 @@ void Material_ClearAll(void)
 
 	for (i = 0; i < MATERIAL_MAX; i++)
 	{
-		Con_DPrintf("\n %s (%s) : ", mMaterials[i].cPath, mMaterials[i].cName);
+		if (!mMaterials[i].cPath[0] && !mMaterials[i].cName[0])
+			break;
+
+		Con_DPrintf(" %s (%s) : ", mMaterials[i].cPath, mMaterials[i].cName);
 
 		if (!(mMaterials[i].iFlags & MATERIAL_FLAG_PRESERVE))
 		{
 			if (mMaterials[i].iSkins > 0)
-				for (j = 0; j < MATERIAL_MAX_SKINS; j++)
+				for (j = 0; j < mMaterials[i].iSkins; j++)
 					Material_ClearSkin(&mMaterials[i], j);
 
 			memset(&mMaterials[i], 0, sizeof(Material_t));
 
-			Con_DPrintf("DONE");
+			Con_DPrintf("DONE\n");
 
 			iMaterialCount--;
 		}
 		else
-			Con_DPrintf("SKIPPED");
+			Con_DPrintf("SKIPPED\n");
 	}
+
+	Con_DPrintf("\n");
 }
 
 MaterialSkin_t *Material_GetSkin(Material_t *mMaterial,int iSkin)
@@ -264,8 +269,6 @@ gltexture_t *Material_LoadTexture(Material_t *mMaterial, MaterialSkin_t *mCurren
 	int			iTextureFlags = TEXPREF_ALPHA;
 	byte		*bTextureMap;
 
-	Con_DPrintf("Loading material texture...\n");
-
 	// Check if it's trying to use a built-in texture.
 	if (cArg[0] == '@')
 	{
@@ -318,7 +321,7 @@ gltexture_t *Material_LoadTexture(Material_t *mMaterial, MaterialSkin_t *mCurren
 			SRC_RGBA, bTextureMap, cArg, 0, iTextureFlags);
 	}
 
-	Con_Warning("Failed to load texture %s!\n", cArg);
+	Con_Warning("Failed to load texture! (%s) (%s)\n", cArg, mMaterial->cPath);
 
 	return notexture;
 }
@@ -392,8 +395,6 @@ void _Material_SetAnimationSpeed(Material_t *mCurrentMaterial, MaterialFunctionT
 
 void _Material_AddSkin(Material_t *mCurrentMaterial, MaterialFunctionType_t mftContext, char *cArg)
 {
-	Con_DPrintf("Adding material skin...\n");
-
 	// Proceed to the next line.
 	Script_GetToken(true);
 
@@ -442,8 +443,6 @@ void _Material_AddSkin(Material_t *mCurrentMaterial, MaterialFunctionType_t mftC
 void _Material_AddTexture(Material_t *mCurrentMaterial, MaterialFunctionType_t mftContext, char *cArg)
 {
 	MaterialSkin_t	*msSkin;
-
-	Con_DPrintf("Adding material texture...\n");
 
 	msSkin = Material_GetSkin(mCurrentMaterial, mCurrentMaterial->iSkins);
 	if (!msSkin)
@@ -567,8 +566,6 @@ void _Material_SetFlags(Material_t *mCurrentMaterial, MaterialFunctionType_t mft
 {
 	int	i;
 
-	Con_DPrintf("Setting material flags...\n");
-
 	// Search through and copy each flag into the materials list of flags.
 	for (i = 0; i < pARRAYELEMENTS(mfMaterialFlags); i++)
 	{
@@ -676,8 +673,6 @@ Material_t *Material_Load(const char *ccPath)
 		return NULL;
 	}
 
-	Con_DPrintf("Loading material: %s\n", ccPath);
-
 	// Update the given path with the base path plus extension.
 	sprintf(cPath,"%s%s.material",Global.cMaterialPath,ccPath);
 
@@ -784,6 +779,10 @@ MATERIAL_LOAD_ERROR:
 
 	return NULL;
 }
+
+/*
+	Editor
+*/
 
 /**/
 
