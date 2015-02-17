@@ -92,7 +92,7 @@ void Menu_Draw(void)
 	if(!cvShowMenu.bValue)
 		return;
 
-	Engine.Client_SetMenuCanvas(CANVAS_MENU);
+	Engine.Client_SetMenuCanvas(CANVAS_DEFAULT);
 
 	// Disclaimer.
 	if (cvMenuDisclaimer.bValue)
@@ -103,7 +103,8 @@ void Menu_Draw(void)
 		Engine.DrawString(30, 60, "portions of the game will not be implemented or functional.");
 	}
 
-#if 1
+	Engine.Client_SetMenuCanvas(CANVAS_MENU);
+
 	if(iMenuState & MENU_STATE_LOADING)
 	{
 		// [21/5/2013] TODO: Switch to element ~hogsy
@@ -155,9 +156,10 @@ void Menu_Draw(void)
 			break;
 		}
 #endif
+
+		Menu_DrawMouse();
 	}
 
-	Menu_DrawMouse();
 #if 0
 	for(i = 0; i < iMenuElements; i++)
 	{
@@ -243,7 +245,7 @@ void Menu_Draw(void)
 		}
 	}
 #endif
-#else
+#if 0
 	for(i = 0; i < iMenuElements; i++)
 	{
 //		mMenuElements[i].vPos[0] = mousepos[0];
