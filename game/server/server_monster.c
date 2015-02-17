@@ -168,7 +168,7 @@ bool Monster_CheckBottom(edict_t *ent)
 bool Monster_MoveStep(edict_t *ent,vec3_t move,bool bRelink)
 {
 	float	dz;
-	vec3_t	oldorg,vNewOrigin,end;
+	vec3_t	vNewOrigin,end;
 	trace_t	trace;
 	int		i;
 
@@ -263,8 +263,6 @@ bool Monster_MoveStep(edict_t *ent,vec3_t move,bool bRelink)
 
 			return true;
 		}
-
-		Math_VectorCopy(ent->v.origin,oldorg);
 
 		return false;
 	}

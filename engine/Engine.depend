@@ -742,3 +742,983 @@
 1412245845 source:/media/hogsy/Projects/KatanaEngine/engine/engine_world.c
 	"quakedef.h"
 
+1421610873 source:/home/hogsy/KatanaEngine/external/glee/GLee.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	"GLee.h"
+	<Carbon/Carbon.h>
+
+1421610873 /home/hogsy/KatanaEngine/external/glee/GLee.h
+	<windows.h>
+	<GL/gl.h>
+	<OpenGL/gl.h>
+	<GL/gl.h>
+	<GL/glx.h>
+	<stddef.h>
+
+1421610874 source:/home/hogsy/KatanaEngine/shared/shared_png.c
+	"shared_png.h"
+	<stdio.h>
+	<stdlib.h>
+	<fstream>
+
+1421610874 /home/hogsy/KatanaEngine/shared/shared_png.h
+	<string.h>
+	<vector>
+	<string>
+	"lodepng.h"
+	<iostream>
+	"lodepng.h"
+
+1421610873 source:/home/hogsy/KatanaEngine/engine/cl_input.c
+	"quakedef.h"
+
+1421610873 /home/hogsy/KatanaEngine/engine/quakedef.h
+	"platform.h"
+	"platform_math.h"
+	"shared_flags.h"
+	"cmdlib.h"
+	"common.h"
+	"vid.h"
+	"sys.h"
+	"zone.h"
+	"shared_client.h"
+	"shared_engine.h"
+	"shared_formats.h"
+	"engine_main.h"
+	"draw.h"
+	"cvar.h"
+	"screen.h"
+	"engine_net.h"
+	"protocol.h"
+	"cmd.h"
+	"sound.h"
+	"render.h"
+	"client.h"
+	"progs.h"
+	"server.h"
+	"engine_model.h"
+	"image.h"
+	"gl_texmgr.h"
+	"world.h"
+	"keys.h"
+	"console.h"
+	"view.h"
+	"menu.h"
+	"crc.h"
+	"glquake.h"
+
+1421610874 /home/hogsy/KatanaEngine/platform/include/platform.h
+	<stdio.h>
+	<stdlib.h>
+	<stdarg.h>
+	<stdlib.h>
+	"platform_inttypes.h"
+	<stdint.h>
+	<string.h>
+	<ctype.h>
+	<math.h>
+	<setjmp.h>
+	<errno.h>
+	<sys/stat.h>
+	<sys/types.h>
+	<Windows.h>
+	<WindowsX.h>
+	<CommCtrl.h>
+	<direct.h>
+	<dirent.h>
+	<unistd.h>
+	<dlfcn.h>
+
+1421610874 /home/hogsy/KatanaEngine/platform/include/platform_inttypes.h
+	"platform_stdint.h"
+
+1421610874 /home/hogsy/KatanaEngine/platform/include/platform_stdint.h
+	<limits.h>
+	<wchar.h>
+
+1421610874 /home/hogsy/KatanaEngine/platform/include/platform_math.h
+	"platform.h"
+
+1421610874 /home/hogsy/KatanaEngine/shared/shared_flags.h
+
+1421610873 /home/hogsy/KatanaEngine/engine/cmdlib.h
+	"platform/include/platform.h"
+	<errno.h>
+	<time.h>
+
+1421610873 /home/hogsy/KatanaEngine/engine/common.h
+	"shared_flags.h"
+
+1421610873 /home/hogsy/KatanaEngine/engine/vid.h
+
+1421610873 /home/hogsy/KatanaEngine/engine/sys.h
+
+1421610873 /home/hogsy/KatanaEngine/engine/zone.h
+
+1421610874 /home/hogsy/KatanaEngine/shared/shared_client.h
+
+1421610874 /home/hogsy/KatanaEngine/shared/shared_engine.h
+	"../platform/include/platform.h"
+	"shared_flags.h"
+
+1421610874 /home/hogsy/KatanaEngine/shared/shared_formats.h
+
+1421610873 /home/hogsy/KatanaEngine/engine/engine_main.h
+	"quakedef.h"
+	"shared_module.h"
+	"shared_engine.h"
+
+1421610874 /home/hogsy/KatanaEngine/shared/shared_module.h
+
+1421610873 /home/hogsy/KatanaEngine/engine/draw.h
+	"screen.h"
+
+1421610873 /home/hogsy/KatanaEngine/engine/screen.h
+
+1421610873 /home/hogsy/KatanaEngine/engine/cvar.h
+
+1421610873 /home/hogsy/KatanaEngine/engine/engine_net.h
+
+1421610873 /home/hogsy/KatanaEngine/engine/protocol.h
+
+1421610873 /home/hogsy/KatanaEngine/engine/cmd.h
+
+1421610873 /home/hogsy/KatanaEngine/engine/sound.h
+
+1421610873 /home/hogsy/KatanaEngine/engine/render.h
+	"shared_client.h"
+
+1421610873 /home/hogsy/KatanaEngine/engine/client.h
+
+1421610873 /home/hogsy/KatanaEngine/engine/progs.h
+	"pr_comp.h"
+	"shared_game.h"
+
+1421610873 /home/hogsy/KatanaEngine/engine/pr_comp.h
+
+1421610874 /home/hogsy/KatanaEngine/shared/shared_game.h
+	"platform.h"
+	"platform_math.h"
+	"shared_client.h"
+
+1421610873 /home/hogsy/KatanaEngine/engine/server.h
+	"shared_flags.h"
+
+1421610873 /home/hogsy/KatanaEngine/engine/engine_model.h
+	"shared_formats.h"
+
+1421610873 /home/hogsy/KatanaEngine/engine/image.h
+
+1421610873 /home/hogsy/KatanaEngine/engine/gl_texmgr.h
+
+1421610873 /home/hogsy/KatanaEngine/engine/world.h
+	"shared_flags.h"
+	"shared_game.h"
+
+1421610873 /home/hogsy/KatanaEngine/engine/keys.h
+	"shared_input.h"
+
+1421610874 /home/hogsy/KatanaEngine/shared/shared_input.h
+
+1421610873 /home/hogsy/KatanaEngine/engine/console.h
+
+1421610873 /home/hogsy/KatanaEngine/engine/view.h
+
+1421610873 /home/hogsy/KatanaEngine/engine/menu.h
+
+1421610873 /home/hogsy/KatanaEngine/engine/crc.h
+
+1421610873 /home/hogsy/KatanaEngine/engine/glquake.h
+	"GLee.h"
+	<GL/gl.h>
+	<GL/glu.h>
+
+1421610873 source:/home/hogsy/KatanaEngine/engine/cl_main.c
+	"quakedef.h"
+	"engine_modgame.h"
+	"engine_clientinput.h"
+	"engine_modmenu.h"
+
+1421610873 /home/hogsy/KatanaEngine/engine/engine_modgame.h
+	"quakedef.h"
+
+1421610873 /home/hogsy/KatanaEngine/engine/engine_clientinput.h
+	"quakedef.h"
+
+1421610873 /home/hogsy/KatanaEngine/engine/engine_modmenu.h
+	"quakedef.h"
+	"shared_menu.h"
+
+1421610874 /home/hogsy/KatanaEngine/shared/shared_menu.h
+
+1421610873 source:/home/hogsy/KatanaEngine/engine/cmdlib.c
+	"cmdlib.h"
+	<sys/types.h>
+	<sys/stat.h>
+	<direct.h>
+	"common.h"
+	"platform_window.h"
+
+1421610874 /home/hogsy/KatanaEngine/platform/include/platform_window.h
+	"platform.h"
+	<X11/Xlib.h>
+
+1421610873 source:/home/hogsy/KatanaEngine/engine/common.c
+	"quakedef.h"
+	"engine_script.h"
+	"platform_filesystem.h"
+
+1421610873 /home/hogsy/KatanaEngine/engine/engine_script.h
+	"quakedef.h"
+	"common/SCRIPLIB.H"
+
+1421610873 /home/hogsy/KatanaEngine/common/SCRIPLIB.H
+	"cmdlib.h"
+
+1421610874 /home/hogsy/KatanaEngine/platform/include/platform_filesystem.h
+	"platform.h"
+
+1421614039 source:/home/hogsy/KatanaEngine/engine/console.c
+	<unistd.h>
+	<fcntl.h>
+	"quakedef.h"
+	<stdio.h>
+	"engine_console.h"
+	"engine_videoshadow.h"
+	"engine_clientinput.h"
+	"engine_video.h"
+
+1421610873 /home/hogsy/KatanaEngine/engine/engine_console.h
+	"quakedef.h"
+
+1421610873 /home/hogsy/KatanaEngine/engine/engine_videoshadow.h
+	"quakedef.h"
+	"engine_client.h"
+
+1421610873 /home/hogsy/KatanaEngine/engine/engine_client.h
+	"quakedef.h"
+	"shared_client.h"
+
+1421610873 /home/hogsy/KatanaEngine/engine/engine_video.h
+	<SDL.h>
+	<SDL_syswm.h>
+
+1421610873 /home/hogsy/KatanaEngine/external/SDL2/include/SDL.h
+	"SDL_main.h"
+	"SDL_stdinc.h"
+	"SDL_assert.h"
+	"SDL_atomic.h"
+	"SDL_audio.h"
+	"SDL_clipboard.h"
+	"SDL_cpuinfo.h"
+	"SDL_endian.h"
+	"SDL_error.h"
+	"SDL_events.h"
+	"SDL_joystick.h"
+	"SDL_gamecontroller.h"
+	"SDL_haptic.h"
+	"SDL_hints.h"
+	"SDL_loadso.h"
+	"SDL_log.h"
+	"SDL_messagebox.h"
+	"SDL_mutex.h"
+	"SDL_power.h"
+	"SDL_render.h"
+	"SDL_rwops.h"
+	"SDL_system.h"
+	"SDL_thread.h"
+	"SDL_timer.h"
+	"SDL_version.h"
+	"SDL_video.h"
+	"begin_code.h"
+	"close_code.h"
+
+1421610873 /home/hogsy/KatanaEngine/external/SDL2/include/SDL_main.h
+	"SDL_stdinc.h"
+	"begin_code.h"
+	"close_code.h"
+
+1421610873 /home/hogsy/KatanaEngine/external/SDL2/include/SDL_stdinc.h
+	"SDL_config.h"
+	<sys/types.h>
+	<stdio.h>
+	<stdlib.h>
+	<stddef.h>
+	<stdarg.h>
+	<stdlib.h>
+	<malloc.h>
+	<stddef.h>
+	<stdarg.h>
+	<memory.h>
+	<string.h>
+	<strings.h>
+	<inttypes.h>
+	<stdint.h>
+	<ctype.h>
+	<math.h>
+	<iconv.h>
+	"begin_code.h"
+	<alloca.h>
+	<malloc.h>
+	<malloc.h>
+	<malloc.h>
+	<stdlib.h>
+	"close_code.h"
+
+1421610873 /home/hogsy/KatanaEngine/external/SDL2/include/SDL_config.h
+	"SDL_platform.h"
+	"SDL_config_windows.h"
+	"SDL_config_macosx.h"
+	"SDL_config_iphoneos.h"
+	"SDL_config_android.h"
+	"SDL_config_psp.h"
+	"SDL_config_minimal.h"
+
+1421610873 /home/hogsy/KatanaEngine/external/SDL2/include/SDL_platform.h
+	"AvailabilityMacros.h"
+	"TargetConditionals.h"
+	"begin_code.h"
+	"close_code.h"
+
+1421610873 /home/hogsy/KatanaEngine/external/SDL2/include/begin_code.h
+
+1421610873 /home/hogsy/KatanaEngine/external/SDL2/include/close_code.h
+
+1421610873 /home/hogsy/KatanaEngine/external/SDL2/include/SDL_config_windows.h
+	"SDL_platform.h"
+
+1421610873 /home/hogsy/KatanaEngine/external/SDL2/include/SDL_config_macosx.h
+	"SDL_platform.h"
+	<AvailabilityMacros.h>
+
+1421610873 /home/hogsy/KatanaEngine/external/SDL2/include/SDL_config_iphoneos.h
+	"SDL_platform.h"
+
+1421610873 /home/hogsy/KatanaEngine/external/SDL2/include/SDL_config_android.h
+	"SDL_platform.h"
+	<stdarg.h>
+
+1421610873 /home/hogsy/KatanaEngine/external/SDL2/include/SDL_config_psp.h
+	"SDL_platform.h"
+
+1421610873 /home/hogsy/KatanaEngine/external/SDL2/include/SDL_config_minimal.h
+	"SDL_platform.h"
+
+1421610873 /home/hogsy/KatanaEngine/external/SDL2/include/SDL_assert.h
+	"SDL_config.h"
+	"begin_code.h"
+	<signal.h>
+	"close_code.h"
+
+1421610873 /home/hogsy/KatanaEngine/external/SDL2/include/SDL_atomic.h
+	"SDL_stdinc.h"
+	"SDL_platform.h"
+	"begin_code.h"
+	<intrin.h>
+	<libkern/OSAtomic.h>
+	"close_code.h"
+
+1421610873 /home/hogsy/KatanaEngine/external/SDL2/include/SDL_audio.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_endian.h"
+	"SDL_mutex.h"
+	"SDL_thread.h"
+	"SDL_rwops.h"
+	"begin_code.h"
+	"close_code.h"
+
+1421610873 /home/hogsy/KatanaEngine/external/SDL2/include/SDL_error.h
+	"SDL_stdinc.h"
+	"begin_code.h"
+	"close_code.h"
+
+1421610873 /home/hogsy/KatanaEngine/external/SDL2/include/SDL_endian.h
+	"SDL_stdinc.h"
+	<endian.h>
+	"begin_code.h"
+	"close_code.h"
+
+1421610873 /home/hogsy/KatanaEngine/external/SDL2/include/SDL_mutex.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"begin_code.h"
+	"close_code.h"
+
+1421610873 /home/hogsy/KatanaEngine/external/SDL2/include/SDL_thread.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_atomic.h"
+	"SDL_mutex.h"
+	"begin_code.h"
+	<process.h>
+	"close_code.h"
+
+1421610873 /home/hogsy/KatanaEngine/external/SDL2/include/SDL_rwops.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"begin_code.h"
+	"close_code.h"
+
+1421610873 /home/hogsy/KatanaEngine/external/SDL2/include/SDL_clipboard.h
+	"SDL_stdinc.h"
+	"begin_code.h"
+	"close_code.h"
+
+1421610873 /home/hogsy/KatanaEngine/external/SDL2/include/SDL_cpuinfo.h
+	"SDL_stdinc.h"
+	<intrin.h>
+	<intrin.h>
+	<altivec.h>
+	<mmintrin.h>
+	<mm3dnow.h>
+	<xmmintrin.h>
+	<emmintrin.h>
+	"begin_code.h"
+	"close_code.h"
+
+1421610873 /home/hogsy/KatanaEngine/external/SDL2/include/SDL_events.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_video.h"
+	"SDL_keyboard.h"
+	"SDL_mouse.h"
+	"SDL_joystick.h"
+	"SDL_gamecontroller.h"
+	"SDL_quit.h"
+	"SDL_gesture.h"
+	"SDL_touch.h"
+	"begin_code.h"
+	"close_code.h"
+
+1421610873 /home/hogsy/KatanaEngine/external/SDL2/include/SDL_video.h
+	"SDL_stdinc.h"
+	"SDL_pixels.h"
+	"SDL_rect.h"
+	"SDL_surface.h"
+	"begin_code.h"
+	"close_code.h"
+
+1421610873 /home/hogsy/KatanaEngine/external/SDL2/include/SDL_pixels.h
+	"begin_code.h"
+	"close_code.h"
+
+1421610873 /home/hogsy/KatanaEngine/external/SDL2/include/SDL_rect.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_pixels.h"
+	"SDL_rwops.h"
+	"begin_code.h"
+	"close_code.h"
+
+1421610873 /home/hogsy/KatanaEngine/external/SDL2/include/SDL_surface.h
+	"SDL_stdinc.h"
+	"SDL_pixels.h"
+	"SDL_rect.h"
+	"SDL_blendmode.h"
+	"SDL_rwops.h"
+	"begin_code.h"
+	"close_code.h"
+
+1421610873 /home/hogsy/KatanaEngine/external/SDL2/include/SDL_blendmode.h
+	"begin_code.h"
+	"close_code.h"
+
+1421610873 /home/hogsy/KatanaEngine/external/SDL2/include/SDL_keyboard.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_keycode.h"
+	"SDL_video.h"
+	"begin_code.h"
+	"close_code.h"
+
+1421610873 /home/hogsy/KatanaEngine/external/SDL2/include/SDL_keycode.h
+	"SDL_stdinc.h"
+	"SDL_scancode.h"
+
+1421610873 /home/hogsy/KatanaEngine/external/SDL2/include/SDL_scancode.h
+	"SDL_stdinc.h"
+
+1421610873 /home/hogsy/KatanaEngine/external/SDL2/include/SDL_mouse.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_video.h"
+	"begin_code.h"
+	"close_code.h"
+
+1421610873 /home/hogsy/KatanaEngine/external/SDL2/include/SDL_joystick.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"begin_code.h"
+	"close_code.h"
+
+1421610873 /home/hogsy/KatanaEngine/external/SDL2/include/SDL_gamecontroller.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_joystick.h"
+	"begin_code.h"
+	"close_code.h"
+
+1421610873 /home/hogsy/KatanaEngine/external/SDL2/include/SDL_quit.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+
+1421610873 /home/hogsy/KatanaEngine/external/SDL2/include/SDL_gesture.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_video.h"
+	"SDL_touch.h"
+	"begin_code.h"
+	"close_code.h"
+
+1421610873 /home/hogsy/KatanaEngine/external/SDL2/include/SDL_touch.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_video.h"
+	"begin_code.h"
+	"close_code.h"
+
+1421610873 /home/hogsy/KatanaEngine/external/SDL2/include/SDL_haptic.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_joystick.h"
+	"begin_code.h"
+	"close_code.h"
+
+1421610873 /home/hogsy/KatanaEngine/external/SDL2/include/SDL_hints.h
+	"SDL_stdinc.h"
+	"begin_code.h"
+	"close_code.h"
+
+1421610873 /home/hogsy/KatanaEngine/external/SDL2/include/SDL_loadso.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"begin_code.h"
+	"close_code.h"
+
+1421610873 /home/hogsy/KatanaEngine/external/SDL2/include/SDL_log.h
+	"SDL_stdinc.h"
+	"begin_code.h"
+	"close_code.h"
+
+1421610873 /home/hogsy/KatanaEngine/external/SDL2/include/SDL_messagebox.h
+	"SDL_stdinc.h"
+	"SDL_video.h"
+	"begin_code.h"
+	"close_code.h"
+
+1421610873 /home/hogsy/KatanaEngine/external/SDL2/include/SDL_power.h
+	"SDL_stdinc.h"
+	"begin_code.h"
+	"close_code.h"
+
+1421610873 /home/hogsy/KatanaEngine/external/SDL2/include/SDL_render.h
+	"SDL_stdinc.h"
+	"SDL_rect.h"
+	"SDL_video.h"
+	"begin_code.h"
+	"close_code.h"
+
+1421610873 /home/hogsy/KatanaEngine/external/SDL2/include/SDL_system.h
+	"SDL_stdinc.h"
+	"SDL_video.h"
+	"SDL_keyboard.h"
+	"begin_code.h"
+	"close_code.h"
+
+1421610873 /home/hogsy/KatanaEngine/external/SDL2/include/SDL_timer.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"begin_code.h"
+	"close_code.h"
+
+1421610873 /home/hogsy/KatanaEngine/external/SDL2/include/SDL_version.h
+	"SDL_stdinc.h"
+	"begin_code.h"
+	"close_code.h"
+
+1421610873 /home/hogsy/KatanaEngine/external/SDL2/include/SDL_syswm.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_video.h"
+	"SDL_version.h"
+	"begin_code.h"
+	<windows.h>
+	<X11/Xlib.h>
+	<X11/Xatom.h>
+	<directfb.h>
+	<Cocoa/Cocoa.h>
+	<UIKit/UIKit.h>
+	"close_code.h"
+
+1421610873 source:/home/hogsy/KatanaEngine/engine/crc.c
+	"quakedef.h"
+	"crc.h"
+
+1421792973 source:/home/hogsy/KatanaEngine/engine/engine_audio.c
+	"engine_audio.h"
+	"SDL.h"
+
+1421610873 /home/hogsy/KatanaEngine/engine/engine_audio.h
+	"quakedef.h"
+
+1421610873 source:/home/hogsy/KatanaEngine/engine/engine_client.c
+	"engine_client.h"
+	"engine_console.h"
+	"engine_videoshadow.h"
+	"engine_video.h"
+	"shared_server.h"
+	"shared_menu.h"
+
+1421610874 /home/hogsy/KatanaEngine/shared/shared_server.h
+
+1421610873 source:/home/hogsy/KatanaEngine/engine/engine_console.c
+	"engine_console.h"
+
+1421610873 source:/home/hogsy/KatanaEngine/engine/engine_editor.c
+	"engine_editor.h"
+	"engine_video.h"
+	"engine_clientinput.h"
+	"engine_videoshadow.h"
+	"engine_console.h"
+	"engine_modmenu.h"
+	"platform_module.h"
+	"platform_filesystem.h"
+
+1421610873 /home/hogsy/KatanaEngine/engine/engine_editor.h
+	"quakedef.h"
+	"shared_module.h"
+
+1421610874 /home/hogsy/KatanaEngine/platform/include/platform_module.h
+	"platform.h"
+
+1421610873 source:/home/hogsy/KatanaEngine/engine/engine_loader.c
+	"engine_loader.h"
+
+1421610873 /home/hogsy/KatanaEngine/engine/engine_loader.h
+	"quakedef.h"
+
+1421610873 source:/home/hogsy/KatanaEngine/engine/engine_main.c
+	"engine_main.h"
+	"engine_video.h"
+	"platform_module.h"
+
+1421610873 source:/home/hogsy/KatanaEngine/engine/engine_physics.c
+	"engine_physics.h"
+	"engine_modgame.h"
+
+1421610873 /home/hogsy/KatanaEngine/engine/engine_physics.h
+	"quakedef.h"
+
+1421610873 source:/home/hogsy/KatanaEngine/engine/engine_script.c
+	"engine_script.h"
+	"engine_modgame.h"
+	"Python.h"
+
+1421610873 source:/home/hogsy/KatanaEngine/engine/engine_server.c
+	"engine_server.h"
+	"engine_videoshadow.h"
+	"engine_console.h"
+
+1421610873 /home/hogsy/KatanaEngine/engine/engine_server.h
+	"quakedef.h"
+	"shared_server.h"
+
+1421796492 source:/home/hogsy/KatanaEngine/engine/engine_video.c
+	"quakedef.h"
+	"engine_video.h"
+	"engine_modgame.h"
+	"engine_clientinput.h"
+	"engine_modmenu.h"
+	"engine_console.h"
+	"platform_window.h"
+	<SDL_syswm.h>
+	"platform_module.h"
+
+1421610873 source:/home/hogsy/KatanaEngine/engine/gl_texmgr.c
+	"quakedef.h"
+	"platform_filesystem.h"
+	"engine_console.h"
+	"engine_video.h"
+
+1421610873 source:/home/hogsy/KatanaEngine/engine/gl_vidnt.c
+	"quakedef.h"
+
+1421610873 source:/home/hogsy/KatanaEngine/engine/host_cmd.c
+	"quakedef.h"
+	"engine_modgame.h"
+	"engine_server.h"
+	"engine_clientinput.h"
+
+1421610873 source:/home/hogsy/KatanaEngine/engine/image.c
+	"quakedef.h"
+	"platform_filesystem.h"
+	"shared_png.h"
+
+1421610873 source:/home/hogsy/KatanaEngine/engine/keys.c
+	"quakedef.h"
+	"engine_video.h"
+	"engine_modmenu.h"
+	"engine_editor.h"
+
+1421610873 source:/home/hogsy/KatanaEngine/engine/menu.c
+	"quakedef.h"
+	"engine_video.h"
+	"engine_modgame.h"
+	"engine_modmenu.h"
+
+1421610873 source:/home/hogsy/KatanaEngine/engine/pr_edict.c
+	"engine_edict.h"
+	"engine_modgame.h"
+
+1421610873 /home/hogsy/KatanaEngine/engine/engine_edict.h
+	"quakedef.h"
+
+1421610873 source:/home/hogsy/KatanaEngine/engine/engine_audiodma.c
+	"quakedef.h"
+	"winquake.h"
+	"sound.h"
+	"engine_audio.h"
+
+1421610873 /home/hogsy/KatanaEngine/engine/winquake.h
+	<windows.h>
+
+1421610873 source:/home/hogsy/KatanaEngine/engine/engine_audiomem.c
+	"quakedef.h"
+
+1421793082 source:/home/hogsy/KatanaEngine/engine/engine_audiomix.c
+	"quakedef.h"
+	"winquake.h"
+
+1421610873 source:/home/hogsy/KatanaEngine/engine/engine_clientchase.c
+	"quakedef.h"
+
+1421610873 source:/home/hogsy/KatanaEngine/engine/engine_clientdemo.c
+	"quakedef.h"
+	"engine_server.h"
+
+1421610873 source:/home/hogsy/KatanaEngine/engine/engine_clientinput.c
+	"engine_clientinput.h"
+	"engine_video.h"
+	"engine_modmenu.h"
+
+1421610873 source:/home/hogsy/KatanaEngine/engine/engine_clientparse.c
+	"quakedef.h"
+	"engine_client.h"
+	"engine_console.h"
+	"engine_modmenu.h"
+	"shared_server.h"
+	"engine_modgame.h"
+
+1421610873 source:/home/hogsy/KatanaEngine/engine/engine_clienttent.c
+	"quakedef.h"
+	"engine_videoshadow.h"
+
+1421610873 source:/home/hogsy/KatanaEngine/engine/engine_clientview.c
+	"quakedef.h"
+	"engine_video.h"
+	"engine_modgame.h"
+
+1421610873 source:/home/hogsy/KatanaEngine/engine/engine_consolecommand.c
+	"quakedef.h"
+	"common/SCRIPLIB.H"
+	"engine_console.h"
+	"platform_filesystem.h"
+
+1421610873 source:/home/hogsy/KatanaEngine/engine/engine_consolevar.c
+	"quakedef.h"
+
+1421610873 source:/home/hogsy/KatanaEngine/engine/engine_host.c
+	"quakedef.h"
+	"engine_console.h"
+	"engine_modgame.h"
+	"engine_modmenu.h"
+	"engine_editor.h"
+	"engine_clientinput.h"
+	"engine_video.h"
+	"engine_physics.h"
+	"engine_client.h"
+	"engine_audio.h"
+	"engine_videomaterial.h"
+	"shared_server.h"
+	"platform_filesystem.h"
+
+1421610873 /home/hogsy/KatanaEngine/engine/engine_videomaterial.h
+	"quakedef.h"
+	"engine_video.h"
+
+1421610873 source:/home/hogsy/KatanaEngine/engine/engine_model.c
+	"quakedef.h"
+	"engine_console.h"
+	"engine_script.h"
+	"engine_videomaterial.h"
+
+1421793984 source:/home/hogsy/KatanaEngine/engine/engine_modgame.c
+	"engine_modgame.h"
+	"engine_console.h"
+	"engine_videoshadow.h"
+	"engine_modmenu.h"
+	"engine_server.h"
+	"shared_module.h"
+	"../platform/include/platform_module.h"
+
+1421614025 source:/home/hogsy/KatanaEngine/engine/engine_modmenu.c
+	"engine_modmenu.h"
+	"engine_video.h"
+	"engine_client.h"
+	"engine_videoshadow.h"
+	"shared_module.h"
+	"platform_window.h"
+	"platform_module.h"
+
+1421610873 source:/home/hogsy/KatanaEngine/engine/engine_netdgrm.c
+	<windows.h>
+	<sys/socket.h>
+	<arpa/inet.h>
+	"quakedef.h"
+	"engine_netdgrm.h"
+
+1421610873 /home/hogsy/KatanaEngine/engine/engine_netdgrm.h
+
+1421610873 source:/home/hogsy/KatanaEngine/engine/engine_netdummy.c
+	"quakedef.h"
+	"engine_netloop.h"
+	"engine_netdgrm.h"
+	"engine_netserial.h"
+
+1421610873 /home/hogsy/KatanaEngine/engine/engine_netloop.h
+
+1421610873 /home/hogsy/KatanaEngine/engine/engine_netserial.h
+
+1421610873 source:/home/hogsy/KatanaEngine/engine/engine_netloop.c
+	"quakedef.h"
+	"engine_netloop.h"
+
+1421610873 source:/home/hogsy/KatanaEngine/engine/engine_netmain.c
+	"quakedef.h"
+
+1421610873 source:/home/hogsy/KatanaEngine/engine/engine_netmaster.c
+	"quakedef.h"
+	<assert.h>
+	<WS2tcpip.h>
+
+1421610873 source:/home/hogsy/KatanaEngine/engine/engine_servermain.c
+	"quakedef.h"
+	"engine_modgame.h"
+	"engine_physics.h"
+	"engine_edict.h"
+	"shared_server.h"
+
+1421610873 source:/home/hogsy/KatanaEngine/engine/engine_serveruser.c
+	"quakedef.h"
+	"engine_physics.h"
+
+1421610873 source:/home/hogsy/KatanaEngine/engine/engine_serverworld.c
+	"quakedef.h"
+
+1421796698 source:/home/hogsy/KatanaEngine/engine/engine_videoalias.c
+	"KatAlias.h"
+	"engine_videoshadow.h"
+	"engine_video.h"
+	"engine_videomaterial.h"
+
+1421610873 /home/hogsy/KatanaEngine/engine/KatAlias.h
+	"quakedef.h"
+
+1421610873 source:/home/hogsy/KatanaEngine/engine/engine_videobrush.c
+	"quakedef.h"
+	"engine_video.h"
+
+1421610873 source:/home/hogsy/KatanaEngine/engine/engine_videodraw.c
+	"quakedef.h"
+	"engine_videoshadow.h"
+	"engine_console.h"
+	"engine_video.h"
+	"engine_client.h"
+
+1421610873 source:/home/hogsy/KatanaEngine/engine/engine_videofog.c
+	"quakedef.h"
+
+1421610873 source:/home/hogsy/KatanaEngine/engine/engine_videolight.c
+	"quakedef.h"
+	"engine_video.h"
+	"engine_editor.h"
+
+1421610873 source:/home/hogsy/KatanaEngine/engine/engine_videomaterial.c
+	"quakedef.h"
+	"engine_videomaterial.h"
+	"engine_script.h"
+
+1421610873 source:/home/hogsy/KatanaEngine/engine/engine_videomisc.c
+	"quakedef.h"
+	"engine_videoshadow.h"
+	"engine_video.h"
+	"engine_client.h"
+
+1421610873 source:/home/hogsy/KatanaEngine/engine/engine_videorefrag.c
+	"quakedef.h"
+
+1421610873 source:/home/hogsy/KatanaEngine/engine/engine_videormain.c
+	"quakedef.h"
+	"engine_editor.h"
+	"engine_console.h"
+	"engine_videoshadow.h"
+	"engine_video.h"
+	"KatAlias.h"
+
+1421610873 source:/home/hogsy/KatanaEngine/engine/engine_videoscreen.c
+	"quakedef.h"
+	"platform_filesystem.h"
+	"engine_modmenu.h"
+	"engine_editor.h"
+	"engine_videoshadow.h"
+	"engine_video.h"
+	"engine_clientinput.h"
+
+1421610873 source:/home/hogsy/KatanaEngine/engine/engine_videoshadow.c
+	"engine_videoshadow.h"
+	"KatAlias.h"
+	"engine_editor.h"
+	"engine_console.h"
+	"engine_client.h"
+	"engine_video.h"
+
+1421610873 source:/home/hogsy/KatanaEngine/engine/engine_videosky.c
+	"quakedef.h"
+	"engine_video.h"
+
+1421610873 source:/home/hogsy/KatanaEngine/engine/engine_videosprite.c
+	"quakedef.h"
+	"engine_video.h"
+
+1421610873 source:/home/hogsy/KatanaEngine/engine/engine_videowarp.c
+	"quakedef.h"
+	"engine_video.h"
+
+1421610873 source:/home/hogsy/KatanaEngine/engine/engine_videoworld.c
+	"quakedef.h"
+	"engine_video.h"
+
+1421610873 source:/home/hogsy/KatanaEngine/engine/sys_win.c
+	"quakedef.h"
+	<SDL.h>
+	"platform_window.h"
+	"platform_filesystem.h"
+	"winquake.h"
+	"conproc.h"
+	"errno.h"
+	"resource.h"
+	<assert.h>
+	"engine_editor.h"
+	"engine_console.h"
+	"engine_video.h"
+
+1421610873 /home/hogsy/KatanaEngine/engine/conproc.h
+
+1421610873 /home/hogsy/KatanaEngine/engine/resource.h
+
+1421610873 source:/home/hogsy/KatanaEngine/engine/zone.c
+	"quakedef.h"
+

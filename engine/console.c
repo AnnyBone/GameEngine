@@ -399,7 +399,7 @@ void Con_Error(char *fmt,...)
 	char 			msg[MAXPRINTMSG];
 
 	if(bInError)
-		Sys_Error("Con_Error: Recursively entered\nCheck log.txt for details.");
+		Sys_Error("Con_Error: Recursively entered\nCheck log for details.\n");
 	bInError = true;
 
 	va_start(argptr,fmt);

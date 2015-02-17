@@ -60,7 +60,7 @@ void Menu_Initialize(void)
 		pModule_Unload(hMenuInstance);
 
         // Let the user know the module failed to load. ~hogsy
-		Sys_Error("Failed to load %s/%s."PLATFORM_CPU""pMODULE_EXTENSION"!\nCheck log for details.",com_gamedir,MODULE_MENU);
+		Sys_Error("Failed to load %s/%s."PLATFORM_CPU""pMODULE_EXTENSION"!\nCheck log for details.\n",com_gamedir,MODULE_MENU);
 	}
 }
 

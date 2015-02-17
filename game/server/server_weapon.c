@@ -283,9 +283,67 @@ void Weapon_BulletProjectile(edict_t *eEntity,float fSpread,int iDamage,vec_t *v
 	}
 }
 
+void Weapon_UpdateCurrentAmmo(Weapon_t *wWeapon, edict_t *eEntity)
+{
+	// [4/7/2012] Set ammo by type ~hogsy
+	switch (wWeapon->iPrimaryType)
+	{
+#ifdef OPENKATANA
+		// [12/8/2012] Added in AM_IONS ~hogsy
+	case AM_IONS:
+		eEntity->v.iPrimaryAmmo = eEntity->local.ionblaster_ammo;
+		break;
+	case AM_ROCKET:
+		eEntity->v.iPrimaryAmmo = eEntity->local.sidewinder_ammo;
+		break;
+	case AM_DISCUS:
+		eEntity->v.iPrimaryAmmo = eEntity->local.discus_ammo;
+		break;
+	case AM_BULLET:
+		eEntity->v.iPrimaryAmmo = eEntity->local.glock_ammo;
+		break;
+	case AM_SHELL:
+		eEntity->v.iPrimaryAmmo = eEntity->local.shotcycler_ammo;
+		break;
+	case AM_LASER:
+		eEntity->v.iPrimaryAmmo = eEntity->local.shockwave_ammo;
+		break;
+	case AM_C4BOMB:
+		eEntity->v.iPrimaryAmmo = eEntity->local.iC4Ammo;
+		break;
+#elif GAME_ADAMAS
+	case AM_BULLET:
+		eEntity->v.iPrimaryAmmo = eEntity->local.iBulletAmmo;
+		break;
+#endif
+	case AM_MELEE:
+	case AM_SWITCH:
+	case AM_NONE:
+		eEntity->v.iPrimaryAmmo = 1;
+		break;
+	default:
+		Engine.Con_Warning("Failed to set primary ammo! (%i)\n", wWeapon->iPrimaryType);
+
+		eEntity->v.iPrimaryAmmo = 0;
+		}
+
+	// [4/7/2012] Set ammo by type ~hogsy
+	switch (wWeapon->iSecondaryType)
+	{
+	case AM_MELEE:
+	case AM_SWITCH:
+	case AM_NONE:
+		eEntity->v.iSecondaryAmmo = 1;
+		break;
+	default:
+		Engine.Con_Warning("Failed to set secondary ammo! (%i)\n", wWeapon->iSecondaryType);
+		eEntity->v.iSecondaryAmmo = 0;
+	}
+};
+
 /*	Sets an active weapon for the specified entity.
 */
-void Weapon_SetActive(Weapon_t *wWeapon,edict_t *eEntity)
+void Weapon_SetActive(Weapon_t *wWeapon,edict_t *eEntity, bool bDeploy)
 {
 	bool	bPrimaryAmmo,bSecondaryAmmo;
 
@@ -300,67 +358,7 @@ void Weapon_SetActive(Weapon_t *wWeapon,edict_t *eEntity)
 	if(!bPrimaryAmmo && !bSecondaryAmmo)
 		return;
 
-	if(bPrimaryAmmo)
-	{
-		// [4/7/2012] Set ammo by type ~hogsy
-		switch(wWeapon->iPrimaryType)
-		{
-#ifdef OPENKATANA
-		// [12/8/2012] Added in AM_IONS ~hogsy
-		case AM_IONS:
-			eEntity->v.iPrimaryAmmo = eEntity->local.ionblaster_ammo;
-			break;
-		case AM_ROCKET:
-			eEntity->v.iPrimaryAmmo = eEntity->local.sidewinder_ammo;
-			break;
-		case AM_DISCUS:
-			eEntity->v.iPrimaryAmmo = eEntity->local.discus_ammo;
-			break;
-		case AM_BULLET:
-			eEntity->v.iPrimaryAmmo = eEntity->local.glock_ammo;
-			break;
-		case AM_SHELL:
-			eEntity->v.iPrimaryAmmo = eEntity->local.shotcycler_ammo;
-			break;
-		case AM_LASER:
-			eEntity->v.iPrimaryAmmo = eEntity->local.shockwave_ammo;
-			break;
-		case AM_C4BOMB:
-			eEntity->v.iPrimaryAmmo = eEntity->local.iC4Ammo;
-			break;
-#elif GAME_ADAMAS
-		case AM_BULLET:
-			eEntity->v.iPrimaryAmmo = eEntity->local.iBulletAmmo;
-			break;
-#endif
-		case AM_MELEE:
-		case AM_SWITCH:
-		case AM_NONE:
-			eEntity->v.iPrimaryAmmo = 1;
-			break;
-		default:
-			Engine.Con_Warning("Failed to set primary ammo! (%i)\n",wWeapon->iPrimaryType);
-
-			eEntity->v.iPrimaryAmmo = 0;
-		}
-	}
-
-	if(bSecondaryAmmo)
-	{
-		// [4/7/2012] Set ammo by type ~hogsy
-		switch(wWeapon->iSecondaryType)
-		{
-		case AM_MELEE:
-		case AM_SWITCH:
-		case AM_NONE:
-			eEntity->v.iSecondaryAmmo = 1;
-			break;
-		default:
-			Engine.Con_Warning("Failed to set secondary ammo! (%i)\n",wWeapon->iSecondaryType);
-
-			eEntity->v.iSecondaryAmmo = 0;
-		}
-	}
+	Weapon_UpdateCurrentAmmo(wWeapon, eEntity);
 
 	eEntity->v.iActiveWeapon	= wWeapon->iItem;
 	eEntity->v.cViewModel		= wWeapon->model;
@@ -368,7 +366,7 @@ void Weapon_SetActive(Weapon_t *wWeapon,edict_t *eEntity)
 	eEntity->local.iFireMode		=
 	eEntity->local.iWeaponIdleFrame	= 0;
 
-	if(wWeapon->Deploy)
+	if(wWeapon->Deploy && bDeploy)
 		wWeapon->Deploy(eEntity);
 }
 
@@ -547,7 +545,7 @@ void Weapon_Cycle(edict_t *eEntity,bool bForward)
 			if(!Weapon_CheckPrimaryAmmo(wNext,eEntity) && !Weapon_CheckSecondaryAmmo(wNext,eEntity))
 				goto NEXTWEAPON;
 
-			Weapon_SetActive(wNext,eEntity);
+			Weapon_SetActive(wNext, eEntity, true);
 
 			eEntity->local.dAttackFinished = Server.dTime+0.3;
 		}
@@ -616,7 +614,7 @@ void Weapon_CheatCommand(edict_t *eEntity)
 
 	wWeapon = Weapon_GetWeapon(WEAPON_DAIKATANA);
 	if(wWeapon)
-		Weapon_SetActive(wWeapon,eEntity);
+		Weapon_SetActive(wWeapon, eEntity, true);
 #endif
 
 	eEntity->v.impulse = 0;
@@ -680,7 +678,7 @@ void Weapon_CheckInput(edict_t *eEntity)
 					Engine.Sound(eEntity,CHAN_AUTO,"misc/deny.wav",255,ATTN_NORM);
 				}
 				else
-					Weapon_SetActive(wWeapon,eEntity);
+					Weapon_SetActive(wWeapon, eEntity, true);
 			}
 		}
 	}

@@ -42,6 +42,7 @@
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />
+			<Add option="-pg" />
 			<Add option="-g" />
 			<Add option="-fPIC" />
 			<Add option="-DOPENKATANA" />
@@ -53,6 +54,7 @@
 			<Add directory="../shared" />
 		</Compiler>
 		<Linker>
+			<Add option="-pg" />
 			<Add directory="../platform/lib" />
 		</Linker>
 		<Unit filename="../shared/shared_client.h" />
@@ -61,20 +63,22 @@
 		<Unit filename="../shared/shared_flags.h" />
 		<Unit filename="../shared/shared_game.h" />
 		<Unit filename="../shared/shared_input.h" />
-		<Unit filename="../shared/shared_math.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../shared/shared_math.h" />
 		<Unit filename="../shared/shared_menu.h" />
 		<Unit filename="../shared/shared_module.h" />
 		<Unit filename="../shared/shared_server.h" />
 		<Unit filename="client/cl_player.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="client/client_effects.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="client/client_main.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="client/client_main.h" />
+		<Unit filename="client/client_view.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="game_main.c">
 			<Option compilerVar="CC" />
 		</Unit>

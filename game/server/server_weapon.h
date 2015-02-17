@@ -102,7 +102,8 @@ Weapon_t *Weapon_GetCurrentWeapon(edict_t *eEntity);
 Weapon_t *Weapon_GetWeapon(int iWeaponID);
 
 void Weapon_Precache(void);
-void Weapon_SetActive(Weapon_t *wWeapon,edict_t *eEntity);
+void Weapon_UpdateCurrentAmmo(Weapon_t *wWeapon, edict_t *eEntity);
+void Weapon_SetActive(Weapon_t *wWeapon,edict_t *eEntity, bool bDeploy);
 void Weapon_BulletProjectile(edict_t *ent,float spread,int damage,vec3_t vVector);
 void Weapon_CheckFrames(edict_t *eEntity);
 void Weapon_Animate(edict_t *ent,EntityFrame_t *eFrames);

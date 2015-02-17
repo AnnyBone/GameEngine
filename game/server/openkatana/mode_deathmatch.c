@@ -38,7 +38,7 @@ void Deathmatch_Spawn(edict_t *ePlayer)
 	ePlayer->local.ionblaster_ammo = 45;
 
 	// [29/7/2013] Set the IonBlaster as our active weapon ~hogsy
-	Weapon_SetActive(Weapon_GetWeapon(WEAPON_IONBLASTER),ePlayer);
+	Weapon_SetActive(Weapon_GetWeapon(WEAPON_IONBLASTER), ePlayer, true);
 
 	Server_UpdateClientMenu(ePlayer,MENU_STATE_HUD,true);
 }
