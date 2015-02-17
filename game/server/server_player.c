@@ -741,7 +741,7 @@ void Player_Spawn(edict_t *ePlayer)
 				{
 					Weapon_t *wStartWeapon = Weapon_GetWeapon(WEAPON_DAIKATANA);
 					if(wStartWeapon)
-						Weapon_SetActive(wStartWeapon,ePlayer);
+						Weapon_SetActive(wStartWeapon,ePlayer,false);
 				}
 			}
 		}
