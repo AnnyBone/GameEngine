@@ -6,5 +6,6 @@
 	$SetLevelPath		"levels/"
 	$SetScreenshotPath	"screenshots/"
 	$SetFontPath		"fonts/"
+	$SetModulePath		"./"
 }
 

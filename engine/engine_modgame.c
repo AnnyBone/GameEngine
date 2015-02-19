@@ -24,6 +24,11 @@ pINSTANCE hGameInstance;
 
 GameExport_t *Game;
 
+edict_t *Game_GetEdicts(void)
+{
+	return sv.edicts;
+}
+
 void Server_ChangeLevel(const char *ccNewLevel)
 {
 	// Make sure we don't issue two changelevels
@@ -581,7 +586,7 @@ void Game_Initialize(void)
 	Import.Server_GetLevelName		= Server_GetLevelName;
 	Import.Server_GetFrameTime		= Server_GetFrameTime;
 
-	Game = (GameExport_t*)pModule_LoadInterface(hGameInstance, va("%s/"MODULE_GAME, com_gamedir), "Game_Main", &Import);
+	Game = (GameExport_t*)pModule_LoadInterface(hGameInstance, va("%s/%s"MODULE_GAME, com_gamedir, Global.cModulePath), "Game_Main", &Import);
 	if(!Game)
 		Con_Warning(pError_Get(),com_gamedir,MODULE_GAME);
 	else if (Game->iVersion != GAME_VERSION)

@@ -290,6 +290,7 @@ void _FileSystem_SetLevelPath(char *cArg);		// common.c
 void _FileSystem_SetScreenshotPath(char *cArg);	// common.c
 void _FileSystem_SetFontPath(char *cArg);		// common.c
 void _FileSystem_AddGameDirectory(char *cArg);	// common.c
+void _FileSystem_SetModulePath(char *cArg);
 
 ScriptKey_t	skScriptKeys[]=
 {
@@ -301,6 +302,7 @@ ScriptKey_t	skScriptKeys[]=
 	{	"SetScreenshotPath",	_FileSystem_SetScreenshotPath	},
 	{	"AddGameDirectory",		_FileSystem_AddGameDirectory	},
 	{ "SetFontPath", _FileSystem_SetFontPath },
+	{ "SetModulePath", _FileSystem_SetModulePath },
 
 	{	0	}
 };

@@ -1476,6 +1476,11 @@ void _FileSystem_SetScreenshotPath(char *cArg)
 	Q_strncpy(Global.cScreenshotPath,cArg,PLATFORM_MAX_PATH);
 }
 
+void _FileSystem_SetModulePath(char *cArg)
+{
+	Q_strncpy(Global.cModulePath, cArg, PLATFORM_MAX_PATH);
+}
+
 /*	Script specific function that adds a new data path.
 	AddGameDirectory
 */
