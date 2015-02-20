@@ -99,7 +99,8 @@ extern SDL_Window	*sMainWindow;
 typedef enum
 {
     VIDEO_PRIMITIVE_TRIANGLES,
-    VIDEO_PRIMITIVE_TRIANGLE_FAN
+    VIDEO_PRIMITIVE_TRIANGLE_FAN,
+	VIDEO_PRIMITIVE_TRIANGLE_FAN_WIRE
 } VideoPrimitive_t;
 
 // Blending Modes

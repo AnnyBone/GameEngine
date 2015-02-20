@@ -108,9 +108,6 @@ void Light_Draw(void)
 				return;
 			}
 
-			// [7/5/2012] Make sure it shows the lights colour ~hogsy
-			glColor3ub(dlLight->color[RED],dlLight->color[GREEN],dlLight->color[BLUE]);
-
 			for(i = 0; i < 3; i++)
 				v[i] = dlLight->origin[i]-vpn[i]*rad;
 
@@ -132,7 +129,9 @@ void Light_Draw(void)
 				voLight[c].vColour[3] = 0.5f;
 			}
 
-			Video_DrawObject(voLight,VIDEO_PRIMITIVE_TRIANGLE_FAN,17,NULL,0);
+			Video_DrawObject(voLight, VIDEO_PRIMITIVE_TRIANGLE_FAN_WIRE, 17, NULL, 0);
+
+			R_EmitWirePoint(dlLight->origin);
 		}
 	}
 

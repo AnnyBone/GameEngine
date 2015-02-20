@@ -20,7 +20,7 @@
 	when a build is released publically.	*/
 #define ENGINE_VERSION_MAJOR	0
 #define ENGINE_VERSION_MINOR	3
-#define ENGINE_VERSION_BUILD	866	// 20/2/2014
+#define ENGINE_VERSION_BUILD	867	// 21/2/2014
 
 #define	PATH_ENGINE			"engine"			// Directory to look in for engine specific modules / assets.
 #define	PATH_LOGS			PATH_ENGINE"/logs"	// Default directory for saving logs.
@@ -131,7 +131,7 @@ enum
 #define	FL_PARTIALGROUND	1024	// Entity is partially on the ground.
 #define	FL_WATERJUMP		2048
 #define	FL_JUMPRELEASED		4096	// Entity has released jump.
-#define	FL_GLOBAL			8192	// Used for
+#define	FL_CROUCHING		8192	// Entity is crouching.
 
 #define	EF_BRIGHTFIELD		1
 #define	EF_MUZZLEFLASH		2

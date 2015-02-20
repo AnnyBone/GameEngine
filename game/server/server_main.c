@@ -113,7 +113,7 @@ cvar_t	cvServerBots			= {	"server_bots",			"0",					false,	true	};
 void Server_SetGameMode(void)
 {
 	// [7/12/2012] Don't continue if we're already using this mode ~hogsy
-	if(Server.iLastGameMode == (int)cvServerGameMode.value)
+	if(Server.iLastGameMode == cvServerGameMode.iValue)
 		return;
 
 	if(cvServerGameMode.value >= MODE_NONE || cvServerGameMode.value < MODE_SINGLEPLAYER)
@@ -127,7 +127,7 @@ void Server_SetGameMode(void)
 		Engine.Con_Printf("Gamemode will be changed on next map.\n");
 
 	// [29/3/2012] Keep OldMode up to date! ~hogsy
-	Server.iLastGameMode = (int)cvServerGameMode.value;
+	Server.iLastGameMode = cvServerGameMode.iValue;
 }
 
 /*	Called by the engine.

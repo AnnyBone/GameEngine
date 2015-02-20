@@ -990,8 +990,9 @@ void Video_DrawObject(
 		else
 			gPrimitive = GL_TRIANGLES;
 		break;
+	case VIDEO_PRIMITIVE_TRIANGLE_FAN_WIRE:
 	case VIDEO_PRIMITIVE_TRIANGLE_FAN:
-		if (r_showtris.bValue)
+		if (r_showtris.bValue || (vpPrimitiveType == VIDEO_PRIMITIVE_TRIANGLE_FAN_WIRE))
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 		gPrimitive = GL_TRIANGLE_FAN;
@@ -1027,7 +1028,7 @@ void Video_DrawObject(
 	if (!r_showtris.bValue)
 		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 
-	if(r_showtris.bValue)
+	if (r_showtris.bValue || (vpPrimitiveType == VIDEO_PRIMITIVE_TRIANGLE_FAN_WIRE))
 		glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
 
 	if (mMaterial)

@@ -502,15 +502,37 @@ void Player_PreThink(edict_t *ePlayer)
 		// [30/7/2012] Simplified ~hogsy
 		ePlayer->v.flags |= FL_JUMPRELEASED;
 
+	// Crouch
 	if(ePlayer->v.button[1])
 	{
-		Entity_SetSize(ePlayer,-16.0f,-16.0f,-18.0f,16.0f,16.0f,18.0f);
-		ePlayer->v.view_ofs[2]	= 10.0f;
+		if (!(ePlayer->v.flags & FL_CROUCHING))
+		{
+			Entity_SetSize(ePlayer, -16.0f, -16.0f, -18.0f, 16.0f, 16.0f, 18.0f);
+
+			ePlayer->v.view_ofs[2] = 10.0f;
+
+			ePlayer->v.flags |= FL_CROUCHING;
+		}
 	}
-	else
+	// Uncrouch
+	else if (ePlayer->v.flags & FL_CROUCHING)
 	{
-		Entity_SetSize(ePlayer,-16.0f,-16.0f,-36.0f,16.0f,16.0f,36.0f);
-		ePlayer->v.view_ofs[2]	= 22.0f;
+		MathVector3_t	
+			vMaxs = { 16.0f, 16.0f, 36.0f },
+			vMins = { -16.0f, -16.0f, -36.0f };
+		trace_t	tStandCheck;
+
+		// Trace to ensure we have enough room to stand.
+		tStandCheck = Engine.Server_Move(ePlayer->v.origin, vMins, vMaxs, ePlayer->v.origin, 0, ePlayer);
+		if (tStandCheck.fraction == 1.0f)
+		{
+			Entity_SetSizeVector(ePlayer, vMins, vMaxs);
+
+			ePlayer->v.view_ofs[2] = 22.0f;
+
+			// Not crouching anymore.
+			ePlayer->v.flags -= (ePlayer->v.flags & FL_CROUCHING);
+		}
 	}
 
 	if(cvServerWaypointSpawn.value && (Server.dTime >= Server.dWaypointSpawnDelay))

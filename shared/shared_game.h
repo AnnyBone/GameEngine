@@ -573,7 +573,7 @@ typedef struct
 	void	(*Server_Initialize)(void);																	// Initializes the server.
 	void	(*Server_EntityFrame)(edict_t *eEntity);
 	void	(*Server_KillClient)(edict_t *eClient);														// Tells the specified client to die.
-	void	(*Server_SetSizeVector)(edict_t *eEntity,vec3_t vMin,vec3_t vMax);							// Set the size of an entity by vector.
+	void(*Server_SetSizeVector)(edict_t *eEntity, MathVector3_t vMin, MathVector3_t vMax);				// Set the size of an entity by vector.
 	void	(*Server_SpawnPlayer)(edict_t *ePlayer);													// Spawns the player (SERVER_PUTCLIENTINSERVER).
 	void	(*Server_StartFrame)(void);																	// Called at the start of each physics frame.
 	bool	(*Server_SpawnEntity)(edict_t *ent);														// Puts a specific entity into the server.
