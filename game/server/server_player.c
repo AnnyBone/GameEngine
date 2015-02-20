@@ -517,14 +517,18 @@ void Player_PreThink(edict_t *ePlayer)
 	// Uncrouch
 	else if (ePlayer->v.flags & FL_CROUCHING)
 	{
-		MathVector3_t	
+		MathVector3_t	vOrigin,
 			vMaxs = { 16.0f, 16.0f, 36.0f },
 			vMins = { -16.0f, -16.0f, -36.0f };
 		trace_t	tStandCheck;
 
+		Math_VectorCopy(ePlayer->v.origin, vOrigin);
+
+		vOrigin[2] += 50.0f;
+
 		// Trace to ensure we have enough room to stand.
-		tStandCheck = Engine.Server_Move(ePlayer->v.origin, vMins, vMaxs, ePlayer->v.origin, 0, ePlayer);
-		if (tStandCheck.fraction == 1.0f)
+		tStandCheck = Engine.Server_Move(vOrigin, vMins, vMaxs, vOrigin, 0, ePlayer);
+		if (!tStandCheck.bAllSolid)
 		{
 			Entity_SetSizeVector(ePlayer, vMins, vMaxs);
 
