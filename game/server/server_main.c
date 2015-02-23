@@ -33,52 +33,56 @@ typedef struct
 */
 SpawnList_t SpawnList[] =
 {
-	{	"worldspawn",	Server_Spawn		},
-	{	"light",		Point_LightSpawn	},	// TODO: This should be made obsolete ~hogsy
+	{ "worldspawn", Server_Spawn },
+	{ "light", Point_LightSpawn },	// TODO: This should be made obsolete ~hogsy
 
 	// Area/Group Entities
-	{	"area_breakable",	Area_BreakableSpawn	},
-	{	"area_button",		Area_ButtonSpawn	},
-	{	"area_changelevel",	Area_ChangeLevel	},
-	{	"area_climb",		Area_ClimbSpawn		},
-	{	"area_door",		Area_DoorSpawn		},
-	{	"area_door_rotate",	Area_DoorSpawn		},
-	{	"area_noclip",		Area_NoclipSpawn	},
-	{	"area_push",		Area_PushSpawn		},
-	{	"area_debris",		Area_PushableSpawn	},	// [25/9/2013] For compatability ~hogsy
-	{	"area_pushable",	Area_PushableSpawn	},
-	{	"area_platform",	Area_PlatformSpawn	},
-	{	"area_rotate",		Area_RotateSpawn	},
-	{	"area_trigger",		Area_TriggerSpawn	},
-	{	"area_wall",		Area_WallSpawn		},
-	{	"area_playerspawn",	Area_PlayerSpawn	},
+	{ "area_breakable", Area_BreakableSpawn },
+	{ "area_button", Area_ButtonSpawn },
+	{ "area_changelevel", Area_ChangeLevel },
+	{ "area_climb", Area_ClimbSpawn },
+	{ "area_door", Area_DoorSpawn },
+	{ "area_door_rotate", Area_DoorSpawn },
+	{ "area_noclip", Area_NoclipSpawn },
+	{ "area_push", Area_PushSpawn },
+	{ "area_debris", Area_PushableSpawn },	// [25/9/2013] For compatability ~hogsy
+	{ "area_pushable", Area_PushableSpawn },
+	{ "area_platform", Area_PlatformSpawn },
+	{ "area_rotate", Area_RotateSpawn },
+	{ "area_trigger", Area_TriggerSpawn },
+	{ "area_wall", Area_WallSpawn },
+	{ "area_playerspawn", Area_PlayerSpawn },
 
 	// Point Entities
-	{	"point_light",			Point_LightSpawn		},
-	{	"point_ambient",		Point_AmbientSpawn		},
-	{	"point_bot",			Bot_Spawn				},
-	{	"point_damage",			Point_DamageSpawn		},
-	{	"point_effect",			Point_EffectSpawn		},
-	{	"point_flare",			Point_FlareSpawn		},
-	{	"point_item",			Item_Spawn				},
-	{	"point_lightstyle",		Point_LightstyleSpawn	},
-	{	"point_logic",			Point_LogicSpawn		},
-	{	"point_message",		Point_MessageSpawn		},
-	{	"point_monster",		Point_MonsterSpawn		},
-	{	"point_multitrigger",	Point_MultiTriggerSpawn	},
-	{	"point_vehicle",		Point_VehicleSpawn		},
-	{	"point_null",			Point_NullSpawn			},
-	{	"point_particle",		Point_ParticleSpawn		},
-	{	"point_prop",			Point_PropSpawn			},
-	{	"point_sound",			Point_SoundSpawn		},
-	{	"point_start",			Point_Start				},
-	{	"point_shake",			Point_ShakeSpawn		},
-	{	"point_teleport",		Point_TeleportSpawn		},
-	{	"point_timedtrigger",	Point_TimedTriggerSpawn	},
-	{	"point_waypoint",		Point_WaypointSpawn		},
+	{ "point_light", Point_LightSpawn },
+	{ "point_ambient", Point_AmbientSpawn },
+	{ "point_bot", Bot_Spawn },
+	{ "point_damage", Point_DamageSpawn },
+	{ "point_effect", Point_EffectSpawn },
+	{ "point_flare", Point_FlareSpawn },
+	{ "point_item", Item_Spawn },
+	{ "point_lightstyle", Point_LightstyleSpawn },
+	{ "point_logic", Point_LogicSpawn },
+	{ "point_message", Point_MessageSpawn },
+	{ "point_monster", Point_MonsterSpawn },
+	{ "point_multitrigger", Point_MultiTriggerSpawn },
+	{ "point_vehicle", Point_VehicleSpawn },
+	{ "point_null", Point_NullSpawn },
+	{ "point_particle", Point_ParticleSpawn },
+	{ "point_prop", Point_PropSpawn },
+	{ "point_sound", Point_SoundSpawn },
+	{ "point_start", Point_Start },
+	{ "point_shake", Point_ShakeSpawn },
+	{ "point_teleport", Point_TeleportSpawn },
+	{ "point_timedtrigger", Point_TimedTriggerSpawn },
+	{ "point_waypoint", Point_WaypointSpawn },
 
 #ifdef GAME_OPENKATANA
-	{	"point_decoration",	Point_DecorationSpawn	},	// TODO: Isn't this made redundant by point_prop? ~hogsy
+	{ "point_decoration", Point_DecorationSpawn },	// TODO: Isn't this made redundant by point_prop? ~hogsy
+
+	{ "monster_inmater", Point_MonsterSpawn },
+	{ "monster_lasergat", Point_MonsterSpawn },
+	{ "monster_prisoner", Point_MonsterSpawn },
 #elif GAME_ADAMAS
 #endif
 

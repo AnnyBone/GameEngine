@@ -859,6 +859,10 @@ bool Monster_WalkMove(edict_t *ent,float yaw,float dist)
 //	NEW IMPLEMENTATION
 /////////////////////////////////////////////////////////////////////////////
 
+/*
+	Animation
+*/
+
 /*	Used to go over each monster state then update it, and then calls the monsters
 	assigned think function.
 */
