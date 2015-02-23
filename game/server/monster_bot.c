@@ -262,34 +262,7 @@ void Bot_Think(edict_t *eBot)
 	switch(eBot->monster.iThink)
 	{
 	case THINK_IDLE:
-	{
-		// Add some random movement. ~hogsy
-		if(rand()%50 == 0)
-		{
-			int	iResult = rand()%2;
-
-			if(iResult == 0)
-				eBot->v.velocity[0] += BOT_MIN_SPEED;
-			else if(iResult == 1)
-				eBot->v.velocity[0] -= BOT_MIN_SPEED;
-
-			iResult = rand()%2;
-			if(iResult == 0)
-				eBot->v.velocity[1] += BOT_MIN_SPEED;
-			else if(iResult == 1)
-				eBot->v.velocity[1] -= BOT_MIN_SPEED;
-
-			eBot->v.angles[1] = Math_VectorToYaw(eBot->v.velocity);
-		}
-		else if (rand() % 150 == 0)
-		{
-			Monster_Jump(eBot, 200.0f);
-
-			Entity_Animate(eBot, PlayerAnimation_Jump);
-		}
-		else if (rand()%250 == 0)
-			eBot->v.angles[1] = (float)(rand() % 360);
-	}
+		Monster_MoveRandom(eBot, BOT_MIN_SPEED);
 	break;
 	case THINK_ATTACKING:
 	{
@@ -302,29 +275,7 @@ void Bot_Think(edict_t *eBot)
 
 #if 1
 		// Add some random movement. ~hogsy
-		if (rand() % 50 == 0)
-		{
-			int	iResult = rand() % 2;
-
-			if (iResult == 0)
-				eBot->v.velocity[0] += BOT_MIN_SPEED;
-			if (iResult == 1)
-				eBot->v.velocity[0] -= BOT_MIN_SPEED;
-
-			iResult = rand() % 2;
-			if (iResult == 0)
-				eBot->v.velocity[1] += BOT_MIN_SPEED;
-			if (iResult == 1)
-				eBot->v.velocity[1] -= BOT_MIN_SPEED;
-
-			eBot->v.angles[1] = Math_VectorToYaw(eBot->v.velocity);
-		}
-		else if (rand() % 150 == 0)
-		{
-			Monster_Jump(eBot, 200.0f);
-
-			Entity_Animate(eBot, PlayerAnimation_Jump);
-		}
+		Monster_MoveRandom(eBot, BOT_MIN_SPEED);
 
 		if (rand()%500 == 0)
 			wActiveWeapon->Primary(eBot);
@@ -332,26 +283,8 @@ void Bot_Think(edict_t *eBot)
 	}
 	break;
 	case THINK_FLEEING:
-	{
 		// Add some random movement. ~hogsy
-		if (rand() % 50 == 0)
-		{
-			int	iResult = rand() % 2;
-
-			if (iResult == 0)
-				eBot->v.velocity[0] += BOT_MAX_SPEED;
-			else if (iResult == 1)
-				eBot->v.velocity[0] -= BOT_MAX_SPEED;
-
-			iResult = rand() % 2;
-			if (iResult == 0)
-				eBot->v.velocity[1] += BOT_MAX_SPEED;
-			else if (iResult == 1)
-				eBot->v.velocity[1] -= BOT_MAX_SPEED;
-
-			eBot->v.angles[1] = Math_VectorToYaw(eBot->v.velocity);
-		}
-	}
+		Monster_MoveRandom(eBot, BOT_MAX_SPEED);
 	break;
 	case THINK_WANDERING:
 		{

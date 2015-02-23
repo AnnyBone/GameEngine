@@ -178,19 +178,15 @@ void SV_SendServerinfo(client_t *client)
 	else
 		MSG_WriteString(&client->message,0);
 
-	//johnfitz -- only send the first 256 model and sound precaches if protocol is 15
 	for(i = 0,s = sv.model_precache+1; *s; s++,i++)
-		if(i < 256)
-			MSG_WriteString(&client->message,*s);
+		MSG_WriteString(&client->message,*s);
 
 	MSG_WriteByte (&client->message, 0);
 
 	for (i=0,s = sv.sound_precache+1 ; *s ; s++,i++)
-		if (i < 256)
-			MSG_WriteString(&client->message,*s);
+		MSG_WriteString(&client->message,*s);
 
 	MSG_WriteByte(&client->message,0);
-	//johnfitz
 
 	// [6/6/2013] Send over textures ~hogsy
 	for(i = 0,s = sv.cParticlePrecache+1; *s; s++,i++)
@@ -491,9 +487,9 @@ void SV_WriteEntitiesToClient (edict_t	*clent, sizebuf_t *msg)
 		//johnfitz
 		if (ent->baseline.alpha != ent->alpha)
 			bits |= U_ALPHA;
-		if (bits & U_FRAME && (int)ent->v.frame & 0xFF00)
+		if (bits & U_FRAME && (ent->v.frame & 0xFF00))
 			bits |= U_FRAME2;
-		if (bits & U_MODEL && (int)ent->v.modelindex & 0xFF00)
+		if (bits & U_MODEL && (ent->v.modelindex & 0xFF00))
 			bits |= U_MODEL2;
 		if (ent->bSendInterval)
 			bits |= U_LERPFINISH;
@@ -530,7 +526,7 @@ void SV_WriteEntitiesToClient (edict_t	*clent, sizebuf_t *msg)
 			MSG_WriteByte (msg,e);
 
 		if (bits & U_MODEL)
-			MSG_WriteByte (msg,	ent->v.modelindex);
+			MSG_WriteByte(msg, ent->v.modelindex);
 
 		if (bits & U_FRAME)
 			MSG_WriteByte (msg, ent->v.frame);
@@ -563,9 +559,9 @@ void SV_WriteEntitiesToClient (edict_t	*clent, sizebuf_t *msg)
 		if (bits & U_ALPHA)
 			MSG_WriteByte(msg, ent->alpha);
 		if (bits & U_FRAME2)
-			MSG_WriteByte(msg, (int)ent->v.frame >> 8);
+			MSG_WriteByte(msg, ent->v.frame >> 8);
 		if (bits & U_MODEL2)
-			MSG_WriteByte(msg, (int)ent->v.modelindex >> 8);
+			MSG_WriteByte(msg, ent->v.modelindex >> 8);
 		if (bits & U_LERPFINISH)
 			MSG_WriteByte(msg,(byte)(pMath_RINT((ent->v.dNextThink-sv.time)*255)));
 	}
@@ -664,7 +660,7 @@ void SV_WriteClientdataToMessage (edict_t *ent, sizebuf_t *msg)
 	//johnfitz -- PROTOCOL_FITZQUAKE
 	if (bits & SU_WEAPON && SV_ModelIndex(ent->v.cViewModel) & 0xFF00)
 		bits |= SU_WEAPON2;
-	if ((int)ent->v.iArmorValue & 0xFF00)
+	if (ent->v.iArmorValue & 0xFF00)
 		bits |= SU_ARMOR2;
 	if(ent->v.iPrimaryAmmo & 0xFF00)
 		bits |= SU_AMMO2;

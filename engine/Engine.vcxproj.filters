@@ -50,9 +50,6 @@
     <ClCompile Include="host_cmd.c">
       <Filter>Legacy</Filter>
     </ClCompile>
-    <ClCompile Include="pr_edict.c">
-      <Filter>Legacy</Filter>
-    </ClCompile>
     <ClCompile Include="zone.c">
       <Filter>Legacy</Filter>
     </ClCompile>
@@ -237,6 +234,9 @@
     </ClCompile>
     <ClCompile Include="image.c">
       <Filter>Client</Filter>
+    </ClCompile>
+    <ClCompile Include="server_edict.c">
+      <Filter>Server</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

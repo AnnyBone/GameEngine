@@ -221,7 +221,7 @@ void Server_SetModel(edict_t *ent,char *m)
 	ent->v.model		= m;
 	ent->v.modelindex	= i;
 
-	mod = sv.models[(int)ent->v.modelindex];
+	mod = sv.models[ent->v.modelindex];
 	// [13/4/2013] Oops, made this more secure! ~hogsy
 	if(mod && mod->mType == MODEL_TYPE_BSP)
 		Game->Server_SetSizeVector(ent,mod->clipmins,mod->clipmaxs);

@@ -61,10 +61,11 @@ EntityFrame_t efInmaterDeath[]=
 };
 
 #define INMATER_MAX_HEALTH	150
-#define	INMATOR_MAX_BOREDOM	45
+#define	INMATER_MAX_BOREDOM	45
+#define	INMATER_MAX_SPEED	120.0f
 
-#define	INMATOR_MIN_HEALTH	-35
-#define	INMATOR_MIN_BOREDOM	-45
+#define	INMATER_MIN_HEALTH	-35
+#define	INMATER_MIN_BOREDOM	-45
 
 void Inmater_Pain(edict_t *eInmater,edict_t *eOther)
 {
@@ -72,7 +73,7 @@ void Inmater_Pain(edict_t *eInmater,edict_t *eOther)
 
 void Inmater_Die(edict_t *eInmater,edict_t *eOther)
 {
-	if(eInmater->v.iHealth < INMATOR_MIN_HEALTH)
+	if(eInmater->v.iHealth < INMATER_MIN_HEALTH)
 	{
 		int	iGibs = (rand()%5)+5,
 			i;
@@ -113,7 +114,7 @@ void Inmater_Think(edict_t *eInmater)
 	switch(eInmater->monster.iState)
 	{
 	case STATE_ASLEEP:
-		if(eInmater->monster.fEmotion[EMOTION_BOREDOM] > INMATOR_MAX_BOREDOM)
+		if(eInmater->monster.fEmotion[EMOTION_BOREDOM] > INMATER_MAX_BOREDOM)
 		{
 			Monster_SetState(eInmater,STATE_AWAKE);
 			Monster_SetThink(eInmater,THINK_WANDERING);
@@ -126,6 +127,8 @@ void Inmater_Think(edict_t *eInmater)
 		case THINK_IDLE:
 			if(!eInmater->local.dAnimationTime || (eInmater->local.iAnimationCurrent == eInmater->local.iAnimationEnd))
 				Entity_Animate(eInmater,efInmaterIdle);
+
+			Monster_MoveRandom(eInmater, INMATER_MAX_SPEED);
 			break;
 		}
 		break;
@@ -142,7 +145,8 @@ void Inmater_Spawn(edict_t *eInmater)
 
 	eInmater->Physics.iSolid	= SOLID_SLIDEBOX;
 	eInmater->Physics.fGravity	= cvServerGravity.value;
-	eInmater->Physics.fMass		= 4.0f;
+	eInmater->Physics.fMass		= 3.0f;
+	eInmater->Physics.fFriction = 4.5f;
 
 	eInmater->monster.iType			= MONSTER_INMATER;
 	eInmater->monster.Think			= Inmater_Think;

@@ -589,6 +589,19 @@ void CL_Viewpos_f (void)
 #endif
 }
 
+/*	List all the currently cached models.
+*/
+void Client_ListModelCache(void)
+{
+	int i;
+
+	Con_Printf("Listing cached models...\n");
+
+	for (i = 0; i < pARRAYELEMENTS(cl.model_precache); i++)
+		if (cl.model_precache[i])
+			Con_Printf(" %s\n", cl.model_precache[i]->name);
+}
+
 void CL_Init (void)
 {
 	SZ_Alloc(&cls.message,1024);
@@ -626,5 +639,6 @@ void CL_Init (void)
 	Cmd_AddCommand ("timedemo", CL_TimeDemo_f);
 	Cmd_AddCommand ("tracepos", CL_Tracepos_f); //johnfitz
 	Cmd_AddCommand ("viewpos", CL_Viewpos_f); //johnfitz
+	Cmd_AddCommand("client_modelcache", Client_ListModelCache);
 }
 

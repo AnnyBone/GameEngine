@@ -93,6 +93,7 @@ float MONSTER_GetRange(edict_t *ent,vec3_t target);
 void MONSTER_Damage(edict_t *target,edict_t *inflictor,int iDamage, int iDamageType);
 void Monster_Jump(edict_t *eMonster,float fVelocity);
 void Monster_MoveToGoal(edict_t *ent,vec3_t goal,float distance);
+void Monster_MoveRandom(edict_t *eMonster, float fSpeed);
 void Monster_Frame(edict_t *eMonster);
 void Monster_SetTargets(edict_t *eMonster);
 void Monster_Killed(edict_t *eTarget,edict_t *eAttacker);

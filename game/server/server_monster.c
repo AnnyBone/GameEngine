@@ -919,6 +919,39 @@ int	Monster_GetRelationship(edict_t *eMonster, edict_t *eTarget)
 	Movement
 */
 
+/*	Can be used to debug monster movement / apply random movement.
+*/
+void Monster_MoveRandom(edict_t *eMonster,float fSpeed)
+{
+	// Add some random movement. ~hogsy
+	if (rand() % 50 == 0)
+	{
+		int	iResult;
+		
+		iResult = rand() % 3;
+		if (iResult == 0)
+			eMonster->v.velocity[0] += fSpeed;
+		else if (iResult == 1)
+			eMonster->v.velocity[0] -= fSpeed;
+
+		iResult = rand() % 3;
+		if (iResult == 0)
+			eMonster->v.velocity[1] += fSpeed;
+		else if (iResult == 1)
+			eMonster->v.velocity[1] -= fSpeed;
+
+		eMonster->v.angles[1] = Math_VectorToYaw(eMonster->v.velocity);
+	}
+	else if (rand() % 150 == 0)
+	{
+		Monster_Jump(eMonster, 200.0f);
+
+		Entity_Animate(eMonster, PlayerAnimation_Jump);
+	}
+	else if (rand() % 250 == 0)
+		eMonster->v.angles[1] = (float)(rand() % 360);
+}
+
 /*	Move the monster forwards.
 */
 void Monster_MoveForward(edict_t *eMonster)
