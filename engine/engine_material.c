@@ -22,17 +22,17 @@ Material_t	mMaterials[MATERIAL_MAX];	// Global array.
 
 MaterialType_t	MaterialTypes[]=
 {
-	{	MATERIAL_TYPE_NONE,		"default"	},
-	{	MATERIAL_TYPE_METAL,	"metal"		},
-	{	MATERIAL_TYPE_GLASS,	"glass"		},
-	{	MATERIAL_TYPE_CONCRETE,	"concrete"	},
-	{	MATERIAL_TYPE_WOOD,		"wood"		},
-	{	MATERIAL_TYPE_DIRT,		"dirt"		},
-	{	MATERIAL_TYPE_RUBBER,	"rubber"	},
-	{	MATERIAL_TYPE_WATER,	"water"		},
-	{	MATERIAL_TYPE_FLESH,	"flesh"		},
-	{	MATERIAL_TYPE_SNOW,		"snow"		},
-	{	MATERIAL_TYPE_MUD,		"mud"		}
+	{ MATERIAL_TYPE_NONE, "default" },
+	{ MATERIAL_TYPE_METAL, "metal" },
+	{ MATERIAL_TYPE_GLASS, "glass" },
+	{ MATERIAL_TYPE_CONCRETE, "concrete" },
+	{ MATERIAL_TYPE_WOOD, "wood" },
+	{ MATERIAL_TYPE_DIRT, "dirt" },
+	{ MATERIAL_TYPE_RUBBER, "rubber" },
+	{ MATERIAL_TYPE_WATER, "water" },
+	{ MATERIAL_TYPE_FLESH, "flesh" },
+	{ MATERIAL_TYPE_SNOW, "snow" },
+	{ MATERIAL_TYPE_MUD, "mud" }
 };
 
 int	iMaterialCount = 0;
@@ -625,7 +625,7 @@ MaterialKey_t	mkMaterialFunctions[]=
 	{ "scroll", _Material_SetTextureScroll, MATERIAL_FUNCTION_TEXTURE },
 	{ "rotate", _Material_SetRotate, MATERIAL_FUNCTION_TEXTURE },
 
-	{	0	}
+	{ 0 }
 };
 
 void Material_CheckFunctions(Material_t *mNewMaterial)

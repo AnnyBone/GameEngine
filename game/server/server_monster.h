@@ -5,6 +5,8 @@
 
 #include "server_main.h"
 
+#define	MONSTER_DEBUG
+
 typedef struct
 {
 	int	iFirstType,iSecondType,	// The first and second monster types, which determines the encounter we might be dealing with.
@@ -82,14 +84,16 @@ enum
 
 edict_t	*Monster_GetTarget(edict_t *eMonster);
 
-bool	Monster_SetState(edict_t *eMonster,MonsterState_t msState);
-bool	Monster_SetThink(edict_t *eMonster,MonsterThink_t mtThink);
-bool	Monster_IsVisible(edict_t *ent,edict_t *target);
+bool Monster_SetState(edict_t *eMonster, MonsterState_t msState);
+bool Monster_SetThink(edict_t *eMonster, MonsterThink_t mtThink);
+bool Monster_IsVisible(edict_t *ent, edict_t *target);
+bool Monster_EmotionReset(edict_t *eMonster, int iEmotion);
 
 int	Monster_GetRelationship(edict_t *eMonster,edict_t *eTarget);
 
 float MONSTER_GetRange(edict_t *ent,vec3_t target);
 
+void Monster_Spawn(edict_t *eMonster);
 void MONSTER_Damage(edict_t *target,edict_t *inflictor,int iDamage, int iDamageType);
 void Monster_Jump(edict_t *eMonster,float fVelocity);
 void Monster_MoveToGoal(edict_t *ent,vec3_t goal,float distance);

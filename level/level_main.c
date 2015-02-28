@@ -262,6 +262,10 @@ int main(int argc,char **argv)
 		}
 		else if (!strcmp (argv[i],"-noforcevis"))
 			forcevis = false;
+		else if (!strcmp(argv[i], "-wadpath"))
+		{ 
+			i++;
+		}
 		else
 			Error("Unknown option '%s'",argv[i]);
 	}

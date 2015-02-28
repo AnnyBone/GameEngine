@@ -822,16 +822,7 @@ void Monster_Frame(edict_t *eMonster)
 
 	// [6/8/2012] Don't let the emotion value get too high or low ~hogsy
 	// [30/6/2013] Moved down here ~hogsy
-	for(i = 0; i < EMOTION_NONE; i++)
-	{
-		// [4/2/2013] Made a quick fix to these, derp! ~hogsy
-		if(eMonster->monster.fEmotion[i] > 100.0f)
-			eMonster->monster.fEmotion[i] = 100.0f;
-		else if(eMonster->monster.fEmotion[i] < -100.0f)
-			eMonster->monster.fEmotion[i] = -100.0f;
 
-		//Engine.Con_DPrintf("EMOTION %i: %f (%s)\n",i,eMonster->monster.fEmotion[i],eMonster->v.cClassname);
-	}
 
 	if(eMonster->monster.Think)
 		eMonster->monster.Think(eMonster);
@@ -859,24 +850,129 @@ bool Monster_WalkMove(edict_t *ent,float yaw,float dist)
 //	NEW IMPLEMENTATION
 /////////////////////////////////////////////////////////////////////////////
 
-/*
-	Animation
-*/
+#define	MONSTER_EMOTION_RESET		30
+#define	MONSTER_EMOTION_THRESHOLD	50
+
+void Monster_Spawn(edict_t *eMonster)
+{
+	int i;
+
+	// Add it to global monster count...
+	Server.iMonsters++;
+
+	// Set its origin and angles...
+	Entity_SetOrigin(eMonster, eMonster->v.origin);
+	Entity_SetAngles(eMonster, eMonster->v.angles);
+
+	// Reset its emotions...
+	for (i = 0; i < EMOTION_NONE; i++)
+	{
+		eMonster->monster.meEmotion[i].dResetDelay = Server.dTime + MONSTER_EMOTION_RESET;
+		eMonster->monster.meEmotion[i].iEmotion = 0;
+		eMonster->monster.meEmotion[i].iPriority = 0;
+	}
+}
 
 /*	Used to go over each monster state then update it, and then calls the monsters
 	assigned think function.
 */
 void Monster_Frame(edict_t *eMonster)
 {
+	int i;
+
 	// The following is only valid for actual monsters.
 	if (!Entity_IsMonster(eMonster))
 		return;
 
 	Entity_CheckFrames(eMonster);
 
+	switch (eMonster->monster.iState)
+	{
+	case STATE_ASLEEP:
+		eMonster->monster.meEmotion[EMOTION_ANGER].iEmotion--;
+		eMonster->monster.meEmotion[EMOTION_BOREDOM].iEmotion++;
+		eMonster->monster.meEmotion[EMOTION_CONTEMPT].iEmotion--;
+		eMonster->monster.meEmotion[EMOTION_DISGUST].iEmotion--;
+		eMonster->monster.meEmotion[EMOTION_FEAR].iEmotion--;
+		eMonster->monster.meEmotion[EMOTION_INTEREST].iEmotion--;
+		eMonster->monster.meEmotion[EMOTION_JOY].iEmotion--;
+
+		
+		break;
+	case STATE_AWAKE:
+		switch (eMonster->monster.iThink)
+		{
+		case THINK_ATTACKING:
+			eMonster->monster.meEmotion[EMOTION_ANGER].iEmotion++;
+			eMonster->monster.meEmotion[EMOTION_BOREDOM].iEmotion--;
+			eMonster->monster.meEmotion[EMOTION_CONTEMPT].iEmotion++;
+			eMonster->monster.meEmotion[EMOTION_DISGUST].iEmotion--;
+			eMonster->monster.meEmotion[EMOTION_FEAR].iEmotion++;
+			eMonster->monster.meEmotion[EMOTION_INTEREST].iEmotion--;
+			eMonster->monster.meEmotion[EMOTION_JOY].iEmotion--;
+			break;
+		case THINK_FLEEING:
+			eMonster->monster.meEmotion[EMOTION_ANGER].iEmotion--;
+			eMonster->monster.meEmotion[EMOTION_BOREDOM].iEmotion--;
+			eMonster->monster.meEmotion[EMOTION_CONTEMPT].iEmotion++;
+			eMonster->monster.meEmotion[EMOTION_DISGUST].iEmotion--;
+			eMonster->monster.meEmotion[EMOTION_FEAR].iEmotion++;
+			eMonster->monster.meEmotion[EMOTION_INTEREST].iEmotion--;
+			eMonster->monster.meEmotion[EMOTION_JOY].iEmotion--;
+			break;
+		case THINK_PURSUING:
+		case THINK_IDLE:
+			eMonster->monster.meEmotion[EMOTION_ANGER].iEmotion--;
+			eMonster->monster.meEmotion[EMOTION_BOREDOM].iEmotion++;
+			eMonster->monster.meEmotion[EMOTION_CONTEMPT].iEmotion--;
+			eMonster->monster.meEmotion[EMOTION_DISGUST].iEmotion--;
+			eMonster->monster.meEmotion[EMOTION_FEAR].iEmotion--;
+			eMonster->monster.meEmotion[EMOTION_INTEREST].iEmotion--;
+			eMonster->monster.meEmotion[EMOTION_JOY].iEmotion--;
+			break;
+		case THINK_WANDERING:
+			break;
+		}
+		break;
+	case STATE_DEAD:
+		break;
+	case STATE_NONE:
+		break;
+	}
+
+	if (eMonster->monster.iState != STATE_DEAD)
+	{
+		for (i = 0; i < EMOTION_NONE; i++)
+		{
+			// Keep these within reasonable limits...
+			if (eMonster->monster.meEmotion[i].iEmotion >= 100.0f)
+			{
+				if (!Monster_EmotionReset(eMonster, i))
+					eMonster->monster.meEmotion[i].iEmotion = 100.0f;
+			}
+			else if (eMonster->monster.meEmotion[i].iEmotion <= -100.0f)
+			{
+				if (!Monster_EmotionReset(eMonster, i))
+					eMonster->monster.meEmotion[i].iEmotion = -100.0f;
+			}
+
+#ifdef MONSTER_DEBUG
+			Engine.Con_DPrintf("EMOTION %i: %i %f (%s)\n",
+				i,
+				eMonster->monster.meEmotion[i].iEmotion,
+				eMonster->monster.meEmotion[i].dResetDelay,
+				eMonster->v.cClassname);
+#endif
+		}
+	}
+
 	if (eMonster->monster.Think)
 		eMonster->monster.Think(eMonster);
 }
+
+/*
+	Animation
+*/
 
 /*
 	States
@@ -885,6 +981,26 @@ void Monster_Frame(edict_t *eMonster)
 /*
 	Emotions
 */
+
+/*	Check if it's time to reset the emotion state or not.
+*/
+bool Monster_EmotionReset(edict_t *eMonster, int iEmotion)
+{
+	if (eMonster->monster.meEmotion[iEmotion].dResetDelay > Server.dTime)
+	{
+		eMonster->monster.meEmotion[iEmotion].iEmotion = 0;
+
+		eMonster->monster.meEmotion[iEmotion].dResetDelay = Server.dTime + MONSTER_EMOTION_RESET;
+
+#ifdef MONSTER_DEBUG
+		Engine.Con_DPrintf("Reset emotional state for %s\n", eMonster->v.cClassname);
+#endif
+
+		return true;
+	}
+
+	return false;
+}
 
 /*
 	Relationships

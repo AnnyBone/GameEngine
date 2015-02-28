@@ -1,3 +1,5 @@
+/*	Copyright (C) 2011-2015 OldTimes Software
+*/
 #ifndef __ENGINEMATERIAL__
 #define __ENGINEMATERIAL__
 
@@ -41,7 +43,7 @@ typedef enum
 	MATERIAL_TEXTURE_SPHERE,		// Spherical mapping.
 	MATERIAL_TEXTURE_FULLBRIGHT,	// Adds highlights to the texture.
 	MATERIAL_TEXTURE_DETAIL,		// Detail map is blended with other layers to make textures appear more detailed.
-	//MATERIAL_TEXTURE_LIGHTMAP,		// Lightmap is automated, gets skipped.
+	//MATERIAL_TEXTURE_LIGHTMAP,	// Lightmap is automated, gets skipped.
 
 	MATERIAL_TEXTURE_MAX
 } MaterialTextureType_t;

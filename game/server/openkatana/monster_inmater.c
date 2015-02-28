@@ -114,7 +114,7 @@ void Inmater_Think(edict_t *eInmater)
 	switch(eInmater->monster.iState)
 	{
 	case STATE_ASLEEP:
-		if(eInmater->monster.fEmotion[EMOTION_BOREDOM] > INMATER_MAX_BOREDOM)
+		if (eInmater->monster.meEmotion[EMOTION_BOREDOM].iEmotion > INMATER_MAX_BOREDOM)
 		{
 			Monster_SetState(eInmater,STATE_AWAKE);
 			Monster_SetThink(eInmater,THINK_WANDERING);

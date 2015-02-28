@@ -7,30 +7,30 @@
     <ClCompile Include="bspinfo.c" />
     <ClCompile Include="cmdlib.c" />
     <ClCompile Include="csg4.c" />
-    <ClCompile Include="faces.c" />
     <ClCompile Include="light.c" />
     <ClCompile Include="light_face.c" />
     <ClCompile Include="light_trace.c" />
     <ClCompile Include="map.c" />
     <ClCompile Include="mathlib.c" />
     <ClCompile Include="mem.c" />
-    <ClCompile Include="outside.c" />
-    <ClCompile Include="portals.c" />
     <ClCompile Include="scriptlib.c" />
     <ClCompile Include="solidbsp.c" />
     <ClCompile Include="threads.c" />
-    <ClCompile Include="tjunc.c" />
-    <ClCompile Include="tree.c" />
     <ClCompile Include="vis.c" />
     <ClCompile Include="vis_flow.c" />
     <ClCompile Include="vis_sound.c" />
-    <ClCompile Include=".\bsp_wad.c" />
     <ClCompile Include="winding.c" />
-    <ClCompile Include="writebsp.c" />
     <ClCompile Include="level_main.c" />
     <ClCompile Include="..\shared\shared_formats.c">
       <Filter>Shared</Filter>
     </ClCompile>
+    <ClCompile Include="level_wad.c" />
+    <ClCompile Include="level_faces.c" />
+    <ClCompile Include="level_outside.c" />
+    <ClCompile Include="level_portals.c" />
+    <ClCompile Include="level_tjunc.c" />
+    <ClCompile Include="level_tree.c" />
+    <ClCompile Include="level_write.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="bsp5.h" />

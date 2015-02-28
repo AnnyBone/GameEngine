@@ -101,18 +101,6 @@ void Prisoner_Walk(edict_t *ePrisoner)
 	if(ePrisoner->v.iHealth <= 0)
 		return;
 
-	if(ePrisoner->monster.fEmotion[EMOTION_FEAR] >= 5)
-	{
-		Monster_SetThink(ePrisoner,THINK_FLEEING);
-		return;
-	}
-	else if(ePrisoner->monster.fEmotion[EMOTION_BOREDOM] <= 1)
-	{
-		// [19/10/2012] BUG: SetThink not working here... Why? ~hogsy
-		Monster_SetThink(ePrisoner,THINK_IDLE);
-		return;
-	}
-
 	Monster_MoveToGoal(ePrisoner,ePrisoner->monster.vTarget,10.0f);
 }
 
@@ -121,14 +109,6 @@ void Prisoner_Run(edict_t *ePrisoner)
 	// [21/9/2012] Check our health before we attempt to move! ~hogsy
 	if(ePrisoner->v.iHealth <= 0)
 		return;
-
-	// [19/10/2012] Fixed a little oversight ~hogsy
-	if(	ePrisoner->monster.fEmotion[EMOTION_BOREDOM] <= 5	&&
-		ePrisoner->monster.fEmotion[EMOTION_FEAR] < 5)
-	{
-		Monster_SetThink(ePrisoner,THINK_IDLE);
-		return;
-	}
 
 	Monster_MoveToGoal(ePrisoner,ePrisoner->monster.vTarget,20.0f);
 }

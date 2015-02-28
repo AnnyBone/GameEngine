@@ -354,13 +354,13 @@ void Bot_BroadcastMessage(edict_t *eBot,edict_t *other)
 		cPhrase = BotDeathPhrases[(rand()%pARRAYELEMENTS(BotDeathPhrases))];
 	else
 	{
-		if(eBot->monster.fEmotion[EMOTION_ANGER] > 5.0f)
+		if(eBot->monster.meEmotion[EMOTION_ANGER].iEmotion > 50)
 			cPhrase = BotAngryPhrases[(rand()%pARRAYELEMENTS(BotAngryPhrases))];
-		else if(eBot->monster.fEmotion[EMOTION_BOREDOM] > 5.0f)
+		else if (eBot->monster.meEmotion[EMOTION_BOREDOM].iEmotion > 50)
 			cPhrase = BotBoredPhrases[(rand()%pARRAYELEMENTS(BotBoredPhrases))];
-		else if(eBot->monster.fEmotion[EMOTION_FEAR] > 5.0f)
+		else if (eBot->monster.meEmotion[EMOTION_FEAR].iEmotion > 50)
 			cPhrase = BotFearPhrases[(rand()%pARRAYELEMENTS(BotFearPhrases))];
-		else if(eBot->monster.fEmotion[EMOTION_JOY] > 5.0f)
+		else if (eBot->monster.meEmotion[EMOTION_JOY].iEmotion > 50)
 			cPhrase = BotJoyPhrases[(rand()%pARRAYELEMENTS(BotJoyPhrases))];
 		else
 			// [22/3/2013] Emotions don't give us anything worth saying... ~hogsy
@@ -494,9 +494,6 @@ void Bot_Walk(edict_t *eBot)
 {
 	eBot->v.velocity[0] -= 5.0f;
 	eBot->v.velocity[1] -= 10.0f;
-
-	if(eBot->monster.fEmotion[EMOTION_BOREDOM] <= 0)
-		Monster_SetThink(eBot,THINK_IDLE);
 }
 
 void Bot_Die(edict_t *eBot,edict_t *eOther)

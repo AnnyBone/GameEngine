@@ -201,6 +201,14 @@ typedef struct
 	edict_t	*eIgnore;	// Tells the entity to ignore collisions with this entity.
 } PhysicsVariables_t;
 
+typedef struct
+{
+	int	iEmotion,
+		iPriority;
+
+	double dResetDelay;
+} MonsterEmotion_t;
+
 // Monster specific variables
 typedef struct
 {
@@ -224,11 +232,13 @@ typedef struct
 	void(*Jump)(edict_t *eMonster);
 
 	// Current thought state
-	int		iState,					// Primary physical state.
-			iThink;					// Primary thought state.
-	int		iCommandList[64];		// List of sub-commands for the monster to execute.
-	float	fEmotion[11],			// Current emotion states.
-			fAffect;				// Chance counter which helps determine an action based on the emotion.
+	int	iState,					// Primary physical state.
+		iNewState,				// The new state that the entity wishes to set.
+		iThink,					// Primary thought state.
+		iNewThink;				// New think that the entity wishes to set.
+	int	iCommandList[64];		// List of sub-commands for the monster to execute.
+
+	MonsterEmotion_t	meEmotion[11];			// Current emotion states.
 
 	float	fViewDistance;			// Distance in which a monster can detect a target within.
 

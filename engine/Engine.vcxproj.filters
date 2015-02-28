@@ -79,7 +79,6 @@
     <ClCompile Include="..\external\glee\GLee.c">
       <Filter>External</Filter>
     </ClCompile>
-    <ClCompile Include="engine_consolevar.c" />
     <ClCompile Include="conproc.c">
       <Filter>Legacy</Filter>
     </ClCompile>
@@ -237,6 +236,9 @@
     </ClCompile>
     <ClCompile Include="server_edict.c">
       <Filter>Server</Filter>
+    </ClCompile>
+    <ClCompile Include="console_variable.c">
+      <Filter>Console</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

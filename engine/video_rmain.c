@@ -589,16 +589,6 @@ void R_RenderScene(void)
 
 		GL_SetFrustum(r_fovx,r_fovy); //johnfitz -- use r_fov* vars
 
-		if(cvVideoMirror.bValue)
-		{
-			if(mpMirrorPlane->normal[2])
-				glScalef(1,-1,1);
-			else
-				glScalef(-1,1,1);
-
-			glCullFace(GL_BACK);
-		}
-
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
 		glRotatef(-90,1,0,0);	    // put Z going up

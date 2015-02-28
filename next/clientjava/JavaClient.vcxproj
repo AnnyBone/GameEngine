@@ -99,15 +99,15 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\Program Files\Java\jdk1.8.0_31\include;C:\Program Files\Java\jdk1.8.0_31\include\win32;.\..\..\platform\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Program Files\Java\jdk1.8.0_31\include;C:\Program Files\Java\jdk1.8.0_31\include\win32;.\..\..\platform\include;.\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Program Files\Java\jdk1.8.0_31\lib;.\..\..\platform\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>platform.x64.lib;jvm.lib;jawt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Program Files\Java\jdk1.8.0_31\lib;.\..\..\platform\lib;..\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>platform.x64.lib;glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>.\..\bin\JavaClient.exe</OutputFile>
     </Link>
   </ItemDefinitionGroup>
@@ -146,7 +146,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="JavaClient.c" />
+    <ClCompile Include="..\..\external\glee\GLee.c" />
+    <ClCompile Include="jclient_input.c" />
+    <ClCompile Include="jclient_main.c" />
+    <ClCompile Include="jclient_video.c" />
+    <ClCompile Include="jclient_virtualmachine.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\external\glee\GLee.h" />
+    <ClInclude Include="jclient_input.h" />
+    <ClInclude Include="jclient_main.h" />
+    <ClInclude Include="jclient_video.h" />
+    <ClInclude Include="jclient_virtualmachine.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

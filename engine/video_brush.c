@@ -132,6 +132,17 @@ void R_DrawSequentialPoly(msurface_t *s)
 
 	if(s->flags & SURF_DRAWSKY)
 		return;
+	else if (s->flags & SURFACE_MIRROR)
+	{
+		float	d;
+
+		if (!cvVideoMirror.bValue)
+			return;
+
+		// TODO: Draw mirror surfaces...
+
+		
+	}
     else if(s->flags & SURF_NOTEXTURE)
 	{
 		DrawGLPoly(s->polys);

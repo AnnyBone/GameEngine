@@ -438,7 +438,7 @@ void Video_UpdateWindow(void)
 	// [16/7/2013] There's gotta be a cleaner way of doing this... Ugh ~hogsy
 	if(Video.bFullscreen != cvFullscreen.bValue)
 	{
-		if(SDL_SetWindowFullscreen(sMainWindow,(SDL_bool)cvFullscreen.bValue) < 0)
+		if(SDL_SetWindowFullscreen(sMainWindow,(SDL_bool)cvFullscreen.bValue) == -1)
 		{
 			Con_Warning("Failed to set window mode!\n%s",SDL_GetError());
 

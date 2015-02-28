@@ -36,10 +36,7 @@ void Point_MonsterSpawn(edict_t *eMonster)
 	if(cvServerMonsters.value <= 0)
 		ENTITY_REMOVE(eMonster);
 
-	Server.iMonsters++;
-
-	Entity_SetOrigin(eMonster, eMonster->v.origin);
-	Entity_SetAngles(eMonster, eMonster->v.angles);
+	Monster_Spawn(eMonster);
 
 	switch(eMonster->local.style)
 	{
