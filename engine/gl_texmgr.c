@@ -833,6 +833,8 @@ void TexMgr_LoadImage32 (gltexture_t *glt, byte *data)
 	if ((glt->flags & TEXPREF_MIPMAP) && Video.bGenerateMipMap)
 		glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
 	glTexImage2D (GL_TEXTURE_2D, 0, internalformat, glt->width, glt->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+	if ((glt->flags & TEXPREF_MIPMAP) && Video.bGenerateMipMap)
+		glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE);
 
 	// upload mipmaps
 	if ((glt->flags & TEXPREF_MIPMAP) && !Video.bGenerateMipMap)
