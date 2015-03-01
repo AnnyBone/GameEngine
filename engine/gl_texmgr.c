@@ -830,35 +830,31 @@ void TexMgr_LoadImage32 (gltexture_t *glt, byte *data)
 	// upload
 	Video_SetTexture(glt);
 	internalformat = (glt->flags & TEXPREF_ALPHA) ? gl_alpha_format : gl_solid_format;
+	if ((glt->flags & TEXPREF_MIPMAP) && Video.bGenerateMipMap)
+		glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
 	glTexImage2D (GL_TEXTURE_2D, 0, internalformat, glt->width, glt->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 
 	// upload mipmaps
-	if (glt->flags & TEXPREF_MIPMAP)
+	if ((glt->flags & TEXPREF_MIPMAP) && !Video.bGenerateMipMap)
 	{
-		if (Video.bGenerateMipMap)
-			// Support generating the mipmap on hardware.
-			glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP_SGIS, GL_TRUE);
-		else
+		// Otherwise do it the ol' fasioned way.
+
+		mipwidth = glt->width;
+		mipheight = glt->height;
+
+		for (miplevel = 1; mipwidth > 1 || mipheight > 1; miplevel++)
 		{
-			// Otherwise do it the ol' fasioned way.
-
-			mipwidth = glt->width;
-			mipheight = glt->height;
-
-			for (miplevel = 1; mipwidth > 1 || mipheight > 1; miplevel++)
+			if (mipwidth > 1)
 			{
-				if (mipwidth > 1)
-				{
-					TexMgr_MipMapW(data, mipwidth, mipheight);
-					mipwidth >>= 1;
-				}
-				if (mipheight > 1)
-				{
-					TexMgr_MipMapH(data, mipwidth, mipheight);
-					mipheight >>= 1;
-				}
-				glTexImage2D(GL_TEXTURE_2D, miplevel, internalformat, mipwidth, mipheight, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+				TexMgr_MipMapW(data, mipwidth, mipheight);
+				mipwidth >>= 1;
 			}
+			if (mipheight > 1)
+			{
+				TexMgr_MipMapH(data, mipwidth, mipheight);
+				mipheight >>= 1;
+			}
+			glTexImage2D(GL_TEXTURE_2D, miplevel, internalformat, mipwidth, mipheight, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 		}
 	}
 
