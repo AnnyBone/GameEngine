@@ -67,7 +67,9 @@ typedef struct
 					bUnlocked;						// Can we change the window settings or not?
 
 	// OpenGL Extensions
-	bool	bVertexBufferObject;		// ARB_vertex_buffer_object
+	bool
+		bGenerateMipMap,
+		bVertexBufferObject;		// ARB_vertex_buffer_object
 
 	SDL_SysWMinfo	sSystemInfo;
 } Video_t;

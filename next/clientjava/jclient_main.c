@@ -13,6 +13,10 @@
 
 void JClient_Initialize(void)
 {
+	pFileSystem_GetWorkingDirectory(Global.cCurrentDirectory);
+
+	printf("Current directory: %s\n", Global.cCurrentDirectory);
+
 	JVirtualMachine_Initialize();
 
 	if (JVideo_Initialize())

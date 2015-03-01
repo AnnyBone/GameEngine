@@ -15,7 +15,8 @@ jint(*_JVirtualMachine_Create)(JavaVM **pvm, void **penv, void *args);
 
 void JVirtualMachine_Initialize(void)
 {
-	int iStatus;
+	char	*cClassPath = "none";
+	int		iStatus;
 
 	if (bVMInitialized)
 		return;
@@ -42,7 +43,10 @@ void JVirtualMachine_Initialize(void)
 	JavaVMInitArgs	jArgs;
 	JavaVMOption	jOptions[1];
 
-	jOptions[0].optionString = "-Djava.class.path=c:\\projects";
+	sprintf(cClassPath, "-Djava.class.path=%s\\data\\scripts", Global.cCurrentDirectory);
+
+	jOptions[0].optionString = cClassPath;
+//	jOptions[1].optionString = "-verbose:jni";
 
 	jArgs.ignoreUnrecognized = false;
 	jArgs.nOptions = 1;
@@ -61,7 +65,7 @@ void JVirtualMachine_Initialize(void)
 	printf("DONE!\n");
 
 	// Attempt to call up main function.
-	JVirtualMachine_CallStaticFunction("main", JVirtualMachine_GetClass("data/scripts/GameMain"));
+	JVirtualMachine_CallStaticFunction("main", JVirtualMachine_GetClass("GameMain"));
 }
 
 void JVirtualMachine_CallStaticFunction(const char *ccFunction, jclass jClass)

@@ -42,6 +42,7 @@ Material_t *Material_Allocate(void);
 Material_t	
 	*mNoTexture,
 	*mBlobShadow,
+	*mWhite,
 	*mConChars;
 
 void Material_List(void);
@@ -71,6 +72,10 @@ void Material_Initialize(void)
 	mBlobShadow = Material_Load("engine/shadow");
 	if (!mBlobShadow)
 		Sys_Error("Failed to load shadow material!\n");
+
+	mWhite = Material_Load("engine/colours");
+	if (!mWhite)
+		Sys_Error("Failed to load white material!\n");
 }
 
 /*	Lists all the currently active materials.
@@ -266,7 +271,7 @@ Material_t *Material_GetByPath(const char *ccPath)
 
 gltexture_t *Material_LoadTexture(Material_t *mMaterial, MaterialSkin_t *mCurrentSkin, char *cArg)
 {
-	int			iTextureFlags = TEXPREF_ALPHA;
+	int			iTextureFlags = TEXPREF_ALPHA|TEXPREF_MIPMAP;
 	byte		*bTextureMap;
 
 	// Check if it's trying to use a built-in texture.

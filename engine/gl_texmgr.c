@@ -835,22 +835,30 @@ void TexMgr_LoadImage32 (gltexture_t *glt, byte *data)
 	// upload mipmaps
 	if (glt->flags & TEXPREF_MIPMAP)
 	{
-		mipwidth = glt->width;
-		mipheight = glt->height;
-
-		for (miplevel=1; mipwidth > 1 || mipheight > 1; miplevel++)
+		if (Video.bGenerateMipMap)
+			// Support generating the mipmap on hardware.
+			glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP_SGIS, GL_TRUE);
+		else
 		{
-			if (mipwidth > 1)
+			// Otherwise do it the ol' fasioned way.
+
+			mipwidth = glt->width;
+			mipheight = glt->height;
+
+			for (miplevel = 1; mipwidth > 1 || mipheight > 1; miplevel++)
 			{
-				TexMgr_MipMapW (data, mipwidth, mipheight);
-				mipwidth >>= 1;
+				if (mipwidth > 1)
+				{
+					TexMgr_MipMapW(data, mipwidth, mipheight);
+					mipwidth >>= 1;
+				}
+				if (mipheight > 1)
+				{
+					TexMgr_MipMapH(data, mipwidth, mipheight);
+					mipheight >>= 1;
+				}
+				glTexImage2D(GL_TEXTURE_2D, miplevel, internalformat, mipwidth, mipheight, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 			}
-			if (mipheight > 1)
-			{
-				TexMgr_MipMapH (data, mipwidth, mipheight);
-				mipheight >>= 1;
-			}
-			glTexImage2D (GL_TEXTURE_2D, miplevel, internalformat, mipwidth, mipheight, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 		}
 	}
 

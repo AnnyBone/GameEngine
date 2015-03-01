@@ -102,6 +102,7 @@ typedef struct Material_s
 extern Material_t	
 	*mNoTexture,	// Used for materials that are missing.
 	*mBlobShadow,	// Self explanitory.
+	*mWhite,
 	*mConChars;		// Used for the console font.
 
 void Material_Initialize(void);

@@ -945,15 +945,15 @@ void Monster_Frame(edict_t *eMonster)
 		for (i = 0; i < EMOTION_NONE; i++)
 		{
 			// Keep these within reasonable limits...
-			if (eMonster->monster.meEmotion[i].iEmotion >= 100.0f)
+			if (eMonster->monster.meEmotion[i].iEmotion >= 100)
 			{
 				if (!Monster_EmotionReset(eMonster, i))
-					eMonster->monster.meEmotion[i].iEmotion = 100.0f;
+					eMonster->monster.meEmotion[i].iEmotion = 100;
 			}
-			else if (eMonster->monster.meEmotion[i].iEmotion <= -100.0f)
+			else if (eMonster->monster.meEmotion[i].iEmotion <= -100)
 			{
 				if (!Monster_EmotionReset(eMonster, i))
-					eMonster->monster.meEmotion[i].iEmotion = -100.0f;
+					eMonster->monster.meEmotion[i].iEmotion = -100;
 			}
 
 #ifdef MONSTER_DEBUG

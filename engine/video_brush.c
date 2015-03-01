@@ -181,29 +181,35 @@ void R_DrawSequentialPoly(msurface_t *s)
 	}
 	else
 	{
-		if (fAlpha < 1.0f)
+		if (!r_showtris.bValue)
 		{
-			Video_SetBlend(VIDEO_BLEND_IGNORE, VIDEO_DEPTH_FALSE);
-			Video_EnableCapabilities(VIDEO_BLEND);
+			if (fAlpha < 1.0f)
+			{
+				Video_SetBlend(VIDEO_BLEND_IGNORE, VIDEO_DEPTH_FALSE);
+				Video_EnableCapabilities(VIDEO_BLEND);
 
-			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+				glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+			}
+
+			Video_SelectTexture(VIDEO_TEXTURE_LIGHT);
+			Video_SetTexture(lightmap_textures[s->lightmaptexturenum]);
+
+			R_RenderDynamicLightmaps(s);
+			R_UploadLightmap(s->lightmaptexturenum);
+
+			Video_EnableCapabilities(VIDEO_TEXTURE_2D);
+
+			Video_SelectTexture(VIDEO_TEXTURE_DIFFUSE);
 		}
-
-		Video_SelectTexture(VIDEO_TEXTURE_LIGHT);
-		Video_SetTexture(lightmap_textures[s->lightmaptexturenum]);
-
-		R_RenderDynamicLightmaps(s);
-		R_UploadLightmap(s->lightmaptexturenum);
-
-		Video_EnableCapabilities(VIDEO_TEXTURE_2D);
-
-		Video_SelectTexture(VIDEO_TEXTURE_DIFFUSE);
 
 		Video_DrawSurface(s, fAlpha, s->texinfo->texture->mAssignedMaterial, 0);
 
-		Video_SelectTexture(VIDEO_TEXTURE_LIGHT);
+		if (!r_showtris.bValue)
+		{
+			Video_SelectTexture(VIDEO_TEXTURE_LIGHT);
 
-		glDisable(GL_TEXTURE_2D);
+			glDisable(GL_TEXTURE_2D);
+		}
 
 		rs_brushpasses++;
 	}

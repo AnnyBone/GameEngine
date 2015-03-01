@@ -300,7 +300,7 @@ void World_Draw(void)
 		for(s = t->texturechain; s; s = s->texturechain)
 			if(!s->culled)
 			{
-				if (t->mAssignedMaterial->bBind)
+				if (t->mAssignedMaterial->bBind && !r_showtris.bValue)
 				{
 					Video_SelectTexture(VIDEO_TEXTURE_LIGHT);
 					Video_EnableCapabilities(VIDEO_TEXTURE_2D);
@@ -308,13 +308,16 @@ void World_Draw(void)
 					t->mAssignedMaterial->bBind = false;
 				}
 
-				Video_SelectTexture(VIDEO_TEXTURE_LIGHT);
+				if (!r_showtris.bValue)
+				{
+					Video_SelectTexture(VIDEO_TEXTURE_LIGHT);
 
-				Video_SetTexture(lightmap_textures[s->lightmaptexturenum]);
-				R_RenderDynamicLightmaps(s);
-				R_UploadLightmap(s->lightmaptexturenum);
+					Video_SetTexture(lightmap_textures[s->lightmaptexturenum]);
+					R_RenderDynamicLightmaps(s);
+					R_UploadLightmap(s->lightmaptexturenum);
 
-				Video_SelectTexture(VIDEO_TEXTURE_DIFFUSE);
+					Video_SelectTexture(VIDEO_TEXTURE_DIFFUSE);
+				}
 				
 				Video_DrawSurface(s, 1.0f, t->mAssignedMaterial, 0);
 

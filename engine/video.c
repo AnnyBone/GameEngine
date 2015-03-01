@@ -81,10 +81,11 @@ void Video_Initialize(void)
 	Con_Printf("Initializing video...\n");
 
 	// [23/7/2013] Set default values ~hogsy
-	Video.iCurrentTexture		= (unsigned int)-1;	// [29/8/2012] "To avoid unnecessary texture sets" ~hogsy
-	Video.bVertexBufferObject	= false;
-	Video.bActive				=			// Window is intially assumed active.
-	Video.bUnlocked				= true;		// Video mode is initially locked.
+	Video.iCurrentTexture = (unsigned int)-1;	// [29/8/2012] "To avoid unnecessary texture sets" ~hogsy
+	Video.bVertexBufferObject = false;
+	Video.bGenerateMipMap = false;
+	Video.bActive = true;						// Window is intially assumed active.
+	Video.bUnlocked = true;						// Video mode is initially locked.
 
 	// All units are initially disabled.
 	for (i = 0; i < VIDEO_MAX_UNITS; i++)
@@ -275,7 +276,9 @@ void Video_CreateWindow(void)
 	SDL_GL_SetAttribute(SDL_GL_ACCUM_GREEN_SIZE,8);
 	SDL_GL_SetAttribute(SDL_GL_ACCUM_BLUE_SIZE,8);
 	SDL_GL_SetAttribute(SDL_GL_ACCUM_ALPHA_SIZE,8);
+#if 0
 	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+#endif
 	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE,24);
 	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE,8);
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER,1);
@@ -354,6 +357,11 @@ void Video_CreateWindow(void)
 		Sys_Error("ARB/EXT_texture_env_add isn't supported by your hardware!\n");
 	else if (!GLEE_EXT_fog_coord)
 		Sys_Error("EXT_fog_coord isn't supported by your hardware!\n");
+	
+	if (GLEE_SGIS_generate_mipmap)
+		Video.bGenerateMipMap = true;
+	else
+		Con_Warning("SGIS_generate_mipmap isn't supported by your hardware!\n");
 
 	if (GLEE_ARB_vertex_buffer_object)
 		Video.bVertexBufferObject = true;
@@ -693,8 +701,28 @@ void Video_DrawMaterial(
 	MaterialSkin_t	*msCurrentSkin;
 
 	// If we're drawing flat, then don't apply textures.
-	if (r_lightmap_cheatsafe || r_drawflat_cheatsafe || r_showtris.bValue || !cvVideoDrawMaterials.bValue)
+	if (r_drawflat_cheatsafe)
 		return;
+
+	if (r_lightmap_cheatsafe || r_showtris.bValue || !cvVideoDrawMaterials.bValue)
+	{
+		// Select the first TMU.
+		Video_SelectTexture(0);
+
+		if (!bPost)
+		{
+			// Enable it.
+			Video_EnableCapabilities(VIDEO_TEXTURE_2D);
+
+			// Bind it.
+			Video_SetTexture(mWhite->msSkin[0].mtTexture->gMap);
+		}
+		else
+			// Disable it.
+			Video_DisableCapabilities(VIDEO_TEXTURE_2D);
+
+		return;
+	}
 
 	if (mMaterial->iFlags & MATERIAL_FLAG_ANIMATED)
 		msCurrentSkin = Material_GetAnimatedSkin(mMaterial);
