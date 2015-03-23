@@ -5,7 +5,7 @@
 
 #include "server_main.h"
 
-#define	MONSTER_DEBUG
+//#define	MONSTER_DEBUG
 
 typedef struct
 {

@@ -222,7 +222,7 @@ void Warp_DrawWaterPoly(glpoly_t *p)
 	fVert = p->verts[0];
 	for (i = 0; i < p->numverts; i++, fVert += VERTEXSIZE)
 	{
-		MathVector_t	mvLightColour;
+		DynamicLight_t *dLight;
 
 		Video_ObjectTexture(&voWaterPoly[i], 0, WARPCALC(fVert[3], fVert[4]), WARPCALC(fVert[4], fVert[3]));
 
@@ -230,15 +230,39 @@ void Warp_DrawWaterPoly(glpoly_t *p)
 
 #if 1	// Shitty lit water, use dynamic light points in the future...
 		// Use vWave position BEFORE we move it, otherwise the water will flicker.
-		mvLightColour = Light_GetSample(vWave);
+		// Additionally, these should be saved so that we aren't trying to light these every frame, URGH.
+		if (r_oldwater.bValue)
+		{
+			MathVector_t mvLightColour = Light_GetSample(vWave);
 
-		Math_MVToVector(mvLightColour,vLightColour);
-		Math_VectorScale(vLightColour,1.0f/200.0f,vLightColour);
-		Math_VectorDivide(vLightColour,0.4f,vLightColour);
+			Math_MVToVector(mvLightColour, vLightColour);
+			Math_VectorScale(vLightColour, 1.0f / 200.0f, vLightColour);
+			Math_VectorDivide(vLightColour, 0.4f, vLightColour);
+		}
+		else
+		{
+			// Other method using dynamic light points, apparently slower? So needs to be optimised.
+			dLight = Light_GetDynamic(vWave, true);
+			if (!dLight)
+				Math_VectorSet(0, vLightColour);
+			else
+			{
+				MathVector3_t vDistance;
+				Math_VectorSubtract(vWave, dLight->origin, vDistance);
+				Math_VectorCopy(dLight->color, vLightColour);
+				Math_VectorSubtractValue(vLightColour, (dLight->radius - Math_Length(vDistance)) / 100.0f, vLightColour);
+				Math_VectorScale(vLightColour, 1.0f / 200.0f, vLightColour);
+				Math_VectorDivide(vLightColour, 0.5f, vLightColour);
+			}
+		}
 
 		Video_ObjectColour(&voWaterPoly[i],
-			vLightColour[0],vLightColour[1],vLightColour[2],fWaterAlpha);
+			vLightColour[0],vLightColour[1],vLightColour[2],
+			fWaterAlpha);
+#elif 2
+		// Lightmapped water!
 #else
+		// Classic ol' Quake; fullbright water.
 		Video_ObjectColour(&voWaterPoly[i], 1.0f, 1.0f, 1.0f, fWaterAlpha);
 #endif
 

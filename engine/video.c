@@ -746,10 +746,10 @@ void Video_DrawMaterial(
 		case MATERIAL_TEXTURE_DIFFUSE:
 			if (!bPost)
 			{
-				if (uiUnit > 0)
-					glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
-				else if (Video_GetCapability(VIDEO_BLEND))
+				if (Video_GetCapability(VIDEO_BLEND))
 					glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
+				else if (uiUnit > 0)
+					glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
 				else
 					glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 
@@ -1012,8 +1012,9 @@ void Video_DrawObject(
 	// Handle different primitive types...
 	switch (vpPrimitiveType)
 	{
+	case VIDEO_PRIMITIVE_LINE:
 	case VIDEO_PRIMITIVE_TRIANGLES:
-		if (r_showtris.bValue)
+		if (r_showtris.bValue || (vpPrimitiveType == VIDEO_PRIMITIVE_LINE))
 			gPrimitive = GL_LINES;
 		else
 			gPrimitive = GL_TRIANGLES;

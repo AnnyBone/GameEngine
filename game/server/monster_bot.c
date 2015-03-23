@@ -354,6 +354,7 @@ void Bot_BroadcastMessage(edict_t *eBot,edict_t *other)
 		cPhrase = BotDeathPhrases[(rand()%pARRAYELEMENTS(BotDeathPhrases))];
 	else
 	{
+#if 0
 		if(eBot->monster.meEmotion[EMOTION_ANGER].iEmotion > 50)
 			cPhrase = BotAngryPhrases[(rand()%pARRAYELEMENTS(BotAngryPhrases))];
 		else if (eBot->monster.meEmotion[EMOTION_BOREDOM].iEmotion > 50)
@@ -365,6 +366,7 @@ void Bot_BroadcastMessage(edict_t *eBot,edict_t *other)
 		else
 			// [22/3/2013] Emotions don't give us anything worth saying... ~hogsy
 			return;
+#endif
 	}
 
 	// [17/7/2012] Temporary until we can simulate chat ~hogsy

@@ -131,7 +131,7 @@ void Draw_Shadow(entity_t *ent)
 			fShadowMatrix[8] =
 			fShadowMatrix[9] = 0;
 
-			dlLight = Light_GetDynamic(ent->origin);
+			dlLight = Light_GetDynamic(ent->origin,false);
 			if(!dlLight)
 				return;
 

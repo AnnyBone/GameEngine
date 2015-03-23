@@ -19,9 +19,6 @@
     <Filter Include="Client\Video">
       <UniqueIdentifier>{77ea4c2d-fc29-4aeb-bb27-3c33e9606552}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Client\Video\LodePNG">
-      <UniqueIdentifier>{d3e7e2e7-174d-4abc-bcbc-e4bda82334e8}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Server">
       <UniqueIdentifier>{0f375dec-2e73-49e9-8781-5f63e733672e}</UniqueIdentifier>
     </Filter>
@@ -89,9 +86,6 @@
     </ClCompile>
     <ClCompile Include="engine_clientinput.c">
       <Filter>Client</Filter>
-    </ClCompile>
-    <ClCompile Include="lodepng\lodepng.c">
-      <Filter>Client\Video\LodePNG</Filter>
     </ClCompile>
     <ClCompile Include="engine_videoshadow.c">
       <Filter>Client\Video</Filter>
@@ -367,9 +361,6 @@
     </ClInclude>
     <ClInclude Include="engine_clientinput.h">
       <Filter>Client</Filter>
-    </ClInclude>
-    <ClInclude Include="lodepng\lodepng.h">
-      <Filter>Client\Video\LodePNG</Filter>
     </ClInclude>
     <ClInclude Include="engine_videoshadow.h">
       <Filter>Client\Video</Filter>

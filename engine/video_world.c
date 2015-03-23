@@ -226,11 +226,6 @@ void World_DrawWaterTextureChains(void)
 			{
 				Video_DrawMaterial(t->mAssignedMaterial, 0, 0, 0, 0, false);
 
-				// This is really dumb...
-				//glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_TEXTURE);
-				//glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_PRIMARY_COLOR);
-				//glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 4);
-
 				for(p = s->polys->next; p; p = p->next)
 				{
 					Warp_DrawWaterPoly(p);

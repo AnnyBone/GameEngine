@@ -238,7 +238,7 @@ typedef struct
 		iNewThink;				// New think that the entity wishes to set.
 	int	iCommandList[64];		// List of sub-commands for the monster to execute.
 
-	MonsterEmotion_t	meEmotion[11];			// Current emotion states.
+	//MonsterEmotion_t	meEmotion[11];			// Current emotion states.
 
 	float	fViewDistance;			// Distance in which a monster can detect a target within.
 

@@ -71,8 +71,7 @@ void Area_CalculateMovement(edict_t *eArea,vec3_t vTDest,float fSpeed,void (*Fun
 */
 void Area_PlayerSpawn(edict_t *eArea)
 {
-	// [10/9/2013] Create a new waypoint here so monsters know to keep back... ~hogsy
-	Waypoint_Spawn(eArea->v.origin,WAYPOINT_SPAWNAREA);
+	//Waypoint_Spawn(eArea->v.origin,WAYPOINT_SPAWNAREA);
 }
 
 /*

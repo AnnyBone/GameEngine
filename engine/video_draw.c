@@ -302,10 +302,6 @@ void Draw_NewGame (void)
 	// Empty scrap and reallocate gltextures
 	memset(&scrap_allocated,0,sizeof(scrap_allocated));
 	memset(&scrap_texels,255,sizeof(scrap_texels));
-	memset(&gEffectTexture,0,sizeof(gEffectTexture));
-
-	// First slot is reserved.
-	gEffectTexture[0] = notexture;
 
 	Scrap_Upload (); //creates 2 empty gltextures
 
@@ -457,6 +453,22 @@ void Draw_TileClear (int x, int y, int w, int h)
 	glTexCoord2f(x/64.0,(y+h)/64.0);
 	glVertex2f(x,y+h);
 	glEnd();
+}
+
+void Draw_Line(MathVector3_t mvStart, MathVector3_t mvEnd)
+{
+	VideoObject_t	voLine[2] = { 0 };
+
+	Video_ResetCapabilities(false);
+
+	Video_ObjectColour(&voLine[0], 1.0f, 0, 0, 1.0f);
+	Video_ObjectVertex(&voLine[0], mvStart[0], mvStart[1], mvStart[2]);
+	Video_ObjectColour(&voLine[1], 1.0f, 0, 0, 1.0f);
+	Video_ObjectVertex(&voLine[1], mvEnd[0], mvEnd[1], mvEnd[2]);
+
+	Video_DrawObject(voLine, VIDEO_PRIMITIVE_LINE, 2, NULL, 0);
+
+	Video_ResetCapabilities(true);
 }
 
 void Draw_Fill(int x,int y,int w,int h,float r,float g,float b,float alpha)

@@ -21,30 +21,65 @@
 
 #include "platform_filesystem.h"
 
-#include "lodepng/lodepng.h"
-
 char loadfilename[MAX_OSPATH]; //file scope so that error messages can use it
 
 /*	Returns a pointer to hunk allocated RGBA data
 */
 byte *Image_LoadImage(char *name, unsigned int *width, unsigned int *height)
 {
+#if 0	// SDL_Image
+	SDL_Surface *sImage;
+	SDL_RWops	*rwFile;
+	FILE		*fFile;
+
+	sprintf(loadfilename, "%s/%s.png",host_parms.cBasePath, name);
+
+	sImage = IMG_Load(loadfilename);
+
+	/*
+	COM_FOpenFile(loadfilename, &fFile);
+	if (fFile)
+	{
+		//char *cBuffer;
+
+		//cBuffer = Hunk_TempAlloc(sizeof(fFile->_base));
+		//memcpy(cBuffer, fFile->_base, sizeof(cBuffer));
+
+		rwFile = SDL_RWFromFP(fFile, SDL_TRUE);
+		//rwFile = SDL_RWFromMem(cBuffer, sizeof(cBuffer));
+		if (rwFile)
+		{
+			sImage = IMG_LoadPNG_RW(rwFile);
+			if (!sImage)
+				Con_Warning("Failed to load PNG! (%s)\n", IMG_GetError());
+
+			SDL_RWclose(rwFile);
+		}
+		
+		fclose(fFile);
+
+		//free(cBuffer);
+	}
+	*/
+
+	if (sImage)
+	{
+		*width = sImage->w;
+		*height = sImage->h;
+
+		byte *bImage = sImage->pixels;
+
+		malloc(sizeof(sImage->pixels));
+
+		memcpy(bImage, sImage->pixels, sizeof(bImage));
+
+		SDL_FreeSurface(sImage);
+
+		return sImage->pixels;
+	}
+#else	// Internal
 	byte	*bImage;
 	FILE	*f;
-
-	// [26/1/2014] PNG support ~hogsy
-	sprintf(loadfilename, "%s.png", name);
-	COM_FOpenFile(loadfilename, &f);
-	if (f)
-	{
-		unsigned int uiDecode;
-
-		uiDecode = lodepng_decode_file2(f, &bImage, width, height, LCT_RGBA, 8);
-		if (!uiDecode)
-			return bImage;
-
-		Con_Warning("Failed to load PNG! (%s) (%s)\n", loadfilename, lodepng_error_text(uiDecode));
-	}
 
 	sprintf(loadfilename,"%s.tga",name);
 	COM_FOpenFile(loadfilename,&f);
@@ -57,19 +92,36 @@ byte *Image_LoadImage(char *name, unsigned int *width, unsigned int *height)
 		// If we failed to load, warn us, then carry on and try PNG instead.
 		Con_Warning("Failed to load TGA! (%s)\n",loadfilename);
 	}
-
-	// If the file was loaded, but we failed, we still need to close it!
-	if (f)
-		fclose(f);
+#endif
 
 	return NULL;
 }
 
-//==============================================================================
-//
-//  TGA
-//
-//==============================================================================
+int fgetLittleShort(FILE *f)
+{
+	byte	b1, b2;
+
+	b1 = fgetc(f);
+	b2 = fgetc(f);
+
+	return (short)(b1 + b2 * 256);
+}
+
+int fgetLittleLong(FILE *f)
+{
+	byte	b1, b2, b3, b4;
+
+	b1 = fgetc(f);
+	b2 = fgetc(f);
+	b3 = fgetc(f);
+	b4 = fgetc(f);
+
+	return b1 + (b2 << 8) + (b3 << 16) + (b4 << 24);
+}
+
+/*
+	TGA
+*/
 
 typedef struct targaheader_s {
 	unsigned char 	id_length, colormap_type, image_type;
@@ -82,28 +134,6 @@ typedef struct targaheader_s {
 #define TARGAHEADERSIZE 18 //size on disk
 
 targaheader_t targa_header;
-
-int fgetLittleShort (FILE *f)
-{
-	byte	b1, b2;
-
-	b1 = fgetc(f);
-	b2 = fgetc(f);
-
-	return (short)(b1 + b2*256);
-}
-
-int fgetLittleLong (FILE *f)
-{
-	byte	b1, b2, b3, b4;
-
-	b1 = fgetc(f);
-	b2 = fgetc(f);
-	b3 = fgetc(f);
-	b4 = fgetc(f);
-
-	return b1 + (b2<<8) + (b3<<16) + (b4<<24);
-}
 
 /*	Writes RGB or RGBA data to a TGA file
 

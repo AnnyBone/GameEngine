@@ -258,60 +258,6 @@ void GL_SetFrustum(float fovx, float fovy)
 }
 
 void R_RenderScene(void);
-
-void R_Mirror(void)
-{
-	float		d;
-	entity_t	*eEntity;
-
-	if (!cvVideoMirror.bValue)
-		return;
-
-	memcpy(r_base_world_matrix,r_world_matrix,sizeof(r_base_world_matrix));
-
-	d = Math_DotProduct(r_refdef.vieworg,mpMirrorPlane->normal)-mpMirrorPlane->dist;
-	Math_VectorMA(r_refdef.vieworg, -2*d, mpMirrorPlane->normal, r_refdef.vieworg);
-
-	d = Math_DotProduct(vpn,mpMirrorPlane->normal);
-	Math_VectorMA(vpn,-2*d,mpMirrorPlane->normal,vpn);
-
-	r_refdef.viewangles[0] = -asin(vpn[2])/pMath_PI*180;
-	r_refdef.viewangles[1] = atan2(vpn[1],vpn[0])/pMath_PI*180;
-	r_refdef.viewangles[2] = -r_refdef.viewangles[2];
-
-	eEntity = &cl_entities[cl.viewentity];
-	if (cl_numvisedicts < MAX_VISEDICTS)
-	{
-		cl_visedicts[cl_numvisedicts] = eEntity;
-		cl_numvisedicts++;
-	}
-
-	glDepthRange(0,0.5);
-	glDepthFunc(GL_LEQUAL);
-
-	R_RenderScene();
-
-	Video_ResetCapabilities(false);
-
-	Video_EnableCapabilities(VIDEO_BLEND);
-
-	glDepthRange(0,1);
-	glDepthFunc(GL_LEQUAL);
-	glMatrixMode(GL_PROJECTION);
-
-	if(mpMirrorPlane->normal[2])
-		glScalef(1.0f,-1.0f,1.0f);
-	else
-		glScalef(-1.0f,1.0f,1.0f);
-
-	glCullFace(GL_FRONT);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadMatrixf(r_base_world_matrix);
-	glColor4f(1.0f,1.0f,1.0f,r_mirroralpha.value);
-
-	Video_ResetCapabilities(true);
-}
-
 void R_MarkSurfaces(void);          // [25/11/2013] See r_world.c ~hogsy
 void R_CullSurfaces(void);          // [25/11/2013] See r_world.c ~hogsy
 void R_UpdateWarpTextures(void);    // [25/11/2013] See gl_warp.c ~hogsy
@@ -527,19 +473,14 @@ void R_ShowBoundingBoxes(void)
 		if(ed == sv_player && !chase_active.value)
 			continue;
 
-		if(ed->v.mins[0] == ed->v.maxs[0] && ed->v.mins[1] == ed->v.maxs[1] && ed->v.mins[2] == ed->v.maxs[2])
-		{
-			glColor3f(1.0f,1.0f,1.0f);
+		glColor3f(1.0f,1.0f,1.0f);
 
-			R_EmitWirePoint (ed->v.origin);
-		}
-		else
-		{
-			Math_VectorAdd(ed->v.mins,ed->v.origin,mins);
-			Math_VectorAdd(ed->v.maxs,ed->v.origin,maxs);
+		R_EmitWirePoint (ed->v.origin);
 
-			R_EmitWireBox(mins,maxs);
-		}
+		Math_VectorAdd(ed->v.mins,ed->v.origin,mins);
+		Math_VectorAdd(ed->v.maxs,ed->v.origin,maxs);
+
+		R_EmitWireBox(mins,maxs);
 	}
 
 	glColor3f(1.0f,1.0f,1.0f);
@@ -627,7 +568,6 @@ void R_RenderScene(void)
 
 	R_DrawViewModel();
 	R_ShowBoundingBoxes();
-	R_Mirror();
 }
 
 void R_RenderView (void)

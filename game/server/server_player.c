@@ -524,7 +524,7 @@ void Player_PreThink(edict_t *ePlayer)
 
 		Math_VectorCopy(ePlayer->v.origin, vOrigin);
 
-		vOrigin[2] += 50.0f;
+		vOrigin[2] += 20.0f;
 
 		// Trace to ensure we have enough room to stand.
 		tStandCheck = Engine.Server_Move(vOrigin, vMins, vMaxs, vOrigin, 0, ePlayer);

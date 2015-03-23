@@ -482,9 +482,9 @@ void SV_WriteEntitiesToClient (edict_t	*clent, sizebuf_t *msg)
 
 		//don't send invisible entities unless they have effects
 		if (ent->alpha == ENTALPHA_ZERO && !ent->v.effects)
-			continue;
-
+			continue;			
 		//johnfitz
+
 		if (ent->baseline.alpha != ent->alpha)
 			bits |= U_ALPHA;
 		if (bits & U_FRAME && (ent->v.frame & 0xFF00))
@@ -895,7 +895,7 @@ int SV_ModelIndex (char *name)
 		if(!strcmp(sv.model_precache[i],name))
 			return i;
 
-#if 0
+#if 1
 	if (i==MAX_MODELS || !sv.model_precache[i])
 		Sys_Error ("SV_ModelIndex: model %s not precached", name);
 #else

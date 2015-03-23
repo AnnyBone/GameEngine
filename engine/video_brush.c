@@ -162,12 +162,6 @@ void R_DrawSequentialPoly(msurface_t *s)
             Video_EnableCapabilities(VIDEO_BLEND);
 		}
 
-		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
-		glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
-		glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_TEXTURE);
-		glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_PRIMARY_COLOR);
-		glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 4);
-
 		Video_DrawMaterial(s->texinfo->texture->mAssignedMaterial, 0, 0, 0, 0, false);
 
         for(pBrushPoly = s->polys->next; pBrushPoly; pBrushPoly = pBrushPoly->next)

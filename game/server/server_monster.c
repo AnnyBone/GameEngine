@@ -865,12 +865,12 @@ void Monster_Spawn(edict_t *eMonster)
 	Entity_SetAngles(eMonster, eMonster->v.angles);
 
 	// Reset its emotions...
-	for (i = 0; i < EMOTION_NONE; i++)
+/*	for (i = 0; i < EMOTION_NONE; i++)
 	{
 		eMonster->monster.meEmotion[i].dResetDelay = Server.dTime + MONSTER_EMOTION_RESET;
 		eMonster->monster.meEmotion[i].iEmotion = 0;
 		eMonster->monster.meEmotion[i].iPriority = 0;
-	}
+	}*/
 }
 
 /*	Used to go over each monster state then update it, and then calls the monsters
@@ -886,6 +886,7 @@ void Monster_Frame(edict_t *eMonster)
 
 	Entity_CheckFrames(eMonster);
 
+	/*
 	switch (eMonster->monster.iState)
 	{
 	case STATE_ASLEEP:
@@ -965,6 +966,7 @@ void Monster_Frame(edict_t *eMonster)
 #endif
 		}
 	}
+	*/
 
 	if (eMonster->monster.Think)
 		eMonster->monster.Think(eMonster);
@@ -986,7 +988,7 @@ void Monster_Frame(edict_t *eMonster)
 */
 bool Monster_EmotionReset(edict_t *eMonster, int iEmotion)
 {
-	if (eMonster->monster.meEmotion[iEmotion].dResetDelay > Server.dTime)
+/*	if (eMonster->monster.meEmotion[iEmotion].dResetDelay > Server.dTime)
 	{
 		eMonster->monster.meEmotion[iEmotion].iEmotion = 0;
 
@@ -997,7 +999,7 @@ bool Monster_EmotionReset(edict_t *eMonster, int iEmotion)
 #endif
 
 		return true;
-	}
+	}*/
 
 	return false;
 }

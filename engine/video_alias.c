@@ -190,16 +190,24 @@ DynamicLight_t	*dlLightSource;
 
 void R_SetupModelLighting(MathVector3_t vOrigin)
 {
-	float			fDistance;
+	float fDistance;
 
 	if(!bShading)
 		return;
 
 	// Check to see if we can grab the light source, for directional information.
-	dlLightSource = Light_GetDynamic(vOrigin);
+	dlLightSource = Light_GetDynamic(vOrigin,false);
 	if (dlLightSource)
 	{
+		vec3_t	vDistance;
+
 		Math_VectorCopy(dlLightSource->color, vLightColour);
+
+		Math_VectorSubtract(vOrigin, dlLightSource->origin, vDistance);
+
+		fDistance = dlLightSource->radius - Math_Length(vDistance);
+		if (fDistance > 0)
+			Math_VectorSubtractValue(vLightColour, fDistance, vLightColour);
 	}
 	else
 		Math_MVToVector(Light_GetSample(vOrigin), vLightColour);
@@ -339,9 +347,9 @@ void Alias_DrawFrame(MD2_t *mModel,entity_t *eEntity,lerpdata_t lLerpData)
 						entalpha);
 #endif
 					Video_ObjectColour(&voModel[uiVerts],
-						vLightColour[pRED],
-						vLightColour[pGREEN],
-						vLightColour[pBLUE],
+						1.0f,
+						1.0f,
+						1.0f,
 						entalpha);
 				}
 				else
@@ -492,9 +500,6 @@ void Alias_Draw(entity_t *eEntity)
 
     Video_ResetCapabilities(false);
 
-	// Let lighting stand out more...
-	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
-
 	Alias_DrawFrame(mModel, eEntity, lLerpData);
 
 	if(r_drawflat_cheatsafe)
@@ -507,5 +512,11 @@ void Alias_Draw(entity_t *eEntity)
 
 	glPopMatrix();
 
-    Video_ResetCapabilities(true);
+	Video_ResetCapabilities(true);
+
+	// Show active light reference.
+#if 0
+	if (dlLightSource)
+		Draw_Line(eEntity->origin, dlLightSource->origin);
+#endif
 }

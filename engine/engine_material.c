@@ -141,8 +141,6 @@ void Material_ClearSkin(Material_t *mMaterial, int iSkin)
 }
 
 /*	Clears all the currently active materials.
-	TODO: 
-		Reorganise list!!!!!!!!!
 */
 void Material_ClearAll(void)
 {
@@ -303,7 +301,7 @@ gltexture_t *Material_LoadTexture(Material_t *mMaterial, MaterialSkin_t *mCurren
 		// Warn about incorrect sizes.
 		if ((mCurrentSkin->mtTexture[mCurrentSkin->uiTextures].uiWidth & 15) || (mCurrentSkin->mtTexture[mCurrentSkin->uiTextures].uiHeight & 15))
 		{
-#if 0
+#if 1
 			Con_Warning("Texture is not 16 aligned! (%s) (%ix%i)\n", cArg,
 				mCurrentSkin->mtTexture[mCurrentSkin->uiTextures].uiWidth,
 				mCurrentSkin->mtTexture[mCurrentSkin->uiTextures].uiHeight);

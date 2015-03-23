@@ -225,6 +225,8 @@ void CL_KeepaliveMessage (void)
 	SZ_Clear (&cls.message);
 }
 
+#include "engine_videoshadow.h"
+
 /*	Parse information given to us by the server.
 */
 void Client_ParseServerInfo(void)
@@ -311,6 +313,8 @@ void Client_ParseServerInfo(void)
 	}
 
 	// [6/6/2013] Precache textures ~hogsy
+	memset(&gEffectTexture, 0, sizeof(gEffectTexture));
+
 	{
 		int iTextures;
 

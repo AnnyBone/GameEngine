@@ -77,7 +77,7 @@ typedef struct
 // Replacement Video Object
 typedef struct
 {
-	MathVector_t	*vVertex;
+	VideoObject_t	*vObject;
 
 	unsigned	int	uiIndeces;
 } VideoObject2_t;
@@ -100,6 +100,7 @@ extern SDL_Window	*sMainWindow;
 // Primitive Types
 typedef enum
 {
+	VIDEO_PRIMITIVE_LINE,
     VIDEO_PRIMITIVE_TRIANGLES,
     VIDEO_PRIMITIVE_TRIANGLE_FAN,
 	VIDEO_PRIMITIVE_TRIANGLE_FAN_WIRE
@@ -161,6 +162,7 @@ bool Video_GetCapability(unsigned int iCapability);
 */
 
 void Draw_ResetCanvas(void);
+void Draw_Line(MathVector3_t mvStart, MathVector3_t mvEnd);
 
 /*
     Sprite
@@ -184,7 +186,7 @@ void Light_MarkLights(DynamicLight_t *light,int bit,mnode_t *node);
 
 MathVector_t Light_GetSample(vec3_t vPoint);
 
-DynamicLight_t *Light_GetDynamic(vec3_t vPoint);
+DynamicLight_t *Light_GetDynamic(vec3_t vPoint,bool bCheap);
 
 void R_RenderDynamicLightmaps(msurface_t *fa);
 void R_UploadLightmap(int lmap);
