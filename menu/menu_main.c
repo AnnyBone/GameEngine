@@ -35,7 +35,7 @@ cvar_t	cvMenuDisclaimer = { "menu_disclaimer", "1", false, true, "Toggles the di
 // [13/8/2013] Fixed ~hogsy
 int	iMousePosition[2];
 
-int 
+int
 	iMenuWidth = 0,
 	iMenuHeight = 0;
 
@@ -54,6 +54,8 @@ char *va(char *format,...)
 
 void Menu_Initialize(void)
 {
+    int i;
+
 	Engine.Con_Printf("Initializing menu...\n");
 
 	// Get the current screen size.
@@ -62,7 +64,7 @@ void Menu_Initialize(void)
 	Engine.Cvar_RegisterVariable(&cvShowMenu, NULL);
 	Engine.Cvar_RegisterVariable(&cvMenuDisclaimer, NULL);
 
-	for (int i = 0; i < 10; i++)
+	for (i = 0; i < 10; i++)
 		Engine.Client_PrecacheResource(RESOURCE_TEXTURE, va(MENU_HUD_PATH"num%i", i));
 }
 

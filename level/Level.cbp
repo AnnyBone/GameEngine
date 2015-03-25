@@ -32,7 +32,11 @@
 			<Add option="-Wall" />
 			<Add option="-g" />
 			<Add directory="../shared" />
+			<Add directory="../platform/include" />
 		</Compiler>
+		<Unit filename="../shared/shared_formats.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="brush.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -40,9 +44,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="bsp5.h" />
-		<Unit filename="bsp_wad.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="bspfile.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -57,10 +58,28 @@
 		<Unit filename="csg4.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="faces.c">
+		<Unit filename="level_faces.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="level_main.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="level_outside.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="level_portals.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="level_tjunc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="level_tree.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="level_wad.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="level_write.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="light.c">
@@ -85,12 +104,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="mem.h" />
-		<Unit filename="outside.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="portals.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="resource.h" />
 		<Unit filename="scriptlib.c">
 			<Option compilerVar="CC" />
@@ -102,12 +115,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="threads.h" />
-		<Unit filename="tjunc.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="tree.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="vis.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -122,9 +129,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="winding.h" />
-		<Unit filename="writebsp.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Extensions>
 			<code_completion />
 			<debugger />
