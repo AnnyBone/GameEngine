@@ -57,9 +57,6 @@
 		<Unit filename="menu_hud.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="menu_input.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="menu_main.c">
 			<Option compilerVar="CC" />
 		</Unit>

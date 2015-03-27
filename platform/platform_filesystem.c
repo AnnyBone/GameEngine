@@ -142,9 +142,11 @@ void pFileSystem_ScanDirectory(const char *ccPath,const char *ccExtension,void (
 		FindClose(hFile);
 	}
 #else	// Linux (todo)
-	{
+/*	{
 		DIR             *dDirectory;
 		struct  dirent  *dEntry;
+
+		sprintf(cFileString, "%s*%s", ccPath, ccExtension);
 
 		dDirectory = opendir(ccPath);
 		if (dDirectory)
@@ -159,7 +161,7 @@ void pFileSystem_ScanDirectory(const char *ccPath,const char *ccExtension,void (
 
 			closedir(dDirectory);
 		}
-	}
+	}*/
 #endif
 }
 
