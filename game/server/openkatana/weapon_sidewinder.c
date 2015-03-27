@@ -169,13 +169,7 @@ void SideWinder_SpawnMissle(edict_t *ent,float fSpeed,float ox)
 	// [4/8/2012] Change our speed depending on what contents we're within ~hogsy
 	eMissile->local.speed	= fSpeed;
 
-	Math_VectorScale(Engine.Aim(ent),eMissile->local.speed,eMissile->v.velocity);
-
-	Math_AngleVectors(ent->v.v_angle,
-		// [4/8/2012] Set up our angle vectors ~hogsy
-		eMissile->v.vForward,
-		eMissile->local.vRight,
-		eMissile->local.vUp);
+	Weapon_Projectile(ent, eMissile, eMissile->local.speed);
 
 	Entity_SetModel(eMissile,"models/sidewinder_missile.md2");
 
@@ -184,9 +178,9 @@ void SideWinder_SpawnMissle(edict_t *ent,float fSpeed,float ox)
 
 	Math_VectorCopy(ent->v.origin,vOrg);
 
-	vOrg[0] += eMissile->v.vForward[0]*8+eMissile->local.vRight[0]*ox;
-	vOrg[1] += eMissile->v.vForward[1]*8+eMissile->local.vRight[1]*ox;
-	vOrg[2] += eMissile->v.vForward[2]*24;
+	vOrg[0] += eMissile->local.vForward[0] * 8 + eMissile->local.vRight[0] * ox;
+	vOrg[1] += eMissile->local.vForward[1] * 8 + eMissile->local.vRight[1] * ox;
+	vOrg[2] += eMissile->local.vForward[2] * 24;
 
 	Entity_SetSizeVector(eMissile,mv3Origin,mv3Origin);
 	Entity_SetOrigin(eMissile,vOrg);

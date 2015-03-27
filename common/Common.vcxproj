@@ -83,6 +83,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="cmdlib.C" />
+    <ClCompile Include="common_filesystem.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cmdlib.H" />

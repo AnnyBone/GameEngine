@@ -625,6 +625,7 @@
     <ClCompile Include="engine_console.c" />
     <ClCompile Include="console_variable.c" />
     <ClCompile Include="engine_editor.c" />
+    <ClCompile Include="vidx_object.c" />
     <ClCompile Include="video_font.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
     </ClCompile>

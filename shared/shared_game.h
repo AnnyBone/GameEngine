@@ -130,7 +130,7 @@ typedef struct
 	int			items;
 	int			iInventory[ENTITY_MAX_INVENTORY];
 
-	vec4_t		vLight;
+	MathVector4_t	vLight;
 
 	bool		bTakeDamage;
 	// [20/8/2012] Changed from an int to edict ~hogsy
@@ -170,14 +170,15 @@ typedef struct
 
 	// Physics
 	vec3_t		movedir;
-
-	// Misc
-	vec3_t		vForward;
 } entvars_t;
 
 // [12/1/2013] Model specific variables ~hogsy
 typedef struct
 {
+	/*	Move the following here...
+	frame
+	*/
+
 	float	fScale;
 
 	int	iSkin;
@@ -187,6 +188,8 @@ typedef struct
 {
 	/*	Move the following here...
 		movetype
+		watertype
+		waterlevel
 		velocity
 		avelocity
 		solid
@@ -419,9 +422,10 @@ typedef struct
 	// state data
 	vec3_t		dir;
 
-	// [4/8/2012] Set up by Math_AngleVectors ~hogsy
-	vec3_t		vRight,
-				vUp;
+	// Angles
+	MathVector3_t	vForward;
+	MathVector3_t	vRight;
+	MathVector3_t	vUp;
 
 	int			iDelta[2][2];			// X & Y Delta.
 
@@ -480,6 +484,11 @@ typedef struct edict_s
 	VehicleVariables_t	Vehicle;	// Vehicle variables.
 } edict_t;
 
+#define	NEXT_EDICT(e) ((edict_t *)( (byte *)e + sizeof(edict_t)))
+
+#define	EDICT_TO_PROG(e) ((byte*)e-(byte*)sv.edicts)
+#define PROG_TO_EDICT(e) ((edict_t *)((byte *)sv.edicts + e))
+
 // [13/1/2013] Revised ~hogsy
 // [25/7/2013] Used intptr to solve gcc warning ~hogsy
 // [25/9/2013] Moved here so we can use it in the game-code too :) ~hogsy
@@ -488,30 +497,41 @@ typedef struct edict_s
 typedef struct
 {
 	// Server
-	int			(*Server_PointContents)(vec3_t point);
-	void		(*Server_MakeStatic)(edict_t *ent);
-	void		(*Server_BroadcastPrint)(char *fmt,...);														// Sends a message to all clients.
-	void		(*Server_SinglePrint)(edict_t *eEntity,char *cMessage);											// Sends a message to a specified client.
-	void		(*Server_PrecacheResource)(int iType,const char *ccResource);									// Precaches the specified resource.
-	void		(*Server_Restart)(void);																		// Restarts the server.
-	void		(*Server_ChangeLevel)(const char *ccNewLevel);													// Changes the level.
-	void		(*Server_AmbientSound)(vec_t *vPosition,const char *cPath,int iVolume,int iAttenuation);		// Plays an ambient sound (a constant sound) from the given location.
+	int(*Server_PointContents)(vec3_t point);
+	int(*Server_GetNumEdicts)(void);
+
+	void(*Server_MakeStatic)(edict_t *ent);
+	void(*Server_BroadcastPrint)(char *fmt, ...);														// Sends a message to all clients.
+	void(*Server_SinglePrint)(edict_t *eEntity, char *cMessage);											// Sends a message to a specified client.
+	void(*Server_PrecacheResource)(int iType, const char *ccResource);									// Precaches the specified resource.
+	void(*Server_Restart)(void);																		// Restarts the server.
+	void(*Server_ChangeLevel)(const char *ccNewLevel);													// Changes the level.
+	void(*Server_AmbientSound)(vec_t *vPosition, const char *cPath, int iVolume, int iAttenuation);		// Plays an ambient sound (a constant sound) from the given location.
+
 	trace_t		(*Server_Move)(vec3_t start,vec3_t mins,vec3_t maxs,vec3_t end,int type,edict_t *passedict);
-	edict_t		*(*Server_FindRadius)(vec3_t origin,float radius);												// Finds entities within a specific radius.
-	edict_t		*(*Server_FindEntity)(edict_t *eStartEntity,char *cName,bool bClassname);						// Finds a specified entity either by classname or by entity name.
+	
+	edict_t*(*Server_FindRadius)(vec3_t origin,float radius);												// Finds entities within a specific radius.
+	edict_t*(*Server_FindEntity)(edict_t *eStartEntity,char *cName,bool bClassname);						// Finds a specified entity either by classname or by entity name.
+	edict_t*(*Server_GetEdicts)(void);
+
 	char		*(*Server_GetLevelName)(void);																	// Returns the name of the currently active level.
+	
 	double		(*Server_GetFrameTime)(void);																	// Returns host time.
 
 	// Client
-	int				(*Client_GetEffect)(const char *cPath);					// Get an effect index.
-	int				(*Client_GetStat)(ClientStat_t csStat);					// Get a client statistic (health etc.)
-	void			(*Client_PrecacheResource)(int iType,char *cResource);	// Precache a resource client-side.
-	void			(*Client_SetMenuCanvas)(int iCanvas);					// Set the canvas type that the menu will use.
-	void			(*Client_AddMenuState)(int iState);						// Adds a new state to the clients menu.
-	void			(*Client_RemoveMenuState)(int iState);					// Removes a state from the clients menu.
+	int(*Client_GetEffect)(const char *cPath);					// Get an effect index.
+	int(*Client_GetStat)(ClientStat_t csStat);					// Get a client statistic (health etc.)
+	
+	void(*Client_PrecacheResource)(int iType, char *cResource);	// Precache a resource client-side.
+	void(*Client_SetMenuCanvas)(int iCanvas);					// Set the canvas type that the menu will use.
+	void(*Client_AddMenuState)(int iState);						// Adds a new state to the clients menu.
+	void(*Client_RemoveMenuState)(int iState);					// Removes a state from the clients menu.
+	
 	entity_t		*(*Client_GetViewEntity)(void);							// Returns the entity representing the players view model.
 	entity_t		*(*Client_GetPlayerEntity)(void);						// Returns the entity representing the player.
+	
 	DynamicLight_t	*(*Client_AllocateDlight)(int key);						// Allocate a new dynamic light.
+	
 	Particle_t		*(*Client_AllocateParticle)(void);						// Allocate a new particle effect.
 
 	// Global
@@ -520,43 +540,40 @@ typedef struct
 	bool(*Material_Precache)(const char *ccPath);
 
 	// Pre 9/4/2012 (Update all these)
-	void	(*Con_Printf)(char *fmt,...);	// Appears to client in console. Standard message.
-	void	(*Con_DPrintf)(char *fmt,...);	// Only appears if launched/running in developer mode.
-	void	(*Con_Warning)(char *fmt,...);	// Highlighted message to indicate an issue.
+	void(*Con_Printf)(char *fmt, ...);	// Appears to client in console. Standard message.
+	void(*Con_DPrintf)(char *fmt, ...);	// Only appears if launched/running in developer mode.
+	void(*Con_Warning)(char *fmt, ...);	// Highlighted message to indicate an issue.
 
 	// [28/7/2012] Added SetMessageEntity ~hogsy
-	void	(*SetMessageEntity)(edict_t *ent);
-	void	(*CenterPrint)(edict_t *ent,char *msg);	// Sends a message to the specified client and displays the message at the center of the screen.
-	void	(*Sys_Error)(char *error,...);
-	void	(*SetModel)(edict_t *ent,char *m);		// Sets the model for the specified entity.
-	void	(*Particle)(float org[3],float dir[3],float scale,char *texture,int count);
-	void	(*Flare)(vec3_t org,float r,float g,float b,float a,float scale,char *texture);
-	void	(*Sound)(edict_t *ent,int channel,char *sample,int volume,float attenuation);
-	void	(*LinkEntity)(edict_t *ent,bool touch_triggers);
-	void	(*UnlinkEntity)(edict_t *ent);
-	void	(*FreeEntity)(edict_t *ed);
-	void	(*DrawPic)(char *path,float alpha,int x,int y,int w,int h);
-	void	(*DrawString)(int x,int y,char *msg);
-	void	(*DrawFill)(int x,int y,int w,int h,float r,float g,float b,float alpha);
-	void 	(*Cvar_RegisterVariable)(cvar_t *variable,void (*Function)(void));
-	void	(*Cvar_SetValue)(char *var_name,float value);
-	void	(*LightStyle)(int style,char *val);
-	void	(*MakeVectors)(vec3_t angles);
-	void	(*Cmd_AddCommand)(char *cmd_name,void (*function)(void));
-	void	(*WriteByte)(int mode,int command);
-	void	(*WriteCoord)(int mode,float f);
-	void	(*WriteAngle)(int mode,float f);
-	void	(*WriteEntity)(int mode,edict_t *ent);
-	void	(*ShowCursor)(bool bShow);
+	void(*SetMessageEntity)(edict_t *ent);
+	void(*CenterPrint)(edict_t *ent, char *msg);	// Sends a message to the specified client and displays the message at the center of the screen.
+	void(*Sys_Error)(char *error, ...);
+	void(*SetModel)(edict_t *ent, char *m);		// Sets the model for the specified entity.
+	void(*Particle)(float org[3], float dir[3], float scale, char *texture, int count);
+	void(*Flare)(MathVector3_t org, float r, float g, float b, float a, float scale, char *texture);
+	void(*Sound)(edict_t *ent, int channel, char *sample, int volume, float attenuation);
+	void(*LinkEntity)(edict_t *ent, bool touch_triggers);
+	void(*UnlinkEntity)(edict_t *ent);
+	void(*FreeEntity)(edict_t *ed);
+	void(*DrawPic)(char *path, float alpha, int x, int y, int w, int h);
+	void(*DrawString)(int x, int y, char *msg);
+	void(*DrawFill)(int x, int y, int w, int h, float r, float g, float b, float alpha);
+	void(*Cvar_RegisterVariable)(cvar_t *variable, void(*Function)(void));
+	void(*Cvar_SetValue)(char *var_name, float value);
+	void(*LightStyle)(int style, char *val);
+	void(*Cmd_AddCommand)(char *cmd_name, void(*function)(void));
+	void(*WriteByte)(int mode, int command);
+	void(*WriteCoord)(int mode, float f);
+	void(*WriteAngle)(int mode, float f);
+	void(*WriteEntity)(int mode, edict_t *ent);
+	void(*ShowCursor)(bool bShow);
 
-	int		(*ReadByte)(void);
-	float	(*ReadCoord)(void);
-	int		(*GetScreenWidth)(void);	// Returns the active screen width.
-	int		(*GetScreenHeight)(void);	// Returns the active screen height.
+	int(*ReadByte)(void);
+	float(*ReadCoord)(void);
+	int(*GetScreenWidth)(void);	// Returns the active screen width.
+	int(*GetScreenHeight)(void);	// Returns the active screen height.
 
-	void	(*GetCursorPosition)(int *X,int *Y);
-
-	float	*(*Aim)(edict_t *ent);
+	void(*GetCursorPosition)(int *X, int *Y);
 
 	edict_t	*(*Spawn)(void);
 } ModuleImport_t;

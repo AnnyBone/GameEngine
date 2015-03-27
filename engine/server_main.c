@@ -39,7 +39,6 @@ void SV_Init (void)
 	extern	cvar_t	sv_maxspeed;
 	extern	cvar_t	sv_accelerate;
 	extern	cvar_t	sv_idealpitchscale;
-	extern	cvar_t	sv_aim;
 	extern	cvar_t	sv_altnoclip; //johnfitz
 	extern	cvar_t	cvPhysicsStepSize;
 
@@ -48,7 +47,6 @@ void SV_Init (void)
 	Cvar_RegisterVariable(&sv_maxspeed, NULL);
 	Cvar_RegisterVariable(&sv_accelerate, NULL);
 	Cvar_RegisterVariable(&sv_idealpitchscale, NULL);
-	Cvar_RegisterVariable(&sv_aim,NULL);
 	Cvar_RegisterVariable(&cvPhysicsNoStep, NULL);
 	Cvar_RegisterVariable(&sv_altnoclip,NULL); //johnfitz
 	Cvar_RegisterVariable(&cvPhysicsStepSize,NULL);

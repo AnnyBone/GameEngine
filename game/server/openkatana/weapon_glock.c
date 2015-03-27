@@ -40,9 +40,6 @@ void Glock_Reload(edict_t *ent)
 // [4/7/2012] Renamed to Glock_PrimaryAttack ~hogsy
 void Glock_PrimaryAttack(edict_t *ent)
 {
-	Engine.MakeVectors(ent->v.v_angle);
-	Engine.Aim(ent);
-
 	if(!ent->local.glock_ammo2)
 	{
 		Sound(ent,CHAN_WEAPON,GLOCK_SOUND_NOAMMO,255,ATTN_NORM);
@@ -67,7 +64,7 @@ void Glock_PrimaryAttack(edict_t *ent)
 	ent->local.glock_ammo--;
 	ent->v.iPrimaryAmmo	= ent->local.glock_ammo;
 
-	Weapon_BulletProjectile(ent,2.0f,15,ent->v.vForward);
+	Weapon_BulletProjectile(ent,2.0f,15,ent->local.vForward);
 
 	// [4/7/2012] Simplified ~hogsy
 	ent->local.glock_ammo2--;

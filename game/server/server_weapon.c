@@ -237,6 +237,108 @@ void Weapon_Precache(void)
 #endif
 }
 
+/*	Enable automatic aim assitance.
+*/
+MathVector_t Weapon_Aim(edict_t *eEntity)
+{
+	int				i, j;
+	float			fDistance, fBestDistance;
+	trace_t			tAimLine;
+	edict_t			*eCheck, *eBest;
+	MathVector3_t	mvStart, mvEnd, mvDirection, mvBestDirection;
+
+	// Copy the entity's origin as our starting position.
+	Math_VectorCopy(eEntity->v.origin, mvStart);
+
+	// Move the starting position up a little.
+	mvStart[2] += 20.0f;
+
+	Entity_MakeVectors(eEntity);
+
+	// Try tracing straight.
+	Math_VectorCopy(eEntity->local.vForward, mvDirection);
+	Math_VectorMA(mvStart, 2048.0f, mvDirection, mvEnd);
+
+	tAimLine = Engine.Server_Move(mvStart, mv3Origin, mv3Origin, mvEnd, 0, eEntity);
+	// See if we encountered anything we can damage.
+	if (tAimLine.ent && tAimLine.ent->v.bTakeDamage)
+	{
+		// Check the teams.
+		if ((eEntity->local.pTeam <= TEAM_NEUTRAL) || (eEntity->local.pTeam != tAimLine.ent->local.pTeam))
+		{
+			MathVector_t mvResult;
+
+			// Convert to the appropriate vector type.
+			Math_VectorToMV(eEntity->local.vForward, mvResult);
+
+			// Return the result.
+			return mvResult;
+		}
+	}
+
+	// Try every possible entity.
+	Math_VectorCopy(mvDirection, mvBestDirection);
+	fBestDistance = cvServerAim.value;
+	eBest = NULL;
+
+	eCheck = NEXT_EDICT(Engine.Server_GetEdicts());
+	for (i = 1; i < Engine.Server_GetNumEdicts(); i++, eCheck = NEXT_EDICT(eCheck))
+	{
+		if (eCheck == eEntity)
+			continue;
+
+		if (eCheck->v.bTakeDamage == false)
+			continue;
+
+		for (j = 0; j < 3; j++)
+			mvEnd[j] = eCheck->v.origin[j] + 0.5f * (eCheck->v.mins[j] + eCheck->v.maxs[j]);
+
+		Math_VectorSubtract(mvEnd, mvStart, mvDirection);
+		Math_VectorNormalize(mvDirection);
+
+		fDistance = Math_DotProduct(mvDirection, eEntity->local.vForward);
+		if (fDistance < fBestDistance)
+			// Too far to turn.
+			continue;
+
+		tAimLine = Engine.Server_Move(mvStart, mv3Origin, mv3Origin, mvEnd, 0, eEntity);
+		if (tAimLine.ent == eCheck)
+		{
+			// Can shoot at this one.
+			fBestDistance = fDistance;
+			eBest = eCheck;
+		}
+	}
+
+	MathVector_t mvResult;
+
+	if (eBest)
+	{
+		Math_VectorSubtract(eBest->v.origin, eEntity->v.origin, mvDirection);
+
+		fDistance = Math_DotProduct(mvDirection, eEntity->local.vForward);
+
+		Math_VectorScale(eEntity->local.vForward, fDistance, mvEnd);
+
+		mvEnd[2] = mvDirection[2];
+
+		Math_VectorNormalize(mvEnd);
+		Math_VectorToMV(mvEnd, mvResult);
+	}
+	else
+		Math_VectorToMV(mvBestDirection, mvResult);
+
+	return mvResult;
+}
+
+void Weapon_Projectile(edict_t *eOwner, edict_t *eProjectile, float fRange)
+{
+	MathVector3_t mvDirection;
+
+	Math_MVToVector(Weapon_Aim(eOwner), mvDirection);
+	Math_VectorScale(mvDirection, fRange, eProjectile->v.velocity);
+}
+
 void Weapon_BulletProjectile(edict_t *eEntity,float fSpread,int iDamage,vec_t *vDirection)
 {
 	int		i;
@@ -562,7 +664,7 @@ void Weapon_PrimaryAttack(edict_t *eEntity)
 
 	if(wCurrentWeapon->Primary)
 	{
-		Engine.MakeVectors(eEntity->v.v_angle);
+		Entity_MakeVectors(eEntity);
 
 		// [15/8/2013] Why write this out again and again for every weapon? Just do it here! ~hogsy
 		if(Entity_IsPlayer(eEntity) && ((eEntity->v.velocity[0] == 0) && (eEntity->v.velocity[1] == 0)))
@@ -584,7 +686,7 @@ void Weapon_SecondaryAttack(edict_t *eEntity)
 
 	if(wCurrentWeapon->Secondary)
 	{
-		Engine.MakeVectors(eEntity->v.v_angle);
+		Entity_MakeVectors(eEntity);
 
 		wCurrentWeapon->Secondary(eEntity);
 	}

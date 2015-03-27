@@ -89,29 +89,30 @@ SpawnList_t SpawnList[] =
 	{	NULL,	NULL	}
 };
 
-cvar_t	cvServerPlayerModel		= { "server_playermodel",	"models/player.md2",	false,	true,   "Sets the main server-side player model."	            },
-		cvServerRespawnDelay	= { "server_respawndelay",	"40",					false,	true,	"Sets the amount of time until a player respawns."      },
-		cvServerSkill			= { "server_skill",			"1",					false,	true,   "The level of difficulty."	                            },
-		cvServerSelfDamage		= { "server_selfdamage",	"0",					false,	true,	"If enabled, your weapons can damage you."              },
+cvar_t	cvServerPlayerModel = { "server_playermodel", "models/player.md2", false, true, "Sets the main server-side player model." };
+cvar_t	cvServerRespawnDelay = { "server_respawndelay", "40", false, true, "Sets the amount of time until a player respawns." };
+cvar_t	cvServerSkill = { "server_skill", "1", false, true, "The level of difficulty." };
+cvar_t	cvServerSelfDamage = { "server_selfdamage", "0", false, true, "If enabled, your weapons can damage you." };
 // [7/12/2012] Changed default maxhealth to 200 ~hogsy
-		cvServerMaxHealth		= { "server_maxhealth",		"200",					false,	true,   "Sets the max amount of health."	                    },
-		cvServerDefaultHealth	= {	"server_defaulthealth",	"100",					false,	true,   "Changes the default amount of health."	                },
-		cvServerMonsters		= { "server_monsters",		"1",					false,	true,   "If enabled, monsters can spawn."	                    },
-		cvServerMaxScore		= { "server_maxscore",		"20",					false,	true,	"Max score before the round ends."						},
-		cvServerGameMode		= { "server_gamemode",		"0",					false,	true,   "Sets the active mode of play."	                        },
-		cvServerGameTime		= {	"server_gametime",		"120",					false,	true,	"Time before the round ends."							},
-		cvServerGameClients		= { "server_gameclients",	"2",					false,	true,	"Number of clients before round starts."				},
-		cvServerWaypointDelay	= { "server_waypointdelay",	"5.0",					false,	true,   "Delay before attempting to spawn another waypoint."	},
-		cvServerWaypointSpawn	= { "server_waypointspawn",	"0",					false,	true,	"if enabled, waypoints autospawn."						},
-		cvServerWaypointParse	= { "server_waypointparse",	"",						false,	true,	"Overrides the default path to load waypoints from."	};
+cvar_t	cvServerMaxHealth = { "server_maxhealth", "200", false, true, "Sets the max amount of health." };
+cvar_t	cvServerDefaultHealth = { "server_defaulthealth", "100", false, true, "Changes the default amount of health." };
+cvar_t	cvServerMonsters = { "server_monsters", "1", false, true, "If enabled, monsters can spawn." };
+cvar_t	cvServerMaxScore = { "server_maxscore", "20", false, true, "Max score before the round ends." };
+cvar_t	cvServerGameMode = { "server_gamemode", "0", false, true, "Sets the active mode of play." };
+cvar_t	cvServerGameTime = { "server_gametime", "120", false, true, "Time before the round ends." };
+cvar_t	cvServerGameClients = { "server_gameclients", "2", false, true, "Number of clients before round starts." };
+cvar_t	cvServerWaypointDelay = { "server_waypointdelay", "5.0", false, true, "Delay before attempting to spawn another waypoint." };
+cvar_t	cvServerWaypointSpawn = { "server_waypointspawn", "0", false, true, "if enabled, waypoints autospawn." };
+cvar_t	cvServerWaypointParse = { "server_waypointparse", "", false, true, "Overrides the default path to load waypoints from." };
+cvar_t	cvServerAim = { "server_aim", "1.0", false, true, "Enables auto-aim." };
 // [19/3/2013] Replacement for the engine-side variable ~hogsy
-cvar_t	cvServerGravityTweak	= {	"server_gravityamount",	"1.0",					false,	true,	"Gravity modifier."										};
-cvar_t	cvServerGravity			= {	"server_gravity",		"600.0",				false,	true,	"Overall gravity."										};
+cvar_t	cvServerGravityTweak = { "server_gravityamount", "1.0", false, true, "Gravity modifier." };
+cvar_t	cvServerGravity = { "server_gravity", "600.0", false, true, "Overall gravity." };
 #ifdef GAME_OPENKATANA
 // [20/1/2013] By default bots spawn in OpenKatana for both SP and MP ~hogsy
-cvar_t	cvServerBots			= {	"server_bots",			"1",					false,	true,	"Can enable and disable bots."							};
+cvar_t	cvServerBots = { "server_bots", "1", false, true, "Can enable and disable bots." };
 #else
-cvar_t	cvServerBots			= {	"server_bots",			"0",					false,	true	};
+cvar_t	cvServerBots = { "server_bots",	"0", false,	true, "Can enable and disable bots." };
 #endif
 
 void Server_SetGameMode(void)
@@ -138,25 +139,26 @@ void Server_SetGameMode(void)
 */
 void Server_Initialize(void)
 {
-	Engine.Cvar_RegisterVariable(&cvServerSkill,NULL);
-	Engine.Cvar_RegisterVariable(&cvServerSelfDamage,NULL);
-	Engine.Cvar_RegisterVariable(&cvServerMaxHealth,NULL);
-	Engine.Cvar_RegisterVariable(&cvServerMonsters,NULL);
-	Engine.Cvar_RegisterVariable(&cvServerMaxScore,NULL);
-	Engine.Cvar_RegisterVariable(&cvServerGameMode,Server_SetGameMode);
-	Engine.Cvar_RegisterVariable(&cvServerPlayerModel,NULL);
-	Engine.Cvar_RegisterVariable(&cvServerWaypointDelay,NULL);
-	Engine.Cvar_RegisterVariable(&cvServerWaypointSpawn,NULL);
-	Engine.Cvar_RegisterVariable(&cvServerBots,NULL);
-	Engine.Cvar_RegisterVariable(&cvServerDefaultHealth,NULL);
-	Engine.Cvar_RegisterVariable(&cvServerGameTime,NULL);
-	Engine.Cvar_RegisterVariable(&cvServerGameClients,NULL);
-	Engine.Cvar_RegisterVariable(&cvServerGravityTweak,NULL);
-	Engine.Cvar_RegisterVariable(&cvServerGravity,NULL);
-	Engine.Cvar_RegisterVariable(&cvServerRespawnDelay,NULL);
+	Engine.Cvar_RegisterVariable(&cvServerSkill, NULL);
+	Engine.Cvar_RegisterVariable(&cvServerSelfDamage, NULL);
+	Engine.Cvar_RegisterVariable(&cvServerMaxHealth, NULL);
+	Engine.Cvar_RegisterVariable(&cvServerMonsters, NULL);
+	Engine.Cvar_RegisterVariable(&cvServerMaxScore, NULL);
+	Engine.Cvar_RegisterVariable(&cvServerGameMode, Server_SetGameMode);
+	Engine.Cvar_RegisterVariable(&cvServerPlayerModel, NULL);
+	Engine.Cvar_RegisterVariable(&cvServerWaypointDelay, NULL);
+	Engine.Cvar_RegisterVariable(&cvServerWaypointSpawn, NULL);
+	Engine.Cvar_RegisterVariable(&cvServerBots, NULL);
+	Engine.Cvar_RegisterVariable(&cvServerDefaultHealth, NULL);
+	Engine.Cvar_RegisterVariable(&cvServerGameTime, NULL);
+	Engine.Cvar_RegisterVariable(&cvServerGameClients, NULL);
+	Engine.Cvar_RegisterVariable(&cvServerGravityTweak, NULL);
+	Engine.Cvar_RegisterVariable(&cvServerGravity, NULL);
+	Engine.Cvar_RegisterVariable(&cvServerRespawnDelay, NULL);
+	Engine.Cvar_RegisterVariable(&cvServerAim, NULL);
 
-	Server.bActive			= false;						// [7/12/2012] We're not active when we've only just initialized ~hogsy
-	Server.iLastGameMode	= (int)cvServerGameMode.value;
+	Server.bActive = false;						// [7/12/2012] We're not active when we've only just initialized ~hogsy
+	Server.iLastGameMode = cvServerGameMode.iValue;
 }
 
 /*	Used just for GIPL shit... Bleh...
@@ -211,45 +213,45 @@ void Server_Spawn(edict_t *ent)
 	Engine.Server_PrecacheResource(RESOURCE_SOUND,"misc/gib1.wav");
 
 	// Physics
-	Engine.Server_PrecacheResource(RESOURCE_SOUND,PHYSICS_SOUND_SPLASH);
-	Engine.Server_PrecacheResource(RESOURCE_SOUND,PHYSICS_SOUND_BODY);
-	Engine.Server_PrecacheResource(RESOURCE_SOUND,PHYSICS_SOUND_RICOCHET0);
-	Engine.Server_PrecacheResource(RESOURCE_SOUND,PHYSICS_SOUND_RICOCHET1);
-	Engine.Server_PrecacheResource(RESOURCE_SOUND,PHYSICS_SOUND_RICOCHET2);
-	Engine.Server_PrecacheResource(RESOURCE_SOUND,PHYSICS_SOUND_RICOCHET3);
-	Engine.Server_PrecacheResource(RESOURCE_SOUND,PHYSICS_SOUND_RICOCHET4);
-	Engine.Server_PrecacheResource(RESOURCE_SOUND,PHYSICS_SOUND_RICOCHET5);
-	Engine.Server_PrecacheResource(RESOURCE_SOUND,PHYSICS_SOUND_RICOCHET6);
-	Engine.Server_PrecacheResource(RESOURCE_SOUND,PHYSICS_SOUND_RICOCHET7);
-	Engine.Server_PrecacheResource(RESOURCE_SOUND,PHYSICS_SOUND_RICOCHET8);
-	Engine.Server_PrecacheResource(RESOURCE_SOUND,PHYSICS_SOUND_RICOCHET9);
-	Engine.Server_PrecacheResource(RESOURCE_SOUND,"fx/explosion1.wav");
-	Engine.Server_PrecacheResource(RESOURCE_SOUND,"fx/explosion2.wav");
-	Engine.Server_PrecacheResource(RESOURCE_SOUND,"fx/explosion3.wav");
-	Engine.Server_PrecacheResource(RESOURCE_SOUND,"fx/explosion4.wav");
-	Engine.Server_PrecacheResource(RESOURCE_SOUND,"fx/explosion5.wav");
-	Engine.Server_PrecacheResource(RESOURCE_SOUND,"fx/explosion6.wav");
+	Engine.Server_PrecacheResource(RESOURCE_SOUND, PHYSICS_SOUND_SPLASH);
+	Engine.Server_PrecacheResource(RESOURCE_SOUND, PHYSICS_SOUND_BODY);
+	Engine.Server_PrecacheResource(RESOURCE_SOUND, PHYSICS_SOUND_RICOCHET0);
+	Engine.Server_PrecacheResource(RESOURCE_SOUND, PHYSICS_SOUND_RICOCHET1);
+	Engine.Server_PrecacheResource(RESOURCE_SOUND, PHYSICS_SOUND_RICOCHET2);
+	Engine.Server_PrecacheResource(RESOURCE_SOUND, PHYSICS_SOUND_RICOCHET3);
+	Engine.Server_PrecacheResource(RESOURCE_SOUND, PHYSICS_SOUND_RICOCHET4);
+	Engine.Server_PrecacheResource(RESOURCE_SOUND, PHYSICS_SOUND_RICOCHET5);
+	Engine.Server_PrecacheResource(RESOURCE_SOUND, PHYSICS_SOUND_RICOCHET6);
+	Engine.Server_PrecacheResource(RESOURCE_SOUND, PHYSICS_SOUND_RICOCHET7);
+	Engine.Server_PrecacheResource(RESOURCE_SOUND, PHYSICS_SOUND_RICOCHET8);
+	Engine.Server_PrecacheResource(RESOURCE_SOUND, PHYSICS_SOUND_RICOCHET9);
+	Engine.Server_PrecacheResource(RESOURCE_SOUND, "fx/explosion1.wav");
+	Engine.Server_PrecacheResource(RESOURCE_SOUND, "fx/explosion2.wav");
+	Engine.Server_PrecacheResource(RESOURCE_SOUND, "fx/explosion3.wav");
+	Engine.Server_PrecacheResource(RESOURCE_SOUND, "fx/explosion4.wav");
+	Engine.Server_PrecacheResource(RESOURCE_SOUND, "fx/explosion5.wav");
+	Engine.Server_PrecacheResource(RESOURCE_SOUND, "fx/explosion6.wav");
 	Engine.Server_PrecacheResource(RESOURCE_SOUND, PHYSICS_SOUND_CONCRETESTEP0);
 	Engine.Server_PrecacheResource(RESOURCE_SOUND, PHYSICS_SOUND_CONCRETESTEP1);
 	Engine.Server_PrecacheResource(RESOURCE_SOUND, PHYSICS_SOUND_CONCRETESTEP2);
 	Engine.Server_PrecacheResource(RESOURCE_SOUND, PHYSICS_SOUND_CONCRETESTEP3);
-	Engine.Server_PrecacheResource(RESOURCE_MODEL,PHYSICS_MODEL_GIB0);
-	Engine.Server_PrecacheResource(RESOURCE_MODEL,PHYSICS_MODEL_GIB1);
-	Engine.Server_PrecacheResource(RESOURCE_MODEL,PHYSICS_MODEL_GIB2);
-	Engine.Server_PrecacheResource(RESOURCE_MODEL,PHYSICS_MODEL_GIB3);
+	Engine.Server_PrecacheResource(RESOURCE_MODEL, PHYSICS_MODEL_GIB0);
+	Engine.Server_PrecacheResource(RESOURCE_MODEL, PHYSICS_MODEL_GIB1);
+	Engine.Server_PrecacheResource(RESOURCE_MODEL, PHYSICS_MODEL_GIB2);
+	Engine.Server_PrecacheResource(RESOURCE_MODEL, PHYSICS_MODEL_GIB3);
 	
 	// Player
-	Engine.Server_PrecacheResource(RESOURCE_MODEL,cvServerPlayerModel.string);
+	Engine.Server_PrecacheResource(RESOURCE_MODEL, cvServerPlayerModel.string);
 
 	// Particles
-	Engine.Server_PrecacheResource(RESOURCE_SPRITE,PARTICLE_BLOOD0);
-	Engine.Server_PrecacheResource(RESOURCE_SPRITE,PARTICLE_BLOOD1);
-	Engine.Server_PrecacheResource(RESOURCE_SPRITE,PARTICLE_BLOOD2);
-	Engine.Server_PrecacheResource(RESOURCE_SPRITE,PARTICLE_BLOOD3);
-	Engine.Server_PrecacheResource(RESOURCE_SPRITE,PARTICLE_SMOKE0);
-	Engine.Server_PrecacheResource(RESOURCE_SPRITE,PARTICLE_SMOKE1);
-	Engine.Server_PrecacheResource(RESOURCE_SPRITE,PARTICLE_SMOKE2);
-	Engine.Server_PrecacheResource(RESOURCE_SPRITE,PARTICLE_SMOKE3);
+	Engine.Server_PrecacheResource(RESOURCE_SPRITE, PARTICLE_BLOOD0);
+	Engine.Server_PrecacheResource(RESOURCE_SPRITE, PARTICLE_BLOOD1);
+	Engine.Server_PrecacheResource(RESOURCE_SPRITE, PARTICLE_BLOOD2);
+	Engine.Server_PrecacheResource(RESOURCE_SPRITE, PARTICLE_BLOOD3);
+	Engine.Server_PrecacheResource(RESOURCE_SPRITE, PARTICLE_SMOKE0);
+	Engine.Server_PrecacheResource(RESOURCE_SPRITE, PARTICLE_SMOKE1);
+	Engine.Server_PrecacheResource(RESOURCE_SPRITE, PARTICLE_SMOKE2);
+	Engine.Server_PrecacheResource(RESOURCE_SPRITE, PARTICLE_SMOKE3);
 
 #ifdef GAME_OPENKATANA	// [22/4/2013] OpenKatana specific stuff is now here instead ~hogsy
 	// Player
@@ -266,24 +268,24 @@ void Server_Spawn(edict_t *ent)
 	Engine.Server_PrecacheResource(RESOURCE_SOUND, PLAYER_SOUND_PAIN6);
 	Engine.Server_PrecacheResource(RESOURCE_SOUND, PLAYER_SOUND_PAIN7);
 
-	Engine.Server_PrecacheResource(RESOURCE_MODEL,"models/blip.md2");
+	Engine.Server_PrecacheResource(RESOURCE_MODEL, "models/blip.md2");
 
-	Engine.Server_PrecacheResource(RESOURCE_SPRITE,"poison");
-	Engine.Server_PrecacheResource(RESOURCE_SPRITE,"spark");
-	Engine.Server_PrecacheResource(RESOURCE_SPRITE,"spark2");
-	Engine.Server_PrecacheResource(RESOURCE_SPRITE,"ice");
-	Engine.Server_PrecacheResource(RESOURCE_SPRITE,"zspark");
+	Engine.Server_PrecacheResource(RESOURCE_SPRITE, "poison");
+	Engine.Server_PrecacheResource(RESOURCE_SPRITE, "spark");
+	Engine.Server_PrecacheResource(RESOURCE_SPRITE, "spark2");
+	Engine.Server_PrecacheResource(RESOURCE_SPRITE, "ice");
+	Engine.Server_PrecacheResource(RESOURCE_SPRITE, "zspark");
 #endif
 
 	// [10/4/2013] Waypoint debugging models ~hogsy
 #ifdef DEBUG_WAYPOINT
-	Engine.Server_PrecacheResource(RESOURCE_MODEL,WAYPOINT_MODEL_BASE);
-	Engine.Server_PrecacheResource(RESOURCE_MODEL,WAYPOINT_MODEL_CLIMB);
-	Engine.Server_PrecacheResource(RESOURCE_MODEL,WAYPOINT_MODEL_ITEM);
-	Engine.Server_PrecacheResource(RESOURCE_MODEL,WAYPOINT_MODEL_JUMP);
-	Engine.Server_PrecacheResource(RESOURCE_MODEL,WAYPOINT_MODEL_SPAWN);
-	Engine.Server_PrecacheResource(RESOURCE_MODEL,WAYPOINT_MODEL_SWIM);
-	Engine.Server_PrecacheResource(RESOURCE_MODEL,WAYPOINT_MODEL_WEAPON);
+	Engine.Server_PrecacheResource(RESOURCE_MODEL, WAYPOINT_MODEL_BASE);
+	Engine.Server_PrecacheResource(RESOURCE_MODEL, WAYPOINT_MODEL_CLIMB);
+	Engine.Server_PrecacheResource(RESOURCE_MODEL, WAYPOINT_MODEL_ITEM);
+	Engine.Server_PrecacheResource(RESOURCE_MODEL, WAYPOINT_MODEL_JUMP);
+	Engine.Server_PrecacheResource(RESOURCE_MODEL, WAYPOINT_MODEL_SPAWN);
+	Engine.Server_PrecacheResource(RESOURCE_MODEL, WAYPOINT_MODEL_SWIM);
+	Engine.Server_PrecacheResource(RESOURCE_MODEL, WAYPOINT_MODEL_WEAPON);
 #endif
 
 	// [7/3/2012] Added mode specific precaches ~hogsy
@@ -305,19 +307,19 @@ void Server_Spawn(edict_t *ent)
 		pFileSystem_ScanDirectory("data/models/player/", ".md2", Server_PrecachePlayerModel);
 	}
 
-	Engine.LightStyle(0,"m");
-	Engine.LightStyle(1,"mmnmmommommnonmmonqnmmo");
-	Engine.LightStyle(2,"abcdefghijklmnopqrstuvwxyzyxwvutsrqponmlkjihgfedcba");
-	Engine.LightStyle(3,"mmmmmaaaaammmmmaaaaaabcdefgabcdefg");
-	Engine.LightStyle(4,"mamamamamama");
-	Engine.LightStyle(5,"jklmnopqrstuvwxyzyxwvutsrqponmlkj");
-	Engine.LightStyle(6,"nmonqnmomnmomomno");
-	Engine.LightStyle(7,"mmmaaaabcdefgmmmmaaaammmaamm");
-	Engine.LightStyle(8,"mmmaaammmaaammmabcdefaaaammmmabcdefmmmaaaa");
-	Engine.LightStyle(9,"aaaaaaaazzzzzzzz");
-	Engine.LightStyle(10,"mmamammmmammamamaaamammma");
-	Engine.LightStyle(11,"abcdefghijklmnopqrrqponmlkjihgfedcba");
-	Engine.LightStyle(32,"a");
+	Engine.LightStyle(0, "m");
+	Engine.LightStyle(1, "mmnmmommommnonmmonqnmmo");
+	Engine.LightStyle(2, "abcdefghijklmnopqrstuvwxyzyxwvutsrqponmlkjihgfedcba");
+	Engine.LightStyle(3, "mmmmmaaaaammmmmaaaaaabcdefgabcdefg");
+	Engine.LightStyle(4, "mamamamamama");
+	Engine.LightStyle(5, "jklmnopqrstuvwxyzyxwvutsrqponmlkj");
+	Engine.LightStyle(6, "nmonqnmomnmomomno");
+	Engine.LightStyle(7, "mmmaaaabcdefgmmmmaaaammmaamm");
+	Engine.LightStyle(8, "mmmaaammmaaammmabcdefaaaammmmabcdefmmmaaaa");
+	Engine.LightStyle(9, "aaaaaaaazzzzzzzz");
+	Engine.LightStyle(10, "mmamammmmammamamaaamammma");
+	Engine.LightStyle(11, "abcdefghijklmnopqrrqponmlkjihgfedcba");
+	Engine.LightStyle(32, "a");
 }
 
 /*	Called by the engine.

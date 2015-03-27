@@ -1,5 +1,7 @@
 #include "server_main.h"
 
+#include "server_weapon.h"
+
 void Discus_Deploy(edict_t *ent)
 {
 	//Weapon_Animate(ent,FALSE,1,10,0.1f,0,0,0,FALSE);
@@ -95,34 +97,32 @@ void Discus_ProjectileTouch(edict_t *ent,edict_t *other)
 // [4/7/2012] Renamed to Discus_SpawnProjectile ~hogsy
 void Discus_SpawnProjectile(edict_t *ent,vec3_t org)
 {
-	edict_t *discus	= Entity_Spawn();
-	float	*dir;
+	edict_t *eDiscus;
+	MathVector3_t mvDirection;
 
-	discus->v.cClassname	= "discus";
-	discus->v.movetype		= MOVETYPE_FLYBOUNCE;
-	discus->Physics.iSolid	= SOLID_BBOX;
-	discus->v.effects		= EF_MOTION_ROTATE;
-	discus->v.enemy			= ent;
+	eDiscus = Entity_Spawn();
+
+	eDiscus->v.cClassname = "discus";
+	eDiscus->v.movetype = MOVETYPE_FLYBOUNCE;
+	eDiscus->Physics.iSolid = SOLID_BBOX;
+	eDiscus->v.effects = EF_MOTION_ROTATE;
+	eDiscus->v.enemy = ent;
 
 	// [4/8/2012] Updated to use owner instead ~hogsy
-	discus->local.eOwner	= ent;
+	eDiscus->local.eOwner = ent;
 
-	discus->local.hit	= 0;
+	eDiscus->local.hit = 0;
 
-	dir = Engine.Aim(ent);
-	discus->v.velocity[0] = dir[0]*700;
-	discus->v.velocity[1] = dir[1]*700;
-	discus->v.velocity[2] = dir[2]*700;
+	Math_MVToVector(Weapon_Aim(ent), mvDirection);
+	Math_VectorScale(mvDirection, 700.0f, eDiscus->v.velocity);
 
-	Engine.MakeVectors(discus->v.v_angle);
+	Math_MVToVector(Math_VectorToAngles(eDiscus->v.velocity), eDiscus->v.angles);
 
-	Math_MVToVector(Math_VectorToAngles(discus->v.velocity),discus->v.angles);
+	eDiscus->v.TouchFunction = Discus_ProjectileTouch;
 
-	discus->v.TouchFunction = Discus_ProjectileTouch;
-
-	Entity_SetModel(discus,"models/w_daedalus.md2");
-	Entity_SetSizeVector(discus,mv3Origin,mv3Origin);
-	Entity_SetOrigin(discus, org);
+	Entity_SetModel(eDiscus, "models/w_daedalus.md2");
+	Entity_SetSizeVector(eDiscus, mv3Origin, mv3Origin);
+	Entity_SetOrigin(eDiscus, org);
 
 	Sound(ent,CHAN_WEAPON,"weapons/discus/discusthrow.wav",255,ATTN_NORM);
 }

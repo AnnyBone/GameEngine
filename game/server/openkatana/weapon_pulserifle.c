@@ -2,39 +2,39 @@
 */
 #include "server_weapon.h"
 
-EntityFrame_t efPulseRifleDeploy[]=
+EntityFrame_t efPulseRifleDeploy[] =
 {
-	{	NULL,	1,	0.1f,	false	},
-	{	NULL,	2,	0.1f,	false	},
-	{	NULL,	3,	0.1f,	false	},
-	{	NULL,	4,	0.1f,	false	},
-	{	NULL,	5,	0.1f,	false	},
-	{	NULL,	6,	0.1f,	false	},
-	{	NULL,	7,	0.1f,	false	},
-	{	NULL,	8,	0.1f,	false	},
-	{	NULL,	9,	0.1f,	false	},
-	{	NULL,	10,	0.1f,	false	},
-	{	NULL,	11,	0.1f,	false	},
-	{	NULL,	12,	0.1f,	false	},
-	{	NULL,	13,	0.1f,	false	},
-	{	NULL,	14,	0.1f,	false	},
-	{	NULL,	15,	0.1f,	true	}
+	{ NULL, 1, 0.1f, false },
+	{ NULL, 2, 0.1f, false },
+	{ NULL, 3, 0.1f, false },
+	{ NULL, 4, 0.1f, false },
+	{ NULL, 5, 0.1f, false },
+	{ NULL, 6, 0.1f, false },
+	{ NULL, 7, 0.1f, false },
+	{ NULL, 8, 0.1f, false },
+	{ NULL, 9, 0.1f, false },
+	{ NULL, 10, 0.1f, false },
+	{ NULL, 11, 0.1f, false },
+	{ NULL, 12, 0.1f, false },
+	{ NULL, 13, 0.1f, false },
+	{ NULL, 14, 0.1f, false },
+	{ NULL, 15, 0.1f, true }
 };
 
-EntityFrame_t efPulseRifleAttack[]=
+EntityFrame_t efPulseRifleAttack[] =
 {
-	{	NULL,	16,	0.1f,	false	},
-	{	NULL,	17,	0.1f,	false	},
-	{	NULL,	18,	0.1f,	false	},
-	{	NULL,	19,	0.1f,	false	},
-	{	NULL,	20,	0.1f,	false	},
-	{	NULL,	21,	0.1f,	false	},
-	{	NULL,	22,	0.1f,	false	},
-	{	NULL,	23,	0.1f,	false	},
-	{	NULL,	24,	0.1f,	false	},
-	{	NULL,	25,	0.1f,	false	},
-	{	NULL,	26,	0.1f,	false	},
-	{	NULL,	27,	0.1f,	true	}
+	{ NULL, 16, 0.1f, false },
+	{ NULL, 17, 0.1f, false },
+	{ NULL, 18, 0.1f, false },
+	{ NULL, 19, 0.1f, false },
+	{ NULL, 20, 0.1f, false },
+	{ NULL, 21, 0.1f, false },
+	{ NULL, 22, 0.1f, false },
+	{ NULL, 23, 0.1f, false },
+	{ NULL, 24, 0.1f, false },
+	{ NULL, 25, 0.1f, false },
+	{ NULL, 26, 0.1f, false },
+	{ NULL, 27, 0.1f, true }
 };
 
 void PulseRifle_Deploy(edict_t *ent)
@@ -96,7 +96,6 @@ void CorditeTouch(edict_t *ent, edict_t *other)
 
 void throw_cordite(edict_t *ent)
 {
-	float	*dir;
 	edict_t *greekfire = Entity_Spawn();
 
 	greekfire->v.cClassname	= "cordite";
@@ -106,10 +105,7 @@ void throw_cordite(edict_t *ent)
 
 	greekfire->local.eOwner = ent;
 
-	dir = Engine.Aim(ent);
-	greekfire->v.velocity[0] = dir[0]*2000.0f;
-	greekfire->v.velocity[1] = dir[1]*2000.0f;
-	greekfire->v.velocity[2] = dir[2]*2000.0f;
+	Weapon_Projectile(ent, greekfire, 2000.0f);
 
 	Entity_SetModel(greekfire,"models/grenade.mdl");
 

@@ -18,6 +18,9 @@
     <ClCompile Include="cmdlib.C">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="common_filesystem.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cmdlib.H">

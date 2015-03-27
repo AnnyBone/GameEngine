@@ -29,6 +29,11 @@ edict_t *Game_GetEdicts(void)
 	return sv.edicts;
 }
 
+int Game_GetNumEdicts(void)
+{
+	return sv.num_edicts;
+}
+
 void Server_ChangeLevel(const char *ccNewLevel)
 {
 	// Make sure we don't issue two changelevels
@@ -122,84 +127,6 @@ void Server_MakeStatic(edict_t *ent)
 		MSG_WriteByte (&sv.signon, ent->alpha);
 
 	ED_Free (ent);
-}
-
-cvar_t	sv_aim = {	"sv_aim",	"1"	};
-
-float *Game_Aim(edict_t *ent)
-{
-	edict_t			*check, *bestent;
-	vec3_t			start, dir, end, bestdir;
-	int				i, j;
-	trace_t			tr;
-	float			dist, bestdist;
-	static float	result[3];
-
-	Math_VectorCopy (ent->v.origin, start);
-	start[2] += 20;
-
-	// try sending a trace straight
-	Math_VectorCopy(ent->v.vForward, dir);
-	Math_VectorMA(start,2048.0f,dir,end);
-
-#if 0
-	// [5/3/2013] BUG: Results in fucked up aim vectors ~hogsy
-	tr = SV_Move(start,mv3Origin,mv3Origin,end,false,ent);
-	if(tr.ent && tr.ent->v.bTakeDamage	&&
-	(!teamplay.value || ent->local.pTeam <= 0 || ent->local.pTeam != tr.ent->local.pTeam) )
-	{
-		Math_VectorCopy(ent->v.vForward, result);
-		return result;
-	}
-#endif
-
-	// try all possible entities
-	Math_VectorCopy (dir, bestdir);
-	bestdist = sv_aim.value;
-	bestent = NULL;
-
-	check = NEXT_EDICT(sv.edicts);
-	for (i=1 ; i<sv.num_edicts ; i++, check = NEXT_EDICT(check) )
-	{
-//		if (check->v.takedamage != DAMAGE_AIM)
-//			continue;
-		if (check == ent)
-			continue;
-		if (teamplay.value && ent->local.pTeam > 0 && ent->local.pTeam == check->local.pTeam)
-			continue;	// don't aim at teammate
-
-		for (j=0 ; j<3 ; j++)
-			end[j] = check->v.origin[j]	+ 0.5f*(check->v.mins[j] + check->v.maxs[j]);
-
-		Math_VectorSubtract(end,start,dir);
-		Math_VectorNormalize(dir);
-
-		dist = Math_DotProduct(dir,ent->v.vForward);		//pr_global_struct.v_forward);
-		if (dist < bestdist)
-			continue;	// to far to turn
-
-		tr = SV_Move(start,mv3Origin,mv3Origin,end,false,ent);
-		if (tr.ent == check)
-		{
-			// Can shoot at this one
-			bestdist = dist;
-			bestent = check;
-		}
-	}
-
-	if (bestent)
-	{
-		Math_VectorSubtract(bestent->v.origin,ent->v.origin,dir);
-		dist = Math_DotProduct(dir,ent->v.vForward);	//pr_global_struct.v_forward);
-		Math_VectorScale(ent->v.vForward,dist,end);		//pr_global_struct.v_forward,dist,end);
-		end[2] = dir[2];
-		Math_VectorNormalize(end);
-		Math_VectorCopy(end,result);
-	}
-	else
-		Math_VectorCopy(bestdir,result);
-
-	return result;
 }
 
 /*	Sets the model for the specified entity.
@@ -451,11 +378,6 @@ void LightStyle(int style,char *val)
 		}
 }
 
-void Game_MakeVectors(vec3_t angles)
-{
-	Math_AngleVectors(angles,pr_global_struct.v_forward,pr_global_struct.v_right,pr_global_struct.v_up);
-}
-
 edict_t	*eMessageEntity;
 
 sizebuf_t *Game_WriteDest(int dest)
@@ -528,44 +450,42 @@ void Game_Initialize(void)
 		pModule_Unload(hGameInstance);
 
 	// Server
-	Import.Con_Printf				= Con_Printf;
-	Import.Con_DPrintf				= Con_DPrintf;
-	Import.Con_Warning				= Con_Warning;
-	Import.Sys_Error				= Sys_Error;
-	Import.SetModel					= Server_SetModel;
-	Import.Particle					= Particle;
-	Import.Flare					= Server_Flare;
-	Import.Sound					= Server_Sound;
-	Import.UnlinkEntity				= SV_UnlinkEdict;
-	Import.LinkEntity				= SV_LinkEdict;
-	Import.Server_Move				= SV_Move;
-	Import.FreeEntity				= ED_Free;
-	Import.DrawPic					= Draw_ExternPic;
-	Import.Spawn					= ED_Alloc;
-	Import.Cvar_RegisterVariable	= Cvar_RegisterVariable;
-	Import.Cvar_SetValue			= Cvar_SetValue;
-	Import.LightStyle				= LightStyle;
-	Import.CenterPrint				= Server_CenterPrint;
+	Import.Con_Printf = Con_Printf;
+	Import.Con_DPrintf = Con_DPrintf;
+	Import.Con_Warning = Con_Warning;
+	Import.Sys_Error = Sys_Error;
+	Import.SetModel = Server_SetModel;
+	Import.Particle = Particle;
+	Import.Flare = Server_Flare;
+	Import.Sound = Server_Sound;
+	Import.UnlinkEntity = SV_UnlinkEdict;
+	Import.LinkEntity = SV_LinkEdict;
+	Import.Server_Move = SV_Move;
+	Import.FreeEntity = ED_Free;
+	Import.DrawPic = Draw_ExternPic;
+	Import.Spawn = ED_Alloc;
+	Import.Cvar_RegisterVariable = Cvar_RegisterVariable;
+	Import.Cvar_SetValue = Cvar_SetValue;
+	Import.LightStyle = LightStyle;
+	Import.CenterPrint = Server_CenterPrint;
 	// [28/7/2012] Updated to use the new function ~hogsy
-	Import.Cmd_AddCommand			= Game_AddCommand;
-	Import.MakeVectors				= Game_MakeVectors;
-	Import.Aim						= Game_Aim;
-	Import.ReadByte					= MSG_ReadByte;
-	Import.ReadCoord				= MSG_ReadCoord;
-	Import.WriteByte				= Game_WriteByte;
-	Import.WriteCoord				= Game_WriteCoord;
-	Import.WriteAngle				= Game_WriteAngle;
-	Import.WriteEntity				= Game_WriteEntity;
-	Import.SetMessageEntity			= Game_SetMessageEntity;
+	Import.Cmd_AddCommand = Game_AddCommand;
+	Import.ReadByte = MSG_ReadByte;
+	Import.ReadCoord = MSG_ReadCoord;
+	Import.WriteByte = Game_WriteByte;
+	Import.WriteCoord = Game_WriteCoord;
+	Import.WriteAngle = Game_WriteAngle;
+	Import.WriteEntity = Game_WriteEntity;
+	Import.SetMessageEntity = Game_SetMessageEntity;
 
 	// Client
-	Import.Client_AllocateDlight	= Client_AllocDlight;
-	Import.Client_AllocateParticle	= Particle_Allocate;
-	Import.Client_PrecacheResource	= Client_PrecacheResource;
-	Import.Client_GetStat			= Client_GetStat;
-	Import.Client_GetEffect			= Client_GetEffect;
-	Import.Client_GetPlayerEntity	= Client_GetPlayerEntity;
-	Import.Client_GetViewEntity		= Client_GetViewEntity;
+	Import.Client_AllocateDlight = Client_AllocDlight;
+	Import.Client_AllocateParticle = Particle_Allocate;
+	Import.Client_PrecacheResource = Client_PrecacheResource;
+	Import.Client_GetStat = Client_GetStat;
+	Import.Client_GetEffect = Client_GetEffect;
+	Import.Client_GetPlayerEntity = Client_GetPlayerEntity;
+	Import.Client_GetViewEntity = Client_GetViewEntity;
 
 	if(Menu)
 	{
@@ -573,18 +493,20 @@ void Game_Initialize(void)
 		Import.Client_RemoveMenuState	= Menu->RemoveState;
 	}
 
-	Import.Server_PointContents		= SV_PointContents;
-	Import.Server_MakeStatic		= Server_MakeStatic;
-	Import.Server_BroadcastPrint	= SV_BroadcastPrintf;
-	Import.Server_SinglePrint		= Server_SinglePrint;
-	Import.Server_PrecacheResource	= Server_PrecacheResource;
-	Import.Server_FindRadius		= Server_FindRadius;
-	Import.Server_FindEntity		= Server_FindEntity;
-	Import.Server_Restart			= Host_Restart_f;
-	Import.Server_ChangeLevel		= Server_ChangeLevel;
-	Import.Server_AmbientSound		= Game_AmbientSound;
-	Import.Server_GetLevelName		= Server_GetLevelName;
-	Import.Server_GetFrameTime		= Server_GetFrameTime;
+	Import.Server_PointContents = SV_PointContents;
+	Import.Server_MakeStatic = Server_MakeStatic;
+	Import.Server_BroadcastPrint = SV_BroadcastPrintf;
+	Import.Server_SinglePrint = Server_SinglePrint;
+	Import.Server_PrecacheResource = Server_PrecacheResource;
+	Import.Server_FindRadius = Server_FindRadius;
+	Import.Server_FindEntity = Server_FindEntity;
+	Import.Server_Restart = Host_Restart_f;
+	Import.Server_ChangeLevel = Server_ChangeLevel;
+	Import.Server_AmbientSound = Game_AmbientSound;
+	Import.Server_GetLevelName = Server_GetLevelName;
+	Import.Server_GetFrameTime = Server_GetFrameTime;
+	Import.Server_GetNumEdicts = Game_GetNumEdicts;
+	Import.Server_GetEdicts = Game_GetEdicts;
 
 	Game = (GameExport_t*)pModule_LoadInterface(hGameInstance, va("%s/%s"MODULE_GAME, com_gamedir, Global.cModulePath), "Game_Main", &Import);
 	if(!Game)

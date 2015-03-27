@@ -8,69 +8,69 @@
 
 #include "server_player.h"
 
-#define IONBLASTER_MAX_RANGE	2000
+#define IONBLASTER_MAX_RANGE 2000.0f
 
-EntityFrame_t IonBlasterAnimation_Deploy [] =
+EntityFrame_t IonBlasterAnimation_Deploy[] =
 {
-	{   NULL, 1, 0.02f    },
-	{   NULL, 2, 0.02f    },
-	{   NULL, 3, 0.02f    },
-	{   NULL, 4, 0.02f    },
-	{   NULL, 5, 0.02f    },
-	{   NULL, 6, 0.02f    },
-	{   NULL, 7, 0.02f    },
-	{   NULL, 8, 0.02f    },
-	{   NULL, 9, 0.02f    },
-	{   NULL, 10, 0.02f	  },
-	{   NULL, 11, 0.02f    },
-	{   NULL, 12, 0.02f    },
-	{   NULL, 13, 0.02f    },
-	{   NULL, 14, 0.02f    },
-	{   NULL, 15, 0.02f    },
-	{   NULL, 16, 0.02f	   },
-	{   NULL, 17, 0.02f    },
-	{   NULL, 18, 0.02f    },
-	{   NULL, 19, 0.02f    },
-	{   NULL, 20, 0.02f    },
-	{   NULL, 21, 0.02f    },
-	{   NULL, 22, 0.02f    },
-	{   NULL, 23, 0.02f    },
-	{   NULL, 24, 0.02f    },
-	{   NULL, 25, 0.02f    },
-	{   NULL, 26, 0.02f, TRUE    }
+	{ NULL, 1, 0.02f },
+	{ NULL, 2, 0.02f },
+	{ NULL, 3, 0.02f },
+	{ NULL, 4, 0.02f },
+	{ NULL, 5, 0.02f },
+	{ NULL, 6, 0.02f },
+	{ NULL, 7, 0.02f },
+	{ NULL, 8, 0.02f },
+	{ NULL, 9, 0.02f },
+	{ NULL, 10, 0.02f },
+	{ NULL, 11, 0.02f },
+	{ NULL, 12, 0.02f },
+	{ NULL, 13, 0.02f },
+	{ NULL, 14, 0.02f },
+	{ NULL, 15, 0.02f },
+	{ NULL, 16, 0.02f },
+	{ NULL, 17, 0.02f },
+	{ NULL, 18, 0.02f },
+	{ NULL, 19, 0.02f },
+	{ NULL, 20, 0.02f },
+	{ NULL, 21, 0.02f },
+	{ NULL, 22, 0.02f },
+	{ NULL, 23, 0.02f },
+	{ NULL, 24, 0.02f },
+	{ NULL, 25, 0.02f },
+	{ NULL, 26, 0.02f, TRUE }
 };
 
-EntityFrame_t IonBlasterAnimation_Fire1 [] =
+EntityFrame_t IonBlasterAnimation_Fire1[] =
 {
-	{   NULL, 27, 0.02f    },
-	{   NULL, 28, 0.02f    },
-	{   NULL, 29, 0.02f    },
-	{   NULL, 30, 0.02f    },
-	{   NULL, 31, 0.02f    },
-	{   NULL, 32, 0.02f    },
-	{   NULL, 33, 0.02f    },
-	{   NULL, 34, 0.02f    },
-	{   NULL, 35, 0.02f    },
-	{   NULL, 36, 0.02f    },
-	{   NULL, 37, 0.02f, TRUE    }
+	{ NULL, 27, 0.02f },
+	{ NULL, 28, 0.02f },
+	{ NULL, 29, 0.02f },
+	{ NULL, 30, 0.02f },
+	{ NULL, 31, 0.02f },
+	{ NULL, 32, 0.02f },
+	{ NULL, 33, 0.02f },
+	{ NULL, 34, 0.02f },
+	{ NULL, 35, 0.02f },
+	{ NULL, 36, 0.02f },
+	{ NULL, 37, 0.02f, TRUE }
 };
 
-EntityFrame_t IonBlasterAnimation_Fire2 [] =
+EntityFrame_t IonBlasterAnimation_Fire2[] =
 {
-	{   NULL, 38, 0.02f    },
-	{   NULL, 39, 0.02f    },
-	{   NULL, 40, 0.02f    },
-	{   NULL, 41, 0.02f    },
-	{   NULL, 42, 0.02f    },
-	{   NULL, 43, 0.02f    },
-	{   NULL, 44, 0.02f    },
-	{   NULL, 45, 0.02f    },
-	{   NULL, 46, 0.02f    },
-	{   NULL, 47, 0.02f    },
-	{   NULL, 48, 0.02f    },
-	{   NULL, 49, 0.02f    },
-	{   NULL, 50, 0.02f    },
-	{   NULL, 51, 0.02f, TRUE    }
+	{ NULL, 38, 0.02f },
+	{ NULL, 39, 0.02f },
+	{ NULL, 40, 0.02f },
+	{ NULL, 41, 0.02f },
+	{ NULL, 42, 0.02f },
+	{ NULL, 43, 0.02f },
+	{ NULL, 44, 0.02f },
+	{ NULL, 45, 0.02f },
+	{ NULL, 46, 0.02f },
+	{ NULL, 47, 0.02f },
+	{ NULL, 48, 0.02f },
+	{ NULL, 49, 0.02f },
+	{ NULL, 50, 0.02f },
+	{ NULL, 51, 0.02f, TRUE }
 };
 
 void IonBlaster_Deploy(edict_t *ent)
@@ -152,8 +152,6 @@ void IonBlaster_IonBallTouch(edict_t *eIonBall,edict_t *other)
 
 void IonBlaster_PrimaryAttack(edict_t *ent)
 {
-	// [26/2/2012] Revised and fixed ~hogsy
-	float	*dir;
 	edict_t *eIonBall;
 	vec3_t	orig;
 
@@ -173,18 +171,16 @@ void IonBlaster_PrimaryAttack(edict_t *ent)
 	eIonBall = Entity_Spawn();
 	if(eIonBall)
 	{
-		eIonBall->v.cClassname	= "ionball";
-		eIonBall->v.movetype	= MOVETYPE_FLYBOUNCE;
-		eIonBall->v.effects		= EF_LIGHT_GREEN;
+		eIonBall->v.cClassname = "ionball";
+		eIonBall->v.movetype = MOVETYPE_FLYBOUNCE;
+		eIonBall->v.effects = EF_LIGHT_GREEN;
 
-		eIonBall->Physics.iSolid	= SOLID_BBOX;
+		eIonBall->Physics.iSolid = SOLID_BBOX;
 
-		eIonBall->local.hit		= false;
-		eIonBall->local.eOwner	= ent;
+		eIonBall->local.hit = false;
+		eIonBall->local.eOwner = ent;
 
-		dir = Engine.Aim(ent);
-		// [26/8/2012] Simplified ~hogsy
-		Math_VectorScale(dir,IONBLASTER_MAX_RANGE,eIonBall->v.velocity);
+		Weapon_Projectile(ent, eIonBall, IONBLASTER_MAX_RANGE);
 
 		Math_VectorCopy(ent->v.angles,eIonBall->v.angles);
 		Math_VectorCopy(ent->v.origin,orig);

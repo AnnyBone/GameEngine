@@ -144,10 +144,10 @@ void IonRifle_PrimaryAttack(edict_t *eOwner)
 			{
 				vec3_t	vOrigin;
 
-				eIonBall->v.cClassname		= "ionball";
-				eIonBall->v.movetype		= MOVETYPE_FLY;
-				eIonBall->v.effects			= EF_LIGHT_GREEN;
-				eIonBall->v.TouchFunction	= IonRifle_IonBallTouch;
+				eIonBall->v.cClassname = "ionball";
+				eIonBall->v.movetype = MOVETYPE_FLY;
+				eIonBall->v.effects = EF_LIGHT_GREEN;
+				eIonBall->v.TouchFunction = IonRifle_IonBallTouch;
 
 				eIonBall->Model.fScale = 2.0f;
 
@@ -165,12 +165,7 @@ void IonRifle_PrimaryAttack(edict_t *eOwner)
 				Entity_SetSizeVector(eIonBall,mv3Origin,mv3Origin);
 				Entity_SetOrigin(eIonBall,vOrigin);
 
-				{
-					vec_t	*vAim = Engine.Aim(eOwner);
-
-					Math_VectorScale(vAim,IONRIFLE_MAX_RANGE,eIonBall->v.velocity);
-					Math_VectorCopy(vAim,eIonBall->v.angles);
-				}
+				Weapon_Projectile(eOwner, eIonBall, IONRIFLE_MAX_RANGE);
 
 				Entity_Link(eIonBall,false);
 			}
@@ -239,12 +234,7 @@ void IonRifle_PrimaryAttack(edict_t *eOwner)
 				Entity_SetSizeVector(eIonBall,mv3Origin,mv3Origin);
 				Entity_SetOrigin(eIonBall,vOrigin);
 
-				{
-					vec_t	*vAim = Engine.Aim(eOwner);
-
-					Math_VectorScale(vAim,IONRIFLE_MAX_RANGE,eIonBall->v.velocity);
-					Math_VectorCopy(vAim,eIonBall->v.avelocity);
-				}
+				Weapon_Projectile(eOwner, eIonBall, IONRIFLE_MAX_RANGE);
 
 				Entity_Link(eIonBall,false);
 			}

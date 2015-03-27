@@ -25,11 +25,14 @@
     <Filter Include="Console">
       <UniqueIdentifier>{dcf4305a-6ad4-4a1d-8c03-7d16abc3355f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Network">
-      <UniqueIdentifier>{118fcf6f-7dea-455c-8ded-044746a27dcb}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Modules">
       <UniqueIdentifier>{c5611a4d-2e07-4438-aae7-3789ee89b3e0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Client\Video\Experimental">
+      <UniqueIdentifier>{722ed0b6-3937-4988-a27d-066200171433}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Network">
+      <UniqueIdentifier>{118fcf6f-7dea-455c-8ded-044746a27dcb}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -79,7 +82,6 @@
     <ClCompile Include="conproc.c">
       <Filter>Legacy</Filter>
     </ClCompile>
-    <ClCompile Include="engine_physics.c" />
     <ClCompile Include="engine_host.c" />
     <ClCompile Include="engine_client.c">
       <Filter>Client</Filter>
@@ -234,6 +236,12 @@
     <ClCompile Include="console_variable.c">
       <Filter>Console</Filter>
     </ClCompile>
+    <ClCompile Include="vidx_object.c">
+      <Filter>Client\Video\Experimental</Filter>
+    </ClCompile>
+    <ClCompile Include="engine_physics.c">
+      <Filter>Server</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\shared\shared_client.h">
@@ -354,7 +362,6 @@
     <ClInclude Include="conproc.h">
       <Filter>Legacy</Filter>
     </ClInclude>
-    <ClInclude Include="engine_physics.h" />
     <ClInclude Include="engine_edict.h" />
     <ClInclude Include="engine_client.h">
       <Filter>Client</Filter>
@@ -415,6 +422,9 @@
     </ClInclude>
     <ClInclude Include="image.h">
       <Filter>Client</Filter>
+    </ClInclude>
+    <ClInclude Include="engine_physics.h">
+      <Filter>Server</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

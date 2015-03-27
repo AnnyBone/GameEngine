@@ -1,4 +1,4 @@
-#include "server_main.h"
+#include "server_weapon.h"
 
 void Midas_Deploy(edict_t *ent)
 {
@@ -44,7 +44,6 @@ void CloudTouch(edict_t *cloud, edict_t *other)
 void Midas_PrimaryAttack(edict_t *ent)
 {
 	edict_t *cloud = Entity_Spawn();
-	float	*dir;
 
 	cloud->v.cClassname	= "cloud";
 	cloud->v.movetype	= MOVETYPE_FLYMISSILE;
@@ -57,12 +56,8 @@ void Midas_PrimaryAttack(edict_t *ent)
 //	SetSize(cloud,-16,-16,-16,16,16,16);
 	Entity_SetOrigin(cloud,ent->v.origin);
 
-	Engine.MakeVectors(ent->v.v_angle);
+	Weapon_Projectile(ent, cloud, 100.0f);
 
-	dir = Engine.Aim(ent);
-	cloud->v.velocity[0]	= dir[0]*100.0f;
-	cloud->v.velocity[1]	= dir[1]*100.0f;
-	cloud->v.velocity[2]	= dir[2]*100.0f;
 	cloud->v.dNextThink		= Server.dTime+0.3;
 	cloud->v.think			= Midas_CloudThink;
 	cloud->v.TouchFunction	= CloudTouch;

@@ -61,11 +61,6 @@ void ED_LoadFromFile (char *data);
 edict_t *EDICT_NUM(int n);
 int NUM_FOR_EDICT(edict_t *e);
 
-#define	NEXT_EDICT(e) ((edict_t *)( (byte *)e + sizeof(edict_t)))
-
-#define	EDICT_TO_PROG(e) ((byte*)e-(byte*)sv.edicts)
-#define PROG_TO_EDICT(e) ((edict_t *)((byte *)sv.edicts + e))
-
 //============================================================================
 
 #define	G_INT(o) (*(int *)&pr_globals[o])

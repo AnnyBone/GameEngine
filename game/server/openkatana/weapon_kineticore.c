@@ -1,4 +1,4 @@
-#include "server_main.h"
+#include "server_weapon.h"
 
 void Kineticore_Deploy(edict_t *ent)
 {
@@ -57,7 +57,6 @@ void IceballTouch(edict_t *ent, edict_t *other)
 void projectile_iceball(edict_t *ent, vec3_t orig)
 {
 	// [26/2/2012] Revised and fixed ~hogsy
-	float   *dir;
 	edict_t *ionball = Entity_Spawn();
 
 	ionball->v.cClassname	= "iceball";
@@ -67,12 +66,7 @@ void projectile_iceball(edict_t *ent, vec3_t orig)
 
 	ionball->local.eOwner = ent;
 
-	dir = Engine.Aim(ent);
-	ionball->v.velocity[0] = dir[0]*2500.0f;
-	ionball->v.velocity[1] = dir[1]*2500.0f;
-	ionball->v.velocity[2] = dir[2]*2500.0f;
-
-	Engine.MakeVectors(ionball->v.v_angle);
+	Weapon_Projectile(ent, ionball, 2500.0f);
 
 	Entity_SetModel(ionball,"models/iceball.md2");
 

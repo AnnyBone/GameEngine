@@ -53,9 +53,6 @@
     <ClCompile Include="server\server_deco.c">
       <Filter>Server</Filter>
     </ClCompile>
-    <ClCompile Include="server\server_entity.c">
-      <Filter>Server</Filter>
-    </ClCompile>
     <ClCompile Include="server\server_item.c">
       <Filter>Server</Filter>
     </ClCompile>
@@ -181,6 +178,9 @@
     </ClCompile>
     <ClCompile Include="client\client_view.c">
       <Filter>Client</Filter>
+    </ClCompile>
+    <ClCompile Include="server\server_entity.c">
+      <Filter>Server</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -464,17 +464,17 @@ void Player_PreThink(edict_t *ePlayer)
 		vec3_t	vStart,vEnd;
 
 		// [23/9/2012] Check if we can jump onto an edge, was originally in a seperate function but merged here instead ~hogsy
-		Math_AngleVectors(ePlayer->v.angles,ePlayer->v.vForward,ePlayer->local.vRight,ePlayer->local.vUp);
+		Math_AngleVectors(ePlayer->v.angles, ePlayer->local.vForward, ePlayer->local.vRight, ePlayer->local.vUp);
 		Math_VectorCopy(ePlayer->v.origin,vStart);
 
 		vStart[pZ] += 8.0f;
 
-		ePlayer->v.vForward[pZ] = 0;
+		ePlayer->local.vForward[pZ] = 0;
 
-		Math_VectorNormalize(ePlayer->v.vForward);
+		Math_VectorNormalize(ePlayer->local.vForward);
 
 		for(i = 0; i < 3; i++)
-			vEnd[i]	= vStart[i]+ePlayer->v.vForward[i]*24.0f;
+			vEnd[i] = vStart[i] + ePlayer->local.vForward[i] * 24.0f;
 
 		tTrace = Engine.Server_Move(vStart,vEnd,mv3Origin,mv3Origin,true,ePlayer);
 		if(tTrace.fraction < 1.0f)
@@ -482,7 +482,7 @@ void Player_PreThink(edict_t *ePlayer)
 			vStart[pZ] += ePlayer->v.maxs[pZ]-8.0f;
 
 			for(i = 0; i < 3; i++)
-				vEnd[i]	= vStart[i]+ePlayer->v.vForward[i]*24.0f;
+				vEnd[i] = vStart[i] + ePlayer->local.vForward[i] * 24.0f;
 
 			Math_VectorSubtractValue(tTrace.plane.normal,50.0f,ePlayer->v.movedir);
 

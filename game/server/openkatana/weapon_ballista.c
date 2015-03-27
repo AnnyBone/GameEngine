@@ -50,7 +50,6 @@ void Ballista_LogTouch(edict_t *ent, edict_t *other)
 void Ballista_SpawnLogProjectile(edict_t *ent)
 {
 	// [11/2/2012] Revised and fixed ~hogsy
-	float	*dir;
 	edict_t *log = Entity_Spawn();
 
 	log->local.eOwner = ent;
@@ -58,13 +57,7 @@ void Ballista_SpawnLogProjectile(edict_t *ent)
 	log->v.movetype = MOVETYPE_FLY;
 	log->Physics.iSolid = SOLID_BBOX;
 
-	dir = Engine.Aim(ent);
-
-	log->v.velocity[0] = dir[0]*2000.0f;
-	log->v.velocity[1] = dir[1]*2000.0f;
-	log->v.velocity[2] = dir[2]*2000.0f;
-
-	Engine.MakeVectors(log->v.v_angle);
+	Weapon_Projectile(ent, log, 2000.0f);
 
 	Entity_SetModel(log,"models/log.md2");
 	Entity_SetSizeVector(log,mv3Origin,mv3Origin);

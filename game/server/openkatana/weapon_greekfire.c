@@ -1,5 +1,7 @@
 #include "server_main.h"
 
+#include "server_weapon.h"
+
 void GreekFire_Deploy(edict_t *ent)
 {
 	//Weapon_Animate(ent,FALSE,1,7,0.1f,0,0,0,FALSE);
@@ -29,7 +31,6 @@ void GreekfireTouch(edict_t *ent, edict_t *other)
 
 void GreekFire_Throw(edict_t *ent)
 {
-	float	*dir;
 	edict_t *greekfire = Entity_Spawn();
 
 	greekfire->v.cClassname	= "greekfire";
@@ -40,12 +41,7 @@ void GreekFire_Throw(edict_t *ent)
 
 	greekfire->local.eOwner = ent;
 
-	dir = Engine.Aim(ent);
-	greekfire->v.velocity[0] = dir[0]*800;
-	greekfire->v.velocity[1] = dir[1]*800;
-	greekfire->v.velocity[2] = dir[2]*800;
-
-	Engine.MakeVectors(greekfire->v.v_angle);
+	Weapon_Projectile(ent,greekfire,800.0f);
 
 	Entity_SetModel(greekfire,"models/w_greekfire.md2");
 	Math_MVToVector(Math_VectorToAngles(greekfire->v.velocity),greekfire->v.angles);

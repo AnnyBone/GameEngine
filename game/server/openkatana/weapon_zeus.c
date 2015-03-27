@@ -1,4 +1,4 @@
-#include "server_main.h"
+#include "server_weapon.h"
 
 void Zeus_Deploy(edict_t *ent)
 {
@@ -7,22 +7,22 @@ void Zeus_Deploy(edict_t *ent)
 
 void Zeus_Hit(edict_t *ent)
 {
-	vec3_t	vSource,vTarg, vel;
-	vec_t	*vDirection = Engine.Aim(ent);
+	vec3_t	vSource, vTarg, vel, mvDirection;
 	trace_t	trace;
+
+	Math_MVToVector(Weapon_Aim(ent), mvDirection);
 
 	vSource[0] = ent->v.origin[0];
 	vSource[1] = ent->v.origin[1];
 	vSource[2] = ent->v.origin[2]+22.0f;
 
-	vTarg[0] = vSource[0]+(vDirection[0]*250);
-	vTarg[1] = vSource[1]+(vDirection[1]*250);
-	vTarg[2] = vSource[2]+(vDirection[2]*250);
+	vTarg[0] = vSource[0] + (mvDirection[0] * 250);
+	vTarg[1] = vSource[1] + (mvDirection[1] * 250);
+	vTarg[2] = vSource[2] + (mvDirection[2] * 250);
 
 	Math_VectorClear(vel);
 
 	trace = Traceline(ent,vSource,vTarg,0);
-
 	if(trace.fraction != 1.0f)
 		{
 			if(trace.ent && trace.ent->v.bTakeDamage)

@@ -140,6 +140,7 @@ void C4Vizatergo_PrimaryAttack(edict_t *eOwner)
 {
 	// [26/2/2012] Revised and fixed ~hogsy
 	vec3_t	vOrigin;
+	MathVector3_t mvDirection;
 	edict_t *c4ball = Entity_Spawn();
 
 	Sound(eOwner,CHAN_AUTO,"weapons/c4/c4fire.wav",255,ATTN_NORM);
@@ -153,24 +154,22 @@ void C4Vizatergo_PrimaryAttack(edict_t *eOwner)
 	c4ball->v.cClassname	= "c4ball";
 	c4ball->v.movetype		= MOVETYPE_BOUNCE;
 
-	c4ball->local.style		= AMMO_C4BOMBS;		// Cleaner way to tell if this can explode or not :V ~hogsy
-	c4ball->local.iC4Ammo	= 1;				// [11/8/2013] Since style is used for other shit too LAWL ~hogsy
-	c4ball->local.eOwner	= eOwner;
+	c4ball->local.style = AMMO_C4BOMBS;		// Cleaner way to tell if this can explode or not :V ~hogsy
+	c4ball->local.iC4Ammo = 1;				// [11/8/2013] Since style is used for other shit too LAWL ~hogsy
+	c4ball->local.eOwner = eOwner;
 
-	// [30/5/2013] Set the gravity properties ~hogsy
-	c4ball->Physics.iSolid		= SOLID_BBOX;
-	c4ball->Physics.fMass		= 0.9f;
-	c4ball->Physics.eIgnore		= eOwner;
-	c4ball->Physics.fGravity	= SERVER_GRAVITY;
+	// Set the physical properties.
+	c4ball->Physics.iSolid = SOLID_BBOX;
+	c4ball->Physics.fMass = 0.9f;
+	c4ball->Physics.eIgnore = eOwner;
+	c4ball->Physics.fGravity = SERVER_GRAVITY;
 
 	eOwner->local.bomb = c4ball;
 
-	// [26/8/2012] Simplified ~hogsy
-	Math_VectorScale(Engine.Aim(eOwner),C4VIZATERGO_MAX_RANGE,c4ball->v.velocity);
+	Math_MVToVector(Weapon_Aim(eOwner), mvDirection);
+	Math_VectorScale(mvDirection, C4VIZATERGO_MAX_RANGE, c4ball->v.velocity);
 
 	c4ball->v.velocity[pY] += 20.0f;
-
-	Engine.MakeVectors(c4ball->v.v_angle);
 
 	Math_MVToVector(Math_VectorToAngles(c4ball->v.velocity),c4ball->v.angles);
 	Math_VectorCopy(eOwner->v.origin,vOrigin);
@@ -193,10 +192,8 @@ void C4Vizatergo_SecondaryAttack(edict_t *eOwner)
 {
 	edict_t *eExplodable = Engine.Server_FindRadius(eOwner->v.origin,10000.0f);
 
-	// [30/5/2013] Fixed ~hogsy
 	do
 	{
-		// [11/8/2013] Fixed ~hogsy
 		if((eExplodable->local.style == AMMO_C4BOMBS) && (eExplodable->local.iC4Ammo == 1) && (eExplodable->local.eOwner == eOwner))
 		{
 			eExplodable->v.think		= C4Vizatergo_Explode;

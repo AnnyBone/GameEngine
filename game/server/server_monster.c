@@ -855,8 +855,6 @@ bool Monster_WalkMove(edict_t *ent,float yaw,float dist)
 
 void Monster_Spawn(edict_t *eMonster)
 {
-	int i;
-
 	// Add it to global monster count...
 	Server.iMonsters++;
 
@@ -878,8 +876,6 @@ void Monster_Spawn(edict_t *eMonster)
 */
 void Monster_Frame(edict_t *eMonster)
 {
-	int i;
-
 	// The following is only valid for actual monsters.
 	if (!Entity_IsMonster(eMonster))
 		return;

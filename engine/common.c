@@ -485,7 +485,6 @@ void MSG_WriteFloat (sizebuf_t *sb, float f)
 		int     l;
 	} dat;
 
-
 	dat.f = f;
 	dat.l = LittleLong (dat.l);
 

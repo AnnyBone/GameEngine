@@ -137,6 +137,7 @@ bool EntitiesTouching(edict_t *e1,edict_t *e2)
 	return true;
 }
 
+// TODO: Move this into server_entity.
 bool DropToFloor(edict_t *ent)
 {
 	vec3_t	end;

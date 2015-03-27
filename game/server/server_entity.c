@@ -3,7 +3,7 @@
 #include "server_main.h"
 
 /*
-	General entity treatment.
+	General Entity Management
 */
 
 /*	Create a new entity instance.
@@ -277,7 +277,7 @@ void Entity_ResetAnimation(edict_t *eEntity)
 	eEntity->local.iAnimationCurrent	=
 	eEntity->local.iAnimationEnd		= 0;
 
-	// [7/2/2013] Split away since this is a float and not an integer ~hogsy
+	// Reset the animation time.
 	eEntity->local.dAnimationTime = 0;
 }
 
@@ -335,6 +335,15 @@ bool Entity_IsMonster(edict_t *eEntity)
 		return true;
 
 	return false;
+}
+
+/*
+	Math/Utility Functions
+*/
+
+void Entity_MakeVectors(edict_t *eEntity)
+{
+	Math_AngleVectors(eEntity->v.v_angle, eEntity->local.vForward, eEntity->local.vRight, eEntity->local.vUp);
 }
 
 /*

@@ -92,11 +92,7 @@ void Shockwave_SpawnProjectile(edict_t *ent)
 	eLaser = Entity_Spawn();
 	if(eLaser)
 	{
-		Engine.MakeVectors(ent->v.v_angle);
-
-		Math_VectorScale(Engine.Aim(ent),2000.0f,eLaser->v.velocity);
-
-		Engine.MakeVectors(eLaser->v.v_angle);
+		Weapon_Projectile(ent, eLaser, 2000.0f);
 
 		Math_VectorCopy(ent->v.origin,eLaser->v.origin);
 		Math_MVToVector(Math_VectorToAngles(eLaser->v.velocity),eLaser->v.angles);

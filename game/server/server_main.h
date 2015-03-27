@@ -31,6 +31,7 @@ extern	cvar_t	cvServerGameTime;		// The length of time a round should last.
 extern	cvar_t	cvServerGameClients;	// Number of clients needed for a round to start.
 extern	cvar_t	cvServerGravityTweak;	// For detailed "tweaking" without touching the absolute amount. Works like mass...
 extern	cvar_t	cvServerGravity;		// The absolute gravity amount.
+extern	cvar_t	cvServerAim;			// Auto-aiming.
 
 void Server_Initialize(void);
 void Server_EntityFrame(edict_t *eEntity);
@@ -63,6 +64,7 @@ void Entity_ResetAnimation(edict_t *eEntity);
 void Entity_Animate(edict_t *eEntity,EntityFrame_t *efAnimation);
 void Entity_Link(edict_t *eEntity, bool bTouchTriggers);
 void Entity_Unlink(edict_t *eEntity);
+void Entity_MakeVectors(edict_t *eEntity);
 
 #define	ENTITY_REMOVE(a)	{	Entity_Remove(a);	return;	}
 

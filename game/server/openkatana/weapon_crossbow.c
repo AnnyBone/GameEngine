@@ -36,10 +36,10 @@ void arrow_touch(edict_t *ent, edict_t *other)
 	ent->v.enemy = other;
 }
 
-void projectile_arrow(edict_t *ent)
+void Crossbow_Projectile(edict_t *ent)
 {
 	// [11/2/2012] Revised and fixed ~hogsy
-	float	*dir;
+	MathVector3_t mvDirection;
 	edict_t *eArrow;
 
 	eArrow = Entity_Spawn();
@@ -51,12 +51,8 @@ void projectile_arrow(edict_t *ent)
 
 		eArrow->Physics.iSolid	= SOLID_BBOX;
 
-		dir = Engine.Aim(ent);
-		eArrow->v.velocity[0] = dir[0]*2000.0f;
-		eArrow->v.velocity[1] = dir[1]*2000.0f;
-		eArrow->v.velocity[2] = dir[2]*2000.0f;
-
-		Engine.MakeVectors(eArrow->v.v_angle);
+		Math_MVToVector(Weapon_Aim(ent), mvDirection);
+		Math_VectorScale(mvDirection, 2000.0f, eArrow->v.velocity);
 
 		Entity_SetModel(eArrow,"models/arrow.md2");
 		Entity_SetSizeVector(eArrow,mv3Origin,mv3Origin);
@@ -83,7 +79,7 @@ void Crossbow_PrimaryAttack(edict_t *ent)
 
 	//Weapon_Animate(ent,FALSE,1,52,0.043f,10,19,0,FALSE);
 
-	projectile_arrow(ent);
+	Crossbow_Projectile(ent);
 
 	if(ent->local.attackb_finished > Server.dTime)	// No attack boost...
 		ent->local.dAttackFinished = Server.dTime+1.0;
