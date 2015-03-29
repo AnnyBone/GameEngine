@@ -2,7 +2,7 @@ package jplatform.math;
 
 public class Vector2f 
 {
-	public static final Vector2f mvOrigin = new Vector2f(0,0);
+	public static final Vector2f origin = new Vector2f(0,0);
 	
 	public float x,y;
 	
@@ -12,10 +12,10 @@ public class Vector2f
 		this.y = y;
 	}
 	
-	public Vector2f(Vector2f vVector)
+	public Vector2f(Vector2f vector)
 	{
-		x = vVector.x;
-		y = vVector.y;
+		x = vector.x;
+		y = vector.y;
 	}
 	
 	public Vector2f()
@@ -24,91 +24,91 @@ public class Vector2f
 		y = 0;
 	}
 	
-	public void Add(Vector2f mvAdd)
+	public void add(Vector2f add)
 	{
-		x += mvAdd.x;
-		y += mvAdd.y;
+		x += add.x;
+		y += add.y;
 	}
 	
-	public void Add(float fAdd)
+	public void add(float add)
 	{
-		x += fAdd;
-		y += fAdd;
+		x += add;
+		y += add;
 	}
 	
-	public void Subtract(Vector2f mvSub)
+	public void subtract(Vector2f sub)
 	{
-		x -= mvSub.x;
-		y -= mvSub.y;
+		x -= sub.x;
+		y -= sub.y;
 	}
 	
-	public void Subtract(float fSub)
+	public void subtract(float sub)
 	{
-		x -= fSub;
-		y -= fSub;
+		x -= sub;
+		y -= sub;
 	}
 	
-	public void Subtract(float x,float y)
+	public void subtract(float x,float y)
 	{
 		this.x -= x;
 		this.y -= y;
 	}
 	
-	public void Set(float fSet)
+	public void set(float set)
 	{
-		x = fSet;
-		y = fSet;
+		x = set;
+		y = set;
 	}
 	
-	public void Set(float x,float y)
+	public void set(float x,float y)
 	{
 		this.x = x;
 		this.y = y;
 	}
 	
-	public void Set(Vector2f mvSet)
+	public void set(Vector2f set)
 	{
-		x = mvSet.x;
-		y = mvSet.y;
+		x = set.x;
+		y = set.y;
 	}
 	
-	public void Inverse()
+	public void inverse()
 	{
 		x = -x;
 		y = -y;
 	}
 	
-	public void Divide(Vector2f mvDiv)
+	public void divide(Vector2f div)
 	{
-		x /= mvDiv.x;
-		y /= mvDiv.y;
+		x /= div.x;
+		y /= div.y;
 	}
 	
-	public void Divide(float fDiv)
+	public void divide(float div)
 	{
-		x /= fDiv;
-		y /= fDiv;
+		x /= div;
+		y /= div;
 	}
 	
-	public void Scale(Vector2f mvScale)
+	public void scale(Vector2f scale)
 	{
-		x *= mvScale.x;
-		y *= mvScale.y;
+		x *= scale.x;
+		y *= scale.y;
 	}
 	
-	public void Scale(float fScale)
+	public void scale(float scale)
 	{
-		x *= fScale;
-		y *= fScale;
+		x *= scale;
+		y *= scale;
 	}
 	
-	public void Scale(float x,float y,float z)
+	public void scale(float x,float y,float z)
 	{
 		this.x *= x;
 		this.y *= y;
 	}
 	
-	public double Length()
+	public double length()
 	{
 		double dLength = 0;
 		
@@ -120,15 +120,15 @@ public class Vector2f
 		return dLength;
 	}
 	
-	public void Length(Vector2f mvOut)
+	public void length(Vector2f out)
 	{
-		double dLength = Length();
-		mvOut.Set((float) dLength);
+		double dLength = length();
+		out.set((float) dLength);
 	}
 
-	public void Normalize()
+	public void normalize()
 	{
-		float fLength = (float)Length();
-		Divide(fLength);
+		float fLength = (float)length();
+		divide(fLength);
 	}
 }

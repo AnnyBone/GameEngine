@@ -2,16 +2,6 @@ package jplatform.math;
 
 public class Vector3f 
 {
-	public static final Vector3f origin = new Vector3f(0,0,0);
-	
-	public static final int	MATH_PITCH = 0;
-	public static final int MATH_YAW = 1;
-	public static final int MATH_ROLL = 2;
-	
-	public static final int MATH_X = 0;
-	public static final int MATH_Y = 1;
-	public static final int MATH_Z = 2;
-	
 	public float x,y,z;
 	
 	public Vector3f(float x,float y,float z)
@@ -21,11 +11,11 @@ public class Vector3f
 		this.z = z;
 	}
 	
-	public Vector3f(Vector3f vVector)
+	public Vector3f(Vector3f vector)
 	{
-		x = vVector.x;
-		y = vVector.y;
-		z = vVector.z;
+		x = vector.x;
+		y = vector.y;
+		z = vector.z;
 	}
 	
 	public Vector3f()
@@ -35,126 +25,126 @@ public class Vector3f
 		z = 0;
 	}
 	
-	public void Add(Vector3f mvAdd)
+	public void add(Vector3f add)
 	{
-		x += mvAdd.x;
-		y += mvAdd.y;
-		z += mvAdd.z;
+		x += add.x;
+		y += add.y;
+		z += add.z;
 	}
 	
-	public void Add(float fAdd)
+	public void add(float add)
 	{
-		x += fAdd;
-		y += fAdd;
-		z += fAdd;
+		x += add;
+		y += add;
+		z += add;
 	}
 	
-	public void Subtract(Vector3f mvSub)
+	public void subtract(Vector3f sub)
 	{
-		x -= mvSub.x;
-		y -= mvSub.y;
-		z -= mvSub.z;
+		x -= sub.x;
+		y -= sub.y;
+		z -= sub.z;
 	}
 	
-	public void Subtract(float fSub)
+	public void subtract(float sub)
 	{
-		x -= fSub;
-		y -= fSub;
-		z -= fSub;
+		x -= sub;
+		y -= sub;
+		z -= sub;
 	}
 	
-	public void Subtract(float x,float y,float z)
+	public void subtract(float x,float y,float z)
 	{
 		this.x -= x;
 		this.y -= y;
 		this.z -= z;
 	}
 	
-	public void Set(float fSet)
+	public void set(float set)
 	{
-		x = fSet;
-		y = fSet;
-		z = fSet;
+		x = set;
+		y = set;
+		z = set;
 	}
 	
-	public void Set(float x,float y,float z)
+	public void set(float x,float y,float z)
 	{
 		this.x = x;
 		this.y = y;
 		this.z = z;
 	}
 	
-	public void Set(Vector3f mvSet)
+	public void set(Vector3f set)
 	{
-		x = mvSet.x;
-		y = mvSet.y;
-		z = mvSet.z;
+		x = set.x;
+		y = set.y;
+		z = set.z;
 	}
 	
-	public void Inverse()
+	public void inverse()
 	{
 		x = -x;
 		y = -y;
 		z = -z;
 	}
 	
-	public void Divide(Vector3f mvDiv)
+	public void divide(Vector3f div)
 	{
-		x /= mvDiv.x;
-		y /= mvDiv.y;
-		z /= mvDiv.z;
+		x /= div.x;
+		y /= div.y;
+		z /= div.z;
 	}
 	
-	public void Divide(float fDiv)
+	public void divide(float div)
 	{
-		x /= fDiv;
-		y /= fDiv;
-		z /= fDiv;
+		x /= div;
+		y /= div;
+		z /= div;
 	}
 	
-	public void Scale(Vector3f mvScale)
+	public void scale(Vector3f scale)
 	{
-		x *= mvScale.x;
-		y *= mvScale.y;
-		z *= mvScale.z;
+		x *= scale.x;
+		y *= scale.y;
+		z *= scale.z;
 	}
 	
-	public void Scale(float fScale)
+	public void scale(float scale)
 	{
-		x *= fScale;
-		y *= fScale;
-		z *= fScale;
+		x *= scale;
+		y *= scale;
+		z *= scale;
 	}
 	
-	public void Scale(float x,float y,float z)
+	public void scale(float x,float y,float z)
 	{
 		this.x *= x;
 		this.y *= y;
 		this.z *= z;
 	}
 	
-	public double Length()
+	public double length()
 	{
-		double dLength = 0;
+		double length = 0;
 		
-		dLength += x*x;
-		dLength += y*y;
-		dLength += z*z;
+		length += x*x;
+		length += y*y;
+		length += z*z;
 		
-		dLength = Math.sqrt(dLength);
+		length = Math.sqrt(length);
 		
-		return dLength;
+		return length;
 	}
 	
-	public void Length(Vector3f mvOut)
+	public void length(Vector3f out)
 	{
-		double dLength = Length();
-		mvOut.Set((float) dLength);
+		double length = length();
+		out.set((float) length);
 	}
 
 	public void Normalize()
 	{
-		float fLength = (float)Length();
-		Divide(fLength);
+		float length = (float)length();
+		divide(length);
 	}
 }

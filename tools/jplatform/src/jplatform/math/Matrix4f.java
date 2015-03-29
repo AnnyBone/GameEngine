@@ -2,77 +2,77 @@ package jplatform.math;
 
 public class Matrix4f 
 {
-	float	fVector[][];	// Row and column.
+	float	matrix[][];	// Row and column.
 	
 	public Matrix4f()
 	{
-		fVector = new float[4][4];
+		matrix = new float[4][4];
 		
 		for(int i = 0; i < 4; i++)		// Row
 			for(int j = 0; j < 4; j++)	// Column
-				fVector[i][j] = 0;
+				matrix[i][j] = 0;
 	}
 	
-	public void Add(Matrix4f mmAdd)
+	public void add(Matrix4f add)
 	{
 		for(int i = 0; i < 4; i++)		// Row
 			for(int j = 0; j < 4; j++)	// Column
-				fVector[i][j] += mmAdd.fVector[i][j];
+				matrix[i][j] += add.matrix[i][j];
 	}
 	
-	public void Add(float fAdd)
+	public void add(float add)
 	{
 		for(int i = 0; i < 4; i++)		// Row
 			for(int j = 0; j < 4; j++)	// Column
-				fVector[i][j] += fAdd;
+				matrix[i][j] += add;
 	}
 	
-	public void Subtract(Matrix4f mmSub)
+	public void subtract(Matrix4f sub)
 	{
 		for(int i = 0; i < 4; i++)		// Row
 			for(int j = 0; j < 4; j++)	// Column
-				fVector[i][j] -= mmSub.fVector[i][j];
+				matrix[i][j] -= sub.matrix[i][j];
 	}
 	
-	public void Subtract(float fSub)
+	public void subtract(float sub)
 	{
 		for(int i = 0; i < 4; i++)		// Row
 			for(int j = 0; j < 4; j++)	// Column
-				fVector[i][j] -= fSub;
+				matrix[i][j] -= sub;
 	}
 	
-	public void Inverse()
+	public void inverse()
 	{
 		for(int i = 0; i < 4; i++)		// Row
 			for(int j = 0; j < 4; j++)	// Column
-				fVector[i][j] = -fVector[i][j];
+				matrix[i][j] = -matrix[i][j];
 	}
 	
-	public void Divide(Matrix4f mmDiv)
+	public void divide(Matrix4f div)
 	{
 		for(int i = 0; i < 4; i++)		// Row
 			for(int j = 0; j < 4; j++)	// Column
-				fVector[i][j] /= mmDiv.fVector[i][j];
+				matrix[i][j] /= div.matrix[i][j];
 	}
 	
-	public void Divide(float fDiv)
+	public void divide(float div)
 	{
 		for(int i = 0; i < 4; i++)		// Row
 			for(int j = 0; j < 4; j++)	// Column
-				fVector[i][j] /= fDiv;
+				matrix[i][j] /= div;
 	}
 	
-	public void Scale(Matrix4f mmScale)
+	public void scale(Matrix4f scale)
 	{
 		for(int i = 0; i < 4; i++)		// Row
 			for(int j = 0; j < 4; j++)	// Column
-				fVector[i][j] *= mmScale.fVector[i][j];
+				matrix[i][j] *= scale.matrix[i][j];
 	}
 	
-	public void Scale(float fScale)
+	public void scale(float scale)
 	{
 		for(int i = 0; i < 4; i++)		// Row
 			for(int j = 0; j < 4; j++)	// Column
-				fVector[i][j] *= fScale;
+				matrix[i][j] *= scale;
 	}
 }
