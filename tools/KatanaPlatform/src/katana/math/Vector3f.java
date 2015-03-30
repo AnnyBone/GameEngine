@@ -1,4 +1,4 @@
-package jplatform.math;
+package katana.math;
 
 public class Vector3f 
 {
