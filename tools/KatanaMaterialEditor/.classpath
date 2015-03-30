@@ -3,6 +3,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/KatanaPlatform"/>
-	<classpathentry kind="lib" path="C:/Users/Mark/Source/Repos/KatanaEngine/tools/jar/swt.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Mark/Source/Repos/KatanaEngine/tools/jar/SWT/jar/swt.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
