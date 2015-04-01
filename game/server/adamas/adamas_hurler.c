@@ -130,9 +130,9 @@ void Hurler_Think(edict_t *eHurler)
 
 				Hurler_Spawn(eNewHurler);
 
-				if(!DropToFloor(eNewHurler))
+				if (!Entity_DropToFloor(eNewHurler))
 				{
-					RemoveEntity(eNewHurler);
+					Entity_Remove(eNewHurler);
 					iHurlers--;
 				}
 				else

@@ -51,7 +51,7 @@ void IceballTouch(edict_t *ent, edict_t *other)
 	// [25/6/2012] Simplified ~hogsy
 	Math_VectorClear(ent->v.velocity);
 
-	RemoveEntity(ent);
+	Entity_Remove(ent);
 }
 
 void projectile_iceball(edict_t *ent, vec3_t orig)

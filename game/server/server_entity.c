@@ -119,6 +119,27 @@ void Entity_ClearEffects(edict_t *eEntity)
 	eEntity->v.effects = 0;
 }
 
+/*	Can be used for convenience.
+*/
+void Entity_AddFlags(edict_t *eEntity, int iFlags)
+{
+	eEntity->v.flags |= iFlags;
+}
+
+/*	Can be used for convenience.
+*/
+void Entity_RemoveFlags(edict_t *eEntity, int iFlags)
+{
+	eEntity->v.flags &= ~iFlags;
+}
+
+/*	Can be used for convenience.
+*/
+void Entity_ClearFlags(edict_t *eEntity, int iFlags)
+{
+	eEntity->v.flags = 0;
+}
+
 /*	Find a random spawn point for the entity (point_start).
 	TODO: Rename!
 */
@@ -344,6 +365,48 @@ bool Entity_IsMonster(edict_t *eEntity)
 void Entity_MakeVectors(edict_t *eEntity)
 {
 	Math_AngleVectors(eEntity->v.v_angle, eEntity->local.vForward, eEntity->local.vRight, eEntity->local.vUp);
+}
+
+bool Entity_DropToFloor(edict_t *eEntity)
+{
+	MathVector3_t	vEnd;
+	trace_t			trGround;
+
+	Math_VectorCopy(eEntity->v.origin, vEnd);
+
+	vEnd[2] -= 256;
+
+	trGround = Engine.Server_Move(eEntity->v.origin, eEntity->v.mins, eEntity->v.maxs, vEnd, false, eEntity);
+	if (trGround.fraction == 1 || trGround.bAllSolid)
+	{
+		Engine.Con_Warning("Entity is stuck in world! (%s) (%i %i %i)\n", eEntity->v.cClassname,
+			(int)eEntity->v.origin[0],
+			(int)eEntity->v.origin[1],
+			(int)eEntity->v.origin[2]);
+		return false;
+	}
+
+	// Use SetOrigin so that it's automatically linked.
+	Entity_SetOrigin(eEntity, trGround.endpos);
+
+	Entity_AddFlags(eEntity, FL_ONGROUND);
+
+	eEntity->v.groundentity = trGround.ent;
+
+	return true;
+}
+
+bool Entity_IsTouching(edict_t *eEntity, edict_t *eOther)
+{
+	if (eEntity->v.mins[0] > eOther->v.maxs[0] ||
+		eEntity->v.mins[1] > eOther->v.maxs[1] ||
+		eEntity->v.mins[2] > eOther->v.maxs[2] ||
+		eEntity->v.maxs[0] < eOther->v.mins[0] ||
+		eEntity->v.maxs[1] < eOther->v.mins[1] ||
+		eEntity->v.maxs[2] < eOther->v.mins[2])
+		return false;
+
+	return true;
 }
 
 /*

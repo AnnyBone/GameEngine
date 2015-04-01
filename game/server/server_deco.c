@@ -8,7 +8,7 @@ void Deco_Push(edict_t *ent,edict_t *other)
 	ent->v.velocity[1] = ent->v.velocity[0]+other->v.velocity[1];
 	ent->v.velocity[2] = ent->v.velocity[0]+other->v.velocity[2];
 
-	DropToFloor(ent);
+	Entity_DropToFloor(ent);
 }
 
 void Deco_VaseBreak(edict_t *ent,edict_t *other)
@@ -45,5 +45,5 @@ void deco_vase(edict_t *ent)
 	Entity_SetModel(ent,"models/deco/e2/vase01.md2");
 	Entity_SetSize(ent,-11,-13,0,11,12,31);
 
-//	DropToFloor(ent);
+//	Entity_DropToFloor(ent);
 }

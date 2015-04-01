@@ -569,7 +569,7 @@ void GetSoundtime(void);
 // [13/9/2012] Moved... ~hogsy
 void S_Update_(void)
 {
-#ifndef KATANA_AUDIO_OPENAL
+#ifdef KATANA_AUDIO_DIRECTSOUND
 	int	endtime,
 		samps;
 
@@ -683,7 +683,7 @@ void S_Update(vec3_t origin, vec3_t forward, vec3_t right, vec3_t up)
 
 void GetSoundtime(void)
 {
-#ifndef KATANA_AUDIO_OPENAL
+#ifdef KATANA_AUDIO_DIRECTSOUND
 	int				samplepos;
 	static	int		buffers;
 	static	int		oldsamplepos;

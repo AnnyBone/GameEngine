@@ -67,10 +67,6 @@ void WEAPON_StickThink(edict_t *ent);
 void ThrowGib(vec3_t origin,vec3_t velocity,char *model,float damage,bool bleed);
 void Item_Respawn(edict_t *ent);
 
-bool DropToFloor(edict_t *ent);
-
-bool EntitiesTouching(edict_t *e1,edict_t *e2);
-
 void Client_RelinkEntities(entity_t *ent,int i,double dTime);
 
 #endif

@@ -231,7 +231,7 @@ void Bot_Spawn(edict_t *eBot)
 	Monster_SetThink(eBot,THINK_IDLE);
 
 	// [6/8/2012] Make sure we're not in the air ~hogsy
-	DropToFloor(eBot);
+	Entity_DropToFloor(eBot);
 }
 
 void Bot_Think(edict_t *eBot)

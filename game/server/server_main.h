@@ -48,29 +48,33 @@ bool Server_SpawnEntity(edict_t *ent);
 
 edict_t	*Entity_Spawn(void);
 
-bool Entity_CanDamage(edict_t *eEntity,edict_t *eTarget,int iDamageType);
+bool Entity_CanDamage(edict_t *eEntity, edict_t *eTarget, int iDamageType);
 bool Entity_IsPlayer(edict_t *eEntity);
 bool Entity_IsMonster(edict_t *eEntity);
+bool Entity_IsTouching(edict_t *eEntity, edict_t *eOther);
+bool Entity_DropToFloor(edict_t *eEntity);
 
 void Entity_SetOrigin(edict_t *eEntity, MathVector3_t vOrigin);
 void Entity_SetAngles(edict_t *eEntity, MathVector3_t vAngles);
-void Entity_SetModel(edict_t *eEntity,char *cModelPath);
+void Entity_SetModel(edict_t *eEntity, char *cModelPath);
 void Entity_SetSizeVector(edict_t *eEntity, MathVector3_t vMin, MathVector3_t vMax);
-void Entity_SetSize(edict_t *eEntity,float fMinA,float fMinB,float fMinC,float fMaxA,float fMaxB,float fMaxC);
-void Entity_RadiusDamage(edict_t *eInflictor,float fRadius,int iDamage,int iDamageType);
+void Entity_SetSize(edict_t *eEntity, float fMinA, float fMinB, float fMinC, float fMaxA, float fMaxB, float fMaxC);
+void Entity_RadiusDamage(edict_t *eInflictor, float fRadius, int iDamage, int iDamageType);
 void Entity_Remove(edict_t *eEntity);
 void Entity_CheckFrames(edict_t *eEntity);
 void Entity_ResetAnimation(edict_t *eEntity);
-void Entity_Animate(edict_t *eEntity,EntityFrame_t *efAnimation);
+void Entity_Animate(edict_t *eEntity, EntityFrame_t *efAnimation);
 void Entity_Link(edict_t *eEntity, bool bTouchTriggers);
 void Entity_Unlink(edict_t *eEntity);
 void Entity_MakeVectors(edict_t *eEntity);
+void Entity_AddEffects(edict_t *eEntity, int iEffects);
+void Entity_RemoveEffects(edict_t *eEntity, int iEffects);
+void Entity_ClearEffects(edict_t *eEntity);
+void Entity_AddFlags(edict_t *eEntity, int iFlags);
+void Entity_RemoveFlags(edict_t *eEntity, int iFlags);
+void Entity_ClearFlags(edict_t *eEntity, int iFlags);
 
 #define	ENTITY_REMOVE(a)	{	Entity_Remove(a);	return;	}
-
-// Defines for legacy functions
-#define	RemoveEntity(a)	Entity_Remove(a)
-#define SetOrigin(a,b)	Entity_SetOrigin(a,b)
 
 edict_t	*Entity_SpawnPoint(edict_t *eEntity,int iType);
 

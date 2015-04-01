@@ -331,18 +331,63 @@ MathVector_t Weapon_Aim(edict_t *eEntity)
 	return mvResult;
 }
 
-void Weapon_Projectile(edict_t *eOwner, edict_t *eProjectile, float fRange)
+MathVector3_t mvTraceMaxs = { 8, 8, 8 };
+MathVector3_t mvTraceMins = { 8, 8, 8 };
+
+/*	Runs a trace to see if a projectile can be casted.
+*/
+bool Weapon_CheckTrace(edict_t *eOwner)
+{
+	int i, iTraceContents;
+	MathVector3_t mvTarget, mvSource, mvDirection;
+	trace_t tCheck;
+
+	// Copy over the players origin.
+	Math_VectorCopy(eOwner->v.origin, mvSource);
+
+	// Update the origin to the correct view offset.
+	mvSource[2] += eOwner->v.view_ofs[2];
+
+	// Apply the distance to the target for the trace.
+	for (i = 0; i < 3; i++)
+		mvTarget[i] = mvSource[i] + mvDirection[i] * 2048.0f;
+
+	// Check that there's enough space for projectile.
+	tCheck = Traceline(eOwner, mvSource, mvTarget, 0);
+	if (tCheck.fraction == 1.0f)
+		return false;
+
+	// Ensure that we're not inside the sky or within a solid.
+	iTraceContents = Engine.Server_PointContents(tCheck.endpos);
+	if ((iTraceContents == CONTENT_SKY) || (iTraceContents == BSP_CONTENTS_SOLID))
+		return false;
+
+	// Check to see if there's a target, and it's not the world!
+	if (tCheck.ent)
+		// Are we intersecting with it?
+		if (Math_IsIntersecting(mvTraceMins, mvTraceMaxs, tCheck.ent->v.mins, tCheck.ent->v.maxs))
+			return false;
+
+	return true;
+}
+
+/*	Attempts to throw out a projectile.
+*/
+void Weapon_Projectile(edict_t *eOwner, edict_t *eProjectile, float fVelocity)
 {
 	MathVector3_t mvDirection;
 
+	// Figure out our aim direction.
 	Math_MVToVector(Weapon_Aim(eOwner), mvDirection);
-	Math_VectorScale(mvDirection, fRange, eProjectile->v.velocity);
+
+	// Scale with the speed and copy over the angled velocity.
+	Math_VectorScale(mvDirection, fVelocity, eProjectile->v.velocity);
 }
 
 void Weapon_BulletProjectile(edict_t *eEntity,float fSpread,int iDamage,vec_t *vDirection)
 {
-	int		i;
-	vec3_t	vSource,vTarg;
+	int	i;
+	MathVector3_t vSource, vTarg;
 	trace_t	tTrace;
 
 	Math_VectorCopy(eEntity->v.origin,vSource);
@@ -664,15 +709,14 @@ void Weapon_PrimaryAttack(edict_t *eEntity)
 
 	if(wCurrentWeapon->Primary)
 	{
-		Entity_MakeVectors(eEntity);
-
-		// [15/8/2013] Why write this out again and again for every weapon? Just do it here! ~hogsy
-		if(Entity_IsPlayer(eEntity) && ((eEntity->v.velocity[0] == 0) && (eEntity->v.velocity[1] == 0)))
 #ifdef GAME_OPENKATANA
-			// [15/8/2013] But let's not forget that the Daikatana is a special case :) ~hogsy
-			if(wCurrentWeapon->iItem != WEAPON_DAIKATANA)
-#endif
+		// Daikatana handles this itself, since it's a special case.
+		if (wCurrentWeapon->iItem != WEAPON_DAIKATANA)
+			// Check to see if it's a player and ensure they're standing.
+			if(Entity_IsPlayer(eEntity) && ((eEntity->v.velocity[0] == 0) && (eEntity->v.velocity[1] == 0)))
+				// Tell them to run their fire animation.
 				Entity_Animate(eEntity,PlayerAnimation_Fire);
+#endif
 
 		wCurrentWeapon->Primary(eEntity);
 	}
@@ -686,8 +730,6 @@ void Weapon_SecondaryAttack(edict_t *eEntity)
 
 	if(wCurrentWeapon->Secondary)
 	{
-		Entity_MakeVectors(eEntity);
-
 		wCurrentWeapon->Secondary(eEntity);
 	}
 }
@@ -733,7 +775,7 @@ void Weapon_CheckInput(edict_t *eEntity)
 		if(eEntity->local.dAttackFinished > Server.dTime)
 			return;
 
-		switch((int)eEntity->v.impulse)
+		switch(eEntity->v.impulse)
 		{
 #ifdef GAME_OPENKATANA
 		case 1:

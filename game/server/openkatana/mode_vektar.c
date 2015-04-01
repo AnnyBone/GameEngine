@@ -123,7 +123,7 @@ void Vektar_Move(edict_t *eVektar)
 
 	Entity_SetOrigin(eVektar,wWaypoint->position);
 
-	DropToFloor(eVektar);
+	Entity_DropToFloor(eVektar);
 
 	Sound(eVektar,CHAN_ITEM,VEKTAR_SOUND_FINDING,255,ATTN_NORM);
 

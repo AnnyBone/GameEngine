@@ -34,6 +34,9 @@
     <Filter Include="Network">
       <UniqueIdentifier>{118fcf6f-7dea-455c-8ded-044746a27dcb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Client\Audio\Interfaces">
+      <UniqueIdentifier>{4068ff62-f40e-400d-aa30-a573d3113102}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="engine_loader.c" />
@@ -67,9 +70,6 @@
     </ClCompile>
     <ClCompile Include="engine_script.c" />
     <ClCompile Include="engine_editor.c" />
-    <ClCompile Include="snd_win.c">
-      <Filter>Legacy</Filter>
-    </ClCompile>
     <ClCompile Include="cl_input.c">
       <Filter>Legacy</Filter>
     </ClCompile>
@@ -241,6 +241,12 @@
     </ClCompile>
     <ClCompile Include="engine_physics.c">
       <Filter>Server</Filter>
+    </ClCompile>
+    <ClCompile Include="audio_dsound.c">
+      <Filter>Client\Audio\Interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="audio_dummy.c">
+      <Filter>Client\Audio\Interfaces</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

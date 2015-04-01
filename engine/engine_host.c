@@ -605,8 +605,14 @@ void _Host_Frame (float time)
 	if(host_speeds.value)
 		time2 = System_DoubleTime ();
 
-	if(cls.signon == SIGNONS)
+	if (cls.signon == SIGNONS)
+	{
+		S_Update(r_origin, vpn, vright, vup);
+
 		CL_DecayLights();
+	}
+	else
+		S_Update(mv3Origin, mv3Origin, mv3Origin, mv3Origin);
 
 	if (host_speeds.value)
 	{

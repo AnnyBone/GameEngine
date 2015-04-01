@@ -98,28 +98,36 @@ typedef struct
 
 	// [30/1/2013] Changed from float to int ~hogsy
 	int			modelindex;
-	vec3_t		absmin;
-	vec3_t		absmax;
-	float		ltime;			// Local time for ents.
+
+	MathVector3_t absmin;
+	MathVector3_t absmax;
+
+	float		ltime;	// Local time for ents.
+
 	// [20/7/2012] Changed to an integer ~hogsy
 	int			movetype;
-	vec3_t		origin;
-	vec3_t		oldorigin;
-	vec3_t		velocity;
-	vec3_t		angles;
-	vec3_t		avelocity;
-	vec3_t		punchangle;
+
+	MathVector3_t origin;
+	MathVector3_t oldorigin;
+	MathVector3_t velocity;
+	MathVector3_t angles;
+	MathVector3_t avelocity;
+	MathVector3_t punchangle;
 
 	// [20/10/2013] Changed from a float to an integer ~hogsy
 	int			frame;
 	int			effects;
-	vec3_t		mins,maxs;
-	vec3_t		size;
+
+	MathVector3_t mins, maxs;
+	MathVector3_t size;
+
 	void		(*TouchFunction)(edict_t *eEntity,edict_t *eOther);
 	void		(*use)(edict_t *ent);
 	void		(*think)(edict_t *ent);
 	void		(*blocked)(edict_t *ent,edict_t *other);
+
 	double		dNextThink;
+
 	edict_t		*groundentity;
 
 	// [21/10/2012] Changed to an integer ~hogsy
@@ -133,20 +141,22 @@ typedef struct
 	MathVector4_t	vLight;
 
 	bool		bTakeDamage;
-	// [20/8/2012] Changed from an int to edict ~hogsy
 	edict_t		*chain;
-	vec3_t		view_ofs;
-	vec3_t		button;
-	float		impulse;
+
+	MathVector3_t view_ofs;
+	MathVector3_t button;
+
+	int		impulse;
 	float		fixangle;
-	vec3_t		v_angle;
+
+	MathVector3_t v_angle;
+
 	float		idealpitch;
 	char		*netname;
 	edict_t		*enemy;     // Obsolete
 	int			flags;
 	float		colormap;
 	float		team;
-	// [27/1/2013] Changed from float to integer (and renamed to iMaxHealth) ~hogsy
 	int			iMaxHealth;
 	float		teleport_time;
 
@@ -169,7 +179,7 @@ typedef struct
 	float		sounds;
 
 	// Physics
-	vec3_t		movedir;
+	MathVector3_t movedir;
 } entvars_t;
 
 // [12/1/2013] Model specific variables ~hogsy

@@ -104,12 +104,12 @@ void IonBlaster_IonBallTouch(edict_t *eIonBall,edict_t *other)
 	// [9/12/2012] Revised and fixed ~hogsy
 	vec3_t	vInversed;
 
-	// [14/2/2013] Moved ~hogsy
-	if(Engine.Server_PointContents(eIonBall->v.origin) == CONTENT_SKY)
-	{
-		Entity_Remove(eIonBall);
-		return;
-	}
+	// Ensure we aren't inside something...
+	int	iPointContent = Engine.Server_PointContents(eIonBall->v.origin);
+	if((iPointContent == CONTENT_SKY) || (iPointContent == BSP_CONTENTS_SOLID))
+		ENTITY_REMOVE(eIonBall);
+
+	Engine.Con_Printf("POINT CONTENT: %i\n", iPointContent);
 
 	// [12/8/2012] Don't collide with owner ~hogsy
 	// [26/8/2012] Don't collide on at least the first hit with the owner (otherwise we'll kill them upon fire) ~hogsy
@@ -154,6 +154,10 @@ void IonBlaster_PrimaryAttack(edict_t *ent)
 {
 	edict_t *eIonBall;
 	vec3_t	orig;
+
+	// Check if there's room to perform the attack.
+	if (!Weapon_CheckTrace(ent))
+		return;
 
 	Sound(ent,CHAN_WEAPON,"weapons/ionblaster/ionfire.wav",255,ATTN_NORM);
 

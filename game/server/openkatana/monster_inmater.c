@@ -167,5 +167,5 @@ void Inmater_Spawn(edict_t *eInmater)
 	Entity_SetSize(eInmater,-16.0f,-16.0f,-24.0f,16.0f,16.0f,32.0f);
 	Entity_SetOrigin(eInmater,eInmater->v.origin);
 
-	DropToFloor(eInmater);
+	Entity_DropToFloor(eInmater);
 }

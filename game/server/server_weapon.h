@@ -107,7 +107,7 @@ void Weapon_Precache(void);
 void Weapon_UpdateCurrentAmmo(Weapon_t *wWeapon, edict_t *eEntity);
 void Weapon_SetActive(Weapon_t *wWeapon, edict_t *eEntity, bool bDeploy);
 void Weapon_BulletProjectile(edict_t *ent, float spread, int damage, vec3_t vVector);
-void Weapon_Projectile(edict_t *eOwner, edict_t *eProjectile, float fRange);
+void Weapon_Projectile(edict_t *eOwner, edict_t *eProjectile, float fVelocity);
 void Weapon_CheckFrames(edict_t *eEntity);
 void Weapon_Animate(edict_t *ent, EntityFrame_t *eFrames);
 void Weapon_PrimaryAttack(edict_t *eEntity);
@@ -115,5 +115,6 @@ void Weapon_CheckInput(edict_t *eEntity);
 
 bool Weapon_CheckPrimaryAmmo(Weapon_t *wWeapon, edict_t *eEntity);
 bool Weapon_CheckSecondaryAmmo(Weapon_t *wWeapon, edict_t *eEntity);
+bool Weapon_CheckTrace(edict_t *eOwner);
 
 #endif

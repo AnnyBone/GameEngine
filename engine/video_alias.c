@@ -229,7 +229,7 @@ void R_SetupModelLighting(MathVector3_t vOrigin)
 
 void Alias_DrawFrame(MD2_t *mModel,entity_t *eEntity,lerpdata_t lLerpData)
 {
-#if 0	// Broken
+#if 1	// Broken
 	int					i,j,k,iVert;
 	float               fAlpha;
 	VideoObject_t		*voModel;
@@ -267,12 +267,7 @@ void Alias_DrawFrame(MD2_t *mModel,entity_t *eEntity,lerpdata_t lLerpData)
             {
                 voModel[iVert].vVertex[j] =	(mtvVertices[mtTriangles->index_xyz[k]].v[j]*scale1[j]+mfFirst->translate[j])*(1.0f-lLerpData.blend)+
 											(mtvLerpVerts[mtTriangles->index_xyz[k]].v[j]*scale2[j]+mfSecond->translate[j])*lLerpData.blend;
-
-                if(bShading)
-					voModel[iVert].vColour[j] = (shadedots[mtvVertices[mtTriangles->index_xyz[k]].lightnormalindex])/2.0f;
-				else
-					// Otherwise give us a default colour of white.
-					voModel[iVert].vColour[j] = 1.0f;
+				voModel[iVert].vColour[j] = 1.0f;
             }
 
 			voModel[iVert].vTextureCoord[0][0] = (float)mModel->mtcTextureCoord[mtTriangles->index_st[k]].S / (float)mModel->skinwidth;
@@ -283,7 +278,7 @@ void Alias_DrawFrame(MD2_t *mModel,entity_t *eEntity,lerpdata_t lLerpData)
 			iVert++;
         }
 
-	Video_DrawObject(voModel, VIDEO_PRIMITIVE_TRIANGLES, mModel->num_glcmds, Material_Get(eEntity->model->iAssignedMaterials), eEntity->skinnum);
+	Video_DrawObject(voModel, VIDEO_PRIMITIVE_TRIANGLES, mModel->num_glcmds, Material_Get(eEntity->model->mAssignedMaterials->iIdentification), eEntity->skinnum);
 #else
 	float				ilerp;
 	int					*order, count;

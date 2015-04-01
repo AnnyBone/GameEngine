@@ -209,5 +209,5 @@ PRISONER_GENERATEKEY:
 	Entity_SetModel(ePrisoner,PRISONER_MODEL_BODY);
 	Entity_SetSize(ePrisoner,-16.0f,-16.0f,-24.0f,16.0f,16.0f,32.0f);
 
-	DropToFloor(ePrisoner);
+	Entity_DropToFloor(ePrisoner);
 }

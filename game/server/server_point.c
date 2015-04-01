@@ -475,7 +475,7 @@ void Point_DecorationSpawn(edict_t *eDecoration)
 	Entity_SetModel(eDecoration,eDecoration->v.model);
 
 	if(eDecoration->v.spawnflags & DECORATION_DROPTOFLOOR)
-		DropToFloor(eDecoration);
+		Entity_DropToFloor(eDecoration);
 }
 
 /*

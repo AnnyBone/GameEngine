@@ -447,3 +447,20 @@ float Math_ExpPulse(float x, float k, float n)
 {
 	return expf(-k*powf(x, n));
 }
+
+/*	Check to see if an area is intersecting another area.
+*/
+bool Math_IsIntersecting(
+	MathVector3_t mvFirstMins, MathVector3_t mvFirstMaxs,
+	MathVector3_t mvSecondMins, MathVector3_t mvSecondMaxs)
+{
+	if (mvFirstMins[0] > mvSecondMaxs[0] ||
+		mvFirstMins[1] > mvSecondMaxs[1] ||
+		mvFirstMins[2] > mvSecondMaxs[2] ||
+		mvFirstMaxs[0] < mvSecondMins[0] ||
+		mvFirstMaxs[1] < mvSecondMins[1] ||
+		mvFirstMaxs[2] < mvSecondMins[2])
+		return false;
+
+	return true;
+}

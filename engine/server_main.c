@@ -230,8 +230,8 @@ void SV_SendServerinfo(client_t *client)
 	MSG_WriteByte(&client->message,svc_signonnum);
 	MSG_WriteByte(&client->message,1);
 
-	client->sendsignon	= true;
-	client->bSpawned	= false;		// need prespawn, spawn, etc
+	client->sendsignon = true;
+	client->bSpawned = false;		// need prespawn, spawn, etc
 }
 
 /*	Initializes a client_t for a new net connection.  This will only be called

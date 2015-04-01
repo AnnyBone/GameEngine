@@ -143,7 +143,8 @@ double	Math_VectorLength(vec3_t a);
 float	Math_AngleMod(float a);
 float	Math_VectorToYaw(vec_t *vVector);
 
-bool	Math_VectorCompare(vec3_t a, vec3_t b);
+bool Math_VectorCompare(vec3_t a, vec3_t b);
+bool Math_IsIntersecting(MathVector3_t mvFirstMins, MathVector3_t mvFirstMaxs, MathVector3_t mvSecondMins, MathVector3_t mvSecondMaxs);
 
 vec_t	Math_Length(vec3_t a);
 vec_t	Math_VectorNormalize(vec3_t a);

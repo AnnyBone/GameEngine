@@ -606,6 +606,7 @@
   <ItemGroup>
     <ClCompile Include="..\external\glee\GLee.c" />
     <ClCompile Include="..\shared\shared_formats.c" />
+    <ClCompile Include="audio_dummy.c" />
     <ClCompile Include="client_chase.c" />
     <ClCompile Include="client_demo.c" />
     <ClCompile Include="cl_input.c" />
@@ -681,7 +682,7 @@
     <ClCompile Include="audio_dma.c" />
     <ClCompile Include="audio_mem.c" />
     <ClCompile Include="audio_mix.c" />
-    <ClCompile Include="snd_win.c" />
+    <ClCompile Include="audio_dsound.c" />
     <ClCompile Include="server_main.c" />
     <ClCompile Include="server_user.c" />
     <ClCompile Include="sys_win.c" />
