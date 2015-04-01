@@ -22,6 +22,8 @@ char	filename_map[1024],
 		filename_prt[1024],
 		filename_pts[1024];
 
+char	wadPath[PLATFORM_MAX_PATH];
+
 int		Vis_Main( int argc, char **argv );
 int		Light_Main( int argc, char **argv );
 int		Bsp2Prt_Main( int argc, char **argv );
@@ -264,6 +266,7 @@ int main(int argc,char **argv)
 			forcevis = false;
 		else if (!strcmp(argv[i], "-wadpath"))
 		{ 
+			sprintf(wadPath, "%s", argv[i + 1]);
 			i++;
 		}
 		else
@@ -283,6 +286,7 @@ STARTERROR:
 				"-vis        vis utility, run -vis as the first parameter for more\n"
 				"\n"
 				"What the options do:\n"
+				"-wadpath (Sets the path to load WADs from.)\n"
 				"-nowater    disable watervis; r_wateralpha in glquake will not work right\n"
 				"-notjunc    disable tjunction fixing; glquake will have holes between polygons\n"
 				"-nofill     disable sealing of map and vis, used for ammoboxes\n"

@@ -245,21 +245,14 @@ void WriteMiptex (void)
 		{
 			success = false;
 
-			// try prepending each -wadpath on the commandline to the wad name
-			for (i = 1;i < myargc;i++)
+			// See if we've already been given a wadPath to work from.
+			if (wadPath[0] != ' ')
 			{
-				if(!strcmp("-wadpath", myargv[i]))	// Originally used Q_strcasecmp or whatever, switched around to reflect everything else.
-				{
-					i++;
-					if(i < myargc)
-					{
-						sprintf(wadfilename,"%s%s",myargv[i],wadname);
+				// Copy over the path with the wads name.
+				sprintf(wadfilename, "%s%s", wadPath, wadname);
 
-						success = WAD_Load(wadfilename);
-						if(success >= 0)
-							break;
-					}
-				}
+				// See if we had any luck.
+				success = WAD_Load(wadfilename);
 			}
 
 			if (!success)
