@@ -8,7 +8,7 @@
 		<Build>
 			<Target title="x64">
 				<Option platforms="Windows;Unix;" />
-				<Option output="../bin/openkatana/game.x64.so" prefix_auto="0" extension_auto="0" />
+				<Option output="../../openkatana/game.x64.so" prefix_auto="0" extension_auto="0" />
 				<Option working_dir="../../../../../dev/ProjectKatana/trunk/bin" />
 				<Option object_output="obj/Release/" />
 				<Option type="3" />

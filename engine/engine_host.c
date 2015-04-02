@@ -716,7 +716,7 @@ void Host_Initialize(EngineParameters_t *epParameters)
 		SCR_Init();
 		Menu->Initialize();
 		R_Init();
-#ifndef KATANA_AUDIO_OPENAL
+#ifdef KATANA_AUDIO_DIRECTSOUND
 		S_Init();
 #endif
 

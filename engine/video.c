@@ -92,7 +92,7 @@ void Video_Initialize(void)
 		Video.bUnitState[i] = false;
 
 	Video_AllocateArrays(uiVideoArraySize);
-	
+
 	Cvar_RegisterVariable(&cvMultisampleSamples,NULL);
 	Cvar_RegisterVariable(&cvVideoDrawModels,NULL);
 	Cvar_RegisterVariable(&cvFullscreen,NULL);
@@ -127,8 +127,10 @@ void Video_Initialize(void)
 	// [9/7/2013] TEMP: Should honestly be called from the launcher (in a perfect world) ~hogsy
 	Video_CreateWindow();
 
-	if (!SDL_GetWindowWMInfo(sMainWindow, &Video.sSystemInfo))
-		Sys_Error("Failed to get WM information!\n");
+#if 0
+    if (!SDL_GetWindowWMInfo(sMainWindow, &Video.sSystemInfo))
+		Sys_Error("Failed to get WM information! (%s)\n",SDL_GetError());
+#endif
 }
 
 /*
@@ -311,7 +313,7 @@ void Video_CreateWindow(void)
 		iFlags);
 	if(!sMainWindow)
 		Sys_Error("Failed to create window!\n%s\n",SDL_GetError());
-	
+
 	// [6/2/2014] Set the icon for the window ~hogsy
 	// [25/3/2014] Grab the icon from our game directory ~hogsy
 	sIcon = SDL_LoadBMP(va("%s/icon.bmp",com_gamedir));
@@ -357,7 +359,7 @@ void Video_CreateWindow(void)
 		Sys_Error("ARB/EXT_texture_env_add isn't supported by your hardware!\n");
 	else if (!GLEE_EXT_fog_coord)
 		Sys_Error("EXT_fog_coord isn't supported by your hardware!\n");
-	
+
 	if (GLEE_SGIS_generate_mipmap)
 		Video.bGenerateMipMap = true;
 	else
@@ -674,7 +676,7 @@ void Video_AllocateArrays(int iSize)
 
 	if(!vVideoColourArray || !vVideoTextureArray || !vVideoVertexArray)
 		Sys_Error("Failed to allocate video arrays!\n");
-	
+
 	// Keep this up to date.
 	uiVideoArraySize = iSize;
 }

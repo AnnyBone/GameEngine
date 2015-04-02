@@ -12,11 +12,12 @@
 				<Option object_output="obj/Release/" />
 				<Option type="3" />
 				<Option compiler="gcc" />
+				<Option host_application="/home/hogsy/git/KatanaEngine/bin/Launcher.x64" />
+				<Option run_host_application_in_terminal="0" />
 				<Option createDefFile="1" />
 				<Option createStaticLib="1" />
 				<Linker>
 					<Add library="../platform/lib/libplatformx64.a" />
-					<Add library="libdl.a" />
 				</Linker>
 			</Target>
 			<Target title="x86">
@@ -32,7 +33,6 @@
 				</Compiler>
 				<Linker>
 					<Add library="../platform/lib/libplatformx86.a" />
-					<Add library="libdl.a" />
 				</Linker>
 			</Target>
 		</Build>
@@ -58,13 +58,35 @@
 			<Add option="-lopenal" />
 			<Add option="-lX11" />
 			<Add option="-lSDL2" />
+			<Add option="-ldl" />
 		</Linker>
+		<Unit filename="../external/glee/GLee.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../external/glee/GLee.h" />
+		<Unit filename="../shared/shared_client.h" />
+		<Unit filename="../shared/shared_editor.h" />
+		<Unit filename="../shared/shared_engine.h" />
+		<Unit filename="../shared/shared_flags.h" />
+		<Unit filename="../shared/shared_formats.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../shared/shared_formats.h" />
+		<Unit filename="../shared/shared_game.h" />
+		<Unit filename="../shared/shared_input.h" />
+		<Unit filename="../shared/shared_menu.h" />
+		<Unit filename="../shared/shared_module.h" />
+		<Unit filename="../shared/shared_server.h" />
+		<Unit filename="../shared/shared_video.h" />
 		<Unit filename="KatAlias.h" />
 		<Unit filename="audio.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="audio.h" />
 		<Unit filename="audio_dma.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="audio_dummy.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="audio_mem.c">
@@ -298,6 +320,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="video_world.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="vidx_object.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="view.h" />

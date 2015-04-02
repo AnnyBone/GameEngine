@@ -1795,14 +1795,14 @@
 	<limits.h>
 	<wchar.h>
 
-1427294735 /home/hogsy/git/KatanaEngine/platform/include/platform_math.h
+1427986031 /home/hogsy/git/KatanaEngine/platform/include/platform_math.h
 	"platform.h"
 
 1427294735 /home/hogsy/git/KatanaEngine/platform/include/platform_window.h
 	"platform.h"
 	<X11/Xlib.h>
 
-1427294735 /home/hogsy/git/KatanaEngine/shared/shared_flags.h
+1427986031 /home/hogsy/git/KatanaEngine/shared/shared_flags.h
 
 1427294735 /home/hogsy/git/KatanaEngine/engine/cmdlib.h
 	"platform/include/platform.h"
@@ -1853,13 +1853,13 @@
 
 1427294735 /home/hogsy/git/KatanaEngine/engine/client.h
 
-1427294735 /home/hogsy/git/KatanaEngine/engine/progs.h
+1427685101 /home/hogsy/git/KatanaEngine/engine/progs.h
 	"pr_comp.h"
 	"shared_game.h"
 
 1427294735 /home/hogsy/git/KatanaEngine/engine/pr_comp.h
 
-1427294735 /home/hogsy/git/KatanaEngine/shared/shared_game.h
+1427986031 /home/hogsy/git/KatanaEngine/shared/shared_game.h
 	"platform.h"
 	"platform_math.h"
 	"shared_client.h"
@@ -2240,7 +2240,7 @@
 	"begin_code.h"
 	"close_code.h"
 
-1427294735 source:/home/hogsy/git/KatanaEngine/engine/audio_dma.c
+1427988970 source:/home/hogsy/git/KatanaEngine/engine/audio_dma.c
 	"quakedef.h"
 	"winquake.h"
 	"sound.h"
@@ -2353,7 +2353,7 @@
 	"common.h"
 	"platform_window.h"
 
-1427294735 source:/home/hogsy/git/KatanaEngine/engine/common.c
+1427685101 source:/home/hogsy/git/KatanaEngine/engine/common.c
 	"quakedef.h"
 	"engine_script.h"
 	"platform_filesystem.h"
@@ -2423,7 +2423,7 @@
 1427294735 /home/hogsy/git/KatanaEngine/platform/include/platform_module.h
 	"platform.h"
 
-1427294735 source:/home/hogsy/git/KatanaEngine/engine/engine_host.c
+1427988983 source:/home/hogsy/git/KatanaEngine/engine/engine_host.c
 	"quakedef.h"
 	"engine_console.h"
 	"engine_modgame.h"
@@ -2451,7 +2451,7 @@
 	"engine_main.h"
 	"platform_module.h"
 
-1427294735 source:/home/hogsy/git/KatanaEngine/engine/engine_material.c
+1427989041 source:/home/hogsy/git/KatanaEngine/engine/engine_material.c
 	"quakedef.h"
 	"engine_material.h"
 	"video.h"
@@ -2463,7 +2463,7 @@
 	"engine_script.h"
 	"video.h"
 
-1427294735 source:/home/hogsy/git/KatanaEngine/engine/engine_modgame.c
+1427685101 source:/home/hogsy/git/KatanaEngine/engine/engine_modgame.c
 	"engine_modgame.h"
 	"engine_console.h"
 	"engine_videoshadow.h"
@@ -2591,7 +2591,7 @@
 1427294735 /home/hogsy/git/KatanaEngine/engine/engine_edict.h
 	"quakedef.h"
 
-1427294735 source:/home/hogsy/git/KatanaEngine/engine/server_main.c
+1427986031 source:/home/hogsy/git/KatanaEngine/engine/server_main.c
 	"quakedef.h"
 	"engine_modgame.h"
 	"engine_physics.h"
@@ -2605,7 +2605,7 @@
 1427294735 source:/home/hogsy/git/KatanaEngine/engine/server_world.c
 	"quakedef.h"
 
-1427294735 source:/home/hogsy/git/KatanaEngine/engine/sys_win.c
+1427988911 source:/home/hogsy/git/KatanaEngine/engine/sys_win.c
 	"quakedef.h"
 	<SDL.h>
 	"platform_window.h"
@@ -2623,19 +2623,19 @@
 
 1427294735 /home/hogsy/git/KatanaEngine/engine/resource.h
 
-1427294735 source:/home/hogsy/git/KatanaEngine/engine/video.c
+1427990390 source:/home/hogsy/git/KatanaEngine/engine/video.c
 	"quakedef.h"
 	"video.h"
 	"engine_modgame.h"
 	"engine_console.h"
 	<SDL_syswm.h>
 
-1427294735 source:/home/hogsy/git/KatanaEngine/engine/video_alias.c
+1427990649 source:/home/hogsy/git/KatanaEngine/engine/video_alias.c
 	"KatAlias.h"
 	"engine_videoshadow.h"
 	"video.h"
 
-1427294735 source:/home/hogsy/git/KatanaEngine/engine/video_brush.c
+1427685101 source:/home/hogsy/git/KatanaEngine/engine/video_brush.c
 	"quakedef.h"
 	"video.h"
 
@@ -2704,4 +2704,29 @@
 
 1427294735 source:/home/hogsy/git/KatanaEngine/engine/zone.c
 	"quakedef.h"
+
+1427299652 source:/home/hogsy/git/KatanaEngine/shared/shared_formats.c
+	"platform.h"
+	"platform_math.h"
+	"shared_flags.h"
+	"shared_formats.h"
+
+1427294735 source:/home/hogsy/git/KatanaEngine/external/glee/GLee.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	"GLee.h"
+	<Carbon/Carbon.h>
+
+1427986031 source:/home/hogsy/git/KatanaEngine/engine/audio_dsound.c
+	"quakedef.h"
+	"winquake.h"
+	"audio.h"
+	"video.h"
+
+1427986031 source:/home/hogsy/git/KatanaEngine/engine/audio_dummy.c
+
+1427685101 source:/home/hogsy/git/KatanaEngine/engine/vidx_object.c
+	"quakedef.h"
+	"video.h"
 
