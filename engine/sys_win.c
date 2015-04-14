@@ -513,7 +513,7 @@ bool System_Main(int iArgumentCount,char *cArguments[])
 #endif
 	}
 #else
-	
+
 	epParameters.memsize	= MAXIMUM_MEMORY;
 #endif
 	epParameters.basedir	= ".";
@@ -573,7 +573,7 @@ bool System_Main(int iArgumentCount,char *cArguments[])
 
 	Sys_InitFloatTime();
 
-#ifndef KATANA_AUDIO_OPENAL
+#ifdef KATANA_AUDIO_DIRECTSOUND
 	// Because sound is off until we become active
 	S_BlockSound();
 #endif

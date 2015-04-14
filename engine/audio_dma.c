@@ -115,7 +115,7 @@ void S_Startup (void)
 
 	if (!fakedma)
 	{
-#ifndef KATANA_AUDIO_OPENAL
+#ifdef KATANA_AUDIO_DIRECTSOUND
 		rc = SNDDMA_Init();
 #else
 		rc = 0;
@@ -220,7 +220,7 @@ void S_Shutdown(void)
 	shm = 0;
 	sound_started = 0;
 
-#ifndef KATANA_AUDIO_OPENAL
+#ifdef KATANA_AUDIO_DIRECTSOUND
 	if (!fakedma)
 		SNDDMA_Shutdown();
 #endif

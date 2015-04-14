@@ -39,7 +39,7 @@ int	iMaterialCount = 0;
 
 Material_t *Material_Allocate(void);
 
-Material_t	
+Material_t
 	*mNoTexture,
 	*mBlobShadow,
 	*mWhite,
@@ -277,7 +277,7 @@ gltexture_t *Material_LoadTexture(Material_t *mMaterial, MaterialSkin_t *mCurren
 	{
 		cArg++;
 
-		if (!stricmp(cArg, "notexture"))
+		if (!strcasecmp(cArg, "notexture"))
 			return notexture;
 		else
 		{
@@ -683,7 +683,7 @@ Material_t *Material_Load(const char *ccPath)
 	mNewMaterial = Material_GetByPath(cPath);
 	if(mNewMaterial)
 		return mNewMaterial;
-	
+
 	cData = COM_LoadFile(cPath,0);
 	if(!cData)
 	{

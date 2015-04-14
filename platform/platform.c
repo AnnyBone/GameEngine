@@ -49,6 +49,8 @@ void pError_Set(const char *ccMessage,...)
 	va_end(vlArguments);
 
 	strncpy(cErrorMessage, cOut, sizeof(cErrorMessage));
+
+	printf(cErrorMessage);
 }
 
 char *pError_Get(void)
@@ -69,12 +71,12 @@ char *pError_SystemGet(void)
 {
 #ifdef _WIN32
 	char	*cBuffer = NULL;
-	int		iError; 
-	
+	int		iError;
+
 	iError = GetLastError();
 	if (iError == 0)
 		return "Unknown system error!";
-	
+
 	if (!FormatMessage(
 		FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
 		NULL,
