@@ -175,9 +175,9 @@ vec4_t		vViewBlend;		// rgba 0.0 - 1.0
 void V_ParseDamage (void)
 {
 	int		armor, blood;
-	vec3_t	from;
+	MathVector3_t from;
 	int		i;
-	vec3_t	forward, right, up;
+	MathVector3_t forward, right, up;
 	entity_t	*ent;
 	float	side;
 	float	count;

@@ -63,7 +63,9 @@ MathVector2_t **vVideoTextureArray;
 MathVector3_t *vVideoVertexArray;
 MathVector4_t *vVideoColourArray;
 
-unsigned int	uiVideoArraySize = 32768;
+unsigned int uiVideoArraySize = 32768;
+
+unsigned int uiVideoDrawObjectCalls = 0;
 
 void Video_DebugCommand(void);
 void Video_AllocateArrays(int iSize);
@@ -545,7 +547,7 @@ void Video_SetBlend(VideoBlend_t voBlendMode, VideoDepth_t vdDepthMode)
 
 /*	Conversion between our TMU selection and OpenGL.
 */
-unsigned int Video_GetGLUnit(unsigned int uiTarget)
+unsigned int Video_GetTextureUnit(unsigned int uiTarget)
 {
 	if (bVideoDebug)
 		Console_WriteToLog(cvVideoDebugLog.string, "Video: Attempting to get TMU target %i\n", uiTarget);
@@ -587,7 +589,7 @@ void Video_SelectTexture(unsigned int uiTarget)
 	if (uiTarget > VIDEO_TEXTURE_MAX)
 		Sys_Error("Invalid texture unit! (%i)\n",uiTarget);
 
-	glActiveTexture(Video_GetGLUnit(uiTarget));
+	glActiveTexture(Video_GetTextureUnit(uiTarget));
 
 	Video.uiActiveUnit = uiTarget;
 
@@ -972,6 +974,51 @@ void Video_DrawSurface(msurface_t *mSurface,float fAlpha, Material_t *mMaterial,
 	Video_DrawObject(voSurface, VIDEO_PRIMITIVE_TRIANGLE_FAN, mSurface->polys->numverts, mMaterial, 0);
 }
 
+/*	Deals with tris view and different primitive types, then finally draws
+	the given arrays.
+*/
+void Video_DrawArrays(VideoPrimitive_t vpPrimitiveType, unsigned int uiSize)
+{
+	unsigned int uiPrimitiveType = 0;
+
+	// Convert between VIDEO_PRIMITIVE and OpenGL's own stuff.
+	switch (vpPrimitiveType)
+	{
+	case VIDEO_PRIMITIVE_LINE:		// GL_LINES
+	case VIDEO_PRIMITIVE_TRIANGLES:	// GL_TRIANGLES
+		if (r_showtris.bValue || (vpPrimitiveType == VIDEO_PRIMITIVE_LINE))
+			uiPrimitiveType = GL_LINES;
+		else
+			uiPrimitiveType = GL_TRIANGLES;
+		break;
+	case VIDEO_PRIMITIVE_TRIANGLE_FAN_LINE:	// GL_TRIANGLE_FAN
+	case VIDEO_PRIMITIVE_TRIANGLE_FAN:		// GL_TRIANGLE_FAN
+		if (r_showtris.bValue || (vpPrimitiveType == VIDEO_PRIMITIVE_TRIANGLE_FAN_LINE))
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+		uiPrimitiveType = GL_TRIANGLE_FAN;
+		break;
+	default:
+		// If it's not valid then throw us an error.
+		Sys_Error("Unknown object primitive type! (%i)\n", vpPrimitiveType);
+	}
+
+	glDrawArrays(uiPrimitiveType, 0, uiSize);
+
+	// Set anything we've changed back to how it was.
+	switch (vpPrimitiveType)
+	{
+	case VIDEO_PRIMITIVE_TRIANGLE_FAN_LINE:	// GL_TRIANGLE_FAN
+	case VIDEO_PRIMITIVE_TRIANGLE_FAN:		// GL_TRIANGLE_FAN
+		if (r_showtris.bValue || (vpPrimitiveType == VIDEO_PRIMITIVE_TRIANGLE_FAN_LINE))
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		break;
+	default:
+		// If it's not valid then throw us an error.
+		Sys_Error("Unknown object primitive type! (%i)\n", vpPrimitiveType);
+	}
+}
+
 /*	Draw 3D object.
 	TODO: Add support for VBOs ?
 */
@@ -994,7 +1041,11 @@ void Video_DrawObject(
 	}
 
 	if (bVideoDebug)
+	{
+		uiVideoDrawObjectCalls++;
+
 		Console_WriteToLog(cvVideoDebugLog.string, "Video: Drawing object (%i) (%i)\n", uiVerts, vpPrimitiveType);
+	}
 
 	bVideoIgnoreCapabilities = true;
 
@@ -1028,28 +1079,6 @@ void Video_DrawObject(
 		Math_VectorCopy(voObject[i].vVertex, vVideoVertexArray[i]);
 	}
 
-	// Handle different primitive types...
-	switch (vpPrimitiveType)
-	{
-	case VIDEO_PRIMITIVE_LINE:
-	case VIDEO_PRIMITIVE_TRIANGLES:
-		if (r_showtris.bValue || (vpPrimitiveType == VIDEO_PRIMITIVE_LINE))
-			gPrimitive = GL_LINES;
-		else
-			gPrimitive = GL_TRIANGLES;
-		break;
-	case VIDEO_PRIMITIVE_TRIANGLE_FAN_WIRE:
-	case VIDEO_PRIMITIVE_TRIANGLE_FAN:
-		if (r_showtris.bValue || (vpPrimitiveType == VIDEO_PRIMITIVE_TRIANGLE_FAN_WIRE))
-			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-		gPrimitive = GL_TRIANGLE_FAN;
-		break;
-	default:
-		// [16/3/2014] Anything else and give us an error ~hogsy
-		Sys_Error("Unknown object primitive type! (%i)\n", vpPrimitiveType);
-	}
-
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glVertexPointer(3, GL_FLOAT, 0, vVideoVertexArray);
 
@@ -1063,21 +1092,18 @@ void Video_DrawObject(
 		for (i = 0; i < VIDEO_MAX_UNITS; i++)
 			if (Video.bUnitState[i])
 			{
-				glClientActiveTexture(Video_GetGLUnit(i));
+				glClientActiveTexture(Video_GetTextureUnit(i));
 				glTexCoordPointer(2, GL_FLOAT, 0, vVideoTextureArray[i]);
 			}
 	}
 
-	glDrawArrays(gPrimitive,0,uiVerts);
+	Video_DrawArrays(vpPrimitiveType, uiVerts);
 
 	glDisableClientState(GL_COLOR_ARRAY);
 	glDisableClientState(GL_VERTEX_ARRAY);
 
 	if (!r_showtris.bValue)
 		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-
-	if (r_showtris.bValue || (vpPrimitiveType == VIDEO_PRIMITIVE_TRIANGLE_FAN_WIRE))
-		glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
 
 	if (mMaterial)
 		Video_DrawMaterial(mMaterial, iSkin, voObject, vpPrimitiveType, uiVerts, true);
@@ -1292,10 +1318,31 @@ void Video_ShaderLoad(const char *ccPath,VideoShaderType_t vstType)
 #endif
 }
 
+/*
+	Vertex Buffer Objects
+*/
+
+/*	Generates a single OpenGL buffer.
+*/
+unsigned int Video_GenerateBuffer(void)
+{
+	unsigned int uiBuffer;
+
+	glGenBuffers(1, &uiBuffer);
+
+	return uiBuffer;
+}
+
+/*	Deletes a single OpenGL buffer.
+*/
+void Video_DeleteBuffer(unsigned int uiBuffer)
+{
+	glDeleteBuffers(1, &uiBuffer);
+}
+
 /**/
 
 /*	Main rendering loop.
-	Unfinished
 */
 void Video_Frame(void)
 {
@@ -1319,29 +1366,36 @@ void Video_Frame(void)
     {
         Console_WriteToLog(cvVideoDebugLog.string,"Video: End of frame\n");
 
-		// TODO: End of frame states (number of calls to video_draw etc)
+		Console_WriteToLog(cvVideoDebugLog.string, "\n-----------------------\n");
+		Console_WriteToLog(cvVideoDebugLog.string, "Video_DrawObject: %i\n", uiVideoDrawObjectCalls);
+		Console_WriteToLog(cvVideoDebugLog.string, "-----------------------\n");
 
 		bVideoDebug = false;
     }
 }
 
+/*	Shuts down the video sub-system.
+*/
 void Video_Shutdown(void)
 {
+	// Check that the video sub-system is actually initialised.
 	if(!Video.bInitialized)
 		return;
 
-	// Let us know that we're shutting down the video sub-system...
+	// Let us know that we're shutting down the video sub-system.
 	Con_Printf("Shutting down video...\n");
 
-	// [6/12/2012] Delete our context ~hogsy
 	if(sMainContext)
+		// Delete the current context.
 		SDL_GL_DeleteContext(sMainContext);
 
-	// [6/12/2012] Destroy our window ~hogsy
 	if(sMainWindow)
+		// Destory our window.
 		SDL_DestroyWindow(sMainWindow);
 
+	// Quit the SDL2 subsystem.
 	SDL_QuitSubSystem(SDL_INIT_VIDEO);
 
+	// Set the initialisation value to false, in-case we want to try again later.
 	Video.bInitialized = false;
 }

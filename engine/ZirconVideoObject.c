@@ -4,6 +4,7 @@
 */
 
 #include "quakedef.h"
+
 #include "video.h"
 
 typedef struct
@@ -24,23 +25,44 @@ typedef struct
 
 	GLenum ePrimitiveType;
 
-	int iBuffer;
+	unsigned int uiVertexBuffer;
+	unsigned int uiColourBuffer;
+	unsigned int uiTextureBuffer;
 } ZVideoObject_t;
 
 ZVideoObject_t *VideoObject_Create(void)
 {
+	ZVideoObject_t *voNewObject;
+
+	voNewObject = (ZVideoObject_t*)malloc(sizeof(ZVideoObject_t));
+
+	// TODO: Allocate...
+
+	voNewObject->uiVertexBuffer = Video_GenerateBuffer();
+	voNewObject->uiColourBuffer = Video_GenerateBuffer();
+	voNewObject->uiTextureBuffer = Video_GenerateBuffer();
+
 	return NULL;
+}
+
+void VideoObject_Delete(ZVideoObject_t *voObject)
+{
+	Video_DeleteBuffer(voObject->uiVertexBuffer);
+	Video_DeleteBuffer(voObject->uiColourBuffer);
+	Video_DeleteBuffer(voObject->uiTextureBuffer);
 }
 
 /*
 	Traditional style interface
 */
 
-void VideoObject_Begin(ZVideoObject_t *voObject)
-{}
+void VideoObject_Begin(ZVideoObject_t *voObject,VideoPrimitive_t vpPrimitive)
+{
+}
 
 void VideoObject_End(ZVideoObject_t *voObject)
-{}
+{
+}
 
 void VideoObject_Vertex(ZVideoObject_t *voObject, float x, float y, float z)
 {
@@ -93,44 +115,26 @@ void VideoObject_Clip(ZVideoObject_t *voObject, MathVector4_t mvClipDimensions)
 void VideoObject_Draw(ZVideoObject_t *voObject)
 {
 	int i;
-	GLenum ePrimitiveType;
 
 	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_COLOR_ARRAY);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-
-	glBindBuffer(GL_ARRAY_BUFFER, voObject->iBuffer);
-
+	glBindBuffer(GL_ARRAY_BUFFER, voObject->uiVertexBuffer);
 	glVertexPointer(3, GL_FLOAT, 0, 0);
+
+	glEnableClientState(GL_COLOR_ARRAY);
+	glBindBuffer(GL_ARRAY_BUFFER, voObject->uiColourBuffer);
 	glColorPointer(4, GL_FLOAT, 0, 0);
+
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	glBindBuffer(GL_ARRAY_BUFFER, voObject->uiTextureBuffer);
 
 	for (i = 0; i < VIDEO_MAX_UNITS; i++)
 		if (Video.bUnitState[i])
 		{
-			glClientActiveTexture(Video_GetGLUnit(i));
+			glClientActiveTexture(Video_GetTextureUnit(i));
 			glTexCoordPointer(2, GL_FLOAT, 0, 0);
 		}
 
-	ePrimitiveType = voObject->ePrimitiveType;
-
-	// Handle wireframe view for different primitive types.
-	if (r_showtris.bValue)
-	{
-		switch (ePrimitiveType)
-		{
-		case GL_TRIANGLES:
-			ePrimitiveType = GL_LINES;
-			break;
-		case GL_TRIANGLE_FAN:
-			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-			break;
-		}
-	}
-
-	glDrawArrays(ePrimitiveType, 0, voObject->iVertices);
-
-	if (r_showtris.bValue && (ePrimitiveType == GL_TRIANGLE_FAN))
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	Video_DrawArrays(VIDEO_PRIMITIVE_TRIANGLE_FAN, voObject->iVertices);
 
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_COLOR_ARRAY);

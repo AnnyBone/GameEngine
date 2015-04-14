@@ -85,7 +85,7 @@ void Light_Draw(void)
 			continue;
 
 		{
-			int				i,j,c = 0;
+			int				j,c = 0;
 			float			a,a2,b,rad;
 			vec3_t			v;
 			VideoObject_t	voLight[17];
@@ -129,7 +129,7 @@ void Light_Draw(void)
 				voLight[c].vColour[3] = 0.5f;
 			}
 
-			Video_DrawObject(voLight, VIDEO_PRIMITIVE_TRIANGLE_FAN_WIRE, 17, NULL, 0);
+			Video_DrawObject(voLight, VIDEO_PRIMITIVE_TRIANGLE_FAN_LINE, 17, NULL, 0);
 
 			R_EmitWirePoint(dlLight->origin);
 		}

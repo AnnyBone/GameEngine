@@ -195,7 +195,6 @@ sndinitstat SNDDMA_InitDirect(void)
 	if (!hInstDS)
 	{
 		hInstDS = LoadLibrary("dsound.dll");
-
 		if (hInstDS == NULL)
 		{
 			Con_SafePrintf("Couldn't load dsound.dll\n");
@@ -234,9 +233,7 @@ sndinitstat SNDDMA_InitDirect(void)
 	dscaps.dwSize = sizeof(dscaps);
 
 	if (DS_OK != pDS->lpVtbl->GetCaps(pDS, &dscaps))
-	{
 		Con_SafePrintf("Couldn't get DS caps\n");
-	}
 
 	if (dscaps.dwFlags & DSCAPS_EMULDRIVER)
 	{
@@ -428,7 +425,7 @@ bool SNDDMA_InitWav(void)
 		&format,
 		0, 0L, CALLBACK_NULL)) != MMSYSERR_NOERROR)
 	{
-		if (hr != MMSYSERR_ALLOCATED)
+		if (hr != (HRESULT)MMSYSERR_ALLOCATED)
 		{
 			Con_SafePrintf("waveOutOpen failed\n");
 			return false;
@@ -542,8 +539,7 @@ int SNDDMA_Init(void)
 	{
 		if (snd_firsttime || snd_isdirect)
 		{
-			stat = SNDDMA_InitDirect();;
-
+			stat = SNDDMA_InitDirect();
 			if (stat == SIS_SUCCESS)
 			{
 				snd_isdirect = true;

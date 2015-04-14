@@ -74,6 +74,8 @@ void R_RemoveEfrags (entity_t *ent)
 	ent->efrag = NULL;
 }
 
+int World_BoxOnPlaneSide(vec3_t emins, vec3_t emaxs, mplane_t *p);	// server_world.c
+
 void R_SplitEntityOnNode (mnode_t *node)
 {
 	efrag_t		*ef;

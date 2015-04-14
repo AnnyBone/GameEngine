@@ -325,7 +325,7 @@ void Player_CheckFootsteps(edict_t *ePlayer)
 		dDelay = Math_Clamp(0.1, (double)(1.0f / (fForce / 100.0f)), 1.0);
 
 		// [9/6/2013] TODO: Check if we're in water or not and change this accordingly :) ~hogsy
-		Sound(ePlayer,CHAN_VOICE,va("physics/concrete%i_footstep.wav",rand()%4),5,ATTN_NORM);
+		Sound(ePlayer,CHAN_VOICE,va("physics/concrete%i_footstep.wav",rand()%4),150,ATTN_NORM);
 
 		ePlayer->local.dStepTime = Server.dTime+dDelay;
 	}
@@ -867,6 +867,9 @@ void Player_Jump(edict_t *ePlayer)
 	}
 
 	Sound(ePlayer,CHAN_VOICE,cJumpSound,255,ATTN_NORM);
+
+	// Play a step sound too, so it sounds like they're pushing off the ground.
+	Sound(ePlayer, CHAN_AUTO, va("physics/concrete%i_footstep.wav", rand() % 4), 250, ATTN_NORM);
 
 	ePlayer->v.punchangle[0] += 3.0f;
 

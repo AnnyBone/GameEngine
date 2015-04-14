@@ -230,15 +230,13 @@ void R_SetupModelLighting(MathVector3_t vOrigin)
 void Alias_DrawFrame(MD2_t *mModel,entity_t *eEntity,lerpdata_t lLerpData)
 {
 #if 0	// Broken
-	int					i,j,k,iVert;
-	float               fAlpha;
-	VideoObject_t		*voModel;
-	MD2TriangleVertex_t	*mtvVertices,
-						*mtvLerpVerts;
-	MD2Triangle_t		*mtTriangles;
-	MD2Frame_t			*mfFirst,*mfSecond;
-	vec3_t				scale1,
-                        scale2;
+	int	i, j, k, iVert;
+	float fAlpha;
+	VideoObject_t *voModel;
+	MD2TriangleVertex_t	*mtvVertices, *mtvLerpVerts;
+	MD2Triangle_t *mtTriangles;
+	MD2Frame_t *mfFirst, *mfSecond;
+	MathVector3_t scale1, scale2;
 
 	// Make sure that entity scale is valid.
 	if(currententity->scale < 0.1f)
@@ -283,15 +281,15 @@ void Alias_DrawFrame(MD2_t *mModel,entity_t *eEntity,lerpdata_t lLerpData)
 	float ilerp;
 	int	*order, count;
 	MD2TriangleVertex_t	*verts1, *verts2;
-	MD2Frame_t			*frame1, *frame2;
-	Material_t			*mMat;
-	VideoObject_t		*voModel;
+	MD2Frame_t *frame1, *frame2;
+	Material_t *mMat;
+	VideoObject_t *voModel;
 
 	ilerp = 1.0f - lLerpData.blend;
 
 	//new version by muff - fixes bug, easier to read, faster (well slightly)
-	frame1 = (MD2Frame_t*)(mModel + mModel->ofs_frames + (mModel->framesize*eEntity->draw_lastpose));
-	frame2 = (MD2Frame_t*)(mModel + mModel->ofs_frames + (mModel->framesize*eEntity->draw_pose));
+	frame1 = (MD2Frame_t*)((uint8_t*)mModel + mModel->ofs_frames + (mModel->framesize*eEntity->draw_lastpose));
+	frame2 = (MD2Frame_t*)((uint8_t*)mModel + mModel->ofs_frames + (mModel->framesize*eEntity->draw_pose));
 
 	if ((eEntity->scale != 1.0f) && (eEntity->scale > 0.1f))
 		glScalef(eEntity->scale, eEntity->scale, eEntity->scale);
@@ -299,9 +297,9 @@ void Alias_DrawFrame(MD2_t *mModel,entity_t *eEntity,lerpdata_t lLerpData)
 	verts1 = &frame1->verts[0];
 	verts2 = &frame2->verts[0];
 
-	order = (int*)(mModel + mModel->ofs_glcmds);
+	order = (int*)((uint8_t*)mModel + mModel->ofs_glcmds);
 
-	voModel = (VideoObject_t*)Hunk_TempAlloc(4*sizeof(VideoObject_t));
+	voModel = (VideoObject_t*)Hunk_TempAlloc(mModel->num_glcmds*sizeof(VideoObject_t));
 
 	if (bShading)
 		// If we're lit etc, then apply our material.
@@ -331,7 +329,6 @@ void Alias_DrawFrame(MD2_t *mModel,entity_t *eEntity,lerpdata_t lLerpData)
 					(verts2[order[2]].v[1] * frame2->scale[1] + frame2->translate[1])*lLerpData.blend,
 					(verts1[order[2]].v[2] * frame1->scale[2] + frame1->translate[2])*ilerp +
 					(verts2[order[2]].v[2] * frame2->scale[2] + frame2->translate[2])*lLerpData.blend);
-
 				if (bShading)
 				{
 #if 0

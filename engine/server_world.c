@@ -714,11 +714,11 @@ bool SV_RecursiveHullCheck (hull_t *hull, int num, float p1f, float p2f, vec3_t 
 /*	Handles selection or creation of a clipping hull, and offseting (and
 	eventually rotation) of the end points
 */
-trace_t SV_ClipMoveToEntity(edict_t *ent, vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end)
+trace_t SV_ClipMoveToEntity(edict_t *ent, MathVector3_t start, MathVector3_t mins, MathVector3_t maxs, MathVector3_t end)
 {
-	trace_t		trace;
-	vec3_t		offset,start_l,end_l,a,forward,right,up,temp;
-	hull_t		*hull;
+	trace_t	trace;
+	MathVector3_t offset, start_l, end_l, a, forward, right, up, temp;
+	hull_t *hull;
 
 	// Fill in a default trace
 	memset (&trace, 0, sizeof(trace_t));
@@ -736,7 +736,7 @@ trace_t SV_ClipMoveToEntity(edict_t *ent, vec3_t start, vec3_t mins, vec3_t maxs
 	if (ent->Physics.iSolid == SOLID_BSP &&
 		(fabs(ent->v.angles[0]) > 1 || fabs(ent->v.angles[1]) > 1 || fabs(ent->v.angles[2]) > 1) )
 	{
-		vec3_t	forward,right,up,temp;
+		MathVector3_t forward,right,up,temp;
 
 		Math_AngleVectors(ent->v.angles,forward,right,up);
 

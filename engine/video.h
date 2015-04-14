@@ -95,7 +95,7 @@ typedef enum
 	VIDEO_PRIMITIVE_LINE,
     VIDEO_PRIMITIVE_TRIANGLES,
     VIDEO_PRIMITIVE_TRIANGLE_FAN,
-	VIDEO_PRIMITIVE_TRIANGLE_FAN_WIRE
+	VIDEO_PRIMITIVE_TRIANGLE_FAN_LINE
 } VideoPrimitive_t;
 
 // Blending Modes
@@ -136,18 +136,21 @@ void Video_EnableCapabilities(unsigned int iCapabilities);
 void Video_DisableCapabilities(unsigned int iCapabilities);
 void Video_ResetCapabilities(bool bClearActive);
 void Video_Frame(void);
+void Video_DeleteBuffer(unsigned int uiBuffer);
 void Video_ObjectTexture(VideoObject_t *voObject, unsigned int uiTextureUnit, float S, float T);
 void Video_ObjectVertex(VideoObject_t *voObject, float X, float Y, float Z);
 void Video_ObjectNormal(VideoObject_t *voObject, float X, float Y, float Z);
 void Video_ObjectColour(VideoObject_t *voObject, float R, float G, float B, float A);
 void Video_SetColour(float R, float G, float B, float A);
+void Video_DrawArrays(VideoPrimitive_t vpPrimitiveType, unsigned int uiSize);
 void Video_DrawFill(VideoObject_t *voFill,Material_t *mMaterial);
 void Video_DrawSurface(msurface_t *mSurface,float fAlpha,Material_t *mMaterial, unsigned int uiSkin);
 void Video_DrawObject(VideoObject_t *voObject, VideoPrimitive_t vpPrimitiveType, unsigned int uiVerts, Material_t *mMaterial, int iSkin);
 void Video_DrawMaterial(Material_t *mMaterial, int iSkin, VideoObject_t *voObject, VideoPrimitive_t vpPrimitiveType, unsigned int uiSize, bool bPost);
 void Video_Shutdown(void);
 
-unsigned int Video_GetGLUnit(unsigned int uiTarget);
+unsigned int Video_GetTextureUnit(unsigned int uiTarget);
+unsigned int Video_GenerateBuffer(void);
 
 bool Video_GetCapability(unsigned int iCapability);
 
@@ -207,5 +210,7 @@ void DrawGLPoly(glpoly_t *p);
 void Warp_DrawWaterPoly(glpoly_t *p);
 
 void R_EmitWirePoint(vec3_t origin);
+
+bool R_CullBox(vec3_t emins, vec3_t emaxs);
 
 #endif

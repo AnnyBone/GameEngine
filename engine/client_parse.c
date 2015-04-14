@@ -116,7 +116,7 @@ entity_t	*CL_EntityNum (int num)
 
 void CL_ParseStartSoundPacket(void)
 {
-	vec3_t  pos;
+	MathVector3_t pos;
 	int 	channel,ent,sound_num,volume,field_mask;
 	float 	attenuation;
 	int		i;
@@ -329,32 +329,28 @@ void Client_ParseServerInfo(void)
 	}
 
 	// TODO: just check the level out client-side and add the lights ourselves, rather than passing from server!!! ~hogsy
+	for(i = 0; ; i++)
 	{
-		int	i;
+		if(!MSG_ReadByte())
+			break;
 
-		for(i = 0; ; i++)
 		{
-			if(!MSG_ReadByte())
-				break;
-
+			DynamicLight_t *dStaticLight = Client_AllocDlight(0);
+			if(dStaticLight)
 			{
-				DynamicLight_t *dStaticLight = Client_AllocDlight(0);
-				if(dStaticLight)
-				{
-					int j;
+				int j;
 
-					for(j = 0; j < 3; j++)
-						dStaticLight->origin[j] = MSG_ReadCoord();
+				for(j = 0; j < 3; j++)
+					dStaticLight->origin[j] = MSG_ReadCoord();
 
-					for(j = 0; j < 3; j++)
-						dStaticLight->color[j] = MSG_ReadCoord();
+				for(j = 0; j < 3; j++)
+					dStaticLight->color[j] = MSG_ReadCoord();
 
-					dStaticLight->decay		= 0;
-					dStaticLight->bLightmap	= false;
-					dStaticLight->die		= 0;
-					dStaticLight->minlight	= 32.0f;
-					dStaticLight->radius	= MSG_ReadCoord();
-				}
+				dStaticLight->decay		= 0;
+				dStaticLight->bLightmap	= false;
+				dStaticLight->die		= 0;
+				dStaticLight->minlight	= 32.0f;
+				dStaticLight->radius	= MSG_ReadCoord();
 			}
 		}
 	}

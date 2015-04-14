@@ -666,6 +666,9 @@ void Model_LoadBSPFaces(BSPLump_t *blLump)
 			Sys_Error("Failed to get a material for BSP surface! (%s)\n",out->texinfo->texture->name);
 
 		//johnfitz -- this section rewritten
+#ifdef _MSC_VER
+#pragma warning(suppress: 6011)
+#endif
 		if(!Q_strncmp(mMaterial->cName,"sky",3)) // sky surface //also note -- was Q_strncmp, changed to match qbsp
 		{
 			out->flags |= (SURF_DRAWSKY | SURF_DRAWTILED);

@@ -7,14 +7,10 @@
     Math Library
 */
 
-#if	_MSC_VER
-#	include <xmmintrin.h>
-#endif
-
-MathVector_t	mvOrigin	= { 0, 0, 0		};
-MathVector2_t	mv2Origin	= { 0, 0		};
-MathVector3_t	mv3Origin	= { 0, 0, 0		};
-MathVector4_t	mv4Origin	= { 0, 0, 0, 0	};
+MathVector_t mvOrigin = { 0, 0, 0 };
+MathVector2_t mv2Origin = { 0, 0 };
+MathVector3_t mv3Origin = { 0, 0, 0 };
+MathVector4_t mv4Origin = { 0, 0, 0, 0 };
 
 MathVector_t Math_VectorToAngles(vec3_t vValue)
 {

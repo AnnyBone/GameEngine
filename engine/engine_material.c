@@ -277,7 +277,7 @@ gltexture_t *Material_LoadTexture(Material_t *mMaterial, MaterialSkin_t *mCurren
 	{
 		cArg++;
 
-		if (!strcasecmp(cArg, "notexture"))
+		if (!Q_strcasecmp(cArg, "notexture"))
 			return notexture;
 		else
 		{
@@ -451,6 +451,9 @@ void _Material_AddTexture(Material_t *mCurrentMaterial, MaterialFunctionType_t m
 	if (!msSkin)
 		Sys_Error("Failed to get skin!\n");
 
+#ifdef _MSC_VER
+#pragma warning(suppress: 6011)
+#endif
 	msSkin->mtTexture[msSkin->uiTextures].bManipulated = false;
 	msSkin->mtTexture[msSkin->uiTextures].fRotate = 0;
 	msSkin->mtTexture[msSkin->uiTextures].mttType = MATERIAL_TEXTURE_DIFFUSE;
@@ -520,12 +523,18 @@ void _Material_SetTextureScroll(Material_t *mCurrentMaterial, MaterialFunctionTy
 	MaterialSkin_t	*msSkin;
 	MathVector2_t	vScroll;
 
-	sscanf(cArg, "%f %f", &vScroll[0], &vScroll[1]);
+	// Ensure there's the correct number of arguments being given.
+	if (sscanf(cArg, "%f %f", &vScroll[0], &vScroll[1]) != 2)
+		// Otherwise throw us an error.
+		Sys_Error("Invalid arguments! (%s) (%i)", mCurrentMaterial->cPath, iScriptLine);
 
+	// Get the current skin.
 	msSkin = Material_GetSkin(mCurrentMaterial, mCurrentMaterial->iSkins);
+	// Apply the scroll variables.
 	msSkin->mtTexture[msSkin->uiTextures].vScroll[0] = vScroll[0];
 	msSkin->mtTexture[msSkin->uiTextures].vScroll[1] = vScroll[1];
 
+	// Optimisation; let the rendering system let us know to manipulate the matrix for this texture.
 	msSkin->mtTexture[msSkin->uiTextures].bManipulated = true;
 }
 
@@ -533,9 +542,12 @@ void _Material_SetRotate(Material_t *mCurrentMaterial, MaterialFunctionType_t mf
 {
 	MaterialSkin_t	*msSkin;
 
+	// Get the current skin.
 	msSkin = Material_GetSkin(mCurrentMaterial, mCurrentMaterial->iSkins);
+	// Apply the rotate variable.
 	msSkin->mtTexture[msSkin->uiTextures].fRotate = strtof(cArg, NULL);
 
+	// Optimisation; let the rendering system let us know to manipulate the matrix for this texture.
 	msSkin->mtTexture[msSkin->uiTextures].bManipulated = true;
 }
 

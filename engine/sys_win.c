@@ -344,7 +344,7 @@ char *Sys_ConsoleInput (void)
     {
 	static char	    text[256];
 	static int		len;
-	INPUT_RECORD	recs[1024];
+	INPUT_RECORD	recs[1024] = { 0 };
 	int		        dummy,
 					ch,numread,numevents;
 

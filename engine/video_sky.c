@@ -749,11 +749,10 @@ void Sky_DrawFaceQuad(glpoly_t *p)
 void Sky_DrawFace (int axis)
 {
 	glpoly_t	*p;
-	vec3_t		verts[4];
+	MathVector3_t verts[4];
 	int			i, j, start;
 	float		di,qi,dj,qj;
-	vec3_t		vup,vright,
-				temp,temp2;
+	MathVector3_t vup, vright, temp, temp2;
 
 	Sky_SetBoxVert(-1.0f,-1.0f,axis,verts[0]);
 	Sky_SetBoxVert(-1.0f,1.0f,axis,verts[1]);

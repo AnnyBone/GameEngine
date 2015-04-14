@@ -1039,6 +1039,9 @@ void Host_Loadgame_f (void)
 		return;
 	}
 
+#ifdef _MSC_VER
+#pragma warning(suppress: 6031)
+#endif
 	fscanf (f, "%i\n", &version);
 	if (version != SAVEGAME_VERSION)
 	{
