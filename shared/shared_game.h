@@ -615,9 +615,15 @@ typedef struct
 	void	(*Server_StartFrame)(void);																	// Called at the start of each physics frame.
 	bool	(*Server_SpawnEntity)(edict_t *ent);														// Puts a specific entity into the server.
 
-	void	(*Physics_SetGravity)(edict_t *eEntity);			// Sets the current gravity for the given entity.
-	void	(*Physics_CheckWaterTransition)(edict_t *eEntity);
-	void	(*Physics_CheckVelocity)(edict_t *ent);				// Checks the velocity of physically simulated entities.
+	void(*Physics_SetGravity)(edict_t *eEntity);			// Sets the current gravity for the given entity.
+	void(*Physics_CheckWaterTransition)(edict_t *eEntity);
+	void(*Physics_CheckVelocity)(edict_t *ent);				// Checks the velocity of physically simulated entities.
+	void(*Physics_WallFriction)(edict_t *eEntity, trace_t *trLine);
+	void(*Physics_Impact)(edict_t *eEntity, edict_t *eOther);
+
+	trace_t(*Physics_PushEntity)(edict_t *eEntity, MathVector3_t mvPush);
+
+	bool(*Physics_CheckWater)(edict_t *eEntity);
 } GameExport_t;
 
 #define GAME_VERSION	(sizeof(GameExport_t)+sizeof(ModuleImport_t)+sizeof(edict_t*))	// Version check that's used for Menu and Launcher.

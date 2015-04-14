@@ -79,7 +79,7 @@
     <PlatformToolset>v120</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
     <PlatformToolset>v120</PlatformToolset>
   </PropertyGroup>
@@ -415,7 +415,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
       <FunctionLevelLinking>false</FunctionLevelLinking>
       <Optimization>Disabled</Optimization>
@@ -430,7 +430,8 @@
       <ProgramDataBaseFileName>.\Release\</ProgramDataBaseFileName>
       <CompileAs>Default</CompileAs>
       <WarningLevel>Level1</WarningLevel>
-      <AdditionalIncludeDirectories>.\;.\libogg\include\;.\libvorbis\include\;.\glee5_4\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\;..\include;..\shared;..\platform\include;..\external\sdl2\include;..\external\sdl2_ttf\include;..\external\glee;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Midl>
       <TypeLibraryName>.\Release\Fitzquake.tlb</TypeLibraryName>
@@ -448,7 +449,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
-      <OutputFile>..\..\OpenKatanax64.exe</OutputFile>
+      <OutputFile>..\bin\engine\engine.x64.dll</OutputFile>
       <AdditionalDependencies>dxguid.lib;opengl32.lib;comctl32.lib;winmm.lib;wsock32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
@@ -626,14 +627,14 @@
     <ClCompile Include="engine_console.c" />
     <ClCompile Include="console_variable.c" />
     <ClCompile Include="engine_editor.c" />
-    <ClCompile Include="vidx_object.c" />
+    <ClCompile Include="ZirconVideoObject.c" />
     <ClCompile Include="video_font.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="engine_modgame.c" />
     <ClCompile Include="engine_clientinput.c" />
     <ClCompile Include="video_light.c" />
-    <ClCompile Include="engine_loader.c" />
+    <ClCompile Include="ZirconLoader.c" />
     <ClCompile Include="engine_main.c" />
     <ClCompile Include="network_master.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
@@ -718,7 +719,7 @@
     <ClInclude Include="engine_material.h" />
     <ClInclude Include="engine_modgame.h" />
     <ClInclude Include="engine_clientinput.h" />
-    <ClInclude Include="engine_loader.h" />
+    <ClInclude Include="ZirconLoader.h" />
     <ClInclude Include="engine_main.h" />
     <ClInclude Include="engine_modmenu.h" />
     <ClInclude Include="engine_physics.h" />

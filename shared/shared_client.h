@@ -83,6 +83,9 @@ typedef struct cvar_s
 	int		iValue;
 } cvar_t;
 
+// Future replacement for cvar, to follow every other naming convention.
+#define ConsoleVariable_t cvar_t
+
 typedef struct
 {
 	vec3_t			origin,

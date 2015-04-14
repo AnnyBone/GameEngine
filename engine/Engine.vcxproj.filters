@@ -39,7 +39,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="engine_loader.c" />
     <ClCompile Include="engine_main.c" />
     <ClCompile Include="common.c">
       <Filter>Legacy</Filter>
@@ -236,9 +235,6 @@
     <ClCompile Include="console_variable.c">
       <Filter>Console</Filter>
     </ClCompile>
-    <ClCompile Include="vidx_object.c">
-      <Filter>Client\Video\Experimental</Filter>
-    </ClCompile>
     <ClCompile Include="engine_physics.c">
       <Filter>Server</Filter>
     </ClCompile>
@@ -247,6 +243,12 @@
     </ClCompile>
     <ClCompile Include="audio_dummy.c">
       <Filter>Client\Audio\Interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="ZirconVideoObject.c">
+      <Filter>Client\Video\Experimental</Filter>
+    </ClCompile>
+    <ClCompile Include="ZirconLoader.c">
+      <Filter>Client\Video\Experimental</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -350,7 +352,6 @@
     <ClInclude Include="cvar.h">
       <Filter>Console</Filter>
     </ClInclude>
-    <ClInclude Include="engine_loader.h" />
     <ClInclude Include="engine_script.h" />
     <ClInclude Include="engine_editor.h" />
     <ClInclude Include="client.h">
@@ -431,6 +432,9 @@
     </ClInclude>
     <ClInclude Include="engine_physics.h">
       <Filter>Server</Filter>
+    </ClInclude>
+    <ClInclude Include="ZirconLoader.h">
+      <Filter>Client\Video\Experimental</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

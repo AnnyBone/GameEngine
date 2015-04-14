@@ -182,5 +182,8 @@
     <ClCompile Include="server\server_entity.c">
       <Filter>Server</Filter>
     </ClCompile>
+    <ClCompile Include="server\openkatana\monster_cambot.c">
+      <Filter>Server\OpenKatana\Monsters</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

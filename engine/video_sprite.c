@@ -10,30 +10,30 @@
 
 typedef enum
 {
-	SPRITE_TYPE_DEFAULT,
+	SPRITE_TYPE_DEFAULT,	// Depth-test and scaled manually.
 	SPRITE_TYPE_FLARE		// No depth-test, scale by view and always fullbright.
 } SpriteType_t;
 
 typedef struct Sprite_s
 {
-	SpriteType_t	stType;	// Type of sprite (see SpriteType_t).
+	SpriteType_t stType;	// Type of sprite (see SpriteType_t).
 
-	vec3_t	vOrigin;
+	MathVector3_t vOrigin;
 
-	vec4_t	vColour;		// Sprite colour.
+	MathVector4_t vColour;	// Sprite colour.
 
-    bool    bFullbright;    // If set to true, the sprite isn't effected by lighting.
+	bool bLit;				// If set to true, the sprite is effected by lighting.
 
-	int		iTexture;		// Texture reference.
+	Material_t mMaterial;	// Assigned material.
 
-	float	fScale;			// Sprite scale.
+	float fScale;			// Sprite scale.
 
-	struct	Sprite_s	*sNext;
+	struct Sprite_s *sNext;	// Next sprite in list.
 } Sprite_t;
 
-Sprite_t	*sSprites,
-			*sActiveSprites,
-			*sFreeSprites;
+Sprite_t *sSprites,
+		 *sActiveSprites,
+		 *sFreeSprites;
 
 /*  Allocate a new sprite.
 */
@@ -61,14 +61,14 @@ Sprite_t *Sprite_Allocate(void)
 
 void Sprite_Process(void)
 {
-	Sprite_t	*sSprite;
+	Sprite_t *sSprite;
 
 	if(!sActiveSprites)
 		return;
 
 	for(sSprite = sActiveSprites; sSprite; sSprite = sSprite->sNext)
 	{
-		if(!sSprite->bFullbright && (sSprite->stType != SPRITE_TYPE_FLARE))
+		if(sSprite->bLit && (sSprite->stType != SPRITE_TYPE_FLARE))
 			Math_MVToVector(Light_GetSample(sSprite->vOrigin),sSprite->vColour);
 
 		switch(sSprite->stType)

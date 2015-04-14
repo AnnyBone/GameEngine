@@ -7,8 +7,8 @@ void Client_ViewFrame(void)
 	entity_t	*ePlayerModel,
 				*eWeaponModel;
 
-	ePlayerModel	= Engine.Client_GetPlayerEntity();
-	eWeaponModel	= Engine.Client_GetViewEntity();
+	ePlayerModel = Engine.Client_GetPlayerEntity();
+	eWeaponModel = Engine.Client_GetViewEntity();
 
 	
 }

@@ -77,21 +77,6 @@ bool Server_RunThink(edict_t *ent)
 	return !ent->free;
 }
 
-/*	Two entities have touched, so run their touch functions
-*/
-void Physics_Impact(edict_t *eEntity,edict_t *eOther)
-{
-	// [7/1/2013] Entities using noclip shouldn't "impact" anything ~hogsy
-	if(eOther->v.movetype == MOVETYPE_NOCLIP)
-		return;
-
-	if(eEntity->v.TouchFunction && eEntity->Physics.iSolid != SOLID_NOT)
-		eEntity->v.TouchFunction(eEntity,eOther);
-
-	if(eOther->v.TouchFunction && eOther->Physics.iSolid != SOLID_NOT)
-		eOther->v.TouchFunction(eOther,eEntity);
-}
-
 /*	Slide off of the impacting object
 	returns the blocked flags (1 = floor, 2 = step / wall)
 */
@@ -205,7 +190,7 @@ int SV_FlyMove (edict_t *ent, float time, trace_t *steptrace)
 		}
 
 		// Run the impact function
-		Physics_Impact(ent,trace.ent);
+		Game->Physics_Impact(ent,trace.ent);
 		if (ent->free)
 			break;		// removed by the impact function
 
@@ -272,31 +257,7 @@ PUSHMOVE
 ===============================================================================
 */
 
-/*	Does not change the entities velocity at all
-*/
-trace_t SV_PushEntity (edict_t *ent, vec3_t push)
-{
-	trace_t	trace;
-	vec3_t	end;
 
-	Math_VectorAdd (ent->v.origin, push, end);
-
-	if (ent->v.movetype == (MOVETYPE_FLYMISSILE || MOVETYPE_FLYBOUNCE))
-		trace = SV_Move (ent->v.origin, ent->v.mins, ent->v.maxs, end, MOVE_MISSILE, ent);
-	else if (ent->Physics.iSolid == SOLID_TRIGGER || ent->Physics.iSolid == SOLID_NOT)
-	// only clip against bmodels
-		trace = SV_Move (ent->v.origin, ent->v.mins, ent->v.maxs, end, MOVE_NOMONSTERS, ent);
-	else
-		trace = SV_Move (ent->v.origin, ent->v.mins, ent->v.maxs, end, MOVE_NORMAL, ent);
-
-	Math_VectorCopy (trace.endpos, ent->v.origin);
-	SV_LinkEdict(ent,true);
-
-	if(trace.ent)
-		Physics_Impact(ent,trace.ent);
-
-	return trace;
-}
 
 void SV_PushMove (edict_t *pusher, float movetime)
 {
@@ -375,7 +336,7 @@ void SV_PushMove (edict_t *pusher, float movetime)
 
 		// try moving the contacted entity
 		pusher->Physics.iSolid = SOLID_NOT;
-		SV_PushEntity (check, move);
+		Game->Physics_PushEntity(check, move);
 		pusher->Physics.iSolid = SOLID_BSP;
 
 	// if it is still inside the pusher, block
@@ -554,7 +515,7 @@ static void Server_PushRotate(edict_t *pusher,float movetime)
 
 		// try moving the contacted entity
 		pusher->Physics.iSolid = SOLID_NOT;
-		SV_PushEntity (check, move);
+		Game->Physics_PushEntity(check, move);
 		pusher->Physics.iSolid = SOLID_BSP;
 
 		// If it is still inside the pusher, block
@@ -698,62 +659,6 @@ void SV_CheckStuck (edict_t *ent)
 	Math_VectorCopy(org,ent->v.origin);
 }
 
-bool Physics_CheckWater(edict_t *eEntity)
-{
-	vec3_t	point;
-	int		cont;
-
-	point[0] = eEntity->v.origin[0];
-	point[1] = eEntity->v.origin[1];
-	point[2] = eEntity->v.origin[2]+eEntity->v.mins[2]+1.0f;
-
-	eEntity->v.waterlevel	= 0;
-	eEntity->v.watertype	= BSP_CONTENTS_EMPTY;
-
-	cont = SV_PointContents(point);
-	if(cont <= BSP_CONTENTS_WATER)
-	{
-		eEntity->v.watertype	= cont;
-		eEntity->v.waterlevel	= 1.0f;
-
-		point[2] = eEntity->v.origin[2]+(eEntity->v.mins[2]+eEntity->v.maxs[2])*0.5f;
-
-		if(SV_PointContents(point) <= BSP_CONTENTS_WATER)
-		{
-			eEntity->v.waterlevel = 2;
-
-			point[2] = eEntity->v.origin[2] + eEntity->v.view_ofs[2];
-
-			if(SV_PointContents(point) <= BSP_CONTENTS_WATER)
-				eEntity->v.waterlevel = 3;
-		}
-	}
-
-	return eEntity->v.waterlevel > 1;
-}
-
-void SV_WallFriction (edict_t *ent, trace_t *trace)
-{
-	vec3_t		forward, right, up;
-	float		d, i;
-	vec3_t		into, side;
-
-	Math_AngleVectors(ent->v.v_angle, forward, right, up);
-	d = Math_DotProduct (trace->plane.normal, forward);
-
-	d += 0.5;
-	if (d >= 0)
-		return;
-
-	// Cut the tangential velocity
-	i = Math_DotProduct (trace->plane.normal, ent->v.velocity);
-	Math_VectorScale (trace->plane.normal, i, into);
-	Math_VectorSubtract (ent->v.velocity, into, side);
-
-	ent->v.velocity[0] = side[0] * (1 + d);
-	ent->v.velocity[1] = side[1] * (1 + d);
-}
-
 /*	Player has come to a dead stop, possibly due to the problem with limited
 	float precision at some angle joins in the BSP hull.
 
@@ -802,7 +707,7 @@ int SV_TryUnstick (edict_t *ent, vec3_t oldvel)
 			case 7:	dir[0] = -2; dir[1] = -2; break;
 		}
 
-		SV_PushEntity (ent, dir);
+		Game->Physics_PushEntity(ent, dir);
 
 		// Retry the original move
 		ent->v.velocity[0] = oldvel[0];
@@ -860,7 +765,7 @@ void SV_WalkMove(edict_t *ent)
 	downmove[2] = -cvPhysicsStepSize.value + oldvel[2]*host_frametime;
 
 	// Move up
-	SV_PushEntity(ent,upmove);	// FIXME: don't link?
+	Game->Physics_PushEntity(ent, upmove);	// FIXME: don't link?
 
 // move forward
 	ent->v.velocity[0]	= oldvel[0];
@@ -878,10 +783,10 @@ void SV_WalkMove(edict_t *ent)
 
 // extra friction based on view angle
 	if ( clip & 2 )
-		SV_WallFriction (ent, &steptrace);
+		Game->Physics_WallFriction(ent, &steptrace);
 
 // move down
-	downtrace = SV_PushEntity(ent,downmove);	// FIXME: don't link?
+	downtrace = Game->Physics_PushEntity(ent,downmove);	// FIXME: don't link?
 	if (downtrace.plane.normal[2] > 0.7)
 	{
 		if (ent->Physics.iSolid == SOLID_BSP)
@@ -925,7 +830,7 @@ void SV_Physics_Client (edict_t	*ent, int num)
 		if(!Server_RunThink(ent))
 			return;
 
-		if(!Physics_CheckWater(ent) && !(ent->v.flags & FL_WATERJUMP))
+		if(!Game->Physics_CheckWater(ent) && !(ent->v.flags & FL_WATERJUMP))
 			Game->Physics_SetGravity(ent);
 
 		SV_CheckStuck (ent);
@@ -998,7 +903,7 @@ void Physics_Toss(edict_t *ent)
 
 	// Move origin
 	Math_VectorScale(ent->v.velocity,host_frametime,move);
-	trace = SV_PushEntity(ent, move);
+	trace = Game->Physics_PushEntity(ent, move);
 	if(trace.fraction == 1.0f || ent->free)
 		return;
 

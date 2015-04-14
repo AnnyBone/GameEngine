@@ -241,7 +241,9 @@ enum
 	BSP_HULL_MAX
 };
 
+#ifdef SHARED_FORMATS_C
 extern float	vHullSizes[BSP_HULL_MAX][2][3];
+#endif
 
 #define	BSP_MAX_HULLS			BSP_HULL_MAX
 #define	BSP_MAX_LEAFS			32768			//0x400000

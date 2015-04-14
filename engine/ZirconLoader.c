@@ -1,9 +1,11 @@
-#include "engine_loader.h"
+/*	Copyright (C) 2011-2015 OldTimes Software
 
-/*
-	ENGINE LOADER
-	Unfinished replacement for gl_model.
+	Zircon Game Framework (ZGF)
 */
+
+#include "quakedef.h"
+
+#include "ZirconLoader.h"
 
 #if 0
 model_t *Loader_LoadModel(LoaderType_t ltFileType,char *ccPath)

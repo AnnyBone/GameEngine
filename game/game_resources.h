@@ -123,7 +123,7 @@
 #define	PRISONER_MODEL_LEGS		"models/prisoner_torsoless.md2"
 #define PRISONER_SOUND_HELP		"monsters/prisoner/prisoner_help.wav"
 
-#define	INMATER_MODEL_BODY		"models/inmater.md2"
+#define	MODEL_INMATER_BODY		"models/placeholders/cube.md2"
 
 #define	LASERGAT_MODEL_BASE		"models/lasergat_base.md2"
 #define	LASERGAT_MODEL_BROKEN	"models/lasergat_broken.md2"

@@ -107,8 +107,9 @@ void LightFace_SetupDirt(void)
 // unfinished
 bool LightFace_DirtTrace(const vec3_t vStart, const vec3_t vStop, const BSPModel_t *bmSelf, vec3_t vHitPointOut)
 {
+#if 0
 	const BSPModel_t *const *bmModel;
-	
+#endif
 	if (bmSelf)
 	{
 	}

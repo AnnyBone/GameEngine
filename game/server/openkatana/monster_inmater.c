@@ -10,54 +10,54 @@
 
 EntityFrame_t efInmaterIdle[]=
 {
-	{	NULL,	1,	0.1f			},
-	{	NULL,	1,	0.1f			},
-	{	NULL,	2,	0.1f			},
-	{	NULL,	3,	0.1f			},
-	{	NULL,	4,	0.1f			},
-	{	NULL,	5,	0.1f			},
-	{	NULL,	6,	0.1f			},
-	{	NULL,	7,	0.1f			},
-	{	NULL,	8,	0.1f			},
-	{	NULL,	9,	0.1f			},
-	{	NULL,	10,	0.1f			},
-	{	NULL,	11,	0.1f			},
-	{	NULL,	12,	0.1f			},
-	{	NULL,	13,	0.1f			},
-	{	NULL,	14,	0.1f			},
-	{	NULL,	15,	0.1f			},
-	{	NULL,	16,	0.1f			},
-	{	NULL,	17,	0.1f			},
-	{	NULL,	18,	0.1f			},
-	{	NULL,	19,	0.1f			},
-	{	NULL,	20,	0.1f			},
-	{	NULL,	21,	0.1f			},
-	{	NULL,	22,	0.1f			},
-	{	NULL,	23,	0.1f,	true	}
+	{ NULL, 1, 0.1f },
+	{ NULL, 1, 0.1f },
+	{ NULL, 2, 0.1f },
+	{ NULL, 3, 0.1f },
+	{ NULL, 4, 0.1f },
+	{ NULL, 5, 0.1f },
+	{ NULL, 6, 0.1f },
+	{ NULL, 7, 0.1f },
+	{ NULL, 8, 0.1f },
+	{ NULL, 9, 0.1f },
+	{ NULL, 10, 0.1f },
+	{ NULL, 11, 0.1f },
+	{ NULL, 12, 0.1f },
+	{ NULL, 13, 0.1f },
+	{ NULL, 14, 0.1f },
+	{ NULL, 15, 0.1f },
+	{ NULL, 16, 0.1f },
+	{ NULL, 17, 0.1f },
+	{ NULL, 18, 0.1f },
+	{ NULL, 19, 0.1f },
+	{ NULL, 20, 0.1f },
+	{ NULL, 21, 0.1f },
+	{ NULL, 22, 0.1f },
+	{ NULL, 23, 0.1f, true }
 };
 
 EntityFrame_t efInmaterDeath[]=
 {
-	{	NULL,	148,	0.1f			},
-	{	NULL,	149,	0.1f			},
-	{	NULL,	150,	0.1f			},
-	{	NULL,	151,	0.1f			},
-	{	NULL,	152,	0.1f			},
-	{	NULL,	153,	0.1f			},
-	{	NULL,	154,	0.1f			},
-	{	NULL,	155,	0.1f			},
-	{	NULL,	156,	0.1f			},
-	{	NULL,	157,	0.1f			},
-	{	NULL,	158,	0.1f			},
-	{	NULL,	159,	0.1f			},
-	{	NULL,	160,	0.1f			},
-	{	NULL,	161,	0.1f			},
-	{	NULL,	162,	0.1f			},
-	{	NULL,	163,	0.1f			},
-	{	NULL,	164,	0.1f			},
-	{	NULL,	165,	0.1f			},
-	{	NULL,	166,	0.1f			},
-	{	NULL,	167,	0.1f,	true	}
+	{ NULL, 148, 0.1f },
+	{ NULL, 149, 0.1f },
+	{ NULL, 150, 0.1f },
+	{ NULL, 151, 0.1f },
+	{ NULL, 152, 0.1f },
+	{ NULL, 153, 0.1f },
+	{ NULL, 154, 0.1f },
+	{ NULL, 155, 0.1f },
+	{ NULL, 156, 0.1f },
+	{ NULL, 157, 0.1f },
+	{ NULL, 158, 0.1f },
+	{ NULL, 159, 0.1f },
+	{ NULL, 160, 0.1f },
+	{ NULL, 161, 0.1f },
+	{ NULL, 162, 0.1f },
+	{ NULL, 163, 0.1f },
+	{ NULL, 164, 0.1f },
+	{ NULL, 165, 0.1f },
+	{ NULL, 166, 0.1f },
+	{ NULL, 167, 0.1f, true }
 };
 
 #define INMATER_MAX_HEALTH	150
@@ -141,31 +141,31 @@ void Inmater_Think(edict_t *eInmater)
 
 void Inmater_Spawn(edict_t *eInmater)
 {
-	Engine.Server_PrecacheResource(RESOURCE_MODEL,INMATER_MODEL_BODY);
+	Engine.Server_PrecacheResource(RESOURCE_MODEL, MODEL_INMATER_BODY);
 
-	eInmater->Physics.iSolid	= SOLID_SLIDEBOX;
-	eInmater->Physics.fGravity	= cvServerGravity.value;
-	eInmater->Physics.fMass		= 3.0f;
+	eInmater->Physics.iSolid = SOLID_SLIDEBOX;
+	eInmater->Physics.fGravity = cvServerGravity.value;
+	eInmater->Physics.fMass = 3.0f;
 	eInmater->Physics.fFriction = 4.5f;
 
-	eInmater->monster.iType			= MONSTER_INMATER;
-	eInmater->monster.Think			= Inmater_Think;
-	eInmater->monster.think_pain	= Inmater_Pain;
-	eInmater->monster.think_die		= Inmater_Die;
+	eInmater->monster.iType = MONSTER_INMATER;
+	eInmater->monster.Think = Inmater_Think;
+	eInmater->monster.think_pain = Inmater_Pain;
+	eInmater->monster.think_die = Inmater_Die;
 
-	eInmater->v.bTakeDamage	= true;
-	eInmater->v.movetype	= MOVETYPE_STEP;
-	eInmater->v.iHealth		= INMATER_MAX_HEALTH;
-	eInmater->v.iMaxHealth	= INMATER_MAX_HEALTH;
-	eInmater->v.netname		= "Inmater";
-	eInmater->v.frame		= 0;
+	eInmater->v.bTakeDamage = true;
+	eInmater->v.movetype = MOVETYPE_STEP;
+	eInmater->v.iHealth = INMATER_MAX_HEALTH;
+	eInmater->v.iMaxHealth = INMATER_MAX_HEALTH;
+	eInmater->v.netname = "Inmater";
+	eInmater->v.frame = 0;
 
-	Monster_SetState(eInmater,STATE_AWAKE);
-	Monster_SetThink(eInmater,THINK_IDLE);
+	Monster_SetState(eInmater, STATE_AWAKE);
+	Monster_SetThink(eInmater, THINK_IDLE);
 
-	Entity_SetModel(eInmater,INMATER_MODEL_BODY);
-	Entity_SetSize(eInmater,-16.0f,-16.0f,-24.0f,16.0f,16.0f,32.0f);
-	Entity_SetOrigin(eInmater,eInmater->v.origin);
+	Entity_SetModel(eInmater, MODEL_INMATER_BODY);
+	Entity_SetSize(eInmater, -16.0f, -16.0f, -24.0f, 16.0f, 16.0f, 32.0f);
+	Entity_SetOrigin(eInmater, eInmater->v.origin);
 
 	Entity_DropToFloor(eInmater);
 }

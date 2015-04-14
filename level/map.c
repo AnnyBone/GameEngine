@@ -72,8 +72,8 @@ int	FindTexinfo( BSPTextureInfo_t *t )
 	int					j;
 	BSPTextureInfo_t	*tex;
 
-	// set the special flag
-	if((miptex[t->iMipTex][0] == '*' && !waterlightmap) || !Q_strncasecmp (miptex[t->iMipTex],"sky",3))
+	// Set the special flag for any "special" cases.
+	if(/*(miptex[t->iMipTex][0] == '*' && !waterlightmap) || */!Q_strncasecmp (miptex[t->iMipTex],"sky",3))
 		t->iFlags |= BSP_TEXTURE_SPECIAL;
 
 	tex = texinfo;

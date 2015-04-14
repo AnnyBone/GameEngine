@@ -30,7 +30,8 @@ static unsigned int	iSavedCapabilites[VIDEO_MAX_UNITS][2];
 #define VIDEO_STATE_ENABLE   0
 #define VIDEO_STATE_DISABLE  1
 
-cvar_t	cvMultisampleSamples		= {	"video_multisamplesamples",		"0",			true,   false,  "Changes the number of samples."									},
+ConsoleVariable_t	
+		cvMultisampleSamples		= {	"video_multisamplesamples",		"0",			true,   false,  "Changes the number of samples."									},
 		cvMultisampleMaxSamples		= { "video_multisamplemaxsamples",	"16",			true,	false,	"Sets the maximum number of allowed samples."						},
 		cvFullscreen				= {	"video_fullscreen",				"0",			true,   false,  "1: Fullscreen, 0: Windowed"										},
 		cvWidth						= {	"video_width",					"640",			true,   false,  "Sets the width of the window."										},
@@ -55,12 +56,12 @@ cvar_t	cvMultisampleSamples		= {	"video_multisamplesamples",		"0",			true,   fal
 
 gltexture_t	*gDepthTexture;
 
-bool	bVideoIgnoreCapabilities	= false,
-		bVideoDebug					= false;
+bool	bVideoIgnoreCapabilities = false,
+		bVideoDebug = false;
 
-MathVector2_t	**vVideoTextureArray;
-MathVector3_t	*vVideoVertexArray;
-MathVector4_t	*vVideoColourArray;
+MathVector2_t **vVideoTextureArray;
+MathVector3_t *vVideoVertexArray;
+MathVector4_t *vVideoColourArray;
 
 unsigned int	uiVideoArraySize = 32768;
 
@@ -263,11 +264,6 @@ void Video_CreateWindow(void)
 	if(!Video.bFullscreen)
 		iFlags &= ~SDL_WINDOW_FULLSCREEN;
 
-#if 0
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,SDL_GL_CONTEXT_PROFILE_CORE);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION,3);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION,2);
-#endif
 	SDL_GL_SetAttribute(SDL_GL_RED_SIZE,8);
 	SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE,8);
 	SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE,8);
@@ -704,6 +700,8 @@ void Video_DrawMaterial(
 	if (r_drawflat_cheatsafe)
 		return;
 
+	bVideoIgnoreCapabilities = true;
+
 	if (r_lightmap_cheatsafe || r_showtris.bValue || !cvVideoDrawMaterials.bValue)
 	{
 		// Select the first TMU.
@@ -720,6 +718,8 @@ void Video_DrawMaterial(
 		else
 			// Disable it.
 			Video_DisableCapabilities(VIDEO_TEXTURE_2D);
+
+		bVideoIgnoreCapabilities = false;
 
 		return;
 	}
@@ -837,7 +837,7 @@ void Video_DrawMaterial(
 
 			if (!bPost)
 			{
-				Video_EnableCapabilities(VIDEO_BLEND);
+				glEnable(GL_BLEND);
 
 				glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_ADD);
 
@@ -856,7 +856,7 @@ void Video_DrawMaterial(
 				}
 			}
 			else
-				Video_DisableCapabilities(VIDEO_BLEND);
+				glDisable(GL_BLEND);
 			break;
 		case MATERIAL_TEXTURE_SPHERE:
 			if (!bPost)
@@ -864,10 +864,24 @@ void Video_DrawMaterial(
 				glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
 
 				Video_GenerateSphereCoordinates();
+#if 0
 				Video_EnableCapabilities(VIDEO_BLEND | VIDEO_TEXTURE_GEN_S | VIDEO_TEXTURE_GEN_T);
+#else	// Enable and disable the ol' fasioned, but safer way.
+				glEnable(GL_BLEND);
+				glEnable(GL_TEXTURE_GEN_S);
+				glEnable(GL_TEXTURE_GEN_T);
+#endif
 			}
 			else
+#if 0
 				Video_DisableCapabilities(VIDEO_BLEND | VIDEO_TEXTURE_GEN_S | VIDEO_TEXTURE_GEN_T);
+#else	// Enable and disable the ol' fasioned, but safer way.
+			{
+				glDisable(GL_BLEND);
+				glDisable(GL_TEXTURE_GEN_S);
+				glDisable(GL_TEXTURE_GEN_T);
+			}
+#endif
 			break;
 		default:
 			Sys_Error("Invalid texture type for material! (%s) (%i)\n", mMaterial->cPath, msCurrentSkin->mtTexture[i].mttType);
@@ -917,6 +931,9 @@ void Video_DrawMaterial(
 			Video_DisableCapabilities(VIDEO_TEXTURE_2D);
 		}
 	}
+
+	// Stop ignoring assigned capabilities.
+	bVideoIgnoreCapabilities = false;
 }
 
 /*  Draw a simple rectangle.

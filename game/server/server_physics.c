@@ -19,6 +19,40 @@ void Physics_SetGravity(edict_t *eEntity)
 		(float)Engine.Server_GetFrameTime();
 }
 
+bool Physics_CheckWater(edict_t *eEntity)
+{
+	MathVector3_t point;
+	int	cont;
+
+	point[0] = eEntity->v.origin[0];
+	point[1] = eEntity->v.origin[1];
+	point[2] = eEntity->v.origin[2] + eEntity->v.mins[2] + 1.0f;
+
+	eEntity->v.waterlevel = 0;
+	eEntity->v.watertype = BSP_CONTENTS_EMPTY;
+	
+	cont = Engine.Server_PointContents(point);
+	if (cont <= BSP_CONTENTS_WATER)
+	{
+		eEntity->v.watertype = cont;
+		eEntity->v.waterlevel = 1.0f;
+
+		point[2] = eEntity->v.origin[2] + (eEntity->v.mins[2] + eEntity->v.maxs[2])*0.5f;
+
+		if (Engine.Server_PointContents(point) <= BSP_CONTENTS_WATER)
+		{
+			eEntity->v.waterlevel = 2;
+
+			point[2] = eEntity->v.origin[2] + eEntity->v.view_ofs[2];
+
+			if (Engine.Server_PointContents(point) <= BSP_CONTENTS_WATER)
+				eEntity->v.waterlevel = 3;
+		}
+	}
+
+	return eEntity->v.waterlevel > 1;
+}
+
 void Physics_CheckVelocity(edict_t *eEntity)
 {
 	int i;
@@ -72,9 +106,36 @@ void Physics_CheckWaterTransition(edict_t *eEntity)
 	//Sound(eEntity, CHAN_AUTO, PHYSICS_SOUND_BODY, 15, ATTN_NORM);
 }
 
-// [5/7/2012] Was SV_Impact ~hogsy
-void Physics_EntityImpact(edict_t *eEntity,edict_t *eOther)
+void Physics_WallFriction(edict_t *eEntity, trace_t *trLine)
 {
+	MathVector3_t forward, right, up;
+	float d, i;
+	MathVector3_t into, side;
+
+	Math_AngleVectors(eEntity->v.v_angle, forward, right, up);
+	d = Math_DotProduct(trLine->plane.normal, forward);
+
+	d += 0.5;
+	if (d >= 0)
+		return;
+
+	// Cut the tangential velocity.
+	i = Math_DotProduct(trLine->plane.normal, eEntity->v.velocity);
+	Math_VectorScale(trLine->plane.normal, i, into);
+	Math_VectorSubtract(eEntity->v.velocity, into, side);
+
+	eEntity->v.velocity[0] = side[0] * (1 + d);
+	eEntity->v.velocity[1] = side[1] * (1 + d);
+}
+
+/*	Two entities have touched, so run their touch functions
+*/
+void Physics_Impact(edict_t *eEntity,edict_t *eOther)
+{
+	// Entities using noclip shouldn't "impact" anything.
+	if (eOther->v.movetype == MOVETYPE_NOCLIP)
+		return;
+
 	if(eEntity->v.TouchFunction && eEntity->Physics.iSolid != SOLID_NOT)
 		eEntity->v.TouchFunction(eEntity,eOther);
 
@@ -82,25 +143,32 @@ void Physics_EntityImpact(edict_t *eEntity,edict_t *eOther)
 		eOther->v.TouchFunction(eOther,eEntity);
 }
 
-trace_t	Physics_PushEntity(edict_t *eEntity,vec3_t vPush)
+/*
+	Push Move
+*/
+
+/*	Does not change the entities velocity at all
+*/
+trace_t Physics_PushEntity(edict_t *eEntity, MathVector3_t mvPush)
 {
 	trace_t	trace;
 	vec3_t	end;
 
-	Math_VectorAdd(eEntity->v.origin,vPush,end);
+	Math_VectorAdd(eEntity->v.origin, mvPush, end);
 
-	if(eEntity->v.movetype == MOVETYPE_FLYMISSILE)
-		trace = Engine.Server_Move(eEntity->v.origin,eEntity->v.mins,eEntity->v.maxs,end,MOVE_MISSILE,eEntity);
-	else if(eEntity->Physics.iSolid == SOLID_TRIGGER || eEntity->Physics.iSolid == SOLID_NOT)
-		trace = Engine.Server_Move(eEntity->v.origin,eEntity->v.mins,eEntity->v.maxs,end,MOVE_NOMONSTERS,eEntity);
+	if (eEntity->v.movetype == (MOVETYPE_FLYMISSILE || MOVETYPE_FLYBOUNCE))
+		trace = Engine.Server_Move(eEntity->v.origin, eEntity->v.mins, eEntity->v.maxs, end, MOVE_MISSILE, eEntity);
+	else if (eEntity->Physics.iSolid == SOLID_TRIGGER || eEntity->Physics.iSolid == SOLID_NOT)
+		// only clip against bmodels
+		trace = Engine.Server_Move(eEntity->v.origin, eEntity->v.mins, eEntity->v.maxs, end, MOVE_NOMONSTERS, eEntity);
 	else
-		trace = Engine.Server_Move(eEntity->v.origin,eEntity->v.mins,eEntity->v.maxs,end,MOVE_NORMAL,eEntity);
+		trace = Engine.Server_Move(eEntity->v.origin, eEntity->v.mins, eEntity->v.maxs, end, MOVE_NORMAL, eEntity);
 
-	// Use SetOrigin since it automatically links.
-	Entity_SetOrigin(eEntity, trace.endpos);
+	Math_VectorCopy(trace.endpos, eEntity->v.origin);
+	Entity_Link(eEntity, true);
 
-	if(trace.ent)
-		Physics_EntityImpact(eEntity,trace.ent);
+	if (trace.ent)
+		Physics_Impact(eEntity, trace.ent);
 
 	return trace;
 }

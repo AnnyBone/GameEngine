@@ -322,8 +322,8 @@ void WriteMiptex (void)
 				memset(blankmiptex.name,0,sizeof(blankmiptex.name));
 				strncpy(blankmiptex.name,s,sizeof(blankmiptex.name)-1);
 
-				blankmiptex.width	= LittleLong(tex->width);
-				blankmiptex.height	= LittleLong(tex->height);
+				blankmiptex.width = LittleLong(tex->width);
+				blankmiptex.height = LittleLong(tex->height);
 
 				memcpy(miptex_data,&blankmiptex,sizeof(miptex_t));
 

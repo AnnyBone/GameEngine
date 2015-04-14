@@ -74,14 +74,6 @@ typedef struct
 	SDL_SysWMinfo	sSystemInfo;
 } Video_t;
 
-// Replacement Video Object
-typedef struct
-{
-	VideoObject_t	*vObject;
-
-	unsigned	int	uiIndeces;
-} VideoObject2_t;
-
 Video_t	Video;
 
 extern SDL_Window	*sMainWindow;
@@ -155,6 +147,8 @@ void Video_DrawObject(VideoObject_t *voObject, VideoPrimitive_t vpPrimitiveType,
 void Video_DrawMaterial(Material_t *mMaterial, int iSkin, VideoObject_t *voObject, VideoPrimitive_t vpPrimitiveType, unsigned int uiSize, bool bPost);
 void Video_Shutdown(void);
 
+unsigned int Video_GetGLUnit(unsigned int uiTarget);
+
 bool Video_GetCapability(unsigned int iCapability);
 
 /*
@@ -211,5 +205,7 @@ void DrawGLPoly(glpoly_t *p);
 */
 
 void Warp_DrawWaterPoly(glpoly_t *p);
+
+void R_EmitWirePoint(vec3_t origin);
 
 #endif

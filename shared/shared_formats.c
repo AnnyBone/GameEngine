@@ -2,6 +2,7 @@
 #include "platform_math.h"
 
 #include "shared_flags.h"
+
 #include "shared_formats.h"
 
 /*
