@@ -137,7 +137,7 @@ void Draw_MaterialSurface(
 	int x, int y, int s, int t,
 	int w, int h)
 {
-	VideoObject_t voSurface[4];
+	VideoObjectVertex_t voSurface[4];
 
 	Video_ResetCapabilities(false);
 
@@ -182,36 +182,36 @@ void Draw_ExternPic(char *path,float alpha,int x,int y,int w,int h)
 	Video_DisableCapabilities(VIDEO_DEPTH_TEST);
 
 	{
-		VideoObject_t	voPicture[4] = { 0 };
+		VideoObjectVertex_t	voPicture[4] = { 0 };
 
 		for(i = 0; i < 4; i++)
 		{
 			// Set RGB values to 1.0f...
-			Math_VectorSet(1.0f,voPicture[i].vColour);
+			Math_VectorSet(1.0f,voPicture[i].mvColour);
 
 			// Alpha needs to be set last, to the given value...
-			voPicture[i].vColour[3] = alpha;
+			voPicture[i].mvColour[3] = alpha;
 		}
 
 		// Give each vertex the coord it needs...
-		voPicture[0].vVertex[1]	=
-		voPicture[1].vVertex[1]	= y;
-		voPicture[2].vVertex[1]	=
-		voPicture[3].vVertex[1]	= y+h;
-		voPicture[1].vVertex[0]	=
-		voPicture[2].vVertex[0]	= x+w;
-		voPicture[0].vVertex[0]	=
-		voPicture[3].vVertex[0]	= x;
+		voPicture[0].mvPosition[1]	=
+		voPicture[1].mvPosition[1]	= y;
+		voPicture[2].mvPosition[1]	=
+		voPicture[3].mvPosition[1]	= y+h;
+		voPicture[1].mvPosition[0]	=
+		voPicture[2].mvPosition[0]	= x+w;
+		voPicture[0].mvPosition[0]	=
+		voPicture[3].mvPosition[0]	= x;
 
 		// Give each texture coord the coord it needs...
-		voPicture[0].vTextureCoord[0][0]	=
-		voPicture[0].vTextureCoord[0][1]	= 
-		voPicture[1].vTextureCoord[0][1]	= 
-		voPicture[3].vTextureCoord[0][0]	= 0;
-		voPicture[1].vTextureCoord[0][0]	=
-		voPicture[2].vTextureCoord[0][0]	= 
-		voPicture[2].vTextureCoord[0][1]	= 
-		voPicture[3].vTextureCoord[0][1]	= 1.0f;
+		voPicture[0].mvST[0][0]	=
+		voPicture[0].mvST[0][1]	= 
+		voPicture[1].mvST[0][1]	= 
+		voPicture[3].mvST[0][0]	= 0;
+		voPicture[1].mvST[0][0]	=
+		voPicture[2].mvST[0][0]	= 
+		voPicture[2].mvST[0][1]	= 
+		voPicture[3].mvST[0][1]	= 1.0f;
 
 		// Throw it off to the rendering pipeline.
 		Video_DrawFill(voPicture,NULL);
@@ -355,7 +355,7 @@ void Draw_Character(int x,int y,int num)
 	size = 0.0625f;
 
 	{
-		VideoObject_t	voCharacter[4] = { 0 };
+		VideoObjectVertex_t	voCharacter[4] = { 0 };
 
 		Video_ResetCapabilities(false);
 
@@ -399,7 +399,7 @@ void Draw_Pic(int x,int y,qpic_t *pic)
 
     // [1/4/2014] Use new rendering system ~hogsy
 	{
-        VideoObject_t voPicture	[]=
+		VideoObjectVertex_t voPicture	[]=
 		{
 			{	{	x,		        y,		        0	},	{	{	0,		0		}	},	{	1.0f,	1.0f,	1.0f,	1.0f	}	},
 			{	{	x+pic->width,	y,		        0	},	{	{	1.0f,	0		}	},	{	1.0f,	1.0f,	1.0f,	1.0f	}	},
@@ -457,7 +457,7 @@ void Draw_TileClear (int x, int y, int w, int h)
 
 void Draw_Line(MathVector3_t mvStart, MathVector3_t mvEnd)
 {
-	VideoObject_t	voLine[2] = { 0 };
+	VideoObjectVertex_t	voLine[2] = { 0 };
 
 	Video_ResetCapabilities(false);
 
@@ -474,13 +474,13 @@ void Draw_Line(MathVector3_t mvStart, MathVector3_t mvEnd)
 void Draw_Fill(int x,int y,int w,int h,float r,float g,float b,float alpha)
 {
 	vec4_t			vColour;
-	VideoObject_t	voFill[4] = { 0 };
+	VideoObjectVertex_t	voFill[4] = { 0 };
 
 	vColour[0] = r; vColour[1] = g; vColour[2] = b; vColour[3] = alpha;
-	Math_Vector4Copy(vColour,voFill[0].vColour);
-	Math_Vector4Copy(vColour,voFill[1].vColour);
-	Math_Vector4Copy(vColour,voFill[2].vColour);
-	Math_Vector4Copy(vColour,voFill[3].vColour);
+	Math_Vector4Copy(vColour,voFill[0].mvColour);
+	Math_Vector4Copy(vColour,voFill[1].mvColour);
+	Math_Vector4Copy(vColour,voFill[2].mvColour);
+	Math_Vector4Copy(vColour,voFill[3].mvColour);
 
     Video_ResetCapabilities(false);
 
@@ -502,7 +502,7 @@ void Draw_Fill(int x,int y,int w,int h,float r,float g,float b,float alpha)
 
 void Draw_FadeScreen (void)
 {
-	VideoObject_t	voFade[4] = { 0 };
+	VideoObjectVertex_t	voFade[4] = { 0 };
 
 	GL_SetCanvas(CANVAS_DEFAULT);
 

@@ -472,7 +472,7 @@ void Particle_Draw(void)
 
 	for (pParticle = pActiveParticles; pParticle; pParticle = pParticle->next)
 	{
-		VideoObject_t	voParticle[4] = { 0 };
+		VideoObjectVertex_t	voParticle[4] = { 0 };
 
 		if (!r_showtris.value)
 			Video_SetTexture(gEffectTexture[pParticle->iMaterial]);
@@ -483,17 +483,17 @@ void Particle_Draw(void)
 			pParticle->vColour[0], pParticle->vColour[1], pParticle->vColour[2], pParticle->vColour[3]);
 		Video_ObjectTexture(&voParticle[0], 0, 0, 0);
 
-		Math_VectorMA(pParticle->vOrigin, pParticle->fScale, vup, voParticle[1].vVertex);
+		Math_VectorMA(pParticle->vOrigin, pParticle->fScale, vup, voParticle[1].mvPosition);
 		Video_ObjectColour(&voParticle[1],
 			pParticle->vColour[0], pParticle->vColour[1], pParticle->vColour[2], pParticle->vColour[3]);
 		Video_ObjectTexture(&voParticle[1], 0, 1.0f, 0);
 
-		Math_VectorMA(voParticle[1].vVertex, pParticle->fScale, vright, voParticle[2].vVertex);
+		Math_VectorMA(voParticle[1].mvPosition, pParticle->fScale, vright, voParticle[2].mvPosition);
 		Video_ObjectColour(&voParticle[2],
 			pParticle->vColour[0], pParticle->vColour[1], pParticle->vColour[2], pParticle->vColour[3]);
 		Video_ObjectTexture(&voParticle[2], 0, 1.0f, 1.0f);
 
-		Math_VectorMA(pParticle->vOrigin, pParticle->fScale, vright, voParticle[3].vVertex);
+		Math_VectorMA(pParticle->vOrigin, pParticle->fScale, vright, voParticle[3].mvPosition);
 		Video_ObjectColour(&voParticle[3],
 			pParticle->vColour[0], pParticle->vColour[1], pParticle->vColour[2], pParticle->vColour[3]);
 		Video_ObjectTexture(&voParticle[3], 0, 0, 1.0f);

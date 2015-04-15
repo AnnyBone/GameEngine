@@ -404,20 +404,20 @@ void View_PolyBlend(void)
 	glLoadIdentity();
 
 	{
-		int				i;
-		VideoObject_t	voScreenPoly[4] = { 0 };
+		int	i;
+		VideoObjectVertex_t	voScreenPoly[4] = { 0 };
 
 		for(i = 0; i < 4; i++)
-			Math_Vector4Copy(vViewBlend,voScreenPoly[i].vColour);
+			Math_Vector4Copy(vViewBlend,voScreenPoly[i].mvColour);
 
-		voScreenPoly[0].vVertex[0]	=
-		voScreenPoly[0].vVertex[1]	=
-		voScreenPoly[1].vVertex[1]	=
-		voScreenPoly[3].vVertex[0]	= 0;
-		voScreenPoly[1].vVertex[0]	=
-		voScreenPoly[2].vVertex[0]	=
-		voScreenPoly[2].vVertex[1]	=
-		voScreenPoly[3].vVertex[1]	= 1.0f;
+		voScreenPoly[0].mvPosition[0]	=
+		voScreenPoly[0].mvPosition[1] =
+		voScreenPoly[1].mvPosition[1] =
+		voScreenPoly[3].mvPosition[0] = 0;
+		voScreenPoly[1].mvPosition[0] =
+		voScreenPoly[2].mvPosition[0] =
+		voScreenPoly[2].mvPosition[1] =
+		voScreenPoly[3].mvPosition[1] = 1.0f;
 
 		Video_DrawFill(voScreenPoly,NULL);
 	}

@@ -205,12 +205,12 @@ void GL_SubdivideSurface(msurface_t *fa)
 */
 void Warp_DrawWaterPoly(glpoly_t *p)
 {
-	VideoObject_t	*voWaterPoly;
+	VideoObjectVertex_t	*voWaterPoly;
 	vec3_t			vWave,vLightColour;
 	float			*fVert,fWaterAlpha;
 	int				i;
 
-	voWaterPoly = Hunk_TempAlloc(p->numverts*sizeof(VideoObject_t));
+	voWaterPoly = Hunk_TempAlloc(p->numverts*sizeof(VideoObjectVertex_t));
 	if(!voWaterPoly)
 	{
 		Sys_Error("Failed to allocate water poly!\n");

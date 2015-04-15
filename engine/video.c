@@ -12,6 +12,7 @@
 
 	TODO:
 		- Move all/most API-specific code here.
+		- Scale TMU support based on actual hardware, rather than set limitations.
 */
 
 // Main header
@@ -232,8 +233,7 @@ void Video_CreateWindow(void)
 	int			iFlags =
 		SDL_WINDOW_SHOWN		|
 		SDL_WINDOW_OPENGL		|
-		SDL_WINDOW_FULLSCREEN,
-				iSupportedUnits;
+		SDL_WINDOW_FULLSCREEN;
 	SDL_Surface	*sIcon;
 
 	if(!Video.bInitialized)
@@ -329,9 +329,9 @@ void Video_CreateWindow(void)
 	if(!sMainContext)
 		Sys_Error("Failed to create context!\n%s\n",SDL_GetError());
 
-	glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS,&iSupportedUnits);
-	if(iSupportedUnits < VIDEO_MAX_UNITS)
-		Sys_Error("Your system doesn't support the required number of TMUs! (%i)",iSupportedUnits);
+	glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS,&Video.uiSupportedUnits);
+	if (Video.uiSupportedUnits < VIDEO_MAX_UNITS)
+		Sys_Error("Your system doesn't support the required number of TMUs! (%i)", Video.uiSupportedUnits);
 
 	glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &Video.fMaxAnisotropy);
 
@@ -586,7 +586,7 @@ void Video_SelectTexture(unsigned int uiTarget)
 	if(uiTarget == Video.uiActiveUnit)
         return;
 
-	if (uiTarget > VIDEO_TEXTURE_MAX)
+	if (uiTarget > VIDEO_MAX_UNITS)
 		Sys_Error("Invalid texture unit! (%i)\n",uiTarget);
 
 	glActiveTexture(Video_GetTextureUnit(uiTarget));
@@ -603,32 +603,32 @@ void Video_SelectTexture(unsigned int uiTarget)
 
 MathVector4_t	mvVideoGlobalColour;
 
-void Video_ObjectTexture(VideoObject_t *voObject, unsigned int uiTextureUnit, float S, float T)
+void Video_ObjectTexture(VideoObjectVertex_t *voObject, unsigned int uiTextureUnit, float S, float T)
 {
-	voObject->vTextureCoord[uiTextureUnit][0] = S;
-	voObject->vTextureCoord[uiTextureUnit][1] = T;
+	voObject->mvST[uiTextureUnit][0] = S;
+	voObject->mvST[uiTextureUnit][1] = T;
 }
 
-void Video_ObjectVertex(VideoObject_t *voObject, float X, float Y, float Z)
+void Video_ObjectVertex(VideoObjectVertex_t *voObject, float X, float Y, float Z)
 {
-	voObject->vVertex[0] = X;
-	voObject->vVertex[1] = Y;
-	voObject->vVertex[2] = Z;
+	voObject->mvPosition[0] = X;
+	voObject->mvPosition[1] = Y;
+	voObject->mvPosition[2] = Z;
 }
 
-void Video_ObjectNormal(VideoObject_t *voObject, float X, float Y, float Z)
+void Video_ObjectNormal(VideoObjectVertex_t *voObject, float X, float Y, float Z)
 {
-	voObject->vNormal[0] = X;
-	voObject->vNormal[1] = Y;
-	voObject->vNormal[2] = Z;
+	voObject->mvNormal[0] = X;
+	voObject->mvNormal[1] = Y;
+	voObject->mvNormal[2] = Z;
 }
 
-void Video_ObjectColour(VideoObject_t *voObject, float R,float G,float B,float A)
+void Video_ObjectColour(VideoObjectVertex_t *voObject, float R, float G, float B, float A)
 {
-	voObject->vColour[pRED] = R;
-	voObject->vColour[pGREEN] = G;
-	voObject->vColour[pBLUE] = B;
-	voObject->vColour[pALPHA] = A;
+	voObject->mvColour[pRED] = R;
+	voObject->mvColour[pGREEN] = G;
+	voObject->mvColour[pBLUE] = B;
+	voObject->mvColour[pALPHA] = A;
 }
 
 /*	Used to override any colour given to a video object.
@@ -682,7 +682,7 @@ void Video_AllocateArrays(int iSize)
 /*	Draw terrain.
 	Unfinished
 */
-void Video_DrawTerrain(VideoObject_t *voTerrain)
+void Video_DrawTerrain(VideoObjectVertex_t *voTerrain)
 {
 	if(!voTerrain)
 		Sys_Error("Invalid video object!\n");
@@ -694,7 +694,7 @@ extern cvar_t gl_fullbrights;
 */
 void Video_DrawMaterial(
 	Material_t *mMaterial, int iSkin,
-	VideoObject_t *voObject, VideoPrimitive_t vpPrimitiveType, unsigned int uiSize,
+	VideoObjectVertex_t *voObject, VideoPrimitive_t vpPrimitiveType, unsigned int uiSize,
 	bool bPost)
 {
 	unsigned int	i,uiUnit;
@@ -768,8 +768,8 @@ void Video_DrawMaterial(
 						// Copy over original texture coords.
 						Video_ObjectTexture(&voObject[j], uiUnit,
 							// Use base texture coordinates as a reference.
-							voObject[j].vTextureCoord[0][0],
-							voObject[j].vTextureCoord[0][1]);
+							voObject[j].mvST[0][0],
+							voObject[j].mvST[0][1]);
 					}
 				}
 			}
@@ -826,8 +826,8 @@ void Video_DrawMaterial(
 						// Copy over original texture coords.
 						Video_ObjectTexture(&voObject[j], uiUnit,
 							// Use base texture coordinates as a reference.
-							voObject[j].vTextureCoord[0][0] * cvVideoDetailScale.value,
-							voObject[j].vTextureCoord[0][1] * cvVideoDetailScale.value);
+							voObject[j].mvST[0][0] * cvVideoDetailScale.value,
+							voObject[j].mvST[0][1] * cvVideoDetailScale.value);
 
 						// TODO: Modify them to the appropriate scale.
 
@@ -854,8 +854,8 @@ void Video_DrawMaterial(
 						// Texture coordinates remain the same for fullbright layers.
 						Video_ObjectTexture(&voObject[j], uiUnit,
 							// Use base texture coordinates as a reference.
-							voObject[j].vTextureCoord[0][0],
-							voObject[j].vTextureCoord[0][1]);
+							voObject[j].mvST[0][0],
+							voObject[j].mvST[0][1]);
 					}
 				}
 			}
@@ -942,7 +942,7 @@ void Video_DrawMaterial(
 
 /*  Draw a simple rectangle.
 */
-void Video_DrawFill(VideoObject_t *voFill,Material_t *mMaterial)
+void Video_DrawFill(VideoObjectVertex_t *voFill, Material_t *mMaterial)
 {
 	Video_DrawObject(voFill,VIDEO_PRIMITIVE_TRIANGLE_FAN,4,mMaterial,0);
 }
@@ -951,11 +951,11 @@ void Video_DrawFill(VideoObject_t *voFill,Material_t *mMaterial)
 */
 void Video_DrawSurface(msurface_t *mSurface,float fAlpha, Material_t *mMaterial, unsigned int uiSkin)
 {
-	VideoObject_t	*voSurface;
+	VideoObjectVertex_t	*voSurface;
 	float			*fVert;
 	int				i;
 
-	voSurface = (VideoObject_t*)Hunk_TempAlloc(mSurface->polys->numverts*sizeof(VideoObject_t));
+	voSurface = (VideoObjectVertex_t*)Hunk_TempAlloc(mSurface->polys->numverts*sizeof(VideoObjectVertex_t));
 	if (!voSurface)
 		Sys_Error("Failed to allocate surface video object!\n");
 
@@ -1013,32 +1013,31 @@ void Video_DrawArrays(VideoPrimitive_t vpPrimitiveType, unsigned int uiSize)
 		if (r_showtris.bValue || (vpPrimitiveType == VIDEO_PRIMITIVE_TRIANGLE_FAN_LINE))
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		break;
+#if 0
 	default:
 		// If it's not valid then throw us an error.
 		Sys_Error("Unknown object primitive type! (%i)\n", vpPrimitiveType);
+#endif
 	}
+}
+
+/*	Draw a video object.
+*/
+void Video_DrawObjectX(VideoObjectX_t *voObject, Material_t *mMaterial, unsigned int uiSkin)
+{
 }
 
 /*	Draw 3D object.
 	TODO: Add support for VBOs ?
 */
 void Video_DrawObject(
-	VideoObject_t *voObject, VideoPrimitive_t vpPrimitiveType, unsigned int	uiVerts,
+	VideoObjectVertex_t *voObject, VideoPrimitive_t vpPrimitiveType, unsigned int	uiVerts,
 	Material_t *mMaterial, int iSkin)
 {
-	unsigned int	i, j;
-	GLenum			gPrimitive = 0;
+	unsigned int i, j;
 
-	if (!voObject)
-	{
-		Sys_Error("Invalid video object!\n");
+	if (uiVerts <= 0)
 		return;
-	}
-	else if (!uiVerts)
-	{
-		Sys_Error("Invalid number of vertices for video object! (%i)\n", uiVerts);
-		return;
-	}
 
 	if (bVideoDebug)
 	{
@@ -1066,17 +1065,17 @@ void Video_DrawObject(
 			if (Video.bColourOverride)
 				Math_Vector4Copy(mvVideoGlobalColour, vVideoColourArray[i]);
 			else
-				Math_Vector4Copy(voObject[i].vColour, vVideoColourArray[i]);
+				Math_Vector4Copy(voObject[i].mvColour, vVideoColourArray[i]);
 
 			// Copy over coords for each active TMU.
 			for (j = 0; j < VIDEO_MAX_UNITS; j++)
 				if (Video.bUnitState[j])
-					Math_Vector2Copy(voObject[i].vTextureCoord[j], vVideoTextureArray[j][i]);
+					Math_Vector2Copy(voObject[i].mvST[j], vVideoTextureArray[j][i]);
 		}
 		else
 			Math_Vector4Set(1.0f, vVideoColourArray[i]);
 
-		Math_VectorCopy(voObject[i].vVertex, vVideoVertexArray[i]);
+		Math_VectorCopy(voObject[i].mvPosition, vVideoVertexArray[i]);
 	}
 
 	glEnableClientState(GL_VERTEX_ARRAY);
@@ -1317,30 +1316,6 @@ void Video_ShaderLoad(const char *ccPath,VideoShaderType_t vstType)
 //    glShaderSource()
 #endif
 }
-
-/*
-	Vertex Buffer Objects
-*/
-
-/*	Generates a single OpenGL buffer.
-*/
-unsigned int Video_GenerateBuffer(void)
-{
-	unsigned int uiBuffer;
-
-	glGenBuffers(1, &uiBuffer);
-
-	return uiBuffer;
-}
-
-/*	Deletes a single OpenGL buffer.
-*/
-void Video_DeleteBuffer(unsigned int uiBuffer)
-{
-	glDeleteBuffers(1, &uiBuffer);
-}
-
-/**/
 
 /*	Main rendering loop.
 */

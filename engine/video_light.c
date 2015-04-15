@@ -88,7 +88,7 @@ void Light_Draw(void)
 			int				j,c = 0;
 			float			a,a2,b,rad;
 			vec3_t			v;
-			VideoObject_t	voLight[17];
+			VideoObjectVertex_t	voLight[17];
 
 			Math_VectorSubtract(dlLight->origin,r_origin,v);
 
@@ -111,7 +111,7 @@ void Light_Draw(void)
 			for(i = 0; i < 3; i++)
 				v[i] = dlLight->origin[i]-vpn[i]*rad;
 
-			Math_VectorCopy(v,voLight[0].vVertex);
+			Math_VectorCopy(v,voLight[0].mvPosition);
 
 			for(i = 16; i >= 0; i--,c++)
 			{
@@ -122,11 +122,11 @@ void Light_Draw(void)
 				for(j = 0; j < 3; j++)
 					v[j] = dlLight->origin[j]+vright[j]*cos(a)*rad+vup[j]*sin(a)*rad;
 
-				Math_VectorCopy(v,voLight[c].vVertex);
+				Math_VectorCopy(v,voLight[c].mvPosition);
 				Math_ColorNormalize(dlLight->color,vColour);
-				Math_VectorCopy(vColour,voLight[c].vColour);
+				Math_VectorCopy(vColour,voLight[c].mvColour);
 
-				voLight[c].vColour[3] = 0.5f;
+				voLight[c].mvColour[3] = 0.5f;
 			}
 
 			Video_DrawObject(voLight, VIDEO_PRIMITIVE_TRIANGLE_FAN_LINE, 17, NULL, 0);

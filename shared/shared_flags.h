@@ -22,13 +22,14 @@
 	when a build is released publically.	*/
 #define ENGINE_VERSION_MAJOR	0
 #define ENGINE_VERSION_MINOR	3
-#define ENGINE_VERSION_BUILD	892	// 15/4/2015
+#define ENGINE_VERSION_BUILD	894	// 17/4/2015
 
 #define	PATH_ENGINE		"engine"			// Directory to look in for engine specific modules / assets.
 #define	PATH_LOGS		PATH_ENGINE"/logs"	// Default directory for saving logs.
 #define	PATH_SPRITES	"textures/sprites/"	// Directory that contains sprites, used for particles etc.
 
-typedef unsigned char byte;
+// Still currently used for some older code; switch it all to use uint8_t instead :)
+#define byte uint8_t
 
 // [27/9/2012] TODO: These were and still are temp, remove ~hogsy
 enum

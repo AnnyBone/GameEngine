@@ -7,64 +7,41 @@
 
 #include "video.h"
 
-typedef struct
+VideoObjectX_t *VideoObject_Create(void)
 {
-	MathVector3_t mvPosition;				// Vertex position.
-	MathVector3_t mvNormal;					// Vertex normal.
+	VideoObjectX_t *voNewObject;
 
-	MathVector2_t mvST[VIDEO_MAX_UNITS];	// Vertex texture coord, per unit.
-
-	MathVector4_t mvColour;					// Vertex RGBA.
-} VideoObjectVertex_t;
-
-typedef struct
-{
-	VideoObjectVertex_t *ovVertices;	// Array of vertices for the object.
-
-	int iVertices;						// Number of vertices.
-
-	GLenum ePrimitiveType;
-
-	unsigned int uiVertexBuffer;
-	unsigned int uiColourBuffer;
-	unsigned int uiTextureBuffer;
-} ZVideoObject_t;
-
-ZVideoObject_t *VideoObject_Create(void)
-{
-	ZVideoObject_t *voNewObject;
-
-	voNewObject = (ZVideoObject_t*)malloc(sizeof(ZVideoObject_t));
+	voNewObject = (VideoObjectX_t*)malloc(sizeof(VideoObjectX_t));
 
 	// TODO: Allocate...
 
-	voNewObject->uiVertexBuffer = Video_GenerateBuffer();
-	voNewObject->uiColourBuffer = Video_GenerateBuffer();
-	voNewObject->uiTextureBuffer = Video_GenerateBuffer();
+	voNewObject->uiVertexBuffer = VideoLayer_GenerateBuffer();
+	voNewObject->uiColourBuffer = VideoLayer_GenerateBuffer();
+	voNewObject->uiTextureBuffer = VideoLayer_GenerateBuffer();
 
 	return NULL;
 }
 
-void VideoObject_Delete(ZVideoObject_t *voObject)
+void VideoObject_Delete(VideoObjectX_t *voObject)
 {
-	Video_DeleteBuffer(voObject->uiVertexBuffer);
-	Video_DeleteBuffer(voObject->uiColourBuffer);
-	Video_DeleteBuffer(voObject->uiTextureBuffer);
+	VideoLayer_DeleteBuffer(voObject->uiVertexBuffer);
+	VideoLayer_DeleteBuffer(voObject->uiColourBuffer);
+	VideoLayer_DeleteBuffer(voObject->uiTextureBuffer);
 }
 
 /*
 	Traditional style interface
 */
 
-void VideoObject_Begin(ZVideoObject_t *voObject,VideoPrimitive_t vpPrimitive)
+void VideoObject_Begin(VideoObjectX_t *voObject, VideoPrimitive_t vpPrimitive)
 {
 }
 
-void VideoObject_End(ZVideoObject_t *voObject)
+void VideoObject_End(VideoObjectX_t *voObject)
 {
 }
 
-void VideoObject_Vertex(ZVideoObject_t *voObject, float x, float y, float z)
+void VideoObject_Vertex(VideoObjectX_t *voObject, float x, float y, float z)
 {
 	voObject->iVertices++;
 
@@ -75,19 +52,19 @@ void VideoObject_Vertex(ZVideoObject_t *voObject, float x, float y, float z)
 	voObject->ovVertices[voObject->iVertices].mvPosition[2] = z;
 }
 
-void VideoObject_VertexVector(ZVideoObject_t *oObject, MathVector3_t mvVertex)
+void VideoObject_VertexVector(VideoObjectX_t *oObject, MathVector3_t mvVertex)
 {
 	VideoObject_Vertex(oObject, mvVertex[0], mvVertex[1], mvVertex[2]);
 }
 
-void VideoObject_Normal(ZVideoObject_t *voObject, float x, float y, float z)
+void VideoObject_Normal(VideoObjectX_t *voObject, float x, float y, float z)
 {
 	voObject->ovVertices[voObject->iVertices].mvNormal[0] = x;
 	voObject->ovVertices[voObject->iVertices].mvNormal[1] = y;
 	voObject->ovVertices[voObject->iVertices].mvNormal[2] = z;
 }
 
-void VideoObject_Colour(ZVideoObject_t *voObject, float r, float g, float b, float a)
+void VideoObject_Colour(VideoObjectX_t *voObject, float r, float g, float b, float a)
 {
 	voObject->ovVertices[voObject->iVertices].mvColour[0] = r;
 	voObject->ovVertices[voObject->iVertices].mvColour[1] = g;
@@ -95,7 +72,7 @@ void VideoObject_Colour(ZVideoObject_t *voObject, float r, float g, float b, flo
 	voObject->ovVertices[voObject->iVertices].mvColour[3] = a;
 }
 
-void VideoObject_ColourVector(ZVideoObject_t *voObject, MathVector4_t mvColour)
+void VideoObject_ColourVector(VideoObjectX_t *voObject, MathVector4_t mvColour)
 {
 	VideoObject_Colour(voObject, mvColour[0], mvColour[1], mvColour[2], mvColour[3]);
 }
@@ -104,7 +81,7 @@ void VideoObject_ColourVector(ZVideoObject_t *voObject, MathVector4_t mvColour)
 	Clipping
 */
 
-void VideoObject_Clip(ZVideoObject_t *voObject, MathVector4_t mvClipDimensions)
+void VideoObject_Clip(VideoObjectX_t *voObject, MathVector4_t mvClipDimensions)
 {
 }
 
@@ -112,7 +89,7 @@ void VideoObject_Clip(ZVideoObject_t *voObject, MathVector4_t mvClipDimensions)
 	Rendering
 */
 
-void VideoObject_Draw(ZVideoObject_t *voObject)
+void VideoObject_Draw(VideoObjectX_t *voObject)
 {
 	int i;
 
@@ -134,7 +111,7 @@ void VideoObject_Draw(ZVideoObject_t *voObject)
 			glTexCoordPointer(2, GL_FLOAT, 0, 0);
 		}
 
-	Video_DrawArrays(VIDEO_PRIMITIVE_TRIANGLE_FAN, voObject->iVertices);
+	Video_DrawArrays(voObject->vpPrimitiveType, voObject->iVertices);
 
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_COLOR_ARRAY);

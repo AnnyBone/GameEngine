@@ -250,6 +250,9 @@
     <ClCompile Include="ZirconVideoObject.c">
       <Filter>Client\Video\Experimental</Filter>
     </ClCompile>
+    <ClCompile Include="ZirconVideoLayer.c">
+      <Filter>Client\Video\Experimental</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\shared\shared_client.h">

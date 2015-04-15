@@ -232,7 +232,7 @@ void Alias_DrawFrame(MD2_t *mModel,entity_t *eEntity,lerpdata_t lLerpData)
 #if 0	// Broken
 	int	i, j, k, iVert;
 	float fAlpha;
-	VideoObject_t *voModel;
+	VideoObjectVertex_t *voModel;
 	MD2TriangleVertex_t	*mtvVertices, *mtvLerpVerts;
 	MD2Triangle_t *mtTriangles;
 	MD2Frame_t *mfFirst, *mfSecond;
@@ -255,7 +255,7 @@ void Alias_DrawFrame(MD2_t *mModel,entity_t *eEntity,lerpdata_t lLerpData)
 	mtvVertices		= &mfFirst->verts[0];
 	mtvLerpVerts	= &mfSecond->verts[0];
 
-	voModel = (VideoObject_t*)Hunk_TempAlloc(mModel->num_glcmds*sizeof(VideoObject_t));
+	voModel = (VideoObjectVertex_t*)Hunk_TempAlloc(mModel->num_glcmds*sizeof(VideoObjectVertex_t));
 
 	mtTriangles	= (MD2Triangle_t*)((uint8_t*)mModel+mModel->ofs_tris);
 	for(iVert = 0,i = 0; i < mModel->numtris; i++,mtTriangles++)
@@ -276,14 +276,15 @@ void Alias_DrawFrame(MD2_t *mModel,entity_t *eEntity,lerpdata_t lLerpData)
 			iVert++;
         }
 
-	Video_DrawObject(voModel, VIDEO_PRIMITIVE_TRIANGLES, mModel->num_glcmds, Material_Get(eEntity->model->mAssignedMaterials->iIdentification), eEntity->skinnum);
+	Video_DrawObject(voModel, VIDEO_PRIMITIVE_TRIANGLES, iVert, Material_Get(eEntity->model->mAssignedMaterials->iIdentification), eEntity->skinnum);
 #else
 	float ilerp;
+	unsigned int uiVerts = 0;
 	int	*order, count;
 	MD2TriangleVertex_t	*verts1, *verts2;
 	MD2Frame_t *frame1, *frame2;
-	Material_t *mMat;
-	VideoObject_t *voModel;
+	Material_t *mMat = NULL; // This is dirty, but it stops the material system from applying materials for shadows.
+	VideoObjectVertex_t *voModel;
 
 	ilerp = 1.0f - lLerpData.blend;
 
@@ -299,61 +300,54 @@ void Alias_DrawFrame(MD2_t *mModel,entity_t *eEntity,lerpdata_t lLerpData)
 
 	order = (int*)((uint8_t*)mModel + mModel->ofs_glcmds);
 
-	voModel = (VideoObject_t*)Hunk_TempAlloc(mModel->num_glcmds*sizeof(VideoObject_t));
+	voModel = (VideoObjectVertex_t*)Hunk_TempAlloc(mModel->num_glcmds*sizeof(VideoObjectVertex_t));
 
 	if (bShading)
 		// If we're lit etc, then apply our material.
 		mMat = eEntity->model->mAssignedMaterials;
-	else
-		// This is dirty, but it stops the material system from applying materials for shadows.
-		mMat = NULL;
 
+	for (;;)
 	{
-		unsigned int uiVerts = 0;
+		count = *order++;
+		if (!count)
+			break;		// done
 
-		for (;;)
+		uiVerts = 0;
+
+		do
 		{
-			count = *order++;
-			if (!count)
-				break;		// done
-
-			uiVerts = 0;
-
-			do
+			Video_ObjectTexture(&voModel[uiVerts], VIDEO_TEXTURE_DIFFUSE, ((float*)order)[0], ((float*)order)[1]);
+			Video_ObjectVertex(&voModel[uiVerts],
+				(verts1[order[2]].v[0] * frame1->scale[0] + frame1->translate[0])*ilerp +
+				(verts2[order[2]].v[0] * frame2->scale[0] + frame2->translate[0])*lLerpData.blend,
+				(verts1[order[2]].v[1] * frame1->scale[1] + frame1->translate[1])*ilerp +
+				(verts2[order[2]].v[1] * frame2->scale[1] + frame2->translate[1])*lLerpData.blend,
+				(verts1[order[2]].v[2] * frame1->scale[2] + frame1->translate[2])*ilerp +
+				(verts2[order[2]].v[2] * frame2->scale[2] + frame2->translate[2])*lLerpData.blend);
+			if (bShading)
 			{
-				Video_ObjectTexture(&voModel[uiVerts], VIDEO_TEXTURE_DIFFUSE, ((float*)order)[0], ((float*)order)[1]);
-				Video_ObjectVertex(&voModel[uiVerts],
-					(verts1[order[2]].v[0] * frame1->scale[0] + frame1->translate[0])*ilerp +
-					(verts2[order[2]].v[0] * frame2->scale[0] + frame2->translate[0])*lLerpData.blend,
-					(verts1[order[2]].v[1] * frame1->scale[1] + frame1->translate[1])*ilerp +
-					(verts2[order[2]].v[1] * frame2->scale[1] + frame2->translate[1])*lLerpData.blend,
-					(verts1[order[2]].v[2] * frame1->scale[2] + frame1->translate[2])*ilerp +
-					(verts2[order[2]].v[2] * frame2->scale[2] + frame2->translate[2])*lLerpData.blend);
-				if (bShading)
-				{
 #if 0
-					Video_ObjectColour(&voModel[uiVerts],
-						(shadedots[verts1->lightnormalindex] * ilerp + shadedots[verts2->lightnormalindex] * lLerpData.blend),
-						(shadedots[verts1->lightnormalindex] * ilerp + shadedots[verts2->lightnormalindex] * lLerpData.blend),
-						(shadedots[verts1->lightnormalindex] * ilerp + shadedots[verts2->lightnormalindex] * lLerpData.blend),
-						entalpha);
+				Video_ObjectColour(&voModel[uiVerts],
+					(shadedots[verts1->lightnormalindex] * ilerp + shadedots[verts2->lightnormalindex] * lLerpData.blend),
+					(shadedots[verts1->lightnormalindex] * ilerp + shadedots[verts2->lightnormalindex] * lLerpData.blend),
+					(shadedots[verts1->lightnormalindex] * ilerp + shadedots[verts2->lightnormalindex] * lLerpData.blend),
+					entalpha);
 #endif
-					Video_ObjectColour(&voModel[uiVerts],
-						1.0f,
-						1.0f,
-						1.0f,
-						entalpha);
-				}
-				else
-					Video_ObjectColour(&voModel[uiVerts], 1.0f, 1.0f, 1.0f, 1.0f);
+				Video_ObjectColour(&voModel[uiVerts],
+					1.0f,
+					1.0f,
+					1.0f,
+					entalpha);
+			}
+			else
+				Video_ObjectColour(&voModel[uiVerts], 1.0f, 1.0f, 1.0f, 1.0f);
 
-				uiVerts++;
+			uiVerts++;
 
-				order += 3;
-			} while (--count);
+			order += 3;
+		} while (--count);
 
-			Video_DrawObject(voModel, VIDEO_PRIMITIVE_TRIANGLE_FAN, uiVerts, mMat, eEntity->skinnum);
-		}
+		Video_DrawObject(voModel, VIDEO_PRIMITIVE_TRIANGLE_FAN, uiVerts, mMat, eEntity->skinnum);
 	}
 #endif
 }

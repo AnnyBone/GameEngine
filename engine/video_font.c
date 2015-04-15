@@ -72,7 +72,7 @@ void Font_Load(const char *ccName,int iSize)
 */
 void Font_Draw(Font_t *fFont,const char *ccMessage,vec3_t vPos,vec3_t vColour)
 {
-	VideoObject_t voFont[4] = { 0 };
+	VideoObjectVertex_t voFont[4] = { 0 };
 
 	/*	todo:
 			need to reserve bind slot.
@@ -84,10 +84,10 @@ void Font_Draw(Font_t *fFont,const char *ccMessage,vec3_t vPos,vec3_t vColour)
 	Video_ObjectTexture(&voFont[2], VIDEO_TEXTURE_DIFFUSE, 1.0f, 1.0f);
 	Video_ObjectTexture(&voFont[3], VIDEO_TEXTURE_DIFFUSE, 0, 1.0f);
 
-	Math_VectorCopy(vPos,voFont[0].vVertex);
-	Math_VectorCopy(vPos,voFont[1].vVertex);
-	Math_VectorCopy(vPos,voFont[2].vVertex);
-	Math_VectorCopy(vPos,voFont[3].vVertex);
+	Math_VectorCopy(vPos,voFont[0].mvPosition);
+	Math_VectorCopy(vPos,voFont[1].mvPosition);
+	Math_VectorCopy(vPos,voFont[2].mvPosition);
+	Math_VectorCopy(vPos,voFont[3].mvPosition);
 
 #if 0
 	voFont[1].vVertex[0] += sFontSurface->w;

@@ -79,7 +79,7 @@ void Draw_Shadow(entity_t *ent)
 			Trace down to get plane and set angles to that
 			clip based on surface extents?
 		*/
-		VideoObject_t	voShadow[4] = { 0 };
+		VideoObjectVertex_t	voShadow[4] = { 0 };
 
 		Video_ResetCapabilities(false);
 

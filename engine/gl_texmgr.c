@@ -499,8 +499,8 @@ unsigned int TexMgr_Pad (unsigned int s)
 unsigned int TexMgr_SafeTextureSize (int s)
 {
 	s = TexMgr_Pad(s);
-	if ((int)gl_max_size.value > 0)
-		s = Math_Min(TexMgr_Pad((int)gl_max_size.value), s);
+	if (gl_max_size.iValue > 0)
+		s = Math_Min(TexMgr_Pad(gl_max_size.iValue), s);
 	s = Math_Min(gl_hardware_maxsize, s);
 	return s;
 }
