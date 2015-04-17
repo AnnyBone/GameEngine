@@ -10,31 +10,38 @@ extern "C" {
 
 #include "platform.h"
 
-#ifndef PLATFORM_MATH_DOUBLE
-typedef	float	vec_t;
-
-#define pMath_PI			3.14159265358979323846f
-#define	pMath_PI_DIV180		(pMath_PI/180.0f)
-#define	pMath_EPSILON_ON	0.1f					// Point on plane side epsilon.
-#define	pMath_EPSILON_EQUAL	0.001f
-#else
-typedef	double	vec_t;
-
 #define pMath_PI			3.14159265358979323846
 #define	pMath_PI_DIV180		(pMath_PI/180.0)
 #define	pMath_EPSILON_ON	0.1						// Point on plane side epsilon.
 #define	pMath_EPSILON_EQUAL	0.001
+
+typedef double MathVectord_t;	// Double precision
+typedef float MathVectorf_t;	// Floating-point precision
+
+// For compatability...
+#ifdef PLATFORM_MATH_DOUBLE
+#define vec_t MathVectord_t
+#else
+#define vec_t MathVectorf_t
 #endif
 
 #define	pMath_RINT(a)		((a)>0?(int)((a)+0.5):(int)((a)-0.5))
 #define	pMath_DEG2RAD(a)	((a)*pMath_PI_DIV180)
 #define	pMath_ISNAN(a)		(((*(int*)&a)&255<<23)==255<<23)
 
-typedef vec_t	MathVector2_t[2],MathVector3_t[3],MathVector4_t[4];
+typedef MathVectorf_t MathVector2f_t[2], MathVector3f_t[3], MathVector4f_t[4];
+// For compatability...
+#define MathVector2_t MathVector2f_t
+#define MathVector3_t MathVector3f_t
+#define MathVector4_t MathVector4f_t
+typedef MathVector4f_t MathMatrix4x4f_t[4];
 // For compatability...
 #define	vec2_t	MathVector2_t
 #define	vec3_t	MathVector3_t
 #define	vec4_t	MathVector4_t
+
+typedef MathVectord_t MathVector2d_t[2], MathVector3d_t[3], MathVector4d_t[4];
+typedef MathVector4d_t MathMatrix4x4d_t[4];
 
 typedef struct
 {
@@ -82,7 +89,7 @@ enum MathRGB_t
 
 /*
 	Utility Defines
-*/
+	*/
 
 #define Math_Min(a,b)					(	((a)<(b))?(a):(b)	                    )
 #define Math_Max(a,b)                   (	((a)>(b))?(a):(b)	                    )
@@ -91,17 +98,10 @@ enum MathRGB_t
 #define	Math_MVSet(a,b)					(	b.vX=a,b.vY=a,b.vZ=a			)
 #define	Math_MVToVector(a,b)			(	b[0]=a.vX,b[1]=a.vY,b[2]=a.vZ	)
 
-#if 0
-#define	Math_VectorSubtract(a,b,c)	_Math_VectorSubtract(a,b,c)
-#define Math_VectorAdd(a,b,c)		_Math_VectorAdd(a,b,c)
-#define Math_VectorCopy(a,b)		_Math_VectorCopy(a,b)
-#define Math_VectorScale(a,b,c)		_Math_VectorScale(a,b,c)
-#else
-#define Math_VectorSubtract(a,b,c)	{	c[0]=a[0]-b[0];c[1]=a[1]-b[1];c[2]=a[2]-b[2];								}
-#define Math_VectorAdd(a,b,c)		{	c[0]=a[0]+b[0];c[1]=a[1]+b[1];c[2]=a[2]+b[2];								}
-#define Math_VectorCopy(a,b)		(	b[0]=a[0],b[1]=a[1],b[2]=a[2]												)
-#define Math_VectorScale(a,b,c)		{	c[0]=a[0]*b;c[1]=a[1]*b;c[2]=a[2]*b;										}
-#endif
+#define Math_VectorSubtract(a,b,c)		{	c[0]=a[0]-b[0];c[1]=a[1]-b[1];c[2]=a[2]-b[2];								}
+#define Math_VectorAdd(a,b,c)			{	c[0]=a[0]+b[0];c[1]=a[1]+b[1];c[2]=a[2]+b[2];								}
+#define Math_VectorCopy(a,b)			(	b[0]=a[0],b[1]=a[1],b[2]=a[2]												)
+#define Math_VectorScale(a,b,c)			{	c[0]=a[0]*b;c[1]=a[1]*b;c[2]=a[2]*b;										}
 #define	Math_VectorAddValue(a,b,c)		{	c[0]=a[0]+b;c[1]=a[1]+b;c[2]=a[2]+b;										}
 #define	Math_VectorSubtractValue(a,b,c)	{	c[0]=a[0]-b;c[1]=a[1]-b;c[2]=a[2]-b;										}
 #define Math_CrossProduct(a,b,c)		{	c[0]=a[1]*b[2]-a[2]*b[1];c[1]=a[2]*b[0]-a[0]*b[2];c[2]=a[0]*b[1]-a[1]*b[0];	}
@@ -118,6 +118,42 @@ enum MathRGB_t
 
 #define	Math_Vector4Copy(a,b)			(	b[0]=a[0],b[1]=a[1],b[2]=a[2],b[3]=a[3]	)
 #define	Math_Vector4Set(a,b)			(	b[0]=b[1]=b[2]=b[3]=a					)
+
+#define Math_Matrix4x4Row(a,b,c) { int k; for(k = 0; k < 4; ++k) a[k] = b[c][k]; }
+#define Math_Matrix4x4Negate(a,b) \
+{ \
+	float s[6]; \
+	float c[6]; \
+	s[0] = a[0][0] * a[1][1] - a[1][0] * a[0][1]; \
+	s[1] = a[0][0] * a[1][2] - a[1][0] * a[0][2]; \
+	s[2] = a[0][0] * a[1][3] - a[1][0] * a[0][3]; \
+	s[3] = a[0][1] * a[1][2] - a[1][1] * a[0][2]; \
+	s[4] = a[0][1] * a[1][3] - a[1][1] * a[0][3]; \
+	s[5] = a[0][2] * a[1][3] - a[1][2] * a[0][3]; \
+	c[0] = a[2][0] * a[3][1] - a[3][0] * a[2][1]; \
+	c[1] = a[2][0] * a[3][2] - a[3][0] * a[2][2]; \
+	c[2] = a[2][0] * a[3][3] - a[3][0] * a[2][3]; \
+	c[3] = a[2][1] * a[3][2] - a[3][1] * a[2][2]; \
+	c[4] = a[2][1] * a[3][3] - a[3][1] * a[2][3]; \
+	c[5] = a[2][2] * a[3][3] - a[3][2] * a[2][3]; \
+	float idet = 1.0f / (s[0] * c[5] - s[1] * c[4] + s[2] * c[3] + s[3] * c[2] - s[4] * c[1] + s[5] * c[0]); \
+	b[0][0] = (a[1][1] * c[5] - a[1][2] * c[4] + a[1][3] * c[3]) * idet; \
+	b[0][1] = (-a[0][1] * c[5] + a[0][2] * c[4] - a[0][3] * c[3]) * idet; \
+	b[0][2] = (a[3][1] * s[5] - a[3][2] * s[4] + a[3][3] * s[3]) * idet; \
+	b[0][3] = (-a[2][1] * s[5] + a[2][2] * s[4] - a[2][3] * s[3]) * idet; \
+	b[1][0] = (-a[1][0] * c[5] + a[1][2] * c[2] - a[1][3] * c[1]) * idet; \
+	b[1][1] = (a[0][0] * c[5] - a[0][2] * c[2] + a[0][3] * c[1]) * idet; \
+	b[1][2] = (-a[3][0] * s[5] + a[3][2] * s[2] - a[3][3] * s[1]) * idet; \
+	b[1][3] = (a[2][0] * s[5] - a[2][2] * s[2] + a[2][3] * s[1]) * idet; \
+	b[2][0] = (a[1][0] * c[4] - a[1][1] * c[2] + a[1][3] * c[0]) * idet; \
+	b[2][1] = (-a[0][0] * c[4] + a[0][1] * c[2] - a[0][3] * c[0]) * idet; \
+	b[2][2] = (a[3][0] * s[4] - a[3][1] * s[2] + a[3][3] * s[0]) * idet; \
+	b[2][3] = (-a[2][0] * s[4] + a[2][1] * s[2] - a[2][3] * s[0]) * idet; \
+	b[3][0] = (-a[1][0] * c[3] + a[1][1] * c[1] - a[1][2] * c[0]) * idet; \
+	b[3][1] = (a[0][0] * c[3] - a[0][1] * c[1] + a[0][2] * c[0]) * idet; \
+	b[3][2] = (-a[3][0] * s[3] + a[3][1] * s[1] - a[3][2] * s[0]) * idet; \
+	b[3][3] = (a[2][0] * s[3] - a[2][1] * s[1] + a[2][2] * s[0]) * idet; \
+}
 
 #define Math_Random()	((rand() & 0x7fff)/((float)0x7fff))
 #define Math_CRandom()	(2.0f*((float)Math_Random()-0.5f))

@@ -3,6 +3,14 @@
 #ifndef __GAMERESOURCES__
 #define	__GAMERESOURCES__
 
+#define SOUND_EXPLODE_UNDERWATER0 "effects/explode_underwater0.wav"
+#define SOUND_EXPLODE va("effects/explode%i.wav",rand()%3)
+#define	SOUND_EXPLODE0 "effects/explode0.wav"
+#define	SOUND_EXPLODE1 "effects/explode1.wav"
+#define SOUND_EXPLODE2 "effects/explode2.wav"
+
+#define	MODEL_BARREL "models/placeholders/cube.md2"
+
 /*	MODEL:	models/player/
 	SOUND:	player/
 */

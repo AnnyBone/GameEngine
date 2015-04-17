@@ -41,12 +41,12 @@ bool Physics_CheckWater(edict_t *eEntity)
 
 		if (Engine.Server_PointContents(point) <= BSP_CONTENTS_WATER)
 		{
-			eEntity->v.waterlevel = 2;
+			eEntity->v.waterlevel = 2.0f;
 
 			point[2] = eEntity->v.origin[2] + eEntity->v.view_ofs[2];
 
 			if (Engine.Server_PointContents(point) <= BSP_CONTENTS_WATER)
-				eEntity->v.waterlevel = 3;
+				eEntity->v.waterlevel = 3.0f;
 		}
 	}
 

@@ -481,9 +481,25 @@ void Video_UpdateWindow(void)
 
 void Video_GenerateSphereCoordinates(void)
 {
-	// OpenGL makes this pretty easy for us (though this should probably be more abstract)...
+	MathMatrix4x4f_t mmMatrix, mmInversed;
+
+	glPushMatrix();
+	glMatrixMode(GL_TEXTURE);
+	glGetFloatv(GL_PROJECTION_MATRIX, mmMatrix);
+
+	// Inverse the matrix.
+	Math_Matrix4x4Negate(mmMatrix, mmInversed);
+
+	// Apply it.
+	glLoadMatrixf(mmInversed);
+
+	// Generate the sphere map coords.
 	glTexGeni(GL_S,GL_TEXTURE_GEN_MODE,GL_SPHERE_MAP);
 	glTexGeni(GL_T,GL_TEXTURE_GEN_MODE,GL_SPHERE_MAP);
+
+	// Reset the matrix.
+	glMatrixMode(GL_MODELVIEW);
+	glPopMatrix();
 }
 
 /**/
@@ -1084,25 +1100,25 @@ void Video_DrawObject(
 	glEnableClientState(GL_COLOR_ARRAY);
 	glColorPointer(4, GL_FLOAT, 0, vVideoColourArray);
 
-	if (!r_showtris.bValue)
-	{
-		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-
-		for (i = 0; i < VIDEO_MAX_UNITS; i++)
-			if (Video.bUnitState[i])
-			{
-				glClientActiveTexture(Video_GetTextureUnit(i));
-				glTexCoordPointer(2, GL_FLOAT, 0, vVideoTextureArray[i]);
-			}
-	}
+	for (i = 0; i < VIDEO_MAX_UNITS; i++)
+		if (Video.bUnitState[i])
+		{
+			glClientActiveTexture(Video_GetTextureUnit(i));
+			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+			glTexCoordPointer(2, GL_FLOAT, 0, vVideoTextureArray[i]);
+		}
 
 	Video_DrawArrays(vpPrimitiveType, uiVerts);
 
 	glDisableClientState(GL_COLOR_ARRAY);
 	glDisableClientState(GL_VERTEX_ARRAY);
 
-	if (!r_showtris.bValue)
-		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	for (i = 0; i < VIDEO_MAX_UNITS; i++)
+		if (Video.bUnitState[i])
+		{
+			glClientActiveTexture(Video_GetTextureUnit(i));
+			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+		}
 
 	if (mMaterial)
 		Video_DrawMaterial(mMaterial, iSkin, voObject, vpPrimitiveType, uiVerts, true);

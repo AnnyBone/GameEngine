@@ -172,8 +172,8 @@ void Math_VectorAngles(const vec3_t forward, vec3_t angles)
 	temp[1] = forward[1];
 	temp[2] = 0;
 
-	angles[PITCH] = (float)-atan2(forward[2], Math_Length(temp)) / pMath_PI_DIV180;
-	angles[YAW] = (float)atan2(forward[1], forward[0]) / pMath_PI_DIV180;
+	angles[PITCH] = -atan2f(forward[2], Math_Length(temp)) / (float)pMath_PI_DIV180;
+	angles[YAW] = atan2f(forward[1], forward[0]) / (float)pMath_PI_DIV180;
 	angles[ROLL] = 0;
 }
 
@@ -297,7 +297,7 @@ float Math_InSin(float x)
 	if (x > 1.0f)
 		return 1.0f;
 
-	return -cosf(x * (pMath_PI / 2.0f)) + 1.0f;
+	return -cosf(x * ((float)pMath_PI / 2.0f)) + 1.0f;
 }
 
 float Math_OutSin(float x)
@@ -307,7 +307,7 @@ float Math_OutSin(float x)
 	if (x > 1.0f)
 		return 1.0f;
 
-	return sinf(x * (pMath_PI / 2.0f));
+	return sinf(x * ((float)pMath_PI / 2.0f));
 }
 
 float Math_InOutSin(float x)
@@ -317,7 +317,7 @@ float Math_InOutSin(float x)
 	if (x > 1.0f)
 		return 1.0f;
 
-	return -0.5f * (cosf(pMath_PI * x) - 1.0f);
+	return -0.5f * (cosf((float)pMath_PI * x) - 1.0f);
 }
 
 float Math_InExp(float x)
@@ -443,6 +443,10 @@ float Math_ExpPulse(float x, float k, float n)
 {
 	return expf(-k*powf(x, n));
 }
+
+/*
+	Utility
+*/
 
 /*	Check to see if an area is intersecting another area.
 */

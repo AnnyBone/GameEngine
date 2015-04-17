@@ -113,44 +113,42 @@ void Area_BreakableBounce(edict_t *eGib,edict_t *eOther)
 	Sound(eGib,CHAN_AUTO,cSound,30,ATTN_NORM);
 }
 
-/**/
-
-void Area_CreateGib(edict_t *eArea,const char *cModel)
+void Area_CreateGib(edict_t *eArea, const char *cModel)
 {
 	int		j;
-	edict_t	*eGib; 
-	
+	edict_t	*eGib;
+
 	eGib = Entity_Spawn();
-	if(eGib)
+	if (eGib)
 	{
-		eGib->v.cClassname		= "area_gib";
-		eGib->v.movetype		= MOVETYPE_BOUNCE;
-		eGib->v.TouchFunction	= Area_BreakableBounce;
-		eGib->v.think			= Entity_Remove;
-		eGib->v.dNextThink		= Server.dTime+20.0f;
+		eGib->v.cClassname = "area_gib";
+		eGib->v.movetype = MOVETYPE_BOUNCE;
+		eGib->v.TouchFunction = Area_BreakableBounce;
+		eGib->v.think = Entity_Remove;
+		eGib->v.dNextThink = Server.dTime + 20.0f;
 
 		eGib->Physics.iSolid = SOLID_TRIGGER;
 
 		eGib->local.style = eArea->local.style;
 
-		for(j = 0; j < 3; j++)
+		for (j = 0; j < 3; j++)
 		{
-			eGib->v.velocity[j]		=
-			eGib->v.avelocity[j]	= (float)(rand()%5*eArea->v.iHealth*5);
+			eGib->v.velocity[j] =
+				eGib->v.avelocity[j] = (float)(rand() % 5 * eArea->v.iHealth * 5);
 		}
 
-		Entity_SetModel(eGib,(char*)cModel);
-		Entity_SetOrigin(eGib,eArea->v.oldorigin);
-		Entity_SetSizeVector(eGib,mv3Origin,mv3Origin);
+		Entity_SetModel(eGib, (char*)cModel);
+		Entity_SetOrigin(eGib, eArea->v.oldorigin);
+		Entity_SetSizeVector(eGib, mv3Origin, mv3Origin);
 	}
 }
 
-void Area_BreakableDie(edict_t *eArea,edict_t *eOther)
+void Area_BreakableDie(edict_t *eArea, edict_t *eOther)
 {
 	int		i;
-	char	cSound[24],cModel[PLATFORM_MAX_PATH];
+	char	cSound[24], cModel[PLATFORM_MAX_PATH];
 
-	switch(eArea->local.style)
+	switch (eArea->local.style)
 	{
 	case BREAKABLE_GLASS:
 		PHYSICS_SOUND_GLASS(cSound);
@@ -170,87 +168,89 @@ void Area_BreakableDie(edict_t *eArea,edict_t *eOther)
 		break;
 	}
 
-	Sound(eArea,CHAN_AUTO,cSound,255,ATTN_STATIC);
+	Sound(eArea, CHAN_AUTO, cSound, 255, ATTN_STATIC);
 
-	for(i = 0; i < eArea->local.count; i++)
-		Area_CreateGib(eArea,cModel);
+	for (i = 0; i < eArea->local.count; i++)
+		Area_CreateGib(eArea, cModel);
 
-	if(eArea->v.targetname) // Trigger doors, etc. ~eukos
-		UseTargets(eArea,eOther);
+	if (eArea->v.targetname) // Trigger doors, etc. ~eukos
+		UseTargets(eArea, eOther);
 
 	Entity_Remove(eArea);
 }
 
 void Area_BreakableUse(edict_t *eArea)
 {
-	Area_BreakableDie(eArea,eArea->local.activator);
+	Area_BreakableDie(eArea, eArea->local.activator);
 }
 
 void Area_BreakableSpawn(edict_t *eArea)
 {
-	if(eArea->v.iHealth <= 0)
+	if (eArea->v.iHealth <= 0)
 		eArea->v.iHealth = 1;
 
-	switch(eArea->local.style)
+	switch (eArea->local.style)
 	{
-		case BREAKABLE_GLASS:
-			Engine.Server_PrecacheResource(RESOURCE_SOUND,PHYSICS_SOUND_GLASS0);
-			Engine.Server_PrecacheResource(RESOURCE_SOUND,PHYSICS_SOUND_GLASS1);
-			Engine.Server_PrecacheResource(RESOURCE_SOUND,PHYSICS_SOUND_GLASS2);
-			Engine.Server_PrecacheResource(RESOURCE_MODEL,PHYSICS_MODEL_GLASS0);
-			Engine.Server_PrecacheResource(RESOURCE_MODEL,PHYSICS_MODEL_GLASS1);
-			Engine.Server_PrecacheResource(RESOURCE_MODEL,PHYSICS_MODEL_GLASS2);
-			break;
-		case BREAKABLE_WOOD:
-			Engine.Server_PrecacheResource(RESOURCE_SOUND,PHYSICS_SOUND_WOOD0);
-			Engine.Server_PrecacheResource(RESOURCE_SOUND,PHYSICS_SOUND_WOOD1);
-			Engine.Server_PrecacheResource(RESOURCE_SOUND,PHYSICS_SOUND_WOOD2);
-			Engine.Server_PrecacheResource(RESOURCE_MODEL,PHYSICS_MODEL_WOOD0);
-			Engine.Server_PrecacheResource(RESOURCE_MODEL,PHYSICS_MODEL_WOOD1);
-			Engine.Server_PrecacheResource(RESOURCE_MODEL,PHYSICS_MODEL_WOOD2);
-			break;
-		case BREAKABLE_ROCK:
-			Engine.Server_PrecacheResource(RESOURCE_SOUND,PHYSICS_SOUND_ROCK0);
-			Engine.Server_PrecacheResource(RESOURCE_SOUND,PHYSICS_SOUND_ROCK1);
-			Engine.Server_PrecacheResource(RESOURCE_SOUND,PHYSICS_SOUND_ROCK2);
-			Engine.Server_PrecacheResource(RESOURCE_MODEL,PHYSICS_MODEL_ROCK0);
-			Engine.Server_PrecacheResource(RESOURCE_MODEL,PHYSICS_MODEL_ROCK1);
-			Engine.Server_PrecacheResource(RESOURCE_MODEL,PHYSICS_MODEL_ROCK2);
-			break;
-		case BREAKABLE_METAL:
-			Engine.Server_PrecacheResource(RESOURCE_SOUND,PHYSICS_SOUND_METAL0);
-			Engine.Server_PrecacheResource(RESOURCE_SOUND,PHYSICS_SOUND_METAL1);
-			Engine.Server_PrecacheResource(RESOURCE_SOUND,PHYSICS_SOUND_METAL2);
-			Engine.Server_PrecacheResource(RESOURCE_MODEL,PHYSICS_MODEL_METAL0);
-			Engine.Server_PrecacheResource(RESOURCE_MODEL,PHYSICS_MODEL_METAL1);
-			Engine.Server_PrecacheResource(RESOURCE_MODEL,PHYSICS_MODEL_METAL2);
-			break;
-		default:
-			Engine.Con_Warning("area_breakable: Unknown style\n");
+	case BREAKABLE_GLASS:
+		Engine.Server_PrecacheResource(RESOURCE_SOUND, PHYSICS_SOUND_GLASS0);
+		Engine.Server_PrecacheResource(RESOURCE_SOUND, PHYSICS_SOUND_GLASS1);
+		Engine.Server_PrecacheResource(RESOURCE_SOUND, PHYSICS_SOUND_GLASS2);
+		Engine.Server_PrecacheResource(RESOURCE_MODEL, PHYSICS_MODEL_GLASS0);
+		Engine.Server_PrecacheResource(RESOURCE_MODEL, PHYSICS_MODEL_GLASS1);
+		Engine.Server_PrecacheResource(RESOURCE_MODEL, PHYSICS_MODEL_GLASS2);
+		break;
+	case BREAKABLE_WOOD:
+		Engine.Server_PrecacheResource(RESOURCE_SOUND, PHYSICS_SOUND_WOOD0);
+		Engine.Server_PrecacheResource(RESOURCE_SOUND, PHYSICS_SOUND_WOOD1);
+		Engine.Server_PrecacheResource(RESOURCE_SOUND, PHYSICS_SOUND_WOOD2);
+		Engine.Server_PrecacheResource(RESOURCE_MODEL, PHYSICS_MODEL_WOOD0);
+		Engine.Server_PrecacheResource(RESOURCE_MODEL, PHYSICS_MODEL_WOOD1);
+		Engine.Server_PrecacheResource(RESOURCE_MODEL, PHYSICS_MODEL_WOOD2);
+		break;
+	case BREAKABLE_ROCK:
+		Engine.Server_PrecacheResource(RESOURCE_SOUND, PHYSICS_SOUND_ROCK0);
+		Engine.Server_PrecacheResource(RESOURCE_SOUND, PHYSICS_SOUND_ROCK1);
+		Engine.Server_PrecacheResource(RESOURCE_SOUND, PHYSICS_SOUND_ROCK2);
+		Engine.Server_PrecacheResource(RESOURCE_MODEL, PHYSICS_MODEL_ROCK0);
+		Engine.Server_PrecacheResource(RESOURCE_MODEL, PHYSICS_MODEL_ROCK1);
+		Engine.Server_PrecacheResource(RESOURCE_MODEL, PHYSICS_MODEL_ROCK2);
+		break;
+	case BREAKABLE_METAL:
+		Engine.Server_PrecacheResource(RESOURCE_SOUND, PHYSICS_SOUND_METAL0);
+		Engine.Server_PrecacheResource(RESOURCE_SOUND, PHYSICS_SOUND_METAL1);
+		Engine.Server_PrecacheResource(RESOURCE_SOUND, PHYSICS_SOUND_METAL2);
+		Engine.Server_PrecacheResource(RESOURCE_MODEL, PHYSICS_MODEL_METAL0);
+		Engine.Server_PrecacheResource(RESOURCE_MODEL, PHYSICS_MODEL_METAL1);
+		Engine.Server_PrecacheResource(RESOURCE_MODEL, PHYSICS_MODEL_METAL2);
+		break;
+	default:
+		Engine.Con_Warning("area_breakable: Unknown style\n");
 	}
 
 	// UNDONE: This compiled and all and it works fine but do it a cleaner way. ~eukos
 	// [31/12/2013] How much cleaner could you even do this? Seems fine to me. ~hogsy
-	if(eArea->v.cName)
+	if (eArea->v.cName)
 		eArea->v.use = Area_BreakableUse;
 
 	eArea->Physics.iSolid = SOLID_BSP;
 
-	eArea->v.movetype		= MOVETYPE_PUSH;
-	eArea->v.bTakeDamage	= true;
+	eArea->v.movetype = MOVETYPE_PUSH;
+	eArea->v.bTakeDamage = true;
 
 	eArea->local.bBleed = false;
 
 	eArea->monster.think_die = Area_BreakableDie;
 
-	Entity_SetModel(eArea,eArea->v.model);
-	Entity_SetOrigin(eArea,eArea->v.origin);
-	Entity_SetSizeVector(eArea,eArea->v.mins,eArea->v.maxs);
+	Entity_SetModel(eArea, eArea->v.model);
+	Entity_SetOrigin(eArea, eArea->v.origin);
+	Entity_SetSizeVector(eArea, eArea->v.mins, eArea->v.maxs);
 
-	eArea->v.oldorigin[0]	= (eArea->v.mins[0]+eArea->v.maxs[0])*0.5f;
-	eArea->v.oldorigin[1]	= (eArea->v.mins[1]+eArea->v.maxs[1])*0.5f;
-	eArea->v.oldorigin[2]	= (eArea->v.mins[2]+eArea->v.maxs[2])*0.5f;
+	eArea->v.oldorigin[0] = (eArea->v.mins[0] + eArea->v.maxs[0])*0.5f;
+	eArea->v.oldorigin[1] = (eArea->v.mins[1] + eArea->v.maxs[1])*0.5f;
+	eArea->v.oldorigin[2] = (eArea->v.mins[2] + eArea->v.maxs[2])*0.5f;
 }
+
+/**/
 
 void Area_RotateBlocked(edict_t *eArea,edict_t *eOther)
 {

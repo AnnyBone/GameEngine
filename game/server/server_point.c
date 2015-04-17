@@ -173,6 +173,7 @@ void Point_Start(edict_t *ent)
 /*
 	Particle Emitter
 */
+
 // [17/7/2012] Renamed to Point_ParticleEmit ~hogsy
 void Point_ParticleEmit(edict_t *ent)
 {
@@ -297,6 +298,30 @@ void Point_DynamicLight(edict_t *ent)
 
 	ent->v.think		= Point_DynamicLightThink;
 	ent->v.dNextThink	= Server.dTime+0.1;
+}
+
+/*
+	Explode
+*/
+
+#define	EXPLODE_FLAG_REMOVE	1	// Remove on use.
+
+void Point_ExplodeUse(edict_t *ePoint)
+{
+	Entity_RadiusDamage(ePoint, MONSTER_RANGE_NEAR, ePoint->local.iDamage, DAMAGE_TYPE_EXPLODE);
+
+	if (Engine.Server_PointContents(ePoint->v.origin) <= BSP_CONTENTS_WATER)
+		Sound(ePoint, CHAN_AUTO, SOUND_EXPLODE_UNDERWATER0, 255, ATTN_NORM);
+	else
+		Sound(ePoint, CHAN_AUTO, SOUND_EXPLODE, 255, ATTN_NORM);
+
+	if (ePoint->v.spawnflags & EXPLODE_FLAG_REMOVE)
+		Entity_Remove(ePoint);
+}
+
+void Point_ExplodeSpawn(edict_t *ePoint)
+{
+	ePoint->v.use = Point_ExplodeUse;
 }
 
 /*

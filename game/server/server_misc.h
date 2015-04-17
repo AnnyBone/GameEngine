@@ -60,6 +60,7 @@ void Point_TeleportSpawn(edict_t *ent);
 void Point_TimedTriggerSpawn(edict_t *eEntity);
 void Point_WaypointSpawn(edict_t *eEntity);
 void Point_LightSpawn(edict_t *eLight);
+void Point_ExplodeSpawn(edict_t *ePoint);
 
 // Weapons
 void WEAPON_StickThink(edict_t *ent);

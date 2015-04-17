@@ -194,6 +194,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (Ictus)|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="server\monster_bot.c" />
+    <ClCompile Include="server\openkatana\decoration_barrel.c" />
     <ClCompile Include="server\openkatana\mode_ctf.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (Adamas)|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (Ictus)|Win32'">true</ExcludedFromBuild>
@@ -319,6 +320,7 @@
     <ClInclude Include="..\Shared\shared_menu.h" />
     <ClInclude Include="game_main.h" />
     <ClInclude Include="game_resources.h" />
+    <ClInclude Include="server\openkatana\openkatana.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

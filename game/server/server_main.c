@@ -16,6 +16,8 @@
 #ifdef GAME_OPENKATANA
 // [20/12/2012] Include the Vektar stuff for spawning ~hogsy
 #include "openkatana/mode_vektar.h"
+
+#include "openkatana/openkatana.h"
 #endif
 
 void Server_Spawn(edict_t *ent);
@@ -76,9 +78,12 @@ SpawnList_t SpawnList[] =
 	{ "point_teleport", Point_TeleportSpawn },
 	{ "point_timedtrigger", Point_TimedTriggerSpawn },
 	{ "point_waypoint", Point_WaypointSpawn },
+	{ "point_explode", Point_ExplodeSpawn },
 
 #ifdef GAME_OPENKATANA
 	{ "point_decoration", Point_DecorationSpawn },	// TODO: Isn't this made redundant by point_prop? ~hogsy
+
+	{ "decoration_barrel", Barrel_Spawn },
 
 	{ "monster_inmater", Point_MonsterSpawn },
 	{ "monster_lasergat", Point_MonsterSpawn },
@@ -89,30 +94,30 @@ SpawnList_t SpawnList[] =
 	{	NULL,	NULL	}
 };
 
-cvar_t	cvServerPlayerModel = { "server_playermodel", "models/player.md2", false, true, "Sets the main server-side player model." };
-cvar_t	cvServerRespawnDelay = { "server_respawndelay", "40", false, true, "Sets the amount of time until a player respawns." };
-cvar_t	cvServerSkill = { "server_skill", "1", false, true, "The level of difficulty." };
-cvar_t	cvServerSelfDamage = { "server_selfdamage", "0", false, true, "If enabled, your weapons can damage you." };
+ConsoleVariable_t cvServerPlayerModel = { "server_playermodel", "models/player.md2", false, true, "Sets the main server-side player model." };
+ConsoleVariable_t cvServerRespawnDelay = { "server_respawndelay", "40", false, true, "Sets the amount of time until a player respawns." };
+ConsoleVariable_t cvServerSkill = { "server_skill", "1", false, true, "The level of difficulty." };
+ConsoleVariable_t cvServerSelfDamage = { "server_selfdamage", "0", false, true, "If enabled, your weapons can damage you." };
 // [7/12/2012] Changed default maxhealth to 200 ~hogsy
-cvar_t	cvServerMaxHealth = { "server_maxhealth", "200", false, true, "Sets the max amount of health." };
-cvar_t	cvServerDefaultHealth = { "server_defaulthealth", "100", false, true, "Changes the default amount of health." };
-cvar_t	cvServerMonsters = { "server_monsters", "1", false, true, "If enabled, monsters can spawn." };
-cvar_t	cvServerMaxScore = { "server_maxscore", "20", false, true, "Max score before the round ends." };
-cvar_t	cvServerGameMode = { "server_gamemode", "0", false, true, "Sets the active mode of play." };
-cvar_t	cvServerGameTime = { "server_gametime", "120", false, true, "Time before the round ends." };
-cvar_t	cvServerGameClients = { "server_gameclients", "2", false, true, "Number of clients before round starts." };
-cvar_t	cvServerWaypointDelay = { "server_waypointdelay", "5.0", false, true, "Delay before attempting to spawn another waypoint." };
-cvar_t	cvServerWaypointSpawn = { "server_waypointspawn", "0", false, true, "if enabled, waypoints autospawn." };
-cvar_t	cvServerWaypointParse = { "server_waypointparse", "", false, true, "Overrides the default path to load waypoints from." };
-cvar_t	cvServerAim = { "server_aim", "1.0", false, true, "Enables auto-aim." };
+ConsoleVariable_t cvServerMaxHealth = { "server_maxhealth", "200", false, true, "Sets the max amount of health." };
+ConsoleVariable_t cvServerDefaultHealth = { "server_defaulthealth", "100", false, true, "Changes the default amount of health." };
+ConsoleVariable_t cvServerMonsters = { "server_monsters", "1", false, true, "If enabled, monsters can spawn." };
+ConsoleVariable_t cvServerMaxScore = { "server_maxscore", "20", false, true, "Max score before the round ends." };
+ConsoleVariable_t cvServerGameMode = { "server_gamemode", "0", false, true, "Sets the active mode of play." };
+ConsoleVariable_t cvServerGameTime = { "server_gametime", "120", false, true, "Time before the round ends." };
+ConsoleVariable_t cvServerGameClients = { "server_gameclients", "2", false, true, "Number of clients before round starts." };
+ConsoleVariable_t cvServerWaypointDelay = { "server_waypointdelay", "5.0", false, true, "Delay before attempting to spawn another waypoint." };
+ConsoleVariable_t cvServerWaypointSpawn = { "server_waypointspawn", "0", false, true, "if enabled, waypoints autospawn." };
+ConsoleVariable_t cvServerWaypointParse = { "server_waypointparse", "", false, true, "Overrides the default path to load waypoints from." };
+ConsoleVariable_t cvServerAim = { "server_aim", "1.0", false, true, "Enables auto-aim." };
 // [19/3/2013] Replacement for the engine-side variable ~hogsy
-cvar_t	cvServerGravityTweak = { "server_gravityamount", "1.0", false, true, "Gravity modifier." };
-cvar_t	cvServerGravity = { "server_gravity", "600.0", false, true, "Overall gravity." };
+ConsoleVariable_t cvServerGravityTweak = { "server_gravityamount", "1.0", false, true, "Gravity modifier." };
+ConsoleVariable_t cvServerGravity = { "server_gravity", "600.0", false, true, "Overall gravity." };
 #ifdef GAME_OPENKATANA
 // [20/1/2013] By default bots spawn in OpenKatana for both SP and MP ~hogsy
-cvar_t	cvServerBots = { "server_bots", "1", false, true, "Can enable and disable bots." };
+ConsoleVariable_t cvServerBots = { "server_bots", "1", false, true, "Can enable and disable bots." };
 #else
-cvar_t	cvServerBots = { "server_bots",	"0", false,	true, "Can enable and disable bots." };
+ConsoleVariable_t cvServerBots = { "server_bots",	"0", false,	true, "Can enable and disable bots." };
 #endif
 
 void Server_SetGameMode(void)
@@ -175,33 +180,34 @@ void Server_Spawn(edict_t *ent)
 	Server.eWorld = ent;
 
 	// Set defaults.
-	Server.dWaypointSpawnDelay	= ((double)cvServerWaypointDelay.value);
-	Server.bRoundStarted		=
-	Server.bPlayersSpawned		= false; // [5/9/3024] Players have no been spawned yet ~hogsy
-	Server.iMonsters			= 0;
+	Server.dWaypointSpawnDelay = ((double)cvServerWaypointDelay.value);
+	Server.bRoundStarted =
+	Server.bPlayersSpawned = false; // [5/9/3024] Players have no been spawned yet ~hogsy
+	Server.iMonsters = 0;
 #ifdef GAME_ADAMAS
-	Server.iLives				= 2;
+	Server.iLives = 2;
 #endif
 
-	Waypoint_Initialize();
+	// Set these to their defaults.
+	bIsDeathmatch = false;
+	bIsCooperative = false;
+	bIsMultiplayer = false;
 
-	// [19/3/2013] This is... Ugly... ~hogsy
-	bIsDeathmatch	=
-	bIsCooperative	= false;
-	bIsMultiplayer	= true;
-
-	// [19/3/2013] Set up our gamemode ~hogsy
-	if(cvServerGameMode.iValue == MODE_DEATHMATCH)
-		bIsDeathmatch = true;
-	else if(cvServerGameMode.iValue == MODE_COOPERATIVE)
-		bIsCooperative = true;
-	else if(cvServerGameMode.iValue == MODE_SINGLEPLAYER)
+	if (cvServerGameMode.iValue != MODE_SINGLEPLAYER)
 	{
-		bIsMultiplayer = false;
+		bIsMultiplayer = true;
 
-		// [5/9/2013] Ooooopsey!!!! Round always starts on singleplayer from spawn ~hogsy
-		Server.bRoundStarted = true;
+		if (cvServerGameMode.iValue == MODE_DEATHMATCH)
+			bIsDeathmatch = true;
+		else if (cvServerGameMode.iValue == MODE_COOPERATIVE)
+			bIsCooperative = true;
 	}
+	else
+		// Round has always immediately started in single player.
+		Server.bRoundStarted = true;
+
+	// Initialize waypoints.
+	Waypoint_Initialize();
 
 	Item_Precache();
 	Weapon_Precache();
@@ -239,6 +245,12 @@ void Server_Spawn(edict_t *ent)
 	Engine.Server_PrecacheResource(RESOURCE_MODEL, PHYSICS_MODEL_GIB1);
 	Engine.Server_PrecacheResource(RESOURCE_MODEL, PHYSICS_MODEL_GIB2);
 	Engine.Server_PrecacheResource(RESOURCE_MODEL, PHYSICS_MODEL_GIB3);
+
+	// Effects
+	Engine.Server_PrecacheResource(RESOURCE_SOUND, SOUND_EXPLODE_UNDERWATER0);
+	Engine.Server_PrecacheResource(RESOURCE_SOUND, SOUND_EXPLODE0);
+	Engine.Server_PrecacheResource(RESOURCE_SOUND, SOUND_EXPLODE1);
+	Engine.Server_PrecacheResource(RESOURCE_SOUND, SOUND_EXPLODE2);
 	
 	// Player
 	Engine.Server_PrecacheResource(RESOURCE_MODEL, cvServerPlayerModel.string);
@@ -307,19 +319,19 @@ void Server_Spawn(edict_t *ent)
 		pFileSystem_ScanDirectory("data/models/player/", ".md2", Server_PrecachePlayerModel);
 	}
 
-	Engine.LightStyle(0, "m");
-	Engine.LightStyle(1, "mmnmmommommnonmmonqnmmo");
-	Engine.LightStyle(2, "abcdefghijklmnopqrstuvwxyzyxwvutsrqponmlkjihgfedcba");
-	Engine.LightStyle(3, "mmmmmaaaaammmmmaaaaaabcdefgabcdefg");
-	Engine.LightStyle(4, "mamamamamama");
-	Engine.LightStyle(5, "jklmnopqrstuvwxyzyxwvutsrqponmlkj");
-	Engine.LightStyle(6, "nmonqnmomnmomomno");
-	Engine.LightStyle(7, "mmmaaaabcdefgmmmmaaaammmaamm");
-	Engine.LightStyle(8, "mmmaaammmaaammmabcdefaaaammmmabcdefmmmaaaa");
-	Engine.LightStyle(9, "aaaaaaaazzzzzzzz");
-	Engine.LightStyle(10, "mmamammmmammamamaaamammma");
-	Engine.LightStyle(11, "abcdefghijklmnopqrrqponmlkjihgfedcba");
-	Engine.LightStyle(32, "a");
+	Server_WorldLightStyle(0, "m");
+	Server_WorldLightStyle(1, "mmnmmommommnonmmonqnmmo");
+	Server_WorldLightStyle(2, "abcdefghijklmnopqrstuvwxyzyxwvutsrqponmlkjihgfedcba");
+	Server_WorldLightStyle(3, "mmmmmaaaaammmmmaaaaaabcdefgabcdefg");
+	Server_WorldLightStyle(4, "mamamamamama");
+	Server_WorldLightStyle(5, "jklmnopqrstuvwxyzyxwvutsrqponmlkj");
+	Server_WorldLightStyle(6, "nmonqnmomnmomomno");
+	Server_WorldLightStyle(7, "mmmaaaabcdefgmmmmaaaammmaamm");
+	Server_WorldLightStyle(8, "mmmaaammmaaammmabcdefaaaammmmabcdefmmmaaaa");
+	Server_WorldLightStyle(9, "aaaaaaaazzzzzzzz");
+	Server_WorldLightStyle(10, "mmamammmmammamamaaamammma");
+	Server_WorldLightStyle(11, "abcdefghijklmnopqrrqponmlkjihgfedcba");
+	Server_WorldLightStyle(32, "a");
 }
 
 /*	Called by the engine.

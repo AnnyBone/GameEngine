@@ -42,6 +42,10 @@ void Server_UpdateClientMenu(edict_t *eClient,int iMenuState,bool bShow);
 
 bool Server_SpawnEntity(edict_t *ent);
 
+#define Server_PrecacheModel(a) Engine.Server_PrecacheResource(RESOURCE_MODEL,a)
+#define	Server_PrecacheSound(a) Engine.Server_PrecacheResource(RESOURCE_SOUND,a)
+#define Server_WorldLightStyle(a,b) Engine.LightStyle(a,b)
+
 /*
 	Entity Functions
 */

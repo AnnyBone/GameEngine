@@ -12,6 +12,9 @@
     <ClInclude Include="..\shared\shared_game.h">
       <Filter>Shared</Filter>
     </ClInclude>
+    <ClInclude Include="server\openkatana\openkatana.h">
+      <Filter>Server\OpenKatana</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Shared">
@@ -40,6 +43,9 @@
     </Filter>
     <Filter Include="Server\OpenKatana\Weapons">
       <UniqueIdentifier>{482025ad-b292-4b59-9eb9-8ee63c20530e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Server\OpenKatana\Decoration">
+      <UniqueIdentifier>{460682a2-262d-4b3a-a8c1-b06fc848bd1b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -184,6 +190,9 @@
     </ClCompile>
     <ClCompile Include="server\openkatana\monster_cambot.c">
       <Filter>Server\OpenKatana\Monsters</Filter>
+    </ClCompile>
+    <ClCompile Include="server\openkatana\decoration_barrel.c">
+      <Filter>Server\OpenKatana\Decoration</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

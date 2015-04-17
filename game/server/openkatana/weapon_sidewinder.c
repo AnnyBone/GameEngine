@@ -96,13 +96,15 @@ void SideWinder_MissileExplode(edict_t *ent,edict_t *other)
 		return;
 	}
 
-	Entity_RadiusDamage(ent,MONSTER_RANGE_NEAR,30,1);
+	Entity_RadiusDamage(ent, MONSTER_RANGE_NEAR, 30, DAMAGE_TYPE_EXPLODE);
 
 	// [4/8/2012] Simplified ~hogsy
 	Math_VectorNegate(ent->v.velocity,vVelocity);
 
-	// [4/8/2012] TODO: Underwater explosion too! ~hogsy
-	Sound(ent,CHAN_AUTO,va("fx/explosion%i.wav",rand()%6+1),255,ATTN_NORM);
+	if (Engine.Server_PointContents(ent->v.origin) <= BSP_CONTENTS_WATER)
+		Sound(ent, CHAN_AUTO, SOUND_EXPLODE_UNDERWATER0, 255, ATTN_NORM);
+	else
+		Sound(ent, CHAN_AUTO, SOUND_EXPLODE, 255, ATTN_NORM);
 
 	Engine.Particle(ent->v.origin,vVelocity,1.0f,"spark2",25);
 
