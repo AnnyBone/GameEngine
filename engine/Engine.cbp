@@ -79,6 +79,16 @@
 		<Unit filename="../shared/shared_server.h" />
 		<Unit filename="../shared/shared_video.h" />
 		<Unit filename="KatAlias.h" />
+		<Unit filename="ZirconLoader.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="ZirconLoader.h" />
+		<Unit filename="ZirconVideoLayer.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="ZirconVideoObject.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="audio.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -161,9 +171,6 @@
 		</Unit>
 		<Unit filename="engine_editor.h" />
 		<Unit filename="engine_host.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="engine_loader.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="engine_loader.h" />
@@ -320,9 +327,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="video_world.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="vidx_object.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="view.h" />
