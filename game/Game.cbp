@@ -96,6 +96,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="server/openkatana/mode_vektar.h" />
+		<Unit filename="server/openkatana/monster_cambot.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="server/openkatana/monster_inmater.c">
 			<Option compilerVar="CC" />
 		</Unit>
