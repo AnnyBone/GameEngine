@@ -268,7 +268,7 @@ void Point_LightUse(edict_t *eLight)
 void Point_LightSpawn(edict_t *eLight)
 {
 	if(eLight->v.noise)
-		Engine.Server_PrecacheResource(RESOURCE_SOUND,eLight->v.noise);
+		Server_PrecacheSound(eLight->v.noise);
 
 	if(eLight->v.message)
 		Engine.LightStyle(eLight->local.style,eLight->v.message);
@@ -372,7 +372,7 @@ void Point_AmbientSpawn(edict_t *eEntity)
 			iAttenuation = ATTN_NORM;
 	}
 
-	Engine.Server_PrecacheResource(RESOURCE_SOUND,eEntity->v.noise);
+	Server_PrecacheSound(eEntity->v.noise);
 
 	Engine.Server_AmbientSound(eEntity->v.origin,eEntity->v.noise,eEntity->local.volume,iAttenuation);
 }
@@ -477,7 +477,7 @@ void Point_SoundSpawn(edict_t *eEntity)
 	else if(!eEntity->local.volume)
 		eEntity->local.volume = 255;
 
-	Engine.Server_PrecacheResource(RESOURCE_SOUND,eEntity->v.noise);
+	Server_PrecacheSound(eEntity->v.noise);
 
 	Entity_SetOrigin(eEntity,eEntity->v.origin);
 
@@ -645,36 +645,36 @@ void Point_PropSpawn(edict_t *eEntity)
 		switch(eEntity->local.style)
 		{
 			case BREAKABLE_GLASS:
-				Engine.Server_PrecacheResource(RESOURCE_SOUND,PHYSICS_SOUND_GLASS0);
-				Engine.Server_PrecacheResource(RESOURCE_SOUND,PHYSICS_SOUND_GLASS1);
-				Engine.Server_PrecacheResource(RESOURCE_SOUND,PHYSICS_SOUND_GLASS2);
+				Server_PrecacheSound(PHYSICS_SOUND_GLASS0);
+				Server_PrecacheSound(PHYSICS_SOUND_GLASS1);
+				Server_PrecacheSound(PHYSICS_SOUND_GLASS2);
 				Engine.Server_PrecacheResource(RESOURCE_MODEL,PHYSICS_MODEL_GLASS0);
 				Engine.Server_PrecacheResource(RESOURCE_MODEL,PHYSICS_MODEL_GLASS1);
 				Engine.Server_PrecacheResource(RESOURCE_MODEL,PHYSICS_MODEL_GLASS2);
 				break;
 			case BREAKABLE_WOOD:
-				Engine.Server_PrecacheResource(RESOURCE_SOUND,PHYSICS_SOUND_WOOD0);
-				Engine.Server_PrecacheResource(RESOURCE_SOUND,PHYSICS_SOUND_WOOD1);
-				Engine.Server_PrecacheResource(RESOURCE_SOUND,PHYSICS_SOUND_WOOD2);
+				Server_PrecacheSound(PHYSICS_SOUND_WOOD0);
+				Server_PrecacheSound(PHYSICS_SOUND_WOOD1);
+				Server_PrecacheSound(PHYSICS_SOUND_WOOD2);
 				Engine.Server_PrecacheResource(RESOURCE_MODEL,PHYSICS_MODEL_WOOD0);
 				Engine.Server_PrecacheResource(RESOURCE_MODEL,PHYSICS_MODEL_WOOD1);
 				Engine.Server_PrecacheResource(RESOURCE_MODEL,PHYSICS_MODEL_WOOD2);
 				break;
 			case BREAKABLE_ROCK:
-				Engine.Server_PrecacheResource(RESOURCE_SOUND,PHYSICS_SOUND_ROCK0);
-				Engine.Server_PrecacheResource(RESOURCE_SOUND,PHYSICS_SOUND_ROCK1);
-				Engine.Server_PrecacheResource(RESOURCE_SOUND,PHYSICS_SOUND_ROCK2);
+				Server_PrecacheSound(PHYSICS_SOUND_ROCK0);
+				Server_PrecacheSound(PHYSICS_SOUND_ROCK1);
+				Server_PrecacheSound(PHYSICS_SOUND_ROCK2);
 				Engine.Server_PrecacheResource(RESOURCE_MODEL,"models/gibs/rock_gibs1.md2");
 				Engine.Server_PrecacheResource(RESOURCE_MODEL,"models/gibs/rock_gibs2.md2");
 				Engine.Server_PrecacheResource(RESOURCE_MODEL,"models/gibs/rock_gibs3.md2");
 				break;
 			case BREAKABLE_METAL:
-				Engine.Server_PrecacheResource(RESOURCE_SOUND,PHYSICS_SOUND_METAL0);
-				Engine.Server_PrecacheResource(RESOURCE_SOUND,PHYSICS_SOUND_METAL1);
-				Engine.Server_PrecacheResource(RESOURCE_SOUND,PHYSICS_SOUND_METAL2);
+				Server_PrecacheSound(PHYSICS_SOUND_METAL0);
+				Server_PrecacheSound(PHYSICS_SOUND_METAL1);
+				Server_PrecacheSound(PHYSICS_SOUND_METAL2);
 				Engine.Server_PrecacheResource(RESOURCE_MODEL,PHYSICS_MODEL_METAL0);
-				Engine.Server_PrecacheResource(RESOURCE_MODEL, PHYSICS_MODEL_METAL1);
-				Engine.Server_PrecacheResource(RESOURCE_MODEL, PHYSICS_MODEL_METAL2);
+				Server_PrecacheModel(PHYSICS_MODEL_METAL1);
+				Server_PrecacheModel(PHYSICS_MODEL_METAL2);
 				break;
 			default:
 				// [4/8/2013] Updated for consistency ~hogsy
@@ -795,7 +795,7 @@ void Point_EffectUse(edict_t *eEntity)
 void Point_EffectSpawn(edict_t *eEntity)
 {
 	if(eEntity->v.noise)
-		Engine.Server_PrecacheResource(RESOURCE_SOUND,eEntity->v.noise);
+		Server_PrecacheSound(eEntity->v.noise);
 
 	eEntity->v.use = Point_EffectUse;
 
@@ -853,7 +853,7 @@ void Point_LightstyleUse(edict_t *eEntity)
 void Point_LightstyleSpawn(edict_t *eEntity)
 {
 	if(eEntity->v.noise)
-		Engine.Server_PrecacheResource(RESOURCE_SOUND,eEntity->v.noise);
+		Server_PrecacheSound(eEntity->v.noise);
 
 	if(!eEntity->v.message)
 		eEntity->v.message = "a";

@@ -32,7 +32,7 @@ typedef struct efrag_s
 {
 	struct mleaf_s		*leaf;
 	struct efrag_s		*leafnext;
-	struct entity_s		*entity;
+	struct ClientEntity_s *entity;
 	struct efrag_s		*entnext;
 } efrag_t;
 
@@ -67,8 +67,8 @@ typedef struct
 	float		xOrigin;			// should probably allways be 0.5
 	float		yOrigin;			// between be around 0.3 to 0.5
 
-	vec3_t		vieworg;
-	vec3_t		viewangles;
+	MathVector3f_t vieworg;
+	MathVector3f_t viewangles;
 
 	float		fov_x, fov_y;
 
@@ -78,7 +78,7 @@ typedef struct
 // refresh
 
 extern refdef_t	r_refdef;
-extern vec3_t	r_origin, vpn, vright, vup;
+extern MathVector3f_t r_origin, vpn, vright, vup;
 
 void R_Init (void);
 void R_InitTextures (void);
@@ -86,8 +86,8 @@ void R_InitEfrags (void);
 void R_RenderView (void);											// must set r_refdef first
 void R_ViewChanged (vrect_t *pvrect, int lineadj, float aspect);	// called whenever r_refdef or vid change
 void R_CheckEfrags (void); //johnfitz
-void R_AddEfrags (entity_t *ent);
-void R_RemoveEfrags (entity_t *ent);
+void R_AddEfrags(ClientEntity_t *ent);
+void R_RemoveEfrags(ClientEntity_t *ent);
 void R_NewMap (void);
 void R_PushDlights (void);
 

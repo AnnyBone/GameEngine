@@ -23,14 +23,14 @@
 
 ddef_t				*pr_fielddefs,
 					*pr_globaldefs;
-GlobalVariables_t	pr_global_struct;	//*pr_global_struct;
+GlobalState_t	pr_global_struct;	//*pr_global_struct;
 float				*pr_globals;			// same as pr_global_struct
 
 #define	MAX_FIELD_LEN	128
 
 /*	Sets everything to null for the specified entity.
 */
-void Edict_Clear(edict_t *eEntity,bool bFreeEntity)
+void Edict_Clear(ServerEntity_t *eEntity, bool bFreeEntity)
 {
 	memset(&eEntity->v,0,sizeof(eEntity->v));
 	// [10/6/2013] Clear everything else that's shared... ~hogsy
@@ -46,17 +46,17 @@ void Edict_Clear(edict_t *eEntity,bool bFreeEntity)
 	instead of being removed and recreated, which can cause interpolated
 	angles and bad trails.
 */
-edict_t *ED_Alloc (void)
+ServerEntity_t *ED_Alloc (void)
 {
-	int			i;
-	edict_t		*e;
+	int i;
+	ServerEntity_t *e;
 
 	for ( i=svs.maxclients+1 ; i<sv.num_edicts ; i++)
 	{
 		e = EDICT_NUM(i);
 		// the first couple seconds of server time can involve a lot of
 		// freeing and allocating, so relax the replacement policy
-		if (e->free && ( e->freetime < 2 || sv.time - e->freetime > 0.5 ) )
+		if (e->free && (e->fFreeTime < 2 || sv.time - e->fFreeTime > 0.5))
 		{
 			Edict_Clear(e,false);
 
@@ -79,7 +79,7 @@ edict_t *ED_Alloc (void)
 /*	Marks the edict as free
 	FIXME: walk all entities and NULL out references to this entity
 */
-void ED_Free (edict_t *ed)
+void ED_Free(ServerEntity_t *ed)
 {
 	SV_UnlinkEdict(ed);		// unlink from world bsp
 
@@ -99,10 +99,10 @@ void ED_Free (edict_t *ed)
 	Math_VectorCopy(mv3Origin,ed->v.origin);
 	Math_VectorCopy(mv3Origin,ed->v.angles);
 
-	ed->freetime = sv.time;
+	ed->fFreeTime = sv.time;
 }
 
-eval_t *GetEdictFieldValue(edict_t *ed, char *field)
+eval_t *GetEdictFieldValue(ServerEntity_t *ed, char *field)
 {
 #if 0
 	ddef_t			*def = NULL;
@@ -205,7 +205,7 @@ char *PR_UglyValueString(EntityType_t type, eval_t *val)
 
 /*	For debugging
 */
-void Edict_Print(edict_t *eEntity)
+void Edict_Print(ServerEntity_t *eEntity)
 {
 #if 0
 	int		l;
@@ -249,7 +249,7 @@ void Edict_Print(edict_t *eEntity)
 
 	Con_Printf("\nEDICT %i:\n",NUM_FOR_EDICT(eEntity));
 
-	for(i = 1; i < sizeof(edict_t); i++)
+	for (i = 1; i < sizeof(ServerEntity_t); i++)
 	{
 	}
 #endif
@@ -258,7 +258,7 @@ void Edict_Print(edict_t *eEntity)
 /*	For savegames
 	[7/2/2013] TODO: Rewrite! ~hogsy
 */
-void ED_Write(FILE *f,edict_t *ed)
+void ED_Write(FILE *f, ServerEntity_t *ed)
 {
 //	ddef_t	*d;
 //	int		*v;
@@ -296,7 +296,7 @@ void ED_Write(FILE *f,edict_t *ed)
 		fprintf (f,"\"%s\"\n", PR_UglyValueString(d->type, (eval_t *)v));
 	}
 #else	// [10/3/2013] Rewrite... ~hogsy
-	for(i = 1; i < sizeof(edict_t); i++)
+	for (i = 1; i < sizeof(ServerEntity_t); i++)
 	{
 //		fprintf(f,"\"%s\" ");
 	}
@@ -341,7 +341,7 @@ void ED_PrintEdict_f (void)
 void ED_Count (void)
 {
 	int		i;
-	edict_t	*ent;
+	ServerEntity_t	*ent;
 	int		active,models,solid,step;
 
 	active = models = solid = step = 0;
@@ -474,7 +474,7 @@ char *ED_NewString (char *string)
 	return cNew;
 }
 
-void Server_ParseEntityField(char *cKey,char *cValue,edict_t *eEntity);
+void Server_ParseEntityField(char *cKey, char *cValue, ServerEntity_t *eEntity);
 
 /*	Parses an edict out of the given string, returning the new position
 	ed should be a properly initialized empty edict.
@@ -482,7 +482,7 @@ void Server_ParseEntityField(char *cKey,char *cValue,edict_t *eEntity);
 	[19/11/2012]
 	Revised to work for our needs. ~hogsy
 */
-char *ED_ParseEdict(char *data, edict_t *ent)
+char *ED_ParseEdict(char *data, ServerEntity_t *ent)
 {
 	bool	bInit = false;
 	char	keyname[256];
@@ -551,7 +551,7 @@ char *ED_ParseEdict(char *data, edict_t *ent)
 */
 void ED_LoadFromFile(char *data)
 {
-	edict_t	*eEntity = NULL;
+	ServerEntity_t	*eEntity = NULL;
 
 	for(;;)
 	{
@@ -589,19 +589,19 @@ void PR_Init (void)
 	Cmd_AddCommand("edictcount",ED_Count);
 }
 
-edict_t *EDICT_NUM(int n)
+ServerEntity_t *EDICT_NUM(int n)
 {
 	if (n < 0 || n >= sv.max_edicts)
 		Sys_Error ("EDICT_NUM: bad number %i", n);
 
-	return (edict_t*)((byte*)sv.edicts+sizeof(edict_t)*(n));
+	return (ServerEntity_t*)((uint8_t*)sv.edicts + sizeof(ServerEntity_t)*(n));
 }
 
-int NUM_FOR_EDICT(edict_t *e)
+int NUM_FOR_EDICT(ServerEntity_t *e)
 {
 	int		b;
 
-	b = ((byte*)e-(byte*)sv.edicts)/sizeof(edict_t);
+	b = ((uint8_t*)e - (uint8_t*)sv.edicts) / sizeof(ServerEntity_t);
 	if(b < 0 || b >= sv.num_edicts)
 		Sys_Error ("NUM_FOR_EDICT: bad pointer");
 

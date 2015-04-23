@@ -198,14 +198,14 @@ void CTF_FlagSpawn(edict_t *eFlag)
 		our models skin we'll do that here
 		instead ;)							*/
 	case TEAM_RED:
-		Engine.Server_PrecacheResource(RESOURCE_SOUND,"ctf/redscore.wav");
+		Server_PrecacheSound("ctf/redscore.wav");
 
 		eFlag->v.model		= "models/ctf/flag_red.md2";
 		eFlag->v.noise		= "ctf/redflagtaken.wav";
 		eFlag->v.netname	= "red flag";
 		break;
 	case TEAM_BLUE:
-		Engine.Server_PrecacheResource(RESOURCE_SOUND,"ctf/bluescore.wav");
+		Server_PrecacheSound("ctf/bluescore.wav");
 
 		eFlag->v.model		= "models/ctf/flag_blue.md2";
 		eFlag->v.noise		= "ctf/blueflagtaken.wav";
@@ -219,8 +219,8 @@ void CTF_FlagSpawn(edict_t *eFlag)
 	}
 
 	Engine.Server_PrecacheResource(RESOURCE_MODEL,eFlag->v.model);
-	Engine.Server_PrecacheResource(RESOURCE_SOUND,eFlag->v.noise);
-	Engine.Server_PrecacheResource(RESOURCE_SOUND,"ctf/flagtaken.wav");
+	Server_PrecacheSound(eFlag->v.noise);
+	Server_PrecacheSound("ctf/flagtaken.wav");
 
 	Entity_SetModel(eFlag,eFlag->v.model);
 	Entity_SetSize(eFlag,-10,-10,0,10,10,65);

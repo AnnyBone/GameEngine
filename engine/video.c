@@ -481,6 +481,7 @@ void Video_UpdateWindow(void)
 
 void Video_GenerateSphereCoordinates(void)
 {
+#if 0
 	MathMatrix4x4f_t mmMatrix, mmInversed;
 
 	glPushMatrix();
@@ -492,14 +493,17 @@ void Video_GenerateSphereCoordinates(void)
 
 	// Apply it.
 	glLoadMatrixf(mmInversed);
+#endif
 
 	// Generate the sphere map coords.
 	glTexGeni(GL_S,GL_TEXTURE_GEN_MODE,GL_SPHERE_MAP);
 	glTexGeni(GL_T,GL_TEXTURE_GEN_MODE,GL_SPHERE_MAP);
 
+#if 0
 	// Reset the matrix.
 	glMatrixMode(GL_MODELVIEW);
 	glPopMatrix();
+#endif
 }
 
 /**/

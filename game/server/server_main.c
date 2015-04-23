@@ -20,12 +20,12 @@
 #include "openkatana/openkatana.h"
 #endif
 
-void Server_Spawn(edict_t *ent);
+void Server_Spawn(ServerEntity_t *seEntity);
 
 typedef struct
 {
 	char	*name;
-	void	(*spawn)(edict_t *ent);
+	void(*spawn)(ServerEntity_t *seEntity);
 } SpawnList_t;
 
 /*	[28/11/2012]
@@ -175,9 +175,9 @@ void Server_PrecachePlayerModel(char *ccFile)
 	Engine.Server_PrecacheResource(RESOURCE_MODEL,ccFile);
 }
 
-void Server_Spawn(edict_t *ent)
+void Server_Spawn(ServerEntity_t *seEntity)
 {
-	Server.eWorld = ent;
+	Server.eWorld = seEntity;
 
 	// Set defaults.
 	Server.dWaypointSpawnDelay = ((double)cvServerWaypointDelay.value);
@@ -212,48 +212,48 @@ void Server_Spawn(edict_t *ent)
 	Item_Precache();
 	Weapon_Precache();
 
-	Engine.Server_PrecacheResource(RESOURCE_SOUND,"misc/deny.wav");
-	Engine.Server_PrecacheResource(RESOURCE_SOUND,BASE_SOUND_TALK0);
-	Engine.Server_PrecacheResource(RESOURCE_SOUND,BASE_SOUND_TALK1);
-	Engine.Server_PrecacheResource(RESOURCE_SOUND,BASE_SOUND_TALK2);
-	Engine.Server_PrecacheResource(RESOURCE_SOUND,"misc/gib1.wav");
+	Server_PrecacheSound("misc/deny.wav");
+	Server_PrecacheSound(BASE_SOUND_TALK0);
+	Server_PrecacheSound(BASE_SOUND_TALK1);
+	Server_PrecacheSound(BASE_SOUND_TALK2);
+	Server_PrecacheSound("misc/gib1.wav");
 
 	// Physics
-	Engine.Server_PrecacheResource(RESOURCE_SOUND, PHYSICS_SOUND_SPLASH);
-	Engine.Server_PrecacheResource(RESOURCE_SOUND, PHYSICS_SOUND_BODY);
-	Engine.Server_PrecacheResource(RESOURCE_SOUND, PHYSICS_SOUND_RICOCHET0);
-	Engine.Server_PrecacheResource(RESOURCE_SOUND, PHYSICS_SOUND_RICOCHET1);
-	Engine.Server_PrecacheResource(RESOURCE_SOUND, PHYSICS_SOUND_RICOCHET2);
-	Engine.Server_PrecacheResource(RESOURCE_SOUND, PHYSICS_SOUND_RICOCHET3);
-	Engine.Server_PrecacheResource(RESOURCE_SOUND, PHYSICS_SOUND_RICOCHET4);
-	Engine.Server_PrecacheResource(RESOURCE_SOUND, PHYSICS_SOUND_RICOCHET5);
-	Engine.Server_PrecacheResource(RESOURCE_SOUND, PHYSICS_SOUND_RICOCHET6);
-	Engine.Server_PrecacheResource(RESOURCE_SOUND, PHYSICS_SOUND_RICOCHET7);
-	Engine.Server_PrecacheResource(RESOURCE_SOUND, PHYSICS_SOUND_RICOCHET8);
-	Engine.Server_PrecacheResource(RESOURCE_SOUND, PHYSICS_SOUND_RICOCHET9);
-	Engine.Server_PrecacheResource(RESOURCE_SOUND, "fx/explosion1.wav");
-	Engine.Server_PrecacheResource(RESOURCE_SOUND, "fx/explosion2.wav");
-	Engine.Server_PrecacheResource(RESOURCE_SOUND, "fx/explosion3.wav");
-	Engine.Server_PrecacheResource(RESOURCE_SOUND, "fx/explosion4.wav");
-	Engine.Server_PrecacheResource(RESOURCE_SOUND, "fx/explosion5.wav");
-	Engine.Server_PrecacheResource(RESOURCE_SOUND, "fx/explosion6.wav");
-	Engine.Server_PrecacheResource(RESOURCE_SOUND, PHYSICS_SOUND_CONCRETESTEP0);
-	Engine.Server_PrecacheResource(RESOURCE_SOUND, PHYSICS_SOUND_CONCRETESTEP1);
-	Engine.Server_PrecacheResource(RESOURCE_SOUND, PHYSICS_SOUND_CONCRETESTEP2);
-	Engine.Server_PrecacheResource(RESOURCE_SOUND, PHYSICS_SOUND_CONCRETESTEP3);
-	Engine.Server_PrecacheResource(RESOURCE_MODEL, PHYSICS_MODEL_GIB0);
-	Engine.Server_PrecacheResource(RESOURCE_MODEL, PHYSICS_MODEL_GIB1);
-	Engine.Server_PrecacheResource(RESOURCE_MODEL, PHYSICS_MODEL_GIB2);
-	Engine.Server_PrecacheResource(RESOURCE_MODEL, PHYSICS_MODEL_GIB3);
+	Server_PrecacheSound(PHYSICS_SOUND_SPLASH);
+	Server_PrecacheSound(PHYSICS_SOUND_BODY);
+	Server_PrecacheSound(PHYSICS_SOUND_RICOCHET0);
+	Server_PrecacheSound(PHYSICS_SOUND_RICOCHET1);
+	Server_PrecacheSound(PHYSICS_SOUND_RICOCHET2);
+	Server_PrecacheSound(PHYSICS_SOUND_RICOCHET3);
+	Server_PrecacheSound(PHYSICS_SOUND_RICOCHET4);
+	Server_PrecacheSound(PHYSICS_SOUND_RICOCHET5);
+	Server_PrecacheSound(PHYSICS_SOUND_RICOCHET6);
+	Server_PrecacheSound(PHYSICS_SOUND_RICOCHET7);
+	Server_PrecacheSound(PHYSICS_SOUND_RICOCHET8);
+	Server_PrecacheSound(PHYSICS_SOUND_RICOCHET9);
+	Server_PrecacheSound("fx/explosion1.wav");
+	Server_PrecacheSound("fx/explosion2.wav");
+	Server_PrecacheSound("fx/explosion3.wav");
+	Server_PrecacheSound("fx/explosion4.wav");
+	Server_PrecacheSound("fx/explosion5.wav");
+	Server_PrecacheSound("fx/explosion6.wav");
+	Server_PrecacheSound(PHYSICS_SOUND_CONCRETESTEP0);
+	Server_PrecacheSound(PHYSICS_SOUND_CONCRETESTEP1);
+	Server_PrecacheSound(PHYSICS_SOUND_CONCRETESTEP2);
+	Server_PrecacheSound(PHYSICS_SOUND_CONCRETESTEP3);
+	Server_PrecacheModel(PHYSICS_MODEL_GIB0);
+	Server_PrecacheModel(PHYSICS_MODEL_GIB1);
+	Server_PrecacheModel(PHYSICS_MODEL_GIB2);
+	Server_PrecacheModel(PHYSICS_MODEL_GIB3);
 
 	// Effects
-	Engine.Server_PrecacheResource(RESOURCE_SOUND, SOUND_EXPLODE_UNDERWATER0);
-	Engine.Server_PrecacheResource(RESOURCE_SOUND, SOUND_EXPLODE0);
-	Engine.Server_PrecacheResource(RESOURCE_SOUND, SOUND_EXPLODE1);
-	Engine.Server_PrecacheResource(RESOURCE_SOUND, SOUND_EXPLODE2);
+	Server_PrecacheSound(SOUND_EXPLODE_UNDERWATER0);
+	Server_PrecacheSound(SOUND_EXPLODE0);
+	Server_PrecacheSound(SOUND_EXPLODE1);
+	Server_PrecacheSound(SOUND_EXPLODE2);
 	
 	// Player
-	Engine.Server_PrecacheResource(RESOURCE_MODEL, cvServerPlayerModel.string);
+	Server_PrecacheModel(cvServerPlayerModel.string);
 
 	// Particles
 	Engine.Server_PrecacheResource(RESOURCE_SPRITE, PARTICLE_BLOOD0);
@@ -267,20 +267,27 @@ void Server_Spawn(edict_t *ent)
 
 #ifdef GAME_OPENKATANA	// [22/4/2013] OpenKatana specific stuff is now here instead ~hogsy
 	// Player
-	Engine.Server_PrecacheResource(RESOURCE_SOUND, PLAYER_SOUND_JUMP0);
-	Engine.Server_PrecacheResource(RESOURCE_SOUND, PLAYER_SOUND_JUMP1);
-	Engine.Server_PrecacheResource(RESOURCE_SOUND, PLAYER_SOUND_JUMP2);
-	Engine.Server_PrecacheResource(RESOURCE_SOUND, PLAYER_SOUND_JUMP3);
-	Engine.Server_PrecacheResource(RESOURCE_SOUND, PLAYER_SOUND_PAIN0);
-	Engine.Server_PrecacheResource(RESOURCE_SOUND, PLAYER_SOUND_PAIN1);
-	Engine.Server_PrecacheResource(RESOURCE_SOUND, PLAYER_SOUND_PAIN2);
-	Engine.Server_PrecacheResource(RESOURCE_SOUND, PLAYER_SOUND_PAIN3);
-	Engine.Server_PrecacheResource(RESOURCE_SOUND, PLAYER_SOUND_PAIN4);
-	Engine.Server_PrecacheResource(RESOURCE_SOUND, PLAYER_SOUND_PAIN5);
-	Engine.Server_PrecacheResource(RESOURCE_SOUND, PLAYER_SOUND_PAIN6);
-	Engine.Server_PrecacheResource(RESOURCE_SOUND, PLAYER_SOUND_PAIN7);
+	Server_PrecacheSound(PLAYER_SOUND_JUMP0);
+	Server_PrecacheSound(PLAYER_SOUND_JUMP1);
+	Server_PrecacheSound(PLAYER_SOUND_JUMP2);
+	Server_PrecacheSound(PLAYER_SOUND_JUMP3);
+	Server_PrecacheSound(PLAYER_SOUND_PAIN0);
+	Server_PrecacheSound(PLAYER_SOUND_PAIN1);
+	Server_PrecacheSound(PLAYER_SOUND_PAIN2);
+	Server_PrecacheSound(PLAYER_SOUND_PAIN3);
+	Server_PrecacheSound(PLAYER_SOUND_PAIN4);
+	Server_PrecacheSound(PLAYER_SOUND_PAIN5);
+	Server_PrecacheSound(PLAYER_SOUND_PAIN6);
+	Server_PrecacheSound(PLAYER_SOUND_PAIN7);
+	Server_PrecacheSound(PLAYER_SOUND_PAIN8);
+	Server_PrecacheSound(PLAYER_SOUND_PAIN9);
+	Server_PrecacheSound(PLAYER_SOUND_PAIN10);
+	Server_PrecacheSound(PLAYER_SOUND_PAIN11);
+	Server_PrecacheSound(PLAYER_SOUND_DEATH0);
+	Server_PrecacheSound(PLAYER_SOUND_DEATH1);
+	Server_PrecacheSound(PLAYER_SOUND_DEATH2);
 
-	Engine.Server_PrecacheResource(RESOURCE_MODEL, "models/blip.md2");
+	Server_PrecacheModel("models/blip.md2");
 
 	Engine.Server_PrecacheResource(RESOURCE_SPRITE, "poison");
 	Engine.Server_PrecacheResource(RESOURCE_SPRITE, "spark");
@@ -291,13 +298,13 @@ void Server_Spawn(edict_t *ent)
 
 	// [10/4/2013] Waypoint debugging models ~hogsy
 #ifdef DEBUG_WAYPOINT
-	Engine.Server_PrecacheResource(RESOURCE_MODEL, WAYPOINT_MODEL_BASE);
-	Engine.Server_PrecacheResource(RESOURCE_MODEL, WAYPOINT_MODEL_CLIMB);
-	Engine.Server_PrecacheResource(RESOURCE_MODEL, WAYPOINT_MODEL_ITEM);
-	Engine.Server_PrecacheResource(RESOURCE_MODEL, WAYPOINT_MODEL_JUMP);
-	Engine.Server_PrecacheResource(RESOURCE_MODEL, WAYPOINT_MODEL_SPAWN);
-	Engine.Server_PrecacheResource(RESOURCE_MODEL, WAYPOINT_MODEL_SWIM);
-	Engine.Server_PrecacheResource(RESOURCE_MODEL, WAYPOINT_MODEL_WEAPON);
+	Server_PrecacheModel(WAYPOINT_MODEL_BASE);
+	Server_PrecacheModel(WAYPOINT_MODEL_CLIMB);
+	Server_PrecacheModel(WAYPOINT_MODEL_ITEM);
+	Server_PrecacheModel(WAYPOINT_MODEL_JUMP);
+	Server_PrecacheModel(WAYPOINT_MODEL_SPAWN);
+	Server_PrecacheModel(WAYPOINT_MODEL_SWIM);
+	Server_PrecacheModel(WAYPOINT_MODEL_WEAPON);
 #endif
 
 	// [7/3/2012] Added mode specific precaches ~hogsy
@@ -307,7 +314,7 @@ void Server_Spawn(edict_t *ent)
 #ifdef GAME_OPENKATANA
 		// [31/7/2012] TODO: We need an md2 version of this! ~hogsy
 //		Engine.Server_PrecacheResource(RESOURCE_MODEL,"models/mikiko.mdl");
-		Engine.Server_PrecacheResource(RESOURCE_SOUND,"items/respawn.wav");
+		Server_PrecacheSound("items/respawn.wav");
 
 		// [20/12/2012] If we're in Vektar mode, then spawn the Vektar! ~hogsy
 		if(cvServerGameMode.iValue == MODE_VEKTAR)
@@ -336,24 +343,24 @@ void Server_Spawn(edict_t *ent)
 
 /*	Called by the engine.
 */
-bool Server_SpawnEntity(edict_t *ent)
+bool Server_SpawnEntity(ServerEntity_t *seEntity)
 {
 	SpawnList_t *slSpawn;
 
-	if(!ent->v.cClassname)
+	if (!seEntity->v.cClassname)
 	{
 		Engine.Con_Warning("Failed to get classname!\n");
 		return false;
 	}
 
 	for(slSpawn = SpawnList; slSpawn->name; slSpawn++)
-		if(!strcmp(slSpawn->name,ent->v.cClassname))
+		if (!strcmp(slSpawn->name, seEntity->v.cClassname))
 		{
-			slSpawn->spawn(ent);
+			slSpawn->spawn(seEntity);
 			return true;
 		}
 
-	Engine.Con_Warning("Entity doesn't have a spawn function! (%s)\n",ent->v.cClassname);
+	Engine.Con_Warning("Entity doesn't have a spawn function! (%s)\n", seEntity->v.cClassname);
 	return false;
 }
 
@@ -383,7 +390,7 @@ void Server_StartFrame(void)
 /*	Called by the engine.
 	Called per-frame for each entity just before physics.
 */
-void Server_EntityFrame(edict_t *eEntity)
+void Server_EntityFrame(ServerEntity_t *eEntity)
 {
 	Waypoint_Frame(eEntity);
 	Monster_Frame(eEntity);
@@ -392,7 +399,7 @@ void Server_EntityFrame(edict_t *eEntity)
 /*	Called by the engine.
 	Called for the "kill" command.
 */
-void Server_KillClient(edict_t *eClient)
+void Server_KillClient(ServerEntity_t *eClient)
 {
 	if(eClient->monster.iState != STATE_DEAD)
 		MONSTER_Damage(eClient,eClient,eClient->v.iHealth,0);
@@ -400,7 +407,7 @@ void Server_KillClient(edict_t *eClient)
 
 /*	General function for globally updating the HUD for clients.
 */
-void Server_UpdateClientMenu(edict_t *eClient,int iMenuState,bool bShow)
+void Server_UpdateClientMenu(ServerEntity_t *eClient, int iMenuState, bool bShow)
 {
 	// [5/8/2013] This is who we're telling to hide/show their HUD ~hogsy
 	Engine.SetMessageEntity(eClient);

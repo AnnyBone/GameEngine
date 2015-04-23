@@ -137,10 +137,10 @@ void Vektar_Spawn(void)
 	// [20/12/2012] Also precache our resources ~hogsy
 	Engine.Server_PrecacheResource(RESOURCE_MODEL,DAIKATANA_MODEL_WORLD);
 	Engine.Server_PrecacheResource(RESOURCE_MODEL,VEKTAR_MODEL_STATUE);
-	Engine.Server_PrecacheResource(RESOURCE_SOUND,VEKTAR_SOUND_GRABIT);
-	Engine.Server_PrecacheResource(RESOURCE_SOUND,VEKTAR_SOUND_FINDING);
-	Engine.Server_PrecacheResource(RESOURCE_SOUND,VEKTAR_SOUND_GOTIT);
-	Engine.Server_PrecacheResource(RESOURCE_SOUND,VEKTAR_SOUND_FANFARE);
+	Server_PrecacheSound(VEKTAR_SOUND_GRABIT);
+	Server_PrecacheSound(VEKTAR_SOUND_FINDING);
+	Server_PrecacheSound(VEKTAR_SOUND_GOTIT);
+	Server_PrecacheSound(VEKTAR_SOUND_FANFARE);
 
 	eVektar->v.cClassname	= "mpm_vektar";
 	eVektar->v.movetype		= MOVETYPE_STEP;

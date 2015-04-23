@@ -118,10 +118,10 @@ void SideWinder_Think(edict_t *eSideWinder)
 	int	iContents = Engine.Server_PointContents(eSideWinder->v.origin);
 
 	// [4/8/2012] Check if the contents have changed ~hogsy
-	if(iContents ==	(BSP_CONTENTS_WATER || CONTENT_SLIME	|| CONTENT_LAVA))
+	if (iContents == (BSP_CONTENTS_WATER || BSP_CONTENTS_SLIME || BSP_CONTENTS_LAVA))
 		eSideWinder->local.speed = SIDEWINDER_MINSPEED;
 	// [31/8/2012] Don't let us explode in the sky... ~hogsy
-	else if(iContents == CONTENT_SKY)
+	else if(iContents == BSP_CONTENTS_SKY)
 	{
 		Entity_Remove(eSideWinder);
 		// [15/8/2013] Oops! Return here! ~hogsy
@@ -206,7 +206,7 @@ void SideWinder_PrimaryAttack(edict_t *eOwner)
 
 	// [31/12/2013] Only do this once when spawning, here! ~hogsy
 	if(Engine.Server_PointContents(eOwner->v.origin) ==
-		(BSP_CONTENTS_WATER || CONTENT_SLIME || CONTENT_LAVA))
+		(BSP_CONTENTS_WATER || BSP_CONTENTS_SLIME || BSP_CONTENTS_LAVA))
 	{
 		cSound = "weapons/sidewinder/sidewinderunderwaterfire.wav";
 

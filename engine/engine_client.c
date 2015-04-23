@@ -55,7 +55,7 @@ void Client_PrecacheResource(int iType,char *cResource)
 	int		i;
 	unsigned int    w,h;
 	model_t	*mClientModel;
-	byte	*bData;
+	uint8_t	*bData;
 
 	switch(iType)
 	{
@@ -102,7 +102,9 @@ void Client_PrecacheResource(int iType,char *cResource)
 
 		Console_ErrorMessage(false,cPath,"Overflow!");
 		break;
-#if 0
+	case RESOURCE_MATERIAL:
+		// TODO: Implement material caching support.
+		break;
 	case RESOURCE_TEXTURE:
 		for(i = 0; i < sizeof(gMenuTexture); i++)
 			if(!gMenuTexture[i])
@@ -122,7 +124,6 @@ void Client_PrecacheResource(int iType,char *cResource)
 
 		Console_ErrorMessage(false,cResource,"Overflow!");
 		break;
-#endif
 	default:
 		Con_Warning("Attempted to precache an undefined type! (%s)\n",cResource);
 	}

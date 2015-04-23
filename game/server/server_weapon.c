@@ -188,50 +188,50 @@ void Weapon_Precache(void)
 
 	// Ion Rifle
 	Engine.Server_PrecacheResource(RESOURCE_MODEL,"models/weapons/v_ionrifle.md2");
-	Engine.Server_PrecacheResource(RESOURCE_SOUND,"weapons/laser.wav");
+	Server_PrecacheSound("weapons/laser.wav");
 
 	// C4
-	Engine.Server_PrecacheResource(RESOURCE_SOUND,"weapons/c4/c4beep.wav");
-	Engine.Server_PrecacheResource(RESOURCE_SOUND,"weapons/c4/c4cock.wav");
-	Engine.Server_PrecacheResource(RESOURCE_SOUND,"weapons/c4/c4fire.wav");
-	Engine.Server_PrecacheResource(RESOURCE_SOUND,"weapons/c4/c4stick.wav");
+	Server_PrecacheSound("weapons/c4/c4beep.wav");
+	Server_PrecacheSound("weapons/c4/c4cock.wav");
+	Server_PrecacheSound("weapons/c4/c4fire.wav");
+	Server_PrecacheSound("weapons/c4/c4stick.wav");
 
 	// Ion Blaster
-	Engine.Server_PrecacheResource(RESOURCE_SOUND,"weapons/ionblaster/explode.wav");
-	Engine.Server_PrecacheResource(RESOURCE_SOUND,"weapons/ionblaster/ionfire.wav");
-	Engine.Server_PrecacheResource(RESOURCE_SOUND,"weapons/ionblaster/ionflyby.wav");
-	Engine.Server_PrecacheResource(RESOURCE_SOUND,"weapons/ionblaster/ionready.wav");
-	Engine.Server_PrecacheResource(RESOURCE_SOUND,"weapons/ionblaster/bounce.wav");
+	Server_PrecacheSound("weapons/ionblaster/explode.wav");
+	Server_PrecacheSound("weapons/ionblaster/ionfire.wav");
+	Server_PrecacheSound("weapons/ionblaster/ionflyby.wav");
+	Server_PrecacheSound("weapons/ionblaster/ionready.wav");
+	Server_PrecacheSound("weapons/ionblaster/bounce.wav");
 	Engine.Server_PrecacheResource(RESOURCE_MODEL,"models/ionball.md2");
 
 	// Shockwave
-	Engine.Server_PrecacheResource(RESOURCE_SOUND,"weapons/shockwave/fade.wav");
-	Engine.Server_PrecacheResource(RESOURCE_SOUND,"weapons/shockwave/fire.wav");
-	Engine.Server_PrecacheResource(RESOURCE_SOUND,"weapons/shockwave/ready.wav");
-	Engine.Server_PrecacheResource(RESOURCE_SOUND,"weapons/shockwave/warmup.wav");
+	Server_PrecacheSound("weapons/shockwave/fade.wav");
+	Server_PrecacheSound("weapons/shockwave/fire.wav");
+	Server_PrecacheSound("weapons/shockwave/ready.wav");
+	Server_PrecacheSound("weapons/shockwave/warmup.wav");
 
-	Engine.Server_PrecacheResource(RESOURCE_SOUND,"weapons/shotcycler6/shotcyclerfire1.wav");
-	Engine.Server_PrecacheResource(RESOURCE_SOUND,"weapons/shotcycler6/shotcyclerfire2.wav");
-	Engine.Server_PrecacheResource(RESOURCE_SOUND,"weapons/shotcycler6/shotcyclerfire3.wav");
-	Engine.Server_PrecacheResource(RESOURCE_SOUND,"weapons/shotcycler6/shotcyclerfire4.wav");
-	Engine.Server_PrecacheResource(RESOURCE_SOUND,"weapons/shotcycler6/shotcyclerfire5.wav");
-	Engine.Server_PrecacheResource(RESOURCE_SOUND,"weapons/shotcycler6/shotcyclerfire6.wav");
-	Engine.Server_PrecacheResource(RESOURCE_SOUND,"weapons/shotcycler6/shotcyclerfire7.wav");
-	Engine.Server_PrecacheResource(RESOURCE_SOUND,"weapons/shotcycler6/shotcyclerfire8.wav");
-	Engine.Server_PrecacheResource(RESOURCE_SOUND,"weapons/shotcycler6/shotcyclerfire9.wav");
-	Engine.Server_PrecacheResource(RESOURCE_SOUND,"weapons/shotcycler6/barrelspin.wav");
-	Engine.Server_PrecacheResource(RESOURCE_SOUND,"weapons/shotcycler6/shotcyclerready.wav");
-	Engine.Server_PrecacheResource(RESOURCE_SOUND,"weapons/shotcycler6/shotcyclerclick.wav");
-	Engine.Server_PrecacheResource(RESOURCE_SOUND,"weapons/shotcycler6/shotclick.wav");
-	Engine.Server_PrecacheResource(RESOURCE_SOUND,"weapons/shotcycler6/shotpull.wav");
-	Engine.Server_PrecacheResource(RESOURCE_SOUND,"weapons/shotcycler6/shotslap.wav");
+	Server_PrecacheSound("weapons/shotcycler6/shotcyclerfire1.wav");
+	Server_PrecacheSound("weapons/shotcycler6/shotcyclerfire2.wav");
+	Server_PrecacheSound("weapons/shotcycler6/shotcyclerfire3.wav");
+	Server_PrecacheSound("weapons/shotcycler6/shotcyclerfire4.wav");
+	Server_PrecacheSound("weapons/shotcycler6/shotcyclerfire5.wav");
+	Server_PrecacheSound("weapons/shotcycler6/shotcyclerfire6.wav");
+	Server_PrecacheSound("weapons/shotcycler6/shotcyclerfire7.wav");
+	Server_PrecacheSound("weapons/shotcycler6/shotcyclerfire8.wav");
+	Server_PrecacheSound("weapons/shotcycler6/shotcyclerfire9.wav");
+	Server_PrecacheSound("weapons/shotcycler6/barrelspin.wav");
+	Server_PrecacheSound("weapons/shotcycler6/shotcyclerready.wav");
+	Server_PrecacheSound("weapons/shotcycler6/shotcyclerclick.wav");
+	Server_PrecacheSound("weapons/shotcycler6/shotclick.wav");
+	Server_PrecacheSound("weapons/shotcycler6/shotpull.wav");
+	Server_PrecacheSound("weapons/shotcycler6/shotslap.wav");
 
 	// Sidewinder
-	Engine.Server_PrecacheResource(RESOURCE_SOUND,"weapons/sidewinder/sidewinderfire.wav");
-	Engine.Server_PrecacheResource(RESOURCE_SOUND,"weapons/sidewinder/sidewinderflyby.wav");
-	Engine.Server_PrecacheResource(RESOURCE_SOUND,"weapons/sidewinder/sidewindersplash.wav");
-	Engine.Server_PrecacheResource(RESOURCE_SOUND,"weapons/sidewinder/sidewinderunderwaterfire.wav");
-	Engine.Server_PrecacheResource(RESOURCE_SOUND,"weapons/sidewinder/sidewinderunderwaterflyby.wav");
+	Server_PrecacheSound("weapons/sidewinder/sidewinderfire.wav");
+	Server_PrecacheSound("weapons/sidewinder/sidewinderflyby.wav");
+	Server_PrecacheSound("weapons/sidewinder/sidewindersplash.wav");
+	Server_PrecacheSound("weapons/sidewinder/sidewinderunderwaterfire.wav");
+	Server_PrecacheSound("weapons/sidewinder/sidewinderunderwaterflyby.wav");
 #elif GAME_ADAMAS
 	Engine.Server_PrecacheResource(RESOURCE_MODEL,BLAZER_MODEL_VIEW);
 #endif
@@ -245,7 +245,7 @@ MathVector_t Weapon_Aim(edict_t *eEntity)
 	float			fDistance, fBestDistance;
 	trace_t			tAimLine;
 	edict_t			*eCheck, *eBest;
-	MathVector3_t	mvStart, mvEnd, mvDirection, mvBestDirection;
+	MathVector3f_t	mvStart, mvEnd, mvDirection, mvBestDirection;
 
 	// Copy the entity's origin as our starting position.
 	Math_VectorCopy(eEntity->v.origin, mvStart);
@@ -336,10 +336,10 @@ MathVector3_t mvTraceMins = { 8, 8, 8 };
 
 /*	Runs a trace to see if a projectile can be casted.
 */
-bool Weapon_CheckTrace(edict_t *eOwner)
+bool Weapon_CheckTrace(ServerEntity_t *eOwner)
 {
 	int i, iTraceContents;
-	MathVector3_t mvTarget, mvSource, mvDirection;
+	MathVector3f_t mvTarget, mvSource, mvDirection;
 	trace_t tCheck;
 
 	// Copy over the players origin.
@@ -359,7 +359,7 @@ bool Weapon_CheckTrace(edict_t *eOwner)
 
 	// Ensure that we're not inside the sky or within a solid.
 	iTraceContents = Engine.Server_PointContents(tCheck.endpos);
-	if ((iTraceContents == CONTENT_SKY) || (iTraceContents == BSP_CONTENTS_SOLID))
+	if ((iTraceContents == BSP_CONTENTS_SKY) || (iTraceContents == BSP_CONTENTS_SOLID))
 		return false;
 
 	// Check to see if there's a target, and it's not the world!
@@ -398,7 +398,7 @@ void Weapon_BulletProjectile(edict_t *eEntity,float fSpread,int iDamage,vec_t *v
 		vTarg[i] = vSource[i]+(vDirection[i]*2048.0f)+(fSpread*Math_CRandom()*20.0f);
 
 	tTrace = Traceline(eEntity,vSource,vTarg,0);
-	if((tTrace.fraction == 1.0f) || (Engine.Server_PointContents(tTrace.endpos) == CONTENT_SKY))
+	if ((tTrace.fraction == 1.0f) || (Engine.Server_PointContents(tTrace.endpos) == BSP_CONTENTS_SKY))
 		return;
 	else
 	{

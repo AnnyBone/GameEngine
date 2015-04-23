@@ -157,7 +157,7 @@ void Prisoner_Spawn(edict_t *ePrisoner)
 	Engine.Server_PrecacheResource(RESOURCE_MODEL,PRISONER_MODEL_BODY);
 	Engine.Server_PrecacheResource(RESOURCE_MODEL,PRISONER_MODEL_LEGS);
 	Engine.Server_PrecacheResource(RESOURCE_MODEL,PRISONER_MODEL_TORSO);
-	Engine.Server_PrecacheResource(RESOURCE_SOUND,PRISONER_SOUND_HELP);
+	Server_PrecacheSound(PRISONER_SOUND_HELP);
 
 #if 0
 	{
@@ -180,7 +180,7 @@ PRISONER_GENERATEKEY:
 
 	ePrisoner->v.movetype		= MOVETYPE_STEP;
 	ePrisoner->v.iHealth		= PRISONER_MAX_HEALTH;
-	ePrisoner->v.iMaxHealth		= PRISONER_MAX_HEALTH;
+	ePrisoner->local.iMaxHealth = PRISONER_MAX_HEALTH;
 	ePrisoner->v.bTakeDamage	= true;
 	ePrisoner->v.netname		= cPrisonerName;
 	ePrisoner->v.frame			= 0;

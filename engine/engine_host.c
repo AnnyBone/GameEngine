@@ -499,9 +499,6 @@ void Host_ServerFrame (void)
 {
 	int		i,active; //johnfitz
 
-	// Run the world state
-	pr_global_struct.frametime = host_frametime;
-
 	// Set the time and clear the general datagram
 	SV_ClearDatagram ();
 
@@ -528,8 +525,8 @@ void Host_ServerFrame (void)
 				active++;
 		}
 
-		dev_stats.edicts        = active;
-		dev_peakstats.edicts    = Math_Max(active,dev_peakstats.edicts);
+		dev_stats.edicts = active;
+		dev_peakstats.edicts = Math_Max(active, dev_peakstats.edicts);
 	}
 //johnfitz
 

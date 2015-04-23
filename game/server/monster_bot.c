@@ -167,12 +167,12 @@ void Bot_Spawn(edict_t *eBot)
 		iSpawnType = INFO_PLAYER_SUPERFLY;
 
 		Engine.Server_PrecacheResource(RESOURCE_MODEL,"models/sprfly.md2");
-		Engine.Server_PrecacheResource(RESOURCE_SOUND,"player/superfly/superflydeath1.wav");
-		Engine.Server_PrecacheResource(RESOURCE_SOUND,"player/superfly/superflydeath2.wav");
-		Engine.Server_PrecacheResource(RESOURCE_SOUND,"player/superfly/superflydeath3.wav");
-		Engine.Server_PrecacheResource(RESOURCE_SOUND,"player/superfly/superflydeath4.wav");
+		Server_PrecacheSound("player/superfly/superflydeath1.wav");
+		Server_PrecacheSound("player/superfly/superflydeath2.wav");
+		Server_PrecacheSound("player/superfly/superflydeath3.wav");
+		Server_PrecacheSound("player/superfly/superflydeath4.wav");
 
-		eBot->v.model	= "models/sprfly.md2";
+		eBot->v.model = "models/sprfly.md2";
 		eBot->v.netname	= "Superfly Johnson";
 
 		eBot->monster.iType	= MONSTER_SUPERFLY;
@@ -186,12 +186,13 @@ void Bot_Spawn(edict_t *eBot)
 			(int)eBot->v.origin[1],
 			(int)eBot->v.origin[2]);
 
-		ENTITY_REMOVE(eBot);
+		Entity_Remove(eBot);
+		return;
 	}
 
 	eBot->v.cClassname	= "bot";
 	eBot->v.iHealth		= 100;
-	eBot->v.iMaxHealth	= (int)cvServerMaxHealth.value;
+	eBot->local.iMaxHealth = cvServerMaxHealth.iValue;
 	eBot->v.movetype	= MOVETYPE_STEP;
 	eBot->v.bTakeDamage	= true;
 

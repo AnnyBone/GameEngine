@@ -55,7 +55,7 @@ void Cvar_List_f (void)
 			continue;
 
 		Con_SafePrintf ("%s%s %s \"%s\"\n",
-			cvar->archive ? "*" : " ",
+			cvar->bArchive ? "*" : " ",
 			cvar->server ? "s" : " ",
 			cvar->name,
 			cvar->string);
@@ -401,7 +401,7 @@ void Cvar_WriteVariables (FILE *f)
 	cvar_t	*var;
 
 	for (var = cConsoleVariables ; var ; var = var->next)
-		if (var->archive)
+		if (var->bArchive)
 			fprintf (f, "%s \"%s\"\n", var->name, var->string);
 }
 

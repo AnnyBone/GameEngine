@@ -13,12 +13,12 @@
 		Cleaned this up.
 	~hogsy
 */
-void Area_SetMoveDirection(vec3_t vAngles,vec3_t vMoveDirection)
+void Area_SetMoveDirection(MathVector3f_t vAngles, MathVector3f_t vMoveDirection)
 {
-	vec3_t	vUp			= { 0,	-1, 0	},
-			vMoveUp		= {	0,	0,	1	},
-			vDown		= { 0,	-2, 0	},
-			vMoveDown	= { 0,	0,	-1	};
+	MathVector3f_t vUp = { 0, -1, 0 };
+	MathVector3f_t vMoveUp = { 0, 0, 1 };
+	MathVector3f_t vDown = { 0, -2, 0 };
+	MathVector3f_t vMoveDown = { 0, 0, -1 };
 
 	if(Math_VectorCompare(vAngles,vUp))
 		Math_VectorCopy(vMoveUp,vMoveDirection);
@@ -30,7 +30,7 @@ void Area_SetMoveDirection(vec3_t vAngles,vec3_t vMoveDirection)
 	Math_VectorClear(vAngles);
 }
 
-void Area_CalculateMovementDone(edict_t *eArea)
+void Area_CalculateMovementDone(ServerEntity_t *eArea)
 {
 	Entity_SetOrigin(eArea,eArea->local.finaldest);
 
@@ -41,9 +41,9 @@ void Area_CalculateMovementDone(edict_t *eArea)
 		eArea->local.think1(eArea,eArea);
 }
 
-void Area_CalculateMovement(edict_t *eArea,vec3_t vTDest,float fSpeed,void (*Function)(edict_t *eArea,edict_t *eOther))
+void Area_CalculateMovement(ServerEntity_t *eArea, MathVector3f_t vTDest, float fSpeed, void(*Function)(ServerEntity_t *eArea, ServerEntity_t *eOther))
 {
-	vec3_t	vdestdelta;
+	MathVector3f_t	vdestdelta;
 	float	fTravelTime;
 
 	Math_VectorCopy(vTDest,eArea->local.finaldest);
@@ -69,7 +69,7 @@ void Area_CalculateMovement(edict_t *eArea,vec3_t vTDest,float fSpeed,void (*Fun
 /*	Area in which players can be randomly spawned.
 	TODO: Finish this!
 */
-void Area_PlayerSpawn(edict_t *eArea)
+void Area_PlayerSpawn(ServerEntity_t *eArea)
 {
 	//Waypoint_Spawn(eArea->v.origin,WAYPOINT_SPAWNAREA);
 }
@@ -84,7 +84,7 @@ void Area_PlayerSpawn(edict_t *eArea)
 #define	BREAKABLE_ROCK	2
 #define	BREAKABLE_METAL	3
 
-void Area_BreakableBounce(edict_t *eGib,edict_t *eOther)
+void Area_BreakableBounce(ServerEntity_t *eGib, ServerEntity_t *eOther)
 {
 	char cSound[24];
 
@@ -113,10 +113,10 @@ void Area_BreakableBounce(edict_t *eGib,edict_t *eOther)
 	Sound(eGib,CHAN_AUTO,cSound,30,ATTN_NORM);
 }
 
-void Area_CreateGib(edict_t *eArea, const char *cModel)
+void Area_CreateGib(ServerEntity_t *eArea, const char *cModel)
 {
 	int		j;
-	edict_t	*eGib;
+	ServerEntity_t	*eGib;
 
 	eGib = Entity_Spawn();
 	if (eGib)
@@ -143,7 +143,7 @@ void Area_CreateGib(edict_t *eArea, const char *cModel)
 	}
 }
 
-void Area_BreakableDie(edict_t *eArea, edict_t *eOther)
+void Area_BreakableDie(ServerEntity_t *eArea, ServerEntity_t *eOther)
 {
 	int		i;
 	char	cSound[24], cModel[PLATFORM_MAX_PATH];
@@ -179,12 +179,12 @@ void Area_BreakableDie(edict_t *eArea, edict_t *eOther)
 	Entity_Remove(eArea);
 }
 
-void Area_BreakableUse(edict_t *eArea)
+void Area_BreakableUse(ServerEntity_t *eArea)
 {
 	Area_BreakableDie(eArea, eArea->local.activator);
 }
 
-void Area_BreakableSpawn(edict_t *eArea)
+void Area_BreakableSpawn(ServerEntity_t *eArea)
 {
 	if (eArea->v.iHealth <= 0)
 		eArea->v.iHealth = 1;
@@ -192,43 +192,42 @@ void Area_BreakableSpawn(edict_t *eArea)
 	switch (eArea->local.style)
 	{
 	case BREAKABLE_GLASS:
-		Engine.Server_PrecacheResource(RESOURCE_SOUND, PHYSICS_SOUND_GLASS0);
-		Engine.Server_PrecacheResource(RESOURCE_SOUND, PHYSICS_SOUND_GLASS1);
-		Engine.Server_PrecacheResource(RESOURCE_SOUND, PHYSICS_SOUND_GLASS2);
-		Engine.Server_PrecacheResource(RESOURCE_MODEL, PHYSICS_MODEL_GLASS0);
-		Engine.Server_PrecacheResource(RESOURCE_MODEL, PHYSICS_MODEL_GLASS1);
-		Engine.Server_PrecacheResource(RESOURCE_MODEL, PHYSICS_MODEL_GLASS2);
+		Server_PrecacheSound( PHYSICS_SOUND_GLASS0);
+		Server_PrecacheSound( PHYSICS_SOUND_GLASS1);
+		Server_PrecacheSound( PHYSICS_SOUND_GLASS2);
+		Server_PrecacheModel(PHYSICS_MODEL_GLASS0);
+		Server_PrecacheModel(PHYSICS_MODEL_GLASS1);
+		Server_PrecacheModel(PHYSICS_MODEL_GLASS2);
 		break;
 	case BREAKABLE_WOOD:
-		Engine.Server_PrecacheResource(RESOURCE_SOUND, PHYSICS_SOUND_WOOD0);
-		Engine.Server_PrecacheResource(RESOURCE_SOUND, PHYSICS_SOUND_WOOD1);
-		Engine.Server_PrecacheResource(RESOURCE_SOUND, PHYSICS_SOUND_WOOD2);
-		Engine.Server_PrecacheResource(RESOURCE_MODEL, PHYSICS_MODEL_WOOD0);
-		Engine.Server_PrecacheResource(RESOURCE_MODEL, PHYSICS_MODEL_WOOD1);
-		Engine.Server_PrecacheResource(RESOURCE_MODEL, PHYSICS_MODEL_WOOD2);
+		Server_PrecacheSound( PHYSICS_SOUND_WOOD0);
+		Server_PrecacheSound( PHYSICS_SOUND_WOOD1);
+		Server_PrecacheSound( PHYSICS_SOUND_WOOD2);
+		Server_PrecacheModel(PHYSICS_MODEL_WOOD0);
+		Server_PrecacheModel(PHYSICS_MODEL_WOOD1);
+		Server_PrecacheModel(PHYSICS_MODEL_WOOD2);
 		break;
 	case BREAKABLE_ROCK:
-		Engine.Server_PrecacheResource(RESOURCE_SOUND, PHYSICS_SOUND_ROCK0);
-		Engine.Server_PrecacheResource(RESOURCE_SOUND, PHYSICS_SOUND_ROCK1);
-		Engine.Server_PrecacheResource(RESOURCE_SOUND, PHYSICS_SOUND_ROCK2);
-		Engine.Server_PrecacheResource(RESOURCE_MODEL, PHYSICS_MODEL_ROCK0);
-		Engine.Server_PrecacheResource(RESOURCE_MODEL, PHYSICS_MODEL_ROCK1);
-		Engine.Server_PrecacheResource(RESOURCE_MODEL, PHYSICS_MODEL_ROCK2);
+		Server_PrecacheSound( PHYSICS_SOUND_ROCK0);
+		Server_PrecacheSound( PHYSICS_SOUND_ROCK1);
+		Server_PrecacheSound( PHYSICS_SOUND_ROCK2);
+		Server_PrecacheModel(PHYSICS_MODEL_ROCK0);
+		Server_PrecacheModel(PHYSICS_MODEL_ROCK1);
+		Server_PrecacheModel(PHYSICS_MODEL_ROCK2);
 		break;
 	case BREAKABLE_METAL:
-		Engine.Server_PrecacheResource(RESOURCE_SOUND, PHYSICS_SOUND_METAL0);
-		Engine.Server_PrecacheResource(RESOURCE_SOUND, PHYSICS_SOUND_METAL1);
-		Engine.Server_PrecacheResource(RESOURCE_SOUND, PHYSICS_SOUND_METAL2);
-		Engine.Server_PrecacheResource(RESOURCE_MODEL, PHYSICS_MODEL_METAL0);
-		Engine.Server_PrecacheResource(RESOURCE_MODEL, PHYSICS_MODEL_METAL1);
-		Engine.Server_PrecacheResource(RESOURCE_MODEL, PHYSICS_MODEL_METAL2);
+		Server_PrecacheSound( PHYSICS_SOUND_METAL0);
+		Server_PrecacheSound( PHYSICS_SOUND_METAL1);
+		Server_PrecacheSound( PHYSICS_SOUND_METAL2);
+		Server_PrecacheModel(PHYSICS_MODEL_METAL0);
+		Server_PrecacheModel(PHYSICS_MODEL_METAL1);
+		Server_PrecacheModel(PHYSICS_MODEL_METAL2);
 		break;
 	default:
 		Engine.Con_Warning("area_breakable: Unknown style\n");
 	}
 
-	// UNDONE: This compiled and all and it works fine but do it a cleaner way. ~eukos
-	// [31/12/2013] How much cleaner could you even do this? Seems fine to me. ~hogsy
+	// If we've been given a name, then set our use function.
 	if (eArea->v.cName)
 		eArea->v.use = Area_BreakableUse;
 
@@ -252,18 +251,18 @@ void Area_BreakableSpawn(edict_t *eArea)
 
 /**/
 
-void Area_RotateBlocked(edict_t *eArea,edict_t *eOther)
+void Area_RotateBlocked(ServerEntity_t *eArea, ServerEntity_t *eOther)
 {
 	MONSTER_Damage(eOther,eArea,eArea->local.iDamage,DAMAGE_TYPE_CRUSH);
 }
 
-void Area_RotateTouch(edict_t *eArea,edict_t *eOther)
+void Area_RotateTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
 {
 	if(eArea->local.dMoveFinished > Server.dTime)
 		return;
 }
 
-void Area_RotateThink(edict_t *eArea)
+void Area_RotateThink(ServerEntity_t *eArea)
 {
 	eArea->v.dNextThink	= Server.dTime+1000000000.0;
 }
@@ -275,7 +274,7 @@ void Area_RotateThink(edict_t *eArea)
 #define	SPAWNFLAG_ROTATE_Z			8
 #define	SPAWNFLAG_ROTATE_REVERSE	64
 
-void Area_RotateSpawn(edict_t *eArea)
+void Area_RotateSpawn(ServerEntity_t *eArea)
 {
 	if(!eArea->local.speed)
 		eArea->local.speed = 100.0f;
@@ -340,7 +339,7 @@ void Area_RotateSpawn(edict_t *eArea)
 #define STATE_UP			2	// Brush is moving up.
 #define STATE_DOWN			3	// Brush is moving down.
 
-void Area_DoorDone(edict_t *eArea, edict_t *eOther)
+void Area_DoorDone(ServerEntity_t *eArea, ServerEntity_t *eOther)
 {
 	eArea->local.iValue = 0;
 
@@ -348,7 +347,7 @@ void Area_DoorDone(edict_t *eArea, edict_t *eOther)
 		Sound(eArea,CHAN_VOICE,eArea->local.cSoundStop,255,ATTN_NORM);
 }
 
-void Area_DoorReturn(edict_t *eArea)
+void Area_DoorReturn(ServerEntity_t *eArea)
 {
 	eArea->local.state = STATE_DOWN;
 
@@ -360,7 +359,7 @@ void Area_DoorReturn(edict_t *eArea)
 		Sound(eArea,CHAN_VOICE,eArea->local.cSoundMoving,255,ATTN_NORM);
 }
 
-void Area_DoorWait(edict_t *eArea,edict_t *eOther)
+void Area_DoorWait(ServerEntity_t *eArea, ServerEntity_t *eOther)
 {
 	UseTargets(eArea, eOther);
 
@@ -376,7 +375,7 @@ void Area_DoorWait(edict_t *eArea,edict_t *eOther)
 		Sound(eArea,CHAN_VOICE,eArea->local.cSoundStop,255,ATTN_NORM);
 }
 
-void Area_DoorTouch(edict_t *eArea, edict_t *eOther)
+void Area_DoorTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
 {
 	if (eArea->local.state == STATE_UP || eArea->local.state == STATE_TOP)
 		return;
@@ -392,7 +391,7 @@ void Area_DoorTouch(edict_t *eArea, edict_t *eOther)
 		Sound(eArea,CHAN_VOICE,eArea->local.cSoundMoving,255,ATTN_NORM);
 }
 
-void Area_DoorUse(edict_t *eArea)
+void Area_DoorUse(ServerEntity_t *eArea)
 {
 	if(eArea->local.state == STATE_UP || eArea->local.state == STATE_TOP)
 		return;
@@ -407,28 +406,28 @@ void Area_DoorUse(edict_t *eArea)
 		Sound(eArea,CHAN_VOICE,eArea->local.cSoundMoving,255,ATTN_NORM);
 }
 
-void Area_DoorBlocked(edict_t *eArea, edict_t *eOther)
+void Area_DoorBlocked(ServerEntity_t *eArea, ServerEntity_t *eOther)
 {
 	MONSTER_Damage(eOther,eArea,eArea->local.iDamage,0);
 }
 
-void Area_DoorSpawn(edict_t *eArea)
+void Area_DoorSpawn(ServerEntity_t *eArea)
 {
 	int		i;
 	float	fDist;
-	vec3_t	vMoveDir;
+	MathVector3f_t vMoveDir;
 
 	if(!eArea->v.spawnflags)
 		eArea->v.spawnflags = 0;
 
 	if(eArea->local.cSoundStart)
-		Engine.Server_PrecacheResource(RESOURCE_SOUND,eArea->local.cSoundStart);
+		Server_PrecacheSound(eArea->local.cSoundStart);
 	if(eArea->local.cSoundStop)
-		Engine.Server_PrecacheResource(RESOURCE_SOUND,eArea->local.cSoundStop);
+		Server_PrecacheSound(eArea->local.cSoundStop);
 	if(eArea->local.cSoundMoving)
-		Engine.Server_PrecacheResource(RESOURCE_SOUND,eArea->local.cSoundMoving);
+		Server_PrecacheSound(eArea->local.cSoundMoving);
 	if(eArea->local.cSoundReturn)
-		Engine.Server_PrecacheResource(RESOURCE_SOUND,eArea->local.cSoundReturn);
+		Server_PrecacheSound(eArea->local.cSoundReturn);
 
 	eArea->v.movetype = MOVETYPE_PUSH;
 
@@ -469,7 +468,7 @@ void Area_DoorSpawn(edict_t *eArea)
 	Change Level
 */
 
-void Area_ChangeLevelTouch(edict_t *eArea,edict_t *eOther)
+void Area_ChangeLevelTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
 {
 	// [2/1/2013] TODO: If coop wait for eOther players? ~hogsy
 
@@ -489,7 +488,7 @@ void Area_ChangeLevelTouch(edict_t *eArea,edict_t *eOther)
 #endif
 }
 
-void Area_ChangeLevel(edict_t *eArea)
+void Area_ChangeLevel(ServerEntity_t *eArea)
 {
 	if(!eArea->v.targetname)
 	{
@@ -514,7 +513,7 @@ void Area_ChangeLevel(edict_t *eArea)
 	Trigger
 */
 
-void Area_TriggerTouch(edict_t *eArea,edict_t *eOther)
+void Area_TriggerTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
 {
 	if(eArea->v.dNextThink || ((eArea->monster.iType != MONSTER_PLAYER) && eOther->v.iHealth <= 0))
 		return;
@@ -527,7 +526,7 @@ void Area_TriggerTouch(edict_t *eArea,edict_t *eOther)
 		Entity_Remove(eArea);
 }
 
-void Area_TriggerSpawn(edict_t *eArea)
+void Area_TriggerSpawn(ServerEntity_t *eArea)
 {
 	if(!eArea->v.targetname)
 	{
@@ -552,7 +551,7 @@ void Area_TriggerSpawn(edict_t *eArea)
 	Pushable
 */
 
-void Area_PushableTouch(edict_t *eArea,edict_t *eOther)
+void Area_PushableTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
 {
 	int i;
 
@@ -566,7 +565,7 @@ void Area_PushableTouch(edict_t *eArea,edict_t *eOther)
 			eArea->v.origin[i] -= (eOther->v.velocity[i]/5.0f);
 }
 
-void Area_PushableUse(edict_t *eArea)
+void Area_PushableUse(ServerEntity_t *eArea)
 {
 	eArea->Physics.iSolid	= SOLID_NOT;
 	eArea->v.movetype		= MOVETYPE_FLYBOUNCE;
@@ -576,7 +575,7 @@ void Area_PushableUse(edict_t *eArea)
 	//Math_VectorSet(10.0f,eArea->v.velocity);
 }
 
-void Area_PushableSpawn(edict_t *eArea)
+void Area_PushableSpawn(ServerEntity_t *eArea)
 {
 	eArea->v.TouchFunction	= Area_PushableTouch;
 	eArea->v.use			= Area_PushableUse;
@@ -595,7 +594,7 @@ void Area_PushableSpawn(edict_t *eArea)
 	Wall
 */
 
-void Area_WallUse(edict_t *eArea)
+void Area_WallUse(ServerEntity_t *eArea)
 {
 	if(eArea->Physics.iSolid == SOLID_BSP)
 	{
@@ -613,12 +612,14 @@ void Area_WallUse(edict_t *eArea)
 	Entity_SetModel(eArea,eArea->local.cOldModel);
 }
 
-void Area_WallSpawn(edict_t *eArea)
+void Area_WallSpawn(ServerEntity_t *eArea)
 {
 	if(!eArea->v.model)
 	{
 		Engine.Con_Warning("Area entity with no model!\n");
-		ENTITY_REMOVE(eArea);
+		
+		Entity_Remove(eArea);
+		return;
 	}
 
 	if(eArea->v.cName)
@@ -636,7 +637,7 @@ void Area_WallSpawn(edict_t *eArea)
 	Button
 */
 
-void Area_ButtonDone(edict_t *eArea, edict_t *eOther)
+void Area_ButtonDone(ServerEntity_t *eArea, ServerEntity_t *eOther)
 {
 	eArea->local.state	= STATE_DOWN;
 	eArea->local.iValue = 0;
@@ -645,7 +646,7 @@ void Area_ButtonDone(edict_t *eArea, edict_t *eOther)
 		Sound(eArea,CHAN_VOICE,eArea->local.cSoundStop,255,ATTN_NORM);
 }
 
-void Area_ButtonReturn(edict_t *eArea)
+void Area_ButtonReturn(ServerEntity_t *eArea)
 {
 	Area_CalculateMovement(eArea,eArea->local.pos1,eArea->local.speed,Area_ButtonDone);
 
@@ -655,7 +656,7 @@ void Area_ButtonReturn(edict_t *eArea)
 		Sound(eArea,CHAN_VOICE,eArea->local.cSoundMoving,255,ATTN_NORM);
 }
 
-void Area_ButtonWait(edict_t *eArea, edict_t *eOther)
+void Area_ButtonWait(ServerEntity_t *eArea, ServerEntity_t *eOther)
 {
 	UseTargets(eArea, eOther);
 
@@ -671,7 +672,7 @@ void Area_ButtonWait(edict_t *eArea, edict_t *eOther)
 		Sound(eArea,CHAN_VOICE,eArea->local.cSoundStop,255,ATTN_NORM);
 }
 
-void Area_ButtonTouch(edict_t *eArea,edict_t *eOther)
+void Area_ButtonTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
 {
 	if(eArea->local.state == STATE_UP || eArea->local.state == STATE_TOP)
 		return;
@@ -688,7 +689,7 @@ void Area_ButtonTouch(edict_t *eArea,edict_t *eOther)
 		Sound(eArea,CHAN_VOICE,eArea->local.cSoundMoving,255,ATTN_NORM);
 }
 
-void Area_ButtonUse(edict_t *eArea)
+void Area_ButtonUse(ServerEntity_t *eArea)
 {
 	if(eArea->local.state == STATE_UP || eArea->local.state == STATE_TOP)
 		return;
@@ -703,28 +704,28 @@ void Area_ButtonUse(edict_t *eArea)
 		Sound(eArea,CHAN_VOICE,eArea->local.cSoundMoving,255,ATTN_NORM);
 }
 
-void Area_ButtonBlocked(edict_t *eArea, edict_t *eOther)
+void Area_ButtonBlocked(ServerEntity_t *eArea, ServerEntity_t *eOther)
 {
 	MONSTER_Damage(eOther,eArea,eArea->local.iDamage,0);
 }
 
-void Area_ButtonSpawn(edict_t *eArea)
+void Area_ButtonSpawn(ServerEntity_t *eArea)
 {
 	int		i;
 	float	fDist;
-	vec3_t	vMoveDir;
+	MathVector3f_t vMoveDir;
 
 	if(!eArea->v.spawnflags)
 		eArea->v.spawnflags = 0;
 
 	if(eArea->local.cSoundStart)
-		Engine.Server_PrecacheResource(RESOURCE_SOUND,eArea->local.cSoundStart);
+		Server_PrecacheSound(eArea->local.cSoundStart);
 	if(eArea->local.cSoundStop)
-		Engine.Server_PrecacheResource(RESOURCE_SOUND,eArea->local.cSoundStop);
+		Server_PrecacheSound(eArea->local.cSoundStop);
 	if(eArea->local.cSoundMoving)
-		Engine.Server_PrecacheResource(RESOURCE_SOUND,eArea->local.cSoundMoving);
+		Server_PrecacheSound(eArea->local.cSoundMoving);
 	if(eArea->local.cSoundReturn)
-		Engine.Server_PrecacheResource(RESOURCE_SOUND,eArea->local.cSoundReturn);
+		Server_PrecacheSound(eArea->local.cSoundReturn);
 
 	eArea->v.movetype = MOVETYPE_PUSH;
 
@@ -768,17 +769,17 @@ void Area_ButtonSpawn(edict_t *eArea)
 	Platform
 */
 
-void Area_PlatformTouch(edict_t *eArea, edict_t *eOther);
+void Area_PlatformTouch(ServerEntity_t *eArea, ServerEntity_t *eOther);
 
-void Area_PlatformSpawnTouchboxTouch(edict_t *eArea, edict_t *eOther)
+void Area_PlatformSpawnTouchboxTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
 {
 	Area_PlatformTouch(eArea->v.enemy, eOther);
 }
 
-void Area_PlatformSpawnTouchbox(edict_t *eArea)
+void Area_PlatformSpawnTouchbox(ServerEntity_t *eArea)
 {
-	edict_t *eTrigger;
-	vec3_t vTrigMin, vTrigMax;
+	ServerEntity_t *eTrigger;
+	MathVector3f_t vTrigMin, vTrigMax;
 
 	eTrigger = Entity_Spawn();
 	eTrigger->v.TouchFunction = Area_PlatformSpawnTouchboxTouch;
@@ -812,7 +813,7 @@ void Area_PlatformSpawnTouchbox(edict_t *eArea)
 	Entity_SetSizeVector(eTrigger,vTrigMin,vTrigMax);
 }
 
-void Area_PlatformDone(edict_t *eArea, edict_t *eOther)
+void Area_PlatformDone(ServerEntity_t *eArea, ServerEntity_t *eOther)
 {
 	eArea->local.iValue = 0;
 
@@ -820,7 +821,7 @@ void Area_PlatformDone(edict_t *eArea, edict_t *eOther)
 		Sound(eArea,CHAN_VOICE,eArea->local.cSoundStop,255,ATTN_NORM);
 }
 
-void Area_PlatformReturn(edict_t *eArea)
+void Area_PlatformReturn(ServerEntity_t *eArea)
 {
 	eArea->local.state = STATE_DOWN;
 
@@ -832,7 +833,7 @@ void Area_PlatformReturn(edict_t *eArea)
 		Sound(eArea,CHAN_VOICE,eArea->local.cSoundMoving,255,ATTN_NORM);
 }
 
-void Area_PlatformWait(edict_t *eArea, edict_t *eOther)
+void Area_PlatformWait(ServerEntity_t *eArea, ServerEntity_t *eOther)
 {
 	UseTargets(eArea, eOther);
 
@@ -848,7 +849,7 @@ void Area_PlatformWait(edict_t *eArea, edict_t *eOther)
 		Sound(eArea,CHAN_VOICE,eArea->local.cSoundStop,255,ATTN_NORM);
 }
 
-void Area_PlatformTouch(edict_t *eArea, edict_t *eOther)
+void Area_PlatformTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
 {
 	if(eArea->local.state == STATE_UP || eArea->local.state == STATE_TOP)
 		return;
@@ -864,7 +865,7 @@ void Area_PlatformTouch(edict_t *eArea, edict_t *eOther)
 		Sound(eArea,CHAN_VOICE,eArea->local.cSoundMoving,255,ATTN_NORM);
 }
 
-void Area_PlatformUse(edict_t *eArea)
+void Area_PlatformUse(ServerEntity_t *eArea)
 {
 	if(eArea->local.state == STATE_UP || eArea->local.state == STATE_TOP)
 		return;
@@ -879,12 +880,12 @@ void Area_PlatformUse(edict_t *eArea)
 		Sound(eArea,CHAN_VOICE,eArea->local.cSoundMoving,255,ATTN_NORM);
 }
 
-void Area_PlatformBlocked(edict_t *eArea, edict_t *eOther)
+void Area_PlatformBlocked(ServerEntity_t *eArea, ServerEntity_t *eOther)
 {
 	MONSTER_Damage(eOther,eArea,eArea->local.iDamage,0);
 }
 
-void Area_PlatformSpawn(edict_t *eArea)
+void Area_PlatformSpawn(ServerEntity_t *eArea)
 {
 	float dist;
 
@@ -892,13 +893,13 @@ void Area_PlatformSpawn(edict_t *eArea)
 		eArea->v.spawnflags = 0;
 
 	if(eArea->local.cSoundStart)
-		Engine.Server_PrecacheResource(RESOURCE_SOUND,eArea->local.cSoundStart);
+		Server_PrecacheSound(eArea->local.cSoundStart);
 	if(eArea->local.cSoundStop)
-		Engine.Server_PrecacheResource(RESOURCE_SOUND,eArea->local.cSoundStop);
+		Server_PrecacheSound(eArea->local.cSoundStop);
 	if(eArea->local.cSoundMoving)
-		Engine.Server_PrecacheResource(RESOURCE_SOUND,eArea->local.cSoundMoving);
+		Server_PrecacheSound(eArea->local.cSoundMoving);
 	if(eArea->local.cSoundReturn)
-		Engine.Server_PrecacheResource(RESOURCE_SOUND,eArea->local.cSoundReturn);
+		Server_PrecacheSound(eArea->local.cSoundReturn);
 
 	eArea->v.movetype = MOVETYPE_PUSH;
 
@@ -950,7 +951,7 @@ void Area_PlatformSpawn(edict_t *eArea)
 		Only push the player up when he is actually trying to move forward. ~eukos
 */
 
-void Area_ClimbTouch(edict_t *eArea,edict_t *eOther)
+void Area_ClimbTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
 {
 	if(eOther->v.movetype != MOVETYPE_WALK || !eOther->v.iHealth) // LADDER MESSY ~EUKOS
 		return;
@@ -962,7 +963,7 @@ void Area_ClimbTouch(edict_t *eArea,edict_t *eOther)
 #endif
 }
 
-void Area_ClimbSpawn(edict_t *eArea)
+void Area_ClimbSpawn(ServerEntity_t *eArea)
 {
 	eArea->v.TouchFunction = Area_ClimbTouch;
 
@@ -978,7 +979,7 @@ void Area_ClimbSpawn(edict_t *eArea)
 	Noclip
 */
 
-void Area_NoclipSpawn(edict_t *eArea)
+void Area_NoclipSpawn(ServerEntity_t *eArea)
 {
 	eArea->v.movetype	= MOVETYPE_PUSH;
 	eArea->Physics.iSolid	= SOLID_NOT;
@@ -993,7 +994,7 @@ void Area_NoclipSpawn(edict_t *eArea)
 
 #define PUSH_ONCE 32
 
-void Area_PushTouch(edict_t *eArea, edict_t *eOther)
+void Area_PushTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
 {
 	// [9/12/2013] TODO: Make this optional? Would be cool to throw monsters and other crap around... ~hogsy
 	if(!Entity_IsPlayer(eOther))
@@ -1006,7 +1007,7 @@ void Area_PushTouch(edict_t *eArea, edict_t *eOther)
 		Entity_Remove(eArea);
 }
 
-void Area_PushSpawn(edict_t *eArea)
+void Area_PushSpawn(ServerEntity_t *eArea)
 {
 	if(!eArea->local.speed)
 		eArea->local.speed = 500.0f;

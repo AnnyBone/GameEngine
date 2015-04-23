@@ -9,6 +9,7 @@ level/Debug/Level.Build.CppClean.log
 *.sdf
 *.suo
 *.suo
+*.depend
 *.opensdf
 level/Debug/Level.log
 engine/Debug/Engine.log

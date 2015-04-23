@@ -67,11 +67,11 @@ EntityFrame_t efInmaterDeath[]=
 #define	INMATER_MIN_HEALTH	-35
 #define	INMATER_MIN_BOREDOM	-45
 
-void Inmater_Pain(edict_t *eInmater,edict_t *eOther)
+void Inmater_Pain(ServerEntity_t *eInmater, ServerEntity_t *eOther)
 {
 }
 
-void Inmater_Die(edict_t *eInmater,edict_t *eOther)
+void Inmater_Die(ServerEntity_t *eInmater, ServerEntity_t *eOther)
 {
 	if(eInmater->v.iHealth < INMATER_MIN_HEALTH)
 	{
@@ -109,7 +109,7 @@ void Inmater_Die(edict_t *eInmater,edict_t *eOther)
 	Monster_SetState(eInmater,STATE_DEAD);
 }
 
-void Inmater_Think(edict_t *eInmater)
+void Inmater_Think(ServerEntity_t *eInmater)
 {
 	switch(eInmater->monster.iState)
 	{
@@ -139,9 +139,9 @@ void Inmater_Think(edict_t *eInmater)
 	}
 }
 
-void Inmater_Spawn(edict_t *eInmater)
+void Inmater_Spawn(ServerEntity_t *eInmater)
 {
-	Engine.Server_PrecacheResource(RESOURCE_MODEL, MODEL_INMATER_BODY);
+	Server_PrecacheModel(MODEL_INMATER_BODY);
 
 	eInmater->Physics.iSolid = SOLID_SLIDEBOX;
 	eInmater->Physics.fGravity = cvServerGravity.value;
@@ -156,7 +156,7 @@ void Inmater_Spawn(edict_t *eInmater)
 	eInmater->v.bTakeDamage = true;
 	eInmater->v.movetype = MOVETYPE_STEP;
 	eInmater->v.iHealth = INMATER_MAX_HEALTH;
-	eInmater->v.iMaxHealth = INMATER_MAX_HEALTH;
+	eInmater->local.iMaxHealth = INMATER_MAX_HEALTH;
 	eInmater->v.netname = "Inmater";
 	eInmater->v.frame = 0;
 

@@ -59,7 +59,7 @@ void GreekFire_PrimaryAttack(edict_t *ent)
 {
 	//Weapon_Animate(ent,FALSE,8,25,0.08f,0,0,0,FALSE);
 
-	ent->v.iPrimaryAmmo = ent->local.greekfire_ammo--;
+	ent->v.iPrimaryAmmo = ent->local.iGreekFireAmmo--;
 
 	if(ent->local.attackb_finished > Server.dTime)	// No attack boost...
 		ent->local.dAttackFinished = Server.dTime+0.75;

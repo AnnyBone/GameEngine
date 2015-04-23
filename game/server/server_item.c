@@ -245,8 +245,8 @@ void Item_Touch(edict_t *eItem,edict_t *eOther)
 		break;
 	case ITEM_HEALTHKIT:
 		eOther->v.iHealth += 20;
-		if(eOther->v.iHealth > eOther->v.iMaxHealth)
-			eOther->v.iHealth = eOther->v.iMaxHealth;
+		if (eOther->v.iHealth > eOther->local.iMaxHealth)
+			eOther->v.iHealth = eOther->local.iMaxHealth;
 		break;
 	/* Episode 1 */
 	case WEAPON_IONBLASTER:
@@ -315,15 +315,15 @@ void Item_Precache(void)
 	if (cvServerGameMode.iValue == MODE_SINGLEPLAYER)
 		return;
 
-	Engine.Server_PrecacheResource(RESOURCE_MODEL, "models/blip.md2");
+	Server_PrecacheModel("models/blip.md2");
 
 	for (i = 0; i < sizeof(Items); i++)
 	{
 		if (Items[i].cModel[0])
-			Engine.Server_PrecacheResource(RESOURCE_MODEL, Items[i].cModel);
+			Server_PrecacheModel(Items[i].cModel);
 
 		if (Items[i].cSound[0])
-			Engine.Server_PrecacheResource(RESOURCE_SOUND, Items[i].cSound);
+			Server_PrecacheSound( Items[i].cSound);
 	}
 }
 
@@ -352,8 +352,8 @@ void Item_Spawn(edict_t *eItem)
 
 	if (cvServerGameMode.iValue == MODE_SINGLEPLAYER)
 	{
-		Engine.Server_PrecacheResource(RESOURCE_SOUND, iItem->cSound);
-		Engine.Server_PrecacheResource(RESOURCE_MODEL, iItem->cModel);
+		Server_PrecacheSound( iItem->cSound);
+		Server_PrecacheModel(iItem->cModel);
 	}
 
 	Entity_SetModel(eItem,iItem->cModel);

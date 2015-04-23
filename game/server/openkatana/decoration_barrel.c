@@ -3,10 +3,10 @@
 
 #include "server_main.h"
 
-void Barrel_Spawn(edict_t *eBarrel)
+void Barrel_Spawn(ServerEntity_t *eBarrel)
 {
-	Server_PrecacheModel(MODEL_BARREL);
+	Server_PrecacheModel(MODEL_DECORATION_BARREL0);
 
-	Entity_SetModel(eBarrel, MODEL_BARREL);
-	Entity_SetSize(eBarrel, -16.0f, -16.0f, -24.0f, 16.0f, 16.0f, 40.0f);
+	Entity_SetModel(eBarrel, MODEL_DECORATION_BARREL0);
+	Entity_SetSize(eBarrel, -10, -10, -15, 10, 9, 10);
 }

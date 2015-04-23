@@ -69,16 +69,16 @@ static double	blocktime;
 bool PASCAL FAR BlockingHook(void)
 {
     MSG		msg;
-    bool	ret;
+	bool	ret;
 
 	if ((System_DoubleTime() - blocktime) > 2.0)
 	{
 		WSACancelBlockingCall();
-		return FALSE;
+		return false;
 	}
 
     /* get the next message, if any */
-    ret = (bool) PeekMessage(&msg, NULL, 0, 0, PM_REMOVE);
+	ret = (bool)PeekMessage(&msg, NULL, 0, 0, PM_REMOVE);
 
     /* if we got one, process it */
     if (ret) {
@@ -104,7 +104,7 @@ void WINS_GetLocalAddress()
 		return;
 
 	blocktime = System_DoubleTime();
-	WSASetBlockingHook(BlockingHook);
+	WSASetBlockingHook((FARPROC)BlockingHook);
 	local = pgethostbyname(buff);
 	WSAUnhookBlockingHook();
 	if (local == NULL)

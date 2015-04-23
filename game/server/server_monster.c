@@ -617,13 +617,13 @@ void MONSTER_WaterMove(edict_t *ent)
 		ent->local.dPainFinished = Server.dTime+1.0;
 	}
 
-	if((ent->v.watertype == CONTENT_LAVA) && ent->local.damage_time < Server.dTime)
+	if ((ent->v.watertype == BSP_CONTENTS_LAVA) && ent->local.dDamageTime < Server.dTime)
 	{
-		ent->local.damage_time = Server.dTime+0.2;
+		ent->local.dDamageTime = Server.dTime + 0.2;
 	}
-	else if((ent->v.watertype == CONTENT_SLIME) && ent->local.damage_time < Server.dTime)
+	else if ((ent->v.watertype == BSP_CONTENTS_SLIME) && ent->local.dDamageTime < Server.dTime)
 	{
-		ent->local.damage_time = Server.dTime+1.0;
+		ent->local.dDamageTime = Server.dTime + 1.0;
 	}
 
 	if(!(ent->v.flags & FL_WATERJUMP))
@@ -762,15 +762,15 @@ void Monster_Frame(edict_t *eMonster)
 	Entity_CheckFrames(eMonster);
 
 	// [26/9/2012] Handle jumping (this is copied over from sv_player.c) ~hogsy
-	if(	(eMonster->local.jump_flag < -300.0f)	&&
+	if(	(eMonster->local.fJumpVelocity < -300.0f)	&&
 		(eMonster->v.flags & FL_ONGROUND))
 	{
 		// [26/9/2012] TODO: Add in think for land! ~hogsy
 		// [26/9/2012] Set our jump_flag to 0 ~hogsy
-		eMonster->local.jump_flag = 0;
+		eMonster->local.fJumpVelocity = 0;
 	}
 	else if(!(eMonster->v.flags & FL_ONGROUND))
-		eMonster->local.jump_flag = eMonster->v.velocity[2];
+		eMonster->local.fJumpVelocity = eMonster->v.velocity[2];
 
 	switch(eMonster->monster.iState)
 	{

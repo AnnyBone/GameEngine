@@ -25,9 +25,9 @@
 
 typedef struct
 {
-	vec3_t		boxmins, boxmaxs;// enclose the test object along entire move
+	MathVector3f_t		boxmins, boxmaxs;// enclose the test object along entire move
 	float		*mins, *maxs;	// size of the moving object
-	vec3_t		mins2, maxs2;	// size when clipping against mosnters
+	MathVector3f_t		mins2, maxs2;	// size when clipping against mosnters
 	float		*start, *end;
 	trace_t		trace;
 	int			type;
@@ -35,7 +35,7 @@ typedef struct
 } moveclip_t;
 
 
-int SV_HullPointContents (hull_t *hull, int num, vec3_t p);
+int SV_HullPointContents(hull_t *hull, int num, MathVector3f_t p);
 
 // ClearLink is used for new headnodes
 void ClearLink(link_t *l)
@@ -113,7 +113,7 @@ void SV_InitBoxHull (void)
 /*	To keep everything totally uniform, bounding boxes are turned into small
 	BSP trees instead of being compared directly.
 */
-hull_t	*SV_HullForBox (vec3_t mins, vec3_t maxs)
+hull_t	*SV_HullForBox(MathVector3f_t mins, MathVector3f_t maxs)
 {
 	box_planes[0].dist = maxs[0];
 	box_planes[1].dist = mins[0];
@@ -130,10 +130,10 @@ hull_t	*SV_HullForBox (vec3_t mins, vec3_t maxs)
 	Offset is filled in to contain the adjustment that must be added to the
 	testing object's origin to get a point to use with the returned hull.
 */
-hull_t *SV_HullForEntity (edict_t *ent, vec3_t mins, vec3_t maxs, vec3_t offset)
+hull_t *SV_HullForEntity(edict_t *ent, MathVector3f_t mins, MathVector3f_t maxs, MathVector3f_t offset)
 {
 	model_t		*model;
-	vec3_t		size,hullmins,hullmaxs;
+	MathVector3f_t		size, hullmins, hullmaxs;
 	hull_t		*hull;
 
 	// Decide which clipping hull to use, based on the size
@@ -207,10 +207,10 @@ typedef struct areanode_s
 static	areanode_t	sv_areanodes[AREA_NODES];
 static	int			sv_numareanodes;
 
-areanode_t *SV_CreateAreaNode (int depth, vec3_t mins, vec3_t maxs)
+areanode_t *SV_CreateAreaNode(int depth, MathVector3f_t mins, MathVector3f_t maxs)
 {
 	areanode_t	*anode;
-	vec3_t		size,
+	MathVector3f_t	size,
 				mins1,maxs1,mins2,maxs2;
 
 	anode = &sv_areanodes[sv_numareanodes];
@@ -327,7 +327,7 @@ void SV_TouchLinks ( edict_t *ent, areanode_t *node )
 		SV_TouchLinks ( ent, node->children[1] );
 }
 
-int World_BoxOnPlaneSide(vec3_t emins, vec3_t emaxs, mplane_t *p)
+int World_BoxOnPlaneSide(MathVector3f_t emins, MathVector3f_t emaxs, mplane_t *p)
 {
 	float	dist1, dist2;
 	int		sides;
@@ -475,8 +475,8 @@ void SV_LinkEdict(edict_t *ent,bool touch_triggers)
 		int		i;
 
 		// http://www.quake-1.com/docs/quakesrc.org/72.html
-		fMaximum	= Math_DotProduct(ent->v.mins,ent->v.mins);
-		fMinimum	= Math_DotProduct(ent->v.maxs,ent->v.maxs);
+		fMaximum = Math_DotProduct(ent->v.mins,ent->v.mins);
+		fMinimum = Math_DotProduct(ent->v.maxs,ent->v.maxs);
 		if(fMaximum < fMinimum)
 		{
 			fMaximum = fMinimum;
@@ -519,7 +519,7 @@ void SV_LinkEdict(edict_t *ent,bool touch_triggers)
 		SV_TouchLinks ( ent, sv_areanodes );
 }
 
-int SV_HullPointContents (hull_t *hull, int num, vec3_t p)
+int SV_HullPointContents(hull_t *hull, int num, MathVector3f_t p)
 {
 	float			d;
 	BSPClipNode_t	*node;
@@ -546,7 +546,7 @@ int SV_HullPointContents (hull_t *hull, int num, vec3_t p)
 	return num;
 }
 
-int SV_PointContents (vec3_t p)
+int SV_PointContents (MathVector3f_t p)
 {
 	int		cont;
 
@@ -556,7 +556,7 @@ int SV_PointContents (vec3_t p)
 	return cont;
 }
 
-int SV_TruePointContents (vec3_t p)
+int SV_TruePointContents(MathVector3f_t p)
 {
 	return SV_HullPointContents (&sv.worldmodel->hulls[0], 0, p);
 }

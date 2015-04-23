@@ -79,27 +79,36 @@
 
 // These are probably what you're going to want to use.
 #ifndef __cplusplus
-typedef int	bool;
+#if 1	// Internal solution
+typedef enum
+{
+	false,	// "false", otherwise nothing.
+	true	// "true", otherwise just a positive number.
+} PlatformBoolean_t;
+typedef PlatformBoolean_t bool;
+#else	// Using _Bool data type
+typedef _Bool bool;
 
-#define	true	1	// "true", otherwise just a positive number.
-#define	false	0	// "false", otherwise nothing.
+#define	true 1
+#define false 0
+#endif
 #endif
 
 // These are usually expected to be defined already, but in-case they're not then we define them here.
 #ifndef BOOL
-#	define BOOL    bool
+#	define BOOL bool
 #endif
 #ifndef TRUE
-#	define	TRUE	true
+#	define TRUE true
 #endif
 #ifndef FALSE
-#	define FALSE	false
+#	define FALSE false
 #endif
 
 // Use these if you want to show reliance on this library.
-#define	pBOOL		bool
-#define pTRUE		true
-#define pFALSE		false
+#define	pBOOL bool
+#define pTRUE true
+#define pFALSE false
 
 /**/
 

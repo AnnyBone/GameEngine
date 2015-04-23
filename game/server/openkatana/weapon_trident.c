@@ -8,7 +8,7 @@ void Trident_Deploy(edict_t *ent)
 void WEAPON_TRIDENT_Precache (void)
 {
 	Engine.Server_PrecacheResource(RESOURCE_MODEL,"models/trident.md2");
-	Engine.Server_PrecacheResource(RESOURCE_SOUND,"weapons/trident/tridentdraw.wav");
+	Server_PrecacheSound("weapons/trident/tridentdraw.wav");
 }
 
 void TridentHit(edict_t *ent)

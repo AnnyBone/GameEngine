@@ -9,12 +9,14 @@
 #define	SOUND_EXPLODE1 "effects/explode1.wav"
 #define SOUND_EXPLODE2 "effects/explode2.wav"
 
-#define	MODEL_BARREL "models/placeholders/cube.md2"
-
 /*	MODEL:	models/player/
 	SOUND:	player/
 */
-#define	PLAYER_SOUND_PAIN(a)	sprintf(a,"player/pain%i.wav",rand()%8)
+#define PLAYER_SOUND_DEATH		va("player/death%i.wav",rand()%3)
+#define	PLAYER_SOUND_DEATH0		"player/death0.wav"
+#define	PLAYER_SOUND_DEATH1		"player/death1.wav"
+#define	PLAYER_SOUND_DEATH2		"player/death2.wav"
+#define	PLAYER_SOUND_PAIN(a)	sprintf(a,"player/pain%i.wav",rand()%12)
 #define	PLAYER_SOUND_PAIN0		"player/pain0.wav"
 #define	PLAYER_SOUND_PAIN1		"player/pain1.wav"
 #define	PLAYER_SOUND_PAIN2		"player/pain2.wav"
@@ -23,7 +25,11 @@
 #define	PLAYER_SOUND_PAIN5		"player/pain5.wav"
 #define	PLAYER_SOUND_PAIN6		"player/pain6.wav"
 #define	PLAYER_SOUND_PAIN7		"player/pain7.wav"
-#define	PLAYER_SOUND_JUMP(a)	sprintf(a,"player/jump%i.wav",rand()%4);
+#define	PLAYER_SOUND_PAIN8		"player/pain8.wav"
+#define	PLAYER_SOUND_PAIN9		"player/pain9.wav"
+#define	PLAYER_SOUND_PAIN10		"player/pain10.wav"
+#define	PLAYER_SOUND_PAIN11		"player/pain11.wav"
+#define	PLAYER_SOUND_JUMP(a)	sprintf(a,"player/jump%i.wav",rand()%4)
 #define	PLAYER_SOUND_JUMP0		"player/jump0.wav"
 #define	PLAYER_SOUND_JUMP1		"player/jump1.wav"
 #define	PLAYER_SOUND_JUMP2		"player/jump2.wav"
@@ -117,6 +123,11 @@
 */
 
 #ifdef GAME_OPENKATANA
+#define	MODEL_DECORATION_BARREL0 "models/decorations/barrel0.md2"
+#define	MODEL_DECORATION_BARREL1 "models/decorations/barrel1.md2"
+#define	MODEL_DECORATION_BARREL2 "models/decorations/barrel2.md2"
+#define	MODEL_DECORATION_BARREL3 "models/decorations/barrel3.md2"
+
 /*	MODEL:	models/vektar/
 	SOUND:	vektar/
 */

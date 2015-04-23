@@ -92,9 +92,9 @@ trace_t Traceline(edict_t *ent,vec3_t vStart,vec3_t vEnd,int type)
 	volume everywhere in the level.
 	Larger attenuations will drop off.
 */
-void Sound(edict_t *ent,int channel,char *sound,int volume,float attenuation)
+void Sound(edict_t *ent, AudioChannel_t channel, char *sound, int volume, float attenuation)
 {
-	Engine.Sound(ent,channel,sound,volume,attenuation);
+	Engine.Sound(ent,(int)channel,sound,volume,attenuation);
 
 	/* TODO
 	// [21/3/2012] Revised ~hogsy

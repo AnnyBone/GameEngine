@@ -13,15 +13,16 @@
 void Physics_SetGravity(edict_t *eEntity)
 {	
 	eEntity->v.velocity[2] -=
-		// [30/5/2013] Slightly more complex gravity management ~hogsy
+		// Slightly more complex gravity management.
 		(eEntity->Physics.fGravity*cvServerGravityTweak.value)*
+		// Multiplied by the mass of the entity.
 		eEntity->Physics.fMass*
 		(float)Engine.Server_GetFrameTime();
 }
 
 bool Physics_CheckWater(edict_t *eEntity)
 {
-	MathVector3_t point;
+	MathVector3f_t point;
 	int	cont;
 
 	point[0] = eEntity->v.origin[0];
@@ -108,9 +109,9 @@ void Physics_CheckWaterTransition(edict_t *eEntity)
 
 void Physics_WallFriction(edict_t *eEntity, trace_t *trLine)
 {
-	MathVector3_t forward, right, up;
+	MathVector3f_t forward, right, up;
 	float d, i;
-	MathVector3_t into, side;
+	MathVector3f_t into, side;
 
 	Math_AngleVectors(eEntity->v.v_angle, forward, right, up);
 	d = Math_DotProduct(trLine->plane.normal, forward);
@@ -149,10 +150,10 @@ void Physics_Impact(edict_t *eEntity,edict_t *eOther)
 
 /*	Does not change the entities velocity at all
 */
-trace_t Physics_PushEntity(edict_t *eEntity, MathVector3_t mvPush)
+trace_t Physics_PushEntity(edict_t *eEntity, MathVector3f_t mvPush)
 {
 	trace_t	trace;
-	vec3_t	end;
+	MathVector3f_t	end;
 
 	Math_VectorAdd(eEntity->v.origin, mvPush, end);
 

@@ -201,108 +201,108 @@ EntityFrame_t PlayerAnimation_KatanaIdle[] =
 
 EntityFrame_t PlayerAnimation_KatanaAttack1[] =
 {
-	{   NULL, 161, 0.02f},
-	{   NULL, 162, 0.02f},
-	{   NULL, 163, 0.02f},
-	{   NULL, 164, 0.02f},
-	{   NULL, 165, 0.02f},
-	{   NULL, 166, 0.02f},
-	{   NULL, 167, 0.02f},
-	{   NULL, 168, 0.02f},
-	{   NULL, 169, 0.02f},
-	{   NULL, 170, 0.02f},
-	{   NULL, 171, 0.02f},
-	{   NULL, 172, 0.02f},
-	{   NULL, 173, 0.02f},
-	{   NULL, 174, 0.02f},
-	{   NULL, 175, 0.02f},
-	{   NULL, 176, 0.02f},
-	{   NULL, 177, 0.02f},
-	{   NULL, 178, 0.02f},
-	{   NULL, 179, 0.02f},
-	{   NULL, 180, 0.02f},
-	{   NULL, 181, 0.02f},
-	{   NULL, 182, 0.02f},
-	{   NULL, 183, 0.02f},
-	{   NULL, 184, 0.02f},
-	{   NULL, 185, 0.02f},
-	{   NULL, 186, 0.02f},
-	{   NULL, 187, 0.02f},
-	{   NULL, 188, 0.02f},
-	{   NULL, 189, 0.02f,  true    }
+	{ NULL, 161, 0.02f },
+	{ NULL, 162, 0.02f },
+	{ NULL, 163, 0.02f },
+	{ NULL, 164, 0.02f },
+	{ NULL, 165, 0.02f },
+	{ NULL, 166, 0.02f },
+	{ NULL, 167, 0.02f },
+	{ NULL, 168, 0.02f },
+	{ NULL, 169, 0.02f },
+	{ NULL, 170, 0.02f },
+	{ NULL, 171, 0.02f },
+	{ NULL, 172, 0.02f },
+	{ NULL, 173, 0.02f },
+	{ NULL, 174, 0.02f },
+	{ NULL, 175, 0.02f },
+	{ NULL, 176, 0.02f },
+	{ NULL, 177, 0.02f },
+	{ NULL, 178, 0.02f },
+	{ NULL, 179, 0.02f },
+	{ NULL, 180, 0.02f },
+	{ NULL, 181, 0.02f },
+	{ NULL, 182, 0.02f },
+	{ NULL, 183, 0.02f },
+	{ NULL, 184, 0.02f },
+	{ NULL, 185, 0.02f },
+	{ NULL, 186, 0.02f },
+	{ NULL, 187, 0.02f },
+	{ NULL, 188, 0.02f },
+	{ NULL, 189, 0.02f, true }
 };
 
 EntityFrame_t PlayerAnimation_KatanaAttack2[] =
 {
-	{   NULL,	191,	0.02f			},
-	{   NULL,	192,	0.02f			},
-	{   NULL,	193,	0.02f			},
-	{   NULL,	194,	0.02f			},
-	{   NULL,	195,	0.02f			},
-	{   NULL,	196,	0.02f			},
-	{   NULL,	197,	0.02f			},
-	{   NULL,	198,	0.02f			},
-	{   NULL,	199,	0.02f			},
-	{   NULL,	200,	0.02f			},
-	{   NULL,	201,	0.02f			},
-	{   NULL,	202,	0.02f			},
-	{   NULL,	203,	0.02f			},
-	{   NULL,	204,	0.02f			},
-	{   NULL,	205,	0.02f			},
-	{   NULL,	206,	0.02f			},
-	{   NULL,	207,	0.02f			},
-	{   NULL,	208,	0.02f			},
-	{   NULL,	209,	0.02f			},
-	{   NULL,	210,	0.02f			},
-	{   NULL,	211,	0.02f			},
-	{   NULL,	212,	0.02f			},
-	{   NULL,	213,	0.02f			},
-	{   NULL,	214,	0.02f			},
-	{   NULL,	215,	0.02f			},
-	{	NULL,	216,	0.02f,	true	}
+	{ NULL, 191, 0.02f },
+	{ NULL, 192, 0.02f },
+	{ NULL, 193, 0.02f },
+	{ NULL, 194, 0.02f },
+	{ NULL, 195, 0.02f },
+	{ NULL, 196, 0.02f },
+	{ NULL, 197, 0.02f },
+	{ NULL, 198, 0.02f },
+	{ NULL, 199, 0.02f },
+	{ NULL, 200, 0.02f },
+	{ NULL, 201, 0.02f },
+	{ NULL, 202, 0.02f },
+	{ NULL, 203, 0.02f },
+	{ NULL, 204, 0.02f },
+	{ NULL, 205, 0.02f },
+	{ NULL, 206, 0.02f },
+	{ NULL, 207, 0.02f },
+	{ NULL, 208, 0.02f },
+	{ NULL, 209, 0.02f },
+	{ NULL, 210, 0.02f },
+	{ NULL, 211, 0.02f },
+	{ NULL, 212, 0.02f },
+	{ NULL, 213, 0.02f },
+	{ NULL, 214, 0.02f },
+	{ NULL, 215, 0.02f },
+	{ NULL, 216, 0.02f, true }
 };
 
 EntityFrame_t PlayerAnimation_KatanaDeath1[] =
 {
-	{   NULL, 218, 0.02f},
-	{   NULL, 219, 0.02f},
-	{   NULL, 220, 0.02f},
-	{   NULL, 221, 0.02f},
-	{   NULL, 222, 0.02f},
-	{   NULL, 223, 0.02f},
-	{   NULL, 224, 0.02f},
-	{   NULL, 225, 0.02f},
-	{   NULL, 226, 0.02f},
-	{   NULL, 227, 0.02f},
-	{   NULL, 228, 0.02f},
-	{   NULL, 229, 0.02f},
-	{   NULL, 230, 0.02f},
-	{   NULL, 231, 0.02f},
-	{   NULL, 232, 0.02f},
-	{   NULL, 233, 0.02f},
-	{   NULL, 234, 0.02f},
-	{   NULL, 235, 0.02f},
-	{   NULL, 236, 0.02f},
-	{   NULL, 237, 0.02f},
-	{   NULL, 238, 0.02f},
-	{   NULL, 239, 0.02f},
-	{   NULL, 240, 0.02f},
-	{   NULL, 241, 0.02f},
-	{   NULL, 242, 0.02f},
-	{   NULL, 243, 0.02f},
-	{   NULL, 244, 0.02f},
-	{   NULL, 245, 0.02f},
-	{   NULL, 246, 0.02f},
-	{   NULL, 247, 0.02f},
-	{   NULL, 248, 0.02f},
-	{   NULL, 249, 0.02f,  true    }
+	{ NULL, 218, 0.02f },
+	{ NULL, 219, 0.02f },
+	{ NULL, 220, 0.02f },
+	{ NULL, 221, 0.02f },
+	{ NULL, 222, 0.02f },
+	{ NULL, 223, 0.02f },
+	{ NULL, 224, 0.02f },
+	{ NULL, 225, 0.02f },
+	{ NULL, 226, 0.02f },
+	{ NULL, 227, 0.02f },
+	{ NULL, 228, 0.02f },
+	{ NULL, 229, 0.02f },
+	{ NULL, 230, 0.02f },
+	{ NULL, 231, 0.02f },
+	{ NULL, 232, 0.02f },
+	{ NULL, 233, 0.02f },
+	{ NULL, 234, 0.02f },
+	{ NULL, 235, 0.02f },
+	{ NULL, 236, 0.02f },
+	{ NULL, 237, 0.02f },
+	{ NULL, 238, 0.02f },
+	{ NULL, 239, 0.02f },
+	{ NULL, 240, 0.02f },
+	{ NULL, 241, 0.02f },
+	{ NULL, 242, 0.02f },
+	{ NULL, 243, 0.02f },
+	{ NULL, 244, 0.02f },
+	{ NULL, 245, 0.02f },
+	{ NULL, 246, 0.02f },
+	{ NULL, 247, 0.02f },
+	{ NULL, 248, 0.02f },
+	{ NULL, 249, 0.02f, true }
 };
 
-void Player_CheckFootsteps(edict_t *ePlayer)
+void Player_CheckFootsteps(ServerEntity_t *ePlayer)
 {
 	float			fForce;
 	double			dDelay;
-	MathVector2_t	vStep;
+	MathVector2f_t	vStep;
 
 	// [8/6/2013] Also check movetype so we don't do steps while noclipping/flying ~hogsy
 	if((ePlayer->v.movetype == MOVETYPE_WALK) && ePlayer->v.flags & FL_ONGROUND)
@@ -331,7 +331,7 @@ void Player_CheckFootsteps(edict_t *ePlayer)
 	}
 }
 
-void Player_CheckWater(edict_t *ePlayer)
+void Player_CheckWater(ServerEntity_t *ePlayer)
 {
 	// [2/8/2014] Basic Drowning... ~eukos
 	if(ePlayer->v.waterlevel != 3)
@@ -346,7 +346,7 @@ void Player_CheckWater(edict_t *ePlayer)
 	}
 }
 
-void Player_PostThink(edict_t *ePlayer)
+void Player_PostThink(ServerEntity_t *ePlayer)
 {
 	// [25/8/2012] Added iFlag to deal with a particular issue ~hogsy
 	int		iFlag = CHAN_VOICE;
@@ -376,13 +376,13 @@ void Player_PostThink(edict_t *ePlayer)
 
 	Weapon_CheckInput(ePlayer);
 
-	if(	(ePlayer->local.jump_flag < -300.0f)	&&
+	if ((ePlayer->local.fJumpVelocity < -300.0f) &&
 		(ePlayer->v.flags & FL_ONGROUND)		&&
 		(ePlayer->v.iHealth > 0))
 	{
 		if(ePlayer->v.watertype == BSP_CONTENTS_WATER)
 			sprintf(snd,"player/h2ojump.wav");
-		else if(ePlayer->local.jump_flag < -650.0f)
+		else if (ePlayer->local.fJumpVelocity < -650.0f)
 		{
 			// [8/6/2012] TODO: Figure out if we were pushed by an enemy... ~hogsy
 			// [8/6/2012] TODO: Base damage on velocity ~hogsy
@@ -405,16 +405,16 @@ void Player_PostThink(edict_t *ePlayer)
 			sprintf(snd,"player/playerland%i.wav",rand()%4+1);
 
 			// [26/4/2013] Rewritten :) ~hogsy
-			ePlayer->v.punchangle[0] -= ePlayer->local.jump_flag/100.0f;	// [13/04/2013] Give him a little punch... ~eukos
+			ePlayer->v.punchangle[0] -= ePlayer->local.fJumpVelocity / 100.0f;	// [13/04/2013] Give him a little punch... ~eukos
 		}
 
 		Sound(ePlayer,iFlag,snd,255,ATTN_NORM);
 
-		ePlayer->local.jump_flag = 0;
+		ePlayer->local.fJumpVelocity = 0;
 	}
 
 	if(!(ePlayer->v.flags & FL_ONGROUND))
-		ePlayer->local.jump_flag = ePlayer->v.velocity[2];
+		ePlayer->local.fJumpVelocity = ePlayer->v.velocity[2];
 	// [10/11/2013] Fixed a bug where the player would cycle when just sliding down something... ~hogsy
 	else if((	(ePlayer->v.velocity[0] < -4.0f || ePlayer->v.velocity[0] > 4.0f)	||
 				(ePlayer->v.velocity[1] < -4.0f || ePlayer->v.velocity[1] > 4.0f))	&&
@@ -436,7 +436,7 @@ void Player_PostThink(edict_t *ePlayer)
 #endif
 }
 
-void Player_PreThink(edict_t *ePlayer)
+void Player_PreThink(ServerEntity_t *ePlayer)
 {
 	if(Server.bRoundStarted && !Server.bPlayersSpawned)
 	{
@@ -461,7 +461,7 @@ void Player_PreThink(edict_t *ePlayer)
 	{
 		int		i;
 		trace_t	tTrace;
-		vec3_t	vStart,vEnd;
+		MathVector3f_t vStart,vEnd;
 
 		// [23/9/2012] Check if we can jump onto an edge, was originally in a seperate function but merged here instead ~hogsy
 		Math_AngleVectors(ePlayer->v.angles, ePlayer->local.vForward, ePlayer->local.vRight, ePlayer->local.vUp);
@@ -517,7 +517,7 @@ void Player_PreThink(edict_t *ePlayer)
 	// Uncrouch
 	else if (ePlayer->v.flags & FL_CROUCHING)
 	{
-		MathVector3_t	vOrigin,
+		MathVector3f_t	vOrigin,
 			vMaxs = { 16.0f, 16.0f, 36.0f },
 			vMins = { -16.0f, -16.0f, -36.0f };
 		trace_t	tStandCheck;
@@ -558,7 +558,7 @@ void Player_PreThink(edict_t *ePlayer)
 	}
 }
 
-void Player_Die(edict_t *ePlayer,edict_t *other)
+void Player_Die(ServerEntity_t *ePlayer, ServerEntity_t *other)
 {
 	char	s[32];
 
@@ -637,7 +637,7 @@ void Player_Die(edict_t *ePlayer,edict_t *other)
 	}
 }
 
-void Player_Pain(edict_t *ent,edict_t *other)
+void Player_Pain(ServerEntity_t *ent, ServerEntity_t *other)
 {
 	char cSound[24];
 
@@ -648,9 +648,9 @@ void Player_Pain(edict_t *ent,edict_t *other)
 
 int	iSpawnSlot;
 
-void Player_Spawn(edict_t *ePlayer)
+void Player_Spawn(ServerEntity_t *ePlayer)
 {
-	edict_t *eSpawnPoint;
+	ServerEntity_t *eSpawnPoint;
 
 	ePlayer->monster.iType	= MONSTER_PLAYER;
 
@@ -658,7 +658,7 @@ void Player_Spawn(edict_t *ePlayer)
 	// [30/1/2013] Default health can now be changed by admins ~hogsy
 	ePlayer->v.iHealth		= cvServerDefaultHealth.iValue;
 	// [5/6/2012] Make max_health changable for admins ~hogsy
-	ePlayer->v.iMaxHealth	= PLAYER_MAX_HEALTH;
+	ePlayer->local.iMaxHealth = PLAYER_MAX_HEALTH;
 	ePlayer->v.movetype		= MOVETYPE_WALK;
 	ePlayer->v.bTakeDamage	= true;
 	ePlayer->v.model		= cvServerPlayerModel.string;
@@ -678,7 +678,7 @@ void Player_Spawn(edict_t *ePlayer)
 	Math_VectorClear(ePlayer->v.velocity);
 	Math_VectorClear(ePlayer->v.view_ofs);
 
-	ePlayer->v.fixangle		= true;
+	ePlayer->v.bFixAngle = true;
 	ePlayer->v.view_ofs[2]	= 28.0f;
 
 	ePlayer->monster.iState		= STATE_AWAKE;	// TODO: Is this necessary? ~hogsy
@@ -806,9 +806,9 @@ void Player_Spawn(edict_t *ePlayer)
 	iPlayerModelIndex = ePlayer->v.modelindex;
 }
 
-void Player_Jump(edict_t *ePlayer)
+void Player_Jump(ServerEntity_t *ePlayer)
 {
-	char	cJumpSound[32];
+	char cJumpSound[32];
 
 #if 1
 	if(ePlayer->v.movetype == MOVETYPE_FLY)	// LADDER MESSY ~EUKOS
@@ -829,7 +829,7 @@ void Player_Jump(edict_t *ePlayer)
 		case BSP_CONTENTS_WATER:
 			ePlayer->v.velocity[2] = 100.0f;
 			break;
-		case CONTENT_SLIME:
+		case BSP_CONTENTS_SLIME:
 			ePlayer->v.velocity[2] = 80.0f;
 			break;
 		default:
@@ -880,7 +880,7 @@ void Player_Jump(edict_t *ePlayer)
 }
 
 #ifdef GAME_OPENKATANA
-void Player_CheckPowerups(edict_t *ePlayer)
+void Player_CheckPowerups(ServerEntity_t *ePlayer)
 {
 	Item_t	*iPowerBoost,
 			*iVitalityBoost,
@@ -892,11 +892,11 @@ void Player_CheckPowerups(edict_t *ePlayer)
 		return;
 
 	// [28/7/2013] Use new friendly functions ~hogsy
-	iPowerBoost		= Item_GetInventory(ITEM_POWERBOOST,ePlayer);
-	iVitalityBoost	= Item_GetInventory(ITEM_VITABOOST,ePlayer);
-	iSpeedBoost		= Item_GetInventory(ITEM_SPEEDBOOST,ePlayer);
-	iAttackBoost	= Item_GetInventory(ITEM_ATTACKBOOST,ePlayer);
-	iAcroBoost		= Item_GetInventory(ITEM_ACROBOOST,ePlayer);
+	iPowerBoost = Item_GetInventory(ITEM_POWERBOOST, ePlayer);
+	iVitalityBoost = Item_GetInventory(ITEM_VITABOOST, ePlayer);
+	iSpeedBoost = Item_GetInventory(ITEM_SPEEDBOOST, ePlayer);
+	iAttackBoost = Item_GetInventory(ITEM_ATTACKBOOST, ePlayer);
+	iAcroBoost = Item_GetInventory(ITEM_ACROBOOST, ePlayer);
 
 	if(iPowerBoost && ePlayer->local.power_finished)
 	{
@@ -1007,7 +1007,7 @@ void Player_CheckPowerups(edict_t *ePlayer)
 #endif
 
 // [23/3/2013] Countdown is now done for cooperative mode too! ~hogsy
-void Player_DeathThink(edict_t *ent)
+void Player_DeathThink(ServerEntity_t *ent)
 {
 	if(	ent->v.button[0]	||
 		ent->v.button[1]	||
@@ -1038,7 +1038,7 @@ void Player_DeathThink(edict_t *ent)
 		ent->local.fSpawnDelay -= 0.5f;
 }
 
-void Player_Use(edict_t *ePlayer)
+void Player_Use(ServerEntity_t *ePlayer)
 {
 	if(ePlayer->v.iHealth <= 0 || ePlayer->local.dAttackFinished > Server.dTime)
 		return;
@@ -1056,7 +1056,7 @@ void Player_Use(edict_t *ePlayer)
 
 /*	Called per-frame to handle player movement for each client.
 */
-void Player_MoveThink(edict_t *ePlayer)
+void Player_MoveThink(ServerEntity_t *ePlayer)
 {
 #if 0
 	vec3_t	vViewAngle;

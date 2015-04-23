@@ -8,11 +8,11 @@
 */
 
 MathVector_t mvOrigin = { 0, 0, 0 };
-MathVector2_t mv2Origin = { 0, 0 };
-MathVector3_t mv3Origin = { 0, 0, 0 };
-MathVector4_t mv4Origin = { 0, 0, 0, 0 };
+MathVector2f_t mv2Origin = { 0, 0 };
+MathVector3f_t mv3Origin = { 0, 0, 0 };
+MathVector4f_t mv4Origin = { 0, 0, 0, 0 };
 
-MathVector_t Math_VectorToAngles(vec3_t vValue)
+MathVector_t Math_VectorToAngles(MathVector3f_t vValue)
 {
 	float			fForward, fYaw, fPitch;
 	MathVector_t	mvResult;
@@ -67,7 +67,7 @@ float Math_AngleMod(float a)
 	return a;
 }
 
-vec_t Math_Length(vec3_t a)
+vec_t Math_Length(MathVector3f_t a)
 {
 	int		i;
 	float	l;
@@ -80,7 +80,7 @@ vec_t Math_Length(vec3_t a)
 	return l;
 }
 
-double Math_VectorLength(vec3_t a)
+double Math_VectorLength(MathVector3f_t a)
 {
 	int		i;
 	double	length;
@@ -93,7 +93,7 @@ double Math_VectorLength(vec3_t a)
 	return length;
 }
 
-vec_t Math_VectorNormalize(vec3_t a)
+vec_t Math_VectorNormalize(MathVector3f_t a)
 {
 	vec_t	i, l = (vec_t)Math_VectorLength(a);
 	if (l)
@@ -105,7 +105,7 @@ vec_t Math_VectorNormalize(vec3_t a)
 	return l;
 }
 
-void Math_VectorNormalizeFast(vec3_t vVector)
+void Math_VectorNormalizeFast(MathVector3f_t vVector)
 {
 	float y, fNumber;
 
@@ -119,7 +119,7 @@ void Math_VectorNormalizeFast(vec3_t vVector)
 	}
 }
 
-bool Math_VectorCompare(vec3_t a, vec3_t b)
+bool Math_VectorCompare(MathVector3f_t a, MathVector3f_t b)
 {
 	int i;
 
@@ -130,7 +130,7 @@ bool Math_VectorCompare(vec3_t a, vec3_t b)
 	return true;
 }
 
-void Math_AngleVectors(vec3_t angles, vec3_t forward, vec3_t right, vec3_t up)
+void Math_AngleVectors(MathVector3f_t angles, MathVector3f_t forward, MathVector3f_t right, MathVector3f_t up)
 {
 	float	angle, sr, sp, sy, cr, cp, cy;
 

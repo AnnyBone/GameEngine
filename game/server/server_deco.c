@@ -32,7 +32,7 @@ void deco_vase(edict_t *ent)
 	Engine.Server_PrecacheResource(RESOURCE_MODEL,"models/deco/e2/vase01.md2");
 	Engine.Server_PrecacheResource(RESOURCE_MODEL,"models/deco/e2/vgib1.md2");
 	Engine.Server_PrecacheResource(RESOURCE_MODEL,"models/deco/e2/vgib2.md2");
-	Engine.Server_PrecacheResource(RESOURCE_SOUND,"fx/vasebrk.wav");
+	Server_PrecacheSound("fx/vasebrk.wav");
 
 	ent->v.movetype		= MOVETYPE_BOUNCE;
 	ent->v.iHealth		= 10;

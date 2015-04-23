@@ -52,43 +52,44 @@ typedef enum
 
 typedef struct
 {
-	vec3_t	origin;
+	MathVector3f_t	origin;
 	float	radius,
 			die,			// Stop lighting after this time
 			decay,			// Drop this each second
 			minlight;		// Don't add when contributing less
 	int		key;
-	vec3_t	color;			//johnfitz -- lit support via lordhavoc
-	vec3_t	transformed;
+	MathVector3f_t	color;			//johnfitz -- lit support via lordhavoc
+	MathVector3f_t	transformed;
 
 	bool	bLightmap;		// Defines whether this light effects the lightmap.
 } DynamicLight_t;
 
 typedef void (*xcommand_t)(void);
 
-typedef struct cvar_s
+typedef struct ConsoleVariable_s
 {
 	char		*name;				// Name of the variable
 	char		*string;			// Default value
-	bool		archive;			// Variable will be archived
+
+	bool bArchive;	// Variable will be archived
 	bool	    server;
 	char        *cDescription;
 	float		value;
-	struct		cvar_s *next;
+	struct		ConsoleVariable_s *next;
 	char		*default_string;
 	void		(*callback)(void);
 
-	// [27/5/2014] Different value types ~hogsy
-	bool	bValue;
-	int		iValue;
-} cvar_t;
+	// Different variable types.
+	bool bValue;
+	int	iValue;
+} ConsoleVariable_t;
 
 // Future replacement for cvar, to follow every other naming convention.
-#define ConsoleVariable_t cvar_t
+#define cvar_t ConsoleVariable_t
 
 typedef struct
 {
-	vec3_t			origin,
+	MathVector3f_t origin,
 					angles;
 	unsigned short 	modelindex,
 					frame;
@@ -97,20 +98,20 @@ typedef struct
 					alpha;
 	int				effects;
 
-	float			fScale;
-} entity_state_t;
+	float fScale;
+} EntityState_t;
 
-typedef struct entity_s
+typedef struct ClientEntity_s
 {
 	bool			bForceLink;		// Model changed
 
 	int				update_type;
-	entity_state_t	baseline;		// to fill in defaults in updates
+	EntityState_t	baseline;		// to fill in defaults in updates
 	double			msgtime;		// time of last update
-	vec3_t			msg_origins[2];	// last two updates (0 is newest)
-	vec3_t			origin;
-	vec3_t			msg_angles[2];	// last two updates (0 is newest)
-	vec3_t			angles;
+	MathVector3f_t msg_origins[2];	// last two updates (0 is newest)
+	MathVector3f_t origin;
+	MathVector3f_t msg_angles[2];	// last two updates (0 is newest)
+	MathVector3f_t angles;
 	int				draw_lastpose,
 					draw_pose;
 	float			draw_lerpstart;
@@ -118,7 +119,7 @@ typedef struct entity_s
 	struct model_s	*model;			// NULL = no model
 	struct efrag_s	*efrag;			// linked list of efrags
 	int				frame;
-	byte			*colormap;          // Obsolete
+	uint8_t			*colormap;          // Obsolete
 	int				effects;		// light, particles, etc
 	int				skinnum;		// for Alias models
 	int				visframe;		// last frame this entity was
@@ -131,20 +132,22 @@ typedef struct entity_s
 	struct mnode_s	*topnode;		// for bmodels, first world node
 											//  that splits bmodel, or NULL if
 											//  not split
-	byte			alpha;			//johnfitz -- alpha
-	byte			lerpflags;		//johnfitz -- lerping
+	uint8_t			alpha;			//johnfitz -- alpha
+	uint8_t			lerpflags;		//johnfitz -- lerping
 	float			lerpstart;		//johnfitz -- animation lerping
 	float			lerpfinish;		//johnfitz -- lerping -- server sent us a more accurate interval, use it instead of 0.1
 	short			previouspose;	//johnfitz -- animation lerping
 	short			currentpose;	//johnfitz -- animation lerping
 	float			movelerpstart;	//johnfitz -- transform lerping
-	vec3_t			previousorigin;	//johnfitz -- transform lerping
-	vec3_t			currentorigin;	//johnfitz -- transform lerping
-	vec3_t			previousangles;	//johnfitz -- transform lerping
-	vec3_t			currentangles;	//johnfitz -- transform lerping
+	MathVector3f_t previousorigin;	//johnfitz -- transform lerping
+	MathVector3f_t currentorigin;	//johnfitz -- transform lerping
+	MathVector3f_t previousangles;	//johnfitz -- transform lerping
+	MathVector3f_t currentangles;	//johnfitz -- transform lerping
 
 	float			scale;			// Sets the model scale.
-} entity_t;
+} ClientEntity_t;
+
+#define entity_t ClientEntity_t
 
 //////////////////////////////////////////////////////////////////////////
 // PARTICLES															//
@@ -171,10 +174,10 @@ typedef enum
 
 typedef struct particle_s
 {
-	MathVector3_t		vOrigin,		// The origin of the particle.
+	MathVector3f_t		vOrigin,		// The origin of the particle.
 						vVelocity;		// Velocity of the particle.
 
-	MathVector4_t		vColour;		// RGBA colour of the particle.
+	MathVector4f_t		vColour;		// RGBA colour of the particle.
 
 	int	iMaterial,						// The material ID of the particle.
 		iFrame;							// Frame of animation.

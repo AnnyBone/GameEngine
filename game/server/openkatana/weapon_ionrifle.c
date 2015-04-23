@@ -96,7 +96,7 @@ void IonRifle_IonBallTouch(edict_t *eIonBall,edict_t *eOther)
 {
 	if(eOther == eIonBall->local.eOwner)
 		return;	// [29/1/2014] Should never even happen, but it does. Shit. ~hogsy
-	else if(Engine.Server_PointContents(eIonBall->v.origin) == CONTENT_SKY)
+	else if (Engine.Server_PointContents(eIonBall->v.origin) == BSP_CONTENTS_SKY)
 	{
 		Entity_Remove(eIonBall);
 		return;

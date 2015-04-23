@@ -26,18 +26,20 @@ enum
 	DAMAGE_TYPE_NONE
 };
 
-typedef struct edict_s edict_t;
+typedef struct ServerEntity_s ServerEntity_t;
+
+#define	edict_t ServerEntity_t
+#define	edict_s ServerEntity_s
 
 typedef struct
 {
-	edict_t	*eOther;
-	int		pad[28];
+	ServerEntity_t *eOther;
+
 	int		self;
 	int		world;
 
 	int		iKilledMonsters;
 	float	time;
-	float	frametime;
 	float	force_retouch;
 	char	*mapname;
 	float	deathmatch;
@@ -47,6 +49,7 @@ typedef struct
 	float	total_secrets;
 	float	total_monsters;
 	float	found_secrets;
+
 	float	parm1;
 	float	parm2;
 	float	parm3;
@@ -75,11 +78,7 @@ typedef struct
 	float	parm27;
 	float	parm28;
 	float	parm29;
-
-	vec3_t	v_forward,
-			v_up,
-			v_right;
-} GlobalVariables_t;
+} GlobalState_t;
 
 #define	ENTITY_MAX_INVENTORY	128
 
@@ -99,36 +98,36 @@ typedef struct
 	// [30/1/2013] Changed from float to int ~hogsy
 	int			modelindex;
 
-	MathVector3_t absmin;
-	MathVector3_t absmax;
+	MathVector3f_t absmin;
+	MathVector3f_t absmax;
 
 	float		ltime;	// Local time for ents.
 
 	// [20/7/2012] Changed to an integer ~hogsy
 	int			movetype;
 
-	MathVector3_t origin;
-	MathVector3_t oldorigin;
-	MathVector3_t velocity;
-	MathVector3_t angles;
-	MathVector3_t avelocity;
-	MathVector3_t punchangle;
+	MathVector3f_t origin;
+	MathVector3f_t oldorigin;
+	MathVector3f_t velocity;
+	MathVector3f_t angles;
+	MathVector3f_t avelocity;
+	MathVector3f_t punchangle;
 
 	// [20/10/2013] Changed from a float to an integer ~hogsy
 	int			frame;
 	int			effects;
 
-	MathVector3_t mins, maxs;
-	MathVector3_t size;
+	MathVector3f_t mins, maxs;
+	MathVector3f_t size;
 
-	void		(*TouchFunction)(edict_t *eEntity,edict_t *eOther);
-	void		(*use)(edict_t *ent);
-	void		(*think)(edict_t *ent);
-	void		(*blocked)(edict_t *ent,edict_t *other);
+	void(*TouchFunction)(ServerEntity_t *eEntity, ServerEntity_t *eOther);
+	void(*use)(ServerEntity_t *ent);
+	void(*think)(ServerEntity_t *ent);
+	void(*blocked)(ServerEntity_t *ent, ServerEntity_t *other);
 
 	double		dNextThink;
 
-	edict_t		*groundentity;
+	ServerEntity_t *groundentity;
 
 	// [21/10/2012] Changed to an integer ~hogsy
 	int			iScore;
@@ -138,27 +137,27 @@ typedef struct
 	int			items;
 	int			iInventory[ENTITY_MAX_INVENTORY];
 
-	MathVector4_t	vLight;
+	MathVector4f_t	vLight;
 
 	bool		bTakeDamage;
-	edict_t		*chain;
+	ServerEntity_t *chain;
 
-	MathVector3_t view_ofs;
-	MathVector3_t button;
+	MathVector3f_t view_ofs;
+	MathVector3f_t button;
 
 	int		impulse;
-	float		fixangle;
+	bool bFixAngle;
 
-	MathVector3_t v_angle;
+	MathVector3f_t v_angle;
 
 	float		idealpitch;
 	char		*netname;
-	edict_t		*enemy;     // Obsolete
+	ServerEntity_t *enemy;     // Obsolete
 	int			flags;
 	float		colormap;
 	float		team;
-	int			iMaxHealth;
-	float		teleport_time;
+
+	double dTeleportTime;
 
 	int			iArmorType,iArmorValue;
 
@@ -173,14 +172,14 @@ typedef struct
 
 	float		dmg_take;
 	float		dmg_save;
-	edict_t		*eDamageInflictor;
+	ServerEntity_t *eDamageInflictor;
 
 	char		*message;
 	float		sounds;
 
 	// Physics
-	MathVector3_t movedir;
-} entvars_t;
+	MathVector3f_t movedir;
+} GlobalVariables_t;
 
 // [12/1/2013] Model specific variables ~hogsy
 typedef struct
@@ -189,7 +188,7 @@ typedef struct
 	frame
 	*/
 
-	float	fScale;
+	float fScale;
 
 	int	iSkin;
 } ModelVariables_t;
@@ -211,7 +210,7 @@ typedef struct
 
 	int	iSolid;			// Sets the collision/solid type for the entity.
 
-	edict_t	*eIgnore;	// Tells the entity to ignore collisions with this entity.
+	ServerEntity_t	*eIgnore;	// Tells the entity to ignore collisions with this entity.
 } PhysicsVariables_t;
 
 typedef struct
@@ -226,23 +225,23 @@ typedef struct
 typedef struct
 {
 	// [15/7/2012] Position we'll be moving to ~hogsy
-	vec3_t	vTarget,
-			vOldTarget;
+	MathVector3f_t vTarget;
+	MathVector3f_t vOldTarget;
 
 	int		iType;
 
 	// Think functions (obsolete)
-//	void	(*think_stand)(edict_t *ent);
-//	void	(*think_run)(edict_t *ent);
-//	void	(*think_attack)(edict_t *ent);
-	void	(*think_die)(edict_t *ent,edict_t *other);
-	void	(*think_pain)(edict_t *ent,edict_t *other);
+//	void	(*think_stand)(ServerEntity_t *ent);
+//	void	(*think_run)(ServerEntity_t *ent);
+//	void	(*think_attack)(ServerEntity_t *ent);
+	void(*think_die)(ServerEntity_t *ent, ServerEntity_t *other);
+	void(*think_pain)(ServerEntity_t *ent, ServerEntity_t *other);
 
-	void(*Think)(edict_t *eMonster);	// Called per-frame for the specific handling of states for each monster.
+	void(*Think)(ServerEntity_t *eMonster);	// Called per-frame for the specific handling of states for each monster.
 
 	// State Functions
-	void(*Idle)(edict_t *eMonster);
-	void(*Jump)(edict_t *eMonster);
+	void(*Idle)(ServerEntity_t *eMonster);
+	void(*Jump)(ServerEntity_t *eMonster);
 
 	// Current thought state
 	int	iState,					// Primary physical state.
@@ -253,15 +252,15 @@ typedef struct
 
 	//MonsterEmotion_t	meEmotion[11];			// Current emotion states.
 
-	float	fViewDistance;			// Distance in which a monster can detect a target within.
+	float fViewDistance;	// Distance in which a monster can detect a target within.
 
 	// Targets
-	edict_t	*eEnemy,		// Current enemy.
-			*eOldEnemy;		// Last enemy.
-	edict_t	*eFriend,		// Current friend.
-			*eOldFriend;	// Last friend.
-	edict_t	*eTarget,		// Current target.
-			*eOldTarget;	// Last target.
+	ServerEntity_t *eEnemy;		// Current enemy.
+	ServerEntity_t *eOldEnemy;	// Last enemy.
+	ServerEntity_t *eFriend;	// Current friend.
+	ServerEntity_t *eOldFriend;	// Last friend.
+	ServerEntity_t *eTarget;	// Current target.
+	ServerEntity_t *eOldTarget;	// Last target.
 } MonsterVariables_t;
 
 /*	Variables used for vehicles.
@@ -279,9 +278,9 @@ typedef struct
 
 	bool	bActive;										// Is the vehicle turned on or not?
 
-	void	(*Enter)(edict_t *eVehicle,edict_t *eOther);	// Function to call when a player enters the vehicle.
-	void	(*Exit)(edict_t *eVehicle,edict_t *eOther);		// Function to call when a player leaves the vehicle.
-	void	(*Kill)(edict_t *eVehicle,edict_t *eOther);		// Function to call when the vehicle is destroyed.
+	void(*Enter)(ServerEntity_t *eVehicle, ServerEntity_t *eOther);	// Function to call when a player enters the vehicle.
+	void(*Exit)(ServerEntity_t *eVehicle, ServerEntity_t *eOther);		// Function to call when a player leaves the vehicle.
+	void(*Kill)(ServerEntity_t *eVehicle, ServerEntity_t *eOther);		// Function to call when the vehicle is destroyed.
 } VehicleVariables_t;
 
 /*	These are tied in with
@@ -299,7 +298,7 @@ typedef enum
 
 typedef struct
 {
-	void	(*Function)(edict_t *eEntity);
+	void	(*Function)(ServerEntity_t *eEntity);
 
 	int		iFrame;
 
@@ -323,9 +322,6 @@ typedef struct
 	// [21/2/2014] Changed to a double and renamed ~hogsy
 	double		dWait;
 	int			count;
-	float		red,
-				green,
-				blue;
 	char		*cTarget1,		// First target.
 				*cTarget2;		// Second target.
 
@@ -345,8 +341,6 @@ typedef struct
 	// Ammo
 	int			iC4Ammo,
 				claw_ammo;
-	int			trident_ammo;
-	int			axe_ammo;
 	int			glock_ammo,glock_ammo2;
 	int			ionblaster_ammo;
 	int			discus_ammo,discus_ammo2;
@@ -355,93 +349,88 @@ typedef struct
 	int			cordite_ammo;
 	int			barrier_ammo;
 	int			ballista_ammo;
-	int			meta_ammo;
-	int			midas_ammo;
 	int			kineticore_ammo,kineticore_ammo2;
-	int			crossbow_ammo;
+	int			iCrossbowAmmo;
 	int			shockwave_ammo;
 	int			sidewinder_ammo;
 	int			shotcycler_ammo;
-	int			iShotCycle;						// Number of shots to cycle through (shotcycler).
-	int			slugger_ammo,slugger_ammo2;
-	int			greekfire_ammo;
-	int			nightmare_ammo;
-	int			wyndrax_ammo;
-	int			zeus_ammo;
-	int			tazerhook_ammo;
+	int			iShotCycle;							// Number of shots to cycle through (shotcycler).
+	int			iGreekFireAmmo;
 #elif GAME_ADAMAS
 	int		iBulletAmmo;
 #endif
 
 	// Animation
-	int				iAnimationCurrent,			// Current frame of current sequence.
-					iAnimationEnd;				// Last frame of current sequence.
-	double			dAnimationTime;				// The speed of the animation.
-	EntityFrame_t	*iFrames;					// Active frame group.
-	int				iWeaponAnimationCurrent,	// Current frame of current sequence.
-					iWeaponAnimationEnd,		// Last frame of current sequence.
-					iWeaponIdleFrame;			// Frame to return to for "idling" after sequence.
-	float			fWeaponAnimationTime;		// The speed of the animation.
-	EntityFrame_t	*iWeaponFrames;				// Active weapon frame group.
+	int	iAnimationCurrent;			// Current frame of current sequence.
+	int iAnimationEnd;				// Last frame of current sequence.
+	double dAnimationTime;			// The speed of the animation.
+	EntityFrame_t *iFrames;			// Active frame group.
+	int	iWeaponAnimationCurrent;	// Current frame of current sequence.
+	int iWeaponAnimationEnd;		// Last frame of current sequence.
+	int iWeaponIdleFrame;			// Frame to return to for "idling" after sequence.
+	float fWeaponAnimationTime;		// The speed of the animation.
+	EntityFrame_t *iWeaponFrames;	// Active weapon frame group.
 
 	// Misc
 	char			*cInfoMessage;				// see server_point > Point_InfoMessage.
 	bool			bBleed;						// Do we bleed?
 
-	int				iDamageType;				// The type of damage this entity can recieve.
+	int	iDamageType;	// The type of damage this entity can recieve.
+	int	iMaxHealth;		// An entities maximum health, they can't gain anymore than this.
 
-	double			damage_time,				// Time between each amount of damage.
+	double			dDamageTime,				// Time between each amount of damage.
 					dStepTime;					// Time between each step.
 	double			dPainFinished,
 					dAirFinished,
 					dAttackFinished,			// Time before we can attack again.
 					dMoveFinished;
 
-	float			jump_flag;
+	float fJumpVelocity;
+
 	float			swim_flag;					// Time before next splash sound.
 	int				hit;
 	int				state;						// Main state.
 	float			fSpawnDelay;				// Delay before next spawn.
-	vec3_t			pos1;
-	vec3_t			pos2;
+	MathVector3f_t	pos1;
+	MathVector3f_t	pos2;
 	char			*deathtype;
 	PlayerTeam_t	pTeam;						// Current active team.
-	void			(*think1)(edict_t *ent,edict_t *other);
-	vec3_t			finaldest;
+	void(*think1)(ServerEntity_t *ent, ServerEntity_t *other);
+	MathVector3f_t	finaldest;
 	char			*killtarget;
 	float			delay;			// Delay before doing a task.
-	edict_t			*trigger_field;
+	ServerEntity_t			*trigger_field;
 	int				iFireMode;		// Active fire mode for weapons.
-	edict_t			*bomb,
+	ServerEntity_t			*bomb,
 					*activator;
 	char			*cOldModel;		// Last model.
 	char			cOldStyle;
 
 	// CTF states
-	edict_t		*flag;				// Currently owned flag (if any).
-	edict_t		*eOwner;			// Owner entity (we usually don't collide with this guy)
+	ServerEntity_t		*flag;				// Currently owned flag (if any).
+	ServerEntity_t		*eOwner;			// Owner entity (we usually don't collide with this guy)
 
 	// Door shizz
 
 	// fixed data
-	vec3_t		start_origin;
-	vec3_t		start_angles;
-	vec3_t		end_origin;
-	vec3_t		end_angles;
+	MathVector3f_t start_origin;
+	MathVector3f_t start_angles;
+	MathVector3f_t end_origin;
+	MathVector3f_t end_angles;
 
 	// state data
-	vec3_t		dir;
+	MathVector3f_t		dir;
 
 	// Angles
-	MathVector3_t	vForward;
-	MathVector3_t	vRight;
-	MathVector3_t	vUp;
+	MathVector3f_t vForward;
+	MathVector3f_t vRight;
+	MathVector3f_t vUp;
 
-	int			iDelta[2][2];			// X & Y Delta.
+	int iDelta[2][2];	// X & Y Delta.
 
 	// Vehicles
-	edict_t		*eVehicle;				// Current vehicle.
-	int			iVehicleSlot;			// Occupied vehicle slot.
+	ServerEntity_t *eVehicle;	// Current vehicle.
+	int iVehicleSlot;			// Occupied vehicle slot.
 
 	// Weapons
 	int	iBarrelCount;			// For cycling barrel animations.
@@ -456,7 +445,7 @@ typedef struct
 
 typedef struct
 {
-	vec3_t	normal;
+	MathVector3f_t	normal;
 	float	dist;
 } plane_t;
 
@@ -467,62 +456,66 @@ typedef struct
 			bOpen,bWater;
 
 	float	fraction;		// time completed, 1.0 = didn't hit anything
-	vec3_t	endpos;			// final position
+	MathVector3f_t	endpos;			// final position
 	plane_t	plane;			// surface normal at impact
-	edict_t	*ent;			// entity the surface is on
+	ServerEntity_t	*ent;			// entity the surface is on
 } trace_t;
 
 /*	If this is changed remember
 	to recompile the engine too!    */
-typedef struct edict_s
+typedef struct ServerEntity_s
 {
 	// Shared
-	bool				free;
+	bool free;
+
 	link_t				area;
 	int					num_leafs;
 	short				leafnums[MAX_ENT_LEAFS];
-	entity_state_t		baseline;
+	EntityState_t		baseline;
 	unsigned char		alpha;
-	bool				bSendInterval;
-	float				freetime;
-	entvars_t			v;
+
+	bool bSendInterval;
+
+	float fFreeTime;
+
+	GlobalVariables_t	v;
 
 	ModelVariables_t	Model;		// Variables that affect the model used for the entity.
 	PhysicsVariables_t	Physics;	// Variables affecting how the entity is physically treated.
 	GameVariables_t		local;		// All variables specific towards the game, that aren't used by the engine.
 	MonsterVariables_t	monster;	// Specific towards AI/monsters.
 	VehicleVariables_t	Vehicle;	// Vehicle variables.
-} edict_t;
+} ServerEntity_t;
 
-#define	NEXT_EDICT(e) ((edict_t *)( (byte *)e + sizeof(edict_t)))
+#define	NEXT_EDICT(e) ((ServerEntity_t *)( (uint8_t *)e + sizeof(ServerEntity_t)))
 
-#define	EDICT_TO_PROG(e) ((byte*)e-(byte*)sv.edicts)
-#define PROG_TO_EDICT(e) ((edict_t *)((byte *)sv.edicts + e))
+#define	EDICT_TO_PROG(e) ((uint8_t*)e-(uint8_t*)sv.edicts)
+#define PROG_TO_EDICT(e) ((ServerEntity_t *)((uint8_t *)sv.edicts + e))
 
 // [13/1/2013] Revised ~hogsy
 // [25/7/2013] Used intptr to solve gcc warning ~hogsy
 // [25/9/2013] Moved here so we can use it in the game-code too :) ~hogsy
-#define	FIELD(y)	(intptr_t)&(((edict_t*)0)->y)
+#define	FIELD(y)	(intptr_t)&(((ServerEntity_t*)0)->y)
 
 typedef struct
 {
 	// Server
-	int(*Server_PointContents)(vec3_t point);
+	int(*Server_PointContents)(MathVector3f_t point);
 	int(*Server_GetNumEdicts)(void);
 
-	void(*Server_MakeStatic)(edict_t *ent);
+	void(*Server_MakeStatic)(ServerEntity_t *ent);
 	void(*Server_BroadcastPrint)(char *fmt, ...);														// Sends a message to all clients.
-	void(*Server_SinglePrint)(edict_t *eEntity, char *cMessage);											// Sends a message to a specified client.
+	void(*Server_SinglePrint)(ServerEntity_t *eEntity, char *cMessage);											// Sends a message to a specified client.
 	void(*Server_PrecacheResource)(int iType, const char *ccResource);									// Precaches the specified resource.
 	void(*Server_Restart)(void);																		// Restarts the server.
 	void(*Server_ChangeLevel)(const char *ccNewLevel);													// Changes the level.
 	void(*Server_AmbientSound)(vec_t *vPosition, const char *cPath, int iVolume, int iAttenuation);		// Plays an ambient sound (a constant sound) from the given location.
 
-	trace_t		(*Server_Move)(vec3_t start,vec3_t mins,vec3_t maxs,vec3_t end,int type,edict_t *passedict);
+	trace_t(*Server_Move)(MathVector3f_t start, MathVector3f_t mins, MathVector3f_t maxs, MathVector3f_t end, int type, edict_t *passedict);
 	
-	edict_t*(*Server_FindRadius)(vec3_t origin,float radius);												// Finds entities within a specific radius.
-	edict_t*(*Server_FindEntity)(edict_t *eStartEntity,char *cName,bool bClassname);						// Finds a specified entity either by classname or by entity name.
-	edict_t*(*Server_GetEdicts)(void);
+	ServerEntity_t*(*Server_FindRadius)(MathVector3f_t origin, float radius);												// Finds entities within a specific radius.
+	ServerEntity_t*(*Server_FindEntity)(ServerEntity_t *eStartEntity, char *cName, bool bClassname);						// Finds a specified entity either by classname or by entity name.
+	ServerEntity_t*(*Server_GetEdicts)(void);
 
 	char		*(*Server_GetLevelName)(void);																	// Returns the name of the currently active level.
 	
@@ -537,15 +530,15 @@ typedef struct
 	void(*Client_AddMenuState)(int iState);						// Adds a new state to the clients menu.
 	void(*Client_RemoveMenuState)(int iState);					// Removes a state from the clients menu.
 	
-	entity_t		*(*Client_GetViewEntity)(void);							// Returns the entity representing the players view model.
-	entity_t		*(*Client_GetPlayerEntity)(void);						// Returns the entity representing the player.
+	ClientEntity_t		*(*Client_GetViewEntity)(void);							// Returns the entity representing the players view model.
+	ClientEntity_t		*(*Client_GetPlayerEntity)(void);						// Returns the entity representing the player.
 	
 	DynamicLight_t	*(*Client_AllocateDlight)(int key);						// Allocate a new dynamic light.
 	
 	Particle_t		*(*Client_AllocateParticle)(void);						// Allocate a new particle effect.
 
 	// Global
-	vec_t			*(*GetLightSample)(vec3_t vOrigin);						// Gets the current lightmap sample for the specified entity.
+	vec_t			*(*GetLightSample)(MathVector3f_t vOrigin);						// Gets the current lightmap sample for the specified entity.
 
 	bool(*Material_Precache)(const char *ccPath);
 
@@ -555,16 +548,16 @@ typedef struct
 	void(*Con_Warning)(char *fmt, ...);	// Highlighted message to indicate an issue.
 
 	// [28/7/2012] Added SetMessageEntity ~hogsy
-	void(*SetMessageEntity)(edict_t *ent);
-	void(*CenterPrint)(edict_t *ent, char *msg);	// Sends a message to the specified client and displays the message at the center of the screen.
+	void(*SetMessageEntity)(ServerEntity_t *ent);
+	void(*CenterPrint)(ServerEntity_t *ent, char *msg);	// Sends a message to the specified client and displays the message at the center of the screen.
 	void(*Sys_Error)(char *error, ...);
-	void(*SetModel)(edict_t *ent, char *m);		// Sets the model for the specified entity.
+	void(*SetModel)(ServerEntity_t *ent, char *m);		// Sets the model for the specified entity.
 	void(*Particle)(float org[3], float dir[3], float scale, char *texture, int count);
-	void(*Flare)(MathVector3_t org, float r, float g, float b, float a, float scale, char *texture);
-	void(*Sound)(edict_t *ent, int channel, char *sample, int volume, float attenuation);
-	void(*LinkEntity)(edict_t *ent, bool touch_triggers);
-	void(*UnlinkEntity)(edict_t *ent);
-	void(*FreeEntity)(edict_t *ed);
+	void(*Flare)(MathVector3f_t org, float r, float g, float b, float a, float scale, char *texture);
+	void(*Sound)(ServerEntity_t *ent, int channel, char *sample, int volume, float attenuation);
+	void(*LinkEntity)(ServerEntity_t *ent, bool touch_triggers);
+	void(*UnlinkEntity)(ServerEntity_t *ent);
+	void(*FreeEntity)(ServerEntity_t *ed);
 	void(*DrawPic)(char *path, float alpha, int x, int y, int w, int h);
 	void(*DrawString)(int x, int y, char *msg);
 	void(*DrawFill)(int x, int y, int w, int h, float r, float g, float b, float alpha);
@@ -575,7 +568,7 @@ typedef struct
 	void(*WriteByte)(int mode, int command);
 	void(*WriteCoord)(int mode, float f);
 	void(*WriteAngle)(int mode, float f);
-	void(*WriteEntity)(int mode, edict_t *ent);
+	void(*WriteEntity)(int mode, ServerEntity_t *ent);
 	void(*ShowCursor)(bool bShow);
 
 	int(*ReadByte)(void);
@@ -585,7 +578,7 @@ typedef struct
 
 	void(*GetCursorPosition)(int *X, int *Y);
 
-	edict_t	*(*Spawn)(void);
+	ServerEntity_t	*(*Spawn)(void);
 } ModuleImport_t;
 
 typedef struct
@@ -598,34 +591,34 @@ typedef struct
 
 	//	Game
 	char	*Name;																						// Name of the currently active game (used as the name for the window).
-	bool	(*Game_Init)(int state,edict_t *ent,double dTime);											// For both server-side and client-side entry
-	void	(*ChangeYaw)(edict_t *ent);
-	void	(*SetSize)(edict_t *ent,float mina,float minb,float minc,float maxa,float maxb,float maxc);	// Sets the size of an entity.
+	bool(*Game_Init)(int state, ServerEntity_t *ent, double dTime);											// For both server-side and client-side entry
+	void(*ChangeYaw)(ServerEntity_t *ent);
+	void(*SetSize)(ServerEntity_t *ent, float mina, float minb, float minc, float maxa, float maxb, float maxc);	// Sets the size of an entity.
 
-	void	(*Client_Initialize)(void);
-	void	(*Client_RelinkEntities)(entity_t *ent,int i,double dTime);
-	void	(*Client_ParseTemporaryEntity)(void);
-	void	(*Client_ViewFrame)(void);																	// Called per-frame to handle players view.
+	void(*Client_Initialize)(void);
+	void(*Client_RelinkEntities)(ClientEntity_t *ent, int i, double dTime);
+	void(*Client_ParseTemporaryEntity)(void);
+	void(*Client_ViewFrame)(void);																	// Called per-frame to handle players view.
 
-	void	(*Server_Initialize)(void);																	// Initializes the server.
-	void	(*Server_EntityFrame)(edict_t *eEntity);
-	void	(*Server_KillClient)(edict_t *eClient);														// Tells the specified client to die.
-	void(*Server_SetSizeVector)(edict_t *eEntity, MathVector3_t vMin, MathVector3_t vMax);				// Set the size of an entity by vector.
-	void	(*Server_SpawnPlayer)(edict_t *ePlayer);													// Spawns the player (SERVER_PUTCLIENTINSERVER).
-	void	(*Server_StartFrame)(void);																	// Called at the start of each physics frame.
-	bool	(*Server_SpawnEntity)(edict_t *ent);														// Puts a specific entity into the server.
+	void(*Server_Initialize)(void);																	// Initializes the server.
+	void(*Server_EntityFrame)(ServerEntity_t *eEntity);
+	void(*Server_KillClient)(ServerEntity_t *eClient);														// Tells the specified client to die.
+	void(*Server_SetSizeVector)(ServerEntity_t *eEntity, MathVector3f_t vMin, MathVector3f_t vMax);				// Set the size of an entity by vector.
+	void(*Server_SpawnPlayer)(ServerEntity_t *ePlayer);													// Spawns the player (SERVER_PUTCLIENTINSERVER).
+	void(*Server_StartFrame)(void);																	// Called at the start of each physics frame.
+	bool(*Server_SpawnEntity)(ServerEntity_t *ent);														// Puts a specific entity into the server.
 
-	void(*Physics_SetGravity)(edict_t *eEntity);			// Sets the current gravity for the given entity.
-	void(*Physics_CheckWaterTransition)(edict_t *eEntity);
-	void(*Physics_CheckVelocity)(edict_t *ent);				// Checks the velocity of physically simulated entities.
-	void(*Physics_WallFriction)(edict_t *eEntity, trace_t *trLine);
-	void(*Physics_Impact)(edict_t *eEntity, edict_t *eOther);
+	void(*Physics_SetGravity)(ServerEntity_t *eEntity);			// Sets the current gravity for the given entity.
+	void(*Physics_CheckWaterTransition)(ServerEntity_t *eEntity);
+	void(*Physics_CheckVelocity)(ServerEntity_t *ent);				// Checks the velocity of physically simulated entities.
+	void(*Physics_WallFriction)(ServerEntity_t *eEntity, trace_t *trLine);
+	void(*Physics_Impact)(ServerEntity_t *eEntity, ServerEntity_t *eOther);
 
-	trace_t(*Physics_PushEntity)(edict_t *eEntity, MathVector3_t mvPush);
+	trace_t(*Physics_PushEntity)(ServerEntity_t *eEntity, MathVector3f_t mvPush);
 
-	bool(*Physics_CheckWater)(edict_t *eEntity);
+	bool(*Physics_CheckWater)(ServerEntity_t *eEntity);
 } GameExport_t;
 
-#define GAME_VERSION	(sizeof(GameExport_t)+sizeof(ModuleImport_t)+sizeof(edict_t*))	// Version check that's used for Menu and Launcher.
+#define GAME_VERSION (sizeof(GameExport_t)+sizeof(ModuleImport_t)+sizeof(GlobalVariables_t*))	// Version check that's used for Menu and Launcher.
 
 #endif

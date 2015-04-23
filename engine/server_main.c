@@ -609,12 +609,12 @@ void SV_WriteClientdataToMessage (edict_t *ent, sizebuf_t *msg)
 	SV_SetIdealPitch ();		// how much to look up / down ideally
 
 	// A fixangle might get lost in a dropped packet.  Oh well.
-	if ( ent->v.fixangle )
+	if (ent->v.bFixAngle)
 	{
 		MSG_WriteByte (msg, svc_setangle);
 		for(i = 0; i < 3; i++)
 			MSG_WriteAngle (msg, ent->v.angles[i] );
-		ent->v.fixangle = 0;
+		ent->v.bFixAngle = false;
 	}
 
 	bits = 0;

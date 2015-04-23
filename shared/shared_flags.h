@@ -22,7 +22,7 @@
 	when a build is released publically.	*/
 #define ENGINE_VERSION_MAJOR	0
 #define ENGINE_VERSION_MINOR	3
-#define ENGINE_VERSION_BUILD	895	// 18/4/2015
+#define ENGINE_VERSION_BUILD	898	// 24/4/2015
 
 #define	PATH_ENGINE		"engine"			// Directory to look in for engine specific modules / assets.
 #define	PATH_LOGS		PATH_ENGINE"/logs"	// Default directory for saving logs.
@@ -68,12 +68,9 @@ enum
 	RESOURCE_SPRITE,	// States that the precache should be used for a sprite.
 	RESOURCE_SOUND,		// States that the precache should be used for a sound.
 	RESOURCE_FONT,		// States that the precache should be used for a font.
+	RESOURCE_MATERIAL,	// States that the precache should be used for a material.
     RESOURCE_TEXTURE	// States that the precache should be used for a texture.
 };
-
-#define CONTENT_SLIME				-4		// Horrible slime to slow us up!
-#define CONTENT_LAVA				-5		// Lava... IT BURNS!
-#define	CONTENT_SKY					-6		// It's the sky!!
 
 /*	Attenuation is used for the
 	Sound function and that
@@ -86,14 +83,14 @@ enum
 
 /*	Different sound channels.
 */
-enum
+typedef enum
 {
-	CHAN_AUTO,								// Sets the sound to a channel automatically (not recommended)
-	CHAN_WEAPON,							// Clearly used for weapons
-	CHAN_VOICE,								// Usually used for the players grunts and groans (no not those)
-	CHAN_ITEM,								// Clearly used for items in the world
-	CHAN_BODY								// Usually used for footsteps and such
-};
+	CHAN_AUTO,		// Sets the sound to a channel automatically (not recommended).
+	CHAN_WEAPON,	// Clearly used for weapons.
+	CHAN_VOICE,		// Usually used for the players grunts and groans.
+	CHAN_ITEM,		// Clearly used for items in the world.
+	CHAN_BODY		// Usually used for footsteps and such.
+} AudioChannel_t;
 
 enum
 {

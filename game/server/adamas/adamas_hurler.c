@@ -37,7 +37,7 @@ void Hurler_Spawn(edict_t *eHurler)
 	eHurler->v.bTakeDamage		= true;
 	eHurler->v.movetype			= MOVETYPE_BOUNCE;
 	eHurler->v.iHealth			= HURLER_MAX_HEALTH;
-	eHurler->v.iMaxHealth		= HURLER_MAX_HEALTH;
+	eHurler->local.iMaxHealth = HURLER_MAX_HEALTH;
 	eHurler->v.netname			= "Hurler";
 	eHurler->v.TouchFunction	= Hurler_Touch;
 

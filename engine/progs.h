@@ -36,7 +36,7 @@ typedef union eval_s
 //============================================================================
 
 extern	ddef_t				*pr_globaldefs;
-extern	GlobalVariables_t	pr_global_struct;
+extern	GlobalState_t	pr_global_struct;
 extern	float				*pr_globals;			// same as pr_global_struct
 
 //============================================================================

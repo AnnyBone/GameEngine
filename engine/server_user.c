@@ -227,7 +227,7 @@ void SV_ClientThink (void)
 
 	Math_VectorAdd (sv_player->v.v_angle, sv_player->v.punchangle, vAngle);
 	angles[ROLL] = V_CalcRoll (sv_player->v.angles, sv_player->v.velocity)*4;
-	if(!sv_player->v.fixangle)
+	if (!sv_player->v.bFixAngle)
 	{
 		angles[PITCH]	= -vAngle[PITCH]/3.0f;
 		angles[YAW]		= vAngle[YAW];
@@ -235,10 +235,10 @@ void SV_ClientThink (void)
 
 	if(sv_player->v.flags & FL_WATERJUMP)
 	{
-		if(sv.time > sv_player->v.teleport_time || !sv_player->v.waterlevel)
+		if (sv.time > sv_player->v.dTeleportTime || !sv_player->v.waterlevel)
 		{
 			sv_player->v.flags			= sv_player->v.flags & ~FL_WATERJUMP;
-			sv_player->v.teleport_time	= 0;
+			sv_player->v.dTeleportTime = 0;
 		}
 
 		sv_player->v.velocity[0] = sv_player->v.movedir[0];
@@ -272,7 +272,7 @@ void SV_ClientThink (void)
 		smove = cmd.sidemove;
 
 		// Hack to not let you back into teleporter
-		if(sv.time < sv_player->v.teleport_time && fmove < 0)
+		if (sv.time < sv_player->v.dTeleportTime && fmove < 0)
 			fmove = 0;
 
 		for(i = 0; i < 3; i++)

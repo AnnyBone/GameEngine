@@ -15,6 +15,9 @@
     <ClInclude Include="server\openkatana\openkatana.h">
       <Filter>Server\OpenKatana</Filter>
     </ClInclude>
+    <ClInclude Include="server\server_gamemode.h">
+      <Filter>Server</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Shared">

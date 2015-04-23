@@ -106,7 +106,7 @@ void IonBlaster_IonBallTouch(edict_t *eIonBall,edict_t *other)
 
 	// Ensure we aren't inside something...
 	int	iPointContent = Engine.Server_PointContents(eIonBall->v.origin);
-	if((iPointContent == CONTENT_SKY) || (iPointContent == BSP_CONTENTS_SOLID))
+	if ((iPointContent == BSP_CONTENTS_SKY) || (iPointContent == BSP_CONTENTS_SOLID))
 		ENTITY_REMOVE(eIonBall);
 
 	Engine.Con_Printf("POINT CONTENT: %i\n", iPointContent);

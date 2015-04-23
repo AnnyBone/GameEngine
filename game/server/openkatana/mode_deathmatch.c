@@ -10,7 +10,7 @@
 #include "server_item.h"
 #include "server_weapon.h"
 
-void Deathmatch_Spawn(edict_t *ePlayer)
+void Deathmatch_Spawn(ServerEntity_t *ePlayer)
 {
 	if(!Server.bRoundStarted)
 	{

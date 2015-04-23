@@ -113,7 +113,7 @@ char *va(char *format,...);
 
 void Flare(vec3_t org,float r,float g,float b,float a,float scale,char *texture);
 
-void Sound(edict_t *ent,int channel,char *sound,int volume,float attenuation);
+void Sound(edict_t *ent, AudioChannel_t channel, char *sound, int volume, float attenuation);
 
 void SetAngle(edict_t *ent,vec3_t vAngle);
 
