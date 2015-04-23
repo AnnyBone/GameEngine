@@ -9,36 +9,8 @@
 
 EntityFrame_t C4Animation_Deploy[] =
 {
-	{   NULL, 1, 0.08f    },
-	{   NULL, 2, 0.08f    },
-	{   NULL, 3, 0.08f    },
-	{   NULL, 4, 0.08f    },
-	{   NULL, 5, 0.08f    },
-	{   NULL, 6, 0.08f    },
-	{   NULL, 7, 0.08f    },
-	{   NULL, 8, 0.08f    },
-	{   NULL, 9, 0.08f    },
-	{   NULL, 10, 0.08f, true    }
-};
-
-EntityFrame_t C4Animation_Fire [] =
-{
-	{   NULL, 11, 0.08f    },
-	{   NULL, 12, 0.08f    },
-	{   NULL, 13, 0.08f    },
-	{   NULL, 14, 0.08f    },
-	{   NULL, 15, 0.08f    },
-	{   NULL, 16, 0.08f    },
-	{   NULL, 17, 0.08f    },
-	{   NULL, 18, 0.08f    },
-	{   NULL, 19, 0.08f    },
-	{   NULL, 20, 0.08f    },
-	{   NULL, 21, 0.08f    },
-	{   NULL, 22, 0.08f, true    }
-};
-
-EntityFrame_t C4Animation_Trigger [] =
-{
+	{   NULL, 22, 0.08f    },
+	{   NULL, 23, 0.08f    },
 	{   NULL, 24, 0.08f    },
 	{   NULL, 25, 0.08f    },
 	{   NULL, 26, 0.08f    },
@@ -50,7 +22,89 @@ EntityFrame_t C4Animation_Trigger [] =
 	{   NULL, 32, 0.08f    },
 	{   NULL, 33, 0.08f    },
 	{   NULL, 34, 0.08f    },
-	{   NULL, 35, 0.08f, true    }
+	{   NULL, 35, 0.08f    },
+	{   NULL, 36, 0.08f    },
+	{   NULL, 37, 0.08f    },
+	{   NULL, 38, 0.08f    },
+	{   NULL, 39, 0.08f    },
+	{   NULL, 40, 0.08f    },
+	{   NULL, 41, 0.08f    },
+	{   NULL, 42, 0.08f    },
+	{   NULL, 43, 0.08f    },
+	{   NULL, 44, 0.08f    },
+	{   NULL, 45, 0.08f    },
+	{   NULL, 46, 0.08f    },
+	{   NULL, 47, 0.08f    },
+	{   NULL, 48, 0.08f    },
+	{   NULL, 49, 0.08f    },
+	{   NULL, 50, 0.08f    },
+	{   NULL, 51, 0.08f    },
+	{   NULL, 51, 0.08f    },
+	{   NULL, 52, 0.08f    },
+	{   NULL, 53, 0.08f    },
+	{   NULL, 54, 0.08f    },
+	{   NULL, 55, 0.08f    },
+	{   NULL, 56, 0.08f    },
+	{   NULL, 57, 0.08f    },
+	{   NULL, 58, 0.08f    },
+	{   NULL, 59, 0.08f, true},
+};
+
+EntityFrame_t C4Animation_Fire1 [] =
+{
+	{   NULL, 1, 0.08f    },
+	{   NULL, 2, 0.08f    },
+	{   NULL, 3, 0.08f    },
+	{   NULL, 4, 0.08f    },
+	{   NULL, 5, 0.08f    },
+	{   NULL, 6, 0.08f    },
+	{   NULL, 7, 0.08f, true    }
+};
+
+EntityFrame_t C4Animation_Fire2 [] =
+{
+	{   NULL, 8, 0.08f    },
+	{   NULL, 9, 0.08f    },
+	{   NULL, 10, 0.08f    },
+	{   NULL, 11, 0.08f    },
+	{   NULL, 12, 0.08f    },
+	{   NULL, 13, 0.08f    },
+	{   NULL, 14, 0.08f, true    }
+};
+
+EntityFrame_t C4Animation_Fire3 [] =
+{
+	{   NULL, 15, 0.08f    },
+	{   NULL, 16, 0.08f    },
+	{   NULL, 17, 0.08f    },
+	{   NULL, 18, 0.08f    },
+	{   NULL, 19, 0.08f    },
+	{   NULL, 20, 0.08f    },
+	{   NULL, 21, 0.08f, true    }
+};
+
+EntityFrame_t C4Animation_Trigger [] =
+{
+	{   NULL, 40, 0.08f    },
+	{   NULL, 41, 0.08f    },
+	{   NULL, 42, 0.08f    },
+	{   NULL, 43, 0.08f    },
+	{   NULL, 44, 0.08f    },
+	{   NULL, 45, 0.08f    },
+	{   NULL, 46, 0.08f    },
+	{   NULL, 47, 0.08f    },
+	{   NULL, 48, 0.08f    },
+	{   NULL, 49, 0.08f    },
+	{   NULL, 50, 0.08f    },
+	{   NULL, 51, 0.08f    },
+	{   NULL, 52, 0.08f    },
+	{   NULL, 53, 0.08f    },
+	{   NULL, 54, 0.08f    },
+	{   NULL, 55, 0.08f    },
+	{   NULL, 56, 0.08f    },
+	{   NULL, 57, 0.08f    },
+	{   NULL, 58, 0.08f    },
+	{   NULL, 59, 0.08f, true    }
 };
 
 void C4Vizatergo_Deploy(edict_t *ent)
@@ -146,7 +200,7 @@ void C4Vizatergo_PrimaryAttack(edict_t *eOwner)
 	Sound(eOwner,CHAN_AUTO,"weapons/c4/c4fire.wav",255,ATTN_NORM);
 	Sound(eOwner,CHAN_AUTO,"weapons/c4/c4cock.wav",255,ATTN_NORM);
 
-	Weapon_Animate(eOwner,C4Animation_Fire);
+	Weapon_Animate(eOwner,C4Animation_Fire1);
 
 	// [11/8/2013] Fixed ~hogsy
 	eOwner->v.iPrimaryAmmo = eOwner->local.iC4Ammo -= 1;
