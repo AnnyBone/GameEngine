@@ -120,8 +120,8 @@ typedef _Bool bool;
 
 #define	pARRAYELEMENTS(a)	(sizeof(a)/sizeof(*(a)))	// Returns the number of elements within an array.
 
-typedef unsigned int	pUINT;
-typedef	unsigned char	pBYTE;
+typedef unsigned int pUINT;
+typedef	unsigned char pBYTE;
 
 #ifdef __cplusplus
 extern "C" {

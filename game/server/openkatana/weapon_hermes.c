@@ -32,7 +32,7 @@ void HermesCloudTouch(edict_t *ent, edict_t *other)
 
 	if(other->v.iHealth > 0 && other->v.movetype == MOVETYPE_STEP)
 	{
-		MONSTER_Damage(other,ent,5,0);
+		Entity_Damage(other, ent, 5, 0);
 		//other->local.poisoned = 1; TODO: MAKE IT WORK
 	}
 }

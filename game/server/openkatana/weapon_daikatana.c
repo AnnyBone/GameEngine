@@ -110,7 +110,7 @@ void Daikatana_Hit(edict_t *ent)
 		// [5/5/2012] Cleaned up ~hogsy
 		// [10/3/2013] Removed particle call since it's done in MONSTER_Damage :) ~hogsy
 		if(trace.ent->v.bTakeDamage)
-			MONSTER_Damage(trace.ent,ent,35,0);
+			Entity_Damage(trace.ent, ent, 35, 0);
 		else
 		{
             char    cSmokeTexture[8];

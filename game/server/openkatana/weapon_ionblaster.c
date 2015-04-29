@@ -127,7 +127,7 @@ void IonBlaster_IonBallTouch(edict_t *eIonBall,edict_t *other)
 		if(other->v.bTakeDamage && other != eIonBall->local.eOwner)
 			// [9/12/2012] IonBall just explodes if selfharm is false ~hogsy
 			// [11/1/2013] Revised ~hogsy
-			MONSTER_Damage(other,eIonBall,15,0);
+			Entity_Damage(other, eIonBall, 15, 0);
 		else
 		{
 			if(!eIonBall->v.angles[1] || !eIonBall->v.angles[0])

@@ -22,7 +22,7 @@
 	when a build is released publically.	*/
 #define ENGINE_VERSION_MAJOR	0
 #define ENGINE_VERSION_MINOR	3
-#define ENGINE_VERSION_BUILD	898	// 24/4/2015
+#define ENGINE_VERSION_BUILD	901	// 30/4/2015
 
 #define	PATH_ENGINE		"engine"			// Directory to look in for engine specific modules / assets.
 #define	PATH_LOGS		PATH_ENGINE"/logs"	// Default directory for saving logs.
@@ -110,15 +110,6 @@ enum
 #define	MOVE_NORMAL		0
 #define	MOVE_NOMONSTERS	1
 #define	MOVE_MISSILE	2
-
-enum
-{
-	SOLID_NOT,		// Entity isn't solid.
-	SOLID_TRIGGER,	// Entity will cause a trigger function.
-	SOLID_BBOX,		// Entity is solid.
-	SOLID_SLIDEBOX,	// Entity is solid and moves.
-	SOLID_BSP
-};
 
 #define	FL_FLY				1		// Entity can fly.
 #define	FL_SWIM				2		// Entity can swim.

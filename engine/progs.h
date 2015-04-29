@@ -31,7 +31,7 @@ typedef union eval_s
 	int				edict;
 } eval_t;
 
-#define	EDICT_FROM_AREA(l) STRUCT_FROM_LINK(l,edict_t,area)
+#define	EDICT_FROM_AREA(l) STRUCT_FROM_LINK(l,ServerEntity_t,area)
 
 //============================================================================
 
@@ -43,23 +43,23 @@ extern	float				*pr_globals;			// same as pr_global_struct
 
 void PR_Init (void);
 
-edict_t *ED_Alloc (void);
-void ED_Free (edict_t *ed);
+ServerEntity_t *ED_Alloc (void);
+void ED_Free(ServerEntity_t *ed);
 
 char	*ED_NewString (char *string);
 // returns a copy of the string allocated from the server's string heap
 
-void Edict_Print(edict_t *eEntity);
-void ED_Write (FILE *f, edict_t *ed);
+void Edict_Print(ServerEntity_t *eEntity);
+void ED_Write(FILE *f, ServerEntity_t *ed);
 
-char *ED_ParseEdict (char *data, edict_t *ent);
+char *ED_ParseEdict(char *data, ServerEntity_t *ent);
 
 void ED_WriteGlobals (FILE *f);
 void ED_ParseGlobals (char *data);
 void ED_LoadFromFile (char *data);
 
-edict_t *EDICT_NUM(int n);
-int NUM_FOR_EDICT(edict_t *e);
+ServerEntity_t *EDICT_NUM(int n);
+int NUM_FOR_EDICT(ServerEntity_t *e);
 
 //============================================================================
 
@@ -70,4 +70,4 @@ typedef void (*builtin_t) (void);
 void ED_PrintEdicts (void);
 void ED_PrintNum (int ent);
 
-eval_t *GetEdictFieldValue(edict_t *ed, char *field);
+eval_t *GetEdictFieldValue(ServerEntity_t *ed, char *field);

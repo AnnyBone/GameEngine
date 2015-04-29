@@ -169,20 +169,29 @@ void	_Math_VectorScale(vec3_t in,vec_t scale,vec3_t out);
 
 struct	mplane_s;
 
-void	Math_VectorAngles(const vec3_t forward, vec3_t angles);
-void	Math_AngleVectors(vec3_t angles, vec3_t forward, vec3_t right, vec3_t up);
-void	Math_VectorNormalizeFast(vec3_t vVector);
-void	Math_VectorMake(vec3_t veca, float scale, vec3_t vecb, vec3_t vecc);
+void	Math_VectorAngles(const MathVector3f_t forward, MathVector3f_t angles);
+void	Math_AngleVectors(MathVector3f_t angles, MathVector3f_t forward, MathVector3f_t right, MathVector3f_t up);
+void	Math_VectorNormalizeFast(MathVector3f_t vVector);
+void	Math_VectorMake(MathVector3f_t veca, float scale, MathVector3f_t vecb, MathVector3f_t vecc);
 
-double	Math_VectorLength(vec3_t a);
+double	Math_VectorLength(MathVector3f_t a);
 
 float	Math_AngleMod(float a);
 float	Math_VectorToYaw(vec_t *vVector);
 
-bool Math_VectorCompare(vec3_t a, vec3_t b);
-bool Math_IsIntersecting(MathVector3_t mvFirstMins, MathVector3_t mvFirstMaxs, MathVector3_t mvSecondMins, MathVector3_t mvSecondMaxs);
+bool Math_VectorCompare(MathVector3f_t a, MathVector3f_t b);
+bool Math_IsIntersecting(MathVector3f_t mvFirstMins, MathVector3f_t mvFirstMaxs, MathVector3f_t mvSecondMins, MathVector3f_t mvSecondMaxs);
 
-vec_t	Math_Length(vec3_t a);
+MathVectorf_t Math_Lengthf(MathVector3f_t a);
+MathVectord_t Math_Lengthd(MathVector3d_t a);
+#if 0
+#define Math_Length(a) _Generic((a), \
+	MathVector3d_t: Math_Lengthd(a) \
+	MathVector3f_t: Math_Lengthf(a))(a)
+#else
+#define Math_Length(a) Math_Lengthf(a)
+#endif
+
 vec_t	Math_VectorNormalize(vec3_t a);
 vec_t	Math_ColorNormalize(vec3_t in, vec3_t out);
 vec_t	Math_DotProduct(vec3_t a, vec3_t b);

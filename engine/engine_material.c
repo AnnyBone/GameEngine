@@ -130,8 +130,8 @@ Material_t *Material_Allocate(void)
 */
 void Material_ClearSkin(Material_t *mMaterial, int iSkin)
 {
-	unsigned int	i;
-	MaterialSkin_t	*mSkin;
+	unsigned int i;
+	MaterialSkin_t *mSkin;
 
 	mSkin = Material_GetSkin(mMaterial, iSkin);
 	if (mSkin)
@@ -317,6 +317,9 @@ gltexture_t *Material_LoadTexture(Material_t *mMaterial, MaterialSkin_t *mCurren
 
 		if (mMaterial->iFlags & MATERIAL_FLAG_PRESERVE)
 			iTextureFlags |= TEXPREF_PERSIST;
+
+		if (mCurrentSkin->uiFlags & MATERIAL_FLAG_NEAREST)
+			iTextureFlags |= TEXPREF_NEAREST;
 
 		return TexMgr_LoadImage(NULL, cArg,
 			mCurrentSkin->mtTexture[mCurrentSkin->uiTextures].uiWidth,
@@ -520,8 +523,8 @@ void _Material_SetTextureType(Material_t *mCurrentMaterial, MaterialFunctionType
 
 void _Material_SetTextureScroll(Material_t *mCurrentMaterial, MaterialFunctionType_t mftContext, char *cArg)
 {
-	MaterialSkin_t	*msSkin;
-	MathVector2_t	vScroll;
+	MaterialSkin_t *msSkin;
+	MathVector2f_t vScroll;
 
 	// Ensure there's the correct number of arguments being given.
 	if (sscanf(cArg, "%f %f", &vScroll[0], &vScroll[1]) != 2)
@@ -557,7 +560,7 @@ typedef struct
 {
 	int	iFlag;
 
-	const	char	*ccName;
+	const char *ccName;
 
 	MaterialFunctionType_t	mftContext;
 } MaterialFlag_t;
@@ -569,8 +572,12 @@ MaterialFlag_t	mfMaterialFlags[] =
 	{ MATERIAL_FLAG_ANIMATED, "ANIMATED", MATERIAL_FUNCTION_MATERIAL },
 	{ MATERIAL_FLAG_MIRROR, "MIRROR", MATERIAL_FUNCTION_MATERIAL },
 	{ MATERIAL_FLAG_WATER, "WATER", MATERIAL_FUNCTION_MATERIAL },
+	{ MATERIAL_FLAG_NOTRIS, "NOTRIS", MATERIAL_FUNCTION_MATERIAL },
 
-	// Local
+	// Skin
+	{ MATERIAL_FLAG_NEAREST, "NEAREST", MATERIAL_FUNCTION_SKIN },
+
+	// Texture
 	{ MATERIAL_FLAG_ALPHA, "ALPHA", MATERIAL_FUNCTION_TEXTURE },
 	{ MATERIAL_FLAG_BLEND, "BLEND", MATERIAL_FUNCTION_TEXTURE }
 };

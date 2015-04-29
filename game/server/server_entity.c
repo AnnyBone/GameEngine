@@ -195,6 +195,37 @@ bool Entity_CanDamage(edict_t *eEntity,edict_t *eTarget, int iDamageType)
 	return false;
 }
 
+void Entity_Damage(ServerEntity_t *seEntity, ServerEntity_t *seInflictor, int iDamage, DamageType_t dtType)
+{
+	// Don't bother if there's no actual damage inflicted.
+	if (iDamage <= 0)
+		return;
+
+	// Only continue if we can damage the entity.
+	if (!Entity_CanDamage(seInflictor, seEntity, dtType))
+		return;
+
+	// If it's a monster or player, hand it over to the monster code.
+	if (Entity_IsMonster(seEntity) || Entity_IsPlayer(seEntity))
+	{
+		Monster_Damage(seEntity, seInflictor, iDamage, dtType);
+		return;
+	}
+
+	// Otherwise we'll do our own thing here...
+
+	seEntity->v.iHealth -= iDamage;
+	if (seEntity->v.iHealth <= 0)
+	{
+		if (seEntity->v.KilledFunction)
+			seEntity->v.KilledFunction(seEntity);
+		return;
+	}
+
+	if (seEntity->v.DamagedFunction)
+		seEntity->v.DamagedFunction(seEntity);
+}
+
 /*	Damage entities within a specific radius.
 */
 void Entity_RadiusDamage(edict_t *eInflictor,float fRadius,int iDamage,int iDamageType)
@@ -235,8 +266,7 @@ void Entity_RadiusDamage(edict_t *eInflictor,float fRadius,int iDamage,int iDama
 					fDistance = fDistance/2.0f;
 
 				if(fDistance > 0)
-					if(Entity_CanDamage(eInflictor,eTarget, iDamageType))
-						MONSTER_Damage(eTarget,eInflictor,(int)fDistance,iDamageType);
+					Entity_Damage(eTarget,eInflictor,(int)fDistance,iDamageType);
 			}
 		}
 
@@ -340,7 +370,7 @@ void Entity_Animate(edict_t *eEntity,EntityFrame_t *efAnimation)
 
 /*	Is the given monster a player?
 */
-bool Entity_IsPlayer(edict_t *eEntity)
+bool Entity_IsPlayer(ServerEntity_t *eEntity)
 {
 	if(eEntity->monster.iType == MONSTER_PLAYER)
 		return true;
@@ -350,7 +380,7 @@ bool Entity_IsPlayer(edict_t *eEntity)
 
 /*	Is the given monster a monster? (this is dumb...)
 */
-bool Entity_IsMonster(edict_t *eEntity)
+bool Entity_IsMonster(ServerEntity_t *eEntity)
 {
 	if((eEntity->monster.iType != MONSTER_PLAYER) && (eEntity->monster.iType > MONSTER_VEHICLE))
 		return true;
@@ -359,18 +389,32 @@ bool Entity_IsMonster(edict_t *eEntity)
 }
 
 /*
+	Physics
+*/
+
+/*	Sets up the physical properties for the entity.
+*/
+void Entity_SetPhysics(ServerEntity_t *seEntity, PhysicsSolidTypes_t pstSolidType, float fMass, float fFriction)
+{
+	seEntity->Physics.iSolid = pstSolidType;
+	seEntity->Physics.fMass = fMass;
+	seEntity->Physics.fGravity = SERVER_GRAVITY;
+	seEntity->Physics.fFriction = fFriction;
+}
+
+/*
 	Math/Utility Functions
 */
 
-void Entity_MakeVectors(edict_t *eEntity)
+void Entity_MakeVectors(ServerEntity_t *eEntity)
 {
 	Math_AngleVectors(eEntity->v.v_angle, eEntity->local.vForward, eEntity->local.vRight, eEntity->local.vUp);
 }
 
-bool Entity_DropToFloor(edict_t *eEntity)
+bool Entity_DropToFloor(ServerEntity_t *eEntity)
 {
-	MathVector3_t	vEnd;
-	trace_t			trGround;
+	MathVector3f_t vEnd;
+	trace_t	trGround;
 
 	Math_VectorCopy(eEntity->v.origin, vEnd);
 
@@ -396,7 +440,7 @@ bool Entity_DropToFloor(edict_t *eEntity)
 	return true;
 }
 
-bool Entity_IsTouching(edict_t *eEntity, edict_t *eOther)
+bool Entity_IsTouching(ServerEntity_t *eEntity, ServerEntity_t *eOther)
 {
 	if (eEntity->v.mins[0] > eOther->v.maxs[0] ||
 		eEntity->v.mins[1] > eOther->v.maxs[1] ||

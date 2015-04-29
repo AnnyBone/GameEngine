@@ -123,6 +123,7 @@
 */
 
 #ifdef GAME_OPENKATANA
+#define MODEL_DECORATION_BARREL va("models/decorations/barrel%i.md2",rand()%4)
 #define	MODEL_DECORATION_BARREL0 "models/decorations/barrel0.md2"
 #define	MODEL_DECORATION_BARREL1 "models/decorations/barrel1.md2"
 #define	MODEL_DECORATION_BARREL2 "models/decorations/barrel2.md2"

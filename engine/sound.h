@@ -71,7 +71,9 @@ typedef struct
 	int		looping;		// where to loop, -1 = no looping
 	int		entnum;			// to allow overriding a specific sound
 	int		entchannel;		//
-	vec3_t	origin;			// origin of sound effect
+
+	MathVector3f_t origin;			// origin of sound effect
+
 	vec_t	dist_mult;		// distance multiplier (attenuation/clipK)
 	int		master_vol;		// 0-255 master volume
 } channel_t;
@@ -89,12 +91,12 @@ typedef struct
 void S_Init (void);
 void S_Startup (void);
 void S_Shutdown (void);
-void S_StartSound (int entnum, int entchannel, sfx_t *sfx, vec3_t origin, float fvol,  float attenuation);
-void S_StaticSound (sfx_t *sfx, vec3_t origin, float vol, float attenuation);
+void S_StartSound(int entnum, int entchannel, sfx_t *sfx, MathVector3f_t origin, float fvol, float attenuation);
+void S_StaticSound(sfx_t *sfx, MathVector3f_t origin, float vol, float attenuation);
 void S_StopSound (int entnum, int entchannel);
 void S_StopAllSounds(void);
 void S_ClearBuffer (void);
-void S_Update (vec3_t origin, vec3_t v_forward, vec3_t v_right, vec3_t v_up);
+void S_Update(MathVector3f_t origin, MathVector3f_t v_forward, MathVector3f_t v_right, MathVector3f_t v_up);
 void S_ExtraUpdate (void);
 
 sfx_t *S_PrecacheSound (char *sample);
@@ -140,10 +142,10 @@ extern	int			total_channels;
 extern bool				fakedma;
 extern int 				fakedma_updates;
 extern int				paintedtime;
-extern vec3_t			listener_origin;
-extern vec3_t			listener_forward;
-extern vec3_t			listener_right;
-extern vec3_t			listener_up;
+extern MathVector3f_t listener_origin;
+extern MathVector3f_t listener_forward;
+extern MathVector3f_t listener_right;
+extern MathVector3f_t listener_up;
 extern volatile dma_t	*shm;
 extern volatile dma_t	sn;
 extern vec_t			sound_nominal_clip_dist;

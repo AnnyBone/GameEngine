@@ -1,11 +1,11 @@
 #include "server_weapon.h"
 
-void Crossbow_Deploy(edict_t *ent)
+void Crossbow_Deploy(ServerEntity_t *ent)
 {
 	//Weapon_Animate(ent,FALSE,53,64,0.1f,0,0,0,FALSE);
 }
 
-void arrow_touch(edict_t *ent, edict_t *other)
+void arrow_touch(ServerEntity_t *ent, ServerEntity_t *other)
 {
 	// [25/6/2012] Cleaned up ~hogsy
 	// [7/4/2012] Cleaned up ~hogsy
@@ -20,7 +20,7 @@ void arrow_touch(edict_t *ent, edict_t *other)
 		// Fleshy sound plz
 		sprintf(snd,"weapons/crossbow/arrowwetimpact%i.wav",rand()%5+1);
 
-		MONSTER_Damage(other,ent,25,0);
+		Entity_Damage(other, ent, 25, 0);
 
 		ent->v.think		= WEAPON_StickThink;
 		ent->v.dNextThink	= Server.dTime+0.1;
@@ -36,11 +36,11 @@ void arrow_touch(edict_t *ent, edict_t *other)
 	ent->v.enemy = other;
 }
 
-void Crossbow_Projectile(edict_t *ent)
+void Crossbow_Projectile(ServerEntity_t *ent)
 {
 	// [11/2/2012] Revised and fixed ~hogsy
 	MathVector3_t mvDirection;
-	edict_t *eArrow;
+	ServerEntity_t *eArrow;
 
 	eArrow = Entity_Spawn();
 	if(eArrow)
@@ -67,7 +67,7 @@ void Crossbow_Projectile(edict_t *ent)
 	}
 }
 
-void Crossbow_PrimaryAttack(edict_t *ent)
+void Crossbow_PrimaryAttack(ServerEntity_t *ent)
 {
 	if (ent->v.waterlevel >= 2)
 		Sound(ent,CHAN_WEAPON,"weapons/crossbow/cbwaterfire.wav",255,ATTN_NORM);

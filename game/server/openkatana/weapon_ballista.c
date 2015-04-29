@@ -30,7 +30,7 @@ void Ballista_LogTouch(edict_t *ent, edict_t *other)
 		// [23/5/2012] Cleaned up ~hogsy
 		sprintf(snd,"weapons/ballista/logwetimpact%i.wav",rand()%4);
 
-		MONSTER_Damage(other,ent,25,0);
+		Entity_Damage(other, ent, 25, 0);
 
 		ent->v.think		= WEAPON_StickThink;
 		ent->v.dNextThink	= Server.dTime+0.1;

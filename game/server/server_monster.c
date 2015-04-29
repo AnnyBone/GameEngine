@@ -406,7 +406,7 @@ bool Monster_SetThink(edict_t *eMonster,MonsterThink_t mtThink)
 
 /*	Automatically sets the state for the monster.
 */
-bool Monster_SetState(edict_t *eMonster,MonsterState_t msState)
+bool Monster_SetState(ServerEntity_t *eMonster, MonsterState_t msState)
 {
 	if(eMonster->monster.iState == msState)
 		return true;
@@ -438,7 +438,7 @@ bool Monster_SetState(edict_t *eMonster,MonsterState_t msState)
 
 /*	Called when a monster/entity gets killed.
 */
-void Monster_Killed(edict_t *eTarget,edict_t *eAttacker)
+void Monster_Killed(ServerEntity_t *eTarget, ServerEntity_t *eAttacker)
 {
 	if(eTarget->monster.iState == STATE_DEAD)
 		return;
@@ -538,7 +538,7 @@ void Monster_Killed(edict_t *eTarget,edict_t *eAttacker)
 	eTarget->monster.iState = STATE_DEAD;
 }
 
-void MONSTER_Damage(edict_t *target,edict_t *inflictor,int iDamage, int iDamageType)
+void Monster_Damage(ServerEntity_t *target, ServerEntity_t *inflictor, int iDamage, int iDamageType)
 {
 	/*	TODO
 		If the new inflicted damage is greater
@@ -551,8 +551,6 @@ void MONSTER_Damage(edict_t *target,edict_t *inflictor,int iDamage, int iDamageT
 		multiply on each call and then slowly
 		decrease after sometime.
 	*/
-	if(!target->v.bTakeDamage || (target->v.flags & FL_GODMODE) || !Entity_CanDamage(inflictor, target, iDamageType))
-		return;
 
 	// [28/8/2012] Blood is now handled here :) ~hogsy
 	if(target->local.bBleed)
@@ -612,7 +610,7 @@ void MONSTER_WaterMove(edict_t *ent)
 		if(ent->local.iDamage > 15)
 			ent->local.iDamage = 10;
 
-		MONSTER_Damage(ent,Server.eWorld,ent->local.iDamage,ent->local.iDamageType);
+		Entity_Damage(ent, Server.eWorld, ent->local.iDamage, ent->local.iDamageType);
 
 		ent->local.dPainFinished = Server.dTime+1.0;
 	}

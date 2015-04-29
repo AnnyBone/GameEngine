@@ -11,7 +11,8 @@ typedef struct
 	void(*StartFrame)(void);	// Called at the start of the frame (pre).
 	void(*EndFrame)(void);		// Called at the end of the frame (post).
 
-	void(*PlayerSpawn)(void);	// Called just before spawning a player.
+	void(*PlayerSpawn)(ServerEntity_t *sePlayer);	// Called just before spawning a player.
+	void(*WorldSpawn)(ServerEntity_t *seWorld);		// Called just before spawning the world.
 } ServerGameMode_t;
 
 #endif

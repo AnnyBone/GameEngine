@@ -2,6 +2,7 @@
 */
 #include "mode_vektar.h"
 
+#include "server_gamemode.h"
 #include "server_waypoint.h"
 
 /*	Notes:
@@ -27,6 +28,12 @@
 		Move over to state-based system. ~hogsy
 		Visibility check before spawning the Vektar. ~hogsy
 */
+
+ServerGameMode_t sgmVektarMode =
+{
+	"Vektar",
+	"Players have to track down statue and destroy it.",
+};
 
 void Vektar_Spawn(void);
 

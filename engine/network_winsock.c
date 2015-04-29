@@ -25,7 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "platform_module.h"
 
-extern cvar_t hostname;
+extern ConsoleVariable_t hostname;
 
 #define MAXHOSTNAMELEN		256
 
@@ -132,11 +132,11 @@ int WINS_Init (void)
 	if (hInst == NULL)
 	{
 		Con_SafePrintf ("Failed to load winsock.dll\n");
-		winsock_lib_initialized = FALSE;
+		winsock_lib_initialized = false;
 		return -1;
 	}
 
-	winsock_lib_initialized = TRUE;
+	winsock_lib_initialized = true;
 
     pWSAStartup = (void *)pModule_FindFunction(hInst, "WSAStartup");
 	pWSACleanup = (void *)pModule_FindFunction(hInst, "WSACleanup");
@@ -239,7 +239,7 @@ int WINS_Init (void)
 	((struct sockaddr_in *)&broadcastaddr)->sin_port = htons((unsigned short)net_hostport);
 
 	Con_Printf("Winsock TCP/IP Initialized\n");
-	tcpipAvailable = TRUE;
+	tcpipAvailable = true;
 
 	return net_controlsocket;
 }
@@ -394,7 +394,7 @@ int WINS_CheckNewConnections (void)
 
 //=============================================================================
 
-int WINS_Read (int socket, byte *buf, int len, struct qsockaddr *addr)
+int WINS_Read (int socket, uint8_t *buf, int len, struct qsockaddr *addr)
 {
 	int addrlen = sizeof (struct qsockaddr);
 	int ret;
@@ -426,7 +426,7 @@ int WINS_MakeSocketBroadcastCapable (int socket)
 
 //=============================================================================
 
-int WINS_Broadcast (int socket, byte *buf, int len)
+int WINS_Broadcast (int socket, uint8_t *buf, int len)
 {
 	int ret;
 
@@ -448,7 +448,7 @@ int WINS_Broadcast (int socket, byte *buf, int len)
 
 //=============================================================================
 
-int WINS_Write (int socket, byte *buf, int len, struct qsockaddr *addr)
+int WINS_Write(int socket, uint8_t *buf, int len, struct qsockaddr *addr)
 {
 	int ret;
 

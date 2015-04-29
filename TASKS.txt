@@ -1,0 +1,18 @@
+
+Gotta get BBOXES automatically set for MD2 models like they should've been in 
+the	first place.
+
+Overflow problem is occuring with barrel origins. Kill me.
+
+Decide if we're still going for OBJ support.
+
+Get SDL2 FS support in, so we can support SDL_Image and other such libraries.
+
+Generate vertex normals.
+
+Can't jump while crouching. This needs to be modified.
+
+Update all monster thinks to use the new think functions.
+
+Want to find things to do? Terms to search for...
+	TODO

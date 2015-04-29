@@ -91,7 +91,7 @@ void CorditeTouch(edict_t *ent, edict_t *other)
 
 	CorditeExplode(ent);
 
-	MONSTER_Damage(other,ent,50,0);
+	Entity_Damage(other, ent, 50, 0);
 }
 
 void throw_cordite(edict_t *ent)

@@ -24,7 +24,7 @@ pINSTANCE hGameInstance;
 
 GameExport_t *Game;
 
-edict_t *Game_GetEdicts(void)
+ServerEntity_t *Game_GetEdicts(void)
 {
 	return sv.edicts;
 }
@@ -50,10 +50,10 @@ char *Server_GetLevelName(void)
 	return sv.name;
 }
 
-edict_t *Server_FindRadius(vec3_t origin,float radius)
+ServerEntity_t *Server_FindRadius(vec3_t origin, float radius)
 {
 	int		i,j;
-	edict_t *eEntity,*eChain;
+	ServerEntity_t *eEntity, *eChain;
 	vec3_t	eorg;
 
 	eChain = sv.edicts;
@@ -79,7 +79,7 @@ edict_t *Server_FindRadius(vec3_t origin,float radius)
 
 int SV_ModelIndex(char *name);
 
-void Server_MakeStatic(edict_t *ent)
+void Server_MakeStatic(ServerEntity_t *ent)
 {
 	int	i,bits=0;
 
@@ -131,7 +131,7 @@ void Server_MakeStatic(edict_t *ent)
 
 /*	Sets the model for the specified entity.
 */
-void Server_SetModel(edict_t *ent,char *m)
+void Server_SetModel(ServerEntity_t *ent, char *m)
 {
 	char	**check;
 	model_t	*mod;
@@ -190,7 +190,7 @@ void Game_AmbientSound(vec_t *vPosition,const char *cPath,int iVolume,int iAtten
 }
 
 // [18/7/2012] Renamed to Server_Sound ~hogsy
-void Server_Sound(edict_t *ent,int channel,char *sample,int volume,float attenuation)
+void Server_Sound(ServerEntity_t *ent, int channel, char *sample, int volume, float attenuation)
 {
 	int sound_num, field_mask, i, e;
 
@@ -378,7 +378,19 @@ void LightStyle(int style,char *val)
 		}
 }
 
-edict_t	*eMessageEntity;
+ServerEntity_t	*eMessageEntity;
+
+
+sizebuf_t *Game_MessageOne(ServerEntity_t *seMessage)
+{
+	int iEntity;
+
+	iEntity = NUM_FOR_EDICT(seMessage);
+	if (iEntity < 1 || iEntity > svs.maxclients)
+		Con_Error("Attempted to send message to a non-client! (%i) (%s)", iEntity, seMessage->v.cClassname);
+
+	return &svs.clients[iEntity - 1].message;
+}
 
 sizebuf_t *Game_WriteDest(int dest)
 {
@@ -389,11 +401,7 @@ sizebuf_t *Game_WriteDest(int dest)
 	case MSG_BROADCAST:
 		return &sv.datagram;
 	case MSG_ONE:
-		entnum = NUM_FOR_EDICT(eMessageEntity);
-		if(entnum < 1 || entnum > svs.maxclients)
-			Con_Error("WriteDest: not a client");
-
-		return &svs.clients[entnum-1].message;
+		return Game_MessageOne(eMessageEntity);
 	case MSG_ALL:
 		return &sv.reliable_datagram;
 	case MSG_INIT:
@@ -421,7 +429,7 @@ void Game_WriteAngle(int mode,float f)
 	MSG_WriteAngle(Game_WriteDest(mode),f);
 }
 
-void Game_WriteEntity(int mode,edict_t *ent)
+void Game_WriteEntity(int mode, ServerEntity_t *ent)
 {
 	MSG_WriteShort(Game_WriteDest(mode),NUM_FOR_EDICT(ent));
 }
@@ -432,13 +440,13 @@ void Game_AddCommand(char *c,void (*Function)(void))
 }
 
 // [28/7/2012] Added Game_SetMessageEntity ~hogsy
-void Game_SetMessageEntity(edict_t *eEntity)
+void Game_SetMessageEntity(ServerEntity_t *eEntity)
 {
 	eMessageEntity = eEntity;
 }
 
 void Host_Restart_f(void);
-void Server_CenterPrint(edict_t *ent,char *msg);	// See engine_server.
+void Server_CenterPrint(ServerEntity_t *ent, char *msg);	// See engine_server.
 
 void Game_Initialize(void)
 {

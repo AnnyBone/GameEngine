@@ -567,7 +567,7 @@ void View_ModelDrift(vec3_t vOrigin,vec3_t vAngles,vec3_t vOldAngles)
 
 		fSpeed = 3.0f;
 
-		fDifference = Math_VectorLength(vDifference);
+		fDifference = Math_Lengthf(vDifference);
 		if((fDifference > cViewModelLag.value) && (cViewModelLag.value > 0.0f ))
 			fSpeed *= fScale = fDifference/cViewModelLag.value;
 
@@ -591,7 +591,7 @@ void V_CalcRefdef (void)
 	float			fBob[2],fCycle[2],
 					delta;
 	static	float	oldz = 0;
-	entity_t		*ent,*view;
+	ClientEntity_t	*ent,*view;
 	vec3_t			forward,right,up,
 					angles,vOldAngles;
 	static	vec3_t	punch = {0,0,0}; //johnfitz -- v_gunkick

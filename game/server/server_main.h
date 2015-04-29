@@ -63,7 +63,9 @@ void Entity_SetAngles(edict_t *eEntity, MathVector3_t vAngles);
 void Entity_SetModel(edict_t *eEntity, char *cModelPath);
 void Entity_SetSizeVector(edict_t *eEntity, MathVector3_t vMin, MathVector3_t vMax);
 void Entity_SetSize(edict_t *eEntity, float fMinA, float fMinB, float fMinC, float fMaxA, float fMaxB, float fMaxC);
+void Entity_SetPhysics(ServerEntity_t *seEntity, PhysicsSolidTypes_t pstSolidType, float fMass, float fFriction);
 void Entity_RadiusDamage(edict_t *eInflictor, float fRadius, int iDamage, int iDamageType);
+void Entity_Damage(ServerEntity_t *seEntity, ServerEntity_t *seInflictor, int iDamage, DamageType_t dtType);
 void Entity_Remove(edict_t *eEntity);
 void Entity_CheckFrames(edict_t *eEntity);
 void Entity_ResetAnimation(edict_t *eEntity);
@@ -77,6 +79,9 @@ void Entity_ClearEffects(edict_t *eEntity);
 void Entity_AddFlags(edict_t *eEntity, int iFlags);
 void Entity_RemoveFlags(edict_t *eEntity, int iFlags);
 void Entity_ClearFlags(edict_t *eEntity, int iFlags);
+
+#define Entity_SetKilledFunction(a,b) (a->v.KilledFunction = b)
+#define Entity_SetDamagedFunction(a,b) (a->v.DamagedFunction = b)
 
 #define	ENTITY_REMOVE(a)	{	Entity_Remove(a);	return;	}
 

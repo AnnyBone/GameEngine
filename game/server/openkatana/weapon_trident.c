@@ -38,7 +38,8 @@ void TridentHit(edict_t *ent)
     {
 		if(trace.ent->local.bBleed)
 			Engine.Particle(sndvec,vel,10,"blood",30);
-		MONSTER_Damage(trace.ent,ent,20,0);
+
+		Entity_Damage(trace.ent,ent,20,0);
 	}
 	else if(trace.ent)
 		Engine.Particle(sndvec,vel,10,"smoke",30);

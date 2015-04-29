@@ -23,8 +23,8 @@
 
 #include <SDL_syswm.h>
 
-SDL_Window		*sMainWindow;
-SDL_GLContext	sMainContext;
+SDL_Window *sMainWindow;
+SDL_GLContext sMainContext;
 
 static unsigned int	iSavedCapabilites[VIDEO_MAX_UNITS][2];
 
@@ -60,9 +60,9 @@ gltexture_t	*gDepthTexture;
 bool	bVideoIgnoreCapabilities = false,
 		bVideoDebug = false;
 
-MathVector2_t **vVideoTextureArray;
-MathVector3_t *vVideoVertexArray;
-MathVector4_t *vVideoColourArray;
+MathVector2f_t **vVideoTextureArray;
+MathVector3f_t *vVideoVertexArray;
+MathVector4f_t *vVideoColourArray;
 
 unsigned int uiVideoArraySize = 32768;
 
@@ -174,20 +174,38 @@ void Video_ClearBuffer(void)
 */
 void Video_DrawDepthBuffer(void)
 {
+	float *uByte;
+
 	if(!cvVideoDrawDepth.bValue)
 		return;
 
+	// Allocate the pixel data.
+	uByte = (float*)malloc(Video.iWidth*Video.iHeight*sizeof(float));
+	if (!uByte)
+		return;
+
+	// Read le pixels, and copy them to uByte.
+	glReadPixels(0, 0, Video.iWidth, Video.iHeight, GL_DEPTH_COMPONENT, GL_FLOAT, uByte);
+	
 	// Create our depth texture.
-	if(!gDepthTexture)
-		gDepthTexture = TexMgr_NewTexture();
+	gDepthTexture = TexMgr_NewTexture();
 
-	GL_SetCanvas(CANVAS_BOTTOMLEFT);
-
+	// Set the texture.
 	Video_SetTexture(gDepthTexture);
 
-	glTexImage2D(GL_TEXTURE_2D,0,GL_DEPTH_COMPONENT32,Video.iWidth,Video.iHeight,0,GL_DEPTH_COMPONENT32,GL_UNSIGNED_BYTE,0);
-
+	// Copy it to the texture.
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, Video.iWidth, Video.iHeight, 0, GL_LUMINANCE, GL_FLOAT, uByte);
+	
+	// Draw the buffer to the bottom left corner of the screen.
+	GL_SetCanvas(CANVAS_BOTTOMLEFT);
 	Draw_Fill(0,0,512,512,1.0f,1.0f,1.0f,1.0f);
+	GL_SetCanvas(CANVAS_DEFAULT);
+
+	// Delete the texture, so we can recreate it later.
+	TexMgr_FreeTexture(gDepthTexture);
+
+	// Free the pixel data.
+	free(uByte);
 }
 
 /*
@@ -200,7 +218,7 @@ void Video_DrawDepthBuffer(void)
 void Video_SetGamma(unsigned short *usRamp,int iRampSize)
 {
 	if(!SDL_SetWindowGammaRamp(sMainWindow,usRamp,usRamp+iRampSize,usRamp+iRampSize*2))
-		Con_Warning("Failed to set gamma level!\n");
+		Con_Warning("Failed to set gamma level!\n%s", SDL_GetError());
 }
 
 /*	Get gamma level.
@@ -209,7 +227,7 @@ void Video_SetGamma(unsigned short *usRamp,int iRampSize)
 void Video_GetGamma(unsigned short *usRamp,int iRampSize)
 {
 	if(!SDL_GetWindowGammaRamp(sMainWindow,usRamp,usRamp+iRampSize,usRamp+iRampSize*2))
-		Con_Warning("Failed to get gamma level!\n");
+		Con_Warning("Failed to get gamma level!\n%s", SDL_GetError());
 }
 
 /*	Get the current displays width.
@@ -230,9 +248,9 @@ unsigned int Video_GetDesktopHeight(void)
 */
 void Video_CreateWindow(void)
 {
-	int			iFlags =
-		SDL_WINDOW_SHOWN		|
-		SDL_WINDOW_OPENGL		|
+	int	iFlags =
+		SDL_WINDOW_SHOWN |
+		SDL_WINDOW_OPENGL |
 		SDL_WINDOW_FULLSCREEN;
 	SDL_Surface	*sIcon;
 
@@ -242,8 +260,8 @@ void Video_CreateWindow(void)
 	// [15/8/2012] Figure out what resolution we're going to use ~hogsy
 	if(COM_CheckParm("-window"))
 	{
-		Video.bFullscreen	=
-		Video.bUnlocked		= false;
+		Video.bFullscreen =
+		Video.bUnlocked	= false;
 	}
 	else
 		// [15/8/2012] Otherwise set us as fullscreen ~hogsy
@@ -251,7 +269,7 @@ void Video_CreateWindow(void)
 
 	if(COM_CheckParm("-width"))
 	{
-		Video.iWidth	= atoi(com_argv[COM_CheckParm("-width")+1]);
+		Video.iWidth = atoi(com_argv[COM_CheckParm("-width")+1]);
 		Video.bUnlocked	= false;
 	}
 	else
@@ -259,7 +277,7 @@ void Video_CreateWindow(void)
 
 	if(COM_CheckParm("-height"))
 	{
-		Video.iHeight	= atoi(com_argv[COM_CheckParm("-height")+1]);
+		Video.iHeight = atoi(com_argv[COM_CheckParm("-height")+1]);
 		Video.bUnlocked	= false;
 	}
 	else
@@ -312,8 +330,7 @@ void Video_CreateWindow(void)
 	if(!sMainWindow)
 		Sys_Error("Failed to create window!\n%s\n",SDL_GetError());
 
-	// [6/2/2014] Set the icon for the window ~hogsy
-	// [25/3/2014] Grab the icon from our game directory ~hogsy
+	// Attempt to grab the window icon from the game directory.
 	sIcon = SDL_LoadBMP(va("%s/icon.bmp",com_gamedir));
 	if(sIcon)
 	{
@@ -323,6 +340,7 @@ void Video_CreateWindow(void)
 		SDL_FreeSurface(sIcon);
 	}
 	else
+		// Give us a warning, but continue.
 		Con_Warning("Failed to load window icon! (%s)\n",SDL_GetError());
 
 	sMainContext = SDL_GL_CreateContext(sMainWindow);
@@ -338,10 +356,10 @@ void Video_CreateWindow(void)
 	SDL_GL_SetSwapInterval(0);
 
 	// Get any information that will be presented later.
-	Video.cGLVendor		= (char*)glGetString(GL_VENDOR);
-	Video.cGLRenderer	= (char*)glGetString(GL_RENDERER);
-	Video.cGLVersion	= (char*)glGetString(GL_VERSION);
-	Video.cGLExtensions	= (char*)glGetString(GL_EXTENSIONS);
+	Video.cGLVendor = (char*)glGetString(GL_VENDOR);
+	Video.cGLRenderer = (char*)glGetString(GL_RENDERER);
+	Video.cGLVersion = (char*)glGetString(GL_VERSION);
+	Video.cGLExtensions = (char*)glGetString(GL_EXTENSIONS);
 
 	// [3/6/2013] Added to fix a bug on some systems when calling wglGetExtensionString* ~hogsy
 	GLeeInit();
@@ -358,11 +376,13 @@ void Video_CreateWindow(void)
 	else if (!GLEE_EXT_fog_coord)
 		Sys_Error("EXT_fog_coord isn't supported by your hardware!\n");
 
+	// Does the hardware support mipmap generation?
 	if (GLEE_SGIS_generate_mipmap)
 		Video.bGenerateMipMap = true;
 	else
 		Con_Warning("SGIS_generate_mipmap isn't supported by your hardware!\n");
 
+	// Does the hardware support VBOs?
 	if (GLEE_ARB_vertex_buffer_object)
 		Video.bVertexBufferObject = true;
 	else
@@ -514,7 +534,7 @@ void Video_SetTexture(gltexture_t *gTexture)
 {
 	if(!gTexture)
 		gTexture = notexture;
-	// [29/8/2012] Same as the last binded texture? ~hogsy
+	// If it's the same as the last, don't bother.
 	else if(gTexture->texnum == Video.iCurrentTexture)
 		return;
 
@@ -522,6 +542,7 @@ void Video_SetTexture(gltexture_t *gTexture)
 
 	gTexture->visframe = r_framecount;
 
+	// Bind it.
 	glBindTexture(GL_TEXTURE_2D,gTexture->texnum);
 
 	if(bVideoDebug)
@@ -621,7 +642,7 @@ void Video_SelectTexture(unsigned int uiTarget)
 	Object Management
 */
 
-MathVector4_t	mvVideoGlobalColour;
+MathVector4f_t mvVideoGlobalColour;
 
 void Video_ObjectTexture(VideoObjectVertex_t *voObject, unsigned int uiTextureUnit, float S, float T)
 {
@@ -685,12 +706,12 @@ void Video_AllocateArrays(int iSize)
 	if (vVideoTextureArray)
 		free(vVideoTextureArray);
 
-	vVideoTextureArray = (MathVector2_t**)Hunk_AllocName(VIDEO_MAX_UNITS*sizeof(MathVector2_t), "video_texturearray");
+	vVideoTextureArray = (MathVector2f_t**)Hunk_AllocName(VIDEO_MAX_UNITS*sizeof(MathVector2f_t), "video_texturearray");
 	for (i = 0; i < VIDEO_MAX_UNITS; i++)
-		vVideoTextureArray[i] = (MathVector2_t*)Hunk_Alloc(iSize*sizeof(MathVector2_t));
+		vVideoTextureArray[i] = (MathVector2f_t*)Hunk_Alloc(iSize*sizeof(MathVector2f_t));
 
-	vVideoVertexArray = (MathVector3_t*)Hunk_AllocName(iSize*sizeof(MathVector3_t), "video_vertexarray");
-	vVideoColourArray = (MathVector4_t*)Hunk_AllocName(iSize*sizeof(MathVector4_t), "video_colourarray");
+	vVideoVertexArray = (MathVector3f_t*)Hunk_AllocName(iSize*sizeof(MathVector3f_t), "video_vertexarray");
+	vVideoColourArray = (MathVector4f_t*)Hunk_AllocName(iSize*sizeof(MathVector4f_t), "video_colourarray");
 
 	if(!vVideoColourArray || !vVideoTextureArray || !vVideoVertexArray)
 		Sys_Error("Failed to allocate video arrays!\n");
@@ -708,7 +729,7 @@ void Video_DrawTerrain(VideoObjectVertex_t *voTerrain)
 		Sys_Error("Invalid video object!\n");
 }
 
-extern cvar_t gl_fullbrights;
+extern ConsoleVariable_t gl_fullbrights;
 
 /*	Called before the object is drawn.
 */
@@ -726,27 +747,28 @@ void Video_DrawMaterial(
 
 	bVideoIgnoreCapabilities = true;
 
-	if (r_lightmap_cheatsafe || r_showtris.bValue || !cvVideoDrawMaterials.bValue)
-	{
-		// Select the first TMU.
-		Video_SelectTexture(0);
-
-		if (!bPost)
+	if (!(mMaterial->iFlags & MATERIAL_FLAG_NOTRIS))
+		if (r_lightmap_cheatsafe || r_showtris.bValue || !cvVideoDrawMaterials.bValue)
 		{
-			// Enable it.
-			Video_EnableCapabilities(VIDEO_TEXTURE_2D);
+			// Select the first TMU.
+			Video_SelectTexture(0);
 
-			// Bind it.
-			Video_SetTexture(mWhite->msSkin[0].mtTexture->gMap);
+			if (!bPost)
+			{
+				// Enable it.
+				Video_EnableCapabilities(VIDEO_TEXTURE_2D);
+
+				// Bind it.
+				Video_SetTexture(mWhite->msSkin[0].mtTexture->gMap);
+			}
+			else
+				// Disable it.
+				Video_DisableCapabilities(VIDEO_TEXTURE_2D);
+
+			bVideoIgnoreCapabilities = false;
+
+			return;
 		}
-		else
-			// Disable it.
-			Video_DisableCapabilities(VIDEO_TEXTURE_2D);
-
-		bVideoIgnoreCapabilities = false;
-
-		return;
-	}
 
 	if (mMaterial->iFlags & MATERIAL_FLAG_ANIMATED)
 		msCurrentSkin = Material_GetAnimatedSkin(mMaterial);
@@ -997,7 +1019,7 @@ void Video_DrawSurface(msurface_t *mSurface,float fAlpha, Material_t *mMaterial,
 /*	Deals with tris view and different primitive types, then finally draws
 	the given arrays.
 */
-void Video_DrawArrays(VideoPrimitive_t vpPrimitiveType, unsigned int uiSize)
+void Video_DrawArrays(VideoPrimitive_t vpPrimitiveType, unsigned int uiSize, bool bWireframe)
 {
 	unsigned int uiPrimitiveType = 0;
 
@@ -1006,14 +1028,14 @@ void Video_DrawArrays(VideoPrimitive_t vpPrimitiveType, unsigned int uiSize)
 	{
 	case VIDEO_PRIMITIVE_LINE:		// GL_LINES
 	case VIDEO_PRIMITIVE_TRIANGLES:	// GL_TRIANGLES
-		if (r_showtris.bValue || (vpPrimitiveType == VIDEO_PRIMITIVE_LINE))
+		if (bWireframe || (vpPrimitiveType == VIDEO_PRIMITIVE_LINE))
 			uiPrimitiveType = GL_LINES;
 		else
 			uiPrimitiveType = GL_TRIANGLES;
 		break;
 	case VIDEO_PRIMITIVE_TRIANGLE_FAN_LINE:	// GL_TRIANGLE_FAN
 	case VIDEO_PRIMITIVE_TRIANGLE_FAN:		// GL_TRIANGLE_FAN
-		if (r_showtris.bValue || (vpPrimitiveType == VIDEO_PRIMITIVE_TRIANGLE_FAN_LINE))
+		if (bWireframe || (vpPrimitiveType == VIDEO_PRIMITIVE_TRIANGLE_FAN_LINE))
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 		uiPrimitiveType = GL_TRIANGLE_FAN;
@@ -1030,7 +1052,7 @@ void Video_DrawArrays(VideoPrimitive_t vpPrimitiveType, unsigned int uiSize)
 	{
 	case VIDEO_PRIMITIVE_TRIANGLE_FAN_LINE:	// GL_TRIANGLE_FAN
 	case VIDEO_PRIMITIVE_TRIANGLE_FAN:		// GL_TRIANGLE_FAN
-		if (r_showtris.bValue || (vpPrimitiveType == VIDEO_PRIMITIVE_TRIANGLE_FAN_LINE))
+		if (bWireframe || (vpPrimitiveType == VIDEO_PRIMITIVE_TRIANGLE_FAN_LINE))
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		break;
 #if 0
@@ -1112,7 +1134,11 @@ void Video_DrawObject(
 			glTexCoordPointer(2, GL_FLOAT, 0, vVideoTextureArray[i]);
 		}
 
-	Video_DrawArrays(vpPrimitiveType, uiVerts);
+	bool bShowWireframe = r_showtris.bValue;
+	if (mMaterial && (mMaterial->iFlags & MATERIAL_FLAG_NOTRIS))
+		bShowWireframe = false;
+
+	Video_DrawArrays(vpPrimitiveType, uiVerts, bShowWireframe);
 
 	glDisableClientState(GL_COLOR_ARRAY);
 	glDisableClientState(GL_VERTEX_ARRAY);
@@ -1144,17 +1170,17 @@ typedef struct
 
 VideoCapabilities_t	vcCapabilityList[]=
 {
-	{	VIDEO_ALPHA_TEST,		GL_ALPHA_TEST,      "ALPHA_TEST"    },
-	{	VIDEO_BLEND,			GL_BLEND,           "BLEND"			},
-	{	VIDEO_DEPTH_TEST,		GL_DEPTH_TEST,      "DEPTH_TEST"	},
-	{	VIDEO_TEXTURE_2D,		GL_TEXTURE_2D,      "TEXTURE_2D"	},
-	{	VIDEO_TEXTURE_GEN_S,	GL_TEXTURE_GEN_S,   "TEXTURE_GEN_S"	},
-	{	VIDEO_TEXTURE_GEN_T,	GL_TEXTURE_GEN_T,   "TEXTURE_GEN_T"	},
-	{	VIDEO_CULL_FACE,		GL_CULL_FACE,       "CULL_FACE"		},
-	{	VIDEO_STENCIL_TEST,		GL_STENCIL_TEST,    "STENCIL_TEST"	},
-	{	VIDEO_NORMALIZE,		GL_NORMALIZE,		"NORMALIZE"     },
+	{ VIDEO_ALPHA_TEST, GL_ALPHA_TEST, "ALPHA_TEST" },
+	{ VIDEO_BLEND, GL_BLEND, "BLEND" },
+	{ VIDEO_DEPTH_TEST, GL_DEPTH_TEST, "DEPTH_TEST" },
+	{ VIDEO_TEXTURE_2D, GL_TEXTURE_2D, "TEXTURE_2D" },
+	{ VIDEO_TEXTURE_GEN_S, GL_TEXTURE_GEN_S, "TEXTURE_GEN_S" },
+	{ VIDEO_TEXTURE_GEN_T, GL_TEXTURE_GEN_T, "TEXTURE_GEN_T" },
+	{ VIDEO_CULL_FACE, GL_CULL_FACE, "CULL_FACE" },
+	{ VIDEO_STENCIL_TEST, GL_STENCIL_TEST, "STENCIL_TEST" },
+	{ VIDEO_NORMALIZE, GL_NORMALIZE, "NORMALIZE" },
 
-	{   0   }
+	{ 0 }
 };
 
 /*	Set rendering capabilities for current draw.
@@ -1345,11 +1371,13 @@ void Video_Frame(void)
         Console_WriteToLog(cvVideoDebugLog.string,"Video: Start of frame\n");
 
 #ifdef VIDEO_ENABLE_SHADERS
+	// Post-processing.
 	glBindFramebuffer(GL_FRAMEBUFFER, Video.uiFrameBuffer);
 #endif
 
 	SCR_UpdateScreen();
 
+	// Attempt to draw the depth buffer.
 	Video_DrawDepthBuffer();
 
 	GL_EndRendering();
@@ -1362,6 +1390,7 @@ void Video_Frame(void)
         Console_WriteToLog(cvVideoDebugLog.string,"Video: End of frame\n");
 
 		Console_WriteToLog(cvVideoDebugLog.string, "\n-----------------------\n");
+		// Show the number of calls to Video_DrawObject.
 		Console_WriteToLog(cvVideoDebugLog.string, "Video_DrawObject: %i\n", uiVideoDrawObjectCalls);
 		Console_WriteToLog(cvVideoDebugLog.string, "-----------------------\n");
 
