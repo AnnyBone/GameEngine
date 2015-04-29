@@ -46,3 +46,6 @@ editor_legacy/Debug/RCa07736
 /engine/Release
 /tools/MaterialGenerator/nbproject/private/
 /references
+*.zip
+*.class
+*.properties

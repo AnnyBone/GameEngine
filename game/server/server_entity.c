@@ -370,7 +370,7 @@ void Entity_Animate(edict_t *eEntity,EntityFrame_t *efAnimation)
 
 /*	Is the given monster a player?
 */
-bool Entity_IsPlayer(edict_t *eEntity)
+bool Entity_IsPlayer(ServerEntity_t *eEntity)
 {
 	if(eEntity->monster.iType == MONSTER_PLAYER)
 		return true;
@@ -380,7 +380,7 @@ bool Entity_IsPlayer(edict_t *eEntity)
 
 /*	Is the given monster a monster? (this is dumb...)
 */
-bool Entity_IsMonster(edict_t *eEntity)
+bool Entity_IsMonster(ServerEntity_t *eEntity)
 {
 	if((eEntity->monster.iType != MONSTER_PLAYER) && (eEntity->monster.iType > MONSTER_VEHICLE))
 		return true;
@@ -406,12 +406,12 @@ void Entity_SetPhysics(ServerEntity_t *seEntity, PhysicsSolidTypes_t pstSolidTyp
 	Math/Utility Functions
 */
 
-void Entity_MakeVectors(edict_t *eEntity)
+void Entity_MakeVectors(ServerEntity_t *eEntity)
 {
 	Math_AngleVectors(eEntity->v.v_angle, eEntity->local.vForward, eEntity->local.vRight, eEntity->local.vUp);
 }
 
-bool Entity_DropToFloor(edict_t *eEntity)
+bool Entity_DropToFloor(ServerEntity_t *eEntity)
 {
 	MathVector3f_t vEnd;
 	trace_t	trGround;
@@ -440,7 +440,7 @@ bool Entity_DropToFloor(edict_t *eEntity)
 	return true;
 }
 
-bool Entity_IsTouching(edict_t *eEntity, edict_t *eOther)
+bool Entity_IsTouching(ServerEntity_t *eEntity, ServerEntity_t *eOther)
 {
 	if (eEntity->v.mins[0] > eOther->v.maxs[0] ||
 		eEntity->v.mins[1] > eOther->v.maxs[1] ||

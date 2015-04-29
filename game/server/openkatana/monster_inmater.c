@@ -143,10 +143,7 @@ void Inmater_Spawn(ServerEntity_t *eInmater)
 {
 	Server_PrecacheModel(MODEL_INMATER_BODY);
 
-	eInmater->Physics.iSolid = SOLID_SLIDEBOX;
-	eInmater->Physics.fGravity = cvServerGravity.value;
-	eInmater->Physics.fMass = 3.0f;
-	eInmater->Physics.fFriction = 4.5f;
+	Entity_SetPhysics(eInmater, SOLID_SLIDEBOX, 3.0f, 4.5f);
 
 	eInmater->monster.iType = MONSTER_INMATER;
 	eInmater->monster.Think = Inmater_Think;

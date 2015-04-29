@@ -388,6 +388,7 @@ typedef struct
 
 	int	iDamageType;	// The type of damage this entity can recieve.
 	int	iMaxHealth;		// An entities maximum health, they can't gain anymore than this.
+	int iOldHealth;		// Previous amount of health.
 
 	double			dDamageTime,				// Time between each amount of damage.
 					dStepTime;					// Time between each step.

@@ -2,7 +2,7 @@
 Gotta get BBOXES automatically set for MD2 models like they should've been in 
 the	first place.
 
-Explodable barrels need to be implemented as per the documentation. << Almost done...
+Overflow problem is occuring with barrel origins. Kill me.
 
 Decide if we're still going for OBJ support.
 
@@ -13,3 +13,6 @@ Generate vertex normals.
 Can't jump while crouching. This needs to be modified.
 
 Update all monster thinks to use the new think functions.
+
+Want to find things to do? Terms to search for...
+	TODO

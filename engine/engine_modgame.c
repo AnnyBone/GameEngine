@@ -380,6 +380,18 @@ void LightStyle(int style,char *val)
 
 ServerEntity_t	*eMessageEntity;
 
+
+sizebuf_t *Game_MessageOne(ServerEntity_t *seMessage)
+{
+	int iEntity;
+
+	iEntity = NUM_FOR_EDICT(seMessage);
+	if (iEntity < 1 || iEntity > svs.maxclients)
+		Con_Error("Attempted to send message to a non-client! (%i) (%s)", iEntity, seMessage->v.cClassname);
+
+	return &svs.clients[iEntity - 1].message;
+}
+
 sizebuf_t *Game_WriteDest(int dest)
 {
 	int	entnum;
@@ -389,11 +401,7 @@ sizebuf_t *Game_WriteDest(int dest)
 	case MSG_BROADCAST:
 		return &sv.datagram;
 	case MSG_ONE:
-		entnum = NUM_FOR_EDICT(eMessageEntity);
-		if(entnum < 1 || entnum > svs.maxclients)
-			Con_Error("WriteDest: not a client");
-
-		return &svs.clients[entnum-1].message;
+		return Game_MessageOne(eMessageEntity);
 	case MSG_ALL:
 		return &sv.reliable_datagram;
 	case MSG_INIT:
