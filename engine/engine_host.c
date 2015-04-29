@@ -516,7 +516,7 @@ void Host_ServerFrame (void)
 //johnfitz -- devstats
 	if(cls.signon == SIGNONS)
 	{
-		edict_t *eEnttiy;
+		ServerEntity_t *eEnttiy;
 
 		for (i=0, active=0; i<sv.num_edicts; i++)
 		{

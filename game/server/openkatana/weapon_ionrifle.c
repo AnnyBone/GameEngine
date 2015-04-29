@@ -105,9 +105,9 @@ void IonRifle_IonBallTouch(edict_t *eIonBall,edict_t *eOther)
 	if(eOther->v.bTakeDamage)
 	{
 		if(!eIonBall->local.style)
-			MONSTER_Damage(eOther,eIonBall->local.eOwner,25,0);
+			Entity_Damage(eOther, eIonBall->local.eOwner, 25, 0);
 		else
-			MONSTER_Damage(eOther,eIonBall->local.eOwner,50,0);
+			Entity_Damage(eOther, eIonBall->local.eOwner, 50, 0);
 	}
 
 	Entity_Remove(eIonBall);

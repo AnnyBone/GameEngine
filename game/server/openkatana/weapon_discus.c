@@ -67,10 +67,9 @@ void Discus_ProjectileTouch(edict_t *ent,edict_t *other)
 
 	if(other->v.bTakeDamage)
 	{
-		MONSTER_Damage(other,ent,35,0);
+		Entity_Damage(other, ent, 35, 0);
 
 		Sound(ent,CHAN_BODY,"weapons/discus/discushit.wav",255,ATTN_NORM);
-
 		return;
 	}
 

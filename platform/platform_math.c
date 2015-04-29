@@ -44,7 +44,7 @@ MathVector_t Math_VectorToAngles(MathVector3f_t vValue)
 	return mvResult;
 }
 
-float Math_VectorToYaw(vec_t *vVector)
+float Math_VectorToYaw(MathVectorf_t *vVector)
 {
 	float fResult;
 
@@ -67,7 +67,7 @@ float Math_AngleMod(float a)
 	return a;
 }
 
-vec_t Math_Length(MathVector3f_t a)
+MathVectorf_t Math_Lengthf(MathVector3f_t a)
 {
 	int		i;
 	float	l;
@@ -75,7 +75,20 @@ vec_t Math_Length(MathVector3f_t a)
 	l = 0;
 	for (i = 0; i<3; i++)
 		l += a[i] * a[i];
-	l = (float)sqrt(l);
+	l = sqrtf(l);
+
+	return l;
+}
+
+MathVectord_t Math_Lengthd(MathVector3d_t a)
+{
+	int		i;
+	double	l;
+
+	l = 0;
+	for (i = 0; i<3; i++)
+		l += a[i] * a[i];
+	l = sqrt(l);
 
 	return l;
 }

@@ -40,6 +40,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Common", "common\Common.vcx
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Generator", "generator\generator.vcxproj", "{3B3C7922-523E-4B2F-891D-D91898058A95}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documents", "Documents", "{41560D42-8883-417B-97E3-9F2847FA13CC}"
+	ProjectSection(SolutionItems) = preProject
+		TASKS.txt = TASKS.txt
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug (Adamas)|Win32 = Debug (Adamas)|Win32

@@ -30,7 +30,7 @@ void IceballTouch(edict_t *ent, edict_t *other)
 	Math_VectorInverse(vel);
 
 	if(other->v.bTakeDamage)
-		MONSTER_Damage(other,ent,50,DAMAGE_TYPE_NONE);
+		Entity_Damage(other, ent, 50, DAMAGE_TYPE_NONE);
 	else if (ent->local.hit < 9)
 	{
 		if(!ent->v.angles[1] || !ent->v.angles[0])

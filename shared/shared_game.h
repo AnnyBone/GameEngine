@@ -13,7 +13,7 @@ typedef struct link_s
 } link_t;
 #endif
 
-enum
+typedef enum
 {
 	DAMAGE_TYPE_NORMAL,
 	DAMAGE_TYPE_EXPLODE,
@@ -24,7 +24,7 @@ enum
 	DAMAGE_TYPE_FALL,
 
 	DAMAGE_TYPE_NONE
-};
+} DamageType_t;
 
 typedef struct ServerEntity_s ServerEntity_t;
 
@@ -120,11 +120,6 @@ typedef struct
 	MathVector3f_t mins, maxs;
 	MathVector3f_t size;
 
-	void(*TouchFunction)(ServerEntity_t *eEntity, ServerEntity_t *eOther);
-	void(*use)(ServerEntity_t *ent);
-	void(*think)(ServerEntity_t *ent);
-	void(*blocked)(ServerEntity_t *ent, ServerEntity_t *other);
-
 	double		dNextThink;
 
 	ServerEntity_t *groundentity;
@@ -179,6 +174,13 @@ typedef struct
 
 	// Physics
 	MathVector3f_t movedir;
+
+	void(*TouchFunction)(ServerEntity_t *eEntity, ServerEntity_t *eOther);
+	void(*use)(ServerEntity_t *ent);
+	void(*think)(ServerEntity_t *ent);
+	void(*blocked)(ServerEntity_t *ent, ServerEntity_t *other);
+	void(*KilledFunction)(ServerEntity_t *seEntity);
+	void(*DamagedFunction)(ServerEntity_t *seEntity);
 } GlobalVariables_t;
 
 // [12/1/2013] Model specific variables ~hogsy
@@ -192,6 +194,15 @@ typedef struct
 
 	int	iSkin;
 } ModelVariables_t;
+
+typedef enum
+{
+	SOLID_NOT,		// Entity isn't solid.
+	SOLID_TRIGGER,	// Entity will cause a trigger function.
+	SOLID_BBOX,		// Entity is solid.
+	SOLID_SLIDEBOX,	// Entity is solid and moves.
+	SOLID_BSP
+} PhysicsSolidTypes_t;
 
 typedef struct
 {
@@ -208,7 +219,7 @@ typedef struct
 			fGravity,	// Sets the gravity which is enforced on the entity.
 			fFriction;	// Sets the amount of friction that effects this entity and others.
 
-	int	iSolid;			// Sets the collision/solid type for the entity.
+	PhysicsSolidTypes_t	iSolid;	// Sets the collision/solid type for the entity.
 
 	ServerEntity_t	*eIgnore;	// Tells the entity to ignore collisions with this entity.
 } PhysicsVariables_t;

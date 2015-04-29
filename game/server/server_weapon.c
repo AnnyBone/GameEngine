@@ -387,7 +387,7 @@ void Weapon_Projectile(edict_t *eOwner, edict_t *eProjectile, float fVelocity)
 void Weapon_BulletProjectile(edict_t *eEntity,float fSpread,int iDamage,vec_t *vDirection)
 {
 	int	i;
-	MathVector3_t vSource, vTarg;
+	MathVector3f_t vSource, vTarg;
 	trace_t	tTrace;
 
 	Math_VectorCopy(eEntity->v.origin,vSource);
@@ -405,7 +405,7 @@ void Weapon_BulletProjectile(edict_t *eEntity,float fSpread,int iDamage,vec_t *v
 		char	cSmoke[6];
 
 		if(tTrace.ent && tTrace.ent->v.bTakeDamage)
-			MONSTER_Damage(tTrace.ent,eEntity,iDamage,DAMAGE_TYPE_NONE);
+			Entity_Damage(tTrace.ent, eEntity, iDamage, DAMAGE_TYPE_NONE);
 		else
 		{
 			edict_t *eSmoke = Entity_Spawn();
@@ -492,7 +492,7 @@ void Weapon_UpdateCurrentAmmo(Weapon_t *wWeapon, edict_t *eEntity)
 */
 void Weapon_SetActive(Weapon_t *wWeapon,edict_t *eEntity, bool bDeploy)
 {
-	bool	bPrimaryAmmo,bSecondaryAmmo;
+	bool bPrimaryAmmo,bSecondaryAmmo;
 
 	// [11/5/2013] Clear everything out ~hogsy
 	eEntity->v.cViewModel		= "";

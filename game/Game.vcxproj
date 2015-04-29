@@ -322,6 +322,7 @@
     <ClInclude Include="game_resources.h" />
     <ClInclude Include="server\openkatana\openkatana.h" />
     <ClInclude Include="server\server_gamemode.h" />
+    <ClInclude Include="server\server_gib.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

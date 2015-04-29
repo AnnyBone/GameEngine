@@ -183,7 +183,7 @@ void Hurler_Touch(edict_t *eHurler,edict_t *eOther)
 		{
 			vec3_t vOrigin;
 
-			MONSTER_Damage(eOther,eHurler,15,DAMAGE_TYPE_NONE);
+			Entity_Damage(eOther, eHurler, 15, DAMAGE_TYPE_NONE);
 
 			// Throw it back. ~hogsy
 			Math_VectorSubtract(eHurler->monster.eEnemy->v.origin,eHurler->v.origin,vOrigin);

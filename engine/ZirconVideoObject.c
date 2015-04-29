@@ -111,7 +111,7 @@ void VideoObject_Draw(VideoObjectX_t *voObject)
 			glTexCoordPointer(2, GL_FLOAT, 0, 0);
 		}
 
-	Video_DrawArrays(voObject->vpPrimitiveType, voObject->iVertices);
+	Video_DrawArrays(voObject->vpPrimitiveType, voObject->iVertices, r_showtris.bValue);
 
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_COLOR_ARRAY);

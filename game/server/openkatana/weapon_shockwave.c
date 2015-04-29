@@ -69,7 +69,7 @@ void ShockLaser_Touch(edict_t *ent, edict_t *other)
 		// burning flesh sound
 		cSound = "weapons/shockwave/burn.wav";
 
-		MONSTER_Damage(other,ent,100,0);
+		Entity_Damage(other, ent, 100, 0);
 	}
 	else
 		cSound = "weapons/shockwave/fade.wav";

@@ -306,7 +306,7 @@ void Point_DynamicLight(edict_t *ent)
 
 #define	EXPLODE_FLAG_REMOVE	1	// Remove on use.
 
-void Point_ExplodeUse(edict_t *ePoint)
+void Point_ExplodeUse(ServerEntity_t *ePoint)
 {
 	Entity_RadiusDamage(ePoint, MONSTER_RANGE_NEAR, ePoint->local.iDamage, DAMAGE_TYPE_EXPLODE);
 
@@ -319,7 +319,7 @@ void Point_ExplodeUse(edict_t *ePoint)
 		Entity_Remove(ePoint);
 }
 
-void Point_ExplodeSpawn(edict_t *ePoint)
+void Point_ExplodeSpawn(ServerEntity_t *ePoint)
 {
 	ePoint->v.use = Point_ExplodeUse;
 }
@@ -808,7 +808,7 @@ void Point_EffectSpawn(edict_t *eEntity)
 
 void Point_DamageUse(edict_t *eEntity)
 {
-	MONSTER_Damage(eEntity->local.activator,eEntity,eEntity->local.iDamage,eEntity->local.style);
+	Entity_Damage(eEntity->local.activator, eEntity, eEntity->local.iDamage, eEntity->local.style);
 }
 
 void Point_DamageSpawn(edict_t *eEntity)

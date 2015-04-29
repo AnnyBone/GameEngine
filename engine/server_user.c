@@ -198,9 +198,9 @@ void SV_WaterMove (void)
 */
 void SV_ClientThink (void)
 {
-	int			i;
-	float		fLength,fmove,smove,addspeed,accelspeed,currentspeed;
-	vec3_t		vAngle,vWishVelocity;
+	int	i;
+	float fLength,fmove,smove,addspeed,accelspeed,currentspeed;
+	MathVector3f_t vAngle, vWishVelocity;
 
 	if(sv_player->v.movetype == MOVETYPE_NONE)
 		return;
@@ -319,9 +319,9 @@ void SV_ClientThink (void)
 
 void SV_ReadClientMove (ClientCommand_t *move)
 {
-	int		i;
-	vec3_t	angle;
-	int		bits;
+	int i;
+	MathVector3f_t angle;
+	int bits;
 
 	// Read ping time
 	host_client->ping_times[host_client->num_pings%NUM_PING_TIMES]

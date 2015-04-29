@@ -18,6 +18,9 @@
     <ClInclude Include="server\server_gamemode.h">
       <Filter>Server</Filter>
     </ClInclude>
+    <ClInclude Include="server\server_gib.c">
+      <Filter>Server</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Shared">

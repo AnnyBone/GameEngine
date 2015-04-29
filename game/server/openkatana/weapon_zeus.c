@@ -29,7 +29,8 @@ void Zeus_Hit(edict_t *ent)
 			{
 				if(trace.ent->local.bBleed)
 					Engine.Particle(trace.endpos,vel,10,"blood",30);
-				MONSTER_Damage(trace.ent,ent,5,0);
+
+				Entity_Damage(trace.ent, ent, 5, 0);
 			}
 			else
 				Engine.Particle(trace.endpos,vel,10,"zspark",30);

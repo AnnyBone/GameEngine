@@ -27,8 +27,9 @@ typedef enum
 #define	MATERIAL_FLAG_BLEND		4	// Ditto to the above, but tells us to use blending rather than alpha-test.
 #define	MATERIAL_FLAG_ANIMATED	8	// This is a global flag; tells the material system to scroll through all skins.
 #define	MATERIAL_FLAG_MIRROR	16	// Must be GLOBAL!
-#define	MATERIAL_FLAG_UNUSED	32
+#define	MATERIAL_FLAG_NEAREST	32	// Forces the texture to be loaded with nearest filtering.
 #define	MATERIAL_FLAG_WATER		64	// Must be GLOBAL!
+#define	MATERIAL_FLAG_NOTRIS	128	// Global flag that lets us override the wireframe view for this object.
 
 typedef struct
 {
@@ -43,7 +44,6 @@ typedef enum
 	MATERIAL_TEXTURE_SPHERE,		// Spherical mapping.
 	MATERIAL_TEXTURE_FULLBRIGHT,	// Adds highlights to the texture.
 	MATERIAL_TEXTURE_DETAIL,		// Detail map is blended with other layers to make textures appear more detailed.
-	//MATERIAL_TEXTURE_LIGHTMAP,	// Lightmap is automated, gets skipped.
 
 	MATERIAL_TEXTURE_MAX
 } MaterialTextureType_t;
@@ -88,7 +88,8 @@ typedef struct Material_s
 
 	MaterialSkin_t	msSkin[MATERIAL_MAX_SKINS];
 
-	bool	bBind;
+	bool bBind;
+	//bool bWireframeOverride;	// Override tris for this material.
 
 	float	fAlpha;	// Alpha override.
 

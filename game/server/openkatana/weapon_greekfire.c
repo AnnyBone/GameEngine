@@ -2,12 +2,12 @@
 
 #include "server_weapon.h"
 
-void GreekFire_Deploy(edict_t *ent)
+void GreekFire_Deploy(ServerEntity_t *ent)
 {
 	//Weapon_Animate(ent,FALSE,1,7,0.1f,0,0,0,FALSE);
 }
 
-void GreekfireTouch(edict_t *ent, edict_t *other)
+void GreekfireTouch(ServerEntity_t *ent, ServerEntity_t *other)
 {
 	vec3_t vel;
 
@@ -15,7 +15,7 @@ void GreekfireTouch(edict_t *ent, edict_t *other)
 		return;
 
 	if(other->v.bTakeDamage)
-		MONSTER_Damage(other,ent,50,0);
+		Entity_Damage(other, ent, 50, 0);
 
     // [25/6/2012] Simplified ~hogsy
 	Math_VectorCopy(ent->v.velocity,vel);
@@ -29,9 +29,9 @@ void GreekfireTouch(edict_t *ent, edict_t *other)
 	Entity_Remove(ent);
 }
 
-void GreekFire_Throw(edict_t *ent)
+void GreekFire_Throw(ServerEntity_t *ent)
 {
-	edict_t *greekfire = Entity_Spawn();
+	ServerEntity_t *greekfire = Entity_Spawn();
 
 	greekfire->v.cClassname	= "greekfire";
 	greekfire->v.movetype	= MOVETYPE_BOUNCE;
@@ -55,7 +55,7 @@ void GreekFire_Throw(edict_t *ent)
 }
 
 // [4/7/2012] Renamed to GreekFire_PrimaryAttack ~hogsy
-void GreekFire_PrimaryAttack(edict_t *ent)
+void GreekFire_PrimaryAttack(ServerEntity_t *ent)
 {
 	//Weapon_Animate(ent,FALSE,8,25,0.08f,0,0,0,FALSE);
 

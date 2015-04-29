@@ -340,7 +340,8 @@ void Player_CheckWater(ServerEntity_t *ePlayer)
 	{
 		if(ePlayer->local.dPainFinished < Server.dTime)
 		{
-			MONSTER_Damage(ePlayer,ePlayer,10, 0);
+			Entity_Damage(ePlayer, ePlayer, 10, 0);
+
 			ePlayer->local.dPainFinished = Server.dTime + 1;
 		}
 	}
@@ -386,7 +387,7 @@ void Player_PostThink(ServerEntity_t *ePlayer)
 		{
 			// [8/6/2012] TODO: Figure out if we were pushed by an enemy... ~hogsy
 			// [8/6/2012] TODO: Base damage on velocity ~hogsy
-			MONSTER_Damage(ePlayer,ePlayer,10, 0);
+			Entity_Damage(ePlayer, ePlayer, 10, 0);
 
 			if(rand()%2 == 1)
 				sprintf(snd,"player/playerlandhurt.wav");

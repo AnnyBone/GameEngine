@@ -115,13 +115,13 @@ void Area_BreakableBounce(ServerEntity_t *eGib, ServerEntity_t *eOther)
 
 void Area_CreateGib(ServerEntity_t *eArea, const char *cModel)
 {
-	int		j;
-	ServerEntity_t	*eGib;
+	int	j;
+	ServerEntity_t *eGib;
 
 	eGib = Entity_Spawn();
 	if (eGib)
 	{
-		eGib->v.cClassname = "area_gib";
+		eGib->v.cClassname = "entity_gib";
 		eGib->v.movetype = MOVETYPE_BOUNCE;
 		eGib->v.TouchFunction = Area_BreakableBounce;
 		eGib->v.think = Entity_Remove;
@@ -238,7 +238,7 @@ void Area_BreakableSpawn(ServerEntity_t *eArea)
 
 	eArea->local.bBleed = false;
 
-	eArea->monster.think_die = Area_BreakableDie;
+	Entity_SetKilledFunction(eArea, Area_BreakableDie);
 
 	Entity_SetModel(eArea, eArea->v.model);
 	Entity_SetOrigin(eArea, eArea->v.origin);
@@ -253,7 +253,7 @@ void Area_BreakableSpawn(ServerEntity_t *eArea)
 
 void Area_RotateBlocked(ServerEntity_t *eArea, ServerEntity_t *eOther)
 {
-	MONSTER_Damage(eOther,eArea,eArea->local.iDamage,DAMAGE_TYPE_CRUSH);
+	Entity_Damage(eOther, eArea, eArea->local.iDamage, DAMAGE_TYPE_CRUSH);
 }
 
 void Area_RotateTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
@@ -408,7 +408,7 @@ void Area_DoorUse(ServerEntity_t *eArea)
 
 void Area_DoorBlocked(ServerEntity_t *eArea, ServerEntity_t *eOther)
 {
-	MONSTER_Damage(eOther,eArea,eArea->local.iDamage,0);
+	Entity_Damage(eOther, eArea, eArea->local.iDamage, 0);
 }
 
 void Area_DoorSpawn(ServerEntity_t *eArea)
@@ -706,7 +706,7 @@ void Area_ButtonUse(ServerEntity_t *eArea)
 
 void Area_ButtonBlocked(ServerEntity_t *eArea, ServerEntity_t *eOther)
 {
-	MONSTER_Damage(eOther,eArea,eArea->local.iDamage,0);
+	Entity_Damage(eOther, eArea, eArea->local.iDamage, 0);
 }
 
 void Area_ButtonSpawn(ServerEntity_t *eArea)
@@ -882,7 +882,7 @@ void Area_PlatformUse(ServerEntity_t *eArea)
 
 void Area_PlatformBlocked(ServerEntity_t *eArea, ServerEntity_t *eOther)
 {
-	MONSTER_Damage(eOther,eArea,eArea->local.iDamage,0);
+	Entity_Damage(eOther, eArea, eArea->local.iDamage, 0);
 }
 
 void Area_PlatformSpawn(ServerEntity_t *eArea)
