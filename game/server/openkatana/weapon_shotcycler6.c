@@ -39,25 +39,16 @@ EntityFrame_t ShotcyclerAnimation_Deploy [] =
 
 EntityFrame_t ShotcyclerAnimation_Fire [] =
 {
-	{	NULL, 1, 0.02f},
-	{	NULL, 2, 0.02f},
-	{	NULL, 3, 0.02f},
-	{	NULL, 4, 0.02f},
-	{	NULL, 5, 0.02f},
-	{	NULL, 6, 0.02f},
-	{	NULL, 7, 0.02f},
-	{	NULL, 8, 0.02f},
-	{	NULL, 9, 0.02f},
-	{	NULL, 10, 0.02f},
-	{	NULL, 11, 0.02f},
-	{	NULL, 12, 0.02f},
-	{	NULL, 13, 0.02f},
-	{	NULL, 14, 0.02f},
-	{	NULL, 15, 0.02f},
-	{	NULL, 16, 0.02f},
-	{	NULL, 17, 0.02f},
-	{	NULL, 18, 0.02f},
-    {	Shotcycler_PrimaryAttack, 19, 0.02f, true   }
+	{	NULL, 1, 0.001f},
+	{	NULL, 3, 0.001f},
+	{	NULL, 5, 0.001f},
+	{	NULL, 7, 0.001f},
+	{	NULL, 9, 0.001f},
+	{	NULL, 11, 0.001f},
+	{	NULL, 13, 0.001f},
+	{	NULL, 15, 0.001f},
+	{	NULL, 17, 0.001f},
+    {	Shotcycler_PrimaryAttack, 19, 0.001f, true   }
 };
 
 EntityFrame_t ShotcyclerAnimation_Reload [] =
