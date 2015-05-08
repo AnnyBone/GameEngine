@@ -119,18 +119,18 @@ char *BotNames[] =
 	"[BOT] Castor"
 };
 
-void Bot_Run(edict_t *ent);
-void Bot_Pain(edict_t *ent,edict_t *other);
-void Bot_Die(edict_t *ent,edict_t *other);
-void Bot_Stand(edict_t *eBot);
-void Bot_Walk(edict_t *eBot);
-void Bot_Think(edict_t *eBot);
+void Bot_Run(ServerEntity_t *ent);
+void Bot_Pain(ServerEntity_t *ent, ServerEntity_t *other);
+void Bot_Die(ServerEntity_t *ent, ServerEntity_t *other);
+void Bot_Stand(ServerEntity_t *eBot);
+void Bot_Walk(ServerEntity_t *eBot);
+void Bot_Think(ServerEntity_t *eBot);
 
 /*	style
 		0	Mikiko
 		1	Superfly
 */
-void Bot_Spawn(edict_t *eBot)
+void Bot_Spawn(ServerEntity_t *eBot)
 {
 	int		iSpawnType;
 	edict_t	*eSpawnPoint;
@@ -150,23 +150,23 @@ void Bot_Spawn(edict_t *eBot)
 		eBot->v.model	= cvServerPlayerModel.string;
 		eBot->v.netname	= BotNames[(rand()%pARRAYELEMENTS(BotNames))];
 
-		eBot->monster.iType	= MONSTER_PLAYER;
+		eBot->Monster.iType	= MONSTER_PLAYER;
 		break;
 #ifdef OPENKATANA
 	case BOT_MIKIKO:
 		iSpawnType = INFO_PLAYER_MIKIKO;
 
-		Engine.Server_PrecacheResource(RESOURCE_MODEL,"models/mikiko.md2");
+		Server_PrecacheModel("models/mikiko.md2");
 
 		eBot->v.model	= "models/mikiko.md2";
 		eBot->v.netname	= "Mikiko Ebihara";
 
-		eBot->monster.iType	= MONSTER_MIKIKO;
+		eBot->Monster.iType	= MONSTER_MIKIKO;
 		break;
 	case BOT_SUPERFLY:
 		iSpawnType = INFO_PLAYER_SUPERFLY;
 
-		Engine.Server_PrecacheResource(RESOURCE_MODEL,"models/sprfly.md2");
+		Server_PrecacheModel("models/sprfly.md2");
 		Server_PrecacheSound("player/superfly/superflydeath1.wav");
 		Server_PrecacheSound("player/superfly/superflydeath2.wav");
 		Server_PrecacheSound("player/superfly/superflydeath3.wav");
@@ -175,7 +175,7 @@ void Bot_Spawn(edict_t *eBot)
 		eBot->v.model = "models/sprfly.md2";
 		eBot->v.netname	= "Superfly Johnson";
 
-		eBot->monster.iType	= MONSTER_SUPERFLY;
+		eBot->Monster.iType	= MONSTER_SUPERFLY;
 		break;
 #endif
 	default:
@@ -203,7 +203,7 @@ void Bot_Spawn(edict_t *eBot)
 
 	eBot->local.bBleed	= true;
 
-	eBot->monster.Think = Bot_Think;
+	eBot->Monster.Think = Bot_Think;
 
     // Mikiko and Superfly are set manually to avoid issues... ~hogsy
 	if(eBot->local.style == BOT_DEFAULT)
@@ -220,10 +220,10 @@ void Bot_Spawn(edict_t *eBot)
         SetAngle(eBot,eSpawnPoint->v.angles);
 	}
 
-	// [15/7/2012] Set the initial state to awake ~hogsy
-	eBot->monster.think_die		= Bot_Die;
-	eBot->monster.think_pain	= Bot_Pain;
-	eBot->monster.Think			= Bot_Think;
+	Entity_SetKilledFunction(eBot, Bot_Die);
+
+	eBot->Monster.think_pain	= Bot_Pain;
+	eBot->Monster.Think			= Bot_Think;
 
 	Entity_SetModel(eBot,eBot->v.model);
 	Entity_SetSize(eBot,-16.0f,-16.0f,-24.0f,16.0f,16.0f,32.0f);
@@ -235,12 +235,12 @@ void Bot_Spawn(edict_t *eBot)
 	Entity_DropToFloor(eBot);
 }
 
-void Bot_Think(edict_t *eBot)
+void Bot_Think(ServerEntity_t *eBot)
 {
 	Weapon_t	*wActiveWeapon;
 
 	// If the bot isn't dead, then add animations.
-	if(eBot->monster.iState != STATE_DEAD)
+	if(eBot->Monster.iState != STATE_DEAD)
 	{
 		if(eBot->v.flags & FL_ONGROUND)
 		{
@@ -260,14 +260,14 @@ void Bot_Think(edict_t *eBot)
 		}
 	}
 
-	switch(eBot->monster.iThink)
+	switch(eBot->Monster.iThink)
 	{
 	case THINK_IDLE:
 		Monster_MoveRandom(eBot, BOT_MIN_SPEED);
 	break;
 	case THINK_ATTACKING:
 	{
-		if (eBot->monster.eTarget->v.iHealth <= 0)
+		if (eBot->Monster.eTarget->v.iHealth <= 0)
 			Monster_SetThink(eBot, THINK_WANDERING);
 
 		wActiveWeapon = Weapon_GetCurrentWeapon(eBot);
@@ -312,8 +312,8 @@ void Bot_Think(edict_t *eBot)
 					// [22/3/2013] TODO: Tell that current entity it's time to move... ~hogsy
 				}
 
-				if (eBot->monster.vTarget != wPoint->position)
-					Math_VectorCopy(wPoint->position,eBot->monster.vTarget);
+				if (eBot->Monster.vTarget != wPoint->position)
+					Math_VectorCopy(wPoint->position,eBot->Monster.vTarget);
 			}
 
 #if 0
@@ -344,7 +344,7 @@ void Bot_Think(edict_t *eBot)
 	}
 }
 
-void Bot_BroadcastMessage(edict_t *eBot,edict_t *other)
+void Bot_BroadcastMessage(ServerEntity_t *eBot, ServerEntity_t *other)
 {
 	char *cPhrase;
 
@@ -356,13 +356,13 @@ void Bot_BroadcastMessage(edict_t *eBot,edict_t *other)
 	else
 	{
 #if 0
-		if(eBot->monster.meEmotion[EMOTION_ANGER].iEmotion > 50)
+		if(eBot->Monster.meEmotion[EMOTION_ANGER].iEmotion > 50)
 			cPhrase = BotAngryPhrases[(rand()%pARRAYELEMENTS(BotAngryPhrases))];
-		else if (eBot->monster.meEmotion[EMOTION_BOREDOM].iEmotion > 50)
+		else if (eBot->Monster.meEmotion[EMOTION_BOREDOM].iEmotion > 50)
 			cPhrase = BotBoredPhrases[(rand()%pARRAYELEMENTS(BotBoredPhrases))];
-		else if (eBot->monster.meEmotion[EMOTION_FEAR].iEmotion > 50)
+		else if (eBot->Monster.meEmotion[EMOTION_FEAR].iEmotion > 50)
 			cPhrase = BotFearPhrases[(rand()%pARRAYELEMENTS(BotFearPhrases))];
-		else if (eBot->monster.meEmotion[EMOTION_JOY].iEmotion > 50)
+		else if (eBot->Monster.meEmotion[EMOTION_JOY].iEmotion > 50)
 			cPhrase = BotJoyPhrases[(rand()%pARRAYELEMENTS(BotJoyPhrases))];
 		else
 			// [22/3/2013] Emotions don't give us anything worth saying... ~hogsy
@@ -380,7 +380,7 @@ void Bot_BroadcastMessage(edict_t *eBot,edict_t *other)
 	);
 }
 
-void Bot_Pain(edict_t *ent,edict_t *other)
+void Bot_Pain(ServerEntity_t *ent, ServerEntity_t *other)
 {
 	char		sound[MAX_QPATH];
 	Weapon_t	*wMyWeapon,*wHisWeapon;
@@ -432,7 +432,7 @@ POINTCHECK:
 			Monster_SetThink(ent,MONSTER);
 
 			// [15/7/2012] Set the position we'll move to next ~hogsy
-			Math_VectorCopy(ent->monster.target,point->position);
+			Math_VectorCopy(ent->Monster.target,point->position);
 		}
 		else
 		{
@@ -503,7 +503,7 @@ void Bot_Die(edict_t *eBot,edict_t *eOther)
 {
 	char sound[MAX_QPATH];
 
-	if(eBot->monster.iState == STATE_DEAD)
+	if(eBot->Monster.iState == STATE_DEAD)
 		return;
 
 	// [15/7/2012] He's dead, Jim. ~hogsy

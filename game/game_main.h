@@ -19,7 +19,7 @@
 #include "game_resources.h"
 
 #ifdef GAME_OPENKATANA
-#define	GAME_NAME	"OpenKatana Multiplayer Alpha"
+#define	GAME_NAME	"OpenKatana"
 #else
 #define	GAME_NAME	"Katana"
 #endif
@@ -28,14 +28,14 @@ extern ModuleImport_t	Engine;
 
 typedef struct
 {
-	bool			bActive;                // Is the server active?
+	bool bActive;	// Is the server active?
 
 	double	dTime,					// Server time.
 			dHostFrameTime,			// Host time.
 			dWaypointSpawnDelay;	// Delay before spawning another waypoint.
 
-	edict_t	*eEntity,	// Current player.
-			*eWorld;	// Pointer to entity representing the current level.
+	ServerEntity_t	*eEntity,	// Current player.
+					*eWorld;	// Pointer to entity representing the current level.
 
 	char	*cMapAuthor,	// Map author.
 			*cMapTitle;		// Map title.
@@ -53,7 +53,7 @@ typedef struct
 {
 	double		time;
 
-	entity_t	*ent;
+	ClientEntity_t *ent;
 } GameClient_t;
 
 GameServer_t Server;
@@ -68,11 +68,10 @@ GameClient_t Client;
 #define DEAD_RESPAWNABLE	3	// Entity can respawn
 
 /*
-	Weapons
+	Items
 */
 
-#define	WEAPON_NONE		-1
-
+#define	WEAPON_NONE			-1
 // [5/8/2013] Made these standard defines since maps rely on these now ~hogsy
 #ifdef OPENKATANA
 // Episode One
@@ -113,17 +112,17 @@ char *va(char *format,...);
 
 void Flare(vec3_t org,float r,float g,float b,float a,float scale,char *texture);
 
-void Sound(edict_t *ent, AudioChannel_t channel, char *sound, int volume, float attenuation);
+void Sound(ServerEntity_t *ent, AudioChannel_t channel, char *sound, int volume, float attenuation);
 
-void SetAngle(edict_t *ent,vec3_t vAngle);
+void SetAngle(ServerEntity_t *ent, vec3_t vAngle);
 
 void DrawPic(char *texture,float alpha,int x,int y,int h,int w);
-void PutClientInServer(edict_t *ent);
+void PutClientInServer(ServerEntity_t *ent);
 void WriteByte(int mode,int c);
-void ChangeYaw(edict_t *ent);
+void ChangeYaw(ServerEntity_t *ent);
 
-trace_t Traceline(edict_t *ent,vec3_t vStart,vec3_t vEnd,int type);
+trace_t Traceline(ServerEntity_t *ent, vec3_t vStart, vec3_t vEnd, int type);
 
-void UseTargets(edict_t *ent, edict_t *other);
+void UseTargets(ServerEntity_t *ent, ServerEntity_t *other);
 
 #endif

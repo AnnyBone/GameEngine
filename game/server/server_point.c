@@ -495,7 +495,7 @@ void Point_DecorationSpawn(edict_t *eDecoration)
 	if(!eDecoration->v.model)
 		ENTITY_REMOVE(eDecoration);
 
-	Engine.Server_PrecacheResource(RESOURCE_MODEL,eDecoration->v.model);
+	Server_PrecacheModel(eDecoration->v.model);
 
 	Entity_SetModel(eDecoration,eDecoration->v.model);
 
@@ -542,7 +542,7 @@ void Point_InfoMessage(edict_t *eEntity)
 {
 	if(!eEntity->local.activator)
 		return;
-	else if((eEntity->monster.iType != MONSTER_PLAYER) && eEntity->local.activator->v.iHealth <= 0)
+	else if((eEntity->Monster.iType != MONSTER_PLAYER) && eEntity->local.activator->v.iHealth <= 0)
 		return;
 
 	Engine.Server_SinglePrint(eEntity->local.activator,"New info message received");
@@ -648,31 +648,31 @@ void Point_PropSpawn(edict_t *eEntity)
 				Server_PrecacheSound(PHYSICS_SOUND_GLASS0);
 				Server_PrecacheSound(PHYSICS_SOUND_GLASS1);
 				Server_PrecacheSound(PHYSICS_SOUND_GLASS2);
-				Engine.Server_PrecacheResource(RESOURCE_MODEL,PHYSICS_MODEL_GLASS0);
-				Engine.Server_PrecacheResource(RESOURCE_MODEL,PHYSICS_MODEL_GLASS1);
-				Engine.Server_PrecacheResource(RESOURCE_MODEL,PHYSICS_MODEL_GLASS2);
+				Server_PrecacheModel(PHYSICS_MODEL_GLASS0);
+				Server_PrecacheModel(PHYSICS_MODEL_GLASS1);
+				Server_PrecacheModel(PHYSICS_MODEL_GLASS2);
 				break;
 			case BREAKABLE_WOOD:
 				Server_PrecacheSound(PHYSICS_SOUND_WOOD0);
 				Server_PrecacheSound(PHYSICS_SOUND_WOOD1);
 				Server_PrecacheSound(PHYSICS_SOUND_WOOD2);
-				Engine.Server_PrecacheResource(RESOURCE_MODEL,PHYSICS_MODEL_WOOD0);
-				Engine.Server_PrecacheResource(RESOURCE_MODEL,PHYSICS_MODEL_WOOD1);
-				Engine.Server_PrecacheResource(RESOURCE_MODEL,PHYSICS_MODEL_WOOD2);
+				Server_PrecacheModel(PHYSICS_MODEL_WOOD0);
+				Server_PrecacheModel(PHYSICS_MODEL_WOOD1);
+				Server_PrecacheModel(PHYSICS_MODEL_WOOD2);
 				break;
 			case BREAKABLE_ROCK:
 				Server_PrecacheSound(PHYSICS_SOUND_ROCK0);
 				Server_PrecacheSound(PHYSICS_SOUND_ROCK1);
 				Server_PrecacheSound(PHYSICS_SOUND_ROCK2);
-				Engine.Server_PrecacheResource(RESOURCE_MODEL,"models/gibs/rock_gibs1.md2");
-				Engine.Server_PrecacheResource(RESOURCE_MODEL,"models/gibs/rock_gibs2.md2");
-				Engine.Server_PrecacheResource(RESOURCE_MODEL,"models/gibs/rock_gibs3.md2");
+				Server_PrecacheModel("models/gibs/rock_gibs1.md2");
+				Server_PrecacheModel("models/gibs/rock_gibs2.md2");
+				Server_PrecacheModel("models/gibs/rock_gibs3.md2");
 				break;
 			case BREAKABLE_METAL:
 				Server_PrecacheSound(PHYSICS_SOUND_METAL0);
 				Server_PrecacheSound(PHYSICS_SOUND_METAL1);
 				Server_PrecacheSound(PHYSICS_SOUND_METAL2);
-				Engine.Server_PrecacheResource(RESOURCE_MODEL,PHYSICS_MODEL_METAL0);
+				Server_PrecacheModel(PHYSICS_MODEL_METAL0);
 				Server_PrecacheModel(PHYSICS_MODEL_METAL1);
 				Server_PrecacheModel(PHYSICS_MODEL_METAL2);
 				break;
@@ -681,12 +681,13 @@ void Point_PropSpawn(edict_t *eEntity)
 				Engine.Con_Warning("Prop with unknown style! (%i)\n",eEntity->local.style);
 		}
 
-		eEntity->v.bTakeDamage		= true;
-		eEntity->local.bBleed		= false;
-		eEntity->monster.think_die	= Area_BreakableDie;
+		eEntity->v.bTakeDamage = true;
+		eEntity->local.bBleed = false;
+
+		Entity_SetKilledFunction(eEntity, Area_BreakableDie);
 	}
 
-	Engine.Server_PrecacheResource(RESOURCE_MODEL,eEntity->v.model);
+	Server_PrecacheModel(eEntity->v.model);
 
 	eEntity->v.movetype			= MOVETYPE_BOUNCE;
 	eEntity->v.TouchFunction	= Point_PropTouch;
@@ -698,10 +699,6 @@ void Point_PropSpawn(edict_t *eEntity)
 	Entity_SetModel(eEntity,eEntity->v.model);
 	Entity_SetOrigin(eEntity,eEntity->v.origin);
 	Entity_SetSize(eEntity,-16.0f,-16.0f,-24.0f,16.0f,16.0f,32.0f);
-
-	eEntity->v.bTakeDamage		= true;
-	eEntity->local.bBleed		= false;
-	eEntity->monster.think_die	= Area_BreakableDie;
 }
 
 /*

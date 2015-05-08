@@ -51,7 +51,7 @@ void Vektar_VekBallDie(edict_t *ent)
 
 void Vektar_VekBallTouch(edict_t *ent, edict_t *other)
 {
-	if(other->monster.iType != MONSTER_PLAYER)
+	if(other->Monster.iType != MONSTER_PLAYER)
 		return;
 
 	Engine.Server_BroadcastPrint("- VEKTAR WAS DESTROYED BY %s -\n", other->v.netname);
@@ -142,8 +142,8 @@ void Vektar_Spawn(void)
 	edict_t	*eVektar = Entity_Spawn();
 
 	// [20/12/2012] Also precache our resources ~hogsy
-	Engine.Server_PrecacheResource(RESOURCE_MODEL,DAIKATANA_MODEL_WORLD);
-	Engine.Server_PrecacheResource(RESOURCE_MODEL,VEKTAR_MODEL_STATUE);
+	Server_PrecacheModel(DAIKATANA_MODEL_WORLD);
+	Server_PrecacheModel(VEKTAR_MODEL_STATUE);
 	Server_PrecacheSound(VEKTAR_SOUND_GRABIT);
 	Server_PrecacheSound(VEKTAR_SOUND_FINDING);
 	Server_PrecacheSound(VEKTAR_SOUND_GOTIT);
@@ -157,7 +157,7 @@ void Vektar_Spawn(void)
 
 	eVektar->Physics.iSolid	= SOLID_NOT;
 
-	eVektar->monster.think_die = Vektar_Die;
+	Entity_SetKilledFunction(eVektar, Vektar_Die);
 
 	Entity_SetModel(eVektar,VEKTAR_MODEL_STATUE);
 	Entity_SetSize(eVektar,-16.0f,-16.0f,-24.0f,16.0f,16.0f,40.0f);

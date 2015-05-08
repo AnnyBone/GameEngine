@@ -361,12 +361,12 @@ void SV_PushMove (edict_t *pusher, float movetime)
 
 			// if the pusher has a "blocked" function, call it
 			// otherwise, just stay in place until the obstacle is gone
-			if(pusher->v.blocked)
+			if (pusher->v.BlockedFunction)
 			{
 				pr_global_struct.self	= EDICT_TO_PROG(pusher);
 				pr_global_struct.eOther	= check;
 
-				pusher->v.blocked(pusher,check);
+				pusher->v.BlockedFunction(pusher,check);
 			}
 
 		// move back any entities we already moved
@@ -550,8 +550,8 @@ static void Server_PushRotate(edict_t *pusher,float movetime)
 
 			// if the pusher has a "blocked" function, call it
 			// otherwise, just stay in place until the obstacle is gone
-			if (pusher->v.blocked)
-				pusher->v.blocked(pusher,check);
+			if (pusher->v.BlockedFunction)
+				pusher->v.BlockedFunction(pusher,check);
 
 			// move back any entities we already moved
 			for (i = 0; i < num_moved; i++)

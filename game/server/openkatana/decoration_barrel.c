@@ -11,7 +11,7 @@ typedef enum
 	BARREL_STYLE_EXPLODE
 } BarrelStyle_t;
 
-void Barrel_Killed(ServerEntity_t *eBarrel)
+void Barrel_Killed(ServerEntity_t *eBarrel, ServerEntity_t *seOther)
 {
 	if (eBarrel->local.style == BARREL_STYLE_EXPLODE)
 	{
@@ -32,7 +32,7 @@ void Barrel_Killed(ServerEntity_t *eBarrel)
 	eBarrel->Physics.iSolid = SOLID_NOT;
 }
 
-void Barrel_Damaged(ServerEntity_t *seBarrel)
+void Barrel_Damaged(ServerEntity_t *seBarrel, ServerEntity_t *seOther)
 {
 	// TODO: play sound, wobble, or react in some way...
 

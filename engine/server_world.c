@@ -836,7 +836,7 @@ void SV_ClipToLinks(areanode_t *node,moveclip_t *clip)
 		}
 
 		// [28/6/2013] Shouldn't really be refering to the monster struct in engine-side code, like we're doing here... ~hogsy
-		if(eTouch->monster.iType > 2)
+		if(eTouch->Monster.iType > 2)
 			trace = SV_ClipMoveToEntity(eTouch,clip->start,clip->mins2,clip->maxs2,clip->end);
 		else
 			trace = SV_ClipMoveToEntity(eTouch, clip->start, clip->mins, clip->maxs, clip->end);

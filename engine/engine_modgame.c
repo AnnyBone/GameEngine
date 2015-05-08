@@ -380,7 +380,6 @@ void LightStyle(int style,char *val)
 
 ServerEntity_t	*eMessageEntity;
 
-
 sizebuf_t *Game_MessageOne(ServerEntity_t *seMessage)
 {
 	int iEntity;
@@ -394,8 +393,6 @@ sizebuf_t *Game_MessageOne(ServerEntity_t *seMessage)
 
 sizebuf_t *Game_WriteDest(int dest)
 {
-	int	entnum;
-
 	switch(dest)
 	{
 	case MSG_BROADCAST:

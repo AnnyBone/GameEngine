@@ -8,6 +8,7 @@
 */
 
 #include "server_waypoint.h"
+#include "server_weapon.h"
 
 /*	Notes
 		We don't need to check if we're dead or not in
@@ -44,7 +45,7 @@ enum
 	his cell or not... This isn't fool proof
 	so don't rely on it.
 */
-bool Prisoner_CheckCell(edict_t *ePrisoner)
+bool Prisoner_CheckCell(ServerEntity_t *ePrisoner)
 {
 	trace_t		tDoorTrace;
 	Waypoint_t	*wCellDoorWaypoint;
@@ -63,7 +64,7 @@ bool Prisoner_CheckCell(edict_t *ePrisoner)
 				Waypoint_IsSafe(ePrisoner,wCellDoorWaypoint))
 			{
 				// [20/9/2012] Set that as our target so we'll walk over to it later ~hogsy
-				Math_VectorCopy(wCellDoorWaypoint->position,ePrisoner->monster.vTarget);
+				Math_VectorCopy(wCellDoorWaypoint->position,ePrisoner->Monster.vTarget);
 
 				// [21/9/2012] Set the state to wandering so we walk over to the selected waypoint ~hogsy
 				Monster_SetThink(ePrisoner,THINK_WANDERING);
@@ -74,16 +75,16 @@ bool Prisoner_CheckCell(edict_t *ePrisoner)
 	return false;
 }
 
-void Prisoner_Think(edict_t *ePrisoner)
+void Prisoner_Think(ServerEntity_t *ePrisoner)
 {
-	if(ePrisoner->monster.iState != STATE_AWAKE)
+	if(ePrisoner->Monster.iState != STATE_AWAKE)
 		return;
 
-	switch(ePrisoner->monster.iThink)
+	switch(ePrisoner->Monster.iThink)
 	{
 	case THINK_IDLE:
 #if 0
-		if (ePrisoner->monster.iCommandList[COMMAND_CHECK_CELL] && !Prisoner_CheckCell(ePrisoner))
+		if (ePrisoner->Monster.iCommandList[COMMAND_CHECK_CELL] && !Prisoner_CheckCell(ePrisoner))
 		{
 			if (rand() % 200 == 1)
 				Sound(ePrisoner, CHAN_VOICE, PRISONER_SOUND_HELP, 255, ATTN_NORM);
@@ -95,31 +96,29 @@ void Prisoner_Think(edict_t *ePrisoner)
 	}
 }
 
-void Prisoner_Walk(edict_t *ePrisoner)
+void Prisoner_Walk(ServerEntity_t *ePrisoner)
 {
 	// [21/9/2012] Check our health before we attempt to move! ~hogsy
 	if(ePrisoner->v.iHealth <= 0)
 		return;
 
-	Monster_MoveToGoal(ePrisoner,ePrisoner->monster.vTarget,10.0f);
+	Monster_MoveToGoal(ePrisoner,ePrisoner->Monster.vTarget,10.0f);
 }
 
-void Prisoner_Run(edict_t *ePrisoner)
+void Prisoner_Run(ServerEntity_t *ePrisoner)
 {
 	// [21/9/2012] Check our health before we attempt to move! ~hogsy
 	if(ePrisoner->v.iHealth <= 0)
 		return;
 
-	Monster_MoveToGoal(ePrisoner,ePrisoner->monster.vTarget,20.0f);
+	Monster_MoveToGoal(ePrisoner,ePrisoner->Monster.vTarget,20.0f);
 }
 
-#include "server_weapon.h"
-
-void Prisoner_Pain(edict_t *ePrisoner,edict_t *eOther)
+void Prisoner_Pain(ServerEntity_t *ePrisoner, ServerEntity_t *eOther)
 {
 }
 
-void Prisoner_Die(edict_t *ePrisoner,edict_t *eOther)
+void Prisoner_Die(ServerEntity_t *ePrisoner, ServerEntity_t *eOther)
 {
 	if(ePrisoner->v.iHealth < PRISONER_MIN_HEALTH)
 	{
@@ -150,13 +149,13 @@ void Prisoner_Die(edict_t *ePrisoner,edict_t *eOther)
 	}
 }
 
-void Prisoner_Spawn(edict_t *ePrisoner)
+void Prisoner_Spawn(ServerEntity_t *ePrisoner)
 {
 	char cPrisonerName[16];
 
-	Engine.Server_PrecacheResource(RESOURCE_MODEL,PRISONER_MODEL_BODY);
-	Engine.Server_PrecacheResource(RESOURCE_MODEL,PRISONER_MODEL_LEGS);
-	Engine.Server_PrecacheResource(RESOURCE_MODEL,PRISONER_MODEL_TORSO);
+	Server_PrecacheModel(PRISONER_MODEL_BODY);
+	Server_PrecacheModel(PRISONER_MODEL_LEGS);
+	Server_PrecacheModel(PRISONER_MODEL_TORSO);
 	Server_PrecacheSound(PRISONER_SOUND_HELP);
 
 #if 0
@@ -192,15 +191,17 @@ PRISONER_GENERATEKEY:
 	ePrisoner->Physics.fFriction	= 1.5f;
 
 	// Initial Command States
-	ePrisoner->monster.iCommandList[COMMAND_CHECK_CELL]	= true;
+	ePrisoner->Monster.iCommandList[COMMAND_CHECK_CELL]	= true;
 
 	// Monster Properties
-	ePrisoner->monster.iType			= MONSTER_PRISONER;
-	ePrisoner->monster.think_die		= Prisoner_Die;
-	ePrisoner->monster.think_pain		= Prisoner_Pain;
-//	ePrisoner->monster.think_walk		= Prisoner_Walk;
-//	ePrisoner->monster.think_run		= Prisoner_Run;
-	ePrisoner->monster.Think			= Prisoner_Think;
+	ePrisoner->Monster.iType = MONSTER_PRISONER;
+
+	Entity_SetKilledFunction(ePrisoner, Prisoner_Die);
+	Entity_SetDamagedFunction(ePrisoner, Prisoner_Pain);
+
+	//	ePrisoner->Monster.think_walk		= Prisoner_Walk;
+	//	ePrisoner->Monster.think_run		= Prisoner_Run;
+	ePrisoner->Monster.Think = Prisoner_Think;
 
 	// [6/8/2012] State must be set before think! ~hogsy
 	Monster_SetState(ePrisoner,STATE_AWAKE);

@@ -354,7 +354,7 @@ void Player_PostThink(ServerEntity_t *ePlayer)
 	char	snd[32];
 
 	// [5/9/2013] If round has not started then don't go through this! ~hogsy
-	if((ePlayer->monster.iState == STATE_DEAD) || !Server.bRoundStarted)
+	if((ePlayer->Monster.iState == STATE_DEAD) || !Server.bRoundStarted)
 		return;
 	// [12/4/2013] Check if we're in a vehicle ~hogsy
 	else if(ePlayer->local.eVehicle)
@@ -452,7 +452,7 @@ void Player_PreThink(ServerEntity_t *ePlayer)
 	Entity_CheckFrames(ePlayer);
 	Player_CheckWater(ePlayer);
 
-	if(ePlayer->monster.iState == STATE_DEAD)
+	if(ePlayer->Monster.iState == STATE_DEAD)
 	{
 		Player_DeathThink(ePlayer);
 		return;
@@ -576,7 +576,7 @@ void Player_Die(ServerEntity_t *ePlayer, ServerEntity_t *other)
 	ePlayer->v.movetype		= MOVETYPE_TOSS;
 	ePlayer->v.angles[0]	= ePlayer->v.angles[2] = 0;
 
-	ePlayer->monster.iState	= STATE_DEAD;
+	ePlayer->Monster.iState	= STATE_DEAD;
 
 	ePlayer->Physics.iSolid	= SOLID_NOT;
 
@@ -653,7 +653,7 @@ void Player_Spawn(ServerEntity_t *ePlayer)
 {
 	ServerEntity_t *eSpawnPoint;
 
-	ePlayer->monster.iType	= MONSTER_PLAYER;
+	ePlayer->Monster.iType	= MONSTER_PLAYER;
 
 	ePlayer->v.cClassname	= "player";
 	// [30/1/2013] Default health can now be changed by admins ~hogsy
@@ -682,9 +682,8 @@ void Player_Spawn(ServerEntity_t *ePlayer)
 	ePlayer->v.bFixAngle = true;
 	ePlayer->v.view_ofs[2]	= 28.0f;
 
-	ePlayer->monster.iState		= STATE_AWAKE;	// TODO: Is this necessary? ~hogsy
-	ePlayer->monster.think_die	= Player_Die;
-	ePlayer->monster.think_pain = Player_Pain;
+	Entity_SetDamagedFunction(ePlayer, Player_Pain);
+	Entity_SetKilledFunction(ePlayer, Player_Die);
 
 	// Clear out the players inventory.
 	Item_ClearInventory(ePlayer);

@@ -175,12 +175,11 @@ typedef struct
 	// Physics
 	MathVector3f_t movedir;
 
-	void(*TouchFunction)(ServerEntity_t *eEntity, ServerEntity_t *eOther);
+	void(*TouchFunction)(ServerEntity_t *eEntity, ServerEntity_t *eOther);		// TODO: Move into local struct.
 	void(*use)(ServerEntity_t *ent);
 	void(*think)(ServerEntity_t *ent);
-	void(*blocked)(ServerEntity_t *ent, ServerEntity_t *other);
-	void(*KilledFunction)(ServerEntity_t *seEntity);
-	void(*DamagedFunction)(ServerEntity_t *seEntity);
+	void(*BlockedFunction)(ServerEntity_t *seEntity, ServerEntity_t *seOther);	// Used in some places by engine_physics.
+	void(*DamagedFunction)(ServerEntity_t *seEntity, ServerEntity_t *seOther);
 } GlobalVariables_t;
 
 // [12/1/2013] Model specific variables ~hogsy
@@ -245,7 +244,6 @@ typedef struct
 //	void	(*think_stand)(ServerEntity_t *ent);
 //	void	(*think_run)(ServerEntity_t *ent);
 //	void	(*think_attack)(ServerEntity_t *ent);
-	void(*think_die)(ServerEntity_t *ent, ServerEntity_t *other);
 	void(*think_pain)(ServerEntity_t *ent, ServerEntity_t *other);
 
 	void(*Think)(ServerEntity_t *eMonster);	// Called per-frame for the specific handling of states for each monster.
@@ -446,6 +444,8 @@ typedef struct
 
 	// Weapons
 	int	iBarrelCount;			// For cycling barrel animations.
+
+	void(*KilledFunction)(ServerEntity_t *seEntity, ServerEntity_t *seOther);
 } GameVariables_t;
 
 //----------------------------
@@ -495,7 +495,7 @@ typedef struct ServerEntity_s
 	ModelVariables_t	Model;		// Variables that affect the model used for the entity.
 	PhysicsVariables_t	Physics;	// Variables affecting how the entity is physically treated.
 	GameVariables_t		local;		// All variables specific towards the game, that aren't used by the engine.
-	MonsterVariables_t	monster;	// Specific towards AI/monsters.
+	MonsterVariables_t	Monster;	// Specific towards AI/monsters.
 	VehicleVariables_t	Vehicle;	// Vehicle variables.
 } ServerEntity_t;
 
@@ -521,17 +521,17 @@ typedef struct
 	void(*Server_PrecacheResource)(int iType, const char *ccResource);									// Precaches the specified resource.
 	void(*Server_Restart)(void);																		// Restarts the server.
 	void(*Server_ChangeLevel)(const char *ccNewLevel);													// Changes the level.
-	void(*Server_AmbientSound)(vec_t *vPosition, const char *cPath, int iVolume, int iAttenuation);		// Plays an ambient sound (a constant sound) from the given location.
+	void(*Server_AmbientSound)(MathVectorf_t *vPosition, const char *cPath, int iVolume, int iAttenuation);		// Plays an ambient sound (a constant sound) from the given location.
 
-	trace_t(*Server_Move)(MathVector3f_t start, MathVector3f_t mins, MathVector3f_t maxs, MathVector3f_t end, int type, edict_t *passedict);
+	trace_t(*Server_Move)(MathVector3f_t start, MathVector3f_t mins, MathVector3f_t maxs, MathVector3f_t end, int type, ServerEntity_t *passedict);
 	
 	ServerEntity_t*(*Server_FindRadius)(MathVector3f_t origin, float radius);												// Finds entities within a specific radius.
 	ServerEntity_t*(*Server_FindEntity)(ServerEntity_t *eStartEntity, char *cName, bool bClassname);						// Finds a specified entity either by classname or by entity name.
 	ServerEntity_t*(*Server_GetEdicts)(void);
 
-	char		*(*Server_GetLevelName)(void);																	// Returns the name of the currently active level.
+	char		*(*Server_GetLevelName)(void);	// Returns the name of the currently active level.
 	
-	double		(*Server_GetFrameTime)(void);																	// Returns host time.
+	double		(*Server_GetFrameTime)(void);	// Returns host time.
 
 	// Client
 	int(*Client_GetEffect)(const char *cPath);					// Get an effect index.
@@ -550,7 +550,7 @@ typedef struct
 	Particle_t		*(*Client_AllocateParticle)(void);						// Allocate a new particle effect.
 
 	// Global
-	vec_t			*(*GetLightSample)(MathVector3f_t vOrigin);						// Gets the current lightmap sample for the specified entity.
+	MathVectorf_t	*(*GetLightSample)(MathVector3f_t vOrigin);	// Gets the current lightmap sample for the specified entity.
 
 	bool(*Material_Precache)(const char *ccPath);
 

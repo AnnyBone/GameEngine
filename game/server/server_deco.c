@@ -2,7 +2,7 @@
 */
 #include "server_main.h"
 
-void Deco_Push(edict_t *ent,edict_t *other)
+void Deco_Push(ServerEntity_t *ent, ServerEntity_t *other)
 {
 	ent->v.velocity[0] = ent->v.velocity[0]+other->v.velocity[0];
 	ent->v.velocity[1] = ent->v.velocity[0]+other->v.velocity[1];
@@ -11,7 +11,7 @@ void Deco_Push(edict_t *ent,edict_t *other)
 	Entity_DropToFloor(ent);
 }
 
-void Deco_VaseBreak(edict_t *ent,edict_t *other)
+void Deco_VaseBreak(ServerEntity_t *ent, ServerEntity_t *other)
 {
 	int		i;
 	vec3_t	vDirection;
@@ -27,11 +27,11 @@ void Deco_VaseBreak(edict_t *ent,edict_t *other)
 	Entity_Remove(ent);
 }
 
-void deco_vase(edict_t *ent)
+void deco_vase(ServerEntity_t *ent)
 {
-	Engine.Server_PrecacheResource(RESOURCE_MODEL,"models/deco/e2/vase01.md2");
-	Engine.Server_PrecacheResource(RESOURCE_MODEL,"models/deco/e2/vgib1.md2");
-	Engine.Server_PrecacheResource(RESOURCE_MODEL,"models/deco/e2/vgib2.md2");
+	Server_PrecacheModel("models/deco/e2/vase01.md2");
+	Server_PrecacheModel("models/deco/e2/vgib1.md2");
+	Server_PrecacheModel("models/deco/e2/vgib2.md2");
 	Server_PrecacheSound("fx/vasebrk.wav");
 
 	ent->v.movetype		= MOVETYPE_BOUNCE;
@@ -39,7 +39,7 @@ void deco_vase(edict_t *ent)
 	ent->Physics.iSolid	= SOLID_BBOX;
 	ent->v.bTakeDamage	= true;
 
-	ent->monster.think_die = Deco_VaseBreak;
+	Entity_SetKilledFunction(ent, Deco_VaseBreak);
 
 	Entity_SetOrigin(ent,ent->v.origin);
 	Entity_SetModel(ent,"models/deco/e2/vase01.md2");

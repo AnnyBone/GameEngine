@@ -317,8 +317,9 @@ void Area_RotateSpawn(ServerEntity_t *eArea)
 			eArea->v.avelocity[2] = eArea->local.speed;
 	}
 
+	Entity_SetBlockedFunction(eArea, Area_RotateBlocked);
+
 	eArea->v.movetype	= MOVETYPE_PUSH;
-	eArea->v.blocked	= Area_RotateBlocked;
 	eArea->v.think		= Area_RotateThink;
 	eArea->v.dNextThink	= Server.dTime+1000000000.0;
 
@@ -379,7 +380,7 @@ void Area_DoorTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
 {
 	if (eArea->local.state == STATE_UP || eArea->local.state == STATE_TOP)
 		return;
-	if((eOther->monster.iType != MONSTER_PLAYER) && eOther->v.iHealth <= 0)
+	if((eOther->Monster.iType != MONSTER_PLAYER) && eOther->v.iHealth <= 0)
 		return;
 
 	eArea->local.state = STATE_UP;
@@ -458,8 +459,8 @@ void Area_DoorSpawn(ServerEntity_t *eArea)
 	if(eArea->v.spawnflags != 32) // Toggle
 		eArea->v.TouchFunction = Area_DoorTouch;
 
-	if(eArea->local.iDamage)
-		eArea->v.blocked = Area_DoorBlocked;
+	if (eArea->local.iDamage)
+		Entity_SetBlockedFunction(eArea, Area_DoorBlocked);
 
 	eArea->v.use = Area_DoorUse;
 }
@@ -515,7 +516,7 @@ void Area_ChangeLevel(ServerEntity_t *eArea)
 
 void Area_TriggerTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
 {
-	if(eArea->v.dNextThink || ((eArea->monster.iType != MONSTER_PLAYER) && eOther->v.iHealth <= 0))
+	if(eArea->v.dNextThink || ((eArea->Monster.iType != MONSTER_PLAYER) && eOther->v.iHealth <= 0))
 		return;
 
 	eArea->v.dNextThink = Server.dTime+eArea->local.dWait;
@@ -676,7 +677,7 @@ void Area_ButtonTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
 {
 	if(eArea->local.state == STATE_UP || eArea->local.state == STATE_TOP)
 		return;
-	if((eOther->monster.iType != MONSTER_PLAYER) && eOther->v.iHealth <= 0)
+	if((eOther->Monster.iType != MONSTER_PLAYER) && eOther->v.iHealth <= 0)
 		return;
 
 	eArea->local.state = STATE_UP;
@@ -759,8 +760,8 @@ void Area_ButtonSpawn(ServerEntity_t *eArea)
 	if(eArea->v.spawnflags != 32) // Toggle
 		eArea->v.TouchFunction = Area_ButtonTouch;
 
-	if(eArea->local.iDamage)
-		eArea->v.blocked = Area_ButtonBlocked;
+	if (eArea->local.iDamage)
+		Entity_SetBlockedFunction(eArea, Area_ButtonBlocked);
 
 	eArea->v.use = Area_ButtonUse;
 }
@@ -853,7 +854,7 @@ void Area_PlatformTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
 {
 	if(eArea->local.state == STATE_UP || eArea->local.state == STATE_TOP)
 		return;
-	if((eOther->monster.iType != MONSTER_PLAYER) && eOther->v.iHealth <= 0)
+	if((eOther->Monster.iType != MONSTER_PLAYER) && eOther->v.iHealth <= 0)
 		return;
 
 	eArea->local.state = STATE_UP;
@@ -937,7 +938,7 @@ void Area_PlatformSpawn(ServerEntity_t *eArea)
 		eArea->v.TouchFunction = Area_PlatformTouch;
 
 	if(eArea->local.iDamage)
-		eArea->v.blocked = Area_PlatformBlocked;
+		Entity_SetBlockedFunction(eArea,Area_PlatformBlocked);
 
 	Area_PlatformSpawnTouchbox(eArea);
 

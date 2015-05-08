@@ -20,14 +20,15 @@ void Hurler_Die(edict_t *eHurler,edict_t *eOther);
 
 void Hurler_Spawn(edict_t *eHurler)
 {
-	Engine.Server_PrecacheResource(RESOURCE_MODEL,HURLER_MODEL_BODY);
+	Server_PrecacheModel(HURLER_MODEL_BODY);
 
 	Entity_SetModel(eHurler,HURLER_MODEL_BODY);
 
-	eHurler->monster.iType		= MONSTER_HURLER;
-	eHurler->monster.think_pain	= Hurler_Pain;
-	eHurler->monster.think_die	= Hurler_Die;
-	eHurler->monster.Think		= Hurler_Think;
+	eHurler->Monster.iType = MONSTER_HURLER;
+	eHurler->Monster.think_pain = Hurler_Pain;
+	eHurler->Monster.Think = Hurler_Think;
+
+	Entity_SetKilledFunction(eHurler, Hurler_Die);
 
 	eHurler->Physics.fMass		= 0.5f;
 	eHurler->Physics.iSolid		= SOLID_SLIDEBOX;
@@ -54,7 +55,7 @@ void Hurler_Think(edict_t *eHurler)
 {
 	edict_t *eTarget;
 
-	switch(eHurler->monster.iThink)
+	switch(eHurler->Monster.iThink)
 	{
 	case THINK_IDLE:
 		Monster_Jump(eHurler,70.0f);
@@ -79,10 +80,10 @@ void Hurler_Think(edict_t *eHurler)
 				eHurler->v.velocity[1] -= 30.0f;
 		}
 
-		if(!eHurler->monster.eEnemy)
+		if(!eHurler->Monster.eEnemy)
 		{
-			eHurler->monster.eTarget = Monster_GetTarget(eHurler);
-			if(!eHurler->monster.eTarget)
+			eHurler->Monster.eTarget = Monster_GetTarget(eHurler);
+			if(!eHurler->Monster.eTarget)
 				return;
 
 			if(Monster_SetEnemy(eHurler))
@@ -97,16 +98,16 @@ void Hurler_Think(edict_t *eHurler)
 
 			Monster_Jump(eHurler,150.0f);
 
-			Math_VectorSubtract(eHurler->monster.eEnemy->v.origin,eHurler->v.origin,vOrigin);
+			Math_VectorSubtract(eHurler->Monster.eEnemy->v.origin,eHurler->v.origin,vOrigin);
 			Math_VectorDivide(vOrigin,5.0f,vOrigin);
 			Math_VectorAdd(eHurler->v.velocity,vOrigin,eHurler->v.velocity);
 		}
 
-		if(MONSTER_GetRange(eHurler,eHurler->monster.eEnemy->v.origin) > MONSTER_RANGE_MELEE)
+		if(MONSTER_GetRange(eHurler,eHurler->Monster.eEnemy->v.origin) > MONSTER_RANGE_MELEE)
 			Monster_SetThink(eHurler,THINK_PURSUING);
 		break;
 	case THINK_PURSUING:
-		if(!eHurler->monster.eEnemy || eHurler->monster.eEnemy->v.iHealth <= 0)
+		if(!eHurler->Monster.eEnemy || eHurler->Monster.eEnemy->v.iHealth <= 0)
 		{
 			Monster_SetThink(eHurler,THINK_IDLE);
 			return;
@@ -150,7 +151,7 @@ void Hurler_Think(edict_t *eHurler)
 
 			Monster_Jump(eHurler,85.0f);
 
-			Math_VectorSubtract(eHurler->monster.eEnemy->v.origin,eHurler->v.origin,vOrigin);
+			Math_VectorSubtract(eHurler->Monster.eEnemy->v.origin,eHurler->v.origin,vOrigin);
 			Math_VectorDivide(vOrigin,2.0f,vOrigin);
 			Math_VectorAdd(eHurler->v.velocity,vOrigin,eHurler->v.velocity);
 		}
@@ -159,7 +160,7 @@ void Hurler_Think(edict_t *eHurler)
 			vec3_t	vAngles;
 
 			// Update angles. ~hogsy
-			Math_VectorSubtract(eHurler->v.origin,eHurler->monster.eEnemy->v.origin,vAngles);
+			Math_VectorSubtract(eHurler->v.origin,eHurler->Monster.eEnemy->v.origin,vAngles);
 			Math_VectorNormalize(vAngles);
 			Math_VectorInverse(vAngles);
 			Math_MVToVector(Math_VectorToAngles(vAngles),eHurler->v.angles);
@@ -174,7 +175,7 @@ void Hurler_Touch(edict_t *eHurler,edict_t *eOther)
 {
 	if(Entity_IsPlayer(eOther))
 	{
-		if(eHurler->monster.iThink != THINK_ATTACKING)
+		if(eHurler->Monster.iThink != THINK_ATTACKING)
 		{
 			Monster_SetThink(eHurler,THINK_ATTACKING);
 			return;
@@ -186,7 +187,7 @@ void Hurler_Touch(edict_t *eHurler,edict_t *eOther)
 			Entity_Damage(eOther, eHurler, 15, DAMAGE_TYPE_NONE);
 
 			// Throw it back. ~hogsy
-			Math_VectorSubtract(eHurler->monster.eEnemy->v.origin,eHurler->v.origin,vOrigin);
+			Math_VectorSubtract(eHurler->Monster.eEnemy->v.origin,eHurler->v.origin,vOrigin);
 			Math_VectorScale(vOrigin,4.0f,vOrigin);
 			Math_VectorInverse(vOrigin);
 			Math_VectorAdd(eHurler->v.velocity,vOrigin,eHurler->v.velocity);

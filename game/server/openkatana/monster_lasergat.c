@@ -40,16 +40,16 @@ void LaserGat_AimTarget(edict_t *eLaserGat,edict_t *eTarget)
 
 void LaserGat_HandleAim(edict_t *eLaserGat)
 {
-	if(eLaserGat->monster.iThink == THINK_IDLE)
+	if(eLaserGat->Monster.iThink == THINK_IDLE)
 	{
-		if(!eLaserGat->monster.eTarget)
+		if(!eLaserGat->Monster.eTarget)
 		{
 		}
 		else
-			LaserGat_AimTarget(eLaserGat,eLaserGat->monster.eTarget);
+			LaserGat_AimTarget(eLaserGat,eLaserGat->Monster.eTarget);
     }
-    else if(eLaserGat->monster.iThink == THINK_ATTACKING)
-		LaserGat_AimTarget(eLaserGat,eLaserGat->monster.eEnemy);
+    else if(eLaserGat->Monster.iThink == THINK_ATTACKING)
+		LaserGat_AimTarget(eLaserGat,eLaserGat->Monster.eEnemy);
 }
 
 void LaserGat_Touch(edict_t *eLaserGat,edict_t *eOther)
@@ -74,18 +74,18 @@ void LaserGat_Die(edict_t *eLaserGat,edict_t *eOther)
 
 void LaserGat_Think(edict_t *eLaserGat)
 {
-	switch(eLaserGat->monster.iThink)
+	switch(eLaserGat->Monster.iThink)
 	{
 	case THINK_IDLE:
         // [22/4/2014] Check if there are any targets nearby... ~hogsy
-		if(!eLaserGat->monster.iCommandList[COMMAND_ATTACK_WAIT])
+		if(!eLaserGat->Monster.iCommandList[COMMAND_ATTACK_WAIT])
 		{
-			eLaserGat->monster.eTarget = Monster_GetTarget(eLaserGat);
-			if(eLaserGat->monster.eTarget)
+			eLaserGat->Monster.eTarget = Monster_GetTarget(eLaserGat);
+			if(eLaserGat->Monster.eTarget)
 			{
 #if 0
 				// [11/6/2013] Try setting the target as an enemy... ~hogsy
-				if (Monster_GetRelationship(eLaserGat, eLaserGat->monster.eTarget) == RELATIONSHIP_HATE)
+				if (Monster_GetRelationship(eLaserGat, eLaserGat->Monster.eTarget) == RELATIONSHIP_HATE)
 				{
 					// [6/4/2013] Set think and state for next frame ~hogsy
 					Monster_SetThink(eLaserGat,THINK_ATTACKING);
@@ -94,55 +94,55 @@ void LaserGat_Think(edict_t *eLaserGat)
 				}
 #endif
 				{
-					eLaserGat->monster.eOldTarget	= eLaserGat->monster.eTarget;
-					eLaserGat->monster.eTarget		= NULL;
+					eLaserGat->Monster.eOldTarget	= eLaserGat->Monster.eTarget;
+					eLaserGat->Monster.eTarget		= NULL;
 				}
 			}
 			// [6/4/2013] TODO: Check if it's neutral and worth damaging? ~hogsy
 
-			eLaserGat->monster.iCommandList[COMMAND_ATTACK_WAIT] = 5;
+			eLaserGat->Monster.iCommandList[COMMAND_ATTACK_WAIT] = 5;
 		}
 		else
-            eLaserGat->monster.iCommandList[COMMAND_ATTACK_WAIT]--;
+            eLaserGat->Monster.iCommandList[COMMAND_ATTACK_WAIT]--;
 
-        if(!eLaserGat->monster.iCommandList[COMMAND_LOOK_WAIT])
+        if(!eLaserGat->Monster.iCommandList[COMMAND_LOOK_WAIT])
         {
-			if(eLaserGat->monster.iCommandList[COMMAND_LOOK_PITCH] == LASERGAT_LOOK_DOWN)
+			if(eLaserGat->Monster.iCommandList[COMMAND_LOOK_PITCH] == LASERGAT_LOOK_DOWN)
 				eLaserGat->v.angles[0] -= 0.5f;
-			else if(eLaserGat->monster.iCommandList[COMMAND_LOOK_YAW] == LASERGAT_LOOK_UP)
+			else if(eLaserGat->Monster.iCommandList[COMMAND_LOOK_YAW] == LASERGAT_LOOK_UP)
 				eLaserGat->v.angles[0] += 0.5f;
 
-			if(eLaserGat->monster.iCommandList[COMMAND_LOOK_YAW] == LASERGAT_LOOK_LEFT)
+			if(eLaserGat->Monster.iCommandList[COMMAND_LOOK_YAW] == LASERGAT_LOOK_LEFT)
 				eLaserGat->v.angles[1] += 0.5f;
-			else if(eLaserGat->monster.iCommandList[COMMAND_LOOK_YAW] == LASERGAT_LOOK_RIGHT)
+			else if(eLaserGat->Monster.iCommandList[COMMAND_LOOK_YAW] == LASERGAT_LOOK_RIGHT)
 				eLaserGat->v.angles[1] -= 0.5f;
 
 			if(rand()%125 == 1)
 			{
-				eLaserGat->monster.iCommandList[COMMAND_LOOK_WAIT] = LASERGAT_MAX_WAIT;
+				eLaserGat->Monster.iCommandList[COMMAND_LOOK_WAIT] = LASERGAT_MAX_WAIT;
 				if(rand()%2 == 1)
-					eLaserGat->monster.iCommandList[COMMAND_LOOK_PITCH]	= LASERGAT_LOOK_UP;
+					eLaserGat->Monster.iCommandList[COMMAND_LOOK_PITCH]	= LASERGAT_LOOK_UP;
 				else
-					eLaserGat->monster.iCommandList[COMMAND_LOOK_PITCH]	= LASERGAT_LOOK_DOWN;
+					eLaserGat->Monster.iCommandList[COMMAND_LOOK_PITCH]	= LASERGAT_LOOK_DOWN;
 
 				if(rand()%2 == 1)
-					eLaserGat->monster.iCommandList[COMMAND_LOOK_YAW]	= LASERGAT_LOOK_LEFT;
+					eLaserGat->Monster.iCommandList[COMMAND_LOOK_YAW]	= LASERGAT_LOOK_LEFT;
 				else
-					eLaserGat->monster.iCommandList[COMMAND_LOOK_YAW]	= LASERGAT_LOOK_RIGHT;
+					eLaserGat->Monster.iCommandList[COMMAND_LOOK_YAW]	= LASERGAT_LOOK_RIGHT;
 			}
         }
 		break;
 	case THINK_ATTACKING:
 		{
-			if(!eLaserGat->monster.eEnemy)
+			if(!eLaserGat->Monster.eEnemy)
 			{
 				Monster_SetThink(eLaserGat,THINK_IDLE);
 				return;
 			}
-			else if(!eLaserGat->monster.eEnemy->v.iHealth)
+			else if(!eLaserGat->Monster.eEnemy->v.iHealth)
 			{
 				// [6/4/2013] TODO: Add a delay here until we actually stop shooting? Means we might gib it which would be kewl... ~hogsy
-				eLaserGat->monster.eEnemy = NULL;
+				eLaserGat->Monster.eEnemy = NULL;
 				break;
 			}
 
@@ -190,9 +190,9 @@ void LaserGat_BaseDie(edict_t *eBase,edict_t *eOther)
 
 void LaserGat_Spawn(edict_t *eLaserGat)
 {
-	Engine.Server_PrecacheResource(RESOURCE_MODEL,LASERGAT_MODEL_BASE);
-	Engine.Server_PrecacheResource(RESOURCE_MODEL,LASERGAT_MODEL_BROKEN);
-	Engine.Server_PrecacheResource(RESOURCE_MODEL,LASERGAT_MODEL_HEAD);
+	Server_PrecacheModel(LASERGAT_MODEL_BASE);
+	Server_PrecacheModel(LASERGAT_MODEL_BROKEN);
+	Server_PrecacheModel(LASERGAT_MODEL_HEAD);
 
 	// [11/6/2013] Get our weapon ~hogsy
 	Item_AddInventory(Item_GetItem(WEAPON_LASERS),eLaserGat);
@@ -202,15 +202,16 @@ void LaserGat_Spawn(edict_t *eLaserGat)
 	eLaserGat->v.iHealth		= 150;
 	eLaserGat->v.bTakeDamage	= true;
 
-	eLaserGat->monster.think_die		= LaserGat_Die;
-//	eLaserGat->monster.think_pain		= LaserGat_Pain;
-	eLaserGat->monster.Think			= LaserGat_Think;
-	eLaserGat->monster.fViewDistance	= MONSTER_RANGE_MEDIUM;
-	eLaserGat->monster.iType			= MONSTER_LASERGAT;
+	Entity_SetKilledFunction(eLaserGat, LaserGat_Die);
+
+//	eLaserGat->Monster.think_pain		= LaserGat_Pain;
+	eLaserGat->Monster.Think			= LaserGat_Think;
+	eLaserGat->Monster.fViewDistance	= MONSTER_RANGE_MEDIUM;
+	eLaserGat->Monster.iType			= MONSTER_LASERGAT;
 
 	// [28/6/2013] Make this random so not all turrets start looking in the same directions ~hogsy
-	eLaserGat->monster.iCommandList[COMMAND_LOOK_PITCH]	= rand()%2;
-	eLaserGat->monster.iCommandList[COMMAND_LOOK_YAW]	= rand()%2;
+	eLaserGat->Monster.iCommandList[COMMAND_LOOK_PITCH]	= rand()%2;
+	eLaserGat->Monster.iCommandList[COMMAND_LOOK_YAW]	= rand()%2;
 
 	// [6/6/2013] Set our physical properties ~hogsy
 	eLaserGat->Physics.iSolid		= SOLID_BBOX;
@@ -228,20 +229,19 @@ void LaserGat_Spawn(edict_t *eLaserGat)
 		edict_t	*eBase = Entity_Spawn();
 		if(eBase)
 		{
-			eBase->v.cClassname		= "lasergat_base";
-			eBase->v.iHealth		= 100;
-			eBase->v.movetype		= MOVETYPE_NONE;
-			eBase->v.bTakeDamage	= true;
+			eBase->v.cClassname = "lasergat_base";
+			eBase->v.iHealth = 100;
+			eBase->v.movetype = MOVETYPE_NONE;
+			eBase->v.bTakeDamage = true;
 
 			// Physical properties
-			eBase->Physics.iSolid		= SOLID_BBOX;
-			eBase->Physics.fGravity		= 0;
-			eBase->Physics.fFriction	= 0;
-			eBase->Physics.fMass		= 0;
+			eBase->Physics.iSolid = SOLID_BBOX;
+			eBase->Physics.fGravity = 0;
+			eBase->Physics.fFriction = 0;
+			eBase->Physics.fMass = 0;
 
-			// [10/3/2013] This was pain rather than die, fixed ~hogsy
-			eBase->monster.think_die	= LaserGat_BaseDie;
-			eBase->monster.think_pain	= LaserGat_BasePain;
+			Entity_SetKilledFunction(eBase, LaserGat_BaseDie);
+			Entity_SetDamagedFunction(eBase, LaserGat_BasePain);
 
 			Entity_SetModel(eBase,LASERGAT_MODEL_BASE);
 			Entity_SetSize(eBase,-22.70f,-19.60f,-18.70f,19.66f,19.28f,3.71f);

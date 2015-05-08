@@ -146,7 +146,7 @@ void C4Vizatergo_C4BallTouch(edict_t *ent,edict_t *eOther)
 #else
 	// [12/12/2012] New method. Explode if touches monster / another player. ~hogsy
 
-	if(	eOther != ent->local.eOwner && eOther->monster.iType)
+	if(	eOther != ent->local.eOwner && eOther->Monster.iType)
 		C4Vizatergo_Explode(ent);
 	else if(eOther->Physics.iSolid == SOLID_BSP && ent->v.movetype != MOVETYPE_NONE)
 	{

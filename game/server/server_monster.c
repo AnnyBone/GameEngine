@@ -184,7 +184,7 @@ bool Monster_MoveStep(edict_t *ent,vec3_t move,bool bRelink)
 
 			if(i == 0)
 			{
-				dz = ent->v.origin[2]-ent->monster.vTarget[2];
+				dz = ent->v.origin[2]-ent->Monster.vTarget[2];
 				if(dz > 40)
 					vNewOrigin[2] -= 8;
 				else if(dz < 30)
@@ -390,16 +390,16 @@ void Monster_NewChaseDirection(edict_t *ent,vec3_t target,float dist)
 
 bool Monster_SetThink(edict_t *eMonster,MonsterThink_t mtThink)
 {
-	if(eMonster->monster.iThink == mtThink)
+	if(eMonster->Monster.iThink == mtThink)
 		// [4/2/2013] Return false, then we might decide it's time for a different state ~hogsy
 		return false;
-	else if(eMonster->monster.iState >= STATE_NONE)
+	else if(eMonster->Monster.iState >= STATE_NONE)
 	{
 		Engine.Con_Warning("Attempted to set a think without a state for %s!\n",eMonster->v.cClassname);
 		return false;
 	}
 
-	eMonster->monster.iThink = mtThink;
+	eMonster->Monster.iThink = mtThink;
 
 	return true;
 }
@@ -408,25 +408,25 @@ bool Monster_SetThink(edict_t *eMonster,MonsterThink_t mtThink)
 */
 bool Monster_SetState(ServerEntity_t *eMonster, MonsterState_t msState)
 {
-	if(eMonster->monster.iState == msState)
+	if(eMonster->Monster.iState == msState)
 		return true;
 
 	switch(msState)
 	{
 	case STATE_AWAKE:
-		if(eMonster->monster.iState == STATE_DEAD)
+		if(eMonster->Monster.iState == STATE_DEAD)
 			return false;
 
-		eMonster->monster.iState = STATE_AWAKE;
+		eMonster->Monster.iState = STATE_AWAKE;
 		break;
 	case STATE_ASLEEP:
-		if(eMonster->monster.iState == STATE_DEAD)
+		if(eMonster->Monster.iState == STATE_DEAD)
 			return false;
 
-		eMonster->monster.iState = STATE_ASLEEP;
+		eMonster->Monster.iState = STATE_ASLEEP;
 		break;
 	case STATE_DEAD:
-		eMonster->monster.iState = STATE_DEAD;
+		eMonster->Monster.iState = STATE_DEAD;
 		break;
 	default:
 		Engine.Con_Warning("Tried to set an unknown state for %s (%i)!\n",eMonster->v.cClassname,msState);
@@ -440,7 +440,7 @@ bool Monster_SetState(ServerEntity_t *eMonster, MonsterState_t msState)
 */
 void Monster_Killed(ServerEntity_t *eTarget, ServerEntity_t *eAttacker)
 {
-	if(eTarget->monster.iState == STATE_DEAD)
+	if(eTarget->Monster.iState == STATE_DEAD)
 		return;
 
 	if(Entity_IsMonster(eTarget))
@@ -531,11 +531,11 @@ void Monster_Killed(ServerEntity_t *eTarget, ServerEntity_t *eAttacker)
     }
 #endif
 
-	if(eTarget->monster.think_die)
-		eTarget->monster.think_die(eTarget,eAttacker);
-
 	// Update our current state.
-	eTarget->monster.iState = STATE_DEAD;
+	eTarget->Monster.iState = STATE_DEAD;
+
+	if (eTarget->local.KilledFunction)
+		eTarget->local.KilledFunction(eTarget, eAttacker);
 }
 
 void Monster_Damage(ServerEntity_t *target, ServerEntity_t *inflictor, int iDamage, int iDamageType)
@@ -584,14 +584,14 @@ void Monster_Damage(ServerEntity_t *target, ServerEntity_t *inflictor, int iDama
 
 	if(Entity_IsMonster(target))
 		// [27/4/2014] Automatically wake us up if asleep ~hogsy
-		if(target->monster.iState == STATE_ASLEEP)
+		if(target->Monster.iState == STATE_ASLEEP)
 			Monster_SetState(target,STATE_AWAKE);
 
 	target->v.iHealth -= iDamage;
 	if(target->v.iHealth <= 0)
 		Monster_Killed(target,inflictor);
-	else if(target->monster.think_pain)
-		target->monster.think_pain(target,inflictor);
+	else if(target->Monster.think_pain)
+		target->Monster.think_pain(target,inflictor);
 }
 
 void MONSTER_WaterMove(edict_t *ent)
@@ -697,15 +697,15 @@ edict_t *Monster_GetTarget(edict_t *eMonster)
 {
 	edict_t	*eTargets;
 
-	eTargets = Engine.Server_FindRadius(eMonster->v.origin,10000.0f);	//eMonster->monster.fViewDistance);
+	eTargets = Engine.Server_FindRadius(eMonster->v.origin,10000.0f);	//eMonster->Monster.fViewDistance);
 
 	do
 	{
 		// [6/6/2013] Only return if it's a new target and a monster type! ~hogsy
 		if(	(eMonster != eTargets)																&&	// Can't target ourself.
 			(eTargets != eMonster->local.eOwner)												&&	// Can't target owner.
-			(eTargets != eMonster->monster.eTarget && eTargets != eMonster->monster.eOldTarget) &&	// Can't target an old target.
-			(eTargets->monster.iType != MONSTER_NONE))												// Has to be a monster.
+			(eTargets != eMonster->Monster.eTarget && eTargets != eMonster->Monster.eOldTarget) &&	// Can't target an old target.
+			(eTargets->Monster.iType != MONSTER_NONE))												// Has to be a monster.
 			// [11/6/2013] Quick crap thrown in to check if the target is visible or not... ~hogsy
 			if(Monster_IsVisible(eMonster,eTargets))
 				return eTargets;
@@ -720,24 +720,24 @@ void Monster_SetTargets(edict_t *eMonster)
 {
 	int	iRelationship;
 
-	if(!eMonster->monster.eTarget)
+	if(!eMonster->Monster.eTarget)
 	{
-		eMonster->monster.eTarget = Monster_GetTarget(eMonster);
-		if(eMonster->monster.eTarget)
+		eMonster->Monster.eTarget = Monster_GetTarget(eMonster);
+		if(eMonster->Monster.eTarget)
 		{
-			if((eMonster->monster.eTarget == eMonster->monster.eFriend) || (eMonster->monster.eTarget == eMonster->monster.eEnemy))
+			if((eMonster->Monster.eTarget == eMonster->Monster.eFriend) || (eMonster->Monster.eTarget == eMonster->Monster.eEnemy))
 				return;
 
-			iRelationship = Monster_GetRelationship(eMonster,eMonster->monster.eTarget);
+			iRelationship = Monster_GetRelationship(eMonster,eMonster->Monster.eTarget);
 			if(iRelationship == RELATIONSHIP_LIKE)
 			{
-				eMonster->monster.eFriend = eMonster->monster.eTarget;
-				eMonster->monster.eTarget = NULL;
+				eMonster->Monster.eFriend = eMonster->Monster.eTarget;
+				eMonster->Monster.eTarget = NULL;
 			}
 			else if(iRelationship == RELATIONSHIP_HATE)
 			{
-				eMonster->monster.eEnemy	= eMonster->monster.eTarget;
-				eMonster->monster.eTarget	= NULL;
+				eMonster->Monster.eEnemy	= eMonster->Monster.eTarget;
+				eMonster->Monster.eTarget	= NULL;
 			}
 		}
 	}
@@ -754,7 +754,7 @@ void Monster_Frame(edict_t *eMonster)
 	int i;
 
 	// [19/2/2013] If it's not a monster then return! ~hogsy
-	if(eMonster->monster.iType < MONSTER_VEHICLE)
+	if(eMonster->Monster.iType < MONSTER_VEHICLE)
 		return;
 
 	Entity_CheckFrames(eMonster);
@@ -770,42 +770,42 @@ void Monster_Frame(edict_t *eMonster)
 	else if(!(eMonster->v.flags & FL_ONGROUND))
 		eMonster->local.fJumpVelocity = eMonster->v.velocity[2];
 
-	switch(eMonster->monster.iState)
+	switch(eMonster->Monster.iState)
 	{
 	case STATE_DEAD:
 		// [6/8/2012] Dead creatures don't have emotions... ~hogsy
 		// [23/9/2012] Simplified ~hogsy
 		for(i = 0; i < EMOTION_NONE; i++)
-			eMonster->monster.fEmotion[i] = 0;
+			eMonster->Monster.fEmotion[i] = 0;
 
 		// [20/9/2012] TODO: Check if we should gib? ~hogsy
 		break;
 	case STATE_ASLEEP:
-		eMonster->monster.fEmotion[EMOTION_BOREDOM]++;
+		eMonster->Monster.fEmotion[EMOTION_BOREDOM]++;
 		break;
 	case STATE_AWAKE:
-		switch(eMonster->monster.iThink)
+		switch(eMonster->Monster.iThink)
 		{
 		case THINK_WANDERING:
-			eMonster->monster.fEmotion[EMOTION_BOREDOM]--;
-			eMonster->monster.fEmotion[EMOTION_ANGER]--;
+			eMonster->Monster.fEmotion[EMOTION_BOREDOM]--;
+			eMonster->Monster.fEmotion[EMOTION_ANGER]--;
 			break;
 		case THINK_ATTACKING:
-			eMonster->monster.fEmotion[EMOTION_BOREDOM]--;
-			eMonster->monster.fEmotion[EMOTION_ANGER]++;
+			eMonster->Monster.fEmotion[EMOTION_BOREDOM]--;
+			eMonster->Monster.fEmotion[EMOTION_ANGER]++;
 			break;
 		case THINK_FLEEING:
-			eMonster->monster.fEmotion[EMOTION_BOREDOM]--;
-			if(eMonster->monster.fEmotion[EMOTION_ANGER] >= 50.0f)
-				eMonster->monster.fEmotion[EMOTION_FEAR]--;
+			eMonster->Monster.fEmotion[EMOTION_BOREDOM]--;
+			if(eMonster->Monster.fEmotion[EMOTION_ANGER] >= 50.0f)
+				eMonster->Monster.fEmotion[EMOTION_FEAR]--;
 			else
-				eMonster->monster.fEmotion[EMOTION_FEAR]++;
+				eMonster->Monster.fEmotion[EMOTION_FEAR]++;
 			break;
 		case THINK_PURSUING:
 			// [1/9/2013] TODO: Handle emotions... ~hogsy
 			break;
 		case THINK_IDLE:
-			eMonster->monster.fEmotion[EMOTION_BOREDOM]++;
+			eMonster->Monster.fEmotion[EMOTION_BOREDOM]++;
 			break;
 		default:
 			Engine.Con_Warning("No think was set for %s at spawn!\n",eMonster->v.cClassname);
@@ -822,8 +822,8 @@ void Monster_Frame(edict_t *eMonster)
 	// [30/6/2013] Moved down here ~hogsy
 
 
-	if(eMonster->monster.Think)
-		eMonster->monster.Think(eMonster);
+	if(eMonster->Monster.Think)
+		eMonster->Monster.Think(eMonster);
 }
 #endif
 
@@ -863,9 +863,9 @@ void Monster_Spawn(edict_t *eMonster)
 	// Reset its emotions...
 /*	for (i = 0; i < EMOTION_NONE; i++)
 	{
-		eMonster->monster.meEmotion[i].dResetDelay = Server.dTime + MONSTER_EMOTION_RESET;
-		eMonster->monster.meEmotion[i].iEmotion = 0;
-		eMonster->monster.meEmotion[i].iPriority = 0;
+		eMonster->Monster.meEmotion[i].dResetDelay = Server.dTime + MONSTER_EMOTION_RESET;
+		eMonster->Monster.meEmotion[i].iEmotion = 0;
+		eMonster->Monster.meEmotion[i].iPriority = 0;
 	}*/
 }
 
@@ -881,49 +881,49 @@ void Monster_Frame(edict_t *eMonster)
 	Entity_CheckFrames(eMonster);
 
 	/*
-	switch (eMonster->monster.iState)
+	switch (eMonster->Monster.iState)
 	{
 	case STATE_ASLEEP:
-		eMonster->monster.meEmotion[EMOTION_ANGER].iEmotion--;
-		eMonster->monster.meEmotion[EMOTION_BOREDOM].iEmotion++;
-		eMonster->monster.meEmotion[EMOTION_CONTEMPT].iEmotion--;
-		eMonster->monster.meEmotion[EMOTION_DISGUST].iEmotion--;
-		eMonster->monster.meEmotion[EMOTION_FEAR].iEmotion--;
-		eMonster->monster.meEmotion[EMOTION_INTEREST].iEmotion--;
-		eMonster->monster.meEmotion[EMOTION_JOY].iEmotion--;
+		eMonster->Monster.meEmotion[EMOTION_ANGER].iEmotion--;
+		eMonster->Monster.meEmotion[EMOTION_BOREDOM].iEmotion++;
+		eMonster->Monster.meEmotion[EMOTION_CONTEMPT].iEmotion--;
+		eMonster->Monster.meEmotion[EMOTION_DISGUST].iEmotion--;
+		eMonster->Monster.meEmotion[EMOTION_FEAR].iEmotion--;
+		eMonster->Monster.meEmotion[EMOTION_INTEREST].iEmotion--;
+		eMonster->Monster.meEmotion[EMOTION_JOY].iEmotion--;
 
 		
 		break;
 	case STATE_AWAKE:
-		switch (eMonster->monster.iThink)
+		switch (eMonster->Monster.iThink)
 		{
 		case THINK_ATTACKING:
-			eMonster->monster.meEmotion[EMOTION_ANGER].iEmotion++;
-			eMonster->monster.meEmotion[EMOTION_BOREDOM].iEmotion--;
-			eMonster->monster.meEmotion[EMOTION_CONTEMPT].iEmotion++;
-			eMonster->monster.meEmotion[EMOTION_DISGUST].iEmotion--;
-			eMonster->monster.meEmotion[EMOTION_FEAR].iEmotion++;
-			eMonster->monster.meEmotion[EMOTION_INTEREST].iEmotion--;
-			eMonster->monster.meEmotion[EMOTION_JOY].iEmotion--;
+			eMonster->Monster.meEmotion[EMOTION_ANGER].iEmotion++;
+			eMonster->Monster.meEmotion[EMOTION_BOREDOM].iEmotion--;
+			eMonster->Monster.meEmotion[EMOTION_CONTEMPT].iEmotion++;
+			eMonster->Monster.meEmotion[EMOTION_DISGUST].iEmotion--;
+			eMonster->Monster.meEmotion[EMOTION_FEAR].iEmotion++;
+			eMonster->Monster.meEmotion[EMOTION_INTEREST].iEmotion--;
+			eMonster->Monster.meEmotion[EMOTION_JOY].iEmotion--;
 			break;
 		case THINK_FLEEING:
-			eMonster->monster.meEmotion[EMOTION_ANGER].iEmotion--;
-			eMonster->monster.meEmotion[EMOTION_BOREDOM].iEmotion--;
-			eMonster->monster.meEmotion[EMOTION_CONTEMPT].iEmotion++;
-			eMonster->monster.meEmotion[EMOTION_DISGUST].iEmotion--;
-			eMonster->monster.meEmotion[EMOTION_FEAR].iEmotion++;
-			eMonster->monster.meEmotion[EMOTION_INTEREST].iEmotion--;
-			eMonster->monster.meEmotion[EMOTION_JOY].iEmotion--;
+			eMonster->Monster.meEmotion[EMOTION_ANGER].iEmotion--;
+			eMonster->Monster.meEmotion[EMOTION_BOREDOM].iEmotion--;
+			eMonster->Monster.meEmotion[EMOTION_CONTEMPT].iEmotion++;
+			eMonster->Monster.meEmotion[EMOTION_DISGUST].iEmotion--;
+			eMonster->Monster.meEmotion[EMOTION_FEAR].iEmotion++;
+			eMonster->Monster.meEmotion[EMOTION_INTEREST].iEmotion--;
+			eMonster->Monster.meEmotion[EMOTION_JOY].iEmotion--;
 			break;
 		case THINK_PURSUING:
 		case THINK_IDLE:
-			eMonster->monster.meEmotion[EMOTION_ANGER].iEmotion--;
-			eMonster->monster.meEmotion[EMOTION_BOREDOM].iEmotion++;
-			eMonster->monster.meEmotion[EMOTION_CONTEMPT].iEmotion--;
-			eMonster->monster.meEmotion[EMOTION_DISGUST].iEmotion--;
-			eMonster->monster.meEmotion[EMOTION_FEAR].iEmotion--;
-			eMonster->monster.meEmotion[EMOTION_INTEREST].iEmotion--;
-			eMonster->monster.meEmotion[EMOTION_JOY].iEmotion--;
+			eMonster->Monster.meEmotion[EMOTION_ANGER].iEmotion--;
+			eMonster->Monster.meEmotion[EMOTION_BOREDOM].iEmotion++;
+			eMonster->Monster.meEmotion[EMOTION_CONTEMPT].iEmotion--;
+			eMonster->Monster.meEmotion[EMOTION_DISGUST].iEmotion--;
+			eMonster->Monster.meEmotion[EMOTION_FEAR].iEmotion--;
+			eMonster->Monster.meEmotion[EMOTION_INTEREST].iEmotion--;
+			eMonster->Monster.meEmotion[EMOTION_JOY].iEmotion--;
 			break;
 		case THINK_WANDERING:
 			break;
@@ -935,35 +935,35 @@ void Monster_Frame(edict_t *eMonster)
 		break;
 	}
 
-	if (eMonster->monster.iState != STATE_DEAD)
+	if (eMonster->Monster.iState != STATE_DEAD)
 	{
 		for (i = 0; i < EMOTION_NONE; i++)
 		{
 			// Keep these within reasonable limits...
-			if (eMonster->monster.meEmotion[i].iEmotion >= 100)
+			if (eMonster->Monster.meEmotion[i].iEmotion >= 100)
 			{
 				if (!Monster_EmotionReset(eMonster, i))
-					eMonster->monster.meEmotion[i].iEmotion = 100;
+					eMonster->Monster.meEmotion[i].iEmotion = 100;
 			}
-			else if (eMonster->monster.meEmotion[i].iEmotion <= -100)
+			else if (eMonster->Monster.meEmotion[i].iEmotion <= -100)
 			{
 				if (!Monster_EmotionReset(eMonster, i))
-					eMonster->monster.meEmotion[i].iEmotion = -100;
+					eMonster->Monster.meEmotion[i].iEmotion = -100;
 			}
 
 #ifdef MONSTER_DEBUG
 			Engine.Con_DPrintf("EMOTION %i: %i %f (%s)\n",
 				i,
-				eMonster->monster.meEmotion[i].iEmotion,
-				eMonster->monster.meEmotion[i].dResetDelay,
+				eMonster->Monster.meEmotion[i].iEmotion,
+				eMonster->Monster.meEmotion[i].dResetDelay,
 				eMonster->v.cClassname);
 #endif
 		}
 	}
 	*/
 
-	if (eMonster->monster.Think)
-		eMonster->monster.Think(eMonster);
+	if (eMonster->Monster.Think)
+		eMonster->Monster.Think(eMonster);
 }
 
 /*
@@ -982,11 +982,11 @@ void Monster_Frame(edict_t *eMonster)
 */
 bool Monster_EmotionReset(edict_t *eMonster, int iEmotion)
 {
-/*	if (eMonster->monster.meEmotion[iEmotion].dResetDelay > Server.dTime)
+/*	if (eMonster->Monster.meEmotion[iEmotion].dResetDelay > Server.dTime)
 	{
-		eMonster->monster.meEmotion[iEmotion].iEmotion = 0;
+		eMonster->Monster.meEmotion[iEmotion].iEmotion = 0;
 
-		eMonster->monster.meEmotion[iEmotion].dResetDelay = Server.dTime + MONSTER_EMOTION_RESET;
+		eMonster->Monster.meEmotion[iEmotion].dResetDelay = Server.dTime + MONSTER_EMOTION_RESET;
 
 #ifdef MONSTER_DEBUG
 		Engine.Con_DPrintf("Reset emotional state for %s\n", eMonster->v.cClassname);
@@ -1009,7 +1009,7 @@ int	Monster_GetRelationship(edict_t *eMonster, edict_t *eTarget)
 {
 	int	i;
 
-	if (!eMonster->monster.iType)
+	if (!eMonster->Monster.iType)
 	{
 		Engine.Con_Warning("Attempted to get a relationship, but no monster type set! (%s)\n", eMonster->v.cClassname);
 		return RELATIONSHIP_NEUTRAL;
@@ -1023,8 +1023,8 @@ int	Monster_GetRelationship(edict_t *eMonster, edict_t *eTarget)
 			break;
 
 		// [15/12/2013] Fixed a little mistake here ~hogsy
-		if ((eMonster->monster.iType == MonsterRelationship[i].iFirstType) &&
-			(eTarget->monster.iType == MonsterRelationship[i].iSecondType))
+		if ((eMonster->Monster.iType == MonsterRelationship[i].iFirstType) &&
+			(eTarget->Monster.iType == MonsterRelationship[i].iSecondType))
 			return MonsterRelationship[i].iRelationship;
 	}
 
@@ -1106,8 +1106,8 @@ void Monster_Jump(edict_t *eMonster,float fVelocity)
 		return;
 	
 	// Allow the monster to add additional sounds/movement if required.
-	if (eMonster->monster.Jump)
-		eMonster->monster.Jump(eMonster);
+	if (eMonster->Monster.Jump)
+		eMonster->Monster.Jump(eMonster);
 
 	eMonster->v.flags		-= FL_ONGROUND;
 	eMonster->v.velocity[2]	= fVelocity;

@@ -111,10 +111,10 @@ void Inmater_Die(ServerEntity_t *eInmater, ServerEntity_t *eOther)
 
 void Inmater_Think(ServerEntity_t *eInmater)
 {
-	switch(eInmater->monster.iState)
+	switch(eInmater->Monster.iState)
 	{
 	case STATE_ASLEEP:
-		//if (eInmater->monster.meEmotion[EMOTION_BOREDOM].iEmotion > INMATER_MAX_BOREDOM)
+		//if (eInmater->Monster.meEmotion[EMOTION_BOREDOM].iEmotion > INMATER_MAX_BOREDOM)
 		{
 			Monster_SetState(eInmater,STATE_AWAKE);
 			Monster_SetThink(eInmater,THINK_WANDERING);
@@ -122,7 +122,7 @@ void Inmater_Think(ServerEntity_t *eInmater)
 		}
 		break;
 	case STATE_AWAKE:
-		switch(eInmater->monster.iThink)
+		switch(eInmater->Monster.iThink)
 		{
 		case THINK_IDLE:
 			if(!eInmater->local.dAnimationTime || (eInmater->local.iAnimationCurrent == eInmater->local.iAnimationEnd))
@@ -145,17 +145,18 @@ void Inmater_Spawn(ServerEntity_t *eInmater)
 
 	Entity_SetPhysics(eInmater, SOLID_SLIDEBOX, 3.0f, 4.5f);
 
-	eInmater->monster.iType = MONSTER_INMATER;
-	eInmater->monster.Think = Inmater_Think;
-	eInmater->monster.think_pain = Inmater_Pain;
-	eInmater->monster.think_die = Inmater_Die;
+	eInmater->Monster.iType = MONSTER_INMATER;
+	eInmater->Monster.Think = Inmater_Think;
+	eInmater->Monster.think_pain = Inmater_Pain;
+
+	Entity_SetKilledFunction(eInmater, Inmater_Die);
 
 	eInmater->v.bTakeDamage = true;
 	eInmater->v.movetype = MOVETYPE_STEP;
 	eInmater->v.iHealth = INMATER_MAX_HEALTH;
-	eInmater->local.iMaxHealth = INMATER_MAX_HEALTH;
 	eInmater->v.netname = "Inmater";
 	eInmater->v.frame = 0;
+	eInmater->local.iMaxHealth = INMATER_MAX_HEALTH;
 
 	Monster_SetState(eInmater, STATE_AWAKE);
 	Monster_SetThink(eInmater, THINK_IDLE);

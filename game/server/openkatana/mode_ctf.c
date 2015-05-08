@@ -117,7 +117,7 @@ void CTF_FlagTouch(edict_t *ent,edict_t *other)
 	// [23/2/2012] Revised ~hogsy
 	/*	Don't let us pick this up if we're either not a client
 		or we are dead.											*/
-	if(other->monster.iType != MONSTER_PLAYER || other->v.iHealth <= 0)
+	if(other->Monster.iType != MONSTER_PLAYER || other->v.iHealth <= 0)
 		return;
 	else if(other->local.flag && other->local.flag->local.style != ent->local.style)
 	{
@@ -218,7 +218,7 @@ void CTF_FlagSpawn(edict_t *eFlag)
 		break;
 	}
 
-	Engine.Server_PrecacheResource(RESOURCE_MODEL,eFlag->v.model);
+	Server_PrecacheModel(eFlag->v.model);
 	Server_PrecacheSound(eFlag->v.noise);
 	Server_PrecacheSound("ctf/flagtaken.wav");
 

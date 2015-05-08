@@ -183,7 +183,7 @@ edict_t *Entity_SpawnPoint(edict_t *eEntity,int iType)
 
 /*	Simple function for checking if an entity can be damaged or not.
 */
-bool Entity_CanDamage(edict_t *eEntity,edict_t *eTarget, int iDamageType)
+bool Entity_CanDamage(ServerEntity_t *eEntity, ServerEntity_t *eTarget, int iDamageType)
 {
 	// Can't damage people on the same team.
 	if(eEntity->local.pTeam && (eEntity->local.pTeam == eTarget->local.pTeam))
@@ -217,23 +217,23 @@ void Entity_Damage(ServerEntity_t *seEntity, ServerEntity_t *seInflictor, int iD
 	seEntity->v.iHealth -= iDamage;
 	if (seEntity->v.iHealth <= 0)
 	{
-		if (seEntity->v.KilledFunction)
-			seEntity->v.KilledFunction(seEntity);
+		if (seEntity->local.KilledFunction)
+			seEntity->local.KilledFunction(seEntity, seInflictor);
 		return;
 	}
 
 	if (seEntity->v.DamagedFunction)
-		seEntity->v.DamagedFunction(seEntity);
+		seEntity->v.DamagedFunction(seEntity, seInflictor);
 }
 
 /*	Damage entities within a specific radius.
 */
-void Entity_RadiusDamage(edict_t *eInflictor,float fRadius,int iDamage,int iDamageType)
+void Entity_RadiusDamage(ServerEntity_t *eInflictor, float fRadius, int iDamage, int iDamageType)
 {
 	int		i;
 	float	fDistance;
-	vec3_t	vOrigin;
-	edict_t *eTarget = Engine.Server_FindRadius(eInflictor->v.origin,fRadius);
+	MathVector3f_t	vOrigin;
+	ServerEntity_t *eTarget = Engine.Server_FindRadius(eInflictor->v.origin, fRadius);
 
 	Engine.WriteByte(MSG_BROADCAST,SVC_TEMPENTITY);
 	Engine.WriteByte(MSG_BROADCAST,CTE_EXPLOSION);
@@ -372,7 +372,7 @@ void Entity_Animate(edict_t *eEntity,EntityFrame_t *efAnimation)
 */
 bool Entity_IsPlayer(ServerEntity_t *eEntity)
 {
-	if(eEntity->monster.iType == MONSTER_PLAYER)
+	if(eEntity->Monster.iType == MONSTER_PLAYER)
 		return true;
 
 	return false;
@@ -382,7 +382,7 @@ bool Entity_IsPlayer(ServerEntity_t *eEntity)
 */
 bool Entity_IsMonster(ServerEntity_t *eEntity)
 {
-	if((eEntity->monster.iType != MONSTER_PLAYER) && (eEntity->monster.iType > MONSTER_VEHICLE))
+	if((eEntity->Monster.iType != MONSTER_PLAYER) && (eEntity->Monster.iType > MONSTER_VEHICLE))
 		return true;
 
 	return false;

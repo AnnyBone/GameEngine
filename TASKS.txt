@@ -12,7 +12,5 @@ Generate vertex normals.
 
 Can't jump while crouching. This needs to be modified.
 
-Update all monster thinks to use the new think functions.
-
 Want to find things to do? Terms to search for...
 	TODO

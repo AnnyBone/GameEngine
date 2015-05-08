@@ -80,8 +80,9 @@ void Entity_AddFlags(edict_t *eEntity, int iFlags);
 void Entity_RemoveFlags(edict_t *eEntity, int iFlags);
 void Entity_ClearFlags(edict_t *eEntity, int iFlags);
 
-#define Entity_SetKilledFunction(a,b) (a->v.KilledFunction = b)
+#define Entity_SetKilledFunction(a,b) (a->local.KilledFunction = b)
 #define Entity_SetDamagedFunction(a,b) (a->v.DamagedFunction = b)
+#define	Entity_SetBlockedFunction(a,b) (a->v.BlockedFunction = b)
 
 #define	ENTITY_REMOVE(a)	{	Entity_Remove(a);	return;	}
 

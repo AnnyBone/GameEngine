@@ -168,26 +168,26 @@ void Weapon_Precache(void)
 {
 #ifdef OPENKATANA
 	// [11/5/2013] Model precaches ~eukos
-	Engine.Server_PrecacheResource(RESOURCE_MODEL,DAIKATANA_MODEL_VIEW);
-	Engine.Server_PrecacheResource(RESOURCE_MODEL,"models/weapons/v_ionblaster.md2");
-	Engine.Server_PrecacheResource(RESOURCE_MODEL,"models/weapons/v_c4.md2");
-	Engine.Server_PrecacheResource(RESOURCE_MODEL,"models/weapons/v_shotcycler.md2");
-	Engine.Server_PrecacheResource(RESOURCE_MODEL,"models/weapons/v_sidewinder.md2");
-	Engine.Server_PrecacheResource(RESOURCE_MODEL,"models/weapons/v_shockwave.md2");
+	Server_PrecacheModel(DAIKATANA_MODEL_VIEW);
+	Server_PrecacheModel("models/weapons/v_ionblaster.md2");
+	Server_PrecacheModel("models/weapons/v_c4.md2");
+	Server_PrecacheModel("models/weapons/v_shotcycler.md2");
+	Server_PrecacheModel("models/weapons/v_sidewinder.md2");
+	Server_PrecacheModel("models/weapons/v_shockwave.md2");
 	// TEMP START
-	Engine.Server_PrecacheResource(RESOURCE_MODEL,"models/weapons/w_ionblaster.md2");
-	Engine.Server_PrecacheResource(RESOURCE_MODEL,"models/weapons/w_c4.md2");
-	Engine.Server_PrecacheResource(RESOURCE_MODEL,"models/weapons/w_shotcycler.md2");
-	Engine.Server_PrecacheResource(RESOURCE_MODEL,"models/weapons/w_sidewinder.md2");
-	Engine.Server_PrecacheResource(RESOURCE_MODEL,"models/weapons/w_shockwave.md2");
+	Server_PrecacheModel("models/weapons/w_ionblaster.md2");
+	Server_PrecacheModel("models/weapons/w_c4.md2");
+	Server_PrecacheModel("models/weapons/w_shotcycler.md2");
+	Server_PrecacheModel("models/weapons/w_sidewinder.md2");
+	Server_PrecacheModel("models/weapons/w_shockwave.md2");
 	// TEMP END
-	Engine.Server_PrecacheResource(RESOURCE_MODEL,"models/slaser.md2");
-	Engine.Server_PrecacheResource(RESOURCE_MODEL,"models/c4ammo.md2");
-	Engine.Server_PrecacheResource(RESOURCE_MODEL,"models/ionball.md2");
-	Engine.Server_PrecacheResource(RESOURCE_MODEL,"models/sidewinder_missile.md2");
+	Server_PrecacheModel("models/slaser.md2");
+	Server_PrecacheModel("models/c4ammo.md2");
+	Server_PrecacheModel("models/ionball.md2");
+	Server_PrecacheModel("models/sidewinder_missile.md2");
 
 	// Ion Rifle
-	Engine.Server_PrecacheResource(RESOURCE_MODEL,"models/weapons/v_ionrifle.md2");
+	Server_PrecacheModel("models/weapons/v_ionrifle.md2");
 	Server_PrecacheSound("weapons/laser.wav");
 
 	// C4
@@ -202,7 +202,7 @@ void Weapon_Precache(void)
 	Server_PrecacheSound("weapons/ionblaster/ionflyby.wav");
 	Server_PrecacheSound("weapons/ionblaster/ionready.wav");
 	Server_PrecacheSound("weapons/ionblaster/bounce.wav");
-	Engine.Server_PrecacheResource(RESOURCE_MODEL,"models/ionball.md2");
+	Server_PrecacheModel("models/ionball.md2");
 
 	// Shockwave
 	Server_PrecacheSound("weapons/shockwave/fade.wav");
@@ -233,7 +233,7 @@ void Weapon_Precache(void)
 	Server_PrecacheSound("weapons/sidewinder/sidewinderunderwaterfire.wav");
 	Server_PrecacheSound("weapons/sidewinder/sidewinderunderwaterflyby.wav");
 #elif GAME_ADAMAS
-	Engine.Server_PrecacheResource(RESOURCE_MODEL,BLAZER_MODEL_VIEW);
+	Server_PrecacheModel(BLAZER_MODEL_VIEW);
 #endif
 }
 

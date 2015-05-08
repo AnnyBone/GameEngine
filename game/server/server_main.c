@@ -172,7 +172,7 @@ void Server_PrecachePlayerModel(char *ccFile)
 {
 	Engine.Con_Printf("EX: %s\n",ccFile);
 
-	Engine.Server_PrecacheResource(RESOURCE_MODEL,ccFile);
+	Server_PrecacheModel(ccFile);
 }
 
 void Server_Spawn(ServerEntity_t *seEntity)
@@ -313,7 +313,7 @@ void Server_Spawn(ServerEntity_t *seEntity)
 	{
 #ifdef GAME_OPENKATANA
 		// [31/7/2012] TODO: We need an md2 version of this! ~hogsy
-//		Engine.Server_PrecacheResource(RESOURCE_MODEL,"models/mikiko.mdl");
+//		Server_PrecacheModel("models/mikiko.mdl");
 		Server_PrecacheSound("items/respawn.wav");
 
 		// [20/12/2012] If we're in Vektar mode, then spawn the Vektar! ~hogsy
@@ -401,7 +401,7 @@ void Server_EntityFrame(ServerEntity_t *eEntity)
 */
 void Server_KillClient(ServerEntity_t *eClient)
 {
-	if(eClient->monster.iState != STATE_DEAD)
+	if(eClient->Monster.iState != STATE_DEAD)
 		Entity_Damage(eClient, eClient, eClient->v.iHealth, 0);
 }
 

@@ -27,7 +27,7 @@ void HermesCloudTouch(edict_t *ent, edict_t *other)
 {
 	// [13/4/2012] Fixed (please remember to use strcmp!) ~hogsy
 	// [8/6/2012] Removed classname check for clients ~hogsy
-	if(other->monster.iType != MONSTER_PLAYER)
+	if(other->Monster.iType != MONSTER_PLAYER)
 		return;
 
 	if(other->v.iHealth > 0 && other->v.movetype == MOVETYPE_STEP)
