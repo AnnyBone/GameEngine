@@ -62,9 +62,6 @@
     <ClCompile Include="server\server_area.c">
       <Filter>Server</Filter>
     </ClCompile>
-    <ClCompile Include="server\server_deco.c">
-      <Filter>Server</Filter>
-    </ClCompile>
     <ClCompile Include="server\server_item.c">
       <Filter>Server</Filter>
     </ClCompile>

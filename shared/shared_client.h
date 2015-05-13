@@ -53,9 +53,9 @@ typedef enum
 typedef struct
 {
 	MathVector3f_t	origin;
-	float	radius,
-			die,			// Stop lighting after this time
-			decay,			// Drop this each second
+	float	radius;
+	double	die;			// Stop lighting after this time
+	float	decay,			// Drop this each second
 			minlight;		// Don't add when contributing less
 	int		key;
 	MathVector3f_t	color;			//johnfitz -- lit support via lordhavoc
@@ -186,8 +186,9 @@ typedef struct particle_s
 
 	struct		particle_s	*next;
 
+	double	fDie;
+
 	float					fRamp,
-							fDie,
 							fScale;		// Size/scale of the particle.
 } Particle_t;
 //////////////////////////////////////////////////////////////////////////

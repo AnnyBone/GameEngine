@@ -8,7 +8,8 @@
 
 #include "server_player.h"
 
-#define IONBLASTER_MAX_RANGE 2000.0f
+#define IONBLASTER_MAX_RANGE	2000.0f
+#define	IONBLASTER_MAX_HITS		10
 
 EntityFrame_t IonBlasterAnimation_Deploy[] =
 {
@@ -82,7 +83,7 @@ void IonBlaster_Deploy(edict_t *ent)
 
 void IonBlaster_IonBallExplode(edict_t *ent)
 {
-	vec3_t vel;
+	MathVector3f_t vel;
 
 	// [18/5/2013] This was the wrong way, fixed now! ~hogsy
 	Math_VectorCopy(ent->v.velocity,vel);
@@ -90,70 +91,64 @@ void IonBlaster_IonBallExplode(edict_t *ent)
 
 	Sound(ent,CHAN_ITEM,"weapons/ionblaster/explode.wav",255,ATTN_NORM);
 
-	Engine.Particle(ent->v.origin,vel,3.0f,"spark2",20);
+	Engine.Particle(ent->v.origin,vel,5.0f,"spark2",20);
 
 	// TODO: Fancy explosion effect with particles? ~hogsy
 
 	Entity_Remove(ent);
 }
 
-void IonBlaster_IonBallTouch(edict_t *eIonBall,edict_t *other)
+void IonBlaster_IonBallTouch(ServerEntity_t *eIonBall, ServerEntity_t *other)
 {
-	// [26/2/2012] Revised and fixed ~hogsy
-	// [25/6/2012] Revised ~hogsy
-	// [9/12/2012] Revised and fixed ~hogsy
-	vec3_t	vInversed;
+	MathVector3f_t vInversed;
+
+	// Increment hit count.
+	eIonBall->local.count++;
 
 	// Ensure we aren't inside something...
 	int	iPointContent = Engine.Server_PointContents(eIonBall->v.origin);
 	if ((iPointContent == BSP_CONTENTS_SKY) || (iPointContent == BSP_CONTENTS_SOLID))
-		ENTITY_REMOVE(eIonBall);
-
-	Engine.Con_Printf("POINT CONTENT: %i\n", iPointContent);
-
-	// [12/8/2012] Don't collide with owner ~hogsy
-	// [26/8/2012] Don't collide on at least the first hit with the owner (otherwise we'll kill them upon fire) ~hogsy
-	if((other == eIonBall->local.eOwner) && !eIonBall->local.hit)
-		return;
-	else
-		eIonBall->local.hit = true;
-
-	Math_VectorCopy(eIonBall->v.velocity,vInversed);
-	Math_VectorInverse(vInversed);
-	Math_MVToVector(Math_VectorToAngles(eIonBall->v.velocity),eIonBall->v.angles);
-
-	if(eIonBall->local.hit)
 	{
-		if(other->v.bTakeDamage && other != eIonBall->local.eOwner)
-			// [9/12/2012] IonBall just explodes if selfharm is false ~hogsy
-			// [11/1/2013] Revised ~hogsy
-			Entity_Damage(other, eIonBall, 15, 0);
-		else
-		{
-			if(!eIonBall->v.angles[1] || !eIonBall->v.angles[0])
-				eIonBall->v.velocity[2] *= 200.0f;
-
-			eIonBall->v.angles[1] -= 180.0f;
-
-			Sound(eIonBall,CHAN_ITEM,"weapons/ionblaster/bounce.wav",255,ATTN_NORM);
-
-			Engine.Particle(eIonBall->v.origin,vInversed,5.0f,"spark2",25);
-
-			return;
-		}
+		Entity_Remove(eIonBall);
+		return;
 	}
 
-	Sound(eIonBall, CHAN_ITEM, "weapons/ionblaster/explode.wav", 255, ATTN_NORM);
+#if 0
+	// Don't collide with the owner initially...
+	if((other == eIonBall->local.eOwner) && !eIonBall->local.hit)
+		return;
+	// If we hit something else, and then hit the owner again, it'll do damage!
+	else
+		eIonBall->local.hit = true;
+#endif
 
-	Engine.Particle(eIonBall->v.origin,vInversed,5.0f,"spark2",17);
+	if (eIonBall->local.count < IONBLASTER_MAX_HITS)
+	{
+		if (Entity_CanDamage(eIonBall, other, DAMAGE_TYPE_NORMAL) && (other != eIonBall->local.eOwner))
+		{
+			Entity_Damage(other, eIonBall, 15, 0);
+			Entity_Remove(eIonBall);
+			return;
+		}
 
-	Entity_Remove(eIonBall);
+		Math_VectorCopy(eIonBall->v.velocity, vInversed);
+		Math_VectorInverse(vInversed);
+		Math_MVToVector(Math_VectorToAngles(eIonBall->v.velocity), eIonBall->v.angles);
+
+		Sound(eIonBall, CHAN_ITEM, "weapons/ionblaster/bounce.wav", 255, ATTN_NORM);
+
+		Engine.Particle(eIonBall->v.origin, vInversed, 5.0f, "spark2", 25);
+
+		return;
+	}
+
+	IonBlaster_IonBallExplode(eIonBall);
 }
 
 void IonBlaster_PrimaryAttack(edict_t *ent)
 {
 	edict_t *eIonBall;
-	vec3_t	orig;
+	MathVector3f_t	orig;
 
 	// Check if there's room to perform the attack.
 	if (!Weapon_CheckTrace(ent))
@@ -183,6 +178,7 @@ void IonBlaster_PrimaryAttack(edict_t *ent)
 
 		eIonBall->local.hit = false;
 		eIonBall->local.eOwner = ent;
+		eIonBall->local.count = 0;
 
 		Weapon_Projectile(ent, eIonBall, IONBLASTER_MAX_RANGE);
 
@@ -192,8 +188,8 @@ void IonBlaster_PrimaryAttack(edict_t *ent)
 		orig[2] += 25.0f;
 
 		Entity_SetModel(eIonBall,"models/ionball.md2");
-		Entity_SetSizeVector(eIonBall,mv3Origin,mv3Origin);
-		Entity_SetOrigin(eIonBall,orig);
+		Entity_SetSize(eIonBall, -8, -8, -8, 8, 8, 8);
+		Entity_SetOrigin(eIonBall, orig);
 
 		eIonBall->v.TouchFunction	= IonBlaster_IonBallTouch;
 		eIonBall->v.dNextThink		= Server.dTime+3.0;

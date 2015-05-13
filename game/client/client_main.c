@@ -40,22 +40,22 @@ void Client_ParseTemporaryEntity(void)
 			for(i = 0; i < 3; i++)
 				vPosition[i] = Engine.ReadCoord();
 
-			for(i = 0; i < 512; i++)
+			for(i = 0; i < 5; i++)
 			{
 				pExplosion = Engine.Client_AllocateParticle();
 				if(!pExplosion)
 					return;
 
 				pExplosion->iMaterial	= Engine.Client_GetEffect(va("smoke%i",rand()%4));
-				pExplosion->fScale		= 30.0f;
-				pExplosion->fDie		= (float)(Client.time+5.0);
+				pExplosion->fScale		= (float)(rand()%5)+10*10;
+				pExplosion->fDie		= (Client.time+rand()%4);
 				pExplosion->fRamp		= (float)(rand()&3);
 				pExplosion->pBehaviour	= PARTICLE_EXPLODE2;
 
 				for(j = 0; j < 3; j++)
 				{
-					pExplosion->vOrigin[j]		= vPosition[j]+((rand()&32)-16);
-					pExplosion->vVelocity[j]	= (float)((rand()%512)-256);
+					pExplosion->vOrigin[j] = vPosition[j]+((rand()&32)-16);
+					pExplosion->vVelocity[j] = (float)((rand()%50)*2);
 				}
 			}
 
@@ -64,13 +64,13 @@ void Client_ParseTemporaryEntity(void)
 
 				Math_VectorCopy(vPosition,dExplosionLight->origin);
 
-				dExplosionLight->bLightmap		= true;
-				dExplosionLight->radius			= 300.0f;
-				dExplosionLight->color[RED]		= 255.0f;
-				dExplosionLight->color[GREEN]	= 255.0f;
-				dExplosionLight->color[BLUE]	= 50.0f;
-				dExplosionLight->minlight		= 32.0f;
-				dExplosionLight->die			= (float)(Client.time+0.5);
+				dExplosionLight->bLightmap = true;
+				dExplosionLight->radius = 300.0f;
+				dExplosionLight->color[RED] = 255.0f;
+				dExplosionLight->color[GREEN] = 255.0f;
+				dExplosionLight->color[BLUE] = 50.0f;
+				dExplosionLight->minlight = 32.0f;
+				dExplosionLight->die = (Client.time + 0.5);
 			}
 		}
 		break;
@@ -136,7 +136,7 @@ void Client_RelinkEntities(entity_t *eClient,int i,double dTime)
 	{
 		int k,j;
 
-		for(k = 0; k < 2; k++)
+		if (rand()%5 == 0)
 		{
 			Particle_t	*pParticle;
 			
@@ -144,15 +144,15 @@ void Client_RelinkEntities(entity_t *eClient,int i,double dTime)
 			if(!pParticle)
 				return;
 
-			pParticle->iMaterial	= Engine.Client_GetEffect(va("smoke%i",rand()%4));
-			pParticle->fRamp		= (float)(rand()&3);
-			pParticle->fScale		= ((float)(rand()%20)*2);
-			pParticle->fDie			= (float)(Client.time+(rand()%5));
-			pParticle->pBehaviour	= PARTICLE_BEHAVIOUR_SMOKE;
+			pParticle->iMaterial = Engine.Client_GetEffect(va("smoke%i", rand() % 4));
+			pParticle->fRamp = (float)(rand() & 3);
+			pParticle->fScale = ((float)(rand() % 15) * 2);
+			pParticle->fDie = (Client.time + (rand() % 5));
+			pParticle->pBehaviour = PARTICLE_BEHAVIOUR_SMOKE;
 			
 			// [5/9/2012] TODO: Simplify this ~hogsy
 			for(j = 0; j < 3; j++)
-				pParticle->vOrigin[j] = eClient->origin[j]+((rand()&15)-5.0f);
+				pParticle->vOrigin[j] = eClient->origin[j]+((rand()&8)-5.0f);
 
 			Math_VectorClear(pParticle->vVelocity);
 		}
@@ -195,25 +195,25 @@ void Client_RelinkEntities(entity_t *eClient,int i,double dTime)
 
 		Math_VectorCopy(eClient->origin,dLight->origin);
 
-		dLight->radius			= (float)(rand()%20)*10;
-		dLight->color[RED]		= 0;
-		dLight->color[GREEN]	= 255.0f;
-		dLight->color[BLUE]		= 0;
-		dLight->minlight		= 16.0f;
-		dLight->die				= (float)(Client.time+0.01);
-		dLight->bLightmap		= true;
+		dLight->radius = (float)(rand() % 20) * 10;
+		dLight->color[RED] = 0;
+		dLight->color[GREEN] = 255.0f;
+		dLight->color[BLUE] = 0;
+		dLight->minlight = 16.0f;
+		dLight->die = (float)(Client.time + 0.01);
+		dLight->bLightmap = true;
 
-		for(k = 0; k < 128; k++)
+		for(k = 0; k < 4; k++)
 		{
 			Particle_t *pParticle = Engine.Client_AllocateParticle();
 			if(!pParticle)
 				return;
 
-			pParticle->iMaterial	= Engine.Client_GetEffect("spark2");
-			pParticle->fRamp		= (float)(rand()&3);
-			pParticle->fScale		= 0.5f+(float)(rand()%15/10);
-			pParticle->fDie			= (float)(Client.time+(double)(rand()%2));
-			pParticle->pBehaviour	= PARTICLE_BEHAVIOUR_SLOWGRAVITY;
+			pParticle->iMaterial = Engine.Client_GetEffect("spark2");
+			pParticle->fRamp = (float)(rand() & 3);
+			pParticle->fScale = 1.5f + (float)(rand() % 15 / 10);
+			pParticle->fDie = (Client.time + (double)(rand() % 2));
+			pParticle->pBehaviour = PARTICLE_BEHAVIOUR_SLOWGRAVITY;
 			
 			// [5/9/2012] TODO: Simplify this ~hogsy
 			for(j = 0; j < 3; j++)
@@ -234,7 +234,7 @@ void Client_RelinkEntities(entity_t *eClient,int i,double dTime)
 		dLight->color[GREEN]	= 0;
 		dLight->color[BLUE]		= 255.0f;
 		dLight->minlight		= 32.0f;
-		dLight->die				= (float)(Client.time+0.01);
+		dLight->die				= (Client.time+0.01);
 		dLight->bLightmap		= true;
 	}
 
@@ -249,7 +249,7 @@ void Client_RelinkEntities(entity_t *eClient,int i,double dTime)
 		dLight->color[GREEN]	= 0;
 		dLight->color[BLUE]		= 0;
 		dLight->minlight		= 32.0f;
-		dLight->die				= (float)(Client.time+0.01);
+		dLight->die				= Client.time+0.01;
 		dLight->bLightmap		= true;
 	}
 
@@ -269,7 +269,7 @@ void Client_RelinkEntities(entity_t *eClient,int i,double dTime)
 		dLight->color[GREEN]	= 255.0f;
 		dLight->color[BLUE]		= 50.0f;
 		dLight->minlight		= 32.0f;
-		dLight->die				= ((float)Client.time)+0.1f;
+		dLight->die				= Client.time+0.1;
 		dLight->bLightmap		= true;
 	}
 
@@ -284,7 +284,7 @@ void Client_RelinkEntities(entity_t *eClient,int i,double dTime)
 		dLight->color[GREEN]	= 255.0f;
 		dLight->color[BLUE]		= 255.0f;
 		dLight->minlight		= 32.0f;
-		dLight->die				= (float)(Client.time+0.01);
+		dLight->die				= Client.time+0.01;
 		dLight->bLightmap		= true;
 	}
 
@@ -299,7 +299,7 @@ void Client_RelinkEntities(entity_t *eClient,int i,double dTime)
 		dLight->origin[2]		+= 16.0f;
 		dLight->radius			= 300.0f+(rand()&31);
 		dLight->minlight		= 32.0f;
-		dLight->die				= ((float)Client.time)+0.001f;
+		dLight->die				= Client.time + 0.001;
 		dLight->bLightmap		= true;
 	}
 
@@ -314,7 +314,7 @@ void Client_RelinkEntities(entity_t *eClient,int i,double dTime)
 		dLight->color[GREEN]	= 0;
 		dLight->color[BLUE]		= 0;
 		dLight->minlight		= 16.0f;
-		dLight->die				= ((float)Client.time)+0.01f;
+		dLight->die				= Client.time + 0.01f;
 		dLight->bLightmap		= true;
 	}
 
@@ -344,7 +344,7 @@ void Client_RelinkEntities(entity_t *eClient,int i,double dTime)
 		dLight->color[GREEN]	= 0;
 		dLight->color[BLUE]		= 255.0f;
 		dLight->minlight		= 16.0f;
-		dLight->die				= (float)(Client.time+0.01);
+		dLight->die				= (Client.time+0.01);
 		dLight->bLightmap		= true;
 	}
 
@@ -358,7 +358,7 @@ void Client_RelinkEntities(entity_t *eClient,int i,double dTime)
 
 		dLight->radius		= (float)sin(Client.time*2.0f)*100.0f;
 		dLight->minlight	= 16.0f;
-		dLight->die			= (float)(Client.time+0.01);
+		dLight->die			= (Client.time+0.01);
 		dLight->bLightmap	= true;
 	}
 

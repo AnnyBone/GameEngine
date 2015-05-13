@@ -363,7 +363,7 @@ bool Weapon_CheckTrace(ServerEntity_t *eOwner)
 		return false;
 
 	// Check to see if there's a target, and it's not the world!
-	if (tCheck.ent)
+	if (tCheck.ent != Server.eWorld)
 		// Are we intersecting with it?
 		if (Math_IsIntersecting(mvTraceMins, mvTraceMaxs, tCheck.ent->v.mins, tCheck.ent->v.maxs))
 			return false;

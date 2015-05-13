@@ -698,13 +698,9 @@ void Video_AllocateArrays(int iSize)
 	if (bVideoDebug)
 		Console_WriteToLog(cvVideoDebugLog.string, "Video: Allocating arrays...\n");
 
-	// Check that each of these have been initialized before freeing them.
-	if (vVideoVertexArray)
-		free(vVideoVertexArray);
-	if (vVideoColourArray)
-		free(vVideoColourArray);
-	if (vVideoTextureArray)
-		free(vVideoTextureArray);
+	free(vVideoVertexArray);
+	free(vVideoColourArray);
+	free(vVideoTextureArray);
 
 	vVideoTextureArray = (MathVector2f_t**)Hunk_AllocName(VIDEO_MAX_UNITS*sizeof(MathVector2f_t), "video_texturearray");
 	for (i = 0; i < VIDEO_MAX_UNITS; i++)
@@ -1101,7 +1097,9 @@ void Video_DrawObject(
 	// Copy everything over...
 	for (i = 0; i < uiVerts; i++)
 	{
-		if (!r_showtris.value)
+		if (r_showtris.value && (mMaterial && !(mMaterial->iFlags & MATERIAL_FLAG_NOTRIS)))
+			Math_Vector4Set(1.0f, vVideoColourArray[i]);
+		else
 		{
 			// Allow us to override the colour if we want/need to.
 			if (Video.bColourOverride)
@@ -1113,9 +1111,7 @@ void Video_DrawObject(
 			for (j = 0; j < VIDEO_MAX_UNITS; j++)
 				if (Video.bUnitState[j])
 					Math_Vector2Copy(voObject[i].mvST[j], vVideoTextureArray[j][i]);
-		}
-		else
-			Math_Vector4Set(1.0f, vVideoColourArray[i]);
+		}			
 
 		Math_VectorCopy(voObject[i].mvPosition, vVideoVertexArray[i]);
 	}

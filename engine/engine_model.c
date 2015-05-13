@@ -1212,56 +1212,48 @@ void Model_LoadTextures(model_t *mModel)
 
 /*	Calculate bounds of alias model for nonrotated, yawrotated, and fullrotated cases
 */
-#if 0
-void Mod_CalcAliasBounds(aliashdr_t *a)
+void Model_CalculateMD2Bounds(MD2_t *mModel)
 {
-	int			i,j,k;
-	float		dist, yawradius, radius;
-	vec3_t		v;
+	int i;
+	MathVector3f_t vMins, vMaxs;
+	MD2Triangle_t *mtTriangles;
 
 	//clear out all data
 	for (i=0; i<3;i++)
 	{
 		loadmodel->mins[i] = loadmodel->ymins[i] = loadmodel->rmins[i] = 999999;
 		loadmodel->maxs[i] = loadmodel->ymaxs[i] = loadmodel->rmaxs[i] = -999999;
-		radius = yawradius = 0;
 	}
 
-	//process verts
-	for (i=0 ; i<a->numposes; i++)
-		for (j=0; j<a->numverts; j++)
-		{
-			for (k=0; k<3;k++)
-				v[k] = poseverts[i][j].v[k] * pheader->scale[k] + pheader->scale_origin[k];
+	mtTriangles = (MD2Triangle_t*)((uint8_t*)mModel + mModel->ofs_tris);
+	for (i=0; i<mModel->num_xyz; i++)
+	{		
+		if (mtTriangles->index_xyz[0] < loadmodel->mins[0])
+			vMins[0] = mtTriangles->index_xyz[0];
+		else if (mtTriangles->index_xyz[0] > vMaxs[0])
+			vMaxs[0] = mtTriangles->index_xyz[0];
 
-			for (k=0; k<3;k++)
-			{
-				loadmodel->mins[k] = Math_Min(loadmodel->mins[k], v[k]);
-				loadmodel->maxs[k] = Math_Max(loadmodel->maxs[k], v[k]);
-			}
+		if (mtTriangles->index_xyz[1] < loadmodel->mins[1])
+			vMins[1] = mtTriangles->index_xyz[1];
+		else if (mtTriangles->index_xyz[1] > vMaxs[1])
+			vMaxs[1] = mtTriangles->index_xyz[1];
 
-			dist = v[0] * v[0] + v[1] * v[1];
-			if (yawradius < dist)
-				yawradius = dist;
+		if (mtTriangles->index_xyz[2] < loadmodel->mins[2])
+			vMins[2] = mtTriangles->index_xyz[2];
+		else if (mtTriangles->index_xyz[2] > vMaxs[2])
+			vMaxs[2] = mtTriangles->index_xyz[2];
 
-			dist += v[2] * v[2];
-			if (radius < dist)
-				radius = dist;
-		}
+		mtTriangles++;
+	}
 
-	//rbounds will be used when entity has nonzero pitch or roll
-	radius = sqrt(radius);
-	loadmodel->rmins[0] = loadmodel->rmins[1] = loadmodel->rmins[2] = -radius;
-	loadmodel->rmaxs[0] = loadmodel->rmaxs[1] = loadmodel->rmaxs[2] = radius;
+	// TODO: Need to multiply this out more.
+	Math_VectorCopy(vMins, loadmodel->rmins);
+	Math_VectorCopy(vMaxs, loadmodel->rmaxs);
 
-	//ybounds will be used when entity has nonzero yaw
-	yawradius = sqrt(yawradius);
-	loadmodel->ymins[0] = loadmodel->ymins[1] = -yawradius;
-	loadmodel->ymaxs[0] = loadmodel->ymaxs[1] = yawradius;
-	loadmodel->ymins[2] = loadmodel->mins[2];
-	loadmodel->ymaxs[2] = loadmodel->maxs[2];
+	// TODO: Need to update for YAW, not just copied over.
+	Math_VectorCopy(vMins, loadmodel->ymins);
+	Math_VectorCopy(vMaxs, loadmodel->ymaxs);
 }
-#endif
 
 void Model_LoadMD2(model_t *mModel,void *Buffer)
 {
@@ -1401,36 +1393,7 @@ void Model_LoadMD2(model_t *mModel,void *Buffer)
 		loadmodel->maxs[i] = loadmodel->ymaxs[i] = loadmodel->rmaxs[i] = 32.0f;
 	}
 #else
-	Math_VectorSet(999999.0f,loadmodel->mins);
-	Math_VectorSet(-999999.0f,loadmodel->maxs);
-
-	for(i = 0; i < mMD2Model->num_xyz; i++)
-	{
-		MD2TriangleVertex_t *mVertex = (MD2TriangleVertex_t*)((int)mMD2Model+mMD2Model->ofs_frames+mMD2Model->framesize);
-
-#if 1
-		if(mVertex->v[X] < vMin[X])
-			vMin[X] = mVertex->v[X];
-		else if(mVertex->v[X] > vMax[X])
-			vMax[X]	= mVertex->v[X];
-
-		if(mVertex->v[Y] < vMin[Y])
-			vMin[Y] = mVertex->v[Y];
-		else if(mVertex->v[Y] > vMax[Y])
-			vMax[Y] = mVertex->v[Y];
-
-		if(mVertex->v[Z] < vMin[Z])
-			vMin[Z] = mVertex->v[Z];
-		else if(mVertex->v[Z] > vMax[Z])
-			vMax[Z] = mVertex->v[Z];
-#else
-		for(j = 0; j < 3; j++)
-		{
-			loadmodel->mins[j] = loadmodel->ymins[j] = loadmodel->rmins[j] = Math_Min(loadmodel->mins[j],mVertex->v[j]);
-			loadmodel->maxs[j] = loadmodel->ymaxs[j] = loadmodel->rmaxs[j] = Math_Max(loadmodel->maxs[j],mVertex->v[j]);
-		}
-#endif
-	}
+	Model_CalculateMD2Bounds(mMD2Model);
 #endif
 
 	iEnd	= Hunk_LowMark();

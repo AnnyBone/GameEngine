@@ -301,7 +301,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (Ictus)|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="server\server_area.c" />
-    <ClCompile Include="server\server_deco.c" />
     <ClCompile Include="server\server_entity.c" />
     <ClCompile Include="server\server_item.c" />
     <ClCompile Include="server\server_main.c" />
