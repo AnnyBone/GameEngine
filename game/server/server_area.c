@@ -618,7 +618,7 @@ void Area_WallSpawn(ServerEntity_t *eArea)
 	if(!eArea->v.model)
 	{
 		Engine.Con_Warning("Area entity with no model!\n");
-		
+
 		Entity_Remove(eArea);
 		return;
 	}
@@ -770,52 +770,10 @@ void Area_ButtonSpawn(ServerEntity_t *eArea)
 	Platform
 */
 
-void Area_PlatformTouch(ServerEntity_t *eArea, ServerEntity_t *eOther);
-
-void Area_PlatformSpawnTouchboxTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
-{
-	Area_PlatformTouch(eArea->v.enemy, eOther);
-}
-
-void Area_PlatformSpawnTouchbox(ServerEntity_t *eArea)
-{
-	ServerEntity_t *eTrigger;
-	MathVector3f_t vTrigMin, vTrigMax;
-
-	eTrigger = Entity_Spawn();
-	eTrigger->v.TouchFunction = Area_PlatformSpawnTouchboxTouch;
-	eTrigger->v.movetype = MOVETYPE_NONE;
-	eTrigger->v.enemy = eArea;
-
-	eTrigger->Physics.iSolid = SOLID_TRIGGER;
-
-	vTrigMin[0] = eArea->v.mins[0] - 25;
-	vTrigMin[1] = eArea->v.mins[1] - 25;
-	vTrigMin[2] = eArea->v.mins[2] + -8;
-
-	vTrigMax[0] = eArea->v.maxs[0] + 25;
-	vTrigMax[1] = eArea->v.maxs[1] + 25;
-	vTrigMax[2] = eArea->v.maxs[2] - 8;
-
-	vTrigMin[2] = vTrigMax[2] - (eArea->local.pos1[2] - eArea->local.pos2[2] -8);
-
-	if (eArea->v.size[0] <= 50)
-	{
-		vTrigMin[0] = (vTrigMin[0] + vTrigMax[0]) / 2;
-		vTrigMax[0] = vTrigMin[0] + 1;
-	}
-	if (eArea->v.size[1] <= 50)
-	{
-		vTrigMin[1] = (vTrigMin[1] + vTrigMax[1]) / 2;
-		vTrigMax[1] = vTrigMin[1] + 1;
-	}
-
-	Entity_SetModel(eArea,eArea->v.model);
-	Entity_SetSizeVector(eTrigger,vTrigMin,vTrigMax);
-}
 
 void Area_PlatformDone(ServerEntity_t *eArea, ServerEntity_t *eOther)
 {
+	eArea->local.state	= STATE_DOWN;
 	eArea->local.iValue = 0;
 
 	if(eArea->local.cSoundStop)
@@ -824,8 +782,6 @@ void Area_PlatformDone(ServerEntity_t *eArea, ServerEntity_t *eOther)
 
 void Area_PlatformReturn(ServerEntity_t *eArea)
 {
-	eArea->local.state = STATE_DOWN;
-
 	Area_CalculateMovement(eArea,eArea->local.pos1,eArea->local.speed,Area_PlatformDone);
 
 	if(eArea->local.cSoundReturn)
@@ -838,13 +794,13 @@ void Area_PlatformWait(ServerEntity_t *eArea, ServerEntity_t *eOther)
 {
 	UseTargets(eArea, eOther);
 
-	eArea->local.state	= STATE_TOP;
+	eArea->local.state = STATE_TOP;
 	eArea->local.iValue = 1;
 
-	eArea->v.think = Area_PlatformReturn;
+	eArea->v.think		= Area_PlatformReturn;
 
 	if(eArea->local.dWait >= 0)
-		eArea->v.dNextThink	= Server.dTime+eArea->local.dWait;
+	eArea->v.dNextThink	= eArea->v.ltime + eArea->local.dWait;
 
 	if(eArea->local.cSoundStop)
 		Sound(eArea,CHAN_VOICE,eArea->local.cSoundStop,255,ATTN_NORM);
@@ -858,6 +814,7 @@ void Area_PlatformTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
 		return;
 
 	eArea->local.state = STATE_UP;
+
 	Area_CalculateMovement(eArea,eArea->local.pos2,eArea->local.speed,Area_PlatformWait);
 
 	if(eArea->local.cSoundStart)
@@ -888,7 +845,9 @@ void Area_PlatformBlocked(ServerEntity_t *eArea, ServerEntity_t *eOther)
 
 void Area_PlatformSpawn(ServerEntity_t *eArea)
 {
-	float dist;
+	int		i;
+	float	fDist;
+	MathVector3f_t vMoveDir;
 
 	if(!eArea->v.spawnflags)
 		eArea->v.spawnflags = 0;
@@ -906,6 +865,11 @@ void Area_PlatformSpawn(ServerEntity_t *eArea)
 
 	eArea->Physics.iSolid = SOLID_BSP;
 
+	if(eArea->local.count == 0.0f)
+		eArea->local.count = 100.0f;
+	if(eArea->local.dWait == 0.0f)
+		eArea->local.dWait == 3.0f;
+
 	eArea->local.iValue = 0;
 	eArea->local.state	= STATE_BOTTOM;
 
@@ -913,37 +877,22 @@ void Area_PlatformSpawn(ServerEntity_t *eArea)
 	Entity_SetOrigin(eArea,eArea->v.origin);
 	Entity_SetSizeVector(eArea,eArea->v.mins,eArea->v.maxs);
 
-	if(!eArea->local.style)
-		eArea->local.style = 0;
-	if(eArea->local.lip == 0.0f)
-		eArea->local.lip = 4.0f;
-
 	Math_VectorCopy(eArea->v.origin,eArea->local.pos1);
-
 	Area_SetMoveDirection(eArea->v.angles, eArea->v.movedir);
 
-	dist = (float)eArea->local.count;
+	fDist = (float)eArea->local.count;
 
-	Math_VectorMake(eArea->local.pos1, dist, eArea->v.movedir, eArea->local.pos2);
-
-	if(eArea->local.style == 1)
-	{
-		Entity_SetOrigin(eArea, eArea->local.pos2);
-
-		Math_VectorCopy(eArea->local.pos2, eArea->local.pos1);
-		Math_VectorCopy(eArea->v.origin, eArea->local.pos2);
-	}
+	Math_VectorMake(eArea->local.pos1, fDist, eArea->v.movedir, eArea->local.pos2);
 
 	if(eArea->v.spawnflags != 32) // Toggle
 		eArea->v.TouchFunction = Area_PlatformTouch;
 
-	if(eArea->local.iDamage)
-		Entity_SetBlockedFunction(eArea,Area_PlatformBlocked);
-
-	Area_PlatformSpawnTouchbox(eArea);
+	if (eArea->local.iDamage)
+		Entity_SetBlockedFunction(eArea, Area_PlatformBlocked);
 
 	eArea->v.use = Area_PlatformUse;
 }
+
 
 /*
 	Climb / Ladders
