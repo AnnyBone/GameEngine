@@ -845,9 +845,7 @@ void Area_PlatformBlocked(ServerEntity_t *eArea, ServerEntity_t *eOther)
 
 void Area_PlatformSpawn(ServerEntity_t *eArea)
 {
-	int		i;
 	float	fDist;
-	MathVector3f_t vMoveDir;
 
 	if(!eArea->v.spawnflags)
 		eArea->v.spawnflags = 0;
@@ -868,7 +866,9 @@ void Area_PlatformSpawn(ServerEntity_t *eArea)
 	if(eArea->local.count == 0.0f)
 		eArea->local.count = 100.0f;
 	if(eArea->local.dWait == 0.0f)
-		eArea->local.dWait == 3.0f;
+		eArea->local.dWait = 3.0f;
+	if(eArea->local.iDamage == 0.0f)
+		eArea->local.iDamage = 20;
 
 	eArea->local.iValue = 0;
 	eArea->local.state	= STATE_BOTTOM;
