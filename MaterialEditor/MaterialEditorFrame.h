@@ -6,6 +6,9 @@ class CMaterialEditorFrame : public wxFrame
 public:
 	CMaterialEditorFrame(const wxString &title, const wxPoint &pos, const wxSize &size);
 
+	void StartRendering(void);
+	void StopRendering(void);
+
 private:
 	void OnOpen(wxCommandEvent &event);
 	void OnExit(wxCommandEvent &event);
@@ -13,9 +16,12 @@ private:
 	void OnSave(wxCommandEvent &event);
 	void OnConsole(wxCommandEvent &event);
 	void OnProperties(wxCommandEvent &event);
+	void OnTimer(wxTimerEvent &event);
 
 	wxBitmap largeExit;
 	wxBitmap largeOpen;
+
+	wxTimer* timer;
 
 	wxDECLARE_EVENT_TABLE();
 };

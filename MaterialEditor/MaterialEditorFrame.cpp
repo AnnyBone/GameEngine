@@ -19,6 +19,7 @@ EVT_MENU(wxID_EXIT, CMaterialEditorFrame::OnExit)
 EVT_MENU(wxID_ABOUT, CMaterialEditorFrame::OnAbout)
 EVT_MENU(ID_WINDOW_CONSOLE, CMaterialEditorFrame::OnConsole)
 EVT_MENU(ID_WINDOW_PROPERTIES, CMaterialEditorFrame::OnProperties)
+EVT_TIMER(-1, CMaterialEditorFrame::OnTimer)
 wxEND_EVENT_TABLE()
 
 CMaterialEditorPropertyWindow *propertyWindow;
@@ -95,9 +96,27 @@ CMaterialEditorFrame::CMaterialEditorFrame(const wxString & title, const wxPoint
 	wxGridSizer *sizer = new wxGridSizer(wxHORIZONTAL);
 
 	sizer->Add(new CMaterialEditorRenderCanvas(this), 1, wxEXPAND);
-	sizer->Add(new wxButton(this, -1, wxT("7")), 1, wxEXPAND | wxLEFT);
+	//sizer->Add(new wxButton(this, -1, wxT("7")), 1, wxEXPAND | wxLEFT);
+
+	timer = new wxTimer(this);
 	
 	propertyWindow = new CMaterialEditorPropertyWindow(wxPoint(GetPosition().x - 256, GetPosition().y), wxSize(256, 480));
+}
+
+void CMaterialEditorFrame::StartRendering(void)
+{
+	timer->Start();
+}
+
+void CMaterialEditorFrame::StopRendering(void)
+{
+	timer->Stop();
+}
+
+void CMaterialEditorFrame::OnTimer(wxTimerEvent &event)
+{
+	if (engine->IsRunning())
+		engine->Loop();
 }
 
 void CMaterialEditorFrame::OnOpen(wxCommandEvent &event)

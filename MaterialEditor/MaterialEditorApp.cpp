@@ -19,8 +19,16 @@ bool CMaterialEditorApp::OnInit()
 	frame->Show(true);
 
 	// Initialize the engine.
-	engine->Initialize(argc, argv, true);
+	if (!engine->Initialize(argc, argv, true))
+	{
+		wxMessageBox("Failed to initialize engine!", MATERIALEDITOR_TITLE" Error");
+		wxExit();
+	}
+
 	engine->MaterialEditorInitialize();
+
+	// Start rendering.
+	frame->StartRendering();
 
 	// We launched without problems, return true.
 	return true;
