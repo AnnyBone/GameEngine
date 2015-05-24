@@ -31,6 +31,7 @@ typedef struct
 
 	char*(*GetBasePath)(void);		// Gets the currently active game path.
 	char*(*GetMaterialPath)(void);	// Gets the set material path.
+	char*(*GetVersion)(void);		// Return the engine version.
 
 	void(*Loop)(void);									// Main loop.
 	void(*SetViewportSize)(int iWidth, int iHeight);

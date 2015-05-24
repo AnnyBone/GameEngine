@@ -40,21 +40,3 @@ void EngineInterface_Unload()
 	// Unload the engine module.
 	pModule_Unload(engineInstance);
 }
-
-/*
-	Material Editor
-*/
-
-bool EngineInterface_LoadEditorMaterial(char *cPath)
-{
-	Material_t *newMat;
-
-	newMat = engine->LoadMaterial(cPath);
-	if (newMat)
-	{
-		engine->MaterialEditorDisplay(newMat);
-		return true;
-	}
-
-	return false;
-}

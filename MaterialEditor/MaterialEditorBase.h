@@ -19,7 +19,7 @@
 #include "platform_math.h"
 #include "platform_module.h"
 
-#define	MATERIALEDITOR_TITLE "Katana Material Editor"
+#define	MATERIALEDITOR_TITLE "Material Editor"
 
 extern "C" {
 #include "shared_module.h"
@@ -28,8 +28,6 @@ extern "C" {
 
 void EngineInterface_Load();
 void EngineInterface_Unload();
-
-bool EngineInterface_LoadEditorMaterial(char *cPath);
 
 extern EngineExport_t *engine;
 extern EngineImport_t *editor;

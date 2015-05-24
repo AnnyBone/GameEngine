@@ -113,7 +113,11 @@ void CMaterialEditorFrame::OnOpen(wxCommandEvent &event)
 		"", 
 		"MATERIAL files (*.material)|*.material",wxFD_OPEN|wxFD_FILE_MUST_EXIST);
 	if (fileDialog->ShowModal() == wxID_OK)
-		EngineInterface_LoadEditorMaterial("dngalax3");
+	{
+		Material_t *newMat = engine->LoadMaterial("dngalax3");
+		if (newMat)
+			engine->MaterialEditorDisplay(newMat);
+	}
 }
 
 void CMaterialEditorFrame::OnExit(wxCommandEvent &event)
@@ -128,8 +132,9 @@ void CMaterialEditorFrame::OnExit(wxCommandEvent &event)
 void CMaterialEditorFrame::OnAbout(wxCommandEvent &event)
 {
 	wxMessageBox(
+		wxString(
 		"Copyright (C) 2011-2015 OldTimes Software\n\
-		Developed by Mark \"hogsy\" Sowden",
+		Developed by Mark \"hogsy\" Sowden"),
 		"About Material Editor", wxOK | wxICON_INFORMATION);
 }
 
