@@ -8,7 +8,6 @@ public:
 
 private:
 	void OnPaint(wxPaintEvent &event);
-	void OnIdle(wxIdleEvent &event);
 
 	void DrawFrame(wxDC &dc);
 

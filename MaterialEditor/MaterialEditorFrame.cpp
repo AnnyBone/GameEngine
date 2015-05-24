@@ -93,14 +93,14 @@ CMaterialEditorFrame::CMaterialEditorFrame(const wxString & title, const wxPoint
 
 	// Create the OpenGL canvas...
 
+	engineViewport = new CMaterialEditorRenderCanvas(this);
+	timer = new wxTimer(this);
+	propertyWindow = new CMaterialEditorPropertyWindow(wxPoint(GetPosition().x - 256, GetPosition().y), wxSize(256, 480));
+
 	wxGridSizer *sizer = new wxGridSizer(wxHORIZONTAL);
 
-	sizer->Add(new CMaterialEditorRenderCanvas(this), 1, wxEXPAND);
-	//sizer->Add(new wxButton(this, -1, wxT("7")), 1, wxEXPAND | wxLEFT);
-
-	timer = new wxTimer(this);
-	
-	propertyWindow = new CMaterialEditorPropertyWindow(wxPoint(GetPosition().x - 256, GetPosition().y), wxSize(256, 480));
+	sizer->Add(engineViewport, 1, wxEXPAND);
+	//sizer->Add(propertyWindow, 1, wxEXPAND | wxLEFT);
 }
 
 void CMaterialEditorFrame::StartRendering(void)
@@ -116,7 +116,11 @@ void CMaterialEditorFrame::StopRendering(void)
 void CMaterialEditorFrame::OnTimer(wxTimerEvent &event)
 {
 	if (engine->IsRunning())
+	{
 		engine->Loop();
+
+		engineViewport->Refresh();
+	}
 }
 
 void CMaterialEditorFrame::OnOpen(wxCommandEvent &event)
@@ -143,6 +147,9 @@ void CMaterialEditorFrame::OnExit(wxCommandEvent &event)
 {
 	// Close the properties first.
 	propertyWindow->Close(true);
+
+	// Stop rendering!
+	StopRendering();
 
 	// Close the frame and app.
 	Close(true);

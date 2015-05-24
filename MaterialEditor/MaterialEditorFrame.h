@@ -1,6 +1,8 @@
 #ifndef __MATERIALEDITORFRAME__
 #define	__MATERIALEDITORFRAME__
 
+#include "MaterialEditorRenderCanvas.h"
+
 class CMaterialEditorFrame : public wxFrame
 {
 public:
@@ -22,6 +24,8 @@ private:
 	wxBitmap largeOpen;
 
 	wxTimer* timer;
+
+	CMaterialEditorRenderCanvas *engineViewport;
 
 	wxDECLARE_EVENT_TABLE();
 };

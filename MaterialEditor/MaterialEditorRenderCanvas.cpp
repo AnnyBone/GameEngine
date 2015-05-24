@@ -9,7 +9,6 @@
 
 wxBEGIN_EVENT_TABLE(CMaterialEditorRenderCanvas, wxGLCanvas)
 EVT_PAINT(CMaterialEditorRenderCanvas::OnPaint)
-EVT_IDLE(CMaterialEditorRenderCanvas::OnIdle)
 wxEND_EVENT_TABLE()
 
 CMaterialEditorRenderCanvas::CMaterialEditorRenderCanvas(wxWindow *parent, int *attribList)
@@ -30,16 +29,11 @@ void CMaterialEditorRenderCanvas::OnPaint(wxPaintEvent &event)
 	DrawFrame(dc);
 }
 
-void CMaterialEditorRenderCanvas::OnIdle(wxIdleEvent &event)
-{
-	wxClientDC dc(this);
-	DrawFrame(dc);
-}
-
 void CMaterialEditorRenderCanvas::DrawFrame(wxDC &dc)
 {
 	const wxSize clientSize = GetClientSize();
 	engine->SetViewportSize(clientSize.x, clientSize.y);
+	engine->Loop();
 
 	SwapBuffers();
 }
