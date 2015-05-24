@@ -3,8 +3,10 @@
 #include "MaterialEditorFrame.h"
 #include "MaterialEditorRenderCanvas.h"
 #include "MaterialEditorPropertyWindow.h"
+#include "MaterialEditorMaterialProperties.h"
 
 #include <wx/splash.h>
+#include <wx/splitter.h>
 
 enum
 {
@@ -22,7 +24,7 @@ EVT_MENU(ID_WINDOW_PROPERTIES, CMaterialEditorFrame::OnProperties)
 EVT_TIMER(-1, CMaterialEditorFrame::OnTimer)
 wxEND_EVENT_TABLE()
 
-CMaterialEditorPropertyWindow *propertyWindow;
+CMaterialEditorMaterialGlobalProperties *globalMaterialProperties;
 
 CMaterialEditorFrame::CMaterialEditorFrame(const wxString & title, const wxPoint & pos, const wxSize & size)
 	: wxFrame(NULL, wxID_ANY, title, pos, size)
@@ -91,16 +93,47 @@ CMaterialEditorFrame::CMaterialEditorFrame(const wxString & title, const wxPoint
 
 	SetIcon(wxIcon(PATH_RESOURCES"/material_editor/icon.png",wxBITMAP_TYPE_PNG));
 
-	// Create the OpenGL canvas...
+	// Initialize the timer...
 
-	engineViewport = new CMaterialEditorRenderCanvas(this);
 	timer = new wxTimer(this);
-	propertyWindow = new CMaterialEditorPropertyWindow(wxPoint(GetPosition().x - 256, GetPosition().y), wxSize(256, 480));
 
-	wxGridSizer *sizer = new wxGridSizer(wxHORIZONTAL);
+	// Organise everything...
 
-	sizer->Add(engineViewport, 1, wxEXPAND);
-	//sizer->Add(propertyWindow, 1, wxEXPAND | wxLEFT);
+	wxBoxSizer *sizermain = new wxBoxSizer(wxVERTICAL);
+
+	wxSplitterWindow *splittermain = new wxSplitterWindow(this, wxID_ANY);
+	splittermain->SetSashGravity(0.5);
+	splittermain->SetMinimumPaneSize(20); // Smalest size the
+
+	wxPanel *pnl1 = new wxPanel(splittermain, wxID_ANY);
+
+	wxBoxSizer *txt1sizer = new wxBoxSizer(wxVERTICAL);
+	engineViewport = new CMaterialEditorRenderCanvas(pnl1);
+	txt1sizer->Add(engineViewport, 1, wxEXPAND, 0);
+	pnl1->SetSizer(txt1sizer);
+
+	wxPanel *pnl2 = new wxPanel(splittermain, wxID_ANY);
+	wxBoxSizer *txt2sizer = new wxBoxSizer(wxVERTICAL);
+
+	wxPropertyGrid *materialProperties = new wxPropertyGrid(pnl2);
+	materialProperties->Append(new wxPropertyCategory("Global"));
+	globalMaterialProperties = new CMaterialEditorMaterialGlobalProperties(materialProperties);
+	materialProperties->CenterSplitter(true);
+	materialProperties->SetCellBackgroundColour(wxColour(0, 0, 0));
+	materialProperties->SetCellTextColour(wxColour(0, 255, 0));
+	materialProperties->SetEmptySpaceColour(wxColour(0, 0, 0));
+
+	txt2sizer->Add(materialProperties, 1, wxEXPAND, 0);
+	pnl2->SetSizer(txt2sizer);
+
+	splittermain->SplitVertically(pnl1, pnl2);
+
+	sizermain->Add(splittermain, 1, wxEXPAND, 0);
+
+	this->SetSizer(sizermain);
+	sizermain->SetSizeHints(this);
+
+	SetSize(size);
 }
 
 void CMaterialEditorFrame::StartRendering(void)
@@ -139,15 +172,16 @@ void CMaterialEditorFrame::OnOpen(wxCommandEvent &event)
 	{
 		Material_t *newMat = engine->LoadMaterial("dngalax3");
 		if (newMat)
+		{
 			engine->MaterialEditorDisplay(newMat);
+
+			globalMaterialProperties->Update(newMat);
+		}
 	}
 }
 
 void CMaterialEditorFrame::OnExit(wxCommandEvent &event)
 {
-	// Close the properties first.
-	propertyWindow->Close(true);
-
 	// Stop rendering!
 	StopRendering();
 
@@ -172,6 +206,8 @@ void CMaterialEditorFrame::OnConsole(wxCommandEvent &event)
 
 void CMaterialEditorFrame::OnProperties(wxCommandEvent &event)
 {
+#if 0
 	propertyWindow->Show(!propertyWindow->IsShown());
 	propertyWindow->SetPosition(wxPoint(GetPosition().x - 256, GetPosition().y));
+#endif
 }

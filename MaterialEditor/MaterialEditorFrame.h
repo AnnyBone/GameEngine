@@ -27,6 +27,10 @@ private:
 
 	CMaterialEditorRenderCanvas *engineViewport;
 
+	// Material Properties
+	wxPropertyGrid* materialProperties;
+
+
 	wxDECLARE_EVENT_TABLE();
 };
 

@@ -751,11 +751,9 @@ Material_t *Material_Load(const char *ccPath)
 	if (cMaterialName[0])
 		// Copy the name over.
 		strncpy(mNewMaterial->cName, cMaterialName, sizeof(mNewMaterial->cName));
-#if 0	// This can end up causing unnecessary conflicts, don't bother.
 	else
 		// Otherwise just use the filename.
 		ExtractFileBase(ccPath, mNewMaterial->cName);
-#endif
 
 	// Copy the path over.
 	strncpy(mNewMaterial->cPath, ccPath, sizeof(mNewMaterial->cPath));

@@ -12,6 +12,7 @@
 #include <wx/glcanvas.h>
 #include <wx/wfstream.h>
 #include <wx/minifram.h>
+#include <wx/propgrid/propgrid.h>
 
 #include "shared_flags.h"
 
