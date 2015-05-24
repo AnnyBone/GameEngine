@@ -17,20 +17,21 @@
 
 #include "platform.h"
 #include "platform_math.h"
+#include "platform_module.h"
 
 #define	MATERIALEDITOR_TITLE "Katana Material Editor"
 
-bool EngineInterface_Load();
+extern "C" {
+#include "shared_module.h"
+#include "shared_engine.h"
+}
 
+void EngineInterface_Load();
 void EngineInterface_Unload();
-void EngineInterface_Initialize();
-void EngineInterface_Loop();
-void EngineInterface_SetViewportSize(int width, int height);
-void EngineInterface_MaterialEditorInitialize(void);
 
 bool EngineInterface_LoadEditorMaterial(char *cPath);
 
-char *EngineInterface_GetBasePath();
-char *EngineInterface_GetMaterialPath();
+extern EngineExport_t *engine;
+extern EngineImport_t *editor;
 
 #endif // !__MATERIALEDITORBASE__

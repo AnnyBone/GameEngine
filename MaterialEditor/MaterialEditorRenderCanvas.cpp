@@ -39,9 +39,9 @@ void CMaterialEditorRenderCanvas::OnIdle(wxIdleEvent &event)
 void CMaterialEditorRenderCanvas::DrawFrame(wxDC &dc)
 {
 	const wxSize clientSize = GetClientSize();
-
-	EngineInterface_SetViewportSize(clientSize.x, clientSize.y);
-	EngineInterface_Loop();
+	
+	engine->SetViewportSize(clientSize.x, clientSize.y);
+	engine->Loop();
 
 	SwapBuffers();
 }

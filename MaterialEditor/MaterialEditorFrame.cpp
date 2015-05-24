@@ -98,17 +98,13 @@ CMaterialEditorFrame::CMaterialEditorFrame(const wxString & title, const wxPoint
 	sizer->Add(new wxButton(this, -1, wxT("7")), 1, wxEXPAND | wxLEFT);
 	
 	propertyWindow = new CMaterialEditorPropertyWindow(wxPoint(GetPosition().x - 256, GetPosition().y), wxSize(256, 480));
-
-	// Initialize the engine.
-	EngineInterface_Initialize();
-	EngineInterface_MaterialEditorInitialize();
 }
 
 void CMaterialEditorFrame::OnOpen(wxCommandEvent &event)
 {
 	char defaultPath[PLATFORM_MAX_PATH];
 
-	sprintf_s(defaultPath, "%s/%s", EngineInterface_GetBasePath(), EngineInterface_GetMaterialPath());
+	sprintf_s(defaultPath, "%s/%s", engine->GetBasePath(), engine->GetMaterialPath());
 
 	wxFileDialog *fileDialog = new wxFileDialog(
 		this, 

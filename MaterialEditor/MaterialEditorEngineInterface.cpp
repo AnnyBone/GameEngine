@@ -2,15 +2,12 @@
 
 #include "platform_module.h"
 
-#include "shared_module.h"
-#include "shared_engine.h"
-
 EngineExport_t *engine;
 EngineImport_t *editor;
 
 pINSTANCE engineInstance;
 
-bool EngineInterface_Load()
+void EngineInterface_Load()
 {
 	char path[PLATFORM_MAX_PATH];
 
@@ -27,17 +24,15 @@ bool EngineInterface_Load()
 	if (!engine)
 	{
 		wxMessageBox(pError_Get(), MATERIALEDITOR_TITLE);
-		return false;
+		wxExit();
 	}
 	// Also ensure that the engine version hasn't changed.
 	else if (engine->iVersion != ENGINE_VERSION)
 	{
 		wxMessageBox("Editor is outdated, please rebuild!", MATERIALEDITOR_TITLE);
 		pModule_Unload(engineInstance);
-		return false;
+		wxExit();
 	}
-
-	return true;
 }
 
 void EngineInterface_Unload()
@@ -46,39 +41,9 @@ void EngineInterface_Unload()
 	pModule_Unload(engineInstance);
 }
 
-void EngineInterface_Initialize()
-{
-	engine->Initialize(0, 0, true);
-}
-
-void EngineInterface_Loop()
-{
-	engine->Loop();
-}
-
-void EngineInterface_SetViewportSize(int width, int height)
-{
-	engine->SetViewportSize(width, height);
-}
-
-char *EngineInterface_GetBasePath()
-{
-	return engine->GetBasePath();
-}
-
-char *EngineInterface_GetMaterialPath()
-{
-	return engine->GetMaterialPath();
-}
-
 /*
 	Material Editor
 */
-
-void EngineInterface_MaterialEditorInitialize(void)
-{
-	engine->MaterialEditorInitialize();
-}
 
 bool EngineInterface_LoadEditorMaterial(char *cPath)
 {

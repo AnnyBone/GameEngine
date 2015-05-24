@@ -7,14 +7,17 @@ wxIMPLEMENT_APP(CMaterialEditorApp);
 
 bool CMaterialEditorApp::OnInit()
 {
-	if (EngineInterface_Load() == false)
-		return false;
+	EngineInterface_Load();
 
 	// Create the main frame.
 	CMaterialEditorFrame *frame = new CMaterialEditorFrame(MATERIALEDITOR_TITLE, wxPoint(50, 50), wxSize(640, 480));
 
 	// Show it!
 	frame->Show(true);
+
+	// Initialize the engine.
+	engine->Initialize(argc, argv, true);
+	engine->MaterialEditorInitialize();
 
 	// We launched without problems, return true.
 	return true;
