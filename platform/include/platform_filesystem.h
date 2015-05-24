@@ -1,4 +1,4 @@
-/*	Copyright (C) 2013-2014 OldTimes Software
+/*	Copyright (C) 2013-2015 OldTimes Software
 */
 #ifndef __PLATFORMFILESYSTEM__
 #define	__PLATFORMFILESYSTEM__
@@ -9,11 +9,12 @@
 extern "C" {
 #endif
 
-extern	void	pFileSystem_GetUserName(char *cOut);
-extern	void	pFileSystem_ScanDirectory(const char *ccPath, const char *ccExtension, void(*vFunction)(char *cFile));
-extern	void	pFileSystem_GetWorkingDirectory(char *cOut);
+	extern void	pFileSystem_GetUserName(char *cOut);
+	extern void	pFileSystem_ScanDirectory(const char *ccPath, const char *ccExtension, void(*vFunction)(char *cFile));
+	extern void	pFileSystem_GetWorkingDirectory(char *cOut);
+	extern void	pFileSystem_UpdatePath(char *cPath);
 
-extern	bool	pFileSystem_CreateDirectory(const char *ccPath);
+	extern bool	pFileSystem_CreateDirectory(const char *ccPath);
 
 #ifdef __cplusplus
 }

@@ -21,11 +21,6 @@
 #include "engine_modgame.h"
 #include "engine_console.h"
 
-#include <SDL_syswm.h>
-
-SDL_Window *sMainWindow;
-SDL_GLContext sMainContext;
-
 static unsigned int	iSavedCapabilites[VIDEO_MAX_UNITS][2];
 
 #define VIDEO_STATE_ENABLE   0
@@ -50,28 +45,22 @@ ConsoleVariable_t
 		cvVideoPlayerShadow			= { "video_playershadow",			"1",			true,	false,	"If enabled, the players own shadow will be drawn."					},
 		cvVideoDebugLog				= {	"video_debuglog",				"log_video",	true,	false,	"The name of the output log for video debugging."					};
 
-#define VIDEO_MIN_WIDTH		640
-#define VIDEO_MIN_HEIGHT	480
 #define VIDEO_MAX_SAMPLES	cvMultisampleMaxSamples.iValue
 #define VIDEO_MIN_SAMPLES	0
 
 gltexture_t	*gDepthTexture;
 
-bool	bVideoIgnoreCapabilities = false,
-		bVideoDebug = false;
+bool bVideoIgnoreCapabilities = false;
 
 MathVector2f_t **vVideoTextureArray;
 MathVector3f_t *vVideoVertexArray;
 MathVector4f_t *vVideoColourArray;
 
 unsigned int uiVideoArraySize = 32768;
-
 unsigned int uiVideoDrawObjectCalls = 0;
 
 void Video_DebugCommand(void);
 void Video_AllocateArrays(int iSize);
-
-SDL_DisplayMode	sDisplayMode;
 
 /*	Initialize the renderer
 */
@@ -79,15 +68,17 @@ void Video_Initialize(void)
 {
 	int i;
 
+	// Ensure we haven't already been initialized.
 	if(Video.bInitialized)
 		return;
 
 	Con_Printf("Initializing video...\n");
 
-	// [23/7/2013] Set default values ~hogsy
-	Video.iCurrentTexture = (unsigned int)-1;	// [29/8/2012] "To avoid unnecessary texture sets" ~hogsy
-	Video.bVertexBufferObject = false;
-	Video.bGenerateMipMap = false;
+	// Give everything within the video sub-system its default value.
+	Video.iCurrentTexture = (unsigned int)-1;	// "To avoid unnecessary texture sets"
+	Video.bVertexBufferObject = false;			// Only enabled if the hardware supports it.
+	Video.bGenerateMipMap = false;				// Only enabled if the hardware supports it.
+	Video.bDebugFrame = false;					// Not debugging the initial frame!
 	Video.bActive = true;						// Window is intially assumed active.
 	Video.bUnlocked = true;						// Video mode is initially locked.
 
@@ -95,6 +86,7 @@ void Video_Initialize(void)
 	for (i = 0; i < VIDEO_MAX_UNITS; i++)
 		Video.bUnitState[i] = false;
 
+	// Allocate the storage arrays for vertices.
 	Video_AllocateArrays(uiVideoArraySize);
 
 	Cvar_RegisterVariable(&cvMultisampleSamples,NULL);
@@ -116,25 +108,122 @@ void Video_Initialize(void)
 	Cmd_AddCommand("video_restart",Video_UpdateWindow);
 	Cmd_AddCommand("video_debug",Video_DebugCommand);
 
-	// [28/7/2013] Moved check here and corrected, seems more secure ~hogsy
-	if(SDL_VideoInit(NULL) < 0)
-		Sys_Error("Failed to initialize video!\n%s\n",SDL_GetError());
+	// Figure out what resolution we're going to use.
+	if (COM_CheckParm("-window"))
+	{
+		Video.bFullscreen = false;
+		Video.bUnlocked = false;
+	}
+	else
+		// Otherwise set us as fullscreen.
+		Video.bFullscreen = cvFullscreen.bValue;
 
-	SDL_DisableScreenSaver();
+	if (COM_CheckParm("-width"))
+	{
+		Video.iWidth = atoi(com_argv[COM_CheckParm("-width") + 1]);
+		Video.bUnlocked = false;
+	}
+	else
+		Video.iWidth = cvWidth.iValue;
 
-	// Get display information.
-	if (SDL_GetCurrentDisplayMode(0, &sDisplayMode) != 0)
-		Sys_Error("Failed to get current display information!\n%s\n", SDL_GetError());
+	if (COM_CheckParm("-height"))
+	{
+		Video.iHeight = atoi(com_argv[COM_CheckParm("-height") + 1]);
+		Video.bUnlocked = false;
+	}
+	else
+		Video.iHeight = cvHeight.iValue;
+
+	if (!Global.bEmbeddedContext)
+		Window_InitializeVideo();
+
+	glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &Video.iSupportedUnits);
+	if (Video.iSupportedUnits < VIDEO_MAX_UNITS)
+		Sys_Error("Your system doesn't support the required number of TMUs! (%i)", Video.iSupportedUnits);
+
+	glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &Video.fMaxAnisotropy);
+
+	// Get any information that will be presented later.
+	Video.cGLVendor = (char*)glGetString(GL_VENDOR);
+	Video.cGLRenderer = (char*)glGetString(GL_RENDERER);
+	Video.cGLVersion = (char*)glGetString(GL_VERSION);
+	Video.cGLExtensions = (char*)glGetString(GL_EXTENSIONS);
+
+	// [3/6/2013] Added to fix a bug on some systems when calling wglGetExtensionString* ~hogsy
+	GLeeInit();
+
+	Con_DPrintf(" Checking for extensions...\n");
+
+	// Check that the required capabilities are supported.
+	if (!GLEE_ARB_multitexture)
+		Sys_Error("Video hardware incapable of multi-texturing!\n");
+	else if (!GLEE_ARB_texture_env_combine && !GLEE_EXT_texture_env_combine)
+		Sys_Error("ARB/EXT_texture_env_combine isn't supported by your hardware!\n");
+	else if (!GLEE_ARB_texture_env_add && !GLEE_EXT_texture_env_add)
+		Sys_Error("ARB/EXT_texture_env_add isn't supported by your hardware!\n");
+	else if (!GLEE_EXT_fog_coord)
+		Sys_Error("EXT_fog_coord isn't supported by your hardware!\n");
+
+	// Does the hardware support mipmap generation?
+	if (GLEE_SGIS_generate_mipmap)
+		Video.bGenerateMipMap = true;
+	else
+		Con_Warning("SGIS_generate_mipmap isn't supported by your hardware!\n");
+
+	// Does the hardware support VBOs?
+	if (GLEE_ARB_vertex_buffer_object)
+		Video.bVertexBufferObject = true;
+	else
+		Con_Warning("ARB_vertex_buffer_object isn't supported by your hardware!\n");
+
+#ifdef KATANA_VIDEO_NEXT
+	if (!GLEE_ARB_vertex_program || !GLEE_ARB_fragment_program)
+		Sys_Error("Unsupported video hardware!\n");
+#endif
+
+	// Set the default states...
+
+	Video_EnableCapabilities(VIDEO_TEXTURE_2D);
+
+	Video_SetBlend(VIDEO_BLEND_TWO, VIDEO_DEPTH_IGNORE);
+
+	glClearColor(0, 0, 0, 0);
+	glCullFace(GL_BACK);
+	glFrontFace(GL_CW);
+	glAlphaFunc(GL_GREATER, 0.5f);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	glShadeModel(GL_SMOOTH);
+	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+	glDepthRange(0, 1);
+	glDepthFunc(GL_LEQUAL);
+
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+	Video_SelectTexture(VIDEO_TEXTURE_LIGHT);
+
+	// Overbrights
+	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
+	glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
+	glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_PREVIOUS);
+	glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_TEXTURE);
+	glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 4);
+
+	Video_SelectTexture(0);
+
+#ifdef VIDEO_ENABLE_SHADERS
+	glGenFramebuffers(VIDEO_MAX_FRAMEBUFFFERS, &Video.uiFrameBuffer);
+#endif
+
+	vid.conwidth = (scr_conwidth.value > 0) ? (int)scr_conwidth.value : (scr_conscale.value > 0) ? (int)(Video.iWidth / scr_conscale.value) : Video.iWidth;
+	vid.conwidth = Math_Clamp(320, vid.conwidth, Video.iWidth);
+	vid.conwidth &= 0xFFFFFFF8;
+	vid.conheight = vid.conwidth*Video.iHeight / Video.iWidth;
+	Video.bVerticalSync = cvVerticalSync.bValue;
 
 	Video.bInitialized = true;
-
-	// [9/7/2013] TEMP: Should honestly be called from the launcher (in a perfect world) ~hogsy
-	Video_CreateWindow();
-
-#if 0
-    if (!SDL_GetWindowWMInfo(sMainWindow, &Video.sSystemInfo))
-		Sys_Error("Failed to get WM information! (%s)\n",SDL_GetError());
-#endif
 }
 
 /*
@@ -143,8 +232,8 @@ void Video_Initialize(void)
 
 void Video_DebugCommand(void)
 {
-	if(!bVideoDebug)
-		bVideoDebug = true;
+	if(!Video.bDebugFrame)
+		Video.bDebugFrame = true;
 
 	Console_ClearLog(cvVideoDebugLog.string);
 }
@@ -230,217 +319,12 @@ void Video_GetGamma(unsigned short *usRamp,int iRampSize)
 		Con_Warning("Failed to get gamma level!\n%s", SDL_GetError());
 }
 
-/*	Get the current displays width.
-*/
-unsigned int Video_GetDesktopWidth(void)
-{
-	return sDisplayMode.w;
-}
-
-/*	Get the current displays height.
-*/
-unsigned int Video_GetDesktopHeight(void)
-{
-	return sDisplayMode.h;
-}
-
-/*	Create our window.
-*/
-void Video_CreateWindow(void)
-{
-	int	iFlags =
-		SDL_WINDOW_SHOWN |
-		SDL_WINDOW_OPENGL |
-		SDL_WINDOW_FULLSCREEN;
-	SDL_Surface	*sIcon;
-
-	if(!Video.bInitialized)
-		Sys_Error("Attempted to create window before video initialization!\n");
-
-	// [15/8/2012] Figure out what resolution we're going to use ~hogsy
-	if(COM_CheckParm("-window"))
-	{
-		Video.bFullscreen =
-		Video.bUnlocked	= false;
-	}
-	else
-		// [15/8/2012] Otherwise set us as fullscreen ~hogsy
-		Video.bFullscreen = cvFullscreen.bValue;
-
-	if(COM_CheckParm("-width"))
-	{
-		Video.iWidth = atoi(com_argv[COM_CheckParm("-width")+1]);
-		Video.bUnlocked	= false;
-	}
-	else
-		Video.iWidth = cvWidth.iValue;
-
-	if(COM_CheckParm("-height"))
-	{
-		Video.iHeight = atoi(com_argv[COM_CheckParm("-height")+1]);
-		Video.bUnlocked	= false;
-	}
-	else
-		Video.iHeight = cvHeight.iValue;
-
-	if(!Video.bFullscreen)
-		iFlags &= ~SDL_WINDOW_FULLSCREEN;
-
-	SDL_GL_SetAttribute(SDL_GL_RED_SIZE,8);
-	SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE,8);
-	SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE,8);
-	SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE,8);
-	SDL_GL_SetAttribute(SDL_GL_ACCUM_RED_SIZE,8);
-	SDL_GL_SetAttribute(SDL_GL_ACCUM_GREEN_SIZE,8);
-	SDL_GL_SetAttribute(SDL_GL_ACCUM_BLUE_SIZE,8);
-	SDL_GL_SetAttribute(SDL_GL_ACCUM_ALPHA_SIZE,8);
-#if 0
-	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
-#endif
-	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE,24);
-	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE,8);
-	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER,1);
-	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE,24);
-
-	// Ensure the given width and height are within reasonable bounds.
-	if(	Video.iWidth	< VIDEO_MIN_WIDTH	||
-		Video.iHeight	< VIDEO_MIN_HEIGHT)
-	{
-		Con_Warning("Failed to get an appropriate resolution!\n");
-
-		Video.iWidth	= VIDEO_MIN_WIDTH;
-		Video.iHeight	= VIDEO_MIN_HEIGHT;
-	}
-	// If we're not fullscreen, then constrain our window size to the size of the desktop.
-	else if (!Video.bFullscreen && ((Video.iWidth > Video_GetDesktopWidth()) || (Video.iHeight > Video_GetDesktopHeight())))
-	{
-		Con_Warning("Attempted to set resolution beyond scope of desktop!\n");
-
-		Video.iWidth = Video_GetDesktopWidth();
-		Video.iHeight = Video_GetDesktopHeight();
-	}
-
-	sMainWindow = SDL_CreateWindow(
-		Game->Name,				// [9/7/2013] Window name is based on the name given by Game ~hogsy
-		SDL_WINDOWPOS_CENTERED,
-		SDL_WINDOWPOS_CENTERED,
-		Video.iWidth,
-		Video.iHeight,
-		iFlags);
-	if(!sMainWindow)
-		Sys_Error("Failed to create window!\n%s\n",SDL_GetError());
-
-	// Attempt to grab the window icon from the game directory.
-	sIcon = SDL_LoadBMP(va("%s/icon.bmp",com_gamedir));
-	if(sIcon)
-	{
-        // [25/3/2014] Set the transparency key... ~hogsy
-        SDL_SetColorKey(sIcon,true,SDL_MapRGB(sIcon->format,0,0,0));
-		SDL_SetWindowIcon(sMainWindow,sIcon);
-		SDL_FreeSurface(sIcon);
-	}
-	else
-		// Give us a warning, but continue.
-		Con_Warning("Failed to load window icon! (%s)\n",SDL_GetError());
-
-	sMainContext = SDL_GL_CreateContext(sMainWindow);
-	if(!sMainContext)
-		Sys_Error("Failed to create context!\n%s\n",SDL_GetError());
-
-	glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS,&Video.uiSupportedUnits);
-	if (Video.uiSupportedUnits < VIDEO_MAX_UNITS)
-		Sys_Error("Your system doesn't support the required number of TMUs! (%i)", Video.uiSupportedUnits);
-
-	glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &Video.fMaxAnisotropy);
-
-	SDL_GL_SetSwapInterval(0);
-
-	// Get any information that will be presented later.
-	Video.cGLVendor = (char*)glGetString(GL_VENDOR);
-	Video.cGLRenderer = (char*)glGetString(GL_RENDERER);
-	Video.cGLVersion = (char*)glGetString(GL_VERSION);
-	Video.cGLExtensions = (char*)glGetString(GL_EXTENSIONS);
-
-	// [3/6/2013] Added to fix a bug on some systems when calling wglGetExtensionString* ~hogsy
-	GLeeInit();
-
-	Con_DPrintf(" Checking for extensions...\n");
-
-	// Check that the required capabilities are supported.
-	if(!GLEE_ARB_multitexture)
-		Sys_Error("Video hardware incapable of multi-texturing!\n");
-	else if (!GLEE_ARB_texture_env_combine && !GLEE_EXT_texture_env_combine)
-		Sys_Error("ARB/EXT_texture_env_combine isn't supported by your hardware!\n");
-	else if (!GLEE_ARB_texture_env_add && !GLEE_EXT_texture_env_add)
-		Sys_Error("ARB/EXT_texture_env_add isn't supported by your hardware!\n");
-	else if (!GLEE_EXT_fog_coord)
-		Sys_Error("EXT_fog_coord isn't supported by your hardware!\n");
-
-	// Does the hardware support mipmap generation?
-	if (GLEE_SGIS_generate_mipmap)
-		Video.bGenerateMipMap = true;
-	else
-		Con_Warning("SGIS_generate_mipmap isn't supported by your hardware!\n");
-
-	// Does the hardware support VBOs?
-	if (GLEE_ARB_vertex_buffer_object)
-		Video.bVertexBufferObject = true;
-	else
-		Con_Warning("ARB_vertex_buffer_object isn't supported by your hardware!\n");
-
-#ifdef KATANA_VIDEO_NEXT
-	if(!GLEE_ARB_vertex_program || !GLEE_ARB_fragment_program)
-		Sys_Error("Unsupported video hardware!\n");
-#endif
-
-	// Set the default states...
-
-	Video_EnableCapabilities(VIDEO_TEXTURE_2D);
-
-	Video_SetBlend(VIDEO_BLEND_TWO, VIDEO_DEPTH_IGNORE);
-
-	glClearColor(0,0,0,0);
-	glCullFace(GL_BACK);
-	glFrontFace(GL_CW);
-	glAlphaFunc(GL_GREATER,0.5f);
-	glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
-	glShadeModel(GL_SMOOTH);
-	glHint(GL_PERSPECTIVE_CORRECTION_HINT,GL_NICEST);
-	glDepthRange(0,1);
-	glDepthFunc(GL_LEQUAL);
-
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-	Video_SelectTexture(VIDEO_TEXTURE_LIGHT);
-
-	// Overbrights
-	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
-	glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
-	glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_PREVIOUS);
-	glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_TEXTURE);
-	glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 4);
-
-	Video_SelectTexture(0);
-
-#ifdef VIDEO_ENABLE_SHADERS
-	glGenFramebuffers(VIDEO_MAX_FRAMEBUFFFERS, &Video.uiFrameBuffer);
-#endif
-
-	vid.conwidth		= (scr_conwidth.value > 0)?(int)scr_conwidth.value:(scr_conscale.value > 0)?(int)(Video.iWidth/scr_conscale.value) : Video.iWidth;
-	vid.conwidth		= Math_Clamp(320,vid.conwidth,Video.iWidth);
-	vid.conwidth		&= 0xFFFFFFF8;
-	vid.conheight		= vid.conwidth*Video.iHeight/Video.iWidth;
-	Video.bVerticalSync	= cvVerticalSync.bValue;
-}
-
 void Video_UpdateWindow(void)
 {
-	if(!Video.bActive)
+	if (Global.bEmbeddedContext || !Video.bInitialized || !Video.bActive)
 		return;
-	else if(!Video.bUnlocked)
+
+	if(!Video.bUnlocked)
 	{
 		Cvar_SetValue(cvFullscreen.name,(float)Video.bFullscreen);
 		Cvar_SetValue(cvWidth.name,(float)Video.iWidth);
@@ -451,48 +335,42 @@ void Video_UpdateWindow(void)
 		return;
 	}
 
-	Video.iWidth	= cvWidth.iValue;
-	Video.iHeight	= cvHeight.iValue;
-
-	SDL_SetWindowSize(sMainWindow,Video.iWidth,Video.iHeight);
-
-	if(Video.bVerticalSync != cvVerticalSync.bValue)
+	// Ensure the given width and height are within reasonable bounds.
+	if (cvWidth.iValue < WINDOW_MINIMUM_WIDTH ||
+		cvHeight.iValue < WINDOW_MINIMUM_HEIGHT)
 	{
-		SDL_GL_SetSwapInterval(cvVerticalSync.iValue);
+		Con_Warning("Failed to get an appropriate resolution!\n");
 
-		Video.bVerticalSync = cvVerticalSync.bValue;
+		Cvar_SetValue(cvWidth.name, WINDOW_MINIMUM_WIDTH);
+		Cvar_SetValue(cvHeight.name, WINDOW_MINIMUM_HEIGHT);
+	}
+	// If we're not fullscreen, then constrain our window size to the size of the desktop.
+	else if (!Video.bFullscreen && ((cvWidth.iValue > pWindow_GetScreenWidth()) || (cvHeight.iValue > pWindow_GetScreenHeight())))
+	{
+		Con_Warning("Attempted to set resolution beyond scope of desktop!\n");
+
+		Cvar_SetValue(cvWidth.name, pWindow_GetScreenWidth());
+		Cvar_SetValue(cvHeight.name, pWindow_GetScreenHeight());
 	}
 
-	// [16/7/2013] There's gotta be a cleaner way of doing this... Ugh ~hogsy
-	if(Video.bFullscreen != cvFullscreen.bValue)
-	{
-		if(SDL_SetWindowFullscreen(sMainWindow,(SDL_bool)cvFullscreen.bValue) == -1)
-		{
-			Con_Warning("Failed to set window mode!\n%s",SDL_GetError());
+	Video.iWidth = cvWidth.iValue;
+	Video.iHeight = cvHeight.iValue;
 
-			// [16/7/2013] Reset the variable to the current value ~hogsy
-			Cvar_SetValue(cvFullscreen.name,(float)Video.bFullscreen);
-		}
-		else
-			Video.bFullscreen = cvFullscreen.bValue;
-	}
+	Window_UpdateVideo();
 
-#if 0
-	if (Video.uiMSAASamples != cvMultisampleSamples.iValue)
-	{
-		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, cvMultisampleSamples.iValue);
+	// Update console size.
+	vid.conwidth = Video.iWidth & 0xFFFFFFF8;
+	vid.conheight = vid.conwidth*Video.iHeight/Video.iWidth;
+}
 
-		Video.uiMSAASamples = cvMultisampleSamples.iValue;
-	}
-#endif
+void Video_SetViewportSize(int iWidth, int iHeight)
+{
+	Video.iWidth = iWidth;
+	Video.iHeight = iHeight;
 
-	if(!cvFullscreen.value)
-		// [15/7/2013] Center the window ~hogsy
-		SDL_SetWindowPosition(sMainWindow,SDL_WINDOWPOS_CENTERED,SDL_WINDOWPOS_CENTERED);
-
-	// [15/7/2013] Update console size ~hogsy
-	vid.conwidth	= Video.iWidth & 0xFFFFFFF8;
-	vid.conheight	= vid.conwidth*Video.iHeight/Video.iWidth;
+	// Update console size.
+	vid.conwidth = Video.iWidth & 0xFFFFFFF8;
+	vid.conheight = vid.conwidth*Video.iHeight / Video.iWidth;
 }
 
 /*
@@ -545,7 +423,7 @@ void Video_SetTexture(gltexture_t *gTexture)
 	// Bind it.
 	glBindTexture(GL_TEXTURE_2D,gTexture->texnum);
 
-	if(bVideoDebug)
+	if(Video.bDebugFrame)
 		Console_WriteToLog(cvVideoDebugLog.string,"Video: Bound texture (%s) (%i)\n",gTexture->name,Video.uiActiveUnit);
 }
 
@@ -578,7 +456,7 @@ void Video_SetBlend(VideoBlend_t voBlendMode, VideoDepth_t vdDepthMode)
         }
     }
 
-	if(bVideoDebug)
+	if(Video.bDebugFrame)
 		Console_WriteToLog(cvVideoDebugLog.string, "Video: Setting blend mode (%i) (%i)\n", voBlendMode, vdDepthMode);
 }
 
@@ -590,7 +468,7 @@ void Video_SetBlend(VideoBlend_t voBlendMode, VideoDepth_t vdDepthMode)
 */
 unsigned int Video_GetTextureUnit(unsigned int uiTarget)
 {
-	if (bVideoDebug)
+	if (Video.bDebugFrame)
 		Console_WriteToLog(cvVideoDebugLog.string, "Video: Attempting to get TMU target %i\n", uiTarget);
 
 #if 0
@@ -616,7 +494,7 @@ unsigned int Video_GetTextureUnit(unsigned int uiTarget)
 	}
 #endif
 
-	if (bVideoDebug)
+	if (Video.bDebugFrame)
 		Console_WriteToLog(cvVideoDebugLog.string, "Video: Returning TMU %i\n", GL_TEXTURE0 + uiTarget);
 
 	return GL_TEXTURE0 + uiTarget;
@@ -634,7 +512,7 @@ void Video_SelectTexture(unsigned int uiTarget)
 
 	Video.uiActiveUnit = uiTarget;
 
-	if(bVideoDebug)
+	if(Video.bDebugFrame)
 		Console_WriteToLog(cvVideoDebugLog.string,"Video: Texture Unit %i\n",Video.uiActiveUnit);
 }
 
@@ -695,7 +573,7 @@ void Video_AllocateArrays(int iSize)
 {
 	int i;
 
-	if (bVideoDebug)
+	if (Video.bDebugFrame)
 		Console_WriteToLog(cvVideoDebugLog.string, "Video: Allocating arrays...\n");
 
 	free(vVideoVertexArray);
@@ -755,7 +633,7 @@ void Video_DrawMaterial(
 				Video_EnableCapabilities(VIDEO_TEXTURE_2D);
 
 				// Bind it.
-				Video_SetTexture(mWhite->msSkin[0].mtTexture->gMap);
+				Video_SetTexture(mColour->msSkin[MATERIAL_COLOUR_WHITE].mtTexture->gMap);
 			}
 			else
 				// Disable it.
@@ -1022,6 +900,9 @@ void Video_DrawArrays(VideoPrimitive_t vpPrimitiveType, unsigned int uiSize, boo
 	// Convert between VIDEO_PRIMITIVE and OpenGL's own stuff.
 	switch (vpPrimitiveType)
 	{
+	case VIDEO_PRIMITIVE_QUAD_STRIP:
+		uiPrimitiveType = GL_QUAD_STRIP;
+		break;
 	case VIDEO_PRIMITIVE_LINE:		// GL_LINES
 	case VIDEO_PRIMITIVE_TRIANGLES:	// GL_TRIANGLES
 		if (bWireframe || (vpPrimitiveType == VIDEO_PRIMITIVE_LINE))
@@ -1077,7 +958,7 @@ void Video_DrawObject(
 	if (uiVerts <= 0)
 		return;
 
-	if (bVideoDebug)
+	if (Video.bDebugFrame)
 	{
 		uiVideoDrawObjectCalls++;
 
@@ -1199,7 +1080,7 @@ void Video_EnableCapabilities(unsigned int iCapabilities)
 
 		if(iCapabilities & vcCapabilityList[i].uiFirst)
 		{
-            if(bVideoDebug)
+            if(Video.bDebugFrame)
 				Console_WriteToLog(cvVideoDebugLog.string, "Video: Enabling %s (%i)\n", vcCapabilityList[i].ccIdentifier, Video.uiActiveUnit);
 
             if(!bVideoIgnoreCapabilities)
@@ -1230,7 +1111,7 @@ void Video_DisableCapabilities(unsigned int iCapabilities)
 
 		if(iCapabilities & vcCapabilityList[i].uiFirst)
 		{
-            if(bVideoDebug)
+            if(Video.bDebugFrame)
 				Console_WriteToLog(cvVideoDebugLog.string, "Video: Disabling %s (%i)\n", vcCapabilityList[i].ccIdentifier, Video.uiActiveUnit);
 
             if(!bVideoIgnoreCapabilities)
@@ -1271,14 +1152,14 @@ void Video_ResetCapabilities(bool bClearActive)
 {
 	int i;
 
-    if(bVideoDebug)
+    if(Video.bDebugFrame)
         Console_WriteToLog(cvVideoDebugLog.string,"Video: Resetting capabilities...\n");
 
 	Video_SelectTexture(VIDEO_TEXTURE_DIFFUSE);
 
 	if(bClearActive)
 	{
-        if(bVideoDebug)
+        if(Video.bDebugFrame)
             Console_WriteToLog(cvVideoDebugLog.string,"Video: Clearing active capabilities...\n");
 
 		bVideoIgnoreCapabilities = true;
@@ -1296,7 +1177,7 @@ void Video_ResetCapabilities(bool bClearActive)
 
 		bVideoIgnoreCapabilities = false;
 
-		if(bVideoDebug)
+		if(Video.bDebugFrame)
             Console_WriteToLog(cvVideoDebugLog.string,"Video: Finished clearing capabilities.\n");
 	}
 
@@ -1363,7 +1244,7 @@ void Video_ShaderLoad(const char *ccPath,VideoShaderType_t vstType)
 */
 void Video_Frame(void)
 {
-    if(bVideoDebug)
+    if(Video.bDebugFrame)
         Console_WriteToLog(cvVideoDebugLog.string,"Video: Start of frame\n");
 
 #ifdef VIDEO_ENABLE_SHADERS
@@ -1381,7 +1262,7 @@ void Video_Frame(void)
 	if (cvVideoFinish.bValue)
 		glFinish();
 
-    if(bVideoDebug)
+    if(Video.bDebugFrame)
     {
         Console_WriteToLog(cvVideoDebugLog.string,"Video: End of frame\n");
 
@@ -1390,7 +1271,7 @@ void Video_Frame(void)
 		Console_WriteToLog(cvVideoDebugLog.string, "Video_DrawObject: %i\n", uiVideoDrawObjectCalls);
 		Console_WriteToLog(cvVideoDebugLog.string, "-----------------------\n");
 
-		bVideoDebug = false;
+		Video.bDebugFrame = false;
     }
 }
 
@@ -1405,16 +1286,8 @@ void Video_Shutdown(void)
 	// Let us know that we're shutting down the video sub-system.
 	Con_Printf("Shutting down video...\n");
 
-	if(sMainContext)
-		// Delete the current context.
-		SDL_GL_DeleteContext(sMainContext);
-
-	if(sMainWindow)
-		// Destory our window.
-		SDL_DestroyWindow(sMainWindow);
-
-	// Quit the SDL2 subsystem.
-	SDL_QuitSubSystem(SDL_INIT_VIDEO);
+	if (!Global.bEmbeddedContext)
+		Window_Shutdown();
 
 	// Set the initialisation value to false, in-case we want to try again later.
 	Video.bInitialized = false;

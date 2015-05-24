@@ -6,6 +6,7 @@
 #include "../platform/include/platform.h"
 
 #include "shared_flags.h"
+#include "SharedMaterial.h"
 
 //johnfitz -- stuff for 2d drawing control
 typedef enum
@@ -25,12 +26,21 @@ typedef enum
 // [12/10/2012] Engine import functions ~hogsy
 typedef struct
 {
-	bool    (*Initialize)(int argc,char *argv[]);					// Initializes the engine.
-    bool    (*CreateDisplay)(int X,int Y,int iWidth,int iHeight);	// Creates a new window.
+	bool(*Initialize)(int argc, char *argv[], bool bEmbedded);	// Initializes the engine.
+	bool(*IsRunning)(void);
 
-    char    *(*GetGamePath)(void);									// Gets the currently active game path.
+	char*(*GetBasePath)(void);		// Gets the currently active game path.
+	char*(*GetMaterialPath)(void);	// Gets the set material path.
 
-    void    (*Shutdown)(void);
+	void(*Loop)(void);									// Main loop.
+	void(*SetViewportSize)(int iWidth, int iHeight);
+	void(*Shutdown)(void);								// Shutdown.
+
+	Material_t*(*LoadMaterial)(const char *cPath);
+
+	// Material Editor
+	void(*MaterialEditorInitialize)(void);					// Initializes the material editor.
+	void(*MaterialEditorDisplay)(Material_t *mMaterial);	// Displays a material in the editor.
 
 	int		iVersion;
 } EngineExport_t;

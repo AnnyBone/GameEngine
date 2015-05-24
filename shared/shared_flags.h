@@ -22,11 +22,12 @@
 	when a build is released publically.	*/
 #define ENGINE_VERSION_MAJOR	0
 #define ENGINE_VERSION_MINOR	3
-#define ENGINE_VERSION_BUILD	906	// 14/5/2015
+#define ENGINE_VERSION_BUILD	912	// 24/5/2015
 
 #define	PATH_ENGINE		"engine"			// Directory to look in for engine specific modules / assets.
 #define	PATH_LOGS		PATH_ENGINE"/logs"	// Default directory for saving logs.
 #define	PATH_SPRITES	"textures/sprites/"	// Directory that contains sprites, used for particles etc.
+#define	PATH_RESOURCES	"resource/"
 
 // Still currently used for some older code; switch it all to use uint8_t instead :)
 #define byte uint8_t

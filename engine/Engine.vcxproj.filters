@@ -28,14 +28,17 @@
     <Filter Include="Modules">
       <UniqueIdentifier>{c5611a4d-2e07-4438-aae7-3789ee89b3e0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Client\Video\Experimental">
-      <UniqueIdentifier>{722ed0b6-3937-4988-a27d-066200171433}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Network">
       <UniqueIdentifier>{118fcf6f-7dea-455c-8ded-044746a27dcb}</UniqueIdentifier>
     </Filter>
     <Filter Include="Client\Audio\Interfaces">
       <UniqueIdentifier>{4068ff62-f40e-400d-aa30-a573d3113102}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="File System">
+      <UniqueIdentifier>{7fe5a03c-b397-4e9c-9b13-87916e65c4a2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Client\Editor">
+      <UniqueIdentifier>{21f0f25d-e661-4ea9-8dd5-b90a159a2702}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -81,7 +84,6 @@
     <ClCompile Include="conproc.c">
       <Filter>Legacy</Filter>
     </ClCompile>
-    <ClCompile Include="engine_host.c" />
     <ClCompile Include="engine_client.c">
       <Filter>Client</Filter>
     </ClCompile>
@@ -93,9 +95,6 @@
     </ClCompile>
     <ClCompile Include="engine_particle.c">
       <Filter>Client</Filter>
-    </ClCompile>
-    <ClCompile Include="engine_material.c">
-      <Filter>Client\Video</Filter>
     </ClCompile>
     <ClCompile Include="..\shared\shared_formats.c">
       <Filter>Shared</Filter>
@@ -154,43 +153,10 @@
     <ClCompile Include="audio.c">
       <Filter>Client\Audio</Filter>
     </ClCompile>
-    <ClCompile Include="video_font.c">
-      <Filter>Client\Video</Filter>
-    </ClCompile>
-    <ClCompile Include="video_light.c">
-      <Filter>Client\Video</Filter>
-    </ClCompile>
-    <ClCompile Include="video_alias.c">
-      <Filter>Client\Video</Filter>
-    </ClCompile>
-    <ClCompile Include="video_brush.c">
-      <Filter>Client\Video</Filter>
-    </ClCompile>
-    <ClCompile Include="video_fog.c">
-      <Filter>Client\Video</Filter>
-    </ClCompile>
-    <ClCompile Include="video_screen.c">
-      <Filter>Client\Video</Filter>
-    </ClCompile>
-    <ClCompile Include="video_warp.c">
-      <Filter>Client\Video</Filter>
-    </ClCompile>
-    <ClCompile Include="video_sprite.c">
-      <Filter>Client\Video</Filter>
-    </ClCompile>
-    <ClCompile Include="video_sky.c">
-      <Filter>Client\Video</Filter>
-    </ClCompile>
-    <ClCompile Include="video_world.c">
-      <Filter>Client\Video</Filter>
-    </ClCompile>
     <ClCompile Include="video_refrag.c">
       <Filter>Client\Video</Filter>
     </ClCompile>
     <ClCompile Include="video_misc.c">
-      <Filter>Client\Video</Filter>
-    </ClCompile>
-    <ClCompile Include="video_draw.c">
       <Filter>Client\Video</Filter>
     </ClCompile>
     <ClCompile Include="video_rmain.c">
@@ -245,14 +211,57 @@
       <Filter>Client\Audio\Interfaces</Filter>
     </ClCompile>
     <ClCompile Include="ZirconLoader.c">
-      <Filter>Client\Video\Experimental</Filter>
+      <Filter>Client\Video</Filter>
     </ClCompile>
-    <ClCompile Include="ZirconVideoObject.c">
-      <Filter>Client\Video\Experimental</Filter>
+    <ClCompile Include="EngineMaterialEditor.c">
+      <Filter>Client\Editor</Filter>
     </ClCompile>
-    <ClCompile Include="ZirconVideoLayer.c">
-      <Filter>Client\Video\Experimental</Filter>
+    <ClCompile Include="EngineVideoLayer.c">
+      <Filter>Client\Video</Filter>
     </ClCompile>
+    <ClCompile Include="EngineVideoObject.c">
+      <Filter>Client\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineSDLWindow.c">
+      <Filter>Client</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineVideoFog.c">
+      <Filter>Client\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineVideoFont.c">
+      <Filter>Client\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineVideoLights.c">
+      <Filter>Client\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineVideoScreen.c">
+      <Filter>Client\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineVideoSky.c">
+      <Filter>Client\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineVideoSprite.c">
+      <Filter>Client\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineVideoWarp.c">
+      <Filter>Client\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineVideoWorld.c">
+      <Filter>Client\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineVideoAlias.c">
+      <Filter>Client\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineVideoBrush.c">
+      <Filter>Client\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineVideoPrimitive.c">
+      <Filter>Client\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineVideoMaterial.c">
+      <Filter>Client\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineHost.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\shared\shared_client.h">
@@ -385,12 +394,6 @@
     <ClInclude Include="engine_particle.h">
       <Filter>Client</Filter>
     </ClInclude>
-    <ClInclude Include="engine_material.h">
-      <Filter>Client\Video</Filter>
-    </ClInclude>
-    <ClInclude Include="..\shared\shared_video.h">
-      <Filter>Shared</Filter>
-    </ClInclude>
     <ClInclude Include="engine_model.h">
       <Filter>Client</Filter>
     </ClInclude>
@@ -437,7 +440,25 @@
       <Filter>Server</Filter>
     </ClInclude>
     <ClInclude Include="ZirconLoader.h">
-      <Filter>Client\Video\Experimental</Filter>
+      <Filter>Client\Video</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineWindow.h">
+      <Filter>Client</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineVideoMaterial.h">
+      <Filter>Client\Video</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\SharedMaterial.h">
+      <Filter>Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\SharedTexture.h">
+      <Filter>Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\SharedModel.h">
+      <Filter>Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\SharedZone.h">
+      <Filter>Shared</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

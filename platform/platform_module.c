@@ -10,7 +10,7 @@
 
 pFARPROC pModule_FindFunction(pINSTANCE hModule,const char *cEntryFunction)
 {
-	pERROR_UPDATE;
+	pFUNCTION_UPDATE;
 
 	if(hModule)
 	{
@@ -30,7 +30,7 @@ pFARPROC pModule_FindFunction(pINSTANCE hModule,const char *cEntryFunction)
 
 void pModule_Unload(pINSTANCE hModule)
 {
-	pERROR_UPDATE;
+	pFUNCTION_UPDATE;
 
 	if(hModule)
 	{
@@ -52,7 +52,7 @@ pINSTANCE pModule_Load(const char *ccPath)
 	pINSTANCE	iModule;
 	char		cUpdatedPath[PLATFORM_MAX_PATH];
 
-	pERROR_UPDATE;
+	pFUNCTION_UPDATE;
 
 	sprintf(cUpdatedPath,"%s"pMODULE_EXTENSION,ccPath);
 
@@ -68,7 +68,7 @@ pINSTANCE pModule_Load(const char *ccPath)
 		pError_SystemReset();
 
 		// Attempt to load under a different directory.
-		sprintf(cUpdatedPath, PLATFORM_CPU"/%s"pMODULE_EXTENSION, PLATFORM_CPU, ccPath);
+		sprintf(cUpdatedPath, PLATFORM_CPU"/%s"pMODULE_EXTENSION, ccPath);
 		iModule = 
 #ifdef _WIN32
 			LoadLibrary(cUpdatedPath);
@@ -90,10 +90,10 @@ pINSTANCE pModule_Load(const char *ccPath)
 */
 void *pModule_LoadInterface(pINSTANCE hModule,const char *cPath,const char *cEntryFunction,void *vPoint)
 {
+	pFUNCTION_START
+
 	char	cUpdatedPath[PLATFORM_MAX_PATH];
 	void	*(*vMain)(void*);
-
-	pERROR_UPDATE;
 
 	sprintf(cUpdatedPath,"%s."PLATFORM_CPU,cPath);
 
@@ -109,4 +109,6 @@ void *pModule_LoadInterface(pINSTANCE hModule,const char *cPath,const char *cEnt
 	}
 
 	return (vMain(vPoint));
+
+	pFUNCTION_END
 }

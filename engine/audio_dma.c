@@ -140,7 +140,8 @@ void S_SoundList(void);
 
 void S_Init (void)
 {
-	if (COM_CheckParm("-nosound"))
+	// TODO: Surely we still want sound in an embedded context??
+	if (Global.bEmbeddedContext || COM_CheckParm("-nosound"))
 		return;
 
 	Con_Printf("Initializing sound...\n");

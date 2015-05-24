@@ -8,6 +8,7 @@
     <ClCompile Include="platform_net.c" />
     <ClCompile Include="platform_window.c" />
     <ClCompile Include="platform_math.c" />
+    <ClCompile Include="platform_log.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\platform.h">

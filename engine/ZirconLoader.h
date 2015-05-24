@@ -1,6 +1,4 @@
 /*	Copyright (C) 2011-2015 OldTimes Software
-
-	Zircon Game Framework (ZGF)
 */
 
 #ifndef __ZIRCON_LOADER__

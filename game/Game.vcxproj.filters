@@ -2,200 +2,218 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClInclude Include="..\Shared\shared_client.h">
-      <Filter>Shared</Filter>
+      <Filter>Legacy\Shared</Filter>
     </ClInclude>
     <ClInclude Include="..\Shared\shared_menu.h">
-      <Filter>Shared</Filter>
+      <Filter>Legacy\Shared</Filter>
     </ClInclude>
-    <ClInclude Include="game_main.h" />
-    <ClInclude Include="game_resources.h" />
     <ClInclude Include="..\shared\shared_game.h">
-      <Filter>Shared</Filter>
+      <Filter>Legacy\Shared</Filter>
     </ClInclude>
     <ClInclude Include="server\openkatana\openkatana.h">
-      <Filter>Server\OpenKatana</Filter>
+      <Filter>Legacy\Server\OpenKatana</Filter>
     </ClInclude>
     <ClInclude Include="server\server_gamemode.h">
-      <Filter>Server</Filter>
+      <Filter>Legacy\Server</Filter>
     </ClInclude>
     <ClInclude Include="server\server_gib.c">
-      <Filter>Server</Filter>
+      <Filter>Legacy\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="game_resources.h">
+      <Filter>Legacy</Filter>
+    </ClInclude>
+    <ClInclude Include="game_main.h">
+      <Filter>Legacy</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="Shared">
+    <Filter Include="Legacy">
+      <UniqueIdentifier>{ff68591f-0a12-4bc8-9069-370e61950cc8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Legacy\Shared">
       <UniqueIdentifier>{75d3350d-3a8a-4fb4-b211-7dc71e4f5475}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Server">
+    <Filter Include="Legacy\Server">
       <UniqueIdentifier>{52fdec07-0ec0-4f02-9099-041d1f667b05}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Client">
-      <UniqueIdentifier>{f867c180-f6d1-4f11-80a3-99d52582592c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Server\OpenKatana">
+    <Filter Include="Legacy\Server\OpenKatana">
       <UniqueIdentifier>{4259e5cd-2758-4ffd-b12a-2cd605141b33}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Server\Adamas">
-      <UniqueIdentifier>{3ce32b8b-7fe2-4c52-b919-1f54a8b51b92}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Server\Adamas\Weapons">
-      <UniqueIdentifier>{dabf2891-434e-495d-ae13-edb8ce0cd4e2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Server\Adamas\Monsters">
-      <UniqueIdentifier>{7b21ad05-bc3d-492e-8ff2-6351e1fb5d95}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Server\OpenKatana\Monsters">
+    <Filter Include="Legacy\Server\OpenKatana\Monsters">
       <UniqueIdentifier>{dec28296-b962-4f23-b16b-5f0f668776cb}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Server\OpenKatana\Weapons">
+    <Filter Include="Legacy\Server\OpenKatana\Weapons">
       <UniqueIdentifier>{482025ad-b292-4b59-9eb9-8ee63c20530e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Server\OpenKatana\Decoration">
+    <Filter Include="Legacy\Server\OpenKatana\Decoration">
       <UniqueIdentifier>{460682a2-262d-4b3a-a8c1-b06fc848bd1b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Legacy\Server\Adamas">
+      <UniqueIdentifier>{3ce32b8b-7fe2-4c52-b919-1f54a8b51b92}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Legacy\Server\Adamas\Weapons">
+      <UniqueIdentifier>{dabf2891-434e-495d-ae13-edb8ce0cd4e2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Legacy\Server\Adamas\Monsters">
+      <UniqueIdentifier>{7b21ad05-bc3d-492e-8ff2-6351e1fb5d95}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Legacy\Client">
+      <UniqueIdentifier>{f867c180-f6d1-4f11-80a3-99d52582592c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Server">
+      <UniqueIdentifier>{8d01da89-4faa-4edb-baa3-843eafde363f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Client">
+      <UniqueIdentifier>{9a6cb20b-864d-4e6e-8cce-d3a58969ce0a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="game_main.c" />
     <ClCompile Include="server\monster_bot.c">
-      <Filter>Server</Filter>
+      <Filter>Legacy\Server</Filter>
     </ClCompile>
     <ClCompile Include="server\server_area.c">
-      <Filter>Server</Filter>
+      <Filter>Legacy\Server</Filter>
     </ClCompile>
     <ClCompile Include="server\server_item.c">
-      <Filter>Server</Filter>
+      <Filter>Legacy\Server</Filter>
     </ClCompile>
     <ClCompile Include="server\server_main.c">
-      <Filter>Server</Filter>
+      <Filter>Legacy\Server</Filter>
     </ClCompile>
     <ClCompile Include="server\server_misc.c">
-      <Filter>Server</Filter>
+      <Filter>Legacy\Server</Filter>
     </ClCompile>
     <ClCompile Include="server\server_monster.c">
-      <Filter>Server</Filter>
+      <Filter>Legacy\Server</Filter>
     </ClCompile>
     <ClCompile Include="server\server_physics.c">
-      <Filter>Server</Filter>
+      <Filter>Legacy\Server</Filter>
     </ClCompile>
     <ClCompile Include="server\server_player.c">
-      <Filter>Server</Filter>
+      <Filter>Legacy\Server</Filter>
     </ClCompile>
     <ClCompile Include="server\server_point.c">
-      <Filter>Server</Filter>
+      <Filter>Legacy\Server</Filter>
     </ClCompile>
     <ClCompile Include="server\server_vehicle.c">
-      <Filter>Server</Filter>
+      <Filter>Legacy\Server</Filter>
     </ClCompile>
     <ClCompile Include="server\server_waypoint.c">
-      <Filter>Server</Filter>
+      <Filter>Legacy\Server</Filter>
     </ClCompile>
     <ClCompile Include="server\server_weapon.c">
-      <Filter>Server</Filter>
+      <Filter>Legacy\Server</Filter>
     </ClCompile>
     <ClCompile Include="client\client_main.c">
-      <Filter>Client</Filter>
+      <Filter>Legacy\Client</Filter>
     </ClCompile>
     <ClCompile Include="server\openkatana\mode_ctf.c">
-      <Filter>Server\OpenKatana</Filter>
+      <Filter>Legacy\Server\OpenKatana</Filter>
     </ClCompile>
     <ClCompile Include="server\openkatana\mode_deathmatch.c">
-      <Filter>Server\OpenKatana</Filter>
+      <Filter>Legacy\Server\OpenKatana</Filter>
     </ClCompile>
     <ClCompile Include="server\openkatana\mode_vektar.c">
-      <Filter>Server\OpenKatana</Filter>
+      <Filter>Legacy\Server\OpenKatana</Filter>
     </ClCompile>
     <ClCompile Include="client\client_effects.c">
-      <Filter>Client</Filter>
+      <Filter>Legacy\Client</Filter>
     </ClCompile>
     <ClCompile Include="server\adamas\adamas_player.c">
-      <Filter>Server\Adamas</Filter>
+      <Filter>Legacy\Server\Adamas</Filter>
     </ClCompile>
     <ClCompile Include="server\adamas\adamas_blazer.c">
-      <Filter>Server\Adamas\Weapons</Filter>
+      <Filter>Legacy\Server\Adamas\Weapons</Filter>
     </ClCompile>
     <ClCompile Include="server\adamas\adamas_hurler.c">
-      <Filter>Server\Adamas\Monsters</Filter>
+      <Filter>Legacy\Server\Adamas\Monsters</Filter>
     </ClCompile>
     <ClCompile Include="server\openkatana\monster_prisoner.c">
-      <Filter>Server\OpenKatana\Monsters</Filter>
+      <Filter>Legacy\Server\OpenKatana\Monsters</Filter>
     </ClCompile>
     <ClCompile Include="server\openkatana\monster_lasergat.c">
-      <Filter>Server\OpenKatana\Monsters</Filter>
+      <Filter>Legacy\Server\OpenKatana\Monsters</Filter>
     </ClCompile>
     <ClCompile Include="server\openkatana\monster_inmater.c">
-      <Filter>Server\OpenKatana\Monsters</Filter>
+      <Filter>Legacy\Server\OpenKatana\Monsters</Filter>
     </ClCompile>
     <ClCompile Include="server\openkatana\weapon_zeus.c">
-      <Filter>Server\OpenKatana\Weapons</Filter>
+      <Filter>Legacy\Server\OpenKatana\Weapons</Filter>
     </ClCompile>
     <ClCompile Include="server\openkatana\weapon_trident.c">
-      <Filter>Server\OpenKatana\Weapons</Filter>
+      <Filter>Legacy\Server\OpenKatana\Weapons</Filter>
     </ClCompile>
     <ClCompile Include="server\openkatana\weapon_sidewinder.c">
-      <Filter>Server\OpenKatana\Weapons</Filter>
+      <Filter>Legacy\Server\OpenKatana\Weapons</Filter>
     </ClCompile>
     <ClCompile Include="server\openkatana\weapon_shotcycler6.c">
-      <Filter>Server\OpenKatana\Weapons</Filter>
+      <Filter>Legacy\Server\OpenKatana\Weapons</Filter>
     </ClCompile>
     <ClCompile Include="server\openkatana\weapon_shockwave.c">
-      <Filter>Server\OpenKatana\Weapons</Filter>
+      <Filter>Legacy\Server\OpenKatana\Weapons</Filter>
     </ClCompile>
     <ClCompile Include="server\openkatana\weapon_pulserifle.c">
-      <Filter>Server\OpenKatana\Weapons</Filter>
+      <Filter>Legacy\Server\OpenKatana\Weapons</Filter>
     </ClCompile>
     <ClCompile Include="server\openkatana\weapon_midas.c">
-      <Filter>Server\OpenKatana\Weapons</Filter>
+      <Filter>Legacy\Server\OpenKatana\Weapons</Filter>
     </ClCompile>
     <ClCompile Include="server\openkatana\weapon_ionrifle.c">
-      <Filter>Server\OpenKatana\Weapons</Filter>
+      <Filter>Legacy\Server\OpenKatana\Weapons</Filter>
     </ClCompile>
     <ClCompile Include="server\openkatana\weapon_glock.c">
-      <Filter>Server\OpenKatana\Weapons</Filter>
+      <Filter>Legacy\Server\OpenKatana\Weapons</Filter>
     </ClCompile>
     <ClCompile Include="server\openkatana\weapon_crossbow.c">
-      <Filter>Server\OpenKatana\Weapons</Filter>
+      <Filter>Legacy\Server\OpenKatana\Weapons</Filter>
     </ClCompile>
     <ClCompile Include="server\openkatana\weapon_ballista.c">
-      <Filter>Server\OpenKatana\Weapons</Filter>
+      <Filter>Legacy\Server\OpenKatana\Weapons</Filter>
     </ClCompile>
     <ClCompile Include="server\openkatana\weapon_axe.c">
-      <Filter>Server\OpenKatana\Weapons</Filter>
+      <Filter>Legacy\Server\OpenKatana\Weapons</Filter>
     </ClCompile>
     <ClCompile Include="server\openkatana\weapon_kineticore.c">
-      <Filter>Server\OpenKatana\Weapons</Filter>
+      <Filter>Legacy\Server\OpenKatana\Weapons</Filter>
     </ClCompile>
     <ClCompile Include="server\openkatana\weapon_ionblaster.c">
-      <Filter>Server\OpenKatana\Weapons</Filter>
+      <Filter>Legacy\Server\OpenKatana\Weapons</Filter>
     </ClCompile>
     <ClCompile Include="server\openkatana\weapon_hermes.c">
-      <Filter>Server\OpenKatana\Weapons</Filter>
+      <Filter>Legacy\Server\OpenKatana\Weapons</Filter>
     </ClCompile>
     <ClCompile Include="server\openkatana\weapon_greekfire.c">
-      <Filter>Server\OpenKatana\Weapons</Filter>
+      <Filter>Legacy\Server\OpenKatana\Weapons</Filter>
     </ClCompile>
     <ClCompile Include="server\openkatana\weapon_discus.c">
-      <Filter>Server\OpenKatana\Weapons</Filter>
+      <Filter>Legacy\Server\OpenKatana\Weapons</Filter>
     </ClCompile>
     <ClCompile Include="server\openkatana\weapon_daikatana.c">
-      <Filter>Server\OpenKatana\Weapons</Filter>
+      <Filter>Legacy\Server\OpenKatana\Weapons</Filter>
     </ClCompile>
     <ClCompile Include="server\openkatana\weapon_c4vizatergo.c">
-      <Filter>Server\OpenKatana\Weapons</Filter>
+      <Filter>Legacy\Server\OpenKatana\Weapons</Filter>
     </ClCompile>
     <ClCompile Include="server\openkatana\weapon_barrier.c">
-      <Filter>Server\OpenKatana\Weapons</Filter>
+      <Filter>Legacy\Server\OpenKatana\Weapons</Filter>
     </ClCompile>
     <ClCompile Include="client\client_view.c">
-      <Filter>Client</Filter>
+      <Filter>Legacy\Client</Filter>
     </ClCompile>
     <ClCompile Include="server\server_entity.c">
-      <Filter>Server</Filter>
+      <Filter>Legacy\Server</Filter>
     </ClCompile>
     <ClCompile Include="server\openkatana\monster_cambot.c">
-      <Filter>Server\OpenKatana\Monsters</Filter>
+      <Filter>Legacy\Server\OpenKatana\Monsters</Filter>
     </ClCompile>
     <ClCompile Include="server\openkatana\decoration_barrel.c">
-      <Filter>Server\OpenKatana\Decoration</Filter>
+      <Filter>Legacy\Server\OpenKatana\Decoration</Filter>
+    </ClCompile>
+    <ClCompile Include="game_main.c">
+      <Filter>Legacy</Filter>
+    </ClCompile>
+    <ClCompile Include="server\ServerEntity.cpp">
+      <Filter>Server</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

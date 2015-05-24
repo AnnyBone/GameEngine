@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug (Ictus)|Win32">
       <Configuration>Debug (Ictus)</Configuration>
@@ -47,18 +47,18 @@
     <SccLocalPath />
     <ProjectName>Engine</ProjectName>
     <ProjectGuid>{5588B942-90A0-63A2-3369-523F456D79C5}</ProjectGuid>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release With Debug Info|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release With Debug Info|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -70,38 +70,38 @@
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
     <CLRSupport>false</CLRSupport>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Editor|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
     <CLRSupport>false</CLRSupport>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug (Ictus)|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Editor|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -287,9 +287,9 @@
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
       <FunctionLevelLinking>false</FunctionLevelLinking>
-      <Optimization>MinSpace</Optimization>
+      <Optimization>Disabled</Optimization>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
       <AdditionalIncludeDirectories>.;..\;..\include;..\shared;..\platform\include;..\external\sdl2\include;..\external\sdl2_ttf\include;..\external\glee;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;_AFX_SECURE_NO_WARNINGS;_ATL_SECURE_NO_WARNINGS;KATANA;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -299,7 +299,7 @@
       <ObjectFileName>.\Release\</ObjectFileName>
       <ProgramDataBaseFileName>.\Release\</ProgramDataBaseFileName>
       <CompileAs>Default</CompileAs>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <CompileAsManaged>false</CompileAsManaged>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <StringPooling>true</StringPooling>
@@ -619,29 +619,31 @@
     <ClCompile Include="conproc.c" />
     <ClCompile Include="console.c" />
     <ClCompile Include="crc.c" />
+    <ClCompile Include="EngineSDLWindow.c" />
     <ClCompile Include="engine_particle.c" />
-    <ClCompile Include="video_alias.c" />
+    <ClCompile Include="EngineVideoAlias.c" />
     <ClCompile Include="audio.c" />
     <ClCompile Include="engine_client.c" />
     <ClCompile Include="console_command.c" />
     <ClCompile Include="engine_console.c" />
     <ClCompile Include="console_variable.c" />
     <ClCompile Include="engine_editor.c" />
-    <ClCompile Include="ZirconVideoLayer.c" />
-    <ClCompile Include="ZirconVideoObject.c" />
-    <ClCompile Include="video_font.c">
+    <ClCompile Include="EngineMaterialEditor.c" />
+    <ClCompile Include="EngineVideoLayer.c" />
+    <ClCompile Include="EngineVideoObject.c" />
+    <ClCompile Include="EngineVideoFont.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="engine_modgame.c" />
     <ClCompile Include="engine_clientinput.c" />
-    <ClCompile Include="video_light.c" />
+    <ClCompile Include="EngineVideoLights.c" />
     <ClCompile Include="ZirconLoader.c" />
     <ClCompile Include="engine_main.c" />
     <ClCompile Include="network_master.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (Ictus)|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="engine_material.c">
+    <ClCompile Include="EngineVideoMaterial.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="engine_modmenu.c" />
@@ -650,24 +652,24 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (Ictus)|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="engine_physics.c" />
-    <ClCompile Include="video_screen.c" />
+    <ClCompile Include="EngineVideoScreen.c" />
     <ClCompile Include="engine_script.c" />
     <ClCompile Include="engine_server.c" />
-    <ClCompile Include="video_sprite.c" />
+    <ClCompile Include="EngineVideoSprite.c" />
     <ClCompile Include="video.c" />
     <ClCompile Include="client_view.c" />
     <ClCompile Include="server_world.c" />
-    <ClCompile Include="video_draw.c" />
-    <ClCompile Include="video_fog.c" />
+    <ClCompile Include="EngineVideoPrimitive.c" />
+    <ClCompile Include="EngineVideoFog.c" />
     <ClCompile Include="engine_model.c" />
     <ClCompile Include="video_refrag.c" />
     <ClCompile Include="video_rmain.c" />
     <ClCompile Include="video_misc.c" />
-    <ClCompile Include="video_sky.c" />
+    <ClCompile Include="EngineVideoSky.c" />
     <ClCompile Include="gl_texmgr.c" />
     <ClCompile Include="gl_vidnt.c" />
-    <ClCompile Include="video_warp.c" />
-    <ClCompile Include="engine_host.c" />
+    <ClCompile Include="EngineVideoWarp.c" />
+    <ClCompile Include="EngineHost.c" />
     <ClCompile Include="host_cmd.c" />
     <ClCompile Include="image.c" />
     <ClCompile Include="engine_videoshadow.c" />
@@ -679,8 +681,8 @@
     <ClCompile Include="network_windows.c" />
     <ClCompile Include="network_winsock.c" />
     <ClCompile Include="server_edict.c" />
-    <ClCompile Include="video_brush.c" />
-    <ClCompile Include="video_world.c" />
+    <ClCompile Include="EngineVideoBrush.c" />
+    <ClCompile Include="EngineVideoWorld.c" />
     <ClCompile Include="audio_dma.c" />
     <ClCompile Include="audio_mem.c" />
     <ClCompile Include="audio_mix.c" />
@@ -691,6 +693,10 @@
     <ClCompile Include="zone.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\shared\SharedMaterial.h" />
+    <ClInclude Include="..\shared\SharedModel.h" />
+    <ClInclude Include="..\shared\SharedTexture.h" />
+    <ClInclude Include="..\shared\SharedZone.h" />
     <ClInclude Include="..\shared\shared_client.h" />
     <ClInclude Include="..\shared\shared_editor.h" />
     <ClInclude Include="..\shared\shared_engine.h" />
@@ -701,7 +707,6 @@
     <ClInclude Include="..\shared\shared_menu.h" />
     <ClInclude Include="..\shared\shared_module.h" />
     <ClInclude Include="..\shared\shared_server.h" />
-    <ClInclude Include="..\shared\shared_video.h" />
     <ClInclude Include="client.h" />
     <ClInclude Include="cmd.h" />
     <ClInclude Include="cmdlib.h" />
@@ -712,12 +717,13 @@
     <ClInclude Include="cvar.h" />
     <ClInclude Include="draw.h" />
     <ClInclude Include="audio.h" />
+    <ClInclude Include="EngineWindow.h" />
     <ClInclude Include="engine_client.h" />
     <ClInclude Include="engine_console.h" />
     <ClInclude Include="engine_edict.h" />
     <ClInclude Include="engine_editor.h" />
     <ClInclude Include="engine_particle.h" />
-    <ClInclude Include="engine_material.h" />
+    <ClInclude Include="EngineVideoMaterial.h" />
     <ClInclude Include="engine_modgame.h" />
     <ClInclude Include="engine_clientinput.h" />
     <ClInclude Include="ZirconLoader.h" />

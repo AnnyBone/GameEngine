@@ -25,7 +25,7 @@ void pNetwork_Initialize(void)
 */
 bool gNetwork_Download(const char *ccURL,const char *ccCache)
 {
-	pERROR_UPDATE;
+	pFUNCTION_UPDATE;
 
 #ifdef _WIN32
 	{

@@ -332,7 +332,7 @@ MathVector_t Weapon_Aim(edict_t *eEntity)
 }
 
 MathVector3_t mvTraceMaxs = { 8, 8, 8 };
-MathVector3_t mvTraceMins = { 8, 8, 8 };
+MathVector3_t mvTraceMins = { -8, -8, -8 };
 
 /*	Runs a trace to see if a projectile can be casted.
 */

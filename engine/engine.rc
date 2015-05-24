@@ -7,7 +7,7 @@
 //
 // Generated from the TEXTINCLUDE 2 resource.
 //
-#include "windows.h"
+#include "afxres.h"
 
 /////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS
@@ -61,8 +61,8 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_UK
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,2
- PRODUCTVERSION 1,2
+ FILEVERSION 1,2,0,0
+ PRODUCTVERSION 1,2,0,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x3L
@@ -78,10 +78,13 @@ BEGIN
         BLOCK "080904b0"
         BEGIN
             VALUE "CompanyName", "OldTimes Software"
+            VALUE "FileDescription", "Engine Module"
+            VALUE "FileVersion", "1.2.0.0"
             VALUE "InternalName", "Katana"
-            VALUE "LegalCopyright", "Copyright (C) 2014 OldTimes Software"
+            VALUE "LegalCopyright", "Copyright (C) 2011-2015 OldTimes Software"
             VALUE "OriginalFilename", "engine.dll"
             VALUE "ProductName", "Katana"
+            VALUE "ProductVersion", "1.2.0.0"
         END
     END
     BLOCK "VarFileInfo"

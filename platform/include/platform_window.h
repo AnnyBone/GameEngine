@@ -39,6 +39,10 @@ extern void gWindow_GetCursorPosition(int *iX,int *iY);
 extern void gWindow_Destroy(GIPLWindow_t *gwWindow);
 extern void gWindow_SwapBuffers(GIPLWindow_t *gwWindow);
 
+extern int pWindow_GetScreenWidth(void);
+extern int pWindow_GetScreenHeight(void);
+extern int pWindow_GetMonitorCount(void);
+
 #ifdef __cplusplus
 }
 #endif

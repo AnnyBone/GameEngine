@@ -35,8 +35,6 @@ static char     *safeargvs[NUM_SAFE_ARGVS] =
 
 bool msg_suppress_1 = 0;
 
-void FileSystem_Initialize(void);
-
 // if a packfile directory differs from this, it is assumed to be hacked
 #define PAK0_COUNT              339
 #define PAK0_CRC                32981
@@ -1299,12 +1297,12 @@ byte *COM_LoadFile (char *path, int usehunk)
 	return buf;
 }
 
-byte *COM_LoadHunkFile(char *path)
+uint8_t *COM_LoadHunkFile(char *path)
 {
 	return COM_LoadFile(path,1);
 }
 
-byte *COM_LoadTempFile (char *path)
+uint8_t *COM_LoadTempFile(char *path)
 {
 	return COM_LoadFile (path,2);
 }
@@ -1316,11 +1314,11 @@ void COM_LoadCacheFile (char *path, struct cache_user_s *cu)
 }
 
 // uses temp hunk if larger than bufsize
-byte *COM_LoadStackFile (char *path, void *buffer, int bufsize)
+uint8_t *COM_LoadStackFile(char *path, void *buffer, int bufsize)
 {
-	byte    *buf;
+	uint8_t *buf;
 
-	loadbuf = (byte *)buffer;
+	loadbuf = (uint8_t *)buffer;
 	loadsize = bufsize;
 	buf = COM_LoadFile (path, 4);
 

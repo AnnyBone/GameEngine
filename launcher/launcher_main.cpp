@@ -10,6 +10,7 @@
 // Platform Library
 #include "platform_module.h"
 #include "platform_window.h"
+#include "platform_math.h"
 
 // Shared Library
 #include "shared_flags.h"
@@ -32,16 +33,24 @@ pINSTANCE hEngineInstance;
 
 int main(int argc,char *argv[])
 {
+	char sPath[PLATFORM_MAX_PATH];
+
+	// Update the path to point to where we need it.
+	sprintf_s(sPath, "./%s/%s", PATH_ENGINE, MODULE_ENGINE);
+
+	// Load the module interface for the engine module.
 	Engine = (EngineExport_t*)pModule_LoadInterface(
 		hEngineInstance,
-		"./"PATH_ENGINE"/"MODULE_ENGINE,
+		sPath,	//"./"PATH_ENGINE"/"MODULE_ENGINE,
 		"Engine_Main",
 		&Launcher);
+	// Let us know if it failed to load.
 	if(!Engine)
 	{
 		gWindow_MessageBox("Launcher",pError_Get());
 		return -1;
 	}
+	// Also ensure that the engine version hasn't changed.
 	else if (Engine->iVersion != ENGINE_VERSION)
 	{
 		gWindow_MessageBox("Launcher","Launcher is outdated, please rebuild!");
@@ -50,8 +59,17 @@ int main(int argc,char *argv[])
 		return -1;
 	}
 	
-	// Initialize and begin our main loop.
-	Engine->Initialize(argc,argv);
+	// Initialize.
+	if (!Engine->Initialize(argc, argv, false))
+	{
+		gWindow_MessageBox("Launcher", "Failed to initialize engine!");
+
+		pModule_Unload(hEngineInstance);
+		return -1;
+	}
+
+	while (Engine->IsRunning())
+		Engine->Loop();
 
 	// Because the loop is within the initialize function.
 	pModule_Unload(hEngineInstance);

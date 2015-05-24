@@ -4,41 +4,49 @@
 
 #include "platform_module.h"
 
+#include "video.h"
+#include "EngineVideoMaterial.h"
+#include "engine_editor.h"
+
 EngineExport_t	eExport;
 EngineImport_t	Launcher;
 
-#if 0
-/*	On failure returns false.
-*/
-bool Engine_Initialize(int argc,char *argv[])
+bool Engine_IsRunning(void)
 {
-    double dNewTime,
-            dCurrentTime,
-            dOldTime = 0;   // [22/7/2013] Set to 0 since we use it on the first frame ~hogsy
-
-	for(;;)
-    {
-        dNewTime        = System_DoubleTime();
-        dCurrentTime    = dNewTime-dOldTime;
-
-        Host_Frame(dCurrentTime);
-
-        dOldTime = dNewTime;
-    }
-
-    return true;
+	return true;
 }
-#endif
 
-// [8/3/2014] Oops, this didn't match! Fixed ~hogsy
-bool System_Main(int iArgumentCount,char *cArguments[]);
+char *Engine_GetBasePath(void)
+{
+	return host_parms.cBasePath;
+}
+
+char *Engine_GetMaterialPath(void)
+{
+	return Global.cMaterialPath;
+}
+
+bool System_Main(int iArgumentCount,char *cArguments[], bool bEmbedded);
+void System_Loop(void);
 
 pMODULE_EXPORT EngineExport_t *Engine_Main(EngineImport_t *mImport)
 {
 	Launcher.iVersion	= mImport->iVersion;
 
 	eExport.Initialize = System_Main;
+	eExport.IsRunning = Engine_IsRunning;
+	eExport.SetViewportSize = Video_SetViewportSize;
+	eExport.Loop = System_Loop;
 	eExport.iVersion = ENGINE_VERSION;
+
+	eExport.GetBasePath = Engine_GetBasePath;
+	eExport.GetMaterialPath = Engine_GetMaterialPath;
+
+	eExport.LoadMaterial = Material_Load;
+
+	// Material Editor
+	eExport.MaterialEditorInitialize = MaterialEditor_Initialize;
+	eExport.MaterialEditorDisplay = MaterialEditor_Display;
 
 	return &eExport;
 }

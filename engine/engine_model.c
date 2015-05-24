@@ -1080,7 +1080,7 @@ void Model_LoadBSP(model_t *mod,void *buffer)
 	loadmodel->mType	= MODEL_TYPE_BSP;
 
 	// swap all the lumps
-	mod_base = (byte*)bhHeader;
+	mod_base = (uint8_t*)bhHeader;
 
 	for (i=0; i < sizeof(BSPHeader_t)/4; i++)
 		((int*)bhHeader)[i] = LittleLong(((int*)bhHeader)[i]);
@@ -1194,7 +1194,7 @@ void Model_LoadIQM(model_t *mModel, void *Buffer)
 	MD2 Models
 */
 
-void Model_LoadTextures(model_t *mModel)
+void Model_LoadMD2Textures(model_t *mModel)
 {
 	char cOutName[MAX_OSPATH];
 
@@ -1384,7 +1384,7 @@ void Model_LoadMD2(model_t *mModel,void *Buffer)
 		mMD2Model->num_skins*MAX_QPATH
 	);
 
-	Model_LoadTextures(mModel);
+	Model_LoadMD2Textures(mModel);
 
 #if 1
 	for (i=0; i<3;i++)
@@ -1459,7 +1459,7 @@ bool Model_LoadOBJ(model_t *mModel,void *Buffer)
 	return false;
 }
 
-void Model_DrawOBJ(entity_t *eEntity)
+void Model_DrawOBJ(ClientEntity_t *eEntity)
 {
 }
 

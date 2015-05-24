@@ -3,12 +3,15 @@
 #ifndef __PLATFORMSYSTEM__
 #define __PLATFORMSYSTEM__
 
+/*
+	This document provides platform-specific
+	headers and any additional system information.
+*/
+
 #ifdef _WINDOWS
 
 #else   // Linux
 
 #endif
-
-#define	pERROR_UPDATE	pError_SetFunction(pFUNCTION)
 
 #endif // __PLATFORMSYSTEM__

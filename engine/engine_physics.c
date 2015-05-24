@@ -1003,7 +1003,7 @@ void Physics_AddFriction(edict_t *eEntity,vec3_t vVelocity,vec3_t vOrigin)
 
 void Physics_ServerFrame(void)
 {
-	int		i;
+	int	i;
 	edict_t	*eEntity;
 
 	// Let the progs know that a new frame has started

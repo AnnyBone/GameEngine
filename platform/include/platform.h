@@ -1,11 +1,11 @@
-/*	Copyright (C) 2013-2015 OldTimes Software
+/*	Copyright (C) 2011-2015 OldTimes Software
 */
 #ifndef __PLATFORM__
 #define __PLATFORM__
 
 /*
 	Platform Library
-	Version 0.8
+	Version 0.10
 
 	This library includes standard platform headers,
 	gives you some standard functions to interact with
@@ -15,23 +15,38 @@
 */
 
 // Shared headers
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdarg.h>
-#include <stdlib.h>
-#ifdef _MSC_VER	// [14/1/2014] MSVC doesn't support stdint, great... ~hogsy
-#	include "platform_inttypes.h"
-#else
-#	include <stdint.h>
-#endif
-#include <string.h>
-#include <ctype.h>
-#include <math.h>
-#include <setjmp.h>
-#include <errno.h>
+#ifndef pIGNORE_SHARED_HEADERS
+//#	ifndef __cplusplus
+#		include <stdio.h>
+#		include <stdlib.h>
+#		include <stdarg.h>
+#		include <stdlib.h>
+#		ifdef _MSC_VER	// MSVC doesn't support stdint...
+#			include "platform_inttypes.h"
+#		else
+#			include <stdint.h>
+#		endif
+#		include <string.h>
+#		include <ctype.h>
+#		include <math.h>
+#		include <setjmp.h>
+#		include <errno.h>
 
-#include <sys/stat.h>
-#include <sys/types.h>
+#		include <sys/stat.h>
+#		include <sys/types.h>
+/*#	else
+#		include <cstdio>
+#		include <cstdlib>
+#		include <cstdarg>
+#		include <cstdlib>
+#		include <cstdint>
+#		include <cstring>
+#		include <cctype>
+#		include <cmath>
+#		include <csetjmp>
+#		include <cerrno>
+#	endif*/
+#endif
 
 #ifdef _WIN32	// Windows
 	// Windows Headers
@@ -79,10 +94,19 @@
 
 // These are probably what you're going to want to use.
 #ifndef __cplusplus
-#if 1	// Internal solution
+#if 0	// Internal solution
+#ifdef bool
+#undef bool
+#endif
+#ifdef true
+#undef true
+#endif
+#ifdef false
+#undef false
+#endif
 typedef enum
 {
-	false,	// "false", otherwise nothing.
+	false,	// "false", nothing.
 	true	// "true", otherwise just a positive number.
 } PlatformBoolean_t;
 typedef PlatformBoolean_t bool;
@@ -112,7 +136,7 @@ typedef _Bool bool;
 
 /**/
 
-#ifdef _MSC_VER	// [15/5/2014] MSVC doesn't support __func__ either... ~hogsy
+#ifdef _MSC_VER	// MSVC doesn't support __func__ either...
 #	define	pFUNCTION	__FUNCTION__	// Returns the active function.
 #else
 #	define	pFUNCTION	__func__		// Returns the active function.
@@ -121,7 +145,19 @@ typedef _Bool bool;
 #define	pARRAYELEMENTS(a)	(sizeof(a)/sizeof(*(a)))	// Returns the number of elements within an array.
 
 typedef unsigned int pUINT;
-typedef	unsigned char pBYTE;
+typedef	unsigned char pUCHAR;
+
+#include "platform_window.h"
+
+/*
+	Error Management Functionality
+*/
+
+static jmp_buf jbException;
+
+#define	pFUNCTION_UPDATE	pError_SetFunction(pFUNCTION)
+#define	pFUNCTION_START		pFUNCTION_UPDATE; if(setjmp(jbException)) gWindow_MessageBox("Error","Encountered exception in "pFUNCTION); { 
+#define pFUNCTION_END 		}
 
 #ifdef __cplusplus
 extern "C" {
@@ -139,5 +175,7 @@ extern char	*pError_Get(void);									// Returns the last recorded error.
 #ifdef __cplusplus
 }
 #endif
+
+/**/
 
 #endif

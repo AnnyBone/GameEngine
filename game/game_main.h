@@ -24,7 +24,7 @@
 #define	GAME_NAME	"Katana"
 #endif
 
-extern ModuleImport_t	Engine;
+extern ModuleImport_t Engine;
 
 typedef struct
 {

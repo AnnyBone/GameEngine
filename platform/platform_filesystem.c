@@ -11,11 +11,19 @@
 
 #include "platform_system.h"
 
+void pFileSystem_UpdatePath(char *cPath)
+{
+	int i;
+
+	for (i = 0; cPath[i]; i++)
+		cPath[i] = (char)tolower(cPath[i]);
+}
+
 /*  Creates a folder at the given path.
 */
 bool pFileSystem_CreateDirectory(const char *ccPath)
 {
-	pERROR_UPDATE;
+	pFUNCTION_UPDATE;
 
 #ifdef _WIN32
 	if(CreateDirectory(ccPath,NULL) || (GetLastError() == ERROR_ALREADY_EXISTS))
@@ -65,7 +73,7 @@ void pFileSystem_GetUserName(char *cOut)
     char	cUser[128] = "user";
 	DWORD	dName;
 
-	pERROR_UPDATE;
+	pFUNCTION_UPDATE;
 
 	// [16/5/2014] Set these AFTER we update active function ~hogsy
 	dName	= sizeof(cUser);
@@ -106,7 +114,7 @@ void pFileSystem_ScanDirectory(const char *ccPath,const char *ccExtension,void (
 {
 	char cFileString[PLATFORM_MAX_PATH];
 
-	pERROR_UPDATE;
+	pFUNCTION_UPDATE;
 
 	if (ccPath[0] == ' ')
 	{
@@ -169,7 +177,7 @@ void pFileSystem_ScanDirectory(const char *ccPath,const char *ccExtension,void (
 */
 void pFileSystem_GetWorkingDirectory(char *cOut)
 {
-    pERROR_UPDATE;
+	pFUNCTION_UPDATE;
 
 #ifdef _WIN32
     if(!_getcwd(cOut,256))

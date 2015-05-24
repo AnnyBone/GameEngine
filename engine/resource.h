@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by winquake.rc
+// Used by engine.rc
 //
 #define IDI_ICON2                       1
 #define IDB_BITMAP2                     115

@@ -1,4 +1,4 @@
-/*	Copyright (C) 2011-2013 OldTimes Software
+/*	Copyright (C) 2011-2015 OldTimes Software
 */
 #include "client_main.h"
 
@@ -119,7 +119,7 @@ void Client_ParseTemporaryEntity(void)
 */
 void Client_RelinkEntities(entity_t *eClient,int i,double dTime)
 {
-	vec3_t			f,r,u;
+	MathVector3f_t	f,r,u;
 	DynamicLight_t	*dLight;
 
 	// [6/5/2012] Keep client time updated (temp) ~hogsy
@@ -134,7 +134,7 @@ void Client_RelinkEntities(entity_t *eClient,int i,double dTime)
 
 	if(eClient->effects & EF_PARTICLE_SMOKE)
 	{
-		int k,j;
+		int j;
 
 		if (rand()%5 == 0)
 		{

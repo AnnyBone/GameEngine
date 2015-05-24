@@ -863,8 +863,8 @@ void Area_PlatformSpawn(ServerEntity_t *eArea)
 
 	eArea->Physics.iSolid = SOLID_BSP;
 
-	if(eArea->local.count == 0.0f)
-		eArea->local.count = 100.0f;
+	if(eArea->local.count == 0)
+		eArea->local.count = 100;
 	if(eArea->local.dWait == 0.0f)
 		eArea->local.dWait = 3.0f;
 	if(eArea->local.iDamage == 0.0f)

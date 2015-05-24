@@ -6,7 +6,7 @@
 #include <SDL.h>
 #include <SDL_syswm.h>
 
-#include "shared_video.h"
+#define	VIDEO_MAX_UNITS	16
 
 //#define	VIDEO_ENABLE_SHADERS
 
@@ -17,6 +17,7 @@ extern cvar_t	cvVideoDrawModels,		// Should we draw models?
 				cvVideoAlphaTrick,
 				cvVideoMirror,			// Toggles mirrors.
 				cvVideoPlayerShadow,	// Render players shadow.
+				cvVerticalSync,
 				gl_overbright,			// Enable overbrights?
 				cvLitParticles;			// Should particles be lit or not?
 
@@ -50,22 +51,25 @@ typedef struct
 
     // Texture Management
 	unsigned	int	iCurrentTexture,	// Current/last binded texture.
-					uiSupportedUnits,	// Max number of supported units.
                     uiActiveUnit,		// The currently active unit.
                     uiSecondaryUnit;	// Current/last secondary texture.
+
+	int iSupportedUnits;	// Max number of supported units.
 
 	unsigned	int	uiMSAASamples,	// Number of AA samples.
 					uiFrameBuffer[VIDEO_MAX_FRAMEBUFFFERS],
 					iWidth,iHeight;
 
-	bool			bInitialized,					// Is the video system started?
-					bFullscreen,					// Is the window fullscreen or not?
-					bVerticalSync,					// Sync the swap interval to the refresh rate?
-					bActive,						// Is the window active or not?
-					bSkipUpdate,					// Skip screen update.
-					bColourOverride,				// Override any applied colour for the object.
-					bUnitState[VIDEO_MAX_UNITS],	// The state of each individual TMU.
-					bUnlocked;						// Can we change the window settings or not?
+	bool			
+		bInitialized,					// Is the video system started?
+		bFullscreen,					// Is the window fullscreen or not?
+		bVerticalSync,					// Sync the swap interval to the refresh rate?
+		bActive,						// Is the window active or not?
+		bSkipUpdate,					// Skip screen update.
+		bColourOverride,				// Override any applied colour for the object.
+		bUnitState[VIDEO_MAX_UNITS],	// The state of each individual TMU.
+		bDebugFrame,
+		bUnlocked;						// Can we change the window settings or not?
 
 	// OpenGL Extensions
 	bool
@@ -94,6 +98,7 @@ extern SDL_Window	*sMainWindow;
 typedef enum
 {
 	VIDEO_PRIMITIVE_LINE,
+	VIDEO_PRIMITIVE_QUAD_STRIP,
     VIDEO_PRIMITIVE_TRIANGLES,
     VIDEO_PRIMITIVE_TRIANGLE_FAN,
 	VIDEO_PRIMITIVE_TRIANGLE_FAN_LINE
@@ -153,12 +158,12 @@ typedef struct
 } VideoObjectX_t;
 
 void Video_Initialize(void);
-void Video_CreateWindow(void);
 void Video_UpdateWindow(void);
 void Video_ClearBuffer(void);
 void Video_GenerateSphereCoordinates(void);
 void Video_SetTexture(gltexture_t *gTexture);
 void Video_SetBlend(VideoBlend_t voBlendMode, VideoDepth_t vdDepthMode);
+void Video_SetViewportSize(int iWidth, int iHeight);
 void Video_SelectTexture(unsigned int uiTarget);
 void Video_EnableCapabilities(unsigned int iCapabilities);
 void Video_DisableCapabilities(unsigned int iCapabilities);
@@ -180,11 +185,21 @@ unsigned int Video_GetTextureUnit(unsigned int uiTarget);
 
 bool Video_GetCapability(unsigned int iCapability);
 
+#define	VIDEO_FUNCTION_START(a) \
+{ \
+	static int a = -1; \
+	a++; \
+	if(Video.bDebugFrame) Console_WriteToLog(va("log_video_"__FILE__), "Function start: "pFUNCTION" (%i)",a); \
+} \
+{
+#define	VIDEO_FUNCTION_END \
+}
+
 /*
 	Layer
 */
 
-unsigned int VideoLayer_GenerateBuffer(void);
+unsigned int VideoLayer_GenerateVertexBuffer(void);
 
 void VideoLayer_DeleteBuffer(unsigned int uiBuffer);
 

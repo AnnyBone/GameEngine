@@ -139,7 +139,7 @@ void IonRifle_PrimaryAttack(edict_t *eOwner)
 		eOwner->local.ionblaster_ammo -= 5;
 
 		{
-			edict_t	*eIonBall = Entity_Spawn();
+			eIonBall = Entity_Spawn();
 			if(eIonBall)
 			{
 				vec3_t	vOrigin;

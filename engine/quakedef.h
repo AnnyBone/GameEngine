@@ -32,6 +32,8 @@
 #pragma warning(disable:4305)
 #endif
 
+#include "shared_flags.h"
+
 #define MINIMUM_MEMORY	0x2000000	// 32MB
 
 #define MAX_NUM_ARGVS	50
@@ -56,8 +58,6 @@
 
 #define	MAX_SCOREBOARD		64
 
-#include "shared_flags.h"
-
 #include "cmdlib.h"
 #include "common.h"
 #include "vid.h"
@@ -67,6 +67,8 @@
 #include "shared_client.h"
 #include "shared_engine.h"
 #include "shared_formats.h"
+
+#include "EngineWindow.h"
 
 #include "engine_main.h"
 #include "draw.h"
@@ -91,7 +93,7 @@
 #include "crc.h"
 #include "glquake.h"
 
-#include "engine_material.h"
+#include "EngineVideoMaterial.h"
 
 //=============================================================================
 

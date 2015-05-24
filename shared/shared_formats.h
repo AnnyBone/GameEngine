@@ -28,7 +28,7 @@ typedef struct
 {
 	float	v[3];
 
-	pBYTE	bLightNormalIndex;
+	pUCHAR	bLightNormalIndex;
 } KMDLTriangleVertex_t;
 
 /*
@@ -54,8 +54,8 @@ typedef struct
 
 typedef struct
 {
-	pBYTE	v[3];			// scaled byte to fit in frame mins/maxs
-	pBYTE	lightnormalindex;
+	pUCHAR	v[3];			// scaled byte to fit in frame mins/maxs
+	pUCHAR	lightnormalindex;
 } MD2TriangleVertex_t;
 
 typedef struct
@@ -407,7 +407,7 @@ typedef struct
 	unsigned	int		uiFirstMarkSurface,
 						uiNumMarkSurfaces;
 
-	pBYTE				bAmbientLevel[BSP_AMBIENT_END];
+	pUCHAR				bAmbientLevel[BSP_AMBIENT_END];
 } BSPLeaf_t;
 
 // Obsolete

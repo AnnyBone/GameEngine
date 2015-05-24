@@ -464,10 +464,11 @@ char *Sys_ConsoleInput (void)
 	return NULL;
 }
 
-bool System_Main(int iArgumentCount,char *cArguments[])
+double dTime, oldtime, newtime;
+
+bool System_Main(int iArgumentCount,char *cArguments[], bool bEmbedded)
 {
 	EngineParameters_t	epParameters;
-	double				time, oldtime, newtime;
 	int					t;
 
 #ifdef _WIN32
@@ -526,6 +527,8 @@ bool System_Main(int iArgumentCount,char *cArguments[])
 	epParameters.argc = com_argc;
 	epParameters.argv = com_argv;
 
+	if (bEmbedded)
+		Global.bEmbeddedContext = true;
 	bIsDedicated = (COM_CheckParm("-dedicated") != 0);
 
 	if(COM_CheckParm("-heapsize"))
@@ -539,8 +542,11 @@ bool System_Main(int iArgumentCount,char *cArguments[])
 	pFileSystem_CreateDirectory(PATH_LOGS);
 
 	epParameters.membase = malloc(epParameters.memsize);
-	if(!epParameters.membase)
-		Sys_Error("Not enough memory free (%imb)!\nCheck disk space.\n",epParameters.memsize);
+	if (!epParameters.membase)
+	{
+		Sys_Error("Not enough memory free (%imb)!\nCheck disk space.\n", epParameters.memsize);
+		return false;
+	}
 
 #ifdef _WIN32
 	Sys_PageIn(epParameters.membase,epParameters.memsize);
@@ -584,37 +590,39 @@ bool System_Main(int iArgumentCount,char *cArguments[])
 
 	oldtime = System_DoubleTime();
 
-	for(;;)
+	return true;
+}
+
+void System_Loop(void)
+{
+	if (bIsDedicated)
 	{
-		if(bIsDedicated)
+		newtime = System_DoubleTime();
+		dTime = newtime - oldtime;
+
+		while (dTime < sys_ticrate.value)
 		{
-			newtime = System_DoubleTime ();
-			time = newtime - oldtime;
-
-			while(time < sys_ticrate.value)
-			{
-				SDL_Delay(1);
-
-				newtime = System_DoubleTime ();
-				time = newtime-oldtime;
-			}
-		}
-		else
-		{
-			if(!Video.bActive && cl.maxclients == 1)
-			{
-				Video.bSkipUpdate = true;
-
-				SDL_Delay(16);
-			}
-			else
-				Video.bSkipUpdate = false;
+			SDL_Delay(1);
 
 			newtime = System_DoubleTime();
-			time = newtime - oldtime;
+			dTime = newtime - oldtime;
 		}
-
-		Host_Frame(time);
-		oldtime = newtime;
 	}
+	else
+	{
+		if (!Video.bActive && cl.maxclients == 1)
+		{
+			Video.bSkipUpdate = true;
+
+			SDL_Delay(16);
+		}
+		else
+			Video.bSkipUpdate = false;
+
+		newtime = System_DoubleTime();
+		dTime = newtime - oldtime;
+	}
+
+	Host_Frame(dTime);
+	oldtime = newtime;
 }

@@ -8,9 +8,9 @@
 
 /*	Create a new entity instance.
 */
-edict_t *Entity_Spawn(void)
+ServerEntity_t *Entity_Spawn(void)
 {
-	edict_t	*eSpawn = Engine.Spawn();
+	ServerEntity_t	*eSpawn = Engine.Spawn();
 
 	// [30/5/2013] Set physics properties to their defaults! ~hogsy
 	eSpawn->Physics.fMass		= 1.0f;
@@ -32,7 +32,7 @@ edict_t *Entity_Spawn(void)
 	object is spawned, and then only
 	if it is teleported.
 */
-void Entity_SetOrigin(edict_t *eEntity, MathVector3_t vOrigin)
+void Entity_SetOrigin(ServerEntity_t *eEntity, MathVector3f_t vOrigin)
 {
 	Math_VectorCopy(vOrigin,eEntity->v.origin);
 
@@ -42,7 +42,7 @@ void Entity_SetOrigin(edict_t *eEntity, MathVector3_t vOrigin)
 /*	Sets the angle of the given entity.
 	Alternative to SetAngle.
 */
-void Entity_SetAngles(edict_t *eEntity, MathVector3_t vAngles)
+void Entity_SetAngles(ServerEntity_t *eEntity, MathVector3f_t vAngles)
 {
 	Math_VectorCopy(vAngles, eEntity->v.angles);
 
@@ -52,7 +52,7 @@ void Entity_SetAngles(edict_t *eEntity, MathVector3_t vAngles)
 /*	Sets the model of the given entity.
 	Alternative to SetModel.
 */
-void Entity_SetModel(edict_t *eEntity,char *cModelPath)
+void Entity_SetModel(ServerEntity_t *eEntity,char *cModelPath)
 {
 	Engine.SetModel(eEntity,cModelPath);
 }
@@ -60,7 +60,7 @@ void Entity_SetModel(edict_t *eEntity,char *cModelPath)
 /*	Sets the size of the given entity; requires that the model has been applied first.
 	Alternative to SetSize.
 */
-void Entity_SetSizeVector(edict_t *eEntity, MathVector3_t vMin, MathVector3_t vMax)
+void Entity_SetSizeVector(ServerEntity_t *eEntity, MathVector3_t vMin, MathVector3_t vMax)
 {
 	int	i;
 
@@ -85,11 +85,11 @@ void Entity_SetSizeVector(edict_t *eEntity, MathVector3_t vMin, MathVector3_t vM
 /*	Set the size of the bounding box for the entity.
 	Should be called AFTER setting model!
 */
-void Entity_SetSize(edict_t *eEntity,
+void Entity_SetSize(ServerEntity_t *eEntity,
 	float fMinA,float fMinB,float fMinC,
 	float fMaxA,float fMaxB,float fMaxC)
 {
-	vec3_t	vMin,vMax;
+	MathVector3f_t	vMin,vMax;
 
 	vMin[0] = fMinA; vMin[1] = fMinB; vMin[2] = fMinC;
 	vMax[0] = fMaxA; vMax[1] = fMaxB; vMax[2] = fMaxC;
@@ -100,42 +100,42 @@ void Entity_SetSize(edict_t *eEntity,
 
 /*	Can be used for convenience.
 */
-void Entity_AddEffects(edict_t *eEntity,int iEffects)
+void Entity_AddEffects(ServerEntity_t *eEntity,int iEffects)
 {
 	eEntity->v.effects |= iEffects;
 }
 
 /*	Can be used for convenience.
 */
-void Entity_RemoveEffects(edict_t *eEntity,int iEffects)
+void Entity_RemoveEffects(ServerEntity_t *eEntity,int iEffects)
 {
 	eEntity->v.effects &= ~iEffects;
 }
 
 /*	Can be used for convenience.
 */
-void Entity_ClearEffects(edict_t *eEntity)
+void Entity_ClearEffects(ServerEntity_t *eEntity)
 {
 	eEntity->v.effects = 0;
 }
 
 /*	Can be used for convenience.
 */
-void Entity_AddFlags(edict_t *eEntity, int iFlags)
+void Entity_AddFlags(ServerEntity_t *eEntity, int iFlags)
 {
 	eEntity->v.flags |= iFlags;
 }
 
 /*	Can be used for convenience.
 */
-void Entity_RemoveFlags(edict_t *eEntity, int iFlags)
+void Entity_RemoveFlags(ServerEntity_t *eEntity, int iFlags)
 {
 	eEntity->v.flags &= ~iFlags;
 }
 
 /*	Can be used for convenience.
 */
-void Entity_ClearFlags(edict_t *eEntity, int iFlags)
+void Entity_ClearFlags(ServerEntity_t *eEntity, int iFlags)
 {
 	eEntity->v.flags = 0;
 }
@@ -143,9 +143,9 @@ void Entity_ClearFlags(edict_t *eEntity, int iFlags)
 /*	Find a random spawn point for the entity (point_start).
 	TODO: Rename!
 */
-edict_t *Entity_SpawnPoint(edict_t *eEntity,int iType)
+ServerEntity_t *Entity_SpawnPoint(ServerEntity_t *eEntity,int iType)
 {
-	edict_t	*eSpawnPoint;
+	ServerEntity_t	*eSpawnPoint;
 	char	*cStartName;
 
 	switch(iType)
@@ -245,8 +245,6 @@ void Entity_RadiusDamage(ServerEntity_t *eInflictor, float fRadius, int iDamage,
 	{
 		if(eTarget->v.bTakeDamage)
 		{
-			int i;
-
 			for(i = 0; i < 3; i++)
 				vOrigin[i] = eTarget->v.origin[i]+(eTarget->v.mins[i]+eTarget->v.maxs[i])*0.5f;
 
@@ -277,19 +275,19 @@ void Entity_RadiusDamage(ServerEntity_t *eInflictor, float fRadius, int iDamage,
 
 /*	Link an entity.
 */
-void Entity_Link(edict_t *eEntity,bool bTouchTriggers)
+void Entity_Link(ServerEntity_t *eEntity,bool bTouchTriggers)
 {
 	Engine.LinkEntity(eEntity, bTouchTriggers);
 }
 
-void Entity_Unlink(edict_t *eEntity)
+void Entity_Unlink(ServerEntity_t *eEntity)
 {
 	Engine.UnlinkEntity(eEntity);
 }
 
 /*	Remove an entity from the world.
 */
-void Entity_Remove(edict_t *eEntity)
+void Entity_Remove(ServerEntity_t *eEntity)
 {
 	Engine.FreeEntity(eEntity);
 }
@@ -300,7 +298,7 @@ void Entity_Remove(edict_t *eEntity)
 
 /*	Checks and updates the entity's current frame.
 */
-void Entity_CheckFrames(edict_t *eEntity)
+void Entity_CheckFrames(ServerEntity_t *eEntity)
 {
 	if(!eEntity->local.iAnimationEnd || Server.dTime < eEntity->local.dAnimationTime)	// If something isn't active and Animationtime is over
 		return;
@@ -322,7 +320,7 @@ void Entity_CheckFrames(edict_t *eEntity)
 
 /*	Resets the currently active animation.
 */
-void Entity_ResetAnimation(edict_t *eEntity)
+void Entity_ResetAnimation(ServerEntity_t *eEntity)
 {
 	eEntity->v.frame					=
 	eEntity->local.iAnimationCurrent	=
@@ -334,7 +332,7 @@ void Entity_ResetAnimation(edict_t *eEntity)
 
 /*	Start animating the entity.
 */
-void Entity_Animate(edict_t *eEntity,EntityFrame_t *efAnimation)
+void Entity_Animate(ServerEntity_t *eEntity,EntityFrame_t *efAnimation)
 {
 	/*	TODO:
 		Something in here was fucked up... Can't remember what but it needs looking over.

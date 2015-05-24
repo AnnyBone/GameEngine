@@ -26,4 +26,15 @@ void Editor_Draw(void);
 void Editor_Initialize(void);
 void Editor_Input(int iKey);
 
+/*
+	Material Editor
+*/
+
+extern bool bMaterialEditorInitialized;
+
+void MaterialEditor_Initialize(void);
+void MaterialEditor_Input(int iKey);
+void MaterialEditor_Draw(void);
+void MaterialEditor_Display(Material_t *mDisplayMaterial);
+
 #endif

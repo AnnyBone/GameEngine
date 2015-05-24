@@ -12,7 +12,7 @@ void Generator_WriteFile(char *cFile)
 
 }
 
-int _tmain(int argc, _TCHAR* argv[])
+int main(int argc, char *argv[])
 {
 	printf("Getting working directory...\n");
 

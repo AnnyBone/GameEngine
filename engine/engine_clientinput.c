@@ -60,9 +60,13 @@ void Input_Initialize(void)
 	Cvar_RegisterVariable(&cvInputMouseFilter,NULL);
 	Cvar_RegisterVariable(&cvInputMouseGrab,NULL);
 
-	if(SDL_Init(SDL_INIT_JOYSTICK) < 0)
+	// Ensure we're not embedded before proceeding.
+	if (!Global.bEmbeddedContext)
+		return;
+
+	if (SDL_Init(SDL_INIT_JOYSTICK) < 0)
 	{
-		Con_Warning("Failed to initialize input!\n%s",SDL_GetError());
+		Con_Warning("Failed to initialize input!\n%s", SDL_GetError());
 		// [2/7/2012] Not a serious issue if input ain't working ~hogsy
 		return;
 	}
@@ -70,16 +74,16 @@ void Input_Initialize(void)
 	SDL_JoystickEventState(SDL_ENABLE);
 	SDL_GameControllerEventState(SDL_ENABLE);
 
-	for(i = 0; i < SDL_NumJoysticks(); i++)
+	for (i = 0; i < SDL_NumJoysticks(); i++)
 	{
 		Con_Printf(" Opening ");
 
-		if(SDL_IsGameController(i))
+		if (SDL_IsGameController(i))
 		{
 			cController[i].sGameController = SDL_GameControllerOpen(i);
 
 			Con_Printf("Controller ");
-        }
+		}
 		else
 		{
 			cController[i].sJoystick = SDL_JoystickOpen(i);
@@ -87,26 +91,26 @@ void Input_Initialize(void)
 			Con_Printf("Joystick ");
 		}
 
-		Con_Printf("(%i): ",i);
+		Con_Printf("(%i): ", i);
 
-		if(cController[i].sJoystick || cController[i].sGameController)
+		if (cController[i].sJoystick || cController[i].sGameController)
 		{
-            Con_Printf("Success\n");
+			Con_Printf("Success\n");
 
 			iNumControllers++;
-        }
-        else
-            Con_Printf("Failed!\n");
+		}
+		else
+			Con_Printf("Failed!\n");
 	}
 
-	if(iNumControllers > 0)
-		Con_Printf(" Found %i input device(s)\n",iNumControllers);
+	if (iNumControllers > 0)
+		Con_Printf(" Found %i input device(s)\n", iNumControllers);
 	else
 	{
 		// [30/1/2013] No controllers found, disable event processing ~hogsy
 		SDL_JoystickEventState(SDL_IGNORE);
 		SDL_GameControllerEventState(SDL_IGNORE);
-    }
+	}
 }
 
 /*	Convert the given key over to what our engine uses.

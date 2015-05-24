@@ -28,13 +28,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 //=============================================================================
 
-typedef struct efrag_s
-{
-	struct mleaf_s		*leaf;
-	struct efrag_s		*leafnext;
-	struct ClientEntity_s *entity;
-	struct efrag_s		*entnext;
-} efrag_t;
+#include "SharedModel.h"
 
 //johnfitz -- for lerping
 #define LERP_MOVESTEP	(1<<0) //this is a MOVETYPE_STEP entity, enable movement lerp

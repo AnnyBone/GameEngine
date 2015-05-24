@@ -109,10 +109,7 @@ void *Hunk_TempAlloc (int size);
 
 void Hunk_Check (void);
 
-typedef struct cache_user_s
-{
-	void	*data;
-} cache_user_t;
+#include "SharedZone.h"
 
 void Cache_Flush (void);
 

@@ -170,7 +170,11 @@ void Con_CheckResize(void)
 	oldwidth 		= con_linewidth;
 	con_linewidth 	= width;
 	oldtotallines 	= con_totallines;
-	con_totallines 	= con_buffersize / con_linewidth; //johnfitz -- con_buffersize replaces CON_TEXTSIZE
+	// Can't rely on this massively if we're embedded anymore :(
+	if (con_linewidth <= 0)
+		con_totallines = 0;
+	else
+		con_totallines 	= con_buffersize / con_linewidth; //johnfitz -- con_buffersize replaces CON_TEXTSIZE
 	numlines 		= oldtotallines;
 
 	if(con_totallines < numlines)

@@ -262,6 +262,22 @@ void R_MarkSurfaces(void);          // [25/11/2013] See r_world.c ~hogsy
 void R_CullSurfaces(void);          // [25/11/2013] See r_world.c ~hogsy
 void R_UpdateWarpTextures(void);    // [25/11/2013] See gl_warp.c ~hogsy
 
+void R_SetupGenericView(void)
+{
+	Fog_SetupFrame();
+
+	// Build the transformation matrix for the given view angles
+	Math_VectorCopy(r_refdef.vieworg, r_origin);
+	Math_AngleVectors(r_refdef.viewangles, vpn, vright, vup);
+
+	r_fovx = r_refdef.fov_x;
+	r_fovy = r_refdef.fov_y;
+
+	R_SetFrustum(r_fovx, r_fovy);
+
+	Video_ClearBuffer();
+}
+
 void R_SetupView (void)
 {
 	Fog_SetupFrame (); //johnfitz
@@ -510,6 +526,38 @@ void R_DrawShadows (void)
 		Draw_Shadow(&cl_entities[cl.viewentity]);
 }
 
+void R_SetupScene(void)
+{
+	//johnfitz -- rewrote this section
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glViewport(glx + r_refdef.vrect.x,
+		gly + glheight - r_refdef.vrect.y - r_refdef.vrect.height,
+		r_refdef.vrect.width,
+		r_refdef.vrect.height);
+	//johnfitz
+
+	GL_SetFrustum(r_fovx, r_fovy); //johnfitz -- use r_fov* vars
+
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	glRotatef(-90, 1, 0, 0);	    // put Z going up
+	glRotatef(90, 0, 0, 1);	    // put Z going up
+	glRotatef(-r_refdef.viewangles[2], 1, 0, 0);
+	glRotatef(-r_refdef.viewangles[0], 0, 1, 0);
+	glRotatef(-r_refdef.viewangles[1], 0, 0, 1);
+	glTranslatef(-r_refdef.vieworg[0], -r_refdef.vieworg[1], -r_refdef.vieworg[2]);
+	glGetFloatv(GL_MODELVIEW_MATRIX, r_world_matrix);
+
+	// set drawing parms
+	if (gl_cull.value)
+		glEnable(GL_CULL_FACE);
+	else
+		glDisable(GL_CULL_FACE);
+
+	Video_EnableCapabilities(VIDEO_DEPTH_TEST);
+}
+
 void R_RenderScene(void)
 {
 	R_PushDlights();
@@ -517,37 +565,7 @@ void R_RenderScene(void)
 
 	r_framecount++;
 
-	// [15/2/2014] Setup OpenGL; moved this over here since it's not used anywhere else ~hogsy
-	{
-		//johnfitz -- rewrote this section
-		glMatrixMode(GL_PROJECTION);
-		glLoadIdentity ();
-		glViewport (glx + r_refdef.vrect.x,
-					gly + glheight - r_refdef.vrect.y - r_refdef.vrect.height,
-					r_refdef.vrect.width,
-					r_refdef.vrect.height);
-		//johnfitz
-
-		GL_SetFrustum(r_fovx,r_fovy); //johnfitz -- use r_fov* vars
-
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
-		glRotatef(-90,1,0,0);	    // put Z going up
-		glRotatef(90,0,0,1);	    // put Z going up
-		glRotatef (-r_refdef.viewangles[2],  1, 0, 0);
-		glRotatef (-r_refdef.viewangles[0],  0, 1, 0);
-		glRotatef (-r_refdef.viewangles[1],  0, 0, 1);
-		glTranslatef (-r_refdef.vieworg[0],  -r_refdef.vieworg[1],  -r_refdef.vieworg[2]);
-		glGetFloatv (GL_MODELVIEW_MATRIX, r_world_matrix);
-
-		// set drawing parms
-		if (gl_cull.value)
-			glEnable(GL_CULL_FACE);
-		else
-			glDisable(GL_CULL_FACE);
-
-        Video_EnableCapabilities(VIDEO_DEPTH_TEST);
-	}
+	R_SetupScene();
 
 	Fog_EnableGFog(); //johnfitz
 

@@ -30,19 +30,55 @@ int	iActive = 0,	// Number of current active windows.
 int	pWindow_GetScreenWidth(void)
 {
 #ifdef _WIN32
-	return 0;
+	return GetSystemMetrics(SM_CXSCREEN);
 #else
-	return 0;
+	Display *display;
+	Screen *screen;
+
+	display = XOpenDisplay(NULL);
+	if (!display)
+	{
+		pError_Set("Failed to open display!\n");
+		return 4000;
+	}
+
+	screen = DefaultScreenOfDisplay(display);
+	if (!screen)
+	{
+		pError_Set("Failed to get screen of display!\n");
+		return 4000;
+	}
+
+	return screen->width;
 #endif
 }
 
 int pWindow_GetScreenHeight(void)
 {
+	pFUNCTION_START
 #ifdef _WIN32
-	return 0;
+	return GetSystemMetrics(SM_CYSCREEN);
 #else
-	return 0;
+	Display *display;
+	Screen *screen;
+
+	display = XOpenDisplay(NULL);
+	if (!display)
+	{
+		pError_Set("Failed to open display!\n");
+		return 4000;
+	}
+
+	screen = DefaultScreenOfDisplay(display);
+	if (!screen)
+	{
+		pError_Set("Failed to get screen of display!\n");
+		return 4000;
+	}
+
+	return screen->height;
 #endif
+	pFUNCTION_END
 }
 
 int pWindow_GetMonitorCount(void)
@@ -60,7 +96,7 @@ GIPLWindow_t *gWindow_Allocate(void)
 {
 	GIPLWindow_t *pwAllocated;
 
-	pERROR_UPDATE;
+	pFUNCTION_UPDATE;
 
 	pwAllocated = (GIPLWindow_t*)malloc(sizeof(GIPLWindow_t));
 	// Don't continue if we failed to allocate.
@@ -79,7 +115,7 @@ GIPLWindow_t *gWindow_Allocate(void)
 */
 void gWindow_CreateWindow(GIPLWindow_t *gwWindow)
 {
-	pERROR_UPDATE;
+	pFUNCTION_UPDATE;
 
 	// Make sure the window has been initialized.
 	if(!gwWindow)
@@ -203,27 +239,27 @@ void gWindow_CreateWindow(GIPLWindow_t *gwWindow)
 bool gWindow_ChooseColor(GIPLWindow_t *gwParent,int *iRed,int *iGreen,int *iBlue)
 {
 #ifdef _WIN32
-	pBYTE					bColour[3];
+	pUCHAR					bColour[3];
 	CHOOSECOLOR				ccColour;
 	static		COLORREF	scCustomColours[16];
 
-	bColour[0]	= (pBYTE)*iRed;
-	bColour[1]	= (pBYTE)*iGreen;
-	bColour[2]	= (pBYTE)*iBlue;
+	bColour[0] = (pUCHAR)*iRed;
+	bColour[1] = (pUCHAR)*iGreen;
+	bColour[2] = (pUCHAR)*iBlue;
 
 	memset(&ccColour,0,sizeof(CHOOSECOLOR));
 
-	ccColour.Flags			= CC_ANYCOLOR|CC_FULLOPEN|CC_RGBINIT;
-	ccColour.hwndOwner		= gwParent?(HWND)gwParent->hWindow:NULL;
-	ccColour.lpCustColors	= scCustomColours;
-	ccColour.lStructSize	= sizeof(CHOOSECOLOR);
-	ccColour.rgbResult		= RGB(bColour[0],bColour[1],bColour[2]);
+	ccColour.Flags = CC_ANYCOLOR | CC_FULLOPEN | CC_RGBINIT;
+	ccColour.hwndOwner = gwParent ? (HWND)gwParent->hWindow : NULL;
+	ccColour.lpCustColors = scCustomColours;
+	ccColour.lStructSize = sizeof(CHOOSECOLOR);
+	ccColour.rgbResult = RGB(bColour[0], bColour[1], bColour[2]);
 
 	if(ChooseColor(&ccColour))
 	{
-		*iRed	= (int)GetRValue(ccColour.rgbResult);
+		*iRed = (int)GetRValue(ccColour.rgbResult);
 		*iGreen = (int)GetGValue(ccColour.rgbResult);
-		*iBlue	= (int)GetBValue(ccColour.rgbResult);
+		*iBlue = (int)GetBValue(ccColour.rgbResult);
 		return true;
 	}
 #else	// Linux
@@ -241,7 +277,7 @@ void gWindow_MessageBox(const char *ccTitle,const char *ccMessage,...)
 	char	cOut[2048];
 	va_list	vlArguments;
 
-	pERROR_UPDATE;
+	pFUNCTION_UPDATE;
 
 	va_start(vlArguments,ccMessage);
 	vsprintf(cOut,ccMessage,vlArguments);
