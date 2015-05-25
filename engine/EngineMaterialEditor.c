@@ -9,6 +9,7 @@
 #include "KatAlias.h"
 
 Material_t *mActiveMaterial = NULL; // This is the material we're currently editing.
+Material_t *mFloorMaterial;			// Material used for the floor plane.
 model_t *mPreviewModel = NULL;		// Model we're previewing material on.
 MD2_t *mPreviewMesh = NULL;			// Mesh we're previewing the material on.
 
@@ -20,6 +21,13 @@ void MaterialEditor_Initialize(void)
 		return;
 
 	key_dest = KEY_EDITOR_MATERIAL;
+
+	mFloorMaterial = Material_Load("engine/grid");
+	if (!mFloorMaterial)
+	{
+		Con_Warning("Failed to load grid material!\n");
+		return;
+	}
 
 	mPreviewModel = Mod_ForName("models/placeholders/sphere.md2");
 	if (!mPreviewModel)
@@ -45,23 +53,21 @@ void MaterialEditor_Draw(void)
 	VideoObjectVertex_t	voGrid[4] = { 0 };
 
 	Video_ResetCapabilities(false);
+
 	glPushMatrix();
 	Video_SetBlend(VIDEO_BLEND_IGNORE, VIDEO_DEPTH_FALSE);
-	glTranslatef(0, 0, 0);
-
 	Video_SetColour(1.0f, 1.0f, 1.0f, 1.0f);
-	Video_ObjectVertex(&voGrid[0], -20.0f, 20.0f, 0);
+	Video_ObjectVertex(&voGrid[0], -50, 50, 0);
 	Video_ObjectTexture(&voGrid[0], VIDEO_TEXTURE_DIFFUSE, 0, 0);
-	Video_ObjectVertex(&voGrid[1], 20.0f, 20.0f, 0);
+	Video_ObjectVertex(&voGrid[1], 50, 50, 0);
 	Video_ObjectTexture(&voGrid[1], VIDEO_TEXTURE_DIFFUSE, 1.0f, 0);
-	Video_ObjectVertex(&voGrid[2], 20.0f, -20.0f, 0);
+	Video_ObjectVertex(&voGrid[2], 50, -50, 0);
 	Video_ObjectTexture(&voGrid[2], VIDEO_TEXTURE_DIFFUSE, 1.0f, 1.0f);
-	Video_ObjectVertex(&voGrid[3], -20.0f, -20.0f, 0);
+	Video_ObjectVertex(&voGrid[3], -50, -50, 0);
 	Video_ObjectTexture(&voGrid[3], VIDEO_TEXTURE_DIFFUSE, 0, 1.0f);
-	Video_DrawFill(voGrid, mColour);
-
-	glTranslatef(0, 0, -0.1);
+	Video_DrawFill(voGrid, mFloorMaterial);
 	glPopMatrix();
+
 	Video_ResetCapabilities(true);
 
 	if (mActiveMaterial)
@@ -74,7 +80,7 @@ void MaterialEditor_Draw(void)
 
 		glPushMatrix();
 		Alias_DrawGenericFrame(mPreviewMesh, mPreviewModel);
-		glTranslatef(16, 0, 0);
+		glTranslatef(2, 0, 0);
 		glPopMatrix();
 
 		Video_ResetCapabilities(true);

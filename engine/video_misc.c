@@ -79,7 +79,7 @@ void R_OldSkyLeaf_f (void)
 */
 void R_Envmap_f(void)
 {
-	byte	buffer[256*256*4];
+	byte buffer[256*256*4];
 
 	glDrawBuffer(GL_FRONT);
 	glReadBuffer(GL_FRONT);

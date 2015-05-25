@@ -214,6 +214,7 @@ void VideoLayer_DeleteBuffer(unsigned int uiBuffer);
 void Screen_DrawFPS(void);
 void Screen_DrawConsole(void);
 void Screen_SetUpToDrawConsole(void);
+void Screen_UpdateSize(void);
 
 /*
 	Legacy

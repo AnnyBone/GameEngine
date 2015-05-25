@@ -44,6 +44,7 @@ typedef struct
 	void(*Video_PostFrame)(void);
 	void(*DrawConsole)(void);
 	void(*DrawFPS)(void);
+	void(*DrawString)(int x, int y, char *cMsg);
 	void(*DrawModel)(void);		// Temporary!
 	void(*ResetCanvas)(void);
 

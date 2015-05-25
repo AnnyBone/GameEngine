@@ -26,7 +26,7 @@ CMaterialEditorRenderCanvas::CMaterialEditorRenderCanvas(wxWindow *parent, int *
 void CMaterialEditorRenderCanvas::OnPaint(wxPaintEvent &event)
 {
 	const wxSize clientSize = GetClientSize();
-	engine->SetViewportSize(clientSize.x, clientSize.y);
+	engine->SetViewportSize(clientSize.GetWidth(), clientSize.GetHeight());
 
 	wxPaintDC dc(this);
 	DrawFrame();
@@ -34,10 +34,17 @@ void CMaterialEditorRenderCanvas::OnPaint(wxPaintEvent &event)
 
 void CMaterialEditorRenderCanvas::DrawFrame(void)
 {
+	if (!engine->IsRunning())
+		return;
+
 	engine->Video_PreFrame();
+
 	engine->DrawModel();
+
 	engine->ResetCanvas();
 	engine->DrawFPS();
+	engine->DrawString(0, 0, "Hello World");
+
 	engine->Video_PostFrame();
 	
 	SwapBuffers();
@@ -65,6 +72,9 @@ void CMaterialEditorEngineConsoleCanvas::OnPaint(wxPaintEvent &event)
 
 void CMaterialEditorEngineConsoleCanvas::DrawFrame(void)
 {
+	if (!engine->IsRunning())
+		return;
+
 	engine->Video_PreFrame();
 	engine->DrawConsole();
 	engine->Video_PostFrame();

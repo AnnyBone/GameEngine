@@ -222,7 +222,7 @@ float CalcFovy (float fov_x, float width, float height)
 	float   a, x;
 
 	if (fov_x < 1 || fov_x > 179)
-			Sys_Error ("Bad fov: %f", fov_x);
+		Sys_Error ("Bad fov: %f", fov_x);
 
 	x = width/tan(fov_x/360*pMath_PI);
 	a = atan (height/x);
@@ -233,9 +233,9 @@ float CalcFovy (float fov_x, float width, float height)
 /*	Must be called whenever vid changes
 	Internal use only
 */
-static void Screen_UpdateSize(void)
+void Screen_UpdateSize(void)
 {
-	float		size, scale; //johnfitz -- scale
+	float size, scale; //johnfitz -- scale
 
 	vid.bRecalcRefDef = false;
 
@@ -278,11 +278,6 @@ static void Screen_UpdateSize(void)
 	r_refdef.fov_y = CalcFovy (r_refdef.fov_x, r_refdef.vrect.width, r_refdef.vrect.height);
 
 	scr_vrect = r_refdef.vrect;
-}
-
-void Screen_UpdateViewportSize(void)
-{
-
 }
 
 /*	Keybinding command
