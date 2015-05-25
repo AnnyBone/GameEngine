@@ -368,6 +368,8 @@ void Video_SetViewportSize(int iWidth, int iHeight)
 	Video.iWidth = iWidth;
 	Video.iHeight = iHeight;
 
+	vid.bRecalcRefDef = true;
+
 	// Update console size.
 	vid.conwidth = Video.iWidth & 0xFFFFFFF8;
 	vid.conheight = vid.conwidth*Video.iHeight / Video.iWidth;
@@ -1240,12 +1242,55 @@ void Video_ShaderLoad(const char *ccPath,VideoShaderType_t vstType)
 #endif
 }
 
+void Video_PreFrame(void)
+{
+	if (Video.bDebugFrame)
+		Console_WriteToLog(cvVideoDebugLog.string, "Video: Start of frame\n");
+
+	VIDEO_FUNCTION_START(Video_PreFrame);
+
+	GL_BeginRendering(&glx, &gly, &glwidth, &glheight);
+
+	Screen_SetUpToDrawConsole();
+
+	r_framecount++;
+
+	R_SetupGenericView();
+	R_SetupScene();
+
+	VIDEO_FUNCTION_END;
+}
+
+void Video_PostFrame(void)
+{
+	VIDEO_FUNCTION_START(Video_PostFrame);
+
+	GL_EndRendering();
+
+	VIDEO_FUNCTION_END;
+
+	if (Video.bDebugFrame)
+	{
+		Console_WriteToLog(cvVideoDebugLog.string, "Video: End of frame\n");
+
+		Console_WriteToLog(cvVideoDebugLog.string, "\n-----------------------\n");
+		// Show the number of calls to Video_DrawObject.
+		Console_WriteToLog(cvVideoDebugLog.string, "Video_DrawObject: %i\n", uiVideoDrawObjectCalls);
+		Console_WriteToLog(cvVideoDebugLog.string, "-----------------------\n");
+
+		Video.bDebugFrame = false;
+	}
+}
+
 /*	Main rendering loop.
 */
 void Video_Frame(void)
 {
-    if(Video.bDebugFrame)
-        Console_WriteToLog(cvVideoDebugLog.string,"Video: Start of frame\n");
+	if (Global.bEmbeddedContext)
+		return;
+
+	if (Video.bDebugFrame)
+		Console_WriteToLog(cvVideoDebugLog.string, "Video: Start of frame\n");
 
 #ifdef VIDEO_ENABLE_SHADERS
 	// Post-processing.

@@ -159,9 +159,6 @@
     <ClCompile Include="video_misc.c">
       <Filter>Client\Video</Filter>
     </ClCompile>
-    <ClCompile Include="video_rmain.c">
-      <Filter>Client\Video</Filter>
-    </ClCompile>
     <ClCompile Include="video.c">
       <Filter>Client\Video</Filter>
     </ClCompile>
@@ -262,6 +259,9 @@
       <Filter>Client\Video</Filter>
     </ClCompile>
     <ClCompile Include="EngineHost.c" />
+    <ClCompile Include="EngineVideoLegacy.c">
+      <Filter>Client\Video</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\shared\shared_client.h">

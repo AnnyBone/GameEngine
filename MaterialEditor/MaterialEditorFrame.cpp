@@ -114,7 +114,6 @@ CMaterialEditorFrame::CMaterialEditorFrame(const wxString & title, const wxPoint
 
 	wxPanel *pnl2 = new wxPanel(splittermain, wxID_ANY);
 	wxBoxSizer *txt2sizer = new wxBoxSizer(wxVERTICAL);
-
 	wxPropertyGrid *materialProperties = new wxPropertyGrid(pnl2);
 	materialProperties->Append(new wxPropertyCategory("Global"));
 	globalMaterialProperties = new CMaterialEditorMaterialGlobalProperties(materialProperties);
@@ -122,7 +121,6 @@ CMaterialEditorFrame::CMaterialEditorFrame(const wxString & title, const wxPoint
 	materialProperties->SetCellBackgroundColour(wxColour(0, 0, 0));
 	materialProperties->SetCellTextColour(wxColour(0, 255, 0));
 	materialProperties->SetEmptySpaceColour(wxColour(0, 0, 0));
-
 	txt2sizer->Add(materialProperties, 1, wxEXPAND, 0);
 	pnl2->SetSizer(txt2sizer);
 
@@ -150,9 +148,18 @@ void CMaterialEditorFrame::OnTimer(wxTimerEvent &event)
 {
 	if (engine->IsRunning())
 	{
+		// Perform the main loop.
 		engine->Loop();
 
+		// Draw the main viewport.
+		engineViewport->DrawFrame();
 		engineViewport->Refresh();
+
+#if 0
+		// Draw the console.
+		engineConsoleViewport->DrawFrame();
+		engineConsoleViewport->Refresh();
+#endif
 	}
 }
 

@@ -4,19 +4,12 @@
 
 #include "menu_hud.h"
 
-#if 0
 void HUD_Draw(void)
 {
-	if(cvShowMenu.value <= 0)
-		return;
-
-	Menu_GetScreenSize();
-
 	// Draw the crosshair...
-	if(cvShowCrosshair.bValue)
 	{
 		Engine.Client_SetMenuCanvas(CANVAS_CROSSHAIR);
-		Engine.DrawPic(va(MENU_HUD_PATH"crosshair%i",cvShowCrosshair.iValue-1),1.0f,-16,-16,32,32);
+		Engine.DrawPic(va(MENU_HUD_PATH"crosshair%i",1),1.0f,-16,-16,32,32);
 	}
 
 	// Draw the rest...
@@ -74,57 +67,6 @@ void HUD_Draw(void)
 			health	= Engine.Client_GetStat(STAT_HEALTH),
 			ammo	= Engine.Client_GetStat(STAT_AMMO);
 
-		if(cvShowHealth.value == 1)
-		{
-			iHSize[WIDTH]	= 320;
-			iHSize[HEIGHT]	= 156;
-
-			iNSize[WIDTH] = 24;
-			iNSize[HEIGHT] = 16;
-
-			Engine.DrawPic(MENU_HUD_PATH"health",1.0f,0,iMenuHeight-iHSize[HEIGHT]+20,iHSize[WIDTH],iHSize[HEIGHT]);
-
-			if(health > 0)
-			{
-				if (health >= 100)
-				{
-					iHealth[0] = health/100;
-					Engine.DrawPic(va(MENU_HUD_PATH"num%i",iHealth[0]),1.0f,131,iMenuHeight-54+20,iNSize[WIDTH],iNSize[HEIGHT]);
-				}
-
-				if(health >= 10)
-				{
-					iHealth[1] = (health % 100)/10;
-					Engine.DrawPic(va(MENU_HUD_PATH"num%i",iHealth[1]),1.0f,161,iMenuHeight-54+20,iNSize[WIDTH],iNSize[HEIGHT]);
-				}
-
-				iHealth[2] = health % 10;
-				Engine.DrawPic(va(MENU_HUD_PATH"num%i",iHealth[2]),1.0f,190,iMenuHeight-54+20,iNSize[WIDTH],iNSize[HEIGHT]);
-			}
-			else
-				Engine.DrawPic(va(MENU_HUD_PATH"num0"),1.0f,190,iMenuHeight-54+20,iNSize[WIDTH],iNSize[HEIGHT]);
-
-			if(armor > 0)
-			{
-				if (armor >= 100)
-				{
-					iArmor[0] = armor/100;
-					Engine.DrawPic(va(MENU_HUD_PATH"num%i",iArmor[0]),1.0f,126,iMenuHeight-107+20,iNSize[WIDTH],iNSize[HEIGHT]);
-				}
-
-				if(armor >= 10)
-				{
-					iArmor[1] = (armor % 100)/10;
-					Engine.DrawPic(va(MENU_HUD_PATH"num%i",iArmor[1]),1.0f,153,iMenuHeight-107+20,iNSize[WIDTH],iNSize[HEIGHT]);
-				}
-
-				iArmor[2] = armor % 10;
-				Engine.DrawPic(va(MENU_HUD_PATH"num%i",iArmor[2]),1.0f,181,iMenuHeight-107+20,iNSize[WIDTH],iNSize[HEIGHT]);
-			}
-			else
-				Engine.DrawPic(va(MENU_HUD_PATH"num0"),1.0f,181,iMenuHeight-107+20,iNSize[WIDTH],iNSize[HEIGHT]);
-		}
-		else if(cvShowHealth.value == 2)
 		{
 			iNSize[WIDTH] = 24;
 			iNSize[HEIGHT] = 16;
@@ -163,39 +105,6 @@ void HUD_Draw(void)
 			Engine.DrawPic(va(MENU_HUD_PATH"num%i",iArmor[2]),1.0f,94,iMenuHeight-70,iNSize[WIDTH],iNSize[HEIGHT]);
 		}
 
-		if(cvShowAmmo.value == 1)
-		{
-
-			iHSize[WIDTH]	= 240;
-			iHSize[HEIGHT]	= 114;
-
-			iNSize[WIDTH]	= 24;
-			iNSize[HEIGHT]	= 16;
-
-			Engine.DrawPic(MENU_HUD_PATH"ammo",1.0f,iMenuWidth-iHSize[WIDTH],iMenuHeight-iHSize[HEIGHT]+20,iHSize[WIDTH],iHSize[HEIGHT]);
-
-			if(ammo > 0)
-			{
-				if (ammo >= 100)
-				{
-					iAmmo[0] = ammo/100;
-					Engine.DrawPic(va(MENU_HUD_PATH"num%i",iAmmo[0]),1.0f,iMenuWidth-134,iMenuHeight-69+20,iNSize[WIDTH],iNSize[HEIGHT]);
-				}
-
-				if(ammo >= 10)
-				{
-					iAmmo[1] = (ammo % 100)/10;
-					Engine.DrawPic(va(MENU_HUD_PATH"num%i",iAmmo[1]),1.0f,iMenuWidth-96,iMenuHeight-69+20,iNSize[WIDTH],iNSize[HEIGHT]);
-				}
-
-				iAmmo[2] = ammo % 10;
-				Engine.DrawPic(va(MENU_HUD_PATH"num%i",iAmmo[2]),1.0f,iMenuWidth-57,iMenuHeight-69+20,iNSize[WIDTH],iNSize[HEIGHT]);
-			}
-			else
-				Engine.DrawPic(va(MENU_HUD_PATH"num0"),1.0f,iMenuWidth-57,iMenuHeight-69+20,iNSize[WIDTH],iNSize[HEIGHT]);
-
-		}
-		else if(cvShowAmmo.value == 2)
 		{
 
 			iNSize[WIDTH]	= 24;
@@ -219,4 +128,3 @@ void HUD_Draw(void)
 	}
 #endif
 }
-#endif

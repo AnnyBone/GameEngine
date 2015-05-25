@@ -26,6 +26,10 @@ extern	cvar_t	cvShowMenu,
 
 extern int	iMenuState;				// Global menu state.
 
+extern int
+iMenuWidth,
+iMenuHeight;
+
 void	Menu_UpdateScreenSize(void);
 void	Menu_AddState(int iState);
 void	Menu_SetState(int iState);

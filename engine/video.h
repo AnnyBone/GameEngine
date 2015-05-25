@@ -168,6 +168,8 @@ void Video_SelectTexture(unsigned int uiTarget);
 void Video_EnableCapabilities(unsigned int iCapabilities);
 void Video_DisableCapabilities(unsigned int iCapabilities);
 void Video_ResetCapabilities(bool bClearActive);
+void Video_PreFrame(void);
+void Video_PostFrame(void);
 void Video_Frame(void);
 void Video_ObjectTexture(VideoObjectVertex_t *voObject, unsigned int uiTextureUnit, float S, float T);
 void Video_ObjectVertex(VideoObjectVertex_t *voObject, float X, float Y, float Z);
@@ -180,6 +182,8 @@ void Video_DrawSurface(msurface_t *mSurface,float fAlpha,Material_t *mMaterial, 
 void Video_DrawObject(VideoObjectVertex_t *voObject, VideoPrimitive_t vpPrimitiveType, unsigned int uiVerts, Material_t *mMaterial, int iSkin);
 void Video_DrawMaterial(Material_t *mMaterial, int iSkin, VideoObjectVertex_t *voObject, VideoPrimitive_t vpPrimitiveType, unsigned int uiSize, bool bPost);
 void Video_Shutdown(void);
+
+
 
 unsigned int Video_GetTextureUnit(unsigned int uiTarget);
 
@@ -202,6 +206,21 @@ bool Video_GetCapability(unsigned int iCapability);
 unsigned int VideoLayer_GenerateVertexBuffer(void);
 
 void VideoLayer_DeleteBuffer(unsigned int uiBuffer);
+
+/*
+	Screen
+*/
+
+void Screen_DrawFPS(void);
+void Screen_DrawConsole(void);
+void Screen_SetUpToDrawConsole(void);
+
+/*
+	Legacy
+*/
+
+void R_SetupGenericView(void);
+void R_SetupScene(void);
 
 /*
 	Draw

@@ -44,12 +44,6 @@ void MaterialEditor_Draw(void)
 {
 	VideoObjectVertex_t	voGrid[4] = { 0 };
 
-	R_SetupGenericView();
-
-	r_framecount++;
-
-	R_SetupScene();
-
 	Video_ResetCapabilities(false);
 	glPushMatrix();
 	Video_SetBlend(VIDEO_BLEND_IGNORE, VIDEO_DEPTH_FALSE);
@@ -75,6 +69,8 @@ void MaterialEditor_Draw(void)
 		mPreviewMesh = (MD2_t*)Mod_Extradata(mPreviewModel);
 
 		Video_ResetCapabilities(false);
+
+		Video_SetColour(0, 1.0f, 0, 1.0f);
 
 		glPushMatrix();
 		Alias_DrawGenericFrame(mPreviewMesh, mPreviewModel);

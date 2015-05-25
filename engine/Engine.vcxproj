@@ -663,7 +663,7 @@
     <ClCompile Include="EngineVideoFog.c" />
     <ClCompile Include="engine_model.c" />
     <ClCompile Include="video_refrag.c" />
-    <ClCompile Include="video_rmain.c" />
+    <ClCompile Include="EngineVideoLegacy.c" />
     <ClCompile Include="video_misc.c" />
     <ClCompile Include="EngineVideoSky.c" />
     <ClCompile Include="gl_texmgr.c" />

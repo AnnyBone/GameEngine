@@ -30,14 +30,14 @@ int	iMenuState = 0;
 
 cvar_t	cvShowMenu = { "menu_show", "1", false, false, "Toggle the display of any menu elements." },
 		cvDebugMenu = { "menu_debug", "0", false, false, "Toggle the display of any debugging information." };
-cvar_t	cvMenuDisclaimer = { "menu_disclaimer", "1", false, true, "Toggles the display of disclaimer." };
+cvar_t	cvMenuDisclaimer = { "menu_disclaimer", "0", false, true, "Toggles the display of disclaimer." };
 
 // [13/8/2013] Fixed ~hogsy
 int	iMousePosition[2];
 
 int
-	iMenuWidth = 0,
-	iMenuHeight = 0;
+iMenuWidth = 0,
+iMenuHeight = 0;
 
 // [2/8/2012] TODO: Why are we doing this!? Should be using the one from the lib ~hogsy
 char *va(char *format,...)
@@ -94,6 +94,8 @@ void Menu_Draw(void)
 	if(!cvShowMenu.bValue)
 		return;
 
+	Menu_UpdateScreenSize();
+
 	Engine.Client_SetMenuCanvas(CANVAS_DEFAULT);
 
 	// Disclaimer.
@@ -121,7 +123,7 @@ void Menu_Draw(void)
 
 	if ((iMenuState & MENU_STATE_HUD) && (!(iMenuState & MENU_STATE_SCOREBOARD) && !(iMenuState & MENU_STATE_MENU)))
 	{
-
+		HUD_Draw();
 	}
 
 	if(iMenuState & MENU_STATE_SCOREBOARD && !(iMenuState & MENU_STATE_MENU))

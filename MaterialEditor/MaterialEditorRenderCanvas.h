@@ -6,10 +6,23 @@ class CMaterialEditorRenderCanvas : public wxGLCanvas
 public:
 	CMaterialEditorRenderCanvas(wxWindow *parent, int *attribList = NULL);
 
+	void DrawFrame(void);
+
 private:
 	void OnPaint(wxPaintEvent &event);
 
-	void DrawFrame(wxDC &dc);
+	wxDECLARE_EVENT_TABLE();
+};
+
+class CMaterialEditorEngineConsoleCanvas : public wxGLCanvas
+{
+public:
+	CMaterialEditorEngineConsoleCanvas(wxWindow *parent, int *attribList = NULL);
+
+	void DrawFrame(void);
+
+private:
+	void OnPaint(wxPaintEvent &event);
 
 	wxDECLARE_EVENT_TABLE();
 };

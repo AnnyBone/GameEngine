@@ -53,6 +53,14 @@ pMODULE_EXPORT EngineExport_t *Engine_Main(EngineImport_t *mImport)
 
 	eExport.LoadMaterial = Material_Load;
 
+	// Video
+	eExport.Video_PostFrame = Video_PostFrame;
+	eExport.Video_PreFrame = Video_PreFrame;
+	eExport.DrawFPS = Screen_DrawFPS;
+	eExport.DrawConsole = Screen_DrawConsole;
+	eExport.DrawModel = MaterialEditor_Draw;
+	eExport.ResetCanvas = Draw_ResetCanvas;
+
 	// Material Editor
 	eExport.MaterialEditorInitialize = MaterialEditor_Initialize;
 	eExport.MaterialEditorDisplay = MaterialEditor_Display;

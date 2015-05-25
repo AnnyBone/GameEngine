@@ -26,6 +26,7 @@ private:
 	wxTimer* timer;
 
 	CMaterialEditorRenderCanvas *engineViewport;
+	CMaterialEditorEngineConsoleCanvas *engineConsoleViewport;
 
 	// Material Properties
 	wxPropertyGrid* materialProperties;

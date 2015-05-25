@@ -233,7 +233,7 @@ float CalcFovy (float fov_x, float width, float height)
 /*	Must be called whenever vid changes
 	Internal use only
 */
-static void SCR_CalcRefdef (void)
+static void Screen_UpdateSize(void)
 {
 	float		size, scale; //johnfitz -- scale
 
@@ -278,6 +278,11 @@ static void SCR_CalcRefdef (void)
 	r_refdef.fov_y = CalcFovy (r_refdef.fov_x, r_refdef.vrect.width, r_refdef.vrect.height);
 
 	scr_vrect = r_refdef.vrect;
+}
+
+void Screen_UpdateViewportSize(void)
+{
+
 }
 
 /*	Keybinding command
@@ -376,7 +381,7 @@ void Screen_DrawFPS(void)
 		oldframecount	= r_framecount;
 	}
 
-	if(scr_showfps.value || (key_dest == KEY_EDITOR_MATERIAL)) //draw it
+	if(scr_showfps.value || Global.bEmbeddedContext) //draw it
 	{
 		// [9/10/2012] Set the highest and lowest counts we get ~hogsy
 		if(fps > dHighestFPS)
@@ -546,7 +551,7 @@ void SCR_DrawPause (void)
 
 //=============================================================================
 
-void SCR_SetUpToDrawConsole (void)
+void Screen_SetUpToDrawConsole(void)
 {
 	//johnfitz -- let's hack away the problem of slow console when host_timescale is <0
 	extern cvar_t host_timescale;
@@ -590,14 +595,8 @@ void SCR_SetUpToDrawConsole (void)
 		scr_tileclear_updates = 0; //johnfitz
 }
 
-void SCR_DrawConsole (void)
+void Screen_DrawConsole(void)
 {
-	if (key_dest == KEY_EDITOR_MATERIAL)
-	{
-		Con_DrawNotify();
-		return;
-	}
-
 	if (scr_con_current)
 	{
 		Con_DrawConsole (scr_con_current,true);
@@ -852,10 +851,10 @@ void SCR_UpdateScreen (void)
 	//johnfitz
 
 	if (vid.bRecalcRefDef)
-		SCR_CalcRefdef();
+		Screen_UpdateSize();
 
 	// do 3D refresh drawing, and then update the screen
-	SCR_SetUpToDrawConsole ();
+	Screen_SetUpToDrawConsole();
 
 	V_RenderView ();
 
@@ -870,19 +869,6 @@ void SCR_UpdateScreen (void)
 
 		Draw_FadeScreen();
 		SCR_DrawNotifyString();
-	}
-	else if (key_dest == KEY_EDITOR_MATERIAL)
-	{
-		MaterialEditor_Draw();
-
-		SCR_DrawNet();
-		SCR_DrawTurtle();
-		SCR_DrawPause();
-		SCR_CheckDrawCenterString();
-		SCR_DrawDevStats(); //johnfitz
-		Screen_DrawFPS(); //johnfitz
-		SCR_DrawClock(); //johnfitz
-		SCR_DrawConsole();
 	}
 	else if(Menu->GetState() & MENU_STATE_LOADING) //loading
 		Menu->Draw();
@@ -901,7 +887,7 @@ void SCR_UpdateScreen (void)
 		SCR_DrawDevStats(); //johnfitz
 		Screen_DrawFPS(); //johnfitz
 		SCR_DrawClock(); //johnfitz
-		SCR_DrawConsole();
+		Screen_DrawConsole();
 	}
 
 	V_UpdateBlend(); //johnfitz -- V_UpdatePalette cleaned up and renamed

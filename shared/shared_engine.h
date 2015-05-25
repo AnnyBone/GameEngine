@@ -39,6 +39,14 @@ typedef struct
 
 	Material_t*(*LoadMaterial)(const char *cPath);
 
+	// Video
+	void(*Video_PreFrame)(void);
+	void(*Video_PostFrame)(void);
+	void(*DrawConsole)(void);
+	void(*DrawFPS)(void);
+	void(*DrawModel)(void);		// Temporary!
+	void(*ResetCanvas)(void);
+
 	// Material Editor
 	void(*MaterialEditorInitialize)(void);					// Initializes the material editor.
 	void(*MaterialEditorDisplay)(Material_t *mMaterial);	// Displays a material in the editor.
