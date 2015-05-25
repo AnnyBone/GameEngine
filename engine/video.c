@@ -187,7 +187,7 @@ void Video_Initialize(void)
 
 	Video_SetBlend(VIDEO_BLEND_TWO, VIDEO_DEPTH_IGNORE);
 
-	glClearColor(0.5, 0, 0, 0);
+	glClearColor(0, 0, 0, 0);
 	glCullFace(GL_BACK);
 	glFrontFace(GL_CW);
 	glAlphaFunc(GL_GREATER, 0.5f);
