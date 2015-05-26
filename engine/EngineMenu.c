@@ -55,7 +55,7 @@ void Menu_Initialize(void)
 	mImport.GetScreenWidth = Menu_GetScreenWidth;
 	mImport.GetScreenHeight = Menu_GetScreenHeight;
 	mImport.ShowCursor = gWindow_ShowCursor;
-	mImport.GetCursorPosition = SDL_GetMouseState;
+	mImport.GetCursorPosition = Window_GetCursorPosition;
 	mImport.Cmd_AddCommand = Game_AddCommand;
 
 	mImport.Client_GetStat = Client_GetStat;

@@ -24,6 +24,8 @@
 #include "EngineVideo.h"
 #include "EngineMenu.h"
 
+#include <SDL.h>
+
 /*
 	Input System
 
@@ -64,9 +66,9 @@ int		iMousePosition[2],
 bool bMouseActive = false;
 
 // [30/1/2013] Found in engine_video.c ~hogsy
-extern SDL_Window	*sMainWindow;
+extern SDL_Window *sMainWindow;
 
-SDL_Event	sEvent;
+SDL_Event sEvent;
 
 void Input_Initialize(void)
 {

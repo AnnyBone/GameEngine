@@ -37,6 +37,8 @@ static unsigned int	iSavedCapabilites[VIDEO_MAX_UNITS][2];
 #define VIDEO_STATE_DISABLE  1
 
 ConsoleVariable_t
+		cvDrawFlares				= { "video_flares",					"1",			true,	false,	"Toggles the rendering of environmental flares."					},
+		cvLitParticles				= { "video_particles_lit",			"0",			true,	false,	"Sets whether or not particles are lit by dynamic lights."			},
 		cvMultisampleSamples		= {	"video_multisamplesamples",		"0",			true,   false,  "Changes the number of samples."									},
 		cvMultisampleMaxSamples		= { "video_multisamplemaxsamples",	"16",			true,	false,	"Sets the maximum number of allowed samples."						},
 		cvFullscreen				= {	"video_fullscreen",				"0",			true,   false,  "1: Fullscreen, 0: Windowed"										},
@@ -105,6 +107,8 @@ void Video_Initialize(void)
 	Cvar_RegisterVariable(&cvWidth,NULL);
 	Cvar_RegisterVariable(&cvHeight,NULL);
 	Cvar_RegisterVariable(&cvVerticalSync,NULL);
+	Cvar_RegisterVariable(&cvLitParticles, NULL);
+	Cvar_RegisterVariable(&cvDrawFlares, NULL);
 	Cvar_RegisterVariable(&cvVideoDebugLog,NULL);
 	Cvar_RegisterVariable(&cvVideoDrawDepth,NULL);
 	Cvar_RegisterVariable(&cvVideoFinish, NULL);
@@ -310,24 +314,6 @@ void Video_DrawDepthBuffer(void)
 /*
 	Window Management
 */
-
-/*	Set the gamma level.
-	Based on Darkplaces implementation.
-*/
-void Video_SetGamma(unsigned short *usRamp,int iRampSize)
-{
-	if(!SDL_SetWindowGammaRamp(sMainWindow,usRamp,usRamp+iRampSize,usRamp+iRampSize*2))
-		Con_Warning("Failed to set gamma level!\n%s", SDL_GetError());
-}
-
-/*	Get gamma level.
-	Based on the Darkplaces implementation.
-*/
-void Video_GetGamma(unsigned short *usRamp,int iRampSize)
-{
-	if(!SDL_GetWindowGammaRamp(sMainWindow,usRamp,usRamp+iRampSize,usRamp+iRampSize*2))
-		Con_Warning("Failed to get gamma level!\n%s", SDL_GetError());
-}
 
 void Video_UpdateWindow(void)
 {

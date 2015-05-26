@@ -98,8 +98,6 @@ typedef struct
 
 Video_t	Video;
 
-extern SDL_Window *sMainWindow;
-
 // Video Capabilities
 #define	VIDEO_ALPHA_TEST	1	// Alpha-testing
 #define	VIDEO_BLEND			2	// Blending

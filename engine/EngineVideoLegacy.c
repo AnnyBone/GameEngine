@@ -23,6 +23,7 @@
 #include "EngineEditor.h"
 #include "EngineVideo.h"
 #include "EngineVideoParticle.h"
+#include "EngineVideoShadow.h"
 
 vec3_t		modelorg, r_entorigin;
 entity_t	*currententity;

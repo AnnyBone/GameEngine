@@ -1,5 +1,6 @@
 /*	Copyright (C) 1996-2001 Id Software, Inc.
 	Copyright (C) 2002-2009 John Fitzgibbons and others
+	Copyright (C) 2011-2015 OldTimes Software
 
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License
@@ -17,28 +18,15 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-// a pixel can be one, two, or four bytes
-typedef byte pixel_t;
-
-typedef struct vrect_s
-{
-	int				x,y,width,height;
-	struct vrect_s	*pnext;
-} vrect_t;
-
-// [6/11/2013] OBSOLETE! ~hogsy
-typedef struct
-{
-	bool			bRecalcRefDef;	// if TRUE, recalc vid-based stuff
-
-	unsigned		rowbytes;		// may be > width if displayed in a window
-	unsigned		bpp;
-	unsigned		conwidth;
-	unsigned		conheight;
-} viddef_t;
-
-extern	viddef_t	vid;				// global video state
-
-extern void (*vid_menudrawfn)(void);
-extern void (*vid_menukeyfn)(int key);
-extern void (*vid_menucmdfn)(void); //johnfitz
+int			Serial_Init (void);
+void		Serial_Listen (bool state);
+void		Serial_SearchForHosts (bool xmit);
+qsocket_t	*Serial_Connect (char *host);
+qsocket_t 	*Serial_CheckNewConnections (void);
+int			Serial_GetMessage (qsocket_t *sock);
+int			Serial_SendMessage (qsocket_t *sock, sizebuf_t *data);
+int			Serial_SendUnreliableMessage (qsocket_t *sock, sizebuf_t *data);
+bool	Serial_CanSendMessage (qsocket_t *sock);
+bool	Serial_CanSendUnreliableMessage (qsocket_t *sock);
+void		Serial_Close (qsocket_t *sock);
+void		Serial_Shutdown (void);

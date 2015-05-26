@@ -607,10 +607,12 @@
   <ItemGroup>
     <ClCompile Include="..\external\glee\GLee.c" />
     <ClCompile Include="..\shared\SharedFormats.c" />
-    <ClCompile Include="EngineAudioDummy.c" />
+    <ClCompile Include="EngineAudioDummy.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="EngineClientChase.c" />
     <ClCompile Include="EngineClientDemo.c" />
-    <ClCompile Include="cl_input.c" />
+    <ClCompile Include="EngineClientInput.c" />
     <ClCompile Include="EngineClient.c" />
     <ClCompile Include="EngineClientParse.c" />
     <ClCompile Include="EngineClientTempEntity.c" />
@@ -637,10 +639,6 @@
     <ClCompile Include="EngineInput.c" />
     <ClCompile Include="EngineVideoLights.c" />
     <ClCompile Include="EngineMain.c" />
-    <ClCompile Include="EngineNetworkMaster.c">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (Ictus)|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="EngineVideoMaterial.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
     </ClCompile>
@@ -668,16 +666,16 @@
     <ClCompile Include="gl_vidnt.c" />
     <ClCompile Include="EngineVideoWarp.c" />
     <ClCompile Include="EngineHost.c" />
-    <ClCompile Include="host_cmd.c" />
+    <ClCompile Include="EngineHostCommand.c" />
     <ClCompile Include="EngineImage.c" />
     <ClCompile Include="EngineVideoShadow.c" />
     <ClCompile Include="keys.c" />
     <ClCompile Include="menu.c" />
     <ClCompile Include="engine_netdgrm.c" />
-    <ClCompile Include="engine_netloop.c" />
+    <ClCompile Include="EngineNetworkLoop.c" />
     <ClCompile Include="EngineNetwork.c" />
     <ClCompile Include="EngineNetworkWindows.c" />
-    <ClCompile Include="network_winsock.c" />
+    <ClCompile Include="EngineNetworkWinsock.c" />
     <ClCompile Include="EngineServerEntity.c" />
     <ClCompile Include="EngineVideoBrush.c" />
     <ClCompile Include="EngineVideoWorld.c" />
@@ -701,7 +699,6 @@
     <ClInclude Include="..\shared\SharedFlags.h" />
     <ClInclude Include="..\shared\SharedFormats.h" />
     <ClInclude Include="..\shared\shared_game.h" />
-    <ClInclude Include="..\shared\shared_input.h" />
     <ClInclude Include="..\shared\shared_menu.h" />
     <ClInclude Include="..\shared\SharedModule.h" />
     <ClInclude Include="..\shared\shared_server.h" />
@@ -739,9 +736,9 @@
     <ClInclude Include="menu.h" />
     <ClInclude Include="EngineNetwork.h" />
     <ClInclude Include="engine_netdgrm.h" />
-    <ClInclude Include="engine_netloop.h" />
-    <ClInclude Include="engine_netserial.h" />
-    <ClInclude Include="network_winsock.h" />
+    <ClInclude Include="EngineNetworkLoop.h" />
+    <ClInclude Include="EngineNetworkSerial.h" />
+    <ClInclude Include="EngineNetworkWinsock.h" />
     <ClInclude Include="progs.h" />
     <ClInclude Include="EngineProtocol.h" />
     <ClInclude Include="pr_comp.h" />

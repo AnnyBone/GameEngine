@@ -54,8 +54,8 @@ void GL_BeginRendering(int *x,int *y,int *width,int *height)
 
 void GL_EndRendering(void)
 {
-	if(!Video.bSkipUpdate)
-		SDL_GL_SwapWindow(sMainWindow);
+	if (!Video.bSkipUpdate)
+		Window_Swap();
 }
 
 void GL_Overbright_f(void)
@@ -180,7 +180,6 @@ void R_Init (void)
 	Cvar_RegisterVariable (&r_lerpmove, NULL);
 	Cvar_RegisterVariable (&gl_subdivide_size, NULL);
 
-	Shadow_Initialize();
 	Particle_Initialize();
 
 	Sky_Init();

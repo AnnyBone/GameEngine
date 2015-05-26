@@ -43,15 +43,15 @@
     <Filter Include="Client\Video\Interfaces">
       <UniqueIdentifier>{7dcb15cb-2530-4696-b29c-1de8a7635517}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Network\Interfaces">
+      <UniqueIdentifier>{12aedf60-fc01-4dce-a337-75a4ed2c429d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="menu.c">
       <Filter>Legacy</Filter>
     </ClCompile>
     <ClCompile Include="sys_win.c">
-      <Filter>Legacy</Filter>
-    </ClCompile>
-    <ClCompile Include="host_cmd.c">
       <Filter>Legacy</Filter>
     </ClCompile>
     <ClCompile Include="zone.c">
@@ -61,9 +61,6 @@
       <Filter>Legacy</Filter>
     </ClCompile>
     <ClCompile Include="crc.c">
-      <Filter>Legacy</Filter>
-    </ClCompile>
-    <ClCompile Include="cl_input.c">
       <Filter>Legacy</Filter>
     </ClCompile>
     <ClCompile Include="gl_vidnt.c">
@@ -85,12 +82,6 @@
       <Filter>Legacy</Filter>
     </ClCompile>
     <ClCompile Include="engine_netdgrm.c">
-      <Filter>Network</Filter>
-    </ClCompile>
-    <ClCompile Include="engine_netloop.c">
-      <Filter>Network</Filter>
-    </ClCompile>
-    <ClCompile Include="network_winsock.c">
       <Filter>Network</Filter>
     </ClCompile>
     <ClCompile Include="EngineMaterialEditor.c">
@@ -138,15 +129,6 @@
     <ClCompile Include="EngineHost.c" />
     <ClCompile Include="EngineVideoLegacy.c">
       <Filter>Client\Video</Filter>
-    </ClCompile>
-    <ClCompile Include="EngineNetworkWindows.c">
-      <Filter>Network</Filter>
-    </ClCompile>
-    <ClCompile Include="EngineNetworkMaster.c">
-      <Filter>Network</Filter>
-    </ClCompile>
-    <ClCompile Include="EngineNetworkDummy.c">
-      <Filter>Network</Filter>
     </ClCompile>
     <ClCompile Include="EngineNetwork.c">
       <Filter>Network</Filter>
@@ -255,6 +237,22 @@
     </ClCompile>
     <ClCompile Include="EngineImage.c" />
     <ClCompile Include="EngineModel.c" />
+    <ClCompile Include="EngineNetworkLoop.c">
+      <Filter>Network</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineNetworkDummy.c">
+      <Filter>Network\Interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineNetworkWindows.c">
+      <Filter>Network\Interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineNetworkWinsock.c">
+      <Filter>Network\Interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineHostCommand.c" />
+    <ClCompile Include="EngineClientInput.c">
+      <Filter>Client</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\shared\shared_client.h">
@@ -264,9 +262,6 @@
       <Filter>Shared</Filter>
     </ClInclude>
     <ClInclude Include="..\shared\shared_game.h">
-      <Filter>Shared</Filter>
-    </ClInclude>
-    <ClInclude Include="..\shared\shared_input.h">
       <Filter>Shared</Filter>
     </ClInclude>
     <ClInclude Include="..\shared\shared_menu.h">
@@ -335,16 +330,7 @@
     <ClInclude Include="cmdlib.h">
       <Filter>Legacy</Filter>
     </ClInclude>
-    <ClInclude Include="engine_netserial.h">
-      <Filter>Network</Filter>
-    </ClInclude>
-    <ClInclude Include="engine_netloop.h">
-      <Filter>Network</Filter>
-    </ClInclude>
     <ClInclude Include="engine_netdgrm.h">
-      <Filter>Network</Filter>
-    </ClInclude>
-    <ClInclude Include="network_winsock.h">
       <Filter>Network</Filter>
     </ClInclude>
     <ClInclude Include="EngineVideoMaterial.h">
@@ -440,6 +426,15 @@
     <ClInclude Include="EngineModel.h" />
     <ClInclude Include="EngineNetwork.h">
       <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineNetworkLoop.h">
+      <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineNetworkSerial.h">
+      <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineNetworkWinsock.h">
+      <Filter>Network\Interfaces</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

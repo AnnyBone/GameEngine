@@ -144,6 +144,29 @@ void Window_UpdateVideo(void)
 		SDL_SetWindowPosition(sMainWindow, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
 }
 
+void Window_Swap(void)
+{
+	SDL_GL_SwapWindow(sMainWindow);
+}
+
+/*	Set the gamma level.
+	Based on Darkplaces implementation.
+*/
+void Window_SetGamma(unsigned short *usRamp, int iRampSize)
+{
+	if (!SDL_SetWindowGammaRamp(sMainWindow, usRamp, usRamp + iRampSize, usRamp + iRampSize * 2))
+		Con_Warning("Failed to set gamma level!\n%s", SDL_GetError());
+}
+
+/*	Get gamma level.
+	Based on the Darkplaces implementation.
+*/
+void Window_GetGamma(unsigned short *usRamp, int iRampSize)
+{
+	if (!SDL_GetWindowGammaRamp(sMainWindow, usRamp, usRamp + iRampSize, usRamp + iRampSize * 2))
+		Con_Warning("Failed to get gamma level!\n%s", SDL_GetError());
+}
+
 int Window_GetWidth(void)
 {
 	return sDisplayMode.w;
@@ -152,6 +175,11 @@ int Window_GetWidth(void)
 int Window_GetHeight(void)
 {
 	return sDisplayMode.h;
+}
+
+void Window_GetCursorPosition(int *x, int *y)
+{
+	SDL_GetMouseState(x, y);
 }
 
 void Window_Shutdown(void)
