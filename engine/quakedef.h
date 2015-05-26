@@ -17,13 +17,13 @@
 	along with this program; if not, write to the Free Software
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
+
 #ifndef QUAKEDEF_H
 #define QUAKEDEF_H
 
 // Platform Library
 #include "platform.h"
 #include "platform_math.h"
-#include "platform_window.h"
 
 #ifdef _MSC_VER
 #pragma warning(disable:4115)
@@ -32,7 +32,7 @@
 #pragma warning(disable:4305)
 #endif
 
-#include "shared_flags.h"
+#include "SharedFlags.h"
 
 #define MINIMUM_MEMORY	0x2000000	// 32MB
 
@@ -70,13 +70,13 @@
 
 #include "EngineWindow.h"
 
-#include "engine_main.h"
+#include "EngineMain.h"
 #include "draw.h"
-#include "cvar.h"
+#include "EngineConsoleVariable.h"
 #include "screen.h"
 #include "engine_net.h"
 #include "protocol.h"
-#include "cmd.h"
+#include "EngineConsoleCommand.h"
 #include "sound.h"
 #include "render.h"
 #include "client.h"
@@ -84,7 +84,7 @@
 #include "server.h"
 #include "engine_model.h"
 #include "image.h" //johnfitz
-#include "gl_texmgr.h" //johnfitz
+#include "EngineVideoTextureManager.h"
 #include "world.h"
 #include "keys.h"
 #include "console.h"

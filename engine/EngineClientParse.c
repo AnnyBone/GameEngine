@@ -17,18 +17,21 @@
 	along with this program; if not, write to the Free Software
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
-#include "quakedef.h"
 
-/*
-	Client-side parsing
-*/
+#include "quakedef.h"
 
 #include "engine_client.h"
 #include "engine_console.h"
 #include "engine_modmenu.h"
-#include "engine_particle.h"
+#include "EngineVideo.h"
+#include "EngineVideoParticle.h"
+#include "EngineGame.h"
 
 #include "shared_server.h"
+
+/*
+	Client Side Parsing
+*/
 
 char *svc_strings[] =
 {
@@ -224,8 +227,6 @@ void CL_KeepaliveMessage (void)
 	NET_SendMessage (cls.netcon, &cls.message);
 	SZ_Clear (&cls.message);
 }
-
-#include "engine_videoshadow.h"
 
 /*	Parse information given to us by the server.
 */
@@ -776,8 +777,6 @@ void CL_ParseStaticSound (int version) //johnfitz -- added argument
 
 	S_StaticSound (cl.sound_precache[sound_num], org, vol, atten);
 }
-
-#include "engine_modgame.h"
 
 #define SHOWNET(x) if(cl_shownet.value==2)Con_Printf ("%3i:%s\n", msg_readcount-1, x);
 

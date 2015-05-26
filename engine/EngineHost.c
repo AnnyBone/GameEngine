@@ -17,18 +17,19 @@
 	along with this program; if not, write to the Free Software
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
+
 #include "quakedef.h"
 
 #include "engine_console.h"
-#include "engine_modgame.h"
+#include "EngineGame.h"
 #include "engine_modmenu.h"
 #include "engine_editor.h"
-#include "engine_clientinput.h"
-#include "video.h"
-#include "engine_physics.h"
+#include "EngineInput.h"
+#include "EngineVideo.h"
+#include "EngineServerPhysics.h"
 #include "engine_client.h"
-#include "audio.h"
-#include "engine_particle.h"
+#include "EngineAudio.h"
+#include "EngineVideoParticle.h"
 
 #include "shared_server.h"
 

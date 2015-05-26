@@ -17,20 +17,21 @@
 	along with this program; if not, write to the Free Software
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
+
 #include "quakedef.h"
+
+#include "engine_client.h"
+#include "EngineVideoParticle.h"
 
 /*
 	Client-side Temporary Entities
 */
 
-#include "engine_client.h"
-#include "engine_particle.h"
+int	num_temp_entities;
+ClientEntity_t cl_temp_entities[MAX_TEMP_ENTITIES];
+beam_t cl_beams[MAX_BEAMS];
 
-int			num_temp_entities;
-entity_t	cl_temp_entities[MAX_TEMP_ENTITIES];
-beam_t		cl_beams[MAX_BEAMS];
-
-sfx_t		*sExplosionSound;
+sfx_t *sExplosionSound;
 
 void CL_InitTEnts(void)
 {

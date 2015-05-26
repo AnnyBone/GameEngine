@@ -17,16 +17,15 @@
 	along with this program; if not, write to the Free Software
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
+
 #include "quakedef.h"
 
 #include "platform_filesystem.h"
 
 #include "engine_modmenu.h"
 #include "engine_editor.h"
-#include "engine_videoshadow.h"
-
-#include "video.h"
-#include "engine_clientinput.h"
+#include "EngineVideo.h"
+#include "EngineInput.h"
 
 /*
 

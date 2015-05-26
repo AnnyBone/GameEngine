@@ -19,7 +19,7 @@
 */
 #include "quakedef.h"
 
-#include "video.h"
+#include "EngineVideo.h"
 
 #define	MAX_CLIP_VERTS 64
 

@@ -17,18 +17,17 @@
 	along with this program; if not, write to the Free Software
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
+
 #ifndef _MSC_VER
 #include <unistd.h>
 #endif
 #include <fcntl.h>
 #include "quakedef.h"
-#include <stdio.h>
 
 #include "engine_console.h"
-#include "engine_videoshadow.h"
 
-#include "engine_clientinput.h"
-#include "video.h"
+#include "EngineInput.h"
+#include "EngineVideo.h"
 
 int 		con_linewidth;
 

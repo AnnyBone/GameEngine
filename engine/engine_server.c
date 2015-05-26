@@ -2,7 +2,6 @@
 */
 #include "engine_server.h"
 
-#include "engine_videoshadow.h"
 #include "engine_console.h"
 
 typedef struct

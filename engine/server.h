@@ -1,4 +1,4 @@
-#include "shared_flags.h"
+#include "SharedFlags.h"
 
 typedef struct
 {

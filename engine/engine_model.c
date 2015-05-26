@@ -17,16 +17,17 @@
 	along with this program; if not, write to the Free Software
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
+
 #include "quakedef.h"
+
+#include "engine_console.h"
+#include "EngineScript.h"
+#include "EngineVideo.h"
 
 /*
 	Model Loading and Caching
 	Models are the only shared resource between a client and server running on the same machine.
 */
-
-#include "engine_console.h"
-#include "engine_script.h"
-#include "video.h"
 
 model_t	*loadmodel;
 char	loadname[32];	// for hunk tags

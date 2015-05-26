@@ -1,6 +1,34 @@
-/*	Copyright (C) 2011-2015 OldTimes Software
+/*	Copyright (C) 1996-2001 Id Software, Inc.
+	Copyright (C) 2002-2009 John Fitzgibbons and others
+	Copyright (C) 2011-2015 OldTimes Software
+
+	This program is free software; you can redistribute it and/or
+	modify it under the terms of the GNU General Public License
+	as published by the Free Software Foundation; either version 2
+	of the License, or (at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+	See the GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
+
+#include "quakedef.h"
+
 #include "engine_editor.h"
+#include "EngineVideo.h"
+#include "EngineInput.h"
+#include "engine_console.h"
+#include "engine_modmenu.h"
+
+// Platform library
+#include "platform_module.h"
+#include "platform_filesystem.h"
 
 /*
 	The Katana Editor is perhaps the biggest addition to
@@ -16,16 +44,6 @@
 	to edit the map	from a single window with a realtime preview
 	of the map in view...
 */
-
-#include "video.h"
-#include "engine_clientinput.h"
-#include "engine_videoshadow.h"			// [14/10/2013] TODO: Obsolete! ~hogsy
-#include "engine_console.h"
-#include "engine_modmenu.h"
-
-// Platform library
-#include "platform_module.h"
-#include "platform_filesystem.h"
 
 cvar_t	cvEditorLightPreview	= {	"editor_lightpreview",	"0",	false,	false,	"Enables a preview showing the radius of each light."	};
 

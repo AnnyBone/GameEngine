@@ -182,7 +182,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="launcher_main.cpp" />
+    <ClCompile Include="LauncherMain.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />

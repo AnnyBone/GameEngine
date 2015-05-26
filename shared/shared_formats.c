@@ -1,7 +1,7 @@
 #include "platform.h"
 #include "platform_math.h"
 
-#include "shared_flags.h"
+#include "SharedFlags.h"
 
 #include "shared_formats.h"
 

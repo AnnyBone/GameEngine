@@ -3,8 +3,6 @@
 #ifndef __ENGINEMENU__
 #define __ENGINEMENU__
 
-#include "quakedef.h"
-
 #include "shared_menu.h"
 
 MenuExport_t *Menu;

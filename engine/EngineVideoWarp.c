@@ -23,7 +23,7 @@
 	Warping animation support.
 */
 
-#include "video.h"
+#include "EngineVideo.h"
 
 extern cvar_t r_drawflat;
 

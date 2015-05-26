@@ -3,7 +3,7 @@
 
 #include "quakedef.h"
 
-#include "video.h"
+#include "EngineVideo.h"
 
 VideoObjectX_t *VideoObject_Create(void)
 {

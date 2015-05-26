@@ -17,14 +17,13 @@
 	along with this program; if not, write to the Free Software
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
+
 #include "quakedef.h"
 
 #include "engine_editor.h"
 #include "engine_console.h"
-#include "engine_videoshadow.h"
-#include "video.h"
-#include "engine_particle.h"
-#include "KatAlias.h"
+#include "EngineVideo.h"
+#include "EngineVideoParticle.h"
 
 vec3_t		modelorg, r_entorigin;
 entity_t	*currententity;
@@ -517,12 +516,12 @@ void R_DrawShadows (void)
 		if(currententity == &cl.viewent)
 			return;
 
-		Draw_Shadow(currententity);
+		Shadow_Draw(currententity);
 	}
 
 	// Allow us to also render the players own shadow too.
 	if (cvVideoPlayerShadow.bValue)
-		Draw_Shadow(&cl_entities[cl.viewentity]);
+		Shadow_Draw(&cl_entities[cl.viewentity]);
 }
 
 void R_SetupScene(void)

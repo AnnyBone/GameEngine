@@ -24,8 +24,8 @@
 #ifdef KATANA_AUDIO_DIRECTSOUND
 #include "winquake.h"
 
-#include "audio.h"
-#include "video.h"
+#include "EngineAudio.h"
+#include "EngineVideo.h"
 
 #define iDirectSoundCreate(a,b,c)	pDirectSoundCreate(a,b,c)
 

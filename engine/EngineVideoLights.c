@@ -19,7 +19,7 @@
 */
 #include "quakedef.h"
 
-#include "video.h"
+#include "EngineVideo.h"
 #include "engine_editor.h"
 
 int	r_dlightframecount;

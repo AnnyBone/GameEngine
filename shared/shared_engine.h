@@ -1,11 +1,12 @@
-/*	Copyright (C) 2011-2013 OldTimes Software
+/*	Copyright (C) 2011-2015 OldTimes Software
 */
+
 #ifndef __SHAREDENGINE__
 #define __SHAREDENGINE__
 
 #include "../platform/include/platform.h"
 
-#include "shared_flags.h"
+#include "SharedFlags.h"
 #include "SharedMaterial.h"
 
 //johnfitz -- stuff for 2d drawing control

@@ -6,8 +6,8 @@
 	Client-side stuff!
 */
 
+#include "EngineVideo.h"
 #include "engine_console.h"
-#include "engine_videoshadow.h"
 
 #include "shared_server.h"
 #include "shared_menu.h"

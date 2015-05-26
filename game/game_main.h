@@ -10,7 +10,7 @@
 #include "platform.h"
 #include "platform_math.h"
 
-#include "shared_flags.h"
+#include "SharedFlags.h"
 #include "shared_module.h"
 #include "shared_menu.h"
 #include "shared_formats.h"

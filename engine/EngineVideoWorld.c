@@ -23,7 +23,7 @@
 	World
 */
 
-#include "video.h"
+#include "EngineVideo.h"
 
 extern cvar_t gl_fullbrights, r_drawflat, gl_overbright, r_oldwater, r_oldskyleaf, r_showtris; //johnfitz
 

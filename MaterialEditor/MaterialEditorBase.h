@@ -16,11 +16,7 @@
 #include <wx/aui/framemanager.h>
 #include <wx/aui/auibar.h>
 
-#ifdef _MSC_VER
-#pragma warning(disable : 4996)
-#endif
-
-#include "shared_flags.h"
+#include "SharedFlags.h"
 
 #include "platform.h"
 #include "platform_math.h"

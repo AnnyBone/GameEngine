@@ -1,7 +1,7 @@
 #ifndef __COMMON__
 #define __COMMON__
 
-#include "shared_flags.h"
+#include "SharedFlags.h"
 
 #if !defined BYTE_DEFINED
 typedef unsigned char 		byte;

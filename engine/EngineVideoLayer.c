@@ -8,7 +8,7 @@
 	and OpenGL. All OpenGL functionality should be here.
 */
 
-#include "video.h"
+#include "EngineVideo.h"
 
 /*===========================
 	OPENGL CAPABILITIES

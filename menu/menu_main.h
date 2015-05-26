@@ -1,12 +1,13 @@
 /*	Copyright (C) 2011-2015 OldTimes Software
 */
+
 #ifndef __MENUMAIN__
 #define __MENUMAIN__
 
 #include "platform.h"
 #include "platform_math.h"
 
-#include "shared_flags.h"
+#include "SharedFlags.h"
 #include "shared_video.h"
 #include "shared_menu.h"
 #include "shared_module.h"
