@@ -112,8 +112,6 @@ void pFileSystem_GetUserName(char *cOut)
 */
 void pFileSystem_ScanDirectory(const char *ccPath,const char *ccExtension,void (*vFunction)(char *cFile))
 {
-	char cFileString[PLATFORM_MAX_PATH];
-
 	pFUNCTION_UPDATE;
 
 	if (ccPath[0] == ' ')
@@ -124,6 +122,7 @@ void pFileSystem_ScanDirectory(const char *ccPath,const char *ccExtension,void (
 
 #ifdef _WIN32
 	{
+        char cFileString[PLATFORM_MAX_PATH];
 		WIN32_FIND_DATA	wfdData;
 		HANDLE			hFile;
 

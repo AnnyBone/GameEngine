@@ -49,8 +49,6 @@ void pError_Set(const char *ccMessage,...)
 	va_end(vlArguments);
 
 	strncpy(cErrorMessage, cOut, sizeof(cErrorMessage));
-
-	printf(cErrorMessage);
 }
 
 char *pError_Get(void)

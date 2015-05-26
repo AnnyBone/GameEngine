@@ -468,12 +468,12 @@ void Particle_Draw(void)
 
 	for (pParticle = pActiveParticles; pParticle; pParticle = pParticle->next)
 	{
-		VideoObjectVertex_t	voParticle[4] = { 0 };
+		VideoObjectVertex_t	voParticle[4];
 
 		if (!r_showtris.value)
 			Video_SetTexture(gEffectTexture[pParticle->iMaterial]);
 
-		Video_ObjectVertex(&voParticle[0], 
+		Video_ObjectVertex(&voParticle[0],
 			pParticle->vOrigin[0], pParticle->vOrigin[1], pParticle->vOrigin[2]);
 		Video_ObjectColour(&voParticle[0],
 			pParticle->vColour[0], pParticle->vColour[1], pParticle->vColour[2], pParticle->vColour[3]);

@@ -83,6 +83,7 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="game_resources.h" />
+		<Unit filename="server/ServerEntity.cpp" />
 		<Unit filename="server/monster_bot.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -168,10 +169,11 @@
 		<Unit filename="server/server_area.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="server/server_deco.c">
+		<Unit filename="server/server_entity.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="server/server_entity.c">
+		<Unit filename="server/server_gamemode.h" />
+		<Unit filename="server/server_gib.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="server/server_item.c">

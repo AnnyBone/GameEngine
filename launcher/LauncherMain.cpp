@@ -36,7 +36,7 @@ int main(int argc,char *argv[])
 	char sPath[PLATFORM_MAX_PATH];
 
 	// Update the path to point to where we need it.
-	sprintf_s(sPath, "./%s/%s", PATH_ENGINE, MODULE_ENGINE);
+	sprintf(sPath, "./%s/%s", PATH_ENGINE, MODULE_ENGINE);
 
 	// Load the module interface for the engine module.
 	Engine = (EngineExport_t*)pModule_LoadInterface(
@@ -58,7 +58,7 @@ int main(int argc,char *argv[])
 		pModule_Unload(hEngineInstance);
 		return -1;
 	}
-	
+
 	// Initialize.
 	if (!Engine->Initialize(argc, argv, false))
 	{

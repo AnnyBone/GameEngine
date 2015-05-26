@@ -181,7 +181,7 @@ void Draw_ExternPic(char *path,float alpha,int x,int y,int w,int h)
 	Video_DisableCapabilities(VIDEO_DEPTH_TEST);
 
 	{
-		VideoObjectVertex_t	voPicture[4] = { 0 };
+		VideoObjectVertex_t	voPicture[4];
 
 		for(i = 0; i < 4; i++)
 		{
@@ -204,12 +204,12 @@ void Draw_ExternPic(char *path,float alpha,int x,int y,int w,int h)
 
 		// Give each texture coord the coord it needs...
 		voPicture[0].mvST[0][0]	=
-		voPicture[0].mvST[0][1]	= 
-		voPicture[1].mvST[0][1]	= 
+		voPicture[0].mvST[0][1]	=
+		voPicture[1].mvST[0][1]	=
 		voPicture[3].mvST[0][0]	= 0;
 		voPicture[1].mvST[0][0]	=
-		voPicture[2].mvST[0][0]	= 
-		voPicture[2].mvST[0][1]	= 
+		voPicture[2].mvST[0][0]	=
+		voPicture[2].mvST[0][1]	=
 		voPicture[3].mvST[0][1]	= 1.0f;
 
 		// Throw it off to the rendering pipeline.
@@ -472,9 +472,10 @@ void Draw_Line(MathVector3_t mvStart, MathVector3_t mvEnd)
 
 void Draw_Grid(MathVector3f_t mvPosition, int iGridSize)
 {
+    int i;
+
 	glPushMatrix();
 
-	//glRotatef(-90.0f, 1, 0, 0);
 	glTranslatef(mvPosition[0], mvPosition[1], mvPosition[2]);
 
 	glEnable(GL_BLEND);
@@ -485,8 +486,8 @@ void Draw_Grid(MathVector3f_t mvPosition, int iGridSize)
 	glLineWidth(1.0f);
 	glBegin(GL_LINES);
 
-	//static int GRID_SIZE = 1;
-	for (int i = 0; i <= (4096 / iGridSize); i++) {
+	for (i = 0; i <= (4096 / iGridSize); i++)
+	{
 		glVertex2i(-4096, (i * iGridSize) * -1);
 		glVertex2i(4096, (i * iGridSize) * -1);
 		glVertex2i(-4096, i * iGridSize);
@@ -504,7 +505,8 @@ void Draw_Grid(MathVector3f_t mvPosition, int iGridSize)
 	glLineWidth(2.0f);
 	glBegin(GL_LINES);
 
-	for (int i = 0; i <= 64; i++) {
+	for (i = 0; i <= 64; i++)
+	{
 		glVertex2i(-4096, (i * 64) * -1);
 		glVertex2i(4096, (i * 64) * -1);
 		glVertex2i(-4096, i * 64);
@@ -529,7 +531,7 @@ void Draw_Grid(MathVector3f_t mvPosition, int iGridSize)
 void Draw_Fill(int x,int y,int w,int h,float r,float g,float b,float alpha)
 {
 	vec4_t			vColour;
-	VideoObjectVertex_t	voFill[4] = { 0 };
+	VideoObjectVertex_t	voFill[4];
 
 	vColour[0] = r; vColour[1] = g; vColour[2] = b; vColour[3] = alpha;
 	Math_Vector4Copy(vColour,voFill[0].mvColour);
@@ -554,7 +556,7 @@ void Draw_Fill(int x,int y,int w,int h,float r,float g,float b,float alpha)
 
 void Draw_FadeScreen (void)
 {
-	VideoObjectVertex_t	voFade[4] = { 0 };
+	VideoObjectVertex_t	voFade[4];
 
 	GL_SetCanvas(CANVAS_DEFAULT);
 
