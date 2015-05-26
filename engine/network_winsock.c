@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // net_wins.c
 
-#include "quakedef.h"
+#include "EngineBase.h"
 #include "winquake.h"
 
 #include "platform_module.h"

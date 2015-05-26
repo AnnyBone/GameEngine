@@ -25,8 +25,8 @@
 #define	MATERIALEDITOR_TITLE "Material Editor"
 
 extern "C" {
-#include "shared_module.h"
-#include "shared_engine.h"
+#include "SharedModule.h"
+#include "SharedEngine.h"
 }
 
 void EngineInterface_Load();

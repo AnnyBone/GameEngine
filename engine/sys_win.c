@@ -17,7 +17,7 @@
 	along with this program; if not, write to the Free Software
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
-#include "quakedef.h"
+#include "EngineBase.h"
 
 /*
 	Old platform specific loop shit. Needs to be rewritten.
@@ -39,8 +39,7 @@
 #include <assert.h>
 #endif
 
-#include "engine_editor.h"
-#include "engine_console.h"
+#include "EngineEditor.h"
 #include "EngineVideo.h"
 
 #define MAXIMUM_MEMORY		0x8000000	// 128MB

@@ -18,11 +18,10 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "quakedef.h"
+#include "EngineBase.h"
 
 #include "engine_client.h"
-#include "engine_console.h"
-#include "engine_modmenu.h"
+#include "EngineMenu.h"
 #include "EngineVideo.h"
 #include "EngineVideoParticle.h"
 #include "EngineGame.h"

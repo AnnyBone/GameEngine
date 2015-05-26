@@ -3,7 +3,7 @@
 #ifndef	__ENGINESERVER__
 #define	__ENGINESERVER__
 
-#include "quakedef.h"
+#include "EngineBase.h"
 
 #include "shared_server.h"
 

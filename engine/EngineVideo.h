@@ -1,25 +1,42 @@
-/*  Copyright (C) 2011-2015 OldTimes Software
+/*	Copyright (C) 1996-2001 Id Software, Inc.
+	Copyright (C) 2002-2009 John Fitzgibbons and others
+	Copyright (C) 2011-2015 OldTimes Software
+
+	This program is free software; you can redistribute it and/or
+	modify it under the terms of the GNU General Public License
+	as published by the Free Software Foundation; either version 2
+	of the License, or (at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+	See the GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
+
 #ifndef __ENGINEVIDEO__
 #define __ENGINEVIDEO__
-
-#include <SDL.h>
-#include <SDL_syswm.h>
 
 #define	VIDEO_MAX_UNITS	16
 
 //#define	VIDEO_ENABLE_SHADERS
 
-extern cvar_t	cvVideoDrawModels,		// Should we draw models?
-				cvWidth,				// The width of our window (not reliable).
-				cvHeight,				// The height of our window (not reliable).
-				cvFullscreen,			// Should we be fullscreen?
-				cvVideoAlphaTrick,
-				cvVideoMirror,			// Toggles mirrors.
-				cvVideoPlayerShadow,	// Render players shadow.
-				cvVerticalSync,
-				gl_overbright,			// Enable overbrights?
-				cvLitParticles;			// Should particles be lit or not?
+extern ConsoleVariable_t	
+	cvVideoDrawModels,		// Should we draw models?
+	cvWidth,				// The width of our window (not reliable).
+	cvHeight,				// The height of our window (not reliable).
+	cvFullscreen,			// Should we be fullscreen?
+	cvMultisampleSamples,	// Number of samples we're using.
+	cvVideoAlphaTrick,
+	cvVideoMirror,			// Toggles mirrors.
+	cvVideoPlayerShadow,	// Render players shadow.
+	cvVerticalSync,
+	gl_overbright,			// Enable overbrights?
+	cvLitParticles;			// Should particles be lit or not?
 
 extern bool	bVideoIgnoreCapabilities;
 
@@ -48,7 +65,7 @@ typedef struct
 			*cGLVersion,
 			*cGLExtensions;
 
-	float			fMaxAnisotropy,		        // Max anisotropy amount allowed by the hardware.
+	float			fMaxAnisotropy,	// Max anisotropy amount allowed by the hardware.
 					fBitsPerPixel;
 
     // Texture Management
@@ -77,13 +94,11 @@ typedef struct
 	bool
 		bGenerateMipMap,
 		bVertexBufferObject;		// ARB_vertex_buffer_object
-
-	SDL_SysWMinfo	sSystemInfo;
 } Video_t;
 
 Video_t	Video;
 
-extern SDL_Window	*sMainWindow;
+extern SDL_Window *sMainWindow;
 
 // Video Capabilities
 #define	VIDEO_ALPHA_TEST	1	// Alpha-testing
@@ -206,24 +221,14 @@ void VideoLayer_DeleteBuffer(unsigned int uiBuffer);
 
 #include "EngineVideoAlias.h"
 
-void Screen_DrawFPS(void);
-void Screen_DrawConsole(void);
-void Screen_SetUpToDrawConsole(void);
-void Screen_UpdateSize(void);
-
 void R_SetupGenericView(void);
 void R_SetupScene(void);
-
-void Draw_ResetCanvas(void);
-void Draw_Line(MathVector3f_t mvStart, MathVector3f_t mvEnd);
-void Draw_Grid(MathVector3f_t mvPosition, int iGridSize);
-void Draw_String(int x, int y, char *msg);
 
 /*
     Sprite
 */
 
-void Sprite_Draw(entity_t *eEntity);
+void Sprite_Draw(ClientEntity_t *eEntity);
 
 /*
 	Sky
@@ -239,9 +244,9 @@ void Light_Draw(void);
 void Light_Animate(void);
 void Light_MarkLights(DynamicLight_t *light,int bit,mnode_t *node);
 
-MathVector_t Light_GetSample(vec3_t vPoint);
+MathVector_t Light_GetSample(MathVector3f_t vPoint);
 
-DynamicLight_t *Light_GetDynamic(vec3_t vPoint,bool bCheap);
+DynamicLight_t *Light_GetDynamic(MathVector3f_t vPoint, bool bCheap);
 
 void R_RenderDynamicLightmaps(msurface_t *fa);
 void R_UploadLightmap(int lmap);
@@ -257,7 +262,7 @@ void World_DrawWaterTextureChains(void);
 	Brush
 */
 
-void Brush_Draw(entity_t *e);
+void Brush_Draw(ClientEntity_t *e);
 
 void DrawGLPoly(glpoly_t *p);
 
@@ -267,8 +272,8 @@ void DrawGLPoly(glpoly_t *p);
 
 void Warp_DrawWaterPoly(glpoly_t *p);
 
-void R_EmitWirePoint(vec3_t origin);
+void R_EmitWirePoint(MathVector3f_t origin);
 
-bool R_CullBox(vec3_t emins, vec3_t emaxs);
+bool R_CullBox(MathVector3f_t emins, MathVector3f_t emaxs);
 
 #endif

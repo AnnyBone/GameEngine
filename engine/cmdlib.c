@@ -7,7 +7,7 @@
 #include <direct.h>
 #endif
 
-#include "common.h"
+#include "EngineCommon.h"
 
 #include "platform_window.h"
 

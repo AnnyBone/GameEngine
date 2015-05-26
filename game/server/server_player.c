@@ -533,7 +533,7 @@ void Player_PreThink(ServerEntity_t *ePlayer)
 		{
 			Entity_SetSizeVector(ePlayer, vMins, vMaxs);
 
-			ePlayer->v.view_ofs[2] = 22.0f;
+			ePlayer->v.view_ofs[2] = 28.0f;
 
 			// Not crouching anymore.
 			ePlayer->v.flags -= (ePlayer->v.flags & FL_CROUCHING);
@@ -680,7 +680,7 @@ void Player_Spawn(ServerEntity_t *ePlayer)
 	Math_VectorClear(ePlayer->v.view_ofs);
 
 	ePlayer->v.bFixAngle = true;
-	ePlayer->v.view_ofs[2]	= 28.0f;
+	ePlayer->v.view_ofs[2] = 28.0f;
 
 	Entity_SetDamagedFunction(ePlayer, Player_Pain);
 	Entity_SetKilledFunction(ePlayer, Player_Die);

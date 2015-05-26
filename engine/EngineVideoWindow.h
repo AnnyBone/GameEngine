@@ -15,4 +15,13 @@ void Window_Shutdown(void);
 int Window_GetWidth(void);
 int Window_GetHeight(void);
 
+typedef struct
+{
+#ifdef _WIN32
+	HWND hWindowInstance;
+#endif
+} Window_t;
+
+Window_t Window;
+
 #endif

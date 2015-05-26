@@ -1,7 +1,7 @@
 #ifndef __KATCLIENT__
 #define __KATCLIENT__
 
-#include "quakedef.h"
+#include "EngineBase.h"
 
 #include "shared_client.h"
 

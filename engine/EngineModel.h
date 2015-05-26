@@ -18,41 +18,29 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef __MENUMAIN__
-#define __MENUMAIN__
+#ifndef __ENGINEMODEL__
+#define __ENGINEMODEL__
 
-#include "platform.h"
-#include "platform_math.h"
+//
+// Whole model
+//
 
-#include "SharedFlags.h"
-#include "shared_video.h"
-#include "shared_menu.h"
-#include "SharedModule.h"
-#include "SharedEngine.h"
-#include "shared_game.h"
+#define	MODEL_MAX_TEXTURES	32
 
-#define	MENU_BASE_PATH	"menu/"
-#define MENU_HUD_PATH	"menu/hud/"
+#include "SharedModel.h"
 
-extern ModuleImport_t	Engine;
+//============================================================================
 
-extern	cvar_t	cvShowMenu,
-				cvShowHealth,
-				cvShowAmmo,
-				cvShowCrosshair,
-				cvCrosshairScale;
+void	Model_Initialize(void);
+void	Model_ClearAll(void);
+model_t *Mod_ForName(char *cName);
+void	*Mod_Extradata (model_t *mod);	// handles caching
+void	Model_Touch(char *cName);
 
-extern int	iMenuState;				// Global menu state.
+mleaf_t *Mod_PointInLeaf (float *p, model_t *model);
+byte	*Mod_LeafPVS (mleaf_t *leaf, model_t *model);
 
-extern int
-iMenuWidth,
-iMenuHeight;
+// OBJ Support
+void Model_DrawOBJ(entity_t *eEntity);
 
-void	Menu_UpdateScreenSize(void);
-void	Menu_AddState(int iState);
-void	Menu_SetState(int iState);
-void	Menu_RemoveState(int iState);
-
-char *va(char *format,...);	// Temporary convenience function, please don't get comfortable with this :(
-
-#endif
+#endif	// __MODEL__

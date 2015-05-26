@@ -17,35 +17,15 @@
 	along with this program; if not, write to the Free Software
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
-#ifndef __ENGINEDRAW__
-#define __ENGINEDRAW__
 
-// draw.h -- these are the only functions outside the refresh allowed
-// to touch the vid buffer
+#ifndef __ENGINEMENU__
+#define __ENGINEMENU__
 
-#include "screen.h"
+#include "shared_menu.h"
 
-typedef struct
-{
-	int			width, height;
-	byte		data[4];			// variably sized
-} qpic_t;
+MenuExport_t *Menu;
 
-extern	qpic_t		*draw_disc;	// also used on sbar
-
-void Draw_Init (void);
-void Draw_Character (int x, int y, int num);
-void Draw_Pic (int x, int y, qpic_t *pic);
-void Draw_ConsoleBackground (void); //johnfitz -- removed parameter int lines
-void Draw_BeginDisc (void);
-void Draw_TileClear (int x,int y,int w,int h);
-void Draw_Fill(int x,int y,int w,int h,float r,float g,float b,float alpha);
-void Draw_FadeScreen(void);
-
-qpic_t *Draw_CachePic(char *path);
-
-void Draw_ExternPic(char *path,float alpha,int x,int y,int width,int height);
-
-void GL_SetCanvas(int newcanvas); //johnfitz
+void Menu_Initialize(void);
+void Menu_Toggle(void);
 
 #endif

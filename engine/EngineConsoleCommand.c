@@ -18,11 +18,9 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "quakedef.h"
+#include "EngineBase.h"
 
 #include "common/SCRIPLIB.H"
-
-#include "engine_console.h"
 
 #include "platform_filesystem.h"
 

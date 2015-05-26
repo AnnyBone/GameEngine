@@ -18,12 +18,12 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "quakedef.h"
+#include "EngineBase.h"
 
 #include "engine_console.h"
 #include "EngineGame.h"
-#include "engine_modmenu.h"
-#include "engine_editor.h"
+#include "EngineMenu.h"
+#include "EngineEditor.h"
 #include "EngineInput.h"
 #include "EngineVideo.h"
 #include "EngineServerPhysics.h"
@@ -686,7 +686,6 @@ void Host_Initialize(EngineParameters_t *epParameters)
 	Host_InitLocal();
 	Key_Init();
 	Console_Initialize();
-	Con_Init();
 	Menu_Initialize();
 	Game_Initialize();
 	PR_Init();

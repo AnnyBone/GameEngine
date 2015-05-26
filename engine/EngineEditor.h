@@ -18,41 +18,39 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef __MENUMAIN__
-#define __MENUMAIN__
+#ifndef __ENGINEEDITOR__
+#define	__ENGINEEDITOR__
 
-#include "platform.h"
-#include "platform_math.h"
-
-#include "SharedFlags.h"
-#include "shared_video.h"
-#include "shared_menu.h"
 #include "SharedModule.h"
-#include "SharedEngine.h"
-#include "shared_game.h"
 
-#define	MENU_BASE_PATH	"menu/"
-#define MENU_HUD_PATH	"menu/hud/"
+extern	cvar_t	cvEditorLightPreview;
 
-extern ModuleImport_t	Engine;
+typedef struct
+{
+	bool bEnabled;       // Is the editor active?
+	bool bToolsLoaded;   // Tools loaded (KBSP etc.)
 
-extern	cvar_t	cvShowMenu,
-				cvShowHealth,
-				cvShowAmmo,
-				cvShowCrosshair,
-				cvCrosshairScale;
+	int		iDrawMode,      // Active draw mode.
+			iSelectMode;    // Active selection mode.
 
-extern int	iMenuState;				// Global menu state.
+    char *cMap;	// Currently loaded level.
+} Editor_t;
 
-extern int
-iMenuWidth,
-iMenuHeight;
+Editor_t	Editor;
 
-void	Menu_UpdateScreenSize(void);
-void	Menu_AddState(int iState);
-void	Menu_SetState(int iState);
-void	Menu_RemoveState(int iState);
+void Editor_Draw(void);
+void Editor_Initialize(void);
+void Editor_Input(int iKey);
 
-char *va(char *format,...);	// Temporary convenience function, please don't get comfortable with this :(
+/*
+	Material Editor
+*/
+
+extern bool bMaterialEditorInitialized;
+
+void MaterialEditor_Initialize(void);
+void MaterialEditor_Input(int iKey);
+void MaterialEditor_Draw(void);
+void MaterialEditor_Display(Material_t *mDisplayMaterial);
 
 #endif

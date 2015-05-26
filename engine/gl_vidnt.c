@@ -2,6 +2,6 @@
 	THIS FILE IS OBSOLETE. REMOVE!
 */
 
-#include "quakedef.h"
+#include "EngineBase.h"
 
 viddef_t	vid;				// global video state

@@ -18,41 +18,27 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef __MENUMAIN__
-#define __MENUMAIN__
-
 #include "platform.h"
 #include "platform_math.h"
 
 #include "SharedFlags.h"
-#include "shared_video.h"
-#include "shared_menu.h"
-#include "SharedModule.h"
-#include "SharedEngine.h"
-#include "shared_game.h"
+#include "SharedFormats.h"
 
-#define	MENU_BASE_PATH	"menu/"
-#define MENU_HUD_PATH	"menu/hud/"
+/*
+	BSP
+*/
 
-extern ModuleImport_t	Engine;
+// Each individual hull size.
+float	vHullSizes[BSP_HULL_MAX][2][3] =
+{
+	{ { 0, 0, 0 }, { 0, 0, 0 } },
 
-extern	cvar_t	cvShowMenu,
-				cvShowHealth,
-				cvShowAmmo,
-				cvShowCrosshair,
-				cvCrosshairScale;
+	// Standing
+	{ { -16, -16, -36 }, { 16, 16, 36 } },
 
-extern int	iMenuState;				// Global menu state.
+	// Large
+	{ { -32, -32, -32 }, { 32, 32, 32 } },
 
-extern int
-iMenuWidth,
-iMenuHeight;
-
-void	Menu_UpdateScreenSize(void);
-void	Menu_AddState(int iState);
-void	Menu_SetState(int iState);
-void	Menu_RemoveState(int iState);
-
-char *va(char *format,...);	// Temporary convenience function, please don't get comfortable with this :(
-
-#endif
+	// Crouch
+	{ { -16, -16, -18 }, { 16, 16, 18 } }
+};

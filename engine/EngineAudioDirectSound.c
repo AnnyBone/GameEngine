@@ -19,7 +19,7 @@
 
 */
 
-#include "quakedef.h"
+#include "EngineBase.h"
 
 #ifdef KATANA_AUDIO_DIRECTSOUND
 #include "winquake.h"
@@ -113,13 +113,11 @@ void FreeSound(void)
 
 	// only release primary buffer if it's not also the mixing buffer we just released
 	if (pDSPBuf && (pDSBuf != pDSPBuf))
-	{
 		pDSPBuf->lpVtbl->Release(pDSPBuf);
-	}
 
 	if (pDS)
 	{
-		pDS->lpVtbl->SetCooperativeLevel(pDS, Video.sSystemInfo.info.win.window, DSSCL_NORMAL);
+		pDS->lpVtbl->SetCooperativeLevel(pDS, Window.hWindowInstance, DSSCL_NORMAL);
 		pDS->lpVtbl->Release(pDS);
 	}
 
@@ -146,7 +144,6 @@ void FreeSound(void)
 			GlobalUnlock(hData);
 			GlobalFree(hData);
 		}
-
 	}
 
 	pDS = NULL;
@@ -242,7 +239,7 @@ sndinitstat SNDDMA_InitDirect(void)
 		return SIS_FAILURE;
 	}
 
-	if (DS_OK != pDS->lpVtbl->SetCooperativeLevel(pDS, Video.sSystemInfo.info.win.window, DSSCL_EXCLUSIVE))
+	if (DS_OK != pDS->lpVtbl->SetCooperativeLevel(pDS, Window.hWindowInstance, DSSCL_EXCLUSIVE))
 	{
 		Con_SafePrintf("Set coop level failed\n");
 		FreeSound();
@@ -317,7 +314,7 @@ sndinitstat SNDDMA_InitDirect(void)
 	}
 	else
 	{
-		if (DS_OK != pDS->lpVtbl->SetCooperativeLevel(pDS, Video.sSystemInfo.info.win.window, DSSCL_WRITEPRIMARY))
+		if (DS_OK != pDS->lpVtbl->SetCooperativeLevel(pDS, Window.hWindowInstance, DSSCL_WRITEPRIMARY))
 		{
 			Con_SafePrintf("Set coop level failed\n");
 			FreeSound();

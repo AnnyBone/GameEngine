@@ -34,20 +34,17 @@
     <Filter Include="Client\Audio\Interfaces">
       <UniqueIdentifier>{4068ff62-f40e-400d-aa30-a573d3113102}</UniqueIdentifier>
     </Filter>
-    <Filter Include="File System">
-      <UniqueIdentifier>{7fe5a03c-b397-4e9c-9b13-87916e65c4a2}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Client\Editor">
       <UniqueIdentifier>{21f0f25d-e661-4ea9-8dd5-b90a159a2702}</UniqueIdentifier>
     </Filter>
     <Filter Include="Client\Input">
       <UniqueIdentifier>{5e44a34d-a9ac-4eff-b4d5-40e9f55bc6f6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Client\Video\Interfaces">
+      <UniqueIdentifier>{7dcb15cb-2530-4696-b29c-1de8a7635517}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="common.c">
-      <Filter>Legacy</Filter>
-    </ClCompile>
     <ClCompile Include="menu.c">
       <Filter>Legacy</Filter>
     </ClCompile>
@@ -66,10 +63,6 @@
     <ClCompile Include="crc.c">
       <Filter>Legacy</Filter>
     </ClCompile>
-    <ClCompile Include="console.c">
-      <Filter>Console</Filter>
-    </ClCompile>
-    <ClCompile Include="engine_editor.c" />
     <ClCompile Include="cl_input.c">
       <Filter>Legacy</Filter>
     </ClCompile>
@@ -85,29 +78,11 @@
     <ClCompile Include="engine_client.c">
       <Filter>Client</Filter>
     </ClCompile>
-    <ClCompile Include="..\shared\shared_formats.c">
-      <Filter>Shared</Filter>
-    </ClCompile>
-    <ClCompile Include="engine_model.c">
-      <Filter>Client</Filter>
-    </ClCompile>
-    <ClCompile Include="engine_console.c">
-      <Filter>Console</Filter>
-    </ClCompile>
     <ClCompile Include="engine_server.c">
       <Filter>Server</Filter>
     </ClCompile>
-    <ClCompile Include="client_main.c">
-      <Filter>Client</Filter>
-    </ClCompile>
-    <ClCompile Include="client_tent.c">
-      <Filter>Client</Filter>
-    </ClCompile>
     <ClCompile Include="cmdlib.c">
       <Filter>Legacy</Filter>
-    </ClCompile>
-    <ClCompile Include="video_refrag.c">
-      <Filter>Client\Video</Filter>
     </ClCompile>
     <ClCompile Include="engine_netdgrm.c">
       <Filter>Network</Filter>
@@ -118,12 +93,6 @@
     <ClCompile Include="network_winsock.c">
       <Filter>Network</Filter>
     </ClCompile>
-    <ClCompile Include="engine_modmenu.c">
-      <Filter>Modules</Filter>
-    </ClCompile>
-    <ClCompile Include="image.c">
-      <Filter>Client</Filter>
-    </ClCompile>
     <ClCompile Include="EngineMaterialEditor.c">
       <Filter>Client\Editor</Filter>
     </ClCompile>
@@ -132,9 +101,6 @@
     </ClCompile>
     <ClCompile Include="EngineVideoObject.c">
       <Filter>Client\Video</Filter>
-    </ClCompile>
-    <ClCompile Include="EngineSDLWindow.c">
-      <Filter>Client</Filter>
     </ClCompile>
     <ClCompile Include="EngineVideoFog.c">
       <Filter>Client\Video</Filter>
@@ -262,18 +228,39 @@
     <ClCompile Include="EngineConsoleVariable.c">
       <Filter>Console</Filter>
     </ClCompile>
+    <ClCompile Include="EngineMenu.c">
+      <Filter>Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineCommon.c" />
+    <ClCompile Include="EngineEditor.c">
+      <Filter>Client\Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineSDLWindow.c">
+      <Filter>Client\Video\Interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineClient.c">
+      <Filter>Client</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineConsole.c">
+      <Filter>Console</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineVideoEFrag.c">
+      <Filter>Client\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineClientTempEntity.c">
+      <Filter>Client</Filter>
+    </ClCompile>
+    <ClCompile Include="..\shared\SharedFormats.c">
+      <Filter>Shared</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineImage.c" />
+    <ClCompile Include="EngineModel.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\shared\shared_client.h">
       <Filter>Shared</Filter>
     </ClInclude>
     <ClInclude Include="..\shared\shared_editor.h">
-      <Filter>Shared</Filter>
-    </ClInclude>
-    <ClInclude Include="..\shared\shared_engine.h">
-      <Filter>Shared</Filter>
-    </ClInclude>
-    <ClInclude Include="..\shared\shared_formats.h">
       <Filter>Shared</Filter>
     </ClInclude>
     <ClInclude Include="..\shared\shared_game.h">
@@ -285,9 +272,6 @@
     <ClInclude Include="..\shared\shared_menu.h">
       <Filter>Shared</Filter>
     </ClInclude>
-    <ClInclude Include="..\shared\shared_module.h">
-      <Filter>Shared</Filter>
-    </ClInclude>
     <ClInclude Include="..\shared\shared_server.h">
       <Filter>Shared</Filter>
     </ClInclude>
@@ -297,13 +281,7 @@
     <ClInclude Include="crc.h">
       <Filter>Legacy</Filter>
     </ClInclude>
-    <ClInclude Include="common.h">
-      <Filter>Legacy</Filter>
-    </ClInclude>
     <ClInclude Include="server.h">
-      <Filter>Legacy</Filter>
-    </ClInclude>
-    <ClInclude Include="quakedef.h">
       <Filter>Legacy</Filter>
     </ClInclude>
     <ClInclude Include="winquake.h">
@@ -315,9 +293,6 @@
     <ClInclude Include="world.h">
       <Filter>Legacy</Filter>
     </ClInclude>
-    <ClInclude Include="view.h">
-      <Filter>Legacy</Filter>
-    </ClInclude>
     <ClInclude Include="vid.h">
       <Filter>Legacy</Filter>
     </ClInclude>
@@ -327,16 +302,10 @@
     <ClInclude Include="sound.h">
       <Filter>Legacy</Filter>
     </ClInclude>
-    <ClInclude Include="screen.h">
-      <Filter>Legacy</Filter>
-    </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>Legacy</Filter>
     </ClInclude>
     <ClInclude Include="progs.h">
-      <Filter>Legacy</Filter>
-    </ClInclude>
-    <ClInclude Include="protocol.h">
       <Filter>Legacy</Filter>
     </ClInclude>
     <ClInclude Include="menu.h">
@@ -345,10 +314,6 @@
     <ClInclude Include="keys.h">
       <Filter>Legacy</Filter>
     </ClInclude>
-    <ClInclude Include="console.h">
-      <Filter>Console</Filter>
-    </ClInclude>
-    <ClInclude Include="engine_editor.h" />
     <ClInclude Include="client.h">
       <Filter>Legacy</Filter>
     </ClInclude>
@@ -358,20 +323,11 @@
     <ClInclude Include="glquake.h">
       <Filter>Legacy</Filter>
     </ClInclude>
-    <ClInclude Include="draw.h">
-      <Filter>Legacy</Filter>
-    </ClInclude>
     <ClInclude Include="conproc.h">
       <Filter>Legacy</Filter>
     </ClInclude>
     <ClInclude Include="engine_client.h">
       <Filter>Client</Filter>
-    </ClInclude>
-    <ClInclude Include="engine_model.h">
-      <Filter>Client</Filter>
-    </ClInclude>
-    <ClInclude Include="engine_console.h">
-      <Filter>Console</Filter>
     </ClInclude>
     <ClInclude Include="engine_server.h">
       <Filter>Server</Filter>
@@ -388,20 +344,8 @@
     <ClInclude Include="engine_netdgrm.h">
       <Filter>Network</Filter>
     </ClInclude>
-    <ClInclude Include="engine_net.h">
-      <Filter>Network</Filter>
-    </ClInclude>
     <ClInclude Include="network_winsock.h">
       <Filter>Network</Filter>
-    </ClInclude>
-    <ClInclude Include="engine_modmenu.h">
-      <Filter>Modules</Filter>
-    </ClInclude>
-    <ClInclude Include="image.h">
-      <Filter>Client</Filter>
-    </ClInclude>
-    <ClInclude Include="EngineWindow.h">
-      <Filter>Client</Filter>
     </ClInclude>
     <ClInclude Include="EngineVideoMaterial.h">
       <Filter>Client\Video</Filter>
@@ -458,6 +402,44 @@
     </ClInclude>
     <ClInclude Include="EngineConsoleVariable.h">
       <Filter>Console</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineMenu.h">
+      <Filter>Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineCommon.h" />
+    <ClInclude Include="EngineEditor.h">
+      <Filter>Client\Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineVideoWindow.h">
+      <Filter>Client\Video</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineConsole.h">
+      <Filter>Console</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineClientView.h">
+      <Filter>Client</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineBase.h" />
+    <ClInclude Include="..\shared\SharedFormats.h">
+      <Filter>Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineVideoScreen.h">
+      <Filter>Client\Video</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineVideoDraw.h">
+      <Filter>Client\Video</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\SharedEngine.h">
+      <Filter>Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineProtocol.h" />
+    <ClInclude Include="..\shared\SharedModule.h">
+      <Filter>Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineImage.h" />
+    <ClInclude Include="EngineModel.h" />
+    <ClInclude Include="EngineNetwork.h">
+      <Filter>Network</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -18,8 +18,8 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef QUAKEDEF_H
-#define QUAKEDEF_H
+#ifndef __ENGINEBASE__
+#define __ENGINEBASE__
 
 // Platform Library
 #include "platform.h"
@@ -59,36 +59,36 @@
 #define	MAX_SCOREBOARD		64
 
 #include "cmdlib.h"
-#include "common.h"
+#include "EngineCommon.h"
 #include "vid.h"
 #include "sys.h"
 #include "zone.h"
 
 #include "shared_client.h"
-#include "shared_engine.h"
-#include "shared_formats.h"
+#include "SharedEngine.h"
+#include "SharedFormats.h"
 
-#include "EngineWindow.h"
+#include "EngineVideoWindow.h"
 
 #include "EngineMain.h"
-#include "draw.h"
 #include "EngineConsoleVariable.h"
-#include "screen.h"
-#include "engine_net.h"
-#include "protocol.h"
+#include "EngineVideoDraw.h"
+#include "EngineVideoScreen.h"
+#include "EngineNetwork.h"
+#include "EngineProtocol.h"
 #include "EngineConsoleCommand.h"
 #include "sound.h"
 #include "render.h"
 #include "client.h"
 #include "progs.h"
 #include "server.h"
-#include "engine_model.h"
-#include "image.h" //johnfitz
+#include "EngineModel.h"
+#include "EngineImage.h" //johnfitz
 #include "EngineVideoTextureManager.h"
 #include "world.h"
 #include "keys.h"
-#include "console.h"
-#include "view.h"
+#include "EngineConsole.h"
+#include "EngineClientView.h"
 #include "menu.h"
 #include "crc.h"
 #include "glquake.h"

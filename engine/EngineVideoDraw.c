@@ -17,9 +17,9 @@
 	along with this program; if not, write to the Free Software
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
-#include "quakedef.h"
 
-#include "engine_console.h"
+#include "EngineBase.h"
+
 #include "EngineVideo.h"
 #include "engine_client.h"	// [28/7/2013] Added for precache functions ~hogsy
 

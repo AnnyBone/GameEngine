@@ -11,9 +11,9 @@
 #include "platform_math.h"
 
 #include "SharedFlags.h"
-#include "shared_module.h"
+#include "SharedModule.h"
 #include "shared_menu.h"
-#include "shared_formats.h"
+#include "SharedFormats.h"
 #include "shared_game.h"
 
 #include "game_resources.h"

@@ -2,8 +2,6 @@
 */
 #include "engine_server.h"
 
-#include "engine_console.h"
-
 typedef struct
 {
 	const char		*cFieldName;

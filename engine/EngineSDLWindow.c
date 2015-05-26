@@ -18,11 +18,12 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "quakedef.h"
+#include "EngineBase.h"
 
 #include "EngineVideo.h"
 #include "EngineGame.h"
 
+#include <SDL.h>
 #include <SDL_syswm.h>
 
 /*
@@ -32,6 +33,7 @@
 SDL_Window *sMainWindow;
 SDL_GLContext sMainContext;
 SDL_DisplayMode	sDisplayMode;
+SDL_SysWMinfo sSystemInfo;
 
 void Window_InitializeVideo(void)
 {
@@ -98,14 +100,23 @@ void Window_InitializeVideo(void)
 
 	SDL_GL_SetSwapInterval(0);
 
-#if 0
-	if (!SDL_GetWindowWMInfo(sMainWindow, &Video.sSystemInfo))
-		Sys_Error("Failed to get WM information! (%s)\n", SDL_GetError());
+#ifdef _WIN32
+	if (SDL_GetWindowWMInfo(sMainWindow, &sSystemInfo))
+		Window.hWindowInstance = sSystemInfo.info.win.window;
+	else
+		Con_Warning("Failed to get WM information! (%s)\n", SDL_GetError());
 #endif
 }
 
 void Window_UpdateVideo(void)
 {
+	if (Video.uiMSAASamples != cvMultisampleSamples.iValue)
+	{
+		// TODO: Destroy window etc.
+
+		Video.uiMSAASamples = cvMultisampleSamples.iValue;
+	}
+
 	SDL_SetWindowSize(sMainWindow, Video.iWidth, Video.iHeight);
 
 	if (Video.bVerticalSync != cvVerticalSync.bValue)

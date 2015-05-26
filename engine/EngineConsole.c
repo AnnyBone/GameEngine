@@ -22,9 +22,8 @@
 #include <unistd.h>
 #endif
 #include <fcntl.h>
-#include "quakedef.h"
 
-#include "engine_console.h"
+#include "EngineBase.h"
 
 #include "EngineInput.h"
 #include "EngineVideo.h"
@@ -204,8 +203,13 @@ void Con_CheckResize(void)
 	con_current = con_totallines - 1;
 }
 
-void Con_Init (void)
+void Console_Initialize(void)
 {
+	if (bConsoleInitialized)
+		return;
+
+	Console_ClearLog("log.txt");
+
 	//johnfitz -- user settable console buffer size
 	if (COM_CheckParm("-consize"))
 		con_buffersize = Math_Max(CON_MINSIZE,Q_atoi(com_argv[COM_CheckParm("-consize")+1])*1024);
@@ -535,6 +539,14 @@ void Con_LogCenterPrint (char *str)
 		Con_Printf(Con_Quakebar(40));
 		Con_ClearNotify();
 	}
+}
+
+void Console_ErrorMessage(bool bCrash, const char *ccFile, char *reason)
+{
+	if (bCrash)
+		Sys_Error("Failed to load %s\nReason: %s", ccFile, reason);
+	else
+		Con_Error("Failed to load %s\nReason: %s", ccFile, reason);
 }
 
 /*
@@ -928,4 +940,44 @@ void Con_NotifyBox(char *text)
 	Con_Printf ("\n");
 	key_dest = key_game;
 	realtime = 0;				// put the cursor back to invisible
+}
+
+/*
+	Log Output
+*/
+
+void Console_WriteToLog(const char *ccFile, char *fmt, ...)
+{
+	FILE			*fLog;
+	va_list		    argptr;
+	static  char	scData[1024];
+	char			cPath[MAX_OSPATH];
+	unsigned int	iData;
+
+	sprintf(cPath, PATH_LOGS"/%s", ccFile);
+
+	COM_DefaultExtension(cPath, ".txt");
+
+	va_start(argptr, fmt);
+	vsprintf(scData, fmt, argptr);
+	va_end(argptr);
+
+	iData = strlen(scData);
+
+	fLog = fopen(cPath, "a");
+	if (fwrite(scData, sizeof(char), iData, fLog) != iData)
+		Sys_Error("Failed to write to log! (%s)\n", ccFile);
+
+	fclose(fLog);
+}
+
+void Console_ClearLog(const char *ccFile)
+{
+	char cPath[MAX_OSPATH];
+
+	sprintf(cPath, PATH_LOGS"/%s", ccFile);
+
+	COM_DefaultExtension(cPath, ".txt");
+
+	unlink(cPath);
 }
