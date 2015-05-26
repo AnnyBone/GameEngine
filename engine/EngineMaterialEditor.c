@@ -6,6 +6,7 @@
 #include "EngineVideoMaterial.h"
 #include "engine_editor.h"
 #include "video.h"
+#include "engine_videoshadow.h"
 #include "KatAlias.h"
 
 Material_t *mActiveMaterial = NULL; // This is the material we're currently editing.

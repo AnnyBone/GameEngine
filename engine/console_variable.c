@@ -188,10 +188,10 @@ void Cvar_Init(void)
 
 void Cvar_UpdateValues(cvar_t *cVariable)
 {
-	cVariable->value	= Q_atof(cVariable->string);
-	cVariable->bValue	=
-	cVariable->iValue	= Q_atoi(cVariable->string);
+	cVariable->value = Q_atof(cVariable->string);
+    cVariable->iValue = Q_atoi(cVariable->string);
 
+	cVariable->bValue = cVariable->iValue;
 	if(cVariable->bValue < false)
 		cVariable->bValue = false;
 	else if(cVariable->bValue > true)

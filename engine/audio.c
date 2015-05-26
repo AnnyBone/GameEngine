@@ -81,6 +81,7 @@ AudioSound_t *Audio_LoadSound(sfx_t *sSoundEffect)
 */
 void Audio_Frame(void)
 {
+#if 0
 	vec3_t	vPosition,
 			vOrientation;
 
@@ -95,7 +96,8 @@ void Audio_Frame(void)
 		Math_VectorCopy(mv3Origin,vOrientation);
 	}
 
-	// [5/8/2013] Update listener position ~hogsy
+	// TODO: Update listener position.
+#endif
 }
 
 void Audio_Shutdown(void)

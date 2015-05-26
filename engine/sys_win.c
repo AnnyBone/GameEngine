@@ -55,8 +55,8 @@ int	starttime;
 static double	curtime = 0.0;
 static double	lastcurtime = 0.0;
 bool			bIsDedicated;
-static bool		sc_return_on_enter = false;
 #ifdef __WIN32__
+static bool		sc_return_on_enter = false;
 HANDLE			hinput, houtput;
 #endif
 

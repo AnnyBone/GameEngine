@@ -60,7 +60,7 @@ typedef struct
 					uiFrameBuffer[VIDEO_MAX_FRAMEBUFFFERS],
 					iWidth,iHeight;
 
-	bool			
+	bool
 		bInitialized,					// Is the video system started?
 		bFullscreen,					// Is the window fullscreen or not?
 		bVerticalSync,					// Sync the swap interval to the refresh rate?
@@ -193,7 +193,8 @@ bool Video_GetCapability(unsigned int iCapability);
 { \
 	static int a = -1; \
 	a++; \
-	if(Video.bDebugFrame) Console_WriteToLog(va("log_video_"__FILE__), "Function start: "pFUNCTION" (%i)",a); \
+	if(Video.bDebugFrame) \
+        Console_WriteToLog(va("log_video_"__FILE__), "Function start: %i",a); \
 } \
 {
 #define	VIDEO_FUNCTION_END \

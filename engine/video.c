@@ -26,7 +26,7 @@ static unsigned int	iSavedCapabilites[VIDEO_MAX_UNITS][2];
 #define VIDEO_STATE_ENABLE   0
 #define VIDEO_STATE_DISABLE  1
 
-ConsoleVariable_t	
+ConsoleVariable_t
 		cvMultisampleSamples		= {	"video_multisamplesamples",		"0",			true,   false,  "Changes the number of samples."									},
 		cvMultisampleMaxSamples		= { "video_multisamplemaxsamples",	"16",			true,	false,	"Sets the maximum number of allowed samples."						},
 		cvFullscreen				= {	"video_fullscreen",				"0",			true,   false,  "1: Fullscreen, 0: Windowed"										},
@@ -275,7 +275,7 @@ void Video_DrawDepthBuffer(void)
 
 	// Read le pixels, and copy them to uByte.
 	glReadPixels(0, 0, Video.iWidth, Video.iHeight, GL_DEPTH_COMPONENT, GL_FLOAT, uByte);
-	
+
 	// Create our depth texture.
 	gDepthTexture = TexMgr_NewTexture();
 
@@ -284,7 +284,7 @@ void Video_DrawDepthBuffer(void)
 
 	// Copy it to the texture.
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, Video.iWidth, Video.iHeight, 0, GL_LUMINANCE, GL_FLOAT, uByte);
-	
+
 	// Draw the buffer to the bottom left corner of the screen.
 	GL_SetCanvas(CANVAS_BOTTOMLEFT);
 	Draw_Fill(0,0,512,512,1.0f,1.0f,1.0f,1.0f);
@@ -939,11 +939,10 @@ void Video_DrawArrays(VideoPrimitive_t vpPrimitiveType, unsigned int uiSize, boo
 		if (bWireframe || (vpPrimitiveType == VIDEO_PRIMITIVE_TRIANGLE_FAN_LINE))
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		break;
-#if 0
 	default:
+        break;
 		// If it's not valid then throw us an error.
-		Sys_Error("Unknown object primitive type! (%i)\n", vpPrimitiveType);
-#endif
+		//Sys_Error("Unknown object primitive type! (%i)\n", vpPrimitiveType);
 	}
 }
 
@@ -999,7 +998,7 @@ void Video_DrawObject(
 			for (j = 0; j < VIDEO_MAX_UNITS; j++)
 				if (Video.bUnitState[j])
 					Math_Vector2Copy(voObject[i].mvST[j], vVideoTextureArray[j][i]);
-		}			
+		}
 
 		Math_VectorCopy(voObject[i].mvPosition, vVideoVertexArray[i]);
 	}

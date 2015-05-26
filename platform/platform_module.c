@@ -69,7 +69,7 @@ pINSTANCE pModule_Load(const char *ccPath)
 
 		// Attempt to load under a different directory.
 		sprintf(cUpdatedPath, PLATFORM_CPU"/%s"pMODULE_EXTENSION, ccPath);
-		iModule = 
+		iModule =
 #ifdef _WIN32
 			LoadLibrary(cUpdatedPath);
 #else
@@ -90,7 +90,7 @@ pINSTANCE pModule_Load(const char *ccPath)
 */
 void *pModule_LoadInterface(pINSTANCE hModule,const char *cPath,const char *cEntryFunction,void *vPoint)
 {
-	pFUNCTION_START
+//	pFUNCTION_START
 
 	char	cUpdatedPath[PLATFORM_MAX_PATH];
 	void	*(*vMain)(void*);
@@ -110,5 +110,5 @@ void *pModule_LoadInterface(pINSTANCE hModule,const char *cPath,const char *cEnt
 
 	return (vMain(vPoint));
 
-	pFUNCTION_END
+//	pFUNCTION_END
 }

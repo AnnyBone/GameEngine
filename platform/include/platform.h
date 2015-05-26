@@ -137,9 +137,9 @@ typedef _Bool bool;
 /**/
 
 #ifdef _MSC_VER	// MSVC doesn't support __func__ either...
-#	define	pFUNCTION	__FUNCTION__	// Returns the active function.
+#	define	pFUNCTION	__FUNCTION__    // Returns the active function.
 #else
-#	define	pFUNCTION	__func__		// Returns the active function.
+#	define	pFUNCTION	__func__	    // Returns the active function.
 #endif
 
 #define	pARRAYELEMENTS(a)	(sizeof(a)/sizeof(*(a)))	// Returns the number of elements within an array.
@@ -153,11 +153,11 @@ typedef	unsigned char pUCHAR;
 	Error Management Functionality
 */
 
-static jmp_buf jbException;
+//static jmp_buf jbException;
 
 #define	pFUNCTION_UPDATE	pError_SetFunction(pFUNCTION)
-#define	pFUNCTION_START		pFUNCTION_UPDATE; if(setjmp(jbException)) gWindow_MessageBox("Error","Encountered exception in "pFUNCTION); { 
-#define pFUNCTION_END 		}
+#define	pFUNCTION_START		//pFUNCTION_UPDATE; if(setjmp(jbException)) gWindow_MessageBox("Error","Encountered exception in "pFUNCTION); {
+#define pFUNCTION_END 		//}
 
 #ifdef __cplusplus
 extern "C" {

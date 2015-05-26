@@ -295,10 +295,10 @@ void Model_LoadBSPTextures(BSPLump_t *blLump)
 	{
 		mLump = (dmiptexlump_t*)(mod_base + blLump->iFileOffset);
 		mLump->nummiptex = LittleLong(mLump->nummiptex);
-		
+
 		iTextures = mLump->nummiptex;
 	}
-	
+
 	loadmodel->numtextures	= iTextures+2;
 	loadmodel->textures		= (texture_t**)Hunk_AllocName(loadmodel->numtextures*sizeof(*loadmodel->textures), loadname);
 
@@ -321,7 +321,7 @@ void Model_LoadBSPTextures(BSPLump_t *blLump)
 
 		// Remove special characters.
 		if (tTexture->name[0] == '*')
-			sprintf(tTexture->name, tTexture->name + 1);
+            strcpy(tTexture->name,tTexture->name + 1);
 
 		// Don't bother loading textures for dedicated servers.
 		if (!bIsDedicated)
@@ -1227,7 +1227,7 @@ void Model_CalculateMD2Bounds(MD2_t *mModel)
 
 	mtTriangles = (MD2Triangle_t*)((uint8_t*)mModel + mModel->ofs_tris);
 	for (i=0; i<mModel->num_xyz; i++)
-	{		
+	{
 		if (mtTriangles->index_xyz[0] < loadmodel->mins[0])
 			vMins[0] = mtTriangles->index_xyz[0];
 		else if (mtTriangles->index_xyz[0] > vMaxs[0])
