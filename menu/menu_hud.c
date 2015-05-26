@@ -61,7 +61,7 @@ void HUD_Draw(void)
 	Engine.DrawPic(MENU_BASE_PATH"int040a",1.0f,iMenuWidth-252,iMenuHeight-92,252,92);
 #elif GAME_OPENKATANA
 	{
-		int iHSize[2],iNSize[2],
+		int iNSize[2],
 			iHealth[3],iArmor[3],iAmmo[3];
 		int armor	= Engine.Client_GetStat(STAT_ARMOR),
 			health	= Engine.Client_GetStat(STAT_HEALTH),

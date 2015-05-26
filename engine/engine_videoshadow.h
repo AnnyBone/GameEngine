@@ -13,7 +13,7 @@
 struct	gltexture_s	*gEffectTexture[MAX_EFFECTS];
 
 void	Shadow_Initialize(void);
-void	R_DrawString(int x,int y,char *msg);
+void	Draw_String(int x, int y, char *msg);
 void	Draw_Shadow(entity_t *ent);
 
 #endif

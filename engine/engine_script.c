@@ -362,11 +362,9 @@ bool Script_Load(/*const */char *ccPath)
 			}
 			else
 			{
-				Con_Warning("Invalid function call!\n");
+				Con_Warning("Invalid field! (%s) (%i)\n", ccPath, iScriptLine);
 				break;
 			}
-
-			Con_Warning("Invalid field! (%s) (%i)\n",ccPath,iScriptLine);
 		}
 	} while(true);
 

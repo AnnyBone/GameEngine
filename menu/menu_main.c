@@ -7,6 +7,8 @@
 	Functions called by the engine can be found here.
 */
 
+#include "menu_hud.h"
+
 // Platform library
 #include "platform_module.h"
 

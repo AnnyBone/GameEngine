@@ -13,6 +13,12 @@
 #include <wx/wfstream.h>
 #include <wx/minifram.h>
 #include <wx/propgrid/propgrid.h>
+#include <wx/aui/framemanager.h>
+#include <wx/aui/auibar.h>
+
+#ifdef _MSC_VER
+#pragma warning(disable : 4996)
+#endif
 
 #include "shared_flags.h"
 
@@ -31,6 +37,6 @@ void EngineInterface_Load();
 void EngineInterface_Unload();
 
 extern EngineExport_t *engine;
-extern EngineImport_t *editor;
+extern EngineImport_t editor;
 
 #endif // !__MATERIALEDITORBASE__

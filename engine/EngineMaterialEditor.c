@@ -52,6 +52,9 @@ void MaterialEditor_Draw(void)
 {
 	VideoObjectVertex_t	voGrid[4] = { 0 };
 
+	MathVector3f_t mvPosition = { 0, 0, -0.5f };
+	Draw_Grid(mvPosition, 1);
+
 	Video_ResetCapabilities(false);
 
 	glPushMatrix();
@@ -78,6 +81,8 @@ void MaterialEditor_Draw(void)
 
 		Video_SetColour(0, 1.0f, 0, 1.0f);
 
+		bShading = true;
+
 		glPushMatrix();
 		Alias_DrawGenericFrame(mPreviewMesh, mPreviewModel);
 		glTranslatef(2, 0, 0);
@@ -85,6 +90,15 @@ void MaterialEditor_Draw(void)
 
 		Video_ResetCapabilities(true);
 	}
+
+	GL_SetCanvas(CANVAS_DEFAULT);
+	Draw_String(10, 10, va("Camera: origin(%i %i %i), angles(%i %i %i)",
+		(int)r_refdef.vieworg[pX],
+		(int)r_refdef.vieworg[pY],
+		(int)r_refdef.vieworg[pZ],
+		(int)r_refdef.viewangles[pX],
+		(int)r_refdef.viewangles[pY],
+		(int)r_refdef.viewangles[pZ]));
 }
 
 void MaterialEditor_Display(Material_t *mDisplayMaterial)

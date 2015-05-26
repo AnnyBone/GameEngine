@@ -228,7 +228,8 @@ void R_SetupScene(void);
 */
 
 void Draw_ResetCanvas(void);
-void Draw_Line(MathVector3_t mvStart, MathVector3_t mvEnd);
+void Draw_Line(MathVector3f_t mvStart, MathVector3f_t mvEnd);
+void Draw_Grid(MathVector3f_t mvPosition, int iGridSize);
 
 /*
     Sprite

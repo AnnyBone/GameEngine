@@ -184,11 +184,11 @@ float	entalpha; //johnfitz
 bool	bOverbright,
 		bShading;		//johnfitz -- if false, disable vertex shading for various reasons (fullbright, r_lightmap, showtris, etc)
 
-MathVector3_t	vLightColour;
+MathVector3f_t	vLightColour;
 
 DynamicLight_t	*dlLightSource;
 
-void R_SetupModelLighting(MathVector3_t vOrigin)
+void R_SetupModelLighting(MathVector3f_t vOrigin)
 {
 	float fDistance;
 
@@ -277,7 +277,7 @@ void Alias_DrawGenericFrame(MD2_t *mModel, model_t *mModelData)
 					1.0f,
 					1.0f,
 					1.0f,
-					entalpha);
+					1.0f);
 			}
 			else
 				Video_ObjectColour(&voModel[uiVerts], 1.0f, 1.0f, 1.0f, 1.0f);
@@ -540,6 +540,8 @@ void Alias_Draw(entity_t *eEntity)
 	Alias_SetupFrame(mModel,&lLerpData);
 	Alias_SetupEntityTransform(&lLerpData);
 
+	Video_ResetCapabilities(false);
+
 	glPushMatrix();
 
 	if(r_drawflat_cheatsafe)
@@ -547,8 +549,6 @@ void Alias_Draw(entity_t *eEntity)
 
 	R_RotateForEntity(eEntity->origin,eEntity->angles);
 	R_SetupModelLighting(eEntity->origin);
-
-    Video_ResetCapabilities(false);
 
 	Alias_DrawFrame(mModel, eEntity, lLerpData);
 

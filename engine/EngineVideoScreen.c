@@ -396,7 +396,7 @@ void Screen_DrawFPS(void)
 
 		GL_SetCanvas(CANVAS_BOTTOMRIGHT);
 
-		R_DrawString(x,y,str);
+		Draw_String(x, y, str);
 
 		scr_tileclear_updates = 0;
 	}
@@ -456,7 +456,7 @@ void SCR_DrawClock (void)
 
 	//draw it
 	GL_SetCanvas (CANVAS_BOTTOMRIGHT);
-	R_DrawString(320 - (strlen(str)<<3), 200 - 8, str);
+	Draw_String(320 - (strlen(str) << 3), 200 - 8, str);
 
 	scr_tileclear_updates = 0;
 }
@@ -475,31 +475,31 @@ void SCR_DrawDevStats (void)
 	Draw_Fill(x,y*8,152,72,0,0,0,0.5f); //dark rectangle
 
 	sprintf (str, "devstats |Curr Peak");
-	R_DrawString(x,(y++)*8-x,str);
+	Draw_String(x, (y++) * 8 - x, str);
 
 	sprintf (str, "---------+---------");
-	R_DrawString(x,(y++)*8-x,str);
+	Draw_String(x, (y++) * 8 - x, str);
 
 	sprintf (str, "Edicts   |%4i %4i", dev_stats.edicts, dev_peakstats.edicts);
-	R_DrawString(x,(y++)*8-x,str);
+	Draw_String(x, (y++) * 8 - x, str);
 
 	sprintf (str, "Packet   |%4i %4i", dev_stats.packetsize, dev_peakstats.packetsize);
-	R_DrawString(x,(y++)*8-x,str);
+	Draw_String(x, (y++) * 8 - x, str);
 
 	sprintf (str, "Visedicts|%4i %4i", dev_stats.visedicts, dev_peakstats.visedicts);
-	R_DrawString(x,(y++)*8-x,str);
+	Draw_String(x, (y++) * 8 - x, str);
 
 	sprintf (str, "Efrags   |%4i %4i", dev_stats.efrags, dev_peakstats.efrags);
-	R_DrawString(x,(y++)*8-x,str);
+	Draw_String(x, (y++) * 8 - x, str);
 
 	sprintf (str, "Dlights  |%4i %4i", dev_stats.dlights, dev_peakstats.dlights);
-	R_DrawString(x,(y++)*8-x,str);
+	Draw_String(x, (y++) * 8 - x, str);
 
 	sprintf (str, "Beams    |%4i %4i", dev_stats.beams, dev_peakstats.beams);
-	R_DrawString(x,(y++)*8-x,str);
+	Draw_String(x, (y++) * 8 - x, str);
 
 	sprintf (str, "Tempents |%4i %4i", dev_stats.tempents, dev_peakstats.tempents);
-	R_DrawString(x,(y++)*8-x,str);
+	Draw_String(x, (y++) * 8 - x, str);
 }
 
 void SCR_DrawTurtle (void)

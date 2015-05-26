@@ -111,29 +111,8 @@
     <ClCompile Include="client_main.c">
       <Filter>Client</Filter>
     </ClCompile>
-    <ClCompile Include="client_view.c">
-      <Filter>Client</Filter>
-    </ClCompile>
-    <ClCompile Include="client_parse.c">
-      <Filter>Client</Filter>
-    </ClCompile>
     <ClCompile Include="client_tent.c">
       <Filter>Client</Filter>
-    </ClCompile>
-    <ClCompile Include="client_demo.c">
-      <Filter>Client</Filter>
-    </ClCompile>
-    <ClCompile Include="client_chase.c">
-      <Filter>Client</Filter>
-    </ClCompile>
-    <ClCompile Include="audio_dma.c">
-      <Filter>Client\Audio</Filter>
-    </ClCompile>
-    <ClCompile Include="audio_mem.c">
-      <Filter>Client\Audio</Filter>
-    </ClCompile>
-    <ClCompile Include="audio_mix.c">
-      <Filter>Client\Audio</Filter>
     </ClCompile>
     <ClCompile Include="server_user.c">
       <Filter>Server</Filter>
@@ -162,9 +141,6 @@
     <ClCompile Include="video.c">
       <Filter>Client\Video</Filter>
     </ClCompile>
-    <ClCompile Include="network_windows.c">
-      <Filter>Network</Filter>
-    </ClCompile>
     <ClCompile Include="engine_netdgrm.c">
       <Filter>Network</Filter>
     </ClCompile>
@@ -172,15 +148,6 @@
       <Filter>Network</Filter>
     </ClCompile>
     <ClCompile Include="network_winsock.c">
-      <Filter>Network</Filter>
-    </ClCompile>
-    <ClCompile Include="network_master.c">
-      <Filter>Network</Filter>
-    </ClCompile>
-    <ClCompile Include="network.c">
-      <Filter>Network</Filter>
-    </ClCompile>
-    <ClCompile Include="network_dummy.c">
       <Filter>Network</Filter>
     </ClCompile>
     <ClCompile Include="engine_modmenu.c">
@@ -200,12 +167,6 @@
     </ClCompile>
     <ClCompile Include="engine_physics.c">
       <Filter>Server</Filter>
-    </ClCompile>
-    <ClCompile Include="audio_dsound.c">
-      <Filter>Client\Audio\Interfaces</Filter>
-    </ClCompile>
-    <ClCompile Include="audio_dummy.c">
-      <Filter>Client\Audio\Interfaces</Filter>
     </ClCompile>
     <ClCompile Include="ZirconLoader.c">
       <Filter>Client\Video</Filter>
@@ -261,6 +222,45 @@
     <ClCompile Include="EngineHost.c" />
     <ClCompile Include="EngineVideoLegacy.c">
       <Filter>Client\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineNetworkWindows.c">
+      <Filter>Network</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineNetworkMaster.c">
+      <Filter>Network</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineNetworkDummy.c">
+      <Filter>Network</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineNetwork.c">
+      <Filter>Network</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineClientView.c">
+      <Filter>Client</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineClientParse.c">
+      <Filter>Client</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineClientDemo.c">
+      <Filter>Client</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineClientChase.c">
+      <Filter>Client</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineAudioMix.c">
+      <Filter>Client\Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineAudioMem.c">
+      <Filter>Client\Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineAudioDMA.c">
+      <Filter>Client\Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineAudioDirectSound.c">
+      <Filter>Client\Audio\Interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineAudioDummy.c">
+      <Filter>Client\Audio\Interfaces</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

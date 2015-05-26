@@ -9,9 +9,6 @@
 #include "engine_videoshadow.h"
 #include "engine_editor.h"
 
-EngineExport_t	eExport;
-EngineImport_t	Launcher;
-
 bool Engine_IsRunning(void)
 {
 	return bHostInitialized;
@@ -40,8 +37,13 @@ void System_Loop(void);
 
 pMODULE_EXPORT EngineExport_t *Engine_Main(EngineImport_t *mImport)
 {
-	Launcher.iVersion	= mImport->iVersion;
+	// Imports
+	Launcher.iVersion = mImport->iVersion;
+	Launcher.PrintError = mImport->PrintError;
+	Launcher.PrintMessage = mImport->PrintMessage;
+	Launcher.PrintWarning = mImport->PrintWarning;
 
+	// Exports
 	eExport.Initialize = System_Main;
 	eExport.IsRunning = Engine_IsRunning;
 	eExport.SetViewportSize = Video_SetViewportSize;
@@ -59,7 +61,8 @@ pMODULE_EXPORT EngineExport_t *Engine_Main(EngineImport_t *mImport)
 	eExport.Video_PreFrame = Video_PreFrame;
 	eExport.DrawFPS = Screen_DrawFPS;
 	eExport.DrawConsole = Screen_DrawConsole;
-	eExport.DrawString = R_DrawString;
+	eExport.DrawString = Draw_String;
+	eExport.DrawLine = Draw_Line;
 	eExport.DrawModel = MaterialEditor_Draw;
 	eExport.ResetCanvas = Draw_ResetCanvas;
 

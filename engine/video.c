@@ -365,6 +365,11 @@ void Video_UpdateWindow(void)
 
 void Video_SetViewportSize(int iWidth, int iHeight)
 {
+	if (iWidth <= 0)
+		iWidth = 1;
+	if (iHeight <= 0)
+		iHeight = 1;
+
 	Video.iWidth = iWidth;
 	Video.iHeight = iHeight;
 

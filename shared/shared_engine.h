@@ -23,7 +23,8 @@ typedef enum
 	CANVAS_TOPRIGHT
 } canvastype;
 
-// [12/10/2012] Engine import functions ~hogsy
+/*	Functions exported from the engine.
+*/
 typedef struct
 {
 	bool(*Initialize)(int argc, char *argv[], bool bEmbedded);	// Initializes the engine.
@@ -45,6 +46,7 @@ typedef struct
 	void(*DrawConsole)(void);
 	void(*DrawFPS)(void);
 	void(*DrawString)(int x, int y, char *cMsg);
+	void(*DrawLine)(MathVector3f_t mvStart, MathVector3f_t mvEnd);
 	void(*DrawModel)(void);		// Temporary!
 	void(*ResetCanvas)(void);
 
@@ -52,13 +54,18 @@ typedef struct
 	void(*MaterialEditorInitialize)(void);					// Initializes the material editor.
 	void(*MaterialEditorDisplay)(Material_t *mMaterial);	// Displays a material in the editor.
 
-	int		iVersion;
+	int	iVersion;
 } EngineExport_t;
 
-// [12/10/2012] Engine export functions ~hogsy
+/*	Functions imported by the engine.
+*/
 typedef struct
 {
-	int		iVersion;
+	void(*PrintMessage)(char *text);
+	void(*PrintWarning)(char *text);
+	void(*PrintError)(char *text);
+
+	int	iVersion;
 } EngineImport_t;
 
 #define ENGINE_VERSION	(sizeof(EngineImport_t)+sizeof(EngineExport_t))

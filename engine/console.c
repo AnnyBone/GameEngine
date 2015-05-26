@@ -350,6 +350,12 @@ void Con_Printf (char *fmt, ...)
 
 	Console_WriteToLog("log.txt","%s",msg);
 
+	if (Global.bEmbeddedContext)
+	{
+		Launcher.PrintMessage(msg);
+		return;
+	}
+
 	// [3/10/2012] Merged check ~hogsy
 	if(!bConsoleInitialized || cls.state == ca_dedicated)
 		return;
@@ -392,6 +398,13 @@ void Con_Warning (char *fmt, ...)
 	vsprintf (msg,fmt,argptr);
 	va_end (argptr);
 
+	if (Global.bEmbeddedContext)
+	{
+		Console_WriteToLog("log.txt", "%s", msg);
+		Launcher.PrintWarning(msg);
+		return;
+	}
+
 	Con_SafePrintf("\x02Warning: ");
 	Con_Printf("%s", msg);
 }
@@ -410,7 +423,13 @@ void Con_Error(char *fmt,...)
 	vsprintf(msg,fmt,argptr);
 	va_end(argptr);
 
-	Con_Printf("\nError: %s\n",msg);
+	if (Global.bEmbeddedContext)
+	{
+		Console_WriteToLog("log.txt", "%s", msg);
+		Launcher.PrintError(msg);
+	}
+	else
+		Con_Printf("\nError: %s\n",msg);
 
 	CL_Disconnect_f();
 
@@ -429,6 +448,13 @@ void Con_DPrintf(char *fmt,...)
 	va_start(argptr,fmt);
 	vsprintf(msg,fmt,argptr);
 	va_end(argptr);
+
+	if (Global.bEmbeddedContext)
+	{
+		Console_WriteToLog("log.txt", "%s", msg);
+		Launcher.PrintMessage(msg);
+		return;
+	}
 
 	// Don't confuse non-developers with techie stuff...
 #ifdef _DEBUG
@@ -770,7 +796,7 @@ void Con_DrawNotify(void)
 			say_prompt = "Say (all):";
 		//johnfitz
 
-		R_DrawString(8,v,say_prompt); //johnfitz
+		Draw_String(8, v, say_prompt); //johnfitz
 
 		while(chat_buffer[x])
 		{

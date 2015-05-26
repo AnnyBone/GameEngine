@@ -471,6 +471,62 @@ void Draw_Line(MathVector3_t mvStart, MathVector3_t mvEnd)
 	Video_ResetCapabilities(true);
 }
 
+void Draw_Grid(MathVector3f_t mvPosition, int iGridSize)
+{
+	glPushMatrix();
+
+	//glRotatef(-90.0f, 1, 0, 0);
+	glTranslatef(mvPosition[0], mvPosition[1], mvPosition[2]);
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	glColor4f(0, 0, 1.0f, 0.5f);
+
+	glLineWidth(1.0f);
+	glBegin(GL_LINES);
+
+	//static int GRID_SIZE = 1;
+	for (int i = 0; i <= (4096 / iGridSize); i++) {
+		glVertex2i(-4096, (i * iGridSize) * -1);
+		glVertex2i(4096, (i * iGridSize) * -1);
+		glVertex2i(-4096, i * iGridSize);
+		glVertex2i(4096, i * iGridSize);
+
+		glVertex2i((i * iGridSize) * -1, -4096);
+		glVertex2i((i * iGridSize) * -1, 4096);
+		glVertex2i(i * iGridSize, -4096);
+		glVertex2i(i * iGridSize, 4096);
+	}
+
+	glEnd();
+
+	glColor4f(0, 0, 0.3f, 1.0f);
+	glLineWidth(2.0f);
+	glBegin(GL_LINES);
+
+	for (int i = 0; i <= 64; i++) {
+		glVertex2i(-4096, (i * 64) * -1);
+		glVertex2i(4096, (i * 64) * -1);
+		glVertex2i(-4096, i * 64);
+		glVertex2i(4096, i * 64);
+
+		glVertex2i((i * 64) * -1, -4096);
+		glVertex2i((i * 64) * -1, 4096);
+		glVertex2i(i * 64, -4096);
+		glVertex2i(i * 64, 4096);
+	}
+
+	glEnd();
+
+	glLineWidth(1.0f);
+	glColor3f(1, 1, 1);
+
+	glDisable(GL_BLEND);
+
+	glPopMatrix();
+}
+
 void Draw_Fill(int x,int y,int w,int h,float r,float g,float b,float alpha)
 {
 	vec4_t			vColour;
@@ -488,11 +544,8 @@ void Draw_Fill(int x,int y,int w,int h,float r,float g,float b,float alpha)
     Video_DisableCapabilities(VIDEO_DEPTH_TEST|VIDEO_TEXTURE_2D);
 
 	Video_ObjectVertex(&voFill[0], x, y, 0);
-
 	Video_ObjectVertex(&voFill[1], x+w, y, 0);
-
 	Video_ObjectVertex(&voFill[2], x+w, y+h, 0);
-
 	Video_ObjectVertex(&voFill[3], x, y+h, 0);
 
 	Video_DrawFill(voFill,NULL);

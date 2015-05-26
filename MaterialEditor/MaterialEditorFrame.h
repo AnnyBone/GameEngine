@@ -7,9 +7,14 @@ class CMaterialEditorFrame : public wxFrame
 {
 public:
 	CMaterialEditorFrame(const wxString &title, const wxPoint &pos, const wxSize &size);
+	~CMaterialEditorFrame();
 
 	void StartRendering(void);
 	void StopRendering(void);
+
+	void PrintMessage(char *text);
+	void PrintWarning(char *text);
+	void PrintError(char *text);
 
 private:
 	void OnOpen(wxCommandEvent &event);
@@ -21,16 +26,20 @@ private:
 	void OnTimer(wxTimerEvent &event);
 
 	wxBitmap largeExit;
+	wxBitmap largeNew;
 	wxBitmap largeOpen;
+	wxBitmap largeScriptEdit;
+
+	wxTextCtrl *textConsoleOut;
 
 	wxTimer* timer;
 
-	CMaterialEditorRenderCanvas *engineViewport;
-	CMaterialEditorEngineConsoleCanvas *engineConsoleViewport;
+	CMaterialEditorRenderCanvas* engineViewport;
 
 	// Material Properties
 	wxPropertyGrid* materialProperties;
 
+	wxAuiManager *manager;
 
 	wxDECLARE_EVENT_TABLE();
 };

@@ -147,15 +147,6 @@ void Editor_Draw(void)
 
     GL_SetCanvas(CANVAS_DEFAULT);
 
-	Draw_Fill(0,0,Video.iWidth,20,0,0,0,1.0f);
-	R_DrawString(10,10,va("Camera: origin(%i %i %i), angles(%i %i %i)",
-		(int)r_refdef.vieworg[pX],
-		(int)r_refdef.vieworg[pY],
-		(int)r_refdef.vieworg[pZ],
-		(int)r_refdef.viewangles[pX],
-		(int)r_refdef.viewangles[pY],
-		(int)r_refdef.viewangles[pZ]));
-
 	// [1/12/2013] TODO: Draw cursor... ~hogsy
 }
 

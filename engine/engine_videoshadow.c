@@ -28,7 +28,7 @@ void Shadow_Initialize(void)
 	Cvar_RegisterVariable(&cvDrawFlares,NULL);
 }
 
-void R_DrawString(int x,int y,char *msg)
+void Draw_String(int x,int y,char *msg)
 {
 	if(y <= -8)
 		return;

@@ -11,6 +11,8 @@ wxBEGIN_EVENT_TABLE(CMaterialEditorRenderCanvas, wxGLCanvas)
 EVT_PAINT(CMaterialEditorRenderCanvas::OnPaint)
 wxEND_EVENT_TABLE()
 
+CMaterialEditorRenderContext *mainContext;
+
 CMaterialEditorRenderCanvas::CMaterialEditorRenderCanvas(wxWindow *parent, int *attribList)
 	: wxGLCanvas(
 	parent,
@@ -20,7 +22,7 @@ CMaterialEditorRenderCanvas::CMaterialEditorRenderCanvas(wxWindow *parent, int *
 	wxDefaultSize,
 	wxFULL_REPAINT_ON_RESIZE)
 {
-	new CMaterialEditorRenderContext(this);
+	mainContext = new CMaterialEditorRenderContext(this);
 }
 
 void CMaterialEditorRenderCanvas::OnPaint(wxPaintEvent &event)
@@ -42,43 +44,11 @@ void CMaterialEditorRenderCanvas::DrawFrame(void)
 	engine->DrawModel();
 
 	engine->ResetCanvas();
+
 	engine->DrawFPS();
-	engine->DrawString(0, 0, "Hello World");
 
 	engine->Video_PostFrame();
 	
-	SwapBuffers();
-}
-
-wxBEGIN_EVENT_TABLE(CMaterialEditorEngineConsoleCanvas, wxGLCanvas)
-EVT_PAINT(CMaterialEditorEngineConsoleCanvas::OnPaint)
-wxEND_EVENT_TABLE()
-
-CMaterialEditorEngineConsoleCanvas::CMaterialEditorEngineConsoleCanvas(wxWindow *parent, int *attribList)
-	: wxGLCanvas(
-	parent,
-	wxID_ANY,
-	attribList,
-	wxDefaultPosition,
-	wxDefaultSize,
-	wxFULL_REPAINT_ON_RESIZE)
-{}
-
-void CMaterialEditorEngineConsoleCanvas::OnPaint(wxPaintEvent &event)
-{
-	const wxSize clientSize = GetClientSize();
-	engine->SetViewportSize(clientSize.x, clientSize.y);
-}
-
-void CMaterialEditorEngineConsoleCanvas::DrawFrame(void)
-{
-	if (!engine->IsRunning())
-		return;
-
-	engine->Video_PreFrame();
-	engine->DrawConsole();
-	engine->Video_PostFrame();
-
 	SwapBuffers();
 }
 

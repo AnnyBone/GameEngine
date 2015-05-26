@@ -607,12 +607,12 @@
   <ItemGroup>
     <ClCompile Include="..\external\glee\GLee.c" />
     <ClCompile Include="..\shared\shared_formats.c" />
-    <ClCompile Include="audio_dummy.c" />
-    <ClCompile Include="client_chase.c" />
-    <ClCompile Include="client_demo.c" />
+    <ClCompile Include="EngineAudioDummy.c" />
+    <ClCompile Include="EngineClientChase.c" />
+    <ClCompile Include="EngineClientDemo.c" />
     <ClCompile Include="cl_input.c" />
     <ClCompile Include="client_main.c" />
-    <ClCompile Include="client_parse.c" />
+    <ClCompile Include="EngineClientParse.c" />
     <ClCompile Include="client_tent.c" />
     <ClCompile Include="cmdlib.c" />
     <ClCompile Include="common.c" />
@@ -639,7 +639,7 @@
     <ClCompile Include="EngineVideoLights.c" />
     <ClCompile Include="ZirconLoader.c" />
     <ClCompile Include="engine_main.c" />
-    <ClCompile Include="network_master.c">
+    <ClCompile Include="EngineNetworkMaster.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (Ictus)|Win32'">true</ExcludedFromBuild>
     </ClCompile>
@@ -647,7 +647,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="engine_modmenu.c" />
-    <ClCompile Include="network_dummy.c">
+    <ClCompile Include="EngineNetworkDummy.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (Ictus)|Win32'">true</ExcludedFromBuild>
     </ClCompile>
@@ -657,7 +657,7 @@
     <ClCompile Include="engine_server.c" />
     <ClCompile Include="EngineVideoSprite.c" />
     <ClCompile Include="video.c" />
-    <ClCompile Include="client_view.c" />
+    <ClCompile Include="EngineClientView.c" />
     <ClCompile Include="server_world.c" />
     <ClCompile Include="EngineVideoPrimitive.c" />
     <ClCompile Include="EngineVideoFog.c" />
@@ -677,16 +677,16 @@
     <ClCompile Include="menu.c" />
     <ClCompile Include="engine_netdgrm.c" />
     <ClCompile Include="engine_netloop.c" />
-    <ClCompile Include="network.c" />
-    <ClCompile Include="network_windows.c" />
+    <ClCompile Include="EngineNetwork.c" />
+    <ClCompile Include="EngineNetworkWindows.c" />
     <ClCompile Include="network_winsock.c" />
     <ClCompile Include="server_edict.c" />
     <ClCompile Include="EngineVideoBrush.c" />
     <ClCompile Include="EngineVideoWorld.c" />
-    <ClCompile Include="audio_dma.c" />
-    <ClCompile Include="audio_mem.c" />
-    <ClCompile Include="audio_mix.c" />
-    <ClCompile Include="audio_dsound.c" />
+    <ClCompile Include="EngineAudioDMA.c" />
+    <ClCompile Include="EngineAudioMem.c" />
+    <ClCompile Include="EngineAudioMix.c" />
+    <ClCompile Include="EngineAudioDirectSound.c" />
     <ClCompile Include="server_main.c" />
     <ClCompile Include="server_user.c" />
     <ClCompile Include="sys_win.c" />

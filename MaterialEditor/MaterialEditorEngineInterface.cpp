@@ -1,11 +1,28 @@
 #include "MaterialEditorBase.h"
 
+#include "MaterialEditorApp.h"
+
 #include "platform_module.h"
 
 EngineExport_t *engine;
-EngineImport_t *editor;
+EngineImport_t editor;
 
 pINSTANCE engineInstance;
+
+void EngineInterface_PrintMessage(char *text)
+{
+	wxGetApp().mainFrame->PrintMessage(text);
+}
+
+void EngineInterface_PrintWarning(char *text)
+{
+	wxGetApp().mainFrame->PrintWarning(text);
+}
+
+void EngineInterface_PrintError(char *text)
+{
+	wxGetApp().mainFrame->PrintError(text);
+}
 
 void EngineInterface_Load()
 {
@@ -13,6 +30,10 @@ void EngineInterface_Load()
 
 	// Update the path to point to where we need it.
 	sprintf(path, "./%s/%s", PATH_ENGINE, MODULE_ENGINE);
+
+	editor.PrintError = EngineInterface_PrintError;
+	editor.PrintMessage = EngineInterface_PrintMessage;
+	editor.PrintWarning = EngineInterface_PrintWarning;
 
 	// Load the module interface for the engine module.
 	engine = (EngineExport_t*)pModule_LoadInterface(

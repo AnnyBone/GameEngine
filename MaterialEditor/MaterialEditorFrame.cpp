@@ -11,6 +11,7 @@
 enum
 {
 	ID_WINDOW_CONSOLE,
+	ID_WINDOW_SCRIPTEDITOR,
 	ID_WINDOW_PROPERTIES
 };
 
@@ -29,13 +30,15 @@ CMaterialEditorMaterialGlobalProperties *globalMaterialProperties;
 CMaterialEditorFrame::CMaterialEditorFrame(const wxString & title, const wxPoint & pos, const wxSize & size)
 	: wxFrame(NULL, wxID_ANY, title, pos, size)
 {
+	manager = new wxAuiManager(this);
+
 	// Load all required icons...
 
-	Center();
-
 	wxImage::AddHandler(new wxPNGHandler);
-	largeExit.LoadFile(PATH_RESOURCES"door_open.png", wxBITMAP_TYPE_PNG);
-	largeOpen.LoadFile(PATH_RESOURCES"folder.png", wxBITMAP_TYPE_PNG);
+	largeNew.LoadFile(PATH_RESOURCES"32/document-new.png", wxBITMAP_TYPE_PNG);
+	largeOpen.LoadFile(PATH_RESOURCES"32/folder-open.png", wxBITMAP_TYPE_PNG);
+	largeExit.LoadFile(PATH_RESOURCES"32/process-stop.png", wxBITMAP_TYPE_PNG);
+	largeScriptEdit.LoadFile(PATH_RESOURCES"32/accessories-text-editor.png", wxBITMAP_TYPE_PNG);
 
 	// Display the splash screen...
 
@@ -75,63 +78,127 @@ CMaterialEditorFrame::CMaterialEditorFrame(const wxString & title, const wxPoint
 	menuBar->Append(menuHelp, "&Help");
 	SetMenuBar(menuBar);
 
-	// Set the toolbar up...
-
-	wxToolBar *toolbar = CreateToolBar();
-	toolbar->AddTool(wxID_OPEN, "Open file", largeOpen, "Open an existing file");
-	toolbar->AddSeparator();
-	toolbar->AddTool(wxID_EXIT, "Exit application", largeExit, "Exit the application");
-	toolbar->Realize();
-
-	// Status bar...
-
 	CreateStatusBar(3);
 	SetStatusText("Initialized");
 	SetStatusText("Currently awaiting user input...", 1);
-
-	// Set the icon...
-
-	SetIcon(wxIcon(PATH_RESOURCES"/material_editor/icon.png",wxBITMAP_TYPE_PNG));
 
 	// Initialize the timer...
 
 	timer = new wxTimer(this);
 
-	// Organise everything...
+	SetSize(size);
+	Center();
 
-	wxBoxSizer *sizermain = new wxBoxSizer(wxVERTICAL);
+	// Create the toolbar...
 
-	wxSplitterWindow *splittermain = new wxSplitterWindow(this, wxID_ANY);
-	splittermain->SetSashGravity(0.5);
-	splittermain->SetMinimumPaneSize(20); // Smalest size the
+	wxAuiToolBar *toolbar = new wxAuiToolBar(this);
+	toolbar->AddTool(wxID_NEW, "New material", largeNew);
+	toolbar->AddTool(wxID_OPEN, "Open material", largeOpen, "Open an existing file");
+	toolbar->AddSeparator();
+	toolbar->AddTool(ID_WINDOW_SCRIPTEDITOR, "Edit material script", largeScriptEdit);
+	toolbar->AddSeparator();
+	toolbar->AddTool(wxID_EXIT, "Exit application", largeExit, "Exit the application");
+	toolbar->Realize();
 
-	wxPanel *pnl1 = new wxPanel(splittermain, wxID_ANY);
+	wxAuiPaneInfo toolbarInfo;
+	toolbarInfo.Caption("Toolbar");
+	toolbarInfo.ToolbarPane();
+	toolbarInfo.Top();
+	toolbarInfo.Movable(false);
+	toolbarInfo.Floatable(false);
+	toolbarInfo.Dockable(false);
+	toolbarInfo.MinSize(wxSize(GetSize().GetWidth(),16));
+	toolbarInfo.MaxSize(wxSize(GetSize().GetWidth(),32));
 
-	wxBoxSizer *txt1sizer = new wxBoxSizer(wxVERTICAL);
-	engineViewport = new CMaterialEditorRenderCanvas(pnl1);
-	txt1sizer->Add(engineViewport, 1, wxEXPAND, 0);
-	pnl1->SetSizer(txt1sizer);
+	manager->AddPane(toolbar, toolbarInfo);
 
-	wxPanel *pnl2 = new wxPanel(splittermain, wxID_ANY);
-	wxBoxSizer *txt2sizer = new wxBoxSizer(wxVERTICAL);
-	wxPropertyGrid *materialProperties = new wxPropertyGrid(pnl2);
+	// Create the engine viewport...
+
+	int attributes[] = {
+		WX_GL_DEPTH_SIZE, 24,
+		WX_GL_STENCIL_SIZE, 8,
+		WX_GL_MIN_RED, 8,
+		WX_GL_MIN_GREEN, 8,
+		WX_GL_MIN_BLUE, 8,
+		WX_GL_MIN_ALPHA, 8,
+		WX_GL_MIN_ACCUM_RED, 8,
+		WX_GL_MIN_ACCUM_GREEN, 8,
+		WX_GL_MIN_ACCUM_BLUE, 8,
+		WX_GL_MIN_ACCUM_ALPHA, 8,
+		//WX_GL_DOUBLEBUFFER,	1,
+	};
+	engineViewport = new CMaterialEditorRenderCanvas(this, attributes);
+
+	wxAuiPaneInfo viewportInfo;
+	viewportInfo.Caption("Viewport");
+	viewportInfo.Center();
+	viewportInfo.Movable(true);
+	viewportInfo.Floatable(true);
+	viewportInfo.Dockable(true);
+	viewportInfo.MaximizeButton(true);
+	viewportInfo.CloseButton(false);
+
+	manager->AddPane(engineViewport, viewportInfo);
+
+	// Create the console...
+
+	wxPanel *consolePanel = new wxPanel(this);
+	wxAuiPaneInfo consoleInfo;
+	consoleInfo.Caption("Console");
+	consoleInfo.Bottom();
+	consoleInfo.Movable(true);
+	consoleInfo.Floatable(true);
+	consoleInfo.MaximizeButton(true);
+	consoleInfo.CloseButton(false);
+
+	wxBoxSizer *vSizer = new wxBoxSizer(wxVERTICAL);
+
+	textConsoleOut = new wxTextCtrl(consolePanel, wxID_ANY, "", wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE | wxTE_READONLY | wxTE_RICH2 | wxTE_DONTWRAP);
+	textConsoleOut->SetBackgroundColour(wxColour(0, 0, 0));
+	textConsoleOut->SetForegroundColour(wxColour(0, 255, 0));
+
+	vSizer->Add(textConsoleOut,1,wxEXPAND|wxTOP|wxBOTTOM|wxLEFT|wxRIGHT);
+
+	wxBoxSizer *hSizer = new wxBoxSizer(wxHORIZONTAL);
+	hSizer->Add(new wxButton(consolePanel, wxID_ANY, "Submit"), 0, wxRIGHT);
+	hSizer->Add(new wxTextCtrl(consolePanel, wxID_ANY, ""), 1, wxEXPAND|wxLEFT|wxRIGHT|wxTOP);
+
+	hSizer->SetSizeHints(consolePanel);
+
+	vSizer->Add(hSizer, 0, wxEXPAND | wxLEFT| wxRIGHT | wxTOP);
+
+	consolePanel->SetSizer(vSizer);
+	consolePanel->SetSize(wxSize(wxDefaultSize.x, 256));
+
+	manager->AddPane(consolePanel, consoleInfo);
+
+	// Create the material props...
+
+	wxPropertyGrid *materialProperties = new wxPropertyGrid(this);
 	materialProperties->Append(new wxPropertyCategory("Global"));
 	globalMaterialProperties = new CMaterialEditorMaterialGlobalProperties(materialProperties);
 	materialProperties->CenterSplitter(true);
 	materialProperties->SetCellBackgroundColour(wxColour(0, 0, 0));
 	materialProperties->SetCellTextColour(wxColour(0, 255, 0));
 	materialProperties->SetEmptySpaceColour(wxColour(0, 0, 0));
-	txt2sizer->Add(materialProperties, 1, wxEXPAND, 0);
-	pnl2->SetSizer(txt2sizer);
+	materialProperties->SetCaptionBackgroundColour(wxColour(70, 70, 70));
+	materialProperties->SetCaptionTextColour(wxColour(255, 255, 255));
+	materialProperties->SetMarginColour(wxColour(50, 50, 50));
+	materialProperties->SetSize(wxSize(300, wxDefaultSize.y));
+	
+	wxAuiPaneInfo propertiesInfo;
+	propertiesInfo.Caption("Properties");
+	propertiesInfo.CloseButton(false);
+	propertiesInfo.Right();
 
-	splittermain->SplitVertically(pnl1, pnl2);
+	manager->AddPane(materialProperties, propertiesInfo);
 
-	sizermain->Add(splittermain, 1, wxEXPAND, 0);
+	manager->Update();
+}
 
-	this->SetSizer(sizermain);
-	sizermain->SetSizeHints(this);
-
-	SetSize(size);
+CMaterialEditorFrame::~CMaterialEditorFrame()
+{
+	manager->UnInit();
 }
 
 void CMaterialEditorFrame::StartRendering(void)
@@ -144,8 +211,28 @@ void CMaterialEditorFrame::StopRendering(void)
 	timer->Stop();
 }
 
+void CMaterialEditorFrame::PrintMessage(char *text)
+{
+	textConsoleOut->SetDefaultStyle(wxTextAttr(*wxGREEN));
+	textConsoleOut->AppendText(text);
+}
+
+void CMaterialEditorFrame::PrintWarning(char *text)
+{
+	textConsoleOut->SetDefaultStyle(wxTextAttr(*wxYELLOW));
+	textConsoleOut->AppendText(text);
+}
+
+void CMaterialEditorFrame::PrintError(char *text)
+{
+	textConsoleOut->SetDefaultStyle(wxTextAttr(*wxRED));
+	textConsoleOut->AppendText(text);
+}
+
 void CMaterialEditorFrame::OnTimer(wxTimerEvent &event)
 {
+	static int consoleOutLength = 0;
+
 	if (engine->IsRunning())
 	{
 		// Perform the main loop.
@@ -154,12 +241,6 @@ void CMaterialEditorFrame::OnTimer(wxTimerEvent &event)
 		// Draw the main viewport.
 		engineViewport->DrawFrame();
 		engineViewport->Refresh();
-
-#if 0
-		// Draw the console.
-		engineConsoleViewport->DrawFrame();
-		engineConsoleViewport->Refresh();
-#endif
 	}
 }
 

@@ -51,7 +51,6 @@ void Window_InitializeVideo(void)
 	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 
 	sMainWindow = SDL_CreateWindow(
 		Game->Name,				// [9/7/2013] Window name is based on the name given by Game ~hogsy

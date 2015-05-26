@@ -26,23 +26,23 @@ void Menu_Initialize(void)
 	if(Menu)
 		pModule_Unload(hMenuInstance);
 
-	mImport.Con_Printf				= Con_Printf;
-	mImport.Con_DPrintf				= Con_DPrintf;
-	mImport.Con_Warning				= Con_Warning;
-	mImport.Sys_Error				= Sys_Error;
-	mImport.Cvar_RegisterVariable	= Cvar_RegisterVariable;
-	mImport.DrawPic					= Draw_ExternPic;
-	mImport.DrawString				= R_DrawString;
-	mImport.DrawFill				= Draw_Fill;
-	mImport.GetScreenWidth			= Menu_GetScreenWidth;
-	mImport.GetScreenHeight			= Menu_GetScreenHeight;
-	mImport.ShowCursor				= gWindow_ShowCursor;
-	mImport.GetCursorPosition = SDL_GetMouseState;	//gWindow_GetCursorPosition;
-	mImport.Cmd_AddCommand			= Game_AddCommand;
+	mImport.Con_Printf = Con_Printf;
+	mImport.Con_DPrintf = Con_DPrintf;
+	mImport.Con_Warning = Con_Warning;
+	mImport.Sys_Error = Sys_Error;
+	mImport.Cvar_RegisterVariable = Cvar_RegisterVariable;
+	mImport.DrawPic = Draw_ExternPic;
+	mImport.DrawString = Draw_String;
+	mImport.DrawFill = Draw_Fill;
+	mImport.GetScreenWidth = Menu_GetScreenWidth;
+	mImport.GetScreenHeight = Menu_GetScreenHeight;
+	mImport.ShowCursor = gWindow_ShowCursor;
+	mImport.GetCursorPosition = SDL_GetMouseState;
+	mImport.Cmd_AddCommand = Game_AddCommand;
 
-	mImport.Client_GetStat			= Client_GetStat;
-	mImport.Client_PrecacheResource	= Client_PrecacheResource;
-	mImport.Client_SetMenuCanvas	= GL_SetCanvas;
+	mImport.Client_GetStat = Client_GetStat;
+	mImport.Client_PrecacheResource = Client_PrecacheResource;
+	mImport.Client_SetMenuCanvas = GL_SetCanvas;
 
 	mImport.Material_Precache = Material_Precache;
 

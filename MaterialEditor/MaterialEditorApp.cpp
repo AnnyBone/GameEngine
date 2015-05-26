@@ -1,7 +1,6 @@
 #include "MaterialEditorBase.h"
 
 #include "MaterialEditorApp.h"
-#include "MaterialEditorFrame.h"
 
 wxIMPLEMENT_APP(CMaterialEditorApp);
 
@@ -13,10 +12,10 @@ bool CMaterialEditorApp::OnInit()
 	sprintf(cTitle, MATERIALEDITOR_TITLE" (%s)", engine->GetVersion());
 
 	// Create the main frame.
-	CMaterialEditorFrame *frame = new CMaterialEditorFrame(cTitle, wxPoint(50, 50), wxSize(640, 480));
+	mainFrame = new CMaterialEditorFrame(cTitle, wxPoint(50, 50), wxSize(1024, 768));
 	
 	// Show it!
-	frame->Show(true);
+	mainFrame->Show(true);
 
 	// Initialize the engine.
 	if (!engine->Initialize(argc, argv, true))
@@ -28,7 +27,7 @@ bool CMaterialEditorApp::OnInit()
 	engine->MaterialEditorInitialize();
 
 	// Start rendering.
-	frame->StartRendering();
+	mainFrame->StartRendering();
 
 	// We launched without problems, return true.
 	return true;
