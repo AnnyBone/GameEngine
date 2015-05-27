@@ -12,17 +12,28 @@ enum
 {
 	ID_WINDOW_CONSOLE,
 	ID_WINDOW_SCRIPTEDITOR,
-	ID_WINDOW_PROPERTIES
+	ID_WINDOW_PROPERTIES,
+
+	ID_CONSOLE_INPUT,
+
+	ID_BUTTON_COMMAND
 };
 
 wxBEGIN_EVENT_TABLE(CMaterialEditorFrame, wxFrame)
-EVT_MENU(wxID_OPEN, CMaterialEditorFrame::OnOpen)
-EVT_MENU(wxID_SAVE, CMaterialEditorFrame::OnSave)
-EVT_MENU(wxID_EXIT, CMaterialEditorFrame::OnExit)
-EVT_MENU(wxID_ABOUT, CMaterialEditorFrame::OnAbout)
-EVT_MENU(ID_WINDOW_CONSOLE, CMaterialEditorFrame::OnConsole)
-EVT_MENU(ID_WINDOW_PROPERTIES, CMaterialEditorFrame::OnProperties)
-EVT_TIMER(-1, CMaterialEditorFrame::OnTimer)
+
+	EVT_CHAR_HOOK(CMaterialEditorFrame::OnKey)
+
+	EVT_MENU(wxID_OPEN, CMaterialEditorFrame::OnOpen)
+	EVT_MENU(wxID_SAVE, CMaterialEditorFrame::OnSave)
+	EVT_MENU(wxID_EXIT, CMaterialEditorFrame::OnExit)
+	EVT_MENU(wxID_ABOUT, CMaterialEditorFrame::OnAbout)
+	EVT_MENU(ID_WINDOW_CONSOLE, CMaterialEditorFrame::OnConsole)
+	EVT_MENU(ID_WINDOW_PROPERTIES, CMaterialEditorFrame::OnProperties)
+
+	EVT_BUTTON(ID_BUTTON_COMMAND, CMaterialEditorFrame::OnCommand)
+
+	EVT_TIMER(-1, CMaterialEditorFrame::OnTimer)
+
 wxEND_EVENT_TABLE()
 
 CMaterialEditorMaterialGlobalProperties *globalMaterialProperties;
@@ -160,8 +171,10 @@ CMaterialEditorFrame::CMaterialEditorFrame(const wxString & title, const wxPoint
 	vSizer->Add(textConsoleOut,1,wxEXPAND|wxTOP|wxBOTTOM|wxLEFT|wxRIGHT);
 
 	wxBoxSizer *hSizer = new wxBoxSizer(wxHORIZONTAL);
-	hSizer->Add(new wxButton(consolePanel, wxID_ANY, "Submit"), 0, wxRIGHT);
-	hSizer->Add(new wxTextCtrl(consolePanel, wxID_ANY, ""), 1, wxEXPAND|wxLEFT|wxRIGHT|wxTOP);
+	hSizer->Add(new wxButton(consolePanel, ID_BUTTON_COMMAND, "Submit"), 0, wxRIGHT);
+
+	textConsoleIn = new wxTextCtrl(consolePanel, ID_CONSOLE_INPUT, "");
+	hSizer->Add(textConsoleIn, 1, wxEXPAND | wxLEFT | wxRIGHT | wxTOP);
 
 	hSizer->SetSizeHints(consolePanel);
 
@@ -229,6 +242,25 @@ void CMaterialEditorFrame::PrintError(char *text)
 	textConsoleOut->AppendText(text);
 }
 
+void CMaterialEditorFrame::OnKey(wxKeyEvent &event)
+{
+	event.DoAllowNextEvent();
+
+	switch (event.GetId())
+	{
+	case ID_CONSOLE_INPUT:
+		if (event.GetKeyCode() == WXK_RETURN)
+		{
+			// Send the command to the engine.
+			engine->InsertConsoleCommand(wxString(textConsoleIn->GetValue()));
+
+			// Clear the input box.
+			textConsoleIn->Clear();
+		}
+		break;
+	}
+}
+
 void CMaterialEditorFrame::OnTimer(wxTimerEvent &event)
 {
 	static int consoleOutLength = 0;
@@ -242,6 +274,15 @@ void CMaterialEditorFrame::OnTimer(wxTimerEvent &event)
 		engineViewport->DrawFrame();
 		engineViewport->Refresh();
 	}
+}
+
+void CMaterialEditorFrame::OnCommand(wxCommandEvent &event)
+{
+	// Send the command to the engine.
+	engine->InsertConsoleCommand(wxString(textConsoleIn->GetValue()));
+
+	// Clear the input box.
+	textConsoleIn->Clear();
 }
 
 void CMaterialEditorFrame::OnOpen(wxCommandEvent &event)

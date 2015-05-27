@@ -23,6 +23,8 @@ private:
 	void OnSave(wxCommandEvent &event);
 	void OnConsole(wxCommandEvent &event);
 	void OnProperties(wxCommandEvent &event);
+	void OnCommand(wxCommandEvent &event);
+	void OnKey(wxKeyEvent &event);
 	void OnTimer(wxTimerEvent &event);
 
 	wxBitmap largeExit;
@@ -31,6 +33,7 @@ private:
 	wxBitmap largeScriptEdit;
 
 	wxTextCtrl *textConsoleOut;
+	wxTextCtrl *textConsoleIn;
 
 	wxTimer* timer;
 

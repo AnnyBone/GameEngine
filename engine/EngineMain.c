@@ -73,6 +73,9 @@ pMODULE_EXPORT EngineExport_t *Engine_Main(EngineImport_t *mImport)
 
 	eExport.LoadMaterial = Material_Load;
 
+	// Console
+	eExport.InsertConsoleCommand = Cbuf_InsertText;
+
 	// Video
 	eExport.Video_PostFrame = Video_PostFrame;
 	eExport.Video_PreFrame = Video_PreFrame;

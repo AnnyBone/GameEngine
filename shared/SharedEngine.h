@@ -21,7 +21,7 @@
 #ifndef __SHAREDENGINE__
 #define __SHAREDENGINE__
 
-#include "../platform/include/platform.h"
+#include "platform.h"
 
 #include "SharedFlags.h"
 #include "SharedMaterial.h"
@@ -57,6 +57,9 @@ typedef struct
 	void(*Shutdown)(void);								// Shutdown.
 
 	Material_t*(*LoadMaterial)(const char *cPath);
+
+	// Console
+	void(*InsertConsoleCommand)(const char *cCommand);	// Sends the given command to the console.
 
 	// Video
 	void(*Video_PreFrame)(void);

@@ -770,8 +770,13 @@ Material_t *Material_Load(const char *ccPath)
 		// Copy the name over.
 		strncpy(mNewMaterial->cName, cMaterialName, sizeof(mNewMaterial->cName));
 	else
+	{
+		char cIn[PLATFORM_MAX_PATH];
+		strcpy(cIn, ccPath);
+
 		// Otherwise just use the filename.
-		ExtractFileBase(ccPath, mNewMaterial->cName);
+		ExtractFileBase(cIn, mNewMaterial->cName);
+	}
 
 	// Copy the path over.
 	strncpy(mNewMaterial->cPath, ccPath, sizeof(mNewMaterial->cPath));
