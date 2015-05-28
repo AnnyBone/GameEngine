@@ -474,11 +474,14 @@ void Draw_Grid(MathVector3f_t mvPosition, int iGridSize)
 {
     int i;
 
+	Video_ResetCapabilities(false);
+
 	glPushMatrix();
 
 	glTranslatef(mvPosition[0], mvPosition[1], mvPosition[2]);
 
 	glEnable(GL_BLEND);
+	glDisable(GL_TEXTURE_2D);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	glColor4f(0, 0, 1.0f, 0.5f);
@@ -524,8 +527,11 @@ void Draw_Grid(MathVector3f_t mvPosition, int iGridSize)
 	glColor3f(1, 1, 1);
 
 	glDisable(GL_BLEND);
+	glEnable(GL_TEXTURE_2D);
 
 	glPopMatrix();
+
+	Video_ResetCapabilities(true);
 }
 
 void Draw_Fill(int x,int y,int w,int h,float r,float g,float b,float alpha)

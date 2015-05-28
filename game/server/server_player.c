@@ -653,41 +653,40 @@ void Player_Spawn(ServerEntity_t *ePlayer)
 {
 	ServerEntity_t *eSpawnPoint;
 
-	ePlayer->Monster.iType	= MONSTER_PLAYER;
+	ePlayer->Monster.iType = MONSTER_PLAYER;
 
-	ePlayer->v.cClassname	= "player";
-	// [30/1/2013] Default health can now be changed by admins ~hogsy
-	ePlayer->v.iHealth		= cvServerDefaultHealth.iValue;
-	// [5/6/2012] Make max_health changable for admins ~hogsy
-	ePlayer->local.iMaxHealth = PLAYER_MAX_HEALTH;
-	ePlayer->v.movetype		= MOVETYPE_WALK;
-	ePlayer->v.bTakeDamage	= true;
-	ePlayer->v.model		= cvServerPlayerModel.string;
-	ePlayer->v.effects		= 0;
+	ePlayer->v.cClassname = "player";
+	ePlayer->v.iHealth = cvServerDefaultHealth.iValue;
+	ePlayer->v.movetype = MOVETYPE_WALK;
+	ePlayer->v.bTakeDamage = true;
+	ePlayer->v.model = cvServerPlayerModel.string;
+	ePlayer->v.effects = 0;
 
-	// [30/5/2013] Set physics properties to their defaults! ~hogsy
-	ePlayer->Physics.iSolid		= SOLID_SLIDEBOX;
-	ePlayer->Physics.fMass		= 1.4f;
-	ePlayer->Physics.fGravity	= SERVER_GRAVITY;
-	ePlayer->Physics.fFriction	= 4.0f;
+	ePlayer->Physics.iSolid = SOLID_SLIDEBOX;
+	ePlayer->Physics.fMass = 1.4f;
+	ePlayer->Physics.fGravity = SERVER_GRAVITY;
+	ePlayer->Physics.fFriction = 4.0f;
 
-	ePlayer->local.fSpawnDelay	= cvServerRespawnDelay.value;	// Set the delay before we spawn ~hogsy
-	ePlayer->local.pTeam		= TEAM_NEUTRAL;					// Set the default team ~hogsy
-	ePlayer->local.bBleed		= true;							// The player bleeds!
+	ePlayer->local.iMaxHealth = PLAYER_MAX_HEALTH;				// Set the players default maximum health.
+	ePlayer->local.fSpawnDelay = cvServerRespawnDelay.value;	// Set the delay before we spawn.
+	ePlayer->local.pTeam = TEAM_NEUTRAL;						// Set the default team.
+	ePlayer->local.bBleed = true;								// The player bleeds!
 
-	// [25/8/2012] Clear velocity here (why would we call this twice!?) ~hogsy
+	// Clear the velocity and current view offset.
 	Math_VectorClear(ePlayer->v.velocity);
 	Math_VectorClear(ePlayer->v.view_ofs);
 
 	ePlayer->v.bFixAngle = true;
 	ePlayer->v.view_ofs[2] = 28.0f;
 
+	// Set our think functions.
 	Entity_SetDamagedFunction(ePlayer, Player_Pain);
 	Entity_SetKilledFunction(ePlayer, Player_Die);
 
 	// Clear out the players inventory.
 	Item_ClearInventory(ePlayer);
 
+	// Let the server know that a player has spawned.
 	Server.bPlayersSpawned = true;
 
 	if(bIsMultiplayer)
@@ -789,19 +788,18 @@ void Player_Spawn(ServerEntity_t *ePlayer)
 		Math_VectorClear(ePlayer->v.origin);
 	}
 
-	// [28/4/2013] Moved here so we check everytime (handy for level designers) ~hogsy
-	// [25/8/2012] Check that we're not inside a brush ~hogsy
+	// Ensure we haven't spawned within the world.
 	if(Engine.Server_PointContents(ePlayer->v.origin) == BSP_CONTENTS_SOLID)
-		// [25/8/2012] Let the admin know he's been spawned inside the world ~hogsy
+		// Let us know if we have done, just so it's logged.
 		Engine.Con_Warning("Player spawned inside world! (%s)\n",ePlayer->v.netname);
 
-	// [30/10/2013] This is for a bug that appeared during testing, but sometimes after immediately spawning the players animation would continue! ~hogsy
+	// Reset the players animation, so the animation from their previous lives don't continue.
 	Entity_ResetAnimation(ePlayer);
 
-	Entity_SetModel(ePlayer,ePlayer->v.model);
+	Entity_SetModel(ePlayer, ePlayer->v.model);
 	Entity_SetSize(ePlayer,-16.0f,-16.0f,-36.0f,16.0f,16.0f,36.0f);
 	Entity_SetAngles(ePlayer, ePlayer->v.angles);
-	Entity_SetOrigin(ePlayer,ePlayer->v.origin);
+	Entity_SetOrigin(ePlayer, ePlayer->v.origin);
 
 	iPlayerModelIndex = ePlayer->v.modelindex;
 }
@@ -810,20 +808,15 @@ void Player_Jump(ServerEntity_t *ePlayer)
 {
 	char cJumpSound[32];
 
-#if 1
+	// TODO: Add new ladder movetype?
 	if(ePlayer->v.movetype == MOVETYPE_FLY)	// LADDER MESSY ~EUKOS
 		ePlayer->v.movetype = MOVETYPE_WALK;
-#else	// [24/9/2013] Mockup of replacement ~hogsy
-	if(ePlayer->v.movetype == MOVETYPE_CLIMB)
-		ePlayer->v.movetype	= MOVETYPE_WALK;
-#endif
 
-	// [28/4/2013] Don't let us jump while inside a vehicle ~hogsy
+	// Don't let us jump while inside a vehicle.
 	if(ePlayer->v.flags & FL_WATERJUMP || ePlayer->local.eVehicle)
 		return;
 	else if(ePlayer->v.waterlevel >= 2)
 	{
-		// [20/8/2012] Simplified ~hogsy
 		switch(ePlayer->v.watertype)
 		{
 		case BSP_CONTENTS_WATER:
@@ -891,7 +884,6 @@ void Player_CheckPowerups(ServerEntity_t *ePlayer)
 	if(ePlayer->v.iHealth <= 0)
 		return;
 
-	// [28/7/2013] Use new friendly functions ~hogsy
 	iPowerBoost = Item_GetInventory(ITEM_POWERBOOST, ePlayer);
 	iVitalityBoost = Item_GetInventory(ITEM_VITABOOST, ePlayer);
 	iSpeedBoost = Item_GetInventory(ITEM_SPEEDBOOST, ePlayer);
@@ -903,7 +895,6 @@ void Player_CheckPowerups(ServerEntity_t *ePlayer)
 		if(ePlayer->local.power_time == 1)
 			if(ePlayer->local.power_finished < Server.dTime+3.0)
 			{
-				// [30/7/2012] Updated to use centerprint instead ~hogsy
 				Engine.CenterPrint(ePlayer,"Your power boost is running out.\n");
 
 				ePlayer->local.power_time = Server.dTime+1.0;
@@ -923,7 +914,6 @@ void Player_CheckPowerups(ServerEntity_t *ePlayer)
 		if(ePlayer->local.speed_time == 1)
 			if(ePlayer->local.speed_finished < Server.dTime+3.0)
 			{
-				// [30/7/2012] Updated to use centerprint instead ~hogsy
 				Engine.CenterPrint(ePlayer,"Your speed boost is running out.\n");
 
 				ePlayer->local.speed_time = Server.dTime+1.0;
@@ -933,14 +923,8 @@ void Player_CheckPowerups(ServerEntity_t *ePlayer)
 		{
 			Item_RemoveInventory(iSpeedBoost,ePlayer);
 
-			ePlayer->local.speed_finished	=
-			ePlayer->local.speed_time		= 0;
-		}
-		else
-		{
-			// [14/2/2013] Commented out since this is printed out every frame and kills the framerate! ~hogsy
-			//Game.Con_DPrintf("%f %f\n",ent->v.velocity[0],ent->v.velocity[1]);
-			// SPEED THE PLAYER UP!!! ~eukos
+			ePlayer->local.speed_finished =
+			ePlayer->local.speed_time = 0;
 		}
 	}
 

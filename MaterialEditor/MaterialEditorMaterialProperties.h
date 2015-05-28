@@ -1,12 +1,13 @@
 #pragma once
-class CMaterialEditorMaterialGlobalProperties
+class CMaterialEditorMaterialGlobalProperties : public wxPropertyGrid
 {
 public:
-	CMaterialEditorMaterialGlobalProperties(wxPropertyGrid *propertyParent);
-	~CMaterialEditorMaterialGlobalProperties();
+	CMaterialEditorMaterialGlobalProperties(wxWindow *parent);
 
-	void Update(Material_t *currentMaterial);
+	void Update();
+	void SetCurrentMaterial(Material_t *newMaterial);
 
+private:
 	wxStringProperty* name;
 	wxStringProperty* path;
 
@@ -23,5 +24,7 @@ public:
 
 	wxFloatProperty* animationSpeed;
 	wxFloatProperty* alpha;
+
+	Material_t *currentMaterial;
 };
 

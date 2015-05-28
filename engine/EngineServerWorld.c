@@ -550,11 +550,12 @@ int SV_HullPointContents(hull_t *hull, int num, MathVector3f_t p)
 
 int SV_PointContents (MathVector3f_t p)
 {
-	int		cont;
+	int	cont;
 
 	cont = SV_HullPointContents (&sv.worldmodel->hulls[0], 0, p);
 	if (cont <= BSP_CONTENTS_0 && cont >= BSP_CONTENTS_DOWN)
 		cont = BSP_CONTENTS_WATER;
+
 	return cont;
 }
 

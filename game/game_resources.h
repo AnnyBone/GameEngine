@@ -9,6 +9,8 @@
 #define	SOUND_EXPLODE1 "effects/explode1.wav"
 #define SOUND_EXPLODE2 "effects/explode2.wav"
 
+#define	MODEL_PLAYER "models/player.md2"
+
 /*	MODEL:	models/player/
 	SOUND:	player/
 */

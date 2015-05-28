@@ -27,7 +27,7 @@ bool CMaterialEditorApp::OnInit()
 	engine->MaterialEditorInitialize();
 
 	// Start rendering.
-	mainFrame->StartRendering();
+	mainFrame->StartEngineLoop();
 
 	// We launched without problems, return true.
 	return true;

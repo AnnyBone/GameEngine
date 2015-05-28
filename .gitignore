@@ -49,3 +49,5 @@ editor_legacy/Debug/RCa07736
 *.zip
 *.class
 *.properties
+*.am
+*.in

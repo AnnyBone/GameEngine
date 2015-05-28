@@ -36,6 +36,9 @@ void MaterialEditor_Initialize(void)
 	if (bMaterialEditorInitialized)
 		return;
 
+	CL_Disconnect();
+	Host_ShutdownServer(false);
+
 	key_dest = KEY_EDITOR_MATERIAL;
 
 	mFloorMaterial = Material_Load("engine/grid");
@@ -45,12 +48,14 @@ void MaterialEditor_Initialize(void)
 		return;
 	}
 
-	mPreviewModel = Mod_ForName("models/placeholders/sphere.md2");
+	mPreviewModel = Mod_ForName("models/placeholders/cube.md2");
 	if (!mPreviewModel)
 	{
 		Con_Warning("Failed to load preview mesh!\n");
 		return;
 	}
+
+	mPreviewMesh = (MD2_t*)Mod_Extradata(mPreviewModel);
 
 	bMaterialEditorInitialized = true;
 }
@@ -64,48 +69,42 @@ void MaterialEditor_Input(int iKey)
 	}
 }
 
+#define	MATERIALEDITOR_FLOOR_SCALE	10.0f
+
 void MaterialEditor_Draw(void)
 {
 	VideoObjectVertex_t	voGrid[4] = { 0 };
 
-	MathVector3f_t mvPosition = { 0, 0, -0.5f };
-	Draw_Grid(mvPosition, 1);
+	MathVector3f_t mvPosition = { 0, 0, -5 };
+	Draw_Grid(mvPosition, 3);
 
 	Video_ResetCapabilities(false);
 
+#if 0
 	glPushMatrix();
+	glTranslatef(0, -2.0f, 0);
+	Alias_DrawGenericFrame(mPreviewMesh, mPreviewModel, mActiveMaterial, 0);
+	glPopMatrix();
+#endif
+
+	glPushMatrix();
+	glTranslatef(10.0f, 0, 0);
+	glRotatef(-90.0f, 0, 1, 0);
+	glRotatef(-90.0f, 0, 0, 1);
 	Video_SetBlend(VIDEO_BLEND_IGNORE, VIDEO_DEPTH_FALSE);
 	Video_SetColour(1.0f, 1.0f, 1.0f, 1.0f);
-	Video_ObjectVertex(&voGrid[0], -50, 50, 0);
+	Video_ObjectVertex(&voGrid[0], -5, 5, 0);
 	Video_ObjectTexture(&voGrid[0], VIDEO_TEXTURE_DIFFUSE, 0, 0);
-	Video_ObjectVertex(&voGrid[1], 50, 50, 0);
+	Video_ObjectVertex(&voGrid[1], 5, 5, 0);
 	Video_ObjectTexture(&voGrid[1], VIDEO_TEXTURE_DIFFUSE, 1.0f, 0);
-	Video_ObjectVertex(&voGrid[2], 50, -50, 0);
+	Video_ObjectVertex(&voGrid[2], 5, -5, 0);
 	Video_ObjectTexture(&voGrid[2], VIDEO_TEXTURE_DIFFUSE, 1.0f, 1.0f);
-	Video_ObjectVertex(&voGrid[3], -50, -50, 0);
+	Video_ObjectVertex(&voGrid[3], -5, -5, 0);
 	Video_ObjectTexture(&voGrid[3], VIDEO_TEXTURE_DIFFUSE, 0, 1.0f);
-	Video_DrawFill(voGrid, mFloorMaterial);
+	Video_DrawFill(voGrid, mActiveMaterial);
 	glPopMatrix();
 
 	Video_ResetCapabilities(true);
-
-	if (mActiveMaterial)
-	{
-		mPreviewMesh = (MD2_t*)Mod_Extradata(mPreviewModel);
-
-		Video_ResetCapabilities(false);
-
-		Video_SetColour(0, 1.0f, 0, 1.0f);
-
-		bShading = true;
-
-		glPushMatrix();
-		Alias_DrawGenericFrame(mPreviewMesh, mPreviewModel);
-		glTranslatef(2, 0, 0);
-		glPopMatrix();
-
-		Video_ResetCapabilities(true);
-	}
 
 	GL_SetCanvas(CANVAS_DEFAULT);
 	Draw_String(10, 10, va("Camera: origin(%i %i %i), angles(%i %i %i)",

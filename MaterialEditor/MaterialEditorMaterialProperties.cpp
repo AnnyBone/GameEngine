@@ -2,8 +2,11 @@
 
 #include "MaterialEditorMaterialProperties.h"
 
-CMaterialEditorMaterialGlobalProperties::CMaterialEditorMaterialGlobalProperties(wxPropertyGrid *propertyParent)
+CMaterialEditorMaterialGlobalProperties::CMaterialEditorMaterialGlobalProperties(wxWindow *parent)
+	: wxPropertyGrid(parent)
 {
+	currentMaterial = NULL;
+
 	name = new wxStringProperty("Name","name");
 	path = new wxStringProperty("Path", "path");
 	skins = new wxIntProperty("Skins","skins");
@@ -18,29 +21,44 @@ CMaterialEditorMaterialGlobalProperties::CMaterialEditorMaterialGlobalProperties
 	water = new wxBoolProperty("Water");
 	notris = new wxBoolProperty("Override Wireframe");
 
-	propertyParent->Append(name);
-	propertyParent->Append(path);
-	propertyParent->Append(skins);
-	propertyParent->Append(animationSpeed);
-	propertyParent->Append(alpha);
-	propertyParent->Append(preserve);
-	propertyParent->Append(useAlpha);
-	propertyParent->Append(blend);
-	propertyParent->Append(animated);
-	propertyParent->Append(mirror);
-	propertyParent->Append(nearest);
-	propertyParent->Append(water);
-	propertyParent->Append(notris);
+	Append(new wxPropertyCategory("Global"));
+	Append(name);
+	Append(path);
+	Append(skins);
+	Append(animationSpeed);
+	Append(alpha);
+	Append(preserve);
+	Append(useAlpha);
+	Append(blend);
+	Append(animated);
+	Append(mirror);
+	Append(nearest);
+	Append(water);
+	Append(notris);
+
+	SetCellBackgroundColour(wxColour(0, 0, 0));
+	SetCellTextColour(wxColour(0, 255, 0));
+	SetEmptySpaceColour(wxColour(0, 0, 0));
+	SetCaptionBackgroundColour(wxColour(70, 70, 70));
+	SetCaptionTextColour(wxColour(255, 255, 255));
+	SetMarginColour(wxColour(50, 50, 50));
+	SetSize(wxSize(300, wxDefaultSize.y));
+
+	CenterSplitter(true);
 }
 
-CMaterialEditorMaterialGlobalProperties::~CMaterialEditorMaterialGlobalProperties()
+void CMaterialEditorMaterialGlobalProperties::Update()
 {
-}
+	if (!currentMaterial)
+		return;
 
-void CMaterialEditorMaterialGlobalProperties::Update(Material_t *currentMaterial)
-{
 	name->SetValue(currentMaterial->cName);
 	path->SetValue(currentMaterial->cPath);
 	skins->SetValue(currentMaterial->iSkins);
 	animationSpeed->SetValue(currentMaterial->fAnimationSpeed);
+}
+
+void CMaterialEditorMaterialGlobalProperties::SetCurrentMaterial(Material_t *newMaterial)
+{
+
 }

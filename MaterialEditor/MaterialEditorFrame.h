@@ -2,6 +2,7 @@
 #define	__MATERIALEDITORFRAME__
 
 #include "MaterialEditorRenderCanvas.h"
+#include "MaterialEditorMaterialProperties.h"
 
 class CMaterialEditorFrame : public wxFrame
 {
@@ -9,8 +10,8 @@ public:
 	CMaterialEditorFrame(const wxString &title, const wxPoint &pos, const wxSize &size);
 	~CMaterialEditorFrame();
 
-	void StartRendering(void);
-	void StopRendering(void);
+	void StartEngineLoop(void);
+	void StopEngineLoop(void);
 
 	void PrintMessage(char *text);
 	void PrintWarning(char *text);
@@ -27,22 +28,25 @@ private:
 	void OnKey(wxKeyEvent &event);
 	void OnTimer(wxTimerEvent &event);
 
-	wxBitmap largeExit;
 	wxBitmap largeNew;
 	wxBitmap largeOpen;
 	wxBitmap largeScriptEdit;
+	wxBitmap iconDocumentSave;
+	wxBitmap iconMediaPause;
+	wxBitmap iconMediaPlay;
+	wxBitmap iconShapeCube;
+	wxBitmap iconShapeSphere;
+	wxBitmap iconShapePlane;
 
 	wxTextCtrl *textConsoleOut;
 	wxTextCtrl *textConsoleIn;
 
 	wxTimer* timer;
 
-	CMaterialEditorRenderCanvas* engineViewport;
-
-	// Material Properties
-	wxPropertyGrid* materialProperties;
-
 	wxAuiManager *manager;
+
+	CMaterialEditorRenderCanvas *editorViewport;
+	CMaterialEditorMaterialGlobalProperties *editorMaterialProperties;
 
 	wxDECLARE_EVENT_TABLE();
 };

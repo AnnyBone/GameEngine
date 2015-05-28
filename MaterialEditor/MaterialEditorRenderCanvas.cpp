@@ -40,13 +40,9 @@ void CMaterialEditorRenderCanvas::DrawFrame(void)
 		return;
 
 	engine->Video_PreFrame();
-
 	engine->DrawModel();
-
 	engine->ResetCanvas();
-
 	engine->DrawFPS();
-
 	engine->Video_PostFrame();
 	
 	SwapBuffers();

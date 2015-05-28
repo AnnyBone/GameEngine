@@ -354,24 +354,22 @@ void Con_Printf (char *fmt, ...)
 	Console_WriteToLog("log.txt","%s",msg);
 
 	if (Global.bEmbeddedContext)
-	{
 		Launcher.PrintMessage(msg);
-		return;
+	else
+	{
+		if (!bConsoleInitialized)
+			return;
+
+		Con_Print(msg);
+
+		if (cls.signon != SIGNONS && !scr_disabled_for_loading)
+			if (!inupdate)
+			{
+				inupdate = true;
+				//SCR_UpdateScreen ();
+				inupdate = false;
+			}
 	}
-
-	// [3/10/2012] Merged check ~hogsy
-	if(!bConsoleInitialized || cls.state == ca_dedicated)
-		return;
-
-	Con_Print(msg);
-
-	if (cls.signon != SIGNONS && !scr_disabled_for_loading )
-		if (!inupdate)
-		{
-			inupdate = true;
-//			SCR_UpdateScreen ();
-			inupdate = false;
-		}
 }
 
 void Con_SPrintf (char *dest, int size, char *fmt, ...)
@@ -405,11 +403,12 @@ void Con_Warning (char *fmt, ...)
 	{
 		Console_WriteToLog("log.txt", "%s", msg);
 		Launcher.PrintWarning(msg);
-		return;
 	}
-
-	Con_SafePrintf("\x02Warning: ");
-	Con_Printf("%s", msg);
+	else
+	{
+		Con_SafePrintf("\x02Warning: ");
+		Con_Printf("%s", msg);
+	}
 }
 
 void Con_Error(char *fmt,...)
@@ -448,6 +447,9 @@ void Con_DPrintf(char *fmt,...)
 	va_list	argptr;
 	char	msg[MAXPRINTMSG];
 
+	if (!developer.bValue)
+		return;
+
 	va_start(argptr,fmt);
 	vsprintf(msg,fmt,argptr);
 	va_end(argptr);
@@ -456,16 +458,12 @@ void Con_DPrintf(char *fmt,...)
 	{
 		Console_WriteToLog("log.txt", "%s", msg);
 		Launcher.PrintMessage(msg);
-		return;
 	}
-
-	// Don't confuse non-developers with techie stuff...
-#ifdef _DEBUG
-	if(!developer.value)
-		Console_WriteToLog("log.txt","%s",msg);
 	else
-#endif
-		Con_SafePrintf("%s",msg); //johnfitz -- was Con_Printf
+	{
+		Console_WriteToLog("log.txt", "%s", msg);
+		Con_SafePrintf("%s", msg); //johnfitz -- was Con_Printf
+	}
 }
 
 /*	Okay to call even when the screen can't be updated

@@ -1080,19 +1080,19 @@ void SV_SpawnServer(char *server)
 
 	// Allocate server memory
 	sv.max_edicts = Math_Clamp(MIN_EDICTS, (int)max_edicts.value, MAX_EDICTS); //johnfitz -- max_edicts cvar
-	sv.edicts		= (edict_t*)Hunk_AllocName(sv.max_edicts*sizeof(edict_t),"edicts");
+	sv.edicts = (edict_t*)Hunk_AllocName(sv.max_edicts*sizeof(edict_t),"edicts");
 
 	sv.datagram.maxsize = sizeof(sv.datagram_buf);
 	sv.datagram.cursize = 0;
-	sv.datagram.data	= sv.datagram_buf;
+	sv.datagram.data = sv.datagram_buf;
 
-	sv.reliable_datagram.maxsize	= sizeof(sv.reliable_datagram_buf);
-	sv.reliable_datagram.cursize	= 0;
-	sv.reliable_datagram.data		= sv.reliable_datagram_buf;
+	sv.reliable_datagram.maxsize = sizeof(sv.reliable_datagram_buf);
+	sv.reliable_datagram.cursize = 0;
+	sv.reliable_datagram.data = sv.reliable_datagram_buf;
 
-	sv.signon.maxsize	= sizeof(sv.signon_buf);
-	sv.signon.cursize	= 0;
-	sv.signon.data		= sv.signon_buf;
+	sv.signon.maxsize = sizeof(sv.signon_buf);
+	sv.signon.cursize = 0;
+	sv.signon.data = sv.signon_buf;
 
 	// Leave slots at start for clients only
 	sv.num_edicts = svs.maxclients+1;

@@ -341,9 +341,9 @@ void ExtraMaps_NewGame (void)
 
 void Host_Maps_f (void)
 {
-	int						i;
-	static			bool	bListUpdated = false;
-	extralevel_t			*level;
+	int i;
+	static bool	bListUpdated = false;
+	extralevel_t *level;
 
 	if(!bListUpdated)
 	{

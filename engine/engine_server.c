@@ -87,10 +87,10 @@ EntityField_t	EntityFields[] =
 	TODO:
 		Better error handling?
 */
-void Server_ParseEntityField(char *cKey,char *cValue,edict_t *eEntity)
+void Server_ParseEntityField(char *cKey, char *cValue, ServerEntity_t *eEntity)
 {
-	EntityField_t	*eField;
-	vec4_t			vVector;
+	EntityField_t *eField;
+	MathVector4f_t vVector;
 
 	for(eField = EntityFields; eField->cFieldName; eField++)
 	{
@@ -99,24 +99,24 @@ void Server_ParseEntityField(char *cKey,char *cValue,edict_t *eEntity)
 			switch(eField->eDataType)
 			{
 				case EV_STRING:
-					*(char**)((byte*)eEntity+eField->iOffset) = ED_NewString(cValue);
+					*(char**)((uint8_t*)eEntity + eField->iOffset) = ED_NewString(cValue);
 					break;
 				case EV_VECTOR:
 					switch(eField->iFlags)
 					{
 					case FL_ANGLEHACK:
-						((float*)((byte*)eEntity+eField->iOffset))[0] = 0;
-						((float*)((byte*)eEntity+eField->iOffset))[1] = strtof(cValue,NULL);
-						((float*)((byte*)eEntity+eField->iOffset))[2] = 0;
+						((float*)((uint8_t*)eEntity+eField->iOffset))[0] = 0;
+						((float*)((uint8_t*)eEntity + eField->iOffset))[1] = strtof(cValue, NULL);
+						((float*)((uint8_t*)eEntity + eField->iOffset))[2] = 0;
 						break;
 					default:
 #ifdef _MSC_VER
 #pragma warning(suppress: 6031)
 #endif
 						sscanf(cValue,"%f %f %f",&vVector[0],&vVector[1],&vVector[2]);
-						((float*)((byte*)eEntity+eField->iOffset))[0] = vVector[0];
-						((float*)((byte*)eEntity+eField->iOffset))[1] = vVector[1];
-						((float*)((byte*)eEntity+eField->iOffset))[2] = vVector[2];
+						((float*)((uint8_t*)eEntity + eField->iOffset))[0] = vVector[0];
+						((float*)((uint8_t*)eEntity + eField->iOffset))[1] = vVector[1];
+						((float*)((uint8_t*)eEntity + eField->iOffset))[2] = vVector[2];
 					}
 					break;
 				case EV_VECTOR4:
@@ -124,16 +124,16 @@ void Server_ParseEntityField(char *cKey,char *cValue,edict_t *eEntity)
 #pragma warning(suppress: 6031)
 #endif
 					sscanf(cValue,"%f %f %f %f",&vVector[0],&vVector[1],&vVector[2],&vVector[3]);
-					((float*)((byte*)eEntity+eField->iOffset))[0] = vVector[0];
-					((float*)((byte*)eEntity+eField->iOffset))[1] = vVector[1];
-					((float*)((byte*)eEntity+eField->iOffset))[2] = vVector[2];
-					((float*)((byte*)eEntity+eField->iOffset))[3] = vVector[3];
+					((float*)((uint8_t*)eEntity + eField->iOffset))[0] = vVector[0];
+					((float*)((uint8_t*)eEntity + eField->iOffset))[1] = vVector[1];
+					((float*)((uint8_t*)eEntity + eField->iOffset))[2] = vVector[2];
+					((float*)((uint8_t*)eEntity + eField->iOffset))[3] = vVector[3];
 					break;
 				case EV_FLOAT:
-					*(float*)((byte*)eEntity+eField->iOffset) = strtof(cValue,NULL);
+					*(float*)((uint8_t*)eEntity + eField->iOffset) = strtof(cValue, NULL);
 					break;
 				case EV_DOUBLE:
-					*(double*)((byte*)eEntity+eField->iOffset) = strtod(cValue,NULL);
+					*(double*)((uint8_t*)eEntity + eField->iOffset) = strtod(cValue, NULL);
 					break;
 				case EV_BOOLEAN:
 					if(!Q_strcasecmp(cValue,"true"))
@@ -222,10 +222,17 @@ void Server_ParseGlobalField(char *cKey,char *cValue)
 	Con_Warning("Invalid field! (%s)\n",cKey);
 }
 
-edict_t *Server_FindEntity(edict_t *eStartEntity,char *cName,bool bClassname)
+ServerEntity_t *Server_FindEntity(ServerEntity_t *eStartEntity, char *cName, bool bClassname)
 {
-	int		i;
-	edict_t *eEntity = eStartEntity;
+	int	i;
+	ServerEntity_t *eEntity = eStartEntity;
+
+	// Ensure that the first entity is valid.
+	if (!eStartEntity)
+	{
+		Con_Warning("Attempted to start search from an invalid entity! (%s)", cName);
+		return NULL;
+	}
 
 	for(i = 0; i < sv.num_edicts; i++,eEntity = NEXT_EDICT(eEntity))
 	{
@@ -316,7 +323,7 @@ void Server_PrecacheResource(int iType,const char *ccResource)
 	Console Messages
 */
 
-void Server_SinglePrint(edict_t *eEntity,char *cMessage)
+void Server_SinglePrint(ServerEntity_t *eEntity, char *cMessage)
 {
 	client_t	*cClient;
 	int			iEntity	= NUM_FOR_EDICT(eEntity);
@@ -335,7 +342,7 @@ void Server_SinglePrint(edict_t *eEntity,char *cMessage)
 
 // [25/2/2012] Added CenterPrint ~hogsy
 // [18/7/2012] Renamed to Server_CenterPrint ~hogsy
-void Server_CenterPrint(edict_t *ent,char *msg)
+void Server_CenterPrint(ServerEntity_t *ent, char *msg)
 {
 	client_t	*client;
 	int			entnum = NUM_FOR_EDICT(ent);

@@ -1244,9 +1244,6 @@ void Video_ShaderLoad(const char *ccPath,VideoShaderType_t vstType)
 
 void Video_PreFrame(void)
 {
-	if (Video.bDebugFrame)
-		Console_WriteToLog(cvVideoDebugLog.string, "Video: Start of frame\n");
-
 	VIDEO_FUNCTION_START(Video_PreFrame);
 
 	GL_BeginRendering(&glx, &gly, &glwidth, &glheight);
@@ -1254,9 +1251,10 @@ void Video_PreFrame(void)
 	Screen_UpdateSize();
 	Screen_SetUpToDrawConsole();
 
+	R_SetupGenericView();
+
 	r_framecount++;
 
-	R_SetupGenericView();
 	R_SetupScene();
 
 	VIDEO_FUNCTION_END;
@@ -1265,15 +1263,10 @@ void Video_PreFrame(void)
 void Video_PostFrame(void)
 {
 	VIDEO_FUNCTION_START(Video_PostFrame);
-
-	GL_EndRendering();
-
 	VIDEO_FUNCTION_END;
 
 	if (Video.bDebugFrame)
 	{
-		Console_WriteToLog(cvVideoDebugLog.string, "Video: End of frame\n");
-
 		Console_WriteToLog(cvVideoDebugLog.string, "\n-----------------------\n");
 		// Show the number of calls to Video_DrawObject.
 		Console_WriteToLog(cvVideoDebugLog.string, "Video_DrawObject: %i\n", uiVideoDrawObjectCalls);

@@ -2,11 +2,6 @@
 
 #include "MaterialEditorFrame.h"
 #include "MaterialEditorRenderCanvas.h"
-#include "MaterialEditorPropertyWindow.h"
-#include "MaterialEditorMaterialProperties.h"
-
-#include <wx/splash.h>
-#include <wx/splitter.h>
 
 enum
 {
@@ -36,8 +31,6 @@ wxBEGIN_EVENT_TABLE(CMaterialEditorFrame, wxFrame)
 
 wxEND_EVENT_TABLE()
 
-CMaterialEditorMaterialGlobalProperties *globalMaterialProperties;
-
 CMaterialEditorFrame::CMaterialEditorFrame(const wxString & title, const wxPoint & pos, const wxSize & size)
 	: wxFrame(NULL, wxID_ANY, title, pos, size)
 {
@@ -46,11 +39,15 @@ CMaterialEditorFrame::CMaterialEditorFrame(const wxString & title, const wxPoint
 	// Load all required icons...
 
 	wxImage::AddHandler(new wxPNGHandler);
-	largeNew.LoadFile(PATH_RESOURCES"32/document-new.png", wxBITMAP_TYPE_PNG);
-	largeOpen.LoadFile(PATH_RESOURCES"32/folder-open.png", wxBITMAP_TYPE_PNG);
-	largeExit.LoadFile(PATH_RESOURCES"32/process-stop.png", wxBITMAP_TYPE_PNG);
-	largeScriptEdit.LoadFile(PATH_RESOURCES"32/accessories-text-editor.png", wxBITMAP_TYPE_PNG);
-
+	largeNew.LoadFile(PATH_RESOURCES"16x16/actions/document-new.png", wxBITMAP_TYPE_PNG);
+	largeOpen.LoadFile(PATH_RESOURCES"16x16/actions/document-open.png", wxBITMAP_TYPE_PNG);
+	iconDocumentSave.LoadFile("resource/16x16/actions/document-save.png", wxBITMAP_TYPE_PNG);
+	iconMediaPause.LoadFile(PATH_RESOURCES"16x16/actions/media-playback-pause.png", wxBITMAP_TYPE_PNG);
+	iconMediaPlay.LoadFile(PATH_RESOURCES"16x16/actions/media-playback-start.png", wxBITMAP_TYPE_PNG);
+	iconShapeCube.LoadFile("resource/shape-cube.png", wxBITMAP_TYPE_PNG);
+	iconShapeSphere.LoadFile("resource/shape-sphere.png", wxBITMAP_TYPE_PNG);
+	iconShapePlane.LoadFile("resource/shape-plane.png", wxBITMAP_TYPE_PNG);
+	
 	// Display the splash screen...
 
 	wxBitmap splashImage;
@@ -71,13 +68,15 @@ CMaterialEditorFrame::CMaterialEditorFrame(const wxString & title, const wxPoint
 
 	wxMenu *menuFile = new wxMenu;
 	menuFile->Append(wxID_OPEN);
+	menuFile->Append(wxID_SAVE);
+	menuFile->Append(wxID_SAVEAS);
 	menuFile->Append(wxID_EXIT);
 
 	wxMenu *menuEdit = new wxMenu;
 
 	wxMenu *menuWindow = new wxMenu;
-	menuWindow->Append(ID_WINDOW_CONSOLE, "&Console");
-	menuWindow->Append(ID_WINDOW_PROPERTIES, "&Properties");
+	menuWindow->AppendCheckItem(ID_WINDOW_CONSOLE, "&Console");
+	menuWindow->AppendCheckItem(ID_WINDOW_PROPERTIES, "&Properties");
 
 	wxMenu *menuHelp = new wxMenu;
 	menuHelp->Append(wxID_ABOUT);
@@ -91,7 +90,6 @@ CMaterialEditorFrame::CMaterialEditorFrame(const wxString & title, const wxPoint
 
 	CreateStatusBar(3);
 	SetStatusText("Initialized");
-	SetStatusText("Currently awaiting user input...", 1);
 
 	// Initialize the timer...
 
@@ -104,11 +102,15 @@ CMaterialEditorFrame::CMaterialEditorFrame(const wxString & title, const wxPoint
 
 	wxAuiToolBar *toolbar = new wxAuiToolBar(this);
 	toolbar->AddTool(wxID_NEW, "New material", largeNew);
-	toolbar->AddTool(wxID_OPEN, "Open material", largeOpen, "Open an existing file");
+	toolbar->AddTool(wxID_OPEN, "Open material", largeOpen, "Open an existing material");
+	toolbar->AddTool(wxID_SAVE, "Save material", iconDocumentSave, "Save the current material");
 	toolbar->AddSeparator();
-	toolbar->AddTool(ID_WINDOW_SCRIPTEDITOR, "Edit material script", largeScriptEdit);
+	toolbar->AddTool(wxID_ANY, "Cube", iconShapeCube);
+	toolbar->AddTool(wxID_ANY, "Sphere", iconShapeSphere);
+	toolbar->AddTool(wxID_ANY, "Plane", iconShapePlane);
 	toolbar->AddSeparator();
-	toolbar->AddTool(wxID_EXIT, "Exit application", largeExit, "Exit the application");
+	toolbar->AddTool(wxID_ANY, "Pause", iconMediaPause);
+	toolbar->AddTool(wxID_ANY, "Play", iconMediaPlay);
 	toolbar->Realize();
 
 	wxAuiPaneInfo toolbarInfo;
@@ -138,7 +140,7 @@ CMaterialEditorFrame::CMaterialEditorFrame(const wxString & title, const wxPoint
 		WX_GL_MIN_ACCUM_ALPHA, 8,
 		//WX_GL_DOUBLEBUFFER,	1,
 	};
-	engineViewport = new CMaterialEditorRenderCanvas(this, attributes);
+	editorViewport = new CMaterialEditorRenderCanvas(this, attributes);
 
 	wxAuiPaneInfo viewportInfo;
 	viewportInfo.Caption("Viewport");
@@ -149,7 +151,7 @@ CMaterialEditorFrame::CMaterialEditorFrame(const wxString & title, const wxPoint
 	viewportInfo.MaximizeButton(true);
 	viewportInfo.CloseButton(false);
 
-	manager->AddPane(engineViewport, viewportInfo);
+	manager->AddPane(editorViewport, viewportInfo);
 
 	// Create the console...
 
@@ -187,24 +189,14 @@ CMaterialEditorFrame::CMaterialEditorFrame(const wxString & title, const wxPoint
 
 	// Create the material props...
 
-	wxPropertyGrid *materialProperties = new wxPropertyGrid(this);
-	materialProperties->Append(new wxPropertyCategory("Global"));
-	globalMaterialProperties = new CMaterialEditorMaterialGlobalProperties(materialProperties);
-	materialProperties->CenterSplitter(true);
-	materialProperties->SetCellBackgroundColour(wxColour(0, 0, 0));
-	materialProperties->SetCellTextColour(wxColour(0, 255, 0));
-	materialProperties->SetEmptySpaceColour(wxColour(0, 0, 0));
-	materialProperties->SetCaptionBackgroundColour(wxColour(70, 70, 70));
-	materialProperties->SetCaptionTextColour(wxColour(255, 255, 255));
-	materialProperties->SetMarginColour(wxColour(50, 50, 50));
-	materialProperties->SetSize(wxSize(300, wxDefaultSize.y));
+	editorMaterialProperties = new CMaterialEditorMaterialGlobalProperties(this);
 	
 	wxAuiPaneInfo propertiesInfo;
 	propertiesInfo.Caption("Properties");
 	propertiesInfo.CloseButton(false);
 	propertiesInfo.Right();
 
-	manager->AddPane(materialProperties, propertiesInfo);
+	manager->AddPane(editorMaterialProperties, propertiesInfo);
 
 	manager->Update();
 }
@@ -214,12 +206,12 @@ CMaterialEditorFrame::~CMaterialEditorFrame()
 	manager->UnInit();
 }
 
-void CMaterialEditorFrame::StartRendering(void)
+void CMaterialEditorFrame::StartEngineLoop(void)
 {
 	timer->Start();
 }
 
-void CMaterialEditorFrame::StopRendering(void)
+void CMaterialEditorFrame::StopEngineLoop(void)
 {
 	timer->Stop();
 }
@@ -271,8 +263,8 @@ void CMaterialEditorFrame::OnTimer(wxTimerEvent &event)
 		engine->Loop();
 
 		// Draw the main viewport.
-		engineViewport->DrawFrame();
-		engineViewport->Refresh();
+		editorViewport->DrawFrame();
+		editorViewport->Refresh();
 	}
 }
 
@@ -299,12 +291,13 @@ void CMaterialEditorFrame::OnOpen(wxCommandEvent &event)
 		"MATERIAL files (*.material)|*.material",wxFD_OPEN|wxFD_FILE_MUST_EXIST);
 	if (fileDialog->ShowModal() == wxID_OK)
 	{
-		Material_t *newMat = engine->LoadMaterial("dngalax3");
+		Material_t *newMat = engine->LoadMaterial("debug_scroll");
 		if (newMat)
 		{
 			engine->MaterialEditorDisplay(newMat);
 
-			globalMaterialProperties->Update(newMat);
+			editorMaterialProperties->SetCurrentMaterial(newMat);
+			editorMaterialProperties->Update();
 		}
 	}
 }
@@ -312,7 +305,7 @@ void CMaterialEditorFrame::OnOpen(wxCommandEvent &event)
 void CMaterialEditorFrame::OnExit(wxCommandEvent &event)
 {
 	// Stop rendering!
-	StopRendering();
+	StopEngineLoop();
 
 	// Close the frame and app.
 	Close(true);
