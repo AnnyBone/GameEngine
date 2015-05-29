@@ -49,9 +49,14 @@ void Menu_Initialize(void)
 	mImport.Con_Warning = Con_Warning;
 	mImport.Sys_Error = Sys_Error;
 	mImport.Cvar_RegisterVariable = Cvar_RegisterVariable;
+
+	mImport.LoadMaterial = Material_Load;
+
 	mImport.DrawPic = Draw_ExternPic;
 	mImport.DrawString = Draw_String;
 	mImport.DrawFill = Draw_Fill;
+	mImport.DrawMaterialSurface = Draw_MaterialSurface;
+
 	mImport.GetScreenWidth = Menu_GetScreenWidth;
 	mImport.GetScreenHeight = Menu_GetScreenHeight;
 	mImport.ShowCursor = gWindow_ShowCursor;

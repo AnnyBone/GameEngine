@@ -861,9 +861,9 @@ void Video_DrawMaterial(
 
 /*  Draw a simple rectangle.
 */
-void Video_DrawFill(VideoObjectVertex_t *voFill, Material_t *mMaterial)
+void Video_DrawFill(VideoObjectVertex_t *voFill, Material_t *mMaterial, int iSkin)
 {
-	Video_DrawObject(voFill,VIDEO_PRIMITIVE_TRIANGLE_FAN,4,mMaterial,0);
+	Video_DrawObject(voFill, VIDEO_PRIMITIVE_TRIANGLE_FAN, 4, mMaterial, iSkin);
 }
 
 /*	Surfaces

@@ -29,12 +29,16 @@
 #include "shared_menu.h"
 #include "SharedModule.h"
 #include "SharedEngine.h"
+#include "SharedMaterial.h"
 #include "shared_game.h"
 
 #define	MENU_BASE_PATH	"menu/"
 #define MENU_HUD_PATH	"menu/hud/"
 
-extern ModuleImport_t	Engine;
+extern ModuleImport_t Engine;
+
+extern Material_t *mNums;
+extern Material_t *mIcons;
 
 extern	cvar_t	cvShowMenu,
 				cvShowHealth,

@@ -13,6 +13,8 @@ typedef struct link_s
 } link_t;
 #endif
 
+#include "SharedMaterial.h"
+
 typedef enum
 {
 	DAMAGE_TYPE_NORMAL,
@@ -452,7 +454,6 @@ typedef struct
 
 #define TE_EXPLOSION		3
 
-// [19/5/2013] Fixed this path ~hogsy
 #include "shared_client.h"
 
 typedef struct
@@ -504,11 +505,9 @@ typedef struct ServerEntity_s
 #define	EDICT_TO_PROG(e) ((uint8_t*)e-(uint8_t*)sv.edicts)
 #define PROG_TO_EDICT(e) ((ServerEntity_t *)((uint8_t *)sv.edicts + e))
 
-// [13/1/2013] Revised ~hogsy
-// [25/7/2013] Used intptr to solve gcc warning ~hogsy
-// [25/9/2013] Moved here so we can use it in the game-code too :) ~hogsy
 #define	FIELD(y)	(intptr_t)&(((ServerEntity_t*)0)->y)
 
+// TODO: Replace with EngineExport_t!
 typedef struct
 {
 	// Server
@@ -559,7 +558,6 @@ typedef struct
 	void(*Con_DPrintf)(char *fmt, ...);	// Only appears if launched/running in developer mode.
 	void(*Con_Warning)(char *fmt, ...);	// Highlighted message to indicate an issue.
 
-	// [28/7/2012] Added SetMessageEntity ~hogsy
 	void(*SetMessageEntity)(ServerEntity_t *ent);
 	void(*CenterPrint)(ServerEntity_t *ent, char *msg);	// Sends a message to the specified client and displays the message at the center of the screen.
 	void(*Sys_Error)(char *error, ...);
@@ -570,9 +568,15 @@ typedef struct
 	void(*LinkEntity)(ServerEntity_t *ent, bool touch_triggers);
 	void(*UnlinkEntity)(ServerEntity_t *ent);
 	void(*FreeEntity)(ServerEntity_t *ed);
+
+	Material_t*(*LoadMaterial)(const char *cPath);
+
+	// Draw Functions
 	void(*DrawPic)(char *path, float alpha, int x, int y, int w, int h);
 	void(*DrawString)(int x, int y, char *msg);
 	void(*DrawFill)(int x, int y, int w, int h, float r, float g, float b, float alpha);
+	void(*DrawMaterialSurface)(Material_t *mMaterial, int iSkin, int x, int y, int w, int h, float fAlpha);
+
 	void(*Cvar_RegisterVariable)(cvar_t *variable, void(*Function)(void));
 	void(*Cvar_SetValue)(char *var_name, float value);
 	void(*LightStyle)(int style, char *val);

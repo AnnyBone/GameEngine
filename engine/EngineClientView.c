@@ -437,7 +437,7 @@ void View_PolyBlend(void)
 		voScreenPoly[2].mvPosition[1] =
 		voScreenPoly[3].mvPosition[1] = 1.0f;
 
-		Video_DrawFill(voScreenPoly,NULL);
+		Video_DrawFill(voScreenPoly,NULL, 0);
 	}
 
 	Video_ResetCapabilities(true);

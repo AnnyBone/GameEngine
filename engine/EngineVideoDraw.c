@@ -130,19 +130,13 @@ void Scrap_Upload (void)
 
 extern gltexture_t	*gMenuTexture[128];
 
-void Draw_MaterialSurface(
-	const char *ccMaterial,
-	float fAlpha,
-	int x, int y, int s, int t,
-	int w, int h)
+void Draw_MaterialSurface(Material_t *mMaterial, int iSkin,
+	int x, int y, int w, int h,
+	float fAlpha)
 {
 	VideoObjectVertex_t voSurface[4];
 
 	Video_ResetCapabilities(false);
-
-	// If alpha is set less than 1.0/255, then blend it (otherwise this is done via the material).
-	if (fAlpha < 1.0f)
-		Video_EnableCapabilities(VIDEO_BLEND);
 
 	// Disable depth testing.
 	Video_DisableCapabilities(VIDEO_DEPTH_TEST);
@@ -155,12 +149,27 @@ void Draw_MaterialSurface(
 
 	// Set the texture coords.
 	Video_ObjectTexture(&voSurface[0], 0, 0, 0);
+	Video_ObjectTexture(&voSurface[1], 0, 1.0f, 0);
+	Video_ObjectTexture(&voSurface[2], 0, 1.0f, 1.0f);
+	Video_ObjectTexture(&voSurface[3], 0, 0, 1.0f);
+
+	// Set the vertex coords.
+	Video_ObjectVertex(&voSurface[0], x, y, 0);
+	Video_ObjectVertex(&voSurface[1], x+w, y, 0);
+	Video_ObjectVertex(&voSurface[2], x+w, y+h, 0);
+	Video_ObjectVertex(&voSurface[3], x, y+h, 0);
+
+	// Throw it off to the rendering pipeline.
+	Video_DrawFill(voSurface, mMaterial, iSkin);
+
+	Video_ResetCapabilities(true);
 }
 
 /*	TODO: Make me obsolete!
 */
 void Draw_ExternPic(char *path,float alpha,int x,int y,int w,int h)
 {
+#if 0
 	int	i;
 
 	// [15/9/2013] Fixed somewhat (clean this up) ~hogsy
@@ -213,10 +222,11 @@ void Draw_ExternPic(char *path,float alpha,int x,int y,int w,int h)
 		voPicture[3].mvST[0][1]	= 1.0f;
 
 		// Throw it off to the rendering pipeline.
-		Video_DrawFill(voPicture,NULL);
+		Video_DrawFill(voPicture,NULL, 0);
 	}
 
 	Video_ResetCapabilities(true);
+#endif
 }
 //==================================================================
 
@@ -376,7 +386,7 @@ void Draw_Character(int x,int y,int num)
 		Video_ObjectColour(&voCharacter[3], 1.0f, 1.0f, 1.0f, 1.0f);
 		Video_ObjectTexture(&voCharacter[3], VIDEO_TEXTURE_DIFFUSE, fcol, frow+size);
 
-		Video_DrawFill(voCharacter, mConChars);
+		Video_DrawFill(voCharacter, mConChars, 0);
 
 		Video_ResetCapabilities(true);
 	}
@@ -384,33 +394,6 @@ void Draw_Character(int x,int y,int num)
 
 void Draw_Pic(int x,int y,qpic_t *pic)
 {
-#if 0
-	glpic_t	*gl;
-
-	if(scrap_dirty)
-		Scrap_Upload ();
-
-	gl = (glpic_t*)pic->data;
-
-	Video_ResetCapabilities(false);
-
-	Video_SetTexture(gl->gltexture);
-
-    // [1/4/2014] Use new rendering system ~hogsy
-	{
-		VideoObjectVertex_t voPicture	[]=
-		{
-			{	{	x,		        y,		        0	},	{	{	0,		0		}	},	{	1.0f,	1.0f,	1.0f,	1.0f	}	},
-			{	{	x+pic->width,	y,		        0	},	{	{	1.0f,	0		}	},	{	1.0f,	1.0f,	1.0f,	1.0f	}	},
-			{	{	x+pic->width,   y+pic->height,	0	},	{	{	1.0f,	1.0f	}	},	{	1.0f,	1.0f,	1.0f,	1.0f	}	},
-			{	{	x,		        y+pic->height,  0	},	{	{	0,		1.0f	}	},	{	1.0f,	1.0f,	1.0f,	1.0f	}	}
-		};
-
-        Video_DrawFill(voPicture,NULL);
-    }
-
-	Video_ResetCapabilities(true);
-#endif
 }
 
 void Draw_ConsoleBackground(void)
@@ -555,7 +538,7 @@ void Draw_Fill(int x,int y,int w,int h,float r,float g,float b,float alpha)
 	Video_ObjectVertex(&voFill[2], x+w, y+h, 0);
 	Video_ObjectVertex(&voFill[3], x, y+h, 0);
 
-	Video_DrawFill(voFill,NULL);
+	Video_DrawFill(voFill,NULL,0);
 
 	Video_ResetCapabilities(true);
 }
@@ -580,7 +563,7 @@ void Draw_FadeScreen (void)
 	Video_ObjectVertex(&voFade[3], 0, glheight, 0);
 	Video_ObjectColour(&voFade[3], 1.0f, 1.0f, 1.0f, 0.5f);
 
-	Video_DrawFill(voFade,NULL);
+	Video_DrawFill(voFade, NULL, 0);
 
 	Video_ResetCapabilities(true);
 }

@@ -41,6 +41,9 @@ int
 iMenuWidth = 0,
 iMenuHeight = 0;
 
+Material_t *mNums;
+Material_t *mIcons;
+
 // [2/8/2012] TODO: Why are we doing this!? Should be using the one from the lib ~hogsy
 char *va(char *format,...)
 {
@@ -56,8 +59,6 @@ char *va(char *format,...)
 
 void Menu_Initialize(void)
 {
-    int i;
-
 	Engine.Con_Printf("Initializing menu...\n");
 
 	// Get the current screen size.
@@ -66,8 +67,8 @@ void Menu_Initialize(void)
 	Engine.Cvar_RegisterVariable(&cvShowMenu, NULL);
 	Engine.Cvar_RegisterVariable(&cvMenuDisclaimer, NULL);
 
-	for (i = 0; i < 10; i++)
-		Engine.Client_PrecacheResource(RESOURCE_TEXTURE, va(MENU_HUD_PATH"num%i", i));
+	mNums = Engine.LoadMaterial("menu/hud/num");
+	mIcons = Engine.LoadMaterial("menu/hud/icons");
 }
 
 void Menu_UpdateScreenSize(void)
@@ -402,11 +403,13 @@ pMODULE_EXPORT MenuExport_t *Menu_Main(ModuleImport_t *Import)
 	Engine.Con_DPrintf = Import->Con_DPrintf;
 	Engine.Con_Printf = Import->Con_Printf;
 	Engine.Con_Warning = Import->Con_Warning;
+	Engine.LoadMaterial = Import->LoadMaterial;
 	Engine.Sys_Error = Import->Sys_Error;
 	Engine.Cvar_RegisterVariable = Import->Cvar_RegisterVariable;
 	Engine.DrawPic = Import->DrawPic;
 	Engine.DrawString = Import->DrawString;
 	Engine.DrawFill = Import->DrawFill;
+	Engine.DrawMaterialSurface = Import->DrawMaterialSurface;
 	Engine.Cvar_SetValue = Import->Cvar_SetValue;
 	Engine.GetScreenHeight = Import->GetScreenHeight;
 	Engine.GetScreenWidth = Import->GetScreenWidth;

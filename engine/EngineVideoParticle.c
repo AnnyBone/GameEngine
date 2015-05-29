@@ -494,7 +494,7 @@ void Particle_Draw(void)
 			pParticle->vColour[0], pParticle->vColour[1], pParticle->vColour[2], pParticle->vColour[3]);
 		Video_ObjectTexture(&voParticle[3], 0, 0, 1.0f);
 
-		Video_DrawFill(voParticle, NULL);
+		Video_DrawFill(voParticle, NULL, 0);
 
 		rs_particles++;
 	}

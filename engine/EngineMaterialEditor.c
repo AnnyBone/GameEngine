@@ -108,7 +108,7 @@ void MaterialEditor_Draw(void)
 		Video_ObjectTexture(&voGrid[2], VIDEO_TEXTURE_DIFFUSE, 1.0f, 1.0f);
 		Video_ObjectVertex(&voGrid[3], -5, -5, 0);
 		Video_ObjectTexture(&voGrid[3], VIDEO_TEXTURE_DIFFUSE, 0, 1.0f);
-		Video_DrawFill(voGrid, mActiveMaterial);
+		Video_DrawFill(voGrid, mActiveMaterial, 0);
 		glPopMatrix();
 
 		Video_ResetCapabilities(true);
