@@ -66,6 +66,7 @@ void Window_InitializeVideo(void)
 	SDL_GL_SetAttribute(SDL_GL_ACCUM_ALPHA_SIZE, 8);
 #if 0
 	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 8);
 #endif
 	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
@@ -110,11 +111,11 @@ void Window_InitializeVideo(void)
 
 void Window_UpdateVideo(void)
 {
-	if (Video.uiMSAASamples != cvMultisampleSamples.iValue)
+	if (Video.iMSAASamples != cvMultisampleSamples.iValue)
 	{
 		// TODO: Destroy window etc.
 
-		Video.uiMSAASamples = cvMultisampleSamples.iValue;
+		Video.iMSAASamples = cvMultisampleSamples.iValue;
 	}
 
 	SDL_SetWindowSize(sMainWindow, Video.iWidth, Video.iHeight);

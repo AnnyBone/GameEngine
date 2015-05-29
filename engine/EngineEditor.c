@@ -55,14 +55,6 @@ typedef enum
 	EDITOR_MODE_SIDE	// 2D side view mode.
 } EditorMode_t;
 
-// Draw Modes
-typedef enum
-{
-	EDITOR_DRAW_FLAT,       // Draw everything as flat-shaded.
-	EDITOR_DRAW_WIREFRAME,  // Draw everything as a wireframe.
-	EDITOR_DRAW_TEXTURED    // Draw everything normally: textured and shaded.
-} EditorDraw_t;
-
 // Selection Modes
 typedef enum
 {
@@ -149,22 +141,12 @@ void Editor_Input(int iKey)
 	}
 }
 
-void Editor_Draw(void)
+void Editor_Frame(void)
 {
-	if(!Editor.bEnabled)
-		return;
+	cl.oldtime = cl.time;
+	cl.time += host_frametime;
 
-	switch(Editor.iDrawMode)
-	{
-	case EDITOR_DRAW_WIREFRAME:
-		break;
-	case EDITOR_DRAW_TEXTURED:
-		break;
-	}
-
-    GL_SetCanvas(CANVAS_DEFAULT);
-
-	// [1/12/2013] TODO: Draw cursor... ~hogsy
+	MaterialEditor_Frame();
 }
 
 void Editor_Shutdown(void)

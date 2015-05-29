@@ -74,9 +74,9 @@ typedef struct
                     uiSecondaryUnit;	// Current/last secondary texture.
 
 	int iSupportedUnits;	// Max number of supported units.
+	int iMSAASamples;
 
-	unsigned	int	uiMSAASamples,	// Number of AA samples.
-					uiFrameBuffer[VIDEO_MAX_FRAMEBUFFFERS],
+	unsigned	int	uiFrameBuffer[VIDEO_MAX_FRAMEBUFFFERS],
 					iWidth,iHeight;
 
 	bool

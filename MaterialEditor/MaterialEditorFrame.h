@@ -34,6 +34,7 @@ private:
 	wxBitmap iconDocumentSave;
 	wxBitmap iconMediaPause;
 	wxBitmap iconMediaPlay;
+	wxBitmap iconViewRefresh;
 	wxBitmap iconShapeCube;
 	wxBitmap iconShapeSphere;
 	wxBitmap iconShapePlane;

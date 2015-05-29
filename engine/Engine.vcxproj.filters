@@ -436,6 +436,12 @@
     <ClInclude Include="EngineNetworkWinsock.h">
       <Filter>Network\Interfaces</Filter>
     </ClInclude>
+    <ClInclude Include="EngineMaterialEditor.h">
+      <Filter>Client\Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineClientTempEntity.h">
+      <Filter>Client</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="engine.rc">

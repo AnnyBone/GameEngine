@@ -20,8 +20,9 @@
 
 #include "EngineBase.h"
 
-#include "engine_client.h"
+#include "EngineClientTempEntity.h"
 #include "EngineVideoParticle.h"
+#include "engine_client.h"	// TODO: Remove this.
 
 /*
 	Client-side Temporary Entities

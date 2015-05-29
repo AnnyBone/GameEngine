@@ -26,8 +26,8 @@
 
 Material_t *mActiveMaterial = NULL; // This is the material we're currently editing.
 Material_t *mFloorMaterial;			// Material used for the floor plane.
-model_t *mPreviewModel = NULL;		// Model we're previewing material on.
-MD2_t *mPreviewMesh = NULL;			// Mesh we're previewing the material on.
+
+ClientEntity_t *mPreviewEntity = NULL;
 
 bool bMaterialEditorInitialized = false;
 
@@ -39,7 +39,16 @@ void MaterialEditor_Initialize(void)
 	CL_Disconnect();
 	Host_ShutdownServer(false);
 
+	cls.state = CLIENT_STATE_EDITOR;
+
 	key_dest = KEY_EDITOR_MATERIAL;
+
+	mPreviewEntity = CL_NewTempEntity();
+	if (!mPreviewEntity)
+	{
+		Con_Warning("Failed to allocation client entity!\n");
+		return;
+	}
 
 	mFloorMaterial = Material_Load("engine/grid");
 	if (!mFloorMaterial)
@@ -48,14 +57,17 @@ void MaterialEditor_Initialize(void)
 		return;
 	}
 
-	mPreviewModel = Mod_ForName("models/placeholders/cube.md2");
-	if (!mPreviewModel)
+	mPreviewEntity->model = Mod_ForName("models/placeholders/cube.md2");
+	if (!mPreviewEntity->model)
 	{
 		Con_Warning("Failed to load preview mesh!\n");
 		return;
 	}
 
-	mPreviewMesh = (MD2_t*)Mod_Extradata(mPreviewModel);
+	mPreviewEntity->alpha = 255;
+	mPreviewEntity->origin[0] = 50.0f;
+	mPreviewEntity->origin[1] = 0;
+	mPreviewEntity->origin[2] = 0;
 
 	bMaterialEditorInitialized = true;
 }
@@ -73,38 +85,38 @@ void MaterialEditor_Input(int iKey)
 
 void MaterialEditor_Draw(void)
 {
-	VideoObjectVertex_t	voGrid[4] = { 0 };
-
+#if 0
 	MathVector3f_t mvPosition = { 0, 0, -5 };
 	Draw_Grid(mvPosition, 3);
 
-	Video_ResetCapabilities(false);
+	{
+		VideoObjectVertex_t	voGrid[4] = { 0 };
 
-#if 0
-	glPushMatrix();
-	glTranslatef(0, -2.0f, 0);
-	Alias_DrawGenericFrame(mPreviewMesh, mPreviewModel, mActiveMaterial, 0);
-	glPopMatrix();
+		Video_ResetCapabilities(false);
+
+		glPushMatrix();
+		glTranslatef(10.0f, 0, 0);
+		glRotatef(-90.0f, 0, 1, 0);
+		glRotatef(-90.0f, 0, 0, 1);
+		Video_SetBlend(VIDEO_BLEND_IGNORE, VIDEO_DEPTH_FALSE);
+		Video_SetColour(1.0f, 1.0f, 1.0f, 1.0f);
+		Video_ObjectVertex(&voGrid[0], -5, 5, 0);
+		Video_ObjectTexture(&voGrid[0], VIDEO_TEXTURE_DIFFUSE, 0, 0);
+		Video_ObjectVertex(&voGrid[1], 5, 5, 0);
+		Video_ObjectTexture(&voGrid[1], VIDEO_TEXTURE_DIFFUSE, 1.0f, 0);
+		Video_ObjectVertex(&voGrid[2], 5, -5, 0);
+		Video_ObjectTexture(&voGrid[2], VIDEO_TEXTURE_DIFFUSE, 1.0f, 1.0f);
+		Video_ObjectVertex(&voGrid[3], -5, -5, 0);
+		Video_ObjectTexture(&voGrid[3], VIDEO_TEXTURE_DIFFUSE, 0, 1.0f);
+		Video_DrawFill(voGrid, mActiveMaterial);
+		glPopMatrix();
+
+		Video_ResetCapabilities(true);
+	}
 #endif
 
-	glPushMatrix();
-	glTranslatef(10.0f, 0, 0);
-	glRotatef(-90.0f, 0, 1, 0);
-	glRotatef(-90.0f, 0, 0, 1);
-	Video_SetBlend(VIDEO_BLEND_IGNORE, VIDEO_DEPTH_FALSE);
-	Video_SetColour(1.0f, 1.0f, 1.0f, 1.0f);
-	Video_ObjectVertex(&voGrid[0], -5, 5, 0);
-	Video_ObjectTexture(&voGrid[0], VIDEO_TEXTURE_DIFFUSE, 0, 0);
-	Video_ObjectVertex(&voGrid[1], 5, 5, 0);
-	Video_ObjectTexture(&voGrid[1], VIDEO_TEXTURE_DIFFUSE, 1.0f, 0);
-	Video_ObjectVertex(&voGrid[2], 5, -5, 0);
-	Video_ObjectTexture(&voGrid[2], VIDEO_TEXTURE_DIFFUSE, 1.0f, 1.0f);
-	Video_ObjectVertex(&voGrid[3], -5, -5, 0);
-	Video_ObjectTexture(&voGrid[3], VIDEO_TEXTURE_DIFFUSE, 0, 1.0f);
-	Video_DrawFill(voGrid, mActiveMaterial);
-	glPopMatrix();
-
-	Video_ResetCapabilities(true);
+	if (cvVideoDrawModels.bValue)
+		Alias_Draw(mPreviewEntity);
 
 	GL_SetCanvas(CANVAS_DEFAULT);
 	Draw_String(10, 10, va("Camera: origin(%i %i %i), angles(%i %i %i)",
@@ -114,6 +126,12 @@ void MaterialEditor_Draw(void)
 		(int)r_refdef.viewangles[pX],
 		(int)r_refdef.viewangles[pY],
 		(int)r_refdef.viewangles[pZ]));
+	Draw_String(10, 20, va("Model: %s",	mPreviewEntity->model->name));
+}
+
+void MaterialEditor_Frame(void)
+{
+	mPreviewEntity->angles[1] += 0.05f;
 }
 
 void MaterialEditor_Display(Material_t *mDisplayMaterial)
@@ -134,7 +152,7 @@ void MaterialEditor_Display(Material_t *mDisplayMaterial)
 		return;
 	}
 
-	mPreviewModel->mAssignedMaterials = mActiveMaterial;
+	mPreviewEntity->model->mAssignedMaterials = mActiveMaterial;
 }
 
 void MaterialEditor_Shutdown(void)

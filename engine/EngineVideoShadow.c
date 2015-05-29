@@ -117,7 +117,7 @@ void Shadow_Draw(ClientEntity_t *ent)
 
 			pmd2 = (MD2_t*)Mod_Extradata(ent->model);
 
-			Alias_SetupFrame(pmd2, &lerpdata);
+			Alias_SetupFrame(pmd2, currententity, &lerpdata);
 
 			bShading = false;
 

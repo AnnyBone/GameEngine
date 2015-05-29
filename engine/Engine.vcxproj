@@ -703,6 +703,7 @@
     <ClInclude Include="..\shared\SharedModule.h" />
     <ClInclude Include="..\shared\shared_server.h" />
     <ClInclude Include="client.h" />
+    <ClInclude Include="EngineClientTempEntity.h" />
     <ClInclude Include="EngineConsoleCommand.h" />
     <ClInclude Include="cmdlib.h" />
     <ClInclude Include="EngineCommon.h" />
@@ -710,6 +711,7 @@
     <ClInclude Include="EngineConsole.h" />
     <ClInclude Include="crc.h" />
     <ClInclude Include="EngineConsoleVariable.h" />
+    <ClInclude Include="EngineMaterialEditor.h" />
     <ClInclude Include="EngineVideoDraw.h" />
     <ClInclude Include="EngineAudio.h" />
     <ClInclude Include="EngineVideoWindow.h" />

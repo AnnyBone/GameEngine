@@ -32,7 +32,7 @@ typedef struct
 	MathVector3f_t origin,angles;
 } lerpdata_t;
 
-void Alias_SetupFrame(MD2_t *mModel,lerpdata_t *ldLerp);
+void Alias_SetupFrame(MD2_t *mModel, ClientEntity_t *ceCurrent, lerpdata_t *ldLerp);
 void Alias_Draw(ClientEntity_t *eEntity);
 void Alias_DrawFrame(MD2_t *mModel, ClientEntity_t *eEntity, lerpdata_t lLerpData);
 void Alias_DrawGenericFrame(MD2_t *mModel, model_t *mModelData,	Material_t *mMaterial, int iSkin);

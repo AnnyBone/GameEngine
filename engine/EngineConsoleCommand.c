@@ -75,7 +75,7 @@ void Cbuf_Init (void)
 
 /*	Adds command text at the end of the buffer
 */
-void Cbuf_AddText (char *text)
+void Cbuf_AddText (const char *text)
 {
 	int		l;
 
@@ -87,7 +87,7 @@ void Cbuf_AddText (char *text)
 		return;
 	}
 
-	SZ_Write(&cmd_text,text,strlen(text));
+	SZ_Write(&cmd_text,(void*)text,strlen(text));
 }
 
 
@@ -95,7 +95,7 @@ void Cbuf_AddText (char *text)
 	Adds a \n to the text
 	FIXME: actually change the command buffer to do less copying
 */
-void Cbuf_InsertText (char *text)
+void Cbuf_InsertText (const char *text)
 {
 	char	*temp = NULL;
 	int		templen;

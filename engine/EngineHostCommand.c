@@ -1283,8 +1283,7 @@ void Host_Tell_f(void)
 	strcat(text,": ");
 
 	p = Cmd_Args();
-
-// remove quotes if present
+	// remove quotes if present
 	if (*p == '"')
 	{
 		p++;

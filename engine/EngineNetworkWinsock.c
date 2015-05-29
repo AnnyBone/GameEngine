@@ -451,7 +451,7 @@ int WINS_Write(int socket, uint8_t *buf, int len, struct qsockaddr *addr)
 {
 	int ret;
 
-	ret = psendto (socket, buf, len, 0, (struct sockaddr *)addr, sizeof(struct qsockaddr));
+	ret = psendto (socket, (char*)buf, len, 0, (struct sockaddr *)addr, sizeof(struct qsockaddr));
 	if (ret == -1)
 		if (pWSAGetLastError() == WSAEWOULDBLOCK)
 			return 0;

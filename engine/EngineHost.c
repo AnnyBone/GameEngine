@@ -592,6 +592,8 @@ void _Host_Frame (float time)
 
 		Particle_Frame(); //johnfitz -- seperated from rendering
 	}
+	else if (cls.state == CLIENT_STATE_EDITOR)
+		Editor_Frame();
 
 	if(host_speeds.value)
 		time1 = System_DoubleTime();

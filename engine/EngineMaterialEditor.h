@@ -18,30 +18,15 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef __ENGINEEDITOR__
-#define	__ENGINEEDITOR__
+#ifndef __ENGINEMATERIALEDITOR__
+#define	__ENGINEMATERIALEDITOR__
 
-#include "SharedModule.h"
+extern bool bMaterialEditorInitialized;
 
-extern	cvar_t	cvEditorLightPreview;
-
-typedef struct
-{
-	bool bEnabled;       // Is the editor active?
-	bool bToolsLoaded;   // Tools loaded (KBSP etc.)
-
-	int		iDrawMode,      // Active draw mode.
-			iSelectMode;    // Active selection mode.
-
-    char *cMap;	// Currently loaded level.
-} Editor_t;
-
-Editor_t	Editor;
-
-#include "EngineMaterialEditor.h"
-
-void Editor_Initialize(void);
-void Editor_Frame(void);
-void Editor_Input(int iKey);
+void MaterialEditor_Initialize(void);
+void MaterialEditor_Input(int iKey);
+void MaterialEditor_Draw(void);
+void MaterialEditor_Display(Material_t *mDisplayMaterial);
+void MaterialEditor_Frame(void);
 
 #endif

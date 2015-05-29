@@ -11,7 +11,8 @@ enum
 
 	ID_CONSOLE_INPUT,
 
-	ID_BUTTON_COMMAND
+	ID_BUTTON_COMMAND,
+	ID_BUTTON_RELOAD
 };
 
 wxBEGIN_EVENT_TABLE(CMaterialEditorFrame, wxFrame)
@@ -44,6 +45,7 @@ CMaterialEditorFrame::CMaterialEditorFrame(const wxString & title, const wxPoint
 	iconDocumentSave.LoadFile("resource/16x16/actions/document-save.png", wxBITMAP_TYPE_PNG);
 	iconMediaPause.LoadFile(PATH_RESOURCES"16x16/actions/media-playback-pause.png", wxBITMAP_TYPE_PNG);
 	iconMediaPlay.LoadFile(PATH_RESOURCES"16x16/actions/media-playback-start.png", wxBITMAP_TYPE_PNG);
+	iconViewRefresh.LoadFile("resource/16x16/actions/view-refresh.png", wxBITMAP_TYPE_PNG);
 	iconShapeCube.LoadFile("resource/shape-cube.png", wxBITMAP_TYPE_PNG);
 	iconShapeSphere.LoadFile("resource/shape-sphere.png", wxBITMAP_TYPE_PNG);
 	iconShapePlane.LoadFile("resource/shape-plane.png", wxBITMAP_TYPE_PNG);
@@ -99,15 +101,17 @@ CMaterialEditorFrame::CMaterialEditorFrame(const wxString & title, const wxPoint
 	Center();
 
 	// Create the toolbar...
-
+	
 	wxAuiToolBar *toolbar = new wxAuiToolBar(this);
 	toolbar->AddTool(wxID_NEW, "New material", largeNew);
 	toolbar->AddTool(wxID_OPEN, "Open material", largeOpen, "Open an existing material");
 	toolbar->AddTool(wxID_SAVE, "Save material", iconDocumentSave, "Save the current material");
 	toolbar->AddSeparator();
-	toolbar->AddTool(wxID_ANY, "Cube", iconShapeCube);
-	toolbar->AddTool(wxID_ANY, "Sphere", iconShapeSphere);
-	toolbar->AddTool(wxID_ANY, "Plane", iconShapePlane);
+	toolbar->AddTool(ID_BUTTON_RELOAD, "Reload material", iconViewRefresh, "Reload the material");
+	toolbar->AddSeparator();
+	toolbar->AddTool(wxID_ANY, "Cube", iconShapeCube, "Cube shape", wxITEM_CHECK);
+	toolbar->AddTool(wxID_ANY, "Sphere", iconShapeSphere, "Sphere shape", wxITEM_CHECK);
+	toolbar->AddTool(wxID_ANY, "Plane", iconShapePlane, "Plane shape", wxITEM_CHECK);
 	toolbar->AddSeparator();
 	toolbar->AddTool(wxID_ANY, "Pause", iconMediaPause);
 	toolbar->AddTool(wxID_ANY, "Play", iconMediaPlay);

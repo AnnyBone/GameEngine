@@ -192,8 +192,6 @@ MathVector3_t	r_avertexnormals[NUMVERTEXNORMALS] =
 	{ -0.688191, -0.587785, -0.425325 },
 };
 
-float	entalpha; //johnfitz
-
 bool	bOverbright,
 		bShading;		//johnfitz -- if false, disable vertex shading for various reasons (fullbright, r_lightmap, showtris, etc)
 
@@ -201,41 +199,39 @@ MathVector3f_t	vLightColour;
 
 DynamicLight_t	*dlLightSource;
 
-void R_SetupModelLighting(MathVector3f_t vOrigin)
+void Alias_SetupLighting(ClientEntity_t *ceEntity)
 {
 	float fDistance;
 
 	if(!bShading)
 		return;
 
-	// Check to see if we can grab the light source, for directional information.
-	dlLightSource = Light_GetDynamic(vOrigin,false);
-	if (dlLightSource)
+	Math_VectorSet(1.0f, vLightColour);
+
+	if (!(ceEntity->effects & EF_FULLBRIGHT))
 	{
-		vec3_t	vDistance;
+		// Check to see if we can grab the light source, for directional information.
+		dlLightSource = Light_GetDynamic(ceEntity->origin, true);
+		if (dlLightSource)
+		{
+			MathVector3f_t vDistance;
 
-		Math_VectorCopy(dlLightSource->color, vLightColour);
+			Math_VectorCopy(dlLightSource->color, vLightColour);
+			Math_VectorSubtract(ceEntity->origin, dlLightSource->origin, vDistance);
 
-		Math_VectorSubtract(vOrigin, dlLightSource->origin, vDistance);
-
-		fDistance = dlLightSource->radius - Math_Length(vDistance);
-		if (fDistance > 0)
-			Math_VectorSubtractValue(vLightColour, fDistance, vLightColour);
+			fDistance = dlLightSource->radius - Math_Length(vDistance);
+			if (fDistance > 0)
+				Math_VectorSubtractValue(vLightColour, fDistance, vLightColour);
+		}
 	}
-	else
-		Math_MVToVector(Light_GetSample(vOrigin), vLightColour);
 
 	// Minimum light value on players (8)
-	if(currententity > cl_entities && currententity <= cl_entities + cl.maxclients)
+	if (ceEntity > cl_entities && ceEntity <= cl_entities + cl.maxclients)
 	{
 		fDistance = 24.0f-(vLightColour[0]+vLightColour[1]+vLightColour[2]);
 		if(fDistance > 0.0f)
 			Math_VectorAddValue(vLightColour,fDistance/3.0f,vLightColour);
 	}
-
-	// [16/5/2013] BUG: Doesn't work since effects aren't being sent over... Poop ~hogsy
-	if(currententity->effects & EF_FULLBRIGHT)
-		Math_VectorSet(1.0f,vLightColour);
 
 	Math_VectorScale(vLightColour,1.0f/200.0f,vLightColour);
 }
@@ -245,7 +241,6 @@ void Alias_DrawGenericFrame(
 	Material_t *mMaterial, int iSkin)
 {
 	int	i, j, k, iVert;
-	float fAlpha;
 	VideoObjectVertex_t *voModel;
 	MD2TriangleVertex_t	*mtvVertices, *mtvLerpVerts;
 	MD2Triangle_t *mtTriangles;
@@ -340,7 +335,7 @@ void Alias_DrawFrame(MD2_t *mModel,entity_t *eEntity,lerpdata_t lLerpData)
 
 	Video_DrawObject(voModel, VIDEO_PRIMITIVE_TRIANGLES, iVert, Material_Get(eEntity->model->mAssignedMaterials->iIdentification), eEntity->skinnum);
 #else
-	float ilerp;
+	float ilerp, fAlpha;
 	unsigned int uiVerts = 0;
 	int	*order, count;
 	MD2TriangleVertex_t	*verts1, *verts2;
@@ -349,6 +344,7 @@ void Alias_DrawFrame(MD2_t *mModel,entity_t *eEntity,lerpdata_t lLerpData)
 	VideoObjectVertex_t *voModel;
 
 	ilerp = 1.0f - lLerpData.blend;
+	fAlpha = ENTALPHA_DECODE(eEntity->alpha);
 
 	//new version by muff - fixes bug, easier to read, faster (well slightly)
 	frame1 = (MD2Frame_t*)((uint8_t*)mModel + mModel->ofs_frames + (mModel->framesize*eEntity->draw_lastpose));
@@ -399,7 +395,7 @@ void Alias_DrawFrame(MD2_t *mModel,entity_t *eEntity,lerpdata_t lLerpData)
 					1.0f,
 					1.0f,
 					1.0f,
-					entalpha);
+					fAlpha);
 			}
 			else
 				Video_ObjectColour(&voModel[uiVerts], 1.0f, 1.0f, 1.0f, 1.0f);
@@ -414,35 +410,35 @@ void Alias_DrawFrame(MD2_t *mModel,entity_t *eEntity,lerpdata_t lLerpData)
 #endif
 }
 
-void Alias_SetupFrame(MD2_t *mModel,lerpdata_t *ldLerp)
+void Alias_SetupFrame(MD2_t *mModel,ClientEntity_t *ceCurrent,lerpdata_t *ldLerp)
 {
-	if((currententity->frame >= mModel->num_frames) || (currententity->frame < 0))
+	if ((ceCurrent->frame >= mModel->num_frames) || (ceCurrent->frame < 0))
 	{
-		Con_Warning("No such frame! (%d) (%s)\n",currententity->frame,currententity->model->name);
+		Con_Warning("No such frame! (%d) (%s)\n", ceCurrent->frame, ceCurrent->model->name);
 
-		currententity->frame = 0;
+		ceCurrent->frame = 0;
 	}
 
 	// [13/9/2012] Added check for r_lerpmodels to solve issue ~hogsy
-	if(r_lerpmodels.value >= 1 && currententity->draw_lastmodel == currententity->model)
+	if (r_lerpmodels.value >= 1 && ceCurrent->draw_lastmodel == ceCurrent->model)
 	{
-		if(currententity->frame != currententity->draw_pose)
+		if (ceCurrent->frame != ceCurrent->draw_pose)
 		{
-			currententity->draw_lastpose	= currententity->draw_pose;
-			currententity->draw_pose		= currententity->frame;
-			currententity->draw_lerpstart	= cl.time;
+			ceCurrent->draw_lastpose = ceCurrent->draw_pose;
+			ceCurrent->draw_pose = ceCurrent->frame;
+			ceCurrent->draw_lerpstart = cl.time;
 
 			ldLerp->blend = 0;
 		}
 		// [13/9/2012] Removed check for r_lerpmodels here since it's now done above ~hogsy
 		else
-			ldLerp->blend = (cl.time-currententity->draw_lerpstart)*20.0;
+			ldLerp->blend = (cl.time - ceCurrent->draw_lerpstart)*20.0;
 	}
 	else
 	{
-		currententity->draw_lastmodel	= currententity->model;
-		currententity->draw_lastpose	= currententity->draw_pose = currententity->frame;
-		currententity->draw_lerpstart	= cl.time;
+		ceCurrent->draw_lastmodel = ceCurrent->model;
+		ceCurrent->draw_lastpose = ceCurrent->draw_pose = ceCurrent->frame;
+		ceCurrent->draw_lerpstart = cl.time;
 
 		ldLerp->blend = 0;
 	}
@@ -451,50 +447,50 @@ void Alias_SetupFrame(MD2_t *mModel,lerpdata_t *ldLerp)
 		ldLerp->blend = 1.0f;
 }
 
-void Alias_SetupEntityTransform(lerpdata_t *lerpdata)
+void Alias_SetupEntityTransform(ClientEntity_t *ceEntity, lerpdata_t *lerpdata)
 {
 	float	blend;
 	int		i;
 	vec3_t	d;
 
 	// if LERP_RESETMOVE, kill any lerps in progress
-	if(currententity->lerpflags & LERP_RESETMOVE)
+	if (ceEntity->lerpflags & LERP_RESETMOVE)
 	{
-		currententity->movelerpstart = 0;
+		ceEntity->movelerpstart = 0;
 
-		Math_VectorCopy(currententity->origin,currententity->previousorigin);
-		Math_VectorCopy(currententity->origin,currententity->currentorigin);
-		Math_VectorCopy(currententity->angles,currententity->previousangles);
-		Math_VectorCopy(currententity->angles,currententity->currentangles);
+		Math_VectorCopy(ceEntity->origin, ceEntity->previousorigin);
+		Math_VectorCopy(ceEntity->origin, ceEntity->currentorigin);
+		Math_VectorCopy(ceEntity->angles, ceEntity->previousangles);
+		Math_VectorCopy(ceEntity->angles, ceEntity->currentangles);
 
-		currententity->lerpflags -= LERP_RESETMOVE;
+		ceEntity->lerpflags -= LERP_RESETMOVE;
 	}
-	else if(!Math_VectorCompare(currententity->origin,currententity->currentorigin) || !Math_VectorCompare(currententity->angles,currententity->currentangles)) // origin/angles changed, start new lerp
+	else if (!Math_VectorCompare(ceEntity->origin, ceEntity->currentorigin) || !Math_VectorCompare(ceEntity->angles, ceEntity->currentangles)) // origin/angles changed, start new lerp
 	{
-		currententity->movelerpstart = cl.time;
+		ceEntity->movelerpstart = cl.time;
 
-		Math_VectorCopy(currententity->currentorigin,currententity->previousorigin);
-		Math_VectorCopy(currententity->origin,currententity->currentorigin);
-		Math_VectorCopy(currententity->currentangles,currententity->previousangles);
-		Math_VectorCopy(currententity->angles,currententity->currentangles);
+		Math_VectorCopy(ceEntity->currentorigin, ceEntity->previousorigin);
+		Math_VectorCopy(ceEntity->origin, ceEntity->currentorigin);
+		Math_VectorCopy(ceEntity->currentangles, ceEntity->previousangles);
+		Math_VectorCopy(ceEntity->angles, ceEntity->currentangles);
 	}
 
 	//set up values
-	if(r_lerpmove.value && currententity != &cl.viewent && currententity->lerpflags & LERP_MOVESTEP)
+	if (r_lerpmove.value && ceEntity != &cl.viewent && ceEntity->lerpflags & LERP_MOVESTEP)
 	{
-		if(currententity->lerpflags & LERP_FINISH)
-			blend = Math_Clamp(0, (cl.time - currententity->movelerpstart) / (currententity->lerpfinish - currententity->movelerpstart), 1);
+		if (ceEntity->lerpflags & LERP_FINISH)
+			blend = Math_Clamp(0, (cl.time - ceEntity->movelerpstart) / (ceEntity->lerpfinish - ceEntity->movelerpstart), 1);
 		else
-			blend = Math_Clamp(0, (cl.time - currententity->movelerpstart) / 0.1, 1);
+			blend = Math_Clamp(0, (cl.time - ceEntity->movelerpstart) / 0.1, 1);
 
 		//translation
-		Math_VectorSubtract(currententity->currentorigin,currententity->previousorigin,d);
-		lerpdata->origin[0] = currententity->previousorigin[0]+d[0]*blend;
-		lerpdata->origin[1] = currententity->previousorigin[1]+d[1]*blend;
-		lerpdata->origin[2] = currententity->previousorigin[2]+d[2]*blend;
+		Math_VectorSubtract(ceEntity->currentorigin, ceEntity->previousorigin, d);
+		lerpdata->origin[0] = ceEntity->previousorigin[0] + d[0] * blend;
+		lerpdata->origin[1] = ceEntity->previousorigin[1] + d[1] * blend;
+		lerpdata->origin[2] = ceEntity->previousorigin[2] + d[2] * blend;
 
 		//rotation
-		Math_VectorSubtract(currententity->currentangles,currententity->previousangles,d);
+		Math_VectorSubtract(ceEntity->currentangles, ceEntity->previousangles, d);
 		for(i = 0; i < 3; i++)
 		{
 			if (d[i] > 180.0f)
@@ -503,12 +499,12 @@ void Alias_SetupEntityTransform(lerpdata_t *lerpdata)
 				d[i] += 360.0f;
 		}
 
-		Math_VectorMA(currententity->previousangles,blend,d,lerpdata->angles);
+		Math_VectorMA(ceEntity->previousangles, blend, d, lerpdata->angles);
 	}
 	else //don't lerp
 	{
-		Math_VectorCopy(currententity->origin,lerpdata->origin);
-		Math_VectorCopy(currententity->angles,lerpdata->angles);
+		Math_VectorCopy(ceEntity->origin, lerpdata->origin);
+		Math_VectorCopy(ceEntity->angles, lerpdata->angles);
 	}
 }
 
@@ -517,26 +513,25 @@ void R_RotateForEntity(vec3_t origin,vec3_t angles);
 
 /*	Draw the alias model.
 */
-void Alias_Draw(entity_t *eEntity)
+void Alias_Draw(ClientEntity_t *eEntity)
 {
-	lerpdata_t	lLerpData;
-	MD2_t		*mModel;
+	lerpdata_t lLerpData;
+	MD2_t *mModel;
 
 	// [17/10/2013] Oops! Added this back in :) ~hogsy
 	if(!cvVideoDrawModels.value || R_CullModelForEntity(eEntity))
 		return;
 
 	// [27/6/2013] Set defaults ~hogsy
-	bShading	= true;
-	entalpha    = ENTALPHA_DECODE(eEntity->alpha);
+	bShading = true;
 
 	mModel = (MD2_t*)Mod_Extradata(eEntity->model);
 
 	// [23/8/2013] Update alias poly count! ~hogsy
 	rs_aliaspolys += mModel->numtris;
 
-	Alias_SetupFrame(mModel,&lLerpData);
-	Alias_SetupEntityTransform(&lLerpData);
+	Alias_SetupFrame(mModel,eEntity,&lLerpData);
+	Alias_SetupEntityTransform(eEntity, &lLerpData);
 
 	Video_ResetCapabilities(false);
 
@@ -546,8 +541,8 @@ void Alias_Draw(entity_t *eEntity)
 		glShadeModel(GL_FLAT);
 
 	R_RotateForEntity(eEntity->origin,eEntity->angles);
-	R_SetupModelLighting(eEntity->origin);
 
+	Alias_SetupLighting(eEntity);
 	Alias_DrawFrame(mModel, eEntity, lLerpData);
 
 	if(r_drawflat_cheatsafe)
