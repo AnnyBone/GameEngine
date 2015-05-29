@@ -50,7 +50,7 @@ ConsoleVariable_t
 		cvVideoDrawDepth			= {	"video_drawdepth",				"0",			false,	false,	"If enabled, previews the debth buffer."							},
 		cvVideoDrawDetail			= {	"video_drawdetail",				"1",			true,	false,	"If enabled, detail maps are drawn."								},
 		cvVideoDrawMaterials		= {	"video_drawmaterials",			"1",			true,	false,	"If enabled, materials are drawn."									},
-		cvVideoDetailScale			= { "video_detailscale",			"4",			true,	false,	"Changes the scaling used for detail maps."							},
+		cvVideoDetailScale			= { "video_detailscale",			"8",			true,	false,	"Changes the scaling used for detail maps."							},
 		cvVideoAlphaTrick			= { "video_alphatrick",				"1",			true,	false,	"If enabled, draws alpha-tested surfaces twice for extra quality."	},
 		cvVideoFinish				= { "video_finish",					"0",			true,	false,	"If enabled, calls glFinish at the end of the frame."				},
 		cvVideoVBO					= { "video_vbo",					"0",			true,	false,	"Enables support of Vertex Buffer Objects."							},
