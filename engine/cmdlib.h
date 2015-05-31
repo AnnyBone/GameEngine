@@ -33,8 +33,8 @@ FILE	*SafeOpenRead (char *filename);
 void	SafeRead (FILE *f, void *buffer, int count);
 void	SafeWrite (FILE *f, void *buffer, int count);
 
-int		LoadFile (char *filename, void **bufferptr);
-void	SaveFile (char *filename, void *buffer, int count);
+int		LoadFile (const char *filename, void **bufferptr);
+void	SaveFile (const char *filename, void *buffer, int count);
 
 void 	DefaultExtension (char *path, char *extension);
 void 	DefaultPath (char *path, char *basepath);

@@ -558,7 +558,7 @@ void Host_God_f (void)
 		if (!(sv_player->v.flags & FL_GODMODE) )
 			SV_ClientPrintf ("godmode OFF\n");
 		else
-			SV_ClientPrintf ("godmode ON\n");
+			SV_BroadcastPrintf("%s is cheating! He's now godlike; run mortals!", sv_player->v.netname);
 		break;
 	case 2:
 		if(atof(Cmd_Argv(1)))

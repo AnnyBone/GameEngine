@@ -299,7 +299,7 @@ void SafeWrite (FILE *f, void *buffer, int count)
 }
 
 // [28/2/2013] Modified ~hogsy
-int LoadFile(char *filename,void **bufferptr)
+int LoadFile(const char *filename,void **bufferptr)
 {
 	FILE			*f;
 	struct	stat	sFileSize;
@@ -327,7 +327,7 @@ int LoadFile(char *filename,void **bufferptr)
 	return sFileSize.st_size;
 }
 
-void SaveFile (char *filename, void *buffer, int count)
+void SaveFile (const char *filename, void *buffer, int count)
 {
 	FILE	*f;
 

@@ -21,6 +21,7 @@
 #include "EngineBase.h"
 
 #include "EngineVideo.h"
+#include "EngineVideoShader.h"
 #include "EngineGame.h"
 
 /*
@@ -236,6 +237,8 @@ void Video_Initialize(void)
 	vid.conwidth &= 0xFFFFFFF8;
 	vid.conheight = vid.conwidth*Video.iHeight / Video.iWidth;
 	Video.bVerticalSync = cvVerticalSync.bValue;
+
+	VideoShader_Initialize();
 
 	Video.bInitialized = true;
 }

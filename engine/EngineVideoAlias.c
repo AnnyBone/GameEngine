@@ -21,6 +21,7 @@
 #include "EngineBase.h"
 
 #include "EngineVideo.h"
+#include "EngineVideoShader.h"
 
 extern cvar_t r_drawflat, gl_fullbrights, r_lerpmodels, r_lerpmove; //johnfitz
 
@@ -533,6 +534,8 @@ void Alias_Draw(ClientEntity_t *eEntity)
 	Alias_SetupFrame(mModel,eEntity,&lLerpData);
 	Alias_SetupEntityTransform(eEntity, &lLerpData);
 
+	VideoShader_Enable();
+
 	Video_ResetCapabilities(false);
 
 	glPushMatrix();
@@ -556,6 +559,8 @@ void Alias_Draw(ClientEntity_t *eEntity)
 	glPopMatrix();
 
 	Video_ResetCapabilities(true);
+
+	VideoShader_Disable();
 
 	// Show active light reference.
 #if 0

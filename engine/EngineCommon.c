@@ -1479,6 +1479,11 @@ void _FileSystem_SetModulePath(char *cArg)
 	Q_strncpy(Global.cModulePath, cArg, PLATFORM_MAX_PATH);
 }
 
+void _FileSystem_SetShaderPath(char *cArg)
+{
+	Q_strncpy(Global.cShaderPath, cArg, PLATFORM_MAX_PATH);
+}
+
 /*	Script specific function that adds a new data path.
 	AddGameDirectory
 */
@@ -1561,6 +1566,11 @@ void FileSystem_Initialize(void)
 	{
 		Con_Warning("Textures path wasn't set in paths script!\n");
 		sprintf(Global.cTexturePath,"textures/");
+	}
+	else if (Global.cShaderPath[0] == ' ')
+	{
+		Con_Warning("Shaders path wasn't set in paths script!\n");
+		sprintf(Global.cShaderPath, "shaders/");
 	}
 
 	// Start up with the default path

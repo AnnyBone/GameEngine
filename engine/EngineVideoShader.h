@@ -18,36 +18,11 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef __ENGINEMAIN__
-#define __ENGINEMAIN__
+#ifndef __ENGINEVIDEOSHADER__
+#define __ENGINEVIDEOSHADER__
 
-#include "SharedModule.h"
-#include "SharedEngine.h"
-
-typedef struct
-{
-	// Host Information
-	char cLocalName[256]; // Current system username.
-
-	char	
-		cMaterialPath[PLATFORM_MAX_PATH],
-		cTexturePath[PLATFORM_MAX_PATH],
-		cLevelPath[PLATFORM_MAX_PATH],
-		cScreenshotPath[PLATFORM_MAX_PATH],
-		cModulePath[PLATFORM_MAX_PATH],
-		cFontPath[PLATFORM_MAX_PATH],
-		cShaderPath[PLATFORM_MAX_PATH],
-		cSoundPath[PLATFORM_MAX_PATH];
-
-	bool bEmbeddedContext;
-} Global_t;
-
-Global_t Global;
-
-EngineExport_t eExport;
-EngineImport_t Launcher;
-
-// System
-double System_DoubleTime(void);
+void VideoShader_Initialize(void);
+void VideoShader_Enable(void);
+void VideoShader_Disable(void);
 
 #endif

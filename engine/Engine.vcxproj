@@ -625,6 +625,7 @@
     <ClCompile Include="EngineVideoParticle.c" />
     <ClCompile Include="EngineVideoAlias.c" />
     <ClCompile Include="EngineAudio.c" />
+    <ClCompile Include="EngineVideoShader.cpp" />
     <ClCompile Include="engine_client.c" />
     <ClCompile Include="EngineConsoleCommand.c" />
     <ClCompile Include="EngineConsoleVariable.c" />
@@ -714,6 +715,7 @@
     <ClInclude Include="EngineMaterialEditor.h" />
     <ClInclude Include="EngineVideoDraw.h" />
     <ClInclude Include="EngineAudio.h" />
+    <ClInclude Include="EngineVideoShader.h" />
     <ClInclude Include="EngineVideoWindow.h" />
     <ClInclude Include="engine_client.h" />
     <ClInclude Include="EngineServerEntity.h" />

@@ -253,6 +253,9 @@
     <ClCompile Include="EngineClientInput.c">
       <Filter>Client</Filter>
     </ClCompile>
+    <ClCompile Include="EngineVideoShader.cpp">
+      <Filter>Client\Video</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\shared\shared_client.h">
@@ -441,6 +444,9 @@
     </ClInclude>
     <ClInclude Include="EngineClientTempEntity.h">
       <Filter>Client</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineVideoShader.h">
+      <Filter>Client\Video</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
