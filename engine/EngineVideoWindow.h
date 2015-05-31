@@ -46,6 +46,6 @@ typedef struct
 #endif
 } Window_t;
 
-Window_t Window;
+Window_t globalWindow;
 
 #endif

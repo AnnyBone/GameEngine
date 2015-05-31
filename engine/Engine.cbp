@@ -63,22 +63,17 @@
 		<Unit filename="../external/glee/GLee.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="../external/glee/GLee.h" />
-		<Unit filename="../shared/shared_client.h" />
-		<Unit filename="../shared/shared_editor.h" />
-		<Unit filename="../shared/shared_engine.h" />
-		<Unit filename="../shared/shared_flags.h" />
-		<Unit filename="../shared/shared_formats.c">
+		<Unit filename="../shared/SharedFormats.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="../shared/shared_formats.h" />
-		<Unit filename="../shared/shared_game.h" />
-		<Unit filename="../shared/shared_input.h" />
-		<Unit filename="../shared/shared_menu.h" />
-		<Unit filename="../shared/shared_module.h" />
-		<Unit filename="../shared/shared_server.h" />
-		<Unit filename="../shared/shared_video.h" />
+		<Unit filename="EngineAudio.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="EngineAudio.h" />
 		<Unit filename="EngineAudioDMA.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="EngineAudioDirectSound.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="EngineAudioDummy.c">
@@ -90,40 +85,137 @@
 		<Unit filename="EngineAudioMix.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="EngineBase.h" />
+		<Unit filename="EngineClient.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="EngineClientChase.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="EngineClientDemo.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="EngineClientInput.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="EngineClientParse.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="EngineClientTempEntity.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="EngineClientTempEntity.h" />
 		<Unit filename="EngineClientView.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="EngineClientView.h" />
+		<Unit filename="EngineCommon.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="EngineCommon.h" />
+		<Unit filename="EngineConsole.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="EngineConsole.h" />
+		<Unit filename="EngineConsoleCommand.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="EngineConsoleCommand.h" />
+		<Unit filename="EngineConsoleVariable.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="EngineConsoleVariable.h" />
+		<Unit filename="EngineEditor.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="EngineEditor.h" />
+		<Unit filename="EngineGame.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="EngineGame.h" />
 		<Unit filename="EngineHost.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="EngineHostCommand.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="EngineImage.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="EngineImage.h" />
+		<Unit filename="EngineInput.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="EngineInput.h" />
+		<Unit filename="EngineMain.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="EngineMain.h" />
 		<Unit filename="EngineMaterialEditor.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="EngineMaterialEditor.h" />
+		<Unit filename="EngineMenu.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="EngineMenu.h" />
+		<Unit filename="EngineModel.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="EngineModel.h" />
 		<Unit filename="EngineNetwork.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="EngineNetwork.h" />
 		<Unit filename="EngineNetworkDummy.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="EngineNetworkMaster.c">
+		<Unit filename="EngineNetworkLoop.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="EngineNetworkLoop.h" />
+		<Unit filename="EngineNetworkSerial.h" />
+		<Unit filename="EngineProtocol.h" />
 		<Unit filename="EngineSDLWindow.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="EngineScript.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="EngineScript.h" />
+		<Unit filename="EngineServer.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="EngineServerEntity.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="EngineServerEntity.h" />
+		<Unit filename="EngineServerPhysics.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="EngineServerPhysics.h" />
+		<Unit filename="EngineServerUser.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="EngineServerWorld.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="EngineVideo.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="EngineVideo.h" />
 		<Unit filename="EngineVideoAlias.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="EngineVideoAlias.h" />
 		<Unit filename="EngineVideoBrush.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="EngineVideoDraw.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="EngineVideoDraw.h" />
+		<Unit filename="EngineVideoEFrag.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="EngineVideoFog.c">
@@ -138,6 +230,9 @@
 		<Unit filename="EngineVideoLegacy.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="EngineVideoLegacy2.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="EngineVideoLights.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -148,150 +243,60 @@
 		<Unit filename="EngineVideoObject.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="EngineVideoPrimitive.c">
+		<Unit filename="EngineVideoParticle.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="EngineVideoParticle.h" />
 		<Unit filename="EngineVideoScreen.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="EngineVideoScreen.h" />
+		<Unit filename="EngineVideoShadow.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="EngineVideoShadow.h" />
 		<Unit filename="EngineVideoSky.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="EngineVideoSprite.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="EngineVideoTextureManager.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="EngineVideoTextureManager.h" />
 		<Unit filename="EngineVideoWarp.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="EngineVideoWindow.h" />
 		<Unit filename="EngineVideoWorld.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="EngineWindow.h" />
-		<Unit filename="KatAlias.h" />
-		<Unit filename="ZirconLoader.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="ZirconLoader.h" />
-		<Unit filename="audio.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="audio.h" />
-		<Unit filename="cl_input.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="client.h" />
-		<Unit filename="client_main.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="client_tent.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="cmd.h" />
 		<Unit filename="cmdlib.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="cmdlib.h" />
-		<Unit filename="common.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="common.h" />
-		<Unit filename="conproc.h" />
-		<Unit filename="console.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="console.h" />
-		<Unit filename="console_command.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="console_variable.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="crc.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="crc.h" />
-		<Unit filename="cvar.h" />
-		<Unit filename="draw.h" />
 		<Unit filename="engine_client.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="engine_client.h" />
-		<Unit filename="engine_clientinput.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="engine_clientinput.h" />
-		<Unit filename="engine_console.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="engine_console.h" />
-		<Unit filename="engine_edict.h" />
-		<Unit filename="engine_editor.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="engine_editor.h" />
-		<Unit filename="engine_loader.h" />
-		<Unit filename="engine_main.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="engine_main.h" />
-		<Unit filename="engine_material.h" />
-		<Unit filename="engine_model.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="engine_model.h" />
-		<Unit filename="engine_modgame.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="engine_modgame.h" />
-		<Unit filename="engine_modmenu.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="engine_modmenu.h" />
-		<Unit filename="engine_net.h" />
 		<Unit filename="engine_netdgrm.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="engine_netdgrm.h" />
-		<Unit filename="engine_netloop.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="engine_netloop.h" />
-		<Unit filename="engine_netserial.h" />
-		<Unit filename="engine_particle.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="engine_particle.h" />
-		<Unit filename="engine_physics.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="engine_physics.h" />
-		<Unit filename="engine_script.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="engine_script.h" />
 		<Unit filename="engine_server.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="engine_server.h" />
-		<Unit filename="engine_videoshadow.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="engine_videoshadow.h" />
-		<Unit filename="gl_texmgr.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="gl_texmgr.h" />
 		<Unit filename="gl_vidnt.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="glquake.h" />
-		<Unit filename="host_cmd.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="image.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="image.h" />
 		<Unit filename="keys.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -300,45 +305,17 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="menu.h" />
-		<Unit filename="network_winsock.h" />
 		<Unit filename="pr_comp.h" />
 		<Unit filename="progs.h" />
-		<Unit filename="protocol.h" />
-		<Unit filename="quakedef.h" />
 		<Unit filename="render.h" />
 		<Unit filename="resource.h" />
-		<Unit filename="screen.h" />
 		<Unit filename="server.h" />
-		<Unit filename="server_edict.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="server_main.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="server_user.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="server_world.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="sound.h" />
 		<Unit filename="sys.h" />
 		<Unit filename="sys_win.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="vid.h" />
-		<Unit filename="video.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="video.h" />
-		<Unit filename="video_misc.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="video_refrag.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="view.h" />
-		<Unit filename="winquake.h" />
 		<Unit filename="world.h" />
 		<Unit filename="zone.c">
 			<Option compilerVar="CC" />

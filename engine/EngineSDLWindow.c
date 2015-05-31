@@ -103,7 +103,7 @@ void Window_InitializeVideo(void)
 
 #ifdef _WIN32
 	if (SDL_GetWindowWMInfo(sMainWindow, &sSystemInfo))
-		Window.hWindowInstance = sSystemInfo.info.win.window;
+		globalWindow.hWindowInstance = sSystemInfo.info.win.window;
 	else
 		Con_Warning("Failed to get WM information! (%s)\n", SDL_GetError());
 #endif

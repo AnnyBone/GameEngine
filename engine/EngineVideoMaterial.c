@@ -681,7 +681,6 @@ void Material_CheckFunctions(Material_t *mNewMaterial)
 Material_t *Material_Load(const char *ccPath)
 {
     Material_t  *mNewMaterial;
-	int			iMaterialVersion = 0;
 	void        *cData;
 	char		cPath[PLATFORM_MAX_PATH],
 				cMaterialName[64] = { 0 };
@@ -723,8 +722,6 @@ Material_t *Material_Load(const char *ccPath)
 		if (!Q_strcmp(cToken, "material_version"))
 		{
 			Script_GetToken(false);
-
-			iMaterialVersion = atoi(cToken);
 		}
 		else	// Probably a name...
 		{

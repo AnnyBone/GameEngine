@@ -123,10 +123,8 @@ void DrawGLPoly(glpoly_t *p)
 void R_DrawSequentialPoly(msurface_t *s)
 {
     float       fAlpha;
-    texture_t   *tAnimation;
 
-    fAlpha      = ENTALPHA_DECODE(currententity->alpha);
-    tAnimation  = R_TextureAnimation(s->texinfo->texture,currententity->frame);
+    fAlpha = ENTALPHA_DECODE(currententity->alpha);
 
     Video_ResetCapabilities(false);
 

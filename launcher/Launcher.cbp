@@ -55,7 +55,7 @@
 			<Add library="libdl.a" />
 			<Add library="X11" />
 		</Linker>
-		<Unit filename="launcher_main.cpp" />
+		<Unit filename="LauncherMain.cpp" />
 		<Extensions>
 			<code_completion />
 			<debugger>
