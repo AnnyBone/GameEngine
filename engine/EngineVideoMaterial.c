@@ -395,9 +395,6 @@ void _Material_SetType(Material_t *mCurrentMaterial, MaterialFunctionType_t mftC
 
 void _Material_SetShader(Material_t *mCurrentMaterial, MaterialFunctionType_t mftContext, char *cArg)
 {
-	if (mftContext != MATERIAL_FUNCTION_UNIVERSAL)
-		Sys_Error("Invalid context!\n");
-
 	mCurrentMaterial->msShader.name = cArg;
 }
 
@@ -644,9 +641,9 @@ MaterialKey_t	mkMaterialFunctions[]=
 	// Universal
 	{ "flags", _Material_SetFlags, MATERIAL_FUNCTION_UNIVERSAL },
 	{ "type", _Material_SetType, MATERIAL_FUNCTION_UNIVERSAL },
-	{ "shader", _Material_SetShader, MATERIAL_FUNCTION_UNIVERSAL },
 
 	// Material
+	{ "shader", _Material_SetShader, MATERIAL_FUNCTION_MATERIAL },
 	{ "animation_speed", _Material_SetAnimationSpeed, MATERIAL_FUNCTION_MATERIAL },
 	{ "skin", _Material_AddSkin, MATERIAL_FUNCTION_MATERIAL },
 
