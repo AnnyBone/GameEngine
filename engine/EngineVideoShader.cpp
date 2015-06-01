@@ -189,34 +189,38 @@ void CVideoShader::SetVariable(const char *name, int i)
 
 /**/
 
-CVideoShader *shaderBase;
+CVideoShader *modelShader = NULL;
+
+CVideoShader *currentShader = NULL;
 
 void VideoShader_Initialize(void)
 {
-	shaderBase = new CVideoShader("base");
+	modelShader = new CVideoShader("model");
+
+	currentShader = modelShader;
 }
 
 void VideoShader_Enable(void)
 {
-	shaderBase->Enable();
+	currentShader->Enable();
 }
 
 void VideoShader_Disable(void)
 {
-	shaderBase->Disable();
+	currentShader->Disable();
 }
 
 void VideoShader_SetVariablei(const char *name, int i)
 {
-	shaderBase->SetVariable(name, i);
+	currentShader->SetVariable(name, i);
 }
 
 void VideoShader_SetVariable3f(const char *name, float x, float y, float z)
 {
-	shaderBase->SetVariable(name, x, y, z);
+	currentShader->SetVariable(name, x, y, z);
 }
 
 void VideoShader_SetVariable4f(const char *name, float x, float y, float z, float a)
 {
-	shaderBase->SetVariable(name, x, y, z, a);
+	currentShader->SetVariable(name, x, y, z, a);
 }

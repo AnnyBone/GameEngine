@@ -68,6 +68,11 @@ typedef struct
 
 typedef struct
 {
+	const char *name;
+} MaterialShader_t;
+
+typedef struct
+{
 	MaterialTexture_t	mtTexture[8];
 
 	unsigned int
@@ -88,7 +93,8 @@ typedef struct Material_s
 	char	cPath[PLATFORM_MAX_PATH],	// Path of the material.
 		cName[64];					// Name of the material.
 
-	MaterialSkin_t	msSkin[MATERIAL_MAX_SKINS];
+	MaterialSkin_t msSkin[MATERIAL_MAX_SKINS];
+	MaterialShader_t msShader;
 
 	bool bBind;
 	//bool bWireframeOverride;	// Override tris for this material.
