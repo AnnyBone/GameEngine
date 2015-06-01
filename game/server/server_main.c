@@ -94,7 +94,7 @@ SpawnList_t SpawnList[] =
 	{	NULL,	NULL	}
 };
 
-ConsoleVariable_t cvServerPlayerModel = { "server_playermodel", "models/player.md2", false, true, "Sets the main server-side player model." };
+ConsoleVariable_t cvServerPlayerModel = { "server_playermodel", "models/player.md2", true, true, "Sets the main server-side player model." };
 ConsoleVariable_t cvServerRespawnDelay = { "server_respawndelay", "40", false, true, "Sets the amount of time until a player respawns." };
 ConsoleVariable_t cvServerSkill = { "server_skill", "1", false, true, "The level of difficulty." };
 ConsoleVariable_t cvServerSelfDamage = { "server_selfdamage", "0", false, true, "If enabled, your weapons can damage you." };

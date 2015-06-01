@@ -109,7 +109,7 @@ typedef struct
 	int			    ofs_glcmds;
 	int			    ofs_end;		// End of file.
 
-	MD2TextureCoordinate_t	*mtcTextureCoord;
+	MD2TextureCoordinate_t *mtcTextureCoord;
 } MD2_t;
 
 /*
@@ -172,16 +172,16 @@ typedef struct
 	unsigned int	uiVersion;
 	unsigned int	uiFileSize;
 	unsigned int	uiFlags;
-	unsigned int	uiNumText,uiOfsText;
-	unsigned int	uiNumMeshes,uiOfsMeshes;
-	unsigned int	uiNumVertexArrays,uiNumVertexes,uiOfsVertexArrays;
-	unsigned int	uiNumTriangles,uiOfsTriangles,uiOfsAdjacency;
-	unsigned int	uiNumJoints,uiOfsJoints;
-	unsigned int	uiNumPoses,uiOfsPoses;
-	unsigned int	uiNumAnims,uiOfsAnims;
-	unsigned int	uiNumFrames,uiNumFrameChannels,uiOfsFrames,uiOfsBounds;
-	unsigned int	uiNumComment,uiOfsComment;
-	unsigned int	uiNumExtensions,uiOfsExtensions;
+	unsigned int	uiNumText, uiOfsText;
+	unsigned int	uiNumMeshes, uiOfsMeshes;
+	unsigned int	uiNumVertexArrays, uiNumVertexes, uiOfsVertexArrays;
+	unsigned int	uiNumTriangles, uiOfsTriangles, uiOfsAdjacency;
+	unsigned int	uiNumJoints, uiOfsJoints;
+	unsigned int	uiNumPoses, uiOfsPoses;
+	unsigned int	uiNumAnims, uiOfsAnims;
+	unsigned int	uiNumFrames, uiNumFrameChannels, uiOfsFrames, uiOfsBounds;
+	unsigned int	uiNumComment, uiOfsComment;
+	unsigned int	uiNumExtensions, uiOfsExtensions;
 } IQMHeader_t;
 
 typedef struct

@@ -148,12 +148,13 @@ typedef enum VideoShaderType_e
 // Vertex
 typedef struct
 {
-	MathVector3_t mvPosition;				// Vertex position.
-	MathVector3_t mvNormal;					// Vertex normal.
+	MathVector3f_t mvPosition;				// Vertex position.
 
-	MathVector2_t mvST[VIDEO_MAX_UNITS];	// Vertex texture coord, per unit.
+	MathVector4f_t mvColour;				// Vertex RGBA.
 
-	MathVector4_t mvColour;					// Vertex RGBA.
+	MathVector3f_t mvNormal;				// Vertex normal.
+
+	MathVector2f_t mvST[VIDEO_MAX_UNITS];	// Vertex texture coord, per unit.
 } VideoObjectVertex_t;
 
 // Object
@@ -170,7 +171,7 @@ typedef struct
 	unsigned int uiVertexBuffer;
 	unsigned int uiColourBuffer;
 	unsigned int uiTextureBuffer;
-} VideoObjectX_t;
+} VideoObject_t;
 
 void Video_Initialize(void);
 void Video_UpdateWindow(void);

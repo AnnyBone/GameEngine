@@ -90,9 +90,6 @@
     <ClCompile Include="EngineVideoLayer.c">
       <Filter>Client\Video</Filter>
     </ClCompile>
-    <ClCompile Include="EngineVideoObject.c">
-      <Filter>Client\Video</Filter>
-    </ClCompile>
     <ClCompile Include="EngineVideoFog.c">
       <Filter>Client\Video</Filter>
     </ClCompile>
@@ -254,6 +251,9 @@
       <Filter>Client</Filter>
     </ClCompile>
     <ClCompile Include="EngineVideoShader.cpp">
+      <Filter>Client\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineVideoObject.c">
       <Filter>Client\Video</Filter>
     </ClCompile>
   </ItemGroup>

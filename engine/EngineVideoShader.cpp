@@ -31,16 +31,22 @@ public:
 	CVideoShader(const char *path);
 	~CVideoShader();
 
-	void PrintLog();
 	void Enable();
 	void Disable();
+
+	void SetVariable(const char *name, float x, float y, float z);
+	void SetVariable(const char *name, MathVector3f_t vector);
+	void SetVariable(const char *name, float x, float y, float z, float a);
+	void SetVariable(const char *name, int i);
 protected:
 private:
 	const char *vertexSource, *fragmentSource;
+
 	char vertexPath[PLATFORM_MAX_PATH], fragmentPath[PLATFORM_MAX_PATH];
+
 	int vertexSourceLength, fragmentSourceLength;
+
 	unsigned int vertexShader, fragmentShader;
-	
 	unsigned int program;
 };
 
@@ -143,6 +149,10 @@ CVideoShader::CVideoShader(const char *path)
 CVideoShader::~CVideoShader()
 {}
 
+/*
+	State Handling
+*/
+
 void CVideoShader::Enable()
 {
 	glUseProgram(program);
@@ -152,6 +162,32 @@ void CVideoShader::Disable()
 {
 	glUseProgram(0);
 }
+
+/*
+	Uniform Handling
+*/
+
+void CVideoShader::SetVariable(const char *name, float x, float y, float z)
+{
+	glUniform3f(glGetUniformLocation(program, name), x, y, z);
+}
+
+void CVideoShader::SetVariable(const char *name, MathVector3f_t vector)
+{
+	glUniform3fv(glGetUniformLocation(program, name), 3, vector);
+}
+
+void CVideoShader::SetVariable(const char *name, float x, float y, float z, float a)
+{
+	glUniform4f(glGetUniformLocation(program, name), x, y, z, a);
+}
+
+void CVideoShader::SetVariable(const char *name, int i)
+{
+	glUniform1i(glGetUniformLocation(program, name), i);
+}
+
+/**/
 
 CVideoShader *shaderBase;
 
@@ -168,4 +204,19 @@ void VideoShader_Enable(void)
 void VideoShader_Disable(void)
 {
 	shaderBase->Disable();
+}
+
+void VideoShader_SetVariablei(const char *name, int i)
+{
+	shaderBase->SetVariable(name, i);
+}
+
+void VideoShader_SetVariable3f(const char *name, float x, float y, float z)
+{
+	shaderBase->SetVariable(name, x, y, z);
+}
+
+void VideoShader_SetVariable4f(const char *name, float x, float y, float z, float a)
+{
+	shaderBase->SetVariable(name, x, y, z, a);
 }

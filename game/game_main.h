@@ -19,7 +19,7 @@
 #include "game_resources.h"
 
 #ifdef GAME_OPENKATANA
-#define	GAME_NAME	"OpenKatana"
+#define	GAME_NAME	"Decay: Tempus"
 #else
 #define	GAME_NAME	"Katana"
 #endif

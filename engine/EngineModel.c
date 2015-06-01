@@ -1190,6 +1190,13 @@ void Model_LoadIQM(model_t *mModel, void *Buffer)
 	mModel->flags = 0;
 }
 
+MathVector_t Model_GenerateNormal(MathVector3f_t mvTriangle)
+{
+	MathVector_t mvNormal;
+	
+	return mvNormal;
+}
+
 /*
 	MD2 Models
 */
@@ -1257,13 +1264,13 @@ void Model_CalculateMD2Bounds(MD2_t *mModel)
 
 void Model_LoadMD2(model_t *mModel,void *Buffer)
 {
-	int						i,j,
-							iVersion,
-							numframes,iSize,*pinglcmd,*poutglcmd,iStartHunk,iEnd,total;
-	MD2_t					*pinmodel,*mMD2Model;
-	MD2Triangle_t			*pintriangles,*pouttriangles;
-	MD2Frame_t				*pinframe,*poutframe;
-	MD2TextureCoordinate_t	*pST;
+	int	i,j,
+		iVersion,
+		numframes,iSize,*pinglcmd,*poutglcmd,iStartHunk,iEnd,total;
+	MD2_t *pinmodel,*mMD2Model;
+	MD2Triangle_t *pintriangles, *pouttriangles;
+	MD2Frame_t *pinframe, *poutframe;
+	MD2TextureCoordinate_t *pST;
 
 	iStartHunk = Hunk_LowMark();
 
@@ -1282,10 +1289,10 @@ void Model_LoadMD2(model_t *mModel,void *Buffer)
 	for(i = 0; i < 17; i++)
 		((int*)mMD2Model)[i] = LittleLong(((int*)pinmodel)[i]);
 
-	mModel->mType		= MODEL_TYPE_MD2;
-	mModel->version		= iVersion;
-	mModel->flags		= 0;
-	mModel->numframes	= numframes = mMD2Model->num_frames;
+	mModel->mType = MODEL_TYPE_MD2;
+	mModel->version	= iVersion;
+	mModel->flags = 0;
+	mModel->numframes = numframes = mMD2Model->num_frames;
 
 	if(iSize <= 0 || iSize >= MD2_MAX_SIZE)
 		Sys_Error("%s is not a valid model",mModel->name);
@@ -1311,8 +1318,8 @@ void Model_LoadMD2(model_t *mModel,void *Buffer)
 	for(i = 0; i < 7; i++)
 		((int*)&mMD2Model->ofs_skins)[i] += sizeof(mMD2Model);
 
-	pintriangles	= (MD2Triangle_t*)((uint8_t*)pinmodel+LittleLong(pinmodel->ofs_tris));
-	pouttriangles	= (MD2Triangle_t*)((uint8_t*)mMD2Model+mMD2Model->ofs_tris);
+	pintriangles = (MD2Triangle_t*)((uint8_t*)pinmodel+LittleLong(pinmodel->ofs_tris));
+	pouttriangles = (MD2Triangle_t*)((uint8_t*)mMD2Model+mMD2Model->ofs_tris);
 	for(i=0; i < mMD2Model->numtris; i++)
 	{
 		for(j=0; j < 3; j++)
@@ -1328,8 +1335,8 @@ void Model_LoadMD2(model_t *mModel,void *Buffer)
 		pouttriangles++;
 	}
 
-	pinframe	= (MD2Frame_t*)((uint8_t*)pinmodel+LittleLong(pinmodel->ofs_frames));
-	poutframe	= (MD2Frame_t*)((uint8_t*)mMD2Model+mMD2Model->ofs_frames);
+	pinframe = (MD2Frame_t*)((uint8_t*)pinmodel+LittleLong(pinmodel->ofs_frames));
+	poutframe = (MD2Frame_t*)((uint8_t*)mMD2Model+mMD2Model->ofs_frames);
 	for(i=0; i < numframes; i++)
 	{
 		for(j=0; j < 3; j++)
@@ -1396,8 +1403,8 @@ void Model_LoadMD2(model_t *mModel,void *Buffer)
 	Model_CalculateMD2Bounds(mMD2Model);
 #endif
 
-	iEnd	= Hunk_LowMark();
-	total	= iEnd-iStartHunk;
+	iEnd = Hunk_LowMark();
+	total = iEnd-iStartHunk;
 
 	Cache_Alloc(&mModel->cache,total,loadname);
 	if(!mModel->cache.data)

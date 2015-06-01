@@ -215,14 +215,17 @@ void Alias_SetupLighting(ClientEntity_t *ceEntity)
 		dlLightSource = Light_GetDynamic(ceEntity->origin, true);
 		if (dlLightSource)
 		{
-			MathVector3f_t vDistance;
+			MathVector3f_t mvLightOut;
 
-			Math_VectorCopy(dlLightSource->color, vLightColour);
-			Math_VectorSubtract(ceEntity->origin, dlLightSource->origin, vDistance);
+			Math_VectorScale(dlLightSource->color, 1.0f / 200.0f, mvLightOut);
 
-			fDistance = dlLightSource->radius - Math_Length(vDistance);
-			if (fDistance > 0)
-				Math_VectorSubtractValue(vLightColour, fDistance, vLightColour);
+			VideoShader_SetVariable3f("lightPosition", dlLightSource->origin[0], dlLightSource->origin[1], dlLightSource->origin[2]);
+			VideoShader_SetVariable3f("lightColour", mvLightOut[0], mvLightOut[1], mvLightOut[2]);
+		}
+		else
+		{
+			VideoShader_SetVariable3f("lightPosition", 0, 0, 0);
+			VideoShader_SetVariable3f("lightColour", 0, 0, 0);
 		}
 	}
 
@@ -383,6 +386,13 @@ void Alias_DrawFrame(MD2_t *mModel,entity_t *eEntity,lerpdata_t lLerpData)
 				(verts2[order[2]].v[1] * frame2->scale[1] + frame2->translate[1])*lLerpData.blend,
 				(verts1[order[2]].v[2] * frame1->scale[2] + frame1->translate[2])*ilerp +
 				(verts2[order[2]].v[2] * frame2->scale[2] + frame2->translate[2])*lLerpData.blend);
+			Video_ObjectNormal(&voModel[uiVerts],
+				(verts1[order[2]].v[0] * frame1->scale[0] + frame1->translate[0])*ilerp +
+				(verts2[order[2]].v[0] * frame2->scale[0] + frame2->translate[0])*lLerpData.blend,
+				(verts1[order[2]].v[1] * frame1->scale[1] + frame1->translate[1])*ilerp +
+				(verts2[order[2]].v[1] * frame2->scale[1] + frame2->translate[1])*lLerpData.blend,
+				(verts1[order[2]].v[2] * frame1->scale[2] + frame1->translate[2])*ilerp +
+				(verts2[order[2]].v[2] * frame2->scale[2] + frame2->translate[2])*lLerpData.blend);
 			if (bShading)
 			{
 #if 0
@@ -534,11 +544,11 @@ void Alias_Draw(ClientEntity_t *eEntity)
 	Alias_SetupFrame(mModel,eEntity,&lLerpData);
 	Alias_SetupEntityTransform(eEntity, &lLerpData);
 
-	VideoShader_Enable();
-
 	Video_ResetCapabilities(false);
 
 	glPushMatrix();
+
+	VideoShader_Enable();
 
 	if(r_drawflat_cheatsafe)
 		glShadeModel(GL_FLAT);
@@ -556,15 +566,13 @@ void Alias_Draw(ClientEntity_t *eEntity)
 		glShadeModel(GL_SMOOTH);
 	}
 
+	VideoShader_Disable();
+
 	glPopMatrix();
 
 	Video_ResetCapabilities(true);
 
-	VideoShader_Disable();
-
 	// Show active light reference.
-#if 0
 	if (dlLightSource)
 		Draw_Line(eEntity->origin, dlLightSource->origin);
-#endif
 }

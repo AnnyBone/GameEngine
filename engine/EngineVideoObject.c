@@ -1,16 +1,33 @@
-/*	Copyright (C) 2011-2015 OldTimes Software
+/*	Copyright (C) 1996-2001 Id Software, Inc.
+	Copyright (C) 2002-2009 John Fitzgibbons and others
+	Copyright (C) 2011-2015 OldTimes Software
+
+	This program is free software; you can redistribute it and/or
+	modify it under the terms of the GNU General Public License
+	as published by the Free Software Foundation; either version 2
+	of the License, or (at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+	See the GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "EngineBase.h"
 
 #include "EngineVideo.h"
 
-VideoObjectX_t *VideoObject_Create(void)
+VideoObject_t *VideoObject_Create(void)
 {
 	VIDEO_FUNCTION_START(VideoObject_Create)
-		VideoObjectX_t *voNewObject;
+		VideoObject_t *voNewObject;
 
-		voNewObject = (VideoObjectX_t*)malloc(sizeof(VideoObjectX_t));
+		voNewObject = (VideoObject_t*)malloc(sizeof(VideoObject_t));
 
 		// TODO: Allocate...
 
@@ -22,7 +39,7 @@ VideoObjectX_t *VideoObject_Create(void)
 	VIDEO_FUNCTION_END
 }
 
-void VideoObject_Delete(VideoObjectX_t *voObject)
+void VideoObject_Delete(VideoObject_t *voObject)
 {
 	VIDEO_FUNCTION_START(VideoObject_Delete)
 		VideoLayer_DeleteBuffer(voObject->uiVertexBuffer);
@@ -35,19 +52,13 @@ void VideoObject_Delete(VideoObjectX_t *voObject)
 	Traditional style interface
 */
 
-void VideoObject_Begin(VideoObjectX_t *voObject, VideoPrimitive_t vpPrimitive)
+void VideoObject_Begin(VideoObject_t *voObject, VideoPrimitive_t vpPrimitive)
 {
 	VIDEO_FUNCTION_START(VideoObject_Begin)
 	VIDEO_FUNCTION_END
 }
 
-void VideoObject_End(VideoObjectX_t *voObject)
-{
-	VIDEO_FUNCTION_START(VideoObject_End)
-	VIDEO_FUNCTION_END
-}
-
-void VideoObject_Vertex(VideoObjectX_t *voObject, float x, float y, float z)
+void VideoObject_Vertex(VideoObject_t *voObject, float x, float y, float z)
 {
 	VIDEO_FUNCTION_START(VideoObject_Vertex)
 		voObject->iVertices++;
@@ -60,14 +71,14 @@ void VideoObject_Vertex(VideoObjectX_t *voObject, float x, float y, float z)
 	VIDEO_FUNCTION_END
 }
 
-void VideoObject_VertexVector(VideoObjectX_t *oObject, MathVector3_t mvVertex)
+void VideoObject_VertexVector(VideoObject_t *oObject, MathVector3_t mvVertex)
 {
 	VIDEO_FUNCTION_START(VideoObject_VertexVector)
 		VideoObject_Vertex(oObject, mvVertex[0], mvVertex[1], mvVertex[2]);
 	VIDEO_FUNCTION_END
 }
 
-void VideoObject_Normal(VideoObjectX_t *voObject, float x, float y, float z)
+void VideoObject_Normal(VideoObject_t *voObject, float x, float y, float z)
 {
 	VIDEO_FUNCTION_START(VideoObject_Normal)
 		voObject->ovVertices[voObject->iVertices].mvNormal[0] = x;
@@ -76,7 +87,7 @@ void VideoObject_Normal(VideoObjectX_t *voObject, float x, float y, float z)
 	VIDEO_FUNCTION_END
 }
 
-void VideoObject_Colour(VideoObjectX_t *voObject, float r, float g, float b, float a)
+void VideoObject_Colour(VideoObject_t *voObject, float r, float g, float b, float a)
 {
 	VIDEO_FUNCTION_START(VideoObject_Colour)
 		voObject->ovVertices[voObject->iVertices].mvColour[0] = r;
@@ -86,10 +97,16 @@ void VideoObject_Colour(VideoObjectX_t *voObject, float r, float g, float b, flo
 	VIDEO_FUNCTION_END
 }
 
-void VideoObject_ColourVector(VideoObjectX_t *voObject, MathVector4_t mvColour)
+void VideoObject_ColourVector(VideoObject_t *voObject, MathVector4_t mvColour)
 {
 	VIDEO_FUNCTION_START(VideoObject_ColourVector)
 		VideoObject_Colour(voObject, mvColour[0], mvColour[1], mvColour[2], mvColour[3]);
+	VIDEO_FUNCTION_END
+}
+
+void VideoObject_End(VideoObject_t *voObject)
+{
+	VIDEO_FUNCTION_START(VideoObject_End)
 	VIDEO_FUNCTION_END
 }
 
@@ -97,7 +114,7 @@ void VideoObject_ColourVector(VideoObjectX_t *voObject, MathVector4_t mvColour)
 	Clipping
 */
 
-void VideoObject_Clip(VideoObjectX_t *voObject, MathVector4_t mvClipDimensions)
+void VideoObject_Clip(VideoObject_t *voObject, MathVector4_t mvClipDimensions)
 {
 	VIDEO_FUNCTION_START(VideoObject_Clip)
 	VIDEO_FUNCTION_END
@@ -107,7 +124,7 @@ void VideoObject_Clip(VideoObjectX_t *voObject, MathVector4_t mvClipDimensions)
 	Rendering
 */
 
-void VideoObject_Draw(VideoObjectX_t *voObject)
+void VideoObject_Draw(VideoObject_t *voObject)
 {
 	VIDEO_FUNCTION_START(VideoObject_Draw)
 		int i;

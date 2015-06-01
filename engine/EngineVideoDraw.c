@@ -443,10 +443,10 @@ void Draw_Line(MathVector3_t mvStart, MathVector3_t mvEnd)
 
 	Video_ResetCapabilities(false);
 
-	Video_ObjectColour(&voLine[0], 1.0f, 0, 0, 1.0f);
 	Video_ObjectVertex(&voLine[0], mvStart[0], mvStart[1], mvStart[2]);
-	Video_ObjectColour(&voLine[1], 1.0f, 0, 0, 1.0f);
+	Video_ObjectColour(&voLine[0], 1.0f, 0, 0, 1.0f);
 	Video_ObjectVertex(&voLine[1], mvEnd[0], mvEnd[1], mvEnd[2]);
+	Video_ObjectColour(&voLine[1], 1.0f, 0, 0, 1.0f);
 
 	Video_DrawObject(voLine, VIDEO_PRIMITIVE_LINE, 2, NULL, 0);
 

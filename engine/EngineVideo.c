@@ -65,15 +65,9 @@ gltexture_t	*gDepthTexture;
 
 bool bVideoIgnoreCapabilities = false;
 
-MathVector2f_t **vVideoTextureArray;
-MathVector3f_t *vVideoVertexArray;
-MathVector4f_t *vVideoColourArray;
-
-unsigned int uiVideoArraySize = 32768;
 unsigned int uiVideoDrawObjectCalls = 0;
 
 void Video_DebugCommand(void);
-void Video_AllocateArrays(int iSize);
 
 /*	Initialize the renderer
 */
@@ -98,9 +92,6 @@ void Video_Initialize(void)
 	// All units are initially disabled.
 	for (i = 0; i < VIDEO_MAX_UNITS; i++)
 		Video.bUnitState[i] = false;
-
-	// Allocate the storage arrays for vertices.
-	Video_AllocateArrays(uiVideoArraySize);
 
 	Cvar_RegisterVariable(&cvMultisampleSamples,NULL);
 	Cvar_RegisterVariable(&cvVideoDrawModels,NULL);
@@ -573,33 +564,6 @@ void Video_SetColour(float R,float G,float B,float A)
     Drawing
 */
 
-/*	Reallocates video arrays.
-*/
-void Video_AllocateArrays(int iSize)
-{
-	int i;
-
-	if (Video.bDebugFrame)
-		Console_WriteToLog(cvVideoDebugLog.string, "Video: Allocating arrays...\n");
-
-	free(vVideoVertexArray);
-	free(vVideoColourArray);
-	free(vVideoTextureArray);
-
-	vVideoTextureArray = (MathVector2f_t**)Hunk_AllocName(VIDEO_MAX_UNITS*sizeof(MathVector2f_t), "video_texturearray");
-	for (i = 0; i < VIDEO_MAX_UNITS; i++)
-		vVideoTextureArray[i] = (MathVector2f_t*)Hunk_Alloc(iSize*sizeof(MathVector2f_t));
-
-	vVideoVertexArray = (MathVector3f_t*)Hunk_AllocName(iSize*sizeof(MathVector3f_t), "video_vertexarray");
-	vVideoColourArray = (MathVector4f_t*)Hunk_AllocName(iSize*sizeof(MathVector4f_t), "video_colourarray");
-
-	if(!vVideoColourArray || !vVideoTextureArray || !vVideoVertexArray)
-		Sys_Error("Failed to allocate video arrays!\n");
-
-	// Keep this up to date.
-	uiVideoArraySize = iSize;
-}
-
 /*	Draw terrain.
 	Unfinished
 */
@@ -672,6 +636,8 @@ void Video_DrawMaterial(
 		case MATERIAL_TEXTURE_DIFFUSE:
 			if (!bPost)
 			{
+				VideoShader_SetVariablei("diffuseTexture", Video.uiActiveUnit);
+
 				if (Video_GetCapability(VIDEO_BLEND))
 					glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
 				else if (uiUnit > 0)
@@ -733,6 +699,8 @@ void Video_DrawMaterial(
 
 			if (!bPost)
 			{
+				VideoShader_SetVariablei("detailTexture", Video.uiActiveUnit);
+
 				glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
 				glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
 				glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 2);
@@ -763,6 +731,8 @@ void Video_DrawMaterial(
 
 			if (!bPost)
 			{
+				VideoShader_SetVariablei("fullbrightTexture", Video.uiActiveUnit);
+
 				glEnable(GL_BLEND);
 
 				glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_ADD);
@@ -787,6 +757,8 @@ void Video_DrawMaterial(
 		case MATERIAL_TEXTURE_SPHERE:
 			if (!bPost)
 			{
+				VideoShader_SetVariablei("sphereTexture", Video.uiActiveUnit);
+
 				glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
 
 				Video_GenerateSphereCoordinates();
@@ -945,12 +917,6 @@ void Video_DrawArrays(VideoPrimitive_t vpPrimitiveType, unsigned int uiSize, boo
 	}
 }
 
-/*	Draw a video object.
-*/
-void Video_DrawObjectX(VideoObjectX_t *voObject, Material_t *mMaterial, unsigned int uiSkin)
-{
-}
-
 /*	Draw 3D object.
 	TODO: Add support for VBOs ?
 */
@@ -975,45 +941,21 @@ void Video_DrawObject(
 	if (mMaterial)
 		Video_DrawMaterial(mMaterial, iSkin, voObject, vpPrimitiveType, uiVerts, false);
 
-	// Vertices count is too high for this object, bump up array sizes to manage it.
-	if (uiVerts > uiVideoArraySize)
-		// Double the array size to cope.
-		Video_AllocateArrays(uiVerts * 2);
-
-	// Copy everything over...
-	for (i = 0; i < uiVerts; i++)
-	{
-		if (r_showtris.value && (mMaterial && !(mMaterial->iFlags & MATERIAL_FLAG_NOTRIS)))
-			Math_Vector4Set(1.0f, vVideoColourArray[i]);
-		else
-		{
-			// Allow us to override the colour if we want/need to.
-			if (Video.bColourOverride)
-				Math_Vector4Copy(mvVideoGlobalColour, vVideoColourArray[i]);
-			else
-				Math_Vector4Copy(voObject[i].mvColour, vVideoColourArray[i]);
-
-			// Copy over coords for each active TMU.
-			for (j = 0; j < VIDEO_MAX_UNITS; j++)
-				if (Video.bUnitState[j])
-					Math_Vector2Copy(voObject[i].mvST[j], vVideoTextureArray[j][i]);
-		}
-
-		Math_VectorCopy(voObject[i].mvPosition, vVideoVertexArray[i]);
-	}
-
 	glEnableClientState(GL_VERTEX_ARRAY);
-	glVertexPointer(3, GL_FLOAT, 0, vVideoVertexArray);
+	glVertexPointer(3, GL_FLOAT, sizeof(VideoObjectVertex_t), voObject);
 
 	glEnableClientState(GL_COLOR_ARRAY);
-	glColorPointer(4, GL_FLOAT, 0, vVideoColourArray);
+	glColorPointer(4, GL_FLOAT, sizeof(VideoObjectVertex_t), voObject->mvColour);
+
+	glEnableClientState(GL_NORMAL_ARRAY);
+	glNormalPointer(GL_FLOAT, sizeof(VideoObjectVertex_t), voObject->mvNormal);
 
 	for (i = 0; i < VIDEO_MAX_UNITS; i++)
 		if (Video.bUnitState[i])
 		{
 			glClientActiveTexture(Video_GetTextureUnit(i));
 			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-			glTexCoordPointer(2, GL_FLOAT, 0, vVideoTextureArray[i]);
+			glTexCoordPointer(2, GL_FLOAT, sizeof(VideoObjectVertex_t), voObject->mvST[i]);
 		}
 
 	bool bShowWireframe = r_showtris.bValue;
