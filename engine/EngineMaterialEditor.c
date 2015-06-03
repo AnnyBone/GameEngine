@@ -27,6 +27,10 @@
 Material_t *mActiveMaterial = NULL; // This is the material we're currently editing.
 Material_t *mFloorMaterial;			// Material used for the floor plane.
 
+model_t *mCubeModel;
+model_t *mPlaneModel;
+model_t *mSphereModel;
+
 ClientEntity_t *mPreviewEntity = NULL;
 
 bool bMaterialEditorInitialized = false;
@@ -57,8 +61,9 @@ void MaterialEditor_Initialize(void)
 		return;
 	}
 
-	mPreviewEntity->model = Mod_ForName("models/placeholders/cube.md2");
-	if (!mPreviewEntity->model)
+	mCubeModel = Mod_ForName("models/placeholders/cube.md2");
+	mSphereModel = Mod_ForName("models/placeholders/sphere.md2");
+	if (!mSphereModel || !mCubeModel)
 	{
 		Con_Warning("Failed to load preview mesh!\n");
 		return;
@@ -68,6 +73,7 @@ void MaterialEditor_Initialize(void)
 	mPreviewEntity->origin[0] = 50.0f;
 	mPreviewEntity->origin[1] = 0;
 	mPreviewEntity->origin[2] = 0;
+	mPreviewEntity->model = mSphereModel;
 
 	bMaterialEditorInitialized = true;
 }
@@ -78,6 +84,31 @@ void MaterialEditor_Input(int iKey)
 	{
 	case K_DOWNARROW:
 		break;
+	}
+}
+
+typedef enum
+{
+	EDITOR_MESH_SPHERE,
+	EDITOR_MESH_CUBE,
+	EDITOR_MESH_PLANE
+} EditorPreviewTypes_t;
+
+void MaterialEditor_SetPreviewMesh(EditorPreviewTypes_t previewMesh)
+{
+	switch (previewMesh)
+	{
+	case EDITOR_MESH_CUBE:
+		mPreviewEntity->model = mCubeModel;
+		break;
+	case EDITOR_MESH_PLANE:
+		Con_Warning("Not implemented!\n");
+		break;
+	case EDITOR_MESH_SPHERE:
+		mPreviewEntity->model = mSphereModel;
+		break;
+	default:
+		Con_Warning("Invalid preview type! (%i)", previewMesh);
 	}
 }
 
@@ -131,7 +162,7 @@ void MaterialEditor_Draw(void)
 
 void MaterialEditor_Frame(void)
 {
-	mPreviewEntity->angles[1] += 0.05f;
+	mPreviewEntity->angles[1] += 0.5f;
 }
 
 void MaterialEditor_Display(Material_t *mDisplayMaterial)

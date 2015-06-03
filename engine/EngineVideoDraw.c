@@ -437,7 +437,7 @@ void Draw_TileClear (int x, int y, int w, int h)
 	glEnd();
 }
 
-void Draw_Line(MathVector3_t mvStart, MathVector3_t mvEnd)
+void Draw_Line(MathVector3f_t mvStart, MathVector3f_t mvEnd)
 {
 	VideoObjectVertex_t	voLine[2] = { 0 };
 

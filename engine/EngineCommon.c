@@ -1573,6 +1573,9 @@ void FileSystem_Initialize(void)
 		sprintf(Global.cShaderPath, "shaders/");
 	}
 
+	// Add the engine directory to our search paths.
+	FileSystem_AddGameDirectory(va("%s/"PATH_ENGINE, basedir));
+
 	// Start up with the default path
 	FileSystem_AddGameDirectory(va("%s/%s",basedir,host_parms.cBasePath));
 	Q_strncpy(com_gamedir,va("%s/%s",basedir,host_parms.cBasePath),sizeof(com_gamedir));

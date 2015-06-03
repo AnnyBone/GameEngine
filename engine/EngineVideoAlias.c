@@ -240,54 +240,6 @@ void Alias_SetupLighting(ClientEntity_t *ceEntity)
 	Math_VectorScale(vLightColour,1.0f/200.0f,vLightColour);
 }
 
-void Alias_DrawGenericFrame(
-	MD2_t *mModel, model_t *mModelData,
-	Material_t *mMaterial, int iSkin)
-{
-	int	i, j, k, iVert;
-	VideoObjectVertex_t *voModel;
-	MD2TriangleVertex_t	*mtvVertices, *mtvLerpVerts;
-	MD2Triangle_t *mtTriangles;
-	MD2Frame_t *mfFirst, *mfSecond;
-	MathVector3_t scale1, scale2;
-
-	//new version by muff - fixes bug, easier to read, faster (well slightly)
-	mfFirst = (MD2Frame_t*)((uint8_t*)mModel + mModel->ofs_frames + (mModel->framesize*0));
-	mfSecond = (MD2Frame_t*)((uint8_t*)mModel + mModel->ofs_frames + (mModel->framesize*0));
-
-	// Apply entity scaling for the model.
-	Math_VectorScale(mfFirst->scale, 1.0f, scale1);
-	Math_VectorScale(mfSecond->scale, 1.0f, scale2);
-
-	mtvVertices = &mfFirst->verts[0];
-	mtvLerpVerts = &mfSecond->verts[0];
-
-	voModel = (VideoObjectVertex_t*)malloc(mModel->num_glcmds*sizeof(VideoObjectVertex_t));
-
-	mtTriangles = (MD2Triangle_t*)((uint8_t*)mModel + mModel->ofs_tris);
-	for (iVert = 0, i = 0; i < mModel->numtris; i++, mtTriangles++)
-		for (k = 0; k < 3; k++)
-		{
-			for (j = 0; j < 3; j++)
-			{
-				voModel[iVert].mvPosition[j] = (mtvVertices[mtTriangles->index_xyz[k]].v[j] * scale1[j] + mfFirst->translate[j])*(1.0f - 1) +
-					(mtvLerpVerts[mtTriangles->index_xyz[k]].v[j] * scale2[j] + mfSecond->translate[j])*1;
-				voModel[iVert].mvColour[j] = 1.0f;
-			}
-
-			voModel[iVert].mvST[0][0] = (float)mModel->mtcTextureCoord[mtTriangles->index_st[k]].S / (float)mModel->skinwidth;
-			voModel[iVert].mvST[0][1] = (float)mModel->mtcTextureCoord[mtTriangles->index_st[k]].T / (float)mModel->skinheight;
-
-			voModel[iVert].mvColour[3] = 1.0f;
-
-			iVert++;
-		}
-
-	Video_DrawObject(voModel, VIDEO_PRIMITIVE_TRIANGLES, iVert, mMaterial, iSkin);
-
-	free(voModel);
-}
-
 void Alias_DrawFrame(MD2_t *mModel,entity_t *eEntity,lerpdata_t lLerpData)
 {
 #if 0	// Broken
@@ -339,12 +291,13 @@ void Alias_DrawFrame(MD2_t *mModel,entity_t *eEntity,lerpdata_t lLerpData)
 
 	Video_DrawObject(voModel, VIDEO_PRIMITIVE_TRIANGLES, iVert, Material_Get(eEntity->model->mAssignedMaterials->iIdentification), eEntity->skinnum);
 #else
+	MD2TriangleVertex_t	*verts1, *verts2;
+	MD2Frame_t *frame1, *frame2;
+
 	float ilerp, fAlpha;
 	unsigned int uiVerts = 0;
 	int	*order, count;
-	MD2TriangleVertex_t	*verts1, *verts2;
-	MD2Frame_t *frame1, *frame2;
-	Material_t *mMat = NULL; // This is dirty, but it stops the material system from applying materials for shadows.
+
 	VideoObjectVertex_t *voModel;
 
 	ilerp = 1.0f - lLerpData.blend;
@@ -354,6 +307,7 @@ void Alias_DrawFrame(MD2_t *mModel,entity_t *eEntity,lerpdata_t lLerpData)
 	frame1 = (MD2Frame_t*)((uint8_t*)mModel + mModel->ofs_frames + (mModel->framesize*eEntity->draw_lastpose));
 	frame2 = (MD2Frame_t*)((uint8_t*)mModel + mModel->ofs_frames + (mModel->framesize*eEntity->draw_pose));
 
+	// TODO: do this via shader.
 	if ((eEntity->scale != 1.0f) && (eEntity->scale > 0.1f))
 		glScalef(eEntity->scale, eEntity->scale, eEntity->scale);
 
@@ -363,10 +317,6 @@ void Alias_DrawFrame(MD2_t *mModel,entity_t *eEntity,lerpdata_t lLerpData)
 	order = (int*)((uint8_t*)mModel + mModel->ofs_glcmds);
 
 	voModel = (VideoObjectVertex_t*)Hunk_TempAlloc(mModel->num_glcmds*sizeof(VideoObjectVertex_t));
-
-	if (bShading)
-		// If we're lit etc, then apply our material.
-		mMat = eEntity->model->mAssignedMaterials;
 
 	for (;;)
 	{
@@ -386,28 +336,13 @@ void Alias_DrawFrame(MD2_t *mModel,entity_t *eEntity,lerpdata_t lLerpData)
 				(verts2[order[2]].v[1] * frame2->scale[1] + frame2->translate[1])*lLerpData.blend,
 				(verts1[order[2]].v[2] * frame1->scale[2] + frame1->translate[2])*ilerp +
 				(verts2[order[2]].v[2] * frame2->scale[2] + frame2->translate[2])*lLerpData.blend);
-			Video_ObjectNormal(&voModel[uiVerts],
-				(verts1[order[2]].v[0] * frame1->scale[0] + frame1->translate[0])*ilerp +
-				(verts2[order[2]].v[0] * frame2->scale[0] + frame2->translate[0])*lLerpData.blend,
-				(verts1[order[2]].v[1] * frame1->scale[1] + frame1->translate[1])*ilerp +
-				(verts2[order[2]].v[1] * frame2->scale[1] + frame2->translate[1])*lLerpData.blend,
-				(verts1[order[2]].v[2] * frame1->scale[2] + frame1->translate[2])*ilerp +
-				(verts2[order[2]].v[2] * frame2->scale[2] + frame2->translate[2])*lLerpData.blend);
+			Video_ObjectNormal(&voModel[uiVerts], 
+				eEntity->model->object.ovVertices[uiVerts].mvNormal[0], 
+				eEntity->model->object.ovVertices[uiVerts].mvNormal[1],
+				eEntity->model->object.ovVertices[uiVerts].mvNormal[2]);
+
 			if (bShading)
-			{
-#if 0
-				Video_ObjectColour(&voModel[uiVerts],
-					(shadedots[verts1->lightnormalindex] * ilerp + shadedots[verts2->lightnormalindex] * lLerpData.blend),
-					(shadedots[verts1->lightnormalindex] * ilerp + shadedots[verts2->lightnormalindex] * lLerpData.blend),
-					(shadedots[verts1->lightnormalindex] * ilerp + shadedots[verts2->lightnormalindex] * lLerpData.blend),
-					entalpha);
-#endif
-				Video_ObjectColour(&voModel[uiVerts],
-					1.0f,
-					1.0f,
-					1.0f,
-					fAlpha);
-			}
+				Video_ObjectColour(&voModel[uiVerts],1.0f,1.0f,1.0f,fAlpha);
 			else
 				Video_ObjectColour(&voModel[uiVerts], 1.0f, 1.0f, 1.0f, 1.0f);
 
@@ -416,7 +351,7 @@ void Alias_DrawFrame(MD2_t *mModel,entity_t *eEntity,lerpdata_t lLerpData)
 			order += 3;
 		} while (--count);
 
-		Video_DrawObject(voModel, VIDEO_PRIMITIVE_TRIANGLE_FAN, uiVerts, mMat, eEntity->skinnum);
+		Video_DrawObject(voModel, VIDEO_PRIMITIVE_TRIANGLE_FAN, uiVerts, eEntity->model->mAssignedMaterials, eEntity->skinnum);
 	}
 #endif
 }

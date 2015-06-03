@@ -924,7 +924,7 @@ void Video_DrawObject(
 	VideoObjectVertex_t *voObject, VideoPrimitive_t vpPrimitiveType, unsigned int	uiVerts,
 	Material_t *mMaterial, int iSkin)
 {
-	unsigned int i, j;
+	unsigned int i;
 
 	if (uiVerts <= 0)
 		return;

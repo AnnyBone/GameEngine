@@ -246,7 +246,7 @@ model_t *Model_Load(model_t *mModel)
 
 	switch(LittleLong(*(unsigned*)buf))
 	{
-	case KMDL_HEADER:
+	case MD2E_HEADER:
 	case MD2_HEADER:
 		Model_LoadMD2(mModel,buf);
 		break;
@@ -1190,11 +1190,53 @@ void Model_LoadIQM(model_t *mModel, void *Buffer)
 	mModel->flags = 0;
 }
 
-MathVector_t Model_GenerateNormal(MathVector3f_t mvTriangle)
+MathVector_t Model_GenerateNormal(MathVector3f_t a, MathVector3f_t b, MathVector3f_t c)
 {
-	MathVector_t mvNormal;
-	
-	return mvNormal;
+	MathVector_t mvOutNormal;
+	MathVector3f_t mvNormal;
+	MathVector3f_t mvX;
+	MathVector3f_t mvY;
+
+	Con_Printf("A : %i %i %i\n", (int)a[0], (int)a[1], (int)a[2]);
+	Con_Printf("B : %i %i %i\n", (int)b[0], (int)b[1], (int)b[2]);
+	Con_Printf("C : %i %i %i\n", (int)c[0], (int)c[1], (int)c[2]);
+
+	Math_VectorSubtract(b, a, mvX);
+	Math_VectorSubtract(c, a, mvY);
+
+//	Con_Printf("X : %i %i %i\n", (int)mvX[0], (int)mvX[1], (int)mvX[2]);
+//	Con_Printf("Y : %i %i %i\n", (int)mvY[0], (int)mvY[1], (int)mvY[2]);
+
+	Math_VectorClear(mvNormal);
+	Math_CrossProduct(mvX, mvY, mvNormal);
+
+//	Con_Printf("NORMAL : %i %i %i\n", (int)mvNormal[0], (int)mvNormal[1], (int)mvNormal[2]);
+
+	// Normalize it.
+	Math_VectorNormalize(mvNormal);
+
+	// Return the normal.
+	Math_VectorToMV(mvNormal, mvOutNormal);
+
+	Con_Printf("NORMAL (NORMALIZED) : %i %i %i\n", (int)mvOutNormal.vX, (int)mvOutNormal.vY, (int)mvOutNormal.vZ);
+
+	return mvOutNormal;
+}
+
+MathVector_t Model_GenerateNormal3f(
+	float aX, float aY, float aZ,
+	float bX, float bY, float bZ,
+	float cX, float cY, float cZ)
+{
+	MathVector3f_t a;
+	MathVector3f_t b;
+	MathVector3f_t c;
+
+	a[0] = aX; a[1] = aY; a[2] = aZ;
+	b[0] = bX; b[1] = bY; b[2] = bZ;
+	c[0] = cX; c[1] = cY; c[2] = cZ;
+
+	return Model_GenerateNormal(a, b, c);
 }
 
 /*
@@ -1262,30 +1304,84 @@ void Model_CalculateMD2Bounds(MD2_t *mModel)
 	Math_VectorCopy(vMaxs, loadmodel->ymaxs);
 }
 
+void Model_CalculateMD2Normals(model_t *model, MD2_t *md2)
+{
+	MD2Frame_t *frame;
+	MD2Triangle_t *triangles;
+	MD2TriangleVertex_t *vertices;
+	int i, j, v;
+
+	frame = (MD2Frame_t*)((uint8_t*)md2 + md2->ofs_frames + md2->framesize);
+
+	vertices = &frame->verts[0];
+
+	triangles = (MD2Triangle_t*)((uint8_t*)md2 + md2->ofs_tris);
+	for(i = 0, v = 0; i < md2->numtris; i++)
+	{
+		MathVector_t normalVector = Model_GenerateNormal3f(
+			vertices[triangles[i].index_xyz[0]].v[0], vertices[triangles[i].index_xyz[0]].v[1], vertices[triangles[i].index_xyz[0]].v[2],
+			vertices[triangles[i].index_xyz[1]].v[0], vertices[triangles[i].index_xyz[1]].v[1], vertices[triangles[i].index_xyz[1]].v[2],
+			vertices[triangles[i].index_xyz[2]].v[0], vertices[triangles[i].index_xyz[2]].v[1], vertices[triangles[i].index_xyz[2]].v[2]);
+
+		// X Y Z
+		for (j = 0; j < 3; j++)
+		{
+			MathVector3f_t normal;
+			Math_MVToVector(normalVector, normal);
+			Math_VectorCopy(normal, model->object.ovVertices[v].mvNormal);
+			v++;
+		}
+	}
+
+#if 0
+	MathVector3f_t x, y, z;
+	MD2TriangleVertex_t *vertices;
+	int i, j, k;
+
+	vertices = &frame[0].verts[0];
+
+	for (i = 0; i < md2->numtris; i++)
+	{
+		for (k = 0; k < 3; k++)
+		{
+			for (j = 0; j < 3; j++)
+			{
+				x[j] = (vertices[triangles[i].index_xyz[k]].v[j] * frame[0].scale[j] + frame[0].translate[j]);
+				y[j] = (vertices[triangles[i].index_xyz[k]].v[j] * frame[0].scale[j] + frame[0].translate[j]);
+				z[j] = (vertices[triangles[i].index_xyz[k]].v[j] * frame[0].scale[j] + frame[0].translate[j]);
+			}
+
+			MathVector_t normalVector = Model_GenerateNormal(x, y, z);
+			for (j = 0; j < 3; j++)
+				Math_VectorSet(0.5f, model->object.ovVertices[j].mvNormal);	//Math_MVToVector(normalVector, model->object.ovVertices[j].mvNormal);
+		}
+	}
+#endif
+}
+
 void Model_LoadMD2(model_t *mModel,void *Buffer)
 {
 	int	i,j,
 		iVersion,
-		numframes,iSize,*pinglcmd,*poutglcmd,iStartHunk,iEnd,total;
+		numframes,
+		*pinglcmd,*poutglcmd,
+		iStartHunk,iEnd,total;
 	MD2_t *pinmodel,*mMD2Model;
 	MD2Triangle_t *pintriangles, *pouttriangles;
 	MD2Frame_t *pinframe, *poutframe;
-	MD2TextureCoordinate_t *pST;
 
 	iStartHunk = Hunk_LowMark();
 
 	pinmodel = (MD2_t*)Buffer;
 
 	iVersion = LittleLong(pinmodel->version);
-	if((iVersion != MD2_VERSION) && (iVersion != KMDL_VERSION))
+	if ((iVersion != MD2_VERSION) && (iVersion != MD2E_VERSION))
 	{
-		Con_Error("%s has wrong version number (%i should be %i or %i)\n", mModel->name, iVersion, MD2_VERSION, KMDL_VERSION);
+		Con_Error("%s has wrong version number (%i should be %i or %i)\n", mModel->name, iVersion, MD2_VERSION, MD2E_VERSION);
 		return;
 	}
 
-	iSize = LittleLong(pinmodel->ofs_end)+sizeof(MD2_t);
-
-	mMD2Model = (MD2_t*)Hunk_AllocName(iSize,loadname);
+	mMD2Model = (MD2_t*)Hunk_AllocName(LittleLong(pinmodel->ofs_end) + sizeof(MD2_t), loadname);
 	for(i = 0; i < 17; i++)
 		((int*)mMD2Model)[i] = LittleLong(((int*)pinmodel)[i]);
 
@@ -1294,9 +1390,7 @@ void Model_LoadMD2(model_t *mModel,void *Buffer)
 	mModel->flags = 0;
 	mModel->numframes = numframes = mMD2Model->num_frames;
 
-	if(iSize <= 0 || iSize >= MD2_MAX_SIZE)
-		Sys_Error("%s is not a valid model",mModel->name);
-	else if(mMD2Model->ofs_skins <= 0 || mMD2Model->ofs_skins >= mMD2Model->ofs_end)
+	if(mMD2Model->ofs_skins <= 0 || mMD2Model->ofs_skins >= mMD2Model->ofs_end)
 		Sys_Error("%s is not a valid model",mModel->name);
 	else if(mMD2Model->ofs_st <= 0 || mMD2Model->ofs_st >= mMD2Model->ofs_end)
 		Sys_Error("%s is not a valid model",mModel->name);
@@ -1335,20 +1429,20 @@ void Model_LoadMD2(model_t *mModel,void *Buffer)
 		pouttriangles++;
 	}
 
-	pinframe = (MD2Frame_t*)((uint8_t*)pinmodel+LittleLong(pinmodel->ofs_frames));
-	poutframe = (MD2Frame_t*)((uint8_t*)mMD2Model+mMD2Model->ofs_frames);
-	for(i=0; i < numframes; i++)
+	pinframe = (MD2Frame_t*)((uint8_t*)pinmodel + LittleLong(pinmodel->ofs_frames));
+	poutframe = (MD2Frame_t*)((uint8_t*)mMD2Model + mMD2Model->ofs_frames);
+	for (i = 0; i < numframes; i++)
 	{
-		for(j=0; j < 3; j++)
+		for (j = 0; j < 3; j++)
 		{
 			poutframe->scale[j] = LittleFloat(pinframe->scale[j]);
 			poutframe->translate[j] = LittleFloat(pinframe->translate[j]);
 		}
 
-		for(j=0; j < 16; j++)
+		for (j = 0; j < 16; j++)
 			poutframe->name[j] = pinframe->name[j];
 
-		for(j=0; j < mMD2Model->num_xyz; j++)
+		for (j = 0; j < mMD2Model->num_xyz; j++)
 		{
 			poutframe->verts[j].v[0] = pinframe->verts[j].v[0];
 			poutframe->verts[j].v[1] = pinframe->verts[j].v[1];
@@ -1356,33 +1450,14 @@ void Model_LoadMD2(model_t *mModel,void *Buffer)
 			poutframe->verts[j].lightnormalindex = pinframe->verts[j].lightnormalindex;
 		}
 
-		pinframe	= (MD2Frame_t*)&pinframe->verts[j].v[0];
-		poutframe	= (MD2Frame_t*)&poutframe->verts[j].v[0];
+		pinframe = (MD2Frame_t*)&pinframe->verts[j].v[0];
+		poutframe = (MD2Frame_t*)&poutframe->verts[j].v[0];
 	}
 
-	pinglcmd	= (int*)((uint8_t*)pinmodel+LittleLong(pinmodel->ofs_glcmds));
-	poutglcmd	= (int*)((uint8_t*)mMD2Model+mMD2Model->ofs_glcmds);
+	pinglcmd = (int*)((uint8_t*)pinmodel+LittleLong(pinmodel->ofs_glcmds));
+	poutglcmd = (int*)((uint8_t*)mMD2Model+mMD2Model->ofs_glcmds);
 	for(i=0; i < mMD2Model->num_glcmds; i++)
 		*poutglcmd++ = LittleLong(*pinglcmd++);
-
-	// Ugh, kill me.
-	{
-		mMD2Model->mtcTextureCoord = (MD2TextureCoordinate_t*)malloc(mMD2Model->num_st*sizeof(MD2TextureCoordinate_t));
-		if(!mMD2Model->mtcTextureCoord)
-		{
-			Sys_Error("Failed to allocate MD2 texture coordinates!\n");
-			return;
-		}
-
-		pST	= (MD2TextureCoordinate_t*)((uint8_t*)pinmodel+LittleLong(pinmodel->ofs_st));
-		for(i = 0; i < mMD2Model->num_st; i++)
-		{
-			mMD2Model->mtcTextureCoord[i].S = LittleShort(pST->S);
-			mMD2Model->mtcTextureCoord[i].T = LittleShort(pST->T);
-
-			pST++;
-		}
-	}
 
 	memcpy
 	(
@@ -1390,6 +1465,11 @@ void Model_LoadMD2(model_t *mModel,void *Buffer)
 		(char*)pinmodel+mMD2Model->ofs_skins,
 		mMD2Model->num_skins*MAX_QPATH
 	);
+
+	// Allocate vertex array.
+	loadmodel->object.iVertices = mMD2Model->numtris * 3;
+	loadmodel->object.ovVertices = (VideoObjectVertex_t*)malloc(loadmodel->object.iVertices * sizeof(VideoObjectVertex_t));
+	memset(loadmodel->object.ovVertices, 0, loadmodel->object.iVertices * sizeof(VideoObjectVertex_t));
 
 	Model_LoadMD2Textures(mModel);
 
@@ -1402,6 +1482,9 @@ void Model_LoadMD2(model_t *mModel,void *Buffer)
 #else
 	Model_CalculateMD2Bounds(mMD2Model);
 #endif
+
+	// Calculate vertex normals.
+	Model_CalculateMD2Normals(loadmodel, mMD2Model);
 
 	iEnd = Hunk_LowMark();
 	total = iEnd-iStartHunk;

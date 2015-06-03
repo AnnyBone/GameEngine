@@ -38,16 +38,23 @@ typedef enum
 	Extension of the already existing MD2 format.
 */
 
-#define KMDL_HEADER		(('L'<<24)+('D'<<16)+('M'<<8)+'K')
-#define	KMDL_VERSION	9
-#define	KMDL_EXTENSION	".model"
+#define MD2E_HEADER		(('E'<<24)+('2'<<16)+('D'<<8)+'M')
+#define	MD2E_VERSION	9
+#define	MD2E_EXTENSION	".model"
 
 typedef struct
 {
-	float	v[3];
+	MathVector3f_t position;
+	MathVector3f_t normal;
+} MD2ETriangleVertex_t;
 
-	pUCHAR	bLightNormalIndex;
-} KMDLTriangleVertex_t;
+typedef struct
+{
+	MathVector3f_t scale;				// multiply byte verts by this
+	MathVector3f_t translate;			// then add this
+	char name[16];						// frame name from grabbing
+	MD2ETriangleVertex_t vertices[1];	// variable sized
+} MD2EFrame_t;
 
 /*
 	MD2 Format
@@ -72,16 +79,16 @@ typedef struct
 
 typedef struct
 {
-	pUCHAR	v[3];			// scaled byte to fit in frame mins/maxs
+	pUCHAR	v[3];				// scaled byte to fit in frame mins/maxs
 	pUCHAR	lightnormalindex;
 } MD2TriangleVertex_t;
 
 typedef struct
 {
-	float				scale[3];		// multiply byte verts by this
-	float				translate[3];	// then add this
-	char				name[16];		// frame name from grabbing
-	MD2TriangleVertex_t	verts[1];		// variable sized
+	float scale[3];					// multiply byte verts by this
+	float translate[3];				// then add this
+	char name[16];					// frame name from grabbing
+	MD2TriangleVertex_t	verts[1];	// variable sized
 } MD2Frame_t;
 
 typedef struct
@@ -108,8 +115,6 @@ typedef struct
 	int			    ofs_frames;		// Offset for first frame.
 	int			    ofs_glcmds;
 	int			    ofs_end;		// End of file.
-
-	MD2TextureCoordinate_t *mtcTextureCoord;
 } MD2_t;
 
 /*

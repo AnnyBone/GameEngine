@@ -23,6 +23,7 @@
 
 #include "SharedFormats.h"
 #include "SharedZone.h"
+#include "shared_video.h"
 
 typedef struct efrag_s
 {
@@ -269,6 +270,8 @@ typedef struct model_s
 
 	// Material System
 	struct Material_s	*mAssignedMaterials;
+
+	VideoObject_t object;
 } model_t;
 
 #endif

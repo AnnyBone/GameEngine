@@ -49,6 +49,8 @@ CMaterialEditorFrame::CMaterialEditorFrame(const wxString & title, const wxPoint
 	iconShapeCube.LoadFile("resource/shape-cube.png", wxBITMAP_TYPE_PNG);
 	iconShapeSphere.LoadFile("resource/shape-sphere.png", wxBITMAP_TYPE_PNG);
 	iconShapePlane.LoadFile("resource/shape-plane.png", wxBITMAP_TYPE_PNG);
+
+	SetIcon(wxIcon("resource/icon-material.png", wxBITMAP_TYPE_PNG));
 	
 	// Display the splash screen...
 
@@ -295,7 +297,10 @@ void CMaterialEditorFrame::OnOpen(wxCommandEvent &event)
 		"MATERIAL files (*.material)|*.material",wxFD_OPEN|wxFD_FILE_MUST_EXIST);
 	if (fileDialog->ShowModal() == wxID_OK)
 	{
-		Material_t *newMat = engine->LoadMaterial("debug_scroll");
+		wxString filename = fileDialog->GetFilename();
+		filename.RemoveLast(9);
+
+		Material_t *newMat = engine->LoadMaterial(filename);
 		if (newMat)
 		{
 			engine->MaterialEditorDisplay(newMat);

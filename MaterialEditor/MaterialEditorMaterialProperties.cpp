@@ -36,12 +36,6 @@ CMaterialEditorMaterialGlobalProperties::CMaterialEditorMaterialGlobalProperties
 	Append(water);
 	Append(notris);
 
-	SetCellBackgroundColour(wxColour(0, 0, 0));
-	SetCellTextColour(wxColour(0, 255, 0));
-	SetEmptySpaceColour(wxColour(0, 0, 0));
-	SetCaptionBackgroundColour(wxColour(70, 70, 70));
-	SetCaptionTextColour(wxColour(255, 255, 255));
-	SetMarginColour(wxColour(50, 50, 50));
 	SetSize(wxSize(300, wxDefaultSize.y));
 
 	CenterSplitter(true);
