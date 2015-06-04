@@ -60,7 +60,7 @@ char *pError_Get(void)
 	System Error Management
 */
 
-char	*cSystemError;
+char cSystemError[2048];
 
 /*	Returns a system-side error message.
 	Requires SystemReset to be called afterwards.
@@ -84,14 +84,13 @@ char *pError_SystemGet(void)
 		0, NULL))
 		return "Failed to get system error details!";
 
-	cSystemError = _strdup(cBuffer);
+	strcpy(cSystemError,_strdup(cBuffer));
 
 	LocalFree(cBuffer);
 
 	return cSystemError;
 #else
-	cSystemError = dlerror();
-
+    strcpy(cSystemError,dlerror());
 	return cSystemError;
 #endif
 }
