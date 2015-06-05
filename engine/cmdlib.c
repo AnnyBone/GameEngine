@@ -255,7 +255,7 @@ int CheckParm (char *check)
 	return 0;
 }
 
-FILE *SafeOpenWrite (char *filename)
+FILE *SafeOpenWrite (const char *filename)
 {
 	FILE	*f;
 

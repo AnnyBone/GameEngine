@@ -942,7 +942,7 @@ void Video_DrawObject(
 		Video_DrawMaterial(mMaterial, iSkin, voObject, vpPrimitiveType, uiVerts, false);
 
 	glEnableClientState(GL_VERTEX_ARRAY);
-	glVertexPointer(3, GL_FLOAT, sizeof(VideoObjectVertex_t), voObject);
+	glVertexPointer(3, GL_FLOAT, sizeof(VideoObjectVertex_t), voObject->mvPosition);
 
 	glEnableClientState(GL_COLOR_ARRAY);
 	glColorPointer(4, GL_FLOAT, sizeof(VideoObjectVertex_t), voObject->mvColour);
@@ -966,6 +966,7 @@ void Video_DrawObject(
 
 	glDisableClientState(GL_COLOR_ARRAY);
 	glDisableClientState(GL_VERTEX_ARRAY);
+	glDisableClientState(GL_NORMAL_ARRAY);
 
 	for (i = 0; i < VIDEO_MAX_UNITS; i++)
 		if (Video.bUnitState[i])

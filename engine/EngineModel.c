@@ -1197,20 +1197,15 @@ MathVector_t Model_GenerateNormal(MathVector3f_t a, MathVector3f_t b, MathVector
 	MathVector3f_t mvX;
 	MathVector3f_t mvY;
 
-	Con_Printf("A : %i %i %i\n", (int)a[0], (int)a[1], (int)a[2]);
-	Con_Printf("B : %i %i %i\n", (int)b[0], (int)b[1], (int)b[2]);
-	Con_Printf("C : %i %i %i\n", (int)c[0], (int)c[1], (int)c[2]);
+//	Con_Printf("A : %i %i %i\n", (int)a[0], (int)a[1], (int)a[2]);
+//	Con_Printf("B : %i %i %i\n", (int)b[0], (int)b[1], (int)b[2]);
+//	Con_Printf("C : %i %i %i\n", (int)c[0], (int)c[1], (int)c[2]);
 
-	Math_VectorSubtract(b, a, mvX);
-	Math_VectorSubtract(c, a, mvY);
-
-//	Con_Printf("X : %i %i %i\n", (int)mvX[0], (int)mvX[1], (int)mvX[2]);
-//	Con_Printf("Y : %i %i %i\n", (int)mvY[0], (int)mvY[1], (int)mvY[2]);
+	Math_VectorSubtract(c, b, mvX);
+	Math_VectorSubtract(a, b, mvY);
 
 	Math_VectorClear(mvNormal);
 	Math_CrossProduct(mvX, mvY, mvNormal);
-
-//	Con_Printf("NORMAL : %i %i %i\n", (int)mvNormal[0], (int)mvNormal[1], (int)mvNormal[2]);
 
 	// Normalize it.
 	Math_VectorNormalize(mvNormal);
@@ -1218,7 +1213,7 @@ MathVector_t Model_GenerateNormal(MathVector3f_t a, MathVector3f_t b, MathVector
 	// Return the normal.
 	Math_VectorToMV(mvNormal, mvOutNormal);
 
-	Con_Printf("NORMAL (NORMALIZED) : %i %i %i\n", (int)mvOutNormal.vX, (int)mvOutNormal.vY, (int)mvOutNormal.vZ);
+//	Con_Printf("NORMAL (%i %i %i)\n", (int)mvOutNormal.vX, (int)mvOutNormal.vY, (int)mvOutNormal.vZ);
 
 	return mvOutNormal;
 }

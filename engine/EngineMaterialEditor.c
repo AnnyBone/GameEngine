@@ -31,6 +31,8 @@ model_t *mCubeModel;
 model_t *mPlaneModel;
 model_t *mSphereModel;
 
+DynamicLight_t *dlMainLight;
+
 ClientEntity_t *mPreviewEntity = NULL;
 
 bool bMaterialEditorInitialized = false;
@@ -60,6 +62,15 @@ void MaterialEditor_Initialize(void)
 		Con_Warning("Failed to load grid material!\n");
 		return;
 	}
+
+	dlMainLight = Client_AllocDlight(0);
+	dlMainLight->bLightmap = false;
+	dlMainLight->decay = 0;
+	dlMainLight->die = 0;
+	dlMainLight->minlight = 32.0f;
+	dlMainLight->radius = 200.0f;
+	Math_VectorSet(-40.0f, dlMainLight->origin);
+	Math_VectorSet(255.0f, dlMainLight->color);
 
 	mCubeModel = Mod_ForName("models/placeholders/cube.md2");
 	mSphereModel = Mod_ForName("models/placeholders/sphere.md2");
@@ -160,9 +171,30 @@ void MaterialEditor_Draw(void)
 	Draw_String(10, 20, va("Model: %s",	mPreviewEntity->model->name));
 }
 
+double dLightMove = 1.0;
+
 void MaterialEditor_Frame(void)
 {
 	mPreviewEntity->angles[1] += 0.5f;
+
+	if (cl.time > dLightMove)
+	{
+		dlMainLight->origin[0] = rand() % 40 / (rand()%40+1);
+		dlMainLight->origin[1] = rand() % 40 / (rand() % 40 + 1);
+		dlMainLight->origin[2] = rand() % 40 / (rand() % 40 + 1);
+
+		dLightMove = cl.time + 1.0;
+	}
+
+	dlMainLight->color[0] -= 0.5f;
+	if (dlMainLight->color[0] <= 0)
+		dlMainLight->color[0] = 255.0f;
+	dlMainLight->color[1] -= 1.0f;
+	if (dlMainLight->color[1] <= 0)
+		dlMainLight->color[1] = 255.0f;
+	dlMainLight->color[2] -= 0.1f;
+	if (dlMainLight->color[2] <= 0)
+		dlMainLight->color[2] = 255.0f;
 }
 
 void MaterialEditor_Display(Material_t *mDisplayMaterial)

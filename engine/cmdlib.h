@@ -28,7 +28,7 @@ double I_FloatTime (void);
 void	Error(const char *error, ...);
 int		CheckParm (char *check);
 
-FILE	*SafeOpenWrite (char *filename);
+FILE	*SafeOpenWrite (const char *filename);
 FILE	*SafeOpenRead (char *filename);
 void	SafeRead (FILE *f, void *buffer, int count);
 void	SafeWrite (FILE *f, void *buffer, int count);
