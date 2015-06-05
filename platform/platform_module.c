@@ -67,6 +67,9 @@ pINSTANCE pModule_Load(const char *ccPath)
 		pError_Set("Failed to load library! (%s)\n%s", cUpdatedPath, pError_SystemGet());
 		pError_SystemReset();
 
+        // Print it...
+		printf(pError_Get());
+
 		// Attempt to load under a different directory.
 		sprintf(cUpdatedPath, PLATFORM_CPU"/%s"pMODULE_EXTENSION, ccPath);
 		iModule =

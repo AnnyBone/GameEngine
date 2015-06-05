@@ -251,6 +251,8 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="EngineVideoScreen.h" />
+		<Unit filename="EngineVideoShader.cpp" />
+		<Unit filename="EngineVideoShader.h" />
 		<Unit filename="EngineVideoShadow.c">
 			<Option compilerVar="CC" />
 		</Unit>
