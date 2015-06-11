@@ -1197,9 +1197,9 @@ MathVector_t Model_GenerateNormal(MathVector3f_t a, MathVector3f_t b, MathVector
 	MathVector3f_t mvX;
 	MathVector3f_t mvY;
 
-//	Con_Printf("A : %i %i %i\n", (int)a[0], (int)a[1], (int)a[2]);
-//	Con_Printf("B : %i %i %i\n", (int)b[0], (int)b[1], (int)b[2]);
-//	Con_Printf("C : %i %i %i\n", (int)c[0], (int)c[1], (int)c[2]);
+	//Con_Printf("A : %i %i %i\n", (int)a[0], (int)a[1], (int)a[2]);
+	//Con_Printf("B : %i %i %i\n", (int)b[0], (int)b[1], (int)b[2]);
+	//Con_Printf("C : %i %i %i\n", (int)c[0], (int)c[1], (int)c[2]);
 
 	Math_VectorSubtract(c, b, mvX);
 	Math_VectorSubtract(a, b, mvY);
@@ -1213,7 +1213,7 @@ MathVector_t Model_GenerateNormal(MathVector3f_t a, MathVector3f_t b, MathVector
 	// Return the normal.
 	Math_VectorToMV(mvNormal, mvOutNormal);
 
-//	Con_Printf("NORMAL (%i %i %i)\n", (int)mvOutNormal.vX, (int)mvOutNormal.vY, (int)mvOutNormal.vZ);
+	//Con_Printf("NORMAL (%i %i %i)\n", (int)mvOutNormal.vX, (int)mvOutNormal.vY, (int)mvOutNormal.vZ);
 
 	return mvOutNormal;
 }
@@ -1314,9 +1314,17 @@ void Model_CalculateMD2Normals(model_t *model, MD2_t *md2)
 	for(i = 0, v = 0; i < md2->numtris; i++)
 	{
 		MathVector_t normalVector = Model_GenerateNormal3f(
-			vertices[triangles[i].index_xyz[0]].v[0], vertices[triangles[i].index_xyz[0]].v[1], vertices[triangles[i].index_xyz[0]].v[2],
-			vertices[triangles[i].index_xyz[1]].v[0], vertices[triangles[i].index_xyz[1]].v[1], vertices[triangles[i].index_xyz[1]].v[2],
-			vertices[triangles[i].index_xyz[2]].v[0], vertices[triangles[i].index_xyz[2]].v[1], vertices[triangles[i].index_xyz[2]].v[2]);
+			vertices[triangles[i].index_xyz[0]].v[0] * frame->scale[0] + frame->translate[0], 
+			vertices[triangles[i].index_xyz[0]].v[1] * frame->scale[1] + frame->translate[1], 
+			vertices[triangles[i].index_xyz[0]].v[2] * frame->scale[2] + frame->translate[2],
+
+			vertices[triangles[i].index_xyz[1]].v[0] * frame->scale[0] + frame->translate[0], 
+			vertices[triangles[i].index_xyz[1]].v[1] * frame->scale[1] + frame->translate[1], 
+			vertices[triangles[i].index_xyz[1]].v[2] * frame->scale[2] + frame->translate[2],
+
+			vertices[triangles[i].index_xyz[2]].v[0] * frame->scale[0] + frame->translate[0], 
+			vertices[triangles[i].index_xyz[2]].v[1] * frame->scale[1] + frame->translate[1],
+			vertices[triangles[i].index_xyz[2]].v[2] * frame->scale[2] + frame->translate[2]);
 
 		// X Y Z
 		for (j = 0; j < 3; j++)
@@ -1327,31 +1335,6 @@ void Model_CalculateMD2Normals(model_t *model, MD2_t *md2)
 			v++;
 		}
 	}
-
-#if 0
-	MathVector3f_t x, y, z;
-	MD2TriangleVertex_t *vertices;
-	int i, j, k;
-
-	vertices = &frame[0].verts[0];
-
-	for (i = 0; i < md2->numtris; i++)
-	{
-		for (k = 0; k < 3; k++)
-		{
-			for (j = 0; j < 3; j++)
-			{
-				x[j] = (vertices[triangles[i].index_xyz[k]].v[j] * frame[0].scale[j] + frame[0].translate[j]);
-				y[j] = (vertices[triangles[i].index_xyz[k]].v[j] * frame[0].scale[j] + frame[0].translate[j]);
-				z[j] = (vertices[triangles[i].index_xyz[k]].v[j] * frame[0].scale[j] + frame[0].translate[j]);
-			}
-
-			MathVector_t normalVector = Model_GenerateNormal(x, y, z);
-			for (j = 0; j < 3; j++)
-				Math_VectorSet(0.5f, model->object.ovVertices[j].mvNormal);	//Math_MVToVector(normalVector, model->object.ovVertices[j].mvNormal);
-		}
-	}
-#endif
 }
 
 void Model_LoadMD2(model_t *mModel,void *Buffer)

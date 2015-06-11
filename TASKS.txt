@@ -8,8 +8,6 @@ Decide if we're still going for OBJ support.
 
 Get SDL2 FS support in, so we can support SDL_Image and other such libraries.
 
-Generate vertex normals.
-
 Can't jump while crouching. This needs to be modified.
 
 Want to find things to do? Terms to search for...

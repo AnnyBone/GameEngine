@@ -888,6 +888,9 @@ void Video_DrawArrays(VideoPrimitive_t vpPrimitiveType, unsigned int uiSize, boo
 		else
 			uiPrimitiveType = GL_TRIANGLES;
 		break;
+	case VIDEO_PRIMITIVE_TRIANGLE_STRIP:
+		uiPrimitiveType = GL_TRIANGLE_STRIP;
+		break;
 	case VIDEO_PRIMITIVE_TRIANGLE_FAN_LINE:	// GL_TRIANGLE_FAN
 	case VIDEO_PRIMITIVE_TRIANGLE_FAN:		// GL_TRIANGLE_FAN
 		if (bWireframe || (vpPrimitiveType == VIDEO_PRIMITIVE_TRIANGLE_FAN_LINE))

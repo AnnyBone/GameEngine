@@ -84,7 +84,7 @@ void MaterialEditor_Initialize(void)
 	mPreviewEntity->origin[0] = 50.0f;
 	mPreviewEntity->origin[1] = 0;
 	mPreviewEntity->origin[2] = 0;
-	mPreviewEntity->model = mSphereModel;
+	mPreviewEntity->model = mCubeModel;
 
 	bMaterialEditorInitialized = true;
 }
@@ -171,30 +171,9 @@ void MaterialEditor_Draw(void)
 	Draw_String(10, 20, va("Model: %s",	mPreviewEntity->model->name));
 }
 
-double dLightMove = 1.0;
-
 void MaterialEditor_Frame(void)
 {
 	mPreviewEntity->angles[1] += 0.5f;
-
-	if (cl.time > dLightMove)
-	{
-		dlMainLight->origin[0] = rand() % 40 / (rand()%40+1);
-		dlMainLight->origin[1] = rand() % 40 / (rand() % 40 + 1);
-		dlMainLight->origin[2] = rand() % 40 / (rand() % 40 + 1);
-
-		dLightMove = cl.time + 1.0;
-	}
-
-	dlMainLight->color[0] -= 0.5f;
-	if (dlMainLight->color[0] <= 0)
-		dlMainLight->color[0] = 255.0f;
-	dlMainLight->color[1] -= 1.0f;
-	if (dlMainLight->color[1] <= 0)
-		dlMainLight->color[1] = 255.0f;
-	dlMainLight->color[2] -= 0.1f;
-	if (dlMainLight->color[2] <= 0)
-		dlMainLight->color[2] = 255.0f;
 }
 
 void MaterialEditor_Display(Material_t *mDisplayMaterial)

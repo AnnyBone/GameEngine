@@ -108,15 +108,15 @@ void Alias_DrawFrame(MD2_t *mModel,entity_t *eEntity,lerpdata_t lLerpData)
         {
             for(j = 0; j < 3; j++)
             {
-                voModel[iVert].vVertex[j] =	(mtvVertices[mtTriangles->index_xyz[k]].v[j]*scale1[j]+mfFirst->translate[j])*(1.0f-lLerpData.blend)+
+                voModel[iVert].mvPosition[j] =	(mtvVertices[mtTriangles->index_xyz[k]].v[j]*scale1[j]+mfFirst->translate[j])*(1.0f-lLerpData.blend)+
 											(mtvLerpVerts[mtTriangles->index_xyz[k]].v[j]*scale2[j]+mfSecond->translate[j])*lLerpData.blend;
-				voModel[iVert].vColour[j] = 1.0f;
+				voModel[iVert].mvColour[j] = 1.0f;
             }
 
-			voModel[iVert].vTextureCoord[0][0] = (float)mModel->mtcTextureCoord[mtTriangles->index_st[k]].S / (float)mModel->skinwidth;
-			voModel[iVert].vTextureCoord[0][1] = (float)mModel->mtcTextureCoord[mtTriangles->index_st[k]].T / (float)mModel->skinheight;
+			voModel[iVert].mvST[0][0] = (float)mModel->mtcTextureCoord[mtTriangles->index_st[k]].S / (float)mModel->skinwidth;
+			voModel[iVert].mvST[0][1] = (float)mModel->mtcTextureCoord[mtTriangles->index_st[k]].T / (float)mModel->skinheight;
 
-			voModel[iVert].vColour[3] = fAlpha;
+			voModel[iVert].mvColour[3] = fAlpha;
 
 			iVert++;
         }
@@ -125,6 +125,7 @@ void Alias_DrawFrame(MD2_t *mModel,entity_t *eEntity,lerpdata_t lLerpData)
 #else
 	MD2TriangleVertex_t	*verts1, *verts2;
 	MD2Frame_t *frame1, *frame2;
+	VideoPrimitive_t primitiveType;
 
 	float ilerp, fAlpha;
 	unsigned int uiVerts = 0;
@@ -150,11 +151,15 @@ void Alias_DrawFrame(MD2_t *mModel,entity_t *eEntity,lerpdata_t lLerpData)
 
 	voModel = (VideoObjectVertex_t*)Hunk_TempAlloc(mModel->num_glcmds*sizeof(VideoObjectVertex_t));
 
-	for (;;)
+	while (count = *(order++))
 	{
-		count = *order++;
-		if (!count)
-			break;		// done
+		if (count < 0)
+		{
+			primitiveType = VIDEO_PRIMITIVE_TRIANGLE_FAN;
+			count = -1;
+		}
+		else
+			primitiveType = VIDEO_PRIMITIVE_TRIANGLE_FAN;
 
 		uiVerts = 0;
 
@@ -174,7 +179,7 @@ void Alias_DrawFrame(MD2_t *mModel,entity_t *eEntity,lerpdata_t lLerpData)
 				eEntity->model->object.ovVertices[uiVerts].mvNormal[2]);
 
 			if (bShading)
-				Video_ObjectColour(&voModel[uiVerts],1.0f,1.0f,1.0f,fAlpha);
+				Video_ObjectColour(&voModel[uiVerts], 1.0f, 1.0f, 1.0f, fAlpha);
 			else
 				Video_ObjectColour(&voModel[uiVerts], 1.0f, 1.0f, 1.0f, 1.0f);
 
