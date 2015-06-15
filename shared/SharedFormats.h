@@ -42,20 +42,6 @@ typedef enum
 #define	MD2E_VERSION	9
 #define	MD2E_EXTENSION	".model"
 
-typedef struct
-{
-	MathVector3f_t position;
-	MathVector3f_t normal;
-} MD2ETriangleVertex_t;
-
-typedef struct
-{
-	MathVector3f_t scale;				// multiply byte verts by this
-	MathVector3f_t translate;			// then add this
-	char name[16];						// frame name from grabbing
-	MD2ETriangleVertex_t vertices[1];	// variable sized
-} MD2EFrame_t;
-
 /*
 	MD2 Format
 */

@@ -21,9 +21,6 @@
     <ClCompile Include="vis_sound.c" />
     <ClCompile Include="winding.c" />
     <ClCompile Include="level_main.c" />
-    <ClCompile Include="..\shared\shared_formats.c">
-      <Filter>Shared</Filter>
-    </ClCompile>
     <ClCompile Include="level_wad.c" />
     <ClCompile Include="level_faces.c" />
     <ClCompile Include="level_outside.c" />
@@ -31,6 +28,9 @@
     <ClCompile Include="level_tjunc.c" />
     <ClCompile Include="level_tree.c" />
     <ClCompile Include="level_write.c" />
+    <ClCompile Include="..\shared\SharedFormats.c">
+      <Filter>Shared</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="bsp5.h" />
@@ -44,7 +44,7 @@
     <ClInclude Include="threads.h" />
     <ClInclude Include="vis.h" />
     <ClInclude Include="winding.h" />
-    <ClInclude Include="..\shared\shared_formats.h">
+    <ClInclude Include="..\shared\SharedFormats.h">
       <Filter>Shared</Filter>
     </ClInclude>
   </ItemGroup>

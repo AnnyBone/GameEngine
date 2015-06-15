@@ -660,7 +660,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\shared\shared_formats.c" />
+    <ClCompile Include="..\shared\SharedFormats.c" />
     <ClCompile Include="brush.c" />
     <ClCompile Include="bsp2prt.c" />
     <ClCompile Include="bspfile.c" />
@@ -690,7 +690,7 @@
     <ClCompile Include="level_write.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\shared\shared_formats.h" />
+    <ClInclude Include="..\shared\SharedFormats.h" />
     <ClInclude Include="bsp5.h" />
     <ClInclude Include="bspfile.h" />
     <ClInclude Include="cmdlib.h" />

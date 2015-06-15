@@ -582,8 +582,8 @@ void Video_DrawMaterial(
 	VideoObjectVertex_t *voObject, VideoPrimitive_t vpPrimitiveType, unsigned int uiSize,
 	bool bPost)
 {
-	unsigned int	i,uiUnit;
-	MaterialSkin_t	*msCurrentSkin;
+	unsigned int i, uiUnit;
+	MaterialSkin_t *msCurrentSkin;
 
 	// If we're drawing flat, then don't apply textures.
 	if (r_drawflat_cheatsafe)
@@ -878,9 +878,6 @@ void Video_DrawArrays(VideoPrimitive_t vpPrimitiveType, unsigned int uiSize, boo
 	// Convert between VIDEO_PRIMITIVE and OpenGL's own stuff.
 	switch (vpPrimitiveType)
 	{
-	case VIDEO_PRIMITIVE_QUAD_STRIP:
-		uiPrimitiveType = GL_QUAD_STRIP;
-		break;
 	case VIDEO_PRIMITIVE_LINE:		// GL_LINES
 	case VIDEO_PRIMITIVE_TRIANGLES:	// GL_TRIANGLES
 		if (bWireframe || (vpPrimitiveType == VIDEO_PRIMITIVE_LINE))
@@ -1154,41 +1151,6 @@ unsigned int Video_ShaderConvertType(VideoShaderType_t vstType)
 	}
 
 	return 0;
-}
-
-/*  Simple whipped up function to demo shader processing
-    then simple error management. Replace this...
-*/
-void Video_ShaderLoad(const char *ccPath,VideoShaderType_t vstType)
-{
-#ifdef VIDEO_ENABLE_SHADERS
-    int             iState;
-    unsigned int    uiShader;
-	char			*cShaderSource;
-
-	if (!LoadFile(ccPath, &cShaderSource))
-	{
-	}
-
-	uiShader = glCreateShader(Video_ShaderConvertType(vstType));
-
-	glShaderSource(uiShader, 1, &cShaderSource, NULL);
-    glCompileShader(uiShader);
-
-    glGetShaderiv(uiShader,GL_COMPILE_STATUS,&iState);
-    if(!iState)
-    {
-        char cLog[512];
-
-        glGetShaderInfoLog(uiShader,512,NULL,cLog);
-
-        // [12/3/2014] Spit a log out to the console ~hogsy
-        Con_Warning("Failed to compile shader!\n%s",cLog);
-        return;
-    }
-
-//    glShaderSource()
-#endif
 }
 
 void Video_PreFrame(void)
