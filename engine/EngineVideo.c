@@ -1,6 +1,4 @@
-/*	Copyright (C) 1996-2001 Id Software, Inc.
-	Copyright (C) 2002-2009 John Fitzgibbons and others
-	Copyright (C) 2011-2015 OldTimes Software
+/*	Copyright (C) 2011-2015 OldTimes Software
 
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License
@@ -182,10 +180,8 @@ void Video_Initialize(void)
 	else
 		Con_Warning("ARB_vertex_buffer_object isn't supported by your hardware!\n");
 
-#ifdef KATANA_VIDEO_NEXT
 	if (!GLEE_ARB_vertex_program || !GLEE_ARB_fragment_program)
 		Sys_Error("Unsupported video hardware!\n");
-#endif
 
 	// Set the default states...
 

@@ -38,6 +38,7 @@ public:
 	void SetVariable(const char *name, MathVector3f_t vector);
 	void SetVariable(const char *name, float x, float y, float z, float a);
 	void SetVariable(const char *name, int i);
+	void SetVariable(const char *name, float f);
 protected:
 private:
 	const char *vertexSource, *fragmentSource;
@@ -187,6 +188,11 @@ void CVideoShader::SetVariable(const char *name, int i)
 	glUniform1i(glGetUniformLocation(program, name), i);
 }
 
+void CVideoShader::SetVariable(const char *name, float f)
+{
+	glUniform1f(glGetUniformLocation(program, name), f);
+}
+
 /**/
 
 CVideoShader *modelShader = NULL;
@@ -213,6 +219,11 @@ void VideoShader_Disable(void)
 void VideoShader_SetVariablei(const char *name, int i)
 {
 	currentShader->SetVariable(name, i);
+}
+
+void VideoShader_SetVariablef(const char *name, float f)
+{
+	currentShader->SetVariable(name, f);
 }
 
 void VideoShader_SetVariable3f(const char *name, float x, float y, float z)

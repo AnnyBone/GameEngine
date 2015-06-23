@@ -315,13 +315,13 @@ void _FileSystem_SetShaderPath(char *cArg);
 
 ScriptKey_t	skScriptKeys[]=
 {
-	{	"SetBasePath",			_FileSystem_SetBasePath			},
-	{	"SetTexturePath",		_FileSystem_SetTexturePath		},
-	{	"SetMaterialPath",		_FileSystem_SetMaterialPath		},
-	{	"SetSoundPath",			_FileSystem_SetSoundPath		},
-	{	"SetLevelPath",			_FileSystem_SetLevelPath		},
-	{	"SetScreenshotPath",	_FileSystem_SetScreenshotPath	},
-	{	"AddGameDirectory",		_FileSystem_AddGameDirectory	},
+	{ "SetBasePath", _FileSystem_SetBasePath },
+	{ "SetTexturePath", _FileSystem_SetTexturePath },
+	{ "SetMaterialPath", _FileSystem_SetMaterialPath },
+	{ "SetSoundPath", _FileSystem_SetSoundPath },
+	{ "SetLevelPath", _FileSystem_SetLevelPath },
+	{ "SetScreenshotPath", _FileSystem_SetScreenshotPath },
+	{ "AddGameDirectory", _FileSystem_AddGameDirectory },
 	{ "SetFontPath", _FileSystem_SetFontPath },
 	{ "SetModulePath", _FileSystem_SetModulePath },
 	{ "SetShaderPath", _FileSystem_SetShaderPath },
@@ -331,28 +331,27 @@ ScriptKey_t	skScriptKeys[]=
 
 /*	Loads a script.
 */
-bool Script_Load(/*const */char *ccPath)
+bool Script_Load(const char *ccPath)
 {
-	void *cData;
+	uint8_t *data;
 
-	if(!LoadFile(ccPath,&cData))
+	data = COM_LoadTempFile(ccPath);
+	if (!data)
 	{
 		Con_Warning("Failed to load script! (%s)\n",ccPath);
 		return false;
 	}
-
-	Script_StartTokenParsing((char*)cData);
+	
+	Script_StartTokenParsing((char*)data);
 
 	if(!Script_GetToken(true))
 	{
 		Con_Warning("Failed to get initial token! (%s) (%i)\n",ccPath,iScriptLine);
-		free(cData);
 		return false;
 	}
 	else if(Q_strcmp(cToken,"{"))
 	{
 		Con_Warning("Missing '{'! (%s) (%i)\n",ccPath,iScriptLine);
-		free(cData);
 		return false;
 	}
 
@@ -389,8 +388,6 @@ bool Script_Load(/*const */char *ccPath)
 			}
 		}
 	} while(true);
-
-	free(cData);
 
 	return true;
 }

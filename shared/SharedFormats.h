@@ -51,11 +51,10 @@ typedef enum
 
 #define	MD2_VERSION	8
 
-#define	MD2_MAX_SIZE		(1024*4200)
 #define	MD2_MAX_FRAMES		1024
 #define MD2_MAX_SKINS		32
 #define MD2_MAX_TRIANGLES	4096
-#define	MD2_MAX_VERTICES	12288
+#define	MD2_MAX_VERTICES	8192
 
 typedef struct
 {

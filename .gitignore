@@ -51,3 +51,4 @@ editor_legacy/Debug/RCa07736
 *.properties
 *.am
 *.in
+/bin/engine/paths.script

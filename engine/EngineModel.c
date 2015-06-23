@@ -1171,10 +1171,7 @@ void Model_LoadIQM(model_t *mModel, void *Buffer)
 #if 0
 	IQMHeader_t	hHeader;
 
-	// [14/9/2012] Checks ~hogsy
-	if (hHeader.uiFileSize <= 0 || hHeader.uiFileSize >= MD2_MAX_SIZE)
-		Sys_Error("%s is not a valid model", mModel->name);
-	else if (hHeader.uiVersion != IQM_VERSION)
+	if (hHeader.uiVersion != IQM_VERSION)
 		Sys_Error("%s is an invalid version (expected %i, recieved %i)", IQM_VERSION, hHeader.uiVersion);
 	else if (hHeader.uiNumTriangles < 1 || hHeader.uiNumTriangles > MD2_MAX_TRIANGLES)
 		Sys_Error("%s has invalid number of triangles (%i)", mModel->name, hHeader.uiNumTriangles);

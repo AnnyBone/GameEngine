@@ -1028,10 +1028,11 @@ void _FileSystem_Path(void)
 */
 void FileSystem_UpdatePath(char *cPath)
 {
+#if !defined(_WIN32) // We don't need to do this on Windows.
     int i;
-
     for(i = 0; cPath[i]; i++)
         cPath[i] = tolower(cPath[i]);
+#endif
 }
 
 /*	The filename will be prefixed by the current game directory
@@ -1109,8 +1110,7 @@ void FileSystem_CopyFile(char *netpath,char *cachepath)
 int COM_FindFile (char *filename, int *handle, FILE **file)
 {
 	searchpath_t    *search;
-	char            netpath[MAX_OSPATH];
-	char            cachepath[MAX_OSPATH];
+	char            netpath[MAX_OSPATH], cachepath[MAX_OSPATH];
 	int             i;
 	int             findtime, cachetime;
 
@@ -1125,14 +1125,14 @@ int COM_FindFile (char *filename, int *handle, FILE **file)
 		return 0;
 	}
 
-    // [10/3/2014] Switch the path to lowercase ~hogsy
+    // Switch the path to lowercase.
     FileSystem_UpdatePath(filename);
 
 	// search through the path, one element at a time
 	search = com_searchpaths;
 	for ( ; search ; search = search->next)
 	{
-#if 0
+#if 0 // TODO: Implement this again.
 		// is the element a pak file?
 		if (search->pack)
 		{
@@ -1529,8 +1529,11 @@ void FileSystem_Initialize(void)
 	else
 		com_cachedir[0] = 0;
 
+	// Add the engine directory to our search paths.
+	FileSystem_AddGameDirectory(va("%s/engine", basedir));
+
 	// [5/2/2014] Check out our paths script ~hogsy
-	if(!Script_Load(va("%s/"PATH_ENGINE"/scripts/paths.script",basedir)))
+	if(!Script_Load("paths.script"))
 		Sys_Error("Failed to load paths script!\n");
 
 	// Check each of our set paths to make sure they're set!
@@ -1572,9 +1575,6 @@ void FileSystem_Initialize(void)
 		Con_Warning("Shaders path wasn't set in paths script!\n");
 		sprintf(Global.cShaderPath, "shaders/");
 	}
-
-	// Add the engine directory to our search paths.
-	FileSystem_AddGameDirectory(va("%s/"PATH_ENGINE, basedir));
 
 	// Start up with the default path
 	FileSystem_AddGameDirectory(va("%s/%s",basedir,host_parms.cBasePath));

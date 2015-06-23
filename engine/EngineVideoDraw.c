@@ -26,8 +26,7 @@
 #define	BLOCK_WIDTH		256
 #define	BLOCK_HEIGHT	BLOCK_WIDTH
 
-cvar_t		cvConsoleAlpha		= { "screen_consolealpha",	"0.7",						true,	false,  "Sets the alpha value for the console background."  }; //johnfitz
-cvar_t		cvConsoleBackground	= { "screen_consoleback",	"",							true,	false,  "Sets the path for the console background."         };
+cvar_t cvConsoleAlpha = { "screen_consolealpha", "0.7", true, false, "Sets the alpha value for the console background." }; //johnfitz
 
 qpic_t	*draw_backtile;
 
@@ -320,17 +319,9 @@ void Draw_NewGame (void)
 	menu_numcachepics = 0;
 }
 
-void Draw_PrecacheConsoleBackground(void)
-{
-#if 0
-	Client_PrecacheResource(RESOURCE_TEXTURE,cvConsoleBackground.string);
-#endif
-}
-
 void Draw_Init (void)
 {
 	Cvar_RegisterVariable(&cvConsoleAlpha,NULL);
-	Cvar_RegisterVariable(&cvConsoleBackground,Draw_PrecacheConsoleBackground);
 
 	// clear scrap and allocate gltextures
 	memset(&scrap_allocated, 0, sizeof(scrap_allocated));
@@ -405,11 +396,7 @@ void Draw_ConsoleBackground(void)
 	if(cls.state == ca_connected)
 		fAlpha = cvConsoleAlpha.value;
 
-	// [27/5/2013] Simplified this check ~hogsy
-	if(!cvConsoleBackground.string[0])
-		Draw_Fill(0,0,vid.conwidth,vid.conheight,0,0,0,fAlpha);
-	else
-		Draw_ExternPic(cvConsoleBackground.string,fAlpha,0,0,vid.conwidth,vid.conheight);
+	Draw_Fill(0,0,vid.conwidth,vid.conheight,0,0,0,fAlpha);
 }
 
 /*	This repeats a 64*64 tile graphic to fill the screen around a sized down

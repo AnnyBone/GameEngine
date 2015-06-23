@@ -1,6 +1,4 @@
-/*	Copyright (C) 1996-2001 Id Software, Inc.
-	Copyright (C) 2002-2009 John Fitzgibbons and others
-	Copyright (C) 2011-2015 OldTimes Software
+/*	Copyright (C) 2011-2015 OldTimes Software
 
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License
@@ -50,15 +48,10 @@ pINSTANCE hEngineInstance;
 
 int main(int argc,char *argv[])
 {
-	char sPath[PLATFORM_MAX_PATH];
-
-	// Update the path to point to where we need it.
-	sprintf(sPath, "./%s/%s", PATH_ENGINE, MODULE_ENGINE);
-
 	// Load the module interface for the engine module.
 	Engine = (EngineExport_t*)pModule_LoadInterface(
 		hEngineInstance,
-		sPath,	//"./"PATH_ENGINE"/"MODULE_ENGINE,
+		"./"MODULE_ENGINE,
 		"Engine_Main",
 		&Launcher);
 	// Let us know if it failed to load.

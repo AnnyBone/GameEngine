@@ -28,11 +28,6 @@ void EngineInterface_PrintError(char *text)
 
 void EngineInterface_Load()
 {
-	char path[PLATFORM_MAX_PATH];
-
-	// Update the path to point to where we need it.
-	sprintf(path, "./%s/%s", PATH_ENGINE, MODULE_ENGINE);
-
 	editor.PrintError = EngineInterface_PrintError;
 	editor.PrintMessage = EngineInterface_PrintMessage;
 	editor.PrintWarning = EngineInterface_PrintWarning;
@@ -40,7 +35,7 @@ void EngineInterface_Load()
 	// Load the module interface for the engine module.
 	engine = (EngineExport_t*)pModule_LoadInterface(
 		engineInstance,
-		path,
+		"./"MODULE_ENGINE,
 		"Engine_Main",
 		&editor);
 	// Let us know if it failed to load.

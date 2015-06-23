@@ -76,13 +76,12 @@ void Alias_DrawFrame(MD2_t *mModel,entity_t *eEntity,lerpdata_t lLerpData)
 {
 	MD2TriangleVertex_t	*verts1, *verts2;
 	MD2Frame_t *frame1, *frame2;
-	VideoPrimitive_t primitiveType;
 
 	float ilerp, fAlpha;
 	unsigned int uiVerts = 0;
 	int	*order, count;
 
-	VideoObjectVertex_t *voModel;
+	VideoObjectVertex_t voModel[MD2_MAX_TRIANGLES] = { 0 };
 
 	ilerp = 1.0f - lLerpData.blend;
 	fAlpha = ENTALPHA_DECODE(eEntity->alpha);
@@ -90,17 +89,16 @@ void Alias_DrawFrame(MD2_t *mModel,entity_t *eEntity,lerpdata_t lLerpData)
 	//new version by muff - fixes bug, easier to read, faster (well slightly)
 	frame1 = (MD2Frame_t*)((uint8_t*)mModel + mModel->ofs_frames + (mModel->framesize*eEntity->draw_lastpose));
 	frame2 = (MD2Frame_t*)((uint8_t*)mModel + mModel->ofs_frames + (mModel->framesize*eEntity->draw_pose));
-
-	// TODO: do this via shader.
+	
 	if ((eEntity->scale != 1.0f) && (eEntity->scale > 0.1f))
-		glScalef(eEntity->scale, eEntity->scale, eEntity->scale);
+		VideoShader_SetVariablef("vertexScale", eEntity->scale);
+	else
+		VideoShader_SetVariablef("vertexScale", 1.0f);
 
 	verts1 = &frame1->verts[0];
 	verts2 = &frame2->verts[0];
 
 	order = (int*)((uint8_t*)mModel + mModel->ofs_glcmds);
-
-	voModel = (VideoObjectVertex_t*)Hunk_TempAlloc(mModel->num_glcmds*sizeof(VideoObjectVertex_t));
 
 	for (;;)
 	{
