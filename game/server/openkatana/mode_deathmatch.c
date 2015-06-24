@@ -59,7 +59,7 @@ void Deathmatch_Frame(void)
 	/*
 	for( i = 0; i < Server.iClients; i++)
 	{
-		edict_t *eClient = getentnum(i);
+		ServerEntity_t *eClient = getentnum(i);
 		if(eClient->iScore >= cvServerMaxScore.value)
 			you won!
 	}

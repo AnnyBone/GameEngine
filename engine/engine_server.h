@@ -7,9 +7,9 @@
 
 #include "shared_server.h"
 
-edict_t *Server_FindEntity(edict_t *eStartEntity,char *cName,bool bClassname);
+ServerEntity_t *Server_FindEntity(ServerEntity_t *eStartEntity,char *cName,bool bClassname);
 
-void	Server_SinglePrint(edict_t *eEntity,char *cMessage);
+void	Server_SinglePrint(ServerEntity_t *eEntity,char *cMessage);
 void	Server_PrecacheResource(int iType,const char *ccResource);
 
 double	Server_GetFrameTime(void);

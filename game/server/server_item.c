@@ -8,7 +8,7 @@
 
 #include "server_item.h"
 
-void CTF_FlagTouch(edict_t *eFlag,edict_t *eOther);
+void CTF_FlagTouch(ServerEntity_t *eFlag,ServerEntity_t *eOther);
 
 Item_t Items[] =
 {
@@ -70,7 +70,7 @@ Item_t *Item_GetItem(int iItemID)
 /*	Returns true if the given item exists in the entities
 	inventory.
 */
-bool Item_CheckInventory(Item_t *iItem,edict_t *eEntity)
+bool Item_CheckInventory(Item_t *iItem,ServerEntity_t *eEntity)
 {
 	int i;
 
@@ -84,7 +84,7 @@ bool Item_CheckInventory(Item_t *iItem,edict_t *eEntity)
 /*	Return an item that we know is in our inventory.
 	Safer alternative to the above.
 */
-Item_t *Item_GetInventory(int iItemID,edict_t *eEntity)
+Item_t *Item_GetInventory(int iItemID,ServerEntity_t *eEntity)
 {
 	Item_t *iItem = Item_GetItem(iItemID);
 	if(!iItem)
@@ -101,7 +101,7 @@ Item_t *Item_GetInventory(int iItemID,edict_t *eEntity)
 
 /*	Adds an item to the entities inventory.
 */
-void Item_AddInventory(Item_t *iItem,edict_t *eEntity)
+void Item_AddInventory(Item_t *iItem,ServerEntity_t *eEntity)
 {
 	int i;
 
@@ -118,7 +118,7 @@ void Item_AddInventory(Item_t *iItem,edict_t *eEntity)
 
 /*	Removes an item from the entities inventory.
 */
-void Item_RemoveInventory(Item_t *iItem,edict_t *eEntity)
+void Item_RemoveInventory(Item_t *iItem,ServerEntity_t *eEntity)
 {
 	int i,
 		iLength	= sizeof(Items);
@@ -140,7 +140,7 @@ void Item_RemoveInventory(Item_t *iItem,edict_t *eEntity)
 
 /*	Clears out the players current inventory.
 */
-void Item_ClearInventory(edict_t *eEntity)
+void Item_ClearInventory(ServerEntity_t *eEntity)
 {
 	// Clear out the inventory array.
 	memset(&eEntity->v.iInventory[0], 0, sizeof(eEntity->v.iInventory));
@@ -150,7 +150,7 @@ void Item_ClearInventory(edict_t *eEntity)
 	Spawnables
 */
 
-void Item_Respawn(edict_t *ent)
+void Item_Respawn(ServerEntity_t *ent)
 {
 	Entity_SetModel(ent,ent->local.cOldModel);
 
@@ -160,7 +160,7 @@ void Item_Respawn(edict_t *ent)
 	Sound(ent,CHAN_ITEM,"items/respawn.wav",255,ATTN_NORM);
 }
 
-void Item_Touch(edict_t *eItem,edict_t *eOther)
+void Item_Touch(ServerEntity_t *eItem,ServerEntity_t *eOther)
 {
 	Item_t *iItem;
 
@@ -328,7 +328,7 @@ void Item_Precache(void)
 }
 
 // [14/7/2012] Renamed to Item_Spawn and heavily revised ~hogsy
-void Item_Spawn(edict_t *eItem)
+void Item_Spawn(ServerEntity_t *eItem)
 {
 	Item_t	*iItem = Item_GetItem(eItem->local.style);
 

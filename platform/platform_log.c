@@ -9,7 +9,7 @@
 
 #define	LOG_FILE_EXTENSION	".log"
 
-void Log_Write(const char *ccPath, char *cMessage, ...)
+void pLog_Write(const char *ccPath, char *cMessage, ...)
 {
 	pFUNCTION_START;
 
@@ -30,6 +30,24 @@ void Log_Write(const char *ccPath, char *cMessage, ...)
 	fLog = fopen(cPath, "a");
 	if (fwrite(scData, sizeof(char), uiData, fLog) != uiData)
 		pError_Set("Failed to write to log! (%s)", cPath);
+	fclose(fLog);
+
+	pFUNCTION_END;
+}
+
+void pLog_Clear(const char *ccPath)
+{
+	pFUNCTION_START;
+
+	char cPath[PLATFORM_MAX_PATH];
+
+	sprintf(cPath, "%s"LOG_FILE_EXTENSION, ccPath);
+
+#ifdef _WIN32
+	_unlink(cPath);
+#else
+	unlink(cPath);
+#endif
 
 	pFUNCTION_END;
 }

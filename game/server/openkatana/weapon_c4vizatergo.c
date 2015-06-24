@@ -107,14 +107,14 @@ EntityFrame_t C4Animation_Trigger [] =
 	{   NULL, 59, 0.08f, true    }
 };
 
-void C4Vizatergo_Deploy(edict_t *ent)
+void C4Vizatergo_Deploy(ServerEntity_t *ent)
 {
 	Sound(ent,CHAN_WEAPON,"weapons/c4/c4cock.wav",255,ATTN_NORM);
 
 	Weapon_Animate(ent,C4Animation_Deploy);
 }
 
-void C4Vizatergo_Explode(edict_t *eVizatergo)
+void C4Vizatergo_Explode(ServerEntity_t *eVizatergo)
 {
 	Sound(eVizatergo,CHAN_AUTO,va("fx/explosion%i.wav",rand()%6+1),255,ATTN_NORM);
 
@@ -124,7 +124,7 @@ void C4Vizatergo_Explode(edict_t *eVizatergo)
 	Entity_Remove(eVizatergo);
 }
 
-void C4Vizatergo_C4BallTouch(edict_t *ent,edict_t *eOther)
+void C4Vizatergo_C4BallTouch(ServerEntity_t *ent,ServerEntity_t *eOther)
 {
 #if 0
 	// [12/8/2012] Don't touch our owner ~hogsy
@@ -160,12 +160,12 @@ void C4Vizatergo_C4BallTouch(edict_t *ent,edict_t *eOther)
 #endif
 }
 
-void C4Vizatergo_Think(edict_t *ent)
+void C4Vizatergo_Think(ServerEntity_t *ent)
 {
 #if 0	// [12/12/2012] TODO: Finish... ~hogsy
 	float	fDistance;
 	vec3_t	vDistance;
-	edict_t *eDistantEnt = Game.Server_FindRadius(ent->v.origin,512.0f);
+	ServerEntity_t *eDistantEnt = Game.Server_FindRadius(ent->v.origin,512.0f);
 
 	if(eDistantEnt)
 	{
@@ -190,12 +190,12 @@ void C4Vizatergo_Think(edict_t *ent)
 #endif
 }
 
-void C4Vizatergo_PrimaryAttack(edict_t *eOwner)
+void C4Vizatergo_PrimaryAttack(ServerEntity_t *eOwner)
 {
 	// [26/2/2012] Revised and fixed ~hogsy
 	vec3_t	vOrigin;
 	MathVector3_t mvDirection;
-	edict_t *c4ball = Entity_Spawn();
+	ServerEntity_t *c4ball = Entity_Spawn();
 
 	Sound(eOwner,CHAN_AUTO,"weapons/c4/c4fire.wav",255,ATTN_NORM);
 	Sound(eOwner,CHAN_AUTO,"weapons/c4/c4cock.wav",255,ATTN_NORM);
@@ -242,9 +242,9 @@ void C4Vizatergo_PrimaryAttack(edict_t *eOwner)
 		eOwner->local.dAttackFinished = Server.dTime+1.2;
 }
 
-void C4Vizatergo_SecondaryAttack(edict_t *eOwner)
+void C4Vizatergo_SecondaryAttack(ServerEntity_t *eOwner)
 {
-	edict_t *eExplodable = Engine.Server_FindRadius(eOwner->v.origin,10000.0f);
+	ServerEntity_t *eExplodable = Engine.Server_FindRadius(eOwner->v.origin,10000.0f);
 
 	do
 	{

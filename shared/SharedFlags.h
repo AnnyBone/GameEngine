@@ -40,7 +40,9 @@
 	when a build is released publically.	*/
 #define ENGINE_VERSION_MAJOR	0
 #define ENGINE_VERSION_MINOR	3
-#define ENGINE_VERSION_BUILD	927	// 24/6/2015
+#define ENGINE_VERSION_BUILD	928	// 25/6/2015
+
+#define	LOG_GLOBAL	"engine"
 
 #define	PATH_ENGINE		"engine"			// Directory to look in for engine specific modules / assets.
 #define	PATH_LOGS		PATH_ENGINE"/logs"	// Default directory for saving logs.

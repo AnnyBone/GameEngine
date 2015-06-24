@@ -30,7 +30,6 @@ typedef enum
 
 typedef struct ServerEntity_s ServerEntity_t;
 
-#define	edict_t ServerEntity_t
 #define	edict_s ServerEntity_s
 
 typedef struct
@@ -502,7 +501,7 @@ typedef struct ServerEntity_s
 
 #define	NEXT_EDICT(e) ((ServerEntity_t *)( (uint8_t *)e + sizeof(ServerEntity_t)))
 
-#define	EDICT_TO_PROG(e) ((uint8_t*)e-(uint8_t*)sv.edicts)
+#define	ServerEntity_tO_PROG(e) ((uint8_t*)e-(uint8_t*)sv.edicts)
 #define PROG_TO_EDICT(e) ((ServerEntity_t *)((uint8_t *)sv.edicts + e))
 
 #define	FIELD(y)	(intptr_t)&(((ServerEntity_t*)0)->y)

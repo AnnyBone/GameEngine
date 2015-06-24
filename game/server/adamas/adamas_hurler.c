@@ -13,12 +13,12 @@ double	dHurlerSpawnDelay = HURLER_MAX_DELAY;
 
 int	iHurlers = 0;
 
-void Hurler_Pain(edict_t *eHurler,edict_t *eOther);
-void Hurler_Think(edict_t *eHurler);
-void Hurler_Touch(edict_t *eHurler,edict_t *eOther);
-void Hurler_Die(edict_t *eHurler,edict_t *eOther);
+void Hurler_Pain(ServerEntity_t *eHurler,ServerEntity_t *eOther);
+void Hurler_Think(ServerEntity_t *eHurler);
+void Hurler_Touch(ServerEntity_t *eHurler,ServerEntity_t *eOther);
+void Hurler_Die(ServerEntity_t *eHurler,ServerEntity_t *eOther);
 
-void Hurler_Spawn(edict_t *eHurler)
+void Hurler_Spawn(ServerEntity_t *eHurler)
 {
 	Server_PrecacheModel(HURLER_MODEL_BODY);
 
@@ -51,9 +51,9 @@ void Hurler_Spawn(edict_t *eHurler)
 //	DropToFloor(eHurler);
 }
 
-void Hurler_Think(edict_t *eHurler)
+void Hurler_Think(ServerEntity_t *eHurler)
 {
-	edict_t *eTarget;
+	ServerEntity_t *eTarget;
 
 	switch(eHurler->Monster.iThink)
 	{
@@ -125,7 +125,7 @@ void Hurler_Think(edict_t *eHurler)
 			tSpawnTraceCheck = Engine.Server_Move(eHurler->v.origin,eHurler->v.mins,eHurler->v.maxs,vNewOrigin,MOVE_NOMONSTERS,eHurler);
 			if(!tSpawnTraceCheck.bAllSolid || tSpawnTraceCheck.bStartSolid)
 			{
-				edict_t *eNewHurler = Entity_Spawn();
+				ServerEntity_t *eNewHurler = Entity_Spawn();
 
 				Math_VectorCopy(vNewOrigin,eNewHurler->v.origin);
 
@@ -171,7 +171,7 @@ void Hurler_Think(edict_t *eHurler)
 	}
 }
 
-void Hurler_Touch(edict_t *eHurler,edict_t *eOther)
+void Hurler_Touch(ServerEntity_t *eHurler,ServerEntity_t *eOther)
 {
 	if(Entity_IsPlayer(eOther))
 	{
@@ -197,7 +197,7 @@ void Hurler_Touch(edict_t *eHurler,edict_t *eOther)
 	}
 }
 
-void Hurler_Pain(edict_t *eHurler,edict_t *eOther)
+void Hurler_Pain(ServerEntity_t *eHurler,ServerEntity_t *eOther)
 {
 	vec3_t	vOrigin;
 	char	cBlood[6];
@@ -216,7 +216,7 @@ void Hurler_Pain(edict_t *eHurler,edict_t *eOther)
 	Monster_SetThink(eHurler,THINK_PURSUING);
 }
 
-void Hurler_Die(edict_t *eHurler,edict_t *eOther)
+void Hurler_Die(ServerEntity_t *eHurler,ServerEntity_t *eOther)
 {
 	Entity_Remove(eHurler);
 }

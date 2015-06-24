@@ -37,12 +37,12 @@ EntityFrame_t efPulseRifleAttack[] =
 	{ NULL, 27, 0.1f, true }
 };
 
-void PulseRifle_Deploy(edict_t *ent)
+void PulseRifle_Deploy(ServerEntity_t *ent)
 {
 	Weapon_Animate(ent,efPulseRifleDeploy);
 }
 
-void PulseRifle_PrimaryAttack(edict_t *ent)
+void PulseRifle_PrimaryAttack(ServerEntity_t *ent)
 {
 	Sound(ent,CHAN_WEAPON,"weapons/pulserifle/pulsefire2.wav",255,ATTN_NORM);
 
@@ -67,7 +67,7 @@ void PulseRifle_PrimaryAttack(edict_t *ent)
 }
 
 // [17/7/2012] Revised ~hogsy
-void CorditeExplode(edict_t *ent)
+void CorditeExplode(ServerEntity_t *ent)
 {
 	vec3_t vel;
 
@@ -84,7 +84,7 @@ void CorditeExplode(edict_t *ent)
 }
 
 // [17/7/2012] Revised ~hogsy
-void CorditeTouch(edict_t *ent, edict_t *other)
+void CorditeTouch(ServerEntity_t *ent, ServerEntity_t *other)
 {
 	if(other == ent->local.eOwner)
 		return;
@@ -94,9 +94,9 @@ void CorditeTouch(edict_t *ent, edict_t *other)
 	Entity_Damage(other, ent, 50, 0);
 }
 
-void throw_cordite(edict_t *ent)
+void throw_cordite(ServerEntity_t *ent)
 {
-	edict_t *greekfire = Entity_Spawn();
+	ServerEntity_t *greekfire = Entity_Spawn();
 
 	greekfire->v.cClassname	= "cordite";
 	greekfire->v.movetype	= MOVETYPE_BOUNCE;
@@ -121,7 +121,7 @@ void throw_cordite(edict_t *ent)
 	Entity_SetOrigin(greekfire, ent->v.origin);
 }
 
-void PulseRifle_SecondaryAttack(edict_t *ent)
+void PulseRifle_SecondaryAttack(ServerEntity_t *ent)
 {
 	// [23/5/2012] Revised ~hogsy
 	// [25/6/2012] Revised ~hogsy

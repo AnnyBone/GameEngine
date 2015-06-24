@@ -26,7 +26,7 @@
 	Server Code for Moving Users
 */
 
-edict_t	*sv_player;
+ServerEntity_t	*sv_player;
 
 cvar_t	sv_edgefriction = {"edgefriction", "2"};
 

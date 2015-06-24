@@ -17,7 +17,7 @@ enum
 };
 
 // Deathmatch
-void Deathmatch_Spawn(edict_t *ePlayer);
+void Deathmatch_Spawn(ServerEntity_t *ePlayer);
 void Deathmatch_Frame(void);
 
 bool	bIsMultiplayer,

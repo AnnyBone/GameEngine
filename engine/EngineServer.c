@@ -73,7 +73,7 @@ EVENT MESSAGES
 	An attenuation of 0 will play full volume everywhere in the level.
 	Larger attenuations will drop off.  (max 4 attenuation)
 */
-void SV_StartSound(edict_t *entity,int channel,char *sample,int volume,float attenuation)
+void SV_StartSound(ServerEntity_t *entity,int channel,char *sample,int volume,float attenuation)
 {
 	int	sound_num,field_mask,i,ent;
 
@@ -195,7 +195,7 @@ void SV_SendServerinfo(client_t *client)
 
 	// [16/1/2014] Send over lights ~hogsy
 	{
-		edict_t *eLight = NEXT_EDICT(sv.edicts);
+		ServerEntity_t *eLight = NEXT_EDICT(sv.edicts);
 
 		for(i = 1; i < sv.num_edicts; i++,eLight = NEXT_EDICT(eLight))
 		{
@@ -240,7 +240,7 @@ void SV_SendServerinfo(client_t *client)
 */
 void SV_ConnectClient (int clientnum)
 {
-	edict_t			*ent;
+	ServerEntity_t			*ent;
 	client_t		*client;
 	int				edictnum;
 	struct qsocket_s *netconnection;
@@ -386,7 +386,7 @@ byte *SV_FatPVS (vec3_t org, model_t *worldmodel) //johnfitz -- added worldmodel
 
 /*	PVS test encapsulated in a nice function
 */
-bool SV_VisibleToClient(edict_t *client,edict_t *test,model_t *worldmodel)
+bool SV_VisibleToClient(ServerEntity_t *client,ServerEntity_t *test,model_t *worldmodel)
 {
 	byte	*pvs;
 	vec3_t	org;
@@ -402,13 +402,13 @@ bool SV_VisibleToClient(edict_t *client,edict_t *test,model_t *worldmodel)
 	return false;
 }
 
-void SV_WriteEntitiesToClient (edict_t	*clent, sizebuf_t *msg)
+void SV_WriteEntitiesToClient (ServerEntity_t	*clent, sizebuf_t *msg)
 {
 	int		e,i,bits;
 	byte	*pvs;
 	vec3_t	org;
 	float	miss;
-	edict_t	*ent;
+	ServerEntity_t	*ent;
 
 // find the client's PVS
 	Math_VectorAdd(clent->v.origin,clent->v.view_ofs,org);
@@ -575,18 +575,18 @@ stats:
 void SV_CleanupEnts (void)
 {
 	int		e;
-	edict_t	*ent;
+	ServerEntity_t	*ent;
 
 	ent = NEXT_EDICT(sv.edicts);
 	for (e=1 ; e<sv.num_edicts ; e++, ent = NEXT_EDICT(ent))
 		ent->v.effects &= ~EF_MUZZLEFLASH;
 }
 
-void SV_WriteClientdataToMessage (edict_t *ent, sizebuf_t *msg)
+void SV_WriteClientdataToMessage (ServerEntity_t *ent, sizebuf_t *msg)
 {
 	int		bits;
 	int		i;
-	edict_t	*other;
+	ServerEntity_t	*other;
 	int		items;
 	eval_t	*val;
 
@@ -918,7 +918,7 @@ int SV_ModelIndex (char *name)
 void SV_CreateBaseline (void)
 {
 	int		i;
-	edict_t	*svent;
+	ServerEntity_t	*svent;
 	int		entnum,bits; //johnfitz -- PROTOCOL_FITZQUAKE
 
 	for (entnum = 0; entnum < sv.num_edicts ; entnum++)
@@ -1033,7 +1033,7 @@ void SV_SaveSpawnparms (void)
 			continue;
 
 	// call the progs to get default spawn parms for the new client
-		pr_global_struct.self = EDICT_TO_PROG(host_client->edict);
+		pr_global_struct.self = ServerEntity_tO_PROG(host_client->edict);
 		Game->Game_Init(SERVER_SETCHANGEPARMS,host_client->edict,sv.time);
 		for (j=0 ; j<NUM_SPAWN_PARMS ; j++)
 			host_client->spawn_parms[j] = (&pr_global_struct.parm1)[j];
@@ -1044,7 +1044,7 @@ extern float scr_centertime_off;
 
 void SV_SpawnServer(char *server)
 {
-	edict_t	*ent;
+	ServerEntity_t	*ent;
 	int		i;
 
 	// Let's not have any servers with no name
@@ -1080,7 +1080,7 @@ void SV_SpawnServer(char *server)
 
 	// Allocate server memory
 	sv.max_edicts = Math_Clamp(MIN_EDICTS, (int)max_edicts.value, MAX_EDICTS); //johnfitz -- max_edicts cvar
-	sv.edicts = (edict_t*)Hunk_AllocName(sv.max_edicts*sizeof(edict_t),"edicts");
+	sv.edicts = (ServerEntity_t*)Hunk_AllocName(sv.max_edicts*sizeof(ServerEntity_t),"edicts");
 
 	sv.datagram.maxsize = sizeof(sv.datagram_buf);
 	sv.datagram.cursize = 0;

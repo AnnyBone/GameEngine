@@ -1,0 +1,17 @@
+/*	Copyright (C) 2011-2015 OldTimes Software
+*/
+#ifndef __PLATFORMLOG__
+#define	__PLATFORMLOG__
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+	void pLog_Write(const char *ccPath, char *cMessage, ...);
+	void pLog_Clear(const char *ccPath);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif

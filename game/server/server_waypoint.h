@@ -25,9 +25,9 @@ typedef struct waypoint_s
 {
 	const	char		*cName;		// The name for the waypoint
 	int					number;		// Each point is assigned it's own number
-	edict_t				*eEntity;	// The entity currently occupying that waypoint
+	ServerEntity_t		*eEntity;	// The entity currently occupying that waypoint
 #ifdef DEBUG_WAYPOINT
-	edict_t				*eDebug;	// Entity to use for displaying waypoint position
+	ServerEntity_t		*eDebug;	// Entity to use for displaying waypoint position
 #endif
 	struct	waypoint_s	*next;		// The next point to target.
 	struct	waypoint_s	*last;		// The last point we were at.
@@ -41,12 +41,12 @@ typedef struct waypoint_s
 void	Waypoint_Initialize(void);
 void	Waypoint_Delete(Waypoint_t *point);
 void	Waypoint_Spawn(vec3_t vOrigin,WaypointType_t type);
-void	Waypoint_Frame(edict_t *eEntity);
+void	Waypoint_Frame(ServerEntity_t *eEntity);
 
-Waypoint_t	*Waypoint_GetByName(edict_t *eMonster,char *cName,float fMaxDistance);
-Waypoint_t	*Waypoint_GetByType(edict_t *eMonster,int iType,float fMaxDistance);
+Waypoint_t	*Waypoint_GetByName(ServerEntity_t *eMonster, char *cName, float fMaxDistance);
+Waypoint_t	*Waypoint_GetByType(ServerEntity_t *eMonster, int iType, float fMaxDistance);
 Waypoint_t	*Waypoint_GetByVisibility(vec3_t origin);
 
-bool Waypoint_IsSafe(edict_t *eMonster,Waypoint_t *wPoint);
+bool Waypoint_IsSafe(ServerEntity_t *eMonster, Waypoint_t *wPoint);
 
 #endif

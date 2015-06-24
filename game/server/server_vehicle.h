@@ -18,7 +18,7 @@ typedef enum
 	VEHICLE_TYPE_END
 } VehicleType_t;
 
-void Vehicle_Spawn(edict_t *eVehicle);
-void Vehicle_Exit(edict_t *eVehicle,edict_t *eOther);
+void Vehicle_Spawn(ServerEntity_t *eVehicle);
+void Vehicle_Exit(ServerEntity_t *eVehicle, ServerEntity_t *eOther);
 
 #endif

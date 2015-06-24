@@ -44,12 +44,12 @@ EntityFrame_t AxeAnimation_Attack2 [] =
 	{   NULL, 27, 0.05f, TRUE    }
 };
 
-void Axe_Deploy(edict_t *ent)
+void Axe_Deploy(ServerEntity_t *ent)
 {
 	Weapon_Animate(ent,AxeAnimation_Deploy);
 }
 
-void AxeHit(edict_t *ent)
+void AxeHit(ServerEntity_t *ent)
 {
 	vec3_t	forward,temp,sndvec,vel;
 	trace_t	trace;
@@ -86,7 +86,7 @@ void AxeHit(edict_t *ent)
 
 }
 
-void Axe_PrimaryAttack(edict_t *ent)
+void Axe_PrimaryAttack(ServerEntity_t *ent)
 {
 
 	Sound(ent,CHAN_WEAPON,"weapons/axe/axeswing.wav",255,ATTN_NORM);

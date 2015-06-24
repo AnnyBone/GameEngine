@@ -43,12 +43,12 @@ cvar_t	cvPhysicsStopSpeed	= {	"physics_stopspeed",	"100"		},
 // [18/3/2013] Added per request ~hogsy
 		cvPhysicsStepSize	= {	"physics_stepsize",		"18"		};
 
-void Physics_Toss(edict_t *ent);
+void Physics_Toss(ServerEntity_t *ent);
 
 void SV_CheckAllEnts (void)
 {
 	int			e;
-	edict_t		*check;
+	ServerEntity_t		*check;
 
 	// See if any solid entities are inside the final position
 	check = NEXT_EDICT(sv.edicts);
@@ -71,7 +71,7 @@ void SV_CheckAllEnts (void)
 	in a frame.  Not used for pushmove objects, because they must be exact.
 	Returns false if the entity removed itself.
 */
-bool Server_RunThink(edict_t *ent)
+bool Server_RunThink(ServerEntity_t *ent)
 {
 	double	dThinkTime;
 
@@ -132,7 +132,7 @@ int ClipVelocity (vec3_t in, vec3_t normal, vec3_t out, float overbounce)
 	If steptrace is not NULL, the trace of any vertical wall hit will be stored
 */
 #define	MAX_CLIP_PLANES	5
-int SV_FlyMove (edict_t *ent, float time, trace_t *steptrace)
+int SV_FlyMove (ServerEntity_t *ent, float time, trace_t *steptrace)
 {
 	int			bumpcount, numbumps;
 	vec3_t		dir;
@@ -275,14 +275,14 @@ PUSHMOVE
 
 
 
-void SV_PushMove (edict_t *pusher, float movetime)
+void SV_PushMove (ServerEntity_t *pusher, float movetime)
 {
 	int			i, e;
-	edict_t		*check, *block;
+	ServerEntity_t		*check, *block;
 	vec3_t		mins, maxs, move;
 	vec3_t		entorig, pushorig;
 	int			num_moved;
-	edict_t		**moved_edict; //johnfitz -- dynamically allocate
+	ServerEntity_t		**moved_edict; //johnfitz -- dynamically allocate
 	vec3_t		*moved_from; //johnfitz -- dynamically allocate
 	int			mark; //johnfitz
 
@@ -309,7 +309,7 @@ void SV_PushMove (edict_t *pusher, float movetime)
 
 	//johnfitz -- dynamically allocate
 	mark = Hunk_LowMark ();
-	moved_edict = (edict_t**)Hunk_Alloc(sv.num_edicts*sizeof(edict_t*));
+	moved_edict = (ServerEntity_t**)Hunk_Alloc(sv.num_edicts*sizeof(ServerEntity_t*));
 	moved_from	= (vec3_t(*))Hunk_Alloc (sv.num_edicts*sizeof(vec3_t));
 	//johnfitz
 
@@ -379,7 +379,7 @@ void SV_PushMove (edict_t *pusher, float movetime)
 			// otherwise, just stay in place until the obstacle is gone
 			if (pusher->v.BlockedFunction)
 			{
-				pr_global_struct.self	= EDICT_TO_PROG(pusher);
+				pr_global_struct.self	= ServerEntity_tO_PROG(pusher);
 				pr_global_struct.eOther	= check;
 
 				pusher->v.BlockedFunction(pusher,check);
@@ -400,10 +400,10 @@ void SV_PushMove (edict_t *pusher, float movetime)
 }
 
 // [18/5/2013] TODO: Merge with SV_PushMove ~hogsy
-static void Server_PushRotate(edict_t *pusher,float movetime)
+static void Server_PushRotate(ServerEntity_t *pusher,float movetime)
 {
 	int		i,e,num_moved,slaves_moved;
-	edict_t	*check,*block,*moved_edict[MAX_EDICTS],*ground,*slave,*master;
+	ServerEntity_t	*check,*block,*moved_edict[MAX_EDICTS],*ground,*slave,*master;
 	vec3_t	move,a,amove,entorig,pushorig,moved_from[MAX_EDICTS],org,org2,forward,right,up;
 	bool	bMoveIt;
 
@@ -585,7 +585,7 @@ static void Server_PushRotate(edict_t *pusher,float movetime)
 	}
 }
 
-void SV_Physics_Pusher (edict_t *ent)
+void SV_Physics_Pusher (ServerEntity_t *ent)
 {
 	float thinktime,oldltime,movetime;
 
@@ -614,7 +614,7 @@ void SV_Physics_Pusher (edict_t *ent)
 	{
 		ent->v.dNextThink = 0;
 
-		pr_global_struct.self	= EDICT_TO_PROG(ent);
+		pr_global_struct.self	= ServerEntity_tO_PROG(ent);
 		pr_global_struct.eOther	= sv.edicts;
 
 		if(ent->v.think)
@@ -636,7 +636,7 @@ CLIENT MOVEMENT
 /*	This is a big hack to try and fix the rare case of getting stuck in the world
 	clipping hull.
 */
-void SV_CheckStuck (edict_t *ent)
+void SV_CheckStuck (ServerEntity_t *ent)
 {
 	int		i,j,z;
 	vec3_t	org;
@@ -682,7 +682,7 @@ void SV_CheckStuck (edict_t *ent)
 
 	This is a hack, but in the interest of good gameplay...
 */
-int SV_TryUnstick (edict_t *ent, vec3_t oldvel)
+int SV_TryUnstick (ServerEntity_t *ent, vec3_t oldvel)
 {
 	int		i;
 	vec3_t	oldorg;
@@ -745,7 +745,7 @@ int SV_TryUnstick (edict_t *ent, vec3_t oldvel)
 
 /*	Only used by players
 */
-void SV_WalkMove(edict_t *ent)
+void SV_WalkMove(ServerEntity_t *ent)
 {
 	vec3_t		upmove,downmove,oldorg,oldvel,nosteporg,nostepvel;
 	int			clip,oldonground;
@@ -823,13 +823,13 @@ void SV_WalkMove(edict_t *ent)
 
 /*	Player character actions
 */
-void SV_Physics_Client (edict_t	*ent, int num)
+void SV_Physics_Client (ServerEntity_t	*ent, int num)
 {
 	if(!svs.clients[num-1].active)
 		return;		// unconnected slot
 
 	// call standard client pre-think
-	pr_global_struct.self = EDICT_TO_PROG(ent);
+	pr_global_struct.self = ServerEntity_tO_PROG(ent);
 
 	Game->Game_Init(SERVER_PLAYERPRETHINK,ent,sv.time);
 
@@ -875,14 +875,14 @@ void SV_Physics_Client (edict_t	*ent, int num)
 	// Call standard player post-think
 	SV_LinkEdict(ent,true);
 
-	pr_global_struct.self = EDICT_TO_PROG(ent);
+	pr_global_struct.self = ServerEntity_tO_PROG(ent);
 
 	Game->Game_Init(SERVER_CLIENTPOSTTHINK,ent,sv.time);
 }
 
 /*	A moving object that doesn't obey physics
 */
-void Physics_NoClip(edict_t *eEntity)
+void Physics_NoClip(ServerEntity_t *eEntity)
 {
 	// Regular thinking
 	if(!Server_RunThink(eEntity))
@@ -896,7 +896,7 @@ void Physics_NoClip(edict_t *eEntity)
 
 /*	Toss, bounce, and fly movement.  When onground, do nothing.
 */
-void Physics_Toss(edict_t *ent)
+void Physics_Toss(ServerEntity_t *ent)
 {
 	trace_t	trace;
 	vec3_t	move;
@@ -952,7 +952,7 @@ void Physics_Toss(edict_t *ent)
 	This is also used for objects that have become still on the ground, but
 	will fall if the floor is pulled out from under them.
 */
-void Physics_Step(edict_t *ent)
+void Physics_Step(ServerEntity_t *ent)
 {
 	// Freefall if not onground
 	if(!(ent->v.flags & (FL_ONGROUND|FL_FLY|FL_SWIM)))
@@ -978,7 +978,7 @@ void Physics_Step(edict_t *ent)
 
 extern cvar_t	sv_edgefriction;
 
-void Physics_AddFriction(edict_t *eEntity,vec3_t vVelocity,vec3_t vOrigin)
+void Physics_AddFriction(ServerEntity_t *eEntity,vec3_t vVelocity,vec3_t vOrigin)
 {
 	float	*vel;
 	float	speed, newspeed, control;
@@ -1020,10 +1020,10 @@ void Physics_AddFriction(edict_t *eEntity,vec3_t vVelocity,vec3_t vOrigin)
 void Physics_ServerFrame(void)
 {
 	int	i;
-	edict_t	*eEntity;
+	ServerEntity_t	*eEntity;
 
 	// Let the progs know that a new frame has started
-	pr_global_struct.self	= EDICT_TO_PROG(sv.edicts);
+	pr_global_struct.self	= ServerEntity_tO_PROG(sv.edicts);
 	pr_global_struct.eOther	= sv.edicts;
 
 	// TODO: should we pass the time to this? ~hogsy

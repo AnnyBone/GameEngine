@@ -4,7 +4,7 @@
 
 #include "server_player.h"
 
-void Shockwave_SpawnProjectile(edict_t *ent);
+void Shockwave_SpawnProjectile(ServerEntity_t *ent);
 
 EntityFrame_t ShockwaveAnimation_Deploy [] =
 {
@@ -51,13 +51,13 @@ EntityFrame_t ShockwaveAnimation_Fire [] =
 	{   NULL, 27, 0.06f, TRUE    }
 };
 
-void Shockwave_Deploy(edict_t *ent)
+void Shockwave_Deploy(ServerEntity_t *ent)
 {
 	Weapon_Animate(ent,ShockwaveAnimation_Deploy);
 	Sound(ent,CHAN_WEAPON,"weapons/shockwave/ready.wav",255,ATTN_NORM);
 }
 
-void ShockLaser_Touch(edict_t *ent, edict_t *other)
+void ShockLaser_Touch(ServerEntity_t *ent, ServerEntity_t *other)
 {
 	char	*cSound;
 
@@ -80,9 +80,9 @@ void ShockLaser_Touch(edict_t *ent, edict_t *other)
 }
 
 // [19/8/2012] Renamed to Shockwave_SpawnProjectile ~hogsy
-void Shockwave_SpawnProjectile(edict_t *ent)
+void Shockwave_SpawnProjectile(ServerEntity_t *ent)
 {
-	edict_t *eLaser;
+	ServerEntity_t *eLaser;
 
 	Sound(ent,CHAN_WEAPON,"weapons/shockwave/fire.wav",255,ATTN_NORM);
 
@@ -114,7 +114,7 @@ void Shockwave_SpawnProjectile(edict_t *ent)
 	ent->v.iPrimaryAmmo = ent->local.shockwave_ammo;
 }
 
-void Shockwave_PrimaryAttack(edict_t *ent)
+void Shockwave_PrimaryAttack(ServerEntity_t *ent)
 {
 	Sound(ent,CHAN_WEAPON,"weapons/shockwave/warmup.wav",255,ATTN_NORM);
 

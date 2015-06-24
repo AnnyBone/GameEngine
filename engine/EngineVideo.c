@@ -54,7 +54,7 @@ ConsoleVariable_t
 		cvVideoFinish				= { "video_finish",					"0",			true,	false,	"If enabled, calls glFinish at the end of the frame."				},
 		cvVideoVBO					= { "video_vbo",					"0",			true,	false,	"Enables support of Vertex Buffer Objects."							},
 		cvVideoPlayerShadow			= { "video_playershadow",			"1",			true,	false,	"If enabled, the players own shadow will be drawn."					},
-		cvVideoDebugLog				= {	"video_debuglog",				"log_video",	true,	false,	"The name of the output log for video debugging."					};
+		cvVideoDebugLog				= {	"video_debuglog",				"video",		true,	false,	"The name of the output log for video debugging."					};
 
 #define VIDEO_MAX_SAMPLES	cvMultisampleMaxSamples.iValue
 #define VIDEO_MIN_SAMPLES	0
@@ -239,7 +239,7 @@ void Video_DebugCommand(void)
 	if(!Video.bDebugFrame)
 		Video.bDebugFrame = true;
 
-	Console_ClearLog(cvVideoDebugLog.string);
+	pLog_Clear(cvVideoDebugLog.string);
 }
 
 /**/
@@ -417,7 +417,7 @@ void Video_SetTexture(gltexture_t *gTexture)
 	glBindTexture(GL_TEXTURE_2D,gTexture->texnum);
 
 	if(Video.bDebugFrame)
-		Console_WriteToLog(cvVideoDebugLog.string,"Video: Bound texture (%s) (%i)\n",gTexture->name,Video.uiActiveUnit);
+		pLog_Write(cvVideoDebugLog.string,"Video: Bound texture (%s) (%i)\n",gTexture->name,Video.uiActiveUnit);
 }
 
 /*  Changes the active blending mode.
@@ -450,7 +450,7 @@ void Video_SetBlend(VideoBlend_t voBlendMode, VideoDepth_t vdDepthMode)
     }
 
 	if(Video.bDebugFrame)
-		Console_WriteToLog(cvVideoDebugLog.string, "Video: Setting blend mode (%i) (%i)\n", voBlendMode, vdDepthMode);
+		pLog_Write(cvVideoDebugLog.string, "Video: Setting blend mode (%i) (%i)\n", voBlendMode, vdDepthMode);
 }
 
 /*
@@ -462,7 +462,7 @@ void Video_SetBlend(VideoBlend_t voBlendMode, VideoDepth_t vdDepthMode)
 unsigned int Video_GetTextureUnit(unsigned int uiTarget)
 {
 	if (Video.bDebugFrame)
-		Console_WriteToLog(cvVideoDebugLog.string, "Video: Attempting to get TMU target %i\n", uiTarget);
+		pLog_Write(cvVideoDebugLog.string, "Video: Attempting to get TMU target %i\n", uiTarget);
 
 #if 0
 	switch (uiTarget)
@@ -488,7 +488,7 @@ unsigned int Video_GetTextureUnit(unsigned int uiTarget)
 #endif
 
 	if (Video.bDebugFrame)
-		Console_WriteToLog(cvVideoDebugLog.string, "Video: Returning TMU %i\n", GL_TEXTURE0 + uiTarget);
+		pLog_Write(cvVideoDebugLog.string, "Video: Returning TMU %i\n", GL_TEXTURE0 + uiTarget);
 
 	return GL_TEXTURE0 + uiTarget;
 }
@@ -506,7 +506,7 @@ void Video_SelectTexture(unsigned int uiTarget)
 	Video.uiActiveUnit = uiTarget;
 
 	if(Video.bDebugFrame)
-		Console_WriteToLog(cvVideoDebugLog.string,"Video: Texture Unit %i\n",Video.uiActiveUnit);
+		pLog_Write(cvVideoDebugLog.string, "Video: Texture Unit %i\n", Video.uiActiveUnit);
 }
 
 /*
@@ -928,8 +928,7 @@ void Video_DrawObject(
 	if (Video.bDebugFrame)
 	{
 		uiVideoDrawObjectCalls++;
-
-		Console_WriteToLog(cvVideoDebugLog.string, "Video: Drawing object (%i) (%i)\n", uiVerts, vpPrimitiveType);
+		pLog_Write(cvVideoDebugLog.string, "Video: Drawing object (%i) (%i)\n", uiVerts, vpPrimitiveType);
 	}
 
 	bVideoIgnoreCapabilities = true;
@@ -1025,7 +1024,7 @@ void Video_EnableCapabilities(unsigned int iCapabilities)
 		if(iCapabilities & vcCapabilityList[i].uiFirst)
 		{
             if(Video.bDebugFrame)
-				Console_WriteToLog(cvVideoDebugLog.string, "Video: Enabling %s (%i)\n", vcCapabilityList[i].ccIdentifier, Video.uiActiveUnit);
+				pLog_Write(cvVideoDebugLog.string, "Video: Enabling %s (%i)\n", vcCapabilityList[i].ccIdentifier, Video.uiActiveUnit);
 
             if(!bVideoIgnoreCapabilities)
                 // [24/2/2014] Collect up a list of the new capabilities we set ~hogsy
@@ -1056,7 +1055,7 @@ void Video_DisableCapabilities(unsigned int iCapabilities)
 		if(iCapabilities & vcCapabilityList[i].uiFirst)
 		{
             if(Video.bDebugFrame)
-				Console_WriteToLog(cvVideoDebugLog.string, "Video: Disabling %s (%i)\n", vcCapabilityList[i].ccIdentifier, Video.uiActiveUnit);
+				pLog_Write(cvVideoDebugLog.string, "Video: Disabling %s (%i)\n", vcCapabilityList[i].ccIdentifier, Video.uiActiveUnit);
 
             if(!bVideoIgnoreCapabilities)
                 // [24/2/2014] Collect up a list of the new capabilities we disabled ~hogsy
@@ -1097,14 +1096,14 @@ void Video_ResetCapabilities(bool bClearActive)
 	int i;
 
     if(Video.bDebugFrame)
-        Console_WriteToLog(cvVideoDebugLog.string,"Video: Resetting capabilities...\n");
+		pLog_Write(cvVideoDebugLog.string, "Video: Resetting capabilities...\n");
 
 	Video_SelectTexture(VIDEO_TEXTURE_DIFFUSE);
 
 	if(bClearActive)
 	{
         if(Video.bDebugFrame)
-            Console_WriteToLog(cvVideoDebugLog.string,"Video: Clearing active capabilities...\n");
+			pLog_Write(cvVideoDebugLog.string, "Video: Clearing active capabilities...\n");
 
 		bVideoIgnoreCapabilities = true;
 
@@ -1122,7 +1121,7 @@ void Video_ResetCapabilities(bool bClearActive)
 		bVideoIgnoreCapabilities = false;
 
 		if(Video.bDebugFrame)
-            Console_WriteToLog(cvVideoDebugLog.string,"Video: Finished clearing capabilities.\n");
+			pLog_Write(cvVideoDebugLog.string, "Video: Finished clearing capabilities.\n");
 	}
 
 	// [7/5/2014] Clear out capability list ~hogsy
@@ -1174,10 +1173,10 @@ void Video_PostFrame(void)
 
 	if (Video.bDebugFrame)
 	{
-		Console_WriteToLog(cvVideoDebugLog.string, "\n-----------------------\n");
+		pLog_Write(cvVideoDebugLog.string, "\n-----------------------\n");
 		// Show the number of calls to Video_DrawObject.
-		Console_WriteToLog(cvVideoDebugLog.string, "Video_DrawObject: %i\n", uiVideoDrawObjectCalls);
-		Console_WriteToLog(cvVideoDebugLog.string, "-----------------------\n");
+		pLog_Write(cvVideoDebugLog.string, "Video_DrawObject: %i\n", uiVideoDrawObjectCalls);
+		pLog_Write(cvVideoDebugLog.string, "-----------------------\n");
 
 		Video.bDebugFrame = false;
 	}
@@ -1191,7 +1190,7 @@ void Video_Frame(void)
 		return;
 
 	if (Video.bDebugFrame)
-		Console_WriteToLog(cvVideoDebugLog.string, "Video: Start of frame\n");
+		pLog_Write(cvVideoDebugLog.string, "Video: Start of frame\n");
 
 #ifdef VIDEO_ENABLE_SHADERS
 	// Post-processing.
@@ -1210,12 +1209,12 @@ void Video_Frame(void)
 
     if(Video.bDebugFrame)
     {
-        Console_WriteToLog(cvVideoDebugLog.string,"Video: End of frame\n");
+		pLog_Write(cvVideoDebugLog.string, "Video: End of frame\n");
 
-		Console_WriteToLog(cvVideoDebugLog.string, "\n-----------------------\n");
+		pLog_Write(cvVideoDebugLog.string, "\n-----------------------\n");
 		// Show the number of calls to Video_DrawObject.
-		Console_WriteToLog(cvVideoDebugLog.string, "Video_DrawObject: %i\n", uiVideoDrawObjectCalls);
-		Console_WriteToLog(cvVideoDebugLog.string, "-----------------------\n");
+		pLog_Write(cvVideoDebugLog.string, "Video_DrawObject: %i\n", uiVideoDrawObjectCalls);
+		pLog_Write(cvVideoDebugLog.string, "-----------------------\n");
 
 		Video.bDebugFrame = false;
     }

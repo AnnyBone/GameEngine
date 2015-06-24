@@ -7,6 +7,6 @@
 	Decoration
 */
 
-void Barrel_Spawn(edict_t *eBarrel);
+void Barrel_Spawn(ServerEntity_t *eBarrel);
 
 #endif

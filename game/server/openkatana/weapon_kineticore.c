@@ -1,11 +1,11 @@
 #include "server_weapon.h"
 
-void Kineticore_Deploy(edict_t *ent)
+void Kineticore_Deploy(ServerEntity_t *ent)
 {
 	//Weapon_Animate(ent,FALSE,1,14,0.1f,0,0,0,FALSE);
 }
 
-void Kineticore_IceballExplode(edict_t *ent)
+void Kineticore_IceballExplode(ServerEntity_t *ent)
 {
 	vec3_t vel;
 
@@ -19,7 +19,7 @@ void Kineticore_IceballExplode(edict_t *ent)
 
 	Entity_Remove(ent);
 }
-void IceballTouch(edict_t *ent, edict_t *other)
+void IceballTouch(ServerEntity_t *ent, ServerEntity_t *other)
 {
 	// [26/2/2012] Revised and fixed ~hogsy
 	// [25/6/2012] Revised ~hogsy
@@ -54,10 +54,10 @@ void IceballTouch(edict_t *ent, edict_t *other)
 	Entity_Remove(ent);
 }
 
-void projectile_iceball(edict_t *ent, vec3_t orig)
+void projectile_iceball(ServerEntity_t *ent, vec3_t orig)
 {
 	// [26/2/2012] Revised and fixed ~hogsy
-	edict_t *ionball = Entity_Spawn();
+	ServerEntity_t *ionball = Entity_Spawn();
 
 	ionball->v.cClassname	= "iceball";
 	ionball->v.movetype		= MOVETYPE_FLYBOUNCE;
@@ -80,7 +80,7 @@ void projectile_iceball(edict_t *ent, vec3_t orig)
 	ionball->v.think			= Kineticore_IceballExplode;
 }
 
-void Kineticore_PrimaryAttack(edict_t *ent)
+void Kineticore_PrimaryAttack(ServerEntity_t *ent)
 {
 	if(!ent->local.kineticore_ammo2)
 	{

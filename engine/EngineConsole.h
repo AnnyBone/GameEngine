@@ -49,8 +49,6 @@ void Con_ClearNotify (void);
 void Con_ToggleConsole_f (void);
 void Con_NotifyBox (char *text);	// during startup for sound / cd warnings
 void Console_ErrorMessage(bool bCrash, const char *ccFile, char *reason);
-void Console_WriteToLog(const char *ccFile, char *fmt, ...);
-void Console_ClearLog(const char *ccFile);
 
 // Other crap...
 char *Con_Quakebar(int len);

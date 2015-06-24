@@ -14,7 +14,7 @@ enum
 	PARTICLE_STACK
 };
 
-void Point_NullSpawn(edict_t *eEntity)
+void Point_NullSpawn(ServerEntity_t *eEntity)
 {
 	// [3/3/2013] Remove if there is no name given! ~hogsy
 	if(!eEntity->v.cName)
@@ -24,14 +24,14 @@ void Point_NullSpawn(edict_t *eEntity)
 }
 
 #ifdef GAME_OPENKATANA
-void Prisoner_Spawn(edict_t *ePrisoner);	// [2/10/2012] See monster_prisoner.c ~hogsy
-void LaserGat_Spawn(edict_t *eLaserGat);	// [14/2/2013] See monster_lasergat.c ~hogsy
-void Inmater_Spawn(edict_t *eInmater);		// [3/3/2013] See monster_inmater.c ~hogsy
+void Prisoner_Spawn(ServerEntity_t *ePrisoner);	// [2/10/2012] See monster_prisoner.c ~hogsy
+void LaserGat_Spawn(ServerEntity_t *eLaserGat);	// [14/2/2013] See monster_lasergat.c ~hogsy
+void Inmater_Spawn(ServerEntity_t *eInmater);		// [3/3/2013] See monster_inmater.c ~hogsy
 #elif GAME_ADAMAS
-void Hurler_Spawn(edict_t *eHurler);
+void Hurler_Spawn(ServerEntity_t *eHurler);
 #endif
 
-void Point_MonsterSpawn(edict_t *eMonster)
+void Point_MonsterSpawn(ServerEntity_t *eMonster)
 {
 	if(cvServerMonsters.value <= 0)
 		ENTITY_REMOVE(eMonster);
@@ -70,10 +70,10 @@ void Point_MonsterSpawn(edict_t *eMonster)
 }
 
 #ifdef GAME_ICTUS
-void Rover_Spawn(edict_t *eRover);
+void Rover_Spawn(ServerEntity_t *eRover);
 #endif
 
-void Point_VehicleSpawn(edict_t *eVehicle)
+void Point_VehicleSpawn(ServerEntity_t *eVehicle)
 {
 	switch(eVehicle->local.style)
 	{
@@ -92,7 +92,7 @@ void Point_VehicleSpawn(edict_t *eVehicle)
 	Player Start
 */
 
-void Point_Start(edict_t *ent)
+void Point_Start(ServerEntity_t *ent)
 {
 	// [2/1/2013] Revised ~hogsy
 	switch((int)cvServerGameMode.value)
@@ -175,7 +175,7 @@ void Point_Start(edict_t *ent)
 */
 
 // [17/7/2012] Renamed to Point_ParticleEmit ~hogsy
-void Point_ParticleEmit(edict_t *ent)
+void Point_ParticleEmit(ServerEntity_t *ent)
 {
 	Engine.Particle(ent->v.origin,ent->v.velocity,ent->Model.fScale,ent->v.model,ent->local.count);
 
@@ -183,12 +183,12 @@ void Point_ParticleEmit(edict_t *ent)
 	ent->v.dNextThink	= Server.dTime+ent->local.dAttackFinished;
 }
 
-void Point_ParticleTrigger(edict_t *ent)
+void Point_ParticleTrigger(ServerEntity_t *ent)
 {
 	Engine.Particle(ent->v.origin,ent->v.velocity,ent->Model.fScale,ent->v.model,ent->local.count);
 }
 
-void Point_ParticleSpawn(edict_t *ent)
+void Point_ParticleSpawn(ServerEntity_t *ent)
 {
 	// [10/3/2012] Revised ~hogsy
 	if(ent->local.count <= 0)
@@ -228,7 +228,7 @@ void Point_ParticleSpawn(edict_t *ent)
 	Flare
 */
 
-void Point_FlareSpawn(edict_t *eFlare)
+void Point_FlareSpawn(ServerEntity_t *eFlare)
 {
 	Engine.Server_PrecacheResource(RESOURCE_SPRITE,eFlare->v.model);
 
@@ -243,7 +243,7 @@ void Point_FlareSpawn(edict_t *eFlare)
 
 #define LIGHT_OFF	1
 
-void Point_LightUse(edict_t *eLight)
+void Point_LightUse(ServerEntity_t *eLight)
 {
 	if(eLight->v.spawnflags & LIGHT_OFF)
 	{
@@ -265,7 +265,7 @@ void Point_LightUse(edict_t *eLight)
 		Sound(eLight,CHAN_VOICE,eLight->v.noise,255,ATTN_NORM);
 }
 
-void Point_LightSpawn(edict_t *eLight)
+void Point_LightSpawn(ServerEntity_t *eLight)
 {
 	if(eLight->v.noise)
 		Server_PrecacheSound(eLight->v.noise);
@@ -283,14 +283,14 @@ void Point_LightSpawn(edict_t *eLight)
 	Dynamic Light
 */
 
-void Point_DynamicLightThink(edict_t *ent)
+void Point_DynamicLightThink(ServerEntity_t *ent)
 {
 	ent->v.origin[2] = (float)sin(Server.dTime*2.0)*10.0f;
 
 	ent->v.dNextThink = Server.dTime+0.1;
 }
 
-void Point_DynamicLight(edict_t *ent)
+void Point_DynamicLight(ServerEntity_t *ent)
 {
 	Entity_SetOrigin(ent,ent->v.origin);
 
@@ -337,7 +337,7 @@ enum
 	AMBIENT_RADIUS_EVERYWHERE
 };
 
-void Point_AmbientSpawn(edict_t *eEntity)
+void Point_AmbientSpawn(ServerEntity_t *eEntity)
 {
 	int iAttenuation;
 
@@ -384,7 +384,7 @@ void Point_AmbientSpawn(edict_t *eEntity)
 // [28/7/2012] Spawn flags ~hogsy
 #define	CAMERA_SPAWN_ACTIVE	0	// Defines if this camera is active after spawning
 
-void Point_CameraUse(edict_t *eEntity, edict_t *eOther)
+void Point_CameraUse(ServerEntity_t *eEntity, ServerEntity_t *eOther)
 {
 		Engine.SetMessageEntity(eOther);
 
@@ -398,7 +398,7 @@ void Point_CameraUse(edict_t *eEntity, edict_t *eOther)
 		Engine.WriteAngle(	MSG_ONE,	eEntity->v.angles[2]	);
 }
 
-void Point_CameraSpawn(edict_t *eEntity)
+void Point_CameraSpawn(ServerEntity_t *eEntity)
 {
 	if(eEntity->v.spawnflags & CAMERA_SPAWN_ACTIVE)
 	{
@@ -426,7 +426,7 @@ void Point_CameraSpawn(edict_t *eEntity)
 */
 
 // [20/9/2012] Waypoints placed inside a level ~hogsy
-void Point_WaypointSpawn(edict_t *eEntity)
+void Point_WaypointSpawn(ServerEntity_t *eEntity)
 {
 	Waypoint_Spawn(eEntity->v.origin,(WaypointType_t)eEntity->local.style);
 
@@ -445,7 +445,7 @@ enum
 	POINT_SND_GLOBAL
 };
 
-void Point_SoundUse(edict_t *eEntity)
+void Point_SoundUse(ServerEntity_t *eEntity)
 {
 	switch(eEntity->local.style)
 	{
@@ -462,7 +462,7 @@ void Point_SoundUse(edict_t *eEntity)
 }
 
 // [2/2/2013] Renamed from Point_PlaySound to Point_SoundSpawn for consistency ~hogsy
-void Point_SoundSpawn(edict_t *eEntity)
+void Point_SoundSpawn(ServerEntity_t *eEntity)
 {
 	if(!eEntity->v.noise)
 	{
@@ -490,7 +490,7 @@ void Point_SoundSpawn(edict_t *eEntity)
 
 #define DECORATION_DROPTOFLOOR	0
 
-void Point_DecorationSpawn(edict_t *eDecoration)
+void Point_DecorationSpawn(ServerEntity_t *eDecoration)
 {
 	if(!eDecoration->v.model)
 		ENTITY_REMOVE(eDecoration);
@@ -515,7 +515,7 @@ enum
 	POINT_MSG_INFOMESSAGE
 };
 
-void Point_MessageLocal(edict_t *eEntity)
+void Point_MessageLocal(ServerEntity_t *eEntity)
 {
 	// [4/8/2013] Simplified ~hogsy
 	if(!eEntity->local.activator || (!Entity_IsPlayer(eEntity) && eEntity->local.activator->v.iHealth <= 0))
@@ -524,7 +524,7 @@ void Point_MessageLocal(edict_t *eEntity)
 	Engine.Server_SinglePrint(eEntity->local.activator,eEntity->v.message);
 }
 
-void Point_MessageCenter(edict_t *eEntity)
+void Point_MessageCenter(ServerEntity_t *eEntity)
 {
 	// [4/8/2013] Simplified ~hogsy
 	if(!eEntity->local.activator || (!Entity_IsPlayer(eEntity) && eEntity->local.activator->v.iHealth <= 0))
@@ -533,12 +533,12 @@ void Point_MessageCenter(edict_t *eEntity)
 	Engine.CenterPrint(eEntity->local.activator,eEntity->v.message);
 }
 
-void Point_MessageServer(edict_t *eEntity)
+void Point_MessageServer(ServerEntity_t *eEntity)
 {
 	Engine.Server_BroadcastPrint(eEntity->v.message);
 }
 
-void Point_InfoMessage(edict_t *eEntity)
+void Point_InfoMessage(ServerEntity_t *eEntity)
 {
 	if(!eEntity->local.activator)
 		return;
@@ -549,7 +549,7 @@ void Point_InfoMessage(edict_t *eEntity)
 	eEntity->local.activator->local.cInfoMessage = eEntity->v.message;
 }
 
-void Point_MessageSpawn(edict_t *eEntity)
+void Point_MessageSpawn(ServerEntity_t *eEntity)
 {
 	if(!eEntity->v.message)
 	{
@@ -593,7 +593,7 @@ void Point_MessageSpawn(edict_t *eEntity)
 	Teleport
 */
 
-void Point_TeleportUse(edict_t *eEntity)
+void Point_TeleportUse(ServerEntity_t *eEntity)
 {
 	Entity_SetOrigin(eEntity->local.activator,eEntity->v.origin);
 
@@ -601,7 +601,7 @@ void Point_TeleportUse(edict_t *eEntity)
 	Math_VectorCopy(eEntity->v.angles,eEntity->local.activator->v.angles);
 }
 
-void Point_TeleportSpawn(edict_t *eEntity)
+void Point_TeleportSpawn(ServerEntity_t *eEntity)
 {
 	Entity_SetOrigin(eEntity,eEntity->v.origin);
 
@@ -620,9 +620,9 @@ enum
 	BREAKABLE_METAL
 };
 
-void Area_BreakableDie(edict_t *eArea,edict_t *eOther);
+void Area_BreakableDie(ServerEntity_t *eArea,ServerEntity_t *eOther);
 
-void Point_PropTouch(edict_t *eEntity, edict_t *eOther)
+void Point_PropTouch(ServerEntity_t *eEntity, ServerEntity_t *eOther)
 {
 	// [28/5/2013] Why can't monsters move props too? Removed check. ~hogsy
 	if(!eOther->v.iHealth)
@@ -633,7 +633,7 @@ void Point_PropTouch(edict_t *eEntity, edict_t *eOther)
 	Math_VectorScale(eOther->v.velocity,0.25f,eEntity->v.velocity);
 }
 
-void Point_PropSpawn(edict_t *eEntity)
+void Point_PropSpawn(ServerEntity_t *eEntity)
 {
 	if(!eEntity->v.model)
 		Entity_Remove(eEntity);
@@ -705,9 +705,9 @@ void Point_PropSpawn(edict_t *eEntity)
 	Shake
 */
 
-void Point_ShakeThink (edict_t *eEntity)
+void Point_ShakeThink (ServerEntity_t *eEntity)
 {
-	edict_t *eEnts = Engine.Server_FindRadius(eEntity->v.origin,10000.0f);
+	ServerEntity_t *eEnts = Engine.Server_FindRadius(eEntity->v.origin,10000.0f);
 
 	if(eEntity->local.dAttackFinished < Server.dTime)
 		return;
@@ -733,13 +733,13 @@ void Point_ShakeThink (edict_t *eEntity)
 	eEntity->v.dNextThink = Server.dTime+eEntity->local.delay;
 }
 
-void Point_ShakeUse (edict_t *eEntity)
+void Point_ShakeUse (ServerEntity_t *eEntity)
 {
 	eEntity->v.dNextThink			= Server.dTime;
 	eEntity->local.dAttackFinished	= Server.dTime+eEntity->local.dWait;
 }
 
-void Point_ShakeSpawn (edict_t *eEntity)
+void Point_ShakeSpawn (ServerEntity_t *eEntity)
 {
 	if (!eEntity->local.delay)
 		eEntity->local.delay = 0.2f;
@@ -758,7 +758,7 @@ void Point_ShakeSpawn (edict_t *eEntity)
 	Effect
 */
 
-void Point_EffectUse(edict_t *eEntity)
+void Point_EffectUse(ServerEntity_t *eEntity)
 {
 	switch(eEntity->local.style)
 	{
@@ -789,7 +789,7 @@ void Point_EffectUse(edict_t *eEntity)
 		Sound(eEntity,CHAN_ITEM,eEntity->v.noise,255,ATTN_NORM);
 }
 
-void Point_EffectSpawn(edict_t *eEntity)
+void Point_EffectSpawn(ServerEntity_t *eEntity)
 {
 	if(eEntity->v.noise)
 		Server_PrecacheSound(eEntity->v.noise);
@@ -803,12 +803,12 @@ void Point_EffectSpawn(edict_t *eEntity)
 	Damage
 */
 
-void Point_DamageUse(edict_t *eEntity)
+void Point_DamageUse(ServerEntity_t *eEntity)
 {
 	Entity_Damage(eEntity->local.activator, eEntity, eEntity->local.iDamage, eEntity->local.style);
 }
 
-void Point_DamageSpawn(edict_t *eEntity)
+void Point_DamageSpawn(ServerEntity_t *eEntity)
 {
 	if(!eEntity->local.iDamage)
 		eEntity->local.iDamage = 10;
@@ -825,7 +825,7 @@ void Point_DamageSpawn(edict_t *eEntity)
 	Lightstyle Switcher
 */
 
-void Point_LightstyleDie(edict_t *eEntity)
+void Point_LightstyleDie(ServerEntity_t *eEntity)
 {
 	Engine.LightStyle(eEntity->local.style,"a");
 
@@ -833,7 +833,7 @@ void Point_LightstyleDie(edict_t *eEntity)
 		UseTargets(eEntity, eEntity);
 }
 
-void Point_LightstyleUse(edict_t *eEntity)
+void Point_LightstyleUse(ServerEntity_t *eEntity)
 {
 	if(eEntity->v.noise)
 		Sound(eEntity,CHAN_ITEM,eEntity->v.noise,255,ATTN_NORM);
@@ -847,7 +847,7 @@ void Point_LightstyleUse(edict_t *eEntity)
 	}
 }
 
-void Point_LightstyleSpawn(edict_t *eEntity)
+void Point_LightstyleSpawn(ServerEntity_t *eEntity)
 {
 	if(eEntity->v.noise)
 		Server_PrecacheSound(eEntity->v.noise);
@@ -874,7 +874,7 @@ void Point_LightstyleSpawn(edict_t *eEntity)
 	Multi-Trigger / Random
 */
 
-void Point_MultiTriggerUse(edict_t *eEntity)
+void Point_MultiTriggerUse(ServerEntity_t *eEntity)
 {
 	int iRand;
 
@@ -898,7 +898,7 @@ void Point_MultiTriggerUse(edict_t *eEntity)
 	}
 }
 
-void Point_MultiTriggerSpawn(edict_t *eEntity)
+void Point_MultiTriggerSpawn(ServerEntity_t *eEntity)
 {
 	if(!eEntity->v.targetname)
 	{
@@ -932,18 +932,18 @@ void Point_MultiTriggerSpawn(edict_t *eEntity)
 	Timed Trigger
 */
 
-void Point_TimedTriggerThink(edict_t *eEntity)
+void Point_TimedTriggerThink(ServerEntity_t *eEntity)
 {
 	UseTargets(eEntity, eEntity);
 }
 
-void Point_TimedTriggerUse(edict_t *eEntity)
+void Point_TimedTriggerUse(ServerEntity_t *eEntity)
 {
 	eEntity->v.dNextThink	= Server.dTime+eEntity->local.dWait;
 	eEntity->v.think		= Point_TimedTriggerThink;
 }
 
-void Point_TimedTriggerSpawn(edict_t *eEntity)
+void Point_TimedTriggerSpawn(ServerEntity_t *eEntity)
 {
 	if(!eEntity->v.targetname)
 	{
@@ -967,10 +967,10 @@ void Point_TimedTriggerSpawn(edict_t *eEntity)
 	Logic
 */
 
-void Point_LogicThink(edict_t *eEntity)
+void Point_LogicThink(ServerEntity_t *eEntity)
 {
 	// [2/1/2013] Set eEnt2 as NULL here to avoid an VC warning *sighs* ~hogsy
-	edict_t *eEnt1,*eEnt2 = NULL;
+	ServerEntity_t *eEnt1,*eEnt2 = NULL;
 
 	eEnt1 = Engine.Server_FindEntity(Server.eWorld,eEntity->local.cTarget1,false);
 	if(!eEnt1)
@@ -1024,7 +1024,7 @@ void Point_LogicThink(edict_t *eEntity)
 	eEntity->v.dNextThink = Server.dTime+eEntity->local.dWait;
 }
 
-void Point_LogicSpawn(edict_t *eEntity)
+void Point_LogicSpawn(ServerEntity_t *eEntity)
 {
 	if(!eEntity->local.cTarget1)
 	{

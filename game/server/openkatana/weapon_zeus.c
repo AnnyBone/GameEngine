@@ -1,11 +1,11 @@
 #include "server_weapon.h"
 
-void Zeus_Deploy(edict_t *ent)
+void Zeus_Deploy(ServerEntity_t *ent)
 {
 	//Weapon_Animate(ent,FALSE,1,19,0.08f,0,0,0,FALSE);
 }
 
-void Zeus_Hit(edict_t *ent)
+void Zeus_Hit(ServerEntity_t *ent)
 {
 	vec3_t	vSource, vTarg, vel, mvDirection;
 	trace_t	trace;
@@ -37,7 +37,7 @@ void Zeus_Hit(edict_t *ent)
 		}
 }
 
-void Zeus_PrimaryAttack(edict_t *ent)
+void Zeus_PrimaryAttack(ServerEntity_t *ent)
 {
 	//Weapon_Animate(ent,FALSE,20,35,0.08f,0,0,0,FALSE);
 

@@ -5,14 +5,14 @@
 
 #include "server_main.h"
 
-void Physics_CheckVelocity(edict_t *eEntity);
-void Physics_CheckWaterTransition(edict_t *eEntity);
-void Physics_SetGravity(edict_t *eEntity);
-void Physics_WallFriction(edict_t *eEntity, trace_t *trLine);
-void Physics_Impact(edict_t *eEntity, edict_t *eOther);
+void Physics_CheckVelocity(ServerEntity_t *eEntity);
+void Physics_CheckWaterTransition(ServerEntity_t *eEntity);
+void Physics_SetGravity(ServerEntity_t *eEntity);
+void Physics_WallFriction(ServerEntity_t *eEntity, trace_t *trLine);
+void Physics_Impact(ServerEntity_t *eEntity, ServerEntity_t *eOther);
 
-bool Physics_CheckWater(edict_t *eEntity);
+bool Physics_CheckWater(ServerEntity_t *eEntity);
 
-trace_t Physics_PushEntity(edict_t *eEntity, MathVector3_t mvPush);
+trace_t Physics_PushEntity(ServerEntity_t *eEntity, MathVector3_t mvPush);
 
 #endif

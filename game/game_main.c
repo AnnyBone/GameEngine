@@ -30,7 +30,7 @@ char *va(char *format,...)
 	return string;
 }
 
-void SetAngle(edict_t *ent,vec3_t vAngle)
+void SetAngle(ServerEntity_t *ent,vec3_t vAngle)
 {
 	// [21/3/2012] Updated ~hogsy
 	Math_VectorCopy(vAngle,ent->v.angles);
@@ -39,7 +39,7 @@ void SetAngle(edict_t *ent,vec3_t vAngle)
 }
 
 // [8/2/2012] Brought ChangeYaw over from the engine ~hogsy
-void ChangeYaw(edict_t *ent)
+void ChangeYaw(ServerEntity_t *ent)
 {
 	float ideal,current,move,speed;
 
@@ -76,7 +76,7 @@ void ChangeYaw(edict_t *ent)
 	also slide box entities	if the
 	tryents flag is set.
 */
-trace_t Traceline(edict_t *ent,vec3_t vStart,vec3_t vEnd,int type)
+trace_t Traceline(ServerEntity_t *ent,vec3_t vStart,vec3_t vEnd,int type)
 {
 	return Engine.Server_Move(vStart, mv3Origin, mv3Origin, vEnd, type, ent);
 }
@@ -92,7 +92,7 @@ trace_t Traceline(edict_t *ent,vec3_t vStart,vec3_t vEnd,int type)
 	volume everywhere in the level.
 	Larger attenuations will drop off.
 */
-void Sound(edict_t *ent, AudioChannel_t channel, char *sound, int volume, float attenuation)
+void Sound(ServerEntity_t *ent, AudioChannel_t channel, char *sound, int volume, float attenuation)
 {
 	Engine.Sound(ent,(int)channel,sound,volume,attenuation);
 
@@ -101,7 +101,7 @@ void Sound(edict_t *ent, AudioChannel_t channel, char *sound, int volume, float 
 	#define SOUND_DEFAULT	0
 	#define SOUND_REFERENCE	1
 
-	edict_t *sound;
+	ServerEntity_t *sound;
 
 	if(type)
 		sound = Entity_Spawn();
@@ -135,7 +135,7 @@ void WriteByte(int mode,int c)
 }
 
 // OBSOLETE
-bool Game_Init(int state,edict_t *ent,double dTime)
+bool Game_Init(int state,ServerEntity_t *ent,double dTime)
 {
 	Server.dTime = dTime;
 

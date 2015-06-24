@@ -82,25 +82,25 @@ enum
 	EMOTION_NONE
 };
 
-edict_t	*Monster_GetTarget(edict_t *eMonster);
+ServerEntity_t	*Monster_GetTarget(ServerEntity_t *eMonster);
 
-bool Monster_SetState(edict_t *eMonster, MonsterState_t msState);
-bool Monster_SetThink(edict_t *eMonster, MonsterThink_t mtThink);
-bool Monster_IsVisible(edict_t *ent, edict_t *target);
-bool Monster_EmotionReset(edict_t *eMonster, int iEmotion);
+bool Monster_SetState(ServerEntity_t *eMonster, MonsterState_t msState);
+bool Monster_SetThink(ServerEntity_t *eMonster, MonsterThink_t mtThink);
+bool Monster_IsVisible(ServerEntity_t *ent, ServerEntity_t *target);
+bool Monster_EmotionReset(ServerEntity_t *eMonster, int iEmotion);
 
-int	Monster_GetRelationship(edict_t *eMonster,edict_t *eTarget);
+int	Monster_GetRelationship(ServerEntity_t *eMonster, ServerEntity_t *eTarget);
 
-float MONSTER_GetRange(edict_t *ent,vec3_t target);
+float MONSTER_GetRange(ServerEntity_t *ent, vec3_t target);
 
-void Monster_Spawn(edict_t *eMonster);
+void Monster_Spawn(ServerEntity_t *eMonster);
 void Monster_Damage(ServerEntity_t *target, ServerEntity_t *inflictor, int iDamage, int iDamageType);
-void Monster_Jump(edict_t *eMonster,float fVelocity);
-void Monster_MoveToGoal(edict_t *ent,vec3_t goal,float distance);
-void Monster_MoveRandom(edict_t *eMonster, float fSpeed);
-void Monster_Frame(edict_t *eMonster);
-void Monster_SetTargets(edict_t *eMonster);
-void Monster_Killed(edict_t *eTarget,edict_t *eAttacker);
+void Monster_Jump(ServerEntity_t *eMonster, float fVelocity);
+void Monster_MoveToGoal(ServerEntity_t *ent, vec3_t goal, float distance);
+void Monster_MoveRandom(ServerEntity_t *eMonster, float fSpeed);
+void Monster_Frame(ServerEntity_t *eMonster);
+void Monster_SetTargets(ServerEntity_t *eMonster);
+void Monster_Killed(ServerEntity_t *eTarget, ServerEntity_t *eAttacker);
 
 /*
     Bots

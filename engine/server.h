@@ -39,8 +39,8 @@ typedef struct
 	char			*lightstyles[MAX_LIGHTSTYLES];
 	int				num_edicts;
 	int				max_edicts;
-	edict_t			*edicts;			// can NOT be array indexed, because
-									// edict_t is variable sized, but can
+	ServerEntity_t			*edicts;			// can NOT be array indexed, because
+									// ServerEntity_t is variable sized, but can
 									// be used to reference the world ent
 	ServerState_t	state;			// some actions are only valid during load
 
@@ -78,7 +78,7 @@ typedef struct client_s
 	sizebuf_t		message;			// can be added to at any time,
 										// copied and clear once per frame
 	byte			msgbuf[MAX_MSGLEN];
-	edict_t			*edict;				// EDICT_NUM(clientnum+1)
+	ServerEntity_t			*edict;				// EDICT_NUM(clientnum+1)
 	char			name[32];			// for printing to other people
 	int				colors;
 
@@ -104,12 +104,12 @@ extern	client_t	*host_client;
 
 extern	jmp_buf 	host_abortserver;
 
-extern	edict_t		*sv_player;
+extern	ServerEntity_t		*sv_player;
 
 //===========================================================
 
 void SV_Init (void);
-void SV_StartSound (edict_t *entity, int channel, char *sample, int volume,float attenuation);
+void SV_StartSound (ServerEntity_t *entity, int channel, char *sample, int volume,float attenuation);
 void SV_DropClient(bool crash);
 void SV_SendClientMessages (void);
 void SV_ClearDatagram (void);
@@ -123,7 +123,7 @@ void SV_AddClientToServer (struct qsocket_s	*ret);
 void SV_ClientPrintf (char *fmt, ...);
 void SV_BroadcastPrintf (char *fmt, ...);
 
-void SV_WriteClientdataToMessage (edict_t *ent, sizebuf_t *msg);
+void SV_WriteClientdataToMessage (ServerEntity_t *ent, sizebuf_t *msg);
 void SV_CheckForNewClients (void);
 void SV_RunClients (void);
 void SV_SaveSpawnparms ();

@@ -32,6 +32,9 @@
     <ClInclude Include="include\platform_window.h">
       <Filter>Include</Filter>
     </ClInclude>
+    <ClInclude Include="include\platform_log.h">
+      <Filter>Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Include">

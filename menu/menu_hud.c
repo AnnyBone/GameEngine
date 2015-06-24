@@ -59,10 +59,10 @@ void HUD_Draw(void)
 #endif
 #elif GAME_OPENKATANA
 	{
-		int iArmor[3],iAmmo[3];
+//		int iArmor[3],iAmmo[3];
 		int armor = Engine.Client_GetStat(STAT_ARMOR),
-			health = Engine.Client_GetStat(STAT_HEALTH),
-			ammo = Engine.Client_GetStat(STAT_AMMO);
+			health = Engine.Client_GetStat(STAT_HEALTH);
+//			ammo = Engine.Client_GetStat(STAT_AMMO);
 
 		// Health
 

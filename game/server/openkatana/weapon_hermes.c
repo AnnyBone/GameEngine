@@ -1,12 +1,12 @@
 #include "server_weapon.h"
 
-void Hermes_Deploy(edict_t *ent)
+void Hermes_Deploy(ServerEntity_t *ent)
 {
 	//Weapon_Animate(ent,FALSE,1,11,0.1f,0,0,0,FALSE);
 }
 
 // [17/7/2012] Renamed to Hermes_CloudThink ~hogsy
-void Hermes_CloudThink(edict_t *ent)
+void Hermes_CloudThink(ServerEntity_t *ent)
 {
 	vec3_t vel;
 
@@ -23,7 +23,7 @@ void Hermes_CloudThink(edict_t *ent)
 	ent->v.dNextThink	= Server.dTime+0.3;
 }
 
-void HermesCloudTouch(edict_t *ent, edict_t *other)
+void HermesCloudTouch(ServerEntity_t *ent, ServerEntity_t *other)
 {
 	// [13/4/2012] Fixed (please remember to use strcmp!) ~hogsy
 	// [8/6/2012] Removed classname check for clients ~hogsy
@@ -37,9 +37,9 @@ void HermesCloudTouch(edict_t *ent, edict_t *other)
 	}
 }
 
-void Hermes_PrimaryAttack(edict_t *ent)
+void Hermes_PrimaryAttack(ServerEntity_t *ent)
 {
-	edict_t *cloud = Entity_Spawn();
+	ServerEntity_t *cloud = Entity_Spawn();
 
 	cloud->v.cClassname = "cloud";
 	cloud->v.movetype	= MOVETYPE_FLYMISSILE;

@@ -141,7 +141,7 @@ Weapon_t Weapons[] =
 
 /*	Returns the entities current active weapon.
 */
-Weapon_t *Weapon_GetCurrentWeapon(edict_t *eEntity)
+Weapon_t *Weapon_GetCurrentWeapon(ServerEntity_t *eEntity)
 {
 	Weapon_t	*wCurrentWeapon;
 
@@ -239,12 +239,12 @@ void Weapon_Precache(void)
 
 /*	Enable automatic aim assitance.
 */
-MathVector_t Weapon_Aim(edict_t *eEntity)
+MathVector_t Weapon_Aim(ServerEntity_t *eEntity)
 {
 	int				i, j;
 	float			fDistance, fBestDistance;
 	trace_t			tAimLine;
-	edict_t			*eCheck, *eBest;
+	ServerEntity_t			*eCheck, *eBest;
 	MathVector3f_t	mvStart, mvEnd, mvDirection, mvBestDirection;
 
 	// Copy the entity's origin as our starting position.
@@ -373,7 +373,7 @@ bool Weapon_CheckTrace(ServerEntity_t *eOwner)
 
 /*	Attempts to throw out a projectile.
 */
-void Weapon_Projectile(edict_t *eOwner, edict_t *eProjectile, float fVelocity)
+void Weapon_Projectile(ServerEntity_t *eOwner, ServerEntity_t *eProjectile, float fVelocity)
 {
 	MathVector3_t mvDirection;
 
@@ -384,7 +384,7 @@ void Weapon_Projectile(edict_t *eOwner, edict_t *eProjectile, float fVelocity)
 	Math_VectorScale(mvDirection, fVelocity, eProjectile->v.velocity);
 }
 
-void Weapon_BulletProjectile(edict_t *eEntity,float fSpread,int iDamage,vec_t *vDirection)
+void Weapon_BulletProjectile(ServerEntity_t *eEntity,float fSpread,int iDamage,vec_t *vDirection)
 {
 	int	i;
 	MathVector3f_t vSource, vTarg;
@@ -408,7 +408,7 @@ void Weapon_BulletProjectile(edict_t *eEntity,float fSpread,int iDamage,vec_t *v
 			Entity_Damage(tTrace.ent, eEntity, iDamage, DAMAGE_TYPE_NONE);
 		else
 		{
-			edict_t *eSmoke = Entity_Spawn();
+			ServerEntity_t *eSmoke = Entity_Spawn();
 			if(eSmoke)
 			{
 				char cSound[32];
@@ -430,7 +430,7 @@ void Weapon_BulletProjectile(edict_t *eEntity,float fSpread,int iDamage,vec_t *v
 	}
 }
 
-void Weapon_UpdateCurrentAmmo(Weapon_t *wWeapon, edict_t *eEntity)
+void Weapon_UpdateCurrentAmmo(Weapon_t *wWeapon, ServerEntity_t *eEntity)
 {
 	// [4/7/2012] Set ammo by type ~hogsy
 	switch (wWeapon->iPrimaryType)
@@ -490,7 +490,7 @@ void Weapon_UpdateCurrentAmmo(Weapon_t *wWeapon, edict_t *eEntity)
 
 /*	Sets an active weapon for the specified entity.
 */
-void Weapon_SetActive(Weapon_t *wWeapon,edict_t *eEntity, bool bDeploy)
+void Weapon_SetActive(Weapon_t *wWeapon,ServerEntity_t *eEntity, bool bDeploy)
 {
 	bool bPrimaryAmmo,bSecondaryAmmo;
 
@@ -519,7 +519,7 @@ void Weapon_SetActive(Weapon_t *wWeapon,edict_t *eEntity, bool bDeploy)
 
 /*	Checks for primary ammo.
 */
-bool Weapon_CheckPrimaryAmmo(Weapon_t *wWeapon,edict_t *eEntity)
+bool Weapon_CheckPrimaryAmmo(Weapon_t *wWeapon,ServerEntity_t *eEntity)
 {
 	switch(wWeapon->iPrimaryType)
 	{
@@ -571,7 +571,7 @@ bool Weapon_CheckPrimaryAmmo(Weapon_t *wWeapon,edict_t *eEntity)
 
 /*	Check for secondary ammo.
 */
-bool Weapon_CheckSecondaryAmmo(Weapon_t *wWeapon,edict_t *eEntity)
+bool Weapon_CheckSecondaryAmmo(Weapon_t *wWeapon,ServerEntity_t *eEntity)
 {
 	switch(wWeapon->iSecondaryType)
 	{
@@ -590,7 +590,7 @@ bool Weapon_CheckSecondaryAmmo(Weapon_t *wWeapon,edict_t *eEntity)
 */
 
 // 06/02/2013 - Animation system = redone! ~eukos
-void Weapon_ResetAnimation(edict_t *ent)
+void Weapon_ResetAnimation(ServerEntity_t *ent)
 {
 	// [3/2/2014] Allow for custom idle frames after animation ~hogsy
 	if(ent->local.iWeaponIdleFrame)
@@ -605,7 +605,7 @@ void Weapon_ResetAnimation(edict_t *ent)
 	ent->local.fWeaponAnimationTime = 0;
 }
 
-void Weapon_CheckFrames(edict_t *eEntity)
+void Weapon_CheckFrames(ServerEntity_t *eEntity)
 {
 	if(!eEntity->local.iWeaponAnimationEnd || Server.dTime < eEntity->local.fWeaponAnimationTime)	// If something isn't active and Animationtime is over
 		return;
@@ -631,7 +631,7 @@ void Weapon_CheckFrames(edict_t *eEntity)
 	eEntity->local.iWeaponAnimationCurrent++;
 }
 
-void Weapon_Animate(edict_t *ent,EntityFrame_t *eFrames)
+void Weapon_Animate(ServerEntity_t *ent,EntityFrame_t *eFrames)
 {
 	int i;
 
@@ -663,7 +663,7 @@ void Weapon_Animate(edict_t *ent,EntityFrame_t *eFrames)
 // [19/8/2012] TODO: Finish ~hogsy
 /*	Cycle through currently avaliable weapons.
 */
-void Weapon_Cycle(edict_t *eEntity,bool bForward)
+void Weapon_Cycle(ServerEntity_t *eEntity,bool bForward)
 {
 	Weapon_t	*wCurrentWeapon,*wNext;
 
@@ -701,7 +701,7 @@ void Weapon_Cycle(edict_t *eEntity,bool bForward)
 	{}	// [1/1/2013] Previous etc blah fa fakf ~hogsy
 }
 
-void Weapon_PrimaryAttack(edict_t *eEntity)
+void Weapon_PrimaryAttack(ServerEntity_t *eEntity)
 {
 	Weapon_t *wCurrentWeapon = Weapon_GetCurrentWeapon(eEntity);
 	if(!wCurrentWeapon || !Weapon_CheckPrimaryAmmo(wCurrentWeapon,eEntity) || eEntity->local.dAttackFinished > Server.dTime)
@@ -722,7 +722,7 @@ void Weapon_PrimaryAttack(edict_t *eEntity)
 	}
 }
 
-void Weapon_SecondaryAttack(edict_t *eEntity)
+void Weapon_SecondaryAttack(ServerEntity_t *eEntity)
 {
 	Weapon_t *wCurrentWeapon = Weapon_GetCurrentWeapon(eEntity);
 	if(!wCurrentWeapon || !Weapon_CheckSecondaryAmmo(wCurrentWeapon,eEntity) || eEntity->local.dAttackFinished > Server.dTime)
@@ -734,7 +734,7 @@ void Weapon_SecondaryAttack(edict_t *eEntity)
 	}
 }
 
-void Weapon_CheatCommand(edict_t *eEntity)
+void Weapon_CheatCommand(ServerEntity_t *eEntity)
 {
 #ifdef GAME_OPENKATANA
 	Weapon_t *wWeapon;
@@ -764,7 +764,7 @@ void Weapon_CheatCommand(edict_t *eEntity)
 	eEntity->v.impulse = 0;
 }
 
-void Weapon_CheckInput(edict_t *eEntity)
+void Weapon_CheckInput(ServerEntity_t *eEntity)
 {
 	if(eEntity->v.impulse >= 1 && eEntity->v.impulse <= 7)
 	{

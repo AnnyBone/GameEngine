@@ -1,6 +1,6 @@
 #include "server_main.h"
 
-void Trident_Deploy(edict_t *ent)
+void Trident_Deploy(ServerEntity_t *ent)
 {
 	//Weapon_Animate(ent,FALSE,1,10,0.1f,0,0,0,FALSE);
 }
@@ -11,7 +11,7 @@ void WEAPON_TRIDENT_Precache (void)
 	Server_PrecacheSound("weapons/trident/tridentdraw.wav");
 }
 
-void TridentHit(edict_t *ent)
+void TridentHit(ServerEntity_t *ent)
 {
 	vec3_t	forward,temp,sndvec,vel;
 	trace_t	trace;
@@ -44,7 +44,7 @@ void TridentHit(edict_t *ent)
 	else if(trace.ent)
 		Engine.Particle(sndvec,vel,10,"smoke",30);
 }
-void Trident_PrimaryAttack(edict_t *ent)
+void Trident_PrimaryAttack(ServerEntity_t *ent)
 {
 	Sound(ent,CHAN_WEAPON,"weapons/axe/axeswing.wav",255,ATTN_NORM);
 

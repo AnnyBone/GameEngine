@@ -30,51 +30,51 @@ typedef enum
 } WeaponAmmo_t;
 
 #ifdef GAME_OPENKATANA
-void IonBlaster_Deploy(edict_t *ent);
-void Shockwave_Deploy(edict_t *ent);
-void SideWinder_Deploy(edict_t *ent);
-void Shotcycler_Deploy(edict_t *ent);
-void C4Vizatergo_Deploy(edict_t *ent);
-void Daikatana_Deploy(edict_t *ent);
-void Axe_Deploy(edict_t *ent);
-void Ballista_Deploy(edict_t *ent);
-void Barrier_Deploy(edict_t *ent);
-void Crossbow_Deploy(edict_t *ent);
-void Discus_Deploy(edict_t *ent);
-void Glock_Deploy(edict_t *ent);
-void GreekFire_Deploy(edict_t *ent);
-void Hermes_Deploy(edict_t *ent);
-void Kineticore_Deploy(edict_t *ent);
-void Midas_Deploy(edict_t *ent);
-void PulseRifle_Deploy(edict_t *ent);
-void Zeus_Deploy(edict_t *ent);
-void IonRifle_Deploy(edict_t *eOwner);
+void IonBlaster_Deploy(ServerEntity_t *ent);
+void Shockwave_Deploy(ServerEntity_t *ent);
+void SideWinder_Deploy(ServerEntity_t *ent);
+void Shotcycler_Deploy(ServerEntity_t *ent);
+void C4Vizatergo_Deploy(ServerEntity_t *ent);
+void Daikatana_Deploy(ServerEntity_t *ent);
+void Axe_Deploy(ServerEntity_t *ent);
+void Ballista_Deploy(ServerEntity_t *ent);
+void Barrier_Deploy(ServerEntity_t *ent);
+void Crossbow_Deploy(ServerEntity_t *ent);
+void Discus_Deploy(ServerEntity_t *ent);
+void Glock_Deploy(ServerEntity_t *ent);
+void GreekFire_Deploy(ServerEntity_t *ent);
+void Hermes_Deploy(ServerEntity_t *ent);
+void Kineticore_Deploy(ServerEntity_t *ent);
+void Midas_Deploy(ServerEntity_t *ent);
+void PulseRifle_Deploy(ServerEntity_t *ent);
+void Zeus_Deploy(ServerEntity_t *ent);
+void IonRifle_Deploy(ServerEntity_t *eOwner);
 
-void Axe_PrimaryAttack(edict_t *ent);
-void Ballista_PrimaryAttack(edict_t *ent);
-void Barrier_PrimaryAttack(edict_t *ent);
-void C4Vizatergo_PrimaryAttack(edict_t *eOwner);
-void C4Vizatergo_SecondaryAttack(edict_t *eOwner);
-void Crossbow_PrimaryAttack(edict_t *ent);
-void Daikatana_PrimaryAttack(edict_t *ent);
-void Discus_PrimaryAttack(edict_t *ent);
-void Glock_PrimaryAttack(edict_t *ent);
-void GreekFire_PrimaryAttack(edict_t *ent);
-void Hermes_PrimaryAttack(edict_t *ent);
-void IonBlaster_PrimaryAttack(edict_t *ent);
-void Kineticore_PrimaryAttack(edict_t *ent);
-void Midas_PrimaryAttack(edict_t *ent);
-void PulseRifle_PrimaryAttack(edict_t *ent);
-void PulseRifle_SecondaryAttack(edict_t *ent);
-void Shockwave_PrimaryAttack(edict_t *ent);
-void Shotcycler_PrimaryAttack(edict_t *ent);
-void SideWinder_PrimaryAttack(edict_t *eOwner);
-void Zeus_PrimaryAttack(edict_t *ent);
-void IonRifle_PrimaryAttack(edict_t *eOwner);
-void IonRifle_SecondaryAttack(edict_t *eOwner);
+void Axe_PrimaryAttack(ServerEntity_t *ent);
+void Ballista_PrimaryAttack(ServerEntity_t *ent);
+void Barrier_PrimaryAttack(ServerEntity_t *ent);
+void C4Vizatergo_PrimaryAttack(ServerEntity_t *eOwner);
+void C4Vizatergo_SecondaryAttack(ServerEntity_t *eOwner);
+void Crossbow_PrimaryAttack(ServerEntity_t *ent);
+void Daikatana_PrimaryAttack(ServerEntity_t *ent);
+void Discus_PrimaryAttack(ServerEntity_t *ent);
+void Glock_PrimaryAttack(ServerEntity_t *ent);
+void GreekFire_PrimaryAttack(ServerEntity_t *ent);
+void Hermes_PrimaryAttack(ServerEntity_t *ent);
+void IonBlaster_PrimaryAttack(ServerEntity_t *ent);
+void Kineticore_PrimaryAttack(ServerEntity_t *ent);
+void Midas_PrimaryAttack(ServerEntity_t *ent);
+void PulseRifle_PrimaryAttack(ServerEntity_t *ent);
+void PulseRifle_SecondaryAttack(ServerEntity_t *ent);
+void Shockwave_PrimaryAttack(ServerEntity_t *ent);
+void Shotcycler_PrimaryAttack(ServerEntity_t *ent);
+void SideWinder_PrimaryAttack(ServerEntity_t *eOwner);
+void Zeus_PrimaryAttack(ServerEntity_t *ent);
+void IonRifle_PrimaryAttack(ServerEntity_t *eOwner);
+void IonRifle_SecondaryAttack(ServerEntity_t *eOwner);
 #elif GAME_ADAMAS
-void Blazer_Deploy(edict_t *eOwner);
-void Blazer_PrimaryAttack(edict_t *eOwner);
+void Blazer_Deploy(ServerEntity_t *eOwner);
+void Blazer_PrimaryAttack(ServerEntity_t *eOwner);
 #endif
 
 typedef struct
@@ -83,38 +83,38 @@ typedef struct
 
 	char			*model;
 
-	void			(*Deploy)(edict_t *ent);
+	void			(*Deploy)(ServerEntity_t *ent);
 
 	WeaponAmmo_t	iPrimaryType;
 
-	void			(*Primary)(edict_t *ent);
+	void			(*Primary)(ServerEntity_t *ent);
 
 	WeaponAmmo_t	iSecondaryType;
 
-	void			(*Secondary)(edict_t *ent);
+	void			(*Secondary)(ServerEntity_t *ent);
 
 	// [25/9/2013] For handing some control over to the weapon system in regards to updating ammo ~hogsy
 	int				iPrimaryAmmoOffset,
 					iSecondaryAmmoOffset;
 } Weapon_t;
 
-MathVector_t Weapon_Aim(edict_t *eEntity);
+MathVector_t Weapon_Aim(ServerEntity_t *eEntity);
 
-Weapon_t *Weapon_GetCurrentWeapon(edict_t *eEntity);
+Weapon_t *Weapon_GetCurrentWeapon(ServerEntity_t *eEntity);
 Weapon_t *Weapon_GetWeapon(int iWeaponID);
 
 void Weapon_Precache(void);
-void Weapon_UpdateCurrentAmmo(Weapon_t *wWeapon, edict_t *eEntity);
-void Weapon_SetActive(Weapon_t *wWeapon, edict_t *eEntity, bool bDeploy);
-void Weapon_BulletProjectile(edict_t *ent, float spread, int damage, vec3_t vVector);
-void Weapon_Projectile(edict_t *eOwner, edict_t *eProjectile, float fVelocity);
-void Weapon_CheckFrames(edict_t *eEntity);
-void Weapon_Animate(edict_t *ent, EntityFrame_t *eFrames);
-void Weapon_PrimaryAttack(edict_t *eEntity);
-void Weapon_CheckInput(edict_t *eEntity);
+void Weapon_UpdateCurrentAmmo(Weapon_t *wWeapon, ServerEntity_t *eEntity);
+void Weapon_SetActive(Weapon_t *wWeapon, ServerEntity_t *eEntity, bool bDeploy);
+void Weapon_BulletProjectile(ServerEntity_t *ent, float spread, int damage, vec3_t vVector);
+void Weapon_Projectile(ServerEntity_t *eOwner, ServerEntity_t *eProjectile, float fVelocity);
+void Weapon_CheckFrames(ServerEntity_t *eEntity);
+void Weapon_Animate(ServerEntity_t *ent, EntityFrame_t *eFrames);
+void Weapon_PrimaryAttack(ServerEntity_t *eEntity);
+void Weapon_CheckInput(ServerEntity_t *eEntity);
 
-bool Weapon_CheckPrimaryAmmo(Weapon_t *wWeapon, edict_t *eEntity);
-bool Weapon_CheckSecondaryAmmo(Weapon_t *wWeapon, edict_t *eEntity);
-bool Weapon_CheckTrace(edict_t *eOwner);
+bool Weapon_CheckPrimaryAmmo(Weapon_t *wWeapon, ServerEntity_t *eEntity);
+bool Weapon_CheckSecondaryAmmo(Weapon_t *wWeapon, ServerEntity_t *eEntity);
+bool Weapon_CheckTrace(ServerEntity_t *eOwner);
 
 #endif

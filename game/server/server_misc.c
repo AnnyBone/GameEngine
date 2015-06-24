@@ -2,12 +2,12 @@
 */
 #include "server_misc.h"
 
-void UseTargets(edict_t *ent, edict_t *other);
+void UseTargets(ServerEntity_t *ent, ServerEntity_t *other);
 
 #if 0
-edict_t *SpawnField(edict_t *ent,vec3_t fmins,vec3_t fmaxs)
+ServerEntity_t *SpawnField(ServerEntity_t *ent,vec3_t fmins,vec3_t fmaxs)
 {
-	edict_t	*trigger = Entity_Spawn();
+	ServerEntity_t	*trigger = Entity_Spawn();
 
 	trigger->v.movetype		= MOVETYPE_NONE;
 	trigger->Physics.iSolid	= SOLID_TRIGGER;
@@ -21,18 +21,18 @@ edict_t *SpawnField(edict_t *ent,vec3_t fmins,vec3_t fmaxs)
 }
 #endif
 
-void Misc_DelayThink(edict_t *ent)
+void Misc_DelayThink(ServerEntity_t *ent)
 {
-	edict_t *other = ent->v.enemy;
+	ServerEntity_t *other = ent->v.enemy;
 
 	UseTargets(ent, other);
 
 	Entity_Remove(ent);
 }
 
-void UseTargets(edict_t *ent, edict_t *other)
+void UseTargets(ServerEntity_t *ent, ServerEntity_t *other)
 {
-	edict_t *t;
+	ServerEntity_t *t;
 
 	ent->local.activator = other;
 
@@ -72,7 +72,7 @@ void UseTargets(edict_t *ent, edict_t *other)
 	}
 }
 
-void WEAPON_StickThink(edict_t *ent)
+void WEAPON_StickThink(ServerEntity_t *ent)
 {
 	ent->v.think			= WEAPON_StickThink;
 	ent->v.TouchFunction	= NULL;
@@ -90,14 +90,14 @@ void WEAPON_StickThink(edict_t *ent)
 }
 
 // [17/7/2012] Renamed to Misc_GibThink ~hogsy
-void Misc_GibThink(edict_t *ent)
+void Misc_GibThink(ServerEntity_t *ent)
 {
 	Entity_Remove(ent);
 }
 
 void ThrowGib(vec3_t origin,vec3_t velocity,char *model,float damage,bool bleed)
 {
-	edict_t *gib = Entity_Spawn();
+	ServerEntity_t *gib = Entity_Spawn();
 
 	gib->v.cClassname	= "gib";
 

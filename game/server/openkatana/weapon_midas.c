@@ -1,11 +1,11 @@
 #include "server_weapon.h"
 
-void Midas_Deploy(edict_t *ent)
+void Midas_Deploy(ServerEntity_t *ent)
 {
 	//Weapon_Animate(ent,FALSE,1,7,0.1f,0,0,0,FALSE);
 }
 
-void Midas_CloudThink(edict_t *ent)
+void Midas_CloudThink(ServerEntity_t *ent)
 {
 	if(ent->local.hit == 0)
 		ENTITY_REMOVE(ent);
@@ -18,7 +18,7 @@ void Midas_CloudThink(edict_t *ent)
 	ent->v.think		= Midas_CloudThink;
 }
 
-void CloudTouch(edict_t *cloud, edict_t *other)
+void CloudTouch(ServerEntity_t *cloud, ServerEntity_t *other)
 {
 	// [13/4/2012] Fixed (please remember to use stricmp!) ~hogsy
 	// [8/6/2012] Removed classname check for clients ~hogsy
@@ -41,9 +41,9 @@ void CloudTouch(edict_t *cloud, edict_t *other)
 }
 
 // [4/7/2012] Renamed to Midas_PrimaryAttack ~hogsy
-void Midas_PrimaryAttack(edict_t *ent)
+void Midas_PrimaryAttack(ServerEntity_t *ent)
 {
-	edict_t *cloud = Entity_Spawn();
+	ServerEntity_t *cloud = Entity_Spawn();
 
 	cloud->v.cClassname	= "cloud";
 	cloud->v.movetype	= MOVETYPE_FLYMISSILE;

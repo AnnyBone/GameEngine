@@ -10,7 +10,7 @@
 
 /*	Sets the amount of gravity for the object.
 */
-void Physics_SetGravity(edict_t *eEntity)
+void Physics_SetGravity(ServerEntity_t *eEntity)
 {	
 	eEntity->v.velocity[2] -=
 		// Slightly more complex gravity management.
@@ -20,7 +20,7 @@ void Physics_SetGravity(edict_t *eEntity)
 		(float)Engine.Server_GetFrameTime();
 }
 
-bool Physics_CheckWater(edict_t *eEntity)
+bool Physics_CheckWater(ServerEntity_t *eEntity)
 {
 	MathVector3f_t point;
 	int	cont;
@@ -54,7 +54,7 @@ bool Physics_CheckWater(edict_t *eEntity)
 	return eEntity->v.waterlevel > 1;
 }
 
-void Physics_CheckVelocity(edict_t *eEntity)
+void Physics_CheckVelocity(ServerEntity_t *eEntity)
 {
 	int i;
 
@@ -79,7 +79,7 @@ void Physics_CheckVelocity(edict_t *eEntity)
 	}
 }
 
-void Physics_CheckWaterTransition(edict_t *eEntity)
+void Physics_CheckWaterTransition(ServerEntity_t *eEntity)
 {
 	int	iCont = Engine.Server_PointContents(eEntity->v.origin);
 
@@ -107,7 +107,7 @@ void Physics_CheckWaterTransition(edict_t *eEntity)
 	//Sound(eEntity, CHAN_AUTO, PHYSICS_SOUND_BODY, 15, ATTN_NORM);
 }
 
-void Physics_WallFriction(edict_t *eEntity, trace_t *trLine)
+void Physics_WallFriction(ServerEntity_t *eEntity, trace_t *trLine)
 {
 	MathVector3f_t forward, right, up;
 	float d, i;
@@ -131,7 +131,7 @@ void Physics_WallFriction(edict_t *eEntity, trace_t *trLine)
 
 /*	Two entities have touched, so run their touch functions
 */
-void Physics_Impact(edict_t *eEntity,edict_t *eOther)
+void Physics_Impact(ServerEntity_t *eEntity,ServerEntity_t *eOther)
 {
 	// Entities using noclip shouldn't "impact" anything.
 	if (eOther->v.movetype == MOVETYPE_NOCLIP)
@@ -150,7 +150,7 @@ void Physics_Impact(edict_t *eEntity,edict_t *eOther)
 
 /*	Does not change the entities velocity at all
 */
-trace_t Physics_PushEntity(edict_t *eEntity, MathVector3f_t mvPush)
+trace_t Physics_PushEntity(ServerEntity_t *eEntity, MathVector3f_t mvPush)
 {
 	trace_t	trace;
 	MathVector3f_t	end;

@@ -133,7 +133,7 @@ void Bot_Think(ServerEntity_t *eBot);
 void Bot_Spawn(ServerEntity_t *eBot)
 {
 	int		iSpawnType;
-	edict_t	*eSpawnPoint;
+	ServerEntity_t	*eSpawnPoint;
 
 	// [20/1/2013] Don't spawn bots unless it's allowed by admin ~hogsy
 	if(!cvServerBots.value)
@@ -289,7 +289,7 @@ void Bot_Think(ServerEntity_t *eBot)
 	break;
 	case THINK_WANDERING:
 		{
-			edict_t		*eTarget;
+			ServerEntity_t		*eTarget;
 			Waypoint_t	*wPoint;
 
 			eTarget = Monster_GetTarget(eBot);
@@ -346,6 +346,7 @@ void Bot_Think(ServerEntity_t *eBot)
 
 void Bot_BroadcastMessage(ServerEntity_t *eBot, ServerEntity_t *other)
 {
+#if 0
 	char *cPhrase;
 
 	if(!bIsMultiplayer || rand()%5 == 5)
@@ -355,7 +356,6 @@ void Bot_BroadcastMessage(ServerEntity_t *eBot, ServerEntity_t *other)
 		cPhrase = BotDeathPhrases[(rand()%pARRAYELEMENTS(BotDeathPhrases))];
 	else
 	{
-#if 0
 		if(eBot->Monster.meEmotion[EMOTION_ANGER].iEmotion > 50)
 			cPhrase = BotAngryPhrases[(rand()%pARRAYELEMENTS(BotAngryPhrases))];
 		else if (eBot->Monster.meEmotion[EMOTION_BOREDOM].iEmotion > 50)
@@ -367,7 +367,6 @@ void Bot_BroadcastMessage(ServerEntity_t *eBot, ServerEntity_t *other)
 		else
 			// [22/3/2013] Emotions don't give us anything worth saying... ~hogsy
 			return;
-#endif
 	}
 
 	// [17/7/2012] Temporary until we can simulate chat ~hogsy
@@ -378,12 +377,13 @@ void Bot_BroadcastMessage(ServerEntity_t *eBot, ServerEntity_t *other)
 		cPhrase,
 		other->v.netname
 	);
+#endif
 }
 
 void Bot_Pain(ServerEntity_t *ent, ServerEntity_t *other)
 {
-	char		sound[MAX_QPATH];
-	Weapon_t	*wMyWeapon,*wHisWeapon;
+	char sound[MAX_QPATH];
+	Weapon_t *wMyWeapon, *wHisWeapon;
 
 	// [4/10/2012] Let the player know how we're feeling :) ~hogsy
 	Bot_BroadcastMessage(ent,other);
@@ -493,13 +493,13 @@ POINTCHECK:
 	Sound(ent,CHAN_VOICE,sound,255,ATTN_NORM);
 }
 
-void Bot_Walk(edict_t *eBot)
+void Bot_Walk(ServerEntity_t *eBot)
 {
 	eBot->v.velocity[0] -= 5.0f;
 	eBot->v.velocity[1] -= 10.0f;
 }
 
-void Bot_Die(edict_t *eBot,edict_t *eOther)
+void Bot_Die(ServerEntity_t *eBot,ServerEntity_t *eOther)
 {
 	char sound[MAX_QPATH];
 

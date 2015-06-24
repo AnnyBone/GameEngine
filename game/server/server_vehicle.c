@@ -15,7 +15,7 @@
 
 /*	Called when a vehicle is destroyed.
 */
-void Vehicle_Kill(edict_t *eVehicle,edict_t *eAttacker)
+void Vehicle_Kill(ServerEntity_t *eVehicle,ServerEntity_t *eAttacker)
 {
 	if(eVehicle->v.iHealth <= VEHICLE_MAX_DAMAGE)
 	{
@@ -30,7 +30,7 @@ void Vehicle_Kill(edict_t *eVehicle,edict_t *eAttacker)
 
 /*	Should be called for when a vehicle is damaged.
 */
-void Vehicle_Damage(edict_t *eVehicle,edict_t *eAttacker,int iDamage)
+void Vehicle_Damage(ServerEntity_t *eVehicle,ServerEntity_t *eAttacker,int iDamage)
 {
 	if(eVehicle->Monster.iState == STATE_DEAD)
 		return;
@@ -46,7 +46,7 @@ void Vehicle_Damage(edict_t *eVehicle,edict_t *eAttacker,int iDamage)
 	states of the vehicle.
 	Requires that iMaxPassengers is set!
 */
-void Vehicle_Spawn(edict_t *eVehicle)
+void Vehicle_Spawn(ServerEntity_t *eVehicle)
 {
 	int	i;
 
@@ -68,7 +68,7 @@ void Vehicle_Spawn(edict_t *eVehicle)
 	for the new passenger and sets whether the vehicle
 	is active or not.
 */
-void Vehicle_Enter(edict_t *eVehicle,edict_t *eOther)
+void Vehicle_Enter(ServerEntity_t *eVehicle,ServerEntity_t *eOther)
 {
 	if(eVehicle->Vehicle.iPassengers >= eVehicle->Vehicle.iMaxPassengers)
 	{
@@ -112,7 +112,7 @@ void Vehicle_Enter(edict_t *eVehicle,edict_t *eOther)
 
 /*	Should be called when an entity exits a vehicle.
 */
-void Vehicle_Exit(edict_t *eVehicle,edict_t *eOther)
+void Vehicle_Exit(ServerEntity_t *eVehicle,ServerEntity_t *eOther)
 {
 	if(eVehicle->Vehicle.iSlot[eOther->local.iVehicleSlot] == SLOT_DRIVER)
 		eVehicle->Vehicle.bActive = false;

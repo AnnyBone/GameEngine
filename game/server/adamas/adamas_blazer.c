@@ -2,11 +2,11 @@
 */
 #include "server_weapon.h"
 
-void Blazer_Deploy(edict_t *eOwner)
+void Blazer_Deploy(ServerEntity_t *eOwner)
 {
 }
 
-void Blazer_PrimaryAttack(edict_t *eOwner)
+void Blazer_PrimaryAttack(ServerEntity_t *eOwner)
 {
 	vec3_t	vForward,vTemp;
 

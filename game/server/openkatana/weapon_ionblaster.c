@@ -74,14 +74,14 @@ EntityFrame_t IonBlasterAnimation_Fire2[] =
 	{ NULL, 51, 0.02f, TRUE }
 };
 
-void IonBlaster_Deploy(edict_t *ent)
+void IonBlaster_Deploy(ServerEntity_t *ent)
 {
 	Sound(ent,CHAN_WEAPON,"weapons/ionblaster/ionready.wav",255,ATTN_NORM);
 
 	Weapon_Animate(ent,IonBlasterAnimation_Deploy);
 }
 
-void IonBlaster_IonBallExplode(edict_t *ent)
+void IonBlaster_IonBallExplode(ServerEntity_t *ent)
 {
 	MathVector3f_t vel;
 
@@ -145,9 +145,9 @@ void IonBlaster_IonBallTouch(ServerEntity_t *eIonBall, ServerEntity_t *other)
 	IonBlaster_IonBallExplode(eIonBall);
 }
 
-void IonBlaster_PrimaryAttack(edict_t *ent)
+void IonBlaster_PrimaryAttack(ServerEntity_t *ent)
 {
-	edict_t *eIonBall;
+	ServerEntity_t *eIonBall;
 	MathVector3f_t	orig;
 
 	// Check if there's room to perform the attack.

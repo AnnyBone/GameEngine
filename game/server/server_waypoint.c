@@ -27,9 +27,9 @@ void Waypoint_Initialize(void)
 	iWaypointCount = 0;
 }
 
-bool Waypoint_IsSafe(edict_t *eMonster,Waypoint_t *wPoint)
+bool Waypoint_IsSafe(ServerEntity_t *eMonster,Waypoint_t *wPoint)
 {
-	edict_t *eMonsters;
+	ServerEntity_t *eMonsters;
 
 	eMonsters = Engine.Server_FindRadius(wPoint->position,MONSTER_RANGE_NEAR);
 	while(eMonsters)
@@ -105,7 +105,7 @@ Waypoint_t *Waypoint_GetByNumber(int iWaypointNumber)
 }
 
 // [20/12/2012] Let us find a waypoint by type! ~hogsy
-Waypoint_t *Waypoint_GetByType(edict_t *eMonster,int iType,float fMaxDistance)
+Waypoint_t *Waypoint_GetByType(ServerEntity_t *eMonster,int iType,float fMaxDistance)
 {
 	Waypoint_t	*wPoint;
 	vec3_t		vDistance;
@@ -131,7 +131,7 @@ Waypoint_t *Waypoint_GetByType(edict_t *eMonster,int iType,float fMaxDistance)
 }
 
 // [20/9/2012] Lets us find a specific waypoint by name ~hogsy
-Waypoint_t *Waypoint_GetByName(edict_t *eMonster,char *cName,float fMaxDistance)
+Waypoint_t *Waypoint_GetByName(ServerEntity_t *eMonster,char *cName,float fMaxDistance)
 {
 	Waypoint_t	*wPoint;
 	vec3_t		vDistance;
@@ -149,7 +149,7 @@ Waypoint_t *Waypoint_GetByName(edict_t *eMonster,char *cName,float fMaxDistance)
 	return NULL;
 }
 
-void Waypoint_Frame(edict_t *eEntity)
+void Waypoint_Frame(ServerEntity_t *eEntity)
 {
 #if 0
 	Waypoint_t	*wPoint;

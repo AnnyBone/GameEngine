@@ -108,7 +108,7 @@ MonsterRelationship_t MonsterRelationship[]=
 /**/
 
 // [30/7/2012] Added Monster_CheckBottom ~hogsy
-bool Monster_CheckBottom(edict_t *ent)
+bool Monster_CheckBottom(ServerEntity_t *ent)
 {
 	vec3_t	mins,maxs,start,stop;
 	trace_t	trace;
@@ -165,7 +165,7 @@ bool Monster_CheckBottom(edict_t *ent)
 
 // [30/7/2012] Added Monster_MoveStep ~hogsy
 // [30/7/2012] TODO: Revised ~hogsy
-bool Monster_MoveStep(edict_t *ent,vec3_t move,bool bRelink)
+bool Monster_MoveStep(ServerEntity_t *ent,vec3_t move,bool bRelink)
 {
 	float	dz;
 	vec3_t	vNewOrigin,end;
@@ -279,7 +279,7 @@ bool Monster_MoveStep(edict_t *ent,vec3_t move,bool bRelink)
 }
 
 // [28/7/2012] Added Monster_StepDirection ~hogsy
-bool Monster_StepDirection(edict_t *ent,float yaw,float dist)
+bool Monster_StepDirection(ServerEntity_t *ent,float yaw,float dist)
 {
 	vec3_t	move,oldorg;
 	float	delta;
@@ -308,7 +308,7 @@ bool Monster_StepDirection(edict_t *ent,float yaw,float dist)
 }
 
 // [30/7/2012] Added Monster_NewChaseDirection ~hogsy
-void Monster_NewChaseDirection(edict_t *ent,vec3_t target,float dist)
+void Monster_NewChaseDirection(ServerEntity_t *ent,vec3_t target,float dist)
 {
 	float	deltax,deltay,d[3],tdir,olddir,turnaround;
 
@@ -388,7 +388,7 @@ void Monster_NewChaseDirection(edict_t *ent,vec3_t target,float dist)
 		ent->v.flags |= FL_PARTIALGROUND;
 }
 
-bool Monster_SetThink(edict_t *eMonster,MonsterThink_t mtThink)
+bool Monster_SetThink(ServerEntity_t *eMonster,MonsterThink_t mtThink)
 {
 	if(eMonster->Monster.iThink == mtThink)
 		// [4/2/2013] Return false, then we might decide it's time for a different state ~hogsy
@@ -520,7 +520,7 @@ void Monster_Killed(ServerEntity_t *eTarget, ServerEntity_t *eAttacker)
         Weapon_t *wActive = Weapon_GetCurrentWeapon(eTarget);
         if(wActive && (wActive->iItem != WEAPON_LASERS))
         {
-            edict_t *eDroppedItem = Entity_Spawn();
+            ServerEntity_t *eDroppedItem = Entity_Spawn();
 
             Math_VectorCopy(eTarget->v.origin,eDroppedItem->v.origin);
 
@@ -594,7 +594,7 @@ void Monster_Damage(ServerEntity_t *target, ServerEntity_t *inflictor, int iDama
 		target->Monster.think_pain(target,inflictor);
 }
 
-void MONSTER_WaterMove(edict_t *ent)
+void MONSTER_WaterMove(ServerEntity_t *ent)
 {
 	if(ent->v.iHealth < 0 || ent->v.movetype == MOVETYPE_NOCLIP)
 		return;
@@ -631,7 +631,7 @@ void MONSTER_WaterMove(edict_t *ent)
 	}
 }
 
-void Monster_MoveToGoal(edict_t *ent,vec3_t goal,float distance)
+void Monster_MoveToGoal(ServerEntity_t *ent,vec3_t goal,float distance)
 {
 	int i;
 
@@ -653,7 +653,7 @@ void Monster_MoveToGoal(edict_t *ent,vec3_t goal,float distance)
 
 /*	Returns the range from an entity to a target.
 */
-float MONSTER_GetRange(edict_t *ent,vec3_t target)
+float MONSTER_GetRange(ServerEntity_t *ent,vec3_t target)
 {
 	// [12/4/2012] Revised ~hogsy
 	vec3_t spot,spot1,spot2;
@@ -671,7 +671,7 @@ float MONSTER_GetRange(edict_t *ent,vec3_t target)
 	return (float)Math_VectorLength(spot);
 }
 
-bool Monster_IsVisible(edict_t *ent,edict_t *target)
+bool Monster_IsVisible(ServerEntity_t *ent,ServerEntity_t *target)
 {
 	trace_t	tTrace;
 	vec3_t	vStart,vEnd;
@@ -693,9 +693,9 @@ bool Monster_IsVisible(edict_t *ent,edict_t *target)
 	TODO:
 		- Base this on if we're currently facing a target or not.
 */
-edict_t *Monster_GetTarget(edict_t *eMonster)
+ServerEntity_t *Monster_GetTarget(ServerEntity_t *eMonster)
 {
-	edict_t	*eTargets;
+	ServerEntity_t	*eTargets;
 
 	eTargets = Engine.Server_FindRadius(eMonster->v.origin,10000.0f);	//eMonster->Monster.fViewDistance);
 
@@ -716,7 +716,7 @@ edict_t *Monster_GetTarget(edict_t *eMonster)
 	return NULL;
 }
 
-void Monster_SetTargets(edict_t *eMonster)
+void Monster_SetTargets(ServerEntity_t *eMonster)
 {
 	int	iRelationship;
 
@@ -749,7 +749,7 @@ double dMonsterEmotionUpdate = 0;
 /*	Used to go over each monster state then update it, and then calls the monsters
 	assigned think function.
 */
-void Monster_Frame(edict_t *eMonster)
+void Monster_Frame(ServerEntity_t *eMonster)
 {
 	int i;
 
@@ -828,7 +828,7 @@ void Monster_Frame(edict_t *eMonster)
 #endif
 
 // [30/7/2012] Added Monster_WalkMove ~hogsy
-bool Monster_WalkMove(edict_t *ent,float yaw,float dist)
+bool Monster_WalkMove(ServerEntity_t *ent,float yaw,float dist)
 {
 	vec3_t move;
 
@@ -851,7 +851,7 @@ bool Monster_WalkMove(edict_t *ent,float yaw,float dist)
 #define	MONSTER_EMOTION_RESET		30
 #define	MONSTER_EMOTION_THRESHOLD	50
 
-void Monster_Spawn(edict_t *eMonster)
+void Monster_Spawn(ServerEntity_t *eMonster)
 {
 	// Add it to global monster count...
 	Server.iMonsters++;
@@ -872,7 +872,7 @@ void Monster_Spawn(edict_t *eMonster)
 /*	Used to go over each monster state then update it, and then calls the monsters
 	assigned think function.
 */
-void Monster_Frame(edict_t *eMonster)
+void Monster_Frame(ServerEntity_t *eMonster)
 {
 	// The following is only valid for actual monsters.
 	if (!Entity_IsMonster(eMonster))
@@ -980,7 +980,7 @@ void Monster_Frame(edict_t *eMonster)
 
 /*	Check if it's time to reset the emotion state or not.
 */
-bool Monster_EmotionReset(edict_t *eMonster, int iEmotion)
+bool Monster_EmotionReset(ServerEntity_t *eMonster, int iEmotion)
 {
 /*	if (eMonster->Monster.meEmotion[iEmotion].dResetDelay > Server.dTime)
 	{
@@ -1005,7 +1005,7 @@ bool Monster_EmotionReset(edict_t *eMonster, int iEmotion)
 /*	Checks our relationship against a table and returns how	we'll
 	treat the current target.
 */
-int	Monster_GetRelationship(edict_t *eMonster, edict_t *eTarget)
+int	Monster_GetRelationship(ServerEntity_t *eMonster, ServerEntity_t *eTarget)
 {
 	int	i;
 
@@ -1037,7 +1037,7 @@ int	Monster_GetRelationship(edict_t *eMonster, edict_t *eTarget)
 
 /*	Can be used to debug monster movement / apply random movement.
 */
-void Monster_MoveRandom(edict_t *eMonster,float fSpeed)
+void Monster_MoveRandom(ServerEntity_t *eMonster,float fSpeed)
 {
 	// Add some random movement. ~hogsy
 	if (rand() % 50 == 0)
@@ -1070,37 +1070,37 @@ void Monster_MoveRandom(edict_t *eMonster,float fSpeed)
 
 /*	Move the monster forwards.
 */
-void Monster_MoveForward(edict_t *eMonster)
+void Monster_MoveForward(ServerEntity_t *eMonster)
 {}
 
 /*	Move the monster backwards.
 */
-void Monster_MoveBackward(edict_t *eMonster)
+void Monster_MoveBackward(ServerEntity_t *eMonster)
 {}
 
 /*	Strafe right.
 */
-void Monster_MoveLeft(edict_t *eMonster)
+void Monster_MoveLeft(ServerEntity_t *eMonster)
 {}
 
 /*	Strafe left.
 */
-void Monster_MoveRight(edict_t *eMonster)
+void Monster_MoveRight(ServerEntity_t *eMonster)
 {}
 
 /*	Turn left on the spot.
 */
-void Monster_TurnLeft(edict_t *eMonster)
+void Monster_TurnLeft(ServerEntity_t *eMonster)
 {}
 
 /*	Turn right on the spot.
 */
-void Monster_TurnRight(edict_t *eMonster)
+void Monster_TurnRight(ServerEntity_t *eMonster)
 {}
 
 /*	Allows a monster to jump with the given velocity.
 */
-void Monster_Jump(edict_t *eMonster,float fVelocity)
+void Monster_Jump(ServerEntity_t *eMonster,float fVelocity)
 {
 	if(eMonster->v.iHealth <= 0 || eMonster->v.velocity[2] || !(eMonster->v.flags & FL_ONGROUND))
 		return;

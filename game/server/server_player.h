@@ -18,14 +18,14 @@ extern	EntityFrame_t	PlayerAnimation_KatanaIdle[];
 extern	EntityFrame_t	PlayerAnimation_KatanaAttack1[];
 extern	EntityFrame_t	PlayerAnimation_KatanaAttack2[];
 
-void Player_PostThink(edict_t *ePlayer);
-void Player_PreThink(edict_t *ePlayer);
-void Player_Spawn(edict_t *self);
-void Player_Jump(edict_t *self);
+void Player_PostThink(ServerEntity_t *ePlayer);
+void Player_PreThink(ServerEntity_t *ePlayer);
+void Player_Spawn(ServerEntity_t *self);
+void Player_Jump(ServerEntity_t *self);
 #ifdef OPENKATANA
-void Player_CheckPowerups(edict_t *self);
+void Player_CheckPowerups(ServerEntity_t *self);
 #endif
-void Player_DeathThink(edict_t *ent);
-void Player_Use(edict_t *ePlayer);
+void Player_DeathThink(ServerEntity_t *ent);
+void Player_Use(ServerEntity_t *ePlayer);
 
 #endif

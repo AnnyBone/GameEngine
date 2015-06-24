@@ -25,9 +25,9 @@
 #define STATE_FLAG_IDLE		3
 #define STATE_FLAG_CAPTURED	4
 
-void CTF_FlagTouch(edict_t *ent,edict_t *other);
+void CTF_FlagTouch(ServerEntity_t *ent,ServerEntity_t *other);
 
-void CTF_FlagReset(edict_t *ent)
+void CTF_FlagReset(ServerEntity_t *ent)
 {
 	Entity_SetOrigin(ent,ent->local.pos1);
 	SetAngle(ent,ent->local.pos2);
@@ -47,7 +47,7 @@ void CTF_FlagReset(edict_t *ent)
 	ent->v.dNextThink		= Server.dTime+0.5;
 }
 
-void CTF_FlagThink(edict_t *ent)
+void CTF_FlagThink(ServerEntity_t *ent)
 {
 	switch(ent->local.state)
 	{
@@ -111,7 +111,7 @@ void CTF_FlagThink(edict_t *ent)
 	}
 }
 
-void CTF_FlagTouch(edict_t *ent,edict_t *other)
+void CTF_FlagTouch(ServerEntity_t *ent,ServerEntity_t *other)
 {
 	// [20/2/2012] Revised ~hogsy
 	// [23/2/2012] Revised ~hogsy
@@ -180,7 +180,7 @@ void CTF_FlagTouch(edict_t *ent,edict_t *other)
 
 /*	Spawns the flag for CTF mode!
 */
-void CTF_FlagSpawn(edict_t *eFlag)
+void CTF_FlagSpawn(ServerEntity_t *eFlag)
 {
 	if(!cvServerGameMode.iValue == MODE_CAPTURETHEFLAG)
 		return;

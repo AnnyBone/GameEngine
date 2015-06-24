@@ -8,7 +8,7 @@
 
 #include "server_player.h"
 
-void Daikatana_Hit(edict_t *ent);
+void Daikatana_Hit(ServerEntity_t *ent);
 
 EntityFrame_t DaikatanaAnimation_Deploy [] =
 {
@@ -82,12 +82,12 @@ EntityFrame_t DaikatanaAnimation_Attack2 [] =
 	{   NULL, 54, 0.02f,	true	}
 };
 
-void Daikatana_Deploy(edict_t *ent)
+void Daikatana_Deploy(ServerEntity_t *ent)
 {
 	Weapon_Animate(ent,DaikatanaAnimation_Deploy);
 }
 
-void Daikatana_Hit(edict_t *ent)
+void Daikatana_Hit(ServerEntity_t *ent)
 {
 	int		i;
 	vec3_t	forward,temp,sndvec;
@@ -128,7 +128,7 @@ void Daikatana_Hit(edict_t *ent)
 	}
 }
 
-void Daikatana_PrimaryAttack(edict_t *ent)
+void Daikatana_PrimaryAttack(ServerEntity_t *ent)
 {
 	if(rand()%2 == 1)
 	{

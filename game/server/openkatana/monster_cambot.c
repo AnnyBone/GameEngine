@@ -3,6 +3,6 @@
 
 #include "server_monster.h"
 
-void CamBot_Spawn(edict_t *eCamBot)
+void CamBot_Spawn(ServerEntity_t *eCamBot)
 {
 }

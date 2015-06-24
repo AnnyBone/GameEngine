@@ -1010,7 +1010,7 @@ void Host_Loadgame_f (void)
 	float	time, tfloat;
 	char	str[32768], *start;
 	int		i, r;
-	edict_t	*ent;
+	ServerEntity_t	*ent;
 	int		entnum,version;
 	float	spawn_parms[NUM_SPAWN_PARMS];
 
@@ -1365,7 +1365,7 @@ void Host_Kill_f (void)
 		return;
 	}
 
-	pr_global_struct.self = EDICT_TO_PROG(sv_player);
+	pr_global_struct.self = ServerEntity_tO_PROG(sv_player);
 
 	// [11/7/2013] Cleaned up and given its own function ~hogsy
 	Game->Server_KillClient(sv_player);
@@ -1422,7 +1422,7 @@ void Host_Spawn_f(void)
 {
 	int			i;
 	client_t	*client;
-	edict_t		*eClient;
+	ServerEntity_t		*eClient;
 
 	if (cmd_source == src_command)
 	{
@@ -1455,7 +1455,7 @@ void Host_Spawn_f(void)
 
 		// call the spawn function
 
-		pr_global_struct.self = EDICT_TO_PROG(sv_player);
+		pr_global_struct.self = ServerEntity_tO_PROG(sv_player);
 
 		Game->Game_Init(SERVER_CLIENTCONNECT,sv_player,sv.time);
 
@@ -1736,10 +1736,10 @@ void Host_Give_f (void)
 #endif
 }
 
-edict_t	*FindViewthing (void)
+ServerEntity_t	*FindViewthing (void)
 {
 	int		i;
-	edict_t	*e;
+	ServerEntity_t	*e;
 
 	for (i=0 ; i<sv.num_edicts ; i++)
 	{
@@ -1753,7 +1753,7 @@ edict_t	*FindViewthing (void)
 
 void Host_Viewmodel_f (void)
 {
-	edict_t	*e;
+	ServerEntity_t	*e;
 	model_t	*m;
 
 	e = FindViewthing ();
@@ -1773,7 +1773,7 @@ void Host_Viewmodel_f (void)
 
 void Host_Viewframe_f (void)
 {
-	edict_t	*e;
+	ServerEntity_t	*e;
 	int		f;
 	model_t	*m;
 
@@ -1806,7 +1806,7 @@ void PrintFrameName(model_t *m,int frame)
 
 void Host_Viewnext_f (void)
 {
-	edict_t	*e;
+	ServerEntity_t	*e;
 	model_t	*m;
 
 	e = FindViewthing ();
@@ -1823,7 +1823,7 @@ void Host_Viewnext_f (void)
 
 void Host_Viewprev_f (void)
 {
-	edict_t	*e;
+	ServerEntity_t	*e;
 	model_t	*m;
 
 	e = FindViewthing ();

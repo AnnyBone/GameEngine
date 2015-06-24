@@ -40,7 +40,7 @@ void Vektar_Spawn(void);
 /*	VEKBALL
 */
 // Merge? - eukos
-void Vektar_VekBallDie(edict_t *ent)
+void Vektar_VekBallDie(ServerEntity_t *ent)
 {
 	Sound(ent,CHAN_ITEM,VEKTAR_SOUND_GOTIT,255,ATTN_NORM);
 
@@ -49,7 +49,7 @@ void Vektar_VekBallDie(edict_t *ent)
 	Entity_Remove(ent);
 }
 
-void Vektar_VekBallTouch(edict_t *ent, edict_t *other)
+void Vektar_VekBallTouch(ServerEntity_t *ent, ServerEntity_t *other)
 {
 	if(other->Monster.iType != MONSTER_PLAYER)
 		return;
@@ -61,7 +61,7 @@ void Vektar_VekBallTouch(edict_t *ent, edict_t *other)
 	Vektar_VekBallDie(ent);
 }
 
-void Vektar_VekBallStart(edict_t *ent)
+void Vektar_VekBallStart(ServerEntity_t *ent)
 {
 	ent->v.TouchFunction	= Vektar_VekBallTouch;
 	ent->v.think			= Vektar_VekBallDie;
@@ -70,7 +70,7 @@ void Vektar_VekBallStart(edict_t *ent)
 
 void Vektar_VekBallSpawn(vec_t *org)
 {
-	edict_t *eVekball = Entity_Spawn();
+	ServerEntity_t *eVekball = Entity_Spawn();
 
 	if(eVekball)
 	{
@@ -91,7 +91,7 @@ void Vektar_VekBallSpawn(vec_t *org)
 }
 // =================================================================================
 
-void Vektar_Die(edict_t *eVektar,edict_t *other)
+void Vektar_Die(ServerEntity_t *eVektar,ServerEntity_t *other)
 {
 	Engine.Server_BroadcastPrint("- %s OPENED THE VEKTAR -\n",other->v.netname);
 
@@ -111,7 +111,7 @@ void Vektar_Die(edict_t *eVektar,edict_t *other)
 	Entity_Remove(eVektar);
 }
 
-void Vektar_Move(edict_t *eVektar)
+void Vektar_Move(ServerEntity_t *eVektar)
 {
 	Waypoint_t	*wWaypoint;
 
@@ -139,7 +139,7 @@ void Vektar_Move(edict_t *eVektar)
 
 void Vektar_Spawn(void)
 {
-	edict_t	*eVektar = Entity_Spawn();
+	ServerEntity_t	*eVektar = Entity_Spawn();
 
 	// [20/12/2012] Also precache our resources ~hogsy
 	Server_PrecacheModel(DAIKATANA_MODEL_WORLD);

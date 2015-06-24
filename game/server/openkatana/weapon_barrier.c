@@ -2,17 +2,17 @@
 */
 #include "server_weapon.h"
 
-void Barrier_Deploy(edict_t *ent)
+void Barrier_Deploy(ServerEntity_t *ent)
 {
 	//Weapon_Animate(ent,FALSE,1,13,0.1f,0,0,0,FALSE);
 }
 
 #if 0   // [10/2/2014] TODO: This needs to be rewritten ~hogsy
-void BarrierFire(edict_t *ent)
+void BarrierFire(ServerEntity_t *ent)
 {
 	vec3_t	forward,temp,sndvec,vel;
 	trace_t	trace;
-	edict_t *bshield = Entity_Spawn();
+	ServerEntity_t *bshield = Entity_Spawn();
 
 	if(ent->local.b_ent)
 		Entity_Remove(ent->local.b_ent);
@@ -52,7 +52,7 @@ void BarrierFire(edict_t *ent)
 	bshield->v.dNextThink	= Server.dTime+0.5;
 }
 
-void Barrier_PrimaryAttack(edict_t *ent)
+void Barrier_PrimaryAttack(ServerEntity_t *ent)
 {
 	//Weapon_Animate(ent,FALSE,0,15,0.05f,10,19,0,FALSE);
 	BarrierFire(ent);

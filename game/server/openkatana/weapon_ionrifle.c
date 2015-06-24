@@ -92,7 +92,7 @@ EntityFrame_t	efIonRifleDeploy[] =
 	{	NULL,	9,	0.02f,	true	}
 };
 
-void IonRifle_IonBallTouch(edict_t *eIonBall,edict_t *eOther)
+void IonRifle_IonBallTouch(ServerEntity_t *eIonBall,ServerEntity_t *eOther)
 {
 	if(eOther == eIonBall->local.eOwner)
 		return;	// [29/1/2014] Should never even happen, but it does. Shit. ~hogsy
@@ -115,7 +115,7 @@ void IonRifle_IonBallTouch(edict_t *eIonBall,edict_t *eOther)
 
 /*	Do the deploy animation.
 */
-void IonRifle_Deploy(edict_t *eOwner)
+void IonRifle_Deploy(ServerEntity_t *eOwner)
 {
 	// [29/1/2014] Remember to reset everything we're going to use ~hogsy
 	eOwner->local.iBarrelCount = 0;
@@ -125,9 +125,9 @@ void IonRifle_Deploy(edict_t *eOwner)
 
 /*	Uses both primary burst and mega burst!
 */
-void IonRifle_PrimaryAttack(edict_t *eOwner)
+void IonRifle_PrimaryAttack(ServerEntity_t *eOwner)
 {
-	edict_t	*eIonBall;
+	ServerEntity_t	*eIonBall;
 
 	switch(eOwner->local.iFireMode)
 	{
@@ -252,7 +252,7 @@ void IonRifle_PrimaryAttack(edict_t *eOwner)
 
 /*	Switch fire modes.
 */
-void IonRifle_SecondaryAttack(edict_t *eOwner)
+void IonRifle_SecondaryAttack(ServerEntity_t *eOwner)
 {
 	if(eOwner->local.iFireMode)
 	{

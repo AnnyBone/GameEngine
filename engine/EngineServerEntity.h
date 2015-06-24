@@ -21,6 +21,6 @@
 #ifndef __ENGINESERVERENTITY__
 #define	__ENGINESERVERENTITY__
 
-void Edict_Clear(edict_t *eEntity,bool bFreeEntity);
+void Edict_Clear(ServerEntity_t *eEntity,bool bFreeEntity);
 
 #endif

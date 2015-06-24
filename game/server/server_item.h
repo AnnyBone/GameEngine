@@ -15,12 +15,12 @@ typedef struct
 } Item_t;
 
 Item_t *Item_GetItem(int iItemID);
-Item_t *Item_GetInventory(int iItemID,edict_t *eEntity);
+Item_t *Item_GetInventory(int iItemID, ServerEntity_t *eEntity);
 
-void Item_Spawn(edict_t *eItem);
-void Item_AddInventory(Item_t *iItem,edict_t *eEntity);
-void Item_RemoveInventory(Item_t *iItem,edict_t *eEntity);
-void Item_ClearInventory(edict_t *eEntity);
+void Item_Spawn(ServerEntity_t *eItem);
+void Item_AddInventory(Item_t *iItem, ServerEntity_t *eEntity);
+void Item_RemoveInventory(Item_t *iItem, ServerEntity_t *eEntity);
+void Item_ClearInventory(ServerEntity_t *eEntity);
 void Item_Precache(void);
 
 #endif

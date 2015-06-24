@@ -471,9 +471,9 @@ void R_EmitWireBox(vec3_t mins,vec3_t maxs)
 */
 void R_ShowBoundingBoxes(void)
 {
-	extern		edict_t *sv_player;
+	extern		ServerEntity_t *sv_player;
 	vec3_t				mins,maxs;
-	edict_t				*ed;
+	ServerEntity_t				*ed;
 	int					i;
 
 	if(!r_showbboxes.value || cl.maxclients > 1 || !r_drawentities.value || !sv.active)

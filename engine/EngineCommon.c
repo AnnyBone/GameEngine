@@ -1026,16 +1026,22 @@ void _FileSystem_Path(void)
 
 /*  Switches the given path to lowercase (solves issues on Linux).
 */
-void FileSystem_UpdatePath(char *cPath)
+void FileSystem_UpdatePath(char cPath[])
 {
-#if !defined(_WIN32) // We don't need to do this on Windows.
-    int i;
-    for(i = 0; cPath[i]; i++)
-        cPath[i] = tolower(cPath[i]);
-#endif
+    int i, iLength;
+
+	iLength = strlen(cPath);
+	for (i = 0; i < iLength; i++)
+	{
+		// Probably the end, or a messed up path.
+		if (cPath[i] == ' ')
+			break;
+		// Switch it around.
+		cPath[i] = tolower(cPath[i]);
+	}
 }
 
-/*	The filename will be prefixed by the current game directory
+/*	The filename will be prefixed by the current game directory.
 */
 void FileSystem_WriteFile(const char *ccFileName,void *data,int len)
 {
@@ -1110,7 +1116,7 @@ void FileSystem_CopyFile(char *netpath,char *cachepath)
 int COM_FindFile (char *filename, int *handle, FILE **file)
 {
 	searchpath_t    *search;
-	char            netpath[MAX_OSPATH], cachepath[MAX_OSPATH];
+	char            netpath[MAX_OSPATH], cachepath[MAX_OSPATH], cUpdatedFilePath[MAX_OSPATH];
 	int             i;
 	int             findtime, cachetime;
 
@@ -1125,8 +1131,10 @@ int COM_FindFile (char *filename, int *handle, FILE **file)
 		return 0;
 	}
 
+	strncpy(cUpdatedFilePath, filename, strlen(filename));
+
     // Switch the path to lowercase.
-    FileSystem_UpdatePath(filename);
+	FileSystem_UpdatePath(cUpdatedFilePath);
 
 	// search through the path, one element at a time
 	search = com_searchpaths;
@@ -1303,7 +1311,7 @@ uint8_t *COM_LoadHunkFile(char *path)
 	return COM_LoadFile(path,1);
 }
 
-uint8_t *COM_LoadTempFile(char *path)
+uint8_t *COM_LoadTempFile(const char *path)
 {
 	return COM_LoadFile (path,2);
 }

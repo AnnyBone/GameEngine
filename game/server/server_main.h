@@ -34,13 +34,13 @@ extern	cvar_t	cvServerGravity;		// The absolute gravity amount.
 extern	cvar_t	cvServerAim;			// Auto-aiming.
 
 void Server_Initialize(void);
-void Server_EntityFrame(edict_t *eEntity);
+void Server_EntityFrame(ServerEntity_t *eEntity);
 
 // Server to client
-void Server_KillClient(edict_t *eClient);
-void Server_UpdateClientMenu(edict_t *eClient,int iMenuState,bool bShow);
+void Server_KillClient(ServerEntity_t *eClient);
+void Server_UpdateClientMenu(ServerEntity_t *eClient,int iMenuState,bool bShow);
 
-bool Server_SpawnEntity(edict_t *ent);
+bool Server_SpawnEntity(ServerEntity_t *ent);
 
 #define Server_PrecacheModel(a) Engine.Server_PrecacheResource(RESOURCE_MODEL,a)
 #define	Server_PrecacheSound(a) Engine.Server_PrecacheResource(RESOURCE_SOUND,a)
@@ -50,35 +50,35 @@ bool Server_SpawnEntity(edict_t *ent);
 	Entity Functions
 */
 
-edict_t	*Entity_Spawn(void);
+ServerEntity_t	*Entity_Spawn(void);
 
-bool Entity_CanDamage(edict_t *eEntity, edict_t *eTarget, int iDamageType);
-bool Entity_IsPlayer(edict_t *eEntity);
-bool Entity_IsMonster(edict_t *eEntity);
-bool Entity_IsTouching(edict_t *eEntity, edict_t *eOther);
-bool Entity_DropToFloor(edict_t *eEntity);
+bool Entity_CanDamage(ServerEntity_t *eEntity, ServerEntity_t *eTarget, int iDamageType);
+bool Entity_IsPlayer(ServerEntity_t *eEntity);
+bool Entity_IsMonster(ServerEntity_t *eEntity);
+bool Entity_IsTouching(ServerEntity_t *eEntity, ServerEntity_t *eOther);
+bool Entity_DropToFloor(ServerEntity_t *eEntity);
 
-void Entity_SetOrigin(edict_t *eEntity, MathVector3_t vOrigin);
-void Entity_SetAngles(edict_t *eEntity, MathVector3_t vAngles);
-void Entity_SetModel(edict_t *eEntity, char *cModelPath);
-void Entity_SetSizeVector(edict_t *eEntity, MathVector3_t vMin, MathVector3_t vMax);
-void Entity_SetSize(edict_t *eEntity, float fMinA, float fMinB, float fMinC, float fMaxA, float fMaxB, float fMaxC);
+void Entity_SetOrigin(ServerEntity_t *eEntity, MathVector3_t vOrigin);
+void Entity_SetAngles(ServerEntity_t *eEntity, MathVector3_t vAngles);
+void Entity_SetModel(ServerEntity_t *eEntity, char *cModelPath);
+void Entity_SetSizeVector(ServerEntity_t *eEntity, MathVector3_t vMin, MathVector3_t vMax);
+void Entity_SetSize(ServerEntity_t *eEntity, float fMinA, float fMinB, float fMinC, float fMaxA, float fMaxB, float fMaxC);
 void Entity_SetPhysics(ServerEntity_t *seEntity, PhysicsSolidTypes_t pstSolidType, float fMass, float fFriction);
-void Entity_RadiusDamage(edict_t *eInflictor, float fRadius, int iDamage, int iDamageType);
+void Entity_RadiusDamage(ServerEntity_t *eInflictor, float fRadius, int iDamage, int iDamageType);
 void Entity_Damage(ServerEntity_t *seEntity, ServerEntity_t *seInflictor, int iDamage, DamageType_t dtType);
-void Entity_Remove(edict_t *eEntity);
-void Entity_CheckFrames(edict_t *eEntity);
-void Entity_ResetAnimation(edict_t *eEntity);
-void Entity_Animate(edict_t *eEntity, EntityFrame_t *efAnimation);
-void Entity_Link(edict_t *eEntity, bool bTouchTriggers);
-void Entity_Unlink(edict_t *eEntity);
-void Entity_MakeVectors(edict_t *eEntity);
-void Entity_AddEffects(edict_t *eEntity, int iEffects);
-void Entity_RemoveEffects(edict_t *eEntity, int iEffects);
-void Entity_ClearEffects(edict_t *eEntity);
-void Entity_AddFlags(edict_t *eEntity, int iFlags);
-void Entity_RemoveFlags(edict_t *eEntity, int iFlags);
-void Entity_ClearFlags(edict_t *eEntity, int iFlags);
+void Entity_Remove(ServerEntity_t *eEntity);
+void Entity_CheckFrames(ServerEntity_t *eEntity);
+void Entity_ResetAnimation(ServerEntity_t *eEntity);
+void Entity_Animate(ServerEntity_t *eEntity, EntityFrame_t *efAnimation);
+void Entity_Link(ServerEntity_t *eEntity, bool bTouchTriggers);
+void Entity_Unlink(ServerEntity_t *eEntity);
+void Entity_MakeVectors(ServerEntity_t *eEntity);
+void Entity_AddEffects(ServerEntity_t *eEntity, int iEffects);
+void Entity_RemoveEffects(ServerEntity_t *eEntity, int iEffects);
+void Entity_ClearEffects(ServerEntity_t *eEntity);
+void Entity_AddFlags(ServerEntity_t *eEntity, int iFlags);
+void Entity_RemoveFlags(ServerEntity_t *eEntity, int iFlags);
+void Entity_ClearFlags(ServerEntity_t *eEntity, int iFlags);
 
 #define Entity_SetKilledFunction(a,b) (a->local.KilledFunction = b)
 #define Entity_SetDamagedFunction(a,b) (a->v.DamagedFunction = b)
@@ -86,6 +86,6 @@ void Entity_ClearFlags(edict_t *eEntity, int iFlags);
 
 #define	ENTITY_REMOVE(a)	{	Entity_Remove(a);	return;	}
 
-edict_t	*Entity_SpawnPoint(edict_t *eEntity,int iType);
+ServerEntity_t	*Entity_SpawnPoint(ServerEntity_t *eEntity,int iType);
 
 #endif

@@ -2,12 +2,12 @@
 
 #include "server_weapon.h"
 
-void Discus_Deploy(edict_t *ent)
+void Discus_Deploy(ServerEntity_t *ent)
 {
 	//Weapon_Animate(ent,FALSE,1,10,0.1f,0,0,0,FALSE);
 }
 
-void Discus_Catch(edict_t *ent, edict_t *discus)
+void Discus_Catch(ServerEntity_t *ent, ServerEntity_t *discus)
 {
 	// [4/7/2012] Simplified ~hogsy
 	ent->v.iPrimaryAmmo = ent->local.discus_ammo2++;
@@ -17,7 +17,7 @@ void Discus_Catch(edict_t *ent, edict_t *discus)
 	Entity_Remove(discus);
 }
 
-void Discus_Follow(edict_t *ent)
+void Discus_Follow(ServerEntity_t *ent)
 {
 	vec3_t	vtemp;
 
@@ -42,7 +42,7 @@ void Discus_Follow(edict_t *ent)
 }
 
 // [4/7/2012] Renamed to Discus_ProjectileTouch ~hogsy
-void Discus_ProjectileTouch(edict_t *ent,edict_t *other)
+void Discus_ProjectileTouch(ServerEntity_t *ent,ServerEntity_t *other)
 {
 	char	snd[64];
 	vec3_t	vel;
@@ -94,9 +94,9 @@ void Discus_ProjectileTouch(edict_t *ent,edict_t *other)
 }
 
 // [4/7/2012] Renamed to Discus_SpawnProjectile ~hogsy
-void Discus_SpawnProjectile(edict_t *ent,vec3_t org)
+void Discus_SpawnProjectile(ServerEntity_t *ent,vec3_t org)
 {
-	edict_t *eDiscus;
+	ServerEntity_t *eDiscus;
 	MathVector3_t mvDirection;
 
 	eDiscus = Entity_Spawn();
@@ -127,7 +127,7 @@ void Discus_SpawnProjectile(edict_t *ent,vec3_t org)
 }
 
 // [4/7/2012] Renamed to Discus_PrimaryAttack ~hogsy
-void Discus_PrimaryAttack(edict_t *ent)
+void Discus_PrimaryAttack(ServerEntity_t *ent)
 {
 	//Weapon_Animate(ent,FALSE,8,24,0.035f,0,0,0,FALSE);
 

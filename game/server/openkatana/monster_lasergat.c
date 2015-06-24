@@ -28,7 +28,7 @@ enum
 // [11/6/2013] So we don't have to set this up a billion times ~hogsy
 Weapon_t *wLaserWeapon;
 
-void LaserGat_AimTarget(edict_t *eLaserGat,edict_t *eTarget)
+void LaserGat_AimTarget(ServerEntity_t *eLaserGat,ServerEntity_t *eTarget)
 {
 	vec3_t	vOrigin;
 
@@ -38,7 +38,7 @@ void LaserGat_AimTarget(edict_t *eLaserGat,edict_t *eTarget)
 	Math_VectorInverse(eLaserGat->v.angles);
 }
 
-void LaserGat_HandleAim(edict_t *eLaserGat)
+void LaserGat_HandleAim(ServerEntity_t *eLaserGat)
 {
 	if(eLaserGat->Monster.iThink == THINK_IDLE)
 	{
@@ -52,13 +52,13 @@ void LaserGat_HandleAim(edict_t *eLaserGat)
 		LaserGat_AimTarget(eLaserGat,eLaserGat->Monster.eEnemy);
 }
 
-void LaserGat_Touch(edict_t *eLaserGat,edict_t *eOther)
+void LaserGat_Touch(ServerEntity_t *eLaserGat,ServerEntity_t *eOther)
 {
 	// [12/3/2013] TODO: Explode ~hogsy
 	Sound(eLaserGat,CHAN_BODY,PHYSICS_SOUND_METAL2,255,ATTN_STATIC);
 }
 
-void LaserGat_Explode(edict_t *eLaserGat)
+void LaserGat_Explode(ServerEntity_t *eLaserGat)
 {
 	Sound(eLaserGat,CHAN_AUTO,va("fx/explosion%i.wav",rand()%6+1),255,ATTN_NORM);
 
@@ -66,13 +66,13 @@ void LaserGat_Explode(edict_t *eLaserGat)
 	Entity_Remove(eLaserGat);
 }
 
-void LaserGat_Die(edict_t *eLaserGat,edict_t *eOther)
+void LaserGat_Die(ServerEntity_t *eLaserGat,ServerEntity_t *eOther)
 {
 	eLaserGat->v.think		= LaserGat_Explode;
 	eLaserGat->v.dNextThink	= Server.dTime+5.0;
 }
 
-void LaserGat_Think(edict_t *eLaserGat)
+void LaserGat_Think(ServerEntity_t *eLaserGat)
 {
 	switch(eLaserGat->Monster.iThink)
 	{
@@ -161,12 +161,12 @@ void LaserGat_Think(edict_t *eLaserGat)
 		eLaserGat->v.angles[0] = -60.0f;
 }
 
-void LaserGat_BasePain(edict_t *eBase,edict_t *eOther)
+void LaserGat_BasePain(ServerEntity_t *eBase,ServerEntity_t *eOther)
 {
 	Sound(eBase,CHAN_BODY,PHYSICS_SOUND_METAL2,255,ATTN_STATIC);
 }
 
-void LaserGat_BaseDie(edict_t *eBase,edict_t *eOther)
+void LaserGat_BaseDie(ServerEntity_t *eBase,ServerEntity_t *eOther)
 {
 	Entity_SetModel(eBase,LASERGAT_MODEL_BROKEN);
 
@@ -188,7 +188,7 @@ void LaserGat_BaseDie(edict_t *eBase,edict_t *eOther)
 	}
 }
 
-void LaserGat_Spawn(edict_t *eLaserGat)
+void LaserGat_Spawn(ServerEntity_t *eLaserGat)
 {
 	Server_PrecacheModel(LASERGAT_MODEL_BASE);
 	Server_PrecacheModel(LASERGAT_MODEL_BROKEN);
@@ -226,7 +226,7 @@ void LaserGat_Spawn(edict_t *eLaserGat)
 
 	{
 		// [19/2/2013] Now set up the base... ~hogsy
-		edict_t	*eBase = Entity_Spawn();
+		ServerEntity_t	*eBase = Entity_Spawn();
 		if(eBase)
 		{
 			eBase->v.cClassname = "lasergat_base";

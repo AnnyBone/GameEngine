@@ -273,7 +273,7 @@ FILE *SafeOpenRead (char *filename)
 {
 	FILE	*f;
 
-	// [10/3/2014] Switch our path to lowercase ~hogsy
+	// Switch our path to lowercase.
 	FileSystem_UpdatePath(filename);
 
 	f = fopen(filename,"rb");

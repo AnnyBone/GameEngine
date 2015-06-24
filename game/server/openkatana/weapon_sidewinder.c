@@ -76,9 +76,9 @@ EntityFrame_t SideWinderAnimation_Fire [] =
 	{ NULL, 29, 0.035f, true }
 };
 
-void SideWinder_Think(edict_t *ent);
+void SideWinder_Think(ServerEntity_t *ent);
 
-void SideWinder_Deploy(edict_t *ent)
+void SideWinder_Deploy(ServerEntity_t *ent)
 {
 	// [31/12/2013] TODO: Deploy sound? ~hogsy
 
@@ -86,7 +86,7 @@ void SideWinder_Deploy(edict_t *ent)
 }
 
 // [2/8/2012] Renamed to SideWinder_MissileExplode ~hogsy
-void SideWinder_MissileExplode(edict_t *ent,edict_t *other)
+void SideWinder_MissileExplode(ServerEntity_t *ent,ServerEntity_t *other)
 {
 	vec3_t	vVelocity;
 
@@ -112,7 +112,7 @@ void SideWinder_MissileExplode(edict_t *ent,edict_t *other)
 }
 
 // [4/8/2012] Added SideWinder_Think ~hogsy
-void SideWinder_Think(edict_t *eSideWinder)
+void SideWinder_Think(ServerEntity_t *eSideWinder)
 {
 	// [31/8/2012] Complete rewrite ~hogsy
 	int	iContents = Engine.Server_PointContents(eSideWinder->v.origin);
@@ -147,11 +147,11 @@ void SideWinder_Think(edict_t *eSideWinder)
 }
 
 // [4/8/2012] Renamed to SideWinder_SpawnMissle ~hogsy
-void SideWinder_SpawnMissle(edict_t *ent,float fSpeed,float ox)
+void SideWinder_SpawnMissle(ServerEntity_t *ent,float fSpeed,float ox)
 {
 	// [26/2/2012] Revised and fixed ~hogsy
 	vec3_t	vOrg;
-	edict_t *eMissile = Entity_Spawn();
+	ServerEntity_t *eMissile = Entity_Spawn();
 
 	/*	TODO:
 			Spawn a flare at our position too
@@ -199,7 +199,7 @@ void SideWinder_SpawnMissle(edict_t *ent,float fSpeed,float ox)
 }
 
 // [4/8/2012] Renamed to SideWinder_PrimaryAttack ~hogsy
-void SideWinder_PrimaryAttack(edict_t *eOwner)
+void SideWinder_PrimaryAttack(ServerEntity_t *eOwner)
 {
 	float	fSpeed	= SIDEWINDER_MAXSPEED;
 	char	*cSound = "weapons/sidewinder/sidewinderfire.wav";

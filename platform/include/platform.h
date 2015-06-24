@@ -147,6 +147,7 @@ typedef _Bool bool;
 typedef unsigned int pUINT;
 typedef	unsigned char pUCHAR;
 
+#include "platform_log.h"
 #include "platform_window.h"
 
 /*
@@ -156,8 +157,8 @@ typedef	unsigned char pUCHAR;
 //static jmp_buf jbException;
 
 #define	pFUNCTION_UPDATE	pError_SetFunction(pFUNCTION)
-#define	pFUNCTION_START		//pFUNCTION_UPDATE; if(setjmp(jbException)) gWindow_MessageBox("Error","Encountered exception in "pFUNCTION); {
-#define pFUNCTION_END 		//}
+#define	pFUNCTION_START		{	//pFUNCTION_UPDATE; if(setjmp(jbException)) gWindow_MessageBox("Error","Encountered exception in "pFUNCTION); {
+#define pFUNCTION_END 		}
 
 #ifdef __cplusplus
 extern "C" {

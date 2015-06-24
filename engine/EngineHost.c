@@ -333,7 +333,7 @@ void SV_DropClient(bool crash)
 			/*	Call the prog function for removing a client
 				this will set the body to a dead frame, among other things	*/
 			iSaveSelf = pr_global_struct.self;
-			pr_global_struct.self = EDICT_TO_PROG(host_client->edict);
+			pr_global_struct.self = ServerEntity_tO_PROG(host_client->edict);
 
 			Game->Game_Init(SERVER_CLIENTDISCONNECT,host_client->edict,sv.time);
 

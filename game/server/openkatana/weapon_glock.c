@@ -8,12 +8,12 @@
 #define GLOCK_SOUND_RELOAD1	"weapons/glock/glockload.wav"
 #define GLOCK_SOUND_RELOAD2	"weapons/glock/glockload2.wav";
 
-void Glock_Deploy(edict_t *ent)
+void Glock_Deploy(ServerEntity_t *ent)
 {
 	//Weapon_Animate(ent,FALSE,46,74,0.1f,0,0,0,FALSE);
 }
 
-void Glock_Reload(edict_t *ent)
+void Glock_Reload(ServerEntity_t *ent)
 {
 	int		rs;
 	char	*noise;
@@ -38,7 +38,7 @@ void Glock_Reload(edict_t *ent)
 }
 
 // [4/7/2012] Renamed to Glock_PrimaryAttack ~hogsy
-void Glock_PrimaryAttack(edict_t *ent)
+void Glock_PrimaryAttack(ServerEntity_t *ent)
 {
 	if(!ent->local.glock_ammo2)
 	{

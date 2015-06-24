@@ -33,7 +33,7 @@ typedef struct
 	float		*start, *end;
 	trace_t		trace;
 	int			type;
-	edict_t		*passedict;
+	ServerEntity_t		*passedict;
 } moveclip_t;
 
 
@@ -132,7 +132,7 @@ hull_t	*SV_HullForBox(MathVector3f_t mins, MathVector3f_t maxs)
 	Offset is filled in to contain the adjustment that must be added to the
 	testing object's origin to get a point to use with the returned hull.
 */
-hull_t *SV_HullForEntity(edict_t *ent, MathVector3f_t mins, MathVector3f_t maxs, MathVector3f_t offset)
+hull_t *SV_HullForEntity(ServerEntity_t *ent, MathVector3f_t mins, MathVector3f_t maxs, MathVector3f_t offset)
 {
 	model_t		*model;
 	MathVector3f_t		size, hullmins, hullmaxs;
@@ -257,7 +257,7 @@ void SV_ClearWorld (void)
 	SV_CreateAreaNode (0, sv.worldmodel->mins, sv.worldmodel->maxs);
 }
 
-void SV_UnlinkEdict(edict_t *ent)
+void SV_UnlinkEdict(ServerEntity_t *ent)
 {
 	if(!ent->area.prev)
 		return;		// not linked in anywhere
@@ -267,10 +267,10 @@ void SV_UnlinkEdict(edict_t *ent)
 	ent->area.prev = ent->area.next = NULL;
 }
 
-void SV_TouchLinks ( edict_t *ent, areanode_t *node )
+void SV_TouchLinks ( ServerEntity_t *ent, areanode_t *node )
 {
 	link_t		*l, *next;
-	edict_t		*touch,*eOldOther;
+	ServerEntity_t		*touch,*eOldOther;
 	int			old_self;
 
 // touch linked edicts
@@ -301,7 +301,7 @@ void SV_TouchLinks ( edict_t *ent, areanode_t *node )
 		old_self	= pr_global_struct.self;
 		eOldOther	= pr_global_struct.eOther;
 
-		pr_global_struct.self	= EDICT_TO_PROG(touch);
+		pr_global_struct.self	= ServerEntity_tO_PROG(touch);
 		pr_global_struct.eOther	= ent;
 
 		if(touch->v.TouchFunction)
@@ -391,7 +391,7 @@ int World_BoxOnPlaneSide(MathVector3f_t emins, MathVector3f_t emaxs, mplane_t *p
 	return sides;
 }
 
-void SV_FindTouchedLeafs (edict_t *ent, mnode_t *node)
+void SV_FindTouchedLeafs (ServerEntity_t *ent, mnode_t *node)
 {
 	mplane_t	*splitplane;
 	mleaf_t		*leaf;
@@ -429,7 +429,7 @@ void SV_FindTouchedLeafs (edict_t *ent, mnode_t *node)
 		SV_FindTouchedLeafs (ent, node->children[1]);
 }
 
-void SV_LinkEdict(edict_t *ent,bool touch_triggers)
+void SV_LinkEdict(ServerEntity_t *ent,bool touch_triggers)
 {
 	areanode_t	*node;
 
@@ -568,7 +568,7 @@ int SV_TruePointContents(MathVector3f_t p)
 
 /*	This could be a lot more efficient...
 */
-edict_t	*SV_TestEntityPosition (edict_t *ent)
+ServerEntity_t	*SV_TestEntityPosition (ServerEntity_t *ent)
 {
 	trace_t	trace;
 
@@ -717,7 +717,7 @@ bool SV_RecursiveHullCheck (hull_t *hull, int num, float p1f, float p2f, vec3_t 
 /*	Handles selection or creation of a clipping hull, and offseting (and
 	eventually rotation) of the end points
 */
-trace_t SV_ClipMoveToEntity(edict_t *ent, MathVector3_t start, MathVector3_t mins, MathVector3_t maxs, MathVector3_t end)
+trace_t SV_ClipMoveToEntity(ServerEntity_t *ent, MathVector3_t start, MathVector3_t mins, MathVector3_t maxs, MathVector3_t end)
 {
 	trace_t	trace;
 	MathVector3_t offset, start_l, end_l, a, forward, right, up, temp;
@@ -794,7 +794,7 @@ trace_t SV_ClipMoveToEntity(edict_t *ent, MathVector3_t start, MathVector3_t min
 void SV_ClipToLinks(areanode_t *node,moveclip_t *clip)
 {
 	link_t		*l,*next;
-	edict_t		*eTouch;
+	ServerEntity_t		*eTouch;
 	trace_t		trace;
 
 	// Touch linked edicts
@@ -894,7 +894,7 @@ void SV_MoveBounds (vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, vec3_t b
 #endif
 }
 
-trace_t SV_Move(vec3_t start,vec3_t mins,vec3_t maxs,vec3_t end,int type,edict_t *passedict)
+trace_t SV_Move(vec3_t start,vec3_t mins,vec3_t maxs,vec3_t end,int type,ServerEntity_t *passedict)
 {
 	moveclip_t	clip;
 	int			i;

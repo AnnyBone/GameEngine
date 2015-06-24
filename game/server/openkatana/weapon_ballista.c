@@ -11,12 +11,12 @@ EntityFrame_t BallistaAnimation_Deploy [] =
 	{   NULL, 39, 0.1f, TRUE    }
 };
 
-void Ballista_Deploy(edict_t *ent)
+void Ballista_Deploy(ServerEntity_t *ent)
 {
 	Weapon_Animate(ent,BallistaAnimation_Deploy);
 }
 
-void Ballista_LogTouch(edict_t *ent, edict_t *other)
+void Ballista_LogTouch(ServerEntity_t *ent, ServerEntity_t *other)
 {
 	// [7/4/2012] Cleaned up ~hogsy
 	char	snd[64];
@@ -47,10 +47,10 @@ void Ballista_LogTouch(edict_t *ent, edict_t *other)
 	ent->v.enemy = other;
 }
 
-void Ballista_SpawnLogProjectile(edict_t *ent)
+void Ballista_SpawnLogProjectile(ServerEntity_t *ent)
 {
 	// [11/2/2012] Revised and fixed ~hogsy
-	edict_t *log = Entity_Spawn();
+	ServerEntity_t *log = Entity_Spawn();
 
 	log->local.eOwner = ent;
 
@@ -71,7 +71,7 @@ void Ballista_SpawnLogProjectile(edict_t *ent)
 	log->v.TouchFunction = Ballista_LogTouch;
 }
 
-void Ballista_PrimaryAttack(edict_t *ent)
+void Ballista_PrimaryAttack(ServerEntity_t *ent)
 {
 	//if (ent->v.waterlevel >= 2)
 	//	Sound(ent,CHAN_WEAPON,"weapons/ballista/cbwaterfire.wav",255,ATTN_NORM);
