@@ -133,7 +133,7 @@ bool Video_GetCapability(unsigned int iCapability);
 	static int iFUNCTIONCALLS = -1; \
 	iFUNCTIONCALLS++; \
 	if(Video.bDebugFrame) \
-        pLog_Write(va("log_video_"__FILE__), "Function start: "pFUNCTION" (%i)",iFUNCTIONCALLS); \
+        pLog_Write(va("log_video_%s", __FILE__), "Function start: "pFUNCTION" (%i)",iFUNCTIONCALLS); \
 } \
 {
 #define	VIDEO_FUNCTION_END \
