@@ -1548,37 +1548,44 @@ void FileSystem_Initialize(void)
 	if(basedir[0] == ' ')
 		// TODO: Close down in this instance, though I might change so we try to load "base" instead? ~hogsy
 		Sys_Error("Base path wasn't set in paths script!\n");
-	else if(Global.cLevelPath[0] == ' ')
+	
+	if(Global.cLevelPath[0] == ' ')
 	{
 		Con_Warning("Levels path wasn't set in paths script!\n");
 		sprintf(Global.cLevelPath,"levels/");
 	}
-	else if(Global.cMaterialPath[0] == ' ')
+	
+	if(Global.cMaterialPath[0] == ' ')
 	{
 		Con_Warning("Materials path wasn't set in paths script!\n");
 		sprintf(Global.cMaterialPath,"materials/");
 	}
-	else if(Global.cScreenshotPath[0] == ' ')
+	
+	if(Global.cScreenshotPath[0] == ' ')
 	{
 		Con_Warning("Screenshots path wasn't set in paths script!\n");
 		sprintf(Global.cScreenshotPath,"screenshots/");
 	}
-	else if(Global.cSoundPath[0] == ' ')
+	
+	if(Global.cSoundPath[0] == ' ')
 	{
 		Con_Warning("Sounds path wasn't set in paths script!\n");
 		sprintf(Global.cSoundPath,"sounds/");
 	}
-	else if (Global.cFontPath[0] == ' ')
+	
+	if (Global.cFontPath[0] == ' ')
 	{
 		Con_Warning("Sounds path wasn't set in paths script!\n");
 		sprintf(Global.cFontPath, "fonts/");
 	}
-	else if(Global.cTexturePath[0] == ' ')
+	
+	if(Global.cTexturePath[0] == ' ')
 	{
 		Con_Warning("Textures path wasn't set in paths script!\n");
 		sprintf(Global.cTexturePath,"textures/");
 	}
-	else if (Global.cShaderPath[0] == ' ')
+
+	if (Global.cShaderPath[0] == ' ')
 	{
 		Con_Warning("Shaders path wasn't set in paths script!\n");
 		sprintf(Global.cShaderPath, "shaders/");
