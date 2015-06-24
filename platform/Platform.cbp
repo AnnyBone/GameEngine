@@ -51,6 +51,9 @@
 		<Unit filename="platform_input.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="platform_log.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="platform_math.c">
 			<Option compilerVar="CC" />
 		</Unit>
