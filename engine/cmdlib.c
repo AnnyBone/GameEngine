@@ -271,10 +271,7 @@ FILE *SafeOpenWrite (const char *filename)
 
 FILE *SafeOpenRead (char *filename)
 {
-	FILE	*f;
-
-	// Switch our path to lowercase.
-	FileSystem_UpdatePath(filename);
+	FILE *f;
 
 	f = fopen(filename,"rb");
 	if(!f)

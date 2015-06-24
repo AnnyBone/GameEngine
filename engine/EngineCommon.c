@@ -1116,7 +1116,7 @@ void FileSystem_CopyFile(char *netpath,char *cachepath)
 int COM_FindFile (char *filename, int *handle, FILE **file)
 {
 	searchpath_t    *search;
-	char            netpath[MAX_OSPATH], cachepath[MAX_OSPATH], cUpdatedFilePath[MAX_OSPATH];
+	char            netpath[MAX_OSPATH], cachepath[MAX_OSPATH];
 	int             i;
 	int             findtime, cachetime;
 
@@ -1130,11 +1130,6 @@ int COM_FindFile (char *filename, int *handle, FILE **file)
 		Sys_Error ("COM_FindFile: both handle and file set");
 		return 0;
 	}
-
-	strncpy(cUpdatedFilePath, filename, strlen(filename));
-
-    // Switch the path to lowercase.
-	FileSystem_UpdatePath(cUpdatedFilePath);
 
 	// search through the path, one element at a time
 	search = com_searchpaths;
@@ -1169,7 +1164,7 @@ int COM_FindFile (char *filename, int *handle, FILE **file)
 		else
 #endif
 		{
-			sprintf (netpath, "%s/%s",search->filename, filename);
+			sprintf(netpath, "%s/%s", search->filename, filename);
 
 			findtime = Sys_FileTime (netpath);
 			if (findtime == -1)
@@ -1351,9 +1346,6 @@ pack_t *FileSystem_LoadPackage(char *packfile)
 	int                             packhandle;
 	dpackfile_t             *info;
 	unsigned short          crc;
-
-    // [10/3/2014] Switch the path to lowercase ~hogsy
-    FileSystem_UpdatePath(packfile);
 
 	if (Sys_FileOpenRead (packfile, &packhandle) == -1)
 		return NULL;
