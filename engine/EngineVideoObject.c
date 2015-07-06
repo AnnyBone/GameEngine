@@ -1,5 +1,4 @@
 /*	Copyright (C) 1996-2001 Id Software, Inc.
-	Copyright (C) 2002-2009 John Fitzgibbons and others
 	Copyright (C) 2011-2015 OldTimes Software
 
 	This program is free software; you can redistribute it and/or
@@ -21,32 +20,88 @@
 #include "EngineBase.h"
 
 #include "EngineVideo.h"
+#include "EngineVideoObject.h"
 
-VideoObject_t *VideoObject_Create(void)
+#if 0
+
+class CVideoObject
 {
-	VIDEO_FUNCTION_START(VideoObject_Create)
-		VideoObject_t *voNewObject;
+public:
+	CVideoObject(VideoPrimitive_t primitiveType);
+	~CVideoObject();
 
-		voNewObject = (VideoObject_t*)malloc(sizeof(VideoObject_t));
+	void Draw();
 
-		// TODO: Allocate...
+protected:
+	VideoPrimitive_t primitiveType;
 
-		voNewObject->uiVertexBuffer = VideoLayer_GenerateVertexBuffer();
-		voNewObject->uiColourBuffer = VideoLayer_GenerateVertexBuffer();
-		voNewObject->uiTextureBuffer = VideoLayer_GenerateVertexBuffer();
+private:
+	unsigned int vertexBuffer;
+	unsigned int colourBuffer;
+	unsigned int textureBuffer;
+};
 
-		return NULL;
+CVideoObject::CVideoObject(VideoPrimitive_t primitiveType)
+{
+	VIDEO_FUNCTION_START(CVideoObject)
+
+		this->primitiveType = primitiveType;
+
+		vertexBuffer = VideoLayer_GenerateVertexBuffer();
+		colourBuffer = VideoLayer_GenerateVertexBuffer();
+		textureBuffer = VideoLayer_GenerateVertexBuffer();
+
 	VIDEO_FUNCTION_END
 }
 
-void VideoObject_Delete(VideoObject_t *voObject)
+CVideoObject::~CVideoObject()
 {
-	VIDEO_FUNCTION_START(VideoObject_Delete)
-		VideoLayer_DeleteBuffer(voObject->uiVertexBuffer);
-		VideoLayer_DeleteBuffer(voObject->uiColourBuffer);
-		VideoLayer_DeleteBuffer(voObject->uiTextureBuffer);
+	VIDEO_FUNCTION_START(~CVideoObject)
+
+		VideoLayer_DeleteBuffer(vertexBuffer);
+		VideoLayer_DeleteBuffer(colourBuffer);
+		VideoLayer_DeleteBuffer(textureBuffer);
+
 	VIDEO_FUNCTION_END
 }
+
+void CVideoObject::Draw()
+{
+	VIDEO_FUNCTION_START(VideoObject_Draw)
+
+		glEnableClientState(GL_VERTEX_ARRAY);
+		glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+		glVertexPointer(3, GL_FLOAT, 0, 0);
+
+		glEnableClientState(GL_COLOR_ARRAY);
+		glBindBuffer(GL_ARRAY_BUFFER, colourBuffer);
+		glColorPointer(4, GL_FLOAT, 0, 0);
+
+		glBindBuffer(GL_ARRAY_BUFFER, textureBuffer);
+
+		int i;
+		for (i = 0; i < VIDEO_MAX_UNITS; i++)
+			if (Video.bUnitState[i])
+			{
+				glClientActiveTexture(Video_GetTextureUnit(i));
+				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+				glTexCoordPointer(2, GL_FLOAT, 0, 0);
+			}
+
+//		Video_DrawArrays(primitiveType, voObject->iVertices, r_showtris.bValue);
+
+		glDisableClientState(GL_VERTEX_ARRAY);
+		glDisableClientState(GL_COLOR_ARRAY);
+		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+
+	VIDEO_FUNCTION_END
+}
+
+/*
+	C Wrapper
+*/
+
+#endif
 
 /*
 	Traditional style interface
@@ -61,6 +116,7 @@ void VideoObject_Begin(VideoObject_t *voObject, VideoPrimitive_t vpPrimitive)
 void VideoObject_Vertex(VideoObject_t *voObject, float x, float y, float z)
 {
 	VIDEO_FUNCTION_START(VideoObject_Vertex)
+
 		voObject->iVertices++;
 
 		// TODO: Add new vertex to list.
@@ -68,39 +124,48 @@ void VideoObject_Vertex(VideoObject_t *voObject, float x, float y, float z)
 		voObject->ovVertices[voObject->iVertices].mvPosition[0] = x;
 		voObject->ovVertices[voObject->iVertices].mvPosition[1] = y;
 		voObject->ovVertices[voObject->iVertices].mvPosition[2] = z;
+
 	VIDEO_FUNCTION_END
 }
 
 void VideoObject_VertexVector(VideoObject_t *oObject, MathVector3_t mvVertex)
 {
 	VIDEO_FUNCTION_START(VideoObject_VertexVector)
+
 		VideoObject_Vertex(oObject, mvVertex[0], mvVertex[1], mvVertex[2]);
+
 	VIDEO_FUNCTION_END
 }
 
 void VideoObject_Normal(VideoObject_t *voObject, float x, float y, float z)
 {
 	VIDEO_FUNCTION_START(VideoObject_Normal)
+
 		voObject->ovVertices[voObject->iVertices].mvNormal[0] = x;
 		voObject->ovVertices[voObject->iVertices].mvNormal[1] = y;
 		voObject->ovVertices[voObject->iVertices].mvNormal[2] = z;
+
 	VIDEO_FUNCTION_END
 }
 
 void VideoObject_Colour(VideoObject_t *voObject, float r, float g, float b, float a)
 {
 	VIDEO_FUNCTION_START(VideoObject_Colour)
+
 		voObject->ovVertices[voObject->iVertices].mvColour[0] = r;
 		voObject->ovVertices[voObject->iVertices].mvColour[1] = g;
 		voObject->ovVertices[voObject->iVertices].mvColour[2] = b;
 		voObject->ovVertices[voObject->iVertices].mvColour[3] = a;
+
 	VIDEO_FUNCTION_END
 }
 
 void VideoObject_ColourVector(VideoObject_t *voObject, MathVector4_t mvColour)
 {
 	VIDEO_FUNCTION_START(VideoObject_ColourVector)
+
 		VideoObject_Colour(voObject, mvColour[0], mvColour[1], mvColour[2], mvColour[3]);
+
 	VIDEO_FUNCTION_END
 }
 
@@ -127,7 +192,6 @@ void VideoObject_Clip(VideoObject_t *voObject, MathVector4_t mvClipDimensions)
 void VideoObject_Draw(VideoObject_t *voObject)
 {
 	VIDEO_FUNCTION_START(VideoObject_Draw)
-		int i;
 
 		glEnableClientState(GL_VERTEX_ARRAY);
 		glBindBuffer(GL_ARRAY_BUFFER, voObject->uiVertexBuffer);
@@ -138,6 +202,8 @@ void VideoObject_Draw(VideoObject_t *voObject)
 		glColorPointer(4, GL_FLOAT, 0, 0);
 
 		glBindBuffer(GL_ARRAY_BUFFER, voObject->uiTextureBuffer);
+
+		int i;
 
 		for (i = 0; i < VIDEO_MAX_UNITS; i++)
 			if (Video.bUnitState[i])
@@ -152,5 +218,6 @@ void VideoObject_Draw(VideoObject_t *voObject)
 		glDisableClientState(GL_VERTEX_ARRAY);
 		glDisableClientState(GL_COLOR_ARRAY);
 		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+
 	VIDEO_FUNCTION_END
 }

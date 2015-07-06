@@ -21,8 +21,6 @@
 #ifndef __ENGINEVIDEO__
 #define __ENGINEVIDEO__
 
-//#define	VIDEO_ENABLE_SHADERS
-
 extern ConsoleVariable_t	
 	cvVideoDrawModels,		// Should we draw models?
 	cvWidth,				// The width of our window (not reliable).
@@ -38,7 +36,7 @@ extern ConsoleVariable_t
 
 extern bool	bVideoIgnoreCapabilities;
 
-struct gltexture_s *gEffectTexture[MAX_EFFECTS];
+extern struct gltexture_s *gEffectTexture[MAX_EFFECTS];
 
 typedef enum VideoUnits_e
 {
@@ -93,10 +91,10 @@ typedef struct
 	// OpenGL Extensions
 	bool
 		bGenerateMipMap,
-		bVertexBufferObject;		// ARB_vertex_buffer_object
+		bVertexBufferObject;	// ARB_vertex_buffer_object
 } Video_t;
 
-Video_t	Video;
+extern Video_t Video;
 
 void Video_Initialize(void);
 void Video_UpdateWindow(void);

@@ -18,34 +18,17 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef __ENGINEWINDOW__
-#define	__ENGINEWINDOW__
+#ifndef __ENGINEVIDEOOBJECT__
+#define __ENGINEVIDEOOBJECT__
 
-/*
-	Generic Window Header
-*/
-
-#define WINDOW_MINIMUM_WIDTH	640
-#define WINDOW_MINIMUM_HEIGHT	480
-
-void Window_InitializeVideo(void);
-void Window_UpdateVideo(void);
-void Window_GetGamma(unsigned short *usRamp, int iRampSize);
-void Window_SetGamma(unsigned short *usRamp, int iRampSize);
-void Window_GetCursorPosition(int *x, int *y);
-void Window_Swap(void);
-void Window_Shutdown(void);
-
-int Window_GetWidth(void);
-int Window_GetHeight(void);
-
-typedef struct
-{
-#ifdef _WIN32
-	HWND hWindowInstance;
-#endif
-} Window_t;
-
-extern Window_t globalWindow;
+void VideoObject_Begin(VideoObject_t *voObject, VideoPrimitive_t vpPrimitive);
+void VideoObject_Vertex(VideoObject_t *voObject, float x, float y, float z);
+void VideoObject_VertexVector(VideoObject_t *oObject, MathVector3_t mvVertex);
+void VideoObject_Normal(VideoObject_t *voObject, float x, float y, float z);
+void VideoObject_Colour(VideoObject_t *voObject, float r, float g, float b, float a);
+void VideoObject_ColourVector(VideoObject_t *voObject, MathVector4_t mvColour);
+void VideoObject_End(VideoObject_t *voObject);
+void VideoObject_Clip(VideoObject_t *voObject, MathVector4_t mvClipDimensions);
+void VideoObject_Draw(VideoObject_t *voObject);
 
 #endif

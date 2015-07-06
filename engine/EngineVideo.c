@@ -30,6 +30,12 @@
 		Scale TMU support based on actual hardware, rather than set limitations.
 */
 
+bool 
+	r_drawflat_cheatsafe, 
+	r_fullbright_cheatsafe,
+	r_lightmap_cheatsafe, 
+	r_drawworld_cheatsafe;
+
 static unsigned int	iSavedCapabilites[VIDEO_MAX_UNITS][2];
 
 #define VIDEO_STATE_ENABLE   0
@@ -61,11 +67,16 @@ ConsoleVariable_t
 
 gltexture_t	*gDepthTexture;
 
+// TODO: Move this? It's used mainly for silly client stuff...
+struct gltexture_s *gEffectTexture[MAX_EFFECTS];
+
 bool bVideoIgnoreCapabilities = false;
 
 unsigned int uiVideoDrawObjectCalls = 0;
 
 void Video_DebugCommand(void);
+
+Video_t	Video;
 
 /*	Initialize the renderer
 */
@@ -214,10 +225,6 @@ void Video_Initialize(void)
 	glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 4);
 
 	Video_SelectTexture(0);
-
-#ifdef VIDEO_ENABLE_SHADERS
-	glGenFramebuffers(VIDEO_MAX_FRAMEBUFFFERS, &Video.uiFrameBuffer);
-#endif
 
 	vid.conwidth = (scr_conwidth.value > 0) ? (int)scr_conwidth.value : (scr_conscale.value > 0) ? (int)(Video.iWidth / scr_conscale.value) : Video.iWidth;
 	vid.conwidth = Math_Clamp(320, vid.conwidth, Video.iWidth);
@@ -1191,11 +1198,6 @@ void Video_Frame(void)
 
 	if (Video.bDebugFrame)
 		pLog_Write(cvVideoDebugLog.string, "Video: Start of frame\n");
-
-#ifdef VIDEO_ENABLE_SHADERS
-	// Post-processing.
-	glBindFramebuffer(GL_FRAMEBUFFER, Video.uiFrameBuffer);
-#endif
 
 	SCR_UpdateScreen();
 

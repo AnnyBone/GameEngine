@@ -38,14 +38,14 @@
 
 #include "SharedTexture.h"
 
-gltexture_t *notexture;
+extern gltexture_t *notexture;
 
-unsigned int d_8to24table[256];
-unsigned int d_8to24table_fbright[256];
-unsigned int d_8to24table_nobright[256];
-unsigned int d_8to24table_conchars[256];
-unsigned int d_8to24table_shirt[256];
-unsigned int d_8to24table_pants[256];
+extern unsigned int d_8to24table[256];
+extern unsigned int d_8to24table_fbright[256];
+extern unsigned int d_8to24table_nobright[256];
+extern unsigned int d_8to24table_conchars[256];
+extern unsigned int d_8to24table_shirt[256];
+extern unsigned int d_8to24table_pants[256];
 
 // TEXTURE MANAGER
 float TexMgr_FrameUsage (void);

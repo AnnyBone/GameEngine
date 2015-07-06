@@ -27,6 +27,8 @@
 
 extern cvar_t r_drawflat;
 
+int gl_warpimagesize;
+
 cvar_t r_oldwater		= {	"r_oldwater",		"1",	true,	false	};
 cvar_t r_waterquality	= {	"r_waterquality",	"8"	};
 cvar_t r_waterwarp		= {	"r_waterwarp",		"1"	};

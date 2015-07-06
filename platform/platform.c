@@ -12,13 +12,10 @@
 #define	MAX_FUNCTION_LENGTH	64
 #define	MAX_ERROR_LENGTH	1024
 
-char	cErrorMessage[MAX_ERROR_LENGTH]		= "null",
-		cLastFunction[MAX_FUNCTION_LENGTH]	= "null";
+bool bPlatformInternalContext = false;
 
-void pPlatform_Initialize(void)
-{
-
-}
+char cErrorMessage[MAX_ERROR_LENGTH]	= "null",
+	 cLastFunction[MAX_FUNCTION_LENGTH]	= "null";
 
 /*	Sets the name of the currently entered function.
 */

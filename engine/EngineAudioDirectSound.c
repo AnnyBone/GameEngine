@@ -27,6 +27,8 @@
 #include "EngineAudio.h"
 #include "EngineVideo.h"
 
+#include "platform_module.h"
+
 #define iDirectSoundCreate(a,b,c)	pDirectSoundCreate(a,b,c)
 
 HRESULT(WINAPI *pDirectSoundCreate)(GUID FAR *lpGUID, LPDIRECTSOUND FAR *lplpDS, IUnknown FAR *pUnkOuter);
@@ -191,15 +193,14 @@ sndinitstat SNDDMA_InitDirect(void)
 
 	if (!hInstDS)
 	{
-		hInstDS = LoadLibrary("dsound.dll");
+		hInstDS = pModule_Load("dsound");
 		if (hInstDS == NULL)
 		{
 			Con_SafePrintf("Couldn't load dsound.dll\n");
 			return SIS_FAILURE;
 		}
 
-		pDirectSoundCreate = (void *)GetProcAddress(hInstDS, "DirectSoundCreate");
-
+		pDirectSoundCreate = (void *)pModule_FindFunction(hInstDS, "DirectSoundCreate");
 		if (!pDirectSoundCreate)
 		{
 			Con_SafePrintf("Couldn't get DS proc addr\n");

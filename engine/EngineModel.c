@@ -279,7 +279,7 @@ model_t *Mod_ForName(char *cName)
 ===============================================================================
 */
 
-byte	*mod_base;
+uint8_t	*mod_base;
 
 void Model_LoadBSPTextures(BSPLump_t *blLump)
 {
@@ -308,7 +308,7 @@ void Model_LoadBSPTextures(BSPLump_t *blLump)
 		if(mLump->dataofs[i] == -1)
 			continue;
 
-		mpTexture = (miptex_t*)((byte*)mLump+mLump->dataofs[i]);
+		mpTexture = (miptex_t*)((uint8_t*)mLump+mLump->dataofs[i]);
 
 		// Scales are checked automatically by material system, so that original check has been removed.
 
@@ -345,7 +345,7 @@ void Model_LoadBSPLighting(BSPLump_t *blLump)
 	if(!blLump->iFileLength)
 		return;
 
-	loadmodel->lightdata = (byte*)Hunk_Alloc(blLump->iFileLength);
+	loadmodel->lightdata = (uint8_t*)Hunk_Alloc(blLump->iFileLength);
 
 	memcpy(loadmodel->lightdata,mod_base+blLump->iFileOffset,blLump->iFileLength);
 }
@@ -358,7 +358,7 @@ void Model_LoadBSPVisibility(BSPLump_t *blLump)
 		return;
 	}
 
-	loadmodel->visdata = (byte*)Hunk_AllocName ( blLump->iFileLength, loadname);
+	loadmodel->visdata = (uint8_t*)Hunk_AllocName(blLump->iFileLength, loadname);
 	memcpy(loadmodel->visdata, mod_base + blLump->iFileOffset, blLump->iFileLength);
 }
 

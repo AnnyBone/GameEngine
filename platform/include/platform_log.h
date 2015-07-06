@@ -3,6 +3,8 @@
 #ifndef __PLATFORMLOG__
 #define	__PLATFORMLOG__
 
+#define	pLOG_GLOBAL "global"
+
 #ifdef __cplusplus
 extern "C" {
 #endif

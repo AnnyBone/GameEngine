@@ -448,6 +448,9 @@
     <ClInclude Include="EngineVideoShader.h">
       <Filter>Client\Video</Filter>
     </ClInclude>
+    <ClInclude Include="EngineVideoObject.h">
+      <Filter>Client\Video</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="engine.rc">

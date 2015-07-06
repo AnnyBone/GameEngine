@@ -460,6 +460,8 @@ void SCR_DrawClock (void)
 	scr_tileclear_updates = 0;
 }
 
+devstats_t dev_stats, dev_peakstats;
+
 void SCR_DrawDevStats (void)
 {
 	char	str[40];

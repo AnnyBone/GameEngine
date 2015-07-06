@@ -537,8 +537,10 @@ bool System_Main(int iArgumentCount,char *cArguments[], bool bEmbedded)
 			epParameters.memsize = atoi(com_argv[t])*1024;
 	}
 
+#if 0
 	// Create any directories we need here; before anything else is done.
 	pFileSystem_CreateDirectory(PATH_LOGS);
+#endif
 
 	epParameters.membase = malloc(epParameters.memsize);
 	if (!epParameters.membase)

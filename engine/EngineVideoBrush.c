@@ -25,7 +25,7 @@
 
 #include "EngineVideo.h"
 
-extern cvar_t gl_fullbrights, r_drawflat, gl_overbright, r_oldwater; //johnfitz
+extern ConsoleVariable_t gl_fullbrights, r_drawflat, gl_overbright, r_oldwater; //johnfitz
 
 #define	BLOCK_WIDTH		128
 #define	BLOCK_HEIGHT	BLOCK_WIDTH
@@ -40,11 +40,13 @@ glpoly_t	*lightmap_polys[MAX_LIGHTMAPS];
 bool		bLightmapModified[MAX_LIGHTMAPS];
 glRect_t	lightmap_rectchange[MAX_LIGHTMAPS];
 
+gltexture_t *lightmap_textures[MAX_LIGHTMAPS];
+
 int			allocated[MAX_LIGHTMAPS][BLOCK_WIDTH];
 
 // the lightmap texture data needs to be kept in
 // main memory so texsubimage can update properly
-byte		lightmaps[LIGHTMAP_BYTES*MAX_LIGHTMAPS*BLOCK_WIDTH*BLOCK_HEIGHT];
+uint8_t	lightmaps[LIGHTMAP_BYTES*MAX_LIGHTMAPS*BLOCK_WIDTH*BLOCK_HEIGHT];
 
 void R_BuildLightMap (msurface_t *surf, byte *dest, int stride);
 

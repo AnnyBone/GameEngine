@@ -34,15 +34,23 @@ cvar_t gl_texture_anisotropy = { "gl_texture_anisotropy", "16", true };
 cvar_t gl_max_size = { "gl_max_size", "0" };
 cvar_t gl_picmip = { "gl_picmip", "0" };
 
-int			gl_hardware_maxsize;
-const int	gl_solid_format = 3;
-const int	gl_alpha_format = 4;
+int	gl_hardware_maxsize;
+const int gl_solid_format = 3;
+const int gl_alpha_format = 4;
 
 #define	MAX_GLTEXTURES 4096	// Bumped up, since we support seperate materials now.
 
 gltexture_t	*active_gltextures, *free_gltextures;
+gltexture_t *notexture;
 
 int numgltextures;
+
+unsigned int d_8to24table[256];
+unsigned int d_8to24table_fbright[256];
+unsigned int d_8to24table_nobright[256];
+unsigned int d_8to24table_conchars[256];
+unsigned int d_8to24table_shirt[256];
+unsigned int d_8to24table_pants[256];
 
 /*
 ================================================================================

@@ -77,6 +77,8 @@
 #	define	pFARPROC	void *		// Function pointer.
 #endif
 
+#define	pEXTERN_C extern "C"
+
 #define	PLATFORM_MAX_USER	256			// Maximum length allowed for a username.
 
 // Helper to allow us to determine the type of CPU; this is used for the module interfaces.
@@ -157,7 +159,7 @@ typedef	unsigned char pUCHAR;
 //static jmp_buf jbException;
 
 #define	pFUNCTION_UPDATE	pError_SetFunction(pFUNCTION)
-#define	pFUNCTION_START		{	//pFUNCTION_UPDATE; if(setjmp(jbException)) gWindow_MessageBox("Error","Encountered exception in "pFUNCTION); {
+#define	pFUNCTION_START		pError_SetFunction(pFUNCTION); {
 #define pFUNCTION_END 		}
 
 #ifdef __cplusplus

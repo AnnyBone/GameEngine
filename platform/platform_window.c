@@ -94,9 +94,9 @@ int pWindow_GetMonitorCount(void)
 
 GIPLWindow_t *gWindow_Allocate(void)
 {
-	GIPLWindow_t *pwAllocated;
+	pFUNCTION_START
 
-	pFUNCTION_UPDATE;
+	GIPLWindow_t *pwAllocated;
 
 	pwAllocated = (GIPLWindow_t*)malloc(sizeof(GIPLWindow_t));
 	// Don't continue if we failed to allocate.
@@ -109,6 +109,8 @@ GIPLWindow_t *gWindow_Allocate(void)
 	memset(pwAllocated,0,sizeof(GIPLWindow_t));
 
 	return pwAllocated;
+
+	pFUNCTION_END
 }
 
 /*	Create a new window.

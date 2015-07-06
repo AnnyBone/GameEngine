@@ -35,6 +35,8 @@ SDL_GLContext sMainContext;
 SDL_DisplayMode	sDisplayMode;
 SDL_SysWMinfo sSystemInfo;
 
+Window_t globalWindow;
+
 void Window_InitializeVideo(void)
 {
 	int	iFlags =

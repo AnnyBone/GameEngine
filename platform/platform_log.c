@@ -11,7 +11,7 @@
 
 void pLog_Write(const char *ccPath, char *cMessage, ...)
 {
-	pFUNCTION_START;
+	pFUNCTION_START
 
 	FILE *fLog;
 	va_list vlArguments;
@@ -32,12 +32,12 @@ void pLog_Write(const char *ccPath, char *cMessage, ...)
 		pError_Set("Failed to write to log! (%s)", cPath);
 	fclose(fLog);
 
-	pFUNCTION_END;
+	pFUNCTION_END
 }
 
 void pLog_Clear(const char *ccPath)
 {
-	pFUNCTION_START;
+	pFUNCTION_START
 
 	char cPath[PLATFORM_MAX_PATH];
 
@@ -49,5 +49,5 @@ void pLog_Clear(const char *ccPath)
 	unlink(cPath);
 #endif
 
-	pFUNCTION_END;
+	pFUNCTION_END
 }

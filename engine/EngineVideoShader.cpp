@@ -1,6 +1,4 @@
-/*	Copyright (C) 1996-2001 Id Software, Inc.
-	Copyright (C) 2002-2009 John Fitzgibbons and others
-	Copyright (C) 2011-2015 OldTimes Software
+/*	Copyright (C) 2011-2015 OldTimes Software
 
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License
@@ -53,98 +51,102 @@ private:
 
 CVideoShader::CVideoShader(const char *path)
 {
-	if (path[0] == ' ')
-		Sys_Error("Invalid shader path! (%s)\n", path);
+	VIDEO_FUNCTION_START(CVideoShader)
 
-	// Load the vertex shader.
+		if (path[0] == ' ')
+			Sys_Error("Invalid shader path! (%s)\n", path);
 
-	sprintf(vertexPath, "%s%s_vertex.shader", Global.cShaderPath, path);
-	vertexSource = (char*)COM_LoadFile(vertexPath, 0);
-	if (!vertexSource)
-		Sys_Error("Failed to load shader! (%s)", vertexPath);
-	vertexSourceLength = strlen(vertexSource);
+		// Load the vertex shader.
 
-	vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertexShader, 1, &vertexSource, &vertexSourceLength);
-	glCompileShader(vertexShader);
+		sprintf(vertexPath, "%s%s_vertex.shader", Global.cShaderPath, path);
+		vertexSource = (char*)COM_LoadFile(vertexPath, 0);
+		if (!vertexSource)
+			Sys_Error("Failed to load shader! (%s)", vertexPath);
+		vertexSourceLength = strlen(vertexSource);
 
-	int compiledStatus;
-	glGetObjectParameterivARB(vertexShader, GL_COMPILE_STATUS, &compiledStatus);
-	if (!compiledStatus)
-	{
-		int logLength = 0;
-		int sLength = 0;
+		vertexShader = glCreateShader(GL_VERTEX_SHADER);
+		glShaderSource(vertexShader, 1, &vertexSource, &vertexSourceLength);
+		glCompileShader(vertexShader);
 
-		glGetShaderiv(vertexShader, GL_INFO_LOG_LENGTH, &logLength);
-
-		if (logLength > 1)
+		int compiledStatus;
+		glGetObjectParameterivARB(vertexShader, GL_COMPILE_STATUS, &compiledStatus);
+		if (!compiledStatus)
 		{
-			char *log = (char*)malloc(logLength);
-			glGetInfoLogARB(vertexShader, logLength, &sLength, log);
-			Con_Warning("%s\n", log);
-			free(log);
+			int logLength = 0;
+			int sLength = 0;
+
+			glGetShaderiv(vertexShader, GL_INFO_LOG_LENGTH, &logLength);
+
+			if (logLength > 1)
+			{
+				char *log = (char*)malloc(logLength);
+				glGetInfoLogARB(vertexShader, logLength, &sLength, log);
+				Con_Warning("%s\n", log);
+				free(log);
+			}
+
+			Sys_Error("Shader compilation failed! (%s)\n", vertexPath);
 		}
 
-		Sys_Error("Shader compilation failed! (%s)\n", vertexPath);
-	}
+		// Load the fragment shader.
 
-	// Load the fragment shader.
+		sprintf(fragmentPath, "%s%s_fragment.shader", Global.cShaderPath, path);
+		fragmentSource = (char*)COM_LoadFile(fragmentPath, 0);
+		if (!fragmentSource)
+			Sys_Error("Failed to load shader! (%s)", fragmentPath);
+		fragmentSourceLength = strlen(fragmentSource);
 
-	sprintf(fragmentPath, "%s%s_fragment.shader", Global.cShaderPath, path);
-	fragmentSource = (char*)COM_LoadFile(fragmentPath, 0);
-	if (!fragmentSource)
-		Sys_Error("Failed to load shader! (%s)", fragmentPath);
-	fragmentSourceLength = strlen(fragmentSource);
+		fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+		glShaderSource(fragmentShader, 1, &fragmentSource, &fragmentSourceLength);
+		glCompileShader(fragmentShader);
 
-	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragmentShader, 1, &fragmentSource, &fragmentSourceLength);
-	glCompileShader(fragmentShader);
-
-	glGetObjectParameterivARB(fragmentShader, GL_COMPILE_STATUS, &compiledStatus);
-	if (!compiledStatus)
-	{
-		int logLength = 0;
-		int sLength = 0;
-
-		glGetShaderiv(vertexShader, GL_INFO_LOG_LENGTH, &logLength);
-
-		if (logLength > 1)
+		glGetObjectParameterivARB(fragmentShader, GL_COMPILE_STATUS, &compiledStatus);
+		if (!compiledStatus)
 		{
-			char *log = (char*)malloc(logLength);
-			glGetInfoLogARB(vertexShader, logLength, &sLength, log);
-			Con_Warning("%s\n", log);
-			free(log);
+			int logLength = 0;
+			int sLength = 0;
+
+			glGetShaderiv(vertexShader, GL_INFO_LOG_LENGTH, &logLength);
+
+			if (logLength > 1)
+			{
+				char *log = (char*)malloc(logLength);
+				glGetInfoLogARB(vertexShader, logLength, &sLength, log);
+				Con_Warning("%s\n", log);
+				free(log);
+			}
+
+			Sys_Error("Shader compilation failed! (%s)\n", fragmentPath);
 		}
 
-		Sys_Error("Shader compilation failed! (%s)\n", fragmentPath);
-	}
+		// Now link them into a program object.
 
-	// Now link them into a program object.
+		program = glCreateProgram();
+		glAttachShader(program, vertexShader);
+		glAttachShader(program, fragmentShader);
 
-	program = glCreateProgram();
-	glAttachShader(program, vertexShader);
-	glAttachShader(program, fragmentShader);
+		glLinkProgram(program);
 
-	glLinkProgram(program);
-
-	glGetProgramiv(program, GL_LINK_STATUS, &compiledStatus);
-	if (!compiledStatus)
-	{
-		int logLength = 0;
-		int sLength = 0;
-
-		glGetProgramiv(program, GL_INFO_LOG_LENGTH, &logLength);
-
-		if (logLength > 1)
+		glGetProgramiv(program, GL_LINK_STATUS, &compiledStatus);
+		if (!compiledStatus)
 		{
-			char *log = (char*)malloc(logLength);
-			glGetInfoLogARB(program, logLength, &sLength, log);
-			Con_Warning("%s\n", log);
-			free(log);
+			int logLength = 0;
+			int sLength = 0;
+
+			glGetProgramiv(program, GL_INFO_LOG_LENGTH, &logLength);
+
+			if (logLength > 1)
+			{
+				char *log = (char*)malloc(logLength);
+				glGetInfoLogARB(program, logLength, &sLength, log);
+				Con_Warning("%s\n", log);
+				free(log);
+			}
+
+			Sys_Error("Program linking failed! (%s)\n");
 		}
 
-		Sys_Error("Program linking failed! (%s)\n");
-	}
+	VIDEO_FUNCTION_END
 }
 
 CVideoShader::~CVideoShader()
@@ -193,7 +195,9 @@ void CVideoShader::SetVariable(const char *name, float f)
 	glUniform1f(glGetUniformLocation(program, name), f);
 }
 
-/**/
+/*
+	C Wrapper
+*/
 
 CVideoShader *modelShader = NULL;
 

@@ -141,7 +141,7 @@ typedef struct {
 	int		beams;
 	int		dlights;
 } devstats_t;
-devstats_t dev_stats, dev_peakstats;
+extern devstats_t dev_stats, dev_peakstats;
 //johnfitz
 
 //ohnfitz -- reduce overflow warning spam
@@ -156,12 +156,12 @@ overflowtimes_t dev_overflows; //this stores the last time overflow messages wer
 
 //johnfitz -- moved here from r_brush.c
 #define MAX_LIGHTMAPS 512 //johnfitz -- was 64
-gltexture_t *lightmap_textures[MAX_LIGHTMAPS]; //johnfitz -- changed to an array
+extern gltexture_t *lightmap_textures[MAX_LIGHTMAPS]; //johnfitz -- changed to an array
 //johnfitz
 
-int gl_warpimagesize; //johnfitz -- for water warp
+extern int gl_warpimagesize; //johnfitz -- for water warp
 
-bool r_drawflat_cheatsafe, r_fullbright_cheatsafe, r_lightmap_cheatsafe, r_drawworld_cheatsafe; //johnfitz
+extern bool r_drawflat_cheatsafe, r_fullbright_cheatsafe, r_lightmap_cheatsafe, r_drawworld_cheatsafe; //johnfitz
 
 // [31/1/2013] TODO: Move this into its own header? ~hogsy
 void Sky_Init(void);

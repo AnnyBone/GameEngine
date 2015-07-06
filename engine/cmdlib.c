@@ -269,7 +269,7 @@ FILE *SafeOpenWrite (const char *filename)
 	return f;
 }
 
-FILE *SafeOpenRead (char *filename)
+FILE *SafeOpenRead (const char *filename)
 {
 	FILE *f;
 

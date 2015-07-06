@@ -1,29 +1,30 @@
 /*	Copyright (C) 2013-2015 OldTimes Software
 */
+
 #include "platform_filesystem.h"
 
 /*
-	gFileSystem
-
-	TODO:
-		A package system?
+	File System
 */
 
 #include "platform_system.h"
 
 void pFileSystem_UpdatePath(char *cPath)
 {
-	int i;
+	pFUNCTION_START
 
+	int i;
 	for (i = 0; cPath[i]; i++)
 		cPath[i] = (char)tolower(cPath[i]);
+
+	pFUNCTION_END
 }
 
 /*  Creates a folder at the given path.
 */
 bool pFileSystem_CreateDirectory(const char *ccPath)
 {
-	pFUNCTION_UPDATE;
+	pFUNCTION_START
 
 #ifdef _WIN32
 	if(CreateDirectory(ccPath,NULL) || (GetLastError() == ERROR_ALREADY_EXISTS))
@@ -62,6 +63,8 @@ bool pFileSystem_CreateDirectory(const char *ccPath)
 #endif
 
 	return false;
+
+	pFUNCTION_END
 }
 
 /*	Returns the name of the systems
@@ -69,13 +72,13 @@ bool pFileSystem_CreateDirectory(const char *ccPath)
 */
 void pFileSystem_GetUserName(char *cOut)
 {
+	pFUNCTION_START
+
 #ifdef _WIN32
     char	cUser[128] = "user";
 	DWORD	dName;
 
-	pFUNCTION_UPDATE;
-
-	// [16/5/2014] Set these AFTER we update active function ~hogsy
+	// Set these AFTER we update active function.
 	dName	= sizeof(cUser);
 
 	if(GetUserName(cUser,&dName))
@@ -102,6 +105,8 @@ void pFileSystem_GetUserName(char *cOut)
 	}
 
 	strcpy(cOut,cUser);
+
+	pFUNCTION_END
 }
 
 /*	Scans the given directory.
@@ -112,7 +117,7 @@ void pFileSystem_GetUserName(char *cOut)
 */
 void pFileSystem_ScanDirectory(const char *ccPath,const char *ccExtension,void (*vFunction)(char *cFile))
 {
-	pFUNCTION_UPDATE;
+	pFUNCTION_START
 
 	if (ccPath[0] == ' ')
 	{
@@ -170,13 +175,15 @@ void pFileSystem_ScanDirectory(const char *ccPath,const char *ccExtension,void (
 		}
 	}*/
 #endif
+
+	pFUNCTION_END
 }
 
 /*  Based on Q_getwd.
 */
 void pFileSystem_GetWorkingDirectory(char *cOut)
 {
-	pFUNCTION_UPDATE;
+	pFUNCTION_START
 
 #ifdef _WIN32
     if(!_getcwd(cOut,256))
@@ -197,4 +204,6 @@ void pFileSystem_GetWorkingDirectory(char *cOut)
     }
 
     strcat(cOut,"\\");
+
+	pFUNCTION_END
 }
