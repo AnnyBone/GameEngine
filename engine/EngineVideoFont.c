@@ -13,9 +13,9 @@
 
 typedef struct
 {
-	char		*cName;
+	char *cName;
 
-	unsigned int	uiCharacters;
+	unsigned int uiCharacters;
 } Font_t;
 
 Font_t	fFonts[32];

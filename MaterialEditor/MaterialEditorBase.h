@@ -25,7 +25,8 @@
 #include "platform_math.h"
 #include "platform_module.h"
 
-#define	MATERIALEDITOR_TITLE "Material Editor"
+#define	MATERIALEDITOR_TITLE	"Material Editor"
+#define	MATERIALEDITOR_LOG		"editor"
 
 extern "C" {
 #include "SharedEngine.h"

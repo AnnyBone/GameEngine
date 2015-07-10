@@ -208,7 +208,7 @@ void Game_AmbientSound(vec_t *vPosition,const char *cPath,int iVolume,int iAtten
 }
 
 // [18/7/2012] Renamed to Server_Sound ~hogsy
-void Server_Sound(ServerEntity_t *ent, int channel, char *sample, int volume, float attenuation)
+void Server_Sound(ServerEntity_t *ent, int channel, char *sample, int iVolume, float attenuation)
 {
 	int sound_num, field_mask, i, e;
 
@@ -217,9 +217,9 @@ void Server_Sound(ServerEntity_t *ent, int channel, char *sample, int volume, fl
 		Con_Warning("Bad sample name (%s)!\n",ent->v.cClassname);
 		return;
 	}
-	else if(volume < 0 || volume > 255)
+	else if(iVolume < 0 || iVolume > 255)
 	{
-		Con_Warning("Sound: volume = %i\n", volume);
+		Con_Warning("Sound: volume = %i\n", iVolume);
 		return;
 	}
 	else if(attenuation < 0 || attenuation > 4)
@@ -249,7 +249,7 @@ void Server_Sound(ServerEntity_t *ent, int channel, char *sample, int volume, fl
 	e = NUM_FOR_EDICT(ent);
 
 	field_mask = 0;
-	if(volume != DEFAULT_SOUND_PACKET_VOLUME)
+	if(iVolume != DEFAULT_SOUND_PACKET_VOLUME)
 		field_mask |= SND_VOLUME;
 
 	if(attenuation != DEFAULT_SOUND_PACKET_ATTENUATION)
@@ -264,7 +264,7 @@ void Server_Sound(ServerEntity_t *ent, int channel, char *sample, int volume, fl
 	MSG_WriteByte(&sv.datagram,svc_sound);
 	MSG_WriteByte(&sv.datagram,field_mask);
 	if(field_mask & SND_VOLUME)
-		MSG_WriteByte(&sv.datagram,volume);
+		MSG_WriteByte(&sv.datagram, iVolume);
 	if(field_mask & SND_ATTENUATION)
 		MSG_WriteByte(&sv.datagram,attenuation*64);
 

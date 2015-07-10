@@ -25,6 +25,9 @@ private:
 	void OnConsole(wxCommandEvent &event);
 	void OnProperties(wxCommandEvent &event);
 	void OnCommand(wxCommandEvent &event);
+	void OnReload(wxCommandEvent &event);
+	void OnPause(wxCommandEvent &event);
+	void OnPlay(wxCommandEvent &event);
 	void OnKey(wxKeyEvent &event);
 	void OnTimer(wxTimerEvent &event);
 

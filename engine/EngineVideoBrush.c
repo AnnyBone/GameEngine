@@ -17,13 +17,14 @@
 	along with this program; if not, write to the Free Software
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
+
 #include "EngineBase.h"
 
-/*
-	Brush model rendering.
-*/
-
 #include "EngineVideo.h"
+
+/*
+	Brush Model rendering.
+*/
 
 extern ConsoleVariable_t gl_fullbrights, r_drawflat, gl_overbright, r_oldwater; //johnfitz
 
@@ -42,7 +43,7 @@ glRect_t	lightmap_rectchange[MAX_LIGHTMAPS];
 
 gltexture_t *lightmap_textures[MAX_LIGHTMAPS];
 
-int			allocated[MAX_LIGHTMAPS][BLOCK_WIDTH];
+int	allocated[MAX_LIGHTMAPS][BLOCK_WIDTH];
 
 // the lightmap texture data needs to be kept in
 // main memory so texsubimage can update properly

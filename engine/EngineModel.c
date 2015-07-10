@@ -1257,45 +1257,58 @@ void Model_LoadMD2Textures(model_t *mModel)
 */
 void Model_CalculateMD2Bounds(MD2_t *mModel)
 {
-	int i;
-	MathVector3f_t vMins, vMaxs;
-	MD2Triangle_t *mtTriangles;
+	int i, j;
+	MD2Frame_t *mFrame;
 
-	//clear out all data
-	for (i=0; i<3;i++)
+	// Reset everything to its maximum size.
+	for (i = 0; i < 3; i++)
 	{
 		loadmodel->mins[i] = loadmodel->ymins[i] = loadmodel->rmins[i] = 999999;
 		loadmodel->maxs[i] = loadmodel->ymaxs[i] = loadmodel->rmaxs[i] = -999999;
 	}
 
-	mtTriangles = (MD2Triangle_t*)((uint8_t*)mModel + mModel->ofs_tris);
-	for (i=0; i<mModel->num_xyz; i++)
+	// Iterate for each frame.
+	mFrame = (MD2Frame_t*)((uint8_t*)mModel + mModel->ofs_frames + mModel->framesize);
+	for (i = 0; i < mModel->num_frames; i++, mFrame++)
 	{
-		if (mtTriangles->index_xyz[0] < loadmodel->mins[0])
-			vMins[0] = mtTriangles->index_xyz[0];
-		else if (mtTriangles->index_xyz[0] > vMaxs[0])
-			vMaxs[0] = mtTriangles->index_xyz[0];
+		// Iterate through all the vertices.
+		for (j = 0; j < mModel->num_xyz; j++)
+		{
+			if (mFrame->verts[j].v[0] < loadmodel->mins[0])
+				loadmodel->mins[0] = mFrame->verts[j].v[0];
+			else if (mFrame->verts[j].v[0] > loadmodel->maxs[0])
+				loadmodel->maxs[0] = mFrame->verts[j].v[0];
 
-		if (mtTriangles->index_xyz[1] < loadmodel->mins[1])
-			vMins[1] = mtTriangles->index_xyz[1];
-		else if (mtTriangles->index_xyz[1] > vMaxs[1])
-			vMaxs[1] = mtTriangles->index_xyz[1];
+			if (mFrame->verts[j].v[1] < loadmodel->mins[1])
+				loadmodel->mins[1] = mFrame->verts[j].v[1];
+			else if (mFrame->verts[j].v[1] > loadmodel->maxs[1])
+				loadmodel->maxs[1] = mFrame->verts[j].v[1];
 
-		if (mtTriangles->index_xyz[2] < loadmodel->mins[2])
-			vMins[2] = mtTriangles->index_xyz[2];
-		else if (mtTriangles->index_xyz[2] > vMaxs[2])
-			vMaxs[2] = mtTriangles->index_xyz[2];
+			if (mFrame->verts[j].v[2] < loadmodel->mins[2])
+				loadmodel->mins[2] = mFrame->verts[j].v[2];
+			else if (mFrame->verts[j].v[2] > loadmodel->maxs[2])
+				loadmodel->maxs[2] = mFrame->verts[j].v[2];
+		}
+	}
 
-		mtTriangles++;
+	// Check that the size is valid.
+	if (loadmodel->mins[0] == 0 &&
+		loadmodel->maxs[0] == 0)
+	{
+		for (i = 0; i<3; i++)
+		{
+			loadmodel->mins[i] = -32.0f;
+			loadmodel->maxs[i] = 32.0f;
+		}
 	}
 
 	// TODO: Need to multiply this out more.
-	Math_VectorCopy(vMins, loadmodel->rmins);
-	Math_VectorCopy(vMaxs, loadmodel->rmaxs);
+	Math_VectorCopy(loadmodel->mins, loadmodel->rmins);
+	Math_VectorCopy(loadmodel->maxs, loadmodel->rmaxs);
 
 	// TODO: Need to update for YAW, not just copied over.
-	Math_VectorCopy(vMins, loadmodel->ymins);
-	Math_VectorCopy(vMaxs, loadmodel->ymaxs);
+	Math_VectorCopy(loadmodel->mins, loadmodel->ymins);
+	Math_VectorCopy(loadmodel->maxs, loadmodel->ymaxs);
 }
 
 void Model_CalculateMD2Normals(model_t *model, MD2_t *md2)
@@ -1326,13 +1339,9 @@ void Model_CalculateMD2Normals(model_t *model, MD2_t *md2)
 			vertices[triangles[i].index_xyz[2]].v[2] * frame->scale[2] + frame->translate[2]);
 
 		// X Y Z
-		for (j = 0; j < 3; j++)
-		{
-			MathVector3f_t normal;
-			Math_MVToVector(normalVector, normal);
-			Math_VectorCopy(normal, model->object.ovVertices[v].mvNormal);
-			v++;
-		}
+		MathVector3f_t normal;
+		Math_MVToVector(normalVector, normal);
+		Math_VectorCopy(normal, model->object.ovVertices[v].mvNormal);
 	}
 }
 
@@ -1450,7 +1459,7 @@ void Model_LoadMD2(model_t *mModel,void *Buffer)
 
 	Model_LoadMD2Textures(mModel);
 
-#if 1
+#if 0
 	for (i=0; i<3;i++)
 	{
 		loadmodel->mins[i] = loadmodel->ymins[i] = loadmodel->rmins[i] = -32.0f;

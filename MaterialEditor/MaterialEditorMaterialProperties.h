@@ -7,6 +7,8 @@ public:
 	void Update();
 	void SetCurrentMaterial(Material_t *newMaterial);
 
+	Material_t *GetCurrent();
+
 private:
 	wxStringProperty* name;
 	wxStringProperty* path;

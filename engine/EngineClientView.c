@@ -610,7 +610,7 @@ void V_CalcRefdef (void)
 					delta;
 	static	float	oldz = 0;
 	ClientEntity_t	*ent,*view;
-	vec3_t			forward,right,up,
+	vec3_t			forward,right,mvUp,
 					angles,vOldAngles;
 	static	vec3_t	punch = {0,0,0}; //johnfitz -- v_gunkick
 
@@ -685,11 +685,11 @@ void V_CalcRefdef (void)
 	angles[YAW]		= ent->angles[YAW];
 	angles[ROLL]	= ent->angles[ROLL];
 
-	Math_AngleVectors(angles,forward,right,up);
+	Math_AngleVectors(angles,forward,right, mvUp);
 
 	if(cl.maxclients <= 1) //johnfitz -- moved cheat-protection here from V_RenderView
 		for(i=0; i<3; i++)
-			r_refdef.vieworg[i] += scr_ofsx.value*forward[i]+scr_ofsy.value*right[i]+scr_ofsz.value*up[i];
+			r_refdef.vieworg[i] += scr_ofsx.value*forward[i]+scr_ofsy.value*right[i]+scr_ofsz.value*mvUp[i];
 
 	V_BoundOffsets ();
 
@@ -700,7 +700,7 @@ void V_CalcRefdef (void)
 	view->origin[2] += cl.viewheight;
 
 	for(i = 0; i < 3; i++)
-		view->origin[i] +=	(up[i]*fBob[0]*0.2f)+
+		view->origin[i] +=	(mvUp[i]*fBob[0]*0.2f)+
 							(right[i]*fBob[1]*0.3f);
 
 	view->origin[2] += fBob[0];

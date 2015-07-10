@@ -406,10 +406,8 @@ void R_EmitWirePoint (vec3_t origin)
 	glEnd();
 }
 
-void R_EmitWireBox(vec3_t mins,vec3_t maxs)
+void R_EmitWireBox(MathVector3f_t mins, MathVector3f_t maxs)
 {
-	glColor4f(0.2f,0,0.5f,0.5f);
-
 	glBegin(GL_QUADS);
 	glVertex3f(mins[0],mins[1],maxs[2]);
 	glVertex3f(maxs[0],mins[1],maxs[2]);
@@ -473,6 +471,7 @@ void R_ShowBoundingBoxes(void)
 {
 	extern		ServerEntity_t *sv_player;
 	vec3_t				mins,maxs;
+	ClientEntity_t *clEntity;
 	ServerEntity_t				*ed;
 	int					i;
 
@@ -494,7 +493,28 @@ void R_ShowBoundingBoxes(void)
 		Math_VectorAdd(ed->v.mins,ed->v.origin,mins);
 		Math_VectorAdd(ed->v.maxs,ed->v.origin,maxs);
 
+		glColor4f(0, 0.5f, 0, 0.5f);
+
 		R_EmitWireBox(mins,maxs);
+	}
+
+	// Cycle through client-side entities.
+	for (i = 0, clEntity = cl_entities; i < cl.num_entities; i++, clEntity++)
+	{
+		if (!clEntity->model || (clEntity == cl.viewentity && !chase_active.bValue) || (clEntity == &cl.viewent))
+			continue;
+		
+		Math_VectorAdd(clEntity->model->rmins, clEntity->origin, mins);
+		Math_VectorAdd(clEntity->model->rmaxs, clEntity->origin, maxs);
+
+		switch (clEntity->model->mType)
+		{
+		case MODEL_TYPE_BSP:
+			break;
+		default:
+			glColor4f(0.5f, 0, 0, 0.5f);
+			R_EmitWireBox(mins, maxs);
+		}
 	}
 
 	glColor3f(1.0f,1.0f,1.0f);

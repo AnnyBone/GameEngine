@@ -72,9 +72,12 @@ pMODULE_EXPORT EngineExport_t *Engine_Main(EngineImport_t *mImport)
 	eExport.GetVersion = Engine_GetVersion;
 
 	eExport.LoadMaterial = Material_Load;
+	eExport.UnloadMaterial = Material_Clear;
 
 	// Console
 	eExport.InsertConsoleCommand = Cbuf_InsertText;
+	eExport.Print = Con_Printf;
+	eExport.PrintDev = Con_DPrintf;
 
 	// Video
 	eExport.Video_PostFrame = Video_PostFrame;

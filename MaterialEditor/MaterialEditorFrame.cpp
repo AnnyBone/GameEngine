@@ -5,14 +5,19 @@
 
 enum
 {
-	ID_WINDOW_CONSOLE,
-	ID_WINDOW_SCRIPTEDITOR,
-	ID_WINDOW_PROPERTIES,
+	ID_WINDOW_CONSOLE,		// Display the console.
+	ID_WINDOW_SCRIPTEDITOR,	// Edit the material script.
+	ID_WINDOW_PROPERTIES,	
+	ID_WINDOW_RELOAD,		// Reload the current material.
+	ID_WINDOW_PLAY,			// Play simulation.
+	ID_WINDOW_PAUSE,		// Pause simulation.
 
 	ID_CONSOLE_INPUT,
 
 	ID_BUTTON_COMMAND,
-	ID_BUTTON_RELOAD
+	ID_BUTTON_CUBE,
+	ID_BUTTON_SPHERE,
+	ID_BUTTON_PLANE
 };
 
 wxBEGIN_EVENT_TABLE(CMaterialEditorFrame, wxFrame)
@@ -25,6 +30,9 @@ wxBEGIN_EVENT_TABLE(CMaterialEditorFrame, wxFrame)
 	EVT_MENU(wxID_ABOUT, CMaterialEditorFrame::OnAbout)
 	EVT_MENU(ID_WINDOW_CONSOLE, CMaterialEditorFrame::OnConsole)
 	EVT_MENU(ID_WINDOW_PROPERTIES, CMaterialEditorFrame::OnProperties)
+	EVT_MENU(ID_WINDOW_RELOAD, CMaterialEditorFrame::OnReload)
+	EVT_MENU(ID_WINDOW_PLAY, CMaterialEditorFrame::OnPlay)
+	EVT_MENU(ID_WINDOW_PAUSE, CMaterialEditorFrame::OnPause)
 
 	EVT_BUTTON(ID_BUTTON_COMMAND, CMaterialEditorFrame::OnCommand)
 
@@ -50,9 +58,13 @@ CMaterialEditorFrame::CMaterialEditorFrame(const wxString & title, const wxPoint
 	iconShapeSphere.LoadFile("resource/shape-sphere.png", wxBITMAP_TYPE_PNG);
 	iconShapePlane.LoadFile("resource/shape-plane.png", wxBITMAP_TYPE_PNG);
 
+	pLog_Write(MATERIALEDITOR_LOG, "Setting frame icon...\n");
+
 	SetIcon(wxIcon("resource/icon-material.png", wxBITMAP_TYPE_PNG));
 	
 	// Display the splash screen...
+
+	pLog_Write(MATERIALEDITOR_LOG, "Displaying splash screen...\n");
 
 	wxBitmap splashImage;
 	if (splashImage.LoadFile(PATH_RESOURCES"material_editor/splash.png", wxBITMAP_TYPE_PNG))
@@ -109,14 +121,14 @@ CMaterialEditorFrame::CMaterialEditorFrame(const wxString & title, const wxPoint
 	toolbar->AddTool(wxID_OPEN, "Open material", largeOpen, "Open an existing material");
 	toolbar->AddTool(wxID_SAVE, "Save material", iconDocumentSave, "Save the current material");
 	toolbar->AddSeparator();
-	toolbar->AddTool(ID_BUTTON_RELOAD, "Reload material", iconViewRefresh, "Reload the material");
+	toolbar->AddTool(ID_WINDOW_RELOAD, "Reload material", iconViewRefresh, "Reload the material");
 	toolbar->AddSeparator();
-	toolbar->AddTool(wxID_ANY, "Cube", iconShapeCube, "Cube shape", wxITEM_CHECK);
-	toolbar->AddTool(wxID_ANY, "Sphere", iconShapeSphere, "Sphere shape", wxITEM_CHECK);
-	toolbar->AddTool(wxID_ANY, "Plane", iconShapePlane, "Plane shape", wxITEM_CHECK);
+	toolbar->AddTool(ID_BUTTON_CUBE, "Cube", iconShapeCube, "Cube shape", wxITEM_CHECK);
+	toolbar->AddTool(ID_BUTTON_SPHERE, "Sphere", iconShapeSphere, "Sphere shape", wxITEM_CHECK);
+	toolbar->AddTool(ID_BUTTON_PLANE, "Plane", iconShapePlane, "Plane shape", wxITEM_CHECK);
 	toolbar->AddSeparator();
-	toolbar->AddTool(wxID_ANY, "Pause", iconMediaPause);
-	toolbar->AddTool(wxID_ANY, "Play", iconMediaPlay);
+	toolbar->AddTool(ID_WINDOW_PAUSE, "Pause", iconMediaPause, "Pause simulation", wxITEM_CHECK);
+	toolbar->AddTool(ID_WINDOW_PLAY, "Play", iconMediaPlay, "Play simulation", wxITEM_CHECK);
 	toolbar->Realize();
 
 	wxAuiPaneInfo toolbarInfo;
@@ -144,6 +156,8 @@ CMaterialEditorFrame::CMaterialEditorFrame(const wxString & title, const wxPoint
 		WX_GL_MIN_ACCUM_GREEN, 8,
 		WX_GL_MIN_ACCUM_BLUE, 8,
 		WX_GL_MIN_ACCUM_ALPHA, 8,
+		WX_GL_SAMPLES, 4,
+		WX_GL_SAMPLE_BUFFERS, 1
 		//WX_GL_DOUBLEBUFFER,	1,
 	};
 	editorViewport = new CMaterialEditorRenderCanvas(this, attributes);
@@ -240,6 +254,16 @@ void CMaterialEditorFrame::PrintError(char *text)
 	textConsoleOut->AppendText(text);
 }
 
+void CMaterialEditorFrame::OnPause(wxCommandEvent &event)
+{
+	engine->Print("IMPLEMENT ME!\n");
+}
+
+void CMaterialEditorFrame::OnPlay(wxCommandEvent &event)
+{
+	engine->Print("IMPLEMENT ME!\n");
+}
+
 void CMaterialEditorFrame::OnKey(wxKeyEvent &event)
 {
 	event.DoAllowNextEvent();
@@ -281,6 +305,22 @@ void CMaterialEditorFrame::OnCommand(wxCommandEvent &event)
 
 	// Clear the input box.
 	textConsoleIn->Clear();
+}
+
+void CMaterialEditorFrame::OnReload(wxCommandEvent &event)
+{
+	Material_t *current = editorMaterialProperties->GetCurrent();
+	if (!current)
+		return;
+
+	Material_t *reloadedMat = engine->LoadMaterial(current->cPath);
+	if (reloadedMat)
+	{
+		engine->MaterialEditorDisplay(reloadedMat);
+
+		editorMaterialProperties->SetCurrentMaterial(reloadedMat);
+		editorMaterialProperties->Update();
+	}
 }
 
 void CMaterialEditorFrame::OnOpen(wxCommandEvent &event)

@@ -50,9 +50,35 @@ void CMaterialEditorMaterialGlobalProperties::Update()
 	path->SetValue(currentMaterial->cPath);
 	skins->SetValue(currentMaterial->iSkins);
 	animationSpeed->SetValue(currentMaterial->fAnimationSpeed);
+
+	if (currentMaterial->iFlags & MATERIAL_FLAG_PRESERVE)
+		preserve->SetValue(true);
+	else
+		preserve->SetValue(false);
+
+	if (currentMaterial->iFlags & MATERIAL_FLAG_ANIMATED)
+		animated->SetValue(true);
+	else
+		animated->SetValue(false);
+
+	if (currentMaterial->iFlags & MATERIAL_FLAG_NOTRIS)
+		notris->SetValue(true);
+	else
+		notris->SetValue(false);
+
+	int i; 
+	for (i = 0; i < currentMaterial->iSkins; i++)
+	{
+
+	}
 }
 
 void CMaterialEditorMaterialGlobalProperties::SetCurrentMaterial(Material_t *newMaterial)
 {
+	currentMaterial = newMaterial;
+}
 
+Material_t *CMaterialEditorMaterialGlobalProperties::GetCurrent()
+{
+	return currentMaterial;
 }

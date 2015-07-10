@@ -57,9 +57,12 @@ typedef struct
 	void(*Shutdown)(void);								// Shutdown.
 
 	Material_t*(*LoadMaterial)(const char *cPath);
+	void(*UnloadMaterial)(Material_t *mMaterial);
 
 	// Console
 	void(*InsertConsoleCommand)(const char *cCommand);	// Sends the given command to the console.
+	void(*Print)(char *cMessage, ...);					// Print a message to the console.
+	void(*PrintDev)(char *cMessage, ...);				// Prints a developer message to the console.
 
 	// Video
 	void(*Video_PreFrame)(void);
