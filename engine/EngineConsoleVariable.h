@@ -77,6 +77,8 @@ void 	Cvar_WriteVariables (FILE *f);
 // Writes lines containing "set variable value" for all variables
 // with the archive flag set to TRUE.
 
+void Cvar_Reset(char *name);
+
 cvar_t *Cvar_FindVar (char *var_name);
 
 extern cvar_t	*cConsoleVariables;

@@ -3,6 +3,7 @@
 
 #include "MaterialEditorRenderCanvas.h"
 #include "MaterialEditorMaterialProperties.h"
+#include "MaterialEditorConsolePanel.h"
 
 class CMaterialEditorFrame : public wxFrame
 {
@@ -10,8 +11,10 @@ public:
 	CMaterialEditorFrame(const wxString &title, const wxPoint &pos, const wxSize &size);
 	~CMaterialEditorFrame();
 
-	void StartEngineLoop(void);
-	void StopEngineLoop(void);
+	void StartEngineLoop();
+	void StopEngineLoop();
+
+	void InitializeConsoleVariables();
 
 	void PrintMessage(char *text);
 	void PrintWarning(char *text);
@@ -31,19 +34,20 @@ private:
 	void OnKey(wxKeyEvent &event);
 	void OnTimer(wxTimerEvent &event);
 
-	wxBitmap largeNew;
-	wxBitmap largeOpen;
-	wxBitmap largeScriptEdit;
-	wxBitmap iconDocumentSave;
+	wxBitmap 
+		largeOpen,
+		largeScriptEdit;
 	wxBitmap iconMediaPause;
 	wxBitmap iconMediaPlay;
-	wxBitmap iconViewRefresh;
-	wxBitmap iconShapeCube;
+	wxBitmap
+		iconDocumentRefresh,
+		iconDocumentNew,
+		iconDocumentSave,
+		iconDocumentUndo,
+		iconDocumentRedo,
+		iconShapeCube;
 	wxBitmap iconShapeSphere;
 	wxBitmap iconShapePlane;
-
-	wxTextCtrl *textConsoleOut;
-	wxTextCtrl *textConsoleIn;
 
 	wxTimer* timer;
 
@@ -51,6 +55,7 @@ private:
 
 	CMaterialEditorRenderCanvas *editorViewport;
 	CMaterialEditorMaterialGlobalProperties *editorMaterialProperties;
+	CMaterialEditorConsolePanel *editorConsolePanel;
 
 	wxDECLARE_EVENT_TABLE();
 };

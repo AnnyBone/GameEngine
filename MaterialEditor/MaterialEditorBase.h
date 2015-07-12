@@ -28,6 +28,8 @@
 #define	MATERIALEDITOR_TITLE	"Material Editor"
 #define	MATERIALEDITOR_LOG		"editor"
 
+#define	PATH_SILK	"resource/silk/"
+
 extern "C" {
 #include "SharedEngine.h"
 }

@@ -76,6 +76,9 @@ pMODULE_EXPORT EngineExport_t *Engine_Main(EngineImport_t *mImport)
 
 	// Console
 	eExport.InsertConsoleCommand = Cbuf_InsertText;
+	eExport.RegisterConsoleVariable = Cvar_RegisterVariable;
+	eExport.SetConsoleVariable = Cvar_Set;
+	eExport.ResetConsoleVariable = Cvar_Reset;
 	eExport.Print = Con_Printf;
 	eExport.PrintDev = Con_DPrintf;
 

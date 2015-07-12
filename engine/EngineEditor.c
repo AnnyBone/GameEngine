@@ -44,7 +44,7 @@
 	of the map in view...
 */
 
-cvar_t	cvEditorLightPreview	= {	"editor_lightpreview",	"0",	false,	false,	"Enables a preview showing the radius of each light."	};
+ConsoleVariable_t cvEditorLightPreview	= {	"editor_lightpreview",	"0",	false,	false,	"Enables a preview showing the radius of each light."	};
 
 pINSTANCE hToolInstance;
 

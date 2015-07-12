@@ -5,16 +5,14 @@
 
 enum
 {
-	ID_WINDOW_CONSOLE,		// Display the console.
+	FRAME_EVENT_SHOWCONSOLE,
+
 	ID_WINDOW_SCRIPTEDITOR,	// Edit the material script.
 	ID_WINDOW_PROPERTIES,	
-	ID_WINDOW_RELOAD,		// Reload the current material.
+	FRAME_EVENT_RELOAD,		// Reload the current material.
 	ID_WINDOW_PLAY,			// Play simulation.
 	ID_WINDOW_PAUSE,		// Pause simulation.
 
-	ID_CONSOLE_INPUT,
-
-	ID_BUTTON_COMMAND,
 	ID_BUTTON_CUBE,
 	ID_BUTTON_SPHERE,
 	ID_BUTTON_PLANE
@@ -22,23 +20,22 @@ enum
 
 wxBEGIN_EVENT_TABLE(CMaterialEditorFrame, wxFrame)
 
-	EVT_CHAR_HOOK(CMaterialEditorFrame::OnKey)
+EVT_MENU(wxID_OPEN, CMaterialEditorFrame::OnOpen)
+EVT_MENU(wxID_SAVE, CMaterialEditorFrame::OnSave)
+EVT_MENU(wxID_EXIT, CMaterialEditorFrame::OnExit)
+EVT_MENU(wxID_ABOUT, CMaterialEditorFrame::OnAbout)
+EVT_MENU(FRAME_EVENT_SHOWCONSOLE, CMaterialEditorFrame::OnConsole)
+EVT_MENU(ID_WINDOW_PROPERTIES, CMaterialEditorFrame::OnProperties)
+EVT_MENU(FRAME_EVENT_RELOAD, CMaterialEditorFrame::OnReload)
+EVT_MENU(ID_WINDOW_PLAY, CMaterialEditorFrame::OnPlay)
+EVT_MENU(ID_WINDOW_PAUSE, CMaterialEditorFrame::OnPause)
 
-	EVT_MENU(wxID_OPEN, CMaterialEditorFrame::OnOpen)
-	EVT_MENU(wxID_SAVE, CMaterialEditorFrame::OnSave)
-	EVT_MENU(wxID_EXIT, CMaterialEditorFrame::OnExit)
-	EVT_MENU(wxID_ABOUT, CMaterialEditorFrame::OnAbout)
-	EVT_MENU(ID_WINDOW_CONSOLE, CMaterialEditorFrame::OnConsole)
-	EVT_MENU(ID_WINDOW_PROPERTIES, CMaterialEditorFrame::OnProperties)
-	EVT_MENU(ID_WINDOW_RELOAD, CMaterialEditorFrame::OnReload)
-	EVT_MENU(ID_WINDOW_PLAY, CMaterialEditorFrame::OnPlay)
-	EVT_MENU(ID_WINDOW_PAUSE, CMaterialEditorFrame::OnPause)
-
-	EVT_BUTTON(ID_BUTTON_COMMAND, CMaterialEditorFrame::OnCommand)
-
-	EVT_TIMER(-1, CMaterialEditorFrame::OnTimer)
+EVT_TIMER(-1, CMaterialEditorFrame::OnTimer)
 
 wxEND_EVENT_TABLE()
+
+ConsoleVariable_t
+	cvEditorShowConsole = { "editor_showconsole", "1", true, false, "Can show/hide the console." };
 
 CMaterialEditorFrame::CMaterialEditorFrame(const wxString & title, const wxPoint & pos, const wxSize & size)
 	: wxFrame(NULL, wxID_ANY, title, pos, size)
@@ -48,12 +45,14 @@ CMaterialEditorFrame::CMaterialEditorFrame(const wxString & title, const wxPoint
 	// Load all required icons...
 
 	wxImage::AddHandler(new wxPNGHandler);
-	largeNew.LoadFile(PATH_RESOURCES"16x16/actions/document-new.png", wxBITMAP_TYPE_PNG);
+	iconDocumentNew.LoadFile(PATH_RESOURCES"16x16/actions/document-new.png", wxBITMAP_TYPE_PNG);
 	largeOpen.LoadFile(PATH_RESOURCES"16x16/actions/document-open.png", wxBITMAP_TYPE_PNG);
 	iconDocumentSave.LoadFile("resource/16x16/actions/document-save.png", wxBITMAP_TYPE_PNG);
-	iconMediaPause.LoadFile(PATH_RESOURCES"16x16/actions/media-playback-pause.png", wxBITMAP_TYPE_PNG);
-	iconMediaPlay.LoadFile(PATH_RESOURCES"16x16/actions/media-playback-start.png", wxBITMAP_TYPE_PNG);
-	iconViewRefresh.LoadFile("resource/16x16/actions/view-refresh.png", wxBITMAP_TYPE_PNG);
+	iconDocumentRefresh.LoadFile(PATH_SILK"arrow_refresh.png", wxBITMAP_TYPE_PNG);
+	iconDocumentUndo.LoadFile(PATH_SILK"arrow_undo.png", wxBITMAP_TYPE_PNG);
+	iconDocumentRedo.LoadFile(PATH_SILK"arrow_redo.png", wxBITMAP_TYPE_PNG);
+	iconMediaPause.LoadFile(PATH_SILK"control_pause.png", wxBITMAP_TYPE_PNG);
+	iconMediaPlay.LoadFile(PATH_SILK"control_play.png", wxBITMAP_TYPE_PNG);
 	iconShapeCube.LoadFile("resource/shape-cube.png", wxBITMAP_TYPE_PNG);
 	iconShapeSphere.LoadFile("resource/shape-sphere.png", wxBITMAP_TYPE_PNG);
 	iconShapePlane.LoadFile("resource/shape-plane.png", wxBITMAP_TYPE_PNG);
@@ -91,7 +90,7 @@ CMaterialEditorFrame::CMaterialEditorFrame(const wxString & title, const wxPoint
 	wxMenu *menuEdit = new wxMenu;
 
 	wxMenu *menuWindow = new wxMenu;
-	menuWindow->AppendCheckItem(ID_WINDOW_CONSOLE, "&Console");
+	menuWindow->AppendCheckItem(FRAME_EVENT_SHOWCONSOLE, "&Console");
 	menuWindow->AppendCheckItem(ID_WINDOW_PROPERTIES, "&Properties");
 
 	wxMenu *menuHelp = new wxMenu;
@@ -106,22 +105,23 @@ CMaterialEditorFrame::CMaterialEditorFrame(const wxString & title, const wxPoint
 
 	CreateStatusBar(3);
 	SetStatusText("Initialized");
+	SetSize(size);
+	Center();
 
 	// Initialize the timer...
 
 	timer = new wxTimer(this);
 
-	SetSize(size);
-	Center();
-
 	// Create the toolbar...
 	
 	wxAuiToolBar *toolbar = new wxAuiToolBar(this);
-	toolbar->AddTool(wxID_NEW, "New material", largeNew);
+	toolbar->AddTool(wxID_NEW, "New material", iconDocumentNew);
 	toolbar->AddTool(wxID_OPEN, "Open material", largeOpen, "Open an existing material");
 	toolbar->AddTool(wxID_SAVE, "Save material", iconDocumentSave, "Save the current material");
 	toolbar->AddSeparator();
-	toolbar->AddTool(ID_WINDOW_RELOAD, "Reload material", iconViewRefresh, "Reload the material");
+	toolbar->AddTool(wxID_UNDO, "Undo", iconDocumentUndo, "Undo changes");
+	toolbar->AddTool(wxID_REDO, "Redo", iconDocumentRedo, "Redo changes");
+	toolbar->AddTool(FRAME_EVENT_RELOAD, "Reload material", iconDocumentRefresh, "Reload the material");
 	toolbar->AddSeparator();
 	toolbar->AddTool(ID_BUTTON_CUBE, "Cube", iconShapeCube, "Cube shape", wxITEM_CHECK);
 	toolbar->AddTool(ID_BUTTON_SPHERE, "Sphere", iconShapeSphere, "Sphere shape", wxITEM_CHECK);
@@ -140,7 +140,6 @@ CMaterialEditorFrame::CMaterialEditorFrame(const wxString & title, const wxPoint
 	toolbarInfo.Dockable(false);
 	toolbarInfo.MinSize(wxSize(GetSize().GetWidth(),16));
 	toolbarInfo.MaxSize(wxSize(GetSize().GetWidth(),32));
-
 	manager->AddPane(toolbar, toolbarInfo);
 
 	// Create the engine viewport...
@@ -170,12 +169,12 @@ CMaterialEditorFrame::CMaterialEditorFrame(const wxString & title, const wxPoint
 	viewportInfo.Dockable(true);
 	viewportInfo.MaximizeButton(true);
 	viewportInfo.CloseButton(false);
-
 	manager->AddPane(editorViewport, viewportInfo);
 
 	// Create the console...
+	
+	editorConsolePanel = new CMaterialEditorConsolePanel(this);
 
-	wxPanel *consolePanel = new wxPanel(this);
 	wxAuiPaneInfo consoleInfo;
 	consoleInfo.Caption("Console");
 	consoleInfo.Bottom();
@@ -183,29 +182,7 @@ CMaterialEditorFrame::CMaterialEditorFrame(const wxString & title, const wxPoint
 	consoleInfo.Floatable(true);
 	consoleInfo.MaximizeButton(true);
 	consoleInfo.CloseButton(false);
-
-	wxBoxSizer *vSizer = new wxBoxSizer(wxVERTICAL);
-
-	textConsoleOut = new wxTextCtrl(consolePanel, wxID_ANY, "", wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE | wxTE_READONLY | wxTE_RICH2 | wxTE_DONTWRAP);
-	textConsoleOut->SetBackgroundColour(wxColour(0, 0, 0));
-	textConsoleOut->SetForegroundColour(wxColour(0, 255, 0));
-
-	vSizer->Add(textConsoleOut,1,wxEXPAND|wxTOP|wxBOTTOM|wxLEFT|wxRIGHT);
-
-	wxBoxSizer *hSizer = new wxBoxSizer(wxHORIZONTAL);
-	hSizer->Add(new wxButton(consolePanel, ID_BUTTON_COMMAND, "Submit"), 0, wxRIGHT);
-
-	textConsoleIn = new wxTextCtrl(consolePanel, ID_CONSOLE_INPUT, "");
-	hSizer->Add(textConsoleIn, 1, wxEXPAND | wxLEFT | wxRIGHT | wxTOP);
-
-	hSizer->SetSizeHints(consolePanel);
-
-	vSizer->Add(hSizer, 0, wxEXPAND | wxLEFT| wxRIGHT | wxTOP);
-
-	consolePanel->SetSizer(vSizer);
-	consolePanel->SetSize(wxSize(wxDefaultSize.x, 256));
-
-	manager->AddPane(consolePanel, consoleInfo);
+	manager->AddPane(editorConsolePanel, consoleInfo);
 
 	// Create the material props...
 
@@ -215,7 +192,6 @@ CMaterialEditorFrame::CMaterialEditorFrame(const wxString & title, const wxPoint
 	propertiesInfo.Caption("Properties");
 	propertiesInfo.CloseButton(false);
 	propertiesInfo.Right();
-
 	manager->AddPane(editorMaterialProperties, propertiesInfo);
 
 	manager->Update();
@@ -223,35 +199,27 @@ CMaterialEditorFrame::CMaterialEditorFrame(const wxString & title, const wxPoint
 
 CMaterialEditorFrame::~CMaterialEditorFrame()
 {
+	timer->Stop();
+
 	manager->UnInit();
 }
 
-void CMaterialEditorFrame::StartEngineLoop(void)
+void CMaterialEditorFrame::InitializeConsoleVariables()
+{
+	engine->RegisterConsoleVariable(&cvEditorShowConsole, NULL);
+
+	if (!cvEditorShowConsole.bValue)
+		editorConsolePanel->Show(false);
+}
+
+void CMaterialEditorFrame::StartEngineLoop()
 {
 	timer->Start();
 }
 
-void CMaterialEditorFrame::StopEngineLoop(void)
+void CMaterialEditorFrame::StopEngineLoop()
 {
 	timer->Stop();
-}
-
-void CMaterialEditorFrame::PrintMessage(char *text)
-{
-	textConsoleOut->SetDefaultStyle(wxTextAttr(*wxGREEN));
-	textConsoleOut->AppendText(text);
-}
-
-void CMaterialEditorFrame::PrintWarning(char *text)
-{
-	textConsoleOut->SetDefaultStyle(wxTextAttr(*wxYELLOW));
-	textConsoleOut->AppendText(text);
-}
-
-void CMaterialEditorFrame::PrintError(char *text)
-{
-	textConsoleOut->SetDefaultStyle(wxTextAttr(*wxRED));
-	textConsoleOut->AppendText(text);
 }
 
 void CMaterialEditorFrame::OnPause(wxCommandEvent &event)
@@ -262,25 +230,6 @@ void CMaterialEditorFrame::OnPause(wxCommandEvent &event)
 void CMaterialEditorFrame::OnPlay(wxCommandEvent &event)
 {
 	engine->Print("IMPLEMENT ME!\n");
-}
-
-void CMaterialEditorFrame::OnKey(wxKeyEvent &event)
-{
-	event.DoAllowNextEvent();
-
-	switch (event.GetId())
-	{
-	case ID_CONSOLE_INPUT:
-		if (event.GetKeyCode() == WXK_RETURN)
-		{
-			// Send the command to the engine.
-			engine->InsertConsoleCommand(wxString(textConsoleIn->GetValue()));
-
-			// Clear the input box.
-			textConsoleIn->Clear();
-		}
-		break;
-	}
 }
 
 void CMaterialEditorFrame::OnTimer(wxTimerEvent &event)
@@ -296,15 +245,6 @@ void CMaterialEditorFrame::OnTimer(wxTimerEvent &event)
 		editorViewport->DrawFrame();
 		editorViewport->Refresh();
 	}
-}
-
-void CMaterialEditorFrame::OnCommand(wxCommandEvent &event)
-{
-	// Send the command to the engine.
-	engine->InsertConsoleCommand(wxString(textConsoleIn->GetValue()));
-
-	// Clear the input box.
-	textConsoleIn->Clear();
 }
 
 void CMaterialEditorFrame::OnReload(wxCommandEvent &event)
@@ -373,7 +313,19 @@ void CMaterialEditorFrame::OnSave(wxCommandEvent &event)
 {}
 
 void CMaterialEditorFrame::OnConsole(wxCommandEvent &event)
-{}
+{
+	if (editorConsolePanel->IsShown())
+	{
+		editorConsolePanel->Show(false);
+
+		engine->SetConsoleVariable(cvEditorShowConsole.name, "0");
+		return;
+	}
+
+	editorConsolePanel->Show(true);
+
+	engine->SetConsoleVariable(cvEditorShowConsole.name, "1");
+}
 
 void CMaterialEditorFrame::OnProperties(wxCommandEvent &event)
 {
@@ -381,4 +333,31 @@ void CMaterialEditorFrame::OnProperties(wxCommandEvent &event)
 	propertyWindow->Show(!propertyWindow->IsShown());
 	propertyWindow->SetPosition(wxPoint(GetPosition().x - 256, GetPosition().y));
 #endif
+}
+
+void CMaterialEditorFrame::PrintMessage(char *text)
+{
+	if (!editorConsolePanel)
+		return;
+
+	editorConsolePanel->textConsoleOut->SetDefaultStyle(wxTextAttr(*wxGREEN));
+	editorConsolePanel->textConsoleOut->AppendText(text);
+}
+
+void CMaterialEditorFrame::PrintWarning(char *text)
+{
+	if (!editorConsolePanel)
+		return;
+
+	editorConsolePanel->textConsoleOut->SetDefaultStyle(wxTextAttr(*wxYELLOW));
+	editorConsolePanel->textConsoleOut->AppendText(text);
+}
+
+void CMaterialEditorFrame::PrintError(char *text)
+{
+	if (!editorConsolePanel)
+		return;
+
+	editorConsolePanel->textConsoleOut->SetDefaultStyle(wxTextAttr(*wxRED));
+	editorConsolePanel->textConsoleOut->AppendText(text);
 }

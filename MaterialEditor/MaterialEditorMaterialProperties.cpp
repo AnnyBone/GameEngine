@@ -41,6 +41,10 @@ CMaterialEditorMaterialGlobalProperties::CMaterialEditorMaterialGlobalProperties
 	CenterSplitter(true);
 }
 
+CMaterialEditorMaterialGlobalProperties::~CMaterialEditorMaterialGlobalProperties()
+{
+}
+
 void CMaterialEditorMaterialGlobalProperties::Update()
 {
 	if (!currentMaterial)

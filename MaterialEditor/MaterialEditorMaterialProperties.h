@@ -3,6 +3,7 @@ class CMaterialEditorMaterialGlobalProperties : public wxPropertyGrid
 {
 public:
 	CMaterialEditorMaterialGlobalProperties(wxWindow *parent);
+	~CMaterialEditorMaterialGlobalProperties();
 
 	void Update();
 	void SetCurrentMaterial(Material_t *newMaterial);

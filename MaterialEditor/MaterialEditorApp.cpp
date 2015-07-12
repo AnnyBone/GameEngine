@@ -35,6 +35,9 @@ bool CMaterialEditorApp::OnInit()
 
 	engine->MaterialEditorInitialize();
 
+	// Initialize any console variables we're using.
+	mainFrame->InitializeConsoleVariables();
+
 	pLog_Write(MATERIALEDITOR_LOG, "Starting main loop...\n");
 
 	// Start rendering.

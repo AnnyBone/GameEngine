@@ -78,6 +78,7 @@
   <ItemGroup>
     <ClInclude Include="MaterialEditorApp.h" />
     <ClInclude Include="MaterialEditorBase.h" />
+    <ClInclude Include="MaterialEditorConsolePanel.h" />
     <ClInclude Include="MaterialEditorFrame.h" />
     <ClInclude Include="MaterialEditorMaterialProperties.h" />
     <ClInclude Include="MaterialEditorRenderCanvas.h" />
@@ -85,6 +86,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MaterialEditorApp.cpp" />
+    <ClCompile Include="MaterialEditorConsolePanel.cpp" />
     <ClCompile Include="MaterialEditorEngineInterface.cpp" />
     <ClCompile Include="MaterialEditorFrame.cpp" />
     <ClCompile Include="MaterialEditorMaterialProperties.cpp" />

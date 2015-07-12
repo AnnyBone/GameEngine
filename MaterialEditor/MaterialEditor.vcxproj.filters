@@ -33,6 +33,9 @@
     <ClInclude Include="MaterialEditorMaterialProperties.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="MaterialEditorConsolePanel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MaterialEditorApp.cpp">
@@ -48,6 +51,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MaterialEditorMaterialProperties.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MaterialEditorConsolePanel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

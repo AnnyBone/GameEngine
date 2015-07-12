@@ -24,17 +24,15 @@
 	Dynamic variable tracking.
 */
 
-cvar_t	*cConsoleVariables;
+ConsoleVariable_t *cConsoleVariables;
 
 /*
     User Commands
 */
 
-void Cvar_Reset (char *name); //johnfitz
-
 void Cvar_List_f (void)
 {
-	cvar_t	*cvar;
+	ConsoleVariable_t *cvar;
 	char 	*partial;
 	int		len, count;
 
@@ -159,7 +157,7 @@ void Cvar_Reset_f (void)
 
 void Cvar_ResetAll_f (void)
 {
-	cvar_t	*var;
+	ConsoleVariable_t *var;
 
 	for (var = cConsoleVariables; var; var = var->next)
 		Cvar_Reset (var->name);
