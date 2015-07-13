@@ -53,3 +53,10 @@ editor_legacy/Debug/RCa07736
 *.in
 /bin/engine/paths.script
 *.xml
+*.lastcodeanalysissucceeded
+*.lock
+*.index
+*.java
+*.DS_Store
+*.prefs
+*.version
