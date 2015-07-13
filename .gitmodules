@@ -1,7 +1,3 @@
-[submodule "ProjectAdamas"]
-  path = bin/adamas
-  url = https://github.com/OldTimes-Software/ProjectAdamas.git
-  
-[submodule "DetectiveS"]
-  path = bin/detectives
-  url = https://github.com/hogsy/DetectiveS.git
+[submodule "PlatformLibrary"]
+	path = PlatformLibrary
+	url = https://github.com/OldTimes-Software/PlatformLibrary
