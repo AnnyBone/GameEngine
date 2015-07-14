@@ -167,6 +167,8 @@ void MaterialEditor_Draw(void)
 		(int)r_refdef.viewangles[pY],
 		(int)r_refdef.viewangles[pZ]));
 	Draw_String(10, 20, va("Model: %s",	mPreviewEntity->model->name));
+	if (mActiveMaterial)
+		Draw_String(10, 30, va("Material: %s", mActiveMaterial->cPath));
 }
 
 void MaterialEditor_Frame(void)

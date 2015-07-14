@@ -123,7 +123,7 @@ Material_t *Material_Allocate(void)
 {
 	iMaterialCount++;
 	if (iMaterialCount > MATERIAL_MAX)
-		Sys_Error("Failed to add new material onto global array! (%i)", iMaterialCount);
+		Sys_Error("Failed to add new material onto global array! (%i)\n", iMaterialCount);
 
 	mMaterials[iMaterialCount].cName[0] = 0;
 	mMaterials[iMaterialCount].iIdentification = iMaterialCount;
@@ -141,10 +141,11 @@ void Material_ClearSkin(Material_t *mMaterial, int iSkin)
 	MaterialSkin_t *mSkin;
 
 	mSkin = Material_GetSkin(mMaterial, iSkin);
-	if (mSkin)
-		if (mSkin->uiTextures > 0)
-			for (i = 0; i < mSkin->uiTextures; i++)
-				TexMgr_FreeTexture(mSkin->mtTexture[i].gMap);
+	if (!mSkin)
+		Sys_Error("Attempted to clear invalid skin! (%s) (%i)\n", mMaterial->cPath, iSkin);
+
+	for (i = 0; i < mSkin->uiTextures; i++)
+		TexMgr_FreeTexture(mSkin->mtTexture[i].gMap);
 }
 
 void Material_Clear(Material_t *mMaterial)
@@ -153,9 +154,8 @@ void Material_Clear(Material_t *mMaterial)
 
 	if (!(mMaterial->iFlags & MATERIAL_FLAG_PRESERVE))
 	{
-		if (mMaterial->iSkins > 0)
-			for (i = 0; i < mMaterial->iSkins; i++)
-				Material_ClearSkin(mMaterial, i);
+		for (i = 0; i < mMaterial->iSkins; i++)
+			Material_ClearSkin(mMaterial, i);
 
 		memset(mMaterial, 0, sizeof(Material_t));
 

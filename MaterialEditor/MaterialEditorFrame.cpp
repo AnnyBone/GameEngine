@@ -49,11 +49,11 @@ CMaterialEditorFrame::CMaterialEditorFrame(const wxString & title, const wxPoint
 	iconDocumentNew.LoadFile(PATH_RESOURCES"16x16/actions/document-new.png", wxBITMAP_TYPE_PNG);
 	largeOpen.LoadFile(PATH_RESOURCES"16x16/actions/document-open.png", wxBITMAP_TYPE_PNG);
 	iconDocumentSave.LoadFile("resource/16x16/actions/document-save.png", wxBITMAP_TYPE_PNG);
-	iconDocumentRefresh.LoadFile(PATH_SILK"arrow_refresh.png", wxBITMAP_TYPE_PNG);
 	iconDocumentUndo.LoadFile(PATH_SILK"arrow_undo.png", wxBITMAP_TYPE_PNG);
 	iconDocumentRedo.LoadFile(PATH_SILK"arrow_redo.png", wxBITMAP_TYPE_PNG);
 	iconMediaPause.LoadFile(PATH_SILK"control_pause.png", wxBITMAP_TYPE_PNG);
 	iconMediaPlay.LoadFile(PATH_SILK"control_play.png", wxBITMAP_TYPE_PNG);
+	iconDocumentRefresh.LoadFile(PATH_SILKA"reload.png", wxBITMAP_TYPE_PNG);
 	iconShapeCube.LoadFile("resource/shape-cube.png", wxBITMAP_TYPE_PNG);
 	iconShapeSphere.LoadFile("resource/shape-sphere.png", wxBITMAP_TYPE_PNG);
 	iconShapePlane.LoadFile("resource/shape-plane.png", wxBITMAP_TYPE_PNG);
@@ -89,8 +89,13 @@ CMaterialEditorFrame::CMaterialEditorFrame(const wxString & title, const wxPoint
 	menuFile->Append(wxID_EXIT);
 
 	wxMenu *menuEdit = new wxMenu;
+	menuEdit->Append(wxID_UNDO);
+	menuEdit->Append(wxID_REDO);
+	menuEdit->AppendSeparator();
 
 	wxMenu *menuView = new wxMenu;
+	menuView->Append(FRAME_EVENT_RELOAD, "&Reload material");
+	menuView->AppendSeparator();
 	menuView->AppendCheckItem(ID_BUTTON_SPHERE, "Sphere");
 	menuView->AppendCheckItem(FRAME_EVENT_CUBE, "Cube");
 	menuView->AppendCheckItem(ID_BUTTON_PLANE, "Plane");
@@ -120,34 +125,42 @@ CMaterialEditorFrame::CMaterialEditorFrame(const wxString & title, const wxPoint
 	timer = new wxTimer(this);
 
 	// Create the toolbar...
-	
-	wxAuiToolBar *toolbar = new wxAuiToolBar(this);
-	toolbar->AddTool(wxID_NEW, "New material", iconDocumentNew);
-	toolbar->AddTool(wxID_OPEN, "Open material", largeOpen, "Open an existing material");
-	toolbar->AddTool(wxID_SAVE, "Save material", iconDocumentSave, "Save the current material");
-	toolbar->AddSeparator();
-	toolbar->AddTool(wxID_UNDO, "Undo", iconDocumentUndo, "Undo changes");
-	toolbar->AddTool(wxID_REDO, "Redo", iconDocumentRedo, "Redo changes");
-	toolbar->AddTool(FRAME_EVENT_RELOAD, "Reload material", iconDocumentRefresh, "Reload the material");
-	toolbar->AddSeparator();
-	toolbar->AddTool(ID_BUTTON_SPHERE, "Sphere", iconShapeSphere, "Sphere shape");
-	toolbar->AddTool(FRAME_EVENT_CUBE, "Cube", iconShapeCube, "Cube shape");
-	toolbar->AddTool(ID_BUTTON_PLANE, "Plane", iconShapePlane, "Plane shape");
-	toolbar->AddSeparator();
-	toolbar->AddTool(ID_WINDOW_PAUSE, "Pause", iconMediaPause, "Pause simulation");
-	toolbar->AddTool(ID_WINDOW_PLAY, "Play", iconMediaPlay, "Play simulation");
-	toolbar->Realize();
 
 	wxAuiPaneInfo toolbarInfo;
 	toolbarInfo.Caption("Toolbar");
 	toolbarInfo.ToolbarPane();
 	toolbarInfo.Top();
-	toolbarInfo.Movable(false);
-	toolbarInfo.Floatable(false);
-	toolbarInfo.Dockable(false);
-	toolbarInfo.MinSize(wxSize(GetSize().GetWidth(),16));
-	toolbarInfo.MaxSize(wxSize(GetSize().GetWidth(),32));
-	manager->AddPane(toolbar, toolbarInfo);
+	//	toolbarInfo.Movable(false);
+	//	toolbarInfo.Floatable(false);
+	//	toolbarInfo.Dockable(false);
+	//	toolbarInfo.MinSize(wxSize(GetSize().GetWidth(),16));
+	//	toolbarInfo.MaxSize(wxSize(GetSize().GetWidth(),32));
+	
+	wxAuiToolBar *fileToolbar = new wxAuiToolBar(this);
+	fileToolbar->AddTool(wxID_NEW, "New material", iconDocumentNew);
+	fileToolbar->AddTool(wxID_OPEN, "Open material", largeOpen, "Open an existing material");
+	fileToolbar->AddTool(wxID_SAVE, "Save material", iconDocumentSave, "Save the current material");
+	fileToolbar->Realize();
+
+	wxAuiToolBar *editToolbar = new wxAuiToolBar(this);
+	editToolbar->AddTool(wxID_UNDO, "Undo", iconDocumentUndo, "Undo changes");
+	editToolbar->AddTool(wxID_REDO, "Redo", iconDocumentRedo, "Redo changes");
+	editToolbar->Realize();
+
+	wxAuiToolBar *viewToolbar = new wxAuiToolBar(this);
+	viewToolbar->AddTool(FRAME_EVENT_RELOAD, "Reload material", iconDocumentRefresh, "Reload the material");
+	viewToolbar->AddSeparator();
+	viewToolbar->AddTool(ID_BUTTON_SPHERE, "Sphere", iconShapeSphere, "Sphere shape");
+	viewToolbar->AddTool(FRAME_EVENT_CUBE, "Cube", iconShapeCube, "Cube shape");
+	viewToolbar->AddTool(ID_BUTTON_PLANE, "Plane", iconShapePlane, "Plane shape");
+	viewToolbar->AddSeparator();
+	viewToolbar->AddTool(ID_WINDOW_PAUSE, "Pause", iconMediaPause, "Pause simulation");
+	viewToolbar->AddTool(ID_WINDOW_PLAY, "Play", iconMediaPlay, "Play simulation");
+	viewToolbar->Realize();
+
+	manager->AddPane(fileToolbar, toolbarInfo);
+	manager->AddPane(editToolbar, toolbarInfo);
+	manager->AddPane(viewToolbar, toolbarInfo);
 
 	// Create the engine viewport...
 
@@ -266,7 +279,12 @@ void CMaterialEditorFrame::OnReload(wxCommandEvent &event)
 	if (!current)
 		return;
 
-	Material_t *reloadedMat = engine->LoadMaterial(current->cPath);
+	char cPath[PLATFORM_MAX_PATH];
+	strcpy(cPath, current->cPath);
+
+	engine->UnloadMaterial(current);
+
+	Material_t *reloadedMat = engine->LoadMaterial(cPath);
 	if (reloadedMat)
 	{
 		engine->MaterialEditorDisplay(reloadedMat);
@@ -292,6 +310,11 @@ void CMaterialEditorFrame::OnOpen(wxCommandEvent &event)
 	{
 		wxString filename = fileDialog->GetFilename();
 		filename.RemoveLast(9);
+
+		// Unload the current material.
+		Material_t *current = editorMaterialProperties->GetCurrent();
+		if (current)
+			engine->UnloadMaterial(current);
 
 		Material_t *newMat = engine->LoadMaterial(filename);
 		if (newMat)

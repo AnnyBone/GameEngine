@@ -29,6 +29,7 @@
 #define	MATERIALEDITOR_LOG		"editor"
 
 #define	PATH_SILK	"resource/silk/"
+#define	PATH_SILKA	"resource/silka/"
 
 extern "C" {
 #include "SharedEngine.h"

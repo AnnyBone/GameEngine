@@ -88,20 +88,10 @@ void CMaterialEditorMaterialGlobalProperties::Update()
 		notris->SetValue(true);
 	else
 		notris->SetValue(false);
-
-	int i; 
-	for (i = 0; i < currentMaterial->iSkins; i++)
-	{
-		AppendIn(skinCategory, new wxIntProperty("test"));
-	}
-
-	CenterSplitter(true);
 }
 
 void CMaterialEditorMaterialGlobalProperties::SetCurrentMaterial(Material_t *newMaterial)
 {
-	if (currentMaterial)
-		engine->UnloadMaterial(currentMaterial);
 	currentMaterial = newMaterial;
 }
 
