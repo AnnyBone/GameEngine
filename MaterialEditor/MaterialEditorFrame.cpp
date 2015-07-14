@@ -13,7 +13,7 @@ enum
 	ID_WINDOW_PLAY,			// Play simulation.
 	ID_WINDOW_PAUSE,		// Pause simulation.
 
-	ID_BUTTON_CUBE,
+	FRAME_EVENT_CUBE,
 	ID_BUTTON_SPHERE,
 	ID_BUTTON_PLANE
 };
@@ -90,6 +90,11 @@ CMaterialEditorFrame::CMaterialEditorFrame(const wxString & title, const wxPoint
 
 	wxMenu *menuEdit = new wxMenu;
 
+	wxMenu *menuView = new wxMenu;
+	menuView->AppendCheckItem(ID_BUTTON_SPHERE, "Sphere");
+	menuView->AppendCheckItem(FRAME_EVENT_CUBE, "Cube");
+	menuView->AppendCheckItem(ID_BUTTON_PLANE, "Plane");
+
 	wxMenu *menuWindow = new wxMenu;
 	windowShowConsole = menuWindow->AppendCheckItem(FRAME_EVENT_SHOWCONSOLE, "&Console");
 	windowShowProperties = menuWindow->AppendCheckItem(ID_WINDOW_PROPERTIES, "&Properties");
@@ -100,6 +105,7 @@ CMaterialEditorFrame::CMaterialEditorFrame(const wxString & title, const wxPoint
 	wxMenuBar *menuBar = new wxMenuBar;
 	menuBar->Append(menuFile, "&File");
 	menuBar->Append(menuEdit, "&Edit");
+	menuBar->Append(menuView, "&View");
 	menuBar->Append(menuWindow, "&Window");
 	menuBar->Append(menuHelp, "&Help");
 	SetMenuBar(menuBar);
@@ -124,8 +130,8 @@ CMaterialEditorFrame::CMaterialEditorFrame(const wxString & title, const wxPoint
 	toolbar->AddTool(wxID_REDO, "Redo", iconDocumentRedo, "Redo changes");
 	toolbar->AddTool(FRAME_EVENT_RELOAD, "Reload material", iconDocumentRefresh, "Reload the material");
 	toolbar->AddSeparator();
-	toolbar->AddTool(ID_BUTTON_CUBE, "Cube", iconShapeCube, "Cube shape");
 	toolbar->AddTool(ID_BUTTON_SPHERE, "Sphere", iconShapeSphere, "Sphere shape");
+	toolbar->AddTool(FRAME_EVENT_CUBE, "Cube", iconShapeCube, "Cube shape");
 	toolbar->AddTool(ID_BUTTON_PLANE, "Plane", iconShapePlane, "Plane shape");
 	toolbar->AddSeparator();
 	toolbar->AddTool(ID_WINDOW_PAUSE, "Pause", iconMediaPause, "Pause simulation");
@@ -212,6 +218,7 @@ void CMaterialEditorFrame::InitializeConsoleVariables()
 
 void CMaterialEditorFrame::StartEngineLoop()
 {
+	// TODO: This isn't working...
 	if (!cvEditorShowConsole.bValue)
 	{
 		manager->GetPane(editorConsolePanel).Show(false);

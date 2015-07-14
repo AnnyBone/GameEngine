@@ -82,7 +82,7 @@ void MaterialEditor_Initialize(void)
 	mPreviewEntity->origin[0] = 50.0f;
 	mPreviewEntity->origin[1] = 0;
 	mPreviewEntity->origin[2] = 0;
-	mPreviewEntity->model = mCubeModel;
+	mPreviewEntity->model = mSphereModel;
 
 	bMaterialEditorInitialized = true;
 }
@@ -181,9 +181,6 @@ void MaterialEditor_Display(Material_t *mDisplayMaterial)
 		Con_Warning("The editor hasn't been initialized!\n");
 		return;
 	}
-
-	if (mActiveMaterial)
-		Material_Clear(mActiveMaterial);
 
 	mActiveMaterial = mDisplayMaterial;
 	if (!mActiveMaterial)

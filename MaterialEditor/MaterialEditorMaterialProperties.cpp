@@ -100,6 +100,8 @@ void CMaterialEditorMaterialGlobalProperties::Update()
 
 void CMaterialEditorMaterialGlobalProperties::SetCurrentMaterial(Material_t *newMaterial)
 {
+	if (currentMaterial)
+		engine->UnloadMaterial(currentMaterial);
 	currentMaterial = newMaterial;
 }
 
