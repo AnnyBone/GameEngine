@@ -2,39 +2,47 @@
 
 #include "MaterialEditorMaterialProperties.h"
 
+enum
+{
+	MATERIAL_EVENT_GLOBAL
+};
+
 CMaterialEditorMaterialGlobalProperties::CMaterialEditorMaterialGlobalProperties(wxWindow *parent)
-	: wxPropertyGrid(parent)
+: wxPropertyGrid(parent)
 {
 	currentMaterial = NULL;
 
 	name = new wxStringProperty("Name","name");
 	path = new wxStringProperty("Path", "path");
 	skins = new wxIntProperty("Skins","skins");
-	animationSpeed = new wxFloatProperty("Animation Speed");
-	alpha = new wxFloatProperty("Alpha");
-	preserve = new wxBoolProperty("Preserve");
-	useAlpha = new wxBoolProperty("Alpha-Tested");
+	animationSpeed = new wxFloatProperty("Animation Speed", "animspeed");
+	alpha = new wxFloatProperty("Alpha", "alpha");
+	preserve = new wxBoolProperty("Preserve", "preserve");
+	useAlpha = new wxBoolProperty("Alpha-Tested", "alphatest");
 	blend = new wxBoolProperty("Blend", "blend");
-	animated = new wxBoolProperty("Animated");
-	mirror = new wxBoolProperty("Mirror");
-	nearest = new wxBoolProperty("Nearest");
-	water = new wxBoolProperty("Water");
-	notris = new wxBoolProperty("Override Wireframe");
+	animated = new wxBoolProperty("Animated", "animated");
+	mirror = new wxBoolProperty("Mirror", "mirror");
+	nearest = new wxBoolProperty("Nearest", "nearest");
+	water = new wxBoolProperty("Water", "water");
+	notris = new wxBoolProperty("Override Wireframe", "wireframe");
 
-	Append(new wxPropertyCategory("Global"));
-	Append(name);
-	Append(path);
-	Append(skins);
-	Append(animationSpeed);
-	Append(alpha);
-	Append(preserve);
-	Append(useAlpha);
-	Append(blend);
-	Append(animated);
-	Append(mirror);
-	Append(nearest);
-	Append(water);
-	Append(notris);
+	materialCategory = Append(new wxPropertyCategory("Material"));
+	AppendIn(materialCategory, name);
+	AppendIn(materialCategory, path);
+	AppendIn(materialCategory, animationSpeed);
+	AppendIn(materialCategory, alpha);
+	AppendIn(materialCategory, preserve);
+	AppendIn(materialCategory, useAlpha);
+	AppendIn(materialCategory, blend);
+	AppendIn(materialCategory, animated);
+	AppendIn(materialCategory, mirror);
+	AppendIn(materialCategory, nearest);
+	AppendIn(materialCategory, water);
+	AppendIn(materialCategory, notris);
+
+	//skinCategory = AppendIn(materialCategory, skins);
+
+	// TODO: skin category class...
 
 	SetSize(wxSize(300, wxDefaultSize.y));
 
@@ -43,6 +51,17 @@ CMaterialEditorMaterialGlobalProperties::CMaterialEditorMaterialGlobalProperties
 
 CMaterialEditorMaterialGlobalProperties::~CMaterialEditorMaterialGlobalProperties()
 {
+}
+
+void CMaterialEditorMaterialGlobalProperties::OnChanged(wxPropertyGridEvent &event)
+{
+	// Ignore if we don't have anything loaded.
+	if (!currentMaterial)
+		return;
+
+	wxPGProperty *property = event.GetProperty();
+	if (!strcmp(event.GetPropertyName(), "animspeed"))
+		currentMaterial->fAnimationSpeed = event.GetPropertyValue().GetDouble();
 }
 
 void CMaterialEditorMaterialGlobalProperties::Update()
@@ -73,8 +92,10 @@ void CMaterialEditorMaterialGlobalProperties::Update()
 	int i; 
 	for (i = 0; i < currentMaterial->iSkins; i++)
 	{
-
+		AppendIn(skinCategory, new wxIntProperty("test"));
 	}
+
+	CenterSplitter(true);
 }
 
 void CMaterialEditorMaterialGlobalProperties::SetCurrentMaterial(Material_t *newMaterial)

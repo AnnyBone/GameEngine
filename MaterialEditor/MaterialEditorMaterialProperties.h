@@ -11,6 +11,12 @@ public:
 	Material_t *GetCurrent();
 
 private:
+	void OnChanged(wxPropertyGridEvent &event);
+
+	wxPGProperty 
+		*materialCategory,
+		*skinCategory;
+
 	wxStringProperty* name;
 	wxStringProperty* path;
 
@@ -29,5 +35,6 @@ private:
 	wxFloatProperty* alpha;
 
 	Material_t *currentMaterial;
+
 };
 

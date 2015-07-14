@@ -34,6 +34,10 @@ private:
 	void OnKey(wxKeyEvent &event);
 	void OnTimer(wxTimerEvent &event);
 
+	// Window
+	wxMenuItem
+		*windowShowConsole;
+
 	wxBitmap 
 		largeOpen,
 		largeScriptEdit;

@@ -34,7 +34,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Material Editor", "Material
 		{5588B942-90A0-63A2-3369-523F456D79C5} = {5588B942-90A0-63A2-3369-523F456D79C5}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Platform", "PlatformLibrary\Platform.vcxproj", "{DDDBE2D3-7AFE-4CBF-8DE5-636374F63DF2}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Platform", "platform\Platform.vcxproj", "{DDDBE2D3-7AFE-4CBF-8DE5-636374F63DF2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

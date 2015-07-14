@@ -90,7 +90,7 @@ CMaterialEditorFrame::CMaterialEditorFrame(const wxString & title, const wxPoint
 	wxMenu *menuEdit = new wxMenu;
 
 	wxMenu *menuWindow = new wxMenu;
-	menuWindow->AppendCheckItem(FRAME_EVENT_SHOWCONSOLE, "&Console");
+	windowShowConsole = menuWindow->AppendCheckItem(FRAME_EVENT_SHOWCONSOLE, "&Console");
 	menuWindow->AppendCheckItem(ID_WINDOW_PROPERTIES, "&Properties");
 
 	wxMenu *menuHelp = new wxMenu;
@@ -210,6 +210,8 @@ void CMaterialEditorFrame::InitializeConsoleVariables()
 
 	if (!cvEditorShowConsole.bValue)
 		editorConsolePanel->Show(false);
+	else
+		windowShowConsole->Check(true);
 }
 
 void CMaterialEditorFrame::StartEngineLoop()
@@ -314,17 +316,18 @@ void CMaterialEditorFrame::OnSave(wxCommandEvent &event)
 
 void CMaterialEditorFrame::OnConsole(wxCommandEvent &event)
 {
-	if (editorConsolePanel->IsShown())
+	if (manager->GetPane(editorConsolePanel).IsShown())
 	{
-		editorConsolePanel->Show(false);
-
+		manager->GetPane(editorConsolePanel).Show(false);
 		engine->SetConsoleVariable(cvEditorShowConsole.name, "0");
-		return;
+	}
+	else
+	{
+		manager->GetPane(editorConsolePanel).Show(true);
+		engine->SetConsoleVariable(cvEditorShowConsole.name, "1");
 	}
 
-	editorConsolePanel->Show(true);
-
-	engine->SetConsoleVariable(cvEditorShowConsole.name, "1");
+	manager->Update();
 }
 
 void CMaterialEditorFrame::OnProperties(wxCommandEvent &event)

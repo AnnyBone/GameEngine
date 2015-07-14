@@ -1316,7 +1316,7 @@ void Model_CalculateMD2Normals(model_t *model, MD2_t *md2)
 	MD2Frame_t *frame;
 	MD2Triangle_t *triangles;
 	MD2TriangleVertex_t *vertices;
-	int i, j, v;
+	int i, v;
 
 	frame = (MD2Frame_t*)((uint8_t*)md2 + md2->ofs_frames + md2->framesize);
 
