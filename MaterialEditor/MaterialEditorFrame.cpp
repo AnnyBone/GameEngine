@@ -35,7 +35,8 @@ EVT_TIMER(-1, CMaterialEditorFrame::OnTimer)
 wxEND_EVENT_TABLE()
 
 ConsoleVariable_t
-	cvEditorShowConsole = { "editor_showconsole", "1", true, false, "Can show/hide the console." };
+cvEditorShowProperties = { "editor_showproperties", "1", true, false, "Can show/hide the properties." },
+cvEditorShowConsole = { "editor_showconsole", "1", true, false, "Can show/hide the console." };
 
 CMaterialEditorFrame::CMaterialEditorFrame(const wxString & title, const wxPoint & pos, const wxSize & size)
 	: wxFrame(NULL, wxID_ANY, title, pos, size)
@@ -91,7 +92,7 @@ CMaterialEditorFrame::CMaterialEditorFrame(const wxString & title, const wxPoint
 
 	wxMenu *menuWindow = new wxMenu;
 	windowShowConsole = menuWindow->AppendCheckItem(FRAME_EVENT_SHOWCONSOLE, "&Console");
-	menuWindow->AppendCheckItem(ID_WINDOW_PROPERTIES, "&Properties");
+	windowShowProperties = menuWindow->AppendCheckItem(ID_WINDOW_PROPERTIES, "&Properties");
 
 	wxMenu *menuHelp = new wxMenu;
 	menuHelp->Append(wxID_ABOUT);
@@ -123,12 +124,12 @@ CMaterialEditorFrame::CMaterialEditorFrame(const wxString & title, const wxPoint
 	toolbar->AddTool(wxID_REDO, "Redo", iconDocumentRedo, "Redo changes");
 	toolbar->AddTool(FRAME_EVENT_RELOAD, "Reload material", iconDocumentRefresh, "Reload the material");
 	toolbar->AddSeparator();
-	toolbar->AddTool(ID_BUTTON_CUBE, "Cube", iconShapeCube, "Cube shape", wxITEM_CHECK);
-	toolbar->AddTool(ID_BUTTON_SPHERE, "Sphere", iconShapeSphere, "Sphere shape", wxITEM_CHECK);
-	toolbar->AddTool(ID_BUTTON_PLANE, "Plane", iconShapePlane, "Plane shape", wxITEM_CHECK);
+	toolbar->AddTool(ID_BUTTON_CUBE, "Cube", iconShapeCube, "Cube shape");
+	toolbar->AddTool(ID_BUTTON_SPHERE, "Sphere", iconShapeSphere, "Sphere shape");
+	toolbar->AddTool(ID_BUTTON_PLANE, "Plane", iconShapePlane, "Plane shape");
 	toolbar->AddSeparator();
-	toolbar->AddTool(ID_WINDOW_PAUSE, "Pause", iconMediaPause, "Pause simulation", wxITEM_CHECK);
-	toolbar->AddTool(ID_WINDOW_PLAY, "Play", iconMediaPlay, "Play simulation", wxITEM_CHECK);
+	toolbar->AddTool(ID_WINDOW_PAUSE, "Pause", iconMediaPause, "Pause simulation");
+	toolbar->AddTool(ID_WINDOW_PLAY, "Play", iconMediaPlay, "Play simulation");
 	toolbar->Realize();
 
 	wxAuiPaneInfo toolbarInfo;
@@ -159,8 +160,8 @@ CMaterialEditorFrame::CMaterialEditorFrame(const wxString & title, const wxPoint
 		WX_GL_SAMPLE_BUFFERS, 1
 		//WX_GL_DOUBLEBUFFER,	1,
 	};
-	editorViewport = new CMaterialEditorRenderCanvas(this, attributes);
 
+	editorViewport = new CMaterialEditorRenderCanvas(this, attributes);
 	wxAuiPaneInfo viewportInfo;
 	viewportInfo.Caption("Viewport");
 	viewportInfo.Center();
@@ -174,7 +175,6 @@ CMaterialEditorFrame::CMaterialEditorFrame(const wxString & title, const wxPoint
 	// Create the console...
 	
 	editorConsolePanel = new CMaterialEditorConsolePanel(this);
-
 	wxAuiPaneInfo consoleInfo;
 	consoleInfo.Caption("Console");
 	consoleInfo.Bottom();
@@ -187,7 +187,6 @@ CMaterialEditorFrame::CMaterialEditorFrame(const wxString & title, const wxPoint
 	// Create the material props...
 
 	editorMaterialProperties = new CMaterialEditorMaterialGlobalProperties(this);
-	
 	wxAuiPaneInfo propertiesInfo;
 	propertiesInfo.Caption("Properties");
 	propertiesInfo.CloseButton(false);
@@ -206,16 +205,21 @@ CMaterialEditorFrame::~CMaterialEditorFrame()
 
 void CMaterialEditorFrame::InitializeConsoleVariables()
 {
+	// TODO: These need to be able to update the editor, when modified.
 	engine->RegisterConsoleVariable(&cvEditorShowConsole, NULL);
-
-	if (!cvEditorShowConsole.bValue)
-		editorConsolePanel->Show(false);
-	else
-		windowShowConsole->Check(true);
+	engine->RegisterConsoleVariable(&cvEditorShowProperties, NULL);
 }
 
 void CMaterialEditorFrame::StartEngineLoop()
 {
+	if (!cvEditorShowConsole.bValue)
+	{
+		manager->GetPane(editorConsolePanel).Show(false);
+		manager->Update();
+	}
+	else
+		windowShowConsole->Check(true);
+
 	timer->Start();
 }
 
@@ -226,12 +230,12 @@ void CMaterialEditorFrame::StopEngineLoop()
 
 void CMaterialEditorFrame::OnPause(wxCommandEvent &event)
 {
-	engine->Print("IMPLEMENT ME!\n");
+	timer->Stop();
 }
 
 void CMaterialEditorFrame::OnPlay(wxCommandEvent &event)
 {
-	engine->Print("IMPLEMENT ME!\n");
+	timer->Start();
 }
 
 void CMaterialEditorFrame::OnTimer(wxTimerEvent &event)
@@ -297,6 +301,8 @@ void CMaterialEditorFrame::OnExit(wxCommandEvent &event)
 {
 	// Stop rendering!
 	StopEngineLoop();
+
+	engine->Shutdown();
 
 	// Close the frame and app.
 	Close(true);

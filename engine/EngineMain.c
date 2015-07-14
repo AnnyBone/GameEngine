@@ -62,6 +62,7 @@ pMODULE_EXPORT EngineExport_t *Engine_Main(EngineImport_t *mImport)
 
 	// Exports
 	eExport.Initialize = System_Main;
+	eExport.Shutdown = Host_Shutdown;
 	eExport.IsRunning = Engine_IsRunning;
 	eExport.SetViewportSize = Video_SetViewportSize;
 	eExport.Loop = System_Loop;

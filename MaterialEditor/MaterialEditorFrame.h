@@ -36,7 +36,8 @@ private:
 
 	// Window
 	wxMenuItem
-		*windowShowConsole;
+		*windowShowConsole,
+		*windowShowProperties;
 
 	wxBitmap 
 		largeOpen,
