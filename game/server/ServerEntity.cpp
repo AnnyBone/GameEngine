@@ -53,6 +53,12 @@ CServerEntity::CServerEntity()
 	Spawn();
 }
 
+CServerEntity::~CServerEntity()
+{
+	// Ensure that it's free before we delete ourself.
+	Free();
+}
+
 void CServerEntity::Spawn()
 {
 	// Check to see if we've already spawned.

@@ -1,7 +1,7 @@
 #ifndef __CMDLIB__
 #define __CMDLIB__
 
-#include "../platform/include/platform.h"
+#include "platform.h"
 
 #include <errno.h>
 #include <time.h>

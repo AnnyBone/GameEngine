@@ -27,7 +27,7 @@
 typedef struct
 {
 	// Host Information
-	char cLocalName[256]; // Current system username.
+	char cLocalName[PLATFORM_MAX_USER];	// Current system username.
 
 	char	
 		cMaterialPath[PLATFORM_MAX_PATH],

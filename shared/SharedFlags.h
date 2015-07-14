@@ -40,7 +40,7 @@
 	when a build is released publically.	*/
 #define ENGINE_VERSION_MAJOR	0
 #define ENGINE_VERSION_MINOR	3
-#define ENGINE_VERSION_BUILD	937	// 12/7/2015
+#define ENGINE_VERSION_BUILD	939	// 14/7/2015
 
 #define	LOG_GLOBAL	"engine"
 
@@ -52,7 +52,6 @@
 // Still currently used for some older code; switch it all to use uint8_t instead :)
 #define byte uint8_t
 
-// [27/9/2012] TODO: These were and still are temp, remove ~hogsy
 enum
 {
 	SERVER_CLIENTPOSTTHINK,

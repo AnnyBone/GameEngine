@@ -24,8 +24,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Menu", "menu\Menu.vcxproj",
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Game", "game\Game.vcxproj", "{6BA71186-7156-4A79-ABAD-FC46D4492EA0}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Generator", "generator\generator.vcxproj", "{3B3C7922-523E-4B2F-891D-D91898058A95}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documents", "Documents", "{41560D42-8883-417B-97E3-9F2847FA13CC}"
 	ProjectSection(SolutionItems) = preProject
 		TASKS.txt = TASKS.txt
@@ -35,6 +33,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Material Editor", "Material
 	ProjectSection(ProjectDependencies) = postProject
 		{5588B942-90A0-63A2-3369-523F456D79C5} = {5588B942-90A0-63A2-3369-523F456D79C5}
 	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Platform", "PlatformLibrary\Platform.vcxproj", "{DDDBE2D3-7AFE-4CBF-8DE5-636374F63DF2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -143,24 +143,6 @@ Global
 		{6BA71186-7156-4A79-ABAD-FC46D4492EA0}.Release|Win32.ActiveCfg = Debug (OpenKatana)|Win32
 		{6BA71186-7156-4A79-ABAD-FC46D4492EA0}.Release|Win32.Build.0 = Debug (OpenKatana)|Win32
 		{6BA71186-7156-4A79-ABAD-FC46D4492EA0}.Release|x64.ActiveCfg = Debug (OpenKatana)|Win32
-		{3B3C7922-523E-4B2F-891D-D91898058A95}.Debug (Adamas)|Win32.ActiveCfg = Debug|Win32
-		{3B3C7922-523E-4B2F-891D-D91898058A95}.Debug (Adamas)|Win32.Build.0 = Debug|Win32
-		{3B3C7922-523E-4B2F-891D-D91898058A95}.Debug (Adamas)|x64.ActiveCfg = Debug|Win32
-		{3B3C7922-523E-4B2F-891D-D91898058A95}.Debug (Devastator)|Win32.ActiveCfg = Debug|Win32
-		{3B3C7922-523E-4B2F-891D-D91898058A95}.Debug (Devastator)|Win32.Build.0 = Debug|Win32
-		{3B3C7922-523E-4B2F-891D-D91898058A95}.Debug (Devastator)|x64.ActiveCfg = Debug|Win32
-		{3B3C7922-523E-4B2F-891D-D91898058A95}.Debug (Ictus)|Win32.ActiveCfg = Debug|Win32
-		{3B3C7922-523E-4B2F-891D-D91898058A95}.Debug (Ictus)|Win32.Build.0 = Debug|Win32
-		{3B3C7922-523E-4B2F-891D-D91898058A95}.Debug (Ictus)|x64.ActiveCfg = Debug|Win32
-		{3B3C7922-523E-4B2F-891D-D91898058A95}.Debug (OpenKatana)|Win32.ActiveCfg = Debug|Win32
-		{3B3C7922-523E-4B2F-891D-D91898058A95}.Debug (OpenKatana)|Win32.Build.0 = Debug|Win32
-		{3B3C7922-523E-4B2F-891D-D91898058A95}.Debug (OpenKatana)|x64.ActiveCfg = Debug|Win32
-		{3B3C7922-523E-4B2F-891D-D91898058A95}.Debug|Win32.ActiveCfg = Debug|Win32
-		{3B3C7922-523E-4B2F-891D-D91898058A95}.Debug|Win32.Build.0 = Debug|Win32
-		{3B3C7922-523E-4B2F-891D-D91898058A95}.Debug|x64.ActiveCfg = Debug|Win32
-		{3B3C7922-523E-4B2F-891D-D91898058A95}.Release|Win32.ActiveCfg = Release|Win32
-		{3B3C7922-523E-4B2F-891D-D91898058A95}.Release|Win32.Build.0 = Release|Win32
-		{3B3C7922-523E-4B2F-891D-D91898058A95}.Release|x64.ActiveCfg = Release|Win32
 		{549FB9B3-C358-4A95-B768-6027A04F1985}.Debug (Adamas)|Win32.ActiveCfg = Debug|Win32
 		{549FB9B3-C358-4A95-B768-6027A04F1985}.Debug (Adamas)|Win32.Build.0 = Debug|Win32
 		{549FB9B3-C358-4A95-B768-6027A04F1985}.Debug (Adamas)|x64.ActiveCfg = Release|Win32
@@ -183,6 +165,30 @@ Global
 		{549FB9B3-C358-4A95-B768-6027A04F1985}.Release|Win32.ActiveCfg = Release|Win32
 		{549FB9B3-C358-4A95-B768-6027A04F1985}.Release|Win32.Build.0 = Release|Win32
 		{549FB9B3-C358-4A95-B768-6027A04F1985}.Release|x64.ActiveCfg = Release|Win32
+		{DDDBE2D3-7AFE-4CBF-8DE5-636374F63DF2}.Debug (Adamas)|Win32.ActiveCfg = Debug (Ictus)|Win32
+		{DDDBE2D3-7AFE-4CBF-8DE5-636374F63DF2}.Debug (Adamas)|Win32.Build.0 = Debug (Ictus)|Win32
+		{DDDBE2D3-7AFE-4CBF-8DE5-636374F63DF2}.Debug (Adamas)|x64.ActiveCfg = Debug (Ictus)|x64
+		{DDDBE2D3-7AFE-4CBF-8DE5-636374F63DF2}.Debug (Adamas)|x64.Build.0 = Debug (Ictus)|x64
+		{DDDBE2D3-7AFE-4CBF-8DE5-636374F63DF2}.Debug (Devastator)|Win32.ActiveCfg = Debug (Ictus)|Win32
+		{DDDBE2D3-7AFE-4CBF-8DE5-636374F63DF2}.Debug (Devastator)|Win32.Build.0 = Debug (Ictus)|Win32
+		{DDDBE2D3-7AFE-4CBF-8DE5-636374F63DF2}.Debug (Devastator)|x64.ActiveCfg = Debug (Ictus)|x64
+		{DDDBE2D3-7AFE-4CBF-8DE5-636374F63DF2}.Debug (Devastator)|x64.Build.0 = Debug (Ictus)|x64
+		{DDDBE2D3-7AFE-4CBF-8DE5-636374F63DF2}.Debug (Ictus)|Win32.ActiveCfg = Debug (Ictus)|Win32
+		{DDDBE2D3-7AFE-4CBF-8DE5-636374F63DF2}.Debug (Ictus)|Win32.Build.0 = Debug (Ictus)|Win32
+		{DDDBE2D3-7AFE-4CBF-8DE5-636374F63DF2}.Debug (Ictus)|x64.ActiveCfg = Debug (Ictus)|x64
+		{DDDBE2D3-7AFE-4CBF-8DE5-636374F63DF2}.Debug (Ictus)|x64.Build.0 = Debug (Ictus)|x64
+		{DDDBE2D3-7AFE-4CBF-8DE5-636374F63DF2}.Debug (OpenKatana)|Win32.ActiveCfg = Debug (Ictus)|Win32
+		{DDDBE2D3-7AFE-4CBF-8DE5-636374F63DF2}.Debug (OpenKatana)|Win32.Build.0 = Debug (Ictus)|Win32
+		{DDDBE2D3-7AFE-4CBF-8DE5-636374F63DF2}.Debug (OpenKatana)|x64.ActiveCfg = Debug (Ictus)|x64
+		{DDDBE2D3-7AFE-4CBF-8DE5-636374F63DF2}.Debug (OpenKatana)|x64.Build.0 = Debug (Ictus)|x64
+		{DDDBE2D3-7AFE-4CBF-8DE5-636374F63DF2}.Debug|Win32.ActiveCfg = Debug|Win32
+		{DDDBE2D3-7AFE-4CBF-8DE5-636374F63DF2}.Debug|Win32.Build.0 = Debug|Win32
+		{DDDBE2D3-7AFE-4CBF-8DE5-636374F63DF2}.Debug|x64.ActiveCfg = Debug|x64
+		{DDDBE2D3-7AFE-4CBF-8DE5-636374F63DF2}.Debug|x64.Build.0 = Debug|x64
+		{DDDBE2D3-7AFE-4CBF-8DE5-636374F63DF2}.Release|Win32.ActiveCfg = Release|Win32
+		{DDDBE2D3-7AFE-4CBF-8DE5-636374F63DF2}.Release|Win32.Build.0 = Release|Win32
+		{DDDBE2D3-7AFE-4CBF-8DE5-636374F63DF2}.Release|x64.ActiveCfg = Release|x64
+		{DDDBE2D3-7AFE-4CBF-8DE5-636374F63DF2}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -192,7 +198,7 @@ Global
 		{5588B942-90A0-63A2-3369-523F456D79C5} = {C752AD1B-A414-4403-A927-1F6D033C9418}
 		{5A2253BD-BDF0-4F0C-A53F-382D3EB5C4BE} = {C752AD1B-A414-4403-A927-1F6D033C9418}
 		{6BA71186-7156-4A79-ABAD-FC46D4492EA0} = {C752AD1B-A414-4403-A927-1F6D033C9418}
-		{3B3C7922-523E-4B2F-891D-D91898058A95} = {F8F2B76F-AEE3-4130-9A78-94BF985EACC2}
 		{549FB9B3-C358-4A95-B768-6027A04F1985} = {F8F2B76F-AEE3-4130-9A78-94BF985EACC2}
+		{DDDBE2D3-7AFE-4CBF-8DE5-636374F63DF2} = {A1423832-9C78-4437-AB29-7C59F21B1D4A}
 	EndGlobalSection
 EndGlobal

@@ -1,2 +1,2 @@
-@"%~dp0\Level.x86.exe" -nofill %1
+@"%~dp0\Level.exe" -nofill %1
 pause
