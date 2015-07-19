@@ -35,6 +35,8 @@ EVT_TIMER(-1, CMaterialEditorFrame::OnTimer)
 wxEND_EVENT_TABLE()
 
 ConsoleVariable_t
+cvEditorAutoReload = { "editor_ar", "1", true, false, "Enable or disable automatic reloading." },
+cvEditorAutoReloadDelay = { "editor_ar_delay", "5", true, false, "Delay before attempting to automatically reload content." },
 cvEditorShowProperties = { "editor_showproperties", "1", true, false, "Can show/hide the properties." },
 cvEditorShowConsole = { "editor_showconsole", "1", true, false, "Can show/hide the console." };
 
@@ -130,11 +132,6 @@ CMaterialEditorFrame::CMaterialEditorFrame(const wxString & title, const wxPoint
 	toolbarInfo.Caption("Toolbar");
 	toolbarInfo.ToolbarPane();
 	toolbarInfo.Top();
-	//	toolbarInfo.Movable(false);
-	//	toolbarInfo.Floatable(false);
-	//	toolbarInfo.Dockable(false);
-	//	toolbarInfo.MinSize(wxSize(GetSize().GetWidth(),16));
-	//	toolbarInfo.MaxSize(wxSize(GetSize().GetWidth(),32));
 	
 	wxAuiToolBar *fileToolbar = new wxAuiToolBar(this);
 	fileToolbar->AddTool(wxID_NEW, "New material", iconDocumentNew);
@@ -213,12 +210,17 @@ CMaterialEditorFrame::CMaterialEditorFrame(const wxString & title, const wxPoint
 	manager->AddPane(editorMaterialProperties, propertiesInfo);
 
 	manager->Update();
+
+	dAutoReloadDelay = 0;
+	dClientTime = 0;
 }
 
 CMaterialEditorFrame::~CMaterialEditorFrame()
 {
-	timer->Stop();
+	// Stop the engine from looping.
+	StopEngineLoop();
 
+	// Uninitialize the AUI manager.
 	manager->UnInit();
 }
 
@@ -227,6 +229,10 @@ void CMaterialEditorFrame::InitializeConsoleVariables()
 	// TODO: These need to be able to update the editor, when modified.
 	engine->RegisterConsoleVariable(&cvEditorShowConsole, NULL);
 	engine->RegisterConsoleVariable(&cvEditorShowProperties, NULL);
+	engine->RegisterConsoleVariable(&cvEditorAutoReload, NULL);
+	engine->RegisterConsoleVariable(&cvEditorAutoReloadDelay, NULL);
+
+	dAutoReloadDelay = cvEditorAutoReloadDelay.value;
 }
 
 void CMaterialEditorFrame::StartEngineLoop()
@@ -262,36 +268,31 @@ void CMaterialEditorFrame::OnTimer(wxTimerEvent &event)
 {
 	static int consoleOutLength = 0;
 
+	// TODO: Editor won't launch if engine isn't running... Can't we just make an assumption?
 	if (engine->IsRunning())
 	{
 		// Perform the main loop.
 		engine->Loop();
 
+		// Keep the client-time updated.
+		dClientTime = engine->GetClientTime();
+
 		// Draw the main viewport.
 		editorViewport->DrawFrame();
 		editorViewport->Refresh();
+	}
+
+	// Check to see if it's time to check for changes.
+	if (dAutoReloadDelay < dClientTime)
+	{
+		ReloadMaterial();
+		dAutoReloadDelay = dClientTime + cvEditorAutoReloadDelay.value;
 	}
 }
 
 void CMaterialEditorFrame::OnReload(wxCommandEvent &event)
 {
-	Material_t *current = editorMaterialProperties->GetCurrent();
-	if (!current)
-		return;
-
-	char cPath[PLATFORM_MAX_PATH];
-	strcpy(cPath, current->cPath);
-
-	engine->UnloadMaterial(current);
-
-	Material_t *reloadedMat = engine->LoadMaterial(cPath);
-	if (reloadedMat)
-	{
-		engine->MaterialEditorDisplay(reloadedMat);
-
-		editorMaterialProperties->SetCurrentMaterial(reloadedMat);
-		editorMaterialProperties->Update();
-	}
+	ReloadMaterial();
 }
 
 void CMaterialEditorFrame::OnOpen(wxCommandEvent &event)
@@ -315,12 +316,18 @@ void CMaterialEditorFrame::OnOpen(wxCommandEvent &event)
 		Material_t *current = editorMaterialProperties->GetCurrent();
 		if (current)
 			engine->UnloadMaterial(current);
-
+		
 		Material_t *newMat = engine->LoadMaterial(filename);
 		if (newMat)
 		{
+			// Update everything.
+			currentFilePath = fileDialog->GetPath();
+			lastTimeModified = currentTimeModified = pFileSystem_GetModifiedTime(currentFilePath);
+
+			// TODO: Handle this internally.
 			engine->MaterialEditorDisplay(newMat);
 
+			// TODO: This is dumb...
 			editorMaterialProperties->SetCurrentMaterial(newMat);
 			editorMaterialProperties->Update();
 		}
@@ -372,6 +379,37 @@ void CMaterialEditorFrame::OnProperties(wxCommandEvent &event)
 	propertyWindow->Show(!propertyWindow->IsShown());
 	propertyWindow->SetPosition(wxPoint(GetPosition().x - 256, GetPosition().y));
 #endif
+}
+
+/*	Reload the currently active material.
+*/
+void CMaterialEditorFrame::ReloadMaterial()
+{
+	Material_t *current = editorMaterialProperties->GetCurrent();
+	if (!current)
+		return;
+
+	// Ensure things have actually changed.
+	currentTimeModified = pFileSystem_GetModifiedTime(currentFilePath);
+	if (currentTimeModified == lastTimeModified)
+		return;
+
+	char cPath[PLATFORM_MAX_PATH];
+	strcpy(cPath, current->cPath);
+
+	engine->UnloadMaterial(current);
+
+	Material_t *reloadedMat = engine->LoadMaterial(cPath);
+	if (reloadedMat)
+	{
+		// Keep this up to date.
+		lastTimeModified = currentTimeModified;
+
+		engine->MaterialEditorDisplay(reloadedMat);
+
+		editorMaterialProperties->SetCurrentMaterial(reloadedMat);
+		editorMaterialProperties->Update();
+	}
 }
 
 void CMaterialEditorFrame::PrintMessage(char *text)

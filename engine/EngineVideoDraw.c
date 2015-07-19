@@ -560,8 +560,8 @@ void Draw_FadeScreen (void)
 */
 void Draw_BeginDisc(void)
 {
-	int			iViewport[4]; //johnfitz
-	canvastype	oldcanvas; //johnfitz
+	int	iViewport[4]; //johnfitz
+	VideoCanvasType_t oldcanvas; //johnfitz
 
 	//johnfitz -- canvas and matrix stuff
 	glGetIntegerv(GL_VIEWPORT,iViewport);
@@ -570,7 +570,7 @@ void Draw_BeginDisc(void)
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 
-	oldcanvas = (canvastype)currentcanvas;
+	oldcanvas = (VideoCanvasType_t)currentcanvas;
 	GL_SetCanvas (CANVAS_TOPRIGHT);
 	currentcanvas = oldcanvas; // a bit of a hack, since GL_SetCanvas doesn't know we are going to pop the stack
 	//johnfitz
@@ -658,7 +658,7 @@ void GL_SetCanvas (int newcanvas)
 
 void Draw_ResetCanvas(void)
 {
-	currentcanvas = (canvastype)-1;
+	currentcanvas = (VideoCanvasType_t)-1;
 
 	GL_SetCanvas(CANVAS_DEFAULT);
 

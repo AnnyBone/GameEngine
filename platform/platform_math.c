@@ -106,9 +106,9 @@ double Math_VectorLength(MathVector3f_t a)
 	return length;
 }
 
-vec_t Math_VectorNormalize(MathVector3f_t a)
+MathVectorf_t Math_VectorNormalize(MathVector3f_t a)
 {
-	vec_t	i, l = (vec_t)Math_VectorLength(a);
+	MathVectorf_t i, l = (MathVectorf_t)Math_VectorLength(a);
 	if (l)
 	{
 		i = 1.0f / l;
@@ -177,9 +177,9 @@ void Math_AngleVectors(MathVector3f_t angles, MathVector3f_t forward, MathVector
 	}
 }
 
-void Math_VectorAngles(const vec3_t forward, vec3_t angles)
+void Math_VectorAngles(const MathVector3f_t forward, MathVector3f_t angles)
 {
-	vec3_t temp;
+	MathVector3f_t temp;
 
 	temp[0] = forward[0];
 	temp[1] = forward[1];
@@ -190,33 +190,33 @@ void Math_VectorAngles(const vec3_t forward, vec3_t angles)
 	angles[ROLL] = 0;
 }
 
-vec_t Math_DotProduct(vec3_t a, vec3_t b)
+MathVectorf_t Math_DotProduct(MathVector3f_t a, MathVector3f_t b)
 {
 	return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
 }
 
-void _Math_VectorCopy(vec3_t a, vec3_t b)
+void _Math_VectorCopy(MathVector3f_t a, MathVector3f_t b)
 {
 	b[0] = a[0];
 	b[1] = a[1];
 	b[2] = a[2];
 }
 
-void _Math_VectorScale(vec3_t in, vec_t scale, vec3_t out)
+void _Math_VectorScale(MathVector3f_t in, vec_t scale, MathVector3f_t out)
 {
 	out[0] = in[0] * scale;
 	out[1] = in[1] * scale;
 	out[2] = in[2] * scale;
 }
 
-void _Math_VectorAdd(vec3_t a, vec3_t b, vec3_t c)
+void _Math_VectorAdd(MathVector3f_t a, MathVector3f_t b, MathVector3f_t c)
 {
 	c[0] = a[0] + b[0];
 	c[1] = a[1] + b[1];
 	c[2] = a[2] + b[2];
 }
 
-void _Math_VectorSubtract(vec3_t a, vec3_t b, vec3_t c)
+void _Math_VectorSubtract(MathVector3f_t a, MathVector3f_t b, MathVector3f_t c)
 {
 	c[0] = a[0] - b[0];
 	c[1] = a[1] - b[1];
@@ -224,15 +224,16 @@ void _Math_VectorSubtract(vec3_t a, vec3_t b, vec3_t c)
 }
 
 // [23/2/2013] Added Math_VectorMake ~eukos
-void Math_VectorMake(vec3_t veca, float scale, vec3_t vecb, vec3_t vecc)
+void Math_VectorMake(MathVector3f_t veca, float scale, MathVector3f_t vecb, MathVector3f_t vecc)
 {
 	vecc[0] = veca[0] + scale*vecb[0];
 	vecc[1] = veca[1] + scale*vecb[1];
 	vecc[2] = veca[2] + scale*vecb[2];
 }
 
-// [1/8/2012] Added Math_ColorNormalize (stolen from Quake 2) ~hogsy
-vec_t Math_ColorNormalize(vec3_t in, vec3_t out)
+/*	Stolen from Quake 2.
+*/
+MathVectorf_t Math_ColorNormalize(MathVector3f_t in, MathVector3f_t out)
 {
 	float	max, scale;
 
@@ -464,8 +465,8 @@ float Math_ExpPulse(float x, float k, float n)
 /*	Check to see if an area is intersecting another area.
 */
 bool Math_IsIntersecting(
-	MathVector3_t mvFirstMins, MathVector3_t mvFirstMaxs,
-	MathVector3_t mvSecondMins, MathVector3_t mvSecondMaxs)
+	MathVector3f_t mvFirstMins, MathVector3f_t mvFirstMaxs,
+	MathVector3f_t mvSecondMins, MathVector3f_t mvSecondMaxs)
 {
 	if (mvFirstMins[0] > mvSecondMaxs[0] ||
 		mvFirstMins[1] > mvSecondMaxs[1] ||

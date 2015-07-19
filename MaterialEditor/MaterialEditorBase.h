@@ -24,6 +24,7 @@
 #include "platform.h"
 #include "platform_math.h"
 #include "platform_module.h"
+#include "platform_filesystem.h"
 
 #define	MATERIALEDITOR_TITLE	"Material Editor"
 #define	MATERIALEDITOR_LOG		"editor"

@@ -5,8 +5,7 @@
 
 /*
 	Platform Library
-	Version 0.10
-
+	
 	This library includes standard platform headers,
 	gives you some standard functions to interact with
 	the system and includes defines for basic data-types that
@@ -49,37 +48,69 @@
 #endif
 
 #ifdef _WIN32	// Windows
-	// Windows Headers
-#	include <Windows.h>
-#	include <WindowsX.h>
-#	include <CommCtrl.h>
-#	include <direct.h>
+	// Headers
+#	ifndef pIGNORE_SHARED_HEADERS
+#		include <Windows.h>
+#		include <WindowsX.h>
+#		include <CommCtrl.h>
+#		include <direct.h>
+#		include <lmcons.h>
+#	endif
 
-	// Platform information
-#	define	PLATFORM_NAME		"WINDOWS"	// Platform name.
+	// Information
+#	define	PLATFORM_NAME	"WINDOWS"	// Platform name.
+
+	// Limits
 #	define	PLATFORM_MAX_PATH	MAX_PATH-1	// Maximum path length.
+#	define	PLATFORM_MAX_USER	UNLEN
 
 	// Other
-#	define	pINSTANCE	HINSTANCE       // Instance definition.
-#	define	pFARPROC	FARPROC			// Function pointer.
-#else	// Linux
-	// Linux Headers
-#	include <dirent.h>
-#	include <unistd.h>
-#	include <dlfcn.h>
+#	define	pINSTANCE	HINSTANCE	// Instance definition.
+#	define	pFARPROC	FARPROC		// Function pointer.
+#elif __APPLE__	// Mac OS X
+	// Information
+#	define	PLATFORM_NAME	"APPLE"
 
-	// Platform information
-#	define	PLATFORM_NAME		"LINUX" // Platform name.
-#	define	PLATFORM_MAX_PATH	256		// Maximum path length.
+	// Limits
+#	define	PLATFORM_MAX_PATH	256	// Supposedly "unlimited", but we'll limit this anyway.
+
+	// Other
+#	ifndef st_mtime
+#		define	st_mtime st_mtimespec.tv_sec
+#	endif
+#else	// Linux
+	// Headers
+#	ifndef pIGNORE_SHARED_HEADERS
+#		include <dirent.h>
+#		include <unistd.h>
+#		include <dlfcn.h>
+#	endif
+
+	// Information
+#	define	PLATFORM_NAME	"LINUX"
+
+	// Limits
+#	define	PLATFORM_MAX_PATH	256	// Maximum path length.
+#	define	PLATFORM_MAX_USER	32
 
 	// Other
 #	define	pINSTANCE	void *		// Instance definition.
 #	define	pFARPROC	void *		// Function pointer.
 #endif
 
-#define	pEXTERN_C extern "C"
+// Set the defaults if nothing's been set for any of these...
 
-#define	PLATFORM_MAX_USER	256			// Maximum length allowed for a username.
+#ifndef PLATFORM_NAME
+#	define	PLATFORM_NAME	"Unknown"
+#endif
+#ifndef PLATFORM_MAX_PATH
+#	define	PLATFORM_MAX_PATH	256
+#endif
+#ifndef PLATFORM_MAX_USER
+#	define	PLATFORM_MAX_USER	256			// Maximum length allowed for a username.
+#endif
+
+#define	pEXTERN_C extern "C"
 
 // Helper to allow us to determine the type of CPU; this is used for the module interfaces.
 #if defined(__amd64) || defined(__amd64__)
@@ -90,34 +121,34 @@
 
 /*
 	Boolean
-	The boolean data type doesn't exist in C, so this is
+	The boolean data type doesn't really exist in C, so this is
 	a custom implementation of it.
 */
 
 // These are probably what you're going to want to use.
 #ifndef __cplusplus
-#if 0	// Internal solution
-#ifdef bool
-#undef bool
-#endif
-#ifdef true
-#undef true
-#endif
-#ifdef false
-#undef false
-#endif
-typedef enum
-{
-	false,	// "false", nothing.
-	true	// "true", otherwise just a positive number.
-} PlatformBoolean_t;
-typedef PlatformBoolean_t bool;
-#else	// Using _Bool data type
-typedef _Bool bool;
+#	if 0	// Internal solution
+#		ifdef bool
+#			undef bool
+#		endif
+#		ifdef true
+#			undef true
+#		endif
+#		ifdef false
+#			undef false
+#		endif
+		typedef enum
+		{
+			false,	// "false", nothing.
+			true	// "true", otherwise just a positive number.
+		} PlatformBoolean_t;
+		typedef PlatformBoolean_t bool;
+#	else	// Using _Bool data type
+		typedef _Bool bool;
 
-#define	true 1
-#define false 0
-#endif
+#		define	true 1
+#		define false 0
+#	endif
 #endif
 
 // These are usually expected to be defined already, but in-case they're not then we define them here.
@@ -166,14 +197,14 @@ typedef	unsigned char pUCHAR;
 extern "C" {
 #endif
 
-extern	void	pError_Reset(void);								// Resets the error message to "null", so you can ensure you have the correct message from the library.
-extern	void	pError_Set(const char *ccMessage,...);			// Sets the error message, so we can grab it outside the library.
-extern	void	pError_SetFunction(const char *ccFunction,...);	// Sets the currently active function, for error reporting.
+	extern	void	pError_Reset(void);								// Resets the error message to "null", so you can ensure you have the correct message from the library.
+	extern	void	pError_Set(const char *ccMessage, ...);			// Sets the error message, so we can grab it outside the library.
+	extern	void	pError_SetFunction(const char *ccFunction, ...);	// Sets the currently active function, for error reporting.
 
-extern char *pError_SystemGet(void);							// Returns the error message currently given by the operating system.
-extern void pError_SystemReset(void);
+	extern char *pError_SystemGet(void);	// Returns the error message currently given by the operating system.
+	extern void pError_SystemReset(void);
 
-extern char	*pError_Get(void);									// Returns the last recorded error.
+	extern char	*pError_Get(void);	// Returns the last recorded error.
 
 #ifdef __cplusplus
 }

@@ -40,6 +40,9 @@ void	Model_Touch(char *cName);
 mleaf_t *Mod_PointInLeaf (float *p, model_t *model);
 byte	*Mod_LeafPVS (mleaf_t *leaf, model_t *model);
 
+MathVector_t Model_GenerateNormal(MathVector3f_t a, MathVector3f_t b, MathVector3f_t c);
+MathVector_t Model_GenerateNormal3f(float aX, float aY, float aZ,float bX, float bY, float bZ,float cX, float cY, float cZ);
+
 // OBJ Support
 void Model_DrawOBJ(entity_t *eEntity);
 

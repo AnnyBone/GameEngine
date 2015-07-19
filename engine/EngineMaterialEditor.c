@@ -25,9 +25,7 @@
 Material_t *mActiveMaterial = NULL; // This is the material we're currently editing.
 Material_t *mFloorMaterial;			// Material used for the floor plane.
 
-model_t *mCubeModel;
-model_t *mPlaneModel;
-model_t *mSphereModel;
+model_t *mCubeModel, *mPlaneModel, *mSphereModel;
 
 DynamicLight_t *dlMainLight;
 
@@ -82,7 +80,7 @@ void MaterialEditor_Initialize(void)
 	mPreviewEntity->origin[0] = 50.0f;
 	mPreviewEntity->origin[1] = 0;
 	mPreviewEntity->origin[2] = 0;
-	mPreviewEntity->model = mSphereModel;
+	mPreviewEntity->model = mCubeModel;
 
 	bMaterialEditorInitialized = true;
 }

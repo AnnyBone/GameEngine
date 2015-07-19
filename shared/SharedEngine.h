@@ -40,7 +40,7 @@ typedef enum
 	CANVAS_BOTTOMLEFT,
 	CANVAS_BOTTOMRIGHT,
 	CANVAS_TOPRIGHT
-} canvastype;
+} VideoCanvasType_t;
 
 /*	Functions exported from the engine.
 */
@@ -60,7 +60,12 @@ typedef struct
 	Material_t*(*LoadMaterial)(const char *cPath);
 	void(*UnloadMaterial)(Material_t *mMaterial);
 
-	// Console
+	// Client...
+
+	double(*GetClientTime)(void);
+
+	// Console...
+
 	void(*InsertConsoleCommand)(const char *cCommand);										// Sends the given command to the console.
 	void(*RegisterConsoleVariable)(ConsoleVariable_t *cvVariable, void(*Function)(void));	// Register a new console variable.
 	void(*SetConsoleVariable)(char *cVariableName, char *cValue);							// Set the value of an existing console variable.
@@ -68,7 +73,8 @@ typedef struct
 	void(*Print)(char *cMessage, ...);														// Prints a message to the console.
 	void(*PrintDev)(char *cMessage, ...);													// Prints a developer message to the console.
 
-	// Video
+	// Video...
+
 	void(*Video_PreFrame)(void);
 	void(*Video_PostFrame)(void);
 

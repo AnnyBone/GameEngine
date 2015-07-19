@@ -150,7 +150,9 @@ CVideoShader::CVideoShader(const char *path)
 }
 
 CVideoShader::~CVideoShader()
-{}
+{
+	Disable();
+}
 
 /*
 	State Handling

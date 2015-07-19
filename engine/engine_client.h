@@ -10,9 +10,7 @@ int Client_GetStat(ClientStat_t csStat);
 
 void Client_PrecacheResource(int iType,char *cResource);
 
-/*
-	Utilities
-*/
+double Client_GetTime(void);
 
 entity_t *Client_GetPlayerEntity(void);
 entity_t *Client_GetViewEntity(void);

@@ -9,6 +9,38 @@
 
 #include "platform_system.h"
 
+bool pFileSystem_IsModified(time_t tOldTime, const char *ccPath)
+{
+	if (!tOldTime)
+	{
+		pError_Set("Invalid time, skipping check!\n");
+		return false;
+	}
+
+	struct stat sAttributes;
+	if(stat(ccPath, &sAttributes) == -1)
+	{
+		pError_Set("Failed to get file stats!\n");
+		return false;
+	}
+	
+	if (sAttributes.st_mtime > tOldTime)
+		return true;
+	
+	return false;
+}
+
+time_t pFileSystem_GetModifiedTime(const char *ccPath)
+{
+	struct stat sAttributes;
+	if (stat(ccPath, &sAttributes) == -1)
+	{
+		pError_Set("Failed to get modification time!\n");
+		return;
+	}
+	return sAttributes.st_mtime;
+}
+
 void pFileSystem_UpdatePath(char *cPath)
 {
 	pFUNCTION_START

@@ -15,6 +15,9 @@ extern "C" {
 	extern void	pFileSystem_UpdatePath(char *cPath);
 
 	extern bool	pFileSystem_CreateDirectory(const char *ccPath);
+	extern bool pFileSystem_IsModified(time_t tOldTime, const char *ccPath);
+
+	extern time_t pFileSystem_GetModifiedTime(const char *ccPath);
 
 #ifdef __cplusplus
 }

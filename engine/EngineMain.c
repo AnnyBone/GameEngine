@@ -24,6 +24,8 @@
 #include "EngineVideoMaterial.h"
 #include "EngineEditor.h"
 
+#include "engine_client.h"
+
 #include "platform_module.h"
 
 bool Engine_IsRunning(void)
@@ -68,10 +70,14 @@ pMODULE_EXPORT EngineExport_t *Engine_Main(EngineImport_t *mImport)
 	eExport.Loop = System_Loop;
 	eExport.iVersion = ENGINE_VERSION;
 
+	// Client
+	eExport.GetClientTime = Client_GetTime;
+
 	eExport.GetBasePath = Engine_GetBasePath;
-	eExport.GetMaterialPath = Engine_GetMaterialPath;
 	eExport.GetVersion = Engine_GetVersion;
 
+	// Material
+	eExport.GetMaterialPath = Engine_GetMaterialPath;
 	eExport.LoadMaterial = Material_Load;
 	eExport.UnloadMaterial = Material_Clear;
 

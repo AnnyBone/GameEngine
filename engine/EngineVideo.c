@@ -166,7 +166,6 @@ void Video_Initialize(void)
 	Video.cGLVersion = (char*)glGetString(GL_VERSION);
 	Video.cGLExtensions = (char*)glGetString(GL_EXTENSIONS);
 
-	// [3/6/2013] Added to fix a bug on some systems when calling wglGetExtensionString* ~hogsy
 	GLeeInit();
 
 	Con_DPrintf(" Checking for extensions...\n");
@@ -1159,7 +1158,7 @@ unsigned int Video_ShaderConvertType(VideoShaderType_t vstType)
 
 void Video_PreFrame(void)
 {
-	VIDEO_FUNCTION_START(Video_PreFrame);
+	VIDEO_FUNCTION_START(Video_PreFrame)
 
 	GL_BeginRendering(&glx, &gly, &glwidth, &glheight);
 
@@ -1172,13 +1171,15 @@ void Video_PreFrame(void)
 
 	R_SetupScene();
 
-	VIDEO_FUNCTION_END;
+	Video_ShowBoundingBoxes();
+
+	VIDEO_FUNCTION_END
 }
 
 void Video_PostFrame(void)
 {
-	VIDEO_FUNCTION_START(Video_PostFrame);
-	VIDEO_FUNCTION_END;
+	VIDEO_FUNCTION_START(Video_PostFrame)
+	VIDEO_FUNCTION_END
 
 	if (Video.bDebugFrame)
 	{

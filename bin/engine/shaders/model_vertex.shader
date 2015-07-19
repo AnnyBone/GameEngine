@@ -8,16 +8,16 @@ uniform float vertexScale;
 
 void main()
 {
-	vec3 viewNormal = gl_Normal;
-	vec3 viewLightPosition = vec3(0.5, 0.5, 0.5) - gl_Vertex.xyz;
-	
-	float dist = length(viewLightPosition);
-	float attenuation = 1.0 / (1.0 + 0.045 * dist + 0.0075 * dist * dist);
-	float intensity = max(dot(viewNormal, normalize(viewLightPosition)), 0.1);
-	
-	diffuseColour = vec4(lightColour, 1.0) * intensity * attenuation * 4.0;
-	normalColour = vec4(gl_Normal.xyz, 1.0);
-
-	gl_TexCoord[0] = gl_TextureMatrix[0] * gl_MultiTexCoord0;
+	gl_TexCoord[0] = gl_MultiTexCoord0;
 	gl_Position = ftransform();
+	
+	vec3 viewVertex = normalize(gl_ModelViewMatrix * gl_Vertex);
+	vec3 viewNormal = normalize(gl_NormalMatrix * gl_Normal);
+	vec3 viewLightPosition = normalize(gl_NormalMatrix * lightPosition);
+	
+	float dist = distance(viewNormal, viewLightPosition);
+	
+	diffuseColour = vec4((lightColour * 2.0) * dist,1.0) * max(dot(viewNormal, viewLightPosition), 0.0);
+	
+	normalColour = vec4(gl_Normal, 1.0);
 }

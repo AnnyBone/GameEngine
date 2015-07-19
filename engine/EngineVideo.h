@@ -137,6 +137,9 @@ bool Video_GetCapability(unsigned int iCapability);
 #define	VIDEO_FUNCTION_END \
 }
 
+// Legacy
+void Video_ShowBoundingBoxes(void);
+
 unsigned int VideoLayer_GenerateVertexBuffer(void);
 
 void VideoLayer_DeleteBuffer(unsigned int uiBuffer);

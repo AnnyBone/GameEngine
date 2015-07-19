@@ -406,7 +406,9 @@ void R_EmitWirePoint (vec3_t origin)
 	glEnd();
 }
 
-void R_EmitWireBox(MathVector3f_t mins, MathVector3f_t maxs)
+void R_EmitWireBox(
+	MathVector3f_t mins, MathVector3f_t maxs,
+	float r, float g, float b)
 {
 	glBegin(GL_QUADS);
 	glVertex3f(mins[0],mins[1],maxs[2]);
@@ -435,7 +437,7 @@ void R_EmitWireBox(MathVector3f_t mins, MathVector3f_t maxs)
 	glVertex3f(mins[0],maxs[1],mins[2]);
 	glEnd();
 
-	glColor4f(0.2f,0,0.5f,1.0f);
+	glColor4f(r,g,b,1.0f);
 
 	glBegin(GL_LINES);
 	glVertex3fv(mins);
@@ -465,9 +467,32 @@ void R_EmitWireBox(MathVector3f_t mins, MathVector3f_t maxs)
 	glEnd();
 }
 
+void Video_DrawClientBoundingBox(ClientEntity_t *clEntity)
+{
+	MathVector3f_t vMins, vMaxs;
+
+	if (!clEntity->model || (clEntity == cl.viewentity && !chase_active.bValue) || (clEntity == &cl.viewent))
+		return;
+
+	Math_VectorAdd(clEntity->model->rmins, clEntity->origin, vMins);
+	Math_VectorAdd(clEntity->model->rmaxs, clEntity->origin, vMaxs);
+
+	switch (clEntity->model->mType)
+	{
+	case MODEL_TYPE_BSP:
+		// Only draw wires for the BSP, since otherwise it's difficult to see anything else.
+		glColor4f(0, 0, 0, 0);
+		R_EmitWireBox(vMins, vMaxs, 0, 1, 0);
+		break;
+	default:
+		glColor4f(0.5f, 0, 0, 0.5f);
+		R_EmitWireBox(vMins, vMaxs, 1, 0, 0);
+	}
+}
+
 /*	draw bounding boxes -- the server-side boxes, not the renderer cullboxes
 */
-void R_ShowBoundingBoxes(void)
+void Video_ShowBoundingBoxes(void)
 {
 	extern		ServerEntity_t *sv_player;
 	vec3_t				mins,maxs;
@@ -475,7 +500,7 @@ void R_ShowBoundingBoxes(void)
 	ServerEntity_t				*ed;
 	int					i;
 
-	if(!r_showbboxes.value || cl.maxclients > 1 || !r_drawentities.value || !sv.active)
+	if(!r_showbboxes.value || cl.maxclients > 1 || !r_drawentities.value || (!sv.active && !Global.bEmbeddedContext))
 		return;
 
     Video_DisableCapabilities(VIDEO_DEPTH_TEST|VIDEO_TEXTURE_2D);
@@ -486,7 +511,7 @@ void R_ShowBoundingBoxes(void)
 		if(ed == sv_player && !chase_active.value)
 			continue;
 
-		glColor3f(1.0f,1.0f,1.0f);
+		glColor3f(1,1,1);
 
 		R_EmitWirePoint (ed->v.origin);
 
@@ -495,29 +520,17 @@ void R_ShowBoundingBoxes(void)
 
 		glColor4f(0, 0.5f, 0, 0.5f);
 
-		R_EmitWireBox(mins,maxs);
+		R_EmitWireBox(mins,maxs, 1, 1, 1);
 	}
 
-	// Cycle through client-side entities.
+	// Cycle through client-side entities...
+
 	for (i = 0, clEntity = cl_entities; i < cl.num_entities; i++, clEntity++)
-	{
-		if (!clEntity->model || (clEntity == cl.viewentity && !chase_active.bValue) || (clEntity == &cl.viewent))
-			continue;
-		
-		Math_VectorAdd(clEntity->model->rmins, clEntity->origin, mins);
-		Math_VectorAdd(clEntity->model->rmaxs, clEntity->origin, maxs);
-
-		switch (clEntity->model->mType)
-		{
-		case MODEL_TYPE_BSP:
-			break;
-		default:
-			glColor4f(0.5f, 0, 0, 0.5f);
-			R_EmitWireBox(mins, maxs);
-		}
-	}
-
-	glColor3f(1.0f,1.0f,1.0f);
+		Video_DrawClientBoundingBox(clEntity);
+	for (i = 0, clEntity = cl_temp_entities; i < cl_numvisedicts; i++, clEntity++)
+		Video_DrawClientBoundingBox(clEntity);
+	
+	glColor3f(1,1,1);
 
     Video_DisableCapabilities(VIDEO_BLEND);
 	Video_EnableCapabilities(VIDEO_TEXTURE_2D|VIDEO_DEPTH_TEST);
@@ -602,7 +615,7 @@ void R_RenderScene(void)
 	Fog_DisableGFog();
 
 	R_DrawViewModel();
-	R_ShowBoundingBoxes();
+	Video_ShowBoundingBoxes();
 }
 
 void R_RenderView (void)

@@ -622,6 +622,13 @@ void Client_ListModelCache(void)
 			Con_Printf(" %s\n", cl.model_precache[i]->name);
 }
 
+/* General utility function for getting client time.
+*/
+double Client_GetTime(void)
+{
+	return cl.time;
+}
+
 void CL_Init (void)
 {
 	SZ_Alloc(&cls.message,1024);

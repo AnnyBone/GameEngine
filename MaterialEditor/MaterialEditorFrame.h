@@ -21,6 +21,7 @@ public:
 	void PrintError(char *text);
 
 private:
+	// Events
 	void OnOpen(wxCommandEvent &event);
 	void OnExit(wxCommandEvent &event);
 	void OnAbout(wxCommandEvent &event);
@@ -33,6 +34,12 @@ private:
 	void OnPlay(wxCommandEvent &event);
 	void OnKey(wxKeyEvent &event);
 	void OnTimer(wxTimerEvent &event);
+
+	void ReloadMaterial();
+
+	double 
+		dAutoReloadDelay,
+		dClientTime;
 
 	// Window
 	wxMenuItem
@@ -57,6 +64,11 @@ private:
 	wxTimer* timer;
 
 	wxAuiManager *manager;
+
+	time_t currentTimeModified;
+	time_t lastTimeModified;
+
+	wxString currentFilePath;
 
 	CMaterialEditorRenderCanvas *editorViewport;
 	CMaterialEditorMaterialGlobalProperties *editorMaterialProperties;
