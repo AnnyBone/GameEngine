@@ -1,7 +1,7 @@
 #include "MaterialEditorBase.h"
 
 #include "MaterialEditorRenderCanvas.h"
-#include "MaterialEditorApp.h"
+#include "EditorApp.h"
 
 /*
 	Render Canvas

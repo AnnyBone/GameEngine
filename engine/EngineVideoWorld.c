@@ -25,7 +25,7 @@
 
 #include "EngineVideo.h"
 
-extern cvar_t gl_fullbrights, r_drawflat, gl_overbright, r_oldwater, r_oldskyleaf, r_showtris; //johnfitz
+extern cvar_t gl_fullbrights, r_drawflat, r_oldwater, r_oldskyleaf, r_showtris; //johnfitz
 
 extern glpoly_t	*lightmap_polys[MAX_LIGHTMAPS];
 

@@ -22,6 +22,7 @@
 #define __ENGINEVIDEO__
 
 extern ConsoleVariable_t	
+	cvVideoLegacy,
 	cvVideoDrawModels,		// Should we draw models?
 	cvWidth,				// The width of our window (not reliable).
 	cvHeight,				// The height of our window (not reliable).
@@ -31,7 +32,7 @@ extern ConsoleVariable_t
 	cvVideoMirror,			// Toggles mirrors.
 	cvVideoPlayerShadow,	// Render players shadow.
 	cvVerticalSync,
-	gl_overbright,			// Enable overbrights?
+	cvVideoOverbright,		// Enable overbrights?
 	cvLitParticles;			// Should particles be lit or not?
 
 extern bool	bVideoIgnoreCapabilities;

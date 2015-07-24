@@ -468,8 +468,11 @@ typedef struct
 			bOpen,bWater;
 
 	float	fraction;		// time completed, 1.0 = didn't hit anything
+
 	MathVector3f_t	endpos;			// final position
+
 	plane_t	plane;			// surface normal at impact
+
 	ServerEntity_t	*ent;			// entity the surface is on
 } trace_t;
 

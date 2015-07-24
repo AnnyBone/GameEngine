@@ -16,6 +16,7 @@
 #include <wx/aui/auibar.h>
 #include <wx/splash.h>
 #include <wx/splitter.h>
+#include <wx/aboutdlg.h>
 
 // Shared Library
 #include "SharedFlags.h"
@@ -26,11 +27,13 @@
 #include "platform_module.h"
 #include "platform_filesystem.h"
 
-#define	MATERIALEDITOR_TITLE	"Material Editor"
+extern char cApplicationTitle[512];
+
+#define	EDITOR_TITLE	"Yokote"
 #define	MATERIALEDITOR_LOG		"editor"
 
-#define	PATH_SILK	"resource/silk/"
-#define	PATH_SILKA	"resource/silka/"
+#define	PATH_16ICONS	"resource/16x16/"
+#define	PATH_32ICONS	"resource/32x32/"
 
 extern "C" {
 #include "SharedEngine.h"

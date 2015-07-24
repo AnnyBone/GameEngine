@@ -13,7 +13,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{549FB9B3-C358-4A95-B768-6027A04F1985}</ProjectGuid>
     <RootNamespace>MaterialEditor</RootNamespace>
-    <ProjectName>Material Editor</ProjectName>
+    <ProjectName>Editor</ProjectName>
     <TargetPlatformVersion>8.1</TargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -76,7 +76,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="MaterialEditorApp.h" />
+    <ClInclude Include="EditorApp.h" />
     <ClInclude Include="MaterialEditorBase.h" />
     <ClInclude Include="MaterialEditorConsolePanel.h" />
     <ClInclude Include="MaterialEditorFrame.h" />
@@ -85,7 +85,7 @@
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="MaterialEditorApp.cpp" />
+    <ClCompile Include="EditorApp.cpp" />
     <ClCompile Include="MaterialEditorConsolePanel.cpp" />
     <ClCompile Include="MaterialEditorEngineInterface.cpp" />
     <ClCompile Include="MaterialEditorFrame.cpp" />

@@ -13,6 +13,16 @@ enum
 	ID_WINDOW_PLAY,			// Play simulation.
 	ID_WINDOW_PAUSE,		// Pause simulation.
 
+	FRAME_EVENT_SCRIPT,
+
+	// View
+	FRAME_EVENT_WIREFRAME,
+	FRAME_EVENT_FLAT,
+	FRAME_EVENT_TEXTURED,
+	FRAME_EVENT_LIT,
+
+	FRAME_EVENT_TRANSFORM,
+
 	FRAME_EVENT_CUBE,
 	ID_BUTTON_SPHERE,
 	ID_BUTTON_PLANE
@@ -29,6 +39,12 @@ EVT_MENU(ID_WINDOW_PROPERTIES, CMaterialEditorFrame::OnProperties)
 EVT_MENU(FRAME_EVENT_RELOAD, CMaterialEditorFrame::OnReload)
 EVT_MENU(ID_WINDOW_PLAY, CMaterialEditorFrame::OnPlay)
 EVT_MENU(ID_WINDOW_PAUSE, CMaterialEditorFrame::OnPause)
+
+// View
+EVT_MENU(FRAME_EVENT_WIREFRAME, CMaterialEditorFrame::OnViewMode)
+EVT_MENU(FRAME_EVENT_FLAT, CMaterialEditorFrame::OnViewMode)
+EVT_MENU(FRAME_EVENT_TEXTURED, CMaterialEditorFrame::OnViewMode)
+EVT_MENU(FRAME_EVENT_LIT, CMaterialEditorFrame::OnViewMode)
 
 EVT_TIMER(-1, CMaterialEditorFrame::OnTimer)
 
@@ -48,17 +64,19 @@ CMaterialEditorFrame::CMaterialEditorFrame(const wxString & title, const wxPoint
 	// Load all required icons...
 
 	wxImage::AddHandler(new wxPNGHandler);
-	iconDocumentNew.LoadFile(PATH_RESOURCES"16x16/actions/document-new.png", wxBITMAP_TYPE_PNG);
-	largeOpen.LoadFile(PATH_RESOURCES"16x16/actions/document-open.png", wxBITMAP_TYPE_PNG);
-	iconDocumentSave.LoadFile("resource/16x16/actions/document-save.png", wxBITMAP_TYPE_PNG);
-	iconDocumentUndo.LoadFile(PATH_SILK"arrow_undo.png", wxBITMAP_TYPE_PNG);
-	iconDocumentRedo.LoadFile(PATH_SILK"arrow_redo.png", wxBITMAP_TYPE_PNG);
-	iconMediaPause.LoadFile(PATH_SILK"control_pause.png", wxBITMAP_TYPE_PNG);
-	iconMediaPlay.LoadFile(PATH_SILK"control_play.png", wxBITMAP_TYPE_PNG);
-	iconDocumentRefresh.LoadFile(PATH_SILKA"reload.png", wxBITMAP_TYPE_PNG);
+	iconDocumentNew.LoadFile(PATH_16ICONS"actions/document-new.png", wxBITMAP_TYPE_PNG);
+	smallFileOpen.LoadFile(PATH_16ICONS"actions/document-open.png", wxBITMAP_TYPE_PNG);
+	iconDocumentSave.LoadFile(PATH_16ICONS"actions/document-save.png", wxBITMAP_TYPE_PNG);
+	iconDocumentUndo.LoadFile(PATH_16ICONS"actions/edit-undo.png", wxBITMAP_TYPE_PNG);
+	iconDocumentRedo.LoadFile(PATH_16ICONS"actions/edit-redo.png", wxBITMAP_TYPE_PNG);
+	iconMediaPause.LoadFile(PATH_16ICONS"actions/media-playback-pause.png", wxBITMAP_TYPE_PNG);
+	iconMediaPlay.LoadFile(PATH_16ICONS"actions/media-playback-start.png", wxBITMAP_TYPE_PNG);
+	iconDocumentRefresh.LoadFile(PATH_16ICONS"actions/view-refresh.png", wxBITMAP_TYPE_PNG);
 	iconShapeCube.LoadFile("resource/shape-cube.png", wxBITMAP_TYPE_PNG);
 	iconShapeSphere.LoadFile("resource/shape-sphere.png", wxBITMAP_TYPE_PNG);
 	iconShapePlane.LoadFile("resource/shape-plane.png", wxBITMAP_TYPE_PNG);
+	iconScriptEdit.LoadFile(PATH_16ICONS"apps/accessories-text-editor.png", wxBITMAP_TYPE_PNG);
+	smallTransform.LoadFile(PATH_16ICONS"actions/transform-move.png", wxBITMAP_TYPE_PNG);
 
 	pLog_Write(MATERIALEDITOR_LOG, "Setting frame icon...\n");
 
@@ -96,11 +114,22 @@ CMaterialEditorFrame::CMaterialEditorFrame(const wxString & title, const wxPoint
 	menuEdit->AppendSeparator();
 
 	wxMenu *menuView = new wxMenu;
-	menuView->Append(FRAME_EVENT_RELOAD, "&Reload material");
+	viewWireframe = menuView->AppendCheckItem(FRAME_EVENT_WIREFRAME, "&Wireframe");
+	viewFlat = menuView->AppendCheckItem(FRAME_EVENT_FLAT, "&Flat");
+	viewTextured = menuView->AppendCheckItem(FRAME_EVENT_TEXTURED, "Textured");
+	viewLit = menuView->AppendCheckItem(FRAME_EVENT_LIT, "&Lit");
+	menuView->AppendSeparator();
+	menuView->Append(FRAME_EVENT_RELOAD, "Reload material");
+	menuView->AppendSeparator();
+	menuView->AppendCheckItem(wxID_ANY, "&Transform");
+	menuView->AppendCheckItem(wxID_ANY, "&Rotate");
+	menuView->AppendCheckItem(wxID_ANY, "&Scale");
 	menuView->AppendSeparator();
 	menuView->AppendCheckItem(ID_BUTTON_SPHERE, "Sphere");
-	menuView->AppendCheckItem(FRAME_EVENT_CUBE, "Cube");
-	menuView->AppendCheckItem(ID_BUTTON_PLANE, "Plane");
+	menuView->AppendCheckItem(FRAME_EVENT_CUBE, "&Cube");
+	menuView->AppendCheckItem(ID_BUTTON_PLANE, "&Plane");
+
+	viewLit->Check(true);
 
 	wxMenu *menuWindow = new wxMenu;
 	windowShowConsole = menuWindow->AppendCheckItem(FRAME_EVENT_SHOWCONSOLE, "&Console");
@@ -133,17 +162,22 @@ CMaterialEditorFrame::CMaterialEditorFrame(const wxString & title, const wxPoint
 	toolbarInfo.ToolbarPane();
 	toolbarInfo.Top();
 	
+	// File
 	wxAuiToolBar *fileToolbar = new wxAuiToolBar(this);
 	fileToolbar->AddTool(wxID_NEW, "New material", iconDocumentNew);
-	fileToolbar->AddTool(wxID_OPEN, "Open material", largeOpen, "Open an existing material");
+	fileToolbar->AddTool(wxID_OPEN, "Open material", smallFileOpen, "Open an existing material");
 	fileToolbar->AddTool(wxID_SAVE, "Save material", iconDocumentSave, "Save the current material");
 	fileToolbar->Realize();
 
+	// Edit
 	wxAuiToolBar *editToolbar = new wxAuiToolBar(this);
 	editToolbar->AddTool(wxID_UNDO, "Undo", iconDocumentUndo, "Undo changes");
 	editToolbar->AddTool(wxID_REDO, "Redo", iconDocumentRedo, "Redo changes");
+	editToolbar->AddSeparator();
+	editToolbar->AddTool(FRAME_EVENT_SCRIPT, "Script", iconScriptEdit, "Modify script");
 	editToolbar->Realize();
 
+	// View
 	wxAuiToolBar *viewToolbar = new wxAuiToolBar(this);
 	viewToolbar->AddTool(FRAME_EVENT_RELOAD, "Reload material", iconDocumentRefresh, "Reload the material");
 	viewToolbar->AddSeparator();
@@ -290,6 +324,53 @@ void CMaterialEditorFrame::OnTimer(wxTimerEvent &event)
 	}
 }
 
+void CMaterialEditorFrame::OnViewMode(wxCommandEvent &event)
+{
+	switch (event.GetId())
+	{
+	case FRAME_EVENT_WIREFRAME:
+		viewFlat->Check(false);
+		viewLit->Check(false);
+		viewWireframe->Check(true);
+		viewTextured->Check(false);
+
+		engine->SetConsoleVariable("r_drawflat", "0");
+		engine->SetConsoleVariable("r_showtris", "1");
+		engine->SetConsoleVariable("r_fullbright", "0");
+		break;
+	case FRAME_EVENT_FLAT:
+		viewFlat->Check(true);
+		viewLit->Check(false);
+		viewWireframe->Check(false);
+		viewTextured->Check(false);
+
+		engine->SetConsoleVariable("r_drawflat", "1");
+		engine->SetConsoleVariable("r_showtris", "0");
+		engine->SetConsoleVariable("r_fullbright", "0");
+		break;
+	case FRAME_EVENT_TEXTURED:
+		viewFlat->Check(false);
+		viewLit->Check(false);
+		viewWireframe->Check(false);
+		viewTextured->Check(true);
+
+		engine->SetConsoleVariable("r_drawflat", "0");
+		engine->SetConsoleVariable("r_showtris", "0");
+		engine->SetConsoleVariable("r_fullbright", "1");
+		break;
+	case FRAME_EVENT_LIT:
+		viewFlat->Check(false);
+		viewLit->Check(true);
+		viewWireframe->Check(false);
+		viewTextured->Check(false);
+
+		engine->SetConsoleVariable("r_drawflat", "0");
+		engine->SetConsoleVariable("r_showtris", "0");
+		engine->SetConsoleVariable("r_fullbright", "0");
+		break;
+	}
+}
+
 void CMaterialEditorFrame::OnReload(wxCommandEvent &event)
 {
 	ReloadMaterial();
@@ -324,6 +405,8 @@ void CMaterialEditorFrame::OnOpen(wxCommandEvent &event)
 			currentFilePath = fileDialog->GetPath();
 			lastTimeModified = currentTimeModified = pFileSystem_GetModifiedTime(currentFilePath);
 
+			SetTitle(newMat->cName + wxString(" - ") + cApplicationTitle);
+
 			// TODO: Handle this internally.
 			engine->MaterialEditorDisplay(newMat);
 
@@ -347,11 +430,13 @@ void CMaterialEditorFrame::OnExit(wxCommandEvent &event)
 
 void CMaterialEditorFrame::OnAbout(wxCommandEvent &event)
 {
-	wxMessageBox(
-		wxString(
-		"Copyright (C) 2011-2015 OldTimes Software\n\
-		Developed by Mark \"hogsy\" Sowden"),
-		"About Material Editor", wxOK | wxICON_INFORMATION);
+	wxAboutDialogInfo info;
+	info.SetName("Yokote");
+	info.SetCopyright("Copyright (C) 2011-2015 OldTimes Software");
+	info.SetDescription("Editor for the Katana engine.");
+	info.SetVersion(engine->GetVersion());
+
+	wxAboutBox(info, this);
 }
 
 void CMaterialEditorFrame::OnSave(wxCommandEvent &event)

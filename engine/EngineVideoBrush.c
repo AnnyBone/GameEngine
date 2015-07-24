@@ -26,7 +26,7 @@
 	Brush Model rendering.
 */
 
-extern ConsoleVariable_t gl_fullbrights, r_drawflat, gl_overbright, r_oldwater; //johnfitz
+extern ConsoleVariable_t gl_fullbrights, r_drawflat, r_oldwater; //johnfitz
 
 #define	BLOCK_WIDTH		128
 #define	BLOCK_HEIGHT	BLOCK_WIDTH
@@ -622,7 +622,7 @@ void R_BuildLightMap (msurface_t *surf, byte *dest, int stride)
 	{
 		for(j = 0; j < smax; j++,dest += 4)
 		{
-			if (gl_overbright.value)
+			if (cvVideoOverbright.value)
 			{
 				t = *bl++ >> 8;if (t > 255) t = 255;dest[2] = t;
 				t = *bl++ >> 8;if (t > 255) t = 255;dest[1] = t;

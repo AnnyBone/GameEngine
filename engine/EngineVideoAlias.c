@@ -264,7 +264,8 @@ void Alias_Draw(ClientEntity_t *eEntity)
 
 	glPushMatrix();
 
-	VideoShader_Enable();
+	if (!cvVideoLegacy.bValue)
+		VideoShader_Enable();
 
 	if(r_drawflat_cheatsafe)
 		glShadeModel(GL_FLAT);
@@ -282,7 +283,8 @@ void Alias_Draw(ClientEntity_t *eEntity)
 		glShadeModel(GL_SMOOTH);
 	}
 
-	VideoShader_Disable();
+	if (!cvVideoLegacy.bValue)
+		VideoShader_Disable();
 
 	glPopMatrix();
 

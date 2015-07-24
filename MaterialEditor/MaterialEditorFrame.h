@@ -32,6 +32,7 @@ private:
 	void OnReload(wxCommandEvent &event);
 	void OnPause(wxCommandEvent &event);
 	void OnPlay(wxCommandEvent &event);
+	void OnViewMode(wxCommandEvent &event);
 	void OnKey(wxKeyEvent &event);
 	void OnTimer(wxTimerEvent &event);
 
@@ -41,14 +42,21 @@ private:
 		dAutoReloadDelay,
 		dClientTime;
 
-	// Window
 	wxMenuItem
+
+		*viewWireframe,
+		*viewTextured,
+		*viewFlat,
+		*viewLit,
+
 		*windowShowConsole,
 		*windowShowProperties;
 
+	wxBitmap
+		iconScriptEdit;
 	wxBitmap 
-		largeOpen,
-		largeScriptEdit;
+		smallTransform,
+		smallFileOpen;
 	wxBitmap iconMediaPause;
 	wxBitmap iconMediaPlay;
 	wxBitmap

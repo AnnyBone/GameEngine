@@ -347,8 +347,9 @@ typedef struct
 	int		iHeadNode[BSP_MAX_HULLS],
 			iVisLeafs;
 
-	unsigned int	iFirstFace,
-					iNumFaces;
+	unsigned int	
+		iFirstFace,	
+		iNumFaces;
 } BSPModel_t;
 
 typedef struct
@@ -358,9 +359,10 @@ typedef struct
 
 typedef struct
 {
-	float	fNormal[3];
-	float	fDist;
-	int		iType;
+	float fNormal[3];
+	float fDist;
+
+	int	iType;
 } BSPPlane_t;
 
 typedef struct

@@ -1,6 +1,6 @@
 #include "MaterialEditorBase.h"
 
-#include "MaterialEditorApp.h"
+#include "EditorApp.h"
 
 #include "SharedModule.h"
 
@@ -41,13 +41,13 @@ void EngineInterface_Load()
 	// Let us know if it failed to load.
 	if (!engine)
 	{
-		wxMessageBox(pError_Get(), MATERIALEDITOR_TITLE);
+		wxMessageBox(pError_Get(), EDITOR_TITLE);
 		wxExit();
 	}
 	// Also ensure that the engine version hasn't changed.
 	else if (engine->iVersion != ENGINE_VERSION)
 	{
-		wxMessageBox("Editor is outdated, please rebuild!", MATERIALEDITOR_TITLE);
+		wxMessageBox("Editor is outdated, please rebuild!", EDITOR_TITLE);
 		pModule_Unload(engineInstance);
 		wxExit();
 	}

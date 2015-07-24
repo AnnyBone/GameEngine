@@ -30,7 +30,6 @@ extern cvar_t r_drawflat;
 extern cvar_t r_flatlightstyles;
 extern cvar_t gl_fullbrights;
 extern cvar_t gl_farclip;
-extern cvar_t gl_overbright;
 extern cvar_t r_waterquality;
 extern cvar_t r_oldwater;
 extern cvar_t r_waterwarp;
@@ -175,7 +174,7 @@ void R_Init (void)
 	Cvar_RegisterVariable (&r_showbboxes, NULL);
 	Cvar_RegisterVariable (&gl_farclip, NULL);
 	Cvar_RegisterVariable (&gl_fullbrights, NULL);
-	Cvar_RegisterVariable (&gl_overbright, GL_Overbright_f);
+	Cvar_RegisterVariable (&cvVideoOverbright, GL_Overbright_f);
 	Cvar_RegisterVariable (&r_lerpmodels, NULL);
 	Cvar_RegisterVariable (&r_lerpmove, NULL);
 	Cvar_RegisterVariable (&gl_subdivide_size, NULL);

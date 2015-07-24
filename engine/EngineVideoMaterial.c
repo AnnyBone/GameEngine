@@ -287,12 +287,10 @@ gltexture_t *Material_LoadTexture(Material_t *mMaterial, MaterialSkin_t *mCurren
 		}
 	}
 
-	{
-		// Ensure we haven't loaded the texture in already...
-		gltexture_t *gTexture = TexMgr_GetTexture(cArg);
-		if (gTexture)
-			return gTexture;
-	}
+	// Ensure we haven't loaded the texture in already...
+	gltexture_t *gTexture = TexMgr_GetTexture(cArg);
+	if (gTexture)
+		return gTexture;
 
 	bTextureMap = Image_LoadImage(cArg,
 		&mCurrentSkin->mtTexture[mCurrentSkin->uiTextures].uiWidth,
@@ -395,7 +393,7 @@ void _Material_SetType(Material_t *mCurrentMaterial, MaterialFunctionType_t mftC
 
 void _Material_SetShader(Material_t *mCurrentMaterial, MaterialFunctionType_t mftContext, char *cArg)
 {
-	mCurrentMaterial->msShader.name = cArg;
+	mCurrentMaterial->msShader.ccName = cArg;
 }
 
 void _Material_SetAnimationSpeed(Material_t *mCurrentMaterial, MaterialFunctionType_t mftContext, char *cArg)

@@ -44,6 +44,7 @@ static unsigned int	iSavedCapabilites[VIDEO_MAX_UNITS][2];
 #define VIDEO_STATE_DISABLE  1
 
 ConsoleVariable_t
+cvVideoLegacy = { "video_legacy", "0", true, false, "If enabled, disables usage of shaders and other fancy features." },
 		cvDrawFlares				= { "video_flares",					"1",			true,	false,	"Toggles the rendering of environmental flares."					},
 		cvLitParticles				= { "video_particles_lit",			"0",			true,	false,	"Sets whether or not particles are lit by dynamic lights."			},
 		cvMultisampleSamples		= {	"video_multisamplesamples",		"0",			true,   false,  "Changes the number of samples."									},
@@ -121,6 +122,7 @@ void Video_Initialize(void)
 	Cvar_RegisterVariable(&cvVideoDrawDetail, NULL);
 	Cvar_RegisterVariable(&cvVideoDetailScale, NULL);
 	Cvar_RegisterVariable(&cvVideoPlayerShadow, NULL);
+	Cvar_RegisterVariable(&cvVideoLegacy, NULL);
 
 	Cmd_AddCommand("video_restart",Video_UpdateWindow);
 	Cmd_AddCommand("video_debug",Video_DebugCommand);
