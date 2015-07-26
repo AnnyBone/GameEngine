@@ -2,6 +2,33 @@
 
 /*
 	Point entities.
+
+	This file contains point-based entity code,
+	which can NOT be assigned to brushes.
+
+	point_monster
+	point_vehicle
+	point_start
+	point_particle
+	point_flare
+	point_light
+	point_dynamiclight
+	point_explode
+	point_ambient
+	point_camera
+	point_waypoint
+	point_sound
+	point_decoration
+	point_message
+	point_teleport
+	point_prop
+	point_shake
+	point_effect
+	point_damage
+	point_lightstyle
+	point_multitrigger
+	point_timedtrigger
+	point_logic
 */
 
 #include "server_waypoint.h"
