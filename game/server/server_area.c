@@ -1,9 +1,28 @@
 /*	Copyright (C) 2011-2015 OldTimes Software
 */
+
 #include "server_main.h"
 
 /*
 	Brush-based entities that span across an area.
+	This document contains the code for the following
+	entities and its sub-methods:
+
+	area_breakable 
+	area_rotate
+	area_door	
+	area_changelevel
+	area_trigger
+	area_pushable
+	area_wall
+	area_button
+	area_platform
+	area_climb
+	area_noclip
+	area_push
+
+TODO:
+	area_monsterclip ?	
 */
 
 #include "server_waypoint.h"
