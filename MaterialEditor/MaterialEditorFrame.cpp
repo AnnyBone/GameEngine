@@ -236,7 +236,7 @@ CMaterialEditorFrame::CMaterialEditorFrame(const wxString & title, const wxPoint
 
 	// Create the material props...
 
-	editorMaterialProperties = new CMaterialEditorMaterialGlobalProperties(this);
+	editorMaterialProperties = new CEditorMaterialGlobalProperties(this);
 	wxAuiPaneInfo propertiesInfo;
 	propertiesInfo.Caption("Properties");
 	propertiesInfo.CloseButton(false);

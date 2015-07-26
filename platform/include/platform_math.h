@@ -30,11 +30,13 @@ typedef float MathVectorf_t;	// Floating-point precision
 #define	pMath_ISNAN(a)		(((*(int*)&a)&255<<23)==255<<23)
 
 typedef MathVectorf_t MathVector2f_t[2], MathVector3f_t[3], MathVector4f_t[4];
+typedef MathVector4f_t Colour_t, MathMatrix4x4f_t[4];
+
 // For compatability...
 #define MathVector2_t MathVector2f_t
 #define MathVector3_t MathVector3f_t
 #define MathVector4_t MathVector4f_t
-typedef MathVector4f_t MathMatrix4x4f_t[4];
+
 // For compatability...
 #define	vec2_t	MathVector2_t
 #define	vec3_t	MathVector3_t

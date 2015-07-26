@@ -1,13 +1,13 @@
 #include "MaterialEditorBase.h"
 
-#include "MaterialEditorMaterialProperties.h"
+#include "EditorMaterialProperties.h"
 
 enum
 {
 	MATERIAL_EVENT_GLOBAL
 };
 
-CMaterialEditorMaterialGlobalProperties::CMaterialEditorMaterialGlobalProperties(wxWindow *parent)
+CEditorMaterialGlobalProperties::CEditorMaterialGlobalProperties(wxWindow *parent)
 : wxPropertyGrid(parent)
 {
 	currentMaterial = NULL;
@@ -26,7 +26,7 @@ CMaterialEditorMaterialGlobalProperties::CMaterialEditorMaterialGlobalProperties
 	water = new wxBoolProperty("Water", "water");
 	notris = new wxBoolProperty("Override Wireframe", "wireframe");
 
-	materialCategory = Append(new wxPropertyCategory("Material"));
+	materialCategory = Append(new wxPropertyCategory("Global"));
 	AppendIn(materialCategory, name);
 	AppendIn(materialCategory, path);
 	AppendIn(materialCategory, animationSpeed);
@@ -49,11 +49,11 @@ CMaterialEditorMaterialGlobalProperties::CMaterialEditorMaterialGlobalProperties
 	CenterSplitter(true);
 }
 
-CMaterialEditorMaterialGlobalProperties::~CMaterialEditorMaterialGlobalProperties()
+CEditorMaterialGlobalProperties::~CEditorMaterialGlobalProperties()
 {
 }
 
-void CMaterialEditorMaterialGlobalProperties::OnChanged(wxPropertyGridEvent &event)
+void CEditorMaterialGlobalProperties::OnChanged(wxPropertyGridEvent &event)
 {
 	// Ignore if we don't have anything loaded.
 	if (!currentMaterial)
@@ -64,7 +64,7 @@ void CMaterialEditorMaterialGlobalProperties::OnChanged(wxPropertyGridEvent &eve
 		currentMaterial->fAnimationSpeed = event.GetPropertyValue().GetDouble();
 }
 
-void CMaterialEditorMaterialGlobalProperties::Update()
+void CEditorMaterialGlobalProperties::Update()
 {
 	if (!currentMaterial)
 		return;
@@ -84,18 +84,15 @@ void CMaterialEditorMaterialGlobalProperties::Update()
 	else
 		animated->SetValue(false);
 
-	if (currentMaterial->iFlags & MATERIAL_FLAG_NOTRIS)
-		notris->SetValue(true);
-	else
-		notris->SetValue(false);
+	notris->SetValue(currentMaterial->bWireframeOverride);
 }
 
-void CMaterialEditorMaterialGlobalProperties::SetCurrentMaterial(Material_t *newMaterial)
+void CEditorMaterialGlobalProperties::SetCurrentMaterial(Material_t *newMaterial)
 {
 	currentMaterial = newMaterial;
 }
 
-Material_t *CMaterialEditorMaterialGlobalProperties::GetCurrent()
+Material_t *CEditorMaterialGlobalProperties::GetCurrent()
 {
 	return currentMaterial;
 }

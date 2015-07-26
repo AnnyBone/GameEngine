@@ -270,8 +270,8 @@ Material_t *Material_GetByPath(const char *ccPath)
 
 gltexture_t *Material_LoadTexture(Material_t *mMaterial, MaterialSkin_t *mCurrentSkin, char *cArg)
 {
-	int			iTextureFlags = TEXPREF_ALPHA|TEXPREF_MIPMAP;
-	byte		*bTextureMap;
+	int	iTextureFlags = TEXPREF_ALPHA|TEXPREF_MIPMAP;
+	byte *bTextureMap;
 
 	// Check if it's trying to use a built-in texture.
 	if (cArg[0] == '@')
@@ -300,17 +300,14 @@ gltexture_t *Material_LoadTexture(Material_t *mMaterial, MaterialSkin_t *mCurren
 		// Warn about incorrect sizes.
 		if ((mCurrentSkin->mtTexture[mCurrentSkin->uiTextures].uiWidth & 15) || (mCurrentSkin->mtTexture[mCurrentSkin->uiTextures].uiHeight & 15))
 		{
-#if 1
+
 			Con_Warning("Texture is not 16 aligned! (%s) (%ix%i)\n", cArg,
 				mCurrentSkin->mtTexture[mCurrentSkin->uiTextures].uiWidth,
 				mCurrentSkin->mtTexture[mCurrentSkin->uiTextures].uiHeight);
 
+#if 1
 			// Pad the image.
 			iTextureFlags |= TEXPREF_PAD;
-#else
-			Sys_Error("Texture is not 16 aligned! (%s) (%ix%i)\n", cArg,
-				mCurrentSkin->mtTexture[mCurrentSkin->uiTextures].uiWidth,
-				mCurrentSkin->mtTexture[mCurrentSkin->uiTextures].uiHeight);
 #endif
 		}
 
@@ -391,6 +388,11 @@ void _Material_SetType(Material_t *mCurrentMaterial, MaterialFunctionType_t mftC
 	}
 }
 
+void _Material_SetWireframe(Material_t *mCurrentMaterial, MaterialFunctionType_t mftContext, char *cArg)
+{
+	mCurrentMaterial->bWireframeOverride = (bool)atoi(cArg);
+}
+
 void _Material_SetShader(Material_t *mCurrentMaterial, MaterialFunctionType_t mftContext, char *cArg)
 {
 	mCurrentMaterial->msShader.ccName = cArg;
@@ -452,9 +454,9 @@ void _Material_AddSkin(Material_t *mCurrentMaterial, MaterialFunctionType_t mftC
 
 void _Material_AddTexture(Material_t *mCurrentMaterial, MaterialFunctionType_t mftContext, char *cArg)
 {
-	MaterialSkin_t	*msSkin;
+	char cTexturePath[MAX_QPATH];
 
-	msSkin = Material_GetSkin(mCurrentMaterial, mCurrentMaterial->iSkins);
+	MaterialSkin_t *msSkin = Material_GetSkin(mCurrentMaterial, mCurrentMaterial->iSkins);
 	if (!msSkin)
 		Sys_Error("Failed to get skin!\n");
 
@@ -466,14 +468,15 @@ void _Material_AddTexture(Material_t *mCurrentMaterial, MaterialFunctionType_t m
 	msSkin->mtTexture[msSkin->uiTextures].mttType = MATERIAL_TEXTURE_DIFFUSE;
 	msSkin->mtTexture[msSkin->uiTextures].vScroll[0] = 0;
 	msSkin->mtTexture[msSkin->uiTextures].vScroll[1] = 0;
-	msSkin->mtTexture[msSkin->uiTextures].gMap = Material_LoadTexture(mCurrentMaterial, msSkin, cArg);
+
+	Q_strcpy(cTexturePath, cArg);
 
 	// Get following line.
 	Script_GetToken(true);
 
 	if (cToken[0] == '{')
 	{
-		while (true)
+		for (;;)
 		{
 			if (!Script_GetToken(true))
 			{
@@ -486,6 +489,7 @@ void _Material_AddTexture(Material_t *mCurrentMaterial, MaterialFunctionType_t m
 
 			if (cToken[0] == '}')
 			{
+				msSkin->mtTexture[msSkin->uiTextures].gMap = Material_LoadTexture(mCurrentMaterial, msSkin, cTexturePath);
 				msSkin->uiTextures++;
 				break;
 			}
@@ -509,7 +513,16 @@ void _Material_AddTexture(Material_t *mCurrentMaterial, MaterialFunctionType_t m
 		}
 	}
 	else
+#if 1
 		Con_Warning("Invalid skin, no opening brace! (%s) (%i)\n", mCurrentMaterial->cPath, iScriptLine);
+#else
+	{
+		msSkin->mtTexture[msSkin->uiTextures].gMap = Material_LoadTexture(mCurrentMaterial, msSkin, cTexturePath);
+		msSkin->uiTextures++;
+
+		Script_GetToken(true);
+	}
+#endif
 }
 
 void _Material_SetTextureType(Material_t *mCurrentMaterial, MaterialFunctionType_t mftContext, char *cArg)
@@ -558,6 +571,11 @@ void _Material_SetRotate(Material_t *mCurrentMaterial, MaterialFunctionType_t mf
 	msSkin->mtTexture[msSkin->uiTextures].bManipulated = true;
 }
 
+void _Material_SetBlend(Material_t *currentMaterial, MaterialFunctionType_t context, char *arg)
+{
+
+}
+
 // Universal Functions...
 
 typedef struct
@@ -576,7 +594,6 @@ MaterialFlag_t	mfMaterialFlags[] =
 	{ MATERIAL_FLAG_ANIMATED, "ANIMATED", MATERIAL_FUNCTION_MATERIAL },
 	{ MATERIAL_FLAG_MIRROR, "MIRROR", MATERIAL_FUNCTION_MATERIAL },
 	{ MATERIAL_FLAG_WATER, "WATER", MATERIAL_FUNCTION_MATERIAL },
-	{ MATERIAL_FLAG_NOTRIS, "NOTRIS", MATERIAL_FUNCTION_MATERIAL },
 
 	// Skin
 	{ MATERIAL_FLAG_NEAREST, "NEAREST", MATERIAL_FUNCTION_SKIN },
@@ -634,23 +651,26 @@ typedef struct
 	MaterialFunctionType_t	mftType;
 } MaterialKey_t;
 
-MaterialKey_t	mkMaterialFunctions[]=
+MaterialKey_t mkMaterialFunctions[]=
 {
 	// Universal
 	{ "flags", _Material_SetFlags, MATERIAL_FUNCTION_UNIVERSAL },
 	{ "type", _Material_SetType, MATERIAL_FUNCTION_UNIVERSAL },
 
 	// Material
+	{ "override_wireframe", _Material_SetWireframe, MATERIAL_FUNCTION_MATERIAL },
 	{ "shader", _Material_SetShader, MATERIAL_FUNCTION_MATERIAL },
 	{ "animation_speed", _Material_SetAnimationSpeed, MATERIAL_FUNCTION_MATERIAL },
 	{ "skin", _Material_AddSkin, MATERIAL_FUNCTION_MATERIAL },
 
 	// Skin
 	{ "map", _Material_AddTexture, MATERIAL_FUNCTION_SKIN },
+	{ "texture", _Material_AddTexture, MATERIAL_FUNCTION_SKIN },
 
 	// Texture
 	{ "scroll", _Material_SetTextureScroll, MATERIAL_FUNCTION_TEXTURE },
 	{ "rotate", _Material_SetRotate, MATERIAL_FUNCTION_TEXTURE },
+	//{ "blend", _Material_SetBlend, MATERIAL_FUNCTION_TEXTURE },
 
 	{ 0 }
 };
@@ -768,7 +788,6 @@ Material_t *Material_Load(const char *ccPath)
 	}
 
 	if (cMaterialName[0])
-		// Copy the name over.
 		strncpy(mNewMaterial->cName, cMaterialName, sizeof(mNewMaterial->cName));
 	else
 	{
@@ -779,10 +798,9 @@ Material_t *Material_Load(const char *ccPath)
 		ExtractFileBase(cIn, mNewMaterial->cName);
 	}
 
-	// Copy the path over.
 	strncpy(mNewMaterial->cPath, ccPath, sizeof(mNewMaterial->cPath));
 
-	while(true)
+	for (;;)
 	{
 		if(!Script_GetToken(true))
 		{
@@ -795,7 +813,11 @@ Material_t *Material_Load(const char *ccPath)
 
 		// End
 		if (cToken[0] == '}')
+		{
+			// TODO: Load material data at the END!
+
 			return mNewMaterial;
+		}
 		// Start
 		else if (cToken[0] == SCRIPT_SYMBOL_FUNCTION)
 			Material_CheckFunctions(mNewMaterial);
@@ -820,12 +842,6 @@ bool Material_Precache(const char *ccPath)
 
 	return true;
 }
-
-/*
-	Editor
-*/
-
-/**/
 
 void Material_Shutdown(void)
 {

@@ -40,7 +40,7 @@
 	when a build is released publically.	*/
 #define ENGINE_VERSION_MAJOR	0
 #define ENGINE_VERSION_MINOR	3
-#define ENGINE_VERSION_BUILD	947	// 24/7/2015
+#define ENGINE_VERSION_BUILD	949	// 26/7/2015
 
 #define	LOG_GLOBAL	"engine"
 

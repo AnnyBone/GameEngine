@@ -38,6 +38,8 @@ void MaterialEditor_Initialize(void)
 	if (bMaterialEditorInitialized)
 		return;
 
+	Cvar_RegisterVariable(&cvEditorPreviewRotate, NULL);
+
 	CL_Disconnect();
 	Host_ShutdownServer(false);
 
@@ -123,40 +125,15 @@ void MaterialEditor_SetPreviewMesh(EditorPreviewTypes_t previewMesh)
 
 void MaterialEditor_Draw(void)
 {
-#if 0
-	MathVector3f_t mvPosition = { 0, 0, -5 };
-	Draw_Grid(mvPosition, 3);
-
-	{
-		VideoObjectVertex_t	voGrid[4] = { 0 };
-
-		Video_ResetCapabilities(false);
-
-		glPushMatrix();
-		glTranslatef(10.0f, 0, 0);
-		glRotatef(-90.0f, 0, 1, 0);
-		glRotatef(-90.0f, 0, 0, 1);
-		Video_SetBlend(VIDEO_BLEND_IGNORE, VIDEO_DEPTH_FALSE);
-		Video_SetColour(1.0f, 1.0f, 1.0f, 1.0f);
-		Video_ObjectVertex(&voGrid[0], -5, 5, 0);
-		Video_ObjectTexture(&voGrid[0], VIDEO_TEXTURE_DIFFUSE, 0, 0);
-		Video_ObjectVertex(&voGrid[1], 5, 5, 0);
-		Video_ObjectTexture(&voGrid[1], VIDEO_TEXTURE_DIFFUSE, 1.0f, 0);
-		Video_ObjectVertex(&voGrid[2], 5, -5, 0);
-		Video_ObjectTexture(&voGrid[2], VIDEO_TEXTURE_DIFFUSE, 1.0f, 1.0f);
-		Video_ObjectVertex(&voGrid[3], -5, -5, 0);
-		Video_ObjectTexture(&voGrid[3], VIDEO_TEXTURE_DIFFUSE, 0, 1.0f);
-		Video_DrawFill(voGrid, mActiveMaterial, 0);
-		glPopMatrix();
-
-		Video_ResetCapabilities(true);
-	}
-#endif
+	Draw_GradientBackground();
 
 	if (cvVideoDrawModels.bValue)
 		Alias_Draw(mPreviewEntity);
 
+	Draw_ResetCanvas();
+
 	GL_SetCanvas(CANVAS_DEFAULT);
+
 	Draw_String(10, 10, va("Camera: origin(%i %i %i), angles(%i %i %i)",
 		(int)r_refdef.vieworg[pX],
 		(int)r_refdef.vieworg[pY],
@@ -171,7 +148,8 @@ void MaterialEditor_Draw(void)
 
 void MaterialEditor_Frame(void)
 {
-	mPreviewEntity->angles[1] += 0.5f;
+	if (cvEditorPreviewRotate.bValue)
+		mPreviewEntity->angles[1] += 0.5f;
 }
 
 void MaterialEditor_Display(Material_t *mDisplayMaterial)

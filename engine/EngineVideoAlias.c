@@ -36,7 +36,7 @@ void Alias_SetupLighting(ClientEntity_t *ceEntity)
 {
 	float fDistance;
 
-	if(!bShading)
+	if(!bShading || r_showtris.bValue)
 		return;
 
 	Math_VectorSet(1.0f, vLightColour);
@@ -123,7 +123,7 @@ void Alias_DrawFrame(MD2_t *mModel,entity_t *eEntity,lerpdata_t lLerpData)
 				eEntity->model->object.ovVertices[uiVerts].mvNormal[1],
 				eEntity->model->object.ovVertices[uiVerts].mvNormal[2]);
 
-			if (bShading)
+			if (bShading && !r_showtris.bValue)
 				Video_ObjectColour(&voModel[uiVerts], 1.0f, 1.0f, 1.0f, fAlpha);
 			else
 				Video_ObjectColour(&voModel[uiVerts], 1.0f, 1.0f, 1.0f, 1.0f);

@@ -1,9 +1,9 @@
 #pragma once
-class CMaterialEditorMaterialGlobalProperties : public wxPropertyGrid
+class CEditorMaterialGlobalProperties : public wxPropertyGrid
 {
 public:
-	CMaterialEditorMaterialGlobalProperties(wxWindow *parent);
-	~CMaterialEditorMaterialGlobalProperties();
+	CEditorMaterialGlobalProperties(wxWindow *parent);
+	~CEditorMaterialGlobalProperties();
 
 	void Update();
 	void SetCurrentMaterial(Material_t *newMaterial);

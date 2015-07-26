@@ -44,26 +44,26 @@ static unsigned int	iSavedCapabilites[VIDEO_MAX_UNITS][2];
 #define VIDEO_STATE_DISABLE  1
 
 ConsoleVariable_t
-cvVideoLegacy = { "video_legacy", "0", true, false, "If enabled, disables usage of shaders and other fancy features." },
-		cvDrawFlares				= { "video_flares",					"1",			true,	false,	"Toggles the rendering of environmental flares."					},
-		cvLitParticles				= { "video_particles_lit",			"0",			true,	false,	"Sets whether or not particles are lit by dynamic lights."			},
-		cvMultisampleSamples		= {	"video_multisamplesamples",		"0",			true,   false,  "Changes the number of samples."									},
-		cvMultisampleMaxSamples		= { "video_multisamplemaxsamples",	"16",			true,	false,	"Sets the maximum number of allowed samples."						},
-		cvFullscreen				= {	"video_fullscreen",				"0",			true,   false,  "1: Fullscreen, 0: Windowed"										},
-		cvWidth						= {	"video_width",					"640",			true,   false,  "Sets the width of the window."										},
-		cvHeight					= {	"video_height",					"480",			true,   false,  "Sets the height of the window."									},
-		cvVerticalSync				= {	"video_verticalsync",			"0",			true																				},
-		cvVideoMirror				= {	"video_drawmirror",				"1",			true,	false,	"Enables and disables the rendering of mirror surfaces."			},
-		cvVideoDrawModels			= {	"video_drawmodels",				"1",			false,  false,  "Toggles models."													},
-		cvVideoDrawDepth			= {	"video_drawdepth",				"0",			false,	false,	"If enabled, previews the debth buffer."							},
-		cvVideoDrawDetail			= {	"video_drawdetail",				"1",			true,	false,	"If enabled, detail maps are drawn."								},
-		cvVideoDrawMaterials		= {	"video_drawmaterials",			"1",			true,	false,	"If enabled, materials are drawn."									},
-		cvVideoDetailScale			= { "video_detailscale",			"8",			true,	false,	"Changes the scaling used for detail maps."							},
-		cvVideoAlphaTrick			= { "video_alphatrick",				"1",			true,	false,	"If enabled, draws alpha-tested surfaces twice for extra quality."	},
-		cvVideoFinish				= { "video_finish",					"0",			true,	false,	"If enabled, calls glFinish at the end of the frame."				},
-		cvVideoVBO					= { "video_vbo",					"0",			true,	false,	"Enables support of Vertex Buffer Objects."							},
-		cvVideoPlayerShadow			= { "video_playershadow",			"1",			true,	false,	"If enabled, the players own shadow will be drawn."					},
-		cvVideoDebugLog				= {	"video_debuglog",				"video",		true,	false,	"The name of the output log for video debugging."					};
+	cvVideoLegacy = { "video_legacy", "0", true, false, "If enabled, disables usage of shaders and other fancy features." },
+	cvDrawFlares = { "video_flares", "1", true, false, "Toggles the rendering of environmental flares." },
+	cvLitParticles = { "video_particles_lit", "0", true, false, "Sets whether or not particles are lit by dynamic lights." },
+	cvMultisampleSamples = { "video_multisamplesamples", "0", true, false, "Changes the number of samples." },
+	cvMultisampleMaxSamples = { "video_multisamplemaxsamples", "16", true, false, "Sets the maximum number of allowed samples." },
+	cvFullscreen = { "video_fullscreen", "0", true, false, "1: Fullscreen, 0: Windowed" },
+	cvWidth = { "video_width", "640", true, false, "Sets the width of the window." },
+	cvHeight = { "video_height", "480", true, false, "Sets the height of the window." },
+	cvVerticalSync = { "video_verticalsync", "0", true },
+	cvVideoMirror = { "video_drawmirror", "1", true, false, "Enables and disables the rendering of mirror surfaces." },
+	cvVideoDrawModels = { "video_drawmodels", "1", false, false, "Toggles models." },
+	cvVideoDrawDepth = { "video_drawdepth", "0", false, false, "If enabled, previews the debth buffer." },
+	cvVideoDrawDetail = { "video_drawdetail", "1", true, false, "If enabled, detail maps are drawn." },
+	cvVideoDrawMaterials = { "video_drawmaterials", "1", true, false, "If enabled, materials are drawn." },
+	cvVideoDetailScale = { "video_detailscale", "3", true, false, "Changes the scaling used for detail maps." },
+	cvVideoAlphaTrick = { "video_alphatrick", "1", true, false, "If enabled, draws alpha-tested surfaces twice for extra quality." },
+	cvVideoFinish = { "video_finish", "0", true, false, "If enabled, calls glFinish at the end of the frame." },
+	cvVideoVBO = { "video_vbo", "0", true, false, "Enables support of Vertex Buffer Objects." },
+	cvVideoPlayerShadow = { "video_playershadow", "1", true, false, "If enabled, the players own shadow will be drawn." },
+	cvVideoDebugLog = { "video_debuglog", "video", true, false, "The name of the output log for video debugging." };
 
 #define VIDEO_MAX_SAMPLES	cvMultisampleMaxSamples.iValue
 #define VIDEO_MIN_SAMPLES	0
@@ -597,7 +597,7 @@ void Video_DrawMaterial(
 
 	bVideoIgnoreCapabilities = true;
 
-	if (!(mMaterial->iFlags & MATERIAL_FLAG_NOTRIS))
+	if (!mMaterial->bWireframeOverride)
 		if (r_lightmap_cheatsafe || r_showtris.bValue || !cvVideoDrawMaterials.bValue)
 		{
 			// Select the first TMU.
@@ -650,7 +650,7 @@ void Video_DrawMaterial(
 					glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
 				else
 					glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-
+				
 				// Check if we've been given a video object to use...
 				if (voObject)
 				{
@@ -874,53 +874,62 @@ void Video_DrawSurface(msurface_t *mSurface,float fAlpha, Material_t *mMaterial,
 	Video_DrawObject(voSurface, VIDEO_PRIMITIVE_TRIANGLE_FAN, mSurface->polys->numverts, mMaterial, 0);
 }
 
+typedef struct
+{
+	VideoPrimitive_t vpPrimitive;
+
+	unsigned int uiGL;
+
+	const char *ccIdentifier;
+} VideoPrimitives_t;
+
+VideoPrimitives_t vpVideoPrimitiveList[]=
+{
+	{ VIDEO_PRIMITIVE_LINE, GL_LINES, "LINES" },
+	{ VIDEO_PRIMITIVE_TRIANGLES, GL_TRIANGLES, "TRIANGLES" },
+	{ VIDEO_PRIMITIVE_TRIANGLE_FAN, GL_TRIANGLE_FAN, "TRIANGLE_FAN" },
+	{ VIDEO_PRIMITIVE_TRIANGLE_FAN_LINE, GL_LINES, "TRIANGLE_FAN_LINE" },
+	{ VIDEO_PRIMITIVE_TRIANGLE_STRIP, GL_TRIANGLE_STRIP, "TRIANGLE_STRIP" }
+};
+
 /*	Deals with tris view and different primitive types, then finally draws
 	the given arrays.
 */
 void Video_DrawArrays(VideoPrimitive_t vpPrimitiveType, unsigned int uiSize, bool bWireframe)
 {
-	unsigned int uiPrimitiveType = 0;
+	unsigned int uiPrimitiveType = -1;
 
-	// Convert between VIDEO_PRIMITIVE and OpenGL's own stuff.
-	switch (vpPrimitiveType)
+	int i;
+
+	for (i = 0; i < sizeof(vpVideoPrimitiveList); i++)
+		if (vpPrimitiveType == vpVideoPrimitiveList[i].vpPrimitive)
+		{
+			uiPrimitiveType = vpVideoPrimitiveList[i].uiGL;
+			break;
+		}
+
+	if (uiPrimitiveType == -1)
+		Sys_Error("Invalid primitive type! (%i)\n", vpPrimitiveType);
+
+	if (bWireframe)
 	{
-	case VIDEO_PRIMITIVE_LINE:		// GL_LINES
-	case VIDEO_PRIMITIVE_TRIANGLES:	// GL_TRIANGLES
-		if (bWireframe || (vpPrimitiveType == VIDEO_PRIMITIVE_LINE))
+		switch (vpPrimitiveType)
+		{
+		case VIDEO_PRIMITIVE_LINE:
+		case VIDEO_PRIMITIVE_TRIANGLES:
 			uiPrimitiveType = GL_LINES;
-		else
-			uiPrimitiveType = GL_TRIANGLES;
-		break;
-	case VIDEO_PRIMITIVE_TRIANGLE_STRIP:
-		uiPrimitiveType = GL_TRIANGLE_STRIP;
-		break;
-	case VIDEO_PRIMITIVE_TRIANGLE_FAN_LINE:	// GL_TRIANGLE_FAN
-	case VIDEO_PRIMITIVE_TRIANGLE_FAN:		// GL_TRIANGLE_FAN
-		if (bWireframe || (vpPrimitiveType == VIDEO_PRIMITIVE_TRIANGLE_FAN_LINE))
+			break;
+		default:
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-		uiPrimitiveType = GL_TRIANGLE_FAN;
-		break;
-	default:
-		// If it's not valid then throw us an error.
-		Sys_Error("Unknown object primitive type! (%i)\n", vpPrimitiveType);
+		}
 	}
 
 	glDrawArrays(uiPrimitiveType, 0, uiSize);
 
-	// Set anything we've changed back to how it was.
-	switch (vpPrimitiveType)
-	{
-	case VIDEO_PRIMITIVE_TRIANGLE_FAN_LINE:	// GL_TRIANGLE_FAN
-	case VIDEO_PRIMITIVE_TRIANGLE_FAN:		// GL_TRIANGLE_FAN
-		if (bWireframe || (vpPrimitiveType == VIDEO_PRIMITIVE_TRIANGLE_FAN_LINE))
+	if (bWireframe)
+		if ((vpPrimitiveType != VIDEO_PRIMITIVE_LINE) && 
+			(vpPrimitiveType != VIDEO_PRIMITIVE_TRIANGLES))
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		break;
-	default:
-        break;
-		// If it's not valid then throw us an error.
-		//Sys_Error("Unknown object primitive type! (%i)\n", vpPrimitiveType);
-	}
 }
 
 /*	Draw 3D object.
@@ -964,7 +973,7 @@ void Video_DrawObject(
 		}
 
 	bool bShowWireframe = r_showtris.bValue;
-	if (mMaterial && (mMaterial->iFlags & MATERIAL_FLAG_NOTRIS))
+	if (mMaterial && mMaterial->bWireframeOverride)
 		bShowWireframe = false;
 
 	Video_DrawArrays(vpPrimitiveType, uiVerts, bShowWireframe);

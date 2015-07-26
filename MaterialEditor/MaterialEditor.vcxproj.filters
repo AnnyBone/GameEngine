@@ -27,13 +27,13 @@
     <ClInclude Include="MaterialEditorRenderCanvas.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="MaterialEditorMaterialProperties.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="MaterialEditorConsolePanel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="EditorApp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EditorMaterialProperties.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -47,13 +47,13 @@
     <ClCompile Include="MaterialEditorRenderCanvas.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MaterialEditorMaterialProperties.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="MaterialEditorConsolePanel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="EditorApp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EditorMaterialProperties.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
