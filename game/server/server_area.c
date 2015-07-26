@@ -628,7 +628,7 @@ void Area_WallUse(ServerEntity_t *eArea)
 	}
 
 	eArea->Physics.iSolid = SOLID_BSP;
-
+	eArea->local.iValue = 1;
 	Entity_SetModel(eArea,eArea->local.cOldModel);
 }
 
@@ -647,7 +647,7 @@ void Area_WallSpawn(ServerEntity_t *eArea)
 
 	eArea->v.movetype = MOVETYPE_PUSH;
 
-	eArea->local.iValue	= 1;
+	eArea->local.iValue = 1;
 
 	Entity_SetModel(eArea,eArea->v.model);
 	Entity_SetOrigin(eArea,eArea->v.origin);

@@ -43,6 +43,7 @@ SpawnList_t SpawnList[] =
 	{ "area_button", Area_ButtonSpawn },
 	{ "area_changelevel", Area_ChangeLevel },
 	{ "area_climb", Area_ClimbSpawn },
+	{ "area_detail", Area_DetailSpawn },
 	{ "area_door", Area_DoorSpawn },
 	{ "area_door_rotate", Area_DoorSpawn },
 	{ "area_noclip", Area_NoclipSpawn },
@@ -53,7 +54,7 @@ SpawnList_t SpawnList[] =
 	{ "area_rotate", Area_RotateSpawn },
 	{ "area_trigger", Area_TriggerSpawn },
 	{ "area_wall", Area_WallSpawn },
-	{ "area_playerspawn", Area_PlayerSpawn },
+//	{ "area_playerspawn", Area_PlayerSpawn },
 
 	// Point Entities
 	{ "point_light", Point_LightSpawn },
@@ -81,8 +82,7 @@ SpawnList_t SpawnList[] =
 	{ "point_explode", Point_ExplodeSpawn },
 
 #ifdef GAME_OPENKATANA
-	{ "point_decoration", Point_DecorationSpawn },	// TODO: Isn't this made redundant by point_prop? ~hogsy
-
+	{ "point_decoration", Point_DecorationSpawn },
 	{ "decoration_barrel", Barrel_Spawn },
 
 	{ "monster_inmater", Point_MonsterSpawn },
