@@ -4,31 +4,31 @@
 	Point entities.
 
 	This file contains point-based entity code,
-	which can NOT be assigned to brushes.
+	which can NOT be assigned to brushes. - eukos
 
-	point_monster
-	point_vehicle
-	point_start
-	point_particle
-	point_flare
-	point_light
-	point_dynamiclight
-	point_explode
-	point_ambient
-	point_camera
-	point_waypoint
-	point_sound
-	point_decoration
-	point_message
-	point_teleport
-	point_prop
-	point_shake
-	point_effect
-	point_damage
-	point_lightstyle
-	point_multitrigger
-	point_timedtrigger
-	point_logic
+	point_monster 		- Used for placing actors/monsters/enemies
+	point_vehicle 		- Used for placing vehicles
+	point_start		- Entity for 
+	point_particle		- Spawns particles
+	point_flare		- Created a flare/corona
+	point_light		- Casts light onto the lightmap
+	point_dynamiclight	- Entity which casts light on the nearby lightmap
+	point_explode		- Creates a target explosion
+	point_ambient		- Plays ambient (looping) sounds
+	point_camera		- Switches the users view to its own
+	point_waypoint		- Waypoint for the AI
+	point_sound		- Plays a sound, with different attentuations
+	point_decoration	- Floating model entity with no collision
+	point_message		- Displays various types of messages (local, global) on the screen
+	point_teleport		- Teleports the user to a target
+	point_prop		- Decoration that can break and has physics
+	point_shake		- Substitute for quakes
+	point_effect		- Spawns one of the many stock effects
+	point_damage		- Hurts the user
+	point_lightstyle	- Manipulates lightstyles
+	point_multitrigger	- Trigger multiple entities by daisy-chaining them
+	point_timedtrigger	- Triggers an entity after a specified delay
+	point_logic		- Compilation of basic logic-gates
 */
 
 #include "server_waypoint.h"

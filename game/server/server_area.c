@@ -8,21 +8,21 @@
 	This document contains the code for the following
 	entities and its sub-methods:
 
-	area_breakable 
-	area_rotate
-	area_door	
-	area_changelevel
-	area_trigger
-	area_pushable
-	area_wall
-	area_button
-	area_platform
-	area_climb
-	area_noclip
-	area_push
+	area_breakable 		- Brush that breaks and spawns debris
+	area_rotate		- Rotates around specified axis
+	area_door		- Opens and closes in specified position
+	area_changelevel	- Changes the current level
+	area_trigger		- Triggers a point entity
+	area_pushable		- Brush that can be pushed around
+	area_wall		- Brush that casts no shadow and can appear/disappear on use
+	area_button		- Trigger a point entity when moved into place
+	area_platform		- Platform that travels between two destinations
+	area_climb		- Substitute for a ladder
+	area_noclip		- Brush that casts no light and no collision
+	area_push		- Pushes entities into the specified direction on touch
 
 TODO:
-	area_monsterclip ?	
+	area_monsterclip ?	- Blocks ways off for monsters
 */
 
 #include "server_waypoint.h"
