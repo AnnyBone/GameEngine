@@ -654,6 +654,24 @@ void Area_WallSpawn(ServerEntity_t *eArea)
 }
 
 /*
+	Detail
+*/
+// Just for the compiler ~eukara
+void Area_DetailSpawn(ServerEntity_t *eArea)
+{
+	if(!eArea->v.model)
+	{
+		Engine.Con_Warning("Area entity with no model!\n");
+
+		Entity_Remove(eArea);
+		return;
+	}
+
+	Entity_SetModel(eArea,eArea->v.model);
+	Entity_SetOrigin(eArea,eArea->v.origin);
+}
+
+/*
 	Button
 */
 
