@@ -23,7 +23,9 @@
 
 #include "SharedModule.h"
 
-extern	cvar_t	cvEditorLightPreview;
+extern	cvar_t	
+cvEditorLightPreview,
+cvEditorPreviewRotate;
 
 typedef struct
 {

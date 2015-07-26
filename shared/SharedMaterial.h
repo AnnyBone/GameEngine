@@ -49,7 +49,6 @@ typedef enum
 #define	MATERIAL_FLAG_MIRROR	16	// Must be GLOBAL!
 #define	MATERIAL_FLAG_NEAREST	32	// Forces the texture to be loaded with nearest filtering.
 #define	MATERIAL_FLAG_WATER		64	// Must be GLOBAL!
-#define	MATERIAL_FLAG_NOTRIS	128	// Global flag that lets us override the wireframe view for this object.
 
 typedef struct
 {
@@ -104,20 +103,23 @@ typedef struct
 
 typedef struct Material_s
 {
-	int		iIdentification,	// Unique ID for the material.
+	int		
+		iIdentification,	// Unique ID for the material.
 		iFlags,				// Global material flags, flags that take priority over all additional skins.
 		iSkins;				// Number of skins provided by this material.
 
-	char	cPath[PLATFORM_MAX_PATH],	// Path of the material.
+	char	
+		cPath[PLATFORM_MAX_PATH],	// Path of the material.
 		cName[64];					// Name of the material.
 
 	MaterialSkin_t msSkin[MATERIAL_MAX_SKINS];
 	MaterialShader_t msShader;
 
-	bool bBind;
-	//bool bWireframeOverride;	// Override tris for this material.
+	bool 
+		bBind,
+		bWireframeOverride;	// Override tris for this material.
 
-	float	fAlpha;	// Alpha override.
+	float fAlpha;	// Alpha override.
 
 	// Animation
 	float	fAnimationSpeed;	// Speed to scroll through skins, if animation is enabled.

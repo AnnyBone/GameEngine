@@ -26,6 +26,9 @@
 #define	SCRIPT_SYMBOL_FUNCTION	'$'
 #define	SCRIPT_SYMBOL_VARIABLE	'%'
 
+#define SCRIPT_START			'{'
+#define	SCRIPT_END				'}'
+
 bool Script_Load(const char *ccPath);
 
 #endif

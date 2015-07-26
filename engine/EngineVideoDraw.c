@@ -399,6 +399,31 @@ void Draw_ConsoleBackground(void)
 	Draw_Fill(0,0,vid.conwidth,vid.conheight,0,0,0,fAlpha);
 }
 
+void Draw_GradientBackground(void)
+{
+	VideoCanvasType_t vctOldCanvas; //johnfitz
+
+	glMatrixMode(GL_PROJECTION);
+	glPushMatrix();
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
+
+	vctOldCanvas = (VideoCanvasType_t)currentcanvas;
+	GL_SetCanvas(CANVAS_DEFAULT);
+	currentcanvas = vctOldCanvas;
+
+	Colour_t
+		cTop = { 0.1f, 0.1f, 0.1f, 1.0f },
+		cBottom = { 0.5f, 0.5f, 0.5f, 1.0f };
+	Draw_GradientFill(0, 0, Video.iWidth, Video.iHeight, cTop, cBottom);
+
+	glMatrixMode(GL_PROJECTION);
+	glPopMatrix();
+	glMatrixMode(GL_MODELVIEW);
+	glPopMatrix();
+	glViewport(0, 0, Video.iWidth, Video.iHeight);
+}
+
 /*	This repeats a 64*64 tile graphic to fill the screen around a sized down
 	refresh window.
 */
@@ -440,7 +465,36 @@ void Draw_Line(MathVector3f_t mvStart, MathVector3f_t mvEnd)
 	Video_ResetCapabilities(true);
 }
 
-void Draw_Grid(MathVector3f_t mvPosition, int iGridSize)
+/*	Debugging tool.
+*/
+void Draw_CoordinateAxes(float x,float y,float z)
+{
+	VideoObjectVertex_t voLine[2] = { 0 };
+
+	Video_ResetCapabilities(true);
+
+	Video_ObjectVertex(&voLine[0], 0, 0, 0);
+	Video_ObjectColour(&voLine[0], 1.0f, 0, 0, 1.0f);
+	Video_ObjectVertex(&voLine[1], 1.0f, 0, 0);
+	Video_ObjectColour(&voLine[1], 1.0f, 0, 0, 1.0f);
+	Video_DrawObject(voLine, VIDEO_PRIMITIVE_LINE, 2, NULL, 0);
+
+	Video_ObjectVertex(&voLine[0], 0, 0, 0);
+	Video_ObjectColour(&voLine[0], 0, 1.0f, 0, 1.0f);
+	Video_ObjectVertex(&voLine[1], 0, 1.0f, 0);
+	Video_ObjectColour(&voLine[1], 0, 1.0f, 0, 1.0f);
+	Video_DrawObject(voLine, VIDEO_PRIMITIVE_LINE, 2, NULL, 0);
+
+	Video_ObjectVertex(&voLine[0], 0, 0, 0);
+	Video_ObjectColour(&voLine[0], 0, 0, 1.0f, 1.0f);
+	Video_ObjectVertex(&voLine[1], 0, 0, 1.0f);
+	Video_ObjectColour(&voLine[1], 0, 0, 1.0f, 1.0f);
+	Video_DrawObject(voLine, VIDEO_PRIMITIVE_LINE, 2, NULL, 0);
+
+	Video_ResetCapabilities(false);
+}
+
+void Draw_Grid(float x, float y, float z, int iGridSize)
 {
     int i;
 
@@ -448,7 +502,7 @@ void Draw_Grid(MathVector3f_t mvPosition, int iGridSize)
 
 	glPushMatrix();
 
-	glTranslatef(mvPosition[0], mvPosition[1], mvPosition[2]);
+	glTranslatef(x, y, z);
 
 	glEnable(GL_BLEND);
 	glDisable(GL_TEXTURE_2D);
@@ -530,6 +584,29 @@ void Draw_Fill(int x,int y,int w,int h,float r,float g,float b,float alpha)
 	Video_ResetCapabilities(true);
 }
 
+void Draw_GradientFill(int x, int y, int w, int h, Colour_t mvTopColour, Colour_t mvBottomColour)
+{
+	VideoObjectVertex_t	voFill[4];
+
+	Video_ResetCapabilities(false);
+
+	Video_EnableCapabilities(VIDEO_BLEND);
+	Video_DisableCapabilities(VIDEO_DEPTH_TEST | VIDEO_TEXTURE_2D);
+
+	Video_ObjectVertex(&voFill[0], x, y, 0);
+	Video_ObjectColour(&voFill[0], mvTopColour[0], mvTopColour[1], mvTopColour[2], mvTopColour[3]);
+	Video_ObjectVertex(&voFill[1], x + w, y, 0);
+	Video_ObjectColour(&voFill[1], mvTopColour[0], mvTopColour[1], mvTopColour[2], mvTopColour[3]);
+	Video_ObjectVertex(&voFill[2], x + w, y + h, 0);
+	Video_ObjectColour(&voFill[2], mvBottomColour[0], mvBottomColour[1], mvBottomColour[2], mvBottomColour[3]);
+	Video_ObjectVertex(&voFill[3], x, y + h, 0);
+	Video_ObjectColour(&voFill[3], mvBottomColour[0], mvBottomColour[1], mvBottomColour[2], mvBottomColour[3]);
+
+	Video_DrawFill(voFill, NULL, 0);
+
+	Video_ResetCapabilities(true);
+}
+
 void Draw_FadeScreen (void)
 {
 	VideoObjectVertex_t	voFade[4];
@@ -576,7 +653,8 @@ void Draw_BeginDisc(void)
 	//johnfitz
 
 	glDrawBuffer(GL_FRONT);
-	Draw_ExternPic("textures/sprites/disc",1.0f,320-32,0,32,32);
+	// TODO: Placeholder!!!!!!
+	Draw_Fill(320 - 32, 0, 32, 32, 1.0f, 0, 0, 1.0f);
 	glDrawBuffer(GL_BACK);
 
 	//johnfitz -- restore everything so that 3d rendering isn't fucked up

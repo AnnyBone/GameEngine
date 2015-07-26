@@ -2,7 +2,7 @@
 #define	__MATERIALEDITORFRAME__
 
 #include "MaterialEditorRenderCanvas.h"
-#include "MaterialEditorMaterialProperties.h"
+#include "EditorMaterialProperties.h"
 #include "MaterialEditorConsolePanel.h"
 
 class CMaterialEditorFrame : public wxFrame
@@ -79,7 +79,7 @@ private:
 	wxString currentFilePath;
 
 	CMaterialEditorRenderCanvas *editorViewport;
-	CMaterialEditorMaterialGlobalProperties *editorMaterialProperties;
+	CEditorMaterialGlobalProperties *editorMaterialProperties;
 	CMaterialEditorConsolePanel *editorConsolePanel;
 
 	wxDECLARE_EVENT_TABLE();

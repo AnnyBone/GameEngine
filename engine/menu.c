@@ -142,245 +142,40 @@ void M_ConfigureNetSubsystem(void);
 */
 void M_DrawCharacter (int cx, int line, int num)
 {
-	Draw_Character (cx, line, num);
 }
 
 void M_Print (int cx, int cy, char *str)
 {
-	while (*str)
-	{
-		M_DrawCharacter (cx, cy, (*str)+128);
-		str++;
-		cx += 8;
-	}
 }
 
 void M_PrintWhite (int cx, int cy, char *str)
 {
-	while (*str)
-	{
-		M_DrawCharacter (cx, cy, *str);
-		str++;
-		cx += 8;
-	}
 }
 
 void M_DrawTransPic (int x, int y, qpic_t *pic)
 {
-	Draw_Pic (x, y, pic); //johnfitz -- simplified becuase centering is handled elsewhere
 }
 
 void M_DrawPic (int x, int y, qpic_t *pic)
 {
-	Draw_Pic(x, y, pic);
 }
 
 void M_DrawTextBox (int x, int y, int width, int lines)
 {
-	int		cx, cy;
-	int		n;
-
-	cx = x;
-	cy = y;
-
-	Draw_ExternPic("textures/sprites/box_tl",1,cx,cy,8,8);
-
-	for(n = 0; n < lines; n++)
-	{
-		cy += 8;
-		Draw_ExternPic("textures/sprites/box_ml",1,cx,cy,8,8);
-	}
-
-	Draw_ExternPic("textures/sprites/box_bl",1,cx,cy+8,8,8);
-
-	cx += 8;
-	while(width > 0)
-	{
-		cy = y;
-
-		Draw_ExternPic("textures/sprites/box_tm",1,cx,cy,16,8);
-
-		for (n = 0; n < lines; n++)
-		{
-			cy += 8;
-			if (n == 1)
-				Draw_ExternPic("textures/sprites/box_mm2",1,cx,cy,16,8);
-
-			Draw_ExternPic("textures/sprites/box_mm",1,cx,cy,16,8);
-		}
-
-		Draw_ExternPic("textures/sprites/box_bm",1,cx,cy+8,16,8);
-
-		width -= 2;
-		cx += 16;
-	}
-
-	cy = y;
-
-	Draw_ExternPic("textures/sprites/box_tr",1,cx,cy,8,8);
-
-	for (n = 0; n < lines; n++)
-	{
-		cy += 8;
-
-		Draw_ExternPic("textures/sprites/box_mr",1,cx,cy,8,8);
-	}
-
-	Draw_ExternPic("textures/sprites/box_br",1,cx,cy+8,8,8);
 }
 
-//=============================================================================
 void M_AdjustSliders(int menu,int optionnum,int dir)
 {
-	// Rewrite!
-	if(!menu)
-	{
-		Con_Warning("M_AdjustSliders: Unknown menu\n");
-		return;
-	}
-
-	if(dir > 0)
-		S_LocalSound(MENU_ADJUSTUP);
-	else
-		S_LocalSound(MENU_ADJUSTDOWN);
-
-	switch(menu)
-	{
-	case MENU_OPTIONS:
-		switch(optionnum)
-		{
-		case MENU_OPTIONS_SOUND:
-			volume.value += dir * 0.1;
-			if (volume.value < 0)
-				volume.value = 0;
-			if (volume.value > 1)
-				volume.value = 1;
-			Cvar_SetValue ("volume", volume.value);
-			break;
-		case MENU_OPTIONS_CD:
-			bgmvolume.value += dir * 1.0;
-			if (bgmvolume.value < 0)
-				bgmvolume.value = 0;
-			if (bgmvolume.value > 1)
-				bgmvolume.value = 1;
-			Cvar_SetValue ("bgmvolume", bgmvolume.value);
-			break;
-		case MENU_OPTIONS_CONTROL:
-			break;
-		case MENU_OPTIONS_MOUSE:
-			break;
-		case MENU_OPTIONS_VIDEO:
-			break;
-		case MENU_OPTIONS_MISC:
-			break;
-		}
-		break;
-	}
 }
 
 void M_DrawIcons(int menu,int optionnum)
 {
-	int x,y;
-//	float angle = sin(cl.time*2)*360;
-
-	if(!menu)
-	{
-		Con_Warning("M_DrawIcons: Unknown menu\n");
-		return;
-	}
-
-	// Not perfect but for now it'll suffice
-	y = Video.iHeight/2;
-	x = Video.iWidth/2;
-//	xr = x+((xr-x)*cos(angle))-((y-yr)*sin(angle));
-//	yr = y+((y-yr)*cos(angle))-((xr-x)*sin(angle));
-
-	switch(menu)
-	{
-	case MENU_MAIN:
-		switch(optionnum)
-		{
-		case 2:
-			Draw_ExternPic("textures/sprites/multi",1,x,y,90,90);
-			break;
-		case 3:
-			Draw_ExternPic("textures/sprites/d_options",1,x,10,128,64);
-			Draw_ExternPic("textures/sprites/options",1,x,y,90,90);
-			break;
-		case 4:
-			Draw_ExternPic("textures/sprites/d_quit",1,x,10,70,64);
-			Draw_ExternPic("textures/sprites/quit",1,x,y,90,90);
-			break;
-		}
-		break;
-	case MENU_NEW:
-		Draw_ExternPic("textures/sprites/d_new",1,x,10,174,64);
-		switch (optionnum)
-		{
-		case 0:
-			Draw_ExternPic("textures/sprites/e1",1,x,y,90,90);
-			break;
-		case 1:
-			Draw_ExternPic("textures/sprites/e2",1,x,y,90,90);
-			break;
-		case 2:
-			Draw_ExternPic("textures/sprites/e3",1,x,y,90,90);
-			break;
-		case 3:
-			Draw_ExternPic("textures/sprites/e4",1,x,y,90,90);
-			break;
-		}
-		break;
-	case MENU_OPTIONS:
-		Draw_ExternPic("textures/sprites/d_options",1,x,10,128,64);
-		switch (optionnum)
-		{
-		case MENU_OPTIONS_CONTROL:
-			Draw_ExternPic("textures/sprites/keyboard",1,x,y,90,90);
-			break;
-		case MENU_OPTIONS_MOUSE:
-			Draw_ExternPic("textures/sprites/mouse",1,x,y,90,90);
-			break;
-		case MENU_OPTIONS_VIDEO:
-			Draw_ExternPic("textures/sprites/videomode",1,x,y,90,90);
-			break;
-		case MENU_OPTIONS_MISC:
-			Draw_ExternPic("textures/sprites/miscsettings",1,x,y,90,90);
-			break;
-		}
-		break;
-	}
 }
-//=============================================================================
 
 int m_save_demonum;
 
 void M_ToggleMenu_f (void)
 {
-	m_entersound = TRUE;
-
-	if (key_dest == key_menu)
-	{
-		if (m_state != m_main)
-		{
-			M_Menu_Main_f ();
-			return;
-		}
-		key_dest = key_game;
-		m_state = m_none;
-		return;
-	}
-
-	if (key_dest == key_console)
-	{
-//		S_StopOgg();
-		Con_ToggleConsole_f ();
-	}
-	else
-	{
-//		S_PlayOgg("music/menutest",FALSE);
-		M_Menu_Main_f ();
-	}
 }
 
 //=============================================================================
@@ -390,19 +185,10 @@ int	m_main_cursor;
 
 void M_Menu_Main_f (void)
 {
-	if (key_dest != key_menu)
-	{
-		m_save_demonum = cls.demonum;
-		cls.demonum = -1;
-	}
-	key_dest = key_menu;
-	m_state = m_main;
-	m_entersound = TRUE;
 }
 
 void M_Main_Draw (void)
 {
-	M_DrawIcons(MENU_MAIN,m_main_cursor);
 }
 
 void M_Main_Key (int key)

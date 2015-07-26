@@ -201,15 +201,14 @@ void CVideoShader::SetVariable(const char *name, float f)
 	C Wrapper
 */
 
-CVideoShader *modelShader = NULL;
-
-CVideoShader *currentShader = NULL;
+CVideoShader 
+	*baseShader = NULL,
+	*currentShader = NULL;
 
 void VideoShader_Initialize(void)
 {
-	modelShader = new CVideoShader("model");
-
-	currentShader = modelShader;
+	baseShader = new CVideoShader("base");
+	currentShader = baseShader;
 }
 
 void VideoShader_Enable(void)
