@@ -271,7 +271,7 @@ Material_t *Material_GetByPath(const char *ccPath)
 gltexture_t *Material_LoadTexture(Material_t *mMaterial, MaterialSkin_t *mCurrentSkin, char *cArg)
 {
 	int	iTextureFlags = TEXPREF_ALPHA|TEXPREF_MIPMAP;
-	byte *bTextureMap;
+	uint8_t *bTextureMap;
 
 	// Check if it's trying to use a built-in texture.
 	if (cArg[0] == '@')
@@ -290,7 +290,14 @@ gltexture_t *Material_LoadTexture(Material_t *mMaterial, MaterialSkin_t *mCurren
 	// Ensure we haven't loaded the texture in already...
 	gltexture_t *gTexture = TexMgr_GetTexture(cArg);
 	if (gTexture)
+#if 0	// Debugging
+	{
+		Con_Printf("Found already existing sample! (%s) (%s)", gTexture->name, mMaterial->cPath);
 		return gTexture;
+	}
+#else
+		return gTexture;
+#endif
 
 	bTextureMap = Image_LoadImage(cArg,
 		&mCurrentSkin->mtTexture[mCurrentSkin->uiTextures].uiWidth,

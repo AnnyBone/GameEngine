@@ -380,11 +380,11 @@ void CMaterialEditorFrame::OnOpen(wxCommandEvent &event)
 {
 	char defaultPath[PLATFORM_MAX_PATH];
 
-	sprintf_s(defaultPath, "%s/%s", engine->GetBasePath(), engine->GetMaterialPath());
+	sprintf_s(defaultPath, "%s", engine->GetBasePath());
 
 	wxFileDialog *fileDialog = new wxFileDialog(
 		this, 
-		"Open MATERIAL file", 
+		"Open File", 
 		defaultPath,
 		"", 
 		"MATERIAL files (*.material)|*.material",wxFD_OPEN|wxFD_FILE_MUST_EXIST);

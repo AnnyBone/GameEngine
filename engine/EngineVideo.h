@@ -68,9 +68,10 @@ typedef struct
 					fBitsPerPixel;
 
     // Texture Management
-	unsigned	int	iCurrentTexture,	// Current/last binded texture.
-                    uiActiveUnit,		// The currently active unit.
-                    uiSecondaryUnit;	// Current/last secondary texture.
+	unsigned	int	
+		uiCurrentTexture[VIDEO_MAX_UNITS],	// Current/last binded texture.   
+		uiActiveUnit,						// The currently active unit.
+		uiSecondaryUnit;					// Current/last secondary texture.
 
 	int iSupportedUnits;	// Max number of supported units.
 	int iMSAASamples;

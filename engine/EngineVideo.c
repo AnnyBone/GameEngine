@@ -93,8 +93,9 @@ void Video_Initialize(void)
 
 	Con_Printf("Initializing video...\n");
 
+	memset(Video.uiCurrentTexture, -1, sizeof(int)*VIDEO_MAX_UNITS); // "To avoid unnecessary texture sets"
+
 	// Give everything within the video sub-system its default value.
-	Video.iCurrentTexture = (unsigned int)-1;	// "To avoid unnecessary texture sets"
 	Video.bVertexBufferObject = false;			// Only enabled if the hardware supports it.
 	Video.bGenerateMipMap = false;				// Only enabled if the hardware supports it.
 	Video.bDebugFrame = false;					// Not debugging the initial frame!
@@ -416,10 +417,10 @@ void Video_SetTexture(gltexture_t *gTexture)
 	if(!gTexture)
 		gTexture = notexture;
 	// If it's the same as the last, don't bother.
-	else if(gTexture->texnum == Video.iCurrentTexture)
+	else if (gTexture->texnum == Video.uiCurrentTexture[Video.uiActiveUnit])
 		return;
 
-	Video.iCurrentTexture = gTexture->texnum;
+	Video.uiCurrentTexture[Video.uiActiveUnit] = gTexture->texnum;
 
 	gTexture->visframe = r_framecount;
 
