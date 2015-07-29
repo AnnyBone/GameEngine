@@ -444,7 +444,7 @@ void TexMgr_RecalcWarpImageSize (void)
 void TextureManager_Initialize(void)
 {
 	int			i;
-	static byte notexture_data[16] =
+	static uint8_t notexture_data[16] =
 	{
 		255,  0,255, 255,
 		  0,  0,  0, 255,
@@ -1063,7 +1063,7 @@ void TexMgr_ReloadImage (gltexture_t *glt, int shirt, int pants)
 	else if (glt->source_file[0] && !glt->source_offset)
 		data = Image_LoadImage(glt->source_file,&glt->source_width,&glt->source_height); //simple file
 	else if (!glt->source_file[0] && glt->source_offset)
-		data = (byte*)glt->source_offset; //image in memory
+		data = (uint8_t*)glt->source_offset; //image in memory
 
 	if(!data)
 	{
