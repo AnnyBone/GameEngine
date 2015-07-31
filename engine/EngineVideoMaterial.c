@@ -79,7 +79,7 @@ void Material_Initialize(void)
 
 	// Load base materials...
 
-	mNoTexture = Material_Load("engine/notexture");
+	mNoTexture = Material_Load("base/missing");
 	if (!mNoTexture)
 		Sys_Error("Failed to load notexture material!\n");
 
@@ -91,7 +91,7 @@ void Material_Initialize(void)
 	if (!mBlobShadow)
 		Sys_Error("Failed to load shadow material!\n");
 
-	mColour = Material_Load("engine/colours");
+	mColour = Material_Load("base/colours");
 	if (!mColour)
 		Sys_Error("Failed to load white material!\n");
 }

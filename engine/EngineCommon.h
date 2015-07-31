@@ -117,7 +117,7 @@ void COM_InitArgv (int argc, char **argv);
 
 char *FileSystem_SkipPath(char *pathname);
 void COM_StripExtension (char *in, char *out);
-void COM_FileBase (char *in, char *out);
+void COM_FileBase (const char *in, char *out);
 void COM_DefaultExtension (char *path, char *extension);
 
 char	*va(char *format, ...);
@@ -132,15 +132,14 @@ struct cache_user_s;
 extern	char	com_gamedir[MAX_OSPATH];
 
 void FileSystem_WriteFile(const char *ccFileName,void *data,int len);
-int COM_OpenFile (char *filename, int *hndl);
-int COM_FOpenFile (char *filename, FILE **file);
+int COM_OpenFile (const char *filename, int *hndl);
+int COM_FOpenFile (const char *filename, FILE **file);
 void COM_CloseFile (int h);
 
 uint8_t *COM_LoadStackFile(char *path, void *buffer, int bufsize);
 uint8_t *COM_LoadTempFile (const char *path);
 uint8_t *COM_LoadHunkFile(char *path);
-
-uint8_t *COM_LoadFile(char *path, int usehunk);
+uint8_t *COM_LoadFile(const char *path, int usehunk);
 
 void COM_LoadCacheFile(char *path,struct cache_user_s *cu);
 

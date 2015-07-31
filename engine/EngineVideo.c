@@ -898,10 +898,9 @@ VideoPrimitives_t vpVideoPrimitiveList[]=
 */
 void Video_DrawArrays(VideoPrimitive_t vpPrimitiveType, unsigned int uiSize, bool bWireframe)
 {
-	unsigned int uiPrimitiveType = -1;
+	unsigned int uiPrimitiveType = VIDEO_PRIMITIVE_IGNORE;
 
 	int i;
-
 	for (i = 0; i < sizeof(vpVideoPrimitiveList); i++)
 		if (vpPrimitiveType == vpVideoPrimitiveList[i].vpPrimitive)
 		{
@@ -909,7 +908,7 @@ void Video_DrawArrays(VideoPrimitive_t vpPrimitiveType, unsigned int uiSize, boo
 			break;
 		}
 
-	if (uiPrimitiveType == -1)
+	if (uiPrimitiveType == VIDEO_PRIMITIVE_IGNORE)
 		Sys_Error("Invalid primitive type! (%i)\n", vpPrimitiveType);
 
 	if (bWireframe)

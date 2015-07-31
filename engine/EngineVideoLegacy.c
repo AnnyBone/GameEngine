@@ -471,7 +471,7 @@ void Video_DrawClientBoundingBox(ClientEntity_t *clEntity)
 {
 	MathVector3f_t vMins, vMaxs;
 
-	if (!clEntity->model || (clEntity == cl.viewentity && !chase_active.bValue) || (clEntity == &cl.viewent))
+	if (!clEntity->model || ((clEntity == &cl_entities[cl.viewentity]) && !chase_active.bValue) || (clEntity == &cl.viewent))
 		return;
 
 	Math_VectorAdd(clEntity->model->rmins, clEntity->origin, vMins);

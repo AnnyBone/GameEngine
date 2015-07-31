@@ -795,7 +795,7 @@ char *COM_FileExtension(char *in)
 	return exten;
 }
 
-void COM_FileBase(char *in,char *out)
+void COM_FileBase(const char *in,char *out)
 {
 	char *s,*s2;
 
@@ -1113,7 +1113,7 @@ void FileSystem_CopyFile(char *netpath,char *cachepath)
 /*	Finds the file in the search path.
 	Sets com_filesize and one of handle or file
 */
-int COM_FindFile (char *filename, int *handle, FILE **file)
+int COM_FindFile (const char *filename, int *handle, FILE **file)
 {
 	searchpath_t    *search;
 	char            netpath[MAX_OSPATH], cachepath[MAX_OSPATH];
@@ -1218,7 +1218,7 @@ int COM_FindFile (char *filename, int *handle, FILE **file)
 	returns a handle and a length
 	it may actually be inside a pak file
 */
-int COM_OpenFile (char *filename, int *handle)
+int COM_OpenFile (const char *filename, int *handle)
 {
 	return COM_FindFile (filename, handle, NULL);
 }
@@ -1226,7 +1226,7 @@ int COM_OpenFile (char *filename, int *handle)
 /*	If the requested file is inside a packfile, a new FILE * will be opened
 	into the file.
 */
-int COM_FOpenFile (char *filename, FILE **file)
+int COM_FOpenFile (const char *filename, FILE **file)
 {
 	return COM_FindFile (filename, NULL, file);
 }
@@ -1250,7 +1250,7 @@ void COM_CloseFile (int h)
 cache_user_t	*loadcache;
 byte			*loadbuf;
 int				loadsize;
-byte *COM_LoadFile (char *path, int usehunk)
+byte *COM_LoadFile (const char *path, int usehunk)
 {
 	int     h,len;
 	byte    *buf = NULL;  // quiet compiler warning
