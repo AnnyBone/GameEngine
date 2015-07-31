@@ -7,7 +7,7 @@
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="x64">
-				<Option output="../bin/Level.x64" prefix_auto="1" extension_auto="0" />
+				<Option output="../bin/level" prefix_auto="1" extension_auto="0" />
 				<Option object_output="obj/Release/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
@@ -34,9 +34,10 @@
 			<Add directory="../shared" />
 			<Add directory="../platform/include" />
 		</Compiler>
-		<Unit filename="../shared/shared_formats.c">
+		<Unit filename="../shared/SharedFormats.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../shared/SharedFormats.h" />
 		<Unit filename="brush.c">
 			<Option compilerVar="CC" />
 		</Unit>

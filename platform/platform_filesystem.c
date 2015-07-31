@@ -23,10 +23,10 @@ bool pFileSystem_IsModified(time_t tOldTime, const char *ccPath)
 		pError_Set("Failed to get file stats!\n");
 		return false;
 	}
-	
+
 	if (sAttributes.st_mtime > tOldTime)
 		return true;
-	
+
 	return false;
 }
 
@@ -36,7 +36,7 @@ time_t pFileSystem_GetModifiedTime(const char *ccPath)
 	if (stat(ccPath, &sAttributes) == -1)
 	{
 		pError_Set("Failed to get modification time!\n");
-		return;
+		return 0;
 	}
 	return sAttributes.st_mtime;
 }
