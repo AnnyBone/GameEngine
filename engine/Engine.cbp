@@ -240,9 +240,7 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="EngineVideoMaterial.h" />
-		<Unit filename="EngineVideoObject.c">
-			<Option compilerVar="CC" />
-		</Unit>
+		<Unit filename="EngineVideoObject.cpp" />
 		<Unit filename="EngineVideoParticle.c">
 			<Option compilerVar="CC" />
 		</Unit>
