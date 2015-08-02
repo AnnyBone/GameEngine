@@ -354,7 +354,7 @@ void Con_Printf (char *fmt, ...)
 	pLog_Write(LOG_GLOBAL, "%s", msg);
 
 	if (Global.bEmbeddedContext)
-		Launcher.PrintMessage(msg);
+		EngineLauncher.PrintMessage(msg);
 	else
 	{
 		if (!bConsoleInitialized)
@@ -402,7 +402,7 @@ void Con_Warning (char *fmt, ...)
 	if (Global.bEmbeddedContext)
 	{
 		pLog_Write(LOG_GLOBAL, "%s", msg);
-		Launcher.PrintWarning(msg);
+		EngineLauncher.PrintWarning(msg);
 	}
 	else
 	{
@@ -428,7 +428,7 @@ void Con_Error(char *fmt,...)
 	if (Global.bEmbeddedContext)
 	{
 		pLog_Write(LOG_GLOBAL, "%s", msg);
-		Launcher.PrintError(msg);
+		EngineLauncher.PrintError(msg);
 	}
 	else
 		Con_Printf("\nError: %s\n",msg);
@@ -457,7 +457,7 @@ void Con_DPrintf(char *fmt,...)
 	if (Global.bEmbeddedContext)
 	{
 		pLog_Write(LOG_GLOBAL, "%s", msg);
-		Launcher.PrintMessage(msg);
+		EngineLauncher.PrintMessage(msg);
 	}
 	else
 	{

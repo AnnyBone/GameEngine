@@ -37,7 +37,7 @@ public:
 	void SetVariable(const char *name, float x, float y, float z, float a);
 	void SetVariable(const char *name, int i);
 	void SetVariable(const char *name, float f);
-protected:
+
 private:
 	const char *vertexSource, *fragmentSource;
 

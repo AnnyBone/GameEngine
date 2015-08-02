@@ -253,7 +253,7 @@
     <ClCompile Include="EngineVideoShader.cpp">
       <Filter>Client\Video</Filter>
     </ClCompile>
-    <ClCompile Include="EngineVideoObject.c">
+    <ClCompile Include="EngineVideoObject.cpp">
       <Filter>Client\Video</Filter>
     </ClCompile>
   </ItemGroup>

@@ -17,12 +17,12 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+extern "C" {
 #include "EngineBase.h"
 
 #include "EngineVideo.h"
 #include "EngineVideoObject.h"
-
-#if 0
+}
 
 class CVideoObject
 {
@@ -100,8 +100,6 @@ void CVideoObject::Draw()
 /*
 	C Wrapper
 */
-
-#endif
 
 /*
 	Traditional style interface

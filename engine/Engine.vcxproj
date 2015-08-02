@@ -632,7 +632,7 @@
     <ClCompile Include="EngineEditor.c" />
     <ClCompile Include="EngineMaterialEditor.c" />
     <ClCompile Include="EngineVideoLayer.c" />
-    <ClCompile Include="EngineVideoObject.c" />
+    <ClCompile Include="EngineVideoObject.cpp" />
     <ClCompile Include="EngineVideoFont.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
     </ClCompile>

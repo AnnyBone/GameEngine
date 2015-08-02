@@ -30,7 +30,8 @@
 extern char cApplicationTitle[512];
 
 #define	EDITOR_TITLE	"Yokote"
-#define	MATERIALEDITOR_LOG		"editor"
+
+#define	MATERIALEDITOR_LOG	"editor"
 
 #define	PATH_16ICONS	"resource/16x16/"
 #define	PATH_32ICONS	"resource/32x32/"

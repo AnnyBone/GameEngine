@@ -28,6 +28,8 @@
 
 #include "platform_module.h"
 
+Global_t Global;
+
 bool Engine_IsRunning(void)
 {
 	return bHostInitialized;
@@ -54,54 +56,57 @@ char* Engine_GetVersion(void)
 bool System_Main(int iArgumentCount,char *cArguments[], bool bEmbedded);
 void System_Loop(void);
 
+EngineExport_t EngineExport;
+EngineImport_t EngineLauncher;
+
 pMODULE_EXPORT EngineExport_t *Engine_Main(EngineImport_t *mImport)
 {
 	// Imports
-	Launcher.iVersion = mImport->iVersion;
-	Launcher.PrintError = mImport->PrintError;
-	Launcher.PrintMessage = mImport->PrintMessage;
-	Launcher.PrintWarning = mImport->PrintWarning;
+	EngineLauncher.iVersion = mImport->iVersion;
+	EngineLauncher.PrintError = mImport->PrintError;
+	EngineLauncher.PrintMessage = mImport->PrintMessage;
+	EngineLauncher.PrintWarning = mImport->PrintWarning;
 
 	// Exports
-	eExport.Initialize = System_Main;
-	eExport.Shutdown = Host_Shutdown;
-	eExport.IsRunning = Engine_IsRunning;
-	eExport.SetViewportSize = Video_SetViewportSize;
-	eExport.Loop = System_Loop;
-	eExport.iVersion = ENGINE_VERSION;
+	EngineExport.Initialize = System_Main;
+	EngineExport.Shutdown = Host_Shutdown;
+	EngineExport.IsRunning = Engine_IsRunning;
+	EngineExport.SetViewportSize = Video_SetViewportSize;
+	EngineExport.Loop = System_Loop;
+	EngineExport.iVersion = ENGINE_VERSION;
 
 	// Client
-	eExport.GetClientTime = Client_GetTime;
+	EngineExport.GetClientTime = Client_GetTime;
 
-	eExport.GetBasePath = Engine_GetBasePath;
-	eExport.GetVersion = Engine_GetVersion;
+	EngineExport.GetBasePath = Engine_GetBasePath;
+	EngineExport.GetVersion = Engine_GetVersion;
 
 	// Material
-	eExport.GetMaterialPath = Engine_GetMaterialPath;
-	eExport.LoadMaterial = Material_Load;
-	eExport.UnloadMaterial = Material_Clear;
+	EngineExport.GetMaterialPath = Engine_GetMaterialPath;
+	EngineExport.LoadMaterial = Material_Load;
+	EngineExport.UnloadMaterial = Material_Clear;
 
 	// Console
-	eExport.InsertConsoleCommand = Cbuf_InsertText;
-	eExport.RegisterConsoleVariable = Cvar_RegisterVariable;
-	eExport.SetConsoleVariable = Cvar_Set;
-	eExport.ResetConsoleVariable = Cvar_Reset;
-	eExport.Print = Con_Printf;
-	eExport.PrintDev = Con_DPrintf;
+	EngineExport.InsertConsoleCommand = Cbuf_InsertText;
+	EngineExport.RegisterConsoleVariable = Cvar_RegisterVariable;
+	EngineExport.SetConsoleVariable = Cvar_Set;
+	EngineExport.ResetConsoleVariable = Cvar_Reset;
+	EngineExport.Print = Con_Printf;
+	EngineExport.PrintDev = Con_DPrintf;
 
 	// Video
-	eExport.Video_PostFrame = Video_PostFrame;
-	eExport.Video_PreFrame = Video_PreFrame;
-	eExport.DrawFPS = Screen_DrawFPS;
-	eExport.DrawConsole = Screen_DrawConsole;
-	eExport.DrawString = Draw_String;
-	eExport.DrawLine = Draw_Line;
-	eExport.DrawModel = MaterialEditor_Draw;
-	eExport.ResetCanvas = Draw_ResetCanvas;
+	EngineExport.Video_PostFrame = Video_PostFrame;
+	EngineExport.Video_PreFrame = Video_PreFrame;
+	EngineExport.DrawFPS = Screen_DrawFPS;
+	EngineExport.DrawConsole = Screen_DrawConsole;
+	EngineExport.DrawString = Draw_String;
+	EngineExport.DrawLine = Draw_Line;
+	EngineExport.DrawModel = MaterialEditor_Draw;
+	EngineExport.ResetCanvas = Draw_ResetCanvas;
 
 	// Material Editor
-	eExport.MaterialEditorInitialize = MaterialEditor_Initialize;
-	eExport.MaterialEditorDisplay = MaterialEditor_Display;
+	EngineExport.MaterialEditorInitialize = MaterialEditor_Initialize;
+	EngineExport.MaterialEditorDisplay = MaterialEditor_Display;
 
-	return &eExport;
+	return &EngineExport;
 }

@@ -1,0 +1,26 @@
+{
+	// Let's the engine know to keep this in memory.
+	$flags "PRESERVE"
+	
+	// Add a skin.
+	$skin
+	{
+		// Add a texture, use @ to use an internal/generated texture.
+		/*
+		$map @notexture
+		{
+		}
+		*/
+		
+		$map "materials/base/default"
+		{
+		}
+		
+		// Finally, add our fullbright layer.
+		$map "materials/base/missing_fullbright"
+		{
+			// Set the type as fullbright, so it's drawn using that path.
+			$type "fullbright"
+		}
+	}
+}

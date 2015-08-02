@@ -150,7 +150,7 @@ typedef struct {
 	double	efrags;
 	double	beams;
 } overflowtimes_t;
-overflowtimes_t dev_overflows; //this stores the last time overflow messages were displayed, not the last time overflows occured
+extern overflowtimes_t dev_overflows; //this stores the last time overflow messages were displayed, not the last time overflows occured
 #define CONSOLE_RESPAM_TIME 3 // seconds between repeated warning messages
 //johnfitz
 

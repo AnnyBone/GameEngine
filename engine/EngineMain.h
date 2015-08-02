@@ -42,10 +42,9 @@ typedef struct
 	bool bEmbeddedContext;
 } Global_t;
 
-Global_t Global;
+extern Global_t Global;
 
-EngineExport_t eExport;
-EngineImport_t Launcher;
+extern EngineImport_t EngineLauncher;
 
 // System
 double System_DoubleTime(void);

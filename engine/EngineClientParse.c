@@ -90,6 +90,8 @@ char *svc_strings[] =
 
 extern vec3_t	v_punchangles[2]; //johnfitz
 
+overflowtimes_t dev_overflows;
+
 //=============================================================================
 
 /*	This error checks and tracks the total number of entities.

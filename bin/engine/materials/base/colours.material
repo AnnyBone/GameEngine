@@ -1,0 +1,27 @@
+colours
+{
+	$flags	"PRESERVE"
+
+	// Do not modify these! The engine expects them to be in this order.
+	
+	$skin
+	{	
+		$map "materials/base/colours/white"
+		{
+		}
+	}
+	
+	$skin
+	{
+		$map "materials/base/colours/black"
+		{
+		}
+	}
+	
+	$skin
+	{
+		$map "materials/base/colours/blue"
+		{
+		}
+	}
+}
