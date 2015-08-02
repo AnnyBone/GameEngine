@@ -542,7 +542,7 @@ brush_t *LoadBrush (mbrush_t *mb, int brushnum, int hullnum)
 	}
 
 	name = miptex[texinfo[mb->faces->texinfo].iMipTex];
-	if (name[0] == '*')		// entities never use water merging
+	if (name[0] == '*' || name[0] == '#')		// entities never use water merging
 	{
 		if(!Q_strncasecmp(name+1,"lava",4))
 			contents = BSP_CONTENTS_LAVA;
