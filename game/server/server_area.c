@@ -947,15 +947,13 @@ void Area_ClimbTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
 		return;
 
 	Math_AngleVectors(eOther->v.angles, vForward, vRight, vUp);
-	Math_VectorCopy(vPlayerVec, vForward);
-	vPlayerVec[0] *= 250;
-	vPlayerVec[1] *= 250;
-	vPlayerVec[2] *= 250;
+	Math_VectorCopy(vForward, vPlayerVec);
+	Math_VectorScale(vPlayerVec, 250, vPlayerVec);
 
 	if (eOther->v.button[2])
 		Math_VectorCopy(eOther->v.velocity, vPlayerVec);
 
-	if (eOther->local.fLadderJump > Server.dTime)
+	if (eOther->local.dLadderJump > Server.dTime)
 		return;
 
 	Math_AngleVectors(eOther->v.angles, vForward, vRight, vUp);
@@ -964,15 +962,15 @@ void Area_ClimbTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
 		return;
 
 	// ignore 8 units of the top edge
-	if (eOther->v.origin[2] + eOther->v.mins[2] + 8 >= eArea->v.absmax[2]) {
-		if ((!eOther->v.flags & FL_ONGROUND))
+	if (eOther->v.origin[2] + eOther->v.mins[2] + 8 >= eArea->v.absmax[2]){
+		if (!(eOther->v.flags & FL_ONGROUND))
 			eOther->v.flags = eOther->v.flags + FL_ONGROUND;
 		return;
 	}
 
 	// null out gravity in PreThink
-	eOther->local.fLadderTime = Server.dTime + 0.1f;
-	eOther->local.fZeroGTime = Server.dTime + 0.1f;
+	eOther->local.dLadderTime = Server.dTime + 0.1;
+	eOther->local.dZeroGTime = Server.dTime + 0.1;
 	eOther->v.velocity[2] = 0;
 
 	if (Math_DotProduct(vRight, eOther->v.velocity) > 25) {
@@ -980,7 +978,7 @@ void Area_ClimbTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
 		eOther->v.origin[0] += vRight[0] * 0.5;
 		eOther->v.origin[1] += vRight[1] * 0.5;
 		eOther->v.origin[2] += vRight[2] * 0.5;
-		printf("right  ");
+	//	printf("right  ");
 		return;
 	}
 	else if (Math_DotProduct(vRight, eOther->v.velocity) < -25) {
@@ -988,7 +986,7 @@ void Area_ClimbTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
 		eOther->v.origin[0] -= vRight[0] * 0.5;
 		eOther->v.origin[1] -= vRight[1] * 0.5;
 		eOther->v.origin[2] -= vRight[2] * 0.5;
-		printf("left  ");
+	//	printf("left  ");
 		return;
 	}
 
@@ -1049,10 +1047,7 @@ void Area_ClimbTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
 		vLadVelocity[2] = -1 * 100;
 
 	// do it manually! VectorCopy won't work with this
-	//Math_VectorCopy(eOther->v.velocity, vLadVelocity);
-	eOther->v.velocity[0] = vLadVelocity[0];
-	eOther->v.velocity[1] = vLadVelocity[1];
-	eOther->v.velocity[2] = vLadVelocity[2];
+	Math_VectorCopy(vLadVelocity, eOther->v.velocity);
 }
 
 void Area_ClimbSpawn(ServerEntity_t *eArea)

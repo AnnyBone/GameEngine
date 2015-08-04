@@ -459,8 +459,8 @@ void Player_PreThink(ServerEntity_t *ePlayer)
 	}
 
 	// ladders only work in ZeroG ~eukara
-	if (ePlayer->local.fZeroGTime < Server.dTime)
-		ePlayer->Physics.fGravity = SERVER_GRAVITY;
+	if (ePlayer->local.dZeroGTime < Server.dTime)
+		ePlayer->Physics.fGravity = cvServerGravity.value;
 	else
 		ePlayer->Physics.fGravity = 0;
 
@@ -815,12 +815,12 @@ void Player_Jump(ServerEntity_t *ePlayer)
 	char cJumpSound[32];
 
 	// better ladder stuff ~eukara
-	if ((ePlayer->local.fLadderTime > Server.dTime) && (ePlayer->local.fLadderJump < Server.dTime)) {
+	if ((ePlayer->local.dLadderTime > Server.dTime) && (ePlayer->local.dLadderJump < Server.dTime)) {
 
 		if (!(ePlayer->v.flags & FL_ONGROUND))
 			ePlayer->v.flags = ePlayer->v.flags + FL_ONGROUND;
 
-		ePlayer->local.fLadderJump = Server.dTime + 0.4f;
+		ePlayer->local.dLadderJump = Server.dTime + 0.4;
 		ePlayer->v.velocity[2] = 0;
 
 		Math_AngleVectors(ePlayer->v.angles, ePlayer->local.vForward, ePlayer->local.vRight, ePlayer->local.vUp);
