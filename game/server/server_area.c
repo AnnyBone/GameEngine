@@ -144,7 +144,7 @@ void Area_CreateGib(ServerEntity_t *eArea, const char *cModel)
 		eGib->v.movetype = MOVETYPE_BOUNCE;
 		eGib->v.TouchFunction = Area_BreakableBounce;
 		eGib->v.think = Entity_Remove;
-		eGib->v.dNextThink = Server.dTime + 20.0f;
+		eGib->v.dNextThink = Server.dTime + 20;
 
 		eGib->Physics.iSolid = SOLID_TRIGGER;
 
@@ -702,8 +702,6 @@ void Area_ButtonWait(ServerEntity_t *eArea, ServerEntity_t *eOther)
 	eArea->local.iValue = 1;
 
 	eArea->v.think		= Area_ButtonReturn;
-
-//	if(eArea->local.dWait >= 0)
 	eArea->v.dNextThink	= eArea->v.ltime + 4;
 
 	if(eArea->local.cSoundStop)
@@ -810,8 +808,12 @@ void Area_ButtonSpawn(ServerEntity_t *eArea)
 
 void Area_PlatformDone(ServerEntity_t *eArea, ServerEntity_t *eOther)
 {
+	if(eArea->local.dWait >= 0)
+		eArea->v.dNextThink = eArea->v.ltime + eArea->local.dWait;
+
 	eArea->local.state	= STATE_DOWN;
 	eArea->local.iValue = 0;
+	eArea->v.think	= NULL;
 
 	if(eArea->local.cSoundStop)
 		Sound(eArea,CHAN_VOICE,eArea->local.cSoundStop,255,ATTN_NORM);
@@ -848,6 +850,8 @@ void Area_PlatformTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
 	if(eArea->local.state == STATE_UP || eArea->local.state == STATE_TOP)
 		return;
 	if((eOther->Monster.iType != MONSTER_PLAYER) && eOther->v.iHealth <= 0)
+		return;
+	if(eArea->v.dNextThink > eArea->v.ltime)
 		return;
 
 	eArea->local.state = STATE_UP;
@@ -902,8 +906,8 @@ void Area_PlatformSpawn(ServerEntity_t *eArea)
 
 	if(eArea->local.count == 0)
 		eArea->local.count = 100;
-	if(eArea->local.dWait == 0.0f)
-		eArea->local.dWait = 3.0f;
+	if(eArea->local.dWait == 0.0)
+		eArea->local.dWait = 3.0;
 	if(eArea->local.iDamage == 0.0f)
 		eArea->local.iDamage = 20;
 

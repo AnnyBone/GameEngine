@@ -416,9 +416,9 @@ typedef struct
 					*activator;
 	char			*cOldModel;		// Last model.
 	char			cOldStyle;
-	float 			fLadderTime;
-	float 			fLadderJump;
-	float 			fZeroGTime;
+	double 			dLadderTime;
+	double 			dLadderJump;
+	double			dZeroGTime;
 
 	// CTF states
 	ServerEntity_t		*flag;				// Currently owned flag (if any).
