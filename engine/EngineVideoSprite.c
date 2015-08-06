@@ -18,9 +18,9 @@ typedef struct Sprite_s
 {
 	SpriteType_t stType;	// Type of sprite (see SpriteType_t).
 
-	MathVector3_t vOrigin;
+	MathVector3f_t vOrigin;
 
-	MathVector4_t vColour;	// Sprite colour.
+	MathVector4f_t vColour;	// Sprite colour.
 
 	bool bLit;				// If set to true, the sprite is effected by lighting.
 

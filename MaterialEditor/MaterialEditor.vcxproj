@@ -77,20 +77,22 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="EditorApp.h" />
-    <ClInclude Include="MaterialEditorBase.h" />
-    <ClInclude Include="MaterialEditorConsolePanel.h" />
-    <ClInclude Include="MaterialEditorFrame.h" />
+    <ClInclude Include="EditorBase.h" />
+    <ClInclude Include="EditorConsolePanel.h" />
+    <ClInclude Include="EditorFrame.h" />
     <ClInclude Include="EditorMaterialProperties.h" />
-    <ClInclude Include="MaterialEditorRenderCanvas.h" />
+    <ClInclude Include="EditorRenderCanvas.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="WADFrame.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EditorApp.cpp" />
-    <ClCompile Include="MaterialEditorConsolePanel.cpp" />
-    <ClCompile Include="MaterialEditorEngineInterface.cpp" />
-    <ClCompile Include="MaterialEditorFrame.cpp" />
+    <ClCompile Include="EditorConsolePanel.cpp" />
+    <ClCompile Include="EditorEngineInterface.cpp" />
+    <ClCompile Include="EditorFrame.cpp" />
     <ClCompile Include="EditorMaterialProperties.cpp" />
-    <ClCompile Include="MaterialEditorRenderCanvas.cpp" />
+    <ClCompile Include="EditorRenderCanvas.cpp" />
+    <ClCompile Include="WADFrame.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Material Editor.rc" />
