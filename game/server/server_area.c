@@ -571,43 +571,89 @@ void Area_TriggerSpawn(ServerEntity_t *eArea)
 	Pushable
 */
 
-void Area_PushableTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
+float IsOnTopOf (ServerEntity_t *eTop, ServerEntity_t *eBottom)
 {
-	int i;
+  	if (eTop->v.absmin[2] < eBottom->v.absmax[2] - 3) {
+    		return 0;
+    	}
+  	if (eTop->v.absmin[2] > eBottom->v.absmax[2] + 2) {
+    		return 0;
+    	}
+  	if (eTop->v.absmin[1] > eBottom->v.absmax[1]) {
+    		return 0;
+    	}
+  	if (eTop->v.absmax[1] < eBottom->v.absmin[1]) {
+    		return 0;
+    	}
+  	if (eTop->v.absmin[0] > eBottom->v.absmax[0]) {
+    		return 0;
+    	}
+  	if (eTop->v.absmax[0] < eBottom->v.absmin[0]) {
+    		return 0;
+    	}
 
-	if(	eOther->v.velocity[0] > eArea->Physics.fMass ||
-		eOther->v.velocity[1] > eArea->Physics.fMass)
-		for(i = 0; i < 2; i++)
-			eArea->v.origin[i] += (eOther->v.velocity[i]/5.0f);
-	else if(	eOther->v.velocity[0] < eArea->Physics.fMass ||
-				eOther->v.velocity[1] < eArea->Physics.fMass)
-		for(i = 0; i < 2; i++)
-			eArea->v.origin[i] -= (eOther->v.velocity[i]/5.0f);
+  	return 1;
 }
 
-void Area_PushableUse(ServerEntity_t *eArea)
+void Area_PushableThink(ServerEntity_t *eArea)
 {
-	eArea->Physics.iSolid	= SOLID_NOT;
-	eArea->v.movetype		= MOVETYPE_FLYBOUNCE;
+	// TODO: sort the physics stuff out engine side perhaps? BSP physics are hard.
+	// only update when something happens ~eukara
+	if(eArea->v.velocity[0] || eArea->v.velocity[1] || eArea->v.velocity[2])
+	{
+		Math_VectorScale(eArea->v.velocity, 0.9, eArea->v.velocity); // slowly slow it down.
+		eArea->v.velocity[2] = -300;	// fake physics... FIXME
+		eArea->v.dNextThink = eArea->v.ltime + 0.5;
+	}
+}
 
-	// [8/11/2013] Placeholder values! ~hogsy
-//	Math_VectorSet(30.0f,eArea->v.avelocity);
-	//Math_VectorSet(10.0f,eArea->v.velocity);
+void Area_PushableTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
+{
+	float fYaw;
+	MathVector3f_t vMVec;
+	MathVector3f_t vPVec;
+
+
+	if (IsOnTopOf(eOther, eArea)) 
+	{
+		eOther->v.flags = eOther->v.flags + FL_ONGROUND; // so the player can jump off the object ~eukara
+		return;
+	}
+	
+    	if (eArea->v.flags & FL_ONGROUND) {
+      		eArea->v.flags = eArea->v.flags - FL_ONGROUND;
+      	}
+	
+	Math_MVToVector(Math_VectorToAngles(eOther->v.velocity), vPVec); // get the right player angle
+	fYaw = vPVec[1] * pMath_PI *2 / 360;
+		
+	vMVec[0] = cos(fYaw)*80;
+	vMVec[1] = sin(fYaw)*80;
+	vMVec[2] = 0; // don't affect the height when pushing... ever ~eukara
+
+	Math_VectorCopy(vMVec, eArea->v.velocity);
+	Math_MVToVector(Math_VectorToAngles(eArea->v.velocity), eArea->v.avelocity);
+	eArea->v.dNextThink = eArea->v.ltime + 0.5;
 }
 
 void Area_PushableSpawn(ServerEntity_t *eArea)
 {
-	eArea->v.TouchFunction	= Area_PushableTouch;
-	eArea->v.use			= Area_PushableUse;
-	eArea->v.movetype		= MOVETYPE_PUSH;
+	// TODO: If designed to be breakable, make breakable? ~eukara
+/*	if (eArea->v.health) {
+		Area_BreakableSpawn(eArea);
+	}
+*/
+	//eArea->Physics.fGravity = cvServerGravity.value;
+	Math_VectorClear(eArea->v.angles);
 
-	eArea->Physics.iSolid	= SOLID_BSP;
-	eArea->Physics.fGravity	= SERVER_GRAVITY;
-	eArea->Physics.fMass	= 2.0f;
-
+	eArea->Physics.iSolid = SOLID_SLIDEBOX;
+	eArea->v.movetype = MOVETYPE_STEP;
 	Entity_SetModel(eArea,eArea->v.model);
 	Entity_SetOrigin(eArea,eArea->v.origin);
 	Entity_SetSizeVector(eArea,eArea->v.mins,eArea->v.maxs);
+
+	eArea->v.TouchFunction = Area_PushableTouch;
+	eArea->v.think = Area_PushableThink;
 }
 
 /*
