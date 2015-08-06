@@ -416,6 +416,9 @@ typedef struct
 					*activator;
 	char			*cOldModel;		// Last model.
 	char			cOldStyle;
+	double 			dLadderTime;
+	double 			dLadderJump;
+	double			dZeroGTime;
 
 	// CTF states
 	ServerEntity_t		*flag;				// Currently owned flag (if any).
@@ -525,29 +528,29 @@ typedef struct
 	void(*Server_AmbientSound)(MathVectorf_t *vPosition, const char *cPath, int iVolume, int iAttenuation);		// Plays an ambient sound (a constant sound) from the given location.
 
 	trace_t(*Server_Move)(MathVector3f_t start, MathVector3f_t mins, MathVector3f_t maxs, MathVector3f_t end, int type, ServerEntity_t *passedict);
-	
+
 	ServerEntity_t*(*Server_FindRadius)(MathVector3f_t origin, float radius);												// Finds entities within a specific radius.
 	ServerEntity_t*(*Server_FindEntity)(ServerEntity_t *eStartEntity, char *cName, bool bClassname);						// Finds a specified entity either by classname or by entity name.
 	ServerEntity_t*(*Server_GetEdicts)(void);
 
 	char		*(*Server_GetLevelName)(void);	// Returns the name of the currently active level.
-	
+
 	double		(*Server_GetFrameTime)(void);	// Returns host time.
 
 	// Client
 	int(*Client_GetEffect)(const char *cPath);					// Get an effect index.
 	int(*Client_GetStat)(ClientStat_t csStat);					// Get a client statistic (health etc.)
-	
+
 	void(*Client_PrecacheResource)(int iType, char *cResource);	// Precache a resource client-side.
 	void(*Client_SetMenuCanvas)(int iCanvas);					// Set the canvas type that the menu will use.
 	void(*Client_AddMenuState)(int iState);						// Adds a new state to the clients menu.
 	void(*Client_RemoveMenuState)(int iState);					// Removes a state from the clients menu.
-	
+
 	ClientEntity_t		*(*Client_GetViewEntity)(void);							// Returns the entity representing the players view model.
 	ClientEntity_t		*(*Client_GetPlayerEntity)(void);						// Returns the entity representing the player.
-	
+
 	DynamicLight_t	*(*Client_AllocateDlight)(int key);						// Allocate a new dynamic light.
-	
+
 	Particle_t		*(*Client_AllocateParticle)(void);						// Allocate a new particle effect.
 
 	// Global

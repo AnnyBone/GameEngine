@@ -458,6 +458,12 @@ void Player_PreThink(ServerEntity_t *ePlayer)
 		return;
 	}
 
+	// ladders only work in ZeroG ~eukara
+	if (ePlayer->local.dZeroGTime < Server.dTime)
+		ePlayer->Physics.fGravity = cvServerGravity.value;
+	else
+		ePlayer->Physics.fGravity = 0;
+
 	if(ePlayer->v.waterlevel == 2)
 	{
 		int		i;
@@ -808,9 +814,20 @@ void Player_Jump(ServerEntity_t *ePlayer)
 {
 	char cJumpSound[32];
 
-	// TODO: Add new ladder movetype?
-	if(ePlayer->v.movetype == MOVETYPE_FLY)	// LADDER MESSY ~EUKOS
-		ePlayer->v.movetype = MOVETYPE_WALK;
+	// better ladder stuff ~eukara
+	if ((ePlayer->local.dLadderTime > Server.dTime) && (ePlayer->local.dLadderJump < Server.dTime)) {
+
+		if (!(ePlayer->v.flags & FL_ONGROUND))
+			ePlayer->v.flags = ePlayer->v.flags + FL_ONGROUND;
+
+		ePlayer->local.dLadderJump = Server.dTime + 0.4;
+		ePlayer->v.velocity[2] = 0;
+
+		Math_AngleVectors(ePlayer->v.angles, ePlayer->local.vForward, ePlayer->local.vRight, ePlayer->local.vUp);
+		ePlayer->v.velocity[0] += (ePlayer->local.vForward[0] * 100);
+		ePlayer->v.velocity[1] += (ePlayer->local.vForward[1] * 100);
+		ePlayer->v.velocity[2] += (ePlayer->local.vForward[2] * 100);
+	}
 
 	// Don't let us jump while inside a vehicle.
 	if(ePlayer->v.flags & FL_WATERJUMP || ePlayer->local.eVehicle)

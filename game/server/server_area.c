@@ -144,7 +144,7 @@ void Area_CreateGib(ServerEntity_t *eArea, const char *cModel)
 		eGib->v.movetype = MOVETYPE_BOUNCE;
 		eGib->v.TouchFunction = Area_BreakableBounce;
 		eGib->v.think = Entity_Remove;
-		eGib->v.dNextThink = Server.dTime + 20.0f;
+		eGib->v.dNextThink = Server.dTime + 20;
 
 		eGib->Physics.iSolid = SOLID_TRIGGER;
 
@@ -702,8 +702,6 @@ void Area_ButtonWait(ServerEntity_t *eArea, ServerEntity_t *eOther)
 	eArea->local.iValue = 1;
 
 	eArea->v.think		= Area_ButtonReturn;
-
-//	if(eArea->local.dWait >= 0)
 	eArea->v.dNextThink	= eArea->v.ltime + 4;
 
 	if(eArea->local.cSoundStop)
@@ -810,8 +808,12 @@ void Area_ButtonSpawn(ServerEntity_t *eArea)
 
 void Area_PlatformDone(ServerEntity_t *eArea, ServerEntity_t *eOther)
 {
+	if(eArea->local.dWait >= 0)
+		eArea->v.dNextThink = eArea->v.ltime + eArea->local.dWait;
+
 	eArea->local.state	= STATE_DOWN;
 	eArea->local.iValue = 0;
+	eArea->v.think	= NULL;
 
 	if(eArea->local.cSoundStop)
 		Sound(eArea,CHAN_VOICE,eArea->local.cSoundStop,255,ATTN_NORM);
@@ -848,6 +850,8 @@ void Area_PlatformTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
 	if(eArea->local.state == STATE_UP || eArea->local.state == STATE_TOP)
 		return;
 	if((eOther->Monster.iType != MONSTER_PLAYER) && eOther->v.iHealth <= 0)
+		return;
+	if(eArea->v.dNextThink > eArea->v.ltime)
 		return;
 
 	eArea->local.state = STATE_UP;
@@ -902,8 +906,8 @@ void Area_PlatformSpawn(ServerEntity_t *eArea)
 
 	if(eArea->local.count == 0)
 		eArea->local.count = 100;
-	if(eArea->local.dWait == 0.0f)
-		eArea->local.dWait = 3.0f;
+	if(eArea->local.dWait == 0.0)
+		eArea->local.dWait = 3.0;
 	if(eArea->local.iDamage == 0.0f)
 		eArea->local.iDamage = 20;
 
@@ -933,32 +937,132 @@ void Area_PlatformSpawn(ServerEntity_t *eArea)
 
 /*
 	Climb / Ladders
-
-	TODO:
-		Only push the player up when he is actually trying to move forward. ~eukos
 */
 
 void Area_ClimbTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
 {
-	if(eOther->v.movetype != MOVETYPE_WALK || !eOther->v.iHealth) // LADDER MESSY ~EUKOS
+	MathVector3f_t vLadVelocity, vPlayerVec, vForward, vRight, vUp;
+
+	float fForwardSpeed;
+
+	if (eOther->v.waterlevel > 1)
+		return;
+	if (eOther->v.flags & FL_WATERJUMP)
 		return;
 
-#if 1
-	eOther->v.movetype = MOVETYPE_FLY;
-#else	// [24/9/2013] Mockup of replacement ~hogsy
-	eOther->v.movetype = MOVETYPE_CLIMB;
-#endif
+	Math_AngleVectors(eOther->v.angles, vForward, vRight, vUp);
+	Math_VectorCopy(vForward, vPlayerVec);
+	Math_VectorScale(vPlayerVec, 250, vPlayerVec);
+
+	if (eOther->v.button[2])
+		Math_VectorCopy(eOther->v.velocity, vPlayerVec);
+
+	if (eOther->local.dLadderJump > Server.dTime)
+		return;
+
+	Math_AngleVectors(eOther->v.angles, vForward, vRight, vUp);
+
+	if (Math_DotProduct(vForward, eArea->v.movedir) < -0.5) // only continue when facing the ladder ~eukara
+		return;
+
+	// ignore 8 units of the top edge
+	if (eOther->v.origin[2] + eOther->v.mins[2] + 8 >= eArea->v.absmax[2]){
+		if (!(eOther->v.flags & FL_ONGROUND))
+			eOther->v.flags = eOther->v.flags + FL_ONGROUND;
+		return;
+	}
+
+	// null out gravity in PreThink
+	eOther->local.dLadderTime = Server.dTime + 0.1;
+	eOther->local.dZeroGTime = Server.dTime + 0.1;
+	eOther->v.velocity[2] = 0;
+
+	if (Math_DotProduct(vRight, eOther->v.velocity) > 25) {
+		Math_VectorClear(eOther->v.velocity);
+		eOther->v.origin[0] += vRight[0] * 0.5;
+		eOther->v.origin[1] += vRight[1] * 0.5;
+		eOther->v.origin[2] += vRight[2] * 0.5;
+	//	printf("right  ");
+		return;
+	}
+	else if (Math_DotProduct(vRight, eOther->v.velocity) < -25) {
+		Math_VectorClear(eOther->v.velocity);
+		eOther->v.origin[0] -= vRight[0] * 0.5;
+		eOther->v.origin[1] -= vRight[1] * 0.5;
+		eOther->v.origin[2] -= vRight[2] * 0.5;
+	//	printf("left  ");
+		return;
+	}
+
+	fForwardSpeed = Math_DotProduct(vForward, eOther->v.velocity);
+	Math_VectorClear(vLadVelocity);
+
+	// up (facing up/forward)
+	if ((eOther->v.v_angle[0] <= 15) && (fForwardSpeed > 0))
+	{
+		//eOther->v.origin[0] -= eArea->v.movedir[0] * 0.36f;
+		//eOther->v.origin[1] -= eArea->v.movedir[1] * 0.36f;
+		eOther->v.origin[2] -= eArea->v.movedir[2] * 0.36f;
+		vLadVelocity[2] = eOther->v.v_angle[0] * 6; // go faster when facing forward
+		//printf("up (facing up/forward)  ");
+
+		if (vLadVelocity[2] < 90)
+			vLadVelocity[2] = 90; // minimum speed
+	}
+	// up (facing down)
+ 	else if ((eOther->v.v_angle[0] >= 15) && (fForwardSpeed < 0))
+	{
+		//eOther->v.origin[0] += eArea->v.movedir[0] * 0.36f;
+		//eOther->v.origin[1] += eArea->v.movedir[1] * 0.36f;
+		eOther->v.origin[2] += eArea->v.movedir[2] * 0.36f;
+		//printf("up (facing down)  ");
+
+		vLadVelocity[2] = eOther->v.v_angle[0] * 4;
+	}
+	// down (facing up/forward)
+	else if ((eOther->v.v_angle[0] <= 15) && (fForwardSpeed < 0))
+	{
+		//eOther->v.origin[0] += eArea->v.movedir[0] * 0.36f;
+		//eOther->v.origin[1] += eArea->v.movedir[1] * 0.36f;
+		eOther->v.origin[2] += eArea->v.movedir[2] * 0.36f;
+
+		vLadVelocity[2] = eOther->v.v_angle[0] * -5;// go faster when facing forward
+		//printf("down (facing up/forward)  ");
+
+		if (vLadVelocity[2] > -80)
+			vLadVelocity[2] = -80;// minimum speed
+	}
+	// down (facing down)
+	else if ((eOther->v.v_angle[0] >= 15) && (fForwardSpeed > 0))
+	{
+		eOther->v.origin[0] -= eArea->v.movedir[0] * 0.36f;
+		eOther->v.origin[1] -= eArea->v.movedir[1] * 0.36f;
+		eOther->v.origin[2] -= eArea->v.movedir[2] * 0.36f;
+		//printf("down (facing down)  ");
+
+		vLadVelocity[2] = eOther->v.v_angle[0] * -4;
+	}
+
+	//printf("angle: %i; velo: %i\n", (int)eOther->v.v_angle[0], (int)vLadVelocity[2]);
+
+	if (vLadVelocity[2] > 100)
+		vLadVelocity[2] = 100;
+	else if (vLadVelocity[2] < -1 * 100)
+		vLadVelocity[2] = -1 * 100;
+
+	// do it manually! VectorCopy won't work with this
+	Math_VectorCopy(vLadVelocity, eOther->v.velocity);
 }
 
 void Area_ClimbSpawn(ServerEntity_t *eArea)
 {
+	Area_SetMoveDirection(eArea->v.angles, eArea->v.movedir);
 	eArea->v.TouchFunction = Area_ClimbTouch;
 
 	eArea->Physics.iSolid	= SOLID_TRIGGER;
 
 	Entity_SetModel(eArea,eArea->v.model);
 	Entity_SetOrigin(eArea,eArea->v.origin);
-
 	eArea->v.model = 0;
 }
 
