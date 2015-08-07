@@ -338,7 +338,7 @@ void Con_Print (char *txt)
 */
 
 // FIXME: make a buffer size safe vsprintf?
-void Con_Printf (char *fmt, ...)
+void Con_Printf (const char *fmt, ...)
 {
 	va_list			argptr;
 	char			msg[MAXPRINTMSG];
@@ -390,7 +390,7 @@ void Con_SPrintf (char *dest, int size, char *fmt, ...)
 	Con_Printf (dest);
 }
 
-void Con_Warning (char *fmt, ...)
+void Con_Warning (const char *fmt, ...)
 {
 	va_list		argptr;
 	char		msg[MAXPRINTMSG];

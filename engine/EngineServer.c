@@ -481,7 +481,7 @@ void SV_WriteEntitiesToClient (ServerEntity_t	*clent, sizebuf_t *msg)
 
 		//don't send invisible entities unless they have effects
 		if (ent->alpha == ENTALPHA_ZERO && !ent->v.effects)
-			continue;			
+			continue;
 		//johnfitz
 
 		if (ent->baseline.alpha != ent->alpha)

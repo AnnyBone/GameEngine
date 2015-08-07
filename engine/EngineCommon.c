@@ -797,9 +797,11 @@ char *COM_FileExtension(char *in)
 
 void COM_FileBase(const char *in,char *out)
 {
-	char *s,*s2;
+	char *s,*s2, cBuf[PLATFORM_MAX_PATH];
 
-	s = in + strlen(in) - 1;
+	strcpy(cBuf, in);
+
+	s = cBuf + strlen(cBuf) - 1;
 
 	while (s != in && *s != '.')
 		s--;
@@ -940,7 +942,7 @@ void COM_Init(void)
 	varargs versions of all text functions.
 	FIXME: make this buffer size safe someday
 */
-char *va(char *format, ...)
+char *va(const char *format, ...)
 {
 	va_list		argptr;
 	static char	string[1024];
@@ -1260,7 +1262,7 @@ byte *COM_LoadFile (const char *path, int usehunk)
 	len = COM_OpenFile (path, &h);
 	if (h == -1)
 		return NULL;
-	
+
 	// extract the filename base name for hunk tag
 	COM_FileBase (path, base);
 
@@ -1540,37 +1542,37 @@ void FileSystem_Initialize(void)
 	if(basedir[0] == ' ')
 		// TODO: Close down in this instance, though I might change so we try to load "base" instead? ~hogsy
 		Sys_Error("Base path wasn't set in paths script!\n");
-	
+
 	if(Global.cLevelPath[0] == ' ')
 	{
 		Con_Warning("Levels path wasn't set in paths script!\n");
 		sprintf(Global.cLevelPath,"levels/");
 	}
-	
+
 	if(Global.cMaterialPath[0] == ' ')
 	{
 		Con_Warning("Materials path wasn't set in paths script!\n");
 		sprintf(Global.cMaterialPath,"materials/");
 	}
-	
+
 	if(Global.cScreenshotPath[0] == ' ')
 	{
 		Con_Warning("Screenshots path wasn't set in paths script!\n");
 		sprintf(Global.cScreenshotPath,"screenshots/");
 	}
-	
+
 	if(Global.cSoundPath[0] == ' ')
 	{
 		Con_Warning("Sounds path wasn't set in paths script!\n");
 		sprintf(Global.cSoundPath,"sounds/");
 	}
-	
+
 	if (Global.cFontPath[0] == ' ')
 	{
 		Con_Warning("Sounds path wasn't set in paths script!\n");
 		sprintf(Global.cFontPath, "fonts/");
 	}
-	
+
 	if(Global.cTexturePath[0] == ' ')
 	{
 		Con_Warning("Textures path wasn't set in paths script!\n");

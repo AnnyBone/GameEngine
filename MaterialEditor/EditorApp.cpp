@@ -37,7 +37,11 @@ bool CEditorApp::OnInit()
 	iconDocumentNew.LoadFile(PATH_16ICONS"actions/document-new.png", wxBITMAP_TYPE_PNG);
 	smallDocumentOpen.LoadFile(PATH_16ICONS"actions/document-open.png", wxBITMAP_TYPE_PNG);
 	smallDocumentSave.LoadFile(PATH_16ICONS"actions/document-save.png", wxBITMAP_TYPE_PNG);
+#ifndef __LINUX__ // MISSING ICONS
 	smallDocumentClose.LoadFile(PATH_16ICONS"actions/document-close.png", wxBITMAP_TYPE_PNG);
+#else
+    smallDocumentClose.LoadFile(PATH_16ICONS"actions/document-save.png", wxBITMAP_TYPE_PNG);
+#endif
 	smallDocumentSaveAs.LoadFile(PATH_16ICONS"actions/document-save-as.png", wxBITMAP_TYPE_PNG);
 	iconDocumentUndo.LoadFile(PATH_16ICONS"actions/edit-undo.png", wxBITMAP_TYPE_PNG);
 	iconDocumentRedo.LoadFile(PATH_16ICONS"actions/edit-redo.png", wxBITMAP_TYPE_PNG);
@@ -48,7 +52,11 @@ bool CEditorApp::OnInit()
 	iconShapeSphere.LoadFile("resource/shape-sphere.png", wxBITMAP_TYPE_PNG);
 	iconShapePlane.LoadFile("resource/shape-plane.png", wxBITMAP_TYPE_PNG);
 	iconScriptEdit.LoadFile(PATH_16ICONS"apps/accessories-text-editor.png", wxBITMAP_TYPE_PNG);
+#ifndef __LINUX__ // MISSING ICONS
 	smallTransform.LoadFile(PATH_16ICONS"actions/transform-move.png", wxBITMAP_TYPE_PNG);
+#else
+    smallTransform.LoadFile(PATH_16ICONS"apps/accessories-text-editor.png", wxBITMAP_TYPE_PNG);
+#endif
 	smallApplicationExit.LoadFile(PATH_16ICONS"actions/application-exit.png", wxBITMAP_TYPE_PNG);
 
 	pLog_Write(EDITOR_LOG, "Creating main frame...\n");
@@ -61,10 +69,6 @@ bool CEditorApp::OnInit()
 		wxMessageBox("Failed to create main frame!", EDITOR_TITLE" Error");
 		wxExit();
 	}
-	
-	efMainFrame->Show(true);
-
-	pLog_Write(EDITOR_LOG, "Proceeding with engine initialization...\n");
 
 	if (!engine->Initialize(argc, argv, true))
 	{
@@ -81,7 +85,7 @@ bool CEditorApp::OnInit()
 	pLog_Write(EDITOR_LOG, "Starting main loop...\n");
 
 	// Start rendering.
-	efMainFrame->StartEngineLoop();
+//	efMainFrame->StartEngineLoop();
 
 	return true;
 }

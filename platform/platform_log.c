@@ -9,7 +9,7 @@
 
 #define	LOG_FILE_EXTENSION	".log"
 
-void pLog_Write(const char *ccPath, char *cMessage, ...)
+void pLog_Write(const char *ccPath, const char *ccMessage, ...)
 {
 	pFUNCTION_START
 
@@ -21,8 +21,8 @@ void pLog_Write(const char *ccPath, char *cMessage, ...)
 
 	sprintf(cPath, "%s"LOG_FILE_EXTENSION, ccPath);
 
-	va_start(vlArguments, cMessage);
-	vsprintf(scData, cMessage, vlArguments);
+	va_start(vlArguments, ccMessage);
+	vsprintf(scData, ccMessage, vlArguments);
 	va_end(vlArguments);
 
 	uiData = strlen(scData);

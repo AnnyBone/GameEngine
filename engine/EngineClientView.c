@@ -423,12 +423,12 @@ void View_PolyBlend(void)
 
 	{
 		int	i;
-		VideoObjectVertex_t	voScreenPoly[4] = { 0 };
+		VideoObjectVertex_t	voScreenPoly[4] = { { { 0 } } };
 
 		for(i = 0; i < 4; i++)
 			Math_Vector4Copy(vViewBlend,voScreenPoly[i].mvColour);
 
-		voScreenPoly[0].mvPosition[0]	=
+		voScreenPoly[0].mvPosition[0] =
 		voScreenPoly[0].mvPosition[1] =
 		voScreenPoly[1].mvPosition[1] =
 		voScreenPoly[3].mvPosition[0] = 0;
@@ -597,7 +597,7 @@ void View_ModelDrift(vec3_t vOrigin,vec3_t vAngles,vec3_t vOldAngles)
 		for(i = 0; i < 3; i++)
 		{
 			vOrigin[i] += (vDifference[i]*-1.0f)*5.0f;
-		//	r_refdef.viewangles[ROLL] += vDifference[YAW];	
+		//	r_refdef.viewangles[ROLL] += vDifference[YAW];
 			vAngles[ROLL] += vDifference[YAW];
 		}
 	}

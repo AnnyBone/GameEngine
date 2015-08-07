@@ -81,7 +81,7 @@ void Alias_DrawFrame(MD2_t *mModel,entity_t *eEntity,lerpdata_t lLerpData)
 	unsigned int uiVerts = 0;
 	int	*order, count;
 
-	VideoObjectVertex_t voModel[MD2_MAX_TRIANGLES] = { 0 };
+	VideoObjectVertex_t voModel[MD2_MAX_TRIANGLES] = { { { 0 } } };
 
 	ilerp = 1.0f - lLerpData.blend;
 	fAlpha = ENTALPHA_DECODE(eEntity->alpha);
@@ -89,7 +89,7 @@ void Alias_DrawFrame(MD2_t *mModel,entity_t *eEntity,lerpdata_t lLerpData)
 	//new version by muff - fixes bug, easier to read, faster (well slightly)
 	frame1 = (MD2Frame_t*)((uint8_t*)mModel + mModel->ofs_frames + (mModel->framesize*eEntity->draw_lastpose));
 	frame2 = (MD2Frame_t*)((uint8_t*)mModel + mModel->ofs_frames + (mModel->framesize*eEntity->draw_pose));
-	
+
 	if ((eEntity->scale != 1.0f) && (eEntity->scale > 0.1f))
 		VideoShader_SetVariablef("vertexScale", eEntity->scale);
 	else
@@ -118,8 +118,8 @@ void Alias_DrawFrame(MD2_t *mModel,entity_t *eEntity,lerpdata_t lLerpData)
 				(verts2[order[2]].v[1] * frame2->scale[1] + frame2->translate[1])*lLerpData.blend,
 				(verts1[order[2]].v[2] * frame1->scale[2] + frame1->translate[2])*ilerp +
 				(verts2[order[2]].v[2] * frame2->scale[2] + frame2->translate[2])*lLerpData.blend);
-			Video_ObjectNormal(&voModel[uiVerts], 
-				eEntity->model->object.ovVertices[uiVerts].mvNormal[0], 
+			Video_ObjectNormal(&voModel[uiVerts],
+				eEntity->model->object.ovVertices[uiVerts].mvNormal[0],
 				eEntity->model->object.ovVertices[uiVerts].mvNormal[1],
 				eEntity->model->object.ovVertices[uiVerts].mvNormal[2]);
 

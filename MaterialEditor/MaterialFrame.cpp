@@ -7,19 +7,19 @@
 CMaterialFrame::CMaterialFrame(wxWindow* parent, wxWindowID id)
 	: wxFrame(parent, id, WAD_TITLE, wxDefaultPosition, wxSize(640, 640))
 {
+    Show();
+
 	mManager = new wxAuiManager(this);
 
 	// Menu
 
 	wxMenu *mFile = new wxMenu;
 
-#if 0
 	wxMenuItem *openMenuItem = new wxMenuItem(mFile, wxID_OPEN);
 	openMenuItem->SetBitmap(smallDocumentOpen);
 
 	wxMenuItem *closeDocumentMenuItem = new wxMenuItem(mFile, wxID_CLOSE);
 	closeDocumentMenuItem->SetBitmap(smallDocumentClose);
-#endif
 
 	wxMenuItem *saveDocumentMenuItem = new wxMenuItem(mFile, wxID_SAVE);
 	saveDocumentMenuItem->SetBitmap(smallDocumentSave);
@@ -30,12 +30,10 @@ CMaterialFrame::CMaterialFrame(wxWindow* parent, wxWindowID id)
 	wxMenuItem *miExit = new wxMenuItem(mFile, wxID_EXIT);
 	miExit->SetBitmap(smallApplicationExit);
 
-#if 0
 	mFile->Append(openMenuItem);
 	mFile->AppendSeparator();
 	mFile->Append(closeDocumentMenuItem);
 	mFile->AppendSeparator();
-#endif
 	mFile->Append(saveDocumentMenuItem);
 	mFile->Append(saveAsDocumentMenuItem);
 	mFile->AppendSeparator();

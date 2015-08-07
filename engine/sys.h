@@ -39,7 +39,7 @@ int	Sys_FileTime (char *path);
 //
 void Sys_DebugLog(char *file, char *fmt, ...);
 
-void Sys_Error (char *error, ...);
+void Sys_Error (const char *error, ...);
 // an error will cause the entire program to exit
 
 void Sys_Printf (char *fmt, ...);

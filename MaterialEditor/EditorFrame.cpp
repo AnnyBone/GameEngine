@@ -12,7 +12,7 @@ enum
 	FRAME_EVENT_SHOWCONSOLE,
 
 	ID_WINDOW_SCRIPTEDITOR,	// Edit the material script.
-	ID_WINDOW_PROPERTIES,	
+	ID_WINDOW_PROPERTIES,
 	FRAME_EVENT_RELOAD,		// Reload the current material.
 	ID_WINDOW_PLAY,			// Play simulation.
 	ID_WINDOW_PAUSE,		// Pause simulation.
@@ -75,7 +75,7 @@ CEditorFrame::CEditorFrame(const wxString & title, const wxPoint & pos, const wx
 	pLog_Write(EDITOR_LOG, "Setting frame icon...\n");
 
 	SetIcon(wxIcon("resource/icon-material.png", wxBITMAP_TYPE_PNG));
-	
+
 	// Display the splash screen...
 
 	pLog_Write(EDITOR_LOG, "Displaying splash screen...\n");
@@ -94,6 +94,8 @@ CEditorFrame::CEditorFrame(const wxString & title, const wxPoint & pos, const wx
 			wxBORDER_SIMPLE | wxSTAY_ON_TOP);
 	}
 
+	Show();
+
 	// Set the menu up...
 
 	wxMenu *mFile = new wxMenu;
@@ -103,11 +105,11 @@ CEditorFrame::CEditorFrame(const wxString & title, const wxPoint & pos, const wx
 	mFile->Append(openMenuItem);
 
 	mFile->AppendSeparator();
-	
+
 	wxMenuItem *miCloseDocument = new wxMenuItem(mFile, wxID_CLOSE);
 	miCloseDocument->SetBitmap(smallDocumentClose);
 	mFile->Append(miCloseDocument);
-	
+
 	mFile->AppendSeparator();
 
 	wxMenuItem *saveDocumentMenuItem = new wxMenuItem(mFile, wxID_SAVE);
@@ -172,7 +174,6 @@ CEditorFrame::CEditorFrame(const wxString & title, const wxPoint & pos, const wx
 	Center();
 
 	// Initialize the timer...
-
 	timer = new wxTimer(this);
 
 	// Create the toolbar...
@@ -181,13 +182,16 @@ CEditorFrame::CEditorFrame(const wxString & title, const wxPoint & pos, const wx
 	toolbarInfo.Caption("Toolbar");
 	toolbarInfo.ToolbarPane();
 	toolbarInfo.Top();
-	
+
 	// File
 	wxAuiToolBar *tbFile = new wxAuiToolBar(this);
 	tbFile->AddTool(wxID_NEW, "New material", iconDocumentNew);
 	tbFile->AddTool(wxID_OPEN, "Open material", smallDocumentOpen, "Open an existing material");
 	tbFile->AddTool(wxID_SAVE, "Save material", smallDocumentSave, "Save the current material");
 	tbFile->Realize();
+
+	toolbarInfo.Position(0);
+	manager->AddPane(tbFile, toolbarInfo);
 
 	// Edit
 	wxAuiToolBar *tbEdit = new wxAuiToolBar(this);
@@ -196,6 +200,9 @@ CEditorFrame::CEditorFrame(const wxString & title, const wxPoint & pos, const wx
 	tbEdit->AddSeparator();
 	tbEdit->AddTool(FRAME_EVENT_SCRIPT, "Script", iconScriptEdit, "Modify script");
 	tbEdit->Realize();
+
+	toolbarInfo.Position(1);
+	manager->AddPane(tbEdit, toolbarInfo);
 
 	// View
 	wxAuiToolBar *tbView = new wxAuiToolBar(this);
@@ -209,11 +216,8 @@ CEditorFrame::CEditorFrame(const wxString & title, const wxPoint & pos, const wx
 	tbView->AddTool(ID_WINDOW_PLAY, "Play", iconMediaPlay, "Play simulation");
 	tbView->Realize();
 
-	manager->AddPane(tbFile, toolbarInfo);
-	manager->AddPane(tbEdit, toolbarInfo);
+    toolbarInfo.Position(2);
 	manager->AddPane(tbView, toolbarInfo);
-
-	// Create the engine viewport...
 
 	int attributes[] = {
 		WX_GL_DEPTH_SIZE, 24,
@@ -226,11 +230,14 @@ CEditorFrame::CEditorFrame(const wxString & title, const wxPoint & pos, const wx
 		WX_GL_MIN_ACCUM_GREEN, 8,
 		WX_GL_MIN_ACCUM_BLUE, 8,
 		WX_GL_MIN_ACCUM_ALPHA, 8,
+#if 0
 		WX_GL_SAMPLES, 4,
 		WX_GL_SAMPLE_BUFFERS, 1
-		//WX_GL_DOUBLEBUFFER,	1,
+		WX_GL_DOUBLEBUFFER,	1,
+#endif
 	};
 
+    // Create the engine viewport...
 	editorViewport = new CEditorRenderCanvas(this, attributes);
 	wxAuiPaneInfo viewportInfo;
 	viewportInfo.Caption("Viewport");
@@ -254,14 +261,12 @@ CEditorFrame::CEditorFrame(const wxString & title, const wxPoint & pos, const wx
 	manager->AddPane(editorConsolePanel, consoleInfo);
 
 	// Create the material props...
-#if 1
 	editorMaterialProperties = new CEditorMaterialGlobalProperties(this);
 	wxAuiPaneInfo propertiesInfo;
 	propertiesInfo.Caption("Properties");
 	propertiesInfo.CloseButton(false);
 	propertiesInfo.Right();
 	manager->AddPane(editorMaterialProperties, propertiesInfo);
-#endif
 
 	Maximize();
 
@@ -295,20 +300,18 @@ void CEditorFrame::OpenWADTool(wxString sPath)
 {
 	static CWADFrame *WADTool;
 	if (!WADTool)
-	{
 		WADTool = new CWADFrame(this);
-		WADTool->Show();
-	}
+
+    WADTool->Show();
 }
 
 void CEditorFrame::OpenMaterialTool(wxString sPath)
 {
 	static CMaterialFrame *MaterialTool;
 	if (!MaterialTool)
-	{
 		MaterialTool = new CMaterialFrame(this);
-		MaterialTool->Show();
-	}
+
+    MaterialTool->Show();
 }
 
 void CEditorFrame::StartEngineLoop()
@@ -342,8 +345,6 @@ void CEditorFrame::OnPlay(wxCommandEvent &event)
 
 void CEditorFrame::OnTimer(wxTimerEvent &event)
 {
-	static int consoleOutLength = 0;
-
 	// TODO: Editor won't launch if engine isn't running... Can't we just make an assumption?
 	if (engine->IsRunning())
 	{
@@ -435,7 +436,7 @@ void CEditorFrame::OnOpen(wxCommandEvent &event)
 {
 	char cDefaultPath[PLATFORM_MAX_PATH];
 
-	sprintf_s(cDefaultPath, "%s", engine->GetBasePath());
+	sprintf(cDefaultPath, "%s", engine->GetBasePath());
 
 	wxFileDialog *fileDialog = new wxFileDialog(
 		this,
@@ -516,9 +517,10 @@ void CEditorFrame::OnExit(wxCommandEvent &event)
 void CEditorFrame::OnAbout(wxCommandEvent &event)
 {
 	wxAboutDialogInfo info;
-	info.SetName("Yokote");
+	info.SetName("Editor");
 	info.SetCopyright("Copyright (C) 2011-2015 OldTimes Software");
 	info.SetDescription("Editor for the Katana engine.");
+	info.SetWebSite("www.oldtimes-software.com");
 	info.SetVersion(engine->GetVersion());
 
 	wxAboutBox(info, this);

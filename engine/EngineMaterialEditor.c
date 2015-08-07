@@ -125,6 +125,9 @@ void MaterialEditor_SetPreviewMesh(EditorPreviewTypes_t previewMesh)
 
 void MaterialEditor_Draw(void)
 {
+    if(!bMaterialEditorInitialized)
+        return;
+
 	Draw_GradientBackground();
 
 	if (cvVideoDrawModels.bValue)

@@ -11,7 +11,7 @@ wxBEGIN_EVENT_TABLE(CEditorRenderCanvas, wxGLCanvas)
 EVT_PAINT(CEditorRenderCanvas::OnPaint)
 wxEND_EVENT_TABLE()
 
-CEditorRenderContext *rcGlobalRenderContext;
+CEditorRenderContext *rcGlobalRenderContext = NULL;
 
 CEditorRenderCanvas::CEditorRenderCanvas(wxWindow *parent, int *attribList)
 	: wxGLCanvas(
@@ -22,18 +22,19 @@ CEditorRenderCanvas::CEditorRenderCanvas(wxWindow *parent, int *attribList)
 	wxDefaultSize,
 	wxFULL_REPAINT_ON_RESIZE)
 {
-	if(!rcGlobalRenderContext) 
+	if(!rcGlobalRenderContext)
 		rcGlobalRenderContext = new CEditorRenderContext(this);
 }
 
 void CEditorRenderCanvas::OnPaint(wxPaintEvent &event)
 {
-	SetCurrent();
+	//SetCurrent();
 
 	const wxSize clientSize = GetClientSize();
 	engine->SetViewportSize(clientSize.GetWidth(), clientSize.GetHeight());
 
 	wxPaintDC dc(this);
+
 	DrawFrame();
 }
 
@@ -51,7 +52,7 @@ void CEditorRenderCanvas::DrawFrame(void)
 	engine->DrawFPS();
 
 	engine->Video_PostFrame();
-	
+
 	SwapBuffers();
 }
 
