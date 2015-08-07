@@ -30,8 +30,6 @@ typedef enum
 
 typedef struct ServerEntity_s ServerEntity_t;
 
-#define	edict_s ServerEntity_s
-
 typedef struct
 {
 	ServerEntity_t *eOther;
@@ -510,7 +508,7 @@ typedef struct ServerEntity_s
 #define	ServerEntity_tO_PROG(e) ((uint8_t*)e-(uint8_t*)sv.edicts)
 #define PROG_TO_EDICT(e) ((ServerEntity_t *)((uint8_t *)sv.edicts + e))
 
-#define	FIELD(y)	(intptr_t)&(((ServerEntity_t*)0)->y)
+#define	ENTITY_FIELD(y)	(intptr_t)&(((ServerEntity_t*)0)->y)
 
 // TODO: Replace with EngineExport_t!
 typedef struct
@@ -582,7 +580,7 @@ typedef struct
 	void(*DrawFill)(int x, int y, int w, int h, float r, float g, float b, float alpha);
 	void(*DrawMaterialSurface)(Material_t *mMaterial, int iSkin, int x, int y, int w, int h, float fAlpha);
 
-	void(*Cvar_RegisterVariable)(cvar_t *variable, void(*Function)(void));
+	void(*Cvar_RegisterVariable)(ConsoleVariable_t *variable, void(*Function)(void));
 	void(*Cvar_SetValue)(char *var_name, float value);
 	void(*LightStyle)(int style, char *val);
 	void(*Cmd_AddCommand)(char *cmd_name, void(*function)(void));

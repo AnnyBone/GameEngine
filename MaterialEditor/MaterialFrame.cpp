@@ -1,11 +1,11 @@
 #include "EditorBase.h"
 
-#include "WADFrame.h"
+#include "MaterialFrame.h"
 
-#define	WAD_TITLE "WAD Tool"
+#define	WAD_TITLE "Material Tool"
 
-CWADFrame::CWADFrame(wxWindow* parent, wxWindowID id) 
-	: wxFrame(parent, id, WAD_TITLE, wxDefaultPosition, wxSize(512, 512))
+CMaterialFrame::CMaterialFrame(wxWindow* parent, wxWindowID id)
+	: wxFrame(parent, id, WAD_TITLE, wxDefaultPosition, wxSize(640, 640))
 {
 	mManager = new wxAuiManager(this);
 
@@ -45,27 +45,7 @@ CWADFrame::CWADFrame(wxWindow* parent, wxWindowID id)
 	mbMenu->Append(mFile, "&File");
 	SetMenuBar(mbMenu);
 
-	// List
-
-	wxListCtrl *lcObjectList = new wxListCtrl(this);
-
-	wxListItem liColumn;
-	liColumn.SetId(0);
-	liColumn.SetText("Name");
-	liColumn.SetWidth(50);
-	lcObjectList->InsertColumn(0, liColumn);
-
-	liColumn.SetId(1);
-	liColumn.SetText("Type");
-	liColumn.SetWidth(50);
-	lcObjectList->InsertColumn(1, liColumn);
-
-	wxAuiPaneInfo piList;
-	piList.Caption("Contents");
-	piList.Movable(true);
-	piList.Floatable(true);
-	piList.Left();
-	mManager->AddPane(lcObjectList, piList);
+	//
 
 	//
 
@@ -73,7 +53,6 @@ CWADFrame::CWADFrame(wxWindow* parent, wxWindowID id)
 	Centre();
 }
 
-CWADFrame::~CWADFrame()
+CMaterialFrame::~CMaterialFrame()
 {
-	mManager->UnInit();
 }

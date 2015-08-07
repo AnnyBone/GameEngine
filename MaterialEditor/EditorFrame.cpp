@@ -5,6 +5,7 @@
 
 // Tools
 #include "WADFrame.h"
+#include "MaterialFrame.h"
 
 enum
 {
@@ -25,7 +26,8 @@ enum
 	FRAME_EVENT_LIT,
 
 	// Tools
-	FRAME_EVENT_WADTOOL,	// Open WAD tool
+	FRAME_EVENT_WADTOOL,		// Open WAD tool
+	FRAME_EVENT_MATERIALTOOL,	// Open Material tool
 
 	FRAME_EVENT_TRANSFORM,
 
@@ -102,9 +104,9 @@ CEditorFrame::CEditorFrame(const wxString & title, const wxPoint & pos, const wx
 
 	mFile->AppendSeparator();
 	
-	wxMenuItem *closeDocumentMenuItem = new wxMenuItem(mFile, wxID_CLOSE);
-	closeDocumentMenuItem->SetBitmap(smallDocumentClose);
-	mFile->Append(closeDocumentMenuItem);
+	wxMenuItem *miCloseDocument = new wxMenuItem(mFile, wxID_CLOSE);
+	miCloseDocument->SetBitmap(smallDocumentClose);
+	mFile->Append(miCloseDocument);
 	
 	mFile->AppendSeparator();
 
@@ -241,7 +243,6 @@ CEditorFrame::CEditorFrame(const wxString & title, const wxPoint & pos, const wx
 	manager->AddPane(editorViewport, viewportInfo);
 
 	// Create the console...
-	
 	editorConsolePanel = new CEditorConsolePanel(this);
 	wxAuiPaneInfo consoleInfo;
 	consoleInfo.Caption("Console");
@@ -253,13 +254,16 @@ CEditorFrame::CEditorFrame(const wxString & title, const wxPoint & pos, const wx
 	manager->AddPane(editorConsolePanel, consoleInfo);
 
 	// Create the material props...
-
+#if 1
 	editorMaterialProperties = new CEditorMaterialGlobalProperties(this);
 	wxAuiPaneInfo propertiesInfo;
 	propertiesInfo.Caption("Properties");
 	propertiesInfo.CloseButton(false);
 	propertiesInfo.Right();
 	manager->AddPane(editorMaterialProperties, propertiesInfo);
+#endif
+
+	Maximize();
 
 	manager->Update();
 
@@ -285,6 +289,26 @@ void CEditorFrame::InitializeConsoleVariables()
 	engine->RegisterConsoleVariable(&cvEditorAutoReloadDelay, NULL);
 
 	dAutoReloadDelay = cvEditorAutoReloadDelay.value;
+}
+
+void CEditorFrame::OpenWADTool(wxString sPath)
+{
+	static CWADFrame *WADTool;
+	if (!WADTool)
+	{
+		WADTool = new CWADFrame(this);
+		WADTool->Show();
+	}
+}
+
+void CEditorFrame::OpenMaterialTool(wxString sPath)
+{
+	static CMaterialFrame *MaterialTool;
+	if (!MaterialTool)
+	{
+		MaterialTool = new CMaterialFrame(this);
+		MaterialTool->Show();
+	}
 }
 
 void CEditorFrame::StartEngineLoop()
@@ -337,7 +361,7 @@ void CEditorFrame::OnTimer(wxTimerEvent &event)
 	// Check to see if it's time to check for changes.
 	if (dAutoReloadDelay < dClientTime)
 	{
-		ReloadMaterial();
+		ReloadCurrentDocument();
 		dAutoReloadDelay = dClientTime + cvEditorAutoReloadDelay.value;
 	}
 }
@@ -394,59 +418,87 @@ void CEditorFrame::OnTool(wxCommandEvent &event)
 	switch (event.GetId())
 	{
 	case FRAME_EVENT_WADTOOL:
-		static CWADFrame *WADTool;
-		if (!WADTool)
-		{
-			WADTool = new CWADFrame(this);
-			WADTool->Show();
-		}
+		OpenWADTool("");
+		break;
+	case FRAME_EVENT_MATERIALTOOL:
+		OpenMaterialTool("");
 		break;
 	}
 }
 
 void CEditorFrame::OnReload(wxCommandEvent &event)
 {
-	ReloadMaterial();
+	ReloadCurrentDocument();
 }
 
 void CEditorFrame::OnOpen(wxCommandEvent &event)
 {
-	char defaultPath[PLATFORM_MAX_PATH];
+	char cDefaultPath[PLATFORM_MAX_PATH];
 
-	sprintf_s(defaultPath, "%s", engine->GetBasePath());
+	sprintf_s(cDefaultPath, "%s", engine->GetBasePath());
 
 	wxFileDialog *fileDialog = new wxFileDialog(
-		this, 
-		"Open File", 
-		defaultPath,
-		"", 
-		"MATERIAL files (*.material)|*.material",wxFD_OPEN|wxFD_FILE_MUST_EXIST);
+		this,
+		"Open File",
+		cDefaultPath,
+		"",
+		"Supported files (*.material;*.map;*.level;*.md2;*.wad)|"
+		"*.material;*.level;*.md2;*.wad|"
+		"MATERIAL files (*.material)|"
+		"*.material|"
+		"MD2 files (*.md2)|"
+		"*.md2|"
+		"MAP files (*.map)|"
+		"*.map|"
+		"LEVEL files (*.level)|"
+		"*.level|"
+		"WAD files (*.wad)|"
+		"*.wad"
+		,wxFD_OPEN|wxFD_FILE_MUST_EXIST);
 	if (fileDialog->ShowModal() == wxID_OK)
 	{
 		wxString filename = fileDialog->GetFilename();
-		filename.RemoveLast(9);
 
-		// Unload the current material.
-		Material_t *current = editorMaterialProperties->GetCurrent();
-		if (current)
-			engine->UnloadMaterial(current);
-		
-		Material_t *newMat = engine->LoadMaterial(filename);
-		if (newMat)
+		if (filename.EndsWith(".material"))
 		{
-			// Update everything.
-			currentFilePath = fileDialog->GetPath();
-			lastTimeModified = currentTimeModified = pFileSystem_GetModifiedTime(currentFilePath);
+			filename.RemoveLast(9);
 
-			SetTitle(newMat->cName + wxString(" - ") + cApplicationTitle);
+			// Unload the current material.
+			Material_t *current = editorMaterialProperties->GetCurrent();
+			if (current)
+				engine->UnloadMaterial(current);
 
-			// TODO: Handle this internally.
-			engine->MaterialEditorDisplay(newMat);
+			Material_t *newMat = engine->LoadMaterial(filename);
+			if (newMat)
+			{
+				// TODO: Handle this internally.
+				engine->MaterialEditorDisplay(newMat);
 
-			// TODO: This is dumb...
-			editorMaterialProperties->SetCurrentMaterial(newMat);
-			editorMaterialProperties->Update();
+				// TODO: This is dumb...
+				editorMaterialProperties->SetCurrentMaterial(newMat);
+				editorMaterialProperties->Update();
+			}
+
+			OpenMaterialTool(fileDialog->GetPath());
 		}
+		else if (filename.EndsWith(".map"))
+		{
+			SetTitle(fileDialog->GetFilename() + wxString(" - ") + cApplicationTitle);
+		}
+		else if (filename.EndsWith(".level"))
+		{
+			// TODO: Load the level up in a "viewer" mode.
+
+			SetTitle(fileDialog->GetFilename() + wxString(" - ") + cApplicationTitle);
+		}
+		else if (filename.EndsWith(".wad"))
+			OpenWADTool(fileDialog->GetPath());
+		else if (filename.EndsWith(".md2"))
+		{
+		}
+
+		currentFilePath = fileDialog->GetPath();
+		lastTimeModified = currentTimeModified = pFileSystem_GetModifiedTime(currentFilePath);
 	}
 }
 
@@ -499,9 +551,9 @@ void CEditorFrame::OnProperties(wxCommandEvent &event)
 #endif
 }
 
-/*	Reload the currently active material.
+/*	Reload the currently active document.
 */
-void CEditorFrame::ReloadMaterial()
+void CEditorFrame::ReloadCurrentDocument()
 {
 	Material_t *current = editorMaterialProperties->GetCurrent();
 	if (!current)

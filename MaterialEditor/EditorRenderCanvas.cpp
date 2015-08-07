@@ -11,7 +11,7 @@ wxBEGIN_EVENT_TABLE(CEditorRenderCanvas, wxGLCanvas)
 EVT_PAINT(CEditorRenderCanvas::OnPaint)
 wxEND_EVENT_TABLE()
 
-CEditorRenderContext *mainContext;
+CEditorRenderContext *rcGlobalRenderContext;
 
 CEditorRenderCanvas::CEditorRenderCanvas(wxWindow *parent, int *attribList)
 	: wxGLCanvas(
@@ -22,11 +22,14 @@ CEditorRenderCanvas::CEditorRenderCanvas(wxWindow *parent, int *attribList)
 	wxDefaultSize,
 	wxFULL_REPAINT_ON_RESIZE)
 {
-	mainContext = new CEditorRenderContext(this);
+	if(!rcGlobalRenderContext) 
+		rcGlobalRenderContext = new CEditorRenderContext(this);
 }
 
 void CEditorRenderCanvas::OnPaint(wxPaintEvent &event)
 {
+	SetCurrent();
+
 	const wxSize clientSize = GetClientSize();
 	engine->SetViewportSize(clientSize.GetWidth(), clientSize.GetHeight());
 

@@ -37,7 +37,10 @@ private:
 	void OnKey(wxKeyEvent &event);
 	void OnTimer(wxTimerEvent &event);
 
-	void ReloadMaterial();
+	void ReloadCurrentDocument();
+
+	void OpenWADTool(wxString sPath);
+	void OpenMaterialTool(wxString sPath);
 
 	double 
 		dAutoReloadDelay,

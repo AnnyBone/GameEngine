@@ -24,7 +24,13 @@
 #define	GAME_NAME	"Katana"
 #endif
 
-extern ModuleImport_t Engine;
+#ifdef __cplusplus
+extern "C" {
+#endif
+	extern ModuleImport_t Engine;
+#ifdef __cplusplus
+};
+#endif
 
 typedef struct
 {
@@ -56,8 +62,8 @@ typedef struct
 	ClientEntity_t *ent;
 } GameClient_t;
 
-GameServer_t Server;
-GameClient_t Client;
+extern GameServer_t Server;
+extern GameClient_t Client;
 
 // [29/7/2013] Moved mode types into server_mode.h ~hogsy
 
@@ -106,23 +112,31 @@ GameClient_t Client;
 #define	ITEM_REDFLAG		1001	// Red flag for CTF
 #define	ITEM_BLUEFLAG		1002	// Blue flag for CTF
 
-int		iRedScore,iBlueScore;
+extern int	iRedScore, iBlueScore;
 
-char *va(char *format,...);
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-void Flare(vec3_t org,float r,float g,float b,float a,float scale,char *texture);
+	char *va(char *format,...);
 
-void Sound(ServerEntity_t *ent, AudioChannel_t channel, char *sound, int volume, float attenuation);
+	void Flare(vec3_t org,float r,float g,float b,float a,float scale,char *texture);
 
-void SetAngle(ServerEntity_t *ent, vec3_t vAngle);
+	void Sound(ServerEntity_t *ent, AudioChannel_t channel, char *sound, int volume, float attenuation);
 
-void DrawPic(char *texture,float alpha,int x,int y,int h,int w);
-void PutClientInServer(ServerEntity_t *ent);
-void WriteByte(int mode,int c);
-void ChangeYaw(ServerEntity_t *ent);
+	void SetAngle(ServerEntity_t *ent, vec3_t vAngle);
 
-trace_t Traceline(ServerEntity_t *ent, vec3_t vStart, vec3_t vEnd, int type);
+	void DrawPic(char *texture,float alpha,int x,int y,int h,int w);
+	void PutClientInServer(ServerEntity_t *ent);
+	void WriteByte(int mode,int c);
+	void ChangeYaw(ServerEntity_t *ent);
 
-void UseTargets(ServerEntity_t *ent, ServerEntity_t *other);
+	trace_t Traceline(ServerEntity_t *ent, vec3_t vStart, vec3_t vEnd, int type);
+
+	void UseTargets(ServerEntity_t *ent, ServerEntity_t *other);
+
+#ifdef __cplusplus
+};
+#endif
 
 #endif

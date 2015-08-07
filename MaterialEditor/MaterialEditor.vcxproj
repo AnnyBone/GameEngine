@@ -82,6 +82,7 @@
     <ClInclude Include="EditorFrame.h" />
     <ClInclude Include="EditorMaterialProperties.h" />
     <ClInclude Include="EditorRenderCanvas.h" />
+    <ClInclude Include="MaterialFrame.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="WADFrame.h" />
   </ItemGroup>
@@ -92,6 +93,7 @@
     <ClCompile Include="EditorFrame.cpp" />
     <ClCompile Include="EditorMaterialProperties.cpp" />
     <ClCompile Include="EditorRenderCanvas.cpp" />
+    <ClCompile Include="MaterialFrame.cpp" />
     <ClCompile Include="WADFrame.cpp" />
   </ItemGroup>
   <ItemGroup>

@@ -1,9 +1,7 @@
 /*	Copyright (C) 2011-2015 OldTimes Software
 */
 
-extern "C" {
 #include "server_main.h"
-}
 
 class CServerEntity
 {

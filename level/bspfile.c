@@ -419,7 +419,7 @@ void LoadBSPFile(char *filename)
 	SB_Free(&sb);
 }
 
-/*	Removes surfaces marked as "nodraw" from the BSP.
+/*	Removes surfaces marked as "skip" from the BSP.
 	Ripped from RMQ.
 */
 void BSP_RemoveSkipSurfaces(void)
@@ -447,10 +447,10 @@ void BSP_RemoveSkipSurfaces(void)
 		{
 			face = dfaces + leafmarks[j];
 			ti = texinfo + face->iTexInfo;
-			texture = (miptex_t *) ((byte *) textures + miptexlump->dataofs[ti->iMipTex]);
+			texture = (miptex_t *)((uint8_t *)textures + miptexlump->dataofs[ti->iMipTex]);
 			name = texture->name;
 
-			if(!Q_strcasecmp(name,"nodraw"))
+			if(!Q_strcasecmp(name,"skip"))
 			{
 				// copy each remaining marksurface to previous slot
 				for (k = j; k < leaf->uiNumMarkSurfaces-1; k++)
@@ -477,10 +477,10 @@ void BSP_RemoveSkipSurfaces(void)
 		{
 			face = modfaces + j;
 			ti = texinfo + face->iTexInfo;
-			texture = (miptex_t *) ((byte *) textures + miptexlump->dataofs[ti->iMipTex]);
+			texture = (miptex_t *) ((uint8_t *) textures + miptexlump->dataofs[ti->iMipTex]);
 			name = texture->name;
 
-			if(!Q_strcasecmp(name,"nodraw"))
+			if(!Q_strcasecmp(name,"skip"))
 			{
 				// copy each remaining face to previous slot
 				for (k = j; k < model->iNumFaces-1; k++)

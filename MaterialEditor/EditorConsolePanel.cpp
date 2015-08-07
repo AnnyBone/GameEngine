@@ -22,7 +22,8 @@ CEditorConsolePanel::CEditorConsolePanel(wxWindow *wParent)
 {
 	wxBoxSizer *vSizer = new wxBoxSizer(wxVERTICAL);
 
-	textConsoleOut = new wxTextCtrl(this, wxID_ANY, "", wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE | wxTE_READONLY | wxTE_RICH2 | wxTE_DONTWRAP);
+	textConsoleOut = new wxTextCtrl(this, wxID_ANY, "", wxDefaultPosition, wxDefaultSize,
+		wxTE_MULTILINE | wxTE_READONLY | wxTE_RICH2 | wxTE_DONTWRAP | wxTE_AUTO_URL);
 	textConsoleOut->SetBackgroundColour(wxColour(0, 0, 0));
 	textConsoleOut->SetForegroundColour(wxColour(0, 255, 0));
 
