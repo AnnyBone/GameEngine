@@ -85,7 +85,7 @@ bool CEditorApp::OnInit()
 	pLog_Write(EDITOR_LOG, "Starting main loop...\n");
 
 	// Start rendering.
-//	efMainFrame->StartEngineLoop();
+	efMainFrame->StartEngineLoop();
 
 	return true;
 }
