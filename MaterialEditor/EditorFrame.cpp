@@ -325,7 +325,7 @@ void CEditorFrame::StartEngineLoop()
 	else
 		windowShowConsole->Check(true);
 
-	timer->Start();
+	timer->Start(25);
 }
 
 void CEditorFrame::StopEngineLoop()
@@ -335,12 +335,12 @@ void CEditorFrame::StopEngineLoop()
 
 void CEditorFrame::OnPause(wxCommandEvent &event)
 {
-	timer->Stop();
+	StopEngineLoop();
 }
 
 void CEditorFrame::OnPlay(wxCommandEvent &event)
 {
-	timer->Start();
+	timer->Start(25);
 }
 
 void CEditorFrame::OnTimer(wxTimerEvent &event)
