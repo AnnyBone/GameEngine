@@ -599,7 +599,7 @@ void Area_PushableThink(ServerEntity_t *eArea)
 {
 	// TODO: sort the physics stuff out engine side perhaps? BSP physics are hard.
 	// only update when something happens ~eukara
-	if(eArea->v.velocity[0] || eArea->v.velocity[1] || eArea->v.velocity[2])
+	if(eArea->v.velocity[0] != 0 || eArea->v.velocity[1] != 0 || eArea->v.velocity[2] != 0)
 	{
 		Math_VectorScale(eArea->v.velocity, 0.9, eArea->v.velocity); // slowly slow it down.
 		eArea->v.velocity[2] = -300;	// fake physics... FIXME
@@ -620,9 +620,8 @@ void Area_PushableTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
 		return;
 	}
 	
-    	if (eArea->v.flags & FL_ONGROUND) {
+    	if (eArea->v.flags & FL_ONGROUND)
       		eArea->v.flags = eArea->v.flags - FL_ONGROUND;
-      	}
 	
 	Math_MVToVector(Math_VectorToAngles(eOther->v.velocity), vPVec); // get the right player angle
 	fYaw = vPVec[1] * pMath_PI *2 / 360;
