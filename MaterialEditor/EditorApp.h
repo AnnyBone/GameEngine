@@ -1,7 +1,7 @@
 #ifndef __EDITORAPP__
 #define	__EDITORAPP__
 
-#include "MaterialEditorFrame.h"
+#include "EditorFrame.h"
 
 class CEditorApp : public wxApp
 {
@@ -10,7 +10,7 @@ public:
 
 	virtual int OnExit();
 
-	CMaterialEditorFrame *mainFrame;
+	CEditorFrame *efMainFrame;
 };
 
 wxDECLARE_APP(CEditorApp);

@@ -40,9 +40,9 @@ typedef struct
 		cSoundPath[PLATFORM_MAX_PATH];
 
 	bool bEmbeddedContext;
-} Global_t;
+} EngineGlobal_t;
 
-extern Global_t Global;
+extern EngineGlobal_t Global;
 
 extern EngineImport_t EngineLauncher;
 

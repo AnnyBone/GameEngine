@@ -355,7 +355,7 @@ void Draw_Character(int x,int y,int num)
 	size = 0.0625f;
 
 	{
-		VideoObjectVertex_t	voCharacter[4] = { 0 };
+		VideoObjectVertex_t	voCharacter[4] = { { { 0 } } };
 
 		Video_ResetCapabilities(false);
 
@@ -451,7 +451,7 @@ void Draw_TileClear (int x, int y, int w, int h)
 
 void Draw_Line(MathVector3f_t mvStart, MathVector3f_t mvEnd)
 {
-	VideoObjectVertex_t	voLine[2] = { 0 };
+	VideoObjectVertex_t	voLine[2] = { { { 0 } } };
 
 	Video_ResetCapabilities(false);
 
@@ -469,7 +469,7 @@ void Draw_Line(MathVector3f_t mvStart, MathVector3f_t mvEnd)
 */
 void Draw_CoordinateAxes(float x,float y,float z)
 {
-	VideoObjectVertex_t voLine[2] = { 0 };
+	VideoObjectVertex_t voLine[2] = { { { 0 } } };
 
 	Video_ResetCapabilities(true);
 

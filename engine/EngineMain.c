@@ -28,7 +28,7 @@
 
 #include "platform_module.h"
 
-Global_t Global;
+EngineGlobal_t Global;
 
 bool Engine_IsRunning(void)
 {

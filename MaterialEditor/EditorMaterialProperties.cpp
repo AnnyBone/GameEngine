@@ -1,4 +1,4 @@
-#include "MaterialEditorBase.h"
+#include "EditorBase.h"
 
 #include "EditorMaterialProperties.h"
 
@@ -59,7 +59,7 @@ void CEditorMaterialGlobalProperties::OnChanged(wxPropertyGridEvent &event)
 	if (!currentMaterial)
 		return;
 
-	wxPGProperty *property = event.GetProperty();
+//	wxPGProperty *property = event.GetProperty();
 	if (!strcmp(event.GetPropertyName(), "animspeed"))
 		currentMaterial->fAnimationSpeed = event.GetPropertyValue().GetDouble();
 }

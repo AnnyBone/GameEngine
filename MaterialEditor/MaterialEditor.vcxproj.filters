@@ -1,61 +1,48 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
-    </Filter>
     <Filter Include="Resource Files">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Tools">
+      <UniqueIdentifier>{fe7d98c3-f2ea-4e6a-8f27-f1ed8f4a8c89}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Tools\Material Tool">
+      <UniqueIdentifier>{e150aed8-a0ec-44bb-9b88-6c1e68e42c98}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Tools\WAD Tool">
+      <UniqueIdentifier>{174dcc66-1235-4b5a-9ce1-f3c68bb93c9f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="MaterialEditorBase.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="WADFrame.h">
+      <Filter>Tools\WAD Tool</Filter>
     </ClInclude>
-    <ClInclude Include="MaterialEditorFrame.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MaterialEditorRenderCanvas.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MaterialEditorConsolePanel.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="EditorApp.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
+    <ClInclude Include="EditorApp.h" />
+    <ClInclude Include="EditorBase.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="EditorConsolePanel.h" />
+    <ClInclude Include="EditorFrame.h" />
+    <ClInclude Include="EditorRenderCanvas.h" />
     <ClInclude Include="EditorMaterialProperties.h">
-      <Filter>Header Files</Filter>
+      <Filter>Tools\Material Tool</Filter>
     </ClInclude>
+    <ClInclude Include="MaterialFrame.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="MaterialEditorFrame.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MaterialEditorEngineInterface.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MaterialEditorRenderCanvas.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MaterialEditorConsolePanel.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="EditorApp.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="EditorMaterialProperties.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Tools\Material Tool</Filter>
     </ClCompile>
+    <ClCompile Include="WADFrame.cpp">
+      <Filter>Tools\WAD Tool</Filter>
+    </ClCompile>
+    <ClCompile Include="EditorApp.cpp" />
+    <ClCompile Include="EditorConsolePanel.cpp" />
+    <ClCompile Include="EditorFrame.cpp" />
+    <ClCompile Include="EditorEngineInterface.cpp" />
+    <ClCompile Include="EditorRenderCanvas.cpp" />
+    <ClCompile Include="MaterialFrame.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Material Editor.rc">

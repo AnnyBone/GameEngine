@@ -30,6 +30,10 @@ public:
 	CVideoObject(VideoPrimitive_t primitiveType);
 	~CVideoObject();
 
+	void Begin();
+	void Vertex(float x, float y, float z);
+	void Colour(float r, float g, float b, float a);
+	void End();
 	void Draw();
 
 protected:

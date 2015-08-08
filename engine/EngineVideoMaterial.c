@@ -305,10 +305,10 @@ gltexture_t *Material_LoadTexture(Material_t *mMaterial, MaterialSkin_t *mCurren
 	if (bTextureMap)
 	{
 		// Warn about incorrect sizes.
-		if ((mCurrentSkin->mtTexture[mCurrentSkin->uiTextures].uiWidth & 15) || (mCurrentSkin->mtTexture[mCurrentSkin->uiTextures].uiHeight & 15))
+		if ((mCurrentSkin->mtTexture[mCurrentSkin->uiTextures].uiWidth % 2) || (mCurrentSkin->mtTexture[mCurrentSkin->uiTextures].uiHeight % 2))
 		{
 
-			Con_Warning("Texture is not 16 aligned! (%s) (%ix%i)\n", cArg,
+			Con_Warning("Texture size is not multiple of 2! (%s) (%ix%i)\n", cArg,
 				mCurrentSkin->mtTexture[mCurrentSkin->uiTextures].uiWidth,
 				mCurrentSkin->mtTexture[mCurrentSkin->uiTextures].uiHeight);
 

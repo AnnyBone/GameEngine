@@ -1023,19 +1023,21 @@ void Area_ClimbTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
 	eOther->local.dZeroGTime = Server.dTime + 0.1;
 	eOther->v.velocity[2] = 0;
 
-	if (Math_DotProduct(vRight, eOther->v.velocity) > 25) {
+	if (Math_DotProduct(vRight, eOther->v.velocity) > 25) 
+	{
 		Math_VectorClear(eOther->v.velocity);
-		eOther->v.origin[0] += vRight[0] * 0.5;
-		eOther->v.origin[1] += vRight[1] * 0.5;
-		eOther->v.origin[2] += vRight[2] * 0.5;
+		eOther->v.origin[0] += vRight[0] * 0.5f;
+		eOther->v.origin[1] += vRight[1] * 0.5f;
+		eOther->v.origin[2] += vRight[2] * 0.5f;
 	//	printf("right  ");
 		return;
 	}
-	else if (Math_DotProduct(vRight, eOther->v.velocity) < -25) {
+	else if (Math_DotProduct(vRight, eOther->v.velocity) < -25) 
+	{
 		Math_VectorClear(eOther->v.velocity);
-		eOther->v.origin[0] -= vRight[0] * 0.5;
-		eOther->v.origin[1] -= vRight[1] * 0.5;
-		eOther->v.origin[2] -= vRight[2] * 0.5;
+		eOther->v.origin[0] -= vRight[0] * 0.5f;
+		eOther->v.origin[1] -= vRight[1] * 0.5f;
+		eOther->v.origin[2] -= vRight[2] * 0.5f;
 	//	printf("left  ");
 		return;
 	}

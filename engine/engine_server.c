@@ -1,5 +1,23 @@
-/*	Copyright (C) 2011-2015 OldTimes Software
+/*	Copyright (C) 1996-2001 Id Software, Inc.
+	Copyright (C) 2002-2009 John Fitzgibbons and others
+	Copyright (C) 2011-2015 OldTimes Software
+
+	This program is free software; you can redistribute it and/or
+	modify it under the terms of the GNU General Public License
+	as published by the Free Software Foundation; either version 2
+	of the License, or (at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+	See the GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
+
 #include "engine_server.h"
 
 typedef struct
@@ -26,64 +44,64 @@ EntityField_t	GlobalFields[] =
 
 EntityField_t	EntityFields[] =
 {
-	{	"classname",	FIELD(v.cClassname),		EV_STRING	},
-	{	"name",			FIELD(v.cName),				EV_STRING	},
-	{	"model",		FIELD(v.model),				EV_STRING	},
-	{	"targetname",	FIELD(v.targetname),		EV_STRING	},
-	{	"noise",		FIELD(v.noise),				EV_STRING	},
-	{	"message",		FIELD(v.message),			EV_STRING	},
-	{	"origin",		FIELD(v.origin),			EV_VECTOR	},
-	{	"angles",		FIELD(v.angles),			EV_VECTOR	},
-	{	"light",		FIELD(v.vLight),			EV_VECTOR4	},
-	{	"health",		FIELD(v.iHealth),			EV_INTEGER	},
-	{	"spawnflags",	FIELD(v.spawnflags),		EV_INTEGER	},
-	{	"bTakeDamage",	FIELD(v.bTakeDamage),		EV_BOOLEAN	},
-	{	"alpha",		FIELD(alpha),				EV_INTEGER	},
+	{ "classname", ENTITY_FIELD(v.cClassname), EV_STRING },
+	{ "name", ENTITY_FIELD(v.cName), EV_STRING },
+	{ "model", ENTITY_FIELD(v.model), EV_STRING },
+	{ "targetname", ENTITY_FIELD(v.targetname), EV_STRING },
+	{ "noise", ENTITY_FIELD(v.noise), EV_STRING },
+	{ "message", ENTITY_FIELD(v.message), EV_STRING },
+	{ "origin", ENTITY_FIELD(v.origin), EV_VECTOR },
+	{ "angles", ENTITY_FIELD(v.angles), EV_VECTOR },
+	{ "light", ENTITY_FIELD(v.vLight), EV_VECTOR4 },
+	{ "health", ENTITY_FIELD(v.iHealth), EV_INTEGER },
+	{ "spawnflags", ENTITY_FIELD(v.spawnflags), EV_INTEGER },
+	{ "bTakeDamage", ENTITY_FIELD(v.bTakeDamage), EV_BOOLEAN },
+	{ "takedamage", ENTITY_FIELD(v.bTakeDamage), EV_BOOLEAN },
+	{ "alpha", ENTITY_FIELD(alpha), EV_INTEGER },
 
 	// Model properties
-	{	"model_skin",	FIELD(Model.iSkin),		EV_INTEGER	},
-	{	"scale",		FIELD(Model.fScale),	EV_FLOAT	},
+	{ "model_skin", ENTITY_FIELD(Model.iSkin), EV_INTEGER },
+	{ "scale", ENTITY_FIELD(Model.fScale), EV_FLOAT },
 
 	// Physical properties
-	{	"physics_solid",	FIELD(Physics.iSolid),		EV_INTEGER	},
-	{	"physics_mass",		FIELD(Physics.fMass),		EV_FLOAT	},
-	{	"physics_gravity",	FIELD(Physics.fGravity),	EV_FLOAT	},
+	{ "physics_solid", ENTITY_FIELD(Physics.iSolid), EV_INTEGER },
+	{ "physics_mass", ENTITY_FIELD(Physics.fMass), EV_FLOAT },
+	{ "physics_gravity", ENTITY_FIELD(Physics.fGravity), EV_FLOAT },
 
 	// Local (move these at some point)
-	{	"sound",			FIELD(local.sound),				EV_STRING	},
-	{	"soundstart",		FIELD(local.cSoundStart),		EV_STRING	},
-	{	"soundstop",		FIELD(local.cSoundStop),		EV_STRING	},
-	{	"soundmoving",		FIELD(local.cSoundMoving),		EV_STRING	},
-	{	"soundreturn",		FIELD(local.cSoundReturn),		EV_STRING	},
-	{	"target1",			FIELD(local.cTarget1),			EV_STRING	},
-	{	"target2",			FIELD(local.cTarget2),			EV_STRING	},
-	{	"speed",			FIELD(local.speed),				EV_FLOAT	},
-	{	"delay",			FIELD(local.delay),				EV_FLOAT	},
-	{	"lip",				FIELD(local.lip),				EV_FLOAT	},
-	{	"wait",				FIELD(local.dWait),				EV_DOUBLE	},
-	{	"damage",			FIELD(local.iDamage),			EV_INTEGER	},
-	{	"volume",			FIELD(local.volume),			EV_INTEGER	},
-	{	"style",			FIELD(local.style),				EV_INTEGER	},
-	{	"count",			FIELD(local.count),				EV_INTEGER	},
-	{	"pTeam",			FIELD(local.pTeam),				EV_INTEGER	},
-	{	"attack_finished",	FIELD(local.dAttackFinished),	EV_DOUBLE	},
+	{ "sound", ENTITY_FIELD(local.sound), EV_STRING },
+	{ "soundstart", ENTITY_FIELD(local.cSoundStart), EV_STRING },
+	{ "soundstop", ENTITY_FIELD(local.cSoundStop), EV_STRING },
+	{ "soundmoving", ENTITY_FIELD(local.cSoundMoving), EV_STRING },
+	{ "soundreturn", ENTITY_FIELD(local.cSoundReturn), EV_STRING },
+	{ "target1", ENTITY_FIELD(local.cTarget1), EV_STRING },
+	{ "target2", ENTITY_FIELD(local.cTarget2), EV_STRING },
+	{ "speed", ENTITY_FIELD(local.speed), EV_FLOAT },
+	{ "delay", ENTITY_FIELD(local.delay), EV_FLOAT },
+	{ "lip", ENTITY_FIELD(local.lip), EV_FLOAT },
+	{ "wait", ENTITY_FIELD(local.dWait), EV_DOUBLE },
+	{ "damage", ENTITY_FIELD(local.iDamage), EV_INTEGER },
+	{ "volume", ENTITY_FIELD(local.volume), EV_INTEGER },
+	{ "style", ENTITY_FIELD(local.style), EV_INTEGER },
+	{ "count", ENTITY_FIELD(local.count), EV_INTEGER },
+	{ "pTeam", ENTITY_FIELD(local.pTeam), EV_INTEGER },
+	{ "attack_finished", ENTITY_FIELD(local.dAttackFinished), EV_DOUBLE },
 
 	// hacks
-	{	"angle",	FIELD(v.angles),	EV_VECTOR,	FL_ANGLEHACK	},
+	{ "angle", ENTITY_FIELD(v.angles), EV_VECTOR, FL_ANGLEHACK },
 
 	// Global fields to ignore... Ugh ~hogsy
-    {	"wad",			0,	EV_NONE		},
-	{	"ambient",		0,	EV_NONE		},
-	{	"sky",			0,	EV_NONE		},
-	{	"cloud",		0,	EV_NONE		},
-	{	"scrollspeed",	0,	EV_NONE		},
-	{	"mapversion",	0,	EV_NONE		},
+	{ "wad", 0, EV_NONE },
+	{ "ambient", 0, EV_NONE },
+	{ "sky", 0, EV_NONE },
+	{ "cloud", 0, EV_NONE },
+	{ "scrollspeed", 0, EV_NONE },
+	{ "mapversion", 0, EV_NONE },
 
 	{	0	}
 };
 
-/*	[20/11/2012]
-	Based on ED_ParseField from Quake 2. ~hogsy
+/*	Based on ED_ParseField from Quake 2.
 	TODO:
 		Better error handling?
 */
@@ -142,7 +160,7 @@ void Server_ParseEntityField(char *cKey, char *cValue, ServerEntity_t *eEntity)
 						cValue = "0";
 					// [2/1/2013] Booleans are handled in the same way as integers, so don't break here! ~hogsy
 				case EV_INTEGER:
-					*(int*)((byte*)eEntity+eField->iOffset) = atoi(cValue);
+					*(int*)((uint8_t*)eEntity+eField->iOffset) = atoi(cValue);
 					break;
 				// [22/11/2012] Just ignore anything that has skip set! ~hogsy
 				case EV_NONE:

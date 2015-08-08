@@ -105,9 +105,6 @@
     <ClCompile Include="EngineVideoSky.c">
       <Filter>Client\Video</Filter>
     </ClCompile>
-    <ClCompile Include="EngineVideoSprite.c">
-      <Filter>Client\Video</Filter>
-    </ClCompile>
     <ClCompile Include="EngineVideoWarp.c">
       <Filter>Client\Video</Filter>
     </ClCompile>
@@ -254,6 +251,9 @@
       <Filter>Client\Video</Filter>
     </ClCompile>
     <ClCompile Include="EngineVideoObject.cpp">
+      <Filter>Client\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineVideoSprite.c">
       <Filter>Client\Video</Filter>
     </ClCompile>
   </ItemGroup>

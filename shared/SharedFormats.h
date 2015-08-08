@@ -250,7 +250,7 @@ enum
 };
 
 #ifdef SHARED_FORMATS_C
-extern float	vHullSizes[BSP_HULL_MAX][2][3];
+extern float vHullSizes[BSP_HULL_MAX][2][3];
 #endif
 
 #define	BSP_MAX_HULLS			BSP_HULL_MAX
@@ -402,7 +402,7 @@ typedef struct
 			iNumEdges,
 			iTexInfo;
 
-	byte	bStyles[4];
+	uint8_t	bStyles[4];
 
 	int		iLightOffset;
 } BSPFace_t;

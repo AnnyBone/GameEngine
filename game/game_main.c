@@ -15,7 +15,12 @@
 GameExport_t	Export;	// Game exports.
 ModuleImport_t	Engine;	// Engine imports.
 
+GameServer_t Server;
+GameClient_t Client;
+
 int	iOldGameMode;
+
+int	iRedScore, iBlueScore;
 
 // [2/8/2012] TODO: Why are we doing this!? Should be using the one from the lib ~hogsy
 char *va(char *format,...)
@@ -30,7 +35,7 @@ char *va(char *format,...)
 	return string;
 }
 
-void SetAngle(ServerEntity_t *ent,vec3_t vAngle)
+void SetAngle(ServerEntity_t *ent,MathVector3f_t vAngle)
 {
 	// [21/3/2012] Updated ~hogsy
 	Math_VectorCopy(vAngle,ent->v.angles);
@@ -76,7 +81,7 @@ void ChangeYaw(ServerEntity_t *ent)
 	also slide box entities	if the
 	tryents flag is set.
 */
-trace_t Traceline(ServerEntity_t *ent,vec3_t vStart,vec3_t vEnd,int type)
+trace_t Traceline(ServerEntity_t *ent, MathVector3f_t vStart, MathVector3f_t vEnd, int type)
 {
 	return Engine.Server_Move(vStart, mv3Origin, mv3Origin, vEnd, type, ent);
 }
@@ -246,19 +251,13 @@ pMODULE_EXPORT GameExport_t *Game_Main(ModuleImport_t *Import)
 	Export.Game_Init = Game_Init;
 	Export.Shutdown = Game_Shutdown;
 
-	/*
-		Client
-	*/
-
+	// Client
 	Export.Client_RelinkEntities = Client_RelinkEntities;
 	Export.Client_Initialize = Client_Initialize;
 	Export.Client_ParseTemporaryEntity = Client_ParseTemporaryEntity;
 	Export.Client_ViewFrame = Client_ViewFrame;
 
-	/*
-		Server
-	*/
-
+	// Server
 	Export.Server_Initialize = Server_Initialize;
 	Export.Server_StartFrame = Server_StartFrame;
 	Export.Server_SpawnEntity = Server_SpawnEntity;
