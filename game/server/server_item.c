@@ -74,11 +74,10 @@ bool Item_CheckInventory(Item_t *iItem,ServerEntity_t *eEntity)
 {
 	int i;
 
-	for(i = 0; i < sizeof(Items)/sizeof(Items[0]); i++) // Proper way to get the amount of items ~eukara
-		if(eEntity->v.iInventory[i] == iItem->iNumber){
-			//printf("ITEM[%i] = %i\n", i, eEntity->v.iInventory[i]);
+	for(i = 0; i < pARRAYELEMENTS(Items); i++)
+		if(eEntity->v.iInventory[i] == iItem->iNumber)
 			return true;
-		}
+		
 
 	return false;
 }
