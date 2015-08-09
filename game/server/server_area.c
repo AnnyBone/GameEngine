@@ -596,9 +596,9 @@ void Area_PushableThink(ServerEntity_t *eArea)
 	// only update when something happens ~eukara
 	if((eArea->v.velocity[0] != 0) || (eArea->v.velocity[1] != 0) || (eArea->v.velocity[2] != 0))
 	{
-		Math_VectorScale(eArea->v.velocity, 0.9, eArea->v.velocity); // slowly slow it down.
+		Math_VectorScale(eArea->v.velocity, 0.9f, eArea->v.velocity); // slowly slow it down.
 		eArea->v.velocity[2] = -300;	// fake physics... FIXME
-		eArea->v.dNextThink = eArea->v.ltime + 0.5;
+		eArea->v.dNextThink = eArea->v.ltime + 0.5f;
 	}
 }
 
@@ -627,7 +627,7 @@ void Area_PushableTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
 
 	Math_VectorCopy(vMVec, eArea->v.velocity);
 	Math_MVToVector(Math_VectorToAngles(eArea->v.velocity), eArea->v.avelocity);
-	eArea->v.dNextThink = eArea->v.ltime + 0.5;
+	eArea->v.dNextThink = eArea->v.ltime + 0.5f;
 }
 
 void Area_PushableSpawn(ServerEntity_t *eArea)
