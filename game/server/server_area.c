@@ -568,26 +568,20 @@ void Area_TriggerSpawn(ServerEntity_t *eArea)
 
 float IsOnTopOf (ServerEntity_t *eTop, ServerEntity_t *eBottom)
 {
-  	if (eTop->v.absmin[2] < eBottom->v.absmax[2] - 3) {
-    		return 0;
-    	}
-  	if (eTop->v.absmin[2] > eBottom->v.absmax[2] + 2) {
-    		return 0;
-    	}
-  	if (eTop->v.absmin[1] > eBottom->v.absmax[1]) {
-    		return 0;
-    	}
-  	if (eTop->v.absmax[1] < eBottom->v.absmin[1]) {
-    		return 0;
-    	}
-  	if (eTop->v.absmin[0] > eBottom->v.absmax[0]) {
-    		return 0;
-    	}
-  	if (eTop->v.absmax[0] < eBottom->v.absmin[0]) {
-    		return 0;
-    	}
+	if (eTop->v.absmin[2] < eBottom->v.absmax[2] - 3)
+		return 0;
+	if (eTop->v.absmin[2] > eBottom->v.absmax[2] + 2)
+		return 0;
+	if (eTop->v.absmin[1] > eBottom->v.absmax[1])
+		return 0;
+	if (eTop->v.absmax[1] < eBottom->v.absmin[1])
+		return 0;
+	if (eTop->v.absmin[0] > eBottom->v.absmax[0])
+		return 0;
+	if (eTop->v.absmax[0] < eBottom->v.absmin[0])
+		return 0;
 
-  	return 1;
+	return 1;
 }
 
 void Area_PushableThink(ServerEntity_t *eArea)
@@ -608,22 +602,24 @@ void Area_PushableTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
 	MathVector3f_t vMVec;
 	MathVector3f_t vPVec;
 
-
 	if (IsOnTopOf(eOther, eArea)) 
 	{
-		eOther->v.flags = eOther->v.flags + FL_ONGROUND; // so the player can jump off the object ~eukara
+		// So the player can jump off the object.
+		eOther->v.flags = eOther->v.flags + FL_ONGROUND; 
 		return;
 	}
 	
-    	if (eArea->v.flags & FL_ONGROUND)
-      		eArea->v.flags = eArea->v.flags - FL_ONGROUND;
+    if (eArea->v.flags & FL_ONGROUND)
+      	eArea->v.flags = eArea->v.flags - FL_ONGROUND;
 	
-	Math_MVToVector(Math_VectorToAngles(eOther->v.velocity), vPVec); // get the right player angle
-	fYaw = vPVec[1] * pMath_PI *2 / 360;
-		
-	vMVec[0] = cos(fYaw)*80;
-	vMVec[1] = sin(fYaw)*80;
-	vMVec[2] = 0; // don't affect the height when pushing... ever ~eukara
+	// Get the right player angle.
+	Math_MVToVector(Math_VectorToAngles(eOther->v.velocity), vPVec); 
+	fYaw = vPVec[1] * ((float)pMath_PI) * 2 / 360;
+	
+	vMVec[0] = cosf(fYaw) * 80.0f;
+	vMVec[1] = sinf(fYaw) * 80.0f;
+	// Don't affect the height when pushing... ever.
+	vMVec[2] = 0; 
 
 	Math_VectorCopy(vMVec, eArea->v.velocity);
 	Math_MVToVector(Math_VectorToAngles(eArea->v.velocity), eArea->v.avelocity);
