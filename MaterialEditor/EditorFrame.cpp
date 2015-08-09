@@ -461,27 +461,7 @@ void CEditorFrame::OnOpen(wxCommandEvent &event)
 		wxString filename = fileDialog->GetFilename();
 
 		if (filename.EndsWith(".material"))
-		{
-			filename.RemoveLast(9);
-
-			// Unload the current material.
-			Material_t *current = editorMaterialProperties->GetCurrent();
-			if (current)
-				engine->UnloadMaterial(current);
-
-			Material_t *newMat = engine->LoadMaterial(filename);
-			if (newMat)
-			{
-				// TODO: Handle this internally.
-				engine->MaterialEditorDisplay(newMat);
-
-				// TODO: This is dumb...
-				editorMaterialProperties->SetCurrentMaterial(newMat);
-				editorMaterialProperties->Update();
-			}
-
 			OpenMaterialTool(fileDialog->GetPath());
-		}
 		else if (filename.EndsWith(".map"))
 		{
 			SetTitle(fileDialog->GetFilename() + wxString(" - ") + cApplicationTitle);
@@ -489,7 +469,6 @@ void CEditorFrame::OnOpen(wxCommandEvent &event)
 		else if (filename.EndsWith(".level"))
 		{
 			// TODO: Load the level up in a "viewer" mode.
-
 			SetTitle(fileDialog->GetFilename() + wxString(" - ") + cApplicationTitle);
 		}
 		else if (filename.EndsWith(".wad"))

@@ -23,7 +23,7 @@ bool	bShowingCursor	    = true,		// Are we showing the cursor?
 int	iActive = 0,	// Number of current active windows.
 	iScreen;		// Default screen.
 
-/*	
+/*
 	Display Information
 */
 
@@ -145,13 +145,13 @@ void gWindow_CreateWindow(GIPLWindow_t *gwWindow)
 
 #ifdef _WIN32
 	{
-		INITCOMMONCONTROLSEX	iCommonControls;
-		WNDCLASSEX				wWindowClass;
+	    WNDCLASSEX wWindowClass;
+#if 0
+		INITCOMMONCONTROLSEX iCommonControls;
 
 		iCommonControls.dwICC	= 0;
 		iCommonControls.dwSize	= sizeof(INITCOMMONCONTROLSEX);
 
-#if 0
 		if(!InitCommonControlsEx(&iCommonControls))
 		{
 			Platform_SetError("Failed to initialize common controls!\n");
