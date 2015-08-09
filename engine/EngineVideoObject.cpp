@@ -1,4 +1,5 @@
 /*	Copyright (C) 1996-2001 Id Software, Inc.
+	Copyright (C) 2002-2009 John Fitzgibbons and others
 	Copyright (C) 2011-2015 OldTimes Software
 
 	This program is free software; you can redistribute it and/or
@@ -23,6 +24,24 @@ extern "C" {
 #include "EngineVideo.h"
 #include "EngineVideoObject.h"
 }
+
+class CVideoVertex
+{
+public:
+	CVideoVertex(float x, float y, float z);
+protected:
+private:
+	float x, y, z;
+};
+
+CVideoVertex::CVideoVertex(float x, float y, float z)
+{
+	this->x = x; 
+	this->y = y; 
+	this->z = z;
+}
+
+//
 
 class CVideoObject
 {
@@ -69,6 +88,22 @@ CVideoObject::~CVideoObject()
 	VIDEO_FUNCTION_END
 }
 
+void CVideoObject::Begin()
+{
+}
+
+void CVideoObject::Vertex(float x, float y, float z)
+{
+}
+
+void CVideoObject::Colour(float r, float g, float b, float a)
+{
+}
+
+void CVideoObject::End()
+{
+}
+
 void CVideoObject::Draw()
 {
 	VIDEO_FUNCTION_START(VideoObject_Draw)
@@ -92,7 +127,7 @@ void CVideoObject::Draw()
 				glTexCoordPointer(2, GL_FLOAT, 0, 0);
 			}
 
-//		Video_DrawArrays(primitiveType, voObject->iVertices, r_showtris.bValue);
+		Video_DrawArrays(primitiveType, 0 /*replace me*/, r_showtris.bValue);
 
 		glDisableClientState(GL_VERTEX_ARRAY);
 		glDisableClientState(GL_COLOR_ARRAY);

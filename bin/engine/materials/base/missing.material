@@ -17,7 +17,7 @@
 		}
 		
 		// Finally, add our fullbright layer.
-		$map "materials/base/missing_fullbright"
+		$map "materials/base/missing"
 		{
 			// Set the type as fullbright, so it's drawn using that path.
 			$type "fullbright"

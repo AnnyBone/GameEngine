@@ -28,7 +28,9 @@
     <ClInclude Include="EditorMaterialProperties.h">
       <Filter>Tools\Material Tool</Filter>
     </ClInclude>
-    <ClInclude Include="MaterialFrame.h" />
+    <ClInclude Include="MaterialFrame.h">
+      <Filter>Tools\Material Tool</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EditorMaterialProperties.cpp">
@@ -42,7 +44,9 @@
     <ClCompile Include="EditorFrame.cpp" />
     <ClCompile Include="EditorEngineInterface.cpp" />
     <ClCompile Include="EditorRenderCanvas.cpp" />
-    <ClCompile Include="MaterialFrame.cpp" />
+    <ClCompile Include="MaterialFrame.cpp">
+      <Filter>Tools\Material Tool</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Material Editor.rc">
