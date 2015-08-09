@@ -163,7 +163,6 @@ ServerEntity_t *Entity_SpawnPoint(ServerEntity_t *eEntity,int iType)
 			Engine.Con_Warning("Unknown team type for spawn point! (%i)",eEntity->local.pTeam);
 			return NULL;
 		}
-		// [27/4/2014] Oops, forgot to break here ~hogsy
 		break;
 #ifdef GAME_OPENKATANA
 	case INFO_PLAYER_SUPERFLY:
@@ -256,10 +255,10 @@ void Entity_RadiusDamage(ServerEntity_t *eInflictor, float fRadius, int iDamage,
 				Math_VectorInverse(vOrigin);
 				Math_VectorAdd(eTarget->v.velocity,vOrigin,eTarget->v.velocity);
 
-				// [15/7/2013] Reduce the damage by distance ~hogsy
+				// Reduce the damage by distance.
 				fDistance = (float)iDamage-(100.0f/fDistance);
 
-				// [15/8/2013] Less damage for the inflictor ~hogsy
+				// Less damage for the inflictor.
 				if(eTarget == eInflictor)
 					fDistance = fDistance/2.0f;
 
@@ -300,7 +299,8 @@ void Entity_Remove(ServerEntity_t *eEntity)
 */
 void Entity_CheckFrames(ServerEntity_t *eEntity)
 {
-	if(!eEntity->local.iAnimationEnd || Server.dTime < eEntity->local.dAnimationTime)	// If something isn't active and Animationtime is over
+	// If something isn't active and Animationtime is over
+	if(!eEntity->local.iAnimationEnd || (Server.dTime < eEntity->local.dAnimationTime))
 		return;
 	else if(eEntity->local.iAnimationCurrent > eEntity->local.iAnimationEnd)
 	{

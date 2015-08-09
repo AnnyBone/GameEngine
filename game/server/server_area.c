@@ -27,11 +27,6 @@ TODO:
 
 #include "server_waypoint.h"
 
-/*	[14/10/2013]
-		Eukos you could at least try to make this look uncopied!
-		Cleaned this up.
-	~hogsy
-*/
 void Area_SetMoveDirection(MathVector3f_t vAngles, MathVector3f_t vMoveDirection)
 {
 	MathVector3f_t vUp = { 0, -1, 0 };
@@ -53,7 +48,6 @@ void Area_CalculateMovementDone(ServerEntity_t *eArea)
 {
 	Entity_SetOrigin(eArea,eArea->local.finaldest);
 
-	// [17/7/2012] Simplified ~hogsy
 	Math_VectorClear(eArea->v.velocity);
 
 	if(eArea->local.think1)
@@ -67,12 +61,10 @@ void Area_CalculateMovement(ServerEntity_t *eArea, MathVector3f_t vTDest, float 
 
 	Math_VectorCopy(vTDest,eArea->local.finaldest);
 
-	// [14/10/2013] Simplified ~hogsy
 	Math_VectorSubtract(vTDest,eArea->v.origin,vdestdelta);
 
 	fTravelTime = (float)Math_VectorLength(vdestdelta)/fSpeed;
 
-	// [13/12/2013] Simplified ~hogsy
 	Math_VectorScale(vdestdelta,1.0f/fTravelTime,eArea->v.velocity);
 
 	eArea->local.think1	= Function;
@@ -97,7 +89,6 @@ void Area_PlayerSpawn(ServerEntity_t *eArea)
 	Breakable
 */
 
-// [10/9/2013] Made these static since entities specifically rely on them ~hogsy
 #define BREAKABLE_GLASS	0
 #define	BREAKABLE_WOOD	1
 #define	BREAKABLE_ROCK	2
@@ -145,6 +136,7 @@ void Area_CreateGib(ServerEntity_t *eArea, const char *cModel)
 		eGib->v.TouchFunction = Area_BreakableBounce;
 		eGib->v.think = Entity_Remove;
 		eGib->v.dNextThink = Server.dTime + 20;
+		eGib->v.bTakeDamage = false;
 
 		eGib->Physics.iSolid = SOLID_TRIGGER;
 
@@ -164,8 +156,8 @@ void Area_CreateGib(ServerEntity_t *eArea, const char *cModel)
 
 void Area_BreakableDie(ServerEntity_t *eArea, ServerEntity_t *eOther)
 {
-	int		i;
-	char	cSound[24], cModel[PLATFORM_MAX_PATH];
+	int	i;
+	char cSound[24], cModel[PLATFORM_MAX_PATH];
 
 	switch (eArea->local.style)
 	{
@@ -190,7 +182,10 @@ void Area_BreakableDie(ServerEntity_t *eArea, ServerEntity_t *eOther)
 	Sound(eArea, CHAN_AUTO, cSound, 255, ATTN_STATIC);
 
 	for (i = 0; i < eArea->local.count; i++)
-		Area_CreateGib(eArea, cModel);
+		Area_CreateGib(eArea, cModel);	
+
+	// Needs to be set to prevent a recursion.
+	eArea->v.bTakeDamage = false;
 
 	if (eArea->v.targetname) // Trigger doors, etc. ~eukos
 		UseTargets(eArea, eOther);

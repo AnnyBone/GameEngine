@@ -8,7 +8,7 @@
 		<Build>
 			<Target title="x64">
 				<Option platforms="Windows;Unix;" />
-				<Option output="../../openkatana/game.x64.so" prefix_auto="0" extension_auto="0" />
+				<Option output="../../openkatana/game" prefix_auto="0" extension_auto="1" />
 				<Option working_dir="../../../../../dev/ProjectKatana/trunk/bin" />
 				<Option object_output="obj/Release/" />
 				<Option type="3" />
@@ -54,6 +54,7 @@
 			<Add directory="../shared" />
 		</Compiler>
 		<Linker>
+			<Add option="-pg -lgmon" />
 			<Add option="-pg" />
 			<Add directory="../platform/lib" />
 		</Linker>

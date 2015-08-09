@@ -28,6 +28,9 @@ void Barrel_Killed(ServerEntity_t *eBarrel, ServerEntity_t *seOther)
 	// Update the model so it looks like it's actually exploded.
 	Entity_SetModel(eBarrel, MODEL_DECORATION_BARREL3);
 
+	// Don't take damage anymore.
+	eBarrel->v.bTakeDamage = false;
+
 	// Set it so it's no longer solid.
 	eBarrel->Physics.iSolid = SOLID_NOT;
 }

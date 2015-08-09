@@ -244,7 +244,7 @@ MathVector_t Weapon_Aim(ServerEntity_t *eEntity)
 	int				i, j;
 	float			fDistance, fBestDistance;
 	trace_t			tAimLine;
-	ServerEntity_t			*eCheck, *eBest;
+	ServerEntity_t	*eCheck, *eBest;
 	MathVector3f_t	mvStart, mvEnd, mvDirection, mvBestDirection;
 
 	// Copy the entity's origin as our starting position.
