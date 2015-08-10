@@ -96,7 +96,7 @@ void Area_PlayerSpawn(ServerEntity_t *eArea)
 
 void Area_BreakableBounce(ServerEntity_t *eGib, ServerEntity_t *eOther)
 {
-	char cSound[24];
+	char cSound[128];
 
 	if(eGib->v.flags & FL_ONGROUND)
 		return;
@@ -157,7 +157,7 @@ void Area_CreateGib(ServerEntity_t *eArea, const char *cModel)
 void Area_BreakableDie(ServerEntity_t *eArea, ServerEntity_t *eOther)
 {
 	int	i;
-	char cSound[24], cModel[PLATFORM_MAX_PATH];
+	char cSound[128], cModel[PLATFORM_MAX_PATH];
 
 	switch (eArea->local.style)
 	{

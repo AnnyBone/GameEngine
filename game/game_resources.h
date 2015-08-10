@@ -62,10 +62,10 @@
 #define	PHYSICS_SOUND_GLASS0		PHYSICS_SOUND_PATH"glass0.wav"
 #define	PHYSICS_SOUND_GLASS1		PHYSICS_SOUND_PATH"glass1.wav"
 #define	PHYSICS_SOUND_GLASS2		PHYSICS_SOUND_PATH"glass2.wav"
-#define	PHYSICS_SOUND_METAL(a)		sprintf(a,PHYSICS_SOUND_PATH"/impacts/metal_medium%i.wav",rand()%3)
-#define	PHYSICS_SOUND_METAL0		PHYSICS_SOUND_PATH"/impacts/metal_medium0.wav"
-#define	PHYSICS_SOUND_METAL1		PHYSICS_SOUND_PATH"/impacts/metal_medium1.wav"
-#define	PHYSICS_SOUND_METAL2		PHYSICS_SOUND_PATH"/impacts/metal_medium2.wav"
+#define	PHYSICS_SOUND_METAL(a)		sprintf(a,PHYSICS_SOUND_PATH"/impacts/metal_light%i.wav",rand()%3)
+#define	PHYSICS_SOUND_METAL0		PHYSICS_SOUND_PATH"/impacts/metal_light0.wav"
+#define	PHYSICS_SOUND_METAL1		PHYSICS_SOUND_PATH"/impacts/metal_light1.wav"
+#define	PHYSICS_SOUND_METAL2		PHYSICS_SOUND_PATH"/impacts/metal_light2.wav"
 #define	PHYSICS_SOUND_ROCK(a)		sprintf(a,PHYSICS_SOUND_PATH"rock%i.wav",rand()%3)
 #define	PHYSICS_SOUND_ROCK0			PHYSICS_SOUND_PATH"rock0.wav"
 #define	PHYSICS_SOUND_ROCK1			PHYSICS_SOUND_PATH"rock1.wav"
