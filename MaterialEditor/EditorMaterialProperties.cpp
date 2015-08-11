@@ -91,8 +91,3 @@ void CEditorMaterialGlobalProperties::SetCurrentMaterial(Material_t *newMaterial
 {
 	currentMaterial = newMaterial;
 }
-
-Material_t *CEditorMaterialGlobalProperties::GetCurrent()
-{
-	return currentMaterial;
-}

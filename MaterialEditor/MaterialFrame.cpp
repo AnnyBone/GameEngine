@@ -2,6 +2,9 @@
 
 #include "MaterialFrame.h"
 
+#include "EditorRenderCanvas.h"
+#include "EditorMaterialProperties.h"
+
 #define	WAD_TITLE "Material Tool"
 
 enum MaterialFrameEvent_s
@@ -18,7 +21,7 @@ EVT_MENU(wxID_ABOUT, CMaterialFrame::FileEvent)
 wxEND_EVENT_TABLE()
 
 CMaterialFrame::CMaterialFrame(wxWindow* parent, wxWindowID id)
-	: wxFrame(parent, id, WAD_TITLE, wxDefaultPosition, wxSize(640, 640))
+	: wxFrame(parent, id, WAD_TITLE, wxDefaultPosition, wxSize(720, 640))
 {
     Show();
 
@@ -58,14 +61,34 @@ CMaterialFrame::CMaterialFrame(wxWindow* parent, wxWindowID id)
 
 	//
 
+	// Create the engine viewport...
+	CEditorRenderCanvas *rcViewport = new CEditorRenderCanvas(this);
+	wxAuiPaneInfo piViewportInfo;
+	piViewportInfo.Caption("Viewport");
+	piViewportInfo.Top();
+	piViewportInfo.Right();
+	mManager->AddPane(rcViewport, piViewportInfo);
+
+	// Create the material props...
+	CEditorMaterialGlobalProperties *mgpProperties = new CEditorMaterialGlobalProperties(this);
+	wxAuiPaneInfo piPropertiesInfo;
+	piPropertiesInfo.Caption("Properties");
+	piPropertiesInfo.Bottom();
+	piPropertiesInfo.Right();
+	mManager->AddPane(mgpProperties, piPropertiesInfo);
+
 	//
 
 	Layout();
 	Centre();
+
+	mManager->Update();
 }
 
 CMaterialFrame::~CMaterialFrame()
 {
+	// Uninitialize the AUI manager.
+	mManager->UnInit();
 }
 
 void CMaterialFrame::ReloadCurrentFile()

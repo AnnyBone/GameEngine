@@ -66,7 +66,6 @@ cvar_t	r_fullbright			= {	"r_fullbright",			"0"					};
 cvar_t	r_lightmap				= {	"r_lightmap",			"0"					};
 cvar_t	r_shadows				= {	"r_shadows",			"1",		true,	false,	"0 = Disabled\n1 = Blob shadows\n2 = Blob and planar shadows"	};
 cvar_t	r_mirroralpha			= {	"r_mirroralpha",		"0.5"				};
-cvar_t	r_wateralpha			= {	"r_wateralpha",			"0.98",		true,	false,	"Changes the level of alpha for water surfaces."				};
 cvar_t	r_dynamic				= {	"r_dynamic",			"1"					};
 cvar_t	r_novis					= {	"r_novis",				"0"					};
 cvar_t	r_nocull				= {	"r_nocull",				"0"					};

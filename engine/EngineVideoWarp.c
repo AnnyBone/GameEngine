@@ -205,12 +205,12 @@ void GL_SubdivideSurface(msurface_t *fa)
 		- Firstly save each iteration of our water, so we can keep track of colour etc.
 		- Recalc colour for different dynamic moving lights.
 */
-void Warp_DrawWaterPoly(glpoly_t *p)
+void Warp_DrawWaterPoly(glpoly_t *p, Material_t *mCurrent)
 {
 	VideoObjectVertex_t	*voWaterPoly;
-	vec3_t			vWave,vLightColour;
-	float			*fVert,fWaterAlpha;
-	int				i;
+	vec3_t	vWave,vLightColour;
+	float *fVert,fWaterAlpha;
+	int	i;
 
 	voWaterPoly = Hunk_TempAlloc(p->numverts*sizeof(VideoObjectVertex_t));
 	if(!voWaterPoly)
@@ -219,18 +219,19 @@ void Warp_DrawWaterPoly(glpoly_t *p)
 		return;
 	}
 
-	fWaterAlpha = Math_Clamp(0, r_wateralpha.value, 1.0f);
+	fWaterAlpha = Math_Clamp(0, mCurrent->fAlpha, 1.0f);
 
 	fVert = p->verts[0];
 	for (i = 0; i < p->numverts; i++, fVert += VERTEXSIZE)
 	{
-		DynamicLight_t *dLight;
-
 		Video_ObjectTexture(&voWaterPoly[i], 0, WARPCALC(fVert[3], fVert[4]), WARPCALC(fVert[4], fVert[3]));
 
 		Math_VectorCopy(fVert, vWave);
 
-#if 1	// Shitty lit water, use dynamic light points in the future...
+#if 1	
+		DynamicLight_t *dLight;
+
+		// Shitty lit water, use dynamic light points in the future...
 		// Use vWave position BEFORE we move it, otherwise the water will flicker.
 		// Additionally, these should be saved so that we aren't trying to light these every frame, URGH.
 		if (r_oldwater.bValue)
@@ -246,7 +247,7 @@ void Warp_DrawWaterPoly(glpoly_t *p)
 			// Other method using dynamic light points, apparently slower? So needs to be optimised.
 			dLight = Light_GetDynamic(vWave, true);
 			if (!dLight)
-				Math_VectorSet(0, vLightColour);
+				Math_VectorSet(0.1f, vLightColour);
 			else
 			{
 				MathVector3_t vDistance;

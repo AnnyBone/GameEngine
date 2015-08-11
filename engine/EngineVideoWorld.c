@@ -207,19 +207,16 @@ void World_DrawWaterTextureChains(void)
 
 	Video_ResetCapabilities(false);
 
-	Video_EnableCapabilities(VIDEO_TEXTURE_2D);
-
-	if (r_wateralpha.value < 1.0)
-	{
-		Video_SetBlend(VIDEO_BLEND_IGNORE, VIDEO_DEPTH_FALSE);
-		Video_EnableCapabilities(VIDEO_BLEND);
-	}
+	Video_EnableCapabilities(VIDEO_TEXTURE_2D|VIDEO_BLEND);
 
 	for (i = 0; i < cl.worldmodel->numtextures; i++)
 	{
 		t = cl.worldmodel->textures[i];
 		if (!t || !t->texturechain || !(t->texturechain->flags & SURF_DRAWTURB))
 			continue;
+
+		if (t->mAssignedMaterial->fAlpha < 1.0)
+			Video_SetBlend(VIDEO_BLEND_IGNORE, VIDEO_DEPTH_TRUE);
 
 		for (s = t->texturechain; s; s = s->texturechain)
 			if(!s->culled)
@@ -228,7 +225,7 @@ void World_DrawWaterTextureChains(void)
 
 				for(p = s->polys->next; p; p = p->next)
 				{
-					Warp_DrawWaterPoly(p);
+					Warp_DrawWaterPoly(p, t->mAssignedMaterial);
 
 					rs_brushpasses++;
 				}

@@ -49,6 +49,8 @@ private:
 
 	unsigned int vertexShader, fragmentShader;
 	unsigned int program;
+
+	void Compile(unsigned int uiShader);
 };
 
 CVideoShader::CVideoShader(const char *path)
@@ -156,6 +158,15 @@ CVideoShader::~CVideoShader()
 	Disable();
 
 	glDeleteProgram(program);
+}
+
+/*
+	Compilation
+*/
+
+void CVideoShader::Compile(unsigned int uiShader)
+{
+
 }
 
 /*

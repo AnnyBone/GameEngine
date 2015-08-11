@@ -94,7 +94,8 @@ CEditorFrame::CEditorFrame(const wxString & title, const wxPoint & pos, const wx
 			wxBORDER_SIMPLE | wxSTAY_ON_TOP);
 	}
 
-	Show();
+	SetSize(size);
+	Maximize();
 
 	// Set the menu up...
 
@@ -151,6 +152,7 @@ CEditorFrame::CEditorFrame(const wxString & title, const wxPoint & pos, const wx
 
 	wxMenu *mTools = new wxMenu;
 	mTools->Append(FRAME_EVENT_WADTOOL, "WAD Tool...");
+	mTools->Append(FRAME_EVENT_MATERIALTOOL, "Material Tool...");
 
 	wxMenu *mWindow = new wxMenu;
 	windowShowConsole = mWindow->AppendCheckItem(FRAME_EVENT_SHOWCONSOLE, "&Console");
@@ -170,8 +172,9 @@ CEditorFrame::CEditorFrame(const wxString & title, const wxPoint & pos, const wx
 
 	CreateStatusBar(3);
 	SetStatusText("Initialized");
-	SetSize(size);
 	Center();
+
+	Show();
 
 	// Initialize the timer...
 	timer = new wxTimer(this);
@@ -259,16 +262,6 @@ CEditorFrame::CEditorFrame(const wxString & title, const wxPoint & pos, const wx
 	consoleInfo.MaximizeButton(true);
 	consoleInfo.CloseButton(false);
 	manager->AddPane(editorConsolePanel, consoleInfo);
-
-	// Create the material props...
-	editorMaterialProperties = new CEditorMaterialGlobalProperties(this);
-	wxAuiPaneInfo propertiesInfo;
-	propertiesInfo.Caption("Properties");
-	propertiesInfo.CloseButton(false);
-	propertiesInfo.Right();
-	manager->AddPane(editorMaterialProperties, propertiesInfo);
-
-	Maximize();
 
 	manager->Update();
 
@@ -536,6 +529,7 @@ void CEditorFrame::OnProperties(wxCommandEvent &event)
 */
 void CEditorFrame::ReloadCurrentDocument()
 {
+#if 0
 	Material_t *current = editorMaterialProperties->GetCurrent();
 	if (!current)
 		return;
@@ -561,6 +555,7 @@ void CEditorFrame::ReloadCurrentDocument()
 		editorMaterialProperties->SetCurrentMaterial(reloadedMat);
 		editorMaterialProperties->Update();
 	}
+#endif
 }
 
 void CEditorFrame::PrintMessage(char *text)

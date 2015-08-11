@@ -28,7 +28,7 @@ CEditorRenderCanvas::CEditorRenderCanvas(wxWindow *parent, int *attribList)
 
 void CEditorRenderCanvas::OnPaint(wxPaintEvent &event)
 {
-	//SetCurrent();
+	rcGlobalRenderContext->SetCurrent(*this);
 
 	const wxSize clientSize = GetClientSize();
 	engine->SetViewportSize(clientSize.GetWidth(), clientSize.GetHeight());

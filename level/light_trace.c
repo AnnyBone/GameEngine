@@ -50,7 +50,7 @@ static int RecursiveTestLine (lightTrace_t *trace, int num, float p1f, float p2f
 	// from solid to empty are not considered impacts. (this does mean that
 	// tracing is not symmetrical; point A to point B may have different
 	// results than point B to point A, if either start in solid)
-
+	
 	while (num >= 0)	
 	{
 		// find the point distances

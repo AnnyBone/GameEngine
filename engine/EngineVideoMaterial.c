@@ -405,6 +405,11 @@ void _Material_SetShader(Material_t *mCurrentMaterial, MaterialFunctionType_t mf
 	mCurrentMaterial->msShader.ccName = cArg;
 }
 
+void _Material_SetAlpha(Material_t *mCurrentMaterial, MaterialFunctionType_t mftContext, char *cArg)
+{
+	mCurrentMaterial->fAlpha = strtof(cArg, NULL);
+}
+
 void _Material_SetAnimationSpeed(Material_t *mCurrentMaterial, MaterialFunctionType_t mftContext, char *cArg)
 {
 	mCurrentMaterial->fAnimationSpeed = strtof(cArg, NULL);
@@ -669,6 +674,7 @@ MaterialKey_t mkMaterialFunctions[]=
 	{ "shader", _Material_SetShader, MATERIAL_FUNCTION_MATERIAL },
 	{ "animation_speed", _Material_SetAnimationSpeed, MATERIAL_FUNCTION_MATERIAL },
 	{ "skin", _Material_AddSkin, MATERIAL_FUNCTION_MATERIAL },
+	{ "alpha", _Material_SetAlpha, MATERIAL_FUNCTION_MATERIAL },
 
 	// Skin
 	{ "map", _Material_AddTexture, MATERIAL_FUNCTION_SKIN },

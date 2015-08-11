@@ -45,7 +45,6 @@ tree_t *Tree_ProcessEntity( entity_t *ent,int hullnum )
 	else
 	{
 		worldmodel = false;
-
 		if (verbose)
 			PrintEntity (ent);
 	}

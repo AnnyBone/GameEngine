@@ -148,27 +148,31 @@ void R_DrawSequentialPoly(msurface_t *s)
 	}
     else if(s->flags & SURF_DRAWTURB)
 	{
+		Material_t *mCurrent = s->texinfo->texture->mAssignedMaterial;
         glpoly_t *pBrushPoly;
-
+		
 		if(currententity->alpha == ENTALPHA_DEFAULT)
-			fAlpha = Math_Clamp(0.0, r_wateralpha.value, 1.0f);
-
+			// Use the materials alpha.
+			fAlpha = Math_Clamp(0.0, mCurrent->fAlpha, 1.0f);
+		else
+			// Use the entity alpha.
+			fAlpha = Math_Clamp(0.0, ENTALPHA_DECODE(currententity->alpha), 1.0f);
 		if(fAlpha < 1.0f)
 		{
             Video_SetBlend(VIDEO_BLEND_IGNORE,VIDEO_DEPTH_FALSE);
             Video_EnableCapabilities(VIDEO_BLEND);
 		}
 
-		Video_DrawMaterial(s->texinfo->texture->mAssignedMaterial, 0, 0, 0, 0, false);
+		Video_DrawMaterial(mCurrent, 0, 0, 0, 0, false);
 
         for(pBrushPoly = s->polys->next; pBrushPoly; pBrushPoly = pBrushPoly->next)
         {
-            Warp_DrawWaterPoly(pBrushPoly);
+			Warp_DrawWaterPoly(pBrushPoly, mCurrent);
 
             rs_brushpasses++;
         }
 
-		Video_DrawMaterial(s->texinfo->texture->mAssignedMaterial, 0, 0, 0, 0, true);
+		Video_DrawMaterial(mCurrent, 0, 0, 0, 0, true);
 	}
 	else
 	{

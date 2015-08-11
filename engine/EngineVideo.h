@@ -197,7 +197,7 @@ void DrawGLPoly(glpoly_t *p);
 	Warp
 */
 
-void Warp_DrawWaterPoly(glpoly_t *p);
+void Warp_DrawWaterPoly(glpoly_t *p, Material_t *mCurrent);
 
 void R_EmitWirePoint(MathVector3f_t origin);
 

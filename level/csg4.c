@@ -242,9 +242,9 @@ void CSGFaces( tree_t *tree )
 
 			for( f = b2->faces; f; f = f->next )
 				ClipInside( f->planenum, f->planeside, overwrite );
-
+			
 			// these faces are continued in another brush, so get rid of them
-			if( b1->contents == BSP_CONTENTS_SOLID && b2->contents <= BSP_CONTENTS_WATER )
+			if( ((b1->contents == BSP_CONTENTS_SOLID) && (b2->contents <= BSP_CONTENTS_WATER)))
 				FreeInside( b2->contents );
 			else
 				FreeInside( BSP_CONTENTS_SOLID );

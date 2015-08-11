@@ -8,8 +8,6 @@ public:
 	void Update();
 	void SetCurrentMaterial(Material_t *newMaterial);
 
-	Material_t *GetCurrent();
-
 private:
 	void OnChanged(wxPropertyGridEvent &event);
 

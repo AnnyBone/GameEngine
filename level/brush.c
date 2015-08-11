@@ -521,7 +521,7 @@ void ExpandBrush (int hullnum)
 
 /*	Converts a mapbrush to a bsp brush
 */
-brush_t *LoadBrush (mbrush_t *mb, int brushnum, int hullnum)
+brush_t *LoadBrush (entity_t *eCurrent, mbrush_t *mb, int brushnum, int hullnum)
 {
 	brush_t		*b;
 	int			contents;
@@ -556,7 +556,10 @@ brush_t *LoadBrush (mbrush_t *mb, int brushnum, int hullnum)
 	else
 		contents = BSP_CONTENTS_SOLID;
 
-	if (hullnum && contents != BSP_CONTENTS_SOLID && contents != BSP_CONTENTS_SKY)
+	if ((hullnum && contents != BSP_CONTENTS_SOLID && contents != BSP_CONTENTS_SKY) &&
+		// Work around for seperate brush entities.
+		// TODO: Better solution...
+		(eCurrent == &entities[0]))
 		return NULL;		// water brushes don't show up in clipping hulls
 
 	// no seperate textures on clip hull
@@ -624,12 +627,12 @@ void Brush_LoadEntity (entity_t *ent, tree_t *tree, int hullnum)
 
 	for (mbr = ent->brushes, brushnum = 0; mbr; mbr=mbr->next, brushnum++)
 	{
-		b = LoadBrush (mbr, brushnum, hullnum);
+		b = LoadBrush (ent, mbr, brushnum, hullnum);
 		if (!b)
 			continue;
 
 		numbrushes++;
-
+		
 		if (b->contents != BSP_CONTENTS_SOLID)
 		{
 			b->next = water;

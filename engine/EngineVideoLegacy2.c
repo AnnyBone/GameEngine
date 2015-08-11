@@ -152,7 +152,6 @@ void R_Init (void)
 	Cvar_RegisterVariable (&r_drawviewmodel, NULL);
 	Cvar_RegisterVariable (&r_shadows, NULL);
 	Cvar_RegisterVariable (&r_mirroralpha, NULL);
-	Cvar_RegisterVariable (&r_wateralpha, NULL);
 	Cvar_RegisterVariable (&r_dynamic, NULL);
 	Cvar_RegisterVariable (&r_novis, R_Novis_f);
 	Cvar_RegisterVariable (&r_nocull, NULL);
