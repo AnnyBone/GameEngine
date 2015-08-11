@@ -116,5 +116,6 @@ void Weapon_CheckInput(ServerEntity_t *eEntity);
 bool Weapon_CheckPrimaryAmmo(Weapon_t *wWeapon, ServerEntity_t *eEntity);
 bool Weapon_CheckSecondaryAmmo(Weapon_t *wWeapon, ServerEntity_t *eEntity);
 bool Weapon_CheckTrace(ServerEntity_t *eOwner);
+void Weapon_ViewPunch(ServerEntity_t *eEntity, float fIntensity, bool bAddition);
 
 #endif

@@ -201,6 +201,7 @@ void C4Vizatergo_PrimaryAttack(ServerEntity_t *eOwner)
 	Sound(eOwner,CHAN_AUTO,"weapons/c4/c4cock.wav",255,ATTN_NORM);
 
 	Weapon_Animate(eOwner,C4Animation_Fire1);
+	Weapon_ViewPunch(eOwner, 7, true);
 
 	// [11/8/2013] Fixed ~hogsy
 	eOwner->v.iPrimaryAmmo = eOwner->local.iC4Ammo -= 1;

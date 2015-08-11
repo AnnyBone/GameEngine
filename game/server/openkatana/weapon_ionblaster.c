@@ -156,7 +156,7 @@ void IonBlaster_PrimaryAttack(ServerEntity_t *ent)
 
 	Sound(ent,CHAN_WEAPON,"weapons/ionblaster/ionfire.wav",255,ATTN_NORM);
 
-	ent->v.punchangle[0] -= (float)(rand()%5+2);
+	Weapon_ViewPunch(ent, 4, false);
 
 	if(rand()%2 == 1)
 		Weapon_Animate(ent,IonBlasterAnimation_Fire1);
