@@ -331,23 +331,23 @@ MathVector_t Weapon_Aim(ServerEntity_t *eEntity)
 	return mvResult;
 }
 
-/*	Kicks the view a little
+/*	Kicks the view a little.
 */
 void Weapon_ViewPunch(ServerEntity_t *eEntity, float fIntensity, bool bAddition)
 {
 	if(bAddition)
 	{
-		eEntity->v.punchangle[YAW] = rand()%2 == 1 ? 
-			eEntity->v.punchangle[YAW] - 3 + (rand() % 2): 
-			eEntity->v.punchangle[YAW] + 3 + (rand() % 2);
-		eEntity->v.punchangle[PITCH] = eEntity->v.punchangle[PITCH] - 5 + (rand() % 2);
+		eEntity->v.punchangle[YAW] = (float)(rand() % 2) == 1 ? 
+			eEntity->v.punchangle[YAW] - 3.0f + (float)(rand() % 2): 
+			eEntity->v.punchangle[YAW] + 3.0f + (float)(rand() % 2);
+		eEntity->v.punchangle[PITCH] = eEntity->v.punchangle[PITCH] - 5.0f + (float)(rand() % 2);
 	}
 	else
 	{
-		eEntity->v.punchangle[YAW] = rand()%2 == 1 ? 
-			-3 + (rand() % 2): 
-			+3 + (rand() % 2);
-		eEntity->v.punchangle[PITCH] = -4 + (rand() % 2);
+		eEntity->v.punchangle[YAW] = (float)(rand()%2) == 1 ? 
+			-3.0f + (float)(rand() % 2): 
+			+3.0f + (float)(rand() % 2);
+		eEntity->v.punchangle[PITCH] = -4.0f + (float)(rand() % 2);
 	}
 
 }
