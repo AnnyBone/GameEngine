@@ -178,7 +178,7 @@ void Shotcycler_PrimaryAttack(ServerEntity_t *ent)
 
 	Sound(ent,CHAN_WEAPON,va("weapons/shotcycler6/shotcyclerfire%i.wav",rand()%9+1),255,ATTN_NORM);
 
-	ent->v.punchangle[PITCH] -= (float)(rand() % 5 + 1);
+	Weapon_ViewPunch(ent, 5, false);
 	ent->v.iPrimaryAmmo = ent->local.shotcycler_ammo -= 2;
 
 	Entity_AddEffects(ent, EF_MUZZLEFLASH);
