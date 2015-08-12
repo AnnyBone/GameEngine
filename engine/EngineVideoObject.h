@@ -21,14 +21,56 @@
 #ifndef __ENGINEVIDEOOBJECT__
 #define __ENGINEVIDEOOBJECT__
 
+#if __cplusplus
+class CVideoVertex
+{
+public:
+	CVideoVertex(float x, float y, float z);
+protected:
+private:
+	MathVector3f_t
+		mvPosition,
+		mvNormal;
+
+	MathVector2f_t mvST[VIDEO_MAX_UNITS];
+
+	Colour_t cColour;
+};
+
+class CVideoObject
+{
+public:
+	CVideoObject(VideoPrimitive_t pPrimitiveType = VIDEO_PRIMITIVE_TRIANGLE_FAN);
+	~CVideoObject();
+
+	void Begin();
+	void Vertex(float x, float y, float z);
+	void Colour(float r, float g, float b, float a);
+	void End();
+	void Draw();
+
+protected:
+	VideoPrimitive_t pPrimitiveType;
+
+private:
+	unsigned int uiVertexBuffer;
+	unsigned int uiColourBuffer;
+	unsigned int uiTextureBuffer;
+
+	CVideoVertex *VertexList;
+
+	unsigned int uiVertices;
+};
+#endif
+
 void VideoObject_Begin(VideoObject_t *voObject, VideoPrimitive_t vpPrimitive);
 void VideoObject_Vertex(VideoObject_t *voObject, float x, float y, float z);
-void VideoObject_VertexVector(VideoObject_t *oObject, MathVector3_t mvVertex);
+void VideoObject_VertexVector(VideoObject_t *oObject, MathVector3f_t mvVertex);
 void VideoObject_Normal(VideoObject_t *voObject, float x, float y, float z);
 void VideoObject_Colour(VideoObject_t *voObject, float r, float g, float b, float a);
-void VideoObject_ColourVector(VideoObject_t *voObject, MathVector4_t mvColour);
+void VideoObject_ColourVector(VideoObject_t *voObject, MathVector4f_t mvColour);
 void VideoObject_End(VideoObject_t *voObject);
-void VideoObject_Clip(VideoObject_t *voObject, MathVector4_t mvClipDimensions);
+void VideoObject_Clip(VideoObject_t *voObject, MathVector4f_t mvClipDimensions);
 void VideoObject_Draw(VideoObject_t *voObject);
 
 #endif

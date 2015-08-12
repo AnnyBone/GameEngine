@@ -117,7 +117,7 @@ void Video_ObjectVertex(VideoObjectVertex_t *voObject, float X, float Y, float Z
 void Video_ObjectNormal(VideoObjectVertex_t *voObject, float X, float Y, float Z);
 void Video_ObjectColour(VideoObjectVertex_t *voObject, float R, float G, float B, float A);
 void Video_SetColour(float R, float G, float B, float A);
-void Video_DrawArrays(VideoPrimitive_t vpPrimitiveType, unsigned int uiSize, bool bWireframe);
+void Video_DrawArrays(const VideoPrimitive_t vpPrimitiveType, unsigned int uiSize, bool bWireframe);
 void Video_DrawFill(VideoObjectVertex_t *voFill, Material_t *mMaterial, int iSkin);
 void Video_DrawSurface(msurface_t *mSurface,float fAlpha,Material_t *mMaterial, unsigned int uiSkin);
 void Video_DrawObject(VideoObjectVertex_t *voObject, VideoPrimitive_t vpPrimitiveType, unsigned int uiVerts, Material_t *mMaterial, int iSkin);

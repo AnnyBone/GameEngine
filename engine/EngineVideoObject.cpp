@@ -25,54 +25,34 @@ extern "C" {
 #include "EngineVideoObject.h"
 }
 
-class CVideoVertex
-{
-public:
-	CVideoVertex(float x, float y, float z);
-protected:
-private:
-	float x, y, z;
-};
+/*
+	Vertex
+*/
 
 CVideoVertex::CVideoVertex(float x, float y, float z)
 {
-	this->x = x; 
-	this->y = y; 
-	this->z = z;
+	mvPosition[0] = x; 
+	mvPosition[1] = y; 
+	mvPosition[2] = z;
+
+	Math_VectorClear(mvNormal);
+
+	Math_Vector4Set(1.0f, cColour);
 }
 
-//
+/*
+	Object
+*/
 
-class CVideoObject
-{
-public:
-	CVideoObject(VideoPrimitive_t primitiveType);
-	~CVideoObject();
-
-	void Begin();
-	void Vertex(float x, float y, float z);
-	void Colour(float r, float g, float b, float a);
-	void End();
-	void Draw();
-
-protected:
-	VideoPrimitive_t primitiveType;
-
-private:
-	unsigned int vertexBuffer;
-	unsigned int colourBuffer;
-	unsigned int textureBuffer;
-};
-
-CVideoObject::CVideoObject(VideoPrimitive_t primitiveType)
+CVideoObject::CVideoObject(VideoPrimitive_t pPrimitiveType)
 {
 	VIDEO_FUNCTION_START(CVideoObject)
 
-		this->primitiveType = primitiveType;
+		this->pPrimitiveType = pPrimitiveType;
 
-		vertexBuffer = VideoLayer_GenerateVertexBuffer();
-		colourBuffer = VideoLayer_GenerateVertexBuffer();
-		textureBuffer = VideoLayer_GenerateVertexBuffer();
+		uiVertexBuffer = VideoLayer_GenerateVertexBuffer();
+		uiColourBuffer = VideoLayer_GenerateVertexBuffer();
+		uiTextureBuffer = VideoLayer_GenerateVertexBuffer();
 
 	VIDEO_FUNCTION_END
 }
@@ -81,9 +61,9 @@ CVideoObject::~CVideoObject()
 {
 	VIDEO_FUNCTION_START(~CVideoObject)
 
-		VideoLayer_DeleteBuffer(vertexBuffer);
-		VideoLayer_DeleteBuffer(colourBuffer);
-		VideoLayer_DeleteBuffer(textureBuffer);
+		VideoLayer_DeleteBuffer(uiVertexBuffer);
+		VideoLayer_DeleteBuffer(uiColourBuffer);
+		VideoLayer_DeleteBuffer(uiTextureBuffer);
 
 	VIDEO_FUNCTION_END
 }
@@ -102,6 +82,26 @@ void CVideoObject::Colour(float r, float g, float b, float a)
 
 void CVideoObject::End()
 {
+	VIDEO_FUNCTION_START(End)
+
+		glBindBuffer(GL_ARRAY_BUFFER, uiVertexBuffer);
+		glVertexPointer(3, GL_FLOAT, 0, 0);
+
+		glBindBuffer(GL_ARRAY_BUFFER, uiColourBuffer);
+		glColorPointer(4, GL_FLOAT, 0, 0);
+
+		glBindBuffer(GL_ARRAY_BUFFER, uiTextureBuffer);
+
+		int i;
+		for (i = 0; i < VIDEO_MAX_UNITS; i++)
+			if (Video.bUnitState[i])
+			{
+				glClientActiveTexture(Video_GetTextureUnit(i));
+
+				glTexCoordPointer(2, GL_FLOAT, 0, 0);
+			}
+
+	VIDEO_FUNCTION_END
 }
 
 void CVideoObject::Draw()
@@ -109,14 +109,14 @@ void CVideoObject::Draw()
 	VIDEO_FUNCTION_START(VideoObject_Draw)
 
 		glEnableClientState(GL_VERTEX_ARRAY);
-		glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+		glBindBuffer(GL_ARRAY_BUFFER, uiVertexBuffer);
 		glVertexPointer(3, GL_FLOAT, 0, 0);
 
 		glEnableClientState(GL_COLOR_ARRAY);
-		glBindBuffer(GL_ARRAY_BUFFER, colourBuffer);
+		glBindBuffer(GL_ARRAY_BUFFER, uiColourBuffer);
 		glColorPointer(4, GL_FLOAT, 0, 0);
 
-		glBindBuffer(GL_ARRAY_BUFFER, textureBuffer);
+		glBindBuffer(GL_ARRAY_BUFFER, uiTextureBuffer);
 
 		int i;
 		for (i = 0; i < VIDEO_MAX_UNITS; i++)
@@ -127,7 +127,7 @@ void CVideoObject::Draw()
 				glTexCoordPointer(2, GL_FLOAT, 0, 0);
 			}
 
-		Video_DrawArrays(primitiveType, 0 /*replace me*/, r_showtris.bValue);
+		Video_DrawArrays(pPrimitiveType, uiVertices /*replace me*/, r_showtris.bValue);
 
 		glDisableClientState(GL_VERTEX_ARRAY);
 		glDisableClientState(GL_COLOR_ARRAY);

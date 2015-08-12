@@ -896,7 +896,7 @@ VideoPrimitives_t vpVideoPrimitiveList[]=
 /*	Deals with tris view and different primitive types, then finally draws
 	the given arrays.
 */
-void Video_DrawArrays(VideoPrimitive_t vpPrimitiveType, unsigned int uiSize, bool bWireframe)
+void Video_DrawArrays(const VideoPrimitive_t vpPrimitiveType, unsigned int uiSize, bool bWireframe)
 {
 	unsigned int uiPrimitiveType = VIDEO_PRIMITIVE_IGNORE;
 
