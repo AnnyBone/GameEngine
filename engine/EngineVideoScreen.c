@@ -852,7 +852,13 @@ void SCR_UpdateScreen (void)
 	// do 3D refresh drawing, and then update the screen
 	Screen_SetUpToDrawConsole();
 
+	if (cvMultisampleSamples.iValue > 0)
+		VideoLayer_Enable(VIDEO_MULTISAMPLE);
+
 	V_RenderView ();
+
+	if (cvMultisampleSamples.iValue > 0)
+		VideoLayer_Disable(VIDEO_MULTISAMPLE);
 
 	Draw_ResetCanvas();
 

@@ -8,6 +8,16 @@ typedef unsigned char 		byte;
 #define BYTE_DEFINED 1
 #endif
 
+#if __cplusplus
+extern "C" {
+#endif
+
+	char *va(const char *format, ...);
+
+#if __cplusplus
+};
+#endif
+
 //============================================================================
 
 typedef struct sizebuf_s

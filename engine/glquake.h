@@ -92,27 +92,7 @@ extern	refdef_t	r_refdef;
 extern	mleaf_t		*r_viewleaf, *r_oldviewleaf;
 extern	int		d_lightstylevalue[256];	// 8.8 fraction of base light value
 
-extern	bool	bEnvironmentMap;
-
-extern	cvar_t	r_drawentities,
-				cvVideoDrawBrushes;
-extern	cvar_t	r_drawworld;
-extern	cvar_t	r_drawviewmodel;
-extern	cvar_t	r_speeds;
-extern	cvar_t	r_waterwarp;
-extern	cvar_t	r_fullbright;
-extern	cvar_t	r_lightmap;
-extern	cvar_t	r_shadows;
-extern	cvar_t	r_mirroralpha;
-extern	cvar_t	r_dynamic;
-extern	cvar_t	r_novis;
-extern	cvar_t	r_nocull;
-extern	cvar_t	r_showtris;
-extern	cvar_t	gl_cull;
-extern	cvar_t	gl_smoothmodels;
-extern	cvar_t	gl_polyblend;
-extern	cvar_t	gl_flashblend;
-extern	cvar_t	gl_max_size;
+extern bool bEnvironmentMap;
 
 extern	int			mirrortexturenum;	// quake texturenum, not gltexturenum
 extern	mplane_t	*mpMirrorPlane;

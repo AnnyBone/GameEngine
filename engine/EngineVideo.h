@@ -21,7 +21,7 @@
 #ifndef __ENGINEVIDEO__
 #define __ENGINEVIDEO__
 
-extern ConsoleVariable_t	
+extern ConsoleVariable_t
 	cvVideoLegacy,
 	cvVideoDrawModels,		// Should we draw models?
 	cvWidth,				// The width of our window (not reliable).
@@ -33,7 +33,35 @@ extern ConsoleVariable_t
 	cvVideoPlayerShadow,	// Render players shadow.
 	cvVerticalSync,
 	cvVideoOverbright,		// Enable overbrights?
+	cvVideoDrawBrushes,		// Draw brush entities?
 	cvLitParticles;			// Should particles be lit or not?
+
+#if __cplusplus
+extern "C" {
+#endif
+
+	extern	ConsoleVariable_t	r_showtris;
+	extern  ConsoleVariable_t	r_drawentities;
+	extern	ConsoleVariable_t	r_drawworld;
+	extern	ConsoleVariable_t	r_drawviewmodel;
+	extern	ConsoleVariable_t	r_speeds;
+	extern	ConsoleVariable_t	r_waterwarp;
+	extern	ConsoleVariable_t	r_fullbright;
+	extern	ConsoleVariable_t	r_lightmap;
+	extern	ConsoleVariable_t	r_shadows;
+	extern	ConsoleVariable_t	r_mirroralpha;
+	extern	ConsoleVariable_t	r_dynamic;
+	extern	ConsoleVariable_t	r_novis;
+	extern	ConsoleVariable_t	r_nocull;
+	extern	ConsoleVariable_t	gl_cull;
+	extern	ConsoleVariable_t	gl_smoothmodels;
+	extern	ConsoleVariable_t	gl_polyblend;
+	extern	ConsoleVariable_t	gl_flashblend;
+	extern	ConsoleVariable_t	gl_max_size;
+
+#ifdef __cplusplus
+};
+#endif
 
 extern bool	bVideoIgnoreCapabilities;
 
@@ -73,11 +101,14 @@ typedef struct
 		uiActiveUnit,						// The currently active unit.
 		uiSecondaryUnit;					// Current/last secondary texture.
 
+	// FBO Management
+	unsigned int
+		uiCurrentFBO[VIDEO_MAX_FRAMEBUFFFERS];	// Current/last binded FBO.
+
 	int iSupportedUnits;	// Max number of supported units.
 	int iMSAASamples;
 
-	unsigned int	uiFrameBuffer[VIDEO_MAX_FRAMEBUFFFERS],
-					iWidth,iHeight;
+	unsigned int iWidth,iHeight;
 
 	bool
 		bInitialized,					// Is the video system started?
@@ -96,37 +127,45 @@ typedef struct
 		bVertexBufferObject;	// ARB_vertex_buffer_object
 } Video_t;
 
-extern Video_t Video;
+#if __cplusplus
+extern "C" {
+#endif
 
-void Video_Initialize(void);
-void Video_UpdateWindow(void);
-void Video_ClearBuffer(void);
-void Video_GenerateSphereCoordinates(void);
-void Video_SetTexture(gltexture_t *gTexture);
-void Video_SetBlend(VideoBlend_t voBlendMode, VideoDepth_t vdDepthMode);
-void Video_SetViewportSize(int iWidth, int iHeight);
-void Video_SelectTexture(unsigned int uiTarget);
-void Video_EnableCapabilities(unsigned int iCapabilities);
-void Video_DisableCapabilities(unsigned int iCapabilities);
-void Video_ResetCapabilities(bool bClearActive);
-void Video_PreFrame(void);
-void Video_PostFrame(void);
-void Video_Frame(void);
-void Video_ObjectTexture(VideoObjectVertex_t *voObject, unsigned int uiTextureUnit, float S, float T);
-void Video_ObjectVertex(VideoObjectVertex_t *voObject, float X, float Y, float Z);
-void Video_ObjectNormal(VideoObjectVertex_t *voObject, float X, float Y, float Z);
-void Video_ObjectColour(VideoObjectVertex_t *voObject, float R, float G, float B, float A);
-void Video_SetColour(float R, float G, float B, float A);
-void Video_DrawArrays(const VideoPrimitive_t vpPrimitiveType, unsigned int uiSize, bool bWireframe);
-void Video_DrawFill(VideoObjectVertex_t *voFill, Material_t *mMaterial, int iSkin);
-void Video_DrawSurface(msurface_t *mSurface,float fAlpha,Material_t *mMaterial, unsigned int uiSkin);
-void Video_DrawObject(VideoObjectVertex_t *voObject, VideoPrimitive_t vpPrimitiveType, unsigned int uiVerts, Material_t *mMaterial, int iSkin);
-void Video_DrawMaterial(Material_t *mMaterial, int iSkin, VideoObjectVertex_t *voObject, VideoPrimitive_t vpPrimitiveType, unsigned int uiSize, bool bPost);
-void Video_Shutdown(void);
+	extern Video_t Video;
 
-unsigned int Video_GetTextureUnit(unsigned int uiTarget);
+	void Video_Initialize(void);
+	void Video_UpdateWindow(void);
+	void Video_ClearBuffer(void);
+	void Video_GenerateSphereCoordinates(void);
+	void Video_SetTexture(gltexture_t *gTexture);
+	void Video_SetBlend(VideoBlend_t voBlendMode, VideoDepth_t vdDepthMode);
+	void Video_SetViewportSize(int iWidth, int iHeight);
+	void Video_SelectTexture(unsigned int uiTarget);
+	void Video_EnableCapabilities(unsigned int iCapabilities);
+	void Video_DisableCapabilities(unsigned int iCapabilities);
+	void Video_ResetCapabilities(bool bClearActive);
+	void Video_PreFrame(void);
+	void Video_PostFrame(void);
+	void Video_Frame(void);
+	void Video_ObjectTexture(VideoObjectVertex_t *voObject, unsigned int uiTextureUnit, float S, float T);
+	void Video_ObjectVertex(VideoObjectVertex_t *voObject, float X, float Y, float Z);
+	void Video_ObjectNormal(VideoObjectVertex_t *voObject, float X, float Y, float Z);
+	void Video_ObjectColour(VideoObjectVertex_t *voObject, float R, float G, float B, float A);
+	void Video_SetColour(float R, float G, float B, float A);
+	void Video_DrawArrays(const VideoPrimitive_t vpPrimitiveType, unsigned int uiSize, bool bWireframe);
+	void Video_DrawFill(VideoObjectVertex_t *voFill, Material_t *mMaterial, int iSkin);
+	void Video_DrawSurface(msurface_t *mSurface, float fAlpha, Material_t *mMaterial, unsigned int uiSkin);
+	void Video_DrawObject(VideoObjectVertex_t *voObject, VideoPrimitive_t vpPrimitiveType, unsigned int uiVerts, Material_t *mMaterial, int iSkin);
+	void Video_DrawMaterial(Material_t *mMaterial, int iSkin, VideoObjectVertex_t *voObject, VideoPrimitive_t vpPrimitiveType, unsigned int uiSize, bool bPost);
+	void Video_Shutdown(void);
 
-bool Video_GetCapability(unsigned int iCapability);
+	unsigned int Video_GetTextureUnit(unsigned int uiTarget);
+
+	bool Video_GetCapability(unsigned int iCapability);
+
+#if __cplusplus
+};
+#endif
 
 #define	VIDEO_FUNCTION_START(a) \
 { \
@@ -142,10 +181,7 @@ bool Video_GetCapability(unsigned int iCapability);
 // Legacy
 void Video_ShowBoundingBoxes(void);
 
-unsigned int VideoLayer_GenerateVertexBuffer(void);
-
-void VideoLayer_DeleteBuffer(unsigned int uiBuffer);
-
+#include "EngineVideoLayer.h"
 #include "EngineVideoAlias.h"
 
 void R_SetupGenericView(void);

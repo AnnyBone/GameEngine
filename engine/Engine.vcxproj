@@ -622,6 +622,7 @@
     <ClCompile Include="EngineConsole.c" />
     <ClCompile Include="crc.c" />
     <ClCompile Include="EngineSDLWindow.c" />
+    <ClCompile Include="EngineVideoFrameBuffer.cpp" />
     <ClCompile Include="EngineVideoParticle.c" />
     <ClCompile Include="EngineVideoAlias.c" />
     <ClCompile Include="EngineAudio.c" />
@@ -715,6 +716,8 @@
     <ClInclude Include="EngineMaterialEditor.h" />
     <ClInclude Include="EngineVideoDraw.h" />
     <ClInclude Include="EngineAudio.h" />
+    <ClInclude Include="EngineVideoFrameBuffer.h" />
+    <ClInclude Include="EngineVideoLayer.h" />
     <ClInclude Include="EngineVideoObject.h" />
     <ClInclude Include="EngineVideoShader.h" />
     <ClInclude Include="EngineVideoWindow.h" />

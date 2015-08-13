@@ -256,6 +256,9 @@
     <ClCompile Include="EngineVideoSprite.c">
       <Filter>Client\Video</Filter>
     </ClCompile>
+    <ClCompile Include="EngineVideoFrameBuffer.cpp">
+      <Filter>Client\Video</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\shared\shared_client.h">
@@ -449,6 +452,12 @@
       <Filter>Client\Video</Filter>
     </ClInclude>
     <ClInclude Include="EngineVideoObject.h">
+      <Filter>Client\Video</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineVideoLayer.h">
+      <Filter>Client\Video</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineVideoFrameBuffer.h">
       <Filter>Client\Video</Filter>
     </ClInclude>
   </ItemGroup>

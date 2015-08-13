@@ -18,12 +18,10 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-extern "C" {
 #include "EngineBase.h"
 
 #include "EngineVideo.h"
 #include "EngineVideoObject.h"
-}
 
 /*
 	Vertex
@@ -61,9 +59,9 @@ CVideoObject::~CVideoObject()
 {
 	VIDEO_FUNCTION_START(~CVideoObject)
 
-		VideoLayer_DeleteBuffer(uiVertexBuffer);
-		VideoLayer_DeleteBuffer(uiColourBuffer);
-		VideoLayer_DeleteBuffer(uiTextureBuffer);
+		VideoLayer_DeleteVertexBuffer(&uiVertexBuffer);
+		VideoLayer_DeleteVertexBuffer(&uiColourBuffer);
+		VideoLayer_DeleteVertexBuffer(&uiTextureBuffer);
 
 	VIDEO_FUNCTION_END
 }

@@ -24,21 +24,20 @@
 #include "engine_client.h"
 #include "EngineVideoParticle.h"
 
-extern cvar_t r_stereo;
-extern cvar_t r_stereodepth;
-extern cvar_t r_drawflat;
-extern cvar_t r_flatlightstyles;
-extern cvar_t gl_fullbrights;
-extern cvar_t gl_farclip;
-extern cvar_t r_waterquality;
-extern cvar_t r_oldwater;
-extern cvar_t r_waterwarp;
-extern cvar_t r_oldskyleaf;
-extern cvar_t r_drawworld;
-extern cvar_t r_showtris;
-extern cvar_t r_showbboxes;
-extern cvar_t r_lerpmodels;
-extern cvar_t r_lerpmove;
+extern ConsoleVariable_t r_stereo;
+extern ConsoleVariable_t r_stereodepth;
+extern ConsoleVariable_t r_drawflat;
+extern ConsoleVariable_t r_flatlightstyles;
+extern ConsoleVariable_t gl_fullbrights;
+extern ConsoleVariable_t gl_farclip;
+extern ConsoleVariable_t r_waterquality;
+extern ConsoleVariable_t r_oldwater;
+extern ConsoleVariable_t r_waterwarp;
+extern ConsoleVariable_t r_oldskyleaf;
+extern ConsoleVariable_t r_drawworld;
+extern ConsoleVariable_t r_showbboxes;
+extern ConsoleVariable_t r_lerpmodels;
+extern ConsoleVariable_t r_lerpmove;
 
 extern float load_subdivide_size; //johnfitz -- remember what subdivide_size value was when this map was loaded
 

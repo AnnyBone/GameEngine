@@ -68,7 +68,7 @@ ConsoleVariable_t
 #define VIDEO_MAX_SAMPLES	cvMultisampleMaxSamples.iValue
 #define VIDEO_MIN_SAMPLES	0
 
-gltexture_t	*gDepthTexture;
+gltexture_t	*gDepthTexture, *gVideoScreenTexture;
 
 // TODO: Move this? It's used mainly for silly client stuff...
 struct gltexture_s *gEffectTexture[MAX_EFFECTS];
@@ -238,6 +238,11 @@ void Video_Initialize(void)
 
 	VideoShader_Initialize();
 
+#if 0
+	// Allocate texture used for screen.
+	gVideoScreenTexture = TexMgr_NewTexture();
+#endif
+
 	Video.bInitialized = true;
 }
 
@@ -262,7 +267,7 @@ void Video_ClearBuffer(void)
 	int	iClear =
 		GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT;
 
-	// [5/9/2013] Handle the stencil buffer too ~hogsy
+	// Handle the stencil buffer too.
 	if(r_shadows.value >= 2)
 	{
 		glClearStencil(1);
@@ -1149,23 +1154,7 @@ void Video_ResetCapabilities(bool bClearActive)
 		iSavedCapabilites[i][1] = 0;
 }
 
-/*
-    Shader Management
-    Unfinished!
-*/
-
-unsigned int Video_ShaderConvertType(VideoShaderType_t vstType)
-{
-	switch (vstType)
-	{
-	case VIDEO_SHADER_FRAGMENT:
-		return GL_FRAGMENT_SHADER;
-	case VIDEO_SHADER_VERTEX:
-		return GL_VERTEX_SHADER;
-	}
-
-	return 0;
-}
+/**/
 
 void Video_PreFrame(void)
 {

@@ -32,6 +32,7 @@ VideoLayerCapabilities_t vlcCapabilityList[] =
 	{ VIDEO_CULL_FACE, GL_CULL_FACE, "CULL_FACE" },
 	{ VIDEO_STENCIL_TEST, GL_STENCIL_TEST, "STENCIL_TEST" },
 	{ VIDEO_NORMALIZE, GL_NORMALIZE, "NORMALIZE" },
+	{ VIDEO_MULTISAMPLE, GL_MULTISAMPLE, "MULTISAMPLE" },
 
 	{ 0 }
 };
@@ -101,24 +102,50 @@ unsigned int VideoLayer_GenerateVertexBuffer(void)
 	VIDEO_FUNCTION_END
 }
 
-// FRAME BUFFER OBJECTS
-
-unsigned int VideoLayer_GenerateFrameBuffer(void) 
-{
-	VIDEO_FUNCTION_START(VideoLayer_GenerateFrameBuffer)
-		unsigned int uiBuffer;
-		glGenFramebuffers(1, &uiBuffer);
-		return uiBuffer;
-	VIDEO_FUNCTION_END
-}
-
-/**/
-
 /*	Deletes a single OpenGL buffer.
 */
-void VideoLayer_DeleteBuffer(unsigned int uiBuffer) 
+void VideoLayer_DeleteVertexBuffer(unsigned int *uiBuffer)
 {
-	VIDEO_FUNCTION_START(VideoLayer_DeleteBuffer)
-		glDeleteBuffers(1, &uiBuffer);
+	VIDEO_FUNCTION_START(VideoLayer_DeleteVertexBuffer)
+		glDeleteBuffers(1, uiBuffer);
 	VIDEO_FUNCTION_END
 }
+
+// FRAME BUFFER OBJECTS
+
+void VideoLayer_GenerateFrameBuffer(unsigned int *uiBuffer) 
+{
+	VIDEO_FUNCTION_START(VideoLayer_GenerateFrameBuffer)
+		glGenFramebuffers(1, uiBuffer);
+	VIDEO_FUNCTION_END
+}
+
+void VideoLayer_BindFrameBuffer(VideoFBOTarget_t vtTarget, unsigned int uiBuffer)
+{
+	VIDEO_FUNCTION_START(VideoLayer_BindFrameBuffer)
+		unsigned int uiOutTarget;
+
+		// TODO: Get these named up so we can easily debug.
+		switch (vtTarget)
+		{
+		case VIDEO_FBO_DRAW:
+			uiOutTarget = GL_DRAW_BUFFER;
+			break;
+		case VIDEO_FBO_READ:
+			uiOutTarget = GL_READ_BUFFER;
+			break;
+		default:
+			uiOutTarget = GL_FRAMEBUFFER;
+		}
+
+		glBindFramebuffer(uiOutTarget, uiBuffer);
+	VIDEO_FUNCTION_END
+}
+
+void VideoLayer_DeleteFrameBuffer(unsigned int *uiBuffer)
+{
+	VIDEO_FUNCTION_START(VideoLayer_DeleteFrameBuffer)
+		glDeleteFramebuffers(1, uiBuffer);
+	VIDEO_FUNCTION_END
+}
+
