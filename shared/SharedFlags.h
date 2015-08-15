@@ -33,17 +33,6 @@
 
 #define	SHARED_FORMATS_C
 
-/*	Build needs to be updated
-	each day that work is done
-	on the engine.
-	Release needs to be updated
-	when a build is released publically.	*/
-#define ENGINE_VERSION_MAJOR	0
-#define ENGINE_VERSION_MINOR	3
-#define ENGINE_VERSION_BUILD	964	// 13/8/2015
-
-#define	LOG_GLOBAL	"engine"
-
 #define	PATH_ENGINE		"engine"			// Directory to look in for engine specific modules / assets.
 #define	PATH_SPRITES	"textures/sprites/"	// Directory that contains sprites, used for particles etc.
 #define	PATH_RESOURCES	"resource/"

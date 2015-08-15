@@ -230,7 +230,7 @@ void Sys_Error(const char *error, ...)
 	vsprintf(text,error,argptr);
 	va_end(argptr);
 
-	pLog_Write(LOG_GLOBAL, "Error: %s", text);
+	pLog_Write(ENGINE_LOG, "Error: %s", text);
 
 #if 0
 	if(bIsDedicated)
@@ -292,7 +292,7 @@ void Sys_Printf (char *fmt, ...)
 		vsprintf(text,fmt,argptr);
 		va_end(argptr);
 
-		pLog_Write(LOG_GLOBAL, "Error: %s", text);
+		pLog_Write(ENGINE_LOG, "Error: %s", text);
 	}
 }
 

@@ -40,7 +40,7 @@ CEditorConsolePanel::CEditorConsolePanel(wxWindow *wParent)
 	vSizer->Add(hSizer, 0, wxEXPAND | wxLEFT | wxRIGHT | wxTOP);
 
 	SetSizer(vSizer);
-	SetSize(wxSize(wxDefaultSize.x, 256));
+	SetSize(wxSize(wxDefaultSize.x, 128));
 }
 
 CEditorConsolePanel::~CEditorConsolePanel()

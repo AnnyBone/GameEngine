@@ -1,7 +1,6 @@
 #include "EditorBase.h"
 
 #include "EditorFrame.h"
-#include "EditorRenderCanvas.h"
 
 // Tools
 #include "WADFrame.h"
@@ -56,6 +55,7 @@ wxBEGIN_EVENT_TABLE(CEditorFrame, wxFrame)
 
 	// Tools
 	EVT_MENU(FRAME_EVENT_WADTOOL, CEditorFrame::OnTool)
+	EVT_MENU(FRAME_EVENT_MATERIALTOOL, CEditorFrame::OnTool)
 
 	EVT_TIMER(-1, CEditorFrame::OnTimer)
 
@@ -100,6 +100,10 @@ CEditorFrame::CEditorFrame(const wxString & title, const wxPoint & pos, const wx
 	// Set the menu up...
 
 	wxMenu *mFile = new wxMenu;
+
+	wxMenuItem *iNewItem = new wxMenuItem(mFile, wxID_NEW);
+	iNewItem->SetBitmap(smallDocumentNew);
+	mFile->Append(iNewItem);
 
 	wxMenuItem *openMenuItem = new wxMenuItem(mFile, wxID_OPEN);
 	openMenuItem->SetBitmap(smallDocumentOpen);
@@ -188,7 +192,7 @@ CEditorFrame::CEditorFrame(const wxString & title, const wxPoint & pos, const wx
 
 	// File
 	wxAuiToolBar *tbFile = new wxAuiToolBar(this);
-	tbFile->AddTool(wxID_NEW, "New material", iconDocumentNew);
+	tbFile->AddTool(wxID_NEW, "New material", smallDocumentNew);
 	tbFile->AddTool(wxID_OPEN, "Open material", smallDocumentOpen, "Open an existing material");
 	tbFile->AddTool(wxID_SAVE, "Save material", smallDocumentSave, "Save the current material");
 	tbFile->Realize();
@@ -222,26 +226,8 @@ CEditorFrame::CEditorFrame(const wxString & title, const wxPoint & pos, const wx
     toolbarInfo.Position(2);
 	manager->AddPane(tbView, toolbarInfo);
 
-	int attributes[] = {
-		WX_GL_DEPTH_SIZE, 24,
-		WX_GL_STENCIL_SIZE, 8,
-		WX_GL_MIN_RED, 8,
-		WX_GL_MIN_GREEN, 8,
-		WX_GL_MIN_BLUE, 8,
-		WX_GL_MIN_ALPHA, 8,
-		WX_GL_MIN_ACCUM_RED, 8,
-		WX_GL_MIN_ACCUM_GREEN, 8,
-		WX_GL_MIN_ACCUM_BLUE, 8,
-		WX_GL_MIN_ACCUM_ALPHA, 8,
-#if 0
-		WX_GL_SAMPLES, 4,
-		WX_GL_SAMPLE_BUFFERS, 1
-		WX_GL_DOUBLEBUFFER,	1,
-#endif
-	};
-
-    // Create the engine viewport...
-	editorViewport = new CEditorRenderCanvas(this, attributes);
+	// Create the engine viewport...
+	pViewport = new CEditorViewportPanel(this);
 	wxAuiPaneInfo viewportInfo;
 	viewportInfo.Caption("Viewport");
 	viewportInfo.Center();
@@ -250,10 +236,10 @@ CEditorFrame::CEditorFrame(const wxString & title, const wxPoint & pos, const wx
 	viewportInfo.Dockable(true);
 	viewportInfo.MaximizeButton(true);
 	viewportInfo.CloseButton(false);
-	manager->AddPane(editorViewport, viewportInfo);
+	manager->AddPane(pViewport, viewportInfo);
 
 	// Create the console...
-	editorConsolePanel = new CEditorConsolePanel(this);
+	pConsole = new CEditorConsolePanel(this);
 	wxAuiPaneInfo consoleInfo;
 	consoleInfo.Caption("Console");
 	consoleInfo.Bottom();
@@ -261,7 +247,7 @@ CEditorFrame::CEditorFrame(const wxString & title, const wxPoint & pos, const wx
 	consoleInfo.Floatable(true);
 	consoleInfo.MaximizeButton(true);
 	consoleInfo.CloseButton(false);
-	manager->AddPane(editorConsolePanel, consoleInfo);
+	manager->AddPane(pConsole, consoleInfo);
 
 	manager->Update();
 
@@ -312,7 +298,7 @@ void CEditorFrame::StartEngineLoop()
 	// TODO: This isn't working...
 	if (!cvEditorShowConsole.bValue)
 	{
-		manager->GetPane(editorConsolePanel).Show(false);
+		manager->GetPane(pConsole).Show(false);
 		manager->Update();
 	}
 	else
@@ -347,9 +333,16 @@ void CEditorFrame::OnTimer(wxTimerEvent &event)
 		// Keep the client-time updated.
 		dClientTime = engine->GetClientTime();
 
+		wxWindow *wActive = wxGetActiveWindow();
+		if(wActive)
+		{
+		}
+
+#if 0
 		// Draw the main viewport.
 		editorViewport->DrawFrame();
 		editorViewport->Refresh();
+#endif
 	}
 
 	// Check to see if it's time to check for changes.
@@ -503,14 +496,14 @@ void CEditorFrame::OnSave(wxCommandEvent &event)
 
 void CEditorFrame::OnConsole(wxCommandEvent &event)
 {
-	if (manager->GetPane(editorConsolePanel).IsShown())
+	if (manager->GetPane(pConsole).IsShown())
 	{
-		manager->GetPane(editorConsolePanel).Show(false);
+		manager->GetPane(pConsole).Show(false);
 		engine->SetConsoleVariable(cvEditorShowConsole.name, "0");
 	}
 	else
 	{
-		manager->GetPane(editorConsolePanel).Show(true);
+		manager->GetPane(pConsole).Show(true);
 		engine->SetConsoleVariable(cvEditorShowConsole.name, "1");
 	}
 
@@ -560,27 +553,27 @@ void CEditorFrame::ReloadCurrentDocument()
 
 void CEditorFrame::PrintMessage(char *text)
 {
-	if (!editorConsolePanel)
+	if (!pConsole)
 		return;
 
-	editorConsolePanel->textConsoleOut->SetDefaultStyle(wxTextAttr(*wxGREEN));
-	editorConsolePanel->textConsoleOut->AppendText(text);
+	pConsole->textConsoleOut->SetDefaultStyle(wxTextAttr(*wxGREEN));
+	pConsole->textConsoleOut->AppendText(text);
 }
 
 void CEditorFrame::PrintWarning(char *text)
 {
-	if (!editorConsolePanel)
+	if (!pConsole)
 		return;
 
-	editorConsolePanel->textConsoleOut->SetDefaultStyle(wxTextAttr(*wxYELLOW));
-	editorConsolePanel->textConsoleOut->AppendText(text);
+	pConsole->textConsoleOut->SetDefaultStyle(wxTextAttr(*wxYELLOW));
+	pConsole->textConsoleOut->AppendText(text);
 }
 
 void CEditorFrame::PrintError(char *text)
 {
-	if (!editorConsolePanel)
+	if (!pConsole)
 		return;
 
-	editorConsolePanel->textConsoleOut->SetDefaultStyle(wxTextAttr(*wxRED));
-	editorConsolePanel->textConsoleOut->AppendText(text);
+	pConsole->textConsoleOut->SetDefaultStyle(wxTextAttr(*wxRED));
+	pConsole->textConsoleOut->AppendText(text);
 }

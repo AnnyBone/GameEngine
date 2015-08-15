@@ -31,6 +31,7 @@
     <ClInclude Include="MaterialFrame.h">
       <Filter>Tools\Material Tool</Filter>
     </ClInclude>
+    <ClInclude Include="EditorViewportPanel.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EditorMaterialProperties.cpp">
@@ -47,6 +48,7 @@
     <ClCompile Include="MaterialFrame.cpp">
       <Filter>Tools\Material Tool</Filter>
     </ClCompile>
+    <ClCompile Include="EditorViewportPanel.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Material Editor.rc">

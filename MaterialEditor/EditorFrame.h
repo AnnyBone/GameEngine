@@ -2,7 +2,8 @@
 #define	__EDITORFRAME__
 
 #include "EditorRenderCanvas.h"
-#include "EditorMaterialProperties.h"
+
+#include "EditorViewportPanel.h"
 #include "EditorConsolePanel.h"
 
 class CEditorFrame : public wxFrame
@@ -66,8 +67,8 @@ private:
 	wxString currentFilePath;
 
 	CEditorRenderCanvas *editorViewport;
-	CEditorMaterialGlobalProperties *editorMaterialProperties;
-	CEditorConsolePanel *editorConsolePanel;
+	CEditorViewportPanel *pViewport;
+	CEditorConsolePanel *pConsole;
 
 	wxDECLARE_EVENT_TABLE();
 };

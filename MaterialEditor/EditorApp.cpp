@@ -13,7 +13,7 @@ wxBitmap
 	iconMediaPause,
 	iconMediaPlay,
 	iconDocumentRefresh,
-	iconDocumentNew,
+	smallDocumentNew,
 	smallDocumentSave,
 	smallDocumentSaveAs,
 	iconDocumentUndo,
@@ -34,7 +34,7 @@ bool CEditorApp::OnInit()
 	sprintf(cApplicationTitle, EDITOR_TITLE" (%s)", engine->GetVersion());
 
 	wxImage::AddHandler(new wxPNGHandler);
-	iconDocumentNew.LoadFile(PATH_16ICONS"actions/document-new.png", wxBITMAP_TYPE_PNG);
+	smallDocumentNew.LoadFile(PATH_16ICONS"actions/document-new.png", wxBITMAP_TYPE_PNG);
 	smallDocumentOpen.LoadFile(PATH_16ICONS"actions/document-open.png", wxBITMAP_TYPE_PNG);
 	smallDocumentSave.LoadFile(PATH_16ICONS"actions/document-save.png", wxBITMAP_TYPE_PNG);
 #ifndef __LINUX__ // MISSING ICONS

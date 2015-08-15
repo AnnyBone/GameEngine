@@ -18,6 +18,18 @@
 #include <wx/splitter.h>
 #include <wx/aboutdlg.h>
 #include <wx/listctrl.h>
+#include <wx/bmpcbox.h>
+#include <wx/artprov.h>
+#include <wx/xrc/xmlres.h>
+#include <wx/panel.h>
+#include <wx/gdicmn.h>
+#include <wx/font.h>
+#include <wx/colour.h>
+#include <wx/settings.h>
+#include <wx/string.h>
+#include <wx/stc/stc.h>
+#include <wx/sizer.h>
+#include <wx/frame.h>
 
 // Shared Library
 #include "SharedFlags.h"
@@ -54,7 +66,7 @@ extern wxBitmap
 	iconMediaPause,
 	iconMediaPlay,
 	iconDocumentRefresh,
-	iconDocumentNew,
+	smallDocumentNew,
 	smallDocumentSave,
 	smallDocumentSaveAs,
 	iconDocumentUndo,

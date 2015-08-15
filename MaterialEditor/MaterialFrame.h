@@ -19,6 +19,8 @@ private:
 
 	wxString sCurrentFilePath;
 
+	wxStyledTextCtrl *cMaterialScript;
+
 	// Events
 	void FileEvent(wxCommandEvent &event);
 

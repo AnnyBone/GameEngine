@@ -48,9 +48,9 @@ CVideoObject::CVideoObject(VideoPrimitive_t pPrimitiveType)
 
 		this->pPrimitiveType = pPrimitiveType;
 
-		uiVertexBuffer = VideoLayer_GenerateVertexBuffer();
-		uiColourBuffer = VideoLayer_GenerateVertexBuffer();
-		uiTextureBuffer = VideoLayer_GenerateVertexBuffer();
+		VideoLayer_GenerateVertexBuffer(&uiVertexBuffer);
+		VideoLayer_GenerateVertexBuffer(&uiColourBuffer);
+		VideoLayer_GenerateVertexBuffer(&uiTextureBuffer);
 
 	VIDEO_FUNCTION_END
 }

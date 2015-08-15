@@ -32,6 +32,18 @@
 #pragma warning(disable:4305)
 #endif
 
+/*	Build needs to be updated
+	each day that work is done
+	on the engine.
+	Release needs to be updated
+	when a build is released publically.	
+*/
+#define ENGINE_VERSION_MAJOR	0
+#define ENGINE_VERSION_MINOR	3
+#define ENGINE_VERSION_BUILD	966	// 15/8/2015
+
+#define	ENGINE_LOG	"engine"
+
 #include "SharedFlags.h"
 
 #define MINIMUM_MEMORY	0x2000000	// 32MB

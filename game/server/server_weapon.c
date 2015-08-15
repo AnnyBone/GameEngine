@@ -124,6 +124,7 @@ Weapon_t Weapons[] =
 		AM_BULLET,
 		Glock_PrimaryAttack
 	},
+
 #elif GAME_ADAMAS
 	{
 		WEAPON_BLAZER,
