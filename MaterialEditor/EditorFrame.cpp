@@ -332,17 +332,6 @@ void CEditorFrame::OnTimer(wxTimerEvent &event)
 
 		// Keep the client-time updated.
 		dClientTime = engine->GetClientTime();
-
-		wxWindow *wActive = wxGetActiveWindow();
-		if(wActive)
-		{
-		}
-
-#if 0
-		// Draw the main viewport.
-		editorViewport->DrawFrame();
-		editorViewport->Refresh();
-#endif
 	}
 
 	// Check to see if it's time to check for changes.

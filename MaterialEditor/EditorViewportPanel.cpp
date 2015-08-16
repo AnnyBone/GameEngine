@@ -2,16 +2,31 @@
 
 #include "EditorViewportPanel.h"
 
-CEditorViewportPanel::CEditorViewportPanel(wxWindow *wParent)
-	: wxPanel(wParent)
-{
-	wxBoxSizer *vSizer = new wxBoxSizer(wxVERTICAL);
+wxBEGIN_EVENT_TABLE(CEditorViewportPanel, wxPanel)
+	
+EVT_TIMER(-1, CEditorViewportPanel::OnTimer)
 
+wxEND_EVENT_TABLE()
+
+CEditorViewportPanel::CEditorViewportPanel(wxWindow *wParent)
+	: wxPanel(wParent, wxID_ANY, wxDefaultPosition, wxSize(512,512))
+{
+	Show();
+
+	tRenderTimer = new wxTimer(this);
+	tRenderTimer->Start(25);
+
+	wxBoxSizer *vSizer = new wxBoxSizer(wxVERTICAL);
 	wxBoxSizer *hSizer = new wxBoxSizer(wxHORIZONTAL);
 
 	hSizer->Add(new wxBitmapButton(this, wxID_ANY, iconShapeSphere));
 	hSizer->Add(new wxBitmapButton(this, wxID_ANY, iconShapeCube));
 	hSizer->Add(new wxBitmapButton(this, wxID_ANY, iconShapePlane));
+
+	hSizer->AddSpacer(2);
+
+	hSizer->Add(new wxBitmapButton(this, wxID_ANY, iconMediaPause));
+	hSizer->Add(new wxBitmapButton(this, wxID_ANY, iconMediaPlay));
 
 	vSizer->Add(hSizer, 0, wxTOP | wxLEFT | wxRIGHT);
 
@@ -40,4 +55,14 @@ CEditorViewportPanel::CEditorViewportPanel(wxWindow *wParent)
 
 CEditorViewportPanel::~CEditorViewportPanel()
 {
+	tRenderTimer->Stop();
+}
+
+void CEditorViewportPanel::OnTimer(wxTimerEvent &event)
+{
+	if (!engine->IsRunning())
+		return;
+
+	rcRenderCanvas->DrawFrame();
+	rcRenderCanvas->Refresh();
 }

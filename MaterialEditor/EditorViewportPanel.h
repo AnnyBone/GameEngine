@@ -12,7 +12,15 @@ public:
 	~CEditorViewportPanel();
 
 private:
+
+	// Events
+	void OnTimer(wxTimerEvent &event);
+
 	CEditorRenderCanvas *rcRenderCanvas;
+
+	wxTimer *tRenderTimer;
+
+	wxDECLARE_EVENT_TABLE();
 };
 
 #endif
