@@ -30,6 +30,7 @@
 #include <wx/stc/stc.h>
 #include <wx/sizer.h>
 #include <wx/frame.h>
+#include <wx/tglbtn.h>
 
 // Shared Library
 #include "SharedFlags.h"
@@ -60,6 +61,7 @@ extern EngineImport_t editor;
 
 // Icons
 extern wxBitmap
+	bSmallAuto,
 	iconScriptEdit,
 	smallTransform,
 	smallDocumentOpen,

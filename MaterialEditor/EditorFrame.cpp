@@ -16,8 +16,6 @@ enum
 	ID_WINDOW_PLAY,			// Play simulation.
 	ID_WINDOW_PAUSE,		// Pause simulation.
 
-	FRAME_EVENT_SCRIPT,
-
 	// View
 	FRAME_EVENT_WIREFRAME,
 	FRAME_EVENT_FLAT,
@@ -74,7 +72,7 @@ CEditorFrame::CEditorFrame(const wxString & title, const wxPoint & pos, const wx
 
 	pLog_Write(EDITOR_LOG, "Setting frame icon...\n");
 
-	SetIcon(wxIcon("resource/icon-material.png", wxBITMAP_TYPE_PNG));
+	SetIcon(wxIcon("resource/icon-engine.png", wxBITMAP_TYPE_PNG));
 
 	// Display the splash screen...
 
@@ -204,8 +202,6 @@ CEditorFrame::CEditorFrame(const wxString & title, const wxPoint & pos, const wx
 	wxAuiToolBar *tbEdit = new wxAuiToolBar(this);
 	tbEdit->AddTool(wxID_UNDO, "Undo", iconDocumentUndo, "Undo changes");
 	tbEdit->AddTool(wxID_REDO, "Redo", iconDocumentRedo, "Redo changes");
-	tbEdit->AddSeparator();
-	tbEdit->AddTool(FRAME_EVENT_SCRIPT, "Script", iconScriptEdit, "Modify script");
 	tbEdit->Realize();
 
 	toolbarInfo.Position(1);
@@ -213,12 +209,6 @@ CEditorFrame::CEditorFrame(const wxString & title, const wxPoint & pos, const wx
 
 	// View
 	wxAuiToolBar *tbView = new wxAuiToolBar(this);
-	tbView->AddTool(FRAME_EVENT_RELOAD, "Reload material", iconDocumentRefresh, "Reload the material");
-	tbView->AddSeparator();
-	tbView->AddTool(ID_BUTTON_SPHERE, "Sphere", iconShapeSphere, "Sphere shape");
-	tbView->AddTool(FRAME_EVENT_CUBE, "Cube", iconShapeCube, "Cube shape");
-	tbView->AddTool(ID_BUTTON_PLANE, "Plane", iconShapePlane, "Plane shape");
-	tbView->AddSeparator();
 	tbView->AddTool(ID_WINDOW_PAUSE, "Pause", iconMediaPause, "Pause simulation");
 	tbView->AddTool(ID_WINDOW_PLAY, "Play", iconMediaPlay, "Play simulation");
 	tbView->Realize();

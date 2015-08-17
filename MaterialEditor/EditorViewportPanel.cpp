@@ -19,14 +19,14 @@ CEditorViewportPanel::CEditorViewportPanel(wxWindow *wParent)
 	wxBoxSizer *vSizer = new wxBoxSizer(wxVERTICAL);
 	wxBoxSizer *hSizer = new wxBoxSizer(wxHORIZONTAL);
 
-	hSizer->Add(new wxBitmapButton(this, wxID_ANY, iconShapeSphere));
-	hSizer->Add(new wxBitmapButton(this, wxID_ANY, iconShapeCube));
-	hSizer->Add(new wxBitmapButton(this, wxID_ANY, iconShapePlane));
-
-	hSizer->AddSpacer(2);
-
-	hSizer->Add(new wxBitmapButton(this, wxID_ANY, iconMediaPause));
-	hSizer->Add(new wxBitmapButton(this, wxID_ANY, iconMediaPlay));
+	bAutoToggle = new wxBitmapToggleButton(
+		this, 
+		wxID_ANY, 
+		bSmallAuto,
+		wxDefaultPosition,
+		wxSize(24,24));
+	bAutoToggle->SetValue(true);
+	hSizer->Add(bAutoToggle);
 
 	vSizer->Add(hSizer, 0, wxTOP | wxLEFT | wxRIGHT);
 

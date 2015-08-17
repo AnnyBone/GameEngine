@@ -23,7 +23,7 @@ wxEND_EVENT_TABLE()
 CMaterialFrame::CMaterialFrame(wxWindow* parent, wxWindowID id)
 	: wxFrame(parent, id, WAD_TITLE, wxDefaultPosition, wxSize(1024, 640))
 {
-    Show();
+	SetIcon(wxIcon("resource/icon-material.png", wxBITMAP_TYPE_PNG));
 
 	mManager = new wxAuiManager(this);
 
@@ -110,6 +110,8 @@ CMaterialFrame::CMaterialFrame(wxWindow* parent, wxWindowID id)
 	mManager->AddPane(cMaterialScript, iPaneInfo);
 
 	//
+
+	Show();
 
 	iPaneInfo.PinButton(true);
 	iPaneInfo.BestSize(wxSize(256, 256));

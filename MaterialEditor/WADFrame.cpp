@@ -7,19 +7,19 @@
 CWADFrame::CWADFrame(wxWindow* parent, wxWindowID id) 
 	: wxFrame(parent, id, WAD_TITLE, wxDefaultPosition, wxSize(512, 512))
 {
+	SetIcon(wxIcon("resource/icon-wad.png", wxBITMAP_TYPE_PNG));
+
 	mManager = new wxAuiManager(this);
 
 	// Menu
 
 	wxMenu *mFile = new wxMenu;
 
-#if 0
 	wxMenuItem *openMenuItem = new wxMenuItem(mFile, wxID_OPEN);
 	openMenuItem->SetBitmap(smallDocumentOpen);
 
 	wxMenuItem *closeDocumentMenuItem = new wxMenuItem(mFile, wxID_CLOSE);
 	closeDocumentMenuItem->SetBitmap(smallDocumentClose);
-#endif
 
 	wxMenuItem *saveDocumentMenuItem = new wxMenuItem(mFile, wxID_SAVE);
 	saveDocumentMenuItem->SetBitmap(smallDocumentSave);
@@ -30,12 +30,10 @@ CWADFrame::CWADFrame(wxWindow* parent, wxWindowID id)
 	wxMenuItem *miExit = new wxMenuItem(mFile, wxID_EXIT);
 	miExit->SetBitmap(smallApplicationExit);
 
-#if 0
 	mFile->Append(openMenuItem);
 	mFile->AppendSeparator();
 	mFile->Append(closeDocumentMenuItem);
 	mFile->AppendSeparator();
-#endif
 	mFile->Append(saveDocumentMenuItem);
 	mFile->Append(saveAsDocumentMenuItem);
 	mFile->AppendSeparator();
@@ -44,10 +42,24 @@ CWADFrame::CWADFrame(wxWindow* parent, wxWindowID id)
 	wxMenuBar *mbMenu = new wxMenuBar;
 	mbMenu->Append(mFile, "&File");
 	SetMenuBar(mbMenu);
+	
+	//
+
+	wxAuiPaneInfo iPaneInfo;
+	iPaneInfo.Movable(true);
+	iPaneInfo.Floatable(true);
+	iPaneInfo.Left();
 
 	// List
 
-	wxListCtrl *lcObjectList = new wxListCtrl(this);
+	iPaneInfo.Caption("Textures");
+
+	wxListCtrl *lcObjectList = new wxListCtrl(
+		this,
+		wxID_ANY,
+		wxDefaultPosition,
+		wxDefaultSize,
+		wxLC_ICON|wxLC_EDIT_LABELS);
 
 	wxListItem liColumn;
 	liColumn.SetId(0);
@@ -60,14 +72,14 @@ CWADFrame::CWADFrame(wxWindow* parent, wxWindowID id)
 	liColumn.SetWidth(50);
 	lcObjectList->InsertColumn(1, liColumn);
 
-	wxAuiPaneInfo piList;
-	piList.Caption("Contents");
-	piList.Movable(true);
-	piList.Floatable(true);
-	piList.Left();
-	mManager->AddPane(lcObjectList, piList);
+	lcObjectList->InsertItem(0, "HELLO WORLD");
+	lcObjectList->InsertItem(0, "HELLO WORLD");
+	lcObjectList->InsertItem(0, "HELLO WORLD");
+	lcObjectList->InsertItem(0, "HELLO WORLD");
+	lcObjectList->InsertItem(0, "HELLO WORLD");
+	lcObjectList->InsertItem(0, "HELLO WORLD");
 
-	//
+	mManager->AddPane(lcObjectList, iPaneInfo);
 
 	Layout();
 	Centre();

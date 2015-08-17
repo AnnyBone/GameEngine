@@ -18,6 +18,8 @@ private:
 
 	CEditorRenderCanvas *rcRenderCanvas;
 
+	wxBitmapToggleButton *bAutoToggle;
+
 	wxTimer *tRenderTimer;
 
 	wxDECLARE_EVENT_TABLE();

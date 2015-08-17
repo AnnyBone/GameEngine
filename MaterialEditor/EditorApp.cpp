@@ -7,6 +7,7 @@ wxIMPLEMENT_APP(CEditorApp);
 char cApplicationTitle[512];
 
 wxBitmap
+	bSmallAuto,
 	iconScriptEdit,
 	smallTransform,
 	smallDocumentOpen,
@@ -34,6 +35,8 @@ bool CEditorApp::OnInit()
 	sprintf(cApplicationTitle, EDITOR_TITLE" (%s)", engine->GetVersion());
 
 	wxImage::AddHandler(new wxPNGHandler);
+	bSmallAuto.LoadFile("resource/view-auto.png", wxBITMAP_TYPE_PNG);
+
 	smallDocumentNew.LoadFile(PATH_16ICONS"actions/document-new.png", wxBITMAP_TYPE_PNG);
 	smallDocumentOpen.LoadFile(PATH_16ICONS"actions/document-open.png", wxBITMAP_TYPE_PNG);
 	smallDocumentSave.LoadFile(PATH_16ICONS"actions/document-save.png", wxBITMAP_TYPE_PNG);
