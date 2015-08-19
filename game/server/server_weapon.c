@@ -680,47 +680,56 @@ void Weapon_Animate(ServerEntity_t *ent,EntityFrame_t *eFrames)
 		ent->local.fWeaponAnimationTime = ((float)Server.dTime)+eFrames[0].fSpeed;
 }
 
-/**/
-
-// [19/8/2012] TODO: Finish ~hogsy
 /*	Cycle through currently avaliable weapons.
 */
-void Weapon_Cycle(ServerEntity_t *eEntity,bool bForward)
+void Weapon_Cycle(ServerEntity_t *eEntity, bool bForward)
 {
-	Weapon_t	*wCurrentWeapon,*wNext;
+	int i, iNextWeapon;
+	Weapon_t *wCurrentWeapon,*wNext;
+	Item_t *iItem;
+
 
 	if(eEntity->local.dAttackFinished > Server.dTime || !eEntity->v.iActiveWeapon)
 		return;
-
-	eEntity->v.impulse = 0;
 
 	wCurrentWeapon = Weapon_GetCurrentWeapon(eEntity);
 	if(!wCurrentWeapon)
 		return;
 
-	if(bForward)
+	// Cycle through the weapon array
+NEXTWEAPON:
+	for (i = 0; i < pARRAYELEMENTS(Weapons); i++)
 	{
-	NEXTWEAPON:
-		// [19/8/2012] Move up to our next slot... ~hogsy
-		for(wNext = Weapons; wNext->iItem; wNext++)
-			if(wNext > wCurrentWeapon)
-			{
-				eEntity->v.iActiveWeapon = wNext->iItem;
-				break;
-			}
 
-		if(eEntity->v.items & eEntity->v.iActiveWeapon)
+		if(! (i <= pARRAYELEMENTS(Weapons)) )
+			return;
+
+		if(wCurrentWeapon->iItem == Weapons[i].iItem)
 		{
-			if(!Weapon_CheckPrimaryAmmo(wNext,eEntity) && !Weapon_CheckSecondaryAmmo(wNext,eEntity))
-				goto NEXTWEAPON;
+			if(bForward == true)
+				iNextWeapon = Weapons[i+1].iItem;
+			else
+				iNextWeapon = Weapons[i-1].iItem;
 
-			Weapon_SetActive(wNext, eEntity, true);
-
-			eEntity->local.dAttackFinished = Server.dTime+0.3;
+			break;
 		}
 	}
-	else
-	{}	// [1/1/2013] Previous etc blah fa fakf ~hogsy
+
+	// Here comes the check if we actually own the next item and the ammo for it
+	iItem = Item_GetInventory(iNextWeapon,eEntity);
+	if(iItem)
+	{
+		if(iItem->iNumber != eEntity->v.iActiveWeapon)
+		{
+			wNext = Weapon_GetWeapon(iNextWeapon);
+			if(!wNext)
+				goto NEXTWEAPON;
+			else if(!Weapon_CheckPrimaryAmmo(wNext,eEntity) && !Weapon_CheckSecondaryAmmo(wNext,eEntity))
+				goto NEXTWEAPON;
+			else
+				Weapon_SetActive(wNext, eEntity, true);
+		}
+	}
 }
 
 void Weapon_PrimaryAttack(ServerEntity_t *eEntity)
@@ -850,12 +859,11 @@ void Weapon_CheckInput(ServerEntity_t *eEntity)
 	}
 	else if(eEntity->v.impulse == 65)
 		Weapon_CheatCommand(eEntity);
-#if 0	// TODO: undo this once cycling is implemented, otherwise it has the potential to break things.
 	else if(eEntity->v.impulse == 10)
-		Weapon_Cycle(eEntity,true);		// Forwards cycling
+		Weapon_Cycle(eEntity,true);	// Forwards cycling
 	else if(eEntity->v.impulse == 12)
 		Weapon_Cycle(eEntity,false);	// Backwards cycling
-#endif
+
 	else if(eEntity->v.impulse == 66)
 		Player_Use(eEntity);
 
