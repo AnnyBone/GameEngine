@@ -101,8 +101,9 @@ pMODULE_EXPORT EngineExport_t *Engine_Main(EngineImport_t *mImport)
 	EngineExport.DrawConsole = Screen_DrawConsole;
 	EngineExport.DrawString = Draw_String;
 	EngineExport.DrawLine = Draw_Line;
+	EngineExport.DrawGradientBackground = Draw_GradientBackground;
 	EngineExport.DrawModel = MaterialEditor_Draw;
-	EngineExport.ResetCanvas = Draw_ResetCanvas;
+	EngineExport.DrawResetCanvas = Draw_ResetCanvas;
 
 	// Material Editor
 	EngineExport.MaterialEditorInitialize = MaterialEditor_Initialize;

@@ -18,240 +18,312 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-extern "C" {
 #include "EngineBase.h"
 
 #include "EngineVideo.h"
 #include "EngineVideoShader.h"
-}
+
+/*
+	TODO:
+		Move all GL functionality over into VideoLayer.
+		Better tracking and error checking?
+*/
+
+using namespace std;
 
 class CVideoShader
 {
 public:
-	CVideoShader(const char *path);
+	CVideoShader(const char *ccPath, VideoShaderType vsType);
 	~CVideoShader();
 
 	void Enable();
 	void Disable();
 
-	void SetVariable(const char *name, float x, float y, float z);
-	void SetVariable(const char *name, MathVector3f_t vector);
-	void SetVariable(const char *name, float x, float y, float z, float a);
-	void SetVariable(const char *name, int i);
-	void SetVariable(const char *name, float f);
+	VideoShader GetInstance();
+	VideoShaderType GetType();
 
 private:
-	const char *vertexSource, *fragmentSource;
+	VideoShader	vsShader;	//sVertex, sFragment;
+	VideoShaderType vsType;
 
-	char vertexPath[PLATFORM_MAX_PATH], fragmentPath[PLATFORM_MAX_PATH];
+	const char *ccShaderSource;
 
-	int vertexSourceLength, fragmentSourceLength;
+	char cShaderPath[PLATFORM_MAX_PATH];
 
-	unsigned int vertexShader, fragmentShader;
-	unsigned int program;
+	int iShaderLength;
 
-	void Compile(unsigned int uiShader);
+	bool CheckCompileStatus();
 };
 
-CVideoShader::CVideoShader(const char *path)
+CVideoShader::CVideoShader(const char *ccPath, VideoShaderType vsType)
 {
 	VIDEO_FUNCTION_START(CVideoShader)
 
-		if (path[0] == ' ')
-			Sys_Error("Invalid shader path! (%s)\n", path);
+		// Check that the path is valid.
+		if (ccPath[0] == ' ')
+			Sys_Error("Invalid shader path! (%s)\n", ccPath);
 
-		// Load the vertex shader.
+		// Ensure the type is valid.
+		if((vsType < VIDEO_SHADER_FRAGMENT) || (vsType > VIDEO_SHADER_VERTEX))
+			Sys_Error("Invalid shader type! (%i) (%s)\n", ccPath, vsType);
 
-		sprintf(vertexPath, "%s%s_vertex.shader", Global.cShaderPath, path);
-		vertexSource = (char*)COM_LoadFile(vertexPath, 0);
-		if (!vertexSource)
-			Sys_Error("Failed to load shader! (%s)", vertexPath);
-		vertexSourceLength = strlen(vertexSource);
+		// Set the shader type.
+		this->vsType = vsType;
 
-		vertexShader = glCreateShader(GL_VERTEX_SHADER);
-		glShaderSource(vertexShader, 1, &vertexSource, &vertexSourceLength);
-		glCompileShader(vertexShader);
-
-		int compiledStatus;
-		glGetObjectParameterivARB(vertexShader, GL_COMPILE_STATUS, &compiledStatus);
-		if (!compiledStatus)
+		// Ensure we use the correct path and shader.
+		unsigned int uiShaderType;
+		if (vsType == VIDEO_SHADER_FRAGMENT)
 		{
-			int logLength = 0;
-			int sLength = 0;
+			sprintf(cShaderPath, "%s%s_fragment.shader", Global.cShaderPath, ccPath);
 
-			glGetShaderiv(vertexShader, GL_INFO_LOG_LENGTH, &logLength);
+			uiShaderType = GL_FRAGMENT_SHADER;
+		}
+		else
+		{
+			sprintf(cShaderPath, "%s%s_vertex.shader", Global.cShaderPath, ccPath);
 
-			if (logLength > 1)
-			{
-				char *log = (char*)malloc(logLength);
-				glGetInfoLogARB(vertexShader, logLength, &sLength, log);
-				Con_Warning("%s\n", log);
-				free(log);
-			}
-
-			Sys_Error("Shader compilation failed! (%s)\n", vertexPath);
+			uiShaderType = GL_VERTEX_SHADER;
 		}
 
-		// Load the fragment shader.
+		// Attempt to load it.
+		ccShaderSource = (char*)COM_LoadFile(cShaderPath, 0);
+		if(!ccShaderSource)
+			Sys_Error("Failed to load shader! (%s)\n", cShaderPath);
 
-		sprintf(fragmentPath, "%s%s_fragment.shader", Global.cShaderPath, path);
-		fragmentSource = (char*)COM_LoadFile(fragmentPath, 0);
-		if (!fragmentSource)
-			Sys_Error("Failed to load shader! (%s)", fragmentPath);
-		fragmentSourceLength = strlen(fragmentSource);
+		// Ensure it's a valid length.
+		iShaderLength = strlen(ccShaderSource);
+		if(iShaderLength <= 1)
+			Sys_Error("Invalid shader! (%i) (%s)\n", iShaderLength, cShaderPath);
 
-		fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-		glShaderSource(fragmentShader, 1, &fragmentSource, &fragmentSourceLength);
-		glCompileShader(fragmentShader);
+		vsShader = glCreateShader(uiShaderType);
+		glShaderSource(vsShader, 1, &ccShaderSource, &iShaderLength);
+		glCompileShader(vsShader);
 
-		glGetObjectParameterivARB(fragmentShader, GL_COMPILE_STATUS, &compiledStatus);
-		if (!compiledStatus)
-		{
-			int logLength = 0;
-			int sLength = 0;
-
-			glGetShaderiv(vertexShader, GL_INFO_LOG_LENGTH, &logLength);
-
-			if (logLength > 1)
-			{
-				char *log = (char*)malloc(logLength);
-				glGetInfoLogARB(vertexShader, logLength, &sLength, log);
-				Con_Warning("%s\n", log);
-				free(log);
-			}
-
-			Sys_Error("Shader compilation failed! (%s)\n", fragmentPath);
-		}
-
-		// Now link them into a program object.
-
-		program = glCreateProgram();
-		glAttachShader(program, vertexShader);
-		glAttachShader(program, fragmentShader);
-
-		glLinkProgram(program);
-
-		glGetProgramiv(program, GL_LINK_STATUS, &compiledStatus);
-		if (!compiledStatus)
-		{
-			int logLength = 0;
-			int sLength = 0;
-
-			glGetProgramiv(program, GL_INFO_LOG_LENGTH, &logLength);
-
-			if (logLength > 1)
-			{
-				char *log = (char*)malloc(logLength);
-				glGetInfoLogARB(program, logLength, &sLength, log);
-				Con_Warning("%s\n", log);
-				free(log);
-			}
-
-			Sys_Error("Program linking failed! (%s)\n");
-		}
+		if(!CheckCompileStatus())
+			Sys_Error("Shader compilation failed! (%s)\n", cShaderPath);
 
 	VIDEO_FUNCTION_END
 }
 
 CVideoShader::~CVideoShader()
 {
+	glDeleteShader(vsShader);
+}
+
+// Compilation
+
+bool CVideoShader::CheckCompileStatus()
+{
+	int iCompileStatus;
+	glGetObjectParameterivARB(vsShader, GL_COMPILE_STATUS, &iCompileStatus);
+	if (!iCompileStatus)
+	{
+		int iLength = 0, sLength = 0;
+		glGetShaderiv(vsShader, GL_INFO_LOG_LENGTH, &iLength);
+
+		if (iLength > 1)
+		{
+			char *cLog = new char[iLength];
+			glGetInfoLogARB(vsShader, iLength, &sLength, cLog);
+			Con_Warning("%s\n", cLog);
+			delete[] cLog;
+		}
+
+		return false;
+	}
+
+	return true;
+}
+
+// Information
+
+VideoShader CVideoShader::GetInstance()
+{
+	return vsShader;
+}
+
+VideoShaderType CVideoShader::GetType()
+{
+	return vsType;
+}
+
+/*
+	Shader Program
+*/
+
+class CVideoShaderProgram
+{
+public:
+	CVideoShaderProgram();
+	~CVideoShaderProgram();
+
+	void Attach(CVideoShader *Shader);
+	void Enable();
+	void Disable();
+	void Link();
+	void SetVariable(const char *ccName, float x, float y, float z);
+	void SetVariable(const char *ccName, MathVector3f_t mvVector);
+	void SetVariable(const char *ccName, float x, float y, float z, float a);
+	void SetVariable(const char *ccName, int i);
+	void SetVariable(const char *ccName, float f);
+
+	VideoShaderProgram GetInstance();
+protected:
+private:
+	//VideoShader *vsShaders;
+
+	VideoShaderProgram vsProgram;
+};
+
+CVideoShaderProgram::CVideoShaderProgram()
+{
+	vsProgram = glCreateProgram();
+	if (!vsProgram)
+	{
+		// TODO: Error handling!!
+	}
+}
+
+CVideoShaderProgram::~CVideoShaderProgram()
+{
 	Disable();
 
-	glDeleteProgram(program);
+	glDeleteProgram(vsProgram);
 }
 
-/*
-	Compilation
-*/
-
-void CVideoShader::Compile(unsigned int uiShader)
+void CVideoShaderProgram::Attach(CVideoShader *Shader)
 {
+	if (!Shader)
+		Sys_Error("Attempted to attach an invalid shader!\n");
 
+	glAttachShader(vsProgram, Shader->GetInstance());
 }
 
-/*
-	State Handling
-*/
-
-void CVideoShader::Enable()
+void CVideoShaderProgram::Enable()
 {
-	glUseProgram(program);
+	glUseProgram(vsProgram);
 }
 
-void CVideoShader::Disable()
+void CVideoShaderProgram::Disable()
 {
 	glUseProgram(0);
 }
 
-/*
-	Uniform Handling
-*/
-
-void CVideoShader::SetVariable(const char *name, float x, float y, float z)
+void CVideoShaderProgram::Link()
 {
-	glUniform3f(glGetUniformLocation(program, name), x, y, z);
+	glLinkProgram(vsProgram);
+
+	int iLinkStatus;
+	glGetProgramiv(vsProgram, GL_LINK_STATUS, &iLinkStatus);
+	if (!iLinkStatus)
+	{
+		int iLength = 0;
+
+		glGetProgramiv(vsProgram, GL_INFO_LOG_LENGTH, &iLength);
+		if (iLength > 1)
+		{
+			int iLoser = 0;
+
+			char *cLog = new char[iLength];
+			glGetInfoLogARB(vsProgram, iLength, &iLoser, cLog);
+			Con_Warning("%s\n", cLog);
+			delete[] cLog;
+		}
+
+		Sys_Error("Shader program linking failed!\nCheck log for details.");
+	}
 }
 
-void CVideoShader::SetVariable(const char *name, MathVector3f_t vector)
+// Uniform Handling
+
+void CVideoShaderProgram::SetVariable(const char *ccName, float x, float y, float z)
 {
-	glUniform3fv(glGetUniformLocation(program, name), 3, vector);
+	glUniform3f(glGetUniformLocation(vsProgram, ccName), x, y, z);
 }
 
-void CVideoShader::SetVariable(const char *name, float x, float y, float z, float a)
+void CVideoShaderProgram::SetVariable(const char *ccName, MathVector3f_t mvVector)
 {
-	glUniform4f(glGetUniformLocation(program, name), x, y, z, a);
+	glUniform3fv(glGetUniformLocation(vsProgram, ccName), 3, mvVector);
 }
 
-void CVideoShader::SetVariable(const char *name, int i)
+void CVideoShaderProgram::SetVariable(const char *ccName, float x, float y, float z, float a)
 {
-	glUniform1i(glGetUniformLocation(program, name), i);
+	glUniform4f(glGetUniformLocation(vsProgram, ccName), x, y, z, a);
 }
 
-void CVideoShader::SetVariable(const char *name, float f)
+void CVideoShaderProgram::SetVariable(const char *ccName, int i)
 {
-	glUniform1f(glGetUniformLocation(program, name), f);
+	glUniform1i(glGetUniformLocation(vsProgram, ccName), i);
+}
+
+void CVideoShaderProgram::SetVariable(const char *ccName, float f)
+{
+	glUniform1f(glGetUniformLocation(vsProgram, ccName), f);
+}
+
+// Information
+
+VideoShaderProgram CVideoShaderProgram::GetInstance()
+{
+	return vsProgram;
 }
 
 /*
 	C Wrapper
 */
 
-CVideoShader 
-	*baseShader = NULL,
-	*currentShader = NULL;
+CVideoShaderProgram *BaseProgram;
+CVideoShader *BaseFragmentShader, *BaseVertexShader;
 
 void VideoShader_Initialize(void)
 {
-	baseShader = new CVideoShader("base");
-	currentShader = baseShader;
+	// Program needs to be created first.
+	BaseProgram = new CVideoShaderProgram();
+
+	// Followed by the shaders.
+	BaseVertexShader = new CVideoShader("base", VIDEO_SHADER_VERTEX);
+	BaseFragmentShader = new CVideoShader("base", VIDEO_SHADER_FRAGMENT);
+
+	// Attach and link it, if this fails then it fails.
+	BaseProgram->Attach(BaseVertexShader);
+	BaseProgram->Attach(BaseFragmentShader);
+	BaseProgram->Link();
 }
 
 void VideoShader_Enable(void)
 {
-	currentShader->Enable();
+	BaseProgram->Enable();
 }
 
 void VideoShader_Disable(void)
 {
-	currentShader->Disable();
+	BaseProgram->Disable();
 }
 
 void VideoShader_SetVariablei(const char *name, int i)
 {
-	currentShader->SetVariable(name, i);
+	BaseProgram->SetVariable(name, i);
 }
 
 void VideoShader_SetVariablef(const char *name, float f)
 {
-	currentShader->SetVariable(name, f);
+	BaseProgram->SetVariable(name, f);
 }
 
 void VideoShader_SetVariable3f(const char *name, float x, float y, float z)
 {
-	currentShader->SetVariable(name, x, y, z);
+	BaseProgram->SetVariable(name, x, y, z);
 }
 
 void VideoShader_SetVariable4f(const char *name, float x, float y, float z, float a)
 {
-	currentShader->SetVariable(name, x, y, z, a);
+	BaseProgram->SetVariable(name, x, y, z, a);
+}
+
+void VideoShader_Shutdown()
+{
+	// Check if it's initialized first, just in-case.
+	if (BaseProgram)
+		delete BaseProgram;
 }

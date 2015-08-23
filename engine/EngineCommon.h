@@ -136,28 +136,36 @@ char *va(const char *format, ...);
 
 //============================================================================
 
-extern int com_filesize;
-struct cache_user_s;
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-extern	char	com_gamedir[MAX_OSPATH];
+	extern int com_filesize;
+	struct cache_user_s;
 
-void FileSystem_WriteFile(const char *ccFileName,void *data,int len);
-int COM_OpenFile (const char *filename, int *hndl);
-int COM_FOpenFile (const char *filename, FILE **file);
-void COM_CloseFile (int h);
+	extern	char	com_gamedir[MAX_OSPATH];
 
-uint8_t *COM_LoadStackFile(char *path, void *buffer, int bufsize);
-uint8_t *COM_LoadTempFile (const char *path);
-uint8_t *COM_LoadHunkFile(char *path);
-uint8_t *COM_LoadFile(const char *path, int usehunk);
+	void FileSystem_WriteFile(const char *ccFileName, void *data, int len);
+	int COM_OpenFile(const char *filename, int *hndl);
+	int COM_FOpenFile(const char *filename, FILE **file);
+	void COM_CloseFile(int h);
 
-void COM_LoadCacheFile(char *path,struct cache_user_s *cu);
+	uint8_t *COM_LoadStackFile(char *path, void *buffer, int bufsize);
+	uint8_t *COM_LoadTempFile(const char *path);
+	uint8_t *COM_LoadHunkFile(char *path);
+	uint8_t *COM_LoadFile(const char *path, int usehunk);
 
-/*
-	File System
-*/
+	void COM_LoadCacheFile(char *path, struct cache_user_s *cu);
 
-void FileSystem_Initialize(void);
-void FileSystem_UpdatePath(char cPath[]);
+	/*
+		File System
+	*/
+
+	void FileSystem_Initialize(void);
+	void FileSystem_UpdatePath(char cPath[]);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

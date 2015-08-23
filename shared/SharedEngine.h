@@ -79,13 +79,13 @@ typedef struct
 	void(*Video_PostFrame)(void);
 
 	void(*DrawConsole)(void);
+	void(*DrawGradientBackground)(void);
 	void(*DrawFPS)(void);
 	void(*DrawString)(int x, int y, char *cMsg);
 	void(*DrawLine)(MathVector3f_t mvStart, MathVector3f_t mvEnd);
 	void(*DrawMaterialSurface)(Material_t *mMaterial, int iSkin, int x, int y, int w, int h, float fAlpha);
 	void(*DrawModel)(void);		// Temporary!
-
-	void(*ResetCanvas)(void);
+	void(*DrawResetCanvas)(void);
 
 	// Material Editor
 	void(*MaterialEditorInitialize)(void);					// Initializes the material editor.

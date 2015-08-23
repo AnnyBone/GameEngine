@@ -3,6 +3,20 @@
 #include "EngineVideoFramebuffer.h"
 #include "EngineVideo.h"
 
+// FrameBuffer Manager
+
+CVideoFrameBufferManager::CVideoFrameBufferManager()
+{
+	FrameBufferList = new CVideoFrameBuffer[5];
+}
+
+CVideoFrameBufferManager::~CVideoFrameBufferManager()
+{
+	delete FrameBufferList;
+}
+
+// FrameBuffer Object
+
 CVideoFrameBuffer::CVideoFrameBuffer()
 {
 	VideoLayer_GenerateFrameBuffer(&uiFrameBuffer);

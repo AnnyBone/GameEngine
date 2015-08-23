@@ -75,9 +75,6 @@
     <ClCompile Include="engine_client.c">
       <Filter>Client</Filter>
     </ClCompile>
-    <ClCompile Include="engine_server.c">
-      <Filter>Server</Filter>
-    </ClCompile>
     <ClCompile Include="cmdlib.c">
       <Filter>Legacy</Filter>
     </ClCompile>
@@ -259,6 +256,7 @@
     <ClCompile Include="EngineVideoFrameBuffer.cpp">
       <Filter>Client\Video</Filter>
     </ClCompile>
+    <ClCompile Include="EngineException.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\shared\shared_client.h">
@@ -329,9 +327,6 @@
     </ClInclude>
     <ClInclude Include="engine_client.h">
       <Filter>Client</Filter>
-    </ClInclude>
-    <ClInclude Include="engine_server.h">
-      <Filter>Server</Filter>
     </ClInclude>
     <ClInclude Include="cmdlib.h">
       <Filter>Legacy</Filter>
@@ -459,6 +454,10 @@
     </ClInclude>
     <ClInclude Include="EngineVideoFrameBuffer.h">
       <Filter>Client\Video</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineException.h" />
+    <ClInclude Include="EngineServer.h">
+      <Filter>Server</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

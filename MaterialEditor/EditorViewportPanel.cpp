@@ -63,6 +63,25 @@ void CEditorViewportPanel::OnTimer(wxTimerEvent &event)
 	if (!engine->IsRunning())
 		return;
 
-	rcRenderCanvas->DrawFrame();
+	rcGlobalRenderContext->SetCurrent(*rcRenderCanvas);
+
+	// Ensure we render at the correct size (multiple viewports).
+	// TODO: Check if there are actually multiple viewports before doing this?
+	rcRenderCanvas->UpdateViewportSize();
+
+	Draw();
+
+	// Cleanup
+	rcRenderCanvas->SwapBuffers();
 	rcRenderCanvas->Refresh();
+}
+
+void CEditorViewportPanel::Draw()
+{
+	engine->Video_PreFrame();
+
+	engine->DrawFPS();
+	engine->DrawString(80, 80, "HELLO WORLD!");
+	
+	engine->Video_PostFrame();
 }

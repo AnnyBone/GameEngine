@@ -361,7 +361,7 @@ MathVector3_t mvTraceMins = { -8, -8, -8 };
 bool Weapon_CheckTrace(ServerEntity_t *eOwner)
 {
 	int i, iTraceContents;
-	MathVector3f_t mvTarget, mvSource, mvDirection;
+	MathVector3f_t mvTarget, mvSource;
 	trace_t tCheck;
 
 	// Copy over the players origin.
@@ -372,7 +372,7 @@ bool Weapon_CheckTrace(ServerEntity_t *eOwner)
 
 	// Apply the distance to the target for the trace.
 	for (i = 0; i < 3; i++)
-		mvTarget[i] = mvSource[i] + mvDirection[i] * 2048.0f;
+		mvTarget[i] = mvSource[i] * 2048.0f;
 
 	// Check that there's enough space for projectile.
 	tCheck = Traceline(eOwner, mvSource, mvTarget, 0);

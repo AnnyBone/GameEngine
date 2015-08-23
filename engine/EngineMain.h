@@ -42,11 +42,19 @@ typedef struct
 	bool bEmbeddedContext;
 } EngineGlobal_t;
 
-extern EngineGlobal_t Global;
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-extern EngineImport_t EngineLauncher;
+	extern EngineGlobal_t Global;
 
-// System
-double System_DoubleTime(void);
+	extern EngineImport_t EngineLauncher;
+
+	// System
+	double System_DoubleTime(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

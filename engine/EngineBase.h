@@ -40,7 +40,7 @@
 */
 #define ENGINE_VERSION_MAJOR	0
 #define ENGINE_VERSION_MINOR	3
-#define ENGINE_VERSION_BUILD	968	// 17/8/2015
+#define ENGINE_VERSION_BUILD	971	// 22/8/2015
 
 #define	ENGINE_LOG	"engine"
 
@@ -76,6 +76,7 @@
 #include "sys.h"
 #include "zone.h"
 
+#include "shared_server.h"
 #include "shared_client.h"
 #include "SharedEngine.h"
 #include "SharedFormats.h"
@@ -132,12 +133,12 @@ typedef struct
 extern bool noclip_anglehack;
 
 // host
-extern	EngineParameters_t host_parms;
+extern EngineParameters_t host_parms;
 
-extern	cvar_t		sys_ticrate;
-extern	cvar_t		sys_nostdout;
-extern	cvar_t		developer;
-extern	cvar_t		max_edicts; //johnfitz
+extern ConsoleVariable_t sys_ticrate;
+extern ConsoleVariable_t sys_nostdout;
+extern ConsoleVariable_t developer;
+extern ConsoleVariable_t max_edicts; //johnfitz
 
 extern	bool		bHostInitialized;		// True if into command execution
 extern	double		host_frametime;
@@ -166,7 +167,7 @@ extern int			current_skill;		// skill level for currently loaded level (in case
 extern bool	bIsDedicated;
 
 // chase
-extern	cvar_t	chase_active;
+extern ConsoleVariable_t chase_active;
 
 void TraceLine(vec3_t start,vec3_t end,vec3_t impact);
 

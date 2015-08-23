@@ -8,6 +8,8 @@ char cApplicationTitle[512];
 
 wxBitmap
 	bSmallAuto,
+	bSmallWAD,
+	bSmallMDL,
 	iconScriptEdit,
 	smallTransform,
 	smallDocumentOpen,
@@ -36,6 +38,8 @@ bool CEditorApp::OnInit()
 
 	wxImage::AddHandler(new wxPNGHandler);
 	bSmallAuto.LoadFile("resource/view-auto.png", wxBITMAP_TYPE_PNG);
+	bSmallMDL.LoadFile("resource/icon-mdl-small.png", wxBITMAP_TYPE_PNG);
+	bSmallWAD.LoadFile("resource/icon-wad-small.png", wxBITMAP_TYPE_PNG);
 
 	smallDocumentNew.LoadFile(PATH_16ICONS"actions/document-new.png", wxBITMAP_TYPE_PNG);
 	smallDocumentOpen.LoadFile(PATH_16ICONS"actions/document-open.png", wxBITMAP_TYPE_PNG);

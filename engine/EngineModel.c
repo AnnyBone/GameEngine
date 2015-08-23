@@ -1224,9 +1224,7 @@ MathVector_t Model_GenerateNormal3f(
 	float bX, float bY, float bZ,
 	float cX, float cY, float cZ)
 {
-	MathVector3f_t a;
-	MathVector3f_t b;
-	MathVector3f_t c;
+	MathVector3f_t a, b, c;
 
 #if 0
 	Con_Printf("A : %f %f %f\n", aX, aY, aZ);
@@ -1323,10 +1321,11 @@ void Model_CalculateMD2Bounds(MD2_t *mModel)
 */
 void Model_CalculateMD2Normals(model_t *model, MD2_t *md2)
 {
+#if 0
 	MD2Frame_t *frame;
 	MD2Triangle_t *triangles;
 	MD2TriangleVertex_t *vertices;
-	int i, j, v;
+	int i; //, j, v;
 
 	frame = (MD2Frame_t*)((uint8_t*)md2 + md2->ofs_frames + md2->framesize);
 
@@ -1349,10 +1348,11 @@ void Model_CalculateMD2Normals(model_t *model, MD2_t *md2)
 			vertices[triangles[i].index_xyz[2]].v[2] * frame->scale[2] + frame->translate[2]);
 
 		// X Y Z
-//		MathVector3f_t normal;
-//		Math_MVToVector(normalVector, normal);
-//		Math_VectorCopy(normal, model->object.ovVertices[v].mvNormal);
+		MathVector3f_t normal;
+		Math_MVToVector(normalVector, normal);
+		Math_VectorCopy(normal, model->object.ovVertices[v].mvNormal);
 	}
+#endif
 }
 
 void Model_LoadMD2(model_t *mModel,void *Buffer)

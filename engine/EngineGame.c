@@ -24,7 +24,7 @@
 #include "EngineVideo.h"
 #include "engine_client.h"
 #include "EngineMenu.h"
-#include "engine_server.h"
+#include "EngineServer.h"
 #include "EngineVideoParticle.h"
 
 #include "SharedModule.h"

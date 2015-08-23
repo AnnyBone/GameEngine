@@ -409,7 +409,7 @@ void Point_AmbientSpawn(ServerEntity_t *eEntity)
 */
 
 // [28/7/2012] Spawn flags ~hogsy
-#define	CAMERA_SPAWN_ACTIVE	0	// Defines if this camera is active after spawning
+#define	CAMERA_SPAWN_ACTIVE	1	// Defines if this camera is active after spawning
 
 void Point_CameraUse(ServerEntity_t *eEntity, ServerEntity_t *eOther)
 {
@@ -515,7 +515,7 @@ void Point_SoundSpawn(ServerEntity_t *eEntity)
 	Decoration
 */
 
-#define DECORATION_DROPTOFLOOR	0
+#define DECORATION_DROPTOFLOOR	1
 
 void Point_DecorationSpawn(ServerEntity_t *eDecoration)
 {

@@ -62,6 +62,8 @@ extern EngineImport_t editor;
 // Icons
 extern wxBitmap
 	bSmallAuto,
+	bSmallWAD,
+	bSmallMDL,
 	iconScriptEdit,
 	smallTransform,
 	smallDocumentOpen,

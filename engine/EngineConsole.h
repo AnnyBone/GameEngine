@@ -31,24 +31,31 @@ extern byte *con_chars;
 
 extern char con_lastcenterstring[]; //johnfitz
 
-void Con_DrawCharacter (int cx, int line, int num);
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-void Con_CheckResize (void);
-void Console_Initialize(void);
-void Con_DrawConsole(int lines,bool drawinput);
-void Con_Print (char *txt);
-void Con_Printf (const char *fmt, ...);
-void Con_SPrintf (char *dest, int size, char *fmt, ...); //hogsy
-void Con_Warning (const char *fmt, ...); //johnfitz
-void Con_Error(char *fmt,...);
-void Con_DPrintf (char *fmt, ...);
-void Con_SafePrintf (char *fmt, ...);
-void Con_Clear_f (void);
-void Con_DrawNotify (void);
-void Con_ClearNotify (void);
-void Con_ToggleConsole_f (void);
-void Con_NotifyBox (char *text);	// during startup for sound / cd warnings
-void Console_ErrorMessage(bool bCrash, const char *ccFile, char *reason);
+	void Con_DrawCharacter(int cx, int line, int num);
+	void Con_CheckResize(void);
+	void Console_Initialize(void);
+	void Con_DrawConsole(int lines, bool drawinput);
+	void Con_Print(char *txt);
+	void Con_Printf(const char *fmt, ...);
+	void Con_SPrintf(char *dest, int size, char *fmt, ...);
+	void Con_Warning(const char *fmt, ...); //johnfitz
+	void Con_Error(char *fmt, ...);
+	void Con_DPrintf(char *fmt, ...);
+	void Con_SafePrintf(char *fmt, ...);
+	void Con_Clear_f(void);
+	void Con_DrawNotify(void);
+	void Con_ClearNotify(void);
+	void Con_ToggleConsole_f(void);
+	void Con_NotifyBox(char *text);	// during startup for sound / cd warnings
+	void Console_ErrorMessage(bool bCrash, const char *ccFile, char *reason);
+
+#ifdef __cplusplus
+}
+#endif
 
 // Other crap...
 char *Con_Quakebar(int len);

@@ -272,7 +272,10 @@ void Bot_Think(ServerEntity_t *eBot)
 
 		wActiveWeapon = Weapon_GetCurrentWeapon(eBot);
 		if (!wActiveWeapon)
+		{
 			Monster_SetThink(eBot, THINK_FLEEING);
+			return;
+		}
 
 #if 1
 		// Add some random movement. ~hogsy

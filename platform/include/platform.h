@@ -15,39 +15,36 @@
 
 // Shared headers
 #ifndef pIGNORE_SHARED_HEADERS
-//#	ifndef __cplusplus
-#		include <stdio.h>
-#		include <stdlib.h>
-#		include <stdarg.h>
-#		include <stdlib.h>
-#		ifdef _MSC_VER	// MSVC doesn't support stdint...
+#	include <stdio.h>
+#	include <stdlib.h>
+#	include <stdarg.h>
+#	include <stdlib.h>
+#	ifdef _MSC_VER	// MSVC doesn't support stdint...
+#		ifndef __cplusplus
 #			include "platform_inttypes.h"
-#		else
-#			include <stdint.h>
 #		endif
-#		include <string.h>
-#		include <ctype.h>
-#		include <math.h>
-#		include <setjmp.h>
-#		include <errno.h>
+#	else
+#		include <stdint.h>
+#	endif
+#	include <string.h>
+#	include <ctype.h>
+#	include <math.h>
+#	include <setjmp.h>
+#	include <errno.h>
 
-#		include <sys/stat.h>
-#		include <sys/types.h>
-/*#	else
-#		include <cstdio>
-#		include <cstdlib>
-#		include <cstdarg>
-#		include <cstdlib>
-#		include <cstdint>
-#		include <cstring>
-#		include <cctype>
-#		include <cmath>
-#		include <csetjmp>
-#		include <cerrno>
-#	endif*/
+#	include <sys/stat.h>
+#	include <sys/types.h>
+
+	// C++
+#	ifdef __cplusplus
+#		include <stdint.h>
+#		include <memory>
+#		include <string>
+#	endif
 #endif
 
-#ifdef _WIN32	// Windows
+// Windows
+#ifdef _WIN32
 	// Headers
 #	ifndef pIGNORE_SHARED_HEADERS
 #		include <Windows.h>

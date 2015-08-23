@@ -19,7 +19,7 @@
 */
 #include "EngineBase.h"
 
-#include "engine_server.h"
+#include "EngineServer.h"
 
 void CL_FinishTimeDemo (void);
 

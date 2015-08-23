@@ -6,6 +6,26 @@
 #include "EditorViewportPanel.h"
 #include "EditorConsolePanel.h"
 
+class CMainViewportPanel : public CEditorViewportPanel
+{
+public:
+	CMainViewportPanel(wxWindow *wParent) : CEditorViewportPanel(wParent) {}
+
+	virtual void Draw()
+	{
+		engine->Video_PreFrame();
+
+		engine->DrawGradientBackground();
+		engine->DrawResetCanvas();
+		engine->DrawString(10, 10, "Hello multiple viewports!");
+		engine->DrawFPS();
+
+		engine->Video_PostFrame();
+	}
+protected:
+private:
+};
+
 class CEditorFrame : public wxFrame
 {
 public:
@@ -67,8 +87,9 @@ private:
 	wxString currentFilePath;
 
 	CEditorRenderCanvas *editorViewport;
-	CEditorViewportPanel *pViewport;
 	CEditorConsolePanel *pConsole;
+
+	CMainViewportPanel *pViewport;
 
 	wxDECLARE_EVENT_TABLE();
 };

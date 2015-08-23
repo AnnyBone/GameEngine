@@ -402,7 +402,7 @@ typedef struct
 			iNumEdges,
 			iTexInfo;
 
-	uint8_t	bStyles[4];
+	unsigned char bStyles[4];
 
 	int		iLightOffset;
 } BSPFace_t;

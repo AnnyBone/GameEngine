@@ -30,28 +30,33 @@ void CEditorRenderCanvas::OnPaint(wxPaintEvent &event)
 {
 	rcGlobalRenderContext->SetCurrent(*this);
 
-	const wxSize clientSize = GetClientSize();
-	engine->SetViewportSize(clientSize.GetWidth(), clientSize.GetHeight());
+	UpdateViewportSize();
 
 	wxPaintDC dc(this);
 
 	DrawFrame();
 }
 
+void CEditorRenderCanvas::UpdateViewportSize()
+{
+	const wxSize clientSize = GetClientSize();
+	engine->SetViewportSize(clientSize.GetWidth(), clientSize.GetHeight());
+}
+
 void CEditorRenderCanvas::DrawFrame(void)
 {
-	if (!engine->IsRunning())
-		return;
-
+#if 0
 	engine->Video_PreFrame();
 
+	engine->DrawGradientBackground();
+	engine->DrawResetCanvas();
+	
 	engine->DrawModel();
-
-	engine->ResetCanvas();
 
 	engine->DrawFPS();
 
 	engine->Video_PostFrame();
+#endif
 
 	SwapBuffers();
 }

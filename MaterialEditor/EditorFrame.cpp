@@ -153,8 +153,16 @@ CEditorFrame::CEditorFrame(const wxString & title, const wxPoint & pos, const wx
 	viewLit->Check(true);
 
 	wxMenu *mTools = new wxMenu;
-	mTools->Append(FRAME_EVENT_WADTOOL, "WAD Tool...");
-	mTools->Append(FRAME_EVENT_MATERIALTOOL, "Material Tool...");
+	wxMenuItem *iWADTool = mTools->Append(FRAME_EVENT_WADTOOL, "&WAD Tool...");
+	iWADTool->SetBitmap(bSmallWAD);
+
+	wxMenuItem *iMATTool = mTools->Append(FRAME_EVENT_MATERIALTOOL, "&Material Tool...");
+	iMATTool->SetBitmap(bSmallMDL);
+
+#if 0
+	wxMenuItem *iMDLTool = mTools->Append(FRAME_EVENT_MATERIALTOOL, "Mo&del Tool...");
+	iMDLTool->SetBitmap(bSmallMDL);
+#endif
 
 	wxMenu *mWindow = new wxMenu;
 	windowShowConsole = mWindow->AppendCheckItem(FRAME_EVENT_SHOWCONSOLE, "&Console");
@@ -217,7 +225,7 @@ CEditorFrame::CEditorFrame(const wxString & title, const wxPoint & pos, const wx
 	manager->AddPane(tbView, toolbarInfo);
 
 	// Create the engine viewport...
-	pViewport = new CEditorViewportPanel(this);
+	pViewport = new CMainViewportPanel(this);
 	wxAuiPaneInfo viewportInfo;
 	viewportInfo.Caption("Viewport");
 	viewportInfo.Center();

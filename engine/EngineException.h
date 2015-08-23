@@ -18,32 +18,15 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef __ENGINEVIDEOSHADER__
-#define __ENGINEVIDEOSHADER__
+#ifndef __ENGINEEXCEPTION__
+#define	__ENGINEEXCEPTION__
+#pragma once
 
-typedef enum VideoShaderType
+class CEngineException : public std::exception
 {
-	VIDEO_SHADER_FRAGMENT,
-	VIDEO_SHADER_VERTEX
-} VideoShaderType;
-
-typedef unsigned int VideoShader;
-typedef unsigned int VideoShaderProgram;
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-	void VideoShader_Initialize(void);
-	void VideoShader_Enable(void);
-	void VideoShader_Disable(void);
-	void VideoShader_SetVariablei(const char *name, int i);
-	void VideoShader_SetVariablef(const char *name, float f);
-	void VideoShader_SetVariable3f(const char *name, float x, float y, float z);
-	void VideoShader_SetVariable4f(const char *name, float x, float y, float z, float a);
-
-#ifdef __cplusplus
-}
-#endif
+public:
+	CEngineException(const char *ccMessage);
+};
 
 #endif
+

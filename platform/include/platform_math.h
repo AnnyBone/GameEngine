@@ -1,6 +1,23 @@
-/*  Copyright (C) 1996-2001 Id Software, Inc.
+/*	Copyright (C) 1996-2001 Id Software, Inc.
+	Copyright (C) 2002-2009 John Fitzgibbons and others
 	Copyright (C) 2011-2015 OldTimes Software
+
+	This program is free software; you can redistribute it and/or
+	modify it under the terms of the GNU General Public License
+	as published by the Free Software Foundation; either version 2
+	of the License, or (at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+	See the GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
+
 #ifndef __PLATFORMMATH__
 #define	__PLATFORMMATH__
 
@@ -38,26 +55,24 @@ typedef MathVector4f_t Colour_t, MathMatrix4x4f_t[4];
 #define MathVector4_t MathVector4f_t
 
 // For compatability...
-#define	vec2_t	MathVector2_t
-#define	vec3_t	MathVector3_t
-#define	vec4_t	MathVector4_t
+#define	vec2_t	MathVector2f_t
+#define	vec3_t	MathVector3f_t
+#define	vec4_t	MathVector4f_t
 
 typedef MathVectord_t MathVector2d_t[2], MathVector3d_t[3], MathVector4d_t[4];
 typedef MathVector4d_t MathMatrix4x4d_t[4];
 
 typedef struct
 {
-	vec_t	vX,
-			vY,
-			vZ;
+	MathVectorf_t vX, vY, vZ;
 } MathVector_t;
 
 extern MathVector_t		mvOrigin;
-extern MathVector2_t	mv2Origin;
-extern MathVector3_t	mv3Origin;
-extern MathVector4_t	mv4Origin;
+extern MathVector2f_t	mv2Origin;
+extern MathVector3f_t	mv3Origin;
+extern MathVector4f_t	mv4Origin;
 
-enum MathWH_t
+enum PlatformMathWH
 {
 	pWIDTH,	pHEIGHT	// 0, 1
 };
@@ -65,12 +80,12 @@ enum MathWH_t
 #define	WIDTH	pWIDTH
 #define	HEIGHT	pHEIGHT
 
-enum MathXYZ_t
+enum PlatformMathXYZ
 {
 	pX, pY, pZ	// 0, 1, 2
 };
 
-enum MathPYR_t
+enum PlatformMathPYR
 {
 	pPITCH, pYAW, pROLL	// 0, 1, 2
 };
@@ -79,7 +94,7 @@ enum MathPYR_t
 #define	YAW		pYAW
 #define	ROLL	pROLL
 
-enum MathRGB_t
+enum PlatformMathRGBA
 {
 	pRED, pGREEN, pBLUE, pALPHA	// 0, 1, 2, 3
 };
@@ -91,7 +106,7 @@ enum MathRGB_t
 
 /*
 	Utility Defines
-	*/
+*/
 
 #define Math_Min(a,b)					(	((a)<(b))?(a):(b)	                    )
 #define Math_Max(a,b)                   (	((a)>(b))?(a):(b)	                    )
@@ -164,10 +179,10 @@ enum MathRGB_t
 	Utility Functions
 */
 
-void	_Math_VectorSubtract(vec3_t a, vec3_t b, vec3_t c);
-void	_Math_VectorAdd(vec3_t a, vec3_t b, vec3_t c);
-void	_Math_VectorCopy(vec3_t a,vec3_t b);
-void	_Math_VectorScale(vec3_t in,vec_t scale,vec3_t out);
+void	_Math_VectorSubtract(MathVector3f_t a, MathVector3f_t b, MathVector3f_t c);
+void	_Math_VectorAdd(MathVector3f_t a, MathVector3f_t b, MathVector3f_t c);
+void	_Math_VectorCopy(MathVector3f_t a, MathVector3f_t b);
+void	_Math_VectorScale(MathVector3f_t in, MathVectorf_t scale, MathVector3f_t out);
 
 struct	mplane_s;
 
@@ -179,7 +194,7 @@ void	Math_VectorMake(MathVector3f_t veca, float scale, MathVector3f_t vecb, Math
 double	Math_VectorLength(MathVector3f_t a);
 
 float	Math_AngleMod(float a);
-float	Math_VectorToYaw(vec_t *vVector);
+float	Math_VectorToYaw(MathVectorf_t *vVector);
 
 bool Math_VectorCompare(MathVector3f_t a, MathVector3f_t b);
 bool Math_IsIntersecting(MathVector3f_t mvFirstMins, MathVector3f_t mvFirstMaxs, MathVector3f_t mvSecondMins, MathVector3f_t mvSecondMaxs);
@@ -194,11 +209,11 @@ MathVectord_t Math_Lengthd(MathVector3d_t a);
 #define Math_Length(a) Math_Lengthf(a)
 #endif
 
-vec_t	Math_VectorNormalize(vec3_t a);
-vec_t	Math_ColorNormalize(vec3_t in, vec3_t out);
-vec_t	Math_DotProduct(vec3_t a, vec3_t b);
+MathVectorf_t Math_VectorNormalize(MathVector3f_t a);
+MathVectorf_t Math_ColorNormalize(MathVector3f_t in, MathVector3f_t out);
+MathVectorf_t Math_DotProduct(MathVector3f_t a, MathVector3f_t b);
 
-MathVector_t	Math_VectorToAngles(vec3_t vValue);
+MathVector_t Math_VectorToAngles(MathVector3f_t vValue);
 
 float Math_Linear(float x);
 float Math_InPow(float x, float p);

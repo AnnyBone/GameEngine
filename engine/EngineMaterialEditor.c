@@ -128,12 +128,7 @@ void MaterialEditor_Draw(void)
     if(!bMaterialEditorInitialized)
         return;
 
-	Draw_GradientBackground();
-
-	if (cvVideoDrawModels.bValue)
-		Alias_Draw(mPreviewEntity);
-
-	Draw_ResetCanvas();
+	Alias_Draw(mPreviewEntity);
 
 	GL_SetCanvas(CANVAS_DEFAULT);
 

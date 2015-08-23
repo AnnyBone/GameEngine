@@ -7,6 +7,27 @@
 
 #define	WAD_TITLE "Material Tool"
 
+class CMaterialViewportPanel : public CEditorViewportPanel
+{
+public:
+	CMaterialViewportPanel(wxWindow *wParent) : CEditorViewportPanel(wParent) {}
+
+	virtual void Draw()
+	{
+		engine->Video_PreFrame();
+
+		engine->DrawGradientBackground();
+	
+		engine->DrawModel();
+
+		engine->DrawFPS();
+
+		engine->Video_PostFrame();
+	}
+protected:
+private:
+};
+
 enum MaterialFrameEvent_s
 {
 };
@@ -117,7 +138,7 @@ CMaterialFrame::CMaterialFrame(wxWindow* parent, wxWindowID id)
 	iPaneInfo.BestSize(wxSize(256, 256));
 
 	// Create the engine viewport...
-	CEditorViewportPanel *rcViewport = new CEditorViewportPanel(this);
+	CMaterialViewportPanel *rcViewport = new CMaterialViewportPanel(this);
 	iPaneInfo.Caption("Viewport");
 	iPaneInfo.Top();
 	iPaneInfo.Right();

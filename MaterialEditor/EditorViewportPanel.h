@@ -11,6 +11,8 @@ public:
 	CEditorViewportPanel(wxWindow *wParent);
 	~CEditorViewportPanel();
 
+	virtual void Draw();
+
 private:
 
 	// Events

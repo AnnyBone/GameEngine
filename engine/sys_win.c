@@ -232,34 +232,16 @@ void Sys_Error(const char *error, ...)
 
 	pLog_Write(ENGINE_LOG, "Error: %s", text);
 
-#if 0
-	if(bIsDedicated)
+	// switch to windowed so the message box is visible, unless we already
+	// tried that and failed
+	if (!in_sys_error0)
 	{
-		//sprintf(text2,"ERROR: %s\n",text);
-
-		starttime = System_DoubleTime ();
-		sc_return_on_enter = true;	// so Enter will get us out of here
-
-		while(!Sys_ConsoleInput() && ((System_DoubleTime()-starttime) < CONSOLE_ERROR_TIMEOUT))
-		{
-		}
+		in_sys_error0 = 1;
+		
+		gWindow_MessageBox("Fatal Error",text);
 	}
 	else
-#endif
-	{
-		// switch to windowed so the message box is visible, unless we already
-		// tried that and failed
-		if (!in_sys_error0)
-		{
-			in_sys_error0 = 1;
-
-			// [28/10/2013] Changed to platform independent function ~hogsy
-			gWindow_MessageBox("Fatal Error",text);
-		}
-		else
-			// [28/10/2013] Changed to platform independent function ~hogsy
-			gWindow_MessageBox("Double Fatal Error",text);
-	}
+		gWindow_MessageBox("Double Fatal Error",text);
 
 	if (!in_sys_error1)
 	{

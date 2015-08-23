@@ -66,13 +66,6 @@ typedef enum VideoDepth_e
 	VIDEO_DEPTH_TRUE			// Enable depth mask.
 } VideoDepth_t;
 
-// Shader Types
-typedef enum VideoShaderType_e
-{
-	VIDEO_SHADER_VERTEX,
-	VIDEO_SHADER_FRAGMENT
-} VideoShaderType_t;
-
 // Vertex
 typedef struct
 {

@@ -21,9 +21,9 @@
 #include "EngineBase.h"
 
 #include "EngineGame.h"
-#include "engine_server.h"
+#include "EngineServer.h"
 
-extern cvar_t	pausable;
+extern ConsoleVariable_t pausable;
 
 int	current_skill;
 

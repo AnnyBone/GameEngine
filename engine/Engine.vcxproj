@@ -621,6 +621,7 @@
     <ClCompile Include="conproc.c" />
     <ClCompile Include="EngineConsole.c" />
     <ClCompile Include="crc.c" />
+    <ClCompile Include="EngineException.cpp" />
     <ClCompile Include="EngineSDLWindow.c" />
     <ClCompile Include="EngineVideoFrameBuffer.cpp" />
     <ClCompile Include="EngineVideoParticle.c" />
@@ -652,7 +653,6 @@
     <ClCompile Include="EngineServerPhysics.c" />
     <ClCompile Include="EngineVideoScreen.c" />
     <ClCompile Include="EngineScript.c" />
-    <ClCompile Include="engine_server.c" />
     <ClCompile Include="EngineVideoSprite.c" />
     <ClCompile Include="EngineVideo.c" />
     <ClCompile Include="EngineClientView.c" />
@@ -713,6 +713,7 @@
     <ClInclude Include="EngineConsole.h" />
     <ClInclude Include="crc.h" />
     <ClInclude Include="EngineConsoleVariable.h" />
+    <ClInclude Include="EngineException.h" />
     <ClInclude Include="EngineMaterialEditor.h" />
     <ClInclude Include="EngineVideoDraw.h" />
     <ClInclude Include="EngineAudio.h" />
@@ -732,7 +733,7 @@
     <ClInclude Include="EngineMenu.h" />
     <ClInclude Include="EngineServerPhysics.h" />
     <ClInclude Include="EngineScript.h" />
-    <ClInclude Include="engine_server.h" />
+    <ClInclude Include="EngineServer.h" />
     <ClInclude Include="EngineVideo.h" />
     <ClInclude Include="glquake.h" />
     <ClInclude Include="EngineModel.h" />

@@ -33,6 +33,8 @@ typedef enum
 extern "C" {
 #endif
 
+	char *VideoLayer_GetErrorMessage(void);
+
 	void VideoLayer_Enable(unsigned int uiCapabilities);
 	void VideoLayer_Disable(unsigned int uiCapabilities);
 	void VideoLayer_GenerateVertexBuffer(unsigned int *uiBuffer);

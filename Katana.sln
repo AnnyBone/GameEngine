@@ -24,12 +24,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Menu", "menu\Menu.vcxproj",
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Game", "game\Game.vcxproj", "{6BA71186-7156-4A79-ABAD-FC46D4492EA0}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documents", "Documents", "{41560D42-8883-417B-97E3-9F2847FA13CC}"
-	ProjectSection(SolutionItems) = preProject
-		TASKS.txt = TASKS.txt
-	EndProjectSection
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Material Editor", "MaterialEditor\MaterialEditor.vcxproj", "{549FB9B3-C358-4A95-B768-6027A04F1985}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Editor", "MaterialEditor\MaterialEditor.vcxproj", "{549FB9B3-C358-4A95-B768-6027A04F1985}"
 	ProjectSection(ProjectDependencies) = postProject
 		{5588B942-90A0-63A2-3369-523F456D79C5} = {5588B942-90A0-63A2-3369-523F456D79C5}
 	EndProjectSection
