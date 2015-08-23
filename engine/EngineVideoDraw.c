@@ -560,7 +560,7 @@ void Draw_Grid(float x, float y, float z, int iGridSize)
 
 void Draw_Fill(int x,int y,int w,int h,float r,float g,float b,float alpha)
 {
-	vec4_t			vColour;
+	MathVector4f_t vColour;
 	VideoObjectVertex_t	voFill[4];
 
 	vColour[0] = r; vColour[1] = g; vColour[2] = b; vColour[3] = alpha;
@@ -575,9 +575,13 @@ void Draw_Fill(int x,int y,int w,int h,float r,float g,float b,float alpha)
     Video_DisableCapabilities(VIDEO_DEPTH_TEST|VIDEO_TEXTURE_2D);
 
 	Video_ObjectVertex(&voFill[0], x, y, 0);
+	Video_ObjectTexture(&voFill[0], 0, h, w);
 	Video_ObjectVertex(&voFill[1], x+w, y, 0);
+	Video_ObjectTexture(&voFill[1], 0, h + w, w);
 	Video_ObjectVertex(&voFill[2], x+w, y+h, 0);
+	Video_ObjectTexture(&voFill[2], 0, h + w, w + h);
 	Video_ObjectVertex(&voFill[3], x, y+h, 0);
+	Video_ObjectTexture(&voFill[0], 0, h, w + h);
 
 	Video_DrawFill(voFill,NULL,0);
 

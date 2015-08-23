@@ -45,19 +45,6 @@ void CEditorRenderCanvas::UpdateViewportSize()
 
 void CEditorRenderCanvas::DrawFrame(void)
 {
-#if 0
-	engine->Video_PreFrame();
-
-	engine->DrawGradientBackground();
-	engine->DrawResetCanvas();
-	
-	engine->DrawModel();
-
-	engine->DrawFPS();
-
-	engine->Video_PostFrame();
-#endif
-
 	SwapBuffers();
 }
 

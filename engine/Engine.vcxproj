@@ -717,7 +717,7 @@
     <ClInclude Include="EngineMaterialEditor.h" />
     <ClInclude Include="EngineVideoDraw.h" />
     <ClInclude Include="EngineAudio.h" />
-    <ClInclude Include="EngineVideoFrameBuffer.h" />
+    <ClInclude Include="EngineVideoFrameBuffer.hpp" />
     <ClInclude Include="EngineVideoLayer.h" />
     <ClInclude Include="EngineVideoObject.h" />
     <ClInclude Include="EngineVideoShader.h" />

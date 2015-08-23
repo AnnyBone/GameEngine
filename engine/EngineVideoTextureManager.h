@@ -38,31 +38,40 @@
 
 #include "SharedTexture.h"
 
-extern gltexture_t *notexture;
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-extern unsigned int d_8to24table[256];
-extern unsigned int d_8to24table_fbright[256];
-extern unsigned int d_8to24table_nobright[256];
-extern unsigned int d_8to24table_conchars[256];
-extern unsigned int d_8to24table_shirt[256];
-extern unsigned int d_8to24table_pants[256];
+	extern gltexture_t *notexture;
 
-// TEXTURE MANAGER
-float TexMgr_FrameUsage (void);
-gltexture_t *TexMgr_FindTexture (model_t *owner, char *name);
-gltexture_t *TexMgr_GetTexture(const char *ccPath);
-gltexture_t *TexMgr_NewTexture (void);
-void TexMgr_FreeTexture (gltexture_t *kill);
-void	TextureManager_FreeTextures(unsigned int flags,unsigned int mask);
-void TexMgr_FreeTexturesForOwner (model_t *owner);
-void	TextureManager_Initialize(void);
+	extern unsigned int d_8to24table[256];
+	extern unsigned int d_8to24table_fbright[256];
+	extern unsigned int d_8to24table_nobright[256];
+	extern unsigned int d_8to24table_conchars[256];
+	extern unsigned int d_8to24table_shirt[256];
+	extern unsigned int d_8to24table_pants[256];
 
-// IMAGE LOADING
-gltexture_t *TexMgr_LoadImage (model_t *owner, char *name, int width, int height, enum srcformat format,
-							   uint8_t *data, char *source_file, unsigned source_offset, unsigned flags);
-void TexMgr_ReloadImage (gltexture_t *glt, int shirt, int pants);
-void TexMgr_ReloadImages (void);
+	// TEXTURE MANAGER
+	float TexMgr_FrameUsage(void);
+	gltexture_t *TexMgr_FindTexture(model_t *owner, char *name);
+	gltexture_t *TexMgr_GetTexture(const char *ccPath);
+	gltexture_t *TexMgr_NewTexture(void);
+	void TexMgr_SetFilterModes(gltexture_t *glt);
+	void TexMgr_FreeTexture(gltexture_t *kill);
+	void	TextureManager_FreeTextures(unsigned int flags, unsigned int mask);
+	void TexMgr_FreeTexturesForOwner(model_t *owner);
+	void	TextureManager_Initialize(void);
 
-unsigned int TexMgr_Pad(unsigned int s);
-unsigned int TexMgr_SafeTextureSize (int s);
-unsigned int TexMgr_PadConditional (unsigned int s);
+	// IMAGE LOADING
+	gltexture_t *TexMgr_LoadImage(model_t *owner, char *name, int width, int height, enum srcformat format,
+		uint8_t *data, char *source_file, unsigned source_offset, unsigned flags);
+	void TexMgr_ReloadImage(gltexture_t *glt, int shirt, int pants);
+	void TexMgr_ReloadImages(void);
+
+	unsigned int TexMgr_Pad(unsigned int s);
+	unsigned int TexMgr_SafeTextureSize(int s);
+	unsigned int TexMgr_PadConditional(unsigned int s);
+
+#ifdef __cplusplus
+};
+#endif

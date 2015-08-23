@@ -21,6 +21,9 @@
 #ifndef __ENGINEVIDEO__
 #define __ENGINEVIDEO__
 
+//#define	VIDEO_SUPPORT_FRAMEBUFFERS
+#define	VIDEO_SUPPORT_SHADERS
+
 extern ConsoleVariable_t
 	cvVideoLegacy,
 	cvVideoDrawModels,		// Should we draw models?
@@ -163,11 +166,16 @@ extern "C" {
 
 	bool Video_GetCapability(unsigned int iCapability);
 
+	// Temporary
+	void VideoPostProcess_Initialize();
+	void VideoPostProcess_BindFrameBuffer();
+	void VideoPostProcess_Draw();
+
 #if __cplusplus
 };
 #endif
 
-#define	VIDEO_FUNCTION_START(a) \
+#define	VIDEO_FUNCTION_START \
 { \
 	static int iFUNCTIONCALLS = -1; \
 	iFUNCTIONCALLS++; \
@@ -186,12 +194,6 @@ void Video_ShowBoundingBoxes(void);
 
 void R_SetupGenericView(void);
 void R_SetupScene(void);
-
-/*
-    Sprite
-*/
-
-void Sprite_Draw(ClientEntity_t *eEntity);
 
 /*
 	Sky

@@ -365,9 +365,11 @@ void R_DrawEntitiesOnList(bool bAlphaPass) //johnfitz -- added parameter
 			case MODEL_TYPE_BSP:
 				Brush_Draw(currententity);
 				break;
+#if 0
 			case MODEL_TYPE_SPRITE:
                 Sprite_Draw(currententity);
                 break;
+#endif
 			default:
 				Console_ErrorMessage(false,currententity->model->name,"Unrecognised model type.");
 		}

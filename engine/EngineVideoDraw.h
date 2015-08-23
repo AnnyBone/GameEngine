@@ -30,28 +30,36 @@ typedef struct
 	byte		data[4];			// variably sized
 } qpic_t;
 
-extern	qpic_t *draw_disc;	// also used on sbar
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-void Draw_Init (void);
-void Draw_Character (int x, int y, int num);
-void Draw_Pic (int x, int y, qpic_t *pic);
-void Draw_ExternPic(char *path, float alpha, int x, int y, int width, int height);
-void Draw_MaterialSurface(Material_t *mMaterial, int iSkin, int x, int y, int w, int h, float fAlpha);
-void Draw_ConsoleBackground (void); //johnfitz -- removed parameter int lines
-void Draw_GradientBackground(void);
-void Draw_BeginDisc (void);
-void Draw_TileClear (int x,int y,int w,int h);
-void Draw_Fill(int x,int y,int w,int h,float r,float g,float b,float alpha);
-void Draw_GradientFill(int x, int y, int w, int h, Colour_t mvTopColour, Colour_t mvBottomColour);
-void Draw_FadeScreen(void);
-void Draw_ResetCanvas(void);
-void Draw_Line(MathVector3f_t mvStart, MathVector3f_t mvEnd);
-void Draw_Grid(float x, float y, float z, int iGridSize);
-void Draw_CoordinateAxes(float x, float y, float z);
-void Draw_String(int x, int y, char *msg);
+	extern	qpic_t *draw_disc;	// also used on sbar
 
-qpic_t *Draw_CachePic(char *path);
+	void Draw_Init(void);
+	void Draw_Character(int x, int y, int num);
+	void Draw_Pic(int x, int y, qpic_t *pic);
+	void Draw_ExternPic(char *path, float alpha, int x, int y, int width, int height);
+	void Draw_MaterialSurface(Material_t *mMaterial, int iSkin, int x, int y, int w, int h, float fAlpha);
+	void Draw_ConsoleBackground(void); //johnfitz -- removed parameter int lines
+	void Draw_GradientBackground(void);
+	void Draw_BeginDisc(void);
+	void Draw_TileClear(int x, int y, int w, int h);
+	void Draw_Fill(int x, int y, int w, int h, float r, float g, float b, float alpha);
+	void Draw_GradientFill(int x, int y, int w, int h, Colour_t mvTopColour, Colour_t mvBottomColour);
+	void Draw_FadeScreen(void);
+	void Draw_ResetCanvas(void);
+	void Draw_Line(MathVector3f_t mvStart, MathVector3f_t mvEnd);
+	void Draw_Grid(float x, float y, float z, int iGridSize);
+	void Draw_CoordinateAxes(float x, float y, float z);
+	void Draw_String(int x, int y, char *msg);
 
-void GL_SetCanvas(int newcanvas); //johnfitz
+	qpic_t *Draw_CachePic(char *path);
+
+	void GL_SetCanvas(int newcanvas); //johnfitz
+
+#ifdef __cplusplus
+};
+#endif
 
 #endif

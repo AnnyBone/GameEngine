@@ -68,7 +68,7 @@ ConsoleVariable_t
 #define VIDEO_MAX_SAMPLES	cvMultisampleMaxSamples.iValue
 #define VIDEO_MIN_SAMPLES	0
 
-gltexture_t	*gDepthTexture, *gVideoScreenTexture;
+gltexture_t	*gDepthTexture;
 
 // TODO: Move this? It's used mainly for silly client stuff...
 struct gltexture_s *gEffectTexture[MAX_EFFECTS];
@@ -236,11 +236,8 @@ void Video_Initialize(void)
 	vid.conheight = vid.conwidth*Video.iHeight / Video.iWidth;
 	Video.bVerticalSync = cvVerticalSync.bValue;
 
+#ifdef VIDEO_SUPPORT_SHADERS
 	VideoShader_Initialize();
-
-#if 0
-	// Allocate texture used for screen.
-	gVideoScreenTexture = TexMgr_NewTexture();
 #endif
 
 	Video.bInitialized = true;
@@ -1158,7 +1155,7 @@ void Video_ResetCapabilities(bool bClearActive)
 
 void Video_PreFrame(void)
 {
-	VIDEO_FUNCTION_START(Video_PreFrame)
+	VIDEO_FUNCTION_START
 
 	GL_BeginRendering(&glx, &gly, &glwidth, &glheight);
 
@@ -1171,25 +1168,15 @@ void Video_PreFrame(void)
 
 	R_SetupScene();
 
+#ifdef VIDEO_SUPPORT_SHADERS
+#ifdef VIDEO_SUPPORT_FRAMEBUFFERS
+	VideoPostProcess_BindFrameBuffer();
+#endif
+#endif
+
 	Video_ShowBoundingBoxes();
 
 	VIDEO_FUNCTION_END
-}
-
-void Video_PostFrame(void)
-{
-	VIDEO_FUNCTION_START(Video_PostFrame)
-	VIDEO_FUNCTION_END
-
-	if (Video.bDebugFrame)
-	{
-		pLog_Write(cvVideoDebugLog.string, "\n-----------------------\n");
-		// Show the number of calls to Video_DrawObject.
-		pLog_Write(cvVideoDebugLog.string, "Video_DrawObject: %i\n", uiVideoDrawObjectCalls);
-		pLog_Write(cvVideoDebugLog.string, "-----------------------\n");
-
-		Video.bDebugFrame = false;
-	}
 }
 
 /*	Main rendering loop.
@@ -1202,6 +1189,12 @@ void Video_Frame(void)
 	if (Video.bDebugFrame)
 		pLog_Write(cvVideoDebugLog.string, "Video: Start of frame\n");
 
+#ifdef VIDEO_SUPPORT_SHADERS
+#ifdef VIDEO_SUPPORT_FRAMEBUFFERS
+	VideoPostProcess_BindFrameBuffer();
+#endif
+#endif
+
 	SCR_UpdateScreen();
 
 	// Attempt to draw the depth buffer.
@@ -1209,20 +1202,32 @@ void Video_Frame(void)
 
 	GL_EndRendering();
 
+	Video_PostFrame();
+}
+
+void Video_PostFrame(void)
+{
+	VIDEO_FUNCTION_START
+	VIDEO_FUNCTION_END
+
+#ifdef VIDEO_SUPPORT_SHADERS
+#ifdef VIDEO_SUPPORT_FRAMEBUFFERS
+	VideoPostProcess_Draw();
+#endif
+#endif
+
 	if (cvVideoFinish.bValue)
 		glFinish();
 
-    if(Video.bDebugFrame)
-    {
-		pLog_Write(cvVideoDebugLog.string, "Video: End of frame\n");
-
+	if (Video.bDebugFrame)
+	{
 		pLog_Write(cvVideoDebugLog.string, "\n-----------------------\n");
 		// Show the number of calls to Video_DrawObject.
 		pLog_Write(cvVideoDebugLog.string, "Video_DrawObject: %i\n", uiVideoDrawObjectCalls);
 		pLog_Write(cvVideoDebugLog.string, "-----------------------\n");
 
 		Video.bDebugFrame = false;
-    }
+	}
 }
 
 /*	Shuts down the video sub-system.

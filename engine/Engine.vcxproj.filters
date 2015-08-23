@@ -46,6 +46,9 @@
     <Filter Include="Network\Interfaces">
       <UniqueIdentifier>{12aedf60-fc01-4dce-a337-75a4ed2c429d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Client\Video\Legacy">
+      <UniqueIdentifier>{77b73aa0-88f4-466f-af2f-4bbaf7543669}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="menu.c">
@@ -118,9 +121,6 @@
       <Filter>Client\Video</Filter>
     </ClCompile>
     <ClCompile Include="EngineHost.c" />
-    <ClCompile Include="EngineVideoLegacy.c">
-      <Filter>Client\Video</Filter>
-    </ClCompile>
     <ClCompile Include="EngineNetwork.c">
       <Filter>Network</Filter>
     </ClCompile>
@@ -161,9 +161,6 @@
       <Filter>Client\Video</Filter>
     </ClCompile>
     <ClCompile Include="EngineVideoTextureManager.c">
-      <Filter>Client\Video</Filter>
-    </ClCompile>
-    <ClCompile Include="EngineVideoLegacy2.c">
       <Filter>Client\Video</Filter>
     </ClCompile>
     <ClCompile Include="EngineAudio.c">
@@ -257,6 +254,12 @@
       <Filter>Client\Video</Filter>
     </ClCompile>
     <ClCompile Include="EngineException.cpp" />
+    <ClCompile Include="EngineVideoLegacy2.c">
+      <Filter>Client\Video\Legacy</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineVideoLegacy.c">
+      <Filter>Client\Video\Legacy</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\shared\shared_client.h">
@@ -452,12 +455,12 @@
     <ClInclude Include="EngineVideoLayer.h">
       <Filter>Client\Video</Filter>
     </ClInclude>
-    <ClInclude Include="EngineVideoFrameBuffer.h">
-      <Filter>Client\Video</Filter>
-    </ClInclude>
     <ClInclude Include="EngineException.h" />
     <ClInclude Include="EngineServer.h">
       <Filter>Server</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineVideoFrameBuffer.hpp">
+      <Filter>Client\Video</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -36,6 +36,7 @@
 */
 char *VideoLayer_GetErrorMessage(void)
 {
+	VIDEO_FUNCTION_START
 	switch (glGetError())
 	{
 	case GL_NO_ERROR:
@@ -57,6 +58,67 @@ char *VideoLayer_GetErrorMessage(void)
 	default:
 		return "An unknown error occured.";
 	}
+	VIDEO_FUNCTION_END
+}
+
+/*===========================
+	OPENGL TEXTURES
+===========================*/
+
+unsigned int VideoLayer_TranslateFormat(VideoTextureFormat Format)
+{
+	switch (Format)
+	{
+	case VIDEO_TEXTURE_FORMAT_BGR:
+		return GL_BGR;
+	case VIDEO_TEXTURE_FORMAT_BGRA:
+		return GL_BGRA;
+	case VIDEO_TEXTURE_FORMAT_LUMINANCE:
+		return GL_LUMINANCE;
+	case VIDEO_TEXTURE_FORMAT_RGB:
+		return GL_RGB;
+	case VIDEO_TEXTURE_FORMAT_RGBA:
+		return GL_RGBA;
+	default:
+		Sys_Error("Unknown texture format! (%i)\n", Format);
+	}
+
+	// Won't be hit but meh, compiler will complain otherwise.
+	return 0;
+}
+
+void VideoLayer_SetupTexture(VideoTextureFormat InternalFormat, VideoTextureFormat Format, unsigned int Width, unsigned int Height)
+{
+	glTexImage2D(GL_TEXTURE_2D, 0, 
+		VideoLayer_TranslateFormat(InternalFormat),
+		Width, Height, 0, 
+		VideoLayer_TranslateFormat(Format), 
+		GL_UNSIGNED_BYTE, NULL);
+}
+
+/*	TODO:
+		Modify this so it works as a replacement for TexMgr_SetFilterModes.
+*/
+void VideoLayer_SetTextureFilter(VideoTextureFilter_t FilterMode)
+{
+	VIDEO_FUNCTION_START
+	unsigned int SetFilter = 0;
+
+	switch (FilterMode)
+	{
+	case VIDEO_TEXTURE_FILTER_LINEAR:
+		SetFilter = GL_LINEAR;
+		break;
+	case VIDEO_TEXTURE_FILTER_NEAREST:
+		SetFilter = GL_NEAREST;
+		break;
+	default:
+		Sys_Error("Unknown texture filter type! (%i)\n", FilterMode);
+	}
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, SetFilter);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, SetFilter);
+	VIDEO_FUNCTION_END
 }
 
 /*===========================
@@ -90,47 +152,47 @@ VideoLayerCapabilities_t vlcCapabilityList[] =
 */
 void VideoLayer_Enable(unsigned int uiCapabilities)
 {
-	VIDEO_FUNCTION_START(VideoLayer_Enable)
-		int i;
-		for (i = 0; i < sizeof(vlcCapabilityList); i++)
+	VIDEO_FUNCTION_START
+	int i;
+	for (i = 0; i < sizeof(vlcCapabilityList); i++)
+	{
+		// Check if we reached the end of the list yet.
+		if (!vlcCapabilityList[i].uiFirst)
+			break;
+
+		if (uiCapabilities & VIDEO_TEXTURE_2D)
+			Video.bUnitState[Video.uiActiveUnit] = true;
+
+		if (uiCapabilities & vlcCapabilityList[i].uiFirst)
 		{
-			// Check if we reached the end of the list yet.
-			if (!vlcCapabilityList[i].uiFirst)
-				break;
+			// TODO: Implement debugging support.
 
-			if (uiCapabilities & VIDEO_TEXTURE_2D)
-				Video.bUnitState[Video.uiActiveUnit] = true;
-
-			if (uiCapabilities & vlcCapabilityList[i].uiFirst)
-			{
-				// TODO: Implement debugging support.
-
-				glEnable(vlcCapabilityList[i].uiSecond);
-			}
+			glEnable(vlcCapabilityList[i].uiSecond);
 		}
+	}
 	VIDEO_FUNCTION_END
 }
 
 void VideoLayer_Disable(unsigned int uiCapabilities)
 {
-	VIDEO_FUNCTION_START(VideoLayer_Disable)
-		int i;
-		for (i = 0; i < sizeof(vlcCapabilityList); i++)
+	VIDEO_FUNCTION_START
+	int i;
+	for (i = 0; i < sizeof(vlcCapabilityList); i++)
+	{
+		// Check if we reached the end of the list yet.
+		if (!vlcCapabilityList[i].uiFirst)
+			break;
+
+		if (uiCapabilities & VIDEO_TEXTURE_2D)
+			Video.bUnitState[Video.uiActiveUnit] = false;
+
+		if (uiCapabilities & vlcCapabilityList[i].uiFirst)
 		{
-			// Check if we reached the end of the list yet.
-			if (!vlcCapabilityList[i].uiFirst)
-				break;
+			// TODO: Implement debugging support.
 
-			if (uiCapabilities & VIDEO_TEXTURE_2D)
-				Video.bUnitState[Video.uiActiveUnit] = false;
-
-			if (uiCapabilities & vlcCapabilityList[i].uiFirst)
-			{
-				// TODO: Implement debugging support.
-
-				glDisable(vlcCapabilityList[i].uiSecond);
-			}
+			glDisable(vlcCapabilityList[i].uiSecond);
 		}
+	}
 	VIDEO_FUNCTION_END
 }
 
@@ -144,8 +206,8 @@ void VideoLayer_Disable(unsigned int uiCapabilities)
 */
 void VideoLayer_GenerateVertexBuffer(unsigned int *uiBuffer) 
 {
-	VIDEO_FUNCTION_START(VideoLayer_GenerateVertexBuffer)
-		glGenBuffers(1, uiBuffer);
+	VIDEO_FUNCTION_START
+	glGenBuffers(1, uiBuffer);
 	VIDEO_FUNCTION_END
 }
 
@@ -153,8 +215,8 @@ void VideoLayer_GenerateVertexBuffer(unsigned int *uiBuffer)
 */
 void VideoLayer_DeleteVertexBuffer(unsigned int *uiBuffer)
 {
-	VIDEO_FUNCTION_START(VideoLayer_DeleteVertexBuffer)
-		glDeleteBuffers(1, uiBuffer);
+	VIDEO_FUNCTION_START
+	glDeleteBuffers(1, uiBuffer);
 	VIDEO_FUNCTION_END
 }
 
@@ -162,37 +224,44 @@ void VideoLayer_DeleteVertexBuffer(unsigned int *uiBuffer)
 
 void VideoLayer_GenerateFrameBuffer(unsigned int *uiBuffer) 
 {
-	VIDEO_FUNCTION_START(VideoLayer_GenerateFrameBuffer)
-		glGenFramebuffers(1, uiBuffer);
+	VIDEO_FUNCTION_START
+	glGenFramebuffers(1, uiBuffer);
 	VIDEO_FUNCTION_END
 }
 
 void VideoLayer_BindFrameBuffer(VideoFBOTarget_t vtTarget, unsigned int uiBuffer)
 {
-	VIDEO_FUNCTION_START(VideoLayer_BindFrameBuffer)
-		unsigned int uiOutTarget;
+	VIDEO_FUNCTION_START
+	unsigned int uiOutTarget;
 
-		// TODO: Get these named up so we can easily debug.
-		switch (vtTarget)
-		{
-		case VIDEO_FBO_DRAW:
-			uiOutTarget = GL_DRAW_BUFFER;
-			break;
-		case VIDEO_FBO_READ:
-			uiOutTarget = GL_READ_BUFFER;
-			break;
-		default:
-			uiOutTarget = GL_FRAMEBUFFER;
-		}
+	// TODO: Get these named up so we can easily debug.
+	switch (vtTarget)
+	{
+	case VIDEO_FBO_DRAW:
+		uiOutTarget = GL_DRAW_BUFFER;
+		break;
+	case VIDEO_FBO_READ:
+		uiOutTarget = GL_READ_BUFFER;
+		break;
+	default:
+		uiOutTarget = GL_FRAMEBUFFER;
+	}
 
-		glBindFramebuffer(uiOutTarget, uiBuffer);
+	glBindFramebuffer(uiOutTarget, uiBuffer);
 	VIDEO_FUNCTION_END
 }
 
 void VideoLayer_DeleteFrameBuffer(unsigned int *uiBuffer)
 {
-	VIDEO_FUNCTION_START(VideoLayer_DeleteFrameBuffer)
-		glDeleteFramebuffers(1, uiBuffer);
+	VIDEO_FUNCTION_START
+	glDeleteFramebuffers(1, uiBuffer);
+	VIDEO_FUNCTION_END
+}
+
+void VideoLayer_AttachFrameBufferTexture(gltexture_t *Texture)
+{
+	VIDEO_FUNCTION_START
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, Texture->texnum, 0);
 	VIDEO_FUNCTION_END
 }
 

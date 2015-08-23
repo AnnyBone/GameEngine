@@ -31,6 +31,55 @@ typedef unsigned int VideoShader;
 typedef unsigned int VideoShaderProgram;
 
 #ifdef __cplusplus
+class CVideoShader
+{
+public:
+	CVideoShader(const char *ccPath, VideoShaderType vsType);
+	~CVideoShader();
+
+	void Enable();
+	void Disable();
+
+	VideoShader GetInstance();
+	VideoShaderType GetType();
+
+private:
+	VideoShader	vsShader;	//sVertex, sFragment;
+	VideoShaderType vsType;
+
+	const char *ccShaderSource;
+
+	char cShaderPath[PLATFORM_MAX_PATH];
+
+	int iShaderLength;
+
+	bool CheckCompileStatus();
+};
+
+class CVideoShaderProgram
+{
+public:
+	CVideoShaderProgram();
+	~CVideoShaderProgram();
+
+	void Attach(CVideoShader *Shader);
+	void Enable();
+	void Disable();
+	void Link();
+	void SetVariable(const char *ccName, float x, float y, float z);
+	void SetVariable(const char *ccName, MathVector3f_t mvVector);
+	void SetVariable(const char *ccName, float x, float y, float z, float a);
+	void SetVariable(const char *ccName, int i);
+	void SetVariable(const char *ccName, float f);
+
+	VideoShaderProgram GetInstance();
+protected:
+private:
+	//VideoShader *vsShaders;
+
+	VideoShaderProgram vsProgram;
+};
+
 extern "C" {
 #endif
 

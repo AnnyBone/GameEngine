@@ -41,7 +41,7 @@ extern ConsoleVariable_t r_lerpmove;
 
 extern float load_subdivide_size; //johnfitz -- remember what subdivide_size value was when this map was loaded
 
-extern cvar_t gl_subdivide_size; //johnfitz -- moved here from gl_model.c
+extern ConsoleVariable_t gl_subdivide_size; //johnfitz -- moved here from gl_model.c
 
 void GL_BeginRendering(int *x,int *y,int *width,int *height)
 {

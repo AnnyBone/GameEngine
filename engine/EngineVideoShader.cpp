@@ -31,90 +31,66 @@
 
 using namespace std;
 
-class CVideoShader
-{
-public:
-	CVideoShader(const char *ccPath, VideoShaderType vsType);
-	~CVideoShader();
-
-	void Enable();
-	void Disable();
-
-	VideoShader GetInstance();
-	VideoShaderType GetType();
-
-private:
-	VideoShader	vsShader;	//sVertex, sFragment;
-	VideoShaderType vsType;
-
-	const char *ccShaderSource;
-
-	char cShaderPath[PLATFORM_MAX_PATH];
-
-	int iShaderLength;
-
-	bool CheckCompileStatus();
-};
-
 CVideoShader::CVideoShader(const char *ccPath, VideoShaderType vsType)
 {
-	VIDEO_FUNCTION_START(CVideoShader)
+	VIDEO_FUNCTION_START
+	// Check that the path is valid.
+	if (ccPath[0] == ' ')
+		Sys_Error("Invalid shader path! (%s)\n", ccPath);
 
-		// Check that the path is valid.
-		if (ccPath[0] == ' ')
-			Sys_Error("Invalid shader path! (%s)\n", ccPath);
+	// Ensure the type is valid.
+	if((vsType < VIDEO_SHADER_FRAGMENT) || (vsType > VIDEO_SHADER_VERTEX))
+		Sys_Error("Invalid shader type! (%i) (%s)\n", ccPath, vsType);
 
-		// Ensure the type is valid.
-		if((vsType < VIDEO_SHADER_FRAGMENT) || (vsType > VIDEO_SHADER_VERTEX))
-			Sys_Error("Invalid shader type! (%i) (%s)\n", ccPath, vsType);
+	// Set the shader type.
+	this->vsType = vsType;
 
-		// Set the shader type.
-		this->vsType = vsType;
+	// Ensure we use the correct path and shader.
+	unsigned int uiShaderType;
+	if (vsType == VIDEO_SHADER_FRAGMENT)
+	{
+		sprintf(cShaderPath, "%s%s_fragment.shader", Global.cShaderPath, ccPath);
 
-		// Ensure we use the correct path and shader.
-		unsigned int uiShaderType;
-		if (vsType == VIDEO_SHADER_FRAGMENT)
-		{
-			sprintf(cShaderPath, "%s%s_fragment.shader", Global.cShaderPath, ccPath);
+		uiShaderType = GL_FRAGMENT_SHADER;
+	}
+	else
+	{
+		sprintf(cShaderPath, "%s%s_vertex.shader", Global.cShaderPath, ccPath);
 
-			uiShaderType = GL_FRAGMENT_SHADER;
-		}
-		else
-		{
-			sprintf(cShaderPath, "%s%s_vertex.shader", Global.cShaderPath, ccPath);
+		uiShaderType = GL_VERTEX_SHADER;
+	}
 
-			uiShaderType = GL_VERTEX_SHADER;
-		}
+	// Attempt to load it.
+	ccShaderSource = (char*)COM_LoadFile(cShaderPath, 0);
+	if(!ccShaderSource)
+		Sys_Error("Failed to load shader! (%s)\n", cShaderPath);
 
-		// Attempt to load it.
-		ccShaderSource = (char*)COM_LoadFile(cShaderPath, 0);
-		if(!ccShaderSource)
-			Sys_Error("Failed to load shader! (%s)\n", cShaderPath);
+	// Ensure it's a valid length.
+	iShaderLength = strlen(ccShaderSource);
+	if(iShaderLength <= 1)
+		Sys_Error("Invalid shader! (%i) (%s)\n", iShaderLength, cShaderPath);
 
-		// Ensure it's a valid length.
-		iShaderLength = strlen(ccShaderSource);
-		if(iShaderLength <= 1)
-			Sys_Error("Invalid shader! (%i) (%s)\n", iShaderLength, cShaderPath);
+	vsShader = glCreateShader(uiShaderType);
+	glShaderSource(vsShader, 1, &ccShaderSource, &iShaderLength);
+	glCompileShader(vsShader);
 
-		vsShader = glCreateShader(uiShaderType);
-		glShaderSource(vsShader, 1, &ccShaderSource, &iShaderLength);
-		glCompileShader(vsShader);
-
-		if(!CheckCompileStatus())
-			Sys_Error("Shader compilation failed! (%s)\n", cShaderPath);
-
+	if(!CheckCompileStatus())
+		Sys_Error("Shader compilation failed! (%s)\n", cShaderPath);
 	VIDEO_FUNCTION_END
 }
 
 CVideoShader::~CVideoShader()
 {
+	VIDEO_FUNCTION_START
 	glDeleteShader(vsShader);
+	VIDEO_FUNCTION_END
 }
 
 // Compilation
 
 bool CVideoShader::CheckCompileStatus()
 {
+	VIDEO_FUNCTION_START
 	int iCompileStatus;
 	glGetObjectParameterivARB(vsShader, GL_COMPILE_STATUS, &iCompileStatus);
 	if (!iCompileStatus)
@@ -134,6 +110,7 @@ bool CVideoShader::CheckCompileStatus()
 	}
 
 	return true;
+	VIDEO_FUNCTION_END
 }
 
 // Information
@@ -151,30 +128,6 @@ VideoShaderType CVideoShader::GetType()
 /*
 	Shader Program
 */
-
-class CVideoShaderProgram
-{
-public:
-	CVideoShaderProgram();
-	~CVideoShaderProgram();
-
-	void Attach(CVideoShader *Shader);
-	void Enable();
-	void Disable();
-	void Link();
-	void SetVariable(const char *ccName, float x, float y, float z);
-	void SetVariable(const char *ccName, MathVector3f_t mvVector);
-	void SetVariable(const char *ccName, float x, float y, float z, float a);
-	void SetVariable(const char *ccName, int i);
-	void SetVariable(const char *ccName, float f);
-
-	VideoShaderProgram GetInstance();
-protected:
-private:
-	//VideoShader *vsShaders;
-
-	VideoShaderProgram vsProgram;
-};
 
 CVideoShaderProgram::CVideoShaderProgram()
 {
@@ -207,7 +160,9 @@ void CVideoShaderProgram::Enable()
 
 void CVideoShaderProgram::Disable()
 {
+	VIDEO_FUNCTION_START
 	glUseProgram(0);
+	VIDEO_FUNCTION_END
 }
 
 void CVideoShaderProgram::Link()
@@ -239,26 +194,31 @@ void CVideoShaderProgram::Link()
 
 void CVideoShaderProgram::SetVariable(const char *ccName, float x, float y, float z)
 {
+	// TODO: Error checking!
 	glUniform3f(glGetUniformLocation(vsProgram, ccName), x, y, z);
 }
 
 void CVideoShaderProgram::SetVariable(const char *ccName, MathVector3f_t mvVector)
 {
+	// TODO: Error checking!
 	glUniform3fv(glGetUniformLocation(vsProgram, ccName), 3, mvVector);
 }
 
 void CVideoShaderProgram::SetVariable(const char *ccName, float x, float y, float z, float a)
 {
+	// TODO: Error checking!
 	glUniform4f(glGetUniformLocation(vsProgram, ccName), x, y, z, a);
 }
 
 void CVideoShaderProgram::SetVariable(const char *ccName, int i)
 {
+	// TODO: Error checking!
 	glUniform1i(glGetUniformLocation(vsProgram, ccName), i);
 }
 
 void CVideoShaderProgram::SetVariable(const char *ccName, float f)
 {
+	// TODO: Error checking!
 	glUniform1f(glGetUniformLocation(vsProgram, ccName), f);
 }
 

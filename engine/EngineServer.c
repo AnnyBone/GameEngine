@@ -35,14 +35,14 @@ char	localmodels[MAX_MODELS][5];			// inline model names for precache
 void SV_Init (void)
 {
 	int				i;
-	extern	cvar_t	cvPhysicsNoStep;
-	extern	cvar_t	sv_edgefriction;
-	extern	cvar_t	cvPhysicsStopSpeed;
-	extern	cvar_t	sv_maxspeed;
-	extern	cvar_t	sv_accelerate;
-	extern	cvar_t	sv_idealpitchscale;
-	extern	cvar_t	sv_altnoclip; //johnfitz
-	extern	cvar_t	cvPhysicsStepSize;
+	extern	ConsoleVariable_t	cvPhysicsNoStep;
+	extern	ConsoleVariable_t	sv_edgefriction;
+	extern	ConsoleVariable_t	cvPhysicsStopSpeed;
+	extern	ConsoleVariable_t	sv_maxspeed;
+	extern	ConsoleVariable_t	sv_accelerate;
+	extern	ConsoleVariable_t	sv_idealpitchscale;
+	extern	ConsoleVariable_t	sv_altnoclip; //johnfitz
+	extern	ConsoleVariable_t	cvPhysicsStepSize;
 
 	Cvar_RegisterVariable(&sv_edgefriction, NULL);
 	Cvar_RegisterVariable(&cvPhysicsStopSpeed, NULL);

@@ -29,18 +29,40 @@ typedef enum
 	VIDEO_FBO_READ
 } VideoFBOTarget_t;
 
+typedef enum
+{
+	VIDEO_TEXTURE_FILTER_NEAREST,
+	VIDEO_TEXTURE_FILTER_LINEAR
+} VideoTextureFilter_t;
+
+typedef enum
+{
+	VIDEO_TEXTURE_FORMAT_RGB,
+	VIDEO_TEXTURE_FORMAT_RGBA,
+	VIDEO_TEXTURE_FORMAT_BGR,
+	VIDEO_TEXTURE_FORMAT_BGRA,
+	VIDEO_TEXTURE_FORMAT_LUMINANCE,
+} VideoTextureFormat;
+
 #if __cplusplus
 extern "C" {
 #endif
 
 	char *VideoLayer_GetErrorMessage(void);
 
+	void VideoLayer_SetupTexture(VideoTextureFormat InternalFormat, VideoTextureFormat Format, unsigned int Width, unsigned int Height);
+	void VideoLayer_SetTextureFilter(VideoTextureFilter_t FilterMode);
 	void VideoLayer_Enable(unsigned int uiCapabilities);
 	void VideoLayer_Disable(unsigned int uiCapabilities);
+
 	void VideoLayer_GenerateVertexBuffer(unsigned int *uiBuffer);
+	void VideoLayer_DeleteVertexBuffer(unsigned int *uiBuffer);
+	
+
+	// FrameBuffer
 	void VideoLayer_GenerateFrameBuffer(unsigned int *uiBuffer);
 	void VideoLayer_BindFrameBuffer(VideoFBOTarget_t vtTarget, unsigned int uiBuffer);
-	void VideoLayer_DeleteVertexBuffer(unsigned int *uiBuffer);
+	void VideoLayer_AttachFrameBufferTexture(gltexture_t *Texture);
 	void VideoLayer_DeleteFrameBuffer(unsigned int *uiBuffer);
 
 #if __cplusplus

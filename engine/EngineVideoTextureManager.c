@@ -99,23 +99,23 @@ void TexMgr_SetFilterModes (gltexture_t *glt)
 
 	if (glt->flags & TEXPREF_NEAREST)
 	{
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	}
 	else if (glt->flags & TEXPREF_LINEAR)
 	{
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	}
 	else if (glt->flags & TEXPREF_MIPMAP)
 	{
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, modes[gl_texturemode].magfilter);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, modes[gl_texturemode].minfilter);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, modes[gl_texturemode].magfilter);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, modes[gl_texturemode].minfilter);
 	}
 	else
 	{
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, modes[gl_texturemode].magfilter);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, modes[gl_texturemode].magfilter);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, modes[gl_texturemode].magfilter);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, modes[gl_texturemode].magfilter);
 	}
 
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, gl_texture_anisotropy.value);
@@ -232,13 +232,13 @@ void TexMgr_Imagedump_f(void)
 
 		if (glt->flags & TEXPREF_ALPHA)
 		{
-			buffer = (byte*)malloc(glt->width*glt->height*4);
+			buffer = (uint8_t*)malloc(glt->width*glt->height * 4);
 			glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
 			Image_WriteTGA (tganame, buffer, glt->width, glt->height, 32, true);
 		}
 		else
 		{
-			buffer = (byte*)malloc(glt->width*glt->height*3);
+			buffer = (uint8_t*)malloc(glt->width*glt->height * 3);
 			glGetTexImage(GL_TEXTURE_2D, 0, GL_RGB, GL_UNSIGNED_BYTE, buffer);
 			Image_WriteTGA (tganame, buffer, glt->width, glt->height, 24,true);
 		}
@@ -403,7 +403,7 @@ void TexMgr_RecalcWarpImageSize (void)
 {
 	int	mark, oldsize;
 	gltexture_t *glt;
-	byte *dummy;
+	uint8_t *dummy;
 
 	//
 	// find the new correct size
@@ -424,7 +424,7 @@ void TexMgr_RecalcWarpImageSize (void)
 	// resize the textures in opengl
 	//
 	mark = Hunk_LowMark();
-	dummy = (byte*)Hunk_Alloc (gl_warpimagesize*gl_warpimagesize*4);
+	dummy = (uint8_t*)Hunk_Alloc (gl_warpimagesize*gl_warpimagesize*4);
 
 	for (glt=active_gltextures; glt; glt=glt->next)
 	{
@@ -524,12 +524,12 @@ unsigned int TexMgr_PadConditional (unsigned int s)
 		return s;
 }
 
-byte *TexMgr_MipMapW (byte *data, int width, int height)
+uint8_t *TexMgr_MipMapW(uint8_t *data, int width, int height)
 {
 	int		i, size;
-	byte	*out, *in;
+	uint8_t	*out, *in;
 
-	out = in = (byte *)data;
+	out = in = (uint8_t *)data;
 	size = (width*height)>>1;
 
 	for (i=0; i<size; i++, out+=4, in+=8)
@@ -543,12 +543,12 @@ byte *TexMgr_MipMapW (byte *data, int width, int height)
 	return data;
 }
 
-byte *TexMgr_MipMapH (byte *data, int width, int height)
+uint8_t *TexMgr_MipMapH(uint8_t *data, int width, int height)
 {
 	int		i, j;
-	byte	*out, *in;
+	uint8_t	*out, *in;
 
-	out = in = (byte *)data;
+	out = in = (uint8_t *)data;
 	height>>=1;
 	width<<=2;
 
@@ -564,9 +564,9 @@ byte *TexMgr_MipMapH (byte *data, int width, int height)
 	return data;
 }
 
-byte *TexMgr_ResampleTexture(byte *in,int inwidth,int inheight,bool alpha)
+uint8_t *TexMgr_ResampleTexture(uint8_t *in, int inwidth, int inheight, bool alpha)
 {
-	byte		*nwpx, *nepx, *swpx, *sepx,
+	uint8_t		*nwpx, *nepx, *swpx, *sepx,
 		*dest, *out;
 	unsigned	xfrac,yfrac,
 				x,y,
@@ -582,7 +582,7 @@ byte *TexMgr_ResampleTexture(byte *in,int inwidth,int inheight,bool alpha)
 	outwidth	= TexMgr_Pad(inwidth);
 	outheight	= TexMgr_Pad(inheight);
 
-	out = (byte*)Hunk_Alloc(outwidth*outheight*4);
+	out = (uint8_t*)Hunk_Alloc(outwidth*outheight * 4);
 
 	xfrac = ((inwidth-1) << 16) / (outwidth-1);
 	yfrac = ((inheight-1) << 16) / (outheight-1);
@@ -600,12 +600,12 @@ byte *TexMgr_ResampleTexture(byte *in,int inwidth,int inheight,bool alpha)
 			modx = (x>>8) & 0xFF;
 			imodx = 256 - modx;
 
-			nwpx = (byte *)(in + (x>>16) + injump);
+			nwpx = (uint8_t *)(in + (x >> 16) + injump);
 			nepx = nwpx + 4;
 			swpx = nwpx + inwidth*4;
 			sepx = swpx + 4;
 
-			dest = (byte *)(out + outjump + j);
+			dest = (uint8_t *)(out + outjump + j);
 
 			dest[0] = (nwpx[0]*imodx*imody + nepx[0]*modx*imody + swpx[0]*imodx*mody + sepx[0]*modx*mody)>>16;
 			dest[1] = (nwpx[1]*imodx*imody + nepx[1]*modx*imody + swpx[1]*imodx*mody + sepx[1]*modx*mody)>>16;
@@ -627,13 +627,13 @@ byte *TexMgr_ResampleTexture(byte *in,int inwidth,int inheight,bool alpha)
 /*	eliminate pink edges on sprites, etc.
 	operates in place on 32bit data
 */
-void TexMgr_AlphaEdgeFix (byte *data, int width, int height)
+void TexMgr_AlphaEdgeFix(uint8_t *data, int width, int height)
 {
 	int i,j,n=0,
 		b,
 		c[3]={0,0,0},
 		lastrow,thisrow,nextrow,lastpix,thispix,nextpix;
-	byte *dest = data;
+	uint8_t *dest = data;
 
 	for (i=0; i<height; i++)
 	{
@@ -662,9 +662,9 @@ void TexMgr_AlphaEdgeFix (byte *data, int width, int height)
 			//average all non-transparent neighbors
 			if (n)
 			{
-				dest[0] = (byte)(c[0]/n);
-				dest[1] = (byte)(c[1]/n);
-				dest[2] = (byte)(c[2]/n);
+				dest[0] = (uint8_t)(c[0] / n);
+				dest[1] = (uint8_t)(c[1] / n);
+				dest[2] = (uint8_t)(c[2] / n);
 
 				n = c[0] = c[1] = c[2] = 0;
 			}
@@ -675,9 +675,9 @@ void TexMgr_AlphaEdgeFix (byte *data, int width, int height)
 /*	Special case of AlphaEdgeFix for textures that only need it because they were padded.
 	Operates in place on 32bit data, and expects unpadded height and width values.
 */
-void TexMgr_PadEdgeFixW (byte *data, int width, int height)
+void TexMgr_PadEdgeFixW(uint8_t *data, int width, int height)
 {
-	byte *src, *dst;
+	uint8_t *src, *dst;
 	int i, padw, padh;
 
 	padw = TexMgr_PadConditional(width);
@@ -713,9 +713,9 @@ TexMgr_PadEdgeFixH -- special case of AlphaEdgeFix for textures that only need i
 operates in place on 32bit data, and expects unpadded height and width values
 ===============
 */
-void TexMgr_PadEdgeFixH (byte *data, int width, int height)
+void TexMgr_PadEdgeFixH(uint8_t *data, int width, int height)
 {
-	byte *src, *dst;
+	uint8_t *src, *dst;
 	int i, padw, padh;
 
 	padw = TexMgr_PadConditional(width);
@@ -746,7 +746,7 @@ void TexMgr_PadEdgeFixH (byte *data, int width, int height)
 	}
 }
 
-unsigned *TexMgr_8to32 (byte *in, int pixels, unsigned int *usepal)
+unsigned *TexMgr_8to32(uint8_t *in, int pixels, unsigned int *usepal)
 {
 	int			i;
 	unsigned	*out,*data;
@@ -761,17 +761,17 @@ unsigned *TexMgr_8to32 (byte *in, int pixels, unsigned int *usepal)
 
 /*	Return image with width padded up to power-of-two dimentions
 */
-byte *TexMgr_PadImageW (byte *in, int width, int height, byte padbyte)
+uint8_t *TexMgr_PadImageW(uint8_t *in, int width, int height, uint8_t padbyte)
 {
 	int i, j, outwidth;
-	byte *out, *data;
+	uint8_t *out, *data;
 
 	if (width == TexMgr_Pad(width))
 		return in;
 
 	outwidth = TexMgr_Pad(width);
 
-	out = data = (byte*)Hunk_Alloc(outwidth*height);
+	out = data = (uint8_t*)Hunk_Alloc(outwidth*height);
 
 	for (i=0; i<height; i++)
 	{
@@ -786,10 +786,10 @@ byte *TexMgr_PadImageW (byte *in, int width, int height, byte padbyte)
 
 /*	Return image with height padded up to power-of-two dimentions.
 */
-byte *TexMgr_PadImageH (byte *in, int width, int height, byte padbyte)
+uint8_t *TexMgr_PadImageH(uint8_t *in, int width, int height, uint8_t padbyte)
 {
 	int i, srcpix, dstpix;
-	byte *data, *out;
+	uint8_t *data, *out;
 
 	if (height == TexMgr_Pad(height))
 		return in;
@@ -797,7 +797,7 @@ byte *TexMgr_PadImageH (byte *in, int width, int height, byte padbyte)
 	srcpix = width * height;
 	dstpix = width * TexMgr_Pad(height);
 
-	out = data = (byte*)Hunk_Alloc(dstpix);
+	out = data = (uint8_t*)Hunk_Alloc(dstpix);
 
 	for (i=0; i<srcpix; i++)
 		*out++ = *in++;
@@ -807,7 +807,7 @@ byte *TexMgr_PadImageH (byte *in, int width, int height, byte padbyte)
 	return data;
 }
 
-void TexMgr_LoadImage32 (gltexture_t *glt, byte *data)
+void TexMgr_LoadImage32(gltexture_t *glt, uint8_t *data)
 {
 	int				internalformat,	miplevel, picmip;
 	unsigned	int	mipwidth, mipheight;
@@ -826,14 +826,14 @@ void TexMgr_LoadImage32 (gltexture_t *glt, byte *data)
 		TexMgr_MipMapW (data, glt->width, glt->height);
 		glt->width >>= 1;
 		if (glt->flags & TEXPREF_ALPHA)
-			TexMgr_AlphaEdgeFix ((byte *)data, glt->width, glt->height);
+			TexMgr_AlphaEdgeFix((uint8_t *)data, glt->width, glt->height);
 	}
 	while (glt->height > mipheight)
 	{
 		TexMgr_MipMapH (data, glt->width, glt->height);
 		glt->height >>= 1;
 		if (glt->flags & TEXPREF_ALPHA)
-			TexMgr_AlphaEdgeFix ((byte *)data, glt->width, glt->height);
+			TexMgr_AlphaEdgeFix((uint8_t *)data, glt->width, glt->height);
 	}
 
 	// upload
@@ -875,11 +875,11 @@ void TexMgr_LoadImage32 (gltexture_t *glt, byte *data)
 
 /*	Handles 8bit source data, then passes it to LoadImage32
 */
-void TexMgr_LoadImage8 (gltexture_t *glt, byte *data)
+void TexMgr_LoadImage8(gltexture_t *glt, uint8_t *data)
 {
 	extern		cvar_t	gl_fullbrights;
 	bool				padw = false,padh = false;
-	byte				padbyte;
+	uint8_t				padbyte;
 	unsigned	int		i,*usepal;
 
 	// detect FALSE alpha cases

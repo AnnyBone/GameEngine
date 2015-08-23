@@ -331,6 +331,12 @@ void SCR_Init (void)
 	Cmd_AddCommand("sizeup",SCR_SizeUp_f);
 	Cmd_AddCommand("sizedown",SCR_SizeDown_f);
 
+#ifdef VIDEO_SUPPORT_SHADERS
+#ifdef VIDEO_SUPPORT_FRAMEBUFFERS
+	VideoPostProcess_Initialize();
+#endif
+#endif
+
 	bScreenInitialized = true;
 }
 

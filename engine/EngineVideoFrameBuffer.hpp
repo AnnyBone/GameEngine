@@ -5,12 +5,14 @@
 class CVideoFrameBuffer
 {
 public:
-	CVideoFrameBuffer();
+	CVideoFrameBuffer(int Width, int Height);
 	~CVideoFrameBuffer();
 
 	void Bind();
+	void Unbind();
 
 protected:
+	gltexture_t *gColourBuffer;
 
 private:
 	unsigned int uiFrameBuffer;
@@ -22,9 +24,20 @@ public:
 	CVideoFrameBufferManager();
 	~CVideoFrameBufferManager();
 
-protected:
 private:
 	CVideoFrameBuffer *FrameBufferList;
+};
+
+class CVideoPostProcess : public CVideoFrameBuffer
+{
+public:
+	CVideoPostProcess(CVideoShaderProgram *PostProcessProgram);
+	CVideoPostProcess(const char *FragName, const char *VertName);
+
+	void Draw();
+
+private:
+	CVideoShaderProgram *PostProcessProgram;
 };
 
 #endif
