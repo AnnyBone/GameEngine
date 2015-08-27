@@ -35,9 +35,6 @@
 #endif
 #include "errno.h"
 #include "resource.h"
-#ifdef _DEBUG
-#include <assert.h>
-#endif
 
 #include "EngineEditor.h"
 #include "EngineVideo.h"

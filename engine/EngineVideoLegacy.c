@@ -354,25 +354,7 @@ void R_DrawEntitiesOnList(bool bAlphaPass) //johnfitz -- added parameter
 			currententity->angles[0] *= 0.3f;
 		//johnfitz
 
-		switch(currententity->model->mType)
-		{
-			case MODEL_TYPE_MD2:
-				Alias_Draw(currententity);
-				break;
-			case MODEL_TYPE_OBJ:
-				Model_DrawOBJ(currententity);
-				break;
-			case MODEL_TYPE_BSP:
-				Brush_Draw(currententity);
-				break;
-#if 0
-			case MODEL_TYPE_SPRITE:
-                Sprite_Draw(currententity);
-                break;
-#endif
-			default:
-				Console_ErrorMessage(false,currententity->model->name,"Unrecognised model type.");
-		}
+		Draw_Entity(currententity);
 	}
 }
 

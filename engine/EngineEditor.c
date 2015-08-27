@@ -45,10 +45,7 @@
 */
 
 ConsoleVariable_t 
-cvEditorPreviewRotate = { "editor_preview_rotate", "1", true, false, "If enabled, preview model will rotate." },
 cvEditorLightPreview = { "editor_lightpreview", "0", false, false, "Enables a preview showing the radius of each light." };
-
-pINSTANCE hToolInstance;
 
 typedef enum
 {
@@ -82,30 +79,6 @@ void Editor_Initialize(void)
 		Editor_Launch();
 }
 
-/*  Load a texture, which will be later used for displaying in our level.
-*/
-void Editor_LoadTexture(char *ccTexture)
-{
-	Con_Printf("   %s\n",ccTexture);
-}
-
-/*	Opens up a level for editing.
-*/
-void Editor_LoadLevel(const char *ccLevel)
-{
-	if(strstr(ccLevel,".map"))
-	{
-	}
-	// [6/2/2014] ".level" is our new extension ~hogsy
-	else if(strstr(ccLevel,".level"))
-	{
-	}
-	else
-		Con_Warning("Unknown level format! (%s)\n",ccLevel);
-}
-
-void Input_OpenTweakMenu(void);
-
 /*  Command function to allow us to launch the editor.
 */
 void Editor_Launch(void)
@@ -117,12 +90,6 @@ void Editor_Launch(void)
 	Con_Printf("\nLaunching editor...\n");
 
 	key_dest = KEY_EDITOR;
-
-	{
-		Con_Printf(" Loading textures: \n");
-
-		pFileSystem_ScanDirectory(va("./%s/textures/",com_gamedir),".png",Editor_LoadTexture);
-	}
 
 	Input_ActivateMouse();
 
@@ -147,8 +114,6 @@ void Editor_Frame(void)
 {
 	cl.oldtime = cl.time;
 	cl.time += host_frametime;
-
-	MaterialEditor_Frame();
 }
 
 void Editor_Shutdown(void)

@@ -1,32 +1,114 @@
+/*	Copyright (C) 2011-2015 OldTimes Software
+
+	This program is free software; you can redistribute it and/or
+	modify it under the terms of the GNU General Public License
+	as published by the Free Software Foundation; either version 2
+	of the License, or (at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+	See the GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+*/
+
 #include "EditorBase.h"
+
+#include "EditorMaterialProperties.h"
 
 #include "MaterialFrame.h"
 
-#include "EditorViewportPanel.h"
-#include "EditorMaterialProperties.h"
-
 #define	WAD_TITLE "Material Tool"
 
-class CMaterialViewportPanel : public CEditorViewportPanel
+CMaterialViewportPanel::CMaterialViewportPanel(wxWindow *wParent) 
+	: CEditorViewportPanel(wParent)
 {
-public:
-	CMaterialViewportPanel(wxWindow *wParent) : CEditorViewportPanel(wParent) {}
+	CubeModel = engine->LoadModel("models/editor/cube.md2");
+	SphereModel = engine->LoadModel("models/editor/sphere.md2");
+	PlaneModel = engine->LoadModel("models/editor/plane.md2");
+	if (!CubeModel || !SphereModel || !PlaneModel)
+		pLog_Write(EDITOR_LOG, "Failed to load preview mesh!\n");
 
-	virtual void Draw()
+	PreviewMaterial = NULL;
+
+	PreviewEntity = engine->CreateClientEntity();
+	if (!PreviewEntity)
+		pLog_Write(EDITOR_LOG, "Failed to create client entity!\n");
+	// TODO: error handling...
+
+	PreviewEntity->alpha = 255;
+	PreviewEntity->origin[0] = 50.0f;
+	PreviewEntity->origin[1] = 0;
+	PreviewEntity->origin[2] = 0;
+	PreviewEntity->model = CubeModel;
+}
+
+void CMaterialViewportPanel::Draw()
+{
+	engine->Video_PreFrame();
+
+	//engine->DrawSetCanvas(CANVAS_DEFAULT);
+	engine->DrawGradientBackground();
+
+	if (PreviewEntity)
+		engine->DrawEntity(PreviewEntity);
+
+	engine->DrawResetCanvas();
+	engine->DrawFPS();
+
+	engine->Video_PostFrame();
+}
+
+/*	Attempts to set the given material as the active one.
+	Returns true on success, false on fail.
+*/
+bool CMaterialViewportPanel::SetMaterial(Material_t *NewMaterial)
+{
+	// Don't bother if it hasn't changed.
+	if (NewMaterial == PreviewMaterial)
+		return true;
+
+	// Ensure the new material is valid.
+	if (!NewMaterial)
 	{
-		engine->Video_PreFrame();
-
-		engine->DrawGradientBackground();
-	
-		engine->DrawModel();
-
-		engine->DrawFPS();
-
-		engine->Video_PostFrame();
+		pLog_Write(EDITOR_LOG, "Invalid material!\n");
+		return false;
 	}
-protected:
-private:
-};
+
+	// Update the preview entity to use the new material.
+	PreviewMaterial = NewMaterial;
+	PreviewEntity->model->mAssignedMaterials = PreviewMaterial;
+
+	return true;
+}
+
+void CMaterialViewportPanel::SetModel(MaterialViewportModel PreviewModel)
+{
+	switch (PreviewModel)
+	{
+	case MATERIAL_PREVIEW_CUBE:
+		PreviewEntity->model = CubeModel;
+		break;
+	case MATERIAL_PREVIEW_SPHERE:
+		PreviewEntity->model = SphereModel;
+		break;
+	case MATERIAL_PREVIEW_PLANE:
+		PreviewEntity->model = PlaneModel;
+		break;
+	default:
+		// handle bad cases
+		break;
+	}
+}
+
+Material_t *CMaterialViewportPanel::GetMaterial()
+{
+	return PreviewMaterial;
+}
 
 enum MaterialFrameEvent_s
 {
@@ -138,11 +220,11 @@ CMaterialFrame::CMaterialFrame(wxWindow* parent, wxWindowID id)
 	iPaneInfo.BestSize(wxSize(256, 256));
 
 	// Create the engine viewport...
-	CMaterialViewportPanel *rcViewport = new CMaterialViewportPanel(this);
+	Viewport = new CMaterialViewportPanel(this);
 	iPaneInfo.Caption("Viewport");
 	iPaneInfo.Top();
 	iPaneInfo.Right();
-	mManager->AddPane(rcViewport, iPaneInfo);
+	mManager->AddPane(Viewport, iPaneInfo);
 
 	// Create the material props...
 	CEditorMaterialGlobalProperties *mgpProperties = new CEditorMaterialGlobalProperties(this);
@@ -170,7 +252,9 @@ CMaterialFrame::~CMaterialFrame()
 
 void CMaterialFrame::ReloadCurrentFile()
 {
-	if (!mCurrent)
+	Material_t *CurrentMaterial = Viewport->GetMaterial();
+	if (!CurrentMaterial)
+		// Likely nothing loaded, just return.
 		return;
 
 	// Ensure things have actually changed.
@@ -178,13 +262,13 @@ void CMaterialFrame::ReloadCurrentFile()
 	if (tCurrentModified == tLastModified)
 		return;
 
-	engine->UnloadMaterial(mCurrent);
-	engine->LoadMaterial(mCurrent->cPath);
-	if (mCurrent)
+	// Reload it.
+	engine->UnloadMaterial(CurrentMaterial);
+	CurrentMaterial = engine->LoadMaterial(CurrentMaterial->cPath);
+	if (CurrentMaterial)
 	{
 		tLastModified = tCurrentModified;
-
-		engine->MaterialEditorDisplay(mCurrent);
+		Viewport->SetMaterial(CurrentMaterial);
 	}
 }
 
@@ -196,13 +280,13 @@ void CMaterialFrame::LoadMaterial(wxString sFileName)
 		// Remove the extension.
 		sMaterialName.RemoveLast(9);
 
-		if (mCurrent)
-			engine->UnloadMaterial(mCurrent);
+		Material_t *CurrentMaterial = Viewport->GetMaterial();
+		if (CurrentMaterial)
+			engine->UnloadMaterial(CurrentMaterial);
 
-		mCurrent = engine->LoadMaterial(sMaterialName);
-		if (mCurrent)
-			// TODO: Handle this internally.
-			engine->MaterialEditorDisplay(mCurrent);
+		CurrentMaterial = engine->LoadMaterial(sMaterialName);
+		if (CurrentMaterial)
+			Viewport->SetMaterial(CurrentMaterial);
 
 		SetTitle(sMaterialName + wxString(" - ") + wxString(WAD_TITLE));
 	}

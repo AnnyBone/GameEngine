@@ -713,7 +713,7 @@
     <ClInclude Include="EngineConsole.h" />
     <ClInclude Include="crc.h" />
     <ClInclude Include="EngineConsoleVariable.h" />
-    <ClInclude Include="EngineException.h" />
+    <ClInclude Include="EngineException.hpp" />
     <ClInclude Include="EngineMaterialEditor.h" />
     <ClInclude Include="EngineVideoDraw.h" />
     <ClInclude Include="EngineAudio.h" />

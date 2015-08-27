@@ -45,7 +45,7 @@ char *Engine_GetMaterialPath(void)
 	return Global.cMaterialPath;
 }
 
-char* Engine_GetVersion(void)
+char *Engine_GetVersion(void)
 {
 	return va("%i.%i.%i",
 		ENGINE_VERSION_MAJOR,
@@ -77,6 +77,7 @@ pMODULE_EXPORT EngineExport_t *Engine_Main(EngineImport_t *mImport)
 
 	// Client
 	EngineExport.GetClientTime = Client_GetTime;
+	EngineExport.CreateClientEntity = CL_NewTempEntity;
 
 	EngineExport.GetBasePath = Engine_GetBasePath;
 	EngineExport.GetVersion = Engine_GetVersion;
@@ -85,6 +86,9 @@ pMODULE_EXPORT EngineExport_t *Engine_Main(EngineImport_t *mImport)
 	EngineExport.GetMaterialPath = Engine_GetMaterialPath;
 	EngineExport.LoadMaterial = Material_Load;
 	EngineExport.UnloadMaterial = Material_Clear;
+
+	// Model
+	EngineExport.LoadModel = Mod_ForName;
 
 	// Console
 	EngineExport.InsertConsoleCommand = Cbuf_InsertText;
@@ -97,17 +101,17 @@ pMODULE_EXPORT EngineExport_t *Engine_Main(EngineImport_t *mImport)
 	// Video
 	EngineExport.Video_PostFrame = Video_PostFrame;
 	EngineExport.Video_PreFrame = Video_PreFrame;
+	EngineExport.DrawEntity = Draw_Entity;
 	EngineExport.DrawFPS = Screen_DrawFPS;
 	EngineExport.DrawConsole = Screen_DrawConsole;
 	EngineExport.DrawString = Draw_String;
 	EngineExport.DrawLine = Draw_Line;
 	EngineExport.DrawGradientBackground = Draw_GradientBackground;
-	EngineExport.DrawModel = MaterialEditor_Draw;
+	EngineExport.DrawSetCanvas = GL_SetCanvas;
 	EngineExport.DrawResetCanvas = Draw_ResetCanvas;
 
 	// Material Editor
 	EngineExport.MaterialEditorInitialize = MaterialEditor_Initialize;
-	EngineExport.MaterialEditorDisplay = MaterialEditor_Display;
 
 	return &EngineExport;
 }

@@ -163,9 +163,9 @@ void CL_ParseTEnt (void)
 	}
 }
 
-entity_t *CL_NewTempEntity (void)
+ClientEntity_t *CL_NewTempEntity (void)
 {
-	entity_t	*ent;
+	ClientEntity_t *ent;
 
 	if(cl_numvisedicts == MAX_VISEDICTS ||	num_temp_entities == MAX_TEMP_ENTITIES)
 		return NULL;

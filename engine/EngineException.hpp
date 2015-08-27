@@ -25,7 +25,7 @@
 class CEngineException : public std::exception
 {
 public:
-	CEngineException(const char *ccMessage);
+	CEngineException(const char *ccMessage, ...);
 };
 
 #endif

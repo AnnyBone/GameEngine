@@ -1,3 +1,21 @@
+/*	Copyright (C) 2011-2015 OldTimes Software
+
+	This program is free software; you can redistribute it and/or
+	modify it under the terms of the GNU General Public License
+	as published by the Free Software Foundation; either version 2
+	of the License, or (at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+	See the GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+*/
+
 #include "EditorBase.h"
 
 #include "EditorViewportPanel.h"
@@ -69,19 +87,13 @@ void CEditorViewportPanel::OnTimer(wxTimerEvent &event)
 	// TODO: Check if there are actually multiple viewports before doing this?
 	rcRenderCanvas->UpdateViewportSize();
 
+	engine->Video_PreFrame();
 	Draw();
+	engine->Video_PostFrame();
 
 	// Cleanup
 	rcRenderCanvas->SwapBuffers();
 	rcRenderCanvas->Refresh();
 }
 
-void CEditorViewportPanel::Draw()
-{
-	engine->Video_PreFrame();
-
-	engine->DrawFPS();
-	engine->DrawString(80, 80, "HELLO WORLD!");
-	
-	engine->Video_PostFrame();
-}
+void CEditorViewportPanel::Draw() {}

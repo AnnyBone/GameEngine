@@ -473,6 +473,7 @@ void CEditorFrame::OnAbout(wxCommandEvent &event)
 	info.SetCopyright("Copyright (C) 2011-2015 OldTimes Software");
 	info.SetDescription("Editor for the Katana engine.");
 	info.SetWebSite("www.oldtimes-software.com");
+	info.SetIcon(wxIcon(PATH_RESOURCES"icon-engine.png", wxBITMAP_TYPE_PNG_RESOURCE, 64, 64));
 	info.SetVersion(engine->GetVersion());
 
 	wxAboutBox(info, this);

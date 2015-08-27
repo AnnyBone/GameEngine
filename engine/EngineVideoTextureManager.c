@@ -496,9 +496,9 @@ void TextureManager_Initialize(void)
 
 /*  Return smallest power of two greater than or equal to s.
 */
-unsigned int TexMgr_Pad (unsigned int s)
+int TexMgr_Pad (int s)
 {
-	unsigned int i;
+	int i;
 	for (i = 1; i < s; i<<=1);
 	return i;
 }

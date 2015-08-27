@@ -25,6 +25,10 @@
 #include "platform.h"
 #include "platform_math.h"
 
+#ifdef _DEBUG
+#include <assert.h>
+#endif
+
 #ifdef _MSC_VER
 #pragma warning(disable:4115)
 #pragma warning(disable:4996)	// [7/7/2013] Annoying VS warnings... Sigh ~hogsy
@@ -40,7 +44,7 @@
 */
 #define ENGINE_VERSION_MAJOR	0
 #define ENGINE_VERSION_MINOR	3
-#define ENGINE_VERSION_BUILD	973	// 24/8/2015
+#define ENGINE_VERSION_BUILD	975	// 26/8/2015
 
 #define	ENGINE_LOG	"engine"
 
@@ -109,6 +113,10 @@
 
 #include "EngineVideoMaterial.h"
 
+#ifdef __cplusplus
+#	include "EngineException.hpp"
+#endif
+
 //=============================================================================
 
 // the host system specifies the base of the directory tree, the
@@ -145,18 +153,25 @@ extern	double		host_frametime;
 extern	int			host_framecount;	// incremented every frame, never reset
 extern	double		realtime;			// not bounded in any way, changed at
 										// start of every frame, never reset
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-void Host_ClearMemory (void);
-void Host_ServerFrame (void);
-void Host_InitCommands (void);
-void Host_Initialize(EngineParameters_t *parms);
-void Host_Shutdown(void);
-void Host_Error (char *error, ...);
-void Host_EndGame (char *message, ...);
-void Host_Frame (float time);
-void Host_Quit_f (void);
-void Host_ClientCommands (char *fmt, ...);
-void Host_ShutdownServer (bool crash);
+	void Host_ClearMemory(void);
+	void Host_ServerFrame(void);
+	void Host_InitCommands(void);
+	void Host_Initialize(EngineParameters_t *parms);
+	void Host_Shutdown(void);
+	void Host_Error(char *error, ...);
+	void Host_EndGame(char *message, ...);
+	void Host_Frame(float time);
+	void Host_Quit_f(void);
+	void Host_ClientCommands(char *fmt, ...);
+	void Host_ShutdownServer(bool crash);
+
+#ifdef __cplusplus
+}
+#endif
 
 extern bool		msg_suppress_1;		// suppresses resolution and cache size console output
 										//  an fullscreen DIB focus gain/loss

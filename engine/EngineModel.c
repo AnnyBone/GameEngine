@@ -170,7 +170,7 @@ void Model_ClearAll(void)
 		}
 }
 
-model_t *Model_FindName(char *cName)
+model_t *Model_FindName(const char *cName)
 {
 	int		i;
 	model_t	*mModel;
@@ -266,7 +266,7 @@ model_t *Model_Load(model_t *mModel)
 
 /*	Loads in a model for the given name
 */
-model_t *Mod_ForName(char *cName)
+model_t *Mod_ForName(const char *cName)
 {
 	return Model_Load(Model_FindName(cName));
 }
@@ -1161,32 +1161,6 @@ void Model_LoadBSP(model_t *mod,void *buffer)
 			mod = loadmodel;
 		}
 	}
-}
-
-/*
-	IQM Models
-*/
-
-// TODO: Finish me :(
-void Model_LoadIQM(model_t *mModel, void *Buffer)
-{
-#if 0
-	IQMHeader_t	hHeader;
-
-	if (hHeader.uiVersion != IQM_VERSION)
-		Sys_Error("%s is an invalid version (expected %i, recieved %i)", IQM_VERSION, hHeader.uiVersion);
-	else if (hHeader.uiNumTriangles < 1 || hHeader.uiNumTriangles > MD2_MAX_TRIANGLES)
-		Sys_Error("%s has invalid number of triangles (%i)", mModel->name, hHeader.uiNumTriangles);
-	else if (hHeader.uiNumVertexes < 1 || hHeader.uiNumVertexes > MD2_MAX_VERTICES)
-		Sys_Error("%s has invalid number of vertices (%i)", mModel->name, hHeader.uiNumVertexes);
-	// [14/9/2012] We'll check anims here instead of frames... ~hogsy
-	else if (hHeader.uiNumAnims < 1 || hHeader.uiNumAnims > MD2_MAX_FRAMES)
-		Sys_Error("%s has invalid number of animations (%i)", mModel->name, hHeader.uiNumAnims);
-	// [14/9/2012] TODO: IQM models use multiple textures, check those! ~hogsy
-#endif
-
-	mModel->mType = MODEL_TYPE_IQM;
-	mModel->flags = 0;
 }
 
 MathVector_t Model_GenerateNormal(MathVector3f_t a, MathVector3f_t b, MathVector3f_t c)

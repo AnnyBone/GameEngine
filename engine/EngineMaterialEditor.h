@@ -25,8 +25,5 @@ extern bool bMaterialEditorInitialized;
 
 void MaterialEditor_Initialize(void);
 void MaterialEditor_Input(int iKey);
-void MaterialEditor_Draw(void);
-void MaterialEditor_Display(Material_t *mDisplayMaterial);
-void MaterialEditor_Frame(void);
 
 #endif

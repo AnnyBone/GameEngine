@@ -761,3 +761,36 @@ void Draw_String(int x, int y, char *msg)
 		x += 8;
 	}
 }
+
+/*
+	Entities
+*/
+
+void Draw_Entity(ClientEntity_t *Entity)
+{
+	if (!Entity->model)
+	{
+		// TODO: Draw placeholder...
+		return;
+	}
+
+	switch (Entity->model->mType)
+	{
+	case MODEL_TYPE_MD2:
+		Alias_Draw(Entity);
+		break;
+	case MODEL_TYPE_OBJ:
+		Model_DrawOBJ(Entity);
+		break;
+	case MODEL_TYPE_BSP:
+		Brush_Draw(Entity);
+		break;
+#if 0
+	case MODEL_TYPE_SPRITE:
+		Sprite_Draw(Entity);
+		break;
+#endif
+	default:
+		Console_ErrorMessage(false, Entity->model->name, "Unrecognised model type.");
+	}
+}

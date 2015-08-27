@@ -47,22 +47,26 @@ typedef enum
 typedef struct
 {
 	bool(*Initialize)(int argc, char *argv[], bool bEmbedded);	// Initializes the engine.
-	bool(*IsRunning)(void);
+	bool(*IsRunning)();
 
-	char*(*GetBasePath)(void);		// Gets the currently active game path.
-	char*(*GetMaterialPath)(void);	// Gets the set material path.
-	char*(*GetVersion)(void);		// Return the engine version.
+	char*(*GetBasePath)();		// Gets the currently active game path.
+	char*(*GetMaterialPath)();	// Gets the set material path.
+	char*(*GetVersion)();		// Return the engine version.
 
-	void(*Loop)(void);									// Main loop.
+	void(*Loop)();										// Main loop.
 	void(*SetViewportSize)(int iWidth, int iHeight);
-	void(*Shutdown)(void);								// Shutdown.
+	void(*Shutdown)();									// Shutdown.
 
 	Material_t*(*LoadMaterial)(const char *cPath);
 	void(*UnloadMaterial)(Material_t *mMaterial);
 
+	model_t*(*LoadModel)(const char *ModelPath);
+
 	// Client...
 
-	double(*GetClientTime)(void);
+	double(*GetClientTime)();
+
+	ClientEntity_t*(*CreateClientEntity)();	// Creates a "temp" client entity.
 
 	// Console...
 
@@ -75,21 +79,21 @@ typedef struct
 
 	// Video...
 
-	void(*Video_PreFrame)(void);
-	void(*Video_PostFrame)(void);
+	void(*Video_PreFrame)();
+	void(*Video_PostFrame)();
 
-	void(*DrawConsole)(void);
-	void(*DrawGradientBackground)(void);
-	void(*DrawFPS)(void);
+	void(*DrawConsole)();
+	void(*DrawGradientBackground)();
+	void(*DrawFPS)();
 	void(*DrawString)(int x, int y, char *cMsg);
 	void(*DrawLine)(MathVector3f_t mvStart, MathVector3f_t mvEnd);
 	void(*DrawMaterialSurface)(Material_t *mMaterial, int iSkin, int x, int y, int w, int h, float fAlpha);
-	void(*DrawModel)(void);		// Temporary!
-	void(*DrawResetCanvas)(void);
+	void(*DrawEntity)(ClientEntity_t *Entity);
+	void(*DrawSetCanvas)(VideoCanvasType_t Canvas);
+	void(*DrawResetCanvas)();
 
 	// Material Editor
 	void(*MaterialEditorInitialize)(void);					// Initializes the material editor.
-	void(*MaterialEditorDisplay)(Material_t *mMaterial);	// Displays a material in the editor.
 
 	int	iVersion;
 } EngineExport_t;
