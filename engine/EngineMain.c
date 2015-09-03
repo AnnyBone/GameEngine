@@ -21,7 +21,6 @@
 #include "EngineBase.h"
 
 #include "EngineVideo.h"
-#include "EngineVideoMaterial.h"
 #include "EngineEditor.h"
 
 #include "engine_client.h"
@@ -78,6 +77,7 @@ pMODULE_EXPORT EngineExport_t *Engine_Main(EngineImport_t *mImport)
 	// Client
 	EngineExport.GetClientTime = Client_GetTime;
 	EngineExport.CreateClientEntity = CL_NewTempEntity;
+	EngineExport.CreateDynamicLight = Client_AllocDlight;
 
 	EngineExport.GetBasePath = Engine_GetBasePath;
 	EngineExport.GetVersion = Engine_GetVersion;

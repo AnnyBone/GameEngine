@@ -20,8 +20,8 @@ enum
 void Deathmatch_Spawn(ServerEntity_t *ePlayer);
 void Deathmatch_Frame(void);
 
-bool	bIsMultiplayer,
-		bIsCooperative,
-		bIsDeathmatch;
+extern bool	bIsMultiplayer,
+			bIsCooperative,
+			bIsDeathmatch;
 
 #endif

@@ -67,8 +67,8 @@ Particle_t *Particle_Allocate(void)
 void Particle_CreateEffect(
 	ParticleType_t pType,
 	ParticleBehaviour_t pBehaviour,
-	MathVector3_t vOrigin,
-	MathVector3_t vDirection,
+	MathVector3f_t vOrigin,
+	MathVector3f_t vDirection,
 	float fVelocity,
 	float fScale,
 	int iCount,
@@ -244,7 +244,7 @@ void Particle_RocketTrail(vec3_t start, vec3_t end, int type)
 
 void Particle_Parse(void)
 {
-	MathVector3_t	vOrigin, vDirection;
+	MathVector3f_t	vOrigin, vDirection;
 	int				i, iCount, iMaterial;
 	float			fScale;
 

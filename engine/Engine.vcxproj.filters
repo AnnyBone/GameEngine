@@ -117,9 +117,6 @@
     <ClCompile Include="EngineVideoBrush.c">
       <Filter>Client\Video</Filter>
     </ClCompile>
-    <ClCompile Include="EngineVideoMaterial.c">
-      <Filter>Client\Video</Filter>
-    </ClCompile>
     <ClCompile Include="EngineHost.c" />
     <ClCompile Include="EngineNetwork.c">
       <Filter>Network</Filter>
@@ -260,6 +257,18 @@
     <ClCompile Include="EngineVideoLegacy.c">
       <Filter>Client\Video\Legacy</Filter>
     </ClCompile>
+    <ClCompile Include="client\Particle.cpp">
+      <Filter>Client</Filter>
+    </ClCompile>
+    <ClCompile Include="client\Material.cpp">
+      <Filter>Client</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineMaterial.c">
+      <Filter>Client</Filter>
+    </ClCompile>
+    <ClCompile Include="client\Sprite.cpp">
+      <Filter>Client</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\shared\shared_client.h">
@@ -336,9 +345,6 @@
     </ClInclude>
     <ClInclude Include="engine_netdgrm.h">
       <Filter>Network</Filter>
-    </ClInclude>
-    <ClInclude Include="EngineVideoMaterial.h">
-      <Filter>Client\Video</Filter>
     </ClInclude>
     <ClInclude Include="..\shared\SharedMaterial.h">
       <Filter>Shared</Filter>
@@ -462,6 +468,10 @@
       <Filter>Client\Video</Filter>
     </ClInclude>
     <ClInclude Include="EngineException.hpp" />
+    <ClInclude Include="EngineMaterial.h">
+      <Filter>Client</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineClass.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="engine.rc">

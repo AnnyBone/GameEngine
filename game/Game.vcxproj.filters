@@ -25,6 +25,9 @@
     <ClInclude Include="game_main.h">
       <Filter>Legacy</Filter>
     </ClInclude>
+    <ClInclude Include="server\Entity.h">
+      <Filter>Server</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Legacy">
@@ -212,7 +215,10 @@
     <ClCompile Include="game_main.c">
       <Filter>Legacy</Filter>
     </ClCompile>
-    <ClCompile Include="server\ServerEntity.cpp">
+    <ClCompile Include="server\Entity.cpp">
+      <Filter>Server</Filter>
+    </ClCompile>
+    <ClCompile Include="server\EntityAnimated.cpp">
       <Filter>Server</Filter>
     </ClCompile>
   </ItemGroup>

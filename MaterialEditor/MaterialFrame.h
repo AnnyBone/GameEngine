@@ -38,6 +38,7 @@ public:
 	Material_t *GetMaterial();
 protected:
 private:
+	DynamicLight_t *PreviewLight;
 	ClientEntity_t *PreviewEntity;
 	Material_t *PreviewMaterial;
 	model_t *CubeModel, *PlaneModel, *SphereModel;

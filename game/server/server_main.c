@@ -20,6 +20,11 @@
 #include "openkatana/openkatana.h"
 #endif
 
+bool	
+	bIsMultiplayer = false,
+	bIsCooperative = false,
+	bIsDeathmatch = false;
+
 void Server_Spawn(ServerEntity_t *seEntity);
 
 typedef struct
@@ -28,15 +33,10 @@ typedef struct
 	void(*spawn)(ServerEntity_t *seEntity);
 } SpawnList_t;
 
-/*	[28/11/2012]
-	Removed info_player_start for good. ~hogsy
-	[29/11/2012]
-	Commented out point_dynamiclit. ~hogsy
-*/
 SpawnList_t SpawnList[] =
 {
 	{ "worldspawn", Server_Spawn },
-	{ "light", Point_LightSpawn },	// TODO: This should be made obsolete ~hogsy
+	{ "light", Point_LightSpawn },	// TODO: This should be made obsolete!
 
 	// Area/Group Entities
 	{ "area_breakable", Area_BreakableSpawn },
@@ -48,7 +48,7 @@ SpawnList_t SpawnList[] =
 	{ "area_door_rotate", Area_DoorSpawn },
 	{ "area_noclip", Area_NoclipSpawn },
 	{ "area_push", Area_PushSpawn },
-	{ "area_debris", Area_PushableSpawn },	// [25/9/2013] For compatability ~hogsy
+	{ "area_debris", Area_PushableSpawn },		// For compatability.
 	{ "area_pushable", Area_PushableSpawn },
 	{ "area_platform", Area_PlatformSpawn },
 	{ "area_rotate", Area_RotateSpawn },
@@ -58,6 +58,7 @@ SpawnList_t SpawnList[] =
 
 	// Point Entities
 	{ "point_light", Point_LightSpawn },
+	{ "point_sprite", Point_SpriteSpawn },
 	{ "point_ambient", Point_AmbientSpawn },
 	{ "point_bot", Bot_Spawn },
 	{ "point_damage", Point_DamageSpawn },
@@ -98,7 +99,6 @@ ConsoleVariable_t cvServerPlayerModel = { "server_playermodel", "models/player.m
 ConsoleVariable_t cvServerRespawnDelay = { "server_respawndelay", "40", false, true, "Sets the amount of time until a player respawns." };
 ConsoleVariable_t cvServerSkill = { "server_skill", "1", false, true, "The level of difficulty." };
 ConsoleVariable_t cvServerSelfDamage = { "server_selfdamage", "0", false, true, "If enabled, your weapons can damage you." };
-// [7/12/2012] Changed default maxhealth to 200 ~hogsy
 ConsoleVariable_t cvServerMaxHealth = { "server_maxhealth", "200", false, true, "Sets the max amount of health." };
 ConsoleVariable_t cvServerDefaultHealth = { "server_defaulthealth", "100", false, true, "Changes the default amount of health." };
 ConsoleVariable_t cvServerMonsters = { "server_monsters", "1", false, true, "If enabled, monsters can spawn." };
@@ -110,11 +110,10 @@ ConsoleVariable_t cvServerWaypointDelay = { "server_waypointdelay", "5.0", false
 ConsoleVariable_t cvServerWaypointSpawn = { "server_waypointspawn", "0", false, true, "if enabled, waypoints autospawn." };
 ConsoleVariable_t cvServerWaypointParse = { "server_waypointparse", "", false, true, "Overrides the default path to load waypoints from." };
 ConsoleVariable_t cvServerAim = { "server_aim", "1.0", false, true, "Enables auto-aim." };
-// [19/3/2013] Replacement for the engine-side variable ~hogsy
 ConsoleVariable_t cvServerGravityTweak = { "server_gravityamount", "1.0", false, true, "Gravity modifier." };
 ConsoleVariable_t cvServerGravity = { "server_gravity", "600.0", false, true, "Overall gravity." };
 #ifdef GAME_OPENKATANA
-// [20/1/2013] By default bots spawn in OpenKatana for both SP and MP ~hogsy
+// By default bots spawn in OpenKatana for both SP and MP.
 ConsoleVariable_t cvServerBots = { "server_bots", "1", false, true, "Can enable and disable bots." };
 #else
 ConsoleVariable_t cvServerBots = { "server_bots",	"0", false,	true, "Can enable and disable bots." };
@@ -265,7 +264,7 @@ void Server_Spawn(ServerEntity_t *seEntity)
 	Engine.Server_PrecacheResource(RESOURCE_SPRITE, PARTICLE_SMOKE2);
 	Engine.Server_PrecacheResource(RESOURCE_SPRITE, PARTICLE_SMOKE3);
 
-#ifdef GAME_OPENKATANA	// [22/4/2013] OpenKatana specific stuff is now here instead ~hogsy
+#ifdef GAME_OPENKATANA
 	// Player
 	Server_PrecacheSound(PLAYER_SOUND_JUMP0);
 	Server_PrecacheSound(PLAYER_SOUND_JUMP1);
@@ -296,7 +295,6 @@ void Server_Spawn(ServerEntity_t *seEntity)
 	Engine.Server_PrecacheResource(RESOURCE_SPRITE, "zspark");
 #endif
 
-	// [10/4/2013] Waypoint debugging models ~hogsy
 #ifdef DEBUG_WAYPOINT
 	Server_PrecacheModel(WAYPOINT_MODEL_BASE);
 	Server_PrecacheModel(WAYPOINT_MODEL_CLIMB);
@@ -307,23 +305,16 @@ void Server_Spawn(ServerEntity_t *seEntity)
 	Server_PrecacheModel(WAYPOINT_MODEL_WEAPON);
 #endif
 
-	// [7/3/2012] Added mode specific precaches ~hogsy
-	// [31/7/2012] Changed so we precache these if it's multiplayer ~hogsy
+	// Precache any multiplayer content.
 	if(bIsMultiplayer)
 	{
 #ifdef GAME_OPENKATANA
-		// [31/7/2012] TODO: We need an md2 version of this! ~hogsy
-//		Server_PrecacheModel("models/mikiko.mdl");
 		Server_PrecacheSound("items/respawn.wav");
 
-		// [20/12/2012] If we're in Vektar mode, then spawn the Vektar! ~hogsy
+		// If we're in Vektar mode, then spawn the Vektar!
 		if(cvServerGameMode.iValue == MODE_VEKTAR)
 			Vektar_Spawn();
 #endif
-
-		// [31/7/2013] Precache custom player models ~hogsy
-		// [31/7/2013] TODO: Get actual current game directory from the engine ~hogsy
-		pFileSystem_ScanDirectory("data/models/player/", ".md2", Server_PrecachePlayerModel);
 	}
 
 	Server_WorldLightStyle(0, "m");
@@ -371,7 +362,7 @@ void Server_StartFrame(void)
 #ifdef GAME_OPENKATANA
 	Deathmatch_Frame();
 #elif GAME_ADAMAS
-	// This is stupid... ~hogsy
+	// This is stupid...
 	if(!Server.iMonsters && Server.bRoundStarted)
 	{
 		if(strstr(Engine.Server_GetLevelName(),"0"))
@@ -409,7 +400,7 @@ void Server_KillClient(ServerEntity_t *eClient)
 */
 void Server_UpdateClientMenu(ServerEntity_t *eClient, int iMenuState, bool bShow)
 {
-	// [5/8/2013] This is who we're telling to hide/show their HUD ~hogsy
+	// This is who we're telling to hide/show their HUD.
 	Engine.SetMessageEntity(eClient);
 
 	Engine.WriteByte(MSG_ONE,SVC_UPDATEMENU);

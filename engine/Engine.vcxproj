@@ -607,6 +607,13 @@
   <ItemGroup>
     <ClCompile Include="..\external\glee\GLee.c" />
     <ClCompile Include="..\shared\SharedFormats.c" />
+    <ClCompile Include="client\Material.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="client\Particle.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="client\Sprite.cpp" />
     <ClCompile Include="EngineAudioDummy.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
@@ -642,7 +649,7 @@
     <ClCompile Include="EngineInput.c" />
     <ClCompile Include="EngineVideoLights.c" />
     <ClCompile Include="EngineMain.c" />
-    <ClCompile Include="EngineVideoMaterial.c">
+    <ClCompile Include="EngineMaterial.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="EngineMenu.c" />
@@ -705,6 +712,7 @@
     <ClInclude Include="..\shared\SharedModule.h" />
     <ClInclude Include="..\shared\shared_server.h" />
     <ClInclude Include="client.h" />
+    <ClInclude Include="EngineClass.h" />
     <ClInclude Include="EngineClientTempEntity.h" />
     <ClInclude Include="EngineConsoleCommand.h" />
     <ClInclude Include="cmdlib.h" />
@@ -726,7 +734,7 @@
     <ClInclude Include="EngineServerEntity.h" />
     <ClInclude Include="EngineEditor.h" />
     <ClInclude Include="EngineVideoParticle.h" />
-    <ClInclude Include="EngineVideoMaterial.h" />
+    <ClInclude Include="EngineMaterial.h" />
     <ClInclude Include="EngineGame.h" />
     <ClInclude Include="EngineInput.h" />
     <ClInclude Include="EngineMain.h" />

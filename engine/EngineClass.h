@@ -1,4 +1,6 @@
-/*	Copyright (C) 2011-2015 OldTimes Software
+/*	Copyright (C) 1996-2001 Id Software, Inc.
+	Copyright (C) 2002-2009 John Fitzgibbons and others
+	Copyright (C) 2011-2015 OldTimes Software
 
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License
@@ -16,33 +18,19 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "EngineBase.h"
+#ifndef __ENGINECLASS_H__
+#define	__ENGINECLASS_H__
+#pragma once
 
-#include "EngineEditor.h"
-#include "EngineVideo.h"
+/*
+	Base Abstract Classes
+*/
 
-bool bMaterialEditorInitialized = false;
-
-void MaterialEditor_Initialize(void)
+class CEngineSubSystem
 {
-	if (bMaterialEditorInitialized)
-		return;
+public:
+	virtual void Initialize() = 0;
+	virtual void Shutdown() = 0;
+};
 
-	CL_Disconnect();
-	Host_ShutdownServer(false);
-
-	cls.state = CLIENT_STATE_EDITOR;
-
-	key_dest = KEY_EDITOR_MATERIAL;
-
-	bMaterialEditorInitialized = true;
-}
-
-void MaterialEditor_Input(int iKey)
-{
-	switch (iKey)
-	{
-	case K_DOWNARROW:
-		break;
-	}
-}
+#endif

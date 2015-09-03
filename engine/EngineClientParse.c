@@ -60,7 +60,6 @@ char *svc_strings[] =
 	"svc_particle",		// [vec3] <variable>
 	"svc_damage",			// [byte] impact [byte] blood [vec3] from
 	"svc_spawnstatic",
-	"SVC_FLARE",
 	"svc_spawnbaseline",
 	"svc_temp_entity",		// <variable>
 	"svc_setpause",

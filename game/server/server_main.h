@@ -9,29 +9,34 @@
 #include "shared_server.h"
 
 // Base includes
+#ifdef __cplusplus
+#include "Entity.h"
+#endif
+
+// Legacy base includes
 #include "server_physics.h"
 #include "server_mode.h"
 #include "server_monster.h"
 #include "server_misc.h"
 
-extern	cvar_t	cvServerSkill;			// The difficulty level.
-extern	cvar_t	cvServerSelfDamage;		// If the player can directly kill themselves or not.
-extern	cvar_t	cvServerMaxHealth;		// The maximum amount of health that a player can have.
-extern	cvar_t	cvServerMonsters;		// Should monsters be allowed?
-extern	cvar_t	cvServerMaxScore;		// Maximum score before a round ends.
-extern	cvar_t	cvServerGameMode;		// The gamemode being used for the server.
-extern	cvar_t	cvServerPlayerModel;	// The default player model for clients joining the server.
-extern	cvar_t	cvServerRespawnDelay;	// The delay before respawning.
-extern	cvar_t	cvServerWaypointSpawn;	// Should waypoints spawn?
-extern	cvar_t	cvServerBots;			// Shoulds bots spawn?
-extern	cvar_t	cvServerDefaultHealth;	// Default amount of health for a player.
-extern	cvar_t	cvServerWaypointDelay;	// Delay between each check before spawning another waypoint.
-extern	cvar_t	cvServerWaypointParse;	// File to parse for waypoint positions.
-extern	cvar_t	cvServerGameTime;		// The length of time a round should last.
-extern	cvar_t	cvServerGameClients;	// Number of clients needed for a round to start.
-extern	cvar_t	cvServerGravityTweak;	// For detailed "tweaking" without touching the absolute amount. Works like mass...
-extern	cvar_t	cvServerGravity;		// The absolute gravity amount.
-extern	cvar_t	cvServerAim;			// Auto-aiming.
+extern	ConsoleVariable_t	cvServerSkill;			// The difficulty level.
+extern	ConsoleVariable_t	cvServerSelfDamage;		// If the player can directly kill themselves or not.
+extern	ConsoleVariable_t	cvServerMaxHealth;		// The maximum amount of health that a player can have.
+extern	ConsoleVariable_t	cvServerMonsters;		// Should monsters be allowed?
+extern	ConsoleVariable_t	cvServerMaxScore;		// Maximum score before a round ends.
+extern	ConsoleVariable_t	cvServerGameMode;		// The gamemode being used for the server.
+extern	ConsoleVariable_t	cvServerPlayerModel;	// The default player model for clients joining the server.
+extern	ConsoleVariable_t	cvServerRespawnDelay;	// The delay before respawning.
+extern	ConsoleVariable_t	cvServerWaypointSpawn;	// Should waypoints spawn?
+extern	ConsoleVariable_t	cvServerBots;			// Shoulds bots spawn?
+extern	ConsoleVariable_t	cvServerDefaultHealth;	// Default amount of health for a player.
+extern	ConsoleVariable_t	cvServerWaypointDelay;	// Delay between each check before spawning another waypoint.
+extern	ConsoleVariable_t	cvServerWaypointParse;	// File to parse for waypoint positions.
+extern	ConsoleVariable_t	cvServerGameTime;		// The length of time a round should last.
+extern	ConsoleVariable_t	cvServerGameClients;	// Number of clients needed for a round to start.
+extern	ConsoleVariable_t	cvServerGravityTweak;	// For detailed "tweaking" without touching the absolute amount. Works like mass...
+extern	ConsoleVariable_t	cvServerGravity;		// The absolute gravity amount.
+extern	ConsoleVariable_t	cvServerAim;			// Auto-aiming.
 
 #ifdef __cplusplus
 extern "C" {

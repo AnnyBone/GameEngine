@@ -307,6 +307,20 @@ void Point_LightSpawn(ServerEntity_t *eLight)
 }
 
 /*
+	Sprite
+*/
+
+void Point_SpriteSpawn(ServerEntity_t *seSprite)
+{
+	Engine.WriteByte(MSG_BROADCAST, SVC_SPRITE);
+	Engine.WriteCoord(MSG_BROADCAST, seSprite->v.origin[0]);
+	Engine.WriteCoord(MSG_BROADCAST, seSprite->v.origin[1]);
+	Engine.WriteCoord(MSG_BROADCAST, seSprite->v.origin[2]);
+
+	Entity_Remove(seSprite);
+}
+
+/*
 	Dynamic Light
 */
 
@@ -499,7 +513,8 @@ void Point_SoundSpawn(ServerEntity_t *eEntity)
 			(int)eEntity->v.origin[1],
 			(int)eEntity->v.origin[2]);
 
-		ENTITY_REMOVE(eEntity);
+		Entity_Remove(eEntity);
+		return;
 	}
 	else if(!eEntity->local.volume)
 		eEntity->local.volume = 255;
@@ -519,8 +534,11 @@ void Point_SoundSpawn(ServerEntity_t *eEntity)
 
 void Point_DecorationSpawn(ServerEntity_t *eDecoration)
 {
-	if(!eDecoration->v.model)
-		ENTITY_REMOVE(eDecoration);
+	if (!eDecoration->v.model)
+	{
+		Entity_Remove(eDecoration);
+		return;
+	}
 
 	Server_PrecacheModel(eDecoration->v.model);
 
@@ -586,7 +604,8 @@ void Point_MessageSpawn(ServerEntity_t *eEntity)
 			(int)eEntity->v.origin[1],
 			(int)eEntity->v.origin[2]);
 
-		ENTITY_REMOVE(eEntity);
+		Entity_Remove(eEntity);
+		return;
 	}
 
 	Entity_SetOrigin(eEntity,eEntity->v.origin);

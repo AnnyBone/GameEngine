@@ -21,7 +21,8 @@
 #include "EngineBase.h"
 
 #include "EngineVideo.h"
-#include "EngineVideoObject.h"
+
+using namespace VideoSys;
 
 /*
 	Vertex
@@ -46,6 +47,14 @@ CVideoObject::CVideoObject(VideoPrimitive_t pPrimitiveType)
 {
 	VIDEO_FUNCTION_START
 	this->pPrimitiveType = pPrimitiveType;
+	
+	uiVertexBuffer = 0;
+	uiColourBuffer = 0;
+	uiTextureBuffer = 0;
+
+	VertexList = NULL;
+
+	uiVertices = 0;
 
 	VideoLayer_GenerateVertexBuffer(&uiVertexBuffer);
 	VideoLayer_GenerateVertexBuffer(&uiColourBuffer);

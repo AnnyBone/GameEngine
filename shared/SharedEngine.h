@@ -68,6 +68,8 @@ typedef struct
 
 	ClientEntity_t*(*CreateClientEntity)();	// Creates a "temp" client entity.
 
+	DynamicLight_t*(*CreateDynamicLight)(int Key);
+
 	// Console...
 
 	void(*InsertConsoleCommand)(const char *cCommand);										// Sends the given command to the console.

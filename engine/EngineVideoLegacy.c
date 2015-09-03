@@ -89,10 +89,13 @@ cvar_t	r_lerpmove				= {	"r_lerpmove",			"1"					};
 
 /*	Returns true if the box is completely outside the frustum
 */
-bool R_CullBox (vec3_t emins, vec3_t emaxs)
+bool R_CullBox (MathVector3f_t emins, MathVector3f_t emaxs)
 {
 	int			i;
 	mplane_t	*p;
+
+	if (r_nocull.bValue)
+		return false;
 
 	for (i = 0;i < 4;i++)
 	{
@@ -141,7 +144,7 @@ bool R_CullModelForEntity(entity_t *e)
 {
 	vec3_t mins, maxs;
 
-	if(r_nocull.value == 1 || e == &cl.viewent)
+	if(e == &cl.viewent)
 		return false;
 
 	if(e->angles[PITCH] || e->angles[ROLL])
@@ -448,6 +451,8 @@ void R_EmitWireBox(
 	glVertex3f(maxs[0],mins[1],mins[2]);
 	glVertex3f(maxs[0],mins[1],maxs[2]);
 	glEnd();
+
+	glColor3f(1, 1, 1);
 }
 
 void Video_DrawClientBoundingBox(ClientEntity_t *clEntity)
@@ -512,8 +517,6 @@ void Video_ShowBoundingBoxes(void)
 		Video_DrawClientBoundingBox(clEntity);
 	for (i = 0, clEntity = cl_temp_entities; i < cl_numvisedicts; i++, clEntity++)
 		Video_DrawClientBoundingBox(clEntity);
-	
-	glColor3f(1,1,1);
 
     Video_DisableCapabilities(VIDEO_BLEND);
 	Video_EnableCapabilities(VIDEO_TEXTURE_2D|VIDEO_DEPTH_TEST);

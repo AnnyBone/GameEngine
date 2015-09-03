@@ -73,7 +73,7 @@ typedef struct
 
 	bool	bManipulated;
 
-	MathVector2_t	vScroll;
+	MathVector2f_t	vScroll;
 
 	float	fRotate;
 
@@ -90,7 +90,7 @@ typedef struct
 
 typedef struct
 {
-	MaterialTexture_t	mtTexture[8];
+	MaterialTexture_t mtTexture[VIDEO_MAX_UNITS];
 
 	unsigned int
 		uiFlags,	// Flags assigned for the current skin, affects how it's displayed/loaded.

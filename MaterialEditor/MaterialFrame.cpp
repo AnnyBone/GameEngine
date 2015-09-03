@@ -45,6 +45,17 @@ CMaterialViewportPanel::CMaterialViewportPanel(wxWindow *wParent)
 	PreviewEntity->origin[1] = 0;
 	PreviewEntity->origin[2] = 0;
 	PreviewEntity->model = CubeModel;
+
+	PreviewLight = engine->CreateDynamicLight(0);
+	if (!PreviewLight)
+	{ }
+
+	PreviewLight->decay = 0;
+	PreviewLight->die = 0;
+	PreviewLight->minlight = 32.0f;
+	PreviewLight->radius = 200.0f;
+	Math_VectorSet(-40.0f, PreviewLight->origin);
+	Math_VectorSet(255.0f, PreviewLight->color);
 }
 
 void CMaterialViewportPanel::Draw()

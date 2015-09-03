@@ -177,10 +177,6 @@ extern "C" {
 
 #define	VIDEO_FUNCTION_START \
 { \
-	static int iFUNCTIONCALLS = -1; \
-	iFUNCTIONCALLS++; \
-	if(Video.bDebugFrame) \
-        pLog_Write(va("log_video_%s", __FILE__), "Function start: %s (%i)", pFUNCTION, iFUNCTIONCALLS); \
 } \
 {
 #define	VIDEO_FUNCTION_END \
@@ -189,6 +185,7 @@ extern "C" {
 // Legacy
 void Video_ShowBoundingBoxes(void);
 
+#include "EngineVideoObject.h"
 #include "EngineVideoLayer.h"
 #include "EngineVideoAlias.h"
 
@@ -238,6 +235,7 @@ void DrawGLPoly(glpoly_t *p);
 void Warp_DrawWaterPoly(glpoly_t *p, Material_t *mCurrent);
 
 void R_EmitWirePoint(MathVector3f_t origin);
+void R_EmitWireBox(MathVector3f_t mins, MathVector3f_t maxs, float r, float g, float b);
 
 bool R_CullBox(MathVector3f_t emins, MathVector3f_t emaxs);
 

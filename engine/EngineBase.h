@@ -44,7 +44,7 @@
 */
 #define ENGINE_VERSION_MAJOR	0
 #define ENGINE_VERSION_MINOR	3
-#define ENGINE_VERSION_BUILD	975	// 26/8/2015
+#define ENGINE_VERSION_BUILD	980	// 2/9/2015
 
 #define	ENGINE_LOG	"engine"
 
@@ -111,7 +111,7 @@
 #include "crc.h"
 #include "glquake.h"
 
-#include "EngineVideoMaterial.h"
+#include "EngineMaterial.h"
 
 #ifdef __cplusplus
 #	include "EngineException.hpp"

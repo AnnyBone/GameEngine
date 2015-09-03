@@ -338,23 +338,27 @@ void Weapon_ViewPunch(ServerEntity_t *eEntity, float fIntensity, bool bAddition)
 {
 	if(bAddition)
 	{
+#if 0
 		eEntity->v.punchangle[YAW] = (float)(rand() % 2) == 1 ? 
 			eEntity->v.punchangle[YAW] - 3.0f + (float)(rand() % 2): 
 			eEntity->v.punchangle[YAW] + 3.0f + (float)(rand() % 2);
-		eEntity->v.punchangle[PITCH] = eEntity->v.punchangle[PITCH] - 5.0f + (float)(rand() % 2);
+#endif
+		eEntity->v.punchangle[PITCH] -= 5.0f + (float)(rand() % 2);
 	}
 	else
 	{
+#if 0
 		eEntity->v.punchangle[YAW] = (float)(rand()%2) == 1 ? 
 			-3.0f + (float)(rand() % 2): 
 			+3.0f + (float)(rand() % 2);
+#endif
 		eEntity->v.punchangle[PITCH] = -4.0f + (float)(rand() % 2);
 	}
 
 }
 
-MathVector3_t mvTraceMaxs = { 8, 8, 8 };
-MathVector3_t mvTraceMins = { -8, -8, -8 };
+MathVector3_t mvTraceMaxs = { 4, 4, 4 };
+MathVector3_t mvTraceMins = { -4, -4, -4 };
 
 /*	Runs a trace to see if a projectile can be casted.
 */
@@ -372,23 +376,23 @@ bool Weapon_CheckTrace(ServerEntity_t *eOwner)
 
 	// Apply the distance to the target for the trace.
 	for (i = 0; i < 3; i++)
-		mvTarget[i] = mvSource[i] * 2048.0f;
+		mvTarget[i] = mvSource[i] * 512.0f;
 
 	// Check that there's enough space for projectile.
-	tCheck = Traceline(eOwner, mvSource, mvTarget, 0);
-	if (tCheck.fraction == 1.0f)
+	tCheck = Engine.Server_Move(mvSource, mvTraceMins, mvTraceMaxs, mvTarget, MOVE_NORMAL, eOwner);
+	if (tCheck.bStartSolid)
 		return false;
+	
+	// Check to see if there's a target, and it's not the world!
+	if ((tCheck.ent != Server.eWorld) && (tCheck.ent != eOwner))
+		// Are we intersecting with it?
+		if (Math_IsIntersecting(mvTraceMins, mvTraceMaxs, tCheck.ent->v.mins, tCheck.ent->v.maxs))
+			return false;
 
 	// Ensure that we're not inside the sky or within a solid.
 	iTraceContents = Engine.Server_PointContents(tCheck.endpos);
 	if ((iTraceContents == BSP_CONTENTS_SKY) || (iTraceContents == BSP_CONTENTS_SOLID))
 		return false;
-
-	// Check to see if there's a target, and it's not the world!
-	if (tCheck.ent != Server.eWorld)
-		// Are we intersecting with it?
-		if (Math_IsIntersecting(mvTraceMins, mvTraceMaxs, tCheck.ent->v.mins, tCheck.ent->v.maxs))
-			return false;
 
 	return true;
 }

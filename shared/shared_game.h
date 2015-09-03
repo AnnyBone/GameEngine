@@ -408,9 +408,9 @@ typedef struct
 	MathVector3f_t	finaldest;
 	char			*killtarget;
 	float			delay;			// Delay before doing a task.
-	ServerEntity_t			*trigger_field;
+	ServerEntity_t	*trigger_field;
 	int				iFireMode;		// Active fire mode for weapons.
-	ServerEntity_t			*bomb,
+	ServerEntity_t	*bomb,
 					*activator;
 	char			*cOldModel;		// Last model.
 	char			cOldStyle;

@@ -18,49 +18,55 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef __ENGINEVIDEOOBJECT__
-#define __ENGINEVIDEOOBJECT__
+#ifndef __ENGINEVIDEOOBJECT_H__
+#define __ENGINEVIDEOOBJECT_H__
 
-#if __cplusplus
-class CVideoVertex
+#ifdef __cplusplus
+namespace VideoSys // temp name...
 {
-public:
-	CVideoVertex(float x, float y, float z);
-protected:
-private:
-	MathVector3f_t
-		mvPosition,
-		mvNormal;
 
-	MathVector2f_t mvST[VIDEO_MAX_UNITS];
+	class CVideoVertex
+	{
+	public:
+		CVideoVertex(float x, float y, float z);
+	protected:
+	private:
+		MathVector3f_t
+			mvPosition,
+			mvNormal;
 
-	Colour_t cColour;
-};
+		MathVector2f_t mvST[VIDEO_MAX_UNITS];
 
-class CVideoObject
-{
-public:
-	CVideoObject(VideoPrimitive_t pPrimitiveType = VIDEO_PRIMITIVE_TRIANGLE_FAN);
-	~CVideoObject();
+		Colour_t cColour;
+	};
 
-	void Begin();
-	void Vertex(float x, float y, float z);
-	void Colour(float r, float g, float b, float a);
-	void End();
-	void Draw();
+	class CVideoObject
+	{
+	public:
+		CVideoObject(VideoPrimitive_t pPrimitiveType = VIDEO_PRIMITIVE_TRIANGLE_FAN);
+		~CVideoObject();
 
-protected:
-	VideoPrimitive_t pPrimitiveType;
+		void Begin();
+		void Vertex(float x, float y, float z);
+		void Colour(float r, float g, float b, float a);
+		void End();
 
-private:
-	unsigned int uiVertexBuffer;
-	unsigned int uiColourBuffer;
-	unsigned int uiTextureBuffer;
+		virtual void Draw();
 
-	CVideoVertex *VertexList;
+	protected:
+		VideoPrimitive_t pPrimitiveType;
 
-	unsigned int uiVertices;
-};
+	private:
+		unsigned int uiVertexBuffer;
+		unsigned int uiColourBuffer;
+		unsigned int uiTextureBuffer;
+
+		CVideoVertex *VertexList;
+
+		unsigned int uiVertices;
+	};
+
+}
 #endif
 
 void VideoObject_Begin(VideoObject_t *voObject, VideoPrimitive_t vpPrimitive);

@@ -39,7 +39,6 @@ enum
 	SVC_PARTICLE,							// Used to create particles
 	SVC_DAMAGE,								// TODO: Tells the server we've been damaged?
 	SVC_SPAWNSTATIC,
-	SVC_FLARE,								// Used to create a flare
 	SVC_SPAWNBASELINE,
 	SVC_TEMPENTITY,							// Spawns a temporary entity
 	SVC_SETPAUSE,							// Pauses the game
@@ -59,6 +58,7 @@ enum
 	SVC_SPAWNSTATIC2,
 	SVC_SPAWNSTATICSOUND2,
 	SVC_UPDATEMENU,
+	SVC_SPRITE,
 /*	Anything beyond this point
 	is local.					*/
 
