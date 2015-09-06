@@ -247,6 +247,18 @@ VideoShaderProgram CVideoShaderProgram::GetInstance()
 CVideoShaderProgram *BaseProgram;
 CVideoShader *BaseFragmentShader, *BaseVertexShader;
 
+// Uniforms
+int
+	iDiffuseUniform,
+	iDetailUniform,
+	iFullbrightUniform,
+	iSphereUniform,
+
+	iScaleUniform,
+
+	iLightPositionUniform,
+	iLightColourUniform;
+
 void VideoShader_Initialize(void)
 {
 	// Program needs to be created first.
@@ -260,11 +272,17 @@ void VideoShader_Initialize(void)
 	BaseProgram->Attach(BaseVertexShader);
 	BaseProgram->Attach(BaseFragmentShader);
 	BaseProgram->Link();
+
+	iDiffuseUniform = BaseProgram->GetUniformLocation("diffuseTexture");
+	iDetailUniform = BaseProgram->GetUniformLocation("detailTexture");
+	iFullbrightUniform = BaseProgram->GetUniformLocation("fullbrightTexture");
+	iSphereUniform = BaseProgram->GetUniformLocation("sphereTexture");
+
+	iScaleUniform = BaseProgram->GetUniformLocation("vertexScale");
+
+	iLightPositionUniform = BaseProgram->GetUniformLocation("lightPosition");
+	iLightColourUniform = BaseProgram->GetUniformLocation("lightColour");
 }
-
-// Temporary Interface START
-
-// Temporary Interface END
 
 void VideoShader_Enable(void)
 {
@@ -276,24 +294,19 @@ void VideoShader_Disable(void)
 	BaseProgram->Disable();
 }
 
-void VideoShader_SetVariablei(const char *name, int i)
+void VideoShader_SetVariablei(int iUniformLocation, int i)
 {
-	BaseProgram->SetVariable(BaseProgram->GetUniformLocation(name), i);
+	BaseProgram->SetVariable(iUniformLocation, i);
 }
 
-void VideoShader_SetVariablef(const char *name, float f)
+void VideoShader_SetVariablef(int iUniformLocation, float f)
 {
-	BaseProgram->SetVariable(BaseProgram->GetUniformLocation(name), f);
+	BaseProgram->SetVariable(iUniformLocation, f);
 }
 
-void VideoShader_SetVariable3f(const char *name, float x, float y, float z)
+void VideoShader_SetVariable3f(int iUniformLocation, float x, float y, float z)
 {
-	BaseProgram->SetVariable(BaseProgram->GetUniformLocation(name), x, y, z);
-}
-
-void VideoShader_SetVariable4f(const char *name, float x, float y, float z, float a)
-{
-	BaseProgram->SetVariable(BaseProgram->GetUniformLocation(name), x, y, z, a);
+	BaseProgram->SetVariable(iUniformLocation, x, y, z);
 }
 
 void VideoShader_Shutdown()

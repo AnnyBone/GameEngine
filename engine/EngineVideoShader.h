@@ -88,10 +88,14 @@ extern "C" {
 	void VideoShader_Initialize(void);
 	void VideoShader_Enable(void);
 	void VideoShader_Disable(void);
-	void VideoShader_SetVariablei(const char *name, int i);
-	void VideoShader_SetVariablef(const char *name, float f);
-	void VideoShader_SetVariable3f(const char *name, float x, float y, float z);
-	void VideoShader_SetVariable4f(const char *name, float x, float y, float z, float a);
+	void VideoShader_SetVariablei(int iUniformLocation, int i);
+	void VideoShader_SetVariablef(int iUniformLocation, float f);
+	void VideoShader_SetVariable3f(int iUniformLocation, float x, float y, float z);
+
+	extern int
+		iDiffuseUniform, iDetailUniform, iFullbrightUniform, iSphereUniform,
+		iScaleUniform,
+		iLightPositionUniform, iLightColourUniform;
 
 #ifdef __cplusplus
 }

@@ -653,7 +653,7 @@ void Video_DrawMaterial(
 		case MATERIAL_TEXTURE_DIFFUSE:
 			if (!bPost)
 			{
-				VideoShader_SetVariablei("diffuseTexture", Video.uiActiveUnit);
+				VideoShader_SetVariablei(iDetailUniform, Video.uiActiveUnit);
 
 				if (Video_GetCapability(VIDEO_BLEND))
 					glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
@@ -716,7 +716,7 @@ void Video_DrawMaterial(
 
 			if (!bPost)
 			{
-				VideoShader_SetVariablei("detailTexture", Video.uiActiveUnit);
+				VideoShader_SetVariablei(iDetailUniform, Video.uiActiveUnit);
 
 				glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
 				glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
@@ -748,7 +748,7 @@ void Video_DrawMaterial(
 
 			if (!bPost)
 			{
-				VideoShader_SetVariablei("fullbrightTexture", Video.uiActiveUnit);
+				VideoShader_SetVariablei(iFullbrightUniform, Video.uiActiveUnit);
 
 				glEnable(GL_BLEND);
 
@@ -774,7 +774,7 @@ void Video_DrawMaterial(
 		case MATERIAL_TEXTURE_SPHERE:
 			if (!bPost)
 			{
-				VideoShader_SetVariablei("sphereTexture", Video.uiActiveUnit);
+				VideoShader_SetVariablei(iSphereUniform, Video.uiActiveUnit);
 
 				glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
 

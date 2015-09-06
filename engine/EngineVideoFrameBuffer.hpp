@@ -57,6 +57,8 @@ public:
 	void Draw();
 
 private:
+	int iDiffuseUniform;
+
 	CVideoShaderProgram *PostProcessProgram;
 };
 

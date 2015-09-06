@@ -21,7 +21,7 @@
 #ifndef __ENGINEVIDEO__
 #define __ENGINEVIDEO__
 
-#define	VIDEO_SUPPORT_FRAMEBUFFERS
+//#define	VIDEO_SUPPORT_FRAMEBUFFERS
 #define	VIDEO_SUPPORT_SHADERS
 
 extern ConsoleVariable_t

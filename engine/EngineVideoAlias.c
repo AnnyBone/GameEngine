@@ -51,13 +51,13 @@ void Alias_SetupLighting(ClientEntity_t *ceEntity)
 
 			Math_VectorScale(dlLightSource->color, 1.0f / 200.0f, mvLightOut);
 
-			VideoShader_SetVariable3f("lightPosition", dlLightSource->origin[0], dlLightSource->origin[1], dlLightSource->origin[2]);
-			VideoShader_SetVariable3f("lightColour", mvLightOut[0], mvLightOut[1], mvLightOut[2]);
+			VideoShader_SetVariable3f(iLightPositionUniform, dlLightSource->origin[0], dlLightSource->origin[1], dlLightSource->origin[2]);
+			VideoShader_SetVariable3f(iLightColourUniform, mvLightOut[0], mvLightOut[1], mvLightOut[2]);
 		}
 		else
 		{
-			VideoShader_SetVariable3f("lightPosition", 0, 0, 0);
-			VideoShader_SetVariable3f("lightColour", 0, 0, 0);
+			VideoShader_SetVariable3f(iLightPositionUniform, 0, 0, 0);
+			VideoShader_SetVariable3f(iLightColourUniform, 0, 0, 0);
 		}
 	}
 
@@ -91,9 +91,9 @@ void Alias_DrawFrame(MD2_t *mModel,entity_t *eEntity,lerpdata_t lLerpData)
 	frame2 = (MD2Frame_t*)((uint8_t*)mModel + mModel->ofs_frames + (mModel->framesize*eEntity->draw_pose));
 
 	if ((eEntity->scale != 1.0f) && (eEntity->scale > 0.1f))
-		VideoShader_SetVariablef("vertexScale", eEntity->scale);
+		VideoShader_SetVariablef(iScaleUniform, eEntity->scale);
 	else
-		VideoShader_SetVariablef("vertexScale", 1.0f);
+		VideoShader_SetVariablef(iScaleUniform, 1.0f);
 
 	verts1 = &frame1->verts[0];
 	verts2 = &frame2->verts[0];

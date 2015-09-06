@@ -85,6 +85,8 @@ CVideoPostProcess::CVideoPostProcess(const char *FragName, const char *VertName)
 	PostProcessProgram->Attach(FragmentShader);
 	PostProcessProgram->Attach(VertexShader);
 	PostProcessProgram->Link();
+
+	iDiffuseUniform = PostProcessProgram->GetUniformLocation("SampleTexture");
 }
 
 CVideoPostProcess::CVideoPostProcess(CVideoShaderProgram *PostProcessProgram)
@@ -104,7 +106,7 @@ void CVideoPostProcess::Draw()
 
 	Video_SetTexture(gColourBuffer);
 
-	PostProcessProgram->SetVariable("SampleTexture", 0);
+	PostProcessProgram->SetVariable(iDiffuseUniform, 0);
 
 	Draw_ResetCanvas();
 	GL_SetCanvas(CANVAS_DEFAULT);

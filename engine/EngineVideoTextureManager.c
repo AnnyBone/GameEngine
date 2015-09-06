@@ -30,9 +30,9 @@
 	Manages OpenGL texture images.
 */
 
-cvar_t gl_texture_anisotropy = { "gl_texture_anisotropy", "16", true };
-cvar_t gl_max_size = { "gl_max_size", "0" };
-cvar_t gl_picmip = { "gl_picmip", "0" };
+ConsoleVariable_t gl_texture_anisotropy = { "gl_texture_anisotropy", "16", true };
+ConsoleVariable_t gl_max_size = { "gl_max_size", "0" };
+ConsoleVariable_t gl_picmip = { "gl_picmip", "0" };
 
 int	gl_hardware_maxsize;
 const int gl_solid_format = 3;
