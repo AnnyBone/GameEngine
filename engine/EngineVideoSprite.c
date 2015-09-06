@@ -57,7 +57,7 @@ Sprite_t *sSprites,
 */
 Sprite_t *Sprite_Allocate(void)
 {
-    Sprite_t *sAllocated;
+	Sprite_t *sAllocated;
 
 	if(!sFreeSprites)
 		return NULL;
@@ -107,7 +107,7 @@ void Sprite_Draw(ClientEntity_t *eEntity)
 {
 	Sprite_t *sSprite;
 
-    Video_ResetCapabilities(false);
+	Video_ResetCapabilities(false);
 	Video_DisableCapabilities(VIDEO_DEPTH_TEST);
 	Video_EnableCapabilities(VIDEO_BLEND);
 

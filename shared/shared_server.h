@@ -3,20 +3,6 @@
 
 #define	SERVER_GRAVITY	600.0f
 
-/*	Server->Client type	defines. 
-	Currently these	are all still engine-side
-	so it's wise not to touch!
-
-	TODO:
-	When SVC is moved into the game-code, move this into server_main.h ~hogsy
-*/
-typedef struct
-{
-	int	iFunction;
-
-	const char *cName;
-} ServerClient_t;
-
 enum
 {
 	SVC_NOP = 1,							// Used by the engine to check if a client is still connected(?)
@@ -39,7 +25,7 @@ enum
 	SVC_PARTICLE,							// Used to create particles
 	SVC_DAMAGE,								// TODO: Tells the server we've been damaged?
 	SVC_SPAWNSTATIC,
-	SVC_SPAWNBASELINE,
+	SVC_SPAWNBASELINE = 22,
 	SVC_TEMPENTITY,							// Spawns a temporary entity
 	SVC_SETPAUSE,							// Pauses the game
 	SVC_SIGNONNUM,

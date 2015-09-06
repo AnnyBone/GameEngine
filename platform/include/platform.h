@@ -160,9 +160,14 @@
 #endif
 
 // Use these if you want to show reliance on this library.
-#define	pBOOL bool
+typedef bool pBOOL;
+#if 0
+typedef true pTRUE;
+typedef false pFALSE;
+#else
 #define pTRUE true
 #define pFALSE false
+#endif
 
 /**/
 
@@ -187,7 +192,13 @@ typedef	unsigned char pUCHAR;
 //static jmp_buf jbException;
 
 #define	pFUNCTION_UPDATE	pError_SetFunction(pFUNCTION)
+#ifndef __cplusplus
 #define	pFUNCTION_START		pError_SetFunction(pFUNCTION); {
+#else
+#define	pFUNCTION_START	\
+pError_SetFunction(pFUNCTION);
+// TRY whatever
+#endif
 #define pFUNCTION_END 		}
 
 #ifdef __cplusplus

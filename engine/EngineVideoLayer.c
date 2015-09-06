@@ -65,7 +65,7 @@ char *VideoLayer_GetErrorMessage(void)
 	OPENGL TEXTURES
 ===========================*/
 
-unsigned int VideoLayer_TranslateFormat(VideoTextureFormat Format)
+unsigned int VideoLayer_TranslateFormat(VideoTextureFormat_t Format)
 {
 	switch (Format)
 	{
@@ -87,7 +87,7 @@ unsigned int VideoLayer_TranslateFormat(VideoTextureFormat Format)
 	return 0;
 }
 
-void VideoLayer_SetupTexture(VideoTextureFormat InternalFormat, VideoTextureFormat Format, unsigned int Width, unsigned int Height)
+void VideoLayer_SetupTexture(VideoTextureFormat_t InternalFormat, VideoTextureFormat_t Format, unsigned int Width, unsigned int Height)
 {
 	glTexImage2D(GL_TEXTURE_2D, 0, 
 		VideoLayer_TranslateFormat(InternalFormat),

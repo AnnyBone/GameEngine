@@ -98,7 +98,7 @@ typedef struct
 	float			fMaxAnisotropy,	// Max anisotropy amount allowed by the hardware.
 					fBitsPerPixel;
 
-    // Texture Management
+	// Texture Management
 	unsigned int	
 		uiCurrentTexture[VIDEO_MAX_UNITS],	// Current/last binded texture.   
 		uiActiveUnit,						// The currently active unit.
@@ -171,6 +171,11 @@ extern "C" {
 	void VideoPostProcess_BindFrameBuffer();
 	void VideoPostProcess_Draw();
 
+	// Legacy
+	void R_EmitWirePoint(MathVector3f_t origin);
+	void R_EmitWireBox(MathVector3f_t mins, MathVector3f_t maxs, float r, float g, float b);
+	bool R_CullBox(MathVector3f_t emins, MathVector3f_t emaxs);
+
 #if __cplusplus
 };
 #endif
@@ -183,6 +188,8 @@ extern "C" {
 }
 
 // Legacy
+extern float r_world_matrix[16], r_base_world_matrix[16];
+
 void Video_ShowBoundingBoxes(void);
 
 #include "EngineVideoObject.h"
@@ -233,10 +240,5 @@ void DrawGLPoly(glpoly_t *p);
 */
 
 void Warp_DrawWaterPoly(glpoly_t *p, Material_t *mCurrent);
-
-void R_EmitWirePoint(MathVector3f_t origin);
-void R_EmitWireBox(MathVector3f_t mins, MathVector3f_t maxs, float r, float g, float b);
-
-bool R_CullBox(MathVector3f_t emins, MathVector3f_t emaxs);
 
 #endif

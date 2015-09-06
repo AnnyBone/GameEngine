@@ -105,7 +105,8 @@ void CSpriteManager::Initialize()
 CSprite *CSpriteManager::Add()
 {
 	CSprite *NewSprite = new CSprite();
-	
+	// TODO: Add to our list.
+	return NewSprite;
 }
 
 void CSpriteManager::Simulate()

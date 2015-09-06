@@ -97,8 +97,16 @@ extern	cvar_t	skill;
 extern	cvar_t	deathmatch;
 extern	cvar_t	coop;
 
-extern	server_static_t	svs;				// persistant server info
-extern	server_t		sv;					// local server
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+	extern	server_static_t	svs;				// persistant server info
+	extern	server_t		sv;					// local server
+
+#ifdef __cplusplus
+};
+#endif
 
 extern	client_t	*host_client;
 

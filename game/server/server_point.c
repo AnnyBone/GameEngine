@@ -392,7 +392,8 @@ void Point_AmbientSpawn(ServerEntity_t *eEntity)
 			(int)eEntity->v.origin[1],
 			(int)eEntity->v.origin[2]);
 
-		ENTITY_REMOVE(eEntity);
+		Entity_Remove(eEntity);
+		return;
 	}
 
 	switch(eEntity->local.style)

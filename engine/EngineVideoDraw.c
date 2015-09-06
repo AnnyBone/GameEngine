@@ -26,7 +26,7 @@
 #define	BLOCK_WIDTH		256
 #define	BLOCK_HEIGHT	BLOCK_WIDTH
 
-cvar_t cvConsoleAlpha = { "screen_consolealpha", "0.7", true, false, "Sets the alpha value for the console background." }; //johnfitz
+ConsoleVariable_t cvConsoleAlpha = { "screen_consolealpha", "0.7", true, false, "Sets the alpha value for the console background." }; //johnfitz
 
 qpic_t	*draw_backtile;
 
@@ -36,7 +36,7 @@ typedef struct
 	float		sl, tl, sh, th;
 } glpic_t;
 
-int currentcanvas = CANVAS_NONE; //johnfitz -- for GL_SetCanvas
+VideoCanvasType_t currentcanvas = CANVAS_NONE; //johnfitz -- for GL_SetCanvas
 
 //==============================================================================
 //
@@ -496,7 +496,7 @@ void Draw_CoordinateAxes(float x,float y,float z)
 
 void Draw_Grid(float x, float y, float z, int iGridSize)
 {
-    int i;
+	int i;
 
 	Video_ResetCapabilities(false);
 
@@ -569,10 +569,10 @@ void Draw_Fill(int x,int y,int w,int h,float r,float g,float b,float alpha)
 	Math_Vector4Copy(vColour,voFill[2].mvColour);
 	Math_Vector4Copy(vColour,voFill[3].mvColour);
 
-    Video_ResetCapabilities(false);
+	Video_ResetCapabilities(false);
 
-    Video_EnableCapabilities(VIDEO_BLEND);
-    Video_DisableCapabilities(VIDEO_DEPTH_TEST|VIDEO_TEXTURE_2D);
+	Video_EnableCapabilities(VIDEO_BLEND);
+	Video_DisableCapabilities(VIDEO_DEPTH_TEST|VIDEO_TEXTURE_2D);
 
 	Video_ObjectVertex(&voFill[0], x, y, 0);
 	Video_ObjectTexture(&voFill[0], 0, h, w);
@@ -670,7 +670,7 @@ void Draw_BeginDisc(void)
 	//johnfitz
 }
 
-void GL_SetCanvas (int newcanvas)
+void GL_SetCanvas (VideoCanvasType_t newcanvas)
 {
 	extern vrect_t scr_vrect;
 	float s;

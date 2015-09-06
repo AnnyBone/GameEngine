@@ -42,7 +42,7 @@ typedef enum
 	VIDEO_TEXTURE_FORMAT_BGR,
 	VIDEO_TEXTURE_FORMAT_BGRA,
 	VIDEO_TEXTURE_FORMAT_LUMINANCE,
-} VideoTextureFormat;
+} VideoTextureFormat_t;
 
 #if __cplusplus
 extern "C" {
@@ -50,7 +50,7 @@ extern "C" {
 
 	char *VideoLayer_GetErrorMessage(void);
 
-	void VideoLayer_SetupTexture(VideoTextureFormat InternalFormat, VideoTextureFormat Format, unsigned int Width, unsigned int Height);
+	void VideoLayer_SetupTexture(VideoTextureFormat_t InternalFormat, VideoTextureFormat_t Format, unsigned int Width, unsigned int Height);
 	void VideoLayer_SetTextureFilter(VideoTextureFilter_t FilterMode);
 	void VideoLayer_Enable(unsigned int uiCapabilities);
 	void VideoLayer_Disable(unsigned int uiCapabilities);
@@ -58,7 +58,6 @@ extern "C" {
 	void VideoLayer_GenerateVertexBuffer(unsigned int *uiBuffer);
 	void VideoLayer_DeleteVertexBuffer(unsigned int *uiBuffer);
 	
-
 	// FrameBuffer
 	void VideoLayer_GenerateFrameBuffer(unsigned int *uiBuffer);
 	void VideoLayer_BindFrameBuffer(VideoFBOTarget_t vtTarget, unsigned int uiBuffer);

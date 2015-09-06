@@ -455,7 +455,7 @@ void CL_RelinkEntities (void)
 
 		Game->Client_RelinkEntities(ent,i,cl.time);
 
-		if(i == cl.viewentity && !chase_active.value)
+		if((i == cl.viewentity) && !chase_active.value)
 			continue;
 
 		if (cl_numvisedicts < MAX_VISEDICTS)

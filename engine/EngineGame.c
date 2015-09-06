@@ -116,7 +116,7 @@ void Server_MakeStatic(ServerEntity_t *ent)
 
 	if(bits)
 	{
-		MSG_WriteByte(&sv.signon, svc_spawnstatic2);
+		MSG_WriteByte(&sv.signon, SVC_SPAWNSTATIC2);
 		MSG_WriteByte(&sv.signon, bits);
 	}
 	else
@@ -291,6 +291,7 @@ void Server_Sound(ServerEntity_t *ent, int channel, char *sample, int iVolume, f
 
 void Server_Flare(vec3_t org,float r,float g,float b,float a,float scale,char *texture)
 {
+#if 0
 	int		i;
 	char	name[MAX_OSPATH];
 
@@ -325,6 +326,7 @@ void Server_Flare(vec3_t org,float r,float g,float b,float a,float scale,char *t
 				MSG_WriteByte(&sv.datagram,i);
 				break;
 			}
+#endif
 }
 
 /*
@@ -465,11 +467,10 @@ void Server_CenterPrint(ServerEntity_t *ent, char *msg);	// See engine_server.
 
 void Game_Initialize(void)
 {
-	bool			bGameLoaded = false;
-	ModuleImport_t	Import;
+	bool bGameLoaded = false;
+	ModuleImport_t Import;
 
 	if(Game)
-		// [4/5/2013] Oops forgot to put this here ~hogsy
 		pModule_Unload(hGameInstance);
 
 	// Server

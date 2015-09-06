@@ -46,39 +46,47 @@
 	interface from being ambiguous.
 */
 
-void Cvar_Init(void);
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-void 	Cvar_RegisterVariable (cvar_t *variable,void (*Function)(void)); //johnfitz -- cvar callback
-// registers a cvar that allready has the name, string, and optionally the
-// archive elements set.
+	void Cvar_Init(void);
 
-void 	Cvar_Set (char *var_name, char *value);
-// equivelant to "<name> <variable>" typed at the console
+	void 	Cvar_RegisterVariable(cvar_t *variable, void(*Function)(void)); //johnfitz -- cvar callback
+	// registers a cvar that allready has the name, string, and optionally the
+	// archive elements set.
 
-void	Cvar_SetValue (char *var_name, float value);
-// expands value to a string and calls Cvar_Set
+	void 	Cvar_Set(char *var_name, char *value);
+	// equivelant to "<name> <variable>" typed at the console
 
-float	Cvar_VariableValue (char *var_name);
-// returns 0 if not defined or non numeric
+	void	Cvar_SetValue(char *var_name, float value);
+	// expands value to a string and calls Cvar_Set
 
-char	*Cvar_VariableString (char *var_name);
-// returns an empty string if not defined
+	float	Cvar_VariableValue(char *var_name);
+	// returns 0 if not defined or non numeric
 
-char 	*Cvar_CompleteVariable (char *partial);
-// attempts to match a partial variable name for command line completion
-// returns NULL if nothing fits
+	char	*Cvar_VariableString(char *var_name);
+	// returns an empty string if not defined
 
-bool Cvar_Command(void);
-// called by Cmd_ExecuteString when Cmd_Argv(0) doesn't match a known
-// command.  Returns TRUE if the command was a variable reference that
-// was handled. (print or change)
+	char 	*Cvar_CompleteVariable(char *partial);
+	// attempts to match a partial variable name for command line completion
+	// returns NULL if nothing fits
 
-void 	Cvar_WriteVariables (FILE *f);
-// Writes lines containing "set variable value" for all variables
-// with the archive flag set to TRUE.
+	bool Cvar_Command(void);
+	// called by Cmd_ExecuteString when Cmd_Argv(0) doesn't match a known
+	// command.  Returns TRUE if the command was a variable reference that
+	// was handled. (print or change)
 
-void Cvar_Reset(char *name);
+	void 	Cvar_WriteVariables(FILE *f);
+	// Writes lines containing "set variable value" for all variables
+	// with the archive flag set to TRUE.
 
-cvar_t *Cvar_FindVar (char *var_name);
+	void Cvar_Reset(char *name);
+
+	cvar_t *Cvar_FindVar(char *var_name);
+
+#ifdef __cplusplus
+};
+#endif
 
 extern cvar_t	*cConsoleVariables;

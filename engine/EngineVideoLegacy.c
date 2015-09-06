@@ -44,7 +44,7 @@ bool	bEnvironmentMap;				// True during envmap command capture
 vec3_t	vup,vpn,vright,
 		r_origin;
 
-float	r_world_matrix[16],r_base_world_matrix[16];
+float r_world_matrix[16], r_base_world_matrix[16];
 
 float r_fovx, r_fovy; //johnfitz -- rendering fov may be different becuase of r_waterwarp and r_stereo
 
@@ -483,7 +483,7 @@ void Video_DrawClientBoundingBox(ClientEntity_t *clEntity)
 void Video_ShowBoundingBoxes(void)
 {
 	extern		ServerEntity_t *sv_player;
-	vec3_t				mins,maxs;
+	MathVector3f_t mins,maxs;
 	ClientEntity_t *clEntity;
 	ServerEntity_t				*ed;
 	int					i;
@@ -491,8 +491,8 @@ void Video_ShowBoundingBoxes(void)
 	if(!r_showbboxes.value || cl.maxclients > 1 || !r_drawentities.value || (!sv.active && !Global.bEmbeddedContext))
 		return;
 
-    Video_DisableCapabilities(VIDEO_DEPTH_TEST|VIDEO_TEXTURE_2D);
-    Video_EnableCapabilities(VIDEO_BLEND);
+	Video_DisableCapabilities(VIDEO_DEPTH_TEST|VIDEO_TEXTURE_2D);
+	Video_EnableCapabilities(VIDEO_BLEND);
 
 	for (i=0, ed=NEXT_EDICT(sv.edicts) ; i<sv.num_edicts ; i++, ed=NEXT_EDICT(ed))
 	{
@@ -518,7 +518,7 @@ void Video_ShowBoundingBoxes(void)
 	for (i = 0, clEntity = cl_temp_entities; i < cl_numvisedicts; i++, clEntity++)
 		Video_DrawClientBoundingBox(clEntity);
 
-    Video_DisableCapabilities(VIDEO_BLEND);
+	Video_DisableCapabilities(VIDEO_BLEND);
 	Video_EnableCapabilities(VIDEO_TEXTURE_2D|VIDEO_DEPTH_TEST);
 }
 

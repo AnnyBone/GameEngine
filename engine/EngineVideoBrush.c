@@ -103,7 +103,7 @@ void DrawGLPoly(glpoly_t *p)
 			voObject[i].mvColour[2]	= rand()%256/255.0;
 		}
 
-        if(!r_showtris.value)
+		if(!r_showtris.value)
 		{
 			voObject[i].mvST[0][0] = v[3];
 			voObject[i].mvST[0][1] = v[4];
@@ -123,33 +123,30 @@ void DrawGLPoly(glpoly_t *p)
 =============================================================
 */
 
+void Surface_DrawMirror(msurface_t *Surface);
+
 void R_DrawSequentialPoly(msurface_t *s)
 {
-    float       fAlpha;
+	float       fAlpha;
 
-    fAlpha = ENTALPHA_DECODE(currententity->alpha);
+	fAlpha = ENTALPHA_DECODE(currententity->alpha);
 
-    Video_ResetCapabilities(false);
+	Video_ResetCapabilities(false);
 
 	if(s->flags & SURF_DRAWSKY)
 		return;
-	else if (s->flags & SURFACE_MIRROR)
-	{
-		if (!cvVideoMirror.bValue)
-			return;
-
-		// TODO: Draw mirror surfaces...
-	}
-    else if(s->flags & SURF_NOTEXTURE)
+	else if ((s->flags & SURFACE_MIRROR))
+		Surface_DrawMirror(s);
+	else if(s->flags & SURF_NOTEXTURE)
 	{
 		DrawGLPoly(s->polys);
 
 		rs_brushpasses++;
 	}
-    else if(s->flags & SURF_DRAWTURB)
+	else if(s->flags & SURF_DRAWTURB)
 	{
 		Material_t *mCurrent = s->texinfo->texture->mAssignedMaterial;
-        glpoly_t *pBrushPoly;
+		glpoly_t *pBrushPoly;
 		
 		if(currententity->alpha == ENTALPHA_DEFAULT)
 			// Use the materials alpha.
@@ -159,18 +156,18 @@ void R_DrawSequentialPoly(msurface_t *s)
 			fAlpha = Math_Clamp(0.0, ENTALPHA_DECODE(currententity->alpha), 1.0f);
 		if(fAlpha < 1.0f)
 		{
-            Video_SetBlend(VIDEO_BLEND_IGNORE,VIDEO_DEPTH_FALSE);
-            Video_EnableCapabilities(VIDEO_BLEND);
+			Video_SetBlend(VIDEO_BLEND_IGNORE,VIDEO_DEPTH_FALSE);
+			Video_EnableCapabilities(VIDEO_BLEND);
 		}
 
 		Video_DrawMaterial(mCurrent, 0, 0, 0, 0, false);
 
-        for(pBrushPoly = s->polys->next; pBrushPoly; pBrushPoly = pBrushPoly->next)
-        {
+		for(pBrushPoly = s->polys->next; pBrushPoly; pBrushPoly = pBrushPoly->next)
+		{
 			Warp_DrawWaterPoly(pBrushPoly, mCurrent);
 
-            rs_brushpasses++;
-        }
+			rs_brushpasses++;
+		}
 
 		Video_DrawMaterial(mCurrent, 0, 0, 0, 0, true);
 	}
@@ -317,7 +314,7 @@ void Brush_Draw(entity_t *e)
 	glPopMatrix();
 
 	if(r_drawflat_cheatsafe)
-        Video_EnableCapabilities(VIDEO_TEXTURE_2D);
+		Video_EnableCapabilities(VIDEO_TEXTURE_2D);
 }
 
 /*

@@ -67,6 +67,8 @@ typedef struct
 	float		fov_x, fov_y;
 
 	int			ambientlight;
+
+	bool bMirror;
 } refdef_t;
 
 // refresh

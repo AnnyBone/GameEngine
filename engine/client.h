@@ -234,20 +234,28 @@ extern	cvar_t	m_side;
 #define	MAX_STATIC_ENTITIES	512		//johnfitz -- was 128
 #define	MAX_VISEDICTS		2048
 
-extern	client_state_t	cl;
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-// FIXME, allocate dynamically
-extern	efrag_t			cl_efrags[MAX_EFRAGS];
-extern	entity_t		cl_static_entities[MAX_STATIC_ENTITIES];
-extern	lightstyle_t	cl_lightstyle[MAX_LIGHTSTYLES];
-extern	DynamicLight_t	cl_dlights[MAX_DLIGHTS];
-extern	entity_t		cl_temp_entities[MAX_TEMP_ENTITIES];
-extern	beam_t			cl_beams[MAX_BEAMS];
-extern	entity_t		*cl_visedicts[MAX_VISEDICTS];
-extern	int				cl_numvisedicts;
+	extern	client_state_t	cl;
 
-extern	entity_t		*cl_entities; //johnfitz -- was a static array, now on hunk
-extern	int				cl_max_edicts; //johnfitz -- only changes when new map loads
+	// FIXME, allocate dynamically
+	extern	efrag_t			cl_efrags[MAX_EFRAGS];
+	extern	entity_t		cl_static_entities[MAX_STATIC_ENTITIES];
+	extern	lightstyle_t	cl_lightstyle[MAX_LIGHTSTYLES];
+	extern	DynamicLight_t	cl_dlights[MAX_DLIGHTS];
+	extern	entity_t		cl_temp_entities[MAX_TEMP_ENTITIES];
+	extern	beam_t			cl_beams[MAX_BEAMS];
+	extern	entity_t		*cl_visedicts[MAX_VISEDICTS];
+	extern	int				cl_numvisedicts;
+
+	extern	entity_t		*cl_entities; //johnfitz -- was a static array, now on hunk
+	extern	int				cl_max_edicts; //johnfitz -- only changes when new map loads
+
+#ifdef __cplusplus
+};
+#endif
 
 //=============================================================================
 

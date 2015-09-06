@@ -42,10 +42,4 @@ CEngineException::CEngineException(const char *ccMessage, ...)
 
 		Host_Shutdown();
 	}
-
-	// Shut down QHOST hooks if necessary
-	if (!ErrorPass2)
-		ErrorPass2 = 1;
-
-	exit(1);
 }

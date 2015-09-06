@@ -61,12 +61,13 @@ void Point_TeleportSpawn(ServerEntity_t *ent);
 void Point_TimedTriggerSpawn(ServerEntity_t *eEntity);
 void Point_WaypointSpawn(ServerEntity_t *eEntity);
 void Point_LightSpawn(ServerEntity_t *eLight);
+void Point_SpriteSpawn(ServerEntity_t *seSprite);
 void Point_ExplodeSpawn(ServerEntity_t *ePoint);
 
 // Weapons
 void WEAPON_StickThink(ServerEntity_t *ent);
 
-void ThrowGib(vec3_t origin,vec3_t velocity,char *model,float damage,bool bleed);
+void ThrowGib(MathVector3f_t origin, MathVector3f_t velocity,char *model,float damage,bool bleed);
 void Item_Respawn(ServerEntity_t *ent);
 
 void Client_RelinkEntities(entity_t *ent,int i,double dTime);

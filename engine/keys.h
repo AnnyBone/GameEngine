@@ -135,15 +135,23 @@ typedef enum
     key_menu				// Menu input mode.
 } keydest_t;
 
-extern keydest_t	key_dest;
-extern char *keybindings[256];
-extern	int		key_repeats[256];
-extern	int		key_count;			// incremented every key event
-extern	int		key_lastpress;
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-void Key_Event (int key, bool down);
-void Key_Init (void);
-void Key_WriteBindings (FILE *f);
-void Key_SetBinding (int keynum, char *binding);
-void Key_ClearStates (void);
+	extern keydest_t	key_dest;
+	extern char *keybindings[256];
+	extern	int		key_repeats[256];
+	extern	int		key_count;			// incremented every key event
+	extern	int		key_lastpress;
+
+	void Key_Event(int key, bool down);
+	void Key_Init(void);
+	void Key_WriteBindings(FILE *f);
+	void Key_SetBinding(int keynum, char *binding);
+	void Key_ClearStates(void);
+
+#ifdef __cplusplus
+};
+#endif
 

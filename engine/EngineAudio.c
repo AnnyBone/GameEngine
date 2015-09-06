@@ -72,11 +72,12 @@ void Audio_PlaySound(AudioSound_t *asSample)
 
 AudioSound_t *Audio_LoadSound(sfx_t *sSoundEffect)
 {
-	AudioSound_t	*asNewSound = NULL;
-	byte			*bData,
-					bStackBuffer[1*1024];
+	AudioSound_t *asNewSound = NULL;
+	uint8_t	
+		*bData,
+		bStackBuffer[1*1024];
 //	sfxcache_t		*sSoundCache;
-	char			cNameBuffer[256];
+	char cNameBuffer[256];
 
 //	sSoundCache = (sfxcache_t*)Cache_Check(&sSoundEffect->cache);
 //	if(sSoundCache)

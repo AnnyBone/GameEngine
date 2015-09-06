@@ -434,40 +434,40 @@ void Video_SetTexture(gltexture_t *gTexture)
 }
 
 /*  Changes the active blending mode.
-    This should be used in conjunction with the VIDEO_BLEND mode.
+	This should be used in conjunction with the VIDEO_BLEND mode.
 */
 void Video_SetBlend(VideoBlend_t voBlendMode, VideoDepth_t vdDepthMode)
 {
 	if (vdDepthMode != VIDEO_DEPTH_IGNORE)
 		glDepthMask(vdDepthMode);
 
-    if(voBlendMode != VIDEO_BLEND_IGNORE)
-    {
-        switch(voBlendMode)
-        {
-        case VIDEO_BLEND_ONE:
-            glBlendFunc(GL_ONE,GL_ONE);
-            break;
-        case VIDEO_BLEND_TWO:
-            glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-            break;
-        case VIDEO_BLEND_THREE:
-            glBlendFunc(GL_DST_COLOR,GL_SRC_COLOR);
-            break;
-        case VIDEO_BLEND_FOUR:
-            glBlendFunc(GL_ZERO,GL_ZERO);
-            break;
-        default:
-            Sys_Error("Unknown blend mode! (%i)\n",voBlendMode);
-        }
-    }
+	if(voBlendMode != VIDEO_BLEND_IGNORE)
+	{
+		switch(voBlendMode)
+		{
+		case VIDEO_BLEND_ONE:
+			glBlendFunc(GL_ONE,GL_ONE);
+			break;
+		case VIDEO_BLEND_TWO:
+			glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+			break;
+		case VIDEO_BLEND_THREE:
+			glBlendFunc(GL_DST_COLOR,GL_SRC_COLOR);
+			break;
+		case VIDEO_BLEND_FOUR:
+			glBlendFunc(GL_ZERO,GL_ZERO);
+			break;
+		default:
+			Sys_Error("Unknown blend mode! (%i)\n",voBlendMode);
+		}
+	}
 
 	if(Video.bDebugFrame)
 		pLog_Write(cvVideoDebugLog.string, "Video: Setting blend mode (%i) (%i)\n", voBlendMode, vdDepthMode);
 }
 
 /*
-    Multitexturing Management
+	Multitexturing Management
 */
 
 /*	Conversion between our TMU selection and OpenGL.
@@ -509,7 +509,7 @@ unsigned int Video_GetTextureUnit(unsigned int uiTarget)
 void Video_SelectTexture(unsigned int uiTarget)
 {
 	if(uiTarget == Video.uiActiveUnit)
-        return;
+		return;
 
 	if (uiTarget > VIDEO_MAX_UNITS)
 		Sys_Error("Invalid texture unit! (%i)\n",uiTarget);
@@ -570,7 +570,7 @@ void Video_SetColour(float R,float G,float B,float A)
 }
 
 /*
-    Drawing
+	Drawing
 */
 
 /*	Draw terrain.
@@ -1004,7 +1004,7 @@ void Video_DrawObject(
 typedef struct
 {
 	unsigned	int	    uiFirst,
-                        uiSecond;
+						uiSecond;
 
 	const       char    *ccIdentifier;
 } VideoCapabilities_t;
@@ -1032,28 +1032,28 @@ void Video_EnableCapabilities(unsigned int iCapabilities)
 	int	i;
 
 	if(!iCapabilities)
-        return;
+		return;
 
 	for(i = 0; i < sizeof(vcCapabilityList); i++)
 	{
-        if(!vcCapabilityList[i].uiFirst)
-            break;
+		if(!vcCapabilityList[i].uiFirst)
+			break;
 
 		if (iCapabilities & VIDEO_TEXTURE_2D)
 			Video.bUnitState[Video.uiActiveUnit] = true;
 
 		if(iCapabilities & vcCapabilityList[i].uiFirst)
 		{
-            if(Video.bDebugFrame)
+			if(Video.bDebugFrame)
 				pLog_Write(cvVideoDebugLog.string, "Video: Enabling %s (%i)\n", vcCapabilityList[i].ccIdentifier, Video.uiActiveUnit);
 
-            if(!bVideoIgnoreCapabilities)
-                // [24/2/2014] Collect up a list of the new capabilities we set ~hogsy
-                iSavedCapabilites[Video.uiActiveUnit][VIDEO_STATE_ENABLE] |= vcCapabilityList[i].uiFirst;
+			if(!bVideoIgnoreCapabilities)
+				// [24/2/2014] Collect up a list of the new capabilities we set ~hogsy
+				iSavedCapabilites[Video.uiActiveUnit][VIDEO_STATE_ENABLE] |= vcCapabilityList[i].uiFirst;
 
 			glEnable(vcCapabilityList[i].uiSecond);
 		}
-    }
+	}
 }
 
 /*	Disables specified capabilities for the current draw.
@@ -1063,28 +1063,28 @@ void Video_DisableCapabilities(unsigned int iCapabilities)
 	int	i;
 
 	if(!iCapabilities)
-        return;
+		return;
 
 	for(i = 0; i < sizeof(vcCapabilityList); i++)
 	{
-        if(!vcCapabilityList[i].uiFirst)
-            break;
+		if(!vcCapabilityList[i].uiFirst)
+			break;
 
 		if (iCapabilities & VIDEO_TEXTURE_2D)
 			Video.bUnitState[Video.uiActiveUnit] = false;
 
 		if(iCapabilities & vcCapabilityList[i].uiFirst)
 		{
-            if(Video.bDebugFrame)
+			if(Video.bDebugFrame)
 				pLog_Write(cvVideoDebugLog.string, "Video: Disabling %s (%i)\n", vcCapabilityList[i].ccIdentifier, Video.uiActiveUnit);
 
-            if(!bVideoIgnoreCapabilities)
-                // [24/2/2014] Collect up a list of the new capabilities we disabled ~hogsy
-                iSavedCapabilites[Video.uiActiveUnit][VIDEO_STATE_DISABLE] |= vcCapabilityList[i].uiFirst;
+			if(!bVideoIgnoreCapabilities)
+				// [24/2/2014] Collect up a list of the new capabilities we disabled ~hogsy
+				iSavedCapabilites[Video.uiActiveUnit][VIDEO_STATE_DISABLE] |= vcCapabilityList[i].uiFirst;
 
 			glDisable(vcCapabilityList[i].uiSecond);
 		}
-    }
+	}
 }
 
 /*	Checks if the given capability is enabled or not.
@@ -1116,14 +1116,14 @@ void Video_ResetCapabilities(bool bClearActive)
 {
 	int i;
 
-    if(Video.bDebugFrame)
+	if(Video.bDebugFrame)
 		pLog_Write(cvVideoDebugLog.string, "Video: Resetting capabilities...\n");
 
 	Video_SelectTexture(VIDEO_TEXTURE_DIFFUSE);
 
 	if(bClearActive)
 	{
-        if(Video.bDebugFrame)
+		if(Video.bDebugFrame)
 			pLog_Write(cvVideoDebugLog.string, "Video: Clearing active capabilities...\n");
 
 		bVideoIgnoreCapabilities = true;

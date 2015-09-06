@@ -60,6 +60,7 @@ char *svc_strings[] =
 	"svc_particle",		// [vec3] <variable>
 	"svc_damage",			// [byte] impact [byte] blood [vec3] from
 	"svc_spawnstatic",
+	"",
 	"svc_spawnbaseline",
 	"svc_temp_entity",		// <variable>
 	"svc_setpause",
@@ -939,7 +940,7 @@ void CL_ParseServerMessage(void)
 			// must use CL_EntityNum() to force cl.num_entities up
 			CL_ParseBaseline (CL_EntityNum(i), 1); // johnfitz -- added second parameter
 			break;
-		case svc_spawnstatic:
+		case SVC_SPAWNSTATIC:
 			CL_ParseStatic (1); //johnfitz -- added parameter
 			break;
 		case SVC_TEMPENTITY:
