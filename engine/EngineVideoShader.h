@@ -21,11 +21,11 @@
 #ifndef __ENGINEVIDEOSHADER__
 #define __ENGINEVIDEOSHADER__
 
-typedef enum VideoShaderType
+typedef enum
 {
 	VIDEO_SHADER_FRAGMENT,
 	VIDEO_SHADER_VERTEX
-} VideoShaderType;
+} VideoShaderType_t;
 
 typedef unsigned int VideoShader;
 typedef unsigned int VideoShaderProgram;
@@ -34,18 +34,18 @@ typedef unsigned int VideoShaderProgram;
 class CVideoShader
 {
 public:
-	CVideoShader(const char *ccPath, VideoShaderType vsType);
+	CVideoShader(const char *ccPath, VideoShaderType_t vsType);
 	~CVideoShader();
 
 	void Enable();
 	void Disable();
 
 	VideoShader GetInstance();
-	VideoShaderType GetType();
+	VideoShaderType_t GetType();
 
 private:
 	VideoShader	vsShader;	//sVertex, sFragment;
-	VideoShaderType vsType;
+	VideoShaderType_t vsType;
 
 	const char *ccShaderSource;
 
@@ -66,16 +66,18 @@ public:
 	void Enable();
 	void Disable();
 	void Link();
-	void SetVariable(const char *ccName, float x, float y, float z);
-	void SetVariable(const char *ccName, MathVector3f_t mvVector);
-	void SetVariable(const char *ccName, float x, float y, float z, float a);
-	void SetVariable(const char *ccName, int i);
-	void SetVariable(const char *ccName, float f);
+	void SetVariable(int iUniformLocation, float x, float y, float z);
+	void SetVariable(int iUniformLocation, MathVector3f_t mvVector);
+	void SetVariable(int iUniformLocation, float x, float y, float z, float a);
+	void SetVariable(int iUniformLocation, int i);
+	void SetVariable(int iUniformLocation, float f);
+
+	int GetUniformLocation(const char *ccUniformName);
 
 	VideoShaderProgram GetInstance();
 protected:
 private:
-	//VideoShader *vsShaders;
+	//CVideoShader **vsShader;
 
 	VideoShaderProgram vsProgram;
 };

@@ -206,21 +206,21 @@ void Surface_DrawMirror(msurface_t *Surface)
 	// Copy the matrix.
 	memcpy(r_base_world_matrix, r_world_matrix, sizeof(r_base_world_matrix));
 
-#if 0
+#if 1
 	fDirection = Math_DotProduct(r_refdef.vieworg, Surface->plane->normal) - Surface->plane->dist;
 	Math_VectorMA(r_refdef.vieworg, -2 * fDirection, Surface->plane->normal, r_refdef.vieworg);
 
-	fDirection = Math_DotProduct(vpn, Surface->plane->normal);
-	Math_VectorMA(vpn, -2 * fDirection, Surface->plane->normal, vpn);
+//	fDirection = Math_DotProduct(vpn, Surface->plane->normal);
+//	Math_VectorMA(vpn, -2 * fDirection, Surface->plane->normal, vpn);
 
 //	r_refdef.viewangles[0] = -asinf(vpn[2]) / pMath_PI * 180.0f;
 ///	r_refdef.viewangles[1] = atan2f(vpn[1], vpn[0]) / pMath_PI * 180.0f;
 	//r_refdef.viewangles[2] = -r_refdef.viewangles[2];
 #else
+//	Math_VectorMA(r_refdef.vieworg, -2, Surface->plane->normal, r_refdef.vieworg);
+//	Math_VectorMA(vpn, -2, Surface->plane->normal, vpn);
+
 	//Math_VectorInverse(r_refdef.viewangles);
-	r_refdef.viewangles[0] += -Surface->plane->normal[0];
-	r_refdef.viewangles[1] = atan2f(r_refdef.viewangles[1], r_refdef.viewangles[0]);
-	r_refdef.viewangles[2] += -Surface->plane->normal[2];
 //	r_refdef.viewangles[0] = -asinf(vpn[2]) / pMath_PI * 180.0f;
 //	r_refdef.viewangles[1] = atan2f(vpn[1], vpn[0]) / pMath_PI * 180.0f;
 //	r_refdef.viewangles[2] = -r_refdef.viewangles[2];
@@ -252,6 +252,7 @@ void Surface_DrawMirror(msurface_t *Surface)
 		R_SetupScene();
 
 		glDepthRange(0, 0.5);
+		glScalef(1.0f, -1.0f, 1.0f);
 
 		//Sky_Draw();
 		World_Draw();
@@ -274,7 +275,7 @@ void Surface_DrawMirror(msurface_t *Surface)
 	// Restore the original matrix.
 	glLoadMatrixf(r_base_world_matrix);
 
-#if 0	
+#if 0
 	// Blend the final surface on top.
 	VideoLayer_Enable(VIDEO_BLEND);
 	Video_DrawSurface(Surface, 0.5f, mColour, 1);

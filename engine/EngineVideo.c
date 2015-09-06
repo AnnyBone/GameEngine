@@ -195,6 +195,7 @@ void Video_Initialize(void)
 	else
 		Con_Warning("ARB_vertex_buffer_object isn't supported by your hardware!\n");
 
+	// Shaders?
 	if (!GLEE_ARB_vertex_program || !GLEE_ARB_fragment_program)
 		Sys_Error("Unsupported video hardware!\n");
 
@@ -241,6 +242,13 @@ void Video_Initialize(void)
 #endif
 
 	Video.bInitialized = true;
+}
+
+/*	Change the render mode, primarily for the editor.
+*/
+void Video_SetRenderMode(VideoRenderMode_t NewMode)
+{
+	Video.CurrentRenderMode = NewMode;
 }
 
 /*
@@ -1220,14 +1228,7 @@ void Video_PostFrame(void)
 		glFinish();
 
 	if (Video.bDebugFrame)
-	{
-		pLog_Write(cvVideoDebugLog.string, "\n-----------------------\n");
-		// Show the number of calls to Video_DrawObject.
-		pLog_Write(cvVideoDebugLog.string, "Video_DrawObject: %i\n", uiVideoDrawObjectCalls);
-		pLog_Write(cvVideoDebugLog.string, "-----------------------\n");
-
 		Video.bDebugFrame = false;
-	}
 }
 
 /*	Shuts down the video sub-system.

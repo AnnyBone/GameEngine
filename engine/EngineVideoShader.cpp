@@ -31,7 +31,7 @@
 
 using namespace std;
 
-CVideoShader::CVideoShader(const char *ccPath, VideoShaderType vsType)
+CVideoShader::CVideoShader(const char *ccPath, VideoShaderType_t vsType)
 {
 	VIDEO_FUNCTION_START
 	// Check that the path is valid.
@@ -120,7 +120,7 @@ VideoShader CVideoShader::GetInstance()
 	return vsShader;
 }
 
-VideoShaderType CVideoShader::GetType()
+VideoShaderType_t CVideoShader::GetType()
 {
 	return vsType;
 }
@@ -147,15 +147,19 @@ CVideoShaderProgram::~CVideoShaderProgram()
 
 void CVideoShaderProgram::Attach(CVideoShader *Shader)
 {
+	VIDEO_FUNCTION_START
 	if (!Shader)
 		Sys_Error("Attempted to attach an invalid shader!\n");
 
 	glAttachShader(vsProgram, Shader->GetInstance());
+	VIDEO_FUNCTION_END
 }
 
 void CVideoShaderProgram::Enable()
 {
+	VIDEO_FUNCTION_START
 	glUseProgram(vsProgram);
+	VIDEO_FUNCTION_END
 }
 
 void CVideoShaderProgram::Disable()
@@ -192,35 +196,42 @@ void CVideoShaderProgram::Link()
 
 // Uniform Handling
 
-void CVideoShaderProgram::SetVariable(const char *ccName, float x, float y, float z)
+int CVideoShaderProgram::GetUniformLocation(const char *ccUniformName)
 {
-	// TODO: Error checking!
-	glUniform3f(glGetUniformLocation(vsProgram, ccName), x, y, z);
+	return glGetUniformLocation(vsProgram, ccUniformName);
 }
 
-void CVideoShaderProgram::SetVariable(const char *ccName, MathVector3f_t mvVector)
+void CVideoShaderProgram::SetVariable(int iUniformLocation, float x, float y, float z)
 {
 	// TODO: Error checking!
-	glUniform3fv(glGetUniformLocation(vsProgram, ccName), 3, mvVector);
+	glUniform3f(iUniformLocation, x, y, z);
 }
 
-void CVideoShaderProgram::SetVariable(const char *ccName, float x, float y, float z, float a)
+void CVideoShaderProgram::SetVariable(int iUniformLocation, MathVector3f_t mvVector)
 {
 	// TODO: Error checking!
-	glUniform4f(glGetUniformLocation(vsProgram, ccName), x, y, z, a);
+	glUniform3fv(iUniformLocation, 3, mvVector);
 }
 
-void CVideoShaderProgram::SetVariable(const char *ccName, int i)
+void CVideoShaderProgram::SetVariable(int iUniformLocation, float x, float y, float z, float a)
 {
 	// TODO: Error checking!
-	glUniform1i(glGetUniformLocation(vsProgram, ccName), i);
+	glUniform4f(iUniformLocation, x, y, z, a);
 }
 
-void CVideoShaderProgram::SetVariable(const char *ccName, float f)
+void CVideoShaderProgram::SetVariable(int iUniformLocation, int i)
 {
 	// TODO: Error checking!
-	glUniform1f(glGetUniformLocation(vsProgram, ccName), f);
+	glUniform1i(iUniformLocation, i);
 }
+
+void CVideoShaderProgram::SetVariable(int iUniformLocation, float f)
+{
+	// TODO: Error checking!
+	glUniform1f(iUniformLocation, f);
+}
+
+//
 
 // Information
 
@@ -251,6 +262,10 @@ void VideoShader_Initialize(void)
 	BaseProgram->Link();
 }
 
+// Temporary Interface START
+
+// Temporary Interface END
+
 void VideoShader_Enable(void)
 {
 	BaseProgram->Enable();
@@ -263,22 +278,22 @@ void VideoShader_Disable(void)
 
 void VideoShader_SetVariablei(const char *name, int i)
 {
-	BaseProgram->SetVariable(name, i);
+	BaseProgram->SetVariable(BaseProgram->GetUniformLocation(name), i);
 }
 
 void VideoShader_SetVariablef(const char *name, float f)
 {
-	BaseProgram->SetVariable(name, f);
+	BaseProgram->SetVariable(BaseProgram->GetUniformLocation(name), f);
 }
 
 void VideoShader_SetVariable3f(const char *name, float x, float y, float z)
 {
-	BaseProgram->SetVariable(name, x, y, z);
+	BaseProgram->SetVariable(BaseProgram->GetUniformLocation(name), x, y, z);
 }
 
 void VideoShader_SetVariable4f(const char *name, float x, float y, float z, float a)
 {
-	BaseProgram->SetVariable(name, x, y, z, a);
+	BaseProgram->SetVariable(BaseProgram->GetUniformLocation(name), x, y, z, a);
 }
 
 void VideoShader_Shutdown()

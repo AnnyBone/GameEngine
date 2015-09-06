@@ -221,7 +221,7 @@ CEditorFrame::CEditorFrame(const wxString & title, const wxPoint & pos, const wx
 	tbView->AddTool(ID_WINDOW_PLAY, "Play", iconMediaPlay, "Play simulation");
 	tbView->Realize();
 
-    toolbarInfo.Position(2);
+	toolbarInfo.Position(2);
 	manager->AddPane(tbView, toolbarInfo);
 
 	// Create the engine viewport...
@@ -279,7 +279,7 @@ void CEditorFrame::OpenWADTool(wxString sPath)
 	if (!WADTool)
 		WADTool = new CWADFrame(this);
 
-    WADTool->Show();
+	WADTool->Show();
 }
 
 void CEditorFrame::OpenMaterialTool(wxString sPath)
@@ -288,7 +288,7 @@ void CEditorFrame::OpenMaterialTool(wxString sPath)
 	if (!MaterialTool)
 		MaterialTool = new CMaterialFrame(this);
 
-    MaterialTool->Show();
+	MaterialTool->Show();
 }
 
 void CEditorFrame::StartEngineLoop()

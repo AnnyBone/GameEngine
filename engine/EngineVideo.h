@@ -21,7 +21,7 @@
 #ifndef __ENGINEVIDEO__
 #define __ENGINEVIDEO__
 
-//#define	VIDEO_SUPPORT_FRAMEBUFFERS
+#define	VIDEO_SUPPORT_FRAMEBUFFERS
 #define	VIDEO_SUPPORT_SHADERS
 
 extern ConsoleVariable_t
@@ -83,6 +83,13 @@ typedef enum VideoUnits_e
 	VIDEO_TEXTURE_MAX
 } VideoUnits_t;
 
+typedef enum
+{
+	VIDEO_MODE_LIT,
+	VIDEO_MODE_FLAT,
+	VIDEO_MODE_WIREFRAME
+} VideoRenderMode_t;
+
 #define	VIDEO_MAX_FRAMEBUFFFERS	1
 
 #include "shared_video.h"
@@ -123,6 +130,8 @@ typedef struct
 		bUnitState[VIDEO_MAX_UNITS],	// The state of each individual TMU.
 		bDebugFrame,
 		bUnlocked;						// Can we change the window settings or not?
+
+	VideoRenderMode_t CurrentRenderMode;
 
 	// OpenGL Extensions
 	bool

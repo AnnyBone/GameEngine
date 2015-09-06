@@ -321,7 +321,7 @@ void Model_LoadBSPTextures(BSPLump_t *blLump)
 
 		// Remove special characters.
 		if (tTexture->name[0] == '*')
-            strcpy(tTexture->name,tTexture->name + 1);
+			strcpy(tTexture->name,tTexture->name + 1);
 
 		FileSystem_UpdatePath(tTexture->name);
 
