@@ -3,11 +3,11 @@ The Katana engine is part of a project that aims to develop a heavily modified v
 
 ###Features###
 - Abstract SDL2 implementation for both video and input
-- Platform library to deal with platform-specific tasks
+- Universal Platform library to deal with platform-specific tasks
 - Heavily modified renderer with state tracking
 - GLSL shaders
 - Embedded mode
-- Material editor
+- WYSIWYG editor environment
 - VBO support
 - Blob and point-based planar shadows
 - Support for MD2 model format
@@ -17,6 +17,12 @@ The Katana engine is part of a project that aims to develop a heavily modified v
 - Tweakable file paths via script
 - Launcher, Engine, Game and Menu sub-systems
 - Complete rewrite of game-logic in C/C++ (versus original QuakeC implementation)
-- Additional bug fixes to existing code...
+- Additional bug fixes to existing code... 
+
+### Planned Features ###
+- Mirrors
+- Interface for dealing with FBOs
+- Support for post-processing
+- Entirely new level format and visibility system
 
 *Copyright (C) 2011-2015 OldTimes Software*
