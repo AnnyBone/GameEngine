@@ -67,7 +67,7 @@ pINSTANCE pModule_Load(const char *ccPath)
 		pError_Set("Failed to load library! (%s)\n%s", cUpdatedPath, pError_SystemGet());
 		pError_SystemReset();
 
-        // Print it...
+		// Print it...
 		printf("%s", pError_Get());
 
 		// Attempt to load under a different directory.

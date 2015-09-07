@@ -22,9 +22,6 @@
 
 #include "EngineVideo.h"
 
-// Platform library
-#include "platform_filesystem.h"
-
 /*
 	FitzQuake's texture manager.
 	Manages OpenGL texture images.
@@ -456,6 +453,8 @@ void TextureManager_Initialize(void)
 
 	Con_Printf("Initializing texture manager...\n");
 
+	Image_InitializePNG();
+
 	// init texture list
 	free_gltextures = (gltexture_t *) Hunk_AllocName (MAX_GLTEXTURES * sizeof(gltexture_t), "gltextures");
 	active_gltextures = NULL;
@@ -484,6 +483,11 @@ void TextureManager_Initialize(void)
 	//set safe size for warpimages
 	gl_warpimagesize = 0;
 	TexMgr_RecalcWarpImageSize ();
+}
+
+void TextureManager_Shutdown()
+{
+	Image_Shutdown();
 }
 
 /*

@@ -716,7 +716,7 @@ void Material_CheckFunctions(Material_t *mNewMaterial)
 */
 Material_t *Material_Load(const char *ccPath)
 {
-    Material_t  *mNewMaterial;
+	Material_t  *mNewMaterial;
 	void        *cData;
 	char		cPath[PLATFORM_MAX_PATH],
 				cMaterialName[64] = { 0 };

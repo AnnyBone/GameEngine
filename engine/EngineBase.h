@@ -24,6 +24,8 @@
 // Platform Library
 #include "platform.h"
 #include "platform_math.h"
+#include "platform_filesystem.h"
+#include "platform_module.h"
 
 #ifdef _DEBUG
 #include <assert.h>
@@ -44,7 +46,7 @@
 */
 #define ENGINE_VERSION_MAJOR	0
 #define ENGINE_VERSION_MINOR	3
-#define ENGINE_VERSION_BUILD	983	// 6/9/2015
+#define ENGINE_VERSION_BUILD	984	// 7/9/2015
 
 #define	ENGINE_LOG	"engine"
 

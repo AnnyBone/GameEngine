@@ -21,7 +21,7 @@ char	com_token[1024],
 		archivedir[1024];
 
 char    cErrorOpeningString[]	= "Error opening %s: %s!",
-        cErrorString[]			= "File read failure!";
+		cErrorString[]			= "File read failure!";
 
 bool	com_eof,
 		archive;
@@ -446,7 +446,7 @@ void ExtractFileExtension (char *path, char *dest)
 int ParseHex (char *hex)
 {
 	char    *str,
-            cMessage[] = "Bad hex number: %s";
+			cMessage[] = "Bad hex number: %s";
 	int     num;
 
 	num = 0;

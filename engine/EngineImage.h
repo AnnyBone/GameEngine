@@ -1,6 +1,6 @@
 /*	Copyright (C) 1996-2001 Id Software, Inc.
 	Copyright (C) 2002-2009 John Fitzgibbons and others
-	Copyright (C) 2011-2013 OldTimes Software
+	Copyright (C) 2011-2015 OldTimes Software
 
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License
@@ -18,8 +18,11 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-//be sure to free the hunk after using these loading functions
-byte *Image_LoadTGA (FILE *f, unsigned int *width, unsigned int *height);
-byte *Image_LoadImage (char *name, unsigned int *width, unsigned int *height);
+void Image_InitializePNG();
+void Image_Shutdown();
 
-bool Image_WriteTGA(char *name,byte *data,int width,int height,int bpp,bool upsidedown);
+//be sure to free the hunk after using these loading functions
+uint8_t *Image_LoadTGA (FILE *f, unsigned int *width, unsigned int *height);
+uint8_t *Image_LoadImage (char *name, unsigned int *width, unsigned int *height);
+
+bool Image_WriteTGA(char *name, uint8_t *data,int width,int height,int bpp,bool upsidedown);

@@ -242,15 +242,15 @@ extern "C" {
 
 	// FIXME, allocate dynamically
 	extern	efrag_t			cl_efrags[MAX_EFRAGS];
-	extern	entity_t		cl_static_entities[MAX_STATIC_ENTITIES];
+	extern	ClientEntity_t	cl_static_entities[MAX_STATIC_ENTITIES];
 	extern	lightstyle_t	cl_lightstyle[MAX_LIGHTSTYLES];
 	extern	DynamicLight_t	cl_dlights[MAX_DLIGHTS];
-	extern	entity_t		cl_temp_entities[MAX_TEMP_ENTITIES];
+	extern	ClientEntity_t	cl_temp_entities[MAX_TEMP_ENTITIES];
 	extern	beam_t			cl_beams[MAX_BEAMS];
-	extern	entity_t		*cl_visedicts[MAX_VISEDICTS];
+	extern	ClientEntity_t	*cl_visedicts[MAX_VISEDICTS];
 	extern	int				cl_numvisedicts;
 
-	extern	entity_t		*cl_entities; //johnfitz -- was a static array, now on hunk
+	extern	ClientEntity_t	*cl_entities; //johnfitz -- was a static array, now on hunk
 	extern	int				cl_max_edicts; //johnfitz -- only changes when new map loads
 
 #ifdef __cplusplus

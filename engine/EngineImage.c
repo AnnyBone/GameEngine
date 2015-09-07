@@ -24,64 +24,31 @@
 
 char loadfilename[MAX_OSPATH]; //file scope so that error messages can use it
 
+bool bPNGSupported = false;
+
+uint8_t *Image_LoadPNG(FILE *fin, unsigned int *width, unsigned int *height);
+
 /*	Returns a pointer to hunk allocated RGBA data
 */
-byte *Image_LoadImage(char *name, unsigned int *width, unsigned int *height)
+uint8_t *Image_LoadImage(char *name, unsigned int *width, unsigned int *height)
 {
-#if 0	// SDL_Image
-	SDL_Surface *sImage;
-	SDL_RWops	*rwFile;
-	FILE		*fFile;
+	uint8_t	*bImage;
+	FILE *f;
 
-	sprintf(loadfilename, "%s/%s.png",host_parms.cBasePath, name);
-
-	sImage = IMG_Load(loadfilename);
-
-	/*
-	COM_FOpenFile(loadfilename, &fFile);
-	if (fFile)
+	// PNG
+	if (bPNGSupported)
 	{
-		//char *cBuffer;
-
-		//cBuffer = Hunk_TempAlloc(sizeof(fFile->_base));
-		//memcpy(cBuffer, fFile->_base, sizeof(cBuffer));
-
-		rwFile = SDL_RWFromFP(fFile, SDL_TRUE);
-		//rwFile = SDL_RWFromMem(cBuffer, sizeof(cBuffer));
-		if (rwFile)
+		sprintf(loadfilename, "%s.png", name);
+		COM_FOpenFile(loadfilename, &f);
+		if (f)
 		{
-			sImage = IMG_LoadPNG_RW(rwFile);
-			if (!sImage)
-				Con_Warning("Failed to load PNG! (%s)\n", IMG_GetError());
-
-			SDL_RWclose(rwFile);
+			bImage = Image_LoadPNG(f, width, height);
+			if (bImage)
+				return bImage;
 		}
-		
-		fclose(fFile);
-
-		//free(cBuffer);
 	}
-	*/
 
-	if (sImage)
-	{
-		*width = sImage->w;
-		*height = sImage->h;
-
-		byte *bImage = sImage->pixels;
-
-		malloc(sizeof(sImage->pixels));
-
-		memcpy(bImage, sImage->pixels, sizeof(bImage));
-
-		SDL_FreeSurface(sImage);
-
-		return sImage->pixels;
-	}
-#else	// Internal
-	byte	*bImage;
-	FILE	*f;
-
+	// TGA
 	sprintf(loadfilename,"%s.tga",name);
 	COM_FOpenFile(loadfilename,&f);
 	if(f)
@@ -89,18 +56,17 @@ byte *Image_LoadImage(char *name, unsigned int *width, unsigned int *height)
 		bImage = Image_LoadTGA(f,width,height);
 		if(bImage)
 			return bImage;
-
-		// If we failed to load, warn us, then carry on and try PNG instead.
-		Con_Warning("Failed to load TGA! (%s)\n",loadfilename);
 	}
-#endif
+
+	// Throw a warning after we've tried all options.
+	Con_Warning("Failed to load image! (%s)\n", loadfilename);
 
 	return NULL;
 }
 
 int fgetLittleShort(FILE *f)
 {
-	byte	b1, b2;
+	uint8_t	b1, b2;
 
 	b1 = fgetc(f);
 	b2 = fgetc(f);
@@ -110,7 +76,7 @@ int fgetLittleShort(FILE *f)
 
 int fgetLittleLong(FILE *f)
 {
-	byte	b1, b2, b3, b4;
+	uint8_t	b1, b2, b3, b4;
 
 	b1 = fgetc(f);
 	b2 = fgetc(f);
@@ -142,11 +108,11 @@ targaheader_t targa_header;
 
 	TODO: support BGRA and BGR formats (since opengl can return them, and we don't have to swap)
 */
-bool Image_WriteTGA(char *name,byte *data,int width,int height,int bpp,bool upsidedown)
+bool Image_WriteTGA(char *name, uint8_t *data,int width,int height,int bpp,bool upsidedown)
 {
-	int		handle, i, size, temp, bytes;
-	char	pathname[MAX_OSPATH];
-	byte	header[TARGAHEADERSIZE];
+	int	handle, i, size, temp, bytes;
+	char pathname[MAX_OSPATH];
+	uint8_t	header[TARGAHEADERSIZE];
 
 	if(!pFileSystem_CreateDirectory(com_gamedir)) //if we've switched to a nonexistant gamedir, create it now so we don't crash
 		Sys_Error("Failed to create directory!\n");
@@ -182,11 +148,11 @@ bool Image_WriteTGA(char *name,byte *data,int width,int height,int bpp,bool upsi
 	return true;
 }
 
-byte *Image_LoadTGA (FILE *fin, unsigned int *width, unsigned int *height)
+uint8_t *Image_LoadTGA (FILE *fin, unsigned int *width, unsigned int *height)
 {
-	int		columns,rows,numPixels,row,column,realrow;
-	byte	*pixbuf,*targa_rgba;
-	bool	upside_down;                                //johnfitz -- fix for upside-down targas
+	int	columns,rows,numPixels,row,column,realrow;
+	uint8_t	*pixbuf,*targa_rgba;
+	bool upside_down;                                //johnfitz -- fix for upside-down targas
 
 	targa_header.id_length			= fgetc(fin);
 	targa_header.colormap_type		= fgetc(fin);
@@ -211,7 +177,7 @@ byte *Image_LoadTGA (FILE *fin, unsigned int *width, unsigned int *height)
 	numPixels   = columns * rows;
 	upside_down = !(targa_header.attributes & 0x20); //johnfitz -- fix for upside-down targas
 
-	targa_rgba = (byte*)Hunk_Alloc (numPixels*4);
+	targa_rgba = (uint8_t*)Hunk_Alloc (numPixels*4);
 
 	if (targa_header.id_length != 0)
 		fseek(fin, targa_header.id_length, SEEK_CUR);  // skip TARGA image comment
@@ -356,4 +322,140 @@ byte *Image_LoadTGA (FILE *fin, unsigned int *width, unsigned int *height)
 	*width = (int)(targa_header.width);
 	*height = (int)(targa_header.height);
 	return targa_rgba;
+}
+
+/*
+	PNG Support
+*/
+
+#include <png.h>
+
+pINSTANCE iPNGLibraryInstance;
+
+png_structp(*PNG_CreateReadStruct)(png_const_charp user_png_ver, png_voidp error_ptr, png_error_ptr error_fn, png_error_ptr warn_fn);
+
+png_infop(*PNG_CreateInfoStruct)(png_const_structrp png_ptr);
+
+png_uint_32(*PNG_AccessVersionNumber)(void);
+png_uint_32(*PNG_GetImageWidth)(png_const_structrp png_ptr, png_const_inforp info_ptr);
+png_uint_32(*PNG_GetImageHeight)(png_const_structrp png_ptr, png_const_inforp info_ptr);
+
+void(*PNG_InitIO)(png_structrp png_ptr, png_FILE_p fp);
+void(*PNG_SetSigBytes)(png_structrp png_ptr, int num_bytes);
+void(*PNG_ReadPNG)(png_structrp png_ptr, png_inforp info_ptr, int transforms, png_voidp params);
+void(*PNG_ReadInfo)(png_structrp png_ptr, png_inforp info_ptr);
+void(*PNG_SetKeepUnknownChunks)(png_structrp png_ptr, int keep, png_const_bytep chunk_list, int num_chunks);
+void(*PNG_DestroyReadStruct)(png_structpp png_ptr_ptr, png_infopp info_ptr_ptr, png_infopp end_info_ptr_ptr);
+
+/*
+	Add struct, with function pointer + name, then go through it and assign everything automatically?
+*/
+
+static pModuleFunction_t PNGFunctions[]=
+{
+	{ "png_create_read_struct", &PNG_CreateReadStruct },
+	{ "png_create_info_struct", &PNG_CreateInfoStruct },
+	{ "png_access_version_number", &PNG_AccessVersionNumber },
+	{ "png_get_image_width", &PNG_GetImageWidth },
+	{ "png_get_image_height", &PNG_GetImageHeight },
+	{ "png_init_io", &PNG_InitIO },
+	{ "png_set_sig_bytes", &PNG_SetSigBytes },
+	{ "png_read_png", &PNG_ReadPNG },
+	{ "png_read_info", &PNG_ReadInfo },
+	{ "png_set_keep_unknown_chunks", &PNG_SetKeepUnknownChunks },
+	{ "png_destroy_read_struct", &PNG_DestroyReadStruct },
+	{ NULL, NULL }
+};
+
+#define	IMAGE_PNG_FUNCTION_WARNING(a) Con_Warning("Failed to find libpng function! ("a")\n");
+
+void Image_InitializePNG()
+{
+	iPNGLibraryInstance = pModule_Load("libpng16");
+	if (!iPNGLibraryInstance)
+	{
+		// Try again...
+		iPNGLibraryInstance = pModule_Load("libpng16-16");
+		if (!iPNGLibraryInstance)
+		{
+			Con_Warning("Failed to load libpng!\n");
+			return;
+		}
+	}
+
+	int i;
+	for (i = 0; i < pARRAYELEMENTS(PNGFunctions); i++)
+	{
+		if (!PNGFunctions[i].ccFunctionName[0])
+			break;
+
+		PNGFunctions[i].Function = pModule_FindFunction(iPNGLibraryInstance, PNGFunctions[i].ccFunctionName);
+		if (!PNGFunctions[i].Function)
+		{
+			Con_Warning("Failed to find libpng function! (%s)\n", PNGFunctions[i].ccFunctionName);
+			return;
+		}
+	}
+
+	bPNGSupported = true;
+}
+
+void Image_PNGError(png_structp pPNG, const char *ccString)
+{
+	Con_Warning("Load error! (%s)\n", ccString);
+}
+
+uint8_t *Image_LoadPNG(FILE *fin, unsigned int *width, unsigned int *height)
+{
+	png_structp pPNG;
+	png_infop pInfo;
+	uint8_t *iImageBuffer;
+	int iWidth, iHeight;
+	//int iBitDepth, iColourType, iInterlaceType;
+	
+	pPNG = PNG_CreateReadStruct(PNG_LIBPNG_VER_STRING, NULL, Image_PNGError, Image_PNGError);
+	if (!pPNG)
+	{
+		Con_Warning("Failed to create PNG read struct!\n");
+
+		fclose(fin);
+		return NULL;
+	}
+
+	pInfo = PNG_CreateInfoStruct(pPNG);
+	if (!pInfo)
+	{
+		Con_Warning("Failed to create info struct!\n");
+
+		PNG_DestroyReadStruct(&pPNG, &pInfo, NULL);
+
+		fclose(fin);
+		return NULL;
+	}
+
+	PNG_InitIO(pPNG, fin);
+
+	// Ignore unknown chunks.
+	PNG_SetKeepUnknownChunks(pPNG, pInfo, 0, NULL, 0);
+
+	// Last parameter isn't used, so just passed null.
+	// No transforms are needed here ether (though PNG_TRANSFORM_BGR in future????)
+	PNG_ReadPNG(pPNG, pInfo, PNG_TRANSFORM_IDENTITY, NULL);
+	
+	// Get the width and height.
+	iWidth = PNG_GetImageWidth(pPNG, pInfo);
+	iHeight = PNG_GetImageHeight(pPNG, pInfo);
+	iImageBuffer = (uint8_t*)Hunk_Alloc((iHeight + iWidth) * 4);
+	
+	fclose(fin);
+
+	return NULL;
+}
+
+/**/
+
+void Image_Shutdown()
+{
+	if (iPNGLibraryInstance)
+		pModule_Unload(iPNGLibraryInstance);
 }

@@ -128,33 +128,33 @@ void Point_Start(ServerEntity_t *ent)
 		if(	(ent->local.style != INFO_PLAYER_START)		&&
 			(ent->local.style != INFO_PLAYER_MIKIKO)	&&
 			(ent->local.style != INFO_PLAYER_SUPERFLY))
-        {
-            Engine.Con_Warning("Invalid start style! (%i)\n",ent->local.style);
+		{
+			Engine.Con_Warning("Invalid start style! (%i)\n",ent->local.style);
 
 			ENTITY_REMOVE(ent);
-        }
+		}
 
 #ifdef GAME_OPENKATANA
-        if(ent->local.style == INFO_PLAYER_SUPERFLY)
-        {
-            ent->local.style = BOT_SUPERFLY;
+		if(ent->local.style == INFO_PLAYER_SUPERFLY)
+		{
+			ent->local.style = BOT_SUPERFLY;
 
-            Bot_Spawn(ent);
-        }
-        else if(ent->local.style == INFO_PLAYER_MIKIKO)
-        {
-            ent->local.style = BOT_MIKIKO;
+			Bot_Spawn(ent);
+		}
+		else if(ent->local.style == INFO_PLAYER_MIKIKO)
+		{
+			ent->local.style = BOT_MIKIKO;
 
-            Bot_Spawn(ent);
-        }
+			Bot_Spawn(ent);
+		}
 		break;
 	case MODE_CAPTURETHEFLAG:
 		if((ent->local.style != INFO_PLAYER_CTF) || !ent->local.pTeam)
-        {
-            Engine.Con_Warning("Invalid start style! (%i)\n",ent->local.style);
+		{
+			Engine.Con_Warning("Invalid start style! (%i)\n",ent->local.style);
 
 			ENTITY_REMOVE(ent);
-        }
+		}
 
 		if(ent->local.pTeam == TEAM_RED)
 			ent->v.cClassname = "point_start_red";
@@ -166,20 +166,20 @@ void Point_Start(ServerEntity_t *ent)
 			(ent->local.style != INFO_PLAYER_MIKIKO)	&&
 			(ent->local.style != INFO_PLAYER_SUPERFLY)	&&
 			(ent->local.style != INFO_PLAYER_COOP))
-        {
-            Engine.Con_Warning("Invalid start style! (%i)\n",ent->local.style);
+		{
+			Engine.Con_Warning("Invalid start style! (%i)\n",ent->local.style);
 
 			ENTITY_REMOVE(ent);
-        }
+		}
 		break;
 	case MODE_DEATHMATCH:
 	case MODE_VEKTAR:
 		if(ent->local.style != INFO_PLAYER_DEATHMATCH)
-        {
-            Engine.Con_Warning("Invalid start style! (%i)\n",ent->local.style);
+		{
+			Engine.Con_Warning("Invalid start style! (%i)\n",ent->local.style);
 
 			ENTITY_REMOVE(ent);
-        }
+		}
 
 		ent->v.cClassname = "point_start_deathmatch";
 		break;

@@ -5,6 +5,13 @@
 
 #include "platform.h"
 
+typedef struct
+{
+	const char *ccFunctionName;
+
+	void (*Function)();
+} pModuleFunction_t;
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -19,12 +26,12 @@ extern "C" {
 #define pMODULE_IMPORT		__attribute__((visibility("hidden")))
 #endif
 
-extern	pFARPROC	pModule_FindFunction(pINSTANCE hModule,const char *cEntryFunction);
+extern pFARPROC pModule_FindFunction(pINSTANCE hModule,const char *cEntryFunction);
 
-pINSTANCE	pModule_Load(const char *ccPath);
+pINSTANCE pModule_Load(const char *ccPath);
 
-extern	void	pModule_Unload(pINSTANCE hModule);
-extern	void	*pModule_LoadInterface(pINSTANCE hModule,const char *cPath,const char *cEntryFunction,void *vPoint);
+extern void pModule_Unload(pINSTANCE hModule);
+extern void *pModule_LoadInterface(pINSTANCE hModule,const char *cPath,const char *cEntryFunction,void *vPoint);
 
 #ifdef __cplusplus
 }

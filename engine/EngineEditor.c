@@ -25,10 +25,6 @@
 #include "EngineInput.h"
 #include "EngineMenu.h"
 
-// Platform library
-#include "platform_module.h"
-#include "platform_filesystem.h"
-
 /*
 	The Katana Editor is perhaps the biggest addition to
 	the engine. If this is finished in-time for OpenKatana's

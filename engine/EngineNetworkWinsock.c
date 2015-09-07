@@ -22,8 +22,6 @@
 
 #include "winquake.h"
 
-#include "platform_module.h"
-
 extern ConsoleVariable_t hostname;
 
 #define MAXHOSTNAMELEN		256
@@ -67,7 +65,7 @@ static double	blocktime;
 
 bool PASCAL FAR BlockingHook(void)
 {
-    MSG		msg;
+	MSG		msg;
 	bool	ret;
 
 	if ((System_DoubleTime() - blocktime) > 2.0)
@@ -76,17 +74,17 @@ bool PASCAL FAR BlockingHook(void)
 		return false;
 	}
 
-    /* get the next message, if any */
+	/* get the next message, if any */
 	ret = (bool)PeekMessage(&msg, NULL, 0, 0, PM_REMOVE);
 
-    /* if we got one, process it */
-    if (ret) {
-        TranslateMessage(&msg);
-        DispatchMessage(&msg);
-    }
+	/* if we got one, process it */
+	if (ret) {
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);
+	}
 
-    /* TRUE if we got a message */
-    return ret;
+	/* TRUE if we got a message */
+	return ret;
 }
 
 
@@ -127,7 +125,7 @@ int WINS_Init (void)
 
 // initialize the Winsock function vectors (we do this instead of statically linking
 // so we can run on Win 3.1, where there isn't necessarily Winsock)
-    hInst = pModule_Load("wsock32");
+	hInst = pModule_Load("wsock32");
 	if (hInst == NULL)
 	{
 		Con_SafePrintf ("Failed to load winsock.dll\n");
@@ -137,7 +135,7 @@ int WINS_Init (void)
 
 	winsock_lib_initialized = true;
 
-    pWSAStartup = (void *)pModule_FindFunction(hInst, "WSAStartup");
+	pWSAStartup = (void *)pModule_FindFunction(hInst, "WSAStartup");
 	pWSACleanup = (void *)pModule_FindFunction(hInst, "WSACleanup");
 	pWSAGetLastError = (void *)pModule_FindFunction(hInst, "WSAGetLastError");
 	psocket = (void *)pModule_FindFunction(hInst, "socket");
@@ -151,7 +149,7 @@ int WINS_Init (void)
 	pgethostbyaddr = (void *)pModule_FindFunction(hInst, "gethostbyaddr");
 	pgetsockname = (void *)pModule_FindFunction(hInst, "getsockname");
 
-    if (!pWSAStartup || !pWSACleanup || !pWSAGetLastError ||
+	if (!pWSAStartup || !pWSACleanup || !pWSAGetLastError ||
 		!psocket || !pioctlsocket || !psetsockopt ||
 		!precvfrom || !psendto || !pclosesocket ||
 		!pgethostname || !pgethostbyname || !pgethostbyaddr ||
@@ -347,7 +345,7 @@ static int PartialIPAddress (char *in, struct qsockaddr *hostaddr)
 		{
 		  num = num*10 + *b++ - '0';
 		  if (++run > 3)
-		  	return -1;
+			return -1;
 		}
 		if ((*b < '0' || *b > '9') && *b != '.' && *b != ':' && *b != 0)
 			return -1;

@@ -61,9 +61,9 @@
 #	define	PLATFORM_MAX_PATH	MAX_PATH-1	// Maximum path length.
 #	define	PLATFORM_MAX_USER	UNLEN
 
-	// Other
-#	define	pINSTANCE	HINSTANCE	// Instance definition.
-#	define	pFARPROC	FARPROC		// Function pointer.
+#	ifdef _MSC_VER
+#		pragma warning(disable : 4152)
+#	endif
 #elif __APPLE__	// Mac OS X
 	// Information
 #	define	PLATFORM_NAME	"APPLE"
@@ -89,10 +89,14 @@
 	// Limits
 #	define	PLATFORM_MAX_PATH	256	// Maximum path length.
 #	define	PLATFORM_MAX_USER	32
+#endif
 
-	// Other
-#	define	pINSTANCE	void *		// Instance definition.
-#	define	pFARPROC	void *		// Function pointer.
+// Other
+#ifndef pINSTANCE
+#	define	pINSTANCE	void *	// Instance definition.
+#endif
+#ifndef pFARPROC
+#	define	pFARPROC	void *	// Function pointer.
 #endif
 
 // Set the defaults if nothing's been set for any of these...

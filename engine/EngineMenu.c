@@ -27,7 +27,6 @@
 #include "SharedModule.h"
 
 #include "platform_window.h"
-#include "platform_module.h"
 
 pINSTANCE hMenuInstance;
 
@@ -82,13 +81,13 @@ void Menu_Initialize(void)
 		// [4/5/2013] Unload our module ~hogsy
 		pModule_Unload(hMenuInstance);
 
-        // Let the user know the module failed to load. ~hogsy
+		// Let the user know the module failed to load. ~hogsy
 		Sys_Error("Failed to load %s/%s."PLATFORM_CPU""pMODULE_EXTENSION"!\nCheck log for details.\n",com_gamedir,MODULE_MENU);
 	}
 }
 
 /*
-    Export Functions
+	Export Functions
 */
 
 /*  Gets the width of the current viewport.
@@ -106,7 +105,7 @@ int Menu_GetScreenHeight(void)
 }
 
 /*
-    Import Functions
+	Import Functions
 */
 
 /*	Toggles whether the menu is active or not.

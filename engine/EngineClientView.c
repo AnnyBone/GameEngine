@@ -410,7 +410,7 @@ void View_PolyBlend(void)
 	if (!gl_polyblend.value || !cl.cshifts[CSHIFT_CONTENTS].percent)
 		return;
 
-    Video_ResetCapabilities(false);
+	Video_ResetCapabilities(false);
 
 	Video_DisableCapabilities(VIDEO_DEPTH_TEST|VIDEO_TEXTURE_2D);
 	Video_EnableCapabilities(VIDEO_BLEND);

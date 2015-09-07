@@ -314,12 +314,12 @@ void Sys_InitFloatTime (void)
 
 char *Sys_ConsoleInput (void)
 {
-    // [17/4/2014] Moved up here; don't worry about console input on Linux either, unless we're dedicated! ~hogsy
-    if(!bIsDedicated)
+	// [17/4/2014] Moved up here; don't worry about console input on Linux either, unless we're dedicated! ~hogsy
+	if(!bIsDedicated)
 		return NULL;
 
 #ifdef __WIN32__
-    {
+	{
 	static char	    text[256];
 	static int		len;
 	INPUT_RECORD	recs[1024] = { 0 };
@@ -387,7 +387,7 @@ char *Sys_ConsoleInput (void)
 	}
 	}
 #else
-    {
+	{
 	static char	con_text[256];
 	static int	textlen;
 	char		c;

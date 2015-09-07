@@ -752,22 +752,26 @@ void Host_Shutdown(void)
 	// Keep Con_Printf from trying to update the screen
 	scr_disabled_for_loading = true;
 
-	Host_WriteConfiguration ();
+	Host_WriteConfiguration();
 
-	// [3/8/2012] Shutdown the menu! ~hogsy
 	if(Menu)
 		Menu->Shutdown();
 
 	if(Game)
 		Game->Shutdown();
 
-	Audio_Shutdown();
 	Input_Shutdown();
 
 	NET_Shutdown();
-	S_Shutdown();
 
-	if(cls.state != ca_dedicated)
+	if (cls.state != ca_dedicated)
+	{
+		S_Shutdown();
+
+		Audio_Shutdown();
 		Video_Shutdown();
+
+		TextureManager_Shutdown();
+	}
 }
 

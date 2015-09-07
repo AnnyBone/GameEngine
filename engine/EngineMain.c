@@ -22,10 +22,7 @@
 
 #include "EngineVideo.h"
 #include "EngineEditor.h"
-
 #include "engine_client.h"
-
-#include "platform_module.h"
 
 EngineGlobal_t Global;
 
