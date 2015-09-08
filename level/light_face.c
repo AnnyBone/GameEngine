@@ -117,6 +117,7 @@ bool LightFace_DirtTrace(const vec3_t vStart, const vec3_t vStop, const BSPModel
 	return false;
 }
 
+#if 0
 static vec_t LightFace_DirtForSample(const BSPModel_t *bModel, const vec3_t vOrigin, const vec3_t vNormal)
 {
 	int		i;
@@ -193,6 +194,7 @@ static vec_t LightFace_DirtForSample(const BSPModel_t *bModel, const vec3_t vOri
 	// Return to sender
 	return 1.0f - fOutDirt;
 }
+#endif
 
 // unfinished
 static void LightFace_Dirt(const directlight_t *light, lightinfo_t *l)

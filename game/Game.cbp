@@ -83,7 +83,8 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="game_resources.h" />
-		<Unit filename="server/ServerEntity.cpp" />
+		<Unit filename="server/Entity.cpp" />
+		<Unit filename="server/EntityAnimated.cpp" />
 		<Unit filename="server/monster_bot.c">
 			<Option compilerVar="CC" />
 		</Unit>
