@@ -133,6 +133,7 @@ CEditorFrame::CEditorFrame(const wxString & title, const wxPoint & pos, const wx
 	mEdit->Append(wxID_UNDO);
 	mEdit->Append(wxID_REDO);
 	mEdit->AppendSeparator();
+	mEdit->Append(wxID_PREFERENCES)->SetBitmap();
 
 	wxMenu *mView = new wxMenu;
 	viewWireframe = mView->AppendCheckItem(FRAME_EVENT_WIREFRAME, "&Wireframe");

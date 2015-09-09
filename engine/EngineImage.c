@@ -332,20 +332,20 @@ uint8_t *Image_LoadTGA (FILE *fin, unsigned int *width, unsigned int *height)
 
 pINSTANCE iPNGLibraryInstance;
 
-png_structp(*PNG_CreateReadStruct)(png_const_charp user_png_ver, png_voidp error_ptr, png_error_ptr error_fn, png_error_ptr warn_fn);
+static png_structp(*PNG_CreateReadStruct)(png_const_charp user_png_ver, png_voidp error_ptr, png_error_ptr error_fn, png_error_ptr warn_fn);
 
-png_infop(*PNG_CreateInfoStruct)(png_const_structrp png_ptr);
+static png_infop(*PNG_CreateInfoStruct)(png_const_structrp png_ptr);
 
-png_uint_32(*PNG_AccessVersionNumber)(void);
-png_uint_32(*PNG_GetImageWidth)(png_const_structrp png_ptr, png_const_inforp info_ptr);
-png_uint_32(*PNG_GetImageHeight)(png_const_structrp png_ptr, png_const_inforp info_ptr);
+static png_uint_32(*PNG_AccessVersionNumber)(void);
+static png_uint_32(*PNG_GetImageWidth)(png_const_structrp png_ptr, png_const_inforp info_ptr);
+static png_uint_32(*PNG_GetImageHeight)(png_const_structrp png_ptr, png_const_inforp info_ptr);
 
-void(*PNG_InitIO)(png_structrp png_ptr, png_FILE_p fp);
-void(*PNG_SetSigBytes)(png_structrp png_ptr, int num_bytes);
-void(*PNG_ReadPNG)(png_structrp png_ptr, png_inforp info_ptr, int transforms, png_voidp params);
-void(*PNG_ReadInfo)(png_structrp png_ptr, png_inforp info_ptr);
-void(*PNG_SetKeepUnknownChunks)(png_structrp png_ptr, int keep, png_const_bytep chunk_list, int num_chunks);
-void(*PNG_DestroyReadStruct)(png_structpp png_ptr_ptr, png_infopp info_ptr_ptr, png_infopp end_info_ptr_ptr);
+static void(*PNG_InitIO)(png_structrp png_ptr, png_FILE_p fp);
+static void(*PNG_SetSigBytes)(png_structrp png_ptr, int num_bytes);
+static void(*PNG_ReadPNG)(png_structrp png_ptr, png_inforp info_ptr, int transforms, png_voidp params);
+static void(*PNG_ReadInfo)(png_structrp png_ptr, png_inforp info_ptr);
+static void(*PNG_SetKeepUnknownChunks)(png_structrp png_ptr, int keep, png_const_bytep chunk_list, int num_chunks);
+static void(*PNG_DestroyReadStruct)(png_structpp png_ptr_ptr, png_infopp info_ptr_ptr, png_infopp end_info_ptr_ptr);
 
 /*
 	Add struct, with function pointer + name, then go through it and assign everything automatically?
@@ -353,18 +353,17 @@ void(*PNG_DestroyReadStruct)(png_structpp png_ptr_ptr, png_infopp info_ptr_ptr, 
 
 static pModuleFunction_t PNGFunctions[]=
 {
-	{ "png_create_read_struct", &PNG_CreateReadStruct },
-	{ "png_create_info_struct", &PNG_CreateInfoStruct },
-	{ "png_access_version_number", &PNG_AccessVersionNumber },
-	{ "png_get_image_width", &PNG_GetImageWidth },
-	{ "png_get_image_height", &PNG_GetImageHeight },
-	{ "png_init_io", &PNG_InitIO },
-	{ "png_set_sig_bytes", &PNG_SetSigBytes },
-	{ "png_read_png", &PNG_ReadPNG },
-	{ "png_read_info", &PNG_ReadInfo },
-	{ "png_set_keep_unknown_chunks", &PNG_SetKeepUnknownChunks },
-	{ "png_destroy_read_struct", &PNG_DestroyReadStruct },
-	{ NULL, NULL }
+	{ "png_create_read_struct", (void**)&PNG_CreateReadStruct },
+	{ "png_create_info_struct", (void**)&PNG_CreateInfoStruct },
+	{ "png_access_version_number", (void**)&PNG_AccessVersionNumber },
+	{ "png_get_image_width", (void**)&PNG_GetImageWidth },
+	{ "png_get_image_height", (void**)&PNG_GetImageHeight },
+	{ "png_init_io", (void**)&PNG_InitIO },
+	{ "png_set_sig_bytes", (void**)&PNG_SetSigBytes },
+	{ "png_read_png", (void**)&PNG_ReadPNG },
+	{ "png_read_info", (void**)&PNG_ReadInfo },
+	{ "png_set_keep_unknown_chunks", (void**)&PNG_SetKeepUnknownChunks },
+	{ "png_destroy_read_struct", (void**)&PNG_DestroyReadStruct }
 };
 
 #define	IMAGE_PNG_FUNCTION_WARNING(a) Con_Warning("Failed to find libpng function! ("a")\n");
@@ -374,22 +373,14 @@ void Image_InitializePNG()
 	iPNGLibraryInstance = pModule_Load("libpng16");
 	if (!iPNGLibraryInstance)
 	{
-		// Try again...
-		iPNGLibraryInstance = pModule_Load("libpng16-16");
-		if (!iPNGLibraryInstance)
-		{
-			Con_Warning("Failed to load libpng!\n");
-			return;
-		}
+		Con_Warning("Failed to load libpng!\n");
+		return;
 	}
 
 	int i;
 	for (i = 0; i < pARRAYELEMENTS(PNGFunctions); i++)
 	{
-		if (!PNGFunctions[i].ccFunctionName[0])
-			break;
-
-		PNGFunctions[i].Function = pModule_FindFunction(iPNGLibraryInstance, PNGFunctions[i].ccFunctionName);
+		*(PNGFunctions[i].Function) = pModule_FindFunction(iPNGLibraryInstance, PNGFunctions[i].ccFunctionName);
 		if (!PNGFunctions[i].Function)
 		{
 			Con_Warning("Failed to find libpng function! (%s)\n", PNGFunctions[i].ccFunctionName);
@@ -436,7 +427,7 @@ uint8_t *Image_LoadPNG(FILE *fin, unsigned int *width, unsigned int *height)
 	PNG_InitIO(pPNG, fin);
 
 	// Ignore unknown chunks.
-	PNG_SetKeepUnknownChunks(pPNG, pInfo, 0, NULL, 0);
+	PNG_SetKeepUnknownChunks(pPNG, 0, NULL, 0);
 
 	// Last parameter isn't used, so just passed null.
 	// No transforms are needed here ether (though PNG_TRANSFORM_BGR in future????)
@@ -446,6 +437,8 @@ uint8_t *Image_LoadPNG(FILE *fin, unsigned int *width, unsigned int *height)
 	iWidth = PNG_GetImageWidth(pPNG, pInfo);
 	iHeight = PNG_GetImageHeight(pPNG, pInfo);
 	iImageBuffer = (uint8_t*)Hunk_Alloc((iHeight + iWidth) * 4);
+
+	PNG_DestroyReadStruct(&pPNG, &pInfo, NULL);
 	
 	fclose(fin);
 

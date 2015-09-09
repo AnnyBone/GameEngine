@@ -4,32 +4,25 @@ Katana.sln.docstates.suo
 *.obj
 *.idb
 *.pdb
-level/Debug/Level.Build.CppClean.log
+level/Debug/
 *.ilk
 *.sdf
 *.suo
 *.suo
 *.depend
 *.opensdf
-level/Debug/Level.log
-engine/Debug/Engine.log
+engine/Debug/
 *.sbr
 *.lastbuildstate
 *.unsuccessfulbuild
-engine/Release/OpenKatana.Build.CppClean.log
-engine/Release/Engine.log
+engine/Release/
 *.log
-viewer/msvc/Release/RCa08556
 *.db
 *.crf
-viewer/msvc/Release/md2viewer.res
-engine/Release/Engine.bsc
 *.exp
-engine/Release/OpenKatana.lib
 bin/engine/scripts/paths.script
 bin/log.txt
-Release/Menu.lib
-Release/Example Game.lib
+Release/
 *.dll
 bin/engine/logs/
 /.project
@@ -41,8 +34,7 @@ editor_legacy/Debug/RCa07736
 *.map
 *.layout
 *.exe
-/Debug (OpenKatana)/Menu.lib
-/Debug (OpenKatana)/Game.lib
+/Debug (OpenKatana)/
 /engine/Release
 /tools/MaterialGenerator/nbproject/private/
 /references
@@ -62,3 +54,8 @@ editor_legacy/Debug/RCa07736
 *.version
 *.a
 *.png~
+*.out
+/external/lpng1618/projects/vstudio/pngtest/Debug
+/external/lpng1618/projects/vstudio/pngtest/Release
+*.ipdb
+*.iobj

@@ -83,11 +83,7 @@ void Editor_Launch(void)
 	if(Editor.bEnabled)
 		return;
 
-	Con_Printf("\nLaunching editor...\n");
-
 	key_dest = KEY_EDITOR;
-
-	Input_ActivateMouse();
 
 	Editor.bEnabled = true;
 }
