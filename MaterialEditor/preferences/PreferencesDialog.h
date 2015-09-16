@@ -27,8 +27,22 @@ public:
 	CPreferencesDialog(wxWindow *wParent);
 	~CPreferencesDialog();
 
+	virtual bool Show();
+
+	void SyncSettings();
+	void ApplySettings();
+
 private:
+	// Events
+	void HandleCommandEvent(wxCommandEvent &event);
+
 	wxNotebook *Notebook;
+
+	wxCheckBox *AutoReload;
+	wxSpinCtrl *AutoReloadDelay;
+
+	wxCheckBox *VideoLegacyMode;
+	wxCheckBox *VideoAlphaTrick;
 
 	wxPanel *VideoPanel;
 	wxPanel *AudioPanel;

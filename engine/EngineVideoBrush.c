@@ -209,7 +209,7 @@ void R_DrawSequentialPoly(msurface_t *s)
 	Video_ResetCapabilities(true);
 }
 
-void Brush_Draw(entity_t *e)
+void Brush_Draw(ClientEntity_t *e)
 {
 	int				k;
 	unsigned int	i;

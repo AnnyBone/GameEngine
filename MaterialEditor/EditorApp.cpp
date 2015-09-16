@@ -6,28 +6,32 @@ wxIMPLEMENT_APP(CEditorApp);
 
 char cApplicationTitle[512];
 
-wxBitmap bSmallPrefIcon;
+wxString
+	sEditorBasePath, 
+	sEditorMaterialPath;
 
 wxBitmap
-bSmallAuto,
-bSmallWAD,
-bSmallMDL,
-iconScriptEdit,
-smallTransform,
-smallDocumentOpen,
-iconMediaPause,
-iconMediaPlay,
-iconDocumentRefresh,
-smallDocumentNew,
-smallDocumentSave,
-smallDocumentSaveAs,
-iconDocumentUndo,
-iconDocumentRedo,
-smallDocumentClose,
-iconShapeCube,
-smallApplicationExit,
-iconShapeSphere;
-wxBitmap bSmallPlaneIcon;
+	bSmallPrefIcon,
+	bSmallPlaneIcon,
+	bSplashScreen,
+	bSmallAuto,
+	bSmallWAD,
+	bSmallMDL,
+	iconScriptEdit,
+	smallTransform,
+	smallDocumentOpen,
+	iconMediaPause,
+	iconMediaPlay,
+	iconDocumentRefresh,
+	smallDocumentNew,
+	smallDocumentSave,
+	smallDocumentSaveAs,
+	iconDocumentUndo,
+	iconDocumentRedo,
+	smallDocumentClose,
+	iconShapeCube,
+	smallApplicationExit,
+	iconShapeSphere;
 
 bool CEditorApp::OnInit()
 {
@@ -39,6 +43,7 @@ bool CEditorApp::OnInit()
 	sprintf(cApplicationTitle, EDITOR_TITLE" (%s)", engine->GetVersion());
 
 	wxImage::AddHandler(new wxPNGHandler);
+	bSplashScreen.LoadFile("resource/splash-editor.png", wxBITMAP_TYPE_PNG);
 	bSmallAuto.LoadFile("resource/view-auto.png", wxBITMAP_TYPE_PNG);
 	bSmallMDL.LoadFile("resource/icon-mdl-small.png", wxBITMAP_TYPE_PNG);
 	bSmallWAD.LoadFile("resource/icon-wad-small.png", wxBITMAP_TYPE_PNG);
@@ -89,6 +94,9 @@ bool CEditorApp::OnInit()
 	}
 
 	engine->MaterialEditorInitialize();
+
+	sEditorBasePath = engine->GetBasePath();
+	sEditorMaterialPath = engine->GetMaterialPath();
 
 	efMainFrame->InitializeConsoleVariables();
 

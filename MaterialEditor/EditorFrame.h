@@ -23,7 +23,6 @@ public:
 
 		engine->DrawGradientBackground();
 		engine->DrawResetCanvas();
-		engine->DrawString(10, 10, "Hello multiple viewports!");
 		engine->DrawFPS();
 
 		engine->Video_PostFrame();

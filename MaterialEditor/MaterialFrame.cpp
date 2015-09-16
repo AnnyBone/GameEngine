@@ -62,7 +62,6 @@ void CMaterialViewportPanel::Draw()
 {
 	engine->Video_PreFrame();
 
-	//engine->DrawSetCanvas(CANVAS_DEFAULT);
 	engine->DrawGradientBackground();
 
 	if (PreviewEntity)
@@ -225,16 +224,18 @@ CMaterialFrame::CMaterialFrame(wxWindow* parent, wxWindowID id)
 
 	//
 
-	Show();
-
 	iPaneInfo.PinButton(true);
 	iPaneInfo.BestSize(wxSize(256, 256));
+
+	Centre();
+	Show();
 
 	// Create the engine viewport...
 	Viewport = new CMaterialViewportPanel(this);
 	iPaneInfo.Caption("Viewport");
 	iPaneInfo.Top();
 	iPaneInfo.Right();
+	iPaneInfo.MaximizeButton(true);
 	mManager->AddPane(Viewport, iPaneInfo);
 
 	// Create the material props...
@@ -242,15 +243,15 @@ CMaterialFrame::CMaterialFrame(wxWindow* parent, wxWindowID id)
 	iPaneInfo.Caption("Properties");
 	iPaneInfo.Bottom();
 	iPaneInfo.Right();
+	iPaneInfo.MaximizeButton(false);
 	mManager->AddPane(mgpProperties, iPaneInfo);
 
 	//
 
-	CreateStatusBar(3);
+	CreateStatusBar();
 	SetStatusText("Initialized");
 
 	Layout();
-	Centre();
 
 	mManager->Update();
 }
@@ -261,7 +262,7 @@ CMaterialFrame::~CMaterialFrame()
 	mManager->UnInit();
 }
 
-void CMaterialFrame::ReloadCurrentFile()
+void CMaterialFrame::ReloadMaterial()
 {
 	Material_t *CurrentMaterial = Viewport->GetMaterial();
 	if (!CurrentMaterial)
@@ -272,6 +273,8 @@ void CMaterialFrame::ReloadCurrentFile()
 	tCurrentModified = pFileSystem_GetModifiedTime(sCurrentFilePath);
 	if (tCurrentModified == tLastModified)
 		return;
+
+	Viewport->SetMaterial(NULL);
 
 	// Unload it.
 	wxString sOldPath = CurrentMaterial->cPath;
@@ -293,20 +296,42 @@ void CMaterialFrame::LoadMaterial(wxString sFileName)
 {
 	wxString sMaterialName = sFileName;
 	if (sMaterialName.EndsWith(".material"))
-	{
 		// Remove the extension.
 		sMaterialName.RemoveLast(9);
 
-		Material_t *CurrentMaterial = Viewport->GetMaterial();
-		if (CurrentMaterial)
-			engine->UnloadMaterial(CurrentMaterial);
+	Material_t *mCurrent = Viewport->GetMaterial();
+	if (mCurrent)
+		engine->UnloadMaterial(mCurrent);
 
-		CurrentMaterial = engine->LoadMaterial(sMaterialName);
-		if (CurrentMaterial)
-			Viewport->SetMaterial(CurrentMaterial);
+	mCurrent = engine->LoadMaterial(sMaterialName);
+	if (mCurrent)
+		Viewport->SetMaterial(mCurrent);
 
-		SetTitle(sMaterialName + wxString(" - ") + wxString(WAD_TITLE));
-	}
+	SetTitle(sMaterialName + wxString(" - ") + wxString(WAD_TITLE));
+}
+
+void CMaterialFrame::UnloadMaterial()
+{
+	Material_t *mCurrent = Viewport->GetMaterial();
+	if (!mCurrent)
+		// Likely nothing loaded, just return.
+		return;
+
+	Viewport->SetMaterial(NULL);
+
+	sOldFilePath = sCurrentFilePath;
+	sCurrentFilePath.Clear();
+
+	cMaterialScript->ClearAll();
+
+	engine->UnloadMaterial(mCurrent);
+}
+
+bool CMaterialFrame::Destroy()
+{
+	UnloadMaterial();
+
+	return wxFrame::Destroy();
 }
 
 // Events
@@ -316,28 +341,40 @@ void CMaterialFrame::FileEvent(wxCommandEvent &event)
 	switch (event.GetId())
 	{
 	case wxID_OPEN:
-	{
-		wxFileDialog *fdOpenMaterial = new wxFileDialog(
-			this,
-			"Open Material",
-			engine->GetBasePath() + wxString("/materials"),
-			"",
-			"Supported files (*.material)|*.material",
-			wxFD_OPEN|wxFD_FILE_MUST_EXIST);
-		if (fdOpenMaterial->ShowModal() == wxID_OK)
 		{
-			LoadMaterial(fdOpenMaterial->GetFilename());
+			wxFileDialog *fdOpenMaterial = new wxFileDialog(
+				this,
+				"Open Material",
+				sEditorBasePath + sEditorMaterialPath,
+				"",
+				"Supported files (*.material)|*.material",
+				wxFD_OPEN | wxFD_FILE_MUST_EXIST);
+			if (fdOpenMaterial->ShowModal() == wxID_OK)
+			{
+				LoadMaterial(fdOpenMaterial->GetFilename());
 
-			// Ensure the current path is kept up to date!
-			sCurrentFilePath = fdOpenMaterial->GetPath();
+				// Ensure the current path is kept up to date!
+				sCurrentFilePath = fdOpenMaterial->GetPath();
 
-			// Check when it was last modified.
-			tLastModified = pFileSystem_GetModifiedTime(sCurrentFilePath);
+				// Check when it was last modified.
+				tLastModified = pFileSystem_GetModifiedTime(sCurrentFilePath);
 
-			// Load the file into the script editor.
-			cMaterialScript->LoadFile(sCurrentFilePath);
+				// Load the file into the script editor.
+				cMaterialScript->LoadFile(sCurrentFilePath);
+			}
 		}
-	}
-	break;
+		break;
+	case wxID_CLOSE:
+		UnloadMaterial();
+		break;
+	case wxID_SAVE:
+		if (sCurrentFilePath.IsEmpty())
+			return;
+
+		cMaterialScript->SaveFile(sCurrentFilePath);
+
+		// Reload it so we instantly see the changes.
+		ReloadMaterial();
+		break;
 	}
 }

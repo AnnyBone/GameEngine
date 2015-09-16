@@ -21,6 +21,9 @@
 #include "PreferencesDialog.h"
 
 wxBEGIN_EVENT_TABLE(CPreferencesDialog, wxDialog)
+EVT_BUTTON(wxID_APPLY, CPreferencesDialog::HandleCommandEvent)
+EVT_BUTTON(wxID_OK, CPreferencesDialog::HandleCommandEvent)
+EVT_BUTTON(wxID_CANCEL, CPreferencesDialog::HandleCommandEvent)
 wxEND_EVENT_TABLE()
 
 CPreferencesDialog::CPreferencesDialog(wxWindow *wParent)
@@ -32,23 +35,87 @@ CPreferencesDialog::CPreferencesDialog(wxWindow *wParent)
 
 	Notebook = new wxNotebook(this, wxID_ANY);
 
-	VideoPanel = new wxPanel(Notebook);
 	AudioPanel = new wxPanel(Notebook);
 	InputPanel = new wxPanel(Notebook);
 
 	// General Settings
+	// TODO: Move this into its own seperate class
+	{
+		wxGridSizer *GeneralGrid = new wxGridSizer(2, 2, 0, 0);
+		GeneralPanel = new wxPanel(Notebook);
+		GeneralPanel->SetSizer(GeneralGrid);
 
-	wxGridSizer *GeneralGrid = new wxGridSizer(4, 4, 0, 0);
+		wxStaticBoxSizer *AutoReloadBox = new wxStaticBoxSizer(wxVERTICAL, GeneralPanel, "Auto Reload");
+		GeneralGrid->Add(AutoReloadBox, 1, wxEXPAND | wxALL, 5);
 
-	GeneralPanel = new wxPanel(Notebook);
-	GeneralPanel->SetSizer(GeneralGrid);
+		AutoReload = new wxCheckBox(GeneralPanel, wxID_ANY, "Automatically reload documents");
+		AutoReloadBox->Add(AutoReload, 0, wxALL, 5);
 
-	wxCheckBox *AutoReload = new wxCheckBox(GeneralPanel, wxID_ANY, "Automatically reload documents?");
-	AutoReload->SetValue(true);
+		// Reload Delay
+		{
+			wxBoxSizer *AutoReloadDelayBox = new wxBoxSizer(wxHORIZONTAL);
 
-	GeneralGrid->Add(AutoReload);
+			AutoReloadDelay = new wxSpinCtrl(GeneralPanel, wxID_ANY, "test", wxDefaultPosition, wxSize(64, wxDefaultSize.GetHeight()));
+			AutoReloadDelayBox->Add(AutoReloadDelay, 0, wxALL);
 
-	GeneralPanel->Layout();
+			wxStaticText *AutoReloadDelayText = new wxStaticText(GeneralPanel, wxID_ANY, "Delay");
+			AutoReloadDelayBox->Add(AutoReloadDelayText, 0, wxALL, 5);
+
+			AutoReloadBox->Add(AutoReloadDelayBox, 0, wxALL, 5);
+		}
+
+		GeneralPanel->Layout();
+	}
+
+	// Video Settings
+	// TODO: Move this into its own seperate class
+	{
+		wxGridSizer *VideoGrid = new wxGridSizer(1, 1, 0, 0);
+		VideoPanel = new wxPanel(Notebook);
+		VideoPanel->SetSizer(VideoGrid);
+
+		{
+			wxBoxSizer *VideoListLeft = new wxBoxSizer(wxVERTICAL);
+
+			VideoListLeft->Add(new wxCheckBox(VideoPanel, wxID_ANY, "Dynamic lightmap updates"), 0, wxALL, 5);
+			VideoListLeft->Add(new wxCheckBox(VideoPanel, wxID_ANY, "Stereoscopic 3D"), 0, wxALL, 5);
+
+			VideoLegacyMode = new wxCheckBox(VideoPanel, wxID_ANY, "Legacy mode (no shader support)");
+			VideoListLeft->Add(VideoLegacyMode, 0, wxALL, 5);
+
+			VideoAlphaTrick = new wxCheckBox(VideoPanel, wxID_ANY, "Multiple pass alpha-test");
+			VideoListLeft->Add(VideoAlphaTrick, 0, wxALL, 5);
+
+			// Water
+			{
+				wxStaticBoxSizer *VideoWaterBox = new wxStaticBoxSizer(wxVERTICAL, VideoPanel, "Water");
+
+				// Subdivision Slider
+				{
+					wxBoxSizer *SubSliderBox = new wxBoxSizer(wxHORIZONTAL);
+					
+					wxSlider *Subdivision = new wxSlider(VideoPanel, wxID_ANY, 0, 0, 1024, wxDefaultPosition, wxSize(128, wxDefaultSize.GetHeight()), wxSL_VALUE_LABEL);
+					Subdivision->SetLineSize(2);
+					Subdivision->SetPageSize(2);
+					SubSliderBox->Add(Subdivision, 0, wxALL);
+
+					wxStaticText *SubdivisionText = new wxStaticText(VideoPanel, wxID_ANY, "Subdivision");
+					SubSliderBox->Add(SubdivisionText, 0, wxALL, 5);
+
+					VideoWaterBox->Add(SubSliderBox, 0, wxALL, 5);
+				}
+
+				VideoWaterBox->Add(new wxCheckBox(VideoPanel, wxID_ANY, "Sample lightmap"), 0, wxALL, 5);
+				VideoWaterBox->Add(new wxCheckBox(VideoPanel, wxID_ANY, "Vertex warping"), 0, wxALL, 5);
+
+				VideoListLeft->Add(VideoWaterBox, 1, wxEXPAND | wxALL, 5);
+			}
+
+			VideoGrid->Add(VideoListLeft, 0, wxALL, 5);
+		}
+
+		VideoPanel->Layout();
+	}
 
 	//
 
@@ -80,3 +147,50 @@ CPreferencesDialog::CPreferencesDialog(wxWindow *wParent)
 
 CPreferencesDialog::~CPreferencesDialog()
 {}
+
+bool CPreferencesDialog::Show()
+{
+	SyncSettings();
+
+	return wxDialog::Show();
+}
+
+void CPreferencesDialog::HandleCommandEvent(wxCommandEvent &event)
+{
+	switch (event.GetId())
+	{
+	case wxID_OK:
+		ApplySettings();
+	case wxID_CANCEL:
+		Hide();
+		break;
+	case wxID_APPLY:
+		ApplySettings();
+		SyncSettings();
+		break;
+	default:
+		// Do nothing.
+		break;
+	}
+}
+
+/*	Called to sync the preferences settings
+	with those of the engine.
+*/
+void CPreferencesDialog::SyncSettings()
+{
+	AutoReload->SetValue(cvEditorAutoReload.bValue);
+	AutoReloadDelay->SetValue(cvEditorAutoReloadDelay.iValue);
+
+	// Video Settings
+	//VideoLegacyMode->SetValue(engine->)
+}
+
+void CPreferencesDialog::ApplySettings()
+{
+	char cBuf[16];
+	
+	engine->SetConsoleVariable(cvEditorAutoReload.name, itoa(AutoReload->GetValue(), cBuf, 10));
+	engine->SetConsoleVariable(cvEditorAutoReloadDelay.name, itoa(AutoReloadDelay->GetValue(), cBuf, 10));
+	engine->SetConsoleVariable("video_legacy", itoa(VideoLegacyMode->GetValue(), cBuf, 10));
+}

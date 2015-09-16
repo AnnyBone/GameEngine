@@ -72,12 +72,41 @@ CWADFrame::CWADFrame(wxWindow* parent, wxWindowID id)
 	liColumn.SetWidth(50);
 	lcObjectList->InsertColumn(1, liColumn);
 
-	lcObjectList->InsertItem(0, "HELLO WORLD");
-	lcObjectList->InsertItem(0, "HELLO WORLD");
-	lcObjectList->InsertItem(0, "HELLO WORLD");
-	lcObjectList->InsertItem(0, "HELLO WORLD");
-	lcObjectList->InsertItem(0, "HELLO WORLD");
-	lcObjectList->InsertItem(0, "HELLO WORLD");
+	lcObjectList->InsertItem(0, "HELLO");
+	lcObjectList->InsertItem(0, "WE");
+	lcObjectList->InsertItem(0, "ARE");
+	lcObjectList->InsertItem(0, "PLACEMENT");
+	lcObjectList->InsertItem(0, "HOLDERS");
+	lcObjectList->InsertItem(0, "HELLO");
+	lcObjectList->InsertItem(0, "WE");
+	lcObjectList->InsertItem(0, "ARE");
+	lcObjectList->InsertItem(0, "PLACEMENT");
+	lcObjectList->InsertItem(0, "HOLDERS");
+	lcObjectList->InsertItem(0, "HELLO");
+	lcObjectList->InsertItem(0, "WE");
+	lcObjectList->InsertItem(0, "ARE");
+	lcObjectList->InsertItem(0, "PLACEMENT");
+	lcObjectList->InsertItem(0, "HOLDERS");
+	lcObjectList->InsertItem(0, "HELLO");
+	lcObjectList->InsertItem(0, "WE");
+	lcObjectList->InsertItem(0, "ARE");
+	lcObjectList->InsertItem(0, "PLACEMENT");
+	lcObjectList->InsertItem(0, "HOLDERS");
+	lcObjectList->InsertItem(0, "HELLO");
+	lcObjectList->InsertItem(0, "WE");
+	lcObjectList->InsertItem(0, "ARE");
+	lcObjectList->InsertItem(0, "PLACEMENT");
+	lcObjectList->InsertItem(0, "HOLDERS");
+	lcObjectList->InsertItem(0, "HELLO");
+	lcObjectList->InsertItem(0, "WE");
+	lcObjectList->InsertItem(0, "ARE");
+	lcObjectList->InsertItem(0, "PLACEMENT");
+	lcObjectList->InsertItem(0, "HOLDERS");
+	lcObjectList->InsertItem(0, "HELLO");
+	lcObjectList->InsertItem(0, "WE");
+	lcObjectList->InsertItem(0, "ARE");
+	lcObjectList->InsertItem(0, "PLACEMENT");
+	lcObjectList->InsertItem(0, "HOLDERS");
 
 	mManager->AddPane(lcObjectList, iPaneInfo);
 

@@ -51,6 +51,7 @@
 #include <wx/dialog.h>
 #include <wx/tglbtn.h>
 #include <wx/notebook.h>
+#include <wx/spinctrl.h>
 
 // Shared Library
 #include "SharedFlags.h"
@@ -90,28 +91,40 @@ enum
 	EDITOR_ID_PREFERENCES
 };
 
+extern wxString
+	sEditorBasePath,
+	sEditorMaterialPath;
+
 // Icons
 extern wxBitmap
-bSmallAuto,
-bSmallWAD,
-bSmallMDL,
-iconScriptEdit,
-smallTransform,
-smallDocumentOpen,
-iconMediaPause,
-iconMediaPlay,
-iconDocumentRefresh,
-smallDocumentNew,
-smallDocumentSave,
-smallDocumentSaveAs,
-iconDocumentUndo,
-iconDocumentRedo,
-smallDocumentClose,
-iconShapeCube,
-smallApplicationExit,
-iconShapeSphere;
+	bSplashScreen,
+	bSmallAuto,
+	bSmallWAD,
+	bSmallMDL,
+	iconScriptEdit,
+	smallTransform,
+	smallDocumentOpen,
+	iconMediaPause,
+	iconMediaPlay,
+	iconDocumentRefresh,
+	smallDocumentNew,
+	smallDocumentSave,
+	smallDocumentSaveAs,
+	iconDocumentUndo,
+	iconDocumentRedo,
+	smallDocumentClose,
+	iconShapeCube,
+	smallApplicationExit,
+	iconShapeSphere;
 extern wxBitmap bSmallPlaneIcon;
 extern wxBitmap bSmallPrefIcon;
+
+// Console Variables
+extern ConsoleVariable_t
+	cvEditorAutoReload,
+	cvEditorAutoReloadDelay,
+	cvEditorShowProperties,
+	cvEditorShowConsole;
 
 #include "EditorRenderCanvas.h"
 #include "EditorViewportPanel.h"

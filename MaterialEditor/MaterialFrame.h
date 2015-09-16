@@ -52,15 +52,17 @@ public:
 	~CMaterialFrame();
 
 	void LoadMaterial(wxString sFileName);
+	void UnloadMaterial();
+	void ReloadMaterial();
 
-	void ReloadCurrentFile();
+	virtual bool Destroy();
 
 private:
 
 	time_t tCurrentModified, tLastModified;
 
 	wxAuiManager *mManager;
-	wxString sCurrentFilePath;
+	wxString sCurrentFilePath, sOldFilePath;
 	wxStyledTextCtrl *cMaterialScript;
 
 	CMaterialViewportPanel *Viewport;
