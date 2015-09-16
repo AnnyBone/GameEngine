@@ -377,6 +377,7 @@ void Image_InitializePNG()
 		return;
 	}
 
+	// TODO: Introduce new Platform functionality to do this itself?
 	int i;
 	for (i = 0; i < pARRAYELEMENTS(PNGFunctions); i++)
 	{
@@ -398,13 +399,14 @@ void Image_PNGError(png_structp pPNG, const char *ccString)
 
 uint8_t *Image_LoadPNG(FILE *fin, unsigned int *width, unsigned int *height)
 {
-	png_structp pPNG;
+	png_structp pPNG = NULL;
 	png_infop pInfo;
 	uint8_t *iImageBuffer;
 	int iWidth, iHeight;
 	//int iBitDepth, iColourType, iInterlaceType;
 	
-	pPNG = PNG_CreateReadStruct(PNG_LIBPNG_VER_STRING, NULL, Image_PNGError, Image_PNGError);
+	// TEMP: Temporarily commented out to force this to fail!
+//	pPNG = PNG_CreateReadStruct(PNG_LIBPNG_VER_STRING, NULL, Image_PNGError, Image_PNGError);
 	if (!pPNG)
 	{
 		Con_Warning("Failed to create PNG read struct!\n");
@@ -430,7 +432,7 @@ uint8_t *Image_LoadPNG(FILE *fin, unsigned int *width, unsigned int *height)
 	PNG_SetKeepUnknownChunks(pPNG, 0, NULL, 0);
 
 	// Last parameter isn't used, so just passed null.
-	// No transforms are needed here ether (though PNG_TRANSFORM_BGR in future????)
+	// No transforms are needed here either (though PNG_TRANSFORM_BGR in future????)
 	PNG_ReadPNG(pPNG, pInfo, PNG_TRANSFORM_IDENTITY, NULL);
 	
 	// Get the width and height.

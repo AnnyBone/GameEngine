@@ -81,6 +81,7 @@ extern unsigned short CRC_Value(unsigned short crcvalue);
 extern void COM_CreatePath (char *path);
 extern void COM_CopyFile (char *from, char *to);
 
+extern char cFilenameEntity[1024];
 extern	char	filename_map[1024];
 extern	char	filename_bsp[1024];
 extern	char	filename_prt[1024];

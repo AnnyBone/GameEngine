@@ -14,6 +14,9 @@
     <Filter Include="Tools\WAD Tool">
       <UniqueIdentifier>{174dcc66-1235-4b5a-9ce1-f3c68bb93c9f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Preferences">
+      <UniqueIdentifier>{d64bd933-0b73-42d5-8cbf-5d0cd570d3f5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WADFrame.h">
@@ -32,6 +35,9 @@
       <Filter>Tools\Material Tool</Filter>
     </ClInclude>
     <ClInclude Include="EditorViewportPanel.h" />
+    <ClInclude Include="preferences\PreferencesDialog.h">
+      <Filter>Preferences</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EditorMaterialProperties.cpp">
@@ -49,6 +55,9 @@
       <Filter>Tools\Material Tool</Filter>
     </ClCompile>
     <ClCompile Include="EditorViewportPanel.cpp" />
+    <ClCompile Include="preferences\PreferencesDialog.cpp">
+      <Filter>Preferences</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Material Editor.rc">

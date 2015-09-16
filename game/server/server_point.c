@@ -1,3 +1,6 @@
+/*	Copyright (C) 2011-2015 OldTimes Software
+*/
+
 #include "server_main.h"
 
 /*
@@ -8,27 +11,27 @@
 
 	point_monster 		- Used for placing actors/monsters/enemies
 	point_vehicle 		- Used for placing vehicles
-	point_start		- Entity for 
+	point_start			- Entity for player start position
 	point_particle		- Spawns particles
-	point_flare		- Created a flare/corona
-	point_light		- Casts light onto the lightmap
+	point_flare			- Created a flare/corona
+	point_light			- Casts light onto the lightmap
 	point_dynamiclight	- Entity which casts light on the nearby lightmap
 	point_explode		- Creates a target explosion
 	point_ambient		- Plays ambient (looping) sounds
 	point_camera		- Switches the users view to its own
 	point_waypoint		- Waypoint for the AI
-	point_sound		- Plays a sound, with different attentuations
+	point_sound			- Plays a sound, with different attentuations
 	point_decoration	- Floating model entity with no collision
 	point_message		- Displays various types of messages (local, global) on the screen
 	point_teleport		- Teleports the user to a target
-	point_prop		- Decoration that can break and has physics
-	point_shake		- Substitute for quakes
+	point_prop			- Decoration that can break and has physics
+	point_shake			- Substitute for quakes
 	point_effect		- Spawns one of the many stock effects
 	point_damage		- Hurts the user
 	point_lightstyle	- Manipulates lightstyles
 	point_multitrigger	- Trigger multiple entities by daisy-chaining them
 	point_timedtrigger	- Triggers an entity after a specified delay
-	point_logic		- Compilation of basic logic-gates
+	point_logic			- Compilation of basic logic-gates
 */
 
 #include "server_waypoint.h"
@@ -60,8 +63,11 @@ void Hurler_Spawn(ServerEntity_t *eHurler);
 
 void Point_MonsterSpawn(ServerEntity_t *eMonster)
 {
-	if(cvServerMonsters.value <= 0)
-		ENTITY_REMOVE(eMonster);
+	if (cvServerMonsters.value <= 0)
+	{
+		Entity_Remove(eMonster);
+		return;
+	}
 
 	Monster_Spawn(eMonster);
 

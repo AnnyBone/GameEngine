@@ -53,7 +53,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <OutputFile>..\bin\Material Editor.exe</OutputFile>
+      <OutputFile>..\bin\Editor.exe</OutputFile>
       <AdditionalLibraryDirectories>..\lib\vc120_dll;..\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>opengl32.lib;platform.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
@@ -84,6 +84,7 @@
     <ClInclude Include="EditorRenderCanvas.h" />
     <ClInclude Include="EditorViewportPanel.h" />
     <ClInclude Include="MaterialFrame.h" />
+    <ClInclude Include="preferences\PreferencesDialog.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="WADFrame.h" />
   </ItemGroup>
@@ -96,6 +97,7 @@
     <ClCompile Include="EditorRenderCanvas.cpp" />
     <ClCompile Include="EditorViewportPanel.cpp" />
     <ClCompile Include="MaterialFrame.cpp" />
+    <ClCompile Include="preferences\PreferencesDialog.cpp" />
     <ClCompile Include="WADFrame.cpp" />
   </ItemGroup>
   <ItemGroup>

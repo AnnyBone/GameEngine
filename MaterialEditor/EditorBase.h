@@ -48,7 +48,9 @@
 #include <wx/stc/stc.h>
 #include <wx/sizer.h>
 #include <wx/frame.h>
+#include <wx/dialog.h>
 #include <wx/tglbtn.h>
+#include <wx/notebook.h>
 
 // Shared Library
 #include "SharedFlags.h"
@@ -77,27 +79,39 @@ void EngineInterface_Unload();
 extern EngineExport_t *engine;
 extern EngineImport_t editor;
 
+enum
+{
+	// Tools
+	EDITOR_ID_MATERIAL_TOOL,
+	EDITOR_ID_WAD_TOOL,
+
+	// Windows
+	EDITOR_ID_MAIN,
+	EDITOR_ID_PREFERENCES
+};
+
 // Icons
 extern wxBitmap
-	bSmallAuto,
-	bSmallWAD,
-	bSmallMDL,
-	iconScriptEdit,
-	smallTransform,
-	smallDocumentOpen,
-	iconMediaPause,
-	iconMediaPlay,
-	iconDocumentRefresh,
-	smallDocumentNew,
-	smallDocumentSave,
-	smallDocumentSaveAs,
-	iconDocumentUndo,
-	iconDocumentRedo,
-	smallDocumentClose,
-	iconShapeCube,
-	smallApplicationExit,
-	iconShapeSphere,
-	iconShapePlane;
+bSmallAuto,
+bSmallWAD,
+bSmallMDL,
+iconScriptEdit,
+smallTransform,
+smallDocumentOpen,
+iconMediaPause,
+iconMediaPlay,
+iconDocumentRefresh,
+smallDocumentNew,
+smallDocumentSave,
+smallDocumentSaveAs,
+iconDocumentUndo,
+iconDocumentRedo,
+smallDocumentClose,
+iconShapeCube,
+smallApplicationExit,
+iconShapeSphere;
+extern wxBitmap bSmallPlaneIcon;
+extern wxBitmap bSmallPrefIcon;
 
 #include "EditorRenderCanvas.h"
 #include "EditorViewportPanel.h"

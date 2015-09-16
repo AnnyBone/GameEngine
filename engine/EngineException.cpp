@@ -1,7 +1,5 @@
 #include "EngineBase.h"
 
-#include "EngineException.hpp"
-
 CEngineException::CEngineException(const char *ccMessage, ...)
 {
 	va_list	ArgPtr;

@@ -70,6 +70,12 @@ typedef struct
 
 	DynamicLight_t*(*CreateDynamicLight)(int Key);
 
+	void(*ClientDisconnect)();
+
+	// Server...
+
+	void(*ServerShutdown)(bool bCrash);
+
 	// Console...
 
 	void(*InsertConsoleCommand)(const char *cCommand);										// Sends the given command to the console.

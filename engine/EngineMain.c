@@ -72,9 +72,13 @@ pMODULE_EXPORT EngineExport_t *Engine_Main(EngineImport_t *mImport)
 	EngineExport.iVersion = ENGINE_VERSION;
 
 	// Client
+	EngineExport.ClientDisconnect = CL_Disconnect;
 	EngineExport.GetClientTime = Client_GetTime;
 	EngineExport.CreateClientEntity = CL_NewTempEntity;
 	EngineExport.CreateDynamicLight = Client_AllocDlight;
+
+	// Server
+	EngineExport.ServerShutdown = Host_ShutdownServer;
 
 	EngineExport.GetBasePath = Engine_GetBasePath;
 	EngineExport.GetVersion = Engine_GetVersion;

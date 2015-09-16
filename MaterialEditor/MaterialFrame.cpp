@@ -273,14 +273,20 @@ void CMaterialFrame::ReloadCurrentFile()
 	if (tCurrentModified == tLastModified)
 		return;
 
-	// Reload it.
+	// Unload it.
+	wxString sOldPath = CurrentMaterial->cPath;
 	engine->UnloadMaterial(CurrentMaterial);
-	CurrentMaterial = engine->LoadMaterial(CurrentMaterial->cPath);
+
+	// Reload it.
+	CurrentMaterial = engine->LoadMaterial(sOldPath);
 	if (CurrentMaterial)
 	{
 		tLastModified = tCurrentModified;
 		Viewport->SetMaterial(CurrentMaterial);
 	}
+
+	// Reload the file into the script editor.
+	cMaterialScript->LoadFile(sCurrentFilePath);
 }
 
 void CMaterialFrame::LoadMaterial(wxString sFileName)
@@ -314,7 +320,7 @@ void CMaterialFrame::FileEvent(wxCommandEvent &event)
 		wxFileDialog *fdOpenMaterial = new wxFileDialog(
 			this,
 			"Open Material",
-			engine->GetBasePath(),
+			engine->GetBasePath() + wxString("/materials"),
 			"",
 			"Supported files (*.material)|*.material",
 			wxFD_OPEN|wxFD_FILE_MUST_EXIST);
@@ -322,7 +328,14 @@ void CMaterialFrame::FileEvent(wxCommandEvent &event)
 		{
 			LoadMaterial(fdOpenMaterial->GetFilename());
 
-			cMaterialScript->LoadFile(fdOpenMaterial->GetPath());
+			// Ensure the current path is kept up to date!
+			sCurrentFilePath = fdOpenMaterial->GetPath();
+
+			// Check when it was last modified.
+			tLastModified = pFileSystem_GetModifiedTime(sCurrentFilePath);
+
+			// Load the file into the script editor.
+			cMaterialScript->LoadFile(sCurrentFilePath);
 		}
 	}
 	break;

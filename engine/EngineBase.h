@@ -46,7 +46,7 @@
 */
 #define ENGINE_VERSION_MAJOR	0
 #define ENGINE_VERSION_MINOR	3
-#define ENGINE_VERSION_BUILD	986	// 9/9/2015
+#define ENGINE_VERSION_BUILD	989	// 16/9/2015
 
 #define	ENGINE_LOG	"engine"
 
@@ -116,7 +116,7 @@
 #include "EngineMaterial.h"
 
 #ifdef __cplusplus
-#	include "EngineException.hpp"
+#	include "EngineException.h"
 #endif
 
 //=============================================================================

@@ -59,7 +59,7 @@ void CreateBrushFaces (void)
 	VectorClear(offset);
 
 	ClearBounds(brush_mins,brush_maxs);
-
+	
 	brush_faces = NULL;
 	if(!strcmp(ValueForKey(CurrentEntity,"classname"),"area_rotate"))
 	{

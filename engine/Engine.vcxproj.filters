@@ -467,11 +467,11 @@
     <ClInclude Include="EngineVideoFrameBuffer.hpp">
       <Filter>Client\Video</Filter>
     </ClInclude>
-    <ClInclude Include="EngineException.hpp" />
     <ClInclude Include="EngineMaterial.h">
       <Filter>Client</Filter>
     </ClInclude>
     <ClInclude Include="EngineClass.h" />
+    <ClInclude Include="EngineException.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="engine.rc">

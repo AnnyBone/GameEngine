@@ -31,7 +31,7 @@ typedef enum
 	SPRITE_TYPE_FLARE		// No depth-test, scale by view, always fullbright and oriented.
 } SpriteType_t;
 
-class CSprite : public VideoSys::CVideoObject
+class CSprite
 {
 public:
 	CSprite();
@@ -64,6 +64,8 @@ private:
 	SpriteType_t Type;
 
 	Colour_t Colour;
+
+	VideoSys::CVideoObject *RenderObject;
 
 	Material_t *Material;
 };
@@ -114,12 +116,8 @@ void CSpriteManager::Simulate()
 	CSprite *Sprite = Sprites[0];
 	while (Sprite)
 	{
-		/*	TODO: 
-				Handle visibility.
-				General movement.
-				Anything else.
-		*/
 		Sprite->Simulate();
+
 		Sprite++;
 	}
 }
@@ -147,7 +145,7 @@ void CSpriteManager::Shutdown()
 
 // Sprite
 
-CSprite::CSprite() : CVideoObject()
+CSprite::CSprite()
 {
 	bActive = false;
 	bLit = false;
@@ -238,7 +236,7 @@ void CSprite::Draw()
 		VideoLayer_Enable(VIDEO_BLEND);
 
 	// Draw it via the VideoObject interface.
-	CVideoObject::Draw();
+	RenderObject->Draw();
 
 	if (bBlend)
 		VideoLayer_Disable(VIDEO_BLEND);

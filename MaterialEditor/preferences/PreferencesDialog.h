@@ -1,6 +1,4 @@
-/*	Copyright (C) 1996-2001 Id Software, Inc.
-	Copyright (C) 2002-2009 John Fitzgibbons and others
-	Copyright (C) 2011-2015 OldTimes Software
+/*	Copyright (C) 2011-2015 OldTimes Software
 
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License
@@ -18,11 +16,26 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef __ENGINEMATERIALEDITOR__
-#define	__ENGINEMATERIALEDITOR__
+#ifndef __PREFERENCESDIALOG_H__
+#define	__PREFERENCESDIALOG_H__
 
-extern bool bMaterialEditorInitialized;
+#pragma once
 
-void MaterialEditor_Initialize(void);
+class CPreferencesDialog : public wxDialog
+{
+public:
+	CPreferencesDialog(wxWindow *wParent);
+	~CPreferencesDialog();
+
+private:
+	wxNotebook *Notebook;
+
+	wxPanel *VideoPanel;
+	wxPanel *AudioPanel;
+	wxPanel *InputPanel;
+	wxPanel *GeneralPanel;
+
+	wxDECLARE_EVENT_TABLE();
+};
 
 #endif

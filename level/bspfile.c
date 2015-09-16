@@ -698,7 +698,7 @@ void WriteBSPFile (char *filename)
 	SB_ZeroFill (&sb, ((lump->iFileLength + 3) & ~3) - lump->iFileLength);
 
 	// Save the entities output to a text file for later analysis.
-	f = SafeOpenWrite("entities.txt");
+	f = SafeOpenWrite(cFilenameEntity);
 	SafeWrite(f, (void*)dentdata, (entdatasize-1));
 	fclose(f);
 

@@ -28,21 +28,9 @@ void MaterialEditor_Initialize(void)
 	if (bMaterialEditorInitialized)
 		return;
 
-	CL_Disconnect();
-	Host_ShutdownServer(false);
-
 	cls.state = CLIENT_STATE_EDITOR;
 
 	key_dest = KEY_EDITOR_MATERIAL;
 
 	bMaterialEditorInitialized = true;
-}
-
-void MaterialEditor_Input(int iKey)
-{
-	switch (iKey)
-	{
-	case K_DOWNARROW:
-		break;
-	}
 }

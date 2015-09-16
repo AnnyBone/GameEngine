@@ -6,26 +6,28 @@ wxIMPLEMENT_APP(CEditorApp);
 
 char cApplicationTitle[512];
 
+wxBitmap bSmallPrefIcon;
+
 wxBitmap
-	bSmallAuto,
-	bSmallWAD,
-	bSmallMDL,
-	iconScriptEdit,
-	smallTransform,
-	smallDocumentOpen,
-	iconMediaPause,
-	iconMediaPlay,
-	iconDocumentRefresh,
-	smallDocumentNew,
-	smallDocumentSave,
-	smallDocumentSaveAs,
-	iconDocumentUndo,
-	iconDocumentRedo,
-	smallDocumentClose,
-	iconShapeCube,
-	smallApplicationExit,
-	iconShapeSphere,
-	iconShapePlane;
+bSmallAuto,
+bSmallWAD,
+bSmallMDL,
+iconScriptEdit,
+smallTransform,
+smallDocumentOpen,
+iconMediaPause,
+iconMediaPlay,
+iconDocumentRefresh,
+smallDocumentNew,
+smallDocumentSave,
+smallDocumentSaveAs,
+iconDocumentUndo,
+iconDocumentRedo,
+smallDocumentClose,
+iconShapeCube,
+smallApplicationExit,
+iconShapeSphere;
+wxBitmap bSmallPlaneIcon;
 
 bool CEditorApp::OnInit()
 {
@@ -40,6 +42,7 @@ bool CEditorApp::OnInit()
 	bSmallAuto.LoadFile("resource/view-auto.png", wxBITMAP_TYPE_PNG);
 	bSmallMDL.LoadFile("resource/icon-mdl-small.png", wxBITMAP_TYPE_PNG);
 	bSmallWAD.LoadFile("resource/icon-wad-small.png", wxBITMAP_TYPE_PNG);
+	bSmallPrefIcon.LoadFile(PATH_16ICONS"actions/configure.png", wxBITMAP_TYPE_PNG);
 
 	smallDocumentNew.LoadFile(PATH_16ICONS"actions/document-new.png", wxBITMAP_TYPE_PNG);
 	smallDocumentOpen.LoadFile(PATH_16ICONS"actions/document-open.png", wxBITMAP_TYPE_PNG);
@@ -57,7 +60,7 @@ bool CEditorApp::OnInit()
 	iconDocumentRefresh.LoadFile(PATH_16ICONS"actions/view-refresh.png", wxBITMAP_TYPE_PNG);
 	iconShapeCube.LoadFile("resource/shape-cube.png", wxBITMAP_TYPE_PNG);
 	iconShapeSphere.LoadFile("resource/shape-sphere.png", wxBITMAP_TYPE_PNG);
-	iconShapePlane.LoadFile("resource/shape-plane.png", wxBITMAP_TYPE_PNG);
+	bSmallPlaneIcon.LoadFile("resource/shape-plane.png", wxBITMAP_TYPE_PNG);
 	iconScriptEdit.LoadFile(PATH_16ICONS"apps/accessories-text-editor.png", wxBITMAP_TYPE_PNG);
 #ifndef __LINUX__ // MISSING ICONS
 	smallTransform.LoadFile(PATH_16ICONS"actions/transform-move.png", wxBITMAP_TYPE_PNG);

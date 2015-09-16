@@ -34,8 +34,9 @@
 ***************************************************************************/
 
 #ifdef _MSC_VER
-	#pragma optimize( "g", off )
+#	pragma optimize( "g", off )
 #	pragma warning(disable:4055)
+#	pragma warning(disable:4054)
 #endif
 
 #include <stdio.h>

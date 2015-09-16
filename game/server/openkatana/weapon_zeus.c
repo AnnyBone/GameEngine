@@ -1,3 +1,6 @@
+/*	Copyright (C) 2011-2015 OldTimes Software
+*/
+
 #include "server_weapon.h"
 
 void Zeus_Deploy(ServerEntity_t *ent)

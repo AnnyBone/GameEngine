@@ -18,6 +18,7 @@ int		subdivide_size;
 int		valid;
 
 char	filename_map[1024],
+		cFilenameEntity[1024],
 		filename_bsp[1024],
 		filename_prt[1024],
 		filename_pts[1024];
@@ -143,6 +144,7 @@ void ProcessFile(char *sourcebase)
 		remove(filename_bsp);
 		remove(filename_prt);
 		remove(filename_pts);
+		remove(cFilenameEntity);
 	}
 
 	// load brushes and entities
@@ -191,6 +193,8 @@ int main(int argc,char **argv)
 	ReplaceExtension(filename_prt,BSP_EXTENSION, ".prt", ".prt");
 	strcpy(filename_pts, filename_bsp);
 	ReplaceExtension(filename_pts,BSP_EXTENSION, ".pts", ".pts");
+	strcpy(cFilenameEntity, filename_pts);
+	ReplaceExtension(cFilenameEntity, ".pts", ".entity", ".entity");
 
 	if(!strcmp(filename_map, filename_bsp))
 		Error("filename_map \"%s\" == filename_bsp \"%s\"\n", filename_map, filename_bsp);

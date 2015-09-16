@@ -2,9 +2,15 @@
 #define	__EDITORFRAME__
 
 #include "EditorRenderCanvas.h"
-
 #include "EditorViewportPanel.h"
 #include "EditorConsolePanel.h"
+
+// Tools
+#include "WADFrame.h"
+#include "MaterialFrame.h"
+
+// Dialog
+#include "preferences\PreferencesDialog.h"
 
 class CMainViewportPanel : public CEditorViewportPanel
 {
@@ -55,6 +61,7 @@ private:
 	void OnReload(wxCommandEvent &event);
 	void OnPause(wxCommandEvent &event);
 	void OnPlay(wxCommandEvent &event);
+	void OnPreferences(wxCommandEvent &event);
 	void OnKey(wxKeyEvent &event);
 	void OnTimer(wxTimerEvent &event);
 
@@ -88,6 +95,11 @@ private:
 
 	CEditorRenderCanvas *editorViewport;
 	CEditorConsolePanel *pConsole;
+
+	CWADFrame *WADTool;
+	CMaterialFrame *MaterialTool;
+
+	CPreferencesDialog *Preferences;
 
 	CMainViewportPanel *pViewport;
 

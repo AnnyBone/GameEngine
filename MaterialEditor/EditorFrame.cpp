@@ -2,10 +2,6 @@
 
 #include "EditorFrame.h"
 
-// Tools
-#include "WADFrame.h"
-#include "MaterialFrame.h"
-
 enum
 {
 	FRAME_EVENT_SHOWCONSOLE,
@@ -39,6 +35,7 @@ wxBEGIN_EVENT_TABLE(CEditorFrame, wxFrame)
 	EVT_MENU(wxID_SAVE, CEditorFrame::OnSave)
 	EVT_MENU(wxID_EXIT, CEditorFrame::OnExit)
 	EVT_MENU(wxID_ABOUT, CEditorFrame::OnAbout)
+	EVT_MENU(wxID_PREFERENCES, CEditorFrame::OnPreferences)
 	EVT_MENU(FRAME_EVENT_SHOWCONSOLE, CEditorFrame::OnConsole)
 	EVT_MENU(ID_WINDOW_PROPERTIES, CEditorFrame::OnProperties)
 	EVT_MENU(FRAME_EVENT_RELOAD, CEditorFrame::OnReload)
@@ -133,7 +130,9 @@ CEditorFrame::CEditorFrame(const wxString & title, const wxPoint & pos, const wx
 	mEdit->Append(wxID_UNDO);
 	mEdit->Append(wxID_REDO);
 	mEdit->AppendSeparator();
-	mEdit->Append(wxID_PREFERENCES)->SetBitmap();
+	wxMenuItem *miEditPreferences = new wxMenuItem(mEdit, wxID_PREFERENCES);
+	miEditPreferences->SetBitmap(bSmallPrefIcon);
+	mEdit->Append(miEditPreferences);
 
 	wxMenu *mView = new wxMenu;
 	viewWireframe = mView->AppendCheckItem(FRAME_EVENT_WIREFRAME, "&Wireframe");
@@ -181,11 +180,8 @@ CEditorFrame::CEditorFrame(const wxString & title, const wxPoint & pos, const wx
 	mbMainMenu->Append(mHelp, "&Help");
 	SetMenuBar(mbMainMenu);
 
-	CreateStatusBar(3);
+	CreateStatusBar(3, wxST_SIZEGRIP);
 	SetStatusText("Initialized");
-	Center();
-
-	Show();
 
 	// Initialize the timer...
 	timer = new wxTimer(this);
@@ -225,6 +221,9 @@ CEditorFrame::CEditorFrame(const wxString & title, const wxPoint & pos, const wx
 	toolbarInfo.Position(2);
 	manager->AddPane(tbView, toolbarInfo);
 
+	Center();
+	Show();
+
 	// Create the engine viewport...
 	pViewport = new CMainViewportPanel(this);
 	wxAuiPaneInfo viewportInfo;
@@ -249,6 +248,8 @@ CEditorFrame::CEditorFrame(const wxString & title, const wxPoint & pos, const wx
 	manager->AddPane(pConsole, consoleInfo);
 
 	manager->Update();
+
+	Preferences = new CPreferencesDialog(this);
 
 	dAutoReloadDelay = 0;
 	dClientTime = 0;
@@ -276,7 +277,6 @@ void CEditorFrame::InitializeConsoleVariables()
 
 void CEditorFrame::OpenWADTool(wxString sPath)
 {
-	static CWADFrame *WADTool;
 	if (!WADTool)
 		WADTool = new CWADFrame(this);
 
@@ -285,7 +285,6 @@ void CEditorFrame::OpenWADTool(wxString sPath)
 
 void CEditorFrame::OpenMaterialTool(wxString sPath)
 {
-	static CMaterialFrame *MaterialTool;
 	if (!MaterialTool)
 		MaterialTool = new CMaterialFrame(this);
 
@@ -336,7 +335,9 @@ void CEditorFrame::OnTimer(wxTimerEvent &event)
 	// Check to see if it's time to check for changes.
 	if (dAutoReloadDelay < dClientTime)
 	{
-		ReloadCurrentDocument();
+		if (MaterialTool)
+			MaterialTool->ReloadCurrentFile();
+
 		dAutoReloadDelay = dClientTime + cvEditorAutoReloadDelay.value;
 	}
 }
@@ -497,6 +498,11 @@ void CEditorFrame::OnConsole(wxCommandEvent &event)
 	}
 
 	manager->Update();
+}
+
+void CEditorFrame::OnPreferences(wxCommandEvent &event)
+{
+	Preferences->Show();
 }
 
 void CEditorFrame::OnProperties(wxCommandEvent &event)

@@ -36,7 +36,7 @@ CEditorViewportPanel::CEditorViewportPanel(wxWindow *wParent)
 
 	wxBoxSizer *vSizer = new wxBoxSizer(wxVERTICAL);
 	wxBoxSizer *hSizer = new wxBoxSizer(wxHORIZONTAL);
-
+	
 	bAutoToggle = new wxBitmapToggleButton(
 		this, 
 		wxID_ANY, 
