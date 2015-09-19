@@ -51,6 +51,7 @@
 			<Add directory="../platform/include" />
 			<Add directory="../external/SDL2/include" />
 			<Add directory="../external/glee" />
+			<Add directory="../external/lpng1618" />
 		</Compiler>
 		<Linker>
 			<Add option="-lGL" />
@@ -86,6 +87,7 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="EngineBase.h" />
+		<Unit filename="EngineClass.h" />
 		<Unit filename="EngineClient.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -129,6 +131,8 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="EngineEditor.h" />
+		<Unit filename="EngineException.cpp" />
+		<Unit filename="EngineException.hpp" />
 		<Unit filename="EngineGame.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -151,6 +155,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="EngineMain.h" />
+		<Unit filename="EngineMaterial.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="EngineMaterial.h" />
 		<Unit filename="EngineMaterialEditor.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -175,6 +183,7 @@
 		</Unit>
 		<Unit filename="EngineNetworkLoop.h" />
 		<Unit filename="EngineNetworkSerial.h" />
+		<Unit filename="EngineNetworkWinsock.h" />
 		<Unit filename="EngineProtocol.h" />
 		<Unit filename="EngineSDLWindow.c">
 			<Option compilerVar="CC" />
@@ -186,6 +195,7 @@
 		<Unit filename="EngineServer.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="EngineServer.h" />
 		<Unit filename="EngineServerEntity.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -224,9 +234,12 @@
 		<Unit filename="EngineVideoFont.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="EngineVideoFrameBuffer.cpp" />
+		<Unit filename="EngineVideoFrameBuffer.hpp" />
 		<Unit filename="EngineVideoLayer.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="EngineVideoLayer.h" />
 		<Unit filename="EngineVideoLegacy.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -236,11 +249,9 @@
 		<Unit filename="EngineVideoLights.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="EngineVideoMaterial.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="EngineVideoMaterial.h" />
 		<Unit filename="EngineVideoObject.cpp" />
+		<Unit filename="EngineVideoObject.h" />
 		<Unit filename="EngineVideoParticle.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -273,6 +284,7 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="client.h" />
+		<Unit filename="client/Sprite.cpp" />
 		<Unit filename="cmdlib.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -289,9 +301,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="engine_netdgrm.h" />
-		<Unit filename="engine_server.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="engine_server.h" />
 		<Unit filename="gl_vidnt.c">
 			<Option compilerVar="CC" />

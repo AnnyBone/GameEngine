@@ -119,7 +119,7 @@ void Scrap_Upload (void)
 	{
 		sprintf (name, "scrap%i", i);
 		scrap_textures[i] = TexMgr_LoadImage (NULL, name, BLOCK_WIDTH, BLOCK_HEIGHT, SRC_INDEXED, scrap_texels[i],
-			"", (unsigned)scrap_texels[i], TEXPREF_ALPHA | TEXPREF_OVERWRITE | TEXPREF_NOPICMIP);
+			"", (unsigned int)scrap_texels[i], TEXPREF_ALPHA | TEXPREF_OVERWRITE | TEXPREF_NOPICMIP);
 	}
 
 	scrap_dirty = false;
@@ -287,7 +287,7 @@ qpic_t *Draw_MakePic (char *name, int width, int height, byte *data)
 	pic->height = height;
 
 	gl = (glpic_t *)pic->data;
-	gl->gltexture = TexMgr_LoadImage (NULL, name, width, height, SRC_INDEXED, data, "", (unsigned)data, flags);
+	gl->gltexture = TexMgr_LoadImage (NULL, name, width, height, SRC_INDEXED, data, "", (unsigned int)data, flags);
 	gl->sl = 0;
 	gl->sh = (float)width/(float)TexMgr_PadConditional(width);
 	gl->tl = 0;

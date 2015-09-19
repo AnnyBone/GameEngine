@@ -593,7 +593,7 @@ extern	cmdalias_t	*cmd_alias;
 
 /*	Tablist is a doubly-linked loop, alphabetized by name
 */
-void AddToTabList (char *name, char *type)
+void AddToTabList (const char *name, char *type)
 {
 	tab_t	*t,*insert;
 

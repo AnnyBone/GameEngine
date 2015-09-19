@@ -197,7 +197,7 @@ void Cvar_UpdateValues(cvar_t *cVariable)
 		cVariable->bValue = true;
 }
 
-cvar_t *Cvar_FindVar (char *var_name)
+cvar_t *Cvar_FindVar (const char *var_name)
 {
 	cvar_t	*var;
 
@@ -256,7 +256,7 @@ void Cvar_Reset (char *name)
 		Cvar_Set (var->name, var->default_string);
 }
 
-void Cvar_Set (char *var_name, char *value)
+void Cvar_Set (const char *var_name, char *value)
 {
 	cvar_t	*var;
 	bool changed;
@@ -298,7 +298,7 @@ void Cvar_Set (char *var_name, char *value)
 	//johnfitz
 }
 
-void Cvar_SetValue (char *var_name, float value)
+void Cvar_SetValue (const char *var_name, float value)
 {
 	char	val[32];
 

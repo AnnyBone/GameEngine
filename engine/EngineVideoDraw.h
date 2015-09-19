@@ -57,7 +57,7 @@ extern "C" {
 
 	qpic_t *Draw_CachePic(char *path);
 
-	void GL_SetCanvas(int newcanvas); //johnfitz
+	void GL_SetCanvas(VideoCanvasType_t newcanvas); //johnfitz
 
 #ifdef __cplusplus
 };

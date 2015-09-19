@@ -68,12 +68,12 @@ typedef void (*xcommand_t)(void);
 
 typedef struct ConsoleVariable_s
 {
-	char		*name;				// Name of the variable
+	const char	*name;				// Name of the variable
 	char		*string;			// Default value
 
 	bool bArchive;	// Variable will be archived
 	bool	    server;
-	char        *cDescription;
+	const char *cDescription;
 	float		value;
 	struct		ConsoleVariable_s *next;
 	char		*default_string;
@@ -159,7 +159,7 @@ typedef enum
 	PARTICLE_BEHAVIOUR_SLOWGRAVITY,		// Slow Gravity
 	PARTICLE_BEHAVIOUR_FIRE,			// Fire
 	PARTICLE_BEHAVIOUR_EXPLODE,			// Explosion
-	PARTICLE_EXPLODE2,					
+	PARTICLE_EXPLODE2,
 	PARTICLE_BLOB,
 	PARTICLE_BLOB2,
 	PARTICLE_BEHAVIOUR_SMOKE			// Smoke

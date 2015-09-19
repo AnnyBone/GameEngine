@@ -328,7 +328,8 @@ uint8_t *Image_LoadTGA (FILE *fin, unsigned int *width, unsigned int *height)
 	PNG Support
 */
 
-#include <png.h>
+// Use a direct path, mainly for Linux's sake.
+#include "../external/lpng1618/png.h"
 
 pINSTANCE iPNGLibraryInstance;
 
@@ -404,7 +405,7 @@ uint8_t *Image_LoadPNG(FILE *fin, unsigned int *width, unsigned int *height)
 	uint8_t *iImageBuffer;
 	int iWidth, iHeight;
 	//int iBitDepth, iColourType, iInterlaceType;
-	
+
 	// TEMP: Temporarily commented out to force this to fail!
 //	pPNG = PNG_CreateReadStruct(PNG_LIBPNG_VER_STRING, NULL, Image_PNGError, Image_PNGError);
 	if (!pPNG)
@@ -434,14 +435,14 @@ uint8_t *Image_LoadPNG(FILE *fin, unsigned int *width, unsigned int *height)
 	// Last parameter isn't used, so just passed null.
 	// No transforms are needed here either (though PNG_TRANSFORM_BGR in future????)
 	PNG_ReadPNG(pPNG, pInfo, PNG_TRANSFORM_IDENTITY, NULL);
-	
+
 	// Get the width and height.
 	iWidth = PNG_GetImageWidth(pPNG, pInfo);
 	iHeight = PNG_GetImageHeight(pPNG, pInfo);
 	iImageBuffer = (uint8_t*)Hunk_Alloc((iHeight + iWidth) * 4);
 
 	PNG_DestroyReadStruct(&pPNG, &pInfo, NULL);
-	
+
 	fclose(fin);
 
 	return NULL;

@@ -964,7 +964,7 @@ void TexMgr_LoadLightmap(gltexture_t *glt,byte *data)
 	TexMgr_SetFilterModes(glt);
 }
 
-gltexture_t *TexMgr_LoadImage(model_t *owner,char *name,int width,int height,enum srcformat format,byte *data,char *source_file,unsigned source_offset,unsigned flags)
+gltexture_t *TexMgr_LoadImage(model_t *owner,char *name,int width,int height,enum srcformat format,byte *data,char *source_file,unsigned int source_offset,unsigned int flags)
 {
 	unsigned    short   crc		= 0;
 	gltexture_t			*glt	= NULL;

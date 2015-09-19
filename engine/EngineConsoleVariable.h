@@ -56,10 +56,10 @@ extern "C" {
 	// registers a cvar that allready has the name, string, and optionally the
 	// archive elements set.
 
-	void 	Cvar_Set(char *var_name, char *value);
+	void 	Cvar_Set(const char *var_name, char *value);
 	// equivelant to "<name> <variable>" typed at the console
 
-	void	Cvar_SetValue(char *var_name, float value);
+	void	Cvar_SetValue(const char *var_name, float value);
 	// expands value to a string and calls Cvar_Set
 
 	float	Cvar_VariableValue(char *var_name);
@@ -83,7 +83,7 @@ extern "C" {
 
 	void Cvar_Reset(char *name);
 
-	cvar_t *Cvar_FindVar(char *var_name);
+	cvar_t *Cvar_FindVar(const char *var_name);
 
 #ifdef __cplusplus
 };

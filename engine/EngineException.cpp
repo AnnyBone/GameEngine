@@ -4,18 +4,17 @@ CEngineException::CEngineException(const char *ccMessage, ...)
 {
 	va_list	ArgPtr;
 	char Out[1024];
-	static int	
+	static int
 		ErrorPass0 = 0,
 		ErrorPass1 = 0,
-		ErrorPass2 = 0,
-		ErrorPass3 = 0;
+		ErrorPass2 = 0;
 
 #ifdef _DEBUG
 	assert(ccMessage);
 #endif
 
-	if (!ErrorPass3)
-		ErrorPass3 = 1;
+	if (!ErrorPass2)
+		ErrorPass2 = 1;
 
 	va_start(ArgPtr, ccMessage);
 	vsprintf(Out, ccMessage, ArgPtr);

@@ -35,6 +35,7 @@ class CSprite
 {
 public:
 	CSprite();
+	virtual ~CSprite();
 
 	void SetPosition(float X, float Y, float Z);
 	void SetColour(float R, float G, float B);
@@ -57,7 +58,7 @@ private:
 		bBlend,
 		bActive;
 
-	MathVector3f_t 
+	MathVector3f_t
 		Position,
 		Mins, Maxs;
 
@@ -162,6 +163,10 @@ CSprite::CSprite()
 	Math_Vector4Set(1.0f, Colour);
 }
 
+CSprite::~CSprite()
+{
+}
+
 void CSprite::SetColour(float R, float G, float B)
 {
 	Colour[0] = R;
@@ -169,10 +174,10 @@ void CSprite::SetColour(float R, float G, float B)
 	Colour[2] = B;
 }
 
-void CSprite::SetPosition(float X,float Y,float Z) 
+void CSprite::SetPosition(float X,float Y,float Z)
 {
-	Position[0] = X; 
-	Position[1] = Y; 
+	Position[0] = X;
+	Position[1] = Y;
 	Position[2] = Z;
 }
 
