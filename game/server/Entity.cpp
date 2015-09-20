@@ -100,6 +100,9 @@ void CServerEntity::SetSize(
 	object is spawned, and then only
 	if it is teleported.
 */
+#ifdef _MSC_VER
+#pragma warning(suppress: 6244)	// TODO: Rename mvOrigin global to something else!!
+#endif
 void CServerEntity::SetOrigin(MathVector3f_t mvOrigin)
 {
 	Math_VectorCopy(mvOrigin, Instance->v.origin);

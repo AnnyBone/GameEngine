@@ -80,8 +80,8 @@ typedef struct
 
 	void(*InsertConsoleCommand)(const char *cCommand);										// Sends the given command to the console.
 	void(*RegisterConsoleVariable)(ConsoleVariable_t *cvVariable, void(*Function)(void));	// Register a new console variable.
-	void(*SetConsoleVariable)(char *cVariableName, char *cValue);							// Set the value of an existing console variable.
-	void(*ResetConsoleVariable)(char *cVariableName);										// Resets the value of a console variable.
+	void(*SetConsoleVariable)(const char *cVariableName, char *cValue);							// Set the value of an existing console variable.
+	void(*ResetConsoleVariable)(const char *cVariableName);										// Resets the value of a console variable.
 	void(*Print)(char *cMessage, ...);														// Prints a message to the console.
 	void(*PrintDev)(char *cMessage, ...);													// Prints a developer message to the console.
 

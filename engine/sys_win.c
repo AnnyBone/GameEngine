@@ -337,9 +337,15 @@ char *Sys_ConsoleInput (void)
 		if(!ReadConsoleInput(hinput,recs,1,(LPDWORD)&numread))
 			Sys_Error ("Error reading console input");
 
+#ifdef _MSC_VER
+#pragma warning(suppress: 6102)
+#endif
 		if (numread != 1)
 			Sys_Error ("Couldn't read console input");
 
+#ifdef _MSC_VER
+#pragma warning(suppress: 6102)
+#endif
 		if (recs[0].EventType == KEY_EVENT)
 		{
 			if (!recs[0].Event.KeyEvent.bKeyDown)
@@ -449,13 +455,11 @@ bool System_Main(int iArgumentCount,char *cArguments[], bool bEmbedded)
 	EngineParameters_t	epParameters;
 	int					t;
 
-#ifdef _WIN32
+#ifdef _WIN32	// TODO: Move this functionality into the platform library.
 	{
-#if 0 // Future replacement...
-		MEMORYSTATUSEX    lpBuffer;
+		MEMORYSTATUSEX lpBuffer;
 
 		lpBuffer.dwLength = sizeof(lpBuffer);
-
 		GlobalMemoryStatusEx (&lpBuffer);
 
 		// take the greater of all the available memory or half the total memory,
@@ -465,34 +469,10 @@ bool System_Main(int iArgumentCount,char *cArguments[], bool bEmbedded)
 		if(epParameters.memsize < MINIMUM_MEMORY)
 			epParameters.memsize = MINIMUM_MEMORY;
 
-		if((unsigned)epParameters.memsize < (lpBuffer.ullTotalPhys >> 1))
-			epParameters.memsize = lpBuffer.ullTotalPhys >> 1;
-
 		if(epParameters.memsize > MAXIMUM_MEMORY)
 			epParameters.memsize = MAXIMUM_MEMORY;
-#else // Old...
-		MEMORYSTATUS lpBuffer;
-
-		lpBuffer.dwLength = sizeof(lpBuffer);
-
-		GlobalMemoryStatus(&lpBuffer);
-
-		// take the greater of all the available memory or half the total memory,
-		// but at least 8 Mb and no more than 16 Mb, unless they explicitly
-		// request otherwise
-		epParameters.memsize = lpBuffer.dwAvailPhys;
-		if (epParameters.memsize < MINIMUM_MEMORY)
-			epParameters.memsize = MINIMUM_MEMORY;
-
-		if ((unsigned)epParameters.memsize < (lpBuffer.dwTotalPhys >> 1))
-			epParameters.memsize = lpBuffer.dwTotalPhys >> 1;
-
-		if (epParameters.memsize > MAXIMUM_MEMORY)
-			epParameters.memsize = MAXIMUM_MEMORY;
-#endif
 	}
 #else
-
 	epParameters.memsize	= MAXIMUM_MEMORY;
 #endif
 	epParameters.basedir	= ".";

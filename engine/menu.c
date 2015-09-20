@@ -1704,6 +1704,7 @@ char	lanConfig_joinname[22];
 
 void M_Menu_LanConfig_f (void)
 {
+#if 0
 	key_dest = key_menu;
 	m_state = m_lanconfig;
 	m_entersound = TRUE;
@@ -1721,6 +1722,7 @@ void M_Menu_LanConfig_f (void)
 
 	m_return_onerror = FALSE;
 	m_return_reason[0] = 0;
+#endif
 }
 
 
@@ -1785,6 +1787,7 @@ void M_LanConfig_Draw (void)
 
 void M_LanConfig_Key (int key)
 {
+#if 0
 	int		l;
 
 	switch (key)
@@ -1893,6 +1896,7 @@ void M_LanConfig_Key (int key)
 	else
 		lanConfig_port = l;
 	sprintf(lanConfig_portname, "%u", lanConfig_port);
+#endif
 }
 
 //=============================================================================
@@ -2225,6 +2229,7 @@ void M_Menu_ServerList_f (void)
 
 void M_ServerList_Draw (void)
 {
+#if 0
 	int		n;
 	char	string [64];
 	qpic_t	*p;
@@ -2261,6 +2266,7 @@ void M_ServerList_Draw (void)
 
 	if (*m_return_reason)
 		M_PrintWhite (16, 148, m_return_reason);
+#endif
 }
 
 

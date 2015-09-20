@@ -193,10 +193,10 @@ vec4_t		vViewBlend;		// rgba 0.0 - 1.0
 void V_ParseDamage (void)
 {
 	int		armor, blood;
-	MathVector3_t from;
+	MathVector3f_t from;
 	int		i;
-	MathVector3_t forward, right, up;
-	entity_t	*ent;
+	MathVector3f_t mvForward, mvRight, mvUp;
+	ClientEntity_t *ent;
 	float	side;
 	float	count;
 
@@ -240,12 +240,12 @@ void V_ParseDamage (void)
 	Math_VectorSubtract(from,ent->origin,from);
 	Math_VectorNormalize(from);
 
-	Math_AngleVectors(ent->angles, forward, right, up);
+	Math_AngleVectors(ent->angles, mvForward, mvRight, mvUp);
 
-	side = Math_DotProduct (from, right);
+	side = Math_DotProduct (from, mvRight);
 	v_dmg_roll = count*side*v_kickroll.value;
 
-	side = Math_DotProduct (from, forward);
+	side = Math_DotProduct (from, mvForward);
 	v_dmg_pitch = count*side*v_kickpitch.value;
 
 	v_dmg_time = v_kicktime.value;
@@ -610,9 +610,9 @@ void V_CalcRefdef (void)
 					delta;
 	static	float	oldz = 0;
 	ClientEntity_t	*ent,*view;
-	vec3_t			forward,right,mvUp,
+	MathVector3f_t forward,right,mvUp,
 					angles,vOldAngles;
-	static	vec3_t	punch = {0,0,0}; //johnfitz -- v_gunkick
+	static MathVector3f_t punch = {0,0,0}; //johnfitz -- v_gunkick
 
 	V_DriftPitch();
 

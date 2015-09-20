@@ -227,9 +227,12 @@ sndinitstat SNDDMA_InitDirect(void)
 	}
 
 	dscaps.dwSize = sizeof(dscaps);
-
 	if (DS_OK != pDS->lpVtbl->GetCaps(pDS, &dscaps))
+	{
 		Con_SafePrintf("Couldn't get DS caps\n");
+		FreeSound();
+		return SIS_FAILURE;
+	}
 
 	if (dscaps.dwFlags & DSCAPS_EMULDRIVER)
 	{

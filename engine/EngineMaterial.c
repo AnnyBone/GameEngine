@@ -124,6 +124,9 @@ Material_t *Material_Allocate(void)
 	if (iMaterialCount > MATERIAL_MAX)
 		Sys_Error("Failed to add new material onto global array! (%i)\n", iMaterialCount);
 
+#ifdef _MSC_VER
+#pragma warning(suppress: 6386)
+#endif
 	mMaterials[iMaterialCount].cName[0] = 0;
 	mMaterials[iMaterialCount].iIdentification = iMaterialCount;
 	mMaterials[iMaterialCount].fAlpha = 1.0f;
@@ -143,6 +146,9 @@ void Material_ClearSkin(Material_t *mMaterial, int iSkin)
 	if (!mSkin)
 		Sys_Error("Attempted to clear invalid skin! (%s) (%i)\n", mMaterial->cPath, iSkin);
 
+#ifdef _MSC_VER
+#pragma warning(suppress: 6011)
+#endif
 	for (i = 0; i < mSkin->uiTextures; i++)
 		TexMgr_FreeTexture(mSkin->mtTexture[i].gMap);
 }

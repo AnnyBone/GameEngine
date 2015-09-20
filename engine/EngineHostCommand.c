@@ -1008,7 +1008,7 @@ void Host_Loadgame_f (void)
 	FILE	*f;
 	char	mapname[MAX_QPATH];
 	float	time, tfloat;
-	char	str[32768], *start;
+	char	str[32768] = { 0 }, *start;
 	int		i, r;
 	ServerEntity_t	*ent;
 	int		entnum,version;
@@ -1315,7 +1315,7 @@ void Host_Tell_f(void)
 void Host_Color_f(void)
 {
 	int		top, bottom;
-	int		playercolor;
+	int	iPlayerColour;
 
 	if (Cmd_Argc() == 1)
 	{
@@ -1339,17 +1339,17 @@ void Host_Color_f(void)
 	if (bottom > 13)
 		bottom = 13;
 
-	playercolor = top*16 + bottom;
+	iPlayerColour = top * 16 + bottom;
 
 	if (cmd_source == src_command)
 	{
-		Cvar_SetValue ("_cl_color", playercolor);
+		Cvar_SetValue("_cl_color", iPlayerColour);
 		if (cls.state == ca_connected)
 			Cmd_ForwardToServer ();
 		return;
 	}
 
-	host_client->colors	= playercolor;
+	host_client->colors = iPlayerColour;
 
 	// Send notification to all clients
 	MSG_WriteByte(&sv.reliable_datagram,SVC_UPDATECOLORS);

@@ -33,14 +33,14 @@ HANDLE	hStdout;
 HANDLE	hStdin;
 
 DWORD RequestProc (DWORD dwNichts);
-LPVOID GetMappedBuffer (HANDLE hfileBuffer);
+LPVOID GetMappedBuffer (HANDLE hBuffer);
 void ReleaseMappedBuffer (LPVOID pBuffer);
 bool GetScreenBufferLines (int *piLines);
 bool SetScreenBufferLines (int iLines);
 bool ReadText (LPTSTR pszText, int iBeginLine, int iEndLine);
 bool WriteText (LPCTSTR szText);
 int CharToCode (char c);
-bool SetConsoleCXCY(HANDLE hStdout, int cx, int cy);
+bool SetConsoleCXCY(HANDLE hOut, int cx, int cy);
 
 void InitConProc (HANDLE hFile, HANDLE heventParent, HANDLE heventChild)
 {
@@ -150,11 +150,11 @@ DWORD RequestProc(DWORD dwNichts)
 	return 0;
 }
 
-LPVOID GetMappedBuffer (HANDLE hfileBuffer)
+LPVOID GetMappedBuffer (HANDLE hBuffer)
 {
 	LPVOID pBuffer;
 
-	pBuffer = MapViewOfFile (hfileBuffer,
+	pBuffer = MapViewOfFile(hBuffer,
 							FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
 
 	return pBuffer;
@@ -275,12 +275,12 @@ int CharToCode (char c)
 	return c;
 }
 
-bool SetConsoleCXCY(HANDLE hStdout, int cx, int cy)
+bool SetConsoleCXCY(HANDLE hOut, int cx, int cy)
 {
 	CONSOLE_SCREEN_BUFFER_INFO	info;
 	COORD						coordMax;
 
-	coordMax = GetLargestConsoleWindowSize(hStdout);
+	coordMax = GetLargestConsoleWindowSize(hOut);
 
 	if (cy > coordMax.Y)
 		cy = coordMax.Y;
@@ -288,7 +288,7 @@ bool SetConsoleCXCY(HANDLE hStdout, int cx, int cy)
 	if (cx > coordMax.X)
 		cx = coordMax.X;
 
-	if (!GetConsoleScreenBufferInfo(hStdout, &info))
+	if (!GetConsoleScreenBufferInfo(hOut, &info))
 		return false;
 
 // height
@@ -299,26 +299,26 @@ bool SetConsoleCXCY(HANDLE hStdout, int cx, int cy)
 
 	if (cy < info.dwSize.Y)
 	{
-		if (!SetConsoleWindowInfo(hStdout, true, &info.srWindow))
+		if (!SetConsoleWindowInfo(hOut, true, &info.srWindow))
 			return false;
 
 		info.dwSize.Y = cy;
 
-		if (!SetConsoleScreenBufferSize(hStdout, info.dwSize))
+		if (!SetConsoleScreenBufferSize(hOut, info.dwSize))
 			return false;
     }
     else if (cy > info.dwSize.Y)
     {
 		info.dwSize.Y = cy;
 
-		if(!SetConsoleScreenBufferSize(hStdout,info.dwSize))
+		if (!SetConsoleScreenBufferSize(hOut, info.dwSize))
 			return false;
 
-		if(!SetConsoleWindowInfo(hStdout,true,&info.srWindow))
+		if (!SetConsoleWindowInfo(hOut, true, &info.srWindow))
 			return false;
     }
 
-	if (!GetConsoleScreenBufferInfo(hStdout, &info))
+	if (!GetConsoleScreenBufferInfo(hOut, &info))
 		return false;
 
 // width
@@ -329,22 +329,22 @@ bool SetConsoleCXCY(HANDLE hStdout, int cx, int cy)
 
 	if (cx < info.dwSize.X)
 	{
-		if (!SetConsoleWindowInfo(hStdout,true,&info.srWindow))
+		if (!SetConsoleWindowInfo(hOut, true, &info.srWindow))
 			return false;
 
 		info.dwSize.X = cx;
 
-		if (!SetConsoleScreenBufferSize(hStdout, info.dwSize))
+		if (!SetConsoleScreenBufferSize(hOut, info.dwSize))
 			return false;
 	}
 	else if (cx > info.dwSize.X)
 	{
 		info.dwSize.X = cx;
 
-		if (!SetConsoleScreenBufferSize(hStdout, info.dwSize))
+		if (!SetConsoleScreenBufferSize(hOut, info.dwSize))
 			return false;
 
-		if (!SetConsoleWindowInfo(hStdout,true,&info.srWindow))
+		if (!SetConsoleWindowInfo(hOut, true, &info.srWindow))
 			return false;
 	}
 

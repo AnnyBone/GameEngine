@@ -466,7 +466,9 @@ void CEditorFrame::OnOpen(wxCommandEvent &event)
 			SetTitle(fileDialog->GetFilename() + wxString(" - ") + cApplicationTitle);
 		}
 		else if (filename.EndsWith(".wad"))
+		{
 			OpenWADTool(fileDialog->GetPath());
+		}
 		else if (filename.EndsWith(".md2"))
 		{
 		}

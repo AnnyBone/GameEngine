@@ -141,7 +141,7 @@ void S_TransferPaintBuffer(int endtime)
 	int 	*p;
 	int 	step;
 	int		val;
-	int		snd_vol;
+	int		iSoundVolume;
 	DWORD	*pbuf;
 #ifdef _WIN32
 	int		reps;
@@ -161,7 +161,7 @@ void S_TransferPaintBuffer(int endtime)
 	out_mask = shm->samples - 1;
 	out_idx = paintedtime * shm->channels & out_mask;
 	step = 3 - shm->channels;
-	snd_vol = volume.value * 256;
+	iSoundVolume = volume.value * 256;
 
 #ifdef _WIN32
 	if (pDSBuf)
@@ -199,7 +199,7 @@ void S_TransferPaintBuffer(int endtime)
 		short *out = (short *)pbuf;
 		while (count--)
 		{
-			val = (*p * snd_vol) >> 8;
+			val = (*p * iSoundVolume) >> 8;
 			p += step;
 			if (val > 0x7fff)
 				val = 0x7fff;
@@ -214,7 +214,7 @@ void S_TransferPaintBuffer(int endtime)
 		unsigned char *out = (unsigned char *)pbuf;
 		while (count--)
 		{
-			val = (*p * snd_vol) >> 8;
+			val = (*p * iSoundVolume) >> 8;
 			p += step;
 			if (val > 0x7fff)
 				val = 0x7fff;

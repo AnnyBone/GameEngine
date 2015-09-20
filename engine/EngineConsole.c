@@ -634,10 +634,10 @@ void AddToTabList (const char *name, char *type)
 
 void BuildTabList (char *partial)
 {
-	cmdalias_t		*alias;
-	cvar_t			*cvar;
-	cmd_function_t	*cmd;
-	int				len;
+	cmdalias_t *alias;
+	ConsoleVariable_t *cvar;
+	cmd_function_t *cmd;
+	int len;
 
 	tablist = NULL;
 	len = strlen(partial);

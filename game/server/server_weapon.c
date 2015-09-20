@@ -1,3 +1,6 @@
+/*	Copyright (C) 2011-2015 OldTimes Software
+*/
+
 #include "server_weapon.h"
 
 /*
@@ -337,24 +340,9 @@ MathVector_t Weapon_Aim(ServerEntity_t *eEntity)
 void Weapon_ViewPunch(ServerEntity_t *eEntity, float fIntensity, bool bAddition)
 {
 	if(bAddition)
-	{
-#if 0
-		eEntity->v.punchangle[YAW] = (float)(rand() % 2) == 1 ? 
-			eEntity->v.punchangle[YAW] - 3.0f + (float)(rand() % 2): 
-			eEntity->v.punchangle[YAW] + 3.0f + (float)(rand() % 2);
-#endif
 		eEntity->v.punchangle[PITCH] -= 5.0f + (float)(rand() % 2);
-	}
 	else
-	{
-#if 0
-		eEntity->v.punchangle[YAW] = (float)(rand()%2) == 1 ? 
-			-3.0f + (float)(rand() % 2): 
-			+3.0f + (float)(rand() % 2);
-#endif
 		eEntity->v.punchangle[PITCH] = -4.0f + (float)(rand() % 2);
-	}
-
 }
 
 MathVector3_t mvTraceMaxs = { 4, 4, 4 };
@@ -401,7 +389,7 @@ bool Weapon_CheckTrace(ServerEntity_t *eOwner)
 */
 void Weapon_Projectile(ServerEntity_t *eOwner, ServerEntity_t *eProjectile, float fVelocity)
 {
-	MathVector3_t mvDirection;
+	MathVector3f_t mvDirection;
 
 	// Figure out our aim direction.
 	Math_MVToVector(Weapon_Aim(eOwner), mvDirection);
@@ -520,7 +508,7 @@ void Weapon_SetActive(Weapon_t *wWeapon,ServerEntity_t *eEntity, bool bDeploy)
 {
 	bool bPrimaryAmmo,bSecondaryAmmo;
 
-	// [11/5/2013] Clear everything out ~hogsy
+	// Clear everything out.
 	eEntity->v.cViewModel		= "";
 	eEntity->v.iSecondaryAmmo	=
 	eEntity->v.iPrimaryAmmo		=
@@ -590,6 +578,8 @@ bool Weapon_CheckPrimaryAmmo(Weapon_t *wWeapon,ServerEntity_t *eEntity)
 	case AM_SWITCH:
 	case AM_NONE:
 		return true;
+	default:
+		break;
 	}
 
 	return false;
@@ -605,20 +595,20 @@ bool Weapon_CheckSecondaryAmmo(Weapon_t *wWeapon,ServerEntity_t *eEntity)
 	case AM_SWITCH:
 	case AM_NONE:
 		return true;
-	// [12/8/2013] Added to get rid of a silly warning in GCC ~hogsy
 	default:
-		return false;
+		break;
 	}
+
+	return false;
 }
 
 /*
 	Animation Code
 */
 
-// 06/02/2013 - Animation system = redone! ~eukos
 void Weapon_ResetAnimation(ServerEntity_t *ent)
 {
-	// [3/2/2014] Allow for custom idle frames after animation ~hogsy
+	// Allow for custom idle frames after animation.
 	if(ent->local.iWeaponIdleFrame)
 		ent->v.iWeaponFrame					=
 		ent->local.iWeaponAnimationCurrent	= ent->local.iWeaponIdleFrame;
@@ -635,7 +625,7 @@ void Weapon_CheckFrames(ServerEntity_t *eEntity)
 {
 	if(!eEntity->local.iWeaponAnimationEnd || Server.dTime < eEntity->local.fWeaponAnimationTime)	// If something isn't active and Animationtime is over
 		return;
-	// [2/10/2013] Reset the animation in-case we die! ~hogsy
+	// Reset the animation in-case we die!
 	else if((eEntity->local.iWeaponAnimationCurrent > eEntity->local.iWeaponAnimationEnd) || (eEntity->v.iHealth <= 0))
 	{
 		Weapon_ResetAnimation(eEntity);
@@ -700,6 +690,9 @@ void Weapon_Cycle(ServerEntity_t *eEntity, bool bForward)
 	if(!wCurrentWeapon)
 		return;
 
+	// Set nextweapon to our current weapon befpre anything else.
+	iNextWeapon = wCurrentWeapon->iItem;
+
 	// Cycle through the weapon array
 NEXTWEAPON:
 	for (i = 0; i < pARRAYELEMENTS(Weapons); i++)
@@ -711,10 +704,10 @@ NEXTWEAPON:
 		if(wCurrentWeapon->iItem == Weapons[i].iItem)
 		{
 			if(bForward == true)
-				iNextWeapon = Weapons[i+1].iItem;
-			else
-				iNextWeapon = Weapons[i-1].iItem;
-
+				iNextWeapon = Weapons[i + 1].iItem;
+			// Ensure we're not the last weapon, before rolling back.
+			else if (i > 0)
+				iNextWeapon = Weapons[i - 1].iItem;
 			break;
 		}
 	}
@@ -787,9 +780,6 @@ void Weapon_CheatCommand(ServerEntity_t *eEntity)
 	Item_AddInventory(Item_GetItem(WEAPON_SIDEWINDER),eEntity);
 	Item_AddInventory(Item_GetItem(WEAPON_SHOCKWAVE),eEntity);
 	Item_AddInventory(Item_GetItem(WEAPON_IONRIFLE),eEntity);
-#if 0
-	Item_AddInventory(Item_GetItem(WEAPON_GLOCK),eEntity);
-#endif
 
 	wWeapon = Weapon_GetWeapon(WEAPON_DAIKATANA);
 	if(wWeapon)

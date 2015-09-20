@@ -1,5 +1,6 @@
 /*	Copyright (C) 2011-2015 OldTimes Software
 */
+
 #include "server_weapon.h"
 
 /*
@@ -80,12 +81,11 @@ void SideWinder_Think(ServerEntity_t *ent);
 
 void SideWinder_Deploy(ServerEntity_t *ent)
 {
-	// [31/12/2013] TODO: Deploy sound? ~hogsy
+	// TODO: Deploy sound?
 
 	Weapon_Animate(ent,SideWinderAnimation_Deploy);
 }
 
-// [2/8/2012] Renamed to SideWinder_MissileExplode ~hogsy
 void SideWinder_MissileExplode(ServerEntity_t *ent,ServerEntity_t *other)
 {
 	vec3_t	vVelocity;
@@ -98,7 +98,6 @@ void SideWinder_MissileExplode(ServerEntity_t *ent,ServerEntity_t *other)
 
 	Entity_RadiusDamage(ent, MONSTER_RANGE_NEAR, 30, DAMAGE_TYPE_EXPLODE);
 
-	// [4/8/2012] Simplified ~hogsy
 	Math_VectorNegate(ent->v.velocity,vVelocity);
 
 	if (Engine.Server_PointContents(ent->v.origin) <= BSP_CONTENTS_WATER)
@@ -111,20 +110,17 @@ void SideWinder_MissileExplode(ServerEntity_t *ent,ServerEntity_t *other)
 	Entity_Remove(ent);
 }
 
-// [4/8/2012] Added SideWinder_Think ~hogsy
 void SideWinder_Think(ServerEntity_t *eSideWinder)
 {
-	// [31/8/2012] Complete rewrite ~hogsy
 	int	iContents = Engine.Server_PointContents(eSideWinder->v.origin);
-
-	// [4/8/2012] Check if the contents have changed ~hogsy
-	if (iContents == (BSP_CONTENTS_WATER || BSP_CONTENTS_SLIME || BSP_CONTENTS_LAVA))
+	if ((iContents == BSP_CONTENTS_WATER) || 
+		(iContents == BSP_CONTENTS_SLIME) || 
+		(iContents == BSP_CONTENTS_LAVA))
 		eSideWinder->local.speed = SIDEWINDER_MINSPEED;
-	// [31/8/2012] Don't let us explode in the sky... ~hogsy
+	// Don't let us explode in the sky.
 	else if(iContents == BSP_CONTENTS_SKY)
 	{
 		Entity_Remove(eSideWinder);
-		// [15/8/2013] Oops! Return here! ~hogsy
 		return;
 	}
 	else
@@ -146,20 +142,15 @@ void SideWinder_Think(ServerEntity_t *eSideWinder)
 	eSideWinder->v.dNextThink = Server.dTime+0.05;
 }
 
-// [4/8/2012] Renamed to SideWinder_SpawnMissle ~hogsy
 void SideWinder_SpawnMissle(ServerEntity_t *ent,float fSpeed,float ox)
 {
-	// [26/2/2012] Revised and fixed ~hogsy
-	vec3_t	vOrg;
+	MathVector3f_t vOrg;
 	ServerEntity_t *eMissile = Entity_Spawn();
 
-	/*	TODO:
-			Spawn a flare at our position too
-		~hogsy
-	*/
+	// TODO: Spawn a flare at our position too
 
-	eMissile->v.cClassname	= "sidewindermissile";
-	eMissile->v.movetype	= MOVETYPE_FLYMISSILE;
+	eMissile->v.cClassname = "sidewindermissile";
+	eMissile->v.movetype = MOVETYPE_FLYMISSILE;
 	eMissile->v.effects = EF_PARTICLE_SMOKE | EF_DIMLIGHT;
 
 	eMissile->Physics.iSolid	= SOLID_BBOX;
@@ -168,7 +159,7 @@ void SideWinder_SpawnMissle(ServerEntity_t *ent,float fSpeed,float ox)
 	eMissile->local.speed	= SIDEWINDER_MAXSPEED;
 	eMissile->local.eOwner	= ent;
 	eMissile->local.count	= 0;
-	// [4/8/2012] Change our speed depending on what contents we're within ~hogsy
+	// Change our speed depending on what contents we're within.
 	eMissile->local.speed	= fSpeed;
 
 	Weapon_Projectile(ent, eMissile, eMissile->local.speed);
@@ -187,29 +178,27 @@ void SideWinder_SpawnMissle(ServerEntity_t *ent,float fSpeed,float ox)
 	Entity_SetSizeVector(eMissile,mv3Origin,mv3Origin);
 	Entity_SetOrigin(eMissile,vOrg);
 
-	// [4/8/2012] Time at which we'll be removed if nothing hit ~hogsy
+	// Time at which we'll be removed if nothing hit.
 	eMissile->local.fSpawnDelay = (float)(Server.dTime+8.0);
 
 	eMissile->v.TouchFunction	= SideWinder_MissileExplode;
 	eMissile->v.dNextThink		= Server.dTime+0.05;
 	eMissile->v.think			= SideWinder_Think;
 
-	// [4/8/2012] Moved so we do this last! ~hogsy
 	Entity_Link(eMissile,false);
 }
 
-// [4/8/2012] Renamed to SideWinder_PrimaryAttack ~hogsy
 void SideWinder_PrimaryAttack(ServerEntity_t *eOwner)
 {
 	float	fSpeed	= SIDEWINDER_MAXSPEED;
 	char	*cSound = "weapons/sidewinder/sidewinderfire.wav";
 
-	// [31/12/2013] Only do this once when spawning, here! ~hogsy
-	if(Engine.Server_PointContents(eOwner->v.origin) ==
-		(BSP_CONTENTS_WATER || BSP_CONTENTS_SLIME || BSP_CONTENTS_LAVA))
+	int iCurrentContents = Engine.Server_PointContents(eOwner->v.origin);
+	if( (iCurrentContents == BSP_CONTENTS_WATER) || 
+		(iCurrentContents == BSP_CONTENTS_SLIME) || 
+		(iCurrentContents == BSP_CONTENTS_LAVA))
 	{
 		cSound = "weapons/sidewinder/sidewinderunderwaterfire.wav";
-
 		fSpeed = SIDEWINDER_MINSPEED;
 	}
 

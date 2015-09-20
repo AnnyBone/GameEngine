@@ -50,22 +50,23 @@ CVideoShader::CVideoShader(const char *ccPath, VideoShaderType_t vsType)
 	if (vsType == VIDEO_SHADER_FRAGMENT)
 	{
 		sprintf(cShaderPath, "%s%s_fragment.shader", Global.cShaderPath, ccPath);
-
 		uiShaderType = GL_FRAGMENT_SHADER;
 	}
 	else
 	{
 		sprintf(cShaderPath, "%s%s_vertex.shader", Global.cShaderPath, ccPath);
-
 		uiShaderType = GL_VERTEX_SHADER;
 	}
 
 	// Attempt to load it.
 	ccShaderSource = (char*)COM_LoadFile(cShaderPath, 0);
-	if(!ccShaderSource)
+	if(!ccShaderSource || ccShaderSource[0] == ' ')
 		Sys_Error("Failed to load shader! (%s)\n", cShaderPath);
 
 	// Ensure it's a valid length.
+#ifdef _MSC_VER
+#pragma warning(suppress: 6387)
+#endif
 	iShaderLength = strlen(ccShaderSource);
 	if(iShaderLength <= 1)
 		Sys_Error("Invalid shader! (%i) (%s)\n", iShaderLength, cShaderPath);

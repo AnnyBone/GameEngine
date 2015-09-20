@@ -121,16 +121,16 @@ entity_t	*CL_EntityNum (int num)
 void CL_ParseStartSoundPacket(void)
 {
 	MathVector3_t pos;
-	int 	channel,ent,sound_num,volume,field_mask;
+	int 	channel,ent,sound_num,iVolume,field_mask;
 	float 	attenuation;
 	int		i;
 
 	field_mask = MSG_ReadByte();
 
 	if (field_mask & SND_VOLUME)
-		volume = MSG_ReadByte ();
+		iVolume = MSG_ReadByte();
 	else
-		volume = DEFAULT_SOUND_PACKET_VOLUME;
+		iVolume = DEFAULT_SOUND_PACKET_VOLUME;
 
 	if (field_mask & SND_ATTENUATION)
 		attenuation = MSG_ReadByte()/64.0f;
@@ -170,7 +170,7 @@ void CL_ParseStartSoundPacket(void)
 #ifdef _MSC_VER
 #pragma warning(suppress: 6385)
 #endif
-	S_StartSound (ent, channel, cl.sound_precache[sound_num], pos, volume, attenuation);
+	S_StartSound(ent, channel, cl.sound_precache[sound_num], pos, iVolume, attenuation);
 }
 
 /*	When the client is taking a long time to load stuff, send keepalive messages

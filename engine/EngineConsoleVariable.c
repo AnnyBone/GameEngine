@@ -245,7 +245,7 @@ char *Cvar_CompleteVariable (char *partial)
 	return NULL;
 }
 
-void Cvar_Reset (char *name)
+void Cvar_Reset (const char *name)
 {
 	cvar_t	*var;
 

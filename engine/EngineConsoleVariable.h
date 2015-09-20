@@ -81,7 +81,7 @@ extern "C" {
 	// Writes lines containing "set variable value" for all variables
 	// with the archive flag set to TRUE.
 
-	void Cvar_Reset(char *name);
+	void Cvar_Reset(const char *name);
 
 	cvar_t *Cvar_FindVar(const char *var_name);
 
