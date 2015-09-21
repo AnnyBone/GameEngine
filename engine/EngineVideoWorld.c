@@ -24,6 +24,7 @@
 */
 
 #include "EngineVideo.h"
+#include "EngineVideoEFrag.h"
 
 extern cvar_t gl_fullbrights, r_drawflat, r_oldwater, r_oldskyleaf, r_showtris; //johnfitz
 
@@ -402,7 +403,7 @@ void World_Draw(void)
 
 					Video_SelectTexture(VIDEO_TEXTURE_DIFFUSE);
 				}
-				
+
 				Video_DrawSurface(s, 1.0f, t->mAssignedMaterial, 0);
 
 				rs_brushpasses++;

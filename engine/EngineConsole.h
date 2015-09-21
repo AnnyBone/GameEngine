@@ -44,14 +44,14 @@ extern "C" {
 	void Con_SPrintf(char *dest, int size, char *fmt, ...);
 	void Con_Warning(const char *fmt, ...); //johnfitz
 	void Con_Error(char *fmt, ...);
-	void Con_DPrintf(char *fmt, ...);
-	void Con_SafePrintf(char *fmt, ...);
+	void Con_DPrintf(const char *fmt, ...);
+	void Con_SafePrintf(const char *fmt, ...);
 	void Con_Clear_f(void);
 	void Con_DrawNotify(void);
 	void Con_ClearNotify(void);
 	void Con_ToggleConsole_f(void);
 	void Con_NotifyBox(char *text);	// during startup for sound / cd warnings
-	void Console_ErrorMessage(bool bCrash, const char *ccFile, char *reason);
+	void Console_ErrorMessage(bool bCrash, const char *ccFile, const char *reason);
 
 #ifdef __cplusplus
 }

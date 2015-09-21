@@ -171,8 +171,7 @@ void SV_SendServerinfo(client_t *client)
 
 	if(sv.edicts->v.message)
 	{
-		sprintf(message,sv.edicts->v.message);
-
+		Q_strcpy(message, sv.edicts->v.message);
 		MSG_WriteString(&client->message,message);
 	}
 	else

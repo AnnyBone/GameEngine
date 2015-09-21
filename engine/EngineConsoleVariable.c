@@ -361,7 +361,6 @@ void Cvar_RegisterVariable (cvar_t *variable,void (*Function)(void))
 	}
 	//johnfitz
 
-	// [21/4/2013] Workaround for warning ~hogsy
 	variable->callback = Function; //johnfitz
 }
 

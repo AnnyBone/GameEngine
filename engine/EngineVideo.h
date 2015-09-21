@@ -106,8 +106,8 @@ typedef struct
 					fBitsPerPixel;
 
 	// Texture Management
-	unsigned int	
-		uiCurrentTexture[VIDEO_MAX_UNITS],	// Current/last binded texture.   
+	unsigned int
+		uiCurrentTexture[VIDEO_MAX_UNITS],	// Current/last binded texture.
 		uiActiveUnit,						// The currently active unit.
 		uiSecondaryUnit;					// Current/last secondary texture.
 
@@ -184,6 +184,10 @@ extern "C" {
 	void R_EmitWirePoint(MathVector3f_t origin);
 	void R_EmitWireBox(MathVector3f_t mins, MathVector3f_t maxs, float r, float g, float b);
 	bool R_CullBox(MathVector3f_t emins, MathVector3f_t emaxs);
+
+	// Brush
+	void GL_BuildLightmaps();
+	void R_RebuildAllLightmaps();
 
 #if __cplusplus
 };

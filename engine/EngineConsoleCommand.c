@@ -565,7 +565,7 @@ void Cmd_AddCommand (char *cmd_name, xcommand_t function)
 	//johnfitz
 }
 
-bool Cmd_Exists (char *cmd_name)
+bool Cmd_Exists (const char *cmd_name)
 {
 	cmd_function_t	*cmd;
 
