@@ -18,18 +18,16 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef __ENGINEEDITOR__
-#define	__ENGINEEDITOR__
+#include "platform.h"
 
-#include "SharedModule.h"
-
-extern	cvar_t	
-cvEditorLightPreview;
-
-#include "EngineMaterialEditor.h"
-
-void Editor_Initialize(void);
-void Editor_Frame(void);
-void Editor_Input(int iKey);
-
+char *p_strcpy(char *cDest, const char *ccSource)
+{
+#if 1
+	while (*ccSource)
+		*cDest++ = *ccSource++;
+	*cDest++ = 0;
+	return cDest;
+#else
+	return strcpy(cDest, ccSource);
 #endif
+}

@@ -135,6 +135,14 @@ void Draw_MaterialSurface(Material_t *mMaterial, int iSkin,
 {
 	VideoObjectVertex_t voSurface[4];
 
+	// Sloppy, but in the case that there's nothing valid...
+	if (!mMaterial)
+	{
+		Draw_Fill(x, y, w, h, 1.0f, 0, 0, 1.0f);
+		Draw_String(x, y, "INVALID MATERIAL!");
+		return;
+	}
+
 	Video_ResetCapabilities(false);
 
 	// Disable depth testing.
@@ -641,8 +649,13 @@ void Draw_FadeScreen (void)
 */
 void Draw_BeginDisc(void)
 {
+	static float fDiscRotation = 0;
 	int	iViewport[4]; //johnfitz
 	VideoCanvasType_t oldcanvas; //johnfitz
+
+	// Don't draw if it's dedicated.
+	if (cls.state == ca_dedicated)
+		return;
 
 	//johnfitz -- canvas and matrix stuff
 	glGetIntegerv(GL_VIEWPORT,iViewport);
@@ -657,8 +670,7 @@ void Draw_BeginDisc(void)
 	//johnfitz
 
 	glDrawBuffer(GL_FRONT);
-	// TODO: Placeholder!!!!!!
-	Draw_Fill(320 - 32, 0, 32, 32, 1.0f, 0, 0, 1.0f);
+	Draw_MaterialSurface(mGlobalAccessMaterial, 0, 320 - 74, 10, 64, 64, 1.0f);
 	glDrawBuffer(GL_BACK);
 
 	//johnfitz -- restore everything so that 3d rendering isn't fucked up

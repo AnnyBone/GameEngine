@@ -48,7 +48,7 @@ typedef enum
 extern "C" {
 #endif
 
-	char *VideoLayer_GetErrorMessage(void);
+	char *VideoLayer_GetErrorMessage(unsigned int uiGLError);
 
 	void VideoLayer_SetupTexture(VideoTextureFormat_t InternalFormat, VideoTextureFormat_t Format, unsigned int Width, unsigned int Height);
 	void VideoLayer_SetTextureFilter(VideoTextureFilter_t FilterMode);

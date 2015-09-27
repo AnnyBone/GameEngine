@@ -56,6 +56,7 @@ int	iMaterialCount = -1;
 
 Material_t *Material_Allocate(void);
 
+Material_t *mGlobalAccessMaterial;
 Material_t
 	*mNoTexture,
 	*mBlobShadow,
@@ -82,6 +83,8 @@ void Material_Initialize(void)
 	if (!mNoTexture)
 		Sys_Error("Failed to load notexture material!\n");
 
+	mGlobalAccessMaterial = Material_Load("sprites/base/access");
+
 	mConChars = Material_Load("engine/conchars");
 	if (!mConChars)
 		Sys_Error("Failed to load conchars material!\n");
@@ -90,9 +93,9 @@ void Material_Initialize(void)
 	if (!mBlobShadow)
 		Sys_Error("Failed to load shadow material!\n");
 
-	mColour = Material_Load("base/colours");
+	mColour = Material_Load("colours/colours");
 	if (!mColour)
-		Sys_Error("Failed to load white material!\n");
+		Sys_Error("Failed to load colours material!\n");
 }
 
 /*	Lists all the currently active materials.

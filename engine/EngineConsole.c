@@ -221,10 +221,10 @@ void Console_Initialize(void)
 	Q_memset (con_text, ' ', con_buffersize);//johnfitz -- con_buffersize replaces CON_TEXTSIZE
 
 	//johnfitz -- no need to run Con_CheckResize here
-	con_linewidth	= 70;
-	con_totallines	= con_buffersize/con_linewidth;//johnfitz -- con_buffersize replaces CON_TEXTSIZE
-	con_backscroll	= 0;
-	con_current		= con_totallines-1;
+	con_linewidth = 70;
+	con_totallines = con_buffersize / con_linewidth;//johnfitz -- con_buffersize replaces CON_TEXTSIZE
+	con_backscroll = 0;
+	con_current = con_totallines - 1;
 	//johnfitz
 
 	// register our commands
@@ -825,8 +825,8 @@ void Con_DrawNotify(void)
 void Con_DrawInput (void)
 {
 	extern double key_blinktime;
-	int				i,len;
-	char			c[256],*text;
+	int	i,len;
+	char c[256],*text;
 
 	if(key_dest != key_console && !con_forcedup)
 		return;		// Don't draw anything
@@ -854,7 +854,7 @@ void Con_DrawInput (void)
 /*	Draws the console with the solid background
 	The typing input line at the bottom should only be drawn if typing is allowed
 */
-void Con_DrawConsole(int lines,bool drawinput)
+void Con_DrawConsole(int lines, bool drawinput)
 {
 	int		i,x,y,j,sb,rows;
 	char	ver[64],*text;
@@ -907,34 +907,4 @@ void Con_DrawConsole(int lines,bool drawinput)
 		ENGINE_VERSION_BUILD);
 	for(x = 0; x < (signed)strlen(ver); x++)
 		Draw_Character((con_linewidth-strlen(ver)+x+2)<<3,y,ver[x]);
-}
-
-void Con_NotifyBox(char *text)
-{
-	double	t1,t2;
-
-	// During startup for sound / cd warnings
-	Con_Printf("\n\n%s",Con_Quakebar(40)); //johnfitz
-	Con_Printf(text);
-	Con_Printf("Press a key.\n");
-	Con_Printf(Con_Quakebar(40)); //johnfitz
-
-	key_count 	= -2;		// Wait for a key down and up
-	key_dest 	= key_console;
-
-	do
-	{
-		t1 = System_DoubleTime ();
-
-		Video_Frame();
-		Input_Frame();
-
-		t2 = System_DoubleTime();
-
-		realtime += t2-t1;		// make the cursor blink
-	} while(key_count < 0);
-
-	Con_Printf ("\n");
-	key_dest = key_game;
-	realtime = 0;				// put the cursor back to invisible
 }

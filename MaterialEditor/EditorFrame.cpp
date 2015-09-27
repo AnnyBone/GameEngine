@@ -62,37 +62,6 @@ ConsoleVariable_t
 	cvEditorShowProperties = { "editor_showproperties", "1", true, false, "Can show/hide the properties." },
 	cvEditorShowConsole = { "editor_showconsole", "1", true, false, "Can show/hide the console." };
 
-class CEditorSplashScreen : public wxSplashScreen
-{
-public:
-	CEditorSplashScreen();
-
-private:
-	wxTextCtrl *Status;
-};
-
-CEditorSplashScreen::CEditorSplashScreen()
-	: wxSplashScreen(
-	bSplashScreen,
-	wxSPLASH_CENTRE_ON_SCREEN,
-	-1,
-	NULL,
-	wxID_ANY,
-	wxDefaultPosition, wxDefaultSize,
-	wxBORDER_SIMPLE | wxSPLASH_NO_TIMEOUT | wxSTAY_ON_TOP | wxFRAME_NO_TASKBAR)
-{
-	int Width, Height;
-	GetSize(&Width, &Height);
-
-	Status = new wxTextCtrl(this, wxID_ANY, wxEmptyString,
-		wxPoint(0, Height-24), wxSize(Width-2, 24), 
-		wxALIGN_CENTRE_HORIZONTAL | wxST_NO_AUTORESIZE);
-	Status->SetDefaultStyle(wxTextAttr(wxColour("blue")));
-	Status->AppendText("Loading...");
-
-	//GetSizer()->Add(Status, 1, wxALL | wxEXPAND | wxALIGN_CENTER);
-}
-
 CEditorFrame::CEditorFrame(const wxString & title, const wxPoint & pos, const wxSize & size)
 	: wxFrame(NULL, wxID_ANY, title, pos, size)
 {
@@ -106,7 +75,14 @@ CEditorFrame::CEditorFrame(const wxString & title, const wxPoint & pos, const wx
 
 	pLog_Write(EDITOR_LOG, "Displaying splash screen...\n");
 
-	CEditorSplashScreen *SplashScreen = new CEditorSplashScreen();
+	new wxSplashScreen(
+		bSplashScreen,
+		wxSPLASH_CENTRE_ON_SCREEN | wxSPLASH_TIMEOUT,
+		2000,
+		NULL,
+		wxID_ANY,
+		wxDefaultPosition, wxDefaultSize,
+		wxBORDER_SIMPLE | wxSTAY_ON_TOP | wxFRAME_NO_TASKBAR);
 
 	SetSize(size);
 	Maximize();

@@ -6,21 +6,21 @@ colours
 	
 	$skin
 	{	
-		$map "materials/base/colours/white"
+		$map "materials/colours/white"
 		{
 		}
 	}
 	
 	$skin
 	{
-		$map "materials/base/colours/black"
+		$map "materials/colours/black"
 		{
 		}
 	}
 	
 	$skin
 	{
-		$map "materials/base/colours/blue"
+		$map "materials/colours/blue"
 		{
 		}
 	}

@@ -1,5 +1,6 @@
 /*	Copyright (C) 2013-2015 OldTimes Software
 */
+
 #include "platform.h"
 
 /*

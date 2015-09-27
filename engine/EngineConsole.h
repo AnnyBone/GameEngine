@@ -50,7 +50,6 @@ extern "C" {
 	void Con_DrawNotify(void);
 	void Con_ClearNotify(void);
 	void Con_ToggleConsole_f(void);
-	void Con_NotifyBox(char *text);	// during startup for sound / cd warnings
 	void Console_ErrorMessage(bool bCrash, const char *ccFile, char *reason);
 
 #ifdef __cplusplus

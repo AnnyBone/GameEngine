@@ -253,12 +253,8 @@ void Surface_DrawMirror(msurface_t *Surface)
 
 		glDepthRange(0, 0.5);
 		glScalef(1.0f, -1.0f, 1.0f);
-
-		//Sky_Draw();
+		
 		World_Draw();
-		//R_DrawShadows();
-		//R_DrawEntitiesOnList(false);
-		//Particle_Draw();
 
 		glDepthRange(0, 1);
 	}

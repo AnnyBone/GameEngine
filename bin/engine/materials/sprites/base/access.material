@@ -1,0 +1,12 @@
+sprite_access
+{
+	$flags	"PRESERVE"
+
+	$skin
+	{
+		$map "materials/sprites/base/access"
+		{
+			$flags "ALPHA"
+		}
+	}
+}

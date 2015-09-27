@@ -34,10 +34,10 @@
 /*	Checks glGetError and returns a string
 	describing the fault.
 */
-char *VideoLayer_GetErrorMessage(void)
+char *VideoLayer_GetErrorMessage(unsigned int uiGLError)
 {
 	VIDEO_FUNCTION_START
-	switch (glGetError())
+	switch (uiGLError)
 	{
 	case GL_NO_ERROR:
 		return "No error has been recorded.";
@@ -248,6 +248,26 @@ void VideoLayer_BindFrameBuffer(VideoFBOTarget_t vtTarget, unsigned int uiBuffer
 	}
 
 	glBindFramebuffer(uiOutTarget, uiBuffer);
+
+	// Ensure there weren't any issues.
+	unsigned int uiGLError = glGetError();
+	if (uiGLError != GL_NO_ERROR)
+	{
+		char *cErrorString = "";
+		switch (uiGLError)
+		{
+		case GL_INVALID_ENUM:
+			cErrorString = "Invalid framebuffer target!";
+			break;
+		case GL_INVALID_OPERATION:
+			cErrorString = "Invalid framebuffer object!";
+			break;
+		default:
+			// This should *NEVER* occur.
+			break;
+		}
+		Sys_Error("%s\n%s", VideoLayer_GetErrorMessage(uiGLError), cErrorString);
+	}
 	VIDEO_FUNCTION_END
 }
 

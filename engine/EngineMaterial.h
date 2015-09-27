@@ -29,6 +29,7 @@ extern "C" {
 
 	// Global materials
 	extern Material_t
+		*mGlobalAccessMaterial,
 		*mNoTexture,	// Used for materials that are missing.
 		*mBlobShadow,	// Self explanitory.
 		*mColour,

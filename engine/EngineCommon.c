@@ -30,8 +30,8 @@
 
 #define NUM_SAFE_ARGVS  7
 
-static char     *largv[MAX_NUM_ARGVS+NUM_SAFE_ARGVS+1],*argvdummy = " ";
-static char     *safeargvs[NUM_SAFE_ARGVS] =
+static char *largv[MAX_NUM_ARGVS + NUM_SAFE_ARGVS + 1], *argvdummy = " ";
+static char *safeargvs[NUM_SAFE_ARGVS] =
 	{"-stdvid", "-nolan", "-nosound", "-nocdaudio", "-nojoy", "-nomouse", "-dibonly"};
 
 bool msg_suppress_1 = 0;
@@ -44,27 +44,6 @@ char	com_token[1024];
 int		com_argc;
 char	**com_argv;
 char	com_cmdline[CMDLINE_LENGTH];
-
-// this graphic needs to be in the pak file to use registered features
-unsigned short pop[] =
-{
- 0x0000,0x0000,0x0000,0x0000,0x0000,0x0000,0x0000,0x0000
-,0x0000,0x0000,0x6600,0x0000,0x0000,0x0000,0x6600,0x0000
-,0x0000,0x0066,0x0000,0x0000,0x0000,0x0000,0x0067,0x0000
-,0x0000,0x6665,0x0000,0x0000,0x0000,0x0000,0x0065,0x6600
-,0x0063,0x6561,0x0000,0x0000,0x0000,0x0000,0x0061,0x6563
-,0x0064,0x6561,0x0000,0x0000,0x0000,0x0000,0x0061,0x6564
-,0x0064,0x6564,0x0000,0x6469,0x6969,0x6400,0x0064,0x6564
-,0x0063,0x6568,0x6200,0x0064,0x6864,0x0000,0x6268,0x6563
-,0x0000,0x6567,0x6963,0x0064,0x6764,0x0063,0x6967,0x6500
-,0x0000,0x6266,0x6769,0x6a68,0x6768,0x6a69,0x6766,0x6200
-,0x0000,0x0062,0x6566,0x6666,0x6666,0x6666,0x6562,0x0000
-,0x0000,0x0000,0x0062,0x6364,0x6664,0x6362,0x0000,0x0000
-,0x0000,0x0000,0x0000,0x0062,0x6662,0x0000,0x0000,0x0000
-,0x0000,0x0000,0x0000,0x0061,0x6661,0x0000,0x0000,0x0000
-,0x0000,0x0000,0x0000,0x0000,0x6500,0x0000,0x0000,0x0000
-,0x0000,0x0000,0x0000,0x0000,0x6400,0x0000,0x0000,0x0000
-};
 
 /*
 
@@ -120,7 +99,7 @@ void Q_memset (void *dest, int fill, int count)
 	}
 	else
 		for (i=0 ; i<count ; i++)
-			((byte *)dest)[i] = fill;
+			((uint8_t *)dest)[i] = fill;
 }
 
 void Q_memcpy (void *dest, void *src, int count)
@@ -135,7 +114,7 @@ void Q_memcpy (void *dest, void *src, int count)
 	}
 	else
 		for (i=0 ; i<count ; i++)
-			((byte *)dest)[i] = ((byte *)src)[i];
+			((uint8_t *)dest)[i] = ((uint8_t *)src)[i];
 }
 
 int Q_memcmp (void *m1, void *m2, int count)
@@ -143,7 +122,7 @@ int Q_memcmp (void *m1, void *m2, int count)
 	while(count)
 	{
 		count--;
-		if (((byte *)m1)[count] != ((byte *)m2)[count])
+		if (((uint8_t *)m1)[count] != ((uint8_t *)m2)[count])
 			return -1;
 	}
 	return 0;
@@ -360,7 +339,7 @@ short   (*LittleShort)(short l);
 
 short   ShortSwap (short l)
 {
-	byte    b1,b2;
+	uint8_t b1, b2;
 
 	b1 = l&255;
 	b2 = (l>>8)&255;
@@ -375,7 +354,7 @@ short   ShortNoSwap (short l)
 
 int    LongSwap (int l)
 {
-	byte    b1,b2,b3,b4;
+	uint8_t b1, b2, b3, b4;
 
 	b1 = l&255;
 	b2 = (l>>8)&255;
@@ -395,7 +374,7 @@ float FloatSwap (float f)
 	union
 	{
 		float   f;
-		byte    b[4];
+		uint8_t b[4];
 	} dat1, dat2;
 
 	dat1.f      = f;
@@ -427,49 +406,49 @@ Handles byte ordering and avoids alignment errors
 
 void MSG_WriteChar (sizebuf_t *sb, int c)
 {
-	byte    *buf;
+	uint8_t    *buf;
 
 #ifdef PARANOID
 	if (c < -128 || c > 127)
 		Sys_Error ("MSG_WriteChar: range error");
 #endif
 
-	buf = (byte*)SZ_GetSpace(sb,1);
+	buf = (uint8_t*)SZ_GetSpace(sb, 1);
 	buf[0] = c;
 }
 
 void MSG_WriteByte (sizebuf_t *sb, int c)
 {
-	byte    *buf;
+	uint8_t    *buf;
 
 #ifdef PARANOID
 	if (c < 0 || c > 255)
 		Sys_Error ("MSG_WriteByte: range error");
 #endif
 
-	buf = (byte*)SZ_GetSpace (sb, 1);
+	buf = (uint8_t*)SZ_GetSpace(sb, 1);
 	buf[0] = c;
 }
 
 void MSG_WriteShort (sizebuf_t *sb, int c)
 {
-	byte    *buf;
+	uint8_t    *buf;
 
 #ifdef PARANOID
 	if (c < ((short)0x8000) || c > (short)0x7fff)
 		Sys_Error ("MSG_WriteShort: range error");
 #endif
 
-	buf = (byte*)SZ_GetSpace (sb, 2);
+	buf = (uint8_t*)SZ_GetSpace(sb, 2);
 	buf[0] = c&0xff;
 	buf[1] = c>>8;
 }
 
 void MSG_WriteLong (sizebuf_t *sb, int c)
 {
-	byte    *buf;
+	uint8_t    *buf;
 
-	buf = (byte*)SZ_GetSpace(sb,4);
+	buf = (uint8_t*)SZ_GetSpace(sb, 4);
 	buf[0] = c&0xff;
 	buf[1] = (c>>8)&0xff;
 	buf[2] = (c>>16)&0xff;
@@ -625,7 +604,7 @@ float MSG_ReadFloat (void)
 {
 	union
 	{
-		byte    b[4];
+		uint8_t b[4];
 		float   f;
 		int     l;
 	} dat;
@@ -707,7 +686,7 @@ void SZ_Alloc (sizebuf_t *buf, int startsize)
 	if (startsize < 256)
 		startsize = 256;
 
-	buf->data		= (byte*)Hunk_AllocName (startsize, "sizebuf");
+	buf->data = (uint8_t*)Hunk_AllocName(startsize, "sizebuf");
 	buf->maxsize	= startsize;
 	buf->cursize	= 0;
 }
@@ -753,9 +732,9 @@ void SZ_Print (sizebuf_t *buf, char *data)
 
 	// byte * cast to keep VC++ happy
 	if (buf->data[buf->cursize-1])
-		memcpy((byte*)SZ_GetSpace(buf,len),data,len); // no trailing 0
+		memcpy((uint8_t*)SZ_GetSpace(buf, len), data, len); // no trailing 0
 	else
-		memcpy((byte*)SZ_GetSpace(buf,len-1)-1,data,len); // write over trailing 0
+		memcpy((uint8_t*)SZ_GetSpace(buf, len - 1) - 1, data, len); // write over trailing 0
 }
 
 char *FileSystem_SkipPath(char *pathname)
@@ -910,7 +889,7 @@ void COM_InitArgv (int argc, char **argv)
 
 void COM_Init(void)
 {
-	byte bSwapTest[2] =
+	uint8_t bSwapTest[2] =
 		{	1,	0	};
 
 	// set the byte swapping variables in a portable manner
@@ -1250,12 +1229,12 @@ void COM_CloseFile (int h)
 	Allways appends a 0 byte.
 */
 cache_user_t	*loadcache;
-byte			*loadbuf;
+uint8_t			*loadbuf;
 int				loadsize;
-byte *COM_LoadFile (const char *path, int usehunk)
+uint8_t *COM_LoadFile(const char *path, int usehunk)
 {
 	int     h,len;
-	byte    *buf = NULL;  // quiet compiler warning
+	uint8_t    *buf = NULL;  // quiet compiler warning
 	char    base[MAX_OSPATH];
 
 	// look for it in the filesystem or pack files
@@ -1267,17 +1246,17 @@ byte *COM_LoadFile (const char *path, int usehunk)
 	COM_FileBase (path, base);
 
 	if (usehunk == 1)
-		buf = (byte*)Hunk_AllocName (len+1, base);
+		buf = (uint8_t*)Hunk_AllocName(len + 1, base);
 	else if (usehunk == 2)
-		buf = (byte*)Hunk_TempAlloc (len+1);
+		buf = (uint8_t*)Hunk_TempAlloc(len + 1);
 	else if (usehunk == 0)
-		buf = (byte*)Z_Malloc (len+1);
+		buf = (uint8_t*)Z_Malloc(len + 1);
 	else if (usehunk == 3)
-		buf = (byte*)Cache_Alloc (loadcache, len+1, base);
+		buf = (uint8_t*)Cache_Alloc(loadcache, len + 1, base);
 	else if (usehunk == 4)
 	{
 		if (len+1 > loadsize)
-			buf = (byte*)Hunk_TempAlloc (len+1);
+			buf = (uint8_t*)Hunk_TempAlloc(len + 1);
 		else
 			buf = loadbuf;
 	}
@@ -1290,11 +1269,10 @@ byte *COM_LoadFile (const char *path, int usehunk)
 		return NULL;
 	}
 
-	((byte*)buf)[len] = 0;
+	((uint8_t*)buf)[len] = 0;
 
 	// [3/5/2012] Don't show if we're dedicated ~hogsy
-	if(cls.state != ca_dedicated)
-		Draw_BeginDisc();
+	Draw_BeginDisc();
 
 	Sys_FileRead(h, buf, len);
 
@@ -1376,7 +1354,7 @@ pack_t *FileSystem_LoadPackage(char *packfile)
 	// crc the directory to check for modifications
 	CRC_Init (&crc);
 	for (i = 0; i < header.dirlen ; i++)
-		CRC_ProcessByte (&crc, ((byte *)info)[i]);
+		CRC_ProcessByte(&crc, ((uint8_t *)info)[i]);
 
 	// parse the directory
 	for (i = 0; i < numpackfiles ; i++)

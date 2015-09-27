@@ -13,6 +13,9 @@
 	support.
 */
 
+// pIGNORE_SHARED_HEADERS
+// pDEFAULT_STANDARD
+
 // Shared headers
 #ifndef pIGNORE_SHARED_HEADERS
 #	include <stdio.h>
@@ -211,14 +214,20 @@ pError_SetFunction(pFUNCTION);
 extern "C" {
 #endif
 
-	extern	void	pError_Reset(void);								// Resets the error message to "null", so you can ensure you have the correct message from the library.
-	extern	void	pError_Set(const char *ccMessage, ...);			// Sets the error message, so we can grab it outside the library.
-	extern	void	pError_SetFunction(const char *ccFunction, ...);	// Sets the currently active function, for error reporting.
+	extern void	pError_Reset(void);								// Resets the error message to "null", so you can ensure you have the correct message from the library.
+	extern void	pError_Set(const char *ccMessage, ...);			// Sets the error message, so we can grab it outside the library.
+	extern void	pError_SetFunction(const char *ccFunction, ...);	// Sets the currently active function, for error reporting.
 
 	extern char *pError_SystemGet(void);	// Returns the error message currently given by the operating system.
 	extern void pError_SystemReset(void);
 
 	extern char	*pError_Get(void);	// Returns the last recorded error.
+
+	/*
+		Standard Implementation
+	*/
+
+	extern char *pString_Copy(char *cDest, const char *ccSource);
 
 #ifdef __cplusplus
 }

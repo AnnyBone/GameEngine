@@ -9,6 +9,9 @@
     <ClCompile Include="platform_window.c" />
     <ClCompile Include="platform_math.c" />
     <ClCompile Include="platform_log.c" />
+    <ClCompile Include="PlatformString.c">
+      <Filter>Standard</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\platform.h">
@@ -39,6 +42,9 @@
   <ItemGroup>
     <Filter Include="Include">
       <UniqueIdentifier>{3f927dcb-3779-430f-9901-5e649246219e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Standard">
+      <UniqueIdentifier>{7291038d-d168-480c-97b3-2b886eea9063}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

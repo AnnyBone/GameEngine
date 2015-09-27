@@ -43,49 +43,11 @@
 ConsoleVariable_t 
 cvEditorLightPreview = { "editor_lightpreview", "0", false, false, "Enables a preview showing the radius of each light." };
 
-typedef enum
-{
-	EDITOR_MODE_CAMERA,	// Default 3D camera view.
-	EDITOR_MODE_TOP,	// 2D top view mode.
-	EDITOR_MODE_SIDE	// 2D side view mode.
-} EditorMode_t;
-
-// Selection Modes
-typedef enum
-{
-	EDITOR_SELECT_VERTEX,
-	EDITOR_SELECT_EDGE
-} EditorSelect_t;
-
-void Editor_Launch(void);
-
 /*  Initialization function.
 */
 void Editor_Initialize(void)
 {
-	Editor.bEnabled = false;
-
-	Cmd_AddCommand("editor",Editor_Launch);
-	// TODO: Add a seperate command to handle this, rather than directly ~hogsy
-	//Cmd_AddCommand("editor_loadlevel",Editor_LoadLevel);
-
 	Cvar_RegisterVariable(&cvEditorLightPreview,NULL);
-
-	if (COM_CheckParm("-editor"))
-		Editor_Launch();
-}
-
-/*  Command function to allow us to launch the editor.
-*/
-void Editor_Launch(void)
-{
-	// Don't allow us to launch again.
-	if(Editor.bEnabled)
-		return;
-
-	key_dest = KEY_EDITOR;
-
-	Editor.bEnabled = true;
 }
 
 /*  Handle input.
@@ -106,14 +68,4 @@ void Editor_Frame(void)
 {
 	cl.oldtime = cl.time;
 	cl.time += host_frametime;
-}
-
-void Editor_Shutdown(void)
-{
-	if(!Editor.bEnabled)
-		return;
-
-	// [1/12/2013] TODO: Unload textures... ~hogsy
-
-	Editor.bEnabled = false;
 }

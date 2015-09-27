@@ -332,7 +332,7 @@ void gWindow_MessageBox(const char *ccTitle,const char *ccMessage,...)
 		XCloseDisplay(dMessageDisplay);
 	}
 #else   // Windows
-	MessageBox(NULL,cOut,ccTitle,MB_SETFOREGROUND|MB_ICONERROR);
+	MessageBoxEx(NULL, cOut, ccTitle, MB_SETFOREGROUND | MB_ICONERROR, 0);
 #endif
 }
 

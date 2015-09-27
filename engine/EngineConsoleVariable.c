@@ -27,7 +27,7 @@
 ConsoleVariable_t *cConsoleVariables;
 
 /*
-    User Commands
+	User Commands
 */
 
 void Cvar_List_f (void)
@@ -185,10 +185,10 @@ void Cvar_Init(void)
 //
 //==============================================================================
 
-void Cvar_UpdateValues(cvar_t *cVariable)
+void Cvar_UpdateValues(ConsoleVariable_t *cVariable)
 {
 	cVariable->value = Q_atof(cVariable->string);
-    cVariable->iValue = Q_atoi(cVariable->string);
+	cVariable->iValue = Q_atoi(cVariable->string);
 
 	cVariable->bValue = cVariable->iValue;
 	if(cVariable->bValue < false)
@@ -197,9 +197,9 @@ void Cvar_UpdateValues(cvar_t *cVariable)
 		cVariable->bValue = true;
 }
 
-cvar_t *Cvar_FindVar (const char *var_name)
+ConsoleVariable_t *Cvar_FindVar (const char *var_name)
 {
-	cvar_t	*var;
+	ConsoleVariable_t *var;
 
 	for(var = cConsoleVariables; var; var = var->next)
 		if(!strcmp(var_name,var->name))
@@ -210,7 +210,7 @@ cvar_t *Cvar_FindVar (const char *var_name)
 
 float Cvar_VariableValue (char *var_name)
 {
-	cvar_t	*var;
+	ConsoleVariable_t *var;
 
 	var = Cvar_FindVar (var_name);
 	if (!var)
@@ -220,7 +220,7 @@ float Cvar_VariableValue (char *var_name)
 
 char *Cvar_VariableString (char *var_name)
 {
-	cvar_t *var;
+	ConsoleVariable_t *var;
 
 	var = Cvar_FindVar (var_name);
 	if (!var)
@@ -230,8 +230,8 @@ char *Cvar_VariableString (char *var_name)
 
 char *Cvar_CompleteVariable (char *partial)
 {
-	cvar_t		*cvar;
-	int			len;
+	ConsoleVariable_t *cvar;
+	int	len;
 
 	len = strlen(partial);
 	if(!len)
@@ -247,7 +247,7 @@ char *Cvar_CompleteVariable (char *partial)
 
 void Cvar_Reset (const char *name)
 {
-	cvar_t	*var;
+	ConsoleVariable_t *var;
 
 	var = Cvar_FindVar (name);
 	if (!var)
@@ -258,7 +258,7 @@ void Cvar_Reset (const char *name)
 
 void Cvar_Set (const char *var_name, char *value)
 {
-	cvar_t	*var;
+	ConsoleVariable_t *var;
 	bool changed;
 
 	var = Cvar_FindVar (var_name);
@@ -308,10 +308,10 @@ void Cvar_SetValue (const char *var_name, float value)
 
 /*	Adds a freestanding variable to the variable list.
 */
-void Cvar_RegisterVariable (cvar_t *variable,void (*Function)(void))
+void Cvar_RegisterVariable (ConsoleVariable_t *variable,void (*Function)(void))
 {
 	char	*oldstr;
-	cvar_t	*cursor,*prev; //johnfitz -- sorted list insert
+	ConsoleVariable_t	*cursor,*prev; //johnfitz -- sorted list insert
 
 	// First check to see if it has allready been defined
 	if (Cvar_FindVar (variable->name))
@@ -382,7 +382,7 @@ bool Cvar_Command(void)
 		Con_Printf ("\"%s\" is \"%s\"\n",v->name,v->string);
 		// [10/3/2014] Added support for descriptions ~hogsy
 		if(v->cDescription)
-            Con_Printf("%s\n",v->cDescription);
+			Con_Printf("%s\n",v->cDescription);
 
 		return true;
 	}

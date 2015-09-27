@@ -189,6 +189,7 @@ extern "C" {
 };
 #endif
 
+// TODO: Reintroduce tracking functionality.
 #define	VIDEO_FUNCTION_START \
 { \
 } \

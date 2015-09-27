@@ -36,6 +36,8 @@ protected:
 
 private:
 	unsigned int uiFrameBuffer;
+
+	bool bIsBound;
 };
 
 class CVideoFrameBufferManager

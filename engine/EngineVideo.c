@@ -231,10 +231,13 @@ void Video_Initialize(void)
 
 	Video_SelectTexture(0);
 
+#if 0
 	vid.conwidth = (scr_conwidth.value > 0) ? (int)scr_conwidth.value : (scr_conscale.value > 0) ? (int)(Video.iWidth / scr_conscale.value) : Video.iWidth;
 	vid.conwidth = Math_Clamp(320, vid.conwidth, Video.iWidth);
 	vid.conwidth &= 0xFFFFFFF8;
 	vid.conheight = vid.conwidth*Video.iHeight / Video.iWidth;
+#endif
+
 	Video.bVerticalSync = cvVerticalSync.bValue;
 
 #ifdef VIDEO_SUPPORT_SHADERS
@@ -366,8 +369,12 @@ void Video_UpdateWindow(void)
 	Window_UpdateVideo();
 
 	// Update console size.
+#if 0
 	vid.conwidth = Video.iWidth & 0xFFFFFFF8;
 	vid.conheight = vid.conwidth*Video.iHeight/Video.iWidth;
+#else
+	SCR_Conwidth_f();
+#endif
 }
 
 void Video_SetViewportSize(int iWidth, int iHeight)
@@ -1175,12 +1182,6 @@ void Video_PreFrame(void)
 	r_framecount++;
 
 	R_SetupScene();
-
-#ifdef VIDEO_SUPPORT_SHADERS
-#ifdef VIDEO_SUPPORT_FRAMEBUFFERS
-	VideoPostProcess_BindFrameBuffer();
-#endif
-#endif
 
 	Video_ShowBoundingBoxes();
 

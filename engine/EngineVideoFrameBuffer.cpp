@@ -40,6 +40,12 @@ CVideoFrameBufferManager::~CVideoFrameBufferManager()
 
 CVideoFrameBuffer::CVideoFrameBuffer(int Width, int Height)
 {
+	bIsBound = 0;
+
+	uiFrameBuffer = 0;
+
+	gColourBuffer = nullptr;
+
 	VideoLayer_GenerateFrameBuffer(&uiFrameBuffer);
 
 	// Create a new texture instance and then bind it.
@@ -64,12 +70,22 @@ CVideoFrameBuffer::~CVideoFrameBuffer()
 
 void CVideoFrameBuffer::Bind()
 {
+	if (bIsBound)
+		return;
+
 	VideoLayer_BindFrameBuffer(VIDEO_FBO_DEFAULT, uiFrameBuffer);
+
+	bIsBound = true;
 }
 
 void CVideoFrameBuffer::Unbind()
 {
+	if (!bIsBound)
+		return;
+
 	VideoLayer_BindFrameBuffer(VIDEO_FBO_DEFAULT, 0);
+
+	bIsBound = false;
 }
 
 // Post Processing Object
