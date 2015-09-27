@@ -1235,7 +1235,7 @@ void Model_LoadMD2Textures(model_t *mModel)
 
 /*	Calculate bounds of alias model for nonrotated, yawrotated, and fullrotated cases
 */
-void Model_CalculateMD2Bounds(MD2_t *mModel)
+void Model_CalculateMD2Bounds(model_t *mModel, MD2_t *mMD2Model)
 {
 	int i, j;
 	MD2Frame_t *mFrame;
@@ -1243,50 +1243,61 @@ void Model_CalculateMD2Bounds(MD2_t *mModel)
 	// Reset everything to its maximum size.
 	for (i = 0; i < 3; i++)
 	{
-		loadmodel->mins[i] = loadmodel->ymins[i] = loadmodel->rmins[i] = 999999;
-		loadmodel->maxs[i] = loadmodel->ymaxs[i] = loadmodel->rmaxs[i] = -999999;
+		loadmodel->mins[i] = loadmodel->ymins[i] = loadmodel->rmins[i] = 999999.0f;
+		loadmodel->maxs[i] = loadmodel->ymaxs[i] = loadmodel->rmaxs[i] = -999999.0f;
 	}
 
-	// Iterate for each frame.
-	mFrame = (MD2Frame_t*)((uint8_t*)mModel + mModel->ofs_frames + mModel->framesize);
-	for (i = 0; i < mModel->num_frames; i++, mFrame++)
+	mFrame = (MD2Frame_t*)((uint8_t*)mMD2Model + mMD2Model->ofs_frames + mMD2Model->framesize);
+	if(!mFrame)
+		Sys_Error("Invalid frame encountered when calculating MD2 bounds! (%s)\n", mModel->name);
+
+#if 1
+	MathVector3f_t
+		mvMins = { 0, 0, 0 }, mvMaxs = { 0, 0, 0 },
+		mvCurMins, mvCurMaxs;
+
+	// Go through all the frames and figure out the best sizing.
+	for (j = 0; j < mMD2Model->num_frames; j++)
 	{
-		// Iterate through all the vertices.
-		for (j = 0; j < mModel->num_xyz; j++)
+		for (i = 0; i < 3; i++)
 		{
-			if (mFrame->verts[j].v[0] < loadmodel->mins[0])
-				loadmodel->mins[0] = mFrame->verts[j].v[0];
-			else if (mFrame->verts[j].v[0] > loadmodel->maxs[0])
-				loadmodel->maxs[0] = mFrame->verts[j].v[0];
+			mvCurMins[i] = mFrame->translate[i];
+			mvCurMaxs[i] = mvCurMins[i] + mFrame->scale[i] * 255;
 
-			if (mFrame->verts[j].v[1] < loadmodel->mins[1])
-				loadmodel->mins[1] = mFrame->verts[j].v[1];
-			else if (mFrame->verts[j].v[1] > loadmodel->maxs[1])
-				loadmodel->maxs[1] = mFrame->verts[j].v[1];
-
-			if (mFrame->verts[j].v[2] < loadmodel->mins[2])
-				loadmodel->mins[2] = mFrame->verts[j].v[2];
-			else if (mFrame->verts[j].v[2] > loadmodel->maxs[2])
-				loadmodel->maxs[2] = mFrame->verts[j].v[2];
+			if (mvCurMins[i] < mvMins[i])
+				mvMins[i] = mvCurMins[i];
+			if (mvCurMaxs[i] > mvMaxs[i])
+				mvMaxs[i] = mvCurMaxs[i];
 		}
+
+		mFrame++;
 	}
+#else
+	MathVector3f_t mvMins, mvMaxs;
+	for (i = 0; i < 3; i++)
+	{
+		mvMins[i] = mFrame->translate[i];
+		mvMaxs[i] = mvMins[i] + mFrame->scale[i] * 255;
+	}
+#endif
 
 	// Check that the size is valid.
-	if (loadmodel->mins[0] == 0 &&
-		loadmodel->maxs[0] == 0)
+	if (((mvMins[0] == 0) && (mvMins[1] == 0) && (mvMins[2] == 0)) &&
+		((mvMaxs[0] == 0) && (mvMaxs[1] == 0) && (mvMaxs[2] == 0)))
 	{
-		for (i = 0; i<3; i++)
-		{
-			loadmodel->mins[i] = -32.0f;
-			loadmodel->maxs[i] = 32.0f;
-		}
+		// This should never happen, but if it does, give a warning.
+		Con_Warning("Suspicious model size! (%s)\n", mModel->name);
+
+		// Then give us a default size.
+		Math_VectorSet(-32, mvMins);
+		Math_VectorSet(32, mvMaxs);
 	}
 
-	// TODO: Need to multiply this out more.
+	Math_VectorCopy(mvMins, loadmodel->mins);
+	Math_VectorCopy(mvMaxs, loadmodel->maxs);
+
 	Math_VectorCopy(loadmodel->mins, loadmodel->rmins);
 	Math_VectorCopy(loadmodel->maxs, loadmodel->rmaxs);
-
-	// TODO: Need to update for YAW, not just copied over.
 	Math_VectorCopy(loadmodel->mins, loadmodel->ymins);
 	Math_VectorCopy(loadmodel->maxs, loadmodel->ymaxs);
 }
@@ -1443,15 +1454,8 @@ void Model_LoadMD2(model_t *mModel,void *Buffer)
 
 	Model_LoadMD2Textures(mModel);
 
-#if 0
-	for (i=0; i<3;i++)
-	{
-		loadmodel->mins[i] = loadmodel->ymins[i] = loadmodel->rmins[i] = -32.0f;
-		loadmodel->maxs[i] = loadmodel->ymaxs[i] = loadmodel->rmaxs[i] = 32.0f;
-	}
-#else
-	Model_CalculateMD2Bounds(mMD2Model);
-#endif
+	// Process the appropriate model bounds.
+	Model_CalculateMD2Bounds(mModel, mMD2Model);
 
 	// Calculate vertex normals.
 	Model_CalculateMD2Normals(loadmodel, mMD2Model);

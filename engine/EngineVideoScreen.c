@@ -80,12 +80,12 @@ float		scr_con_current;
 float		scr_conlines;		// lines of console to display
 float		oldscreensize, oldfov, oldsbarscale, oldsbaralpha; //johnfitz -- added oldsbarscale and oldsbaralpha
 
-cvar_t	scr_menuscale		= {"scr_menuscale", "1", TRUE};
-cvar_t	scr_sbarscale		= {"scr_sbarscale", "1", TRUE};
-cvar_t	scr_sbaralpha		= {"scr_sbaralpha", "1", TRUE};
-cvar_t	scr_conwidth		= {"scr_conwidth", "0", TRUE};
+cvar_t	scr_menuscale		= {"scr_menuscale", "1", true };
+cvar_t	scr_sbarscale		= {"scr_sbarscale", "1", true };
+cvar_t	scr_sbaralpha		= {"scr_sbaralpha", "1", true };
+cvar_t	scr_conwidth		= {"scr_conwidth", "0", true };
 cvar_t	scr_conscale		= {"scr_conscale", "1", true};
-cvar_t	scr_crosshairscale	= {"scr_crosshairscale", "1", TRUE};
+cvar_t	scr_crosshairscale	= {"scr_crosshairscale", "1", true };
 cvar_t	scr_showfps			= {"scr_showfps", "0"};
 cvar_t	scr_fps_rate		= { "scr_fps_rate","0.37", true, false, "Changes the rate at which the FPS counter is updated." };
 cvar_t	scr_clock			= { "scr_clock", "0"};
@@ -363,27 +363,27 @@ void Screen_DrawFPS(void)
 	char			str[128];
 	int				x,y,frames;
 
-	time	= realtime-oldtime;
-	frames	= r_framecount-oldframecount;
+	time = realtime-oldtime;
+	frames = Video.iFrameCount - oldframecount;
 
 	if(time < 0 || frames < 0)
 	{
-		oldtime			= realtime;
-		oldframecount	= r_framecount;
+		oldtime = realtime;
+		oldframecount = Video.iFrameCount;
 		return;
 	}
 
-	// [14/6/2012] Allow us to set our own update rate ~hogsy
+	// Allow us to set our own update rate.
 	if(time > scr_fps_rate.value)
 	{
-		fps				= frames/time;
-		oldtime			= realtime;
-		oldframecount	= r_framecount;
+		fps = frames / time;
+		oldtime = realtime;
+		oldframecount = Video.iFrameCount;
 	}
 
-	if(scr_showfps.value || Global.bEmbeddedContext) //draw it
+	if(scr_showfps.value) //draw it
 	{
-		// [9/10/2012] Set the highest and lowest counts we get ~hogsy
+		// Set the highest and lowest counts we get.
 		if(fps > dHighestFPS)
 			dHighestFPS = fps;
 
@@ -394,7 +394,10 @@ void Screen_DrawFPS(void)
 			fps,dHighestFPS,dLowestFPS);
 
 		x = 320-(strlen(str)<<3);
-		y = 200-8;
+		if (scr_con_current && (cls.state != ca_connected))
+			y = 200 - 16;
+		else
+			y = 200 - 8;
 
 		if (scr_clock.value)
 			y -= 8; //make room for clock
@@ -825,6 +828,11 @@ void SCR_UpdateScreen (void)
 
 	GL_BeginRendering(&glx,&gly,&glwidth,&glheight);
 
+	Video.iFrameCount++;
+	// Don't let us exceed a limited count.
+	if (Video.iFrameCount > 100000)
+		Video.iFrameCount = 0;
+
 	// determine size of refresh window
 	if(oldfov != scr_fov.value)
 	{
@@ -893,9 +901,9 @@ void SCR_UpdateScreen (void)
 		SCR_DrawPause();
 		SCR_CheckDrawCenterString ();
 		SCR_DrawDevStats(); //johnfitz
-		Screen_DrawFPS(); //johnfitz
 		SCR_DrawClock(); //johnfitz
 		Screen_DrawConsole();
+		Screen_DrawFPS(); //johnfitz
 	}
 
 	V_UpdateBlend(); //johnfitz -- V_UpdatePalette cleaned up and renamed

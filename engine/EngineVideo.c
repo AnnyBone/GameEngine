@@ -369,12 +369,7 @@ void Video_UpdateWindow(void)
 	Window_UpdateVideo();
 
 	// Update console size.
-#if 0
-	vid.conwidth = Video.iWidth & 0xFFFFFFF8;
-	vid.conheight = vid.conwidth*Video.iHeight/Video.iWidth;
-#else
 	SCR_Conwidth_f();
-#endif
 }
 
 void Video_SetViewportSize(int iWidth, int iHeight)

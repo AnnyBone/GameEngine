@@ -120,6 +120,8 @@ typedef struct
 
 	unsigned int iWidth,iHeight;
 
+	int iFrameCount;	// An alternative to r_framecount, which is slightly more reliable.
+
 	bool
 		bInitialized,					// Is the video system started?
 		bFullscreen,					// Is the window fullscreen or not?
