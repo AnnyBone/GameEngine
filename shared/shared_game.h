@@ -540,7 +540,7 @@ typedef struct
 	int(*Client_GetStat)(ClientStat_t csStat);					// Get a client statistic (health etc.)
 
 	void(*Client_PrecacheResource)(int iType, char *cResource);	// Precache a resource client-side.
-	void(*Client_SetMenuCanvas)(int iCanvas);					// Set the canvas type that the menu will use.
+	void(*Client_SetMenuCanvas)(VideoCanvasType_t Canvas);		// Set the canvas type that the menu will use.
 	void(*Client_AddMenuState)(int iState);						// Adds a new state to the clients menu.
 	void(*Client_RemoveMenuState)(int iState);					// Removes a state from the clients menu.
 
@@ -557,13 +557,13 @@ typedef struct
 	bool(*Material_Precache)(const char *ccPath);
 
 	// Pre 9/4/2012 (Update all these)
-	void(*Con_Printf)(char *fmt, ...);	// Appears to client in console. Standard message.
-	void(*Con_DPrintf)(char *fmt, ...);	// Only appears if launched/running in developer mode.
+	void(*Con_Printf)(const char *fmt, ...);	// Appears to client in console. Standard message.
+	void(*Con_DPrintf)(const char *fmt, ...);	// Only appears if launched/running in developer mode.
 	void(*Con_Warning)(const char *fmt, ...);	// Highlighted message to indicate an issue.
 
 	void(*SetMessageEntity)(ServerEntity_t *ent);
 	void(*CenterPrint)(ServerEntity_t *ent, char *msg);	// Sends a message to the specified client and displays the message at the center of the screen.
-	void(*Sys_Error)(char *error, ...);
+	void(*Sys_Error)(const char *error, ...);
 	void(*SetModel)(ServerEntity_t *ent, char *m);		// Sets the model for the specified entity.
 	void(*Particle)(float org[3], float dir[3], float scale, char *texture, int count);
 	void(*Flare)(MathVector3f_t org, float r, float g, float b, float a, float scale, char *texture);
@@ -581,7 +581,7 @@ typedef struct
 	void(*DrawMaterialSurface)(Material_t *mMaterial, int iSkin, int x, int y, int w, int h, float fAlpha);
 
 	void(*Cvar_RegisterVariable)(ConsoleVariable_t *variable, void(*Function)(void));
-	void(*Cvar_SetValue)(char *var_name, float value);
+	void(*Cvar_SetValue)(const char *var_name, float value);
 	void(*LightStyle)(int style, char *val);
 	void(*Cmd_AddCommand)(char *cmd_name, void(*function)(void));
 	void(*WriteByte)(int mode, int command);

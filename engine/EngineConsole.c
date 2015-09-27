@@ -441,7 +441,7 @@ void Con_Error(char *fmt,...)
 	 - Clear everything out*/
 }
 
-void Con_DPrintf(char *fmt,...)
+void Con_DPrintf(const char *fmt,...)
 {
 	va_list	argptr;
 	char	msg[MAXPRINTMSG];
@@ -467,7 +467,7 @@ void Con_DPrintf(char *fmt,...)
 
 /*	Okay to call even when the screen can't be updated
 */
-void Con_SafePrintf (char *fmt, ...)
+void Con_SafePrintf (const char *fmt, ...)
 {
 	va_list		argptr;
 	char		msg[1024];
@@ -538,7 +538,7 @@ void Con_LogCenterPrint (char *str)
 	}
 }
 
-void Console_ErrorMessage(bool bCrash, const char *ccFile, char *reason)
+void Console_ErrorMessage(bool bCrash, const char *ccFile, const char *reason)
 {
 	if (bCrash)
 		Sys_Error("Failed to load %s\nReason: %s", ccFile, reason);

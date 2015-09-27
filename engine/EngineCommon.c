@@ -147,14 +147,11 @@ void Q_strncpy (char *dest, char *src, int count)
 		*dest++ = 0;
 }
 
-int Q_strlen (char *str)
+size_t Q_strlen (const char *str)
 {
-	int             count;
-
-	count = 0;
+	size_t count = 0;
 	while (str[count])
 		count++;
-
 	return count;
 }
 
@@ -167,6 +164,9 @@ char *Q_strrchr(char *s, char c)
 	return 0;
 }
 
+/*  TODO: This should follow standard implementation...
+        char *strcat(char *dest, const char *src)
+*/
 void Q_strcat (char *dest, char *src)
 {
 	dest += Q_strlen(dest);
@@ -186,6 +186,8 @@ int Q_strcmp (char *s1, char *s2)
 	}
 }
 
+/*  TODO: Rewrite this so both parms are const.
+*/
 int Q_strncmp (char *s1, char *s2, int count)
 {
 	for(;;)

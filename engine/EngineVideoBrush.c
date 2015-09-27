@@ -147,7 +147,7 @@ void R_DrawSequentialPoly(msurface_t *s)
 	{
 		Material_t *mCurrent = s->texinfo->texture->mAssignedMaterial;
 		glpoly_t *pBrushPoly;
-		
+
 		if(currententity->alpha == ENTALPHA_DEFAULT)
 			// Use the materials alpha.
 			fAlpha = Math_Clamp(0.0, mCurrent->fAlpha, 1.0f);
@@ -502,7 +502,7 @@ void BuildSurfaceDisplayList (msurface_t *fa)
 
 /*	Builds the lightmap texture	with all the surfaces from all brush models.
 */
-void GL_BuildLightmaps (void)
+void GL_BuildLightmaps()
 {
 	char	name[16];
 	byte	*data;

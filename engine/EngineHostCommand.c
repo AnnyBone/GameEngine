@@ -274,7 +274,7 @@ void ExtraMaps_Init(void)
                 Find = FindFirstFile(filestring,&FindFileData);
                 if(Find == INVALID_HANDLE_VALUE)
                     continue;
-				
+
                 do
                 {
                     COM_StripExtension(FindFileData.cFileName,cMapName);
@@ -491,7 +491,7 @@ void Host_Status_f (void)
 	int			minutes;
 	int			hours = 0;
 	int			j;
-	void		(*print) (char *fmt, ...);
+	void		(*print) (const char *fmt, ...);
 
 	if (cmd_source == src_command)
 	{

@@ -1049,9 +1049,9 @@ gltexture_t *TexMgr_LoadImage(model_t *owner,char *name,int width,int height,enu
 */
 void TexMgr_ReloadImage (gltexture_t *glt, int shirt, int pants)
 {
-	byte	translation[256];
-	byte	*src, *dst, *data = NULL, *translated;
-	int		mark, size, i;
+	uint8_t	translation[256];
+	uint8_t	*src, *dst, *data = NULL, *translated;
+	int	mark, size, i;
 
 	// Get source data
 	mark = Hunk_LowMark ();
