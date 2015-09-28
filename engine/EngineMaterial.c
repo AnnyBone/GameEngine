@@ -1008,7 +1008,7 @@ void Material_Draw(Material_t *Material, int Skin,
 
 				VideoLayer_SetTextureEnvironmentMode(VIDEO_TEXTURE_MODE_COMBINE);
 				glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
-				glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 1);
+				glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 2);
 
 				// Check if we've been given a video object to use...
 				if (ObjectVertex)
@@ -1030,7 +1030,10 @@ void Material_Draw(Material_t *Material, int Skin,
 				}
 			}
 			else
+			{
 				VideoLayer_SetTextureEnvironmentMode(VIDEO_TEXTURE_MODE_MODULATE);
+				glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 1);
+			}
 			break;
 		case MATERIAL_TEXTURE_FULLBRIGHT:
 			if (!bPost)

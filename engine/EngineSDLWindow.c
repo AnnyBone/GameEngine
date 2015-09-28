@@ -58,6 +58,9 @@ void Window_InitializeVideo(void)
 	if (!Video.bFullscreen)
 		iFlags &= ~SDL_WINDOW_FULLSCREEN;
 
+#if 0
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+#endif
 	SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
 	SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
 	SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);

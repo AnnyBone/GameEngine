@@ -461,8 +461,6 @@ void Particle_Draw(void)
 
 	Video_ResetCapabilities(false);
 
-	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-
 	Video_SetBlend(VIDEO_BLEND_IGNORE, VIDEO_DEPTH_FALSE);
 	Video_EnableCapabilities(VIDEO_BLEND | VIDEO_TEXTURE_2D);
 
@@ -498,8 +496,6 @@ void Particle_Draw(void)
 
 		rs_particles++;
 	}
-
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 
 	Video_ResetCapabilities(true);
 }

@@ -844,14 +844,10 @@ void Sky_Draw(void)
 
 		if(cvDrawClouds.value && gCloudTexture)
 		{
-			glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
-
 			// Draw the scrolling clouds...
 			for(i = 0; i < 6; i++)
 				if(skymins[0][i] < skymaxs[0][i] && skymins[1][i] < skymaxs[1][i])
 					Sky_DrawFace(i);
-
-			glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_REPLACE);
 		}
 
 		Video_EnableCapabilities(VIDEO_DEPTH_TEST);

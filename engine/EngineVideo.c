@@ -214,11 +214,6 @@ void Video_Initialize(void)
 
 	// Set the default states...
 
-	Video_EnableCapabilities(VIDEO_TEXTURE_2D);
-
-	Video_SetBlend(VIDEO_BLEND_TWO, VIDEO_DEPTH_IGNORE);
-
-	glClearColor(0, 0, 0, 0);
 	glCullFace(GL_BACK);
 	glFrontFace(GL_CW);
 	glAlphaFunc(GL_GREATER, 0.5f);
@@ -236,19 +231,13 @@ void Video_Initialize(void)
 	Video_SelectTexture(VIDEO_TEXTURE_LIGHT);
 
 	// Overbrights
-	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
+	VideoLayer_SetTextureEnvironmentMode(VIDEO_TEXTURE_MODE_COMBINE);
 	glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
 	glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_PREVIOUS);
 	glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_TEXTURE);
 	glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 4);
 
 	Video_SelectTexture(0);
-
-#ifdef VIDEO_SUPPORT_PERFHACKS
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_COLOR_ARRAY);
-	glEnableClientState(GL_NORMAL_ARRAY);
-#endif
 
 #if 0
 	vid.conwidth = (scr_conwidth.value > 0) ? (int)scr_conwidth.value : (scr_conscale.value > 0) ? (int)(Video.iWidth / scr_conscale.value) : Video.iWidth;
@@ -895,7 +884,7 @@ void Video_ResetCapabilities(bool bClearActive)
 		bVideoIgnoreCapabilities = true;
 
 		// Set this back too...
-		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+		VideoLayer_SetTextureEnvironmentMode(VIDEO_TEXTURE_MODE_MODULATE);
 
 		Video_DisableCapabilities(iSavedCapabilites[VIDEO_TEXTURE_DIFFUSE][VIDEO_STATE_ENABLE]);
 		Video_EnableCapabilities(iSavedCapabilites[VIDEO_TEXTURE_DIFFUSE][VIDEO_STATE_DISABLE]);

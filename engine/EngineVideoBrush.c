@@ -179,8 +179,6 @@ void R_DrawSequentialPoly(msurface_t *s)
 			{
 				Video_SetBlend(VIDEO_BLEND_IGNORE, VIDEO_DEPTH_FALSE);
 				Video_EnableCapabilities(VIDEO_BLEND);
-
-				glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 			}
 
 			Video_SelectTexture(VIDEO_TEXTURE_LIGHT);
