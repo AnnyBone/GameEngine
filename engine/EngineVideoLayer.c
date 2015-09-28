@@ -156,8 +156,8 @@ void VideoLayer_SetTextureEnvironmentMode(VideoTextureEnvironmentMode_t TextureE
 	if (Video.TextureUnits[Video.uiActiveUnit].CurrentTexEnvMode == TextureEnvironmentMode)
 		return;
 
-	int iTexMode = VideoLayer_TranslateTextureEnvironmentMode(TextureEnvironmentMode);
-	glTexEnviv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, &iTexMode);
+	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, 
+		VideoLayer_TranslateTextureEnvironmentMode(TextureEnvironmentMode));
 
 	Video.TextureUnits[Video.uiActiveUnit].CurrentTexEnvMode = TextureEnvironmentMode;
 	VIDEO_FUNCTION_END

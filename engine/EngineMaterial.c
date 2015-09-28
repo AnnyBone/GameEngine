@@ -618,10 +618,10 @@ MaterialFlag_t	mfMaterialFlags[] =
 
 	// Skin
 	{ MATERIAL_FLAG_NEAREST, "NEAREST", MATERIAL_FUNCTION_SKIN },
+	{ MATERIAL_FLAG_BLEND, "BLEND", MATERIAL_FUNCTION_SKIN },
 
 	// Texture
-	{ MATERIAL_FLAG_ALPHA, "ALPHA", MATERIAL_FUNCTION_TEXTURE },
-	{ MATERIAL_FLAG_BLEND, "BLEND", MATERIAL_FUNCTION_TEXTURE }
+	{ MATERIAL_FLAG_ALPHA, "ALPHA", MATERIAL_FUNCTION_TEXTURE }
 };
 
 /*	Set flags for the material.
@@ -900,6 +900,14 @@ void Material_Draw(Material_t *Material, int Skin,
 		msCurrentSkin = Material_GetSkin(Material, Skin);
 	if (!msCurrentSkin)
 		Sys_Error("Failed to get valid skin! (%s)\n", Material->cName);
+
+	if (msCurrentSkin->uiFlags & MATERIAL_FLAG_BLEND)
+	{
+		if (!bPost)
+			VideoLayer_Enable(VIDEO_BLEND);
+		else
+			VideoLayer_Disable(VIDEO_BLEND);
+	}
 
 	unsigned int i, uiCurrentUnit;
 	for (i = 0, uiCurrentUnit = 0; i < msCurrentSkin->uiTextures; i++, uiCurrentUnit++)

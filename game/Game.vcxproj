@@ -199,6 +199,7 @@
     <ClCompile Include="server\EntityAnimated.cpp" />
     <ClCompile Include="server\monster_bot.c" />
     <ClCompile Include="server\openkatana\decoration_barrel.c" />
+    <ClCompile Include="server\openkatana\item_health.c" />
     <ClCompile Include="server\openkatana\mode_ctf.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (Adamas)|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (Ictus)|Win32'">true</ExcludedFromBuild>

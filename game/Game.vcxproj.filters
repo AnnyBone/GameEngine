@@ -65,6 +65,9 @@
     <Filter Include="Shared">
       <UniqueIdentifier>{75d3350d-3a8a-4fb4-b211-7dc71e4f5475}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Server\Decay\Items">
+      <UniqueIdentifier>{451b1ebf-1a54-42fb-b52b-fc44c386f023}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="server\monster_bot.c">
@@ -215,5 +218,8 @@
       <Filter>New\Server</Filter>
     </ClCompile>
     <ClCompile Include="game_main.c" />
+    <ClCompile Include="server\openkatana\item_health.c">
+      <Filter>Server\Decay\Items</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

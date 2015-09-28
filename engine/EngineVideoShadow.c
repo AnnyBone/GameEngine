@@ -29,8 +29,6 @@
 		Rename to engine_draw!
 */
 
-gltexture_t	/**gRenderTarget,*/*gShadow;
-
 extern vec3_t	lightspot;
 extern entity_t *currententity;
 
@@ -69,14 +67,12 @@ void Shadow_Draw(ClientEntity_t *ent)
 
 	{
 		/*	TODO:
-		Trace down to get plane and set angles to that
-		clip based on surface extents?
+			Trace down to get plane and set angles to that
+			clip based on surface extents?
 		*/
-		VideoObjectVertex_t	voShadow[4];
+		VideoObjectVertex_t	voShadow[4] = { { { 0 } } };
 
 		Video_ResetCapabilities(false);
-
-		Video_SetTexture(gShadow);
 
 		glPushMatrix();
 
@@ -85,19 +81,21 @@ void Shadow_Draw(ClientEntity_t *ent)
 		glTranslatef(ent->origin[0], ent->origin[1], ent->origin[2]);
 		glTranslatef(0, 0, -lheight + 0.1f);
 
-		Video_SetColour(1.0f, 1.0f, 1.0f, 1.0f);
-
 		Video_ObjectVertex(&voShadow[0], -fShadowScale[0], fShadowScale[1], 0);
 		Video_ObjectTexture(&voShadow[0], VIDEO_TEXTURE_DIFFUSE, 0, 0);
+		Video_ObjectColour(&voShadow[0], 1.0f, 1.0f, 1.0f, 1.0f);
 
 		Video_ObjectVertex(&voShadow[1], fShadowScale[0], fShadowScale[1], 0);
 		Video_ObjectTexture(&voShadow[1], VIDEO_TEXTURE_DIFFUSE, 1.0f, 0);
+		Video_ObjectColour(&voShadow[1], 1.0f, 1.0f, 1.0f, 1.0f);
 
 		Video_ObjectVertex(&voShadow[2], fShadowScale[0], -fShadowScale[1], 0);
 		Video_ObjectTexture(&voShadow[2], VIDEO_TEXTURE_DIFFUSE, 1.0f, 1.0f);
+		Video_ObjectColour(&voShadow[2], 1.0f, 1.0f, 1.0f, 1.0f);
 
 		Video_ObjectVertex(&voShadow[3], -fShadowScale[0], -fShadowScale[1], 0);
 		Video_ObjectTexture(&voShadow[3], VIDEO_TEXTURE_DIFFUSE, 0, 1.0f);
+		Video_ObjectColour(&voShadow[3], 1.0f, 1.0f, 1.0f, 1.0f);
 
 		Video_DrawFill(voShadow, mBlobShadow, 0);
 

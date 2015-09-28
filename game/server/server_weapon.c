@@ -573,7 +573,7 @@ bool Weapon_CheckPrimaryAmmo(Weapon_t *wWeapon,ServerEntity_t *eEntity)
 			return true;
 		break;
 #endif
-    case AM_PROJECTILE:
+	case AM_PROJECTILE:
 	case AM_MELEE:
 	case AM_SWITCH:
 	case AM_NONE:
