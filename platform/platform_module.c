@@ -104,7 +104,7 @@ void *pModule_LoadInterface(pINSTANCE hModule,const char *cPath,const char *cEnt
 	if(!hModule)
 		return NULL;
 
-	vMain = (void*(*)(void*))pModule_FindFunction(hModule,cEntryFunction);
+	vMain = (void*)pModule_FindFunction(hModule,cEntryFunction);
 	if(!vMain)
 	{
 		pError_Set("Failed to find entry function! (%s)\n",cEntryFunction);

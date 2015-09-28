@@ -106,7 +106,7 @@ CVideoPostProcess::CVideoPostProcess(const char *FragName, const char *VertName)
 }
 
 CVideoPostProcess::CVideoPostProcess(CVideoShaderProgram *PostProcessProgram)
-	: CVideoFrameBuffer(800, 600)	//Video.iWidth, Video.iHeight)
+	: CVideoFrameBuffer(512, 512)	//Video.iWidth, Video.iHeight)
 {
 	if (!PostProcessProgram)
 		throw CEngineException("Invalid shader program!\n");

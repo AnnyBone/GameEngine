@@ -68,10 +68,6 @@ extern "C" {
 	char	*Cvar_VariableString(char *var_name);
 	// returns an empty string if not defined
 
-	char 	*Cvar_CompleteVariable(char *partial);
-	// attempts to match a partial variable name for command line completion
-	// returns NULL if nothing fits
-
 	bool Cvar_Command(void);
 	// called by Cmd_ExecuteString when Cmd_Argv(0) doesn't match a known
 	// command.  Returns TRUE if the command was a variable reference that

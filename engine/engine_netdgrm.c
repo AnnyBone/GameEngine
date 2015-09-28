@@ -43,10 +43,10 @@ struct in_addr
 #define	s_addr	S_un.S_addr	/* can be used for most tcp & ip code */
 struct sockaddr_in
 {
-    short			sin_family;
-    unsigned short	sin_port;
+	short			sin_family;
+	unsigned short	sin_port;
 	struct in_addr	sin_addr;
-    char			sin_zero[8];
+	char			sin_zero[8];
 };
 char *inet_ntoa(struct in_addr in);
 unsigned long inet_addr(const char *cp);

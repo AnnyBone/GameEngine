@@ -23,6 +23,8 @@
 
 //#define	VIDEO_SUPPORT_FRAMEBUFFERS
 #define	VIDEO_SUPPORT_SHADERS
+//#define	VIDEO_SUPPORT_PERFHACKS
+#define	VIDEO_LIGHTMAP_HACKS
 
 extern ConsoleVariable_t
 	cvVideoLegacy,
@@ -62,6 +64,9 @@ extern "C" {
 	extern	ConsoleVariable_t	gl_flashblend;
 	extern	ConsoleVariable_t	gl_max_size;
 
+	extern ConsoleVariable_t cvVideoDrawDetail;	// TODO: Move into EngineMaterial ?
+	extern ConsoleVariable_t cvVideoDetailScale; // TODO: Move into EngineMaterial ?
+
 #ifdef __cplusplus
 };
 #endif
@@ -94,22 +99,45 @@ typedef enum
 
 #include "shared_video.h"
 
+typedef enum
+{
+	VIDEO_TEXTURE_MODE_ADD,
+	VIDEO_TEXTURE_MODE_MODULATE,
+	VIDEO_TEXTURE_MODE_DECAL,
+	VIDEO_TEXTURE_MODE_BLEND,
+	VIDEO_TEXTURE_MODE_REPLACE,
+	VIDEO_TEXTURE_MODE_COMBINE
+} VideoTextureEnvironmentMode_t;
+
+typedef struct
+{
+	bool bIsActive;
+
+	unsigned int uiCurrentTexture;
+
+	VideoTextureEnvironmentMode_t CurrentTexEnvMode;
+} VideoTextureMU_t;
+
 typedef struct
 {
 	// OpenGL Information
-	char	*cGLVendor,
-			*cGLRenderer,
-			*cGLVersion,
-			*cGLExtensions;
+	char	
+		*cGLVendor,
+		*cGLRenderer,
+		*cGLVersion,
+		*cGLExtensions;
 
-	float			fMaxAnisotropy,	// Max anisotropy amount allowed by the hardware.
-					fBitsPerPixel;
+	float	
+		fMaxAnisotropy,	// Max anisotropy amount allowed by the hardware.
+		fBitsPerPixel;
 
 	// Texture Management
 	unsigned int
 		uiCurrentTexture[VIDEO_MAX_UNITS],	// Current/last binded texture.
 		uiActiveUnit,						// The currently active unit.
 		uiSecondaryUnit;					// Current/last secondary texture.
+
+	VideoTextureMU_t *TextureUnits;
 
 	// FBO Management
 	unsigned int
@@ -170,7 +198,6 @@ extern "C" {
 	void Video_DrawFill(VideoObjectVertex_t *voFill, Material_t *mMaterial, int iSkin);
 	void Video_DrawSurface(msurface_t *mSurface, float fAlpha, Material_t *mMaterial, unsigned int uiSkin);
 	void Video_DrawObject(VideoObjectVertex_t *voObject, VideoPrimitive_t vpPrimitiveType, unsigned int uiVerts, Material_t *mMaterial, int iSkin);
-	void Video_DrawMaterial(Material_t *mMaterial, int iSkin, VideoObjectVertex_t *voObject, VideoPrimitive_t vpPrimitiveType, unsigned int uiSize, bool bPost);
 	void Video_Shutdown(void);
 
 	unsigned int Video_GetTextureUnit(unsigned int uiTarget);
@@ -198,6 +225,11 @@ extern "C" {
 // TODO: Reintroduce tracking functionality.
 #define	VIDEO_FUNCTION_START \
 { \
+	static int iVideoFunctionCalls = -1; \
+	if(Video.bDebugFrame) \
+	{ \
+		iVideoFunctionCalls++; \
+	} \
 } \
 {
 #define	VIDEO_FUNCTION_END \

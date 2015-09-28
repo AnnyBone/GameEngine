@@ -50,7 +50,7 @@ extern "C" {
 	void Con_DrawNotify(void);
 	void Con_ClearNotify(void);
 	void Con_ToggleConsole_f(void);
-	void Console_ErrorMessage(bool bCrash, const char *ccFile, char *reason);
+	void Console_ErrorMessage(bool bCrash, const char *ccFile, const char *reason);
 
 #ifdef __cplusplus
 }

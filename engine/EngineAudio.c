@@ -25,6 +25,8 @@
 
 /*
 	Audio System
+	Unfinished
+	OpenAL or SDL? :(
 */
 
 #define AUDIO_NUM_BUFFERS	1

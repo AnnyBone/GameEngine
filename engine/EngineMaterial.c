@@ -21,6 +21,7 @@
 #include "EngineBase.h"
 
 #include "EngineVideo.h"
+#include "EngineVideoShader.h"
 #include "EngineScript.h"
 
 /*
@@ -863,6 +864,245 @@ bool Material_Precache(const char *ccPath)
 
 	return true;
 }
+
+/*
+	Rendering
+*/
+
+extern ConsoleVariable_t gl_fullbrights;
+
+/*	Typically called before an object is drawn.
+*/
+void Material_Draw(Material_t *Material, int Skin, 
+	VideoObjectVertex_t *ObjectVertex, VideoPrimitive_t ObjectPrimitive, unsigned int ObjectSize,
+	bool bPost)
+{
+	if (r_drawflat_cheatsafe || !Material)
+		return;
+
+	if (!Material->bWireframeOverride && (r_lightmap_cheatsafe || r_showtris.bValue))
+	{
+		if (!bPost)
+		{
+			// Select the first TMU.
+			Video_SelectTexture(0);
+
+			// Set it as white.
+			Video_SetTexture(mColour->msSkin[MATERIAL_COLOUR_WHITE].mtTexture->gMap);
+		}
+		return;
+	}
+
+	MaterialSkin_t *msCurrentSkin;
+	if (Material->iFlags & MATERIAL_FLAG_ANIMATED)
+		msCurrentSkin = Material_GetAnimatedSkin(Material);
+	else
+		msCurrentSkin = Material_GetSkin(Material, Skin);
+	if (!msCurrentSkin)
+		Sys_Error("Failed to get valid skin! (%s)\n", Material->cName);
+
+	unsigned int i, uiCurrentUnit;
+	for (i = 0, uiCurrentUnit = 0; i < msCurrentSkin->uiTextures; i++, uiCurrentUnit++)
+	{
+#ifdef VIDEO_LIGHTMAP_HACKS
+		// Skip the lightmap, since it's manually handled.
+		if (uiCurrentUnit == VIDEO_TEXTURE_LIGHT)
+			uiCurrentUnit++;
+#endif
+
+		// Attempt to select the unit (if it's already selected, then it'll just return).
+		Video_SelectTexture(uiCurrentUnit);
+
+		if (!bPost)
+		{
+			// Enable it.
+			Video_EnableCapabilities(VIDEO_TEXTURE_2D);
+
+			// Bind it.
+			Video_SetTexture(msCurrentSkin->mtTexture[i].gMap);
+
+			// Allow us to manipulate the texture.
+			if (msCurrentSkin->mtTexture[i].bManipulated)
+			{
+				glMatrixMode(GL_TEXTURE);
+				glLoadIdentity();
+				if ((msCurrentSkin->mtTexture[i].vScroll[0] > 0) || (msCurrentSkin->mtTexture[i].vScroll[0] < 0) ||
+					(msCurrentSkin->mtTexture[i].vScroll[1] > 0) || (msCurrentSkin->mtTexture[i].vScroll[1] < 0))
+					glTranslatef(
+						msCurrentSkin->mtTexture[i].vScroll[0] * cl.time,
+						msCurrentSkin->mtTexture[i].vScroll[1] * cl.time,
+						0);
+				if ((msCurrentSkin->mtTexture[i].fRotate > 0) || (msCurrentSkin->mtTexture[i].fRotate < 0))
+					glRotatef(msCurrentSkin->mtTexture[i].fRotate*cl.time, 0, 0, 1.0f);
+				glMatrixMode(GL_MODELVIEW);
+			}
+		}
+
+		switch (msCurrentSkin->mtTexture[i].mttType)
+		{
+		case MATERIAL_TEXTURE_DIFFUSE:
+			if (!bPost)
+			{
+#if 0 // TODO: Material shader assignments!!!!
+				VideoShader_SetVariablei(iDiffuseUniform, Video.uiActiveUnit);
+#endif
+
+				if (uiCurrentUnit > 0)
+				{
+					VideoLayer_SetTextureEnvironmentMode(VIDEO_TEXTURE_MODE_DECAL);
+
+					// Check if we've been given a video object to use...
+					if (ObjectVertex)
+					{
+						unsigned int j;
+
+						// Go through the whole object.
+						for (j = 0; j < ObjectSize; j++)
+						{
+							// Copy over original texture coords.
+							Video_ObjectTexture(&ObjectVertex[j], uiCurrentUnit,
+								// Use base texture coordinates as a reference.
+								ObjectVertex[j].mvST[0][0],
+								ObjectVertex[j].mvST[0][1]);
+						}
+					}
+				}
+				else
+					VideoLayer_SetTextureEnvironmentMode(VIDEO_TEXTURE_MODE_MODULATE);
+
+				if (msCurrentSkin->mtTexture[i].uiFlags & MATERIAL_FLAG_ALPHA)
+					VideoLayer_Enable(VIDEO_ALPHA_TEST);
+			}
+			else
+			{
+				if (msCurrentSkin->mtTexture[i].uiFlags & MATERIAL_FLAG_ALPHA)
+				{
+					VideoLayer_Disable(VIDEO_ALPHA_TEST);
+
+					if (cvVideoAlphaTrick.bValue && (ObjectSize > 0))
+					{
+						Video_SetBlend(VIDEO_BLEND_IGNORE, VIDEO_DEPTH_FALSE);
+
+						VideoLayer_Enable(VIDEO_BLEND);
+
+						// Draw the object again (don't bother passing material).
+						Video_DrawObject(ObjectVertex, ObjectPrimitive, ObjectSize, NULL, 0);
+
+						VideoLayer_Disable(VIDEO_BLEND);
+
+						Video_SetBlend(VIDEO_BLEND_IGNORE, VIDEO_DEPTH_TRUE);
+					}
+				}
+
+				VideoLayer_SetTextureEnvironmentMode(VIDEO_TEXTURE_MODE_MODULATE);
+			}
+			break;
+		case MATERIAL_TEXTURE_DETAIL:
+			if (!bPost)
+			{
+				if (!cvVideoDrawDetail.bValue)
+				{
+					Video_DisableCapabilities(VIDEO_TEXTURE_2D);
+					break;
+				}
+
+				VideoLayer_SetTextureEnvironmentMode(VIDEO_TEXTURE_MODE_COMBINE);
+				glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
+				glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 1);
+
+				// Check if we've been given a video object to use...
+				if (ObjectVertex)
+				{
+					unsigned int j;
+
+					// Go through the whole object.
+					for (j = 0; j < ObjectSize; j++)
+					{
+						// Copy over original texture coords.
+						Video_ObjectTexture(&ObjectVertex[j], uiCurrentUnit,
+							// Use base texture coordinates as a reference.
+							ObjectVertex[j].mvST[0][0] * cvVideoDetailScale.value,
+							ObjectVertex[j].mvST[0][1] * cvVideoDetailScale.value);
+
+						// TODO: Modify them to the appropriate scale.
+
+					}
+				}
+			}
+			else
+				VideoLayer_SetTextureEnvironmentMode(VIDEO_TEXTURE_MODE_MODULATE);
+			break;
+		case MATERIAL_TEXTURE_FULLBRIGHT:
+			if (!bPost)
+			{
+				if (!gl_fullbrights.bValue)
+				{
+					Video_DisableCapabilities(VIDEO_TEXTURE_2D);
+					break;
+				}
+
+				VideoLayer_SetTextureEnvironmentMode(VIDEO_TEXTURE_MODE_ADD);
+
+				if (uiCurrentUnit > 0)
+				{
+					// Check if we've been given a video object to use...
+					if (ObjectVertex)
+					{
+						unsigned int j;
+
+						// Go through the whole object.
+						for (j = 0; j < ObjectSize; j++)
+						{
+							// Copy over original texture coords.
+							Video_ObjectTexture(&ObjectVertex[j], uiCurrentUnit,
+								// Use base texture coordinates as a reference.
+								ObjectVertex[j].mvST[0][0],
+								ObjectVertex[j].mvST[0][1]);
+						}
+					}
+				}
+			}
+			else
+				VideoLayer_SetTextureEnvironmentMode(VIDEO_TEXTURE_MODE_MODULATE);
+			break;
+		case MATERIAL_TEXTURE_SPHERE:
+			if (!bPost)
+			{
+				VideoLayer_SetTextureEnvironmentMode(VIDEO_TEXTURE_MODE_COMBINE);
+
+				Video_GenerateSphereCoordinates();
+
+				VideoLayer_Enable(VIDEO_TEXTURE_GEN_S | VIDEO_TEXTURE_GEN_T);
+			}
+			else
+			{
+				VideoLayer_SetTextureEnvironmentMode(VIDEO_TEXTURE_MODE_MODULATE);
+				VideoLayer_Disable(VIDEO_TEXTURE_GEN_S | VIDEO_TEXTURE_GEN_T);
+			}
+			break;
+		default:
+			Sys_Error("Invalid texture type for material! (%s) (%i)\n", Material->cPath, msCurrentSkin->mtTexture[i].mttType);
+		}
+
+		if (bPost)
+		{
+			// Reset any manipulation within the matrix.
+			if (msCurrentSkin->mtTexture[i].bManipulated)
+			{
+				glMatrixMode(GL_TEXTURE);
+				glLoadIdentity();
+				glTranslatef(0, 0, 0);
+				glRotatef(0, 0, 0, 0);
+				glMatrixMode(GL_MODELVIEW);
+			}
+
+			// Disable the texture.
+			Video_DisableCapabilities(VIDEO_TEXTURE_2D);
+		}
+	}
+}
+
+/**/
 
 void Material_Shutdown(void)
 {

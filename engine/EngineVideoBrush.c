@@ -160,7 +160,7 @@ void R_DrawSequentialPoly(msurface_t *s)
 			Video_EnableCapabilities(VIDEO_BLEND);
 		}
 
-		Video_DrawMaterial(mCurrent, 0, 0, 0, 0, false);
+		Material_Draw(mCurrent, 0, 0, 0, 0, false);
 
 		for(pBrushPoly = s->polys->next; pBrushPoly; pBrushPoly = pBrushPoly->next)
 		{
@@ -169,7 +169,7 @@ void R_DrawSequentialPoly(msurface_t *s)
 			rs_brushpasses++;
 		}
 
-		Video_DrawMaterial(mCurrent, 0, 0, 0, 0, true);
+		Material_Draw(mCurrent, 0, 0, 0, 0, true);
 	}
 	else
 	{

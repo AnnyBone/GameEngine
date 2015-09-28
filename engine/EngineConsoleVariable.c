@@ -228,6 +228,10 @@ char *Cvar_VariableString (char *var_name)
 	return var->string;
 }
 
+#if 0
+/*	Attempts to match a partial variable name for command line completion
+	returns NULL if nothing fits
+*/
 char *Cvar_CompleteVariable (char *partial)
 {
 	ConsoleVariable_t *cvar;
@@ -244,6 +248,7 @@ char *Cvar_CompleteVariable (char *partial)
 
 	return NULL;
 }
+#endif
 
 void Cvar_Reset (const char *name)
 {

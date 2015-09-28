@@ -35,14 +35,10 @@ extern "C" {
 		*mColour,
 		*mConChars;		// Used for the console font.
 
-	// Do NOT change these.
-#define	MATERIAL_COLOUR_WHITE	0
-#define	MATERIAL_COLOUR_BLACK	1
-#define	MATERIAL_COLOUR_BLUE	2
-
 	void Material_Initialize(void);
 	void Material_ClearAll(void);
 	void Material_Clear(Material_t *mMaterial);
+	void Material_Draw(Material_t *Material, int Skin, VideoObjectVertex_t *ObjectVertex, VideoPrimitive_t ObjectPrimitive, unsigned int ObjectSize, bool bPost);
 
 	bool Material_Precache(const char *ccPath);
 

@@ -42,6 +42,11 @@ typedef enum
 	MATERIAL_TYPE_MAX		// This isn't valid, don't use it (just used for utility).
 } MaterialProperty_t;
 
+// Do NOT change these.
+#define	MATERIAL_COLOUR_WHITE	0
+#define	MATERIAL_COLOUR_BLACK	1
+#define	MATERIAL_COLOUR_BLUE	2
+
 #define	MATERIAL_FLAG_PRESERVE	1	// Preserves the material during clear outs.
 #define	MATERIAL_FLAG_ALPHA		2	// Declares that the given texture has an alpha channel.
 #define	MATERIAL_FLAG_BLEND		4	// Ditto to the above, but tells us to use blending rather than alpha-test.

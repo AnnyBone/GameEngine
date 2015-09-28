@@ -287,17 +287,23 @@ void VideoShader_Initialize(void)
 
 void VideoShader_Enable(void)
 {
+#ifdef VIDEO_SUPPORT_SHADERS
 	BaseProgram->Enable();
+#endif
 }
 
 void VideoShader_Disable(void)
 {
+#ifdef VIDEO_SUPPORT_SHADERS
 	BaseProgram->Disable();
+#endif
 }
 
 void VideoShader_SetVariablei(int iUniformLocation, int i)
 {
+#ifdef VIDEO_SUPPORT_SHADERS
 	BaseProgram->SetVariable(iUniformLocation, i);
+#endif
 }
 
 void VideoShader_SetVariablef(int iUniformLocation, float f)

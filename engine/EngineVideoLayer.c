@@ -89,11 +89,13 @@ unsigned int VideoLayer_TranslateFormat(VideoTextureFormat_t Format)
 
 void VideoLayer_SetupTexture(VideoTextureFormat_t InternalFormat, VideoTextureFormat_t Format, unsigned int Width, unsigned int Height)
 {
+	VIDEO_FUNCTION_START
 	glTexImage2D(GL_TEXTURE_2D, 0, 
 		VideoLayer_TranslateFormat(InternalFormat),
 		Width, Height, 0, 
 		VideoLayer_TranslateFormat(Format), 
 		GL_UNSIGNED_BYTE, NULL);
+	VIDEO_FUNCTION_END
 }
 
 /*	TODO:
@@ -118,6 +120,46 @@ void VideoLayer_SetTextureFilter(VideoTextureFilter_t FilterMode)
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, SetFilter);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, SetFilter);
+	VIDEO_FUNCTION_END
+}
+
+int VideoLayer_TranslateTextureEnvironmentMode(VideoTextureEnvironmentMode_t TextureEnvironmentMode)
+{
+	VIDEO_FUNCTION_START
+	switch (TextureEnvironmentMode)
+	{
+	case VIDEO_TEXTURE_MODE_ADD:
+		return GL_ADD;
+	case VIDEO_TEXTURE_MODE_MODULATE:
+		return GL_MODULATE;
+	case VIDEO_TEXTURE_MODE_DECAL:
+		return GL_DECAL;
+	case VIDEO_TEXTURE_MODE_BLEND:
+		return GL_BLEND;
+	case VIDEO_TEXTURE_MODE_REPLACE:
+		return GL_REPLACE;
+	case VIDEO_TEXTURE_MODE_COMBINE:
+		return GL_COMBINE;
+	default:
+		Sys_Error("Unknown texture environment mode! (%i)\n", TextureEnvironmentMode);
+	}
+
+	// Won't be hit but meh, compiler will complain otherwise.
+	return 0;
+	VIDEO_FUNCTION_END
+}
+
+void VideoLayer_SetTextureEnvironmentMode(VideoTextureEnvironmentMode_t TextureEnvironmentMode)
+{
+	VIDEO_FUNCTION_START
+	// Ensure there's actually been a change.
+	if (Video.TextureUnits[Video.uiActiveUnit].CurrentTexEnvMode == TextureEnvironmentMode)
+		return;
+
+	int iTexMode = VideoLayer_TranslateTextureEnvironmentMode(TextureEnvironmentMode);
+	glTexEnviv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, &iTexMode);
+
+	Video.TextureUnits[Video.uiActiveUnit].CurrentTexEnvMode = TextureEnvironmentMode;
 	VIDEO_FUNCTION_END
 }
 

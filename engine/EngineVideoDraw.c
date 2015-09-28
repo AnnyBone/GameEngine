@@ -654,7 +654,7 @@ void Draw_BeginDisc(void)
 	VideoCanvasType_t oldcanvas; //johnfitz
 
 	// Don't draw if it's dedicated.
-	if (cls.state == ca_dedicated)
+	if (!Video.bInitialized || (cls.state == ca_dedicated))
 		return;
 
 	//johnfitz -- canvas and matrix stuff

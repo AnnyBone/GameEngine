@@ -102,10 +102,6 @@ void Video_Initialize(void)
 	Video.bActive = true;						// Window is intially assumed active.
 	Video.bUnlocked = true;						// Video mode is initially locked.
 
-	// All units are initially disabled.
-	for (i = 0; i < VIDEO_MAX_UNITS; i++)
-		Video.bUnitState[i] = false;
-
 	Cvar_RegisterVariable(&cvMultisampleSamples,NULL);
 	Cvar_RegisterVariable(&cvVideoDrawModels,NULL);
 	Cvar_RegisterVariable(&cvFullscreen,NULL);
@@ -159,7 +155,22 @@ void Video_Initialize(void)
 
 	glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &Video.iSupportedUnits);
 	if (Video.iSupportedUnits < VIDEO_MAX_UNITS)
-		Sys_Error("Your system doesn't support the required number of TMUs! (%i)", Video.iSupportedUnits);
+		Sys_Error("Your system doesn't support the required number of TMUs! (%i)\n", Video.iSupportedUnits);
+
+	// Attempt to dynamically allocated the number of supported TMUs.
+	Video.TextureUnits = (VideoTextureMU_t*)Hunk_Alloc(sizeof(VideoTextureMU_t)*Video.iSupportedUnits);
+	if (!Video.TextureUnits)
+		Sys_Error("Failed to allocated handler for the number of supported TMUs! (%i)\n", Video.iSupportedUnits);
+
+	for (i = 0; i < Video.iSupportedUnits; i++)
+	{
+		Video.TextureUnits[i].bIsActive = false;
+		Video.TextureUnits[i].CurrentTexEnvMode = VIDEO_TEXTURE_MODE_REPLACE;
+		Video.TextureUnits[i].uiCurrentTexture = 0;
+	}
+
+	// All units are initially disabled.
+	Q_memset(Video.bUnitState, 0, sizeof(Video.bUnitState));
 
 	glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &Video.fMaxAnisotropy);
 
@@ -195,9 +206,11 @@ void Video_Initialize(void)
 	else
 		Con_Warning("ARB_vertex_buffer_object isn't supported by your hardware!\n");
 
+#ifdef VIDEO_SUPPORT_SHADERS
 	// Shaders?
 	if (!GLEE_ARB_vertex_program || !GLEE_ARB_fragment_program)
 		Sys_Error("Unsupported video hardware!\n");
+#endif
 
 	// Set the default states...
 
@@ -230,6 +243,12 @@ void Video_Initialize(void)
 	glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 4);
 
 	Video_SelectTexture(0);
+
+#ifdef VIDEO_SUPPORT_PERFHACKS
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_COLOR_ARRAY);
+	glEnableClientState(GL_NORMAL_ARRAY);
+#endif
 
 #if 0
 	vid.conwidth = (scr_conwidth.value > 0) ? (int)scr_conwidth.value : (scr_conscale.value > 0) ? (int)(Video.iWidth / scr_conscale.value) : Video.iWidth;
@@ -592,267 +611,6 @@ void Video_DrawTerrain(VideoObjectVertex_t *voTerrain)
 		Sys_Error("Invalid video object!\n");
 }
 
-extern ConsoleVariable_t gl_fullbrights;
-
-/*	Called before the object is drawn.
-*/
-void Video_DrawMaterial(
-	Material_t *mMaterial, int iSkin,
-	VideoObjectVertex_t *voObject, VideoPrimitive_t vpPrimitiveType, unsigned int uiSize,
-	bool bPost)
-{
-	unsigned int i, uiUnit;
-	MaterialSkin_t *msCurrentSkin;
-
-	// If we're drawing flat, then don't apply textures.
-	if (r_drawflat_cheatsafe)
-		return;
-
-	bVideoIgnoreCapabilities = true;
-
-	if (!mMaterial->bWireframeOverride)
-		if (r_lightmap_cheatsafe || r_showtris.bValue || !cvVideoDrawMaterials.bValue)
-		{
-			// Select the first TMU.
-			Video_SelectTexture(0);
-
-			if (!bPost)
-			{
-				// Enable it.
-				Video_EnableCapabilities(VIDEO_TEXTURE_2D);
-
-				// Bind it.
-				Video_SetTexture(mColour->msSkin[MATERIAL_COLOUR_WHITE].mtTexture->gMap);
-			}
-			else
-				// Disable it.
-				Video_DisableCapabilities(VIDEO_TEXTURE_2D);
-
-			bVideoIgnoreCapabilities = false;
-
-			return;
-		}
-
-	if (mMaterial->iFlags & MATERIAL_FLAG_ANIMATED)
-		msCurrentSkin = Material_GetAnimatedSkin(mMaterial);
-	else
-		msCurrentSkin = Material_GetSkin(mMaterial, iSkin);
-	if (!msCurrentSkin)
-		Sys_Error("Failed to get valid skin!\n");
-
-	for (i = 0,uiUnit = 0; i < msCurrentSkin->uiTextures; i++, uiUnit++)
-	{
-		// Skip the lightmap, since it's manually handled.
-		if (uiUnit == VIDEO_TEXTURE_LIGHT)
-			uiUnit++;
-
-		// Select the given texture.
-		Video_SelectTexture(uiUnit);
-
-		// Check our specific type.
-		switch (msCurrentSkin->mtTexture[i].mttType)
-		{
-		case MATERIAL_TEXTURE_DIFFUSE:
-			if (!bPost)
-			{
-				VideoShader_SetVariablei(iDetailUniform, Video.uiActiveUnit);
-
-				if (Video_GetCapability(VIDEO_BLEND))
-					glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
-				else if (uiUnit > 0)
-					glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
-				else
-					glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-				
-				// Check if we've been given a video object to use...
-				if (voObject)
-				{
-					unsigned int j;
-
-					// Go through the whole object.
-					for (j = 0; j < uiSize; j++)
-					{
-						// Copy over original texture coords.
-						Video_ObjectTexture(&voObject[j], uiUnit,
-							// Use base texture coordinates as a reference.
-							voObject[j].mvST[0][0],
-							voObject[j].mvST[0][1]);
-					}
-				}
-			}
-
-			if (msCurrentSkin->mtTexture[i].uiFlags & MATERIAL_FLAG_ALPHA)
-			{
-				if (!bPost)
-					glEnable(GL_ALPHA_TEST);
-				else
-				{
-					glDisable(GL_ALPHA_TEST);
-
-					if (cvVideoAlphaTrick.bValue && (uiSize > 0))
-					{
-						Video_SetBlend(VIDEO_BLEND_IGNORE, VIDEO_DEPTH_FALSE);
-
-						glEnable(GL_BLEND);
-
-						// Draw the object again (don't bother passing material).
-						Video_DrawObject(voObject, vpPrimitiveType, uiSize, NULL, 0);
-
-						glDisable(GL_BLEND);
-
-						Video_SetBlend(VIDEO_BLEND_IGNORE, VIDEO_DEPTH_TRUE);
-					}
-				}
-			}
-			else if (msCurrentSkin->mtTexture[i].uiFlags & MATERIAL_FLAG_BLEND)
-			{
-				if (!bPost)
-					glEnable(GL_BLEND);
-				else
-					glDisable(GL_BLEND);
-			}
-			break;
-		case MATERIAL_TEXTURE_DETAIL:
-			if (!cvVideoDrawDetail.bValue)
-				break;
-
-			if (!bPost)
-			{
-				VideoShader_SetVariablei(iDetailUniform, Video.uiActiveUnit);
-
-				glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
-				glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
-				glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 2);
-
-				// Check if we've been given a video object to use...
-				if (voObject)
-				{
-					unsigned int j;
-
-					// Go through the whole object.
-					for (j = 0; j < uiSize; j++)
-					{
-						// Copy over original texture coords.
-						Video_ObjectTexture(&voObject[j], uiUnit,
-							// Use base texture coordinates as a reference.
-							voObject[j].mvST[0][0] * cvVideoDetailScale.value,
-							voObject[j].mvST[0][1] * cvVideoDetailScale.value);
-
-						// TODO: Modify them to the appropriate scale.
-
-					}
-				}
-			}
-			break;
-		case MATERIAL_TEXTURE_FULLBRIGHT:
-			if (!gl_fullbrights.bValue)
-				break;
-
-			if (!bPost)
-			{
-				VideoShader_SetVariablei(iFullbrightUniform, Video.uiActiveUnit);
-
-				glEnable(GL_BLEND);
-
-				glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_ADD);
-
-				if (voObject)
-				{
-					unsigned int j;
-
-					for (j = 0; j < uiSize; j++)
-					{
-						// Texture coordinates remain the same for fullbright layers.
-						Video_ObjectTexture(&voObject[j], uiUnit,
-							// Use base texture coordinates as a reference.
-							voObject[j].mvST[0][0],
-							voObject[j].mvST[0][1]);
-					}
-				}
-			}
-			else
-				glDisable(GL_BLEND);
-			break;
-		case MATERIAL_TEXTURE_SPHERE:
-			if (!bPost)
-			{
-				VideoShader_SetVariablei(iSphereUniform, Video.uiActiveUnit);
-
-				glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
-
-				Video_GenerateSphereCoordinates();
-#if 0
-				Video_EnableCapabilities(VIDEO_BLEND | VIDEO_TEXTURE_GEN_S | VIDEO_TEXTURE_GEN_T);
-#else	// Enable and disable the ol' fasioned, but safer way.
-				glEnable(GL_BLEND);
-				glEnable(GL_TEXTURE_GEN_S);
-				glEnable(GL_TEXTURE_GEN_T);
-#endif
-			}
-			else
-#if 0
-				Video_DisableCapabilities(VIDEO_BLEND | VIDEO_TEXTURE_GEN_S | VIDEO_TEXTURE_GEN_T);
-#else	// Enable and disable the ol' fasioned, but safer way.
-			{
-				glDisable(GL_BLEND);
-				glDisable(GL_TEXTURE_GEN_S);
-				glDisable(GL_TEXTURE_GEN_T);
-			}
-#endif
-			break;
-		default:
-			Sys_Error("Invalid texture type for material! (%s) (%i)\n", mMaterial->cPath, msCurrentSkin->mtTexture[i].mttType);
-		}
-
-		if (!bPost)
-		{
-			// Enable it.
-			Video_EnableCapabilities(VIDEO_TEXTURE_2D);
-
-			// Bind it.
-			Video_SetTexture(msCurrentSkin->mtTexture[i].gMap);
-
-			// Allow us to manipulate the texture.
-			if (msCurrentSkin->mtTexture[i].bManipulated)
-			{
-				glMatrixMode(GL_TEXTURE);
-				glLoadIdentity();
-				if ((msCurrentSkin->mtTexture[i].vScroll[0] > 0) || (msCurrentSkin->mtTexture[i].vScroll[0] < 0) ||
-					(msCurrentSkin->mtTexture[i].vScroll[1] > 0) || (msCurrentSkin->mtTexture[i].vScroll[1] < 0))
-					glTranslatef(
-					msCurrentSkin->mtTexture[i].vScroll[0] * cl.time,
-					msCurrentSkin->mtTexture[i].vScroll[1] * cl.time,
-					0);
-				if ((msCurrentSkin->mtTexture[i].fRotate > 0) || (msCurrentSkin->mtTexture[i].fRotate < 0))
-					glRotatef(msCurrentSkin->mtTexture[i].fRotate*cl.time, 0, 0, 1.0f);
-				glMatrixMode(GL_MODELVIEW);
-			}
-		}
-		else
-		{
-			// Reset any manipulation within the matrix.
-			if (msCurrentSkin->mtTexture[i].bManipulated)
-			{
-				glMatrixMode(GL_TEXTURE);
-				glLoadIdentity();
-				glTranslatef(0, 0, 0);
-				glRotatef(0, 0, 0, 0);
-				glMatrixMode(GL_MODELVIEW);
-			}
-
-			// Reset texture env changes...
-			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-			glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 1);
-
-			// Disable the texture.
-			Video_DisableCapabilities(VIDEO_TEXTURE_2D);
-		}
-	}
-
-	// Stop ignoring assigned capabilities.
-	bVideoIgnoreCapabilities = false;
-}
-
 /*  Draw a simple rectangle.
 */
 void Video_DrawFill(VideoObjectVertex_t *voFill, Material_t *mMaterial, int iSkin)
@@ -964,8 +722,7 @@ void Video_DrawObject(
 
 	bVideoIgnoreCapabilities = true;
 
-	if (mMaterial)
-		Video_DrawMaterial(mMaterial, iSkin, voObject, vpPrimitiveType, uiVerts, false);
+	Material_Draw(mMaterial, iSkin, voObject, vpPrimitiveType, uiVerts, false);
 
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glVertexPointer(3, GL_FLOAT, sizeof(VideoObjectVertex_t), voObject->mvPosition);
@@ -1001,8 +758,7 @@ void Video_DrawObject(
 			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 		}
 
-	if (mMaterial)
-		Video_DrawMaterial(mMaterial, iSkin, voObject, vpPrimitiveType, uiVerts, true);
+	Material_Draw(mMaterial, iSkin, voObject, vpPrimitiveType, uiVerts, true);
 
 	bVideoIgnoreCapabilities = false;
 }
