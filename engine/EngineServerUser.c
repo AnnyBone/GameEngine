@@ -239,7 +239,7 @@ void SV_ClientThink (void)
 	{
 		if (sv.time > sv_player->v.dTeleportTime || !sv_player->v.waterlevel)
 		{
-			sv_player->v.flags			= sv_player->v.flags & ~FL_WATERJUMP;
+			sv_player->v.flags = sv_player->v.flags & ~FL_WATERJUMP;
 			sv_player->v.dTeleportTime = 0;
 		}
 

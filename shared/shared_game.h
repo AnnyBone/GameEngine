@@ -1,12 +1,25 @@
-/*  Copyright (C) 2011-2015 OldTimes Software
+/*	Copyright (C) 2011-2015 OldTimes Software
+
+	This program is free software; you can redistribute it and/or
+	modify it under the terms of the GNU General Public License
+	as published by the Free Software Foundation; either version 2
+	of the License, or (at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+	See the GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
-#ifndef __SHAREDGAME__
-#define __SHAREDGAME__
 
-#ifndef KATANA
-#include "platform.h"
-#include "platform_math.h"
+#ifndef __SHAREDGAME_H__
+#define __SHAREDGAME_H__
 
+#ifndef KATANA	// TODO: Sort this out!!!
 typedef struct link_s
 {
 	struct link_s	*prev, *next;
@@ -81,28 +94,28 @@ typedef struct
 
 #define	ENTITY_MAX_INVENTORY	128
 
-typedef struct
+typedef struct GlobalVariables_e
 {
 	// Weapons
 	int			iSecondaryAmmo,iPrimaryAmmo;
 	int			iWeaponFrame;
 
 	// Editor
-	char		*cClassname,	// The classname of the entity.
-				*cName;			// The specified name for the entity.
-	char		*noise;
-	char		*model;
-	int			iHealth;
+	char 
+		*cClassname,	// The classname of the entity.
+		*cName;			// The specified name for the entity.
+	char *noise;
+	char *model;
 
-	// [30/1/2013] Changed from float to int ~hogsy
-	int			modelindex;
+	int	iHealth;
+
+	int	modelindex;
 
 	MathVector3f_t absmin;
 	MathVector3f_t absmax;
 
 	float		ltime;	// Local time for ents.
 
-	// [20/7/2012] Changed to an integer ~hogsy
 	int			movetype;
 
 	MathVector3f_t origin;
@@ -112,7 +125,6 @@ typedef struct
 	MathVector3f_t avelocity;
 	MathVector3f_t punchangle;
 
-	// [20/10/2013] Changed from a float to an integer ~hogsy
 	int			frame;
 	int			effects;
 
@@ -123,17 +135,17 @@ typedef struct
 
 	ServerEntity_t *groundentity;
 
-	// [21/10/2012] Changed to an integer ~hogsy
-	int			iScore;
-	int			iActiveWeapon;	// Current active weapon ID
-	char		*cViewModel;	// The model that appears in our view, this is traditionally used for weapons.
+	int	iScore;
+	int	iActiveWeapon;	// Current active weapon ID
+	char *cViewModel;	// The model that appears in our view, this is traditionally used for weapons.
 
-	int			items;
-	int			iInventory[ENTITY_MAX_INVENTORY];
+	int	items;
+	int	iInventory[ENTITY_MAX_INVENTORY];
 
 	MathVector4f_t	vLight;
 
-	bool		bTakeDamage;
+	bool bTakeDamage;		// TODO: Make local.
+
 	ServerEntity_t *chain;
 
 	MathVector3f_t view_ofs;
@@ -145,40 +157,38 @@ typedef struct
 	MathVector3f_t v_angle;
 
 	float		idealpitch;
-	char		*netname;
-	ServerEntity_t *enemy;     // Obsolete
+
+	char *netname;	// Players name on the server.
+
+	ServerEntity_t *enemy;		// TODO: Obsolete!
 	int			flags;
 	float		colormap;
-	float		team;
 
-	double dTeleportTime;
+	double dTeleportTime;	// TODO: This is NEVER set!
 
 	int			iArmorType,iArmorValue;
 
 	float		waterlevel;
 	int			watertype;
-	float		ideal_yaw;
-	float		yaw_speed;
-	int			aiment;
-	// [9/7/2012] Changed from float to an integer ~hogsy
+	float		ideal_yaw;		// TODO: Obsolete!
+	int			aiment;			// TODO: What is this?? What does it do??
 	int			spawnflags;
 	char		*targetname;
 
 	float		dmg_take;
 	float		dmg_save;
-	ServerEntity_t *eDamageInflictor;
+	ServerEntity_t *seDamageInflictor;	// TODO: This is NEVER set!
 
 	char		*message;
-	float		sounds;
+	float		sounds;		// TODO: This is NEVER set!
 
 	// Physics
 	MathVector3f_t movedir;
 
-	void(*TouchFunction)(ServerEntity_t *eEntity, ServerEntity_t *eOther);		// TODO: Move into local struct.
-	void(*use)(ServerEntity_t *ent);
-	void(*think)(ServerEntity_t *ent);
-	void(*BlockedFunction)(ServerEntity_t *seEntity, ServerEntity_t *seOther);	// Used in some places by engine_physics.
-	void(*DamagedFunction)(ServerEntity_t *seEntity, ServerEntity_t *seOther);
+	void(*TouchFunction)(ServerEntity_t *seEntity, ServerEntity_t *eOther);		// Called when an entity touches another entity.
+	void(*use)(ServerEntity_t *seEntity);
+	void(*think)(ServerEntity_t *seEntity);
+	void(*BlockedFunction)(ServerEntity_t *seEntity, ServerEntity_t *seOther);	// Called when an entity is blocked against another.
 } GlobalVariables_t;
 
 // [12/1/2013] Model specific variables ~hogsy
@@ -213,9 +223,9 @@ typedef struct
 		solid
 	*/
 
-	float	fMass,		// Sets the mass of the entity.
-			fGravity,	// Sets the gravity which is enforced on the entity.
-			fFriction;	// Sets the amount of friction that effects this entity and others.
+	float fMass;		// Sets the mass of the entity.
+	float fGravity;		// Sets the gravity which is enforced on the entity.
+	float fFriction;	// Sets the amount of friction that effects this entity and others.
 
 	PhysicsSolidTypes_t	iSolid;	// Sets the collision/solid type for the entity.
 
@@ -243,7 +253,7 @@ typedef struct
 //	void	(*think_stand)(ServerEntity_t *ent);
 //	void	(*think_run)(ServerEntity_t *ent);
 //	void	(*think_attack)(ServerEntity_t *ent);
-	void(*think_pain)(ServerEntity_t *ent, ServerEntity_t *other);
+	void(*PainFunction)(ServerEntity_t *ent, ServerEntity_t *other);
 
 	void(*Think)(ServerEntity_t *eMonster);	// Called per-frame for the specific handling of states for each monster.
 
@@ -277,7 +287,7 @@ typedef struct
 {
 	int		iPassengers,									// Current number of passengers.
 			iMaxPassengers;									// Maximum passengers the vehicle can carry.
-	int		iSlot[16];
+	int		iSlot[4];
 	int		iFuel,											// Current amount of fuel in the vehicle.
 			iMaxFuel;										// Maximum amount of fuel that can be in the vehicle.
 	int		iType;											// Type of vehicle.
@@ -306,37 +316,44 @@ typedef enum
 
 typedef struct
 {
-	void	(*Function)(ServerEntity_t *eEntity);
+	void (*Function)(ServerEntity_t *eEntity);
 
-	int		iFrame;
+	int	iFrame;
 
-	float	fSpeed;
+	float fSpeed;
 
-	bool	bIsEnd;
+	bool bIsEnd;
 } EntityFrame_t;
 
 // Misc local variables
 typedef struct
 {
-	// mapping features
+	// TODO: Move all mapping parameters to its own struct.
+
 	char		*sound;
 	float		speed;
-	int			iDamage,	// Amount of damage to inflict.
-				iValue;
+	
+	int	iDamage,	// Amount of damage to inflict.
+		iValue;		// TODO: Make this a little less... Ambiguous?
+	
 	int			volume;		// Volume level for sound.
 	float		lip;
 	int			distance;
 	int			style;
-	// [21/2/2014] Changed to a double and renamed ~hogsy
-	double		dWait;
-	int			count;
-	char		*cTarget1,		// First target.
-				*cTarget2;		// Second target.
 
-	char		*cSoundStart,
-				*cSoundStop,
-				*cSoundMoving,
-				*cSoundReturn;
+	double dWait;
+
+	int			count;
+
+	char		
+		*cTarget1,	// First target.
+		*cTarget2;	// Second target.
+
+	char		
+		*cSoundStart,
+		*cSoundStop,
+		*cSoundMoving,
+		*cSoundReturn;
 
 #ifdef GAME_OPENKATANA
 	// Powerups
@@ -362,8 +379,8 @@ typedef struct
 	int			shockwave_ammo;
 	int			sidewinder_ammo;
 	int			shotcycler_ammo;
-	int			iShotCycle;							// Number of shots to cycle through (shotcycler).
-	int			iGreekFireAmmo;
+	int	iShotCycle;							// Number of shots to cycle through (shotcycler).
+	//int	iGreekFireAmmo;
 #elif GAME_ADAMAS
 	int		iBulletAmmo;
 #endif
@@ -396,9 +413,11 @@ typedef struct
 
 	float fJumpVelocity;
 
-	float			swim_flag;					// Time before next splash sound.
-	int				hit;
-	int				state;						// Main state.
+	float swim_flag;					// Time before next splash sound.
+	int	hit;
+
+	int	iLocalFlags; // Local entity flags.
+
 	float			fSpawnDelay;				// Delay before next spawn.
 	MathVector3f_t	pos1;
 	MathVector3f_t	pos2;
@@ -438,8 +457,6 @@ typedef struct
 	MathVector3f_t vRight;
 	MathVector3f_t vUp;
 
-	int iDelta[2][2];	// X & Y Delta.
-
 	// Vehicles
 	ServerEntity_t *eVehicle;	// Current vehicle.
 	int iVehicleSlot;			// Occupied vehicle slot.
@@ -448,6 +465,8 @@ typedef struct
 	int	iBarrelCount;			// For cycling barrel animations.
 
 	void(*KilledFunction)(ServerEntity_t *seEntity, ServerEntity_t *seOther);
+	void(*RespawnFunction)(ServerEntity_t *seEntity);
+	void(*DamagedFunction)(ServerEntity_t *seEntity, ServerEntity_t *seOther);
 } GameVariables_t;
 
 //----------------------------

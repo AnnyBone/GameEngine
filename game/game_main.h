@@ -9,6 +9,7 @@
 
 #include "platform.h"
 #include "platform_math.h"
+#include "platform_filesystem.h"
 
 #include "SharedFlags.h"
 #include "SharedModule.h"
@@ -36,15 +37,18 @@ typedef struct
 {
 	bool bActive;	// Is the server active?
 
-	double	dTime,					// Server time.
-			dHostFrameTime,			// Host time.
-			dWaypointSpawnDelay;	// Delay before spawning another waypoint.
+	double	
+		dTime,					// Server time.
+		dHostFrameTime,			// Host time.
+		dWaypointSpawnDelay;	// Delay before spawning another waypoint.
 
-	ServerEntity_t	*eEntity,	// Current player.
-					*eWorld;	// Pointer to entity representing the current level.
+	ServerEntity_t	
+		*eEntity,	// Current player.
+		*eWorld;	// Pointer to entity representing the current level.
 
-	char	*cMapAuthor,	// Map author.
-			*cMapTitle;		// Map title.
+	char	
+		*cMapAuthor,	// Map author.
+		*cMapTitle;		// Map title.
 
 	int	iLastGameMode,	// The last active gamemode.
 		iClients,		// Number of connected clients.
@@ -65,10 +69,6 @@ typedef struct
 extern GameServer_t Server;
 extern GameClient_t Client;
 
-// [29/7/2013] Moved mode types into server_mode.h ~hogsy
-
-// [28/7/2013] Moved door states into sv_area.c ~hogsy
-
 #define	DEAD_NO				0	// Entity isn't dead
 #define DEAD_DEAD			2	// Entity is dead
 #define DEAD_RESPAWNABLE	3	// Entity can respawn
@@ -78,7 +78,6 @@ extern GameClient_t Client;
 */
 
 #define	WEAPON_NONE			-1
-// [5/8/2013] Made these standard defines since maps rely on these now ~hogsy
 #ifdef OPENKATANA
 // Episode One
 #define WEAPON_LASERS		1		// NPC weapon
@@ -120,18 +119,16 @@ extern "C" {
 
 	char *va(char *format,...);
 
-	void Flare(vec3_t org,float r,float g,float b,float a,float scale,char *texture);
+	void Flare(MathVector3f_t org,float r,float g,float b,float a,float scale,char *texture);
 
 	void Sound(ServerEntity_t *ent, AudioChannel_t channel, char *sound, int volume, float attenuation);
 
-	void SetAngle(ServerEntity_t *ent, vec3_t vAngle);
-
-	void DrawPic(char *texture,float alpha,int x,int y,int h,int w);
+	void SetAngle(ServerEntity_t *ent, MathVector3f_t vAngle);
 	void PutClientInServer(ServerEntity_t *ent);
 	void WriteByte(int mode,int c);
 	void ChangeYaw(ServerEntity_t *ent);
 
-	trace_t Traceline(ServerEntity_t *ent, vec3_t vStart, vec3_t vEnd, int type);
+	trace_t Traceline(ServerEntity_t *ent, MathVector3f_t vStart, MathVector3f_t vEnd, int type);
 
 	void UseTargets(ServerEntity_t *ent, ServerEntity_t *other);
 

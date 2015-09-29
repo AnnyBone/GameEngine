@@ -1,4 +1,19 @@
 /*	Copyright (C) 2011-2015 OldTimes Software
+
+	This program is free software; you can redistribute it and/or
+	modify it under the terms of the GNU General Public License
+	as published by the Free Software Foundation; either version 2
+	of the License, or (at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+	See the GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "server_main.h"
@@ -46,9 +61,12 @@ enum
 
 void Point_NullSpawn(ServerEntity_t *eEntity)
 {
-	// [3/3/2013] Remove if there is no name given! ~hogsy
-	if(!eEntity->v.cName)
-		ENTITY_REMOVE(eEntity);
+	// Remove if there is no name given!
+	if (!eEntity->v.cName[0])
+	{
+		Entity_Remove(eEntity);
+		return;
+	}
 
 	Entity_SetOrigin(eEntity,eEntity->v.origin);
 }
@@ -127,7 +145,6 @@ void Point_VehicleSpawn(ServerEntity_t *eVehicle)
 
 void Point_Start(ServerEntity_t *ent)
 {
-	// [2/1/2013] Revised ~hogsy
 	switch((int)cvServerGameMode.value)
 	{
 	case MODE_SINGLEPLAYER:
@@ -137,7 +154,8 @@ void Point_Start(ServerEntity_t *ent)
 		{
 			Engine.Con_Warning("Invalid start style! (%i)\n",ent->local.style);
 
-			ENTITY_REMOVE(ent);
+			Entity_Remove(ent);
+			return;
 		}
 
 #ifdef GAME_OPENKATANA
@@ -159,7 +177,8 @@ void Point_Start(ServerEntity_t *ent)
 		{
 			Engine.Con_Warning("Invalid start style! (%i)\n",ent->local.style);
 
-			ENTITY_REMOVE(ent);
+			Entity_Remove(ent);
+			return;
 		}
 
 		if(ent->local.pTeam == TEAM_RED)
@@ -175,7 +194,8 @@ void Point_Start(ServerEntity_t *ent)
 		{
 			Engine.Con_Warning("Invalid start style! (%i)\n",ent->local.style);
 
-			ENTITY_REMOVE(ent);
+			Entity_Remove(ent);
+			return;
 		}
 		break;
 	case MODE_DEATHMATCH:
@@ -184,7 +204,8 @@ void Point_Start(ServerEntity_t *ent)
 		{
 			Engine.Con_Warning("Invalid start style! (%i)\n",ent->local.style);
 
-			ENTITY_REMOVE(ent);
+			Entity_Remove(ent);
+			return;
 		}
 
 		ent->v.cClassname = "point_start_deathmatch";
@@ -195,11 +216,12 @@ void Point_Start(ServerEntity_t *ent)
 	default:
 		// [16/1/2014] Show the gamemode, not the entity style! ~hogsy
 		Engine.Con_Warning("Failed to set up spawn points, unknown game type! (%i)\n",cvServerGameMode.value);
-		ENTITY_REMOVE(ent);
+		
+		Entity_Remove(ent);
+		return;
 	}
 
-	// [19/7/2012] Create a waypoint here so bots can try to avoid ~hogsy
-	// [16/1/2014] This was getting set outside the world, derp ~hogsy
+	// Create a waypoint here so bots can try to avoid.
 	Waypoint_Spawn(ent->v.origin,WAYPOINT_SPAWN);
 }
 
@@ -207,7 +229,6 @@ void Point_Start(ServerEntity_t *ent)
 	Particle Emitter
 */
 
-// [17/7/2012] Renamed to Point_ParticleEmit ~hogsy
 void Point_ParticleEmit(ServerEntity_t *ent)
 {
 	Engine.Particle(ent->v.origin,ent->v.velocity,ent->Model.fScale,ent->v.model,ent->local.count);
@@ -223,15 +244,12 @@ void Point_ParticleTrigger(ServerEntity_t *ent)
 
 void Point_ParticleSpawn(ServerEntity_t *ent)
 {
-	// [10/3/2012] Revised ~hogsy
 	if(ent->local.count <= 0)
 		ent->local.count = 1;
 
-	// [9/3/2012] Revised ~hogsy
 	if(ent->Model.fScale <= 0)
 		ent->Model.fScale = 7.0f;
 
-	// [21/3/2012] Updated ~hogsy
 	Engine.Server_PrecacheResource(RESOURCE_SPRITE,ent->v.model);
 
 	Entity_SetOrigin(ent,ent->v.origin);
@@ -247,7 +265,6 @@ void Point_ParticleSpawn(ServerEntity_t *ent)
 		Engine.Con_Warning("Unknown particle type (%i)!\n",ent->local.style);
 	}
 
-	// [9/3/2012] Revised ~hogsy
 	if(ent->local.dAttackFinished > 0)
 	{
 		ent->v.think		= Point_ParticleEmit;
@@ -473,7 +490,9 @@ void Point_CameraSpawn(ServerEntity_t *eEntity)
 	Waypoint
 */
 
-// [20/9/2012] Waypoints placed inside a level ~hogsy
+/*	Waypoints manually placed within a level.
+	Entity gets removed after the waypoint is spawned.
+*/
 void Point_WaypointSpawn(ServerEntity_t *eEntity)
 {
 	Waypoint_Spawn(eEntity->v.origin,(WaypointType_t)eEntity->local.style);
@@ -509,7 +528,6 @@ void Point_SoundUse(ServerEntity_t *eEntity)
 
 }
 
-// [2/2/2013] Renamed from Point_PlaySound to Point_SoundSpawn for consistency ~hogsy
 void Point_SoundSpawn(ServerEntity_t *eEntity)
 {
 	if(!eEntity->v.noise)
@@ -569,7 +587,6 @@ enum
 
 void Point_MessageLocal(ServerEntity_t *eEntity)
 {
-	// [4/8/2013] Simplified ~hogsy
 	if(!eEntity->local.activator || (!Entity_IsPlayer(eEntity) && eEntity->local.activator->v.iHealth <= 0))
 		return;
 
@@ -578,7 +595,6 @@ void Point_MessageLocal(ServerEntity_t *eEntity)
 
 void Point_MessageCenter(ServerEntity_t *eEntity)
 {
-	// [4/8/2013] Simplified ~hogsy
 	if(!eEntity->local.activator || (!Entity_IsPlayer(eEntity) && eEntity->local.activator->v.iHealth <= 0))
 		return;
 
@@ -650,7 +666,6 @@ void Point_TeleportUse(ServerEntity_t *eEntity)
 {
 	Entity_SetOrigin(eEntity->local.activator,eEntity->v.origin);
 
-	// [4/8/2013] Simplified ~hogsy
 	Math_VectorCopy(eEntity->v.angles,eEntity->local.activator->v.angles);
 }
 
@@ -677,11 +692,9 @@ void Area_BreakableDie(ServerEntity_t *eArea,ServerEntity_t *eOther);
 
 void Point_PropTouch(ServerEntity_t *eEntity, ServerEntity_t *eOther)
 {
-	// [28/5/2013] Why can't monsters move props too? Removed check. ~hogsy
 	if(!eOther->v.iHealth)
 		return;
 
-	// [28/5/2013] Simplified all this ~hogsy
 	Math_VectorClear(eEntity->v.velocity);
 	Math_VectorScale(eOther->v.velocity,0.25f,eEntity->v.velocity);
 }
@@ -730,7 +743,6 @@ void Point_PropSpawn(ServerEntity_t *eEntity)
 				Server_PrecacheModel(PHYSICS_MODEL_METAL2);
 				break;
 			default:
-				// [4/8/2013] Updated for consistency ~hogsy
 				Engine.Con_Warning("Prop with unknown style! (%i)\n",eEntity->local.style);
 		}
 
@@ -816,7 +828,6 @@ void Point_EffectUse(ServerEntity_t *eEntity)
 	switch(eEntity->local.style)
 	{
 		case 1:
-			// [15/8/2013] Updated ~hogsy
 			Entity_RadiusDamage(eEntity,MONSTER_RANGE_MEDIUM,eEntity->local.iDamage, eEntity->local.iDamageType);
 			break;
 		case 2:
@@ -834,7 +845,6 @@ void Point_EffectUse(ServerEntity_t *eEntity)
 			Engine.WriteCoord(MSG_BROADCAST,eEntity->v.origin[2]);
 			break;
 		default:
-			// [24/6/2013] Made this more informative ~hogsy
 			Engine.Con_Warning("Unknown effect style! (%i)\n",eEntity->local.style);
 	}
 
@@ -915,7 +925,8 @@ void Point_LightstyleSpawn(ServerEntity_t *eEntity)
 			(int)eEntity->v.origin[1],
 			(int)eEntity->v.origin[2]);
 
-		ENTITY_REMOVE(eEntity);
+		Entity_Remove(eEntity);
+		return;
 	}
 
 	eEntity->v.use = Point_LightstyleUse;
@@ -960,7 +971,8 @@ void Point_MultiTriggerSpawn(ServerEntity_t *eEntity)
 			(int)eEntity->v.origin[1],
 			(int)eEntity->v.origin[2]);
 
-		ENTITY_REMOVE(eEntity);
+		Entity_Remove(eEntity);
+		return;
 	}
 
 	if(!eEntity->v.message)
@@ -970,7 +982,8 @@ void Point_MultiTriggerSpawn(ServerEntity_t *eEntity)
 			(int)eEntity->v.origin[1],
 			(int)eEntity->v.origin[2]);
 
-		ENTITY_REMOVE(eEntity);
+		Entity_Remove(eEntity);
+		return;
 	}
 
 	if(!eEntity->local.style)
@@ -1005,7 +1018,8 @@ void Point_TimedTriggerSpawn(ServerEntity_t *eEntity)
 			eEntity->v.origin[1],
 			eEntity->v.origin[2]);
 
-		ENTITY_REMOVE(eEntity);
+		Entity_Remove(eEntity);
+		return;
 	}
 
 	eEntity->v.use = Point_TimedTriggerUse;
@@ -1022,8 +1036,7 @@ void Point_TimedTriggerSpawn(ServerEntity_t *eEntity)
 
 void Point_LogicThink(ServerEntity_t *eEntity)
 {
-	// [2/1/2013] Set eEnt2 as NULL here to avoid an VC warning *sighs* ~hogsy
-	ServerEntity_t *eEnt1,*eEnt2 = NULL;
+	ServerEntity_t *eEnt1, *eEnt2 = NULL;
 
 	eEnt1 = Engine.Server_FindEntity(Server.eWorld,eEntity->local.cTarget1,false);
 	if(!eEnt1)
@@ -1086,7 +1099,8 @@ void Point_LogicSpawn(ServerEntity_t *eEntity)
 			(int)eEntity->v.origin[1],
 			(int)eEntity->v.origin[2]);
 
-		ENTITY_REMOVE(eEntity);
+		Entity_Remove(eEntity);
+		return;
 	}
 
 	if(!eEntity->local.cTarget2 && eEntity->local.style != 3)
@@ -1096,7 +1110,8 @@ void Point_LogicSpawn(ServerEntity_t *eEntity)
 			(int)eEntity->v.origin[1],
 			(int)eEntity->v.origin[2]);
 
-		ENTITY_REMOVE(eEntity);
+		Entity_Remove(eEntity);
+		return;
 	}
 
 	if(!eEntity->local.style)

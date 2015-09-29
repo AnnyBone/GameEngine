@@ -47,8 +47,8 @@ void LaserGat_HandleAim(ServerEntity_t *eLaserGat)
 		}
 		else
 			LaserGat_AimTarget(eLaserGat,eLaserGat->Monster.eTarget);
-    }
-    else if(eLaserGat->Monster.iThink == THINK_ATTACKING)
+	}
+	else if(eLaserGat->Monster.iThink == THINK_ATTACKING)
 		LaserGat_AimTarget(eLaserGat,eLaserGat->Monster.eEnemy);
 }
 
@@ -77,7 +77,7 @@ void LaserGat_Think(ServerEntity_t *eLaserGat)
 	switch(eLaserGat->Monster.iThink)
 	{
 	case THINK_IDLE:
-        // [22/4/2014] Check if there are any targets nearby... ~hogsy
+		// [22/4/2014] Check if there are any targets nearby... ~hogsy
 		if(!eLaserGat->Monster.iCommandList[COMMAND_ATTACK_WAIT])
 		{
 			eLaserGat->Monster.eTarget = Monster_GetTarget(eLaserGat);
@@ -103,10 +103,10 @@ void LaserGat_Think(ServerEntity_t *eLaserGat)
 			eLaserGat->Monster.iCommandList[COMMAND_ATTACK_WAIT] = 5;
 		}
 		else
-            eLaserGat->Monster.iCommandList[COMMAND_ATTACK_WAIT]--;
+			eLaserGat->Monster.iCommandList[COMMAND_ATTACK_WAIT]--;
 
-        if(!eLaserGat->Monster.iCommandList[COMMAND_LOOK_WAIT])
-        {
+		if(!eLaserGat->Monster.iCommandList[COMMAND_LOOK_WAIT])
+		{
 			if(eLaserGat->Monster.iCommandList[COMMAND_LOOK_PITCH] == LASERGAT_LOOK_DOWN)
 				eLaserGat->v.angles[0] -= 0.5f;
 			else if(eLaserGat->Monster.iCommandList[COMMAND_LOOK_YAW] == LASERGAT_LOOK_UP)
@@ -130,7 +130,7 @@ void LaserGat_Think(ServerEntity_t *eLaserGat)
 				else
 					eLaserGat->Monster.iCommandList[COMMAND_LOOK_YAW]	= LASERGAT_LOOK_RIGHT;
 			}
-        }
+		}
 		break;
 	case THINK_ATTACKING:
 		{
@@ -146,7 +146,7 @@ void LaserGat_Think(ServerEntity_t *eLaserGat)
 				break;
 			}
 
-            // [22/4/2014] Switched over to use this instead since it manages delay etc for us :) ~hogsy
+			// [22/4/2014] Switched over to use this instead since it manages delay etc for us :) ~hogsy
 			Weapon_PrimaryAttack(eLaserGat);
 		}
 		break;
@@ -154,8 +154,8 @@ void LaserGat_Think(ServerEntity_t *eLaserGat)
 		Monster_SetThink(eLaserGat,THINK_IDLE);
 	}
 
-    // [22/4/2014] Make sure our pitch doesn't go crazy, heh ~hogsy
-    if(eLaserGat->v.angles[0] > 10.0f)
+	// [22/4/2014] Make sure our pitch doesn't go crazy, heh ~hogsy
+	if(eLaserGat->v.angles[0] > 10.0f)
 		eLaserGat->v.angles[0] = 10.0f;
 	else if(eLaserGat->v.angles[0] < -60.0f)
 		eLaserGat->v.angles[0] = -60.0f;
@@ -204,7 +204,7 @@ void LaserGat_Spawn(ServerEntity_t *eLaserGat)
 
 	Entity_SetKilledFunction(eLaserGat, LaserGat_Die);
 
-//	eLaserGat->Monster.think_pain		= LaserGat_Pain;
+//	eLaserGat->Monster.PainFunction		= LaserGat_Pain;
 	eLaserGat->Monster.Think			= LaserGat_Think;
 	eLaserGat->Monster.fViewDistance	= MONSTER_RANGE_MEDIUM;
 	eLaserGat->Monster.iType			= MONSTER_LASERGAT;

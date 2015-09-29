@@ -593,7 +593,7 @@ void SV_WriteClientdataToMessage (ServerEntity_t *ent, sizebuf_t *msg)
 	// Send a damage message
 	if (ent->v.dmg_take || ent->v.dmg_save)
 	{
-		other = ent->v.eDamageInflictor;
+		other = ent->v.seDamageInflictor;
 
 		MSG_WriteByte(msg,SVC_DAMAGE);
 		MSG_WriteByte(msg,ent->v.dmg_save);

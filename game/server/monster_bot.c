@@ -205,25 +205,27 @@ void Bot_Spawn(ServerEntity_t *eBot)
 
 	eBot->Monster.Think = Bot_Think;
 
-    // Mikiko and Superfly are set manually to avoid issues... ~hogsy
+	// Mikiko and Superfly are set manually to avoid issues... ~hogsy
 	if(eBot->local.style == BOT_DEFAULT)
 	{
-        // [16/7/2012] Must be set after teams are set up ~hogsy
-        eSpawnPoint = Entity_SpawnPoint(eBot,iSpawnType);
-        if(!eSpawnPoint)
-        {
-            Engine.Con_Warning("%s failed to find spawnpoint!\n",eBot->v.netname);
-            ENTITY_REMOVE(eBot);
-        }
+		// [16/7/2012] Must be set after teams are set up ~hogsy
+		eSpawnPoint = Entity_SpawnPoint(eBot,iSpawnType);
+		if(!eSpawnPoint)
+		{
+			Engine.Con_Warning("%s failed to find spawnpoint!\n",eBot->v.netname);
 
-        Entity_SetOrigin(eBot,eSpawnPoint->v.origin);
-        SetAngle(eBot,eSpawnPoint->v.angles);
+			Entity_Remove(eBot);
+			return;
+		}
+
+		Entity_SetOrigin(eBot,eSpawnPoint->v.origin);
+		SetAngle(eBot,eSpawnPoint->v.angles);
 	}
 
 	Entity_SetKilledFunction(eBot, Bot_Die);
 
-	eBot->Monster.think_pain	= Bot_Pain;
-	eBot->Monster.Think			= Bot_Think;
+	eBot->Monster.PainFunction = Bot_Pain;
+	eBot->Monster.Think	= Bot_Think;
 
 	Entity_SetModel(eBot,eBot->v.model);
 	Entity_SetSize(eBot,-16.0f,-16.0f,-24.0f,16.0f,16.0f,32.0f);

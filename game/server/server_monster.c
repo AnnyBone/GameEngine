@@ -37,7 +37,7 @@
 		should be based on their maxview distance.
 		Trace onto the world surface at the same time?
 		 /a(a2)
-	    O - - -
+		O - - -
 		 \b(b2)
 
 	This is our basic monster/ai platform which
@@ -281,6 +281,7 @@ bool Monster_MoveStep(ServerEntity_t *ent,vec3_t move,bool bRelink)
 // [28/7/2012] Added Monster_StepDirection ~hogsy
 bool Monster_StepDirection(ServerEntity_t *ent,float yaw,float dist)
 {
+#if 0
 	vec3_t	move,oldorg;
 	float	delta;
 
@@ -304,6 +305,7 @@ bool Monster_StepDirection(ServerEntity_t *ent,float yaw,float dist)
 	}
 
 	Entity_Link(ent, true);
+#endif
 	return false;
 }
 
@@ -515,20 +517,20 @@ void Monster_Killed(ServerEntity_t *eTarget, ServerEntity_t *eAttacker)
 		eTarget->v.bTakeDamage = false;
 
 #ifdef GAME_OPENKATANA
-    // [22/4/2014] Drop the currently equipped item for the player to pick up! ~hogsy
-    {
-        Weapon_t *wActive = Weapon_GetCurrentWeapon(eTarget);
-        if(wActive && (wActive->iItem != WEAPON_LASERS))
-        {
-            ServerEntity_t *eDroppedItem = Entity_Spawn();
+	// [22/4/2014] Drop the currently equipped item for the player to pick up! ~hogsy
+	{
+		Weapon_t *wActive = Weapon_GetCurrentWeapon(eTarget);
+		if(wActive && (wActive->iItem != WEAPON_LASERS))
+		{
+			ServerEntity_t *eDroppedItem = Entity_Spawn();
 
-            Math_VectorCopy(eTarget->v.origin,eDroppedItem->v.origin);
+			Math_VectorCopy(eTarget->v.origin,eDroppedItem->v.origin);
 
-            eDroppedItem->local.style = wActive->iItem;
+			eDroppedItem->local.style = wActive->iItem;
 
-            Item_Spawn(eDroppedItem);
-        }
-    }
+			Item_Spawn(eDroppedItem);
+		}
+	}
 #endif
 
 	// Update our current state.
@@ -590,8 +592,8 @@ void Monster_Damage(ServerEntity_t *target, ServerEntity_t *inflictor, int iDama
 	target->v.iHealth -= iDamage;
 	if(target->v.iHealth <= 0)
 		Monster_Killed(target,inflictor);
-	else if(target->Monster.think_pain)
-		target->Monster.think_pain(target,inflictor);
+	else if(target->Monster.PainFunction)
+		target->Monster.PainFunction(target,inflictor);
 }
 
 void MONSTER_WaterMove(ServerEntity_t *ent)
@@ -631,7 +633,7 @@ void MONSTER_WaterMove(ServerEntity_t *ent)
 	}
 }
 
-void Monster_MoveToGoal(ServerEntity_t *ent,vec3_t goal,float distance)
+void Monster_MoveToGoal(ServerEntity_t *ent,MathVector3f_t goal,float distance)
 {
 	int i;
 

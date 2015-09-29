@@ -46,6 +46,7 @@ void SetAngle(ServerEntity_t *ent,MathVector3f_t vAngle)
 // [8/2/2012] Brought ChangeYaw over from the engine ~hogsy
 void ChangeYaw(ServerEntity_t *ent)
 {
+#if 0
 	float ideal,current,move,speed;
 
 	current	= Math_AngleMod(ent->v.angles[1]);
@@ -73,6 +74,7 @@ void ChangeYaw(ServerEntity_t *ent)
 		move = -speed;
 
 	ent->v.angles[1] = Math_AngleMod(current+move);
+#endif
 }
 
 /*	Used for use tracing and shot

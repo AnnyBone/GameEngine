@@ -101,7 +101,8 @@ void Inmater_Die(ServerEntity_t *eInmater, ServerEntity_t *eOther)
 
 		Engine.Particle(eInmater->v.origin,eInmater->v.velocity,10.0f,"blood",20);
 
-		ENTITY_REMOVE(eInmater);
+		Entity_Remove(eInmater);
+		return;
 	}
 
 	Entity_Animate(eInmater,efInmaterDeath);
@@ -147,7 +148,7 @@ void Inmater_Spawn(ServerEntity_t *eInmater)
 
 	eInmater->Monster.iType = MONSTER_INMATER;
 	eInmater->Monster.Think = Inmater_Think;
-	eInmater->Monster.think_pain = Inmater_Pain;
+	eInmater->Monster.PainFunction = Inmater_Pain;
 
 	Entity_SetKilledFunction(eInmater, Inmater_Die);
 

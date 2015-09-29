@@ -1,3 +1,21 @@
+/*	Copyright (C) 2011-2015 OldTimes Software
+
+	This program is free software; you can redistribute it and/or
+	modify it under the terms of the GNU General Public License
+	as published by the Free Software Foundation; either version 2
+	of the License, or (at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+	See the GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+*/
+
 #include "server_weapon.h"
 
 void Midas_Deploy(ServerEntity_t *ent)
@@ -7,8 +25,11 @@ void Midas_Deploy(ServerEntity_t *ent)
 
 void Midas_CloudThink(ServerEntity_t *ent)
 {
-	if(ent->local.hit == 0)
-		ENTITY_REMOVE(ent);
+	if (ent->local.hit == 0)
+	{
+		Entity_Remove(ent);
+		return;
+	}
 
 	ent->local.hit = ent->local.hit - 2;
 
@@ -20,9 +41,6 @@ void Midas_CloudThink(ServerEntity_t *ent)
 
 void CloudTouch(ServerEntity_t *cloud, ServerEntity_t *other)
 {
-	// [13/4/2012] Fixed (please remember to use stricmp!) ~hogsy
-	// [8/6/2012] Removed classname check for clients ~hogsy
-	// [4/6/2013] Updated to use the new method ~hogsy
 	if(Entity_IsPlayer(other))
 		return;
 
@@ -36,11 +54,10 @@ void CloudTouch(ServerEntity_t *cloud, ServerEntity_t *other)
 		other->local.hit = 1;
 	}
 	else
-		// [18/4/2012] We probably hit a wall so don't hang about! ~hogsy
+		// We probably hit a wall so don't hang about!
 		Entity_Remove(cloud);
 }
 
-// [4/7/2012] Renamed to Midas_PrimaryAttack ~hogsy
 void Midas_PrimaryAttack(ServerEntity_t *ent)
 {
 	ServerEntity_t *cloud = Entity_Spawn();
@@ -48,7 +65,7 @@ void Midas_PrimaryAttack(ServerEntity_t *ent)
 	cloud->v.cClassname	= "cloud";
 	cloud->v.movetype	= MOVETYPE_FLYMISSILE;
 
-	cloud->Physics.iSolid		= SOLID_TRIGGER;
+	cloud->Physics.iSolid = SOLID_TRIGGER;
 
 	cloud->local.hit	= 10;
 	cloud->local.eOwner = ent;

@@ -1,5 +1,21 @@
 /*	Copyright (C) 2011-2015 OldTimes Software
+
+	This program is free software; you can redistribute it and/or
+	modify it under the terms of the GNU General Public License
+	as published by the Free Software Foundation; either version 2
+	of the License, or (at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+	See the GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
+
 #include "server_main.h"
 
 /*
@@ -94,7 +110,6 @@ void Entity_SetSize(ServerEntity_t *eEntity,
 	vMin[0] = fMinA; vMin[1] = fMinB; vMin[2] = fMinC;
 	vMax[0] = fMaxA; vMax[1] = fMaxB; vMax[2] = fMaxC;
 
-	// [12/9/2013] Meh, just do it through our other func :) ~hogsy
 	Entity_SetSizeVector(eEntity,vMin,vMax);
 }
 
@@ -102,6 +117,8 @@ void Entity_SetSize(ServerEntity_t *eEntity,
 */
 void Entity_AddEffects(ServerEntity_t *eEntity,int iEffects)
 {
+	if (eEntity->v.effects & iEffects)
+		return;
 	eEntity->v.effects |= iEffects;
 }
 
@@ -109,6 +126,8 @@ void Entity_AddEffects(ServerEntity_t *eEntity,int iEffects)
 */
 void Entity_RemoveEffects(ServerEntity_t *eEntity,int iEffects)
 {
+	if (!(eEntity->v.effects & iEffects))
+		return;
 	eEntity->v.effects &= ~iEffects;
 }
 
@@ -123,6 +142,8 @@ void Entity_ClearEffects(ServerEntity_t *eEntity)
 */
 void Entity_AddFlags(ServerEntity_t *eEntity, int iFlags)
 {
+	if (eEntity->v.flags & iFlags)
+		return;
 	eEntity->v.flags |= iFlags;
 }
 
@@ -130,6 +151,8 @@ void Entity_AddFlags(ServerEntity_t *eEntity, int iFlags)
 */
 void Entity_RemoveFlags(ServerEntity_t *eEntity, int iFlags)
 {
+	if (!(eEntity->v.flags & iFlags))
+		return;
 	eEntity->v.flags &= ~iFlags;
 }
 
@@ -221,8 +244,8 @@ void Entity_Damage(ServerEntity_t *seEntity, ServerEntity_t *seInflictor, int iD
 		return;
 	}
 
-	if (seEntity->v.DamagedFunction)
-		seEntity->v.DamagedFunction(seEntity, seInflictor);
+	if (seEntity->local.DamagedFunction)
+		seEntity->local.DamagedFunction(seEntity, seInflictor);
 }
 
 /*	Damage entities within a specific radius.

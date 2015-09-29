@@ -90,10 +90,9 @@ extern "C" {
 	void Entity_ClearFlags(ServerEntity_t *eEntity, int iFlags);
 
 #define Entity_SetKilledFunction(a,b) (a->local.KilledFunction = b)
-#define Entity_SetDamagedFunction(a,b) (a->v.DamagedFunction = b)
+#define Entity_SetDamagedFunction(a,b) (a->local.DamagedFunction = b)
 #define	Entity_SetBlockedFunction(a,b) (a->v.BlockedFunction = b)
-
-#define	ENTITY_REMOVE(a)	{	Entity_Remove(a);	return;	}
+#define Entity_SetTouchFunction(a,b) (a->v.TouchFunction = b)
 
 	ServerEntity_t	*Entity_SpawnPoint(ServerEntity_t *eEntity, int iType);
 

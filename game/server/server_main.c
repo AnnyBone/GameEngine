@@ -1,24 +1,35 @@
-/*	Copyright (C) 2011-2013 OldTimes Software
+/*	Copyright (C) 2011-2015 OldTimes Software
+
+	This program is free software; you can redistribute it and/or
+	modify it under the terms of the GNU General Public License
+	as published by the Free Software Foundation; either version 2
+	of the License, or (at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+	See the GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
+
 #include "server_main.h"
-
-#include "platform_filesystem.h"
-
-/*
-	This is where most functions between the Game and Engine can be found along
-	with the main list of entities that's parsed upon spawning a server.
-*/
 
 #include "server_waypoint.h"
 #include "server_weapon.h"
 #include "server_item.h"
 
 #ifdef GAME_OPENKATANA
-// [20/12/2012] Include the Vektar stuff for spawning ~hogsy
-#include "openkatana/mode_vektar.h"
-
 #include "openkatana/openkatana.h"
 #endif
+
+/*
+	This is where most functions between the Game and Engine can be found along
+	with the main list of entities that's parsed upon spawning a server.
+*/
 
 bool	
 	bIsMultiplayer = false,
@@ -85,6 +96,8 @@ SpawnList_t SpawnList[] =
 #ifdef GAME_OPENKATANA
 	{ "point_decoration", Point_DecorationSpawn },
 	{ "decoration_barrel", Barrel_Spawn },
+
+	{ "item_health", Health_Spawn },
 
 	{ "monster_inmater", Point_MonsterSpawn },
 	{ "monster_lasergat", Point_MonsterSpawn },
@@ -161,17 +174,8 @@ void Server_Initialize(void)
 	Engine.Cvar_RegisterVariable(&cvServerRespawnDelay, NULL);
 	Engine.Cvar_RegisterVariable(&cvServerAim, NULL);
 
-	Server.bActive = false;						// [7/12/2012] We're not active when we've only just initialized ~hogsy
-	Server.iLastGameMode = cvServerGameMode.iValue;
-}
-
-/*	Used just for GIPL shit... Bleh...
-*/
-void Server_PrecachePlayerModel(char *ccFile)
-{
-	Engine.Con_Printf("EX: %s\n",ccFile);
-
-	Server_PrecacheModel(ccFile);
+	Server.bActive = false;							// We're not active when we've only just initialized.
+	Server.iLastGameMode = cvServerGameMode.iValue;	// Last mode is equal to the current mode initially.
 }
 
 void Server_Spawn(ServerEntity_t *seEntity)
@@ -181,7 +185,7 @@ void Server_Spawn(ServerEntity_t *seEntity)
 	// Set defaults.
 	Server.dWaypointSpawnDelay = ((double)cvServerWaypointDelay.value);
 	Server.bRoundStarted =
-	Server.bPlayersSpawned = false; // [5/9/3024] Players have no been spawned yet ~hogsy
+	Server.bPlayersSpawned = false;
 	Server.iMonsters = 0;
 #ifdef GAME_ADAMAS
 	Server.iLives = 2;

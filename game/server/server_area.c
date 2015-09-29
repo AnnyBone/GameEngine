@@ -1,4 +1,19 @@
 /*	Copyright (C) 2011-2015 OldTimes Software
+
+	This program is free software; you can redistribute it and/or
+	modify it under the terms of the GNU General Public License
+	as published by the Free Software Foundation; either version 2
+	of the License, or (at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+	See the GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "server_main.h"
@@ -364,7 +379,7 @@ void Area_DoorDone(ServerEntity_t *eArea, ServerEntity_t *eOther)
 
 void Area_DoorReturn(ServerEntity_t *eArea)
 {
-	eArea->local.state = STATE_DOWN;
+	eArea->local.iLocalFlags = STATE_DOWN;
 
 	Area_CalculateMovement(eArea,eArea->local.pos1,eArea->local.speed,Area_DoorDone);
 
@@ -378,7 +393,7 @@ void Area_DoorWait(ServerEntity_t *eArea, ServerEntity_t *eOther)
 {
 	UseTargets(eArea, eOther);
 
-	eArea->local.state	= STATE_TOP;
+	eArea->local.iLocalFlags = STATE_TOP;
 	eArea->local.iValue = 1;
 
 	if(eArea->local.dWait >= 0)
@@ -392,12 +407,12 @@ void Area_DoorWait(ServerEntity_t *eArea, ServerEntity_t *eOther)
 
 void Area_DoorTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
 {
-	if (eArea->local.state == STATE_UP || eArea->local.state == STATE_TOP)
+	if (eArea->local.iLocalFlags == STATE_UP || eArea->local.iLocalFlags == STATE_TOP)
 		return;
 	if((eOther->Monster.iType != MONSTER_PLAYER) && eOther->v.iHealth <= 0)
 		return;
 
-	eArea->local.state = STATE_UP;
+	eArea->local.iLocalFlags = STATE_UP;
 	Area_CalculateMovement(eArea,eArea->local.pos2,eArea->local.speed,Area_DoorWait);
 
 	if(eArea->local.cSoundStart)
@@ -408,10 +423,10 @@ void Area_DoorTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
 
 void Area_DoorUse(ServerEntity_t *eArea)
 {
-	if(eArea->local.state == STATE_UP || eArea->local.state == STATE_TOP)
+	if(eArea->local.iLocalFlags == STATE_UP || eArea->local.iLocalFlags == STATE_TOP)
 		return;
 
-	eArea->local.state = STATE_UP;
+	eArea->local.iLocalFlags = STATE_UP;
 
 	Area_CalculateMovement(eArea,eArea->local.pos2,eArea->local.speed,Area_DoorWait);
 
@@ -468,7 +483,7 @@ void Area_DoorSpawn(ServerEntity_t *eArea)
 
 	Math_VectorMake(eArea->local.pos1,fDist,eArea->v.movedir,eArea->local.pos2);
 
-	eArea->local.state = STATE_BOTTOM;
+	eArea->local.iLocalFlags = STATE_BOTTOM;
 
 	if(eArea->v.spawnflags != 32) // Toggle
 		eArea->v.TouchFunction = Area_DoorTouch;
@@ -609,8 +624,8 @@ void Area_PushableTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
 		return;
 	}
 	
-    if (eArea->v.flags & FL_ONGROUND)
-      	eArea->v.flags = eArea->v.flags - FL_ONGROUND;
+	if (eArea->v.flags & FL_ONGROUND)
+		eArea->v.flags = eArea->v.flags - FL_ONGROUND;
 	
 	// Get the right player angle.
 	Math_MVToVector(Math_VectorToAngles(eOther->v.velocity), vPVec); 
@@ -713,7 +728,7 @@ void Area_DetailSpawn(ServerEntity_t *eArea)
 
 void Area_ButtonDone(ServerEntity_t *eArea, ServerEntity_t *eOther)
 {
-	eArea->local.state	= STATE_DOWN;
+	eArea->local.iLocalFlags = STATE_DOWN;
 	eArea->local.iValue = 0;
 
 	if(eArea->local.cSoundStop)
@@ -734,7 +749,7 @@ void Area_ButtonWait(ServerEntity_t *eArea, ServerEntity_t *eOther)
 {
 	UseTargets(eArea, eOther);
 
-	eArea->local.state = STATE_TOP;
+	eArea->local.iLocalFlags = STATE_TOP;
 	eArea->local.iValue = 1;
 
 	eArea->v.think		= Area_ButtonReturn;
@@ -746,12 +761,12 @@ void Area_ButtonWait(ServerEntity_t *eArea, ServerEntity_t *eOther)
 
 void Area_ButtonTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
 {
-	if(eArea->local.state == STATE_UP || eArea->local.state == STATE_TOP)
+	if(eArea->local.iLocalFlags == STATE_UP || eArea->local.iLocalFlags == STATE_TOP)
 		return;
 	if((eOther->Monster.iType != MONSTER_PLAYER) && eOther->v.iHealth <= 0)
 		return;
 
-	eArea->local.state = STATE_UP;
+	eArea->local.iLocalFlags = STATE_UP;
 
 	Area_CalculateMovement(eArea,eArea->local.pos2,eArea->local.speed,Area_ButtonWait);
 
@@ -763,10 +778,10 @@ void Area_ButtonTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
 
 void Area_ButtonUse(ServerEntity_t *eArea)
 {
-	if(eArea->local.state == STATE_UP || eArea->local.state == STATE_TOP)
+	if(eArea->local.iLocalFlags == STATE_UP || eArea->local.iLocalFlags == STATE_TOP)
 		return;
 
-	eArea->local.state = STATE_UP;
+	eArea->local.iLocalFlags = STATE_UP;
 
 	Area_CalculateMovement(eArea,eArea->local.pos2,eArea->local.speed,Area_ButtonWait);
 
@@ -808,7 +823,7 @@ void Area_ButtonSpawn(ServerEntity_t *eArea)
 		eArea->local.lip = 4.0f;
 
 	eArea->local.iValue = 0;
-	eArea->local.state	= STATE_BOTTOM;
+	eArea->local.iLocalFlags = STATE_BOTTOM;
 
 	Entity_SetModel(eArea,eArea->v.model);
 	Entity_SetOrigin(eArea,eArea->v.origin);
@@ -847,7 +862,7 @@ void Area_PlatformDone(ServerEntity_t *eArea, ServerEntity_t *eOther)
 	if(eArea->local.dWait >= 0)
 		eArea->v.dNextThink = eArea->v.ltime + eArea->local.dWait;
 
-	eArea->local.state	= STATE_DOWN;
+	eArea->local.iLocalFlags = STATE_DOWN;
 	eArea->local.iValue = 0;
 	eArea->v.think	= NULL;
 
@@ -869,7 +884,7 @@ void Area_PlatformWait(ServerEntity_t *eArea, ServerEntity_t *eOther)
 {
 	UseTargets(eArea, eOther);
 
-	eArea->local.state = STATE_TOP;
+	eArea->local.iLocalFlags = STATE_TOP;
 	eArea->local.iValue = 1;
 
 	eArea->v.think		= Area_PlatformReturn;
@@ -883,14 +898,14 @@ void Area_PlatformWait(ServerEntity_t *eArea, ServerEntity_t *eOther)
 
 void Area_PlatformTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
 {
-	if(eArea->local.state == STATE_UP || eArea->local.state == STATE_TOP)
+	if(eArea->local.iLocalFlags == STATE_UP || eArea->local.iLocalFlags == STATE_TOP)
 		return;
 	if((eOther->Monster.iType != MONSTER_PLAYER) && eOther->v.iHealth <= 0)
 		return;
 	if(eArea->v.dNextThink > eArea->v.ltime)
 		return;
 
-	eArea->local.state = STATE_UP;
+	eArea->local.iLocalFlags = STATE_UP;
 
 	Area_CalculateMovement(eArea,eArea->local.pos2,eArea->local.speed,Area_PlatformWait);
 
@@ -902,10 +917,10 @@ void Area_PlatformTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
 
 void Area_PlatformUse(ServerEntity_t *eArea)
 {
-	if(eArea->local.state == STATE_UP || eArea->local.state == STATE_TOP)
+	if(eArea->local.iLocalFlags == STATE_UP || eArea->local.iLocalFlags == STATE_TOP)
 		return;
 
-	eArea->local.state = STATE_UP;
+	eArea->local.iLocalFlags = STATE_UP;
 
 	Area_CalculateMovement(eArea,eArea->local.pos2,eArea->local.speed,Area_PlatformWait);
 
@@ -948,7 +963,7 @@ void Area_PlatformSpawn(ServerEntity_t *eArea)
 		eArea->local.iDamage = 20;
 
 	eArea->local.iValue = 0;
-	eArea->local.state	= STATE_BOTTOM;
+	eArea->local.iLocalFlags = STATE_BOTTOM;
 
 	Entity_SetModel(eArea,eArea->v.model);
 	Entity_SetOrigin(eArea,eArea->v.origin);
@@ -1048,7 +1063,7 @@ void Area_ClimbTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
 			vLadVelocity[2] = 90; // minimum speed
 	}
 	// up (facing down)
- 	else if ((eOther->v.v_angle[0] >= 15) && (fForwardSpeed < 0))
+	else if ((eOther->v.v_angle[0] >= 15) && (fForwardSpeed < 0))
 	{
 		//eOther->v.origin[0] += eArea->v.movedir[0] * 0.36f;
 		//eOther->v.origin[1] += eArea->v.movedir[1] * 0.36f;

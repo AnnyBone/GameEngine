@@ -17,13 +17,11 @@ void GreekfireTouch(ServerEntity_t *ent, ServerEntity_t *other)
 	if(other->v.bTakeDamage)
 		Entity_Damage(other, ent, 50, 0);
 
-    // [25/6/2012] Simplified ~hogsy
 	Math_VectorCopy(ent->v.velocity,vel);
 	Math_VectorInverse(vel);
 
 	Engine.Particle(ent->v.origin,vel,5,"spark",17);
 
-	// [25/6/2012] Simplified ~hogsy
 	Math_VectorClear(ent->v.velocity);
 
 	Entity_Remove(ent);
@@ -54,9 +52,9 @@ void GreekFire_Throw(ServerEntity_t *ent)
 	greekfire->v.TouchFunction = GreekfireTouch;
 }
 
-// [4/7/2012] Renamed to GreekFire_PrimaryAttack ~hogsy
 void GreekFire_PrimaryAttack(ServerEntity_t *ent)
 {
+#if 0
 	//Weapon_Animate(ent,FALSE,8,25,0.08f,0,0,0,FALSE);
 
 	ent->v.iPrimaryAmmo = ent->local.iGreekFireAmmo--;
@@ -65,4 +63,5 @@ void GreekFire_PrimaryAttack(ServerEntity_t *ent)
 		ent->local.dAttackFinished = Server.dTime+0.75;
 	else
 		ent->local.dAttackFinished = Server.dTime+1.5;
+#endif
 }

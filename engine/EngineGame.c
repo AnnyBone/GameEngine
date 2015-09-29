@@ -66,11 +66,11 @@ char *Server_GetLevelName(void)
 	return sv.name;
 }
 
-ServerEntity_t *Server_FindRadius(vec3_t origin, float radius)
+ServerEntity_t *Server_FindRadius(MathVector3f_t origin, float radius)
 {
 	int		i,j;
 	ServerEntity_t *eEntity, *eChain;
-	vec3_t	eorg;
+	MathVector3f_t	eorg;
 
 	eChain = sv.edicts;
 
@@ -287,7 +287,7 @@ void Server_Sound(ServerEntity_t *ent, int channel, char *sample, int iVolume, f
 	Flares
 */
 
-void Server_Flare(vec3_t org,float r,float g,float b,float a,float scale,char *texture)
+void Server_Flare(MathVector3f_t org,float r,float g,float b,float a,float scale,char *texture)
 {
 #if 0
 	int		i;
@@ -331,7 +331,7 @@ void Server_Flare(vec3_t org,float r,float g,float b,float a,float scale,char *t
 	Particles
 */
 
-void Particle(vec3_t org,vec3_t dir,float scale,char *texture,int count)
+void Particle(MathVector3f_t org, MathVector3f_t dir,float scale,char *texture,int count)
 {
 	int	i,v;
 
@@ -454,7 +454,6 @@ void Game_AddCommand(char *c,void (*Function)(void))
 	Cmd_AddCommand(c,(xcommand_t)Function);
 }
 
-// [28/7/2012] Added Game_SetMessageEntity ~hogsy
 void Game_SetMessageEntity(ServerEntity_t *eEntity)
 {
 	eMessageEntity = eEntity;
@@ -484,13 +483,11 @@ void Game_Initialize(void)
 	Import.LinkEntity = SV_LinkEdict;
 	Import.Server_Move = SV_Move;
 	Import.FreeEntity = ED_Free;
-	Import.DrawPic = Draw_ExternPic;
 	Import.Spawn = ED_Alloc;
 	Import.Cvar_RegisterVariable = Cvar_RegisterVariable;
 	Import.Cvar_SetValue = Cvar_SetValue;
 	Import.LightStyle = LightStyle;
 	Import.CenterPrint = Server_CenterPrint;
-	// [28/7/2012] Updated to use the new function ~hogsy
 	Import.Cmd_AddCommand = Game_AddCommand;
 	Import.ReadByte = MSG_ReadByte;
 	Import.ReadCoord = MSG_ReadCoord;

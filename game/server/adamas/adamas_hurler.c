@@ -25,7 +25,7 @@ void Hurler_Spawn(ServerEntity_t *eHurler)
 	Entity_SetModel(eHurler,HURLER_MODEL_BODY);
 
 	eHurler->Monster.iType = MONSTER_HURLER;
-	eHurler->Monster.think_pain = Hurler_Pain;
+	eHurler->Monster.PainFunction = Hurler_Pain;
 	eHurler->Monster.Think = Hurler_Think;
 
 	Entity_SetKilledFunction(eHurler, Hurler_Die);

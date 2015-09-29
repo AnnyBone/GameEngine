@@ -1,5 +1,21 @@
 /*	Copyright (C) 2011-2015 OldTimes Software
+
+	This program is free software; you can redistribute it and/or
+	modify it under the terms of the GNU General Public License
+	as published by the Free Software Foundation; either version 2
+	of the License, or (at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+	See the GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
+
 #include "server_mode.h"
 
 /*	
@@ -32,24 +48,24 @@ void CTF_FlagReset(ServerEntity_t *ent)
 	Entity_SetOrigin(ent,ent->local.pos1);
 	SetAngle(ent,ent->local.pos2);
 
-	// [2/4/2012] Make sure our owner no longer thinks he has us ~hogsy
+	// Make sure our owner no longer thinks he has us.
 	if(ent->local.eOwner)
 	{
-		ent->local.eOwner->local.flag	= NULL;
-		ent->local.eOwner				= NULL;
+		ent->local.eOwner->local.flag = NULL;
+		ent->local.eOwner = NULL;
 	}
 
-	ent->local.state	= STATE_FLAG_IDLE;
+	ent->local.iLocalFlags = STATE_FLAG_IDLE;
 
 	ent->v.TouchFunction	= CTF_FlagTouch;
-	// [5/6/2012] Just clear the effects out... ~hogsy
+	// Just clear the effects out.
 	ent->v.effects			= 0;
 	ent->v.dNextThink		= Server.dTime+0.5;
 }
 
 void CTF_FlagThink(ServerEntity_t *ent)
 {
-	switch(ent->local.state)
+	switch(ent->local.iLocalFlags)
 	{
 	case STATE_FLAG_IDLE:
 //		MONSTER_Animate(ent,FALSE,0,9,0.1f,0);
@@ -58,7 +74,7 @@ void CTF_FlagThink(ServerEntity_t *ent)
 		if(ent->local.eOwner->v.iHealth <= 0)
 		{
 			ent->local.hit = RESPAWN_DELAY;
-			ent->local.state = STATE_FLAG_DROPPED;
+			ent->local.iLocalFlags = STATE_FLAG_DROPPED;
 //			MONSTER_Animate(ent,FALSE,0,9,0.1f,0);
 			break;
 		}
@@ -88,8 +104,7 @@ void CTF_FlagThink(ServerEntity_t *ent)
 
 			ent->v.TouchFunction	= CTF_FlagTouch;
 			ent->v.angles[0]		= ent->v.angles[0]+10;
-			// [10/5/2012] Floating motion is now done client-side ~hogsy
-			ent->v.effects			|= EF_MOTION_ROTATE|EF_MOTION_FLOAT;
+			ent->v.effects |= EF_MOTION_ROTATE|EF_MOTION_FLOAT;
 		}
 #if 1
 		else if(ent->local.hit == 70	||
@@ -105,23 +120,20 @@ void CTF_FlagThink(ServerEntity_t *ent)
 //		MONSTER_Animate(ent,FALSE,0,9,0.1f,0);
 		break;
 	default:
-		// [5/6/2012] Currently this gives us our think time so we need to call it here ~hogsy
 //		MONSTER_Animate(ent,FALSE,0,9,0.1f,0);
-		Engine.Con_Warning("Unknown flag state (%i)!\n",ent->local.state);
+		Engine.Con_Warning("Unknown flag state (%i)!\n",ent->local.iLocalFlags);
 	}
 }
 
 void CTF_FlagTouch(ServerEntity_t *ent,ServerEntity_t *other)
 {
-	// [20/2/2012] Revised ~hogsy
-	// [23/2/2012] Revised ~hogsy
 	/*	Don't let us pick this up if we're either not a client
 		or we are dead.											*/
 	if(other->Monster.iType != MONSTER_PLAYER || other->v.iHealth <= 0)
 		return;
 	else if(other->local.flag && other->local.flag->local.style != ent->local.style)
 	{
-		if(other->local.flag->local.state == STATE_FLAG_CAPTURED)
+		if(other->local.flag->local.iLocalFlags == STATE_FLAG_CAPTURED)
 			return;
 
 		switch(other->local.pTeam)
@@ -140,7 +152,7 @@ void CTF_FlagTouch(ServerEntity_t *ent,ServerEntity_t *other)
 			other->v.iScore++;
 		}
 
-		// [8/6/2012] Check our scores... ~hogsy
+		// TODO: Check our scores...
 		if(iRedScore > cvServerMaxScore.value)
 		{
 		}
@@ -148,12 +160,12 @@ void CTF_FlagTouch(ServerEntity_t *ent,ServerEntity_t *other)
 		{
 		}
 
-		other->local.flag->local.state = STATE_FLAG_CAPTURED;
+		other->local.flag->local.iLocalFlags = STATE_FLAG_CAPTURED;
 	}
 	else if(!other->local.flag && other->local.pTeam != ent->local.style)
 	{
 		other->local.flag					= ent;
-		other->local.flag->local.state		= STATE_FLAG_CARRIED;
+		other->local.flag->local.iLocalFlags = STATE_FLAG_CARRIED;
 		other->local.flag->local.eOwner		= other;
 		other->local.flag->v.TouchFunction	= NULL;
 
@@ -190,13 +202,14 @@ void CTF_FlagSpawn(ServerEntity_t *eFlag)
 
 	eFlag->Physics.iSolid	= SOLID_TRIGGER;
 
-	eFlag->local.state = STATE_FLAG_IDLE;
+	eFlag->local.iLocalFlags = STATE_FLAG_IDLE;
 
 	switch(eFlag->local.style)
 	{
 	/*	Once we have support for setting
 		our models skin we'll do that here
 		instead ;)							*/
+	// TODO: This is in now, so rewrite the below to use skins instead.
 	case TEAM_RED:
 		Server_PrecacheSound("ctf/redscore.wav");
 
@@ -226,7 +239,7 @@ void CTF_FlagSpawn(ServerEntity_t *eFlag)
 	Entity_SetSize(eFlag,-10,-10,0,10,10,65);
 	Entity_SetOrigin(eFlag,eFlag->v.origin);
 
-	// [5/6/2012] Save our original position ~hogsy
+	// Save our original position.
 	Math_VectorCopy(eFlag->v.angles,eFlag->local.pos1);
 	Math_VectorCopy(eFlag->v.angles,eFlag->local.pos2);
 
