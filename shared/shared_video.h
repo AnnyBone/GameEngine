@@ -66,6 +66,17 @@ typedef enum VideoDepth_e
 	VIDEO_DEPTH_TRUE			// Enable depth mask.
 } VideoDepth_t;
 
+// Texture Environment Modes
+typedef enum VideoTextureEnvironmentMode_e
+{
+	VIDEO_TEXTURE_MODE_ADD,
+	VIDEO_TEXTURE_MODE_MODULATE,
+	VIDEO_TEXTURE_MODE_DECAL,
+	VIDEO_TEXTURE_MODE_BLEND,
+	VIDEO_TEXTURE_MODE_REPLACE,
+	VIDEO_TEXTURE_MODE_COMBINE
+} VideoTextureEnvironmentMode_t;
+
 // Vertex
 typedef struct
 {

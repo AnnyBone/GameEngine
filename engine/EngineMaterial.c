@@ -484,6 +484,7 @@ void _Material_AddTexture(Material_t *mCurrentMaterial, MaterialFunctionType_t m
 #ifdef _MSC_VER
 #pragma warning(suppress: 6011)
 #endif
+	msSkin->mtTexture[msSkin->uiTextures].EnvironmentMode = VIDEO_TEXTURE_MODE_MODULATE;
 	msSkin->mtTexture[msSkin->uiTextures].bManipulated = false;
 	msSkin->mtTexture[msSkin->uiTextures].fRotate = 0;
 	msSkin->mtTexture[msSkin->uiTextures].mttType = MATERIAL_TEXTURE_DIFFUSE;
@@ -976,7 +977,7 @@ void Material_Draw(Material_t *Material, int Skin,
 					}
 				}
 				else
-					VideoLayer_SetTextureEnvironmentMode(VIDEO_TEXTURE_MODE_MODULATE);
+					VideoLayer_SetTextureEnvironmentMode(msCurrentSkin->mtTexture[i].EnvironmentMode);
 
 				if (msCurrentSkin->mtTexture[i].uiFlags & MATERIAL_FLAG_ALPHA)
 					VideoLayer_Enable(VIDEO_ALPHA_TEST);

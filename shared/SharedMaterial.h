@@ -82,10 +82,12 @@ typedef struct
 
 	float	fRotate;
 
-	unsigned int uiWidth, uiHeight,
-		uiFlags;	// Size of the texture.
+	unsigned int uiWidth, uiHeight;	// Width and height of the texture.
+	unsigned int uiFlags;			// Size of the texture.
 
-	MaterialTextureType_t	mttType;	// Sphere, fullbright, or what have you.
+	MaterialTextureType_t mttType;	// Sphere, fullbright, or what have you.
+
+	VideoTextureEnvironmentMode_t EnvironmentMode;
 } MaterialTexture_t;
 
 typedef struct

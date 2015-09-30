@@ -99,16 +99,6 @@ typedef enum
 
 #include "shared_video.h"
 
-typedef enum
-{
-	VIDEO_TEXTURE_MODE_ADD,
-	VIDEO_TEXTURE_MODE_MODULATE,
-	VIDEO_TEXTURE_MODE_DECAL,
-	VIDEO_TEXTURE_MODE_BLEND,
-	VIDEO_TEXTURE_MODE_REPLACE,
-	VIDEO_TEXTURE_MODE_COMBINE
-} VideoTextureEnvironmentMode_t;
-
 typedef struct
 {
 	bool bIsActive;
