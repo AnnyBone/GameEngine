@@ -82,7 +82,7 @@ void R_Envmap_f(void)
 	glDrawBuffer(GL_FRONT);
 	glReadBuffer(GL_FRONT);
 
-	bEnvironmentMap = true;
+	r_refdef.bEnvironmentMap = true;
 
 	r_refdef.vrect.x		=
 	r_refdef.vrect.y		= 0;
@@ -128,7 +128,7 @@ void R_Envmap_f(void)
 	glReadPixels (0, 0, 256, 256, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
 	FileSystem_WriteFile("env5.rgb",buffer,sizeof(buffer));
 
-	bEnvironmentMap = false;
+	r_refdef.bEnvironmentMap = false;
 
 	glDrawBuffer(GL_BACK);
 	glReadBuffer(GL_BACK);

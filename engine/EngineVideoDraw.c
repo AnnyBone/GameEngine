@@ -385,14 +385,10 @@ void Draw_Character(int x,int y,int num)
 		Video_ObjectColour(&voCharacter[3], 1.0f, 1.0f, 1.0f, 1.0f);
 		Video_ObjectTexture(&voCharacter[3], VIDEO_TEXTURE_DIFFUSE, fcol, frow+size);
 
-		Video_DrawFill(voCharacter, mConChars, 0);
+		Video_DrawFill(voCharacter, g_mGlobalConChars, 0);
 
 		Video_ResetCapabilities(true);
 	}
-}
-
-void Draw_Pic(int x,int y,qpic_t *pic)
-{
 }
 
 void Draw_ConsoleBackground(void)
@@ -404,7 +400,13 @@ void Draw_ConsoleBackground(void)
 	if(cls.state == ca_connected)
 		fAlpha = cvConsoleAlpha.value;
 
+#if 0
 	Draw_Fill(0,0,vid.conwidth,vid.conheight,0,0,0,fAlpha);
+#else
+	Colour_t cBlack = { 0, 0, 0, 255 };
+	Colour_t cLightBlack = { 0, 0, 0, fAlpha };
+	Draw_GradientFill(0, 0, vid.conwidth, vid.conheight, cBlack, cLightBlack);
+#endif
 }
 
 void Draw_GradientBackground(void)
@@ -512,8 +514,9 @@ void Draw_Grid(float x, float y, float z, int iGridSize)
 
 	glTranslatef(x, y, z);
 
-	glEnable(GL_BLEND);
-	glDisable(GL_TEXTURE_2D);
+	VideoLayer_Enable(VIDEO_BLEND);
+	VideoLayer_Disable(VIDEO_TEXTURE_2D);
+
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	glColor4f(0, 0, 1.0f, 0.5f);
@@ -558,8 +561,8 @@ void Draw_Grid(float x, float y, float z, int iGridSize)
 	glLineWidth(1.0f);
 	glColor3f(1, 1, 1);
 
-	glDisable(GL_BLEND);
-	glEnable(GL_TEXTURE_2D);
+	VideoLayer_Disable(VIDEO_BLEND);
+	VideoLayer_Enable(VIDEO_TEXTURE_2D);
 
 	glPopMatrix();
 
@@ -670,7 +673,7 @@ void Draw_BeginDisc(void)
 	//johnfitz
 
 	glDrawBuffer(GL_FRONT);
-	Draw_MaterialSurface(mGlobalAccessMaterial, 0, 320 - 74, 10, 64, 64, 1.0f);
+	Draw_MaterialSurface(g_mHDAccess, 0, 320 - 74, 10, 64, 64, 1.0f);
 	glDrawBuffer(GL_BACK);
 
 	//johnfitz -- restore everything so that 3d rendering isn't fucked up

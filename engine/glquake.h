@@ -92,8 +92,6 @@ extern	refdef_t	r_refdef;
 extern	mleaf_t		*r_viewleaf, *r_oldviewleaf;
 extern	int		d_lightstylevalue[256];	// 8.8 fraction of base light value
 
-extern bool bEnvironmentMap;
-
 extern	int			mirrortexturenum;	// quake texturenum, not gltexturenum
 extern	mplane_t	*mpMirrorPlane;
 
@@ -110,7 +108,7 @@ extern float rs_megatexels;
 //johnfitz
 
 //johnfitz -- track developer statistics that vary every frame
-extern cvar_t devstats;
+extern ConsoleVariable_t devstats;
 typedef struct {
 	int		packetsize;
 	int		edicts;

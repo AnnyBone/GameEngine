@@ -97,7 +97,7 @@ void Shadow_Draw(ClientEntity_t *ent)
 		Video_ObjectTexture(&voShadow[3], VIDEO_TEXTURE_DIFFUSE, 0, 1.0f);
 		Video_ObjectColour(&voShadow[3], 1.0f, 1.0f, 1.0f, 1.0f);
 
-		Video_DrawFill(voShadow, mBlobShadow, 0);
+		Video_DrawFill(voShadow, g_mBlobShadow, 0);
 
 		glTranslatef(0, 0, lheight + 0.1);
 		glPopMatrix();

@@ -39,7 +39,6 @@ extern "C" {
 	void Draw_Init(void);
 	void Draw_Character(int x, int y, int num);
 	void Draw_Pic(int x, int y, qpic_t *pic);
-	void Draw_ExternPic(char *path, float alpha, int x, int y, int width, int height);
 	void Draw_MaterialSurface(Material_t *mMaterial, int iSkin, int x, int y, int w, int h, float fAlpha);
 	void Draw_ConsoleBackground(void); //johnfitz -- removed parameter int lines
 	void Draw_GradientBackground(void);

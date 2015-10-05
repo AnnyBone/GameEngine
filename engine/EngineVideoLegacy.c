@@ -25,20 +25,18 @@
 #include "EngineVideoParticle.h"
 #include "EngineVideoShadow.h"
 
-vec3_t		modelorg, r_entorigin;
-entity_t	*currententity;
+MathVector3f_t modelorg, r_entorigin;
+ClientEntity_t *currententity;
 
 int	r_visframecount,	// bumped when going to a new PVS
 	r_framecount;		// used for dlight push checking
 
-mplane_t	frustum[4];
+mplane_t frustum[4];
 
 //johnfitz -- rendering statistics
 int rs_brushpolys, rs_aliaspolys, rs_skypolys, rs_particles, rs_fogpolys;
 int rs_dynamiclightmaps, rs_brushpasses, rs_aliaspasses, rs_skypasses;
 float rs_megatexels;
-
-bool	bEnvironmentMap;				// True during envmap command capture
 
 // view origin
 vec3_t	vup,vpn,vright,
@@ -363,7 +361,7 @@ void R_DrawEntitiesOnList(bool bAlphaPass) //johnfitz -- added parameter
 
 void R_DrawViewModel(void)
 {
-	if(!cvVideoDrawModels.value || !r_drawviewmodel.value || !r_drawentities.value || chase_active.value || bEnvironmentMap)
+	if(!cvVideoDrawModels.value || !r_drawviewmodel.value || !r_drawentities.value || chase_active.value || r_refdef.bEnvironmentMap)
 		return;
 	else if(cl.stats[STAT_HEALTH] <= 0)
 		return;

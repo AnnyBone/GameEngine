@@ -57,12 +57,12 @@ int	iMaterialCount = -1;
 
 Material_t *Material_Allocate(void);
 
-Material_t *mGlobalAccessMaterial;
-Material_t
-	*mNoTexture,
-	*mBlobShadow,
-	*mColour,
-	*mConChars;
+// Global Materials
+Material_t *g_mHDAccess;
+Material_t *g_mMissingMaterial;
+Material_t *g_mBlobShadow;
+Material_t *g_mGlobalColour;
+Material_t *g_mGlobalConChars;
 
 void Material_List(void);
 
@@ -80,23 +80,20 @@ void Material_Initialize(void)
 
 	// Load base materials...
 
-	mNoTexture = Material_Load("base/missing");
-	if (!mNoTexture)
+	g_mMissingMaterial = Material_Load("base/missing");
+	if (!g_mMissingMaterial)
 		Sys_Error("Failed to load notexture material!\n");
 
-	mGlobalAccessMaterial = Material_Load("sprites/base/access");
-
-	mConChars = Material_Load("engine/conchars");
-	if (!mConChars)
+	g_mGlobalConChars = Material_Load("engine/conchars");
+	if (!g_mGlobalConChars)
 		Sys_Error("Failed to load conchars material!\n");
 
-	mBlobShadow = Material_Load("engine/shadow");
-	if (!mBlobShadow)
-		Sys_Error("Failed to load shadow material!\n");
-
-	mColour = Material_Load("colours/colours");
-	if (!mColour)
+	g_mGlobalColour = Material_Load("colours/colours");
+	if (!g_mGlobalColour)
 		Sys_Error("Failed to load colours material!\n");
+
+	g_mHDAccess = Material_Load("sprites/base/access");
+	g_mBlobShadow = Material_Load("engine/shadow");
 }
 
 /*	Lists all the currently active materials.
@@ -889,7 +886,7 @@ void Material_Draw(Material_t *Material, int Skin,
 			Video_SelectTexture(0);
 
 			// Set it as white.
-			Video_SetTexture(mColour->msSkin[MATERIAL_COLOUR_WHITE].mtTexture->gMap);
+			Video_SetTexture(g_mGlobalColour->msSkin[MATERIAL_COLOUR_WHITE].mtTexture->gMap);
 		}
 		return;
 	}

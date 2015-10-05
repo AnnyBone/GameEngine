@@ -235,7 +235,7 @@ void Surface_DrawMirror(msurface_t *Surface)
 	Video_SetBlend(VIDEO_BLEND_IGNORE, VIDEO_DEPTH_FALSE);
 	glClear(GL_STENCIL_BUFFER_BIT);
 
-	Video_DrawSurface(Surface, 0, mColour, 0);
+	Video_DrawSurface(Surface, 0, g_mGlobalColour, 0);
 
 	glStencilFunc(GL_EQUAL, 1, 255);
 	glStencilMask(0);
@@ -275,7 +275,7 @@ void Surface_DrawMirror(msurface_t *Surface)
 #if 0
 	// Blend the final surface on top.
 	VideoLayer_Enable(VIDEO_BLEND);
-	Video_DrawSurface(Surface, 0.5f, mColour, 1);
+	Video_DrawSurface(Surface, 0.5f, g_mGlobalColour, 1);
 	VideoLayer_Disable(VIDEO_BLEND);
 #endif
 }

@@ -68,7 +68,8 @@ typedef struct
 
 	int			ambientlight;
 
-	bool bMirror;
+	bool bMirror;			// Mirror context.
+	bool bEnvironmentMap;	// Environment map context.
 } refdef_t;
 
 // refresh

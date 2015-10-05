@@ -29,11 +29,11 @@ extern "C" {
 
 	// Global materials
 	extern Material_t
-		*mGlobalAccessMaterial,
-		*mNoTexture,	// Used for materials that are missing.
-		*mBlobShadow,	// Self explanitory.
-		*mColour,
-		*mConChars;		// Used for the console font.
+		*g_mHDAccess,
+		*g_mMissingMaterial,	// Used for materials that are missing.
+		*g_mBlobShadow,	// Self explanitory.
+		*g_mGlobalColour,
+		*g_mGlobalConChars;		// Used for the console font.
 
 	void Material_Initialize(void);
 	void Material_ClearAll(void);

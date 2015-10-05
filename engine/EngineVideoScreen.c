@@ -514,6 +514,7 @@ void SCR_DrawDevStats (void)
 
 void SCR_DrawTurtle (void)
 {
+#if 0
 	static int	count;
 
 	if (!scr_showturtle.value)
@@ -532,6 +533,7 @@ void SCR_DrawTurtle (void)
 	GL_SetCanvas (CANVAS_DEFAULT); //johnfitz
 
 	Draw_Pic (scr_vrect.x, scr_vrect.y, scr_turtle);
+#endif
 }
 
 void SCR_DrawNet(void)

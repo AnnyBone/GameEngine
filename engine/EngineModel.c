@@ -332,7 +332,7 @@ void Model_LoadBSPTextures(BSPLump_t *blLump)
 			if (mAssignedMaterial)
 				tTexture->mAssignedMaterial = mAssignedMaterial;
 			else
-				tTexture->mAssignedMaterial = mNoTexture;
+				tTexture->mAssignedMaterial = g_mMissingMaterial;
 		}
 	}
 
@@ -1229,7 +1229,7 @@ void Model_LoadMD2Textures(model_t *mModel)
 		Con_Warning("Failed to load material for model! (%s) (%s)\n",mModel->name,cOutName);
 
 		// Set us up to just use the dummy material instead.
-		mModel->mAssignedMaterials = mNoTexture;
+		mModel->mAssignedMaterials = g_mMissingMaterial;
 	}
 }
 

@@ -8,7 +8,6 @@ level/Debug/
 *.ilk
 *.sdf
 *.suo
-*.suo
 *.depend
 *.opensdf
 engine/Debug/
@@ -59,3 +58,6 @@ editor_legacy/Debug/RCa07736
 /external/lpng1618/projects/vstudio/pngtest/Release
 *.ipdb
 *.iobj
+/.vs/
+/Debug (Ictus)/
+/Debug/

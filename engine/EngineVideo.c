@@ -834,7 +834,7 @@ void Video_DisableCapabilities(unsigned int iCapabilities)
 				pLog_Write(cvVideoDebugLog.string, "Video: Disabling %s (%i)\n", vcCapabilityList[i].ccIdentifier, Video.uiActiveUnit);
 
 			if(!bVideoIgnoreCapabilities)
-				// [24/2/2014] Collect up a list of the new capabilities we disabled ~hogsy
+				// Collect up a list of the new capabilities we disabled.
 				iSavedCapabilites[Video.uiActiveUnit][VIDEO_STATE_DISABLE] |= vcCapabilityList[i].uiFirst;
 
 			glDisable(vcCapabilityList[i].uiSecond);
@@ -900,7 +900,7 @@ void Video_ResetCapabilities(bool bClearActive)
 			pLog_Write(cvVideoDebugLog.string, "Video: Finished clearing capabilities.\n");
 	}
 
-	// [7/5/2014] Clear out capability list ~hogsy
+	// Clear out capability list.
 	for(i = 0; i < VIDEO_MAX_UNITS; i++)
 		iSavedCapabilites[i][0] =
 		iSavedCapabilites[i][1] = 0;

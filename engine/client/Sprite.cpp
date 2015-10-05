@@ -155,7 +155,7 @@ CSprite::CSprite()
 
 	fScale = 1.0f;
 
-	Material = mNoTexture;
+	Material = g_mMissingMaterial;
 
 	Math_VectorClear(Position);
 	Math_VectorClear(Mins);
