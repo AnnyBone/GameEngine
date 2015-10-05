@@ -265,7 +265,7 @@ Material_t *Material_GetByPath(const char *ccPath)
 		Con_Warning("Attempted to find material, but recieved invalid path!\n");
 		return NULL;
 	}
-
+	
 	for (i = 0; i < iMaterialCount; i++)
 		if (mMaterials[i].cPath[0])
 			if (!strncmp(mMaterials[i].cPath, ccPath, sizeof(mMaterials[i].cPath)))
@@ -577,6 +577,39 @@ void _Material_SetTextureScroll(Material_t *mCurrentMaterial, MaterialFunctionTy
 	msSkin->mtTexture[msSkin->uiTextures].bManipulated = true;
 }
 
+typedef struct
+{
+	const char *ccVarName;
+
+	VideoTextureEnvironmentMode_t Mode;
+} MaterialTextureEnvironmentModeType_t;
+
+MaterialTextureEnvironmentModeType_t tEnvironmentModes[]=
+{
+	{ "add", VIDEO_TEXTURE_MODE_ADD },
+	{ "modulate", VIDEO_TEXTURE_MODE_MODULATE },
+	{ "decal", VIDEO_TEXTURE_MODE_DECAL },
+	{ "blend", VIDEO_TEXTURE_MODE_BLEND },
+	{ "replace", VIDEO_TEXTURE_MODE_REPLACE },
+	{ "combine", VIDEO_TEXTURE_MODE_COMBINE }
+};
+
+void _Material_SetTextureEnvironmentMode(Material_t *Material, MaterialFunctionType_t Context, char *cArg)
+{
+	MaterialSkin_t *sCurrentSkin;
+	sCurrentSkin = Material_GetSkin(Material, Material->iSkins);
+	
+	int i;
+	for (i = 0; i < pARRAYELEMENTS(tEnvironmentModes); i++)
+		if (!strncmp(tEnvironmentModes[i].ccVarName, cArg, Q_strlen(tEnvironmentModes[i].ccVarName)))
+		{
+			sCurrentSkin->mtTexture[sCurrentSkin->uiTextures].EnvironmentMode = tEnvironmentModes[i].Mode;
+			return;
+		}
+
+	Con_Warning("Invalid texture environment mode! (%s) (%s)\n", cArg, Material->cName);
+}
+
 void _Material_SetRotate(Material_t *mCurrentMaterial, MaterialFunctionType_t mftContext, char *cArg)
 {
 	MaterialSkin_t	*msSkin;
@@ -690,6 +723,7 @@ MaterialKey_t mkMaterialFunctions[]=
 	// Texture
 	{ "scroll", _Material_SetTextureScroll, MATERIAL_FUNCTION_TEXTURE },
 	{ "rotate", _Material_SetRotate, MATERIAL_FUNCTION_TEXTURE },
+	{ "env_mode", _Material_SetTextureEnvironmentMode, MATERIAL_FUNCTION_TEXTURE },
 	//{ "blend", _Material_SetBlend, MATERIAL_FUNCTION_TEXTURE },
 
 	{ 0 }

@@ -561,7 +561,7 @@ void SCR_DrawPause (void)
 void Screen_SetUpToDrawConsole(void)
 {
 	//johnfitz -- let's hack away the problem of slow console when host_timescale is <0
-	extern cvar_t host_timescale;
+	extern ConsoleVariable_t host_timescale;
 	float timescale;
 	//johnfitz
 
@@ -572,7 +572,6 @@ void Screen_SetUpToDrawConsole(void)
 
 	// Decide on the height of the console
 	con_forcedup = !cl.worldmodel || cls.signon != SIGNONS;
-
 	if(con_forcedup)
 	{
 		scr_conlines = glheight; //full screen //johnfitz -- glheight instead of vid.height
