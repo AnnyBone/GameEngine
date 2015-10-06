@@ -13,5 +13,6 @@
 		</Project>
 		<Project filename="platform/Platform.cbp" />
 		<Project filename="level/Level.cbp" />
+		<Project filename="editor/Editor.cbp" />
 	</Workspace>
 </CodeBlocks_workspace_file>

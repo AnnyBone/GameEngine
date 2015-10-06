@@ -61,10 +61,14 @@
 		<Unit filename="../MaterialEditor/EditorMaterialProperties.h" />
 		<Unit filename="../MaterialEditor/EditorRenderCanvas.cpp" />
 		<Unit filename="../MaterialEditor/EditorRenderCanvas.h" />
+		<Unit filename="../MaterialEditor/EditorViewportPanel.cpp" />
+		<Unit filename="../MaterialEditor/EditorViewportPanel.h" />
 		<Unit filename="../MaterialEditor/MaterialFrame.cpp" />
 		<Unit filename="../MaterialEditor/MaterialFrame.h" />
 		<Unit filename="../MaterialEditor/WADFrame.cpp" />
 		<Unit filename="../MaterialEditor/WADFrame.h" />
+		<Unit filename="../MaterialEditor/preferences/PreferencesDialog.cpp" />
+		<Unit filename="../MaterialEditor/preferences/PreferencesDialog.h" />
 		<Unit filename="../MaterialEditor/resource.h" />
 		<Extensions>
 			<code_completion />

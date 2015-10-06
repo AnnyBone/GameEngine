@@ -228,6 +228,7 @@
 		<Unit filename="EngineVideoEFrag.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="EngineVideoEFrag.h" />
 		<Unit filename="EngineVideoFog.c">
 			<Option compilerVar="CC" />
 		</Unit>

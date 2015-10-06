@@ -93,7 +93,7 @@ CPreferencesDialog::CPreferencesDialog(wxWindow *wParent)
 				// Subdivision Slider
 				{
 					wxBoxSizer *SubSliderBox = new wxBoxSizer(wxHORIZONTAL);
-					
+
 					wxSlider *Subdivision = new wxSlider(VideoPanel, wxID_ANY, 0, 0, 1024, wxDefaultPosition, wxSize(128, wxDefaultSize.GetHeight()), wxSL_VALUE_LABEL);
 					Subdivision->SetLineSize(2);
 					Subdivision->SetPageSize(2);
@@ -189,8 +189,13 @@ void CPreferencesDialog::SyncSettings()
 void CPreferencesDialog::ApplySettings()
 {
 	char cBuf[16];
-	
-	engine->SetConsoleVariable(cvEditorAutoReload.name, itoa(AutoReload->GetValue(), cBuf, 10));
-	engine->SetConsoleVariable(cvEditorAutoReloadDelay.name, itoa(AutoReloadDelay->GetValue(), cBuf, 10));
-	engine->SetConsoleVariable("video_legacy", itoa(VideoLegacyMode->GetValue(), cBuf, 10));
+
+	snprintf(cBuf, sizeof(cBuf), "%i", AutoReload->GetValue());
+	engine->SetConsoleVariable(cvEditorAutoReload.name, cBuf);
+
+	snprintf(cBuf, sizeof(cBuf), "%i", AutoReloadDelay->GetValue());
+	engine->SetConsoleVariable(cvEditorAutoReloadDelay.name, cBuf);
+
+	snprintf(cBuf, sizeof(cBuf), "%i", VideoLegacyMode->GetValue());
+	engine->SetConsoleVariable("video_legacy", cBuf);
 }
