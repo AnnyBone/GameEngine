@@ -10,7 +10,7 @@
 #include "MaterialFrame.h"
 
 // Dialog
-#include "preferences\PreferencesDialog.h"
+#include "preferences/PreferencesDialog.h"
 
 class CMainViewportPanel : public CEditorViewportPanel
 {
@@ -68,7 +68,7 @@ private:
 	void OpenWADTool(wxString sPath);
 	void OpenMaterialTool(wxString sPath);
 
-	double 
+	double
 		dAutoReloadDelay,
 		dClientTime;
 
