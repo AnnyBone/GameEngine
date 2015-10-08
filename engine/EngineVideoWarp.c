@@ -209,7 +209,7 @@ void GL_SubdivideSurface(msurface_t *fa)
 void Warp_DrawWaterPoly(glpoly_t *p, Material_t *mCurrent)
 {
 	VideoObjectVertex_t	*voWaterPoly;
-	vec3_t	vWave,vLightColour;
+	MathVector3f_t vWave,vLightColour;
 	float *fVert,fWaterAlpha;
 	int	i;
 

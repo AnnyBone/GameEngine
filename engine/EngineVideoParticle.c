@@ -31,7 +31,7 @@ Particle_t	*pActiveParticles,
 			*pFreeParticles,
 			*pParticles;
 
-cvar_t	cvParticleDraw = { "video_particles", "1", true, false, "Toggles the rendering of particles." };
+ConsoleVariable_t cvParticleDraw = { "video_particles", "1", true, false, "Toggles the rendering of particles." };	// TODO: Move into enginevideo!
 
 void Particle_Initialize(void)
 {

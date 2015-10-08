@@ -18,8 +18,8 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef __ENGINEMATERIAL__
-#define __ENGINEMATERIAL__
+#ifndef __ENGINEMATERIAL_H__
+#define __ENGINEMATERIAL_H__
 
 #include "SharedMaterial.h"
 

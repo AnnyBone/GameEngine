@@ -65,10 +65,11 @@ void CMaterialViewportPanel::Draw()
 	engine->DrawGradientBackground();
 
 	if (PreviewEntity)
+	{
 		engine->DrawEntity(PreviewEntity);
+	}
 
-	engine->DrawResetCanvas();
-	engine->DrawFPS();
+//	engine->DrawResetCanvas();
 
 	engine->Video_PostFrame();
 }

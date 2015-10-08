@@ -49,7 +49,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>..\include\msvc;..\include;..\platform\include;..\shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WXUSINGDLL;wxMSVC_VERSION_AUTO;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WXUSINGDLL;wxUSE_AUI;wxUSE_LIBPNG;wxMSVC_VERSION_AUTO;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

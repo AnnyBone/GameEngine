@@ -229,7 +229,6 @@ void VideoObject_Draw(VideoObject_t *voObject)
 	glBindBuffer(GL_ARRAY_BUFFER, voObject->uiTextureBuffer);
 
 	int i;
-
 	for (i = 0; i < VIDEO_MAX_UNITS; i++)
 		if (Video.bUnitState[i])
 		{

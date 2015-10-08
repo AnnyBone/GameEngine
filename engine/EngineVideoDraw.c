@@ -429,7 +429,7 @@ void Draw_GradientBackground(void)
 	currentcanvas = vctOldCanvas;
 
 	Colour_t
-		cTop = { 0.1f, 0.1f, 0.1f, 1.0f },
+		cTop	= { 0.1f, 0.1f, 0.1f, 1.0f },
 		cBottom = { 0.5f, 0.5f, 0.5f, 1.0f };
 	Draw_GradientFill(0, 0, Video.iWidth, Video.iHeight, cTop, cBottom);
 

@@ -967,6 +967,8 @@ void Video_PostFrame(void)
 #endif
 #endif
 
+	Screen_DrawFPS();
+
 	if (cvVideoFinish.bValue)
 		glFinish();
 

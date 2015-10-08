@@ -22,8 +22,7 @@ public:
 		engine->Video_PreFrame();
 
 		engine->DrawGradientBackground();
-		engine->DrawResetCanvas();
-		engine->DrawFPS();
+		//engine->DrawResetCanvas();
 
 		engine->Video_PostFrame();
 	}

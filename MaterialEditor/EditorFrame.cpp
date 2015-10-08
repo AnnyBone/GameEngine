@@ -57,10 +57,10 @@ wxBEGIN_EVENT_TABLE(CEditorFrame, wxFrame)
 wxEND_EVENT_TABLE()
 
 ConsoleVariable_t
-	cvEditorAutoReload = { "editor_ar", "1", true, false, "Enable or disable automatic reloading." },
+	cvEditorAutoReload		= { "editor_ar", "1", true, false, "Enable or disable automatic reloading." },
 	cvEditorAutoReloadDelay = { "editor_ar_delay", "5", true, false, "Delay before attempting to automatically reload content." },
-	cvEditorShowProperties = { "editor_showproperties", "1", true, false, "Can show/hide the properties." },
-	cvEditorShowConsole = { "editor_showconsole", "1", true, false, "Can show/hide the console." };
+	cvEditorShowProperties	= { "editor_showproperties", "1", true, false, "Can show/hide the properties." },
+	cvEditorShowConsole		= { "editor_showconsole", "1", true, false, "Can show/hide the console." };
 
 CEditorFrame::CEditorFrame(const wxString & title, const wxPoint & pos, const wxSize & size)
 	: wxFrame(NULL, wxID_ANY, title, pos, size)
