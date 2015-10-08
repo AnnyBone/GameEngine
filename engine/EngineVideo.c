@@ -58,6 +58,7 @@ ConsoleVariable_t
 	cvVideoDrawDepth = { "video_drawdepth", "0", false, false, "If enabled, previews the debth buffer." },
 	cvVideoDrawDetail = { "video_drawdetail", "1", true, false, "If enabled, detail maps are drawn." },
 	cvVideoDrawMaterials = { "video_drawmaterials", "1", true, false, "If enabled, materials are drawn." },
+	cvVideoDrawSky = { "video_drawsky", "1", false, false, "Toggles rendering of the sky." },
 	cvVideoDetailScale = { "video_detailscale", "3", true, false, "Changes the scaling used for detail maps." },
 	cvVideoAlphaTrick = { "video_alphatrick", "1", true, false, "If enabled, draws alpha-tested surfaces twice for extra quality." },
 	cvVideoFinish = { "video_finish", "0", true, false, "If enabled, calls glFinish at the end of the frame." },
@@ -117,6 +118,7 @@ void Video_Initialize(void)
 	Cvar_RegisterVariable(&cvVideoMirror, NULL);
 	Cvar_RegisterVariable(&cvVideoDrawMaterials, NULL);
 	Cvar_RegisterVariable(&cvVideoDrawDetail, NULL);
+	Cvar_RegisterVariable(&cvVideoDrawSky, NULL);
 	Cvar_RegisterVariable(&cvVideoDetailScale, NULL);
 	Cvar_RegisterVariable(&cvVideoPlayerShadow, NULL);
 	Cvar_RegisterVariable(&cvVideoLegacy, NULL);

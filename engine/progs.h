@@ -35,9 +35,7 @@ typedef union eval_s
 
 //============================================================================
 
-extern	ddef_t				*pr_globaldefs;
 extern	GlobalState_t	pr_global_struct;
-extern	float				*pr_globals;			// same as pr_global_struct
 
 //============================================================================
 
@@ -62,8 +60,6 @@ ServerEntity_t *EDICT_NUM(int n);
 int NUM_FOR_EDICT(ServerEntity_t *e);
 
 //============================================================================
-
-#define	G_INT(o) (*(int *)&pr_globals[o])
 
 typedef void (*builtin_t) (void);
 

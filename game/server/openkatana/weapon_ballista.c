@@ -1,5 +1,21 @@
-/*  Copyright (C) 2011-2015 OldTimes Software
+/*	Copyright (C) 2011-2015 OldTimes Software
+
+	This program is free software; you can redistribute it and/or
+	modify it under the terms of the GNU General Public License
+	as published by the Free Software Foundation; either version 2
+	of the License, or (at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+	See the GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
+
 #include "server_weapon.h"
 
 EntityFrame_t BallistaAnimation_Deploy [] =
@@ -18,8 +34,7 @@ void Ballista_Deploy(ServerEntity_t *ent)
 
 void Ballista_LogTouch(ServerEntity_t *ent, ServerEntity_t *other)
 {
-	// [7/4/2012] Cleaned up ~hogsy
-	char	snd[64];
+	char snd[64];
 
 	if(other == ent->local.eOwner)
 		return;
@@ -27,7 +42,6 @@ void Ballista_LogTouch(ServerEntity_t *ent, ServerEntity_t *other)
 	// We hit an enemy! Stick with 'em
 	if(other->v.bTakeDamage)
 	{
-		// [23/5/2012] Cleaned up ~hogsy
 		sprintf(snd,"weapons/ballista/logwetimpact%i.wav",rand()%4);
 
 		Entity_Damage(other, ent, 25, 0);
@@ -35,7 +49,7 @@ void Ballista_LogTouch(ServerEntity_t *ent, ServerEntity_t *other)
 		ent->v.think		= WEAPON_StickThink;
 		ent->v.dNextThink	= Server.dTime+0.1;
 	}
-	// [23/5/2012] We didn't hit anything, so NOW we set up our impact sound ~hogsy
+	// We didn't hit anything, so NOW we set up our impact sound.
 	else
 		sprintf(snd,"weapons/ballista/logimpact%i.wav",rand()%5);
 
@@ -49,7 +63,6 @@ void Ballista_LogTouch(ServerEntity_t *ent, ServerEntity_t *other)
 
 void Ballista_SpawnLogProjectile(ServerEntity_t *ent)
 {
-	// [11/2/2012] Revised and fixed ~hogsy
 	ServerEntity_t *log = Entity_Spawn();
 
 	log->local.eOwner = ent;
@@ -60,13 +73,12 @@ void Ballista_SpawnLogProjectile(ServerEntity_t *ent)
 	Weapon_Projectile(ent, log, 2000.0f);
 
 	Entity_SetModel(log,"models/log.md2");
-	Entity_SetSizeVector(log,mv3Origin,mv3Origin);
+	Entity_SetSizeVector(log,g_mvOrigin3f,g_mvOrigin3f);
 
-	// [1/7/2012] Simplified ~hogsy
 	Math_VectorCopy(ent->v.origin,log->v.origin);
 	log->v.origin[2] += 15.0f;
 
-    Math_MVToVector(Math_VectorToAngles(log->v.velocity),log->v.angles);
+	Math_MVToVector(Math_VectorToAngles(log->v.velocity),log->v.angles);
 
 	log->v.TouchFunction = Ballista_LogTouch;
 }

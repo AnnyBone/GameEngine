@@ -51,7 +51,6 @@ void Menu_Initialize(void)
 
 	mImport.LoadMaterial = Material_Load;
 
-	mImport.DrawPic = Draw_ExternPic;
 	mImport.DrawString = Draw_String;
 	mImport.DrawFill = Draw_Fill;
 	mImport.DrawMaterialSurface = Draw_MaterialSurface;

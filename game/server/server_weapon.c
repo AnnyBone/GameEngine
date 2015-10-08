@@ -263,7 +263,7 @@ MathVector_t Weapon_Aim(ServerEntity_t *eEntity)
 	Math_VectorCopy(eEntity->local.vForward, mvDirection);
 	Math_VectorMA(mvStart, 2048.0f, mvDirection, mvEnd);
 
-	tAimLine = Engine.Server_Move(mvStart, mv3Origin, mv3Origin, mvEnd, 0, eEntity);
+	tAimLine = Engine.Server_Move(mvStart, g_mvOrigin3f, g_mvOrigin3f, mvEnd, 0, eEntity);
 	// See if we encountered anything we can damage.
 	if (tAimLine.ent && tAimLine.ent->v.bTakeDamage)
 	{
@@ -305,7 +305,7 @@ MathVector_t Weapon_Aim(ServerEntity_t *eEntity)
 			// Too far to turn.
 			continue;
 
-		tAimLine = Engine.Server_Move(mvStart, mv3Origin, mv3Origin, mvEnd, 0, eEntity);
+		tAimLine = Engine.Server_Move(mvStart, g_mvOrigin3f, g_mvOrigin3f, mvEnd, 0, eEntity);
 		if (tAimLine.ent == eCheck)
 		{
 			// Can shoot at this one.
@@ -345,8 +345,8 @@ void Weapon_ViewPunch(ServerEntity_t *eEntity, float fIntensity, bool bAddition)
 		eEntity->v.punchangle[PITCH] = -4.0f + (float)(rand() % 2);
 }
 
-MathVector3_t mvTraceMaxs = { 4, 4, 4 };
-MathVector3_t mvTraceMins = { -4, -4, -4 };
+MathVector3f_t mvTraceMaxs = { 4, 4, 4 };
+MathVector3f_t mvTraceMins = { -4, -4, -4 };
 
 /*	Runs a trace to see if a projectile can be casted.
 */
@@ -439,7 +439,7 @@ void Weapon_BulletProjectile(ServerEntity_t *eEntity,float fSpread,int iDamage,v
 
 			PARTICLE_SMOKE(cSmoke);
 
-			Engine.Particle(tTrace.endpos,mv3Origin,15,cSmoke,15);
+			Engine.Particle(tTrace.endpos,g_mvOrigin3f,15,cSmoke,15);
 		}
 	}
 }

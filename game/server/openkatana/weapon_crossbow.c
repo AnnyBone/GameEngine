@@ -39,7 +39,7 @@ void arrow_touch(ServerEntity_t *ent, ServerEntity_t *other)
 void Crossbow_Projectile(ServerEntity_t *ent)
 {
 	// [11/2/2012] Revised and fixed ~hogsy
-	MathVector3_t mvDirection;
+	MathVector3f_t mvDirection;
 	ServerEntity_t *eArrow;
 
 	eArrow = Entity_Spawn();
@@ -55,7 +55,7 @@ void Crossbow_Projectile(ServerEntity_t *ent)
 		Math_VectorScale(mvDirection, 2000.0f, eArrow->v.velocity);
 
 		Entity_SetModel(eArrow,"models/arrow.md2");
-		Entity_SetSizeVector(eArrow,mv3Origin,mv3Origin);
+		Entity_SetSizeVector(eArrow,g_mvOrigin3f,g_mvOrigin3f);
 
 		// [25/6/2012] Simplified ~hogsy
 		Math_VectorCopy(ent->v.origin,eArrow->v.origin);

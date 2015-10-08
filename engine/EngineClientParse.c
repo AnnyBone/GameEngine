@@ -120,7 +120,7 @@ entity_t	*CL_EntityNum (int num)
 
 void CL_ParseStartSoundPacket(void)
 {
-	MathVector3_t pos;
+	MathVector3f_t pos;
 	int 	channel,ent,sound_num,iVolume,field_mask;
 	float 	attenuation;
 	int		i;

@@ -1,7 +1,23 @@
 /*	Copyright (C) 2011-2015 OldTimes Software
+
+	This program is free software; you can redistribute it and/or
+	modify it under the terms of the GNU General Public License
+	as published by the Free Software Foundation; either version 2
+	of the License, or (at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+	See the GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
-#ifndef __SERVERMAIN__
-#define __SERVERMAIN__
+
+#ifndef __SERVERMAIN_H__
+#define __SERVERMAIN_H__
 
 #include "game_main.h"
 
@@ -57,7 +73,7 @@ extern "C" {
 
 	/*
 		Entity Functions
-		*/
+	*/
 
 	ServerEntity_t	*Entity_Spawn(void);
 
@@ -67,10 +83,10 @@ extern "C" {
 	bool Entity_IsTouching(ServerEntity_t *eEntity, ServerEntity_t *eOther);
 	bool Entity_DropToFloor(ServerEntity_t *eEntity);
 
-	void Entity_SetOrigin(ServerEntity_t *eEntity, MathVector3_t vOrigin);
-	void Entity_SetAngles(ServerEntity_t *eEntity, MathVector3_t vAngles);
+	void Entity_SetOrigin(ServerEntity_t *eEntity, MathVector3f_t vOrigin);
+	void Entity_SetAngles(ServerEntity_t *eEntity, MathVector3f_t vAngles);
 	void Entity_SetModel(ServerEntity_t *eEntity, char *cModelPath);
-	void Entity_SetSizeVector(ServerEntity_t *eEntity, MathVector3_t vMin, MathVector3_t vMax);
+	void Entity_SetSizeVector(ServerEntity_t *eEntity, MathVector3f_t vMin, MathVector3f_t vMax);
 	void Entity_SetSize(ServerEntity_t *eEntity, float fMinA, float fMinB, float fMinC, float fMaxA, float fMaxB, float fMaxC);
 	void Entity_SetPhysics(ServerEntity_t *seEntity, PhysicsSolidTypes_t pstSolidType, float fMass, float fFriction);
 	void Entity_RadiusDamage(ServerEntity_t *eInflictor, float fRadius, int iDamage, int iDamageType);
@@ -89,10 +105,10 @@ extern "C" {
 	void Entity_RemoveFlags(ServerEntity_t *eEntity, int iFlags);
 	void Entity_ClearFlags(ServerEntity_t *eEntity, int iFlags);
 
-#define Entity_SetKilledFunction(a,b) (a->local.KilledFunction = b)
-#define Entity_SetDamagedFunction(a,b) (a->local.DamagedFunction = b)
-#define	Entity_SetBlockedFunction(a,b) (a->v.BlockedFunction = b)
-#define Entity_SetTouchFunction(a,b) (a->v.TouchFunction = b)
+#define Entity_SetKilledFunction(a,b)	(a->local.KilledFunction = b)
+#define Entity_SetDamagedFunction(a,b)	(a->local.DamagedFunction = b)
+#define	Entity_SetBlockedFunction(a,b)	(a->v.BlockedFunction = b)
+#define Entity_SetTouchFunction(a,b)	(a->v.TouchFunction = b)
 
 	ServerEntity_t	*Entity_SpawnPoint(ServerEntity_t *eEntity, int iType);
 

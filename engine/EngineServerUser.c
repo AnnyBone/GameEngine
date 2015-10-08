@@ -32,9 +32,9 @@ cvar_t	sv_edgefriction = {"edgefriction", "2"};
 
 extern	cvar_t	cvPhysicsStopSpeed;
 
-static	vec3_t		forward, right, up;
+static	MathVector3f_t		forward, right, up;
 
-vec3_t	wishdir;
+MathVector3f_t	wishdir;
 float	wishspeed;
 
 // world
@@ -52,12 +52,12 @@ cvar_t	sv_altnoclip		= {	"sv_altnoclip",			"1",	true	}; //johnfitz
 #define	MAX_FORWARD	6
 void SV_SetIdealPitch (void)
 {
-	float	angleval, sinval, cosval;
-	trace_t	tr;
-	vec3_t	top, bottom;
-	float	z[MAX_FORWARD];
-	int		i, j;
-	int		step, dir, steps;
+	float			angleval, sinval, cosval;
+	trace_t			tr;
+	MathVector3f_t	top, bottom;
+	float			z[MAX_FORWARD];
+	int				i, j;
+	int				step, dir, steps;
 
 	if(!(sv_player->v.flags & FL_ONGROUND))
 		return;
@@ -76,7 +76,7 @@ void SV_SetIdealPitch (void)
 		bottom[1] = top[1];
 		bottom[2] = top[2] - 160;
 
-		tr = SV_Move (top, mv3Origin, mv3Origin, bottom, 1, sv_player);
+		tr = SV_Move (top, g_mvOrigin3f, g_mvOrigin3f, bottom, 1, sv_player);
 		if (tr.bAllSolid)
 			return;	// looking at a wall, leave ideal the way is was
 
@@ -112,10 +112,11 @@ void SV_SetIdealPitch (void)
 	sv_player->v.idealpitch = -dir * sv_idealpitchscale.value;
 }
 
-cvar_t	sv_maxspeed		= { "sv_maxspeed",		"320",	false,	true	};
-cvar_t	sv_accelerate	= { "sv_accelerate",	"10"					};
+ConsoleVariable_t	
+	sv_maxspeed		= { "sv_maxspeed",		"320",	false,	true	},
+	sv_accelerate	= { "sv_accelerate",	"10"					};
 
-void SV_AirAccelerate (vec3_t wishveloc)
+void SV_AirAccelerate (MathVector3f_t wishveloc)
 {
 	int			i;
 	float		addspeed, wishspd, accelspeed, currentspeed;
@@ -139,9 +140,9 @@ void SV_AirAccelerate (vec3_t wishveloc)
 
 void SV_WaterMove (void)
 {
-	int		i;
-	vec3_t	wishvel;
-	float	speed, newspeed, wishspeed, addspeed, accelspeed;
+	int				i;
+	MathVector3f_t	wishvel;
+	float			speed, newspeed, wishspeed, addspeed, accelspeed;
 
 //
 // user intentions

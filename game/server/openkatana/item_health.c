@@ -65,6 +65,7 @@ void Health_TouchFunction(ServerEntity_t *seHealth, ServerEntity_t *seOther)
 
 	// TODO: Run animation of lil doors opening up.
 
+	// TODO: Do this gradually?
 	int i;
 	for (i = 0; i < 5; i++)
 	{

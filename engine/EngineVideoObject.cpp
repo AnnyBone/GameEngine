@@ -162,7 +162,7 @@ void VideoObject_Vertex(VideoObject_t *voObject, float x, float y, float z)
 	VIDEO_FUNCTION_END
 }
 
-void VideoObject_VertexVector(VideoObject_t *oObject, MathVector3_t mvVertex)
+void VideoObject_VertexVector(VideoObject_t *oObject, MathVector3f_t mvVertex)
 {
 	VIDEO_FUNCTION_START
 	VideoObject_Vertex(oObject, mvVertex[0], mvVertex[1], mvVertex[2]);
@@ -188,7 +188,7 @@ void VideoObject_Colour(VideoObject_t *voObject, float r, float g, float b, floa
 	VIDEO_FUNCTION_END
 }
 
-void VideoObject_ColourVector(VideoObject_t *voObject, MathVector4_t mvColour)
+void VideoObject_ColourVector(VideoObject_t *voObject, MathVector4f_t mvColour)
 {
 	VIDEO_FUNCTION_START
 	VideoObject_Colour(voObject, mvColour[0], mvColour[1], mvColour[2], mvColour[3]);
@@ -205,7 +205,7 @@ void VideoObject_End(VideoObject_t *voObject)
 	Clipping
 */
 
-void VideoObject_Clip(VideoObject_t *voObject, MathVector4_t mvClipDimensions)
+void VideoObject_Clip(VideoObject_t *voObject, MathVector4f_t mvClipDimensions)
 {
 	VIDEO_FUNCTION_START
 	VIDEO_FUNCTION_END

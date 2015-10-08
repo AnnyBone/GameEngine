@@ -18,8 +18,8 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef __SHAREDMODEL__
-#define	__SHAREDMODEL__
+#ifndef __SHAREDMODEL_H__
+#define	__SHAREDMODEL_H__
 
 #include "SharedFormats.h"
 #include "SharedZone.h"
@@ -37,11 +37,11 @@ typedef struct efrag_s
 // !!! if this is changed, it must be changed in asm_i386.h too !!!
 typedef struct mplane_s
 {
-	vec3_t	normal;
-	float	dist;
-	byte	type;			// for texture axis selection and fast side tests
-	byte	signbits;		// signx + signy<<1 + signz<<1
-	byte	pad[2];
+	MathVector3f_t	normal;
+	float			dist;
+	uint8_t			type;			// for texture axis selection and fast side tests
+	uint8_t			signbits;		// signx + signy<<1 + signz<<1
+	uint8_t			pad[2];
 } mplane_t;
 
 /*
@@ -140,10 +140,10 @@ typedef struct msurface_s
 	int			dlightframe, dlightbits;
 
 	int			lightmaptexturenum;
-	byte		styles[BSP_MAX_LIGHTMAPS];
+	uint8_t		styles[BSP_MAX_LIGHTMAPS];
 	int			cached_light[BSP_MAX_LIGHTMAPS];	// values currently used in lightmap
 	bool		cached_dlight;				// TRUE if dynamic light in cache
-	byte		*samples;		// [numstyles*surfsize]
+	uint8_t		*samples;		// [numstyles*surfsize]
 } msurface_t;
 
 typedef struct mnode_s
@@ -194,8 +194,8 @@ typedef struct
 	int				firstclipnode;
 	int				lastclipnode;
 
-	vec3_t			clip_mins;
-	vec3_t			clip_maxs;
+	MathVector3f_t	clip_mins;
+	MathVector3f_t	clip_maxs;
 } hull_t;
 
 typedef struct model_s
@@ -212,14 +212,14 @@ typedef struct model_s
 	int			flags;
 
 	// volume occupied by the model graphics
-	vec3_t		mins, maxs;
-	vec3_t		ymins, ymaxs; //johnfitz -- bounds for entities with nonzero yaw
-	vec3_t		rmins, rmaxs; //johnfitz -- bounds for entities with nonzero pitch or roll
+	MathVector3f_t	mins, maxs;
+	MathVector3f_t	ymins, ymaxs; //johnfitz -- bounds for entities with nonzero yaw
+	MathVector3f_t	rmins, rmaxs; //johnfitz -- bounds for entities with nonzero pitch or roll
 	//johnfitz -- removed float radius;
 
 	// solid volume for clipping
-	bool		clipbox;
-	vec3_t		clipmins, clipmaxs;
+	bool			clipbox;
+	MathVector3f_t	clipmins, clipmaxs;
 
 	// brush model
 	unsigned int	firstmodelsurface, nummodelsurfaces;
@@ -262,7 +262,7 @@ typedef struct model_s
 	int				numtextures;
 	texture_t		**textures;
 
-	byte			*visdata, *lightdata;
+	uint8_t			*visdata, *lightdata;
 	char			*entities;
 
 	// additional model data

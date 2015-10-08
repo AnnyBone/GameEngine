@@ -76,7 +76,7 @@ void Entity_SetModel(ServerEntity_t *eEntity,char *cModelPath)
 /*	Sets the size of the given entity; requires that the model has been applied first.
 	Alternative to SetSize.
 */
-void Entity_SetSizeVector(ServerEntity_t *eEntity, MathVector3_t vMin, MathVector3_t vMax)
+void Entity_SetSizeVector(ServerEntity_t *eEntity, MathVector3f_t vMin, MathVector3f_t vMax)
 {
 	int	i;
 

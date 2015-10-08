@@ -18,8 +18,8 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef __PLATFORMMATH__
-#define	__PLATFORMMATH__
+#ifndef __PLATFORMMATH_H__
+#define	__PLATFORMMATH_H__
 
 #ifdef __cplusplus
 extern "C" {
@@ -50,26 +50,24 @@ typedef MathVectorf_t MathVector2f_t[2], MathVector3f_t[3], MathVector4f_t[4];
 typedef MathVector4f_t Colour_t, MathMatrix4x4f_t[4];
 
 // For compatability...
-#define MathVector2_t MathVector2f_t
-#define MathVector3_t MathVector3f_t
-#define MathVector4_t MathVector4f_t
-
-// For compatability...
-#define	vec2_t	MathVector2f_t
 #define	vec3_t	MathVector3f_t
-#define	vec4_t	MathVector4f_t
 
 typedef MathVectord_t MathVector2d_t[2], MathVector3d_t[3], MathVector4d_t[4];
 typedef MathVector4d_t MathMatrix4x4d_t[4];
 
 typedef struct
 {
-	MathVectorf_t vX, vY, vZ;
+#ifdef PLATFORM_MATH_DOUBLE
+	MathVectord_t
+#else
+	MathVectorf_t 
+#endif
+		vX, vY, vZ;
 } MathVector_t;
 
 extern MathVector_t		mvOrigin;
 extern MathVector2f_t	mv2Origin;
-extern MathVector3f_t	mv3Origin;
+extern MathVector3f_t	g_mvOrigin3f;
 extern MathVector4f_t	mv4Origin;
 
 enum PlatformMathWH

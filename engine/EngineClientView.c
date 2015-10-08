@@ -188,7 +188,7 @@ cshift_t	cshift_water	= { {	0,		0,	100	},	100	};
 cshift_t	cshift_slime	= { {	0,		25,	5	},	150 };
 cshift_t	cshift_lava		= { {	255,	80,	0	},	150 };
 
-vec4_t		vViewBlend;		// rgba 0.0 - 1.0
+Colour_t vViewBlend;		// rgba 0.0 - 1.0
 
 void V_ParseDamage (void)
 {
@@ -330,7 +330,7 @@ void V_CalcPowerupCshift (void)
 // [26/3/2013] Revised ~hogsy
 void View_CalculateBlend(void)
 {
-	vec4_t	vColour;
+	Colour_t vColour;
 	float	fAlpha;
 	int		j;
 
@@ -719,7 +719,7 @@ void V_CalcRefdef (void)
 	if(v_gunkick.value) //lerped kick
 	{
 		for(i = 0; i < 3; i++)
-			if(mv3Origin[i] != v_punchangles[0][i])
+			if(g_mvOrigin3f[i] != v_punchangles[0][i])
 			{
 				// Speed determined by how far we need to lerp in 1/10th of a second
 				delta = (v_punchangles[0][i]-v_punchangles[1][i])*host_frametime*10.0f;

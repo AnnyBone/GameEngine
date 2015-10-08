@@ -211,11 +211,10 @@ void Host_InitLocal (void)
 	Cvar_RegisterVariable(&coop, NULL);
 	Cvar_RegisterVariable(&pausable, NULL);
 
-	// [16/2/2013] For my sanity... ~hogsy
-	if(COM_CheckParm("-developer"))
-		Cvar_SetValue("developer",1.0f);
+	if (COM_CheckParm("-developer"))
+		Cvar_SetValue("developer", 1.0f);
 
-	// [28/6/2013] Set the global username ~hogsy
+	// Set the global username.
 	pFileSystem_GetUserName(Global.cLocalName);
 
 	Host_FindMaxClients();
@@ -417,7 +416,7 @@ void Host_ShutdownServer(bool crash)
 	while (count);
 
 	// Make sure all the clients know we're disconnecting
-	buf.data	= (byte*)message;
+	buf.data	= (uint8_t*)message;
 	buf.maxsize = 4;
 	buf.cursize = 0;
 
@@ -611,7 +610,7 @@ void _Host_Frame (float time)
 		CL_DecayLights();
 	}
 	else
-		S_Update(mv3Origin, mv3Origin, mv3Origin, mv3Origin);
+		S_Update(g_mvOrigin3f, g_mvOrigin3f, g_mvOrigin3f, g_mvOrigin3f);
 
 	if (host_speeds.value)
 	{

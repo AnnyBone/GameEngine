@@ -1,5 +1,21 @@
 /*	Copyright (C) 2011-2015 OldTimes Software
+
+	This program is free software; you can redistribute it and/or
+	modify it under the terms of the GNU General Public License
+	as published by the Free Software Foundation; either version 2
+	of the License, or (at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+	See the GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
+
 #include "server_weapon.h"
 
 #include "server_player.h"
@@ -127,11 +143,11 @@ void C4Vizatergo_Explode(ServerEntity_t *eVizatergo)
 void C4Vizatergo_C4BallTouch(ServerEntity_t *ent,ServerEntity_t *eOther)
 {
 #if 0
-	// [12/8/2012] Don't touch our owner ~hogsy
+	// Don't touch our owner.
 	if(other == ent->local.eOwner)
 		return;
 
-	// [12/8/2012] Play the stick sound! ~hogsy
+	// Play the stick sound!
 	Sound(ent,CHAN_ITEM,"weapons/c4/c4stick.wav",255,ATTN_NORM);
 
 	if(other->Physics.iSolid == SOLID_BSP && ent->v.movetype != MOVETYPE_NONE)
@@ -143,14 +159,12 @@ void C4Vizatergo_C4BallTouch(ServerEntity_t *ent,ServerEntity_t *eOther)
 		ent->v.think			= WEAPON_StickThink;
 		ent->v.dNextThink		= Server.time;
 	}
-#else
-	// [12/12/2012] New method. Explode if touches monster / another player. ~hogsy
-
+#else	// [12/12/2012] New method. Explode if touches monster / another player. ~hogsy
 	if(	eOther != ent->local.eOwner && eOther->Monster.iType)
 		C4Vizatergo_Explode(ent);
 	else if(eOther->Physics.iSolid == SOLID_BSP && ent->v.movetype != MOVETYPE_NONE)
 	{
-		// [12/8/2012] Play the stick sound! ~hogsy
+		// Play the stick sound!
 		Sound(ent,CHAN_ITEM,"weapons/c4/c4stick.wav",255,ATTN_NORM);
 
 		ent->v.movetype	= MOVETYPE_NONE;
@@ -162,7 +176,7 @@ void C4Vizatergo_C4BallTouch(ServerEntity_t *ent,ServerEntity_t *eOther)
 
 void C4Vizatergo_Think(ServerEntity_t *ent)
 {
-#if 0	// [12/12/2012] TODO: Finish... ~hogsy
+#if 0	// TODO: Finish?
 	float	fDistance;
 	vec3_t	vDistance;
 	ServerEntity_t *eDistantEnt = Game.Server_FindRadius(ent->v.origin,512.0f);
@@ -192,9 +206,8 @@ void C4Vizatergo_Think(ServerEntity_t *ent)
 
 void C4Vizatergo_PrimaryAttack(ServerEntity_t *eOwner)
 {
-	// [26/2/2012] Revised and fixed ~hogsy
-	vec3_t	vOrigin;
-	MathVector3_t mvDirection;
+	MathVector3f_t vOrigin;
+	MathVector3f_t mvDirection;
 	ServerEntity_t *c4ball = Entity_Spawn();
 
 	Sound(eOwner,CHAN_AUTO,"weapons/c4/c4fire.wav",255,ATTN_NORM);
@@ -203,7 +216,6 @@ void C4Vizatergo_PrimaryAttack(ServerEntity_t *eOwner)
 	Weapon_Animate(eOwner,C4Animation_Fire1);
 	Weapon_ViewPunch(eOwner, 7, true);
 
-	// [11/8/2013] Fixed ~hogsy
 	eOwner->v.iPrimaryAmmo = eOwner->local.iC4Ammo -= 1;
 
 	c4ball->v.cClassname	= "c4ball";
@@ -234,7 +246,7 @@ void C4Vizatergo_PrimaryAttack(ServerEntity_t *eOwner)
 	c4ball->v.dNextThink = Server.dTime + 2.5;
 
 	Entity_SetModel(c4ball,"models/c4ammo.md2");
-	Entity_SetSizeVector(c4ball,mv3Origin,mv3Origin);
+	Entity_SetSizeVector(c4ball,g_mvOrigin3f,g_mvOrigin3f);
 	Entity_SetOrigin(c4ball,vOrigin);
 
 	if(eOwner->local.attackb_finished > Server.dTime)	// No attack boost...

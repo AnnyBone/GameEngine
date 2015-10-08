@@ -13,6 +13,6 @@ void Physics_Impact(ServerEntity_t *eEntity, ServerEntity_t *eOther);
 
 bool Physics_CheckWater(ServerEntity_t *eEntity);
 
-trace_t Physics_PushEntity(ServerEntity_t *eEntity, MathVector3_t mvPush);
+trace_t Physics_PushEntity(ServerEntity_t *eEntity, MathVector3f_t mvPush);
 
 #endif

@@ -115,8 +115,8 @@ void Audio_Frame(void)
 	}
 	else
 	{
-		Math_VectorCopy(mv3Origin,vPosition);
-		Math_VectorCopy(mv3Origin,vOrientation);
+		Math_VectorCopy(g_mvOrigin3f,vPosition);
+		Math_VectorCopy(g_mvOrigin3f,vOrientation);
 	}
 
 	// TODO: Update listener position.

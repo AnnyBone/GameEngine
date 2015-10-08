@@ -106,7 +106,7 @@ void Shockwave_SpawnProjectile(ServerEntity_t *ent)
 		eLaser->Physics.iSolid	= SOLID_BBOX;
 
 		Entity_SetModel(eLaser,"models/slaser.md2");
-		Entity_SetSizeVector(eLaser,mv3Origin,mv3Origin);
+		Entity_SetSizeVector(eLaser,g_mvOrigin3f,g_mvOrigin3f);
 	}
 
 	// This fixes the ammo bug ~eukos [05/08/2013]

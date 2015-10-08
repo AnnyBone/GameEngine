@@ -483,7 +483,7 @@ void Player_PreThink(ServerEntity_t *ePlayer)
 		for(i = 0; i < 3; i++)
 			vEnd[i] = vStart[i] + ePlayer->local.vForward[i] * 24.0f;
 
-		tTrace = Engine.Server_Move(vStart,vEnd,mv3Origin,mv3Origin,true,ePlayer);
+		tTrace = Engine.Server_Move(vStart,vEnd,g_mvOrigin3f,g_mvOrigin3f,true,ePlayer);
 		if(tTrace.fraction < 1.0f)
 		{
 			vStart[pZ] += ePlayer->v.maxs[pZ]-8.0f;
@@ -493,7 +493,7 @@ void Player_PreThink(ServerEntity_t *ePlayer)
 
 			Math_VectorSubtractValue(tTrace.plane.normal,50.0f,ePlayer->v.movedir);
 
-			tTrace = Engine.Server_Move(vStart,vEnd,mv3Origin,mv3Origin,true,ePlayer);
+			tTrace = Engine.Server_Move(vStart,vEnd,g_mvOrigin3f,g_mvOrigin3f,true,ePlayer);
 			if(tTrace.fraction == 1.0f)
 			{
 				ePlayer->v.flags		|= FL_WATERJUMP;

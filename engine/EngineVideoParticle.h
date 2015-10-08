@@ -26,7 +26,7 @@
 Particle_t *Particle_Allocate(void);
 
 void Particle_Initialize(void);
-void Particle_CreateEffect(ParticleType_t pType, ParticleBehaviour_t pBehaviour, MathVector3_t vOrigin, MathVector3_t vDirection, float fVelocity, float fScale, int iCount, int iMaterial);
+void Particle_CreateEffect(ParticleType_t pType, ParticleBehaviour_t pBehaviour, MathVector3f_t vOrigin, MathVector3f_t vDirection, float fVelocity, float fScale, int iCount, int iMaterial);
 void Particle_Parse(void);
 void Particle_ClearAll(void);
 void Particle_Draw(void);

@@ -46,7 +46,7 @@ typedef vec_t vec3_t[3];
 # define T_EPSILON          ((vec_t)0.01)
 #endif
 
-extern vec3_t mv3Origin;
+extern vec3_t g_mvOrigin3f;
 
 typedef struct
 {

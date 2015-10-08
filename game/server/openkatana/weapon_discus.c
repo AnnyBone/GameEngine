@@ -97,7 +97,7 @@ void Discus_ProjectileTouch(ServerEntity_t *ent,ServerEntity_t *other)
 void Discus_SpawnProjectile(ServerEntity_t *ent,vec3_t org)
 {
 	ServerEntity_t *eDiscus;
-	MathVector3_t mvDirection;
+	MathVector3f_t mvDirection;
 
 	eDiscus = Entity_Spawn();
 
@@ -120,7 +120,7 @@ void Discus_SpawnProjectile(ServerEntity_t *ent,vec3_t org)
 	eDiscus->v.TouchFunction = Discus_ProjectileTouch;
 
 	Entity_SetModel(eDiscus, "models/w_daedalus.md2");
-	Entity_SetSizeVector(eDiscus, mv3Origin, mv3Origin);
+	Entity_SetSizeVector(eDiscus, g_mvOrigin3f, g_mvOrigin3f);
 	Entity_SetOrigin(eDiscus, org);
 
 	Sound(ent,CHAN_WEAPON,"weapons/discus/discusthrow.wav",255,ATTN_NORM);

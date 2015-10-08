@@ -38,17 +38,17 @@
 	solid_edge items only clip against bsp models.
 */
 
-cvar_t	cvPhysicsStopSpeed	= {	"physics_stopspeed",	"100"		},
-		cvPhysicsNoStep		= {	"physics_nostep",		"0"			},
-// [18/3/2013] Added per request ~hogsy
-		cvPhysicsStepSize	= {	"physics_stepsize",		"18"		};
+ConsoleVariable_t
+	cvPhysicsStopSpeed	= {	"physics_stopspeed",	"100"		},
+	cvPhysicsNoStep		= {	"physics_nostep",		"0"			},
+	cvPhysicsStepSize	= {	"physics_stepsize",		"18"		};
 
 void Physics_Toss(ServerEntity_t *ent);
 
 void SV_CheckAllEnts (void)
 {
-	int			e;
-	ServerEntity_t		*check;
+	int	e;
+	ServerEntity_t *check;
 
 	// See if any solid entities are inside the final position
 	check = NEXT_EDICT(sv.edicts);
@@ -73,7 +73,7 @@ void SV_CheckAllEnts (void)
 */
 bool Server_RunThink(ServerEntity_t *ent)
 {
-	double	dThinkTime;
+	double dThinkTime;
 
 	dThinkTime = ent->v.dNextThink;
 	if(dThinkTime <= 0 || dThinkTime > sv.time+host_frametime)
@@ -98,7 +98,7 @@ bool Server_RunThink(ServerEntity_t *ent)
 */
 #define	STOP_EPSILON	0.1
 
-int ClipVelocity (vec3_t in, vec3_t normal, vec3_t out, float overbounce)
+int ClipVelocity (MathVector3f_t in, MathVector3f_t normal, MathVector3f_t out, float overbounce)
 {
 	float	backoff;
 	float	change;
@@ -134,17 +134,17 @@ int ClipVelocity (vec3_t in, vec3_t normal, vec3_t out, float overbounce)
 #define	MAX_CLIP_PLANES	5
 int SV_FlyMove (ServerEntity_t *ent, float time, trace_t *steptrace)
 {
-	int			bumpcount, numbumps;
-	vec3_t		dir;
-	float		d;
-	int			numplanes;
-	vec3_t		planes[MAX_CLIP_PLANES];
-	vec3_t		primal_velocity, original_velocity, new_velocity;
-	int			i, j;
-	trace_t		trace;
-	vec3_t		end;
-	float		time_left;
-	int			blocked;
+	int					bumpcount, numbumps;
+	MathVector3f_t		dir;
+	float				d;
+	int					numplanes;
+	MathVector3f_t		planes[MAX_CLIP_PLANES];
+	MathVector3f_t		primal_velocity, original_velocity, new_velocity;
+	int					i, j;
+	trace_t				trace;
+	MathVector3f_t		end;
+	float				time_left;
+	int					blocked;
 
 	numbumps = 4;
 
@@ -167,7 +167,7 @@ int SV_FlyMove (ServerEntity_t *ent, float time, trace_t *steptrace)
 		if(trace.bAllSolid)
 		{
 			// Entity is trapped in another solid
-			Math_VectorCopy(mv3Origin, ent->v.velocity);
+			Math_VectorCopy(g_mvOrigin3f, ent->v.velocity);
 			return 3;
 		}
 
@@ -216,7 +216,7 @@ int SV_FlyMove (ServerEntity_t *ent, float time, trace_t *steptrace)
 		if(numplanes >= MAX_CLIP_PLANES)
 		{
 			// This shouldn't really happen
-			Math_VectorCopy(mv3Origin, ent->v.velocity);
+			Math_VectorCopy(g_mvOrigin3f, ent->v.velocity);
 			return 3;
 		}
 
@@ -244,7 +244,7 @@ int SV_FlyMove (ServerEntity_t *ent, float time, trace_t *steptrace)
 			// Go along the crease
 			if (numplanes != 2)
 			{
-				Math_VectorCopy(mv3Origin, ent->v.velocity);
+				Math_VectorCopy(g_mvOrigin3f, ent->v.velocity);
 				return 7;
 			}
 
@@ -257,7 +257,7 @@ int SV_FlyMove (ServerEntity_t *ent, float time, trace_t *steptrace)
 		// to avoid tiny occilations in sloping corners
 		if(Math_DotProduct(ent->v.velocity,primal_velocity) <= 0)
 		{
-			Math_VectorCopy(mv3Origin,ent->v.velocity);
+			Math_VectorCopy(g_mvOrigin3f,ent->v.velocity);
 			return blocked;
 		}
 	}
@@ -277,14 +277,14 @@ PUSHMOVE
 
 void SV_PushMove (ServerEntity_t *pusher, float movetime)
 {
-	int			i, e;
+	int					i, e;
 	ServerEntity_t		*check, *block;
-	vec3_t		mins, maxs, move;
-	vec3_t		entorig, pushorig;
-	int			num_moved;
+	MathVector3f_t		mins, maxs, move;
+	MathVector3f_t		entorig, pushorig;
+	int					num_moved;
 	ServerEntity_t		**moved_edict; //johnfitz -- dynamically allocate
-	vec3_t		*moved_from; //johnfitz -- dynamically allocate
-	int			mark; //johnfitz
+	MathVector3f_t		*moved_from; //johnfitz -- dynamically allocate
+	int					mark; //johnfitz
 
 	if(!pusher->v.velocity[0] && !pusher->v.velocity[1] && !pusher->v.velocity[2])
 	{
@@ -310,7 +310,7 @@ void SV_PushMove (ServerEntity_t *pusher, float movetime)
 	//johnfitz -- dynamically allocate
 	mark = Hunk_LowMark ();
 	moved_edict = (ServerEntity_t**)Hunk_Alloc(sv.num_edicts*sizeof(ServerEntity_t*));
-	moved_from	= (vec3_t(*))Hunk_Alloc (sv.num_edicts*sizeof(vec3_t));
+	moved_from	= (MathVector3f_t(*))Hunk_Alloc (sv.num_edicts*sizeof(MathVector3f_t));
 	//johnfitz
 
 // see if any solid entities are inside the final position
@@ -402,10 +402,10 @@ void SV_PushMove (ServerEntity_t *pusher, float movetime)
 // [18/5/2013] TODO: Merge with SV_PushMove ~hogsy
 static void Server_PushRotate(ServerEntity_t *pusher,float movetime)
 {
-	int		i,e,num_moved,slaves_moved;
+	int				i,e,num_moved,slaves_moved;
 	ServerEntity_t	*check,*block,*moved_edict[MAX_EDICTS],*ground,*slave,*master;
-	vec3_t	move,a,amove,entorig,pushorig,moved_from[MAX_EDICTS],org,org2,forward,right,up;
-	bool	bMoveIt;
+	MathVector3f_t	move,a,amove,entorig,pushorig,moved_from[MAX_EDICTS],org,org2,forward,right,up;
+	bool			bMoveIt;
 
 	for (i = 0; i < 3; i++)
 		amove[i] = pusher->v.avelocity[i] * movetime;
@@ -638,8 +638,8 @@ CLIENT MOVEMENT
 */
 void SV_CheckStuck (ServerEntity_t *ent)
 {
-	int		i,j,z;
-	vec3_t	org;
+	int				i,j,z;
+	MathVector3f_t	org;
 
 	if(!SV_TestEntityPosition(ent))
 	{
@@ -682,16 +682,16 @@ void SV_CheckStuck (ServerEntity_t *ent)
 
 	This is a hack, but in the interest of good gameplay...
 */
-int SV_TryUnstick (ServerEntity_t *ent, vec3_t oldvel)
+int SV_TryUnstick (ServerEntity_t *ent, MathVector3f_t oldvel)
 {
-	int		i;
-	vec3_t	oldorg;
-	vec3_t	dir;
-	int		clip;
-	trace_t	steptrace;
+	int				i;
+	MathVector3f_t	oldorg;
+	MathVector3f_t	dir;
+	int				clip;
+	trace_t			steptrace;
 
 	Math_VectorCopy (ent->v.origin, oldorg);
-	Math_VectorCopy (mv3Origin, dir);
+	Math_VectorCopy (g_mvOrigin3f, dir);
 
 	for (i=0 ; i<8 ; i++)
 	{
@@ -739,7 +739,7 @@ int SV_TryUnstick (ServerEntity_t *ent, vec3_t oldvel)
 		Math_VectorCopy (oldorg, ent->v.origin);
 	}
 
-	Math_VectorCopy(mv3Origin,ent->v.velocity);
+	Math_VectorCopy(g_mvOrigin3f,ent->v.velocity);
 	return 7;		// still not moving
 }
 
@@ -747,9 +747,9 @@ int SV_TryUnstick (ServerEntity_t *ent, vec3_t oldvel)
 */
 void SV_WalkMove(ServerEntity_t *ent)
 {
-	vec3_t		upmove,downmove,oldorg,oldvel,nosteporg,nostepvel;
-	int			clip,oldonground;
-	trace_t		steptrace,downtrace;
+	MathVector3f_t	upmove,downmove,oldorg,oldvel,nosteporg,nostepvel;
+	int				clip,oldonground;
+	trace_t			steptrace,downtrace;
 
 	// Do a regular slide move unless it looks like you ran into a step
 	oldonground = ent->v.flags & FL_ONGROUND;
@@ -774,8 +774,8 @@ void SV_WalkMove(ServerEntity_t *ent)
 	// Try moving up and forward to go up a step
 	Math_VectorCopy (oldorg, ent->v.origin);	// back to start pos
 
-	Math_VectorCopy (mv3Origin, upmove);
-	Math_VectorCopy (mv3Origin, downmove);
+	Math_VectorCopy (g_mvOrigin3f, upmove);
+	Math_VectorCopy (g_mvOrigin3f, downmove);
 
 	upmove[2]	= cvPhysicsStepSize.value;
 	downmove[2] = -cvPhysicsStepSize.value + oldvel[2]*host_frametime;
@@ -898,9 +898,9 @@ void Physics_NoClip(ServerEntity_t *eEntity)
 */
 void Physics_Toss(ServerEntity_t *ent)
 {
-	trace_t	trace;
-	vec3_t	move;
-	float	backoff;
+	trace_t			trace;
+	MathVector3f_t	move;
+	float			backoff;
 
 	// Regular thinking
 	if(!Server_RunThink(ent) || (ent->v.flags & FL_ONGROUND))
@@ -939,8 +939,8 @@ void Physics_Toss(ServerEntity_t *ent)
 			ent->v.flags		= ent->v.flags | FL_ONGROUND;
 			ent->v.groundentity = trace.ent;
 
-			Math_VectorCopy(mv3Origin,ent->v.velocity);
-			Math_VectorCopy(mv3Origin,ent->v.avelocity);
+			Math_VectorCopy(g_mvOrigin3f,ent->v.velocity);
+			Math_VectorCopy(g_mvOrigin3f,ent->v.avelocity);
 		}
 
 	Game->Physics_CheckWaterTransition(ent);
@@ -978,13 +978,13 @@ void Physics_Step(ServerEntity_t *ent)
 
 extern cvar_t	sv_edgefriction;
 
-void Physics_AddFriction(ServerEntity_t *eEntity,vec3_t vVelocity,vec3_t vOrigin)
+void Physics_AddFriction(ServerEntity_t *eEntity, MathVector3f_t vVelocity, MathVector3f_t vOrigin)
 {
-	float	*vel;
-	float	speed, newspeed, control;
-	vec3_t	start, stop;
-	float	friction;
-	trace_t	trace;
+	float			*vel;
+	float			speed, newspeed, control;
+	MathVector3f_t	start, stop;
+	float			friction;
+	trace_t			trace;
 
 	vel = vVelocity;
 
@@ -998,7 +998,7 @@ void Physics_AddFriction(ServerEntity_t *eEntity,vec3_t vVelocity,vec3_t vOrigin
 	start[2] = vOrigin[2] + eEntity->v.mins[2];
 	stop[2] = start[2] - 34;
 
-	trace = SV_Move(start,mv3Origin,mv3Origin,stop,true,eEntity);
+	trace = SV_Move(start,g_mvOrigin3f,g_mvOrigin3f,stop,true,eEntity);
 	if(trace.fraction == 1.0f)
 		friction = eEntity->Physics.fFriction*sv_edgefriction.value;
 	else

@@ -685,7 +685,7 @@ bool SV_RecursiveHullCheck (hull_t *hull, int num, float p1f, float p2f, vec3_t 
 	}
 	else
 	{
-		Math_VectorSubtract (mv3Origin, plane->normal, trace->plane.normal);
+		Math_VectorSubtract (g_mvOrigin3f, plane->normal, trace->plane.normal);
 		trace->plane.dist = -plane->dist;
 	}
 
@@ -717,10 +717,10 @@ bool SV_RecursiveHullCheck (hull_t *hull, int num, float p1f, float p2f, vec3_t 
 /*	Handles selection or creation of a clipping hull, and offseting (and
 	eventually rotation) of the end points
 */
-trace_t SV_ClipMoveToEntity(ServerEntity_t *ent, MathVector3_t start, MathVector3_t mins, MathVector3_t maxs, MathVector3_t end)
+trace_t SV_ClipMoveToEntity(ServerEntity_t *ent, MathVector3f_t start, MathVector3f_t mins, MathVector3f_t maxs, MathVector3f_t end)
 {
 	trace_t	trace;
-	MathVector3_t offset, start_l, end_l, a, forward, right, up, temp;
+	MathVector3f_t offset, start_l, end_l, a, forward, right, up, temp;
 	hull_t *hull;
 
 	// Fill in a default trace
@@ -739,7 +739,7 @@ trace_t SV_ClipMoveToEntity(ServerEntity_t *ent, MathVector3_t start, MathVector
 	if (ent->Physics.iSolid == SOLID_BSP &&
 		(fabs(ent->v.angles[0]) > 1 || fabs(ent->v.angles[1]) > 1 || fabs(ent->v.angles[2]) > 1) )
 	{
-		MathVector3_t forward,right,up,temp;
+		MathVector3f_t forward,right,up,temp;
 
 		Math_AngleVectors(ent->v.angles,forward,right,up);
 
@@ -869,7 +869,7 @@ void SV_ClipToLinks(areanode_t *node,moveclip_t *clip)
 		SV_ClipToLinks ( node->children[1], clip );
 }
 
-void SV_MoveBounds (vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, vec3_t boxmins, vec3_t boxmaxs)
+void SV_MoveBounds(MathVector3f_t start, MathVector3f_t mins, MathVector3f_t maxs, MathVector3f_t end, MathVector3f_t boxmins, MathVector3f_t boxmaxs)
 {
 #if 0
 	// debug to test against everything
@@ -894,7 +894,7 @@ void SV_MoveBounds (vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, vec3_t b
 #endif
 }
 
-trace_t SV_Move(vec3_t start,vec3_t mins,vec3_t maxs,vec3_t end,int type,ServerEntity_t *passedict)
+trace_t SV_Move(MathVector3f_t start, MathVector3f_t mins, MathVector3f_t maxs, MathVector3f_t end,int type,ServerEntity_t *passedict)
 {
 	moveclip_t	clip;
 	int			i;

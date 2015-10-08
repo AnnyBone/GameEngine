@@ -126,7 +126,7 @@ void Menu_Draw(void)
 
 	if ((iMenuState & MENU_STATE_HUD) && (!(iMenuState & MENU_STATE_SCOREBOARD) && !(iMenuState & MENU_STATE_MENU)))
 	{
-		HUD_Draw();
+		//HUD_Draw();
 	}
 
 	if(iMenuState & MENU_STATE_SCOREBOARD && !(iMenuState & MENU_STATE_MENU))

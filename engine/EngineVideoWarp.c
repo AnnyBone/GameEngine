@@ -251,7 +251,7 @@ void Warp_DrawWaterPoly(glpoly_t *p, Material_t *mCurrent)
 				Math_VectorSet(0.1f, vLightColour);
 			else
 			{
-				MathVector3_t vDistance;
+				MathVector3f_t vDistance;
 				Math_VectorSubtract(vWave, dLight->origin, vDistance);
 				Math_VectorCopy(dLight->color, vLightColour);
 				Math_VectorSubtractValue(vLightColour, (dLight->radius - Math_Length(vDistance)) / 100.0f, vLightColour);

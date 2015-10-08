@@ -47,7 +47,7 @@ void GreekFire_Throw(ServerEntity_t *ent)
 	// Use SetOrigin since it automatically links.
 	Entity_SetOrigin(greekfire, ent->v.origin);
 
-	Entity_SetSizeVector(greekfire,mv3Origin,mv3Origin);
+	Entity_SetSizeVector(greekfire,g_mvOrigin3f,g_mvOrigin3f);
 
 	greekfire->v.TouchFunction = GreekfireTouch;
 }

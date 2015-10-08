@@ -23,10 +23,7 @@
 #include "EngineServerEntity.h"
 #include "EngineGame.h"
 
-ddef_t				*pr_fielddefs,
-					*pr_globaldefs;
-GlobalState_t	pr_global_struct;	//*pr_global_struct;
-float				*pr_globals;			// same as pr_global_struct
+GlobalState_t pr_global_struct;	//*pr_global_struct;
 
 #define	MAX_FIELD_LEN	128
 
@@ -35,7 +32,10 @@ float				*pr_globals;			// same as pr_global_struct
 void Edict_Clear(ServerEntity_t *eEntity, bool bFreeEntity)
 {
 	memset(&eEntity->v,0,sizeof(eEntity->v));
-	// [10/6/2013] Clear everything else that's shared... ~hogsy
+
+	// TODO: Call this game-side too!!!!
+
+	// Clear everything else that's shared...
 	memset(&eEntity->Model,0,sizeof(eEntity->Model));
 	memset(&eEntity->Physics,0,sizeof(eEntity->Physics));
 
@@ -98,8 +98,8 @@ void ED_Free(ServerEntity_t *ed)
 	ed->Model.fScale	= 1.0f;
 	ed->alpha			= ENTALPHA_DEFAULT; //johnfitz -- reset alpha for next entity
 
-	Math_VectorCopy(mv3Origin,ed->v.origin);
-	Math_VectorCopy(mv3Origin,ed->v.angles);
+	Math_VectorCopy(g_mvOrigin3f,ed->v.origin);
+	Math_VectorCopy(g_mvOrigin3f,ed->v.angles);
 
 	ed->fFreeTime = sv.time;
 }
@@ -136,73 +136,6 @@ Done:
 	return (eval_t *)((char *)&ed->v + def->ofs*4);
 #endif
 	return NULL;
-}
-
-/*	Returns a string describing *data in a type specific manner
-*/
-char *PR_ValueString (EntityType_t type, eval_t *val)
-{
-#if 0
-	static char	line[256];
-
-	type &= ~DEF_SAVEGLOBAL;
-
-	switch (type)
-	{
-	case EV_STRING:
-		sprintf(line, "%s", val->string);
-		break;
-	case ev_entity:
-		sprintf(line,"entity %i",NUM_FOR_EDICT(PROG_TO_EDICT(val->edict)) );
-		break;
-	case EV_FLOAT:
-		sprintf(line, "%5.1f", val->_float);
-		break;
-	case EV_VECTOR:
-		sprintf(line, "'%5.1f %5.1f %5.1f'", val->vector[0], val->vector[1], val->vector[2]);
-		break;
-	default:
-		sprintf(line, "bad type %i", type);
-		break;
-	}
-
-	return line;
-#else
-	return "null";
-#endif
-}
-
-/*	Returns a string describing *data in a type specific manner
-	Easier to parse than PR_ValueString
-*/
-char *PR_UglyValueString(EntityType_t type, eval_t *val)
-{
-	static char	line[256];
-
-	type &= ~DEF_SAVEGLOBAL;
-
-#if 0
-	switch (type)
-	{
-	case EV_STRING:
-		sprintf (line, "%s", pr_strings + val->string);
-		break;
-	case ev_entity:
-		sprintf (line, "%i", NUM_FOR_EDICT(PROG_TO_EDICT(val->edict)));
-		break;
-	case EV_FLOAT:
-		sprintf (line, "%f", val->_float);
-		break;
-	case EV_VECTOR:
-		sprintf (line, "%f %f %f", val->vector[0], val->vector[1], val->vector[2]);
-		break;
-	default:
-		sprintf (line, "bad type %i", type);
-		break;
-	}
-#endif
-
-	return line;
 }
 
 /*	For debugging

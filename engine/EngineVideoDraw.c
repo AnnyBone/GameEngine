@@ -403,8 +403,14 @@ void Draw_ConsoleBackground(void)
 #if 0
 	Draw_Fill(0,0,vid.conwidth,vid.conheight,0,0,0,fAlpha);
 #else
-	Colour_t cBlack = { 0, 0, 0, 255 };
-	Colour_t cLightBlack = { 0, 0, 0, fAlpha };
+	Colour_t cBlack, cLightBlack;
+
+	Math_Vector4Set(0, cBlack);
+	Math_Vector4Set(0, cLightBlack);
+
+	cBlack[3] = 255.0f;
+	cLightBlack[3] = fAlpha;
+
 	Draw_GradientFill(0, 0, vid.conwidth, vid.conheight, cBlack, cLightBlack);
 #endif
 }

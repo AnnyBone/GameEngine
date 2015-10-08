@@ -165,7 +165,7 @@ void Area_CreateGib(ServerEntity_t *eArea, const char *cModel)
 
 		Entity_SetModel(eGib, (char*)cModel);
 		Entity_SetOrigin(eGib, eArea->v.oldorigin);
-		Entity_SetSizeVector(eGib, mv3Origin, mv3Origin);
+		Entity_SetSizeVector(eGib, g_mvOrigin3f, g_mvOrigin3f);
 	}
 }
 

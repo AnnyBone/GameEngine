@@ -33,7 +33,7 @@ void Midas_CloudThink(ServerEntity_t *ent)
 
 	ent->local.hit = ent->local.hit - 2;
 
-	Engine.Particle(ent->v.origin,mv3Origin,12.0f,"spark",8);
+	Engine.Particle(ent->v.origin,g_mvOrigin3f,12.0f,"spark",8);
 
 	ent->v.dNextThink	= Server.dTime+0.3;
 	ent->v.think		= Midas_CloudThink;

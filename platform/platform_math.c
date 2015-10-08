@@ -21,11 +21,11 @@
 #include "platform_math.h"
 
 /*
-    Math Library
+	Math Library
 */
 
 MathVector2f_t mv2Origin = { 0, 0 };
-MathVector3f_t mv3Origin = { 0, 0, 0 };
+MathVector3f_t g_mvOrigin3f = { 0, 0, 0 };
 MathVector4f_t mv4Origin = { 0, 0, 0, 0 };
 
 MathVector_t Math_VectorToAngles(MathVector3f_t vValue)

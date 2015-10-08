@@ -65,6 +65,7 @@ extern "C" {
 	extern	ConsoleVariable_t	gl_max_size;
 
 	extern ConsoleVariable_t cvVideoDrawDetail;	// TODO: Move into EngineMaterial ?
+	extern ConsoleVariable_t cvVideoDrawSky;
 	extern ConsoleVariable_t cvVideoDetailScale; // TODO: Move into EngineMaterial ?
 
 #ifdef __cplusplus

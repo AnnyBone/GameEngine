@@ -538,6 +538,7 @@ void SCR_DrawTurtle (void)
 
 void SCR_DrawNet(void)
 {
+#if 0
 	// [24/7/2012] Don't display when we're not even connected ~hogsy
 	if(	cl.maxclients <= 1	||
 		cls.demoplayback || realtime-cl.last_received_message < 0.3f)
@@ -546,6 +547,7 @@ void SCR_DrawNet(void)
 	GL_SetCanvas(CANVAS_DEFAULT); //johnfitz
 
 	Draw_ExternPic("textures/interface/net",1.0f,scr_vrect.x+64,scr_vrect.y,64,64);
+#endif
 }
 
 void SCR_DrawPause (void)

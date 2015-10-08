@@ -169,7 +169,7 @@ void Server_SetModel(ServerEntity_t *ent, char *m)
 	if(mod && mod->mType == MODEL_TYPE_BSP)
 		Game->Server_SetSizeVector(ent,mod->clipmins,mod->clipmaxs);
 	else
-		Game->Server_SetSizeVector(ent,mv3Origin,mv3Origin);
+		Game->Server_SetSizeVector(ent,g_mvOrigin3f,g_mvOrigin3f);
 }
 
 void Game_AmbientSound(vec_t *vPosition,const char *cPath,int iVolume,int iAttenuation)

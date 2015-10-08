@@ -178,7 +178,7 @@ void Particle_RocketTrail(vec3_t start, vec3_t end, int type)
 
 		p = Particle_Allocate();
 
-		Math_VectorCopy(mv3Origin, p->vVelocity);
+		Math_VectorCopy(g_mvOrigin3f, p->vVelocity);
 		p->fDie = cl.time + 2;
 
 		switch (type)

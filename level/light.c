@@ -129,10 +129,10 @@ void ParseLightEntities( void )
 	{
 		value = ValueForKey(ent,"classname");
 
-        if(strncmp(value,"light",5))
+		if(strncmp(value,"light",5))
 			continue;
 
-        if(!strcmp(value,"light"))
+		if(!strcmp(value,"light"))
 			isLight = true;
 		else
 			isLight = false;
@@ -169,7 +169,7 @@ void ParseLightEntities( void )
 			if( sscanf(value,"%lf %lf %lf",&color2[0],&color2[1],&color2[2]) != 3 )
 				Error("error in light at %.0f %.0f %.0f:\ncolor must be given 3 values", l->origin[0], l->origin[1], l->origin[2] );
 
-        value = ValueForKey(ent,"light");
+		value = ValueForKey(ent,"light");
 		if( !value[0] )
 			value = ValueForKey(ent,"_light");
 
@@ -223,7 +223,7 @@ void ParseLightEntities( void )
 			}
 			else
 				l->radius /= vec[0];
-        }
+		}
 
 		l->radius *= globallightradiusscale;
 		l->clampradius = l->radius;

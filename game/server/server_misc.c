@@ -118,7 +118,7 @@ void ThrowGib(vec3_t origin,vec3_t velocity,char *model,float damage,bool bleed)
 	Math_VectorSet((float)(rand()%10*damage),gib->v.avelocity);
 
 	Entity_SetModel(gib,model);
-	Entity_SetSizeVector(gib,mv3Origin,mv3Origin);
+	Entity_SetSizeVector(gib,g_mvOrigin3f,g_mvOrigin3f);
 
 	gib->v.think		= Misc_GibThink;
 	gib->v.dNextThink	= Server.dTime+20.0f;

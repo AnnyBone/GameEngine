@@ -162,7 +162,7 @@ void IonRifle_PrimaryAttack(ServerEntity_t *eOwner)
 				vOrigin[2] += 25.0f;
 
 				Entity_SetModel(eIonBall,"models/ionball.md2");
-				Entity_SetSizeVector(eIonBall,mv3Origin,mv3Origin);
+				Entity_SetSizeVector(eIonBall,g_mvOrigin3f,g_mvOrigin3f);
 				Entity_SetOrigin(eIonBall,vOrigin);
 
 				Weapon_Projectile(eOwner, eIonBall, IONRIFLE_MAX_RANGE);
@@ -231,7 +231,7 @@ void IonRifle_PrimaryAttack(ServerEntity_t *eOwner)
 				vOrigin[2] += 25.0f;
 
 				Entity_SetModel(eIonBall,"models/ionball.md2");
-				Entity_SetSizeVector(eIonBall,mv3Origin,mv3Origin);
+				Entity_SetSizeVector(eIonBall,g_mvOrigin3f,g_mvOrigin3f);
 				Entity_SetOrigin(eIonBall,vOrigin);
 
 				Weapon_Projectile(eOwner, eIonBall, IONRIFLE_MAX_RANGE);

@@ -44,7 +44,7 @@ cvar_t	r_fastsky			= {	"r_fastsky",		"0"		},
 
 int		skytexorder[6] = {0,2,1,3,4,5}; //for skybox
 
-vec3_t vSkyClip[6] =
+MathVector3f_t vSkyClip[6] =
 {
 	{	1,	1,	0	},
 	{	1,	-1,	0	},
@@ -111,7 +111,7 @@ void Sky_LoadSkyBox (char *name)
 	unsigned int width, height;
 	char	filename[MAX_OSPATH];
 	bool	bNoneFound = true;
-	byte	*data;
+	uint8_t	*data;
 
 	if(strcmp(cSkyBoxName, name) == 0)
 		return; //no change
@@ -266,16 +266,16 @@ void Sky_Init(void)
 
 /*	Update sky bounds
 */
-void Sky_ProjectPoly (int nump, vec3_t vecs)
+void Sky_ProjectPoly (int nump, MathVector3f_t vecs)
 {
-	int		i,j;
-	vec3_t	v, av;
-	float	s, t, dv;
-	int		axis;
-	float	*vp;
+	int				i,j;
+	MathVector3f_t	v, av;
+	float			s, t, dv;
+	int				axis;
+	float			*vp;
 
 	// decide which face it maps to
-	Math_VectorCopy (mv3Origin, v);
+	Math_VectorCopy (g_mvOrigin3f, v);
 	for (i=0, vp=vecs ; i<nump ; i++, vp+=3)
 		Math_VectorAdd (vp, v, v);
 
@@ -335,16 +335,16 @@ void Sky_ProjectPoly (int nump, vec3_t vecs)
 	}
 }
 
-void Sky_ClipPoly (int nump, vec3_t vecs, int stage)
+void Sky_ClipPoly (int nump, MathVector3f_t vecs, int stage)
 {
-	bool	bFront	= false,
-			bBack	= false;
-	float	*norm,*v,
-			d,e,dists[MAX_CLIP_VERTS];
-	int		sides[MAX_CLIP_VERTS],
-			newc[2],
-			i,j;
-	vec3_t	vNew[2][MAX_CLIP_VERTS];
+	bool			bFront	= false,
+					bBack	= false;
+	float			*norm,*v,
+					d,e,dists[MAX_CLIP_VERTS];
+	int				sides[MAX_CLIP_VERTS],
+					newc[2],
+					i,j;
+	MathVector3f_t	vNew[2][MAX_CLIP_VERTS];
 
 	if(nump > MAX_CLIP_VERTS-2)
 		Sys_Error ("Sky_ClipPoly: MAX_CLIP_VERTS");
@@ -429,8 +429,8 @@ void Sky_ClipPoly (int nump, vec3_t vecs, int stage)
 
 void Sky_ProcessPoly (glpoly_t	*p)
 {
-	int		i;
-	vec3_t	verts[MAX_CLIP_VERTS];
+	int				i;
+	MathVector3f_t	verts[MAX_CLIP_VERTS];
 
 	// Draw it
 	DrawGLPoly(p);
@@ -473,10 +473,10 @@ void Sky_ProcessEntities(void)
 	unsigned int	j;
 	float			dot;
 	bool			bRotated;
-	entity_t		*e;
+	ClientEntity_t	*e;
 	msurface_t		*s;
 	glpoly_t		*p;
-	vec3_t			vTemp, forward, right, up;
+	MathVector3f_t	vTemp, forward, right, up;
 
 	if (!r_drawentities.value)
 		return;
@@ -556,9 +556,9 @@ void Sky_ProcessEntities(void)
 
 void Sky_EmitSkyBoxVertex(float s,float t,int axis)
 {
-	int		j,k;
-	float	w,h;
-	vec3_t	v,b;
+	int				j,k;
+	float			w,h;
+	MathVector3f_t	v,b;
 
 	b[0] = s*10.0f;
 	b[1] = t*10.0f;
@@ -651,10 +651,10 @@ void Sky_DrawSkyBox (void)
 //
 //==============================================================================
 
-void Sky_SetBoxVert (float s, float t, int axis, vec3_t v)
+void Sky_SetBoxVert (float s, float t, int axis, MathVector3f_t v)
 {
-	vec3_t		b;
-	int			j, k;
+	MathVector3f_t	b;
+	int				j, k;
 
 	b[0] = s * 10.0f;
 	b[1] = t * 10.0f;
@@ -671,10 +671,10 @@ void Sky_SetBoxVert (float s, float t, int axis, vec3_t v)
 	}
 }
 
-void Sky_GetTexCoord(vec3_t v,float speed,float *s,float *t)
+void Sky_GetTexCoord(MathVector3f_t v,float speed,float *s,float *t)
 {
-	vec3_t	vDirection;
-	float	fLength,fScroll;
+	MathVector3f_t	vDirection;
+	float			fLength,fScroll;
 
 	Math_VectorSubtract(v,r_origin,vDirection);
 
@@ -693,6 +693,7 @@ void Sky_GetTexCoord(vec3_t v,float speed,float *s,float *t)
 
 void Sky_DrawFaceQuad(glpoly_t *p)
 {
+	VideoObjectVertex_t QuadVertex[4] = { { { 0 } } };
 	float	s,t,
 			*v;
 	int		i;
@@ -701,10 +702,9 @@ void Sky_DrawFaceQuad(glpoly_t *p)
 
 	Video_SetTexture(gCloudTexture);
 
-	// [12/5/2013] Pwopah blendin' ~hogsy
-	Video_ResetCapabilities(false);
-	Video_EnableCapabilities(VIDEO_BLEND);
-	Video_SetBlend(VIDEO_BLEND_ONE,VIDEO_DEPTH_IGNORE);
+	VideoLayer_Enable(VIDEO_BLEND);
+
+	Video_SetBlend(VIDEO_BLEND_ONE, VIDEO_DEPTH_IGNORE);
 
 	glBegin(GL_QUADS);
 
@@ -718,7 +718,7 @@ void Sky_DrawFaceQuad(glpoly_t *p)
 
 	glEnd();
 
-	Video_ResetCapabilities(true);
+	Video_SetBlend(VIDEO_BLEND_TWO, VIDEO_DEPTH_IGNORE);
 
 	rs_skypolys++;
 	rs_skypasses++;
@@ -727,9 +727,7 @@ void Sky_DrawFaceQuad(glpoly_t *p)
 	{
 		float *c = Fog_GetColor();
 
-		Video_ResetCapabilities(false);
-		Video_EnableCapabilities(VIDEO_BLEND);
-		Video_DisableCapabilities(VIDEO_TEXTURE_2D);
+		VideoLayer_Disable(VIDEO_TEXTURE_2D);
 
 		glColor4f(c[0], c[1], c[2], Math_Clamp(0.0, r_skyfog.value, 1.0));
 
@@ -740,19 +738,21 @@ void Sky_DrawFaceQuad(glpoly_t *p)
 
 		glColor3f(1.0f,1.0f,1.0f);
 
-		Video_ResetCapabilities(true);
+		VideoLayer_Enable(VIDEO_TEXTURE_2D);
 
 		rs_skypasses++;
 	}
+
+	VideoLayer_Disable(VIDEO_BLEND);
 }
 
 void Sky_DrawFace (int axis)
 {
 	glpoly_t	*p;
-	MathVector3_t verts[4];
+	MathVector3f_t verts[4];
 	int			i, j, start;
 	float		di,qi,dj,qj;
-	MathVector3_t vup, vright, temp, temp2;
+	MathVector3f_t vup, vright, temp, temp2;
 
 	Sky_SetBoxVert(-1.0f,-1.0f,axis,verts[0]);
 	Sky_SetBoxVert(-1.0f,1.0f,axis,verts[1]);
@@ -806,7 +806,7 @@ void Sky_Draw(void)
 	int	i;
 
 	// In these special render modes, the sky faces are handled in the normal world/brush renderer
-	if(r_drawflat_cheatsafe || r_lightmap_cheatsafe)
+	if(r_drawflat_cheatsafe || r_lightmap_cheatsafe || !cvVideoDrawSky.bValue)
 		return;
 
 	// reset sky bounds
@@ -838,7 +838,7 @@ void Sky_Draw(void)
 	{
 		Video_DisableCapabilities(VIDEO_DEPTH_TEST);
 
-		// [28/4/2013] By default we use a skybox ~hogsy
+		// By default we use a skybox.
 		if(cSkyBoxName[0])
 			Sky_DrawSkyBox();
 
