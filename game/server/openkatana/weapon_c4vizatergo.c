@@ -195,7 +195,7 @@ void C4Vizatergo_Think(ServerEntity_t *ent)
 
 	ent->v.dNextThink = Server.dTime+(2.5f*(fDistance/100.0f));
 #else
-	Sound(ent,CHAN_AUTO,"weapons/c4/c4beep.wav",120,ATTN_NORM);
+	Sound(ent, CHAN_AUTO, "weapons/c4/beep.wav", 130, ATTN_IDLE);
 
 	if(!ent->local.eOwner && ent->local.hit)
 		ent->v.movetype = MOVETYPE_BOUNCE;

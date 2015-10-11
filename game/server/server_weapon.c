@@ -195,7 +195,7 @@ void Weapon_Precache(void)
 	Server_PrecacheSound("weapons/laser.wav");
 
 	// C4
-	Server_PrecacheSound("weapons/c4/c4beep.wav");
+	Server_PrecacheSound("weapons/c4/beep.wav");
 	Server_PrecacheSound("weapons/c4/c4cock.wav");
 	Server_PrecacheSound("weapons/c4/c4fire.wav");
 	Server_PrecacheSound("weapons/c4/c4stick.wav");
