@@ -67,7 +67,12 @@
 #	ifdef _MSC_VER
 #		pragma warning(disable : 4152)
 
-#		define itoa _itoa
+#		ifndef itoa
+#			define itoa	_itoa
+#		endif
+#		ifndef snprintf
+#			define snprintf _snprintf
+#		endif
 #	endif
 #elif __APPLE__	// Mac OS X
 	// Information

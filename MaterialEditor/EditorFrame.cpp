@@ -467,13 +467,37 @@ void CEditorFrame::OnExit(wxCommandEvent &event)
 
 void CEditorFrame::OnAbout(wxCommandEvent &event)
 {
+	const char ccLicense[]=
+	{
+		"Copyright (C) 1996-2001 Id Software, Inc.\n"
+		"Copyright (C) 2002-2009 John Fitzgibbons and others\n"
+		"Copyright (C) 2011-2015 OldTimes Software\n"
+		"\n"
+		"This program is free software; you can redistribute it and / or\n"
+		"modify it under the terms of the GNU General Public License\n"
+		"as published by the Free Software Foundation; either version 2\n"
+		"of the License, or(at your option) any later version.\n"
+		"\n"
+		"This program is distributed in the hope that it will be useful,\n"
+		"but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
+		"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n"
+		"\n"
+		"See the GNU General Public License for more details.\n"
+		"\n"
+		"You should have received a copy of the GNU General Public License\n"
+		"along with this program; if not, write to the Free Software\n"
+		"Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111 - 1307, USA."
+	};
+
 	wxAboutDialogInfo info;
+	info.AddDeveloper("Mark \"hogsy\" Sowden");
 	info.SetName("Editor");
 	info.SetCopyright("Copyright (C) 2011-2015 OldTimes Software");
 	info.SetDescription("Editor for the Katana engine.");
 	info.SetWebSite("www.oldtimes-software.com");
 	info.SetIcon(wxIcon(PATH_RESOURCES"icon-engine.png", wxBITMAP_TYPE_PNG_RESOURCE, 64, 64));
 	info.SetVersion(engine->GetVersion());
+	info.SetLicense(ccLicense);
 
 	wxAboutBox(info, this);
 }
