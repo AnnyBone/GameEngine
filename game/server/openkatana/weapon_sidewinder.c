@@ -14,50 +14,50 @@
 
 EntityFrame_t SideWinderAnimation_Deploy [] =
 {
-	{	NULL, 26, 0.05},
-	{	NULL, 27, 0.05},
-	{	NULL, 28, 0.05},
-	{	NULL, 29, 0.05},
-	{	NULL, 30, 0.05},
-	{	NULL, 31, 0.05},
-	{	NULL, 32, 0.05},
-	{	NULL, 33, 0.05},
-	{	NULL, 34, 0.05},
-	{	NULL, 35, 0.05},
-	{	NULL, 36, 0.05},
-	{	NULL, 37, 0.05},
-	{	NULL, 38, 0.05},
-	{	NULL, 39, 0.05},
-	{	NULL, 40, 0.05},
-	{	NULL, 41, 0.05, true},
+	{	NULL, 26, 0.05f},
+	{	NULL, 27, 0.05f},
+	{	NULL, 28, 0.05f},
+	{	NULL, 29, 0.05f},
+	{	NULL, 30, 0.05f},
+	{	NULL, 31, 0.05f},
+	{	NULL, 32, 0.05f},
+	{	NULL, 33, 0.05f},
+	{	NULL, 34, 0.05f},
+	{	NULL, 35, 0.05f},
+	{	NULL, 36, 0.05f},
+	{	NULL, 37, 0.05f},
+	{	NULL, 38, 0.05f},
+	{	NULL, 39, 0.05f},
+	{	NULL, 40, 0.05f},
+	{	NULL, 41, 0.05f, true},
 };
 
 EntityFrame_t SideWinderAnimation_Fire [] =
 {
-	{	NULL, 2, 0.05},
-	{	NULL, 3, 0.05},
-	{	NULL, 4, 0.05},
-	{	NULL, 5, 0.05},
-	{	NULL, 6, 0.05},
-	{	NULL, 7, 0.05},
-	{	NULL, 8, 0.05},
-	{	NULL, 9, 0.05},
-	{	NULL, 10, 0.05},
-	{	NULL, 11, 0.05},
-	{	NULL, 12, 0.05},
-	{	NULL, 13, 0.05},
-	{	NULL, 14, 0.05},
-	{	NULL, 15, 0.05},
-	{	NULL, 16, 0.05},
-	{	NULL, 17, 0.05},
-	{	NULL, 18, 0.05},
-	{	NULL, 19, 0.05},
-	{	NULL, 20, 0.05},
-	{	NULL, 21, 0.05},
-	{	NULL, 22, 0.05},
-	{	NULL, 23, 0.05},
-	{	NULL, 24, 0.05},
-	{	NULL, 25, 0.05, true},
+	{	NULL, 2, 0.05f},
+	{	NULL, 3, 0.05f},
+	{	NULL, 4, 0.05f},
+	{	NULL, 5, 0.05f},
+	{	NULL, 6, 0.05f},
+	{	NULL, 7, 0.05f},
+	{	NULL, 8, 0.05f},
+	{	NULL, 9, 0.05f},
+	{	NULL, 10, 0.05f},
+	{	NULL, 11, 0.05f},
+	{	NULL, 12, 0.05f},
+	{	NULL, 13, 0.05f},
+	{	NULL, 14, 0.05f},
+	{	NULL, 15, 0.05f},
+	{	NULL, 16, 0.05f},
+	{	NULL, 17, 0.05f},
+	{	NULL, 18, 0.05f},
+	{	NULL, 19, 0.05f},
+	{	NULL, 20, 0.05f},
+	{	NULL, 21, 0.05f},
+	{	NULL, 22, 0.05f},
+	{	NULL, 23, 0.05f},
+	{	NULL, 24, 0.05f},
+	{	NULL, 25, 0.05f, true},
 };
 
 void SideWinder_Think(ServerEntity_t *ent);
@@ -71,7 +71,7 @@ void SideWinder_Deploy(ServerEntity_t *ent)
 
 void SideWinder_MissileExplode(ServerEntity_t *ent,ServerEntity_t *other)
 {
-	vec3_t	vVelocity;
+	MathVector3f_t vVelocity;
 
 	if(other && (other == ent->local.eOwner))
 	{
@@ -174,7 +174,7 @@ void SideWinder_SpawnMissle(ServerEntity_t *ent,float fSpeed,float ox)
 void SideWinder_PrimaryAttack(ServerEntity_t *eOwner)
 {
 	float	fSpeed	= SIDEWINDER_MAXSPEED;
-	char	*cSound = "weapons/sidewinder/sidewinderfire.wav";
+	char	*cSound = SOUND_SIDEWINDER_FIRE;
 
 	int iCurrentContents = Engine.Server_PointContents(eOwner->v.origin);
 	if( (iCurrentContents == BSP_CONTENTS_WATER) || 

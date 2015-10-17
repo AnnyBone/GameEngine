@@ -320,7 +320,7 @@ typedef struct
 
 	int	iFrame;
 
-	float fSpeed;
+	float fSpeed;	// TODO: This is time-based... Change to double instead?
 
 	bool bIsEnd;
 } EntityFrame_t;

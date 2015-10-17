@@ -231,7 +231,7 @@ void Weapon_Precache(void)
 	Server_PrecacheSound("weapons/shotcycler6/shotslap.wav");
 
 	// Sidewinder
-	Server_PrecacheSound("weapons/sidewinder/sidewinderfire.wav");
+	Server_PrecacheSound(SOUND_SIDEWINDER_FIRE);
 	Server_PrecacheSound("weapons/sidewinder/sidewinderflyby.wav");
 	Server_PrecacheSound("weapons/sidewinder/sidewindersplash.wav");
 	Server_PrecacheSound("weapons/sidewinder/sidewinderunderwaterfire.wav");
