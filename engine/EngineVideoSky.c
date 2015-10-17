@@ -36,11 +36,11 @@ gltexture_t	*gSkyBoxTexture[6],
 
 extern cvar_t gl_farclip;
 cvar_t	r_fastsky			= {	"r_fastsky",		"0"		},
-		r_sky_quality		= {	"r_sky_quality",	"12"	},
+		r_sky_quality		= {	"r_sky_quality",	"8"		},
 		r_skyalpha			= {	"r_skyalpha",		"1"		},
 		r_skyfog			= {	"r_skyfog",			"0.5"	},
-		cvDrawClouds	    = { "sky_drawclouds",	"1"		},
-		cvSkyScrollSpeed    = { "sky_scrollspeed",  "2.0",	false,   false,  "Changes the speed at which the clouds scroll." };
+		cvDrawClouds	    = { "sky_drawclouds",	"1"																			},
+		cvSkyScrollSpeed    = { "sky_scrollspeed",  "2.0",	false,   false,  "Changes the speed at which the clouds scroll."	};
 
 int		skytexorder[6] = {0,2,1,3,4,5}; //for skybox
 

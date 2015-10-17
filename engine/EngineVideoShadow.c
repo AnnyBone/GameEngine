@@ -29,8 +29,8 @@
 		Rename to engine_draw!
 */
 
-extern vec3_t	lightspot;
-extern entity_t *currententity;
+extern MathVector3f_t lightspot;
+extern ClientEntity_t *currententity;
 
 /*	Draw multiple shadow types.
 	TODO:
@@ -41,10 +41,10 @@ void Shadow_Draw(ClientEntity_t *ent)
 {
 	lerpdata_t		lerpdata;
 	float			fShadowMatrix[16] =
-	{ 1, 0, 0, 0,
-	0, 1, 0, 0,
-	0, 0, 0, 0,
-	0, 0, 0.1f, 1 };
+	{	1, 0, 0,	0,
+		0, 1, 0,	0,
+		0, 0, 0,	0,
+		0, 0, 0.1f, 1 };
 	float			lheight, fShadowScale[2],
 		fShadowAlpha = 0;
 

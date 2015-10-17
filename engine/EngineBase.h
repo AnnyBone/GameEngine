@@ -18,8 +18,8 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef __ENGINEBASE__
-#define __ENGINEBASE__
+#ifndef __ENGINEBASE_H__
+#define __ENGINEBASE_H__
 
 // Platform Library
 #include "platform.h"
@@ -46,7 +46,7 @@
 */
 #define ENGINE_VERSION_MAJOR	0
 #define ENGINE_VERSION_MINOR	3
-#define ENGINE_VERSION_BUILD	1001	// 13/10/2015
+#define ENGINE_VERSION_BUILD	1002	// 17/10/2015
 
 #define	ENGINE_LOG	"engine"
 

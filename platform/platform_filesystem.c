@@ -1,4 +1,19 @@
-/*	Copyright (C) 2013-2015 OldTimes Software
+/*	Copyright (C) 2011-2015 OldTimes Software
+
+	This program is free software; you can redistribute it and/or
+	modify it under the terms of the GNU General Public License
+	as published by the Free Software Foundation; either version 2
+	of the License, or (at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+	See the GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "platform_filesystem.h"
@@ -6,8 +21,6 @@
 /*
 	File System
 */
-
-#include "platform_system.h"
 
 bool pFileSystem_IsModified(time_t tOldTime, const char *ccPath)
 {
@@ -44,11 +57,9 @@ time_t pFileSystem_GetModifiedTime(const char *ccPath)
 void pFileSystem_UpdatePath(char *cPath)
 {
 	pFUNCTION_START
-
 	int i;
 	for (i = 0; cPath[i]; i++)
 		cPath[i] = (char)tolower(cPath[i]);
-
 	pFUNCTION_END
 }
 
@@ -57,7 +68,7 @@ void pFileSystem_UpdatePath(char *cPath)
 bool pFileSystem_CreateDirectory(const char *ccPath)
 {
 	pFUNCTION_START
-
+		
 #ifdef _WIN32
 	if(CreateDirectory(ccPath,NULL) || (GetLastError() == ERROR_ALREADY_EXISTS))
 		return true;
@@ -65,7 +76,7 @@ bool pFileSystem_CreateDirectory(const char *ccPath)
 		pError_Set("Failed to find an intermediate directory! (%s)\n",ccPath);
 	else    // Assume it already exists.
 		pError_Set("Unknown error! (%s)\n",ccPath);
-#else
+#else	// TODO: Won't the below code work fine on Windows too??
 	{
 		struct stat ssBuffer;
 
@@ -89,7 +100,7 @@ bool pFileSystem_CreateDirectory(const char *ccPath)
 			}
 		}
 		else
-			// [28/10/2013] Path already exists! ~hogsy
+			// Path already exists, so this is fine.
 			return true;
 	}
 #endif
@@ -150,7 +161,6 @@ void pFileSystem_GetUserName(char *cOut)
 void pFileSystem_ScanDirectory(const char *ccPath,const char *ccExtension,void (*vFunction)(char *cFile))
 {
 	pFUNCTION_START
-
 	if (ccPath[0] == ' ')
 	{
 		pError_Set("Invalid path!\n");
@@ -179,7 +189,7 @@ void pFileSystem_ScanDirectory(const char *ccPath,const char *ccExtension,void (
 
 		do
 		{
-			// [31/7/2013] Send the file we've found! ~hogsy
+			// Send the file we've found!
 			vFunction(wfdData.cFileName);
 		} while (FindNextFile(hFile, &wfdData));
 
@@ -207,35 +217,38 @@ void pFileSystem_ScanDirectory(const char *ccPath,const char *ccExtension,void (
 		}
 	}*/
 #endif
-
 	pFUNCTION_END
 }
 
-/*  Based on Q_getwd.
-*/
 void pFileSystem_GetWorkingDirectory(char *cOut)
 {
 	pFUNCTION_START
-
-#ifdef _WIN32
-    if(!_getcwd(cOut,256))
-#else   // Linux
-    if(!getcwd(cOut,256))
-#endif
+    if(!getcwd(cOut,PLATFORM_MAX_PATH))
     {
-        // [3/3/2014] Simple error handling. ~hogsy
         switch(errno)
         {
-        case ERANGE:
-        case EINVAL:
-            pError_Set("Invalid size!\n");
         case EACCES:
-            pError_Set("Permission was denied!\n");
+            pError_Set("Permission to read or search a component of the filename was denied!\n");
+			break;
+		case EFAULT:
+			pError_Set("buf points to a bad address!\n");
+			break;
+		case EINVAL:
+			pError_Set("The size argument is zero and buf is not a null pointer!\n");
+			break;
+		case ENOMEM:
+			pError_Set("Out of memory!\n");
+			break;
+		case ENOENT:
+			pError_Set("The current working directory has been unlinked!\n");
+			break;
+		case ERANGE:
+			pError_Set("The size argument is less than the length of the absolute pathname of the working directory, including the terminating null byte. \
+					    You need to allocate a bigger array and try again!\n");
+			break;
         }
         return;
     }
-
     strcat(cOut,"\\");
-
 	pFUNCTION_END
 }

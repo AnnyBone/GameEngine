@@ -584,7 +584,7 @@ typedef struct
 	VideoTextureEnvironmentMode_t Mode;
 } MaterialTextureEnvironmentModeType_t;
 
-MaterialTextureEnvironmentModeType_t tEnvironmentModes[]=
+MaterialTextureEnvironmentModeType_t EnvironmentModes[]=
 {
 	{ "add", VIDEO_TEXTURE_MODE_ADD },
 	{ "modulate", VIDEO_TEXTURE_MODE_MODULATE },
@@ -600,10 +600,10 @@ void _Material_SetTextureEnvironmentMode(Material_t *Material, MaterialFunctionT
 	sCurrentSkin = Material_GetSkin(Material, Material->iSkins);
 	
 	int i;
-	for (i = 0; i < pARRAYELEMENTS(tEnvironmentModes); i++)
-		if (!strncmp(tEnvironmentModes[i].ccVarName, cArg, Q_strlen(tEnvironmentModes[i].ccVarName)))
+	for (i = 0; i < pARRAYELEMENTS(EnvironmentModes); i++)
+		if (!strncmp(EnvironmentModes[i].ccVarName, cArg, Q_strlen(EnvironmentModes[i].ccVarName)))
 		{
-			sCurrentSkin->mtTexture[sCurrentSkin->uiTextures].EnvironmentMode = tEnvironmentModes[i].Mode;
+			sCurrentSkin->mtTexture[sCurrentSkin->uiTextures].EnvironmentMode = EnvironmentModes[i].Mode;
 			return;
 		}
 
@@ -696,14 +696,14 @@ void _Material_SetFlags(Material_t *mCurrentMaterial, MaterialFunctionType_t mft
 
 typedef struct
 {
-	char	*cKey;
+	char *cKey;
 
-	void	(*Function)(Material_t *mCurrentMaterial, MaterialFunctionType_t mftContext, char *cArg);
+	void (*Function)(Material_t *mCurrentMaterial, MaterialFunctionType_t mftContext, char *cArg);
 
-	MaterialFunctionType_t	mftType;
+	MaterialFunctionType_t mftType;
 } MaterialKey_t;
 
-MaterialKey_t mkMaterialFunctions[]=
+MaterialKey_t MaterialFunctions[]=
 {
 	// Universal
 	{ "flags", _Material_SetFlags, MATERIAL_FUNCTION_UNIVERSAL },
@@ -734,7 +734,7 @@ void Material_CheckFunctions(Material_t *mNewMaterial)
 	MaterialKey_t *mKey;
 
 	// Find the related function.
-	for (mKey = mkMaterialFunctions; mKey->cKey; mKey++)
+	for (mKey = MaterialFunctions; mKey->cKey; mKey++)
 		// Remain case sensitive.
 		if (!Q_strcasecmp(mKey->cKey, cToken + 1))
 		{
@@ -742,7 +742,8 @@ void Material_CheckFunctions(Material_t *mNewMaterial)
 				account for texture slots etc
 			*/
 			if ((mKey->mftType != MATERIAL_FUNCTION_UNIVERSAL) && (mftMaterialState != mKey->mftType))
-				Sys_Error("Attempted to call a function within the wrong context! (%s) (%s) (%i)\n", cToken, mNewMaterial->cPath, iScriptLine);
+				Sys_Error("Attempted to call a function within the wrong context! (%s) (%s) (%i)\n", 
+					cToken, mNewMaterial->cPath, iScriptLine);
 
 			Script_GetToken(false);
 

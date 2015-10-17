@@ -284,6 +284,8 @@ void CEditorFrame::OpenMaterialTool(wxString sPath)
 		MaterialTool = new CMaterialFrame(this);
 
 	MaterialTool->Show();
+	if (!sPath.IsEmpty())
+		MaterialTool->LoadMaterial(sPath);
 }
 
 void CEditorFrame::StartEngineLoop()
@@ -330,7 +332,7 @@ void CEditorFrame::OnTimer(wxTimerEvent &event)
 	// Check to see if it's time to check for changes.
 	if (dAutoReloadDelay < dClientTime)
 	{
-		if (MaterialTool)
+		if (MaterialTool && MaterialTool->IsActive())
 			MaterialTool->ReloadMaterial();
 
 		dAutoReloadDelay = dClientTime + cvEditorAutoReloadDelay.value;
@@ -431,7 +433,8 @@ void CEditorFrame::OnOpen(wxCommandEvent &event)
 		wxString filename = fileDialog->GetFilename();
 
 		if (filename.EndsWith(".material"))
-			OpenMaterialTool(fileDialog->GetPath());
+			// TODO: Pass the path!!
+			OpenMaterialTool(filename);
 		else if (filename.EndsWith(".map"))
 		{
 			SetTitle(fileDialog->GetFilename() + wxString(" - ") + cApplicationTitle);

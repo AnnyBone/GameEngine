@@ -367,6 +367,10 @@ void CMaterialFrame::FileEvent(wxCommandEvent &event)
 		break;
 	case wxID_CLOSE:
 		UnloadMaterial();
+
+		DestroyChildren();
+
+		Close(false);
 		break;
 	case wxID_SAVE:
 		if (sCurrentFilePath.IsEmpty())
