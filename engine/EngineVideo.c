@@ -65,6 +65,8 @@ ConsoleVariable_t
 	cvVideoVBO = { "video_vbo", "0", true, false, "Enables support of Vertex Buffer Objects." },
 	cvVideoPlayerShadow = { "video_playershadow", "1", true, false, "If enabled, the players own shadow will be drawn." },
 	cvVideoDebugLog = { "video_debuglog", "video", true, false, "The name of the output log for video debugging." };
+ConsoleVariable_t cvVideoDrawShadowMap = { "video_draw_shadowmap", "1", true, false, "Enables/disables the rendering of shadow maps." };
+ConsoleVariable_t cvVideoDrawShadowBlob = { "video_draw_shadowblob", "1", true, false, "Enables/disables the rendering of a shadow blob." };
 
 #define VIDEO_MAX_SAMPLES	cvMultisampleMaxSamples.iValue
 #define VIDEO_MIN_SAMPLES	0
@@ -97,8 +99,8 @@ void Video_Initialize(void)
 	memset(Video.uiCurrentTexture, -1, sizeof(int)*VIDEO_MAX_UNITS); // "To avoid unnecessary texture sets"
 
 	// Give everything within the video sub-system its default value.
-	Video.bVertexBufferObject = false;			// Only enabled if the hardware supports it.
-	Video.bGenerateMipMap = false;				// Only enabled if the hardware supports it.
+	Video.bSupportsVBO = false;			// Only enabled if the hardware supports it.
+	Video.bSupportsHWMipmap = false;				// Only enabled if the hardware supports it.
 	Video.bDebugFrame = false;					// Not debugging the initial frame!
 	Video.bActive = true;						// Window is intially assumed active.
 	Video.bUnlocked = true;						// Video mode is initially locked.
@@ -119,6 +121,8 @@ void Video_Initialize(void)
 	Cvar_RegisterVariable(&cvVideoDrawMaterials, NULL);
 	Cvar_RegisterVariable(&cvVideoDrawDetail, NULL);
 	Cvar_RegisterVariable(&cvVideoDrawSky, NULL);
+	Cvar_RegisterVariable(&cvVideoDrawShadowMap, NULL);
+	Cvar_RegisterVariable(&cvVideoDrawShadowBlob, NULL);
 	Cvar_RegisterVariable(&cvVideoDetailScale, NULL);
 	Cvar_RegisterVariable(&cvVideoPlayerShadow, NULL);
 	Cvar_RegisterVariable(&cvVideoLegacy, NULL);
@@ -196,17 +200,14 @@ void Video_Initialize(void)
 	else if (!GLEE_EXT_fog_coord)
 		Sys_Error("EXT_fog_coord isn't supported by your hardware!\n");
 
-	// Does the hardware support mipmap generation?
-	if (GLEE_SGIS_generate_mipmap)
-		Video.bGenerateMipMap = true;
-	else
-		Con_Warning("SGIS_generate_mipmap isn't supported by your hardware!\n");
-
-	// Does the hardware support VBOs?
-	if (GLEE_ARB_vertex_buffer_object)
-		Video.bVertexBufferObject = true;
-	else
-		Con_Warning("ARB_vertex_buffer_object isn't supported by your hardware!\n");
+	if (GLEE_SGIS_generate_mipmap) Video.bSupportsHWMipmap = true;
+	else Con_Warning("Hardware mipmap generation isn't supported!\n");
+	if (GLEE_ARB_depth_texture) Video.bSupportsDepthTexture = true;
+	else Con_Warning("ARB_depth_texture isn't supported by your hardware!\n");
+	if (GLEE_ARB_shadow) Video.bSupportsShadow = true;
+	else Con_Warning("ARB_shadow isn't supported by your hardware!\n");
+	if (GLEE_ARB_vertex_buffer_object) Video.bSupportsVBO = true;
+	else Con_Warning("Hardware doesn't support Vertex Buffer Objects!\n");
 
 #ifdef VIDEO_SUPPORT_SHADERS
 	// Shaders?

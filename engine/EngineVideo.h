@@ -64,6 +64,8 @@ extern "C" {
 	extern	ConsoleVariable_t	gl_flashblend;
 	extern	ConsoleVariable_t	gl_max_size;
 
+	extern ConsoleVariable_t cvVideoDrawShadowMap;
+	extern ConsoleVariable_t cvVideoDrawShadowBlob;
 	extern ConsoleVariable_t cvVideoDrawDetail;	// TODO: Move into EngineMaterial ?
 	extern ConsoleVariable_t cvVideoDrawSky;
 	extern ConsoleVariable_t cvVideoDetailScale; // TODO: Move into EngineMaterial ?
@@ -155,9 +157,10 @@ typedef struct
 	VideoRenderMode_t CurrentRenderMode;
 
 	// OpenGL Extensions
-	bool
-		bGenerateMipMap,
-		bVertexBufferObject;	// ARB_vertex_buffer_object
+	bool bSupportsDepthTexture;	// ARB_depth_texture
+	bool bSupportsShadow;		// ARB_shadow
+	bool bSupportsHWMipmap;		// SGIS_generate_mipmap
+	bool bSupportsVBO;			// ARB_vertex_buffer_object
 } Video_t;
 
 #if __cplusplus

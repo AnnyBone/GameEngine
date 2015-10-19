@@ -62,6 +62,34 @@ char *VideoLayer_GetErrorMessage(unsigned int uiGLError)
 }
 
 /*===========================
+	OPENGL MATRICES
+===========================*/
+
+static bool bVLMatrixPushed = false;
+
+void VideoLayer_PushMatrix(void)
+{
+	VIDEO_FUNCTION_START
+	if (bVLMatrixPushed)
+		return;
+
+	glPushMatrix();
+	bVLMatrixPushed = true;
+	VIDEO_FUNCTION_END
+}
+
+void VideoLayer_PopMatrix(void)
+{
+	VIDEO_FUNCTION_START
+	if (!bVLMatrixPushed)
+		return;
+	
+	glPopMatrix();
+	bVLMatrixPushed = false;
+	VIDEO_FUNCTION_END
+}
+
+/*===========================
 	OPENGL TEXTURES
 ===========================*/
 

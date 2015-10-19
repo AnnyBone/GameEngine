@@ -50,6 +50,9 @@ extern "C" {
 
 	char *VideoLayer_GetErrorMessage(unsigned int uiGLError);
 
+	void VideoLayer_PushMatrix(void);
+	void VideoLayer_PopMatrix(void);
+
 	void VideoLayer_SetupTexture(VideoTextureFormat_t InternalFormat, VideoTextureFormat_t Format, unsigned int Width, unsigned int Height);
 	void VideoLayer_SetTextureFilter(VideoTextureFilter_t FilterMode);
 	void VideoLayer_SetTextureEnvironmentMode(VideoTextureEnvironmentMode_t TextureEnvironmentMode);
