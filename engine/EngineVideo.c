@@ -99,11 +99,13 @@ void Video_Initialize(void)
 	memset(Video.uiCurrentTexture, -1, sizeof(int)*VIDEO_MAX_UNITS); // "To avoid unnecessary texture sets"
 
 	// Give everything within the video sub-system its default value.
-	Video.bSupportsVBO = false;			// Only enabled if the hardware supports it.
-	Video.bSupportsHWMipmap = false;				// Only enabled if the hardware supports it.
-	Video.bDebugFrame = false;					// Not debugging the initial frame!
-	Video.bActive = true;						// Window is intially assumed active.
-	Video.bUnlocked = true;						// Video mode is initially locked.
+	Video.bSupportsVBO			= false;	// Only enabled if the hardware supports it.
+	Video.bSupportsHWMipmap		= false;	// Only enabled if the hardware supports it.
+	Video.bSupportsDepthTexture = false;	// Only enabled if the hardware supports it.
+	Video.bSupportsShadow		= false;	// Only enabled if the hardware supports it.
+	Video.bDebugFrame			= false;	// Not debugging the initial frame!
+	Video.bActive				= true;		// Window is intially assumed active.
+	Video.bUnlocked				= true;		// Video mode is initially locked.
 
 	Cvar_RegisterVariable(&cvMultisampleSamples,NULL);
 	Cvar_RegisterVariable(&cvVideoDrawModels,NULL);
@@ -698,7 +700,7 @@ void Video_DrawArrays(const VideoPrimitive_t vpPrimitiveType, unsigned int uiSiz
 	TODO: Add support for VBOs ?
 */
 void Video_DrawObject(
-	VideoObjectVertex_t *voObject, VideoPrimitive_t vpPrimitiveType, unsigned int	uiVerts,
+	VideoObjectVertex_t *voObject, VideoPrimitive_t vpPrimitiveType, unsigned int uiVerts,
 	Material_t *mMaterial, int iSkin)
 {
 	unsigned int i;

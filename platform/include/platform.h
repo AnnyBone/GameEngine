@@ -30,6 +30,7 @@
 */
 
 // pIGNORE_SHARED_HEADERS
+// pIGNORE_PLATFORM_HEADERS
 // pDEFAULT_STANDARD
 
 // Shared headers
@@ -65,7 +66,7 @@
 // Windows
 #ifdef _WIN32
 	// Headers
-#	ifndef pIGNORE_SHARED_HEADERS
+#	ifndef pIGNORE_PLATFORM_HEADERS
 #		include <Windows.h>
 #		include <WindowsX.h>
 #		include <CommCtrl.h>
@@ -80,6 +81,7 @@
 #	define	PLATFORM_MAX_PATH	MAX_PATH-1	// Maximum path length.
 #	define	PLATFORM_MAX_USER	UNLEN
 
+	// Other
 #	ifdef _MSC_VER
 #		pragma warning(disable : 4152)
 
@@ -106,7 +108,7 @@
 #	endif
 #else	// Linux
 	// Headers
-#	ifndef pIGNORE_SHARED_HEADERS
+#	ifndef pIGNORE_PLATFORM_HEADERS
 #		include <dirent.h>
 #		include <unistd.h>
 #		include <dlfcn.h>

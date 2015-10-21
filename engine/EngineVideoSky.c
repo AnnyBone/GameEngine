@@ -693,7 +693,6 @@ void Sky_GetTexCoord(MathVector3f_t v,float speed,float *s,float *t)
 
 void Sky_DrawFaceQuad(glpoly_t *p)
 {
-	VideoObjectVertex_t QuadVertex[4] = { { { 0 } } };
 	float	s,t,
 			*v;
 	int		i;

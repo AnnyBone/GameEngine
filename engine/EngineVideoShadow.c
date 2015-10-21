@@ -29,84 +29,105 @@
 		Rename to engine_draw!
 */
 
-#define	SHADOW_MAP_RESOLUTION	512
+#define	SHADOW_MAP_RESOLUTION	512	// TODO: Make this a console variable?
 
-#define	SHADOW_BLOB_SCALE	20.0f
+#define	SHADOW_BLOB_SCALE	20.0f	// Default blob scale.
 
 extern MathVector3f_t lightspot;
-extern mplane_t	*lightplane;
-extern ClientEntity_t *currententity;
+extern mplane_t	*lightplane;		// Plane underneath the entity.
+
+/*	Draws a simple rectangular blob under an entity.
+	TODO:
+		Fade out blob shadow based on distance from ground.
+*/
+void Shadow_DrawBlob(ClientEntity_t *Entity)
+{
+	if (!cvVideoDrawShadowBlob.bValue)
+		return;
+
+	// TODO: We ONLY want the bottom plane! Not the light sample... Simplify this?
+	Light_GetSample(Entity->origin);
+	if (!lightplane)
+		return;
+
+	VideoObjectVertex_t	voShadow[4] = { { { 0 } } };
+	float fBlobHeight, fShadowScale[2];
+
+	// TODO: This should be averaged out to the size of an entity.
+	fShadowScale[0] = fShadowScale[1] = SHADOW_BLOB_SCALE;
+
+	fBlobHeight = Entity->origin[2] - lightspot[2];
+
+	Video_ResetCapabilities(false);
+
+	VideoLayer_PushMatrix();
+
+	Video_SetBlend(VIDEO_BLEND_IGNORE, VIDEO_DEPTH_FALSE);
+
+	glTranslatef(Entity->origin[0], Entity->origin[1], Entity->origin[2]);
+	glTranslatef(0, 0, -fBlobHeight + 0.1f);
+
+	Video_ObjectVertex(&voShadow[0], -fShadowScale[0], fShadowScale[1], 0);
+	Video_ObjectTexture(&voShadow[0], VIDEO_TEXTURE_DIFFUSE, 0, 0);
+	Video_ObjectColour(&voShadow[0], 1.0f, 1.0f, 1.0f, 1.0f);
+
+	Video_ObjectVertex(&voShadow[1], fShadowScale[0], fShadowScale[1], 0);
+	Video_ObjectTexture(&voShadow[1], VIDEO_TEXTURE_DIFFUSE, 1.0f, 0);
+	Video_ObjectColour(&voShadow[1], 1.0f, 1.0f, 1.0f, 1.0f);
+
+	Video_ObjectVertex(&voShadow[2], fShadowScale[0], -fShadowScale[1], 0);
+	Video_ObjectTexture(&voShadow[2], VIDEO_TEXTURE_DIFFUSE, 1.0f, 1.0f);
+	Video_ObjectColour(&voShadow[2], 1.0f, 1.0f, 1.0f, 1.0f);
+
+	Video_ObjectVertex(&voShadow[3], -fShadowScale[0], -fShadowScale[1], 0);
+	Video_ObjectTexture(&voShadow[3], VIDEO_TEXTURE_DIFFUSE, 0, 1.0f);
+	Video_ObjectColour(&voShadow[3], 1.0f, 1.0f, 1.0f, 1.0f);
+
+	Video_DrawFill(voShadow, g_mBlobShadow, 0);
+
+	glTranslatef(0, 0, fBlobHeight + 0.1);
+
+	VideoLayer_PopMatrix();
+
+	Video_ResetCapabilities(true);
+}
+
+void Shadow_DrawMap(ClientEntity_t *Entity)
+{
+	if (!cvVideoDrawShadowMap.bValue)
+		return;
+
+	DynamicLight_t *dlNearest = Light_GetDynamic(Entity->origin, false);
+	if (dlNearest)
+	{
+		// TODO: Load up light protection matrix...
+
+		VideoLayer_PushMatrix();
+		VideoLayer_PopMatrix();
+	}
+}
 
 /*	Draw multiple shadow types.
 	TODO:
-	Fade out blob shadow based on distance from ground.
-	Shadow maps.
+		Shadow maps.
+		Need a flag, to disable/enable shadows on certain entities.
 */
 #if 1
 void Shadow_Draw(ClientEntity_t *Entity)
 {
+	// Only meshes are valid here.
+	if ((Entity->model->mType == MODEL_TYPE_BSP) || (Entity->model->mType == MODEL_TYPE_SPRITE))
+		return;
+
 	// Make sure the entity is actually visible.
-	if ((ENTALPHA_DECODE(Entity->alpha) <= 0) || R_CullModelForEntity(Entity))
+	if ((Entity == &cl.viewent) || (ENTALPHA_DECODE(Entity->alpha) <= 0) || R_CullModelForEntity(Entity))
 		return;
 
 	// Shadow blob
-	if (cvVideoDrawShadowBlob.bValue)
-	{
-		VideoObjectVertex_t	voShadow[4] = { { { 0 } } };
-		float fBlobHeight, fShadowScale[2];
-
-		// TODO: This should be averaged out to the size of an entity.
-		fShadowScale[0] = fShadowScale[1] = 20.0f;
-
-		// TODO: We ONLY want the bottom plane! Not the light sample... Simplify this?
-		Light_GetSample(Entity->origin);
-		fBlobHeight = Entity->origin[2] - lightspot[2];
-
-		Video_ResetCapabilities(false);
-
-		glPushMatrix();
-
-		Video_SetBlend(VIDEO_BLEND_IGNORE, VIDEO_DEPTH_FALSE);
-
-		glTranslatef(Entity->origin[0], Entity->origin[1], Entity->origin[2]);
-		glTranslatef(0, 0, -fBlobHeight + 0.1f);
-
-		Video_ObjectVertex(&voShadow[0], -fShadowScale[0], fShadowScale[1], 0);
-		Video_ObjectTexture(&voShadow[0], VIDEO_TEXTURE_DIFFUSE, 0, 0);
-		Video_ObjectColour(&voShadow[0], 1.0f, 1.0f, 1.0f, 1.0f);
-
-		Video_ObjectVertex(&voShadow[1], fShadowScale[0], fShadowScale[1], 0);
-		Video_ObjectTexture(&voShadow[1], VIDEO_TEXTURE_DIFFUSE, 1.0f, 0);
-		Video_ObjectColour(&voShadow[1], 1.0f, 1.0f, 1.0f, 1.0f);
-
-		Video_ObjectVertex(&voShadow[2], fShadowScale[0], -fShadowScale[1], 0);
-		Video_ObjectTexture(&voShadow[2], VIDEO_TEXTURE_DIFFUSE, 1.0f, 1.0f);
-		Video_ObjectColour(&voShadow[2], 1.0f, 1.0f, 1.0f, 1.0f);
-
-		Video_ObjectVertex(&voShadow[3], -fShadowScale[0], -fShadowScale[1], 0);
-		Video_ObjectTexture(&voShadow[3], VIDEO_TEXTURE_DIFFUSE, 0, 1.0f);
-		Video_ObjectColour(&voShadow[3], 1.0f, 1.0f, 1.0f, 1.0f);
-
-		Video_DrawFill(voShadow, g_mBlobShadow, 0);
-
-		glTranslatef(0, 0, fBlobHeight + 0.1);
-		glPopMatrix();
-
-		Video_ResetCapabilities(true);
-	}
+	Shadow_DrawBlob(Entity);
 
 	// Shadow map
-	if (cvVideoDrawShadowMap.bValue)
-	{
-		DynamicLight_t *dlNearest = Light_GetDynamic(Entity->origin, false);
-		if (dlNearest)
-		{
-			// TODO: Load up light protection matrix...
-
-			VideoLayer_PushMatrix();
-			VideoLayer_PopMatrix();
-		}
-	}
+	Shadow_DrawMap(Entity);
 #else	// Old shadows...
 void Shadow_Draw(ClientEntity_t *ent)
 {
