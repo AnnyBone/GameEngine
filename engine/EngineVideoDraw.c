@@ -658,7 +658,7 @@ void Draw_FadeScreen (void)
 */
 void Draw_BeginDisc(void)
 {
-	static float fDiscRotation = 0;
+	//static float fDiscRotation = 0;
 	int	iViewport[4]; //johnfitz
 	VideoCanvasType_t oldcanvas; //johnfitz
 

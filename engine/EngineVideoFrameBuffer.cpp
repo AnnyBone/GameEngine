@@ -44,7 +44,7 @@ CVideoFrameBuffer::CVideoFrameBuffer(int Width, int Height)
 
 	uiFrameBuffer = 0;
 
-	gColourBuffer = nullptr;
+	gColourBuffer = NULL;
 
 	VideoLayer_GenerateFrameBuffer(&uiFrameBuffer);
 
