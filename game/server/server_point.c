@@ -86,7 +86,11 @@ void Point_MonsterSpawn(ServerEntity_t *eMonster)
 		return;
 	}
 
-	Monster_Spawn(eMonster);
+	// Set its origin and angles...
+	Entity_SetOrigin(eMonster, eMonster->v.origin);
+	Entity_SetAngles(eMonster, eMonster->v.angles);
+
+	Server.iMonsters++;
 
 	switch(eMonster->local.style)
 	{

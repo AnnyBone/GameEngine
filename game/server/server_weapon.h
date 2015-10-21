@@ -19,6 +19,8 @@
 #ifndef	__SERVERWEAPON_H__
 #define	__SERVERWEAPON_H__
 
+#include "server_main.h"
+
 /*	Ammo types.
 */
 typedef enum

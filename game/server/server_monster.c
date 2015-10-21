@@ -101,8 +101,6 @@ MonsterRelationship_t MonsterRelationship[]=
 	{	MONSTER_HURLER,		MONSTER_PLAYER,		RELATIONSHIP_HATE	},
 	{	MONSTER_HURLER,		MONSTER_HURLER,		RELATIONSHIP_LIKE	},
 #endif
-
-	{	MONSTER_NONE	}
 };
 
 /**/
@@ -110,7 +108,7 @@ MonsterRelationship_t MonsterRelationship[]=
 // [30/7/2012] Added Monster_CheckBottom ~hogsy
 bool Monster_CheckBottom(ServerEntity_t *ent)
 {
-	vec3_t	mins,maxs,start,stop;
+	MathVector3f_t	mins,maxs,start,stop;
 	trace_t	trace;
 	int		x,y;
 	float	mid,bottom;
@@ -184,7 +182,7 @@ bool Monster_MoveStep(ServerEntity_t *ent,vec3_t move,bool bRelink)
 
 			if(i == 0)
 			{
-				dz = ent->v.origin[2]-ent->Monster.vTarget[2];
+				dz = ent->v.origin[2] - ent->Monster.mvMoveTarget[2];
 				if(dz > 40)
 					vNewOrigin[2] -= 8;
 				else if(dz < 30)
@@ -516,11 +514,14 @@ void Monster_Killed(ServerEntity_t *eTarget, ServerEntity_t *eAttacker)
 	else
 		eTarget->v.bTakeDamage = false;
 
-#ifdef GAME_OPENKATANA
-	// [22/4/2014] Drop the currently equipped item for the player to pick up! ~hogsy
+	// Drop the currently equipped item for the player to pick up!
 	{
 		Weapon_t *wActive = Weapon_GetCurrentWeapon(eTarget);
+#ifdef GAME_OPENKATANA
 		if(wActive && (wActive->iItem != WEAPON_LASERS))
+#else
+		if (wActive)
+#endif
 		{
 			ServerEntity_t *eDroppedItem = Entity_Spawn();
 
@@ -531,7 +532,6 @@ void Monster_Killed(ServerEntity_t *eTarget, ServerEntity_t *eAttacker)
 			Item_Spawn(eDroppedItem);
 		}
 	}
-#endif
 
 	// Update our current state.
 	eTarget->Monster.iState = STATE_DEAD;
@@ -554,7 +554,6 @@ void Monster_Damage(ServerEntity_t *target, ServerEntity_t *inflictor, int iDama
 		decrease after sometime.
 	*/
 
-	// [28/8/2012] Blood is now handled here :) ~hogsy
 	if(target->local.bBleed)
 	{
 		char	cBlood[6];
@@ -564,7 +563,7 @@ void Monster_Damage(ServerEntity_t *target, ServerEntity_t *inflictor, int iDama
 		Engine.Particle(target->v.origin,target->v.velocity,10.0f,cBlood,20);
 	}
 
-	// [3/10/2012] Only do this for clients ~hogsy
+	// Only do this for players.
 	if(Entity_IsPlayer(inflictor))
 	{
 #ifdef GAME_OPENKATANA
@@ -579,13 +578,13 @@ void Monster_Damage(ServerEntity_t *target, ServerEntity_t *inflictor, int iDama
 	}
 	else if(Entity_IsMonster(inflictor))
 	{
-		// [3/10/2012] Double if we're a monster ~hogsy
+		// Double if we're a monster.
 		if(cvServerSkill.value >= 3)
 			iDamage *= 2;
 	}
 
 	if(Entity_IsMonster(target))
-		// [27/4/2014] Automatically wake us up if asleep ~hogsy
+		// Automatically wake us up if asleep.
 		if(target->Monster.iState == STATE_ASLEEP)
 			Monster_SetState(target,STATE_AWAKE);
 
@@ -718,6 +717,18 @@ ServerEntity_t *Monster_GetTarget(ServerEntity_t *eMonster)
 	return NULL;
 }
 
+ServerEntity_t *Monster_GetEnemy(ServerEntity_t *Monster)
+{
+	ServerEntity_t *Target = Monster_GetTarget(Monster);
+	if (!Target)
+		return NULL;
+
+	if (Monster_GetRelationship(Monster, Target) == RELATIONSHIP_HATE)
+		return Target;
+
+	return NULL;
+}
+
 void Monster_SetTargets(ServerEntity_t *eMonster)
 {
 	int	iRelationship;
@@ -829,10 +840,10 @@ void Monster_Frame(ServerEntity_t *eMonster)
 }
 #endif
 
-// [30/7/2012] Added Monster_WalkMove ~hogsy
+// TODO: This is obsolete.
 bool Monster_WalkMove(ServerEntity_t *ent,float yaw,float dist)
 {
-	vec3_t move;
+	MathVector3f_t move;
 
 	if(!(ent->v.flags & (FL_ONGROUND|FL_FLY|FL_SWIM)))
 		return false;
@@ -853,24 +864,6 @@ bool Monster_WalkMove(ServerEntity_t *ent,float yaw,float dist)
 #define	MONSTER_EMOTION_RESET		30
 #define	MONSTER_EMOTION_THRESHOLD	50
 
-void Monster_Spawn(ServerEntity_t *eMonster)
-{
-	// Add it to global monster count...
-	Server.iMonsters++;
-
-	// Set its origin and angles...
-	Entity_SetOrigin(eMonster, eMonster->v.origin);
-	Entity_SetAngles(eMonster, eMonster->v.angles);
-
-	// Reset its emotions...
-/*	for (i = 0; i < EMOTION_NONE; i++)
-	{
-		eMonster->Monster.meEmotion[i].dResetDelay = Server.dTime + MONSTER_EMOTION_RESET;
-		eMonster->Monster.meEmotion[i].iEmotion = 0;
-		eMonster->Monster.meEmotion[i].iPriority = 0;
-	}*/
-}
-
 /*	Used to go over each monster state then update it, and then calls the monsters
 	assigned think function.
 */
@@ -881,88 +874,6 @@ void Monster_Frame(ServerEntity_t *eMonster)
 		return;
 
 	Entity_CheckFrames(eMonster);
-
-	/*
-	switch (eMonster->Monster.iState)
-	{
-	case STATE_ASLEEP:
-		eMonster->Monster.meEmotion[EMOTION_ANGER].iEmotion--;
-		eMonster->Monster.meEmotion[EMOTION_BOREDOM].iEmotion++;
-		eMonster->Monster.meEmotion[EMOTION_CONTEMPT].iEmotion--;
-		eMonster->Monster.meEmotion[EMOTION_DISGUST].iEmotion--;
-		eMonster->Monster.meEmotion[EMOTION_FEAR].iEmotion--;
-		eMonster->Monster.meEmotion[EMOTION_INTEREST].iEmotion--;
-		eMonster->Monster.meEmotion[EMOTION_JOY].iEmotion--;
-
-		
-		break;
-	case STATE_AWAKE:
-		switch (eMonster->Monster.iThink)
-		{
-		case THINK_ATTACKING:
-			eMonster->Monster.meEmotion[EMOTION_ANGER].iEmotion++;
-			eMonster->Monster.meEmotion[EMOTION_BOREDOM].iEmotion--;
-			eMonster->Monster.meEmotion[EMOTION_CONTEMPT].iEmotion++;
-			eMonster->Monster.meEmotion[EMOTION_DISGUST].iEmotion--;
-			eMonster->Monster.meEmotion[EMOTION_FEAR].iEmotion++;
-			eMonster->Monster.meEmotion[EMOTION_INTEREST].iEmotion--;
-			eMonster->Monster.meEmotion[EMOTION_JOY].iEmotion--;
-			break;
-		case THINK_FLEEING:
-			eMonster->Monster.meEmotion[EMOTION_ANGER].iEmotion--;
-			eMonster->Monster.meEmotion[EMOTION_BOREDOM].iEmotion--;
-			eMonster->Monster.meEmotion[EMOTION_CONTEMPT].iEmotion++;
-			eMonster->Monster.meEmotion[EMOTION_DISGUST].iEmotion--;
-			eMonster->Monster.meEmotion[EMOTION_FEAR].iEmotion++;
-			eMonster->Monster.meEmotion[EMOTION_INTEREST].iEmotion--;
-			eMonster->Monster.meEmotion[EMOTION_JOY].iEmotion--;
-			break;
-		case THINK_PURSUING:
-		case THINK_IDLE:
-			eMonster->Monster.meEmotion[EMOTION_ANGER].iEmotion--;
-			eMonster->Monster.meEmotion[EMOTION_BOREDOM].iEmotion++;
-			eMonster->Monster.meEmotion[EMOTION_CONTEMPT].iEmotion--;
-			eMonster->Monster.meEmotion[EMOTION_DISGUST].iEmotion--;
-			eMonster->Monster.meEmotion[EMOTION_FEAR].iEmotion--;
-			eMonster->Monster.meEmotion[EMOTION_INTEREST].iEmotion--;
-			eMonster->Monster.meEmotion[EMOTION_JOY].iEmotion--;
-			break;
-		case THINK_WANDERING:
-			break;
-		}
-		break;
-	case STATE_DEAD:
-		break;
-	case STATE_NONE:
-		break;
-	}
-
-	if (eMonster->Monster.iState != STATE_DEAD)
-	{
-		for (i = 0; i < EMOTION_NONE; i++)
-		{
-			// Keep these within reasonable limits...
-			if (eMonster->Monster.meEmotion[i].iEmotion >= 100)
-			{
-				if (!Monster_EmotionReset(eMonster, i))
-					eMonster->Monster.meEmotion[i].iEmotion = 100;
-			}
-			else if (eMonster->Monster.meEmotion[i].iEmotion <= -100)
-			{
-				if (!Monster_EmotionReset(eMonster, i))
-					eMonster->Monster.meEmotion[i].iEmotion = -100;
-			}
-
-#ifdef MONSTER_DEBUG
-			Engine.Con_DPrintf("EMOTION %i: %i %f (%s)\n",
-				i,
-				eMonster->Monster.meEmotion[i].iEmotion,
-				eMonster->Monster.meEmotion[i].dResetDelay,
-				eMonster->v.cClassname);
-#endif
-		}
-	}
-	*/
 
 	if (eMonster->Monster.Think)
 		eMonster->Monster.Think(eMonster);
@@ -1018,13 +929,12 @@ int	Monster_GetRelationship(ServerEntity_t *eMonster, ServerEntity_t *eTarget)
 	}
 
 	// Run through the relationship table...
-	for (i = 0; i < sizeof(MonsterRelationship); i++)
+	for (i = 0; i < pARRAYELEMENTS(MonsterRelationship); i++)
 	{
 		// If the first type returns 0, then assume we've reached the end.
 		if (!MonsterRelationship[i].iFirstType)
 			break;
 
-		// [15/12/2013] Fixed a little mistake here ~hogsy
 		if ((eMonster->Monster.iType == MonsterRelationship[i].iFirstType) &&
 			(eTarget->Monster.iType == MonsterRelationship[i].iSecondType))
 			return MonsterRelationship[i].iRelationship;
@@ -1070,6 +980,11 @@ void Monster_MoveRandom(ServerEntity_t *eMonster,float fSpeed)
 		eMonster->v.angles[1] = (float)(rand() % 360);
 }
 
+Waypoint_t *Monster_GetMoveTarget(ServerEntity_t *Monster)
+{
+	return Waypoint_GetByVisibility(Monster->v.origin);
+}
+
 /*	Move the monster forwards.
 */
 void Monster_MoveForward(ServerEntity_t *eMonster)
@@ -1082,7 +997,7 @@ void Monster_MoveBackward(ServerEntity_t *eMonster)
 
 /*	Strafe right.
 */
-void Monster_MoveLeft(ServerEntity_t *eMonster)
+void Monster_MoveLeft(ServerEntity_t *Monster, float fVelocity)
 {}
 
 /*	Strafe left.
@@ -1092,7 +1007,7 @@ void Monster_MoveRight(ServerEntity_t *eMonster)
 
 /*	Turn left on the spot.
 */
-void Monster_TurnLeft(ServerEntity_t *eMonster)
+void Monster_TurnLeft(ServerEntity_t *Monster, float fVelocity)
 {}
 
 /*	Turn right on the spot.

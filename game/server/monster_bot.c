@@ -20,6 +20,10 @@
 
 #include "server_main.h"
 
+#include "server_monster.h"
+#include "server_weapon.h"
+#include "server_player.h"
+
 /*
 	Katana Bot
 	Used as companions in single-player
@@ -37,11 +41,6 @@
 		risk getting "spawn gibbed" by someone.
 	~hogsy
 */
-
-#include "server_monster.h"
-
-#include "server_weapon.h"
-#include "server_player.h"
 
 // These need to match player specs!
 #define	BOT_MAX_HEALTH		cvServerMaxHealth.iValue
@@ -280,8 +279,29 @@ void Bot_Think(ServerEntity_t *eBot)
 	{
 	case THINK_IDLE:
 	{
-		Monster_MoveRandom(eBot, BOT_MIN_SPEED);
+		Monster_MoveRandom(eBot, 50.0f);
 
+		// Attempt to find an enemy.
+		if (!eBot->Monster.eEnemy)
+		{
+			ServerEntity_t *Enemy = Monster_GetEnemy(eBot);
+			if (Enemy)
+			{
+				eBot->Monster.eEnemy = Enemy;
+
+				Monster_SetThink(eBot, THINK_PURSUING);
+				return;
+			}
+		}
+
+		Waypoint_t *wMoveTarget = Monster_GetMoveTarget(eBot);
+		if (wMoveTarget)
+		{
+			Math_VectorCopy(wMoveTarget->position, eBot->Monster.mvMoveTarget);
+
+			Monster_SetThink(eBot, THINK_WANDERING);
+			return;
+		}
 	}
 	break;
 	case THINK_ATTACKING:
@@ -311,33 +331,6 @@ void Bot_Think(ServerEntity_t *eBot)
 	break;
 	case THINK_WANDERING:
 		{
-			ServerEntity_t		*eTarget;
-			Waypoint_t	*wPoint;
-
-			eTarget = Monster_GetTarget(eBot);
-			if(eTarget)
-			{
-				if(Monster_GetRelationship(eBot,eTarget) == RELATIONSHIP_HATE)
-				{
-					// [22/3/2013] Begin attacking next frame ~hogsy
-					Monster_SetThink(eBot,THINK_ATTACKING);
-					return;
-				}
-			}
-
-			// [28/7/2012] TODO: Find specific waypoint such as an item ~hogsy
-			wPoint = Waypoint_GetByVisibility(eBot->v.origin);
-			if(wPoint)
-			{
-				if(wPoint->bOpen)
-				{
-					// [22/3/2013] TODO: Tell that current entity it's time to move... ~hogsy
-				}
-
-				if (eBot->Monster.vTarget != wPoint->position)
-					Math_VectorCopy(wPoint->position,eBot->Monster.vTarget);
-			}
-
 #if 0
 			wMyWeapon = Weapon_GetCurrentWeapon(eBot);
 			if(MONSTER_GetRange(eBot,eBot->v.enemy->v.origin) > 4000)

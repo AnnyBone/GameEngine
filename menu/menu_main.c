@@ -99,17 +99,6 @@ void Menu_Draw(void)
 
 	Menu_UpdateScreenSize();
 
-	Engine.Client_SetMenuCanvas(CANVAS_DEFAULT);
-
-	// Disclaimer.
-	if (cvMenuDisclaimer.bValue)
-	{
-		Engine.DrawString(30, 30, "This is an early pre-alpha build of OpenKatana");
-		Engine.DrawString(30, 40, "that's intended to focus purely on the multiplayer");
-		Engine.DrawString(30, 50, "component of the game. As such is unfinished and certain");
-		Engine.DrawString(30, 60, "portions of the game will not be implemented or functional.");
-	}
-
 	Engine.Client_SetMenuCanvas(CANVAS_MENU);
 
 	if(iMenuState & MENU_STATE_LOADING)

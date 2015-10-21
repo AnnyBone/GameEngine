@@ -50,7 +50,7 @@ bool Waypoint_IsSafe(ServerEntity_t *eMonster,Waypoint_t *wPoint)
 	eMonsters = Engine.Server_FindRadius(wPoint->position,MONSTER_RANGE_NEAR);
 	while(eMonsters)
 	{
-		// [6/6/2013] Check this by relationship rather than type ~hogsy
+		// Check this by relationship rather than type.
 		if(Monster_GetRelationship(eMonster,eMonsters) == RELATIONSHIP_HATE)
 			return false;
 
@@ -178,7 +178,7 @@ void Waypoint_Frame(ServerEntity_t *eEntity)
 #endif
 }
 
-void Waypoint_Spawn(vec3_t vOrigin,WaypointType_t type)
+void Waypoint_Spawn(MathVector3f_t vOrigin,WaypointType_t type)
 {
 #ifdef	DEBUG_WAYPOINT
 	char		*cModelName = WAYPOINT_MODEL_BASE;
@@ -206,7 +206,7 @@ void Waypoint_Spawn(vec3_t vOrigin,WaypointType_t type)
 		// [30/1/2013] Oops! Check we actually have a visible waypoint!! ~hogsy
 		if(wVisibleWaypoint)
 		{
-			vec3_t	vDistance;
+			MathVector3f_t vDistance;
 
 			Math_VectorSubtract(wVisibleWaypoint->position,vOrigin,vDistance);
 			if(Math_VectorLength(vDistance) < MONSTER_RANGE_MEDIUM)
@@ -242,7 +242,7 @@ void Waypoint_Spawn(vec3_t vOrigin,WaypointType_t type)
 		break;
 	case WAYPOINT_CLIMB:
 		wPoint->cName = "climb";
-		// [27/12/2012] TODO: Check that there's a ladder nearby ~hogsy
+		// TODO: Check that there's a ladder nearby.
 #ifdef DEBUG_WAYPOINT
 		cModelName	= WAYPOINT_MODEL_CLIMB;
 #endif

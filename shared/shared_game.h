@@ -243,8 +243,7 @@ typedef struct
 // Monster specific variables
 typedef struct
 {
-	// [15/7/2012] Position we'll be moving to ~hogsy
-	MathVector3f_t vTarget;
+	MathVector3f_t mvMoveTarget;	// Position we're currently headed towards.
 	MathVector3f_t vOldTarget;
 
 	int		iType;

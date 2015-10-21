@@ -1,5 +1,6 @@
 /*	Copyright (C) 2014 OldTimes Software / Mark Elsworth Sowden
 */
+
 #include "server_weapon.h"
 
 void Blazer_Deploy(ServerEntity_t *eOwner)

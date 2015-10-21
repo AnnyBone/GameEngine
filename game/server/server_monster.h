@@ -98,7 +98,8 @@ enum
 	EMOTION_NONE
 };
 
-ServerEntity_t	*Monster_GetTarget(ServerEntity_t *eMonster);
+ServerEntity_t *Monster_GetTarget(ServerEntity_t *eMonster);
+ServerEntity_t *Monster_GetEnemy(ServerEntity_t *Monster);
 
 bool Monster_SetState(ServerEntity_t *eMonster, MonsterState_t msState);
 bool Monster_SetThink(ServerEntity_t *eMonster, MonsterThink_t mtThink);
@@ -107,16 +108,17 @@ bool Monster_EmotionReset(ServerEntity_t *eMonster, int iEmotion);
 
 int	Monster_GetRelationship(ServerEntity_t *eMonster, ServerEntity_t *eTarget);
 
-float MONSTER_GetRange(ServerEntity_t *ent, vec3_t target);
+float MONSTER_GetRange(ServerEntity_t *ent, MathVector3f_t target);
 
-void Monster_Spawn(ServerEntity_t *eMonster);
 void Monster_Damage(ServerEntity_t *target, ServerEntity_t *inflictor, int iDamage, int iDamageType);
 void Monster_Jump(ServerEntity_t *eMonster, float fVelocity);
-void Monster_MoveToGoal(ServerEntity_t *ent, vec3_t goal, float distance);
+void Monster_MoveToGoal(ServerEntity_t *ent, MathVector3f_t goal, float distance);
 void Monster_MoveRandom(ServerEntity_t *eMonster, float fSpeed);
 void Monster_Frame(ServerEntity_t *eMonster);
 void Monster_SetTargets(ServerEntity_t *eMonster);
 void Monster_Killed(ServerEntity_t *eTarget, ServerEntity_t *eAttacker);
+
+Waypoint_t *Monster_GetMoveTarget(ServerEntity_t *Monster);
 
 /*
     Bots
