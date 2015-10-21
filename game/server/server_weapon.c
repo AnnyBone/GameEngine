@@ -1,14 +1,30 @@
 /*	Copyright (C) 2011-2015 OldTimes Software
+
+	This program is free software; you can redistribute it and/or
+	modify it under the terms of the GNU General Public License
+	as published by the Free Software Foundation; either version 2
+	of the License, or (at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+	See the GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#include "server_main.h"
+
 #include "server_weapon.h"
+#include "server_item.h"
+#include "server_player.h"
 
 /*
 	Base code for the weapon system.
 */
-
-#include "server_item.h"
-#include "server_player.h"
 
 Weapon_t Weapons[] =
 {
@@ -457,9 +473,6 @@ void Weapon_UpdateCurrentAmmo(Weapon_t *wWeapon, ServerEntity_t *eEntity)
 	case AM_ROCKET:
 		eEntity->v.iPrimaryAmmo = eEntity->local.sidewinder_ammo;
 		break;
-	case AM_DISCUS:
-		eEntity->v.iPrimaryAmmo = eEntity->local.discus_ammo;
-		break;
 	case AM_BULLET:
 		eEntity->v.iPrimaryAmmo = eEntity->local.glock_ammo;
 		break;
@@ -538,17 +551,12 @@ bool Weapon_CheckPrimaryAmmo(Weapon_t *wWeapon,ServerEntity_t *eEntity)
 	switch(wWeapon->iPrimaryType)
 	{
 #ifdef OPENKATANA
-	// [12/8/2012] Added in AM_IONS ~hogsy
 	case AM_IONS:
 		if(eEntity->local.ionblaster_ammo)
 			return true;
 		break;
 	case AM_ROCKET:
 		if(eEntity->local.sidewinder_ammo)
-			return true;
-		break;
-	case AM_DISCUS:
-		if(eEntity->local.discus_ammo)
 			return true;
 		break;
 	case AM_BULLET:
@@ -623,7 +631,8 @@ void Weapon_ResetAnimation(ServerEntity_t *ent)
 
 void Weapon_CheckFrames(ServerEntity_t *eEntity)
 {
-	if(!eEntity->local.iWeaponAnimationEnd || Server.dTime < eEntity->local.fWeaponAnimationTime)	// If something isn't active and Animationtime is over
+	// If something isn't active and Animationtime is over
+	if(!eEntity->local.iWeaponAnimationEnd || Server.dTime < eEntity->local.fWeaponAnimationTime)
 		return;
 	// Reset the animation in-case we die!
 	else if((eEntity->local.iWeaponAnimationCurrent > eEntity->local.iWeaponAnimationEnd) || (eEntity->v.iHealth <= 0))
@@ -690,7 +699,7 @@ void Weapon_Cycle(ServerEntity_t *eEntity, bool bForward)
 	if(!wCurrentWeapon)
 		return;
 
-	// Set nextweapon to our current weapon befpre anything else.
+	// Set nextweapon to our current weapon before anything else.
 	iNextWeapon = wCurrentWeapon->iItem;
 
 	// Cycle through the weapon array
@@ -829,11 +838,11 @@ void Weapon_CheckInput(ServerEntity_t *eEntity)
 			iNewWeapon = WEAPON_NONE;
 		}
 
-		// [29/7/2013] Check our actual inventory! ~hogsy
+		// Check our actual inventory!
 		iItem = Item_GetInventory(iNewWeapon,eEntity);
 		if(iItem)
 		{
-			// [11/5/2013] Check our new weapon against our active one ~hogsy
+			// Check our new weapon against our active one.
 			if(iItem->iNumber != eEntity->v.iActiveWeapon)
 			{
 				wWeapon = Weapon_GetWeapon(iItem->iNumber);
@@ -843,7 +852,7 @@ void Weapon_CheckInput(ServerEntity_t *eEntity)
 				{
 					Engine.Server_SinglePrint(eEntity,"Not enough ammo.\n");
 
-					// [27/1/2013] TODO: Change to client-specific sound function ~hogsy
+					// TODO: Change to client-specific sound function.
 					Engine.Sound(eEntity,CHAN_AUTO,"misc/deny.wav",255,ATTN_NORM);
 				}
 				else
@@ -854,17 +863,16 @@ void Weapon_CheckInput(ServerEntity_t *eEntity)
 	else if(eEntity->v.impulse == 65)
 		Weapon_CheatCommand(eEntity);
 	else if(eEntity->v.impulse == 10)
-		Weapon_Cycle(eEntity,true);	// Forwards cycling
+		Weapon_Cycle(eEntity,true);		// Forwards cycling
 	else if(eEntity->v.impulse == 12)
 		Weapon_Cycle(eEntity,false);	// Backwards cycling
 
-	else if(eEntity->v.impulse == 66)
+	else if(eEntity->v.impulse == 66)	// TODO: Button?
 		Player_Use(eEntity);
 
 	if(eEntity->v.button[0])
 		Weapon_PrimaryAttack(eEntity);
-	// [28/7/2012] Added secondary attack ~hogsy
-	else if(eEntity->v.impulse == 150)
+	else if(eEntity->v.impulse == 150)	// TODO: Change to a button?
 		Weapon_SecondaryAttack(eEntity);
 
 	eEntity->v.impulse = 0;

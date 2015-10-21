@@ -49,7 +49,6 @@
 	point_logic			- Compilation of basic logic-gates
 */
 
-#include "server_waypoint.h"
 #include "server_vehicle.h"
 #include "server_physics.h"
 

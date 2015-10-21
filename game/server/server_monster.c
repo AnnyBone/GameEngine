@@ -703,7 +703,7 @@ ServerEntity_t *Monster_GetTarget(ServerEntity_t *eMonster)
 
 	do
 	{
-		// [6/6/2013] Only return if it's a new target and a monster type! ~hogsy
+		// Only return if it's a new target and a monster type!
 		if(	(eMonster != eTargets)																&&	// Can't target ourself.
 			(eTargets != eMonster->local.eOwner)												&&	// Can't target owner.
 			(eTargets != eMonster->Monster.eTarget && eTargets != eMonster->Monster.eOldTarget) &&	// Can't target an old target.

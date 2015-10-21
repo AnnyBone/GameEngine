@@ -18,7 +18,6 @@
 
 #include "server_main.h"
 
-#include "server_waypoint.h"
 #include "server_weapon.h"
 #include "server_item.h"
 

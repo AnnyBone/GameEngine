@@ -40,8 +40,6 @@ TODO:
 	area_monsterclip ?	- Blocks ways off for monsters
 */
 
-#include "server_waypoint.h"
-
 void Area_SetMoveDirection(MathVector3f_t vAngles, MathVector3f_t vMoveDirection)
 {
 	MathVector3f_t vUp = { 0, -1, 0 };

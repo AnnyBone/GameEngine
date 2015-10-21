@@ -16,7 +16,7 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "server_waypoint.h"
+#include "server_main.h"
 
 /*
 	Used for both navigation and as basic reference points within levels.
@@ -90,10 +90,7 @@ void Waypoint_Delete(Waypoint_t *wPoint)
 	iWaypointAllocated--;
 }
 
-// [25/6/2012] Added Monster_FindClosestVisibleWaypoint ~hogsy
-// [20/12/2012] Renamed to Monster_GetVisibleWaypoint for consistency ~hogsy
-// [30/1/2013] Renamed to Waypoint_GetByVisibility ~hogsy
-Waypoint_t *Waypoint_GetByVisibility(vec3_t vOrigin)
+Waypoint_t *Waypoint_GetByVisibility(MathVector3f_t vOrigin)
 {
 	Waypoint_t	*wPoint;
 	trace_t		tTrace;
@@ -101,7 +98,7 @@ Waypoint_t *Waypoint_GetByVisibility(vec3_t vOrigin)
 	for(wPoint = wWaypoints; wPoint->number < iWaypointCount; wPoint++)
 	{
 		tTrace = Traceline(NULL,vOrigin,wPoint->position,0);
-		// [16/1/2014] Given point cannot be in the same place as the given origin ~hogsy
+		// Given point cannot be in the same place as the given origin.
 		if(	Math_VectorCompare(tTrace.endpos,wPoint->position) && 
 			!Math_VectorCompare(vOrigin,wPoint->position))
 			return wPoint;
@@ -123,8 +120,8 @@ Waypoint_t *Waypoint_GetByNumber(int iWaypointNumber)
 // [20/12/2012] Let us find a waypoint by type! ~hogsy
 Waypoint_t *Waypoint_GetByType(ServerEntity_t *eMonster,int iType,float fMaxDistance)
 {
-	Waypoint_t	*wPoint;
-	vec3_t		vDistance;
+	Waypoint_t *wPoint;
+	MathVector3f_t vDistance;
 
 	// [5/1/2013] Very unlikely but this is a temporary precaution ~hogsy
 	if(!eMonster)

@@ -46,7 +46,7 @@ ConsoleVariable_t
         cvInputMouseFilter	= {	"input_mousefilter",	"0",	true,   false,  "Filters out mouse input so it responds more smoothly."	                },
         cvInputMouseGrab    = { "input_mousegrab",      "1",    true,   false,  "If enabled, the mouse is automatically hidden and limited to window."  };
 
-extern cvar_t	joy_pitchsensitivity;
+extern ConsoleVariable_t joy_pitchsensitivity;
 
 typedef struct
 {
@@ -76,7 +76,7 @@ void Input_Initialize(void)
 
 	Con_Printf("Initializing input...\n");
 
-	// [29/7/2012] Register input cvars ~hogsy
+	// Register input cvars.
 	Cvar_RegisterVariable(&cvInputMouseLook,NULL);
 	Cvar_RegisterVariable(&cvInputMouseFilter,NULL);
 	Cvar_RegisterVariable(&cvInputMouseGrab,NULL);
@@ -88,7 +88,7 @@ void Input_Initialize(void)
 	if (SDL_Init(SDL_INIT_JOYSTICK) < 0)
 	{
 		Con_Warning("Failed to initialize input!\n%s", SDL_GetError());
-		// [2/7/2012] Not a serious issue if input ain't working ~hogsy
+		// Not a serious issue if controller input ain't working.
 		return;
 	}
 
@@ -128,7 +128,7 @@ void Input_Initialize(void)
 		Con_Printf(" Found %i input device(s)\n", iNumControllers);
 	else
 	{
-		// [30/1/2013] No controllers found, disable event processing ~hogsy
+		// No controllers found, disable event processing.
 		SDL_JoystickEventState(SDL_IGNORE);
 		SDL_GameControllerEventState(SDL_IGNORE);
 	}
@@ -248,7 +248,7 @@ int Input_ConvertKey(int iKey)
 	}
 }
 
-// [13/7/2013] Ripped from Raynorpat's code ~hogsy
+// Ripped from Raynorpat's code.
 static int InputMouseRemap[18]=
 {
 	K_MOUSE1,
@@ -272,24 +272,24 @@ void Input_Frame(void)
                 case SDL_WINDOWEVENT_FOCUS_GAINED:
                     Video.bActive = true;
 
-                    // [6/11/2013] Then restore it :) ~hogsy
+                    // Then restore it.
                     if(sbOldMouseState)
                         Input_ActivateMouse();
                     else
                         Input_DeactivateMouse();
 
-                    // [30/7/2013] Window isn't active! Clear states ~hogsy
+                    // Window isn't active! Clear states.
                     Key_ClearStates();
                     break;
                 case SDL_WINDOWEVENT_FOCUS_LOST:
                     Video.bActive = false;
 
-                    // [6/11/2013] Save our old mouse state ~hogsy
+                    // Save our old mouse state.
                     sbOldMouseState = bMouseActive;
 
                     Input_DeactivateMouse();
 
-                    // [30/7/2013] Window isn't active! Clear states ~hogsy
+                    // Window isn't active! Clear states.
                     Key_ClearStates();
                     break;
                 case SDL_WINDOWEVENT_RESIZED:
@@ -308,7 +308,7 @@ void Input_Frame(void)
 				if (bIsDedicated || !bMouseActive)
                     return;
 
-                // [30/7/2013] Originally handled this differently for fullscreen but this works fine apparently ~hogsy
+                // Originally handled this differently for fullscreen but this works fine apparently!
                 if(((unsigned)sEvent.motion.x != (Video.iWidth/2)) || ((unsigned)sEvent.motion.y != (Video.iHeight/2)))
                 {
                     iMousePosition[pX]	= sEvent.motion.xrel*5;
@@ -364,15 +364,15 @@ void Input_Frame(void)
         }
 }
 
-extern cvar_t	cl_maxpitch,
-				cl_minpitch;
+extern ConsoleVariable_t	cl_maxpitch,
+							cl_minpitch;
 
 /*	Process client-specific movement which
 	will be sent to the server.
 */
 void Input_ClientFrame(ClientCommand_t *ccInput)
 {
-	// [16/7/2013] Don't bother if the application isn't active ~hogsy
+	// Don't bother if the application isn't active.
 	if(!bMouseActive)
 		return;
 
@@ -390,7 +390,7 @@ void Input_ClientFrame(ClientCommand_t *ccInput)
 
 	if(!cvInputMouseLook.value)
 	{
-		// [13/7/2013] Copied from Raynorpat's code ~hogsy
+		// Copied from Raynorpat's code.
 		if(in_strafe.state & 1)
 			ccInput->sidemove += m_side.value*iMousePosition[pX];
 
@@ -398,7 +398,7 @@ void Input_ClientFrame(ClientCommand_t *ccInput)
 	}
 	else
 	{
-		// [16/7/2013] Prevent the camera from resetting ~hogsy
+		// Prevent the camera from resetting.
 		V_StopPitchDrift();
 
 		cl.viewangles[YAW]		-= m_yaw.value*iMousePosition[pX];
@@ -445,7 +445,7 @@ void Input_Shutdown(void)
 
 	for(i = 0; i < iNumControllers; i++)
 	{
-		// [29/7/2013] Function originally used here is obsolete. Just do a silly check here instead for safety ~hogsy
+		// Function originally used here is obsolete. Just do a silly check here instead for safety.
 		if(cController[i].sJoystick)
 			SDL_JoystickClose(cController[i].sJoystick);
 		else if(cController[i].sGameController)

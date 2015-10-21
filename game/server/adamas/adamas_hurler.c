@@ -9,7 +9,7 @@
 #define	HURLER_MAX_HEALTH	250
 #define	HURLER_MAX_DELAY	7.0f;
 
-double	dHurlerSpawnDelay = HURLER_MAX_DELAY;
+double dHurlerSpawnDelay = HURLER_MAX_DELAY;
 
 int	iHurlers = 0;
 

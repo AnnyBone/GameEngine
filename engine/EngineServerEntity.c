@@ -34,6 +34,7 @@ void Edict_Clear(ServerEntity_t *eEntity, bool bFreeEntity)
 	memset(&eEntity->v,0,sizeof(eEntity->v));
 
 	// TODO: Call this game-side too!!!!
+	//Game->Server_ClearEntity(Entity);
 
 	// Clear everything else that's shared...
 	memset(&eEntity->Model,0,sizeof(eEntity->Model));

@@ -32,6 +32,7 @@
 // Legacy base includes
 #include "server_physics.h"
 #include "server_mode.h"
+#include "server_waypoint.h"
 #include "server_monster.h"
 #include "server_misc.h"
 

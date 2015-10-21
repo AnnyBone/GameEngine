@@ -1,10 +1,23 @@
 /*	Copyright (C) 2011-2015 OldTimes Software
+
+	This program is free software; you can redistribute it and/or
+	modify it under the terms of the GNU General Public License
+	as published by the Free Software Foundation; either version 2
+	of the License, or (at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+	See the GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef	__SERVERWEAPON__
-#define	__SERVERWEAPON__
-
-#include "server_main.h"
+#ifndef	__SERVERWEAPON_H__
+#define	__SERVERWEAPON_H__
 
 /*	Ammo types.
 */
@@ -22,7 +35,6 @@ typedef enum
 	AM_LASER,					// Shockwave ammunition.
 	AM_C4BOMB,					// C4 ammunition.
 /*	Episode two					*/
-	AM_DISCUS,					// Discus ammunition.
 /*	Episode three				*/
 /*	Episode four				*/
 #endif
@@ -94,7 +106,7 @@ typedef struct
 
 	void			(*Secondary)(ServerEntity_t *ent);
 
-	// [25/9/2013] For handing some control over to the weapon system in regards to updating ammo ~hogsy
+	// For handing some control over to the weapon system in regards to updating ammo.
 	int				iPrimaryAmmoOffset,
 					iSecondaryAmmoOffset;
 } Weapon_t;
@@ -107,16 +119,16 @@ Weapon_t *Weapon_GetWeapon(int iWeaponID);
 void Weapon_Precache(void);
 void Weapon_UpdateCurrentAmmo(Weapon_t *wWeapon, ServerEntity_t *eEntity);
 void Weapon_SetActive(Weapon_t *wWeapon, ServerEntity_t *eEntity, bool bDeploy);
-void Weapon_BulletProjectile(ServerEntity_t *ent, float spread, int damage, vec3_t vVector);
+void Weapon_BulletProjectile(ServerEntity_t *ent, float spread, int damage, MathVector3f_t vVector);
 void Weapon_Projectile(ServerEntity_t *eOwner, ServerEntity_t *eProjectile, float fVelocity);
 void Weapon_CheckFrames(ServerEntity_t *eEntity);
 void Weapon_Animate(ServerEntity_t *ent, EntityFrame_t *eFrames);
 void Weapon_PrimaryAttack(ServerEntity_t *eEntity);
 void Weapon_CheckInput(ServerEntity_t *eEntity);
+void Weapon_ViewPunch(ServerEntity_t *eEntity, float fIntensity, bool bAddition);
 
 bool Weapon_CheckPrimaryAmmo(Weapon_t *wWeapon, ServerEntity_t *eEntity);
 bool Weapon_CheckSecondaryAmmo(Weapon_t *wWeapon, ServerEntity_t *eEntity);
 bool Weapon_CheckTrace(ServerEntity_t *eOwner);
-void Weapon_ViewPunch(ServerEntity_t *eEntity, float fIntensity, bool bAddition);
 
 #endif

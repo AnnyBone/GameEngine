@@ -52,7 +52,7 @@ extern "C" {
 
 	void Cvar_Init(void);
 
-	void 	Cvar_RegisterVariable(cvar_t *variable, void(*Function)(void)); //johnfitz -- cvar callback
+	void 	Cvar_RegisterVariable(ConsoleVariable_t *variable, void(*Function)(void)); //johnfitz -- cvar callback
 	// registers a cvar that allready has the name, string, and optionally the
 	// archive elements set.
 
@@ -79,10 +79,10 @@ extern "C" {
 
 	void Cvar_Reset(const char *name);
 
-	cvar_t *Cvar_FindVar(const char *var_name);
+	ConsoleVariable_t *Cvar_FindVar(const char *var_name);
 
 #ifdef __cplusplus
 };
 #endif
 
-extern cvar_t	*cConsoleVariables;
+extern ConsoleVariable_t *cConsoleVariables;

@@ -1,5 +1,23 @@
-/*	Copyright (C) 2011-2013 OldTimes Software
+/*	Copyright (C) 1996-2001 Id Software, Inc.
+	Copyright (C) 2002-2009 John Fitzgibbons and others
+	Copyright (C) 2011-2015 OldTimes Software
+
+	This program is free software; you can redistribute it and/or
+	modify it under the terms of the GNU General Public License
+	as published by the Free Software Foundation; either version 2
+	of the License, or (at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+	See the GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
+
 #include "server_main.h"
 
 /*
@@ -22,7 +40,6 @@
 
 #include "server_monster.h"
 
-#include "server_waypoint.h"
 #include "server_weapon.h"
 #include "server_player.h"
 
@@ -32,10 +49,10 @@
 #define	BOT_MAX_SPEED		320.0f	// Must match player speed.
 #define	BOT_DEFAULT_HEALTH	cvServerDefaultHealth.iValue
 #define	BOT_MIN_SPEED		200.0f	// Must match player walk speed.
-#define BOT_MIN_HEALTH		-20		// [2/1/2013] Same as in server_player ~hogsy
+#define BOT_MIN_HEALTH		-20
 
-// [15/7/2012] List of death phrases ~hogsy
-char *BotDeathPhrases[] =
+// List of death phrases.
+const char *BotDeathPhrases[] =
 {
 	"You got lucky, punk.\n",
 	"%s is a dirty hacker!\n",
@@ -49,8 +66,8 @@ char *BotDeathPhrases[] =
 	"I hit you like 5 times, %s!\n"
 };
 
-// [15/7/2012] List of kill phrases ~hogsy
-char *BotKillPhrases[] =
+// List of kill phrases.
+const char *BotKillPhrases[] =
 {
 	"Suck it down!\n",
 	"Messed %s up, hah!\n",
@@ -64,44 +81,43 @@ char *BotKillPhrases[] =
 	"You all suck, especially %s.\n"
 };
 
-// [17/7/2012] Emotion based phrases ~hogsy
-char *BotBoredPhrases[] =
+// Emotion based phrases.
+const char *BotBoredPhrases[] =
 {
 	"Ugh this is boring...\n",
 	"Are we playing yet?\n"
 };
 
-// [17/7/2012] Emotion based phrases ~hogsy
-char *BotAngryPhrases[] =
+// Emotion based phrases.
+const char *BotAngryPhrases[] =
 {
 	"Argh!!\n",
 	"I'm going to kill you!!!\n"
 };
 
-// [4/10/2012] Emotion based phrases ~hogsy
-char *BotFearPhrases[] =
+// Emotion based phrases.
+const char *BotFearPhrases[] =
 {
 	"Hold up! Wait!! Go easy on me, %s\n",
 	"You're too strong! I can't do this...\n"
 };
 
-// [4/10/2012] Emotion based phrases ~hogsy
-char *BotSurprisePhrases[] =
+// Emotion based phrases.
+const char *BotSurprisePhrases[] =
 {
 	"Woah! Snuck up on me there, %s ;)\n",
 	"Haha you almost scared me for a moment there.\n"
 };
 
-// [4/10/2012] Emotion based phrases ~hogsy
-char *BotJoyPhrases[] =
+// Emotion based phrases.
+const char *BotJoyPhrases[] =
 {
 	"This is pretty fun!\n",
 	"Nothing can stop me :)\n"
 };
 
-// [15/7/2012] List of bot names ~hogsy
-// [29/7/2012] Reorganised ~hogsy
-char *BotNames[] =
+// List of bot names.
+const char *BotNames[] =
 {
 	"[BOT] Mercury",
 	"[BOT] Atlas",
@@ -135,7 +151,7 @@ void Bot_Spawn(ServerEntity_t *eBot)
 	int		iSpawnType;
 	ServerEntity_t	*eSpawnPoint;
 
-	// [20/1/2013] Don't spawn bots unless it's allowed by admin ~hogsy
+	// Don't spawn bots unless it's allowed by admin.
 	if(!cvServerBots.value)
 		return;
 
@@ -196,19 +212,17 @@ void Bot_Spawn(ServerEntity_t *eBot)
 	eBot->v.movetype	= MOVETYPE_STEP;
 	eBot->v.bTakeDamage	= true;
 
-	eBot->Physics.iSolid	= SOLID_SLIDEBOX;
-	eBot->Physics.fGravity	= SERVER_GRAVITY;
-	eBot->Physics.fMass		= 1.4f;
-	eBot->Physics.fFriction	= 4.0f;
+	Entity_SetPhysics(eBot, SOLID_SLIDEBOX, 1.4f, 4.0f);
 
 	eBot->local.bBleed	= true;
 
 	eBot->Monster.Think = Bot_Think;
+	eBot->Monster.PainFunction = Bot_Pain;
 
-	// Mikiko and Superfly are set manually to avoid issues... ~hogsy
+	// Mikiko and Superfly are set manually to avoid issues...
 	if(eBot->local.style == BOT_DEFAULT)
 	{
-		// [16/7/2012] Must be set after teams are set up ~hogsy
+		// Must be set after teams are set up.
 		eSpawnPoint = Entity_SpawnPoint(eBot,iSpawnType);
 		if(!eSpawnPoint)
 		{
@@ -233,13 +247,13 @@ void Bot_Spawn(ServerEntity_t *eBot)
 	Monster_SetState(eBot,STATE_AWAKE);
 	Monster_SetThink(eBot,THINK_IDLE);
 
-	// [6/8/2012] Make sure we're not in the air ~hogsy
+	// Make sure we're not in the air.
 	Entity_DropToFloor(eBot);
 }
 
 void Bot_Think(ServerEntity_t *eBot)
 {
-	Weapon_t	*wActiveWeapon;
+	Weapon_t *wActiveWeapon;
 
 	// If the bot isn't dead, then add animations.
 	if(eBot->Monster.iState != STATE_DEAD)
@@ -252,11 +266,11 @@ void Bot_Think(ServerEntity_t *eBot)
 				Entity_Animate(eBot,PlayerAnimation_Walk);
 			else if((eBot->v.velocity[0] == 0 || eBot->v.velocity[1] == 0) && (!eBot->local.dAnimationTime || eBot->local.iAnimationEnd > 9))
 			{
-	#ifdef GAME_OPENKATANA
+#ifdef GAME_OPENKATANA
 				if(eBot->v.iActiveWeapon == WEAPON_DAIKATANA)
 					Entity_Animate(eBot,PlayerAnimation_KatanaIdle);
 				else
-	#endif
+#endif
 					Entity_Animate(eBot,PlayerAnimation_Idle);
 			}
 		}
@@ -265,7 +279,10 @@ void Bot_Think(ServerEntity_t *eBot)
 	switch(eBot->Monster.iThink)
 	{
 	case THINK_IDLE:
+	{
 		Monster_MoveRandom(eBot, BOT_MIN_SPEED);
+
+	}
 	break;
 	case THINK_ATTACKING:
 	{

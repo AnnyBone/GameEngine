@@ -1,9 +1,7 @@
 /*	Copyright (C) 2011-2014 OldTimes Software
 */
-#ifndef __SERVERWAYPOINT__
-#define __SERVERWAYPOINT__
-
-#include "server_main.h"
+#ifndef __SERVERWAYPOINT_H__
+#define __SERVERWAYPOINT_H__
 
 #define	DEBUG_WAYPOINT
 

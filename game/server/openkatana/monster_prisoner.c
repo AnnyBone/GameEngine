@@ -23,7 +23,6 @@
 	One of the victims of Mishima's evil plans.
 */
 
-#include "server_waypoint.h"
 #include "server_weapon.h"
 
 /*	Notes
