@@ -32,7 +32,6 @@ int	iMenuState = 0;
 
 cvar_t	cvShowMenu = { "menu_show", "1", false, false, "Toggle the display of any menu elements." },
 		cvDebugMenu = { "menu_debug", "0", false, false, "Toggle the display of any debugging information." };
-cvar_t	cvMenuDisclaimer = { "menu_disclaimer", "0", false, true, "Toggles the display of disclaimer." };
 
 // [13/8/2013] Fixed ~hogsy
 int	iMousePosition[2];
@@ -65,7 +64,6 @@ void Menu_Initialize(void)
 	Menu_UpdateScreenSize();
 
 	Engine.Cvar_RegisterVariable(&cvShowMenu, NULL);
-	Engine.Cvar_RegisterVariable(&cvMenuDisclaimer, NULL);
 
 	mNums = Engine.LoadMaterial("menu/hud/num");
 	mIcons = Engine.LoadMaterial("menu/hud/icons");

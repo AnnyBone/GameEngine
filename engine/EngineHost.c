@@ -494,9 +494,17 @@ void Host_GetConsoleCommands(void)
 	}
 }
 
+/*	Start of the server frame.
+*/
 void Host_ServerFrame (void)
 {
-	int		i,active; //johnfitz
+	static double dAccumulated = 0, dOldTime;
+	const double dDelta = (1.0 / 72.0);
+	double dAlpha, dNewFrameTime;
+
+	int	i, active; //johnfitz
+
+	dAccumulated += host_frametime;
 
 	// Set the time and clear the general datagram
 	SV_ClearDatagram ();
@@ -504,13 +512,28 @@ void Host_ServerFrame (void)
 	// Check for new clients
 	SV_CheckForNewClients ();
 
-	// Read client messages
-	SV_RunClients ();
+	// http://forums.insideqc.com/viewtopic.php?f=12&t=3308&sid=a66f15bacaffadedaf706eb2cc8e70a3
+	while (dAccumulated >= dDelta)
+	{
+		host_frametime = dDelta;
 
-	// move things around and think
-	// always pause in single player if in console or menus
-	if(!sv.paused && (svs.maxclients > 1 || key_dest == key_game))
-		Physics_ServerFrame();
+		// Read client messages
+		SV_RunClients();
+
+		// move things around and think
+		// always pause in single player if in console or menus
+		if (!sv.paused && (svs.maxclients > 1 || key_dest == key_game))
+			Physics_ServerFrame();
+
+		dAccumulated -= dDelta;
+	}
+
+	dAlpha = dAccumulated / dDelta;
+
+	// Assign the remainder of the timestep to a new interpolated time.
+	dNewFrameTime = host_frametime * dAlpha + dOldTime * (1.0 - dAlpha);
+	dOldTime = host_frametime;
+	host_frametime = dNewFrameTime;
 
 //johnfitz -- devstats
 	if(cls.signon == SIGNONS)
