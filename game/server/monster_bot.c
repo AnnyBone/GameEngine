@@ -51,7 +51,7 @@
 #define BOT_MIN_HEALTH		-20
 
 // List of death phrases.
-const char *BotDeathPhrases[] =
+char *BotDeathPhrases[] =
 {
 	"You got lucky, punk.\n",
 	"%s is a dirty hacker!\n",
@@ -66,7 +66,7 @@ const char *BotDeathPhrases[] =
 };
 
 // List of kill phrases.
-const char *BotKillPhrases[] =
+char *BotKillPhrases[] =
 {
 	"Suck it down!\n",
 	"Messed %s up, hah!\n",
@@ -81,35 +81,35 @@ const char *BotKillPhrases[] =
 };
 
 // Emotion based phrases.
-const char *BotBoredPhrases[] =
+char *BotBoredPhrases[] =
 {
 	"Ugh this is boring...\n",
 	"Are we playing yet?\n"
 };
 
 // Emotion based phrases.
-const char *BotAngryPhrases[] =
+char *BotAngryPhrases[] =
 {
 	"Argh!!\n",
 	"I'm going to kill you!!!\n"
 };
 
 // Emotion based phrases.
-const char *BotFearPhrases[] =
+char *BotFearPhrases[] =
 {
 	"Hold up! Wait!! Go easy on me, %s\n",
 	"You're too strong! I can't do this...\n"
 };
 
 // Emotion based phrases.
-const char *BotSurprisePhrases[] =
+char *BotSurprisePhrases[] =
 {
 	"Woah! Snuck up on me there, %s ;)\n",
 	"Haha you almost scared me for a moment there.\n"
 };
 
 // Emotion based phrases.
-const char *BotJoyPhrases[] =
+char *BotJoyPhrases[] =
 {
 	"This is pretty fun!\n",
 	"Nothing can stop me :)\n"
@@ -156,14 +156,13 @@ void Bot_Spawn(ServerEntity_t *eBot)
 
 	Math_VectorClear(eBot->v.velocity);
 
-	// [29/7/2012] Names are now set here, the otherway was dumb ~hogsy
 	switch(eBot->local.style)
 	{
 	case BOT_DEFAULT:
 		iSpawnType = INFO_PLAYER_DEATHMATCH;
 
-		eBot->v.model	= cvServerPlayerModel.string;
-		eBot->v.netname	= BotNames[(rand()%pARRAYELEMENTS(BotNames))];
+		eBot->v.model = cvServerPlayerModel.string;
+		strncpy(eBot->v.netname, BotNames[(rand() % pARRAYELEMENTS(BotNames))], 64);
 
 		eBot->Monster.iType	= MONSTER_PLAYER;
 		break;
@@ -194,7 +193,6 @@ void Bot_Spawn(ServerEntity_t *eBot)
 		break;
 #endif
 	default:
-		// [22/3/2013] Removed multiplayer support ~hogsy
 		Engine.Con_Warning("Attempted to spawn unknown bot type! (%i) (%i %i %i)\n",
 			eBot->local.style,
 			(int)eBot->v.origin[0],
@@ -317,7 +315,7 @@ void Bot_Think(ServerEntity_t *eBot)
 		}
 
 #if 1
-		// Add some random movement. ~hogsy
+		// Add some random movement.
 		Monster_MoveRandom(eBot, BOT_MIN_SPEED);
 
 		if (rand()%500 == 0)
@@ -326,7 +324,7 @@ void Bot_Think(ServerEntity_t *eBot)
 	}
 	break;
 	case THINK_FLEEING:
-		// Add some random movement. ~hogsy
+		// Add some random movement.
 		Monster_MoveRandom(eBot, BOT_MAX_SPEED);
 	break;
 	case THINK_WANDERING:
@@ -361,7 +359,6 @@ void Bot_Think(ServerEntity_t *eBot)
 
 void Bot_BroadcastMessage(ServerEntity_t *eBot, ServerEntity_t *other)
 {
-#if 0
 	char *cPhrase;
 
 	if(!bIsMultiplayer || rand()%5 == 5)
@@ -371,6 +368,7 @@ void Bot_BroadcastMessage(ServerEntity_t *eBot, ServerEntity_t *other)
 		cPhrase = BotDeathPhrases[(rand()%pARRAYELEMENTS(BotDeathPhrases))];
 	else
 	{
+#if 0
 		if(eBot->Monster.meEmotion[EMOTION_ANGER].iEmotion > 50)
 			cPhrase = BotAngryPhrases[(rand()%pARRAYELEMENTS(BotAngryPhrases))];
 		else if (eBot->Monster.meEmotion[EMOTION_BOREDOM].iEmotion > 50)
@@ -380,11 +378,12 @@ void Bot_BroadcastMessage(ServerEntity_t *eBot, ServerEntity_t *other)
 		else if (eBot->Monster.meEmotion[EMOTION_JOY].iEmotion > 50)
 			cPhrase = BotJoyPhrases[(rand()%pARRAYELEMENTS(BotJoyPhrases))];
 		else
-			// [22/3/2013] Emotions don't give us anything worth saying... ~hogsy
+#endif
+			// Emotions don't give us anything worth saying...
 			return;
 	}
 
-	// [17/7/2012] Temporary until we can simulate chat ~hogsy
+	// TODO: Temporary until we can simulate chat!
 	Engine.Server_BroadcastPrint
 	(
 		"%s: %s\n",
@@ -392,7 +391,6 @@ void Bot_BroadcastMessage(ServerEntity_t *eBot, ServerEntity_t *other)
 		cPhrase,
 		other->v.netname
 	);
-#endif
 }
 
 void Bot_Pain(ServerEntity_t *ent, ServerEntity_t *other)
@@ -521,8 +519,8 @@ void Bot_Die(ServerEntity_t *eBot,ServerEntity_t *eOther)
 	if(eBot->Monster.iState == STATE_DEAD)
 		return;
 
-	// [15/7/2012] He's dead, Jim. ~hogsy
-	Monster_SetState(eBot,STATE_DEAD);
+	// He's dead, Jim.
+	Monster_SetState(eBot, STATE_DEAD);
 
 	eBot->v.movetype	= MOVETYPE_TOSS;
 	eBot->v.flags		-= (eBot->v.flags & FL_ONGROUND);
@@ -535,11 +533,11 @@ void Bot_Die(ServerEntity_t *eBot,ServerEntity_t *eOther)
 	else
 		Entity_Animate(eBot,PlayerAnimation_Death2);
 
-	// [4/10/2012] Let the player know how we're feeling :) ~hogsy
+	// Let the player know how we're feeling.
 	Bot_BroadcastMessage(eBot,eOther);
 
 #ifdef OPENKATANA
-	// [26/7/2012] Character-based sounds ~hogsy
+	// Character-based sounds.
 	switch(eBot->local.style)
 	{
 	case BOT_MIKIKO:
@@ -559,7 +557,7 @@ void Bot_Die(ServerEntity_t *eBot,ServerEntity_t *eOther)
 
 	if(eBot->v.iHealth < BOT_MIN_HEALTH)
 	{
-		Sound(eBot,CHAN_VOICE,"misc/gib1.wav",255,ATTN_NORM);
+		Sound(eBot, CHAN_VOICE, "misc/gib1.wav", 255, ATTN_NORM);
 
 		ThrowGib(eBot->v.origin,eBot->v.velocity,PHYSICS_MODEL_GIB0,(float)(eBot->v.iHealth*-1),true);
 		ThrowGib(eBot->v.origin,eBot->v.velocity,PHYSICS_MODEL_GIB1,(float)(eBot->v.iHealth*-1),true);

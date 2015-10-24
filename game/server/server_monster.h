@@ -48,11 +48,12 @@ typedef struct
 */
 typedef enum
 {
-	STATE_DEAD		= 1,	// Monster is dead
-	STATE_AWAKE,			// Monster is awake
-	STATE_ASLEEP,			// Monster is asleep
+	STATE_DEAD		= 1,	// Monster is dead.
+	STATE_DYING,			// In-between dead and alive.
+	STATE_AWAKE,			// Monster is awake.
+	STATE_ASLEEP,			// Monster is asleep.
 
-	STATE_NONE				// Monster has no state
+	STATE_NONE				// Monster has no state.
 } MonsterState_t;
 
 #define	MONSTER_RANGE_MELEE		48.0f
@@ -65,7 +66,7 @@ typedef enum
 */
 enum
 {
-	RELATIONSHIP_HATE,
+	MONSTER_RELATIONSHIP_HATE,
 	RELATIONSHIP_NEUTRAL,
 	RELATIONSHIP_LIKE
 };
@@ -115,7 +116,6 @@ void Monster_Jump(ServerEntity_t *eMonster, float fVelocity);
 void Monster_MoveToGoal(ServerEntity_t *ent, MathVector3f_t goal, float distance);
 void Monster_MoveRandom(ServerEntity_t *eMonster, float fSpeed);
 void Monster_Frame(ServerEntity_t *eMonster);
-void Monster_SetTargets(ServerEntity_t *eMonster);
 void Monster_Killed(ServerEntity_t *eTarget, ServerEntity_t *eAttacker);
 
 Waypoint_t *Monster_GetMoveTarget(ServerEntity_t *Monster);

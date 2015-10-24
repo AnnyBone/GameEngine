@@ -51,7 +51,7 @@ bool Waypoint_IsSafe(ServerEntity_t *eMonster,Waypoint_t *wPoint)
 	while(eMonsters)
 	{
 		// Check this by relationship rather than type.
-		if(Monster_GetRelationship(eMonster,eMonsters) == RELATIONSHIP_HATE)
+		if(Monster_GetRelationship(eMonster,eMonsters) == MONSTER_RELATIONSHIP_HATE)
 			return false;
 
 		eMonsters = eMonsters->v.chain;

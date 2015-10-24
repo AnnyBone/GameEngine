@@ -355,3 +355,63 @@ void VideoLayer_AttachFrameBufferTexture(gltexture_t *Texture)
 	VIDEO_FUNCTION_END
 }
 
+/*===========================
+	OPENGL DRAWING
+===========================*/
+
+typedef struct
+{
+	VideoPrimitive_t vpPrimitive;
+
+	unsigned int uiGL;
+
+	const char *ccIdentifier;
+} VideoPrimitives_t;
+
+VideoPrimitives_t vpVideoPrimitiveList[] =
+{
+	{ VIDEO_PRIMITIVE_LINE, GL_LINES, "LINES" },
+	{ VIDEO_PRIMITIVE_TRIANGLES, GL_TRIANGLES, "TRIANGLES" },
+	{ VIDEO_PRIMITIVE_TRIANGLE_FAN, GL_TRIANGLE_FAN, "TRIANGLE_FAN" },
+	{ VIDEO_PRIMITIVE_TRIANGLE_FAN_LINE, GL_LINES, "TRIANGLE_FAN_LINE" },
+	{ VIDEO_PRIMITIVE_TRIANGLE_STRIP, GL_TRIANGLE_STRIP, "TRIANGLE_STRIP" }
+};
+
+/*	Deals with tris view and different primitive types, then finally draws
+	the given arrays.
+*/
+void VideoLayer_DrawArrays(const VideoPrimitive_t vpPrimitiveType, unsigned int uiSize, bool bWireframe)
+{
+	unsigned int uiPrimitiveType = VIDEO_PRIMITIVE_IGNORE;
+
+	int i;
+	for (i = 0; i < sizeof(vpVideoPrimitiveList); i++)
+		if (vpPrimitiveType == vpVideoPrimitiveList[i].vpPrimitive)
+		{
+			uiPrimitiveType = vpVideoPrimitiveList[i].uiGL;
+			break;
+		}
+
+	if (uiPrimitiveType == VIDEO_PRIMITIVE_IGNORE)
+		Sys_Error("Invalid primitive type! (%i)\n", vpPrimitiveType);
+
+	if (bWireframe)
+	{
+		switch (vpPrimitiveType)
+		{
+		case VIDEO_PRIMITIVE_LINE:
+		case VIDEO_PRIMITIVE_TRIANGLES:
+			uiPrimitiveType = GL_LINES;
+			break;
+		default:
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		}
+	}
+
+	glDrawArrays(uiPrimitiveType, 0, uiSize);
+
+	if (bWireframe)
+		if ((vpPrimitiveType != VIDEO_PRIMITIVE_LINE) &&
+			(vpPrimitiveType != VIDEO_PRIMITIVE_TRIANGLES))
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+}

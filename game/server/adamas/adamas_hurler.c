@@ -63,7 +63,7 @@ void Hurler_Think(ServerEntity_t *eHurler)
 		if(rand()%50 == 0)
 			eHurler->v.angles[1] = (float)(rand()%360);
 
-		// Add some random movement. ~hogsy
+		// Add some random movement.
 		if(rand()%120 == 0)
 		{
 			int	iResult = rand()%3;

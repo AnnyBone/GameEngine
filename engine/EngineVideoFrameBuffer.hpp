@@ -18,8 +18,8 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef __ENGINEVIDEOFRAMEBUFFER__
-#define	__ENGINEVIDEOFRAMEBUFFER__
+#ifndef __ENGINEVIDEOFRAMEBUFFER_H__
+#define	__ENGINEVIDEOFRAMEBUFFER_H__
 #pragma once
 
 class CVideoFrameBuffer

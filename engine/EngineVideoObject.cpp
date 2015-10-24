@@ -22,13 +22,13 @@
 
 #include "EngineVideo.h"
 
-using namespace VideoSys;
+using namespace video;
 
 /*
 	Vertex
 */
 
-CVideoVertex::CVideoVertex(float x, float y, float z)
+CVertex::CVertex(float x, float y, float z)
 {
 	mvPosition[0] = x; 
 	mvPosition[1] = y; 
@@ -43,7 +43,7 @@ CVideoVertex::CVideoVertex(float x, float y, float z)
 	Object
 */
 
-CVideoObject::CVideoObject(VideoPrimitive_t pPrimitiveType)
+CVertexObject::CVertexObject(VideoPrimitive_t pPrimitiveType)
 {
 	VIDEO_FUNCTION_START
 	this->pPrimitiveType = pPrimitiveType;
@@ -62,7 +62,7 @@ CVideoObject::CVideoObject(VideoPrimitive_t pPrimitiveType)
 	VIDEO_FUNCTION_END
 }
 
-CVideoObject::~CVideoObject()
+CVertexObject::~CVertexObject()
 {
 	VIDEO_FUNCTION_START
 	VideoLayer_DeleteVertexBuffer(&uiVertexBuffer);
@@ -71,19 +71,19 @@ CVideoObject::~CVideoObject()
 	VIDEO_FUNCTION_END
 }
 
-void CVideoObject::Begin()
+void CVertexObject::Begin()
 {
 }
 
-void CVideoObject::Vertex(float x, float y, float z)
+void CVertexObject::AddVertex(float x, float y, float z)
 {
 }
 
-void CVideoObject::Colour(float r, float g, float b, float a)
+void CVertexObject::Colour(float r, float g, float b, float a)
 {
 }
 
-void CVideoObject::End()
+void CVertexObject::End()
 {
 	VIDEO_FUNCTION_START
 	glBindBuffer(GL_ARRAY_BUFFER, uiVertexBuffer);
@@ -105,7 +105,7 @@ void CVideoObject::End()
 	VIDEO_FUNCTION_END
 }
 
-void CVideoObject::Draw()
+void CVertexObject::Draw()
 {
 	VIDEO_FUNCTION_START
 	glEnableClientState(GL_VERTEX_ARRAY);
@@ -127,7 +127,7 @@ void CVideoObject::Draw()
 			glTexCoordPointer(2, GL_FLOAT, 0, 0);
 		}
 
-	Video_DrawArrays(pPrimitiveType, uiVertices /*replace me*/, r_showtris.bValue);
+	VideoLayer_DrawArrays(pPrimitiveType, uiVertices /*replace me*/, r_showtris.bValue);
 
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_COLOR_ARRAY);
@@ -237,7 +237,7 @@ void VideoObject_Draw(VideoObject_t *voObject)
 			glTexCoordPointer(2, GL_FLOAT, 0, 0);
 		}
 
-	Video_DrawArrays(voObject->vpPrimitiveType, voObject->iVertices, r_showtris.bValue);
+	VideoLayer_DrawArrays(voObject->vpPrimitiveType, voObject->iVertices, r_showtris.bValue);
 
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_COLOR_ARRAY);

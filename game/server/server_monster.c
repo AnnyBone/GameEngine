@@ -60,52 +60,51 @@ MonsterRelationship_t MonsterRelationship[]=
 {
 #ifdef GAME_OPENKATANA
 	// LaserGat
-	{	MONSTER_LASERGAT,	MONSTER_LASERGAT,	RELATIONSHIP_LIKE		},
-	{	MONSTER_LASERGAT,	MONSTER_INMATER,	RELATIONSHIP_LIKE		},
-	{	MONSTER_LASERGAT,	MONSTER_PRISONER,	RELATIONSHIP_NEUTRAL	},
-	{	MONSTER_LASERGAT,	MONSTER_MIKIKO,		RELATIONSHIP_HATE		},
-	{	MONSTER_LASERGAT,	MONSTER_SUPERFLY,	RELATIONSHIP_HATE		},
-	{	MONSTER_LASERGAT,	MONSTER_PLAYER,		RELATIONSHIP_HATE		},
+	{	MONSTER_LASERGAT,	MONSTER_LASERGAT,	RELATIONSHIP_LIKE				},
+	{	MONSTER_LASERGAT,	MONSTER_INMATER,	RELATIONSHIP_LIKE				},
+	{	MONSTER_LASERGAT,	MONSTER_PRISONER,	RELATIONSHIP_NEUTRAL			},
+	{	MONSTER_LASERGAT,	MONSTER_MIKIKO,		MONSTER_RELATIONSHIP_HATE		},
+	{	MONSTER_LASERGAT,	MONSTER_SUPERFLY,	MONSTER_RELATIONSHIP_HATE		},
+	{	MONSTER_LASERGAT,	MONSTER_PLAYER,		MONSTER_RELATIONSHIP_HATE		},
 
 	// Inmater
-	{	MONSTER_INMATER,	MONSTER_INMATER,	RELATIONSHIP_LIKE		},
-	{	MONSTER_INMATER,	MONSTER_LASERGAT,	RELATIONSHIP_LIKE		},
-	{	MONSTER_INMATER,	MONSTER_PRISONER,	RELATIONSHIP_NEUTRAL	},
-	{	MONSTER_INMATER,	MONSTER_PLAYER,		RELATIONSHIP_HATE		},
-	{	MONSTER_INMATER,	MONSTER_MIKIKO,		RELATIONSHIP_HATE		},
-	{	MONSTER_INMATER,	MONSTER_SUPERFLY,	RELATIONSHIP_HATE		},
+	{	MONSTER_INMATER,	MONSTER_INMATER,	RELATIONSHIP_LIKE				},
+	{	MONSTER_INMATER,	MONSTER_LASERGAT,	RELATIONSHIP_LIKE				},
+	{	MONSTER_INMATER,	MONSTER_PRISONER,	RELATIONSHIP_NEUTRAL			},
+	{	MONSTER_INMATER,	MONSTER_PLAYER,		MONSTER_RELATIONSHIP_HATE		},
+	{	MONSTER_INMATER,	MONSTER_MIKIKO,		MONSTER_RELATIONSHIP_HATE		},
+	{	MONSTER_INMATER,	MONSTER_SUPERFLY,	MONSTER_RELATIONSHIP_HATE		},
 
 	// Prisoner
-	{	MONSTER_PRISONER,	MONSTER_PRISONER,	RELATIONSHIP_LIKE	},
-	{	MONSTER_PRISONER,	MONSTER_PLAYER,		RELATIONSHIP_LIKE	},
-	{	MONSTER_PRISONER,	MONSTER_MIKIKO,		RELATIONSHIP_LIKE	},
-	{	MONSTER_PRISONER,	MONSTER_SUPERFLY,	RELATIONSHIP_LIKE	},
-	{	MONSTER_PRISONER,	MONSTER_LASERGAT,	RELATIONSHIP_HATE	},
-	{	MONSTER_PRISONER,	MONSTER_INMATER,	RELATIONSHIP_HATE	},
+	{	MONSTER_PRISONER,	MONSTER_PRISONER,	RELATIONSHIP_LIKE			},
+	{	MONSTER_PRISONER,	MONSTER_PLAYER,		RELATIONSHIP_LIKE			},
+	{	MONSTER_PRISONER,	MONSTER_MIKIKO,		RELATIONSHIP_LIKE			},
+	{	MONSTER_PRISONER,	MONSTER_SUPERFLY,	RELATIONSHIP_LIKE			},
+	{	MONSTER_PRISONER,	MONSTER_LASERGAT,	MONSTER_RELATIONSHIP_HATE	},
+	{	MONSTER_PRISONER,	MONSTER_INMATER,	MONSTER_RELATIONSHIP_HATE	},
 
 	// Mikiko
-	{	MONSTER_MIKIKO,		MONSTER_MIKIKO,		RELATIONSHIP_LIKE	},
-	{	MONSTER_MIKIKO,		MONSTER_SUPERFLY,	RELATIONSHIP_LIKE	},
-	{	MONSTER_MIKIKO,		MONSTER_PLAYER,		RELATIONSHIP_LIKE	},
-	{	MONSTER_MIKIKO,		MONSTER_LASERGAT,	RELATIONSHIP_HATE	},
+	{	MONSTER_MIKIKO,		MONSTER_MIKIKO,		RELATIONSHIP_LIKE			},
+	{	MONSTER_MIKIKO,		MONSTER_SUPERFLY,	RELATIONSHIP_LIKE			},
+	{	MONSTER_MIKIKO,		MONSTER_PLAYER,		RELATIONSHIP_LIKE			},
+	{	MONSTER_MIKIKO,		MONSTER_LASERGAT,	MONSTER_RELATIONSHIP_HATE	},
 
 	// Superfly
-	{	MONSTER_SUPERFLY,	MONSTER_SUPERFLY,	RELATIONSHIP_LIKE	},
-	{	MONSTER_SUPERFLY,	MONSTER_MIKIKO,		RELATIONSHIP_LIKE	},
-	{	MONSTER_SUPERFLY,	MONSTER_PLAYER,		RELATIONSHIP_LIKE	},
-	{	MONSTER_SUPERFLY,	MONSTER_PRISONER,	RELATIONSHIP_LIKE	},
-	{	MONSTER_SUPERFLY,	MONSTER_INMATER,	RELATIONSHIP_HATE	},
-	{	MONSTER_SUPERFLY,	MONSTER_LASERGAT,	RELATIONSHIP_HATE	},
+	{	MONSTER_SUPERFLY,	MONSTER_SUPERFLY,	RELATIONSHIP_LIKE			},
+	{	MONSTER_SUPERFLY,	MONSTER_MIKIKO,		RELATIONSHIP_LIKE			},
+	{	MONSTER_SUPERFLY,	MONSTER_PLAYER,		RELATIONSHIP_LIKE			},
+	{	MONSTER_SUPERFLY,	MONSTER_PRISONER,	RELATIONSHIP_LIKE			},
+	{	MONSTER_SUPERFLY,	MONSTER_INMATER,	MONSTER_RELATIONSHIP_HATE	},
+	{	MONSTER_SUPERFLY,	MONSTER_LASERGAT,	MONSTER_RELATIONSHIP_HATE	},
 #elif GAME_ADAMAS
 	// Hurler
-	{	MONSTER_HURLER,		MONSTER_PLAYER,		RELATIONSHIP_HATE	},
-	{	MONSTER_HURLER,		MONSTER_HURLER,		RELATIONSHIP_LIKE	},
+	{	MONSTER_HURLER,		MONSTER_PLAYER,		MONSTER_RELATIONSHIP_HATE	},
+	{	MONSTER_HURLER,		MONSTER_HURLER,		RELATIONSHIP_LIKE			},
 #endif
 };
 
 /**/
 
-// [30/7/2012] Added Monster_CheckBottom ~hogsy
 bool Monster_CheckBottom(ServerEntity_t *ent)
 {
 	MathVector3f_t	mins,maxs,start,stop;
@@ -161,8 +160,6 @@ bool Monster_CheckBottom(ServerEntity_t *ent)
 	return true;
 }
 
-// [30/7/2012] Added Monster_MoveStep ~hogsy
-// [30/7/2012] TODO: Revised ~hogsy
 bool Monster_MoveStep(ServerEntity_t *ent,vec3_t move,bool bRelink)
 {
 	float	dz;
@@ -276,7 +273,6 @@ bool Monster_MoveStep(ServerEntity_t *ent,vec3_t move,bool bRelink)
 	return true;
 }
 
-// [28/7/2012] Added Monster_StepDirection ~hogsy
 bool Monster_StepDirection(ServerEntity_t *ent,float yaw,float dist)
 {
 #if 0
@@ -307,13 +303,12 @@ bool Monster_StepDirection(ServerEntity_t *ent,float yaw,float dist)
 	return false;
 }
 
-// [30/7/2012] Added Monster_NewChaseDirection ~hogsy
 void Monster_NewChaseDirection(ServerEntity_t *ent,vec3_t target,float dist)
 {
 	float	deltax,deltay,d[3],tdir,olddir,turnaround;
 
-	olddir		= Math_AngleMod((ent->v.ideal_yaw/45.0f)*45.0f);
-	turnaround	= Math_AngleMod(olddir-180);
+	olddir = Math_AngleMod((ent->v.ideal_yaw/45.0f)*45.0f);
+	turnaround = Math_AngleMod(olddir-180);
 
 	deltax	= target[0]-ent->v.origin[0];
 	deltay	= target[1]-ent->v.origin[1];
@@ -391,7 +386,7 @@ void Monster_NewChaseDirection(ServerEntity_t *ent,vec3_t target,float dist)
 bool Monster_SetThink(ServerEntity_t *eMonster,MonsterThink_t mtThink)
 {
 	if(eMonster->Monster.iThink == mtThink)
-		// [4/2/2013] Return false, then we might decide it's time for a different state ~hogsy
+		// Return false, then we might decide it's time for a different state.
 		return false;
 	else if(eMonster->Monster.iState >= STATE_NONE)
 	{
@@ -474,7 +469,7 @@ void Monster_Killed(ServerEntity_t *eTarget, ServerEntity_t *eAttacker)
 
 			eAttacker->v.iScore--;
 		}
-		// [2/9/2012] Did we kill someone while dead? ~hogsy
+		// Did we kill someone while dead?
 		else
 		{
 			eAttacker->v.iScore++;
@@ -571,8 +566,8 @@ void Monster_Damage(ServerEntity_t *target, ServerEntity_t *inflictor, int iDama
 			iDamage *= 3;
 #endif
 
-		// [3/10/2012] Half the amount of damage we can inflict in hard ~hogsy
-		// [15/11/2012] Removed vita check here... Vita should not be acting like armor! ~hogsy
+		// Half the amount of damage we can inflict in hard.
+		// Removed vita check here... Vita should not be acting like armor!
 		if(cvServerSkill.value >= 3)
 			iDamage /= 2;
 	}
@@ -639,7 +634,6 @@ void Monster_MoveToGoal(ServerEntity_t *ent,MathVector3f_t goal,float distance)
 	if(!(ent->v.flags & (FL_ONGROUND|FL_FLY|FL_SWIM)))
 		return;
 
-	// [9/12/2012] Updated so this works better with our point based shit ~hogsy
 	for(i = 0; i < 3; i++)
 	{
 		if(goal[i] > ent->v.absmax[i]+distance)
@@ -653,10 +647,10 @@ void Monster_MoveToGoal(ServerEntity_t *ent,MathVector3f_t goal,float distance)
 }
 
 /*	Returns the range from an entity to a target.
+	TODO: Make this into a util type function.
 */
 float MONSTER_GetRange(ServerEntity_t *ent,vec3_t target)
 {
-	// [12/4/2012] Revised ~hogsy
 	vec3_t spot,spot1,spot2;
 
 	spot1[0] = ent->v.origin[0]+ent->v.view_ofs[0];
@@ -668,22 +662,19 @@ float MONSTER_GetRange(ServerEntity_t *ent,vec3_t target)
 
 	Math_VectorSubtract(spot1,spot2,spot);
 
-	// [4/2/2013] Shouldn't this be a float rather than a double? Oh well, whatever you say, Carmack ~hogsy
 	return (float)Math_VectorLength(spot);
 }
 
 bool Monster_IsVisible(ServerEntity_t *ent,ServerEntity_t *target)
 {
 	trace_t	tTrace;
-	vec3_t	vStart,vEnd;
+	MathVector3f_t vStart,vEnd;
 
-	// [10/4/2013] TODO: Rework for new FOV system ~hogsy
-	// [2/1/2013] Simplified ~hogsy
+	// TODO: Rework for new FOV system
 	Math_VectorAdd(ent->v.origin,ent->v.view_ofs,vStart);
 	Math_VectorAdd(target->v.origin,target->v.view_ofs,vEnd);
 
 	tTrace = Traceline(ent,vStart,vEnd,true);
-	// [10/4/2013] Simplified ~hogsy
 	if(!(tTrace.bOpen && tTrace.bWater) && tTrace.fraction == 1.0f)
 		return true;
 
@@ -696,9 +687,7 @@ bool Monster_IsVisible(ServerEntity_t *ent,ServerEntity_t *target)
 */
 ServerEntity_t *Monster_GetTarget(ServerEntity_t *eMonster)
 {
-	ServerEntity_t	*eTargets;
-
-	eTargets = Engine.Server_FindRadius(eMonster->v.origin,10000.0f);	//eMonster->Monster.fViewDistance);
+	ServerEntity_t	*eTargets = Engine.Server_FindRadius(eMonster->v.origin,10000.0f);	//eMonster->Monster.fViewDistance);
 
 	do
 	{
@@ -707,7 +696,7 @@ ServerEntity_t *Monster_GetTarget(ServerEntity_t *eMonster)
 			(eTargets != eMonster->local.eOwner)												&&	// Can't target owner.
 			(eTargets != eMonster->Monster.eTarget && eTargets != eMonster->Monster.eOldTarget) &&	// Can't target an old target.
 			(eTargets->Monster.iType != MONSTER_NONE))												// Has to be a monster.
-			// [11/6/2013] Quick crap thrown in to check if the target is visible or not... ~hogsy
+			// Quick crap thrown in to check if the target is visible or not...
 			if(Monster_IsVisible(eMonster,eTargets))
 				return eTargets;
 
@@ -723,37 +712,10 @@ ServerEntity_t *Monster_GetEnemy(ServerEntity_t *Monster)
 	if (!Target)
 		return NULL;
 
-	if (Monster_GetRelationship(Monster, Target) == RELATIONSHIP_HATE)
+	if (Monster_GetRelationship(Monster, Target) == MONSTER_RELATIONSHIP_HATE)
 		return Target;
 
 	return NULL;
-}
-
-void Monster_SetTargets(ServerEntity_t *eMonster)
-{
-	int	iRelationship;
-
-	if(!eMonster->Monster.eTarget)
-	{
-		eMonster->Monster.eTarget = Monster_GetTarget(eMonster);
-		if(eMonster->Monster.eTarget)
-		{
-			if((eMonster->Monster.eTarget == eMonster->Monster.eFriend) || (eMonster->Monster.eTarget == eMonster->Monster.eEnemy))
-				return;
-
-			iRelationship = Monster_GetRelationship(eMonster,eMonster->Monster.eTarget);
-			if(iRelationship == RELATIONSHIP_LIKE)
-			{
-				eMonster->Monster.eFriend = eMonster->Monster.eTarget;
-				eMonster->Monster.eTarget = NULL;
-			}
-			else if(iRelationship == RELATIONSHIP_HATE)
-			{
-				eMonster->Monster.eEnemy	= eMonster->Monster.eTarget;
-				eMonster->Monster.eTarget	= NULL;
-			}
-		}
-	}
 }
 
 #if 0
@@ -840,22 +802,7 @@ void Monster_Frame(ServerEntity_t *eMonster)
 }
 #endif
 
-// TODO: This is obsolete.
-bool Monster_WalkMove(ServerEntity_t *ent,float yaw,float dist)
-{
-	MathVector3f_t move;
 
-	if(!(ent->v.flags & (FL_ONGROUND|FL_FLY|FL_SWIM)))
-		return false;
-
-	yaw *= (float)pMath_PI*2.0f/360.0f;
-
-	move[0] = (vec_t)cos(yaw)*dist;
-	move[1] = (vec_t)sin(yaw)*dist;
-	move[2] = 0;
-
-	return Monster_MoveStep(ent,move,true);
-}
 
 /////////////////////////////////////////////////////////////////////////////
 //	NEW IMPLEMENTATION

@@ -66,7 +66,7 @@ private:
 
 	Colour_t Colour;
 
-	VideoSys::CVideoObject *RenderObject;
+	video::CVertexObject *RenderObject;
 
 	Material_t *Material;
 };

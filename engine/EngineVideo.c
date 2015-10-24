@@ -32,6 +32,8 @@
 		Scale TMU support based on actual hardware, rather than set limitations.
 */
 
+viddef_t vid; // Legacy global video state (TODO: Replace!)
+
 bool 
 	r_drawflat_cheatsafe, 
 	r_fullbright_cheatsafe,
@@ -579,19 +581,6 @@ void Video_ObjectColour(VideoObjectVertex_t *voObject, float R, float G, float B
 	voObject->mvColour[pALPHA] = A;
 }
 
-/*	Used to override any colour given to a video object.
-	Cleared by Video_ResetCapabilities.
-*/
-void Video_SetColour(float R,float G,float B,float A)
-{
-	mvVideoGlobalColour[pRED] = R;
-	mvVideoGlobalColour[pGREEN] = G;
-	mvVideoGlobalColour[pBLUE] = B;
-	mvVideoGlobalColour[pALPHA] = A;
-
-	Video.bColourOverride = true;
-}
-
 /*
 	Drawing
 */
@@ -639,63 +628,6 @@ void Video_DrawSurface(msurface_t *mSurface,float fAlpha, Material_t *mMaterial,
 	Video_DrawObject(voSurface, VIDEO_PRIMITIVE_TRIANGLE_FAN, mSurface->polys->numverts, mMaterial, 0);
 }
 
-typedef struct
-{
-	VideoPrimitive_t vpPrimitive;
-
-	unsigned int uiGL;
-
-	const char *ccIdentifier;
-} VideoPrimitives_t;
-
-VideoPrimitives_t vpVideoPrimitiveList[]=
-{
-	{ VIDEO_PRIMITIVE_LINE, GL_LINES, "LINES" },
-	{ VIDEO_PRIMITIVE_TRIANGLES, GL_TRIANGLES, "TRIANGLES" },
-	{ VIDEO_PRIMITIVE_TRIANGLE_FAN, GL_TRIANGLE_FAN, "TRIANGLE_FAN" },
-	{ VIDEO_PRIMITIVE_TRIANGLE_FAN_LINE, GL_LINES, "TRIANGLE_FAN_LINE" },
-	{ VIDEO_PRIMITIVE_TRIANGLE_STRIP, GL_TRIANGLE_STRIP, "TRIANGLE_STRIP" }
-};
-
-/*	Deals with tris view and different primitive types, then finally draws
-	the given arrays.
-*/
-void Video_DrawArrays(const VideoPrimitive_t vpPrimitiveType, unsigned int uiSize, bool bWireframe)
-{
-	unsigned int uiPrimitiveType = VIDEO_PRIMITIVE_IGNORE;
-
-	int i;
-	for (i = 0; i < sizeof(vpVideoPrimitiveList); i++)
-		if (vpPrimitiveType == vpVideoPrimitiveList[i].vpPrimitive)
-		{
-			uiPrimitiveType = vpVideoPrimitiveList[i].uiGL;
-			break;
-		}
-
-	if (uiPrimitiveType == VIDEO_PRIMITIVE_IGNORE)
-		Sys_Error("Invalid primitive type! (%i)\n", vpPrimitiveType);
-
-	if (bWireframe)
-	{
-		switch (vpPrimitiveType)
-		{
-		case VIDEO_PRIMITIVE_LINE:
-		case VIDEO_PRIMITIVE_TRIANGLES:
-			uiPrimitiveType = GL_LINES;
-			break;
-		default:
-			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		}
-	}
-
-	glDrawArrays(uiPrimitiveType, 0, uiSize);
-
-	if (bWireframe)
-		if ((vpPrimitiveType != VIDEO_PRIMITIVE_LINE) && 
-			(vpPrimitiveType != VIDEO_PRIMITIVE_TRIANGLES))
-			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-}
-
 /*	Draw 3D object.
 	TODO: Add support for VBOs ?
 */
@@ -739,7 +671,7 @@ void Video_DrawObject(
 	if (mMaterial && mMaterial->bWireframeOverride)
 		bShowWireframe = false;
 
-	Video_DrawArrays(vpPrimitiveType, uiVerts, bShowWireframe);
+	VideoLayer_DrawArrays(vpPrimitiveType, uiVerts, bShowWireframe);
 
 	glDisableClientState(GL_COLOR_ARRAY);
 	glDisableClientState(GL_VERTEX_ARRAY);
@@ -895,9 +827,6 @@ void Video_ResetCapabilities(bool bClearActive)
 		Video_EnableCapabilities(iSavedCapabilites[VIDEO_TEXTURE_DIFFUSE][VIDEO_STATE_DISABLE]);
 
 		Video_SetBlend(VIDEO_BLEND_TWO, VIDEO_DEPTH_TRUE);
-
-		if (Video.bColourOverride)
-			Video.bColourOverride = false;
 
 		bVideoIgnoreCapabilities = false;
 

@@ -40,7 +40,6 @@ enum
 
 #define	LASERGAT_MAX_WAIT	rand()%50
 
-// [11/6/2013] So we don't have to set this up a billion times ~hogsy
 Weapon_t *wLaserWeapon;
 
 void LaserGat_AimTarget(ServerEntity_t *eLaserGat,ServerEntity_t *eTarget)
@@ -69,7 +68,7 @@ void LaserGat_HandleAim(ServerEntity_t *eLaserGat)
 
 void LaserGat_Touch(ServerEntity_t *eLaserGat,ServerEntity_t *eOther)
 {
-	// [12/3/2013] TODO: Explode ~hogsy
+	// TODO: Explode
 	Sound(eLaserGat,CHAN_BODY,PHYSICS_SOUND_METAL2,255,ATTN_STATIC);
 }
 
@@ -84,7 +83,7 @@ void LaserGat_Explode(ServerEntity_t *eLaserGat)
 void LaserGat_Die(ServerEntity_t *eLaserGat,ServerEntity_t *eOther)
 {
 	eLaserGat->v.think		= LaserGat_Explode;
-	eLaserGat->v.dNextThink	= Server.dTime+5.0;
+	eLaserGat->v.dNextThink	= Server.dTime + 5.0;
 }
 
 void LaserGat_Think(ServerEntity_t *eLaserGat)
@@ -92,7 +91,7 @@ void LaserGat_Think(ServerEntity_t *eLaserGat)
 	switch(eLaserGat->Monster.iThink)
 	{
 	case THINK_IDLE:
-		// [22/4/2014] Check if there are any targets nearby... ~hogsy
+		// Check if there are any targets nearby...
 		if(!eLaserGat->Monster.iCommandList[COMMAND_ATTACK_WAIT])
 		{
 			eLaserGat->Monster.eTarget = Monster_GetTarget(eLaserGat);
@@ -100,7 +99,7 @@ void LaserGat_Think(ServerEntity_t *eLaserGat)
 			{
 #if 0
 				// [11/6/2013] Try setting the target as an enemy... ~hogsy
-				if (Monster_GetRelationship(eLaserGat, eLaserGat->Monster.eTarget) == RELATIONSHIP_HATE)
+				if (Monster_GetRelationship(eLaserGat, eLaserGat->Monster.eTarget) == MONSTER_RELATIONSHIP_HATE)
 				{
 					// [6/4/2013] Set think and state for next frame ~hogsy
 					Monster_SetThink(eLaserGat,THINK_ATTACKING);
@@ -185,10 +184,10 @@ void LaserGat_BaseDie(ServerEntity_t *eBase,ServerEntity_t *eOther)
 {
 	Entity_SetModel(eBase,LASERGAT_MODEL_BROKEN);
 
-	// [6/4/2013] Check that we still have our owner... ~hogsy
+	// Check that we still have our owner...
 	if(eBase->local.eOwner)
 	{
-		// [6/4/2013] Clear out the owners owner ~hogsy
+		// Clear out the owners owner.
 		eBase->local.eOwner->local.eOwner = NULL;
 
 		eBase->local.eOwner->v.movetype			= MOVETYPE_BOUNCE;
@@ -209,7 +208,7 @@ void LaserGat_Spawn(ServerEntity_t *eLaserGat)
 	Server_PrecacheModel(LASERGAT_MODEL_BROKEN);
 	Server_PrecacheModel(LASERGAT_MODEL_HEAD);
 
-	// [11/6/2013] Get our weapon ~hogsy
+	// Get our weapon.
 	Item_AddInventory(Item_GetItem(WEAPON_LASERS),eLaserGat);
 
 	eLaserGat->v.netname		= "Laser Turret";
@@ -224,11 +223,11 @@ void LaserGat_Spawn(ServerEntity_t *eLaserGat)
 	eLaserGat->Monster.fViewDistance	= MONSTER_RANGE_MEDIUM;
 	eLaserGat->Monster.iType			= MONSTER_LASERGAT;
 
-	// [28/6/2013] Make this random so not all turrets start looking in the same directions ~hogsy
+	// Make this random so not all turrets start looking in the same directions.
 	eLaserGat->Monster.iCommandList[COMMAND_LOOK_PITCH]	= rand()%2;
 	eLaserGat->Monster.iCommandList[COMMAND_LOOK_YAW]	= rand()%2;
 
-	// [6/6/2013] Set our physical properties ~hogsy
+	// Set our physical properties.
 	eLaserGat->Physics.iSolid		= SOLID_BBOX;
 	eLaserGat->Physics.fGravity		= cvServerGravity.value;
 	eLaserGat->Physics.fMass		= 3.5f;
@@ -240,7 +239,7 @@ void LaserGat_Spawn(ServerEntity_t *eLaserGat)
 	Monster_SetThink(eLaserGat,THINK_IDLE);
 
 	{
-		// [19/2/2013] Now set up the base... ~hogsy
+		// Now set up the base...
 		ServerEntity_t	*eBase = Entity_Spawn();
 		if(eBase)
 		{
@@ -265,14 +264,9 @@ void LaserGat_Spawn(ServerEntity_t *eLaserGat)
 
 			eLaserGat->v.origin[2] -= 30.0f;
 
-			/*	[19/2/2013]
-				To be debated, but we'll set the base as the turrets owner
-				so we can destroy it on the turrets death... For now... ~hogsy
-			*/
 			eLaserGat->local.eOwner	= eBase;
-			eBase->local.eOwner		= eLaserGat;
-
-			eBase->Physics.eIgnore	= eLaserGat;
+			eBase->local.eOwner	= eLaserGat;
+			eBase->Physics.eIgnore = eLaserGat;
 		}
 	}
 }

@@ -607,13 +607,13 @@
   <ItemGroup>
     <ClCompile Include="..\external\glee\GLee.c" />
     <ClCompile Include="..\shared\SharedFormats.c" />
-    <ClCompile Include="client\Material.cpp">
+    <ClCompile Include="client\ClientMaterial.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="client\Particle.cpp">
+    <ClCompile Include="client\ClientParticle.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="client\Sprite.cpp" />
+    <ClCompile Include="client\ClientSprite.cpp" />
     <ClCompile Include="EngineAudioDummy.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
@@ -672,7 +672,6 @@
     <ClCompile Include="EngineVideoLegacy2.c" />
     <ClCompile Include="EngineVideoSky.c" />
     <ClCompile Include="EngineVideoTextureManager.c" />
-    <ClCompile Include="gl_vidnt.c" />
     <ClCompile Include="EngineVideoWarp.c" />
     <ClCompile Include="EngineHost.c" />
     <ClCompile Include="EngineHostCommand.c" />

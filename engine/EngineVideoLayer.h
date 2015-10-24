@@ -60,10 +60,13 @@ extern "C" {
 	void VideoLayer_Enable(unsigned int uiCapabilities);
 	void VideoLayer_Disable(unsigned int uiCapabilities);
 
+	// Drawing
+	void VideoLayer_DrawArrays(const VideoPrimitive_t vpPrimitiveType, unsigned int uiSize, bool bWireframe);
+
 	void VideoLayer_GenerateVertexBuffer(unsigned int *uiBuffer);
 	void VideoLayer_DeleteVertexBuffer(unsigned int *uiBuffer);
 	
-	// FrameBuffer
+	// Frame Buffer
 	void VideoLayer_GenerateFrameBuffer(unsigned int *uiBuffer);
 	void VideoLayer_BindFrameBuffer(VideoFBOTarget_t vtTarget, unsigned int uiBuffer);
 	void VideoLayer_AttachFrameBufferTexture(gltexture_t *Texture);

@@ -66,9 +66,6 @@
     <ClCompile Include="crc.c">
       <Filter>Legacy</Filter>
     </ClCompile>
-    <ClCompile Include="gl_vidnt.c">
-      <Filter>Legacy</Filter>
-    </ClCompile>
     <ClCompile Include="..\external\glee\GLee.c">
       <Filter>External</Filter>
     </ClCompile>
@@ -220,7 +217,6 @@
     <ClCompile Include="..\shared\SharedFormats.c">
       <Filter>Shared</Filter>
     </ClCompile>
-    <ClCompile Include="EngineImage.c" />
     <ClCompile Include="EngineModel.c" />
     <ClCompile Include="EngineNetworkLoop.c">
       <Filter>Network</Filter>
@@ -257,16 +253,19 @@
     <ClCompile Include="EngineVideoLegacy.c">
       <Filter>Client\Video\Legacy</Filter>
     </ClCompile>
-    <ClCompile Include="client\Particle.cpp">
-      <Filter>Client</Filter>
-    </ClCompile>
-    <ClCompile Include="client\Material.cpp">
-      <Filter>Client</Filter>
-    </ClCompile>
     <ClCompile Include="EngineMaterial.c">
       <Filter>Client</Filter>
     </ClCompile>
-    <ClCompile Include="client\Sprite.cpp">
+    <ClCompile Include="EngineImage.c">
+      <Filter>Client</Filter>
+    </ClCompile>
+    <ClCompile Include="client\ClientSprite.cpp">
+      <Filter>Client</Filter>
+    </ClCompile>
+    <ClCompile Include="client\ClientMaterial.cpp">
+      <Filter>Client</Filter>
+    </ClCompile>
+    <ClCompile Include="client\ClientParticle.cpp">
       <Filter>Client</Filter>
     </ClCompile>
   </ItemGroup>
@@ -432,7 +431,6 @@
     <ClInclude Include="..\shared\SharedModule.h">
       <Filter>Shared</Filter>
     </ClInclude>
-    <ClInclude Include="EngineImage.h" />
     <ClInclude Include="EngineModel.h" />
     <ClInclude Include="EngineNetwork.h">
       <Filter>Network</Filter>
@@ -472,10 +470,11 @@
     </ClInclude>
     <ClInclude Include="EngineClass.h" />
     <ClInclude Include="EngineException.h" />
+    <ClInclude Include="EngineImage.h">
+      <Filter>Client</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="engine.rc">
-      <Filter>Legacy</Filter>
-    </ResourceCompile>
+    <ResourceCompile Include="engine.rc" />
   </ItemGroup>
 </Project>

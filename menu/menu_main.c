@@ -30,8 +30,9 @@ ModuleImport_t	Engine;
 
 int	iMenuState = 0;
 
-cvar_t	cvShowMenu = { "menu_show", "1", false, false, "Toggle the display of any menu elements." },
-		cvDebugMenu = { "menu_debug", "0", false, false, "Toggle the display of any debugging information." };
+ConsoleVariable_t	
+	cvShowMenu	= { "menu_show", "1", false, false, "Toggle the display of any menu elements." },
+	cvDebugMenu = { "menu_debug", "0", false, false, "Toggle the display of any debugging information." };
 
 // [13/8/2013] Fixed ~hogsy
 int	iMousePosition[2];

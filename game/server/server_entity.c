@@ -26,9 +26,9 @@
 */
 ServerEntity_t *Entity_Spawn(void)
 {
-	ServerEntity_t	*eSpawn = Engine.Spawn();
+	ServerEntity_t *eSpawn = Engine.Spawn();
 
-	// [30/5/2013] Set physics properties to their defaults! ~hogsy
+	// Set physics properties to their defaults!
 	eSpawn->Physics.fMass		= 1.0f;
 	eSpawn->Physics.fFriction	= 1.0f;
 	eSpawn->Physics.fGravity	= SERVER_GRAVITY;
@@ -80,7 +80,7 @@ void Entity_SetSizeVector(ServerEntity_t *eEntity, MathVector3f_t vMin, MathVect
 {
 	int	i;
 
-	// [13/9/2013] Check if the model is set yet, if not give us a little warning ~hogsy
+	// Check if the model is set yet, if not give us a little warning.
 	if(!eEntity->v.model)
 		Engine.Con_Warning("Setting entity size before model! (%s)\n",eEntity->v.cClassname);
 
@@ -357,17 +357,12 @@ void Entity_ResetAnimation(ServerEntity_t *eEntity)
 */
 void Entity_Animate(ServerEntity_t *eEntity,EntityFrame_t *efAnimation)
 {
-	/*	TODO:
-		Something in here was fucked up... Can't remember what but it needs looking over.
-		~hogsy
-	*/
 	int i = 0;
 
 	Entity_ResetAnimation(eEntity);
 
 	eEntity->local.iAnimationCurrent = 0;
 
-	// [20/10/2013] We were skipping the first frame? Fixed ~hogsy
 	eEntity->v.frame = efAnimation[0].iFrame;
 
 	for(;;)

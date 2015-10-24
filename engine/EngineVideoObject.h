@@ -22,49 +22,49 @@
 #define __ENGINEVIDEOOBJECT_H__
 
 #ifdef __cplusplus
-namespace VideoSys // temp name...
+namespace video // temp name...
 {
 
-	class CVideoVertex
-	{
-	public:
-		CVideoVertex(float x, float y, float z);
-	protected:
-	private:
-		MathVector3f_t
-			mvPosition,
-			mvNormal;
+class CVertex
+{
+public:
+	CVertex(float x, float y, float z);
+protected:
+private:
+	MathVector3f_t
+		mvPosition,
+		mvNormal;
 
-		MathVector2f_t mvST[VIDEO_MAX_UNITS];
+	MathVector2f_t mvST[VIDEO_MAX_UNITS];
 
-		Colour_t cColour;
-	};
+	Colour_t cColour;
+};
 
-	class CVideoObject
-	{
-	public:
-		CVideoObject(VideoPrimitive_t pPrimitiveType = VIDEO_PRIMITIVE_TRIANGLE_FAN);
-		~CVideoObject();
+class CVertexObject
+{
+public:
+	CVertexObject(VideoPrimitive_t pPrimitiveType = VIDEO_PRIMITIVE_TRIANGLE_FAN);
+	~CVertexObject();
 
-		void Begin();
-		void Vertex(float x, float y, float z);
-		void Colour(float r, float g, float b, float a);
-		void End();
+	void Begin();
+	void AddVertex(float x, float y, float z);
+	void Colour(float r, float g, float b, float a);
+	void End();
 
-		virtual void Draw();
+	virtual void Draw();
 
-	protected:
-		VideoPrimitive_t pPrimitiveType;
+protected:
+	VideoPrimitive_t pPrimitiveType;
 
-	private:
-		unsigned int uiVertexBuffer;
-		unsigned int uiColourBuffer;
-		unsigned int uiTextureBuffer;
+private:
+	unsigned int uiVertexBuffer;
+	unsigned int uiColourBuffer;
+	unsigned int uiTextureBuffer;
 
-		CVideoVertex *VertexList;
+	CVertex *VertexList;
 
-		unsigned int uiVertices;
-	};
+	unsigned int uiVertices;
+};
 
 }
 #endif
