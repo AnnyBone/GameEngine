@@ -14,6 +14,7 @@
 
 EntityFrame_t SideWinderAnimation_Deploy [] =
 {
+	{	NULL, 25, 0.02f},
 	{	NULL, 26, 0.02f},
 	{	NULL, 27, 0.02f},
 	{	NULL, 28, 0.02f},
@@ -28,12 +29,12 @@ EntityFrame_t SideWinderAnimation_Deploy [] =
 	{	NULL, 37, 0.02f},
 	{	NULL, 38, 0.02f},
 	{	NULL, 39, 0.02f},
-	{	NULL, 40, 0.02f},
-	{	NULL, 41, 0.02f, TRUE},
+	{	NULL, 40, 0.02f, TRUE},
 };
 
 EntityFrame_t SideWinderAnimation_Fire [] =
 {
+	{	NULL, 1, 0.02f},
 	{	NULL, 2, 0.02f},
 	{	NULL, 3, 0.02f},
 	{	NULL, 4, 0.02f},
@@ -56,8 +57,7 @@ EntityFrame_t SideWinderAnimation_Fire [] =
 	{	NULL, 21, 0.02f},
 	{	NULL, 22, 0.02f},
 	{	NULL, 23, 0.02f},
-	{	NULL, 24, 0.02f},
-	{	NULL, 25, 0.02f, TRUE},
+	{	NULL, 24, 0.02f, TRUE},
 };
 
 void SideWinder_Think(ServerEntity_t *ent);
