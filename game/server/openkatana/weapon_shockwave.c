@@ -8,48 +8,46 @@ void Shockwave_SpawnProjectile(ServerEntity_t *ent);
 
 EntityFrame_t ShockwaveAnimation_Deploy [] =
 {
-	{   NULL, 37, 0.06f    },
-	{   NULL, 38, 0.06f    },
-	{   NULL, 39, 0.06f    },
-	{   NULL, 40, 0.06f    },
-	{   NULL, 41, 0.06f    },
-	{   NULL, 42, 0.06f    },
-	{   NULL, 43, 0.06f    },
-	{   NULL, 44, 0.06f    },
-	{   NULL, 45, 0.06f    },
-	{   NULL, 46, 0.06f    },
-	{   NULL, 47, 0.06f, TRUE    }
+	{	NULL, 19, 0.075f},
+	{	NULL, 20, 0.075f},
+	{	NULL, 21, 0.075f},
+	{	NULL, 22, 0.075f},
+	{	NULL, 23, 0.075f},
+	{	NULL, 24, 0.075f},
+	{	NULL, 25, 0.075f},
+	{	NULL, 26, 0.075f},
+	{	NULL, 27, 0.075f},
+	{	NULL, 28, 0.075f},
+	{	NULL, 29, 0.075f, TRUE},
 };
-EntityFrame_t ShockwaveAnimation_Fire [] =
+EntityFrame_t ShockwaveAnimation_FireA [] =
 {
-	{   NULL, 1, 0.06f    },
-	{   NULL, 2, 0.06f    },
-	{   NULL, 3, 0.06f    },
-	{   NULL, 4, 0.06f    },
-	{   NULL, 5, 0.06f    },
-	{   NULL, 6, 0.06f    },
-	{   Shockwave_SpawnProjectile, 7, 0.06f    },
-	{   NULL, 8, 0.06f    },
-	{   NULL, 9, 0.06f    },
-	{   NULL, 10, 0.06f    },
-	{   NULL, 11, 0.06f    },
-	{   NULL, 12, 0.06f    },
-	{   NULL, 13, 0.06f    },
-	{   NULL, 14, 0.06f    },
-	{   NULL, 15, 0.06f    },
-	{   NULL, 16, 0.06f    },
-	{   NULL, 17, 0.06f    },
-	{   NULL, 18, 0.06f    },
-	{   NULL, 19, 0.06f    },
-	{   NULL, 20, 0.06f    },
-	{   NULL, 21, 0.06f    },
-	{   NULL, 22, 0.06f    },
-	{   NULL, 23, 0.06f    },
-	{   NULL, 24, 0.06f    },
-	{   NULL, 25, 0.06f    },
-	{   NULL, 26, 0.06f    },
-	{   NULL, 27, 0.06f, TRUE    }
+	{	NULL, 1, 0.075f},
+	{	NULL, 2, 0.075f},
+	{	NULL, 3, 0.075f},
+	{	NULL, 4, 0.075f},
+	{	NULL, 5, 0.075f},
+	{	NULL, 6, 0.075f, TRUE},
 };
+EntityFrame_t ShockwaveAnimation_FireB [] =
+{
+	{	NULL, 7, 0.075f},
+	{	NULL, 8, 0.075f},
+	{	NULL, 9, 0.075f},
+	{	NULL, 10, 0.075f},
+	{	NULL, 11, 0.075f},
+	{	NULL, 12, 0.075f, TRUE},
+};
+EntityFrame_t ShockwaveAnimation_FireC [] =
+{
+	{	NULL, 13, 0.075f},
+	{	NULL, 14, 0.075f},
+	{	NULL, 15, 0.075f},
+	{	NULL, 16, 0.075f},
+	{	NULL, 17, 0.075f},
+	{	NULL, 18, 0.075f, TRUE},
+};
+
 
 void Shockwave_Deploy(ServerEntity_t *ent)
 {
@@ -118,7 +116,16 @@ void Shockwave_PrimaryAttack(ServerEntity_t *ent)
 {
 	Sound(ent,CHAN_WEAPON,"weapons/shockwave/warmup.wav",255,ATTN_NORM);
 
-	Weapon_Animate(ent,ShockwaveAnimation_Fire);
+	float iRand = random();
+
+	if(iRand < 0.3f)
+		Weapon_Animate(ent,ShockwaveAnimation_FireA);
+	else if(iRand < 0.7)
+		Weapon_Animate(ent,ShockwaveAnimation_FireB);
+	else
+		Weapon_Animate(ent,ShockwaveAnimation_FireC);
+
+	Shockwave_SpawnProjectile(ent);
 
 	if(ent->local.attackb_finished > Server.dTime)	// No attack boost...
 		ent->local.dAttackFinished = Server.dTime+0.65;
