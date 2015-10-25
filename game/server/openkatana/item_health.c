@@ -69,7 +69,7 @@ void Health_TouchFunction(ServerEntity_t *seHealth, ServerEntity_t *seOther)
 	int i;
 	for (i = 0; i < 5; i++)
 	{
-		ServerEntity_t *seHiveBot;
+//		ServerEntity_t *seHiveBot;
 	}
 
 	// Set a flag so we don't come here again.

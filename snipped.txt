@@ -1,0 +1,46 @@
+
+server_monster.c
+
+void Monster_SetTargets(ServerEntity_t *eMonster)
+{
+	int	iRelationship;
+
+	if(!eMonster->Monster.eTarget)
+	{
+		eMonster->Monster.eTarget = Monster_GetTarget(eMonster);
+		if(eMonster->Monster.eTarget)
+		{
+			if((eMonster->Monster.eTarget == eMonster->Monster.eFriend) || (eMonster->Monster.eTarget == eMonster->Monster.eEnemy))
+				return;
+
+			iRelationship = Monster_GetRelationship(eMonster,eMonster->Monster.eTarget);
+			if(iRelationship == RELATIONSHIP_LIKE)
+			{
+				eMonster->Monster.eFriend = eMonster->Monster.eTarget;
+				eMonster->Monster.eTarget = NULL;
+			}
+			else if (iRelationship == MONSTER_RELATIONSHIP_HATE)
+			{
+				eMonster->Monster.eEnemy	= eMonster->Monster.eTarget;
+				eMonster->Monster.eTarget	= NULL;
+			}
+		}
+	}
+}
+
+// TODO: This is obsolete.
+bool Monster_WalkMove(ServerEntity_t *ent,float yaw,float dist)
+{
+	MathVector3f_t move;
+
+	if(!(ent->v.flags & (FL_ONGROUND|FL_FLY|FL_SWIM)))
+		return false;
+
+	yaw *= (float)pMath_PI*2.0f/360.0f;
+
+	move[0] = (vec_t)cos(yaw)*dist;
+	move[1] = (vec_t)sin(yaw)*dist;
+	move[2] = 0;
+
+	return Monster_MoveStep(ent,move,true);
+}

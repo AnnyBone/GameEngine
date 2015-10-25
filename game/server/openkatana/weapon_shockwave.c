@@ -116,11 +116,10 @@ void Shockwave_PrimaryAttack(ServerEntity_t *ent)
 {
 	Sound(ent,CHAN_WEAPON,"weapons/shockwave/warmup.wav",255,ATTN_NORM);
 
-	float iRand = random();
-
-	if(iRand < 0.3f)
+	int iRand = rand()%3;
+	if(iRand == 2)
 		Weapon_Animate(ent,ShockwaveAnimation_FireA);
-	else if(iRand < 0.7)
+	else if(iRand == 1)
 		Weapon_Animate(ent,ShockwaveAnimation_FireB);
 	else
 		Weapon_Animate(ent,ShockwaveAnimation_FireC);
