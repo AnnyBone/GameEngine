@@ -285,7 +285,7 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="client.h" />
-		<Unit filename="client/Sprite.cpp" />
+		<Unit filename="client/ClientSprite.cpp" />
 		<Unit filename="cmdlib.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -303,9 +303,6 @@
 		</Unit>
 		<Unit filename="engine_netdgrm.h" />
 		<Unit filename="engine_server.h" />
-		<Unit filename="gl_vidnt.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="glquake.h" />
 		<Unit filename="keys.c">
 			<Option compilerVar="CC" />
