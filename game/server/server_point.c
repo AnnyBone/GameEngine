@@ -953,14 +953,14 @@ void Point_MultiTriggerUse(ServerEntity_t *eEntity)
 			UseTargets(eEntity, eEntity);
 		else
 		{
-			strcpy (eEntity->v.targetname,eEntity->v.message);
+			p_strcpy(eEntity->v.targetname, eEntity->v.message);
 			UseTargets(eEntity, eEntity);
 		}
 	}
 	else
 	{
 		UseTargets(eEntity, eEntity);
-		strcpy (eEntity->v.targetname,eEntity->v.message);
+		p_strcpy(eEntity->v.targetname, eEntity->v.message);
 		UseTargets(eEntity, eEntity);
 	}
 }

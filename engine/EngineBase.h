@@ -33,7 +33,7 @@
 
 #ifdef _MSC_VER
 #pragma warning(disable:4115)
-#pragma warning(disable:4996)	// [7/7/2013] Annoying VS warnings... Sigh ~hogsy
+#pragma warning(disable:4996)
 #pragma warning(disable:4229)   // mgraph gets this
 #pragma warning(disable:4305)
 #endif
@@ -44,9 +44,9 @@
 	Release needs to be updated
 	when a build is released publically.	
 */
-#define ENGINE_VERSION_MAJOR	0
-#define ENGINE_VERSION_MINOR	3
-#define ENGINE_VERSION_BUILD	1007	// 23/10/2015
+#define ENGINE_VERSION_MAJOR	0		// TODO: Isn't relevent for engine ver anymore!
+#define ENGINE_VERSION_MINOR	3		// TODO: Isn't relevent for engine ver anymore!
+#define ENGINE_VERSION_BUILD	1010	// 26/10/2015
 
 #define	ENGINE_LOG	"engine"
 
@@ -87,10 +87,13 @@
 #include "SharedEngine.h"
 #include "SharedFormats.h"
 
-#include "EngineVideoWindow.h"
+#ifdef __cplusplus
+#	include "EngineException.h"
+#endif
 
 #include "EngineMain.h"
 #include "EngineConsoleVariable.h"
+#include "EngineVideoWindow.h"
 #include "EngineVideoDraw.h"
 #include "EngineVideoScreen.h"
 #include "EngineNetwork.h"
@@ -114,10 +117,6 @@
 #include "glquake.h"
 
 #include "EngineMaterial.h"
-
-#ifdef __cplusplus
-#	include "EngineException.h"
-#endif
 
 //=============================================================================
 

@@ -128,25 +128,6 @@ int Q_memcmp (void *m1, void *m2, int count)
 	return 0;
 }
 
-void Q_strcpy (char *dest, char *src)
-{
-	while (*src)
-	{
-		*dest++ = *src++;
-	}
-	*dest++ = 0;
-}
-
-void Q_strncpy (char *dest, char *src, int count)
-{
-	while (*src && count--)
-	{
-		*dest++ = *src++;
-	}
-	if (count)
-		*dest++ = 0;
-}
-
 size_t Q_strlen (const char *str)
 {
 	size_t count = 0;
@@ -170,7 +151,7 @@ char *Q_strrchr(char *s, char c)
 void Q_strcat (char *dest, char *src)
 {
 	dest += Q_strlen(dest);
-	Q_strcpy (dest, src);
+	p_strcpy(dest, src);
 }
 
 int Q_strcmp (char *s1, char *s2)
@@ -780,7 +761,7 @@ void COM_FileBase(const char *in,char *out)
 {
 	char *s,*s2, cBuf[PLATFORM_MAX_PATH];
 
-	strcpy(cBuf, in);
+	p_strcpy(cBuf, in);
 
 	s = cBuf + strlen(cBuf) - 1;
 
@@ -791,11 +772,11 @@ void COM_FileBase(const char *in,char *out)
 	;
 
 	if (s-s2 < 2)
-		strcpy(out,"?model?");
+		p_strcpy(out, "?model?");
 	else
 	{
 		s--;
-		strncpy(out,s2+1,s-s2);
+		p_strncpy(out, s2 + 1, s - s2);
 		out[s-s2] = 0;
 	}
 }
@@ -1155,7 +1136,7 @@ int COM_FindFile (const char *filename, int *handle, FILE **file)
 
 		// see if the file needs to be updated in the cache
 			if (!com_cachedir[0])
-				strcpy (cachepath, netpath);
+				p_strcpy(cachepath, netpath);
 			else
 			{
 #if defined(_WIN32)
@@ -1171,7 +1152,7 @@ int COM_FindFile (const char *filename, int *handle, FILE **file)
 
 				if (cachetime < findtime)
 					FileSystem_CopyFile(netpath,cachepath);
-				strcpy (netpath, cachepath);
+				p_strcpy(netpath, cachepath);
 			}
 
 			Sys_Printf ("FindFile: %s\n",netpath);
@@ -1364,7 +1345,7 @@ pack_t *FileSystem_LoadPackage(char *packfile)
 #ifdef _MSC_VER
 #pragma warning(suppress: 6011)	// We checked this already!
 #endif
-		strcpy (newfiles[i].name, info[i].name);
+		p_strcpy(newfiles[i].name, info[i].name);
 		newfiles[i].filepos = LittleLong(info[i].filepos);
 		newfiles[i].filelen = LittleLong(info[i].filelen);
 	}
@@ -1373,7 +1354,7 @@ pack_t *FileSystem_LoadPackage(char *packfile)
 	pack = (pack_t*)Z_Malloc (sizeof (pack_t));
 	//johnfitz
 
-	strcpy (pack->filename, packfile);
+	p_strcpy(pack->filename, packfile);
 	pack->handle = packhandle;
 	pack->numfiles = numpackfiles;
 	pack->files = newfiles;
@@ -1390,11 +1371,11 @@ void FileSystem_AddGameDirectory(char *dir)
 	pack_t          *pak;
 	char            pakfile[MAX_OSPATH];
 
-	strcpy (com_gamedir, dir);
+	p_strcpy(com_gamedir, dir);
 
 	// add the directory to the search path
 	search = (searchpath_t*)Z_Malloc(sizeof(searchpath_t));
-	Q_strncpy (search->filename, dir,sizeof(search->filename));
+	p_strncpy(search->filename, dir, sizeof(search->filename));
 	search->next = com_searchpaths;
 	com_searchpaths = search;
 
@@ -1423,47 +1404,47 @@ void FileSystem_AddGameDirectory(char *dir)
 */
 void _FileSystem_SetBasePath(char *cArg)
 {
-	Q_strncpy(host_parms.cBasePath,cArg,PLATFORM_MAX_PATH);
+	p_strncpy(host_parms.cBasePath, cArg, PLATFORM_MAX_PATH);
 }
 
 void _FileSystem_SetMaterialPath(char *cArg)
 {
-	Q_strncpy(Global.cMaterialPath,cArg,PLATFORM_MAX_PATH);
+	p_strncpy(Global.cMaterialPath, cArg, PLATFORM_MAX_PATH);
 }
 
 void _FileSystem_SetTexturePath(char *cArg)
 {
-	Q_strncpy(Global.cTexturePath,cArg,PLATFORM_MAX_PATH);
+	p_strncpy(Global.cTexturePath, cArg, PLATFORM_MAX_PATH);
 }
 
 void _FileSystem_SetSoundPath(char *cArg)
 {
-	Q_strncpy(Global.cSoundPath,cArg,PLATFORM_MAX_PATH);
+	p_strncpy(Global.cSoundPath, cArg, PLATFORM_MAX_PATH);
 }
 
 void _FileSystem_SetLevelPath(char *cArg)
 {
-	Q_strncpy(Global.cLevelPath,cArg,PLATFORM_MAX_PATH);
+	p_strncpy(Global.cLevelPath, cArg, PLATFORM_MAX_PATH);
 }
 
 void _FileSystem_SetFontPath(char *cArg)
 {
-	Q_strncpy(Global.cFontPath, cArg, PLATFORM_MAX_PATH);
+	p_strncpy(Global.cFontPath, cArg, PLATFORM_MAX_PATH);
 }
 
 void _FileSystem_SetScreenshotPath(char *cArg)
 {
-	Q_strncpy(Global.cScreenshotPath,cArg,PLATFORM_MAX_PATH);
+	p_strncpy(Global.cScreenshotPath, cArg, PLATFORM_MAX_PATH);
 }
 
 void _FileSystem_SetModulePath(char *cArg)
 {
-	Q_strncpy(Global.cModulePath, cArg, PLATFORM_MAX_PATH);
+	p_strncpy(Global.cModulePath, cArg, PLATFORM_MAX_PATH);
 }
 
 void _FileSystem_SetShaderPath(char *cArg)
 {
-	Q_strncpy(Global.cShaderPath, cArg, PLATFORM_MAX_PATH);
+	p_strncpy(Global.cShaderPath, cArg, PLATFORM_MAX_PATH);
 }
 
 /*	Script specific function that adds a new data path.
@@ -1486,9 +1467,9 @@ void FileSystem_Initialize(void)
 
 	i = COM_CheckParm ("-basedir");
 	if (i && i < com_argc-1)
-		strncpy(basedir,com_argv[i+1],sizeof(basedir));
+		p_strncpy(basedir, com_argv[i + 1], sizeof(basedir));
 	else
-		strncpy(basedir,host_parms.basedir,sizeof(basedir));
+		p_strncpy(basedir, host_parms.basedir, sizeof(basedir));
 
 #ifdef _MSC_VER
 #pragma warning(suppress: 6053)	// This isn't an issue in this case.
@@ -1504,10 +1485,10 @@ void FileSystem_Initialize(void)
 		if (com_argv[i+1][0] == '-')
 			com_cachedir[0] = 0;
 		else
-			strcpy (com_cachedir, com_argv[i+1]);
+			p_strcpy(com_cachedir, com_argv[i + 1]);
 	}
 	else if (host_parms.cachedir)
-		strncpy (com_cachedir, host_parms.cachedir,sizeof(com_cachedir));
+		p_strncpy(com_cachedir, host_parms.cachedir, sizeof(com_cachedir));
 	else
 		com_cachedir[0] = 0;
 
@@ -1567,7 +1548,7 @@ void FileSystem_Initialize(void)
 
 	// Start up with the default path
 	FileSystem_AddGameDirectory(va("%s/%s",basedir,host_parms.cBasePath));
-	Q_strncpy(com_gamedir,va("%s/%s",basedir,host_parms.cBasePath),sizeof(com_gamedir));
+	p_strncpy(com_gamedir, va("%s/%s", basedir, host_parms.cBasePath), sizeof(com_gamedir));
 
 	i = COM_CheckParm ("-game");
 	if (i && i < com_argc-1)
@@ -1591,7 +1572,7 @@ void FileSystem_Initialize(void)
 					Sys_Error ("Couldn't load packfile: %s", com_argv[i]);
 			}
 			else
-				Q_strcpy(search->filename,com_argv[i]);
+				p_strcpy(search->filename, com_argv[i]);
 
 			search->next    = com_searchpaths;
 			com_searchpaths = search;

@@ -380,11 +380,11 @@ bool Weapon_CheckTrace(ServerEntity_t *eOwner)
 
 	// Apply the distance to the target for the trace.
 	for (i = 0; i < 3; i++)
-		mvTarget[i] = mvSource[i] * 512.0f;
+		mvTarget[i] = mvSource[i] * 128.0f;
 
 	// Check that there's enough space for projectile.
-	tCheck = Engine.Server_Move(mvSource, mvTraceMins, mvTraceMaxs, mvTarget, MOVE_NORMAL, eOwner);
-	if (tCheck.bStartSolid)
+	tCheck = Engine.Server_Move(mvSource, mvTraceMins, mvTraceMaxs, mvTarget, MOVE_NOMONSTERS, eOwner);
+	if (!tCheck.bOpen)
 		return false;
 	
 	// Check to see if there's a target, and it's not the world!
@@ -462,11 +462,9 @@ void Weapon_BulletProjectile(ServerEntity_t *eEntity,float fSpread,int iDamage,v
 
 void Weapon_UpdateCurrentAmmo(Weapon_t *wWeapon, ServerEntity_t *eEntity)
 {
-	// [4/7/2012] Set ammo by type ~hogsy
 	switch (wWeapon->iPrimaryType)
 	{
-#ifdef OPENKATANA
-		// [12/8/2012] Added in AM_IONS ~hogsy
+#ifdef GAME_OPENKATANA
 	case AM_IONS:
 		eEntity->v.iPrimaryAmmo = eEntity->local.ionblaster_ammo;
 		break;
@@ -501,7 +499,6 @@ void Weapon_UpdateCurrentAmmo(Weapon_t *wWeapon, ServerEntity_t *eEntity)
 		eEntity->v.iPrimaryAmmo = 0;
 		}
 
-	// [4/7/2012] Set ammo by type ~hogsy
 	switch (wWeapon->iSecondaryType)
 	{
 	case AM_MELEE:
@@ -550,7 +547,7 @@ bool Weapon_CheckPrimaryAmmo(Weapon_t *wWeapon,ServerEntity_t *eEntity)
 {
 	switch(wWeapon->iPrimaryType)
 	{
-#ifdef OPENKATANA
+#ifdef GAME_OPENKATANA
 	case AM_IONS:
 		if(eEntity->local.ionblaster_ammo)
 			return true;
@@ -687,12 +684,12 @@ void Weapon_Animate(ServerEntity_t *ent,EntityFrame_t *eFrames)
 */
 void Weapon_Cycle(ServerEntity_t *eEntity, bool bForward)
 {
+#if 0
 	int i, iNextWeapon;
 	Weapon_t *wCurrentWeapon,*wNext;
 	Item_t *iItem;
 
-
-	if(eEntity->local.dAttackFinished > Server.dTime || !eEntity->v.iActiveWeapon)
+	if(eEntity->local.dAttackFinished > Server.dTime)
 		return;
 
 	wCurrentWeapon = Weapon_GetCurrentWeapon(eEntity);
@@ -706,10 +703,6 @@ void Weapon_Cycle(ServerEntity_t *eEntity, bool bForward)
 NEXTWEAPON:
 	for (i = 0; i < pARRAYELEMENTS(Weapons); i++)
 	{
-
-		if(! (i <= pARRAYELEMENTS(Weapons)) )
-			return;
-
 		if(wCurrentWeapon->iItem == Weapons[i].iItem)
 		{
 			if(bForward == true)
@@ -717,13 +710,15 @@ NEXTWEAPON:
 			// Ensure we're not the last weapon, before rolling back.
 			else if (i > 0)
 				iNextWeapon = Weapons[i - 1].iItem;
+
+			// Here comes the check if we actually own the next item and the ammo for it
+			iItem = Item_GetInventory(iNextWeapon, eEntity);
+			if (iItem)
 			break;
 		}
 	}
 
-	// Here comes the check if we actually own the next item and the ammo for it
-	iItem = Item_GetInventory(iNextWeapon,eEntity);
-	if(iItem)
+	
 	{
 		if(iItem->iNumber != eEntity->v.iActiveWeapon)
 		{
@@ -736,6 +731,7 @@ NEXTWEAPON:
 				Weapon_SetActive(wNext, eEntity, true);
 		}
 	}
+#endif
 }
 
 void Weapon_PrimaryAttack(ServerEntity_t *eEntity)

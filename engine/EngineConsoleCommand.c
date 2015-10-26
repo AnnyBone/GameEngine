@@ -271,7 +271,7 @@ char *CopyString (char *in)
 	char *out;
 
 	out = (char*)Z_Malloc (strlen(in)+1);
-	strcpy (out, in);
+	p_strcpy(out, in);
 	return out;
 }
 
@@ -321,7 +321,7 @@ void Cmd_Alias_f (void)
 			a->next = cmd_alias;
 			cmd_alias = a;
 		}
-		strcpy (a->name, s);
+		p_strcpy(a->name, s);
 
 		// copy the rest of the command line
 		cmd[0] = 0;		// start out with a null string
@@ -511,7 +511,7 @@ void Cmd_TokenizeString (char *text)
 		if (cmd_argc < MAX_ARGS)
 		{
 			cmd_argv[cmd_argc] = (char*)Z_Malloc (Q_strlen(com_token)+1);
-			strcpy(cmd_argv[cmd_argc], com_token);
+			p_strcpy(cmd_argv[cmd_argc], com_token);
 			cmd_argc++;
 		}
 	}
@@ -606,14 +606,12 @@ char *Cmd_UpdateString(char *cString,const char *cFind,const char *cReplace)
 
 	if(strlen(cFind) >= strlen(cReplace))
 	{
-		strncpy(scBuffer,cString,p-cString);
-
+		p_strncpy(scBuffer, cString, p - cString);
 		scBuffer[p-cString]	= '\0';
 	}
 	else
 	{
-		strncpy(scBuffer,cString,p-cString+strlen(cFind));
-
+		p_strncpy(scBuffer, cString, p - cString + strlen(cFind));
 		scBuffer[p-cString+strlen(cFind)] = '\0';
 	}
 

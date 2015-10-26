@@ -384,7 +384,7 @@ void Con_SPrintf (char *dest, int size, char *fmt, ...)
 	if (len >= size)
 		Con_Printf("Com_sprintf: overflow of %i in %i\n", len, size);
 
-	strncpy (dest, bigbuffer, size-1);
+	p_strncpy(dest, bigbuffer, size - 1);
 
 	Con_Printf (dest);
 }
@@ -527,7 +527,7 @@ void Con_LogCenterPrint (char *str)
 	if(cl.gametype == GAME_DEATHMATCH && con_logcenterprint.value != 2)
 		return; // Don't log in deathmatch
 
-	strcpy(con_lastcenterstring, str);
+	p_strcpy(con_lastcenterstring, str);
 
 	if(con_logcenterprint.value)
 	{
@@ -560,7 +560,7 @@ char key_tabpartial[MAXCMDLINE];
 
 typedef struct tab_s
 {
-	char			*name;
+	char			name[256];
 	char			*type;
 	struct tab_s	*next;
 	struct tab_s	*prev;
@@ -598,7 +598,7 @@ void AddToTabList (const char *name, char *type)
 	tab_t	*t,*insert;
 
 	t = (tab_t*)Hunk_Alloc(sizeof(tab_t));
-	t->name = name;
+	p_strncpy(t->name, name, sizeof(t->name));
 	t->type = type;
 
 	if (!tablist) //create list
@@ -691,7 +691,7 @@ void Con_TabComplete (void)
 	mark = Hunk_LowMark();
 	if (!Q_strlen(key_tabpartial)) //first time through
 	{
-		Q_strcpy (key_tabpartial, partial);
+		p_strcpy(key_tabpartial, partial);
 		BuildTabList (key_tabpartial);
 
 		if (!tablist)
@@ -730,9 +730,9 @@ void Con_TabComplete (void)
 	Hunk_FreeToLowMark(mark); //it's okay to free it here becuase match is a pointer to persistent data
 
 	// Insert new match into edit line
-	strcpy(partial,match);								// First copy match string
+	p_strcpy(partial, match);								// First copy match string
 	strcat(partial,key_lines[edit_line] + key_linepos); // Then add chars after cursor
-	strcpy(c,partial);									// Now copy all of this into edit line
+	p_strcpy(c, partial);									// Now copy all of this into edit line
 
 	key_linepos = c-key_lines[edit_line]+strlen(match); //set new cursor position
 
@@ -831,7 +831,7 @@ void Con_DrawInput (void)
 	if(key_dest != key_console && !con_forcedup)
 		return;		// Don't draw anything
 
-	text = strcpy(c, key_lines[edit_line]);
+	text = p_strcpy(c, key_lines[edit_line]);
 
 	// Pad with one space so we can draw one past the string (in case the cursor is there)
 	len = strlen(key_lines[edit_line]);

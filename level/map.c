@@ -59,7 +59,7 @@ int FindMiptex( char *name )
 	if( nummiptex == BSP_MAX_TEXINFO )
 		Error ("nummiptex == BSP_MAX_TEXINFO");
 
-	strcpy( miptex[i], name );
+	p_strcpy(miptex[i], name);
 
 	return nummiptex++;
 }

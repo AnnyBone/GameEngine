@@ -258,7 +258,7 @@ qpic_t	*Draw_CachePic(char *path)
 		Sys_Error ("menu_numcachepics == MAX_CACHED_PICS");
 
 	menu_numcachepics++;
-	strcpy(pic->name, path);
+	p_strcpy(pic->name, path);
 
 	// load the pic from disk
 	dat = (qpic_t *)COM_LoadTempFile (path);

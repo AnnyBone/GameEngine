@@ -398,7 +398,7 @@ void *Hunk_AllocName (int size, char *name)
 	h->size = size;
 	h->sentinal = HUNK_SENTINAL;
 
-	strncpy(h->name,name,8);
+	p_strncpy(h->name, name, 8);
 
 	return (void *)(h+1);
 }
@@ -478,7 +478,7 @@ void *Hunk_HighAllocName(int size,char *name)
 	memset (h, 0, size);
 	h->size = size;
 	h->sentinal = HUNK_SENTINAL;
-	Q_strncpy (h->name, name, 8);
+	p_strncpy(h->name, name, 8);
 
 	return (void *)(h+1);
 }
@@ -796,7 +796,7 @@ void *Cache_Alloc (cache_user_t *c, int size, char *name)
 		cs = Cache_TryAlloc(size,false);
 		if(cs)
 		{
-			strncpy(cs->name, name,sizeof(cs->name)-1);
+			p_strncpy(cs->name, name, sizeof(cs->name) - 1);
 			c->data = (void*)(cs+1);
 			cs->user = c;
 			break;

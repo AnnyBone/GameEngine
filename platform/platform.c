@@ -29,7 +29,7 @@ void pError_SetFunction(const char *ccFunction,...)
 	vsprintf(cOut,ccFunction,vlArguments);
 	va_end(vlArguments);
 
-	strncpy(cLastFunction, cOut, sizeof(ccFunction));
+	p_strncpy(cLastFunction, cOut, sizeof(ccFunction));
 }
 
 void pError_Reset(void)
@@ -46,7 +46,7 @@ void pError_Set(const char *ccMessage,...)
 	vsprintf(cOut,ccMessage,vlArguments);
 	va_end(vlArguments);
 
-	strncpy(cErrorMessage, cOut, sizeof(cErrorMessage));
+	p_strncpy(cErrorMessage, cOut, sizeof(cErrorMessage));
 }
 
 char *pError_Get(void)
@@ -82,13 +82,13 @@ char *pError_SystemGet(void)
 		0, NULL))
 		return "Failed to get system error details!";
 
-	strcpy(cSystemError,_strdup(cBuffer));
+	p_strcpy(cSystemError, _strdup(cBuffer));
 
 	LocalFree(cBuffer);
 
 	return cSystemError;
 #else
-    strcpy(cSystemError,dlerror());
+	p_strcpy(cSystemError,dlerror());
 	return cSystemError;
 #endif
 }

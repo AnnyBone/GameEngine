@@ -278,7 +278,7 @@ void Cvar_Set (const char *var_name, char *value)
 	Z_Free(var->string);	// free the old value string
 
 	var->string = (char*)Z_Malloc(Q_strlen(value)+1);
-	strcpy(var->string,value);
+	p_strcpy(var->string, value);
 
 	Cvar_UpdateValues(var);
 
@@ -287,7 +287,7 @@ void Cvar_Set (const char *var_name, char *value)
 	{
 		Z_Free (var->default_string);
 		var->default_string = (char*)Z_Malloc(strlen(value)+1);
-		strcpy (var->default_string,value);
+		p_strcpy(var->default_string, value);
 	}
 	//johnfitz
 
@@ -335,13 +335,13 @@ void Cvar_RegisterVariable (ConsoleVariable_t *variable,void (*Function)(void))
 // copy the value off, because future sets will Z_Free it
 	oldstr = variable->string;
 	variable->string = (char*)Z_Malloc(strlen(variable->string)+1);
-	strcpy (variable->string, oldstr);
+	p_strcpy(variable->string, oldstr);
 
 	Cvar_UpdateValues(variable);
 
 	//johnfitz -- save initial value for "reset" command
 	variable->default_string = (char*)Z_Malloc(strlen(variable->string)+1);
-	strcpy (variable->default_string, oldstr);
+	p_strcpy(variable->default_string, oldstr);
 	//johnfitz
 
 // link the variable in

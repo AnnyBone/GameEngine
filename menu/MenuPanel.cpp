@@ -1,4 +1,5 @@
 /*	Copyright (C) 1996-2001 Id Software, Inc.
+	Copyright (C) 2002-2009 John Fitzgibbons and others
 	Copyright (C) 2011-2015 OldTimes Software
 
 	This program is free software; you can redistribute it and/or
@@ -17,31 +18,22 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "platform.h"
-
-char *p_strcpy(char *destination, const char *source)
+class MenuPanel
 {
-#ifndef pIGNORE_INTERNAL_STANDARD
-	char *r = destination;
-	while (*source)
-		*destination++ = *source++;
-	*destination++ = '\0';
-	return r;
-#else
-	return strcpy(cDest, ccSource);
-#endif
-}
+public:
+	MenuPanel();
+protected:
+private:
+	int x, y;			// Position coordinates.
 
-char *p_strncpy(char *destination, const char *source, size_t num)
+	int width, height;
+};
+
+MenuPanel::MenuPanel()
 {
-#ifndef pIGNORE_INTERNAL_STANDARD
-	char *r = destination;
-	while (*source && num--)
-		*destination++ = *source++;
-	if (num)
-		*destination++ = '\0';
-	return r;
-#else
-	return strncpy(destination, source, num);
-#endif
+	x = 0;
+	y = 0;
+
+	width = 128;
+	height = 128;
 }

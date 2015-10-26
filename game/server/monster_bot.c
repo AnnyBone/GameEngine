@@ -162,7 +162,7 @@ void Bot_Spawn(ServerEntity_t *eBot)
 		iSpawnType = INFO_PLAYER_DEATHMATCH;
 
 		eBot->v.model = cvServerPlayerModel.string;
-		strncpy(eBot->v.netname, BotNames[(rand() % pARRAYELEMENTS(BotNames))], 64);
+		p_strncpy(eBot->v.netname, BotNames[(rand() % pARRAYELEMENTS(BotNames))], 64);
 
 		eBot->Monster.iType	= MONSTER_PLAYER;
 		break;
@@ -398,10 +398,10 @@ void Bot_Pain(ServerEntity_t *ent, ServerEntity_t *other)
 	char sound[MAX_QPATH];
 	Weapon_t *wMyWeapon, *wHisWeapon;
 
-	// [4/10/2012] Let the player know how we're feeling :) ~hogsy
+	// Let the player know how we're feeling.
 	Bot_BroadcastMessage(ent,other);
 
-	// [14/9/2012] Get both mine and our enemies weapon ~hogsy
+	// Get both mine and our enemies weapon.
 	wMyWeapon	= Weapon_GetCurrentWeapon(ent);
 	wHisWeapon	= Weapon_GetCurrentWeapon(other);
 	if(!wMyWeapon || (!Weapon_CheckPrimaryAmmo(wMyWeapon,ent) && wMyWeapon->iPrimaryType != AM_MELEE))
@@ -409,10 +409,10 @@ void Bot_Pain(ServerEntity_t *ent, ServerEntity_t *other)
 		Monster_SetThink(ent,THINK_FLEEING);
 		return;
 	}
-	// [14/9/2012] Otherwise check what we can see our enemy having (don't check ammo since it's unrealistic) ~hogsy
+	// Otherwise check what we can see our enemy having (don't check ammo since it's unrealistic).
 	else if(!wHisWeapon || wHisWeapon->iPrimaryType == AM_MELEE)
 	{
-		// [14/9/2012] We see you!! ~hogsy
+		// We see you!
 		if(Monster_IsVisible(ent,other))
 		{
 			Monster_SetThink(ent,THINK_ATTACKING);
@@ -470,8 +470,6 @@ POINTCHECK:
 #endif
 
 #ifdef OPENKATANA
-	// [26/7/2012] Character-based sounds ~hogsy
-	// [29/7/2012] Revised ~hogsy
 	switch(ent->local.style)
 	{
 	case BOT_MIKIKO:
@@ -541,10 +539,10 @@ void Bot_Die(ServerEntity_t *eBot,ServerEntity_t *eOther)
 	switch(eBot->local.style)
 	{
 	case BOT_MIKIKO:
-		sprintf(sound,"player/mikiko/mikikodeath%i.wav",rand()%5+1);
+		sprintf(sound,"player/mikiko/death%i.wav",rand()%4+1);
 		break;
 	case BOT_SUPERFLY:
-		sprintf(sound,"player/superfly/superflydeath%i.wav",rand()%4+1);
+		sprintf(sound,"player/superfly/death%i.wav",rand()%4+1);
 		break;
 	default:
 #endif

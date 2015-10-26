@@ -171,7 +171,7 @@ void SV_SendServerinfo(client_t *client)
 
 	if(sv.edicts->v.message)
 	{
-		Q_strcpy(message, sv.edicts->v.message);
+		p_strcpy(message, sv.edicts->v.message);
 		MSG_WriteString(&client->message,message);
 	}
 	else
@@ -263,7 +263,7 @@ void SV_ConnectClient (int clientnum)
 	memset (client, 0, sizeof(*client));
 	client->netconnection = netconnection;
 
-	strcpy(client->name,"unconnected");
+	p_strcpy(client->name, "unconnected");
 	client->active					= true;
 	client->bSpawned				= false;
 	client->edict					= ent;
@@ -1074,7 +1074,7 @@ void SV_SpawnServer(char *server)
 
 	memset(&sv,0,sizeof(sv));
 
-	strcpy(sv.name,server);
+	p_strcpy(sv.name, server);
 
 	sv.protocol	= SERVER_PROTOCOL;
 
@@ -1106,7 +1106,7 @@ void SV_SpawnServer(char *server)
 	sv.paused	= false;
 	sv.time		= 1.0;
 
-	Q_strcpy(sv.name,server);
+	p_strcpy(sv.name, server);
 	sprintf(sv.modelname,"%s%s"BSP_EXTENSION,Global.cLevelPath,server);
 	sv.worldmodel = Mod_ForName(sv.modelname);
 	if(!sv.worldmodel)

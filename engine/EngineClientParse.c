@@ -268,7 +268,7 @@ void Client_ParseServerInfo(void)
 
 // parse signon message
 	str = MSG_ReadString ();
-	strncpy(cl.levelname,str,sizeof(cl.levelname)-1);
+	p_strncpy(cl.levelname, str, sizeof(cl.levelname) - 1);
 
 // seperate the printfs so the server message can have a color
 	Con_Printf ("\n%s\n", Con_Quakebar(40)); //johnfitz
@@ -292,7 +292,7 @@ void Client_ParseServerInfo(void)
 			return;
 		}
 
-		strcpy(cModelPrecache[nummodels],str);
+		p_strcpy(cModelPrecache[nummodels], str);
 		Model_Touch(str);
 	}
 
@@ -310,7 +310,7 @@ void Client_ParseServerInfo(void)
 			return;
 		}
 
-		strcpy (cSoundPrecache[numsounds], str);
+		p_strcpy(cSoundPrecache[numsounds], str);
 		S_TouchSound (str);
 	}
 
@@ -887,7 +887,7 @@ void CL_ParseServerMessage(void)
 				return;
 			}
 
-			Q_strcpy (cl_lightstyle[i].cMap,  MSG_ReadString());
+			p_strcpy(cl_lightstyle[i].cMap, MSG_ReadString());
 			cl_lightstyle[i].length = Q_strlen(cl_lightstyle[i].cMap);
 			//johnfitz -- save extra info
 			if (cl_lightstyle[i].length)
@@ -916,7 +916,7 @@ void CL_ParseServerMessage(void)
 			i = MSG_ReadByte ();
 			if (i >= cl.maxclients)
 				Host_Error ("CL_ParseServerMessage: svc_updatename > MAX_SCOREBOARD");
-			strcpy (cl.scores[i].name, MSG_ReadString ());
+			p_strcpy(cl.scores[i].name, MSG_ReadString());
 			break;
 		case svc_updatefrags:
 			i = MSG_ReadByte();

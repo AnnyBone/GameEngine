@@ -275,14 +275,12 @@ char *Script_UpdateString(char *cString,const char *cFind,const char *cReplace)
 
 	if(strlen(cFind) >= strlen(cReplace))
 	{
-		strncpy(scBuffer,cString,p-cString);
-
+		p_strncpy(scBuffer, cString, p - cString);
 		scBuffer[p-cString]	= '\0';
 	}
 	else
 	{
-		strncpy(scBuffer,cString,p-cString+strlen(cFind));
-
+		p_strncpy(scBuffer, cString, p - cString + strlen(cFind));
 		scBuffer[p-cString+strlen(cFind)] = '\0';
 	}
 

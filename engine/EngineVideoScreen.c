@@ -137,7 +137,7 @@ int			scr_erase_center;
 */
 void SCR_CenterPrint (char *str) //update centerprint data
 {
-	strncpy (scr_centerstring, str, sizeof(scr_centerstring)-1);
+	p_strncpy(scr_centerstring, str, sizeof(scr_centerstring) - 1);
 	scr_centertime_off = scr_centertime.value;
 	scr_centertime_start = cl.time;
 
@@ -438,7 +438,7 @@ void SCR_DrawClock (void)
 		seconds = systime.wSecond;
 
 		if (hours > 12)
-			strcpy(m, "PM");
+			p_strcpy(m, "PM");
 		hours = hours%12;
 		if (hours == 0)
 			hours = 12;

@@ -215,7 +215,7 @@ void TexMgr_Imagedump_f(void)
 	// Loop through textures
 	for (glt=active_gltextures; glt; glt=glt->next)
 	{
-		Q_strcpy(tempname, glt->name);
+		p_strcpy(tempname, glt->name);
 
 #if 0	// Is this even needed anymore?
 		while ((c = strchr(tempname, ':'))) *c = '_';
@@ -1013,8 +1013,8 @@ gltexture_t *TexMgr_LoadImage(model_t *owner,char *name,int width,int height,enu
 	glt->source_width   = width;
 	glt->source_height  = height;
 	glt->source_crc     = crc;
-	strncpy(glt->name,name,sizeof(glt->name));
-	strncpy(glt->source_file,source_file,sizeof(glt->source_file));
+	p_strncpy(glt->name, name, sizeof(glt->name));
+	p_strncpy(glt->source_file, source_file, sizeof(glt->source_file));
 
 	//upload it
 	mark = Hunk_LowMark();

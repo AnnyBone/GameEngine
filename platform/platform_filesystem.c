@@ -147,7 +147,7 @@ void pFileSystem_GetUserName(char *cOut)
 		}
 	}
 
-	strcpy(cOut,cUser);
+	p_strcpy(cOut, cUser);
 
 	pFUNCTION_END
 }

@@ -191,7 +191,6 @@ typedef struct GlobalVariables_e
 	void(*BlockedFunction)(ServerEntity_t *seEntity, ServerEntity_t *seOther);	// Called when an entity is blocked against another.
 } GlobalVariables_t;
 
-// [12/1/2013] Model specific variables ~hogsy
 typedef struct
 {
 	/*	Move the following here...

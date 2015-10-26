@@ -44,9 +44,6 @@
     <Filter Include="Server\Decay">
       <UniqueIdentifier>{4259e5cd-2758-4ffd-b12a-2cd605141b33}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Server\Decay\Monsters">
-      <UniqueIdentifier>{dec28296-b962-4f23-b16b-5f0f668776cb}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Server\Decay\Weapons">
       <UniqueIdentifier>{482025ad-b292-4b59-9eb9-8ee63c20530e}</UniqueIdentifier>
     </Filter>
@@ -67,6 +64,15 @@
     </Filter>
     <Filter Include="Server\Decay\Items">
       <UniqueIdentifier>{451b1ebf-1a54-42fb-b52b-fc44c386f023}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Server\Decay\NPC">
+      <UniqueIdentifier>{1b99f1bc-abf3-4acd-b0d6-b51914181e44}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Server\Decay\NPC\Monsters">
+      <UniqueIdentifier>{dec28296-b962-4f23-b16b-5f0f668776cb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Server\Decay\NPC\Companions">
+      <UniqueIdentifier>{34a87f71-707c-411a-a49f-678df7378a42}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -131,13 +137,13 @@
       <Filter>Server\Adamas\Monsters</Filter>
     </ClCompile>
     <ClCompile Include="server\openkatana\monster_prisoner.c">
-      <Filter>Server\Decay\Monsters</Filter>
+      <Filter>Server\Decay\NPC\Monsters</Filter>
     </ClCompile>
     <ClCompile Include="server\openkatana\monster_lasergat.c">
-      <Filter>Server\Decay\Monsters</Filter>
+      <Filter>Server\Decay\NPC\Monsters</Filter>
     </ClCompile>
     <ClCompile Include="server\openkatana\monster_inmater.c">
-      <Filter>Server\Decay\Monsters</Filter>
+      <Filter>Server\Decay\NPC\Monsters</Filter>
     </ClCompile>
     <ClCompile Include="server\openkatana\weapon_zeus.c">
       <Filter>Server\Decay\Weapons</Filter>
@@ -206,7 +212,7 @@
       <Filter>Server</Filter>
     </ClCompile>
     <ClCompile Include="server\openkatana\monster_cambot.c">
-      <Filter>Server\Decay\Monsters</Filter>
+      <Filter>Server\Decay\NPC\Monsters</Filter>
     </ClCompile>
     <ClCompile Include="server\openkatana\decoration_barrel.c">
       <Filter>Server\Decay\Decoration</Filter>

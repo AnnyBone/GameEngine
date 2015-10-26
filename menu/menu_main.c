@@ -34,17 +34,16 @@ ConsoleVariable_t
 	cvShowMenu	= { "menu_show", "1", false, false, "Toggle the display of any menu elements." },
 	cvDebugMenu = { "menu_debug", "0", false, false, "Toggle the display of any debugging information." };
 
-// [13/8/2013] Fixed ~hogsy
 int	iMousePosition[2];
 
 int
-iMenuWidth = 0,
-iMenuHeight = 0;
+	iMenuWidth = 0,
+	iMenuHeight = 0;
 
 Material_t *mNums;
 Material_t *mIcons;
 
-// [2/8/2012] TODO: Why are we doing this!? Should be using the one from the lib ~hogsy
+// TODO: Why are we doing this!? Should be using the one from the lib
 char *va(char *format,...)
 {
 	va_list		argptr;
@@ -103,12 +102,12 @@ void Menu_Draw(void)
 	if(iMenuState & MENU_STATE_LOADING)
 	{
 		// [21/5/2013] TODO: Switch to element ~hogsy
-		Engine.DrawPic(MENU_BASE_PATH"loading",1.0f,(iMenuWidth-256)/2,(iMenuHeight-32)/2,256,32);
+		//Engine.DrawPic(MENU_BASE_PATH"loading",1.0f,(iMenuWidth-256)/2,(iMenuHeight-32)/2,256,32);
 		return;
 	}
 	else if(iMenuState & MENU_STATE_PAUSED)
 	{
-		Engine.DrawPic(MENU_BASE_PATH"paused",1.0f,0,0,32,64);
+		//Engine.DrawPic(MENU_BASE_PATH"paused",1.0f,0,0,32,64);
 		return;
 	}
 

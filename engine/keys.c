@@ -209,7 +209,7 @@ void Key_Console (int key)
 		key_tabpartial[0] = 0;
 		if (key_linepos > 1)
 		{
-			strcpy(key_lines[edit_line] + key_linepos - 1, key_lines[edit_line] + key_linepos);
+			p_strcpy(key_lines[edit_line] + key_linepos - 1, key_lines[edit_line] + key_linepos);
 			key_linepos--;
 		}
 		return;
@@ -219,7 +219,7 @@ void Key_Console (int key)
 	case K_DEL:
 		key_tabpartial[0] = 0;
 		if ((unsigned)key_linepos < strlen(key_lines[edit_line]))
-			strcpy(key_lines[edit_line] + key_linepos, key_lines[edit_line] + key_linepos + 1);
+			p_strcpy(key_lines[edit_line] + key_linepos, key_lines[edit_line] + key_linepos + 1);
 		return;
 	case K_HOME:
 		if (keydown[K_CTRL])
@@ -293,7 +293,7 @@ void Key_Console (int key)
 				&& !key_lines[history_line][1]);
 		if (history_line == edit_line)
 			history_line = (edit_line+1)&31;
-		strcpy(key_lines[edit_line], key_lines[history_line]);
+		p_strcpy(key_lines[edit_line], key_lines[history_line]);
 		key_linepos = strlen(key_lines[edit_line]);
 		return;
 	case K_DOWNARROW:
@@ -318,7 +318,7 @@ void Key_Console (int key)
 		}
 		else
 		{
-			Q_strcpy(key_lines[edit_line], key_lines[history_line]);
+			p_strcpy(key_lines[edit_line], key_lines[history_line]);
 			key_linepos = Q_strlen(key_lines[edit_line]);
 		}
 		return;
@@ -527,7 +527,7 @@ void Key_SetBinding (int keynum, char *binding)
 	// allocate memory for new binding
 	l = Q_strlen (binding);
 	new = Z_Malloc (l+1);
-	Q_strcpy (new, binding);
+	p_strcpy(new, binding);
 	new[l] = 0;
 	keybindings[keynum] = new;
 }

@@ -488,7 +488,7 @@ void _Material_AddTexture(Material_t *mCurrentMaterial, MaterialFunctionType_t m
 	msSkin->mtTexture[msSkin->uiTextures].vScroll[0] = 0;
 	msSkin->mtTexture[msSkin->uiTextures].vScroll[1] = 0;
 
-	Q_strcpy(cTexturePath, cArg);
+	p_strcpy(cTexturePath, cArg);
 
 	// Get following line.
 	Script_GetToken(true);
@@ -805,7 +805,7 @@ Material_t *Material_Load(const char *ccPath)
 		else	// Probably a name...
 		{
 			// Copy over the given name.
-			strncpy(cMaterialName, cToken, sizeof(cMaterialName));
+			p_strncpy(cMaterialName, cToken, sizeof(cMaterialName));
 			if (cMaterialName[0] == ' ')
 				Sys_Error("Invalid material name!\n");
 
@@ -843,17 +843,17 @@ Material_t *Material_Load(const char *ccPath)
 	}
 
 	if (cMaterialName[0])
-		strncpy(mNewMaterial->cName, cMaterialName, sizeof(mNewMaterial->cName));
+		p_strncpy(mNewMaterial->cName, cMaterialName, sizeof(mNewMaterial->cName));
 	else
 	{
 		char cIn[PLATFORM_MAX_PATH];
-		strcpy(cIn, ccPath);
+		p_strcpy(cIn, ccPath);
 
 		// Otherwise just use the filename.
 		ExtractFileBase(cIn, mNewMaterial->cName);
 	}
 
-	strncpy(mNewMaterial->cPath, ccPath, sizeof(mNewMaterial->cPath));
+	p_strncpy(mNewMaterial->cPath, ccPath, sizeof(mNewMaterial->cPath));
 
 	for (;;)
 	{

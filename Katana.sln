@@ -12,6 +12,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Launcher", "launcher\Launch
 		{5588B942-90A0-63A2-3369-523F456D79C5} = {5588B942-90A0-63A2-3369-523F456D79C5}
 		{6BA71186-7156-4A79-ABAD-FC46D4492EA0} = {6BA71186-7156-4A79-ABAD-FC46D4492EA0}
 		{5A2253BD-BDF0-4F0C-A53F-382D3EB5C4BE} = {5A2253BD-BDF0-4F0C-A53F-382D3EB5C4BE}
+		{DDDBE2D3-7AFE-4CBF-8DE5-636374F63DF2} = {DDDBE2D3-7AFE-4CBF-8DE5-636374F63DF2}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Level", "level\Level.vcxproj", "{9E7DC621-0D2D-803C-AAD4-6DDFA9C191E1}"
@@ -19,6 +20,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{A1423832-9C78-4437-AB29-7C59F21B1D4A}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine", "engine\Engine.vcxproj", "{5588B942-90A0-63A2-3369-523F456D79C5}"
+	ProjectSection(ProjectDependencies) = postProject
+		{DDDBE2D3-7AFE-4CBF-8DE5-636374F63DF2} = {DDDBE2D3-7AFE-4CBF-8DE5-636374F63DF2}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Menu", "menu\Menu.vcxproj", "{5A2253BD-BDF0-4F0C-A53F-382D3EB5C4BE}"
 EndProject
@@ -40,10 +44,6 @@ Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug (Adamas)|Win32 = Debug (Adamas)|Win32
 		Debug (Adamas)|x64 = Debug (Adamas)|x64
-		Debug (Devastator)|Win32 = Debug (Devastator)|Win32
-		Debug (Devastator)|x64 = Debug (Devastator)|x64
-		Debug (Ictus)|Win32 = Debug (Ictus)|Win32
-		Debug (Ictus)|x64 = Debug (Ictus)|x64
 		Debug (OpenKatana)|Win32 = Debug (OpenKatana)|Win32
 		Debug (OpenKatana)|x64 = Debug (OpenKatana)|x64
 		Debug|Win32 = Debug|Win32
@@ -52,13 +52,9 @@ Global
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{0D435709-1C21-446A-BE4E-A41438087A4D}.Debug (Adamas)|Win32.ActiveCfg = Release|Win32
+		{0D435709-1C21-446A-BE4E-A41438087A4D}.Debug (Adamas)|Win32.ActiveCfg = Debug (Adamas)|Win32
+		{0D435709-1C21-446A-BE4E-A41438087A4D}.Debug (Adamas)|Win32.Build.0 = Debug (Adamas)|Win32
 		{0D435709-1C21-446A-BE4E-A41438087A4D}.Debug (Adamas)|x64.ActiveCfg = Release|Win32
-		{0D435709-1C21-446A-BE4E-A41438087A4D}.Debug (Devastator)|Win32.ActiveCfg = Debug (Devastator)|Win32
-		{0D435709-1C21-446A-BE4E-A41438087A4D}.Debug (Devastator)|Win32.Build.0 = Debug (Devastator)|Win32
-		{0D435709-1C21-446A-BE4E-A41438087A4D}.Debug (Devastator)|x64.ActiveCfg = Release|Win32
-		{0D435709-1C21-446A-BE4E-A41438087A4D}.Debug (Ictus)|Win32.ActiveCfg = Debug (Ictus)|Win32
-		{0D435709-1C21-446A-BE4E-A41438087A4D}.Debug (Ictus)|x64.ActiveCfg = Debug (Ictus)|Win32
 		{0D435709-1C21-446A-BE4E-A41438087A4D}.Debug (OpenKatana)|Win32.ActiveCfg = Debug (OpenKatana)|Win32
 		{0D435709-1C21-446A-BE4E-A41438087A4D}.Debug (OpenKatana)|Win32.Build.0 = Debug (OpenKatana)|Win32
 		{0D435709-1C21-446A-BE4E-A41438087A4D}.Debug (OpenKatana)|x64.ActiveCfg = Release|Win32
@@ -68,15 +64,9 @@ Global
 		{0D435709-1C21-446A-BE4E-A41438087A4D}.Release|Win32.ActiveCfg = Release|Win32
 		{0D435709-1C21-446A-BE4E-A41438087A4D}.Release|Win32.Build.0 = Release|Win32
 		{0D435709-1C21-446A-BE4E-A41438087A4D}.Release|x64.ActiveCfg = Release|Win32
-		{9E7DC621-0D2D-803C-AAD4-6DDFA9C191E1}.Debug (Adamas)|Win32.ActiveCfg = Release|Win32
+		{9E7DC621-0D2D-803C-AAD4-6DDFA9C191E1}.Debug (Adamas)|Win32.ActiveCfg = Debug|Win32
+		{9E7DC621-0D2D-803C-AAD4-6DDFA9C191E1}.Debug (Adamas)|Win32.Build.0 = Debug|Win32
 		{9E7DC621-0D2D-803C-AAD4-6DDFA9C191E1}.Debug (Adamas)|x64.ActiveCfg = Release|x64
-		{9E7DC621-0D2D-803C-AAD4-6DDFA9C191E1}.Debug (Adamas)|x64.Build.0 = Release|x64
-		{9E7DC621-0D2D-803C-AAD4-6DDFA9C191E1}.Debug (Devastator)|Win32.ActiveCfg = Release|Win32
-		{9E7DC621-0D2D-803C-AAD4-6DDFA9C191E1}.Debug (Devastator)|Win32.Build.0 = Release|Win32
-		{9E7DC621-0D2D-803C-AAD4-6DDFA9C191E1}.Debug (Devastator)|x64.ActiveCfg = Release|x64
-		{9E7DC621-0D2D-803C-AAD4-6DDFA9C191E1}.Debug (Ictus)|Win32.ActiveCfg = Debug (Ictus)|Win32
-		{9E7DC621-0D2D-803C-AAD4-6DDFA9C191E1}.Debug (Ictus)|x64.ActiveCfg = Debug (Ictus)|x64
-		{9E7DC621-0D2D-803C-AAD4-6DDFA9C191E1}.Debug (Ictus)|x64.Build.0 = Debug (Ictus)|x64
 		{9E7DC621-0D2D-803C-AAD4-6DDFA9C191E1}.Debug (OpenKatana)|Win32.ActiveCfg = Release|Win32
 		{9E7DC621-0D2D-803C-AAD4-6DDFA9C191E1}.Debug (OpenKatana)|Win32.Build.0 = Release|Win32
 		{9E7DC621-0D2D-803C-AAD4-6DDFA9C191E1}.Debug (OpenKatana)|x64.ActiveCfg = Release|x64
@@ -87,15 +77,9 @@ Global
 		{9E7DC621-0D2D-803C-AAD4-6DDFA9C191E1}.Release|Win32.Build.0 = Release|Win32
 		{9E7DC621-0D2D-803C-AAD4-6DDFA9C191E1}.Release|x64.ActiveCfg = Release|x64
 		{9E7DC621-0D2D-803C-AAD4-6DDFA9C191E1}.Release|x64.Build.0 = Release|x64
-		{5588B942-90A0-63A2-3369-523F456D79C5}.Debug (Adamas)|Win32.ActiveCfg = Release|Win32
+		{5588B942-90A0-63A2-3369-523F456D79C5}.Debug (Adamas)|Win32.ActiveCfg = Debug|Win32
+		{5588B942-90A0-63A2-3369-523F456D79C5}.Debug (Adamas)|Win32.Build.0 = Debug|Win32
 		{5588B942-90A0-63A2-3369-523F456D79C5}.Debug (Adamas)|x64.ActiveCfg = Release|x64
-		{5588B942-90A0-63A2-3369-523F456D79C5}.Debug (Adamas)|x64.Build.0 = Release|x64
-		{5588B942-90A0-63A2-3369-523F456D79C5}.Debug (Devastator)|Win32.ActiveCfg = Release|Win32
-		{5588B942-90A0-63A2-3369-523F456D79C5}.Debug (Devastator)|Win32.Build.0 = Release|Win32
-		{5588B942-90A0-63A2-3369-523F456D79C5}.Debug (Devastator)|x64.ActiveCfg = Release|x64
-		{5588B942-90A0-63A2-3369-523F456D79C5}.Debug (Ictus)|Win32.ActiveCfg = Debug (Ictus)|Win32
-		{5588B942-90A0-63A2-3369-523F456D79C5}.Debug (Ictus)|x64.ActiveCfg = Debug (Ictus)|x64
-		{5588B942-90A0-63A2-3369-523F456D79C5}.Debug (Ictus)|x64.Build.0 = Debug (Ictus)|x64
 		{5588B942-90A0-63A2-3369-523F456D79C5}.Debug (OpenKatana)|Win32.ActiveCfg = Release|Win32
 		{5588B942-90A0-63A2-3369-523F456D79C5}.Debug (OpenKatana)|Win32.Build.0 = Release|Win32
 		{5588B942-90A0-63A2-3369-523F456D79C5}.Debug (OpenKatana)|x64.ActiveCfg = Release|x64
@@ -107,15 +91,9 @@ Global
 		{5588B942-90A0-63A2-3369-523F456D79C5}.Release|Win32.Build.0 = Release|Win32
 		{5588B942-90A0-63A2-3369-523F456D79C5}.Release|x64.ActiveCfg = Release|x64
 		{5588B942-90A0-63A2-3369-523F456D79C5}.Release|x64.Build.0 = Release|x64
-		{5A2253BD-BDF0-4F0C-A53F-382D3EB5C4BE}.Debug (Adamas)|Win32.ActiveCfg = Debug (Adamas)|Win32
-		{5A2253BD-BDF0-4F0C-A53F-382D3EB5C4BE}.Debug (Adamas)|Win32.Build.0 = Debug (Adamas)|Win32
-		{5A2253BD-BDF0-4F0C-A53F-382D3EB5C4BE}.Debug (Adamas)|x64.ActiveCfg = Debug (Adamas)|Win32
-		{5A2253BD-BDF0-4F0C-A53F-382D3EB5C4BE}.Debug (Devastator)|Win32.ActiveCfg = Debug (Devastator)|Win32
-		{5A2253BD-BDF0-4F0C-A53F-382D3EB5C4BE}.Debug (Devastator)|Win32.Build.0 = Debug (Devastator)|Win32
-		{5A2253BD-BDF0-4F0C-A53F-382D3EB5C4BE}.Debug (Devastator)|x64.ActiveCfg = Debug (OpenKatana)|Win32
-		{5A2253BD-BDF0-4F0C-A53F-382D3EB5C4BE}.Debug (Ictus)|Win32.ActiveCfg = Debug (Ictus)|Win32
-		{5A2253BD-BDF0-4F0C-A53F-382D3EB5C4BE}.Debug (Ictus)|Win32.Build.0 = Debug (Ictus)|Win32
-		{5A2253BD-BDF0-4F0C-A53F-382D3EB5C4BE}.Debug (Ictus)|x64.ActiveCfg = Debug (Ictus)|Win32
+		{5A2253BD-BDF0-4F0C-A53F-382D3EB5C4BE}.Debug (Adamas)|Win32.ActiveCfg = Debug|Win32
+		{5A2253BD-BDF0-4F0C-A53F-382D3EB5C4BE}.Debug (Adamas)|Win32.Build.0 = Debug|Win32
+		{5A2253BD-BDF0-4F0C-A53F-382D3EB5C4BE}.Debug (Adamas)|x64.ActiveCfg = Debug (OpenKatana)|Win32
 		{5A2253BD-BDF0-4F0C-A53F-382D3EB5C4BE}.Debug (OpenKatana)|Win32.ActiveCfg = Debug (OpenKatana)|Win32
 		{5A2253BD-BDF0-4F0C-A53F-382D3EB5C4BE}.Debug (OpenKatana)|Win32.Build.0 = Debug (OpenKatana)|Win32
 		{5A2253BD-BDF0-4F0C-A53F-382D3EB5C4BE}.Debug (OpenKatana)|x64.ActiveCfg = Debug (OpenKatana)|Win32
@@ -127,13 +105,7 @@ Global
 		{5A2253BD-BDF0-4F0C-A53F-382D3EB5C4BE}.Release|x64.ActiveCfg = Debug (OpenKatana)|Win32
 		{6BA71186-7156-4A79-ABAD-FC46D4492EA0}.Debug (Adamas)|Win32.ActiveCfg = Debug (Adamas)|Win32
 		{6BA71186-7156-4A79-ABAD-FC46D4492EA0}.Debug (Adamas)|Win32.Build.0 = Debug (Adamas)|Win32
-		{6BA71186-7156-4A79-ABAD-FC46D4492EA0}.Debug (Adamas)|x64.ActiveCfg = Debug (Adamas)|Win32
-		{6BA71186-7156-4A79-ABAD-FC46D4492EA0}.Debug (Devastator)|Win32.ActiveCfg = Debug (Devastator)|Win32
-		{6BA71186-7156-4A79-ABAD-FC46D4492EA0}.Debug (Devastator)|Win32.Build.0 = Debug (Devastator)|Win32
-		{6BA71186-7156-4A79-ABAD-FC46D4492EA0}.Debug (Devastator)|x64.ActiveCfg = Debug (OpenKatana)|Win32
-		{6BA71186-7156-4A79-ABAD-FC46D4492EA0}.Debug (Ictus)|Win32.ActiveCfg = Debug (Ictus)|Win32
-		{6BA71186-7156-4A79-ABAD-FC46D4492EA0}.Debug (Ictus)|Win32.Build.0 = Debug (Ictus)|Win32
-		{6BA71186-7156-4A79-ABAD-FC46D4492EA0}.Debug (Ictus)|x64.ActiveCfg = Debug (Ictus)|Win32
+		{6BA71186-7156-4A79-ABAD-FC46D4492EA0}.Debug (Adamas)|x64.ActiveCfg = Debug (OpenKatana)|Win32
 		{6BA71186-7156-4A79-ABAD-FC46D4492EA0}.Debug (OpenKatana)|Win32.ActiveCfg = Debug (OpenKatana)|Win32
 		{6BA71186-7156-4A79-ABAD-FC46D4492EA0}.Debug (OpenKatana)|Win32.Build.0 = Debug (OpenKatana)|Win32
 		{6BA71186-7156-4A79-ABAD-FC46D4492EA0}.Debug (OpenKatana)|x64.ActiveCfg = Debug (OpenKatana)|Win32
@@ -147,14 +119,6 @@ Global
 		{549FB9B3-C358-4A95-B768-6027A04F1985}.Debug (Adamas)|Win32.Build.0 = Debug|Win32
 		{549FB9B3-C358-4A95-B768-6027A04F1985}.Debug (Adamas)|x64.ActiveCfg = Release|Win32
 		{549FB9B3-C358-4A95-B768-6027A04F1985}.Debug (Adamas)|x64.Build.0 = Release|Win32
-		{549FB9B3-C358-4A95-B768-6027A04F1985}.Debug (Devastator)|Win32.ActiveCfg = Debug|Win32
-		{549FB9B3-C358-4A95-B768-6027A04F1985}.Debug (Devastator)|Win32.Build.0 = Debug|Win32
-		{549FB9B3-C358-4A95-B768-6027A04F1985}.Debug (Devastator)|x64.ActiveCfg = Release|Win32
-		{549FB9B3-C358-4A95-B768-6027A04F1985}.Debug (Devastator)|x64.Build.0 = Release|Win32
-		{549FB9B3-C358-4A95-B768-6027A04F1985}.Debug (Ictus)|Win32.ActiveCfg = Debug|Win32
-		{549FB9B3-C358-4A95-B768-6027A04F1985}.Debug (Ictus)|Win32.Build.0 = Debug|Win32
-		{549FB9B3-C358-4A95-B768-6027A04F1985}.Debug (Ictus)|x64.ActiveCfg = Release|Win32
-		{549FB9B3-C358-4A95-B768-6027A04F1985}.Debug (Ictus)|x64.Build.0 = Release|Win32
 		{549FB9B3-C358-4A95-B768-6027A04F1985}.Debug (OpenKatana)|Win32.ActiveCfg = Debug|Win32
 		{549FB9B3-C358-4A95-B768-6027A04F1985}.Debug (OpenKatana)|Win32.Build.0 = Debug|Win32
 		{549FB9B3-C358-4A95-B768-6027A04F1985}.Debug (OpenKatana)|x64.ActiveCfg = Release|Win32
@@ -165,20 +129,12 @@ Global
 		{549FB9B3-C358-4A95-B768-6027A04F1985}.Release|Win32.ActiveCfg = Release|Win32
 		{549FB9B3-C358-4A95-B768-6027A04F1985}.Release|Win32.Build.0 = Release|Win32
 		{549FB9B3-C358-4A95-B768-6027A04F1985}.Release|x64.ActiveCfg = Release|Win32
-		{DDDBE2D3-7AFE-4CBF-8DE5-636374F63DF2}.Debug (Adamas)|Win32.ActiveCfg = Debug (Ictus)|Win32
-		{DDDBE2D3-7AFE-4CBF-8DE5-636374F63DF2}.Debug (Adamas)|Win32.Build.0 = Debug (Ictus)|Win32
+		{DDDBE2D3-7AFE-4CBF-8DE5-636374F63DF2}.Debug (Adamas)|Win32.ActiveCfg = Debug|Win32
+		{DDDBE2D3-7AFE-4CBF-8DE5-636374F63DF2}.Debug (Adamas)|Win32.Build.0 = Debug|Win32
 		{DDDBE2D3-7AFE-4CBF-8DE5-636374F63DF2}.Debug (Adamas)|x64.ActiveCfg = Debug (Ictus)|x64
 		{DDDBE2D3-7AFE-4CBF-8DE5-636374F63DF2}.Debug (Adamas)|x64.Build.0 = Debug (Ictus)|x64
-		{DDDBE2D3-7AFE-4CBF-8DE5-636374F63DF2}.Debug (Devastator)|Win32.ActiveCfg = Debug (Ictus)|Win32
-		{DDDBE2D3-7AFE-4CBF-8DE5-636374F63DF2}.Debug (Devastator)|Win32.Build.0 = Debug (Ictus)|Win32
-		{DDDBE2D3-7AFE-4CBF-8DE5-636374F63DF2}.Debug (Devastator)|x64.ActiveCfg = Debug (Ictus)|x64
-		{DDDBE2D3-7AFE-4CBF-8DE5-636374F63DF2}.Debug (Devastator)|x64.Build.0 = Debug (Ictus)|x64
-		{DDDBE2D3-7AFE-4CBF-8DE5-636374F63DF2}.Debug (Ictus)|Win32.ActiveCfg = Debug (Ictus)|Win32
-		{DDDBE2D3-7AFE-4CBF-8DE5-636374F63DF2}.Debug (Ictus)|Win32.Build.0 = Debug (Ictus)|Win32
-		{DDDBE2D3-7AFE-4CBF-8DE5-636374F63DF2}.Debug (Ictus)|x64.ActiveCfg = Debug (Ictus)|x64
-		{DDDBE2D3-7AFE-4CBF-8DE5-636374F63DF2}.Debug (Ictus)|x64.Build.0 = Debug (Ictus)|x64
-		{DDDBE2D3-7AFE-4CBF-8DE5-636374F63DF2}.Debug (OpenKatana)|Win32.ActiveCfg = Debug (Ictus)|Win32
-		{DDDBE2D3-7AFE-4CBF-8DE5-636374F63DF2}.Debug (OpenKatana)|Win32.Build.0 = Debug (Ictus)|Win32
+		{DDDBE2D3-7AFE-4CBF-8DE5-636374F63DF2}.Debug (OpenKatana)|Win32.ActiveCfg = Debug|Win32
+		{DDDBE2D3-7AFE-4CBF-8DE5-636374F63DF2}.Debug (OpenKatana)|Win32.Build.0 = Debug|Win32
 		{DDDBE2D3-7AFE-4CBF-8DE5-636374F63DF2}.Debug (OpenKatana)|x64.ActiveCfg = Debug (Ictus)|x64
 		{DDDBE2D3-7AFE-4CBF-8DE5-636374F63DF2}.Debug (OpenKatana)|x64.Build.0 = Debug (Ictus)|x64
 		{DDDBE2D3-7AFE-4CBF-8DE5-636374F63DF2}.Debug|Win32.ActiveCfg = Debug|Win32

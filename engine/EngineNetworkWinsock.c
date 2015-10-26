@@ -212,7 +212,7 @@ int WINS_Init (void)
 			myAddr = inet_addr(com_argv[i+1]);
 			if (myAddr == INADDR_NONE)
 				Sys_Error ("%s is not a valid IP address", com_argv[i+1]);
-			strcpy(my_tcpip_address, com_argv[i+1]);
+			p_strcpy(my_tcpip_address, com_argv[i + 1]);
 		}
 		else
 			Sys_Error ("NET_Init: you must specify an IP address after -ip");
@@ -220,7 +220,7 @@ int WINS_Init (void)
 	else
 	{
 		myAddr = INADDR_ANY;
-		strcpy(my_tcpip_address, "INADDR_ANY");
+		p_strcpy(my_tcpip_address, "INADDR_ANY");
 	}
 
 	if ((net_controlsocket = WINS_OpenSocket (0)) == -1)
@@ -330,7 +330,7 @@ static int PartialIPAddress (char *in, struct qsockaddr *hostaddr)
 
 	buff[0] = '.';
 	b = buff;
-	strcpy(buff+1, in);
+	p_strcpy(buff + 1, in);
 	if (buff[1] == '.')
 		b++;
 
@@ -513,11 +513,11 @@ int WINS_GetNameFromAddr (struct qsockaddr *addr, char *name)
 	hostentry = pgethostbyaddr ((char *)&((struct sockaddr_in *)addr)->sin_addr, sizeof(struct in_addr), AF_INET);
 	if (hostentry)
 	{
-		Q_strncpy (name, (char *)hostentry->h_name, NET_NAMELEN - 1);
+		p_strncpy(name, (char *)hostentry->h_name, NET_NAMELEN - 1);
 		return 0;
 	}
 
-	Q_strcpy (name, WINS_AddrToString (addr));
+	p_strcpy(name, WINS_AddrToString(addr));
 	return 0;
 }
 

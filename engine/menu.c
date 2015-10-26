@@ -347,7 +347,7 @@ void M_ScanSaves (void)
 
 	for (i=0 ; i<MAX_SAVEGAMES ; i++)
 	{
-		Q_strcpy(m_filenames[i],"--- UNUSED SLOT ---");
+		p_strcpy(m_filenames[i],"--- UNUSED SLOT ---");
 		loadable[i] = false;
 		sprintf(name,"%s/s%i.sav", com_gamedir, i);
 
@@ -357,7 +357,7 @@ void M_ScanSaves (void)
 
 		fscanf(f,"%i\n",&version);
 		fscanf(f,"%79s\n",name);
-		Q_strncpy(m_filenames[i],name,sizeof(m_filenames[i])-1);
+		p_strncpy(m_filenames[i], name, sizeof(m_filenames[i]) - 1);
 
         // Change _ back to space.
 		for(j = 0; j < SAVEGAME_COMMENT_LENGTH; j++)
@@ -569,8 +569,8 @@ void M_Menu_Setup_f (void)
 	key_dest = key_menu;
 	m_state = m_setup;
 	m_entersound = TRUE;
-	Q_strcpy(setup_myname, cl_name.string);
-	Q_strcpy(setup_hostname, hostname.string);
+	p_strcpy(setup_myname, cl_name.string);
+	p_strcpy(setup_hostname, hostname.string);
 	setup_top = setup_oldtop = ((int)cl_color.value) >> 4;
 	setup_bottom = setup_oldbottom = ((int)cl_color.value) & 15;
 }

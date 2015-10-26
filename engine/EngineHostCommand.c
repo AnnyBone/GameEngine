@@ -134,7 +134,7 @@ void Host_Game_f (void)
 			return;
 		}
 
-		Q_strcpy(pakfile,va("%s/%s",host_parms.basedir,Cmd_Argv(1)));
+		p_strcpy(pakfile, va("%s/%s", host_parms.basedir, Cmd_Argv(1)));
 		if(!strncmp(pakfile,com_gamedir,sizeof(com_gamedir))) //no change
 		{
 			Con_Printf("\"game\" is already \"%s\"\n",FileSystem_SkipPath(com_gamedir));
@@ -148,12 +148,12 @@ void Host_Game_f (void)
 		// Write config file
 		Host_WriteConfiguration();
 
-		strcpy (com_gamedir, pakfile);
+		p_strcpy(com_gamedir, pakfile);
 
 		if(Q_strcasecmp(Cmd_Argv(1),host_parms.cBasePath)) //game is not id1
 		{
 			search = (searchpath_t*)Z_Malloc(sizeof(searchpath_t));
-			strcpy (search->filename, pakfile);
+			p_strcpy(search->filename, pakfile);
 			search->next = com_searchpaths;
 			com_searchpaths = search;
 
@@ -226,7 +226,7 @@ void ExtraMaps_Add (char *name)
 			return;
 
 	level = (extralevel_t*)Z_Malloc(sizeof(extralevel_t));
-	strcpy(level->name, name);
+	p_strcpy(level->name, name);
 
 	// Insert each entry in alphabetical order
 	if (extralevels == NULL || Q_strcasecmp(level->name,extralevels->name) < 0) //insert at front
@@ -408,7 +408,7 @@ void Modlist_Init(void) //TODO: move win32 specific stuff to sys_win.c
 				return;
 			}
 
-			strcpy (mod->name,FindFileData.cFileName);
+			p_strcpy(mod->name, FindFileData.cFileName);
 
 			//insert each entry in alphabetical order
 			if (modlist == NULL || _stricmp(mod->name, modlist->name) < 0) //insert at front
@@ -791,7 +791,7 @@ void Host_Map_f (void)
 	strcat (cls.mapstring, "\n");
 
 	svs.serverflags = 0;			// haven't completed an episode yet
-	strcpy (name, Cmd_Argv(1));
+	p_strcpy(name, Cmd_Argv(1));
 
 	SV_SpawnServer (name);
 
@@ -800,7 +800,7 @@ void Host_Map_f (void)
 
 	if (cls.state != ca_dedicated)
 	{
-		strcpy (cls.spawnparms, "");
+		p_strcpy(cls.spawnparms, "");
 
 		for (i=2 ; i<Cmd_Argc() ; i++)
 		{
@@ -837,7 +837,7 @@ void Host_Changelevel_f (void)
 	//johnfitz
 
 	SV_SaveSpawnparms ();
-	strcpy (level, Cmd_Argv(1));
+	p_strcpy(level, Cmd_Argv(1));
 	SV_SpawnServer (level);
 }
 
@@ -852,7 +852,7 @@ void Host_Restart_f (void)
 	else if (cmd_source != src_command)
 		return;
 
-	Q_strcpy(mapname,sv.name);	// must copy out, because it gets cleared
+	p_strcpy(mapname, sv.name);	// must copy out, because it gets cleared
 								// in sv_spawnserver
 	SV_SpawnServer (mapname);
 }
@@ -878,7 +878,7 @@ void Host_Connect_f (void)
 		CL_StopPlayback ();
 		CL_Disconnect ();
 	}
-	Q_strcpy(name,Cmd_Argv(1));
+	p_strcpy(name, Cmd_Argv(1));
 	CL_EstablishConnection (name);
 	Host_Reconnect_f ();
 }
@@ -1081,7 +1081,7 @@ void Host_Loadgame_f (void)
 
 		sv.lightstyles[i] = (char*)Hunk_Alloc(strlen(str)+1);
 
-		strcpy(sv.lightstyles[i],str);
+		p_strcpy(sv.lightstyles[i], str);
 	}
 
 // load the edicts out of the savegame file
@@ -1174,7 +1174,7 @@ void Host_Name_f (void)
 	if(host_client->name[0] && strcmp(host_client->name, "unconnected") )
 		if(strcmp(host_client->name, newName) != 0)
 			Con_Printf("%s renamed to %s\n",host_client->name,newName);
-	strcpy(host_client->name, newName);
+	p_strcpy(host_client->name, newName);
 	host_client->edict->v.netname = host_client->name;
 
 	// Send notification to all clients
@@ -1279,7 +1279,7 @@ void Host_Tell_f(void)
 	else if(Cmd_Argc() < 3)
 		return;
 
-	strcpy(text,host_client->name);
+	p_strcpy(text, host_client->name);
 	strcat(text,": ");
 
 	p = Cmd_Args();
@@ -1867,7 +1867,7 @@ void Host_Startdemos_f (void)
 	Con_Printf ("%i demo(s) in loop\n", c);
 
 	for (i=1 ; i<c+1 ; i++)
-		strncpy (cls.demos[i-1], Cmd_Argv(i), sizeof(cls.demos[0])-1);
+		p_strncpy(cls.demos[i - 1], Cmd_Argv(i), sizeof(cls.demos[0]) - 1);
 
 	if (!sv.active && cls.demonum != -1 && !cls.demoplayback)
 	{

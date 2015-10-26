@@ -166,7 +166,7 @@ void Sky_LoadSkyBox (char *name)
 		return;
 	}
 
-	strcpy(cSkyBoxName, name);
+	p_strcpy(cSkyBoxName, name);
 }
 
 void Sky_NewMap (void)
@@ -202,9 +202,9 @@ void Sky_NewMap (void)
 		if (com_token[0] == '}')
 			break; // end of worldspawn
 		if (com_token[0] == '_')
-			strcpy(key, com_token + 1);
+			p_strcpy(key, com_token + 1);
 		else
-			strcpy(key, com_token);
+			p_strcpy(key, com_token);
 
 		while (key[strlen(key)-1] == ' ') // remove trailing spaces
 			key[strlen(key)-1] = 0;
@@ -212,7 +212,7 @@ void Sky_NewMap (void)
 		data = COM_Parse(data);
 		if (!data)
 			return; // error
-		strcpy(value,com_token);
+		p_strcpy(value, com_token);
 
 		// [2/5/2013] Removed skyname ~hogsy
 		if(!strcmp("sky",key))

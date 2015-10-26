@@ -52,11 +52,11 @@ void Model_Initialize(void)
 
 	//johnfitz -- create notexture miptex
 	r_notexture_mip = (texture_t*)Hunk_AllocName(sizeof(texture_t),"r_notexture_mip");
-	strcpy (r_notexture_mip->name, "notexture");
+	p_strcpy(r_notexture_mip->name, "notexture");
 	r_notexture_mip->height = r_notexture_mip->width = 32;
 
 	r_notexture_mip2 = (texture_t*)Hunk_AllocName (sizeof(texture_t), "r_notexture_mip2");
-	strcpy (r_notexture_mip2->name, "notexture2");
+	p_strcpy(r_notexture_mip2->name, "notexture2");
 	r_notexture_mip2->height = r_notexture_mip2->width = 32;
 	//johnfitz
 }
@@ -188,7 +188,7 @@ model_t *Model_FindName(const char *cName)
 		if (mod_numknown == MAX_MOD_KNOWN)
 			Sys_Error ("mod_numknown == MAX_MOD_KNOWN");
 
-		strcpy(mModel->name,cName);
+		p_strcpy(mModel->name, cName);
 
 		mModel->bNeedLoad = true;
 
@@ -321,7 +321,7 @@ void Model_LoadBSPTextures(BSPLump_t *blLump)
 
 		// Remove special characters.
 		if (tTexture->name[0] == '*')
-			strcpy(tTexture->name,tTexture->name + 1);
+			p_strcpy(tTexture->name, tTexture->name + 1);
 
 		FileSystem_UpdatePath(tTexture->name);
 
@@ -1157,7 +1157,7 @@ void Model_LoadBSP(model_t *mod,void *buffer)
 			sprintf (name, "*%i", i+1);
 			loadmodel = Model_FindName(name);
 			*loadmodel = *mod;
-			strcpy (loadmodel->name, name);
+			p_strcpy(loadmodel->name, name);
 			mod = loadmodel;
 		}
 	}

@@ -106,7 +106,7 @@ int LightStyleForTargetname( char *targetname )
 	if( numlighttargets == 32 )
 		Error( "LightStyleForTargetname: numlighttargets == 32" );
 
-	strcpy( lighttargets[numlighttargets], targetname );
+	p_strcpy(lighttargets[numlighttargets], targetname);
 	numlighttargets++;
 	return numlighttargets - 1 + 32;
 }
@@ -122,7 +122,7 @@ void ParseLightEntities( void )
 	char *value, *targetname, *style;
 	directlight_t *l;
 	double vec[4], color2[3];
-	BOOL isLight;
+	bool isLight;
 
 	num_directlights = 0;
 	for( i = 0, ent = entities; i < num_entities; i++, ent++ )

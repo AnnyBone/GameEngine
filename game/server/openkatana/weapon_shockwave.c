@@ -77,14 +77,12 @@ void ShockLaser_Touch(ServerEntity_t *ent, ServerEntity_t *other)
 	Entity_Remove(ent);
 }
 
-// [19/8/2012] Renamed to Shockwave_SpawnProjectile ~hogsy
 void Shockwave_SpawnProjectile(ServerEntity_t *ent)
 {
 	ServerEntity_t *eLaser;
 
 	Sound(ent,CHAN_WEAPON,"weapons/shockwave/fire.wav",255,ATTN_NORM);
 
-	// [27/1/2013] Moved punch here so that it happens when we actually throw out the projectile ~hogsy
 	ent->v.punchangle[0] -= 10.0f;
 	
 	eLaser = Entity_Spawn();
@@ -107,7 +105,6 @@ void Shockwave_SpawnProjectile(ServerEntity_t *ent)
 		Entity_SetSizeVector(eLaser,g_mvOrigin3f,g_mvOrigin3f);
 	}
 
-	// This fixes the ammo bug ~eukos [05/08/2013]
 	ent->local.shockwave_ammo--;
 	ent->v.iPrimaryAmmo = ent->local.shockwave_ammo;
 }
