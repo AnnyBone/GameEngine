@@ -102,7 +102,7 @@ GIPLWindow_t *gWindow_Allocate(void)
 	// Don't continue if we failed to allocate.
 	if(!pwAllocated)
 	{
-		gWindow_MessageBox("Platform Error","Failed to allocate a new window!\n");
+		pWindow_MessageBox("Platform Error", "Failed to allocate a new window!\n");
 		return NULL;
 	}
 
@@ -274,7 +274,7 @@ bool gWindow_ChooseColor(GIPLWindow_t *gwParent,int *iRed,int *iGreen,int *iBlue
 	TODO:
 		Support for alternative dialog types? Error etc.
 */
-void gWindow_MessageBox(const char *ccTitle,const char *ccMessage,...)
+void pWindow_MessageBox(const char *ccTitle, const char *ccMessage, ...)
 {
 	char	cOut[2048];
 	va_list	vlArguments;
@@ -358,7 +358,7 @@ void gWindow_Destroy(GIPLWindow_t *gwWindow)
 /*  Shows or hides the cursor for
 	the active window.
 */
-void gWindow_ShowCursor(bool bShow)
+void pWindow_ShowCursor(bool bShow)
 {
 	if(bShow == bShowingCursor)
 		return;
@@ -392,7 +392,7 @@ void gWindow_GetCursorPosition(int *iX,int *iY)
 	RENDERING
 */
 
-void gWindow_SwapBuffers(GIPLWindow_t *gwWindow)
+void pWindow_SwapBuffers(GIPLWindow_t *gwWindow)
 {
 #ifdef _WIN32
 	SwapBuffers(gwWindow->hDeviceContext);

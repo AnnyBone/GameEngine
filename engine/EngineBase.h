@@ -46,7 +46,7 @@
 */
 #define ENGINE_VERSION_MAJOR	0		// TODO: Isn't relevent for engine ver anymore!
 #define ENGINE_VERSION_MINOR	3		// TODO: Isn't relevent for engine ver anymore!
-#define ENGINE_VERSION_BUILD	1010	// 26/10/2015
+#define ENGINE_VERSION_BUILD	1011	// 27/10/2015
 
 #define	ENGINE_LOG	"engine"
 
@@ -69,7 +69,6 @@
 #define	MAX_MODELS		2048		// johnfitz -- was 256
 #define	MAX_SOUNDS		2048		// johnfitz -- was 256
 #define MAX_PARTICLES	4096		// Default max # of particles at one time
-#define MAX_FLARES		2048		// Max number of flares
 #define MAX_EFFECTS		1024		// Max textures for particles, sprites and flares
 
 #define	SAVEGAME_COMMENT_LENGTH	39

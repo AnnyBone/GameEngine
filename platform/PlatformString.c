@@ -28,7 +28,7 @@ char *p_strcpy(char *destination, const char *source)
 	*destination++ = '\0';
 	return r;
 #else
-	return strcpy(cDest, ccSource);
+	return strcpy(destination, source);
 #endif
 }
 

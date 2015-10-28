@@ -847,7 +847,7 @@ Material_t *Material_Load(const char *ccPath)
 	else
 	{
 		char cIn[PLATFORM_MAX_PATH];
-		p_strcpy(cIn, ccPath);
+		p_strncpy(cIn, ccPath, sizeof(cIn));
 
 		// Otherwise just use the filename.
 		ExtractFileBase(cIn, mNewMaterial->cName);

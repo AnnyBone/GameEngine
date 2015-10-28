@@ -58,7 +58,7 @@ client_t	*host_client;			// current client
 jmp_buf 	host_abortserver;
 
 cvar_t	host_speeds		= {	"host_speeds",		"0"						};	// Set for running times
-cvar_t	host_maxfps		= {	"host_maxfps",		"72",	true			};	//johnfitz
+cvar_t	host_maxfps		= {	"host_maxfps",		"300",	true			};	//johnfitz
 cvar_t	host_timescale	= {	"host_timescale",	"0"						};	//johnfitz
 cvar_t	max_edicts		= {	"max_edicts",		"2048",	true			};	//johnfitz
 cvar_t	sys_ticrate		= {	"sys_ticrate",		"0.05"					};	// dedicated server
@@ -328,16 +328,7 @@ void SV_DropClient(bool crash)
 		}
 
 		if(host_client->edict && host_client->bSpawned)
-		{
-			/*	Call the prog function for removing a client
-				this will set the body to a dead frame, among other things	*/
-			iSaveSelf = pr_global_struct.self;
-			pr_global_struct.self = ServerEntity_tO_PROG(host_client->edict);
-
 			Game->Game_Init(SERVER_CLIENTDISCONNECT,host_client->edict,sv.time);
-
-			pr_global_struct.self = iSaveSelf;
-		}
 
 		Sys_Printf("Client %s removed\n",host_client->name);
 	}

@@ -1365,9 +1365,6 @@ void Host_Kill_f (void)
 		return;
 	}
 
-	pr_global_struct.self = ServerEntity_tO_PROG(sv_player);
-
-	// [11/7/2013] Cleaned up and given its own function ~hogsy
 	Game->Server_KillClient(sv_player);
 }
 
@@ -1453,15 +1450,12 @@ void Host_Spawn_f(void)
 		for (i=0 ; i< NUM_SPAWN_PARMS ; i++)
 			(&pr_global_struct.parm1)[i] = host_client->spawn_parms[i];
 
-		// call the spawn function
-
-		pr_global_struct.self = ServerEntity_tO_PROG(sv_player);
-
 		Game->Game_Init(SERVER_CLIENTCONNECT,sv_player,sv.time);
 
 		if ((System_DoubleTime() - host_client->netconnection->connecttime) <= sv.time)
 			Sys_Printf ("%s entered the game\n", host_client->name);
 
+		// Call the spawn function.
 		Game->Server_SpawnPlayer(eClient);
 	}
 

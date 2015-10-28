@@ -20,43 +20,22 @@
 
 #include "EngineBase.h"
 
-CEngineException::CEngineException(const char *ccMessage, ...)
+#include "EngineVideo.h"
+#include "EngineVideoShader.h"
+
+class CBaseShader : public CVideoShader
 {
-	va_list	ArgPtr;
-	char Out[1024];
-	static int
-		ErrorPass0 = 0,
-		ErrorPass1 = 0,
-		ErrorPass2 = 0;
+public:
+	CBaseShader(VideoShaderType_t type);
+protected:
+private:
+	bool	alpha_test;
+	float	alpha_clamp;
+};
 
-#ifdef _DEBUG
-	assert(ccMessage);
-#endif
-
-	if (!ErrorPass2)
-		ErrorPass2 = 1;
-
-	va_start(ArgPtr, ccMessage);
-	vsprintf(Out, ccMessage, ArgPtr);
-	va_end(ArgPtr);
-
-	pLog_Write(ENGINE_LOG, "Error: %s", Out);
-
-	// switch to windowed so the message box is visible, unless we already
-	// tried that and failed
-	if (!ErrorPass0)
-	{
-		ErrorPass0 = 1;
-
-		pWindow_MessageBox("Fatal Error", Out);
-	}
-	else
-		pWindow_MessageBox("Double Fatal Error", Out);
-
-	if (!ErrorPass1)
-	{
-		ErrorPass1 = 1;
-
-		Host_Shutdown();
-	}
+CBaseShader::CBaseShader(VideoShaderType_t type)
+	: CVideoShader(type)
+{
+	alpha_test	= false;
+	alpha_clamp	= 0.5f;
 }

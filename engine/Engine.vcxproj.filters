@@ -49,6 +49,15 @@
     <Filter Include="Client\Video\Legacy">
       <UniqueIdentifier>{77b73aa0-88f4-466f-af2f-4bbaf7543669}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Client\Video\Shaders">
+      <UniqueIdentifier>{af314822-6735-443a-950f-3a2f3dcf119f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Client\Video\Shaders\Base">
+      <UniqueIdentifier>{94332e8c-5538-40be-b3db-1d924d0160f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Client\Video\Shaders\Bloom">
+      <UniqueIdentifier>{69010c1c-8316-463a-aeb9-c08a63366be1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="menu.c">
@@ -234,9 +243,6 @@
     <ClCompile Include="EngineClientInput.c">
       <Filter>Client</Filter>
     </ClCompile>
-    <ClCompile Include="EngineVideoShader.cpp">
-      <Filter>Client\Video</Filter>
-    </ClCompile>
     <ClCompile Include="EngineVideoObject.cpp">
       <Filter>Client\Video</Filter>
     </ClCompile>
@@ -267,6 +273,12 @@
     </ClCompile>
     <ClCompile Include="client\ClientParticle.cpp">
       <Filter>Client</Filter>
+    </ClCompile>
+    <ClCompile Include="shader_base.cpp">
+      <Filter>Client\Video\Shaders\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineVideoShader.cpp">
+      <Filter>Client\Video\Shaders</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -450,9 +462,6 @@
     <ClInclude Include="EngineClientTempEntity.h">
       <Filter>Client</Filter>
     </ClInclude>
-    <ClInclude Include="EngineVideoShader.h">
-      <Filter>Client\Video</Filter>
-    </ClInclude>
     <ClInclude Include="EngineVideoObject.h">
       <Filter>Client\Video</Filter>
     </ClInclude>
@@ -473,8 +482,22 @@
     <ClInclude Include="EngineImage.h">
       <Filter>Client</Filter>
     </ClInclude>
+    <ClInclude Include="EngineVideoShader.h">
+      <Filter>Client\Video\Shaders</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="engine.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\bin\engine\shaders\base_fragment.shader">
+      <Filter>Client\Video\Shaders\Base</Filter>
+    </None>
+    <None Include="..\bin\engine\shaders\base_vertex.shader">
+      <Filter>Client\Video\Shaders\Base</Filter>
+    </None>
+    <None Include="..\bin\engine\shaders\bloom_fragment.shader">
+      <Filter>Client\Video\Shaders\Bloom</Filter>
+    </None>
   </ItemGroup>
 </Project>

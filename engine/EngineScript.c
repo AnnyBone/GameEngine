@@ -260,10 +260,9 @@ bool Script_TokenAvaliable(void)
 	return true;
 }
 
-// [18/5/2012] Code by itsme86 @ http://www.linuxquestions.org ~hogsy
-// [11/5/2013] Added fixes by paulhope123 ~hogsy
-// [3/7/2013] Revised ~hogsy
-// [6/7/2013] Cleaned up ~hogsy
+/*	Code originally by itsme86 http://www.linuxquestions.org
+	Fixes by paulhope123.
+*/
 char *Script_UpdateString(char *cString,const char *cFind,const char *cReplace)
 {
 	static char scBuffer[4096];
@@ -313,6 +312,7 @@ void _FileSystem_SetShaderPath(char *cArg);
 
 ScriptKey_t	skScriptKeys[]=
 {
+	// TODO: Make these obsolete
 	{ "SetBasePath", _FileSystem_SetBasePath },
 	{ "SetTexturePath", _FileSystem_SetTexturePath },
 	{ "SetMaterialPath", _FileSystem_SetMaterialPath },
@@ -323,6 +323,17 @@ ScriptKey_t	skScriptKeys[]=
 	{ "SetFontPath", _FileSystem_SetFontPath },
 	{ "SetModulePath", _FileSystem_SetModulePath },
 	{ "SetShaderPath", _FileSystem_SetShaderPath },
+
+	{ "path_base", _FileSystem_SetBasePath },
+	{ "path_textures", _FileSystem_SetTexturePath },
+	{ "path_materials", _FileSystem_SetMaterialPath },
+	{ "path_sounds", _FileSystem_SetSoundPath },
+	{ "path_levels", _FileSystem_SetLevelPath },
+	{ "path_screenshots", _FileSystem_SetScreenshotPath },
+	{ "path_modules", _FileSystem_SetModulePath },
+	{ "path_shaders", _FileSystem_SetShaderPath },
+	{ "path_fonts", _FileSystem_SetFontPath },
+	{ "path_add", _FileSystem_AddGameDirectory },
 
 	{	0	}
 };

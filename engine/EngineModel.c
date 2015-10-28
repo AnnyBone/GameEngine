@@ -1157,7 +1157,7 @@ void Model_LoadBSP(model_t *mod,void *buffer)
 			sprintf (name, "*%i", i+1);
 			loadmodel = Model_FindName(name);
 			*loadmodel = *mod;
-			p_strcpy(loadmodel->name, name);
+			p_strncpy(loadmodel->name, name, sizeof(loadmodel->name));
 			mod = loadmodel;
 		}
 	}

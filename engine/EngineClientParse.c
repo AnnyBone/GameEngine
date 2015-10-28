@@ -788,7 +788,6 @@ void CL_ParseServerMessage(void)
 	int			cmd;
 	int			i;
 	char		*str; //johnfitz
-	// [28/7/2012] Set lastcmd to 0 to resolve warning ~hogsy
 	int			total,j,lastcmd = 0; //johnfitz
 
 	// if recording demos, copy the message out
@@ -833,14 +832,14 @@ void CL_ParseServerMessage(void)
 			break;
 		case SVC_NOP:
 			break;
-		case svc_time:
+		case SVC_TIME:
 			cl.mtime[1] = cl.mtime[0];
 			cl.mtime[0] = MSG_ReadFloat ();
 			break;
-		case svc_clientdata:
+		case SVC_CLIENTDATA:
 			CL_ParseClientdata (); //johnfitz -- removed bits parameter, we will read this inside CL_ParseClientdata()
 			break;
-		case svc_version:
+		case SVC_VERSION:
 			i = MSG_ReadLong ();
 			if(i != SERVER_PROTOCOL)
 				Host_Error("Server returned protocol version %i, not %i!\n",i,SERVER_PROTOCOL);
@@ -848,7 +847,7 @@ void CL_ParseServerMessage(void)
 			cl.protocol = i;
 			break;
 		case SVC_DISCONNECT:
-			// [17/9/2013] Stop drawing the HUD on disconnect ~hogsy
+			// Stop drawing the HUD on disconnect.
 			Menu->RemoveState(MENU_STATE_HUD);
 
 			Host_EndGame("Server disconnected\n");
@@ -916,7 +915,7 @@ void CL_ParseServerMessage(void)
 			i = MSG_ReadByte ();
 			if (i >= cl.maxclients)
 				Host_Error ("CL_ParseServerMessage: svc_updatename > MAX_SCOREBOARD");
-			p_strcpy(cl.scores[i].name, MSG_ReadString());
+			p_strncpy(cl.scores[i].name, MSG_ReadString(), sizeof(cl.scores[i].name));
 			break;
 		case svc_updatefrags:
 			i = MSG_ReadByte();
@@ -926,7 +925,7 @@ void CL_ParseServerMessage(void)
 			cl.scores[i].frags = MSG_ReadShort();
 			cl.stats[STAT_FRAGS] = cl.scores[i].frags;
 			break;
-		case svc_updatecolors:
+		case SVC_UPDATECOLORS:
 			i = MSG_ReadByte ();
 			if (i >= cl.maxclients)
 				Host_Error ("CL_ParseServerMessage: svc_updatecolors > MAX_SCOREBOARD");
@@ -935,7 +934,7 @@ void CL_ParseServerMessage(void)
 		case SVC_PARTICLE:
 			Particle_Parse();
 			break;
-		case svc_spawnbaseline:
+		case SVC_SPAWNBASELINE:
 			i = MSG_ReadShort ();
 			// must use CL_EntityNum() to force cl.num_entities up
 			CL_ParseBaseline (CL_EntityNum(i), 1); // johnfitz -- added second parameter
@@ -947,7 +946,7 @@ void CL_ParseServerMessage(void)
 			// [19/6/2013] Now handed over directly to the game-code :) ~hogsy
 			Game->Client_ParseTemporaryEntity();
 			break;
-		case svc_setpause:
+		case SVC_SETPAUSE:
 			cl.bIsPaused = MSG_ReadByte();
 
 			if(cl.bIsPaused)
@@ -966,7 +965,7 @@ void CL_ParseServerMessage(void)
 			//johnfitz
 			CL_SignonReply ();
 			break;
-		case svc_killedmonster:
+		case SVC_KILLEDMONSTER:
 			cl.stats[STAT_MONSTERS]++;
 			break;
 		case svc_foundsecret:

@@ -225,7 +225,7 @@ void Video_Initialize(void)
 	glFrontFace(GL_CW);
 	glAlphaFunc(GL_GREATER, 0.5f);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	glShadeModel(GL_SMOOTH);
+	//glShadeModel(GL_SMOOTH);
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 	glDepthRange(0, 1);
 	glDepthFunc(GL_LEQUAL);

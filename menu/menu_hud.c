@@ -9,7 +9,7 @@ void HUD_Draw(void)
 	// Draw the crosshair...
 	{
 		Engine.Client_SetMenuCanvas(CANVAS_CROSSHAIR);
-		Engine.DrawPic(va(MENU_HUD_PATH"crosshair%i",1),1.0f,-16,-16,32,32);
+		//Engine.DrawPic(va(MENU_HUD_PATH"crosshair%i",1),1.0f,-16,-16,32,32);
 	}
 
 	// Draw the rest...

@@ -825,7 +825,8 @@ void Con_DrawNotify(void)
 void Con_DrawInput (void)
 {
 	extern double key_blinktime;
-	int	i,len;
+	unsigned int i;
+	int len;
 	char c[256],*text;
 
 	if(key_dest != key_console && !con_forcedup)
@@ -843,7 +844,7 @@ void Con_DrawInput (void)
 		text += 1 + key_linepos - con_linewidth;
 
 	// Draw input string
-	for(i = 0; i <= (signed)strlen(text)-1; i++) //only write enough letters to go from *text to cursor
+	for(i = 0; i <= strlen(text)-1; i++) //only write enough letters to go from *text to cursor
 		Draw_Character ((i+1)<<3, vid.conheight - 16, text[i]);
 
 	// johnfitz -- new cursor handling

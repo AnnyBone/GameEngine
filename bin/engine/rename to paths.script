@@ -1,12 +1,12 @@
 {
-	$SetBasePath		"../../katanacontent"
-	$SetTexturePath		"textures/"
-	$SetMaterialPath	"materials/"
-	$SetSoundPath		"sounds/"
-	$SetLevelPath		"levels/"
-	$SetScreenshotPath	"screenshots/"
-	$SetFontPath		"fonts/"
-	$SetShaderPath		"shaders/"
-	$SetModulePath		"./"
+	$path_base			"../../katanacontent"
+	$path_textures		"textures/"
+	$path_materials		"materials/"
+	$path_sounds		"sounds/"
+	$path_levels		"levels/"
+	$path_screenshots	"screenshots/"
+	$path_fonts			"fonts/"
+	$path_shaders		"shaders/"
+	$path_modules		"./"
 }
 

@@ -508,57 +508,57 @@ void ExtractFileBase (char *path, char *dest)
 
 void ExtractFileExtension (char *path, char *dest)
 {
-  char    *src;
+	char *src;
 
-  src = path + strlen(path) - 1;
+	src = path + strlen(path) - 1;
 
-  //
-  // back up until a . or the start
-  //
-  while (src != path && *(src-1) != '.')
-	src--;
-  if (src == path)
+	//
+	// back up until a . or the start
+	//
+	while (src != path && *(src - 1) != '.')
+		src--;
+	if (src == path)
 	{
-	  *dest = 0;	// no extension
-	  return;
+		*dest = 0;	// no extension
+		return;
 	}
 
-  p_strcpy(dest, src);
+	p_strcpy(dest, src);
 }
 
 int ParseHex (char *hex)
 {
-  char    *str;
-  int    num;
+	char    *str;
+	int    num;
 
-  num = 0;
-  str = hex;
+	num = 0;
+	str = hex;
 
-  while (*str)
+	while (*str)
 	{
-	  num <<= 4;
-	  if (*str >= '0' && *str <= '9')
-	num += *str-'0';
-	  else if (*str >= 'a' && *str <= 'f')
-	num += 10 + *str-'a';
-	  else if (*str >= 'A' && *str <= 'F')
-	num += 10 + *str-'A';
-	  else
-	Error ("Bad hex number: %s",hex);
-	  str++;
+		num <<= 4;
+		if (*str >= '0' && *str <= '9')
+			num += *str - '0';
+		else if (*str >= 'a' && *str <= 'f')
+			num += 10 + *str - 'a';
+		else if (*str >= 'A' && *str <= 'F')
+			num += 10 + *str - 'A';
+		else
+			Error("Bad hex number: %s", hex);
+		str++;
 	}
 
-  return num;
+	return num;
 }
 
 
 int ParseNum (char *str)
 {
-  if (str[0] == '$')
-	return ParseHex (str+1);
-  if (str[0] == '0' && str[1] == 'x')
-	return ParseHex (str+2);
-  return atol (str);
+	if (str[0] == '$')
+		return ParseHex(str + 1);
+	if (str[0] == '0' && str[1] == 'x')
+		return ParseHex(str + 2);
+	return atol(str);
 }
 
 

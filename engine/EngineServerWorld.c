@@ -269,9 +269,8 @@ void SV_UnlinkEdict(ServerEntity_t *ent)
 
 void SV_TouchLinks ( ServerEntity_t *ent, areanode_t *node )
 {
-	link_t		*l, *next;
-	ServerEntity_t		*touch,*eOldOther;
-	int			old_self;
+	link_t *l, *next;
+	ServerEntity_t *touch;
 
 // touch linked edicts
 	for(l = node->trigger_edicts.next; l != &node->trigger_edicts; l = next)
@@ -298,12 +297,6 @@ void SV_TouchLinks ( ServerEntity_t *ent, areanode_t *node )
 		|| ent->v.absmax[2] < touch->v.absmin[2])
 			continue;
 
-		old_self	= pr_global_struct.self;
-		eOldOther	= pr_global_struct.eOther;
-
-		pr_global_struct.self	= ServerEntity_tO_PROG(touch);
-		pr_global_struct.eOther	= ent;
-
 		if(touch->v.TouchFunction)
 			touch->v.TouchFunction(touch,ent);
 
@@ -314,9 +307,6 @@ void SV_TouchLinks ( ServerEntity_t *ent, areanode_t *node )
 			next = l->next;
 		}
 		//johnfitz
-
-		pr_global_struct.self	= old_self;
-		pr_global_struct.eOther = eOldOther;
 	}
 
 	// Recurse down both sides

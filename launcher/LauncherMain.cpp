@@ -32,8 +32,10 @@
 	to also launch the engine directly into editor mode in the future.
 */
 
-EngineExport_t *Engine;
-EngineImport_t *Launcher;
+#define	LAUNCHER_LOG "launcher"
+
+EngineExport_t *engine;
+EngineImport_t *launcher;
 
 pINSTANCE hEngineInstance;
 
@@ -48,38 +50,41 @@ pINSTANCE hEngineInstance;
 
 int main(int argc,char *argv[])
 {
+	pLog_Write(LAUNCHER_LOG, "Launcher (Interface Version %i)\n", ENGINE_VERSION);
+
 	// Load the module interface for the engine module.
-	Engine = (EngineExport_t*)pModule_LoadInterface(
+	engine = (EngineExport_t*)pModule_LoadInterface(
 		hEngineInstance,
 		"./"MODULE_ENGINE,
 		"Engine_Main",
-		&Launcher);
+		&launcher);
 	// Let us know if it failed to load.
-	if(!Engine)
+	if (!engine)
 	{
-		gWindow_MessageBox("Launcher",pError_Get());
+		pLog_Write(LAUNCHER_LOG, "Failed to load engine!\n%s",pError_Get());
+		pWindow_MessageBox("Launcher", pError_Get());
 		return -1;
 	}
 	// Also ensure that the engine version hasn't changed.
-	else if (Engine->iVersion != ENGINE_VERSION)
+	else if (engine->iVersion != ENGINE_VERSION)
 	{
-		gWindow_MessageBox("Launcher","Launcher is outdated, please rebuild!");
-
+		pLog_Write(LAUNCHER_LOG, "Launcher is outdated, please rebuild! (%i)\n", engine->iVersion);
+		pWindow_MessageBox("Launcher", "Launcher is outdated, please rebuild!");
 		pModule_Unload(hEngineInstance);
 		return -1;
 	}
 
 	// Initialize.
-	if (!Engine->Initialize(argc, argv, false))
+	if (!engine->Initialize(argc, argv, false))
 	{
-		gWindow_MessageBox("Launcher", "Failed to initialize engine!");
-
+		pLog_Write(LAUNCHER_LOG, "Engine failed to initialize, check engine log!\n");
+		pWindow_MessageBox("Launcher", "Failed to initialize engine!");
 		pModule_Unload(hEngineInstance);
 		return -1;
 	}
 
-	while (Engine->IsRunning())
-		Engine->Loop();
+	while (engine->IsRunning())
+		engine->Loop();
 
 	// Unload once the engine has stopped running.
 	pModule_Unload(hEngineInstance);

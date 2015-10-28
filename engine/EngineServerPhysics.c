@@ -85,8 +85,6 @@ bool Server_RunThink(ServerEntity_t *ent)
 								// by a trigger with a local time.
 	ent->v.dNextThink = 0;
 
-	pr_global_struct.eOther	= sv.edicts;
-
 	if(ent->v.think)
 		ent->v.think(ent);
 
@@ -378,12 +376,7 @@ void SV_PushMove (ServerEntity_t *pusher, float movetime)
 			// if the pusher has a "blocked" function, call it
 			// otherwise, just stay in place until the obstacle is gone
 			if (pusher->v.BlockedFunction)
-			{
-				pr_global_struct.self	= ServerEntity_tO_PROG(pusher);
-				pr_global_struct.eOther	= check;
-
 				pusher->v.BlockedFunction(pusher,check);
-			}
 
 		// move back any entities we already moved
 			for (i=0 ; i<num_moved ; i++)
@@ -614,9 +607,6 @@ void SV_Physics_Pusher (ServerEntity_t *ent)
 	{
 		ent->v.dNextThink = 0;
 
-		pr_global_struct.self	= ServerEntity_tO_PROG(ent);
-		pr_global_struct.eOther	= sv.edicts;
-
 		if(ent->v.think)
 			ent->v.think(ent);
 
@@ -829,8 +819,6 @@ void SV_Physics_Client (ServerEntity_t	*ent, int num)
 		return;		// unconnected slot
 
 	// call standard client pre-think
-	pr_global_struct.self = ServerEntity_tO_PROG(ent);
-
 	Game->Game_Init(SERVER_PLAYERPRETHINK,ent,sv.time);
 
 	Game->Physics_CheckVelocity(ent);
@@ -874,8 +862,6 @@ void SV_Physics_Client (ServerEntity_t	*ent, int num)
 
 	// Call standard player post-think
 	SV_LinkEdict(ent,true);
-
-	pr_global_struct.self = ServerEntity_tO_PROG(ent);
 
 	Game->Game_Init(SERVER_CLIENTPOSTTHINK,ent,sv.time);
 }
@@ -1023,10 +1009,7 @@ void Physics_ServerFrame(void)
 	ServerEntity_t	*eEntity;
 
 	// Let the progs know that a new frame has started
-	pr_global_struct.self	= ServerEntity_tO_PROG(sv.edicts);
-	pr_global_struct.eOther	= sv.edicts;
-
-	// TODO: should we pass the time to this? ~hogsy
+	// TODO: should we pass the time to this?
 	Game->Server_StartFrame();
 
 	// Treat each object in turn
@@ -1039,7 +1022,6 @@ void Physics_ServerFrame(void)
 		if(pr_global_struct.force_retouch)
 			SV_LinkEdict(eEntity,true);	// Force retouch even for stationary
 
-		// [11/7/2013] Cleaned this up and gave it its own function ~hogsy
 		Game->Server_EntityFrame(eEntity);
 
 		if(i > 0 && i <= svs.maxclients)

@@ -267,21 +267,14 @@ void Alias_Draw(ClientEntity_t *eEntity)
 	if (!cvVideoLegacy.bValue)
 		VideoShader_Enable();
 
-	if(r_drawflat_cheatsafe)
-		glShadeModel(GL_FLAT);
-
 	R_RotateForEntity(eEntity->origin,eEntity->angles);
 
 	Alias_SetupLighting(eEntity);
 	Alias_DrawFrame(mModel, eEntity, lLerpData);
 
 	if(r_drawflat_cheatsafe)
-	{
 		// Restore randomness
 		srand((int)(cl.time*1000));
-
-		glShadeModel(GL_SMOOTH);
-	}
 
 	if (!cvVideoLegacy.bValue)
 		VideoShader_Disable();

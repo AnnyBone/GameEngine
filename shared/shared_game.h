@@ -45,14 +45,11 @@ typedef struct ServerEntity_s ServerEntity_t;
 
 typedef struct
 {
-	ServerEntity_t *eOther;
-
-	int		self;
 	int		world;
 
 	int		iKilledMonsters;
 	float	time;
-	float	force_retouch;
+	float	force_retouch;		// TODO: This isn't setup properly!
 	char	*mapname;
 	float	deathmatch;
 	float	coop;
@@ -592,7 +589,6 @@ typedef struct
 	Material_t*(*LoadMaterial)(const char *cPath);
 
 	// Draw Functions
-	void(*DrawPic)(char *path, float alpha, int x, int y, int w, int h);
 	void(*DrawString)(int x, int y, char *msg);
 	void(*DrawFill)(int x, int y, int w, int h, float r, float g, float b, float alpha);
 	void(*DrawMaterialSurface)(Material_t *mMaterial, int iSkin, int x, int y, int w, int h, float fAlpha);

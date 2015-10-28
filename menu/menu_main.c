@@ -81,7 +81,7 @@ void Menu_DrawMouse(void)
 
 	Engine.GetCursorPosition(&iMousePosition[0], &iMousePosition[1]);
 
-	Engine.DrawPic(MENU_BASE_PATH"cursor", 1.0f, iMousePosition[0], iMousePosition[1], 16, 16);
+	//Engine.DrawPic(MENU_BASE_PATH"cursor", 1.0f, iMousePosition[0], iMousePosition[1], 16, 16);
 }
 
 void Menu_Draw(void)
@@ -393,7 +393,6 @@ pMODULE_EXPORT MenuExport_t *Menu_Main(ModuleImport_t *Import)
 	Engine.LoadMaterial = Import->LoadMaterial;
 	Engine.Sys_Error = Import->Sys_Error;
 	Engine.Cvar_RegisterVariable = Import->Cvar_RegisterVariable;
-	Engine.DrawPic = Import->DrawPic;
 	Engine.DrawString = Import->DrawString;
 	Engine.DrawFill = Import->DrawFill;
 	Engine.DrawMaterialSurface = Import->DrawMaterialSurface;

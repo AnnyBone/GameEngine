@@ -235,10 +235,10 @@ void Sys_Error(const char *error, ...)
 	{
 		in_sys_error0 = 1;
 		
-		gWindow_MessageBox("Fatal Error",text);
+		pWindow_MessageBox("Fatal Error", text);
 	}
 	else
-		gWindow_MessageBox("Double Fatal Error",text);
+		pWindow_MessageBox("Double Fatal Error",text);
 
 	if (!in_sys_error1)
 	{

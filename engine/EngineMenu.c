@@ -49,23 +49,19 @@ void Menu_Initialize(void)
 	mImport.Sys_Error = Sys_Error;
 	mImport.Cvar_RegisterVariable = Cvar_RegisterVariable;
 
-	mImport.LoadMaterial = Material_Load;
-
-	mImport.DrawString = Draw_String;
-	mImport.DrawFill = Draw_Fill;
-	mImport.DrawMaterialSurface = Draw_MaterialSurface;
-
-	mImport.GetScreenWidth = Menu_GetScreenWidth;
-	mImport.GetScreenHeight = Menu_GetScreenHeight;
-	mImport.ShowCursor = gWindow_ShowCursor;
-	mImport.GetCursorPosition = Window_GetCursorPosition;
-	mImport.Cmd_AddCommand = Game_AddCommand;
-
-	mImport.Client_GetStat = Client_GetStat;
+	mImport.LoadMaterial			= Material_Load;
+	mImport.DrawString				= Draw_String;
+	mImport.DrawFill				= Draw_Fill;
+	mImport.DrawMaterialSurface		= Draw_MaterialSurface;
+	mImport.GetScreenWidth			= Menu_GetScreenWidth;
+	mImport.GetScreenHeight			= Menu_GetScreenHeight;
+	mImport.ShowCursor				= pWindow_ShowCursor;
+	mImport.GetCursorPosition		= Window_GetCursorPosition;
+	mImport.Cmd_AddCommand			= Game_AddCommand;
+	mImport.Client_GetStat			= Client_GetStat;
 	mImport.Client_PrecacheResource = Client_PrecacheResource;
-	mImport.Client_SetMenuCanvas = GL_SetCanvas;
-
-	mImport.Material_Precache = Material_Precache;
+	mImport.Client_SetMenuCanvas	= GL_SetCanvas;
+	mImport.Material_Precache		= Material_Precache;
 
 	Menu = (MenuExport_t*)pModule_LoadInterface(hMenuInstance, va("%s/%s"MODULE_MENU, com_gamedir, Global.cModulePath), "Menu_Main", &mImport);
 	if(!Menu)

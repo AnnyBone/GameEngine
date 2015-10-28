@@ -31,59 +31,83 @@
 
 using namespace std;
 
-CVideoShader::CVideoShader(const char *ccPath, VideoShaderType_t vsType)
+CVideoShader::CVideoShader(VideoShaderType_t type)
+{
+	instance = 0;
+
+	this->type = type;
+
+	source_length = 0;
+}
+
+bool CVideoShader::Load(const char *path)
 {
 	VIDEO_FUNCTION_START
 	// Check that the path is valid.
-	if (ccPath[0] == ' ')
-		Sys_Error("Invalid shader path! (%s)\n", ccPath);
+	if (path[0] == ' ')
+	{
+		Con_Warning("Invalid shader path! (%s)\n", path);
+		return false;
+	}
 
 	// Ensure the type is valid.
-	if((vsType < VIDEO_SHADER_FRAGMENT) || (vsType > VIDEO_SHADER_VERTEX))
-		Sys_Error("Invalid shader type! (%i) (%s)\n", ccPath, vsType);
-
-	// Set the shader type.
-	this->vsType = vsType;
+	if ((type < VIDEO_SHADER_FRAGMENT) || (type > VIDEO_SHADER_VERTEX))
+	{
+		Con_Warning("Invalid shader type! (%i) (%s)\n", path, type);
+		return false;
+	}
 
 	// Ensure we use the correct path and shader.
 	unsigned int uiShaderType;
-	if (vsType == VIDEO_SHADER_FRAGMENT)
+	if (type == VIDEO_SHADER_FRAGMENT)
 	{
-		sprintf(cShaderPath, "%s%s_fragment.shader", Global.cShaderPath, ccPath);
+		sprintf(source_path, "%s%s_fragment.shader", Global.cShaderPath, path);
 		uiShaderType = GL_FRAGMENT_SHADER;
 	}
 	else
 	{
-		sprintf(cShaderPath, "%s%s_vertex.shader", Global.cShaderPath, ccPath);
+		sprintf(source_path, "%s%s_vertex.shader", Global.cShaderPath, path);
 		uiShaderType = GL_VERTEX_SHADER;
 	}
 
 	// Attempt to load it.
-	ccShaderSource = (char*)COM_LoadFile(cShaderPath, 0);
-	if(!ccShaderSource || ccShaderSource[0] == ' ')
-		Sys_Error("Failed to load shader! (%s)\n", cShaderPath);
+	source = (char*)COM_LoadFile(source_path, 0);
+	if (!source || source[0] == ' ')
+	{
+		Con_Warning("Failed to load shader! (%s)\n", source_path);
+		return false;
+	}
 
 	// Ensure it's a valid length.
 #ifdef _MSC_VER
 #pragma warning(suppress: 6387)
 #endif
-	iShaderLength = strlen(ccShaderSource);
-	if(iShaderLength <= 1)
-		Sys_Error("Invalid shader! (%i) (%s)\n", iShaderLength, cShaderPath);
+	source_length = strlen(source);
+	if (source_length <= 1)
+	{
+		Con_Warning("Invalid shader! (%i) (%s)\n", source_length, source_path);
+		return false;
+	}
 
-	vsShader = glCreateShader(uiShaderType);
-	glShaderSource(vsShader, 1, &ccShaderSource, &iShaderLength);
-	glCompileShader(vsShader);
+	instance = glCreateShader(uiShaderType);
+	glShaderSource(instance, 1, &source, &source_length);
+	glCompileShader(instance);
 
-	if(!CheckCompileStatus())
-		Sys_Error("Shader compilation failed! (%s)\n", cShaderPath);
+	if (!CheckCompileStatus())
+	{
+		Con_Warning("Shader compilation failed! (%s)\n", source_path);
+		return false;
+	}
+
+	// Everything worked out okay!
+	return true;
 	VIDEO_FUNCTION_END
 }
 
 CVideoShader::~CVideoShader()
 {
 	VIDEO_FUNCTION_START
-	glDeleteShader(vsShader);
+	glDeleteShader(instance);
 	VIDEO_FUNCTION_END
 }
 
@@ -93,16 +117,16 @@ bool CVideoShader::CheckCompileStatus()
 {
 	VIDEO_FUNCTION_START
 	int iCompileStatus;
-	glGetObjectParameterivARB(vsShader, GL_COMPILE_STATUS, &iCompileStatus);
+	glGetObjectParameterivARB(instance, GL_COMPILE_STATUS, &iCompileStatus);
 	if (!iCompileStatus)
 	{
 		int iLength = 0, sLength = 0;
-		glGetShaderiv(vsShader, GL_INFO_LOG_LENGTH, &iLength);
+		glGetShaderiv(instance, GL_INFO_LOG_LENGTH, &iLength);
 
 		if (iLength > 1)
 		{
 			char *cLog = new char[iLength];
-			glGetInfoLogARB(vsShader, iLength, &sLength, cLog);
+			glGetInfoLogARB(instance, iLength, &sLength, cLog);
 			Con_Warning("%s\n", cLog);
 			delete[] cLog;
 		}
@@ -116,14 +140,14 @@ bool CVideoShader::CheckCompileStatus()
 
 // Information
 
-VideoShader CVideoShader::GetInstance()
+unsigned int CVideoShader::GetInstance()
 {
-	return vsShader;
+	return instance;
 }
 
 VideoShaderType_t CVideoShader::GetType()
 {
-	return vsType;
+	return type;
 }
 
 /*
@@ -236,7 +260,7 @@ void CVideoShaderProgram::SetVariable(int iUniformLocation, float f)
 
 // Information
 
-VideoShaderProgram CVideoShaderProgram::GetInstance()
+unsigned int CVideoShaderProgram::GetInstance()
 {
 	return vsProgram;
 }
@@ -266,8 +290,13 @@ void VideoShader_Initialize(void)
 	BaseProgram = new CVideoShaderProgram();
 
 	// Followed by the shaders.
-	BaseVertexShader = new CVideoShader("base", VIDEO_SHADER_VERTEX);
-	BaseFragmentShader = new CVideoShader("base", VIDEO_SHADER_FRAGMENT);
+	BaseVertexShader = new CVideoShader(VIDEO_SHADER_VERTEX);
+	if (!BaseVertexShader->Load("base"))
+		Sys_Error("Failed to load base vertex shader!\n");
+
+	BaseFragmentShader = new CVideoShader(VIDEO_SHADER_FRAGMENT);
+	if (!BaseFragmentShader->Load("base"))
+		Sys_Error("Failed to load base fragment shader!\n");
 
 	// Attach and link it, if this fails then it fails.
 	BaseProgram->Attach(BaseVertexShader);

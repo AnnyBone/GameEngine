@@ -75,7 +75,7 @@ qsocket_t *Loop_Connect (char *host)
 			return NULL;
 		}
 
-		p_strcpy(loop_client->address, "localhost");
+		p_strncpy(loop_client->address, "localhost", sizeof(loop_client->address));
 	}
 
 	loop_client->receiveMessageLength	= 0;
@@ -90,7 +90,7 @@ qsocket_t *Loop_Connect (char *host)
 			return NULL;
 		}
 
-		p_strcpy(loop_server->address, "LOCAL");
+		p_strncpy(loop_server->address, "LOCAL", sizeof(loop_server->address));
 	}
 
 	loop_server->receiveMessageLength	= 0;

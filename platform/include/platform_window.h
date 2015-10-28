@@ -33,11 +33,11 @@ typedef struct
 #endif
 } GIPLWindow_t;
 
-extern void gWindow_MessageBox(const char *cTitle,const char *cMessage,...);
-extern void gWindow_ShowCursor(bool bShow);
+extern void pWindow_MessageBox(const char *cTitle, const char *cMessage, ...);
+extern void pWindow_ShowCursor(bool bShow);
 extern void gWindow_GetCursorPosition(int *iX,int *iY);
 extern void gWindow_Destroy(GIPLWindow_t *gwWindow);
-extern void gWindow_SwapBuffers(GIPLWindow_t *gwWindow);
+extern void pWindow_SwapBuffers(GIPLWindow_t *gwWindow);
 
 extern int pWindow_GetScreenWidth(void);
 extern int pWindow_GetScreenHeight(void);

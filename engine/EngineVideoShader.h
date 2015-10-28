@@ -18,42 +18,41 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef __ENGINEVIDEOSHADER__
-#define __ENGINEVIDEOSHADER__
+#ifndef __ENGINEVIDEOSHADER_H__
+#define __ENGINEVIDEOSHADER_H__
 
 typedef enum
 {
+	VIDEO_SHADER_INVALID,
+
 	VIDEO_SHADER_FRAGMENT,
 	VIDEO_SHADER_VERTEX
 } VideoShaderType_t;
-
-typedef unsigned int VideoShader;
-typedef unsigned int VideoShaderProgram;
 
 #ifdef __cplusplus
 class CVideoShader
 {
 public:
-	CVideoShader(const char *ccPath, VideoShaderType_t vsType);
+	CVideoShader(VideoShaderType_t type);
 	~CVideoShader();
+
+	bool Load(const char *path);
+	bool CheckCompileStatus();
 
 	void Enable();
 	void Disable();
 
-	VideoShader GetInstance();
+	unsigned int GetInstance();
 	VideoShaderType_t GetType();
 
 private:
-	VideoShader	vsShader;	//sVertex, sFragment;
-	VideoShaderType_t vsType;
+	unsigned int instance;
 
-	const char *ccShaderSource;
+	VideoShaderType_t type;
 
-	char cShaderPath[PLATFORM_MAX_PATH];
-
-	int iShaderLength;
-
-	bool CheckCompileStatus();
+	const char	*source;
+	char		source_path[PLATFORM_MAX_PATH];
+	int			source_length;
 };
 
 class CVideoShaderProgram
@@ -74,12 +73,12 @@ public:
 
 	int GetUniformLocation(const char *ccUniformName);
 
-	VideoShaderProgram GetInstance();
+	unsigned int GetInstance();
 protected:
 private:
 	//CVideoShader **vsShader;
 
-	VideoShaderProgram vsProgram;
+	unsigned int vsProgram;
 };
 
 extern "C" {

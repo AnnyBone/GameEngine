@@ -693,6 +693,7 @@
     <ClCompile Include="EngineAudioDirectSound.c" />
     <ClCompile Include="EngineServer.c" />
     <ClCompile Include="EngineServerUser.c" />
+    <ClCompile Include="shader_base.cpp" />
     <ClCompile Include="sys_win.c" />
     <ClCompile Include="zone.c" />
   </ItemGroup>
@@ -773,6 +774,11 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="engine.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\bin\engine\shaders\base_fragment.shader" />
+    <None Include="..\bin\engine\shaders\base_vertex.shader" />
+    <None Include="..\bin\engine\shaders\bloom_fragment.shader" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

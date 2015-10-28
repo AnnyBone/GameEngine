@@ -1032,8 +1032,7 @@ void SV_SaveSpawnparms (void)
 		if (!host_client->active)
 			continue;
 
-	// call the progs to get default spawn parms for the new client
-		pr_global_struct.self = ServerEntity_tO_PROG(host_client->edict);
+		// call the progs to get default spawn parms for the new client
 		Game->Game_Init(SERVER_SETCHANGEPARMS,host_client->edict,sv.time);
 		for (j=0 ; j<NUM_SPAWN_PARMS ; j++)
 			host_client->spawn_parms[j] = (&pr_global_struct.parm1)[j];
