@@ -35,7 +35,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Editor", "MaterialEditor\Ma
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Platform", "platform\Platform.vcxproj", "{DDDBE2D3-7AFE-4CBF-8DE5-636374F63DF2}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B8CECB63-3BCE-4DBB-A73D-8AF7177BEF24}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documents", "Documents", "{B8CECB63-3BCE-4DBB-A73D-8AF7177BEF24}"
 	ProjectSection(SolutionItems) = preProject
 		snipped.txt = snipped.txt
 	EndProjectSection

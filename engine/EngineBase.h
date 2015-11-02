@@ -18,8 +18,8 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef __ENGINEBASE_H__
-#define __ENGINEBASE_H__
+#ifndef ENGINE_BASE_H
+#define ENGINE_BASE_H
 
 // Platform Library
 #include "platform.h"
@@ -46,7 +46,7 @@
 */
 #define ENGINE_VERSION_MAJOR	0		// TODO: Isn't relevent for engine ver anymore!
 #define ENGINE_VERSION_MINOR	3		// TODO: Isn't relevent for engine ver anymore!
-#define ENGINE_VERSION_BUILD	1011	// 27/10/2015
+#define ENGINE_VERSION_BUILD	1014	// 2/10/2015
 
 #define	ENGINE_LOG	"engine"
 
@@ -184,9 +184,9 @@ extern bool	bIsDedicated;
 // chase
 extern ConsoleVariable_t chase_active;
 
-void TraceLine(vec3_t start,vec3_t end,vec3_t impact);
+void TraceLine(MathVector3f_t start, MathVector3f_t end, MathVector3f_t impact);
 
 void Chase_Init(void);
 void Chase_UpdateForDrawing(void); //johnfitz
 
-#endif //QUAKEDEF_H
+#endif	// ENGINE_BASE_H

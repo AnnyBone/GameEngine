@@ -10,7 +10,7 @@ extern "C" {
 #endif
 
 	extern void	pFileSystem_GetUserName(char *cOut);
-	extern void	pFileSystem_ScanDirectory(const char *ccPath, const char *ccExtension, void(*vFunction)(char *cFile));
+	extern void pFileSystem_ScanDirectory(const char *path, const char *extension, void(*Function)(char *filepath));
 	extern void	pFileSystem_GetWorkingDirectory(char *cOut);
 	extern void	pFileSystem_UpdatePath(char *cPath);
 

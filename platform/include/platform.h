@@ -16,8 +16,8 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef __PLATFORM_H__
-#define __PLATFORM_H__
+#ifndef PLATFORM_H
+#define PLATFORM_H
 
 /*
 	Platform Library
@@ -31,7 +31,6 @@
 
 // pIGNORE_SHARED_HEADERS
 // pIGNORE_PLATFORM_HEADERS
-// pDEFAULT_STANDARD
 
 // Shared headers
 #ifndef pIGNORE_SHARED_HEADERS
@@ -85,14 +84,16 @@
 #	ifdef _MSC_VER
 #		pragma warning(disable : 4152)
 
+#		define pIGNORE_INTERNAL_STANDARD
+
 #		ifndef itoa
-#			define itoa	_itoa
+#			define	itoa		_itoa
 #		endif
 #		ifndef getcwd
-#			define	getcwd _getcwd
+#			define	getcwd		_getcwd
 #		endif
 #		ifndef snprintf
-#			define snprintf _snprintf
+#			define	snprintf	_snprintf
 #		endif
 #	endif
 #elif __APPLE__	// Mac OS X
@@ -240,6 +241,11 @@ pError_SetFunction(pFUNCTION);
 #endif
 #define pFUNCTION_END 		}
 
+typedef enum
+{
+	pERROR_INVALID_HANDLE
+} PlatformErrorType_t;
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -265,4 +271,4 @@ extern "C" {
 
 /**/
 
-#endif
+#endif	// PLATFORM_H

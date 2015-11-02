@@ -23,15 +23,25 @@
 #include "EngineVideo.h"
 #include "EngineVideoShader.h"
 
-class CBaseShader : public CVideoShader
+namespace video
 {
-public:
-	CBaseShader(VideoShaderType_t type);
-protected:
-private:
-	bool	alpha_test;
-	float	alpha_clamp;
-};
+	namespace shaders
+	{
+
+		class CBaseShader : public CVideoShader
+		{
+		public:
+			CBaseShader(VideoShaderType_t type);
+		protected:
+		private:
+			bool	alpha_test;
+			float	alpha_clamp;
+		};
+
+	}
+}
+
+using namespace video::shaders;
 
 CBaseShader::CBaseShader(VideoShaderType_t type)
 	: CVideoShader(type)

@@ -110,44 +110,42 @@ bool pFileSystem_CreateDirectory(const char *ccPath)
 	pFUNCTION_END
 }
 
-/*	Returns the name of the systems
-	current user.
+/*	Returns the name of the systems	current user.
+	TODO:
+		This is crazy unsafe... Urghsjhfdj
 */
-void pFileSystem_GetUserName(char *cOut)
+void pFileSystem_GetUserName(char *out)
 {
 	pFUNCTION_START
 
 #ifdef _WIN32
-    char	cUser[128] = "user";
+    char	userstring[PLATFORM_MAX_USER];
 	DWORD	dName;
 
+	sprintf(userstring, "user");
+
 	// Set these AFTER we update active function.
-	dName	= sizeof(cUser);
-
-	if(GetUserName(cUser,&dName))
+	dName = sizeof(userstring);
+	if(GetUserName(userstring,&dName))
 #else   // Linux
-    char *cUser = "user";
-
-    cUser = getenv("LOGNAME");
-	if(strcasecmp(cUser,"user"))
+	char	*userstring = "user";
+	userstring = getenv("LOGNAME");
+	if (strcasecmp(userstring, "user"))
 #endif
 	{
-		int	i		= 0,
-			iLength = (int)strlen(cUser);
-
-		// [11/5/2013] Quick fix for spaces ~hogsy
-		while(i < iLength)
+		int		i = 0,
+				userlength = (int)strlen(userstring);
+		while (i < userlength)
 		{
-			if(cUser[i] == ' ')
-				cUser[i] = '_';
+			if (userstring[i] == ' ')
+				out[i] = '_';
 			else
-				cUser[i] = (char)tolower(cUser[i]);
-
+				out[i] = (char)tolower(userstring[i]);
 			i++;
 		}
 	}
 
-	p_strncpy(cOut, cUser, sizeof(cOut));
+	//p_strncpy(out, cUser, sizeof(out));
 
 	pFUNCTION_END
 }
@@ -158,10 +156,12 @@ void pFileSystem_GetUserName(char *cOut)
 		Better error management.
 		Finish Linux implementation.
 */
-void pFileSystem_ScanDirectory(const char *ccPath,const char *ccExtension,void (*vFunction)(char *cFile))
+void pFileSystem_ScanDirectory(const char *path, const char *extension, void(*Function)(char *filepath))
 {
 	pFUNCTION_START
-	if (ccPath[0] == ' ')
+	char	filestring[PLATFORM_MAX_PATH];
+
+	if (path[0] == ' ')
 	{
 		pError_Set("Invalid path!\n");
 		return;
@@ -169,31 +169,24 @@ void pFileSystem_ScanDirectory(const char *ccPath,const char *ccExtension,void (
 
 #ifdef _WIN32
 	{
-        char cFileString[PLATFORM_MAX_PATH];
-		WIN32_FIND_DATA	wfdData;
-		HANDLE			hFile;
+		WIN32_FIND_DATA	finddata;
+		HANDLE			find;
 
-		sprintf(cFileString, "%s*%s", ccPath, ccExtension);
+		sprintf(filestring, "%s/*%s", path, extension);
 
-		hFile = FindFirstFile(cFileString, &wfdData);
-		if (hFile == INVALID_HANDLE_VALUE)
+		find = FindFirstFile(filestring, &finddata);
+		if (find == INVALID_HANDLE_VALUE)
 		{
-			pError_Set("Recieved invalid handle! (%s)\n", cFileString);
-			return;
-		}
-		else if (GetLastError() == ERROR_FILE_NOT_FOUND)
-		{
-			pError_Set("Failed to find first file! (%s)\n", cFileString);
+			pError_Set("Failed to find an initial file!\n");
 			return;
 		}
 
 		do
 		{
-			// Send the file we've found!
-			vFunction(wfdData.cFileName);
-		} while (FindNextFile(hFile, &wfdData));
-
-		FindClose(hFile);
+			// Pass the entire dir + filename.
+			sprintf(filestring, "%s/%s", path, finddata.cFileName);
+			Function(filestring);
+		} while(FindNextFile(find, &finddata));
 	}
 #else	// Linux (todo)
 /*	{

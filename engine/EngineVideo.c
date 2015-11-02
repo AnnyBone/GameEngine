@@ -246,12 +246,10 @@ void Video_Initialize(void)
 
 	Video_SelectTexture(0);
 
-#if 0
 	vid.conwidth = (scr_conwidth.value > 0) ? (int)scr_conwidth.value : (scr_conscale.value > 0) ? (int)(Video.iWidth / scr_conscale.value) : Video.iWidth;
 	vid.conwidth = Math_Clamp(320, vid.conwidth, Video.iWidth);
 	vid.conwidth &= 0xFFFFFFF8;
 	vid.conheight = vid.conwidth*Video.iHeight / Video.iWidth;
-#endif
 
 	Video.bVerticalSync = cvVerticalSync.bValue;
 
@@ -866,7 +864,7 @@ void Video_PreFrame(void)
 */
 void Video_Frame(void)
 {
-	if (Global.bEmbeddedContext)
+	if (Global.bEmbeddedContext || (Video.bInitialized == false))
 		return;
 
 	if (Video.bDebugFrame)
@@ -880,8 +878,10 @@ void Video_Frame(void)
 
 	SCR_UpdateScreen();
 
+#if 0
 	// Attempt to draw the depth buffer.
 	Video_DrawDepthBuffer();
+#endif
 
 	GL_EndRendering();
 

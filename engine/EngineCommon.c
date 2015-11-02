@@ -169,7 +169,7 @@ int Q_strcmp (char *s1, char *s2)
 
 /*  TODO: Rewrite this so both parms are const.
 */
-int Q_strncmp (char *s1, char *s2, int count)
+int Q_strncmp (char *s1, const char *s2, int count)
 {
 	for(;;)
 	{
@@ -1079,6 +1079,7 @@ void FileSystem_CopyFile(char *netpath,char *cachepath)
 */
 int COM_FindFile (const char *filename, int *handle, FILE **file)
 {
+	pack_t			*pak;
 	searchpath_t    *search;
 	char            netpath[MAX_OSPATH], cachepath[MAX_OSPATH];
 	int             i;
@@ -1099,7 +1100,6 @@ int COM_FindFile (const char *filename, int *handle, FILE **file)
 	search = com_searchpaths;
 	for ( ; search ; search = search->next)
 	{
-#if 0 // TODO: Implement this again.
 		// is the element a pak file?
 		if (search->pack)
 		{
@@ -1126,7 +1126,6 @@ int COM_FindFile (const char *filename, int *handle, FILE **file)
 				}
 		}
 		else
-#endif
 		{
 			sprintf(netpath, "%s/%s", search->filename, filename);
 
@@ -1149,7 +1148,6 @@ int COM_FindFile (const char *filename, int *handle, FILE **file)
 #endif
 
 				cachetime = Sys_FileTime (cachepath);
-
 				if (cachetime < findtime)
 					FileSystem_CopyFile(netpath,cachepath);
 				p_strcpy(netpath, cachepath);
@@ -1254,7 +1252,6 @@ uint8_t *COM_LoadFile(const char *path, int usehunk)
 
 	((uint8_t*)buf)[len] = 0;
 
-	// [3/5/2012] Don't show if we're dedicated ~hogsy
 	Draw_BeginDisc();
 
 	Sys_FileRead(h, buf, len);
@@ -1364,12 +1361,24 @@ pack_t *FileSystem_LoadPackage(char *packfile)
 	return pack;
 }
 
+void FileSystem_AddPackage(char *file)
+{
+	searchpath_t    *search;
+	pack_t			*pak;
+
+	pak = FileSystem_LoadPackage(file);
+	if (pak)
+	{
+		search = (searchpath_t*)Z_Malloc(sizeof(searchpath_t));
+		search->pack = pak;
+		search->next = com_searchpaths;
+		com_searchpaths = search;
+	}
+}
+
 void FileSystem_AddGameDirectory(char *dir)
 {
-	int			    i;
-	searchpath_t    *search;
-	pack_t          *pak;
-	char            pakfile[MAX_OSPATH];
+	searchpath_t	*search;
 
 	p_strcpy(com_gamedir, dir);
 
@@ -1379,20 +1388,8 @@ void FileSystem_AddGameDirectory(char *dir)
 	search->next = com_searchpaths;
 	com_searchpaths = search;
 
-	// add any pak files in the format pak0.pak pak1.pak, ...
-	for (i = 0; ; i++)
-	{
-		sprintf (pakfile, "%s/pak%i.pak", dir, i);
-		pak = FileSystem_LoadPackage(pakfile);
-		if (!pak)
-			break;
-
-		search = (searchpath_t*)Z_Malloc(sizeof(searchpath_t));
-		search->pack	= pak;
-		search->next	= com_searchpaths;
-
-		com_searchpaths = search;
-	}
+	// Also scan for ye old packages.
+	pFileSystem_ScanDirectory(dir, ".pak", FileSystem_AddPackage);
 }
 
 /*
@@ -1495,7 +1492,7 @@ void FileSystem_Initialize(void)
 	// Add the engine directory to our search paths.
 	FileSystem_AddGameDirectory(va("%s/engine", basedir));
 
-	// [5/2/2014] Check out our paths script ~hogsy
+	// Check out our paths script.
 	if(!Script_Load("paths.script"))
 		Sys_Error("Failed to load paths script!\n");
 

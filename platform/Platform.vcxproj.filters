@@ -9,7 +9,7 @@
     <ClCompile Include="platform_window.c" />
     <ClCompile Include="platform_math.c" />
     <ClCompile Include="platform_log.c" />
-    <ClCompile Include="PlatformString.c">
+    <ClCompile Include="platform_string.c">
       <Filter>Standard</Filter>
     </ClCompile>
   </ItemGroup>
@@ -39,7 +39,7 @@
       <Filter>Include</Filter>
     </ClInclude>
     <ClInclude Include="include\PlatformString.h">
-      <Filter>Include</Filter>
+      <Filter>Standard</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

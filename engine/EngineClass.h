@@ -18,8 +18,8 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef __ENGINECLASS_H__
-#define	__ENGINECLASS_H__
+#ifndef ENGINE_CLASS_H
+#define	ENGINE_CLASS_H
 #pragma once
 
 /*
@@ -29,8 +29,14 @@
 class CEngineSubSystem
 {
 public:
-	virtual void Initialize() = 0;
+	CEngineSubSystem();
+
+	virtual void Initialize(const char *sys_name) = 0;
+	virtual void Frame() = 0;
 	virtual void Shutdown() = 0;
+
+private:
+	char name[128];
 };
 
-#endif
+#endif // ENGINE_CLASS_H

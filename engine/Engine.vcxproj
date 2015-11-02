@@ -291,7 +291,7 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
-      <AdditionalIncludeDirectories>.;..\;..\platform\include;..\include;..\shared;..\external\sdl2\include;..\external\sdl2_ttf\include;..\external\glee;..\external\lpng1618;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;.\new;..\;..\platform\include;..\include;..\shared;..\external\sdl2\include;..\external\sdl2_ttf\include;..\external\glee;..\external\lpng1618;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;_AFX_SECURE_NO_WARNINGS;_ATL_SECURE_NO_WARNINGS;KATANA;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AssemblerListingLocation>.\Release\</AssemblerListingLocation>
       <BrowseInformation>true</BrowseInformation>
@@ -693,7 +693,7 @@
     <ClCompile Include="EngineAudioDirectSound.c" />
     <ClCompile Include="EngineServer.c" />
     <ClCompile Include="EngineServerUser.c" />
-    <ClCompile Include="shader_base.cpp" />
+    <ClCompile Include="ShaderBase.cpp" />
     <ClCompile Include="sys_win.c" />
     <ClCompile Include="zone.c" />
   </ItemGroup>

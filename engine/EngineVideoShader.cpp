@@ -29,8 +29,6 @@
 		Better tracking and error checking?
 */
 
-using namespace std;
-
 CVideoShader::CVideoShader(VideoShaderType_t type)
 {
 	instance = 0;

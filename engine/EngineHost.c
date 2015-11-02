@@ -313,8 +313,7 @@ void Host_ClientCommands (char *fmt, ...)
 */
 void SV_DropClient(bool crash)
 {
-	int			iSaveSelf,
-				i;
+	int			i;
 	client_t	*client;
 
 	if(!crash)

@@ -1,53 +1,59 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Shared">
-      <UniqueIdentifier>{214bfd5b-5bbf-456a-aea5-11a0d707dd8e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Legacy">
       <UniqueIdentifier>{e00778df-b576-4da4-ada2-0e2b7435e56d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="External">
-      <UniqueIdentifier>{43e61e0d-c696-4895-b21b-f30edea514ab}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Client">
-      <UniqueIdentifier>{f0ccfc9a-bab0-4174-9895-f5246a8ab4fb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Client\Audio">
-      <UniqueIdentifier>{08d41959-b691-4200-8939-61ac28b06306}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Client\Video">
-      <UniqueIdentifier>{77ea4c2d-fc29-4aeb-bb27-3c33e9606552}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Server">
-      <UniqueIdentifier>{0f375dec-2e73-49e9-8781-5f63e733672e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Console">
-      <UniqueIdentifier>{dcf4305a-6ad4-4a1d-8c03-7d16abc3355f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Modules">
-      <UniqueIdentifier>{c5611a4d-2e07-4438-aae7-3789ee89b3e0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Network">
+    <Filter Include="Legacy\Network">
       <UniqueIdentifier>{118fcf6f-7dea-455c-8ded-044746a27dcb}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Client\Audio\Interfaces">
-      <UniqueIdentifier>{4068ff62-f40e-400d-aa30-a573d3113102}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Client\Editor">
-      <UniqueIdentifier>{21f0f25d-e661-4ea9-8dd5-b90a159a2702}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Client\Input">
-      <UniqueIdentifier>{5e44a34d-a9ac-4eff-b4d5-40e9f55bc6f6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Client\Video\Interfaces">
-      <UniqueIdentifier>{7dcb15cb-2530-4696-b29c-1de8a7635517}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Network\Interfaces">
+    <Filter Include="Legacy\Network\Interfaces">
       <UniqueIdentifier>{12aedf60-fc01-4dce-a337-75a4ed2c429d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Client\Video\Legacy">
+    <Filter Include="Legacy\External">
+      <UniqueIdentifier>{43e61e0d-c696-4895-b21b-f30edea514ab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Legacy\Console">
+      <UniqueIdentifier>{dcf4305a-6ad4-4a1d-8c03-7d16abc3355f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Legacy\Client">
+      <UniqueIdentifier>{f0ccfc9a-bab0-4174-9895-f5246a8ab4fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Legacy\Client\Audio">
+      <UniqueIdentifier>{08d41959-b691-4200-8939-61ac28b06306}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Legacy\Client\Audio\Interfaces">
+      <UniqueIdentifier>{4068ff62-f40e-400d-aa30-a573d3113102}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Legacy\Client\Video">
+      <UniqueIdentifier>{77ea4c2d-fc29-4aeb-bb27-3c33e9606552}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Legacy\Client\Video\Interfaces">
+      <UniqueIdentifier>{7dcb15cb-2530-4696-b29c-1de8a7635517}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Legacy\Client\Video\Legacy">
       <UniqueIdentifier>{77b73aa0-88f4-466f-af2f-4bbaf7543669}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Legacy\Client\Editor">
+      <UniqueIdentifier>{21f0f25d-e661-4ea9-8dd5-b90a159a2702}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Legacy\Client\Input">
+      <UniqueIdentifier>{5e44a34d-a9ac-4eff-b4d5-40e9f55bc6f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Legacy\Modules">
+      <UniqueIdentifier>{c5611a4d-2e07-4438-aae7-3789ee89b3e0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Legacy\Server">
+      <UniqueIdentifier>{0f375dec-2e73-49e9-8781-5f63e733672e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Legacy\Shared">
+      <UniqueIdentifier>{214bfd5b-5bbf-456a-aea5-11a0d707dd8e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Client">
+      <UniqueIdentifier>{58810262-9f0f-4838-852a-88b58eab5b2e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Client\Video">
+      <UniqueIdentifier>{16c0cd61-6a2d-4a9a-ae91-9ded4dc10e05}</UniqueIdentifier>
     </Filter>
     <Filter Include="Client\Video\Shaders">
       <UniqueIdentifier>{af314822-6735-443a-950f-3a2f3dcf119f}</UniqueIdentifier>
@@ -57,6 +63,18 @@
     </Filter>
     <Filter Include="Client\Video\Shaders\Bloom">
       <UniqueIdentifier>{69010c1c-8316-463a-aeb9-c08a63366be1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Client\Audio">
+      <UniqueIdentifier>{c12cc687-965c-4955-8f42-74202d394245}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Client\Input">
+      <UniqueIdentifier>{c6b992aa-fb54-4274-8893-9ecce59afa57}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Client\Game">
+      <UniqueIdentifier>{b05ed56a-79b5-47c9-9fb1-d191092924be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Server">
+      <UniqueIdentifier>{2e4dcda0-35d9-42bb-8829-ff49c6285135}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -76,226 +94,238 @@
       <Filter>Legacy</Filter>
     </ClCompile>
     <ClCompile Include="..\external\glee\GLee.c">
-      <Filter>External</Filter>
+      <Filter>Legacy\External</Filter>
     </ClCompile>
     <ClCompile Include="conproc.c">
       <Filter>Legacy</Filter>
     </ClCompile>
     <ClCompile Include="engine_client.c">
-      <Filter>Client</Filter>
+      <Filter>Legacy\Client</Filter>
     </ClCompile>
     <ClCompile Include="cmdlib.c">
       <Filter>Legacy</Filter>
     </ClCompile>
     <ClCompile Include="engine_netdgrm.c">
-      <Filter>Network</Filter>
+      <Filter>Legacy\Network</Filter>
     </ClCompile>
     <ClCompile Include="EngineMaterialEditor.c">
-      <Filter>Client\Editor</Filter>
+      <Filter>Legacy\Client\Editor</Filter>
     </ClCompile>
     <ClCompile Include="EngineVideoLayer.c">
-      <Filter>Client\Video</Filter>
+      <Filter>Legacy\Client\Video</Filter>
     </ClCompile>
     <ClCompile Include="EngineVideoFog.c">
-      <Filter>Client\Video</Filter>
+      <Filter>Legacy\Client\Video</Filter>
     </ClCompile>
     <ClCompile Include="EngineVideoFont.c">
-      <Filter>Client\Video</Filter>
+      <Filter>Legacy\Client\Video</Filter>
     </ClCompile>
     <ClCompile Include="EngineVideoLights.c">
-      <Filter>Client\Video</Filter>
+      <Filter>Legacy\Client\Video</Filter>
     </ClCompile>
     <ClCompile Include="EngineVideoScreen.c">
-      <Filter>Client\Video</Filter>
+      <Filter>Legacy\Client\Video</Filter>
     </ClCompile>
     <ClCompile Include="EngineVideoSky.c">
-      <Filter>Client\Video</Filter>
+      <Filter>Legacy\Client\Video</Filter>
     </ClCompile>
     <ClCompile Include="EngineVideoWarp.c">
-      <Filter>Client\Video</Filter>
+      <Filter>Legacy\Client\Video</Filter>
     </ClCompile>
     <ClCompile Include="EngineVideoWorld.c">
-      <Filter>Client\Video</Filter>
+      <Filter>Legacy\Client\Video</Filter>
     </ClCompile>
     <ClCompile Include="EngineVideoAlias.c">
-      <Filter>Client\Video</Filter>
+      <Filter>Legacy\Client\Video</Filter>
     </ClCompile>
     <ClCompile Include="EngineVideoBrush.c">
-      <Filter>Client\Video</Filter>
+      <Filter>Legacy\Client\Video</Filter>
     </ClCompile>
-    <ClCompile Include="EngineHost.c" />
     <ClCompile Include="EngineNetwork.c">
-      <Filter>Network</Filter>
+      <Filter>Legacy\Network</Filter>
     </ClCompile>
     <ClCompile Include="EngineClientView.c">
-      <Filter>Client</Filter>
+      <Filter>Legacy\Client</Filter>
     </ClCompile>
     <ClCompile Include="EngineClientParse.c">
-      <Filter>Client</Filter>
+      <Filter>Legacy\Client</Filter>
     </ClCompile>
     <ClCompile Include="EngineClientDemo.c">
-      <Filter>Client</Filter>
+      <Filter>Legacy\Client</Filter>
     </ClCompile>
     <ClCompile Include="EngineClientChase.c">
-      <Filter>Client</Filter>
+      <Filter>Legacy\Client</Filter>
     </ClCompile>
     <ClCompile Include="EngineAudioMix.c">
-      <Filter>Client\Audio</Filter>
+      <Filter>Legacy\Client\Audio</Filter>
     </ClCompile>
     <ClCompile Include="EngineAudioMem.c">
-      <Filter>Client\Audio</Filter>
+      <Filter>Legacy\Client\Audio</Filter>
     </ClCompile>
     <ClCompile Include="EngineAudioDMA.c">
-      <Filter>Client\Audio</Filter>
+      <Filter>Legacy\Client\Audio</Filter>
     </ClCompile>
     <ClCompile Include="EngineAudioDirectSound.c">
-      <Filter>Client\Audio\Interfaces</Filter>
+      <Filter>Legacy\Client\Audio\Interfaces</Filter>
     </ClCompile>
     <ClCompile Include="EngineAudioDummy.c">
-      <Filter>Client\Audio\Interfaces</Filter>
+      <Filter>Legacy\Client\Audio\Interfaces</Filter>
     </ClCompile>
     <ClCompile Include="EngineVideoDraw.c">
-      <Filter>Client\Video</Filter>
+      <Filter>Legacy\Client\Video</Filter>
     </ClCompile>
     <ClCompile Include="EngineVideoShadow.c">
-      <Filter>Client\Video</Filter>
+      <Filter>Legacy\Client\Video</Filter>
     </ClCompile>
     <ClCompile Include="EngineVideo.c">
-      <Filter>Client\Video</Filter>
+      <Filter>Legacy\Client\Video</Filter>
     </ClCompile>
     <ClCompile Include="EngineVideoTextureManager.c">
-      <Filter>Client\Video</Filter>
+      <Filter>Legacy\Client\Video</Filter>
     </ClCompile>
     <ClCompile Include="EngineAudio.c">
-      <Filter>Client\Audio</Filter>
+      <Filter>Legacy\Client\Audio</Filter>
     </ClCompile>
     <ClCompile Include="EngineVideoParticle.c">
-      <Filter>Client\Video</Filter>
+      <Filter>Legacy\Client\Video</Filter>
     </ClCompile>
     <ClCompile Include="EngineInput.c">
-      <Filter>Client\Input</Filter>
+      <Filter>Legacy\Client\Input</Filter>
     </ClCompile>
     <ClCompile Include="EngineServerEntity.c">
-      <Filter>Server</Filter>
+      <Filter>Legacy\Server</Filter>
     </ClCompile>
     <ClCompile Include="EngineServer.c">
-      <Filter>Server</Filter>
+      <Filter>Legacy\Server</Filter>
     </ClCompile>
     <ClCompile Include="EngineServerUser.c">
-      <Filter>Server</Filter>
+      <Filter>Legacy\Server</Filter>
     </ClCompile>
     <ClCompile Include="EngineServerWorld.c">
-      <Filter>Server</Filter>
+      <Filter>Legacy\Server</Filter>
     </ClCompile>
     <ClCompile Include="EngineServerPhysics.c">
-      <Filter>Server</Filter>
+      <Filter>Legacy\Server</Filter>
     </ClCompile>
-    <ClCompile Include="EngineScript.c" />
-    <ClCompile Include="EngineMain.c" />
     <ClCompile Include="EngineGame.c">
-      <Filter>Modules</Filter>
+      <Filter>Legacy\Modules</Filter>
     </ClCompile>
     <ClCompile Include="EngineConsoleCommand.c">
-      <Filter>Console</Filter>
+      <Filter>Legacy\Console</Filter>
     </ClCompile>
     <ClCompile Include="EngineConsoleVariable.c">
-      <Filter>Console</Filter>
+      <Filter>Legacy\Console</Filter>
     </ClCompile>
     <ClCompile Include="EngineMenu.c">
-      <Filter>Modules</Filter>
+      <Filter>Legacy\Modules</Filter>
     </ClCompile>
-    <ClCompile Include="EngineCommon.c" />
     <ClCompile Include="EngineEditor.c">
-      <Filter>Client\Editor</Filter>
+      <Filter>Legacy\Client\Editor</Filter>
     </ClCompile>
     <ClCompile Include="EngineSDLWindow.c">
-      <Filter>Client\Video\Interfaces</Filter>
+      <Filter>Legacy\Client\Video\Interfaces</Filter>
     </ClCompile>
     <ClCompile Include="EngineClient.c">
-      <Filter>Client</Filter>
+      <Filter>Legacy\Client</Filter>
     </ClCompile>
     <ClCompile Include="EngineConsole.c">
-      <Filter>Console</Filter>
+      <Filter>Legacy\Console</Filter>
     </ClCompile>
     <ClCompile Include="EngineVideoEFrag.c">
-      <Filter>Client\Video</Filter>
+      <Filter>Legacy\Client\Video</Filter>
     </ClCompile>
     <ClCompile Include="EngineClientTempEntity.c">
-      <Filter>Client</Filter>
+      <Filter>Legacy\Client</Filter>
     </ClCompile>
     <ClCompile Include="..\shared\SharedFormats.c">
-      <Filter>Shared</Filter>
+      <Filter>Legacy\Shared</Filter>
     </ClCompile>
-    <ClCompile Include="EngineModel.c" />
     <ClCompile Include="EngineNetworkLoop.c">
-      <Filter>Network</Filter>
+      <Filter>Legacy\Network</Filter>
     </ClCompile>
     <ClCompile Include="EngineNetworkDummy.c">
-      <Filter>Network\Interfaces</Filter>
+      <Filter>Legacy\Network\Interfaces</Filter>
     </ClCompile>
     <ClCompile Include="EngineNetworkWindows.c">
-      <Filter>Network\Interfaces</Filter>
+      <Filter>Legacy\Network\Interfaces</Filter>
     </ClCompile>
     <ClCompile Include="EngineNetworkWinsock.c">
-      <Filter>Network\Interfaces</Filter>
+      <Filter>Legacy\Network\Interfaces</Filter>
     </ClCompile>
-    <ClCompile Include="EngineHostCommand.c" />
     <ClCompile Include="EngineClientInput.c">
-      <Filter>Client</Filter>
+      <Filter>Legacy\Client</Filter>
     </ClCompile>
     <ClCompile Include="EngineVideoObject.cpp">
-      <Filter>Client\Video</Filter>
+      <Filter>Legacy\Client\Video</Filter>
     </ClCompile>
     <ClCompile Include="EngineVideoSprite.c">
-      <Filter>Client\Video</Filter>
+      <Filter>Legacy\Client\Video</Filter>
     </ClCompile>
     <ClCompile Include="EngineVideoFrameBuffer.cpp">
-      <Filter>Client\Video</Filter>
+      <Filter>Legacy\Client\Video</Filter>
     </ClCompile>
     <ClCompile Include="EngineException.cpp" />
     <ClCompile Include="EngineVideoLegacy2.c">
-      <Filter>Client\Video\Legacy</Filter>
+      <Filter>Legacy\Client\Video\Legacy</Filter>
     </ClCompile>
     <ClCompile Include="EngineVideoLegacy.c">
-      <Filter>Client\Video\Legacy</Filter>
+      <Filter>Legacy\Client\Video\Legacy</Filter>
     </ClCompile>
     <ClCompile Include="EngineMaterial.c">
-      <Filter>Client</Filter>
+      <Filter>Legacy\Client</Filter>
     </ClCompile>
     <ClCompile Include="EngineImage.c">
-      <Filter>Client</Filter>
+      <Filter>Legacy\Client</Filter>
     </ClCompile>
     <ClCompile Include="client\ClientSprite.cpp">
-      <Filter>Client</Filter>
+      <Filter>Legacy\Client</Filter>
     </ClCompile>
     <ClCompile Include="client\ClientMaterial.cpp">
-      <Filter>Client</Filter>
+      <Filter>Legacy\Client</Filter>
     </ClCompile>
     <ClCompile Include="client\ClientParticle.cpp">
-      <Filter>Client</Filter>
+      <Filter>Legacy\Client</Filter>
     </ClCompile>
-    <ClCompile Include="shader_base.cpp">
-      <Filter>Client\Video\Shaders\Base</Filter>
+    <ClCompile Include="EngineScript.c">
+      <Filter>Legacy</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineModel.c">
+      <Filter>Legacy</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineMain.c">
+      <Filter>Legacy</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineHostCommand.c">
+      <Filter>Legacy</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineHost.c">
+      <Filter>Legacy</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineCommon.c">
+      <Filter>Legacy</Filter>
     </ClCompile>
     <ClCompile Include="EngineVideoShader.cpp">
-      <Filter>Client\Video\Shaders</Filter>
+      <Filter>Client\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderBase.cpp">
+      <Filter>Client\Video\Shaders\Base</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\shared\shared_client.h">
-      <Filter>Shared</Filter>
+      <Filter>Legacy\Shared</Filter>
     </ClInclude>
     <ClInclude Include="..\shared\shared_editor.h">
-      <Filter>Shared</Filter>
+      <Filter>Legacy\Shared</Filter>
     </ClInclude>
     <ClInclude Include="..\shared\shared_game.h">
-      <Filter>Shared</Filter>
+      <Filter>Legacy\Shared</Filter>
     </ClInclude>
     <ClInclude Include="..\shared\shared_menu.h">
-      <Filter>Shared</Filter>
+      <Filter>Legacy\Shared</Filter>
     </ClInclude>
     <ClInclude Include="..\shared\shared_server.h">
-      <Filter>Shared</Filter>
+      <Filter>Legacy\Shared</Filter>
     </ClInclude>
     <ClInclude Include="pr_comp.h">
       <Filter>Legacy</Filter>
@@ -349,142 +379,152 @@
       <Filter>Legacy</Filter>
     </ClInclude>
     <ClInclude Include="engine_client.h">
-      <Filter>Client</Filter>
+      <Filter>Legacy\Client</Filter>
     </ClInclude>
     <ClInclude Include="cmdlib.h">
       <Filter>Legacy</Filter>
     </ClInclude>
     <ClInclude Include="engine_netdgrm.h">
-      <Filter>Network</Filter>
+      <Filter>Legacy\Network</Filter>
     </ClInclude>
     <ClInclude Include="..\shared\SharedMaterial.h">
-      <Filter>Shared</Filter>
+      <Filter>Legacy\Shared</Filter>
     </ClInclude>
     <ClInclude Include="..\shared\SharedTexture.h">
-      <Filter>Shared</Filter>
+      <Filter>Legacy\Shared</Filter>
     </ClInclude>
     <ClInclude Include="..\shared\SharedModel.h">
-      <Filter>Shared</Filter>
+      <Filter>Legacy\Shared</Filter>
     </ClInclude>
     <ClInclude Include="..\shared\SharedZone.h">
-      <Filter>Shared</Filter>
+      <Filter>Legacy\Shared</Filter>
     </ClInclude>
     <ClInclude Include="EngineVideoShadow.h">
-      <Filter>Client\Video</Filter>
+      <Filter>Legacy\Client\Video</Filter>
     </ClInclude>
     <ClInclude Include="EngineVideoAlias.h">
-      <Filter>Client\Video</Filter>
+      <Filter>Legacy\Client\Video</Filter>
     </ClInclude>
     <ClInclude Include="EngineVideo.h">
-      <Filter>Client\Video</Filter>
+      <Filter>Legacy\Client\Video</Filter>
     </ClInclude>
     <ClInclude Include="EngineVideoTextureManager.h">
-      <Filter>Client\Video</Filter>
+      <Filter>Legacy\Client\Video</Filter>
     </ClInclude>
     <ClInclude Include="EngineAudio.h">
-      <Filter>Client\Audio</Filter>
+      <Filter>Legacy\Client\Audio</Filter>
     </ClInclude>
     <ClInclude Include="EngineVideoParticle.h">
-      <Filter>Client\Video</Filter>
+      <Filter>Legacy\Client\Video</Filter>
     </ClInclude>
     <ClInclude Include="EngineInput.h">
-      <Filter>Client\Input</Filter>
+      <Filter>Legacy\Client\Input</Filter>
     </ClInclude>
     <ClInclude Include="EngineServerEntity.h">
-      <Filter>Server</Filter>
+      <Filter>Legacy\Server</Filter>
     </ClInclude>
     <ClInclude Include="EngineServerPhysics.h">
-      <Filter>Server</Filter>
+      <Filter>Legacy\Server</Filter>
     </ClInclude>
-    <ClInclude Include="EngineScript.h" />
-    <ClInclude Include="EngineMain.h" />
     <ClInclude Include="..\shared\SharedFlags.h">
-      <Filter>Shared</Filter>
+      <Filter>Legacy\Shared</Filter>
     </ClInclude>
     <ClInclude Include="EngineGame.h">
-      <Filter>Modules</Filter>
+      <Filter>Legacy\Modules</Filter>
     </ClInclude>
     <ClInclude Include="EngineConsoleCommand.h">
-      <Filter>Console</Filter>
+      <Filter>Legacy\Console</Filter>
     </ClInclude>
     <ClInclude Include="EngineConsoleVariable.h">
-      <Filter>Console</Filter>
+      <Filter>Legacy\Console</Filter>
     </ClInclude>
     <ClInclude Include="EngineMenu.h">
-      <Filter>Modules</Filter>
+      <Filter>Legacy\Modules</Filter>
     </ClInclude>
-    <ClInclude Include="EngineCommon.h" />
     <ClInclude Include="EngineEditor.h">
-      <Filter>Client\Editor</Filter>
+      <Filter>Legacy\Client\Editor</Filter>
     </ClInclude>
     <ClInclude Include="EngineVideoWindow.h">
-      <Filter>Client\Video</Filter>
+      <Filter>Legacy\Client\Video</Filter>
     </ClInclude>
     <ClInclude Include="EngineConsole.h">
-      <Filter>Console</Filter>
+      <Filter>Legacy\Console</Filter>
     </ClInclude>
     <ClInclude Include="EngineClientView.h">
-      <Filter>Client</Filter>
+      <Filter>Legacy\Client</Filter>
     </ClInclude>
     <ClInclude Include="EngineBase.h" />
     <ClInclude Include="..\shared\SharedFormats.h">
-      <Filter>Shared</Filter>
+      <Filter>Legacy\Shared</Filter>
     </ClInclude>
     <ClInclude Include="EngineVideoScreen.h">
-      <Filter>Client\Video</Filter>
+      <Filter>Legacy\Client\Video</Filter>
     </ClInclude>
     <ClInclude Include="EngineVideoDraw.h">
-      <Filter>Client\Video</Filter>
+      <Filter>Legacy\Client\Video</Filter>
     </ClInclude>
     <ClInclude Include="..\shared\SharedEngine.h">
-      <Filter>Shared</Filter>
+      <Filter>Legacy\Shared</Filter>
     </ClInclude>
-    <ClInclude Include="EngineProtocol.h" />
     <ClInclude Include="..\shared\SharedModule.h">
-      <Filter>Shared</Filter>
+      <Filter>Legacy\Shared</Filter>
     </ClInclude>
-    <ClInclude Include="EngineModel.h" />
     <ClInclude Include="EngineNetwork.h">
-      <Filter>Network</Filter>
+      <Filter>Legacy\Network</Filter>
     </ClInclude>
     <ClInclude Include="EngineNetworkLoop.h">
-      <Filter>Network</Filter>
+      <Filter>Legacy\Network</Filter>
     </ClInclude>
     <ClInclude Include="EngineNetworkSerial.h">
-      <Filter>Network</Filter>
+      <Filter>Legacy\Network</Filter>
     </ClInclude>
     <ClInclude Include="EngineNetworkWinsock.h">
-      <Filter>Network\Interfaces</Filter>
+      <Filter>Legacy\Network\Interfaces</Filter>
     </ClInclude>
     <ClInclude Include="EngineMaterialEditor.h">
-      <Filter>Client\Editor</Filter>
+      <Filter>Legacy\Client\Editor</Filter>
     </ClInclude>
     <ClInclude Include="EngineClientTempEntity.h">
-      <Filter>Client</Filter>
+      <Filter>Legacy\Client</Filter>
     </ClInclude>
     <ClInclude Include="EngineVideoObject.h">
-      <Filter>Client\Video</Filter>
+      <Filter>Legacy\Client\Video</Filter>
     </ClInclude>
     <ClInclude Include="EngineVideoLayer.h">
-      <Filter>Client\Video</Filter>
+      <Filter>Legacy\Client\Video</Filter>
     </ClInclude>
     <ClInclude Include="EngineServer.h">
-      <Filter>Server</Filter>
+      <Filter>Legacy\Server</Filter>
     </ClInclude>
     <ClInclude Include="EngineVideoFrameBuffer.hpp">
-      <Filter>Client\Video</Filter>
+      <Filter>Legacy\Client\Video</Filter>
     </ClInclude>
     <ClInclude Include="EngineMaterial.h">
-      <Filter>Client</Filter>
+      <Filter>Legacy\Client</Filter>
     </ClInclude>
-    <ClInclude Include="EngineClass.h" />
     <ClInclude Include="EngineException.h" />
     <ClInclude Include="EngineImage.h">
-      <Filter>Client</Filter>
+      <Filter>Legacy\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineScript.h">
+      <Filter>Legacy</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineProtocol.h">
+      <Filter>Legacy</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineModel.h">
+      <Filter>Legacy</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineMain.h">
+      <Filter>Legacy</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineCommon.h">
+      <Filter>Legacy</Filter>
     </ClInclude>
     <ClInclude Include="EngineVideoShader.h">
-      <Filter>Client\Video\Shaders</Filter>
+      <Filter>Client\Video</Filter>
     </ClInclude>
+    <ClInclude Include="EngineClass.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="engine.rc" />

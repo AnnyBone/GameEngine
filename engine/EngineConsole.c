@@ -902,10 +902,7 @@ void Con_DrawConsole(int lines, bool drawinput)
 
 	// Draw version number in bottom right
 	y += 8;
-	sprintf(ver,"Katana %i.%i (%i)",
-		ENGINE_VERSION_MAJOR,
-		ENGINE_VERSION_MINOR,
-		ENGINE_VERSION_BUILD);
+	sprintf(ver,"Katana (%i)", ENGINE_VERSION_BUILD);
 	for(x = 0; x < (signed)strlen(ver); x++)
 		Draw_Character((con_linewidth-strlen(ver)+x+2)<<3,y,ver[x]);
 }

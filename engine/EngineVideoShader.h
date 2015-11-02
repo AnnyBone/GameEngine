@@ -18,8 +18,8 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef __ENGINEVIDEOSHADER_H__
-#define __ENGINEVIDEOSHADER_H__
+#ifndef VIDEO_SHADER_H
+#define VIDEO_SHADER_H
 
 typedef enum
 {
@@ -54,6 +54,8 @@ private:
 	char		source_path[PLATFORM_MAX_PATH];
 	int			source_length;
 };
+
+#define	SHADER_REGISTER(name)
 
 class CVideoShaderProgram
 {
@@ -100,4 +102,4 @@ extern "C" {
 }
 #endif
 
-#endif
+#endif	// VIDEO_SHADER_H

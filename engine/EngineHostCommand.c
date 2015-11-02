@@ -251,72 +251,63 @@ void ExtraMaps_Add (char *name)
 void ExtraMaps_Init(void)
 {
     char            cMapName[128],
-                    filestring[MAX_OSPATH],
-					ignorepakdir[64];
+                    filestring[MAX_OSPATH];
 	searchpath_t    *search;
 	pack_t          *pak;
 	int             i;
-
-	//we don't want to list the maps in id1 pakfiles, becuase these are not "add-on" levels
-	sprintf(ignorepakdir,"/%s/",host_parms.cBasePath);
 
 	for (search = com_searchpaths ; search ; search = search->next)
 	{
 		if(*search->filename) //directory
 		{
 #ifdef _WIN32
+            WIN32_FIND_DATA	FindFileData;
+            HANDLE			Find;
+
+            sprintf(filestring,"%s/%s*"BSP_EXTENSION,search->filename,Global.cLevelPath);
+
+            Find = FindFirstFile(filestring,&FindFileData);
+            if(Find == INVALID_HANDLE_VALUE)
+                continue;
+				
+            do
             {
-                WIN32_FIND_DATA	FindFileData;
-                HANDLE			Find;
+                COM_StripExtension(FindFileData.cFileName,cMapName);
 
-                sprintf(filestring,"%s/%s*"BSP_EXTENSION,search->filename,Global.cLevelPath);
-
-                Find = FindFirstFile(filestring,&FindFileData);
-                if(Find == INVALID_HANDLE_VALUE)
-                    continue;
-
-                do
-                {
-                    COM_StripExtension(FindFileData.cFileName,cMapName);
-
-                    ExtraMaps_Add(cMapName);
-                } while(FindNextFile(Find,&FindFileData));
-			}
+                ExtraMaps_Add(cMapName);
+            } while(FindNextFile(Find,&FindFileData));
 #else // linux
+            DIR             *dDirectory;
+            struct  dirent  *dEntry;
+
+            sprintf(filestring,"%s/%s",search->filename,Global.cLevelPath);
+
+            dDirectory = opendir(filestring);
+            if(dDirectory)
             {
-                DIR             *dDirectory;
-                struct  dirent  *dEntry;
-
-                sprintf(filestring,"%s/%s",search->filename,Global.cLevelPath);
-
-                dDirectory = opendir(filestring);
-                if(dDirectory)
+                while((dEntry = readdir(dDirectory)))
                 {
-                    while((dEntry = readdir(dDirectory)))
+                    if(strstr(dEntry->d_name,BSP_EXTENSION))
                     {
-                        if(strstr(dEntry->d_name,BSP_EXTENSION))
-                        {
-                            COM_StripExtension(dEntry->d_name,cMapName);
+                        COM_StripExtension(dEntry->d_name,cMapName);
 
-                            ExtraMaps_Add(cMapName);
-                        }
+                        ExtraMaps_Add(cMapName);
                     }
-
-                    closedir(dDirectory);
                 }
+
+                closedir(dDirectory);
             }
 #endif
 		}
 		else //pakfile
 		{
-			if(!strstr(search->pack->filename,ignorepakdir)) // Don't list standard id maps
-				for(i = 0,pak = search->pack; i < pak->numfiles; i++)
-					if(strstr(pak->files[i].name,BSP_EXTENSION))
-						if(pak->files[i].filelen > 32*1024) // Don't list files under 32k (ammo boxes etc)
-						{
-							COM_StripExtension(pak->files[i].name+5,cMapName);
-							ExtraMaps_Add(cMapName);
-						}
+			for(i = 0,pak = search->pack; i < pak->numfiles; i++)
+				if(strstr(pak->files[i].name,BSP_EXTENSION))
+					if(pak->files[i].filelen > 32*1024) // Don't list files under 32k (ammo boxes etc)
+					{
+						COM_StripExtension(pak->files[i].name+5,cMapName);
+						ExtraMaps_Add(cMapName);
+					}
 		}
 	}
 }

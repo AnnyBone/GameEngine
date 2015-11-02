@@ -95,8 +95,13 @@ CVideoPostProcess::CVideoPostProcess(const char *FragName, const char *VertName)
 {
 	PostProcessProgram = new CVideoShaderProgram();
 
-	CVideoShader *FragmentShader = new CVideoShader(FragName, VIDEO_SHADER_FRAGMENT);
-	CVideoShader *VertexShader = new CVideoShader(VertName, VIDEO_SHADER_VERTEX);
+	CVideoShader *FragmentShader = new CVideoShader(VIDEO_SHADER_FRAGMENT);
+	if (!FragmentShader->Load(FragName))
+		Sys_Error("Failed to load fragment shader! (%s)\n", FragName);
+
+	CVideoShader *VertexShader = new CVideoShader(VIDEO_SHADER_VERTEX);
+	if (!VertexShader->Load(VertName))
+		Sys_Error("Failed to load vertex shader! (%s)\n", VertName);
 
 	PostProcessProgram->Attach(FragmentShader);
 	PostProcessProgram->Attach(VertexShader);
@@ -132,21 +137,21 @@ void CVideoPostProcess::Draw()
 	PostProcessProgram->Disable();
 }
 
-CVideoPostProcess *PostEffects;
+CVideoPostProcess *post_bloom;
 
 void VideoPostProcess_Initialize()
 {
-	PostEffects = new CVideoPostProcess("bloom", "base");
-	if (!PostEffects)
+	post_bloom = new CVideoPostProcess("bloom", "base");
+	if (!post_bloom)
 		Sys_Error("Failed to create post process effect!\n");
 }
 
 void VideoPostProcess_BindFrameBuffer()
 {
-	PostEffects->Bind();
+	post_bloom->Bind();
 }
 
 void VideoPostProcess_Draw()
 {
-	PostEffects->Draw();
+	post_bloom->Draw();
 }
