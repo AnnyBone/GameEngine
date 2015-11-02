@@ -50,9 +50,6 @@
 			<Add option="-fPIC" />
 			<Add directory="../platform/include" />
 		</Compiler>
-		<Unit filename="menu_button.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="menu_button.h" />
 		<Unit filename="menu_hud.c">
 			<Option compilerVar="CC" />

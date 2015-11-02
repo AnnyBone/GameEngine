@@ -35,6 +35,9 @@
 			<Add option="-g" />
 			<Add option="-fPIC" />
 		</Compiler>
+		<Unit filename="PlatformString.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="include/platform.h" />
 		<Unit filename="include/platform_filesystem.h" />
 		<Unit filename="include/platform_inttypes.h" />
