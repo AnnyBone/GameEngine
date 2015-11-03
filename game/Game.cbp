@@ -8,7 +8,7 @@
 		<Build>
 			<Target title="x64">
 				<Option platforms="Windows;Unix;" />
-				<Option output="../../openkatana/game" prefix_auto="0" extension_auto="1" />
+				<Option output="../../openkatana/game.x64.so" prefix_auto="0" extension_auto="0" />
 				<Option working_dir="../../../../../dev/ProjectKatana/trunk/bin" />
 				<Option object_output="obj/Release/" />
 				<Option type="3" />
@@ -89,6 +89,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="server/openkatana/decoration_barrel.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="server/openkatana/item_health.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="server/openkatana/mode_ctf.c">
