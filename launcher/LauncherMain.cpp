@@ -50,6 +50,7 @@ pINSTANCE hEngineInstance;
 
 int main(int argc,char *argv[])
 {
+	pLog_Clear(LAUNCHER_LOG);
 	pLog_Write(LAUNCHER_LOG, "Launcher (Interface Version %i)\n", ENGINE_VERSION);
 
 	// Load the module interface for the engine module.

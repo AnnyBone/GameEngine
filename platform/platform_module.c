@@ -64,7 +64,7 @@ pINSTANCE pModule_Load(const char *ccPath)
 #endif
 	if(!iModule)
 	{
-		pError_Set("Failed to load library! (%s)\n%s", cUpdatedPath, pError_SystemGet());
+		pError_Set("Failed to load module! (%s)\n%s\n", cUpdatedPath, pError_SystemGet());
 		pError_SystemReset();
 
 		// Print it...
@@ -80,7 +80,7 @@ pINSTANCE pModule_Load(const char *ccPath)
 #endif
 		if (!iModule)
 		{
-			pError_Set("Failed to load library! (%s)\n%s", cUpdatedPath, pError_SystemGet());
+			pError_Set("Failed to load module! (%s)\n%s\n", cUpdatedPath, pError_SystemGet());
 			pError_SystemReset();
 			return NULL;
 		}

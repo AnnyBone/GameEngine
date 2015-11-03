@@ -24,10 +24,6 @@
 
 #include "server_player.h"
 
-void Shotcycler_SoundPull(ServerEntity_t *eShotcycler);
-void Shotcycler_SoundClick(ServerEntity_t *eShotcycler);
-void Shotcycler_SoundSlap(ServerEntity_t *eShotcycler);
-
 EntityFrame_t ShotcyclerAnimation_Deploy [] =
 {
 	{ NULL, 31, 0.04f },
@@ -141,26 +137,11 @@ EntityFrame_t ShotcyclerAnimation_Reload [] =
 	{ NULL, 102, 0.04f, true }
 };
 
-void Shotcycler_SoundClick(ServerEntity_t *eShotcycler)
-{
-	Sound(eShotcycler,CHAN_WEAPON,"weapons/shotcycler6/shotclick.wav",255,ATTN_NORM);
-}
-
-void Shotcycler_SoundPull(ServerEntity_t *eShotcycler)
-{
-	Sound(eShotcycler,CHAN_WEAPON,"weapons/shotcycler6/shotpull.wav",255,ATTN_NORM);
-}
-
-void Shotcycler_SoundSlap(ServerEntity_t *eShotcycler)
-{
-	Sound(eShotcycler,CHAN_WEAPON,"weapons/shotcycler6/shotslap.wav",255,ATTN_NORM);
-}
-
 void Shotcycler_Deploy(ServerEntity_t *ent)
 {
 	ent->local.iShotCycle = 6;
 
-	// TODO: Call our deploy sound ~hogsy
+	// TODO: This should be on the client :(
 	Sound(ent, CHAN_WEAPON, "weapons/shotcycler6/shotcyclerready.wav", 255, ATTN_NORM);
 
 	Weapon_Animate(ent,ShotcyclerAnimation_Deploy);
@@ -188,11 +169,13 @@ void Shotcycler_PrimaryAttack(ServerEntity_t *ent)
 	}
 	else if(!ent->local.shotcycler_ammo)
 	{
+		// TODO: Use a generic global sound, anything specific just means more work, for such a minor detail.
+		// TODO: This should also be on the client?
 		Sound(ent,CHAN_WEAPON,"weapons/shotcycler6/shotcyclerclick.wav",255,ATTN_NORM);
 		return;
 	}
 
-	Sound(ent,CHAN_WEAPON,va("weapons/shotcycler6/shotcyclerfire%i.wav",rand()%9+1),255,ATTN_NORM);
+	Sound(ent, CHAN_WEAPON, va("weapons/shotcycler6/fire%i.wav", rand() % 1), 130, ATTN_NORM);
 
 	Weapon_ViewPunch(ent, 5, false);
 	ent->v.iPrimaryAmmo = ent->local.shotcycler_ammo -= 2;
