@@ -66,6 +66,7 @@ pINSTANCE pModule_Load(const char *ccPath)
 	{
 		pError_Set("Failed to load module! (%s)\n%s\n", cUpdatedPath, pError_SystemGet());
 		pError_SystemReset();
+#if 0	// Second attempt; load it from a platform-specific subdirectory.
 
 		// Print it...
 		printf("%s", pError_Get());
@@ -80,10 +81,13 @@ pINSTANCE pModule_Load(const char *ccPath)
 #endif
 		if (!iModule)
 		{
-			pError_Set("Failed to load module! (%s)\n%s\n", cUpdatedPath, pError_SystemGet());
+			pError_Set("%s\nFailed to load module! (%s)\n%s\n", cUpdatedPath, pError_SystemGet());
 			pError_SystemReset();
 			return NULL;
 		}
+#else
+		return NULL;
+#endif
 	}
 
 	return iModule;
