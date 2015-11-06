@@ -224,7 +224,6 @@ typedef struct
 	float fFriction;	// Sets the amount of friction that effects this entity and others.
 
 	PhysicsSolidTypes_t	iSolid;		// Sets the collision/solid type for the entity.
-	PhysicsSolidTypes_t damagetype;	// Type of damage this entity physically inflicts.
 
 	ServerEntity_t	*eIgnore;	// Tells the entity to ignore collisions with this entity.
 } PhysicsVariables_t;
