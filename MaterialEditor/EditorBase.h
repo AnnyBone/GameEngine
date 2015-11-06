@@ -64,8 +64,9 @@
 
 extern char cApplicationTitle[512];
 
-#define	EDITOR_TITLE	"Editor"
+#define	EDITOR_TITLE	"Katana Editor"
 #define	EDITOR_LOG		"editor"
+#define	EDITOR_VERSION	"v0.1"
 
 #define	PATH_16ICONS	"resource/16x16/"
 #define	PATH_32ICONS	"resource/32x32/"

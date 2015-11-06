@@ -40,7 +40,7 @@ bool CEditorApp::OnInit()
 
 	EngineInterface_Load();
 
-	sprintf(cApplicationTitle, EDITOR_TITLE" (%s)", engine->GetVersion());
+	sprintf(cApplicationTitle, EDITOR_TITLE" ("EDITOR_VERSION")");
 
 	wxImage::AddHandler(new wxPNGHandler);
 	bSplashScreen.LoadFile("resource/splash-editor.png", wxBITMAP_TYPE_PNG);

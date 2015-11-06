@@ -1,5 +1,5 @@
-#ifndef __COMMON__
-#define __COMMON__
+#ifndef COMMON_H
+#define COMMON_H
 
 #include "SharedFlags.h"
 
@@ -24,7 +24,7 @@ typedef struct sizebuf_s
 {
 	bool	allowoverflow;	// if false, do a Sys_Error
 	bool	overflowed;		// set to true if the buffer size failed
-	byte	*data;
+	uint8_t	*data;
 	int		maxsize;
 	int		cursize;
 } sizebuf_t;
@@ -166,4 +166,4 @@ extern "C" {
 }
 #endif
 
-#endif
+#endif	// COMMON_H

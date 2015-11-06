@@ -134,7 +134,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (OpenKatana)|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (Adamas)|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="server\EntityAnimated.cpp" />
+    <ClCompile Include="server\server_animated.cpp" />
     <ClCompile Include="server\monster_bot.c" />
     <ClCompile Include="server\openkatana\decoration_barrel.c" />
     <ClCompile Include="server\openkatana\item_health.c" />
@@ -165,7 +165,7 @@
     <ClCompile Include="server\openkatana\weapon_sidewinder.c" />
     <ClCompile Include="server\openkatana\weapon_trident.c" />
     <ClCompile Include="server\openkatana\weapon_zeus.c" />
-    <ClCompile Include="server\Entity.cpp" />
+    <ClCompile Include="server\server_entity.cpp" />
     <ClCompile Include="server\server_area.c" />
     <ClCompile Include="server\server_entity.c" />
     <ClCompile Include="server\server_item.c" />
@@ -185,7 +185,7 @@
     <ClInclude Include="..\Shared\shared_menu.h" />
     <ClInclude Include="game_main.h" />
     <ClInclude Include="game_resources.h" />
-    <ClInclude Include="server\Entity.h" />
+    <ClInclude Include="server\server_entity.h" />
     <ClInclude Include="server\openkatana\openkatana.h" />
     <ClInclude Include="server\server_gamemode.h" />
     <ClInclude Include="server\server_gib.c" />

@@ -384,34 +384,6 @@ void ED_ParseGlobals (char *data)
 
 //============================================================================
 
-char *ED_NewString (char *string)
-{
-	char	*cNew,*new_p;
-	int		i,l;
-
-	l = strlen(string) + 1;
-	cNew = (char*)Hunk_Alloc(l);
-	new_p = cNew;
-
-	for (i=0 ; i< l ; i++)
-	{
-		if (string[i] == '\\' && i < l-1)
-		{
-			i++;
-			if (string[i] == 'n')
-				*new_p++ = '\n';
-			else
-				*new_p++ = '\\';
-		}
-		else
-			*new_p++ = string[i];
-	}
-
-	return cNew;
-}
-
-void Server_ParseEntityField(char *cKey, char *cValue, ServerEntity_t *eEntity);
-
 /*	Parses an edict out of the given string, returning the new position
 	ed should be a properly initialized empty edict.
 	Used for initial level load and for savegames.
@@ -466,7 +438,7 @@ char *ED_ParseEdict(char *data, ServerEntity_t *ent)
 		if(keyname[0] == '_')
 			continue;
 
-		Server_ParseEntityField(keyname,com_token,ent);
+		Game->Server_ParseEntityField(keyname, com_token, ent);
 	}
 
 	if(!bInit)

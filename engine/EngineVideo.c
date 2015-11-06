@@ -899,6 +899,8 @@ void Video_PostFrame(void)
 #endif
 #endif
 
+	Draw_ResetCanvas();
+
 	Screen_DrawFPS();
 
 	if (cvVideoFinish.bValue)

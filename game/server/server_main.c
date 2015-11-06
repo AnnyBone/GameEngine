@@ -64,6 +64,7 @@ SpawnList_t SpawnList[] =
 	{ "area_rotate", Area_RotateSpawn },
 	{ "area_trigger", Area_TriggerSpawn },
 	{ "area_wall", Area_WallSpawn },
+	{ "area_kill", Area_KillSpawn },
 //	{ "area_playerspawn", Area_PlayerSpawn },
 
 	// Point Entities
@@ -91,9 +92,9 @@ SpawnList_t SpawnList[] =
 	{ "point_timedtrigger", Point_TimedTriggerSpawn },
 	{ "point_waypoint", Point_WaypointSpawn },
 	{ "point_explode", Point_ExplodeSpawn },
+	{ "point_decoration", Point_DecorationSpawn },
 
 #ifdef GAME_OPENKATANA
-	{ "point_decoration", Point_DecorationSpawn },
 	{ "decoration_barrel", Barrel_Spawn },
 
 	{ "item_health", Health_Spawn },

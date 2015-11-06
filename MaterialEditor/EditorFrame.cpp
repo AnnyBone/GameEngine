@@ -494,12 +494,12 @@ void CEditorFrame::OnAbout(wxCommandEvent &event)
 
 	wxAboutDialogInfo info;
 	info.AddDeveloper("Mark \"hogsy\" Sowden");
-	info.SetName("Editor");
+	info.SetName(EDITOR_TITLE);
 	info.SetCopyright("Copyright (C) 2011-2015 OldTimes Software");
-	info.SetDescription("Editor for the Katana engine.");
+	info.SetDescription("Editor for the Katana Engine.");
 	info.SetWebSite("www.oldtimes-software.com");
 	info.SetIcon(wxIcon(PATH_RESOURCES"icon-engine.png", wxBITMAP_TYPE_PNG_RESOURCE, 64, 64));
-	info.SetVersion(engine->GetVersion());
+	info.SetVersion(EDITOR_VERSION);
 	info.SetLicense(ccLicense);
 
 	wxAboutBox(info, this);

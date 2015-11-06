@@ -17,6 +17,7 @@
 	along with this program; if not, write to the Free Software
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
+
 #include "pr_comp.h"			// defs shared with qcc
 
 #include "shared_game.h"
@@ -43,9 +44,6 @@ void PR_Init (void);
 
 ServerEntity_t *ED_Alloc (void);
 void ED_Free(ServerEntity_t *ed);
-
-char	*ED_NewString (char *string);
-// returns a copy of the string allocated from the server's string heap
 
 void Edict_Print(ServerEntity_t *eEntity);
 void ED_Write(FILE *f, ServerEntity_t *ed);

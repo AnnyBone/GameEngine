@@ -19,11 +19,11 @@
     <ClInclude Include="server\server_gib.c">
       <Filter>Server</Filter>
     </ClInclude>
-    <ClInclude Include="server\Entity.h">
-      <Filter>New\Server</Filter>
-    </ClInclude>
     <ClInclude Include="game_main.h" />
     <ClInclude Include="game_resources.h" />
+    <ClInclude Include="server\server_entity.h">
+      <Filter>New\Server</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="New">
@@ -217,15 +217,15 @@
     <ClCompile Include="server\openkatana\decoration_barrel.c">
       <Filter>Server\Decay\Decoration</Filter>
     </ClCompile>
-    <ClCompile Include="server\Entity.cpp">
-      <Filter>New\Server</Filter>
-    </ClCompile>
-    <ClCompile Include="server\EntityAnimated.cpp">
-      <Filter>New\Server</Filter>
-    </ClCompile>
     <ClCompile Include="game_main.c" />
     <ClCompile Include="server\openkatana\item_health.c">
       <Filter>Server\Decay\Items</Filter>
+    </ClCompile>
+    <ClCompile Include="server\server_animated.cpp">
+      <Filter>New\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="server\server_entity.cpp">
+      <Filter>New\Server</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

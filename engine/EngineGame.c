@@ -464,8 +464,8 @@ void Server_CenterPrint(ServerEntity_t *ent, char *msg);	// See engine_server.
 
 void Game_Initialize(void)
 {
-	bool bGameLoaded = false;
-	ModuleImport_t Import;
+	bool			bGameLoaded = false;
+	ModuleImport_t	Import;
 
 	if(Game)
 		pModule_Unload(hGameInstance);
@@ -539,7 +539,7 @@ void Game_Initialize(void)
 	{
 		pModule_Unload(hGameInstance);
 
-		// Let the user know the module failed to load. ~hogsy
+		// Let the user know the module failed to load.
 		Sys_Error("Failed to load %s/%s."PLATFORM_CPU""pMODULE_EXTENSION"!\nCheck log for details.\n",com_gamedir,MODULE_GAME);
 	}
 }

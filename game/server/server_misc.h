@@ -38,6 +38,7 @@ void Area_RotateSpawn(ServerEntity_t *eArea);
 void Area_TriggerSpawn(ServerEntity_t *eArea);
 void Area_WallSpawn(ServerEntity_t *eArea);
 void Area_DetailSpawn(ServerEntity_t *eArea);
+void Area_KillSpawn(ServerEntity_t *area);
 
 void Point_AmbientSpawn(ServerEntity_t *eEntity);
 void Point_DecorationSpawn(ServerEntity_t *eDecoration);

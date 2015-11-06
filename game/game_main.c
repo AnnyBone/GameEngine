@@ -1,5 +1,21 @@
 /*	Copyright (C) 2011-2015 OldTimes Software
+
+	This program is free software; you can redistribute it and/or
+	modify it under the terms of the GNU General Public License
+	as published by the Free Software Foundation; either version 2
+	of the License, or (at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+	See the GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
+
 #include "game_main.h"
 
 /*
@@ -8,9 +24,12 @@
 
 #include "platform_module.h"
 
-#include "server_player.h"
-
+// Client
 #include "client_main.h"
+
+// Server
+#include "server_main.h"
+#include "server_player.h"
 
 GameExport_t	Export;	// Game exports.
 ModuleImport_t	Engine;	// Engine imports.
@@ -260,13 +279,14 @@ pMODULE_EXPORT GameExport_t *Game_Main(ModuleImport_t *Import)
 	Export.Client_ViewFrame = Client_ViewFrame;
 
 	// Server
-	Export.Server_Initialize = Server_Initialize;
-	Export.Server_StartFrame = Server_StartFrame;
-	Export.Server_SpawnEntity = Server_SpawnEntity;
-	Export.Server_EntityFrame = Server_EntityFrame;
-	Export.Server_KillClient = Server_KillClient;
-	Export.Server_SetSizeVector = Entity_SetSizeVector;
-	Export.Server_SpawnPlayer = Player_Spawn;
+	Export.Server_Initialize		= Server_Initialize;
+	Export.Server_StartFrame		= Server_StartFrame;
+	Export.Server_SpawnEntity		= Server_SpawnEntity;
+	Export.Server_EntityFrame		= Server_EntityFrame;
+	Export.Server_KillClient		= Server_KillClient;
+	Export.Server_SetSizeVector		= Entity_SetSizeVector;
+	Export.Server_ParseEntityField	= ServerEntity_ParseField;
+	Export.Server_SpawnPlayer		= Player_Spawn;
 
 	// Physics
 	Export.Physics_SetGravity = Physics_SetGravity;

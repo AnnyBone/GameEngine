@@ -18,8 +18,8 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef __SHAREDFLAGS__
-#define __SHAREDFLAGS__
+#ifndef SHARED_FLAGS_H
+#define SHARED_FLAGS_H
 
 #ifdef _MSC_VER
 #pragma warning(disable:4100)	// unreferenced formal parameter
@@ -59,12 +59,26 @@ enum
 	MSG_INIT		// Write to the init string
 };
 
+typedef enum
+{
+	EV_STRING,
+	EV_FLOAT,
+	EV_DOUBLE,
+	EV_VECTOR,
+	EV_VECTOR4,
+	ev_entity,
+	EV_INTEGER,
+	EV_BOOLEAN,
+
+	EV_NONE
+} DataType_t;
+
 #define CMDLINE_LENGTH	256
 
 #define	MAX_ENT_LEAFS	16
 
 #define	MAX_QPATH	128	// Max length of a quake game pathname
-#define	MAX_OSPATH	512	// Max length of a filesystem pathname
+#define	MAX_OSPATH	512	// Max length of a filesystem pathname TODO: Replace with platform library equivalent!
 
 /*	These have to be the same
 	as they are engine-side so
@@ -132,26 +146,26 @@ enum
 #define	FL_JUMPRELEASED		4096	// Entity has released jump.
 #define	FL_CROUCHING		8192	// Entity is crouching.
 
-#define	EF_BRIGHTFIELD		1
-#define	EF_MUZZLEFLASH		2
-#define	EF_BRIGHTLIGHT 		4
-#define	EF_DIMLIGHT 		8
-#define	EF_GLOW_RED			16
-#define EF_LIGHT_GREEN		64
-#define	EF_MOTION_ROTATE	128				// Client-side rotation
-#define EF_MOTION_FLOAT		256				// Adds a nice floating motion for the entity
-#define EF_GLOW_BLUE		512
-#define EF_GLOW_WHITE		1024
-#define	EF_PARTICLE_BLOOD	2048
-#define	EF_PARTICLE_SMOKE	8192			// Smoke trail.
-#define EF_FULLBRIGHT		4096
-#define	EF_GRENADE			16384			// leave a trail
-#define	EF_GIB				32768			// leave a trail
-#define	EF_TRACER			65536			// green split trail
-#define	EF_TRACER2			262144			// orange split trail + rotate
-#define	EF_TRACER3			524288			// purple trail
-#define	EF_INVISIBLE		1048576			// Entity is invisible
-#define EF_LIGHT_BLUE		2097152			// A constant blue dynamic light
-#define EF_LIGHT_RED		4194304			// A constant red dynamic light
+#define	EF_BRIGHTFIELD		(1 << 0)
+#define	EF_MUZZLEFLASH		(1 << 1)
+#define	EF_BRIGHTLIGHT 		(1 << 2)
+#define	EF_DIMLIGHT 		(1 << 3)
+#define	EF_GLOW_RED			(1 << 4)
+#define EF_LIGHT_GREEN		(1 << 5)
+#define	EF_MOTION_ROTATE	(1 << 6)	// Client-side rotation
+#define EF_MOTION_FLOAT		(1 << 7)	// Adds a nice floating motion for the entity
+#define EF_GLOW_BLUE		(1 << 8)	// Simple blue dlight glow.
+#define EF_GLOW_WHITE		(1 << 9)	// Simple white dlight glow.
+#define	EF_PARTICLE_BLOOD	(1 << 10)	// Blood particle trail.
+#define	EF_PARTICLE_SMOKE	(1 << 11)	// Smoke particle trail.
+#define EF_FULLBRIGHT		(1 << 12)
+#define	EF_GRENADE			(1 << 13)	// leave a trail.
+#define	EF_GIB				(1 << 14)	// leave a trail.
+#define	EF_TRACER			(1 << 15)	// green split trail.
+#define	EF_TRACER2			(1 << 16)	// orange split trail + rotate.
+#define	EF_TRACER3			(1 << 17)	// purple trail.
+#define	EF_INVISIBLE		(1 << 18)	// Entity is invisible.
+#define EF_LIGHT_BLUE		(1 << 19)	// A constant blue dynamic light.
+#define EF_LIGHT_RED		(1 << 20)	// A constant red dynamic light.
 
-#endif
+#endif	// SHARED_FLAGS_H

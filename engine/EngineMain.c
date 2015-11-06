@@ -43,10 +43,7 @@ char *Engine_GetMaterialPath(void)
 
 char *Engine_GetVersion(void)
 {
-	return va("%i.%i.%i",
-		ENGINE_VERSION_MAJOR,
-		ENGINE_VERSION_MINOR,
-		ENGINE_VERSION_BUILD);
+	return va("%i", ENGINE_VERSION_BUILD);
 }
 
 bool System_Main(int iArgumentCount,char *cArguments[], bool bEmbedded);

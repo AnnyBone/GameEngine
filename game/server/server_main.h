@@ -16,8 +16,8 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef __SERVERMAIN_H__
-#define __SERVERMAIN_H__
+#ifndef SERVER_MAIN_H
+#define SERVER_MAIN_H
 
 #include "game_main.h"
 
@@ -26,7 +26,7 @@
 
 // Base includes
 #ifdef __cplusplus
-#include "Entity.h"
+#include "server_entity.h"
 #endif
 
 // Legacy base includes
@@ -84,6 +84,8 @@ extern "C" {
 	bool Entity_IsTouching(ServerEntity_t *eEntity, ServerEntity_t *eOther);
 	bool Entity_DropToFloor(ServerEntity_t *eEntity);
 
+	void ServerEntity_ParseField(char *key, char *value, ServerEntity_t *entity);
+
 	void Entity_SetOrigin(ServerEntity_t *eEntity, MathVector3f_t vOrigin);
 	void Entity_SetAngles(ServerEntity_t *eEntity, MathVector3f_t vAngles);
 	void Entity_SetModel(ServerEntity_t *eEntity, char *cModelPath);
@@ -117,4 +119,4 @@ extern "C" {
 };
 #endif
 
-#endif
+#endif	// SERVER_MAIN_H

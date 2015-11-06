@@ -1,19 +1,34 @@
 /*	Copyright (C) 2011-2015 OldTimes Software
+
+	This program is free software; you can redistribute it and/or
+	modify it under the terms of the GNU General Public License
+	as published by the Free Software Foundation; either version 2
+	of the License, or (at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+	See the GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
+
 #include "server_monster.h"
+
+#include "server_player.h"
+#include "server_item.h"
+#include "server_weapon.h"
 
 /*
 	Base code for the AI. This contains various basic functions
 	that handle animation, movement and other small features
 	that are used for the various monsters that can be found
 	in both OpenKatana and future projects.
-*/
 
-#include "server_player.h"
-#include "server_item.h"
-#include "server_weapon.h"
-
-/*	TODO:
+	TODO:
 		- Move out player specific code
 		- Parse a document to find waypoints in the map
 		- Add in tick stuff, if an entity is trying to
@@ -55,7 +70,7 @@
 
 #define MONSTER_STEPSIZE	18
 
-// [28/6/2013] Global relationship table ~hogsy
+// Relationships
 MonsterRelationship_t MonsterRelationship[]=
 {
 #ifdef GAME_OPENKATANA

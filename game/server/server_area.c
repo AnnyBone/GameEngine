@@ -1165,3 +1165,23 @@ void Area_PushSpawn(ServerEntity_t *eArea)
 
 	eArea->v.model = 0;
 }
+
+/*
+	area_kill
+	Kills anything that enters the area.
+*/
+
+void Area_KillTouch(ServerEntity_t *area, ServerEntity_t *other)
+{
+	// Damage it, until it gibs and gets removed.
+	Entity_Damage(other, area, other->v.iHealth, DAMAGE_TYPE_NORMAL);
+}
+
+void Area_KillSpawn(ServerEntity_t *area)
+{
+	area->Physics.iSolid = SOLID_TRIGGER;
+
+	Entity_SetModel(area, area->v.model);
+	Entity_SetOrigin(area, area->v.origin);
+	Entity_SetTouchFunction(area, Area_KillTouch);
+}

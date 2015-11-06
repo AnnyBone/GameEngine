@@ -19,6 +19,179 @@
 #include "server_main.h"
 
 /*
+	Entity Spawning
+*/
+
+char *Entity_AllocateString(char *string)
+{
+	char	*newstring, *new_p;
+	int		i, l;
+
+	l = strlen(string) + 1;
+	newstring = (char*)Hunk_Alloc(l);
+	new_p = newstring;
+
+	for (i = 0; i< l; i++)
+	{
+		if (string[i] == '\\' && i < l - 1)
+		{
+			i++;
+			if (string[i] == 'n')
+				*new_p++ = '\n';
+			else
+				*new_p++ = '\\';
+		}
+		else
+			*new_p++ = string[i];
+	}
+
+	return newstring;
+}
+
+typedef struct
+{
+	const char *varname;
+
+	int	offset;
+
+	DataType_t	datatype;
+
+	int	flags;
+} ServerEntityField_t;
+
+ServerEntityField_t	entity_fields[] =
+{
+	{ "classname", ENTITY_FIELD(v.cClassname), EV_STRING },
+	{ "name", ENTITY_FIELD(v.cName), EV_STRING },
+	{ "model", ENTITY_FIELD(v.model), EV_STRING },
+	{ "targetname", ENTITY_FIELD(v.targetname), EV_STRING },
+	{ "noise", ENTITY_FIELD(v.noise), EV_STRING },
+	{ "message", ENTITY_FIELD(v.message), EV_STRING },
+	{ "origin", ENTITY_FIELD(v.origin), EV_VECTOR },
+	{ "angles", ENTITY_FIELD(v.angles), EV_VECTOR },
+	{ "light", ENTITY_FIELD(v.vLight), EV_VECTOR4 },
+	{ "health", ENTITY_FIELD(v.iHealth), EV_INTEGER },
+	{ "spawnflags", ENTITY_FIELD(v.spawnflags), EV_INTEGER },
+	{ "bTakeDamage", ENTITY_FIELD(v.bTakeDamage), EV_BOOLEAN },
+	{ "takedamage", ENTITY_FIELD(v.bTakeDamage), EV_BOOLEAN },
+	{ "alpha", ENTITY_FIELD(alpha), EV_INTEGER },
+
+	// Model properties
+	{ "model_skin", ENTITY_FIELD(Model.iSkin), EV_INTEGER },
+	{ "scale", ENTITY_FIELD(Model.fScale), EV_FLOAT },
+
+	// Physical properties
+	{ "physics_solid", ENTITY_FIELD(Physics.iSolid), EV_INTEGER },
+	{ "physics_mass", ENTITY_FIELD(Physics.fMass), EV_FLOAT },
+	{ "physics_gravity", ENTITY_FIELD(Physics.fGravity), EV_FLOAT },
+
+	// Local (move these at some point)
+	{ "sound", ENTITY_FIELD(local.sound), EV_STRING },
+	{ "soundstart", ENTITY_FIELD(local.cSoundStart), EV_STRING },
+	{ "soundstop", ENTITY_FIELD(local.cSoundStop), EV_STRING },
+	{ "soundmoving", ENTITY_FIELD(local.cSoundMoving), EV_STRING },
+	{ "soundreturn", ENTITY_FIELD(local.cSoundReturn), EV_STRING },
+	{ "target1", ENTITY_FIELD(local.cTarget1), EV_STRING },
+	{ "target2", ENTITY_FIELD(local.cTarget2), EV_STRING },
+	{ "speed", ENTITY_FIELD(local.speed), EV_FLOAT },
+	{ "delay", ENTITY_FIELD(local.delay), EV_FLOAT },
+	{ "lip", ENTITY_FIELD(local.lip), EV_FLOAT },
+	{ "wait", ENTITY_FIELD(local.dWait), EV_DOUBLE },
+	{ "damage", ENTITY_FIELD(local.iDamage), EV_INTEGER },
+	{ "volume", ENTITY_FIELD(local.volume), EV_INTEGER },
+	{ "style", ENTITY_FIELD(local.style), EV_INTEGER },
+	{ "count", ENTITY_FIELD(local.count), EV_INTEGER },
+	{ "pTeam", ENTITY_FIELD(local.pTeam), EV_INTEGER },
+	{ "attack_finished", ENTITY_FIELD(local.dAttackFinished), EV_DOUBLE },
+
+	// hacks
+	{ "angle", ENTITY_FIELD(v.angles), EV_VECTOR, FL_ANGLEHACK },
+
+	// Ignore these global fields.
+	{ "wad", 0, EV_NONE },
+	{ "ambient", 0, EV_NONE },
+	{ "sky", 0, EV_NONE },
+	{ "cloud", 0, EV_NONE },
+	{ "scrollspeed", 0, EV_NONE },
+	{ "mapversion", 0, EV_NONE },
+
+	{ 0 }
+};
+
+/*	Automatically called by the engine during entity parsing.
+*/
+void ServerEntity_ParseField(char *key, char *value, ServerEntity_t *entity)
+{
+	ServerEntityField_t *field;
+
+	for (field = entity_fields; field->varname; field++)
+	{
+		if (!strncmp(field->varname, key, sizeof(field->varname)))
+		{
+			switch (field->datatype)
+			{
+			case EV_STRING:
+				*(char**)((uint8_t*)entity + field->offset) = Entity_AllocateString(value);
+				break;
+			case EV_VECTOR:
+				if (field->flags & FL_ANGLEHACK)
+				{
+					((float*)((uint8_t*)entity + field->offset))[0] = 0;
+					((float*)((uint8_t*)entity + field->offset))[1] = strtof(value, NULL);
+					((float*)((uint8_t*)entity + field->offset))[2] = 0;
+				}
+				else
+				{
+					MathVector3f_t vector;
+					Math_VectorSet(0, vector);
+					if (sscanf(value, "%f %f %f", &vector[0], &vector[1], &vector[2]) < 3)
+						Engine.Con_Warning("Field did not return expected number of arguments! (%s)\n", value);
+					((float*)((uint8_t*)entity + field->offset))[0] = vector[0];
+					((float*)((uint8_t*)entity + field->offset))[1] = vector[1];
+					((float*)((uint8_t*)entity + field->offset))[2] = vector[2];
+				}
+				break;
+			case EV_VECTOR4:
+				{
+					MathVector4f_t vector;
+					Math_VectorSet(0, vector);
+					if (sscanf(value, "%f %f %f %f", &vector[0], &vector[1], &vector[2], &vector[3]) < 4)
+						Engine.Con_Warning("Field did not return expected number of arguments! (%s)\n", value);
+					((float*)((uint8_t*)entity + field->offset))[0] = vector[0];
+					((float*)((uint8_t*)entity + field->offset))[1] = vector[1];
+					((float*)((uint8_t*)entity + field->offset))[2] = vector[2];
+					((float*)((uint8_t*)entity + field->offset))[3] = vector[3];
+				}
+				break;
+			case EV_FLOAT:
+				*(float*)((uint8_t*)entity + field->offset) = strtof(value, NULL);
+				break;
+			case EV_DOUBLE:
+				*(double*)((uint8_t*)entity + field->offset) = strtod(value, NULL);
+				break;
+			case EV_BOOLEAN:
+				if (!strcmp(value, "true"))
+					value = "1";
+				else if (!strcmp(value, "false"))
+					value = "0";
+				// Booleans are handled in the same way as integers, so don't break here!
+			case EV_INTEGER:
+				*(int*)((uint8_t*)entity + field->offset) = atoi(value);
+				break;
+			case EV_NONE:
+				// Just ignore anything that has none set.
+				break;
+			default:
+				Engine.Con_Warning("Unknown entity field type! (%i)\n", field->datatype);
+			}
+			return;
+		}
+	}
+
+	Engine.Con_Warning("Invalid field! (%s)\n", key);
+}
+
+/*
 	General Entity Management
 */
 

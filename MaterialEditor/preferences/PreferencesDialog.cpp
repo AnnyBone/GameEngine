@@ -105,7 +105,7 @@ CPreferencesDialog::CPreferencesDialog(wxWindow *wParent)
 					VideoWaterBox->Add(SubSliderBox, 0, wxALL, 5);
 				}
 
-				VideoWaterBox->Add(new wxCheckBox(VideoPanel, wxID_ANY, "Sample lightmap"), 0, wxALL, 5);
+				VideoWaterBox->Add(new wxCheckBox(VideoPanel, wxID_ANY, "Vertex lighting"), 0, wxALL, 5);
 				VideoWaterBox->Add(new wxCheckBox(VideoPanel, wxID_ANY, "Vertex warping"), 0, wxALL, 5);
 
 				VideoListLeft->Add(VideoWaterBox, 1, wxEXPAND | wxALL, 5);

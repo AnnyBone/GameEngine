@@ -223,7 +223,8 @@ typedef struct
 	float fGravity;		// Sets the gravity which is enforced on the entity.
 	float fFriction;	// Sets the amount of friction that effects this entity and others.
 
-	PhysicsSolidTypes_t	iSolid;	// Sets the collision/solid type for the entity.
+	PhysicsSolidTypes_t	iSolid;		// Sets the collision/solid type for the entity.
+	PhysicsSolidTypes_t damagetype;	// Type of damage this entity physically inflicts.
 
 	ServerEntity_t	*eIgnore;	// Tells the entity to ignore collisions with this entity.
 } PhysicsVariables_t;
@@ -324,7 +325,6 @@ typedef struct
 typedef struct
 {
 	// TODO: Move all mapping parameters to its own struct.
-
 	char		*sound;
 	float		speed;
 	
@@ -634,11 +634,12 @@ typedef struct
 
 	void(*Server_Initialize)(void);																	// Initializes the server.
 	void(*Server_EntityFrame)(ServerEntity_t *eEntity);
-	void(*Server_KillClient)(ServerEntity_t *eClient);														// Tells the specified client to die.
-	void(*Server_SetSizeVector)(ServerEntity_t *eEntity, MathVector3f_t vMin, MathVector3f_t vMax);				// Set the size of an entity by vector.
-	void(*Server_SpawnPlayer)(ServerEntity_t *ePlayer);													// Spawns the player (SERVER_PUTCLIENTINSERVER).
+	void(*Server_KillClient)(ServerEntity_t *eClient);												// Tells the specified client to die.
+	void(*Server_SetSizeVector)(ServerEntity_t *eEntity, MathVector3f_t vMin, MathVector3f_t vMax);	// Set the size of an entity by vector.
+	void(*Server_SpawnPlayer)(ServerEntity_t *ePlayer);												// Spawns the player (SERVER_PUTCLIENTINSERVER).
 	void(*Server_StartFrame)(void);																	// Called at the start of each physics frame.
-	bool(*Server_SpawnEntity)(ServerEntity_t *ent);														// Puts a specific entity into the server.
+	void(*Server_ParseEntityField)(char *key, char *value, ServerEntity_t *entity);					// Parse the given field and value into an entities struct.
+	bool(*Server_SpawnEntity)(ServerEntity_t *ent);													// Puts a specific entity into the server.
 
 	void(*Physics_SetGravity)(ServerEntity_t *eEntity);			// Sets the current gravity for the given entity.
 	void(*Physics_CheckWaterTransition)(ServerEntity_t *eEntity);

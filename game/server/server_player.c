@@ -16,17 +16,18 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#include "server_main.h"
+
 #include "server_player.h"
+#include "server_vehicle.h"
+#include "server_weapon.h"
+#include "server_item.h"
 
 /*
 	Code specific towards the player. This includes code for
 	spawning, jumping, animating and everything else except
 	for physics.
 */
-
-#include "server_vehicle.h"
-#include "server_weapon.h"
-#include "server_item.h"
 
 #define	PLAYER_MAX_HEALTH	cvServerMaxHealth.iValue
 #define	PLAYER_MIN_HEALTH	-20

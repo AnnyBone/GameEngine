@@ -169,7 +169,6 @@ Weapon_t *Weapon_GetCurrentWeapon(ServerEntity_t *eEntity)
 		if(eEntity->v.iActiveWeapon == wCurrentWeapon->iItem)
 			return wCurrentWeapon;
 
-	// [20/5/2013] Changed to WEAPON_NONE ~hogsy
 	return Weapon_GetWeapon(0);
 }
 
@@ -187,7 +186,6 @@ Weapon_t *Weapon_GetWeapon(int iWeaponID)
 void Weapon_Precache(void)
 {
 #ifdef OPENKATANA
-	// [11/5/2013] Model precaches ~eukos
 	Server_PrecacheModel(DAIKATANA_MODEL_VIEW);
 	Server_PrecacheModel("models/weapons/v_ionblaster.md2");
 	Server_PrecacheModel("models/weapons/v_c4.md2");
@@ -449,12 +447,10 @@ void Weapon_BulletProjectile(ServerEntity_t *eEntity,float fSpread,int iDamage,v
 				Entity_SetOrigin(eSmoke,tTrace.endpos);
 
 				PHYSICS_SOUND_RICOCHET(cSound);
-
 				Sound(eSmoke,CHAN_BODY,cSound,255,ATTN_NORM);
 			}
 
 			PARTICLE_SMOKE(cSmoke);
-
 			Engine.Particle(tTrace.endpos,g_mvOrigin3f,15,cSmoke,15);
 		}
 	}
@@ -497,7 +493,7 @@ void Weapon_UpdateCurrentAmmo(Weapon_t *wWeapon, ServerEntity_t *eEntity)
 		Engine.Con_Warning("Failed to set primary ammo! (%i)\n", wWeapon->iPrimaryType);
 
 		eEntity->v.iPrimaryAmmo = 0;
-		}
+	}
 
 	switch (wWeapon->iSecondaryType)
 	{
@@ -621,8 +617,7 @@ void Weapon_ResetAnimation(ServerEntity_t *ent)
 		ent->v.iWeaponFrame					=
 		ent->local.iWeaponAnimationCurrent	= 0;
 
-	ent->local.iWeaponAnimationEnd = 0;
-
+	ent->local.iWeaponAnimationEnd	= 0;
 	ent->local.fWeaponAnimationTime = 0;
 }
 
