@@ -18,8 +18,8 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef __SHAREDENGINE__
-#define __SHAREDENGINE__
+#ifndef SHARED_ENGINE_H
+#define SHARED_ENGINE_H
 
 #include "platform.h"
 

@@ -18,22 +18,38 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-class MenuPanel
+#include "EngineBase.h"
+
+#include "EngineVideo.h"
+#include "EngineVideoShader.h"
+
+SHADER_REGISTER("BLOOM");
+
+namespace video
 {
-public:
-	MenuPanel();
-protected:
-private:
-	int x, y;			// Position coordinates.
+	namespace shaders
+	{
 
-	int width, height;
-};
+		class CBaseShader : public CVideoShader
+		{
+		public:
+			CBaseShader(VideoShaderType_t type);
+		protected:
+		private:
+			bool	alpha_test;
+			float	alpha_clamp;
+		};
 
-MenuPanel::MenuPanel()
+	}
+}
+
+// DECLARE_SHADER
+
+using namespace video::shaders;
+
+CBaseShader::CBaseShader(VideoShaderType_t type)
+	: CVideoShader(type)
 {
-	x = 0;
-	y = 0;
-
-	width = 128;
-	height = 128;
+	alpha_test	= false;
+	alpha_clamp	= 0.5f;
 }

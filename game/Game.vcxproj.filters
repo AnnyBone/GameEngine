@@ -208,9 +208,6 @@
     <ClCompile Include="client\client_view.c">
       <Filter>Client</Filter>
     </ClCompile>
-    <ClCompile Include="server\server_entity.c">
-      <Filter>Server</Filter>
-    </ClCompile>
     <ClCompile Include="server\openkatana\monster_cambot.c">
       <Filter>Server\Decay\NPC\Monsters</Filter>
     </ClCompile>
@@ -226,6 +223,9 @@
     </ClCompile>
     <ClCompile Include="server\server_entity.cpp">
       <Filter>New\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="server\server_ent.c">
+      <Filter>Server</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

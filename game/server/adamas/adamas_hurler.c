@@ -53,8 +53,6 @@ void Hurler_Spawn(ServerEntity_t *eHurler)
 
 void Hurler_Think(ServerEntity_t *eHurler)
 {
-	ServerEntity_t *eTarget;
-
 	switch(eHurler->Monster.iThink)
 	{
 	case THINK_IDLE:
@@ -86,7 +84,8 @@ void Hurler_Think(ServerEntity_t *eHurler)
 			if(!eHurler->Monster.eTarget)
 				return;
 
-			if(Monster_SetEnemy(eHurler))
+			eHurler->Monster.eEnemy = Monster_GetEnemy(eHurler);
+			if (eHurler->Monster.eEnemy)
 				Monster_SetThink(eHurler,THINK_PURSUING);
 		}
 		break;

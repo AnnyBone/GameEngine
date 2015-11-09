@@ -497,6 +497,10 @@ void Game_Initialize(void)
 	Import.WriteEntity = Game_WriteEntity;
 	Import.SetMessageEntity = Game_SetMessageEntity;
 
+	// Hunk
+	Import.Hunk_Alloc			= Hunk_Alloc;
+	Import.Hunk_AllocateName	= Hunk_AllocName;
+
 	// Client
 	Import.Client_AllocateDlight = Client_AllocDlight;
 	Import.Client_AllocateParticle = Particle_Allocate;

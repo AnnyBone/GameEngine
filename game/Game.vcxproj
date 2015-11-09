@@ -100,7 +100,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <AdditionalIncludeDirectories>.;./server;./client;..\platform\include;../shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_AFX_SECURE_NO_WARNINGS;_ATL_SECURE_NO_WARNINGS;GAME_OPENKATANA;OPENKATANA;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_AFX_SECURE_NO_WARNINGS;_ATL_SECURE_NO_WARNINGS;GAME_ADAMAS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <WholeProgramOptimization>false</WholeProgramOptimization>
@@ -111,7 +111,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <OutputFile>$(KSDK_PROJECTPATH)\game.x86.dll</OutputFile>
+      <OutputFile>..\..\adamas\game.x86.dll</OutputFile>
       <AdditionalLibraryDirectories>..\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>platform.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Windows</SubSystem>
@@ -128,46 +128,104 @@
     </ClCompile>
     <ClCompile Include="server\adamas\adamas_hurler.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (OpenKatana)|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (Adamas)|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (Adamas)|Win32'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="server\adamas\adamas_player.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (OpenKatana)|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (Adamas)|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (Adamas)|Win32'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="server\server_animated.cpp" />
     <ClCompile Include="server\monster_bot.c" />
-    <ClCompile Include="server\openkatana\decoration_barrel.c" />
-    <ClCompile Include="server\openkatana\item_health.c" />
-    <ClCompile Include="server\openkatana\mode_ctf.c" />
-    <ClCompile Include="server\openkatana\mode_deathmatch.c" />
-    <ClCompile Include="server\openkatana\mode_vektar.c" />
-    <ClCompile Include="server\openkatana\monster_cambot.c" />
-    <ClCompile Include="server\openkatana\monster_inmater.c" />
-    <ClCompile Include="server\openkatana\monster_lasergat.c" />
-    <ClCompile Include="server\openkatana\monster_prisoner.c" />
-    <ClCompile Include="server\openkatana\weapon_axe.c" />
-    <ClCompile Include="server\openkatana\weapon_ballista.c" />
-    <ClCompile Include="server\openkatana\weapon_barrier.c" />
-    <ClCompile Include="server\openkatana\weapon_c4vizatergo.c" />
-    <ClCompile Include="server\openkatana\weapon_crossbow.c" />
-    <ClCompile Include="server\openkatana\weapon_daikatana.c" />
-    <ClCompile Include="server\openkatana\weapon_discus.c" />
-    <ClCompile Include="server\openkatana\weapon_glock.c" />
-    <ClCompile Include="server\openkatana\weapon_greekfire.c" />
-    <ClCompile Include="server\openkatana\weapon_hermes.c" />
-    <ClCompile Include="server\openkatana\weapon_ionblaster.c" />
-    <ClCompile Include="server\openkatana\weapon_ionrifle.c" />
-    <ClCompile Include="server\openkatana\weapon_kineticore.c" />
-    <ClCompile Include="server\openkatana\weapon_midas.c" />
-    <ClCompile Include="server\openkatana\weapon_pulserifle.c" />
-    <ClCompile Include="server\openkatana\weapon_shockwave.c" />
-    <ClCompile Include="server\openkatana\weapon_shotcycler6.c" />
-    <ClCompile Include="server\openkatana\weapon_sidewinder.c" />
-    <ClCompile Include="server\openkatana\weapon_trident.c" />
-    <ClCompile Include="server\openkatana\weapon_zeus.c" />
+    <ClCompile Include="server\openkatana\decoration_barrel.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (Adamas)|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="server\openkatana\item_health.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (Adamas)|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="server\openkatana\mode_ctf.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (Adamas)|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="server\openkatana\mode_deathmatch.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (Adamas)|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="server\openkatana\mode_vektar.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (Adamas)|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="server\openkatana\monster_cambot.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (Adamas)|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="server\openkatana\monster_inmater.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (Adamas)|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="server\openkatana\monster_lasergat.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (Adamas)|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="server\openkatana\monster_prisoner.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (Adamas)|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="server\openkatana\weapon_axe.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (Adamas)|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="server\openkatana\weapon_ballista.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (Adamas)|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="server\openkatana\weapon_barrier.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (Adamas)|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="server\openkatana\weapon_c4vizatergo.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (Adamas)|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="server\openkatana\weapon_crossbow.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (Adamas)|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="server\openkatana\weapon_daikatana.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (Adamas)|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="server\openkatana\weapon_discus.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (Adamas)|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="server\openkatana\weapon_glock.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (Adamas)|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="server\openkatana\weapon_greekfire.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (Adamas)|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="server\openkatana\weapon_hermes.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (Adamas)|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="server\openkatana\weapon_ionblaster.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (Adamas)|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="server\openkatana\weapon_ionrifle.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (Adamas)|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="server\openkatana\weapon_kineticore.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (Adamas)|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="server\openkatana\weapon_midas.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (Adamas)|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="server\openkatana\weapon_pulserifle.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (Adamas)|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="server\openkatana\weapon_shockwave.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (Adamas)|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="server\openkatana\weapon_shotcycler6.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (Adamas)|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="server\openkatana\weapon_sidewinder.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (Adamas)|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="server\openkatana\weapon_trident.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (Adamas)|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="server\openkatana\weapon_zeus.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (Adamas)|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="server\server_entity.cpp" />
     <ClCompile Include="server\server_area.c" />
-    <ClCompile Include="server\server_entity.c" />
+    <ClCompile Include="server\server_ent.c" />
     <ClCompile Include="server\server_item.c" />
     <ClCompile Include="server\server_main.c" />
     <ClCompile Include="server\server_misc.c" />
@@ -186,7 +244,9 @@
     <ClInclude Include="game_main.h" />
     <ClInclude Include="game_resources.h" />
     <ClInclude Include="server\server_entity.h" />
-    <ClInclude Include="server\openkatana\openkatana.h" />
+    <ClInclude Include="server\openkatana\openkatana.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (Adamas)|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="server\server_gamemode.h" />
     <ClInclude Include="server\server_gib.c" />
   </ItemGroup>

@@ -63,7 +63,6 @@ Item_t Items[] =
 	{	ITEM_REDFLAG,		"Red Flag",			"models/ctf/flag_red.md2",		"items/redflagpickup.wav",						false	},
 	{	ITEM_BLUEFLAG,		"Blue Flag",		"models/ctf/flag_blue.md2",		"items/blueflagpickup.wav",						false	},
 #elif GAME_ADAMAS
-	{	WEAPON_BLAZER,		"Blazer",			"models/weapon.bsp",		"items/weaponpickup.wav",	false	},
 	{	ITEM_LIFE,			"Extra Life",		"models/life.bsp",			"items/weaponpickup.wav",	false	},
 #endif
 
@@ -312,7 +311,7 @@ void Item_Touch(ServerEntity_t *eItem,ServerEntity_t *eOther)
 		break;
 #elif GAME_ADAMAS
 	case ITEM_LIFE:
-		Server.iLives++;
+		//Server.iLives++;
 		break;
 #endif
 	default:

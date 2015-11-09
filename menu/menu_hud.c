@@ -16,6 +16,7 @@ void HUD_Draw(void)
 	Engine.Client_SetMenuCanvas(CANVAS_DEFAULT);
 
 #ifdef GAME_ADAMAS
+#if 0
 	Engine.DrawFill(0,iMenuHeight-64,iMenuWidth,64,0,0,0,0.6f);
 
 	if(cvShowHealth.bValue)
@@ -56,6 +57,7 @@ void HUD_Draw(void)
 	Engine.DrawString(iMenuWidth-128,iMenuHeight-16,va("SCORE: %i",Engine.Client_GetStat(STAT_FRAGS)));
 #if 0
 	Engine.DrawString(iMenuWidth-128,iMenuHeight-32,va("LIVES: %i",Engine.Client_GetStat(STAT_LIVES)));
+#endif
 #endif
 #elif GAME_OPENKATANA
 	{

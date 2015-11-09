@@ -307,7 +307,7 @@
     <ClCompile Include="EngineVideoShader.cpp">
       <Filter>Client\Video</Filter>
     </ClCompile>
-    <ClCompile Include="ShaderBase.cpp">
+    <ClCompile Include="shader_base.cpp">
       <Filter>Client\Video\Shaders\Base</Filter>
     </ClCompile>
   </ItemGroup>

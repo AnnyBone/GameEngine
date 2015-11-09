@@ -145,15 +145,6 @@ Weapon_t Weapons[] =
 	},
 
 #elif GAME_ADAMAS
-	{
-		WEAPON_BLAZER,
-		BLAZER_MODEL_VIEW,
-		Blazer_Deploy,
-
-		// Primary
-		AM_BULLET,
-		Blazer_PrimaryAttack
-	},
 #endif
 
 	{	0,	NULL,	NULL,	AM_NONE, NULL,	AM_NONE,	NULL	}

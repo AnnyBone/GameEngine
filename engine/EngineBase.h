@@ -46,7 +46,7 @@
 */
 #define ENGINE_VERSION_MAJOR	0		// TODO: Isn't relevent for engine ver anymore!
 #define ENGINE_VERSION_MINOR	3		// TODO: Isn't relevent for engine ver anymore!
-#define ENGINE_VERSION_BUILD	1017	// 6/10/2015
+#define ENGINE_VERSION_BUILD	1019	// 9/10/2015
 
 #define	ENGINE_LOG	"engine"
 

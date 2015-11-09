@@ -187,9 +187,6 @@ void Server_Spawn(ServerEntity_t *seEntity)
 	Server.bRoundStarted =
 	Server.bPlayersSpawned = false;
 	Server.iMonsters = 0;
-#ifdef GAME_ADAMAS
-	Server.iLives = 2;
-#endif
 
 	// Set these to their defaults.
 	bIsDeathmatch = false;

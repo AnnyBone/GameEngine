@@ -28,7 +28,7 @@ char *Entity_AllocateString(char *string)
 	int		i, l;
 
 	l = strlen(string) + 1;
-	newstring = (char*)Hunk_Alloc(l);
+	newstring = (char*)Engine.Hunk_Alloc(l);
 	new_p = newstring;
 
 	for (i = 0; i< l; i++)

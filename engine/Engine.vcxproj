@@ -693,7 +693,7 @@
     <ClCompile Include="EngineAudioDirectSound.c" />
     <ClCompile Include="EngineServer.c" />
     <ClCompile Include="EngineServerUser.c" />
-    <ClCompile Include="ShaderBase.cpp" />
+    <ClCompile Include="shader_base.cpp" />
     <ClCompile Include="sys_win.c" />
     <ClCompile Include="zone.c" />
   </ItemGroup>

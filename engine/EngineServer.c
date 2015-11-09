@@ -1173,13 +1173,13 @@ void SV_SpawnServer(char *server)
 
 void Server_ParseGlobalField(char *cKey, char *cValue)
 {
+#if 0	// todo
 	EntityField_t	*eField;
 
 	for (eField = GlobalFields; eField->cFieldName; eField++)
 	{
 		if (!Q_strcasecmp((char*)eField->cFieldName, cKey))
 		{
-#if 0	// todo
 			switch (eField->eDataType)
 			{
 			case EV_STRING:
@@ -1229,9 +1229,9 @@ void Server_ParseGlobalField(char *cKey, char *cValue)
 				Con_Warning("Unknown entity field type! (%i)\n", (int)eField->eDataType);
 			}
 			return;
-#endif
 		}
 	}
+#endif
 
 	Con_Warning("Invalid field! (%s)\n", cKey);
 }

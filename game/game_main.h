@@ -96,7 +96,7 @@ extern GameClient_t Client;
 */
 
 #define	WEAPON_NONE			-1
-#ifdef OPENKATANA
+#ifdef GAME_OPENKATANA
 // Episode One
 #define WEAPON_LASERS		1		// NPC weapon
 #define WEAPON_KATANA		2		// Simple Katana / Melee
@@ -124,6 +124,8 @@ extern GameClient_t Client;
 #define	WEAPON_GLOCK		50		// Standard pistol
 // Universal
 #define	WEAPON_IONRIFLE		70		// Talon Brave's weapon
+#elif GAME_ADAMAS
+#	define ITEM_LIFE	50
 #endif
 #define ITEM_FLAG			1000	// Neutral flag for CTF
 #define	ITEM_REDFLAG		1001	// Red flag for CTF

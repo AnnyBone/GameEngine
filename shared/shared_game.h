@@ -587,6 +587,10 @@ typedef struct
 
 	Material_t*(*LoadMaterial)(const char *cPath);
 
+	// Memory
+	void*(*Hunk_AllocateName)(int size, char *name);
+	void*(*Hunk_Alloc)(int size);
+
 	// Draw Functions
 	void(*DrawString)(int x, int y, char *msg);
 	void(*DrawFill)(int x, int y, int w, int h, float r, float g, float b, float alpha);
