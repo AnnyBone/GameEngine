@@ -19,11 +19,11 @@
 #ifndef SERVER_ENTITY_H
 #define	SERVER_ENTITY_H
 
-class CServerEntity
+class ServerEntity
 {
 public:
-	CServerEntity();
-	~CServerEntity();
+	ServerEntity();
+	~ServerEntity();
 
 	void SetOrigin(MathVector3f_t origin);
 	void SetAngles(MathVector3f_t angles);
@@ -41,19 +41,30 @@ public:
 	void RemoveFlags(int flags);
 	void ClearFlags();
 
-	void Spawn();
+	virtual void Spawn();
+	virtual void Precache() {};
+
+	bool CanDamage(ServerEntity *target, DamageType_t damagetype);
+	void Damage(ServerEntity *inflictor, int damage, DamageType_t damagetype);
+	virtual void Killed(ServerEntity *inflictor)	{};
+	virtual void Damaged(ServerEntity *inflictor) {};
+
+	// Physics
+	bool IsTouching(ServerEntity *other);
+	bool DropToFloor();
+
 	void Link(bool touchtriggers);
 	void Unlink();
 	void Free();
 
 	/*	Returns the current entity reference for this particular entity.
 	*/
-	ServerEntity_t *GetEdict()
+	ServerEntity_t *GetInstance()
 	{
 		return instance;
 	};
 
-	CServerEntity *owner;
+	ServerEntity *owner;
 
 private:
 	ServerEntity_t *instance;

@@ -18,7 +18,7 @@
 
 #include "server_main.h"
 
-class CServerEntityAnimated : public CServerEntity
+class ServerEntityAnimated : public ServerEntity
 {
 public:
 private:

@@ -21,8 +21,6 @@
 #ifndef __ENGINEMATERIALEDITOR__
 #define	__ENGINEMATERIALEDITOR__
 
-extern bool bMaterialEditorInitialized;
-
 void MaterialEditor_Initialize(void);
 
 #endif

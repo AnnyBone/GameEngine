@@ -3,7 +3,7 @@
 #ifndef __SERVERWAYPOINT_H__
 #define __SERVERWAYPOINT_H__
 
-#define	DEBUG_WAYPOINT
+//#define	DEBUG_WAYPOINT
 
 typedef enum
 {

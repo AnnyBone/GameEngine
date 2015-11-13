@@ -271,8 +271,6 @@ PUSHMOVE
 ===============================================================================
 */
 
-
-
 void SV_PushMove (ServerEntity_t *pusher, float movetime)
 {
 	int					i, e;
@@ -685,7 +683,7 @@ int SV_TryUnstick (ServerEntity_t *ent, MathVector3f_t oldvel)
 
 	for (i=0 ; i<8 ; i++)
 	{
-// try pushing a little in an axial direction
+		// try pushing a little in an axial direction
 		switch (i)
 		{
 			case 0:

@@ -126,7 +126,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (OpenKatana)|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (Adamas)|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="server\adamas\adamas_hurler.c">
+    <ClCompile Include="server\adamas\monster_hurler.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (OpenKatana)|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (Adamas)|Win32'">false</ExcludedFromBuild>
     </ClCompile>
@@ -134,6 +134,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (OpenKatana)|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (Adamas)|Win32'">false</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="server\adamas\monster_roller.c" />
     <ClCompile Include="server\server_animated.cpp" />
     <ClCompile Include="server\monster_bot.c" />
     <ClCompile Include="server\openkatana\decoration_barrel.c">
@@ -243,6 +244,7 @@
     <ClInclude Include="..\Shared\shared_menu.h" />
     <ClInclude Include="game_main.h" />
     <ClInclude Include="game_resources.h" />
+    <ClInclude Include="server\adamas\adamas.h" />
     <ClInclude Include="server\server_entity.h" />
     <ClInclude Include="server\openkatana\openkatana.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (Adamas)|Win32'">true</ExcludedFromBuild>

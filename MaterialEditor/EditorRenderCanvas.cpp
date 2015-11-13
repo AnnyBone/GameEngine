@@ -7,52 +7,54 @@
 	Render Canvas
 */
 
-wxBEGIN_EVENT_TABLE(CEditorRenderCanvas, wxGLCanvas)
-EVT_PAINT(CEditorRenderCanvas::OnPaint)
+wxBEGIN_EVENT_TABLE(EditorDrawCanvas, wxGLCanvas)
+#if 0
+EVT_PAINT(EditorDrawCanvas::OnPaint)
+#endif
 wxEND_EVENT_TABLE()
 
-CEditorRenderContext *rcGlobalRenderContext = NULL;
+EditorDrawContext *g_rendercontext = NULL;
 
-CEditorRenderCanvas::CEditorRenderCanvas(wxWindow *parent, int *attribList)
+EditorDrawCanvas::EditorDrawCanvas(wxWindow *parent, int *attribList)
 	: wxGLCanvas(
 	parent,
 	wxID_ANY,
 	attribList,
 	wxDefaultPosition,
-	wxDefaultSize,
-	wxFULL_REPAINT_ON_RESIZE)
+	wxDefaultSize)
 {
-	if(!rcGlobalRenderContext)
-		rcGlobalRenderContext = new CEditorRenderContext(this);
+	if (!g_rendercontext)
+		g_rendercontext = new EditorDrawContext(this);
 }
 
-void CEditorRenderCanvas::OnPaint(wxPaintEvent &event)
+void EditorDrawCanvas::OnPaint(wxPaintEvent &event)
 {
-	rcGlobalRenderContext->SetCurrent(*this);
+#if 0
+	g_rendercontext->SetCurrent(*this);
 
 	UpdateViewportSize();
 
 	wxPaintDC dc(this);
 
-	DrawFrame();
+	Draw();
+
+	SwapBuffers();
+#endif
 }
 
-void CEditorRenderCanvas::UpdateViewportSize()
+void EditorDrawCanvas::UpdateViewportSize()
 {
 	const wxSize clientSize = GetClientSize();
-	engine->SetViewportSize(clientSize.GetWidth(), clientSize.GetHeight());
-}
-
-void CEditorRenderCanvas::DrawFrame(void)
-{
-	SwapBuffers();
+	width = clientSize.GetWidth();
+	height = clientSize.GetHeight();
+	engine->SetViewportSize(width, height);
 }
 
 /*
 	Render Context
 */
 
-CEditorRenderContext::CEditorRenderContext(wxGLCanvas *canvas)
+EditorDrawContext::EditorDrawContext(wxGLCanvas *canvas)
 	: wxGLContext(canvas)
 {
 	SetCurrent(*canvas);

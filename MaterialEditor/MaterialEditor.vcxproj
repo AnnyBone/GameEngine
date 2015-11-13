@@ -80,25 +80,23 @@
     <ClInclude Include="EditorBase.h" />
     <ClInclude Include="EditorConsolePanel.h" />
     <ClInclude Include="EditorFrame.h" />
-    <ClInclude Include="EditorMaterialProperties.h" />
     <ClInclude Include="EditorRenderCanvas.h" />
     <ClInclude Include="EditorViewportPanel.h" />
-    <ClInclude Include="MaterialFrame.h" />
+    <ClInclude Include="material_frame.h" />
     <ClInclude Include="preferences\PreferencesDialog.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="WADFrame.h" />
+    <ClInclude Include="wad_frame.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EditorApp.cpp" />
     <ClCompile Include="EditorConsolePanel.cpp" />
     <ClCompile Include="EditorEngineInterface.cpp" />
     <ClCompile Include="EditorFrame.cpp" />
-    <ClCompile Include="EditorMaterialProperties.cpp" />
     <ClCompile Include="EditorRenderCanvas.cpp" />
     <ClCompile Include="EditorViewportPanel.cpp" />
-    <ClCompile Include="MaterialFrame.cpp" />
+    <ClCompile Include="material_frame.cpp" />
     <ClCompile Include="preferences\PreferencesDialog.cpp" />
-    <ClCompile Include="WADFrame.cpp" />
+    <ClCompile Include="wad_frame.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Material Editor.rc" />

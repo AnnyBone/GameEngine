@@ -424,6 +424,8 @@ void Draw_GradientBackground(void)
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 
+	Draw_ResetCanvas();
+
 	vctOldCanvas = (VideoCanvasType_t)currentcanvas;
 	GL_SetCanvas(CANVAS_DEFAULT);
 	currentcanvas = vctOldCanvas;
@@ -510,7 +512,7 @@ void Draw_CoordinateAxes(float x,float y,float z)
 	Video_ResetCapabilities(false);
 }
 
-void Draw_Grid(float x, float y, float z, int iGridSize)
+void Draw_Grid(float x, float y, float z, int grid_size)
 {
 	int i;
 
@@ -530,17 +532,17 @@ void Draw_Grid(float x, float y, float z, int iGridSize)
 	glLineWidth(1.0f);
 	glBegin(GL_LINES);
 
-	for (i = 0; i <= (4096 / iGridSize); i++)
+	for (i = 0; i <= (4096 / grid_size); i++)
 	{
-		glVertex2i(-4096, (i * iGridSize) * -1);
-		glVertex2i(4096, (i * iGridSize) * -1);
-		glVertex2i(-4096, i * iGridSize);
-		glVertex2i(4096, i * iGridSize);
+		glVertex2i(-4096, (i * grid_size) * -1);
+		glVertex2i(4096, (i * grid_size) * -1);
+		glVertex2i(-4096, i * grid_size);
+		glVertex2i(4096, i * grid_size);
 
-		glVertex2i((i * iGridSize) * -1, -4096);
-		glVertex2i((i * iGridSize) * -1, 4096);
-		glVertex2i(i * iGridSize, -4096);
-		glVertex2i(i * iGridSize, 4096);
+		glVertex2i((i * grid_size) * -1, -4096);
+		glVertex2i((i * grid_size) * -1, 4096);
+		glVertex2i(i * grid_size, -4096);
+		glVertex2i(i * grid_size, 4096);
 	}
 
 	glEnd();

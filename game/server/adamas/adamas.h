@@ -16,14 +16,5 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "EngineBase.h"
-
-#include "EngineEditor.h"
-#include "EngineVideo.h"
-
-void MaterialEditor_Initialize(void)
-{
-	cls.state = CLIENT_STATE_EDITOR;
-
-	key_dest = KEY_EDITOR_MATERIAL;
-}
+void Roller_Spawn(ServerEntity_t *entity);
+void Roller_Precache();

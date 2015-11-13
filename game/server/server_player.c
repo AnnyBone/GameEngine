@@ -372,7 +372,7 @@ void Player_PostThink(ServerEntity_t *ePlayer)
 	// [5/9/2013] If round has not started then don't go through this! ~hogsy
 	if((ePlayer->Monster.iState == STATE_DEAD) || !Server.bRoundStarted)
 		return;
-	// [12/4/2013] Check if we're in a vehicle ~hogsy
+	// Check if we're in a vehicle.
 	else if(ePlayer->local.eVehicle)
 	{
 		switch(ePlayer->local.eVehicle->Vehicle.iSlot[ePlayer->local.iVehicleSlot])
@@ -421,8 +421,9 @@ void Player_PostThink(ServerEntity_t *ePlayer)
 
 			sprintf(snd,"player/playerland%i.wav",rand()%4+1);
 
-			// [26/4/2013] Rewritten :) ~hogsy
-			ePlayer->v.punchangle[0] -= ePlayer->local.fJumpVelocity / 100.0f;	// [13/04/2013] Give him a little punch... ~eukos
+			// Give him a little punch...
+			// TODO: Switch these over purely to the client.
+			ePlayer->v.punchangle[0] -= ePlayer->local.fJumpVelocity / 100.0f;
 		}
 
 		Sound(ePlayer,iFlag,snd,255,ATTN_NORM);
@@ -432,7 +433,6 @@ void Player_PostThink(ServerEntity_t *ePlayer)
 
 	if(!(ePlayer->v.flags & FL_ONGROUND))
 		ePlayer->local.fJumpVelocity = ePlayer->v.velocity[2];
-	// [10/11/2013] Fixed a bug where the player would cycle when just sliding down something... ~hogsy
 	else if((	(ePlayer->v.velocity[0] < -4.0f || ePlayer->v.velocity[0] > 4.0f)	||
 				(ePlayer->v.velocity[1] < -4.0f || ePlayer->v.velocity[1] > 4.0f))	&&
 				(!ePlayer->local.dAnimationTime || ePlayer->local.iAnimationEnd == 9))
@@ -447,9 +447,11 @@ void Player_PostThink(ServerEntity_t *ePlayer)
 			Entity_Animate(ePlayer,PlayerAnimation_Idle);
 	}
 
+#ifndef GAME_ADAMAS
 	Player_CheckFootsteps(ePlayer);
 #ifdef GAME_OPENKATANA
 	Player_CheckPowerups(ePlayer);
+#endif
 #endif
 }
 
@@ -457,7 +459,7 @@ void Player_PreThink(ServerEntity_t *ePlayer)
 {
 	if(Server.bRoundStarted && !Server.bPlayersSpawned)
 	{
-		// [5/9/2013] Spawn the player! ~hogsy
+		// Spawn the player!
 		Player_Spawn(ePlayer);
 		return;
 	}
@@ -482,9 +484,9 @@ void Player_PreThink(ServerEntity_t *ePlayer)
 
 	if(ePlayer->v.waterlevel == 2)
 	{
-		int		i;
-		trace_t	tTrace;
-		MathVector3f_t vStart,vEnd;
+		int				i;
+		trace_t			tTrace;
+		MathVector3f_t	vStart,vEnd;
 
 		// [23/9/2012] Check if we can jump onto an edge, was originally in a seperate function but merged here instead ~hogsy
 		Math_AngleVectors(ePlayer->v.angles, ePlayer->local.vForward, ePlayer->local.vRight, ePlayer->local.vUp);
@@ -522,7 +524,6 @@ void Player_PreThink(ServerEntity_t *ePlayer)
 	if(ePlayer->v.button[2])
 		Player_Jump(ePlayer);
 	else
-		// [30/7/2012] Simplified ~hogsy
 		ePlayer->v.flags |= FL_JUMPRELEASED;
 
 	// Crouch
@@ -573,7 +574,7 @@ void Player_PreThink(ServerEntity_t *ePlayer)
 			Waypoint_Spawn(ePlayer->v.origin,WAYPOINT_DEFAULT);
 		else if((ePlayer->v.flags & FL_SWIM) /*&& !(ePlayer->v.flags & FL_ONGROUND)*/)
 			Waypoint_Spawn(ePlayer->v.origin,WAYPOINT_SWIM);
-		// [10/4/2013] Create waypoints in the air.
+		// Create waypoints in the air.
 		else if(!(ePlayer->v.flags & FL_ONGROUND))
 			Waypoint_Spawn(ePlayer->v.origin,WAYPOINT_JUMP);
 

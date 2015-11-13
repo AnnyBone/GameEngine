@@ -16,8 +16,8 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef __EDITORVIEWPORTPANEL__
-#define	__EDITORVIEWPORTPANEL__
+#ifndef VIEWPORT_PANEL_H
+#define	VIEWPORT_PANEL_H
 #pragma once
 
 class CEditorViewportPanel :
@@ -27,14 +27,24 @@ public:
 	CEditorViewportPanel(wxWindow *wParent);
 	~CEditorViewportPanel();
 
-	virtual void Draw();
+	virtual void Draw() {}
+
+	int GetCanvasWidth()
+	{
+		return viewport_canvas->GetWidth();
+	}
+
+	int GetCanvasHeight()
+	{
+		return viewport_canvas->GetHeight();
+	}
 
 private:
 
 	// Events
 	void OnTimer(wxTimerEvent &event);
 
-	CEditorRenderCanvas *rcRenderCanvas;
+	EditorDrawCanvas *viewport_canvas;
 
 	wxBitmapToggleButton *bAutoToggle;
 	wxTimer *tRenderTimer;
@@ -42,5 +52,5 @@ private:
 	wxDECLARE_EVENT_TABLE();
 };
 
-#endif
+#endif	// VIEWPORT_PANEL_H
 

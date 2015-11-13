@@ -1,31 +1,23 @@
-#ifndef __EDITORFRAME__
-#define	__EDITORFRAME__
+#ifndef EDITOR_FRAME_H
+#define	EDITOR_FRAME_H
 
 #include "EditorRenderCanvas.h"
 #include "EditorViewportPanel.h"
 #include "EditorConsolePanel.h"
 
 // Tools
-#include "WADFrame.h"
-#include "MaterialFrame.h"
+#include "wad_frame.h"
+#include "material_frame.h"
 
 // Dialog
 #include "preferences/PreferencesDialog.h"
 
-class CMainViewportPanel : public CEditorViewportPanel
+class MainViewportPanel : public CEditorViewportPanel
 {
 public:
-	CMainViewportPanel(wxWindow *wParent) : CEditorViewportPanel(wParent) {}
+	MainViewportPanel(wxWindow *parent) : CEditorViewportPanel(parent) {}
 
-	virtual void Draw()
-	{
-		engine->Video_PreFrame();
-
-		engine->DrawGradientBackground();
-		//engine->DrawResetCanvas();
-
-		engine->Video_PostFrame();
-	}
+	virtual void Draw();
 protected:
 private:
 };
@@ -66,7 +58,7 @@ private:
 	void ReloadCurrentDocument();
 
 	void OpenWADTool(wxString sPath);
-	void OpenMaterialTool(wxString sPath);
+	void OpenMaterial(wxString path);
 
 	double
 		dAutoReloadDelay,
@@ -82,26 +74,25 @@ private:
 		*windowShowConsole,
 		*windowShowProperties;
 
-	wxTimer* timer;
-
-	wxAuiManager *manager;
+	wxTimer			*timer;
+	wxAuiManager	*manager;
 
 	time_t currentTimeModified;
 	time_t lastTimeModified;
 
 	wxString currentFilePath;
 
-	CEditorRenderCanvas *editorViewport;
+	EditorDrawCanvas *editorViewport;
+
+	CWADFrame		*tool_wad;
+	CMaterialFrame	*tool_material;
+
+	CPreferencesDialog *preferences;
+
+	MainViewportPanel	*viewport;
 	CEditorConsolePanel *pConsole;
-
-	CWADFrame *WADTool;
-	CMaterialFrame *MaterialTool;
-
-	CPreferencesDialog *Preferences;
-
-	CMainViewportPanel *pViewport;
 
 	wxDECLARE_EVENT_TABLE();
 };
 
-#endif // !__EDITORFRAME__
+#endif // !EDITOR_FRAME_H

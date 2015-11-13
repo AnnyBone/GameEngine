@@ -27,7 +27,12 @@ EVT_TIMER(-1, CEditorViewportPanel::OnTimer)
 wxEND_EVENT_TABLE()
 
 CEditorViewportPanel::CEditorViewportPanel(wxWindow *wParent)
-	: wxPanel(wParent, wxID_ANY, wxDefaultPosition, wxSize(512,512))
+	: wxPanel(
+	wParent, 
+	wxID_ANY, 
+	wxDefaultPosition, 
+	wxSize(512,512),
+	wxFULL_REPAINT_ON_RESIZE)
 {
 	Show();
 
@@ -64,9 +69,8 @@ CEditorViewportPanel::CEditorViewportPanel(wxWindow *wParent)
 #endif
 	};
 
-	rcRenderCanvas = new CEditorRenderCanvas(this, attributes);
-
-	vSizer->Add(rcRenderCanvas, 1, wxEXPAND | wxBOTTOM | wxLEFT | wxRIGHT);
+	viewport_canvas = new EditorDrawCanvas(this, attributes);
+	vSizer->Add(viewport_canvas, 1, wxEXPAND | wxBOTTOM | wxLEFT | wxRIGHT);
 
 	SetSizer(vSizer);
 }
@@ -81,19 +85,17 @@ void CEditorViewportPanel::OnTimer(wxTimerEvent &event)
 	if (!engine->IsRunning())
 		return;
 
-	rcGlobalRenderContext->SetCurrent(*rcRenderCanvas);
+	g_rendercontext->SetCurrent(*viewport_canvas);
 
 	// Ensure we render at the correct size (multiple viewports).
 	// TODO: Check if there are actually multiple viewports before doing this?
-	rcRenderCanvas->UpdateViewportSize();
+	viewport_canvas->UpdateViewportSize();
 
-	engine->Video_PreFrame();
+	engine->DrawPreFrame();
 	Draw();
-	engine->Video_PostFrame();
+	engine->DrawPostFrame();
 
 	// Cleanup
-	rcRenderCanvas->SwapBuffers();
-	rcRenderCanvas->Refresh();
+	viewport_canvas->SwapBuffers();
+	//viewport_canvas->Refresh();
 }
-
-void CEditorViewportPanel::Draw() {}

@@ -16,41 +16,18 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#pragma once
-class CEditorMaterialGlobalProperties : public wxPropertyGrid
+#ifndef WAD_FRAME_H
+#define	WAD_FRAME_H
+
+class CWADFrame : public wxFrame
 {
 public:
-	CEditorMaterialGlobalProperties(wxWindow *parent);
-	~CEditorMaterialGlobalProperties();
-
-	void Update();
-	void SetCurrentMaterial(Material_t *newMaterial);
+	CWADFrame(wxWindow* parent, wxWindowID id = wxID_ANY);
+	~CWADFrame();
 
 private:
-	void OnChanged(wxPropertyGridEvent &event);
-
-	wxPGProperty 
-		*materialCategory,
-		*skinCategory;
-
-	wxStringProperty* name;
-	wxStringProperty* path;
-
-	wxBoolProperty* preserve;
-	wxBoolProperty* useAlpha;
-	wxBoolProperty* blend;
-	wxBoolProperty* animated;
-	wxBoolProperty* mirror;
-	wxBoolProperty* nearest;
-	wxBoolProperty* water;
-	wxBoolProperty* notris;
-
-	wxIntProperty* skins;
-
-	wxFloatProperty* animationSpeed;
-	wxFloatProperty* alpha;
-
-	Material_t *currentMaterial;
-
+	wxAuiManager *mManager;
 };
+
+#endif // WAD_FRAME_H
 

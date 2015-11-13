@@ -1,6 +1,34 @@
+/*	Copyright (C) 2011-2015 OldTimes Software
+
+	This program is free software; you can redistribute it and/or
+	modify it under the terms of the GNU General Public License
+	as published by the Free Software Foundation; either version 2
+	of the License, or (at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+	See the GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+*/
+
 #include "EditorBase.h"
 
 #include "EditorFrame.h"
+
+void MainViewportPanel::Draw()
+{
+	// Currently doing nothing...
+	engine->DrawGrid(0, 0, -16, 16);
+
+	engine->DrawResetCanvas();
+	engine->DrawSetCanvas(CANVAS_DEFAULT);
+	engine->DrawString(10, 10, "Hello World!");
+}
 
 enum
 {
@@ -9,8 +37,8 @@ enum
 	ID_WINDOW_SCRIPTEDITOR,	// Edit the material script.
 	ID_WINDOW_PROPERTIES,
 	FRAME_EVENT_RELOAD,		// Reload the current material.
-	ID_WINDOW_PLAY,			// Play simulation.
-	ID_WINDOW_PAUSE,		// Pause simulation.
+//	ID_WINDOW_PLAY,			// Play simulation.
+//	ID_WINDOW_PAUSE,		// Pause simulation.
 
 	// View
 	FRAME_EVENT_WIREFRAME,
@@ -39,8 +67,8 @@ wxBEGIN_EVENT_TABLE(CEditorFrame, wxFrame)
 	EVT_MENU(FRAME_EVENT_SHOWCONSOLE, CEditorFrame::OnConsole)
 	EVT_MENU(ID_WINDOW_PROPERTIES, CEditorFrame::OnProperties)
 	EVT_MENU(FRAME_EVENT_RELOAD, CEditorFrame::OnReload)
-	EVT_MENU(ID_WINDOW_PLAY, CEditorFrame::OnPlay)
-	EVT_MENU(ID_WINDOW_PAUSE, CEditorFrame::OnPause)
+//	EVT_MENU(ID_WINDOW_PLAY, CEditorFrame::OnPlay)
+//	EVT_MENU(ID_WINDOW_PAUSE, CEditorFrame::OnPause)
 
 	// View
 	EVT_MENU(FRAME_EVENT_WIREFRAME, CEditorFrame::OnView)
@@ -135,15 +163,15 @@ CEditorFrame::CEditorFrame(const wxString & title, const wxPoint & pos, const wx
 	viewTextured = mView->AppendCheckItem(FRAME_EVENT_TEXTURED, "Textured");
 	viewLit = mView->AppendCheckItem(FRAME_EVENT_LIT, "&Lit");
 	mView->AppendSeparator();
-	mView->Append(FRAME_EVENT_RELOAD, "Reload material");
-	mView->AppendSeparator();
+//	mView->Append(FRAME_EVENT_RELOAD, "Reload material");
+//	mView->AppendSeparator();
 	mView->AppendCheckItem(wxID_ANY, "&Transform");
 	mView->AppendCheckItem(wxID_ANY, "&Rotate");
 	mView->AppendCheckItem(wxID_ANY, "&Scale");
-	mView->AppendSeparator();
-	mView->AppendCheckItem(ID_BUTTON_SPHERE, "Sphere");
-	mView->AppendCheckItem(FRAME_EVENT_CUBE, "&Cube");
-	mView->AppendCheckItem(ID_BUTTON_PLANE, "&Plane");
+//	mView->AppendSeparator();
+//	mView->AppendCheckItem(ID_BUTTON_SPHERE, "Sphere");
+//	mView->AppendCheckItem(FRAME_EVENT_CUBE, "&Cube");
+//	mView->AppendCheckItem(ID_BUTTON_PLANE, "&Plane");
 
 	viewLit->Check(true);
 
@@ -154,10 +182,8 @@ CEditorFrame::CEditorFrame(const wxString & title, const wxPoint & pos, const wx
 	wxMenuItem *iMATTool = mTools->Append(FRAME_EVENT_MATERIALTOOL, "&Material Tool...");
 	iMATTool->SetBitmap(bSmallMDL);
 
-#if 0
 	wxMenuItem *iMDLTool = mTools->Append(FRAME_EVENT_MATERIALTOOL, "Mo&del Tool...");
 	iMDLTool->SetBitmap(bSmallMDL);
-#endif
 
 	wxMenu *mWindow = new wxMenu;
 	windowShowConsole = mWindow->AppendCheckItem(FRAME_EVENT_SHOWCONSOLE, "&Console");
@@ -189,28 +215,26 @@ CEditorFrame::CEditorFrame(const wxString & title, const wxPoint & pos, const wx
 	toolbarInfo.Top();
 
 	// File
-	wxAuiToolBar *tbFile = new wxAuiToolBar(this);
-	tbFile->AddTool(wxID_NEW, "New material", smallDocumentNew);
-	tbFile->AddTool(wxID_OPEN, "Open material", smallDocumentOpen, "Open an existing material");
-	tbFile->AddTool(wxID_SAVE, "Save material", smallDocumentSave, "Save the current material");
-	tbFile->Realize();
-
 	toolbarInfo.Position(0);
-	manager->AddPane(tbFile, toolbarInfo);
+	wxAuiToolBar *tb_file = new wxAuiToolBar(this);
+	tb_file->AddTool(wxID_NEW, "New material", smallDocumentNew);
+	tb_file->AddTool(wxID_OPEN, "Open material", smallDocumentOpen, "Open an existing material");
+	tb_file->AddTool(wxID_SAVE, "Save material", smallDocumentSave, "Save the current material");
+	tb_file->Realize();
+	manager->AddPane(tb_file, toolbarInfo);
 
 	// Edit
-	wxAuiToolBar *tbEdit = new wxAuiToolBar(this);
-	tbEdit->AddTool(wxID_UNDO, "Undo", iconDocumentUndo, "Undo changes");
-	tbEdit->AddTool(wxID_REDO, "Redo", iconDocumentRedo, "Redo changes");
-	tbEdit->Realize();
-
 	toolbarInfo.Position(1);
-	manager->AddPane(tbEdit, toolbarInfo);
+	wxAuiToolBar *tb_edit = new wxAuiToolBar(this);
+	tb_edit->AddTool(wxID_UNDO, "Undo", iconDocumentUndo, "Undo changes");
+	tb_edit->AddTool(wxID_REDO, "Redo", iconDocumentRedo, "Redo changes");
+	tb_edit->Realize();
+	manager->AddPane(tb_edit, toolbarInfo);
 
 	// View
 	wxAuiToolBar *tbView = new wxAuiToolBar(this);
-	tbView->AddTool(ID_WINDOW_PAUSE, "Pause", iconMediaPause, "Pause simulation");
-	tbView->AddTool(ID_WINDOW_PLAY, "Play", iconMediaPlay, "Play simulation");
+//	tbView->AddTool(ID_WINDOW_PAUSE, "Pause", iconMediaPause, "Pause simulation");
+//	tbView->AddTool(ID_WINDOW_PLAY, "Play", iconMediaPlay, "Play simulation");
 	tbView->Realize();
 
 	toolbarInfo.Position(2);
@@ -220,7 +244,7 @@ CEditorFrame::CEditorFrame(const wxString & title, const wxPoint & pos, const wx
 	Show();
 
 	// Create the engine viewport...
-	pViewport = new CMainViewportPanel(this);
+	viewport = new MainViewportPanel(this);
 	wxAuiPaneInfo viewportInfo;
 	viewportInfo.Caption("Viewport");
 	viewportInfo.Center();
@@ -229,7 +253,7 @@ CEditorFrame::CEditorFrame(const wxString & title, const wxPoint & pos, const wx
 	viewportInfo.Dockable(true);
 	viewportInfo.MaximizeButton(true);
 	viewportInfo.CloseButton(false);
-	manager->AddPane(pViewport, viewportInfo);
+	manager->AddPane(viewport, viewportInfo);
 
 	// Create the console...
 	pConsole = new CEditorConsolePanel(this);
@@ -244,7 +268,7 @@ CEditorFrame::CEditorFrame(const wxString & title, const wxPoint & pos, const wx
 
 	manager->Update();
 
-	Preferences = new CPreferencesDialog(this);
+	preferences = new CPreferencesDialog(this);
 
 	dAutoReloadDelay = 0;
 	dClientTime = 0;
@@ -272,20 +296,20 @@ void CEditorFrame::InitializeConsoleVariables()
 
 void CEditorFrame::OpenWADTool(wxString sPath)
 {
-	if (!WADTool)
-		WADTool = new CWADFrame(this);
+	if (!tool_wad)
+		tool_wad = new CWADFrame(this);
 
-	WADTool->Show();
+	tool_wad->Show();
 }
 
-void CEditorFrame::OpenMaterialTool(wxString sPath)
+void CEditorFrame::OpenMaterial(wxString path)
 {
-	if (!MaterialTool)
-		MaterialTool = new CMaterialFrame(this);
+	if (!tool_material)
+		tool_material = new CMaterialFrame(this);
 
-	MaterialTool->Show();
-	if (!sPath.IsEmpty())
-		MaterialTool->LoadMaterial(sPath);
+	tool_material->Show();
+	if (!path.IsEmpty())
+		tool_material->LoadMaterial(path);
 }
 
 void CEditorFrame::StartEngineLoop()
@@ -319,21 +343,20 @@ void CEditorFrame::OnPlay(wxCommandEvent &event)
 
 void CEditorFrame::OnTimer(wxTimerEvent &event)
 {
-	// TODO: Editor won't launch if engine isn't running... Can't we just make an assumption?
-	if (engine->IsRunning())
-	{
-		// Perform the main loop.
-		engine->Loop();
+	if (!engine->IsRunning())
+		return;
 
-		// Keep the client-time updated.
-		dClientTime = engine->GetClientTime();
-	}
+	// Perform the main loop.
+	engine->Loop();
+
+	// Keep the client-time updated.
+	dClientTime = engine->GetClientTime();
 
 	// Check to see if it's time to check for changes.
 	if (dAutoReloadDelay < dClientTime)
 	{
-		if (MaterialTool && MaterialTool->IsActive())
-			MaterialTool->ReloadMaterial();
+		if (tool_material && tool_material->IsActive())
+			tool_material->ReloadMaterial();
 
 		dAutoReloadDelay = dClientTime + cvEditorAutoReloadDelay.value;
 	}
@@ -394,7 +417,7 @@ void CEditorFrame::OnTool(wxCommandEvent &event)
 		OpenWADTool("");
 		break;
 	case FRAME_EVENT_MATERIALTOOL:
-		OpenMaterialTool("");
+		OpenMaterial("");
 		break;
 	}
 }
@@ -410,7 +433,7 @@ void CEditorFrame::OnOpen(wxCommandEvent &event)
 
 	sprintf(cDefaultPath, "%s", engine->GetBasePath());
 
-	wxFileDialog *fileDialog = new wxFileDialog(
+	wxFileDialog *filedialog = new wxFileDialog(
 		this,
 		"Open File",
 		cDefaultPath,
@@ -428,31 +451,31 @@ void CEditorFrame::OnOpen(wxCommandEvent &event)
 		"WAD files (*.wad)|"
 		"*.wad"
 		,wxFD_OPEN|wxFD_FILE_MUST_EXIST);
-	if (fileDialog->ShowModal() == wxID_OK)
+	if (filedialog->ShowModal() == wxID_OK)
 	{
-		wxString filename = fileDialog->GetFilename();
+		wxString filename = filedialog->GetFilename();
 
 		if (filename.EndsWith(".material"))
 			// TODO: Pass the path!!
-			OpenMaterialTool(filename);
+			OpenMaterial(filename);
 		else if (filename.EndsWith(".map"))
 		{
-			SetTitle(fileDialog->GetFilename() + wxString(" - ") + cApplicationTitle);
+			SetTitle(filedialog->GetFilename() + wxString(" - ") + cApplicationTitle);
 		}
 		else if (filename.EndsWith(".level"))
 		{
 			// TODO: Load the level up in a "viewer" mode.
-			SetTitle(fileDialog->GetFilename() + wxString(" - ") + cApplicationTitle);
+			SetTitle(filedialog->GetFilename() + wxString(" - ") + cApplicationTitle);
 		}
 		else if (filename.EndsWith(".wad"))
 		{
-			OpenWADTool(fileDialog->GetPath());
+			OpenWADTool(filedialog->GetPath());
 		}
 		else if (filename.EndsWith(".md2"))
 		{
 		}
 
-		currentFilePath = fileDialog->GetPath();
+		currentFilePath = filedialog->GetPath();
 		lastTimeModified = currentTimeModified = pFileSystem_GetModifiedTime(currentFilePath);
 	}
 }
@@ -526,7 +549,7 @@ void CEditorFrame::OnConsole(wxCommandEvent &event)
 
 void CEditorFrame::OnPreferences(wxCommandEvent &event)
 {
-	Preferences->Show();
+	preferences->Show();
 }
 
 void CEditorFrame::OnProperties(wxCommandEvent &event)

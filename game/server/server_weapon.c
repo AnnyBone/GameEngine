@@ -242,7 +242,6 @@ void Weapon_Precache(void)
 	Server_PrecacheSound("weapons/sidewinder/sidewinderunderwaterfire.wav");
 	Server_PrecacheSound("weapons/sidewinder/sidewinderunderwaterflyby.wav");
 #elif GAME_ADAMAS
-	Server_PrecacheModel(BLAZER_MODEL_VIEW);
 #endif
 }
 

@@ -77,8 +77,8 @@ pMODULE_EXPORT EngineExport_t *Engine_Main(EngineImport_t *mImport)
 	// Server
 	EngineExport.ServerShutdown = Host_ShutdownServer;
 
-	EngineExport.GetBasePath = Engine_GetBasePath;
-	EngineExport.GetVersion = Engine_GetVersion;
+	EngineExport.GetBasePath	= Engine_GetBasePath;
+	EngineExport.GetVersion		= Engine_GetVersion;
 
 	// Material
 	EngineExport.GetMaterialPath = Engine_GetMaterialPath;
@@ -89,24 +89,26 @@ pMODULE_EXPORT EngineExport_t *Engine_Main(EngineImport_t *mImport)
 	EngineExport.LoadModel = Mod_ForName;
 
 	// Console
-	EngineExport.InsertConsoleCommand = Cbuf_InsertText;
-	EngineExport.RegisterConsoleVariable = Cvar_RegisterVariable;
-	EngineExport.SetConsoleVariable = Cvar_Set;
-	EngineExport.ResetConsoleVariable = Cvar_Reset;
-	EngineExport.Print = Con_Printf;
-	EngineExport.PrintDev = Con_DPrintf;
+	EngineExport.InsertConsoleCommand		= Cbuf_InsertText;
+	EngineExport.RegisterConsoleVariable	= Cvar_RegisterVariable;
+	EngineExport.SetConsoleVariable			= Cvar_Set;
+	EngineExport.ResetConsoleVariable		= Cvar_Reset;
+	EngineExport.Print						= Con_Printf;
+	EngineExport.PrintDev					= Con_DPrintf;
 
 	// Video
-	EngineExport.Video_PostFrame = Video_PostFrame;
-	EngineExport.Video_PreFrame = Video_PreFrame;
-	EngineExport.DrawEntity = Draw_Entity;
-	EngineExport.DrawFPS = Screen_DrawFPS;
-	EngineExport.DrawConsole = Screen_DrawConsole;
-	EngineExport.DrawString = Draw_String;
-	EngineExport.DrawLine = Draw_Line;
+	EngineExport.DrawPostFrame			= Video_PostFrame;
+	EngineExport.DrawPreFrame			= Video_PreFrame;
+	EngineExport.DrawEntity				= Draw_Entity;
+	EngineExport.DrawFPS				= Screen_DrawFPS;
+	EngineExport.DrawConsole			= Screen_DrawConsole;
+	EngineExport.DrawGrid				= Draw_Grid;
+	EngineExport.DrawString				= Draw_String;
+	EngineExport.DrawLine				= Draw_Line;
 	EngineExport.DrawGradientBackground = Draw_GradientBackground;
-	EngineExport.DrawSetCanvas = GL_SetCanvas;
-	EngineExport.DrawResetCanvas = Draw_ResetCanvas;
+	EngineExport.DrawSetCanvas			= GL_SetCanvas;
+	EngineExport.DrawResetCanvas		= Draw_ResetCanvas;
+	EngineExport.DrawMaterialSurface	= Draw_MaterialSurface;
 
 	// Material Editor
 	EngineExport.MaterialEditorInitialize = MaterialEditor_Initialize;

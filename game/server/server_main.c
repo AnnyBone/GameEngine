@@ -22,7 +22,9 @@
 #include "server_item.h"
 
 #ifdef GAME_OPENKATANA
-#include "openkatana/openkatana.h"
+#	include "openkatana/openkatana.h"
+#elif GAME_ADAMAS
+#	include "adamas/adamas.h"
 #endif
 
 /*
@@ -40,7 +42,9 @@ void Server_Spawn(ServerEntity_t *seEntity);
 typedef struct
 {
 	char	*name;
-	void(*spawn)(ServerEntity_t *seEntity);
+
+	void(*Spawn)(ServerEntity_t *seEntity);
+	void(*Precache)();
 } SpawnList_t;
 
 SpawnList_t SpawnList[] =
@@ -103,12 +107,13 @@ SpawnList_t SpawnList[] =
 	{ "monster_lasergat", Point_MonsterSpawn },
 	{ "monster_prisoner", Point_MonsterSpawn },
 #elif GAME_ADAMAS
+	{ "monster_roller", Roller_Spawn, Roller_Precache },
 #endif
 
-	{	NULL,	NULL	}
+	{	NULL	}
 };
 
-ConsoleVariable_t cvServerPlayerModel = { "server_playermodel", "models/player.md2", false, true, "Sets the main server-side player model." };
+ConsoleVariable_t cvServerPlayerModel = { "server_playermodel", MODEL_PLAYER, false, true, "Sets the main server-side player model." };
 ConsoleVariable_t cvServerRespawnDelay = { "server_respawndelay", "40", false, true, "Sets the amount of time until a player respawns." };
 ConsoleVariable_t cvServerSkill = { "server_skill", "1", false, true, "The level of difficulty." };
 ConsoleVariable_t cvServerSelfDamage = { "server_selfdamage", "0", false, true, "If enabled, your weapons can damage you." };
@@ -218,6 +223,7 @@ void Server_Spawn(ServerEntity_t *seEntity)
 	Server_PrecacheSound(BASE_SOUND_TALK2);
 	Server_PrecacheSound("misc/gib1.wav");
 
+#ifndef GAME_ADAMAS
 	// Physics
 	Server_PrecacheSound(PHYSICS_SOUND_SPLASH);
 	Server_PrecacheSound(PHYSICS_SOUND_BODY);
@@ -251,10 +257,12 @@ void Server_Spawn(ServerEntity_t *seEntity)
 	Server_PrecacheSound(SOUND_EXPLODE0);
 	Server_PrecacheSound(SOUND_EXPLODE1);
 	Server_PrecacheSound(SOUND_EXPLODE2);
+#endif
 	
 	// Player
 	Server_PrecacheModel(cvServerPlayerModel.string);
 
+#ifdef GAME_OPENKATANA
 	// Particles
 	Engine.Server_PrecacheResource(RESOURCE_SPRITE, PARTICLE_BLOOD0);
 	Engine.Server_PrecacheResource(RESOURCE_SPRITE, PARTICLE_BLOOD1);
@@ -265,7 +273,6 @@ void Server_Spawn(ServerEntity_t *seEntity)
 	Engine.Server_PrecacheResource(RESOURCE_SPRITE, PARTICLE_SMOKE2);
 	Engine.Server_PrecacheResource(RESOURCE_SPRITE, PARTICLE_SMOKE3);
 
-#ifdef GAME_OPENKATANA
 	// Player
 	Server_PrecacheSound(PLAYER_SOUND_JUMP0);
 	Server_PrecacheSound(PLAYER_SOUND_JUMP1);
@@ -337,7 +344,7 @@ void Server_Spawn(ServerEntity_t *seEntity)
 */
 bool Server_SpawnEntity(ServerEntity_t *seEntity)
 {
-	SpawnList_t *slSpawn;
+	SpawnList_t *spawn;
 
 	if (!seEntity->v.cClassname)
 	{
@@ -345,10 +352,13 @@ bool Server_SpawnEntity(ServerEntity_t *seEntity)
 		return false;
 	}
 
-	for(slSpawn = SpawnList; slSpawn->name; slSpawn++)
-		if (!strcmp(slSpawn->name, seEntity->v.cClassname))
+	for (spawn = SpawnList; spawn->name; spawn++)
+		if (!strcmp(spawn->name, seEntity->v.cClassname))
 		{
-			slSpawn->spawn(seEntity);
+			if (spawn->Precache)
+				spawn->Precache();
+
+			spawn->Spawn(seEntity);
 			return true;
 		}
 
@@ -363,19 +373,6 @@ void Server_StartFrame(void)
 #ifdef GAME_OPENKATANA
 	Deathmatch_Frame();
 #elif GAME_ADAMAS
-	// This is stupid...
-	if(!Server.iMonsters && Server.bRoundStarted)
-	{
-		if(strstr(Engine.Server_GetLevelName(),"0"))
-			Engine.Server_ChangeLevel("room1");
-		else if(strstr(Engine.Server_GetLevelName(),"1"))
-			Engine.Server_ChangeLevel("room2");
-		else
-		{
-			Engine.Server_BroadcastPrint("You Win!!\n");
-			Engine.Server_ChangeLevel("room0");
-		}
-	}
 #endif
 }
 

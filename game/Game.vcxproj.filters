@@ -22,19 +22,13 @@
     <ClInclude Include="game_main.h" />
     <ClInclude Include="game_resources.h" />
     <ClInclude Include="server\server_entity.h">
-      <Filter>New\Server</Filter>
+      <Filter>Server</Filter>
+    </ClInclude>
+    <ClInclude Include="server\adamas\adamas.h">
+      <Filter>Server\Adamas</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="New">
-      <UniqueIdentifier>{8b7d1742-8a0e-4caa-b81f-20c9fd95ea16}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="New\Server">
-      <UniqueIdentifier>{8d01da89-4faa-4edb-baa3-843eafde363f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="New\Client">
-      <UniqueIdentifier>{9a6cb20b-864d-4e6e-8cce-d3a58969ce0a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Client">
       <UniqueIdentifier>{f867c180-f6d1-4f11-80a3-99d52582592c}</UniqueIdentifier>
     </Filter>
@@ -133,9 +127,6 @@
     <ClCompile Include="server\adamas\adamas_blazer.c">
       <Filter>Server\Adamas\Weapons</Filter>
     </ClCompile>
-    <ClCompile Include="server\adamas\adamas_hurler.c">
-      <Filter>Server\Adamas\Monsters</Filter>
-    </ClCompile>
     <ClCompile Include="server\openkatana\monster_prisoner.c">
       <Filter>Server\Decay\NPC\Monsters</Filter>
     </ClCompile>
@@ -218,14 +209,20 @@
     <ClCompile Include="server\openkatana\item_health.c">
       <Filter>Server\Decay\Items</Filter>
     </ClCompile>
-    <ClCompile Include="server\server_animated.cpp">
-      <Filter>New\Server</Filter>
-    </ClCompile>
-    <ClCompile Include="server\server_entity.cpp">
-      <Filter>New\Server</Filter>
-    </ClCompile>
     <ClCompile Include="server\server_ent.c">
       <Filter>Server</Filter>
+    </ClCompile>
+    <ClCompile Include="server\adamas\monster_hurler.c">
+      <Filter>Server\Adamas\Monsters</Filter>
+    </ClCompile>
+    <ClCompile Include="server\server_animated.cpp">
+      <Filter>Server</Filter>
+    </ClCompile>
+    <ClCompile Include="server\server_entity.cpp">
+      <Filter>Server</Filter>
+    </ClCompile>
+    <ClCompile Include="server\adamas\monster_roller.c">
+      <Filter>Server\Adamas\Monsters</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

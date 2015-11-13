@@ -1,27 +1,37 @@
-#ifndef __EDITORRENDERCANVAS__
-#define	__EDITORRENDERCANVAS__
+#ifndef VIEWPORT_CANVAS_H
+#define	VIEWPORT_CANVAS_H
 
-class CEditorRenderCanvas : public wxGLCanvas
+class EditorDrawCanvas : public wxGLCanvas
 {
 public:
-	CEditorRenderCanvas(wxWindow *parent, int *attribList = NULL);
+	EditorDrawCanvas(wxWindow *parent, int *attribList = NULL);
 
-	void DrawFrame(void);
 	void UpdateViewportSize();
+
+	int GetWidth() 
+	{
+		return width;
+	}
+	int GetHeight()
+	{
+		return height;
+	}
 
 private:
 	void OnPaint(wxPaintEvent &event);
 
+	int width, height;
+
 	wxDECLARE_EVENT_TABLE();
 };
 
-class CEditorRenderContext : public wxGLContext
+class EditorDrawContext : public wxGLContext
 {
 public:
-	CEditorRenderContext(wxGLCanvas *canvas);
+	EditorDrawContext(wxGLCanvas *canvas);
 };
 
-extern CEditorRenderContext *rcGlobalRenderContext;
+extern EditorDrawContext *g_rendercontext;
 
-#endif // !__EDITORRENDERCANVAS__
+#endif // !VIEWPORT_CANVAS_H
 

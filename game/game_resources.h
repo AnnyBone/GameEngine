@@ -11,7 +11,11 @@
 
 #define	SOUND_SIDEWINDER_FIRE "weapons/sidewinder/fire.wav"
 
-#define	MODEL_PLAYER "models/player.md2"
+#ifdef GAME_OPENKATANA
+#	define MODEL_PLAYER "models/player.md2"
+#else
+#	define MODEL_PLAYER	"models/editor/sphere.md2"
+#endif
 
 /*	MODEL:	models/player/
 	SOUND:	player/
