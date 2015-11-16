@@ -560,7 +560,7 @@ char key_tabpartial[MAXCMDLINE];
 
 typedef struct tab_s
 {
-	char			name[256];
+	char			name[MAXCMDLINE];
 	char			*type;
 	struct tab_s	*next;
 	struct tab_s	*prev;
@@ -657,7 +657,7 @@ void BuildTabList (char *partial)
 
 void Con_TabComplete (void)
 {
-	char		partial[MAXCMDLINE],*match;
+	char		partial[MAXCMDLINE], match[MAXCMDLINE];
 	static char	*c;
 	tab_t		*t;
 	int			mark, i;
@@ -706,7 +706,7 @@ void Con_TabComplete (void)
 		} while (t != tablist);
 
 		//get first match
-		match = tablist->name;
+		p_strncpy(match, tablist->name, sizeof(match));
 	}
 	else
 	{
@@ -725,7 +725,7 @@ void Con_TabComplete (void)
 		} while (t != tablist);
 
 		//use prev or next to find next match
-		match = keydown[K_SHIFT] ? t->prev->name : t->next->name;
+		p_strncpy(match, keydown[K_SHIFT] ? t->prev->name : t->next->name, sizeof(match));
 	}
 	Hunk_FreeToLowMark(mark); //it's okay to free it here becuase match is a pointer to persistent data
 

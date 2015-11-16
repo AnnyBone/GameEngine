@@ -1,0 +1,450 @@
+@SolidClass = worldspawn : "World entity"
+[
+	message(string) 		: 	"Map Title"
+	sky(string) 			: 	"Sky" 			:	"default"
+	cloud(string)			:	"Cloud Layer"
+	scrollspeed(integer)	:	"Cloud Speed"	:	"20"
+	fog(float)				: 	"Fog (0 0 0 0)"
+]
+
+///////////////////////////////////////////////////////////////////////////////////
+// BASE CLASSES
+///////////////////////////////////////////////////////////////////////////////////
+
+@baseclass size(-16 -16 -36, 16 16 36) color(0 0 255) 	= PlayerClass 
+[
+	pTeam(choices) : "Team" : 0 =
+	[
+		0 : "Neutral"
+		1 : "Red"
+		2 : "Blue"
+		3 : "Spectator"
+	]
+]
+
+@baseclass size(-16 -16 -24, 16 16 32) color(255 0 0) 	= MonsterClass []
+@baseclass size(-16 -16 -18, 16 16 18) color(0 255 255) = ItemClass []
+@baseclass size(-16 -16 -16, 16 16 16) color(255 255 0) = LogicClass []
+
+@baseclass = EffectClass
+[
+	alpha(integer) : "Alpha (0/255)" : 255
+]
+
+@baseclass = ModelClass
+[
+	model(studio) 		: "Model"	: ""
+	model_skin(integer)	: "Skin" 	: 0
+	scale(integer)		: "Scale" 	: 0
+]
+
+@baseclass = PhysicsProperties
+[
+	physics_solid(choices) : "Collision" : 4 =
+	[
+		0 : "Not Solid"
+		1 : "Trigger"
+		2 : "Solid"
+		3 : "Solid Movable"
+		4 : "Solid BSP"
+	]
+]
+
+@baseclass = Appearflags 
+[
+	spawnflags(Flags) = 
+	[
+		256 : "Not in Easy" : 0
+		512 : "Not in Normal" : 0
+		1024 : "Not in Hard" : 0
+		2048 : "Not in Deathmatch" : 0
+		4096 : "Not in Singleplayer" : 0
+	]
+]
+
+@baseclass = EntName 
+[ 
+	name(target_source) : "Name"
+]
+
+///////////////////////////////////////////////////////////////////////////////////
+
+@SolidClass base(Appearflags, EntName,EffectClass) = area_door : "Basic door" 
+[
+	speed(integer) 	: "Speed" : 100
+	noise2(string) 	: "Move sound"
+ 	noise1(string) 	: "Stop sound"
+	wait(string) 	: "Delay before close" : "4" 
+	lip(integer) 	: "Lip" : 8
+	dmg(integer) 	: "Damage inflicted when blocked" : 0
+	message(string) : "Message if triggered"
+	health(integer) : "Health (shoot open)" : 0
+	spawnflags(flags) =
+	[
+		1 : "Starts Open" : 0
+        32: "Toggle" : 0
+	]
+]
+
+@SolidClass base(Appearflags, EntName,EffectClass) = area_rotate : "Rotating Brush" 
+[
+	speed(integer) : "Speed" : 100
+	damage(integer) : "Damage inflicted when blocked"
+	spawnflags(flags) =
+	[
+		8 	: "X" 		: 1
+		2 	: "Y" 		: 0
+		4 	: "Z" 		: 0
+		64	: "Reverse" : 0
+	]
+]
+
+@SolidClass base(EntName,PhysicsProperties,EffectClass) = area_wall : "Wall" []
+@SolidClass base(EntName,EffectClass) = area_noclip : "Noclipped Wall" []
+@SolidClass base(EntName,EffectClass) = area_breakable : "Breakable Brush" 
+[
+	health(integer) : "Health" : 100
+	style(choices) 	: "Type" : 0 =
+	[
+		0 : "Glass"
+		1 : "Wood"
+		2 : "Rock"
+		3 : "Metal"
+	]
+	count(integer) : "Gib count" : 3
+	targetname(string) : "Target when killed"
+]
+
+@SolidClass base(EntName, Appearflags) = area_changelevel : "Changelevel Trigger" 
+[
+	wait(string) 		: "Delay before level change" : "1"
+	targetname(string)	: "Name of next level."
+]
+
+@SolidClass base(EntName, Appearflags) = area_climb : "Ladder Brush" []
+
+@SolidClass base(EntName, Appearflags) = area_push : "Pushing Brush" 
+[
+	speed(integer) : "Speed" : 1000
+	spawnflags(Flags) =
+	[
+		32 : "Only once" : 0
+	]
+]
+
+@SolidClass base(EntName, Appearflags) = area_pushable : "Pushable Brush" []
+@SolidClass base(EntName, Appearflags) = area_debris : "Pushable Brush" []
+
+@SolidClass base(Appearflags, EntName) = area_trigger : "Trigger" 
+[
+	targetname(string) 	: "Target"
+	wait(integer)		: "Delay"
+]
+
+@SolidClass base(EntName,EffectClass) = area_button : "Button" 
+[
+	speed(integer) : "Speed" : 40
+	lip(integer) : "Lip" : 4
+	targetname(string) : "Targetted object"
+	health(integer) : "Health (shootable if > 0)"
+	wait(integer) : "Delay before reset" : 1
+	soundstart(string) : "Start Sound" 
+	soundstop(string) : "Stop Sound"
+	soundmoving(string) : "Moving Sound"
+	soundreturn(string) : "Returning Sound"
+]
+
+@SolidClass base(EntName,EffectClass) = area_platform : "Platform" 
+[	
+	spawnflags(Flags) =
+	[
+		32 : "Toggle" : 0
+	]
+	
+	speed(integer) : "Speed" : 150
+	count(integer) : "Travel altitude" : 0
+	
+	soundstart(string) : "Start Sound" 
+	soundstop(string) : "Stop Sound"
+	soundmoving(string) : "Moving Sound"
+	soundreturn(string) : "Returning Sound"
+]	
+
+@PointClass base(EntName) = point_ambient : "Ambient sound" 
+[
+	volume(integer) : "Volume" : 255
+	noise(string) : "Sound" : "ambience/"
+	style(Choices) : "Attenuation" : 2 =
+	[
+		1 : "Small"
+		2 : "Normal"
+		3 : "Large"
+		0 : "Everywhere"
+	]
+]
+
+@PointClass base(EntName) = point_damage: "Target Damage" 
+[
+	damage(integer) : "Damage" : 10
+	style(choices)	: "Type" : 0 =
+	[
+		0 : "Normal"
+		1 : "Explosive"
+		2 : "Burn"
+		3 : "Freeze"
+		4 : "Explode"
+		5 : "Gravity"
+		6 : "Crush"
+		7 : "Fall"
+	]
+]
+
+@PointClass base(EntName) = point_explode : "Explode"
+[
+	damage(integer) : "Damage" : 30
+	spawnflags(Flags) =
+	[
+		1 : "Remove on use" : 0
+	]
+]
+
+@PointClass base(EntName) = point_dynamic : "A dynamic light" []
+
+@PointClass base(EntName) studio() = point_decoration : "Misc decoration"
+[
+	model(studio) 				: "Model"
+	speed(integer) 				: "Speed"
+	alpha(integer) 				: "Alpha" : 255
+]
+
+@PointClass base(EntName) = point_effect : "Special Effects" 
+[
+	style(choices) : "Type" : 1 =
+	[
+		1 : "Explosion"
+		2 : "Gun Shot"
+		3 : "Teleport"
+	]
+]
+
+@PointClass base(EntName) = point_flare : "Flare"
+[
+	model(string) 				: "Texture"
+	scale(integer) 				: "Scale"
+	rgb_red(integer) 			: "RGB: Red"
+	rgb_green(integer) 			: "RGB: Green"
+	rgb_blue(integer) 			: "RGB: Blue"
+]
+
+@PointClass base(ItemClass, EntName) = point_item : "Item Spawn" 
+[
+	style(choices) : "Type" : 3 =
+	[
+		9  : "Ion Cells"
+		10 : "C4 Bombs"
+		11 : "Shotcycler Round"
+		12 : "Sidewinder Rockets"
+		13 : "Shockwave Cells"
+		3  : "Daikatana"
+		4  : "Ion Blaster"
+		5  : "C4 Vizatergo"
+		6  : "Shotcycler-6"
+		7  : "Sidewinder"
+		8  : "Shockwave"
+		70 : "Ion-Rifle"
+		20 : "Plasteel Armor"
+		19 : "Large Health Kit"
+		14 : "Attack Boost"
+		15 : "Power Boost"
+		16 : "Vita Boost"
+		17 : "Speed Boost"
+		18 : "Acro Boost"
+		22 : "Oxylung"
+		21 : "Envirosuit"
+	]
+	count(integer) : "Count"
+]
+
+@PointClass base(EntName) = point_lightstyle : "Lightstyle Switcher" 
+[
+	style(integer) : "Light Style Targetted" : 33
+	message(string) : "Apperance" : "a"
+	wait(integer) : "Delay before going black (-1 if not)" : 5
+	targetname(string) 	: "Target when black"
+]
+
+@PointClass base(LogicClass, EntName) = point_logic : "Logic Entity" 
+[
+	target1(string) : "First Target"
+	target2(string) : "Second Target"
+	targetname(string) : "Trigger (Optional)"
+	wait(integer) : "Tickrate" : 1
+]
+
+@PointClass base(EntName) = point_message : "Messages and misc"
+[
+	message(string) 				: "Message"
+	
+	style(choices) : "Type" : 0 =
+	[
+		0 : "Center Message"
+		1 : "Local Message"
+		2 : "Server Message"
+		3 : "Info/Mission Message"
+	]
+]
+
+@PointClass base(MonsterClass, EntName) = point_monster : "Monster Spawn"
+[
+	style(choices) : "Type" : 1 =
+	[
+		3 : "(E1) Prisoner"
+		4 : "(E1) Laser Turret"
+		5 : "(E1) Inmater"
+	]
+]
+
+@PointClass base(MonsterClass, EntName) studio("models/inmater.md2") = monster_inmater : "Inmater"
+[
+	style(integer) : "Type (don't modify)" : 5
+]
+
+@PointClass base(MonsterClass, EntName) studio("models/prisoner.md2") = monster_prisoner : "Prisoner"
+[
+	style(integer) : "Type (don't modify)" : 3
+]
+
+@PointClass base(MonsterClass, EntName) studio("models/inmater.md2") = monster_lasergat : "Laser Turret"
+[
+	style(integer) : "Type (don't modify)" : 4
+]
+
+@PointClass base(EntName) = point_multitrigger : "Multi Trigger"
+[
+	targetname(string) 			: "Target #1"
+	message(string) 			: "Target #2"
+]
+
+@PointClass base(EntName) = point_null : "point_null (spotlight target)" []
+
+@PointClass base(EntName) = point_particle : "Particle Emitter"
+[
+	model(string) 				: "Texture"
+	scale(integer) 				: "Scale"
+	count(integer) 				: "Count"
+	attack_finished(integer) 	: "Delay (if constant)"
+]
+
+@PointClass base(EntName) studio() = point_prop : "Model Prop Pushable"
+[
+	model(studio) 				: "Model"
+	speed(integer) 				: "Speed"
+	health(integer) 			: "Health" : 100
+	alpha(integer) 				: "Alpha" : 255
+	style(choices) 				: "Type" : 0 =
+	[
+		0 : "Glass"
+		1 : "Wood"
+		2 : "Rock"
+		3 : "Metal"
+	]
+]
+
+@PointClass base(EntName) = point_shake : "Shake/Quake"
+[
+	delay(integer) 				: "Delay between shakes" : 0
+	speed(integer) 				: "Strength" : 300
+	wait(integer) 				: "Duration" : 5
+]
+
+@PointClass base(EntName) = point_sound : "Sound Emitter"
+[
+	noise(string) 				: "Sound"
+	volume(integer) 			: "Volume"
+	style(choices) 				: "Type" : 0 =
+	[
+		0 : "Local"
+		1 : "Entity"
+		2 : "Global"
+	]
+]
+
+@PointClass base(PlayerClass) studio("models/player.md2") = point_start : "Player Spawn" 
+[
+	style(choices) : "Type" : 0 =
+	[
+		0 : "Singleplayer"
+		1 : "Cooperative"
+		2 : "Deathmatch"
+		3 : "Capture the flag"
+		4 : "Mikiko"
+		5 : "Superfly"
+	]
+]
+
+@PointClass base(PlayerClass) studio("models/player.md2") = point_bot : "Bot Spawn"
+[
+	style(choices) : "Type" : 0 =
+	[
+		0 : "Default"
+		1 : "Mikiko"
+		2 : "Superfly"
+	]
+]
+
+@PointClass base(EntName) = point_teleport : "Teleport Destination" []
+
+@PointClass base(EntName) = point_timedtrigger : "Timed Trigger"
+[
+	targetname(string) 			: "Target #1"
+	wait(integer) 				: "Delay"
+	spawnflags(Flags) =
+	[
+		32 : "Auto Trigger" : 0
+	]
+]
+
+@PointClass base(EntName) = point_sprite : "Sprite" 
+[
+	noise(string) : "Sound" : "ambience/"
+]
+
+@PointClass base(EntName) = point_waypoint : "Waypoint" []
+
+@PointClass base(EntName) = light : "Invisible lightsource"
+[
+	spawnflags(Flags) = 
+	[ 
+		1 : "Initially dark" : 0 
+	]
+	light(color255) 		: "Colour" 						: "255 255 255 300"
+	_lightradius(integer)	: "Light radius"
+	wait(integer) 			: "Fade distance multiplier" 	: 1
+	delay(choices) 			: "Attenuation" 				: 0 =
+	[
+		0 : "Linear falloff (Default)"
+		1 : "Inverse distance falloff"
+		2 : "Inverse distance squared"
+		3 : "No falloff"
+		4 : "Sun"
+		5 : "Fast"
+	]
+	target(string)	: "Sun Target"
+	mangle(string) 	: "Spotlight angle"
+	style(Choices) : "Appearance" : 0 =
+	[
+		0 	: "Normal"
+		10	: "Fluorescent flicker"
+		2 	: "Slow, strong pulse"
+		11	: "Slow pulse, noblack"
+		5 	: "Gentle pulse"
+		1 	: "Flicker A"
+		6 	: "Flicker B"
+		3 	: "Candle A"
+		7 	: "Candle B"
+		8 	: "Candle C"
+		4 	: "Fast strobe"
+		9 	: "Slow strobe"
+	]
+	message(string) : "Custom Appearance"
+]

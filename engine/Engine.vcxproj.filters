@@ -496,9 +496,6 @@
     <ClInclude Include="EngineServer.h">
       <Filter>Legacy\Server</Filter>
     </ClInclude>
-    <ClInclude Include="EngineVideoFrameBuffer.hpp">
-      <Filter>Legacy\Client\Video</Filter>
-    </ClInclude>
     <ClInclude Include="EngineMaterial.h">
       <Filter>Legacy\Client</Filter>
     </ClInclude>
@@ -525,6 +522,9 @@
       <Filter>Client\Video</Filter>
     </ClInclude>
     <ClInclude Include="EngineClass.h" />
+    <ClInclude Include="EngineVideoFrameBuffer.h">
+      <Filter>Legacy\Client\Video</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="engine.rc" />

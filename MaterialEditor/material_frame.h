@@ -25,11 +25,12 @@ typedef enum
 	MATERIAL_PREVIEW_PLANE
 } MaterialViewportModel;
 
-class CMaterialViewportPanel : public CEditorViewportPanel
+class MaterialViewportPanel : public BaseViewportPanel
 {
 public:
-	CMaterialViewportPanel(wxWindow *wParent);
+	MaterialViewportPanel(wxWindow *wParent);
 
+	virtual void Initialize();
 	virtual void Draw();
 
 	bool SetMaterial(Material_t *NewMaterial);
@@ -65,7 +66,7 @@ private:
 	wxString sCurrentFilePath, sOldFilePath;
 	wxStyledTextCtrl *cMaterialScript;
 
-	CMaterialViewportPanel *Viewport;
+	MaterialViewportPanel *Viewport;
 
 	// Events
 	void FileEvent(wxCommandEvent &event);

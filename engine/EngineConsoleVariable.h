@@ -62,7 +62,7 @@ extern "C" {
 	void	Cvar_SetValue(const char *var_name, float value);
 	// expands value to a string and calls Cvar_Set
 
-	float	Cvar_VariableValue(char *var_name);
+	float	Cvar_VariableValue(const char *var_name);
 	// returns 0 if not defined or non numeric
 
 	char	*Cvar_VariableString(char *var_name);

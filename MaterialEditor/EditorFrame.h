@@ -1,8 +1,8 @@
 #ifndef EDITOR_FRAME_H
 #define	EDITOR_FRAME_H
 
-#include "EditorRenderCanvas.h"
-#include "EditorViewportPanel.h"
+#include "base_rendercanvas.h"
+#include "base_viewportpanel.h"
 #include "EditorConsolePanel.h"
 
 // Tools
@@ -12,10 +12,10 @@
 // Dialog
 #include "preferences/PreferencesDialog.h"
 
-class MainViewportPanel : public CEditorViewportPanel
+class MainViewportPanel : public BaseViewportPanel
 {
 public:
-	MainViewportPanel(wxWindow *parent) : CEditorViewportPanel(parent) {}
+	MainViewportPanel(wxWindow *parent) : BaseViewportPanel(parent) {}
 
 	virtual void Draw();
 protected:
@@ -30,9 +30,7 @@ public:
 
 	void StartEngineLoop();
 	void StopEngineLoop();
-
-	void InitializeConsoleVariables();
-
+	void Initialize();
 	void PrintMessage(char *text);
 	void PrintWarning(char *text);
 	void PrintError(char *text);
@@ -82,7 +80,7 @@ private:
 
 	wxString currentFilePath;
 
-	EditorDrawCanvas *editorViewport;
+	BaseDrawCanvas *editorViewport;
 
 	CWADFrame		*tool_wad;
 	CMaterialFrame	*tool_material;

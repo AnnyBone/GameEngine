@@ -1,10 +1,10 @@
 #ifndef VIEWPORT_CANVAS_H
 #define	VIEWPORT_CANVAS_H
 
-class EditorDrawCanvas : public wxGLCanvas
+class BaseDrawCanvas : public wxGLCanvas
 {
 public:
-	EditorDrawCanvas(wxWindow *parent, int *attribList = NULL);
+	BaseDrawCanvas(wxWindow *parent, int *attribList = NULL);
 
 	void UpdateViewportSize();
 

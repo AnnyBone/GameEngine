@@ -80,8 +80,8 @@
     <ClInclude Include="EditorBase.h" />
     <ClInclude Include="EditorConsolePanel.h" />
     <ClInclude Include="EditorFrame.h" />
-    <ClInclude Include="EditorRenderCanvas.h" />
-    <ClInclude Include="EditorViewportPanel.h" />
+    <ClInclude Include="base_rendercanvas.h" />
+    <ClInclude Include="base_viewportpanel.h" />
     <ClInclude Include="material_frame.h" />
     <ClInclude Include="preferences\PreferencesDialog.h" />
     <ClInclude Include="resource.h" />
@@ -92,9 +92,11 @@
     <ClCompile Include="EditorConsolePanel.cpp" />
     <ClCompile Include="EditorEngineInterface.cpp" />
     <ClCompile Include="EditorFrame.cpp" />
-    <ClCompile Include="EditorRenderCanvas.cpp" />
-    <ClCompile Include="EditorViewportPanel.cpp" />
+    <ClCompile Include="base_rendercanvas.cpp" />
+    <ClCompile Include="base_viewportpanel.cpp" />
+    <ClCompile Include="material_browser.cpp" />
     <ClCompile Include="material_frame.cpp" />
+    <ClCompile Include="model_frame.cpp" />
     <ClCompile Include="preferences\PreferencesDialog.cpp" />
     <ClCompile Include="wad_frame.cpp" />
   </ItemGroup>

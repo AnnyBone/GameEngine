@@ -1,0 +1,24 @@
+
+   Title: Color Bugs
+    Type: Charset 256x256
+
+  Author: Michal Sochon
+Nickname: _KaszpiR_
+ Contact: kaszpir@gmail.com or _KaszpiR_ @ quakenet
+
+    Date: 2009.10.10, 01:07   
+ Version: 1.0
+ License: Creative Commons
+
+  Format: Mixed, png, windows bitmap, Adobe Photoshop CS4 .psd files.
+
+   Notes:
+I use 1680x1050 (widescreen) with vid_conwidth 840 and vid_conheight 525
+Based on charset Bugs3 (Bugs-05) http://gfx.quakeworld.nu/details/94/  which
+AFAIK was done by Bugsy. All credits goes to his work that was the basis fo my
+color adjustments - I thought this font is really nice, smooth and well
+readable. 
+Notice that colors are tweked for my color needs - so your experience may vary 
+depending on the console background and in game textures and so on.
+
+I provide source .psd I used, maybe someone will want to alter it.

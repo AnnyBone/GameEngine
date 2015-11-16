@@ -1,0 +1,17 @@
+conchars
+{
+	$flags "PRESERVE"
+	
+	$override_wireframe "1"
+	
+	$skin
+	{
+		// Conchars always should use nearest filtering.
+		//$flags "NEAREST"
+	
+		$map "materials/engine/cbugs"
+		{
+			$flags "ALPHA"
+		}
+	}
+}

@@ -18,6 +18,8 @@
 
 #include "EditorBase.h"
 
+#include "base_rendercanvas.h"
+#include "base_viewportpanel.h"
 #include "EditorFrame.h"
 
 void MainViewportPanel::Draw()
@@ -28,6 +30,24 @@ void MainViewportPanel::Draw()
 	engine->DrawResetCanvas();
 	engine->DrawSetCanvas(CANVAS_DEFAULT);
 	engine->DrawString(10, 10, "Hello World!");
+}
+
+class XViewportPanel : public BaseViewportPanel
+{
+public:
+	XViewportPanel(wxWindow *parent) : BaseViewportPanel(parent) {}
+
+	virtual void Draw();
+
+protected:
+private:
+};
+
+void XViewportPanel::Draw()
+{
+	engine->DrawResetCanvas();
+	engine->DrawSetCanvas(CANVAS_DEFAULT);
+	engine->DrawGrid(0, 0, 0, 8);
 }
 
 enum
@@ -49,6 +69,7 @@ enum
 	// Tools
 	FRAME_EVENT_WADTOOL,		// Open WAD tool
 	FRAME_EVENT_MATERIALTOOL,	// Open Material tool
+	EDITOR_EVENT_MODELVIEWER,
 
 	FRAME_EVENT_TRANSFORM,
 
@@ -96,13 +117,11 @@ CEditorFrame::CEditorFrame(const wxString & title, const wxPoint & pos, const wx
 	manager = new wxAuiManager(this);
 
 	pLog_Write(EDITOR_LOG, "Setting frame icon...\n");
-
 	SetIcon(wxIcon("resource/icon-engine.png", wxBITMAP_TYPE_PNG));
 
 	// Display the splash screen...
 
-	pLog_Write(EDITOR_LOG, "Displaying splash screen...\n");
-
+	pLog_Write(EDITOR_LOG, "Creating splash screen\n");
 	new wxSplashScreen(
 		bSplashScreen,
 		wxSPLASH_CENTRE_ON_SCREEN | wxSPLASH_TIMEOUT,
@@ -163,27 +182,36 @@ CEditorFrame::CEditorFrame(const wxString & title, const wxPoint & pos, const wx
 	viewTextured = mView->AppendCheckItem(FRAME_EVENT_TEXTURED, "Textured");
 	viewLit = mView->AppendCheckItem(FRAME_EVENT_LIT, "&Lit");
 	mView->AppendSeparator();
-//	mView->Append(FRAME_EVENT_RELOAD, "Reload material");
-//	mView->AppendSeparator();
+	mView->Append(FRAME_EVENT_RELOAD, "Reload materials");
+	mView->AppendSeparator();
 	mView->AppendCheckItem(wxID_ANY, "&Transform");
 	mView->AppendCheckItem(wxID_ANY, "&Rotate");
 	mView->AppendCheckItem(wxID_ANY, "&Scale");
-//	mView->AppendSeparator();
-//	mView->AppendCheckItem(ID_BUTTON_SPHERE, "Sphere");
-//	mView->AppendCheckItem(FRAME_EVENT_CUBE, "&Cube");
-//	mView->AppendCheckItem(ID_BUTTON_PLANE, "&Plane");
 
 	viewLit->Check(true);
 
 	wxMenu *mTools = new wxMenu;
-	wxMenuItem *iWADTool = mTools->Append(FRAME_EVENT_WADTOOL, "&WAD Tool...");
-	iWADTool->SetBitmap(bSmallWAD);
+	{
+		wxMenuItem *menutools_wad = new wxMenuItem(mTools, FRAME_EVENT_WADTOOL, "&WAD Tool...");
+		menutools_wad->SetBitmap(bSmallWAD);
+		mTools->Append(menutools_wad);
 
-	wxMenuItem *iMATTool = mTools->Append(FRAME_EVENT_MATERIALTOOL, "&Material Tool...");
-	iMATTool->SetBitmap(bSmallMDL);
+		mTools->AppendSeparator();
 
-	wxMenuItem *iMDLTool = mTools->Append(FRAME_EVENT_MATERIALTOOL, "Mo&del Tool...");
-	iMDLTool->SetBitmap(bSmallMDL);
+		wxMenuItem *menutools_mbrowser = new wxMenuItem(mTools, wxID_ANY, "Material Browser...");
+		menutools_mbrowser->SetBitmap(bSmallMDL);
+		mTools->Append(menutools_mbrowser);
+
+		wxMenuItem *menutools_material = new wxMenuItem(mTools, FRAME_EVENT_MATERIALTOOL, "&Material Editor...");
+		menutools_material->SetBitmap(bSmallMDL);
+		mTools->Append(menutools_material);
+
+		mTools->AppendSeparator();
+
+		wxMenuItem *menutools_model = new wxMenuItem(mTools, EDITOR_EVENT_MODELVIEWER, "Model &Viewer...");
+		menutools_model->SetBitmap(bSmallMDL);
+		mTools->Append(menutools_model);
+	}
 
 	wxMenu *mWindow = new wxMenu;
 	windowShowConsole = mWindow->AppendCheckItem(FRAME_EVENT_SHOWCONSOLE, "&Console");
@@ -219,6 +247,7 @@ CEditorFrame::CEditorFrame(const wxString & title, const wxPoint & pos, const wx
 	wxAuiToolBar *tb_file = new wxAuiToolBar(this);
 	tb_file->AddTool(wxID_NEW, "New material", smallDocumentNew);
 	tb_file->AddTool(wxID_OPEN, "Open material", smallDocumentOpen, "Open an existing material");
+	tb_file->AddSeparator();
 	tb_file->AddTool(wxID_SAVE, "Save material", smallDocumentSave, "Save the current material");
 	tb_file->Realize();
 	manager->AddPane(tb_file, toolbarInfo);
@@ -245,15 +274,33 @@ CEditorFrame::CEditorFrame(const wxString & title, const wxPoint & pos, const wx
 
 	// Create the engine viewport...
 	viewport = new MainViewportPanel(this);
+	viewport->Initialize();
 	wxAuiPaneInfo viewportInfo;
-	viewportInfo.Caption("Viewport");
+	viewportInfo.Caption("Camera Viewport");
 	viewportInfo.Center();
 	viewportInfo.Movable(true);
 	viewportInfo.Floatable(true);
 	viewportInfo.Dockable(true);
 	viewportInfo.MaximizeButton(true);
 	viewportInfo.CloseButton(false);
+	viewportInfo.Gripper(false);
 	manager->AddPane(viewport, viewportInfo);
+
+	XViewportPanel *viewport_top = new XViewportPanel(this);
+	viewport_top->Initialize();
+	viewportInfo.Caption("Top Viewport");
+//	viewportInfo.Top();
+	viewportInfo.Right();
+	viewport_top->StartDrawing();
+	manager->AddPane(viewport_top, viewportInfo);
+
+	viewport_top = new XViewportPanel(this);
+	viewport_top->Initialize();
+	viewportInfo.Caption("Side Viewport");
+//	viewportInfo.Bottom();
+//	viewportInfo.Left();
+	viewport_top->StartDrawing();
+	manager->AddPane(viewport_top, viewportInfo);
 
 	// Create the console...
 	pConsole = new CEditorConsolePanel(this);
@@ -283,13 +330,15 @@ CEditorFrame::~CEditorFrame()
 	manager->UnInit();
 }
 
-void CEditorFrame::InitializeConsoleVariables()
+void CEditorFrame::Initialize()
 {
 	// TODO: These need to be able to update the editor, when modified.
 	engine->RegisterConsoleVariable(&cvEditorShowConsole, NULL);
 	engine->RegisterConsoleVariable(&cvEditorShowProperties, NULL);
 	engine->RegisterConsoleVariable(&cvEditorAutoReload, NULL);
 	engine->RegisterConsoleVariable(&cvEditorAutoReloadDelay, NULL);
+
+	viewport->StartDrawing();
 
 	dAutoReloadDelay = cvEditorAutoReloadDelay.value;
 }

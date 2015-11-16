@@ -93,6 +93,7 @@ pMODULE_EXPORT EngineExport_t *Engine_Main(EngineImport_t *mImport)
 	EngineExport.RegisterConsoleVariable	= Cvar_RegisterVariable;
 	EngineExport.SetConsoleVariable			= Cvar_Set;
 	EngineExport.ResetConsoleVariable		= Cvar_Reset;
+	EngineExport.GetConsoleVariableValue	= Cvar_VariableValue;
 	EngineExport.Print						= Con_Printf;
 	EngineExport.PrintDev					= Con_DPrintf;
 

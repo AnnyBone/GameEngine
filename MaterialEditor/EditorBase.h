@@ -16,8 +16,8 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef __EDITORBASE__
-#define	__EDITORBASE__
+#ifndef EDITOR_BASE_H
+#define	EDITOR_BASE_H
 
 #define	wxUSE_GUI 1
 
@@ -83,13 +83,12 @@ extern EngineImport_t editor;
 
 enum
 {
-	// Tools
-	EDITOR_ID_MATERIAL_TOOL,
-	EDITOR_ID_WAD_TOOL,
-
-	// Windows
-	EDITOR_ID_MAIN,
-	EDITOR_ID_PREFERENCES
+	EDITOR_WINDOW_MAIN,				// Main
+	EDITOR_WINDOW_PREFERENCES,		// Preferences
+	EDITOR_WINDOW_MATERIAL,			// Material Tool
+	EDITOR_WINDOW_MATERIALBROWSER,	// Material Browser
+	EDITOR_WINDOW_WAD,				// WAD Tool
+	EDITOR_WINDOW_MODEL				// Model Viewer
 };
 
 extern wxString
@@ -127,7 +126,4 @@ extern ConsoleVariable_t
 	cvEditorShowProperties,
 	cvEditorShowConsole;
 
-#include "EditorRenderCanvas.h"
-#include "EditorViewportPanel.h"
-
-#endif // !__EDITORBASE__
+#endif // !EDITOR_BASE_H

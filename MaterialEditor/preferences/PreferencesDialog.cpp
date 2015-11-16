@@ -183,19 +183,19 @@ void CPreferencesDialog::SyncSettings()
 	AutoReloadDelay->SetValue(cvEditorAutoReloadDelay.iValue);
 
 	// Video Settings
-	//VideoLegacyMode->SetValue(engine->)
+	VideoLegacyMode->SetValue((bool)engine->GetConsoleVariableValue("video_legacy"));
 }
 
 void CPreferencesDialog::ApplySettings()
 {
-	char cBuf[16];
+	char buf[16];
 
-	snprintf(cBuf, sizeof(cBuf), "%i", AutoReload->GetValue());
-	engine->SetConsoleVariable(cvEditorAutoReload.name, cBuf);
+	snprintf(buf, sizeof(buf), "%i", AutoReload->GetValue());
+	engine->SetConsoleVariable(cvEditorAutoReload.name, buf);
 
-	snprintf(cBuf, sizeof(cBuf), "%i", AutoReloadDelay->GetValue());
-	engine->SetConsoleVariable(cvEditorAutoReloadDelay.name, cBuf);
+	snprintf(buf, sizeof(buf), "%i", AutoReloadDelay->GetValue());
+	engine->SetConsoleVariable(cvEditorAutoReloadDelay.name, buf);
 
-	snprintf(cBuf, sizeof(cBuf), "%i", VideoLegacyMode->GetValue());
-	engine->SetConsoleVariable("video_legacy", cBuf);
+	snprintf(buf, sizeof(buf), "%i", VideoLegacyMode->GetValue());
+	engine->SetConsoleVariable("video_legacy", buf);
 }

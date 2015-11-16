@@ -1,21 +1,22 @@
 #include "EditorBase.h"
 
-#include "EditorRenderCanvas.h"
+#include "base_rendercanvas.h"
+#include "base_viewportpanel.h"
 #include "EditorApp.h"
 
 /*
 	Render Canvas
 */
 
-wxBEGIN_EVENT_TABLE(EditorDrawCanvas, wxGLCanvas)
+wxBEGIN_EVENT_TABLE(BaseDrawCanvas, wxGLCanvas)
 #if 0
-EVT_PAINT(EditorDrawCanvas::OnPaint)
+EVT_PAINT(BaseDrawCanvas::OnPaint)
 #endif
 wxEND_EVENT_TABLE()
 
 EditorDrawContext *g_rendercontext = NULL;
 
-EditorDrawCanvas::EditorDrawCanvas(wxWindow *parent, int *attribList)
+BaseDrawCanvas::BaseDrawCanvas(wxWindow *parent, int *attribList)
 	: wxGLCanvas(
 	parent,
 	wxID_ANY,
@@ -27,9 +28,9 @@ EditorDrawCanvas::EditorDrawCanvas(wxWindow *parent, int *attribList)
 		g_rendercontext = new EditorDrawContext(this);
 }
 
-void EditorDrawCanvas::OnPaint(wxPaintEvent &event)
+void BaseDrawCanvas::OnPaint(wxPaintEvent &event)
 {
-#if 0
+#if 0	// TODO: I want this back in at some point...
 	g_rendercontext->SetCurrent(*this);
 
 	UpdateViewportSize();
@@ -42,7 +43,7 @@ void EditorDrawCanvas::OnPaint(wxPaintEvent &event)
 #endif
 }
 
-void EditorDrawCanvas::UpdateViewportSize()
+void BaseDrawCanvas::UpdateViewportSize()
 {
 	const wxSize clientSize = GetClientSize();
 	width = clientSize.GetWidth();

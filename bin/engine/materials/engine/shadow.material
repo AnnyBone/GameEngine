@@ -1,0 +1,13 @@
+shadow
+{
+	$flags	"PRESERVE"
+	
+	$skin
+	{	
+		$flags "BLEND"
+	
+		$map "materials/engine/shadow"
+		{
+		}
+	}
+}

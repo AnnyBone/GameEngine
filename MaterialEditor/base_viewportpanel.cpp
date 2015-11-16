@@ -18,41 +18,53 @@
 
 #include "EditorBase.h"
 
-#include "EditorViewportPanel.h"
+#include "base_rendercanvas.h"
+#include "base_viewportpanel.h"
 
-wxBEGIN_EVENT_TABLE(CEditorViewportPanel, wxPanel)
-	
-EVT_TIMER(-1, CEditorViewportPanel::OnTimer)
-
+wxBEGIN_EVENT_TABLE(BaseViewportPanel, wxPanel)
+EVT_TIMER(-1, BaseViewportPanel::OnTimer)
 wxEND_EVENT_TABLE()
 
-CEditorViewportPanel::CEditorViewportPanel(wxWindow *wParent)
+BaseViewportPanel::BaseViewportPanel(wxWindow *wParent, const wxSize &size)
 	: wxPanel(
-	wParent, 
-	wxID_ANY, 
-	wxDefaultPosition, 
-	wxSize(512,512),
-	wxFULL_REPAINT_ON_RESIZE)
+		wParent,
+		wxID_ANY,
+		wxDefaultPosition,
+		size,
+		wxFULL_REPAINT_ON_RESIZE) 
 {
-	Show();
+	timer = new wxTimer(this);
+}
 
-	tRenderTimer = new wxTimer(this);
-	tRenderTimer->Start(25);
+BaseViewportPanel::~BaseViewportPanel()
+{
+	timer->Stop();
+}
 
-	wxBoxSizer *vSizer = new wxBoxSizer(wxVERTICAL);
-	wxBoxSizer *hSizer = new wxBoxSizer(wxHORIZONTAL);
-	
+void BaseViewportPanel::Initialize()
+{
+	CreateDrawCanvas(this);
+
+	wxBoxSizer *vertical = new wxBoxSizer(wxVERTICAL);
+	wxBoxSizer *horizontal = new wxBoxSizer(wxHORIZONTAL);
+
 	bAutoToggle = new wxBitmapToggleButton(
-		this, 
-		wxID_ANY, 
+		this,
+		wxID_ANY,
 		bSmallAuto,
 		wxDefaultPosition,
-		wxSize(24,24));
+		wxSize(24, 24));
 	bAutoToggle->SetValue(true);
-	hSizer->Add(bAutoToggle);
+	horizontal->Add(bAutoToggle);
 
-	vSizer->Add(hSizer, 0, wxTOP | wxLEFT | wxRIGHT);
+	vertical->Add(horizontal, 0, wxTOP | wxLEFT | wxRIGHT);
+	vertical->Add(GetDrawCanvas(), 1, wxEXPAND | wxBOTTOM | wxLEFT | wxRIGHT);
 
+	SetSizer(vertical);
+}
+
+void BaseViewportPanel::CreateDrawCanvas(wxWindow *parent)
+{
 	int attributes[] = {
 		WX_GL_DEPTH_SIZE, 24,
 		WX_GL_STENCIL_SIZE, 8,
@@ -68,21 +80,22 @@ CEditorViewportPanel::CEditorViewportPanel(wxWindow *wParent)
 		WX_GL_DOUBLEBUFFER, 1,
 #endif
 	};
-
-	viewport_canvas = new EditorDrawCanvas(this, attributes);
-	vSizer->Add(viewport_canvas, 1, wxEXPAND | wxBOTTOM | wxLEFT | wxRIGHT);
-
-	SetSizer(vSizer);
+	viewport_canvas = new BaseDrawCanvas(parent, attributes);
 }
 
-CEditorViewportPanel::~CEditorViewportPanel()
+void BaseViewportPanel::StartDrawing()
 {
-	tRenderTimer->Stop();
+	timer->Start(25);
 }
 
-void CEditorViewportPanel::OnTimer(wxTimerEvent &event)
+void BaseViewportPanel::StopDrawing()
 {
-	if (!engine->IsRunning())
+	timer->Stop();
+}
+
+void BaseViewportPanel::OnTimer(wxTimerEvent &event)
+{
+	if (!IsShown() || !engine->IsRunning())
 		return;
 
 	g_rendercontext->SetCurrent(*viewport_canvas);

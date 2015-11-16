@@ -1,0 +1,9 @@
+trigger
+{
+   $skin
+   {
+      $map "materials/base/trigger"
+      {
+      }
+   }
+}

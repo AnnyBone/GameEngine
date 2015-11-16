@@ -70,6 +70,8 @@ typedef struct
 	void(*Print)(const char *cMessage, ...);												// Prints a message to the console.
 	void(*PrintDev)(const char *cMessage, ...);												// Prints a developer message to the console.
 
+	float(*GetConsoleVariableValue)(const char *var_name);
+
 	// Video...
 
 	void(*DrawPreFrame)();

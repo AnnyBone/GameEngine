@@ -1,0 +1,11 @@
+grid
+{
+	$flags	"PRESERVE"
+	
+	$skin
+	{	
+		$map "textures/engine/grid"
+		{
+		}
+	}
+}

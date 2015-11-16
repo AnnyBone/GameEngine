@@ -20,34 +20,34 @@
 #define	VIEWPORT_PANEL_H
 #pragma once
 
-class CEditorViewportPanel :
+class BaseViewportPanel :
 	public wxPanel
 {
 public:
-	CEditorViewportPanel(wxWindow *wParent);
-	~CEditorViewportPanel();
+	BaseViewportPanel(wxWindow *wParent, const wxSize &size = wxSize(512, 512));
+	~BaseViewportPanel();
 
+	virtual void Initialize();
 	virtual void Draw() {}
 
-	int GetCanvasWidth()
-	{
-		return viewport_canvas->GetWidth();
-	}
+	void StartDrawing();
+	void StopDrawing();
 
-	int GetCanvasHeight()
-	{
-		return viewport_canvas->GetHeight();
-	}
+	// Draw Canvas
+	BaseDrawCanvas *GetDrawCanvas() { return viewport_canvas; }
+	int GetDrawCanvasWidth()		{ return viewport_canvas->GetWidth(); }
+	int GetDrawCanvasHeight()		{ return viewport_canvas->GetHeight(); }
+	void CreateDrawCanvas(wxWindow *parent);
 
 private:
 
 	// Events
 	void OnTimer(wxTimerEvent &event);
 
-	EditorDrawCanvas *viewport_canvas;
+	BaseDrawCanvas *viewport_canvas;
 
-	wxBitmapToggleButton *bAutoToggle;
-	wxTimer *tRenderTimer;
+	wxBitmapToggleButton	*bAutoToggle;
+	wxTimer					*timer;
 
 	wxDECLARE_EVENT_TABLE();
 };

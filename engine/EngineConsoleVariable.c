@@ -208,7 +208,7 @@ ConsoleVariable_t *Cvar_FindVar (const char *var_name)
 	return NULL;
 }
 
-float Cvar_VariableValue (char *var_name)
+float Cvar_VariableValue (const char *var_name)
 {
 	ConsoleVariable_t *var;
 

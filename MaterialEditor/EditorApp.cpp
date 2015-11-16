@@ -43,12 +43,12 @@ bool CEditorApp::OnInit()
 	sprintf(cApplicationTitle, EDITOR_TITLE" ("EDITOR_VERSION")");
 
 	wxImage::AddHandler(new wxPNGHandler);
+	wxImage::AddHandler(new wxGIFHandler);
 	bSplashScreen.LoadFile("resource/splash-editor.png", wxBITMAP_TYPE_PNG);
+	bSmallMDL.LoadFile("resource/icon-mdl-small.gif", wxBITMAP_TYPE_GIF);
 	bSmallAuto.LoadFile("resource/view-auto.png", wxBITMAP_TYPE_PNG);
-	bSmallMDL.LoadFile("resource/icon-mdl-small.png", wxBITMAP_TYPE_PNG);
-	bSmallWAD.LoadFile("resource/icon-wad-small.png", wxBITMAP_TYPE_PNG);
+	bSmallWAD.LoadFile("resource/icon-wad-small.gif", wxBITMAP_TYPE_GIF);
 	bSmallPrefIcon.LoadFile(PATH_16ICONS"actions/configure.png", wxBITMAP_TYPE_PNG);
-
 	smallDocumentNew.LoadFile(PATH_16ICONS"actions/document-new.png", wxBITMAP_TYPE_PNG);
 	smallDocumentOpen.LoadFile(PATH_16ICONS"actions/document-open.png", wxBITMAP_TYPE_PNG);
 	smallDocumentSave.LoadFile(PATH_16ICONS"actions/document-save.png", wxBITMAP_TYPE_PNG);
@@ -90,7 +90,7 @@ bool CEditorApp::OnInit()
 	sEditorBasePath = engine->GetBasePath();
 	sEditorMaterialPath = engine->GetMaterialPath();
 
-	efMainFrame->InitializeConsoleVariables();
+	efMainFrame->Initialize();
 
 	pLog_Write(EDITOR_LOG, "Starting main loop...\n");
 

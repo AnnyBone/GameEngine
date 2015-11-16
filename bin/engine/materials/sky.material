@@ -1,0 +1,9 @@
+sky
+{
+	$skin
+    {
+		$map "materials/base/sky"
+		{
+		}
+    }
+}

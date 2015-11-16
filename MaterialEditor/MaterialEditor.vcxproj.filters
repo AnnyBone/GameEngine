@@ -20,14 +20,15 @@
     <Filter Include="Tools\Model">
       <UniqueIdentifier>{def462c2-3034-4f73-9d9e-017c86a81080}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Viewport">
+      <UniqueIdentifier>{1c9c608f-c4b4-4f2c-a117-d9ca7ac65d10}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EditorApp.h" />
     <ClInclude Include="EditorBase.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="EditorConsolePanel.h" />
-    <ClInclude Include="EditorRenderCanvas.h" />
-    <ClInclude Include="EditorViewportPanel.h" />
     <ClInclude Include="preferences\PreferencesDialog.h">
       <Filter>Preferences</Filter>
     </ClInclude>
@@ -38,13 +39,17 @@
       <Filter>Tools\WAD</Filter>
     </ClInclude>
     <ClInclude Include="EditorFrame.h" />
+    <ClInclude Include="base_viewportpanel.h">
+      <Filter>Viewport</Filter>
+    </ClInclude>
+    <ClInclude Include="base_rendercanvas.h">
+      <Filter>Viewport</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EditorApp.cpp" />
     <ClCompile Include="EditorConsolePanel.cpp" />
     <ClCompile Include="EditorEngineInterface.cpp" />
-    <ClCompile Include="EditorRenderCanvas.cpp" />
-    <ClCompile Include="EditorViewportPanel.cpp" />
     <ClCompile Include="preferences\PreferencesDialog.cpp">
       <Filter>Preferences</Filter>
     </ClCompile>
@@ -55,6 +60,18 @@
       <Filter>Tools\WAD</Filter>
     </ClCompile>
     <ClCompile Include="EditorFrame.cpp" />
+    <ClCompile Include="model_frame.cpp">
+      <Filter>Tools\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="base_viewportpanel.cpp">
+      <Filter>Viewport</Filter>
+    </ClCompile>
+    <ClCompile Include="base_rendercanvas.cpp">
+      <Filter>Viewport</Filter>
+    </ClCompile>
+    <ClCompile Include="material_browser.cpp">
+      <Filter>Tools\Material</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Material Editor.rc">
