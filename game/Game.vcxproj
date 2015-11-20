@@ -226,6 +226,7 @@
     <ClCompile Include="server\openkatana\weapon_zeus.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (Adamas)|Win32'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="server\server_effects.c" />
     <ClCompile Include="server\server_entity.cpp" />
     <ClCompile Include="server\server_area.c" />
     <ClCompile Include="server\server_ent.c" />
@@ -256,9 +257,11 @@
     <ClInclude Include="..\shared\shared_server.h" />
     <ClInclude Include="..\shared\shared_video.h" />
     <ClInclude Include="client\client_effects.h" />
+    <ClInclude Include="client\client.h" />
     <ClInclude Include="game_main.h" />
     <ClInclude Include="game_resources.h" />
     <ClInclude Include="server\adamas\adamas.h" />
+    <ClInclude Include="server\server_effects.h" />
     <ClInclude Include="server\server_entity.h" />
     <ClInclude Include="server\openkatana\openkatana.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (Adamas)|Win32'">true</ExcludedFromBuild>

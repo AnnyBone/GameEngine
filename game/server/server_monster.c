@@ -18,6 +18,7 @@
 
 #include "server_monster.h"
 
+#include "server_effects.h"
 #include "server_player.h"
 #include "server_item.h"
 #include "server_weapon.h"
@@ -564,14 +565,8 @@ void Monster_Damage(ServerEntity_t *target, ServerEntity_t *inflictor, int iDama
 		decrease after sometime.
 	*/
 
-	if(target->local.bBleed)
-	{
-		char	cBlood[6];
-
-		PARTICLE_BLOOD(cBlood);
-
-		Engine.Particle(target->v.origin,target->v.velocity,10.0f,cBlood,20);
-	}
+	if (target->local.bBleed)
+		ServerEffect_BloodSpray(target->v.origin);
 
 	// Only do this for players.
 	if(Entity_IsPlayer(inflictor))
@@ -962,7 +957,7 @@ void Monster_MoveForward(ServerEntity_t *monster, float velocity)
 		return;
 #endif
 
-	MathVector3f_t angles;
+	//MathVector3f_t angles;
 }
 
 /*	Move the monster backwards.

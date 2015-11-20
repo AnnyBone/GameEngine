@@ -16,15 +16,9 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "client.h"
+#ifndef SERVER_EFFECTS_H
+#define	SERVER_EFFECTS_H
 
-void Client_ViewFrame(void)
-{
-#if 0
-	entity_t	*ePlayerModel,
-				*eWeaponModel;
+void ServerEffect_BloodSpray(MathVector3f_t position);
 
-	ePlayerModel = Engine.Client_GetPlayerEntity();
-	eWeaponModel = Engine.Client_GetViewEntity();
-#endif
-}
+#endif // !SERVER_EFFECTS_H

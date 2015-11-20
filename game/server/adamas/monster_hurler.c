@@ -1,6 +1,9 @@
 /*	Copyright (C) 2014 OldTimes Software / Mark Elsworth Sowden
 */
+
 #include "server_monster.h"
+
+#include "server_effects.h"
 
 /*
 	Small little blob thing that throws itself around.
@@ -201,9 +204,7 @@ void Hurler_Pain(ServerEntity_t *eHurler,ServerEntity_t *eOther)
 	vec3_t	vOrigin;
 	char	cBlood[6];
 
-	PARTICLE_BLOOD(cBlood);
-
-	Engine.Particle(eHurler->v.origin,eHurler->v.velocity,6.0f,cBlood,5);
+	ServerEffect_BloodSpray(eHurler->v.origin);
 
 	// Throw it back. ~hogsy
 	Math_VectorSubtract(eOther->v.origin,eHurler->v.origin,vOrigin);

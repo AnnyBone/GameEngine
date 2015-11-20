@@ -16,18 +16,15 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef CLIENT_MAIN_H
-#define CLIENT_MAIN_H
+#include "server_main.h"
 
-#include "game_main.h"
+#include "server_effects.h"
 
-#include "shared_client.h"
-
-void Client_Initialize(void);
-void Client_Draw(void);
-void Client_ParseTemporaryEntity(void);
-
-// View
-void Client_ViewFrame(void);
-
-#endif	// CLIENT_MAIN_H
+void ServerEffect_BloodSpray(MathVector3f_t position)
+{
+	Engine.WriteByte(MSG_BROADCAST, SVC_TEMPENTITY);
+	Engine.WriteByte(MSG_BROADCAST, CTE_BLOODSPRAY);
+	Engine.WriteCoord(MSG_BROADCAST, position[0]);
+	Engine.WriteCoord(MSG_BROADCAST, position[1]);
+	Engine.WriteCoord(MSG_BROADCAST, position[2]);
+}

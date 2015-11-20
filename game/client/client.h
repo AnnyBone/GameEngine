@@ -16,15 +16,18 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "client.h"
+#ifndef CLIENT_H
+#define CLIENT_H
 
-void Client_ViewFrame(void)
-{
-#if 0
-	entity_t	*ePlayerModel,
-				*eWeaponModel;
+#include "game_main.h"
 
-	ePlayerModel = Engine.Client_GetPlayerEntity();
-	eWeaponModel = Engine.Client_GetViewEntity();
-#endif
-}
+#include "shared_client.h"
+
+void Client_Initialize(void);
+void Client_Draw(void);
+void Client_ParseTemporaryEntity(void);
+
+// View
+void Client_ViewFrame(void);
+
+#endif // !CLIENT_H

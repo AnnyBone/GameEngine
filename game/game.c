@@ -25,7 +25,7 @@
 #include "platform_module.h"
 
 // Client
-#include "client_main.h"
+#include "client.h"
 
 // Server
 #include "server_main.h"

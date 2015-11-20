@@ -19,6 +19,8 @@
 #ifndef CLIENT_EFFECTS_H
 #define	CLIENT_EFFECTS_H
 
-void Effect_Explosion(MathVector3f_t position);
+void ClientEffect_ParticleField(MathVector3f_t position, MathVector3f_t mins, MathVector3f_t maxs, float density);
+void ClientEffect_BloodSpray(MathVector3f_t position);
+void ClientEffect_Explosion(MathVector3f_t position);
 
 #endif	// !CLIENT_EFFECTS_H

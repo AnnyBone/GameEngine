@@ -16,7 +16,7 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "client_main.h"
+#include "client.h"
 
 #include "client_effects.h"
 
@@ -57,43 +57,23 @@ void Client_ParseTemporaryEntity(void)
 			for(i = 0; i < 3; i++)
 				position[i] = Engine.ReadCoord();
 
-			Effect_Explosion(position);
+			ClientEffect_Explosion(position);
 		}
 		break;
 	case CTE_BLOODSPRAY:
 		{
-			int			i,j;
-			char		cBlood[12];
-			vec3_t		vPosition;
-			Particle_t	*pBloodSpray;
+			int				i;
+			MathVector3f_t	position;
 
 			for(i = 0; i < 3; i++)
-				vPosition[i] = Engine.ReadCoord();
+				position[i] = Engine.ReadCoord();
 
-			for(i = 0; i < 24; i++)
-			{
-				pBloodSpray = Engine.Client_AllocateParticle();
-				if(!pBloodSpray)
-					return;
-
-				// Keep the textures random.
-				PARTICLE_BLOOD(cBlood);
-
-				Math_VectorSet(1.0f,pBloodSpray->vColour);
-				Math_VectorCopy(vPosition,pBloodSpray->vOrigin);
-
-				pBloodSpray->lifetime = (float)(Client.time + 5.0);
-				pBloodSpray->pBehaviour	= PARTICLE_BEHAVIOUR_SLOWGRAVITY;
-				pBloodSpray->fRamp		= (float)(rand()&3);
-				pBloodSpray->fScale		= (float)(rand()%8+1);
-				pBloodSpray->iMaterial	= Engine.Client_GetEffect(cBlood);
-				
-				for(j = 0; j < 3; j++)
-					pBloodSpray->vVelocity[j] = (float)((rand()%512)-256);
-			}
+			ClientEffect_BloodSpray(position);
 		}
 		break;
 	case CTE_PARTICLE_FIELD:
+		// TODO: implement this properly...
+		ClientEffect_ParticleField(g_mvOrigin3f, g_mvOrigin3f, g_mvOrigin3f, 0);
 		break;
 	default:
 		Engine.Con_Warning("Unknown temporary entity type! (%i)\n", type);
@@ -105,10 +85,10 @@ void Client_ParseTemporaryEntity(void)
 void Client_RelinkEntities(ClientEntity_t *entity,int i,double dTime)
 {
 	MathVector3f_t	f,r,u;
-	DynamicLight_t	*dLight;
+	DynamicLight_t	*light;
 
 	// [6/5/2012] Keep client time updated (temp) ~hogsy
-	// [5/6/2012] TODO: Move over to somewhere more appropriate please ~hogsy
+	// TODO: Move over to somewhere more appropriate please
 	Client.time = dTime;
 
 	if (entity->effects & EF_MOTION_FLOAT)
@@ -135,7 +115,6 @@ void Client_RelinkEntities(ClientEntity_t *entity,int i,double dTime)
 			pParticle->lifetime = (Client.time + (rand() % 5));
 			pParticle->pBehaviour = PARTICLE_BEHAVIOUR_SMOKE;
 			
-			// [5/9/2012] TODO: Simplify this ~hogsy
 			for(j = 0; j < 3; j++)
 				pParticle->vOrigin[j] = entity->origin[j] + ((rand() & 8) - 5.0f);
 
@@ -143,50 +122,24 @@ void Client_RelinkEntities(ClientEntity_t *entity,int i,double dTime)
 		}
 	}
 
-	// [23/11/2013] Simple bloody particle effect, which is now done client-side! Yay! ~hogsy
 	if (entity->effects & EF_PARTICLE_BLOOD)
-	{
-		char	cBlood[12];
-		int		k,j;
-
-		for(k = 0; k < 2; k++)
-		{
-			Particle_t *pParticle = Engine.Client_AllocateParticle();
-			if(!pParticle)
-				return;
-
-			// Keep the textures random.
-			PARTICLE_BLOOD(cBlood);
-
-			pParticle->iMaterial	= Engine.Client_GetEffect(cBlood);
-			pParticle->fRamp		= (float)(rand()&4);
-			pParticle->fScale		= (float)(rand()%2+2);
-			pParticle->lifetime = (float)(Client.time + 0.3*(rand() % 5));
-			pParticle->pBehaviour	= PARTICLE_BEHAVIOUR_GRAVITY;
-			
-			for(j = 0; j < 3; j++)
-				pParticle->vOrigin[j] = entity->origin[j] + ((rand() & 15) - 5.0f);
-
-			pParticle->vVelocity[2] = 15.0f;
-			//Math_VectorScale(eClient->angles,15.0f,pParticle->vel);
-		}
-	}
+		ClientEffect_BloodSpray(entity->origin);
 
 	if (entity->effects & EF_LIGHT_GREEN)
 	{
 		int k,j;
 
-		dLight = Engine.Client_AllocateDlight(i);
+		light = Engine.Client_AllocateDlight(i);
 
-		Math_VectorCopy(entity->origin, dLight->origin);
+		Math_VectorCopy(entity->origin, light->origin);
 
-		dLight->radius = (float)(rand() % 20) * 10;
-		dLight->color[RED] = 0;
-		dLight->color[GREEN] = 255.0f;
-		dLight->color[BLUE] = 0;
-		dLight->minlight = 16.0f;
-		dLight->die = (float)(Client.time + 0.01);
-		dLight->lightmap		 = true;
+		light->radius		= (float)(rand() % 20) * 10;
+		light->color[RED]	= 0;
+		light->color[GREEN] = 255.0f;
+		light->color[BLUE]	= 0;
+		light->minlight		= 16.0f;
+		light->die			= (float)(Client.time + 0.01);
+		light->lightmap		= true;
 
 		for(k = 0; k < 4; k++)
 		{
@@ -200,7 +153,6 @@ void Client_RelinkEntities(ClientEntity_t *entity,int i,double dTime)
 			pParticle->lifetime = (Client.time + (double)(rand() % 2));
 			pParticle->pBehaviour = PARTICLE_BEHAVIOUR_SLOWGRAVITY;
 			
-			// [5/9/2012] TODO: Simplify this ~hogsy
 			for(j = 0; j < 3; j++)
 				pParticle->vOrigin[j] = entity->origin[j] + ((rand() & 15) - 5.0f);
 
@@ -210,97 +162,96 @@ void Client_RelinkEntities(ClientEntity_t *entity,int i,double dTime)
 
 	if (entity->effects & EF_LIGHT_BLUE)
 	{
-		dLight = Engine.Client_AllocateDlight(i);
+		light = Engine.Client_AllocateDlight(i);
 
-		Math_VectorCopy(entity->origin, dLight->origin);
+		Math_VectorCopy(entity->origin, light->origin);
 
-		dLight->radius			= 120.0f;
-		dLight->color[RED]		= 0;
-		dLight->color[GREEN]	= 0;
-		dLight->color[BLUE]		= 255.0f;
-		dLight->minlight		= 32.0f;
-		dLight->die				= (Client.time+0.01);
-		dLight->lightmap		= true;
+		light->radius			= 120.0f;
+		light->color[RED]		= 0;
+		light->color[GREEN]		= 0;
+		light->color[BLUE]		= 255.0f;
+		light->minlight			= 32.0f;
+		light->die				= (Client.time+0.01);
+		light->lightmap			= true;
 	}
 
 	if (entity->effects & EF_LIGHT_RED)
 	{
-		dLight = Engine.Client_AllocateDlight(i);
+		light = Engine.Client_AllocateDlight(i);
 
-		Math_VectorCopy(entity->origin, dLight->origin);
+		Math_VectorCopy(entity->origin, light->origin);
 
-		dLight->radius			= 120.0f;
-		dLight->color[RED]		= 255.0f;
-		dLight->color[GREEN]	= 0;
-		dLight->color[BLUE]		= 0;
-		dLight->minlight		= 32.0f;
-		dLight->die				= Client.time+0.01;
-		dLight->lightmap		= true;
+		light->radius			= 120.0f;
+		light->color[RED]		= 255.0f;
+		light->color[GREEN]		= 0;
+		light->color[BLUE]		= 0;
+		light->minlight			= 32.0f;
+		light->die				= Client.time + 0.01;
+		light->lightmap			= true;
 	}
 
 	if (entity->effects & EF_MUZZLEFLASH)
 	{
-		dLight = Engine.Client_AllocateDlight(i);
+		light = Engine.Client_AllocateDlight(i);
 
-		Math_VectorCopy(entity->origin, dLight->origin);
+		Math_VectorCopy(entity->origin, light->origin);
 
-		dLight->origin[2] += 16.0f;
+		light->origin[2] += 16.0f;
 
 		Math_AngleVectors(entity->angles, f, r, u);
-		Math_VectorMA(dLight->origin,18,f,dLight->origin);
+		Math_VectorMA(light->origin, 18, f, light->origin);
 		
-		dLight->radius			= 170.0f+(rand()&31);
-		dLight->color[RED]		= 255.0f;
-		dLight->color[GREEN]	= 255.0f;
-		dLight->color[BLUE]		= 50.0f;
-		dLight->minlight		= 32.0f;
-		dLight->die				= Client.time+0.1;
-		dLight->lightmap		= true;
+		light->radius		= 170.0f + (rand() & 31);
+		light->color[RED]	= 255.0f;
+		light->color[GREEN] = 255.0f;
+		light->color[BLUE]	= 50.0f;
+		light->minlight		= 32.0f;
+		light->die			= Client.time + 0.1;
+		light->lightmap		= true;
 	}
 
 	if (entity->effects & EF_DIMLIGHT)
 	{
-		dLight = Engine.Client_AllocateDlight(i);
+		light = Engine.Client_AllocateDlight(i);
 
-		Math_VectorCopy(entity->origin, dLight->origin);
+		Math_VectorCopy(entity->origin, light->origin);
 
-		dLight->radius			= 200.0f;
-		dLight->color[RED]		= 255.0f;
-		dLight->color[GREEN]	= 255.0f;
-		dLight->color[BLUE]		= 255.0f;
-		dLight->minlight		= 32.0f;
-		dLight->die				= Client.time+0.01;
-		dLight->lightmap		= true;
+		light->radius		= 200.0f;
+		light->color[RED]	= 255.0f;
+		light->color[GREEN] = 255.0f;
+		light->color[BLUE]	= 255.0f;
+		light->minlight		= 32.0f;
+		light->die			= Client.time + 0.01;
+		light->lightmap		= true;
 	}
 
 	if (entity->effects & EF_BRIGHTLIGHT)
 	{
-		dLight = Engine.Client_AllocateDlight(i);
+		light = Engine.Client_AllocateDlight(i);
 
-		Math_VectorCopy(entity->origin, dLight->origin);
-		// [22/4/2013] Simplified ~hogsy
-		Math_VectorSet(255.0f,dLight->color);
+		Math_VectorCopy(entity->origin, light->origin);
+		Math_VectorSet(255.0f, light->color);
 
-		dLight->origin[2]		+= 16.0f;
-		dLight->radius			= 300.0f+(rand()&31);
-		dLight->minlight		= 32.0f;
-		dLight->die				= Client.time + 0.001;
-		dLight->lightmap		= true;
+		light->origin[2]	+= 16.0f;
+		light->radius		= 300.0f + (rand() & 31);
+		light->minlight		= 32.0f;
+		light->die			= Client.time + 0.001;
+		light->lightmap		= true;
 	}
 
 	if (entity->effects & EF_GLOW_RED)
 	{
-		dLight = Engine.Client_AllocateDlight(i);
+		light = Engine.Client_AllocateDlight(i);
 
-		Math_VectorCopy(entity->origin, dLight->origin);
+		Math_VectorCopy(entity->origin, light->origin);
 
-		dLight->radius			= (float)sin(Client.time*2.0f)*100.0f;
-		dLight->color[RED]		= 255.0f;
-		dLight->color[GREEN]	= 0;
-		dLight->color[BLUE]		= 0;
-		dLight->minlight		= 16.0f;
-		dLight->die				= Client.time + 0.01f;
-		dLight->lightmap		= true;
+		light->radius		= (float)sin(Client.time*2.0f)*100.0f;
+		light->color[RED]	= 255.0f;
+		light->color[GREEN] = 0;
+		light->color[BLUE]	= 0;
+		light->minlight		= 16.0f;
+		light->die			= Client.time + 0.01f;
+		light->lightmap		= true;
 	}
 
 /*	if(ent->effects & EF_GLOW_GREEN)
@@ -320,31 +271,30 @@ void Client_RelinkEntities(ClientEntity_t *entity,int i,double dTime)
 
 	if (entity->effects & EF_GLOW_BLUE)
 	{
-		dLight = Engine.Client_AllocateDlight(i);
+		light = Engine.Client_AllocateDlight(i);
 
-		Math_VectorCopy(entity->origin, dLight->origin);
+		Math_VectorCopy(entity->origin, light->origin);
 
-		dLight->radius			= (float)sin(Client.time*2.0f)*100.0f;
-		dLight->color[RED]		= 0;
-		dLight->color[GREEN]	= 0;
-		dLight->color[BLUE]		= 255.0f;
-		dLight->minlight		= 16.0f;
-		dLight->die				= (Client.time+0.01);
-		dLight->lightmap	= true;
+		light->radius		= (float)sin(Client.time*2.0f)*100.0f;
+		light->color[RED]	= 0;
+		light->color[GREEN] = 0;
+		light->color[BLUE]	= 255.0f;
+		light->minlight		= 16.0f;
+		light->die			= (Client.time + 0.01);
+		light->lightmap		= true;
 	}
 
 	if (entity->effects & EF_GLOW_WHITE)
 	{
-		dLight = Engine.Client_AllocateDlight(i);
+		light = Engine.Client_AllocateDlight(i);
 
-		Math_VectorCopy(entity->origin, dLight->origin);
-		// [22/4/2013] Simplified ~hogsy
-		Math_VectorSet(255.0f,dLight->color);
+		Math_VectorCopy(entity->origin, light->origin);
+		Math_VectorSet(255.0f, light->color);
 
-		dLight->radius		= (float)sin(Client.time*2.0f)*100.0f;
-		dLight->minlight	= 16.0f;
-		dLight->die			= (Client.time+0.01);
-		dLight->lightmap	= true;
+		light->radius		= (float)sin(Client.time*2.0f)*100.0f;
+		light->minlight		= 16.0f;
+		light->die			= (Client.time + 0.01);
+		light->lightmap		= true;
 	}
 
 	entity->bForceLink = false;

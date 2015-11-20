@@ -63,6 +63,12 @@
     <ClInclude Include="..\shared\shared_zone.h">
       <Filter>Shared</Filter>
     </ClInclude>
+    <ClInclude Include="client\client.h">
+      <Filter>Client</Filter>
+    </ClInclude>
+    <ClInclude Include="server\server_effects.h">
+      <Filter>Server</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Client">
@@ -258,6 +264,9 @@
     </ClCompile>
     <ClCompile Include="game.c" />
     <ClCompile Include="server\server.c">
+      <Filter>Server</Filter>
+    </ClCompile>
+    <ClCompile Include="server\server_effects.c">
       <Filter>Server</Filter>
     </ClCompile>
   </ItemGroup>
