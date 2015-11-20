@@ -21,7 +21,7 @@
 #include "EngineBase.h"
 
 #include "EngineGame.h"
-#include "EngineVideo.h"
+#include "video.h"
 #include "engine_client.h"
 #include "EngineMenu.h"
 #include "EngineServer.h"
@@ -291,7 +291,7 @@ void Server_Flare(MathVector3f_t org,float r,float g,float b,float a,float scale
 {
 #if 0
 	int		i;
-	char	name[MAX_OSPATH];
+	char	name[PLATFORM_MAX_PATH];
 
 	if(!texture)
 	{

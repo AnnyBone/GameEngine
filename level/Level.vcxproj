@@ -329,6 +329,7 @@
       <ProgramDataBaseFileName>.\Release\</ProgramDataBaseFileName>
       <AdditionalIncludeDirectories>..\external;..\shared;..\platform\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <FloatingPointModel>Precise</FloatingPointModel>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
     </ClCompile>
     <Midl>
       <TypeLibraryName>.\Release\hmap2.tlb</TypeLibraryName>

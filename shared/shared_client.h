@@ -1,7 +1,23 @@
 /*	Copyright (C) 2011-2015 OldTimes Software
+
+	This program is free software; you can redistribute it and/or
+	modify it under the terms of the GNU General Public License
+	as published by the Free Software Foundation; either version 2
+	of the License, or (at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+	See the GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
-#ifndef __SHAREDCLIENT__
-#define __SHAREDCLIENT__
+
+#ifndef SHARED_CLIENT_H
+#define SHARED_CLIENT_H
 
 /*	Client->Server type
 	defines. Currently these
@@ -22,7 +38,6 @@ enum
 };
 
 /*	Temporary Entity Types
-	CTE stands for Client Temporary Entity.
 */
 enum
 {
@@ -33,6 +48,8 @@ enum
 	CTE_PARTICLE_FIELD
 };
 
+/*	Client stats, shared from server to client.
+*/
 typedef enum
 {
 	STAT_HEALTH,
@@ -61,7 +78,7 @@ typedef struct
 	MathVector3f_t	color;			//johnfitz -- lit support via lordhavoc
 	MathVector3f_t	transformed;
 
-	bool	bLightmap;		// Defines whether this light effects the lightmap.
+	bool	lightmap;		// Defines whether this light effects the lightmap.
 } DynamicLight_t;
 
 typedef void (*xcommand_t)(void);
@@ -127,8 +144,6 @@ typedef struct ClientEntity_s
 	int				dlightframe;	// dynamic lighting
 	int				dlightbits;
 
-// FIXME: could turn these into a union
-	int				trivial_accept;
 	struct mnode_s	*topnode;		// for bmodels, first world node
 											//  that splits bmodel, or NULL if
 											//  not split
@@ -159,7 +174,6 @@ typedef enum
 	PARTICLE_BEHAVIOUR_SLOWGRAVITY,		// Slow Gravity
 	PARTICLE_BEHAVIOUR_FIRE,			// Fire
 	PARTICLE_BEHAVIOUR_EXPLODE,			// Explosion
-	PARTICLE_EXPLODE2,
 	PARTICLE_BLOB,
 	PARTICLE_BLOB2,
 	PARTICLE_BEHAVIOUR_SMOKE			// Smoke
@@ -172,6 +186,7 @@ typedef enum
 	PARTICLE_TYPE_TELEPORTSPLASH
 } ParticleType_t;
 
+// TODO: Update these to new coding standard; e.g. lowercase names
 typedef struct particle_s
 {
 	MathVector3f_t		vOrigin,		// The origin of the particle.
@@ -186,7 +201,7 @@ typedef struct particle_s
 
 	struct		particle_s	*next;
 
-	double	fDie;
+	double	lifetime;
 
 	float					fRamp,
 							fScale;		// Size/scale of the particle.

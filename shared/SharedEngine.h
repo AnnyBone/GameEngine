@@ -23,8 +23,8 @@
 
 #include "platform.h"
 
-#include "SharedFlags.h"
-#include "SharedMaterial.h"
+#include "shared_flags.h"
+#include "shared_material.h"
 #include "shared_client.h"
 
 /*	Functions exported from the engine.
@@ -106,4 +106,4 @@ typedef struct
 
 #define ENGINE_VERSION	(sizeof(EngineImport_t)+sizeof(EngineExport_t))
 
-#endif
+#endif // !SHARED_ENGINE_H

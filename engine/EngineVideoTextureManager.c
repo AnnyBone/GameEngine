@@ -20,7 +20,7 @@
 
 #include "EngineBase.h"
 
-#include "EngineVideo.h"
+#include "video.h"
 
 /*
 	FitzQuake's texture manager.
@@ -203,7 +203,7 @@ void TexMgr_Imagelist_f (void)
 
 void TexMgr_Imagedump_f(void)
 {
-	char		tganame[MAX_OSPATH],tempname[MAX_OSPATH],dirname[MAX_OSPATH];
+	char		tganame[PLATFORM_MAX_PATH], tempname[PLATFORM_MAX_PATH], dirname[PLATFORM_MAX_PATH];
 	gltexture_t	*glt;
 	byte		*buffer;
 
@@ -964,7 +964,7 @@ void TexMgr_LoadLightmap(gltexture_t *glt,byte *data)
 	TexMgr_SetFilterModes(glt);
 }
 
-gltexture_t *TexMgr_LoadImage(model_t *owner,char *name,int width,int height,enum srcformat format,byte *data,char *source_file,unsigned int source_offset,unsigned int flags)
+gltexture_t *TexMgr_LoadImage(model_t *owner, char *name, int width, int height, enum TextureSourceFormat format, byte *data, char *source_file, unsigned int source_offset, unsigned int flags)
 {
 	unsigned    short   crc		= 0;
 	gltexture_t			*glt	= NULL;

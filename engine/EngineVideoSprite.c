@@ -20,7 +20,7 @@
 
 #include "EngineBase.h"
 
-#include "EngineVideo.h"
+#include "video.h"
 
 /*
 	Sprite Management

@@ -1,6 +1,4 @@
-/*	Copyright (C) 1996-2001 Id Software, Inc.
-	Copyright (C) 2002-2009 John Fitzgibbons and others
-	Copyright (C) 2011-2015 OldTimes Software
+/*	Copyright (C) 2011-2015 OldTimes Software
 
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License
@@ -20,25 +18,31 @@
 
 #include "EngineBase.h"
 
-#include "EngineVideo.h"
-#include "EngineVideoShader.h"
-#include "EngineVideoFrameBuffer.h"
+#include "video.h"
+#include "video_shader.h"
+#include "video_framebuffer.h"
 
-// FrameBuffer Manager
+/*
+	Framebuffer Manager
+*/
 
-CVideoFrameBufferManager::CVideoFrameBufferManager()
+VideoFrameBufferManager	*g_framebuffermanager;
+
+VideoFrameBufferManager::VideoFrameBufferManager()
 {
-	//FrameBufferList = new CVideoFrameBuffer[5];
+	//FrameBufferList = new VideoFrameBuffer[5];
 }
 
-CVideoFrameBufferManager::~CVideoFrameBufferManager()
+VideoFrameBufferManager::~VideoFrameBufferManager()
 {
 	//delete[] FrameBufferList;
 }
 
-// FrameBuffer Object
+/*
+	Framebuffer Object
+*/
 
-CVideoFrameBuffer::CVideoFrameBuffer(int Width, int Height)
+VideoFrameBuffer::VideoFrameBuffer(int Width, int Height)
 {
 	bIsBound = 0;
 
@@ -63,12 +67,12 @@ CVideoFrameBuffer::CVideoFrameBuffer(int Width, int Height)
 	VideoLayer_AttachFrameBufferTexture(gColourBuffer);
 }
 
-CVideoFrameBuffer::~CVideoFrameBuffer()
+VideoFrameBuffer::~VideoFrameBuffer()
 {
 	VideoLayer_DeleteFrameBuffer(&uiFrameBuffer);
 }
 
-void CVideoFrameBuffer::Bind()
+void VideoFrameBuffer::Bind()
 {
 	if (bIsBound)
 		return;
@@ -78,7 +82,7 @@ void CVideoFrameBuffer::Bind()
 	bIsBound = true;
 }
 
-void CVideoFrameBuffer::Unbind()
+void VideoFrameBuffer::Unbind()
 {
 	if (!bIsBound)
 		return;
@@ -90,58 +94,59 @@ void CVideoFrameBuffer::Unbind()
 
 // Post Processing Object
 
-CVideoPostProcess::CVideoPostProcess(const char *FragName, const char *VertName)
-	: CVideoFrameBuffer(Video.iWidth, Video.iHeight)
+VideoPostProcess::VideoPostProcess(const char *FragName, const char *VertName)
+	: VideoFrameBuffer(Video.iWidth, Video.iHeight)
 {
-	PostProcessProgram = new CVideoShaderProgram();
+	program = new VideoShaderProgram();
+	program->Initialize();
 
-	CVideoShader *FragmentShader = new CVideoShader(VIDEO_SHADER_FRAGMENT);
+	VideoShader *FragmentShader = new VideoShader(VIDEO_SHADER_FRAGMENT);
 	if (!FragmentShader->Load(FragName))
 		Sys_Error("Failed to load fragment shader! (%s)\n", FragName);
 
-	CVideoShader *VertexShader = new CVideoShader(VIDEO_SHADER_VERTEX);
+	VideoShader *VertexShader = new VideoShader(VIDEO_SHADER_VERTEX);
 	if (!VertexShader->Load(VertName))
 		Sys_Error("Failed to load vertex shader! (%s)\n", VertName);
 
-	PostProcessProgram->Attach(FragmentShader);
-	PostProcessProgram->Attach(VertexShader);
-	PostProcessProgram->Link();
+	program->Attach(FragmentShader);
+	program->Attach(VertexShader);
+	program->Link();
 
-	iDiffuseUniform = PostProcessProgram->GetUniformLocation("SampleTexture");
+	iDiffuseUniform = program->GetUniformLocation("SampleTexture");
 }
 
-CVideoPostProcess::CVideoPostProcess(CVideoShaderProgram *PostProcessProgram)
-	: CVideoFrameBuffer(512, 512)	//Video.iWidth, Video.iHeight)
+VideoPostProcess::VideoPostProcess(VideoShaderProgram *PostProcessProgram)
+	: VideoFrameBuffer(512, 512)	//Video.iWidth, Video.iHeight)
 {
 	if (!PostProcessProgram)
 		throw CEngineException("Invalid shader program!\n");
 
-	this->PostProcessProgram = PostProcessProgram;
+	this->program = PostProcessProgram;
 }
 
-void CVideoPostProcess::Draw()
+void VideoPostProcess::Draw()
 {
 	Unbind();
 
-	PostProcessProgram->Enable();
+	program->Enable();
 
 	Video_SetTexture(gColourBuffer);
 
-	PostProcessProgram->SetVariable(iDiffuseUniform, 0);
+	program->SetVariable(iDiffuseUniform, 0);
 
 	Draw_ResetCanvas();
 	GL_SetCanvas(CANVAS_DEFAULT);
 	Draw_Fill(0, 0, 512, 512, 1, 1, 1, 1); //Video.iWidth, Video.iHeight, 1, 1, 1, 1);
 	Draw_ResetCanvas();
 
-	PostProcessProgram->Disable();
+	program->Disable();
 }
 
-CVideoPostProcess *post_bloom;
+VideoPostProcess *post_bloom;
 
 void VideoPostProcess_Initialize()
 {
-	post_bloom = new CVideoPostProcess("bloom", "base");
+	post_bloom = new VideoPostProcess("bloom", "base");
 	if (!post_bloom)
 		Sys_Error("Failed to create post process effect!\n");
 }

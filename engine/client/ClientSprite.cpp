@@ -20,7 +20,7 @@
 
 #include "../EngineBase.h"
 
-#include "../EngineVideo.h"
+#include "../video.h"
 
 ConsoleVariable_t cvSpriteDebugSize = { "sprite_debugsize", "0", false, false, "If enabled, shows the area that the sprite covers." };
 
@@ -66,7 +66,7 @@ private:
 
 	Colour_t Colour;
 
-	video::CVertexObject *RenderObject;
+	VideoVertexObject *RenderObject;
 
 	Material_t *Material;
 };

@@ -46,11 +46,11 @@
 */
 #define ENGINE_VERSION_MAJOR	0		// TODO: Isn't relevent for engine ver anymore!
 #define ENGINE_VERSION_MINOR	3		// TODO: Isn't relevent for engine ver anymore!
-#define ENGINE_VERSION_BUILD	1024	// 17/10/2015
+#define ENGINE_VERSION_BUILD	1027	// 20/10/2015
 
 #define	ENGINE_LOG	"engine"
 
-#include "SharedFlags.h"
+#include "shared_flags.h"
 
 #define MINIMUM_MEMORY	0x2000000	// 32MB
 
@@ -92,7 +92,7 @@
 
 #include "EngineMain.h"
 #include "EngineConsoleVariable.h"
-#include "EngineVideoWindow.h"
+#include "video_window.h"
 #include "EngineVideoDraw.h"
 #include "EngineVideoScreen.h"
 #include "EngineNetwork.h"

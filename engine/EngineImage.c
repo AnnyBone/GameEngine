@@ -22,7 +22,7 @@
 
 #include "platform_filesystem.h"
 
-char loadfilename[MAX_OSPATH]; //file scope so that error messages can use it
+char loadfilename[PLATFORM_MAX_PATH]; //file scope so that error messages can use it
 
 bool bPNGSupported = false;
 
@@ -111,7 +111,7 @@ targaheader_t targa_header;
 bool Image_WriteTGA(char *name, uint8_t *data,int width,int height,int bpp,bool upsidedown)
 {
 	int	handle, i, size, temp, bytes;
-	char pathname[MAX_OSPATH];
+	char pathname[PLATFORM_MAX_PATH];
 	uint8_t	header[TARGAHEADERSIZE];
 
 	if(!pFileSystem_CreateDirectory(com_gamedir)) //if we've switched to a nonexistant gamedir, create it now so we don't crash

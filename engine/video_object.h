@@ -1,6 +1,4 @@
-/*	Copyright (C) 1996-2001 Id Software, Inc.
-	Copyright (C) 2002-2009 John Fitzgibbons and others
-	Copyright (C) 2011-2015 OldTimes Software
+/*	Copyright (C) 2011-2015 OldTimes Software
 
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License
@@ -18,17 +16,14 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef __ENGINEVIDEOOBJECT_H__
-#define __ENGINEVIDEOOBJECT_H__
+#ifndef VIDEO_OBJECT_H
+#define VIDEO_OBJECT_H
 
 #ifdef __cplusplus
-namespace video // temp name...
-{
-
-class CVertex
+class VideoVertex
 {
 public:
-	CVertex(float x, float y, float z);
+	VideoVertex(float x, float y, float z);
 protected:
 private:
 	MathVector3f_t
@@ -40,11 +35,11 @@ private:
 	Colour_t cColour;
 };
 
-class CVertexObject
+class VideoVertexObject
 {
 public:
-	CVertexObject(VideoPrimitive_t pPrimitiveType = VIDEO_PRIMITIVE_TRIANGLE_FAN);
-	~CVertexObject();
+	VideoVertexObject(VideoPrimitive_t pPrimitiveType = VIDEO_PRIMITIVE_TRIANGLE_FAN);
+	~VideoVertexObject();
 
 	void Begin();
 	void AddVertex(float x, float y, float z);
@@ -61,12 +56,10 @@ private:
 	unsigned int uiColourBuffer;
 	unsigned int uiTextureBuffer;
 
-	CVertex *VertexList;
+	VideoVertex *VertexList;
 
 	unsigned int uiVertices;
 };
-
-}
 #endif
 
 void VideoObject_Begin(VideoObject_t *voObject, VideoPrimitive_t vpPrimitive);
@@ -79,4 +72,4 @@ void VideoObject_End(VideoObject_t *voObject);
 void VideoObject_Clip(VideoObject_t *voObject, MathVector4f_t mvClipDimensions);
 void VideoObject_Draw(VideoObject_t *voObject);
 
-#endif
+#endif // !VIDEO_OBJECT_H

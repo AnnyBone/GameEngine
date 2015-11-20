@@ -63,7 +63,7 @@ void CL_ParseTEnt (void)
 
 			pParticle->iMaterial	= iParticleTexture;
 			pParticle->fScale		= 30.0f;
-			pParticle->fDie			= cl.time+10.0f;
+			pParticle->lifetime = cl.time + 10.0f;
 			pParticle->fRamp		= rand()&3;
 			pParticle->pBehaviour	= PARTICLE_BEHAVIOUR_SMOKE;
 
@@ -85,7 +85,7 @@ void CL_ParseTEnt (void)
 			dlExplodeLight->color[2]	= 50.0f;
 			dlExplodeLight->minlight	= 32.0f;
 			dlExplodeLight->die			= cl.time+0.5f;
-			dlExplodeLight->bLightmap	= true;
+			dlExplodeLight->lightmap	= true;
 		}
 
 		S_StartSound(-1,0,sExplosionSound,pos,255,1);
@@ -112,7 +112,7 @@ void CL_ParseTEnt (void)
 
 					pParticle->iMaterial	= iParticleTexture;
 					pParticle->fScale		= 7.0f;
-					pParticle->fDie			= cl.time+2.0f+(rand()&31)*0.02f;
+					pParticle->lifetime = cl.time + 2.0f + (rand() & 31)*0.02f;
 					pParticle->pBehaviour	= PARTICLE_BEHAVIOUR_SLOWGRAVITY;
 					pParticle->vOrigin[0]	= pos[0]+vDirection[0];
 					pParticle->vOrigin[1]	= pos[1]+vDirection[1];
@@ -146,7 +146,7 @@ void CL_ParseTEnt (void)
 
 					pParticle->iMaterial	= iParticleTexture;
 					pParticle->fScale		= 7.0f;
-					pParticle->fDie			= cl.time+2.0f+(rand()&7)*0.02f;
+					pParticle->lifetime = cl.time + 2.0f + (rand() & 7)*0.02f;
 					pParticle->pBehaviour	= PARTICLE_BEHAVIOUR_SLOWGRAVITY;
 					pParticle->vOrigin[0]	= pos[0]+i+(rand()&3);
 					pParticle->vOrigin[1]	= pos[1]+j+(rand()&3);

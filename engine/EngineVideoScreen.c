@@ -24,7 +24,7 @@
 
 #include "EngineMenu.h"
 #include "EngineEditor.h"
-#include "EngineVideo.h"
+#include "video.h"
 #include "EngineInput.h"
 
 /*
@@ -628,7 +628,7 @@ void Screen_DrawConsole(void)
 void SCR_ScreenShot_f (void)
 {
 	byte	*buffer;
-	char	tganame[32],checkname[MAX_OSPATH];
+	char	tganame[32], checkname[PLATFORM_MAX_PATH];
 	int		i;
 
 	if(!pFileSystem_CreateDirectory(va("%s/%s",com_gamedir,Global.cScreenshotPath)))

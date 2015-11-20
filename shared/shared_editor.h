@@ -1,6 +1,6 @@
-#ifndef __SHAREDEDITOR__
-#define __SHAREDEDITOR__
+#ifndef SHARED_EDITOR_H
+#define SHARED_EDITOR_H
 
 #define	ENTITY_LIGHT	"light"
 
-#endif
+#endif	// !SHARED_EDITOR_H

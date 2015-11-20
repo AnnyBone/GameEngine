@@ -79,7 +79,7 @@ bool Prisoner_CheckCell(ServerEntity_t *ePrisoner)
 				Waypoint_IsSafe(ePrisoner,wCellDoorWaypoint))
 			{
 				// Set that as our target so we'll walk over to it later.
-				Math_VectorCopy(wCellDoorWaypoint->position, ePrisoner->Monster.mvMoveTarget);
+			//	Math_VectorCopy(wCellDoorWaypoint->position, ePrisoner->Monster.mvMoveTarget);
 
 				// Set the state to wandering so we walk over to the selected waypoint.
 				Monster_SetThink(ePrisoner,THINK_WANDERING);
@@ -117,7 +117,7 @@ void Prisoner_Walk(ServerEntity_t *ePrisoner)
 	if(ePrisoner->v.iHealth <= 0)
 		return;
 
-	Monster_MoveToGoal(ePrisoner, ePrisoner->Monster.mvMoveTarget, 10.0f);
+//	Monster_MoveToGoal(ePrisoner, ePrisoner->Monster.mvMoveTarget, 10.0f);
 }
 
 void Prisoner_Run(ServerEntity_t *ePrisoner)
@@ -126,7 +126,7 @@ void Prisoner_Run(ServerEntity_t *ePrisoner)
 	if(ePrisoner->v.iHealth <= 0)
 		return;
 
-	Monster_MoveToGoal(ePrisoner, ePrisoner->Monster.mvMoveTarget, 20.0f);
+//	Monster_MoveToGoal(ePrisoner, ePrisoner->Monster.mvMoveTarget, 20.0f);
 }
 
 void Prisoner_Pain(ServerEntity_t *ePrisoner, ServerEntity_t *eOther)

@@ -18,8 +18,8 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef __ENGINEWINDOW__
-#define	__ENGINEWINDOW__
+#ifndef VIDEO_WINDOW_H
+#define	VIDEO_WINDOW_H
 
 /*
 	Generic Window Header
@@ -42,10 +42,10 @@ int Window_GetHeight(void);
 typedef struct
 {
 #ifdef _WIN32
-	HWND hWindowInstance;
+	HWND instance;
 #endif
 } Window_t;
 
-extern Window_t globalWindow;
+extern Window_t g_mainwindow;
 
-#endif
+#endif // !VIDEO_WINDOW_H

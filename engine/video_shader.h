@@ -30,11 +30,11 @@ typedef enum
 } VideoShaderType_t;
 
 #ifdef __cplusplus
-class CVideoShader
+class VideoShader
 {
 public:
-	CVideoShader(VideoShaderType_t type);
-	~CVideoShader();
+	VideoShader(VideoShaderType_t type);
+	~VideoShader();
 
 	bool Load(const char *path);
 	bool CheckCompileStatus();
@@ -57,13 +57,14 @@ private:
 
 #define	SHADER_REGISTER(name)
 
-class CVideoShaderProgram
+class VideoShaderProgram
 {
 public:
-	CVideoShaderProgram();
-	~CVideoShaderProgram();
+	VideoShaderProgram();
+	~VideoShaderProgram();
 
-	void Attach(CVideoShader *Shader);
+	void Initialize();
+	void Attach(VideoShader *Shader);
 	void Enable();
 	void Disable();
 	void Link();
@@ -80,7 +81,7 @@ protected:
 private:
 	//CVideoShader **vsShader;
 
-	unsigned int vsProgram;
+	unsigned int instance;
 };
 
 extern "C" {

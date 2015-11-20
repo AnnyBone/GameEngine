@@ -16,8 +16,8 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef __SHAREDGAME_H__
-#define __SHAREDGAME_H__
+#ifndef SHARED_GAME_H
+#define SHARED_GAME_H
 
 #ifndef KATANA	// TODO: Sort this out!!!
 typedef struct link_s
@@ -26,7 +26,7 @@ typedef struct link_s
 } link_t;
 #endif
 
-#include "SharedMaterial.h"
+#include "shared_material.h"
 
 typedef enum
 {
@@ -42,6 +42,41 @@ typedef enum
 } DamageType_t;
 
 typedef struct ServerEntity_s ServerEntity_t;
+
+/*
+	Waypoints
+*/
+
+typedef enum
+{
+	WAYPOINT_DEFAULT,	// Basic point
+
+	WAYPOINT_JUMP,		// Next waypoint needs a jump
+	WAYPOINT_CLIMB,		// Next waypoint needs a climb
+	WAYPOINT_COVER,		// Is behind cover
+	WAYPOINT_ITEM,		// Has an item nearby
+	WAYPOINT_WEAPON,	// Has a weapon nearby
+	WAYPOINT_SPAWN,		// Near a spawn point
+	WAYPOINT_SPAWNAREA,	// Near a spawn area
+	WAYPOINT_SWIM		// Underwater
+} WaypointType_t;
+
+typedef struct waypoint_s
+{
+	const	char		*cName;		// The name for the waypoint
+	int					number;		// Each point is assigned it's own number
+	ServerEntity_t		*eEntity;	// The entity currently occupying that waypoint
+#ifdef DEBUG_WAYPOINT
+	ServerEntity_t		*eDebug;	// Entity to use for displaying waypoint position
+#endif
+	struct	waypoint_s	*next;		// The next point to target.
+	struct	waypoint_s	*last;		// The last point we were at.
+	vec3_t				position;	// The waypoints position.
+	bool				bOpen;		// Check to see if the waypoint currently is occupied.
+	WaypointType_t		wType;		// Type of point (duck, jump, climb etc.)
+} Waypoint_t;
+
+/**/
 
 typedef struct
 {
@@ -241,6 +276,8 @@ typedef struct
 {
 	MathVector3f_t mvMoveTarget;	// Position we're currently headed towards.
 	MathVector3f_t vOldTarget;
+
+	Waypoint_t	*move_target;
 
 	int		iType;
 
@@ -657,4 +694,4 @@ typedef struct
 
 #define GAME_VERSION (sizeof(GameExport_t)+sizeof(ModuleImport_t)+sizeof(GlobalVariables_t*))	// Version check that's used for Menu and Launcher.
 
-#endif
+#endif // !SHARED_GAME_H

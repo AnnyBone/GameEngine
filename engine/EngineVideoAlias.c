@@ -20,8 +20,8 @@
 
 #include "EngineBase.h"
 
-#include "EngineVideo.h"
-#include "EngineVideoShader.h"
+#include "video.h"
+#include "video_shader.h"
 
 extern cvar_t r_drawflat, gl_fullbrights, r_lerpmodels, r_lerpmove; //johnfitz
 

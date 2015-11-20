@@ -128,6 +128,7 @@ void Vektar_Die(ServerEntity_t *eVektar,ServerEntity_t *other)
 
 void Vektar_Move(ServerEntity_t *eVektar)
 {
+#if 0	// TODO: Rewrite this...
 	Waypoint_t	*wWaypoint;
 
 	// [20/12/2012] Vektar's positioning shit ~hogsy
@@ -144,6 +145,7 @@ void Vektar_Move(ServerEntity_t *eVektar)
 	eVektar->Physics.iSolid = SOLID_SLIDEBOX;
 
 	Entity_SetOrigin(eVektar,wWaypoint->position);
+#endif
 
 	Entity_DropToFloor(eVektar);
 

@@ -942,6 +942,12 @@ void Monster_MoveRandom(ServerEntity_t *eMonster,float fSpeed)
 		eMonster->v.angles[1] = (float)(rand() % 360);
 }
 
+void Monster_MoveToWaypoint(ServerEntity_t *monster, Waypoint_t *target, float velocity)
+{
+	if (!target)
+		return;
+}
+
 Waypoint_t *Monster_GetMoveTarget(ServerEntity_t *Monster)
 {
 	return Waypoint_GetByVisibility(Monster->v.origin);
@@ -949,8 +955,15 @@ Waypoint_t *Monster_GetMoveTarget(ServerEntity_t *Monster)
 
 /*	Move the monster forwards.
 */
-void Monster_MoveForward(ServerEntity_t *eMonster)
-{}
+void Monster_MoveForward(ServerEntity_t *monster, float velocity)
+{
+#if 0	// Ensure we're on the ground?
+	if (!Entity_IsOnGround(monster))
+		return;
+#endif
+
+	MathVector3f_t angles;
+}
 
 /*	Move the monster backwards.
 */
@@ -979,15 +992,15 @@ void Monster_TurnRight(ServerEntity_t *eMonster)
 
 /*	Allows a monster to jump with the given velocity.
 */
-void Monster_Jump(ServerEntity_t *eMonster,float fVelocity)
+void Monster_Jump(ServerEntity_t *monster, float velocity)
 {
-	if(eMonster->v.iHealth <= 0 || eMonster->v.velocity[2] || !(eMonster->v.flags & FL_ONGROUND))
+	if (monster->v.velocity[2] != 0 || Entity_IsOnGround(monster))
 		return;
-	
-	// Allow the monster to add additional sounds/movement if required.
-	if (eMonster->Monster.Jump)
-		eMonster->Monster.Jump(eMonster);
 
-	eMonster->v.flags		-= FL_ONGROUND;
-	eMonster->v.velocity[2]	= fVelocity;
+	// Allow the monster to add additional sounds/movement if required.
+	if (monster->Monster.Jump)
+		monster->Monster.Jump(monster);
+
+	monster->v.flags -= FL_ONGROUND;
+	monster->v.velocity[2] = velocity;
 }

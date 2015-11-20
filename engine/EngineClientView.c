@@ -20,7 +20,7 @@
 
 #include "EngineBase.h"
 
-#include "EngineVideo.h"
+#include "video.h"
 #include "EngineGame.h"
 
 /*	The view is allowed to move slightly from it's true position for bobbing,

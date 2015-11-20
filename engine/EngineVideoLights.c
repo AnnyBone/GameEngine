@@ -20,7 +20,7 @@
 
 #include "EngineBase.h"
 
-#include "EngineVideo.h"
+#include "video.h"
 #include "EngineEditor.h"
 
 int	r_dlightframecount;
@@ -79,7 +79,7 @@ void Light_Draw(void)
 	dlLight = cl_dlights;
 	for(i = 0; i < MAX_DLIGHTS; i++,dlLight++)
 	{
-		if(cvEditorLightPreview.bValue && dlLight->bLightmap)
+		if (cvEditorLightPreview.bValue && dlLight->lightmap)
 			continue;
 		// [5/5/2012] Ugh rarely some lights are inverted... ~hogsy
 		else if(((dlLight->die < cl.time) && dlLight->die) || !dlLight->radius)
@@ -219,7 +219,7 @@ void R_PushDlights(void)
 	dLight = cl_dlights;
 	for(i = 0; i < MAX_DLIGHTS; i++,dLight++)
 	{
-		if ((dLight->bLightmap == false) || ((dLight->die < cl.time) && dLight->die))
+		if ((dLight->lightmap == false) || ((dLight->die < cl.time) && dLight->die))
 			continue;
 
 		Math_VectorCopy(dLight->origin,dLight->transformed);
@@ -399,10 +399,10 @@ DynamicLight_t *Light_GetDynamic(vec3_t vPoint,bool bCheap)
 	for(i = 0; i < MAX_DLIGHTS; i++)
 	{
 		// [24/2/2014] If we're not being effected by the lightmap then ignore static light sources ~hogsy
-		if (!bStaticLights && !cl_dlights[i].bLightmap)
+		if (!bStaticLights && !cl_dlights[i].lightmap)
 			continue;
 
-		if((cl_dlights[i].die >= cl.time) || (!cl_dlights[i].bLightmap && cl_dlights[i].radius))
+		if ((cl_dlights[i].die >= cl.time) || (!cl_dlights[i].lightmap && cl_dlights[i].radius))
 		{
 			float	fDistance[2];
 			vec3_t	vDistance;
@@ -447,7 +447,7 @@ void R_AddDynamicLights(msurface_t *surf)
 
 	for(lnum = 0; lnum < MAX_DLIGHTS; lnum++)
 	{
-		if (!(surf->dlightbits & (1 << lnum)) || (cl_dlights[lnum].bLightmap == false))
+		if (!(surf->dlightbits & (1 << lnum)) || (cl_dlights[lnum].lightmap == false))
 			continue;		// not lit by this light
 
 		rad = cl_dlights[lnum].radius;

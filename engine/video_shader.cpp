@@ -1,18 +1,16 @@
-/*	Copyright (C) 1996-2001 Id Software, Inc.
-	Copyright (C) 2002-2009 John Fitzgibbons and others
-	Copyright (C) 2011-2015 OldTimes Software
-
+/*	Copyright (C) 2011-2015 OldTimes Software
+	
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License
 	as published by the Free Software Foundation; either version 2
 	of the License, or (at your option) any later version.
-
+	
 	This program is distributed in the hope that it will be useful,
 	but WITHOUT ANY WARRANTY; without even the implied warranty of
 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
+	
 	See the GNU General Public License for more details.
-
+	
 	You should have received a copy of the GNU General Public License
 	along with this program; if not, write to the Free Software
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -20,8 +18,8 @@
 
 #include "EngineBase.h"
 
-#include "EngineVideo.h"
-#include "EngineVideoShader.h"
+#include "video.h"
+#include "video_shader.h"
 
 /*
 	TODO:
@@ -29,7 +27,7 @@
 		Better tracking and error checking?
 */
 
-CVideoShader::CVideoShader(VideoShaderType_t type)
+VideoShader::VideoShader(VideoShaderType_t type)
 {
 	instance = 0;
 
@@ -38,7 +36,7 @@ CVideoShader::CVideoShader(VideoShaderType_t type)
 	source_length = 0;
 }
 
-bool CVideoShader::Load(const char *path)
+bool VideoShader::Load(const char *path)
 {
 	VIDEO_FUNCTION_START
 	// Check that the path is valid.
@@ -102,7 +100,7 @@ bool CVideoShader::Load(const char *path)
 	VIDEO_FUNCTION_END
 }
 
-CVideoShader::~CVideoShader()
+VideoShader::~VideoShader()
 {
 	VIDEO_FUNCTION_START
 	glDeleteShader(instance);
@@ -111,7 +109,7 @@ CVideoShader::~CVideoShader()
 
 // Compilation
 
-bool CVideoShader::CheckCompileStatus()
+bool VideoShader::CheckCompileStatus()
 {
 	VIDEO_FUNCTION_START
 	int iCompileStatus;
@@ -138,12 +136,12 @@ bool CVideoShader::CheckCompileStatus()
 
 // Information
 
-unsigned int CVideoShader::GetInstance()
+unsigned int VideoShader::GetInstance()
 {
 	return instance;
 }
 
-VideoShaderType_t CVideoShader::GetType()
+VideoShaderType_t VideoShader::GetType()
 {
 	return type;
 }
@@ -152,123 +150,122 @@ VideoShaderType_t CVideoShader::GetType()
 	Shader Program
 */
 
-CVideoShaderProgram::CVideoShaderProgram()
+VideoShaderProgram::VideoShaderProgram()
 {
-	vsProgram = glCreateProgram();
-	if (!vsProgram)
-	{
-		// TODO: Error handling!!
-	}
+	instance = 0;
 }
 
-CVideoShaderProgram::~CVideoShaderProgram()
+VideoShaderProgram::~VideoShaderProgram()
 {
 	Disable();
 
-	glDeleteProgram(vsProgram);
+	glDeleteProgram(instance);
 }
 
-void CVideoShaderProgram::Attach(CVideoShader *Shader)
+void VideoShaderProgram::Initialize()
+{
+	instance = glCreateProgram();
+	if (!instance)
+		Sys_Error("Failed to create shader program!\n");
+}
+
+void VideoShaderProgram::Attach(VideoShader *Shader)
 {
 	VIDEO_FUNCTION_START
 	if (!Shader)
 		Sys_Error("Attempted to attach an invalid shader!\n");
 
-	glAttachShader(vsProgram, Shader->GetInstance());
+	glAttachShader(instance, Shader->GetInstance());
 	VIDEO_FUNCTION_END
 }
 
-void CVideoShaderProgram::Enable()
+void VideoShaderProgram::Enable()
 {
 	VIDEO_FUNCTION_START
-	glUseProgram(vsProgram);
+	glUseProgram(instance);
 	VIDEO_FUNCTION_END
 }
 
-void CVideoShaderProgram::Disable()
+void VideoShaderProgram::Disable()
 {
 	VIDEO_FUNCTION_START
 	glUseProgram(0);
 	VIDEO_FUNCTION_END
 }
 
-void CVideoShaderProgram::Link()
+void VideoShaderProgram::Link()
 {
-	glLinkProgram(vsProgram);
+	glLinkProgram(instance);
 
 	int iLinkStatus;
-	glGetProgramiv(vsProgram, GL_LINK_STATUS, &iLinkStatus);
+	glGetProgramiv(instance, GL_LINK_STATUS, &iLinkStatus);
 	if (!iLinkStatus)
 	{
 		int iLength = 0;
 
-		glGetProgramiv(vsProgram, GL_INFO_LOG_LENGTH, &iLength);
+		glGetProgramiv(instance, GL_INFO_LOG_LENGTH, &iLength);
 		if (iLength > 1)
 		{
 			int iLoser = 0;
 
 			char *cLog = new char[iLength];
-			glGetInfoLogARB(vsProgram, iLength, &iLoser, cLog);
+			glGetInfoLogARB(instance, iLength, &iLoser, cLog);
 			Con_Warning("%s\n", cLog);
 			delete[] cLog;
 		}
 
-		Sys_Error("Shader program linking failed!\nCheck log for details.");
+		Sys_Error("Shader program linking failed!\nCheck log for details.\n");
 	}
 }
 
 // Uniform Handling
 
-int CVideoShaderProgram::GetUniformLocation(const char *ccUniformName)
+int VideoShaderProgram::GetUniformLocation(const char *ccUniformName)
 {
-	return glGetUniformLocation(vsProgram, ccUniformName);
+	return glGetUniformLocation(instance, ccUniformName);
 }
 
-void CVideoShaderProgram::SetVariable(int iUniformLocation, float x, float y, float z)
+void VideoShaderProgram::SetVariable(int iUniformLocation, float x, float y, float z)
 {
 	// TODO: Error checking!
 	glUniform3f(iUniformLocation, x, y, z);
 }
 
-void CVideoShaderProgram::SetVariable(int iUniformLocation, MathVector3f_t mvVector)
+void VideoShaderProgram::SetVariable(int iUniformLocation, MathVector3f_t mvVector)
 {
 	// TODO: Error checking!
 	glUniform3fv(iUniformLocation, 3, mvVector);
 }
 
-void CVideoShaderProgram::SetVariable(int iUniformLocation, float x, float y, float z, float a)
+void VideoShaderProgram::SetVariable(int iUniformLocation, float x, float y, float z, float a)
 {
 	// TODO: Error checking!
 	glUniform4f(iUniformLocation, x, y, z, a);
 }
 
-void CVideoShaderProgram::SetVariable(int iUniformLocation, int i)
+void VideoShaderProgram::SetVariable(int iUniformLocation, int i)
 {
 	// TODO: Error checking!
 	glUniform1i(iUniformLocation, i);
 }
 
-void CVideoShaderProgram::SetVariable(int iUniformLocation, float f)
+void VideoShaderProgram::SetVariable(int iUniformLocation, float f)
 {
 	// TODO: Error checking!
 	glUniform1f(iUniformLocation, f);
 }
 
-//
-
-// Information
-
-unsigned int CVideoShaderProgram::GetInstance()
+unsigned int VideoShaderProgram::GetInstance()
 {
-	return vsProgram;
+	return instance;
 }
 
 /*
 	C Wrapper
 */
 
-CVideoShaderProgram *BaseProgram;
-CVideoShader *BaseFragmentShader, *BaseVertexShader;
+VideoShaderProgram *base_program;
+VideoShader *base_fragment, *base_vertex;
 
 // Uniforms
 int
@@ -285,67 +282,68 @@ int
 void VideoShader_Initialize(void)
 {
 	// Program needs to be created first.
-	BaseProgram = new CVideoShaderProgram();
+	base_program = new VideoShaderProgram();
+	base_program->Initialize();
 
 	// Followed by the shaders.
-	BaseVertexShader = new CVideoShader(VIDEO_SHADER_VERTEX);
-	if (!BaseVertexShader->Load("base"))
+	base_vertex = new VideoShader(VIDEO_SHADER_VERTEX);
+	if (!base_vertex->Load("base"))
 		Sys_Error("Failed to load base vertex shader!\n");
 
-	BaseFragmentShader = new CVideoShader(VIDEO_SHADER_FRAGMENT);
-	if (!BaseFragmentShader->Load("base"))
+	base_fragment = new VideoShader(VIDEO_SHADER_FRAGMENT);
+	if (!base_fragment->Load("base"))
 		Sys_Error("Failed to load base fragment shader!\n");
 
 	// Attach and link it, if this fails then it fails.
-	BaseProgram->Attach(BaseVertexShader);
-	BaseProgram->Attach(BaseFragmentShader);
-	BaseProgram->Link();
+	base_program->Attach(base_vertex);
+	base_program->Attach(base_fragment);
+	base_program->Link();
 
-	iDiffuseUniform = BaseProgram->GetUniformLocation("diffuseTexture");
-	iDetailUniform = BaseProgram->GetUniformLocation("detailTexture");
-	iFullbrightUniform = BaseProgram->GetUniformLocation("fullbrightTexture");
-	iSphereUniform = BaseProgram->GetUniformLocation("sphereTexture");
+	iDiffuseUniform = base_program->GetUniformLocation("diffuseTexture");
+	iDetailUniform = base_program->GetUniformLocation("detailTexture");
+	iFullbrightUniform = base_program->GetUniformLocation("fullbrightTexture");
+	iSphereUniform = base_program->GetUniformLocation("sphereTexture");
 
-	iScaleUniform = BaseProgram->GetUniformLocation("vertexScale");
+	iScaleUniform = base_program->GetUniformLocation("vertexScale");
 
-	iLightPositionUniform = BaseProgram->GetUniformLocation("lightPosition");
-	iLightColourUniform = BaseProgram->GetUniformLocation("lightColour");
+	iLightPositionUniform = base_program->GetUniformLocation("lightPosition");
+	iLightColourUniform = base_program->GetUniformLocation("lightColour");
 }
 
 void VideoShader_Enable(void)
 {
 #ifdef VIDEO_SUPPORT_SHADERS
-	BaseProgram->Enable();
+	base_program->Enable();
 #endif
 }
 
 void VideoShader_Disable(void)
 {
 #ifdef VIDEO_SUPPORT_SHADERS
-	BaseProgram->Disable();
+	base_program->Disable();
 #endif
 }
 
 void VideoShader_SetVariablei(int iUniformLocation, int i)
 {
 #ifdef VIDEO_SUPPORT_SHADERS
-	BaseProgram->SetVariable(iUniformLocation, i);
+	base_program->SetVariable(iUniformLocation, i);
 #endif
 }
 
 void VideoShader_SetVariablef(int iUniformLocation, float f)
 {
-	BaseProgram->SetVariable(iUniformLocation, f);
+	base_program->SetVariable(iUniformLocation, f);
 }
 
 void VideoShader_SetVariable3f(int iUniformLocation, float x, float y, float z)
 {
-	BaseProgram->SetVariable(iUniformLocation, x, y, z);
+	base_program->SetVariable(iUniformLocation, x, y, z);
 }
 
 void VideoShader_Shutdown()
 {
 	// Check if it's initialized first, just in-case.
-	if (BaseProgram)
-		delete BaseProgram;
+	if (base_program)
+		delete base_program;
 }

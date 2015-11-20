@@ -1273,7 +1273,7 @@ ServerEntity_t *Server_FindEntity(ServerEntity_t *eStartEntity, char *cName, boo
 // [9/7/2012] Added Server_PrecacheResource ~hogsy
 void Server_PrecacheResource(int iType, const char *ccResource)
 {
-	char	name[MAX_OSPATH];
+	char	name[PLATFORM_MAX_PATH];
 	int		i;
 
 	/*	[13/7/2012] TODO:

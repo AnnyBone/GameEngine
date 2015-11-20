@@ -26,7 +26,7 @@
 #include "EngineBase.h"
 
 #include "EngineInput.h"
-#include "EngineVideo.h"
+#include "video.h"
 
 int 		con_linewidth;
 

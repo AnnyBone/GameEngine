@@ -20,8 +20,8 @@
 
 #include "EngineBase.h"
 
-#include "EngineVideo.h"
-#include "EngineVideoShader.h"
+#include "video.h"
+#include "video_shader.h"
 #include "EngineScript.h"
 
 /*

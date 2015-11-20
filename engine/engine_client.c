@@ -21,7 +21,7 @@
 #include "EngineBase.h"
 
 #include "engine_client.h"
-#include "EngineVideo.h"
+#include "video.h"
 
 #include "shared_server.h"
 #include "shared_menu.h"
@@ -69,11 +69,11 @@ gltexture_t	*gMenuTexture[128];
 */
 void Client_PrecacheResource(int iType,char *cResource)
 {
-	char	cPath[MAX_OSPATH];
-	int		i;
+	char			cPath[PLATFORM_MAX_PATH];
+	int				i;
 	unsigned int    w,h;
-	model_t	*mClientModel;
-	uint8_t	*bData;
+	model_t			*mClientModel;
+	uint8_t			*bData;
 
 	switch(iType)
 	{

@@ -21,7 +21,7 @@
 #include "EngineBase.h"
 
 #include "EngineVideoParticle.h"
-#include "EngineVideo.h"
+#include "video.h"
 
 /*
 	Particle System
@@ -95,7 +95,7 @@ void Particle_CreateEffect(
 					// [5/9/2012] Keep this pre-defined? ~hogsy
 					fVelocity = 50.0f + (float)(rand() & 63);
 
-					pParticle->fDie = cl.time + 2.0f + (rand() & 31)*0.02f;
+					pParticle->lifetime = cl.time + 2.0f + (rand() & 31)*0.02f;
 					pParticle->pBehaviour = PARTICLE_BEHAVIOUR_SLOWGRAVITY;
 					pParticle->iMaterial = iMaterial;
 
@@ -119,7 +119,7 @@ void Particle_CreateEffect(
 
 					fVelocity = 50 + (rand() & 63);
 
-					pParticle->fDie = cl.time + 0.2f + (rand() & 7)*0.02f;
+					pParticle->lifetime = cl.time + 0.2f + (rand() & 7)*0.02f;
 					pParticle->pBehaviour = PARTICLE_BEHAVIOUR_SLOWGRAVITY;
 					pParticle->vOrigin[0] = vOrigin[0] + i + (rand() & 3);
 					pParticle->vOrigin[1] = vOrigin[1] + j + (rand() & 3);
@@ -138,7 +138,7 @@ void Particle_CreateEffect(
 
 			pParticle->iMaterial = iMaterial;
 			pParticle->fScale = fScale;
-			pParticle->fDie = cl.time + 0.1f*(rand() % 5);
+			pParticle->lifetime = cl.time + 0.1*(rand() % 5);
 			pParticle->pBehaviour = pBehaviour;
 
 			// TODO: Simplify this.
@@ -179,7 +179,7 @@ void Particle_RocketTrail(vec3_t start, vec3_t end, int type)
 		p = Particle_Allocate();
 
 		Math_VectorCopy(g_mvOrigin3f, p->vVelocity);
-		p->fDie = cl.time + 2;
+		p->lifetime = cl.time + 2;
 
 		switch (type)
 		{
@@ -204,7 +204,7 @@ void Particle_RocketTrail(vec3_t start, vec3_t end, int type)
 			break;
 		case 3:
 		case 5:	// tracer
-			p->fDie = cl.time + 0.5;
+			p->lifetime = cl.time + 0.5;
 			p->pBehaviour = PARTICLE_BEHAVIOUR_STATIC;
 
 			Math_VectorCopy(start, p->vOrigin);
@@ -231,7 +231,7 @@ void Particle_RocketTrail(vec3_t start, vec3_t end, int type)
 			break;
 		case 6:	// voor trail
 			p->pBehaviour = PARTICLE_BEHAVIOUR_STATIC;
-			p->fDie = cl.time + 0.3f;
+			p->lifetime = cl.time + 0.3f;
 
 			for (j = 0; j<3; j++)
 				p->vOrigin[j] = start[j] + ((rand() & 15) - 8);
@@ -372,7 +372,7 @@ void Particle_Frame(void)
 	for (;;)
 	{
 		pKill = pActiveParticles;
-		if (pKill && (pKill->fDie < cl.time))
+		if (pKill && (pKill->lifetime < cl.time))
 		{
 			pActiveParticles = pKill->next;
 			pKill->next = pFreeParticles;
@@ -389,7 +389,7 @@ void Particle_Frame(void)
 		for (;;)
 		{
 			pKill = pParticle->next;
-			if (pKill && (pKill->fDie < cl.time))
+			if (pKill && (pKill->lifetime < cl.time))
 			{
 				pParticle->next = pKill->next;
 				pKill->next = pFreeParticles;
@@ -406,7 +406,7 @@ void Particle_Frame(void)
 			pParticle->vOrigin[i] += pParticle->vVelocity[i] * fFrameTime;
 
 		// Keep the alpha updated.
-		pParticle->vColour[pALPHA] = Math_Clamp(0, pParticle->fDie - cl.time, 1.0f);
+		pParticle->vColour[pALPHA] = Math_Clamp(0, pParticle->lifetime - cl.time, 1.0f);
 
 		// Lighting support was here, but for now it's being left out since I want to implement a better solution.
 
@@ -419,14 +419,14 @@ void Particle_Frame(void)
 		case PARTICLE_BEHAVIOUR_FIRE:
 			pParticle->fRamp += fTime[0];
 			if (pParticle->fRamp >= 6.0f)
-				pParticle->fDie = -1.0f;
+				pParticle->lifetime = -1.0;
 
 			pParticle->vVelocity[2] += fGravity;
 			break;
 		case PARTICLE_BEHAVIOUR_EXPLODE:
 			pParticle->fRamp += fTime[1];
 			if (pParticle->fRamp >= 8.0f)
-				pParticle->fDie = -1.0f;
+				pParticle->lifetime = -1.0;
 
 			for (i = 0; i < 3; i++)
 				pParticle->vVelocity[i] += pParticle->vVelocity[i] * fDVelocity;

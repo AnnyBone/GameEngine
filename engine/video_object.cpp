@@ -1,6 +1,4 @@
-/*	Copyright (C) 1996-2001 Id Software, Inc.
-	Copyright (C) 2002-2009 John Fitzgibbons and others
-	Copyright (C) 2011-2015 OldTimes Software
+/*	Copyright (C) 2011-2015 OldTimes Software
 
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License
@@ -20,15 +18,13 @@
 
 #include "EngineBase.h"
 
-#include "EngineVideo.h"
-
-using namespace video;
+#include "video.h"
 
 /*
 	Vertex
 */
 
-CVertex::CVertex(float x, float y, float z)
+VideoVertex::VideoVertex(float x, float y, float z)
 {
 	mvPosition[0] = x; 
 	mvPosition[1] = y; 
@@ -43,7 +39,7 @@ CVertex::CVertex(float x, float y, float z)
 	Object
 */
 
-CVertexObject::CVertexObject(VideoPrimitive_t pPrimitiveType)
+VideoVertexObject::VideoVertexObject(VideoPrimitive_t pPrimitiveType)
 {
 	VIDEO_FUNCTION_START
 	this->pPrimitiveType = pPrimitiveType;
@@ -62,7 +58,7 @@ CVertexObject::CVertexObject(VideoPrimitive_t pPrimitiveType)
 	VIDEO_FUNCTION_END
 }
 
-CVertexObject::~CVertexObject()
+VideoVertexObject::~VideoVertexObject()
 {
 	VIDEO_FUNCTION_START
 	VideoLayer_DeleteVertexBuffer(&uiVertexBuffer);
@@ -71,19 +67,19 @@ CVertexObject::~CVertexObject()
 	VIDEO_FUNCTION_END
 }
 
-void CVertexObject::Begin()
+void VideoVertexObject::Begin()
 {
 }
 
-void CVertexObject::AddVertex(float x, float y, float z)
+void VideoVertexObject::AddVertex(float x, float y, float z)
 {
 }
 
-void CVertexObject::Colour(float r, float g, float b, float a)
+void VideoVertexObject::Colour(float r, float g, float b, float a)
 {
 }
 
-void CVertexObject::End()
+void VideoVertexObject::End()
 {
 	VIDEO_FUNCTION_START
 	glBindBuffer(GL_ARRAY_BUFFER, uiVertexBuffer);
@@ -105,7 +101,7 @@ void CVertexObject::End()
 	VIDEO_FUNCTION_END
 }
 
-void CVertexObject::Draw()
+void VideoVertexObject::Draw()
 {
 	VIDEO_FUNCTION_START
 	glEnableClientState(GL_VERTEX_ARRAY);

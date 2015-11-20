@@ -203,11 +203,11 @@ void Bot_Spawn(ServerEntity_t *eBot)
 		return;
 	}
 
-	eBot->v.cClassname	= "bot";
-	eBot->v.iHealth		= 100;
+	eBot->v.cClassname		= "bot";
+	eBot->v.iHealth			= 100;
 	eBot->local.iMaxHealth = cvServerMaxHealth.iValue;
-	eBot->v.movetype	= MOVETYPE_STEP;
-	eBot->v.bTakeDamage	= true;
+	eBot->v.movetype		= MOVETYPE_STEP;
+	eBot->v.bTakeDamage		= true;
 
 	Entity_SetPhysics(eBot, SOLID_SLIDEBOX, 1.4f, 4.0f);
 
@@ -216,7 +216,6 @@ void Bot_Spawn(ServerEntity_t *eBot)
 	eBot->Monster.Think = Bot_Think;
 	eBot->Monster.PainFunction = Bot_Pain;
 
-	// Mikiko and Superfly are set manually to avoid issues...
 	if(eBot->local.style == BOT_DEFAULT)
 	{
 		// Must be set after teams are set up.
@@ -295,7 +294,7 @@ void Bot_Think(ServerEntity_t *eBot)
 		Waypoint_t *wMoveTarget = Monster_GetMoveTarget(eBot);
 		if (wMoveTarget)
 		{
-			Math_VectorCopy(wMoveTarget->position, eBot->Monster.mvMoveTarget);
+			eBot->Monster.move_target = wMoveTarget;
 
 			Monster_SetThink(eBot, THINK_WANDERING);
 			return;

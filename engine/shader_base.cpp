@@ -20,35 +20,23 @@
 
 #include "EngineBase.h"
 
-#include "EngineVideo.h"
-#include "EngineVideoShader.h"
+#include "video.h"
+#include "video_shader.h"
 
-SHADER_REGISTER("BLOOM");
+SHADER_REGISTER("BASE");
 
-namespace video
+class BaseShader : public VideoShader
 {
-	namespace shaders
-	{
+public:
+	BaseShader(VideoShaderType_t type);
+protected:
+private:
+	bool	alpha_test;
+	float	alpha_clamp;
+};
 
-		class CBaseShader : public CVideoShader
-		{
-		public:
-			CBaseShader(VideoShaderType_t type);
-		protected:
-		private:
-			bool	alpha_test;
-			float	alpha_clamp;
-		};
-
-	}
-}
-
-// DECLARE_SHADER
-
-using namespace video::shaders;
-
-CBaseShader::CBaseShader(VideoShaderType_t type)
-	: CVideoShader(type)
+BaseShader::BaseShader(VideoShaderType_t type)
+	: VideoShader(type)
 {
 	alpha_test	= false;
 	alpha_clamp	= 0.5f;

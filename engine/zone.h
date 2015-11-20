@@ -109,7 +109,7 @@ void *Hunk_TempAlloc (int size);
 
 void Hunk_Check (void);
 
-#include "SharedZone.h"
+#include "shared_zone.h"
 
 void Cache_Flush (void);
 

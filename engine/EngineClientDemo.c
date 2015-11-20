@@ -181,7 +181,7 @@ void CL_Stop_f (void)
 void CL_Record_f (void)
 {
 	int		c;
-	char	name[MAX_OSPATH];
+	char	name[PLATFORM_MAX_PATH];
 	int		track;
 
 	if (cmd_source != src_command)

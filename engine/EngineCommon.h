@@ -1,7 +1,5 @@
-#ifndef COMMON_H
-#define COMMON_H
-
-#include "SharedFlags.h"
+#ifndef ENGCOMMON_H
+#define ENGCOMMON_H
 
 #if !defined BYTE_DEFINED
 typedef unsigned char 		byte;
@@ -141,7 +139,7 @@ extern "C" {
 	extern int com_filesize;
 	struct cache_user_s;
 
-	extern	char	com_gamedir[MAX_OSPATH];
+	extern char com_gamedir[PLATFORM_MAX_PATH];
 
 	void FileSystem_WriteFile(const char *ccFileName, void *data, int len);
 	int COM_OpenFile(const char *filename, int *hndl);

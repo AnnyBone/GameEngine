@@ -27,7 +27,7 @@
 #include "platform_math.h"
 #include "platform_filesystem.h"
 
-#include "SharedFlags.h"
+#include "shared_flags.h"
 #include "SharedModule.h"
 #include "shared_menu.h"
 #include "SharedFormats.h"

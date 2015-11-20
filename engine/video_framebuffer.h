@@ -1,6 +1,4 @@
-/*	Copyright (C) 1996-2001 Id Software, Inc.
-	Copyright (C) 2002-2009 John Fitzgibbons and others
-	Copyright (C) 2011-2015 OldTimes Software
+/*	Copyright (C) 2011-2015 OldTimes Software
 
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License
@@ -18,15 +16,15 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef __ENGINEVIDEOFRAMEBUFFER_H__
-#define	__ENGINEVIDEOFRAMEBUFFER_H__
+#ifndef VIDEO_FRAMEBUFFER_H
+#define	VIDEO_FRAMEBUFFER_H
 #pragma once
 
-class CVideoFrameBuffer
+class VideoFrameBuffer
 {
 public:
-	CVideoFrameBuffer(int Width, int Height);
-	~CVideoFrameBuffer();
+	VideoFrameBuffer(int Width, int Height);
+	~VideoFrameBuffer();
 
 	void Bind();
 	void Unbind();
@@ -40,29 +38,31 @@ private:
 	bool bIsBound;
 };
 
-class CVideoFrameBufferManager
+class VideoFrameBufferManager
 {
 public:
-	CVideoFrameBufferManager();
-	~CVideoFrameBufferManager();
+	VideoFrameBufferManager();
+	~VideoFrameBufferManager();
+
+	void Initialize();
 
 private:
-	CVideoFrameBuffer *FrameBufferList;
+	VideoFrameBuffer *fbo;
 };
 
-class CVideoPostProcess : public CVideoFrameBuffer
+class VideoPostProcess : public VideoFrameBuffer
 {
 public:
-	CVideoPostProcess(CVideoShaderProgram *PostProcessProgram);
-	CVideoPostProcess(const char *FragName, const char *VertName);
+	VideoPostProcess(VideoShaderProgram *PostProcessProgram);
+	VideoPostProcess(const char *FragName, const char *VertName);
 
-	void Draw();
+	virtual void Draw();
 
 private:
 	int iDiffuseUniform;
 
-	CVideoShaderProgram *PostProcessProgram;
+	VideoShaderProgram *program;
 };
 
-#endif
+#endif // !VIDEO_FRAMEBUFFER_H
 

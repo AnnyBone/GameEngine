@@ -20,9 +20,8 @@
 
 #include "EngineBase.h"
 
-#include "EngineVideo.h"
-#include "EngineVideoShader.h"
-#include "EngineGame.h"
+#include "video.h"
+#include "video_shader.h"
 
 /*
 	Video System

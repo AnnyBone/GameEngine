@@ -24,7 +24,7 @@
 #include "EngineMenu.h"
 #include "EngineEditor.h"
 #include "EngineInput.h"
-#include "EngineVideo.h"
+#include "video.h"
 #include "EngineServerPhysics.h"
 #include "engine_client.h"
 #include "EngineAudio.h"

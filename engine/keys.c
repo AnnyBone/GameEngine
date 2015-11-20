@@ -20,7 +20,7 @@
 
 #include "EngineBase.h"
 
-#include "EngineVideo.h"
+#include "video.h"
 #include "EngineMenu.h"
 #include "EngineEditor.h"
 

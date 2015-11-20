@@ -1,6 +1,4 @@
-/*	Copyright (C) 1996-2001 Id Software, Inc.
-	Copyright (C) 2002-2009 John Fitzgibbons and others
-	Copyright (C) 2011-2015 OldTimes Software
+/*	Copyright (C) 2011-2015 OldTimes Software
 
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License
@@ -18,12 +16,11 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef __ENGINEVIDEO__
-#define __ENGINEVIDEO__
+#ifndef VIDEO_H
+#define VIDEO_H
 
 //#define	VIDEO_SUPPORT_FRAMEBUFFERS
 #define	VIDEO_SUPPORT_SHADERS
-//#define	VIDEO_SUPPORT_PERFHACKS
 #define	VIDEO_LIGHTMAP_HACKS
 
 extern ConsoleVariable_t
@@ -231,8 +228,10 @@ extern float r_world_matrix[16], r_base_world_matrix[16];
 
 void Video_ShowBoundingBoxes(void);
 
-#include "EngineVideoObject.h"
+#include "video_object.h"
 #include "EngineVideoLayer.h"
+
+// Legacy
 #include "EngineVideoAlias.h"
 
 void R_SetupGenericView(void);
@@ -280,4 +279,4 @@ void DrawGLPoly(glpoly_t *p);
 
 void Warp_DrawWaterPoly(glpoly_t *p, Material_t *mCurrent);
 
-#endif
+#endif // !VIDEO_H

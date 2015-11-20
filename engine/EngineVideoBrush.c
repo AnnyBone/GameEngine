@@ -20,7 +20,7 @@
 
 #include "EngineBase.h"
 
-#include "EngineVideo.h"
+#include "video.h"
 
 /*
 	Brush Model rendering.
@@ -253,7 +253,7 @@ void Brush_Draw(ClientEntity_t *e)
 
 		for(k = 0; k < MAX_DLIGHTS; k++)
 		{
-			if ((cl_dlights[k].bLightmap == false) || ((cl_dlights[k].die < cl.time) && cl_dlights[k].die))
+			if ((cl_dlights[k].lightmap == false) || ((cl_dlights[k].die < cl.time) && cl_dlights[k].die))
 				continue;
 
 			cl_dlights[k].transformed[0] =

@@ -629,19 +629,19 @@
     <ClCompile Include="EngineConsole.c" />
     <ClCompile Include="crc.c" />
     <ClCompile Include="EngineException.cpp" />
-    <ClCompile Include="EngineSDLWindow.c" />
-    <ClCompile Include="EngineVideoFrameBuffer.cpp" />
+    <ClCompile Include="video_sdlwindow.c" />
+    <ClCompile Include="video_framebuffer.cpp" />
     <ClCompile Include="EngineVideoParticle.c" />
     <ClCompile Include="EngineVideoAlias.c" />
     <ClCompile Include="EngineAudio.c" />
-    <ClCompile Include="EngineVideoShader.cpp" />
+    <ClCompile Include="video_shader.cpp" />
     <ClCompile Include="engine_client.c" />
     <ClCompile Include="EngineConsoleCommand.c" />
     <ClCompile Include="EngineConsoleVariable.c" />
     <ClCompile Include="EngineEditor.c" />
     <ClCompile Include="EngineMaterialEditor.c" />
     <ClCompile Include="EngineVideoLayer.c" />
-    <ClCompile Include="EngineVideoObject.cpp" />
+    <ClCompile Include="video_object.cpp" />
     <ClCompile Include="EngineVideoFont.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
     </ClCompile>
@@ -661,7 +661,7 @@
     <ClCompile Include="EngineVideoScreen.c" />
     <ClCompile Include="EngineScript.c" />
     <ClCompile Include="EngineVideoSprite.c" />
-    <ClCompile Include="EngineVideo.c" />
+    <ClCompile Include="video.c" />
     <ClCompile Include="EngineClientView.c" />
     <ClCompile Include="EngineServerWorld.c" />
     <ClCompile Include="EngineVideoDraw.c" />
@@ -725,11 +725,11 @@
     <ClInclude Include="EngineMaterialEditor.h" />
     <ClInclude Include="EngineVideoDraw.h" />
     <ClInclude Include="EngineAudio.h" />
-    <ClInclude Include="EngineVideoFrameBuffer.h" />
+    <ClInclude Include="video_framebuffer.h" />
     <ClInclude Include="EngineVideoLayer.h" />
-    <ClInclude Include="EngineVideoObject.h" />
-    <ClInclude Include="EngineVideoShader.h" />
-    <ClInclude Include="EngineVideoWindow.h" />
+    <ClInclude Include="video_object.h" />
+    <ClInclude Include="video_shader.h" />
+    <ClInclude Include="video_window.h" />
     <ClInclude Include="engine_client.h" />
     <ClInclude Include="EngineServerEntity.h" />
     <ClInclude Include="EngineEditor.h" />
@@ -742,7 +742,7 @@
     <ClInclude Include="EngineServerPhysics.h" />
     <ClInclude Include="EngineScript.h" />
     <ClInclude Include="EngineServer.h" />
-    <ClInclude Include="EngineVideo.h" />
+    <ClInclude Include="video.h" />
     <ClInclude Include="glquake.h" />
     <ClInclude Include="EngineModel.h" />
     <ClInclude Include="EngineVideoTextureManager.h" />

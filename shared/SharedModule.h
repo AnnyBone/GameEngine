@@ -1,6 +1,4 @@
-/*	Copyright (C) 1996-2001 Id Software, Inc.
-	Copyright (C) 2002-2009 John Fitzgibbons and others
-	Copyright (C) 2011-2015 OldTimes Software
+/*	Copyright (C) 2011-2015 OldTimes Software
 
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License
@@ -18,12 +16,12 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef __SHAREDMODULE__
-#define __SHAREDMODULE__
+#ifndef SHARED_MODULE_H
+#define SHARED_MODULE_H
 
-// Base module names...
+// Base module names
 #define	MODULE_ENGINE	"engine"
 #define MODULE_GAME		"game"
 #define	MODULE_MENU		"menu"
 
-#endif
+#endif // !SHARED_MODULE_H

@@ -91,9 +91,9 @@ void Hurler_Think(ServerEntity_t *eHurler)
 		break;
 	case THINK_ATTACKING:
 		// Throw us in the direction of the enemy. ~hogsy
-		if(eHurler->v.flags & FL_ONGROUND)
+		if (Entity_IsOnGround(eHurler))
 		{
-			vec3_t	vOrigin;
+			MathVector3f_t	vOrigin;
 
 			Monster_Jump(eHurler,150.0f);
 
@@ -114,8 +114,8 @@ void Hurler_Think(ServerEntity_t *eHurler)
 
 		if(dHurlerSpawnDelay < Server.dTime)
 		{
-			trace_t	tSpawnTraceCheck;
-			vec3_t	vNewOrigin;
+			trace_t			tSpawnTraceCheck;
+			MathVector3f_t	vNewOrigin;
 
 			Math_VectorCopy(eHurler->v.origin,vNewOrigin);
 			// Bump it up a lil' ~hogsy

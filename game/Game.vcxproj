@@ -119,9 +119,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="client\client_effects.c" />
-    <ClCompile Include="client\client_main.c" />
+    <ClCompile Include="client\client.c" />
     <ClCompile Include="client\client_view.c" />
-    <ClCompile Include="game_main.c" />
+    <ClCompile Include="game.c" />
     <ClCompile Include="server\adamas\adamas_blazer.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (OpenKatana)|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (Adamas)|Win32'">true</ExcludedFromBuild>
@@ -230,7 +230,7 @@
     <ClCompile Include="server\server_area.c" />
     <ClCompile Include="server\server_ent.c" />
     <ClCompile Include="server\server_item.c" />
-    <ClCompile Include="server\server_main.c" />
+    <ClCompile Include="server\server.c" />
     <ClCompile Include="server\server_misc.c" />
     <ClCompile Include="server\server_monster.c" />
     <ClCompile Include="server\server_physics.c" />
@@ -241,9 +241,21 @@
     <ClCompile Include="server\server_weapon.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\shared\SharedEngine.h" />
+    <ClInclude Include="..\shared\shared_flags.h" />
+    <ClInclude Include="..\shared\shared_material.h" />
+    <ClInclude Include="..\shared\shared_model.h" />
+    <ClInclude Include="..\shared\SharedModule.h" />
+    <ClInclude Include="..\shared\shared_texture.h" />
+    <ClInclude Include="..\shared\shared_zone.h" />
     <ClInclude Include="..\Shared\shared_client.h" />
+    <ClInclude Include="..\shared\shared_editor.h" />
     <ClInclude Include="..\shared\shared_game.h" />
+    <ClInclude Include="..\shared\shared_input.h" />
     <ClInclude Include="..\Shared\shared_menu.h" />
+    <ClInclude Include="..\shared\shared_server.h" />
+    <ClInclude Include="..\shared\shared_video.h" />
+    <ClInclude Include="client\client_effects.h" />
     <ClInclude Include="game_main.h" />
     <ClInclude Include="game_resources.h" />
     <ClInclude Include="server\adamas\adamas.h" />

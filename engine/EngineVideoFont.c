@@ -9,7 +9,7 @@
 		Move into menu.
 */
 
-#include "EngineVideo.h"
+#include "video.h"
 
 typedef struct
 {

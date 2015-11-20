@@ -939,7 +939,7 @@ typedef struct
 
 typedef struct pack_s
 {
-	char    filename[MAX_OSPATH];
+	char			filename[PLATFORM_MAX_PATH];
 	int             handle;
 	int             numfiles;
 	packfile_t      *files;
@@ -963,12 +963,12 @@ typedef struct
 
 #define MAX_FILES_IN_PACK       2048
 
-char    com_cachedir[MAX_OSPATH];
-char    com_gamedir[MAX_OSPATH];
+char    com_cachedir[PLATFORM_MAX_PATH];
+char    com_gamedir[PLATFORM_MAX_PATH];
 
 typedef struct searchpath_s
 {
-	char    filename[MAX_OSPATH];
+	char    filename[PLATFORM_MAX_PATH];
 	pack_t  *pack;          // only one of filename / pack will be used
 	struct searchpath_s *next;
 } searchpath_t;
@@ -1009,8 +1009,8 @@ void FileSystem_UpdatePath(char cPath[])
 */
 void FileSystem_WriteFile(const char *ccFileName,void *data,int len)
 {
-	int             handle;
-	char    name[MAX_OSPATH];
+	int		handle;
+	char    name[PLATFORM_MAX_PATH];
 
 	if(!pFileSystem_CreateDirectory(com_gamedir)) //johnfitz -- if we've switched to a nonexistant gamedir, create it now so we don't crash
 		Sys_Error("Failed to create directory!\n");
@@ -1081,7 +1081,7 @@ int COM_FindFile (const char *filename, int *handle, FILE **file)
 {
 	pack_t			*pak;
 	searchpath_t    *search;
-	char            netpath[MAX_OSPATH], cachepath[MAX_OSPATH];
+	char            netpath[PLATFORM_MAX_PATH], cachepath[PLATFORM_MAX_PATH];
 	int             i;
 	int             findtime, cachetime;
 
@@ -1215,8 +1215,8 @@ int				loadsize;
 uint8_t *COM_LoadFile(const char *path, int usehunk)
 {
 	int     h,len;
-	uint8_t    *buf = NULL;  // quiet compiler warning
-	char    base[MAX_OSPATH];
+	uint8_t	*buf = NULL;  // quiet compiler warning
+	char    base[PLATFORM_MAX_PATH];
 
 	// look for it in the filesystem or pack files
 	len = COM_OpenFile (path, &h);
@@ -1457,7 +1457,7 @@ void _FileSystem_AddGameDirectory(char *cArg)
 void FileSystem_Initialize(void)
 {
 	int				i,j;
-	char			basedir[MAX_OSPATH];
+	char			basedir[PLATFORM_MAX_PATH];
 	searchpath_t	*search;
 
 	COM_Init();

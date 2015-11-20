@@ -21,7 +21,7 @@
 #ifndef ENGINE_MATERIAL_H
 #define ENGINE_MATERIAL_H
 
-#include "SharedMaterial.h"
+#include "shared_material.h"
 
 #ifdef __cplusplus
 extern "C" {

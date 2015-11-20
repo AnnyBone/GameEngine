@@ -16,14 +16,12 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "EngineBase.h"
+#ifndef SHARED_ZONE_H
+#define	SHARED_ZONE_H
 
-#include "EngineEditor.h"
-#include "video.h"
-
-void MaterialEditor_Initialize(void)
+typedef struct cache_user_s
 {
-	cls.state = CLIENT_STATE_EDITOR;
+	void *data;
+} cache_user_t;
 
-	key_dest = KEY_EDITOR_MATERIAL;
-}
+#endif // !SHARED_ZONE_H

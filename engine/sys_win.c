@@ -37,7 +37,7 @@
 #include "resource.h"
 
 #include "EngineEditor.h"
-#include "EngineVideo.h"
+#include "video.h"
 
 #define MAXIMUM_MEMORY		0x8000000	// 128MB
 

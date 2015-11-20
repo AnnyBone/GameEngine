@@ -219,15 +219,8 @@ void Weapon_Precache(void)
 	Server_PrecacheSound("weapons/shockwave/ready.wav");
 	Server_PrecacheSound("weapons/shockwave/warmup.wav");
 
-	Server_PrecacheSound("weapons/shotcycler6/shotcyclerfire1.wav");
-	Server_PrecacheSound("weapons/shotcycler6/shotcyclerfire2.wav");
-	Server_PrecacheSound("weapons/shotcycler6/shotcyclerfire3.wav");
-	Server_PrecacheSound("weapons/shotcycler6/shotcyclerfire4.wav");
-	Server_PrecacheSound("weapons/shotcycler6/shotcyclerfire5.wav");
-	Server_PrecacheSound("weapons/shotcycler6/shotcyclerfire6.wav");
-	Server_PrecacheSound("weapons/shotcycler6/shotcyclerfire7.wav");
-	Server_PrecacheSound("weapons/shotcycler6/shotcyclerfire8.wav");
-	Server_PrecacheSound("weapons/shotcycler6/shotcyclerfire9.wav");
+	Server_PrecacheSound("weapons/shotcycler6/fire0.wav");
+	Server_PrecacheSound("weapons/shotcycler6/fire1.wav");
 	Server_PrecacheSound("weapons/shotcycler6/barrelspin.wav");
 	Server_PrecacheSound("weapons/shotcycler6/shotcyclerready.wav");
 	Server_PrecacheSound("weapons/shotcycler6/shotcyclerclick.wav");

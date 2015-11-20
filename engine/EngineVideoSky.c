@@ -19,7 +19,7 @@
 */
 #include "EngineBase.h"
 
-#include "EngineVideo.h"
+#include "video.h"
 
 #define	MAX_CLIP_VERTS 64
 
@@ -76,7 +76,7 @@ int	vec_to_st[6][3] =
 
 void Sky_LoadCloudTexture(const char *cPath)
 {
-	char	cFileName[MAX_OSPATH];
+	char	cFileName[PLATFORM_MAX_PATH];
 	unsigned int		iWidth,iHeight;
 	byte	*bData;
 
@@ -109,7 +109,7 @@ void Sky_LoadSkyBox (char *name)
 {
 	int		i, mark;
 	unsigned int width, height;
-	char	filename[MAX_OSPATH];
+	char	filename[PLATFORM_MAX_PATH];
 	bool	bNoneFound = true;
 	uint8_t	*data;
 

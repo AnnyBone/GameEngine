@@ -122,20 +122,27 @@ void ParseLightEntities( void )
 	char *value, *targetname, *style;
 	directlight_t *l;
 	double vec[4], color2[3];
-	bool isLight;
+	bool isLight, is_skylight, is_spotlight;
 
 	num_directlights = 0;
 	for( i = 0, ent = entities; i < num_entities; i++, ent++ )
 	{
 		value = ValueForKey(ent,"classname");
 
-		if(strncmp(value,"light",5))
+		// Reset these each time, just to be safe.
+		is_skylight = false;
+		is_spotlight = false;
+		isLight = false;
+
+		if(strncmp(value,"light", 5))
 			continue;
 
-		if(!strcmp(value,"light"))
+		if (!strcmp(value, "light"))
 			isLight = true;
-		else
-			isLight = false;
+		else if (!strcmp(value, "light_spot"))
+			is_spotlight = true;
+		else if (!strcmp(value, "light_environment"))
+			is_skylight = true;
 
 		if( num_directlights == MAP_DIRECTLIGHTS )
 			Error( "numdirectlights == MAP_DIRECTLIGHTS" );
@@ -147,7 +154,12 @@ void ParseLightEntities( void )
 		l->color[0] = l->color[1] = l->color[2] = 1.0f;
 		GetVectorForKey(ent,"origin",l->origin);
 
-		l->type = defaultlighttype;
+		if (is_skylight)
+			l->type = LIGHTTYPE_SUN;
+		else if (is_spotlight)
+			l->spotcone = -cos(20.0f*Q_PI / 180.0f);
+		else
+			l->type = defaultlighttype;
 		j = FloatForKey(ent,"delay");
 		if(!overridelighttypes && j)
 		{
@@ -162,6 +174,20 @@ void ParseLightEntities( void )
 
 		l->angle = FloatForKey(ent,"angle");
 
+		VectorClear(l->spotdir);
+
+		value = ValueForKey(ent, "angles");
+		if (value[0] && (l->type == LIGHTTYPE_SUN))
+		{
+			j = sscanf(value, "%lf %lf %lf", &vec[0], &vec[1], &vec[2]);
+			if (j != 3)
+				Error("error in light at %.0f %.0f %0.f:\nangles must be given 3 values", l->origin[0], l->origin[1], l->origin[2]);
+
+			printf("%lf %lf %lf\n", vec[0], vec[1], vec[2]);
+
+			VectorCopy(vec, l->spotdir);
+		}
+
 		value = ValueForKey(ent,"color");
 		if( !value[0] )
 			value = ValueForKey(ent,"_color");
@@ -172,11 +198,11 @@ void ParseLightEntities( void )
 		value = ValueForKey(ent,"light");
 		if( !value[0] )
 			value = ValueForKey(ent,"_light");
-
 		if( value[0] )
 		{
 			j = sscanf(value,"%lf %lf %lf %lf",&vec[0],&vec[1],&vec[2],&vec[3]);
 
+			// TODO: Make this check obsolete? Decay is always HL lights.
 			switch( j )
 			{
 				case 4:// HalfLife light
@@ -268,7 +294,7 @@ void ParseLightEntities( void )
 		value = ValueForKey( ent, "target" );
 		if( !value[0] )
 		{
-			if (l->type == LIGHTTYPE_SUN)
+			if (!is_skylight && (l->type == LIGHTTYPE_SUN))
 				Error("error in light at %.0f %.0f %.0f:\nLIGHTTYPE_SUN (delay 4) requires a target for the sun direction\n", l->origin[0], l->origin[1], l->origin[2]);
 			continue;
 		}
@@ -300,7 +326,7 @@ void ParseLightEntities( void )
 		if( j == num_entities )
 		{
 			printf( "warning in light at %.0f %.0f %.0f:\nunmatched spotlight target\n", l->origin[0], l->origin[1], l->origin[2]);
-			if (l->type == LIGHTTYPE_SUN)
+			if (!is_skylight && (l->type == LIGHTTYPE_SUN))
 				Error("error in light at %.0f %.0f %.0f:\nLIGHTTYPE_SUN (delay 4) requires a target for the sun direction\n", l->origin[0], l->origin[1], l->origin[2]);
 			continue;
 		}

@@ -21,7 +21,7 @@
 #include "EngineBase.h"
 
 #include "EngineInput.h"
-#include "EngineVideo.h"
+#include "video.h"
 #include "EngineMenu.h"
 
 #include <SDL.h>

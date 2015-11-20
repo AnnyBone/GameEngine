@@ -20,7 +20,7 @@
 
 #include "EngineBase.h"
 
-#include "EngineVideo.h"
+#include "video.h"
 #include "EngineGame.h"
 #include "EngineMenu.h"
 
@@ -342,7 +342,7 @@ void M_ScanSaves (void)
 {
 #if 0
 	int		i,j,version;
-	char	name[MAX_OSPATH];
+	char	name[PLATFORM_MAX_PATH];
 	FILE	*f;
 
 	for (i=0 ; i<MAX_SAVEGAMES ; i++)

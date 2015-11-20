@@ -22,7 +22,7 @@
 
 #include "engine_client.h"
 #include "EngineMenu.h"
-#include "EngineVideo.h"
+#include "video.h"
 #include "EngineVideoParticle.h"
 #include "EngineGame.h"
 
@@ -349,7 +349,7 @@ void Client_ParseServerInfo(void)
 					dStaticLight->color[j] = MSG_ReadCoord();
 
 				dStaticLight->decay		= 0;
-				dStaticLight->bLightmap	= false;
+				dStaticLight->lightmap	= false;
 				dStaticLight->die		= 0;
 				dStaticLight->minlight	= 32.0f;
 				dStaticLight->radius	= MSG_ReadCoord();

@@ -54,7 +54,7 @@
 #include <wx/spinctrl.h>
 
 // Shared Library
-#include "SharedFlags.h"
+#include "shared_flags.h"
 
 // Platform Library
 #include "platform.h"

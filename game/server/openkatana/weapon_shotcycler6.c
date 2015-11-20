@@ -137,12 +137,18 @@ EntityFrame_t ShotcyclerAnimation_Reload [] =
 	{ NULL, 102, 0.04f, true }
 };
 
+void Shotcycler_Precache(ServerEntity_t *ent)
+{
+	Server_PrecacheSound("weapons/shotcycler6/fire0.wav");
+	Server_PrecacheSound("weapons/shotcycler6/fire1.wav");
+}
+
 void Shotcycler_Deploy(ServerEntity_t *ent)
 {
 	ent->local.iShotCycle = 6;
 
 	// TODO: This should be on the client :(
-	Sound(ent, CHAN_WEAPON, "weapons/shotcycler6/shotcyclerready.wav", 255, ATTN_NORM);
+	Sound(ent, CHAN_WEAPON, "weapons/shotcycler6/deploy.wav", 255, ATTN_NORM);
 
 	Weapon_Animate(ent,ShotcyclerAnimation_Deploy);
 }
@@ -175,7 +181,7 @@ void Shotcycler_PrimaryAttack(ServerEntity_t *ent)
 		return;
 	}
 
-	Sound(ent, CHAN_WEAPON, va("weapons/shotcycler6/fire%i.wav", rand() % 1), 130, ATTN_NORM);
+	Sound(ent, CHAN_WEAPON, va("weapons/shotcycler6/fire%i.wav", rand() % 2), 130, ATTN_NORM);
 
 	Weapon_ViewPunch(ent, 5, false);
 	ent->v.iPrimaryAmmo = ent->local.shotcycler_ammo -= 2;

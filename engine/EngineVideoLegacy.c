@@ -21,7 +21,7 @@
 #include "EngineBase.h"
 
 #include "EngineEditor.h"
-#include "EngineVideo.h"
+#include "video.h"
 #include "EngineVideoParticle.h"
 #include "EngineVideoShadow.h"
 

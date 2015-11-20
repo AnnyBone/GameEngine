@@ -82,6 +82,7 @@ extern "C" {
 	bool Entity_IsPlayer(ServerEntity_t *eEntity);
 	bool Entity_IsMonster(ServerEntity_t *eEntity);
 	bool Entity_IsTouching(ServerEntity_t *eEntity, ServerEntity_t *eOther);
+	bool Entity_IsOnGround(ServerEntity_t *entity);
 	bool Entity_DropToFloor(ServerEntity_t *eEntity);
 
 	void ServerEntity_ParseField(char *key, char *value, ServerEntity_t *entity);

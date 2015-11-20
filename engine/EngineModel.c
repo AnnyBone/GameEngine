@@ -21,7 +21,7 @@
 #include "EngineBase.h"
 
 #include "EngineScript.h"
-#include "EngineVideo.h"
+#include "video.h"
 
 /*
 	Model Loading and Caching
@@ -37,7 +37,7 @@ bool Model_LoadOBJ(model_t *mModel,void *Buffer);
 
 model_t *Model_Load(model_t *mod);
 
-byte mod_novis[BSP_MAX_LEAFS/8];
+uint8_t mod_novis[BSP_MAX_LEAFS/8];
 
 #define	MAX_MOD_KNOWN	2048 //johnfitz -- was 512
 model_t	mod_known[MAX_MOD_KNOWN];

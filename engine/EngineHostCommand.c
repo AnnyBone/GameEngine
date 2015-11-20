@@ -53,13 +53,13 @@ void Host_Quit_f (void)
 // Declarations shared with common.c:
 typedef struct
 {
-	char    name[MAX_QPATH];
+	char			name[MAX_QPATH];
 	int             filepos, filelen;
 } packfile_t;
 
 typedef struct pack_s
 {
-	char    filename[MAX_OSPATH];
+	char			filename[PLATFORM_MAX_PATH];
 	int             handle;
 	int             numfiles;
 	packfile_t      *files;
@@ -67,7 +67,7 @@ typedef struct pack_s
 
 typedef struct searchpath_s
 {
-	char    filename[MAX_OSPATH];
+	char    filename[PLATFORM_MAX_PATH];
 	pack_t  *pack;          // only one of filename / pack will be used
 	struct searchpath_s *next;
 } searchpath_t;
@@ -124,7 +124,7 @@ void Host_Game_f (void)
 	int				i;
 	searchpath_t	*search = com_searchpaths;
 	pack_t			*pak;
-	char			pakfile[MAX_OSPATH]; //FIXME: it's confusing to use this string for two different things
+	char			pakfile[PLATFORM_MAX_PATH]; //FIXME: it's confusing to use this string for two different things
 
 	if(Cmd_Argc() > 1)
 	{
@@ -251,7 +251,7 @@ void ExtraMaps_Add (char *name)
 void ExtraMaps_Init(void)
 {
     char            cMapName[128],
-                    filestring[MAX_OSPATH];
+		filestring[PLATFORM_MAX_PATH];
 	searchpath_t    *search;
 	pack_t          *pak;
 	int             i;
@@ -358,7 +358,7 @@ void Host_Maps_f (void)
 
 typedef struct mod_s
 {
-	char			name[MAX_OSPATH];
+	char			name[PLATFORM_MAX_PATH];
 	struct mod_s	*next;
 } mod_t;
 
@@ -370,7 +370,7 @@ void Modlist_Init(void) //TODO: move win32 specific stuff to sys_win.c
 	WIN32_FIND_DATA	FindFileData,FindChildData;
 	HANDLE			Find,FindGame;
 	mod_t			*mod,*cursor,*prev;
-	char			filestring[MAX_OSPATH],childstring[MAX_OSPATH];
+	char			filestring[PLATFORM_MAX_PATH], childstring[PLATFORM_MAX_PATH];
 
 	sprintf(filestring,"%s/*",host_parms.basedir);
 	Find = FindFirstFile(filestring,&FindFileData);

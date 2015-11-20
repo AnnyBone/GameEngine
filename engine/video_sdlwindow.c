@@ -20,7 +20,7 @@
 
 #include "EngineBase.h"
 
-#include "EngineVideo.h"
+#include "video.h"
 #include "EngineGame.h"
 
 #include <SDL.h>
@@ -30,12 +30,12 @@
 	Window Manager
 */
 
-SDL_Window *sMainWindow;
-SDL_GLContext sMainContext;
+SDL_Window		*sMainWindow;
+SDL_GLContext	sMainContext;
 SDL_DisplayMode	sDisplayMode;
-SDL_SysWMinfo sSystemInfo;
+SDL_SysWMinfo	sSystemInfo;
 
-Window_t globalWindow;
+Window_t g_mainwindow;
 
 void Window_InitializeVideo(void)
 {
@@ -108,7 +108,7 @@ void Window_InitializeVideo(void)
 
 #ifdef _WIN32
 	if (SDL_GetWindowWMInfo(sMainWindow, &sSystemInfo))
-		globalWindow.hWindowInstance = sSystemInfo.info.win.window;
+		g_mainwindow.instance = sSystemInfo.info.win.window;
 	else
 		Con_Warning("Failed to get WM information! (%s)\n", SDL_GetError());
 #endif

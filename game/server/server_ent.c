@@ -642,6 +642,14 @@ bool Entity_IsTouching(ServerEntity_t *eEntity, ServerEntity_t *eOther)
 	return true;
 }
 
+bool Entity_IsOnGround(ServerEntity_t *entity)
+{
+	if (entity->v.flags & FL_ONGROUND)
+		return true;
+
+	return false;
+}
+
 /*
 	IO System
 */

@@ -6,7 +6,7 @@
 #include <errno.h>
 #include <time.h>
 
-#include "../shared/SharedFlags.h"
+#include "../shared/shared_flags.h"
 
 // the dec offsetof macro doesn't work very well...
 #define myoffsetof(type,identifier) ((size_t)&((type *)0)->identifier)

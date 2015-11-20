@@ -28,9 +28,6 @@
     <Filter Include="Legacy\Client\Video">
       <UniqueIdentifier>{77ea4c2d-fc29-4aeb-bb27-3c33e9606552}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Legacy\Client\Video\Interfaces">
-      <UniqueIdentifier>{7dcb15cb-2530-4696-b29c-1de8a7635517}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Legacy\Client\Video\Legacy">
       <UniqueIdentifier>{77b73aa0-88f4-466f-af2f-4bbaf7543669}</UniqueIdentifier>
     </Filter>
@@ -75,6 +72,9 @@
     </Filter>
     <Filter Include="Server">
       <UniqueIdentifier>{2e4dcda0-35d9-42bb-8829-ff49c6285135}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Client\Video\Interfaces">
+      <UniqueIdentifier>{7dcb15cb-2530-4696-b29c-1de8a7635517}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -177,9 +177,6 @@
     <ClCompile Include="EngineVideoShadow.c">
       <Filter>Legacy\Client\Video</Filter>
     </ClCompile>
-    <ClCompile Include="EngineVideo.c">
-      <Filter>Legacy\Client\Video</Filter>
-    </ClCompile>
     <ClCompile Include="EngineVideoTextureManager.c">
       <Filter>Legacy\Client\Video</Filter>
     </ClCompile>
@@ -222,9 +219,6 @@
     <ClCompile Include="EngineEditor.c">
       <Filter>Legacy\Client\Editor</Filter>
     </ClCompile>
-    <ClCompile Include="EngineSDLWindow.c">
-      <Filter>Legacy\Client\Video\Interfaces</Filter>
-    </ClCompile>
     <ClCompile Include="EngineClient.c">
       <Filter>Legacy\Client</Filter>
     </ClCompile>
@@ -255,13 +249,7 @@
     <ClCompile Include="EngineClientInput.c">
       <Filter>Legacy\Client</Filter>
     </ClCompile>
-    <ClCompile Include="EngineVideoObject.cpp">
-      <Filter>Legacy\Client\Video</Filter>
-    </ClCompile>
     <ClCompile Include="EngineVideoSprite.c">
-      <Filter>Legacy\Client\Video</Filter>
-    </ClCompile>
-    <ClCompile Include="EngineVideoFrameBuffer.cpp">
       <Filter>Legacy\Client\Video</Filter>
     </ClCompile>
     <ClCompile Include="EngineException.cpp" />
@@ -304,11 +292,23 @@
     <ClCompile Include="EngineCommon.c">
       <Filter>Legacy</Filter>
     </ClCompile>
-    <ClCompile Include="EngineVideoShader.cpp">
-      <Filter>Client\Video</Filter>
-    </ClCompile>
     <ClCompile Include="shader_base.cpp">
       <Filter>Client\Video\Shaders\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="video_shader.cpp">
+      <Filter>Client\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="video.c">
+      <Filter>Client\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="video_framebuffer.cpp">
+      <Filter>Client\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="video_object.cpp">
+      <Filter>Client\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="video_sdlwindow.c">
+      <Filter>Client\Video\Interfaces</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -405,9 +405,6 @@
     <ClInclude Include="EngineVideoAlias.h">
       <Filter>Legacy\Client\Video</Filter>
     </ClInclude>
-    <ClInclude Include="EngineVideo.h">
-      <Filter>Legacy\Client\Video</Filter>
-    </ClInclude>
     <ClInclude Include="EngineVideoTextureManager.h">
       <Filter>Legacy\Client\Video</Filter>
     </ClInclude>
@@ -443,9 +440,6 @@
     </ClInclude>
     <ClInclude Include="EngineEditor.h">
       <Filter>Legacy\Client\Editor</Filter>
-    </ClInclude>
-    <ClInclude Include="EngineVideoWindow.h">
-      <Filter>Legacy\Client\Video</Filter>
     </ClInclude>
     <ClInclude Include="EngineConsole.h">
       <Filter>Legacy\Console</Filter>
@@ -487,9 +481,6 @@
     <ClInclude Include="EngineClientTempEntity.h">
       <Filter>Legacy\Client</Filter>
     </ClInclude>
-    <ClInclude Include="EngineVideoObject.h">
-      <Filter>Legacy\Client\Video</Filter>
-    </ClInclude>
     <ClInclude Include="EngineVideoLayer.h">
       <Filter>Legacy\Client\Video</Filter>
     </ClInclude>
@@ -518,12 +509,21 @@
     <ClInclude Include="EngineCommon.h">
       <Filter>Legacy</Filter>
     </ClInclude>
-    <ClInclude Include="EngineVideoShader.h">
+    <ClInclude Include="EngineClass.h" />
+    <ClInclude Include="video_shader.h">
       <Filter>Client\Video</Filter>
     </ClInclude>
-    <ClInclude Include="EngineClass.h" />
-    <ClInclude Include="EngineVideoFrameBuffer.h">
-      <Filter>Legacy\Client\Video</Filter>
+    <ClInclude Include="video.h">
+      <Filter>Client\Video</Filter>
+    </ClInclude>
+    <ClInclude Include="video_framebuffer.h">
+      <Filter>Client\Video</Filter>
+    </ClInclude>
+    <ClInclude Include="video_object.h">
+      <Filter>Client\Video</Filter>
+    </ClInclude>
+    <ClInclude Include="video_window.h">
+      <Filter>Client\Video</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -22,7 +22,7 @@
 #include "platform_math.h"
 
 // Shared Library
-#include "SharedFlags.h"
+#include "shared_flags.h"
 #include "SharedModule.h"
 #include "SharedEngine.h"
 

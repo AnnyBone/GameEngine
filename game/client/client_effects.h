@@ -16,14 +16,9 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "EngineBase.h"
+#ifndef CLIENT_EFFECTS_H
+#define	CLIENT_EFFECTS_H
 
-#include "EngineEditor.h"
-#include "video.h"
+void Effect_Explosion(MathVector3f_t position);
 
-void MaterialEditor_Initialize(void)
-{
-	cls.state = CLIENT_STATE_EDITOR;
-
-	key_dest = KEY_EDITOR_MATERIAL;
-}
+#endif	// !CLIENT_EFFECTS_H
