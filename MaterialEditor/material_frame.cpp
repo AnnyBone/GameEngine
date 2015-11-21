@@ -25,6 +25,13 @@
 
 #define	WAD_TITLE "Material Editor"
 
+enum MaterialFrameEvent
+{
+	MATERIAL_EVENT_CUBE,
+	MATERIAL_EVENT_SPHERE,
+	MATERIAL_EVENT_PLANE
+};
+
 /*
 	Global Properties Grid
 */
@@ -108,6 +115,12 @@ void MaterialGlobalProperties::GetProperties(Material_t *newmaterial)
 	Viewport
 */
 
+wxBEGIN_EVENT_TABLE(MaterialViewportPanel, BaseViewportPanel)
+EVT_BUTTON(MATERIAL_EVENT_CUBE, MaterialViewportPanel::ViewEvent)
+EVT_BUTTON(MATERIAL_EVENT_SPHERE, MaterialViewportPanel::ViewEvent)
+EVT_BUTTON(MATERIAL_EVENT_PLANE, MaterialViewportPanel::ViewEvent)
+wxEND_EVENT_TABLE()
+
 MaterialViewportPanel::MaterialViewportPanel(wxWindow *wParent)
 	: BaseViewportPanel(wParent)
 {
@@ -154,7 +167,7 @@ void MaterialViewportPanel::Initialize()
 
 	wxBitmapButton *button_cube = new wxBitmapButton(
 		this,
-		wxID_ANY,
+		MATERIAL_EVENT_CUBE,
 		iconShapeCube,
 		wxDefaultPosition,
 		wxSize(24, 24));
@@ -162,7 +175,7 @@ void MaterialViewportPanel::Initialize()
 
 	wxBitmapButton *button_sphere = new wxBitmapButton(
 		this,
-		wxID_ANY,
+		MATERIAL_EVENT_SPHERE,
 		iconShapeSphere,
 		wxDefaultPosition,
 		wxSize(24, 24));
@@ -170,7 +183,7 @@ void MaterialViewportPanel::Initialize()
 
 	wxBitmapButton *button_plane = new wxBitmapButton(
 		this,
-		wxID_ANY,
+		MATERIAL_EVENT_PLANE,
 		bSmallPlaneIcon,
 		wxDefaultPosition,
 		wxSize(24, 24));
@@ -190,10 +203,10 @@ void MaterialViewportPanel::Draw()
 	{
 		engine->DrawEntity(preview_entity);
 		preview_entity->angles[1] += 0.5f;
-		engine->DrawResetCanvas();
 	}
 	else // Plane
 	{
+		engine->DrawResetCanvas();
 		engine->DrawSetCanvas(CANVAS_DEFAULT);
 		engine->DrawMaterialSurface(preview_material, 0, 0, 0, GetDrawCanvasWidth(), GetDrawCanvasHeight(), 1.0f);
 	}
@@ -204,10 +217,6 @@ void MaterialViewportPanel::Draw()
 */
 bool MaterialViewportPanel::SetPreviewMaterial(Material_t *NewMaterial)
 {
-	// Don't bother if it hasn't changed.
-	if (NewMaterial == preview_material)
-		return true;
-
 	// Ensure the new material is valid.
 	if (!NewMaterial)
 	{
@@ -215,9 +224,14 @@ bool MaterialViewportPanel::SetPreviewMaterial(Material_t *NewMaterial)
 		return false;
 	}
 
+	// Don't bother if it hasn't changed.
+	if (NewMaterial == preview_material)
+		return true;
+
 	// Update the preview entity to use the new material.
 	preview_material = NewMaterial;
-	preview_entity->model->mAssignedMaterials = preview_material;
+	CubeModel->mAssignedMaterials = preview_material;
+	SphereModel->mAssignedMaterials = preview_material;
 
 	return true;
 }
@@ -247,22 +261,35 @@ Material_t *MaterialViewportPanel::GetMaterial()
 	return preview_material;
 }
 
+void MaterialViewportPanel::ViewEvent(wxCommandEvent &event)
+{
+	switch (event.GetId())
+	{
+	case MATERIAL_EVENT_CUBE:
+		SetModel(MATERIAL_PREVIEW_CUBE);
+		break;
+	case MATERIAL_EVENT_PLANE:
+		SetModel(MATERIAL_PREVIEW_PLANE);
+		break;
+	case MATERIAL_EVENT_SPHERE:
+		SetModel(MATERIAL_PREVIEW_SPHERE);
+		break;
+	}
+}
+
 /*
 	Frame
 */
-
-enum MaterialFrameEvent
-{
-	MATERIAL_EVENT_CUBE,
-	MATERIAL_EVENT_SPHERE,
-	MATERIAL_EVENT_PLANE
-};
 
 wxBEGIN_EVENT_TABLE(CMaterialFrame, wxFrame)
 EVT_MENU(wxID_OPEN, CMaterialFrame::FileEvent)
 EVT_MENU(wxID_SAVE, CMaterialFrame::FileEvent)
 EVT_MENU(wxID_EXIT, CMaterialFrame::FileEvent)
 EVT_MENU(wxID_ABOUT, CMaterialFrame::FileEvent)
+
+EVT_MENU(MATERIAL_EVENT_CUBE, CMaterialFrame::ViewEvent)
+EVT_MENU(MATERIAL_EVENT_SPHERE, CMaterialFrame::ViewEvent)
+EVT_MENU(MATERIAL_EVENT_PLANE, CMaterialFrame::ViewEvent)
 wxEND_EVENT_TABLE()
 
 CMaterialFrame::CMaterialFrame(wxWindow* parent, wxWindowID id)
@@ -271,7 +298,7 @@ CMaterialFrame::CMaterialFrame(wxWindow* parent, wxWindowID id)
 	SetIcon(wxIcon("resource/icon-material.png", wxBITMAP_TYPE_PNG));
 
 	mManager = new wxAuiManager(this);
-
+	
 	// Menu
 	{
 		wxMenu *mFile = new wxMenu;
@@ -298,9 +325,9 @@ CMaterialFrame::CMaterialFrame(wxWindow* parent, wxWindowID id)
 		mFile->Append(iExit);
 
 		wxMenu *menu_view = new wxMenu;
-		menu_view->Append(wxID_ANY, "Cube");
-		menu_view->Append(wxID_ANY, "Sphere");
-		menu_view->Append(wxID_ANY, "Plane");
+		menu_view->Append(MATERIAL_EVENT_CUBE, "Cube");
+		menu_view->Append(MATERIAL_EVENT_SPHERE, "Sphere");
+		menu_view->Append(MATERIAL_EVENT_PLANE, "Plane");
 		menu_view->AppendSeparator();
 		menu_view->Append(wxID_ANY, "Reload material");
 
@@ -436,8 +463,8 @@ void CMaterialFrame::LoadMaterial(wxString path)
 		wxMessageBox(wxString("Invalid material extension! (" + materialname + ")\n"), WAD_TITLE);
 		return;
 	}
-
-	// Remove the extension.
+	
+	// Update the path.
 	materialname.RemoveLast(9);
 	// TODO: Hacky jacks; basically the paths script includes forward slashes. Paths returned by windows use backwards slashes. See the problem?
 	// I propose adding a hacky function to the platform library that can switch slashes around, because yolo.
@@ -537,6 +564,22 @@ void CMaterialFrame::FileEvent(wxCommandEvent &event)
 
 		// Reload it so we instantly see the changes.
 		ReloadMaterial();
+		break;
+	}
+}
+
+void CMaterialFrame::ViewEvent(wxCommandEvent &event)
+{
+	switch (event.GetId())
+	{
+	case MATERIAL_EVENT_CUBE:
+		Viewport->SetModel(MATERIAL_PREVIEW_CUBE);
+		break;
+	case MATERIAL_EVENT_PLANE:
+		Viewport->SetModel(MATERIAL_PREVIEW_PLANE);
+		break;
+	case MATERIAL_EVENT_SPHERE:
+		Viewport->SetModel(MATERIAL_PREVIEW_SPHERE);
 		break;
 	}
 }

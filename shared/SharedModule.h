@@ -24,4 +24,13 @@
 #define MODULE_GAME		"game"
 #define	MODULE_MENU		"menu"
 
+#ifdef __cplusplus
+class ModuleInterface
+{
+public:
+	virtual void Initialize() = 0;
+	virtual void Shutdown() = 0;
+};
+#endif
+
 #endif // !SHARED_MODULE_H

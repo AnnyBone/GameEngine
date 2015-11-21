@@ -55,22 +55,22 @@ EngineImport_t EngineLauncher;
 pMODULE_EXPORT EngineExport_t *Engine_Main(EngineImport_t *mImport)
 {
 	// Imports
-	EngineLauncher.iVersion = mImport->iVersion;
-	EngineLauncher.PrintError = mImport->PrintError;
+	EngineLauncher.iVersion		= mImport->iVersion;
+	EngineLauncher.PrintError	= mImport->PrintError;
 	EngineLauncher.PrintMessage = mImport->PrintMessage;
-	EngineLauncher.PrintWarning = mImport->PrintWarning;
+	EngineLauncher.PrintWarning	= mImport->PrintWarning;
 
 	// Exports
-	EngineExport.Initialize = System_Main;
-	EngineExport.Shutdown = Host_Shutdown;
-	EngineExport.IsRunning = Engine_IsRunning;
-	EngineExport.SetViewportSize = Video_SetViewportSize;
-	EngineExport.Loop = System_Loop;
-	EngineExport.iVersion = ENGINE_VERSION;
+	EngineExport.Initialize			= System_Main;
+	EngineExport.Shutdown			= Host_Shutdown;
+	EngineExport.IsRunning			= Engine_IsRunning;
+	EngineExport.SetViewportSize	= Video_SetViewportSize;
+	EngineExport.Loop				= System_Loop;
+	EngineExport.iVersion			= ENGINE_VERSION;
 
 	// Client
-	EngineExport.ClientDisconnect = CL_Disconnect;
-	EngineExport.GetClientTime = Client_GetTime;
+	EngineExport.ClientDisconnect	= CL_Disconnect;
+	EngineExport.GetClientTime		= Client_GetTime;
 	EngineExport.CreateClientEntity = CL_NewTempEntity;
 	EngineExport.CreateDynamicLight = Client_AllocDlight;
 
@@ -81,9 +81,9 @@ pMODULE_EXPORT EngineExport_t *Engine_Main(EngineImport_t *mImport)
 	EngineExport.GetVersion		= Engine_GetVersion;
 
 	// Material
-	EngineExport.GetMaterialPath = Engine_GetMaterialPath;
-	EngineExport.LoadMaterial = Material_Load;
-	EngineExport.UnloadMaterial = Material_Clear;
+	EngineExport.GetMaterialPath	= Engine_GetMaterialPath;
+	EngineExport.LoadMaterial		= Material_Load;
+	EngineExport.UnloadMaterial		= Material_Clear;
 
 	// Model
 	EngineExport.LoadModel = Mod_ForName;

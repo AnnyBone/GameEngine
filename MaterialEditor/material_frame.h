@@ -42,7 +42,11 @@ private:
 	DynamicLight_t	*preview_light;
 	ClientEntity_t	*preview_entity;
 	Material_t		*preview_material;
-	model_t *CubeModel, *PlaneModel, *SphereModel;
+	model_t			*CubeModel, *PlaneModel, *SphereModel;
+
+	void ViewEvent(wxCommandEvent &event);
+
+	wxDECLARE_EVENT_TABLE();
 };
 
 class CMaterialFrame : public wxFrame
@@ -70,6 +74,7 @@ private:
 
 	// Events
 	void FileEvent(wxCommandEvent &event);
+	void ViewEvent(wxCommandEvent &event);
 
 	wxDECLARE_EVENT_TABLE();
 };
