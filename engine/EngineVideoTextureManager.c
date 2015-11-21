@@ -205,7 +205,7 @@ void TexMgr_Imagedump_f(void)
 {
 	char		tganame[PLATFORM_MAX_PATH], tempname[PLATFORM_MAX_PATH], dirname[PLATFORM_MAX_PATH];
 	gltexture_t	*glt;
-	byte		*buffer;
+	uint8_t		*buffer;
 
 	// Create directory
 	sprintf(dirname, "%s/imagedump", com_gamedir);
@@ -217,7 +217,7 @@ void TexMgr_Imagedump_f(void)
 	{
 		p_strcpy(tempname, glt->name);
 
-#if 0	// Is this even needed anymore?
+#if 0	// TODO: Is this even needed anymore?
 		while ((c = strchr(tempname, ':'))) *c = '_';
 		while ((c = strchr(tempname, '/'))) *c = '_';
 		while ((c = strchr(tempname, '*'))) *c = '#';

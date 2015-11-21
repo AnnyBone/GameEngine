@@ -1,6 +1,6 @@
 #include "EditorBase.h"
 
-#include "EditorApp.h"
+#include "editor.h"
 
 wxIMPLEMENT_APP(CEditorApp);
 

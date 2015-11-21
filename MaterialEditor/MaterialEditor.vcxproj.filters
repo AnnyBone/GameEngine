@@ -25,7 +25,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="EditorApp.h" />
     <ClInclude Include="EditorBase.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="EditorConsolePanel.h" />
@@ -45,11 +44,10 @@
     <ClInclude Include="base_rendercanvas.h">
       <Filter>Viewport</Filter>
     </ClInclude>
+    <ClInclude Include="editor.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="EditorApp.cpp" />
     <ClCompile Include="EditorConsolePanel.cpp" />
-    <ClCompile Include="EditorEngineInterface.cpp" />
     <ClCompile Include="preferences\PreferencesDialog.cpp">
       <Filter>Preferences</Filter>
     </ClCompile>
@@ -72,6 +70,8 @@
     <ClCompile Include="material_browser.cpp">
       <Filter>Tools\Material</Filter>
     </ClCompile>
+    <ClCompile Include="editor_engineinterface.cpp" />
+    <ClCompile Include="editor.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Material Editor.rc">

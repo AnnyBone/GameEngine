@@ -503,10 +503,8 @@ void CEditorFrame::OnOpen(wxCommandEvent &event)
 	if (filedialog->ShowModal() == wxID_OK)
 	{
 		wxString filename = filedialog->GetFilename();
-
 		if (filename.EndsWith(".material"))
-			// TODO: Pass the path!!
-			OpenMaterial(filename);
+			OpenMaterial(filedialog->GetPath());
 		else if (filename.EndsWith(".map"))
 		{
 			SetTitle(filedialog->GetFilename() + wxString(" - ") + cApplicationTitle);

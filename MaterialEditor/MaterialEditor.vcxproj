@@ -76,7 +76,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="EditorApp.h" />
+    <ClInclude Include="editor.h" />
     <ClInclude Include="EditorBase.h" />
     <ClInclude Include="EditorConsolePanel.h" />
     <ClInclude Include="EditorFrame.h" />
@@ -88,9 +88,9 @@
     <ClInclude Include="wad_frame.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="EditorApp.cpp" />
+    <ClCompile Include="editor.cpp" />
     <ClCompile Include="EditorConsolePanel.cpp" />
-    <ClCompile Include="EditorEngineInterface.cpp" />
+    <ClCompile Include="editor_engineinterface.cpp" />
     <ClCompile Include="EditorFrame.cpp" />
     <ClCompile Include="base_rendercanvas.cpp" />
     <ClCompile Include="base_viewportpanel.cpp" />

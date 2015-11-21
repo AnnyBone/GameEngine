@@ -45,7 +45,7 @@ typedef struct
 	Material_t*(*LoadMaterial)(const char *cPath);
 	void(*UnloadMaterial)(Material_t *mMaterial);
 
-	model_t*(*LoadModel)(const char *ModelPath);
+	model_t*(*LoadModel)(const char *path);
 
 	// Client...
 

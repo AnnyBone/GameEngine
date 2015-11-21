@@ -33,7 +33,7 @@ public:
 	virtual void Initialize();
 	virtual void Draw();
 
-	bool SetMaterial(Material_t *NewMaterial);
+	bool SetPreviewMaterial(Material_t *NewMaterial);
 	void SetModel(MaterialViewportModel PreviewModel);
 
 	Material_t *GetMaterial();
@@ -52,7 +52,7 @@ public:
 	CMaterialFrame(wxWindow* parent, wxWindowID id = wxID_ANY);
 	~CMaterialFrame();
 
-	void LoadMaterial(wxString sFileName);
+	void LoadMaterial(wxString path);
 	void UnloadMaterial();
 	void ReloadMaterial();
 

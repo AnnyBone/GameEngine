@@ -2,7 +2,7 @@
 
 #include "base_rendercanvas.h"
 #include "base_viewportpanel.h"
-#include "EditorApp.h"
+#include "editor.h"
 
 /*
 	Render Canvas

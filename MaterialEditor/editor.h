@@ -1,5 +1,5 @@
-#ifndef __EDITORAPP__
-#define	__EDITORAPP__
+#ifndef EDITOR_H
+#define	EDITOR_H
 
 #include "EditorFrame.h"
 
@@ -15,5 +15,5 @@ public:
 
 wxDECLARE_APP(CEditorApp);
 
-#endif // !__EDITORAPP__
+#endif // !EDITOR_H
 

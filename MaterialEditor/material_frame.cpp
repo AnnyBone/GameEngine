@@ -116,7 +116,7 @@ MaterialViewportPanel::MaterialViewportPanel(wxWindow *wParent)
 	PlaneModel = engine->LoadModel("models/editor/plane.md2");
 	if (!CubeModel || !SphereModel || !PlaneModel)
 		pLog_Write(EDITOR_LOG, "Failed to load preview mesh!\n");
-
+	
 	preview_material = NULL;
 
 	preview_entity = engine->CreateClientEntity();
@@ -202,7 +202,7 @@ void MaterialViewportPanel::Draw()
 /*	Attempts to set the given material as the active one.
 	Returns true on success, false on fail.
 */
-bool MaterialViewportPanel::SetMaterial(Material_t *NewMaterial)
+bool MaterialViewportPanel::SetPreviewMaterial(Material_t *NewMaterial)
 {
 	// Don't bother if it hasn't changed.
 	if (NewMaterial == preview_material)
@@ -233,6 +233,7 @@ void MaterialViewportPanel::SetModel(MaterialViewportModel PreviewModel)
 		preview_entity->model = SphereModel;
 		break;
 	case MATERIAL_PREVIEW_PLANE:
+		// Just clear out the model here.
 		preview_entity->model = 0;
 		break;
 	default:
@@ -399,8 +400,8 @@ CMaterialFrame::~CMaterialFrame()
 
 void CMaterialFrame::ReloadMaterial()
 {
-	Material_t *CurrentMaterial = Viewport->GetMaterial();
-	if (!CurrentMaterial)
+	Material_t *currentmat = Viewport->GetMaterial();
+	if (!currentmat)
 		// Likely nothing loaded, just return.
 		return;
 
@@ -409,40 +410,69 @@ void CMaterialFrame::ReloadMaterial()
 	if (tCurrentModified == tLastModified)
 		return;
 
-	Viewport->SetMaterial(NULL);
+	Viewport->SetPreviewMaterial(NULL);
 
 	// Unload it.
-	wxString sOldPath = CurrentMaterial->cPath;
-	engine->UnloadMaterial(CurrentMaterial);
+	wxString sOldPath = currentmat->cPath;
+	engine->UnloadMaterial(currentmat);
 
 	// Reload it.
-	CurrentMaterial = engine->LoadMaterial(sOldPath);
-	if (CurrentMaterial)
+	currentmat = engine->LoadMaterial(sOldPath);
+	if (currentmat)
 	{
 		tLastModified = tCurrentModified;
-		Viewport->SetMaterial(CurrentMaterial);
+		Viewport->SetPreviewMaterial(currentmat);
 	}
 
 	// Reload the file into the script editor.
 	cMaterialScript->LoadFile(sCurrentFilePath);
 }
 
-void CMaterialFrame::LoadMaterial(wxString sFileName)
+void CMaterialFrame::LoadMaterial(wxString path)
 {
-	wxString materialname = sFileName;
-	if (materialname.EndsWith(".material"))
-		// Remove the extension.
-		materialname.RemoveLast(9);
+	wxString materialname = path;
+	if (!materialname.EndsWith(".material"))
+	{
+		wxMessageBox(wxString("Invalid material extension! (" + materialname + ")\n"), WAD_TITLE);
+		return;
+	}
 
-	Material_t *mCurrent = Viewport->GetMaterial();
-	if (mCurrent)
-		engine->UnloadMaterial(mCurrent);
+	// Remove the extension.
+	materialname.RemoveLast(9);
+	// TODO: Hacky jacks; basically the paths script includes forward slashes. Paths returned by windows use backwards slashes. See the problem?
+	// I propose adding a hacky function to the platform library that can switch slashes around, because yolo.
+	int stringmod = materialname.Find(wxString(engine->GetMaterialPath()).RemoveLast(1));
+	if (stringmod == wxNOT_FOUND)
+	{
+		wxMessageBox(wxString("Failed to update path! (" + materialname + ")\nPlease ensure your material is inside the game directory."), WAD_TITLE);
+		return;
+	}
+	materialname.Remove(0, stringmod + wxString(engine->GetMaterialPath()).Length());
 
-	mCurrent = engine->LoadMaterial(materialname);
-	if (mCurrent)
-		Viewport->SetMaterial(mCurrent);
+	// Attempt to load the new material.
+	Material_t *newmat = engine->LoadMaterial(materialname);
+	if (!newmat)
+	{
+		// Failed, throw us a warning and return.
+		wxMessageBox(wxString("Failed to load material! (" + materialname + ")\n"), WAD_TITLE);
+		return;
+	}
 
+	// Grab the current material from the viewport.
+	UnloadMaterial();
+
+	// Assign the new material to the viewport.
+	Viewport->SetPreviewMaterial(newmat);
+
+	// Update the window title.
 	SetTitle(materialname + wxString(" - ") + wxString(WAD_TITLE));
+
+	// Update the current material path and check when it was last modified.
+	sCurrentFilePath = path;
+	tLastModified = pFileSystem_GetModifiedTime(sCurrentFilePath);
+
+	// Load the file into the script editor.
+	cMaterialScript->LoadFile(sCurrentFilePath);
 }
 
 void CMaterialFrame::UnloadMaterial()
@@ -452,7 +482,7 @@ void CMaterialFrame::UnloadMaterial()
 		// Likely nothing loaded, just return.
 		return;
 
-	Viewport->SetMaterial(NULL);
+	Viewport->SetPreviewMaterial(NULL);
 
 	sOldFilePath = sCurrentFilePath;
 	sCurrentFilePath.Clear();
@@ -481,26 +511,15 @@ void CMaterialFrame::FileEvent(wxCommandEvent &event)
 	{
 	case wxID_OPEN:
 		{
-			wxFileDialog *fdOpenMaterial = new wxFileDialog(
+			wxFileDialog *filed = new wxFileDialog(
 				this,
 				"Open Material",
 				defaultpath,
 				"",
 				"Supported files (*.material)|*.material",
 				wxFD_OPEN | wxFD_FILE_MUST_EXIST);
-			if (fdOpenMaterial->ShowModal() == wxID_OK)
-			{
-				LoadMaterial(fdOpenMaterial->GetFilename());
-
-				// Ensure the current path is kept up to date!
-				sCurrentFilePath = fdOpenMaterial->GetPath();
-
-				// Check when it was last modified.
-				tLastModified = pFileSystem_GetModifiedTime(sCurrentFilePath);
-
-				// Load the file into the script editor.
-				cMaterialScript->LoadFile(sCurrentFilePath);
-			}
+			if (filed->ShowModal() == wxID_OK)
+				LoadMaterial(filed->GetPath());
 		}
 		break;
 	case wxID_CLOSE:
