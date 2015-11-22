@@ -20,22 +20,51 @@
 #define	VIDEO_FRAMEBUFFER_H
 #pragma once
 
+class VideoRenderBuffer
+{
+public:
+	VideoRenderBuffer(unsigned int w = 512, unsigned int h = 512);
+	~VideoRenderBuffer();
+
+	void Attach();
+	void Bind();
+	void Unbind();
+	void Storage(int format, int samples);
+	void SetWidth(unsigned int w) { width = w; }
+	void SetHeight(unsigned int h) { height = h; }
+
+	unsigned int GetInstance() { return instance; }
+
+protected:
+private:
+	unsigned int instance;
+
+	unsigned int width, height;
+};
+
 class VideoFrameBuffer
 {
 public:
-	VideoFrameBuffer(int Width, int Height);
+	VideoFrameBuffer(unsigned int w = 512, unsigned int h = 512);
 	~VideoFrameBuffer();
 
+	void GenerateBuffers();
 	void Bind();
 	void Unbind();
 
 protected:
-	gltexture_t *gColourBuffer;
+	gltexture_t *buf_colour;	// Colour buffer.
+
+	VideoRenderBuffer *buf_depth;
 
 private:
-	unsigned int uiFrameBuffer;
+	// GL instance of the fbo.
+	unsigned int instance;
 
-	bool bIsBound;
+	// Width and height of the framebuffer.
+	unsigned int width, height;
+
+	bool isbound;
 };
 
 class VideoFrameBufferManager
@@ -50,16 +79,19 @@ private:
 	VideoFrameBuffer *fbo;
 };
 
+extern VideoFrameBufferManager *g_framebuffermanager;
+
 class VideoPostProcess : public VideoFrameBuffer
 {
 public:
 	VideoPostProcess(VideoShaderProgram *PostProcessProgram);
-	VideoPostProcess(const char *FragName, const char *VertName);
+	VideoPostProcess(const char *fragpath, const char *vertpath);
 
+	//virtual void Initialize();
 	virtual void Draw();
 
 private:
-	int iDiffuseUniform;
+	unsigned int uniform_diffuse;
 
 	VideoShaderProgram *program;
 };

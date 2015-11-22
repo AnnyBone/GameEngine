@@ -22,6 +22,39 @@
 #include "video_shader.h"
 #include "video_framebuffer.h"
 
+VideoRenderBuffer::VideoRenderBuffer(unsigned int w, unsigned int h)
+{
+	width = w;
+	height = h;
+
+	VideoLayer_GenerateRenderBuffer(&instance);
+}
+
+VideoRenderBuffer::~VideoRenderBuffer()
+{
+	VideoLayer_DeleteRenderBuffer(&instance);
+}
+
+void VideoRenderBuffer::Attach()
+{
+	VideoLayer_AttachFrameBufferRenderBuffer(GL_DEPTH_STENCIL_ATTACHMENT, instance);
+}
+
+void VideoRenderBuffer::Bind()
+{
+	VideoLayer_BindRenderBuffer(instance);
+}
+
+void VideoRenderBuffer::Unbind()
+{
+	VideoLayer_BindRenderBuffer(0);
+}
+
+void VideoRenderBuffer::Storage(int format, int samples)
+{
+	VideoLayer_RenderBufferStorage(format, samples, width, height);
+}
+
 /*
 	Framebuffer Manager
 */
@@ -30,89 +63,126 @@ VideoFrameBufferManager	*g_framebuffermanager;
 
 VideoFrameBufferManager::VideoFrameBufferManager()
 {
-	//FrameBufferList = new VideoFrameBuffer[5];
+	fbo = NULL;
 }
 
 VideoFrameBufferManager::~VideoFrameBufferManager()
 {
-	//delete[] FrameBufferList;
+	delete[] fbo;
+}
+
+void VideoFrameBufferManager::Initialize()
+{
+	//fbo = new VideoFrameBuffer[1];
 }
 
 /*
 	Framebuffer Object
 */
 
-VideoFrameBuffer::VideoFrameBuffer(int Width, int Height)
+VideoFrameBuffer::VideoFrameBuffer(unsigned int w, unsigned int h)
 {
-	bIsBound = 0;
+	isbound = false;
+	buf_colour = NULL;
+	buf_depth = NULL;
+	width = w;
+	height = h;
 
-	uiFrameBuffer = 0;
-
-	gColourBuffer = NULL;
-
-	VideoLayer_GenerateFrameBuffer(&uiFrameBuffer);
-
-	// Create a new texture instance and then bind it.
-	gColourBuffer = TexMgr_NewTexture();
-	if (!gColourBuffer)
-		throw CEngineException("Failed to create framebuffer texture!\n");
-
-	Video_SetTexture(gColourBuffer);
-
-	// Set the texture up.
-	VideoLayer_SetupTexture(VIDEO_TEXTURE_FORMAT_RGB, VIDEO_TEXTURE_FORMAT_RGB, Width, Height);
-	VideoLayer_SetTextureFilter(VIDEO_TEXTURE_FILTER_LINEAR);
-
-	// Attach the texture to this framebuffer.
-	VideoLayer_AttachFrameBufferTexture(gColourBuffer);
+	// Generate an fbo for this object.
+	VideoLayer_GenerateFrameBuffer(&instance);
 }
 
 VideoFrameBuffer::~VideoFrameBuffer()
 {
-	VideoLayer_DeleteFrameBuffer(&uiFrameBuffer);
+	delete buf_depth;
+
+	VideoLayer_DeleteFrameBuffer(&instance);
+}
+
+/*	TODO: Make this more abstract; need more control over what this is doing.
+*/
+void VideoFrameBuffer::GenerateBuffers()
+{
+	// Colour buffer
+	{
+		// Create a new texture instance and then bind it.
+		buf_colour = TexMgr_NewTexture();
+		if (!buf_colour)
+			Sys_Error("Failed to create framebuffer texture!\n");
+
+		Video_SetTexture(buf_colour);
+
+		// Set the texture up.
+		VideoLayer_SetupTexture(VIDEO_TEXTURE_FORMAT_RGB, VIDEO_TEXTURE_FORMAT_RGB, width, height);
+		VideoLayer_SetTextureFilter(VIDEO_TEXTURE_FILTER_LINEAR);
+
+		// Attach the texture to this framebuffer.
+		VideoLayer_AttachFrameBufferTexture(buf_colour);
+	}
+
+	// Depth buffer
+	buf_depth = new VideoRenderBuffer(width, height);
+	buf_depth->Bind();
+	buf_depth->Storage(GL_DEPTH24_STENCIL8, 0);
+	buf_depth->Attach();
+
+	VideoLayer_CheckFrameBufferStatus(instance);
 }
 
 void VideoFrameBuffer::Bind()
 {
-	if (bIsBound)
+	if (isbound)
 		return;
 
-	VideoLayer_BindFrameBuffer(VIDEO_FBO_DEFAULT, uiFrameBuffer);
+	VideoLayer_BindFrameBuffer(VIDEO_FBO_DEFAULT, instance);
 
-	bIsBound = true;
+	isbound = true;
 }
 
 void VideoFrameBuffer::Unbind()
 {
-	if (!bIsBound)
+	if (!isbound)
 		return;
 
 	VideoLayer_BindFrameBuffer(VIDEO_FBO_DEFAULT, 0);
 
-	bIsBound = false;
+	isbound = false;
+}
+
+VideoFrameBuffer *debug_fbo;
+
+void DEBUG_FrameBufferInitialization()
+{
+	debug_fbo = new VideoFrameBuffer(512, 512);	// Generate the FBO.
+	debug_fbo->Bind();							// Bind it, so it's active.
+	debug_fbo->GenerateBuffers();				// TODO: Abstract this stage out.
+}
+
+void DEBUG_FrameBufferDraw()
+{
 }
 
 // Post Processing Object
 
-VideoPostProcess::VideoPostProcess(const char *FragName, const char *VertName)
+VideoPostProcess::VideoPostProcess(const char *fragpath, const char *vertpath)
 	: VideoFrameBuffer(Video.iWidth, Video.iHeight)
 {
 	program = new VideoShaderProgram();
 	program->Initialize();
 
-	VideoShader *FragmentShader = new VideoShader(VIDEO_SHADER_FRAGMENT);
-	if (!FragmentShader->Load(FragName))
-		Sys_Error("Failed to load fragment shader! (%s)\n", FragName);
+	VideoShader *frag = new VideoShader(VIDEO_SHADER_FRAGMENT);
+	if (!frag->Load(fragpath))
+		Sys_Error("Failed to load fragment shader! (%s)\n", fragpath);
 
-	VideoShader *VertexShader = new VideoShader(VIDEO_SHADER_VERTEX);
-	if (!VertexShader->Load(VertName))
-		Sys_Error("Failed to load vertex shader! (%s)\n", VertName);
+	VideoShader *vert = new VideoShader(VIDEO_SHADER_VERTEX);
+	if (!vert->Load(vertpath))
+		Sys_Error("Failed to load vertex shader! (%s)\n", vertpath);
 
-	program->Attach(FragmentShader);
-	program->Attach(VertexShader);
+	program->Attach(frag);
+	program->Attach(vert);
 	program->Link();
 
-	iDiffuseUniform = program->GetUniformLocation("SampleTexture");
+	uniform_diffuse = program->GetUniformLocation("SampleTexture");
 }
 
 VideoPostProcess::VideoPostProcess(VideoShaderProgram *PostProcessProgram)
@@ -130,7 +200,7 @@ void VideoPostProcess::Draw()
 
 	program->Enable();
 
-	Video_SetTexture(gColourBuffer);
+	Video_SetTexture(buf_colour);
 
 	program->SetVariable(iDiffuseUniform, 0);
 
@@ -144,19 +214,21 @@ void VideoPostProcess::Draw()
 
 VideoPostProcess *post_bloom;
 
-void VideoPostProcess_Initialize()
+void DEBUG_PostProcessInitialization()
 {
 	post_bloom = new VideoPostProcess("bloom", "base");
-	if (!post_bloom)
-		Sys_Error("Failed to create post process effect!\n");
 }
 
-void VideoPostProcess_BindFrameBuffer()
+void DEBUG_PostProcessDraw()
+{
+	post_bloom->Draw();
+}
+
+void DEBUG_PostProcessBind()
 {
 	post_bloom->Bind();
 }
 
-void VideoPostProcess_Draw()
-{
-	post_bloom->Draw();
-}
+void VideoPostProcess_Initialize() {}
+void VideoPostProcess_BindFrameBuffer() {}
+void VideoPostProcess_Draw() {}

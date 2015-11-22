@@ -1,6 +1,4 @@
-/*	Copyright (C) 1996-2001 Id Software, Inc.
-	Copyright (C) 2002-2009 John Fitzgibbons and others
-	Copyright (C) 2011-2015 OldTimes Software
+/*	Copyright (C) 2011-2015 OldTimes Software
 
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License
@@ -18,8 +16,8 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef __ENGINEVIDEOLAYER__
-#define	__ENGINEVIDEOLAYER__
+#ifndef VIDEO_LAYER_H
+#define	VIDEO_LAYER_H
 
 typedef enum
 {
@@ -63,14 +61,23 @@ extern "C" {
 	// Drawing
 	void VideoLayer_DrawArrays(const VideoPrimitive_t vpPrimitiveType, unsigned int uiSize, bool bWireframe);
 
+	// Vertex Buffer
 	void VideoLayer_GenerateVertexBuffer(unsigned int *uiBuffer);
 	void VideoLayer_DeleteVertexBuffer(unsigned int *uiBuffer);
 	
 	// Frame Buffer
 	void VideoLayer_GenerateFrameBuffer(unsigned int *uiBuffer);
+	void VideoLayer_CheckFrameBufferStatus(unsigned int instance);
 	void VideoLayer_BindFrameBuffer(VideoFBOTarget_t vtTarget, unsigned int uiBuffer);
-	void VideoLayer_AttachFrameBufferTexture(gltexture_t *Texture);
+	void VideoLayer_AttachFrameBufferRenderBuffer(unsigned int attachment, unsigned int buffer);
+	void VideoLayer_AttachFrameBufferTexture(gltexture_t *buffer);
 	void VideoLayer_DeleteFrameBuffer(unsigned int *uiBuffer);
+
+	// Render Buffer
+	void VideoLayer_GenerateRenderBuffer(unsigned int *buffer);
+	void VideoLayer_BindRenderBuffer(unsigned int buffer);
+	void VideoLayer_RenderBufferStorage(int format, int samples, unsigned int width, unsigned int height);
+	void VideoLayer_DeleteRenderBuffer(unsigned int *buffer);
 
 #if __cplusplus
 };

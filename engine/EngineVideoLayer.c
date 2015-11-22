@@ -268,9 +268,58 @@ void VideoLayer_Disable(unsigned int uiCapabilities)
 	OPENGL BUFFERS
 ===========================*/
 
+// RENDER BUFFER OBJECTS
+
+void VideoLayer_GenerateRenderBuffer(unsigned int *buffer)
+{
+	VIDEO_FUNCTION_START
+	glGenRenderbuffers(1, buffer);
+	VIDEO_FUNCTION_END
+}
+
+void VideoLayer_DeleteRenderBuffer(unsigned int *buffer)
+{
+	VIDEO_FUNCTION_START
+	glDeleteRenderbuffers(1, buffer);
+	VIDEO_FUNCTION_END
+}
+
+void VideoLayer_BindRenderBuffer(unsigned int buffer)
+{
+	VIDEO_FUNCTION_START
+	glBindRenderbuffer(GL_RENDERBUFFER, buffer);
+	VIDEO_FUNCTION_END
+}
+
+void VideoLayer_RenderBufferStorage(int format, int samples, unsigned int width, unsigned int height)
+{
+	glRenderbufferStorageMultisample(GL_RENDERBUFFER, samples, format, width, height);
+
+	// Ensure there weren't any issues.
+	unsigned int glerror = glGetError();
+	if (glerror != GL_NO_ERROR)
+	{
+		char *errorstring = "";
+		switch (glerror)
+		{
+		case GL_INVALID_ENUM:
+			errorstring = "Invalid internal format!";
+			break;
+		case GL_OUT_OF_MEMORY:
+			errorstring = "Unable to create a data store of the requested size!";
+			break;
+		default:
+			// This should *NEVER* occur.
+			break;
+		}
+		Sys_Error("%s\n%s", VideoLayer_GetErrorMessage(glerror), errorstring);
+	}
+}
+
 // VERTEX BUFFER OBJECTS
 
 /*	Generates a single OpenGL buffer.
+	glGenBuffers
 */
 void VideoLayer_GenerateVertexBuffer(unsigned int *uiBuffer) 
 {
@@ -280,6 +329,7 @@ void VideoLayer_GenerateVertexBuffer(unsigned int *uiBuffer)
 }
 
 /*	Deletes a single OpenGL buffer.
+	glDeleteBuffers
 */
 void VideoLayer_DeleteVertexBuffer(unsigned int *uiBuffer)
 {
@@ -290,6 +340,9 @@ void VideoLayer_DeleteVertexBuffer(unsigned int *uiBuffer)
 
 // FRAME BUFFER OBJECTS
 
+/*	Generates a single framebuffer.
+	glGenFramebuffers
+*/
 void VideoLayer_GenerateFrameBuffer(unsigned int *uiBuffer) 
 {
 	VIDEO_FUNCTION_START
@@ -297,48 +350,89 @@ void VideoLayer_GenerateFrameBuffer(unsigned int *uiBuffer)
 	VIDEO_FUNCTION_END
 }
 
+/*	Ensures that the framebuffer is valid, otherwise throws an error.
+	glCheckFramebufferStatus
+*/
+void VideoLayer_CheckFrameBufferStatus(unsigned int instance)
+{
+	int status;
+	status = glCheckFramebufferStatus(instance);
+	if (status == GL_FRAMEBUFFER_COMPLETE)
+		return;
+
+	// Generic GL error.
+	if (status == 0)
+		Sys_Error("An error occured when checking framebuffer! (%s)\n", VideoLayer_GetErrorMessage(glGetError()));
+
+	switch (status)
+	{
+	case GL_FRAMEBUFFER_UNDEFINED:
+		Sys_Error("Default framebuffer doesn't exist!\n");
+	case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
+		Sys_Error("Framebuffer attachment points are incomplete!\n");
+	case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
+		Sys_Error("Framebuffer doesn't have an image attached!\n");
+	case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER:
+		Sys_Error("Invalid attachment type!\n");
+	case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER:
+		break;
+	case GL_FRAMEBUFFER_UNSUPPORTED:
+	case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE:
+	case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS_ARB:
+		break;
+	}
+
+	Sys_Error("An unknown error occured when checking framebuffer status!\n");
+}
+
+/*	Binds the given framebuffer.
+	glBindFramebuffer
+*/
 void VideoLayer_BindFrameBuffer(VideoFBOTarget_t vtTarget, unsigned int uiBuffer)
 {
 	VIDEO_FUNCTION_START
-	unsigned int uiOutTarget;
+	unsigned int outtarget;
 
 	// TODO: Get these named up so we can easily debug.
 	switch (vtTarget)
 	{
 	case VIDEO_FBO_DRAW:
-		uiOutTarget = GL_DRAW_BUFFER;
+		outtarget = GL_DRAW_BUFFER;
 		break;
 	case VIDEO_FBO_READ:
-		uiOutTarget = GL_READ_BUFFER;
+		outtarget = GL_READ_BUFFER;
 		break;
 	default:
-		uiOutTarget = GL_FRAMEBUFFER;
+		outtarget = GL_FRAMEBUFFER;
 	}
 
-	glBindFramebuffer(uiOutTarget, uiBuffer);
+	glBindFramebuffer(outtarget, uiBuffer);
 
 	// Ensure there weren't any issues.
-	unsigned int uiGLError = glGetError();
-	if (uiGLError != GL_NO_ERROR)
+	unsigned int glerror = glGetError();
+	if (glerror != GL_NO_ERROR)
 	{
-		char *cErrorString = "";
-		switch (uiGLError)
+		char *errorstring = "";
+		switch (glerror)
 		{
 		case GL_INVALID_ENUM:
-			cErrorString = "Invalid framebuffer target!";
+			errorstring = "Invalid framebuffer target!";
 			break;
 		case GL_INVALID_OPERATION:
-			cErrorString = "Invalid framebuffer object!";
+			errorstring = "Invalid framebuffer object!";
 			break;
 		default:
 			// This should *NEVER* occur.
 			break;
 		}
-		Sys_Error("%s\n%s", VideoLayer_GetErrorMessage(uiGLError), cErrorString);
+		Sys_Error("%s\n%s", VideoLayer_GetErrorMessage(glerror), errorstring);
 	}
 	VIDEO_FUNCTION_END
 }
 
+/*	Deletes the given framebuffer.
+	glDeleteFramebuffers
+*/
 void VideoLayer_DeleteFrameBuffer(unsigned int *uiBuffer)
 {
 	VIDEO_FUNCTION_START
@@ -346,10 +440,17 @@ void VideoLayer_DeleteFrameBuffer(unsigned int *uiBuffer)
 	VIDEO_FUNCTION_END
 }
 
-void VideoLayer_AttachFrameBufferTexture(gltexture_t *Texture)
+void VideoLayer_AttachFrameBufferRenderBuffer(unsigned int attachment, unsigned int buffer)
 {
 	VIDEO_FUNCTION_START
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, Texture->texnum, 0);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, attachment, GL_RENDERBUFFER, buffer);
+	VIDEO_FUNCTION_END
+}
+
+void VideoLayer_AttachFrameBufferTexture(gltexture_t *buffer)
+{
+	VIDEO_FUNCTION_START
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, buffer->texnum, 0);
 	VIDEO_FUNCTION_END
 }
 
