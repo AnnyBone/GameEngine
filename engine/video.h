@@ -193,9 +193,9 @@ extern "C" {
 	bool Video_GetCapability(unsigned int iCapability);
 
 	// Temporary
-	void VideoPostProcess_Initialize();
-	void VideoPostProcess_BindFrameBuffer();
-	void VideoPostProcess_Draw();
+	void DEBUG_FrameBufferInitialization();
+	void DEBUG_FrameBufferBind();
+	void DEBUG_FrameBufferDraw();
 
 	// Legacy
 	void R_EmitWirePoint(MathVector3f_t origin);

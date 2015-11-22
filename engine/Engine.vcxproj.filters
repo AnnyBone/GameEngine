@@ -298,9 +298,6 @@
     <ClCompile Include="video_shader.cpp">
       <Filter>Client\Video</Filter>
     </ClCompile>
-    <ClCompile Include="video.c">
-      <Filter>Client\Video</Filter>
-    </ClCompile>
     <ClCompile Include="video_framebuffer.cpp">
       <Filter>Client\Video</Filter>
     </ClCompile>
@@ -309,6 +306,9 @@
     </ClCompile>
     <ClCompile Include="video_sdlwindow.c">
       <Filter>Client\Video\Interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="video.c">
+      <Filter>Client\Video</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

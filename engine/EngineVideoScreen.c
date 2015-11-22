@@ -331,10 +331,8 @@ void SCR_Init (void)
 	Cmd_AddCommand("sizeup",SCR_SizeUp_f);
 	Cmd_AddCommand("sizedown",SCR_SizeDown_f);
 
-#ifdef VIDEO_SUPPORT_SHADERS
 #ifdef VIDEO_SUPPORT_FRAMEBUFFERS
-	VideoPostProcess_Initialize();
-#endif
+	DEBUG_FrameBufferInitialization();
 #endif
 
 	bScreenInitialized = true;
@@ -898,6 +896,13 @@ void SCR_UpdateScreen (void)
 	else
 	{
 		Menu->Draw();
+
+#ifdef VIDEO_SUPPORT_SHADERS
+#ifdef VIDEO_SUPPORT_FRAMEBUFFERS
+		//VideoPostProcess_Draw();
+		DEBUG_FrameBufferDraw();
+#endif
+#endif
 
 		SCR_DrawNet();
 		SCR_DrawTurtle();

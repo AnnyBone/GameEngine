@@ -871,7 +871,8 @@ void Video_Frame(void)
 
 #ifdef VIDEO_SUPPORT_SHADERS
 #ifdef VIDEO_SUPPORT_FRAMEBUFFERS
-	VideoPostProcess_BindFrameBuffer();
+	//VideoPostProcess_BindFrameBuffer();
+	DEBUG_FrameBufferBind();
 #endif
 #endif
 
@@ -891,12 +892,6 @@ void Video_PostFrame(void)
 {
 	VIDEO_FUNCTION_START
 	VIDEO_FUNCTION_END
-
-#ifdef VIDEO_SUPPORT_SHADERS
-#ifdef VIDEO_SUPPORT_FRAMEBUFFERS
-	VideoPostProcess_Draw();
-#endif
-#endif
 
 	Draw_ResetCanvas();
 

@@ -126,7 +126,7 @@ void VideoFrameBuffer::GenerateBuffers()
 	buf_depth->Storage(GL_DEPTH24_STENCIL8, 0);
 	buf_depth->Attach();
 
-	VideoLayer_CheckFrameBufferStatus(instance);
+	VideoLayer_CheckFrameBufferStatus();
 }
 
 void VideoFrameBuffer::Bind()
@@ -149,6 +149,16 @@ void VideoFrameBuffer::Unbind()
 	isbound = false;
 }
 
+void VideoFrameBuffer::Draw()
+{
+	Unbind();
+
+	GL_SetCanvas(CANVAS_DEFAULT);
+
+	Video_SetTexture(buf_colour);
+	Draw_Fill(0, 0, 512, 512, 1, 1, 1, 1); //Video.iWidth, Video.iHeight, 1, 1, 1, 1);
+}
+
 VideoFrameBuffer *debug_fbo;
 
 void DEBUG_FrameBufferInitialization()
@@ -156,10 +166,17 @@ void DEBUG_FrameBufferInitialization()
 	debug_fbo = new VideoFrameBuffer(512, 512);	// Generate the FBO.
 	debug_fbo->Bind();							// Bind it, so it's active.
 	debug_fbo->GenerateBuffers();				// TODO: Abstract this stage out.
+	debug_fbo->Unbind();
+}
+
+void DEBUG_FrameBufferBind()
+{
+	debug_fbo->Bind();
 }
 
 void DEBUG_FrameBufferDraw()
 {
+	debug_fbo->Draw();
 }
 
 // Post Processing Object
@@ -204,10 +221,8 @@ void VideoPostProcess::Draw()
 
 	program->SetVariable(iDiffuseUniform, 0);
 
-	Draw_ResetCanvas();
 	GL_SetCanvas(CANVAS_DEFAULT);
 	Draw_Fill(0, 0, 512, 512, 1, 1, 1, 1); //Video.iWidth, Video.iHeight, 1, 1, 1, 1);
-	Draw_ResetCanvas();
 
 	program->Disable();
 }

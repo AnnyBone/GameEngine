@@ -67,7 +67,7 @@ extern "C" {
 	
 	// Frame Buffer
 	void VideoLayer_GenerateFrameBuffer(unsigned int *uiBuffer);
-	void VideoLayer_CheckFrameBufferStatus(unsigned int instance);
+	void VideoLayer_CheckFrameBufferStatus();
 	void VideoLayer_BindFrameBuffer(VideoFBOTarget_t vtTarget, unsigned int uiBuffer);
 	void VideoLayer_AttachFrameBufferRenderBuffer(unsigned int attachment, unsigned int buffer);
 	void VideoLayer_AttachFrameBufferTexture(gltexture_t *buffer);

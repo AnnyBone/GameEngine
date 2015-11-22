@@ -52,6 +52,8 @@ public:
 	void Bind();
 	void Unbind();
 
+	virtual void Draw();
+
 protected:
 	gltexture_t *buf_colour;	// Colour buffer.
 

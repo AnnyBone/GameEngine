@@ -353,10 +353,10 @@ void VideoLayer_GenerateFrameBuffer(unsigned int *uiBuffer)
 /*	Ensures that the framebuffer is valid, otherwise throws an error.
 	glCheckFramebufferStatus
 */
-void VideoLayer_CheckFrameBufferStatus(unsigned int instance)
+void VideoLayer_CheckFrameBufferStatus()
 {
 	int status;
-	status = glCheckFramebufferStatus(instance);
+	status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 	if (status == GL_FRAMEBUFFER_COMPLETE)
 		return;
 
@@ -375,11 +375,13 @@ void VideoLayer_CheckFrameBufferStatus(unsigned int instance)
 	case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER:
 		Sys_Error("Invalid attachment type!\n");
 	case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER:
-		break;
+		Sys_Error("INCOMPLETE READ BUFFER\n");
 	case GL_FRAMEBUFFER_UNSUPPORTED:
+		Sys_Error("UNSUPPORTED\n");
 	case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE:
+		Sys_Error("INCOMPLETE MULTISAMPLE\n");
 	case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS_ARB:
-		break;
+		Sys_Error("INCOMPLETE LAYER TARGETS\n");
 	}
 
 	Sys_Error("An unknown error occured when checking framebuffer status!\n");
