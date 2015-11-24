@@ -368,8 +368,10 @@ bool Server_SpawnEntity(ServerEntity_t *seEntity)
 
 /*	Called by the engine.
 */
-void Server_StartFrame(void)
+void Server_PreFrame(void)
 {
+	Waypoint_Frame();
+
 #ifdef GAME_OPENKATANA
 	Deathmatch_Frame();
 #elif GAME_ADAMAS
@@ -379,10 +381,9 @@ void Server_StartFrame(void)
 /*	Called by the engine.
 	Called per-frame for each entity just before physics.
 */
-void Server_EntityFrame(ServerEntity_t *eEntity)
+void Server_EntityFrame(ServerEntity_t *entity)
 {
-	Waypoint_Frame(eEntity);
-	Monster_Frame(eEntity);
+	Monster_Frame(entity);
 }
 
 /*	Called by the engine.

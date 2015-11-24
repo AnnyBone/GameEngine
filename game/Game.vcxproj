@@ -226,6 +226,7 @@
     <ClCompile Include="server\openkatana\weapon_zeus.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (Adamas)|Win32'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="server\server_debug.c" />
     <ClCompile Include="server\server_effects.c" />
     <ClCompile Include="server\server_entity.cpp" />
     <ClCompile Include="server\server_area.c" />

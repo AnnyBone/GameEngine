@@ -1008,7 +1008,7 @@ void Physics_ServerFrame(void)
 
 	// Let the progs know that a new frame has started
 	// TODO: should we pass the time to this?
-	Game->Server_StartFrame();
+	Game->Server_PreFrame();
 
 	// Treat each object in turn
 	eEntity = sv.edicts;

@@ -133,7 +133,7 @@ void Vektar_Move(ServerEntity_t *eVektar)
 
 	// [20/12/2012] Vektar's positioning shit ~hogsy
 	// [20/12/2012] BUG: Pretty sure this will always return the first players position... ~hogsy
-	wWaypoint = Waypoint_GetByType(Engine.Server_FindEntity(Server.eWorld,"player",true),WAYPOINT_DEFAULT,MONSTER_RANGE_FAR);
+	wWaypoint = Waypoint_GetByType(Engine.Server_FindEntity(Server.eWorld,"player",true),WAYPOINT_TYPE_DEFAULT,MONSTER_RANGE_FAR);
 	if(!wWaypoint)
 	{
 		eVektar->v.think		= Vektar_Move;

@@ -568,15 +568,14 @@ void Player_PreThink(ServerEntity_t *ePlayer)
 		if(ePlayer->v.movetype != MOVETYPE_WALK)
 			return;
 
-		// [2/1/2012] TODO: Delay currently isn't properly setup! Ugh lazy me ~hogsy
 		if(ePlayer->v.flags & FL_ONGROUND)
-			// [20/12/2012] Create a waypoint at our current position ~hogsy
-			Waypoint_Spawn(ePlayer->v.origin,WAYPOINT_DEFAULT);
+			// Create a waypoint at our current position.
+			Waypoint_Spawn(ePlayer->v.origin, WAYPOINT_TYPE_DEFAULT);
 		else if((ePlayer->v.flags & FL_SWIM) /*&& !(ePlayer->v.flags & FL_ONGROUND)*/)
-			Waypoint_Spawn(ePlayer->v.origin,WAYPOINT_SWIM);
+			Waypoint_Spawn(ePlayer->v.origin, WAYPOINT_TYPE_SWIM);
 		// Create waypoints in the air.
 		else if(!(ePlayer->v.flags & FL_ONGROUND))
-			Waypoint_Spawn(ePlayer->v.origin,WAYPOINT_JUMP);
+			Waypoint_Spawn(ePlayer->v.origin, WAYPOINT_TYPE_JUMP);
 
 		Server.dWaypointSpawnDelay = Server.dTime+((double)cvServerWaypointDelay.value);
 	}
@@ -671,6 +670,45 @@ void Player_Pain(ServerEntity_t *ent, ServerEntity_t *other)
 }
 
 int	iSpawnSlot;
+
+/*	Find a random spawn point for the entity (point_start).
+*/
+ServerEntity_t *Player_GetSpawnEntity(ServerEntity_t *entity, int type)
+{
+	ServerEntity_t	*spawn;
+	char			*startname;
+
+	switch (type)
+	{
+	case INFO_PLAYER_DEATHMATCH:
+		startname = "point_deathmatch";
+		break;
+	case INFO_PLAYER_CTF:
+		if (entity->local.pTeam == TEAM_RED)
+			startname = "point_start_red";
+		else if (entity->local.pTeam == TEAM_BLUE)
+			startname = "point_start_blue";
+		else
+		{
+			Engine.Con_Warning("Unknown team type for spawn point! (%i)", entity->local.pTeam);
+			return NULL;
+		}
+		break;
+#ifdef GAME_OPENKATANA
+	case INFO_PLAYER_SUPERFLY:
+	case INFO_PLAYER_MIKIKO:
+#endif
+	default:
+		startname = "point_start";
+	}
+
+	spawn = Engine.Server_FindEntity(Server.eWorld, startname, true);
+	if (spawn)
+		if (type == spawn->local.style)
+			return spawn;
+
+	return NULL;
+}
 
 void Player_Spawn(ServerEntity_t *ePlayer)
 {
@@ -796,10 +834,10 @@ void Player_Spawn(ServerEntity_t *ePlayer)
 #endif
 	}
 
-	eSpawnPoint = Entity_SpawnPoint(ePlayer,INFO_PLAYER_START);
+	eSpawnPoint = Player_GetSpawnEntity(ePlayer, INFO_PLAYER_START);
 	if(eSpawnPoint)
 	{
-		// [25/8/2012] Just copy our position and angle ~hogsy
+		// Just copy our position and angle.
 		Math_VectorCopy(eSpawnPoint->v.origin,ePlayer->v.origin);
 		Math_VectorCopy(eSpawnPoint->v.angles,ePlayer->v.angles);
 	}
@@ -1025,22 +1063,22 @@ void Player_CheckPowerups(ServerEntity_t *ePlayer)
 #endif
 
 // [23/3/2013] Countdown is now done for cooperative mode too! ~hogsy
-void Player_DeathThink(ServerEntity_t *ent)
+void Player_DeathThink(ServerEntity_t *entity)
 {
-	if(	ent->v.button[0]	||
-		ent->v.button[1]	||
-		ent->v.button[2])
+	if (entity->v.button[0] ||
+		entity->v.button[1] ||
+		entity->v.button[2])
 	{
 		// [25/8/2012] Simplified ~hogsy
-		Math_VectorClear(ent->v.button);
+		Math_VectorClear(entity->v.button);
 
-		if(!ent->local.fSpawnDelay)
+		if (!entity->local.fSpawnDelay)
 		{
 			// [25/8/2012] We don't respawn in singleplayer ~hogsy
 			// [23/3/2013] Oops! Fixed, we were checking for the wrong case here :) ~hogsy
 			if(bIsMultiplayer)
 				// [16/10/2013] Swapped out for the more "correct" Player_Spawn rather than via Monster_Respawn ~hogsy
-				Player_Spawn(ent);
+				Player_Spawn(entity);
 			else
 			{
 				Engine.Server_Restart();
@@ -1051,21 +1089,21 @@ void Player_DeathThink(ServerEntity_t *ent)
 
 	// [25/8/2012] If it's multiplayer and not coop, countdown ~hogsy
 	// [15/8/2013] Countdown for both singleplayer and multiplayer ~hogsy
-	if(ent->local.fSpawnDelay)
+	if (entity->local.fSpawnDelay)
 		// [25/8/2012] TODO: Force respawn if timer runs out? ~hogsy
-		ent->local.fSpawnDelay -= 0.5f;
+		entity->local.fSpawnDelay -= 0.5f;
 }
 
-void Player_Use(ServerEntity_t *ePlayer)
+void Player_Use(ServerEntity_t *entity)
 {
-	if(ePlayer->v.iHealth <= 0 || ePlayer->local.dAttackFinished > Server.dTime)
+	if (entity->v.iHealth <= 0 || entity->local.dAttackFinished > Server.dTime)
 		return;
 
 	// If nothing usable is being aimed at then play sound...
 	// TODO: Find a more appropriate sound :)
-	Sound(ePlayer,CHAN_VOICE,"player/playerpain3.wav",255,ATTN_NORM);
+	Sound(entity, CHAN_VOICE, "player/playerpain3.wav", 255, ATTN_NORM);
 
-	ePlayer->local.dAttackFinished = Server.dTime+0.5;
+	entity->local.dAttackFinished = Server.dTime + 0.5;
 }
 
 /*

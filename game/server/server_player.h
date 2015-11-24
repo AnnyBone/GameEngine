@@ -39,7 +39,9 @@ void Player_Jump(ServerEntity_t *self);
 #ifdef OPENKATANA
 void Player_CheckPowerups(ServerEntity_t *self);
 #endif
-void Player_DeathThink(ServerEntity_t *ent);
-void Player_Use(ServerEntity_t *ePlayer);
+void Player_DeathThink(ServerEntity_t *entity);
+void Player_Use(ServerEntity_t *entity);
+
+ServerEntity_t *Player_GetSpawnEntity(ServerEntity_t *entity, int type);
 
 #endif	// SERVER_PLAYER_H

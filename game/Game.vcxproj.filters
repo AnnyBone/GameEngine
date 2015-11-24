@@ -269,5 +269,8 @@
     <ClCompile Include="server\server_effects.c">
       <Filter>Server</Filter>
     </ClCompile>
+    <ClCompile Include="server\server_debug.c">
+      <Filter>Server</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

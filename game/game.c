@@ -207,7 +207,7 @@ bool Game_Init(int state,ServerEntity_t *ent,double dTime)
 	return true;
 }
 
-void	Server_StartFrame(void);	// server_main
+void	Server_PreFrame(void);	// server_main
 void	Game_Shutdown(void);
 
 pMODULE_EXPORT GameExport_t *Game_Main(ModuleImport_t *Import)
@@ -282,7 +282,7 @@ pMODULE_EXPORT GameExport_t *Game_Main(ModuleImport_t *Import)
 
 	// Server
 	Export.Server_Initialize		= Server_Initialize;
-	Export.Server_StartFrame		= Server_StartFrame;
+	Export.Server_PreFrame			= Server_PreFrame;
 	Export.Server_SpawnEntity		= Server_SpawnEntity;
 	Export.Server_EntityFrame		= Server_EntityFrame;
 	Export.Server_KillClient		= Server_KillClient;

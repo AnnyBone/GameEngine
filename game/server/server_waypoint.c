@@ -29,8 +29,7 @@
 
 Waypoint_t	wWaypoints[WAYPOINT_MAX_ALLOCATED];
 
-int	iWaypointCount,
-	iWaypointAllocated;
+int	waypoint_count,	waypoint_allocated;
 
 void Waypoint_Shutdown(void);
 
@@ -40,7 +39,7 @@ void Waypoint_Initialize(void)
 {
 	memset(wWaypoints,0,sizeof(wWaypoints));
 
-	iWaypointCount = 0;
+	waypoint_count = 0;
 }
 
 bool Waypoint_IsSafe(ServerEntity_t *eMonster,Waypoint_t *wPoint)
@@ -64,13 +63,13 @@ bool Waypoint_IsSafe(ServerEntity_t *eMonster,Waypoint_t *wPoint)
 */
 Waypoint_t *Waypoint_Allocate(void)
 {
-	if((iWaypointCount+1) > WAYPOINT_MAX_ALLOCATED)
+	if ((waypoint_count + 1) > WAYPOINT_MAX_ALLOCATED)
 	{
-		Engine.Con_Warning("Failed to allocate waypoint! (%i / %i)\n",iWaypointCount,WAYPOINT_MAX_ALLOCATED);
+		Engine.Con_Warning("Failed to allocate waypoint! (%i / %i)\n", waypoint_count, WAYPOINT_MAX_ALLOCATED);
 		return NULL;
 	}
 
-	return &wWaypoints[iWaypointCount++];
+	return &wWaypoints[waypoint_count++];
 }
 
 void Waypoint_Delete(Waypoint_t *wPoint)
@@ -86,8 +85,8 @@ void Waypoint_Delete(Waypoint_t *wPoint)
 
 	free((void*)wPoint);
 
-	iWaypointCount--;
-	iWaypointAllocated--;
+	waypoint_count--;
+	waypoint_allocated--;
 }
 
 Waypoint_t *Waypoint_GetByVisibility(MathVector3f_t vOrigin)
@@ -95,7 +94,7 @@ Waypoint_t *Waypoint_GetByVisibility(MathVector3f_t vOrigin)
 	Waypoint_t	*wPoint;
 	trace_t		tTrace;
 
-	for(wPoint = wWaypoints; wPoint->number < iWaypointCount; wPoint++)
+	for (wPoint = wWaypoints; wPoint->number < waypoint_count; wPoint++)
 	{
 		tTrace = Traceline(NULL,vOrigin,wPoint->position,0);
 		// Given point cannot be in the same place as the given origin.
@@ -110,34 +109,26 @@ Waypoint_t *Waypoint_GetByNumber(int iWaypointNumber)
 {
 	Waypoint_t	*wPoint;
 
-	for(wPoint = wWaypoints; wPoint->number < iWaypointCount; wPoint++)
+	for (wPoint = wWaypoints; wPoint->number < waypoint_count; wPoint++)
 		if(wPoint->number == iWaypointNumber)
 			return wPoint;
 
 	return NULL;
 }
 
-Waypoint_t *Waypoint_GetByType(ServerEntity_t *eMonster,int iType,float fMaxDistance)
+Waypoint_t *Waypoint_GetByType(MathVector3f_t position, WaypointType_t type, float distance)
 {
-	Waypoint_t *wPoint;
-	MathVector3f_t vDistance;
+	Waypoint_t		*point;
+	MathVector3f_t	vecdist;
 
-	if(!eMonster)
-	{
-		Engine.Con_Warning("Failed to get entity when finding waypoint!\n");
-		return NULL;
-	}
-
-	for(wPoint = wWaypoints; wPoint->number < iWaypointCount; wPoint++)
-		if(wPoint->wType == iType)
+	for (point = wWaypoints; point->number < waypoint_count; point++)
+		if (point->wType == type)
 		{
-			// [20/9/2012] TODO: Needs testing :[ ~hogsy
-			Math_VectorSubtract(eMonster->v.origin,wPoint->position,vDistance);
-			if(Math_Length(vDistance) < fMaxDistance)
-				return wPoint;
+			Math_VectorSubtract(position, point->position, vecdist);
+			if (Math_Length(vecdist) < distance)
+				return point;
 		}
 
-	// [20/9/2012] Welp we didn't find anything, return null ~hogsy
 	return NULL;
 }
 
@@ -147,7 +138,7 @@ Waypoint_t *Waypoint_GetByName(ServerEntity_t *eMonster,char *cName,float fMaxDi
 	Waypoint_t	*wPoint;
 	vec3_t		vDistance;
 
-	for(wPoint = wWaypoints; wPoint->number < iWaypointCount; wPoint++)
+	for (wPoint = wWaypoints; wPoint->number < waypoint_count; wPoint++)
 		if(strcmp(wPoint->cName,cName))
 		{
 			// [20/9/2012] TODO: Needs testing :[ ~hogsy
@@ -160,20 +151,15 @@ Waypoint_t *Waypoint_GetByName(ServerEntity_t *eMonster,char *cName,float fMaxDi
 	return NULL;
 }
 
-void Waypoint_Frame(ServerEntity_t *eEntity)
+void Waypoint_Frame()
 {
-#if 0
-	Waypoint_t	*wPoint;
+	if (waypoint_count <= 0)
+		return;
 
-	for(wPoint = wWaypoints; wPoint->number < iWaypointCount; wPoint++)
+	Waypoint_t *point;
+	for (point = wWaypoints; point->number < waypoint_count; point++)
 	{
-		if(!wPoint->next)
-			wPoint->next = Waypoint_GetByNumber(wPoint->number+1);
-		// Is someone there!?
-		// Yeah, we're occupied folks :)
-		// Oh they left, we're not occupied!
 	}
-#endif
 }
 
 void Waypoint_Spawn(MathVector3f_t vOrigin,WaypointType_t type)
@@ -224,7 +210,7 @@ void Waypoint_Spawn(MathVector3f_t vOrigin,WaypointType_t type)
 
 	Math_VectorCopy(vOrigin,wPoint->position);
 
-	wPoint->number	= iWaypointCount;
+	wPoint->number	= waypoint_count;
 	wPoint->bOpen	= false;
 	wPoint->next	= Waypoint_GetByNumber(wPoint->number+1);
 	wPoint->last	= Waypoint_GetByNumber(wPoint->number-1);
@@ -249,14 +235,14 @@ void Waypoint_Spawn(MathVector3f_t vOrigin,WaypointType_t type)
 		wPoint->cName = "cover";
 		// [27/12/2012] TODO: Check that this is actually cover ~hogsy
 		break;
-	case WAYPOINT_JUMP:
+	case WAYPOINT_TYPE_JUMP:
 		wPoint->cName = "jump";
 		// [27/12/2012] TODO: Check if this is actually a jump by tracing out ahead ~hogsy
 #ifdef DEBUG_WAYPOINT
 		cModelName	= WAYPOINT_MODEL_JUMP;
 #endif
 		break;
-	case WAYPOINT_SWIM:
+	case WAYPOINT_TYPE_SWIM:
 		if(iPointContents != BSP_CONTENTS_WATER)
 		{
 			Engine.Con_Warning("Waypoint with type swim not within water contents (%i %i %i)!",
@@ -273,7 +259,7 @@ void Waypoint_Spawn(MathVector3f_t vOrigin,WaypointType_t type)
 		cModelName	= WAYPOINT_MODEL_SWIM;
 #endif
 		break;
-	case WAYPOINT_DEFAULT:
+	case WAYPOINT_TYPE_DEFAULT:
 		wPoint->cName = "default";
 		break;
 	case WAYPOINT_SPAWN:

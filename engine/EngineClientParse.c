@@ -85,7 +85,8 @@ char *svc_strings[] =
 	"svc_spawnstatic2", 			// support for large modelindex, large framenum, alpha, using flags
 	"svc_spawnstaticsound2",		// [coord3] [short] samp [byte] vol [byte] aten
 //johnfitz
-	"SVC_UPDATEMENU"
+	"SVC_UPDATEMENU",
+	"SVC_DEBUG"
 };
 
 extern vec3_t	v_punchangles[2]; //johnfitz
@@ -828,7 +829,11 @@ void CL_ParseServerMessage(void)
 		switch(cmd)
 		{
 		default:
+#if 1
 			Host_Error("Illegible server message! (%s) (%i)\n",svc_strings[lastcmd],cmd); //johnfitz -- added svc_strings[lastcmd]
+#else
+			Game->ParseServerMessage(cmd);
+#endif
 			break;
 		case SVC_NOP:
 			break;
@@ -851,34 +856,34 @@ void CL_ParseServerMessage(void)
 			Menu->RemoveState(MENU_STATE_HUD);
 
 			Host_EndGame("Server disconnected\n");
-		case svc_print:
+		case SVC_PRINT:
 			Con_Printf ("%s", MSG_ReadString ());
 			break;
-		case svc_centerprint:
+		case SVC_CENTERPRINT:
 			//johnfitz -- log centerprints to console
 			str = MSG_ReadString ();
 			SCR_CenterPrint (str);
 			Con_LogCenterPrint (str);
 			//johnfitz
 			break;
-		case svc_stufftext:
+		case SVC_STUFFTEXT:
 			Cbuf_AddText (MSG_ReadString ());
 			break;
 		case SVC_DAMAGE:
 			V_ParseDamage ();
 			break;
-		case svc_serverinfo:
+		case SVC_SERVERINFO:
 			Client_ParseServerInfo();
 			vid.bRecalcRefDef = true;	// leave intermission full screen
 			break;
-		case svc_setangle:
+		case SVC_SETANGLE:
 			for (i=0 ; i<3 ; i++)
 				cl.viewangles[i] = MSG_ReadAngle ();
 			break;
-		case svc_setview:
+		case SVC_SETVIEW:
 			cl.viewentity = MSG_ReadShort ();
 			break;
-		case svc_lightstyle:
+		case SVC_LIGHTSTYLE:
 			i = MSG_ReadByte ();
 			if (i >= MAX_LIGHTSTYLES)
 			{

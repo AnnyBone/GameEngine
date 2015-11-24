@@ -38,6 +38,14 @@ void Client_Draw(void)
 {
 }
 
+void Client_ParseServerMessage(int cmd)
+{
+	switch (cmd)
+	{
+		
+	}
+}
+
 /*	Parse temporary entity types, useful for particles and other small crap.
 */
 void Client_ParseTemporaryEntity(void)

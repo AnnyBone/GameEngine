@@ -115,8 +115,6 @@ extern "C" {
 #define	Entity_SetBlockedFunction(a,b)	(a->v.BlockedFunction = b)
 #define Entity_SetTouchFunction(a,b)	(a->v.TouchFunction = b)
 
-	ServerEntity_t	*Entity_SpawnPoint(ServerEntity_t *eEntity, int iType);
-
 #ifdef __cplusplus
 };
 #endif

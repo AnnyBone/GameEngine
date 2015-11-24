@@ -164,14 +164,12 @@ void Point_Start(ServerEntity_t *ent)
 #ifdef GAME_OPENKATANA
 		if(ent->local.style == INFO_PLAYER_SUPERFLY)
 		{
-			ent->local.style = BOT_SUPERFLY;
-
+			ent->local.style = BOT_COMPANION;
 			Bot_Spawn(ent);
 		}
 		else if(ent->local.style == INFO_PLAYER_MIKIKO)
 		{
-			ent->local.style = BOT_MIKIKO;
-
+			ent->local.style = BOT_COMPANION;
 			Bot_Spawn(ent);
 		}
 		break;
@@ -225,7 +223,7 @@ void Point_Start(ServerEntity_t *ent)
 	}
 
 	// Create a waypoint here so bots can try to avoid.
-	Waypoint_Spawn(ent->v.origin,WAYPOINT_SPAWN);
+	Waypoint_Spawn(ent->v.origin, WAYPOINT_SPAWN);
 }
 
 /*
@@ -338,11 +336,12 @@ void Point_LightSpawn(ServerEntity_t *eLight)
 
 void Point_SpriteSpawn(ServerEntity_t *seSprite)
 {
+#if 0
 	Engine.WriteByte(MSG_BROADCAST, SVC_SPRITE);
 	Engine.WriteCoord(MSG_BROADCAST, seSprite->v.origin[0]);
 	Engine.WriteCoord(MSG_BROADCAST, seSprite->v.origin[1]);
 	Engine.WriteCoord(MSG_BROADCAST, seSprite->v.origin[2]);
-
+#endif
 	Entity_Remove(seSprite);
 }
 

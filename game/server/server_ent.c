@@ -18,6 +18,8 @@
 
 #include "server_main.h"
 
+// TODO: Rename funcs to ServerEntity_*! This is in consideration of CL implementation.
+
 /*
 	Entity Spawning
 */
@@ -334,46 +336,6 @@ void Entity_RemoveFlags(ServerEntity_t *eEntity, int iFlags)
 void Entity_ClearFlags(ServerEntity_t *eEntity, int iFlags)
 {
 	eEntity->v.flags = 0;
-}
-
-/*	Find a random spawn point for the entity (point_start).
-	TODO: Rename!
-*/
-ServerEntity_t *Entity_SpawnPoint(ServerEntity_t *eEntity,int iType)
-{
-	ServerEntity_t	*eSpawnPoint;
-	char	*cStartName;
-
-	switch(iType)
-	{
-	case INFO_PLAYER_DEATHMATCH:
-		cStartName = "point_deathmatch";
-		break;
-	case INFO_PLAYER_CTF:
-		if(eEntity->local.pTeam == TEAM_RED)
-			cStartName = "point_start_red";
-		else if(eEntity->local.pTeam == TEAM_BLUE)
-			cStartName = "point_start_blue";
-		else
-		{
-			Engine.Con_Warning("Unknown team type for spawn point! (%i)",eEntity->local.pTeam);
-			return NULL;
-		}
-		break;
-#ifdef GAME_OPENKATANA
-	case INFO_PLAYER_SUPERFLY:
-	case INFO_PLAYER_MIKIKO:
-#endif
-	default:
-		cStartName = "point_start";
-	}
-
-	eSpawnPoint = Engine.Server_FindEntity(Server.eWorld,cStartName,true);
-	if(eSpawnPoint)
-		if(iType == eSpawnPoint->local.style)
-			return eSpawnPoint;
-
-	return NULL;
 }
 
 /*	Simple function for checking if an entity can be damaged or not.

@@ -40,6 +40,7 @@ typedef struct
 
 #define MONSTER_MIKIKO      50  // Added for sanity sake.
 #define MONSTER_SUPERFLY    51  // Added for sanity sake.
+#define	MONSTER_COMPANION	52	// Generic companion identifier.
 #elif GAME_ADAMAS
 #define MONSTER_HURLER	    3
 #endif
@@ -128,8 +129,7 @@ enum
 {
 	BOT_DEFAULT,
 #ifdef OPENKATANA
-	BOT_MIKIKO,
-	BOT_SUPERFLY
+	BOT_COMPANION
 #endif
 };
 

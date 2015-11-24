@@ -28,6 +28,15 @@ typedef struct link_s
 
 #include "shared_material.h"
 
+/**/
+
+typedef enum
+{
+	MESSAGE_SERVER_DEBUG
+} ServerClientMessage;
+
+/**/
+
 typedef enum
 {
 	DAMAGE_TYPE_NORMAL,
@@ -49,16 +58,17 @@ typedef struct ServerEntity_s ServerEntity_t;
 
 typedef enum
 {
-	WAYPOINT_DEFAULT,	// Basic point
+	WAYPOINT_TYPE_DEFAULT,	// Basic point
 
-	WAYPOINT_JUMP,		// Next waypoint needs a jump
+	WAYPOINT_TYPE_JUMP,		// Next waypoint needs a jump
 	WAYPOINT_CLIMB,		// Next waypoint needs a climb
 	WAYPOINT_COVER,		// Is behind cover
 	WAYPOINT_ITEM,		// Has an item nearby
 	WAYPOINT_WEAPON,	// Has a weapon nearby
+	WAYPOINT_TYPE_INTEREST,	// Waypoint that exists purely just for points of interest.
 	WAYPOINT_SPAWN,		// Near a spawn point
 	WAYPOINT_SPAWNAREA,	// Near a spawn area
-	WAYPOINT_SWIM		// Underwater
+	WAYPOINT_TYPE_SWIM		// Underwater
 } WaypointType_t;
 
 typedef struct waypoint_s
@@ -658,7 +668,8 @@ typedef struct
 	void(*Server_KillClient)(ServerEntity_t *eClient);												// Tells the specified client to die.
 	void(*Server_SetSizeVector)(ServerEntity_t *eEntity, MathVector3f_t vMin, MathVector3f_t vMax);	// Set the size of an entity by vector.
 	void(*Server_SpawnPlayer)(ServerEntity_t *ePlayer);												// Spawns the player (SERVER_PUTCLIENTINSERVER).
-	void(*Server_StartFrame)(void);																	// Called at the start of each physics frame.
+	void(*Server_PreFrame)(void);																	// Called at the start of each physics frame.
+	void(*Server_PostFrame)();																		// Called at the end of each physics frame.
 	void(*Server_ParseEntityField)(char *key, char *value, ServerEntity_t *entity);					// Parse the given field and value into an entities struct.
 	bool(*Server_SpawnEntity)(ServerEntity_t *ent);													// Puts a specific entity into the server.
 

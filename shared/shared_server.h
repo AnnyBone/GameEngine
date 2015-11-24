@@ -1,10 +1,31 @@
-#ifndef __SHAREDSERVER__
-#define __SHAREDSERVER__
+/*	Copyright (C) 2011-2015 OldTimes Software
+
+	This program is free software; you can redistribute it and/or
+	modify it under the terms of the GNU General Public License
+	as published by the Free Software Foundation; either version 2
+	of the License, or (at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+	See the GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+*/
+
+#ifndef SHARED_SERVER_H
+#define SHARED_SERVER_H
 
 #define	SERVER_GRAVITY	600.0f
 
-enum
+enum ServerMessage
 {
+	/*	TODO: Reduce all this, and then shift stuff over
+		into game module.
+	*/
 	SVC_NOP = 1,							// Used by the engine to check if a client is still connected(?)
 	SVC_DISCONNECT,							// Disconnects the current server
 	SVC_UPDATESTAT,							// Updates the specified client statistic
@@ -44,13 +65,14 @@ enum
 	SVC_SPAWNSTATIC2,
 	SVC_SPAWNSTATICSOUND2,
 	SVC_UPDATEMENU,
-	SVC_SPRITE,
+	//SVC_SPRITE,
 /*	Anything beyond this point
 	is local.					*/
+	MESSAGE_SERVER_DEBUG,
 
 	SVC_NONE
 };
 
 #define	SERVER_PROTOCOL	(1+(SVC_NONE))
 
-#endif
+#endif // !SHARED_SERVER_H

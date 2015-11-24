@@ -166,30 +166,20 @@ void Bot_Spawn(ServerEntity_t *eBot)
 
 		eBot->Monster.iType	= MONSTER_PLAYER;
 		break;
-#ifdef OPENKATANA
-	case BOT_MIKIKO:
-		iSpawnType = INFO_PLAYER_MIKIKO;
-
-		Server_PrecacheModel("models/mikiko.md2");
-
-		eBot->v.model	= "models/mikiko.md2";
-		eBot->v.netname	= "Mikiko Ebihara";
-
-		eBot->Monster.iType	= MONSTER_MIKIKO;
-		break;
-	case BOT_SUPERFLY:
+#ifdef GAME_OPENKATANA
+	case BOT_COMPANION:
 		iSpawnType = INFO_PLAYER_SUPERFLY;
 
-		Server_PrecacheModel("models/sprfly.md2");
-		Server_PrecacheSound("player/superfly/superflydeath1.wav");
-		Server_PrecacheSound("player/superfly/superflydeath2.wav");
-		Server_PrecacheSound("player/superfly/superflydeath3.wav");
-		Server_PrecacheSound("player/superfly/superflydeath4.wav");
+		Server_PrecacheModel("models/sprfly.md2");					// TODO: Placeholder!
+		Server_PrecacheSound("player/superfly/superflydeath1.wav");	// TODO: Placeholder!
+		Server_PrecacheSound("player/superfly/superflydeath2.wav");	// TODO: Placeholder!
+		Server_PrecacheSound("player/superfly/superflydeath3.wav");	// TODO: Placeholder!
+		Server_PrecacheSound("player/superfly/superflydeath4.wav");	// TODO: Placeholder!
 
-		eBot->v.model = "models/sprfly.md2";
-		eBot->v.netname	= "Superfly Johnson";
+		eBot->v.model	= "models/sprfly.md2";	// TODO: Placeholder!
+		eBot->v.netname = "Companion Bot";		// TODO: give a proper name??
 
-		eBot->Monster.iType	= MONSTER_SUPERFLY;
+		eBot->Monster.iType = MONSTER_SUPERFLY;
 		break;
 #endif
 	default:
@@ -219,7 +209,7 @@ void Bot_Spawn(ServerEntity_t *eBot)
 	if(eBot->local.style == BOT_DEFAULT)
 	{
 		// Must be set after teams are set up.
-		eSpawnPoint = Entity_SpawnPoint(eBot,iSpawnType);
+		eSpawnPoint = Player_GetSpawnEntity(eBot, iSpawnType);
 		if(!eSpawnPoint)
 		{
 			Engine.Con_Warning("%s failed to find spawnpoint!\n",eBot->v.netname);
@@ -267,7 +257,7 @@ void Bot_Idle(ServerEntity_t *entity)
 	}
 
 	// Otherwise look for a point of interest.
-	Waypoint_t *targ_interest = Waypoint_GetByType(entity, any, 0);
+	Waypoint_t *targ_interest = Waypoint_GetByType(entity->v.origin, WAYPOINT_TYPE, 0);
 	if (targ_interest)
 	{
 	}
@@ -377,7 +367,7 @@ POINTCHECK:
 			return;
 		if(	point->type	== WAYPOINT_WEAPON	||
 			point->type == WAYPOINT_COVER	||
-			point->type == WAYPOINT_DEFAULT)
+			point->type == WAYPOINT_TYPE_DEFAULT)
 		{
 			Monster_SetThink(ent,MONSTER);
 
@@ -406,22 +396,15 @@ POINTCHECK:
 		return;
 #endif
 
-#ifdef OPENKATANA
+#ifdef GAME_OPENKATANA
 	switch(ent->local.style)
 	{
-	case BOT_MIKIKO:
+	case BOT_COMPANION:
 		if(ent->v.watertype == BSP_CONTENTS_WATER && ent->v.waterlevel == 3)
 		{
 		}
 		else
 			sprintf(sound,"player/mikiko/mikikodeath%i.wav",rand()%5+1);
-		break;
-	case BOT_SUPERFLY:
-		if(ent->v.watertype == BSP_CONTENTS_WATER && ent->v.waterlevel == 3)
-		{
-		}
-		else
-			sprintf(sound,"player/superfly/superflydeath%i.wav",rand()%4+1);
 		break;
 	default:
 #endif
@@ -434,7 +417,7 @@ POINTCHECK:
 		}
 		else
 			sprintf(sound,"player/playerpain%i.wav",rand()%4+1);
-#ifdef OPENKATANA
+#ifdef GAME_OPENKATANA
 	}
 #endif
 
@@ -471,20 +454,17 @@ void Bot_Die(ServerEntity_t *eBot,ServerEntity_t *eOther)
 	// Let the player know how we're feeling.
 	Bot_BroadcastMessage(eBot,eOther);
 
-#ifdef OPENKATANA
+#ifdef GAME_OPENKATANA
 	// Character-based sounds.
 	switch(eBot->local.style)
 	{
-	case BOT_MIKIKO:
-		sprintf(sound,"player/mikiko/death%i.wav",rand()%4+1);
-		break;
-	case BOT_SUPERFLY:
+	case BOT_COMPANION:
 		sprintf(sound,"player/superfly/death%i.wav",rand()%4+1);
 		break;
 	default:
 #endif
 		sprintf(sound,"player/playerdeath%i.wav",rand()%4+1);
-#ifdef OPENKATANA
+#ifdef GAME_OPENKATANA
 	}
 #endif
 
