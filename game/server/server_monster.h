@@ -48,12 +48,12 @@ typedef struct
 */
 typedef enum
 {
-	STATE_DEAD		= 1,	// Monster is dead.
-	STATE_DYING,			// In-between dead and alive.
-	STATE_AWAKE,			// Monster is awake.
-	STATE_ASLEEP,			// Monster is asleep.
+	MONSTER_STATE_DEAD = 1,	// Monster is dead.
+	MONSTER_STATE_DYING,	// In-between dead and alive.
+	MONSTER_STATE_AWAKE,	// Monster is awake.
+	MONSTER_STATE_ASLEEP,	// Monster is asleep.
 
-	STATE_NONE				// Monster has no state.
+	MONSTER_STATE_NONE		// Monster has no state.
 } MonsterState_t;
 
 #define	MONSTER_RANGE_MELEE		48.0f
@@ -75,11 +75,11 @@ enum
 */
 typedef enum
 {
-	THINK_IDLE = 1,		// Monster is idle.
-	THINK_FLEEING,		// Monster is fleeing.
-	THINK_PURSUING,		// Monster is following.
-	THINK_ATTACKING,	// Monster is attacking.
-	THINK_WANDERING		// Monster is just walking around.
+	MONSTER_THINK_IDLE = 1,		// Monster is idle.
+	MONSTER_THINK_FLEEING,		// Monster is fleeing.
+	MONSTER_THINK_PURSUING,		// Monster is following.
+	MONSTER_THINK_ATTACKING,	// Monster is attacking.
+	MONSTER_THINK_WANDERING		// Monster is just walking around.
 } MonsterThink_t;
 
 /*	Various emotions.

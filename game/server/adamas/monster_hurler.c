@@ -28,7 +28,7 @@ void Hurler_Spawn(ServerEntity_t *eHurler)
 	Entity_SetModel(eHurler,HURLER_MODEL_BODY);
 
 	eHurler->Monster.iType = MONSTER_HURLER;
-	eHurler->Monster.PainFunction = Hurler_Pain;
+	eHurler->Monster.Pain = Hurler_Pain;
 	eHurler->Monster.Think = Hurler_Think;
 
 	Entity_SetKilledFunction(eHurler, Hurler_Die);
@@ -45,8 +45,8 @@ void Hurler_Spawn(ServerEntity_t *eHurler)
 	eHurler->v.netname			= "Hurler";
 	eHurler->v.TouchFunction	= Hurler_Touch;
 
-	Monster_SetState(eHurler,STATE_AWAKE);
-	Monster_SetThink(eHurler,THINK_IDLE);
+	Monster_SetState(eHurler, MONSTER_STATE_AWAKE);
+	Monster_SetThink(eHurler, MONSTER_THINK_IDLE);
 
 	// Add to the count of Hurlers currently in the game. ~hogsy
 	iHurlers++;
@@ -56,9 +56,9 @@ void Hurler_Spawn(ServerEntity_t *eHurler)
 
 void Hurler_Think(ServerEntity_t *eHurler)
 {
-	switch(eHurler->Monster.iThink)
+	switch (eHurler->Monster.think)
 	{
-	case THINK_IDLE:
+	case MONSTER_THINK_IDLE:
 		Monster_Jump(eHurler,70.0f);
 
 		if(rand()%50 == 0)
@@ -89,10 +89,10 @@ void Hurler_Think(ServerEntity_t *eHurler)
 
 			eHurler->Monster.eEnemy = Monster_GetEnemy(eHurler);
 			if (eHurler->Monster.eEnemy)
-				Monster_SetThink(eHurler,THINK_PURSUING);
+				Monster_SetThink(eHurler, MONSTER_THINK_PURSUING);
 		}
 		break;
-	case THINK_ATTACKING:
+	case MONSTER_THINK_ATTACKING:
 		// Throw us in the direction of the enemy. ~hogsy
 		if (Entity_IsOnGround(eHurler))
 		{
@@ -106,12 +106,12 @@ void Hurler_Think(ServerEntity_t *eHurler)
 		}
 
 		if(MONSTER_GetRange(eHurler,eHurler->Monster.eEnemy->v.origin) > MONSTER_RANGE_MELEE)
-			Monster_SetThink(eHurler,THINK_PURSUING);
+			Monster_SetThink(eHurler, MONSTER_THINK_PURSUING);
 		break;
-	case THINK_PURSUING:
+	case MONSTER_THINK_PURSUING:
 		if(!eHurler->Monster.eEnemy || eHurler->Monster.eEnemy->v.iHealth <= 0)
 		{
-			Monster_SetThink(eHurler,THINK_IDLE);
+			Monster_SetThink(eHurler, MONSTER_THINK_IDLE);
 			return;
 		}
 
@@ -177,9 +177,9 @@ void Hurler_Touch(ServerEntity_t *eHurler,ServerEntity_t *eOther)
 {
 	if(Entity_IsPlayer(eOther))
 	{
-		if(eHurler->Monster.iThink != THINK_ATTACKING)
+		if (eHurler->Monster.think != MONSTER_THINK_ATTACKING)
 		{
-			Monster_SetThink(eHurler,THINK_ATTACKING);
+			Monster_SetThink(eHurler, MONSTER_THINK_ATTACKING);
 			return;
 		}
 
@@ -194,7 +194,7 @@ void Hurler_Touch(ServerEntity_t *eHurler,ServerEntity_t *eOther)
 			Math_VectorInverse(vOrigin);
 			Math_VectorAdd(eHurler->v.velocity,vOrigin,eHurler->v.velocity);
 
-			Monster_SetThink(eHurler,THINK_PURSUING);
+			Monster_SetThink(eHurler, MONSTER_THINK_PURSUING);
 		}
 	}
 }
@@ -213,7 +213,7 @@ void Hurler_Pain(ServerEntity_t *eHurler,ServerEntity_t *eOther)
 	Math_VectorAdd(eHurler->v.velocity,vOrigin,eHurler->v.velocity);
 	Math_MVToVector(Math_VectorToAngles(vOrigin),eHurler->v.angles);
 
-	Monster_SetThink(eHurler,THINK_PURSUING);
+	Monster_SetThink(eHurler, MONSTER_THINK_PURSUING);
 }
 
 void Hurler_Die(ServerEntity_t *eHurler,ServerEntity_t *eOther)

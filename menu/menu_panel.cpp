@@ -22,9 +22,12 @@ class MenuPanel
 {
 public:
 	MenuPanel();
+	~MenuPanel();
 
 	bool IsInside(int xpos, int ypos);
 	bool IsInside(MenuPanel *panel);
+
+	virtual void Draw();
 protected:
 private:
 	int x, y;			// Position coordinates.
@@ -36,10 +39,12 @@ MenuPanel::MenuPanel()
 {
 	x = 0;
 	y = 0;
-
 	width = 128;
 	height = 128;
 }
+
+MenuPanel::~MenuPanel()
+{}
 
 bool MenuPanel::IsInside(int xpos, int ypos)
 {
@@ -52,4 +57,15 @@ bool MenuPanel::IsInside(int xpos, int ypos)
 bool MenuPanel::IsInside(MenuPanel *panel)
 {
 	return IsInside(panel->x, panel->y);
+}
+
+void MenuPanel::Draw()
+{
+	/*
+		VideoDrawObject *draw = engine->CreateDrawObject();
+		if(!draw)
+			engine->Sys_Error("something");
+
+
+	*/
 }

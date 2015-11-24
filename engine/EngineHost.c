@@ -728,9 +728,7 @@ void Host_Initialize(EngineParameters_t *epParameters)
 		Menu->Initialize();
 
 		R_Init();
-#ifdef KATANA_AUDIO_DIRECTSOUND
 		S_Init();
-#endif
 
 		Game->Client_Initialize();
 		CL_Init();

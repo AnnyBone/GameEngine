@@ -553,6 +553,16 @@ void Entity_Animate(ServerEntity_t *eEntity,EntityFrame_t *efAnimation)
 	eEntity->local.iFrames			= efAnimation;
 }
 
+/*	Returns true if an animation is currently playing.
+*/
+bool Entity_IsAnimating(ServerEntity_t *entity)
+{
+	if (!entity->local.iAnimationEnd || (Server.dTime < entity->local.dAnimationTime))
+		return false;
+
+	return true;
+}
+
 /*
 	Type Checks
 */

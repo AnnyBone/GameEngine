@@ -263,46 +263,27 @@ typedef struct
 	ServerEntity_t	*eIgnore;	// Tells the entity to ignore collisions with this entity.
 } PhysicsVariables_t;
 
-typedef struct
-{
-	int	iEmotion,
-		iPriority;
-
-	double dResetDelay;
-} MonsterEmotion_t;
-
 // Monster specific variables
 typedef struct
 {
-	MathVector3f_t mvMoveTarget;	// Position we're currently headed towards.
-	MathVector3f_t vOldTarget;
-
 	Waypoint_t	*move_target;
 
 	int		iType;
 
-	// Think functions (obsolete)
-//	void	(*think_stand)(ServerEntity_t *ent);
-//	void	(*think_run)(ServerEntity_t *ent);
-//	void	(*think_attack)(ServerEntity_t *ent);
-	void(*PainFunction)(ServerEntity_t *ent, ServerEntity_t *other);
-
-	void(*Think)(ServerEntity_t *eMonster);	// Called per-frame for the specific handling of states for each monster.
+	void(*Think)(ServerEntity_t *monster);	// Called per-frame for the specific handling of states for each monster.
 
 	// State Functions
-	void(*Idle)(ServerEntity_t *eMonster);
-	void(*Jump)(ServerEntity_t *eMonster);
+	void(*Idle)(ServerEntity_t *monster);
+	void(*Jump)(ServerEntity_t *monster);
+	void(*Pain)(ServerEntity_t *monster, ServerEntity_t *other);
 
 	// Current thought state
-	int	iState,					// Primary physical state.
-		iNewState,				// The new state that the entity wishes to set.
-		iThink,					// Primary thought state.
-		iNewThink;				// New think that the entity wishes to set.
-	int	iCommandList[64];		// List of sub-commands for the monster to execute.
-
-	//MonsterEmotion_t	meEmotion[11];			// Current emotion states.
+	int	state;			// Current physical state.
+	int	think;			// Current thought process.
+	int	commands[64];	// List of sub-commands for the monster to execute.
 
 	float fViewDistance;	// Distance in which a monster can detect a target within.
+	float attack_delay;		// Delay before attempting to attack again.
 
 	// Targets
 	ServerEntity_t *eEnemy;		// Current enemy.

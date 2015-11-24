@@ -99,6 +99,7 @@ extern "C" {
 	void Entity_CheckFrames(ServerEntity_t *eEntity);
 	void Entity_ResetAnimation(ServerEntity_t *eEntity);
 	void Entity_Animate(ServerEntity_t *eEntity, EntityFrame_t *efAnimation);
+	bool Entity_IsAnimating(ServerEntity_t *entity);
 	void Entity_Link(ServerEntity_t *eEntity, bool bTouchTriggers);
 	void Entity_Unlink(ServerEntity_t *eEntity);
 	void Entity_MakeVectors(ServerEntity_t *eEntity);

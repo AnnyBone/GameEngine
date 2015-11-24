@@ -1,4 +1,117 @@
 
+monster_bot.c
+
+void Bot_Think(ServerEntity_t *bot)
+{
+	Weapon_t *wActiveWeapon;
+
+	switch ()
+
+	// If the bot isn't dead, then add animations.
+	if(eBot->Monster.iState != STATE_DEAD)
+	{
+		if(eBot->v.flags & FL_ONGROUND)
+		{
+			if((	(eBot->v.velocity[0] < -4.0f || eBot->v.velocity[0] > 4.0f)	|| 
+					(eBot->v.velocity[1] < -4.0f || eBot->v.velocity[1] > 4.0f))	&& 
+					(!eBot->local.dAnimationTime || eBot->local.iAnimationEnd == 9))
+				Entity_Animate(eBot,PlayerAnimation_Walk);
+			else if((eBot->v.velocity[0] == 0 || eBot->v.velocity[1] == 0) && (!eBot->local.dAnimationTime || eBot->local.iAnimationEnd > 9))
+			{
+#ifdef GAME_OPENKATANA
+				if(eBot->v.iActiveWeapon == WEAPON_DAIKATANA)
+					Entity_Animate(eBot,PlayerAnimation_KatanaIdle);
+				else
+#endif
+					Entity_Animate(eBot,PlayerAnimation_Idle);
+			}
+		}
+	}
+
+	switch(eBot->Monster.iThink)
+	{
+	case THINK_IDLE:
+	{
+		Monster_MoveRandom(eBot, 50.0f);
+
+		// Attempt to find an enemy.
+		if (!eBot->Monster.eEnemy)
+		{
+			ServerEntity_t *Enemy = Monster_GetEnemy(eBot);
+			if (Enemy)
+			{
+				eBot->Monster.eEnemy = Enemy;
+
+				Monster_SetThink(eBot, THINK_PURSUING);
+				return;
+			}
+		}
+
+		Waypoint_t *wMoveTarget = Monster_GetMoveTarget(eBot);
+		if (wMoveTarget)
+		{
+			eBot->Monster.move_target = wMoveTarget;
+
+			Monster_SetThink(eBot, THINK_WANDERING);
+			return;
+		}
+	}
+	break;
+	case THINK_ATTACKING:
+	{
+		if (eBot->Monster.eTarget->v.iHealth <= 0)
+			Monster_SetThink(eBot, THINK_WANDERING);
+
+		wActiveWeapon = Weapon_GetCurrentWeapon(eBot);
+		if (!wActiveWeapon)
+		{
+			Monster_SetThink(eBot, THINK_FLEEING);
+			return;
+		}
+
+#if 1
+		// Add some random movement.
+		Monster_MoveRandom(eBot, BOT_MIN_SPEED);
+
+		if (rand()%500 == 0)
+			wActiveWeapon->Primary(eBot);
+#endif
+	}
+	break;
+	case THINK_FLEEING:
+		// Add some random movement.
+		Monster_MoveRandom(eBot, BOT_MAX_SPEED);
+	break;
+	case THINK_WANDERING:
+		{
+#if 0
+			wMyWeapon = Weapon_GetCurrentWeapon(eBot);
+			if(MONSTER_GetRange(eBot,eBot->v.enemy->v.origin) > 4000)
+				return;
+			else if(wMyWeapon->iPrimaryType == AM_MELEE && MONSTER_GetRange(eBot,eBot->v.enemy->v.origin) > MONSTER_RANGE_MELEE)
+				return;
+			else if(Monster_IsVisible(eBot,eBot->v.enemy))
+			{
+				// [5/8/2012] No ammo and it's not a melee weapon? ~hogsy
+				if(!Weapon_CheckPrimaryAmmo(eBot) && wMyWeapon->iPrimaryType != AM_MELEE)
+				{
+					// [5/8/2012] Should probably flee ~hogsy
+					Monster_SetThink(eBot,THINK_FLEEING);
+					return;
+				}
+
+				Math_VectorSubtract(eBot->v.enemy->v.origin,eBot->v.origin,vAngle);
+
+		//		ent->v.ideal_yaw	= VectorToAngles(vAngle);
+
+				ChangeYaw(eBot);
+			}
+#endif
+		}
+		break;
+	}
+}
+
 server_monster.c
 
 void Monster_SetTargets(ServerEntity_t *eMonster)

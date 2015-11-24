@@ -214,7 +214,7 @@ void Bot_Spawn(ServerEntity_t *eBot)
 	eBot->local.bBleed	= true;
 
 	eBot->Monster.Think = Bot_Think;
-	eBot->Monster.PainFunction = Bot_Pain;
+	eBot->Monster.Pain = Bot_Pain;
 
 	if(eBot->local.style == BOT_DEFAULT)
 	{
@@ -234,124 +234,62 @@ void Bot_Spawn(ServerEntity_t *eBot)
 
 	Entity_SetKilledFunction(eBot, Bot_Die);
 
-	eBot->Monster.PainFunction = Bot_Pain;
+	eBot->Monster.Pain = Bot_Pain;
 	eBot->Monster.Think	= Bot_Think;
 
 	Entity_SetModel(eBot,eBot->v.model);
 	Entity_SetSize(eBot,-16.0f,-16.0f,-24.0f,16.0f,16.0f,32.0f);
 
-	Monster_SetState(eBot,STATE_AWAKE);
-	Monster_SetThink(eBot,THINK_IDLE);
+	Monster_SetState(eBot, MONSTER_STATE_AWAKE);
+	Monster_SetThink(eBot, MONSTER_THINK_IDLE);
 
 	// Make sure we're not in the air.
 	Entity_DropToFloor(eBot);
 }
 
-void Bot_Think(ServerEntity_t *eBot)
+void Bot_Idle(ServerEntity_t *entity)
 {
-	Weapon_t *wActiveWeapon;
-
-	// If the bot isn't dead, then add animations.
-	if(eBot->Monster.iState != STATE_DEAD)
+	if (!Entity_IsAnimating(entity))
 	{
-		if(eBot->v.flags & FL_ONGROUND)
-		{
-			if((	(eBot->v.velocity[0] < -4.0f || eBot->v.velocity[0] > 4.0f)	|| 
-					(eBot->v.velocity[1] < -4.0f || eBot->v.velocity[1] > 4.0f))	&& 
-					(!eBot->local.dAnimationTime || eBot->local.iAnimationEnd == 9))
-				Entity_Animate(eBot,PlayerAnimation_Walk);
-			else if((eBot->v.velocity[0] == 0 || eBot->v.velocity[1] == 0) && (!eBot->local.dAnimationTime || eBot->local.iAnimationEnd > 9))
-			{
-#ifdef GAME_OPENKATANA
-				if(eBot->v.iActiveWeapon == WEAPON_DAIKATANA)
-					Entity_Animate(eBot,PlayerAnimation_KatanaIdle);
-				else
-#endif
-					Entity_Animate(eBot,PlayerAnimation_Idle);
-			}
-		}
+		if (entity->v.iActiveWeapon == WEAPON_DAIKATANA)
+			Entity_Animate(entity, PlayerAnimation_KatanaIdle);
+		else
+			Entity_Animate(entity, PlayerAnimation_Idle);
 	}
 
-	switch(eBot->Monster.iThink)
+	// Attempt to find an enemy.
+	ServerEntity_t *enttarg = Monster_GetEnemy(entity);
+	if (enttarg && Monster_IsVisible(entity, enttarg))
 	{
-	case THINK_IDLE:
-	{
-		Monster_MoveRandom(eBot, 50.0f);
-
-		// Attempt to find an enemy.
-		if (!eBot->Monster.eEnemy)
-		{
-			ServerEntity_t *Enemy = Monster_GetEnemy(eBot);
-			if (Enemy)
-			{
-				eBot->Monster.eEnemy = Enemy;
-
-				Monster_SetThink(eBot, THINK_PURSUING);
-				return;
-			}
-		}
-
-		Waypoint_t *wMoveTarget = Monster_GetMoveTarget(eBot);
-		if (wMoveTarget)
-		{
-			eBot->Monster.move_target = wMoveTarget;
-
-			Monster_SetThink(eBot, THINK_WANDERING);
-			return;
-		}
+		Engine.Con_DPrintf("I see you!\n");
+		Monster_SetThink(entity, MONSTER_THINK_PURSUING);
+		return;
 	}
-	break;
-	case THINK_ATTACKING:
+
+	// Otherwise look for a point of interest.
+	Waypoint_t *targ_interest = Waypoint_GetByType(entity, any, 0);
+	if (targ_interest)
 	{
-		if (eBot->Monster.eTarget->v.iHealth <= 0)
-			Monster_SetThink(eBot, THINK_WANDERING);
-
-		wActiveWeapon = Weapon_GetCurrentWeapon(eBot);
-		if (!wActiveWeapon)
-		{
-			Monster_SetThink(eBot, THINK_FLEEING);
-			return;
-		}
-
-#if 1
-		// Add some random movement.
-		Monster_MoveRandom(eBot, BOT_MIN_SPEED);
-
-		if (rand()%500 == 0)
-			wActiveWeapon->Primary(eBot);
-#endif
 	}
-	break;
-	case THINK_FLEEING:
-		// Add some random movement.
-		Monster_MoveRandom(eBot, BOT_MAX_SPEED);
-	break;
-	case THINK_WANDERING:
-		{
-#if 0
-			wMyWeapon = Weapon_GetCurrentWeapon(eBot);
-			if(MONSTER_GetRange(eBot,eBot->v.enemy->v.origin) > 4000)
-				return;
-			else if(wMyWeapon->iPrimaryType == AM_MELEE && MONSTER_GetRange(eBot,eBot->v.enemy->v.origin) > MONSTER_RANGE_MELEE)
-				return;
-			else if(Monster_IsVisible(eBot,eBot->v.enemy))
-			{
-				// [5/8/2012] No ammo and it's not a melee weapon? ~hogsy
-				if(!Weapon_CheckPrimaryAmmo(eBot) && wMyWeapon->iPrimaryType != AM_MELEE)
-				{
-					// [5/8/2012] Should probably flee ~hogsy
-					Monster_SetThink(eBot,THINK_FLEEING);
-					return;
-				}
+}
 
-				Math_VectorSubtract(eBot->v.enemy->v.origin,eBot->v.origin,vAngle);
+void Bot_Think(ServerEntity_t *entity)
+{
+	if ((entity->Monster.state == MONSTER_STATE_DEAD) || (entity->Monster.state == MONSTER_STATE_DYING))
+		return;
 
-		//		ent->v.ideal_yaw	= VectorToAngles(vAngle);
-
-				ChangeYaw(eBot);
-			}
-#endif
-		}
+	switch (entity->Monster.think)
+	{
+	case MONSTER_THINK_ATTACKING:
+		break;
+	case MONSTER_THINK_FLEEING:
+		break;
+	case MONSTER_THINK_IDLE:
+		Bot_Idle(entity);
+		break;
+	case MONSTER_THINK_PURSUING:
+		break;
+	case MONSTER_THINK_WANDERING:
 		break;
 	}
 }
@@ -405,7 +343,7 @@ void Bot_Pain(ServerEntity_t *ent, ServerEntity_t *other)
 	wHisWeapon	= Weapon_GetCurrentWeapon(other);
 	if(!wMyWeapon || (!Weapon_CheckPrimaryAmmo(wMyWeapon,ent) && wMyWeapon->iPrimaryType != AM_MELEE))
 	{
-		Monster_SetThink(ent,THINK_FLEEING);
+		Monster_SetThink(ent, MONSTER_THINK_FLEEING);
 		return;
 	}
 	// Otherwise check what we can see our enemy having (don't check ammo since it's unrealistic).
@@ -414,7 +352,7 @@ void Bot_Pain(ServerEntity_t *ent, ServerEntity_t *other)
 		// We see you!
 		if(Monster_IsVisible(ent,other))
 		{
-			Monster_SetThink(ent,THINK_ATTACKING);
+			Monster_SetThink(ent, MONSTER_THINK_ATTACKING);
 			return;
 		}
 	}
@@ -513,11 +451,11 @@ void Bot_Die(ServerEntity_t *eBot,ServerEntity_t *eOther)
 {
 	char sound[MAX_QPATH];
 
-	if(eBot->Monster.iState == STATE_DEAD)
+	if (eBot->Monster.state == MONSTER_STATE_DEAD)
 		return;
 
 	// He's dead, Jim.
-	Monster_SetState(eBot, STATE_DEAD);
+	Monster_SetState(eBot, MONSTER_STATE_DEAD);
 
 	eBot->v.movetype	= MOVETYPE_TOSS;
 	eBot->v.flags		-= (eBot->v.flags & FL_ONGROUND);

@@ -390,7 +390,7 @@ void Server_EntityFrame(ServerEntity_t *eEntity)
 */
 void Server_KillClient(ServerEntity_t *eClient)
 {
-	if(eClient->Monster.iState != STATE_DEAD)
+	if (eClient->Monster.state != MONSTER_STATE_DEAD)
 		Entity_Damage(eClient, eClient, eClient->v.iHealth, 0);
 }
 

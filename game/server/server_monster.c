@@ -178,6 +178,7 @@ bool Monster_CheckBottom(ServerEntity_t *ent)
 
 bool Monster_MoveStep(ServerEntity_t *ent,vec3_t move,bool bRelink)
 {
+#if 0 // obsolete
 	float	dz;
 	vec3_t	vNewOrigin,end;
 	trace_t	trace;
@@ -285,7 +286,7 @@ bool Monster_MoveStep(ServerEntity_t *ent,vec3_t move,bool bRelink)
 
 	if(bRelink)
 		Entity_Link(ent, true);
-
+#endif
 	return true;
 }
 
@@ -401,16 +402,16 @@ void Monster_NewChaseDirection(ServerEntity_t *ent,vec3_t target,float dist)
 
 bool Monster_SetThink(ServerEntity_t *eMonster,MonsterThink_t mtThink)
 {
-	if(eMonster->Monster.iThink == mtThink)
+	if (eMonster->Monster.think == mtThink)
 		// Return false, then we might decide it's time for a different state.
 		return false;
-	else if(eMonster->Monster.iState >= STATE_NONE)
+	else if (eMonster->Monster.state >= MONSTER_STATE_NONE)
 	{
 		Engine.Con_Warning("Attempted to set a think without a state for %s!\n",eMonster->v.cClassname);
 		return false;
 	}
 
-	eMonster->Monster.iThink = mtThink;
+	eMonster->Monster.think = mtThink;
 
 	return true;
 }
@@ -419,25 +420,25 @@ bool Monster_SetThink(ServerEntity_t *eMonster,MonsterThink_t mtThink)
 */
 bool Monster_SetState(ServerEntity_t *eMonster, MonsterState_t msState)
 {
-	if(eMonster->Monster.iState == msState)
+	if (eMonster->Monster.state == msState)
 		return true;
 
 	switch(msState)
 	{
-	case STATE_AWAKE:
-		if(eMonster->Monster.iState == STATE_DEAD)
+	case MONSTER_STATE_AWAKE:
+		if (eMonster->Monster.state == MONSTER_STATE_DEAD)
 			return false;
 
-		eMonster->Monster.iState = STATE_AWAKE;
+		eMonster->Monster.state = MONSTER_STATE_AWAKE;
 		break;
-	case STATE_ASLEEP:
-		if(eMonster->Monster.iState == STATE_DEAD)
+	case MONSTER_STATE_ASLEEP:
+		if (eMonster->Monster.state == MONSTER_STATE_DEAD)
 			return false;
 
-		eMonster->Monster.iState = STATE_ASLEEP;
+		eMonster->Monster.state = MONSTER_STATE_ASLEEP;
 		break;
-	case STATE_DEAD:
-		eMonster->Monster.iState = STATE_DEAD;
+	case MONSTER_STATE_DEAD:
+		eMonster->Monster.state = MONSTER_STATE_DEAD;
 		break;
 	default:
 		Engine.Con_Warning("Tried to set an unknown state for %s (%i)!\n",eMonster->v.cClassname,msState);
@@ -451,7 +452,7 @@ bool Monster_SetState(ServerEntity_t *eMonster, MonsterState_t msState)
 */
 void Monster_Killed(ServerEntity_t *eTarget, ServerEntity_t *eAttacker)
 {
-	if(eTarget->Monster.iState == STATE_DEAD)
+	if (eTarget->Monster.state == MONSTER_STATE_DEAD)
 		return;
 
 	if(Entity_IsMonster(eTarget))
@@ -545,7 +546,7 @@ void Monster_Killed(ServerEntity_t *eTarget, ServerEntity_t *eAttacker)
 	}
 
 	// Update our current state.
-	eTarget->Monster.iState = STATE_DEAD;
+	eTarget->Monster.state = MONSTER_STATE_DEAD;
 
 	if (eTarget->local.KilledFunction)
 		eTarget->local.KilledFunction(eTarget, eAttacker);
@@ -590,14 +591,14 @@ void Monster_Damage(ServerEntity_t *target, ServerEntity_t *inflictor, int iDama
 
 	if(Entity_IsMonster(target))
 		// Automatically wake us up if asleep.
-		if(target->Monster.iState == STATE_ASLEEP)
-			Monster_SetState(target,STATE_AWAKE);
+		if (target->Monster.state == MONSTER_STATE_ASLEEP)
+			Monster_SetState(target, MONSTER_STATE_AWAKE);
 
 	target->v.iHealth -= iDamage;
 	if(target->v.iHealth <= 0)
 		Monster_Killed(target,inflictor);
-	else if(target->Monster.PainFunction)
-		target->Monster.PainFunction(target,inflictor);
+	else if (target->Monster.Pain)
+		target->Monster.Pain(target, inflictor);
 }
 
 void MONSTER_WaterMove(ServerEntity_t *ent)
@@ -755,9 +756,9 @@ void Monster_Frame(ServerEntity_t *eMonster)
 	else if(!(eMonster->v.flags & FL_ONGROUND))
 		eMonster->local.fJumpVelocity = eMonster->v.velocity[2];
 
-	switch(eMonster->Monster.iState)
+	switch (eMonster->Monster.state)
 	{
-	case STATE_DEAD:
+	case MONSTER_STATE_DEAD:
 		// [6/8/2012] Dead creatures don't have emotions... ~hogsy
 		// [23/9/2012] Simplified ~hogsy
 		for(i = 0; i < EMOTION_NONE; i++)
@@ -765,37 +766,37 @@ void Monster_Frame(ServerEntity_t *eMonster)
 
 		// [20/9/2012] TODO: Check if we should gib? ~hogsy
 		break;
-	case STATE_ASLEEP:
+	case MONSTER_STATE_ASLEEP:
 		eMonster->Monster.fEmotion[EMOTION_BOREDOM]++;
 		break;
-	case STATE_AWAKE:
-		switch(eMonster->Monster.iThink)
+	case MONSTER_STATE_AWAKE:
+		switch(eMonster->Monster.think)
 		{
-		case THINK_WANDERING:
+		case MONSTER_THINK_WANDERING:
 			eMonster->Monster.fEmotion[EMOTION_BOREDOM]--;
 			eMonster->Monster.fEmotion[EMOTION_ANGER]--;
 			break;
-		case THINK_ATTACKING:
+		case MONSTER_THINK_ATTACKING:
 			eMonster->Monster.fEmotion[EMOTION_BOREDOM]--;
 			eMonster->Monster.fEmotion[EMOTION_ANGER]++;
 			break;
-		case THINK_FLEEING:
+		case MONSTER_THINK_FLEEING:
 			eMonster->Monster.fEmotion[EMOTION_BOREDOM]--;
 			if(eMonster->Monster.fEmotion[EMOTION_ANGER] >= 50.0f)
 				eMonster->Monster.fEmotion[EMOTION_FEAR]--;
 			else
 				eMonster->Monster.fEmotion[EMOTION_FEAR]++;
 			break;
-		case THINK_PURSUING:
+		case MONSTER_THINK_PURSUING:
 			// [1/9/2013] TODO: Handle emotions... ~hogsy
 			break;
-		case THINK_IDLE:
+		case MONSTER_THINK_IDLE:
 			eMonster->Monster.fEmotion[EMOTION_BOREDOM]++;
 			break;
 		default:
 			Engine.Con_Warning("No think was set for %s at spawn!\n",eMonster->v.cClassname);
 
-			Monster_SetThink(eMonster,THINK_IDLE);
+			Monster_SetThink(eMonster,MONSTER_THINK_IDLE);
 			return;
 		}
 		break;

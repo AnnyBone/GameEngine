@@ -117,13 +117,11 @@ Waypoint_t *Waypoint_GetByNumber(int iWaypointNumber)
 	return NULL;
 }
 
-// [20/12/2012] Let us find a waypoint by type! ~hogsy
 Waypoint_t *Waypoint_GetByType(ServerEntity_t *eMonster,int iType,float fMaxDistance)
 {
 	Waypoint_t *wPoint;
 	MathVector3f_t vDistance;
 
-	// [5/1/2013] Very unlikely but this is a temporary precaution ~hogsy
 	if(!eMonster)
 	{
 		Engine.Con_Warning("Failed to get entity when finding waypoint!\n");
