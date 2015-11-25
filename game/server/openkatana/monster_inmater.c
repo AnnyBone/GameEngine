@@ -163,7 +163,7 @@ void Inmater_Spawn(ServerEntity_t *eInmater)
 	Entity_SetPhysics(eInmater, SOLID_SLIDEBOX, 3.0f, 4.5f);
 
 	eInmater->Monster.iType = MONSTER_INMATER;
-	eInmater->Monster.Think = Inmater_Think;
+	eInmater->Monster.Frame = Inmater_Think;
 	eInmater->Monster.Pain = Inmater_Pain;
 
 	Entity_SetKilledFunction(eInmater, Inmater_Die);

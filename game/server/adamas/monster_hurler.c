@@ -29,7 +29,7 @@ void Hurler_Spawn(ServerEntity_t *eHurler)
 
 	eHurler->Monster.iType = MONSTER_HURLER;
 	eHurler->Monster.Pain = Hurler_Pain;
-	eHurler->Monster.Think = Hurler_Think;
+	eHurler->Monster.Frame = Hurler_Think;
 
 	Entity_SetKilledFunction(eHurler, Hurler_Die);
 

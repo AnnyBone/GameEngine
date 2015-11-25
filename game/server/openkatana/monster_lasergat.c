@@ -209,7 +209,7 @@ void LaserGat_Spawn(ServerEntity_t *eLaserGat)
 	Server_PrecacheModel(LASERGAT_MODEL_HEAD);
 
 	// Get our weapon.
-	Item_AddInventory(Item_GetItem(WEAPON_LASERS),eLaserGat);
+	Item_AddInventory(Item_GetItem(WEAPON_LASERS), eLaserGat);
 
 	eLaserGat->v.netname		= "Laser Turret";
 	eLaserGat->v.movetype		= MOVETYPE_NONE;
@@ -219,21 +219,20 @@ void LaserGat_Spawn(ServerEntity_t *eLaserGat)
 	Entity_SetKilledFunction(eLaserGat, LaserGat_Die);
 
 //	eLaserGat->Monster.PainFunction		= LaserGat_Pain;
-	eLaserGat->Monster.Think			= LaserGat_Think;
-	eLaserGat->Monster.fViewDistance	= MONSTER_RANGE_MEDIUM;
-	eLaserGat->Monster.iType			= MONSTER_LASERGAT;
+	eLaserGat->Monster.Frame	= LaserGat_Think;
+	eLaserGat->Monster.iType	= MONSTER_LASERGAT;
 
 	// Make this random so not all turrets start looking in the same directions.
 	eLaserGat->Monster.commands[COMMAND_LOOK_PITCH] = rand() % 2;
-	eLaserGat->Monster.commands[COMMAND_LOOK_YAW] = rand() % 2;
+	eLaserGat->Monster.commands[COMMAND_LOOK_YAW]	= rand() % 2;
 
 	// Set our physical properties.
 	eLaserGat->Physics.iSolid		= SOLID_BBOX;
 	eLaserGat->Physics.fGravity		= cvServerGravity.value;
 	eLaserGat->Physics.fMass		= 3.5f;
 
-	Entity_SetModel(eLaserGat,LASERGAT_MODEL_HEAD);
-	Entity_SetSize(eLaserGat,-6.20f,-18.70f,-8.0f,19.46f,18.71f,7.53f);
+	Entity_SetModel(eLaserGat, LASERGAT_MODEL_HEAD);
+	Entity_SetSize(eLaserGat, -6.20f, -18.70f, -8.0f, 19.46f, 18.71f, 7.53f);
 
 	Monster_SetState(eLaserGat, MONSTER_STATE_AWAKE);
 	Monster_SetThink(eLaserGat, MONSTER_THINK_IDLE);
@@ -242,16 +241,17 @@ void LaserGat_Spawn(ServerEntity_t *eLaserGat)
 	ServerEntity_t	*eBase = Entity_Spawn();
 	if(eBase)
 	{
-		eBase->v.cClassname = "lasergat_base";
-		eBase->v.iHealth = 100;
-		eBase->v.movetype = MOVETYPE_NONE;
-		eBase->v.bTakeDamage = true;
+		eBase->v.cClassname		= "lasergat_base";
+		eBase->v.iHealth		= 100;
+		eBase->v.movetype		= MOVETYPE_NONE;
+		eBase->v.bTakeDamage	= true;
 
 		// Physical properties
-		eBase->Physics.iSolid = SOLID_BBOX;
-		eBase->Physics.fGravity = 0;
-		eBase->Physics.fFriction = 0;
-		eBase->Physics.fMass = 0;
+		eBase->Physics.iSolid		= SOLID_BBOX;
+		eBase->Physics.fGravity		= 0;
+		eBase->Physics.fFriction	= 0;
+		eBase->Physics.fMass		= 0;
+		eBase->Physics.eIgnore		= eLaserGat;
 
 		Entity_SetKilledFunction(eBase, LaserGat_BaseDie);
 		Entity_SetDamagedFunction(eBase, LaserGat_BasePain);
@@ -264,7 +264,6 @@ void LaserGat_Spawn(ServerEntity_t *eLaserGat)
 		eLaserGat->v.origin[2] -= 30.0f;
 
 		eLaserGat->local.eOwner	= eBase;
-		eBase->local.eOwner	= eLaserGat;
-		eBase->Physics.eIgnore = eLaserGat;
+		eBase->local.eOwner		= eLaserGat;
 	}
 }

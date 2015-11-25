@@ -37,13 +37,14 @@ void Waypoint_Shutdown(void);
 */
 void Waypoint_Initialize(void)
 {
-	memset(wWaypoints,0,sizeof(wWaypoints));
+	memset(wWaypoints, 0, sizeof(wWaypoints));
 
 	waypoint_count = 0;
 }
 
 bool Waypoint_IsSafe(ServerEntity_t *eMonster,Waypoint_t *wPoint)
 {
+#if 0
 	ServerEntity_t *eMonsters;
 
 	eMonsters = Engine.Server_FindRadius(wPoint->position,MONSTER_RANGE_NEAR);
@@ -55,6 +56,8 @@ bool Waypoint_IsSafe(ServerEntity_t *eMonster,Waypoint_t *wPoint)
 
 		eMonsters = eMonsters->v.chain;
 	}
+#endif
+
 	return true;
 }
 

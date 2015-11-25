@@ -215,7 +215,7 @@ PRISONER_GENERATEKEY:
 
 	//	ePrisoner->Monster.think_walk		= Prisoner_Walk;
 	//	ePrisoner->Monster.think_run		= Prisoner_Run;
-	ePrisoner->Monster.Think = Prisoner_Think;
+	ePrisoner->Monster.Frame = Prisoner_Think;
 
 	// State must be set before think!
 	Monster_SetState(ePrisoner, MONSTER_STATE_AWAKE);

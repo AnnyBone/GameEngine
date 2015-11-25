@@ -310,7 +310,7 @@ bool Monster_StepDirection(ServerEntity_t *ent,float yaw,float dist)
 	return false;
 }
 
-void Monster_NewChaseDirection(ServerEntity_t *ent,vec3_t target,float dist)
+void Monster_NewChaseDirection(ServerEntity_t *ent, MathVector3f_t target, float dist)
 {
 	float	deltax,deltay,d[3],tdir,olddir,turnaround;
 
@@ -390,18 +390,18 @@ void Monster_NewChaseDirection(ServerEntity_t *ent,vec3_t target,float dist)
 		ent->v.flags |= FL_PARTIALGROUND;
 }
 
-bool Monster_SetThink(ServerEntity_t *eMonster,MonsterThink_t mtThink)
+bool Monster_SetThink(ServerEntity_t *entity, MonsterThink_t newthink)
 {
-	if (eMonster->Monster.think == mtThink)
+	if (entity->Monster.think == newthink)
 		// Return false, then we might decide it's time for a different state.
 		return false;
-	else if (eMonster->Monster.state >= MONSTER_STATE_NONE)
+	else if (entity->Monster.state >= MONSTER_STATE_NONE)
 	{
-		Engine.Con_Warning("Attempted to set a think without a state for %s!\n",eMonster->v.cClassname);
+		Engine.Con_Warning("Attempted to set a think without a state! (%s)\n", entity->v.cClassname);
 		return false;
 	}
 
-	eMonster->Monster.think = mtThink;
+	entity->Monster.think = newthink;
 
 	return true;
 }
@@ -447,7 +447,7 @@ void Monster_Killed(ServerEntity_t *eTarget, ServerEntity_t *eAttacker)
 
 	if(Entity_IsMonster(eTarget))
 	{
-		WriteByte(MSG_ALL,SVC_KILLEDMONSTER);
+		WriteByte(MSG_ALL, SVC_KILLEDMONSTER);
 
 		Server.iMonsters--;
 		eAttacker->v.iScore++;
@@ -481,10 +481,10 @@ void Monster_Killed(ServerEntity_t *eTarget, ServerEntity_t *eAttacker)
 		{
 			eAttacker->v.iScore++;
 
-			// [15/12/2013] Extra points! ~hogsy
+			// Extra points!
 			if(eAttacker->v.iHealth <= 0)
 			{
-				// [3/10/2012] TODO: Play sound ~hogsy
+				// TODO: Play sound
 				Engine.CenterPrint(eAttacker,"FROM BEYOND THE GRAVE!\n");
 
 				cDeathMessage = "%s was killed from beyond the grave by %s\n";
@@ -492,10 +492,10 @@ void Monster_Killed(ServerEntity_t *eTarget, ServerEntity_t *eAttacker)
 				eAttacker->v.iScore += 2;
 			}
 
-			// [15/12/2013] Extra points! ~hogsy
+			// Extra points!
 			if(!(eTarget->v.flags & FL_ONGROUND))
 			{
-				// [25/6/2012] TODO: Play sound ~hogsy
+				// TODO: Play sound
 				Engine.CenterPrint(eAttacker,"WATCH THEM DROP!\n");
 
 				cDeathMessage = "%s was shot out of the air by %s\n";
@@ -517,22 +517,20 @@ void Monster_Killed(ServerEntity_t *eTarget, ServerEntity_t *eAttacker)
 		eTarget->v.bTakeDamage = false;
 
 	// Drop the currently equipped item for the player to pick up!
-	{
-		Weapon_t *wActive = Weapon_GetCurrentWeapon(eTarget);
+	Weapon_t *wActive = Weapon_GetCurrentWeapon(eTarget);
 #ifdef GAME_OPENKATANA
-		if(wActive && (wActive->iItem != WEAPON_LASERS))
+	if(wActive && (wActive->iItem != WEAPON_LASERS))
 #else
-		if (wActive)
+	if (wActive)
 #endif
-		{
-			ServerEntity_t *eDroppedItem = Entity_Spawn();
+	{
+		ServerEntity_t *eDroppedItem = Entity_Spawn();
 
-			Math_VectorCopy(eTarget->v.origin,eDroppedItem->v.origin);
+		Math_VectorCopy(eTarget->v.origin,eDroppedItem->v.origin);
 
-			eDroppedItem->local.style = wActive->iItem;
+		eDroppedItem->local.style = wActive->iItem;
 
-			Item_Spawn(eDroppedItem);
-		}
+		Item_Spawn(eDroppedItem);
 	}
 
 	// Update our current state.
@@ -719,92 +717,6 @@ ServerEntity_t *Monster_GetEnemy(ServerEntity_t *Monster)
 	return NULL;
 }
 
-#if 0
-double dMonsterEmotionUpdate = 0;
-
-/*	Used to go over each monster state then update it, and then calls the monsters
-	assigned think function.
-*/
-void Monster_Frame(ServerEntity_t *eMonster)
-{
-	int i;
-
-	// [19/2/2013] If it's not a monster then return! ~hogsy
-	if(eMonster->Monster.iType < MONSTER_VEHICLE)
-		return;
-
-	Entity_CheckFrames(eMonster);
-
-	// [26/9/2012] Handle jumping (this is copied over from sv_player.c) ~hogsy
-	if(	(eMonster->local.fJumpVelocity < -300.0f)	&&
-		(eMonster->v.flags & FL_ONGROUND))
-	{
-		// [26/9/2012] TODO: Add in think for land! ~hogsy
-		// [26/9/2012] Set our jump_flag to 0 ~hogsy
-		eMonster->local.fJumpVelocity = 0;
-	}
-	else if(!(eMonster->v.flags & FL_ONGROUND))
-		eMonster->local.fJumpVelocity = eMonster->v.velocity[2];
-
-	switch (eMonster->Monster.state)
-	{
-	case MONSTER_STATE_DEAD:
-		// [6/8/2012] Dead creatures don't have emotions... ~hogsy
-		// [23/9/2012] Simplified ~hogsy
-		for(i = 0; i < EMOTION_NONE; i++)
-			eMonster->Monster.fEmotion[i] = 0;
-
-		// [20/9/2012] TODO: Check if we should gib? ~hogsy
-		break;
-	case MONSTER_STATE_ASLEEP:
-		eMonster->Monster.fEmotion[EMOTION_BOREDOM]++;
-		break;
-	case MONSTER_STATE_AWAKE:
-		switch(eMonster->Monster.think)
-		{
-		case MONSTER_THINK_WANDERING:
-			eMonster->Monster.fEmotion[EMOTION_BOREDOM]--;
-			eMonster->Monster.fEmotion[EMOTION_ANGER]--;
-			break;
-		case MONSTER_THINK_ATTACKING:
-			eMonster->Monster.fEmotion[EMOTION_BOREDOM]--;
-			eMonster->Monster.fEmotion[EMOTION_ANGER]++;
-			break;
-		case MONSTER_THINK_FLEEING:
-			eMonster->Monster.fEmotion[EMOTION_BOREDOM]--;
-			if(eMonster->Monster.fEmotion[EMOTION_ANGER] >= 50.0f)
-				eMonster->Monster.fEmotion[EMOTION_FEAR]--;
-			else
-				eMonster->Monster.fEmotion[EMOTION_FEAR]++;
-			break;
-		case MONSTER_THINK_PURSUING:
-			// [1/9/2013] TODO: Handle emotions... ~hogsy
-			break;
-		case MONSTER_THINK_IDLE:
-			eMonster->Monster.fEmotion[EMOTION_BOREDOM]++;
-			break;
-		default:
-			Engine.Con_Warning("No think was set for %s at spawn!\n",eMonster->v.cClassname);
-
-			Monster_SetThink(eMonster,MONSTER_THINK_IDLE);
-			return;
-		}
-		break;
-	default:
-		Engine.Con_Warning("Unknown state set for monster! (%s)\n",eMonster->v.cClassname);
-	}
-
-	// [6/8/2012] Don't let the emotion value get too high or low ~hogsy
-	// [30/6/2013] Moved down here ~hogsy
-
-
-	if(eMonster->Monster.Think)
-		eMonster->Monster.Think(eMonster);
-}
-#endif
-
-
-
 /////////////////////////////////////////////////////////////////////////////
 //	NEW IMPLEMENTATION
 /////////////////////////////////////////////////////////////////////////////
@@ -815,16 +727,28 @@ void Monster_Frame(ServerEntity_t *eMonster)
 /*	Used to go over each monster state then update it, and then calls the monsters
 	assigned think function.
 */
-void Monster_Frame(ServerEntity_t *eMonster)
+void Monster_Frame(ServerEntity_t *entity)
 {
 	// The following is only valid for actual monsters.
-	if (!Entity_IsMonster(eMonster))
+	if (!Entity_IsMonster(entity))
 		return;
 
-	Entity_CheckFrames(eMonster);
+	Entity_CheckFrames(entity);
 
-	if (eMonster->Monster.Think)
-		eMonster->Monster.Think(eMonster);
+	// Handle jumping.
+	if ((entity->local.fJumpVelocity < -300.0f) && (entity->v.flags & FL_ONGROUND))
+	{
+		entity->local.fJumpVelocity = 0;
+
+		// Call up land function, so custom sounds can be added.
+		if (entity->Monster.Land)
+			entity->Monster.Land(entity);
+	}
+	else if (!(entity->v.flags & FL_ONGROUND))
+		entity->local.fJumpVelocity = entity->v.velocity[2];
+
+	if (entity->Monster.Frame)
+		entity->Monster.Frame(entity);
 }
 
 /*

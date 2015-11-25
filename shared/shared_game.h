@@ -28,15 +28,6 @@ typedef struct link_s
 
 #include "shared_material.h"
 
-/**/
-
-typedef enum
-{
-	MESSAGE_SERVER_DEBUG
-} ServerClientMessage;
-
-/**/
-
 typedef enum
 {
 	DAMAGE_TYPE_NORMAL,
@@ -280,22 +271,23 @@ typedef struct
 
 	int		iType;
 
-	void(*Think)(ServerEntity_t *monster);	// Called per-frame for the specific handling of states for each monster.
+	void(*Frame)(ServerEntity_t *entity);	// Called per-frame for the specific handling of states for each monster.
 
 	// State Functions
-	void(*Idle)(ServerEntity_t *monster);
-	void(*Jump)(ServerEntity_t *monster);
-	void(*Pain)(ServerEntity_t *monster, ServerEntity_t *other);
+	void(*Idle)(ServerEntity_t *entity);
+	void(*Jump)(ServerEntity_t *entity);
+	void(*Land)(ServerEntity_t *entity);
+	void(*Pain)(ServerEntity_t *entity, ServerEntity_t *other);
 
 	// Current thought state
 	int	state;			// Current physical state.
 	int	think;			// Current thought process.
 	int	commands[64];	// List of sub-commands for the monster to execute.
 
-	float fViewDistance;	// Distance in which a monster can detect a target within.
 	float attack_delay;		// Delay before attempting to attack again.
 
 	// Targets
+	// TODO: Crunch this down!
 	ServerEntity_t *eEnemy;		// Current enemy.
 	ServerEntity_t *eOldEnemy;	// Last enemy.
 	ServerEntity_t *eFriend;	// Current friend.

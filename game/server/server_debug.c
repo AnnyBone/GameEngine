@@ -22,5 +22,5 @@
 */
 void ServerDebug_DrawLine(MathVector3f_t start, MathVector3f_t end)
 {
-	Engine.WriteByte(MSG_BROADCAST, SVC_CLIENTDATA)
+	// TODO: This is NEEDED for debugging waypoints, get this done ASAP!
 }

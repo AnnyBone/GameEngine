@@ -110,6 +110,9 @@
     <Filter Include="Server\Decay\NPC\Companions">
       <UniqueIdentifier>{34a87f71-707c-411a-a49f-678df7378a42}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Server\Decay\Weapons\Unused">
+      <UniqueIdentifier>{961422f7-14af-4531-ac36-f3c021da80a2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="server\monster_bot.c">
@@ -137,9 +140,6 @@
       <Filter>Server</Filter>
     </ClCompile>
     <ClCompile Include="server\server_vehicle.c">
-      <Filter>Server</Filter>
-    </ClCompile>
-    <ClCompile Include="server\server_waypoint.c">
       <Filter>Server</Filter>
     </ClCompile>
     <ClCompile Include="server\server_weapon.c">
@@ -172,12 +172,6 @@
     <ClCompile Include="server\openkatana\monster_inmater.c">
       <Filter>Server\Decay\NPC\Monsters</Filter>
     </ClCompile>
-    <ClCompile Include="server\openkatana\weapon_zeus.c">
-      <Filter>Server\Decay\Weapons</Filter>
-    </ClCompile>
-    <ClCompile Include="server\openkatana\weapon_trident.c">
-      <Filter>Server\Decay\Weapons</Filter>
-    </ClCompile>
     <ClCompile Include="server\openkatana\weapon_sidewinder.c">
       <Filter>Server\Decay\Weapons</Filter>
     </ClCompile>
@@ -187,49 +181,13 @@
     <ClCompile Include="server\openkatana\weapon_shockwave.c">
       <Filter>Server\Decay\Weapons</Filter>
     </ClCompile>
-    <ClCompile Include="server\openkatana\weapon_pulserifle.c">
-      <Filter>Server\Decay\Weapons</Filter>
-    </ClCompile>
-    <ClCompile Include="server\openkatana\weapon_midas.c">
-      <Filter>Server\Decay\Weapons</Filter>
-    </ClCompile>
-    <ClCompile Include="server\openkatana\weapon_ionrifle.c">
-      <Filter>Server\Decay\Weapons</Filter>
-    </ClCompile>
-    <ClCompile Include="server\openkatana\weapon_glock.c">
-      <Filter>Server\Decay\Weapons</Filter>
-    </ClCompile>
-    <ClCompile Include="server\openkatana\weapon_crossbow.c">
-      <Filter>Server\Decay\Weapons</Filter>
-    </ClCompile>
-    <ClCompile Include="server\openkatana\weapon_ballista.c">
-      <Filter>Server\Decay\Weapons</Filter>
-    </ClCompile>
-    <ClCompile Include="server\openkatana\weapon_axe.c">
-      <Filter>Server\Decay\Weapons</Filter>
-    </ClCompile>
-    <ClCompile Include="server\openkatana\weapon_kineticore.c">
-      <Filter>Server\Decay\Weapons</Filter>
-    </ClCompile>
     <ClCompile Include="server\openkatana\weapon_ionblaster.c">
-      <Filter>Server\Decay\Weapons</Filter>
-    </ClCompile>
-    <ClCompile Include="server\openkatana\weapon_hermes.c">
-      <Filter>Server\Decay\Weapons</Filter>
-    </ClCompile>
-    <ClCompile Include="server\openkatana\weapon_greekfire.c">
-      <Filter>Server\Decay\Weapons</Filter>
-    </ClCompile>
-    <ClCompile Include="server\openkatana\weapon_discus.c">
       <Filter>Server\Decay\Weapons</Filter>
     </ClCompile>
     <ClCompile Include="server\openkatana\weapon_daikatana.c">
       <Filter>Server\Decay\Weapons</Filter>
     </ClCompile>
     <ClCompile Include="server\openkatana\weapon_c4vizatergo.c">
-      <Filter>Server\Decay\Weapons</Filter>
-    </ClCompile>
-    <ClCompile Include="server\openkatana\weapon_barrier.c">
       <Filter>Server\Decay\Weapons</Filter>
     </ClCompile>
     <ClCompile Include="client\client_view.c">
@@ -270,6 +228,51 @@
       <Filter>Server</Filter>
     </ClCompile>
     <ClCompile Include="server\server_debug.c">
+      <Filter>Server</Filter>
+    </ClCompile>
+    <ClCompile Include="server\openkatana\weapon_axe.c">
+      <Filter>Server\Decay\Weapons\Unused</Filter>
+    </ClCompile>
+    <ClCompile Include="server\openkatana\weapon_ballista.c">
+      <Filter>Server\Decay\Weapons\Unused</Filter>
+    </ClCompile>
+    <ClCompile Include="server\openkatana\weapon_barrier.c">
+      <Filter>Server\Decay\Weapons\Unused</Filter>
+    </ClCompile>
+    <ClCompile Include="server\openkatana\weapon_crossbow.c">
+      <Filter>Server\Decay\Weapons\Unused</Filter>
+    </ClCompile>
+    <ClCompile Include="server\openkatana\weapon_discus.c">
+      <Filter>Server\Decay\Weapons\Unused</Filter>
+    </ClCompile>
+    <ClCompile Include="server\openkatana\weapon_glock.c">
+      <Filter>Server\Decay\Weapons\Unused</Filter>
+    </ClCompile>
+    <ClCompile Include="server\openkatana\weapon_greekfire.c">
+      <Filter>Server\Decay\Weapons\Unused</Filter>
+    </ClCompile>
+    <ClCompile Include="server\openkatana\weapon_hermes.c">
+      <Filter>Server\Decay\Weapons\Unused</Filter>
+    </ClCompile>
+    <ClCompile Include="server\openkatana\weapon_zeus.c">
+      <Filter>Server\Decay\Weapons\Unused</Filter>
+    </ClCompile>
+    <ClCompile Include="server\openkatana\weapon_trident.c">
+      <Filter>Server\Decay\Weapons\Unused</Filter>
+    </ClCompile>
+    <ClCompile Include="server\openkatana\weapon_pulserifle.c">
+      <Filter>Server\Decay\Weapons\Unused</Filter>
+    </ClCompile>
+    <ClCompile Include="server\openkatana\weapon_midas.c">
+      <Filter>Server\Decay\Weapons\Unused</Filter>
+    </ClCompile>
+    <ClCompile Include="server\openkatana\weapon_kineticore.c">
+      <Filter>Server\Decay\Weapons\Unused</Filter>
+    </ClCompile>
+    <ClCompile Include="server\openkatana\weapon_ionrifle.c">
+      <Filter>Server\Decay\Weapons</Filter>
+    </ClCompile>
+    <ClCompile Include="server\server_waypoint.cpp">
       <Filter>Server</Filter>
     </ClCompile>
   </ItemGroup>

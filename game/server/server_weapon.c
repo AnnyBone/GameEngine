@@ -132,18 +132,6 @@ Weapon_t Weapons[] =
 		AM_LASER,
 		IonBlaster_PrimaryAttack	// [31/3/2013] Temporary ~hogsy
 	},
-
-	// Unused Weapons
-	{
-		WEAPON_GLOCK,
-		"models/weapons/v_glock.md2",
-		Glock_Deploy,
-
-		// Primary
-		AM_BULLET,
-		Glock_PrimaryAttack
-	},
-
 #elif GAME_ADAMAS
 #endif
 

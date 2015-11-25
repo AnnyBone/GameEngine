@@ -114,6 +114,90 @@ void Bot_Think(ServerEntity_t *bot)
 
 server_monster.c
 
+#if 0
+double dMonsterEmotionUpdate = 0;
+
+/*	Used to go over each monster state then update it, and then calls the monsters
+	assigned think function.
+*/
+void Monster_Frame(ServerEntity_t *eMonster)
+{
+	int i;
+
+	// [19/2/2013] If it's not a monster then return! ~hogsy
+	if(eMonster->Monster.iType < MONSTER_VEHICLE)
+		return;
+
+	Entity_CheckFrames(eMonster);
+
+	// [26/9/2012] Handle jumping (this is copied over from sv_player.c) ~hogsy
+	if(	(eMonster->local.fJumpVelocity < -300.0f)	&&
+		(eMonster->v.flags & FL_ONGROUND))
+	{
+		// [26/9/2012] TODO: Add in think for land! ~hogsy
+		// [26/9/2012] Set our jump_flag to 0 ~hogsy
+		eMonster->local.fJumpVelocity = 0;
+	}
+	else if(!(eMonster->v.flags & FL_ONGROUND))
+		eMonster->local.fJumpVelocity = eMonster->v.velocity[2];
+
+	switch (eMonster->Monster.state)
+	{
+	case MONSTER_STATE_DEAD:
+		// [6/8/2012] Dead creatures don't have emotions... ~hogsy
+		// [23/9/2012] Simplified ~hogsy
+		for(i = 0; i < EMOTION_NONE; i++)
+			eMonster->Monster.fEmotion[i] = 0;
+
+		// [20/9/2012] TODO: Check if we should gib? ~hogsy
+		break;
+	case MONSTER_STATE_ASLEEP:
+		eMonster->Monster.fEmotion[EMOTION_BOREDOM]++;
+		break;
+	case MONSTER_STATE_AWAKE:
+		switch(eMonster->Monster.think)
+		{
+		case MONSTER_THINK_WANDERING:
+			eMonster->Monster.fEmotion[EMOTION_BOREDOM]--;
+			eMonster->Monster.fEmotion[EMOTION_ANGER]--;
+			break;
+		case MONSTER_THINK_ATTACKING:
+			eMonster->Monster.fEmotion[EMOTION_BOREDOM]--;
+			eMonster->Monster.fEmotion[EMOTION_ANGER]++;
+			break;
+		case MONSTER_THINK_FLEEING:
+			eMonster->Monster.fEmotion[EMOTION_BOREDOM]--;
+			if(eMonster->Monster.fEmotion[EMOTION_ANGER] >= 50.0f)
+				eMonster->Monster.fEmotion[EMOTION_FEAR]--;
+			else
+				eMonster->Monster.fEmotion[EMOTION_FEAR]++;
+			break;
+		case MONSTER_THINK_PURSUING:
+			// [1/9/2013] TODO: Handle emotions... ~hogsy
+			break;
+		case MONSTER_THINK_IDLE:
+			eMonster->Monster.fEmotion[EMOTION_BOREDOM]++;
+			break;
+		default:
+			Engine.Con_Warning("No think was set for %s at spawn!\n",eMonster->v.cClassname);
+
+			Monster_SetThink(eMonster,MONSTER_THINK_IDLE);
+			return;
+		}
+		break;
+	default:
+		Engine.Con_Warning("Unknown state set for monster! (%s)\n",eMonster->v.cClassname);
+	}
+
+	// [6/8/2012] Don't let the emotion value get too high or low ~hogsy
+	// [30/6/2013] Moved down here ~hogsy
+
+
+	if(eMonster->Monster.Think)
+		eMonster->Monster.Think(eMonster);
+}
+#endif
+
 void Monster_SetTargets(ServerEntity_t *eMonster)
 {
 	int	iRelationship;

@@ -1,6 +1,4 @@
-/*	Copyright (C) 1996-2001 Id Software, Inc.
-	Copyright (C) 2002-2009 John Fitzgibbons and others
-	Copyright (C) 2011-2015 OldTimes Software
+/*	Copyright (C) 2011-2015 OldTimes Software
 
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License
@@ -33,12 +31,6 @@
 
 	TODO:
 		Parse a file for phrases and names?
-
-		Create a WAYPOINT_SPAWN at the point
-		we spawn if there isn't one already.
-		We'll check for this whenever we're
-		moving later on to make sure we don't
-		risk getting "spawn gibbed" by someone.
 	~hogsy
 */
 
@@ -134,12 +126,12 @@ const char *BotNames[] =
 	"[BOT] Castor"
 };
 
-void Bot_Run(ServerEntity_t *ent);
-void Bot_Pain(ServerEntity_t *ent, ServerEntity_t *other);
-void Bot_Die(ServerEntity_t *ent, ServerEntity_t *other);
-void Bot_Stand(ServerEntity_t *eBot);
-void Bot_Walk(ServerEntity_t *eBot);
-void Bot_Think(ServerEntity_t *eBot);
+void Bot_Run(ServerEntity_t *entity);
+void Bot_Pain(ServerEntity_t *entity, ServerEntity_t *other);
+void Bot_Die(ServerEntity_t *entity, ServerEntity_t *other);
+void Bot_Stand(ServerEntity_t *entity);
+void Bot_Walk(ServerEntity_t *entity);
+void Bot_Frame(ServerEntity_t *entity);
 
 /*	style
 		0	Mikiko
@@ -147,7 +139,7 @@ void Bot_Think(ServerEntity_t *eBot);
 */
 void Bot_Spawn(ServerEntity_t *eBot)
 {
-	int		iSpawnType;
+	int				iSpawnType;
 	ServerEntity_t	*eSpawnPoint;
 
 	// Don't spawn bots unless it's allowed by admin.
@@ -203,9 +195,10 @@ void Bot_Spawn(ServerEntity_t *eBot)
 
 	eBot->local.bBleed	= true;
 
-	eBot->Monster.Think = Bot_Think;
-	eBot->Monster.Pain = Bot_Pain;
+	eBot->Monster.Frame = Bot_Frame;
+	eBot->Monster.Pain	= Bot_Pain;
 
+	// Default bots are purely for MP, so they spawn at player spawns.
 	if(eBot->local.style == BOT_DEFAULT)
 	{
 		// Must be set after teams are set up.
@@ -225,7 +218,7 @@ void Bot_Spawn(ServerEntity_t *eBot)
 	Entity_SetKilledFunction(eBot, Bot_Die);
 
 	eBot->Monster.Pain = Bot_Pain;
-	eBot->Monster.Think	= Bot_Think;
+	eBot->Monster.Frame = Bot_Frame;
 
 	Entity_SetModel(eBot,eBot->v.model);
 	Entity_SetSize(eBot,-16.0f,-16.0f,-24.0f,16.0f,16.0f,32.0f);
@@ -257,13 +250,13 @@ void Bot_Idle(ServerEntity_t *entity)
 	}
 
 	// Otherwise look for a point of interest.
-	Waypoint_t *targ_interest = Waypoint_GetByType(entity->v.origin, WAYPOINT_TYPE, 0);
+	Waypoint_t *targ_interest = Waypoint_GetByType(entity->v.origin, WAYPOINT_TYPE_INTEREST, 0);
 	if (targ_interest)
 	{
 	}
 }
 
-void Bot_Think(ServerEntity_t *entity)
+void Bot_Frame(ServerEntity_t *entity)
 {
 	if ((entity->Monster.state == MONSTER_STATE_DEAD) || (entity->Monster.state == MONSTER_STATE_DYING))
 		return;
