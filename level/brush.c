@@ -61,7 +61,7 @@ void CreateBrushFaces (void)
 	ClearBounds(brush_mins,brush_maxs);
 	
 	brush_faces = NULL;
-	if(!strcmp(ValueForKey(CurrentEntity,"classname"),"area_rotate"))
+	if (!strcmp(ValueForKey(CurrentEntity, "classname"), "area_rotate"))
 	{
 		entity_t	*FoundEntity;
 		char 		*searchstring,

@@ -61,7 +61,7 @@ enum
 void Point_NullSpawn(ServerEntity_t *eEntity)
 {
 	// Remove if there is no name given!
-	if (!eEntity->v.cName[0])
+	if (!eEntity->v.cName || (eEntity->v.cName[0] == ' '))
 	{
 		Entity_Remove(eEntity);
 		return;
