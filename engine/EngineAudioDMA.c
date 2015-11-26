@@ -204,8 +204,8 @@ void S_Init (void)
 //	if (shm->buffer)
 //		shm->buffer[4] = shm->buffer[5] = 0x7f;	// force a pop for debugging
 
-	ambient_sfx[BSP_AMBIENT_WATER]	= S_PrecacheSound("ambience/water1.wav");
-	ambient_sfx[BSP_AMBIENT_SKY]	= S_PrecacheSound("ambience/wind2.wav");
+	ambient_sfx[BSP_AMBIENT_WATER]	= S_PrecacheSound("ambience/water_loop0.wav");
+	//ambient_sfx[BSP_AMBIENT_SKY]	= S_PrecacheSound("ambience/wind2.wav");
 
 	S_StopAllSounds();
 }

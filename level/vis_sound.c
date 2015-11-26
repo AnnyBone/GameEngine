@@ -88,8 +88,9 @@ void CalcAmbientSounds (void)
 
 					ambient_type = BSP_AMBIENT_SKY;
 				}
-				else if (miptex->name[0] == '*')
+				else if ((miptex->name[0] == '*') || (miptex->name[0] == '#'))
 				{
+#if 0
 					if ( !Q_strncasecmp (miptex->name, "*water", 6) )
 					{
 						if (noambientwater)
@@ -122,6 +123,12 @@ void CalcAmbientSounds (void)
 					}
 					else
 						continue;
+#else
+					if (noambientwater)
+						continue;
+
+					ambient_type = BSP_AMBIENT_WATER;
+#endif
 				}
 				else
 					continue;
@@ -146,7 +153,7 @@ void CalcAmbientSounds (void)
 			}
 		}
 
-		for (j=0 ; j<BSP_AMBIENT_END ; j++)
+		for (j = 0; j<BSP_AMBIENT_END; j++)
 		{
 			if (dists[j] < 100)
 				vol = 1.0;

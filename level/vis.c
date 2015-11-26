@@ -568,7 +568,7 @@ int Vis_Main( int argc, char **argv )
 	noambientslime = true;
 	noreuse = false;
 	farplane = 0;
-	noambient = true;
+	noambient = false;
 
 	for (i=1 ; i<argc ; i++)
 	{
