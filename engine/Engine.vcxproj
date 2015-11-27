@@ -613,7 +613,7 @@
     <ClCompile Include="client\ClientParticle.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="client\ClientSprite.cpp" />
+    <ClCompile Include="client\client_sprite.cpp" />
     <ClCompile Include="EngineAudioDummy.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
@@ -628,7 +628,8 @@
     <ClCompile Include="conproc.c" />
     <ClCompile Include="EngineConsole.c" />
     <ClCompile Include="crc.c" />
-    <ClCompile Include="EngineException.cpp" />
+    <ClCompile Include="engine_exception.cpp" />
+    <ClCompile Include="model_u3d.cpp" />
     <ClCompile Include="video_sdlwindow.c" />
     <ClCompile Include="video_framebuffer.cpp" />
     <ClCompile Include="EngineVideoParticle.c" />
@@ -698,6 +699,8 @@
     <ClCompile Include="zone.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\shared\format_obj.h" />
+    <ClInclude Include="..\shared\format_u3d.h" />
     <ClInclude Include="..\shared\SharedMaterial.h" />
     <ClInclude Include="..\shared\SharedModel.h" />
     <ClInclude Include="..\shared\SharedTexture.h" />
@@ -706,13 +709,13 @@
     <ClInclude Include="..\shared\shared_editor.h" />
     <ClInclude Include="..\shared\SharedEngine.h" />
     <ClInclude Include="..\shared\SharedFlags.h" />
-    <ClInclude Include="..\shared\SharedFormats.h" />
+    <ClInclude Include="..\shared\shared_formats.h" />
     <ClInclude Include="..\shared\shared_game.h" />
     <ClInclude Include="..\shared\shared_menu.h" />
     <ClInclude Include="..\shared\SharedModule.h" />
     <ClInclude Include="..\shared\shared_server.h" />
     <ClInclude Include="client.h" />
-    <ClInclude Include="EngineClass.h" />
+    <ClInclude Include="engine_class.h" />
     <ClInclude Include="EngineClientTempEntity.h" />
     <ClInclude Include="EngineConsoleCommand.h" />
     <ClInclude Include="cmdlib.h" />
@@ -721,7 +724,7 @@
     <ClInclude Include="EngineConsole.h" />
     <ClInclude Include="crc.h" />
     <ClInclude Include="EngineConsoleVariable.h" />
-    <ClInclude Include="EngineException.h" />
+    <ClInclude Include="engine_exception.h" />
     <ClInclude Include="EngineMaterialEditor.h" />
     <ClInclude Include="EngineVideoDraw.h" />
     <ClInclude Include="EngineAudio.h" />
@@ -759,7 +762,7 @@
     <ClInclude Include="progs.h" />
     <ClInclude Include="EngineProtocol.h" />
     <ClInclude Include="pr_comp.h" />
-    <ClInclude Include="EngineBase.h" />
+    <ClInclude Include="engine_base.h" />
     <ClInclude Include="render.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="EngineVideoScreen.h" />

@@ -16,7 +16,7 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "EngineBase.h"
+#include "engine_base.h"
 
 #include "video.h"
 #include "video_shader.h"
@@ -206,7 +206,7 @@ VideoPostProcess::VideoPostProcess(VideoShaderProgram *PostProcessProgram)
 	: VideoFrameBuffer(512, 512)	//Video.iWidth, Video.iHeight)
 {
 	if (!PostProcessProgram)
-		throw CEngineException("Invalid shader program!\n");
+		throw EngineException("Invalid shader program!\n");
 
 	this->program = PostProcessProgram;
 }

@@ -43,9 +43,6 @@
     <Filter Include="Legacy\Server">
       <UniqueIdentifier>{0f375dec-2e73-49e9-8781-5f63e733672e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Legacy\Shared">
-      <UniqueIdentifier>{214bfd5b-5bbf-456a-aea5-11a0d707dd8e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Client">
       <UniqueIdentifier>{58810262-9f0f-4838-852a-88b58eab5b2e}</UniqueIdentifier>
     </Filter>
@@ -75,6 +72,12 @@
     </Filter>
     <Filter Include="Client\Video\Interfaces">
       <UniqueIdentifier>{7dcb15cb-2530-4696-b29c-1de8a7635517}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shared">
+      <UniqueIdentifier>{214bfd5b-5bbf-456a-aea5-11a0d707dd8e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shared\Formats">
+      <UniqueIdentifier>{95406f5f-f141-4f65-8479-fcc86da8db3e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -232,7 +235,7 @@
       <Filter>Legacy\Client</Filter>
     </ClCompile>
     <ClCompile Include="..\shared\SharedFormats.c">
-      <Filter>Legacy\Shared</Filter>
+      <Filter>Shared</Filter>
     </ClCompile>
     <ClCompile Include="EngineNetworkLoop.c">
       <Filter>Legacy\Network</Filter>
@@ -252,7 +255,6 @@
     <ClCompile Include="EngineVideoSprite.c">
       <Filter>Legacy\Client\Video</Filter>
     </ClCompile>
-    <ClCompile Include="EngineException.cpp" />
     <ClCompile Include="EngineVideoLegacy2.c">
       <Filter>Legacy\Client\Video\Legacy</Filter>
     </ClCompile>
@@ -263,9 +265,6 @@
       <Filter>Legacy\Client</Filter>
     </ClCompile>
     <ClCompile Include="EngineImage.c">
-      <Filter>Legacy\Client</Filter>
-    </ClCompile>
-    <ClCompile Include="client\ClientSprite.cpp">
       <Filter>Legacy\Client</Filter>
     </ClCompile>
     <ClCompile Include="client\ClientMaterial.cpp">
@@ -310,22 +309,29 @@
     <ClCompile Include="video.c">
       <Filter>Client\Video</Filter>
     </ClCompile>
+    <ClCompile Include="engine_exception.cpp" />
+    <ClCompile Include="client\client_sprite.cpp">
+      <Filter>Legacy\Client</Filter>
+    </ClCompile>
+    <ClCompile Include="model_u3d.cpp">
+      <Filter>Client</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\shared\shared_client.h">
-      <Filter>Legacy\Shared</Filter>
+      <Filter>Shared</Filter>
     </ClInclude>
     <ClInclude Include="..\shared\shared_editor.h">
-      <Filter>Legacy\Shared</Filter>
+      <Filter>Shared</Filter>
     </ClInclude>
     <ClInclude Include="..\shared\shared_game.h">
-      <Filter>Legacy\Shared</Filter>
+      <Filter>Shared</Filter>
     </ClInclude>
     <ClInclude Include="..\shared\shared_menu.h">
-      <Filter>Legacy\Shared</Filter>
+      <Filter>Shared</Filter>
     </ClInclude>
     <ClInclude Include="..\shared\shared_server.h">
-      <Filter>Legacy\Shared</Filter>
+      <Filter>Shared</Filter>
     </ClInclude>
     <ClInclude Include="pr_comp.h">
       <Filter>Legacy</Filter>
@@ -388,16 +394,16 @@
       <Filter>Legacy\Network</Filter>
     </ClInclude>
     <ClInclude Include="..\shared\SharedMaterial.h">
-      <Filter>Legacy\Shared</Filter>
+      <Filter>Shared</Filter>
     </ClInclude>
     <ClInclude Include="..\shared\SharedTexture.h">
-      <Filter>Legacy\Shared</Filter>
+      <Filter>Shared</Filter>
     </ClInclude>
     <ClInclude Include="..\shared\SharedModel.h">
-      <Filter>Legacy\Shared</Filter>
+      <Filter>Shared</Filter>
     </ClInclude>
     <ClInclude Include="..\shared\SharedZone.h">
-      <Filter>Legacy\Shared</Filter>
+      <Filter>Shared</Filter>
     </ClInclude>
     <ClInclude Include="EngineVideoShadow.h">
       <Filter>Legacy\Client\Video</Filter>
@@ -424,7 +430,7 @@
       <Filter>Legacy\Server</Filter>
     </ClInclude>
     <ClInclude Include="..\shared\SharedFlags.h">
-      <Filter>Legacy\Shared</Filter>
+      <Filter>Shared</Filter>
     </ClInclude>
     <ClInclude Include="EngineGame.h">
       <Filter>Legacy\Modules</Filter>
@@ -447,10 +453,6 @@
     <ClInclude Include="EngineClientView.h">
       <Filter>Legacy\Client</Filter>
     </ClInclude>
-    <ClInclude Include="EngineBase.h" />
-    <ClInclude Include="..\shared\SharedFormats.h">
-      <Filter>Legacy\Shared</Filter>
-    </ClInclude>
     <ClInclude Include="EngineVideoScreen.h">
       <Filter>Legacy\Client\Video</Filter>
     </ClInclude>
@@ -458,10 +460,10 @@
       <Filter>Legacy\Client\Video</Filter>
     </ClInclude>
     <ClInclude Include="..\shared\SharedEngine.h">
-      <Filter>Legacy\Shared</Filter>
+      <Filter>Shared</Filter>
     </ClInclude>
     <ClInclude Include="..\shared\SharedModule.h">
-      <Filter>Legacy\Shared</Filter>
+      <Filter>Shared</Filter>
     </ClInclude>
     <ClInclude Include="EngineNetwork.h">
       <Filter>Legacy\Network</Filter>
@@ -490,7 +492,6 @@
     <ClInclude Include="EngineMaterial.h">
       <Filter>Legacy\Client</Filter>
     </ClInclude>
-    <ClInclude Include="EngineException.h" />
     <ClInclude Include="EngineImage.h">
       <Filter>Legacy\Client</Filter>
     </ClInclude>
@@ -509,7 +510,6 @@
     <ClInclude Include="EngineCommon.h">
       <Filter>Legacy</Filter>
     </ClInclude>
-    <ClInclude Include="EngineClass.h" />
     <ClInclude Include="video_shader.h">
       <Filter>Client\Video</Filter>
     </ClInclude>
@@ -524,6 +524,18 @@
     </ClInclude>
     <ClInclude Include="video_window.h">
       <Filter>Client\Video</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\format_u3d.h">
+      <Filter>Shared\Formats</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\shared_formats.h">
+      <Filter>Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="engine_exception.h" />
+    <ClInclude Include="engine_base.h" />
+    <ClInclude Include="engine_class.h" />
+    <ClInclude Include="..\shared\format_obj.h">
+      <Filter>Shared\Formats</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -18,7 +18,7 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "EngineBase.h"
+#include "engine_base.h"
 
 #include "EngineScript.h"
 #include "video.h"
@@ -1079,7 +1079,7 @@ void Model_LoadBSP(model_t *mod,void *buffer)
 		Console_ErrorMessage(false,mod->name,va("Wrong version (%i should be %i)",version,BSP_VERSION));
 
 	loadmodel->version	= version;
-	loadmodel->mType	= MODEL_TYPE_BSP;
+	loadmodel->mType	= MODEL_TYPE_LEVEL;
 
 	// swap all the lumps
 	mod_base = (uint8_t*)bhHeader;
@@ -1165,10 +1165,9 @@ void Model_LoadBSP(model_t *mod,void *buffer)
 
 MathVector_t Model_GenerateNormal(MathVector3f_t a, MathVector3f_t b, MathVector3f_t c)
 {
-	MathVector_t mvOutNormal;
-	MathVector3f_t mvNormal;
-	MathVector3f_t mvX;
-	MathVector3f_t mvY;
+	MathVector_t	mvOutNormal;
+	MathVector3f_t	mvNormal;
+	MathVector3f_t	mvX, mvY;
 
 #if 0
 	Con_Printf("A : %i %i %i\n", (int)a[0], (int)a[1], (int)a[2]);
@@ -1521,10 +1520,6 @@ bool Model_LoadOBJ(model_t *mModel,void *Buffer)
 #endif
 
 	return false;
-}
-
-void Model_DrawOBJ(ClientEntity_t *eEntity)
-{
 }
 
 /**/

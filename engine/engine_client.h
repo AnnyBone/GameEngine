@@ -1,7 +1,7 @@
 #ifndef __KATCLIENT__
 #define __KATCLIENT__
 
-#include "EngineBase.h"
+#include "engine_base.h"
 
 #include "shared_client.h"
 

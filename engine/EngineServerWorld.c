@@ -18,7 +18,7 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "EngineBase.h"
+#include "engine_base.h"
 
 /*	
 	Entities never clip against themselves, or their owner.
@@ -149,7 +149,7 @@ hull_t *SV_HullForEntity(ServerEntity_t *ent, MathVector3f_t mins, MathVector3f_
 		}
 
 		model = sv.models[ent->v.modelindex];
-		if(!model || model->mType != MODEL_TYPE_BSP)
+		if (!model || model->mType != MODEL_TYPE_LEVEL)
 		{
 			Con_Warning("MOVETYPE_PUSH with a non bsp model!\n");
 			return NULL;

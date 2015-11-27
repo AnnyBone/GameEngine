@@ -26,7 +26,7 @@
 
 // Base includes
 #ifdef __cplusplus
-#include "server_entity.h"
+#	include "server_entity.h"
 #endif
 
 // Legacy base includes

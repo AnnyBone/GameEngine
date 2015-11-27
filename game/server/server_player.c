@@ -22,6 +22,7 @@
 #include "server_vehicle.h"
 #include "server_weapon.h"
 #include "server_item.h"
+#include "server_menu.h"
 
 /*
 	Code specific towards the player. This includes code for
@@ -812,9 +813,9 @@ void Player_Spawn(ServerEntity_t *ePlayer)
 		}
 #endif
 	}
-	else	// [29/7/2013] Singleplayer ~hogsy
+	else // SINGLEPLAYER
 	{
-		Server_UpdateClientMenu(ePlayer,MENU_STATE_HUD,true);
+		ServerMenu_UpdateClient(ePlayer, MENU_STATE_HUD, true);
 
 #ifdef GAME_OPENKATANA
 		{

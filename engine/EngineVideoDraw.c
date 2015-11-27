@@ -18,7 +18,7 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "EngineBase.h"
+#include "engine_base.h"
 
 #include "video.h"
 #include "engine_client.h"	// [28/7/2013] Added for precache functions ~hogsy
@@ -805,7 +805,7 @@ void Draw_Entity(ClientEntity_t *Entity)
 	case MODEL_TYPE_OBJ:
 		Model_DrawOBJ(Entity);
 		break;
-	case MODEL_TYPE_BSP:
+	case MODEL_TYPE_LEVEL:
 		Brush_Draw(Entity);
 		break;
 #if 0

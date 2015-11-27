@@ -19,7 +19,7 @@
 #ifndef SHARED_MODEL_H
 #define	SHARED_MODEL_H
 
-#include "SharedFormats.h"
+#include "shared_formats.h"
 #include "shared_zone.h"
 #include "shared_video.h"
 

@@ -1,6 +1,4 @@
-/*	Copyright (C) 1996-2001 Id Software, Inc.
-	Copyright (C) 2002-2009 John Fitzgibbons and others
-	Copyright (C) 2011-2015 OldTimes Software
+/*	Copyright (C) 2011-2015 OldTimes Software
 
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License
@@ -18,26 +16,25 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "EngineBase.h"
+#include "engine_base.h"
 
-CEngineException::CEngineException(const char *ccMessage, ...)
+EngineException::EngineException(const char *message, ...)
 {
-	va_list	ArgPtr;
-	char Out[1024];
-	static int
-		ErrorPass0 = 0,
-		ErrorPass1 = 0,
-		ErrorPass2 = 0;
+	va_list		ArgPtr;
+	char		Out[1024];
+	static int	ErrorPass0 = 0,
+				ErrorPass1 = 0,
+				ErrorPass2 = 0;
 
 #ifdef _DEBUG
-	assert(ccMessage);
+	assert(message);
 #endif
 
 	if (!ErrorPass2)
 		ErrorPass2 = 1;
 
-	va_start(ArgPtr, ccMessage);
-	vsprintf(Out, ccMessage, ArgPtr);
+	va_start(ArgPtr, message);
+	vsprintf(Out, message, ArgPtr);
 	va_end(ArgPtr);
 
 	pLog_Write(ENGINE_LOG, "Error: %s", Out);

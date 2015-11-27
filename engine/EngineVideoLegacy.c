@@ -18,7 +18,7 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "EngineBase.h"
+#include "engine_base.h"
 
 #include "EngineEditor.h"
 #include "video.h"
@@ -465,7 +465,7 @@ void Video_DrawClientBoundingBox(ClientEntity_t *clEntity)
 
 	switch (clEntity->model->mType)
 	{
-	case MODEL_TYPE_BSP:
+	case MODEL_TYPE_LEVEL:
 		// Only draw wires for the BSP, since otherwise it's difficult to see anything else.
 		glColor4f(0, 0, 0, 0);
 		R_EmitWireBox(vMins, vMaxs, 0, 1, 0);

@@ -46,7 +46,7 @@
 */
 #define ENGINE_VERSION_MAJOR	0		// TODO: Isn't relevent for engine ver anymore!
 #define ENGINE_VERSION_MINOR	3		// TODO: Isn't relevent for engine ver anymore!
-#define ENGINE_VERSION_BUILD	1032	// 26/10/2015
+#define ENGINE_VERSION_BUILD	1033	// 27/10/2015
 
 #define	ENGINE_LOG	"engine"
 
@@ -84,10 +84,10 @@
 #include "shared_server.h"
 #include "shared_client.h"
 #include "SharedEngine.h"
-#include "SharedFormats.h"
+#include "shared_formats.h"
 
 #ifdef __cplusplus
-#	include "EngineException.h"
+#	include "engine_exception.h"
 #endif
 
 #include "EngineMain.h"

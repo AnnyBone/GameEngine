@@ -69,6 +69,9 @@
     <ClInclude Include="server\server_effects.h">
       <Filter>Server</Filter>
     </ClInclude>
+    <ClInclude Include="server\server_menu.h">
+      <Filter>Server</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Client">
@@ -221,9 +224,6 @@
       <Filter>Client</Filter>
     </ClCompile>
     <ClCompile Include="game.c" />
-    <ClCompile Include="server\server.c">
-      <Filter>Server</Filter>
-    </ClCompile>
     <ClCompile Include="server\server_effects.c">
       <Filter>Server</Filter>
     </ClCompile>
@@ -273,6 +273,12 @@
       <Filter>Server\Decay\Weapons</Filter>
     </ClCompile>
     <ClCompile Include="server\server_waypoint.cpp">
+      <Filter>Server</Filter>
+    </ClCompile>
+    <ClCompile Include="server\server_menu.c">
+      <Filter>Server</Filter>
+    </ClCompile>
+    <ClCompile Include="server\server.c">
       <Filter>Server</Filter>
     </ClCompile>
   </ItemGroup>

@@ -17,7 +17,7 @@
 	along with this program; if not, write to the Free Software
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
-#include "EngineBase.h"
+#include "engine_base.h"
 
 #include "video.h"
 
@@ -485,7 +485,7 @@ void Sky_ProcessEntities(void)
 	{
 		e = cl_visedicts[i];
 
-		if(e->model->mType != MODEL_TYPE_BSP)
+		if (e->model->mType != MODEL_TYPE_LEVEL)
 			continue;
 
 		if(R_CullModelForEntity(e))

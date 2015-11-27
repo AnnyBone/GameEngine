@@ -18,7 +18,7 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "EngineBase.h"
+#include "engine_base.h"
 
 #include "EngineGame.h"
 #include "video.h"
@@ -157,7 +157,6 @@ void Server_SetModel(ServerEntity_t *ent, char *m)
 		if(!strcmp(*check, m))
 			break;
 
-	// [27/1/2013] Removed dynamic caching. This should only be done client-side derp! ~hogsy
 	if(!*check)
 		Console_ErrorMessage(true,m,"Model was not registered.");
 
@@ -165,14 +164,13 @@ void Server_SetModel(ServerEntity_t *ent, char *m)
 	ent->v.modelindex	= i;
 
 	mod = sv.models[ent->v.modelindex];
-	// [13/4/2013] Oops, made this more secure! ~hogsy
-	if(mod && mod->mType == MODEL_TYPE_BSP)
+	if (mod && mod->mType == MODEL_TYPE_LEVEL)
 		Game->Server_SetSizeVector(ent,mod->clipmins,mod->clipmaxs);
 	else
 		Game->Server_SetSizeVector(ent,g_mvOrigin3f,g_mvOrigin3f);
 }
 
-void Game_AmbientSound(vec_t *vPosition,const char *cPath,int iVolume,int iAttenuation)
+void Game_AmbientSound(MathVectorf_t *vPosition,const char *cPath,int iVolume,int iAttenuation)
 {
 	char		**cCheck;
 	int			i,iSoundNumber;

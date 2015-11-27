@@ -168,11 +168,9 @@ bool Game_Init(int state,ServerEntity_t *ent,double dTime)
 	switch(state)
 	{
 	case SERVER_CLIENTPOSTTHINK:
-		// [8/6/2012] Revised ~hogsy
 		Player_PostThink(ent);
 		break;
 	case SERVER_PLAYERPRETHINK:
-		// [8/6/2012] Revised ~hogsy
 		Player_PreThink(ent);
 		break;
 	case SERVER_CLIENTCONNECT:
@@ -214,16 +212,16 @@ pMODULE_EXPORT GameExport_t *Game_Main(ModuleImport_t *Import)
 {
 	// Imports...
 
-	Engine.Con_Printf = Import->Con_Printf;
-	Engine.Con_DPrintf = Import->Con_DPrintf;
-	Engine.Con_Warning = Import->Con_Warning;
-	Engine.Sys_Error = Import->Sys_Error;
-	Engine.SetMessageEntity = Import->SetMessageEntity;
-	Engine.SetModel = Import->SetModel;
-	Engine.Sound = Import->Sound;
-	Engine.LinkEntity = Import->LinkEntity;
-	Engine.FreeEntity = Import->FreeEntity;
-	Engine.Spawn = Import->Spawn;
+	Engine.Con_Printf				= Import->Con_Printf;
+	Engine.Con_DPrintf				= Import->Con_DPrintf;
+	Engine.Con_Warning				= Import->Con_Warning;
+	Engine.Sys_Error				= Import->Sys_Error;
+	Engine.SetMessageEntity			= Import->SetMessageEntity;
+	Engine.SetModel					= Import->SetModel;
+	Engine.Sound					= Import->Sound;
+	Engine.LinkEntity				= Import->LinkEntity;
+	Engine.FreeEntity				= Import->FreeEntity;
+	Engine.Spawn					= Import->Spawn;
 	Engine.Cvar_RegisterVariable	= Import->Cvar_RegisterVariable;
 	Engine.Cvar_SetValue			= Import->Cvar_SetValue;
 	Engine.ReadByte					= Import->ReadByte;
@@ -242,27 +240,27 @@ pMODULE_EXPORT GameExport_t *Game_Main(ModuleImport_t *Import)
 	Engine.Hunk_AllocateName		= Import->Hunk_AllocateName;
 	Engine.Hunk_Alloc				= Import->Hunk_Alloc;
 
-	Engine.Client_GetEffect = Import->Client_GetEffect;
-	Engine.Client_AllocateDlight = Import->Client_AllocateDlight;
-	Engine.Client_AllocateParticle = Import->Client_AllocateParticle;
-	Engine.Client_PrecacheResource = Import->Client_PrecacheResource;
-	Engine.Client_GetPlayerEntity = Import->Client_GetPlayerEntity;
-	Engine.Client_GetViewEntity = Import->Client_GetViewEntity;
+	Engine.Client_GetEffect			= Import->Client_GetEffect;
+	Engine.Client_AllocateDlight	= Import->Client_AllocateDlight;
+	Engine.Client_AllocateParticle	= Import->Client_AllocateParticle;
+	Engine.Client_PrecacheResource	= Import->Client_PrecacheResource;
+	Engine.Client_GetPlayerEntity	= Import->Client_GetPlayerEntity;
+	Engine.Client_GetViewEntity		= Import->Client_GetViewEntity;
 
-	Engine.Server_PointContents = Import->Server_PointContents;
-	Engine.Server_MakeStatic = Import->Server_MakeStatic;
-	Engine.Server_PrecacheResource = Import->Server_PrecacheResource;
-	Engine.Server_BroadcastPrint = Import->Server_BroadcastPrint;
-	Engine.Server_SinglePrint = Import->Server_SinglePrint;
-	Engine.Server_FindRadius = Import->Server_FindRadius;
-	Engine.Server_FindEntity = Import->Server_FindEntity;
-	Engine.Server_Restart = Import->Server_Restart;
-	Engine.Server_ChangeLevel = Import->Server_ChangeLevel;
-	Engine.Server_AmbientSound = Import->Server_AmbientSound;
-	Engine.Server_GetLevelName = Import->Server_GetLevelName;
-	Engine.Server_GetFrameTime = Import->Server_GetFrameTime;
-	Engine.Server_GetNumEdicts = Import->Server_GetNumEdicts;
-	Engine.Server_GetEdicts = Import->Server_GetEdicts;
+	Engine.Server_PointContents		= Import->Server_PointContents;
+	Engine.Server_MakeStatic		= Import->Server_MakeStatic;
+	Engine.Server_PrecacheResource	= Import->Server_PrecacheResource;
+	Engine.Server_BroadcastPrint	= Import->Server_BroadcastPrint;
+	Engine.Server_SinglePrint		= Import->Server_SinglePrint;
+	Engine.Server_FindRadius		= Import->Server_FindRadius;
+	Engine.Server_FindEntity		= Import->Server_FindEntity;
+	Engine.Server_Restart			= Import->Server_Restart;
+	Engine.Server_ChangeLevel		= Import->Server_ChangeLevel;
+	Engine.Server_AmbientSound		= Import->Server_AmbientSound;
+	Engine.Server_GetLevelName		= Import->Server_GetLevelName;
+	Engine.Server_GetFrameTime		= Import->Server_GetFrameTime;
+	Engine.Server_GetNumEdicts		= Import->Server_GetNumEdicts;
+	Engine.Server_GetEdicts			= Import->Server_GetEdicts;
 
 	// Exports...
 

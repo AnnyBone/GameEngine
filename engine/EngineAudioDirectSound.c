@@ -19,7 +19,7 @@
 
 */
 
-#include "EngineBase.h"
+#include "engine_base.h"
 
 #ifdef KATANA_AUDIO_DIRECTSOUND
 #include "winquake.h"

@@ -16,15 +16,18 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef __ENGINEEXCEPTION_H__
-#define	__ENGINEEXCEPTION_H__
-#pragma once
+#include "server_main.h"
 
-class CEngineException : public std::exception
+#include "server_menu.h"
+
+/*	General function for globally updating the HUD for clients.
+*/
+void ServerMenu_UpdateClient(ServerEntity_t *entity, int menustate, bool show)
 {
-public:
-	CEngineException(const char *ccMessage, ...);
-};
+	// This is who we're telling to hide/show their HUD.
+	Engine.SetMessageEntity(entity);
 
-#endif
-
+	Engine.WriteByte(MSG_ONE, SVC_UPDATEMENU);
+	Engine.WriteByte(MSG_ONE, menustate);
+	Engine.WriteByte(MSG_ONE, show);
+}

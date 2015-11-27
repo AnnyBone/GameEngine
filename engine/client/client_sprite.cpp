@@ -18,7 +18,7 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "../EngineBase.h"
+#include "../engine_base.h"
 
 #include "../video.h"
 
@@ -31,11 +31,11 @@ typedef enum
 	SPRITE_TYPE_FLARE		// No depth-test, scale by view, always fullbright and oriented.
 } SpriteType_t;
 
-class CSprite
+class Sprite
 {
 public:
-	CSprite();
-	virtual ~CSprite();
+	Sprite();
+	virtual ~Sprite();
 
 	void SetPosition(float X, float Y, float Z);
 	void SetColour(float R, float G, float B);
@@ -71,12 +71,12 @@ private:
 	Material_t *Material;
 };
 
-class CSpriteManager
+class SpriteManager
 {
 public:
-	CSpriteManager();
+	SpriteManager();
 
-	CSprite *Add();
+	Sprite *Add();
 
 	void Initialize();
 	void Simulate();
@@ -84,48 +84,50 @@ public:
 	void Shutdown();
 
 private:
-	CSprite **Sprites;
+	Sprite **Sprites;
 };
+
+SpriteManager *g_spritemanager;
 
 // Sprite Manager
 
-CSpriteManager::CSpriteManager()
+SpriteManager::SpriteManager()
 {
 	Sprites = NULL;
 }
 
-void CSpriteManager::Initialize()
+void SpriteManager::Initialize()
 {
 	Con_Printf("Initializing Sprite Manager...\n");
 
 	Cvar_RegisterVariable(&cvSpriteDebugSize, NULL);
 
-	Sprites = new CSprite*;
+	Sprites = new Sprite*;
 }
 
 /*	Add a new sprite to the manager.
 */
-CSprite *CSpriteManager::Add()
+Sprite *SpriteManager::Add()
 {
-	CSprite *NewSprite = new CSprite();
+	Sprite *NewSprite = new Sprite();
 	// TODO: Add to our list.
 	return NewSprite;
 }
 
-void CSpriteManager::Simulate()
+void SpriteManager::Simulate()
 {
-	CSprite *Sprite = Sprites[0];
-	while (Sprite)
+	Sprite *sprite = Sprites[0];
+	while (sprite)
 	{
-		Sprite->Simulate();
+		sprite->Simulate();
 
-		Sprite++;
+		sprite++;
 	}
 }
 
-void CSpriteManager::Draw()
+void SpriteManager::Draw()
 {
-	CSprite *CurrentSprite = Sprites[0];
+	Sprite *CurrentSprite = Sprites[0];
 	while (CurrentSprite)
 	{
 		// Skip sprites that aren't currently visible.
@@ -137,7 +139,7 @@ void CSpriteManager::Draw()
 	}
 }
 
-void CSpriteManager::Shutdown()
+void SpriteManager::Shutdown()
 {
 	Con_Printf("Shutting down Sprite Manager...\n");
 
@@ -146,7 +148,7 @@ void CSpriteManager::Shutdown()
 
 // Sprite
 
-CSprite::CSprite()
+Sprite::Sprite()
 {
 	bActive = false;
 	bLit = false;
@@ -163,25 +165,25 @@ CSprite::CSprite()
 	Math_Vector4Set(1.0f, Colour);
 }
 
-CSprite::~CSprite()
+Sprite::~Sprite()
 {
 }
 
-void CSprite::SetColour(float R, float G, float B)
+void Sprite::SetColour(float R, float G, float B)
 {
 	Colour[0] = R;
 	Colour[1] = G;
 	Colour[2] = B;
 }
 
-void CSprite::SetPosition(float X,float Y,float Z)
+void Sprite::SetPosition(float X, float Y, float Z)
 {
 	Position[0] = X;
 	Position[1] = Y;
 	Position[2] = Z;
 }
 
-void CSprite::SetType(SpriteType_t InType)
+void Sprite::SetType(SpriteType_t InType)
 {
 	switch (Type)
 	{
@@ -198,7 +200,7 @@ void CSprite::SetType(SpriteType_t InType)
 	}
 }
 
-void CSprite::Simulate()
+void Sprite::Simulate()
 {
 	if (cl.bIsPaused || ((key_dest == key_console) && (svs.maxclients == 1)))
 		return;
@@ -231,7 +233,7 @@ void CSprite::Simulate()
 	}
 }
 
-void CSprite::Draw()
+void Sprite::Draw()
 {
 	// Not visible.
 	if (!bVisible)

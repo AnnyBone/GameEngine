@@ -246,6 +246,7 @@
     <ClCompile Include="server\server_ent.c" />
     <ClCompile Include="server\server_item.c" />
     <ClCompile Include="server\server.c" />
+    <ClCompile Include="server\server_menu.c" />
     <ClCompile Include="server\server_misc.c" />
     <ClCompile Include="server\server_monster.c" />
     <ClCompile Include="server\server_physics.c" />
@@ -282,6 +283,7 @@
     </ClInclude>
     <ClInclude Include="server\server_gamemode.h" />
     <ClInclude Include="server\server_gib.c" />
+    <ClInclude Include="server\server_menu.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

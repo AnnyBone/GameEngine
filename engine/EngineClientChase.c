@@ -17,7 +17,7 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
-#include "EngineBase.h"
+#include "engine_base.h"
 
 cvar_t	chase_back      = { "chase_back",   "100"   };
 cvar_t	chase_up        = { "chase_up",     "16"    };

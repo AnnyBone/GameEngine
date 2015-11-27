@@ -18,20 +18,35 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef	__SHAREDFORMATS__
-#define	__SHAREDFORMATS__
+#ifndef	SHARED_FORMATS_H
+#define	SHARED_FORMATS_H
 
 typedef enum
 {
+#if 1
 	MODEL_TYPE_MD2,		// MD2 support.
-	MODEL_TYPE_IQM,		// IQM support.
 	MODEL_TYPE_KMDL,	// Extended MD2 support.
+	MODEL_TYPE_U3D,
+	MODEL_TYPE_IQM,		// IQM support.
 	MODEL_TYPE_OBJ,		// OBJ support.
+#else
+	/*	TODO:
+			Eventually I want to convert meshes
+			during load time to somewhat of an abstrac
+			type, so it's no longer format-specific.
+	*/
+	MODEL_TYPE_STATIC,		// Static mesh (MD2, U3D, OBJ)
+	MODEL_TYPE_SKELETAL,	// Skeletal mesh (IQM)
+	MODEL_TYPE_VERTEX,		// Per-vertex animated mesh (MD2, U3D)
+#endif
 	MODEL_TYPE_SPRITE,	// Just a flat-plane with a texture.
-	MODEL_TYPE_BSP,		// BSP support.
+	MODEL_TYPE_LEVEL,	// Level / World model.
 
 	MODEL_NONE
 } ModelType_t;
+
+#include "format_u3d.h"
+#include "format_obj.h"
 
 /*
 	KMDL Format
@@ -101,24 +116,6 @@ typedef struct
 	int			    ofs_glcmds;
 	int			    ofs_end;		// End of file.
 } MD2_t;
-
-/*
-	OBJ Format
-*/
-
-#define	OBJ_EXTENSION	".obj"
-
-typedef struct
-{
-	vec3_t	vVertex;
-} OBJVertex_t;
-
-typedef struct
-{
-	int	iTriangles;
-
-	OBJVertex_t	*ovVertex;
-} OBJ_t;
 
 /*
 	IQM Format
@@ -444,4 +441,4 @@ typedef struct miptex_s
 #define	PLANE_ANYY		4
 #define	PLANE_ANYZ		5
 
-#endif
+#endif // !SHARED_FORMATS_H

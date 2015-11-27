@@ -18,33 +18,22 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "../engine_base.h"
+#ifndef ENGINE_CLASS_H
+#define	ENGINE_CLASS_H
+#pragma once
 
-class CParticle
+/*
+	Base Abstract Classes
+*/
+
+class EngineSubSystem
 {
 public:
-	void Draw();
-protected:
-private:
-	MathVector3f_t Position;
+	EngineSubSystem();
 
-	float Scale;
+	virtual void Initialize() = 0;
+	virtual void Frame() = 0;
+	virtual void Shutdown() = 0;
 };
 
-void CParticle::Draw()
-{
-}
-
-class CParticleManager
-{
-public:
-	CParticleManager(const char *ScriptPath);
-protected:
-private:
-};
-
-CParticleManager::CParticleManager(const char *ScriptPath)
-{
-	if (!ScriptPath)
-		throw EngineException("Invalid particle script path!\n");
-}
+#endif // !ENGINE_CLASS_H

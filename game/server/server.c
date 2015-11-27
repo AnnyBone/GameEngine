@@ -134,7 +134,7 @@ ConsoleVariable_t cvServerGravity = { "server_gravity", "600.0", false, true, "O
 // By default bots spawn in OpenKatana for both SP and MP.
 ConsoleVariable_t cvServerBots = { "server_bots", "1", false, true, "Can enable and disable bots." };
 #else
-ConsoleVariable_t cvServerBots = { "server_bots",	"0", false,	true, "Can enable and disable bots." };
+ConsoleVariable_t cvServerBots = { "server_bots", "0", false, true, "Can enable and disable bots." };
 #endif
 
 void Server_SetGameMode(void)
@@ -342,27 +342,27 @@ void Server_Spawn(ServerEntity_t *seEntity)
 
 /*	Called by the engine.
 */
-bool Server_SpawnEntity(ServerEntity_t *seEntity)
+bool Server_SpawnEntity(ServerEntity_t *entity)
 {
 	SpawnList_t *spawn;
 
-	if (!seEntity->v.cClassname)
+	if (!entity->v.cClassname)
 	{
 		Engine.Con_Warning("Failed to get classname!\n");
 		return false;
 	}
 
 	for (spawn = SpawnList; spawn->name; spawn++)
-		if (!strcmp(spawn->name, seEntity->v.cClassname))
+		if (!strcmp(spawn->name, entity->v.cClassname))
 		{
 			if (spawn->Precache)
 				spawn->Precache();
 
-			spawn->Spawn(seEntity);
+			spawn->Spawn(entity);
 			return true;
 		}
 
-	Engine.Con_Warning("Entity doesn't have a spawn function! (%s)\n", seEntity->v.cClassname);
+	Engine.Con_Warning("Entity doesn't have a spawn function! (%s)\n", entity->v.cClassname);
 	return false;
 }
 
@@ -392,17 +392,5 @@ void Server_EntityFrame(ServerEntity_t *entity)
 void Server_KillClient(ServerEntity_t *eClient)
 {
 	if (eClient->Monster.state != MONSTER_STATE_DEAD)
-		Entity_Damage(eClient, eClient, eClient->v.iHealth, 0);
-}
-
-/*	General function for globally updating the HUD for clients.
-*/
-void Server_UpdateClientMenu(ServerEntity_t *eClient, int iMenuState, bool bShow)
-{
-	// This is who we're telling to hide/show their HUD.
-	Engine.SetMessageEntity(eClient);
-
-	Engine.WriteByte(MSG_ONE,SVC_UPDATEMENU);
-	Engine.WriteByte(MSG_ONE,iMenuState);
-	Engine.WriteByte(MSG_ONE,bShow);
+		Entity_Damage(eClient, eClient, eClient->v.iHealth, DAMAGE_TYPE_NORMAL);
 }

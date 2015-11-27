@@ -21,7 +21,7 @@
 #ifndef BSPFILE_H
 #define BSPFILE_H
 
-#include "SharedFormats.h"
+#include "shared_formats.h"
 
 #define	MAX_KEY		32
 #define	MAX_VALUE	1024

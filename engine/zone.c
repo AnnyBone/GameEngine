@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // zone.c
 
-#include "EngineBase.h"
+#include "engine_base.h"
 
 #define	DYNAMIC_SIZE	256*1024 //johnfitz: was 48k
 

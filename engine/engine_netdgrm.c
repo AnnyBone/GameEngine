@@ -53,7 +53,7 @@ unsigned long inet_addr(const char *cp);
 #endif
 #endif	// BAN_TEST
 
-#include "EngineBase.h"
+#include "engine_base.h"
 #include "engine_netdgrm.h"
 
 // these two macros are to make the code more readable

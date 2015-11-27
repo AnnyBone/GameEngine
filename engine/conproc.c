@@ -23,7 +23,7 @@
 #include <windows.h>
 
 #include "conproc.h"
-#include "EngineBase.h"
+#include "engine_base.h"
 
 HANDLE	heventDone;
 HANDLE	hfileBuffer;

@@ -18,7 +18,7 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "EngineBase.h"
+#include "engine_base.h"
 
 #include "video.h"
 #include "EngineVideoShadow.h"
@@ -116,7 +116,7 @@ void Shadow_DrawMap(ClientEntity_t *Entity)
 void Shadow_Draw(ClientEntity_t *Entity)
 {
 	// Only meshes are valid here.
-	if ((Entity->model->mType == MODEL_TYPE_BSP) || (Entity->model->mType == MODEL_TYPE_SPRITE))
+	if ((Entity->model->mType == MODEL_TYPE_LEVEL) || (Entity->model->mType == MODEL_TYPE_SPRITE))
 		return;
 
 	// Make sure the entity is actually visible.

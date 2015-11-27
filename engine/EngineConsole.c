@@ -23,7 +23,7 @@
 #endif
 #include <fcntl.h>
 
-#include "EngineBase.h"
+#include "engine_base.h"
 
 #include "EngineInput.h"
 #include "video.h"

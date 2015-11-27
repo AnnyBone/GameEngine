@@ -30,7 +30,7 @@
 #include "shared_flags.h"
 #include "SharedModule.h"
 #include "shared_menu.h"
-#include "SharedFormats.h"
+#include "shared_formats.h"
 #include "shared_game.h"
 
 #include "game_resources.h"
