@@ -235,21 +235,17 @@ void Alias_SetupEntityTransform(ClientEntity_t *ceEntity, lerpdata_t *lerpdata)
 	}
 }
 
-// [23/8/2013] TODO: This seriously needs a damn header ~hogsy
-void R_RotateForEntity(vec3_t origin,vec3_t angles);
-
 /*	Draw the alias model.
 */
 void Alias_Draw(ClientEntity_t *eEntity)
 {
-	lerpdata_t lLerpData;
-	MD2_t *mModel;
+	lerpdata_t	lLerpData;
+	MD2_t		*mModel;
 
-	// [17/10/2013] Oops! Added this back in :) ~hogsy
 	if(!cvVideoDrawModels.value || R_CullModelForEntity(eEntity))
 		return;
 
-	// [27/6/2013] Set defaults ~hogsy
+	// Set defaults.
 	bShading = true;
 
 	mModel = (MD2_t*)Mod_Extradata(eEntity->model);

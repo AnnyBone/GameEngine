@@ -202,7 +202,7 @@ typedef struct model_s
 
 	bool		bNeedLoad;		// bmodels and sprites don't cache normally
 
-	ModelType_t	mType;
+	ModelType_t	type;
 
 	int			version;
 	int			numframes;

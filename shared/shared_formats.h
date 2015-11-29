@@ -25,11 +25,9 @@ typedef enum
 {
 #if 1
 	MODEL_TYPE_MD2,		// MD2 support.
-	MODEL_TYPE_KMDL,	// Extended MD2 support.
-	MODEL_TYPE_U3D,
 	MODEL_TYPE_IQM,		// IQM support.
 	MODEL_TYPE_OBJ,		// OBJ support.
-#else
+#endif
 	/*	TODO:
 			Eventually I want to convert meshes
 			during load time to somewhat of an abstrac
@@ -38,9 +36,8 @@ typedef enum
 	MODEL_TYPE_STATIC,		// Static mesh (MD2, U3D, OBJ)
 	MODEL_TYPE_SKELETAL,	// Skeletal mesh (IQM)
 	MODEL_TYPE_VERTEX,		// Per-vertex animated mesh (MD2, U3D)
-#endif
-	MODEL_TYPE_SPRITE,	// Just a flat-plane with a texture.
-	MODEL_TYPE_LEVEL,	// Level / World model.
+	MODEL_TYPE_SPRITE,		// Just a flat-plane with a texture.
+	MODEL_TYPE_LEVEL,		// Level / World model.
 
 	MODEL_NONE
 } ModelType_t;

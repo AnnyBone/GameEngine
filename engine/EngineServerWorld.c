@@ -149,7 +149,7 @@ hull_t *SV_HullForEntity(ServerEntity_t *ent, MathVector3f_t mins, MathVector3f_
 		}
 
 		model = sv.models[ent->v.modelindex];
-		if (!model || model->mType != MODEL_TYPE_LEVEL)
+		if (!model || model->type != MODEL_TYPE_LEVEL)
 		{
 			Con_Warning("MOVETYPE_PUSH with a non bsp model!\n");
 			return NULL;

@@ -116,7 +116,7 @@ void Shadow_DrawMap(ClientEntity_t *Entity)
 void Shadow_Draw(ClientEntity_t *Entity)
 {
 	// Only meshes are valid here.
-	if ((Entity->model->mType == MODEL_TYPE_LEVEL) || (Entity->model->mType == MODEL_TYPE_SPRITE))
+	if ((Entity->model->type == MODEL_TYPE_LEVEL) || (Entity->model->type == MODEL_TYPE_SPRITE))
 		return;
 
 	// Make sure the entity is actually visible.
@@ -199,7 +199,7 @@ void Shadow_Draw(ClientEntity_t *ent)
 
 	// Player doesn't get animated, so don't bother with planar shadows for him.
 	if (ent != &cl_entities[cl.viewentity])
-		if ((r_shadows.value >= 2) && (ent->model->mType == MODEL_TYPE_MD2))
+		if ((r_shadows.value >= 2) && (ent->model->type == MODEL_TYPE_MD2))
 		{
 			MD2_t			*pmd2;
 			DynamicLight_t	*dlLight;

@@ -1,6 +1,4 @@
-/*	Copyright (C) 1996-2001 Id Software, Inc.
-	Copyright (C) 2002-2009 John Fitzgibbons and others
-	Copyright (C) 2011-2015 OldTimes Software
+/*	Copyright (C) 2011-2015 OldTimes Software
 
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License
@@ -48,7 +46,7 @@ typedef struct cachepic_s
 {
 	char		name[MAX_QPATH];
 	qpic_t		pic;
-	byte		padding[32];	// for appended glpic
+	uint8_t		padding[32];	// for appended glpic
 } cachepic_t;
 
 #define	MAX_CACHED_PICS		128
@@ -62,7 +60,7 @@ int			menu_numcachepics;
 #define	MAX_SCRAPS		2
 
 int			scrap_allocated[MAX_SCRAPS][BLOCK_WIDTH];
-byte		scrap_texels[MAX_SCRAPS][BLOCK_WIDTH*BLOCK_HEIGHT]; //johnfitz -- removed *4 after BLOCK_HEIGHT
+uint8_t		scrap_texels[MAX_SCRAPS][BLOCK_WIDTH*BLOCK_HEIGHT]; //johnfitz -- removed *4 after BLOCK_HEIGHT
 bool		scrap_dirty;
 gltexture_t	*scrap_textures[MAX_SCRAPS]; //johnfitz
 
@@ -789,31 +787,64 @@ void Draw_String(int x, int y, char *msg)
 	Entities
 */
 
-void Draw_Entity(ClientEntity_t *Entity)
+void Draw_StaticEntity(ClientEntity_t *entity)
+{}
+
+void Draw_VertexEntity(ClientEntity_t *entity)
+{}
+
+void Draw_SpriteEntity(ClientEntity_t *entity)
 {
-	if (!Entity->model)
+	Sprite_DrawSimple(entity->model->mAssignedMaterials, entity->origin, entity->scale);
+}
+
+void Draw_Entity(ClientEntity_t *entity)
+{
+	if (!entity->model)
 	{
-		// TODO: Draw placeholder...
+		MathVector3f_t start, end;
+
+		Math_VectorCopy(entity->origin, start);
+		Math_VectorCopy(entity->origin, end);
+		start[0] += 5;
+		end[0] -= 5;
+		Draw_Line(start, end);
+
+		Math_VectorCopy(entity->origin, start);
+		Math_VectorCopy(entity->origin, end);
+		start[1] += 5;
+		end[1] -= 5;
+		Draw_Line(start, end);
+
+		Math_VectorCopy(entity->origin, start);
+		Math_VectorCopy(entity->origin, end);
+		start[2] += 5;
+		end[2] -= 5;
+		Draw_Line(start, end);
 		return;
 	}
 
-	switch (Entity->model->mType)
+	switch (entity->model->mType)
 	{
+#if 1	// Old legacy draws
 	case MODEL_TYPE_MD2:
-		Alias_Draw(Entity);
-		break;
-	case MODEL_TYPE_OBJ:
-		Model_DrawOBJ(Entity);
-		break;
-	case MODEL_TYPE_LEVEL:
-		Brush_Draw(Entity);
-		break;
-#if 0
-	case MODEL_TYPE_SPRITE:
-		Sprite_Draw(Entity);
+		Alias_Draw(entity);
 		break;
 #endif
+	case MODEL_TYPE_STATIC:
+		Draw_StaticEntity(entity);
+		break;
+	case MODEL_TYPE_SKELETAL:
+		break;
+	case MODEL_TYPE_VERTEX:
+		break;
+	case MODEL_TYPE_LEVEL:
+		Brush_Draw(entity);
+		break;
+	case MODEL_TYPE_SPRITE:
+		Draw_SpriteEntity(entity);
+		break;
 	default:
-		Console_ErrorMessage(false, Entity->model->name, "Unrecognised model type.");
+		Console_ErrorMessage(false, entity->model->name, "Unrecognised model type.");
 	}
 }

@@ -18,9 +18,11 @@
 
 #include "engine_base.h"
 
-void ModelU3D_Load(const char *datapath, const char *animpath)
+void ModelU3D_Load(model_t *model, const char *datapath, const char *animpath)
 {
 	U3DDataHeader		dataheader;
 	U3DAnimationHeader	animheader;
 
+	// U3D models are animated per-vertex.
+	model->type = MODEL_TYPE_VERTEX;
 }

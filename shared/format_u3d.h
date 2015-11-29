@@ -26,7 +26,7 @@
 	http://paulbourke.net/dataformats/unreal/
 */
 
-#define	FORMAT_U3D_EXTENSION	".3d"
+#define	FORMAT_U3D_EXTENSION ".3d"
 
 typedef struct
 {

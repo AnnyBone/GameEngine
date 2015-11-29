@@ -485,7 +485,7 @@ void Sky_ProcessEntities(void)
 	{
 		e = cl_visedicts[i];
 
-		if (e->model->mType != MODEL_TYPE_LEVEL)
+		if (e->model->type != MODEL_TYPE_LEVEL)
 			continue;
 
 		if(R_CullModelForEntity(e))

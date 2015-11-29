@@ -162,7 +162,7 @@ void Model_ClearAll(void)
 	model_t	*mModel;
 
 	for(i = 0,mModel = mod_known; i < mod_numknown; i++,mModel++)
-		if(mModel->mType != MODEL_TYPE_MD2)
+		if (mModel->type != MODEL_TYPE_MD2)
 		{
 			mModel->bNeedLoad = true;
 
@@ -204,7 +204,7 @@ void Model_Touch(char *cName)
 
 	mModel = Model_FindName(cName);
 	if(!mModel->bNeedLoad)
-		if(mModel->mType == MODEL_TYPE_MD2)
+		if (mModel->type == MODEL_TYPE_MD2)
 			Cache_Check(&mModel->cache);
 }
 
@@ -214,11 +214,11 @@ model_t *Model_Load(model_t *mModel)
 {
 	void		*d;
 	unsigned	*buf;
-	byte		stackbuf[1024];		// avoid dirtying the cache heap
+	uint8_t		stackbuf[1024];		// avoid dirtying the cache heap
 
 	if(!mModel->bNeedLoad)
 	{
-		if(mModel->mType == MODEL_TYPE_MD2)
+		if (mModel->type == MODEL_TYPE_MD2)
 		{
 			d = Cache_Check (&mModel->cache);
 			if (d)
@@ -229,7 +229,7 @@ model_t *Model_Load(model_t *mModel)
 	}
 
 	// Load the file
-	buf = (unsigned*)COM_LoadStackFile(mModel->name,stackbuf,sizeof(stackbuf));
+	buf = (unsigned*)COM_LoadStackFile(mModel->name, stackbuf, sizeof(stackbuf));
 	if(!buf)
 	{
 		Con_Warning("Mod_LoadModel: %s not found\n",mModel->name);
@@ -1365,7 +1365,7 @@ void Model_LoadMD2(model_t *mModel,void *Buffer)
 	for(i = 0; i < 17; i++)
 		((int*)mMD2Model)[i] = LittleLong(((int*)pinmodel)[i]);
 
-	mModel->mType = MODEL_TYPE_MD2;
+	mModel->type = MODEL_TYPE_MD2;
 	mModel->version	= iVersion;
 	mModel->flags = 0;
 	mModel->numframes = numframes = mMD2Model->num_frames;
@@ -1486,7 +1486,7 @@ bool Model_LoadOBJ(model_t *mModel,void *Buffer)
 	if(Q_strcmp(cExtension,".obj"))
 		return false;
 
-	mModel->mType = MODEL_TYPE_OBJ;
+	mModel->type = MODEL_TYPE_OBJ;
 
 	// Parse OBJ file...
 	for(;;)

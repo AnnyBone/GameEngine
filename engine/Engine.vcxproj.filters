@@ -174,9 +174,6 @@
     <ClCompile Include="EngineAudioDummy.c">
       <Filter>Legacy\Client\Audio\Interfaces</Filter>
     </ClCompile>
-    <ClCompile Include="EngineVideoDraw.c">
-      <Filter>Legacy\Client\Video</Filter>
-    </ClCompile>
     <ClCompile Include="EngineVideoShadow.c">
       <Filter>Legacy\Client\Video</Filter>
     </ClCompile>
@@ -270,9 +267,6 @@
     <ClCompile Include="client\ClientMaterial.cpp">
       <Filter>Legacy\Client</Filter>
     </ClCompile>
-    <ClCompile Include="client\ClientParticle.cpp">
-      <Filter>Legacy\Client</Filter>
-    </ClCompile>
     <ClCompile Include="EngineScript.c">
       <Filter>Legacy</Filter>
     </ClCompile>
@@ -310,10 +304,16 @@
       <Filter>Client\Video</Filter>
     </ClCompile>
     <ClCompile Include="engine_exception.cpp" />
-    <ClCompile Include="client\client_sprite.cpp">
-      <Filter>Legacy\Client</Filter>
-    </ClCompile>
     <ClCompile Include="model_u3d.cpp">
+      <Filter>Client</Filter>
+    </ClCompile>
+    <ClCompile Include="video_draw.c">
+      <Filter>Client\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="client\effect_sprite.cpp">
+      <Filter>Client</Filter>
+    </ClCompile>
+    <ClCompile Include="client\effect_particle.cpp">
       <Filter>Client</Filter>
     </ClCompile>
   </ItemGroup>

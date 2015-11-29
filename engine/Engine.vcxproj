@@ -610,10 +610,10 @@
     <ClCompile Include="client\ClientMaterial.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="client\ClientParticle.cpp">
+    <ClCompile Include="client\effect_particle.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="client\client_sprite.cpp" />
+    <ClCompile Include="client\effect_sprite.cpp" />
     <ClCompile Include="EngineAudioDummy.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
@@ -665,7 +665,7 @@
     <ClCompile Include="video.c" />
     <ClCompile Include="EngineClientView.c" />
     <ClCompile Include="EngineServerWorld.c" />
-    <ClCompile Include="EngineVideoDraw.c" />
+    <ClCompile Include="video_draw.c" />
     <ClCompile Include="EngineVideoFog.c" />
     <ClCompile Include="EngineModel.c" />
     <ClCompile Include="EngineVideoEFrag.c" />

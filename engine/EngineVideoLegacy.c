@@ -367,7 +367,7 @@ void R_DrawViewModel(void)
 		return;
 
 	currententity = &cl.viewent;
-	if(!currententity->model || currententity->model->mType != MODEL_TYPE_MD2)
+	if (!currententity->model || currententity->model->type != MODEL_TYPE_MD2)
 		return;
 
 	// hack the depth range to prevent view model from poking into walls

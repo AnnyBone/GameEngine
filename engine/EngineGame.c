@@ -164,7 +164,7 @@ void Server_SetModel(ServerEntity_t *ent, char *m)
 	ent->v.modelindex	= i;
 
 	mod = sv.models[ent->v.modelindex];
-	if (mod && mod->mType == MODEL_TYPE_LEVEL)
+	if (mod && mod->type == MODEL_TYPE_LEVEL)
 		Game->Server_SetSizeVector(ent,mod->clipmins,mod->clipmaxs);
 	else
 		Game->Server_SetSizeVector(ent,g_mvOrigin3f,g_mvOrigin3f);
