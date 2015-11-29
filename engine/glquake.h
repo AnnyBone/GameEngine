@@ -81,10 +81,10 @@ extern	mplane_t	frustum[4];
 //
 // view origin
 //
-extern	vec3_t	vup;
-extern	vec3_t	vpn;
-extern	vec3_t	vright;
-extern	vec3_t	r_origin;
+extern	MathVector3f_t	vup;
+extern	MathVector3f_t	vpn;
+extern	MathVector3f_t	vright;
+extern	MathVector3f_t	r_origin;
 
 //
 // screen size info

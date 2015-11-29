@@ -74,22 +74,30 @@ typedef struct
 
 // refresh
 
-extern refdef_t	r_refdef;
-extern MathVector3f_t r_origin, vpn, vright, vup;
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-void R_Init (void);
-void R_InitTextures (void);
-void R_InitEfrags (void);
-void R_RenderView (void);											// must set r_refdef first
-void R_ViewChanged (vrect_t *pvrect, int lineadj, float aspect);	// called whenever r_refdef or vid change
-void R_CheckEfrags (void); //johnfitz
-void R_AddEfrags(ClientEntity_t *ent);
-void R_RemoveEfrags(ClientEntity_t *ent);
-void R_NewMap (void);
-void R_PushDlights (void);
+	extern refdef_t	r_refdef;
+	extern MathVector3f_t r_origin, vpn, vright, vup;
 
-// surface cache related
-int	D_SurfaceCacheForRes (int width, int height);
-void D_DeleteSurfaceCache (void);
-void D_InitCaches (void *buffer, int size);
-void R_SetVrect (vrect_t *pvrect, vrect_t *pvrectin, int lineadj);
+	void R_Init(void);
+	void R_InitTextures(void);
+	void R_InitEfrags(void);
+	void R_RenderView(void);											// must set r_refdef first
+	void R_ViewChanged(vrect_t *pvrect, int lineadj, float aspect);	// called whenever r_refdef or vid change
+	void R_CheckEfrags(void); //johnfitz
+	void R_AddEfrags(ClientEntity_t *ent);
+	void R_RemoveEfrags(ClientEntity_t *ent);
+	void R_NewMap(void);
+	void R_PushDlights(void);
+
+	// surface cache related
+	int	D_SurfaceCacheForRes(int width, int height);
+	void D_DeleteSurfaceCache(void);
+	void D_InitCaches(void *buffer, int size);
+	void R_SetVrect(vrect_t *pvrect, vrect_t *pvrectin, int lineadj);
+
+#ifdef __cplusplus
+}
+#endif

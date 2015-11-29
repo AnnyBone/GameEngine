@@ -715,6 +715,7 @@
     <ClInclude Include="..\shared\SharedModule.h" />
     <ClInclude Include="..\shared\shared_server.h" />
     <ClInclude Include="client.h" />
+    <ClInclude Include="client\effect_sprite.h" />
     <ClInclude Include="engine_class.h" />
     <ClInclude Include="EngineClientTempEntity.h" />
     <ClInclude Include="EngineConsoleCommand.h" />

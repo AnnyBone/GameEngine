@@ -39,7 +39,7 @@ VideoVertex::VideoVertex(float x, float y, float z)
 	Object
 */
 
-VideoVertexObject::VideoVertexObject(VideoPrimitive_t pPrimitiveType)
+VideoDrawStatic::VideoDrawStatic(VideoPrimitive_t pPrimitiveType)
 {
 	VIDEO_FUNCTION_START
 	this->pPrimitiveType = pPrimitiveType;
@@ -51,14 +51,10 @@ VideoVertexObject::VideoVertexObject(VideoPrimitive_t pPrimitiveType)
 	VertexList = NULL;
 
 	uiVertices = 0;
-
-	VideoLayer_GenerateVertexBuffer(&uiVertexBuffer);
-	VideoLayer_GenerateVertexBuffer(&uiColourBuffer);
-	VideoLayer_GenerateVertexBuffer(&uiTextureBuffer);
 	VIDEO_FUNCTION_END
 }
 
-VideoVertexObject::~VideoVertexObject()
+VideoDrawStatic::~VideoDrawStatic()
 {
 	VIDEO_FUNCTION_START
 	VideoLayer_DeleteVertexBuffer(&uiVertexBuffer);
@@ -67,19 +63,24 @@ VideoVertexObject::~VideoVertexObject()
 	VIDEO_FUNCTION_END
 }
 
-void VideoVertexObject::Begin()
+void VideoDrawStatic::Begin()
+{
+	VIDEO_FUNCTION_START
+	VideoLayer_GenerateVertexBuffer(&uiVertexBuffer);
+	VideoLayer_GenerateVertexBuffer(&uiColourBuffer);
+	VideoLayer_GenerateVertexBuffer(&uiTextureBuffer);
+	VIDEO_FUNCTION_END
+}
+
+void VideoDrawStatic::AddVertex(float x, float y, float z)
 {
 }
 
-void VideoVertexObject::AddVertex(float x, float y, float z)
+void VideoDrawStatic::Colour(float r, float g, float b, float a)
 {
 }
 
-void VideoVertexObject::Colour(float r, float g, float b, float a)
-{
-}
-
-void VideoVertexObject::End()
+void VideoDrawStatic::End()
 {
 	VIDEO_FUNCTION_START
 	glBindBuffer(GL_ARRAY_BUFFER, uiVertexBuffer);
@@ -101,7 +102,7 @@ void VideoVertexObject::End()
 	VIDEO_FUNCTION_END
 }
 
-void VideoVertexObject::Draw()
+void VideoDrawStatic::Draw()
 {
 	VIDEO_FUNCTION_START
 	glEnableClientState(GL_VERTEX_ARRAY);

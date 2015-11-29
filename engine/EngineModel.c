@@ -1079,7 +1079,7 @@ void Model_LoadBSP(model_t *mod,void *buffer)
 		Console_ErrorMessage(false,mod->name,va("Wrong version (%i should be %i)",version,BSP_VERSION));
 
 	loadmodel->version	= version;
-	loadmodel->mType	= MODEL_TYPE_LEVEL;
+	loadmodel->type		= MODEL_TYPE_LEVEL;
 
 	// swap all the lumps
 	mod_base = (uint8_t*)bhHeader;

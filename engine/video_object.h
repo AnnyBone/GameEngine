@@ -35,15 +35,44 @@ private:
 	Colour_t cColour;
 };
 
-class VideoVertexObject
+class DrawObject
 {
 public:
-	VideoVertexObject(VideoPrimitive_t pPrimitiveType = VIDEO_PRIMITIVE_TRIANGLE_FAN);
-	~VideoVertexObject();
+	virtual void Begin() = 0;
+	virtual void End() = 0;
+	virtual void Draw() = 0;
+
+protected:
+	VideoPrimitive_t primitive;
+
+	unsigned int vertices;
+	unsigned int triangles;
+};
+
+class DrawDynamicObject : public DrawObject
+{
+public:
+	DrawDynamicObject(VideoPrimitive_t primitive = VIDEO_PRIMITIVE_TRIANGLE_FAN);
+	~DrawDynamicObject();
+
+	virtual void Begin();
+	virtual void End();
+	virtual void Draw();
+
+protected:
+private:
+	std::vector<VideoVertex> vertices;
+};
+
+class VideoDrawStatic
+{
+public:
+	VideoDrawStatic(VideoPrimitive_t pPrimitiveType = VIDEO_PRIMITIVE_TRIANGLE_FAN);
+	~VideoDrawStatic();
 
 	void Begin();
 	void AddVertex(float x, float y, float z);
-	void Colour(float r, float g, float b, float a);
+	void Colour(float r, float g, float b, float a = 1.0f);
 	void End();
 
 	virtual void Draw();

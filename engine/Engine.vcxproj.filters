@@ -537,6 +537,9 @@
     <ClInclude Include="..\shared\format_obj.h">
       <Filter>Shared\Formats</Filter>
     </ClInclude>
+    <ClInclude Include="client\effect_sprite.h">
+      <Filter>Client</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="engine.rc" />

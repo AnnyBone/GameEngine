@@ -18,78 +18,10 @@
 
 #include "../engine_base.h"
 
-#include "../video.h"
+#include "../video.h"		// TODO: make this a base include
+#include "effect_sprite.h"
 
 ConsoleVariable_t cvSpriteDebugSize = { "sprite_debugsize", "0", false, false, "If enabled, shows the area that the sprite covers." };
-
-typedef enum
-{
-	SPRITE_TYPE_DEFAULT,	// Depth-test, scaled manually and oriented.
-	SPRITE_TYPE_SCALE,		// Depth-test, scale by view and oriented.
-	SPRITE_TYPE_FLARE		// No depth-test, scale by view, always fullbright and oriented.
-} SpriteType_t;
-
-class Sprite
-{
-public:
-	Sprite();
-	virtual ~Sprite();
-
-	void SetPosition(float x, float y, float z);
-	void SetPosition(MathVector3f_t position);
-	void SetColour(float r, float g, float b, float a = 1.0f);
-	void SetType(SpriteType_t type);
-	void SetActive(bool active) { isactive = active; }
-	void SetScale(float scale);
-	void SetMaterial(Material_t *material);
-
-	virtual void Simulate();
-	virtual void Draw();
-
-	bool IsVisible() { return isvisible; }
-	bool IsActive()	{ return isactive; }
-	bool IsLit() { return islit; }
-
-	float GetScale() { return scale; }
-
-	SpriteType_t GetType() { return Type; }
-
-private:
-	float scale;
-
-	bool
-		islit,
-		isvisible,
-		isactive;
-
-	MathVector3f_t
-		Position,
-		mins, maxs;
-
-	SpriteType_t Type;
-
-	Colour_t Colour;
-
-	VideoVertexObject *vertexobj;
-
-	Material_t *material;
-};
-
-class SpriteManager
-{
-public:
-	SpriteManager();
-
-	Sprite *Add();
-
-	void Initialize();
-	void Simulate();
-	void Draw();
-	void Shutdown();
-
-private:
-	std::vector<Sprite*> sprites;
-};
 
 SpriteManager *g_spritemanager;
 
@@ -123,15 +55,15 @@ Sprite *SpriteManager::Add()
 */
 void SpriteManager::Simulate()
 {
-	int i;
-	for (i = 0; i < sprites.size; i++)
+	unsigned int i;
+	for (i = 0; i < sprites.size(); i++)
 		sprites[i]->Simulate();
 }
 
 void SpriteManager::Draw()
 {
-	int i;
-	for (i = 0; i < sprites.size; i++)
+	unsigned int i;
+	for (i = 0; i < sprites.size(); i++)
 	{
 		// Skip sprites that aren't currently visible.
 		if (!sprites[i]->IsVisible())
@@ -166,13 +98,10 @@ Sprite::Sprite()
 	Math_VectorClear(mins);
 	Math_VectorClear(maxs);
 	Math_Vector4Set(1.0f, Colour);
-
-	vertexobj = new VideoVertexObject();
 }
 
 Sprite::~Sprite()
 {
-	delete vertexobj;
 }
 
 void Sprite::SetColour(float r, float g, float b, float a)
@@ -230,6 +159,14 @@ void Sprite::SetScale(float scale)
 	this->scale = scale;
 }
 
+void Sprite::SetMaterial(Material_t *material)
+{
+	if (!material)
+		return;
+
+	this->material = material;
+}
+
 void Sprite::Simulate()
 {
 	// TODO: last bit is a hack, since having the console open doesn't count as being paused...
@@ -268,8 +205,10 @@ void Sprite::Draw()
 	if (Colour[3] < 1.0f)
 		VideoLayer_Enable(VIDEO_BLEND);
 
+#if 0	// TODO
 	// Draw it via the VideoObject interface.
 	vertexobj->Draw();
+#endif
 
 	if (Colour[3] < 1.0f)
 		VideoLayer_Disable(VIDEO_BLEND);
@@ -293,24 +232,28 @@ void Sprite::Draw()
 	C Interface
 */
 
-void Sprite_DrawSimple(Material_t *material, MathVector3f_t position, float scale)
-{
-	// Create the new sprite.
-	Sprite *rendersprite = new Sprite();
+extern "C" {
 
-	// Set it up.
-	rendersprite->SetActive(true);
-	rendersprite->SetColour(1.0f, 1.0f, 1.0f, 0.5f);
-	rendersprite->SetPosition(position);
-	rendersprite->SetScale(scale);
-	rendersprite->SetMaterial(material);
+	void Sprite_DrawSimple(Material_t *material, MathVector3f_t position, float scale)
+	{
+		// Create the new sprite.
+		Sprite *rendersprite = new Sprite();
 
-	// Simulate it and then draw.
-	rendersprite->Simulate();
-	rendersprite->Draw();
+		// Set it up.
+		rendersprite->SetActive(true);
+		rendersprite->SetColour(1.0f, 1.0f, 1.0f, 0.5f);
+		rendersprite->SetPosition(position);
+		rendersprite->SetScale(scale);
+		rendersprite->SetMaterial(material);
 
-	// Delete it.
-	delete rendersprite;
+		// Simulate it and then draw.
+		rendersprite->Simulate();
+		rendersprite->Draw();
+
+		// Delete it.
+		delete rendersprite;
+	}
+
 }
 
 /**/

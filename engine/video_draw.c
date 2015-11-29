@@ -793,6 +793,8 @@ void Draw_StaticEntity(ClientEntity_t *entity)
 void Draw_VertexEntity(ClientEntity_t *entity)
 {}
 
+void Sprite_DrawSimple(Material_t *material, MathVector3f_t position, float scale);
+
 void Draw_SpriteEntity(ClientEntity_t *entity)
 {
 	Sprite_DrawSimple(entity->model->mAssignedMaterials, entity->origin, entity->scale);
@@ -824,7 +826,7 @@ void Draw_Entity(ClientEntity_t *entity)
 		return;
 	}
 
-	switch (entity->model->mType)
+	switch (entity->model->type)
 	{
 #if 1	// Old legacy draws
 	case MODEL_TYPE_MD2:

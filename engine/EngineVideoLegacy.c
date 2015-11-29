@@ -39,7 +39,7 @@ int rs_dynamiclightmaps, rs_brushpasses, rs_aliaspasses, rs_skypasses;
 float rs_megatexels;
 
 // view origin
-vec3_t	vup,vpn,vright,
+MathVector3f_t	vup,vpn,vright,
 		r_origin;
 
 float r_world_matrix[16], r_base_world_matrix[16];
@@ -378,7 +378,7 @@ void R_DrawViewModel(void)
 	glDepthRange(0,1);
 }
 
-void R_EmitWirePoint (vec3_t origin)
+void R_EmitWirePoint (MathVector3f_t origin)
 {
 	glBegin(GL_LINES);
 	glVertex3f(origin[0]-4.0f,origin[1],origin[2]);
@@ -463,7 +463,7 @@ void Video_DrawClientBoundingBox(ClientEntity_t *clEntity)
 	Math_VectorAdd(clEntity->model->rmins, clEntity->origin, vMins);
 	Math_VectorAdd(clEntity->model->rmaxs, clEntity->origin, vMaxs);
 
-	switch (clEntity->model->mType)
+	switch (clEntity->model->type)
 	{
 	case MODEL_TYPE_LEVEL:
 		// Only draw wires for the BSP, since otherwise it's difficult to see anything else.
