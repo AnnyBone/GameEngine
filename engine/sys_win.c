@@ -469,6 +469,9 @@ bool System_Main(int iArgumentCount,char *cArguments[], bool bEmbedded)
 		if(epParameters.memsize < MINIMUM_MEMORY)
 			epParameters.memsize = MINIMUM_MEMORY;
 
+		if ((unsigned)epParameters.memsize < (lpBuffer.ullAvailPhys >> 1))
+			epParameters.memsize = lpBuffer.ullAvailPhys >> 1;
+
 		if(epParameters.memsize > MAXIMUM_MEMORY)
 			epParameters.memsize = MAXIMUM_MEMORY;
 	}

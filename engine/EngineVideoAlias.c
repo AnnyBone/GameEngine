@@ -110,7 +110,7 @@ void Alias_DrawFrame(MD2_t *mModel,entity_t *eEntity,lerpdata_t lLerpData)
 
 		do
 		{
-			Video_ObjectTexture(&voModel[uiVerts], VIDEO_TEXTURE_DIFFUSE, ((float*)order)[0], ((float*)order)[1]);
+			Video_ObjectTexture(&voModel[uiVerts], 0, ((float*)order)[0], ((float*)order)[1]);
 			Video_ObjectVertex(&voModel[uiVerts],
 				(verts1[order[2]].v[0] * frame1->scale[0] + frame1->translate[0])*ilerp +
 				(verts2[order[2]].v[0] * frame2->scale[0] + frame2->translate[0])*lLerpData.blend,

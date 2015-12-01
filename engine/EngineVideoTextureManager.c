@@ -843,14 +843,14 @@ void TexMgr_LoadImage32(gltexture_t *glt, uint8_t *data)
 	// upload
 	Video_SetTexture(glt);
 	internalformat = (glt->flags & TEXPREF_ALPHA) ? gl_alpha_format : gl_solid_format;
-	if ((glt->flags & TEXPREF_MIPMAP) && Video.bSupportsHWMipmap)
+	if ((glt->flags & TEXPREF_MIPMAP) && Video.extensions.generate_mipmap)
 		glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
 	glTexImage2D (GL_TEXTURE_2D, 0, internalformat, glt->width, glt->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-	if ((glt->flags & TEXPREF_MIPMAP) && Video.bSupportsHWMipmap)
+	if ((glt->flags & TEXPREF_MIPMAP) && Video.extensions.generate_mipmap)
 		glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE);
 
 	// upload mipmaps
-	if ((glt->flags & TEXPREF_MIPMAP) && !Video.bSupportsHWMipmap)
+	if ((glt->flags & TEXPREF_MIPMAP) && !Video.extensions.generate_mipmap)
 	{
 		// Otherwise do it the ol' fasioned way.
 

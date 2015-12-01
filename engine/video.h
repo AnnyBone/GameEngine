@@ -75,25 +75,8 @@ extern bool	bVideoIgnoreCapabilities;
 
 extern struct gltexture_s *gEffectTexture[MAX_EFFECTS];
 
-typedef enum VideoUnits_e
-{
-	VIDEO_TEXTURE_MIN = -1,
-
-	VIDEO_TEXTURE_DIFFUSE,
-	VIDEO_TEXTURE_LIGHT,
-	VIDEO_TEXTURE_DETAIL,
-	VIDEO_TEXTURE_FULLBRIGHT,
-	VIDEO_TEXTURE_SPHERE,
-
-	VIDEO_TEXTURE_MAX
-} VideoUnits_t;
-
-typedef enum
-{
-	VIDEO_MODE_LIT,
-	VIDEO_MODE_FLAT,
-	VIDEO_MODE_WIREFRAME
-} VideoRenderMode_t;
+#define	VIDEO_TEXTURE_DIFFUSE	0
+#define	VIDEO_TEXTURE_LIGHT		1
 
 #define	VIDEO_MAX_FRAMEBUFFFERS	1
 
@@ -107,6 +90,15 @@ typedef struct
 
 	VideoTextureEnvironmentMode_t CurrentTexEnvMode;
 } VideoTextureMU_t;
+
+typedef struct
+{
+	bool	fog_coord;
+	bool	vertex_buffer_object;
+	bool	shadow;
+	bool	depth_texture;
+	bool	generate_mipmap;
+} VideoExtensions;
 
 typedef struct
 {
@@ -150,13 +142,8 @@ typedef struct
 		bDebugFrame,
 		bUnlocked;						// Can we change the window settings or not?
 
-	VideoRenderMode_t CurrentRenderMode;
-
 	// OpenGL Extensions
-	bool bSupportsDepthTexture;	// ARB_depth_texture
-	bool bSupportsShadow;		// ARB_shadow
-	bool bSupportsHWMipmap;		// SGIS_generate_mipmap
-	bool bSupportsVBO;			// ARB_vertex_buffer_object
+	VideoExtensions	extensions;
 } Video_t;
 
 #if __cplusplus

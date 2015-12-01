@@ -210,58 +210,65 @@ void Model_Touch(char *cName)
 
 /*	Loads a model into the cache
 */
-model_t *Model_Load(model_t *mModel)
+model_t *Model_Load(model_t *model)
 {
 	void		*d;
 	unsigned	*buf;
 	uint8_t		stackbuf[1024];		// avoid dirtying the cache heap
 
-	if(!mModel->bNeedLoad)
+	if (!model->bNeedLoad)
 	{
-		if (mModel->type == MODEL_TYPE_MD2)
+		if (model->type == MODEL_TYPE_MD2)
 		{
-			d = Cache_Check (&mModel->cache);
+			d = Cache_Check(&model->cache);
 			if (d)
-				return mModel;
+				return model;
 		}
 		else
-			return mModel;
+			return model;
 	}
 
 	// Load the file
-	buf = (unsigned*)COM_LoadStackFile(mModel->name, stackbuf, sizeof(stackbuf));
+	buf = (unsigned*)COM_LoadStackFile(model->name, stackbuf, sizeof(stackbuf));
 	if(!buf)
 	{
-		Con_Warning("Mod_LoadModel: %s not found\n",mModel->name);
+		Con_Warning("Mod_LoadModel: %s not found\n", model->name);
 		return NULL;
 	}
 
 	// Allocate a new model
-	COM_FileBase(mModel->name, loadname);
+	COM_FileBase(model->name, loadname);
 
-	loadmodel = mModel;
+	loadmodel = model;
 
 	// Call the apropriate loader
-	mModel->bNeedLoad = false;
+	model->bNeedLoad = false;
+
+#if 0
+	char *exten = COM_FileExtension(loadname);
+	if (Q_strcmp(exten, "3d"))
+	{
+	}
+#endif
 
 	switch(LittleLong(*(unsigned*)buf))
 	{
 	case MD2E_HEADER:
 	case MD2_HEADER:
-		Model_LoadMD2(mModel,buf);
+		Model_LoadMD2(model, buf);
 		break;
 	case BSP_HEADER:
-		Model_LoadBSP(mModel,buf);
+		Model_LoadBSP(model, buf);
 		break;
 	default:
-		if(Model_LoadOBJ(mModel,buf))
+		if (Model_LoadOBJ(model, buf))
 			break;
 
-		Con_Warning("Unsupported model type! (%s)\n",mModel->name);
+		Con_Warning("Unsupported model type! (%s)\n", model->name);
 		return NULL;
 	}
 
-	return mModel;
+	return model;
 }
 
 /*	Loads in a model for the given name
@@ -1466,7 +1473,7 @@ void Model_LoadMD2(model_t *mModel,void *Buffer)
 	if(!mModel->cache.data)
 		return;
 
-	memcpy(mModel->cache.data,mMD2Model,total);
+	memcpy(mModel->cache.data, mMD2Model, total);
 
 	Hunk_FreeToLowMark(iStartHunk);
 }

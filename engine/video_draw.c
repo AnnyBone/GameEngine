@@ -837,8 +837,10 @@ void Draw_Entity(ClientEntity_t *entity)
 		Draw_StaticEntity(entity);
 		break;
 	case MODEL_TYPE_SKELETAL:
+		
 		break;
 	case MODEL_TYPE_VERTEX:
+		Draw_VertexEntity(entity);
 		break;
 	case MODEL_TYPE_LEVEL:
 		Brush_Draw(entity);

@@ -25,4 +25,6 @@ void ModelU3D_Load(model_t *model, const char *datapath, const char *animpath)
 
 	// U3D models are animated per-vertex.
 	model->type = MODEL_TYPE_VERTEX;
+
+//	COM_LoadFile()
 }

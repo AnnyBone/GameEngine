@@ -97,14 +97,16 @@ void Video_Initialize(void)
 
 	memset(Video.uiCurrentTexture, -1, sizeof(int)*VIDEO_MAX_UNITS); // "To avoid unnecessary texture sets"
 
+	// Only enabled if the hardware supports it.
+	Video.extensions.vertex_buffer_object	= false;
+	Video.extensions.generate_mipmap		= false;
+	Video.extensions.depth_texture			= false;
+	Video.extensions.shadow					= false;
+
 	// Give everything within the video sub-system its default value.
-	Video.bSupportsVBO			= false;	// Only enabled if the hardware supports it.
-	Video.bSupportsHWMipmap		= false;	// Only enabled if the hardware supports it.
-	Video.bSupportsDepthTexture = false;	// Only enabled if the hardware supports it.
-	Video.bSupportsShadow		= false;	// Only enabled if the hardware supports it.
-	Video.bDebugFrame			= false;	// Not debugging the initial frame!
-	Video.bActive				= true;		// Window is intially assumed active.
-	Video.bUnlocked				= true;		// Video mode is initially locked.
+	Video.bDebugFrame	= false;	// Not debugging the initial frame!
+	Video.bActive		= true;		// Window is intially assumed active.
+	Video.bUnlocked		= true;		// Video mode is initially locked.
 
 	Cvar_RegisterVariable(&cvMultisampleSamples,NULL);
 	Cvar_RegisterVariable(&cvVideoDrawModels,NULL);
@@ -201,13 +203,13 @@ void Video_Initialize(void)
 	else if (!GLEE_EXT_fog_coord)
 		Sys_Error("EXT_fog_coord isn't supported by your hardware!\n");
 
-	if (GLEE_SGIS_generate_mipmap) Video.bSupportsHWMipmap = true;
+	if (GLEE_SGIS_generate_mipmap) Video.extensions.generate_mipmap = true;
 	else Con_Warning("Hardware mipmap generation isn't supported!\n");
-	if (GLEE_ARB_depth_texture) Video.bSupportsDepthTexture = true;
+	if (GLEE_ARB_depth_texture) Video.extensions.depth_texture = true;
 	else Con_Warning("ARB_depth_texture isn't supported by your hardware!\n");
-	if (GLEE_ARB_shadow) Video.bSupportsShadow = true;
+	if (GLEE_ARB_shadow) Video.extensions.shadow = true;
 	else Con_Warning("ARB_shadow isn't supported by your hardware!\n");
-	if (GLEE_ARB_vertex_buffer_object) Video.bSupportsVBO = true;
+	if (GLEE_ARB_vertex_buffer_object) Video.extensions.vertex_buffer_object = true;
 	else Con_Warning("Hardware doesn't support Vertex Buffer Objects!\n");
 
 #ifdef VIDEO_SUPPORT_SHADERS
@@ -255,13 +257,6 @@ void Video_Initialize(void)
 #endif
 
 	Video.bInitialized = true;
-}
-
-/*	Change the render mode, primarily for the editor.
-*/
-void Video_SetRenderMode(VideoRenderMode_t NewMode)
-{
-	Video.CurrentRenderMode = NewMode;
 }
 
 /*

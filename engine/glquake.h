@@ -53,7 +53,7 @@ typedef struct surfcache_s
 	unsigned			height;		// DEBUG only needed for debug
 	float				mipscale;
 	struct texture_s	*texture;	// checked for animating textures
-	byte				data[4];	// width*height elements
+	uint8_t				data[4];	// width*height elements
 } surfcache_t;
 
 
@@ -72,11 +72,11 @@ typedef struct
 
 //====================================================
 
-extern	vec3_t		modelorg, r_entorigin;
-extern	entity_t	*currententity;
-extern	int			r_visframecount;	// ??? what difs?
-extern	int			r_framecount;
-extern	mplane_t	frustum[4];
+extern	MathVector3f_t	modelorg, r_entorigin;
+extern	ClientEntity_t	*currententity;
+extern	int				r_visframecount;	// ??? what difs?
+extern	int				r_framecount;
+extern	mplane_t		frustum[4];
 
 //
 // view origin

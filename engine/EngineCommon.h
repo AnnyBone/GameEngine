@@ -125,6 +125,7 @@ char *FileSystem_SkipPath(char *pathname);
 void COM_StripExtension (char *in, char *out);
 void COM_FileBase (const char *in, char *out);
 void COM_DefaultExtension (char *path, char *extension);
+char *COM_FileExtension(char *in);
 
 char *va(const char *format, ...);
 // does a varargs printf into a temp buffer

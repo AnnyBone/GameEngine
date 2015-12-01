@@ -689,7 +689,7 @@ void Host_Initialize(EngineParameters_t *epParameters)
 	com_argc = epParameters->argc;
 	com_argv = epParameters->argv;
 
-	Memory_Init(epParameters->membase,epParameters->memsize);
+	Memory_Init(epParameters->membase, epParameters->memsize);
 	Cbuf_Init();
 	Cmd_Init();
 	Cvar_Init(); //johnfitz
