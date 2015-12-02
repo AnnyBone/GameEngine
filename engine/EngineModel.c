@@ -249,7 +249,7 @@ model_t *Model_Load(model_t *model)
 	buf = (unsigned*)COM_LoadStackFile(model->name, stackbuf, sizeof(stackbuf));
 	if(!buf)
 	{
-		Con_Warning("Mod_LoadModel: %s not found\n", model->name);
+		Con_Warning("Model was not found! (%s)\n", model->name);
 		return NULL;
 	}
 

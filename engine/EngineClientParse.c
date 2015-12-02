@@ -362,8 +362,12 @@ void Client_ParseServerInfo(void)
 	for(i = 1; i < nummodels; i++)
 	{
 		cl.model_precache[i] = Mod_ForName(cModelPrecache[i]);
-		if(!cl.model_precache[i])
-			Console_ErrorMessage(false,cModelPrecache[i],"Either the file is corrupt or does not exist.\n");
+		if (!cl.model_precache[i])
+		{
+#ifndef _DEBUG
+			Console_ErrorMessage(false, cModelPrecache[i], "Either the file is corrupt or does not exist.\n");
+#endif // !_DEBUG
+		}
 
 		CL_KeepaliveMessage ();
 	}

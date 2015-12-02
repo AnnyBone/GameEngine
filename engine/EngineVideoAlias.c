@@ -279,7 +279,9 @@ void Alias_Draw(ClientEntity_t *eEntity)
 
 	Video_ResetCapabilities(true);
 
+#if 0
 	// Show active light reference.
 	if (dlLightSource)
 		Draw_Line(eEntity->origin, dlLightSource->origin);
+#endif
 }

@@ -178,11 +178,18 @@ void Item_Respawn(ServerEntity_t *ent)
 
 void Item_Touch(ServerEntity_t *eItem,ServerEntity_t *eOther)
 {
-	Item_t *iItem;
+	Item_t	*iItem;
+
+	if (Server.dTime < eItem->local.delay)
+		// TODO: play a little negative sound on fail for client.
+		return;
 
 	// Don't let monsters pick up items, and don't let dead players pick them up either.
 	if(!Entity_IsPlayer(eOther) || eOther->v.iHealth <= 0)
 		return;
+
+	// Add a minimal display time before we're allowed to pick up again.
+	eItem->local.delay = Server.dTime + 2;
 
 	// Get the item reference.
 	iItem = Item_GetItem(eItem->local.style);
@@ -358,9 +365,11 @@ void Item_Spawn(ServerEntity_t *eItem)
 	// Start with this so these can be overwritten in a specific entcase
 	eItem->Physics.iSolid	= SOLID_TRIGGER;
 
-	eItem->v.movetype = MOVETYPE_FLY;
-	eItem->v.TouchFunction = Item_Touch;
-	eItem->v.flags = FL_ITEM;
+	eItem->v.movetype		= MOVETYPE_FLY;
+	eItem->v.TouchFunction	= Item_Touch;
+	eItem->v.flags			= FL_ITEM;
+
+	eItem->local.delay = 0;
 
 	if(eItem->local.style >= 30 && eItem->local.style <= 34)
 		eItem->v.effects = EF_MOTION_FLOAT;

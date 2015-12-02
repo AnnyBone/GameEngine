@@ -561,7 +561,7 @@ void Point_SoundSpawn(ServerEntity_t *eEntity)
 
 void Point_DecorationSpawn(ServerEntity_t *eDecoration)
 {
-	if (!eDecoration->v.model)
+	if (eDecoration->v.model[0] == ' ')
 	{
 		Entity_Remove(eDecoration);
 		return;

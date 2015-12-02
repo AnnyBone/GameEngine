@@ -440,7 +440,7 @@ typedef struct
 	void(*think1)(ServerEntity_t *ent, ServerEntity_t *other);
 	MathVector3f_t	finaldest;
 	char			*killtarget;
-	float			delay;			// Delay before doing a task.
+	double			delay;			// Delay before doing a task.
 	ServerEntity_t	*trigger_field;
 	int				iFireMode;		// Active fire mode for weapons.
 	ServerEntity_t	*bomb,
