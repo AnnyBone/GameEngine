@@ -139,21 +139,20 @@ ConsoleVariable_t cvServerBots = { "server_bots", "0", false, true, "Can enable 
 
 void Server_SetGameMode(void)
 {
-	// [7/12/2012] Don't continue if we're already using this mode ~hogsy
+	// Don't continue if we're already using this mode.
 	if(Server.iLastGameMode == cvServerGameMode.iValue)
 		return;
 
 	if(cvServerGameMode.value >= MODE_NONE || cvServerGameMode.value < MODE_SINGLEPLAYER)
 	{
 		Engine.Con_Warning("Attempted to set unknown game mode! Reverting to singleplayer.\n");
-		Engine.Cvar_SetValue("server_gamemode",MODE_SINGLEPLAYER);
+		Engine.Cvar_SetValue("server_gamemode", MODE_SINGLEPLAYER);
 	}
 
-	// [5/6/2012] Moved so we give this message if the above case occurs ~hogsy
 	if(Server.iLastGameMode != cvServerGameMode.value && Server.bActive)
 		Engine.Con_Printf("Gamemode will be changed on next map.\n");
 
-	// [29/3/2012] Keep OldMode up to date! ~hogsy
+	// Keep OldMode up to date!
 	Server.iLastGameMode = cvServerGameMode.iValue;
 }
 
@@ -194,9 +193,9 @@ void Server_Spawn(ServerEntity_t *seEntity)
 	Server.iMonsters = 0;
 
 	// Set these to their defaults.
-	bIsDeathmatch = false;
-	bIsCooperative = false;
-	bIsMultiplayer = false;
+	bIsDeathmatch	= false;
+	bIsCooperative	= false;
+	bIsMultiplayer	= false;
 
 	if (cvServerGameMode.iValue != MODE_SINGLEPLAYER)
 	{

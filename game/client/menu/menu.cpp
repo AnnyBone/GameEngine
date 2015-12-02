@@ -16,20 +16,48 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "engine_base.h"
+#include "client.h"
 
-extern "C" {
+class Panel
+{
+public:
+protected:
+private:
+	int width, height;
+	int x, y;
+};
 
-	void ModelU3D_Load(model_t *model, void *buffer)
-	{
-//		U3DDataHeader		dataheader;
-//		U3DAnimationHeader	animheader;
-//		void				*anim_buffer, *data_buffer;
+Material_t *m_cursor;
 
-		// U3D models are animated per-vertex.
-		model->type = MODEL_TYPE_VERTEX;
+class Menu
+{
+public:
+	Menu();
+	~Menu();
 
-		//	COM_LoadFile()
-	}
+	void Initialize();
+	void Draw();
 
+	void SetWidth(int nwidth) { width = nwidth; }
+	void SetHeight(int nheight) { height = nheight; }
+protected:
+private:
+	int width, height;
+	int x, y;
+};
+
+Menu::Menu()
+{
+	width	= 640;
+	height	= 480;
+	x		= 0;
+	y		= 0;
 }
+
+void Menu::Initialize()
+{
+	
+}
+
+void Menu::Draw()
+{}

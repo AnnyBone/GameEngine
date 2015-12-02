@@ -4,23 +4,6 @@
 
 void UseTargets(ServerEntity_t *ent, ServerEntity_t *other);
 
-#if 0
-ServerEntity_t *SpawnField(ServerEntity_t *ent,vec3_t fmins,vec3_t fmaxs)
-{
-	ServerEntity_t	*trigger = Entity_Spawn();
-
-	trigger->v.movetype		= MOVETYPE_NONE;
-	trigger->Physics.iSolid	= SOLID_TRIGGER;
-	trigger->v.touch		= Touch_DoorTrigger;
-
-	trigger->local.eOwner = ent;
-
-	Entity_SetSize(trigger,fmins[0]-60,fmins[1]-60,fmins[2]-8,fmaxs[0]+60,fmaxs[1]+60,fmaxs[2]+8);
-
-	return(trigger);
-}
-#endif
-
 void Misc_DelayThink(ServerEntity_t *ent)
 {
 	ServerEntity_t *other = ent->v.enemy;

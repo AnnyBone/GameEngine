@@ -150,21 +150,21 @@ void Sprite::SetType(SpriteType_t type)
 	}
 }
 
-void Sprite::SetScale(float scale)
+void Sprite::SetScale(float nscale)
 {
 	// Little bit silly, sometimes we have an invalid scale.
-	if (scale <= 0)
-		scale = 1.0f;
+	if (nscale <= 0)
+		nscale = 1.0f;
 
-	this->scale = scale;
+	scale = nscale;
 }
 
-void Sprite::SetMaterial(Material_t *material)
+void Sprite::SetMaterial(Material_t *nmaterial)
 {
-	if (!material)
+	if (!nmaterial)
 		return;
 
-	this->material = material;
+	material = nmaterial;
 }
 
 void Sprite::Simulate()

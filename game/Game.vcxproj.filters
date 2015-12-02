@@ -116,6 +116,9 @@
     <Filter Include="Server\Decay\Weapons\Unused">
       <UniqueIdentifier>{961422f7-14af-4531-ac36-f3c021da80a2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Client\Menu">
+      <UniqueIdentifier>{dca7b097-d524-4784-8388-19076585d650}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="server\monster_bot.c">
@@ -280,6 +283,9 @@
     </ClCompile>
     <ClCompile Include="server\server.c">
       <Filter>Server</Filter>
+    </ClCompile>
+    <ClCompile Include="client\menu\menu.cpp">
+      <Filter>Client\Menu</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -38,15 +38,8 @@
 #pragma warning(disable:4305)
 #endif
 
-/*	Build needs to be updated
-	each day that work is done
-	on the engine.
-	Release needs to be updated
-	when a build is released publically.	
-*/
-#define ENGINE_VERSION_MAJOR	0		// TODO: Isn't relevent for engine ver anymore!
-#define ENGINE_VERSION_MINOR	3		// TODO: Isn't relevent for engine ver anymore!
-#define ENGINE_VERSION_BUILD	1034	// 28/11/2015
+//	Build needs to be updated each day that work is done on the engine.
+#define ENGINE_VERSION_BUILD	1038	// 02/12/2015
 
 #define	ENGINE_LOG	"engine"
 

@@ -32,6 +32,7 @@
 #include "shared_menu.h"
 #include "shared_formats.h"
 #include "shared_game.h"
+#include "SharedEngine.h"
 
 #include "game_resources.h"
 
@@ -156,4 +157,4 @@ extern "C" {
 };
 #endif
 
-#endif	// GAME_MAIN_H
+#endif	// !GAME_MAIN_H

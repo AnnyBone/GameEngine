@@ -33,7 +33,7 @@ char	loadname[32];	// for hunk tags
 
 void Model_LoadBSP(model_t *mod, void *buffer);
 void Model_LoadMD2(model_t *mod,void *buffer);
-bool Model_LoadOBJ(model_t *mModel,void *Buffer);
+void Model_LoadOBJ(model_t *mModel, void *Buffer);
 
 model_t *Model_Load(model_t *mod);
 
@@ -78,7 +78,7 @@ void *Mod_Extradata (model_t *mod)
 	return mod->cache.data;
 }
 
-mleaf_t *Mod_PointInLeaf (vec3_t p, model_t *model)
+mleaf_t *Mod_PointInLeaf (MathVector3f_t p, model_t *model)
 {
 	mnode_t		*node;
 	float		d;
@@ -208,11 +208,28 @@ void Model_Touch(char *cName)
 			Cache_Check(&mModel->cache);
 }
 
+void ModelU3D_Load(model_t *model, void *buffer);
+
+typedef struct
+{
+	const char *extension;
+
+	void (*Function)(model_t *model, void *buffer);
+} ModelLoadInterface;
+
+ModelLoadInterface model_formatlist[] =
+{
+	{ "3d", ModelU3D_Load },
+	{ "obj", Model_LoadOBJ }
+};
+
 /*	Loads a model into the cache
 */
 model_t *Model_Load(model_t *model)
 {
+	char		exten[64];
 	void		*d;
+	int			i;
 	unsigned	*buf;
 	uint8_t		stackbuf[1024];		// avoid dirtying the cache heap
 
@@ -244,14 +261,7 @@ model_t *Model_Load(model_t *model)
 	// Call the apropriate loader
 	model->bNeedLoad = false;
 
-#if 0
-	char *exten = COM_FileExtension(loadname);
-	if (Q_strcmp(exten, "3d"))
-	{
-	}
-#endif
-
-	switch(LittleLong(*(unsigned*)buf))
+	switch (LittleLong(*(unsigned*)buf))
 	{
 	case MD2E_HEADER:
 	case MD2_HEADER:
@@ -261,9 +271,21 @@ model_t *Model_Load(model_t *model)
 		Model_LoadBSP(model, buf);
 		break;
 	default:
-		if (Model_LoadOBJ(model, buf))
-			break;
+		// Grab the file extension, so we can check for formats that don't have idents.
+		strcpy(exten, COM_FileExtension(model->name));
+		if (exten[0] != ' ')
+		{
+			for (i = 0; i < pARRAYELEMENTS(model_formatlist); i++)
+			{
+				if (!strcmp(model_formatlist[i].extension, exten))
+				{
+					model_formatlist[i].Function(model, buf);
+					return model;
+				}
+			}
+		}
 
+		// If we reach this point, definately not supported.
 		Con_Warning("Unsupported model type! (%s)\n", model->name);
 		return NULL;
 	}
@@ -1372,10 +1394,10 @@ void Model_LoadMD2(model_t *mModel,void *Buffer)
 	for(i = 0; i < 17; i++)
 		((int*)mMD2Model)[i] = LittleLong(((int*)pinmodel)[i]);
 
-	mModel->type = MODEL_TYPE_MD2;
-	mModel->version	= iVersion;
-	mModel->flags = 0;
-	mModel->numframes = numframes = mMD2Model->num_frames;
+	mModel->type		= MODEL_TYPE_MD2;
+	mModel->version		= iVersion;
+	mModel->flags		= 0;
+	mModel->numframes	= numframes = mMD2Model->num_frames;
 
 	if(mMD2Model->ofs_skins <= 0 || mMD2Model->ofs_skins >= mMD2Model->ofs_end)
 		Sys_Error("%s is not a valid model",mModel->name);
@@ -1482,16 +1504,11 @@ void Model_LoadMD2(model_t *mModel,void *Buffer)
 	OBJ Support
 */
 
-bool Model_LoadOBJ(model_t *mModel,void *Buffer)
+void Model_LoadOBJ(model_t *mModel,void *Buffer)
 {
 #if 0
 	char	cExtension[4];
 	OBJ_t	*oObject;
-
-	// Check if the file is a valid OBJ or not...
-	ExtractFileExtension(mModel->name,cExtension);
-	if(Q_strcmp(cExtension,".obj"))
-		return false;
 
 	mModel->type = MODEL_TYPE_OBJ;
 
@@ -1525,8 +1542,6 @@ bool Model_LoadOBJ(model_t *mModel,void *Buffer)
 		}
 	}
 #endif
-
-	return false;
 }
 
 /**/

@@ -121,6 +121,7 @@
     <ClCompile Include="client\client_effects.c" />
     <ClCompile Include="client\client.c" />
     <ClCompile Include="client\client_view.c" />
+    <ClCompile Include="client\menu\menu.cpp" />
     <ClCompile Include="game.c" />
     <ClCompile Include="server\adamas\adamas_blazer.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (OpenKatana)|Win32'">true</ExcludedFromBuild>
