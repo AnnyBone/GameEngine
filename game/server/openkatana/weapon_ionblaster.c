@@ -170,7 +170,7 @@ void IonBlaster_PrimaryAttack(ServerEntity_t *ent)
 	if (!Weapon_CheckTrace(ent))
 		return;
 
-	Sound(ent,CHAN_WEAPON,"weapons/ionblaster/ionfire.wav",255,ATTN_NORM);
+	Sound(ent,CHAN_WEAPON,"weapons/ionblaster/fire.wav",255,ATTN_NORM);
 
 	Weapon_ViewPunch(ent, 4, false);
 

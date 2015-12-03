@@ -188,7 +188,7 @@ void Item_Touch(ServerEntity_t *eItem,ServerEntity_t *eOther)
 	if(!Entity_IsPlayer(eOther) || eOther->v.iHealth <= 0)
 		return;
 
-	// Add a minimal display time before we're allowed to pick up again.
+	// Add a minimal delay time before we're allowed to pick up again.
 	eItem->local.delay = Server.dTime + 2;
 
 	// Get the item reference.

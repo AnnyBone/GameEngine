@@ -195,8 +195,7 @@ void Weapon_Precache(void)
 
 	// Ion Blaster
 	Server_PrecacheSound("weapons/ionblaster/explode.wav");
-	Server_PrecacheSound("weapons/ionblaster/ionfire.wav");
-	Server_PrecacheSound("weapons/ionblaster/ionflyby.wav");
+	Server_PrecacheSound("weapons/ionblaster/fire.wav");
 	Server_PrecacheSound("weapons/ionblaster/ionready.wav");
 	Server_PrecacheSound("weapons/ionblaster/bounce.wav");
 	Server_PrecacheModel("models/ionball.md2");

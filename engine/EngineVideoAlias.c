@@ -23,75 +23,73 @@
 #include "video.h"
 #include "video_shader.h"
 
-extern cvar_t r_drawflat, gl_fullbrights, r_lerpmodels, r_lerpmove; //johnfitz
+extern ConsoleVariable_t r_drawflat, gl_fullbrights, r_lerpmodels, r_lerpmove; //johnfitz
 
-bool	bOverbright,
-		bShading;		//johnfitz -- if false, disable vertex shading for various reasons (fullbright, r_lightmap, showtris, etc)
+bool	bShading;		//johnfitz -- if false, disable vertex shading for various reasons (fullbright, r_lightmap, showtris, etc)
 
-MathVector3f_t	vLightColour;
+MathVector3f_t	alias_lightcolour, oldlightcolour;
+MathVector3f_t	lightposition, oldlightposition;
 
 DynamicLight_t	*dlLightSource;
 
-void Alias_SetupLighting(ClientEntity_t *ceEntity)
+void Alias_SetupLighting(ClientEntity_t *entity)
 {
 	float fDistance;
+
+	Math_VectorSet(1.0f, alias_lightcolour);
 
 	if(!bShading || r_showtris.bValue)
 		return;
 
-	Math_VectorSet(1.0f, vLightColour);
-
-	if (!(ceEntity->effects & EF_FULLBRIGHT))
+	if (!(entity->effects & EF_FULLBRIGHT))
 	{
 		// Check to see if we can grab the light source, for directional information.
-		dlLightSource = Light_GetDynamic(ceEntity->origin, true);
+		dlLightSource = Light_GetDynamic(entity->origin, true);
 		if (dlLightSource)
 		{
-			MathVector3f_t mvLightOut;
-
-			Math_VectorScale(dlLightSource->color, 1.0f / 200.0f, mvLightOut);
+			Math_VectorScale(dlLightSource->color, 1.0f / 200.0f, alias_lightcolour);
 
 			VideoShader_SetVariable3f(iLightPositionUniform, dlLightSource->origin[0], dlLightSource->origin[1], dlLightSource->origin[2]);
-			VideoShader_SetVariable3f(iLightColourUniform, mvLightOut[0], mvLightOut[1], mvLightOut[2]);
+			VideoShader_SetVariable3f(iLightColourUniform, alias_lightcolour[0], alias_lightcolour[1], alias_lightcolour[2]);
 		}
 		else
 		{
-			VideoShader_SetVariable3f(iLightPositionUniform, 0, 0, 0);
-			VideoShader_SetVariable3f(iLightColourUniform, 0, 0, 0);
+			Math_MVToVector(Light_GetSample(entity->origin), alias_lightcolour);
+			Math_VectorScale(alias_lightcolour, 1.0f / 200.0f, alias_lightcolour);
+
+			VideoShader_SetVariable3f(iLightPositionUniform, entity->origin[0], entity->origin[1], entity->origin[2]);
+			VideoShader_SetVariable3f(iLightColourUniform, alias_lightcolour[0], alias_lightcolour[1], alias_lightcolour[2]);
 		}
 	}
 
 	// Minimum light value on players (8)
-	if (ceEntity > cl_entities && ceEntity <= cl_entities + cl.maxclients)
+	if (entity > cl_entities && entity <= cl_entities + cl.maxclients)
 	{
-		fDistance = 24.0f-(vLightColour[0]+vLightColour[1]+vLightColour[2]);
+		fDistance = 24.0f - (alias_lightcolour[0] + alias_lightcolour[1] + alias_lightcolour[2]);
 		if(fDistance > 0.0f)
-			Math_VectorAddValue(vLightColour,fDistance/3.0f,vLightColour);
+			Math_VectorAddValue(alias_lightcolour, fDistance / 3.0f, alias_lightcolour);
 	}
-
-	Math_VectorScale(vLightColour,1.0f/200.0f,vLightColour);
 }
 
-void Alias_DrawFrame(MD2_t *mModel,entity_t *eEntity,lerpdata_t lLerpData)
+void Alias_DrawFrame(MD2_t *mModel, ClientEntity_t *entity, lerpdata_t lLerpData)
 {
+	VideoObjectVertex_t	voModel[MD2_MAX_TRIANGLES] = { { { 0 } } };
 	MD2TriangleVertex_t	*verts1, *verts2;
-	MD2Frame_t *frame1, *frame2;
-
-	float ilerp, fAlpha;
-	unsigned int uiVerts = 0;
-	int	*order, count;
-
-	VideoObjectVertex_t voModel[MD2_MAX_TRIANGLES] = { { { 0 } } };
+	MD2Frame_t			*frame1, *frame2;
+	float				ilerp, fAlpha = 1.0f;
+	unsigned int		uiVerts = 0;
+	int					*order, count;
 
 	ilerp = 1.0f - lLerpData.blend;
-	fAlpha = ENTALPHA_DECODE(eEntity->alpha);
+	if (bShading && !r_showtris.bValue)
+		fAlpha	= ENTALPHA_DECODE(entity->alpha);
 
 	//new version by muff - fixes bug, easier to read, faster (well slightly)
-	frame1 = (MD2Frame_t*)((uint8_t*)mModel + mModel->ofs_frames + (mModel->framesize*eEntity->draw_lastpose));
-	frame2 = (MD2Frame_t*)((uint8_t*)mModel + mModel->ofs_frames + (mModel->framesize*eEntity->draw_pose));
+	frame1 = (MD2Frame_t*)((uint8_t*)mModel + mModel->ofs_frames + (mModel->framesize*entity->draw_lastpose));
+	frame2 = (MD2Frame_t*)((uint8_t*)mModel + mModel->ofs_frames + (mModel->framesize*entity->draw_pose));
 
-	if ((eEntity->scale != 1.0f) && (eEntity->scale > 0.1f))
-		VideoShader_SetVariablef(iScaleUniform, eEntity->scale);
+	if ((entity->scale != 1.0f) && (entity->scale > 0.1f))
+		VideoShader_SetVariablef(iScaleUniform, entity->scale);
 	else
 		VideoShader_SetVariablef(iScaleUniform, 1.0f);
 
@@ -119,21 +117,17 @@ void Alias_DrawFrame(MD2_t *mModel,entity_t *eEntity,lerpdata_t lLerpData)
 				(verts1[order[2]].v[2] * frame1->scale[2] + frame1->translate[2])*ilerp +
 				(verts2[order[2]].v[2] * frame2->scale[2] + frame2->translate[2])*lLerpData.blend);
 			Video_ObjectNormal(&voModel[uiVerts],
-				eEntity->model->object.ovVertices[uiVerts].mvNormal[0],
-				eEntity->model->object.ovVertices[uiVerts].mvNormal[1],
-				eEntity->model->object.ovVertices[uiVerts].mvNormal[2]);
-
-			if (bShading && !r_showtris.bValue)
-				Video_ObjectColour(&voModel[uiVerts], 1.0f, 1.0f, 1.0f, fAlpha);
-			else
-				Video_ObjectColour(&voModel[uiVerts], 1.0f, 1.0f, 1.0f, 1.0f);
+				entity->model->object.ovVertices[uiVerts].mvNormal[0],
+				entity->model->object.ovVertices[uiVerts].mvNormal[1],
+				entity->model->object.ovVertices[uiVerts].mvNormal[2]);
+			Video_ObjectColour(&voModel[uiVerts], alias_lightcolour[0], alias_lightcolour[1], alias_lightcolour[2], fAlpha);
 
 			uiVerts++;
 
 			order += 3;
 		} while (--count);
 
-		Video_DrawObject(voModel, VIDEO_PRIMITIVE_TRIANGLE_STRIP, uiVerts, eEntity->model->mAssignedMaterials, eEntity->skinnum);
+		Video_DrawObject(voModel, VIDEO_PRIMITIVE_TRIANGLE_STRIP, uiVerts, entity->model->mAssignedMaterials, entity->skinnum);
 	}
 }
 
@@ -146,7 +140,6 @@ void Alias_SetupFrame(MD2_t *mModel,ClientEntity_t *ceCurrent,lerpdata_t *ldLerp
 		ceCurrent->frame = 0;
 	}
 
-	// [13/9/2012] Added check for r_lerpmodels to solve issue ~hogsy
 	if (r_lerpmodels.value >= 1 && ceCurrent->draw_lastmodel == ceCurrent->model)
 	{
 		if (ceCurrent->frame != ceCurrent->draw_pose)
@@ -157,7 +150,6 @@ void Alias_SetupFrame(MD2_t *mModel,ClientEntity_t *ceCurrent,lerpdata_t *ldLerp
 
 			ldLerp->blend = 0;
 		}
-		// [13/9/2012] Removed check for r_lerpmodels here since it's now done above ~hogsy
 		else
 			ldLerp->blend = (cl.time - ceCurrent->draw_lerpstart)*20.0;
 	}
@@ -176,9 +168,9 @@ void Alias_SetupFrame(MD2_t *mModel,ClientEntity_t *ceCurrent,lerpdata_t *ldLerp
 
 void Alias_SetupEntityTransform(ClientEntity_t *ceEntity, lerpdata_t *lerpdata)
 {
-	float	blend;
-	int		i;
-	vec3_t	d;
+	float			blend;
+	int				i;
+	MathVector3f_t	d;
 
 	// if LERP_RESETMOVE, kill any lerps in progress
 	if (ceEntity->lerpflags & LERP_RESETMOVE)
@@ -250,7 +242,6 @@ void Alias_Draw(ClientEntity_t *eEntity)
 
 	mModel = (MD2_t*)Mod_Extradata(eEntity->model);
 
-	// [23/8/2013] Update alias poly count! ~hogsy
 	rs_aliaspolys += mModel->numtris;
 
 	Alias_SetupFrame(mModel,eEntity,&lLerpData);
