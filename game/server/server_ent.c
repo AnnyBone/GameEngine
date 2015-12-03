@@ -245,6 +245,12 @@ void Entity_SetAngles(ServerEntity_t *eEntity, MathVector3f_t vAngles)
 */
 void Entity_SetModel(ServerEntity_t *eEntity,char *cModelPath)
 {
+	if (!cModelPath)
+	{
+		Engine.Con_Warning("Invalid path for model! (%s)", eEntity->v.cClassname);
+		return;
+	}
+
 	Engine.SetModel(eEntity,cModelPath);
 }
 

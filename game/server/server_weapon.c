@@ -177,6 +177,7 @@ void Weapon_Precache(void)
 	Server_PrecacheModel("models/weapons/w_shotcycler.md2");
 	Server_PrecacheModel("models/weapons/w_sidewinder.md2");
 	Server_PrecacheModel("models/weapons/w_shockwave.md2");
+	Server_PrecacheModel("models/weapons/w_daikatana.md2");
 	// TEMP END
 	Server_PrecacheModel("models/slaser.md2");
 	Server_PrecacheModel("models/c4ammo.md2");
