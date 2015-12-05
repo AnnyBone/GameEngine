@@ -1,5 +1,5 @@
 #Katana Engine#
-The Katana engine is part of a project that aims to develop a heavily modified version of the FitzQuake engine that has been specifically developed for our game, **Decay**.
+The Katana engine is part of a project that aims to develop a heavily modified version of the FitzQuake engine.
 
 ###Features###
 - Abstract SDL2 implementation for both video and input
