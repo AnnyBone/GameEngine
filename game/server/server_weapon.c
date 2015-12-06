@@ -164,7 +164,7 @@ Weapon_t *Weapon_GetWeapon(int iWeaponID)
 
 void Weapon_Precache(void)
 {
-#ifdef OPENKATANA
+#ifdef GAME_OPENKATANA
 	Server_PrecacheModel(DAIKATANA_MODEL_VIEW);
 	Server_PrecacheModel("models/weapons/v_ionblaster.md2");
 	Server_PrecacheModel("models/weapons/v_c4.md2");

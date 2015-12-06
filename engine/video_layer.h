@@ -57,6 +57,7 @@ extern "C" {
 
 	void VideoLayer_Enable(unsigned int uiCapabilities);
 	void VideoLayer_Disable(unsigned int uiCapabilities);
+	void VideoLayer_SetBlend(VideoBlend_t mode);
 
 	// Drawing
 	void VideoLayer_DrawArrays(const VideoPrimitive_t vpPrimitiveType, unsigned int uiSize, bool bWireframe);

@@ -39,7 +39,7 @@
 #endif
 
 //	Build needs to be updated each day that work is done on the engine.
-#define ENGINE_VERSION_BUILD	1038	// 02/12/2015
+#define ENGINE_VERSION_BUILD	1040	// 05/12/2015
 
 #define	ENGINE_LOG	"engine"
 
@@ -182,4 +182,4 @@ void TraceLine(MathVector3f_t start, MathVector3f_t end, MathVector3f_t impact);
 void Chase_Init(void);
 void Chase_UpdateForDrawing(void); //johnfitz
 
-#endif	// ENGINE_BASE_H
+#endif // !ENGINE_BASE_H

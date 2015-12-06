@@ -200,10 +200,10 @@ extern "C" {
 // TODO: Reintroduce tracking functionality.
 #define	VIDEO_FUNCTION_START \
 { \
-	static int iVideoFunctionCalls = -1; \
+	static unsigned int callnum = 0; \
 	if(Video.bDebugFrame) \
 	{ \
-		iVideoFunctionCalls++; \
+		callnum++; \
 	} \
 } \
 {
@@ -215,8 +215,8 @@ extern float r_world_matrix[16], r_base_world_matrix[16];
 
 void Video_ShowBoundingBoxes(void);
 
+#include "video_layer.h"
 #include "video_object.h"
-#include "EngineVideoLayer.h"
 
 // Legacy
 #include "EngineVideoAlias.h"

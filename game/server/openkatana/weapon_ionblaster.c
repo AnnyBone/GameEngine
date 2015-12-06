@@ -163,7 +163,7 @@ void IonBlaster_IonBallTouch(ServerEntity_t *eIonBall, ServerEntity_t *other)
 
 void IonBlaster_PrimaryAttack(ServerEntity_t *ent)
 {
-	ServerEntity_t *eIonBall;
+	ServerEntity_t	*eIonBall;
 	MathVector3f_t	orig;
 
 	// Check if there's room to perform the attack.

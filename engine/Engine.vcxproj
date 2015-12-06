@@ -642,7 +642,7 @@
     <ClCompile Include="EngineConsoleVariable.c" />
     <ClCompile Include="EngineEditor.c" />
     <ClCompile Include="EngineMaterialEditor.c" />
-    <ClCompile Include="EngineVideoLayer.c" />
+    <ClCompile Include="video_layer.c" />
     <ClCompile Include="video_object.cpp" />
     <ClCompile Include="EngineVideoFont.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
@@ -731,7 +731,7 @@
     <ClInclude Include="EngineVideoDraw.h" />
     <ClInclude Include="EngineAudio.h" />
     <ClInclude Include="video_framebuffer.h" />
-    <ClInclude Include="EngineVideoLayer.h" />
+    <ClInclude Include="video_layer.h" />
     <ClInclude Include="video_object.h" />
     <ClInclude Include="video_shader.h" />
     <ClInclude Include="video_window.h" />

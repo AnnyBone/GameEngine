@@ -793,6 +793,8 @@ bool Video_GetCapability(unsigned int iCapability)
 /*	Resets our capabilities.
 	Give an argument of true to only clear the list, not the capabilities.
 	Also resets active blending mode.
+
+	TODO: GET RID OF THIS!!!!
 */
 void Video_ResetCapabilities(bool bClearActive)
 {

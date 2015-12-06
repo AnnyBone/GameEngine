@@ -18,12 +18,12 @@
 
 #include "engine_base.h"
 
+#include "video.h"
+
 /*
 	This document acts as a layer between the video sub-system
 	and OpenGL. All OpenGL functionality should be here.
 */
-
-#include "video.h"
 
 /*===========================
 	OPENGL ERROR HANDLING
@@ -262,6 +262,26 @@ void VideoLayer_Disable(unsigned int uiCapabilities)
 		}
 	}
 	VIDEO_FUNCTION_END
+}
+
+/*	TODO: Want more control over the dynamics of this...
+*/
+void VideoLayer_SetBlend(VideoBlend_t mode)
+{
+	if (mode == VIDEO_BLEND_IGNORE)
+		return;
+
+	switch (mode)
+	{
+	case VIDEO_BLEND_ADDITIVE:
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+		break;
+	case VIDEO_BLEND_DEFAULT:
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		break;
+	default:
+		Sys_Error("Unknown blend mode! (%i)\n", mode);
+	}
 }
 
 /*===========================

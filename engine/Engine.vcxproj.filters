@@ -114,9 +114,6 @@
     <ClCompile Include="EngineMaterialEditor.c">
       <Filter>Legacy\Client\Editor</Filter>
     </ClCompile>
-    <ClCompile Include="EngineVideoLayer.c">
-      <Filter>Legacy\Client\Video</Filter>
-    </ClCompile>
     <ClCompile Include="EngineVideoFog.c">
       <Filter>Legacy\Client\Video</Filter>
     </ClCompile>
@@ -316,6 +313,9 @@
     <ClCompile Include="client\effect_particle.cpp">
       <Filter>Client</Filter>
     </ClCompile>
+    <ClCompile Include="video_layer.c">
+      <Filter>Client\Video</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\shared\shared_client.h">
@@ -483,9 +483,6 @@
     <ClInclude Include="EngineClientTempEntity.h">
       <Filter>Legacy\Client</Filter>
     </ClInclude>
-    <ClInclude Include="EngineVideoLayer.h">
-      <Filter>Legacy\Client\Video</Filter>
-    </ClInclude>
     <ClInclude Include="EngineServer.h">
       <Filter>Legacy\Server</Filter>
     </ClInclude>
@@ -539,6 +536,9 @@
     </ClInclude>
     <ClInclude Include="client\effect_sprite.h">
       <Filter>Client</Filter>
+    </ClInclude>
+    <ClInclude Include="video_layer.h">
+      <Filter>Client\Video</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

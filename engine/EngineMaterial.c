@@ -1,6 +1,4 @@
-/*	Copyright (C) 1996-2001 Id Software, Inc.
-	Copyright (C) 2002-2009 John Fitzgibbons and others
-	Copyright (C) 2011-2015 OldTimes Software
+/*	Copyright (C) 2011-2015 OldTimes Software
 
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License
@@ -623,16 +621,23 @@ void _Material_SetRotate(Material_t *mCurrentMaterial, MaterialFunctionType_t mf
 	msSkin->mtTexture[msSkin->uiTextures].bManipulated = true;
 }
 
-void _Material_SetBlend(Material_t *currentMaterial, MaterialFunctionType_t context, char *arg)
+void _Material_SetAdditive(Material_t *material, MaterialFunctionType_t context, char *arg)
 {
+	if (atoi(arg) == TRUE)
+		material->msSkin[material->iSkins].uiFlags |= MATERIAL_FLAG_ADDITIVE|MATERIAL_FLAG_BLEND;
+}
 
+void _Material_SetBlend(Material_t *material, MaterialFunctionType_t context, char *arg)
+{
+	if (atoi(arg) == TRUE)
+		material->msSkin[material->iSkins].uiFlags |= MATERIAL_FLAG_BLEND;
 }
 
 // Universal Functions...
 
 typedef struct
 {
-	int	iFlag;
+	int	flags;
 
 	const char *ccName;
 
@@ -650,6 +655,7 @@ MaterialFlag_t	mfMaterialFlags[] =
 	// Skin
 	{ MATERIAL_FLAG_NEAREST, "NEAREST", MATERIAL_FUNCTION_SKIN },
 	{ MATERIAL_FLAG_BLEND, "BLEND", MATERIAL_FUNCTION_SKIN },
+	{ MATERIAL_FLAG_BLEND|MATERIAL_FLAG_ADDITIVE, "ADDITIVE", MATERIAL_FUNCTION_SKIN },
 
 	// Texture
 	{ MATERIAL_FLAG_ALPHA, "ALPHA", MATERIAL_FUNCTION_TEXTURE }
@@ -672,20 +678,20 @@ void _Material_SetFlags(Material_t *mCurrentMaterial, MaterialFunctionType_t mft
 			switch (mftContext)
 			{
 			case MATERIAL_FUNCTION_MATERIAL:
-				if (mfMaterialFlags[i].iFlag == MATERIAL_FLAG_ANIMATED)
+				if (mfMaterialFlags[i].flags == MATERIAL_FLAG_ANIMATED)
 				{
 					mCurrentMaterial->iAnimationFrame = 0;
 					mCurrentMaterial->dAnimationTime = 0;
 				}
 
-				mCurrentMaterial->iFlags |= mfMaterialFlags[i].iFlag;
+				mCurrentMaterial->iFlags |= mfMaterialFlags[i].flags;
 				break;
 			case MATERIAL_FUNCTION_SKIN:
-				mCurrentMaterial->msSkin[mCurrentMaterial->iSkins].uiFlags |= mfMaterialFlags[i].iFlag;
+				mCurrentMaterial->msSkin[mCurrentMaterial->iSkins].uiFlags |= mfMaterialFlags[i].flags;
 				break;
 			case MATERIAL_FUNCTION_TEXTURE:
 				mCurrentMaterial->msSkin[mCurrentMaterial->iSkins].mtTexture
-					[mCurrentMaterial->msSkin[mCurrentMaterial->iSkins].uiTextures].uiFlags |= mfMaterialFlags[i].iFlag;
+					[mCurrentMaterial->msSkin[mCurrentMaterial->iSkins].uiTextures].uiFlags |= mfMaterialFlags[i].flags;
 				break;
 			default:
 				Con_Warning("Invalid context! (%s) (%s) (%i)\n", mCurrentMaterial->cName, mfMaterialFlags[i].ccName, mftContext);
@@ -719,12 +725,13 @@ MaterialKey_t MaterialFunctions[]=
 	// Skin
 	{ "map", _Material_AddTexture, MATERIAL_FUNCTION_SKIN },
 	{ "texture", _Material_AddTexture, MATERIAL_FUNCTION_SKIN },
+	{ "additive", _Material_SetAdditive, MATERIAL_FUNCTION_SKIN },
+	{ "blend", _Material_SetBlend, MATERIAL_FUNCTION_SKIN },
 
 	// Texture
 	{ "scroll", _Material_SetTextureScroll, MATERIAL_FUNCTION_TEXTURE },
 	{ "rotate", _Material_SetRotate, MATERIAL_FUNCTION_TEXTURE },
 	{ "env_mode", _Material_SetTextureEnvironmentMode, MATERIAL_FUNCTION_TEXTURE },
-	//{ "blend", _Material_SetBlend, MATERIAL_FUNCTION_TEXTURE },
 
 	{ 0 }
 };
@@ -934,12 +941,25 @@ void Material_Draw(Material_t *Material, int Skin,
 	if (!msCurrentSkin)
 		Sys_Error("Failed to get valid skin! (%s)\n", Material->cName);
 
+	// Handle any generic blending.
 	if (msCurrentSkin->uiFlags & MATERIAL_FLAG_BLEND)
 	{
 		if (!bPost)
+		{
 			VideoLayer_Enable(VIDEO_BLEND);
+
+			if (msCurrentSkin->uiFlags & MATERIAL_FLAG_ADDITIVE)
+				// Additive blending isn't done by default.
+				VideoLayer_SetBlend(VIDEO_BLEND_ADDITIVE);
+		}
 		else
+		{
 			VideoLayer_Disable(VIDEO_BLEND);
+
+			if (msCurrentSkin->uiFlags & MATERIAL_FLAG_ADDITIVE)
+				// Return blend mode to its default.
+				VideoLayer_SetBlend(VIDEO_BLEND_DEFAULT);
+		}
 	}
 
 	unsigned int i, uiCurrentUnit;

@@ -45,13 +45,14 @@ typedef enum
 #define	MATERIAL_COLOUR_BLACK	1
 #define	MATERIAL_COLOUR_BLUE	2
 
-#define	MATERIAL_FLAG_PRESERVE	1	// Preserves the material during clear outs.
-#define	MATERIAL_FLAG_ALPHA		2	// Declares that the given texture has an alpha channel.
-#define	MATERIAL_FLAG_BLEND		4	// Ditto to the above, but tells us to use blending rather than alpha-test.
-#define	MATERIAL_FLAG_ANIMATED	8	// This is a global flag; tells the material system to scroll through all skins.
-#define	MATERIAL_FLAG_MIRROR	16	// Must be GLOBAL!
-#define	MATERIAL_FLAG_NEAREST	32	// Forces the texture to be loaded with nearest filtering.
-#define	MATERIAL_FLAG_WATER		64	// Must be GLOBAL!
+#define	MATERIAL_FLAG_PRESERVE	(1 << 0)	// Preserves the material during clear outs.
+#define	MATERIAL_FLAG_ALPHA		(1 << 1)	// Declares that the given texture has an alpha channel.
+#define	MATERIAL_FLAG_BLEND		(1 << 2)	// Ditto to the above, but tells us to use blending rather than alpha-test.
+#define	MATERIAL_FLAG_ANIMATED	(1 << 3)	// This is a global flag; tells the material system to scroll through all skins.
+#define	MATERIAL_FLAG_MIRROR	(1 << 4)	// Must be GLOBAL!
+#define	MATERIAL_FLAG_NEAREST	(1 << 5)	// Forces the texture to be loaded with nearest filtering.
+#define	MATERIAL_FLAG_WATER		(1 << 6)	// Must be GLOBAL!
+#define	MATERIAL_FLAG_ADDITIVE	(1 << 7)	// Renders the current skin as an additive.
 
 typedef struct
 {

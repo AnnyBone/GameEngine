@@ -235,7 +235,7 @@ void Item_Touch(ServerEntity_t *eItem,ServerEntity_t *eOther)
 	// [14/7/2012] Cleaned up ~hogsy
 	switch(iItem->iNumber)
 	{
-#ifdef OPENKATANA
+#ifdef GAME_OPENKATANA
 	case ITEM_POWERBOOST:
 		eOther->local.power_time		= 1.0f;
 		eOther->local.power_finished	= Server.dTime+30.0;
