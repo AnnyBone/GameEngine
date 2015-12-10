@@ -231,7 +231,6 @@ void Entity_SetOrigin(ServerEntity_t *eEntity, MathVector3f_t vOrigin)
 }
 
 /*	Sets the angle of the given entity.
-	Alternative to SetAngle.
 */
 void Entity_SetAngles(ServerEntity_t *eEntity, MathVector3f_t vAngles)
 {
@@ -241,7 +240,6 @@ void Entity_SetAngles(ServerEntity_t *eEntity, MathVector3f_t vAngles)
 }
 
 /*	Sets the model of the given entity.
-	Alternative to SetModel.
 */
 void Entity_SetModel(ServerEntity_t *eEntity,char *cModelPath)
 {
