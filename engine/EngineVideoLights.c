@@ -70,11 +70,8 @@ void Light_Draw(void)
 	// Because the count hasn't advanced yet for this frame.
 	r_dlightframecount = r_framecount+1;
 
-	Video_ResetCapabilities(false);
-
-	Video_DisableCapabilities(VIDEO_TEXTURE_2D);
-	Video_EnableCapabilities(VIDEO_BLEND);
-	Video_SetBlend(VIDEO_BLEND_ONE,VIDEO_DEPTH_FALSE);
+	VideoLayer_Enable(VIDEO_BLEND);
+	VideoLayer_BlendFunc(VIDEO_BLEND_ONE, VIDEO_BLEND_ONE);
 
 	dlLight = cl_dlights;
 	for(i = 0; i < MAX_DLIGHTS; i++,dlLight++)
@@ -136,7 +133,8 @@ void Light_Draw(void)
 		}
 	}
 
-	Video_ResetCapabilities(true);
+	VideoLayer_BlendFunc(VIDEO_BLEND_DEFAULT);
+	VideoLayer_Disable(VIDEO_BLEND);
 }
 
 void Light_MarkLights(DynamicLight_t *light,int bit,mnode_t *node)

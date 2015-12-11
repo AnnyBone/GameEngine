@@ -702,12 +702,11 @@ void Sky_DrawFaceQuad(glpoly_t *p)
 	Video_SetTexture(gCloudTexture);
 
 	VideoLayer_Enable(VIDEO_BLEND);
-
-	Video_SetBlend(VIDEO_BLEND_ONE, VIDEO_DEPTH_IGNORE);
+	VideoLayer_BlendFunc(VIDEO_BLEND_ONE, VIDEO_BLEND_ONE);
 
 	glBegin(GL_QUADS);
 
-	for(i = 0,v = p->verts[0]; i < 4; i++,v += VERTEXSIZE)
+	for (i = 0, v = p->verts[0]; i < 4; i++, v += VERTEXSIZE)
 	{
 		Sky_GetTexCoord(v,cvSkyScrollSpeed.value,&s,&t);
 
@@ -717,7 +716,7 @@ void Sky_DrawFaceQuad(glpoly_t *p)
 
 	glEnd();
 
-	Video_SetBlend(VIDEO_BLEND_TWO, VIDEO_DEPTH_IGNORE);
+	VideoLayer_BlendFunc(VIDEO_BLEND_DEFAULT);
 
 	rs_skypolys++;
 	rs_skypasses++;

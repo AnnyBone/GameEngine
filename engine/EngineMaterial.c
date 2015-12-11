@@ -950,7 +950,7 @@ void Material_Draw(Material_t *Material, int Skin,
 
 			if (msCurrentSkin->uiFlags & MATERIAL_FLAG_ADDITIVE)
 				// Additive blending isn't done by default.
-				VideoLayer_SetBlend(VIDEO_BLEND_ADDITIVE);
+				VideoLayer_BlendFunc(VIDEO_BLEND_ADDITIVE);
 		}
 		else
 		{
@@ -958,7 +958,7 @@ void Material_Draw(Material_t *Material, int Skin,
 
 			if (msCurrentSkin->uiFlags & MATERIAL_FLAG_ADDITIVE)
 				// Return blend mode to its default.
-				VideoLayer_SetBlend(VIDEO_BLEND_DEFAULT);
+				VideoLayer_BlendFunc(VIDEO_BLEND_DEFAULT);
 		}
 	}
 
@@ -1042,16 +1042,14 @@ void Material_Draw(Material_t *Material, int Skin,
 
 					if (cvVideoAlphaTrick.bValue && (ObjectSize > 0))
 					{
-						Video_SetBlend(VIDEO_BLEND_IGNORE, VIDEO_DEPTH_FALSE);
-
+						VideoLayer_DepthMask(false);
 						VideoLayer_Enable(VIDEO_BLEND);
 
 						// Draw the object again (don't bother passing material).
 						Video_DrawObject(ObjectVertex, ObjectPrimitive, ObjectSize, NULL, 0);
 
 						VideoLayer_Disable(VIDEO_BLEND);
-
-						Video_SetBlend(VIDEO_BLEND_IGNORE, VIDEO_DEPTH_TRUE);
+						VideoLayer_DepthMask(true);
 					}
 				}
 

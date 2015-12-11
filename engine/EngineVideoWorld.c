@@ -232,14 +232,14 @@ void Surface_DrawMirror(msurface_t *Surface)
 	glStencilFunc(GL_ALWAYS, 1, 255);
 	glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE);
 	glStencilMask(255);
-	Video_SetBlend(VIDEO_BLEND_IGNORE, VIDEO_DEPTH_FALSE);
+	VideoLayer_DepthMask(false);
 	glClear(GL_STENCIL_BUFFER_BIT);
 
 	Video_DrawSurface(Surface, 0, g_mGlobalColour, 0);
 
 	glStencilFunc(GL_EQUAL, 1, 255);
 	glStencilMask(0);
-	Video_SetBlend(VIDEO_BLEND_IGNORE, VIDEO_DEPTH_TRUE);
+	VideoLayer_DepthMask(true);
 
 	ClientEntity_t *ViewEntity = &cl_entities[cl.viewentity];
 	if (cl_numvisedicts < MAX_VISEDICTS)
@@ -305,7 +305,8 @@ void World_DrawWaterTextureChains(void)
 			continue;
 
 		if (t->mAssignedMaterial->fAlpha < 1.0)
-			Video_SetBlend(VIDEO_BLEND_IGNORE, VIDEO_DEPTH_TRUE);
+			// TODO: uh... this is the default state is it not?
+			VideoLayer_DepthMask(true);
 
 		for (s = t->texturechain; s; s = s->texturechain)
 			if(!s->culled)

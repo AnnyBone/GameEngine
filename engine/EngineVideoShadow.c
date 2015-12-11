@@ -60,9 +60,9 @@ void Shadow_DrawBlob(ClientEntity_t *Entity)
 
 	Video_ResetCapabilities(false);
 
-	VideoLayer_PushMatrix();
+	VideoLayer_DepthMask(false);
 
-	Video_SetBlend(VIDEO_BLEND_IGNORE, VIDEO_DEPTH_FALSE);
+	VideoLayer_PushMatrix();
 
 	glTranslatef(Entity->origin[0], Entity->origin[1], Entity->origin[2]);
 	glTranslatef(0, 0, -fBlobHeight + 0.1f);
@@ -88,6 +88,8 @@ void Shadow_DrawBlob(ClientEntity_t *Entity)
 	glTranslatef(0, 0, fBlobHeight + 0.1);
 
 	VideoLayer_PopMatrix();
+
+	VideoLayer_DepthMask(true);
 
 	Video_ResetCapabilities(true);
 }

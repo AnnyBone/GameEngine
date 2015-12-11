@@ -37,8 +37,6 @@ bool
 	r_lightmap_cheatsafe, 
 	r_drawworld_cheatsafe;
 
-static unsigned int	iSavedCapabilites[VIDEO_MAX_UNITS][2];
-
 #define VIDEO_STATE_ENABLE   0
 #define VIDEO_STATE_DISABLE  1
 
@@ -173,7 +171,7 @@ void Video_Initialize(void)
 
 	for (i = 0; i < Video.iSupportedUnits; i++)
 	{
-		Video.TextureUnits[i].bIsActive = false;
+		Video.TextureUnits[i].isactive = false;
 		Video.TextureUnits[i].CurrentTexEnvMode = VIDEO_TEXTURE_MODE_REPLACE;
 		Video.TextureUnits[i].uiCurrentTexture = 0;
 	}
@@ -448,39 +446,6 @@ void Video_SetTexture(gltexture_t *gTexture)
 		pLog_Write(cvVideoDebugLog.string,"Video: Bound texture (%s) (%i)\n",gTexture->name,Video.uiActiveUnit);
 }
 
-/*  Changes the active blending mode.
-	This should be used in conjunction with the VIDEO_BLEND mode.
-*/
-void Video_SetBlend(VideoBlend_t voBlendMode, VideoDepth_t vdDepthMode)
-{
-	if (vdDepthMode != VIDEO_DEPTH_IGNORE)
-		glDepthMask(vdDepthMode);
-
-	if(voBlendMode != VIDEO_BLEND_IGNORE)
-	{
-		switch(voBlendMode)
-		{
-		case VIDEO_BLEND_ONE:
-			glBlendFunc(GL_ONE,GL_ONE);
-			break;
-		case VIDEO_BLEND_TWO:
-			glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-			break;
-		case VIDEO_BLEND_THREE:
-			glBlendFunc(GL_DST_COLOR,GL_SRC_COLOR);
-			break;
-		case VIDEO_BLEND_FOUR:
-			glBlendFunc(GL_ZERO,GL_ZERO);
-			break;
-		default:
-			Sys_Error("Unknown blend mode! (%i)\n",voBlendMode);
-		}
-	}
-
-	if(Video.bDebugFrame)
-		pLog_Write(cvVideoDebugLog.string, "Video: Setting blend mode (%i) (%i)\n", voBlendMode, vdDepthMode);
-}
-
 /*
 	Multitexturing Management
 */
@@ -726,12 +691,9 @@ void Video_EnableCapabilities(unsigned int iCapabilities)
 
 		if(iCapabilities & vcCapabilityList[i].uiFirst)
 		{
-			if(Video.bDebugFrame)
-				pLog_Write(cvVideoDebugLog.string, "Video: Enabling %s (%i)\n", vcCapabilityList[i].ccIdentifier, Video.uiActiveUnit);
-
 			if(!bVideoIgnoreCapabilities)
 				// [24/2/2014] Collect up a list of the new capabilities we set ~hogsy
-				iSavedCapabilites[Video.uiActiveUnit][VIDEO_STATE_ENABLE] |= vcCapabilityList[i].uiFirst;
+				Video.TextureUnits[Video.uiActiveUnit].capabilities[VIDEO_STATE_ENABLE] |= vcCapabilityList[i].uiFirst;
 
 			glEnable(vcCapabilityList[i].uiSecond);
 		}
@@ -762,7 +724,7 @@ void Video_DisableCapabilities(unsigned int iCapabilities)
 
 			if(!bVideoIgnoreCapabilities)
 				// Collect up a list of the new capabilities we disabled.
-				iSavedCapabilites[Video.uiActiveUnit][VIDEO_STATE_DISABLE] |= vcCapabilityList[i].uiFirst;
+				Video.TextureUnits[Video.uiActiveUnit].capabilities[VIDEO_STATE_DISABLE] |= vcCapabilityList[i].uiFirst;
 
 			glDisable(vcCapabilityList[i].uiSecond);
 		}
@@ -783,7 +745,7 @@ bool Video_GetCapability(unsigned int iCapability)
 		if (!vcCapabilityList[i].uiFirst)
 			break;
 
-		if (iCapability & iSavedCapabilites[Video.uiActiveUnit][VIDEO_STATE_ENABLE])
+		if (iCapability & Video.TextureUnits[Video.uiActiveUnit].capabilities[VIDEO_STATE_ENABLE])
 			return true;
 	}
 
@@ -798,6 +760,7 @@ bool Video_GetCapability(unsigned int iCapability)
 */
 void Video_ResetCapabilities(bool bClearActive)
 {
+	VIDEO_FUNCTION_START
 	int i;
 
 	if(Video.bDebugFrame)
@@ -815,21 +778,25 @@ void Video_ResetCapabilities(bool bClearActive)
 		// Set this back too...
 		VideoLayer_SetTextureEnvironmentMode(VIDEO_TEXTURE_MODE_MODULATE);
 
-		Video_DisableCapabilities(iSavedCapabilites[VIDEO_TEXTURE_DIFFUSE][VIDEO_STATE_ENABLE]);
-		Video_EnableCapabilities(iSavedCapabilites[VIDEO_TEXTURE_DIFFUSE][VIDEO_STATE_DISABLE]);
+		// Clear out capability list.
+		for (i = 0; i < VIDEO_MAX_UNITS; i++)
+		{
+			Video_DisableCapabilities(Video.TextureUnits[i].capabilities[VIDEO_STATE_ENABLE]);
+			Video_EnableCapabilities(Video.TextureUnits[i].capabilities[VIDEO_STATE_DISABLE]);
 
-		Video_SetBlend(VIDEO_BLEND_TWO, VIDEO_DEPTH_TRUE);
+			Video.TextureUnits[i].capabilities[0] =
+			Video.TextureUnits[i].capabilities[1] = 0;
+		}
+
+		VideoLayer_BlendFunc(VIDEO_BLEND_DEFAULT);
+		VideoLayer_DepthMask(true);
 
 		bVideoIgnoreCapabilities = false;
 
 		if(Video.bDebugFrame)
 			pLog_Write(cvVideoDebugLog.string, "Video: Finished clearing capabilities.\n");
 	}
-
-	// Clear out capability list.
-	for(i = 0; i < VIDEO_MAX_UNITS; i++)
-		iSavedCapabilites[i][0] =
-		iSavedCapabilites[i][1] = 0;
+	VIDEO_FUNCTION_END
 }
 
 /**/

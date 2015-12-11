@@ -459,10 +459,8 @@ void Particle_Draw(void)
 	if (!pActiveParticles || !cvParticleDraw.value)
 		return;
 
-	Video_ResetCapabilities(false);
-
-	Video_SetBlend(VIDEO_BLEND_IGNORE, VIDEO_DEPTH_FALSE);
-	Video_EnableCapabilities(VIDEO_BLEND | VIDEO_TEXTURE_2D);
+	VideoLayer_DepthMask(false);
+	VideoLayer_Enable(VIDEO_BLEND | VIDEO_TEXTURE_2D);
 
 	for (pParticle = pActiveParticles; pParticle; pParticle = pParticle->next)
 	{
@@ -497,5 +495,6 @@ void Particle_Draw(void)
 		rs_particles++;
 	}
 
-	Video_ResetCapabilities(true);
+	VideoLayer_DepthMask(true);
+	VideoLayer_Disable(VIDEO_BLEND | VIDEO_TEXTURE_2D);
 }

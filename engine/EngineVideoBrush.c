@@ -127,7 +127,7 @@ void Surface_DrawMirror(msurface_t *Surface);
 
 void R_DrawSequentialPoly(msurface_t *s)
 {
-	float       fAlpha;
+	float fAlpha;
 
 	fAlpha = ENTALPHA_DECODE(currententity->alpha);
 
@@ -156,8 +156,8 @@ void R_DrawSequentialPoly(msurface_t *s)
 			fAlpha = Math_Clamp(0.0, ENTALPHA_DECODE(currententity->alpha), 1.0f);
 		if(fAlpha < 1.0f)
 		{
-			Video_SetBlend(VIDEO_BLEND_IGNORE,VIDEO_DEPTH_FALSE);
-			Video_EnableCapabilities(VIDEO_BLEND);
+			VideoLayer_DepthMask(false);
+			VideoLayer_Enable(VIDEO_BLEND);
 		}
 
 		Material_Draw(mCurrent, 0, 0, 0, 0, false);
@@ -170,6 +170,12 @@ void R_DrawSequentialPoly(msurface_t *s)
 		}
 
 		Material_Draw(mCurrent, 0, 0, 0, 0, true);
+
+		if (fAlpha < 1.0f)
+		{
+			VideoLayer_DepthMask(true);
+			VideoLayer_Disable(VIDEO_BLEND);
+		}
 	}
 	else
 	{
@@ -177,8 +183,8 @@ void R_DrawSequentialPoly(msurface_t *s)
 		{
 			if (fAlpha < 1.0f)
 			{
-				Video_SetBlend(VIDEO_BLEND_IGNORE, VIDEO_DEPTH_FALSE);
-				Video_EnableCapabilities(VIDEO_BLEND);
+				VideoLayer_DepthMask(false);
+				VideoLayer_Enable(VIDEO_BLEND);
 			}
 
 			Video_SelectTexture(VIDEO_TEXTURE_LIGHT);
@@ -187,7 +193,7 @@ void R_DrawSequentialPoly(msurface_t *s)
 			R_RenderDynamicLightmaps(s);
 			R_UploadLightmap(s->lightmaptexturenum);
 
-			Video_EnableCapabilities(VIDEO_TEXTURE_2D);
+			VideoLayer_Enable(VIDEO_TEXTURE_2D);
 
 			Video_SelectTexture(VIDEO_TEXTURE_DIFFUSE);
 		}
@@ -196,9 +202,15 @@ void R_DrawSequentialPoly(msurface_t *s)
 
 		if (!r_showtris.bValue)
 		{
+			if (fAlpha < 1.0f)
+			{
+				VideoLayer_DepthMask(true);
+				VideoLayer_Disable(VIDEO_BLEND);
+			}
+
 			Video_SelectTexture(VIDEO_TEXTURE_LIGHT);
 
-			glDisable(GL_TEXTURE_2D);
+			VideoLayer_Disable(VIDEO_TEXTURE_2D);
 		}
 
 		rs_brushpasses++;

@@ -80,13 +80,16 @@ extern struct gltexture_s *gEffectTexture[MAX_EFFECTS];
 
 #define	VIDEO_MAX_FRAMEBUFFFERS	1
 
+#define	VIDEO_LOG	"video"
+
 #include "shared_video.h"
 
 typedef struct
 {
-	bool bIsActive;
+	bool isactive;
 
 	unsigned int uiCurrentTexture;
+	unsigned int capabilities[2];
 
 	VideoTextureEnvironmentMode_t CurrentTexEnvMode;
 } VideoTextureMU_t;
@@ -157,7 +160,6 @@ extern "C" {
 	void Video_ClearBuffer(void);
 	void Video_GenerateSphereCoordinates(void);
 	void Video_SetTexture(gltexture_t *gTexture);
-	void Video_SetBlend(VideoBlend_t voBlendMode, VideoDepth_t vdDepthMode);
 	void Video_SetViewportSize(int iWidth, int iHeight);
 	void Video_SelectTexture(unsigned int uiTarget);
 	void Video_EnableCapabilities(unsigned int iCapabilities);

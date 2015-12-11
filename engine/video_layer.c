@@ -200,7 +200,7 @@ typedef struct
 	const char *ccIdentifier;
 } VideoLayerCapabilities_t;
 
-VideoLayerCapabilities_t vlcCapabilityList[] =
+VideoLayerCapabilities_t capabilities[] =
 {
 	{ VIDEO_ALPHA_TEST, GL_ALPHA_TEST, "ALPHA_TEST" },
 	{ VIDEO_BLEND, GL_BLEND, "BLEND" },
@@ -222,20 +222,21 @@ void VideoLayer_Enable(unsigned int uiCapabilities)
 {
 	VIDEO_FUNCTION_START
 	int i;
-	for (i = 0; i < sizeof(vlcCapabilityList); i++)
+	for (i = 0; i < sizeof(capabilities); i++)
 	{
 		// Check if we reached the end of the list yet.
-		if (!vlcCapabilityList[i].uiFirst)
+		if (!capabilities[i].uiFirst)
 			break;
 
 		if (uiCapabilities & VIDEO_TEXTURE_2D)
 			Video.bUnitState[Video.uiActiveUnit] = true;
 
-		if (uiCapabilities & vlcCapabilityList[i].uiFirst)
+		if (uiCapabilities & capabilities[i].uiFirst)
 		{
-			// TODO: Implement debugging support.
+			if (Video.bDebugFrame)
+				pLog_Write(VIDEO_LOG, "Video: Enabling %s (%i)\n", capabilities[i].ccIdentifier, Video.uiActiveUnit);
 
-			glEnable(vlcCapabilityList[i].uiSecond);
+			glEnable(capabilities[i].uiSecond);
 		}
 	}
 	VIDEO_FUNCTION_END
@@ -245,20 +246,20 @@ void VideoLayer_Disable(unsigned int uiCapabilities)
 {
 	VIDEO_FUNCTION_START
 	int i;
-	for (i = 0; i < sizeof(vlcCapabilityList); i++)
+	for (i = 0; i < sizeof(capabilities); i++)
 	{
 		// Check if we reached the end of the list yet.
-		if (!vlcCapabilityList[i].uiFirst)
+		if (!capabilities[i].uiFirst)
 			break;
 
 		if (uiCapabilities & VIDEO_TEXTURE_2D)
 			Video.bUnitState[Video.uiActiveUnit] = false;
 
-		if (uiCapabilities & vlcCapabilityList[i].uiFirst)
+		if (uiCapabilities & capabilities[i].uiFirst)
 		{
 			// TODO: Implement debugging support.
 
-			glDisable(vlcCapabilityList[i].uiSecond);
+			glDisable(capabilities[i].uiSecond);
 		}
 	}
 	VIDEO_FUNCTION_END
@@ -266,22 +267,22 @@ void VideoLayer_Disable(unsigned int uiCapabilities)
 
 /*	TODO: Want more control over the dynamics of this...
 */
-void VideoLayer_SetBlend(VideoBlend_t mode)
+void VideoLayer_BlendFunc(VideoBlend_t modea, VideoBlend_t modeb)
 {
-	if (mode == VIDEO_BLEND_IGNORE)
-		return;
+	VIDEO_FUNCTION_START
+	glBlendFunc(modea, modeb);
+	if (Video.bDebugFrame)
+		pLog_Write(VIDEO_LOG, "Video: Setting blend mode (%i) (%i)\n", modea, modeb);
+	VIDEO_FUNCTION_END
+}
 
-	switch (mode)
-	{
-	case VIDEO_BLEND_ADDITIVE:
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-		break;
-	case VIDEO_BLEND_DEFAULT:
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		break;
-	default:
-		Sys_Error("Unknown blend mode! (%i)\n", mode);
-	}
+/*	Enable or disable writing into the depth buffer.
+*/
+void VideoLayer_DepthMask(bool mode)
+{
+	VIDEO_FUNCTION_START
+	glDepthMask(mode);
+	VIDEO_FUNCTION_END
 }
 
 /*===========================

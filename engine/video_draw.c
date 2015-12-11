@@ -609,10 +609,8 @@ void Draw_GradientFill(int x, int y, int w, int h, Colour_t mvTopColour, Colour_
 {
 	VideoObjectVertex_t	voFill[4];
 
-	Video_ResetCapabilities(false);
-
-	Video_EnableCapabilities(VIDEO_BLEND);
-	Video_DisableCapabilities(VIDEO_DEPTH_TEST | VIDEO_TEXTURE_2D);
+	VideoLayer_Enable(VIDEO_BLEND);
+	VideoLayer_Disable(VIDEO_DEPTH_TEST | VIDEO_TEXTURE_2D);
 
 	Video_ObjectVertex(&voFill[0], x, y, 0);
 	Video_ObjectColour(&voFill[0], mvTopColour[0], mvTopColour[1], mvTopColour[2], mvTopColour[3]);
@@ -625,7 +623,8 @@ void Draw_GradientFill(int x, int y, int w, int h, Colour_t mvTopColour, Colour_
 
 	Video_DrawFill(voFill, NULL, 0);
 
-	Video_ResetCapabilities(true);
+	VideoLayer_Disable(VIDEO_BLEND);
+	VideoLayer_Enable(VIDEO_DEPTH_TEST | VIDEO_TEXTURE_2D);
 }
 
 void Draw_FadeScreen (void)
@@ -633,8 +632,6 @@ void Draw_FadeScreen (void)
 	VideoObjectVertex_t	voFade[4];
 
 	GL_SetCanvas(CANVAS_DEFAULT);
-
-	Video_ResetCapabilities(false);
 
 	Video_ObjectVertex(&voFade[0], 0, 0, 0);
 	Video_ObjectColour(&voFade[0], 1.0f, 1.0f, 1.0f, 0.5f);
@@ -649,8 +646,6 @@ void Draw_FadeScreen (void)
 	Video_ObjectColour(&voFade[3], 1.0f, 1.0f, 1.0f, 0.5f);
 
 	Video_DrawFill(voFade, NULL, 0);
-
-	Video_ResetCapabilities(true);
 }
 
 /*	Draws the little blue disc in the corner of the screen.
