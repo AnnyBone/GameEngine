@@ -611,6 +611,7 @@
     <ClCompile Include="client\ClientMaterial.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="client\effect_decal.cpp" />
     <ClCompile Include="client\effect_particle.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
@@ -687,7 +688,7 @@
     <ClCompile Include="EngineNetworkWindows.c" />
     <ClCompile Include="EngineNetworkWinsock.c" />
     <ClCompile Include="EngineServerEntity.c" />
-    <ClCompile Include="EngineVideoBrush.c" />
+    <ClCompile Include="video_brush.c" />
     <ClCompile Include="EngineVideoWorld.c" />
     <ClCompile Include="EngineAudioDMA.c" />
     <ClCompile Include="EngineAudioMem.c" />

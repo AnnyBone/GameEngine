@@ -138,9 +138,6 @@
     <ClCompile Include="EngineVideoAlias.c">
       <Filter>Legacy\Client\Video</Filter>
     </ClCompile>
-    <ClCompile Include="EngineVideoBrush.c">
-      <Filter>Legacy\Client\Video</Filter>
-    </ClCompile>
     <ClCompile Include="EngineNetwork.c">
       <Filter>Legacy\Network</Filter>
     </ClCompile>
@@ -315,6 +312,12 @@
     </ClCompile>
     <ClCompile Include="video_layer.c">
       <Filter>Client\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="video_brush.c">
+      <Filter>Client\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="client\effect_decal.cpp">
+      <Filter>Client</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

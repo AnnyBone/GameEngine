@@ -946,6 +946,8 @@ void Material_Draw(Material_t *Material, int Skin,
 	{
 		if (!bPost)
 		{
+			VideoLayer_DepthMask(false);
+
 			VideoLayer_Enable(VIDEO_BLEND);
 
 			if (msCurrentSkin->uiFlags & MATERIAL_FLAG_ADDITIVE)
@@ -954,6 +956,8 @@ void Material_Draw(Material_t *Material, int Skin,
 		}
 		else
 		{
+			VideoLayer_DepthMask(true);
+
 			VideoLayer_Disable(VIDEO_BLEND);
 
 			if (msCurrentSkin->uiFlags & MATERIAL_FLAG_ADDITIVE)

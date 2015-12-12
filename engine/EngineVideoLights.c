@@ -78,7 +78,7 @@ void Light_Draw(void)
 	{
 		if (cvEditorLightPreview.bValue && dlLight->lightmap)
 			continue;
-		// [5/5/2012] Ugh rarely some lights are inverted... ~hogsy
+		// Ugh rarely some lights are inverted...
 		else if(((dlLight->die < cl.time) && dlLight->die) || !dlLight->radius)
 			continue;
 
@@ -141,7 +141,7 @@ void Light_MarkLights(DynamicLight_t *light,int bit,mnode_t *node)
 {
 	mplane_t		*splitplane;
 	msurface_t		*surf;
-	vec3_t			impact;
+	MathVector3f_t	impact;
 	float			dist, l, maxdist;
 	int				j, s, t;
 	unsigned int	i;
@@ -234,15 +234,15 @@ LIGHT SAMPLING
 =============================================================================
 */
 
-msurface_t	*lightsurface;
-mplane_t	*lightplane;
-vec3_t		lightspot;
+msurface_t		*lightsurface;
+mplane_t		*lightplane;
+MathVector3f_t	lightspot;
 
-bool RecursiveLightPoint(vec3_t color,mnode_t *node,vec3_t start,vec3_t end)
+bool RecursiveLightPoint(MathVector3f_t color, mnode_t *node, MathVector3f_t start, MathVector3f_t end)
 {
-	float	front,back,
-			frac;
-	vec3_t	mid;
+	float			front,back,
+					frac;
+	MathVector3f_t	mid;
 
 loc0:
 	if (node->contents < 0)
@@ -300,14 +300,14 @@ loc0:
 			ds -= surf->texturemins[0];
 			dt -= surf->texturemins[1];
 
-			// Changed to >= on LordHavoc's suggestion; http://forums.inside3d.com/viewtopic.php?p=42053&sid=0ac1068afbe6572365d3ba2b9a62d411#p42053
+			// Changed to >= on LordHavoc's suggestion; http://forums.insideqc.com/viewtopic.php?p=42053&sid=0ac1068afbe6572365d3ba2b9a62d411#p42053
 			if (ds >= surf->extents[0] || dt >= surf->extents[1])
 				continue;
 
 			if (surf->samples)
 			{
 				// LordHavoc: enhanced to interpolate lighting
-				byte *lightmap;
+				uint8_t *lightmap;
 				int maps,line3,dsfrac = ds & 15,dtfrac = dt & 15,
 					r00 = 0,g00 = 0,b00 = 0,
 					r01 = 0,g01 = 0,b01 = 0,
@@ -348,9 +348,9 @@ loc0:
 
 /*	Returns a colour sample from the lightmap.
 */
-MathVector_t Light_GetSample(vec3_t vPoint)
+MathVector_t Light_GetSample(MathVector3f_t vPoint)
 {
-	vec3_t			vEnd,vLightColour;
+	MathVector3f_t	vEnd, vLightColour;
 	MathVector_t	mvLightColour;
 
 	if(!cl.worldmodel->lightdata)
@@ -360,7 +360,6 @@ MathVector_t Light_GetSample(vec3_t vPoint)
 	vEnd[1] = vPoint[1];
 	vEnd[2] = vPoint[2]-2048.0f;
 
-	// [1/7/2012] Simplified ~hogsy
 	Math_VectorClear(vLightColour);
 
 	RecursiveLightPoint(vLightColour,cl.worldmodel->nodes,vPoint,vEnd);
@@ -375,13 +374,13 @@ MathVector_t Light_GetSample(vec3_t vPoint)
 	sample. If the lightmap sample comes back as dark, then we assume
 	there shouldn't be an actual light source.
 */
-DynamicLight_t *Light_GetDynamic(vec3_t vPoint,bool bCheap)
+DynamicLight_t *Light_GetDynamic(MathVector3f_t vPoint, bool bCheap)
 {
 	int				i;
 	bool			bStaticLights = true;
 	float			fLightAmount;
 	DynamicLight_t	*dlClosestLight = NULL;
-	vec3_t			vLightColour;
+	MathVector3f_t	vLightColour;
 
 	// If cheap, then don't bother with the lightmap checks.
 	if (!bCheap)
