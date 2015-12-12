@@ -1,5 +1,5 @@
-#Katana Engine#
-The Katana engine is part of a project that aims to develop a heavily modified version of the FitzQuake engine.
+#Katana#
+Katana is a heavily modified version of the FitzQuake engine.
 
 ###Features###
 - Abstract SDL2 implementation for both video and input
@@ -9,6 +9,7 @@ The Katana engine is part of a project that aims to develop a heavily modified v
 - Embedded mode
 - WYSIWYG editor environment
 - VBO support
+- FBO support
 - Blob and point-based planar shadows
 - Support for MD2 model format
 - Support for both TGA and PNG image formats
@@ -21,7 +22,6 @@ The Katana engine is part of a project that aims to develop a heavily modified v
 
 ### Planned Features ###
 - Mirrors
-- Interface for dealing with FBOs
 - Support for post-processing
 - Entirely new level format and visibility system
 
