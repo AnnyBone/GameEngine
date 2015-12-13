@@ -560,12 +560,12 @@ void Video_DrawFill(VideoObjectVertex_t *voFill, Material_t *mMaterial, int iSki
 */
 void Video_DrawSurface(msurface_t *mSurface,float fAlpha, Material_t *mMaterial, unsigned int uiSkin)
 {
-	VideoObjectVertex_t	*voSurface;
-	float			*fVert;
-	int				i;
+	VideoObjectVertex_t	*drawsurf;
+	float				*fVert;
+	int					i;
 
-	voSurface = (VideoObjectVertex_t*)Hunk_TempAlloc(mSurface->polys->numverts*sizeof(VideoObjectVertex_t));
-	if (!voSurface)
+	drawsurf = (VideoObjectVertex_t*)Hunk_TempAlloc(mSurface->polys->numverts*sizeof(VideoObjectVertex_t));
+	if (!drawsurf)
 		Sys_Error("Failed to allocate surface video object!\n");
 
 	fVert = mSurface->polys->verts[0];
@@ -574,13 +574,13 @@ void Video_DrawSurface(msurface_t *mSurface,float fAlpha, Material_t *mMaterial,
 #ifdef _MSC_VER
 #pragma warning(suppress: 6011)
 #endif
-		Video_ObjectVertex(&voSurface[i], fVert[0], fVert[1], fVert[2]);
-		Video_ObjectTexture(&voSurface[i], VIDEO_TEXTURE_DIFFUSE, fVert[3], fVert[4]);
-		Video_ObjectTexture(&voSurface[i], VIDEO_TEXTURE_LIGHT, fVert[5], fVert[6]);
-		Video_ObjectColour(&voSurface[i], 1.0f, 1.0f, 1.0f, fAlpha);
+		Video_ObjectVertex(&drawsurf[i], fVert[0], fVert[1], fVert[2]);
+		Video_ObjectTexture(&drawsurf[i], VIDEO_TEXTURE_DIFFUSE, fVert[3], fVert[4]);
+		Video_ObjectTexture(&drawsurf[i], VIDEO_TEXTURE_LIGHT, fVert[5], fVert[6]);
+		Video_ObjectColour(&drawsurf[i], 1.0f, 1.0f, 1.0f, fAlpha);
 	}
 
-	Video_DrawObject(voSurface, VIDEO_PRIMITIVE_TRIANGLE_FAN, mSurface->polys->numverts, mMaterial, 0);
+	Video_DrawObject(drawsurf, VIDEO_PRIMITIVE_TRIANGLE_FAN, mSurface->polys->numverts, mMaterial, 0);
 }
 
 /*	Draw 3D object.
@@ -623,7 +623,7 @@ void Video_DrawObject(
 		}
 
 	bool bShowWireframe = r_showtris.bValue;
-	if (mMaterial && mMaterial->bWireframeOverride)
+	if (mMaterial && mMaterial->override_wireframe)
 		bShowWireframe = false;
 
 	VideoLayer_DrawArrays(vpPrimitiveType, uiVerts, bShowWireframe);

@@ -126,10 +126,12 @@ Material_t *Material_Allocate(void)
 #ifdef _MSC_VER
 #pragma warning(suppress: 6386)
 #endif
-	mMaterials[iMaterialCount].cName[0] = 0;
-	mMaterials[iMaterialCount].iIdentification = iMaterialCount;
-	mMaterials[iMaterialCount].fAlpha = 1.0f;
-	mMaterials[iMaterialCount].bBind = true;
+	mMaterials[iMaterialCount].cName[0]				= 0;
+	mMaterials[iMaterialCount].iIdentification		= iMaterialCount;
+	mMaterials[iMaterialCount].fAlpha				= 1.0f;
+	mMaterials[iMaterialCount].bBind				= true;
+	mMaterials[iMaterialCount].override_wireframe	= false;
+	mMaterials[iMaterialCount].override_lightmap	= false;
 
 	return &mMaterials[iMaterialCount];
 }
@@ -284,6 +286,12 @@ gltexture_t *Material_LoadTexture(Material_t *mMaterial, MaterialSkin_t *mCurren
 
 		if (!Q_strcasecmp(cArg, "notexture"))
 			return notexture;
+		else if (!Q_strcasecmp(cArg, "lightmap"))
+		{
+			mMaterial->override_lightmap = true;
+			mCurrentSkin->mtTexture[mCurrentSkin->uiTextures].mttType = MATERIAL_TEXTURE_LIGHTMAP;
+			return notexture;
+		}
 		else
 		{
 			Con_Warning("Attempted to set invalid internal texture! (%s)\n", mMaterial->cPath);
@@ -368,9 +376,9 @@ typedef struct
 
 MaterialTextureTypeX_t mttMaterialTypes[] =
 {
-	{ "diffuse", MATERIAL_TEXTURE_DIFFUSE },		// Default
-	{ "detail", MATERIAL_TEXTURE_DETAIL },			// Detail map
-	{ "sphere", MATERIAL_TEXTURE_SPHERE },			// Sphere map
+	{ "diffuse",	MATERIAL_TEXTURE_DIFFUSE	},	// Default
+	{ "detail",		MATERIAL_TEXTURE_DETAIL		},	// Detail map
+	{ "sphere",		MATERIAL_TEXTURE_SPHERE		},	// Sphere map
 	{ "fullbright", MATERIAL_TEXTURE_FULLBRIGHT }	// Fullbright map
 };
 
@@ -401,7 +409,12 @@ void _Material_SetType(Material_t *mCurrentMaterial, MaterialFunctionType_t mftC
 
 void _Material_SetWireframe(Material_t *mCurrentMaterial, MaterialFunctionType_t mftContext, char *cArg)
 {
-	mCurrentMaterial->bWireframeOverride = (bool)atoi(cArg);
+	mCurrentMaterial->override_wireframe = (bool)atoi(cArg);
+}
+
+void _Material_SetLightmap(Material_t *material, MaterialFunctionType_t context, char *arg)
+{
+	material->override_lightmap = (bool)atoi(arg);
 }
 
 void _Material_SetShader(Material_t *mCurrentMaterial, MaterialFunctionType_t mftContext, char *cArg)
@@ -717,6 +730,7 @@ MaterialKey_t MaterialFunctions[]=
 
 	// Material
 	{ "override_wireframe", _Material_SetWireframe, MATERIAL_FUNCTION_MATERIAL },
+	{ "override_lightmap", _Material_SetLightmap, MATERIAL_FUNCTION_MATERIAL },
 	{ "shader", _Material_SetShader, MATERIAL_FUNCTION_MATERIAL },
 	{ "animation_speed", _Material_SetAnimationSpeed, MATERIAL_FUNCTION_MATERIAL },
 	{ "skin", _Material_AddSkin, MATERIAL_FUNCTION_MATERIAL },
@@ -920,7 +934,7 @@ void Material_Draw(Material_t *Material, int Skin,
 	if (r_drawflat_cheatsafe || !Material)
 		return;
 
-	if (!Material->bWireframeOverride && (r_lightmap_cheatsafe || r_showtris.bValue))
+	if (!Material->override_wireframe && (r_lightmap_cheatsafe || r_showtris.bValue))
 	{
 		if (!bPost)
 		{

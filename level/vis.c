@@ -166,10 +166,7 @@ void LeafFlow (int leafnum)
 	totalvis += numvis;
 
 	if( !noreuse ) {	// Vic: reuse old vis data
-		int		i;
-		byte	*data;
-
-		data = uncompressed;
+		uint8_t	*data = uncompressed;
 		for( i = 0; i < leafnum; i++, data += bitbytes ) {
 			if( !memcmp( data, outbuffer, bitbytes ) ) {
 				c_reused++;

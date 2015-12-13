@@ -74,12 +74,12 @@ EVENT MESSAGES
 	An attenuation of 0 will play full volume everywhere in the level.
 	Larger attenuations will drop off.  (max 4 attenuation)
 */
-void SV_StartSound(ServerEntity_t *entity,int channel,char *sample,int volume,float attenuation)
+void SV_StartSound(ServerEntity_t *entity,int channel,char *sample,int nvolume,float attenuation)
 {
 	int	sound_num,field_mask,i,ent;
 
-	if (volume < 0 || volume > 255)
-		Sys_Error ("SV_StartSound: volume = %i", volume);
+	if (nvolume < 0 || nvolume > 255)
+		Sys_Error ("SV_StartSound: volume = %i", nvolume);
 
 	if(attenuation < 0 || attenuation > 4.0f)
 		Sys_Error ("SV_StartSound: attenuation = %f", attenuation);
@@ -105,7 +105,7 @@ void SV_StartSound(ServerEntity_t *entity,int channel,char *sample,int volume,fl
 	ent = NUM_FOR_EDICT(entity);
 
 	field_mask = 0;
-	if (volume != DEFAULT_SOUND_PACKET_VOLUME)
+	if (nvolume != DEFAULT_SOUND_PACKET_VOLUME)
 		field_mask |= SND_VOLUME;
 	if (attenuation != DEFAULT_SOUND_PACKET_ATTENUATION)
 		field_mask |= SND_ATTENUATION;
@@ -118,7 +118,7 @@ void SV_StartSound(ServerEntity_t *entity,int channel,char *sample,int volume,fl
 	MSG_WriteByte (&sv.datagram, svc_sound);
 	MSG_WriteByte (&sv.datagram, field_mask);
 	if (field_mask & SND_VOLUME)
-		MSG_WriteByte (&sv.datagram, volume);
+		MSG_WriteByte (&sv.datagram, nvolume);
 	if (field_mask & SND_ATTENUATION)
 		MSG_WriteByte (&sv.datagram, attenuation*64);
 

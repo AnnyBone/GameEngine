@@ -18,46 +18,15 @@
 
 #include "client.h"
 
-class Panel
-{
-public:
-protected:
-private:
-	int width, height;
-	int x, y;
-};
-
 Material_t *m_cursor;
 
-class Menu
+void Menu_Initialize()
 {
-public:
-	Menu();
-	~Menu();
-
-	void Initialize();
-	void Draw();
-
-	void SetWidth(int nwidth) { width = nwidth; }
-	void SetHeight(int nheight) { height = nheight; }
-protected:
-private:
-	int width, height;
-	int x, y;
-};
-
-Menu::Menu()
-{
-	width	= 640;
-	height	= 480;
-	x		= 0;
-	y		= 0;
+	Engine.Con_DPrintf("Initializing menu...\n");
 }
 
-void Menu::Initialize()
-{
-	
-}
+void Menu_Draw()
+{}
 
-void Menu::Draw()
+void Menu_Shutdown()
 {}

@@ -729,19 +729,19 @@ trace_t SV_ClipMoveToEntity(ServerEntity_t *ent, MathVector3f_t start, MathVecto
 	if (ent->Physics.iSolid == SOLID_BSP &&
 		(fabs(ent->v.angles[0]) > 1 || fabs(ent->v.angles[1]) > 1 || fabs(ent->v.angles[2]) > 1) )
 	{
-		MathVector3f_t forward,right,up,temp;
+		MathVector3f_t nforward,nright,nup,ntemp;
 
-		Math_AngleVectors(ent->v.angles,forward,right,up);
+		Math_AngleVectors(ent->v.angles, nforward, nright, nup);
 
-		Math_VectorCopy (start_l, temp);
-		start_l[0] = Math_DotProduct(temp,forward);
-		start_l[1] = -Math_DotProduct(temp,right);
-		start_l[2] = Math_DotProduct(temp,up);
+		Math_VectorCopy (start_l, ntemp);
+		start_l[0] = Math_DotProduct(ntemp, nforward);
+		start_l[1] = -Math_DotProduct(ntemp, nright);
+		start_l[2] = Math_DotProduct(ntemp, nup);
 
-		Math_VectorCopy (end_l, temp);
-		end_l[0] = Math_DotProduct(temp,forward);
-		end_l[1] = -Math_DotProduct(temp,right);
-		end_l[2] = Math_DotProduct(temp,up);
+		Math_VectorCopy (end_l, ntemp);
+		end_l[0] = Math_DotProduct(ntemp, nforward);
+		end_l[1] = -Math_DotProduct(ntemp, nright);
+		end_l[2] = Math_DotProduct(ntemp, nup);
 	}
 
 	// Trace a line through the apropriate clipping hull

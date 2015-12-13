@@ -39,7 +39,7 @@
 #endif
 
 //	Build needs to be updated each day that work is done on the engine.
-#define ENGINE_VERSION_BUILD	1040	// 05/12/2015
+#define ENGINE_VERSION_BUILD	1048	// 13/12/2015
 
 #define	ENGINE_LOG	"engine"
 

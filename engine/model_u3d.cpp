@@ -22,14 +22,16 @@ extern "C" {
 
 	void ModelU3D_Load(model_t *model, void *buffer)
 	{
-//		U3DDataHeader		dataheader;
-//		U3DAnimationHeader	animheader;
-//		void				*anim_buffer, *data_buffer;
+#if 0
+		U3DDataHeader		dataheader;
+		U3DAnimationHeader	animheader;
+		void				*anim_buffer, *data_buffer;
 
 		// U3D models are animated per-vertex.
 		model->type = MODEL_TYPE_VERTEX;
 
 		//	COM_LoadFile()
+#endif
 	}
 
 }

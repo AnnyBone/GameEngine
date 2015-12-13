@@ -385,7 +385,7 @@ void World_Draw(void)
 				if (t->mAssignedMaterial->bBind && !r_showtris.bValue)
 				{
 					Video_SelectTexture(VIDEO_TEXTURE_LIGHT);
-					Video_EnableCapabilities(VIDEO_TEXTURE_2D);
+					VideoLayer_Enable(VIDEO_TEXTURE_2D);
 
 					t->mAssignedMaterial->bBind = false;
 				}
@@ -409,7 +409,8 @@ void World_Draw(void)
 
 	// Disable light texture
 	Video_SelectTexture(VIDEO_TEXTURE_LIGHT);
-	Video_DisableCapabilities(VIDEO_TEXTURE_2D);
-
+	VideoLayer_Disable(VIDEO_TEXTURE_2D);
+	Video_SelectTexture(0);
+	
 	Video_ResetCapabilities(true);
 }

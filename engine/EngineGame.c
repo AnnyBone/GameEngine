@@ -487,12 +487,14 @@ void Game_Initialize(void)
 	Import.LightStyle = LightStyle;
 	Import.CenterPrint = Server_CenterPrint;
 	Import.Cmd_AddCommand = Game_AddCommand;
-	Import.ReadByte = MSG_ReadByte;
-	Import.ReadCoord = MSG_ReadCoord;
-	Import.WriteByte = Game_WriteByte;
-	Import.WriteCoord = Game_WriteCoord;
-	Import.WriteAngle = Game_WriteAngle;
-	Import.WriteEntity = Game_WriteEntity;
+
+	Import.ReadByte			= MSG_ReadByte;
+	Import.ReadCoord		= MSG_ReadCoord;
+	Import.ReadFloat		= MSG_ReadFloat;
+	Import.WriteByte		= Game_WriteByte;
+	Import.WriteCoord		= Game_WriteCoord;
+	Import.WriteAngle		= Game_WriteAngle;
+	Import.WriteEntity		= Game_WriteEntity;
 	Import.SetMessageEntity = Game_SetMessageEntity;
 
 	// Hunk
@@ -514,20 +516,20 @@ void Game_Initialize(void)
 		Import.Client_RemoveMenuState	= Menu->RemoveState;
 	}
 
-	Import.Server_PointContents = SV_PointContents;
-	Import.Server_MakeStatic = Server_MakeStatic;
-	Import.Server_BroadcastPrint = SV_BroadcastPrintf;
-	Import.Server_SinglePrint = Server_SinglePrint;
-	Import.Server_PrecacheResource = Server_PrecacheResource;
-	Import.Server_FindRadius = Server_FindRadius;
-	Import.Server_FindEntity = Server_FindEntity;
-	Import.Server_Restart = Host_Restart_f;
-	Import.Server_ChangeLevel = Server_ChangeLevel;
-	Import.Server_AmbientSound = Game_AmbientSound;
-	Import.Server_GetLevelName = Server_GetLevelName;
-	Import.Server_GetFrameTime = Server_GetFrameTime;
-	Import.Server_GetNumEdicts = Game_GetNumEdicts;
-	Import.Server_GetEdicts = Game_GetEdicts;
+	Import.Server_PointContents		= SV_PointContents;
+	Import.Server_MakeStatic		= Server_MakeStatic;
+	Import.Server_BroadcastPrint	= SV_BroadcastPrintf;
+	Import.Server_SinglePrint		= Server_SinglePrint;
+	Import.Server_PrecacheResource	= Server_PrecacheResource;
+	Import.Server_FindRadius		= Server_FindRadius;
+	Import.Server_FindEntity		= Server_FindEntity;
+	Import.Server_Restart			= Host_Restart_f;
+	Import.Server_ChangeLevel		= Server_ChangeLevel;
+	Import.Server_AmbientSound		= Game_AmbientSound;
+	Import.Server_GetLevelName		= Server_GetLevelName;
+	Import.Server_GetFrameTime		= Server_GetFrameTime;
+	Import.Server_GetNumEdicts		= Game_GetNumEdicts;
+	Import.Server_GetEdicts			= Game_GetEdicts;
 
 	Game = (GameExport_t*)pModule_LoadInterface(hGameInstance, va("%s/%s"MODULE_GAME, com_gamedir, Global.cModulePath), "Game_Main", &Import);
 	if(!Game)

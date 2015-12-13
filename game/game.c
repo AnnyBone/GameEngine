@@ -226,6 +226,7 @@ pMODULE_EXPORT GameExport_t *Game_Main(ModuleImport_t *Import)
 	Engine.Cvar_SetValue			= Import->Cvar_SetValue;
 	Engine.ReadByte					= Import->ReadByte;
 	Engine.ReadCoord				= Import->ReadCoord;
+	Engine.ReadFloat				= Import->ReadFloat;
 	Engine.WriteByte				= Import->WriteByte;
 	Engine.WriteCoord				= Import->WriteCoord;
 	Engine.WriteAngle				= Import->WriteAngle;
@@ -264,19 +265,19 @@ pMODULE_EXPORT GameExport_t *Game_Main(ModuleImport_t *Import)
 
 	// Exports...
 
-	Export.iVersion = GAME_VERSION;
-	Export.Name = GAME_NAME;
-	Export.ChangeYaw = ChangeYaw;
-	Export.SetSize = Entity_SetSize;
-	Export.Draw = Client_Draw;
-	Export.Game_Init = Game_Init;
-	Export.Shutdown = Game_Shutdown;
+	Export.iVersion		= GAME_VERSION;
+	Export.Name			= GAME_NAME;
+	Export.ChangeYaw	= ChangeYaw;
+	Export.SetSize		= Entity_SetSize;
+	Export.Draw			= Client_Draw;
+	Export.Game_Init	= Game_Init;
+	Export.Shutdown		= Game_Shutdown;
 
 	// Client
-	Export.Client_RelinkEntities = Client_RelinkEntities;
-	Export.Client_Initialize = Client_Initialize;
-	Export.Client_ParseTemporaryEntity = Client_ParseTemporaryEntity;
-	Export.Client_ViewFrame = Client_ViewFrame;
+	Export.Client_RelinkEntities		= Client_RelinkEntities;
+	Export.Client_Initialize			= Client_Initialize;
+	Export.Client_ParseTemporaryEntity	= Client_ParseTemporaryEntity;
+	Export.Client_ViewFrame				= Client_ViewFrame;
 
 	// Server
 	Export.Server_Initialize		= Server_Initialize;
@@ -289,13 +290,13 @@ pMODULE_EXPORT GameExport_t *Game_Main(ModuleImport_t *Import)
 	Export.Server_SpawnPlayer		= Player_Spawn;
 
 	// Physics
-	Export.Physics_SetGravity = Physics_SetGravity;
+	Export.Physics_SetGravity			= Physics_SetGravity;
 	Export.Physics_CheckWaterTransition = Physics_CheckWaterTransition;
-	Export.Physics_CheckVelocity = Physics_CheckVelocity;
-	Export.Physics_CheckWater = Physics_CheckWater;
-	Export.Physics_WallFriction = Physics_WallFriction;
-	Export.Physics_Impact = Physics_Impact;
-	Export.Physics_PushEntity = Physics_PushEntity;
+	Export.Physics_CheckVelocity		= Physics_CheckVelocity;
+	Export.Physics_CheckWater			= Physics_CheckWater;
+	Export.Physics_WallFriction			= Physics_WallFriction;
+	Export.Physics_Impact				= Physics_Impact;
+	Export.Physics_PushEntity			= Physics_PushEntity;
 
 	return &Export;
 }

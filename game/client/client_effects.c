@@ -20,6 +20,11 @@
 
 #include "client_effects.h"
 
+void ClientEffect_Initialize()
+{
+
+}
+
 /*
 	Particle Effects
 */
@@ -73,16 +78,16 @@ void ClientEffect_Explosion(MathVector3f_t position)
 		if (!part)
 			break;
 
-		part->iMaterial = Engine.Client_GetEffect(va("smoke%i", rand() % 4));
-		part->fScale = ((float)(rand() % 5)) + 10.0f*10.0f;
-		part->lifetime = Client.time + rand() % 4;
-		part->fRamp = (float)(rand() & 3);
-		part->pBehaviour = PARTICLE_BEHAVIOUR_EXPLODE;
+		part->iMaterial		= Engine.Client_GetEffect(va("smoke%i", rand() % 4));
+		part->fScale		= ((float)(rand() % 5)) + 10.0f*10.0f;
+		part->lifetime		= Client.time + rand() % 4;
+		part->fRamp			= (float)(rand() & 3);
+		part->pBehaviour	= PARTICLE_BEHAVIOUR_EXPLODE;
 
 		for (j = 0; j < 3; j++)
 		{
-			part->vOrigin[j] = position[j] + (((float)(rand() & 32)) - 16.0f);
-			part->vVelocity[j] = (float)((rand() % 50) * 2);	// TODO: THIS IS STUPID!! HOLY FUCK.
+			part->vOrigin[j]	= position[j] + (((float)(rand() & 32)) - 16.0f);
+			part->vVelocity[j]	= (float)((rand() % 50) * 2);	// TODO: THIS IS STUPID!! HOLY FUCK.
 		}
 	}
 
@@ -90,11 +95,13 @@ void ClientEffect_Explosion(MathVector3f_t position)
 	if (!light)
 		return;
 
-	light->lightmap = true;
-	light->radius = 300.0f;
-	light->color[0] = 255.0f;
-	light->color[1] = 255.0f;
-	light->color[2] = 50.0f;
-	light->minlight = 32.0f;
-	light->die = (Client.time + 0.5);
+	Math_VectorCopy(position, light->origin);
+
+	light->lightmap		= true;
+	light->radius		= 300.0f;
+	light->color[0]		= 255.0f;
+	light->color[1]		= 255.0f;
+	light->color[2]		= 50.0f;
+	light->minlight		= 32.0f;
+	light->die			= (Client.time + 0.5);
 }

@@ -93,9 +93,6 @@ extern	refdef_t	r_refdef;
 extern	mleaf_t		*r_viewleaf, *r_oldviewleaf;
 extern	int		d_lightstylevalue[256];	// 8.8 fraction of base light value
 
-extern	int			mirrortexturenum;	// quake texturenum, not gltexturenum
-extern	mplane_t	*mpMirrorPlane;
-
 #define OFFSET_NONE		0
 #define OFFSET_DECAL	-1
 #define OFFSET_FOG		-2

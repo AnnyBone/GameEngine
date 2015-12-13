@@ -18,6 +18,7 @@
 
 #include "client.h"
 
+#include "client_player.h"
 #include "client_effects.h"
 
 /*
@@ -29,6 +30,8 @@
 */
 void Client_Initialize(void)
 {
+	ClientEffect_Initialize();
+	ClientPlayer_Initialize();
 }
 
 /*	Crappy the sticky renderer loop!
@@ -38,6 +41,8 @@ void Client_Draw(void)
 {
 }
 
+/*	Parse messages from the server.
+*/
 void Client_ParseServerMessage(int cmd)
 {
 	switch (cmd)
@@ -54,7 +59,6 @@ void Client_ParseTemporaryEntity(void)
 
 	// Set iType, so if the type is missing we can mention it below.
 	type = Engine.ReadByte();
-
 	switch (type)
 	{
 	case CTE_EXPLOSION:
@@ -80,8 +84,24 @@ void Client_ParseTemporaryEntity(void)
 		}
 		break;
 	case CTE_PARTICLE_FIELD:
-		// TODO: implement this properly...
-		ClientEffect_ParticleField(g_mvOrigin3f, g_mvOrigin3f, g_mvOrigin3f, 0);
+		{
+			int				i;
+			float			density;
+			MathVector3f_t	position, mins, maxs;
+
+			for (i = 0; i < 3; i++)
+				position[i] = Engine.ReadCoord();
+
+			for (i = 0; i < 3; i++)
+				mins[i] = Engine.ReadCoord();
+
+			for (i = 0; i < 3; i++)
+				maxs[i] = Engine.ReadCoord();
+
+			density = Engine.ReadFloat();
+
+			ClientEffect_ParticleField(position, mins, maxs, density);
+		}
 		break;
 	default:
 		Engine.Con_Warning("Unknown temporary entity type! (%i)\n", type);
@@ -90,7 +110,7 @@ void Client_ParseTemporaryEntity(void)
 
 /*	Called by the engine.
 */
-void Client_RelinkEntities(ClientEntity_t *entity,int i,double dTime)
+void Client_RelinkEntities(ClientEntity_t *entity, int i, double dTime)
 {
 	MathVector3f_t	f,r,u;
 	DynamicLight_t	*light;

@@ -281,7 +281,10 @@ void VideoLayer_BlendFunc(VideoBlend_t modea, VideoBlend_t modeb)
 void VideoLayer_DepthMask(bool mode)
 {
 	VIDEO_FUNCTION_START
+	static bool cur_state = true;
+	if (mode == cur_state) return;
 	glDepthMask(mode);
+	cur_state = mode;
 	VIDEO_FUNCTION_END
 }
 

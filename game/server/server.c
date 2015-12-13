@@ -317,10 +317,6 @@ void Server_Spawn(ServerEntity_t *seEntity)
 	{
 #ifdef GAME_OPENKATANA
 		Server_PrecacheSound("items/respawn.wav");
-
-		// If we're in Vektar mode, then spawn the Vektar!
-		if(cvServerGameMode.iValue == MODE_VEKTAR)
-			Vektar_Spawn();
 #endif
 	}
 

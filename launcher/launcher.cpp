@@ -56,7 +56,7 @@ int main(int argc,char *argv[])
 	// Load the module interface for the engine module.
 	engine = (EngineExport_t*)pModule_LoadInterface(
 		hEngineInstance,
-		"./"MODULE_ENGINE,
+		"./" MODULE_ENGINE,
 		"Engine_Main",
 		&launcher);
 	// Let us know if it failed to load.

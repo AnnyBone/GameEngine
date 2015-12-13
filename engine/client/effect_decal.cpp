@@ -16,12 +16,9 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef CLIENT_EFFECTS_H
-#define	CLIENT_EFFECTS_H
-
-void ClientEffect_Initialize();
-void ClientEffect_ParticleField(MathVector3f_t position, MathVector3f_t mins, MathVector3f_t maxs, float density);
-void ClientEffect_BloodSpray(MathVector3f_t position);
-void ClientEffect_Explosion(MathVector3f_t position);
-
-#endif	// !CLIENT_EFFECTS_H
+class Decal
+{
+public:
+protected:
+private:
+};

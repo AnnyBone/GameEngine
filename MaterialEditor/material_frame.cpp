@@ -108,7 +108,7 @@ void MaterialGlobalProperties::GetProperties(Material_t *newmaterial)
 	else
 		animated->SetValue(false);
 
-	notris->SetValue(material->bWireframeOverride);
+	notris->SetValue(material->override_wireframe);
 }
 
 /*

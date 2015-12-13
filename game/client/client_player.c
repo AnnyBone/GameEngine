@@ -16,12 +16,19 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef CLIENT_EFFECTS_H
-#define	CLIENT_EFFECTS_H
+#include "client.h"
 
-void ClientEffect_Initialize();
-void ClientEffect_ParticleField(MathVector3f_t position, MathVector3f_t mins, MathVector3f_t maxs, float density);
-void ClientEffect_BloodSpray(MathVector3f_t position);
-void ClientEffect_Explosion(MathVector3f_t position);
+ConsoleVariable_t g_cvclientplayermodel = { "client_playermodel", MODEL_PLAYER, false, false };
 
-#endif	// !CLIENT_EFFECTS_H
+/*	Called when a change occurs to our
+	current player model. Sends request to
+	server for it to apply the model we want.
+*/
+void ClientPlayer_UpdateModel(void)
+{
+}
+
+void ClientPlayer_Initialize()
+{
+	Engine.Cvar_RegisterVariable(&g_cvclientplayermodel, ClientPlayer_UpdateModel);
+}

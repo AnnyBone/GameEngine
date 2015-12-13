@@ -626,8 +626,10 @@ typedef struct
 	void(*WriteEntity)(int mode, ServerEntity_t *ent);
 	void(*ShowCursor)(bool bShow);
 
-	int(*ReadByte)(void);
-	float(*ReadCoord)(void);
+	int(*ReadByte)();
+	float(*ReadCoord)();
+	float(*ReadFloat)();
+
 	int(*GetScreenWidth)(void);	// Returns the active screen width.
 	int(*GetScreenHeight)(void);	// Returns the active screen height.
 

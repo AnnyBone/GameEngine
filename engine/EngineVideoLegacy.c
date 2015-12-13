@@ -53,8 +53,6 @@ mleaf_t		*r_viewleaf,*r_oldviewleaf;
 
 int		d_lightstylevalue[256];	// 8.8 fraction of base light value
 
-mplane_t	*mpMirrorPlane;
-
 cvar_t	r_norefresh				= {	"r_norefresh",			"0"					};
 cvar_t	r_drawentities			= {	"r_drawentities",		"1"					};
 cvar_t	r_drawviewmodel			= {	"r_drawviewmodel",		"1"					},
@@ -68,7 +66,6 @@ cvar_t	r_dynamic				= {	"r_dynamic",			"1"					};
 cvar_t	r_novis					= {	"r_novis",				"0"					};
 cvar_t	r_nocull				= {	"r_nocull",				"0"					};
 cvar_t	gl_cull					= {	"gl_cull",				"1"					};
-cvar_t	gl_smoothmodels			= {	"gl_smoothmodels",		"1"					};
 cvar_t	gl_polyblend			= {	"gl_polyblend",			"1"					};
 cvar_t	gl_flashblend			= {	"gl_flashblend",		"0"					};
 cvar_t	r_stereo				= {	"r_stereo",				"0"					};
@@ -77,7 +74,7 @@ cvar_t	r_drawflat				= {	"r_drawflat",			"0"					};
 cvar_t	r_flatlightstyles		= {	"r_flatlightstyles",	"0"					};
 cvar_t	gl_fullbrights			= {	"gl_fullbrights",		"1",		true	};
 cvar_t	gl_farclip				= {	"gl_farclip",			"16384",	true	};
-cvar_t	cvVideoOverbright = { "gl_overbright", "1", true };
+cvar_t	video_lightoversamp		= { "video_lightoversamp",	"8",		true	};
 cvar_t	r_oldskyleaf			= {	"r_oldskyleaf",			"0"					};
 cvar_t	r_drawworld				= {	"r_drawworld",			"1"					};
 cvar_t	r_showtris				= {	"r_showtris",			"0"					};

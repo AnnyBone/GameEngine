@@ -156,7 +156,6 @@ void R_Init (void)
 	Cvar_RegisterVariable (&r_nocull, NULL);
 	Cvar_RegisterVariable (&r_speeds, NULL);
 	Cvar_RegisterVariable (&gl_cull, NULL);
-	Cvar_RegisterVariable (&gl_smoothmodels, NULL);
 	Cvar_RegisterVariable (&gl_polyblend, NULL);
 	Cvar_RegisterVariable (&gl_flashblend, NULL);
 	Cvar_RegisterVariable (&r_stereo, NULL);
@@ -172,7 +171,7 @@ void R_Init (void)
 	Cvar_RegisterVariable (&r_showbboxes, NULL);
 	Cvar_RegisterVariable (&gl_farclip, NULL);
 	Cvar_RegisterVariable (&gl_fullbrights, NULL);
-	Cvar_RegisterVariable (&cvVideoOverbright, GL_Overbright_f);
+	Cvar_RegisterVariable (&video_lightoversamp, GL_Overbright_f);
 	Cvar_RegisterVariable (&r_lerpmodels, NULL);
 	Cvar_RegisterVariable (&r_lerpmove, NULL);
 	Cvar_RegisterVariable (&gl_subdivide_size, NULL);

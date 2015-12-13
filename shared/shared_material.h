@@ -67,6 +67,7 @@ typedef enum
 	MATERIAL_TEXTURE_SPHERE,		// Spherical mapping.
 	MATERIAL_TEXTURE_FULLBRIGHT,	// Adds highlights to the texture.
 	MATERIAL_TEXTURE_DETAIL,		// Detail map is blended with other layers to make textures appear more detailed.
+	MATERIAL_TEXTURE_LIGHTMAP,
 
 	MATERIAL_TEXTURE_MAX
 } MaterialTextureType_t;
@@ -123,7 +124,8 @@ typedef struct Material_s
 
 	bool 
 		bBind,
-		bWireframeOverride;	// Override tris for this material.
+		override_lightmap,
+		override_wireframe;	// Override tris for this material.
 
 	float fAlpha;	// Alpha override.
 

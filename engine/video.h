@@ -34,7 +34,7 @@ extern ConsoleVariable_t
 	cvVideoMirror,			// Toggles mirrors.
 	cvVideoPlayerShadow,	// Render players shadow.
 	cvVerticalSync,
-	cvVideoOverbright,		// Enable overbrights?
+	video_lightoversamp,	// Enable overbrights?
 	cvVideoDrawBrushes,		// Draw brush entities?
 	cvLitParticles;			// Should particles be lit or not?
 
@@ -56,7 +56,6 @@ extern "C" {
 	extern	ConsoleVariable_t	r_novis;
 	extern	ConsoleVariable_t	r_nocull;
 	extern	ConsoleVariable_t	gl_cull;
-	extern	ConsoleVariable_t	gl_smoothmodels;
 	extern	ConsoleVariable_t	gl_polyblend;
 	extern	ConsoleVariable_t	gl_flashblend;
 	extern	ConsoleVariable_t	gl_max_size;

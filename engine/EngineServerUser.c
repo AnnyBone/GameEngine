@@ -142,7 +142,7 @@ void SV_WaterMove (void)
 {
 	int				i;
 	MathVector3f_t	wishvel;
-	float			speed, newspeed, wishspeed, addspeed, accelspeed;
+	float			speed, newspeed, wishspd, addspeed, accelspeed;
 
 //
 // user intentions
@@ -157,13 +157,13 @@ void SV_WaterMove (void)
 	else
 		wishvel[2] += cmd.upmove;
 
-	wishspeed = Math_Length(wishvel);
-	if (wishspeed > sv_maxspeed.value)
+	wishspd = Math_Length(wishvel);
+	if (wishspd > sv_maxspeed.value)
 	{
-		Math_VectorScale (wishvel, sv_maxspeed.value/wishspeed, wishvel);
-		wishspeed = sv_maxspeed.value;
+		Math_VectorScale (wishvel, sv_maxspeed.value/ wishspd, wishvel);
+		wishspd = sv_maxspeed.value;
 	}
-	wishspeed *= 0.7f;
+	wishspd *= 0.7f;
 
 	// Water friction
 	speed = Math_Length(velocity);
@@ -180,15 +180,15 @@ void SV_WaterMove (void)
 //
 // water acceleration
 //
-	if (!wishspeed)
+	if (!wishspd)
 		return;
 
-	addspeed = wishspeed - newspeed;
+	addspeed = wishspd - newspeed;
 	if (addspeed <= 0)
 		return;
 
 	Math_VectorNormalize (wishvel);
-	accelspeed = sv_accelerate.value * wishspeed * host_frametime;
+	accelspeed = sv_accelerate.value * wishspd * host_frametime;
 	if (accelspeed > addspeed)
 		accelspeed = addspeed;
 

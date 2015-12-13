@@ -146,7 +146,7 @@ char *Q_strrchr(char *s, char c)
 }
 
 /*  TODO: This should follow standard implementation...
-        char *strcat(char *dest, const char *src)
+		char *strcat(char *dest, const char *src)
 */
 void Q_strcat (char *dest, char *src)
 {
@@ -992,7 +992,7 @@ void _FileSystem_Path(void)
 */
 void FileSystem_UpdatePath(char cPath[])
 {
-    int i, iLength;
+	int i, iLength;
 
 	iLength = strlen(cPath);
 	for (i = 0; i < iLength; i++)

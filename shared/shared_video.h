@@ -111,8 +111,6 @@ typedef struct
 
 	VideoPrimitive_t vpPrimitiveType;
 
-	bool bWireframeOverride;			// If wireframe view is active, override it for this object.
-
 	unsigned int uiVertexBuffer;
 	unsigned int uiColourBuffer;
 	unsigned int uiTextureBuffer;

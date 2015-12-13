@@ -633,18 +633,9 @@ void R_BuildLightMap (msurface_t *surf, byte *dest, int stride)
 	{
 		for(j = 0; j < smax; j++,dest += 4)
 		{
-			if (cvVideoOverbright.value)
-			{
-				t = *bl++ >> 8;if (t > 255) t = 255;dest[2] = t;
-				t = *bl++ >> 8;if (t > 255) t = 255;dest[1] = t;
-				t = *bl++ >> 8;if (t > 255) t = 255;dest[0] = t;
-			}
-			else
-			{
-				t = *bl++ >> 7;if (t > 255) t = 255;dest[2] = t;
-				t = *bl++ >> 7;if (t > 255) t = 255;dest[1] = t;
-				t = *bl++ >> 7;if (t > 255) t = 255;dest[0] = t;
-			}
+			t = *bl++ >> video_lightoversamp.iValue;if (t > 255) t = 255;dest[2] = t;
+			t = *bl++ >> video_lightoversamp.iValue;if (t > 255) t = 255;dest[1] = t;
+			t = *bl++ >> video_lightoversamp.iValue;if (t > 255) t = 255;dest[0] = t;
 
 			dest[3] = 255;
 		}
