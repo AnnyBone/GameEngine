@@ -40,8 +40,7 @@ int
 	iMenuWidth = 0,
 	iMenuHeight = 0;
 
-Material_t *mNums;
-Material_t *mIcons;
+Material_t *g_mhudnumbers, *g_mhudicons;
 
 // TODO: Why are we doing this!? Should be using the one from the lib
 char *va(char *format,...)
@@ -65,8 +64,8 @@ void Menu_Initialize(void)
 
 	Engine.Cvar_RegisterVariable(&cvShowMenu, NULL);
 
-	mNums = Engine.LoadMaterial("menu/hud/num");
-	mIcons = Engine.LoadMaterial("menu/hud/icons");
+	g_mhudnumbers	= Engine.LoadMaterial("menu/hud/num");
+	g_mhudicons		= Engine.LoadMaterial("menu/hud/icons");
 }
 
 void Menu_UpdateScreenSize(void)
@@ -112,17 +111,7 @@ void Menu_Draw(void)
 	}
 
 	if ((iMenuState & MENU_STATE_HUD) && (!(iMenuState & MENU_STATE_SCOREBOARD) && !(iMenuState & MENU_STATE_MENU)))
-	{
-		//HUD_Draw();
-	}
-
-	if(iMenuState & MENU_STATE_SCOREBOARD && !(iMenuState & MENU_STATE_MENU))
-	{
-		// [10/11/2013] TEMP: Added for MP test ~hogsy
-		Engine.DrawFill((iMenuWidth/2),(iMenuHeight/2),128,35,0,0,0,0.7f);
-		Engine.DrawString(255,10,"Player Score:");
-		Engine.DrawString(270,20,va("%d",Engine.Client_GetStat(STAT_FRAGS)));
-	}
+		HUD_Draw();
 
 	if(iMenuState & MENU_STATE_MENU)
 	{

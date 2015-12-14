@@ -67,22 +67,19 @@ void HUD_Draw(void)
 //			ammo = Engine.Client_GetStat(STAT_AMMO);
 
 		// Health
-
-		Engine.DrawMaterialSurface(mIcons, 0, 70, iMenuHeight - 70, 32, 32, 1.0f);
+		Engine.DrawMaterialSurface(g_mhudicons, 0, 70, iMenuHeight - 70, 32, 32, 1.0f);
 		if (health >= 100)
-			Engine.DrawMaterialSurface(mNums, (health / 100), 102, iMenuHeight-70, 32, 32, 1.0f);
+			Engine.DrawMaterialSurface(g_mhudnumbers, (health / 100), 102, iMenuHeight-70, 32, 32, 1.0f);
 		if(health >= 10)
-			Engine.DrawMaterialSurface(mNums, ((health % 100) / 10), 134, iMenuHeight - 70, 32, 32, 1.0f);
-
-		Engine.DrawMaterialSurface(mNums, (health % 10), 166, iMenuHeight - 70, 32, 32, 1.0f);
+			Engine.DrawMaterialSurface(g_mhudnumbers, ((health % 100) / 10), 134, iMenuHeight - 70, 32, 32, 1.0f);
+		Engine.DrawMaterialSurface(g_mhudnumbers, (health % 10), 166, iMenuHeight - 70, 32, 32, 1.0f);
 
 		// Armor
-
-		Engine.DrawMaterialSurface(mIcons, 1, 70, iMenuHeight - 110, 32, 32, 1.0f);
+		Engine.DrawMaterialSurface(g_mhudicons, 1, 70, iMenuHeight - 110, 32, 32, 1.0f);
 		if (armor >= 100)
-			Engine.DrawMaterialSurface(mNums, (armor / 100), 102, iMenuHeight-70, 32, 32, 1.0f);
+			Engine.DrawMaterialSurface(g_mhudnumbers, (armor / 100), 102, iMenuHeight-70, 32, 32, 1.0f);
 		if(armor >= 10)
-			Engine.DrawMaterialSurface(mNums, ((armor % 100) / 10), 134, iMenuHeight - 70, 32, 32, 1.0f);
+			Engine.DrawMaterialSurface(g_mhudnumbers, ((armor % 100) / 10), 134, iMenuHeight - 70, 32, 32, 1.0f);
 
 #if 0
 		if (armor >= 100)

@@ -637,13 +637,25 @@ void _Material_SetRotate(Material_t *mCurrentMaterial, MaterialFunctionType_t mf
 void _Material_SetAdditive(Material_t *material, MaterialFunctionType_t context, char *arg)
 {
 	if (atoi(arg) == TRUE)
-		material->msSkin[material->iSkins].uiFlags |= MATERIAL_FLAG_ADDITIVE|MATERIAL_FLAG_BLEND;
+		material->msSkin[material->iSkins].uiFlags |= MATERIAL_FLAG_ADDITIVE | MATERIAL_FLAG_BLEND;
+	else
+		material->msSkin[material->iSkins].uiFlags &= ~MATERIAL_FLAG_ADDITIVE | MATERIAL_FLAG_BLEND;
 }
 
 void _Material_SetBlend(Material_t *material, MaterialFunctionType_t context, char *arg)
 {
 	if (atoi(arg) == TRUE)
 		material->msSkin[material->iSkins].uiFlags |= MATERIAL_FLAG_BLEND;
+	else
+		material->msSkin[material->iSkins].uiFlags &= ~MATERIAL_FLAG_BLEND;
+}
+
+void _Material_SetAlphaTest(Material_t *material, MaterialFunctionType_t context, char *arg)
+{
+	if (atoi(arg) == TRUE)
+		material->msSkin[material->iSkins].uiFlags |= MATERIAL_FLAG_ALPHA;
+	else
+		material->msSkin[material->iSkins].uiFlags &= ~MATERIAL_FLAG_ALPHA;
 }
 
 // Universal Functions...
@@ -741,6 +753,7 @@ MaterialKey_t MaterialFunctions[]=
 	{ "texture", _Material_AddTexture, MATERIAL_FUNCTION_SKIN },
 	{ "additive", _Material_SetAdditive, MATERIAL_FUNCTION_SKIN },
 	{ "blend", _Material_SetBlend, MATERIAL_FUNCTION_SKIN },
+	{ "alpha_test", _Material_SetAlphaTest, MATERIAL_FUNCTION_SKIN },
 
 	// Texture
 	{ "scroll", _Material_SetTextureScroll, MATERIAL_FUNCTION_TEXTURE },

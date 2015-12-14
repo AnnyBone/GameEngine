@@ -35,8 +35,8 @@
 
 extern ModuleImport_t Engine;
 
-extern Material_t *mNums;
-extern Material_t *mIcons;
+extern Material_t *g_mhudnumbers;
+extern Material_t *g_mhudicons;
 
 extern	cvar_t	cvShowMenu,
 				cvShowHealth,
