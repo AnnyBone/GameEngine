@@ -240,6 +240,7 @@ pMODULE_EXPORT GameExport_t *Game_Main(ModuleImport_t *Import)
 	Engine.GetLightSample			= Import->GetLightSample;
 	Engine.Hunk_AllocateName		= Import->Hunk_AllocateName;
 	Engine.Hunk_Alloc				= Import->Hunk_Alloc;
+	Engine.LoadMaterial				= Import->LoadMaterial;
 
 	Engine.Client_GetEffect			= Import->Client_GetEffect;
 	Engine.Client_AllocateDlight	= Import->Client_AllocateDlight;

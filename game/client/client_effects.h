@@ -22,6 +22,10 @@
 void ClientEffect_Initialize();
 void ClientEffect_ParticleField(MathVector3f_t position, MathVector3f_t mins, MathVector3f_t maxs, float density);
 void ClientEffect_BloodSpray(MathVector3f_t position);
+void ClientEffect_Smoke(MathVector3f_t position);
 void ClientEffect_Explosion(MathVector3f_t position);
+#ifdef GAME_OPENKATANA
+void ClientEffect_IonBallTrail(MathVector3f_t position);
+#endif
 
 #endif	// !CLIENT_EFFECTS_H

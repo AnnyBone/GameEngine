@@ -97,7 +97,7 @@ void Particle_CreateEffect(
 
 					pParticle->lifetime = cl.time + 2.0f + (rand() & 31)*0.02f;
 					pParticle->pBehaviour = PARTICLE_BEHAVIOUR_SLOWGRAVITY;
-					pParticle->iMaterial = iMaterial;
+					//pParticle->iMaterial = iMaterial;
 
 					Math_VectorAdd(vOrigin, vDirection, pParticle->vOrigin);
 					Math_VectorNormalize(vDirection);
@@ -136,7 +136,7 @@ void Particle_CreateEffect(
 			if (!pParticle)
 				return;
 
-			pParticle->iMaterial = iMaterial;
+			//pParticle->iMaterial = iMaterial;
 			pParticle->fScale = fScale;
 			pParticle->lifetime = cl.time + 0.1*(rand() % 5);
 			pParticle->pBehaviour = pBehaviour;
@@ -459,15 +459,9 @@ void Particle_Draw(void)
 	if (!pActiveParticles || !cvParticleDraw.value)
 		return;
 
-	VideoLayer_DepthMask(false);
-	VideoLayer_Enable(VIDEO_BLEND | VIDEO_TEXTURE_2D);
-
 	for (pParticle = pActiveParticles; pParticle; pParticle = pParticle->next)
 	{
 		VideoObjectVertex_t	voParticle[4];
-
-		if (!r_showtris.value)
-			Video_SetTexture(gEffectTexture[pParticle->iMaterial]);
 
 		Video_ObjectVertex(&voParticle[0],
 			pParticle->vOrigin[0], pParticle->vOrigin[1], pParticle->vOrigin[2]);
@@ -490,11 +484,8 @@ void Particle_Draw(void)
 			pParticle->vColour[0], pParticle->vColour[1], pParticle->vColour[2], pParticle->vColour[3]);
 		Video_ObjectTexture(&voParticle[3], 0, 0, 1.0f);
 
-		Video_DrawFill(voParticle, NULL, 0);
+		Video_DrawFill(voParticle, pParticle->material, pParticle->skin);
 
 		rs_particles++;
 	}
-
-	VideoLayer_DepthMask(true);
-	VideoLayer_Disable(VIDEO_BLEND | VIDEO_TEXTURE_2D);
 }

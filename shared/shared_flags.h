@@ -91,7 +91,7 @@ enum
 	RESOURCE_SOUND,		// States that the precache should be used for a sound.
 	RESOURCE_FONT,		// States that the precache should be used for a font.
 	RESOURCE_MATERIAL,	// States that the precache should be used for a material.
-    RESOURCE_TEXTURE	// States that the precache should be used for a texture.
+	RESOURCE_TEXTURE	// States that the precache should be used for a texture.
 };
 
 /*	Attenuation is used for the
@@ -168,4 +168,9 @@ enum
 #define EF_LIGHT_BLUE		(1 << 19)	// A constant blue dynamic light.
 #define EF_LIGHT_RED		(1 << 20)	// A constant red dynamic light.
 
-#endif	// SHARED_FLAGS_H
+typedef enum
+{
+	STOC_SPAWNSPRITE
+} STOCMessage_t;
+
+#endif // !SHARED_FLAGS_H

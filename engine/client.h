@@ -20,7 +20,7 @@
 
 typedef struct
 {
-	vec3_t	viewangles;
+	MathVector3f_t	viewangles;
 
 // intended velocities
 	float	forwardmove;
@@ -266,13 +266,7 @@ DynamicLight_t	*Client_AllocDlight(int key);
 void			CL_DecayLights (void);
 
 void CL_Init (void);
-
 void CL_EstablishConnection (char *host);
-void CL_Signon1 (void);
-void CL_Signon2 (void);
-void CL_Signon3 (void);
-void CL_Signon4 (void);
-
 void CL_Disconnect (void);
 void CL_Disconnect_f (void);
 void CL_NextDemo (void);
@@ -293,15 +287,10 @@ extern 	kbutton_t 	in_speed;
 void CL_InitInput (void);
 void CL_SendCmd (void);
 void CL_SendMove(ClientCommand_t *cmd);
-
-void CL_ParseTEnt (void);
 void CL_UpdateTEnts (void);
-
 void CL_ClearState (void);
 
-
 int  CL_ReadFromServer (void);
-void CL_WriteToServer(ClientCommand_t *cmd);
 void CL_BaseMove(ClientCommand_t *cmd);
 
 
@@ -313,7 +302,6 @@ char *Key_KeynumToString (int keynum);
 //
 void CL_StopPlayback (void);
 int CL_GetMessage (void);
-
 void CL_Stop_f (void);
 void CL_Record_f (void);
 void CL_PlayDemo_f (void);
@@ -329,9 +317,7 @@ void CL_ParseServerMessage (void);
 //
 void V_StartPitchDrift (void);
 void V_StopPitchDrift (void);
-
 void V_RenderView (void);
-void V_Register (void);
 void V_ParseDamage (void);
 void V_SetContentsColor (int contents);
 

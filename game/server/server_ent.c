@@ -396,12 +396,6 @@ void Entity_RadiusDamage(ServerEntity_t *eInflictor, float fRadius, int iDamage,
 	MathVector3f_t	vOrigin;
 	ServerEntity_t *eTarget = Engine.Server_FindRadius(eInflictor->v.origin, fRadius);
 
-	Engine.WriteByte(MSG_BROADCAST,SVC_TEMPENTITY);
-	Engine.WriteByte(MSG_BROADCAST,CTE_EXPLOSION);
-
-	for(i = 0; i < 3; i++)
-		Engine.WriteCoord(MSG_BROADCAST,eInflictor->v.origin[i]);
-
 	do
 	{
 		if(eTarget->v.bTakeDamage)

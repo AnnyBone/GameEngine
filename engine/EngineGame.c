@@ -203,7 +203,6 @@ void Game_AmbientSound(MathVectorf_t *vPosition,const char *cPath,int iVolume,in
 	MSG_WriteByte(&sv.signon,iAttenuation*64);
 }
 
-// [18/7/2012] Renamed to Server_Sound ~hogsy
 void Server_Sound(ServerEntity_t *ent, int channel, char *sample, int iVolume, float attenuation)
 {
 	int sound_num, field_mask, i, e;
@@ -287,42 +286,6 @@ void Server_Sound(ServerEntity_t *ent, int channel, char *sample, int iVolume, f
 
 void Server_Flare(MathVector3f_t org,float r,float g,float b,float a,float scale,char *texture)
 {
-#if 0
-	int		i;
-	char	name[PLATFORM_MAX_PATH];
-
-	if(!texture)
-	{
-		Con_Warning("Tried to spawn a flare with no texture.\n");
-		return;
-	}
-	else if(sv.datagram.cursize > MAX_DATAGRAM-16)
-		return;
-
-	sprintf(name,PATH_SPRITES"%s",texture);
-
-	if(!org || !scale)
-	{
-		Console_ErrorMessage(FALSE,name,"Illegal parameters used for flare.");
-		return;
-	}
-
-	MSG_WriteByte(&sv.datagram,SVC_FLARE);
-	for(i=0;i<3;i++)
-		MSG_WriteCoord(&sv.datagram,org[i]);
-	MSG_WriteFloat(&sv.datagram,r);
-	MSG_WriteFloat(&sv.datagram,g);
-	MSG_WriteFloat(&sv.datagram,b);
-	MSG_WriteFloat(&sv.datagram,a);
-	MSG_WriteFloat(&sv.datagram,scale);
-	for(i=0;i<MAX_EFFECTS;i++)
-		if(gEffectTexture[i])
-			if(!Q_strcmp(name,gEffectTexture[i]->name))
-			{
-				MSG_WriteByte(&sv.datagram,i);
-				break;
-			}
-#endif
 }
 
 /*
@@ -469,24 +432,25 @@ void Game_Initialize(void)
 		pModule_Unload(hGameInstance);
 
 	// Server
-	Import.Con_Printf = Con_Printf;
-	Import.Con_DPrintf = Con_DPrintf;
-	Import.Con_Warning = Con_Warning;
-	Import.Sys_Error = Sys_Error;
-	Import.SetModel = Server_SetModel;
-	Import.Particle = Particle;
-	Import.Flare = Server_Flare;
-	Import.Sound = Server_Sound;
-	Import.UnlinkEntity = SV_UnlinkEdict;
-	Import.LinkEntity = SV_LinkEdict;
-	Import.Server_Move = SV_Move;
-	Import.FreeEntity = ED_Free;
-	Import.Spawn = ED_Alloc;
-	Import.Cvar_RegisterVariable = Cvar_RegisterVariable;
-	Import.Cvar_SetValue = Cvar_SetValue;
-	Import.LightStyle = LightStyle;
-	Import.CenterPrint = Server_CenterPrint;
-	Import.Cmd_AddCommand = Game_AddCommand;
+	Import.Con_Printf				= Con_Printf;
+	Import.Con_DPrintf				= Con_DPrintf;
+	Import.Con_Warning				= Con_Warning;
+	Import.Sys_Error				= Sys_Error;
+	Import.SetModel					= Server_SetModel;
+	Import.Particle					= Particle;
+	Import.Flare					= Server_Flare;
+	Import.Sound					= Server_Sound;
+	Import.UnlinkEntity				= SV_UnlinkEdict;
+	Import.LinkEntity				= SV_LinkEdict;
+	Import.Server_Move				= SV_Move;
+	Import.FreeEntity				= ED_Free;
+	Import.Spawn					= ED_Alloc;
+	Import.Cvar_RegisterVariable	= Cvar_RegisterVariable;
+	Import.Cvar_SetValue			= Cvar_SetValue;
+	Import.LightStyle				= LightStyle;
+	Import.CenterPrint				= Server_CenterPrint;
+	Import.Cmd_AddCommand			= Game_AddCommand;
+	Import.LoadMaterial				= Material_Load;
 
 	Import.ReadByte			= MSG_ReadByte;
 	Import.ReadCoord		= MSG_ReadCoord;
@@ -502,13 +466,13 @@ void Game_Initialize(void)
 	Import.Hunk_AllocateName	= Hunk_AllocName;
 
 	// Client
-	Import.Client_AllocateDlight = Client_AllocDlight;
-	Import.Client_AllocateParticle = Particle_Allocate;
-	Import.Client_PrecacheResource = Client_PrecacheResource;
-	Import.Client_GetStat = Client_GetStat;
-	Import.Client_GetEffect = Client_GetEffect;
-	Import.Client_GetPlayerEntity = Client_GetPlayerEntity;
-	Import.Client_GetViewEntity = Client_GetViewEntity;
+	Import.Client_AllocateDlight	= Client_AllocDlight;
+	Import.Client_AllocateParticle	= Particle_Allocate;
+	Import.Client_PrecacheResource	= Client_PrecacheResource;
+	Import.Client_GetStat			= Client_GetStat;
+	Import.Client_GetEffect			= Client_GetEffect;
+	Import.Client_GetPlayerEntity	= Client_GetPlayerEntity;
+	Import.Client_GetViewEntity		= Client_GetViewEntity;
 
 	if(Menu)
 	{

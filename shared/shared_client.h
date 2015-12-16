@@ -186,6 +186,8 @@ typedef enum
 	PARTICLE_TYPE_TELEPORTSPLASH
 } ParticleType_t;
 
+#include "shared_material.h"
+
 // TODO: Update these to new coding standard; e.g. lowercase names
 typedef struct particle_s
 {
@@ -194,8 +196,10 @@ typedef struct particle_s
 
 	MathVector4f_t		vColour;		// RGBA colour of the particle.
 
-	int	iMaterial,						// The material ID of the particle.
-		iFrame;							// Frame of animation.
+	int	iFrame;							// Frame of animation.
+
+	Material_t *material;
+	int	skin;
 
 	ParticleBehaviour_t		pBehaviour;	// Type of behaviour.
 

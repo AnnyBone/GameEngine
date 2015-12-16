@@ -41,6 +41,18 @@ void Client_Draw(void)
 {
 }
 
+typedef struct
+{
+	int ident;
+
+	void(*Function)();
+} ClientMessageFunction_t;
+
+ClientMessageFunction_t stochandles[]=
+{
+	{ STOC_SPAWNSPRITE, }
+};
+
 /*	Parse messages from the server.
 */
 void Client_ParseServerMessage(int cmd)
@@ -126,37 +138,14 @@ void Client_RelinkEntities(ClientEntity_t *entity, int i, double dTime)
 		entity->angles[YAW] = Math_AngleMod((float)(100.0*Client.time));
 
 	if (entity->effects & EF_PARTICLE_SMOKE)
-	{
-		int j;
-
-		if (rand()%5 == 0)
-		{
-			Particle_t	*pParticle;
-			
-			pParticle = Engine.Client_AllocateParticle();
-			if(!pParticle)
-				return;
-
-			pParticle->iMaterial = Engine.Client_GetEffect(va("smoke%i", rand() % 4));
-			pParticle->fRamp = (float)(rand() & 3);
-			pParticle->fScale = ((float)(rand() % 15) * 2);
-			pParticle->lifetime = (Client.time + (rand() % 5));
-			pParticle->pBehaviour = PARTICLE_BEHAVIOUR_SMOKE;
-			
-			for(j = 0; j < 3; j++)
-				pParticle->vOrigin[j] = entity->origin[j] + ((rand() & 8) - 5.0f);
-
-			Math_VectorClear(pParticle->vVelocity);
-		}
-	}
+		ClientEffect_Smoke(entity->origin);
 
 	if (entity->effects & EF_PARTICLE_BLOOD)
 		ClientEffect_BloodSpray(entity->origin);
 
 	if (entity->effects & EF_LIGHT_GREEN)
 	{
-		int k,j;
-
+#ifdef GAME_OPENKATANA
 		light = Engine.Client_AllocateDlight(i);
 
 		Math_VectorCopy(entity->origin, light->origin);
@@ -169,23 +158,8 @@ void Client_RelinkEntities(ClientEntity_t *entity, int i, double dTime)
 		light->die			= (float)(Client.time + 0.01);
 		light->lightmap		= true;
 
-		for(k = 0; k < 4; k++)
-		{
-			Particle_t *pParticle = Engine.Client_AllocateParticle();
-			if(!pParticle)
-				return;
-
-			pParticle->iMaterial = Engine.Client_GetEffect("spark2");
-			pParticle->fRamp = (float)(rand() & 3);
-			pParticle->fScale = 1.5f + (float)(rand() % 15 / 10);
-			pParticle->lifetime = (Client.time + (double)(rand() % 2));
-			pParticle->pBehaviour = PARTICLE_BEHAVIOUR_SLOWGRAVITY;
-			
-			for(j = 0; j < 3; j++)
-				pParticle->vOrigin[j] = entity->origin[j] + ((rand() & 15) - 5.0f);
-
-			Math_VectorClear(pParticle->vVelocity);
-		}
+		ClientEffect_IonBallTrail(entity->origin);
+#endif
 	}
 
 	if (entity->effects & EF_LIGHT_BLUE)

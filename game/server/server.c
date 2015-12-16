@@ -262,16 +262,6 @@ void Server_Spawn(ServerEntity_t *seEntity)
 	Server_PrecacheModel(cvServerPlayerModel.string);
 
 #ifdef GAME_OPENKATANA
-	// Particles
-	Engine.Server_PrecacheResource(RESOURCE_SPRITE, PARTICLE_BLOOD0);
-	Engine.Server_PrecacheResource(RESOURCE_SPRITE, PARTICLE_BLOOD1);
-	Engine.Server_PrecacheResource(RESOURCE_SPRITE, PARTICLE_BLOOD2);
-	Engine.Server_PrecacheResource(RESOURCE_SPRITE, PARTICLE_BLOOD3);
-	Engine.Server_PrecacheResource(RESOURCE_SPRITE, PARTICLE_SMOKE0);
-	Engine.Server_PrecacheResource(RESOURCE_SPRITE, PARTICLE_SMOKE1);
-	Engine.Server_PrecacheResource(RESOURCE_SPRITE, PARTICLE_SMOKE2);
-	Engine.Server_PrecacheResource(RESOURCE_SPRITE, PARTICLE_SMOKE3);
-
 	// Player
 	Server_PrecacheSound(PLAYER_SOUND_JUMP0);
 	Server_PrecacheSound(PLAYER_SOUND_JUMP1);
@@ -294,12 +284,6 @@ void Server_Spawn(ServerEntity_t *seEntity)
 	Server_PrecacheSound(PLAYER_SOUND_DEATH2);
 
 	Server_PrecacheModel("models/blip.md2");
-
-	Engine.Server_PrecacheResource(RESOURCE_SPRITE, "poison");
-	Engine.Server_PrecacheResource(RESOURCE_SPRITE, "spark");
-	Engine.Server_PrecacheResource(RESOURCE_SPRITE, "spark2");
-	Engine.Server_PrecacheResource(RESOURCE_SPRITE, "ice");
-	Engine.Server_PrecacheResource(RESOURCE_SPRITE, "zspark");
 #endif
 
 #ifdef DEBUG_WAYPOINT

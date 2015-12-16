@@ -8,6 +8,7 @@
 */
 
 #include "server_player.h"
+#include "server_effects.h"
 
 #define	SIDEWINDER_MAXSPEED	600.0f
 #define SIDEWINDER_MINSPEED	50.0f
@@ -88,7 +89,7 @@ void SideWinder_MissileExplode(ServerEntity_t *ent,ServerEntity_t *other)
 	else
 		Sound(ent, CHAN_AUTO, SOUND_EXPLODE, 255, ATTN_NORM);
 
-	Engine.Particle(ent->v.origin,vVelocity,1.0f,"spark2",25);
+	ServerEffect_Explosion(ent->v.origin);
 
 	Entity_Remove(ent);
 }

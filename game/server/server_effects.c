@@ -28,3 +28,12 @@ void ServerEffect_BloodSpray(MathVector3f_t position)
 	Engine.WriteCoord(MSG_BROADCAST, position[1]);
 	Engine.WriteCoord(MSG_BROADCAST, position[2]);
 }
+
+void ServerEffect_Explosion(MathVector3f_t position)
+{
+	Engine.WriteByte(MSG_BROADCAST, SVC_TEMPENTITY);
+	Engine.WriteByte(MSG_BROADCAST, CTE_EXPLOSION);
+	Engine.WriteCoord(MSG_BROADCAST, position[0]);
+	Engine.WriteCoord(MSG_BROADCAST, position[1]);
+	Engine.WriteCoord(MSG_BROADCAST, position[2]);
+}
