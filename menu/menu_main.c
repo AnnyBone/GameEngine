@@ -115,7 +115,8 @@ void Menu_Draw(void)
 
 	if(iMenuState & MENU_STATE_MENU)
 	{
-		Engine.DrawFill(0,0,iMenuWidth,iMenuHeight,0,0,0,0.8f);
+		Colour_t col = { 0, 0, 0, 0.8f };
+		Engine.DrawRectangle(0, 0, iMenuWidth, iMenuHeight, col);
 
 		Engine.DrawString(110,80,">");
 		Engine.DrawString(190,80,"<");
@@ -296,7 +297,7 @@ void Menu_Draw(void)
 				Engine.DrawString(mMenuElements[i].iPosition[X]+5,mMenuElements[i].iPosition[Y]+5,mMenuElements[i].cName);
 
 				// [3/8/2012] Do the fill for the contents ~hogsy
-				Engine.DrawFill(
+				Engine.DrawRectangle(
 					mMenuElements[i].iPosition[X],
 					mMenuElements[i].iPosition[Y]+20,
 					mMenuElements[i].iScale[WIDTH],
@@ -382,9 +383,11 @@ pMODULE_EXPORT MenuExport_t *Menu_Main(ModuleImport_t *Import)
 	Engine.LoadMaterial = Import->LoadMaterial;
 	Engine.Sys_Error = Import->Sys_Error;
 	Engine.Cvar_RegisterVariable = Import->Cvar_RegisterVariable;
-	Engine.DrawString = Import->DrawString;
-	Engine.DrawFill = Import->DrawFill;
-	Engine.DrawMaterialSurface = Import->DrawMaterialSurface;
+
+	Engine.DrawString			= Import->DrawString;
+	Engine.DrawRectangle		= Import->DrawRectangle;
+	Engine.DrawMaterialSurface	= Import->DrawMaterialSurface;
+
 	Engine.Cvar_SetValue = Import->Cvar_SetValue;
 	Engine.GetScreenHeight = Import->GetScreenHeight;
 	Engine.GetScreenWidth = Import->GetScreenWidth;

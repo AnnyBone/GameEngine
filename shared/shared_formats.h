@@ -36,7 +36,6 @@ typedef enum
 	MODEL_TYPE_STATIC,		// Static mesh (MD2, U3D, OBJ)
 	MODEL_TYPE_SKELETAL,	// Skeletal mesh (IQM)
 	MODEL_TYPE_VERTEX,		// Per-vertex animated mesh (MD2, U3D)
-	MODEL_TYPE_SPRITE,		// Just a flat-plane with a texture.
 	MODEL_TYPE_LEVEL,		// Level / World model.
 
 	MODEL_NONE

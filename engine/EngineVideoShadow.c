@@ -1,6 +1,4 @@
-/*	Copyright (C) 1996-2001 Id Software, Inc.
-	Copyright (C) 2002-2009 John Fitzgibbons and others
-	Copyright (C) 2011-2015 OldTimes Software
+/*	Copyright (C) 2011-2015 OldTimes Software
 
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License
@@ -25,8 +23,6 @@
 
 /*
 	Contains all basic drawing routines.
-	TODO:
-		Rename to engine_draw!
 */
 
 #define	SHADOW_MAP_RESOLUTION	512	// TODO: Make this a console variable?
@@ -58,10 +54,7 @@ void Shadow_DrawBlob(ClientEntity_t *Entity)
 
 	fBlobHeight = Entity->origin[2] - lightspot[2];
 
-	Video_ResetCapabilities(false);
-
 	VideoLayer_DepthMask(false);
-
 	VideoLayer_PushMatrix();
 
 	glTranslatef(Entity->origin[0], Entity->origin[1], Entity->origin[2]);
@@ -88,10 +81,7 @@ void Shadow_DrawBlob(ClientEntity_t *Entity)
 	glTranslatef(0, 0, fBlobHeight + 0.1);
 
 	VideoLayer_PopMatrix();
-
 	VideoLayer_DepthMask(true);
-
-	Video_ResetCapabilities(true);
 }
 
 void Shadow_DrawMap(ClientEntity_t *Entity)
@@ -118,7 +108,7 @@ void Shadow_DrawMap(ClientEntity_t *Entity)
 void Shadow_Draw(ClientEntity_t *Entity)
 {
 	// Only meshes are valid here.
-	if ((Entity->model->type == MODEL_TYPE_LEVEL) || (Entity->model->type == MODEL_TYPE_SPRITE))
+	if (Entity->model->type == MODEL_TYPE_LEVEL)
 		return;
 
 	// Make sure the entity is actually visible.

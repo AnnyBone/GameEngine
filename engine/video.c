@@ -318,7 +318,7 @@ void Video_DrawDepthBuffer(void)
 
 	// Draw the buffer to the bottom left corner of the screen.
 	GL_SetCanvas(CANVAS_BOTTOMLEFT);
-	Draw_Fill(0,0,512,512,1.0f,1.0f,1.0f,1.0f);
+	Draw_Rectangle(0, 0, 512, 512, g_colourwhite);
 	GL_SetCanvas(CANVAS_DEFAULT);
 
 	// Delete the texture, so we can recreate it later.

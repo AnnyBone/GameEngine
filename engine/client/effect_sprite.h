@@ -54,13 +54,15 @@ public:
 private:
 	float scale;
 
+	int	ident;
+
 	bool
-		islit,
-		isvisible,
-		isactive;
+		islit,		// Is the sprite intended to be lit?
+		isvisible,	// Is the sprite currently visible?
+		isactive;	// Is the sprite considered active?
 
 	MathVector3f_t
-		Position,
+		position,
 		mins, maxs;
 
 	SpriteType_t Type;

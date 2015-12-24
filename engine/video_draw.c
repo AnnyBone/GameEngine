@@ -127,24 +127,20 @@ void Scrap_Upload (void)
 
 extern gltexture_t	*gMenuTexture[128];
 
-void Draw_MaterialSurface(Material_t *mMaterial, int iSkin,
-	int x, int y, int w, int h,
-	float fAlpha)
+void Draw_MaterialSurface(Material_t *mMaterial, int iSkin,	int x, int y, int w, int h,	float fAlpha)
 {
 	VideoObjectVertex_t voSurface[4];
 
 	// Sloppy, but in the case that there's nothing valid...
 	if (!mMaterial)
 	{
-		Draw_Fill(x, y, w, h, 1.0f, 0, 0, 1.0f);
+		Draw_Rectangle(x, y, w, h, g_colourred);
 		Draw_String(x, y, "INVALID MATERIAL!");
 		return;
 	}
 
-	Video_ResetCapabilities(false);
-
 	// Disable depth testing.
-	Video_DisableCapabilities(VIDEO_DEPTH_TEST);
+	VideoLayer_Disable(VIDEO_DEPTH_TEST);
 
 	// Set the colour.
 	Video_ObjectColour(&voSurface[0], 1.0f, 1.0f, 1.0f, fAlpha);
@@ -167,7 +163,7 @@ void Draw_MaterialSurface(Material_t *mMaterial, int iSkin,
 	// Throw it off to the rendering pipeline.
 	Video_DrawFill(voSurface, mMaterial, iSkin);
 
-	Video_ResetCapabilities(true);
+	VideoLayer_Enable(VIDEO_DEPTH_TEST);
 }
 
 /*	TODO: Make me obsolete!
@@ -399,7 +395,7 @@ void Draw_ConsoleBackground(void)
 		fAlpha = cvConsoleAlpha.value;
 
 #if 0
-	Draw_Fill(0,0,vid.conwidth,vid.conheight,0,0,0,fAlpha);
+	Draw_Rectangle(0,0,vid.conwidth,vid.conheight,0,0,0,fAlpha);
 #else
 	Colour_t cBlack, cLightBlack;
 
@@ -575,16 +571,14 @@ void Draw_Grid(float x, float y, float z, int grid_size)
 	Video_ResetCapabilities(true);
 }
 
-void Draw_Fill(int x,int y,int w,int h,float r,float g,float b,float alpha)
+void Draw_Rectangle(int x, int y, int w, int h, Colour_t colour)
 {
-	MathVector4f_t vColour;
 	VideoObjectVertex_t	voFill[4];
 
-	vColour[0] = r; vColour[1] = g; vColour[2] = b; vColour[3] = alpha;
-	Math_Vector4Copy(vColour,voFill[0].mvColour);
-	Math_Vector4Copy(vColour,voFill[1].mvColour);
-	Math_Vector4Copy(vColour,voFill[2].mvColour);
-	Math_Vector4Copy(vColour,voFill[3].mvColour);
+	Math_Vector4Copy(colour, voFill[0].mvColour);
+	Math_Vector4Copy(colour, voFill[1].mvColour);
+	Math_Vector4Copy(colour, voFill[2].mvColour);
+	Math_Vector4Copy(colour, voFill[3].mvColour);
 
 	Video_ResetCapabilities(false);
 
@@ -839,9 +833,6 @@ void Draw_Entity(ClientEntity_t *entity)
 		break;
 	case MODEL_TYPE_LEVEL:
 		Brush_Draw(entity);
-		break;
-	case MODEL_TYPE_SPRITE:
-		Draw_SpriteEntity(entity);
 		break;
 	default:
 		Console_ErrorMessage(false, entity->model->name, "Unrecognised model type.");

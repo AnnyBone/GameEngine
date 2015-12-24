@@ -250,7 +250,7 @@ void ExtraMaps_Add (char *name)
 
 void ExtraMaps_Init(void)
 {
-    char            cMapName[128],
+	char            cMapName[128],
 		filestring[PLATFORM_MAX_PATH];
 	searchpath_t    *search;
 	pack_t          *pak;
@@ -261,42 +261,42 @@ void ExtraMaps_Init(void)
 		if(*search->filename) //directory
 		{
 #ifdef _WIN32
-            WIN32_FIND_DATA	FindFileData;
-            HANDLE			Find;
+			WIN32_FIND_DATA	FindFileData;
+			HANDLE			Find;
 
-            sprintf(filestring,"%s/%s*"BSP_EXTENSION,search->filename,Global.cLevelPath);
+			sprintf(filestring,"%s/%s*"BSP_EXTENSION,search->filename,Global.cLevelPath);
 
-            Find = FindFirstFile(filestring,&FindFileData);
-            if(Find == INVALID_HANDLE_VALUE)
-                continue;
+			Find = FindFirstFile(filestring,&FindFileData);
+			if(Find == INVALID_HANDLE_VALUE)
+				continue;
 				
-            do
-            {
-                COM_StripExtension(FindFileData.cFileName,cMapName);
+			do
+			{
+				COM_StripExtension(FindFileData.cFileName,cMapName);
 
-                ExtraMaps_Add(cMapName);
-            } while(FindNextFile(Find,&FindFileData));
+				ExtraMaps_Add(cMapName);
+			} while(FindNextFile(Find,&FindFileData));
 #else // linux
-            DIR             *dDirectory;
-            struct  dirent  *dEntry;
+			DIR             *dDirectory;
+			struct  dirent  *dEntry;
 
-            sprintf(filestring,"%s/%s",search->filename,Global.cLevelPath);
+			sprintf(filestring,"%s/%s",search->filename,Global.cLevelPath);
 
-            dDirectory = opendir(filestring);
-            if(dDirectory)
-            {
-                while((dEntry = readdir(dDirectory)))
-                {
-                    if(strstr(dEntry->d_name,BSP_EXTENSION))
-                    {
-                        COM_StripExtension(dEntry->d_name,cMapName);
+			dDirectory = opendir(filestring);
+			if(dDirectory)
+			{
+				while((dEntry = readdir(dDirectory)))
+				{
+					if(strstr(dEntry->d_name,BSP_EXTENSION))
+					{
+						COM_StripExtension(dEntry->d_name,cMapName);
 
-                        ExtraMaps_Add(cMapName);
-                    }
-                }
+						ExtraMaps_Add(cMapName);
+					}
+				}
 
-                closedir(dDirectory);
-            }
+				closedir(dDirectory);
+			}
 #endif
 		}
 		else //pakfile

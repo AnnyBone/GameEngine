@@ -214,13 +214,15 @@ typedef struct
 {
 	const char *extension;
 
+	int type;
+
 	void (*Function)(model_t *model, void *buffer);
 } ModelLoadInterface;
 
 ModelLoadInterface model_formatlist[] =
 {
-	{ "3d", ModelU3D_Load },
-	{ "obj", Model_LoadOBJ }
+	{ "3d",		MODEL_TYPE_STATIC,	ModelU3D_Load },
+	{ "obj",	MODEL_TYPE_STATIC,	Model_LoadOBJ }
 };
 
 /*	Loads a model into the cache
@@ -272,13 +274,16 @@ model_t *Model_Load(model_t *model)
 		break;
 	default:
 		// Grab the file extension, so we can check for formats that don't have idents.
-		strcpy(exten, COM_FileExtension(model->name));
+		p_strncpy(exten, COM_FileExtension(model->name), sizeof(exten));
 		if (exten[0] != ' ')
 		{
 			for (i = 0; i < pARRAYELEMENTS(model_formatlist); i++)
 			{
 				if (!strcmp(model_formatlist[i].extension, exten))
 				{
+					// Set the default type, we can change later.
+					model->type = model_formatlist[i].type;
+
 					model_formatlist[i].Function(model, buf);
 					return model;
 				}
@@ -1370,14 +1375,14 @@ void Model_CalculateMD2Normals(model_t *model, MD2_t *md2)
 
 void Model_LoadMD2(model_t *mModel,void *Buffer)
 {
-	int	i,j,
-		iVersion,
-		numframes,
-		*pinglcmd,*poutglcmd,
-		iStartHunk,iEnd,total;
-	MD2_t *pinmodel,*mMD2Model;
-	MD2Triangle_t *pintriangles, *pouttriangles;
-	MD2Frame_t *pinframe, *poutframe;
+	int				i, j,
+					iVersion,
+					numframes,
+					*pinglcmd,*poutglcmd,
+					iStartHunk,iEnd,total;
+	MD2_t			*pinmodel,*mMD2Model;
+	MD2Triangle_t	*pintriangles, *pouttriangles;
+	MD2Frame_t		*pinframe, *poutframe;
 
 	iStartHunk = Hunk_LowMark();
 

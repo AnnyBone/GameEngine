@@ -156,7 +156,8 @@ void VideoFrameBuffer::Draw()
 	GL_SetCanvas(CANVAS_DEFAULT);
 
 	Video_SetTexture(buf_colour);
-	Draw_Fill(0, 0, 512, 512, 1, 1, 1, 1); //Video.iWidth, Video.iHeight, 1, 1, 1, 1);
+
+	Draw_Rectangle(0, 0, 512, 512, g_colourwhite); //Video.iWidth, Video.iHeight,
 }
 
 VideoFrameBuffer *debug_fbo;
@@ -222,7 +223,8 @@ void VideoPostProcess::Draw()
 	program->SetVariable(iDiffuseUniform, 0);
 
 	GL_SetCanvas(CANVAS_DEFAULT);
-	Draw_Fill(0, 0, 512, 512, 1, 1, 1, 1); //Video.iWidth, Video.iHeight, 1, 1, 1, 1);
+
+	Draw_Rectangle(0, 0, 512, 512, g_colourwhite); //Video.iWidth, Video.iHeight,
 
 	program->Disable();
 }

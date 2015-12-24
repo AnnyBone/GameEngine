@@ -357,7 +357,7 @@ void SV_ReadClientMove (ClientCommand_t *move)
 */
 bool Server_ReadClientMessage(void)
 {
-	int		ret,cmd;
+	int		ret, ncmd;
 	char	*s;
 
 	do
@@ -384,8 +384,8 @@ nextmsg:
 				return false;
 			}
 
-			cmd = MSG_ReadChar();
-			switch(cmd)
+			ncmd = MSG_ReadChar();
+			switch(ncmd)
 			{
 			case -1:
 				goto nextmsg;		// end of message

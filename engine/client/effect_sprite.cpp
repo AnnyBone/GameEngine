@@ -86,15 +86,14 @@ void SpriteManager::Shutdown()
 
 Sprite::Sprite()
 {
-	isactive = false;
-	islit = false;
-	isvisible = false;
+	ident		= 0;
+	isactive	= false;
+	islit		= false;
+	isvisible	= false;
+	scale		= 1.0f;
+	material	= g_mMissingMaterial;
 
-	scale = 1.0f;
-
-	material = g_mMissingMaterial;
-
-	Math_VectorClear(Position);
+	Math_VectorClear(position);
 	Math_VectorClear(mins);
 	Math_VectorClear(maxs);
 	Math_Vector4Set(1.0f, Colour);
@@ -112,17 +111,17 @@ void Sprite::SetColour(float r, float g, float b, float a)
 	Colour[3] = a;
 }
 
-void Sprite::SetPosition(MathVector3f_t position)
+void Sprite::SetPosition(MathVector3f_t nposition)
 {
 	// Just use the other func.
-	SetPosition(position[0], position[1], position[2]);
+	SetPosition(nposition[0], nposition[1], nposition[2]);
 }
 
 void Sprite::SetPosition(float x, float y, float z)
 {
-	Position[0] = x;
-	Position[1] = y;
-	Position[2] = z;
+	position[0] = x;
+	position[1] = y;
+	position[2] = z;
 }
 
 void Sprite::SetType(SpriteType_t type)
@@ -189,9 +188,9 @@ void Sprite::Simulate()
 	case SPRITE_TYPE_SCALE:
 		// Scale the sprite, dependant on view position.
 		scale *=
-			(Position[0] - r_origin[0])*vpn[0] +
-			(Position[1] - r_origin[1])*vpn[1] +
-			(Position[2] - r_origin[2])*vpn[2];
+			(position[0] - r_origin[0])*vpn[0] +
+			(position[1] - r_origin[1])*vpn[1] +
+			(position[2] - r_origin[2])*vpn[2];
 		break;
 	}
 }
@@ -217,11 +216,11 @@ void Sprite::Draw()
 	{
 		// We need the size relative to the current position.
 		MathVector3f_t NewMins, NewMaxs;
-		Math_VectorAdd(mins, Position, NewMins);
-		Math_VectorAdd(maxs, Position, NewMaxs);
+		Math_VectorAdd(mins, position, NewMins);
+		Math_VectorAdd(maxs, position, NewMaxs);
 
 		// Draw a point representing the current position.
-		R_EmitWirePoint(Position);
+		R_EmitWirePoint(position);
 
 		// Draw the bounding box.
 		R_EmitWireBox(NewMins, NewMaxs, 0, 1.0f, 0);

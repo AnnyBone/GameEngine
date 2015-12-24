@@ -471,16 +471,17 @@ devstats_t dev_stats, dev_peakstats;
 
 void SCR_DrawDevStats (void)
 {
-	char	str[40];
-	int		y = 25-9; //9=number of lines to print
-	int		x = 0; //margin
+	Colour_t	colour_dark = { 0, 0, 0, 0.5f };
+	char		str[40];
+	int			y = 25-9; //9=number of lines to print
+	int			x = 0; //margin
 
 	if (!devstats.value)
 		return;
 
 	GL_SetCanvas (CANVAS_BOTTOMLEFT);
 
-	Draw_Fill(x,y*8,152,72,0,0,0,0.5f); //dark rectangle
+	Draw_Rectangle(x,y*8,152,72, colour_dark); //dark rectangle
 
 	sprintf (str, "devstats |Curr Peak");
 	Draw_String(x, (y++) * 8 - x, str);

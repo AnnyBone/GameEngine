@@ -18,14 +18,20 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef __PLATFORMMATH_H__
-#define	__PLATFORMMATH_H__
+#ifndef PLATFORM_MATH_H
+#define	PLATFORM_MATH_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #include "platform.h"
+
+#ifdef __cplusplus
+	/*
+	TODO: C++ Math Classes
+	*/
+#endif
 
 #define pMath_PI			3.14159265358979323846
 #define	pMath_PI_DIV180		(pMath_PI/180.0)
@@ -69,6 +75,9 @@ extern MathVector_t		mvOrigin;
 extern MathVector2f_t	mv2Origin;
 extern MathVector3f_t	g_mvOrigin3f;
 extern MathVector4f_t	mv4Origin;
+
+extern Colour_t	g_colourwhite;
+extern Colour_t g_colourred;
 
 enum PlatformMathWH
 {
@@ -237,4 +246,4 @@ float Math_ExpPulse(float x, float k, float n);
 }
 #endif
 
-#endif
+#endif // !PLATFORM_MATH_H
