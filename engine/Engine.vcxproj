@@ -701,21 +701,24 @@
     <ClCompile Include="zone.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\shared\format_iqm.h" />
     <ClInclude Include="..\shared\format_obj.h" />
     <ClInclude Include="..\shared\format_u3d.h" />
-    <ClInclude Include="..\shared\SharedMaterial.h" />
-    <ClInclude Include="..\shared\SharedModel.h" />
-    <ClInclude Include="..\shared\SharedTexture.h" />
-    <ClInclude Include="..\shared\SharedZone.h" />
     <ClInclude Include="..\shared\shared_client.h" />
     <ClInclude Include="..\shared\shared_editor.h" />
     <ClInclude Include="..\shared\SharedEngine.h" />
-    <ClInclude Include="..\shared\SharedFlags.h" />
+    <ClInclude Include="..\shared\shared_flags.h" />
     <ClInclude Include="..\shared\shared_formats.h" />
     <ClInclude Include="..\shared\shared_game.h" />
+    <ClInclude Include="..\shared\shared_input.h" />
+    <ClInclude Include="..\shared\shared_material.h" />
     <ClInclude Include="..\shared\shared_menu.h" />
     <ClInclude Include="..\shared\SharedModule.h" />
+    <ClInclude Include="..\shared\shared_model.h" />
     <ClInclude Include="..\shared\shared_server.h" />
+    <ClInclude Include="..\shared\shared_texture.h" />
+    <ClInclude Include="..\shared\shared_video.h" />
+    <ClInclude Include="..\shared\shared_zone.h" />
     <ClInclude Include="client.h" />
     <ClInclude Include="client\effect_sprite.h" />
     <ClInclude Include="engine_class.h" />

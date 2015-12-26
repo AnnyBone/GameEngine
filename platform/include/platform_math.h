@@ -76,8 +76,11 @@ extern MathVector2f_t	mv2Origin;
 extern MathVector3f_t	g_mvOrigin3f;
 extern MathVector4f_t	mv4Origin;
 
-extern Colour_t	g_colourwhite;
-extern Colour_t g_colourred;
+extern Colour_t	
+	g_colourwhite, 
+	g_colourred, 
+	g_colourgreen, 
+	g_colourblue;
 
 enum PlatformMathWH
 {

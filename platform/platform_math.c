@@ -24,13 +24,15 @@
 	Math Library
 */
 
-MathVector2f_t mv2Origin = { 0, 0 };
-MathVector3f_t g_mvOrigin3f = { 0, 0, 0 };
-MathVector4f_t mv4Origin = { 0, 0, 0, 0 };
+MathVector2f_t mv2Origin		= { 0, 0 };
+MathVector3f_t g_mvOrigin3f		= { 0, 0, 0 };
+MathVector4f_t mv4Origin		= { 0, 0, 0, 0 };
 
 // Colours
-Colour_t g_colourwhite = { 1, 1, 1, 1 };
-Colour_t g_colourred = { 1, 0, 0, 1 };
+Colour_t g_colourwhite	= { 1, 1, 1, 1 };
+Colour_t g_colourred	= { 1, 0, 0, 1 };
+Colour_t g_colourgreen	= { 0, 1, 0, 1 };
+Colour_t g_colourblue	= { 0, 0, 1, 1 };
 
 MathVector_t Math_VectorToAngles(MathVector3f_t vValue)
 {

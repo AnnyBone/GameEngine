@@ -396,18 +396,6 @@
     <ClInclude Include="engine_netdgrm.h">
       <Filter>Legacy\Network</Filter>
     </ClInclude>
-    <ClInclude Include="..\shared\SharedMaterial.h">
-      <Filter>Shared</Filter>
-    </ClInclude>
-    <ClInclude Include="..\shared\SharedTexture.h">
-      <Filter>Shared</Filter>
-    </ClInclude>
-    <ClInclude Include="..\shared\SharedModel.h">
-      <Filter>Shared</Filter>
-    </ClInclude>
-    <ClInclude Include="..\shared\SharedZone.h">
-      <Filter>Shared</Filter>
-    </ClInclude>
     <ClInclude Include="EngineVideoShadow.h">
       <Filter>Legacy\Client\Video</Filter>
     </ClInclude>
@@ -431,9 +419,6 @@
     </ClInclude>
     <ClInclude Include="EngineServerPhysics.h">
       <Filter>Legacy\Server</Filter>
-    </ClInclude>
-    <ClInclude Include="..\shared\SharedFlags.h">
-      <Filter>Shared</Filter>
     </ClInclude>
     <ClInclude Include="EngineGame.h">
       <Filter>Legacy\Modules</Filter>
@@ -542,6 +527,30 @@
     </ClInclude>
     <ClInclude Include="video_layer.h">
       <Filter>Client\Video</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\shared_flags.h">
+      <Filter>Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\shared_input.h">
+      <Filter>Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\shared_material.h">
+      <Filter>Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\shared_model.h">
+      <Filter>Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\shared_texture.h">
+      <Filter>Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\shared_video.h">
+      <Filter>Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\shared_zone.h">
+      <Filter>Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\format_iqm.h">
+      <Filter>Shared\Formats</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
