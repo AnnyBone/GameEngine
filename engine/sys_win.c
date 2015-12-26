@@ -455,6 +455,7 @@ bool System_Main(int iArgumentCount,char *cArguments[], bool bEmbedded)
 	EngineParameters_t	epParameters;
 	int					t;
 
+#if 0
 #ifdef _WIN32	// TODO: Move this functionality into the platform library.
 	{
 		MEMORYSTATUSEX lpBuffer;
@@ -475,9 +476,10 @@ bool System_Main(int iArgumentCount,char *cArguments[], bool bEmbedded)
 		if(epParameters.memsize > MAXIMUM_MEMORY)
 			epParameters.memsize = MAXIMUM_MEMORY;
 	}
-#else
-	epParameters.memsize	= MAXIMUM_MEMORY;
 #endif
+#endif
+	
+	epParameters.memsize	= MAXIMUM_MEMORY;
 	epParameters.basedir	= ".";
 	epParameters.cachedir	= NULL;
 	epParameters.argc		= iArgumentCount;

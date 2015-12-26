@@ -1032,6 +1032,7 @@ void Material_Draw(Material_t *Material, int Skin,
 
 		switch (msCurrentSkin->mtTexture[i].mttType)
 		{
+		case MATERIAL_TEXTURE_LIGHTMAP:
 		case MATERIAL_TEXTURE_DIFFUSE:
 			if (!bPost)
 			{
