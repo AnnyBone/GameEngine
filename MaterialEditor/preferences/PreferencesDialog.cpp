@@ -183,7 +183,7 @@ void CPreferencesDialog::SyncSettings()
 	AutoReloadDelay->SetValue(cvEditorAutoReloadDelay.iValue);
 
 	// Video Settings
-	VideoLegacyMode->SetValue((bool)engine->GetConsoleVariableValue("video_legacy"));
+	VideoLegacyMode->SetValue(engine->GetConsoleVariableBoolValue("video_legacy"));
 }
 
 void CPreferencesDialog::ApplySettings()

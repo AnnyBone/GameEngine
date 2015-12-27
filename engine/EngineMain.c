@@ -89,13 +89,14 @@ pMODULE_EXPORT EngineExport_t *Engine_Main(EngineImport_t *mImport)
 	EngineExport.LoadModel = Mod_ForName;
 
 	// Console
-	EngineExport.InsertConsoleCommand		= Cbuf_InsertText;
-	EngineExport.RegisterConsoleVariable	= Cvar_RegisterVariable;
-	EngineExport.SetConsoleVariable			= Cvar_Set;
-	EngineExport.ResetConsoleVariable		= Cvar_Reset;
-	EngineExport.GetConsoleVariableValue	= Cvar_VariableValue;
-	EngineExport.Print						= Con_Printf;
-	EngineExport.PrintDev					= Con_DPrintf;
+	EngineExport.InsertConsoleCommand			= Cbuf_InsertText;
+	EngineExport.RegisterConsoleVariable		= Cvar_RegisterVariable;
+	EngineExport.SetConsoleVariable				= Cvar_Set;
+	EngineExport.ResetConsoleVariable			= Cvar_Reset;
+	EngineExport.GetConsoleVariableValue		= Cvar_VariableValue;
+	EngineExport.GetConsoleVariableBoolValue	= ConsoleVariable_GetBoolValue;
+	EngineExport.Print							= Con_Printf;
+	EngineExport.PrintDev						= Con_DPrintf;
 
 	// Video
 	EngineExport.DrawPostFrame			= Video_PostFrame;

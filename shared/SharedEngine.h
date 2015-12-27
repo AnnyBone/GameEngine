@@ -71,6 +71,7 @@ typedef struct
 	void(*PrintDev)(const char *cMessage, ...);												// Prints a developer message to the console.
 
 	float(*GetConsoleVariableValue)(const char *var_name);
+	bool(*GetConsoleVariableBoolValue)(const char *var_name);
 
 	// Video...
 

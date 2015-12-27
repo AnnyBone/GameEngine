@@ -65,6 +65,8 @@ extern "C" {
 	float	Cvar_VariableValue(const char *var_name);
 	// returns 0 if not defined or non numeric
 
+	bool ConsoleVariable_GetBoolValue(const char *var_name);
+
 	char	*Cvar_VariableString(char *var_name);
 	// returns an empty string if not defined
 

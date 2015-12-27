@@ -210,19 +210,23 @@ ConsoleVariable_t *Cvar_FindVar (const char *var_name)
 
 float Cvar_VariableValue (const char *var_name)
 {
-	ConsoleVariable_t *var;
-
-	var = Cvar_FindVar (var_name);
+	ConsoleVariable_t *var = Cvar_FindVar (var_name);
 	if (!var)
 		return 0;
-	return Q_atof (var->string);
+	return var->value;
+}
+
+bool ConsoleVariable_GetBoolValue(const char *var_name)
+{
+	ConsoleVariable_t *var = Cvar_FindVar(var_name);
+	if (!var)
+		return false;
+	return var->bValue;
 }
 
 char *Cvar_VariableString (char *var_name)
 {
-	ConsoleVariable_t *var;
-
-	var = Cvar_FindVar (var_name);
+	ConsoleVariable_t *var = Cvar_FindVar (var_name);
 	if (!var)
 		return "";
 	return var->string;
