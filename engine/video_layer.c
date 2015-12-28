@@ -93,11 +93,10 @@ void VideoLayer_PopMatrix(void)
 
 void VideoLayer_UseProgram(unsigned int program)
 {
-	static unsigned int curprogram = 0;
-	if (program == curprogram)
+	if (program == Video.current_program)
 		return;
 	glUseProgram(program);
-	curprogram = program;
+	Video.current_program = program;
 }
 
 /*===========================

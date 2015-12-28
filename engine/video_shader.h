@@ -83,6 +83,11 @@ public:
 	void Link();
 	void Shutdown();
 
+	bool IsActive() 
+	{ 
+		return (Video.current_program == instance); 
+	}
+
 	void SetVariable(int location, float x, float y, float z);
 	void SetVariable(int location, MathVector3f_t vector);
 	void SetVariable(int location, float x, float y, float z, float a);
@@ -113,6 +118,7 @@ public:
 	}
 
 	virtual void Initialize() = 0;
+	virtual void Draw() = 0;
 	virtual void Shutdown() = 0;
 
 	virtual void Enable()

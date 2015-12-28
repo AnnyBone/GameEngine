@@ -27,6 +27,8 @@ public:
 	BaseShader();
 
 	virtual void Initialize();
+	virtual void Draw();
+	virtual void Shutdown();
 
 	void EnableAlphaTest();
 	void DisableAlphaTest();
@@ -74,6 +76,9 @@ void BaseShader::Initialize()
 	PROGRAM_REGISTER_UNIFORM(u_lightposition);
 
 	PROGRAM_REGISTER_UNIFORM(u_vertexscale);
+
+	// Set defaults...
+	program->SetVariable(u_alphaclamp, alpha_clamp);
 }
 
 void BaseShader::EnableAlphaTest()

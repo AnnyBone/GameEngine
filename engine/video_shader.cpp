@@ -235,31 +235,43 @@ int VideoShaderProgram::GetUniformLocation(const char *name)
 
 void VideoShaderProgram::SetVariable(int location, float x, float y, float z)
 {
-	// TODO: Error checking!
+	if (IsActive())
+		Sys_Error("Ensure shader program is enabled before applying variables! (%i) (%i %i %i)\n",
+			location, (int)x, (int)y, (int)z);
+	
 	glUniform3f(location, x, y, z);
 }
 
-void VideoShaderProgram::SetVariable(int location, MathVector3f_t mvVector)
+void VideoShaderProgram::SetVariable(int location, MathVector3f_t vector)
 {
-	// TODO: Error checking!
-	glUniform3fv(location, 3, mvVector);
+	if (IsActive())
+		Sys_Error("Ensure shader program is enabled before applying variables! (%i) (%i %i %i)\n",
+			location, (int)vector[0], (int)vector[1], (int)vector[2]);
+
+	glUniform3fv(location, 3, vector);
 }
 
 void VideoShaderProgram::SetVariable(int location, float x, float y, float z, float a)
 {
-	// TODO: Error checking!
+	if (IsActive())
+		Sys_Error("Ensure shader program is enabled before applying variables! (%i) (%i %i %i %i)\n",
+			location, (int)x, (int)y, (int)z, (int)a);
 	glUniform4f(location, x, y, z, a);
 }
 
 void VideoShaderProgram::SetVariable(int location, int i)
 {
-	// TODO: Error checking!
+	if (IsActive())
+		Sys_Error("Ensure program is enabled before applying variables! (%i) (%i)\n",
+			location, i);
 	glUniform1i(location, i);
 }
 
 void VideoShaderProgram::SetVariable(int location, float f)
 {
-	// TODO: Error checking!
+	if (IsActive())
+		Sys_Error("Ensure program is enabled before applying variables! (%i) (%i)\n",
+			location, (int)f);
 	glUniform1f(location, f);
 }
 

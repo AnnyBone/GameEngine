@@ -127,6 +127,8 @@ typedef struct
 	unsigned int
 		uiCurrentFBO[VIDEO_MAX_FRAMEBUFFFERS];	// Current/last binded FBO.
 
+	unsigned int current_program;
+
 	int iSupportedUnits;	// Max number of supported units.
 	int iMSAASamples;
 

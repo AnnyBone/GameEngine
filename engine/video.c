@@ -102,9 +102,10 @@ void Video_Initialize(void)
 	Video.extensions.shadow					= false;
 
 	// Give everything within the video sub-system its default value.
-	Video.bDebugFrame	= false;	// Not debugging the initial frame!
-	Video.bActive		= true;		// Window is intially assumed active.
-	Video.bUnlocked		= true;		// Video mode is initially locked.
+	Video.bDebugFrame		= false;	// Not debugging the initial frame!
+	Video.bActive			= true;		// Window is intially assumed active.
+	Video.bUnlocked			= true;		// Video mode is initially locked.
+	Video.current_program	= 0;
 
 	Cvar_RegisterVariable(&cvMultisampleSamples,NULL);
 	Cvar_RegisterVariable(&cvVideoDrawModels,NULL);
