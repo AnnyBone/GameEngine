@@ -417,11 +417,6 @@ void _Material_SetLightmap(Material_t *material, MaterialFunctionType_t context,
 	material->override_lightmap = (bool)atoi(arg);
 }
 
-void _Material_SetShader(Material_t *mCurrentMaterial, MaterialFunctionType_t mftContext, char *cArg)
-{
-	mCurrentMaterial->msShader.ccName = cArg;
-}
-
 void _Material_SetAlpha(Material_t *mCurrentMaterial, MaterialFunctionType_t mftContext, char *cArg)
 {
 	mCurrentMaterial->fAlpha = strtof(cArg, NULL);
@@ -658,6 +653,13 @@ void _Material_SetAlphaTest(Material_t *material, MaterialFunctionType_t context
 		material->msSkin[material->iSkins].uiFlags &= ~MATERIAL_FLAG_ALPHA;
 }
 
+void _Material_SetShader(Material_t *material, MaterialFunctionType_t context, char *arg)
+{
+	p_strncpy(material->msSkin[material->iSkins].shader.name, arg, sizeof(material->msSkin[material->iSkins].shader.name));
+
+	
+}
+
 // Universal Functions...
 
 typedef struct
@@ -743,12 +745,12 @@ MaterialKey_t MaterialFunctions[]=
 	// Material
 	{ "override_wireframe", _Material_SetWireframe, MATERIAL_FUNCTION_MATERIAL },
 	{ "override_lightmap", _Material_SetLightmap, MATERIAL_FUNCTION_MATERIAL },
-	{ "shader", _Material_SetShader, MATERIAL_FUNCTION_MATERIAL },
 	{ "animation_speed", _Material_SetAnimationSpeed, MATERIAL_FUNCTION_MATERIAL },
 	{ "skin", _Material_AddSkin, MATERIAL_FUNCTION_MATERIAL },
 	{ "alpha", _Material_SetAlpha, MATERIAL_FUNCTION_MATERIAL },
 
 	// Skin
+	{ "shader", _Material_SetShader, MATERIAL_FUNCTION_SKIN },
 	{ "map", _Material_AddTexture, MATERIAL_FUNCTION_SKIN },
 	{ "texture", _Material_AddTexture, MATERIAL_FUNCTION_SKIN },
 	{ "additive", _Material_SetAdditive, MATERIAL_FUNCTION_SKIN },

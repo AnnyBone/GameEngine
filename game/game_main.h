@@ -32,7 +32,7 @@
 #include "shared_menu.h"
 #include "shared_formats.h"
 #include "shared_game.h"
-#include "SharedEngine.h"
+#include "shared_engine.h"
 
 #include "game_resources.h"
 

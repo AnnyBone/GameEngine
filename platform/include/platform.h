@@ -216,15 +216,15 @@ typedef false pFALSE;
 
 #define	pARRAYELEMENTS(a)	(sizeof(a)/sizeof(*(a)))	// Returns the number of elements within an array.
 
-typedef unsigned int pUINT;
-typedef	unsigned char pUCHAR;
+typedef unsigned int	pUINT;
+typedef	unsigned char	pUCHAR;
 
 #include "platform_log.h"
 #include "platform_window.h"
 
 /*	Platform Standard Headers
 */
-#include "PlatformString.h"
+#include "platform_string.h"
 
 /*
 	Error Management Functionality

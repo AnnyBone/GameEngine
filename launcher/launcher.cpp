@@ -24,7 +24,7 @@
 // Shared Library
 #include "shared_flags.h"
 #include "SharedModule.h"
-#include "SharedEngine.h"
+#include "shared_engine.h"
 
 /*
 	Launches the engine.

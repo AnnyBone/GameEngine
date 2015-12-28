@@ -16,43 +16,52 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef ENGINE_MAIN_H
-#define ENGINE_MAIN_H
+#include "engine_base.h"
 
-#include "SharedModule.h"
-#include "shared_engine.h"
+#include "video.h"
+#include "video_shader.h"
 
-typedef struct
+/*
+	Implementation for a water shader.
+*/
+
+class WaterShader : public VideoShaderManager
 {
-	// Host Information
-	char cLocalName[PLATFORM_MAX_USER];	// Current system username.
+public:
+	WaterShader();
+	~WaterShader();
 
-	char	
-		cMaterialPath[PLATFORM_MAX_PATH],
-		cTexturePath[PLATFORM_MAX_PATH],
-		cLevelPath[PLATFORM_MAX_PATH],
-		cScreenshotPath[PLATFORM_MAX_PATH],
-		cModulePath[PLATFORM_MAX_PATH],
-		cFontPath[PLATFORM_MAX_PATH],
-		cShaderPath[PLATFORM_MAX_PATH],
-		cSoundPath[PLATFORM_MAX_PATH];
+	virtual void Initialize();
+	virtual void Shutdown();
 
-	bool bEmbeddedContext;
-} EngineGlobal_t;
+protected:
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+private:
+	uniform u_diffusemap;
+	uniform	u_normalmap;
 
-	extern EngineGlobal_t Global;
+	uniform	u_time;
+};
 
-	extern EngineImport_t EngineLauncher;
-
-	// System
-	double System_DoubleTime(void);
-
-#ifdef __cplusplus
+WaterShader::WaterShader()
+{
+	program	= NULL;
 }
-#endif
 
-#endif
+void WaterShader::Initialize()
+{
+	PROGRAM_REGISTER_SHADER_START();
+	PROGRAM_REGISTER_SHADER(base, VIDEO_SHADER_VERTEX);
+	PROGRAM_REGISTER_SHADER(water, VIDEO_SHADER_FRAGMENT);
+	PROGRAM_REGISTER_SHADER_END();
+
+	PROGRAM_REGISTER_UNIFORM(u_diffusemap);
+	PROGRAM_REGISTER_UNIFORM(u_normalmap);
+
+	PROGRAM_REGISTER_UNIFORM(u_time);
+}
+
+void WaterShader::Shutdown()
+{
+}
+

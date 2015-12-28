@@ -92,12 +92,13 @@ typedef struct
 
 typedef struct
 {
-	const char *ccName;
+	char name[128];
 } MaterialShader_t;
 
 typedef struct
 {
-	MaterialTexture_t mtTexture[VIDEO_MAX_UNITS];
+	MaterialTexture_t	mtTexture[VIDEO_MAX_UNITS];
+	MaterialShader_t	shader;
 
 	unsigned int
 		uiFlags,	// Flags assigned for the current skin, affects how it's displayed/loaded.
@@ -120,7 +121,6 @@ typedef struct Material_s
 		cName[64];					// Name of the material.
 
 	MaterialSkin_t msSkin[MATERIAL_MAX_SKINS];
-	MaterialShader_t msShader;
 
 	bool 
 		bBind,

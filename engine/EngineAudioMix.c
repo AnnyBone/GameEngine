@@ -44,16 +44,16 @@ void Snd_WriteLinearBlastStereo16(void)
 		val = (snd_p[i] * snd_vol) >> 8;
 		if (val > 0x7fff)
 			snd_out[i] = 0x7fff;
-		else if (val < (short)0x8000)
-			snd_out[i] = (short)0x8000;
+		else if (val < 0x8000)
+			snd_out[i] = 0x8000;
 		else
 			snd_out[i] = val;
 
 		val = (snd_p[i + 1] * snd_vol) >> 8;
 		if (val > 0x7fff)
 			snd_out[i + 1] = 0x7fff;
-		else if (val < (short)0x8000)
-			snd_out[i + 1] = (short)0x8000;
+		else if (val < 0x8000)
+			snd_out[i + 1] = 0x8000;
 		else
 			snd_out[i + 1] = val;
 	}
@@ -203,8 +203,8 @@ void S_TransferPaintBuffer(int endtime)
 			p += step;
 			if (val > 0x7fff)
 				val = 0x7fff;
-			else if (val < (short)0x8000)
-				val = (short)0x8000;
+			else if (val < 0x8000)
+				val = 0x8000;
 			out[out_idx] = val;
 			out_idx = (out_idx + 1) & out_mask;
 		}
@@ -218,8 +218,8 @@ void S_TransferPaintBuffer(int endtime)
 			p += step;
 			if (val > 0x7fff)
 				val = 0x7fff;
-			else if (val < (short)0x8000)
-				val = (short)0x8000;
+			else if (val < 0x8000)
+				val = 0x8000;
 			out[out_idx] = (val >> 8) + 128;
 			out_idx = (out_idx + 1) & out_mask;
 		}

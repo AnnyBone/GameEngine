@@ -1,6 +1,4 @@
-/*	Copyright (C) 1996-2001 Id Software, Inc.
-	Copyright (C) 2002-2009 John Fitzgibbons and others
-	Copyright (C) 2011-2015 OldTimes Software
+/*	Copyright (C) 2011-2015 OldTimes Software
 
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License
@@ -23,21 +21,73 @@
 #include "video.h"
 #include "video_shader.h"
 
-SHADER_REGISTER("BASE");
-
-class BaseShader : public VideoShader
+class BaseShader : public VideoShaderManager
 {
 public:
-	BaseShader(VideoShaderType_t type);
+	BaseShader();
+
+	virtual void Initialize();
+
+	void EnableAlphaTest();
+	void DisableAlphaTest();
 protected:
 private:
+	uniform u_alphaclamp;
+	uniform u_alphatest;
+
+	uniform	u_diffusemap;
+	uniform	u_detailmap;
+	uniform	u_fullbrightmap;
+	uniform	u_spheremap;
+
+	uniform u_lightposition;
+	uniform u_lightcolour;
+
+	uniform u_vertexscale;
+
 	bool	alpha_test;
 	float	alpha_clamp;
 };
 
-BaseShader::BaseShader(VideoShaderType_t type)
-	: VideoShader(type)
+BaseShader::BaseShader()
 {
-	alpha_test	= false;
-	alpha_clamp	= 0.5f;
+	alpha_test		= false;
+	alpha_clamp		= 0.5f;
+}
+
+void BaseShader::Initialize()
+{
+	PROGRAM_REGISTER_SHADER_START();
+	PROGRAM_REGISTER_SHADER(base, VIDEO_SHADER_VERTEX);
+	PROGRAM_REGISTER_SHADER(base, VIDEO_SHADER_FRAGMENT);
+	PROGRAM_REGISTER_SHADER_END();
+
+	PROGRAM_REGISTER_UNIFORM(u_diffusemap);
+	PROGRAM_REGISTER_UNIFORM(u_detailmap);
+	PROGRAM_REGISTER_UNIFORM(u_fullbrightmap);
+	PROGRAM_REGISTER_UNIFORM(u_spheremap);
+
+	PROGRAM_REGISTER_UNIFORM(u_alphaclamp);
+	PROGRAM_REGISTER_UNIFORM(u_alphatest);
+	
+	PROGRAM_REGISTER_UNIFORM(u_lightcolour);
+	PROGRAM_REGISTER_UNIFORM(u_lightposition);
+
+	PROGRAM_REGISTER_UNIFORM(u_vertexscale);
+}
+
+void BaseShader::EnableAlphaTest()
+{
+	if (alpha_test)
+		return;
+	program->SetVariable(u_alphatest, 1);
+	alpha_test = true;
+}
+
+void BaseShader::DisableAlphaTest()
+{
+	if (!alpha_test)
+		return;
+	program->SetVariable(u_alphatest, 0);
+	alpha_test = false;
 }

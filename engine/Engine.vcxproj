@@ -608,9 +608,6 @@
   <ItemGroup>
     <ClCompile Include="..\external\glee\GLee.c" />
     <ClCompile Include="..\shared\SharedFormats.c" />
-    <ClCompile Include="client\ClientMaterial.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="client\effect_decal.cpp" />
     <ClCompile Include="client\effect_particle.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
@@ -632,6 +629,7 @@
     <ClCompile Include="crc.c" />
     <ClCompile Include="engine_exception.cpp" />
     <ClCompile Include="model_u3d.cpp" />
+    <ClCompile Include="shader_water.cpp" />
     <ClCompile Include="video_sdlwindow.c" />
     <ClCompile Include="video_framebuffer.cpp" />
     <ClCompile Include="EngineVideoParticle.c" />
@@ -652,7 +650,7 @@
     <ClCompile Include="EngineInput.c" />
     <ClCompile Include="EngineVideoLights.c" />
     <ClCompile Include="EngineMain.c" />
-    <ClCompile Include="EngineMaterial.c">
+    <ClCompile Include="material.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="EngineMenu.c" />
@@ -706,7 +704,7 @@
     <ClInclude Include="..\shared\format_u3d.h" />
     <ClInclude Include="..\shared\shared_client.h" />
     <ClInclude Include="..\shared\shared_editor.h" />
-    <ClInclude Include="..\shared\SharedEngine.h" />
+    <ClInclude Include="..\shared\shared_engine.h" />
     <ClInclude Include="..\shared\shared_flags.h" />
     <ClInclude Include="..\shared\shared_formats.h" />
     <ClInclude Include="..\shared\shared_game.h" />
@@ -743,7 +741,7 @@
     <ClInclude Include="EngineServerEntity.h" />
     <ClInclude Include="EngineEditor.h" />
     <ClInclude Include="EngineVideoParticle.h" />
-    <ClInclude Include="EngineMaterial.h" />
+    <ClInclude Include="material.h" />
     <ClInclude Include="EngineGame.h" />
     <ClInclude Include="EngineInput.h" />
     <ClInclude Include="EngineMain.h" />
@@ -788,6 +786,7 @@
     <None Include="..\bin\engine\shaders\base_fragment.shader" />
     <None Include="..\bin\engine\shaders\base_vertex.shader" />
     <None Include="..\bin\engine\shaders\bloom_fragment.shader" />
+    <None Include="..\bin\engine\shaders\water_fragment.shader" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

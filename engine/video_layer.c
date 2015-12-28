@@ -88,6 +88,19 @@ void VideoLayer_PopMatrix(void)
 }
 
 /*===========================
+	OPENGL SHADERS
+===========================*/
+
+void VideoLayer_UseProgram(unsigned int program)
+{
+	static unsigned int curprogram = 0;
+	if (program == curprogram)
+		return;
+	glUseProgram(program);
+	curprogram = program;
+}
+
+/*===========================
 	OPENGL TEXTURES
 ===========================*/
 

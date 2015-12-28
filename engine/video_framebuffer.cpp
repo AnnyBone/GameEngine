@@ -24,8 +24,8 @@
 
 VideoRenderBuffer::VideoRenderBuffer(unsigned int w, unsigned int h)
 {
-	width = w;
-	height = h;
+	width	= w;
+	height	= h;
 
 	VideoLayer_GenerateRenderBuffer(&instance);
 }
@@ -82,11 +82,11 @@ void VideoFrameBufferManager::Initialize()
 
 VideoFrameBuffer::VideoFrameBuffer(unsigned int w, unsigned int h)
 {
-	isbound = false;
-	buf_colour = NULL;
-	buf_depth = NULL;
-	width = w;
-	height = h;
+	isbound		= false;
+	buf_colour	= NULL;
+	buf_depth	= NULL;
+	width		= w;
+	height		= h;
 
 	// Generate an fbo for this object.
 	VideoLayer_GenerateFrameBuffer(&instance);

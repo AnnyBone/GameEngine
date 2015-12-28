@@ -39,7 +39,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\platform.h" />
-    <ClInclude Include="include\PlatformString.h" />
+    <ClInclude Include="include\platform_string.h" />
     <ClInclude Include="include\platform_filesystem.h" />
     <ClInclude Include="include\platform_inttypes.h" />
     <ClInclude Include="include\platform_log.h" />

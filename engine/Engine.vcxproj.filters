@@ -79,6 +79,9 @@
     <Filter Include="Shared\Formats">
       <UniqueIdentifier>{95406f5f-f141-4f65-8479-fcc86da8db3e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Client\Video\Shaders\Water">
+      <UniqueIdentifier>{68fc86c4-1c0c-4bb3-8e5c-1d546491e637}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="menu.c">
@@ -252,13 +255,7 @@
     <ClCompile Include="EngineVideoLegacy.c">
       <Filter>Legacy\Client\Video\Legacy</Filter>
     </ClCompile>
-    <ClCompile Include="EngineMaterial.c">
-      <Filter>Legacy\Client</Filter>
-    </ClCompile>
     <ClCompile Include="EngineImage.c">
-      <Filter>Legacy\Client</Filter>
-    </ClCompile>
-    <ClCompile Include="client\ClientMaterial.cpp">
       <Filter>Legacy\Client</Filter>
     </ClCompile>
     <ClCompile Include="EngineScript.c">
@@ -317,6 +314,12 @@
       <Filter>Client\Video</Filter>
     </ClCompile>
     <ClCompile Include="client\effect_decal.cpp">
+      <Filter>Client</Filter>
+    </ClCompile>
+    <ClCompile Include="shader_water.cpp">
+      <Filter>Client\Video\Shaders\Water</Filter>
+    </ClCompile>
+    <ClCompile Include="material.c">
       <Filter>Client</Filter>
     </ClCompile>
   </ItemGroup>
@@ -447,9 +450,6 @@
     <ClInclude Include="EngineVideoDraw.h">
       <Filter>Legacy\Client\Video</Filter>
     </ClInclude>
-    <ClInclude Include="..\shared\SharedEngine.h">
-      <Filter>Shared</Filter>
-    </ClInclude>
     <ClInclude Include="..\shared\SharedModule.h">
       <Filter>Shared</Filter>
     </ClInclude>
@@ -473,9 +473,6 @@
     </ClInclude>
     <ClInclude Include="EngineServer.h">
       <Filter>Legacy\Server</Filter>
-    </ClInclude>
-    <ClInclude Include="EngineMaterial.h">
-      <Filter>Legacy\Client</Filter>
     </ClInclude>
     <ClInclude Include="EngineImage.h">
       <Filter>Legacy\Client</Filter>
@@ -552,6 +549,12 @@
     <ClInclude Include="..\shared\format_iqm.h">
       <Filter>Shared\Formats</Filter>
     </ClInclude>
+    <ClInclude Include="..\shared\shared_engine.h">
+      <Filter>Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="material.h">
+      <Filter>Client</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="engine.rc" />
@@ -565,6 +568,9 @@
     </None>
     <None Include="..\bin\engine\shaders\bloom_fragment.shader">
       <Filter>Client\Video\Shaders\Bloom</Filter>
+    </None>
+    <None Include="..\bin\engine\shaders\water_fragment.shader">
+      <Filter>Client\Video\Shaders\Water</Filter>
     </None>
   </ItemGroup>
 </Project>

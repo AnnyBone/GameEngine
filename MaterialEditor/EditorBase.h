@@ -72,7 +72,7 @@ extern char cApplicationTitle[512];
 #define	PATH_32ICONS	"resource/32x32/"
 
 extern "C" {
-#include "SharedEngine.h"
+#include "shared_engine.h"
 }
 
 void EngineInterface_Load();

@@ -27,6 +27,8 @@
 		Better tracking and error checking?
 */
 
+// Shader
+
 VideoShader::VideoShader(VideoShaderType_t type)
 {
 	instance = 0;
@@ -152,13 +154,12 @@ VideoShaderType_t VideoShader::GetType()
 
 VideoShaderProgram::VideoShaderProgram()
 {
-	instance = 0;
+	instance	= 0;
+	isenabled	= false;
 }
 
 VideoShaderProgram::~VideoShaderProgram()
 {
-	Disable();
-
 	glDeleteProgram(instance);
 }
 
@@ -169,32 +170,33 @@ void VideoShaderProgram::Initialize()
 		Sys_Error("Failed to create shader program!\n");
 }
 
-void VideoShaderProgram::Attach(VideoShader *Shader)
+void VideoShaderProgram::Attach(VideoShader *shader)
 {
 	VIDEO_FUNCTION_START
-	if (!Shader)
+	if (!shader)
 		Sys_Error("Attempted to attach an invalid shader!\n");
 
-	glAttachShader(instance, Shader->GetInstance());
+	glAttachShader(instance, shader->GetInstance());
 	VIDEO_FUNCTION_END
 }
 
 void VideoShaderProgram::Enable()
 {
 	VIDEO_FUNCTION_START
-	glUseProgram(instance);
+	VideoLayer_UseProgram(instance);
 	VIDEO_FUNCTION_END
 }
 
 void VideoShaderProgram::Disable()
 {
 	VIDEO_FUNCTION_START
-	glUseProgram(0);
+	VideoLayer_UseProgram(0);
 	VIDEO_FUNCTION_END
 }
 
 void VideoShaderProgram::Link()
 {
+	VIDEO_FUNCTION_START
 	glLinkProgram(instance);
 
 	int iLinkStatus;
@@ -216,43 +218,49 @@ void VideoShaderProgram::Link()
 
 		Sys_Error("Shader program linking failed!\nCheck log for details.\n");
 	}
+	VIDEO_FUNCTION_END
+}
+
+void VideoShaderProgram::Shutdown()
+{
+	Disable();
 }
 
 // Uniform Handling
 
-int VideoShaderProgram::GetUniformLocation(const char *ccUniformName)
+int VideoShaderProgram::GetUniformLocation(const char *name)
 {
-	return glGetUniformLocation(instance, ccUniformName);
+	return glGetUniformLocation(instance, name);
 }
 
-void VideoShaderProgram::SetVariable(int iUniformLocation, float x, float y, float z)
+void VideoShaderProgram::SetVariable(int location, float x, float y, float z)
 {
 	// TODO: Error checking!
-	glUniform3f(iUniformLocation, x, y, z);
+	glUniform3f(location, x, y, z);
 }
 
-void VideoShaderProgram::SetVariable(int iUniformLocation, MathVector3f_t mvVector)
+void VideoShaderProgram::SetVariable(int location, MathVector3f_t mvVector)
 {
 	// TODO: Error checking!
-	glUniform3fv(iUniformLocation, 3, mvVector);
+	glUniform3fv(location, 3, mvVector);
 }
 
-void VideoShaderProgram::SetVariable(int iUniformLocation, float x, float y, float z, float a)
+void VideoShaderProgram::SetVariable(int location, float x, float y, float z, float a)
 {
 	// TODO: Error checking!
-	glUniform4f(iUniformLocation, x, y, z, a);
+	glUniform4f(location, x, y, z, a);
 }
 
-void VideoShaderProgram::SetVariable(int iUniformLocation, int i)
+void VideoShaderProgram::SetVariable(int location, int i)
 {
 	// TODO: Error checking!
-	glUniform1i(iUniformLocation, i);
+	glUniform1i(location, i);
 }
 
-void VideoShaderProgram::SetVariable(int iUniformLocation, float f)
+void VideoShaderProgram::SetVariable(int location, float f)
 {
 	// TODO: Error checking!
-	glUniform1f(iUniformLocation, f);
+	glUniform1f(location, f);
 }
 
 unsigned int VideoShaderProgram::GetInstance()
@@ -345,5 +353,8 @@ void VideoShader_Shutdown()
 {
 	// Check if it's initialized first, just in-case.
 	if (base_program)
+	{
+		base_program->Shutdown();
 		delete base_program;
+	}
 }

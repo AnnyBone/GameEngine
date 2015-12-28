@@ -26,8 +26,11 @@ extern "C" {
 	char *p_strcpy(char *destination, const char *source);
 	char *p_strncpy(char *destination, const char *source, size_t num);
 
+	// TODO: These need to be implemented...
+#define p_strlen(str) strlen(str)
+
 #ifdef __cplusplus
 }
 #endif
 
-#endif // PLATFORMSTRING_H
+#endif // !PLATFORMSTRING_H

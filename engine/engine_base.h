@@ -39,7 +39,7 @@
 #endif
 
 //	Build needs to be updated each day that work is done on the engine.
-#define ENGINE_VERSION_BUILD	1052	// 26/12/2015
+#define ENGINE_VERSION_BUILD	1054	// 28/12/2015
 
 #define	ENGINE_LOG	"engine"
 
@@ -76,7 +76,7 @@
 
 #include "shared_server.h"
 #include "shared_client.h"
-#include "SharedEngine.h"
+#include "shared_engine.h"
 #include "shared_formats.h"
 
 #ifdef __cplusplus
@@ -108,7 +108,7 @@
 #include "crc.h"
 #include "glquake.h"
 
-#include "EngineMaterial.h"
+#include "material.h"
 
 //=============================================================================
 
