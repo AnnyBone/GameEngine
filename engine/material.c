@@ -1,4 +1,4 @@
-/*	Copyright (C) 2011-2015 OldTimes Software
+/*	Copyright (C) 2011-2016 OldTimes Software
 
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License
@@ -27,7 +27,7 @@
 
 	This is pretty much written from scratch without using anything else for reference,
 	more just for inspiration. This has been a pretty weird learning experience for me
-	since I've never written anything out like this before but it works and does the job
+	since I've never written anything out like this before, but it works and does the job
 	it was designed to do.
 	~hogsy
 */

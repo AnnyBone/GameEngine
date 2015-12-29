@@ -1,4 +1,4 @@
-/*	Copyright (C) 2011-2015 OldTimes Software
+/*	Copyright (C) 2011-2016 OldTimes Software
 	
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License
@@ -262,7 +262,7 @@ void VideoShaderProgram::SetVariable(int location, float x, float y, float z, fl
 void VideoShaderProgram::SetVariable(int location, int i)
 {
 	if (IsActive())
-		Sys_Error("Ensure program is enabled before applying variables! (%i) (%i)\n",
+		Sys_Error("Ensure shader program is enabled before applying variables! (%i) (%i)\n",
 			location, i);
 	glUniform1i(location, i);
 }
@@ -270,7 +270,7 @@ void VideoShaderProgram::SetVariable(int location, int i)
 void VideoShaderProgram::SetVariable(int location, float f)
 {
 	if (IsActive())
-		Sys_Error("Ensure program is enabled before applying variables! (%i) (%i)\n",
+		Sys_Error("Ensure shader program is enabled before applying variables! (%i) (%i)\n",
 			location, (int)f);
 	glUniform1f(location, f);
 }

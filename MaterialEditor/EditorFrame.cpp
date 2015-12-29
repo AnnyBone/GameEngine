@@ -1,4 +1,4 @@
-/*	Copyright (C) 2011-2015 OldTimes Software
+/*	Copyright (C) 2011-2016 OldTimes Software
 
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License
@@ -544,7 +544,7 @@ void CEditorFrame::OnAbout(wxCommandEvent &event)
 	{
 		"Copyright (C) 1996-2001 Id Software, Inc.\n"
 		"Copyright (C) 2002-2009 John Fitzgibbons and others\n"
-		"Copyright (C) 2011-2015 OldTimes Software\n"
+		"Copyright (C) 2011-2016 OldTimes Software\n"
 		"\n"
 		"This program is free software; you can redistribute it and / or\n"
 		"modify it under the terms of the GNU General Public License\n"
@@ -565,7 +565,7 @@ void CEditorFrame::OnAbout(wxCommandEvent &event)
 	wxAboutDialogInfo info;
 	info.AddDeveloper("Mark \"hogsy\" Sowden");
 	info.SetName(EDITOR_TITLE);
-	info.SetCopyright("Copyright (C) 2011-2015 OldTimes Software");
+	info.SetCopyright("Copyright (C) 2011-2016 OldTimes Software");
 	info.SetDescription("Editor for the Katana Engine.");
 	info.SetWebSite("www.oldtimes-software.com");
 	info.SetIcon(wxIcon(PATH_RESOURCES"icon-engine.png", wxBITMAP_TYPE_PNG_RESOURCE, 64, 64));

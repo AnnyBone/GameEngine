@@ -1,6 +1,6 @@
 /*	Copyright (C) 1996-2001 Id Software, Inc.
 	Copyright (C) 2002-2009 John Fitzgibbons and others
-	Copyright (C) 2011-2015 OldTimes Software
+	Copyright (C) 2011-2016 OldTimes Software
 
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License
@@ -98,10 +98,10 @@ int CL_GetMessage (void)
 				return 0;		// don't need another message yet
 		}
 
-        // Get the next message
+		// Get the next message
 		if(fread(&net_message.cursize,4,1,cls.demofile) != 1)
 		{
-            Sys_Error("Failed to recieve next message!\n");
+			Sys_Error("Failed to recieve next message!\n");
 			return 0;
 		}
 

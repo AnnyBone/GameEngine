@@ -1,6 +1,6 @@
 /*	Copyright (C) 1996-2001 Id Software, Inc.
 	Copyright (C) 2002-2009 John Fitzgibbons and others
-	Copyright (C) 2011-2015 OldTimes Software
+	Copyright (C) 2011-2016 OldTimes Software
 
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License
@@ -353,13 +353,13 @@ void M_ScanSaves (void)
 
 		f = fopen (name, "r");
 		if(!f)
-            continue;
+			continue;
 
 		fscanf(f,"%i\n",&version);
 		fscanf(f,"%79s\n",name);
 		p_strncpy(m_filenames[i], name, sizeof(m_filenames[i]) - 1);
 
-        // Change _ back to space.
+		// Change _ back to space.
 		for(j = 0; j < SAVEGAME_COMMENT_LENGTH; j++)
 			if(m_filenames[i][j] == '_')
 				m_filenames[i][j] = ' ';
@@ -1509,7 +1509,7 @@ forward:
 			serialConfig_cursor = 2;
 		else
 			serialConfig_cursor = 5;
-    }
+	}
 
 	if (SerialConfig && StartingGame && serialConfig_cursor == 4)
 	{
@@ -1517,7 +1517,7 @@ forward:
 			serialConfig_cursor = 3;
 		else
 			serialConfig_cursor = 5;
-    }
+	}
 }
 
 //=============================================================================
@@ -1888,7 +1888,7 @@ void M_LanConfig_Key (int key)
 			lanConfig_cursor = 1;
 		else
 			lanConfig_cursor = 0;
-    }
+	}
 
 	l =  Q_atoi(lanConfig_portname);
 	if (l > 65535)

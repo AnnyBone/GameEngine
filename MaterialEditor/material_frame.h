@@ -1,4 +1,4 @@
-/*	Copyright (C) 2011-2015 OldTimes Software
+/*	Copyright (C) 2011-2016 OldTimes Software
 
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License
@@ -16,7 +16,8 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#pragma once
+#ifndef MATERIAL_FRAME_H
+#define	MATERIAL_FRAME_H
 
 typedef enum
 {
@@ -78,4 +79,6 @@ private:
 
 	wxDECLARE_EVENT_TABLE();
 };
+
+#endif // !MATERIAL_FRAME_H
 

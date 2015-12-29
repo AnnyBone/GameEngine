@@ -1,6 +1,6 @@
 /*  Copyright (C) 1996-2001 Id Software, Inc.
     Copyright (C) 2002-2009 John Fitzgibbons and others
-    Copyright (C) 2011-2015 OldTimes Software
+    Copyright (C) 2011-2016 OldTimes Software
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -34,15 +34,15 @@ void SV_LinkEdict(ServerEntity_t *ent,bool touch_triggers);
 // sets ent->v.absmin and ent->v.absmax
 // if touchtriggers, calls prog functions for the intersected triggers
 
-int SV_PointContents (vec3_t p);
-int SV_TruePointContents (vec3_t p);
+int SV_PointContents (MathVector3f_t p);
+int SV_TruePointContents (MathVector3f_t p);
 // returns the CONTENTS_* value from the world at the given point.
 // does not check any entities at all
 // the non-TRUE version remaps the water current contents to content_water
 
 ServerEntity_t	*SV_TestEntityPosition (ServerEntity_t *ent);
 
-trace_t SV_Move (vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, int type, ServerEntity_t *passedict);
+trace_t SV_Move (MathVector3f_t start, MathVector3f_t mins, MathVector3f_t maxs, MathVector3f_t end, int type, ServerEntity_t *passedict);
 // mins and maxs are reletive
 
 // if the entire move stays in a solid volume, trace.allsolid will be set
@@ -56,4 +56,4 @@ trace_t SV_Move (vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, int type, S
 // passedict is explicitly excluded from clipping checks (normally NULL)
 
 // Other crap...
-bool SV_RecursiveHullCheck (hull_t *hull, int num, float p1f, float p2f, vec3_t p1, vec3_t p2, trace_t *trace);
+bool SV_RecursiveHullCheck (hull_t *hull, int num, float p1f, float p2f, MathVector3f_t p1, MathVector3f_t p2, trace_t *trace);

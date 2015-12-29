@@ -1,4 +1,4 @@
-/*	Copyright (C) 2011-2015 OldTimes Software
+/*	Copyright (C) 2011-2016 OldTimes Software
 
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License
@@ -16,8 +16,8 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef __PLATFORMMODULE__
-#define __PLATFORMMODULE__
+#ifndef PLATFORM_MODULE_H
+#define PLATFORM_MODULE_H
 
 #include "platform.h"
 
@@ -54,4 +54,4 @@ extern void *pModule_LoadInterface(pINSTANCE hModule,const char *cPath,const cha
 }
 #endif
 
-#endif
+#endif // !PLATFORM_MODULE_H

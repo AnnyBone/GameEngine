@@ -81,7 +81,7 @@ BEGIN
             VALUE "FileDescription", "Engine Module"
             VALUE "FileVersion", "1.2.0.0"
             VALUE "InternalName", "Katana"
-            VALUE "LegalCopyright", "Copyright (C) 2011-2015 OldTimes Software"
+            VALUE "LegalCopyright", "Copyright (C) 2011-2016 OldTimes Software"
             VALUE "OriginalFilename", "engine.dll"
             VALUE "ProductName", "Katana"
             VALUE "ProductVersion", "1.2.0.0"

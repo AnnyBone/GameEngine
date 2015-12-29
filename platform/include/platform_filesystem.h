@@ -1,4 +1,4 @@
-/*	Copyright (C) 2011-2015 OldTimes Software
+/*	Copyright (C) 2011-2016 OldTimes Software
 
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License
@@ -39,4 +39,4 @@ extern "C" {
 }
 #endif
 
-#endif	// PLATFORM_FILESYSTEM_H
+#endif // !PLATFORM_FILESYSTEM_H

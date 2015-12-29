@@ -1,6 +1,6 @@
 /*	Copyright (C) 1996-2001 Id Software, Inc.
 	Copyright (C) 2002-2009 John Fitzgibbons and others
-	Copyright (C) 2011-2015 OldTimes Software
+	Copyright (C) 2011-2016 OldTimes Software
 
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License
@@ -73,27 +73,27 @@ int net_numdrivers = 2;
 net_landriver_t	net_landrivers[MAX_NET_DRIVERS] =
 {
 	{
-        "Winsock TCPIP",
-        false,
-        0,
-        WINS_Init,
-        WINS_Shutdown,
-        WINS_Listen,
-        WINS_OpenSocket,
-        WINS_CloseSocket,
-        WINS_Connect,
-        WINS_CheckNewConnections,
-        WINS_Read,
-        WINS_Write,
-        WINS_Broadcast,
-        WINS_AddrToString,
-        WINS_StringToAddr,
-        WINS_GetSocketAddr,
-        WINS_GetNameFromAddr,
-        WINS_GetAddrFromName,
-        WINS_AddrCompare,
-        WINS_GetSocketPort,
-        WINS_SetSocketPort
+		"Winsock TCPIP",
+		false,
+		0,
+		WINS_Init,
+		WINS_Shutdown,
+		WINS_Listen,
+		WINS_OpenSocket,
+		WINS_CloseSocket,
+		WINS_Connect,
+		WINS_CheckNewConnections,
+		WINS_Read,
+		WINS_Write,
+		WINS_Broadcast,
+		WINS_AddrToString,
+		WINS_StringToAddr,
+		WINS_GetSocketAddr,
+		WINS_GetNameFromAddr,
+		WINS_GetAddrFromName,
+		WINS_AddrCompare,
+		WINS_GetSocketPort,
+		WINS_SetSocketPort
 	}
 };
 

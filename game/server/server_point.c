@@ -1,4 +1,4 @@
-/*	Copyright (C) 2011-2015 OldTimes Software
+/*	Copyright (C) 2011-2016 OldTimes Software
 
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License
@@ -17,6 +17,9 @@
 */
 
 #include "server_main.h"
+
+#include "server_vehicle.h"
+#include "server_physics.h"
 
 /*
 	Point entities.
@@ -48,9 +51,6 @@
 	point_timedtrigger	- Triggers an entity after a specified delay
 	point_logic			- Compilation of basic logic-gates
 */
-
-#include "server_vehicle.h"
-#include "server_physics.h"
 
 enum
 {

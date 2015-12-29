@@ -1,6 +1,6 @@
 /*	Copyright (C) 1996-2001 Id Software, Inc.
 	Copyright (C) 2002-2009 John Fitzgibbons and others
-	Copyright (C) 2011-2015 OldTimes Software
+	Copyright (C) 2011-2016 OldTimes Software
 
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License
@@ -25,7 +25,7 @@
 #include "EngineNetworkSerial.h"
 
 /*
-    Network Dummy Interface
+	Network Dummy Interface
 */
 
 net_driver_t net_drivers[MAX_NET_DRIVERS] =
@@ -51,4 +51,4 @@ net_driver_t net_drivers[MAX_NET_DRIVERS] =
 net_landriver_t	net_landrivers[MAX_NET_DRIVERS];
 
 int net_numdrivers      = 1,
-    net_numlandrivers   = 0;
+	net_numlandrivers   = 0;

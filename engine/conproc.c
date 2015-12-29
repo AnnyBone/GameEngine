@@ -1,6 +1,6 @@
 /*	Copyright (C) 1996-2001 Id Software, Inc.
 	Copyright (C) 2002-2009 John Fitzgibbons and others
-	Copyright (C) 2011-2015 OldTimes Software
+	Copyright (C) 2011-2016 OldTimes Software
 
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License
@@ -292,10 +292,10 @@ bool SetConsoleCXCY(HANDLE hOut, int cx, int cy)
 		return false;
 
 // height
-    info.srWindow.Left = 0;
-    info.srWindow.Right = info.dwSize.X - 1;
-    info.srWindow.Top = 0;
-    info.srWindow.Bottom = cy - 1;
+	info.srWindow.Left = 0;
+	info.srWindow.Right = info.dwSize.X - 1;
+	info.srWindow.Top = 0;
+	info.srWindow.Bottom = cy - 1;
 
 	if (cy < info.dwSize.Y)
 	{
@@ -306,9 +306,9 @@ bool SetConsoleCXCY(HANDLE hOut, int cx, int cy)
 
 		if (!SetConsoleScreenBufferSize(hOut, info.dwSize))
 			return false;
-    }
-    else if (cy > info.dwSize.Y)
-    {
+	}
+	else if (cy > info.dwSize.Y)
+	{
 		info.dwSize.Y = cy;
 
 		if (!SetConsoleScreenBufferSize(hOut, info.dwSize))
@@ -316,7 +316,7 @@ bool SetConsoleCXCY(HANDLE hOut, int cx, int cy)
 
 		if (!SetConsoleWindowInfo(hOut, true, &info.srWindow))
 			return false;
-    }
+	}
 
 	if (!GetConsoleScreenBufferInfo(hOut, &info))
 		return false;

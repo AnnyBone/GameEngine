@@ -1,4 +1,4 @@
-/*	Copyright (C) 2011-2015 OldTimes Software
+/*	Copyright (C) 2011-2016 OldTimes Software
 
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License
@@ -16,8 +16,8 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef __OPENKATANA_H__
-#define	__OPENKATANA_H__
+#ifndef OPENKATANA_H
+#define	OPENKATANA_H
 
 #include "mode_vektar.h"
 
@@ -27,4 +27,4 @@ void Barrel_Spawn(ServerEntity_t *eBarrel);
 // Items
 void Health_Spawn(ServerEntity_t *seHealth);
 
-#endif
+#endif // !OPENKATANA_H

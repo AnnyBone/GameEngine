@@ -1,6 +1,6 @@
 /*	Copyright (C) 1996-2001 Id Software, Inc.
 	Copyright (C) 2002-2009 John Fitzgibbons and others
-	Copyright (C) 2011-2015 OldTimes Software
+	Copyright (C) 2011-2016 OldTimes Software
 
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License
@@ -43,8 +43,8 @@
 
 ConsoleVariable_t	
 		cvInputMouseLook	= {	"input_mouselook",		"1",	true,   false,  "Enables and disables the ability to use the mouse to look around."	    },
-        cvInputMouseFilter	= {	"input_mousefilter",	"0",	true,   false,  "Filters out mouse input so it responds more smoothly."	                },
-        cvInputMouseGrab    = { "input_mousegrab",      "1",    true,   false,  "If enabled, the mouse is automatically hidden and limited to window."  };
+		cvInputMouseFilter	= {	"input_mousefilter",	"0",	true,   false,  "Filters out mouse input so it responds more smoothly."	                },
+		cvInputMouseGrab    = { "input_mousegrab",      "1",    true,   false,  "If enabled, the mouse is automatically hidden and limited to window."  };
 
 extern ConsoleVariable_t joy_pitchsensitivity;
 
@@ -264,104 +264,104 @@ void Input_Frame(void)
 
 	while(SDL_PollEvent(&sEvent))
 	{
-            switch(sEvent.type)
-            {
-            case SDL_WINDOWEVENT:
-                switch(sEvent.window.event)
-                {
-                case SDL_WINDOWEVENT_FOCUS_GAINED:
-                    Video.bActive = true;
+			switch(sEvent.type)
+			{
+			case SDL_WINDOWEVENT:
+				switch(sEvent.window.event)
+				{
+				case SDL_WINDOWEVENT_FOCUS_GAINED:
+					Video.bActive = true;
 
-                    // Then restore it.
-                    if(sbOldMouseState)
-                        Input_ActivateMouse();
-                    else
-                        Input_DeactivateMouse();
+					// Then restore it.
+					if(sbOldMouseState)
+						Input_ActivateMouse();
+					else
+						Input_DeactivateMouse();
 
-                    // Window isn't active! Clear states.
-                    Key_ClearStates();
-                    break;
-                case SDL_WINDOWEVENT_FOCUS_LOST:
-                    Video.bActive = false;
+					// Window isn't active! Clear states.
+					Key_ClearStates();
+					break;
+				case SDL_WINDOWEVENT_FOCUS_LOST:
+					Video.bActive = false;
 
-                    // Save our old mouse state.
-                    sbOldMouseState = bMouseActive;
+					// Save our old mouse state.
+					sbOldMouseState = bMouseActive;
 
-                    Input_DeactivateMouse();
+					Input_DeactivateMouse();
 
-                    // Window isn't active! Clear states.
-                    Key_ClearStates();
-                    break;
-                case SDL_WINDOWEVENT_RESIZED:
-                    Video_UpdateWindow();
-                    break;
-                case SDL_WINDOWEVENT_CLOSE:
-                    Sys_Quit();
-                    break;
-                }
-                break;
-            case SDL_KEYDOWN:
-            case SDL_KEYUP:
+					// Window isn't active! Clear states.
+					Key_ClearStates();
+					break;
+				case SDL_WINDOWEVENT_RESIZED:
+					Video_UpdateWindow();
+					break;
+				case SDL_WINDOWEVENT_CLOSE:
+					Sys_Quit();
+					break;
+				}
+				break;
+			case SDL_KEYDOWN:
+			case SDL_KEYUP:
 				Key_Event(Input_ConvertKey(sEvent.key.keysym.sym),(sEvent.key.state == SDL_PRESSED));
-                break;
-            case SDL_MOUSEMOTION:
+				break;
+			case SDL_MOUSEMOTION:
 				if (bIsDedicated || !bMouseActive)
-                    return;
+					return;
 
-                // Originally handled this differently for fullscreen but this works fine apparently!
-                if(((unsigned)sEvent.motion.x != (Video.iWidth/2)) || ((unsigned)sEvent.motion.y != (Video.iHeight/2)))
-                {
-                    iMousePosition[pX]	= sEvent.motion.xrel*5;
-                    iMousePosition[pY]	= sEvent.motion.yrel*5;
-                    // [22/12/2013] TODO: This currently isn't accounting for any frame-loss... Ugh ~hogsy
-                    if(	((unsigned)sEvent.motion.x < Video.iWidth)	||
-                        ((unsigned)sEvent.motion.x > Video.iWidth)	||
-                        ((unsigned)sEvent.motion.y < Video.iHeight)	||
-                        ((unsigned)sEvent.motion.y > Video.iHeight))
-                        SDL_WarpMouseInWindow(sMainWindow,Video.iWidth/2,Video.iHeight/2);
-                }
-                break;
-            case SDL_MOUSEBUTTONDOWN:
-            case SDL_MOUSEBUTTONUP:
+				// Originally handled this differently for fullscreen but this works fine apparently!
+				if(((unsigned)sEvent.motion.x != (Video.iWidth/2)) || ((unsigned)sEvent.motion.y != (Video.iHeight/2)))
+				{
+					iMousePosition[pX]	= sEvent.motion.xrel*5;
+					iMousePosition[pY]	= sEvent.motion.yrel*5;
+					// [22/12/2013] TODO: This currently isn't accounting for any frame-loss... Ugh ~hogsy
+					if(	((unsigned)sEvent.motion.x < Video.iWidth)	||
+						((unsigned)sEvent.motion.x > Video.iWidth)	||
+						((unsigned)sEvent.motion.y < Video.iHeight)	||
+						((unsigned)sEvent.motion.y > Video.iHeight))
+						SDL_WarpMouseInWindow(sMainWindow,Video.iWidth/2,Video.iHeight/2);
+				}
+				break;
+			case SDL_MOUSEBUTTONDOWN:
+			case SDL_MOUSEBUTTONUP:
 				if(sEvent.button.button <= 18)
 					Key_Event(InputMouseRemap[sEvent.button.button-1],(sEvent.button.state == SDL_PRESSED));
-                break;
-            case SDL_MOUSEWHEEL:
-                if(sEvent.wheel.y > 0)
-                {
-                    Key_Event(K_MWHEELUP,true);
-                    Key_Event(K_MWHEELUP,false);
-                }
-                else
-                {
-                    Key_Event(K_MWHEELDOWN,true);
-                    Key_Event(K_MWHEELDOWN,false);
-                }
-                break;
-            /*
-                Controller Input
-            */
-            case SDL_CONTROLLERBUTTONDOWN:
-            case SDL_CONTROLLERBUTTONUP:
-                break;
-            /*
-                Joystick Input
-            */
-            case SDL_JOYAXISMOTION:
-                if((sEvent.jaxis.value > INPUT_MAX_ZONE) || (sEvent.jaxis.value < INPUT_MIN_ZONE))
-                {
-                }
-                break;
-            case SDL_JOYBALLMOTION:
-            case SDL_JOYHATMOTION:
-            case SDL_JOYBUTTONDOWN:
-            case SDL_JOYBUTTONUP:
-                break;
-            case SDL_QUIT:
-                Sys_Quit();
-                break;
-            }
-        }
+				break;
+			case SDL_MOUSEWHEEL:
+				if(sEvent.wheel.y > 0)
+				{
+					Key_Event(K_MWHEELUP,true);
+					Key_Event(K_MWHEELUP,false);
+				}
+				else
+				{
+					Key_Event(K_MWHEELDOWN,true);
+					Key_Event(K_MWHEELDOWN,false);
+				}
+				break;
+			/*
+				Controller Input
+			*/
+			case SDL_CONTROLLERBUTTONDOWN:
+			case SDL_CONTROLLERBUTTONUP:
+				break;
+			/*
+				Joystick Input
+			*/
+			case SDL_JOYAXISMOTION:
+				if((sEvent.jaxis.value > INPUT_MAX_ZONE) || (sEvent.jaxis.value < INPUT_MIN_ZONE))
+				{
+				}
+				break;
+			case SDL_JOYBALLMOTION:
+			case SDL_JOYHATMOTION:
+			case SDL_JOYBUTTONDOWN:
+			case SDL_JOYBUTTONUP:
+				break;
+			case SDL_QUIT:
+				Sys_Quit();
+				break;
+			}
+		}
 }
 
 extern ConsoleVariable_t	cl_maxpitch,
@@ -418,11 +418,11 @@ void Input_ActivateMouse(void)
 	if(bMouseActive)
 		return;
 
-    if(cvInputMouseGrab.bValue)
-    {
-        SDL_ShowCursor(false);
-        SDL_SetWindowGrab(sMainWindow,SDL_TRUE);
-        SDL_WarpMouseInWindow(sMainWindow,Video.iWidth/2,Video.iHeight/2);
+	if(cvInputMouseGrab.bValue)
+	{
+		SDL_ShowCursor(false);
+		SDL_SetWindowGrab(sMainWindow,SDL_TRUE);
+		SDL_WarpMouseInWindow(sMainWindow,Video.iWidth/2,Video.iHeight/2);
 	}
 
 	bMouseActive = true;

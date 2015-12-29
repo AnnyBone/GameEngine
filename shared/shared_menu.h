@@ -1,12 +1,28 @@
-/*	Copyright (C) 2011-2015 OldTimes Software
+/*	Copyright (C) 2011-2016 OldTimes Software
+
+	This program is free software; you can redistribute it and/or
+	modify it under the terms of the GNU General Public License
+	as published by the Free Software Foundation; either version 2
+	of the License, or (at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+	See the GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
-#ifndef __SHAREDMENU__
-#define	__SHAREDMENU__
+
+#ifndef SHARED_MENU_H
+#define	SHARED_MENU_H
 
 typedef enum
 {
 	MENU_IMAGE,
-	MENU_MODEL,		// [19/12/2012] Necessary? Could just compare extensions... ~hogsy
+	MENU_MODEL,
 	MENU_WINDOW,
 	MENU_BUTTON,
 		MENU_BUTTON_OK,
@@ -31,21 +47,16 @@ typedef struct Menu_s
 					*cResource,		// If based on a model/image this is the path of the resource it needs.
 					*cContent;		// Content, meaning the text that could be inside the window.
 
-	// [3/8/2012] Parent window ~hogsy
 	struct	Menu_s	*mParent;		// The parent of the element. If an element has a parent and the parent moves then this will move with it.
 
 	int				iPosition[1];	// Position (X & Y) of the element.
-	// [3/8/2012] Added vScale variable ~hogsy
 	int				iScale[1];		// Scale (width & height) of the element.
 
 	MenuType_t		mMenuType;		// The type of element.
 
-	// [2/8/2012] Added visible and active flags ~hogsy
-	// [4/8/2013] Removed bVisible since bActive makes it obsolete ~hogsy
 	bool			bActive,		// Is it active?
 					bMoveable;		// Can the element be moved?
 
-	// [3/8/2012] Added in alpha variable ~hogsy
 	float			fAlpha;
 } Menu_t;
 

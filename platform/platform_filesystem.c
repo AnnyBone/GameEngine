@@ -1,4 +1,4 @@
-/*	Copyright (C) 2011-2015 OldTimes Software
+/*	Copyright (C) 2011-2016 OldTimes Software
 
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License
@@ -119,7 +119,7 @@ void pFileSystem_GetUserName(char *out)
 	pFUNCTION_START
 
 #ifdef _WIN32
-    char	userstring[PLATFORM_MAX_USER];
+	char	userstring[PLATFORM_MAX_USER];
 	DWORD	dName;
 
 	sprintf(userstring, "user");
@@ -216,12 +216,12 @@ void pFileSystem_ScanDirectory(const char *path, const char *extension, void(*Fu
 void pFileSystem_GetWorkingDirectory(char *cOut)
 {
 	pFUNCTION_START
-    if(!getcwd(cOut,PLATFORM_MAX_PATH))
-    {
-        switch(errno)
-        {
-        case EACCES:
-            pError_Set("Permission to read or search a component of the filename was denied!\n");
+	if(!getcwd(cOut,PLATFORM_MAX_PATH))
+	{
+		switch(errno)
+		{
+		case EACCES:
+			pError_Set("Permission to read or search a component of the filename was denied!\n");
 			break;
 		case EFAULT:
 			pError_Set("buf points to a bad address!\n");
@@ -237,11 +237,11 @@ void pFileSystem_GetWorkingDirectory(char *cOut)
 			break;
 		case ERANGE:
 			pError_Set("The size argument is less than the length of the absolute pathname of the working directory, including the terminating null byte. \
-					    You need to allocate a bigger array and try again!\n");
+						You need to allocate a bigger array and try again!\n");
 			break;
-        }
-        return;
-    }
-    strcat(cOut,"\\");
+		}
+		return;
+	}
+	strcat(cOut,"\\");
 	pFUNCTION_END
 }
