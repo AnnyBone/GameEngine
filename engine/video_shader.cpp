@@ -27,6 +27,24 @@
 		Better tracking and error checking?
 */
 
+// Manager
+
+void VideoShaderManager::Initialize()
+{
+	program = new VideoShaderProgram();
+	program->Initialize();
+
+	RegisterShaders();
+}
+
+void VideoShaderManager::Shutdown()
+{
+	program->Shutdown();
+
+	shaders.clear();
+	shaders.shrink_to_fit();
+}
+
 // Shader
 
 VideoShader::VideoShader(VideoShaderType_t type)

@@ -23,12 +23,7 @@
 
 class BaseShader : public VideoShaderManager
 {
-public:
-	BaseShader();
-
-	virtual void Initialize();
-	virtual void Draw();
-	virtual void Shutdown();
+	SHADER_IMPLEMENT(BaseShader);
 
 	void EnableAlphaTest();
 	void DisableAlphaTest();
@@ -51,51 +46,54 @@ private:
 	float	alpha_clamp;
 };
 
-BaseShader::BaseShader()
+BaseShader::BaseShader() : VideoShaderManager()
 {
 	alpha_test		= false;
 	alpha_clamp		= 0.5f;
 }
 
-void BaseShader::Initialize()
-{
-	PROGRAM_REGISTER_SHADER_START();
-	PROGRAM_REGISTER_SHADER(base, VIDEO_SHADER_VERTEX);
-	PROGRAM_REGISTER_SHADER(base, VIDEO_SHADER_FRAGMENT);
-	PROGRAM_REGISTER_SHADER_END();
+SHADER_REGISTER_START(BaseShader)
 
-	PROGRAM_REGISTER_UNIFORM(u_diffusemap);
-	PROGRAM_REGISTER_UNIFORM(u_detailmap);
-	PROGRAM_REGISTER_UNIFORM(u_fullbrightmap);
-	PROGRAM_REGISTER_UNIFORM(u_spheremap);
+	SHADER_REGISTER_SCRIPT(base, VIDEO_SHADER_VERTEX)
+	SHADER_REGISTER_SCRIPT(base, VIDEO_SHADER_FRAGMENT)
 
-	PROGRAM_REGISTER_UNIFORM(u_alphaclamp);
-	PROGRAM_REGISTER_UNIFORM(u_alphatest);
-	
-	PROGRAM_REGISTER_UNIFORM(u_lightcolour);
-	PROGRAM_REGISTER_UNIFORM(u_lightposition);
+	SHADER_REGISTER_LINK()
 
-	PROGRAM_REGISTER_UNIFORM(u_vertexscale);
+	// Textures
+	SHADER_REGISTER_UNIFORM(u_diffusemap, 0)
+	SHADER_REGISTER_UNIFORM(u_detailmap, 0)
+	SHADER_REGISTER_UNIFORM(u_fullbrightmap, 0)
+	SHADER_REGISTER_UNIFORM(u_spheremap, 0)
 
-	// Set defaults...
-	program->SetVariable(u_alphaclamp, alpha_clamp);
-}
+	// Alpha
+	SHADER_REGISTER_UNIFORM(u_alphaclamp, alpha_clamp)
+	SHADER_REGISTER_UNIFORM(u_alphatest, alpha_test)
+
+	// Lighting
+	SHADER_REGISTER_UNIFORM(u_lightcolour, g_colourwhite)
+	SHADER_REGISTER_UNIFORM(u_lightposition, g_mvOrigin3f)
+
+	// Vertex scaling
+	SHADER_REGISTER_UNIFORM(u_vertexscale, 1.0f)
+
+SHADER_REGISTER_END()
 
 void BaseShader::EnableAlphaTest()
 {
+VIDEO_FUNCTION_START
 	if (alpha_test)
 		return;
 	program->SetVariable(u_alphatest, 1);
 	alpha_test = true;
+VIDEO_FUNCTION_END
 }
 
 void BaseShader::DisableAlphaTest()
 {
+VIDEO_FUNCTION_START
 	if (!alpha_test)
 		return;
 	program->SetVariable(u_alphatest, 0);
 	alpha_test = false;
+VIDEO_FUNCTION_END
 }
-
-void BaseShader::Draw()
-{}

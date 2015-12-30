@@ -27,16 +27,9 @@
 
 class WaterShader : public VideoShaderManager
 {
-public:
-	WaterShader();
-	~WaterShader();
+	SHADER_IMPLEMENT(WaterShader);
 
-	virtual void Initialize();
-	virtual void Draw();
-	virtual void Shutdown();
-
-protected:
-
+	void SetTime(float curtime);
 private:
 	uniform u_diffusemap;
 	uniform	u_normalmap;
@@ -44,25 +37,27 @@ private:
 	uniform	u_time;
 };
 
-WaterShader::WaterShader()
+SHADER_REGISTER_START(WaterShader)
+
+	SHADER_REGISTER_SCRIPT(base, VIDEO_SHADER_VERTEX)
+	SHADER_REGISTER_SCRIPT(water, VIDEO_SHADER_FRAGMENT)
+
+	SHADER_REGISTER_LINK()
+
+	SHADER_REGISTER_UNIFORM(u_diffusemap, 0)
+	SHADER_REGISTER_UNIFORM(u_normalmap, 0)
+	SHADER_REGISTER_UNIFORM(u_time, 0)
+
+SHADER_REGISTER_END()
+
+void WaterShader::SetTime(float curtime)
 {
-	program	= NULL;
-}
-
-void WaterShader::Initialize()
-{
-	PROGRAM_REGISTER_SHADER_START();
-	PROGRAM_REGISTER_SHADER(base, VIDEO_SHADER_VERTEX);
-	PROGRAM_REGISTER_SHADER(water, VIDEO_SHADER_FRAGMENT);
-	PROGRAM_REGISTER_SHADER_END();
-
-	PROGRAM_REGISTER_UNIFORM(u_diffusemap);
-	PROGRAM_REGISTER_UNIFORM(u_normalmap);
-
-	PROGRAM_REGISTER_UNIFORM(u_time);
-}
-
-void WaterShader::Shutdown()
-{
+VIDEO_FUNCTION_START
+	static float time = 0;
+	if (curtime == time)
+		return;
+	program->SetVariable(u_time, curtime);
+	time = curtime;
+VIDEO_FUNCTION_END
 }
 

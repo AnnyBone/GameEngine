@@ -379,6 +379,7 @@ MaterialTextureTypeX_t mttMaterialTypes[] =
 	{ "diffuse",	MATERIAL_TEXTURE_DIFFUSE	},	// Default
 	{ "detail",		MATERIAL_TEXTURE_DETAIL		},	// Detail map
 	{ "sphere",		MATERIAL_TEXTURE_SPHERE		},	// Sphere map
+	{ "normal",		MATERIAL_TEXTURE_NORMAL		},	// Normal map
 	{ "fullbright", MATERIAL_TEXTURE_FULLBRIGHT }	// Fullbright map
 };
 

@@ -1,5 +1,6 @@
 /*	Copyright (C) 2011-2016 OldTimes Software
 
+
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License
 	as published by the Free Software Foundation; either version 2
@@ -55,21 +56,6 @@ private:
 	int			source_length;
 };
 
-#define	PROGRAM_REGISTER_SHADER_START()		\
-	program = new VideoShaderProgram();		\
-	program->Initialize();
-#define	PROGRAM_REGISTER_SHADER(name, type)						\
-	{															\
-	VideoShader *shader_ = new VideoShader(type);				\
-	if(!shader_->Load(#name))									\
-		Sys_Error("Failed to load "#name" vertex shader!\n");	\
-	program->Attach(shader_);									\
-	}
-#define	PROGRAM_REGISTER_SHADER_END()	\
-	program->Link()
-
-#define	PROGRAM_REGISTER_UNIFORM(name) name = program->GetUniformLocation(#name)
-
 class VideoShaderProgram
 {
 public:
@@ -104,12 +90,36 @@ private:
 	unsigned int instance;
 };
 
+#define SHADER_IMPLEMENT(name)		\
+	public:							\
+	name();							\
+	virtual void RegisterShaders();
+#define	SHADER_REGISTER_START(name)	\
+	void name::RegisterShaders() {
+#define SHADER_REGISTER_END()		\
+	}
+#define	SHADER_REGISTER_SCRIPT(name, type)						\
+	{															\
+	VideoShader *shader_ = new VideoShader(type);				\
+	if(!shader_->Load(#name))									\
+		Sys_Error("Failed to load "#name" shader!\n");			\
+	program->Attach(shader_);									\
+	shaders.push_back(shader_);									\
+	}
+#define	SHADER_REGISTER_LINK()	\
+	program->Link();
+#define	SHADER_REGISTER_UNIFORM(name, def)		\
+	name = program->GetUniformLocation(#name);	\
+	program->SetVariable(name, def);
+
 class VideoShaderManager
 {
 public:
 	VideoShaderManager() 
 	{
 		program = NULL;
+
+		shaders.reserve(2);
 	}
 
 	~VideoShaderManager() 
@@ -117,9 +127,10 @@ public:
 		delete program;
 	}
 
-	virtual void Initialize() = 0;
-	virtual void Draw() = 0;
-	virtual void Shutdown() = 0;
+	virtual void Initialize();
+	virtual void Shutdown();
+
+	virtual void RegisterShaders() = 0;
 
 	virtual void Enable()
 	{

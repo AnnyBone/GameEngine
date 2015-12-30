@@ -66,6 +66,7 @@ typedef enum
 	MATERIAL_TEXTURE_DIFFUSE,		// Basic diffuse layer.
 	MATERIAL_TEXTURE_SPHERE,		// Spherical mapping.
 	MATERIAL_TEXTURE_FULLBRIGHT,	// Adds highlights to the texture.
+	MATERIAL_TEXTURE_NORMAL,		// Defines the direction of a pixel's normal.
 	MATERIAL_TEXTURE_DETAIL,		// Detail map is blended with other layers to make textures appear more detailed.
 	MATERIAL_TEXTURE_LIGHTMAP,
 
