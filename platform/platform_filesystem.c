@@ -26,14 +26,14 @@ bool pFileSystem_IsModified(time_t tOldTime, const char *ccPath)
 {
 	if (!tOldTime)
 	{
-		pError_Set("Invalid time, skipping check!\n");
+		pSetError("Invalid time, skipping check!\n");
 		return false;
 	}
 
 	struct stat sAttributes;
 	if(stat(ccPath, &sAttributes) == -1)
 	{
-		pError_Set("Failed to get file stats!\n");
+		pSetError("Failed to get file stats!\n");
 		return false;
 	}
 
@@ -48,7 +48,7 @@ time_t pFileSystem_GetModifiedTime(const char *ccPath)
 	struct stat sAttributes;
 	if (stat(ccPath, &sAttributes) == -1)
 	{
-		pError_Set("Failed to get modification time!\n");
+		pSetError("Failed to get modification time!\n");
 		return 0;
 	}
 	return sAttributes.st_mtime;
@@ -73,9 +73,9 @@ bool pFileSystem_CreateDirectory(const char *ccPath)
 	if(CreateDirectory(ccPath,NULL) || (GetLastError() == ERROR_ALREADY_EXISTS))
 		return true;
 	else if(GetLastError() == ERROR_PATH_NOT_FOUND)
-		pError_Set("Failed to find an intermediate directory! (%s)\n",ccPath);
+		pSetError("Failed to find an intermediate directory! (%s)\n",ccPath);
 	else    // Assume it already exists.
-		pError_Set("Unknown error! (%s)\n",ccPath);
+		pSetError("Unknown error! (%s)\n",ccPath);
 #else	// TODO: Won't the below code work fine on Windows too??
 	{
 		struct stat ssBuffer;
@@ -89,13 +89,13 @@ bool pFileSystem_CreateDirectory(const char *ccPath)
 				switch(errno)
 				{
 				case EACCES:
-					pError_Set("Failed to get permission! (%s)\n",ccPath);
+					pSetError("Failed to get permission! (%s)\n",ccPath);
 				case EROFS:
-					pError_Set("File system is read only! (%s)\n",ccPath);
+					pSetError("File system is read only! (%s)\n",ccPath);
 				case ENAMETOOLONG:
-					pError_Set("Path is too long! (%s)\n",ccPath);
+					pSetError("Path is too long! (%s)\n",ccPath);
 				default:
-					pError_Set("Failed to create directory! (%s)\n",ccPath);
+					pSetError("Failed to create directory! (%s)\n",ccPath);
 				}
 			}
 		}
@@ -163,7 +163,7 @@ void pFileSystem_ScanDirectory(const char *path, const char *extension, void(*Fu
 
 	if (path[0] == ' ')
 	{
-		pError_Set("Invalid path!\n");
+		pSetError("Invalid path!\n");
 		return;
 	}
 
@@ -177,7 +177,7 @@ void pFileSystem_ScanDirectory(const char *path, const char *extension, void(*Fu
 		find = FindFirstFile(filestring, &finddata);
 		if (find == INVALID_HANDLE_VALUE)
 		{
-			pError_Set("Failed to find an initial file!\n");
+			pSetError("Failed to find an initial file!\n");
 			return;
 		}
 
@@ -221,22 +221,22 @@ void pFileSystem_GetWorkingDirectory(char *cOut)
 		switch(errno)
 		{
 		case EACCES:
-			pError_Set("Permission to read or search a component of the filename was denied!\n");
+			pSetError("Permission to read or search a component of the filename was denied!\n");
 			break;
 		case EFAULT:
-			pError_Set("buf points to a bad address!\n");
+			pSetError("buf points to a bad address!\n");
 			break;
 		case EINVAL:
-			pError_Set("The size argument is zero and buf is not a null pointer!\n");
+			pSetError("The size argument is zero and buf is not a null pointer!\n");
 			break;
 		case ENOMEM:
-			pError_Set("Out of memory!\n");
+			pSetError("Out of memory!\n");
 			break;
 		case ENOENT:
-			pError_Set("The current working directory has been unlinked!\n");
+			pSetError("The current working directory has been unlinked!\n");
 			break;
 		case ERANGE:
-			pError_Set("The size argument is less than the length of the absolute pathname of the working directory, including the terminating null byte. \
+			pSetError("The size argument is less than the length of the absolute pathname of the working directory, including the terminating null byte. \
 						You need to allocate a bigger array and try again!\n");
 			break;
 		}

@@ -631,7 +631,7 @@ void SCR_ScreenShot_f (void)
 	int		i;
 
 	if(!pFileSystem_CreateDirectory(va("%s/%s",com_gamedir,Global.cScreenshotPath)))
-		Sys_Error("Failed to create directory!\n%s",pError_Get());
+		Sys_Error("Failed to create directory!\n%s", pGetError());
 
 	// find a file name to save it to
 	for (i = 0; i < 10000; i++)

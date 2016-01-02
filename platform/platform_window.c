@@ -38,14 +38,14 @@ int	pWindow_GetScreenWidth(void)
 	display = XOpenDisplay(NULL);
 	if (!display)
 	{
-		pError_Set("Failed to open display!\n");
+		pSetError("Failed to open display!\n");
 		return 4000;
 	}
 
 	screen = DefaultScreenOfDisplay(display);
 	if (!screen)
 	{
-		pError_Set("Failed to get screen of display!\n");
+		pSetError("Failed to get screen of display!\n");
 		return 4000;
 	}
 
@@ -65,14 +65,14 @@ int pWindow_GetScreenHeight(void)
 	display = XOpenDisplay(NULL);
 	if (!display)
 	{
-		pError_Set("Failed to open display!\n");
+		pSetError("Failed to open display!\n");
 		return 4000;
 	}
 
 	screen = DefaultScreenOfDisplay(display);
 	if (!screen)
 	{
-		pError_Set("Failed to get screen of display!\n");
+		pSetError("Failed to get screen of display!\n");
 		return 4000;
 	}
 
@@ -117,12 +117,12 @@ GIPLWindow_t *gWindow_Allocate(void)
 */
 void gWindow_CreateWindow(GIPLWindow_t *gwWindow)
 {
-	pFUNCTION_UPDATE;
+	pFUNCTION_UPDATE();
 
 	// Make sure the window has been initialized.
 	if(!gwWindow)
 	{
-		pError_Set("Window has not been allocated!\n");
+		pSetError("Window has not been allocated!\n");
 		return;
 	}
 	// Make sure that any platform specific window systems are set up.
@@ -132,7 +132,7 @@ void gWindow_CreateWindow(GIPLWindow_t *gwWindow)
 		dMainDisplay = XOpenDisplay(NULL);
 		if(!dMainDisplay)
 		{
-			pError_Set("Failed to open display!\n");
+			pSetError("Failed to open display!\n");
 			return;
 		}
 
@@ -175,7 +175,7 @@ void gWindow_CreateWindow(GIPLWindow_t *gwWindow)
 
 		if(!RegisterClassEx(&wWindowClass))
 		{
-			pError_Set("Failed to register window class!\n");
+			pSetError("Failed to register window class!\n");
 			return;
 		}
 
@@ -193,7 +193,7 @@ void gWindow_CreateWindow(GIPLWindow_t *gwWindow)
 			NULL);
 		if(!gwWindow->hWindow)
 		{
-			pError_Set("Failed to create window!\n");
+			pSetError("Failed to create window!\n");
 			return;
 		}
 
@@ -220,7 +220,7 @@ void gWindow_CreateWindow(GIPLWindow_t *gwWindow)
 			WhitePixel(dMainDisplay,iScreen));
 		if(!gwWindow->wInstance)
 		{
-			pError_Set("Failed to create window!\n");
+			pSetError("Failed to create window!\n");
 			return;
 		}
 
@@ -279,7 +279,7 @@ void pWindow_MessageBox(const char *ccTitle, const char *ccMessage, ...)
 	char	cOut[2048];
 	va_list	vlArguments;
 
-	pFUNCTION_UPDATE;
+	pFUNCTION_UPDATE();
 
 	va_start(vlArguments,ccMessage);
 	vsprintf(cOut,ccMessage,vlArguments);

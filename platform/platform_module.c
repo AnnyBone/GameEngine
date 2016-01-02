@@ -10,7 +10,7 @@
 
 pFARPROC pModule_FindFunction(pINSTANCE hModule,const char *cEntryFunction)
 {
-	pFUNCTION_UPDATE;
+	pFUNCTION_UPDATE();
 
 	if(hModule)
 	{
@@ -30,7 +30,7 @@ pFARPROC pModule_FindFunction(pINSTANCE hModule,const char *cEntryFunction)
 
 void pModule_Unload(pINSTANCE hModule)
 {
-	pFUNCTION_UPDATE;
+	pFUNCTION_UPDATE();
 
 	if(hModule)
 	{
@@ -52,9 +52,7 @@ pINSTANCE pModule_Load(const char *ccPath)
 	pINSTANCE	iModule;
 	char		cUpdatedPath[PLATFORM_MAX_PATH];
 
-	pFUNCTION_UPDATE;
-
-	pResetError();
+	pFUNCTION_UPDATE();
 
 	sprintf(cUpdatedPath,"%s"pMODULE_EXTENSION,ccPath);
 

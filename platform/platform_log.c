@@ -44,7 +44,7 @@ void pLog_Write(const char *ccPath, const char *ccMessage, ...)
 
 	fLog = fopen(cPath, "a");
 	if (fwrite(scData, sizeof(char), uiData, fLog) != uiData)
-		pError_Set("Failed to write to log! (%s)", cPath);
+		pSetError("Failed to write to log! (%s)", cPath);
 	fclose(fLog);
 
 	pFUNCTION_END
