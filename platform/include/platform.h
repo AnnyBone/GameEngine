@@ -232,12 +232,14 @@ typedef	unsigned char	pUCHAR;
 
 //static jmp_buf jbException;
 
-#define	pFUNCTION_UPDATE	pError_SetFunction(pFUNCTION)
+#define	pFUNCTION_UPDATE()			\
+	pResetError();					\
+	pSetErrorFunction(pFUNCTION)
 #ifndef __cplusplus
-#define	pFUNCTION_START		pError_SetFunction(pFUNCTION); {
+#define	pFUNCTION_START		pSetErrorFunction(pFUNCTION); {
 #else
 #define	pFUNCTION_START	\
-pError_SetFunction(pFUNCTION);
+pSetErrorFunction(pFUNCTION);
 // TRY whatever
 #endif
 #define pFUNCTION_END 		}
@@ -251,14 +253,13 @@ typedef enum
 extern "C" {
 #endif
 
-	extern void	pError_Reset(void);								// Resets the error message to "null", so you can ensure you have the correct message from the library.
-	extern void	pError_Set(const char *ccMessage, ...);			// Sets the error message, so we can grab it outside the library.
-	extern void	pError_SetFunction(const char *ccFunction, ...);	// Sets the currently active function, for error reporting.
+	extern void	pResetError(void);									// Resets the error message to "null", so you can ensure you have the correct message from the library.
+	extern void	pSetError(const char *ccMessage, ...);				// Sets the error message, so we can grab it outside the library.
+	extern void	pSetErrorFunction(const char *ccFunction, ...);		// Sets the currently active function, for error reporting.
 
-	extern char *pError_SystemGet(void);	// Returns the error message currently given by the operating system.
-	extern void pError_SystemReset(void);
+	extern char *pGetSystemError(void);	// Returns the error message currently given by the operating system.
 
-	extern char	*pError_Get(void);	// Returns the last recorded error.
+	extern char	*pGetError(void);	// Returns the last recorded error.
 
 	/*
 		Standard Implementation

@@ -41,7 +41,7 @@ void EngineInterface_Load()
 	// Let us know if it failed to load.
 	if (!engine)
 	{
-		wxMessageBox(pError_Get(), EDITOR_TITLE);
+		wxMessageBox(pGetError(), EDITOR_TITLE);
 		wxExit();
 	}
 	// Also ensure that the engine version hasn't changed.

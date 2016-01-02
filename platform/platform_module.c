@@ -54,6 +54,8 @@ pINSTANCE pModule_Load(const char *ccPath)
 
 	pFUNCTION_UPDATE;
 
+	pResetError();
+
 	sprintf(cUpdatedPath,"%s"pMODULE_EXTENSION,ccPath);
 
 	iModule	=
@@ -64,12 +66,11 @@ pINSTANCE pModule_Load(const char *ccPath)
 #endif
 	if(!iModule)
 	{
-		pError_Set("Failed to load module! (%s)\n%s\n", cUpdatedPath, pError_SystemGet());
-		pError_SystemReset();
+		pSetError("Failed to load module! (%s)\n%s\n", cUpdatedPath, pGetSystemError());
 #if 0	// Second attempt; load it from a platform-specific subdirectory.
 
 		// Print it...
-		printf("%s", pError_Get());
+		printf("%s", pGetError());
 
 		// Attempt to load under a different directory.
 		sprintf(cUpdatedPath, PLATFORM_CPU"/%s"pMODULE_EXTENSION, ccPath);
@@ -81,8 +82,7 @@ pINSTANCE pModule_Load(const char *ccPath)
 #endif
 		if (!iModule)
 		{
-			pError_Set("%s\nFailed to load module! (%s)\n%s\n", cUpdatedPath, pError_SystemGet());
-			pError_SystemReset();
+			pSetError("%s\nFailed to load module! (%s)\n%s\n", cUpdatedPath, pGetSystemError());
 			return NULL;
 		}
 #else
@@ -111,7 +111,7 @@ void *pModule_LoadInterface(pINSTANCE hModule,const char *cPath,const char *cEnt
 	vMain = (void*)pModule_FindFunction(hModule,cEntryFunction);
 	if(!vMain)
 	{
-		pError_Set("Failed to find entry function! (%s)\n",cEntryFunction);
+		pSetError("Failed to find entry function! (%s)\n",cEntryFunction);
 		return NULL;
 	}
 

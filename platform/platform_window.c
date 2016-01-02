@@ -298,7 +298,7 @@ void pWindow_MessageBox(const char *ccTitle, const char *ccMessage, ...)
 		dMessageDisplay = XOpenDisplay(NULL);
 		if(!dMessageDisplay)
 		{
-			pError_Set("Failed to open display!\n");
+			pSetError("Failed to open display!\n");
 			return;
 		}
 

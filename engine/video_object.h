@@ -45,8 +45,7 @@ public:
 protected:
 	VideoPrimitive_t primitive;
 
-	unsigned int vertices;
-	unsigned int triangles;
+	std::vector<VideoVertex> vertices;
 };
 
 class DrawDynamicObject : public DrawObject
@@ -61,7 +60,6 @@ public:
 
 protected:
 private:
-	std::vector<VideoVertex> vertices;
 };
 
 class VideoDrawStatic

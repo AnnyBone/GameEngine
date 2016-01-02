@@ -62,8 +62,8 @@ int main(int argc,char *argv[])
 	// Let us know if it failed to load.
 	if (!engine)
 	{
-		pLog_Write(LAUNCHER_LOG, "Failed to load engine!\n%s",pError_Get());
-		pWindow_MessageBox("Launcher", pError_Get());
+		pLog_Write(LAUNCHER_LOG, "Failed to load engine!\n%s", pGetError());
+		pWindow_MessageBox("Launcher", pGetError());
 		return -1;
 	}
 	// Also ensure that the engine version hasn't changed.
