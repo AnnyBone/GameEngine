@@ -232,8 +232,6 @@ model_t *Model_Load(model_t *model)
 	char		exten[64];
 	void		*d;
 	int			i;
-	unsigned	*buf;
-	uint8_t		stackbuf[1024];		// avoid dirtying the cache heap
 
 	if (!model->bNeedLoad)
 	{
@@ -248,7 +246,7 @@ model_t *Model_Load(model_t *model)
 	}
 
 	// Load the file
-	buf = (unsigned*)COM_LoadStackFile(model->name, stackbuf, sizeof(stackbuf));
+	void *buf = COM_LoadHeapFile(model->name);
 	if(!buf)
 	{
 		Con_Warning("Model was not found! (%s)\n", model->name);
@@ -285,15 +283,17 @@ model_t *Model_Load(model_t *model)
 					model->type = model_formatlist[i].type;
 
 					model_formatlist[i].Function(model, buf);
-					return model;
+					break;
 				}
 			}
 		}
 
 		// If we reach this point, definately not supported.
 		Con_Warning("Unsupported model type! (%s)\n", model->name);
-		return NULL;
+		model = NULL;
 	}
+
+	free(buf);
 
 	return model;
 }
