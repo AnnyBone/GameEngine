@@ -1,51 +1,53 @@
-/*	Copyright (C) 1999 Mete Ciragan
-	Copyright (C) 2013-2014 OldTimes Software
+/*	Copyright (C) 2011-2016 OldTimes Software
+
+	This program is free software; you can redistribute it and/or
+	modify it under the terms of the GNU General Public License
+	as published by the Free Software Foundation; either version 2
+	of the License, or (at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+	See the GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
+
+#include "platform.h"
+
 #include "platform_window.h"
 
 /*
-	gWindow
 	Window/Display management.
+	TODO: BLITZ!!!!!
 */
-
-#include "platform_system.h"
-
-#ifdef __linux__
-Display *dMainDisplay;
-Window  wRootWindow;
-#endif
-
-pINSTANCE iGlobalInstance;
-
-bool	bShowingCursor	    = true,		// Are we showing the cursor?
-		bWindowInitialized	= false;	// Is the window system initialized?
-
-int	iActive = 0,	// Number of current active windows.
-	iScreen;		// Default screen.
 
 /*
 	Display Information
 */
 
-int	pWindow_GetScreenWidth(void)
+int	plGetScreenWidth(void)
 {
 #ifdef _WIN32
 	return GetSystemMetrics(SM_CXSCREEN);
 #else
 	Display *display;
-	Screen *screen;
+	Screen	*screen;
 
 	display = XOpenDisplay(NULL);
 	if (!display)
 	{
-		pSetError("Failed to open display!\n");
+		plSetError("Failed to open display!\n");
 		return 4000;
 	}
 
 	screen = DefaultScreenOfDisplay(display);
 	if (!screen)
 	{
-		pSetError("Failed to get screen of display!\n");
+		plSetError("Failed to get screen of display!\n");
 		return 4000;
 	}
 
@@ -53,26 +55,26 @@ int	pWindow_GetScreenWidth(void)
 #endif
 }
 
-int pWindow_GetScreenHeight(void)
+int plGetScreenHeight(void)
 {
 	pFUNCTION_START
 #ifdef _WIN32
 	return GetSystemMetrics(SM_CYSCREEN);
 #else
 	Display *display;
-	Screen *screen;
+	Screen	*screen;
 
 	display = XOpenDisplay(NULL);
 	if (!display)
 	{
-		pSetError("Failed to open display!\n");
+		plSetError("Failed to open display!\n");
 		return 4000;
 	}
 
 	screen = DefaultScreenOfDisplay(display);
 	if (!screen)
 	{
-		pSetError("Failed to get screen of display!\n");
+		plSetError("Failed to get screen of display!\n");
 		return 4000;
 	}
 
@@ -81,7 +83,7 @@ int pWindow_GetScreenHeight(void)
 	pFUNCTION_END
 }
 
-int pWindow_GetMonitorCount(void)
+int plGetScreenCount(void)
 {
 #ifdef _WIN32
 	return GetSystemMetrics(SM_CMONITORS);
@@ -90,58 +92,72 @@ int pWindow_GetMonitorCount(void)
 #endif
 }
 
-/**/
+/*
+	Window Creation
+*/
 
-GIPLWindow_t *gWindow_Allocate(void)
+#ifdef __linux__
+Display *dMainDisplay;
+Window  wRootWindow;
+#endif
+
+pINSTANCE iGlobalInstance;
+
+bool is_cursorvisible = true;		// Are we showing the cursor?
+
+int	iActive = 0,	// Number of current active windows.
+iScreen;		// Default screen.
+
+typedef struct
 {
-	pFUNCTION_START
+	char	*cTitle,
+		*cClass;
 
-	GIPLWindow_t *pwAllocated;
+	int		iWidth, iHeight,
+		x, y;
 
-	pwAllocated = (GIPLWindow_t*)malloc(sizeof(GIPLWindow_t));
-	// Don't continue if we failed to allocate.
-	if(!pwAllocated)
-	{
-		pWindow_MessageBox("Platform Error", "Failed to allocate a new window!\n");
-		return NULL;
-	}
+	bool	bActive,
+		bFullscreen;
 
-	memset(pwAllocated,0,sizeof(GIPLWindow_t));
-
-	return pwAllocated;
-
-	pFUNCTION_END
-}
+#ifdef _WIN32
+	HWND	hWindow;
+	HDC		hDeviceContext;
+#else	// Linux
+	Window  wInstance;
+#endif
+} plWindow_t;
 
 /*	Create a new window.
+	TODO:
+		Rewrite this...
 */
-void gWindow_CreateWindow(GIPLWindow_t *gwWindow)
+void plCreateWindow(plWindow_t *window)
 {
 	pFUNCTION_UPDATE();
 
 	// Make sure the window has been initialized.
-	if(!gwWindow)
+	if (!window)
 	{
-		pSetError("Window has not been allocated!\n");
+		plSetError("Window has not been allocated!\n");
 		return;
 	}
+#if 0
 	// Make sure that any platform specific window systems are set up.
-	else if(!bWindowInitialized)
+	else if()
 	{
 #ifdef __linux__
 		dMainDisplay = XOpenDisplay(NULL);
 		if(!dMainDisplay)
 		{
-			pSetError("Failed to open display!\n");
+			plSetError("Failed to open display!\n");
 			return;
 		}
 
 		iScreen = DefaultScreen(dMainDisplay);
 #else
 #endif
-
-		bWindowInitialized = true;
 	}
+#endif
 
 #ifdef _WIN32
 	{
@@ -169,124 +185,133 @@ void gWindow_CreateWindow(GIPLWindow_t *gwWindow)
 		wWindowClass.hIconSm		= 0;
 		wWindowClass.hInstance		= iGlobalInstance;
 		wWindowClass.lpfnWndProc	= NULL;	// (WNDPROC)Platform_WindowProcedure;
-		wWindowClass.lpszClassName	= gwWindow->cClass;
+		wWindowClass.lpszClassName	= window->cClass;
 		wWindowClass.lpszMenuName	= 0;
 		wWindowClass.style			= CS_OWNDC;
 
 		if(!RegisterClassEx(&wWindowClass))
 		{
-			pSetError("Failed to register window class!\n");
+			plSetError("Failed to register window class!\n");
 			return;
 		}
 
-		gwWindow->hWindow = CreateWindowEx(
+		window->hWindow = CreateWindowEx(
 			0,
-			gwWindow->cClass,
-			gwWindow->cTitle,
+			window->cClass,
+			window->cTitle,
 			WS_OVERLAPPED|WS_BORDER|WS_CAPTION|WS_SYSMENU|WS_MINIMIZEBOX|WS_CLIPCHILDREN|WS_CLIPSIBLINGS,
-			gwWindow->x,
-			gwWindow->y,
-			gwWindow->iWidth,
-			gwWindow->iHeight,
+			window->x,
+			window->y,
+			window->iWidth,
+			window->iHeight,
 			NULL,NULL,
 			iGlobalInstance,
 			NULL);
-		if(!gwWindow->hWindow)
+		if (!window->hWindow)
 		{
-			pSetError("Failed to create window!\n");
+			plSetError("Failed to create window!\n");
 			return;
 		}
 
-		ShowWindow(gwWindow->hWindow,SW_SHOWDEFAULT);
+		ShowWindow(window->hWindow, SW_SHOWDEFAULT);
 
-		UpdateWindow(gwWindow->hWindow);
+		UpdateWindow(window->hWindow);
 
-		SetForegroundWindow(gwWindow->hWindow);
+		SetForegroundWindow(window->hWindow);
 
-		gwWindow->hDeviceContext = GetDC(gwWindow->hWindow);
+		window->hDeviceContext = GetDC(window->hWindow);
 	}
 #else	// Linux
 	{
 		// Create our window.
-		gwWindow->wInstance = XCreateSimpleWindow(
+		window->wInstance = XCreateSimpleWindow(
 			dMainDisplay,
 			RootWindow(dMainDisplay,iScreen),
-			gwWindow->x,
-			gwWindow->y,
-			gwWindow->iWidth,
-			gwWindow->iHeight,
+			window->x,
+			window->y,
+			window->iWidth,
+			window->iHeight,
 			1,
 			BlackPixel(dMainDisplay,iScreen),
 			WhitePixel(dMainDisplay,iScreen));
-		if(!gwWindow->wInstance)
+		if(!window->wInstance)
 		{
-			pSetError("Failed to create window!\n");
+			plSetError("Failed to create window!\n");
 			return;
 		}
 
 		// Set the window title.
-		XStoreName(dMainDisplay,gwWindow->wInstance,gwWindow->cTitle);
+		XStoreName(dMainDisplay,window->wInstance,window->cTitle);
 	}
 #endif
 
-	gwWindow->bActive = true;
+	window->bActive = true;
 
 	iActive++;
 }
 
-/*
-	Dialogue Windows
-*/
-
-bool gWindow_ChooseColor(GIPLWindow_t *gwParent,int *iRed,int *iGreen,int *iBlue)
+void plDestroyWindow(plWindow_t *window)
 {
 #ifdef _WIN32
-	pUCHAR					bColour[3];
-	CHOOSECOLOR				ccColour;
-	static		COLORREF	scCustomColours[16];
+	if (!window->hWindow)
+		return;
 
-	bColour[0] = (pUCHAR)*iRed;
-	bColour[1] = (pUCHAR)*iGreen;
-	bColour[2] = (pUCHAR)*iBlue;
-
-	memset(&ccColour,0,sizeof(CHOOSECOLOR));
-
-	ccColour.Flags = CC_ANYCOLOR | CC_FULLOPEN | CC_RGBINIT;
-	ccColour.hwndOwner = gwParent ? (HWND)gwParent->hWindow : NULL;
-	ccColour.lpCustColors = scCustomColours;
-	ccColour.lStructSize = sizeof(CHOOSECOLOR);
-	ccColour.rgbResult = RGB(bColour[0], bColour[1], bColour[2]);
-
-	if(ChooseColor(&ccColour))
-	{
-		*iRed = (int)GetRValue(ccColour.rgbResult);
-		*iGreen = (int)GetGValue(ccColour.rgbResult);
-		*iBlue = (int)GetBValue(ccColour.rgbResult);
-		return true;
-	}
+	// Destroy our window.
+	DestroyWindow(window->hWindow);
 #else	// Linux
+	// Close our display instance.
+	if(dMainDisplay)
+		XCloseDisplay(dMainDisplay);
 #endif
 
-	return false;
+	free(window);
+
+	iActive--;
+}
+
+/*  Shows or hides the cursor for
+	the active window.
+*/
+void plShowCursor(bool show)
+{
+	if (show == is_cursorvisible)
+		return;
+#ifdef _WIN32
+	ShowCursor(show);
+#else	// Linux
+#endif
+	is_cursorvisible = show;
+}
+
+/*	Gets the position of the cursor.
+	TODO:
+		Move into platform_input.
+*/
+void plGetCursorPosition(int *x, int *y)
+{
+#ifdef _WIN32
+	POINT	pPoint;
+	GetCursorPos(&pPoint);
+	*x = pPoint.x; *y = pPoint.y;
+#else	// Linux
+#endif
 }
 
 /*	Displays a simple dialogue window.
-	TODO:
-		Support for alternative dialog types? Error etc.
 */
-void pWindow_MessageBox(const char *ccTitle, const char *ccMessage, ...)
+void plMessageBox(const char *ccTitle, const char *ccMessage, ...)
 {
 	char	cOut[2048];
 	va_list	vlArguments;
 
 	pFUNCTION_UPDATE();
 
-	va_start(vlArguments,ccMessage);
-	vsprintf(cOut,ccMessage,vlArguments);
+	va_start(vlArguments, ccMessage);
+	vsprintf(cOut, ccMessage, vlArguments);
 	va_end(vlArguments);
 
-	// [28/10/2013] Also print the message out ~hogsy
-	printf("Platform: %s",cOut);
+	// Also print a message out, on the off chance the message box fails.
+	printf("Platform: %s", cOut);
 
 #ifndef _WIN32
 	{
@@ -296,9 +321,9 @@ void pWindow_MessageBox(const char *ccTitle, const char *ccMessage, ...)
 		Window  wMessageWindow;
 
 		dMessageDisplay = XOpenDisplay(NULL);
-		if(!dMessageDisplay)
+		if (!dMessageDisplay)
 		{
-			pSetError("Failed to open display!\n");
+			plSetError("Failed to open display!\n");
 			return;
 		}
 
@@ -306,26 +331,26 @@ void pWindow_MessageBox(const char *ccTitle, const char *ccMessage, ...)
 
 		wMessageWindow = XCreateSimpleWindow(
 			dMessageDisplay,
-			RootWindow(dMessageDisplay,iDefaultScreen),
-			50,50,
-			512,64,
+			RootWindow(dMessageDisplay, iDefaultScreen),
+			50, 50,
+			512, 64,
 			1,
-			BlackPixel(dMessageDisplay,iDefaultScreen),
-			WhitePixel(dMessageDisplay,iDefaultScreen));
-		XStoreName(dMessageDisplay,wMessageWindow,ccTitle);
-		XSelectInput(dMessageDisplay,wMessageWindow,ExposureMask|KeyPressMask);
-		XMapWindow(dMessageDisplay,wMessageWindow);
+			BlackPixel(dMessageDisplay, iDefaultScreen),
+			WhitePixel(dMessageDisplay, iDefaultScreen));
+		XStoreName(dMessageDisplay, wMessageWindow, ccTitle);
+		XSelectInput(dMessageDisplay, wMessageWindow, ExposureMask | KeyPressMask);
+		XMapWindow(dMessageDisplay, wMessageWindow);
 
-		for(;;)
+		for (;;)
 		{
-			XNextEvent(dMessageDisplay,&xEvent);
+			XNextEvent(dMessageDisplay, &xEvent);
 
-			if(xEvent.type == Expose)
+			if (xEvent.type == Expose)
 			{
-				XDrawString(dMessageDisplay,wMessageWindow,DefaultGC(dMessageDisplay,iDefaultScreen),10,10,cOut,strlen(cOut));
-				XDrawString(dMessageDisplay,wMessageWindow,DefaultGC(dMessageDisplay,iDefaultScreen),10,54,"Press any key to continue...",32);
+				XDrawString(dMessageDisplay, wMessageWindow, DefaultGC(dMessageDisplay, iDefaultScreen), 10, 10, cOut, strlen(cOut));
+				XDrawString(dMessageDisplay, wMessageWindow, DefaultGC(dMessageDisplay, iDefaultScreen), 10, 54, "Press any key to continue...", 32);
 			}
-			else if(xEvent.type == KeyPress)
+			else if (xEvent.type == KeyPress)
 				break;
 		}
 
@@ -336,66 +361,10 @@ void pWindow_MessageBox(const char *ccTitle, const char *ccMessage, ...)
 #endif
 }
 
-void gWindow_Destroy(GIPLWindow_t *gwWindow)
+void plSwapBuffers(plWindow_t *window)
 {
 #ifdef _WIN32
-	if(!gwWindow->hWindow)
-		return;
-
-	// Destroy our window.
-	DestroyWindow(gwWindow->hWindow);
-#else	// Linux
-	// Close our display instance.
-	if(dMainDisplay)
-		XCloseDisplay(dMainDisplay);
-#endif
-
-	free(gwWindow);
-
-	iActive--;
-}
-
-/*  Shows or hides the cursor for
-	the active window.
-*/
-void pWindow_ShowCursor(bool bShow)
-{
-	if(bShow == bShowingCursor)
-		return;
-
-#ifdef _WIN32
-	ShowCursor(bShow);
-#else	// Linux
-#endif
-
-	bShowingCursor = bShow;
-}
-
-/*	Gets the position of the cursor.
-	TODO:
-		Move into platform_input.
-*/
-void gWindow_GetCursorPosition(int *iX,int *iY)
-{
-#ifdef _WIN32
-	POINT	pPoint;
-
-	GetCursorPos(&pPoint);
-
-	*iX = pPoint.x;
-	*iY	= pPoint.y;
-#else	// Linux
-#endif
-}
-
-/*
-	RENDERING
-*/
-
-void pWindow_SwapBuffers(GIPLWindow_t *gwWindow)
-{
-#ifdef _WIN32
-	SwapBuffers(gwWindow->hDeviceContext);
+	SwapBuffers(window->hDeviceContext);
 #else	// Linux
 	//glXSwapBuffers() // todo
 #endif

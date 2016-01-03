@@ -50,11 +50,11 @@ pINSTANCE hEngineInstance;
 
 int main(int argc,char *argv[])
 {
-	pLog_Clear(LAUNCHER_LOG);
-	pLog_Write(LAUNCHER_LOG, "Launcher (Interface Version %i)\n", ENGINE_VERSION);
+	plClearLog(LAUNCHER_LOG);
+	plWriteLog(LAUNCHER_LOG, "Launcher (Interface Version %i)\n", ENGINE_VERSION);
 
 	// Load the module interface for the engine module.
-	engine = (EngineExport_t*)pModule_LoadInterface(
+	engine = (EngineExport_t*)plLoadModuleInterface(
 		hEngineInstance,
 		"./" MODULE_ENGINE,
 		"Engine_Main",
@@ -63,27 +63,27 @@ int main(int argc,char *argv[])
 	if (!engine)
 	{
 		char err[2048];
-		snprintf(err, sizeof(err), "%s", pGetError());
+		snprintf(err, sizeof(err), "%s", plGetError());
 
-		pLog_Write(LAUNCHER_LOG, "Failed to load engine!\n%s", err);
-		pWindow_MessageBox("Launcher", "%s", err);
+		plWriteLog(LAUNCHER_LOG, "Failed to load engine!\n%s", err);
+		plMessageBox("Launcher", "%s", err);
 		return -1;
 	}
 	// Also ensure that the engine version hasn't changed.
 	else if (engine->iVersion != ENGINE_VERSION)
 	{
-		pLog_Write(LAUNCHER_LOG, "Launcher is outdated, please rebuild! (%i)\n", engine->iVersion);
-		pWindow_MessageBox("Launcher", "Launcher is outdated, please rebuild!");
-		pModule_Unload(hEngineInstance);
+		plWriteLog(LAUNCHER_LOG, "Launcher is outdated, please rebuild! (%i)\n", engine->iVersion);
+		plMessageBox("Launcher", "Launcher is outdated, please rebuild!");
+		plUnloadModule(hEngineInstance);
 		return -1;
 	}
 
 	// Initialize.
 	if (!engine->Initialize(argc, argv, false))
 	{
-		pLog_Write(LAUNCHER_LOG, "Engine failed to initialize, check engine log!\n");
-		pWindow_MessageBox("Launcher", "Failed to initialize engine!");
-		pModule_Unload(hEngineInstance);
+		plWriteLog(LAUNCHER_LOG, "Engine failed to initialize, check engine log!\n");
+		plMessageBox("Launcher", "Failed to initialize engine!");
+		plUnloadModule(hEngineInstance);
 		return -1;
 	}
 
@@ -91,7 +91,7 @@ int main(int argc,char *argv[])
 		engine->Loop();
 
 	// Unload once the engine has stopped running.
-	pModule_Unload(hEngineInstance);
+	plUnloadModule(hEngineInstance);
 
 	return -1;
 }

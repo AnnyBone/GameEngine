@@ -262,7 +262,7 @@ FILE *SafeOpenWrite (const char *filename)
 	f = fopen(filename, "wb");
 	if(!f)
 	{
-		pWindow_MessageBox("Katana Engine", cErrorOpeningString, filename, strerror(errno));
+		plMessageBox("Katana Engine", cErrorOpeningString, filename, strerror(errno));
 		exit(1);
 	}
 
@@ -276,7 +276,7 @@ FILE *SafeOpenRead (const char *filename)
 	f = fopen(filename,"rb");
 	if(!f)
 	{
-		pWindow_MessageBox("Katana Engine", cErrorOpeningString, filename, strerror(errno));
+		plMessageBox("Katana Engine", cErrorOpeningString, filename, strerror(errno));
 		exit(1);
 	}
 

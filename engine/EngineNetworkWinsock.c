@@ -125,7 +125,7 @@ int WINS_Init (void)
 
 // initialize the Winsock function vectors (we do this instead of statically linking
 // so we can run on Win 3.1, where there isn't necessarily Winsock)
-	hInst = pModule_Load("wsock32");
+	hInst = plLoadModule("wsock32");
 	if (hInst == NULL)
 	{
 		Con_SafePrintf ("Failed to load winsock.dll\n");
@@ -135,19 +135,19 @@ int WINS_Init (void)
 
 	winsock_lib_initialized = true;
 
-	pWSAStartup = (void *)pModule_FindFunction(hInst, "WSAStartup");
-	pWSACleanup = (void *)pModule_FindFunction(hInst, "WSACleanup");
-	pWSAGetLastError = (void *)pModule_FindFunction(hInst, "WSAGetLastError");
-	psocket = (void *)pModule_FindFunction(hInst, "socket");
-	pioctlsocket = (void *)pModule_FindFunction(hInst, "ioctlsocket");
-	psetsockopt = (void *)pModule_FindFunction(hInst, "setsockopt");
-	precvfrom = (void *)pModule_FindFunction(hInst, "recvfrom");
-	psendto = (void *)pModule_FindFunction(hInst, "sendto");
-	pclosesocket = (void *)pModule_FindFunction(hInst, "closesocket");
-	pgethostname = (void *)pModule_FindFunction(hInst, "gethostname");
-	pgethostbyname = (void *)pModule_FindFunction(hInst, "gethostbyname");
-	pgethostbyaddr = (void *)pModule_FindFunction(hInst, "gethostbyaddr");
-	pgetsockname = (void *)pModule_FindFunction(hInst, "getsockname");
+	pWSAStartup = (void *)plFindModuleFunction(hInst, "WSAStartup");
+	pWSACleanup = (void *)plFindModuleFunction(hInst, "WSACleanup");
+	pWSAGetLastError = (void *)plFindModuleFunction(hInst, "WSAGetLastError");
+	psocket = (void *)plFindModuleFunction(hInst, "socket");
+	pioctlsocket = (void *)plFindModuleFunction(hInst, "ioctlsocket");
+	psetsockopt = (void *)plFindModuleFunction(hInst, "setsockopt");
+	precvfrom = (void *)plFindModuleFunction(hInst, "recvfrom");
+	psendto = (void *)plFindModuleFunction(hInst, "sendto");
+	pclosesocket = (void *)plFindModuleFunction(hInst, "closesocket");
+	pgethostname = (void *)plFindModuleFunction(hInst, "gethostname");
+	pgethostbyname = (void *)plFindModuleFunction(hInst, "gethostbyname");
+	pgethostbyaddr = (void *)plFindModuleFunction(hInst, "gethostbyaddr");
+	pgetsockname = (void *)plFindModuleFunction(hInst, "getsockname");
 
 	if (!pWSAStartup || !pWSACleanup || !pWSAGetLastError ||
 		!psocket || !pioctlsocket || !psetsockopt ||

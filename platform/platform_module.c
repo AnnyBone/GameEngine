@@ -1,86 +1,102 @@
-/*	Copyright (C) 2013-2014 OldTimes Software
+/*	Copyright (C) 2011-2016 OldTimes Software
+
+	This program is free software; you can redistribute it and/or
+	modify it under the terms of the GNU General Public License
+	as published by the Free Software Foundation; either version 2
+	of the License, or (at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+	See the GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
+
+#include "platform.h"
+
 #include "platform_module.h"
 
 /*
-	Module System
+	Module management
 */
 
-#include "platform_system.h"
-
-pFARPROC pModule_FindFunction(pINSTANCE hModule,const char *cEntryFunction)
+pFARPROC plFindModuleFunction(pINSTANCE instance, const char *function)
 {
 	pFUNCTION_UPDATE();
 
-	if(hModule)
+	if(instance)
 	{
-		pFARPROC fFunc;
+		pFARPROC address;
 
 #ifdef _WIN32
-		fFunc = GetProcAddress(hModule,cEntryFunction);
+		address = GetProcAddress(instance, function);
 #else   // Linux
-		fFunc = dlsym(hModule,cEntryFunction);
+		address = dlsym(instance, function);
 #endif
-		if(fFunc)
-			return fFunc;
+		if (address)
+			return address;
 	}
 
 	return (NULL);
 }
 
-void pModule_Unload(pINSTANCE hModule)
+void plUnloadModule(pINSTANCE instance)
 {
 	pFUNCTION_UPDATE();
 
-	if(hModule)
+	if(instance)
 	{
 #ifdef _WIN32
-		FreeLibrary(hModule);
+		FreeLibrary(instance);
 #else   // Linux
 		dlclose(hModule);
 #endif
 
-		// [12/10/2012] Set the instance to null ~hogsy
-		hModule = NULL;
+		// Set the instance to null.
+		instance = NULL;
 	}
 }
 
 /*	Function to allow direct loading of an external module.
 */
-pINSTANCE pModule_Load(const char *ccPath)
+pINSTANCE plLoadModule(const char *path)
 {
-	pINSTANCE	iModule;
-	char		cUpdatedPath[PLATFORM_MAX_PATH];
+	pINSTANCE	instance;
+	char		newpath[PLATFORM_MAX_PATH];
 
 	pFUNCTION_UPDATE();
 
-	sprintf(cUpdatedPath,"%s"pMODULE_EXTENSION,ccPath);
+	sprintf(newpath, "%s"pMODULE_EXTENSION, path);
 
-	iModule	=
+	instance =
 #ifdef _WIN32
-		LoadLibrary(cUpdatedPath);
+		LoadLibrary(newpath);
 #else
-		dlopen(cUpdatedPath,RTLD_NOW);
+		dlopen(newpath,RTLD_NOW);
 #endif
-	if(!iModule)
+	if (!instance)
 	{
-		pSetError("Failed to load module! (%s)\n%s\n", cUpdatedPath, pGetSystemError());
+		plSetError("Failed to load module! (%s)\n%s\n", newpath, plGetSystemError());
 #if 0	// Second attempt; load it from a platform-specific subdirectory.
 
 		// Print it...
-		printf("%s", pGetError());
+		printf("%s", plGetError());
 
 		// Attempt to load under a different directory.
-		sprintf(cUpdatedPath, PLATFORM_CPU"/%s"pMODULE_EXTENSION, ccPath);
-		iModule =
+		sprintf(newpath, PLATFORM_CPU"/%s"pMODULE_EXTENSION, path);
+		instance =
 #ifdef _WIN32
-			LoadLibrary(cUpdatedPath);
+			LoadLibrary(newpath);
 #else
-			dlopen(cUpdatedPath, RTLD_NOW);
+			dlopen(newpath, RTLD_NOW);
 #endif
 		if (!iModule)
 		{
-			pSetError("%s\nFailed to load module! (%s)\n%s\n", cUpdatedPath, pGetSystemError());
+			plSetError("%s\nFailed to load module! (%s)\n%s\n", newpath, plGetSystemError());
 			return NULL;
 		}
 #else
@@ -88,32 +104,31 @@ pINSTANCE pModule_Load(const char *ccPath)
 #endif
 	}
 
-	return iModule;
+	return instance;
 }
 
 /*	Generic interface to allow loading of an external module.
 */
-void *pModule_LoadInterface(pINSTANCE hModule,const char *cPath,const char *cEntryFunction,void *vPoint)
+void *plLoadModuleInterface(pINSTANCE instance, const char *path, const char *entry, void *handle)
 {
 //	pFUNCTION_START
 
-	char	cUpdatedPath[PLATFORM_MAX_PATH];
-	void	*(*vMain)(void*);
+	char	newpath[PLATFORM_MAX_PATH];
+	void	*(*EntryFunction)(void*);
 
-	sprintf(cUpdatedPath,"%s."PLATFORM_CPU,cPath);
-
-	hModule = pModule_Load(cUpdatedPath);
-	if(!hModule)
+	sprintf(newpath, "%s."PLATFORM_CPU, path);
+	instance = plLoadModule(newpath);
+	if(!instance)
 		return NULL;
 
-	vMain = (void*)pModule_FindFunction(hModule,cEntryFunction);
-	if(!vMain)
+	EntryFunction = (void*)plFindModuleFunction(instance, entry);
+	if (!EntryFunction)
 	{
-		pSetError("Failed to find entry function! (%s)\n",cEntryFunction);
+		plSetError("Failed to find entry function! (%s)\n", entry);
 		return NULL;
 	}
 
-	return (vMain(vPoint));
+	return (EntryFunction(handle));
 
 //	pFUNCTION_END
 }

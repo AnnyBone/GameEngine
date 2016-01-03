@@ -19,8 +19,6 @@
 #ifndef PLATFORM_MODULE_H
 #define PLATFORM_MODULE_H
 
-#include "platform.h"
-
 // Copied from Darkplaces.
 typedef struct
 {
@@ -43,12 +41,12 @@ extern "C" {
 #define pMODULE_IMPORT		__attribute__((visibility("hidden")))
 #endif
 
-extern pFARPROC pModule_FindFunction(pINSTANCE hModule,const char *cEntryFunction);
+	extern pFARPROC plFindModuleFunction(pINSTANCE instance, const char *function);
 
-pINSTANCE pModule_Load(const char *ccPath);
+	pINSTANCE plLoadModule(const char *path);
 
-extern void pModule_Unload(pINSTANCE hModule);
-extern void *pModule_LoadInterface(pINSTANCE hModule,const char *cPath,const char *cEntryFunction,void *vPoint);
+	extern void plUnloadModule(pINSTANCE instance);
+	extern void *plLoadModuleInterface(pINSTANCE instance, const char *path, const char *entry, void *handle);
 
 #ifdef __cplusplus
 }

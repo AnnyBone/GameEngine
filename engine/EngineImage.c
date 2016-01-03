@@ -114,7 +114,7 @@ bool Image_WriteTGA(char *name, uint8_t *data,int width,int height,int bpp,bool 
 	char pathname[PLATFORM_MAX_PATH];
 	uint8_t	header[TARGAHEADERSIZE];
 
-	if(!pFileSystem_CreateDirectory(com_gamedir)) //if we've switched to a nonexistant gamedir, create it now so we don't crash
+	if (!plCreateDirectory(com_gamedir)) //if we've switched to a nonexistant gamedir, create it now so we don't crash
 		Sys_Error("Failed to create directory!\n");
 	sprintf (pathname, "%s/%s", com_gamedir, name);
 	handle = Sys_FileOpenWrite (pathname);
@@ -371,7 +371,7 @@ static pModuleFunction_t PNGFunctions[]=
 
 void Image_InitializePNG()
 {
-	iPNGLibraryInstance = pModule_Load("libpng16");
+	iPNGLibraryInstance = plLoadModule("libpng16");
 	if (!iPNGLibraryInstance)
 	{
 		Con_Warning("Failed to load libpng!\n");
@@ -382,7 +382,7 @@ void Image_InitializePNG()
 	int i;
 	for (i = 0; i < pARRAYELEMENTS(PNGFunctions); i++)
 	{
-		*(PNGFunctions[i].Function) = pModule_FindFunction(iPNGLibraryInstance, PNGFunctions[i].ccFunctionName);
+		*(PNGFunctions[i].Function) = plFindModuleFunction(iPNGLibraryInstance, PNGFunctions[i].ccFunctionName);
 		if (!PNGFunctions[i].Function)
 		{
 			Con_Warning("Failed to find libpng function! (%s)\n", PNGFunctions[i].ccFunctionName);
@@ -453,5 +453,5 @@ uint8_t *Image_LoadPNG(FILE *fin, unsigned int *width, unsigned int *height)
 void Image_Shutdown()
 {
 	if (iPNGLibraryInstance)
-		pModule_Unload(iPNGLibraryInstance);
+		plUnloadModule(iPNGLibraryInstance);
 }

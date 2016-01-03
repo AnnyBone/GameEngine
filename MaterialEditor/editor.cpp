@@ -35,8 +35,8 @@ wxBitmap
 
 bool CEditorApp::OnInit()
 {
-	pLog_Clear(EDITOR_LOG);
-	pLog_Write(EDITOR_LOG, "Initializing engine interface...\n");
+	plClearLog(EDITOR_LOG);
+	plWriteLog(EDITOR_LOG, "Initializing engine interface...\n");
 
 	EngineInterface_Load();
 
@@ -66,7 +66,7 @@ bool CEditorApp::OnInit()
 	smallTransform.LoadFile(PATH_16ICONS"actions/transform-move.png", wxBITMAP_TYPE_PNG);
 	smallApplicationExit.LoadFile(PATH_16ICONS"actions/application-exit.png", wxBITMAP_TYPE_PNG);
 
-	pLog_Write(EDITOR_LOG, "Creating main frame...\n");
+	plWriteLog(EDITOR_LOG, "Creating main frame...\n");
 
 	efMainFrame = new CEditorFrame(cApplicationTitle, wxPoint(50, 50), wxSize(1024, 768));
 	if (!efMainFrame)
@@ -92,7 +92,7 @@ bool CEditorApp::OnInit()
 
 	efMainFrame->Initialize();
 
-	pLog_Write(EDITOR_LOG, "Starting main loop...\n");
+	plWriteLog(EDITOR_LOG, "Starting main loop...\n");
 
 	// Start rendering.
 	efMainFrame->StartEngineLoop();
@@ -102,8 +102,8 @@ bool CEditorApp::OnInit()
 
 int CEditorApp::OnExit()
 {
-	pLog_Write(EDITOR_LOG, "Unloading engine interface...\n");
+	plWriteLog(EDITOR_LOG, "Unloading engine interface...\n");
 	EngineInterface_Unload();
-	pLog_Write(EDITOR_LOG, "Done!\n");
+	plWriteLog(EDITOR_LOG, "Done!\n");
 	return 0;
 }

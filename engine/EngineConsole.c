@@ -208,7 +208,7 @@ void Console_Initialize(void)
 	if (bConsoleInitialized)
 		return;
 
-	pLog_Clear(ENGINE_LOG);
+	plClearLog(ENGINE_LOG);
 
 	//johnfitz -- user settable console buffer size
 	if (COM_CheckParm("-consize"))
@@ -350,7 +350,7 @@ void Con_Printf (const char *fmt, ...)
 	// also echo to debugging console
 	Sys_Printf ("%s", msg);
 
-	pLog_Write(ENGINE_LOG, "%s", msg);
+	plWriteLog(ENGINE_LOG, "%s", msg);
 
 	if (Global.bEmbeddedContext)
 		EngineLauncher.PrintMessage(msg);
@@ -400,7 +400,7 @@ void Con_Warning (const char *fmt, ...)
 
 	if (Global.bEmbeddedContext)
 	{
-		pLog_Write(ENGINE_LOG, "%s", msg);
+		plWriteLog(ENGINE_LOG, "%s", msg);
 		EngineLauncher.PrintWarning(msg);
 	}
 	else
@@ -426,7 +426,7 @@ void Con_Error(char *fmt,...)
 
 	if (Global.bEmbeddedContext)
 	{
-		pLog_Write(ENGINE_LOG, "%s", msg);
+		plWriteLog(ENGINE_LOG, "%s", msg);
 		EngineLauncher.PrintError(msg);
 	}
 	else
@@ -455,12 +455,12 @@ void Con_DPrintf(const char *fmt,...)
 
 	if (Global.bEmbeddedContext)
 	{
-		pLog_Write(ENGINE_LOG, "%s", msg);
+		plWriteLog(ENGINE_LOG, "%s", msg);
 		EngineLauncher.PrintMessage(msg);
 	}
 	else
 	{
-		pLog_Write(ENGINE_LOG, "%s", msg);
+		plWriteLog(ENGINE_LOG, "%s", msg);
 		Con_SafePrintf("%s", msg); //johnfitz -- was Con_Printf
 	}
 }

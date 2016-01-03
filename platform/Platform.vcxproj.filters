@@ -3,9 +3,7 @@
   <ItemGroup>
     <ClCompile Include="platform.c" />
     <ClCompile Include="platform_filesystem.c" />
-    <ClCompile Include="platform_input.c" />
     <ClCompile Include="platform_module.c" />
-    <ClCompile Include="platform_net.c" />
     <ClCompile Include="platform_window.c" />
     <ClCompile Include="platform_math.c" />
     <ClCompile Include="platform_log.c" />

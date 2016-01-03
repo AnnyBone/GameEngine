@@ -215,7 +215,7 @@ void Host_InitLocal (void)
 		Cvar_SetValue("developer", 1.0f);
 
 	// Set the global username.
-	pFileSystem_GetUserName(Global.cLocalName);
+	plGetUserName(Global.cLocalName);
 
 	Host_FindMaxClients();
 

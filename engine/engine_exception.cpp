@@ -37,7 +37,7 @@ EngineException::EngineException(const char *message, ...)
 	vsprintf(Out, message, ArgPtr);
 	va_end(ArgPtr);
 
-	pLog_Write(ENGINE_LOG, "Error: %s", Out);
+	plWriteLog(ENGINE_LOG, "Error: %s", Out);
 
 	// switch to windowed so the message box is visible, unless we already
 	// tried that and failed
@@ -45,10 +45,10 @@ EngineException::EngineException(const char *message, ...)
 	{
 		ErrorPass0 = 1;
 
-		pWindow_MessageBox("Fatal Error", Out);
+		plMessageBox("Fatal Error", Out);
 	}
 	else
-		pWindow_MessageBox("Double Fatal Error", Out);
+		plMessageBox("Double Fatal Error", Out);
 
 	if (!ErrorPass1)
 	{

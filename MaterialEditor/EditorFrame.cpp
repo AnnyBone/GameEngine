@@ -116,12 +116,12 @@ CEditorFrame::CEditorFrame(const wxString & title, const wxPoint & pos, const wx
 {
 	manager = new wxAuiManager(this);
 
-	pLog_Write(EDITOR_LOG, "Setting frame icon...\n");
+	plWriteLog(EDITOR_LOG, "Setting frame icon...\n");
 	SetIcon(wxIcon("resource/icon-engine.png", wxBITMAP_TYPE_PNG));
 
 	// Display the splash screen...
 
-	pLog_Write(EDITOR_LOG, "Creating splash screen\n");
+	plWriteLog(EDITOR_LOG, "Creating splash screen\n");
 	new wxSplashScreen(
 		bSplashScreen,
 		wxSPLASH_CENTRE_ON_SCREEN | wxSPLASH_TIMEOUT,
@@ -523,7 +523,7 @@ void CEditorFrame::OnOpen(wxCommandEvent &event)
 		}
 
 		currentFilePath = filedialog->GetPath();
-		lastTimeModified = currentTimeModified = pFileSystem_GetModifiedTime(currentFilePath);
+		lastTimeModified = currentTimeModified = plGetFileModifiedTime(currentFilePath);
 	}
 }
 
@@ -617,7 +617,7 @@ void CEditorFrame::ReloadCurrentDocument()
 		return;
 
 	// Ensure things have actually changed.
-	currentTimeModified = pFileSystem_GetModifiedTime(currentFilePath);
+	currentTimeModified = plGetFileModifiedTime(currentFilePath);
 	if (currentTimeModified == lastTimeModified)
 		return;
 

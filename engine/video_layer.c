@@ -246,7 +246,7 @@ void VideoLayer_Enable(unsigned int uiCapabilities)
 		if (uiCapabilities & capabilities[i].uiFirst)
 		{
 			if (Video.bDebugFrame)
-				pLog_Write(VIDEO_LOG, "Video: Enabling %s (%i)\n", capabilities[i].ccIdentifier, Video.uiActiveUnit);
+				plWriteLog(VIDEO_LOG, "Video: Enabling %s (%i)\n", capabilities[i].ccIdentifier, Video.uiActiveUnit);
 
 			glEnable(capabilities[i].uiSecond);
 		}
@@ -284,7 +284,7 @@ void VideoLayer_BlendFunc(VideoBlend_t modea, VideoBlend_t modeb)
 	VIDEO_FUNCTION_START
 	glBlendFunc(modea, modeb);
 	if (Video.bDebugFrame)
-		pLog_Write(VIDEO_LOG, "Video: Setting blend mode (%i) (%i)\n", modea, modeb);
+		plWriteLog(VIDEO_LOG, "Video: Setting blend mode (%i) (%i)\n", modea, modeb);
 	VIDEO_FUNCTION_END
 }
 

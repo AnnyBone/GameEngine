@@ -427,7 +427,7 @@ void Game_Initialize(void)
 	ModuleImport_t	Import;
 
 	if(Game)
-		pModule_Unload(hGameInstance);
+		plUnloadModule(hGameInstance);
 
 	// Server
 	Import.Con_Printf				= Con_Printf;
@@ -493,9 +493,9 @@ void Game_Initialize(void)
 	Import.Server_GetNumEdicts		= Game_GetNumEdicts;
 	Import.Server_GetEdicts			= Game_GetEdicts;
 
-	Game = (GameExport_t*)pModule_LoadInterface(hGameInstance, va("%s/%s"MODULE_GAME, com_gamedir, Global.cModulePath), "Game_Main", &Import);
+	Game = (GameExport_t*)plLoadModuleInterface(hGameInstance, va("%s/%s" MODULE_GAME, com_gamedir, Global.cModulePath), "Game_Main", &Import);
 	if(!Game)
-		Con_Warning(pGetError(),com_gamedir,MODULE_GAME);
+		Con_Warning(plGetError(), com_gamedir, MODULE_GAME);
 	else if (Game->iVersion != GAME_VERSION)
 		Con_Warning("Size mismatch (recieved %i, expected %i)!\n", Game->iVersion, GAME_VERSION);
 	else
@@ -503,7 +503,7 @@ void Game_Initialize(void)
 
 	if(!bGameLoaded)
 	{
-		pModule_Unload(hGameInstance);
+		plUnloadModule(hGameInstance);
 
 		// Let the user know the module failed to load.
 		Sys_Error("Failed to load %s/%s."PLATFORM_CPU""pMODULE_EXTENSION"!\nCheck log for details.\n",com_gamedir,MODULE_GAME);

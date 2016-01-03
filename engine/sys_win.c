@@ -227,7 +227,7 @@ void Sys_Error(const char *error, ...)
 	vsprintf(text,error,argptr);
 	va_end(argptr);
 
-	pLog_Write(ENGINE_LOG, "Error: %s", text);
+	plWriteLog(ENGINE_LOG, "Error: %s", text);
 
 	// switch to windowed so the message box is visible, unless we already
 	// tried that and failed
@@ -235,10 +235,10 @@ void Sys_Error(const char *error, ...)
 	{
 		in_sys_error0 = 1;
 		
-		pWindow_MessageBox("Fatal Error", text);
+		plMessageBox("Fatal Error", text);
 	}
 	else
-		pWindow_MessageBox("Double Fatal Error",text);
+		plMessageBox("Double Fatal Error",text);
 
 	if (!in_sys_error1)
 	{
@@ -271,7 +271,7 @@ void Sys_Printf (char *fmt, ...)
 		vsprintf(text,fmt,argptr);
 		va_end(argptr);
 
-		pLog_Write(ENGINE_LOG, "Error: %s", text);
+		plWriteLog(ENGINE_LOG, "Error: %s", text);
 	}
 }
 

@@ -96,6 +96,9 @@
 #		ifndef snprintf
 #			define	snprintf	_snprintf
 #		endif
+#		ifndef unlink
+#			define unlink		_unlink
+#		endif
 #	endif
 #elif __APPLE__	// Mac OS X
 	// Information
@@ -233,39 +236,27 @@ typedef	unsigned char	pUCHAR;
 //static jmp_buf jbException;
 
 #define	pFUNCTION_UPDATE()			\
-	pResetError();					\
-	pSetErrorFunction(pFUNCTION)
+	plResetError();					\
+	plSetErrorFunction(pFUNCTION)
 #ifndef __cplusplus
-#define	pFUNCTION_START		pSetErrorFunction(pFUNCTION); {
+#define	pFUNCTION_START		plSetErrorFunction(pFUNCTION); {
 #else
 #define	pFUNCTION_START	\
-pSetErrorFunction(pFUNCTION);
+plSetErrorFunction(pFUNCTION);
 // TRY whatever
 #endif
 #define pFUNCTION_END 		}
-
-typedef enum
-{
-	pERROR_INVALID_HANDLE
-} PlatformErrorType_t;
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-	extern void	pResetError(void);									// Resets the error message to "null", so you can ensure you have the correct message from the library.
-	extern void	pSetError(const char *ccMessage, ...);				// Sets the error message, so we can grab it outside the library.
-	extern void	pSetErrorFunction(const char *ccFunction, ...);		// Sets the currently active function, for error reporting.
+	extern void	plResetError(void);									// Resets the error message to "null", so you can ensure you have the correct message from the library.
+	extern void	plSetError(const char *msg, ...);					// Sets the error message, so we can grab it outside the library.
+	extern void	plSetErrorFunction(const char *function, ...);		// Sets the currently active function, for error reporting.
 
-	extern char *pGetSystemError(void);	// Returns the error message currently given by the operating system.
-
-	extern char	*pGetError(void);	// Returns the last recorded error.
-
-	/*
-		Standard Implementation
-	*/
-
-	extern char *pString_Copy(char *cDest, const char *ccSource);
+	extern char *plGetSystemError(void);	// Returns the error message currently given by the operating system.
+	extern char	*plGetError(void);			// Returns the last recorded error.
 
 #ifdef __cplusplus
 }

@@ -22,8 +22,10 @@
 
 
 /*
-	Generic functions for platform, such as
-	error handling.
+	Generic functions for platform, such as	error handling.
+
+	TODO:
+		Introduce generic return types (e.g. PLATFORM_ERROR_FILENOTFOUND)
 */
 
 #define	MAX_FUNCTION_LENGTH	64
@@ -36,19 +38,19 @@ char
 
 /*	Sets the name of the currently entered function.
 */
-void pSetErrorFunction(const char *ccFunction,...)
+void plSetErrorFunction(const char *function, ...)
 {
-	char	cOut[MAX_FUNCTION_LENGTH];
-	va_list vlArguments;
+	char	out[MAX_FUNCTION_LENGTH];
+	va_list args;
 
-	va_start(vlArguments,ccFunction);
-	vsprintf(cOut,ccFunction,vlArguments);
-	va_end(vlArguments);
+	va_start(args, function);
+	vsprintf(out, function, args);
+	va_end(args);
 
-	p_strncpy(loc_function, cOut, sizeof(ccFunction));
+	p_strncpy(loc_function, out, sizeof(function));
 }
 
-void pResetError(void)
+void plResetError(void)
 {
 	// Set everything to "null".
 	sprintf(loc_error, "null");
@@ -56,51 +58,51 @@ void pResetError(void)
 	sprintf(loc_function, "null");
 }
 
-void pSetError(const char *ccMessage,...)
+/*	Sets the local error message.
+*/
+void plSetError(const char *msg, ...)
 {
 	char	out[MAX_ERROR_LENGTH];
 	va_list args;
 
-	va_start(args,ccMessage);
-	vsprintf(out,ccMessage, args);
+	va_start(args, msg);
+	vsprintf(out, msg, args);
 	va_end(args);
 
 	p_strncpy(loc_error, out, sizeof(loc_error));
 }
 
-char *pGetError(void)
+/*	Returns the locally generated error message.
+*/
+char *plGetError(void)
 {
 	return loc_error;
 }
 
-/*
-	System Error Management
+/*	Returns a system error message.
 */
-
-/*	Returns a system-side error message.
-*/
-char *pGetSystemError(void)
+char *plGetSystemError(void)
 {
 #ifdef _WIN32
-	char	*cBuffer = NULL;
-	int		iError;
+	char	*buffer = NULL;
+	int		error;
 
-	iError = GetLastError();
-	if (iError == 0)
+	error = GetLastError();
+	if (error == 0)
 		return "Unknown system error!";
 
 	if (!FormatMessage(
 		FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
 		NULL,
-		iError,
+		error,
 		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-		(LPSTR)&cBuffer,
+		(LPSTR)&buffer,
 		0, NULL))
 		return "Failed to get system error details!";
 
-	p_strcpy(sys_error, _strdup(cBuffer));
+	p_strcpy(sys_error, _strdup(buffer));
 
-	LocalFree(cBuffer);
+	LocalFree(buffer);
 
 	return sys_error;
 #else

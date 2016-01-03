@@ -18,51 +18,47 @@
 
 #include "platform.h"
 
+#include "platform_log.h"
+
 /*
 	Log System
 */
 
 #define	LOG_FILE_EXTENSION	".log"
 
-void pLog_Write(const char *ccPath, const char *ccMessage, ...)
+void plWriteLog(const char *path, const char *msg, ...)
 {
 	pFUNCTION_START
 
-	FILE *fLog;
-	va_list vlArguments;
-	static char scData[1024];
-	char cPath[PLATFORM_MAX_PATH];
-	unsigned int uiData;
+	FILE			*file;
+	va_list			args;
+	static char		buffer[1024];
+	char			newpath[PLATFORM_MAX_PATH];
+	unsigned int	size;
 
-	sprintf(cPath, "%s"LOG_FILE_EXTENSION, ccPath);
+	sprintf(newpath, "%s"LOG_FILE_EXTENSION, path);
 
-	va_start(vlArguments, ccMessage);
-	vsprintf(scData, ccMessage, vlArguments);
-	va_end(vlArguments);
+	va_start(args, msg);
+	vsprintf(buffer, msg, args);
+	va_end(args);
 
-	uiData = strlen(scData);
+	size = strlen(buffer);
 
-	fLog = fopen(cPath, "a");
-	if (fwrite(scData, sizeof(char), uiData, fLog) != uiData)
-		pSetError("Failed to write to log! (%s)", cPath);
-	fclose(fLog);
+	file = fopen(newpath, "a");
+	if (fwrite(buffer, sizeof(char), size, file) != size)
+		plSetError("Failed to write to log! (%s)", newpath);
+	fclose(file);
 
 	pFUNCTION_END
 }
 
-void pLog_Clear(const char *ccPath)
+void plClearLog(const char *path)
 {
 	pFUNCTION_START
 
-	char cPath[PLATFORM_MAX_PATH];
-
-	sprintf(cPath, "%s"LOG_FILE_EXTENSION, ccPath);
-
-#ifdef _WIN32
-	_unlink(cPath);
-#else
-	unlink(cPath);
-#endif
+	char newpath[PLATFORM_MAX_PATH];
+	sprintf(newpath, "%s"LOG_FILE_EXTENSION, path);
+	unlink(newpath);
 
 	pFUNCTION_END
 }

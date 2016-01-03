@@ -39,7 +39,7 @@ void Menu_Initialize(void)
 	ModuleImport_t mImport;
 
 	if(Menu)
-		pModule_Unload(hMenuInstance);
+		plUnloadModule(hMenuInstance);
 
 	mImport.Con_Printf = Con_Printf;
 	mImport.Con_DPrintf = Con_DPrintf;
@@ -56,16 +56,16 @@ void Menu_Initialize(void)
 
 	mImport.GetScreenWidth				= Menu_GetScreenWidth;
 	mImport.GetScreenHeight				= Menu_GetScreenHeight;
-	mImport.ShowCursor					= pWindow_ShowCursor;
+	mImport.ShowCursor					= plShowCursor;
 	mImport.GetCursorPosition			= Window_GetCursorPosition;
 	mImport.Cmd_AddCommand				= Game_AddCommand;
 	mImport.Client_GetStat				= Client_GetStat;
 	mImport.Client_PrecacheResource		= Client_PrecacheResource;
 	mImport.Client_SetMenuCanvas		= GL_SetCanvas;
 
-	Menu = (MenuExport_t*)pModule_LoadInterface(hMenuInstance, va("%s/%s"MODULE_MENU, com_gamedir, Global.cModulePath), "Menu_Main", &mImport);
+	Menu = (MenuExport_t*)plLoadModuleInterface(hMenuInstance, va("%s/%s" MODULE_MENU, com_gamedir, Global.cModulePath), "Menu_Main", &mImport);
 	if(!Menu)
-		Con_Warning(pGetError(),com_gamedir,MODULE_MENU);
+		Con_Warning(plGetError(), com_gamedir, MODULE_MENU);
 	else if (Menu->iVersion != MENU_VERSION)
 		Con_Warning("Size mismatch (recieved %i, expected %i)!\n", Menu->iVersion, MENU_VERSION);
 	else
@@ -73,8 +73,8 @@ void Menu_Initialize(void)
 
 	if(!bMenuLoaded)
 	{
-		// [4/5/2013] Unload our module ~hogsy
-		pModule_Unload(hMenuInstance);
+		// Unload our module.
+		plUnloadModule(hMenuInstance);
 
 		// Let the user know the module failed to load. ~hogsy
 		Sys_Error("Failed to load %s/%s."PLATFORM_CPU""pMODULE_EXTENSION"!\nCheck log for details.\n",com_gamedir,MODULE_MENU);

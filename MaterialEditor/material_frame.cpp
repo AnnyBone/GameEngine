@@ -128,7 +128,7 @@ MaterialViewportPanel::MaterialViewportPanel(wxWindow *wParent)
 	SphereModel = engine->LoadModel("models/editor/sphere.md2");
 	PlaneModel = engine->LoadModel("models/editor/plane.md2");
 	if (!CubeModel || !SphereModel || !PlaneModel)
-		pLog_Write(EDITOR_LOG, "Failed to load preview mesh!\n");
+		plWriteLog(EDITOR_LOG, "Failed to load preview mesh!\n");
 	
 	preview_material = NULL;
 
@@ -142,7 +142,7 @@ MaterialViewportPanel::MaterialViewportPanel(wxWindow *wParent)
 		preview_entity->model = CubeModel;
 	}
 	else
-		pLog_Write(EDITOR_LOG, "Failed to create client entity!\n");
+		plWriteLog(EDITOR_LOG, "Failed to create client entity!\n");
 
 	preview_light = engine->CreateDynamicLight(0);
 	if (preview_light)
@@ -155,7 +155,7 @@ MaterialViewportPanel::MaterialViewportPanel(wxWindow *wParent)
 		Math_VectorSet(255.0f, preview_light->color);
 	}
 	else
-		pLog_Write(EDITOR_LOG, "Failed to create dynamic light!\n");
+		plWriteLog(EDITOR_LOG, "Failed to create dynamic light!\n");
 }
 
 void MaterialViewportPanel::Initialize()
@@ -220,7 +220,7 @@ bool MaterialViewportPanel::SetPreviewMaterial(Material_t *NewMaterial)
 	// Ensure the new material is valid.
 	if (!NewMaterial)
 	{
-		pLog_Write(EDITOR_LOG, "Invalid material!\n");
+		plWriteLog(EDITOR_LOG, "Invalid material!\n");
 		return false;
 	}
 
@@ -433,7 +433,7 @@ void CMaterialFrame::ReloadMaterial()
 		return;
 
 	// Ensure things have actually changed.
-	tCurrentModified = pFileSystem_GetModifiedTime(sCurrentFilePath);
+	tCurrentModified = plGetFileModifiedTime(sCurrentFilePath);
 	if (tCurrentModified == tLastModified)
 		return;
 
@@ -496,7 +496,7 @@ void CMaterialFrame::LoadMaterial(wxString path)
 
 	// Update the current material path and check when it was last modified.
 	sCurrentFilePath = path;
-	tLastModified = pFileSystem_GetModifiedTime(sCurrentFilePath);
+	tLastModified = plGetFileModifiedTime(sCurrentFilePath);
 
 	// Load the file into the script editor.
 	cMaterialScript->LoadFile(sCurrentFilePath);

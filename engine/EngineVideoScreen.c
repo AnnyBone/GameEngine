@@ -626,12 +626,12 @@ void Screen_DrawConsole(void)
 
 void SCR_ScreenShot_f (void)
 {
-	byte	*buffer;
+	uint8_t	*buffer;
 	char	tganame[32], checkname[PLATFORM_MAX_PATH];
 	int		i;
 
-	if(!pFileSystem_CreateDirectory(va("%s/%s",com_gamedir,Global.cScreenshotPath)))
-		Sys_Error("Failed to create directory!\n%s", pGetError());
+	if (!plCreateDirectory(va("%s/%s", com_gamedir, Global.cScreenshotPath)))
+		Sys_Error("Failed to create directory!\n%s", plGetError());
 
 	// find a file name to save it to
 	for (i = 0; i < 10000; i++)

@@ -19,21 +19,19 @@
 #ifndef PLATFORM_FILESYSTEM_H
 #define	PLATFORM_FILESYSTEM_H
 
-#include "platform.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-	extern void	pFileSystem_GetUserName(char *out);
-	extern void pFileSystem_ScanDirectory(const char *path, const char *extension, void(*Function)(char *filepath));
-	extern void	pFileSystem_GetWorkingDirectory(char *out);
-	extern void	pFileSystem_UpdatePath(char *path);
+	extern void	plGetUserName(char *out);
+	extern void plScanDirectory(const char *path, const char *extension, void(*Function)(char *filepath));
+	extern void	plGetWorkingDirectory(char *out);
+	extern void	plLowerCasePath(char *out);
 
-	extern bool	pFileSystem_CreateDirectory(const char *path);
-	extern bool pFileSystem_IsModified(time_t oldtime, const char *path);
+	extern bool	plCreateDirectory(const char *path);
+	extern bool plIsFileModified(time_t oldtime, const char *path);
 
-	extern time_t pFileSystem_GetModifiedTime(const char *path);
+	extern time_t plGetFileModifiedTime(const char *path);
 
 #ifdef __cplusplus
 }

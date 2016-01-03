@@ -267,7 +267,7 @@ void Video_DebugCommand(void)
 	if(!Video.bDebugFrame)
 		Video.bDebugFrame = true;
 
-	pLog_Clear(cvVideoDebugLog.string);
+	plClearLog(cvVideoDebugLog.string);
 }
 
 /**/
@@ -359,12 +359,12 @@ void Video_UpdateWindow(void)
 		Cvar_SetValue(cvHeight.name, WINDOW_MINIMUM_HEIGHT);
 	}
 	// If we're not fullscreen, then constrain our window size to the size of the desktop.
-	else if (!Video.bFullscreen && ((cvWidth.iValue > pWindow_GetScreenWidth()) || (cvHeight.iValue > pWindow_GetScreenHeight())))
+	else if (!Video.bFullscreen && ((cvWidth.iValue > plGetScreenWidth()) || (cvHeight.iValue > plGetScreenHeight())))
 	{
 		Con_Warning("Attempted to set resolution beyond scope of desktop!\n");
 
-		Cvar_SetValue(cvWidth.name, pWindow_GetScreenWidth());
-		Cvar_SetValue(cvHeight.name, pWindow_GetScreenHeight());
+		Cvar_SetValue(cvWidth.name, plGetScreenWidth());
+		Cvar_SetValue(cvHeight.name, plGetScreenHeight());
 	}
 
 	Video.iWidth = cvWidth.iValue;
@@ -444,7 +444,7 @@ void Video_SetTexture(gltexture_t *gTexture)
 	glBindTexture(GL_TEXTURE_2D,gTexture->texnum);
 
 	if(Video.bDebugFrame)
-		pLog_Write(cvVideoDebugLog.string,"Video: Bound texture (%s) (%i)\n",gTexture->name,Video.uiActiveUnit);
+		plWriteLog(cvVideoDebugLog.string, "Video: Bound texture (%s) (%i)\n", gTexture->name, Video.uiActiveUnit);
 }
 
 /*
@@ -456,7 +456,7 @@ void Video_SetTexture(gltexture_t *gTexture)
 unsigned int Video_GetTextureUnit(unsigned int uiTarget)
 {
 	if (Video.bDebugFrame)
-		pLog_Write(cvVideoDebugLog.string, "Video: Attempting to get TMU target %i\n", uiTarget);
+		plWriteLog(cvVideoDebugLog.string, "Video: Attempting to get TMU target %i\n", uiTarget);
 
 #if 0
 	switch (uiTarget)
@@ -482,7 +482,7 @@ unsigned int Video_GetTextureUnit(unsigned int uiTarget)
 #endif
 
 	if (Video.bDebugFrame)
-		pLog_Write(cvVideoDebugLog.string, "Video: Returning TMU %i\n", GL_TEXTURE0 + uiTarget);
+		plWriteLog(cvVideoDebugLog.string, "Video: Returning TMU %i\n", GL_TEXTURE0 + uiTarget);
 
 	return GL_TEXTURE0 + uiTarget;
 }
@@ -500,7 +500,7 @@ void Video_SelectTexture(unsigned int uiTarget)
 	Video.uiActiveUnit = uiTarget;
 
 	if(Video.bDebugFrame)
-		pLog_Write(cvVideoDebugLog.string, "Video: Texture Unit %i\n", Video.uiActiveUnit);
+		plWriteLog(cvVideoDebugLog.string, "Video: Texture Unit %i\n", Video.uiActiveUnit);
 }
 
 /*
@@ -599,7 +599,7 @@ void Video_DrawObject(
 	if (Video.bDebugFrame)
 	{
 		uiVideoDrawObjectCalls++;
-		pLog_Write(cvVideoDebugLog.string, "Video: Drawing object (%i) (%i)\n", uiVerts, vpPrimitiveType);
+		plWriteLog(cvVideoDebugLog.string, "Video: Drawing object (%i) (%i)\n", uiVerts, vpPrimitiveType);
 	}
 
 	bVideoIgnoreCapabilities = true;
@@ -721,7 +721,7 @@ void Video_DisableCapabilities(unsigned int iCapabilities)
 		if(iCapabilities & vcCapabilityList[i].uiFirst)
 		{
 			if(Video.bDebugFrame)
-				pLog_Write(cvVideoDebugLog.string, "Video: Disabling %s (%i)\n", vcCapabilityList[i].ccIdentifier, Video.uiActiveUnit);
+				plWriteLog(cvVideoDebugLog.string, "Video: Disabling %s (%i)\n", vcCapabilityList[i].ccIdentifier, Video.uiActiveUnit);
 
 			if(!bVideoIgnoreCapabilities)
 				// Collect up a list of the new capabilities we disabled.
@@ -765,14 +765,14 @@ void Video_ResetCapabilities(bool bClearActive)
 	int i;
 
 	if(Video.bDebugFrame)
-		pLog_Write(cvVideoDebugLog.string, "Video: Resetting capabilities...\n");
+		plWriteLog(cvVideoDebugLog.string, "Video: Resetting capabilities...\n");
 
 	Video_SelectTexture(VIDEO_TEXTURE_DIFFUSE);
 
 	if(bClearActive)
 	{
 		if(Video.bDebugFrame)
-			pLog_Write(cvVideoDebugLog.string, "Video: Clearing active capabilities...\n");
+			plWriteLog(cvVideoDebugLog.string, "Video: Clearing active capabilities...\n");
 
 		bVideoIgnoreCapabilities = true;
 
@@ -795,7 +795,7 @@ void Video_ResetCapabilities(bool bClearActive)
 		bVideoIgnoreCapabilities = false;
 
 		if(Video.bDebugFrame)
-			pLog_Write(cvVideoDebugLog.string, "Video: Finished clearing capabilities.\n");
+			plWriteLog(cvVideoDebugLog.string, "Video: Finished clearing capabilities.\n");
 	}
 	VIDEO_FUNCTION_END
 }
@@ -830,7 +830,7 @@ void Video_Frame(void)
 		return;
 
 	if (Video.bDebugFrame)
-		pLog_Write(cvVideoDebugLog.string, "Video: Start of frame\n");
+		plWriteLog(cvVideoDebugLog.string, "Video: Start of frame\n");
 
 #ifdef VIDEO_SUPPORT_SHADERS
 #ifdef VIDEO_SUPPORT_FRAMEBUFFERS

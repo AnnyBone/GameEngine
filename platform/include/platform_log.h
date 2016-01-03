@@ -19,14 +19,12 @@
 #ifndef PLATFORM_LOG_H
 #define	PLATFORM_LOG_H
 
-#define	pLOG_GLOBAL "global"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-	void pLog_Write(const char *ccPath, const char *ccMessage, ...);
-	void pLog_Clear(const char *ccPath);
+	void plWriteLog(const char *path, const char *msg, ...);
+	void plClearLog(const char *ccPath);
 
 #ifdef __cplusplus
 }

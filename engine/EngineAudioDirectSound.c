@@ -191,14 +191,14 @@ sndinitstat SNDDMA_InitDirect(void)
 
 	if (!hInstDS)
 	{
-		hInstDS = pModule_Load("dsound");
+		hInstDS = plLoadModule("dsound");
 		if (hInstDS == NULL)
 		{
 			Con_SafePrintf("Couldn't load dsound.dll\n");
 			return SIS_FAILURE;
 		}
 
-		pDirectSoundCreate = (void *)pModule_FindFunction(hInstDS, "DirectSoundCreate");
+		pDirectSoundCreate = (void *)plFindModuleFunction(hInstDS, "DirectSoundCreate");
 		if (!pDirectSoundCreate)
 		{
 			Con_SafePrintf("Couldn't get DS proc addr\n");

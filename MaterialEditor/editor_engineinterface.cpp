@@ -33,7 +33,7 @@ void EngineInterface_Load()
 	editor.PrintWarning = EngineInterface_PrintWarning;
 
 	// Load the module interface for the engine module.
-	engine = (EngineExport_t*)pModule_LoadInterface(
+	engine = (EngineExport_t*)plLoadModuleInterface(
 		engineInstance,
 		"./" MODULE_ENGINE,
 		"Engine_Main",
@@ -41,14 +41,14 @@ void EngineInterface_Load()
 	// Let us know if it failed to load.
 	if (!engine)
 	{
-		wxMessageBox(pGetError(), EDITOR_TITLE);
+		wxMessageBox(plGetError(), EDITOR_TITLE);
 		wxExit();
 	}
 	// Also ensure that the engine version hasn't changed.
 	else if (engine->iVersion != ENGINE_VERSION)
 	{
 		wxMessageBox("Editor is outdated, please rebuild!", EDITOR_TITLE);
-		pModule_Unload(engineInstance);
+		plUnloadModule(engineInstance);
 		wxExit();
 	}
 }
@@ -56,5 +56,5 @@ void EngineInterface_Load()
 void EngineInterface_Unload()
 {
 	// Unload the engine module.
-	pModule_Unload(engineInstance);
+	plUnloadModule(engineInstance);
 }
