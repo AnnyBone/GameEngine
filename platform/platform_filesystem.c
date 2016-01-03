@@ -112,7 +112,7 @@ bool pFileSystem_CreateDirectory(const char *ccPath)
 
 /*	Returns the name of the systems	current user.
 	TODO:
-		This is crazy unsafe... Urghsjhfdj
+		Move this into platform_system
 */
 void pFileSystem_GetUserName(char *out)
 {
@@ -120,21 +120,22 @@ void pFileSystem_GetUserName(char *out)
 
 #ifdef _WIN32
 	char	userstring[PLATFORM_MAX_USER];
-	DWORD	dName;
-
-	sprintf(userstring, "user");
+	DWORD	name;
 
 	// Set these AFTER we update active function.
-	dName = sizeof(userstring);
-	if(GetUserName(userstring,&dName))
+	name = sizeof(userstring);
+	if (GetUserName(userstring, &name) == 0)
+		// If it fails, just set it to user.
+		sprintf(userstring, "user");
 #else   // Linux
-	char	*userstring = "user";
-	userstring = getenv("LOGNAME");
-	if (strcasecmp(userstring, "user"))
+	char *userstring = getenv("LOGNAME");
+	if (userstring == NULL)
+		// If it fails, just set it to user.
+		userstring = "user";
 #endif
 	{
-		int		i = 0,
-				userlength = (int)strlen(userstring);
+		int	i = 0,
+			userlength = (int)strlen(userstring);
 		while (i < userlength)
 		{
 			if (userstring[i] == ' ')
