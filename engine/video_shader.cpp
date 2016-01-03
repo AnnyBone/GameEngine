@@ -253,7 +253,7 @@ int VideoShaderProgram::GetUniformLocation(const char *name)
 
 void VideoShaderProgram::SetVariable(int location, float x, float y, float z)
 {
-	if (IsActive())
+	if (!IsActive())
 		Sys_Error("Ensure shader program is enabled before applying variables! (%i) (%i %i %i)\n",
 			location, (int)x, (int)y, (int)z);
 	
@@ -262,7 +262,7 @@ void VideoShaderProgram::SetVariable(int location, float x, float y, float z)
 
 void VideoShaderProgram::SetVariable(int location, MathVector3f_t vector)
 {
-	if (IsActive())
+	if (!IsActive())
 		Sys_Error("Ensure shader program is enabled before applying variables! (%i) (%i %i %i)\n",
 			location, (int)vector[0], (int)vector[1], (int)vector[2]);
 
@@ -271,7 +271,7 @@ void VideoShaderProgram::SetVariable(int location, MathVector3f_t vector)
 
 void VideoShaderProgram::SetVariable(int location, float x, float y, float z, float a)
 {
-	if (IsActive())
+	if (!IsActive())
 		Sys_Error("Ensure shader program is enabled before applying variables! (%i) (%i %i %i %i)\n",
 			location, (int)x, (int)y, (int)z, (int)a);
 	glUniform4f(location, x, y, z, a);
@@ -279,7 +279,7 @@ void VideoShaderProgram::SetVariable(int location, float x, float y, float z, fl
 
 void VideoShaderProgram::SetVariable(int location, int i)
 {
-	if (IsActive())
+	if (!IsActive())
 		Sys_Error("Ensure shader program is enabled before applying variables! (%i) (%i)\n",
 			location, i);
 	glUniform1i(location, i);
@@ -287,7 +287,7 @@ void VideoShaderProgram::SetVariable(int location, int i)
 
 void VideoShaderProgram::SetVariable(int location, float f)
 {
-	if (IsActive())
+	if (!IsActive())
 		Sys_Error("Ensure shader program is enabled before applying variables! (%i) (%i)\n",
 			location, (int)f);
 	glUniform1f(location, f);
@@ -337,8 +337,6 @@ void VideoShader_Initialize(void)
 	base_program->Attach(base_fragment);
 	base_program->Link();
 
-	base_program->Enable();
-
 	iDiffuseUniform = base_program->GetUniformLocation("diffuseTexture");
 	iDetailUniform = base_program->GetUniformLocation("detailTexture");
 	iFullbrightUniform = base_program->GetUniformLocation("fullbrightTexture");
@@ -348,8 +346,6 @@ void VideoShader_Initialize(void)
 
 	iLightPositionUniform = base_program->GetUniformLocation("lightPosition");
 	iLightColourUniform = base_program->GetUniformLocation("lightColour");
-
-	base_program->Disable();
 }
 
 void VideoShader_Enable(void)
