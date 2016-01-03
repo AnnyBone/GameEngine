@@ -35,11 +35,6 @@ Hunk allocations are guaranteed to be 16 byte aligned.
 The video buffers are allocated high to avoid leaving a hole underneath
 server allocations when changing to a higher video mode.
 
-
-Z_??? Zone memory functions used for small, dynamic allocations like text
-strings from command input.  There is only about 48K for it, allocated at
-the very bottom of the hunk.
-
 Cache_??? Cache memory is for objects that can be dynamically loaded and
 can usefully stay persistant between levels.  The size of the cache
 fluctuates from level to level.
@@ -84,15 +79,10 @@ Zone block
 
 */
 
+void *malloc_or_die(size_t size);
+void *calloc_or_die(size_t nmemb, size_t size);
+
 void Memory_Init (void *buf, int size);
-
-void Z_Free (void *ptr);
-void *Z_Malloc (int size);			// returns 0 filled memory
-void *Z_TagMalloc (int size, int tag);
-
-void Z_DumpHeap (void);
-void Z_CheckHeap (void);
-int Z_FreeMemory (void);
 
 void *Hunk_Alloc (int size);		// returns 0 filled memory
 void *Hunk_AllocName (int size, char *name);

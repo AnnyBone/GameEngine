@@ -86,7 +86,7 @@ void KillGameDir(searchpath_t *search)
 		if (*search->filename)
 		{
 			com_searchpaths = search->next;
-			Z_Free(search);
+			free(search);
 			return; //once you hit the dir, youve already freed the paks
 		}
 
@@ -94,9 +94,9 @@ void KillGameDir(searchpath_t *search)
 
 		search_killer = search->next;
 
-		Z_Free(search->pack->files);
-		Z_Free(search->pack);
-		Z_Free(search);
+		free(search->pack->files);
+		free(search->pack);
+		free(search);
 
 		search = search_killer;
 	}
@@ -152,7 +152,7 @@ void Host_Game_f (void)
 
 		if(Q_strcasecmp(Cmd_Argv(1),host_parms.cBasePath)) //game is not id1
 		{
-			search = (searchpath_t*)Z_Malloc(sizeof(searchpath_t));
+			search = calloc_or_die(1, sizeof(searchpath_t));
 			p_strcpy(search->filename, pakfile);
 			search->next = com_searchpaths;
 			com_searchpaths = search;
@@ -164,7 +164,7 @@ void Host_Game_f (void)
 				pak = FileSystem_LoadPackage(pakfile);
 				if(!pak)
 					break;
-				search = (searchpath_t*)Z_Malloc(sizeof(searchpath_t));
+				search = calloc_or_die(1, sizeof(searchpath_t));
 				search->pack = pak;
 				search->next = com_searchpaths;
 				com_searchpaths = search;
@@ -225,7 +225,7 @@ void ExtraMaps_Add (char *name)
 		if(!strcmp(name,level->name))
 			return;
 
-	level = (extralevel_t*)Z_Malloc(sizeof(extralevel_t));
+	level = malloc_or_die(sizeof(extralevel_t));
 	p_strcpy(level->name, name);
 
 	// Insert each entry in alphabetical order
@@ -319,7 +319,7 @@ void ExtraMaps_Clear (void)
 	while (extralevels)
 	{
 		blah = extralevels->next;
-		Z_Free(extralevels);
+		free(extralevels);
 		extralevels = blah;
 	}
 }
@@ -392,12 +392,7 @@ void Modlist_Init(void) //TODO: move win32 specific stuff to sys_win.c
 				if(!Q_strcmp(FindFileData.cFileName, mod->name))
 					return;
 
-			mod = (mod_t*)Z_Malloc(sizeof(mod_t));
-			if(!mod)
-			{
-				Sys_Error("Failed to allocate mod!\n");
-				return;
-			}
+			mod = malloc_or_die(sizeof(mod_t));
 
 			p_strcpy(mod->name, FindFileData.cFileName);
 

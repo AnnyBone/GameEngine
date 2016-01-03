@@ -1231,7 +1231,7 @@ uint8_t *COM_LoadFile(const char *path, int usehunk)
 	else if (usehunk == 2)
 		buf = (uint8_t*)Hunk_TempAlloc(len + 1);
 	else if (usehunk == 0)
-		buf = (uint8_t*)Z_Malloc(len + 1);
+		buf = malloc_or_die(len + 1);
 	else if (usehunk == 3)
 		buf = (uint8_t*)Cache_Alloc(loadcache, len + 1, base);
 	else if (usehunk == 4)
@@ -1321,7 +1321,7 @@ pack_t *FileSystem_LoadPackage(char *packfile)
 		Sys_Error ("%s has %i files", packfile, numpackfiles);
 
 	//johnfitz -- dynamic gamedir loading
-	newfiles = (packfile_t*)Z_Malloc(numpackfiles*sizeof(packfile_t));
+	newfiles = calloc_or_die(numpackfiles, sizeof(packfile_t));
 	//johnfitz
 
 	info = (dpackfile_t*)malloc(MAX_FILES_IN_PACK);
@@ -1348,7 +1348,7 @@ pack_t *FileSystem_LoadPackage(char *packfile)
 	}
 
 	//johnfitz -- dynamic gamedir loading
-	pack = (pack_t*)Z_Malloc (sizeof (pack_t));
+	pack = malloc_or_die(sizeof(pack_t));
 	//johnfitz
 
 	p_strcpy(pack->filename, packfile);
@@ -1369,7 +1369,7 @@ void FileSystem_AddPackage(char *file)
 	pak = FileSystem_LoadPackage(file);
 	if (pak)
 	{
-		search = (searchpath_t*)Z_Malloc(sizeof(searchpath_t));
+		search = calloc_or_die(1, sizeof(searchpath_t));
 		search->pack = pak;
 		search->next = com_searchpaths;
 		com_searchpaths = search;
@@ -1383,7 +1383,7 @@ void FileSystem_AddGameDirectory(char *dir)
 	p_strcpy(com_gamedir, dir);
 
 	// add the directory to the search path
-	search = (searchpath_t*)Z_Malloc(sizeof(searchpath_t));
+	search = calloc_or_die(1, sizeof(searchpath_t));
 	p_strncpy(search->filename, dir, sizeof(search->filename));
 	search->next = com_searchpaths;
 	com_searchpaths = search;

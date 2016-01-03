@@ -854,7 +854,7 @@ Material_t *Material_Load(const char *ccPath)
 					ccPath, cMaterialName,
 					mNewMaterial->cPath, mNewMaterial->cName);
 
-				Z_Free(cData);
+				free(cData);
 
 				return mNewMaterial;
 			}
@@ -916,7 +916,7 @@ Material_t *Material_Load(const char *ccPath)
 	}
 
 MATERIAL_LOAD_ERROR:
-	Z_Free(cData);
+	free(cData);
 
 	return NULL;
 }

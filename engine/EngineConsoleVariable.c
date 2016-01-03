@@ -279,9 +279,9 @@ void Cvar_Set (const char *var_name, char *value)
 
 	changed = strcmp(var->string,value);
 
-	Z_Free(var->string);	// free the old value string
+	free(var->string);	// free the old value string
 
-	var->string = (char*)Z_Malloc(Q_strlen(value)+1);
+	var->string = malloc_or_die(Q_strlen(value) + 1);
 	p_strcpy(var->string, value);
 
 	Cvar_UpdateValues(var);
@@ -289,8 +289,8 @@ void Cvar_Set (const char *var_name, char *value)
 	//johnfitz -- during initialization, update default too
 	if (!bHostInitialized)
 	{
-		Z_Free (var->default_string);
-		var->default_string = (char*)Z_Malloc(strlen(value)+1);
+		free(var->default_string);
+		var->default_string = malloc_or_die(strlen(value) + 1);
 		p_strcpy(var->default_string, value);
 	}
 	//johnfitz
@@ -336,15 +336,15 @@ void Cvar_RegisterVariable (ConsoleVariable_t *variable,void (*Function)(void))
 		return;
 	}
 
-// copy the value off, because future sets will Z_Free it
+// copy the value off, because future sets will free it
 	oldstr = variable->string;
-	variable->string = (char*)Z_Malloc(strlen(variable->string)+1);
+	variable->string = malloc_or_die(strlen(variable->string) + 1);
 	p_strcpy(variable->string, oldstr);
 
 	Cvar_UpdateValues(variable);
 
 	//johnfitz -- save initial value for "reset" command
-	variable->default_string = (char*)Z_Malloc(strlen(variable->string)+1);
+	variable->default_string = malloc_or_die(strlen(variable->string) + 1);
 	p_strcpy(variable->default_string, oldstr);
 	//johnfitz
 
