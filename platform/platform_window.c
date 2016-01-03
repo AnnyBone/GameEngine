@@ -83,6 +83,11 @@ int plGetScreenHeight(void)
 	pFUNCTION_END
 }
 
+#ifdef __linux__
+Display *dMainDisplay;
+Window  wRootWindow;
+#endif
+
 int plGetScreenCount(void)
 {
 #ifdef _WIN32
@@ -95,11 +100,6 @@ int plGetScreenCount(void)
 /*
 	Window Creation
 */
-
-#ifdef __linux__
-Display *dMainDisplay;
-Window  wRootWindow;
-#endif
 
 pINSTANCE iGlobalInstance;
 
