@@ -306,16 +306,7 @@ VideoShaderProgram *base_program;
 VideoShader *base_fragment, *base_vertex;
 
 // Uniforms
-int
-	iDiffuseUniform,
-	iDetailUniform,
-	iFullbrightUniform,
-	iSphereUniform,
-
-	iScaleUniform,
-
-	iLightPositionUniform,
-	iLightColourUniform;
+int	iDiffuseUniform;
 
 void VideoShader_Initialize(void)
 {
@@ -338,45 +329,6 @@ void VideoShader_Initialize(void)
 	base_program->Link();
 
 	iDiffuseUniform = base_program->GetUniformLocation("diffuseTexture");
-	iDetailUniform = base_program->GetUniformLocation("detailTexture");
-	iFullbrightUniform = base_program->GetUniformLocation("fullbrightTexture");
-	iSphereUniform = base_program->GetUniformLocation("sphereTexture");
-
-	iScaleUniform = base_program->GetUniformLocation("vertexScale");
-
-	iLightPositionUniform = base_program->GetUniformLocation("lightPosition");
-	iLightColourUniform = base_program->GetUniformLocation("lightColour");
-}
-
-void VideoShader_Enable(void)
-{
-#ifdef VIDEO_SUPPORT_SHADERS
-	base_program->Enable();
-#endif
-}
-
-void VideoShader_Disable(void)
-{
-#ifdef VIDEO_SUPPORT_SHADERS
-	base_program->Disable();
-#endif
-}
-
-void VideoShader_SetVariablei(int iUniformLocation, int i)
-{
-#ifdef VIDEO_SUPPORT_SHADERS
-	base_program->SetVariable(iUniformLocation, i);
-#endif
-}
-
-void VideoShader_SetVariablef(int iUniformLocation, float f)
-{
-	base_program->SetVariable(iUniformLocation, f);
-}
-
-void VideoShader_SetVariable3f(int iUniformLocation, float x, float y, float z)
-{
-	base_program->SetVariable(iUniformLocation, x, y, z);
 }
 
 void VideoShader_Shutdown()

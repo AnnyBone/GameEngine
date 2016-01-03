@@ -311,7 +311,7 @@ void World_DrawWaterTextureChains(void)
 		for (s = t->texturechain; s; s = s->texturechain)
 			if(!s->culled)
 			{
-				Material_Draw(t->mAssignedMaterial, 0, 0, 0, 0, false);
+				Material_Draw(t->mAssignedMaterial, 0, 0, VIDEO_PRIMITIVE_IGNORE, 0, false);
 
 				for(p = s->polys->next; p; p = p->next)
 				{
@@ -320,7 +320,7 @@ void World_DrawWaterTextureChains(void)
 					rs_brushpasses++;
 				}
 
-				Material_Draw(t->mAssignedMaterial, 0, 0, 0, 0, true);
+				Material_Draw(t->mAssignedMaterial, 0, 0, VIDEO_PRIMITIVE_IGNORE, 0, true);
 			}
 	}
 

@@ -49,16 +49,20 @@ void Alias_SetupLighting(ClientEntity_t *entity)
 		{
 			Math_VectorScale(dlLightSource->color, 1.0f / 200.0f, alias_lightcolour);
 
+#if 0
 			VideoShader_SetVariable3f(iLightPositionUniform, dlLightSource->origin[0], dlLightSource->origin[1], dlLightSource->origin[2]);
 			VideoShader_SetVariable3f(iLightColourUniform, alias_lightcolour[0], alias_lightcolour[1], alias_lightcolour[2]);
+#endif
 		}
 		else
 		{
 			Math_MVToVector(Light_GetSample(entity->origin), alias_lightcolour);
 			Math_VectorScale(alias_lightcolour, 1.0f / 200.0f, alias_lightcolour);
 
+#if 0
 			VideoShader_SetVariable3f(iLightPositionUniform, entity->origin[0], entity->origin[1], entity->origin[2]);
 			VideoShader_SetVariable3f(iLightColourUniform, alias_lightcolour[0], alias_lightcolour[1], alias_lightcolour[2]);
+#endif
 		}
 	}
 
@@ -88,10 +92,12 @@ void Alias_DrawFrame(MD2_t *mModel, ClientEntity_t *entity, lerpdata_t lLerpData
 	frame1 = (MD2Frame_t*)((uint8_t*)mModel + mModel->ofs_frames + (mModel->framesize*entity->draw_lastpose));
 	frame2 = (MD2Frame_t*)((uint8_t*)mModel + mModel->ofs_frames + (mModel->framesize*entity->draw_pose));
 
+#if 0
 	if ((entity->scale != 1.0f) && (entity->scale > 0.1f))
 		VideoShader_SetVariablef(iScaleUniform, entity->scale);
 	else
 		VideoShader_SetVariablef(iScaleUniform, 1.0f);
+#endif
 
 	verts1 = &frame1->verts[0];
 	verts2 = &frame2->verts[0];
@@ -259,9 +265,6 @@ void Alias_Draw(ClientEntity_t *eEntity)
 
 	glPushMatrix();
 
-	if (!cvVideoLegacy.bValue)
-		VideoShader_Enable();
-
 	R_RotateForEntity(eEntity->origin,eEntity->angles);
 
 	Alias_SetupLighting(eEntity);
@@ -270,9 +273,6 @@ void Alias_Draw(ClientEntity_t *eEntity)
 	if(r_drawflat_cheatsafe)
 		// Restore randomness
 		srand((int)(cl.time*1000));
-
-	if (!cvVideoLegacy.bValue)
-		VideoShader_Disable();
 
 	glPopMatrix();
 

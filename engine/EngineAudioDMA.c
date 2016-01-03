@@ -185,7 +185,7 @@ void S_Init (void)
 
 	if (fakedma)
 	{
-		shm = (void *) Hunk_AllocName(sizeof(*shm), "shm");
+		shm = (volatile dma_t *) Hunk_AllocName(sizeof(*shm), "shm");
 		shm->splitbuffer		= 0;
 		shm->samplebits			= 16;
 		shm->speed				= 22050;
@@ -792,7 +792,7 @@ void S_SoundList(void)
 	total = 0;
 	for (sfx=known_sfx, i=0 ; i<num_sfx ; i++, sfx++)
 	{
-		sc = Cache_Check (&sfx->cache);
+		sc = (sfxcache_t*)Cache_Check (&sfx->cache);
 		if (!sc)
 			continue;
 		size = sc->length*sc->width*(sc->stereo+1);

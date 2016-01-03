@@ -354,7 +354,7 @@ void MSG_WriteFloat (sizebuf_t *sb, float f)
 	SZ_Write (sb, &dat.l, 4);
 }
 
-void MSG_WriteString (sizebuf_t *sb, char *s)
+void MSG_WriteString (sizebuf_t *sb, const char *s)
 {
 	if (!s)
 		SZ_Write (sb, "", 1);
@@ -604,7 +604,7 @@ void *SZ_GetSpace (sizebuf_t *buf, int length)
 	return data;
 }
 
-void SZ_Write (sizebuf_t *buf, void *data, int length)
+void SZ_Write (sizebuf_t *buf, const void *data, int length)
 {
 	memcpy(SZ_GetSpace(buf,length),data,length);
 }
@@ -1130,7 +1130,7 @@ static uint8_t *COM_LoadFile(const char *path, int usehunk)
 	else if (usehunk == 2)
 		buf = (uint8_t*)Hunk_TempAlloc(len + 1);
 	else if (usehunk == 0)
-		buf = malloc_or_die(len + 1);
+		buf = (uint8_t*)malloc_or_die(len + 1);
 	else
 		Sys_Error ("COM_LoadFile: bad usehunk");
 
@@ -1198,7 +1198,7 @@ pack_t *FileSystem_LoadPackage(char *packfile)
 		Sys_Error ("%s has %i files", packfile, numpackfiles);
 
 	//johnfitz -- dynamic gamedir loading
-	newfiles = calloc_or_die(numpackfiles, sizeof(packfile_t));
+	newfiles = (packfile_t*)calloc_or_die(numpackfiles, sizeof(packfile_t));
 	//johnfitz
 
 	info = (dpackfile_t*)malloc(MAX_FILES_IN_PACK);
@@ -1225,7 +1225,7 @@ pack_t *FileSystem_LoadPackage(char *packfile)
 	}
 
 	//johnfitz -- dynamic gamedir loading
-	pack = malloc_or_die(sizeof(pack_t));
+	pack = (pack_t*)malloc_or_die(sizeof(pack_t));
 	//johnfitz
 
 	p_strcpy(pack->filename, packfile);
@@ -1246,7 +1246,7 @@ void FileSystem_AddPackage(char *file)
 	pak = FileSystem_LoadPackage(file);
 	if (pak)
 	{
-		search = calloc_or_die(1, sizeof(searchpath_t));
+		search = (searchpath_t*)calloc_or_die(1, sizeof(searchpath_t));
 		search->pack = pak;
 		search->next = com_searchpaths;
 		com_searchpaths = search;
@@ -1260,7 +1260,7 @@ void FileSystem_AddGameDirectory(char *dir)
 	p_strcpy(com_gamedir, dir);
 
 	// add the directory to the search path
-	search = calloc_or_die(1, sizeof(searchpath_t));
+	search = (searchpath_t*)calloc_or_die(1, sizeof(searchpath_t));
 	p_strncpy(search->filename, dir, sizeof(search->filename));
 	search->next = com_searchpaths;
 	com_searchpaths = search;

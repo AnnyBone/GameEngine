@@ -280,7 +280,7 @@ model_t *Model_Load(model_t *model)
 				if (!strcmp(model_formatlist[i].extension, exten))
 				{
 					// Set the default type, we can change later.
-					model->type = model_formatlist[i].type;
+					model->type = (ModelType_t)model_formatlist[i].type;
 
 					model_formatlist[i].Function(model, buf);
 					break;
@@ -415,7 +415,7 @@ void Model_LoadBSPVertexes(BSPLump_t *blLump)
 	BSPVertex_t	*out;
 	int			i, count;
 
-	in = (void *)(mod_base+blLump->iFileOffset);
+	in = (BSPVertex_t *)(mod_base+blLump->iFileOffset);
 	if(blLump->iFileLength%sizeof(*in))
 		Sys_Error ("Model_LoadBSPVertexes: funny lump size in %s",loadmodel->name);
 
@@ -439,7 +439,7 @@ void Model_LoadBSPEdges(BSPLump_t *blLump)
 	medge_t		*out;
 	int 		i,count;
 
-	beEdge = (void*)(mod_base+blLump->iFileOffset);
+	beEdge = (BSPEdge_t*)(mod_base+blLump->iFileOffset);
 	if(blLump->iFileLength%sizeof(*beEdge))
 		Sys_Error ("Model_LoadBSPEdges: funny lump size in %s",loadmodel->name);
 
@@ -464,11 +464,11 @@ void Model_LoadBSPTextureInfo(BSPLump_t *blLump)
 	float				len1, len2;
 	int					missing = 0; //johnfitz
 
-	in = (void *)(mod_base + blLump->iFileOffset);
+	in = (BSPTextureInfo_t *)(mod_base + blLump->iFileOffset);
 	if (blLump->iFileLength % sizeof(*in))
 		Sys_Error ("Model_LoadBSPTextureInfo: funny lump size in %s",loadmodel->name);
 	count = blLump->iFileLength / sizeof(*in);
-	out = Hunk_AllocName ( count*sizeof(*out), loadname);
+	out = (mtexinfo_t*)Hunk_AllocName ( count*sizeof(*out), loadname);
 
 	loadmodel->texinfo		= out;
 	loadmodel->numtexinfo	= count;
@@ -648,7 +648,7 @@ void Model_LoadBSPFaces(BSPLump_t *blLump)
 	int			i, count, surfnum;
 	int			planenum, side;
 
-	in = (void *)(mod_base + blLump->iFileOffset);
+	in = (BSPFace_t *)(mod_base + blLump->iFileOffset);
 	if (blLump->iFileLength % sizeof(*in))
 	{
 		Sys_Error ("Model_LoadBSPFaces: funny lump size in %s",loadmodel->name);
@@ -751,7 +751,7 @@ void Model_LoadBSPNodes(BSPLump_t *blLump)
 	BSPNode_t	*in;
 	mnode_t 	*out;
 
-	in = (void *)(mod_base + blLump->iFileOffset);
+	in = (BSPNode_t *)(mod_base + blLump->iFileOffset);
 	if (blLump->iFileLength % sizeof(*in))
 		Sys_Error ("Model_LoadBSPNodes: funny lump size in %s",loadmodel->name);
 
@@ -805,7 +805,7 @@ void Model_LoadBSPLeafs(BSPLump_t *blLump)
 	mleaf_t 	*out;
 	int			i, j, count, p;
 
-	in = (void *)(mod_base + blLump->iFileOffset);
+	in = (BSPLeaf_t *)(mod_base + blLump->iFileOffset);
 	if (blLump->iFileLength % sizeof(*in))
 		Sys_Error ("Model_LoadBSPLeafs: funny lump size in %s",loadmodel->name);
 	count = blLump->iFileLength / sizeof(*in);
@@ -849,7 +849,7 @@ void Model_LoadBSPClipNodes(BSPLump_t *blLump)
 	int			i, count;
 	hull_t		*hull;
 
-	in = (void *)(mod_base + blLump->iFileOffset);
+	in = (BSPClipNode_t *)(mod_base + blLump->iFileOffset);
 	if (blLump->iFileLength % sizeof(*in))
 		Sys_Error ("Model_LoadBSPClipNodes: funny lump size in %s",loadmodel->name);
 	count = blLump->iFileLength / sizeof(*in);
@@ -930,7 +930,7 @@ void Model_LoadBSPMarkSurfaces(BSPLump_t *blLump)
 	int		*in;
 	msurface_t **out;
 
-	in = (void *)(mod_base + blLump->iFileOffset);
+	in = (int *)(mod_base + blLump->iFileOffset);
 	if (blLump->iFileLength % sizeof(*in))
 		Sys_Error ("Model_LoadBSPMarkSurfaces: funny lump size in %s",loadmodel->name);
 	count = blLump->iFileLength / sizeof(*in);
@@ -953,7 +953,7 @@ void Model_LoadBSPSurfaceEdges(BSPLump_t *blLump)
 	int	i, count;
 	int	*in, *out;
 
-	in = (void *)(mod_base+blLump->iFileOffset);
+	in = (int *)(mod_base+blLump->iFileOffset);
 	if(blLump->iFileLength%sizeof(*in))
 		Sys_Error ("Model_LoadBSPSurfaceEdges: funny lump size in %s",loadmodel->name);
 
@@ -975,7 +975,7 @@ void Model_LoadBSPPlanes(BSPLump_t *blLump)
 	int			count;
 	int			bits;
 
-	in = (void *)(mod_base + blLump->iFileOffset);
+	in = (BSPPlane_t *)(mod_base + blLump->iFileOffset);
 	if (blLump->iFileLength % sizeof(*in))
 		Sys_Error ("Model_LoadBSPPlanes: funny lump size in %s\n",loadmodel->name);
 	count = blLump->iFileLength / sizeof(*in);
@@ -1017,7 +1017,7 @@ void Model_LoadBSPSubmodels(BSPLump_t *blLump)
 	BSPModel_t	*out;
 	int			i, j, count;
 
-	in = (void *)(mod_base+blLump->iFileOffset);
+	in = (BSPModel_t *)(mod_base+blLump->iFileOffset);
 	if (blLump->iFileLength%sizeof(*in))
 		Sys_Error ("Model_LoadBSPSubmodels: funny lump size in %s",loadmodel->name);
 

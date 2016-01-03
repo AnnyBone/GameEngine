@@ -152,7 +152,7 @@ void Host_Game_f (void)
 
 		if(Q_strcasecmp(Cmd_Argv(1),host_parms.cBasePath)) //game is not id1
 		{
-			search = calloc_or_die(1, sizeof(searchpath_t));
+			search = (searchpath_t*)calloc_or_die(1, sizeof(searchpath_t));
 			p_strcpy(search->filename, pakfile);
 			search->next = com_searchpaths;
 			com_searchpaths = search;
@@ -164,7 +164,7 @@ void Host_Game_f (void)
 				pak = FileSystem_LoadPackage(pakfile);
 				if(!pak)
 					break;
-				search = calloc_or_die(1, sizeof(searchpath_t));
+				search = (searchpath_t*)calloc_or_die(1, sizeof(searchpath_t));
 				search->pack = pak;
 				search->next = com_searchpaths;
 				com_searchpaths = search;
@@ -225,7 +225,7 @@ void ExtraMaps_Add (char *name)
 		if(!strcmp(name,level->name))
 			return;
 
-	level = malloc_or_die(sizeof(extralevel_t));
+	level = (extralevel_t*)malloc_or_die(sizeof(extralevel_t));
 	p_strcpy(level->name, name);
 
 	// Insert each entry in alphabetical order
@@ -392,7 +392,7 @@ void Modlist_Init(void) //TODO: move win32 specific stuff to sys_win.c
 				if(!strcmp(FindFileData.cFileName, mod->name))
 					return;
 
-			mod = malloc_or_die(sizeof(mod_t));
+			mod = (mod_t*)malloc_or_die(sizeof(mod_t));
 
 			p_strcpy(mod->name, FindFileData.cFileName);
 

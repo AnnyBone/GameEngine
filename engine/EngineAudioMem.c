@@ -99,7 +99,7 @@ sfxcache_t *S_LoadSound (sfx_t *s)
 	p_strncpy(namebuffer, Global.cSoundPath, sizeof(namebuffer));
 	strcat(namebuffer, s->name);
 
-	byte *data = COM_LoadHeapFile(namebuffer);
+	uint8_t *data = (uint8_t*)COM_LoadHeapFile(namebuffer);
 	if (!data)
 	{
 		Con_Warning("Couldn't load %s\n", namebuffer);
@@ -141,7 +141,7 @@ WAV loading
 ===============================================================================
 */
 
-byte	*data_p,
+uint8_t	*data_p,
 		*iff_end,
 		*last_chunk,
 		*iff_data;

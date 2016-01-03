@@ -213,7 +213,7 @@ void Warp_DrawWaterPoly(glpoly_t *p, Material_t *mCurrent)
 	float *fVert,fWaterAlpha;
 	int	i;
 
-	voWaterPoly = Hunk_TempAlloc(p->numverts*sizeof(VideoObjectVertex_t));
+	voWaterPoly = (VideoObjectVertex_t*)Hunk_TempAlloc(p->numverts*sizeof(VideoObjectVertex_t));
 	if(!voWaterPoly)
 	{
 		Sys_Error("Failed to allocate water poly!\n");

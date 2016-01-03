@@ -511,7 +511,7 @@ char *Key_KeynumToString (int keynum)
 
 void Key_SetBinding (int keynum, char *binding)
 {
-	char	*new;
+	char	*newstring;
 	int		l;
 
 	if (keynum == -1)
@@ -523,10 +523,10 @@ void Key_SetBinding (int keynum, char *binding)
 
 	// allocate memory for new binding
 	l = strlen(binding);
-	new = malloc_or_die(l + 1);
-	p_strcpy(new, binding);
-	new[l] = 0;
-	keybindings[keynum] = new;
+	newstring = (char*)malloc_or_die(l + 1);
+	p_strcpy(newstring, binding);
+	newstring[l] = 0;
+	keybindings[keynum] = newstring;
 }
 
 void Key_Unbind_f (void)

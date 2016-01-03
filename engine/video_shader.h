@@ -153,16 +153,8 @@ extern "C" {
 #endif
 
 	void VideoShader_Initialize(void);
-	void VideoShader_Enable(void);
-	void VideoShader_Disable(void);
-	void VideoShader_SetVariablei(int iUniformLocation, int i);
-	void VideoShader_SetVariablef(int iUniformLocation, float f);
-	void VideoShader_SetVariable3f(int iUniformLocation, float x, float y, float z);
 
-	extern int
-		iDiffuseUniform, iDetailUniform, iFullbrightUniform, iSphereUniform,
-		iScaleUniform,
-		iLightPositionUniform, iLightColourUniform;
+	extern int iDiffuseUniform;
 
 #ifdef __cplusplus
 }
