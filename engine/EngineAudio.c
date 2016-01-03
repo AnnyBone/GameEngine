@@ -70,34 +70,6 @@ void Audio_PlaySound(AudioSound_t *asSample)
 	Audio.iAudioSource++;
 }
 
-AudioSound_t *Audio_LoadSound(sfx_t *sSoundEffect)
-{
-	AudioSound_t *asNewSound = NULL;
-	uint8_t	
-		*bData,
-		bStackBuffer[1*1024];
-//	sfxcache_t		*sSoundCache;
-	char cNameBuffer[256];
-
-//	sSoundCache = (sfxcache_t*)Cache_Check(&sSoundEffect->cache);
-//	if(sSoundCache)
-//		return sSoundCache;
-
-	sprintf(cNameBuffer,"%s",Global.cSoundPath);
-	strncat(cNameBuffer,sSoundEffect->name,sizeof(sSoundEffect->name));
-
-	bData = COM_LoadStackFile(cNameBuffer,bStackBuffer,sizeof(bStackBuffer));
-	if(!bData)
-	{
-		Con_Warning("Failed to load %s!\n",cNameBuffer);
-		return NULL;
-	}
-
-	//------
-
-	return asNewSound;
-}
-
 /*	Called per-frame to update listener position and more!
 */
 void Audio_Frame(void)
