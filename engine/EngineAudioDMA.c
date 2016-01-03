@@ -198,7 +198,8 @@ void S_Init (void)
 		shm->buffer				= (unsigned char*)Hunk_AllocName(1<<16, "shmbuf");
 	}
 
-	Con_Printf("Sound sampling rate: %i\n", shm->speed);
+	// TODO: Make this work? Segfaults on Linux due to shm being NULL.
+	//Con_Printf("Sound sampling rate: %i\n", shm->speed);
 
 	// provides a tick sound until washed clean
 //	if (shm->buffer)
