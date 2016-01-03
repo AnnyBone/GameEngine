@@ -188,27 +188,26 @@ void pFileSystem_ScanDirectory(const char *path, const char *extension, void(*Fu
 			Function(filestring);
 		} while(FindNextFile(find, &finddata));
 	}
-#else	// Linux (todo)
-/*	{
+#else
+	{
 		DIR             *dDirectory;
 		struct  dirent  *dEntry;
 
-		sprintf(cFileString, "%s*%s", ccPath, ccExtension);
-
-		dDirectory = opendir(ccPath);
+		dDirectory = opendir(path);
 		if (dDirectory)
 		{
 			while ((dEntry = readdir(dDirectory)))
 			{
-				if (strstr(dEntry->d_name, ccExtension))
+				if (strstr(dEntry->d_name, extension))
 				{
-					vFunction(wfdData.cFileName);
+					sprintf(filestring, "%s/%s", path, dEntry->d_name);
+					Function(filestring);
 				}
 			}
 
 			closedir(dDirectory);
 		}
-	}*/
+	}
 #endif
 	pFUNCTION_END
 }
