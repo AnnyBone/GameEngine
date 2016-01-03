@@ -337,6 +337,8 @@ void VideoShader_Initialize(void)
 	base_program->Attach(base_fragment);
 	base_program->Link();
 
+	base_program->Enable();
+
 	iDiffuseUniform = base_program->GetUniformLocation("diffuseTexture");
 	iDetailUniform = base_program->GetUniformLocation("detailTexture");
 	iFullbrightUniform = base_program->GetUniformLocation("fullbrightTexture");
@@ -346,6 +348,8 @@ void VideoShader_Initialize(void)
 
 	iLightPositionUniform = base_program->GetUniformLocation("lightPosition");
 	iLightColourUniform = base_program->GetUniformLocation("lightColour");
+
+	base_program->Disable();
 }
 
 void VideoShader_Enable(void)

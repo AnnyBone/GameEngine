@@ -35,7 +35,7 @@ void EngineInterface_Load()
 	// Load the module interface for the engine module.
 	engine = (EngineExport_t*)pModule_LoadInterface(
 		engineInstance,
-		"./"MODULE_ENGINE,
+		"./" MODULE_ENGINE,
 		"Engine_Main",
 		&editor);
 	// Let us know if it failed to load.
