@@ -142,7 +142,7 @@ extern "C" {
 	uint8_t *COM_LoadStackFile(char *path, void *buffer, int bufsize);
 	uint8_t *COM_LoadTempFile(const char *path);
 	uint8_t *COM_LoadHunkFile(char *path);
-	uint8_t *COM_LoadFile(const char *path, int usehunk);
+	void    *COM_LoadHeapFile(const char *path);
 
 	void COM_LoadCacheFile(char *path, struct cache_user_s *cu);
 

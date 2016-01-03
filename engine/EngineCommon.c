@@ -1191,6 +1191,11 @@ uint8_t *COM_LoadStackFile(char *path, void *buffer, int bufsize)
 	return buf;
 }
 
+void *COM_LoadHeapFile(const char *path)
+{
+	return COM_LoadFile(path, 0);
+}
+
 /*	johnfitz -- modified based on topaz's tutorial
 
 	Takes an explicit (not game tree related) path to a pak file.

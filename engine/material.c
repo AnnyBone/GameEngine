@@ -819,7 +819,7 @@ Material_t *Material_Load(const char *ccPath)
 	if(mNewMaterial)
 		return mNewMaterial;
 
-	cData = COM_LoadFile(cPath,0);
+	cData = COM_LoadHeapFile(cPath);
 	if(!cData)
 	{
 		Con_Warning("Failed to load material! (%s) (%s)\n", cPath, ccPath);
