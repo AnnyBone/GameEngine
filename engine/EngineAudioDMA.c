@@ -239,12 +239,12 @@ sfx_t *S_FindName (char *name)
 		return NULL;
 	}
 
-	if(Q_strlen(name) >= MAX_QPATH)
+	if(strlen(name) >= MAX_QPATH)
 		Sys_Error ("Sound name too long: %s", name);
 
 	// See if already loaded
 	for (i=0 ; i < num_sfx ; i++)
-		if (!Q_strcmp(known_sfx[i].name, name))
+		if (!strcmp(known_sfx[i].name, name))
 			return &known_sfx[i];
 
 	if (num_sfx == MAX_SFX)
@@ -455,7 +455,7 @@ void S_StopAllSounds(void)
 		if (channels[i].sfx)
 			channels[i].sfx = NULL;
 
-	Q_memset(channels,0,MAX_CHANNELS*sizeof(channel_t));
+	memset(channels, 0, MAX_CHANNELS * sizeof(channel_t));
 
 	S_ClearBuffer();
 }
@@ -470,7 +470,7 @@ void S_ClearBuffer (void)
 	if(shm->samplebits == 8)
 		clear = 0x80;
 
-	Q_memset(shm->buffer,clear,shm->samples*shm->samplebits/8);
+	memset(shm->buffer, clear, shm->samples * shm->samplebits / 8);
 }
 
 void S_StaticSound (sfx_t *sfx, vec3_t origin, float vol, float attenuation)
@@ -740,7 +740,7 @@ void S_Play(void)
 	i = 1;
 	while (i<Cmd_Argc())
 	{
-		if(!Q_strrchr(Cmd_Argv(i), '.'))
+		if(!strrchr(Cmd_Argv(i), '.'))
 		{
 			p_strcpy(name, Cmd_Argv(i));
 			strcat(name,".wav");
@@ -767,10 +767,10 @@ void S_PlayVol(void)
 	i = 1;
 	while (i<Cmd_Argc())
 	{
-		if (!Q_strrchr(Cmd_Argv(i), '.'))
+		if (!strrchr(Cmd_Argv(i), '.'))
 		{
 			p_strcpy(name, Cmd_Argv(i));
-			Q_strcat(name, ".wav");
+			strcat(name, ".wav");
 		}
 		else
 			p_strcpy(name, Cmd_Argv(i));

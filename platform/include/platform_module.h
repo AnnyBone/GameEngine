@@ -19,6 +19,8 @@
 #ifndef PLATFORM_MODULE_H
 #define PLATFORM_MODULE_H
 
+#include "platform.h"
+
 // Copied from Darkplaces.
 typedef struct
 {

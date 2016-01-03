@@ -104,8 +104,8 @@ void Cbuf_InsertText (const char *text)
 	templen = cmd_text.cursize;
 	if (templen)
 	{
-		temp = (char*)Z_Malloc (templen);
-		Q_memcpy (temp, cmd_text.data, templen);
+		temp = malloc_or_die(templen);
+		memcpy(temp, cmd_text.data, templen);
 		SZ_Clear (&cmd_text);
 	}
 
@@ -116,7 +116,7 @@ void Cbuf_InsertText (const char *text)
 	if (templen)
 	{
 		SZ_Write (&cmd_text, temp, templen);
-		Z_Free (temp);
+		free(temp);
 	}
 }
 
@@ -153,7 +153,7 @@ void Cbuf_Execute (void)
 		{
 			i++;
 			cmd_text.cursize -= i;
-			Q_memcpy(text,text+i,cmd_text.cursize);
+			memcpy(text, text + i, cmd_text.cursize);
 		}
 
 		// Execute the command line
@@ -268,9 +268,7 @@ void Cmd_Echo_f (void)
 
 char *CopyString (char *in)
 {
-	char *out;
-
-	out = (char*)Z_Malloc (strlen(in)+1);
+	char *out = malloc_or_die(strlen(in) + 1);
 	p_strcpy(out, in);
 	return out;
 }
@@ -311,13 +309,13 @@ void Cmd_Alias_f (void)
 		for (a = cmd_alias ; a ; a=a->next)
 			if (!strcmp(s, a->name))
 			{
-				Z_Free (a->value);
+				free(a->value);
 				break;
 			}
 
 		if (!a)
 		{
-			a = (cmdalias_t*)Z_Malloc (sizeof(cmdalias_t));
+			a = malloc_or_die(sizeof(cmdalias_t));
 			a->next = cmd_alias;
 			cmd_alias = a;
 		}
@@ -355,8 +353,8 @@ void Cmd_Unalias_f (void)
 			if (!strcmp(Cmd_Argv(1), a->name))
 			{
 				prev->next = a->next;
-				Z_Free (a->value);
-				Z_Free (a);
+				free(a->value);
+				free(a);
 				prev = a;
 				return;
 			}
@@ -373,8 +371,8 @@ void Cmd_Unaliasall_f (void)
 	while (cmd_alias)
 	{
 		blah = cmd_alias->next;
-		Z_Free(cmd_alias->value);
-		Z_Free(cmd_alias);
+		free(cmd_alias->value);
+		free(cmd_alias);
 		cmd_alias = blah;
 	}
 }
@@ -416,7 +414,7 @@ void Cmd_List_f (void)
 	if (Cmd_Argc() > 1)
 	{
 		partial = Cmd_Argv (1);
-		len = Q_strlen(partial);
+		len = strlen(partial);
 	}
 	else
 	{
@@ -427,7 +425,7 @@ void Cmd_List_f (void)
 	count=0;
 	for (cmd=cmd_functions ; cmd ; cmd=cmd->next)
 	{
-		if (partial && Q_strncmp (partial,cmd->name, len))
+		if (partial && strncmp(partial, cmd->name, len))
 			continue;
 		Con_SafePrintf ("   %s\n", cmd->name);
 		count++;
@@ -478,7 +476,7 @@ void Cmd_TokenizeString (char *text)
 
 // clear the args from the last string
 	for (i=0 ; i<cmd_argc ; i++)
-		Z_Free (cmd_argv[i]);
+		free(cmd_argv[i]);
 
 	cmd_argc = 0;
 	cmd_args = NULL;
@@ -510,7 +508,7 @@ void Cmd_TokenizeString (char *text)
 
 		if (cmd_argc < MAX_ARGS)
 		{
-			cmd_argv[cmd_argc] = (char*)Z_Malloc (Q_strlen(com_token)+1);
+			cmd_argv[cmd_argc] = malloc_or_die(strlen(com_token) + 1);
 			p_strcpy(cmd_argv[cmd_argc], com_token);
 			cmd_argc++;
 		}
@@ -587,7 +585,7 @@ char *Cmd_CompleteCommand (char *partial)
 
 	// Check functions
 	for (cmd=cmd_functions ; cmd ; cmd=cmd->next)
-		if (!Q_strncmp (partial,cmd->name, iLength))
+		if (!strncmp(partial, cmd->name, iLength))
 			return cmd->name;
 
 	return NULL;

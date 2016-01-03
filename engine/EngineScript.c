@@ -358,7 +358,7 @@ bool Script_Load(const char *ccPath)
 		Con_Warning("Failed to get initial token! (%s) (%i)\n",ccPath,iScriptLine);
 		return false;
 	}
-	else if(Q_strcmp(cToken,"{"))
+	else if(strcmp(cToken, "{"))
 	{
 		Con_Warning("Missing '{'! (%s) (%i)\n",ccPath,iScriptLine);
 		return false;
@@ -371,9 +371,9 @@ bool Script_Load(const char *ccPath)
 			Con_Warning("End of field without closing brace! (%s) (%i)\n",ccPath,iScriptLine);
 			break;
 		}
-		else if(!Q_strcmp(cToken,"}"))
+		else if(!strcmp(cToken, "}"))
 			break;
-		else if(Q_strcmp(cToken,"{"))
+		else if(strcmp(cToken, "{"))
 		{
 			ScriptKey_t	*sKey;
 

@@ -127,7 +127,7 @@ void Con_ToggleConsole_f (void)
 void Con_Clear_f (void)
 {
 	if (con_text)
-		Q_memset (con_text, ' ', con_buffersize); //johnfitz -- con_buffersize replaces CON_TEXTSIZE
+		memset(con_text, ' ', con_buffersize); //johnfitz -- con_buffersize replaces CON_TEXTSIZE
 	con_backscroll = 0; //johnfitz -- if console is empty, being scrolled up is confusing
 }
 
@@ -218,7 +218,7 @@ void Console_Initialize(void)
 	//johnfitz
 
 	con_text = (char*)Hunk_AllocName (con_buffersize, "context");//johnfitz -- con_buffersize replaces CON_TEXTSIZE
-	Q_memset (con_text, ' ', con_buffersize);//johnfitz -- con_buffersize replaces CON_TEXTSIZE
+	memset(con_text, ' ', con_buffersize);//johnfitz -- con_buffersize replaces CON_TEXTSIZE
 
 	//johnfitz -- no need to run Con_CheckResize here
 	con_linewidth = 70;
@@ -250,7 +250,7 @@ void Con_Linefeed (void)
 
 	con_x = 0;
 	con_current++;
-	Q_memset(&con_text[(con_current%con_totallines)*con_linewidth], ' ', con_linewidth);
+	memset(&con_text[(con_current%con_totallines)*con_linewidth], ' ', con_linewidth);
 }
 
 /*	Handles cursor positioning, line wrapping, etc
@@ -643,15 +643,15 @@ void BuildTabList (char *partial)
 	len = strlen(partial);
 
 	for (cvar=cConsoleVariables ; cvar ; cvar=cvar->next)
-		if (!Q_strncmp (partial, cvar->name, len))
+		if (!strncmp(partial, cvar->name, len))
 			AddToTabList (cvar->name, "cvar");
 
 	for (cmd=cmd_functions ; cmd ; cmd=cmd->next)
-		if (!Q_strncmp (partial,cmd->name, len))
+		if (!strncmp(partial,cmd->name, len))
 			AddToTabList (cmd->name, "command");
 
 	for (alias=cmd_alias ; alias ; alias=alias->next)
-		if (!Q_strncmp (partial, alias->name, len))
+		if (!strncmp(partial, alias->name, len))
 			AddToTabList (alias->name, "alias");
 }
 
@@ -667,7 +667,7 @@ void Con_TabComplete (void)
 		return;
 
 // get partial string (space -> cursor)
-	if (!Q_strlen(key_tabpartial)) //first time through, find new insert point. (Otherwise, use previous.)
+	if (!strlen(key_tabpartial)) //first time through, find new insert point. (Otherwise, use previous.)
 	{
 		//work back from cursor until you find a space, quote, semicolon, or prompt
 		c = key_lines[edit_line] + key_linepos - 1; //start one space left of cursor
@@ -689,7 +689,7 @@ void Con_TabComplete (void)
 
 // find a match
 	mark = Hunk_LowMark();
-	if (!Q_strlen(key_tabpartial)) //first time through
+	if (!strlen(key_tabpartial)) //first time through
 	{
 		p_strcpy(key_tabpartial, partial);
 		BuildTabList (key_tabpartial);

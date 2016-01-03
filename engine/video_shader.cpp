@@ -87,7 +87,7 @@ bool VideoShader::Load(const char *path)
 	}
 
 	// Attempt to load it.
-	source = (char*)COM_LoadFile(source_path, 0);
+	source = (char*)COM_LoadHeapFile(source_path);
 	if (!source || source[0] == ' ')
 	{
 		Con_Warning("Failed to load shader! (%s)\n", source_path);

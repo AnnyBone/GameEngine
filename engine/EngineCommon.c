@@ -86,104 +86,6 @@ override an explicit setting on the original command line.
 ============================================================================
 */
 
-void Q_memset (void *dest, int fill, int count)
-{
-	int             i;
-
-	if ( (((long)dest | count) & 3) == 0)
-	{
-		count >>= 2;
-		fill = fill | (fill<<8) | (fill<<16) | (fill<<24);
-		for (i=0 ; i<count ; i++)
-			((int *)dest)[i] = fill;
-	}
-	else
-		for (i=0 ; i<count ; i++)
-			((uint8_t *)dest)[i] = fill;
-}
-
-void Q_memcpy (void *dest, void *src, int count)
-{
-	int             i;
-
-	if (( ( (long)dest | (long)src | count) & 3) == 0 )
-	{
-		count>>=2;
-		for (i=0 ; i<count ; i++)
-			((int *)dest)[i] = ((int *)src)[i];
-	}
-	else
-		for (i=0 ; i<count ; i++)
-			((uint8_t *)dest)[i] = ((uint8_t *)src)[i];
-}
-
-int Q_memcmp (void *m1, void *m2, int count)
-{
-	while(count)
-	{
-		count--;
-		if (((uint8_t *)m1)[count] != ((uint8_t *)m2)[count])
-			return -1;
-	}
-	return 0;
-}
-
-size_t Q_strlen (const char *str)
-{
-	size_t count = 0;
-	while (str[count])
-		count++;
-	return count;
-}
-
-char *Q_strrchr(char *s, char c)
-{
-	int len = Q_strlen(s);
-	s += len;
-	while (len--)
-	if (*--s == c) return s;
-	return 0;
-}
-
-/*  TODO: This should follow standard implementation...
-		char *strcat(char *dest, const char *src)
-*/
-void Q_strcat (char *dest, char *src)
-{
-	dest += Q_strlen(dest);
-	p_strcpy(dest, src);
-}
-
-int Q_strcmp (char *s1, char *s2)
-{
-	for(;;)
-	{
-		if (*s1 != *s2)
-			return -1;              // strings not equal
-		if (!*s1)
-			return 0;               // strings are equal
-		s1++;
-		s2++;
-	}
-}
-
-/*  TODO: Rewrite this so both parms are const.
-*/
-int Q_strncmp (char *s1, const char *s2, int count)
-{
-	for(;;)
-	{
-		if (!count--)
-			return 0;
-		if (*s1 != *s2)
-			return -1;              // strings not equal
-		if (!*s1)
-			return 0;               // strings are equal
-		s1++;
-		s2++;
-	}
-}
-
 int Q_atoi (char *str)
 {
 	int             val;
@@ -457,7 +359,7 @@ void MSG_WriteString (sizebuf_t *sb, char *s)
 	if (!s)
 		SZ_Write (sb, "", 1);
 	else
-		SZ_Write (sb, s, Q_strlen(s)+1);
+		SZ_Write (sb, s, strlen(s) + 1);
 }
 
 //johnfitz -- original behavior, 13.3 fixed point coords, max range +-4096
@@ -851,7 +753,7 @@ void COM_InitArgv (int argc, char **argv)
 	for (com_argc=0 ; (com_argc<MAX_NUM_ARGVS) && (com_argc < argc) ; com_argc++)
 	{
 		largv[com_argc] = argv[com_argc];
-		if (!Q_strcmp ("-safe", argv[com_argc]))
+		if (!strcmp ("-safe", argv[com_argc]))
 			safe = true;
 	}
 
@@ -1209,10 +1111,7 @@ void COM_CloseFile (int h)
 /*	Filename are relative to the quake directory.
 	Allways appends a 0 byte.
 */
-cache_user_t	*loadcache;
-uint8_t			*loadbuf;
-int				loadsize;
-uint8_t *COM_LoadFile(const char *path, int usehunk)
+static uint8_t *COM_LoadFile(const char *path, int usehunk)
 {
 	int     h,len;
 	uint8_t	*buf = NULL;  // quiet compiler warning
@@ -1231,16 +1130,7 @@ uint8_t *COM_LoadFile(const char *path, int usehunk)
 	else if (usehunk == 2)
 		buf = (uint8_t*)Hunk_TempAlloc(len + 1);
 	else if (usehunk == 0)
-		buf = (uint8_t*)Z_Malloc(len + 1);
-	else if (usehunk == 3)
-		buf = (uint8_t*)Cache_Alloc(loadcache, len + 1, base);
-	else if (usehunk == 4)
-	{
-		if (len+1 > loadsize)
-			buf = (uint8_t*)Hunk_TempAlloc(len + 1);
-		else
-			buf = loadbuf;
-	}
+		buf = malloc_or_die(len + 1);
 	else
 		Sys_Error ("COM_LoadFile: bad usehunk");
 
@@ -1271,22 +1161,9 @@ uint8_t *COM_LoadTempFile(const char *path)
 	return COM_LoadFile (path,2);
 }
 
-void COM_LoadCacheFile (char *path, struct cache_user_s *cu)
+void *COM_LoadHeapFile(const char *path)
 {
-	loadcache = cu;
-	COM_LoadFile (path, 3);
-}
-
-// uses temp hunk if larger than bufsize
-uint8_t *COM_LoadStackFile(char *path, void *buffer, int bufsize)
-{
-	uint8_t *buf;
-
-	loadbuf = (uint8_t *)buffer;
-	loadsize = bufsize;
-	buf = COM_LoadFile (path, 4);
-
-	return buf;
+	return COM_LoadFile(path, 0);
 }
 
 /*	johnfitz -- modified based on topaz's tutorial
@@ -1321,7 +1198,7 @@ pack_t *FileSystem_LoadPackage(char *packfile)
 		Sys_Error ("%s has %i files", packfile, numpackfiles);
 
 	//johnfitz -- dynamic gamedir loading
-	newfiles = (packfile_t*)Z_Malloc(numpackfiles*sizeof(packfile_t));
+	newfiles = calloc_or_die(numpackfiles, sizeof(packfile_t));
 	//johnfitz
 
 	info = (dpackfile_t*)malloc(MAX_FILES_IN_PACK);
@@ -1348,7 +1225,7 @@ pack_t *FileSystem_LoadPackage(char *packfile)
 	}
 
 	//johnfitz -- dynamic gamedir loading
-	pack = (pack_t*)Z_Malloc (sizeof (pack_t));
+	pack = malloc_or_die(sizeof(pack_t));
 	//johnfitz
 
 	p_strcpy(pack->filename, packfile);
@@ -1369,7 +1246,7 @@ void FileSystem_AddPackage(char *file)
 	pak = FileSystem_LoadPackage(file);
 	if (pak)
 	{
-		search = (searchpath_t*)Z_Malloc(sizeof(searchpath_t));
+		search = calloc_or_die(1, sizeof(searchpath_t));
 		search->pack = pak;
 		search->next = com_searchpaths;
 		com_searchpaths = search;
@@ -1383,7 +1260,7 @@ void FileSystem_AddGameDirectory(char *dir)
 	p_strcpy(com_gamedir, dir);
 
 	// add the directory to the search path
-	search = (searchpath_t*)Z_Malloc(sizeof(searchpath_t));
+	search = calloc_or_die(1, sizeof(searchpath_t));
 	p_strncpy(search->filename, dir, sizeof(search->filename));
 	search->next = com_searchpaths;
 	com_searchpaths = search;
@@ -1562,7 +1439,7 @@ void FileSystem_Initialize(void)
 				break;
 
 			search = (searchpath_t*)Hunk_Alloc(sizeof(searchpath_t));
-			if(!Q_strcmp(COM_FileExtension(com_argv[i]), "pak") )
+			if(!strcmp(COM_FileExtension(com_argv[i]), "pak") )
 			{
 				search->pack = FileSystem_LoadPackage(com_argv[i]);
 				if (!search->pack)

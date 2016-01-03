@@ -608,7 +608,7 @@ void _Material_SetTextureEnvironmentMode(Material_t *Material, MaterialFunctionT
 	
 	int i;
 	for (i = 0; i < pARRAYELEMENTS(EnvironmentModes); i++)
-		if (!strncmp(EnvironmentModes[i].ccVarName, cArg, Q_strlen(EnvironmentModes[i].ccVarName)))
+		if (!strncmp(EnvironmentModes[i].ccVarName, cArg, strlen(EnvironmentModes[i].ccVarName)))
 		{
 			sCurrentSkin->mtTexture[sCurrentSkin->uiTextures].EnvironmentMode = EnvironmentModes[i].Mode;
 			return;
@@ -819,7 +819,7 @@ Material_t *Material_Load(const char *ccPath)
 	if(mNewMaterial)
 		return mNewMaterial;
 
-	cData = COM_LoadFile(cPath,0);
+	cData = COM_LoadHeapFile(cPath);
 	if(!cData)
 	{
 		Con_Warning("Failed to load material! (%s) (%s)\n", cPath, ccPath);
@@ -835,7 +835,7 @@ Material_t *Material_Load(const char *ccPath)
 	}
 	else if (cToken[0] != '{')
 	{
-		if (!Q_strcmp(cToken, "material_version"))
+		if (!strcmp(cToken, "material_version"))
 		{
 			Script_GetToken(false);
 		}
@@ -854,7 +854,7 @@ Material_t *Material_Load(const char *ccPath)
 					ccPath, cMaterialName,
 					mNewMaterial->cPath, mNewMaterial->cName);
 
-				Z_Free(cData);
+				free(cData);
 
 				return mNewMaterial;
 			}
@@ -916,7 +916,7 @@ Material_t *Material_Load(const char *ccPath)
 	}
 
 MATERIAL_LOAD_ERROR:
-	Z_Free(cData);
+	free(cData);
 
 	return NULL;
 }

@@ -178,7 +178,7 @@ void Video_Initialize(void)
 	}
 
 	// All units are initially disabled.
-	Q_memset(Video.bUnitState, 0, sizeof(Video.bUnitState));
+	memset(Video.bUnitState, 0, sizeof(Video.bUnitState));
 
 	glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &Video.fMaxAnisotropy);
 

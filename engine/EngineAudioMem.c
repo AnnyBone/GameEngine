@@ -85,12 +85,10 @@ void ResampleSfx (sfx_t *sfx, int inrate, int inwidth, byte *data)
 sfxcache_t *S_LoadSound (sfx_t *s)
 {
     char		namebuffer[512];
-	byte		*data;
 	wavinfo_t	info;
 	int			len;
 	float		stepscale;
 	sfxcache_t	*sc;
-	byte		stackbuf[1*1024];		// avoid dirtying the cache heap
 
 	// see if still in memory
 	sc = (sfxcache_t*)Cache_Check(&s->cache);
@@ -99,9 +97,9 @@ sfxcache_t *S_LoadSound (sfx_t *s)
 
 	// load it in
 	p_strncpy(namebuffer, Global.cSoundPath, sizeof(namebuffer));
-    Q_strcat(namebuffer,s->name);
+	strcat(namebuffer, s->name);
 
-	data = COM_LoadStackFile(namebuffer, stackbuf, sizeof(stackbuf));
+	byte *data = COM_LoadHeapFile(namebuffer);
 	if (!data)
 	{
 		Con_Warning("Couldn't load %s\n", namebuffer);
@@ -117,7 +115,10 @@ sfxcache_t *S_LoadSound (sfx_t *s)
 
 	sc = (sfxcache_t*)Cache_Alloc ( &s->cache, len + sizeof(sfxcache_t), s->name);
 	if (!sc)
+	{
+		free(data);
 		return NULL;
+	}
 
 	sc->length = info.samples;
 	sc->loopstart = info.loopstart;
@@ -126,6 +127,8 @@ sfxcache_t *S_LoadSound (sfx_t *s)
 	sc->stereo = info.channels;
 
 	ResampleSfx (s, sc->speed, sc->width, data + info.dataofs);
+
+	free(data);
 
 	return sc;
 }
@@ -186,7 +189,7 @@ void FindNextChunk(char *name)
 
 		data_p -= 8;
 		last_chunk = data_p + 8 + ( (iff_chunk_len + 1) & ~1 );
-		if (!Q_strncmp((char*)data_p, name, 4))
+		if (!strncmp((const char*)data_p, name, 4))
 			return;
 	}
 }
@@ -229,7 +232,7 @@ wavinfo_t GetWavinfo (char *name, byte *wav, int wavlength)
 
 	// Find "RIFF" chunk
 	FindChunk("RIFF");
-	if (!(data_p && !Q_strncmp((char*)data_p+8,"WAVE",4)))
+	if (!(data_p && !strncmp((const char*)data_p + 8, "WAVE", 4)))
 	{
 		Con_Printf("Missing RIFF/WAVE chunks\n");
 		return info;

@@ -186,7 +186,7 @@ int WINS_Init (void)
 	}
 
 	// if the quake hostname isn't set, set it to the machine name
-	if (Q_strcmp(hostname.string, "UNNAMED") == 0)
+	if (strcmp(hostname.string, "UNNAMED") == 0)
 	{
 		// see if it's a text IP address (well, close enough)
 		for (p = buff; *p; p++)
@@ -495,7 +495,7 @@ int WINS_GetSocketAddr (int socket, struct qsockaddr *addr)
 	int addrlen = sizeof(struct qsockaddr);
 	unsigned int a;
 
-	Q_memset(addr, 0, sizeof(struct qsockaddr));
+	memset(addr, 0, sizeof(struct qsockaddr));
 	pgetsockname(socket, (struct sockaddr *)addr, &addrlen);
 	a = ((struct sockaddr_in *)addr)->sin_addr.s_addr;
 	if (a == 0 || a == inet_addr("127.0.0.1"))

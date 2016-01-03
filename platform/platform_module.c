@@ -53,7 +53,7 @@ void plUnloadModule(pINSTANCE instance)
 #ifdef _WIN32
 		FreeLibrary(instance);
 #else   // Linux
-		dlclose(hModule);
+		dlclose(instance);
 #endif
 
 		// Set the instance to null.
