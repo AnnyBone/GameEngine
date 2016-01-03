@@ -88,7 +88,17 @@ void ModelFrame::FileEvent(wxCommandEvent &event)
 {
 	switch (event.GetId())
 	{
-	case wxID_CLOSE_FRAME:
+	case wxID_OPEN:
+		wxFileDialog *filed = new wxFileDialog(
+			this,
+			"Open Model",
+			engine->GetBasePath(),
+			"",
+			"Supported files (*.3d;*.md2)|*.3d;*.md2",
+			wxFD_OPEN | wxFD_FILE_MUST_EXIST);
+		if (filed->ShowModal() == wxID_OK)
+			LoadModel(filed->GetPath());
+		break;
 	case wxID_EXIT:
 		Show(false);
 		break;

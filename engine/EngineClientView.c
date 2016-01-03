@@ -188,7 +188,7 @@ cshift_t	cshift_water	= { {	0,		0,	100	},	100	};
 cshift_t	cshift_slime	= { {	0,		25,	5	},	150 };
 cshift_t	cshift_lava		= { {	255,	80,	0	},	150 };
 
-Colour_t vViewBlend;		// rgba 0.0 - 1.0
+Colour_t vViewBlend = { 0, 0, 0, 255.0f };	// rgba 0.0 - 1.0
 
 void V_ParseDamage (void)
 {

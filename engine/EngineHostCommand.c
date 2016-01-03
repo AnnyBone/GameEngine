@@ -1130,7 +1130,7 @@ void Host_Loadgame_f (void)
 
 void Host_Name_f (void)
 {
-	char	*newName;
+	char *newName;
 
 	if (Cmd_Argc () == 1)
 	{
@@ -1142,7 +1142,7 @@ void Host_Name_f (void)
 		newName = Cmd_Argv(1);
 	else
 		newName = Cmd_Args();
-	newName[15] = 0;
+	//newName[15] = 0;
 
 	if (cmd_source == src_command)
 	{
