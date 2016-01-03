@@ -1111,10 +1111,7 @@ void COM_CloseFile (int h)
 /*	Filename are relative to the quake directory.
 	Allways appends a 0 byte.
 */
-cache_user_t	*loadcache;
-uint8_t			*loadbuf;
-int				loadsize;
-uint8_t *COM_LoadFile(const char *path, int usehunk)
+static uint8_t *COM_LoadFile(const char *path, int usehunk)
 {
 	int     h,len;
 	uint8_t	*buf = NULL;  // quiet compiler warning
@@ -1134,15 +1131,6 @@ uint8_t *COM_LoadFile(const char *path, int usehunk)
 		buf = (uint8_t*)Hunk_TempAlloc(len + 1);
 	else if (usehunk == 0)
 		buf = malloc_or_die(len + 1);
-	else if (usehunk == 3)
-		buf = (uint8_t*)Cache_Alloc(loadcache, len + 1, base);
-	else if (usehunk == 4)
-	{
-		if (len+1 > loadsize)
-			buf = (uint8_t*)Hunk_TempAlloc(len + 1);
-		else
-			buf = loadbuf;
-	}
 	else
 		Sys_Error ("COM_LoadFile: bad usehunk");
 
@@ -1171,24 +1159,6 @@ uint8_t *COM_LoadHunkFile(char *path)
 uint8_t *COM_LoadTempFile(const char *path)
 {
 	return COM_LoadFile (path,2);
-}
-
-void COM_LoadCacheFile (char *path, struct cache_user_s *cu)
-{
-	loadcache = cu;
-	COM_LoadFile (path, 3);
-}
-
-// uses temp hunk if larger than bufsize
-uint8_t *COM_LoadStackFile(char *path, void *buffer, int bufsize)
-{
-	uint8_t *buf;
-
-	loadbuf = (uint8_t *)buffer;
-	loadsize = bufsize;
-	buf = COM_LoadFile (path, 4);
-
-	return buf;
 }
 
 void *COM_LoadHeapFile(const char *path)
