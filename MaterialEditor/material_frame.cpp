@@ -126,8 +126,7 @@ MaterialViewportPanel::MaterialViewportPanel(wxWindow *wParent)
 {
 	CubeModel = engine->LoadModel("models/editor/cube.md2");
 	SphereModel = engine->LoadModel("models/editor/sphere.md2");
-	PlaneModel = engine->LoadModel("models/editor/plane.md2");
-	if (!CubeModel || !SphereModel || !PlaneModel)
+	if (!CubeModel || !SphereModel)
 		plWriteLog(EDITOR_LOG, "Failed to load preview mesh!\n");
 	
 	preview_material = NULL;
@@ -135,11 +134,11 @@ MaterialViewportPanel::MaterialViewportPanel(wxWindow *wParent)
 	preview_entity = engine->CreateClientEntity();
 	if (preview_entity)
 	{
-		preview_entity->alpha = 255;
-		preview_entity->origin[0] = 50.0f;
-		preview_entity->origin[1] = 0;
-		preview_entity->origin[2] = 0;
-		preview_entity->model = CubeModel;
+		preview_entity->alpha		= 255;
+		preview_entity->origin[0]	= 50.0f;
+		preview_entity->origin[1]	= 0;
+		preview_entity->origin[2]	= 0;
+		preview_entity->model		= CubeModel;
 	}
 	else
 		plWriteLog(EDITOR_LOG, "Failed to create client entity!\n");

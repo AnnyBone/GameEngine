@@ -43,7 +43,7 @@ private:
 	DynamicLight_t	*preview_light;
 	ClientEntity_t	*preview_entity;
 	Material_t		*preview_material;
-	model_t			*CubeModel, *PlaneModel, *SphereModel;
+	model_t			*CubeModel, *SphereModel;
 
 	void ViewEvent(wxCommandEvent &event);
 

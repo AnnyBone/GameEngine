@@ -62,9 +62,7 @@
 #include "platform_module.h"
 #include "platform_filesystem.h"
 
-extern char cApplicationTitle[512];
-
-#define	EDITOR_TITLE	"Katana Editor"
+#define	EDITOR_TITLE	"Katana World Editor"
 #define	EDITOR_LOG		"editor"
 #define	EDITOR_VERSION	"v0.1"
 
@@ -91,9 +89,7 @@ enum
 	EDITOR_WINDOW_MODEL				// Model Viewer
 };
 
-extern wxString
-	sEditorBasePath,
-	sEditorMaterialPath;
+extern wxString	g_apptitle, sEditorMaterialPath;
 
 // Icons
 extern wxBitmap
@@ -125,5 +121,8 @@ extern ConsoleVariable_t
 	cvEditorAutoReloadDelay,
 	cvEditorShowProperties,
 	cvEditorShowConsole;
+
+#include "base_rendercanvas.h"
+#include "base_viewportpanel.h"
 
 #endif // !EDITOR_BASE_H

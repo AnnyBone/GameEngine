@@ -18,26 +18,11 @@
 
 #include "EditorBase.h"
 
-#include "base_rendercanvas.h"
-#include "base_viewportpanel.h"
+#include "model_frame.h"
 
 /*
 	Viewport
 */
-
-class ModelViewportPanel : public BaseViewportPanel
-{
-public:
-	ModelViewportPanel(wxWindow *parent) : BaseViewportPanel(parent) {}
-
-	virtual void Draw();
-protected:
-private:
-	bool rotate;
-
-	DynamicLight_t	*light;
-	ClientEntity_t	*entity;
-};
 
 void ModelViewportPanel::Draw()
 {
@@ -50,23 +35,19 @@ void ModelViewportPanel::Draw()
 		if (rotate)
 			entity->angles[1] += 0.5f;
 	}
-
-	engine->DrawResetCanvas();
-	engine->DrawSetCanvas(CANVAS_DEFAULT);
-
 }
 
 /*
 	Frame
 */
 
-class ModelFrame : public wxFrame
-{
-public:
-	ModelFrame(wxWindow *parent);
-protected:
-private:
-};
+wxBEGIN_EVENT_TABLE(ModelFrame, wxFrame)
+
+EVT_MENU(wxID_EXIT, ModelFrame::FileEvent)
+
+EVT_CLOSE(ModelFrame::CloseEvent)
+
+wxEND_EVENT_TABLE()
 
 #define	MODEL_TITLE	"Model Viewer"
 
@@ -93,5 +74,28 @@ ModelFrame::ModelFrame(wxWindow *parent)
 	}
 	SetMenuBar(menubar);
 
-	
+	viewport = new ModelViewportPanel(this);
+	viewport->Initialize();
+	viewport->StartDrawing();
+}
+
+void ModelFrame::LoadModel(const char *path)
+{
+
+}
+
+void ModelFrame::FileEvent(wxCommandEvent &event)
+{
+	switch (event.GetId())
+	{
+	case wxID_CLOSE_FRAME:
+	case wxID_EXIT:
+		Show(false);
+		break;
+	}
+}
+
+void ModelFrame::CloseEvent(wxCloseEvent &event)
+{
+	Show(false);
 }

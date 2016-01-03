@@ -16,22 +16,46 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef EDITOR_H
-#define	EDITOR_H
+#ifndef MODEL_FRAME_H
+#define	MODEL_FRAME_H
 
-#include "main_frame.h"
-
-class CEditorApp : public wxApp
+class ModelViewportPanel : public BaseViewportPanel
 {
 public:
-	virtual bool OnInit();
 
-	virtual int OnExit();
+	ModelViewportPanel(wxWindow *parent) : BaseViewportPanel(parent) {}
 
-	CEditorFrame *editor_frame;
+	virtual void Draw();
+protected:
+private:
+
+	bool rotate;
+
+	DynamicLight_t	*light;
+	ClientEntity_t	*entity;
+
+	void ViewEvent(wxCommandEvent &event);
 };
 
-wxDECLARE_APP(CEditorApp);
+class ModelFrame : public wxFrame
+{
+public:
 
-#endif // !EDITOR_H
+	ModelFrame(wxWindow *parent);
 
+	void LoadModel(const char *path);
+
+protected:
+private:
+
+	ModelViewportPanel *viewport;
+
+	// Events
+	void FileEvent(wxCommandEvent &event);
+	void ViewEvent(wxCommandEvent &event);
+	void CloseEvent(wxCloseEvent &event);
+
+	wxDECLARE_EVENT_TABLE();
+};
+
+#endif // !MODEL_FRAME_H

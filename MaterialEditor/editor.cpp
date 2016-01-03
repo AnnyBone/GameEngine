@@ -4,11 +4,7 @@
 
 wxIMPLEMENT_APP(CEditorApp);
 
-char cApplicationTitle[512];
-
-wxString
-	sEditorBasePath, 
-	sEditorMaterialPath;
+wxString sEditorMaterialPath, g_apptitle;
 
 wxBitmap
 	bSmallPrefIcon,
@@ -40,7 +36,7 @@ bool CEditorApp::OnInit()
 
 	EngineInterface_Load();
 
-	sprintf(cApplicationTitle, EDITOR_TITLE" ("EDITOR_VERSION")");
+	g_apptitle = EDITOR_TITLE " (" EDITOR_VERSION ")";
 
 	wxImage::AddHandler(new wxPNGHandler);
 	wxImage::AddHandler(new wxGIFHandler);
@@ -68,8 +64,8 @@ bool CEditorApp::OnInit()
 
 	plWriteLog(EDITOR_LOG, "Creating main frame...\n");
 
-	efMainFrame = new CEditorFrame(cApplicationTitle, wxPoint(50, 50), wxSize(1024, 768));
-	if (!efMainFrame)
+	editor_frame = new CEditorFrame(g_apptitle, wxPoint(50, 50), wxSize(1024, 768));
+	if (!editor_frame)
 	{
 		EngineInterface_Unload();
 
@@ -87,15 +83,14 @@ bool CEditorApp::OnInit()
 
 	engine->MaterialEditorInitialize();
 
-	sEditorBasePath = engine->GetBasePath();
 	sEditorMaterialPath = engine->GetMaterialPath();
 
-	efMainFrame->Initialize();
+	editor_frame->Initialize();
 
 	plWriteLog(EDITOR_LOG, "Starting main loop...\n");
 
 	// Start rendering.
-	efMainFrame->StartEngineLoop();
+	editor_frame->StartEngineLoop();
 
 	return true;
 }

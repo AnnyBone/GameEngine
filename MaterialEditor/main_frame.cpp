@@ -20,7 +20,8 @@
 
 #include "base_rendercanvas.h"
 #include "base_viewportpanel.h"
-#include "EditorFrame.h"
+
+#include "main_frame.h"
 
 void MainViewportPanel::Draw()
 {
@@ -69,7 +70,7 @@ enum
 	// Tools
 	FRAME_EVENT_WADTOOL,		// Open WAD tool
 	FRAME_EVENT_MATERIALTOOL,	// Open Material tool
-	EDITOR_EVENT_MODELVIEWER,
+	MAIN_EVENT_MODELVIEWER,		// Open model viewer.
 
 	FRAME_EVENT_TRANSFORM,
 
@@ -100,6 +101,7 @@ wxBEGIN_EVENT_TABLE(CEditorFrame, wxFrame)
 	// Tools
 	EVT_MENU(FRAME_EVENT_WADTOOL, CEditorFrame::OnTool)
 	EVT_MENU(FRAME_EVENT_MATERIALTOOL, CEditorFrame::OnTool)
+	EVT_MENU(MAIN_EVENT_MODELVIEWER, CEditorFrame::OnTool)
 
 	EVT_TIMER(-1, CEditorFrame::OnTimer)
 
@@ -208,7 +210,7 @@ CEditorFrame::CEditorFrame(const wxString & title, const wxPoint & pos, const wx
 
 		mTools->AppendSeparator();
 
-		wxMenuItem *menutools_model = new wxMenuItem(mTools, EDITOR_EVENT_MODELVIEWER, "Model &Viewer...");
+		wxMenuItem *menutools_model = new wxMenuItem(mTools, MAIN_EVENT_MODELVIEWER, "Model &Viewer...");
 		menutools_model->SetBitmap(bSmallMDL);
 		mTools->Append(menutools_model);
 	}
@@ -316,6 +318,8 @@ CEditorFrame::CEditorFrame(const wxString & title, const wxPoint & pos, const wx
 	manager->Update();
 
 	preferences = new CPreferencesDialog(this);
+
+	frame_model = new ModelFrame(this);
 
 	dAutoReloadDelay = 0;
 	dClientTime = 0;
@@ -468,6 +472,9 @@ void CEditorFrame::OnTool(wxCommandEvent &event)
 	case FRAME_EVENT_MATERIALTOOL:
 		OpenMaterial("");
 		break;
+	case MAIN_EVENT_MODELVIEWER:
+		frame_model->Show();
+		break;
 	}
 }
 
@@ -478,28 +485,28 @@ void CEditorFrame::OnReload(wxCommandEvent &event)
 
 void CEditorFrame::OnOpen(wxCommandEvent &event)
 {
-	char cDefaultPath[PLATFORM_MAX_PATH];
-
-	sprintf(cDefaultPath, "%s", engine->GetBasePath());
-
 	wxFileDialog *filedialog = new wxFileDialog(
 		this,
 		"Open File",
-		cDefaultPath,
+		engine->GetBasePath(),
 		"",
+
 		"Supported files (*.material;*.map;*.level;*.md2;*.wad)|"
 		"*.material;*.level;*.md2;*.wad|"
-		"MATERIAL files (*.material)|"
+
+		"Material files (*.material)|"
 		"*.material|"
-		"MD2 files (*.md2)|"
-		"*.md2|"
-		"MAP files (*.map)|"
-		"*.map|"
-		"LEVEL files (*.level)|"
-		"*.level|"
+
+		"Model files (*.md2;*.u3d;*.obj)|"
+		"*.md2;*.u3d;*.obj|"
+
+		"Level files (*.level;*.map)|"
+		"*.level;*.map|"
+		
 		"WAD files (*.wad)|"
-		"*.wad"
-		,wxFD_OPEN|wxFD_FILE_MUST_EXIST);
+		"*.wad",
+
+		wxFD_OPEN|wxFD_FILE_MUST_EXIST);
 	if (filedialog->ShowModal() == wxID_OK)
 	{
 		wxString filename = filedialog->GetFilename();
@@ -507,12 +514,12 @@ void CEditorFrame::OnOpen(wxCommandEvent &event)
 			OpenMaterial(filedialog->GetPath());
 		else if (filename.EndsWith(".map"))
 		{
-			SetTitle(filedialog->GetFilename() + wxString(" - ") + cApplicationTitle);
+			SetTitle(filedialog->GetFilename() + wxString(" - ") + g_apptitle);
 		}
 		else if (filename.EndsWith(".level"))
 		{
 			// TODO: Load the level up in a "viewer" mode.
-			SetTitle(filedialog->GetFilename() + wxString(" - ") + cApplicationTitle);
+			SetTitle(filedialog->GetFilename() + wxString(" - ") + g_apptitle);
 		}
 		else if (filename.EndsWith(".wad"))
 		{

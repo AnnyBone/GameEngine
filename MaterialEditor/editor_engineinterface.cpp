@@ -13,17 +13,17 @@ pINSTANCE engineInstance;
 
 void EngineInterface_PrintMessage(char *text)
 {
-	wxGetApp().efMainFrame->PrintMessage(text);
+	wxGetApp().editor_frame->PrintMessage(text);
 }
 
 void EngineInterface_PrintWarning(char *text)
 {
-	wxGetApp().efMainFrame->PrintWarning(text);
+	wxGetApp().editor_frame->PrintWarning(text);
 }
 
 void EngineInterface_PrintError(char *text)
 {
-	wxGetApp().efMainFrame->PrintError(text);
+	wxGetApp().editor_frame->PrintError(text);
 }
 
 void EngineInterface_Load()
