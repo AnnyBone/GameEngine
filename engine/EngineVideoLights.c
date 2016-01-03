@@ -353,8 +353,12 @@ MathVector_t Light_GetSample(MathVector3f_t vPoint)
 	MathVector3f_t	vEnd, vLightColour;
 	MathVector_t	mvLightColour;
 
-	if(!cl.worldmodel->lightdata)
-		Math_VectorSet(255.0f,vLightColour);
+	if (!cl.worldmodel || !cl.worldmodel->lightdata)
+	{
+		Math_VectorSet(255.0f, vLightColour);
+		Math_VectorToMV(vLightColour, mvLightColour);
+		return mvLightColour;
+	}
 
 	vEnd[0] = vPoint[0];
 	vEnd[1] = vPoint[1];
