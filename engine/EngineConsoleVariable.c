@@ -39,7 +39,7 @@ void Cvar_List_f (void)
 	if (Cmd_Argc() > 1)
 	{
 		partial = Cmd_Argv (1);
-		len = Q_strlen(partial);
+		len = strlen(partial);
 	}
 	else
 	{
@@ -50,7 +50,7 @@ void Cvar_List_f (void)
 	count=0;
 	for (cvar=cConsoleVariables ; cvar ; cvar=cvar->next)
 	{
-		if (partial && Q_strncmp (partial,cvar->name, len))
+		if (partial && strncmp(partial, cvar->name, len))
 			continue;
 
 		Con_SafePrintf ("%s%s %s \"%s\"\n",
@@ -281,7 +281,7 @@ void Cvar_Set (const char *var_name, char *value)
 
 	free(var->string);	// free the old value string
 
-	var->string = malloc_or_die(Q_strlen(value) + 1);
+	var->string = malloc_or_die(strlen(value) + 1);
 	p_strcpy(var->string, value);
 
 	Cvar_UpdateValues(var);

@@ -86,104 +86,6 @@ override an explicit setting on the original command line.
 ============================================================================
 */
 
-void Q_memset (void *dest, int fill, int count)
-{
-	int             i;
-
-	if ( (((long)dest | count) & 3) == 0)
-	{
-		count >>= 2;
-		fill = fill | (fill<<8) | (fill<<16) | (fill<<24);
-		for (i=0 ; i<count ; i++)
-			((int *)dest)[i] = fill;
-	}
-	else
-		for (i=0 ; i<count ; i++)
-			((uint8_t *)dest)[i] = fill;
-}
-
-void Q_memcpy (void *dest, void *src, int count)
-{
-	int             i;
-
-	if (( ( (long)dest | (long)src | count) & 3) == 0 )
-	{
-		count>>=2;
-		for (i=0 ; i<count ; i++)
-			((int *)dest)[i] = ((int *)src)[i];
-	}
-	else
-		for (i=0 ; i<count ; i++)
-			((uint8_t *)dest)[i] = ((uint8_t *)src)[i];
-}
-
-int Q_memcmp (void *m1, void *m2, int count)
-{
-	while(count)
-	{
-		count--;
-		if (((uint8_t *)m1)[count] != ((uint8_t *)m2)[count])
-			return -1;
-	}
-	return 0;
-}
-
-size_t Q_strlen (const char *str)
-{
-	size_t count = 0;
-	while (str[count])
-		count++;
-	return count;
-}
-
-char *Q_strrchr(char *s, char c)
-{
-	int len = Q_strlen(s);
-	s += len;
-	while (len--)
-	if (*--s == c) return s;
-	return 0;
-}
-
-/*  TODO: This should follow standard implementation...
-		char *strcat(char *dest, const char *src)
-*/
-void Q_strcat (char *dest, char *src)
-{
-	dest += Q_strlen(dest);
-	p_strcpy(dest, src);
-}
-
-int Q_strcmp (char *s1, char *s2)
-{
-	for(;;)
-	{
-		if (*s1 != *s2)
-			return -1;              // strings not equal
-		if (!*s1)
-			return 0;               // strings are equal
-		s1++;
-		s2++;
-	}
-}
-
-/*  TODO: Rewrite this so both parms are const.
-*/
-int Q_strncmp (char *s1, const char *s2, int count)
-{
-	for(;;)
-	{
-		if (!count--)
-			return 0;
-		if (*s1 != *s2)
-			return -1;              // strings not equal
-		if (!*s1)
-			return 0;               // strings are equal
-		s1++;
-		s2++;
-	}
-}
-
 int Q_atoi (char *str)
 {
 	int             val;
@@ -457,7 +359,7 @@ void MSG_WriteString (sizebuf_t *sb, char *s)
 	if (!s)
 		SZ_Write (sb, "", 1);
 	else
-		SZ_Write (sb, s, Q_strlen(s)+1);
+		SZ_Write (sb, s, strlen(s) + 1);
 }
 
 //johnfitz -- original behavior, 13.3 fixed point coords, max range +-4096
@@ -851,7 +753,7 @@ void COM_InitArgv (int argc, char **argv)
 	for (com_argc=0 ; (com_argc<MAX_NUM_ARGVS) && (com_argc < argc) ; com_argc++)
 	{
 		largv[com_argc] = argv[com_argc];
-		if (!Q_strcmp ("-safe", argv[com_argc]))
+		if (!strcmp ("-safe", argv[com_argc]))
 			safe = true;
 	}
 
@@ -1562,7 +1464,7 @@ void FileSystem_Initialize(void)
 				break;
 
 			search = (searchpath_t*)Hunk_Alloc(sizeof(searchpath_t));
-			if(!Q_strcmp(COM_FileExtension(com_argv[i]), "pak") )
+			if(!strcmp(COM_FileExtension(com_argv[i]), "pak") )
 			{
 				search->pack = FileSystem_LoadPackage(com_argv[i]);
 				if (!search->pack)

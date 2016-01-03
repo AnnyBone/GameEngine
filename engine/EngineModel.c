@@ -705,7 +705,7 @@ void Model_LoadBSPFaces(BSPLump_t *blLump)
 #ifdef _MSC_VER
 #pragma warning(suppress: 6011)
 #endif
-		if(!Q_strncmp(mMaterial->cName,"sky",3)) // sky surface //also note -- was Q_strncmp, changed to match qbsp
+		if(!strncmp(mMaterial->cName, "sky", 3)) // sky surface
 		{
 			out->flags |= (SURF_DRAWSKY | SURF_DRAWTILED);
 			Mod_PolyForUnlitSurface (out); //no more subdivision

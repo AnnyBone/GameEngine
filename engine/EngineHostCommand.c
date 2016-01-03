@@ -389,7 +389,7 @@ void Modlist_Init(void) //TODO: move win32 specific stuff to sys_win.c
 		{
 			//ingore duplicate
 			for(mod = modlist; mod; mod = mod->next)
-				if(!Q_strcmp(FindFileData.cFileName, mod->name))
+				if(!strcmp(FindFileData.cFileName, mod->name))
 					return;
 
 			mod = malloc_or_die(sizeof(mod_t));
@@ -1146,7 +1146,7 @@ void Host_Name_f (void)
 
 	if (cmd_source == src_command)
 	{
-		if (Q_strcmp(cl_name.string, newName) == 0)
+		if (strcmp(cl_name.string, newName) == 0)
 			return;
 		Cvar_Set ("_cl_name", newName);
 		if (cls.state == ca_connected)
@@ -1267,7 +1267,7 @@ void Host_Tell_f(void)
 	if (*p == '"')
 	{
 		p++;
-		p[Q_strlen(p)-1] = 0;
+		p[strlen(p) - 1] = 0;
 	}
 
 // check length & truncate if necessary
@@ -1540,7 +1540,7 @@ void Host_Kick_f (void)
 
 	save = host_client;
 
-	if(Cmd_Argc() > 2 && Q_strcmp(Cmd_Argv(1), "#") == 0)
+	if(Cmd_Argc() > 2 && strcmp(Cmd_Argv(1), "#") == 0)
 	{
 		i = Q_atof(Cmd_Argv(2)) - 1;
 		if(i < 0 || i >= svs.maxclients)

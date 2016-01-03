@@ -896,7 +896,7 @@ void CL_ParseServerMessage(void)
 			}
 
 			p_strcpy(cl_lightstyle[i].cMap, MSG_ReadString());
-			cl_lightstyle[i].length = Q_strlen(cl_lightstyle[i].cMap);
+			cl_lightstyle[i].length = strlen(cl_lightstyle[i].cMap);
 			//johnfitz -- save extra info
 			if (cl_lightstyle[i].length)
 			{

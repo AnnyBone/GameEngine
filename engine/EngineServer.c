@@ -379,7 +379,7 @@ void SV_AddToFatPVS (vec3_t org, mnode_t *node, model_t *worldmodel) //johnfitz 
 byte *SV_FatPVS (vec3_t org, model_t *worldmodel) //johnfitz -- added worldmodel as a parameter
 {
 	fatbytes = (worldmodel->numleafs+31)>>3;
-	Q_memset (fatpvs, 0, fatbytes);
+	memset(fatpvs, 0, fatbytes);
 	SV_AddToFatPVS (org, worldmodel->nodes, worldmodel); //johnfitz -- worldmodel as a parameter
 	return fatpvs;
 }
@@ -735,7 +735,7 @@ bool SV_SendClientDatagram (client_t *client)
 	msg.cursize = 0;
 
 	//johnfitz -- if client is nonlocal, use smaller max size so packets aren't fragmented
-	if (Q_strcmp (client->netconnection->address, "LOCAL") != 0)
+	if (strcmp(client->netconnection->address, "LOCAL") != 0)
 		msg.maxsize = DATAGRAM_MTU;
 	//johnfitz
 
@@ -1255,13 +1255,13 @@ ServerEntity_t *Server_FindEntity(ServerEntity_t *eStartEntity, char *cName, boo
 		if (bClassname)
 		{
 			if (eEntity->v.cClassname)
-				if (!Q_strcmp(cName, eEntity->v.cClassname))
+				if (!strcmp(cName, eEntity->v.cClassname))
 					return eEntity;
 		}
 		else
 		{
 			if (eEntity->v.cName)
-				if (!Q_strcmp(cName, eEntity->v.cName))
+				if (!strcmp(cName, eEntity->v.cName))
 					return eEntity;
 		}
 	}

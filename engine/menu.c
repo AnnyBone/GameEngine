@@ -601,10 +601,10 @@ void M_Setup_Draw (void)
 	M_DrawCharacter (56, setup_cursor_table [setup_cursor], 12+((int)(realtime*4)&1));
 
 	if (setup_cursor == 0)
-		M_DrawCharacter (168 + 8*Q_strlen(setup_hostname), setup_cursor_table [setup_cursor], 10+((int)(realtime*4)&1));
+		M_DrawCharacter (168 + 8*strlen(setup_hostname), setup_cursor_table [setup_cursor], 10+((int)(realtime*4)&1));
 
 	if (setup_cursor == 1)
-		M_DrawCharacter (168 + 8*Q_strlen(setup_myname), setup_cursor_table [setup_cursor], 10+((int)(realtime*4)&1));
+		M_DrawCharacter (168 + 8*strlen(setup_myname), setup_cursor_table [setup_cursor], 10+((int)(realtime*4)&1));
 }
 
 void M_Setup_Key (int k)
@@ -659,9 +659,9 @@ forward:
 			goto forward;
 
 		// setup_cursor == 4 (OK)
-		if (Q_strcmp(cl_name.string, setup_myname) != 0)
+		if (strcmp(cl_name.string, setup_myname) != 0)
 			Cbuf_AddText ( va ("name \"%s\"\n", setup_myname) );
-		if (Q_strcmp(hostname.string, setup_hostname) != 0)
+		if (strcmp(hostname.string, setup_hostname) != 0)
 			Cvar_Set("hostname", setup_hostname);
 		if (setup_top != setup_oldtop || setup_bottom != setup_oldbottom)
 			Cbuf_AddText( va ("color %i %i\n", setup_top, setup_bottom) );
@@ -671,11 +671,11 @@ forward:
 
 	case K_BACKSPACE:
 		if (setup_cursor == 0)
-			if(Q_strlen(setup_hostname))
+			if(strlen(setup_hostname))
 				setup_hostname[strlen(setup_hostname)-1] = 0;
 
 		if (setup_cursor == 1)
-			if(Q_strlen(setup_myname))
+			if(strlen(setup_myname))
 				setup_myname[strlen(setup_myname)-1] = 0;
 		break;
 
@@ -962,7 +962,7 @@ void M_FindKeysForCommand (char *command, int *twokeys)
 	char	*b;
 
 	twokeys[0] = twokeys[1] = -1;
-	l = Q_strlen(command);
+	l = strlen(command);
 	count = 0;
 
 	for(j = 0; j < 256; j++)
@@ -970,7 +970,7 @@ void M_FindKeysForCommand (char *command, int *twokeys)
 		b = keybindings[j];
 		if(!b)
 			continue;
-		if(!Q_strncmp(b,command,l))
+		if(!strncmp(b, command, l))
 		{
 			twokeys[count] = j;
 			count++;
@@ -986,7 +986,7 @@ void M_UnbindCommand (char *command)
 	int		l;
 	char	*b;
 
-	l = Q_strlen(command);
+	l = strlen(command);
 
 	for (j=0 ; j<256 ; j++)
 	{

@@ -105,7 +105,7 @@ void Cbuf_InsertText (const char *text)
 	if (templen)
 	{
 		temp = malloc_or_die(templen);
-		Q_memcpy (temp, cmd_text.data, templen);
+		memcpy(temp, cmd_text.data, templen);
 		SZ_Clear (&cmd_text);
 	}
 
@@ -153,7 +153,7 @@ void Cbuf_Execute (void)
 		{
 			i++;
 			cmd_text.cursize -= i;
-			Q_memcpy(text,text+i,cmd_text.cursize);
+			memcpy(text, text + i, cmd_text.cursize);
 		}
 
 		// Execute the command line
@@ -414,7 +414,7 @@ void Cmd_List_f (void)
 	if (Cmd_Argc() > 1)
 	{
 		partial = Cmd_Argv (1);
-		len = Q_strlen(partial);
+		len = strlen(partial);
 	}
 	else
 	{
@@ -425,7 +425,7 @@ void Cmd_List_f (void)
 	count=0;
 	for (cmd=cmd_functions ; cmd ; cmd=cmd->next)
 	{
-		if (partial && Q_strncmp (partial,cmd->name, len))
+		if (partial && strncmp(partial, cmd->name, len))
 			continue;
 		Con_SafePrintf ("   %s\n", cmd->name);
 		count++;
@@ -508,7 +508,7 @@ void Cmd_TokenizeString (char *text)
 
 		if (cmd_argc < MAX_ARGS)
 		{
-			cmd_argv[cmd_argc] = malloc_or_die(Q_strlen(com_token) + 1);
+			cmd_argv[cmd_argc] = malloc_or_die(strlen(com_token) + 1);
 			p_strcpy(cmd_argv[cmd_argc], com_token);
 			cmd_argc++;
 		}
@@ -585,7 +585,7 @@ char *Cmd_CompleteCommand (char *partial)
 
 	// Check functions
 	for (cmd=cmd_functions ; cmd ; cmd=cmd->next)
-		if (!Q_strncmp (partial,cmd->name, iLength))
+		if (!strncmp(partial, cmd->name, iLength))
 			return cmd->name;
 
 	return NULL;

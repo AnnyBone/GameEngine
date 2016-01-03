@@ -99,7 +99,7 @@ sfxcache_t *S_LoadSound (sfx_t *s)
 
 	// load it in
 	p_strncpy(namebuffer, Global.cSoundPath, sizeof(namebuffer));
-    Q_strcat(namebuffer,s->name);
+	strcat(namebuffer, s->name);
 
 	data = COM_LoadStackFile(namebuffer, stackbuf, sizeof(stackbuf));
 	if (!data)
@@ -186,7 +186,7 @@ void FindNextChunk(char *name)
 
 		data_p -= 8;
 		last_chunk = data_p + 8 + ( (iff_chunk_len + 1) & ~1 );
-		if (!Q_strncmp((char*)data_p, name, 4))
+		if (!strncmp((const char*)data_p, name, 4))
 			return;
 	}
 }
@@ -229,7 +229,7 @@ wavinfo_t GetWavinfo (char *name, byte *wav, int wavlength)
 
 	// Find "RIFF" chunk
 	FindChunk("RIFF");
-	if (!(data_p && !Q_strncmp((char*)data_p+8,"WAVE",4)))
+	if (!(data_p && !strncmp((const char*)data_p + 8, "WAVE", 4)))
 	{
 		Con_Printf("Missing RIFF/WAVE chunks\n");
 		return info;

@@ -49,7 +49,7 @@ void Loop_SearchForHosts (bool xmit)
 		return;
 
 	hostCacheCount = 1;
-	if (Q_strcmp(hostname.string, "UNNAMED") == 0)
+	if (strcmp(hostname.string, "UNNAMED") == 0)
 		p_strcpy(hostcache[0].name, "local");
 	else
 		p_strcpy(hostcache[0].name, hostname.string);
@@ -62,7 +62,7 @@ void Loop_SearchForHosts (bool xmit)
 
 qsocket_t *Loop_Connect (char *host)
 {
-	if (Q_strcmp(host,"local") != 0)
+	if (strcmp(host, "local") != 0)
 		return NULL;
 
 	localconnectpending = true;
@@ -143,7 +143,7 @@ int Loop_GetMessage (qsocket_t *sock)
 	sock->receiveMessageLength -= length;
 
 	if (sock->receiveMessageLength)
-		Q_memcpy(sock->receiveMessage, &sock->receiveMessage[length], sock->receiveMessageLength);
+		memcpy(sock->receiveMessage, &sock->receiveMessage[length], sock->receiveMessageLength);
 
 	if (sock->driverdata && ret == 1)
 		((qsocket_t *)sock->driverdata)->canSend = TRUE;
@@ -177,7 +177,7 @@ int Loop_SendMessage (qsocket_t *sock, sizebuf_t *data)
 	buffer++;
 
 	// message
-	Q_memcpy(buffer, data->data, data->cursize);
+	memcpy(buffer, data->data, data->cursize);
 	*bufferLength = IntAlign(*bufferLength + data->cursize + 4);
 
 	sock->canSend = FALSE;
@@ -210,7 +210,7 @@ int Loop_SendUnreliableMessage (qsocket_t *sock, sizebuf_t *data)
 	buffer++;
 
 	// message
-	Q_memcpy(buffer, data->data, data->cursize);
+	memcpy(buffer, data->data, data->cursize);
 	*bufferLength = IntAlign(*bufferLength + data->cursize + 4);
 	return 1;
 }

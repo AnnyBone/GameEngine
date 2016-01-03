@@ -266,7 +266,7 @@ void CL_BaseMove(ClientCommand_t *cmd)
 
 	CL_AdjustAngles();
 
-	Q_memset (cmd, 0, sizeof(*cmd));
+	memset(cmd, 0, sizeof(*cmd));
 
 	if (in_strafe.state & 1)
 	{

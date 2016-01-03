@@ -121,7 +121,7 @@ bool Image_WriteTGA(char *name, uint8_t *data,int width,int height,int bpp,bool 
 	if (handle == -1)
 		return false;
 
-	Q_memset (&header, 0, TARGAHEADERSIZE);
+	memset(&header, 0, TARGAHEADERSIZE);
 	header[2]	= 2; // uncompressed type
 	header[12]	= width&255;
 	header[13]	= width>>8;

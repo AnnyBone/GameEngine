@@ -319,7 +319,7 @@ void Key_Console (int key)
 		else
 		{
 			p_strcpy(key_lines[edit_line], key_lines[history_line]);
-			key_linepos = Q_strlen(key_lines[edit_line]);
+			key_linepos = strlen(key_lines[edit_line]);
 		}
 		return;
 	}
@@ -522,7 +522,7 @@ void Key_SetBinding (int keynum, char *binding)
 	keybindings[keynum] = NULL;
 
 	// allocate memory for new binding
-	l = Q_strlen (binding);
+	l = strlen(binding);
 	new = malloc_or_die(l + 1);
 	p_strcpy(new, binding);
 	new[l] = 0;
