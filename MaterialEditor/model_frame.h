@@ -23,10 +23,11 @@ class ModelViewportPanel : public BaseViewportPanel
 {
 public:
 
-	ModelViewportPanel(wxWindow *parent) : BaseViewportPanel(parent) {}
+	ModelViewportPanel(wxWindow *parent);
 
 	void Draw();
 	void SetModel(model_t *newmodel);
+	void SetRotate(bool dorotate);
 protected:
 private:
 

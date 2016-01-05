@@ -24,12 +24,31 @@
 	Viewport
 */
 
+ModelViewportPanel::ModelViewportPanel(wxWindow *parent) : BaseViewportPanel(parent)
+{
+	entity = engine->CreateClientEntity();
+	if (entity)
+	{
+		entity->alpha = 255;
+		entity->origin[0] = 50.0f;
+		entity->origin[1] = 0;
+		entity->origin[2] = 0;
+		entity->model = NULL;
+	}
+	else
+		plWriteLog(EDITOR_LOG, "Failed to create client entity!\n");
+}
+
 void ModelViewportPanel::Draw()
 {
 	engine->DrawGradientBackground();
 
-	if (entity)
+	if (entity && entity->model)
 	{
+		entity->frame++;
+		if (entity->frame >= entity->model->numframes)
+			entity->frame = 0;
+
 		engine->DrawEntity(entity);
 		// Dolly rotate
 		if (rotate)
@@ -46,14 +65,30 @@ void ModelViewportPanel::SetModel(model_t *newmodel)
 	entity->model = newmodel;
 }
 
+void ModelViewportPanel::SetRotate(bool dorotate)
+{
+	if ((rotate == true) && (dorotate == false))
+		// If we're setting it to false, reset the models current angle.
+		entity->angles[1] = 0;
+
+	rotate = dorotate;
+}
+
 /*
 	Frame
 */
+
+enum
+{
+	MODELFRAME_EVENT_ROTATE,
+};
 
 wxBEGIN_EVENT_TABLE(ModelFrame, wxFrame)
 
 EVT_MENU(wxID_OPEN, ModelFrame::FileEvent)
 EVT_MENU(wxID_EXIT, ModelFrame::FileEvent)
+
+EVT_MENU(MODELFRAME_EVENT_ROTATE, ModelFrame::ViewEvent)
 
 EVT_CLOSE(ModelFrame::CloseEvent)
 
@@ -69,18 +104,31 @@ ModelFrame::ModelFrame(wxWindow *parent)
 	// Setup the menu...
 	wxMenuBar *menubar = new wxMenuBar;
 	{
-		wxMenu *menu_file = new wxMenu;
+		// File
+		{
+			wxMenu *menu_file = new wxMenu;
 
-		wxMenuItem *menu_file_open = new wxMenuItem(menu_file, wxID_OPEN);
-		menu_file->Append(menu_file_open);
+			wxMenuItem *menu_file_open = new wxMenuItem(menu_file, wxID_OPEN);
+			menu_file->Append(menu_file_open);
 
-		wxMenuItem *menu_file_close = new wxMenuItem(menu_file, wxID_CLOSE);
-		menu_file->Append(menu_file_close);
+			wxMenuItem *menu_file_close = new wxMenuItem(menu_file, wxID_CLOSE);
+			menu_file->Append(menu_file_close);
 
-		wxMenuItem *menu_file_exit = new wxMenuItem(menu_file, wxID_EXIT);
-		menu_file->Append(menu_file_exit);
+			wxMenuItem *menu_file_exit = new wxMenuItem(menu_file, wxID_EXIT);
+			menu_file->Append(menu_file_exit);
 
-		menubar->Append(menu_file, "&File");
+			menubar->Append(menu_file, "&File");
+		}
+		
+		// View
+		{
+			wxMenu *menu_view = new wxMenu;
+
+			wxMenuItem *menu_view_rotate = new wxMenuItem(menu_view, MODELFRAME_EVENT_ROTATE, "&Rotate", "Dolly rotates the current preview");
+			menu_view->Append(menu_view_rotate);
+
+			menubar->Append(menu_view, "&View");
+		}
 	}
 	SetMenuBar(menubar);
 
@@ -105,6 +153,8 @@ void ModelFrame::LoadModel(wxString path)
 	if (!model)
 		return;
 
+	viewport->SetModel(model);
+
 	SetTitle(newpath + " - " MODEL_TITLE);
 }
 
@@ -127,6 +177,16 @@ void ModelFrame::FileEvent(wxCommandEvent &event)
 		break;
 	case wxID_EXIT:
 		Show(false);
+		break;
+	}
+}
+
+void ModelFrame::ViewEvent(wxCommandEvent &event)
+{
+	switch (event.GetId())
+	{
+	case MODELFRAME_EVENT_ROTATE:
+		viewport->SetRotate(false);
 		break;
 	}
 }
