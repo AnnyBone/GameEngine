@@ -37,12 +37,22 @@ void ModelViewportPanel::Draw()
 	}
 }
 
+void ModelViewportPanel::SetModel(model_t *newmodel)
+{
+	if (entity->model)
+	{
+		// TODO: unload it.
+	}
+	entity->model = newmodel;
+}
+
 /*
 	Frame
 */
 
 wxBEGIN_EVENT_TABLE(ModelFrame, wxFrame)
 
+EVT_MENU(wxID_OPEN, ModelFrame::FileEvent)
 EVT_MENU(wxID_EXIT, ModelFrame::FileEvent)
 
 EVT_CLOSE(ModelFrame::CloseEvent)
@@ -79,9 +89,23 @@ ModelFrame::ModelFrame(wxWindow *parent)
 	viewport->StartDrawing();
 }
 
-void ModelFrame::LoadModel(const char *path)
+void ModelFrame::LoadModel(wxString path)
 {
+	wxString newpath = path;
 
+	int stringmod = newpath.Find(wxString("models/").RemoveLast(1));
+	if (stringmod == wxNOT_FOUND)
+	{
+		wxMessageBox(wxString("Failed to update path! (" + newpath + ")\nPlease ensure your model is inside the game directory."), MODEL_TITLE);
+		return;
+	}
+	newpath.Remove(0, stringmod);
+
+	model_t *model = engine->LoadModel(newpath);
+	if (!model)
+		return;
+
+	SetTitle(newpath + " - " MODEL_TITLE);
 }
 
 void ModelFrame::FileEvent(wxCommandEvent &event)
@@ -89,15 +113,17 @@ void ModelFrame::FileEvent(wxCommandEvent &event)
 	switch (event.GetId())
 	{
 	case wxID_OPEN:
-		wxFileDialog *filed = new wxFileDialog(
-			this,
-			"Open Model",
-			engine->GetBasePath(),
-			"",
-			"Supported files (*.3d;*.md2)|*.3d;*.md2",
-			wxFD_OPEN | wxFD_FILE_MUST_EXIST);
-		if (filed->ShowModal() == wxID_OK)
-			LoadModel(filed->GetPath());
+		{
+			wxFileDialog *filed = new wxFileDialog(
+				this,
+				"Open Model",
+				wxString(engine->GetBasePath()) + "/models",
+				"",
+				"Supported files (*.3d;*.md2)|*.3d;*.md2",
+				wxFD_OPEN | wxFD_FILE_MUST_EXIST);
+			if (filed->ShowModal() == wxID_OK)
+				LoadModel(filed->GetPath());
+		}
 		break;
 	case wxID_EXIT:
 		Show(false);

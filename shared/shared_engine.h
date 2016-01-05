@@ -32,15 +32,17 @@ typedef struct
 	bool(*Initialize)(int argc, char *argv[], bool bEmbedded);	// Initializes the engine.
 	bool(*IsRunning)();
 
-	char*(*GetBasePath)();		// Gets the currently active game path.
-	char*(*GetMaterialPath)();	// Gets the set material path.
-	char*(*GetVersion)();		// Return the engine version.
+	char*(*GetBasePath)();		// Returns the currently active game path.
+	char*(*GetMaterialPath)();	// Returns the set material path.
+	//char*(*GetModelPath)();	// Returns the set model path.
+	char*(*GetVersion)();		// Returns the current engine version (as a string).
 
 	void(*Loop)();										// Main loop.
 	void(*SetViewportSize)(int iWidth, int iHeight);
 	void(*Shutdown)();									// Shutdown.
 
 	Material_t*(*LoadMaterial)(const char *cPath);
+
 	void(*UnloadMaterial)(Material_t *mMaterial);
 
 	model_t*(*LoadModel)(const char *path);

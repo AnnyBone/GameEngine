@@ -25,7 +25,8 @@ public:
 
 	ModelViewportPanel(wxWindow *parent) : BaseViewportPanel(parent) {}
 
-	virtual void Draw();
+	void Draw();
+	void SetModel(model_t *newmodel);
 protected:
 private:
 
@@ -43,7 +44,7 @@ public:
 
 	ModelFrame(wxWindow *parent);
 
-	void LoadModel(const char *path);
+	void LoadModel(wxString path);
 
 protected:
 private:

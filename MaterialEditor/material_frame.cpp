@@ -491,7 +491,7 @@ void CMaterialFrame::LoadMaterial(wxString path)
 	Viewport->SetPreviewMaterial(newmat);
 
 	// Update the window title.
-	SetTitle(materialname + wxString(" - ") + wxString(WAD_TITLE));
+	SetTitle(materialname + " - " WAD_TITLE);
 
 	// Update the current material path and check when it was last modified.
 	sCurrentFilePath = path;
