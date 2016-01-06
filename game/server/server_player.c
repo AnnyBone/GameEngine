@@ -33,7 +33,6 @@
 #define	PLAYER_MAX_HEALTH	cvServerMaxHealth.iValue
 #define	PLAYER_MIN_HEALTH	-20
 
-// [10/4/2013] Moved entity frames here so that bots can refer to them! ~hogsy
 EntityFrame_t PlayerAnimation_Idle[] =
 {
 	{	NULL,	0,	0.1f			},
@@ -315,36 +314,40 @@ EntityFrame_t PlayerAnimation_KatanaDeath1[] =
 	{ NULL, 249, 0.02f, true }
 };
 
-void Player_CheckFootsteps(ServerEntity_t *ePlayer)
+void Player_CheckFootsteps(ServerEntity_t *player)
 {
 	float			fForce;
 	double			dDelay;
 	MathVector2f_t	vStep;
 
-	// [8/6/2013] Also check movetype so we don't do steps while noclipping/flying ~hogsy
-	if((ePlayer->v.movetype == MOVETYPE_WALK) && ePlayer->v.flags & FL_ONGROUND)
+	// Also check movetype so we don't do steps while noclipping/flying.
+	if ((player->v.movetype == MOVETYPE_WALK) && player->v.flags & FL_ONGROUND)
 	{
-		if((ePlayer->v.velocity[0] == 0 && ePlayer->v.velocity[1] == 0)	||
-			ePlayer->local.dStepTime > Server.dTime)
+		if (player->local.dStepTime > Server.dTime)
+			return;
+		else if (
+			// Ensure there's enough movement that calls for us to produce a footstep.
+			(player->v.velocity[0] < 5) && (player->v.velocity[0] > -5) &&
+			(player->v.velocity[1] < 5) && (player->v.velocity[1] > -5))
 			return;
 
-		vStep[0] = ePlayer->v.velocity[0];
+		vStep[0] = player->v.velocity[0];
 		if(vStep[0] < 0)
 			vStep[0] *= -1.0f;
 
-		vStep[1] = ePlayer->v.velocity[1];
+		vStep[1] = player->v.velocity[1];
 		if(vStep[1] < 0)
 			vStep[1] *= -1.0f;
 
 		fForce = vStep[0]+vStep[1];
 
-		// [9/6/2013] Base this on our velocity ~hogsy
+		// Base this on our velocity.
 		dDelay = Math_Clamp(0.1, (double)(1.0f / (fForce / 100.0f)), 1.0);
 
-		// [9/6/2013] TODO: Check if we're in water or not and change this accordingly :) ~hogsy
-		Sound(ePlayer,CHAN_VOICE,va("physics/concrete%i_footstep.wav",rand()%4),150,ATTN_NORM);
+		// TODO: Check if we're in water or not and change this accordingly :)
+		Sound(player, CHAN_VOICE, va("physics/concrete%i_footstep.wav", rand() % 4), 150, ATTN_NORM);
 
-		ePlayer->local.dStepTime = Server.dTime+dDelay;
+		player->local.dStepTime = Server.dTime + dDelay;
 	}
 }
 
@@ -366,11 +369,10 @@ void Player_CheckWater(ServerEntity_t *ePlayer)
 
 void Player_PostThink(ServerEntity_t *ePlayer)
 {
-	// [25/8/2012] Added iFlag to deal with a particular issue ~hogsy
 	int		iFlag = CHAN_VOICE;
 	char	snd[32];
 
-	// [5/9/2013] If round has not started then don't go through this! ~hogsy
+	// If round has not started then don't go through this!
 	if ((ePlayer->Monster.state == MONSTER_STATE_DEAD) || !Server.bRoundStarted)
 		return;
 	// Check if we're in a vehicle.
@@ -402,8 +404,8 @@ void Player_PostThink(ServerEntity_t *ePlayer)
 			sprintf(snd,"player/h2ojump.wav");
 		else if (ePlayer->local.fJumpVelocity < -650.0f)
 		{
-			// [8/6/2012] TODO: Figure out if we were pushed by an enemy... ~hogsy
-			// [8/6/2012] TODO: Base damage on velocity ~hogsy
+			// TODO: Figure out if we were pushed by an enemy.
+			// TODO: Base damage on velocity.
 			Entity_Damage(ePlayer, ePlayer, 10, 0);
 
 			if(rand()%2 == 1)
@@ -417,7 +419,7 @@ void Player_PostThink(ServerEntity_t *ePlayer)
 		}
 		else
 		{
-			// [25/8/2012] Land sounds DO NOT use CHAN_VOICE otherwise they get horribly cut out! ~hogsy
+			// Land sounds DO NOT use CHAN_VOICE otherwise they get horribly cut out!
 			iFlag = CHAN_AUTO;
 
 			sprintf(snd,"player/playerland%i.wav",rand()%4+1);
