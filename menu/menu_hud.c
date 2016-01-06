@@ -37,17 +37,24 @@ void HUD_Initialize()
 
 void HUD_DrawNumber(int x, int y, int w, int h, int value)
 {
+	if (value < 0)
+		value = 0;
+	if (value > 9)
+		value = 9;
 	Engine.DrawMaterialSurface(hud_mnumbers, value, x, y, w, h, 1);
 }
 
 void HUD_DrawNumbers(int x, int y, int value)
 {
+	// 999
 	if (value >= 100)
-	{
 		HUD_DrawNumber(x - 64, y, 32, 32, (value / 100));
-	}
+	else x -= 32;
+
 	if (value >= 10)
 		HUD_DrawNumber(x - 32, y, 32, 32, (value % 100));
+	else x -= 32;
+
 	HUD_DrawNumber(x, y, 32, 32, (value % 10));
 }
 
