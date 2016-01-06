@@ -26,13 +26,13 @@
 
 #include "video.h"
 
-extern cvar_t r_drawflat;
+extern ConsoleVariable_t r_drawflat;
 
 int gl_warpimagesize;
 
-cvar_t r_oldwater		= {	"r_oldwater",		"1",	true,	false	};
-cvar_t r_waterquality	= {	"r_waterquality",	"8"	};
-cvar_t r_waterwarp		= {	"r_waterwarp",		"1"	};
+ConsoleVariable_t r_oldwater		= {	"r_oldwater",		"1",	true,	false	};
+ConsoleVariable_t r_waterquality = { "r_waterquality", "8" };
+ConsoleVariable_t r_waterwarp = { "r_waterwarp", "1" };
 
 float load_subdivide_size; //johnfitz -- remember what subdivide_size value was when this map was loaded
 
@@ -229,24 +229,23 @@ void Warp_DrawWaterPoly(glpoly_t *p, Material_t *mCurrent)
 
 		Math_VectorCopy(fVert, vWave);
 
-#if 1	
-		DynamicLight_t *dLight;
-
 		// Shitty lit water, use dynamic light points in the future...
 		// Use vWave position BEFORE we move it, otherwise the water will flicker.
 		// Additionally, these should be saved so that we aren't trying to light these every frame, URGH.
-		if (r_oldwater.bValue)
+		if (r_oldwater.iValue == 1)
 		{
 			MathVector_t mvLightColour = Light_GetSample(vWave);
 
 			Math_MVToVector(mvLightColour, vLightColour);
 			Math_VectorScale(vLightColour, 1.0f / 200.0f, vLightColour);
-			Math_VectorDivide(vLightColour, 0.4f, vLightColour);
+			Math_VectorDivide(vLightColour, 0.5f, vLightColour);
 		}
+		else if (r_oldwater.iValue == 2)
+			Math_VectorSet(1.0f, vLightColour);
 		else
 		{
 			// Other method using dynamic light points, apparently slower? So needs to be optimised.
-			dLight = Light_GetDynamic(vWave, true);
+			DynamicLight_t *dLight = Light_GetDynamic(vWave, true);
 			if (!dLight)
 				Math_VectorSet(0.1f, vLightColour);
 			else
@@ -260,15 +259,7 @@ void Warp_DrawWaterPoly(glpoly_t *p, Material_t *mCurrent)
 			}
 		}
 
-		Video_ObjectColour(&voWaterPoly[i],
-			vLightColour[0],vLightColour[1],vLightColour[2],
-			fWaterAlpha);
-#elif 2
-		// Lightmapped water!
-#else
-		// Classic ol' Quake; fullbright water.
-		Video_ObjectColour(&voWaterPoly[i], 1.0f, 1.0f, 1.0f, fWaterAlpha);
-#endif
+		Video_ObjectColour(&voWaterPoly[i], vLightColour[0], vLightColour[1], vLightColour[2], fWaterAlpha);
 
 		// Subtle water bobbing, based on this code http://www.quake-1.com/docs/quakesrc.org/26.html
 		vWave[2] =	fVert[2]+
@@ -277,7 +268,7 @@ void Warp_DrawWaterPoly(glpoly_t *p, Material_t *mCurrent)
 		Video_ObjectVertex(&voWaterPoly[i], vWave[0], vWave[1], vWave[2]);
 	}
 
-	Video_DrawObject(voWaterPoly,VIDEO_PRIMITIVE_TRIANGLE_FAN,p->numverts,NULL,0);
+	Video_DrawObject(voWaterPoly, VIDEO_PRIMITIVE_TRIANGLE_FAN, p->numverts, mCurrent, 0);
 }
 
 //==============================================================================
