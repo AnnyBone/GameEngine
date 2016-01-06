@@ -35,20 +35,9 @@
 
 extern ModuleImport_t Engine;
 
-extern Material_t *g_mhudnumbers;
-extern Material_t *g_mhudicons;
-
-extern	cvar_t	cvShowMenu,
-				cvShowHealth,
-				cvShowAmmo,
-				cvShowCrosshair,
-				cvCrosshairScale;
-
 extern int	iMenuState;				// Global menu state.
 
-extern int
-iMenuWidth,
-iMenuHeight;
+extern int g_menuwidth, g_menuheight;
 
 void	Menu_UpdateScreenSize(void);
 void	Menu_AddState(int iState);

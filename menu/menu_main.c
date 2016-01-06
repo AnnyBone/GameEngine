@@ -46,17 +46,12 @@ ModuleImport_t	Engine;
 
 int	iMenuState = 0;
 
-ConsoleVariable_t	
-	cvShowMenu	= { "menu_show", "1", false, false, "Toggle the display of any menu elements." },
-	cvDebugMenu = { "menu_debug", "0", false, false, "Toggle the display of any debugging information." };
+ConsoleVariable_t	cv_menushow = { "menu_show", "1", false, false, "Toggle the display of any menu elements." };
+ConsoleVariable_t	cv_menudebug = { "menu_debug", "0", false, false, "Toggle the display of any debugging information." };
 
 int	iMousePosition[2];
 
-int
-	iMenuWidth = 0,
-	iMenuHeight = 0;
-
-Material_t *g_mhudnumbers, *g_mhudicons;
+int g_menuwidth = 0, g_menuheight = 0;
 
 // TODO: Why are we doing this!? Should be using the one from the lib
 char *va(char *format,...)
@@ -78,16 +73,15 @@ void Menu_Initialize(void)
 	// Get the current screen size.
 	Menu_UpdateScreenSize();
 
-	Engine.Cvar_RegisterVariable(&cvShowMenu, NULL);
+	Engine.Cvar_RegisterVariable(&cv_menushow, NULL);
 
-	g_mhudnumbers	= Engine.LoadMaterial("menu/hud/num");
-	g_mhudicons		= Engine.LoadMaterial("menu/hud/icons");
+	HUD_Initialize();
 }
 
 void Menu_UpdateScreenSize(void)
 {
-	iMenuWidth = Engine.GetScreenWidth();
-	iMenuHeight = Engine.GetScreenHeight();
+	g_menuwidth = Engine.GetScreenWidth();
+	g_menuheight = Engine.GetScreenHeight();
 }
 
 void Menu_DrawMouse(void)
@@ -101,13 +95,7 @@ void Menu_DrawMouse(void)
 
 void Menu_Draw(void)
 {
-	/*	TODO:
-			Draw inactive windows last.
-
-		~hogsy
-	*/
-
-	if(!cvShowMenu.bValue)
+	if (!cv_menushow.bValue)
 		return;
 
 	Menu_UpdateScreenSize();
@@ -117,7 +105,7 @@ void Menu_Draw(void)
 	if(iMenuState & MENU_STATE_LOADING)
 	{
 		// [21/5/2013] TODO: Switch to element ~hogsy
-		//Engine.DrawPic(MENU_BASE_PATH"loading",1.0f,(iMenuWidth-256)/2,(iMenuHeight-32)/2,256,32);
+		//Engine.DrawPic(MENU_BASE_PATH"loading",1.0f,(iMenuWidth-256)/2,(g_menuheight-32)/2,256,32);
 		return;
 	}
 	else if(iMenuState & MENU_STATE_PAUSED)
@@ -132,7 +120,7 @@ void Menu_Draw(void)
 	if(iMenuState & MENU_STATE_MENU)
 	{
 		Colour_t col = { 0, 0, 0, 0.8f };
-		Engine.DrawRectangle(0, 0, iMenuWidth, iMenuHeight, col);
+		Engine.DrawRectangle(0, 0, g_menuwidth, g_menuheight, col);
 
 		Engine.DrawString(110,80,">");
 		Engine.DrawString(190,80,"<");
@@ -183,7 +171,7 @@ void Menu_Draw(void)
 		}
 
 		// [3/8/2012] MUST be done last to prevent something drawing over us! ~hogsy
-		if(cvDebugMenu.value >= 1)
+		if(cv_menudebug.value >= 1)
 		{
 			int p = mMenuElements[i].iPosition[Y];
 
@@ -256,7 +244,7 @@ void Menu_Draw(void)
 			mMenuElements[i].vPos[0] = (float)(screenwidth-mMenuElements[i].vScale[WIDTH]);
 		else if(mMenuElements[i].vPos[0] < (screenwidth+mMenuElements[i].vScale[WIDTH]))
 			mMenuElements[i].vPos[0] = (float)(screenwidth+mMenuElements[i].vScale[WIDTH]);
-		if(mMenuElements[i].vPos[1] > (iMenuHeight-mMenuElements[i].height))
+		if(mMenuElements[i].vPos[1] > (g_menuheight-mMenuElements[i].height))
 			mMenuElements[i].vPos[1] = (float)(screenwidth-mMenuElements[i].height);
 		else if(mMenuElements[i].vPos[1] < (screenwidth+mMenuElements[i].height))
 			mMenuElements[i].vPos[1] = (float)(screenwidth+mMenuElements[i].height);
