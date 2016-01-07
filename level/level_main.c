@@ -257,7 +257,7 @@ int main(int argc,char **argv)
 	transwater		= true;
 	forcevis		= true;
 	waterlightmap	= true;
-	subdivide_size	= 240;
+	subdivide_size	= 2048;
 
 	for (; i < argc; i++)
 	{
@@ -307,15 +307,15 @@ STARTERROR:
 				"\n"
 				"What the options do:\n"
 				"-wadpath (Sets the path to load WADs from.)\n"
-				"-nowater    disable watervis; r_wateralpha in glquake will not work right\n"
-				"-notjunc    disable tjunction fixing; glquake will have holes between polygons\n"
-				"-nofill     disable sealing of map and vis, used for ammoboxes\n"
-				"-onlyents   patchs entities in existing "BSP_EXTENSION", for relighting\n"
-				"-verbose    show more messages\n"
-				"-darkplaces allow really big polygons\n"
-				"-noforcevis don't make a .prt if the map leaks\n"
-				"-nowaterlightmap disable darkplaces lightmapped water feature\n"
-				"-notex      store blank textures instead of real ones, smaller bsp if zipped\n");
+				"-nowater			disable watervis; r_wateralpha in glquake will not work right\n"
+				"-notjunc			disable tjunction fixing; glquake will have holes between polygons\n"
+				"-nofill			disable sealing of map and vis, used for ammoboxes\n"
+				"-onlyents			patchs entities in existing "BSP_EXTENSION", for relighting\n"
+				"-verbose			show more messages\n"
+				"-subdivide			allow really big polygons (e.g. -subdivide 1024)\n"
+				"-noforcevis		don't make a .prt if the map leaks\n"
+				"-nowaterlightmap	disable darkplaces lightmapped water feature\n"
+				"-notex				store blank textures instead of real ones, smaller bsp if zipped\n");
 
 	printf("Input:	%s\n", filename_map);
 	printf("Output: %s\n", filename_bsp);
