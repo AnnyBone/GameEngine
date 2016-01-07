@@ -31,6 +31,8 @@ enum
 	HUD_ICON_HEALTH,
 	HUD_ICON_ARMOR,
 	HUD_ICON_HEARTRATE,
+
+	HUD_ICON_ARMORWAVE0,
 };
 
 void HUD_Initialize()
@@ -55,12 +57,18 @@ void HUD_DrawNumber(int x, int y, int w, int h, int value)
 void HUD_DrawNumbers(int x, int y, int value, bool offset)
 {
 	if (value >= 100)
-		HUD_DrawNumber(x - 64, y, 32, 32, (value / 100));
-	else if (offset) x -= 32;
+	{
+		HUD_DrawNumber(x, y, 32, 32, (value / 100));
+		x += 34;
+	}
+	else if (offset) x += 32;
 
 	if (value >= 10)
-		HUD_DrawNumber(x - 32, y, 32, 32, (value % 100));
-	else if (offset) x -= 32;
+	{
+		HUD_DrawNumber(x, y, 32, 32, (value % 100));
+		x += 34;
+	}
+	else if (offset) x += 32;
 
 	HUD_DrawNumber(x, y, 32, 32, (value % 10));
 }
@@ -95,13 +103,15 @@ void HUD_Draw(void)
 	if (armor < 0)
 		armor = 0;
 
-	Engine.DrawMaterialSurface(hud_micons, HUD_ICON_HEARTRATE, 70, g_menuheight - 70, 64, 64, 1.0f);
+	Engine.DrawMaterialSurface(hud_micons, HUD_ICON_HEARTRATE, 70, g_menuheight - 70, 32, 32, 1.0f);
 
 	// Health
 	Engine.DrawMaterialSurface(hud_micons, HUD_ICON_HEALTH, 70, g_menuheight - 70, 32, 32, 1.0f);
-	HUD_DrawNumbers(170, g_menuheight - 70, health, true);
+	HUD_DrawNumbers(106, g_menuheight - 70, health, false);
+
+	Engine.DrawMaterialSurface(hud_micons, HUD_ICON_ARMORWAVE0, 70, g_menuheight - 110, 32, 32, 1.0f);
 
 	// Armor
 	Engine.DrawMaterialSurface(hud_micons, HUD_ICON_ARMOR, 70, g_menuheight - 110, 32, 32, 1.0f);
-	HUD_DrawNumbers(170, g_menuheight - 110, armor, true);
+	HUD_DrawNumbers(106, g_menuheight - 110, armor, false);
 }
