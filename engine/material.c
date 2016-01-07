@@ -658,7 +658,7 @@ void _Material_SetShader(Material_t *material, MaterialFunctionType_t context, c
 {
 	p_strncpy(material->msSkin[material->iSkins].shader.name, arg, sizeof(material->msSkin[material->iSkins].shader.name));
 
-	
+	// TODO: set shader up correctly (ensure it's loaded, blah blah blah)
 }
 
 // Universal Functions...

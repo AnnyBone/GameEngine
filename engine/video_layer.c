@@ -29,8 +29,7 @@
 	OPENGL ERROR HANDLING
 ===========================*/
 
-/*	Checks glGetError and returns a string
-	describing the fault.
+/*	Checks glGetError and returns a generic string describing the fault.
 */
 char *VideoLayer_GetErrorMessage(unsigned int uiGLError)
 {
@@ -63,27 +62,27 @@ char *VideoLayer_GetErrorMessage(unsigned int uiGLError)
 	OPENGL MATRICES
 ===========================*/
 
-static bool bVLMatrixPushed = false;
+static bool vl_matrixpushed = false;
 
 void VideoLayer_PushMatrix(void)
 {
 	VIDEO_FUNCTION_START
-	if (bVLMatrixPushed)
+	if (vl_matrixpushed)
 		return;
 
 	glPushMatrix();
-	bVLMatrixPushed = true;
+	vl_matrixpushed = true;
 	VIDEO_FUNCTION_END
 }
 
 void VideoLayer_PopMatrix(void)
 {
 	VIDEO_FUNCTION_START
-	if (!bVLMatrixPushed)
+	if (!vl_matrixpushed)
 		return;
 	
 	glPopMatrix();
-	bVLMatrixPushed = false;
+	vl_matrixpushed = false;
 	VIDEO_FUNCTION_END
 }
 

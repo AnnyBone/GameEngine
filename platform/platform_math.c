@@ -171,13 +171,13 @@ void Math_AngleVectors(MathVector3f_t angles, MathVector3f_t forward, MathVector
 {
 	float	angle, sr, sp, sy, cr, cp, cy;
 
-	angle = angles[YAW] * ((float)pMath_PI * 2 / 360);
+	angle = angles[pYAW] * ((float)pMath_PI * 2 / 360);
 	sy = (float)sin(angle);
 	cy = (float)cos(angle);
-	angle = angles[PITCH] * ((float)pMath_PI * 2 / 360);
+	angle = angles[pPITCH] * ((float)pMath_PI * 2 / 360);
 	sp = (float)sin(angle);
 	cp = (float)cos(angle);
-	angle = angles[ROLL] * ((float)pMath_PI * 2 / 360);
+	angle = angles[pROLL] * ((float)pMath_PI * 2 / 360);
 	sr = (float)sin(angle);
 	cr = (float)cos(angle);
 
