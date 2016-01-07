@@ -96,7 +96,7 @@ Sprite::Sprite()
 	Math_VectorClear(position);
 	Math_VectorClear(mins);
 	Math_VectorClear(maxs);
-	Math_Vector4Set(1.0f, Colour);
+	Math_Vector4Set(1.0f, colour);
 }
 
 Sprite::~Sprite()
@@ -105,10 +105,10 @@ Sprite::~Sprite()
 
 void Sprite::SetColour(float r, float g, float b, float a)
 {
-	Colour[0] = r;
-	Colour[1] = g;
-	Colour[2] = b;
-	Colour[3] = a;
+	colour[0] = r;
+	colour[1] = g;
+	colour[2] = b;
+	colour[3] = a;
 }
 
 void Sprite::SetPosition(MathVector3f_t nposition)
@@ -124,15 +124,15 @@ void Sprite::SetPosition(float x, float y, float z)
 	position[2] = z;
 }
 
-void Sprite::SetType(SpriteType_t type)
+void Sprite::SetType(SpriteType_t stype)
 {
 	// Don't bother if we're already that type.
-	if (Type == type)
+	if (type == stype)
 		return;
 
 	// Otherwise update, and set defaults.
-	Type = type;
-	switch (Type)
+	type = stype;
+	switch (type)
 	{
 	default:
 	case SPRITE_TYPE_DEFAULT:
@@ -175,14 +175,16 @@ void Sprite::Simulate()
 	isvisible = true;
 
 	// Ensure it's on screen.
-	if ((Colour[3] <= 0) || R_CullBox(mins, maxs))
+	if ((colour[3] <= 0) || R_CullBox(mins, maxs))
 		isvisible = false;
 
 	// Simulation depends on type, nothing complex though.
-	switch (Type)
+	switch (type)
 	{
 	default:
 	case SPRITE_TYPE_DEFAULT:
+		if (islit)
+			Math_MVToVector(Light_GetSample(position), colour);
 		break;
 	case SPRITE_TYPE_FLARE:
 	case SPRITE_TYPE_SCALE:
@@ -201,7 +203,7 @@ void Sprite::Draw()
 	if (!isvisible)
 		return;
 
-	if (Colour[3] < 1.0f)
+	if (colour[3] < 1.0f)
 		VideoLayer_Enable(VIDEO_BLEND);
 
 #if 0	// TODO
@@ -209,7 +211,7 @@ void Sprite::Draw()
 	vertexobj->Draw();
 #endif
 
-	if (Colour[3] < 1.0f)
+	if (colour[3] < 1.0f)
 		VideoLayer_Disable(VIDEO_BLEND);
 
 	if (cvSpriteDebugSize.bValue)

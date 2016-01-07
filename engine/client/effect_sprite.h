@@ -49,7 +49,7 @@ public:
 
 	float GetScale() { return scale; }
 
-	SpriteType_t GetType() { return Type; }
+	SpriteType_t GetType() { return type; }
 
 private:
 	float scale;
@@ -65,9 +65,9 @@ private:
 		position,
 		mins, maxs;
 
-	SpriteType_t Type;
+	SpriteType_t type;
 
-	Colour_t Colour;
+	Colour_t colour;
 
 	Material_t *material;
 };

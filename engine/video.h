@@ -196,6 +196,8 @@ extern "C" {
 	void GL_BuildLightmaps();
 	void R_RebuildAllLightmaps();
 
+	MathVector_t Light_GetSample(MathVector3f_t vPoint);
+
 #if __cplusplus
 };
 #endif
@@ -240,8 +242,6 @@ void Sky_Draw(void);
 void Light_Draw(void);
 void Light_Animate(void);
 void Light_MarkLights(DynamicLight_t *light,int bit,mnode_t *node);
-
-MathVector_t Light_GetSample(MathVector3f_t vPoint);
 
 DynamicLight_t *Light_GetDynamic(MathVector3f_t vPoint, bool bCheap);
 
