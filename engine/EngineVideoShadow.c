@@ -108,7 +108,7 @@ void Shadow_DrawMap(ClientEntity_t *Entity)
 void Shadow_Draw(ClientEntity_t *Entity)
 {
 	// Only meshes are valid here.
-	if (Entity->model->type == MODEL_TYPE_LEVEL)
+	if (!Entity->model || Entity->model->type == MODEL_TYPE_LEVEL)
 		return;
 
 	// Make sure the entity is actually visible.
