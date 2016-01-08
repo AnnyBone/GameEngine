@@ -150,7 +150,7 @@ void plGetUserName(char *out)
 		}
 	}
 
-	//p_strncpy(out, cUser, sizeof(out));
+	//strncpy(out, cUser, sizeof(out));
 
 	pFUNCTION_END
 }

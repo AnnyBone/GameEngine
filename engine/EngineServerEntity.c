@@ -126,7 +126,7 @@ eval_t *GetEdictFieldValue(ServerEntity_t *ed, char *field)
 	if(strlen(field) < MAX_FIELD_LEN)
 	{
 		gefvCache[rep].pcache = def;
-		p_strcpy (gefvCache[rep].field, field);
+		strcpy (gefvCache[rep].field, field);
 		rep ^= 1;
 	}
 
@@ -361,7 +361,7 @@ void ED_ParseGlobals (char *data)
 		if (!data)
 			Sys_Error ("ED_ParseEntity: EOF without closing brace");
 
-		p_strcpy(keyname, com_token);
+		strcpy(keyname, com_token);
 
 	// parse value
 		data = COM_Parse (data);
@@ -410,7 +410,7 @@ char *ED_ParseEdict(char *data, ServerEntity_t *ent)
 		if(!data)
 			Sys_Error("ED_ParseEntity: EOF without closing brace");
 
-		p_strncpy(keyname, com_token, sizeof(keyname) - 1);
+		strncpy(keyname, com_token, sizeof(keyname) - 1);
 
 		// Hack to fix keynames with trailing spaces
 #ifdef _MSC_VER

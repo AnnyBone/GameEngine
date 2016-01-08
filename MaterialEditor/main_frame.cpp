@@ -629,7 +629,7 @@ void CEditorFrame::ReloadCurrentDocument()
 		return;
 
 	char cPath[PLATFORM_MAX_PATH];
-	p_strcpy(cPath, current->cPath);
+	strcpy(cPath, current->cPath);
 
 	engine->UnloadMaterial(current);
 

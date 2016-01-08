@@ -23,6 +23,8 @@
 #include "shared_zone.h"
 #include "shared_video.h"
 
+#define	MODEL_FLAG_3DSKY	(1 << 0)	// Let's us know that the model supports 3D skies.
+
 typedef struct efrag_s
 {
 	struct mleaf_s		*leaf;
@@ -84,6 +86,7 @@ typedef struct texture_s
 #define SURFACE_MIRROR		0x40
 #define SURF_UNDERWATER		0x80
 #define SURF_NOTEXTURE		0x100 //johnfitz
+#define	SURFACE_SKIP		0x200
 
 // !!! if this is changed, it must be changed in asm_draw.h too !!!
 typedef struct

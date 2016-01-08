@@ -663,7 +663,7 @@ void COM_FileBase(const char *in,char *out)
 {
 	char *s,*s2, cBuf[PLATFORM_MAX_PATH];
 
-	p_strcpy(cBuf, in);
+	strcpy(cBuf, in);
 
 	s = cBuf + strlen(cBuf) - 1;
 
@@ -674,11 +674,11 @@ void COM_FileBase(const char *in,char *out)
 	;
 
 	if (s-s2 < 2)
-		p_strcpy(out, "?model?");
+		strcpy(out, "?model?");
 	else
 	{
 		s--;
-		p_strncpy(out, s2 + 1, s - s2);
+		strncpy(out, s2 + 1, s - s2);
 		out[s-s2] = 0;
 	}
 }
@@ -1037,7 +1037,7 @@ int COM_FindFile (const char *filename, int *handle, FILE **file)
 
 		// see if the file needs to be updated in the cache
 			if (!com_cachedir[0])
-				p_strcpy(cachepath, netpath);
+				strcpy(cachepath, netpath);
 			else
 			{
 #if defined(_WIN32)
@@ -1052,7 +1052,7 @@ int COM_FindFile (const char *filename, int *handle, FILE **file)
 				cachetime = Sys_FileTime (cachepath);
 				if (cachetime < findtime)
 					FileSystem_CopyFile(netpath,cachepath);
-				p_strcpy(netpath, cachepath);
+				strcpy(netpath, cachepath);
 			}
 
 			Sys_Printf ("FindFile: %s\n",netpath);
@@ -1219,7 +1219,7 @@ pack_t *FileSystem_LoadPackage(char *packfile)
 #ifdef _MSC_VER
 #pragma warning(suppress: 6011)	// We checked this already!
 #endif
-		p_strcpy(newfiles[i].name, info[i].name);
+		strcpy(newfiles[i].name, info[i].name);
 		newfiles[i].filepos = LittleLong(info[i].filepos);
 		newfiles[i].filelen = LittleLong(info[i].filelen);
 	}
@@ -1228,7 +1228,7 @@ pack_t *FileSystem_LoadPackage(char *packfile)
 	pack = (pack_t*)malloc_or_die(sizeof(pack_t));
 	//johnfitz
 
-	p_strcpy(pack->filename, packfile);
+	strcpy(pack->filename, packfile);
 	pack->handle = packhandle;
 	pack->numfiles = numpackfiles;
 	pack->files = newfiles;
@@ -1257,11 +1257,11 @@ void FileSystem_AddGameDirectory(char *dir)
 {
 	searchpath_t	*search;
 
-	p_strcpy(com_gamedir, dir);
+	strcpy(com_gamedir, dir);
 
 	// add the directory to the search path
 	search = (searchpath_t*)calloc_or_die(1, sizeof(searchpath_t));
-	p_strncpy(search->filename, dir, sizeof(search->filename));
+	strncpy(search->filename, dir, sizeof(search->filename));
 	search->next = com_searchpaths;
 	com_searchpaths = search;
 
@@ -1278,47 +1278,47 @@ void FileSystem_AddGameDirectory(char *dir)
 */
 void _FileSystem_SetBasePath(char *cArg)
 {
-	p_strncpy(host_parms.cBasePath, cArg, PLATFORM_MAX_PATH);
+	strncpy(host_parms.cBasePath, cArg, PLATFORM_MAX_PATH);
 }
 
 void _FileSystem_SetMaterialPath(char *cArg)
 {
-	p_strncpy(Global.cMaterialPath, cArg, PLATFORM_MAX_PATH);
+	strncpy(g_state.cMaterialPath, cArg, PLATFORM_MAX_PATH);
 }
 
 void _FileSystem_SetTexturePath(char *cArg)
 {
-	p_strncpy(Global.cTexturePath, cArg, PLATFORM_MAX_PATH);
+	strncpy(g_state.cTexturePath, cArg, PLATFORM_MAX_PATH);
 }
 
 void _FileSystem_SetSoundPath(char *cArg)
 {
-	p_strncpy(Global.cSoundPath, cArg, PLATFORM_MAX_PATH);
+	strncpy(g_state.cSoundPath, cArg, PLATFORM_MAX_PATH);
 }
 
 void _FileSystem_SetLevelPath(char *cArg)
 {
-	p_strncpy(Global.cLevelPath, cArg, PLATFORM_MAX_PATH);
+	strncpy(g_state.cLevelPath, cArg, PLATFORM_MAX_PATH);
 }
 
 void _FileSystem_SetFontPath(char *cArg)
 {
-	p_strncpy(Global.cFontPath, cArg, PLATFORM_MAX_PATH);
+	strncpy(g_state.cFontPath, cArg, PLATFORM_MAX_PATH);
 }
 
 void _FileSystem_SetScreenshotPath(char *cArg)
 {
-	p_strncpy(Global.cScreenshotPath, cArg, PLATFORM_MAX_PATH);
+	strncpy(g_state.cScreenshotPath, cArg, PLATFORM_MAX_PATH);
 }
 
 void _FileSystem_SetModulePath(char *cArg)
 {
-	p_strncpy(Global.cModulePath, cArg, PLATFORM_MAX_PATH);
+	strncpy(g_state.cModulePath, cArg, PLATFORM_MAX_PATH);
 }
 
 void _FileSystem_SetShaderPath(char *cArg)
 {
-	p_strncpy(Global.cShaderPath, cArg, PLATFORM_MAX_PATH);
+	strncpy(g_state.cShaderPath, cArg, PLATFORM_MAX_PATH);
 }
 
 /*	Script specific function that adds a new data path.
@@ -1341,9 +1341,9 @@ void FileSystem_Initialize(void)
 
 	i = COM_CheckParm ("-basedir");
 	if (i && i < com_argc-1)
-		p_strncpy(basedir, com_argv[i + 1], sizeof(basedir));
+		strncpy(basedir, com_argv[i + 1], sizeof(basedir));
 	else
-		p_strncpy(basedir, host_parms.basedir, sizeof(basedir));
+		strncpy(basedir, host_parms.basedir, sizeof(basedir));
 
 #ifdef _MSC_VER
 #pragma warning(suppress: 6053)	// This isn't an issue in this case.
@@ -1359,10 +1359,10 @@ void FileSystem_Initialize(void)
 		if (com_argv[i+1][0] == '-')
 			com_cachedir[0] = 0;
 		else
-			p_strcpy(com_cachedir, com_argv[i + 1]);
+			strcpy(com_cachedir, com_argv[i + 1]);
 	}
 	else if (host_parms.cachedir)
-		p_strncpy(com_cachedir, host_parms.cachedir, sizeof(com_cachedir));
+		strncpy(com_cachedir, host_parms.cachedir, sizeof(com_cachedir));
 	else
 		com_cachedir[0] = 0;
 
@@ -1378,51 +1378,51 @@ void FileSystem_Initialize(void)
 		// TODO: Close down in this instance, though I might change so we try to load "base" instead? ~hogsy
 		Sys_Error("Base path wasn't set in paths script!\n");
 
-	if(Global.cLevelPath[0] == ' ')
+	if (g_state.cLevelPath[0] == ' ')
 	{
 		Con_Warning("Levels path wasn't set in paths script!\n");
-		sprintf(Global.cLevelPath,"levels/");
+		sprintf(g_state.cLevelPath, "levels/");
 	}
 
-	if(Global.cMaterialPath[0] == ' ')
+	if (g_state.cMaterialPath[0] == ' ')
 	{
 		Con_Warning("Materials path wasn't set in paths script!\n");
-		sprintf(Global.cMaterialPath,"materials/");
+		sprintf(g_state.cMaterialPath, "materials/");
 	}
 
-	if(Global.cScreenshotPath[0] == ' ')
+	if (g_state.cScreenshotPath[0] == ' ')
 	{
 		Con_Warning("Screenshots path wasn't set in paths script!\n");
-		sprintf(Global.cScreenshotPath,"screenshots/");
+		sprintf(g_state.cScreenshotPath, "screenshots/");
 	}
 
-	if(Global.cSoundPath[0] == ' ')
+	if (g_state.cSoundPath[0] == ' ')
 	{
 		Con_Warning("Sounds path wasn't set in paths script!\n");
-		sprintf(Global.cSoundPath,"sounds/");
+		sprintf(g_state.cSoundPath, "sounds/");
 	}
 
-	if (Global.cFontPath[0] == ' ')
+	if (g_state.cFontPath[0] == ' ')
 	{
 		Con_Warning("Sounds path wasn't set in paths script!\n");
-		sprintf(Global.cFontPath, "fonts/");
+		sprintf(g_state.cFontPath, "fonts/");
 	}
 
-	if(Global.cTexturePath[0] == ' ')
+	if (g_state.cTexturePath[0] == ' ')
 	{
 		Con_Warning("Textures path wasn't set in paths script!\n");
-		sprintf(Global.cTexturePath,"textures/");
+		sprintf(g_state.cTexturePath, "textures/");
 	}
 
-	if (Global.cShaderPath[0] == ' ')
+	if (g_state.cShaderPath[0] == ' ')
 	{
 		Con_Warning("Shaders path wasn't set in paths script!\n");
-		sprintf(Global.cShaderPath, "shaders/");
+		sprintf(g_state.cShaderPath, "shaders/");
 	}
 
 	// Start up with the default path
 	FileSystem_AddGameDirectory(va("%s/%s",basedir,host_parms.cBasePath));
-	p_strncpy(com_gamedir, va("%s/%s", basedir, host_parms.cBasePath), sizeof(com_gamedir));
+	strncpy(com_gamedir, va("%s/%s", basedir, host_parms.cBasePath), sizeof(com_gamedir));
 
 	i = COM_CheckParm ("-game");
 	if (i && i < com_argc-1)
@@ -1446,7 +1446,7 @@ void FileSystem_Initialize(void)
 					Sys_Error ("Couldn't load packfile: %s", com_argv[i]);
 			}
 			else
-				p_strcpy(search->filename, com_argv[i]);
+				strcpy(search->filename, com_argv[i]);
 
 			search->next    = com_searchpaths;
 			com_searchpaths = search;

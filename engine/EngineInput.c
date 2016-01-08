@@ -82,7 +82,7 @@ void Input_Initialize(void)
 	Cvar_RegisterVariable(&cvInputMouseGrab,NULL);
 
 	// Ensure we're not embedded before proceeding.
-	if (!Global.bEmbeddedContext)
+	if (!g_state.embedded)
 		return;
 
 	if (SDL_Init(SDL_INIT_JOYSTICK) < 0)

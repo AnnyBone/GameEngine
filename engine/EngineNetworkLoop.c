@@ -50,14 +50,14 @@ void Loop_SearchForHosts (bool xmit)
 
 	hostCacheCount = 1;
 	if (strcmp(hostname.string, "UNNAMED") == 0)
-		p_strcpy(hostcache[0].name, "local");
+		strcpy(hostcache[0].name, "local");
 	else
-		p_strcpy(hostcache[0].name, hostname.string);
-	p_strcpy(hostcache[0].map, sv.name);
+		strcpy(hostcache[0].name, hostname.string);
+	strcpy(hostcache[0].map, sv.name);
 	hostcache[0].users = iActiveNetConnections;
 	hostcache[0].maxusers = svs.maxclients;
 	hostcache[0].driver = net_driverlevel;
-	p_strcpy(hostcache[0].cname, "local");
+	strcpy(hostcache[0].cname, "local");
 }
 
 qsocket_t *Loop_Connect (char *host)
@@ -75,7 +75,7 @@ qsocket_t *Loop_Connect (char *host)
 			return NULL;
 		}
 
-		p_strncpy(loop_client->address, "localhost", sizeof(loop_client->address));
+		strncpy(loop_client->address, "localhost", sizeof(loop_client->address));
 	}
 
 	loop_client->receiveMessageLength	= 0;
@@ -90,7 +90,7 @@ qsocket_t *Loop_Connect (char *host)
 			return NULL;
 		}
 
-		p_strncpy(loop_server->address, "LOCAL", sizeof(loop_server->address));
+		strncpy(loop_server->address, "LOCAL", sizeof(loop_server->address));
 	}
 
 	loop_server->receiveMessageLength	= 0;

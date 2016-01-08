@@ -491,7 +491,7 @@ bool System_Main(int iArgumentCount,char *cArguments[], bool bEmbedded)
 	epParameters.argv = com_argv;
 
 	if (bEmbedded)
-		Global.bEmbeddedContext = true;
+		g_state.embedded = true;
 	bIsDedicated = (COM_CheckParm("-dedicated") != 0);
 
 	if(COM_CheckParm("-heapsize"))

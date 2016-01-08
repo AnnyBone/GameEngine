@@ -37,16 +37,16 @@ typedef struct
 		cShaderPath[PLATFORM_MAX_PATH],
 		cSoundPath[PLATFORM_MAX_PATH];
 
-	bool bEmbeddedContext;
+	bool embedded;
 } EngineGlobal_t;
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-	extern EngineGlobal_t Global;
+	extern EngineGlobal_t g_state;
 
-	extern EngineImport_t EngineLauncher;
+	extern EngineImport_t g_launcher;
 
 	// System
 	double System_DoubleTime(void);

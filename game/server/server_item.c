@@ -172,7 +172,6 @@ void Item_Respawn(ServerEntity_t *ent)
 
 	ent->Physics.iSolid = SOLID_TRIGGER;
 
-	// [16/7/2012] Changed to ent rather than other... ~hogsy
 	Sound(ent,CHAN_ITEM,"items/respawn.wav",255,ATTN_NORM);
 }
 
@@ -212,7 +211,6 @@ void Item_Touch(ServerEntity_t *eItem,ServerEntity_t *eOther)
 	else
 		Engine.Con_Warning("No pickup sound set for %s!", iItem->cName);
 
-	// [20/1/2013] Changed from Con_Printf to Server_SinglePrint ~hogsy
 	Engine.Server_SinglePrint(eOther,"You got the");
 	Engine.Server_SinglePrint(eOther,va("\x02 %s",iItem->cName));
 	Engine.Server_SinglePrint(eOther,"!\n");
@@ -232,7 +230,6 @@ void Item_Touch(ServerEntity_t *eItem,ServerEntity_t *eOther)
 
 	eItem->Physics.iSolid = SOLID_NOT;
 
-	// [14/7/2012] Cleaned up ~hogsy
 	switch(iItem->iNumber)
 	{
 #ifdef GAME_OPENKATANA
@@ -350,7 +347,6 @@ void Item_Precache(void)
 	}
 }
 
-// [14/7/2012] Renamed to Item_Spawn and heavily revised ~hogsy
 void Item_Spawn(ServerEntity_t *eItem)
 {
 	Item_t	*iItem = Item_GetItem(eItem->local.style);

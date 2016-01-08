@@ -41,34 +41,34 @@ bool
 #define VIDEO_STATE_DISABLE  1
 
 ConsoleVariable_t
-	cvVideoLegacy = { "video_legacy", "0", true, false, "If enabled, disables usage of shaders and other fancy features." },
-	cvDrawFlares = { "video_flares", "1", true, false, "Toggles the rendering of environmental flares." },
+	cv_video_shaders = { "video_shaders", "1", true, false, "If enabled, disables usage of shaders and other fancy features." },
 	cvLitParticles = { "video_particles_lit", "0", true, false, "Sets whether or not particles are lit by dynamic lights." },
-	cvMultisampleSamples = { "video_multisamplesamples", "0", true, false, "Changes the number of samples." },
-	cvMultisampleMaxSamples = { "video_multisamplemaxsamples", "16", true, false, "Sets the maximum number of allowed samples." },
-	cvFullscreen = { "video_fullscreen", "0", true, false, "1: Fullscreen, 0: Windowed" },
-	cvWidth = { "video_width", "640", true, false, "Sets the width of the window." },
-	cvHeight = { "video_height", "480", true, false, "Sets the height of the window." },
-	cvVerticalSync = { "video_verticalsync", "0", true },
-	cvVideoMirror = { "video_drawmirror", "1", true, false, "Enables and disables the rendering of mirror surfaces." },
-	cvVideoDrawModels = { "video_drawmodels", "1", false, false, "Toggles models." },
-	cvVideoDrawDepth = { "video_drawdepth", "0", false, false, "If enabled, previews the debth buffer." },
-	cvVideoDrawDetail = { "video_drawdetail", "1", true, false, "If enabled, detail maps are drawn." },
-	cvVideoDrawMaterials = { "video_drawmaterials", "1", true, false, "If enabled, materials are drawn." },
-	cvVideoDrawSky = { "video_drawsky", "1", false, false, "Toggles rendering of the sky." },
-	cvVideoDetailScale = { "video_detailscale", "3", true, false, "Changes the scaling used for detail maps." },
-	cvVideoAlphaTrick = { "video_alphatrick", "1", true, false, "If enabled, draws alpha-tested surfaces twice for extra quality." },
-	cvVideoFinish = { "video_finish", "0", true, false, "If enabled, calls glFinish at the end of the frame." },
-	cvVideoVBO = { "video_vbo", "0", true, false, "Enables support of Vertex Buffer Objects." },
-	cvVideoPlayerShadow = { "video_playershadow", "1", true, false, "If enabled, the players own shadow will be drawn." },
-	cvVideoDebugLog = { "video_debuglog", "video", true, false, "The name of the output log for video debugging." };
-ConsoleVariable_t cvVideoDrawShadowMap = { "video_draw_shadowmap", "1", true, false, "Enables/disables the rendering of shadow maps." };
-ConsoleVariable_t cvVideoDrawShadowBlob = { "video_draw_shadowblob", "1", true, false, "Enables/disables the rendering of a shadow blob." };
 
-#define VIDEO_MAX_SAMPLES	cvMultisampleMaxSamples.iValue
+	cv_video_msaasamples = { "video_multisamplesamples", "0", true, false, "Changes the number of samples." },
+	cv_video_msaamaxsamples = { "video_msaamaxsamples", "16", true, false, "Sets the maximum number of allowed samples." },
+	cv_video_fullscreen = { "video_fullscreen", "0", true, false, "1: Fullscreen, 0: Windowed" },
+	cv_video_width = { "video_width", "640", true, false, "Sets the width of the window." },
+	cv_video_height = { "video_height", "480", true, false, "Sets the height of the window." },
+	cv_video_verticlesync = { "video_verticalsync", "0", true },
+
+	cv_video_drawmirrors = { "video_drawmirrors", "1", true, false, "Enables and disables the rendering of mirror surfaces." },
+	cv_video_drawmodels = { "video_drawmodels", "1", false, false, "Toggles models." },
+	cv_video_drawdepth = { "video_drawdepth", "0", false, false, "If enabled, previews the debth buffer." },
+	cv_video_drawdetail = { "video_drawdetail", "1", true, false, "If enabled, detail maps are drawn." },
+	cv_video_drawmaterials = { "video_drawmaterials", "1", false, false, "If enabled, materials are drawn." },
+	cv_video_drawsky = { "video_drawsky", "1", false, false, "Toggles rendering of the sky." },
+	cv_video_drawplayershadow = { "video_drawplayershadow", "1", true, false, "If enabled, the players own shadow will be drawn." },
+
+	cv_video_clearbuffers = { "video_clearbuffers", "1", true, false },
+	cv_video_detailscale = { "video_detailscale", "3", true, false, "Changes the scaling used for detail maps." },
+	cv_video_alphatrick = { "video_alphatrick", "1", true, false, "If enabled, draws alpha-tested surfaces twice for extra quality." },
+	cv_video_finish = { "video_finish", "0", true, false, "If enabled, calls glFinish at the end of the frame." },
+	cv_video_log = { "video_debuglog", "video", true, false, "The name of the output log for video debugging." };
+ConsoleVariable_t cv_video_drawshadowmap = { "video_draw_shadowmap", "1", true, false, "Enables/disables the rendering of shadow maps." };
+ConsoleVariable_t cv_video_drawshadowblob = { "video_draw_shadowblob", "1", true, false, "Enables/disables the rendering of a shadow blob." };
+
+#define VIDEO_MAX_SAMPLES	cv_video_msaamaxsamples.iValue
 #define VIDEO_MIN_SAMPLES	0
-
-gltexture_t	*gDepthTexture;
 
 // TODO: Move this? It's used mainly for silly client stuff...
 struct gltexture_s *gEffectTexture[MAX_EFFECTS];
@@ -93,7 +93,7 @@ void Video_Initialize(void)
 
 	Con_Printf("Initializing video...\n");
 
-	memset(Video.uiCurrentTexture, -1, sizeof(int)*VIDEO_MAX_UNITS); // "To avoid unnecessary texture sets"
+	memset(Video.current_texture, -1, sizeof(int)*VIDEO_MAX_UNITS); // "To avoid unnecessary texture sets"
 
 	// Only enabled if the hardware supports it.
 	Video.extensions.vertex_buffer_object	= false;
@@ -102,32 +102,32 @@ void Video_Initialize(void)
 	Video.extensions.shadow					= false;
 
 	// Give everything within the video sub-system its default value.
-	Video.bDebugFrame		= false;	// Not debugging the initial frame!
+	Video.debug_frame		= false;	// Not debugging the initial frame!
 	Video.bActive			= true;		// Window is intially assumed active.
-	Video.bUnlocked			= true;		// Video mode is initially locked.
+	Video.unlocked			= true;		// Video mode is initially locked.
 	Video.current_program	= 0;
 
-	Cvar_RegisterVariable(&cvMultisampleSamples,NULL);
-	Cvar_RegisterVariable(&cvVideoDrawModels,NULL);
-	Cvar_RegisterVariable(&cvFullscreen,NULL);
-	Cvar_RegisterVariable(&cvWidth,NULL);
-	Cvar_RegisterVariable(&cvHeight,NULL);
-	Cvar_RegisterVariable(&cvVerticalSync,NULL);
+	Cvar_RegisterVariable(&cv_video_msaasamples, NULL);
+	Cvar_RegisterVariable(&cv_video_drawmodels, NULL);
+	Cvar_RegisterVariable(&cv_video_fullscreen, NULL);
+	Cvar_RegisterVariable(&cv_video_width, NULL);
+	Cvar_RegisterVariable(&cv_video_height, NULL);
+	Cvar_RegisterVariable(&cv_video_verticlesync, NULL);
 	Cvar_RegisterVariable(&cvLitParticles, NULL);
-	Cvar_RegisterVariable(&cvDrawFlares, NULL);
-	Cvar_RegisterVariable(&cvVideoDebugLog,NULL);
-	Cvar_RegisterVariable(&cvVideoDrawDepth,NULL);
-	Cvar_RegisterVariable(&cvVideoFinish, NULL);
-	Cvar_RegisterVariable(&cvVideoAlphaTrick, NULL);
-	Cvar_RegisterVariable(&cvVideoMirror, NULL);
-	Cvar_RegisterVariable(&cvVideoDrawMaterials, NULL);
-	Cvar_RegisterVariable(&cvVideoDrawDetail, NULL);
-	Cvar_RegisterVariable(&cvVideoDrawSky, NULL);
-	Cvar_RegisterVariable(&cvVideoDrawShadowMap, NULL);
-	Cvar_RegisterVariable(&cvVideoDrawShadowBlob, NULL);
-	Cvar_RegisterVariable(&cvVideoDetailScale, NULL);
-	Cvar_RegisterVariable(&cvVideoPlayerShadow, NULL);
-	Cvar_RegisterVariable(&cvVideoLegacy, NULL);
+	Cvar_RegisterVariable(&cv_video_log, NULL);
+	Cvar_RegisterVariable(&cv_video_drawdepth, NULL);
+	Cvar_RegisterVariable(&cv_video_finish, NULL);
+	Cvar_RegisterVariable(&cv_video_alphatrick, NULL);
+	Cvar_RegisterVariable(&cv_video_drawmirrors, NULL);
+	Cvar_RegisterVariable(&cv_video_drawmaterials, NULL);
+	Cvar_RegisterVariable(&cv_video_drawdetail, NULL);
+	Cvar_RegisterVariable(&cv_video_drawsky, NULL);
+	Cvar_RegisterVariable(&cv_video_drawshadowmap, NULL);
+	Cvar_RegisterVariable(&cv_video_drawshadowblob, NULL);
+	Cvar_RegisterVariable(&cv_video_detailscale, NULL);
+	Cvar_RegisterVariable(&cv_video_drawplayershadow, NULL);
+	Cvar_RegisterVariable(&cv_video_shaders, NULL);
+	Cvar_RegisterVariable(&cv_video_clearbuffers, NULL);
 
 	Cmd_AddCommand("video_restart",Video_UpdateWindow);
 	Cmd_AddCommand("video_debug",Video_DebugCommand);
@@ -135,73 +135,73 @@ void Video_Initialize(void)
 	// Figure out what resolution we're going to use.
 	if (COM_CheckParm("-window"))
 	{
-		Video.bFullscreen = false;
-		Video.bUnlocked = false;
+		Video.fullscreen = false;
+		Video.unlocked = false;
 	}
 	else
 		// Otherwise set us as fullscreen.
-		Video.bFullscreen = cvFullscreen.bValue;
+		Video.fullscreen = cv_video_fullscreen.bValue;
 
 	if (COM_CheckParm("-width"))
 	{
 		Video.iWidth = atoi(com_argv[COM_CheckParm("-width") + 1]);
-		Video.bUnlocked = false;
+		Video.unlocked = false;
 	}
 	else
-		Video.iWidth = cvWidth.iValue;
+		Video.iWidth = cv_video_width.iValue;
 
 	if (COM_CheckParm("-height"))
 	{
 		Video.iHeight = atoi(com_argv[COM_CheckParm("-height") + 1]);
-		Video.bUnlocked = false;
+		Video.unlocked = false;
 	}
 	else
-		Video.iHeight = cvHeight.iValue;
+		Video.iHeight = cv_video_height.iValue;
 
-	if (!Global.bEmbeddedContext)
+	if (!g_state.embedded)
 		Window_InitializeVideo();
 
-	glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &Video.iSupportedUnits);
-	if (Video.iSupportedUnits < VIDEO_MAX_UNITS)
-		Sys_Error("Your system doesn't support the required number of TMUs! (%i)\n", Video.iSupportedUnits);
+	glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &Video.num_textureunits);
+	if (Video.num_textureunits < VIDEO_MAX_UNITS)
+		Sys_Error("Your system doesn't support the required number of TMUs! (%i)\n", Video.num_textureunits);
 
 	// Attempt to dynamically allocated the number of supported TMUs.
-	Video.TextureUnits = (VideoTextureMU_t*)Hunk_Alloc(sizeof(VideoTextureMU_t)*Video.iSupportedUnits);
-	if (!Video.TextureUnits)
-		Sys_Error("Failed to allocated handler for the number of supported TMUs! (%i)\n", Video.iSupportedUnits);
+	Video.textureunits = (VideoTextureMU_t*)Hunk_Alloc(sizeof(VideoTextureMU_t)*Video.num_textureunits);
+	if (!Video.textureunits)
+		Sys_Error("Failed to allocated handler for the number of supported TMUs! (%i)\n", Video.num_textureunits);
 
-	for (i = 0; i < Video.iSupportedUnits; i++)
+	for (i = 0; i < Video.num_textureunits; i++)
 	{
-		Video.TextureUnits[i].isactive = false;
-		Video.TextureUnits[i].CurrentTexEnvMode = VIDEO_TEXTURE_MODE_REPLACE;
-		Video.TextureUnits[i].uiCurrentTexture = 0;
+		Video.textureunits[i].isactive			= false;
+		Video.textureunits[i].current_envmode	= VIDEO_TEXTURE_MODE_REPLACE;
+		Video.textureunits[i].current_texture	= 0;
 	}
 
 	// All units are initially disabled.
-	memset(Video.bUnitState, 0, sizeof(Video.bUnitState));
+	memset(Video.textureunit_state, 0, sizeof(Video.textureunit_state));
 
 	glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &Video.fMaxAnisotropy);
 
 	// Get any information that will be presented later.
-	Video.cGLVendor = (char*)glGetString(GL_VENDOR);
-	Video.cGLRenderer = (char*)glGetString(GL_RENDERER);
-	Video.cGLVersion = (char*)glGetString(GL_VERSION);
-	Video.cGLExtensions = (char*)glGetString(GL_EXTENSIONS);
+	Video.gl_vendor = (char*)glGetString(GL_VENDOR);
+	Video.gl_renderer = (char*)glGetString(GL_RENDERER);
+	Video.gl_version = (char*)glGetString(GL_VERSION);
+	Video.gl_extensions = (char*)glGetString(GL_EXTENSIONS);
 
 	GLeeInit();
 
 	Con_DPrintf(" Checking for extensions...\n");
 
 	// Check that the required capabilities are supported.
-	if (!GLEE_ARB_multitexture)
-		Sys_Error("Video hardware incapable of multi-texturing!\n");
-	else if (!GLEE_ARB_texture_env_combine && !GLEE_EXT_texture_env_combine)
-		Sys_Error("ARB/EXT_texture_env_combine isn't supported by your hardware!\n");
-	else if (!GLEE_ARB_texture_env_add && !GLEE_EXT_texture_env_add)
-		Sys_Error("ARB/EXT_texture_env_add isn't supported by your hardware!\n");
-	else if (!GLEE_EXT_fog_coord)
-		Sys_Error("EXT_fog_coord isn't supported by your hardware!\n");
+	if (!GLEE_ARB_multitexture) Sys_Error("Video hardware incapable of multi-texturing!\n");
+	else if (!GLEE_ARB_texture_env_combine && !GLEE_EXT_texture_env_combine) Sys_Error("ARB/EXT_texture_env_combine isn't supported by your hardware!\n");
+	else if (!GLEE_ARB_texture_env_add && !GLEE_EXT_texture_env_add) Sys_Error("ARB/EXT_texture_env_add isn't supported by your hardware!\n");
+	//else if (!GLEE_EXT_fog_coord) Sys_Error("EXT_fog_coord isn't supported by your hardware!\n");
+#ifdef VIDEO_SUPPORT_SHADERS
+	else if (!GLEE_ARB_vertex_program || !GLEE_ARB_fragment_program) Sys_Error("Shaders aren't supported by this hardware!\n");
+#endif
 
+	// Optional capabilities.
 	if (GLEE_SGIS_generate_mipmap) Video.extensions.generate_mipmap = true;
 	else Con_Warning("Hardware mipmap generation isn't supported!\n");
 	if (GLEE_ARB_depth_texture) Video.extensions.depth_texture = true;
@@ -211,22 +211,16 @@ void Video_Initialize(void)
 	if (GLEE_ARB_vertex_buffer_object) Video.extensions.vertex_buffer_object = true;
 	else Con_Warning("Hardware doesn't support Vertex Buffer Objects!\n");
 
-#ifdef VIDEO_SUPPORT_SHADERS
-	// Shaders?
-	if (!GLEE_ARB_vertex_program || !GLEE_ARB_fragment_program)
-		Sys_Error("Unsupported video hardware!\n");
-#endif
-
 	// Set the default states...
 
 	glCullFace(GL_BACK);
 	glFrontFace(GL_CW);
 	glAlphaFunc(GL_GREATER, 0.5f);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	//glShadeModel(GL_SMOOTH);
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 	glDepthRange(0, 1);
 	glDepthFunc(GL_LEQUAL);
+	glClearStencil(1);
 
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -235,7 +229,7 @@ void Video_Initialize(void)
 
 	Video_SelectTexture(VIDEO_TEXTURE_LIGHT);
 
-	// Overbrights
+	// Overbrights.
 	VideoLayer_SetTextureEnvironmentMode(VIDEO_TEXTURE_MODE_COMBINE);
 	glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
 	glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_PREVIOUS);
@@ -249,7 +243,7 @@ void Video_Initialize(void)
 	vid.conwidth &= 0xFFFFFFF8;
 	vid.conheight = vid.conwidth*Video.iHeight / Video.iWidth;
 
-	Video.bVerticalSync = cvVerticalSync.bValue;
+	Video.vertical_sync = cv_video_verticlesync.bValue;
 
 #ifdef VIDEO_SUPPORT_SHADERS
 	VideoShader_Initialize();
@@ -264,30 +258,28 @@ void Video_Initialize(void)
 
 void Video_DebugCommand(void)
 {
-	if(!Video.bDebugFrame)
-		Video.bDebugFrame = true;
+	if (!Video.debug_frame)
+		Video.debug_frame = true;
 
-	plClearLog(cvVideoDebugLog.string);
+	plClearLog(cv_video_log.string);
 }
 
 /**/
 
-/*	Clears the color and depth buffers.
+/*	Clears the color, stencil and depth buffers.
 */
 void Video_ClearBuffer(void)
 {
-	int	iClear =
-		GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT;
+	if (!cv_video_clearbuffers.bValue)
+		return;
 
-	// Handle the stencil buffer too.
-	if(r_shadows.value >= 2)
-	{
-		glClearStencil(1);
+	int clear = 0;
+	if ((cls.state != ca_connected) || g_state.embedded)
+		clear |= GL_COLOR_BUFFER_BIT;
+	if (cv_video_drawmirrors.bValue)
+		clear |= GL_STENCIL_BUFFER_BIT;
 
-		iClear |= GL_STENCIL_BUFFER_BIT;
-	}
-
-	glClear(iClear);
+	glClear(GL_DEPTH_BUFFER_BIT | clear);
 }
 
 /*	Displays the depth buffer for testing purposes.
@@ -295,9 +287,10 @@ void Video_ClearBuffer(void)
 */
 void Video_DrawDepthBuffer(void)
 {
-	float *uByte;
+	static gltexture_t	*depth_texture = NULL;
+	float				*uByte;
 
-	if(!cvVideoDrawDepth.bValue)
+	if(!cv_video_drawdepth.bValue)
 		return;
 
 	// Allocate the pixel data.
@@ -309,10 +302,10 @@ void Video_DrawDepthBuffer(void)
 	glReadPixels(0, 0, Video.iWidth, Video.iHeight, GL_DEPTH_COMPONENT, GL_FLOAT, uByte);
 
 	// Create our depth texture.
-	gDepthTexture = TexMgr_NewTexture();
+	depth_texture = TexMgr_NewTexture();
 
 	// Set the texture.
-	Video_SetTexture(gDepthTexture);
+	Video_SetTexture(depth_texture);
 
 	// Copy it to the texture.
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, Video.iWidth, Video.iHeight, 0, GL_LUMINANCE, GL_FLOAT, uByte);
@@ -323,7 +316,7 @@ void Video_DrawDepthBuffer(void)
 	GL_SetCanvas(CANVAS_DEFAULT);
 
 	// Delete the texture, so we can recreate it later.
-	TexMgr_FreeTexture(gDepthTexture);
+	TexMgr_FreeTexture(depth_texture);
 
 	// Free the pixel data.
 	free(uByte);
@@ -335,40 +328,40 @@ void Video_DrawDepthBuffer(void)
 
 void Video_UpdateWindow(void)
 {
-	if (Global.bEmbeddedContext || !Video.bInitialized || !Video.bActive)
+	if (g_state.embedded || !Video.bInitialized || !Video.bActive)
 		return;
 
-	if(!Video.bUnlocked)
+	if (!Video.unlocked)
 	{
-		Cvar_SetValue(cvFullscreen.name,(float)Video.bFullscreen);
-		Cvar_SetValue(cvWidth.name,(float)Video.iWidth);
-		Cvar_SetValue(cvHeight.name,(float)Video.iHeight);
-		Cvar_SetValue(cvVerticalSync.name,(float)Video.bVerticalSync);
+		Cvar_SetValue(cv_video_fullscreen.name, (float)Video.fullscreen);
+		Cvar_SetValue(cv_video_width.name, (float)Video.iWidth);
+		Cvar_SetValue(cv_video_height.name, (float)Video.iHeight);
+		Cvar_SetValue(cv_video_verticlesync.name, (float)Video.vertical_sync);
 
-		Video.bUnlocked = true;
+		Video.unlocked = true;
 		return;
 	}
 
 	// Ensure the given width and height are within reasonable bounds.
-	if (cvWidth.iValue < WINDOW_MINIMUM_WIDTH ||
-		cvHeight.iValue < WINDOW_MINIMUM_HEIGHT)
+	if (cv_video_width.iValue < WINDOW_MINIMUM_WIDTH ||
+		cv_video_height.iValue < WINDOW_MINIMUM_HEIGHT)
 	{
 		Con_Warning("Failed to get an appropriate resolution!\n");
 
-		Cvar_SetValue(cvWidth.name, WINDOW_MINIMUM_WIDTH);
-		Cvar_SetValue(cvHeight.name, WINDOW_MINIMUM_HEIGHT);
+		Cvar_SetValue(cv_video_width.name, WINDOW_MINIMUM_WIDTH);
+		Cvar_SetValue(cv_video_height.name, WINDOW_MINIMUM_HEIGHT);
 	}
 	// If we're not fullscreen, then constrain our window size to the size of the desktop.
-	else if (!Video.bFullscreen && ((cvWidth.iValue > plGetScreenWidth()) || (cvHeight.iValue > plGetScreenHeight())))
+	else if (!Video.fullscreen && ((cv_video_width.iValue > plGetScreenWidth()) || (cv_video_height.iValue > plGetScreenHeight())))
 	{
 		Con_Warning("Attempted to set resolution beyond scope of desktop!\n");
 
-		Cvar_SetValue(cvWidth.name, plGetScreenWidth());
-		Cvar_SetValue(cvHeight.name, plGetScreenHeight());
+		Cvar_SetValue(cv_video_width.name, plGetScreenWidth());
+		Cvar_SetValue(cv_video_height.name, plGetScreenHeight());
 	}
 
-	Video.iWidth = cvWidth.iValue;
-	Video.iHeight = cvHeight.iValue;
+	Video.iWidth = cv_video_width.iValue;
+	Video.iHeight = cv_video_height.iValue;
 
 	Window_UpdateVideo();
 
@@ -376,15 +369,15 @@ void Video_UpdateWindow(void)
 	SCR_Conwidth_f();
 }
 
-void Video_SetViewportSize(int iWidth, int iHeight)
+void Video_SetViewportSize(int w, int h)
 {
-	if (iWidth <= 0)
-		iWidth = 1;
-	if (iHeight <= 0)
-		iHeight = 1;
+	if (w <= 0)
+		w = 1;
+	if (h <= 0)
+		h = 1;
 
-	Video.iWidth = iWidth;
-	Video.iHeight = iHeight;
+	Video.iWidth = w;
+	Video.iHeight = h;
 
 	vid.bRecalcRefDef = true;
 
@@ -433,18 +426,18 @@ void Video_SetTexture(gltexture_t *gTexture)
 	if(!gTexture)
 		gTexture = notexture;
 	// If it's the same as the last, don't bother.
-	else if (gTexture->texnum == Video.uiCurrentTexture[Video.uiActiveUnit])
+	else if (gTexture->texnum == Video.current_texture[Video.current_textureunit])
 		return;
 
-	Video.uiCurrentTexture[Video.uiActiveUnit] = gTexture->texnum;
+	Video.current_texture[Video.current_textureunit] = gTexture->texnum;
 
 	gTexture->visframe = r_framecount;
 
 	// Bind it.
 	glBindTexture(GL_TEXTURE_2D,gTexture->texnum);
 
-	if(Video.bDebugFrame)
-		plWriteLog(cvVideoDebugLog.string, "Video: Bound texture (%s) (%i)\n", gTexture->name, Video.uiActiveUnit);
+	if (Video.debug_frame)
+		plWriteLog(cv_video_log.string, "Video: Bound texture (%s) (%i)\n", gTexture->name, Video.current_textureunit);
 }
 
 /*
@@ -455,8 +448,8 @@ void Video_SetTexture(gltexture_t *gTexture)
 */
 unsigned int Video_GetTextureUnit(unsigned int uiTarget)
 {
-	if (Video.bDebugFrame)
-		plWriteLog(cvVideoDebugLog.string, "Video: Attempting to get TMU target %i\n", uiTarget);
+	if (Video.debug_frame)
+		plWriteLog(cv_video_log.string, "Video: Attempting to get TMU target %i\n", uiTarget);
 
 #if 0
 	switch (uiTarget)
@@ -481,15 +474,15 @@ unsigned int Video_GetTextureUnit(unsigned int uiTarget)
 	}
 #endif
 
-	if (Video.bDebugFrame)
-		plWriteLog(cvVideoDebugLog.string, "Video: Returning TMU %i\n", GL_TEXTURE0 + uiTarget);
+	if (Video.debug_frame)
+		plWriteLog(cv_video_log.string, "Video: Returning TMU %i\n", GL_TEXTURE0 + uiTarget);
 
 	return GL_TEXTURE0 + uiTarget;
 }
 
 void Video_SelectTexture(unsigned int uiTarget)
 {
-	if(uiTarget == Video.uiActiveUnit)
+	if (uiTarget == Video.current_textureunit)
 		return;
 
 	if (uiTarget > VIDEO_MAX_UNITS)
@@ -497,10 +490,10 @@ void Video_SelectTexture(unsigned int uiTarget)
 
 	glActiveTexture(Video_GetTextureUnit(uiTarget));
 
-	Video.uiActiveUnit = uiTarget;
+	Video.current_textureunit = uiTarget;
 
-	if(Video.bDebugFrame)
-		plWriteLog(cvVideoDebugLog.string, "Video: Texture Unit %i\n", Video.uiActiveUnit);
+	if (Video.debug_frame)
+		plWriteLog(cv_video_log.string, "Video: Texture Unit %i\n", Video.current_textureunit);
 }
 
 /*
@@ -596,10 +589,10 @@ void Video_DrawObject(
 	if (uiVerts <= 0)
 		return;
 
-	if (Video.bDebugFrame)
+	if (Video.debug_frame)
 	{
 		uiVideoDrawObjectCalls++;
-		plWriteLog(cvVideoDebugLog.string, "Video: Drawing object (%i) (%i)\n", uiVerts, vpPrimitiveType);
+		plWriteLog(cv_video_log.string, "Drawing object (%i) (%i)\n", uiVerts, vpPrimitiveType);
 	}
 
 	bVideoIgnoreCapabilities = true;
@@ -616,7 +609,7 @@ void Video_DrawObject(
 	glNormalPointer(GL_FLOAT, sizeof(VideoObjectVertex_t), voObject->mvNormal);
 
 	for (i = 0; i < VIDEO_MAX_UNITS; i++)
-		if (Video.bUnitState[i])
+		if (Video.textureunit_state[i])
 		{
 			glClientActiveTexture(Video_GetTextureUnit(i));
 			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -634,7 +627,7 @@ void Video_DrawObject(
 	glDisableClientState(GL_NORMAL_ARRAY);
 
 	for (i = 0; i < VIDEO_MAX_UNITS; i++)
-		if (Video.bUnitState[i])
+		if (Video.textureunit_state[i])
 		{
 			glClientActiveTexture(Video_GetTextureUnit(i));
 			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -688,13 +681,13 @@ void Video_EnableCapabilities(unsigned int iCapabilities)
 			break;
 
 		if (iCapabilities & VIDEO_TEXTURE_2D)
-			Video.bUnitState[Video.uiActiveUnit] = true;
+			Video.textureunit_state[Video.current_textureunit] = true;
 
 		if(iCapabilities & vcCapabilityList[i].uiFirst)
 		{
 			if(!bVideoIgnoreCapabilities)
-				// [24/2/2014] Collect up a list of the new capabilities we set ~hogsy
-				Video.TextureUnits[Video.uiActiveUnit].capabilities[VIDEO_STATE_ENABLE] |= vcCapabilityList[i].uiFirst;
+				// Collect up a list of the new capabilities we set.
+				Video.textureunits[Video.current_textureunit].capabilities[VIDEO_STATE_ENABLE] |= vcCapabilityList[i].uiFirst;
 
 			glEnable(vcCapabilityList[i].uiSecond);
 		}
@@ -716,16 +709,16 @@ void Video_DisableCapabilities(unsigned int iCapabilities)
 			break;
 
 		if (iCapabilities & VIDEO_TEXTURE_2D)
-			Video.bUnitState[Video.uiActiveUnit] = false;
+			Video.textureunit_state[Video.current_textureunit] = false;
 
 		if(iCapabilities & vcCapabilityList[i].uiFirst)
 		{
-			if(Video.bDebugFrame)
-				plWriteLog(cvVideoDebugLog.string, "Video: Disabling %s (%i)\n", vcCapabilityList[i].ccIdentifier, Video.uiActiveUnit);
+			if (Video.debug_frame)
+				plWriteLog(cv_video_log.string, "Video: Disabling %s (%i)\n", vcCapabilityList[i].ccIdentifier, Video.current_textureunit);
 
 			if(!bVideoIgnoreCapabilities)
 				// Collect up a list of the new capabilities we disabled.
-				Video.TextureUnits[Video.uiActiveUnit].capabilities[VIDEO_STATE_DISABLE] |= vcCapabilityList[i].uiFirst;
+				Video.textureunits[Video.current_textureunit].capabilities[VIDEO_STATE_DISABLE] |= vcCapabilityList[i].uiFirst;
 
 			glDisable(vcCapabilityList[i].uiSecond);
 		}
@@ -746,7 +739,7 @@ bool Video_GetCapability(unsigned int iCapability)
 		if (!vcCapabilityList[i].uiFirst)
 			break;
 
-		if (iCapability & Video.TextureUnits[Video.uiActiveUnit].capabilities[VIDEO_STATE_ENABLE])
+		if (iCapability & Video.textureunits[Video.current_textureunit].capabilities[VIDEO_STATE_ENABLE])
 			return true;
 	}
 
@@ -764,15 +757,15 @@ void Video_ResetCapabilities(bool bClearActive)
 	VIDEO_FUNCTION_START
 	int i;
 
-	if(Video.bDebugFrame)
-		plWriteLog(cvVideoDebugLog.string, "Video: Resetting capabilities...\n");
+	if (Video.debug_frame)
+		plWriteLog(cv_video_log.string, "Video: Resetting capabilities...\n");
 
 	Video_SelectTexture(VIDEO_TEXTURE_DIFFUSE);
 
 	if(bClearActive)
 	{
-		if(Video.bDebugFrame)
-			plWriteLog(cvVideoDebugLog.string, "Video: Clearing active capabilities...\n");
+		if (Video.debug_frame)
+			plWriteLog(cv_video_log.string, "Video: Clearing active capabilities...\n");
 
 		bVideoIgnoreCapabilities = true;
 
@@ -782,11 +775,11 @@ void Video_ResetCapabilities(bool bClearActive)
 		// Clear out capability list.
 		for (i = 0; i < VIDEO_MAX_UNITS; i++)
 		{
-			Video_DisableCapabilities(Video.TextureUnits[i].capabilities[VIDEO_STATE_ENABLE]);
-			Video_EnableCapabilities(Video.TextureUnits[i].capabilities[VIDEO_STATE_DISABLE]);
+			Video_DisableCapabilities(Video.textureunits[i].capabilities[VIDEO_STATE_ENABLE]);
+			Video_EnableCapabilities(Video.textureunits[i].capabilities[VIDEO_STATE_DISABLE]);
 
-			Video.TextureUnits[i].capabilities[0] =
-			Video.TextureUnits[i].capabilities[1] = 0;
+			Video.textureunits[i].capabilities[0] =
+			Video.textureunits[i].capabilities[1] = 0;
 		}
 
 		VideoLayer_BlendFunc(VIDEO_BLEND_DEFAULT);
@@ -794,8 +787,8 @@ void Video_ResetCapabilities(bool bClearActive)
 
 		bVideoIgnoreCapabilities = false;
 
-		if(Video.bDebugFrame)
-			plWriteLog(cvVideoDebugLog.string, "Video: Finished clearing capabilities.\n");
+		if (Video.debug_frame)
+			plWriteLog(cv_video_log.string, "Video: Finished clearing capabilities.\n");
 	}
 	VIDEO_FUNCTION_END
 }
@@ -826,11 +819,11 @@ void Video_PreFrame(void)
 */
 void Video_Frame(void)
 {
-	if (Global.bEmbeddedContext || (Video.bInitialized == false))
+	if (g_state.embedded || (Video.bInitialized == false))
 		return;
 
-	if (Video.bDebugFrame)
-		plWriteLog(cvVideoDebugLog.string, "Video: Start of frame\n");
+	if (Video.debug_frame)
+		plWriteLog(cv_video_log.string, "Video: Start of frame\n");
 
 #ifdef VIDEO_SUPPORT_SHADERS
 #ifdef VIDEO_SUPPORT_FRAMEBUFFERS
@@ -860,11 +853,11 @@ void Video_PostFrame(void)
 
 	Screen_DrawFPS();
 
-	if (cvVideoFinish.bValue)
+	if (cv_video_finish.bValue)
 		glFinish();
 
-	if (Video.bDebugFrame)
-		Video.bDebugFrame = false;
+	if (Video.debug_frame)
+		Video.debug_frame = false;
 }
 
 /*	Shuts down the video sub-system.
@@ -878,7 +871,7 @@ void Video_Shutdown(void)
 	// Let us know that we're shutting down the video sub-system.
 	Con_Printf("Shutting down video...\n");
 
-	if (!Global.bEmbeddedContext)
+	if (!g_state.embedded)
 		Window_Shutdown();
 
 	// Set the initialisation value to false, in-case we want to try again later.

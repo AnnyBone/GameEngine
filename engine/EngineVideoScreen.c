@@ -137,7 +137,7 @@ int			scr_erase_center;
 */
 void SCR_CenterPrint (char *str) //update centerprint data
 {
-	p_strncpy(scr_centerstring, str, sizeof(scr_centerstring) - 1);
+	strncpy(scr_centerstring, str, sizeof(scr_centerstring) - 1);
 	scr_centertime_off = scr_centertime.value;
 	scr_centertime_start = cl.time;
 
@@ -436,7 +436,7 @@ void SCR_DrawClock (void)
 		seconds = systime.wSecond;
 
 		if (hours > 12)
-			p_strcpy(m, "PM");
+			strcpy(m, "PM");
 		hours = hours%12;
 		if (hours == 0)
 			hours = 12;
@@ -568,7 +568,7 @@ void Screen_SetUpToDrawConsole(void)
 
 	Con_CheckResize();
 
-	if(Menu->GetState() & MENU_STATE_LOADING)
+	if (g_menu->GetState() & MENU_STATE_LOADING)
 		return;		// never a console with loading plaque
 
 	// Decide on the height of the console
@@ -630,13 +630,13 @@ void SCR_ScreenShot_f (void)
 	char	tganame[32], checkname[PLATFORM_MAX_PATH];
 	int		i;
 
-	if (!plCreateDirectory(va("%s/%s", com_gamedir, Global.cScreenshotPath)))
+	if (!plCreateDirectory(va("%s/%s", com_gamedir, g_state.cScreenshotPath)))
 		Sys_Error("Failed to create directory!\n%s", plGetError());
 
 	// find a file name to save it to
 	for (i = 0; i < 10000; i++)
 	{
-		sprintf(tganame,"%s%04i.tga",Global.cScreenshotPath,i);
+		sprintf(tganame, "%s%04i.tga", g_state.cScreenshotPath, i);
 		sprintf(checkname,"%s/%s",com_gamedir,tganame);
 		if(Sys_FileTime(checkname) == -1)
 			break;	// file doesn't exist
@@ -649,7 +649,7 @@ void SCR_ScreenShot_f (void)
 	}
 
 	//get data
-	buffer = (byte*)malloc(glwidth*glheight*3);
+	buffer = (uint8_t*)malloc(glwidth*glheight*3);
 	glReadPixels(glx,gly,glwidth,glheight,GL_RGB,GL_UNSIGNED_BYTE,buffer);
 
 	// now write the file
@@ -674,11 +674,11 @@ void SCR_BeginLoadingPlaque (void)
 	scr_centertime_off	= 0;
 	scr_con_current		= 0;
 
-	Menu->AddState(MENU_STATE_LOADING);
+	g_menu->AddState(MENU_STATE_LOADING);
 
 	Video_Frame();
 
-	Menu->RemoveState(MENU_STATE_LOADING);
+	g_menu->RemoveState(MENU_STATE_LOADING);
 
 	scr_disabled_for_loading	= true;
 	scr_disabled_time			= realtime;
@@ -868,12 +868,12 @@ void SCR_UpdateScreen (void)
 	// do 3D refresh drawing, and then update the screen
 	Screen_SetUpToDrawConsole();
 
-	if (cvMultisampleSamples.iValue > 0)
+	if (cv_video_msaasamples.iValue > 0)
 		VideoLayer_Enable(VIDEO_MULTISAMPLE);
 
 	V_RenderView ();
 
-	if (cvMultisampleSamples.iValue > 0)
+	if (cv_video_msaasamples.iValue > 0)
 		VideoLayer_Disable(VIDEO_MULTISAMPLE);
 
 	Draw_ResetCanvas();
@@ -883,20 +883,20 @@ void SCR_UpdateScreen (void)
 
 	if(bDrawDialog) //new game confirm
 	{
-		Menu->Draw();
+		g_menu->Draw();
 
 		Draw_FadeScreen();
 		SCR_DrawNotifyString();
 	}
-	else if(Menu->GetState() & MENU_STATE_LOADING) //loading
-		Menu->Draw();
+	else if (g_menu->GetState() & MENU_STATE_LOADING) //loading
+		g_menu->Draw();
 	else if(cl.intermission == 1 && key_dest == key_game) //end of level
 	{}
 	else if(cl.intermission == 2 && key_dest == key_game) //end of episode
 		SCR_CheckDrawCenterString ();
 	else
 	{
-		Menu->Draw();
+		g_menu->Draw();
 
 #ifdef VIDEO_SUPPORT_SHADERS
 #ifdef VIDEO_SUPPORT_FRAMEBUFFERS

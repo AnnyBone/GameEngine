@@ -1,0 +1,9 @@
+sky3d
+{
+	$skin
+    {
+		$map "materials/base/sky3d"
+		{
+		}
+    }
+}

@@ -201,15 +201,15 @@ int main(int argc,char **argv)
 		goto STARTERROR;
 
 	// create all the filenames pertaining to this map
-	p_strcpy(filename_map, argv[argc - 1]);
+	strcpy(filename_map, argv[argc - 1]);
 	ReplaceExtension(filename_map,BSP_EXTENSION, ".map", ".map");
-	p_strcpy(filename_bsp, filename_map);
+	strcpy(filename_bsp, filename_map);
 	ReplaceExtension(filename_bsp, ".map",BSP_EXTENSION,BSP_EXTENSION);
-	p_strcpy(filename_prt, filename_bsp);
+	strcpy(filename_prt, filename_bsp);
 	ReplaceExtension(filename_prt,BSP_EXTENSION, ".prt", ".prt");
-	p_strcpy(filename_pts, filename_bsp);
+	strcpy(filename_pts, filename_bsp);
 	ReplaceExtension(filename_pts,BSP_EXTENSION, ".pts", ".pts");
-	p_strcpy(cFilenameEntity, filename_pts);
+	strcpy(cFilenameEntity, filename_pts);
 	ReplaceExtension(cFilenameEntity, ".pts", ".entity", ".entity");
 
 	if(!strcmp(filename_map, filename_bsp))

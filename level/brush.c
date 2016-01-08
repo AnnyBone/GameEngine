@@ -553,7 +553,7 @@ brush_t *LoadBrush (entity_t *eCurrent, mbrush_t *mb, int brushnum, int hullnum)
 		name = miptex[texinfo[f->texinfo].iMipTex];
 		if (hullnum == 0)
 			// textures which don't show up in the drawing hull
-			if(!Q_strcasecmp(name,"clip"))
+			if (!Q_strcasecmp(name, "clip"))
 				return NULL;
 	}
 
@@ -567,7 +567,7 @@ brush_t *LoadBrush (entity_t *eCurrent, mbrush_t *mb, int brushnum, int hullnum)
 		else
 			contents = BSP_CONTENTS_WATER;
 	}
-	else if (!Q_strncasecmp (name, "sky",3) && hullnum == 0)
+	else if ((!strncmp(name, "sky", 3) || !strncmp(name, "sky3d", 5)) && hullnum == 0)
 		contents = BSP_CONTENTS_SKY;
 	else
 		contents = BSP_CONTENTS_SOLID;

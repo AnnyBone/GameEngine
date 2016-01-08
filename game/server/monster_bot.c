@@ -154,7 +154,7 @@ void Bot_Spawn(ServerEntity_t *eBot)
 		iSpawnType = INFO_PLAYER_DEATHMATCH;
 
 		eBot->v.model = cvServerPlayerModel.string;
-		p_strncpy(eBot->v.netname, BotNames[(rand() % pARRAYELEMENTS(BotNames))], 64);
+		strncpy(eBot->v.netname, BotNames[(rand() % pARRAYELEMENTS(BotNames))], 64);
 
 		eBot->Monster.iType	= MONSTER_PLAYER;
 		break;

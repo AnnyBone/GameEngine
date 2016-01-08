@@ -87,6 +87,7 @@ SpawnList_t SpawnList[] =
 	{ "point_multitrigger", Point_MultiTriggerSpawn },
 	{ "point_vehicle", Point_VehicleSpawn },
 	{ "point_null", Point_NullSpawn },
+	{ "point_skycamera", Point_NullSpawn },				// Used as reference for 3D skybox.
 	{ "point_particle", Point_ParticleSpawn },
 	{ "point_prop", Point_PropSpawn },
 	{ "point_sound", Point_SoundSpawn },

@@ -30,7 +30,8 @@ enum
 {
 	HUD_ICON_HEALTH,
 	HUD_ICON_ARMOR,
-	HUD_ICON_HEARTRATE,
+
+	HUD_ICON_HEARTWAVE0,
 
 	HUD_ICON_ARMORWAVE0,
 };
@@ -103,15 +104,13 @@ void HUD_Draw(void)
 	if (armor < 0)
 		armor = 0;
 
-	Engine.DrawMaterialSurface(hud_micons, HUD_ICON_HEARTRATE, 70, g_menuheight - 70, 32, 32, 1.0f);
-
 	// Health
+	Engine.DrawMaterialSurface(hud_micons, HUD_ICON_HEARTWAVE0, 70, g_menuheight - 70, 32, 32, 1.0f);	// TODO: Change depending on health...
 	Engine.DrawMaterialSurface(hud_micons, HUD_ICON_HEALTH, 70, g_menuheight - 70, 32, 32, 1.0f);
 	HUD_DrawNumbers(106, g_menuheight - 70, health, false);
 
-	Engine.DrawMaterialSurface(hud_micons, HUD_ICON_ARMORWAVE0, 70, g_menuheight - 110, 32, 32, 1.0f);
-
 	// Armor
+	Engine.DrawMaterialSurface(hud_micons, HUD_ICON_ARMORWAVE0, 70, g_menuheight - 110, 32, 32, 1.0f);	// TODO: Change depending on armor...
 	Engine.DrawMaterialSurface(hud_micons, HUD_ICON_ARMOR, 70, g_menuheight - 110, 32, 32, 1.0f);
 	HUD_DrawNumbers(106, g_menuheight - 110, armor, false);
 }

@@ -56,12 +56,11 @@ int		d_lightstylevalue[256];	// 8.8 fraction of base light value
 cvar_t	r_norefresh				= {	"r_norefresh",			"0"					};
 cvar_t	r_drawentities			= {	"r_drawentities",		"1"					};
 cvar_t	r_drawviewmodel			= {	"r_drawviewmodel",		"1"					},
-		cvVideoDrawBrushes		= {	"video_drawbrushes",	"1",		false,	true,	"Toggles whether brushes are drawn in the level."				};
+	cv_video_drawbrushes = { "video_drawbrushes", "1", false, true, "Toggles whether brushes are drawn in the level." };
 cvar_t	r_speeds				= {	"r_speeds",				"0"					};
 cvar_t	r_fullbright			= {	"r_fullbright",			"0"					};
 cvar_t	r_lightmap				= {	"r_lightmap",			"0"					};
 cvar_t	r_shadows				= {	"r_shadows",			"1",		true,	false,	"0 = Disabled\n1 = Blob shadows\n2 = Blob and planar shadows"	};
-cvar_t	r_mirroralpha			= {	"r_mirroralpha",		"0.5"				};
 cvar_t	r_dynamic				= {	"r_dynamic",			"1"					};
 cvar_t	r_novis					= {	"r_novis",				"0"					};
 cvar_t	r_nocull				= {	"r_nocull",				"0"					};
@@ -74,7 +73,7 @@ cvar_t	r_drawflat				= {	"r_drawflat",			"0"					};
 cvar_t	r_flatlightstyles		= {	"r_flatlightstyles",	"0"					};
 cvar_t	gl_fullbrights			= {	"gl_fullbrights",		"1",		true	};
 cvar_t	gl_farclip				= {	"gl_farclip",			"16384",	true	};
-cvar_t	video_lightoversamp		= { "video_lightoversamp",	"7",		true	};
+ConsoleVariable_t cv_video_lightmapoversample = { "video_lightmapoversample", "8", true };
 cvar_t	r_oldskyleaf			= {	"r_oldskyleaf",			"0"					};
 cvar_t	r_drawworld				= {	"r_drawworld",			"1"					};
 cvar_t	r_showtris				= {	"r_showtris",			"0"					};
@@ -309,8 +308,6 @@ void R_SetupView (void)
 	R_CullSurfaces(); //johnfitz -- do after R_SetFrustum and R_MarkSurfaces
 	R_UpdateWarpTextures(); //johnfitz -- do this before R_Clear
 
-	Video_ClearBuffer();
-
 	//johnfitz -- cheat-protect some draw modes
 	r_drawflat_cheatsafe = r_fullbright_cheatsafe = r_lightmap_cheatsafe = false;
 	r_drawworld_cheatsafe = true;
@@ -358,7 +355,7 @@ void R_DrawEntitiesOnList(bool bAlphaPass) //johnfitz -- added parameter
 
 void R_DrawViewModel(void)
 {
-	if(!cvVideoDrawModels.value || !r_drawviewmodel.value || !r_drawentities.value || chase_active.value || r_refdef.bEnvironmentMap)
+	if (!cv_video_drawmodels.value || !r_drawviewmodel.value || !r_drawentities.value || chase_active.value || r_refdef.bEnvironmentMap)
 		return;
 	else if(cl.stats[STAT_HEALTH] <= 0)
 		return;
@@ -477,17 +474,17 @@ void Video_DrawClientBoundingBox(ClientEntity_t *clEntity)
 */
 void Video_ShowBoundingBoxes(void)
 {
-	extern		ServerEntity_t *sv_player;
-	MathVector3f_t mins,maxs;
-	ClientEntity_t *clEntity;
-	ServerEntity_t				*ed;
-	int					i;
+	extern ServerEntity_t	*sv_player;
+	MathVector3f_t			mins, maxs;
+	ClientEntity_t			*clEntity;
+	ServerEntity_t			*ed;
+	int						i;
 
-	if(!r_showbboxes.value || cl.maxclients > 1 || !r_drawentities.value || (!sv.active && !Global.bEmbeddedContext))
+	if (!r_showbboxes.value || (cl.maxclients > 1) || !r_drawentities.value || (!sv.active && !g_state.embedded))
 		return;
 
-	Video_DisableCapabilities(VIDEO_DEPTH_TEST|VIDEO_TEXTURE_2D);
-	Video_EnableCapabilities(VIDEO_BLEND);
+	VideoLayer_Disable(VIDEO_DEPTH_TEST | VIDEO_TEXTURE_2D);
+	VideoLayer_Enable(VIDEO_BLEND);
 
 	for (i=0, ed=NEXT_EDICT(sv.edicts) ; i<sv.num_edicts ; i++, ed=NEXT_EDICT(ed))
 	{
@@ -506,15 +503,14 @@ void Video_ShowBoundingBoxes(void)
 		R_EmitWireBox(mins,maxs, 1, 1, 1);
 	}
 
-	// Cycle through client-side entities...
-
+	// Cycle through client-side entities.
 	for (i = 0, clEntity = cl_entities; i < cl.num_entities; i++, clEntity++)
 		Video_DrawClientBoundingBox(clEntity);
 	for (i = 0, clEntity = cl_temp_entities; i < cl_numvisedicts; i++, clEntity++)
 		Video_DrawClientBoundingBox(clEntity);
 
-	Video_DisableCapabilities(VIDEO_BLEND);
-	Video_EnableCapabilities(VIDEO_TEXTURE_2D|VIDEO_DEPTH_TEST);
+	VideoLayer_Disable(VIDEO_BLEND);
+	VideoLayer_Enable(VIDEO_TEXTURE_2D | VIDEO_DEPTH_TEST);
 }
 
 void R_DrawShadows (void)
@@ -534,7 +530,7 @@ void R_DrawShadows (void)
 	}
 
 	// Allow us to also render the players own shadow too.
-	if (cvVideoPlayerShadow.bValue)
+	if (cv_video_drawplayershadow.bValue)
 		Shadow_Draw(&cl_entities[cl.viewentity]);
 }
 
@@ -554,7 +550,7 @@ void R_SetupScene(void)
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	glRotatef(-90, 1, 0, 0);	    // put Z going up
-	glRotatef(90, 0, 0, 1);	    // put Z going up
+	glRotatef(90, 0, 0, 1);			// put Z going up
 	glRotatef(-r_refdef.viewangles[2], 1, 0, 0);
 	glRotatef(-r_refdef.viewangles[0], 0, 1, 0);
 	glRotatef(-r_refdef.viewangles[1], 0, 0, 1);
@@ -567,7 +563,7 @@ void R_SetupScene(void)
 	else
 		glDisable(GL_CULL_FACE);
 
-	Video_EnableCapabilities(VIDEO_DEPTH_TEST);
+	VideoLayer_Enable(VIDEO_DEPTH_TEST);
 }
 
 void R_RenderScene(void)
@@ -621,6 +617,8 @@ void R_RenderView (void)
 	}
 
 	R_SetupView (); //johnfitz -- this does everything that should be done once per frame
+
+	Video_ClearBuffer();
 
 	//johnfitz -- stereo rendering -- full of hacky goodness
 	if (r_stereo.value)

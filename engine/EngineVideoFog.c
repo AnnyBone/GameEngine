@@ -171,15 +171,15 @@ void Fog_ParseWorldspawn (void)
 		if (com_token[0] == '}')
 			break; // end of worldspawn
 		if (com_token[0] == '_')
-			p_strcpy(key, com_token + 1);
+			strcpy(key, com_token + 1);
 		else
-			p_strcpy(key, com_token);
+			strcpy(key, com_token);
 		while (key[strlen(key)-1] == ' ') // remove trailing spaces
 			key[strlen(key)-1] = 0;
 		data = COM_Parse(data);
 		if (!data)
 			return; // error
-		p_strcpy(value, com_token);
+		strcpy(value, com_token);
 
 		if (!strcmp("fog", key))
 #ifdef _MSC_VER

@@ -47,7 +47,7 @@ void plSetErrorFunction(const char *function, ...)
 	vsprintf(out, function, args);
 	va_end(args);
 
-	p_strncpy(loc_function, out, sizeof(function));
+	strncpy(loc_function, out, sizeof(function));
 }
 
 void plResetError(void)
@@ -69,7 +69,7 @@ void plSetError(const char *msg, ...)
 	vsprintf(out, msg, args);
 	va_end(args);
 
-	p_strncpy(loc_error, out, sizeof(loc_error));
+	strncpy(loc_error, out, sizeof(loc_error));
 }
 
 /*	Returns the locally generated error message.
@@ -100,13 +100,13 @@ char *plGetSystemError(void)
 		0, NULL))
 		return "Failed to get system error details!";
 
-	p_strcpy(sys_error, _strdup(buffer));
+	strcpy(sys_error, _strdup(buffer));
 
 	LocalFree(buffer);
 
 	return sys_error;
 #else
-	p_strcpy(sys_error,dlerror());
+	strcpy(sys_error,dlerror());
 	return sys_error;
 #endif
 }

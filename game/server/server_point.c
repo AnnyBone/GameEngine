@@ -215,7 +215,6 @@ void Point_Start(ServerEntity_t *ent)
 		break;
 #endif
 	default:
-		// [16/1/2014] Show the gamemode, not the entity style! ~hogsy
 		Engine.Con_Warning("Failed to set up spawn points, unknown game type! (%i)\n",cvServerGameMode.value);
 		
 		Entity_Remove(ent);
@@ -249,7 +248,7 @@ void Point_ParticleSpawn(ServerEntity_t *ent)
 		ent->local.count = 1;
 
 	if(ent->Model.fScale <= 0)
-		ent->Model.fScale = 7.0f;
+		ent->Model.fScale = 7;
 
 	Engine.Server_PrecacheResource(RESOURCE_SPRITE,ent->v.model);
 
@@ -952,14 +951,14 @@ void Point_MultiTriggerUse(ServerEntity_t *eEntity)
 			UseTargets(eEntity, eEntity);
 		else
 		{
-			p_strcpy(eEntity->v.targetname, eEntity->v.message);
+			strcpy(eEntity->v.targetname, eEntity->v.message);
 			UseTargets(eEntity, eEntity);
 		}
 	}
 	else
 	{
 		UseTargets(eEntity, eEntity);
-		p_strcpy(eEntity->v.targetname, eEntity->v.message);
+		strcpy(eEntity->v.targetname, eEntity->v.message);
 		UseTargets(eEntity, eEntity);
 	}
 }

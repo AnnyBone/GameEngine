@@ -38,7 +38,7 @@ extern mplane_t	*lightplane;		// Plane underneath the entity.
 */
 void Shadow_DrawBlob(ClientEntity_t *Entity)
 {
-	if (!cvVideoDrawShadowBlob.bValue)
+	if (!cv_video_drawshadowblob.bValue)
 		return;
 
 	// TODO: We ONLY want the bottom plane! Not the light sample... Simplify this?
@@ -86,7 +86,7 @@ void Shadow_DrawBlob(ClientEntity_t *Entity)
 
 void Shadow_DrawMap(ClientEntity_t *Entity)
 {
-	if (!cvVideoDrawShadowMap.bValue)
+	if (!cv_video_drawshadowmap.bValue)
 		return;
 
 	DynamicLight_t *dlNearest = Light_GetDynamic(Entity->origin, false);

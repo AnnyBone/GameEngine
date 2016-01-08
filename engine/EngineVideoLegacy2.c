@@ -147,10 +147,9 @@ void R_Init (void)
 	Cvar_RegisterVariable (&r_lightmap, NULL);
 	Cvar_RegisterVariable (&r_fullbright, NULL);
 	Cvar_RegisterVariable (&r_drawentities, NULL);
-	Cvar_RegisterVariable(&cvVideoDrawBrushes,NULL);
+	Cvar_RegisterVariable(&cv_video_drawbrushes, NULL);
 	Cvar_RegisterVariable (&r_drawviewmodel, NULL);
 	Cvar_RegisterVariable (&r_shadows, NULL);
-	Cvar_RegisterVariable (&r_mirroralpha, NULL);
 	Cvar_RegisterVariable (&r_dynamic, NULL);
 	Cvar_RegisterVariable (&r_novis, R_Novis_f);
 	Cvar_RegisterVariable (&r_nocull, NULL);
@@ -171,7 +170,7 @@ void R_Init (void)
 	Cvar_RegisterVariable (&r_showbboxes, NULL);
 	Cvar_RegisterVariable (&gl_farclip, NULL);
 	Cvar_RegisterVariable (&gl_fullbrights, NULL);
-	Cvar_RegisterVariable (&video_lightoversamp, GL_Overbright_f);
+	Cvar_RegisterVariable(&cv_video_lightmapoversample, GL_Overbright_f);
 	Cvar_RegisterVariable (&r_lerpmodels, NULL);
 	Cvar_RegisterVariable (&r_lerpmove, NULL);
 	Cvar_RegisterVariable (&gl_subdivide_size, NULL);

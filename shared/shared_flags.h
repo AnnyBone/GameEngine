@@ -114,6 +114,7 @@ typedef enum
 	CHAN_BODY		// Usually used for footsteps and such.
 } AudioChannel_t;
 
+// TODO: Move into shared_game!
 enum
 {
 	MOVETYPE_NONE,			// Never moves

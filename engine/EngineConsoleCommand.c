@@ -269,7 +269,7 @@ void Cmd_Echo_f (void)
 char *CopyString (char *in)
 {
 	char *out = (char*)malloc_or_die(strlen(in) + 1);
-	p_strcpy(out, in);
+	strcpy(out, in);
 	return out;
 }
 
@@ -319,7 +319,7 @@ void Cmd_Alias_f (void)
 			a->next = cmd_alias;
 			cmd_alias = a;
 		}
-		p_strcpy(a->name, s);
+		strcpy(a->name, s);
 
 		// copy the rest of the command line
 		cmd[0] = 0;		// start out with a null string
@@ -509,7 +509,7 @@ void Cmd_TokenizeString (char *text)
 		if (cmd_argc < MAX_ARGS)
 		{
 			cmd_argv[cmd_argc] = (char*)malloc_or_die(strlen(com_token) + 1);
-			p_strcpy(cmd_argv[cmd_argc], com_token);
+			strcpy(cmd_argv[cmd_argc], com_token);
 			cmd_argc++;
 		}
 	}
@@ -604,12 +604,12 @@ char *Cmd_UpdateString(char *cString,const char *cFind,const char *cReplace)
 
 	if(strlen(cFind) >= strlen(cReplace))
 	{
-		p_strncpy(scBuffer, cString, p - cString);
+		strncpy(scBuffer, cString, p - cString);
 		scBuffer[p-cString]	= '\0';
 	}
 	else
 	{
-		p_strncpy(scBuffer, cString, p - cString + strlen(cFind));
+		strncpy(scBuffer, cString, p - cString + strlen(cFind));
 		scBuffer[p-cString+strlen(cFind)] = '\0';
 	}
 
@@ -626,9 +626,9 @@ void Cmd_ExecuteString(char *text,cmd_source_t src)
 	cmd_function_t	*cmd;
 	cmdalias_t		*a;
 
-	// [5/8/2012] Check if we're trying to use a modifier ~hogsy
-	if(strstr(text,COMMAND_USER))
-		text = Cmd_UpdateString(text,COMMAND_USER,Global.cLocalName);
+	// Check if we're trying to use a modifier.
+	if (strstr(text, COMMAND_USER))
+		text = Cmd_UpdateString(text, COMMAND_USER, g_state.cLocalName);
 
 	cmd_source = src;
 	Cmd_TokenizeString(text);

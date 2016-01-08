@@ -970,7 +970,7 @@ void ParseEntities (void)
 			if (!strcmp(com_token,"}"))
 				break;
 
-			p_strcpy(key, com_token);
+			strcpy(key, com_token);
 
 			// parse value
 			data = COM_Parse (data);

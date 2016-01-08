@@ -269,7 +269,7 @@ void Client_ParseServerInfo(void)
 
 // parse signon message
 	str = MSG_ReadString ();
-	p_strncpy(cl.levelname, str, sizeof(cl.levelname) - 1);
+	strncpy(cl.levelname, str, sizeof(cl.levelname) - 1);
 
 // seperate the printfs so the server message can have a color
 	Con_Printf ("\n%s\n", Con_Quakebar(40)); //johnfitz
@@ -293,7 +293,7 @@ void Client_ParseServerInfo(void)
 			return;
 		}
 
-		p_strcpy(cModelPrecache[nummodels], str);
+		strcpy(cModelPrecache[nummodels], str);
 		Model_Touch(str);
 	}
 
@@ -311,7 +311,7 @@ void Client_ParseServerInfo(void)
 			return;
 		}
 
-		p_strcpy(cSoundPrecache[numsounds], str);
+		strcpy(cSoundPrecache[numsounds], str);
 		S_TouchSound (str);
 	}
 
@@ -852,12 +852,11 @@ void CL_ParseServerMessage(void)
 			i = MSG_ReadLong ();
 			if(i != SERVER_PROTOCOL)
 				Host_Error("Server returned protocol version %i, not %i!\n",i,SERVER_PROTOCOL);
-
 			cl.protocol = i;
 			break;
 		case SVC_DISCONNECT:
 			// Stop drawing the HUD on disconnect.
-			Menu->RemoveState(MENU_STATE_HUD);
+			g_menu->RemoveState(MENU_STATE_HUD);
 
 			Host_EndGame("Server disconnected\n");
 		case SVC_PRINT:
@@ -895,7 +894,7 @@ void CL_ParseServerMessage(void)
 				return;
 			}
 
-			p_strcpy(cl_lightstyle[i].cMap, MSG_ReadString());
+			strcpy(cl_lightstyle[i].cMap, MSG_ReadString());
 			cl_lightstyle[i].length = strlen(cl_lightstyle[i].cMap);
 			//johnfitz -- save extra info
 			if (cl_lightstyle[i].length)
@@ -924,7 +923,7 @@ void CL_ParseServerMessage(void)
 			i = MSG_ReadByte ();
 			if (i >= cl.maxclients)
 				Host_Error ("CL_ParseServerMessage: svc_updatename > MAX_SCOREBOARD");
-			p_strncpy(cl.scores[i].name, MSG_ReadString(), sizeof(cl.scores[i].name));
+			strncpy(cl.scores[i].name, MSG_ReadString(), sizeof(cl.scores[i].name));
 			break;
 		case svc_updatefrags:
 			i = MSG_ReadByte();
@@ -959,9 +958,9 @@ void CL_ParseServerMessage(void)
 			cl.bIsPaused = MSG_ReadByte();
 
 			if(cl.bIsPaused)
-				Menu->AddState(MENU_STATE_PAUSED);
+				g_menu->AddState(MENU_STATE_PAUSED);
 			else
-				Menu->RemoveState(MENU_STATE_PAUSED);
+				g_menu->RemoveState(MENU_STATE_PAUSED);
 			break;
 		case svc_signonnum:
 			i = MSG_ReadByte ();
@@ -1052,9 +1051,9 @@ void CL_ParseServerMessage(void)
 					iShow	= MSG_ReadByte();
 
 				if(iShow)
-					Menu->AddState(iState);
+					g_menu->AddState(iState);
 				else
-					Menu->RemoveState(iState);
+					g_menu->RemoveState(iState);
 			}
 			break;
 		}

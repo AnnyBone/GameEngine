@@ -209,7 +209,7 @@ void Key_Console (int key)
 		key_tabpartial[0] = 0;
 		if (key_linepos > 1)
 		{
-			p_strcpy(key_lines[edit_line] + key_linepos - 1, key_lines[edit_line] + key_linepos);
+			strcpy(key_lines[edit_line] + key_linepos - 1, key_lines[edit_line] + key_linepos);
 			key_linepos--;
 		}
 		return;
@@ -219,7 +219,7 @@ void Key_Console (int key)
 	case K_DEL:
 		key_tabpartial[0] = 0;
 		if ((unsigned)key_linepos < strlen(key_lines[edit_line]))
-			p_strcpy(key_lines[edit_line] + key_linepos, key_lines[edit_line] + key_linepos + 1);
+			strcpy(key_lines[edit_line] + key_linepos, key_lines[edit_line] + key_linepos + 1);
 		return;
 	case K_HOME:
 		if (keydown[K_CTRL])
@@ -293,7 +293,7 @@ void Key_Console (int key)
 				&& !key_lines[history_line][1]);
 		if (history_line == edit_line)
 			history_line = (edit_line+1)&31;
-		p_strcpy(key_lines[edit_line], key_lines[history_line]);
+		strcpy(key_lines[edit_line], key_lines[history_line]);
 		key_linepos = strlen(key_lines[edit_line]);
 		return;
 	case K_DOWNARROW:
@@ -318,7 +318,7 @@ void Key_Console (int key)
 		}
 		else
 		{
-			p_strcpy(key_lines[edit_line], key_lines[history_line]);
+			strcpy(key_lines[edit_line], key_lines[history_line]);
 			key_linepos = strlen(key_lines[edit_line]);
 		}
 		return;
@@ -524,7 +524,7 @@ void Key_SetBinding (int keynum, char *binding)
 	// allocate memory for new binding
 	l = strlen(binding);
 	newstring = (char*)malloc_or_die(l + 1);
-	p_strcpy(newstring, binding);
+	strcpy(newstring, binding);
 	newstring[l] = 0;
 	keybindings[keynum] = newstring;
 }
@@ -722,7 +722,6 @@ void Key_Event(int key,bool down)
 			cmd[1024];
 
 	keydown[key] = down;
-
 	if (!down)
 		key_repeats[key] = 0;
 
@@ -760,7 +759,7 @@ void Key_Event(int key,bool down)
 			Key_Message (key);
 			break;
 		case key_menu:
-			Menu->Input(key);
+			g_menu->Input(key);
 			break;
 		case key_game:
 		case key_console:
@@ -775,7 +774,7 @@ void Key_Event(int key,bool down)
 	// Allow users to use ALT and ENTER to toggle fullscreen.
 	if((key == INPUT_KEY_ENTER) && keydown[K_ALT])
 	{
-		if(cvFullscreen.value)
+		if (cv_video_fullscreen.value)
 			Cvar_SetValue("video_fullscreen",0);
 		else
 			Cvar_SetValue("video_fullscreen",1);
@@ -861,7 +860,7 @@ void Key_Event(int key,bool down)
 		Key_Message(key);
 		break;
 	case key_menu:
-		Menu->Input(key);
+		g_menu->Input(key);
 		break;
 	case key_game:
 	case key_console:

@@ -410,37 +410,9 @@ void View_PolyBlend(void)
 	if (!gl_polyblend.value || !cl.cshifts[CSHIFT_CONTENTS].percent)
 		return;
 
-	Video_ResetCapabilities(false);
-
-	Video_DisableCapabilities(VIDEO_DEPTH_TEST|VIDEO_TEXTURE_2D);
-	Video_EnableCapabilities(VIDEO_BLEND);
-
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity ();
-	glOrtho(0,1,1,0,-99999,99999);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-
-	{
-		int	i;
-		VideoObjectVertex_t	voScreenPoly[4] = { { { 0 } } };
-
-		for(i = 0; i < 4; i++)
-			Math_Vector4Copy(vViewBlend,voScreenPoly[i].mvColour);
-
-		voScreenPoly[0].mvPosition[0] =
-		voScreenPoly[0].mvPosition[1] =
-		voScreenPoly[1].mvPosition[1] =
-		voScreenPoly[3].mvPosition[0] = 0;
-		voScreenPoly[1].mvPosition[0] =
-		voScreenPoly[2].mvPosition[0] =
-		voScreenPoly[2].mvPosition[1] =
-		voScreenPoly[3].mvPosition[1] = 1.0f;
-
-		Video_DrawFill(voScreenPoly,NULL, 0);
-	}
-
-	Video_ResetCapabilities(true);
+	VideoLayer_Disable(VIDEO_DEPTH_TEST);
+	Draw_Rectangle(0, 0, Video.iWidth, Video.iHeight, vViewBlend);
+	VideoLayer_Enable(VIDEO_DEPTH_TEST);
 }
 
 /*
@@ -792,7 +764,7 @@ void V_RenderView (void)
 		V_CalcRefdef();
 	}
 
-	// [16/6/2013] Draw first since we'll draw the gun on top of this for effect :) ~hogsy
+	// Draw first since we'll draw the gun on top of this for effect :)
 	View_DrawMuzzleFlash();
 
 	R_RenderView();

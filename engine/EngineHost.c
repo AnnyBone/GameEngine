@@ -215,7 +215,7 @@ void Host_InitLocal (void)
 		Cvar_SetValue("developer", 1.0f);
 
 	// Set the global username.
-	plGetUserName(Global.cLocalName);
+	plGetUserName(g_state.cLocalName);
 
 	Host_FindMaxClients();
 
@@ -235,12 +235,12 @@ void Host_WriteConfiguration(void)
 		// [2/5/2013] Updated to use the new platform function ~hogsy
 		char	cString[256];
 
-		sprintf(cString,"%s/config/%s.cfg",com_gamedir,Global.cLocalName);
+		sprintf(cString, "%s/config/%s.cfg", com_gamedir, g_state.cLocalName);
 
 		fConfig = fopen(cString,"w");
 		if(!fConfig)
 		{
-			Con_Warning("Couldn't write %s.cfg!\n",Global.cLocalName);
+			Con_Warning("Couldn't write %s.cfg!\n", g_state.cLocalName);
 			return;
 		}
 
@@ -725,7 +725,7 @@ void Host_Initialize(EngineParameters_t *epParameters)
 		Draw_Init();
 		SCR_Init();
 
-		Menu->Initialize();
+		g_menu->Initialize();
 
 		R_Init();
 		S_Init();
@@ -764,8 +764,8 @@ void Host_Shutdown(void)
 
 	Host_WriteConfiguration();
 
-	if(Menu)
-		Menu->Shutdown();
+	if (g_menu)
+		g_menu->Shutdown();
 
 	if(Game)
 		Game->Shutdown();

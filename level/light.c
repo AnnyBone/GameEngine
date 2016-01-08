@@ -106,7 +106,7 @@ int LightStyleForTargetname( char *targetname )
 	if( numlighttargets == 32 )
 		Error( "LightStyleForTargetname: numlighttargets == 32" );
 
-	p_strcpy(lighttargets[numlighttargets], targetname);
+	strcpy(lighttargets[numlighttargets], targetname);
 	numlighttargets++;
 	return numlighttargets - 1 + 32;
 }

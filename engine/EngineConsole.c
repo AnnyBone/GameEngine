@@ -341,19 +341,19 @@ void Con_Printf (const char *fmt, ...)
 {
 	va_list			argptr;
 	char			msg[MAXPRINTMSG];
-	static	bool	inupdate;
+	static bool		inupdate;
 
 	va_start(argptr,fmt);
 	vsprintf(msg,fmt,argptr);
 	va_end(argptr);
 
-	// also echo to debugging console
+	// Also echo to debugging console.
 	Sys_Printf ("%s", msg);
 
 	plWriteLog(ENGINE_LOG, "%s", msg);
 
-	if (Global.bEmbeddedContext)
-		EngineLauncher.PrintMessage(msg);
+	if (g_state.embedded)
+		g_launcher.PrintMessage(msg);
 	else
 	{
 		if (!bConsoleInitialized)
@@ -373,9 +373,9 @@ void Con_Printf (const char *fmt, ...)
 
 void Con_SPrintf (char *dest, int size, char *fmt, ...)
 {
-	int		len;
-	va_list	argptr;
-	char	bigbuffer[MAXPRINTMSG];
+	int			len;
+	va_list		argptr;
+	char		bigbuffer[MAXPRINTMSG];
 
 	va_start (argptr,fmt);
 	len = vsprintf (bigbuffer,fmt,argptr);
@@ -384,7 +384,7 @@ void Con_SPrintf (char *dest, int size, char *fmt, ...)
 	if (len >= size)
 		Con_Printf("Com_sprintf: overflow of %i in %i\n", len, size);
 
-	p_strncpy(dest, bigbuffer, size - 1);
+	strncpy(dest, bigbuffer, size - 1);
 
 	Con_Printf (dest);
 }
@@ -398,10 +398,10 @@ void Con_Warning (const char *fmt, ...)
 	vsprintf (msg,fmt,argptr);
 	va_end (argptr);
 
-	if (Global.bEmbeddedContext)
+	if (g_state.embedded)
 	{
 		plWriteLog(ENGINE_LOG, "%s", msg);
-		EngineLauncher.PrintWarning(msg);
+		g_launcher.PrintWarning(msg);
 	}
 	else
 	{
@@ -424,10 +424,10 @@ void Con_Error(char *fmt,...)
 	vsprintf(msg,fmt,argptr);
 	va_end(argptr);
 
-	if (Global.bEmbeddedContext)
+	if (g_state.embedded)
 	{
 		plWriteLog(ENGINE_LOG, "%s", msg);
-		EngineLauncher.PrintError(msg);
+		g_launcher.PrintError(msg);
 	}
 	else
 		Con_Printf("\nError: %s\n",msg);
@@ -453,10 +453,10 @@ void Con_DPrintf(const char *fmt,...)
 	vsprintf(msg,fmt,argptr);
 	va_end(argptr);
 
-	if (Global.bEmbeddedContext)
+	if (g_state.embedded)
 	{
 		plWriteLog(ENGINE_LOG, "%s", msg);
-		EngineLauncher.PrintMessage(msg);
+		g_launcher.PrintMessage(msg);
 	}
 	else
 	{
@@ -527,7 +527,7 @@ void Con_LogCenterPrint (char *str)
 	if(cl.gametype == GAME_DEATHMATCH && con_logcenterprint.value != 2)
 		return; // Don't log in deathmatch
 
-	p_strcpy(con_lastcenterstring, str);
+	strcpy(con_lastcenterstring, str);
 
 	if(con_logcenterprint.value)
 	{
@@ -598,7 +598,7 @@ void AddToTabList (const char *name, char *type)
 	tab_t	*t,*insert;
 
 	t = (tab_t*)Hunk_Alloc(sizeof(tab_t));
-	p_strncpy(t->name, name, sizeof(t->name));
+	strncpy(t->name, name, sizeof(t->name));
 	t->type = type;
 
 	if (!tablist) //create list
@@ -691,7 +691,7 @@ void Con_TabComplete (void)
 	mark = Hunk_LowMark();
 	if (!strlen(key_tabpartial)) //first time through
 	{
-		p_strcpy(key_tabpartial, partial);
+		strcpy(key_tabpartial, partial);
 		BuildTabList (key_tabpartial);
 
 		if (!tablist)
@@ -706,7 +706,7 @@ void Con_TabComplete (void)
 		} while (t != tablist);
 
 		//get first match
-		p_strncpy(match, tablist->name, sizeof(match));
+		strncpy(match, tablist->name, sizeof(match));
 	}
 	else
 	{
@@ -725,14 +725,14 @@ void Con_TabComplete (void)
 		} while (t != tablist);
 
 		//use prev or next to find next match
-		p_strncpy(match, keydown[K_SHIFT] ? t->prev->name : t->next->name, sizeof(match));
+		strncpy(match, keydown[K_SHIFT] ? t->prev->name : t->next->name, sizeof(match));
 	}
 	Hunk_FreeToLowMark(mark); //it's okay to free it here becuase match is a pointer to persistent data
 
 	// Insert new match into edit line
-	p_strcpy(partial, match);								// First copy match string
+	strcpy(partial, match);								// First copy match string
 	strcat(partial,key_lines[edit_line] + key_linepos); // Then add chars after cursor
-	p_strcpy(c, partial);									// Now copy all of this into edit line
+	strcpy(c, partial);									// Now copy all of this into edit line
 
 	key_linepos = c-key_lines[edit_line]+strlen(match); //set new cursor position
 
@@ -783,13 +783,12 @@ void Con_DrawNotify(void)
 		text = con_text + (i % con_totallines)*con_linewidth;
 
 		for(x = 0; x < con_linewidth; x++)
-			Draw_Character((x+1)<<3,v,text[x]);
+			Draw_Character((x + 1) << 3, v, text[x]);
 
 		v += 8;
 
 		scr_tileclear_updates = 0; //johnfitz
 	}
-
 
 	if (key_dest == key_message)
 	{
@@ -832,7 +831,7 @@ void Con_DrawInput (void)
 	if(key_dest != key_console && !con_forcedup)
 		return;		// Don't draw anything
 
-	text = p_strcpy(c, key_lines[edit_line]);
+	text = strcpy(c, key_lines[edit_line]);
 
 	// Pad with one space so we can draw one past the string (in case the cursor is there)
 	len = strlen(key_lines[edit_line]);

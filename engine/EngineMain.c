@@ -22,7 +22,7 @@
 #include "EngineEditor.h"
 #include "engine_client.h"
 
-EngineGlobal_t Global;
+EngineGlobal_t g_state;
 
 bool Engine_IsRunning(void)
 {
@@ -36,7 +36,7 @@ char *Engine_GetBasePath(void)
 
 char *Engine_GetMaterialPath(void)
 {
-	return Global.cMaterialPath;
+	return g_state.cMaterialPath;
 }
 
 char *Engine_GetVersion(void)
@@ -47,71 +47,71 @@ char *Engine_GetVersion(void)
 bool System_Main(int iArgumentCount,char *cArguments[], bool bEmbedded);
 void System_Loop(void);
 
-EngineExport_t EngineExport;
-EngineImport_t EngineLauncher;
+EngineImport_t g_launcher;
+EngineExport_t exports;
 
 pMODULE_EXPORT EngineExport_t *Engine_Main(EngineImport_t *mImport)
 {
 	// Imports
-	EngineLauncher.iVersion		= mImport->iVersion;
-	EngineLauncher.PrintError	= mImport->PrintError;
-	EngineLauncher.PrintMessage = mImport->PrintMessage;
-	EngineLauncher.PrintWarning	= mImport->PrintWarning;
+	g_launcher.iVersion = mImport->iVersion;
+	g_launcher.PrintError = mImport->PrintError;
+	g_launcher.PrintMessage = mImport->PrintMessage;
+	g_launcher.PrintWarning = mImport->PrintWarning;
 
 	// Exports
-	EngineExport.Initialize			= System_Main;
-	EngineExport.Shutdown			= Host_Shutdown;
-	EngineExport.IsRunning			= Engine_IsRunning;
-	EngineExport.SetViewportSize	= Video_SetViewportSize;
-	EngineExport.Loop				= System_Loop;
-	EngineExport.iVersion			= ENGINE_VERSION;
+	exports.Initialize = System_Main;
+	exports.Shutdown = Host_Shutdown;
+	exports.IsRunning = Engine_IsRunning;
+	exports.SetViewportSize = Video_SetViewportSize;
+	exports.Loop = System_Loop;
+	exports.iVersion = ENGINE_VERSION;
 
 	// Client
-	EngineExport.ClientDisconnect	= CL_Disconnect;
-	EngineExport.GetClientTime		= Client_GetTime;
-	EngineExport.CreateClientEntity = CL_NewTempEntity;
-	EngineExport.CreateDynamicLight = Client_AllocDlight;
+	exports.ClientDisconnect = CL_Disconnect;
+	exports.GetClientTime = Client_GetTime;
+	exports.CreateClientEntity = CL_NewTempEntity;
+	exports.CreateDynamicLight = Client_AllocDlight;
 
 	// Server
-	EngineExport.ServerShutdown = Host_ShutdownServer;
+	exports.ServerShutdown = Host_ShutdownServer;
 
-	EngineExport.GetBasePath	= Engine_GetBasePath;
-	EngineExport.GetVersion		= Engine_GetVersion;
+	exports.GetBasePath = Engine_GetBasePath;
+	exports.GetVersion = Engine_GetVersion;
 
 	// Material
-	EngineExport.GetMaterialPath	= Engine_GetMaterialPath;
-	EngineExport.LoadMaterial		= Material_Load;
-	EngineExport.UnloadMaterial		= Material_Clear;
+	exports.GetMaterialPath = Engine_GetMaterialPath;
+	exports.LoadMaterial = Material_Load;
+	exports.UnloadMaterial = Material_Clear;
 
 	// Model
-	EngineExport.LoadModel = Mod_ForName;
+	exports.LoadModel = Mod_ForName;
 
 	// Console
-	EngineExport.InsertConsoleCommand			= Cbuf_InsertText;
-	EngineExport.RegisterConsoleVariable		= Cvar_RegisterVariable;
-	EngineExport.SetConsoleVariable				= Cvar_Set;
-	EngineExport.ResetConsoleVariable			= Cvar_Reset;
-	EngineExport.GetConsoleVariableValue		= Cvar_VariableValue;
-	EngineExport.GetConsoleVariableBoolValue	= ConsoleVariable_GetBoolValue;
-	EngineExport.Print							= Con_Printf;
-	EngineExport.PrintDev						= Con_DPrintf;
+	exports.InsertConsoleCommand = Cbuf_InsertText;
+	exports.RegisterConsoleVariable = Cvar_RegisterVariable;
+	exports.SetConsoleVariable = Cvar_Set;
+	exports.ResetConsoleVariable = Cvar_Reset;
+	exports.GetConsoleVariableValue = Cvar_VariableValue;
+	exports.GetConsoleVariableBoolValue = ConsoleVariable_GetBoolValue;
+	exports.Print = Con_Printf;
+	exports.PrintDev = Con_DPrintf;
 
 	// Video
-	EngineExport.DrawPostFrame			= Video_PostFrame;
-	EngineExport.DrawPreFrame			= Video_PreFrame;
-	EngineExport.DrawEntity				= Draw_Entity;
-	EngineExport.DrawFPS				= Screen_DrawFPS;
-	EngineExport.DrawConsole			= Screen_DrawConsole;
-	EngineExport.DrawGrid				= Draw_Grid;
-	EngineExport.DrawString				= Draw_String;
-	EngineExport.DrawLine				= Draw_Line;
-	EngineExport.DrawGradientBackground = Draw_GradientBackground;
-	EngineExport.DrawSetCanvas			= GL_SetCanvas;
-	EngineExport.DrawResetCanvas		= Draw_ResetCanvas;
-	EngineExport.DrawMaterialSurface	= Draw_MaterialSurface;
+	exports.DrawPostFrame = Video_PostFrame;
+	exports.DrawPreFrame = Video_PreFrame;
+	exports.DrawEntity = Draw_Entity;
+	exports.DrawFPS = Screen_DrawFPS;
+	exports.DrawConsole = Screen_DrawConsole;
+	exports.DrawGrid = Draw_Grid;
+	exports.DrawString = Draw_String;
+	exports.DrawLine = Draw_Line;
+	exports.DrawGradientBackground = Draw_GradientBackground;
+	exports.DrawSetCanvas = GL_SetCanvas;
+	exports.DrawResetCanvas = Draw_ResetCanvas;
+	exports.DrawMaterialSurface = Draw_MaterialSurface;
 
 	// Material Editor
-	EngineExport.MaterialEditorInitialize = MaterialEditor_Initialize;
+	exports.MaterialEditorInitialize = MaterialEditor_Initialize;
 
-	return &EngineExport;
+	return &exports;
 }

@@ -477,11 +477,11 @@ void _Material_AddSkin(Material_t *mCurrentMaterial, MaterialFunctionType_t mftC
 
 // Texture Functions...
 
-void _Material_AddTexture(Material_t *mCurrentMaterial, MaterialFunctionType_t mftContext, char *cArg)
+void _Material_AddTexture(Material_t *material, MaterialFunctionType_t mftContext, char *cArg)
 {
 	char cTexturePath[MAX_QPATH];
 
-	MaterialSkin_t *msSkin = Material_GetSkin(mCurrentMaterial, mCurrentMaterial->iSkins);
+	MaterialSkin_t *msSkin = Material_GetSkin(material, material->iSkins);
 	if (!msSkin)
 		Sys_Error("Failed to get skin!\n");
 
@@ -489,13 +489,13 @@ void _Material_AddTexture(Material_t *mCurrentMaterial, MaterialFunctionType_t m
 #pragma warning(suppress: 6011)
 #endif
 	msSkin->mtTexture[msSkin->uiTextures].EnvironmentMode = VIDEO_TEXTURE_MODE_MODULATE;
-	msSkin->mtTexture[msSkin->uiTextures].bManipulated = false;
+	msSkin->mtTexture[msSkin->uiTextures].matrixmod = false;
 	msSkin->mtTexture[msSkin->uiTextures].fRotate = 0;
 	msSkin->mtTexture[msSkin->uiTextures].mttType = MATERIAL_TEXTURE_DIFFUSE;
 	msSkin->mtTexture[msSkin->uiTextures].vScroll[0] = 0;
 	msSkin->mtTexture[msSkin->uiTextures].vScroll[1] = 0;
 
-	p_strcpy(cTexturePath, cArg);
+	strcpy(cTexturePath, cArg);
 
 	// Get following line.
 	Script_GetToken(true);
@@ -506,7 +506,7 @@ void _Material_AddTexture(Material_t *mCurrentMaterial, MaterialFunctionType_t m
 		{
 			if (!Script_GetToken(true))
 			{
-				Con_Warning("End of field without closing brace! (%s) (%i)\n", mCurrentMaterial->cPath, iScriptLine);
+				Con_Warning("End of field without closing brace! (%s) (%i)\n", material->cPath, iScriptLine);
 				break;
 			}
 
@@ -515,13 +515,13 @@ void _Material_AddTexture(Material_t *mCurrentMaterial, MaterialFunctionType_t m
 
 			if (cToken[0] == '}')
 			{
-				msSkin->mtTexture[msSkin->uiTextures].gMap = Material_LoadTexture(mCurrentMaterial, msSkin, cTexturePath);
+				msSkin->mtTexture[msSkin->uiTextures].gMap = Material_LoadTexture(material, msSkin, cTexturePath);
 				msSkin->uiTextures++;
 				break;
 			}
 			// '$' declares that the following is a function.
 			else if (cToken[0] == SCRIPT_SYMBOL_FUNCTION)
-				Material_CheckFunctions(mCurrentMaterial);
+				Material_CheckFunctions(material);
 			// '%' declares that the following is a variable.
 			else if (cToken[0] == SCRIPT_SYMBOL_VARIABLE)
 			{
@@ -533,14 +533,14 @@ void _Material_AddTexture(Material_t *mCurrentMaterial, MaterialFunctionType_t m
 			}
 			else
 			{
-				Con_Warning("Invalid field! (%s) (%i)\n", mCurrentMaterial->cPath, iScriptLine);
+				Con_Warning("Invalid field! (%s) (%i)\n", material->cPath, iScriptLine);
 				break;
 			}
 		}
 	}
 	else
 #if 1
-		Con_Warning("Invalid skin, no opening brace! (%s) (%i)\n", mCurrentMaterial->cPath, iScriptLine);
+		Con_Warning("Invalid skin, no opening brace! (%s) (%i)\n", material->cPath, iScriptLine);
 #else
 	{
 		msSkin->mtTexture[msSkin->uiTextures].gMap = Material_LoadTexture(mCurrentMaterial, msSkin, cTexturePath);
@@ -581,7 +581,7 @@ void _Material_SetTextureScroll(Material_t *mCurrentMaterial, MaterialFunctionTy
 	msSkin->mtTexture[msSkin->uiTextures].vScroll[1] = vScroll[1];
 
 	// Optimisation; let the rendering system let us know to manipulate the matrix for this texture.
-	msSkin->mtTexture[msSkin->uiTextures].bManipulated = true;
+	msSkin->mtTexture[msSkin->uiTextures].matrixmod = true;
 }
 
 typedef struct
@@ -627,7 +627,7 @@ void _Material_SetRotate(Material_t *mCurrentMaterial, MaterialFunctionType_t mf
 	msSkin->mtTexture[msSkin->uiTextures].fRotate = strtof(cArg, NULL);
 
 	// Optimisation; let the rendering system let us know to manipulate the matrix for this texture.
-	msSkin->mtTexture[msSkin->uiTextures].bManipulated = true;
+	msSkin->mtTexture[msSkin->uiTextures].matrixmod = true;
 }
 
 void _Material_SetAdditive(Material_t *material, MaterialFunctionType_t context, char *arg)
@@ -656,7 +656,7 @@ void _Material_SetAlphaTest(Material_t *material, MaterialFunctionType_t context
 
 void _Material_SetShader(Material_t *material, MaterialFunctionType_t context, char *arg)
 {
-	p_strncpy(material->msSkin[material->iSkins].shader.name, arg, sizeof(material->msSkin[material->iSkins].shader.name));
+	strncpy(material->msSkin[material->iSkins].shader.name, arg, sizeof(material->msSkin[material->iSkins].shader.name));
 
 	// TODO: set shader up correctly (ensure it's loaded, blah blah blah)
 }
@@ -812,7 +812,7 @@ Material_t *Material_Load(const char *ccPath)
 	}
 
 	// Update the given path with the base path plus extension.
-	sprintf(cPath,"%s%s.material",Global.cMaterialPath,ccPath);
+	sprintf(cPath, "%s%s.material", g_state.cMaterialPath, ccPath);
 
 	// Check if it's been cached already...
 	mNewMaterial = Material_GetByPath(cPath);
@@ -842,7 +842,7 @@ Material_t *Material_Load(const char *ccPath)
 		else	// Probably a name...
 		{
 			// Copy over the given name.
-			p_strncpy(cMaterialName, cToken, sizeof(cMaterialName));
+			strncpy(cMaterialName, cToken, sizeof(cMaterialName));
 			if (cMaterialName[0] == ' ')
 				Sys_Error("Invalid material name!\n");
 
@@ -880,17 +880,17 @@ Material_t *Material_Load(const char *ccPath)
 	}
 
 	if (cMaterialName[0])
-		p_strncpy(mNewMaterial->cName, cMaterialName, sizeof(mNewMaterial->cName));
+		strncpy(mNewMaterial->cName, cMaterialName, sizeof(mNewMaterial->cName));
 	else
 	{
 		char cIn[PLATFORM_MAX_PATH];
-		p_strncpy(cIn, ccPath, sizeof(cIn));
+		strncpy(cIn, ccPath, sizeof(cIn));
 
 		// Otherwise just use the filename.
 		ExtractFileBase(cIn, mNewMaterial->cName);
 	}
 
-	p_strncpy(mNewMaterial->cPath, ccPath, sizeof(mNewMaterial->cPath));
+	strncpy(mNewMaterial->cPath, ccPath, sizeof(mNewMaterial->cPath));
 
 	for (;;)
 	{
@@ -945,14 +945,14 @@ extern ConsoleVariable_t gl_fullbrights;
 */
 void Material_Draw(Material_t *Material, int Skin, 
 	VideoObjectVertex_t *ObjectVertex, VideoPrimitive_t ObjectPrimitive, unsigned int ObjectSize,
-	bool bPost)
+	bool ispost)
 {
 	if (r_drawflat_cheatsafe || !Material)
 		return;
 
 	if (!Material->override_wireframe && (r_lightmap_cheatsafe || r_showtris.bValue))
 	{
-		if (!bPost)
+		if (!ispost)
 		{
 			// Select the first TMU.
 			Video_SelectTexture(0);
@@ -974,7 +974,7 @@ void Material_Draw(Material_t *Material, int Skin,
 	// Handle any generic blending.
 	if (msCurrentSkin->uiFlags & MATERIAL_FLAG_BLEND)
 	{
-		if (!bPost)
+		if (!ispost)
 		{
 			VideoLayer_DepthMask(false);
 
@@ -1008,16 +1008,16 @@ void Material_Draw(Material_t *Material, int Skin,
 		// Attempt to select the unit (if it's already selected, then it'll just return).
 		Video_SelectTexture(uiCurrentUnit);
 
-		if (!bPost)
+		if (!ispost)
 		{
 			// Enable it.
-			Video_EnableCapabilities(VIDEO_TEXTURE_2D);
+			VideoLayer_Enable(VIDEO_TEXTURE_2D);
 
 			// Bind it.
 			Video_SetTexture(msCurrentSkin->mtTexture[i].gMap);
 
 			// Allow us to manipulate the texture.
-			if (msCurrentSkin->mtTexture[i].bManipulated)
+			if (msCurrentSkin->mtTexture[i].matrixmod)
 			{
 				glMatrixMode(GL_TEXTURE);
 				glLoadIdentity();
@@ -1037,10 +1037,10 @@ void Material_Draw(Material_t *Material, int Skin,
 		{
 		case MATERIAL_TEXTURE_LIGHTMAP:
 		case MATERIAL_TEXTURE_DIFFUSE:
-			if (!bPost)
+			if (!ispost)
 			{
 #if 0 // TODO: Material shader assignments!!!!
-				VideoShader_SetVariablei(iDiffuseUniform, Video.uiActiveUnit);
+				VideoShader_SetVariablei(iDiffuseUniform, Video.current_textureunit);
 #endif
 
 				if (uiCurrentUnit > 0)
@@ -1075,7 +1075,7 @@ void Material_Draw(Material_t *Material, int Skin,
 				{
 					VideoLayer_Disable(VIDEO_ALPHA_TEST);
 
-					if (cvVideoAlphaTrick.bValue && (ObjectSize > 0))
+					if (cv_video_alphatrick.bValue && (ObjectSize > 0))
 					{
 						VideoLayer_DepthMask(false);
 						VideoLayer_Enable(VIDEO_BLEND);
@@ -1092,9 +1092,9 @@ void Material_Draw(Material_t *Material, int Skin,
 			}
 			break;
 		case MATERIAL_TEXTURE_DETAIL:
-			if (!bPost)
+			if (!ispost)
 			{
-				if (!cvVideoDrawDetail.bValue)
+				if (!cv_video_drawdetail.bValue)
 				{
 					Video_DisableCapabilities(VIDEO_TEXTURE_2D);
 					break;
@@ -1115,8 +1115,8 @@ void Material_Draw(Material_t *Material, int Skin,
 						// Copy over original texture coords.
 						Video_ObjectTexture(&ObjectVertex[j], uiCurrentUnit,
 							// Use base texture coordinates as a reference.
-							ObjectVertex[j].mvST[0][0] * cvVideoDetailScale.value,
-							ObjectVertex[j].mvST[0][1] * cvVideoDetailScale.value);
+							ObjectVertex[j].mvST[0][0] * cv_video_detailscale.value,
+							ObjectVertex[j].mvST[0][1] * cv_video_detailscale.value);
 
 						// TODO: Modify them to the appropriate scale.
 
@@ -1130,7 +1130,7 @@ void Material_Draw(Material_t *Material, int Skin,
 			}
 			break;
 		case MATERIAL_TEXTURE_FULLBRIGHT:
-			if (!bPost)
+			if (!ispost)
 			{
 				if (!gl_fullbrights.bValue)
 				{
@@ -1163,7 +1163,7 @@ void Material_Draw(Material_t *Material, int Skin,
 				VideoLayer_SetTextureEnvironmentMode(VIDEO_TEXTURE_MODE_MODULATE);
 			break;
 		case MATERIAL_TEXTURE_SPHERE:
-			if (!bPost)
+			if (!ispost)
 			{
 				VideoLayer_SetTextureEnvironmentMode(VIDEO_TEXTURE_MODE_COMBINE);
 
@@ -1181,10 +1181,10 @@ void Material_Draw(Material_t *Material, int Skin,
 			Sys_Error("Invalid texture type for material! (%s) (%i)\n", Material->cPath, msCurrentSkin->mtTexture[i].mttType);
 		}
 
-		if (bPost)
+		if (ispost)
 		{
 			// Reset any manipulation within the matrix.
-			if (msCurrentSkin->mtTexture[i].bManipulated)
+			if (msCurrentSkin->mtTexture[i].matrixmod)
 			{
 				glMatrixMode(GL_TEXTURE);
 				glLoadIdentity();
@@ -1194,7 +1194,7 @@ void Material_Draw(Material_t *Material, int Skin,
 			}
 
 			// Disable the texture.
-			Video_DisableCapabilities(VIDEO_TEXTURE_2D);
+			VideoLayer_Disable(VIDEO_TEXTURE_2D);
 		}
 	}
 }

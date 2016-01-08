@@ -53,7 +53,7 @@ void Window_InitializeVideo(void)
 	if (SDL_GetCurrentDisplayMode(0, &sDisplayMode) != 0)
 		Sys_Error("Failed to get current display information!\n%s\n", SDL_GetError());
 
-	if (!Video.bFullscreen)
+	if (!Video.fullscreen)
 		iFlags &= ~SDL_WINDOW_FULLSCREEN;
 
 #if 0
@@ -114,36 +114,36 @@ void Window_InitializeVideo(void)
 
 void Window_UpdateVideo(void)
 {
-	if (Video.iMSAASamples != cvMultisampleSamples.iValue)
+	if (Video.msaa_samples != cv_video_msaasamples.iValue)
 	{
 		// TODO: Destroy window etc.
 
-		Video.iMSAASamples = cvMultisampleSamples.iValue;
+		Video.msaa_samples = cv_video_msaasamples.iValue;
 	}
 
 	SDL_SetWindowSize(sMainWindow, Video.iWidth, Video.iHeight);
 
-	if (Video.bVerticalSync != cvVerticalSync.bValue)
+	if (Video.vertical_sync != cv_video_verticlesync.bValue)
 	{
-		SDL_GL_SetSwapInterval(cvVerticalSync.iValue);
+		SDL_GL_SetSwapInterval(cv_video_verticlesync.iValue);
 
-		Video.bVerticalSync = cvVerticalSync.bValue;
+		Video.vertical_sync = cv_video_verticlesync.bValue;
 	}
 
-	if (Video.bFullscreen != cvFullscreen.bValue)
+	if (Video.fullscreen != cv_video_fullscreen.bValue)
 	{
-		if (SDL_SetWindowFullscreen(sMainWindow, (SDL_bool)cvFullscreen.bValue) == -1)
+		if (SDL_SetWindowFullscreen(sMainWindow, (SDL_bool)cv_video_fullscreen.bValue) == -1)
 		{
 			Con_Warning("Failed to set window mode!\n%s", SDL_GetError());
 
 			// Reset the variable to the current value.
-			Cvar_SetValue(cvFullscreen.name, Video.bFullscreen);
+			Cvar_SetValue(cv_video_fullscreen.name, Video.fullscreen);
 		}
 		else
-			Video.bFullscreen = cvFullscreen.bValue;
+			Video.fullscreen = cv_video_fullscreen.bValue;
 	}
 
-	if (!cvFullscreen.value)
+	if (!cv_video_fullscreen.value)
 		// Center the window, to ensure it's not off screen.
 		SDL_SetWindowPosition(sMainWindow, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
 }

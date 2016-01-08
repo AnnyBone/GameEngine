@@ -31,13 +31,13 @@ Particle_t	*pActiveParticles,
 			*pFreeParticles,
 			*pParticles;
 
-ConsoleVariable_t cvParticleDraw = { "video_particles", "1", true, false, "Toggles the rendering of particles." };	// TODO: Move into enginevideo!
+ConsoleVariable_t cv_video_drawparticles = { "video_particles", "1", true, false, "Toggles the rendering of particles." };	// TODO: Move into enginevideo!
 
 void Particle_Initialize(void)
 {
 	pParticles = (Particle_t*)Hunk_AllocName(MAX_PARTICLES*sizeof(Particle_t), "particles");
 
-	Cvar_RegisterVariable(&cvParticleDraw, NULL);
+	Cvar_RegisterVariable(&cv_video_drawparticles, NULL);
 }
 
 Particle_t *Particle_Allocate(void)
@@ -456,7 +456,7 @@ void Particle_Draw(void)
 {
 	Particle_t	*pParticle;
 
-	if (!pActiveParticles || !cvParticleDraw.value)
+	if (!pActiveParticles || !cv_video_drawparticles.value)
 		return;
 
 	for (pParticle = pActiveParticles; pParticle; pParticle = pParticle->next)

@@ -93,7 +93,7 @@ void VideoDrawStatic::End()
 	
 	int i;
 	for (i = 0; i < VIDEO_MAX_UNITS; i++)
-		if (Video.bUnitState[i])
+		if (Video.textureunit_state[i])
 		{
 			glClientActiveTexture(Video_GetTextureUnit(i));
 
@@ -117,7 +117,7 @@ void VideoDrawStatic::Draw()
 
 	int i;
 	for (i = 0; i < VIDEO_MAX_UNITS; i++)
-		if (Video.bUnitState[i])
+		if (Video.textureunit_state[i])
 		{
 			glClientActiveTexture(Video_GetTextureUnit(i));
 			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -227,7 +227,7 @@ void VideoObject_Draw(VideoObject_t *voObject)
 
 	int i;
 	for (i = 0; i < VIDEO_MAX_UNITS; i++)
-		if (Video.bUnitState[i])
+		if (Video.textureunit_state[i])
 		{
 			glClientActiveTexture(Video_GetTextureUnit(i));
 			glEnableClientState(GL_TEXTURE_COORD_ARRAY);

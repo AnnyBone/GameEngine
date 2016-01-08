@@ -134,7 +134,7 @@ void Host_Game_f (void)
 			return;
 		}
 
-		p_strcpy(pakfile, va("%s/%s", host_parms.basedir, Cmd_Argv(1)));
+		strcpy(pakfile, va("%s/%s", host_parms.basedir, Cmd_Argv(1)));
 		if(!strncmp(pakfile,com_gamedir,sizeof(com_gamedir))) //no change
 		{
 			Con_Printf("\"game\" is already \"%s\"\n",FileSystem_SkipPath(com_gamedir));
@@ -148,12 +148,12 @@ void Host_Game_f (void)
 		// Write config file
 		Host_WriteConfiguration();
 
-		p_strcpy(com_gamedir, pakfile);
+		strcpy(com_gamedir, pakfile);
 
 		if(Q_strcasecmp(Cmd_Argv(1),host_parms.cBasePath)) //game is not id1
 		{
 			search = (searchpath_t*)calloc_or_die(1, sizeof(searchpath_t));
-			p_strcpy(search->filename, pakfile);
+			strcpy(search->filename, pakfile);
 			search->next = com_searchpaths;
 			com_searchpaths = search;
 
@@ -226,7 +226,7 @@ void ExtraMaps_Add (char *name)
 			return;
 
 	level = (extralevel_t*)malloc_or_die(sizeof(extralevel_t));
-	p_strcpy(level->name, name);
+	strcpy(level->name, name);
 
 	// Insert each entry in alphabetical order
 	if (extralevels == NULL || Q_strcasecmp(level->name,extralevels->name) < 0) //insert at front
@@ -264,7 +264,7 @@ void ExtraMaps_Init(void)
 			WIN32_FIND_DATA	FindFileData;
 			HANDLE			Find;
 
-			sprintf(filestring,"%s/%s*"BSP_EXTENSION,search->filename,Global.cLevelPath);
+			sprintf(filestring, "%s/%s*"BSP_EXTENSION, search->filename, g_state.cLevelPath);
 
 			Find = FindFirstFile(filestring,&FindFileData);
 			if(Find == INVALID_HANDLE_VALUE)
@@ -280,7 +280,7 @@ void ExtraMaps_Init(void)
 			DIR             *dDirectory;
 			struct  dirent  *dEntry;
 
-			sprintf(filestring,"%s/%s",search->filename,Global.cLevelPath);
+			sprintf(filestring,"%s/%s",search->filename,g_state.cLevelPath);
 
 			dDirectory = opendir(filestring);
 			if(dDirectory)
@@ -394,7 +394,7 @@ void Modlist_Init(void) //TODO: move win32 specific stuff to sys_win.c
 
 			mod = (mod_t*)malloc_or_die(sizeof(mod_t));
 
-			p_strcpy(mod->name, FindFileData.cFileName);
+			strcpy(mod->name, FindFileData.cFileName);
 
 			//insert each entry in alphabetical order
 			if (modlist == NULL || _stricmp(mod->name, modlist->name) < 0) //insert at front
@@ -774,7 +774,7 @@ void Host_Map_f (void)
 	strcat (cls.mapstring, "\n");
 
 	svs.serverflags = 0;			// haven't completed an episode yet
-	p_strcpy(name, Cmd_Argv(1));
+	strcpy(name, Cmd_Argv(1));
 
 	SV_SpawnServer (name);
 
@@ -783,7 +783,7 @@ void Host_Map_f (void)
 
 	if (cls.state != ca_dedicated)
 	{
-		p_strcpy(cls.spawnparms, "");
+		strcpy(cls.spawnparms, "");
 
 		for (i=2 ; i<Cmd_Argc() ; i++)
 		{
@@ -814,13 +814,13 @@ void Host_Changelevel_f (void)
 	}
 
 	//johnfitz -- check for client having map before anything else
-	sprintf(level,"%s/%s"BSP_EXTENSION,Global.cLevelPath,Cmd_Argv(1));
+	sprintf(level, "%s/%s"BSP_EXTENSION, g_state.cLevelPath, Cmd_Argv(1));
 	if (COM_OpenFile (level, &i) == -1)
 		Host_Error ("cannot find map %s", level);
 	//johnfitz
 
 	SV_SaveSpawnparms ();
-	p_strcpy(level, Cmd_Argv(1));
+	strcpy(level, Cmd_Argv(1));
 	SV_SpawnServer (level);
 }
 
@@ -835,7 +835,7 @@ void Host_Restart_f (void)
 	else if (cmd_source != src_command)
 		return;
 
-	p_strcpy(mapname, sv.name);	// must copy out, because it gets cleared
+	strcpy(mapname, sv.name);	// must copy out, because it gets cleared
 								// in sv_spawnserver
 	SV_SpawnServer (mapname);
 }
@@ -861,7 +861,7 @@ void Host_Connect_f (void)
 		CL_StopPlayback ();
 		CL_Disconnect ();
 	}
-	p_strcpy(name, Cmd_Argv(1));
+	strcpy(name, Cmd_Argv(1));
 	CL_EstablishConnection (name);
 	Host_Reconnect_f ();
 }
@@ -1064,7 +1064,7 @@ void Host_Loadgame_f (void)
 
 		sv.lightstyles[i] = (char*)Hunk_Alloc(strlen(str)+1);
 
-		p_strcpy(sv.lightstyles[i], str);
+		strcpy(sv.lightstyles[i], str);
 	}
 
 // load the edicts out of the savegame file
@@ -1157,7 +1157,7 @@ void Host_Name_f (void)
 	if(host_client->name[0] && strcmp(host_client->name, "unconnected") )
 		if(strcmp(host_client->name, newName) != 0)
 			Con_Printf("%s renamed to %s\n",host_client->name,newName);
-	p_strcpy(host_client->name, newName);
+	strcpy(host_client->name, newName);
 	host_client->edict->v.netname = host_client->name;
 
 	// Send notification to all clients
@@ -1259,7 +1259,7 @@ void Host_Tell_f(void)
 	else if(Cmd_Argc() < 3)
 		return;
 
-	p_strcpy(text, host_client->name);
+	strcpy(text, host_client->name);
 	strcat(text,": ");
 
 	p = Cmd_Args();
@@ -1841,7 +1841,7 @@ void Host_Startdemos_f (void)
 	Con_Printf ("%i demo(s) in loop\n", c);
 
 	for (i=1 ; i<c+1 ; i++)
-		p_strncpy(cls.demos[i - 1], Cmd_Argv(i), sizeof(cls.demos[0]) - 1);
+		strncpy(cls.demos[i - 1], Cmd_Argv(i), sizeof(cls.demos[0]) - 1);
 
 	if (!sv.active && cls.demonum != -1 && !cls.demoplayback)
 	{

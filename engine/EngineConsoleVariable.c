@@ -282,7 +282,7 @@ void Cvar_Set (const char *var_name, char *value)
 	free(var->string);	// free the old value string
 
 	var->string = (char*)malloc_or_die(strlen(value) + 1);
-	p_strcpy(var->string, value);
+	strcpy(var->string, value);
 
 	Cvar_UpdateValues(var);
 
@@ -291,7 +291,7 @@ void Cvar_Set (const char *var_name, char *value)
 	{
 		free(var->default_string);
 		var->default_string = (char*)malloc_or_die(strlen(value) + 1);
-		p_strcpy(var->default_string, value);
+		strcpy(var->default_string, value);
 	}
 	//johnfitz
 
@@ -339,13 +339,13 @@ void Cvar_RegisterVariable (ConsoleVariable_t *variable,void (*Function)(void))
 // copy the value off, because future sets will free it
 	oldstr = variable->string;
 	variable->string = (char*)malloc_or_die(strlen(variable->string) + 1);
-	p_strcpy(variable->string, oldstr);
+	strcpy(variable->string, oldstr);
 
 	Cvar_UpdateValues(variable);
 
 	//johnfitz -- save initial value for "reset" command
 	variable->default_string = (char*)malloc_or_die(strlen(variable->string) + 1);
-	p_strcpy(variable->default_string, oldstr);
+	strcpy(variable->default_string, oldstr);
 	//johnfitz
 
 // link the variable in

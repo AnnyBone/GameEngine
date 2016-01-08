@@ -141,13 +141,13 @@ void S_SoundList(void);
 void S_Init (void)
 {
 	// TODO: Surely we still want sound in an embedded context??
-	if (Global.bEmbeddedContext || COM_CheckParm("-nosound"))
+	if (g_state.embedded || COM_CheckParm("-nosound"))
 		return;
 
 	Con_Printf("Initializing sound...\n");
 
 	if (COM_CheckParm("-simsound"))
-		fakedma = TRUE;
+		fakedma = true;
 
 	Cmd_AddCommand("play", S_Play);
 	Cmd_AddCommand("playvol",S_PlayVol);
@@ -251,7 +251,7 @@ sfx_t *S_FindName (char *name)
 		Sys_Error ("S_FindName: out of sfx_t");
 
 	sfx = &known_sfx[i];
-	p_strncpy(sfx->name, name, sizeof(sfx->name));
+	strncpy(sfx->name, name, sizeof(sfx->name));
 
 	num_sfx++;
 
@@ -742,11 +742,11 @@ void S_Play(void)
 	{
 		if(!strrchr(Cmd_Argv(i), '.'))
 		{
-			p_strcpy(name, Cmd_Argv(i));
+			strcpy(name, Cmd_Argv(i));
 			strcat(name,".wav");
 		}
 		else
-			p_strcpy(name, Cmd_Argv(i));
+			strcpy(name, Cmd_Argv(i));
 
 		sfx = S_PrecacheSound(name);
 
@@ -769,11 +769,11 @@ void S_PlayVol(void)
 	{
 		if (!strrchr(Cmd_Argv(i), '.'))
 		{
-			p_strcpy(name, Cmd_Argv(i));
+			strcpy(name, Cmd_Argv(i));
 			strcat(name, ".wav");
 		}
 		else
-			p_strcpy(name, Cmd_Argv(i));
+			strcpy(name, Cmd_Argv(i));
 
 		sfx = S_PrecacheSound(name);
 		vol = Q_atof(Cmd_Argv(i+1));

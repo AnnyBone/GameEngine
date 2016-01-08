@@ -190,13 +190,13 @@ void VideoLayer_SetTextureEnvironmentMode(VideoTextureEnvironmentMode_t TextureE
 {
 	VIDEO_FUNCTION_START
 	// Ensure there's actually been a change.
-	if (Video.TextureUnits[Video.uiActiveUnit].CurrentTexEnvMode == TextureEnvironmentMode)
+	if (Video.textureunits[Video.current_textureunit].current_envmode == TextureEnvironmentMode)
 		return;
 
 	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, 
 		VideoLayer_TranslateTextureEnvironmentMode(TextureEnvironmentMode));
 
-	Video.TextureUnits[Video.uiActiveUnit].CurrentTexEnvMode = TextureEnvironmentMode;
+	Video.textureunits[Video.current_textureunit].current_envmode = TextureEnvironmentMode;
 	VIDEO_FUNCTION_END
 }
 
@@ -240,12 +240,12 @@ void VideoLayer_Enable(unsigned int uiCapabilities)
 			break;
 
 		if (uiCapabilities & VIDEO_TEXTURE_2D)
-			Video.bUnitState[Video.uiActiveUnit] = true;
+			Video.textureunit_state[Video.current_textureunit] = true;
 
 		if (uiCapabilities & capabilities[i].uiFirst)
 		{
-			if (Video.bDebugFrame)
-				plWriteLog(VIDEO_LOG, "Video: Enabling %s (%i)\n", capabilities[i].ccIdentifier, Video.uiActiveUnit);
+			if (Video.debug_frame)
+				plWriteLog(VIDEO_LOG, "Enabling %s (%i)\n", capabilities[i].ccIdentifier, Video.current_textureunit);
 
 			glEnable(capabilities[i].uiSecond);
 		}
@@ -264,7 +264,7 @@ void VideoLayer_Disable(unsigned int uiCapabilities)
 			break;
 
 		if (uiCapabilities & VIDEO_TEXTURE_2D)
-			Video.bUnitState[Video.uiActiveUnit] = false;
+			Video.textureunit_state[Video.current_textureunit] = false;
 
 		if (uiCapabilities & capabilities[i].uiFirst)
 		{
@@ -282,7 +282,7 @@ void VideoLayer_BlendFunc(VideoBlend_t modea, VideoBlend_t modeb)
 {
 	VIDEO_FUNCTION_START
 	glBlendFunc(modea, modeb);
-	if (Video.bDebugFrame)
+	if (Video.debug_frame)
 		plWriteLog(VIDEO_LOG, "Video: Setting blend mode (%i) (%i)\n", modea, modeb);
 	VIDEO_FUNCTION_END
 }

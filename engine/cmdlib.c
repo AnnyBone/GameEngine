@@ -73,7 +73,7 @@ char *copystring(char *s)
 {
 	char	*b;
 	b = (char*)malloc(strlen(s)+1);
-	p_strcpy(b, s);
+	strcpy(b, s);
 	return b;
 }
 
@@ -358,8 +358,8 @@ void DefaultPath (char *path, char *basepath)
 
 	if (path[0] == '/')
 		return;                   // absolute path location
-	p_strcpy(temp, path);
-	p_strcpy(path, basepath);
+	strcpy(temp, path);
+	strcpy(path, basepath);
 	strcat (path,temp);
 }
 
@@ -440,7 +440,7 @@ void ExtractFileExtension (char *path, char *dest)
 		return;
 	}
 
-	p_strcpy(dest, src);
+	strcpy(dest, src);
 }
 
 int ParseHex (char *hex)

@@ -198,18 +198,18 @@ void R_DrawTextureChains_Drawflat (void)
 
 void Surface_DrawMirror(msurface_t *Surface)
 {
-	float fDirection;
+	float dir;
 
 	// Prevent recursion...
-	if (r_refdef.bMirror)
+	if (!cv_video_drawmirrors.bValue || r_refdef.bMirror)
 		return;
 
 	// Copy the matrix.
 	memcpy(r_base_world_matrix, r_world_matrix, sizeof(r_base_world_matrix));
 
 #if 1
-	fDirection = Math_DotProduct(r_refdef.vieworg, Surface->plane->normal) - Surface->plane->dist;
-	Math_VectorMA(r_refdef.vieworg, -2 * fDirection, Surface->plane->normal, r_refdef.vieworg);
+	dir = Math_DotProduct(r_refdef.vieworg, Surface->plane->normal) - Surface->plane->dist;
+	Math_VectorMA(r_refdef.vieworg, -2 * dir, Surface->plane->normal, r_refdef.vieworg);
 
 //	fDirection = Math_DotProduct(vpn, Surface->plane->normal);
 //	Math_VectorMA(vpn, -2 * fDirection, Surface->plane->normal, vpn);
@@ -296,7 +296,7 @@ void World_DrawWaterTextureChains(void)
 
 	Video_ResetCapabilities(false);
 
-	Video_EnableCapabilities(VIDEO_TEXTURE_2D|VIDEO_BLEND);
+	VideoLayer_Enable(VIDEO_TEXTURE_2D | VIDEO_BLEND);
 
 	for (i = 0; i < cl.worldmodel->numtextures; i++)
 	{
@@ -323,6 +323,8 @@ void World_DrawWaterTextureChains(void)
 				Material_Draw(t->mAssignedMaterial, 0, 0, VIDEO_PRIMITIVE_IGNORE, 0, true);
 			}
 	}
+
+	VideoLayer_Disable(VIDEO_TEXTURE_2D | VIDEO_BLEND);
 
 	Video_ResetCapabilities(true);
 }

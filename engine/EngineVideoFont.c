@@ -51,7 +51,7 @@ void Font_Load(const char *ccName,int iSize)
 {
 	char cPath[PLATFORM_MAX_PATH];
 
-	sprintf(cPath, "%s/%s", Global.cFontPath, ccName);
+	sprintf(cPath, "%s/%s", g_state.cFontPath, ccName);
 
 #ifdef _WIN32	// TODO: Move this over to platform.
 	HFONT	hFont;

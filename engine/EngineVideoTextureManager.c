@@ -197,7 +197,7 @@ void TexMgr_Imagelist_f (void)
 			texels += (glt->width * glt->height);
 	}
 
-	mb = texels * (Video.fBitsPerPixel/8.0f)/0x100000;
+	mb = texels * (Video.bpp / 8.0f) / 0x100000;
 	Con_Printf ("%i textures %i pixels %1.1f megabytes\n", numgltextures, (int)texels, mb);
 }
 
@@ -215,7 +215,7 @@ void TexMgr_Imagedump_f(void)
 	// Loop through textures
 	for (glt=active_gltextures; glt; glt=glt->next)
 	{
-		p_strcpy(tempname, glt->name);
+		strcpy(tempname, glt->name);
 
 #if 0	// TODO: Is this even needed anymore?
 		while ((c = strchr(tempname, ':'))) *c = '_';
@@ -263,7 +263,7 @@ float TexMgr_FrameUsage (void)
 				texels += (glt->width*glt->height);
 		}
 
-	mb = texels*(Video.fBitsPerPixel/8.0f)/0x100000;
+	mb = texels*(Video.bpp / 8.0f) / 0x100000;
 	return mb;
 }
 
@@ -1013,8 +1013,8 @@ gltexture_t *TexMgr_LoadImage(model_t *owner, char *name, int width, int height,
 	glt->source_width   = width;
 	glt->source_height  = height;
 	glt->source_crc     = crc;
-	p_strncpy(glt->name, name, sizeof(glt->name));
-	p_strncpy(glt->source_file, source_file, sizeof(glt->source_file));
+	strncpy(glt->name, name, sizeof(glt->name));
+	strncpy(glt->source_file, source_file, sizeof(glt->source_file));
 
 	//upload it
 	mark = Hunk_LowMark();

@@ -77,12 +77,12 @@ bool VideoShader::Load(const char *path)
 	unsigned int uiShaderType;
 	if (type == VIDEO_SHADER_FRAGMENT)
 	{
-		sprintf(source_path, "%s%s_fragment.shader", Global.cShaderPath, path);
+		sprintf(source_path, "%s%s_fragment.shader", g_state.cShaderPath, path);
 		uiShaderType = GL_FRAGMENT_SHADER;
 	}
 	else
 	{
-		sprintf(source_path, "%s%s_vertex.shader", Global.cShaderPath, path);
+		sprintf(source_path, "%s%s_vertex.shader", g_state.cShaderPath, path);
 		uiShaderType = GL_VERTEX_SHADER;
 	}
 

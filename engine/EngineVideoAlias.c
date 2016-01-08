@@ -30,12 +30,8 @@ bool	bShading;		//johnfitz -- if false, disable vertex shading for various reaso
 MathVector3f_t	alias_lightcolour, oldlightcolour;
 MathVector3f_t	lightposition, oldlightposition;
 
-DynamicLight_t	*dlLightSource;
-
 void Alias_SetupLighting(ClientEntity_t *entity)
 {
-	float fDistance;
-
 	Math_VectorSet(1.0f, alias_lightcolour);
 
 	if(!bShading || r_showtris.bValue)
@@ -43,13 +39,23 @@ void Alias_SetupLighting(ClientEntity_t *entity)
 
 	if (!(entity->effects & EF_FULLBRIGHT))
 	{
-		// Check to see if we can grab the light source, for directional information.
-		dlLightSource = Light_GetDynamic(entity->origin, true);
-		if (dlLightSource)
-		{
-			Math_VectorScale(dlLightSource->color, 1.0f / 200.0f, alias_lightcolour);
+		Math_VectorSet(0, alias_lightcolour);
 
-#if 0
+		// Check to see if we can grab the light source, for directional information.
+		DynamicLight_t *dlight = Light_GetDynamic(entity->origin, true);
+		if (dlight)
+		{
+			MathVector3f_t distance;
+
+			// Approximate light intensity based on distance.
+			Math_VectorSubtract(entity->origin, dlight->origin, distance);
+			Math_VectorCopy(dlight->color, alias_lightcolour);
+			Math_VectorSubtractValue(alias_lightcolour, (dlight->radius - Math_Length(distance)) / 1000.0f, alias_lightcolour);
+			Math_VectorScale(alias_lightcolour, 1.0f / 200.0f, alias_lightcolour);
+			//Math_VectorDivide(alias_lightcolour, 0.3f, alias_lightcolour);
+
+
+#if 0	// TODO: DO THIS ON A PER ENTITY BASIS, RATHER THAN PER MESH!!!!
 			VideoShader_SetVariable3f(iLightPositionUniform, dlLightSource->origin[0], dlLightSource->origin[1], dlLightSource->origin[2]);
 			VideoShader_SetVariable3f(iLightColourUniform, alias_lightcolour[0], alias_lightcolour[1], alias_lightcolour[2]);
 #endif
@@ -59,7 +65,7 @@ void Alias_SetupLighting(ClientEntity_t *entity)
 			Math_MVToVector(Light_GetSample(entity->origin), alias_lightcolour);
 			Math_VectorScale(alias_lightcolour, 1.0f / 200.0f, alias_lightcolour);
 
-#if 0
+#if 0	// TODO: DO THIS ON A PER ENTITY BASIS, RATHER THAN PER MESH!!!!
 			VideoShader_SetVariable3f(iLightPositionUniform, entity->origin[0], entity->origin[1], entity->origin[2]);
 			VideoShader_SetVariable3f(iLightColourUniform, alias_lightcolour[0], alias_lightcolour[1], alias_lightcolour[2]);
 #endif
@@ -69,9 +75,9 @@ void Alias_SetupLighting(ClientEntity_t *entity)
 	// Minimum light value on players (8)
 	if (entity > cl_entities && entity <= cl_entities + cl.maxclients)
 	{
-		fDistance = 24.0f - (alias_lightcolour[0] + alias_lightcolour[1] + alias_lightcolour[2]);
-		if(fDistance > 0.0f)
-			Math_VectorAddValue(alias_lightcolour, fDistance / 3.0f, alias_lightcolour);
+		float mod = 24.0f - (alias_lightcolour[0] + alias_lightcolour[1] + alias_lightcolour[2]);
+		if (mod > 0.0f)
+			Math_VectorAddValue(alias_lightcolour, mod / 3.0f, alias_lightcolour);
 	}
 }
 
@@ -248,7 +254,7 @@ void Alias_Draw(ClientEntity_t *eEntity)
 	lerpdata_t	lLerpData;
 	MD2_t		*mModel;
 
-	if(!cvVideoDrawModels.value || R_CullModelForEntity(eEntity))
+	if (!cv_video_drawmodels.value || R_CullModelForEntity(eEntity))
 		return;
 
 	// Set defaults.
@@ -260,8 +266,6 @@ void Alias_Draw(ClientEntity_t *eEntity)
 
 	Alias_SetupFrame(mModel,eEntity,&lLerpData);
 	Alias_SetupEntityTransform(eEntity, &lLerpData);
-
-	Video_ResetCapabilities(false);
 
 	glPushMatrix();
 
@@ -275,12 +279,4 @@ void Alias_Draw(ClientEntity_t *eEntity)
 		srand((int)(cl.time*1000));
 
 	glPopMatrix();
-
-	Video_ResetCapabilities(true);
-
-#if 0
-	// Show active light reference.
-	if (dlLightSource)
-		Draw_Line(eEntity->origin, dlLightSource->origin);
-#endif
 }

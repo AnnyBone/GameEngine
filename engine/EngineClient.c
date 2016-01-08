@@ -131,7 +131,7 @@ void CL_Disconnect_f (void)
 	if(sv.active)
 		Host_ShutdownServer(false);
 
-	Menu->RemoveState(MENU_STATE_HUD);
+	g_menu->RemoveState(MENU_STATE_HUD);
 }
 
 /*	Host should be either "local" or a net address to be passed on

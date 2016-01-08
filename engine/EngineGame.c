@@ -472,10 +472,10 @@ void Game_Initialize(void)
 	Import.Client_GetPlayerEntity	= Client_GetPlayerEntity;
 	Import.Client_GetViewEntity		= Client_GetViewEntity;
 
-	if(Menu)
+	if (g_menu)
 	{
-		Import.Client_AddMenuState		= Menu->AddState;
-		Import.Client_RemoveMenuState	= Menu->RemoveState;
+		Import.Client_AddMenuState = g_menu->AddState;
+		Import.Client_RemoveMenuState = g_menu->RemoveState;
 	}
 
 	Import.Server_PointContents		= SV_PointContents;
@@ -493,7 +493,7 @@ void Game_Initialize(void)
 	Import.Server_GetNumEdicts		= Game_GetNumEdicts;
 	Import.Server_GetEdicts			= Game_GetEdicts;
 
-	Game = (GameExport_t*)plLoadModuleInterface(hGameInstance, va("%s/%s" MODULE_GAME, com_gamedir, Global.cModulePath), "Game_Main", &Import);
+	Game = (GameExport_t*)plLoadModuleInterface(hGameInstance, va("%s/%s" MODULE_GAME, com_gamedir, g_state.cModulePath), "Game_Main", &Import);
 	if(!Game)
 		Con_Warning(plGetError(), com_gamedir, MODULE_GAME);
 	else if (Game->iVersion != GAME_VERSION)

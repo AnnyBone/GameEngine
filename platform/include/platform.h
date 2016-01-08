@@ -225,10 +225,6 @@ typedef	unsigned char	pUCHAR;
 #include "platform_log.h"
 #include "platform_window.h"
 
-/*	Platform Standard Headers
-*/
-#include "platform_string.h"
-
 /*
 	Error Management Functionality
 */

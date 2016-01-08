@@ -39,8 +39,8 @@ cvar_t	r_fastsky			= {	"r_fastsky",		"0"		},
 		r_sky_quality		= {	"r_sky_quality",	"8"		},
 		r_skyalpha			= {	"r_skyalpha",		"1"		},
 		r_skyfog			= {	"r_skyfog",			"0.5"	},
-		cvDrawClouds	    = { "sky_drawclouds",	"1"																			},
-		cvSkyScrollSpeed    = { "sky_scrollspeed",  "2.0",	false,   false,  "Changes the speed at which the clouds scroll."	};
+		cv_video_drawclouds = { "sky_drawclouds", "1", true, false, "Toggles rendering of clouds." },
+		cv_sky_scrollspeed = { "sky_scrollspeed", "2.0", false, false, "Changes the speed at which the clouds scroll." };
 
 int		skytexorder[6] = {0,2,1,3,4,5}; //for skybox
 
@@ -76,14 +76,14 @@ int	vec_to_st[6][3] =
 
 void Sky_LoadCloudTexture(const char *cPath)
 {
-	char	cFileName[PLATFORM_MAX_PATH];
+	char				cFileName[PLATFORM_MAX_PATH];
 	unsigned int		iWidth,iHeight;
-	byte	*bData;
+	uint8_t				*bData;
 
 	if(!cPath[0])
 		return;
 
-	sprintf(cFileName,"%ssky/%scloud",Global.cTexturePath,cPath);
+	sprintf(cFileName, "%ssky/%scloud", g_state.cTexturePath, cPath);
 
 	bData = Image_LoadImage(cFileName,&iWidth,&iHeight);
 	if(bData)
@@ -137,7 +137,7 @@ void Sky_LoadSkyBox (char *name)
 	{
 		mark = Hunk_LowMark ();
 
-		sprintf (filename, "%ssky/%s%s",Global.cTexturePath, name, suf[i]);
+		sprintf(filename, "%ssky/%s%s", g_state.cTexturePath, name, suf[i]);
 		data = Image_LoadImage (filename, &width, &height);
 		if (data)
 		{
@@ -166,7 +166,7 @@ void Sky_LoadSkyBox (char *name)
 		return;
 	}
 
-	p_strcpy(cSkyBoxName, name);
+	strcpy(cSkyBoxName, name);
 }
 
 void Sky_NewMap (void)
@@ -202,9 +202,9 @@ void Sky_NewMap (void)
 		if (com_token[0] == '}')
 			break; // end of worldspawn
 		if (com_token[0] == '_')
-			p_strcpy(key, com_token + 1);
+			strcpy(key, com_token + 1);
 		else
-			p_strcpy(key, com_token);
+			strcpy(key, com_token);
 
 		while (key[strlen(key)-1] == ' ') // remove trailing spaces
 			key[strlen(key)-1] = 0;
@@ -212,9 +212,8 @@ void Sky_NewMap (void)
 		data = COM_Parse(data);
 		if (!data)
 			return; // error
-		p_strcpy(value, com_token);
+		strcpy(value, com_token);
 
-		// [2/5/2013] Removed skyname ~hogsy
 		if(!strcmp("sky",key))
 			Sky_LoadSkyBox(value);
 
@@ -222,7 +221,7 @@ void Sky_NewMap (void)
 			Sky_LoadCloudTexture(value);
 
 		if(!strcmp("scrollspeed",key))
-			Cvar_SetValue(cvSkyScrollSpeed.name,(float)(atoi(value)/10));
+			Cvar_SetValue(cv_sky_scrollspeed.name, (float)(atoi(value) / 10));
 	}
 }
 
@@ -249,10 +248,10 @@ void Sky_Init(void)
 	Cvar_RegisterVariable (&r_sky_quality, NULL);
 	Cvar_RegisterVariable (&r_skyalpha, NULL);
 	Cvar_RegisterVariable (&r_skyfog, NULL);
-	Cvar_RegisterVariable(&cvDrawClouds,NULL);
-	Cvar_RegisterVariable(&cvSkyScrollSpeed,NULL);
+	Cvar_RegisterVariable(&cv_video_drawclouds, NULL);
+	Cvar_RegisterVariable(&cv_sky_scrollspeed, NULL);
 
-	Cmd_AddCommand("sky",Sky_SkyCommand_f);
+	Cmd_AddCommand("sky", Sky_SkyCommand_f);
 
 	for(i = 0; i < 6; i++)
 		gSkyBoxTexture[i] = NULL;
@@ -458,11 +457,11 @@ void Sky_ProcessTextureChains(void)
 	for (i=0 ; i<cl.worldmodel->numtextures ; i++)
 	{
 		tTexture = cl.worldmodel->textures[i];
-		if(!tTexture || !tTexture->texturechain || !(tTexture->texturechain->flags & SURF_DRAWSKY))
+		if (!tTexture || !tTexture->texturechain || !(tTexture->texturechain->flags & SURF_DRAWSKY))
 			continue;
 
 		for(s = tTexture->texturechain; s; s = s->texturechain)
-			if(!s->culled)
+			if (!s->culled)
 				Sky_ProcessPoly(s->polys);
 	}
 }
@@ -623,8 +622,8 @@ void Sky_DrawSkyBox (void)
 
 			c = Fog_GetColor();
 
-			Video_EnableCapabilities(VIDEO_BLEND);
-			Video_DisableCapabilities(VIDEO_TEXTURE_2D);
+			VideoLayer_Enable(VIDEO_BLEND);
+			VideoLayer_Disable(VIDEO_TEXTURE_2D);
 
 			glColor4f(c[0], c[1], c[2], Math_Clamp(0, r_skyfog.value, 1.0f));
 
@@ -637,8 +636,8 @@ void Sky_DrawSkyBox (void)
 
 			glColor3f(1.0f,1.0f,1.0f);
 
-			Video_EnableCapabilities(VIDEO_TEXTURE_2D);
-			Video_DisableCapabilities(VIDEO_BLEND);
+			VideoLayer_Enable(VIDEO_TEXTURE_2D);
+			VideoLayer_Disable(VIDEO_BLEND);
 
 			rs_skypasses++;
 		}
@@ -708,7 +707,7 @@ void Sky_DrawFaceQuad(glpoly_t *p)
 
 	for (i = 0, v = p->verts[0]; i < 4; i++, v += VERTEXSIZE)
 	{
-		Sky_GetTexCoord(v,cvSkyScrollSpeed.value,&s,&t);
+		Sky_GetTexCoord(v,cv_sky_scrollspeed.value,&s,&t);
 
 		glTexCoord2f(s,t);
 		glVertex3fv(v);
@@ -797,6 +796,45 @@ void Sky_DrawFace (int axis)
 	Hunk_FreeToLowMark(start);
 }
 
+void R_SetupView(void);
+void R_RenderScene(void);
+
+/*	Hacky way of rendering a 3D skybox.
+		- Consider rendering 3D skybox once into envmap?
+		- Consider using FBO instead and somehow spanning it?
+*/
+void Sky_Draw3DWorld(void)
+{
+	MathVector3f_t oldorg;
+
+	// Don't let us render twice.
+	if (r_refdef.sky)
+		return;
+
+	// Update view position.
+	Math_VectorCopy(r_refdef.vieworg, oldorg);
+	r_refdef.vieworg[0] = 1792;
+	r_refdef.vieworg[1] = -512;
+	r_refdef.vieworg[2] = -464;
+
+	R_SetupView();
+
+	glPushMatrix();
+	glScalef(2.0f, 2.0f, 2.0f);
+
+	r_refdef.sky = true;
+	R_RenderScene();
+	r_refdef.sky = false;
+
+	glPopMatrix();
+
+	// Restore view position.
+	Math_VectorCopy(oldorg, r_refdef.vieworg);
+
+	// Setup the view again, urgh.
+	R_SetupView();
+}
+
 /*	Called once per frame before drawing anything else
 */
 void Sky_Draw(void)
@@ -804,10 +842,11 @@ void Sky_Draw(void)
 	int	i;
 
 	// In these special render modes, the sky faces are handled in the normal world/brush renderer
-	if(r_drawflat_cheatsafe || r_lightmap_cheatsafe || !cvVideoDrawSky.bValue)
+	if (r_drawflat_cheatsafe || r_lightmap_cheatsafe || !cv_video_drawsky.bValue)
 		return;
 
-	// reset sky bounds
+#if 1
+	// Reset sky bounds.
 	for(i = 0; i < 6; i++)
 	{
 		skymins[0][i] = skymins[1][i] = 9999;
@@ -817,7 +856,7 @@ void Sky_Draw(void)
 	// Process world and bmodels: draw flat-shaded sky surfs, and update skybounds
 	Fog_DisableGFog();
 
-	Video_DisableCapabilities(VIDEO_TEXTURE_2D);
+	VideoLayer_Disable(VIDEO_TEXTURE_2D);
 
 	if(Fog_GetDensity() > 0)
 		glColor3fv(Fog_GetColor());
@@ -829,18 +868,18 @@ void Sky_Draw(void)
 
 	glColor3f(1.0f,1.0f,1.0f);
 
-	Video_EnableCapabilities(VIDEO_TEXTURE_2D);
+	VideoLayer_Enable(VIDEO_TEXTURE_2D);
 
 	// Render slow sky: cloud layers or skybox
 	if(!r_fastsky.value && !(Fog_GetDensity() > 0 && r_skyfog.value >= 1))
 	{
-		Video_DisableCapabilities(VIDEO_DEPTH_TEST);
+		VideoLayer_Disable(VIDEO_DEPTH_TEST);
 
 		// By default we use a skybox.
 		if(cSkyBoxName[0])
 			Sky_DrawSkyBox();
 
-		if(cvDrawClouds.value && gCloudTexture)
+		if(cv_video_drawclouds.value && gCloudTexture)
 		{
 			// Draw the scrolling clouds...
 			for(i = 0; i < 6; i++)
@@ -848,8 +887,17 @@ void Sky_Draw(void)
 					Sky_DrawFace(i);
 		}
 
-		Video_EnableCapabilities(VIDEO_DEPTH_TEST);
+		VideoLayer_Enable(VIDEO_DEPTH_TEST);
 	}
 
 	Fog_EnableGFog();
+#endif
+
+	//VideoLayer_Disable(VIDEO_DEPTH_TEST);
+
+	// 3D skybox support.
+//	if (cl.worldmodel && (cl.worldmodel->flags & MODEL_FLAG_3DSKY))
+//		Sky_Draw3DWorld();
+
+	//VideoLayer_Enable(VIDEO_DEPTH_FALSE);
 }

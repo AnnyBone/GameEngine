@@ -100,36 +100,3 @@ void Sprite_Process(void)
 		}
 	}
 }
-
-void Sprite_Draw(ClientEntity_t *eEntity)
-{
-	Sprite_t *sSprite;
-
-	Video_ResetCapabilities(false);
-	Video_DisableCapabilities(VIDEO_DEPTH_TEST);
-	Video_EnableCapabilities(VIDEO_BLEND);
-
-	for(sSprite = sActiveSprites; sSprite; sSprite = sSprite->sNext)
-	{
-		VideoObjectVertex_t voSprite[4];
-
-		Video_ObjectTexture(&voSprite[0], 0, 0, 0);
-		Video_ObjectTexture(&voSprite[1], 0, 1.0f, 0);
-		Video_ObjectTexture(&voSprite[2], 0, 1.0f, 1.0f);
-		Video_ObjectTexture(&voSprite[3], 0, 0, 1.0f);
-
-		Video_ObjectColour(&voSprite[0], sSprite->vColour[0], sSprite->vColour[1], sSprite->vColour[2], sSprite->vColour[3]);
-		Video_ObjectColour(&voSprite[1], sSprite->vColour[0], sSprite->vColour[1], sSprite->vColour[2], sSprite->vColour[3]);
-		Video_ObjectColour(&voSprite[2], sSprite->vColour[0], sSprite->vColour[1], sSprite->vColour[2], sSprite->vColour[3]);
-		Video_ObjectColour(&voSprite[3], sSprite->vColour[0], sSprite->vColour[1], sSprite->vColour[2], sSprite->vColour[3]);
-
-		Math_VectorCopy(sSprite->vOrigin, voSprite[0].mvPosition);
-		Math_VectorMA(sSprite->vOrigin, sSprite->fScale, vup, voSprite[1].mvPosition);
-		Math_VectorMA(voSprite[1].mvPosition, sSprite->fScale, vright, voSprite[2].mvPosition);
-		Math_VectorMA(sSprite->vOrigin, sSprite->fScale, vright, voSprite[3].mvPosition);
-		
-		//Video_DrawFill(voSprite);
-	}
-
-	Video_ResetCapabilities(true);
-}

@@ -252,7 +252,7 @@ qpic_t	*Draw_CachePic(char *path)
 		Sys_Error ("menu_numcachepics == MAX_CACHED_PICS");
 
 	menu_numcachepics++;
-	p_strncpy(pic->name, path, sizeof(pic->name));
+	strncpy(pic->name, path, sizeof(pic->name));
 
 	// load the pic from disk
 	dat = (qpic_t *)COM_LoadTempFile (path);
@@ -337,10 +337,11 @@ void Draw_Init (void)
 //
 //==============================================================================
 
-void Draw_Character(int x,int y,int num)
+void Draw_Character(int x, int y, int num)
 {
-	int		row, col;
-	float	frow,fcol,size;
+	VideoObjectVertex_t		voCharacter[4] = { { { 0 } } };
+	int						row, col;
+	float					frow,fcol,size;
 
 	if(y <= -8)
 		return;			// totally off screen
@@ -356,57 +357,46 @@ void Draw_Character(int x,int y,int num)
 	fcol = col*0.0625f;
 	size = 0.0625f;
 
-	{
-		VideoObjectVertex_t	voCharacter[4] = { { { 0 } } };
+	VideoLayer_Disable(VIDEO_DEPTH_TEST);
 
-		Video_ResetCapabilities(false);
+	Video_ObjectVertex(&voCharacter[0], x, y, 0);
+	Video_ObjectColour(&voCharacter[0], 1.0f, 1.0f, 1.0f, 1.0f);
+	Video_ObjectTexture(&voCharacter[0], VIDEO_TEXTURE_DIFFUSE, fcol, frow);
 
-		Video_DisableCapabilities(VIDEO_DEPTH_TEST);
+	Video_ObjectVertex(&voCharacter[1], x+8, y, 0);
+	Video_ObjectColour(&voCharacter[1], 1.0f, 1.0f, 1.0f, 1.0f);
+	Video_ObjectTexture(&voCharacter[1], VIDEO_TEXTURE_DIFFUSE, fcol+size, frow);
 
-		Video_ObjectVertex(&voCharacter[0], x, y, 0);
-		Video_ObjectColour(&voCharacter[0], 1.0f, 1.0f, 1.0f, 1.0f);
-		Video_ObjectTexture(&voCharacter[0], VIDEO_TEXTURE_DIFFUSE, fcol, frow);
+	Video_ObjectVertex(&voCharacter[2], x+8, y+8, 0);
+	Video_ObjectColour(&voCharacter[2], 1.0f, 1.0f, 1.0f, 1.0f);
+	Video_ObjectTexture(&voCharacter[2], VIDEO_TEXTURE_DIFFUSE, fcol+size, frow+size);
 
-		Video_ObjectVertex(&voCharacter[1], x+8, y, 0);
-		Video_ObjectColour(&voCharacter[1], 1.0f, 1.0f, 1.0f, 1.0f);
-		Video_ObjectTexture(&voCharacter[1], VIDEO_TEXTURE_DIFFUSE, fcol+size, frow);
+	Video_ObjectVertex(&voCharacter[3], x, y+8, 0);
+	Video_ObjectColour(&voCharacter[3], 1.0f, 1.0f, 1.0f, 1.0f);
+	Video_ObjectTexture(&voCharacter[3], VIDEO_TEXTURE_DIFFUSE, fcol, frow+size);
 
-		Video_ObjectVertex(&voCharacter[2], x+8, y+8, 0);
-		Video_ObjectColour(&voCharacter[2], 1.0f, 1.0f, 1.0f, 1.0f);
-		Video_ObjectTexture(&voCharacter[2], VIDEO_TEXTURE_DIFFUSE, fcol+size, frow+size);
+	Video_DrawFill(voCharacter, g_mGlobalConChars, 0);
 
-		Video_ObjectVertex(&voCharacter[3], x, y+8, 0);
-		Video_ObjectColour(&voCharacter[3], 1.0f, 1.0f, 1.0f, 1.0f);
-		Video_ObjectTexture(&voCharacter[3], VIDEO_TEXTURE_DIFFUSE, fcol, frow+size);
-
-		Video_DrawFill(voCharacter, g_mGlobalConChars, 0);
-
-		Video_ResetCapabilities(true);
-	}
+	VideoLayer_Enable(VIDEO_DEPTH_TEST);
 }
 
 void Draw_ConsoleBackground(void)
 {
-	float fAlpha = 1.0f;
+	float		alpha = cvConsoleAlpha.value;
+	Colour_t	black, lightblack;
+
+	if (cls.state != ca_connected)
+		alpha = 1;
+
+	Math_VectorSet(0, black);
+	Math_VectorSet(0, lightblack);
+
+	black[3] = 255.0f;
+	lightblack[3] = alpha;
 
 	GL_SetCanvas(CANVAS_CONSOLE);
 
-	if(cls.state == ca_connected)
-		fAlpha = cvConsoleAlpha.value;
-
-#if 0
-	Draw_Rectangle(0,0,vid.conwidth,vid.conheight,0,0,0,fAlpha);
-#else
-	Colour_t cBlack, cLightBlack;
-
-	Math_Vector4Set(0, cBlack);
-	Math_Vector4Set(0, cLightBlack);
-
-	cBlack[3] = 255.0f;
-	cLightBlack[3] = fAlpha;
-
-	Draw_GradientFill(0, 0, vid.conwidth, vid.conheight, cBlack, cLightBlack);
-#endif
+	Draw_GradientFill(0, 0, vid.conwidth, vid.conheight, black, lightblack);
 }
 
 void Draw_GradientBackground(void)
@@ -465,16 +455,12 @@ void Draw_Line(MathVector3f_t mvStart, MathVector3f_t mvEnd)
 {
 	VideoObjectVertex_t	voLine[2] = { { { 0 } } };
 
-	Video_ResetCapabilities(false);
-
 	Video_ObjectVertex(&voLine[0], mvStart[0], mvStart[1], mvStart[2]);
 	Video_ObjectColour(&voLine[0], 1.0f, 0, 0, 1.0f);
 	Video_ObjectVertex(&voLine[1], mvEnd[0], mvEnd[1], mvEnd[2]);
 	Video_ObjectColour(&voLine[1], 1.0f, 0, 0, 1.0f);
 
 	Video_DrawObject(voLine, VIDEO_PRIMITIVE_LINE, 2, NULL, 0);
-
-	Video_ResetCapabilities(true);
 }
 
 /*	Debugging tool.
@@ -482,8 +468,6 @@ void Draw_Line(MathVector3f_t mvStart, MathVector3f_t mvEnd)
 void Draw_CoordinateAxes(float x,float y,float z)
 {
 	VideoObjectVertex_t voLine[2] = { { { 0 } } };
-
-	Video_ResetCapabilities(true);
 
 	Video_ObjectVertex(&voLine[0], 0, 0, 0);
 	Video_ObjectColour(&voLine[0], 1.0f, 0, 0, 1.0f);
@@ -502,8 +486,6 @@ void Draw_CoordinateAxes(float x,float y,float z)
 	Video_ObjectVertex(&voLine[1], 0, 0, 1.0f);
 	Video_ObjectColour(&voLine[1], 0, 0, 1.0f, 1.0f);
 	Video_DrawObject(voLine, VIDEO_PRIMITIVE_LINE, 2, NULL, 0);
-
-	Video_ResetCapabilities(false);
 }
 
 void Draw_Grid(float x, float y, float z, int grid_size)
@@ -580,10 +562,8 @@ void Draw_Rectangle(int x, int y, int w, int h, Colour_t colour)
 	Math_Vector4Copy(colour, voFill[2].mvColour);
 	Math_Vector4Copy(colour, voFill[3].mvColour);
 
-	Video_ResetCapabilities(false);
-
-	Video_EnableCapabilities(VIDEO_BLEND);
-	Video_DisableCapabilities(VIDEO_DEPTH_TEST|VIDEO_TEXTURE_2D);
+	VideoLayer_Enable(VIDEO_BLEND);
+	VideoLayer_Disable(VIDEO_DEPTH_TEST|VIDEO_TEXTURE_2D);
 
 	Video_ObjectVertex(&voFill[0], x, y, 0);
 	Video_ObjectTexture(&voFill[0], 0, h, w);
@@ -596,7 +576,8 @@ void Draw_Rectangle(int x, int y, int w, int h, Colour_t colour)
 
 	Video_DrawFill(voFill,NULL,0);
 
-	Video_ResetCapabilities(true);
+	VideoLayer_Disable(VIDEO_BLEND);
+	VideoLayer_Enable(VIDEO_DEPTH_TEST | VIDEO_TEXTURE_2D);
 }
 
 void Draw_GradientFill(int x, int y, int w, int h, Colour_t mvTopColour, Colour_t mvBottomColour)

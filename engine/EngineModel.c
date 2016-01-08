@@ -52,11 +52,11 @@ void Model_Initialize(void)
 
 	//johnfitz -- create notexture miptex
 	r_notexture_mip = (texture_t*)Hunk_AllocName(sizeof(texture_t),"r_notexture_mip");
-	p_strcpy(r_notexture_mip->name, "notexture");
+	strcpy(r_notexture_mip->name, "notexture");
 	r_notexture_mip->height = r_notexture_mip->width = 32;
 
 	r_notexture_mip2 = (texture_t*)Hunk_AllocName (sizeof(texture_t), "r_notexture_mip2");
-	p_strcpy(r_notexture_mip2->name, "notexture2");
+	strcpy(r_notexture_mip2->name, "notexture2");
 	r_notexture_mip2->height = r_notexture_mip2->width = 32;
 	//johnfitz
 }
@@ -188,7 +188,7 @@ model_t *Model_FindName(const char *cName)
 		if (mod_numknown == MAX_MOD_KNOWN)
 			Sys_Error ("mod_numknown == MAX_MOD_KNOWN");
 
-		p_strcpy(mModel->name, cName);
+		strcpy(mModel->name, cName);
 
 		mModel->bNeedLoad = true;
 
@@ -272,7 +272,7 @@ model_t *Model_Load(model_t *model)
 		break;
 	default:
 		// Grab the file extension, so we can check for formats that don't have idents.
-		p_strncpy(exten, COM_FileExtension(model->name), sizeof(exten));
+		strncpy(exten, COM_FileExtension(model->name), sizeof(exten));
 		if (exten[0] != ' ')
 		{
 			for (i = 0; i < pARRAYELEMENTS(model_formatlist); i++)
@@ -355,7 +355,7 @@ void Model_LoadBSPTextures(BSPLump_t *blLump)
 
 		// Remove special characters.
 		if (tTexture->name[0] == '*')
-			p_strcpy(tTexture->name, tTexture->name + 1);
+			strcpy(tTexture->name, tTexture->name + 1);
 
 		FileSystem_UpdatePath(tTexture->name);
 
@@ -700,15 +700,22 @@ void Model_LoadBSPFaces(BSPLump_t *blLump)
 		mMaterial = out->texinfo->texture->mAssignedMaterial;
 		if (!mMaterial)
 			Sys_Error("Failed to get a material for BSP surface! (%s)\n",out->texinfo->texture->name);
-
+		
 		//johnfitz -- this section rewritten
 #ifdef _MSC_VER
 #pragma warning(suppress: 6011)
 #endif
-		if(!strncmp(mMaterial->cName, "sky", 3)) // sky surface
+		if (!strncmp(mMaterial->cName, "sky3d", 5))
+		{
+			out->flags |= SURFACE_SKIP;
+			//Mod_PolyForUnlitSurface(out);
+
+			loadmodel->flags |= MODEL_FLAG_3DSKY;
+		}
+		else if(!strncmp(mMaterial->cName, "sky", 3)) // sky surface
 		{
 			out->flags |= (SURF_DRAWSKY | SURF_DRAWTILED);
-			Mod_PolyForUnlitSurface (out); //no more subdivision
+			Mod_PolyForUnlitSurface(out); //no more subdivision
 		}
 		else if (mMaterial->iFlags & MATERIAL_FLAG_WATER) // warp surface
 		{
@@ -1191,7 +1198,7 @@ void Model_LoadBSP(model_t *mod,void *buffer)
 			sprintf (name, "*%i", i+1);
 			loadmodel = Model_FindName(name);
 			*loadmodel = *mod;
-			p_strncpy(loadmodel->name, name, sizeof(loadmodel->name));
+			strncpy(loadmodel->name, name, sizeof(loadmodel->name));
 			mod = loadmodel;
 		}
 	}

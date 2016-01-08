@@ -131,9 +131,7 @@ void R_DrawSequentialPoly(msurface_t *s)
 
 	fAlpha = ENTALPHA_DECODE(currententity->alpha);
 
-	Video_ResetCapabilities(false);
-
-	if(s->flags & SURF_DRAWSKY)
+	if((s->flags & SURF_DRAWSKY) || (s->flags & SURFACE_SKIP))
 		return;
 	else if ((s->flags & SURFACE_MIRROR))
 		Surface_DrawMirror(s);
@@ -215,8 +213,6 @@ void R_DrawSequentialPoly(msurface_t *s)
 
 		rs_brushpasses++;
 	}
-
-	Video_ResetCapabilities(true);
 }
 
 void Brush_Draw(ClientEntity_t *e)
@@ -228,7 +224,7 @@ void Brush_Draw(ClientEntity_t *e)
 	mplane_t		*pplane;
 	model_t			*clmodel;
 
-	if(R_CullModelForEntity(e) || !cvVideoDrawBrushes.bValue)
+	if(R_CullModelForEntity(e) || !cv_video_drawbrushes.bValue)
 		return;
 
 	currententity = e;
@@ -306,9 +302,6 @@ void Brush_Draw(ClientEntity_t *e)
 	// draw it
 	//
 
-	if (r_drawflat_cheatsafe) //johnfitz
-		Video_DisableCapabilities(VIDEO_TEXTURE_2D);
-
 	for(i = 0; i < clmodel->nummodelsurfaces; i++,psurf++)
 	{
 		pplane = psurf->plane;
@@ -322,9 +315,6 @@ void Brush_Draw(ClientEntity_t *e)
 	}
 
 	glPopMatrix();
-
-	if(r_drawflat_cheatsafe)
-		Video_EnableCapabilities(VIDEO_TEXTURE_2D);
 }
 
 /*
@@ -633,9 +623,9 @@ void R_BuildLightMap (msurface_t *surf, byte *dest, int stride)
 	{
 		for(j = 0; j < smax; j++,dest += 4)
 		{
-			t = *bl++ >> video_lightoversamp.iValue;if (t > 255) t = 255;dest[2] = t;
-			t = *bl++ >> video_lightoversamp.iValue;if (t > 255) t = 255;dest[1] = t;
-			t = *bl++ >> video_lightoversamp.iValue;if (t > 255) t = 255;dest[0] = t;
+			t = *bl++ >> cv_video_lightmapoversample.iValue; if (t > 255) t = 255; dest[2] = t;
+			t = *bl++ >> cv_video_lightmapoversample.iValue; if (t > 255) t = 255; dest[1] = t;
+			t = *bl++ >> cv_video_lightmapoversample.iValue;if (t > 255) t = 255;dest[0] = t;
 
 			dest[3] = 255;
 		}

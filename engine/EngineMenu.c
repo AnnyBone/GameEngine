@@ -38,7 +38,7 @@ void Menu_Initialize(void)
 	bool bMenuLoaded = false;
 	ModuleImport_t mImport;
 
-	if(Menu)
+	if (g_menu)
 		plUnloadModule(hMenuInstance);
 
 	mImport.Con_Printf = Con_Printf;
@@ -63,11 +63,11 @@ void Menu_Initialize(void)
 	mImport.Client_PrecacheResource		= Client_PrecacheResource;
 	mImport.Client_SetMenuCanvas		= GL_SetCanvas;
 
-	Menu = (MenuExport_t*)plLoadModuleInterface(hMenuInstance, va("%s/%s" MODULE_MENU, com_gamedir, Global.cModulePath), "Menu_Main", &mImport);
-	if(!Menu)
+	g_menu = (MenuExport_t*)plLoadModuleInterface(hMenuInstance, va("%s/%s" MODULE_MENU, com_gamedir, g_state.cModulePath), "Menu_Main", &mImport);
+	if (!g_menu)
 		Con_Warning(plGetError(), com_gamedir, MODULE_MENU);
-	else if (Menu->iVersion != MENU_VERSION)
-		Con_Warning("Size mismatch (recieved %i, expected %i)!\n", Menu->iVersion, MENU_VERSION);
+	else if (g_menu->iVersion != MENU_VERSION)
+		Con_Warning("Size mismatch (recieved %i, expected %i)!\n", g_menu->iVersion, MENU_VERSION);
 	else
 		bMenuLoaded = true;
 
@@ -107,10 +107,10 @@ int Menu_GetScreenHeight(void)
 */
 void Menu_Toggle(void)
 {
-	if(Menu->GetState() & MENU_STATE_MENU)
-		Menu->RemoveState(MENU_STATE_MENU);
+	if (g_menu->GetState() & MENU_STATE_MENU)
+		g_menu->RemoveState(MENU_STATE_MENU);
 	else
-		Menu->AddState(MENU_STATE_MENU);
+		g_menu->AddState(MENU_STATE_MENU);
 }
 
 /*  Gets the state of the selected menu type.

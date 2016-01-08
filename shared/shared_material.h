@@ -77,7 +77,7 @@ typedef struct
 {
 	gltexture_t	*gMap;
 
-	bool	bManipulated;
+	bool	matrixmod;	// Modify texture matrix?
 
 	MathVector2f_t	vScroll;
 

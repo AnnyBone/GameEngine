@@ -68,6 +68,8 @@ typedef struct
 
 	int			ambientlight;
 
+	bool sky;				// Sky context.
+
 	bool bMirror;			// Mirror context.
 	bool bEnvironmentMap;	// Environment map context.
 } refdef_t;

@@ -21,7 +21,7 @@
 
 #include "shared_menu.h"
 
-MenuExport_t *Menu;
+MenuExport_t *g_menu;
 
 void Menu_Initialize(void);
 void Menu_Toggle(void);

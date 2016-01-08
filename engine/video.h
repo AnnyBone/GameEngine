@@ -24,19 +24,19 @@
 #define	VIDEO_LIGHTMAP_HACKS
 
 extern ConsoleVariable_t
-	cvVideoLegacy,
-	cvVideoDrawModels,		// Should we draw models?
-	cvWidth,				// The width of our window (not reliable).
-	cvHeight,				// The height of our window (not reliable).
-	cvFullscreen,			// Should we be fullscreen?
-	cvMultisampleSamples,	// Number of samples we're using.
-	cvVideoAlphaTrick,
-	cvVideoMirror,			// Toggles mirrors.
-	cvVideoPlayerShadow,	// Render players shadow.
-	cvVerticalSync,
-	video_lightoversamp,	// Enable overbrights?
-	cvVideoDrawBrushes,		// Draw brush entities?
-	cvLitParticles;			// Should particles be lit or not?
+	cv_video_shaders,
+	cv_video_drawmodels,			// Should we draw models?
+	cv_video_width,					// The width of our window (not reliable).
+	cv_video_height,				// The height of our window (not reliable).
+	cv_video_fullscreen,			// Should we be fullscreen?
+	cv_video_msaasamples,			// Number of samples we're using.
+	cv_video_alphatrick,			// TODO: move into material codebase
+	cv_video_drawmirrors,			// Toggles mirrors.
+	cv_video_drawplayershadow,		// Render players shadow.
+	cv_video_verticlesync,
+	cv_video_lightmapoversample,	// Enable overbrights?
+	cv_video_drawbrushes,			// Draw brush entities?
+	cvLitParticles;					// Should particles be lit or not?
 
 #if __cplusplus
 extern "C" {
@@ -51,7 +51,6 @@ extern "C" {
 	extern	ConsoleVariable_t	r_fullbright;
 	extern	ConsoleVariable_t	r_lightmap;
 	extern	ConsoleVariable_t	r_shadows;
-	extern	ConsoleVariable_t	r_mirroralpha;
 	extern	ConsoleVariable_t	r_dynamic;
 	extern	ConsoleVariable_t	r_novis;
 	extern	ConsoleVariable_t	r_nocull;
@@ -60,11 +59,11 @@ extern "C" {
 	extern	ConsoleVariable_t	gl_flashblend;
 	extern	ConsoleVariable_t	gl_max_size;
 
-	extern ConsoleVariable_t cvVideoDrawShadowMap;
-	extern ConsoleVariable_t cvVideoDrawShadowBlob;
-	extern ConsoleVariable_t cvVideoDrawDetail;	// TODO: Move into EngineMaterial ?
-	extern ConsoleVariable_t cvVideoDrawSky;
-	extern ConsoleVariable_t cvVideoDetailScale; // TODO: Move into EngineMaterial ?
+	extern ConsoleVariable_t cv_video_drawshadowmap;
+	extern ConsoleVariable_t cv_video_drawshadowblob;
+	extern ConsoleVariable_t cv_video_drawdetail;	// TODO: Move into EngineMaterial ?
+	extern ConsoleVariable_t cv_video_drawsky;
+	extern ConsoleVariable_t cv_video_detailscale; // TODO: Move into EngineMaterial ?
 
 #ifdef __cplusplus
 };
@@ -87,10 +86,10 @@ typedef struct
 {
 	bool isactive;
 
-	unsigned int uiCurrentTexture;
+	unsigned int current_texture;
 	unsigned int capabilities[2];
 
-	VideoTextureEnvironmentMode_t CurrentTexEnvMode;
+	VideoTextureEnvironmentMode_t current_envmode;
 } VideoTextureMU_t;
 
 typedef struct
@@ -106,31 +105,25 @@ typedef struct
 {
 	// OpenGL Information
 	char	
-		*cGLVendor,
-		*cGLRenderer,
-		*cGLVersion,
-		*cGLExtensions;
+		*gl_vendor,
+		*gl_renderer,
+		*gl_version,
+		*gl_extensions;
 
 	float	
 		fMaxAnisotropy,	// Max anisotropy amount allowed by the hardware.
-		fBitsPerPixel;
+		bpp;			// Bits per-pixel.
 
 	// Texture Management
-	unsigned int
-		uiCurrentTexture[VIDEO_MAX_UNITS],	// Current/last binded texture.
-		uiActiveUnit,						// The currently active unit.
-		uiSecondaryUnit;					// Current/last secondary texture.
-
-	VideoTextureMU_t *TextureUnits;
-
-	// FBO Management
-	unsigned int
-		uiCurrentFBO[VIDEO_MAX_FRAMEBUFFFERS];	// Current/last binded FBO.
+	VideoTextureMU_t	*textureunits;
+	int					num_textureunits;					// Max number of supported units.
+	unsigned int		current_textureunit;				// Current TMU.
+	unsigned int		current_texture[VIDEO_MAX_UNITS];	// Current/last binded texture.
+	bool				textureunit_state[VIDEO_MAX_UNITS];	// The state of each individual TMU.
 
 	unsigned int current_program;
 
-	int iSupportedUnits;	// Max number of supported units.
-	int iMSAASamples;
+	int msaa_samples;
 
 	unsigned int iWidth,iHeight;
 
@@ -138,13 +131,12 @@ typedef struct
 
 	bool
 		bInitialized,					// Is the video system started?
-		bFullscreen,					// Is the window fullscreen or not?
-		bVerticalSync,					// Sync the swap interval to the refresh rate?
+		fullscreen,						// Is the window fullscreen or not?
+		vertical_sync,					// Sync the swap interval to the refresh rate?
 		bActive,						// Is the window active or not?
 		bSkipUpdate,					// Skip screen update.
-		bUnitState[VIDEO_MAX_UNITS],	// The state of each individual TMU.
-		bDebugFrame,
-		bUnlocked;						// Can we change the window settings or not?
+		debug_frame,
+		unlocked;						// Can we change the window settings or not?
 
 	// OpenGL Extensions
 	VideoExtensions	extensions;
@@ -161,7 +153,7 @@ extern "C" {
 	void Video_ClearBuffer(void);
 	void Video_GenerateSphereCoordinates(void);
 	void Video_SetTexture(gltexture_t *gTexture);
-	void Video_SetViewportSize(int iWidth, int iHeight);
+	void Video_SetViewportSize(int w, int h);
 	void Video_SelectTexture(unsigned int uiTarget);
 	void Video_EnableCapabilities(unsigned int iCapabilities);
 	void Video_DisableCapabilities(unsigned int iCapabilities);
@@ -206,7 +198,7 @@ extern "C" {
 #define	VIDEO_FUNCTION_START \
 { \
 	static unsigned int callnum = 0; \
-	if(Video.bDebugFrame) \
+	if(Video.debug_frame) \
 	{ \
 		callnum++; \
 	} \
