@@ -138,6 +138,8 @@ Weapon_t Weapons[] =
 	{	0,	NULL,	NULL,	AM_NONE, NULL,	AM_NONE,	NULL	}
 };
 
+static Weapon_t *LAST_WEAPON = Weapons + (pARRAYELEMENTS(Weapons) - 2);
+
 /*	Returns the entities current active weapon.
 */
 Weapon_t *Weapon_GetCurrentWeapon(ServerEntity_t *eEntity)
@@ -650,54 +652,66 @@ void Weapon_Animate(ServerEntity_t *ent,EntityFrame_t *eFrames)
 */
 void Weapon_Cycle(ServerEntity_t *eEntity, bool bForward)
 {
-#if 0
-	int i, iNextWeapon;
-	Weapon_t *wCurrentWeapon,*wNext;
-	Item_t *iItem;
-
 	if(eEntity->local.dAttackFinished > Server.dTime)
-		return;
-
-	wCurrentWeapon = Weapon_GetCurrentWeapon(eEntity);
-	if(!wCurrentWeapon)
-		return;
-
-	// Set nextweapon to our current weapon before anything else.
-	iNextWeapon = wCurrentWeapon->iItem;
-
-	// Cycle through the weapon array
-NEXTWEAPON:
-	for (i = 0; i < pARRAYELEMENTS(Weapons); i++)
 	{
-		if(wCurrentWeapon->iItem == Weapons[i].iItem)
-		{
-			if(bForward == true)
-				iNextWeapon = Weapons[i + 1].iItem;
-			// Ensure we're not the last weapon, before rolling back.
-			else if (i > 0)
-				iNextWeapon = Weapons[i - 1].iItem;
+		return;
+	}
 
-			// Here comes the check if we actually own the next item and the ammo for it
-			iItem = Item_GetInventory(iNextWeapon, eEntity);
-			if (iItem)
+	Weapon_t *cur_weapon = Weapon_GetCurrentWeapon(eEntity);
+	if(!cur_weapon)
+	{
+		return;
+	}
+
+	if(cur_weapon < Weapons || cur_weapon > LAST_WEAPON)
+	{
+		Engine.Con_Warning("Weapon_Cycle: cur_weapon outside of Weapons array!\n");
+		return;
+	}
+
+	/* Start at our current weapon... */
+	Weapon_t *next_weapon = cur_weapon;
+
+	do
+	{
+		/* ...move up/down the Weapons array... */
+		if(bForward)
+		{
+			++next_weapon;
+		}
+		else{
+			--next_weapon;
+		}
+
+		/* ...loop around if we run off the end... */
+		if(next_weapon < Weapons)
+		{
+			next_weapon = LAST_WEAPON;
+		}
+		else if(next_weapon > LAST_WEAPON)
+		{
+			next_weapon = Weapons;
+		}
+
+		/* ...get the backing item... */
+		Item_t *nw_item = Item_GetItem(next_weapon->iItem);
+		if(nw_item == NULL)
+		{
+			Engine.Con_Warning("Weapon_Cycle: Found weapon with no matching item (iItem = %d)!\n", next_weapon->iItem);
+			continue;
+		}
+
+		/* ...check the weapon is in our inventory and has some ammo... */
+		if(Item_CheckInventory(nw_item, eEntity)
+			&& (Weapon_CheckPrimaryAmmo(next_weapon, eEntity) || Weapon_CheckSecondaryAmmo(next_weapon, eEntity)))
+		{
+			/* ...everything's ok, switch to it! */
+			Weapon_SetActive(next_weapon, eEntity, true);
 			break;
 		}
-	}
 
-	
-	{
-		if(iItem->iNumber != eEntity->v.iActiveWeapon)
-		{
-			wNext = Weapon_GetWeapon(iNextWeapon);
-			if(!wNext)
-				goto NEXTWEAPON;
-			else if(!Weapon_CheckPrimaryAmmo(wNext,eEntity) && !Weapon_CheckSecondaryAmmo(wNext,eEntity))
-				goto NEXTWEAPON;
-			else
-				Weapon_SetActive(wNext, eEntity, true);
-		}
-	}
-#endif
+		/* ...keep looping until we come back to our current weapon... */
+	} while(next_weapon != cur_weapon);
 }
 
 void Weapon_PrimaryAttack(ServerEntity_t *eEntity)

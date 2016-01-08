@@ -15,6 +15,7 @@ typedef struct
 } Item_t;
 
 Item_t *Item_GetItem(int iItemID);
+bool Item_CheckInventory(Item_t *iItem,ServerEntity_t *eEntity);
 Item_t *Item_GetInventory(int iItemID, ServerEntity_t *eEntity);
 
 void Item_Spawn(ServerEntity_t *eItem);
