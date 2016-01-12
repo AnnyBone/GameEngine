@@ -75,6 +75,9 @@
     <ClInclude Include="client\client_player.h">
       <Filter>Client</Filter>
     </ClInclude>
+    <ClInclude Include="..\shared\shared_common.h">
+      <Filter>Shared</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Client">

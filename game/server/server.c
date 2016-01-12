@@ -190,7 +190,7 @@ void Server_Spawn(ServerEntity_t *seEntity)
 	// Set defaults.
 	Server.dWaypointSpawnDelay	= ((double)cvServerWaypointDelay.value);
 	Server.round_started		=
-	Server.bPlayersSpawned		= false;
+	Server.players_spawned		= false;
 	Server.iMonsters			= 0;
 	Server.skycam				= false;
 
@@ -352,7 +352,6 @@ bool Server_SpawnEntity(ServerEntity_t *entity)
 void Server_PreFrame(void)
 {
 	Waypoint_Frame();
-
 #ifdef GAME_OPENKATANA
 	Deathmatch_Frame();
 #endif
@@ -366,8 +365,19 @@ void Server_EntityFrame(ServerEntity_t *entity)
 	Monster_Frame(entity);
 }
 
+/*	Called by the engine.
+*/
 void Server_SendClientInformation(ServerClient_t *client)
-{}
+{
+	Engine.MSG_WriteByte(&client->message, MESSAGE_SERVER_SKYCAMERA);
+	Engine.MSG_WriteByte(&client->message, Server.skycam);
+	if (Server.skycam)
+	{
+		Engine.MSG_WriteCoord(&client->message, Server.skycam_position[0]);
+		Engine.MSG_WriteCoord(&client->message, Server.skycam_position[1]);
+		Engine.MSG_WriteCoord(&client->message, Server.skycam_position[2]);
+	}
+}
 
 /*	Called by the engine.
 	Called for the "kill" command.

@@ -799,6 +799,23 @@ void Sky_DrawFace (int axis)
 void R_SetupView(void);
 void R_RenderScene(void);
 
+bool			sky_camera;
+MathVector3f_t	sky_camerapos;
+
+void Sky_ReadCameraPosition(void)
+{
+	MathVector3f_t campos;
+
+	sky_camera = MSG_ReadByte();
+	if (!sky_camera)
+		return;
+
+	campos[0] = MSG_ReadCoord();
+	campos[1] = MSG_ReadCoord();
+	campos[2] = MSG_ReadCoord();
+	Math_VectorCopy(campos, sky_camerapos);
+}
+
 /*	Hacky way of rendering a 3D skybox.
 		- Consider rendering 3D skybox once into envmap?
 		- Consider using FBO instead and somehow spanning it?
@@ -808,14 +825,12 @@ void Sky_Draw3DWorld(void)
 	MathVector3f_t oldorg;
 
 	// Don't let us render twice.
-	if (r_refdef.sky)
+	if (!sky_camera || r_refdef.sky)
 		return;
 
 	// Update view position.
 	Math_VectorCopy(r_refdef.vieworg, oldorg);
-	r_refdef.vieworg[0] = 1792;
-	r_refdef.vieworg[1] = -512;
-	r_refdef.vieworg[2] = -464;
+	Math_VectorCopy(sky_camerapos, r_refdef.vieworg);
 
 	R_SetupView();
 

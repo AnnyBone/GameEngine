@@ -232,7 +232,6 @@ void Host_WriteConfiguration(void)
 	if(bHostInitialized & !bIsDedicated)
 	{
 		FILE	*fConfig;
-		// [2/5/2013] Updated to use the new platform function ~hogsy
 		char	cString[256];
 
 		sprintf(cString, "%s/config/%s.cfg", com_gamedir, g_state.cLocalName);
@@ -488,9 +487,9 @@ void Host_GetConsoleCommands(void)
 */
 void Host_ServerFrame (void)
 {
-	static double dAccumulated = 0, dOldTime;
-	const double dDelta = (1.0 / 72.0);
-	double dAlpha, dNewFrameTime;
+	static double	dAccumulated = 0, dOldTime;
+	const double	dDelta = (1.0 / 72.0);
+	double			dAlpha, dNewFrameTime;
 
 	int	i, active; //johnfitz
 

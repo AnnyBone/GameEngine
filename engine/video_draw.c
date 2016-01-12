@@ -386,6 +386,7 @@ void Draw_ConsoleBackground(void)
 	Colour_t	black, lightblack;
 
 	if (cls.state != ca_connected)
+		// TODO: we're not clearing buffers when disconnected...
 		alpha = 1;
 
 	Math_VectorSet(0, black);
@@ -562,7 +563,8 @@ void Draw_Rectangle(int x, int y, int w, int h, Colour_t colour)
 	Math_Vector4Copy(colour, voFill[2].mvColour);
 	Math_Vector4Copy(colour, voFill[3].mvColour);
 
-	VideoLayer_Enable(VIDEO_BLEND);
+	if (colour[3] < 1)
+		VideoLayer_Enable(VIDEO_BLEND);
 	VideoLayer_Disable(VIDEO_DEPTH_TEST|VIDEO_TEXTURE_2D);
 
 	Video_ObjectVertex(&voFill[0], x, y, 0);
@@ -574,9 +576,10 @@ void Draw_Rectangle(int x, int y, int w, int h, Colour_t colour)
 	Video_ObjectVertex(&voFill[3], x, y+h, 0);
 	Video_ObjectTexture(&voFill[0], 0, h, w + h);
 
-	Video_DrawFill(voFill,NULL,0);
+	Video_DrawFill(voFill, NULL, 0);
 
-	VideoLayer_Disable(VIDEO_BLEND);
+	if (colour[3] < 1)
+		VideoLayer_Disable(VIDEO_BLEND);
 	VideoLayer_Enable(VIDEO_DEPTH_TEST | VIDEO_TEXTURE_2D);
 }
 
@@ -584,7 +587,8 @@ void Draw_GradientFill(int x, int y, int w, int h, Colour_t mvTopColour, Colour_
 {
 	VideoObjectVertex_t	voFill[4];
 
-	VideoLayer_Enable(VIDEO_BLEND);
+	if ((mvTopColour[3] < 1) || (mvBottomColour[3] < 1))
+		VideoLayer_Enable(VIDEO_BLEND);
 	VideoLayer_Disable(VIDEO_DEPTH_TEST | VIDEO_TEXTURE_2D);
 
 	Video_ObjectVertex(&voFill[0], x, y, 0);
@@ -598,7 +602,8 @@ void Draw_GradientFill(int x, int y, int w, int h, Colour_t mvTopColour, Colour_
 
 	Video_DrawFill(voFill, NULL, 0);
 
-	VideoLayer_Disable(VIDEO_BLEND);
+	if ((mvTopColour[3] < 1) || (mvBottomColour[3] < 1))
+		VideoLayer_Disable(VIDEO_BLEND);
 	VideoLayer_Enable(VIDEO_DEPTH_TEST | VIDEO_TEXTURE_2D);
 }
 
@@ -607,6 +612,8 @@ void Draw_FadeScreen (void)
 	VideoObjectVertex_t	voFade[4];
 
 	GL_SetCanvas(CANVAS_DEFAULT);
+
+	VideoLayer_Enable(VIDEO_BLEND);
 
 	Video_ObjectVertex(&voFade[0], 0, 0, 0);
 	Video_ObjectColour(&voFade[0], 1.0f, 1.0f, 1.0f, 0.5f);
@@ -621,6 +628,8 @@ void Draw_FadeScreen (void)
 	Video_ObjectColour(&voFade[3], 1.0f, 1.0f, 1.0f, 0.5f);
 
 	Video_DrawFill(voFade, NULL, 0);
+
+	VideoLayer_Disable(VIDEO_BLEND);
 }
 
 /*	Draws the little blue disc in the corner of the screen.
@@ -649,7 +658,7 @@ void Draw_BeginDisc(void)
 	//johnfitz
 
 	glDrawBuffer(GL_FRONT);
-	Draw_MaterialSurface(g_mHDAccess, 0, 320 - 74, 10, 64, 64, 1.0f);
+	Draw_MaterialSurface(g_mHDAccess, 0, 320 - 74, 10, 64, 64, 1);
 	glDrawBuffer(GL_BACK);
 
 	//johnfitz -- restore everything so that 3d rendering isn't fucked up
@@ -663,13 +672,12 @@ void Draw_BeginDisc(void)
 
 void GL_SetCanvas (VideoCanvasType_t newcanvas)
 {
-	extern vrect_t scr_vrect;
-	float s;
-	int lines;
+	extern vrect_t		scr_vrect;
+	float				s;
+	int					lines;
 
 	if (newcanvas == currentcanvas)
 		return;
-
 	currentcanvas = newcanvas;
 
 	glMatrixMode(GL_PROJECTION);
@@ -735,7 +743,7 @@ void Draw_ResetCanvas(void)
 
 	GL_SetCanvas(CANVAS_DEFAULT);
 
-	glColor4f(1.0f,1.0f,1.0f,1.0f);
+	glColor4f(1, 1, 1, 1);
 }
 
 /*	Draws a simple string of text on the screen.
@@ -762,13 +770,6 @@ void Draw_StaticEntity(ClientEntity_t *entity)
 
 void Draw_VertexEntity(ClientEntity_t *entity)
 {}
-
-void Sprite_DrawSimple(Material_t *material, MathVector3f_t position, float scale);
-
-void Draw_SpriteEntity(ClientEntity_t *entity)
-{
-	Sprite_DrawSimple(entity->model->mAssignedMaterials, entity->origin, entity->scale);
-}
 
 void Draw_Entity(ClientEntity_t *entity)
 {
@@ -807,7 +808,6 @@ void Draw_Entity(ClientEntity_t *entity)
 		Draw_StaticEntity(entity);
 		break;
 	case MODEL_TYPE_SKELETAL:
-		
 		break;
 	case MODEL_TYPE_VERTEX:
 		Draw_VertexEntity(entity);

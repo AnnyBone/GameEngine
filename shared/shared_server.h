@@ -68,11 +68,54 @@ enum ServerMessage
 	//SVC_SPRITE,
 /*	Anything beyond this point
 	is local.					*/
+	MESSAGE_SERVER_SKYCAMERA,
 	MESSAGE_SERVER_DEBUG,
 
 	SVC_NONE
 };
 
 #define	SERVER_PROTOCOL	(1+(SVC_NONE))
+
+#define	NUM_PING_TIMES		16
+#define	NUM_SPAWN_PARMS		33
+
+#define	SERVER_MAX_TEXTURES	512	// Maximum number of textures we can send.
+
+#include "shared_common.h"
+#include "shared_client.h"
+#include "shared_game.h"
+
+typedef struct client_s
+{
+	bool		active;				// FALSE = client is free
+	bool		bSpawned;			// FALSE = don't send datagrams
+	bool		dropasap;			// has been told to go to another level
+	bool		privileged;			// can execute any host command
+	bool		sendsignon;			// only valid before spawned
+
+	double			last_message;		// reliable messages must be sent
+	// periodically
+
+	struct qsocket_s *netconnection;	// communications handle
+
+	ClientCommand_t		cmd;				// movement
+	MathVector3f_t		wishdir;			// intended motion calced from cmd
+
+	sizebuf_t		message;			// can be added to at any time,
+	// copied and clear once per frame
+	uint8_t			msgbuf[MAX_MSGLEN];
+	ServerEntity_t	*edict;				// EDICT_NUM(clientnum+1)
+	char			name[32];			// for printing to other people
+	int				colors;
+
+	float			ping_times[NUM_PING_TIMES];
+	int				num_pings;			// ping_times[num_pings%NUM_PING_TIMES]
+
+	// spawn parms are carried from level to level
+	float			spawn_parms[NUM_SPAWN_PARMS];
+
+	// client known data for deltas
+	int				old_frags;
+} ServerClient_t;
 
 #endif // !SHARED_SERVER_H

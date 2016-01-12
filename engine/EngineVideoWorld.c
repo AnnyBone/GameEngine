@@ -294,8 +294,6 @@ void World_DrawWaterTextureChains(void)
 	if (r_drawflat_cheatsafe || r_lightmap_cheatsafe || !r_drawworld_cheatsafe)
 		return;
 
-	Video_ResetCapabilities(false);
-
 	VideoLayer_Enable(VIDEO_TEXTURE_2D | VIDEO_BLEND);
 
 	for (i = 0; i < cl.worldmodel->numtextures; i++)
@@ -304,62 +302,27 @@ void World_DrawWaterTextureChains(void)
 		if (!t || !t->texturechain || !(t->texturechain->flags & SURF_DRAWTURB))
 			continue;
 
-		if (t->mAssignedMaterial->fAlpha < 1.0)
+		if (t->material->fAlpha < 1)
 			// TODO: uh... this is the default state is it not?
 			VideoLayer_DepthMask(true);
 
 		for (s = t->texturechain; s; s = s->texturechain)
 			if(!s->culled)
 			{
-				Material_Draw(t->mAssignedMaterial, 0, 0, VIDEO_PRIMITIVE_IGNORE, 0, false);
+				Material_Draw(t->material, 0, 0, VIDEO_PRIMITIVE_IGNORE, 0, false);
 
 				for(p = s->polys->next; p; p = p->next)
 				{
-					Warp_DrawWaterPoly(p, t->mAssignedMaterial);
+					Warp_DrawWaterPoly(p, t->material);
 
 					rs_brushpasses++;
 				}
 
-				Material_Draw(t->mAssignedMaterial, 0, 0, VIDEO_PRIMITIVE_IGNORE, 0, true);
+				Material_Draw(t->material, 0, 0, VIDEO_PRIMITIVE_IGNORE, 0, true);
 			}
 	}
 
 	VideoLayer_Disable(VIDEO_TEXTURE_2D | VIDEO_BLEND);
-
-	Video_ResetCapabilities(true);
-}
-
-void R_DrawLightmapChains (void)
-{
-	int			i,j;
-	float		*v;
-	glpoly_t	*p;
-
-	for(i = 0; i < MAX_LIGHTMAPS; i++)
-	{
-		if(!lightmap_polys[i])
-			continue;
-
-		Video_SetTexture(lightmap_textures[i]);
-
-		R_UploadLightmap(i);
-
-		for (p = lightmap_polys[i]; p; p=p->chain)
-		{
-			glBegin(GL_TRIANGLE_FAN);
-
-			v = p->verts[0];
-			for(j = 0; j < p->numverts; j++,v += VERTEXSIZE)
-			{
-				glTexCoord2fv(v+5);
-				glVertex3fv(v);
-			}
-
-			glEnd();
-
-			rs_brushpasses++;
-		}
-	}
 }
 
 void World_Draw(void)
@@ -371,25 +334,23 @@ void World_Draw(void)
 	if(!r_drawworld_cheatsafe)
 		return;
 
-	Video_ResetCapabilities(false);
-
 	for(i = 0; i < cl.worldmodel->numtextures; i++)
 	{
 		t = cl.worldmodel->textures[i];
 		if(!t || !t->texturechain || t->texturechain->flags & (SURF_DRAWTILED | SURF_NOTEXTURE))
 			continue;
 
-		t->mAssignedMaterial->bBind = true;
+		t->material->bBind = true;
 
 		for(s = t->texturechain; s; s = s->texturechain)
 			if(!s->culled)
 			{
-				if (t->mAssignedMaterial->bBind && !r_showtris.bValue)
+				if (t->material->bBind && !r_showtris.bValue)
 				{
 					Video_SelectTexture(VIDEO_TEXTURE_LIGHT);
 					VideoLayer_Enable(VIDEO_TEXTURE_2D);
 
-					t->mAssignedMaterial->bBind = false;
+					t->material->bBind = false;
 				}
 
 				if (!r_showtris.bValue)
@@ -400,10 +361,10 @@ void World_Draw(void)
 					R_RenderDynamicLightmaps(s);
 					R_UploadLightmap(s->lightmaptexturenum);
 
-					Video_SelectTexture(VIDEO_TEXTURE_DIFFUSE);
+					Video_SelectTexture(0);
 				}
 
-				Video_DrawSurface(s, 1.0f, t->mAssignedMaterial, 0);
+				Video_DrawSurface(s, 1.0f, t->material, 0);
 
 				rs_brushpasses++;
 			}
@@ -413,6 +374,4 @@ void World_Draw(void)
 	Video_SelectTexture(VIDEO_TEXTURE_LIGHT);
 	VideoLayer_Disable(VIDEO_TEXTURE_2D);
 	Video_SelectTexture(0);
-	
-	Video_ResetCapabilities(true);
 }

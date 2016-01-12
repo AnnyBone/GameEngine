@@ -624,6 +624,16 @@ typedef struct
 	void(*WriteCoord)(int mode, float f);
 	void(*WriteAngle)(int mode, float f);
 	void(*WriteEntity)(int mode, ServerEntity_t *ent);
+
+	void(*MSG_WriteByte)(sizebuf_t *sb, int c);
+	void(*MSG_WriteChar)(sizebuf_t *sb, int c);
+	void(*MSG_WriteShort)(sizebuf_t *sb, int c);
+	void(*MSG_WriteLong)(sizebuf_t *sb, int c);
+	void(*MSG_WriteFloat)(sizebuf_t *sb, int c);
+	void(*MSG_WriteString)(sizebuf_t *sb, const char *s);
+	void(*MSG_WriteCoord)(sizebuf_t *sb, float f);
+	void(*MSG_WriteAngle)(sizebuf_t *sb, float f);
+
 	void(*ShowCursor)(bool bShow);
 
 	int(*ReadByte)();
@@ -640,7 +650,7 @@ typedef struct
 
 typedef struct
 {
-	int		iVersion;
+	int	iVersion;
 
 	void	(*Initialize)(void);
 	void	(*Shutdown)(void);
@@ -663,7 +673,8 @@ typedef struct
 	void(*Server_SetSizeVector)(ServerEntity_t *eEntity, MathVector3f_t vMin, MathVector3f_t vMax);	// Set the size of an entity by vector.
 	void(*Server_SpawnPlayer)(ServerEntity_t *ePlayer);												// Spawns the player (SERVER_PUTCLIENTINSERVER).
 	void(*Server_PreFrame)(void);																	// Called at the start of each physics frame.
-	void(*Server_PostFrame)();																		// Called at the end of each physics frame.
+	void(*Server_PostFrame)(void);																	// Called at the end of each physics frame.
+	void(*Server_SendClientInformation)(ServerClient_t *client);
 	void(*Server_ParseEntityField)(char *key, char *value, ServerEntity_t *entity);					// Parse the given field and value into an entities struct.
 	bool(*Server_SpawnEntity)(ServerEntity_t *ent);													// Puts a specific entity into the server.
 

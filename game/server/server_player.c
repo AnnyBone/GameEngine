@@ -450,17 +450,15 @@ void Player_PostThink(ServerEntity_t *ePlayer)
 			Entity_Animate(ePlayer,PlayerAnimation_Idle);
 	}
 
-#ifndef GAME_ADAMAS
 	Player_CheckFootsteps(ePlayer);
 #ifdef GAME_OPENKATANA
 	Player_CheckPowerups(ePlayer);
-#endif
 #endif
 }
 
 void Player_PreThink(ServerEntity_t *ePlayer)
 {
-	if (Server.round_started && !Server.bPlayersSpawned)
+	if (Server.round_started && !Server.players_spawned)
 	{
 		// Spawn the player!
 		Player_Spawn(ePlayer);
@@ -491,7 +489,7 @@ void Player_PreThink(ServerEntity_t *ePlayer)
 		trace_t			tTrace;
 		MathVector3f_t	vStart,vEnd;
 
-		// [23/9/2012] Check if we can jump onto an edge, was originally in a seperate function but merged here instead ~hogsy
+		// Check if we can jump onto an edge, was originally in a seperate function but merged here instead.
 		Math_AngleVectors(ePlayer->v.angles, ePlayer->local.vForward, ePlayer->local.vRight, ePlayer->local.vUp);
 		Math_VectorCopy(ePlayer->v.origin,vStart);
 
@@ -586,11 +584,11 @@ void Player_PreThink(ServerEntity_t *ePlayer)
 
 void Player_Die(ServerEntity_t *ePlayer, ServerEntity_t *other)
 {
-	char	s[32];
+	char s[32];
 
 	/*	TODO:
-		Slowly fade our screen to red.
-		Camera should follow the entity that killed us.
+		Slowly fade our screen to red (or black?)
+		Camera should follow the entity that killed us?
 	*/
 
 	Math_VectorClear(ePlayer->v.view_ofs);
@@ -751,7 +749,7 @@ void Player_Spawn(ServerEntity_t *ePlayer)
 	Item_ClearInventory(ePlayer);
 
 	// Let the server know that a player has spawned.
-	Server.bPlayersSpawned = true;
+	Server.players_spawned = true;
 
 	if(bIsMultiplayer)
 	{

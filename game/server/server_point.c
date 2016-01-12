@@ -78,8 +78,7 @@ void Point_SkyCameraSpawn(ServerEntity_t *entity)
 {
 	if (Server.skycam)
 	{
-		Console_Warning("Multiple sky cameras on level! (%i %i %i)\n",
-			(int)entity->v.origin[0], (int)entity->v.origin[1], (int)entity->v.origin[2]);
+		Engine.Con_Warning("Multiple sky cameras on level! (%i %i %i)\n", (int)entity->v.origin[0], (int)entity->v.origin[1], (int)entity->v.origin[2]);
 		return;
 	}
 

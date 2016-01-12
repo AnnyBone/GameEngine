@@ -339,8 +339,8 @@ void Particle(MathVector3f_t org, MathVector3f_t dir,float scale,char *texture,i
 void LightStyle(int style,char *val)
 {
 	ServerClient_t	*client;
-	int			j;
-
+	int				j;
+	
 	sv.lightstyles[style] = val;
 
 	if (sv.state != SERVER_STATE_ACTIVE)
@@ -453,6 +453,16 @@ void Game_Initialize(void)
 	Import.ReadByte			= MSG_ReadByte;
 	Import.ReadCoord		= MSG_ReadCoord;
 	Import.ReadFloat		= MSG_ReadFloat;
+
+	Import.MSG_WriteAngle	= MSG_WriteAngle;
+	Import.MSG_WriteByte	= MSG_WriteByte;
+	Import.MSG_WriteChar	= MSG_WriteChar;
+	Import.MSG_WriteCoord	= MSG_WriteCoord;
+	Import.MSG_WriteFloat	= MSG_WriteFloat;
+	Import.MSG_WriteLong	= MSG_WriteLong;
+	Import.MSG_WriteShort	= MSG_WriteShort;
+	Import.MSG_WriteString	= MSG_WriteString;
+
 	Import.WriteByte		= Game_WriteByte;
 	Import.WriteCoord		= Game_WriteCoord;
 	Import.WriteAngle		= Game_WriteAngle;

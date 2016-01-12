@@ -80,6 +80,9 @@ typedef enum
 #define	MAX_QPATH	128	// Max length of a quake game pathname
 #define	MAX_OSPATH	512	// Max length of a filesystem pathname TODO: Replace with platform library equivalent!
 
+#define	MAX_MSGLEN		32000	// max length of a reliable message
+#define	MAX_DATAGRAM	32000	// max length of unreliable message
+
 /*	These have to be the same
 	as they are engine-side so
 	do not touch!

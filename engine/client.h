@@ -20,16 +20,6 @@
 
 typedef struct
 {
-	MathVector3f_t	viewangles;
-
-// intended velocities
-	float	forwardmove;
-	float	sidemove;
-	float	upmove;
-} ClientCommand_t;
-
-typedef struct
-{
 	int		length;
 	char	cMap[64];
 	char	average; //johnfitz
@@ -133,7 +123,7 @@ typedef struct
 								// throw out the first couple, so the player
 								// doesn't accidentally do something the
 								// first frame
-	ClientCommand_t	cmd;			// last command sent to the server
+	ClientCommand_t	cmd;		// last command sent to the server
 
 	// information for local display
 	int				stats[STAT_NONE];	// health, etc

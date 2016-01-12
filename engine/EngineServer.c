@@ -27,14 +27,14 @@
 
 #include "shared_server.h"
 
-server_t sv;
-server_static_t	svs;
+Server_t		sv;
+ServerStatic_t	svs;
 
-char	localmodels[MAX_MODELS][5];			// inline model names for precache
+char localmodels[MAX_MODELS][5];			// inline model names for precache
 
 void SV_Init (void)
 {
-	int				i;
+	int							i;
 	extern	ConsoleVariable_t	cvPhysicsNoStep;
 	extern	ConsoleVariable_t	sv_edgefriction;
 	extern	ConsoleVariable_t	cvPhysicsStopSpeed;
@@ -219,7 +219,8 @@ void SV_SendServerinfo(ServerClient_t *client)
 
 	MSG_WriteByte(&client->message, 0);
 
-	Game->Server_SendInfo(client);
+	// Let the game do some of this itself.
+	Game->Server_SendClientInformation(client);
 
 	// Send music
 	MSG_WriteByte(&client->message,svc_cdtrack);

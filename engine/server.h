@@ -5,11 +5,10 @@ typedef struct
 	struct client_s	*clients;		// [maxclients]
 	int				serverflags;		// episode completion information
 	bool			bChangingLevel;	// cleared when at SV_SpawnServer
-} server_static_t;
+} ServerStatic_t;
 
 //=============================================================================
 
-// [30/5/2013] Updated to follow new conventions ~hogsy
 typedef enum
 {
 	SERVER_STATE_LOADING,
@@ -33,74 +32,38 @@ typedef struct
 	char			*model_precache[MAX_MODELS];	// NULL terminated
 	struct model_s	*models[MAX_MODELS];
 	char			*sound_precache[MAX_SOUNDS];	// NULL terminated
-	char			*sprite_precache[MAX_PARTICLES];
+	char			*sprite_precache[SERVER_MAX_TEXTURES];
 	char			*lightstyles[MAX_LIGHTSTYLES];
 	int				num_edicts;
 	int				max_edicts;
-	ServerEntity_t			*edicts;			// can NOT be array indexed, because
+	ServerEntity_t	*edicts;		// can NOT be array indexed, because
 									// ServerEntity_t is variable sized, but can
 									// be used to reference the world ent
 	ServerState_t	state;			// some actions are only valid during load
 
 	sizebuf_t	datagram;
-	byte		datagram_buf[MAX_DATAGRAM];
+	uint8_t		datagram_buf[MAX_DATAGRAM];
 
 	sizebuf_t	reliable_datagram;	// copied to all clients at end of frame
-	byte		reliable_datagram_buf[MAX_DATAGRAM];
+	uint8_t		reliable_datagram_buf[MAX_DATAGRAM];
 
 	sizebuf_t	signon;
-	byte		signon_buf[MAX_MSGLEN-2]; //johnfitz -- was 8192, now uses MAX_MSGLEN
+	uint8_t		signon_buf[MAX_MSGLEN - 2]; //johnfitz -- was 8192, now uses MAX_MSGLEN
 
 	unsigned	protocol; //johnfitz
-} server_t;
+} Server_t;
 
-#define	NUM_PING_TIMES		16
-#define	NUM_SPAWN_PARMS		33
-
-typedef struct client_s
-{
-	bool		active;				// FALSE = client is free
-	bool		bSpawned;			// FALSE = don't send datagrams
-	bool		dropasap;			// has been told to go to another level
-	bool		privileged;			// can execute any host command
-	bool		sendsignon;			// only valid before spawned
-
-	double			last_message;		// reliable messages must be sent
-										// periodically
-
-	struct qsocket_s *netconnection;	// communications handle
-
-	ClientCommand_t		cmd;				// movement
-	MathVector3f_t		wishdir;			// intended motion calced from cmd
-
-	sizebuf_t		message;			// can be added to at any time,
-										// copied and clear once per frame
-	uint8_t			msgbuf[MAX_MSGLEN];
-	ServerEntity_t	*edict;				// EDICT_NUM(clientnum+1)
-	char			name[32];			// for printing to other people
-	int				colors;
-
-	float			ping_times[NUM_PING_TIMES];
-	int				num_pings;			// ping_times[num_pings%NUM_PING_TIMES]
-
-	// spawn parms are carried from level to level
-	float			spawn_parms[NUM_SPAWN_PARMS];
-
-	// client known data for deltas
-	int				old_frags;
-} ServerClient_t;
-
-extern	cvar_t	teamplay;
-extern	cvar_t	skill;
-extern	cvar_t	deathmatch;
-extern	cvar_t	coop;
+extern	ConsoleVariable_t	teamplay;
+extern	ConsoleVariable_t	skill;
+extern	ConsoleVariable_t	deathmatch;
+extern	ConsoleVariable_t	coop;
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-	extern	server_static_t	svs;				// persistant server info
-	extern	server_t		sv;					// local server
+	extern	ServerStatic_t	svs;				// persistant server info
+	extern	Server_t		sv;					// local server
 
 #ifdef __cplusplus
 };

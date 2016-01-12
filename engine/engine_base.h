@@ -39,7 +39,7 @@
 #endif
 
 //	Build needs to be updated each day that work is done on the engine.
-#define ENGINE_VERSION_BUILD	1064	// 11/01/2016
+#define ENGINE_VERSION_BUILD	1065	// 12/01/2016
 
 #define	ENGINE_LOG	"engine"
 
@@ -48,9 +48,6 @@
 #define MINIMUM_MEMORY	0x2000000	// 32MB
 
 #define MAX_NUM_ARGVS	50
-
-#define	MAX_MSGLEN		32000	// max length of a reliable message
-#define	MAX_DATAGRAM	32000	// max length of unreliable message
 
 #define DATAGRAM_MTU	1400	// johnfitz -- actual limit for unreliable messages to nonlocal clients
 

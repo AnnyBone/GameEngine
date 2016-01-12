@@ -86,10 +86,12 @@ char *svc_strings[] =
 	"svc_spawnstaticsound2",		// [coord3] [short] samp [byte] vol [byte] aten
 //johnfitz
 	"SVC_UPDATEMENU",
-	"SVC_DEBUG"
+
+	"MESSAGE_SERVER_SKYCAMERA",
+	"MESSAGE_SERVER_DEBUG",
 };
 
-extern vec3_t	v_punchangles[2]; //johnfitz
+extern MathVector3f_t v_punchangles[2]; //johnfitz
 
 overflowtimes_t dev_overflows;
 
@@ -787,6 +789,7 @@ void CL_ParseStaticSound (int version) //johnfitz -- added argument
 #define SHOWNET(x) if(cl_shownet.value==2)Con_Printf ("%3i:%s\n", msg_readcount-1, x);
 
 void Sky_LoadSkyBox(char *name);
+void Sky_ReadCameraPosition(void);
 
 void CL_ParseServerMessage(void)
 {
@@ -1026,6 +1029,9 @@ void CL_ParseServerMessage(void)
 		//johnfitz -- new svc types
 		case svc_skybox:
 			Sky_LoadSkyBox(MSG_ReadString());
+			break;
+		case MESSAGE_SERVER_SKYCAMERA:
+			Sky_ReadCameraPosition();
 			break;
 		case SVC_BF:
 			Cmd_ExecuteString("bf",src_command);

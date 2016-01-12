@@ -257,6 +257,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\shared\SharedEngine.h" />
+    <ClInclude Include="..\shared\shared_common.h" />
     <ClInclude Include="..\shared\shared_flags.h" />
     <ClInclude Include="..\shared\shared_material.h" />
     <ClInclude Include="..\shared\shared_model.h" />

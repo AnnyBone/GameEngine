@@ -206,6 +206,7 @@ bool Game_Init(int state,ServerEntity_t *ent,double dTime)
 }
 
 void	Server_PreFrame(void);	// server_main
+void	Server_SendClientInformation(ServerClient_t *client);
 void	Game_Shutdown(void);
 
 pMODULE_EXPORT GameExport_t *Game_Main(ModuleImport_t *Import)
@@ -281,23 +282,24 @@ pMODULE_EXPORT GameExport_t *Game_Main(ModuleImport_t *Import)
 	Export.Client_ViewFrame				= Client_ViewFrame;
 
 	// Server
-	Export.Server_Initialize		= Server_Initialize;
-	Export.Server_PreFrame			= Server_PreFrame;
-	Export.Server_SpawnEntity		= Server_SpawnEntity;
-	Export.Server_EntityFrame		= Server_EntityFrame;
-	Export.Server_KillClient		= Server_KillClient;
-	Export.Server_SetSizeVector		= Entity_SetSizeVector;
-	Export.Server_ParseEntityField	= ServerEntity_ParseField;
-	Export.Server_SpawnPlayer		= Player_Spawn;
+	Export.Server_Initialize				= Server_Initialize;
+	Export.Server_PreFrame					= Server_PreFrame;
+	Export.Server_SpawnEntity				= Server_SpawnEntity;
+	Export.Server_EntityFrame				= Server_EntityFrame;
+	Export.Server_KillClient				= Server_KillClient;
+	Export.Server_SetSizeVector				= Entity_SetSizeVector;
+	Export.Server_ParseEntityField			= ServerEntity_ParseField;
+	Export.Server_SpawnPlayer				= Player_Spawn;
+	Export.Server_SendClientInformation		= Server_SendClientInformation;
 
 	// Physics
-	Export.Physics_SetGravity			= Physics_SetGravity;
-	Export.Physics_CheckWaterTransition = Physics_CheckWaterTransition;
-	Export.Physics_CheckVelocity		= Physics_CheckVelocity;
-	Export.Physics_CheckWater			= Physics_CheckWater;
-	Export.Physics_WallFriction			= Physics_WallFriction;
-	Export.Physics_Impact				= Physics_Impact;
-	Export.Physics_PushEntity			= Physics_PushEntity;
+	Export.Physics_SetGravity				= Physics_SetGravity;
+	Export.Physics_CheckWaterTransition		= Physics_CheckWaterTransition;
+	Export.Physics_CheckVelocity			= Physics_CheckVelocity;
+	Export.Physics_CheckWater				= Physics_CheckWater;
+	Export.Physics_WallFriction				= Physics_WallFriction;
+	Export.Physics_Impact					= Physics_Impact;
+	Export.Physics_PushEntity				= Physics_PushEntity;
 
 	return &Export;
 }

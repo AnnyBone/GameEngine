@@ -319,7 +319,7 @@ void Model_LoadBSPTextures(BSPLump_t *blLump)
 {
 	texture_t		*tTexture;
 	Material_t		*mAssignedMaterial;
-	miptex_t		*mpTexture;
+	miptex_t		*miptexture;
 	dmiptexlump_t	*mLump = NULL;
 	int				i, iTextures = 0;
 
@@ -342,16 +342,16 @@ void Model_LoadBSPTextures(BSPLump_t *blLump)
 		if(mLump->dataofs[i] == -1)
 			continue;
 
-		mpTexture = (miptex_t*)((uint8_t*)mLump+mLump->dataofs[i]);
+		miptexture = (miptex_t*)((uint8_t*)mLump + mLump->dataofs[i]);
 
 		// Scales are checked automatically by material system, so that original check has been removed.
 
 		tTexture = (texture_t*)Hunk_AllocName(sizeof(texture_t), loadname);
 		loadmodel->textures[i] = tTexture;
 
-		memcpy(tTexture->name, mpTexture->name, sizeof(tTexture->name));
-		tTexture->width		= LittleLong(mpTexture->width);
-		tTexture->height	= LittleLong(mpTexture->height);
+		memcpy(tTexture->name, miptexture->name, sizeof(tTexture->name));
+		tTexture->width = LittleLong(miptexture->width);
+		tTexture->height = LittleLong(miptexture->height);
 
 		// Remove special characters.
 		if (tTexture->name[0] == '*')
@@ -364,9 +364,9 @@ void Model_LoadBSPTextures(BSPLump_t *blLump)
 		{
 			mAssignedMaterial = Material_Load(tTexture->name);
 			if (mAssignedMaterial)
-				tTexture->mAssignedMaterial = mAssignedMaterial;
+				tTexture->material = mAssignedMaterial;
 			else
-				tTexture->mAssignedMaterial = g_mMissingMaterial;
+				tTexture->material = g_mMissingMaterial;
 		}
 	}
 
@@ -697,7 +697,7 @@ void Model_LoadBSPFaces(BSPLump_t *blLump)
 		else
 			out->samples = loadmodel->lightdata+(i*3); //johnfitz -- lit support via lordhavoc (was "+ i")
 
-		mMaterial = out->texinfo->texture->mAssignedMaterial;
+		mMaterial = out->texinfo->texture->material;
 		if (!mMaterial)
 			Sys_Error("Failed to get a material for BSP surface! (%s)\n",out->texinfo->texture->name);
 		

@@ -80,7 +80,7 @@ typedef struct
 
 	// Gamemode
 	bool	round_started,			// Has the round started yet?
-			bPlayersSpawned;		// Have the players been spawned for the current mode?
+			players_spawned;		// Have the players been spawned for the current mode?
 } GameServer_t;
 
 typedef struct

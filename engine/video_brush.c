@@ -143,7 +143,7 @@ void R_DrawSequentialPoly(msurface_t *s)
 	}
 	else if(s->flags & SURF_DRAWTURB)
 	{
-		Material_t *mCurrent = s->texinfo->texture->mAssignedMaterial;
+		Material_t *mCurrent = s->texinfo->texture->material;
 		glpoly_t *pBrushPoly;
 
 		if(currententity->alpha == ENTALPHA_DEFAULT)
@@ -196,7 +196,7 @@ void R_DrawSequentialPoly(msurface_t *s)
 			Video_SelectTexture(VIDEO_TEXTURE_DIFFUSE);
 		}
 
-		Video_DrawSurface(s, fAlpha, s->texinfo->texture->mAssignedMaterial, 0);
+		Video_DrawSurface(s, fAlpha, s->texinfo->texture->material, 0);
 
 		if (!r_showtris.bValue)
 		{

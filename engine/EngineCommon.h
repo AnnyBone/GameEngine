@@ -16,16 +16,9 @@ extern "C" {
 };
 #endif
 
-//============================================================================
+#include "shared_common.h"
 
-typedef struct sizebuf_s
-{
-	bool	allowoverflow;	// if false, do a Sys_Error
-	bool	overflowed;		// set to true if the buffer size failed
-	uint8_t	*data;
-	int		maxsize;
-	int		cursize;
-} sizebuf_t;
+//============================================================================
 
 void SZ_Alloc (sizebuf_t *buf, int startsize);
 void SZ_Free (sizebuf_t *buf);

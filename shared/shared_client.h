@@ -69,6 +69,16 @@ typedef enum
 
 typedef struct
 {
+	MathVector3f_t	viewangles;
+
+	// intended velocities
+	float	forwardmove;
+	float	sidemove;
+	float	upmove;
+} ClientCommand_t;
+
+typedef struct
+{
 	MathVector3f_t	origin;
 	float	radius;
 	double	die;			// Stop lighting after this time
@@ -212,4 +222,4 @@ typedef struct particle_s
 } Particle_t;
 //////////////////////////////////////////////////////////////////////////
 
-#endif
+#endif // !SHARED_CLIENT_H
