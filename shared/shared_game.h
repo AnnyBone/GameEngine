@@ -19,7 +19,6 @@
 #ifndef SHARED_GAME_H
 #define SHARED_GAME_H
 
-#include "shared_common.h"
 #include "shared_material.h"
 #include "shared_server.h"
 
@@ -57,7 +56,7 @@ typedef enum
 
 typedef struct waypoint_s
 {
-	const	char		*cName;		// The name for the waypoint
+	const char			*cName;		// The name for the waypoint
 	int					number;		// Each point is assigned it's own number
 	ServerEntity_t		*eEntity;	// The entity currently occupying that waypoint
 #ifdef DEBUG_WAYPOINT
@@ -65,7 +64,7 @@ typedef struct waypoint_s
 #endif
 	struct	waypoint_s	*next;		// The next point to target.
 	struct	waypoint_s	*last;		// The last point we were at.
-	vec3_t				position;	// The waypoints position.
+	MathVector3f_t		position;	// The waypoints position.
 	bool				bOpen;		// Check to see if the waypoint currently is occupied.
 	WaypointType_t		wType;		// Type of point (duck, jump, climb etc.)
 } Waypoint_t;
