@@ -1,13 +1,3 @@
-typedef struct
-{
-	int				maxclients;
-	int				maxclientslimit;
-	struct client_s	*clients;		// [maxclients]
-	int				serverflags;		// episode completion information
-	bool			bChangingLevel;	// cleared when at SV_SpawnServer
-} ServerStatic_t;
-
-//=============================================================================
 
 typedef enum
 {

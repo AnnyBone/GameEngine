@@ -280,10 +280,6 @@ void Surface_DrawMirror(msurface_t *Surface)
 #endif
 }
 
-void World_DrawMirrors(void)
-{
-}
-
 void World_DrawWaterTextureChains(void)
 {
 	int			i;
