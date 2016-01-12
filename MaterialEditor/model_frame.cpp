@@ -51,7 +51,7 @@ void ModelViewportPanel::Draw()
 
 		engine->DrawEntity(entity);
 		// Dolly rotate
-		if (rotate)
+		//if (rotate)
 			entity->angles[1] += 0.5f;
 	}
 }

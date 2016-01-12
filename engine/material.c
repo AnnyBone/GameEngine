@@ -353,15 +353,13 @@ gltexture_t *Material_LoadTexture(Material_t *mMaterial, MaterialSkin_t *mCurren
 
 typedef enum
 {
-	MATERIAL_FUNCTION_NONE,
-
+	MATERIAL_FUNCTION_UNIVERSAL,
 	MATERIAL_FUNCTION_MATERIAL,
 	MATERIAL_FUNCTION_SKIN,
 	MATERIAL_FUNCTION_TEXTURE,
-	MATERIAL_FUNCTION_UNIVERSAL
-} MaterialFunctionType_t;
+} MaterialFunctionContext_t;
 
-MaterialFunctionType_t	mftMaterialState;	// Indicates that any settings applied are global.
+MaterialFunctionContext_t	material_currentcontext;	// Indicates that any settings applied are global.
 
 void Material_CheckFunctions(Material_t *mNewMaterial);
 
@@ -383,9 +381,9 @@ MaterialTextureTypeX_t mttMaterialTypes[] =
 	{ "fullbright", MATERIAL_TEXTURE_FULLBRIGHT }	// Fullbright map
 };
 
-void _Material_SetTextureType(Material_t *mCurrentMaterial, MaterialFunctionType_t mftContext, char *cArg);
+void _Material_SetTextureType(Material_t *mCurrentMaterial, MaterialFunctionContext_t mftContext, char *cArg);
 
-void _Material_SetType(Material_t *mCurrentMaterial, MaterialFunctionType_t mftContext, char *cArg)
+void _Material_SetType(Material_t *mCurrentMaterial, MaterialFunctionContext_t mftContext, char *cArg)
 {
 	switch (mftContext)
 	{
@@ -408,29 +406,29 @@ void _Material_SetType(Material_t *mCurrentMaterial, MaterialFunctionType_t mftC
 	}
 }
 
-void _Material_SetWireframe(Material_t *mCurrentMaterial, MaterialFunctionType_t mftContext, char *cArg)
+void _Material_SetWireframe(Material_t *mCurrentMaterial, MaterialFunctionContext_t mftContext, char *cArg)
 {
 	mCurrentMaterial->override_wireframe = (bool)atoi(cArg);
 }
 
-void _Material_SetLightmap(Material_t *material, MaterialFunctionType_t context, char *arg)
+void _Material_SetLightmap(Material_t *material, MaterialFunctionContext_t context, char *arg)
 {
 	material->override_lightmap = (bool)atoi(arg);
 }
 
-void _Material_SetAlpha(Material_t *mCurrentMaterial, MaterialFunctionType_t mftContext, char *cArg)
+void _Material_SetAlpha(Material_t *mCurrentMaterial, MaterialFunctionContext_t mftContext, char *cArg)
 {
 	mCurrentMaterial->fAlpha = strtof(cArg, NULL);
 }
 
-void _Material_SetAnimationSpeed(Material_t *mCurrentMaterial, MaterialFunctionType_t mftContext, char *cArg)
+void _Material_SetAnimationSpeed(Material_t *mCurrentMaterial, MaterialFunctionContext_t mftContext, char *cArg)
 {
 	mCurrentMaterial->fAnimationSpeed = strtof(cArg, NULL);
 }
 
 // Skin Functions...
 
-void _Material_AddSkin(Material_t *mCurrentMaterial, MaterialFunctionType_t mftContext, char *cArg)
+void _Material_AddSkin(Material_t *mCurrentMaterial, MaterialFunctionContext_t mftContext, char *cArg)
 {
 	// Proceed to the next line.
 	Script_GetToken(true);
@@ -445,7 +443,7 @@ void _Material_AddSkin(Material_t *mCurrentMaterial, MaterialFunctionType_t mftC
 				break;
 			}
 
-			mftMaterialState = MATERIAL_FUNCTION_SKIN;
+			material_currentcontext = MATERIAL_FUNCTION_SKIN;
 
 			if (cToken[0] == '}')
 			{
@@ -477,7 +475,7 @@ void _Material_AddSkin(Material_t *mCurrentMaterial, MaterialFunctionType_t mftC
 
 // Texture Functions...
 
-void _Material_AddTexture(Material_t *material, MaterialFunctionType_t mftContext, char *cArg)
+void _Material_AddTexture(Material_t *material, MaterialFunctionContext_t mftContext, char *cArg)
 {
 	char cTexturePath[MAX_QPATH];
 
@@ -511,7 +509,7 @@ void _Material_AddTexture(Material_t *material, MaterialFunctionType_t mftContex
 			}
 
 			// Update state.
-			mftMaterialState = MATERIAL_FUNCTION_TEXTURE;
+			material_currentcontext = MATERIAL_FUNCTION_TEXTURE;
 
 			if (cToken[0] == '}')
 			{
@@ -551,7 +549,7 @@ void _Material_AddTexture(Material_t *material, MaterialFunctionType_t mftContex
 #endif
 }
 
-void _Material_SetTextureType(Material_t *mCurrentMaterial, MaterialFunctionType_t mftContext, char *cArg)
+void _Material_SetTextureType(Material_t *mCurrentMaterial, MaterialFunctionContext_t mftContext, char *cArg)
 {
 	MaterialSkin_t	*msSkin;
 	int				i;
@@ -564,7 +562,7 @@ void _Material_SetTextureType(Material_t *mCurrentMaterial, MaterialFunctionType
 			msSkin[mCurrentMaterial->iSkins].mtTexture[mCurrentMaterial->msSkin->uiTextures].mttType = mttMaterialTypes[i].mttType;
 }
 
-void _Material_SetTextureScroll(Material_t *mCurrentMaterial, MaterialFunctionType_t mftContext, char *cArg)
+void _Material_SetTextureScroll(Material_t *mCurrentMaterial, MaterialFunctionContext_t mftContext, char *cArg)
 {
 	MaterialSkin_t *msSkin;
 	MathVector2f_t vScroll;
@@ -601,7 +599,7 @@ MaterialTextureEnvironmentModeType_t EnvironmentModes[]=
 	{ "combine", VIDEO_TEXTURE_MODE_COMBINE }
 };
 
-void _Material_SetTextureEnvironmentMode(Material_t *Material, MaterialFunctionType_t Context, char *cArg)
+void _Material_SetTextureEnvironmentMode(Material_t *Material, MaterialFunctionContext_t Context, char *cArg)
 {
 	MaterialSkin_t *sCurrentSkin;
 	sCurrentSkin = Material_GetSkin(Material, Material->iSkins);
@@ -617,7 +615,7 @@ void _Material_SetTextureEnvironmentMode(Material_t *Material, MaterialFunctionT
 	Con_Warning("Invalid texture environment mode! (%s) (%s)\n", cArg, Material->cName);
 }
 
-void _Material_SetRotate(Material_t *mCurrentMaterial, MaterialFunctionType_t mftContext, char *cArg)
+void _Material_SetRotate(Material_t *mCurrentMaterial, MaterialFunctionContext_t mftContext, char *cArg)
 {
 	MaterialSkin_t	*msSkin;
 
@@ -630,7 +628,7 @@ void _Material_SetRotate(Material_t *mCurrentMaterial, MaterialFunctionType_t mf
 	msSkin->mtTexture[msSkin->uiTextures].matrixmod = true;
 }
 
-void _Material_SetAdditive(Material_t *material, MaterialFunctionType_t context, char *arg)
+void _Material_SetAdditive(Material_t *material, MaterialFunctionContext_t context, char *arg)
 {
 	if (atoi(arg) == TRUE)
 		material->msSkin[material->iSkins].uiFlags |= MATERIAL_FLAG_ADDITIVE | MATERIAL_FLAG_BLEND;
@@ -638,7 +636,7 @@ void _Material_SetAdditive(Material_t *material, MaterialFunctionType_t context,
 		material->msSkin[material->iSkins].uiFlags &= ~MATERIAL_FLAG_ADDITIVE | MATERIAL_FLAG_BLEND;
 }
 
-void _Material_SetBlend(Material_t *material, MaterialFunctionType_t context, char *arg)
+void _Material_SetBlend(Material_t *material, MaterialFunctionContext_t context, char *arg)
 {
 	if (atoi(arg) == TRUE)
 		material->msSkin[material->iSkins].uiFlags |= MATERIAL_FLAG_BLEND;
@@ -646,7 +644,7 @@ void _Material_SetBlend(Material_t *material, MaterialFunctionType_t context, ch
 		material->msSkin[material->iSkins].uiFlags &= ~MATERIAL_FLAG_BLEND;
 }
 
-void _Material_SetAlphaTest(Material_t *material, MaterialFunctionType_t context, char *arg)
+void _Material_SetAlphaTest(Material_t *material, MaterialFunctionContext_t context, char *arg)
 {
 	if (atoi(arg) == TRUE)
 		material->msSkin[material->iSkins].uiFlags |= MATERIAL_FLAG_ALPHA;
@@ -654,11 +652,24 @@ void _Material_SetAlphaTest(Material_t *material, MaterialFunctionType_t context
 		material->msSkin[material->iSkins].uiFlags &= ~MATERIAL_FLAG_ALPHA;
 }
 
-void _Material_SetShader(Material_t *material, MaterialFunctionType_t context, char *arg)
+void _Material_SetAlphaTrick(Material_t *material, MaterialFunctionContext_t context, char *arg)
+{
+	if (atoi(arg) == TRUE)
+		material->msSkin[material->iSkins].uiFlags |= MATERIAL_FLAG_ALPHATRICK;
+	else
+		material->msSkin[material->iSkins].uiFlags &= ~MATERIAL_FLAG_ALPHATRICK;
+}
+
+void _Material_SetShader(Material_t *material, MaterialFunctionContext_t context, char *arg)
 {
 	strncpy(material->msSkin[material->iSkins].shader.name, arg, sizeof(material->msSkin[material->iSkins].shader.name));
 
 	// TODO: set shader up correctly (ensure it's loaded, blah blah blah)
+}
+
+void _Material_SetBoolean(Material_t *material, MaterialFunctionContext_t context, char *arg)
+{
+
 }
 
 // Universal Functions...
@@ -669,7 +680,7 @@ typedef struct
 
 	const char *ccName;
 
-	MaterialFunctionType_t	mftContext;
+	MaterialFunctionContext_t	mftContext;
 } MaterialFlag_t;
 
 MaterialFlag_t	mfMaterialFlags[] =
@@ -684,14 +695,14 @@ MaterialFlag_t	mfMaterialFlags[] =
 	{ MATERIAL_FLAG_NEAREST, "NEAREST", MATERIAL_FUNCTION_SKIN },
 	{ MATERIAL_FLAG_BLEND, "BLEND", MATERIAL_FUNCTION_SKIN },
 	{ MATERIAL_FLAG_BLEND|MATERIAL_FLAG_ADDITIVE, "ADDITIVE", MATERIAL_FUNCTION_SKIN },
+	{ MATERIAL_FLAG_ALPHA, "ALPHA", MATERIAL_FUNCTION_SKIN },
 
-	// Texture
-	{ MATERIAL_FLAG_ALPHA, "ALPHA", MATERIAL_FUNCTION_TEXTURE }
+	{ MATERIAL_FLAG_ALPHA, "ALPHA", MATERIAL_FUNCTION_TEXTURE }	// TODO: Make this obsolete!!
 };
 
 /*	Set flags for the material.
 */
-void _Material_SetFlags(Material_t *mCurrentMaterial, MaterialFunctionType_t mftContext, char *cArg)
+void _Material_SetFlags(Material_t *mCurrentMaterial, MaterialFunctionContext_t mftContext, char *cArg)
 {
 	int	i;
 
@@ -732,9 +743,9 @@ typedef struct
 {
 	char *cKey;
 
-	void (*Function)(Material_t *mCurrentMaterial, MaterialFunctionType_t mftContext, char *cArg);
+	void(*Function)(Material_t *mCurrentMaterial, MaterialFunctionContext_t mftContext, char *cArg);
 
-	MaterialFunctionType_t mftType;
+	MaterialFunctionContext_t mftType;
 } MaterialKey_t;
 
 MaterialKey_t MaterialFunctions[]=
@@ -757,6 +768,7 @@ MaterialKey_t MaterialFunctions[]=
 	{ "additive", _Material_SetAdditive, MATERIAL_FUNCTION_SKIN },
 	{ "blend", _Material_SetBlend, MATERIAL_FUNCTION_SKIN },
 	{ "alpha_test", _Material_SetAlphaTest, MATERIAL_FUNCTION_SKIN },
+	{ "alpha_trick", _Material_SetAlphaTrick, MATERIAL_FUNCTION_SKIN },
 
 	// Texture
 	{ "scroll", _Material_SetTextureScroll, MATERIAL_FUNCTION_TEXTURE },
@@ -778,13 +790,13 @@ void Material_CheckFunctions(Material_t *mNewMaterial)
 			/*	todo
 				account for texture slots etc
 			*/
-			if ((mKey->mftType != MATERIAL_FUNCTION_UNIVERSAL) && (mftMaterialState != mKey->mftType))
+			if ((mKey->mftType != MATERIAL_FUNCTION_UNIVERSAL) && (material_currentcontext != mKey->mftType))
 				Sys_Error("Attempted to call a function within the wrong context! (%s) (%s) (%i)\n", 
 					cToken, mNewMaterial->cPath, iScriptLine);
 
 			Script_GetToken(false);
 
-			mKey->Function(mNewMaterial, mftMaterialState, cToken);
+			mKey->Function(mNewMaterial, material_currentcontext, cToken);
 			return;
 		}
 
@@ -901,7 +913,7 @@ Material_t *Material_Load(const char *ccPath)
 			goto MATERIAL_LOAD_ERROR;
 		}
 
-		mftMaterialState = MATERIAL_FUNCTION_MATERIAL;
+		material_currentcontext = MATERIAL_FUNCTION_MATERIAL;
 
 		// End
 		if (cToken[0] == '}')
@@ -1066,16 +1078,16 @@ void Material_Draw(Material_t *Material, int Skin,
 				else
 					VideoLayer_SetTextureEnvironmentMode(msCurrentSkin->mtTexture[i].EnvironmentMode);
 
-				if (msCurrentSkin->mtTexture[i].uiFlags & MATERIAL_FLAG_ALPHA)
+				if ((msCurrentSkin->mtTexture[i].uiFlags & MATERIAL_FLAG_ALPHA) || (msCurrentSkin->uiFlags & MATERIAL_FLAG_ALPHA))
 					VideoLayer_Enable(VIDEO_ALPHA_TEST);
 			}
 			else
 			{
-				if (msCurrentSkin->mtTexture[i].uiFlags & MATERIAL_FLAG_ALPHA)
+				if ((msCurrentSkin->mtTexture[i].uiFlags & MATERIAL_FLAG_ALPHA) || (msCurrentSkin->uiFlags & MATERIAL_FLAG_ALPHA))
 				{
 					VideoLayer_Disable(VIDEO_ALPHA_TEST);
 
-					if (cv_video_alphatrick.bValue && (ObjectSize > 0))
+					if ((msCurrentSkin->uiFlags & MATERIAL_FLAG_ALPHATRICK) && (cv_video_alphatrick.bValue && (ObjectSize > 0)))
 					{
 						VideoLayer_DepthMask(false);
 						VideoLayer_Enable(VIDEO_BLEND);

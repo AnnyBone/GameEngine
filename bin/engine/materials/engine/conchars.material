@@ -6,12 +6,11 @@ conchars
 	
 	$skin
 	{
-		// Conchars always should use nearest filtering.
-		//$flags "NEAREST"
+		$alpha_test "1"
+		$alpha_trick "0"
 	
 		$map "materials/engine/cbugs"
 		{
-			$flags "ALPHA"
 		}
 	}
 }

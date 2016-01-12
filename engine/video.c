@@ -274,7 +274,7 @@ void Video_ClearBuffer(void)
 		return;
 
 	int clear = 0;
-	if ((cls.state != ca_connected) || g_state.embedded)
+	if (r_showtris.bValue || (cls.state != ca_connected) || g_state.embedded)
 		clear |= GL_COLOR_BUFFER_BIT;
 	if (cv_video_drawmirrors.bValue)
 		clear |= GL_STENCIL_BUFFER_BIT;

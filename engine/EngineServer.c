@@ -1272,17 +1272,9 @@ ServerEntity_t *Server_FindEntity(ServerEntity_t *eStartEntity, char *cName, boo
 	return NULL;
 }
 
-// [9/7/2012] Added Server_PrecacheResource ~hogsy
 void Server_PrecacheResource(int iType, const char *ccResource)
 {
-	char	name[PLATFORM_MAX_PATH];
-	int		i;
-
-	/*	[13/7/2012] TODO:
-	Set extension automatically based on type.
-
-	~hogsy
-	*/
+	int	i;
 
 	if (sv.state != SERVER_STATE_LOADING)
 	{

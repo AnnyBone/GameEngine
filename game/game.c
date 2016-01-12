@@ -243,6 +243,10 @@ pMODULE_EXPORT GameExport_t *Game_Main(ModuleImport_t *Import)
 	Engine.Hunk_Alloc				= Import->Hunk_Alloc;
 	Engine.LoadMaterial				= Import->LoadMaterial;
 
+	Engine.MSG_WriteAngle = Import->MSG_WriteAngle;
+	Engine.MSG_WriteByte = Import->MSG_WriteByte;
+	Engine.MSG_WriteCoord = Import->MSG_WriteCoord;
+
 	Engine.Client_GetEffect			= Import->Client_GetEffect;
 	Engine.Client_AllocateDlight	= Import->Client_AllocateDlight;
 	Engine.Client_AllocateParticle	= Import->Client_AllocateParticle;

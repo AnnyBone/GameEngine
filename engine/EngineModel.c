@@ -707,8 +707,8 @@ void Model_LoadBSPFaces(BSPLump_t *blLump)
 #endif
 		if (!strncmp(mMaterial->cName, "sky3d", 5))
 		{
-			out->flags |= SURFACE_SKIP;
-			//Mod_PolyForUnlitSurface(out);
+			out->flags |= (SURF_DRAWTILED|SURFACE_SKIP);
+			Mod_PolyForUnlitSurface(out);
 
 			loadmodel->flags |= MODEL_FLAG_3DSKY;
 		}
@@ -1322,8 +1322,7 @@ void Model_CalculateMD2Bounds(model_t *mModel, MD2_t *mMD2Model)
 #endif
 
 	// Check that the size is valid.
-	if (((mvMins[0] == 0) && (mvMins[1] == 0) && (mvMins[2] == 0)) &&
-		((mvMaxs[0] == 0) && (mvMaxs[1] == 0) && (mvMaxs[2] == 0)))
+	if (Math_VectorCompare(mvMins, g_mvOrigin3f) &&	Math_VectorCompare(mvMaxs, g_mvOrigin3f))
 	{
 		// This should never happen, but if it does, give a warning.
 		Con_Warning("Suspicious model size! (%s)\n", mModel->name);
