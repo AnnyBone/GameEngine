@@ -472,12 +472,12 @@ void Host_Mapname_f (void)
 
 void Host_Status_f (void)
 {
-	client_t	*client;
-	int			seconds;
-	int			minutes;
-	int			hours = 0;
-	int			j;
-	void		(*print) (const char *fmt, ...);
+	ServerClient_t	*client;
+	int				seconds;
+	int				minutes;
+	int				hours = 0;
+	int				j;
+	void			(*print) (const char *fmt, ...);
 
 	if (cmd_source == src_command)
 	{
@@ -709,9 +709,9 @@ void Host_Fly_f (void)
 
 void Host_Ping_f (void)
 {
-	int		i, j;
-	float	total;
-	client_t	*client;
+	int				i, j;
+	float			total;
+	ServerClient_t	*client;
 
 	if (cmd_source == src_command)
 	{
@@ -1174,11 +1174,11 @@ void Host_Version(void)
 
 void Host_Say(bool bTeamOnly)
 {
-	client_t		*client,*save;
-	int				j;
-	char			*p;
-	unsigned char	text[64];
-	bool			bFromServer = false;
+	ServerClient_t		*client, *save;
+	int					j;
+	char				*p;
+	unsigned char		text[64];
+	bool				bFromServer = false;
 
 	if (cmd_source == src_command)
 	{
@@ -1247,9 +1247,9 @@ void Host_Say_Team_f(void)
 
 void Host_Tell_f(void)
 {
-	client_t	*client,*save;
-	int			j;
-	char		*p,text[64];
+	ServerClient_t	*client, *save;
+	int				j;
+	char			*p,text[64];
 
 	if(cmd_source == src_command)
 	{
@@ -1397,9 +1397,9 @@ void Host_PreSpawn_f (void)
 
 void Host_Spawn_f(void)
 {
-	int			i;
-	client_t	*client;
-	ServerEntity_t		*eClient;
+	int				i;
+	ServerClient_t	*client;
+	ServerEntity_t	*eClient;
 
 	if (cmd_source == src_command)
 	{
@@ -1521,11 +1521,11 @@ void Host_Begin_f(void)
 
 void Host_Kick_f (void)
 {
-	char		*who,
-				*message = NULL;
-	client_t	*save;
-	int			i;
-	bool		bByNumber = false;
+	char			*who,
+					*message = NULL;
+	ServerClient_t	*save;
+	int				i;
+	bool			bByNumber = false;
 
 	if (cmd_source == src_command)
 	{

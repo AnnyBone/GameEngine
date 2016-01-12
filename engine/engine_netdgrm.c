@@ -758,10 +758,10 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 
 	if (command == CCREQ_PLAYER_INFO)
 	{
-		int			playerNumber;
-		int			activeNumber;
-		int			clientNumber;
-		client_t	*client;
+		int				playerNumber;
+		int				activeNumber;
+		int				clientNumber;
+		ServerClient_t	*client;
 
 		playerNumber = MSG_ReadByte();
 		activeNumber = -1;

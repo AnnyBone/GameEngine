@@ -29,7 +29,7 @@
 
 void Deathmatch_Spawn(ServerEntity_t *ePlayer)
 {
-	if(!Server.bRoundStarted)
+	if (!Server.round_started)
 	{
 		ePlayer->v.model		= "";
 		ePlayer->v.movetype		= MOVETYPE_NOCLIP;
@@ -64,9 +64,9 @@ void Deathmatch_Frame(void)
 {
 	if(!Server.bActive || (!bIsMultiplayer && !bIsDeathmatch))
 		return;
-	else if((Server.iClients >= cvServerGameClients.value) && !Server.bRoundStarted)
+	else if ((Server.iClients >= cvServerGameClients.value) && !Server.round_started)
 	{
-		Server.bRoundStarted = true;
+		Server.round_started = true;
 
 		Engine.Server_BroadcastPrint("Fight!\n");
 		return;

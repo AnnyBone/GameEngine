@@ -53,7 +53,7 @@ double		host_frametime,
 
 int	host_framecount,host_hunklevel;
 
-client_t	*host_client;			// current client
+ServerClient_t	*host_client;			// current client
 
 jmp_buf 	host_abortserver;
 
@@ -185,7 +185,7 @@ void Host_FindMaxClients(void)
 	svs.maxclientslimit = svs.maxclients;
 	if(svs.maxclientslimit < 4)
 		svs.maxclientslimit = 4;
-	svs.clients = (client_t*)Hunk_AllocName(svs.maxclientslimit*sizeof(client_t),"clients");
+	svs.clients = (ServerClient_t*)Hunk_AllocName(svs.maxclientslimit*sizeof(ServerClient_t), "clients");
 
 	if(svs.maxclients > 1)
 		Cvar_SetValue("deathmatch",1.0f);
@@ -313,8 +313,8 @@ void Host_ClientCommands (char *fmt, ...)
 */
 void SV_DropClient(bool crash)
 {
-	int			i;
-	client_t	*client;
+	int				i;
+	ServerClient_t	*client;
 
 	if(!crash)
 	{
@@ -422,7 +422,7 @@ void Host_ShutdownServer(bool crash)
 
 	// Clear structures
 	memset (&sv, 0, sizeof(sv));
-	memset (svs.clients, 0, svs.maxclientslimit*sizeof(client_t));
+	memset(svs.clients, 0, svs.maxclientslimit*sizeof(ServerClient_t));
 }
 
 /*	This clears all the memory used by both the client and server, but does

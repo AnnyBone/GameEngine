@@ -32,7 +32,7 @@
 	~hogsy
 */
 
-bool bInitialized = false;
+bool material_initialized = false;
 
 Material_t	mMaterials[MATERIAL_MAX];	// Global array.
 
@@ -66,7 +66,7 @@ void Material_List(void);
 
 void Material_Initialize(void)
 {
-	if(bInitialized)
+	if (material_initialized)
 		return;
 
 	Con_Printf("Initializing material system...\n");
@@ -74,7 +74,7 @@ void Material_Initialize(void)
 	Cmd_AddCommand("material_list", Material_List);
 
 	// Must be set to initialized before anything else.
-	bInitialized = true;
+	material_initialized = true;
 
 	// Load base materials...
 
@@ -805,7 +805,7 @@ Material_t *Material_Load(const char *ccPath)
 	if (ccPath[0] == ' ')
 		Sys_Error("Invalid material path! (%s)\n", ccPath);
 
-	if (!bInitialized)
+	if (!material_initialized)
 	{
 		Con_Warning("Attempted to load material, before initialization! (%s)\n", ccPath);
 		return NULL;

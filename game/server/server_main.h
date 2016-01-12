@@ -68,9 +68,9 @@ extern "C" {
 
 	bool Server_SpawnEntity(ServerEntity_t *ent);
 
-#define Server_PrecacheModel(a) Engine.Server_PrecacheResource(RESOURCE_MODEL,a)
-#define	Server_PrecacheSound(a) Engine.Server_PrecacheResource(RESOURCE_SOUND,a)
-#define Server_WorldLightStyle(a,b) Engine.LightStyle(a,b)
+#define Server_PrecacheModel(a)			Engine.Server_PrecacheResource(RESOURCE_MODEL,a)
+#define	Server_PrecacheSound(a)			Engine.Server_PrecacheResource(RESOURCE_SOUND,a)
+#define Server_WorldLightStyle(a,b)		Engine.LightStyle(a,b)
 
 	/*
 		Entity Functions

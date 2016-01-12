@@ -151,7 +151,7 @@ CLIENT SPAWNING
 /*	Sends the first message from the server to a connected client.
 	This will be sent on the initial connection and upon each server load.
 */
-void SV_SendServerinfo(client_t *client)
+void SV_SendServerinfo(ServerClient_t *client)
 {
 	char	**s,message[2048];
 	int		i; //johnfitz
@@ -187,8 +187,8 @@ void SV_SendServerinfo(client_t *client)
 
 	MSG_WriteByte(&client->message,0);
 
-	// [6/6/2013] Send over textures ~hogsy
-	for(i = 0,s = sv.cParticlePrecache+1; *s; s++,i++)
+	// Throw over all the sprite precaches.
+	for (i = 0, s = sv.sprite_precache + 1; *s; s++, i++)
 		MSG_WriteString(&client->message,*s);
 
 	MSG_WriteByte(&client->message,0);
@@ -214,10 +214,12 @@ void SV_SendServerinfo(client_t *client)
 				for(j = 0; j < 4; j++)
 					MSG_WriteCoord(&client->message,eLight->v.vLight[j]);
 			}
-		}
-
-		MSG_WriteByte(&client->message,0);
+		}		
 	}
+
+	MSG_WriteByte(&client->message, 0);
+
+	Game->Server_SendInfo(client);
 
 	// Send music
 	MSG_WriteByte(&client->message,svc_cdtrack);
@@ -240,12 +242,12 @@ void SV_SendServerinfo(client_t *client)
 */
 void SV_ConnectClient (int clientnum)
 {
-	ServerEntity_t			*ent;
-	client_t		*client;
-	int				edictnum;
-	struct qsocket_s *netconnection;
-	int				i;
-	float			spawn_parms[NUM_SPAWN_PARMS];
+	ServerEntity_t		*ent;
+	ServerClient_t		*client;
+	int					edictnum;
+	struct qsocket_s	*netconnection;
+	int					i;
+	float				spawn_parms[NUM_SPAWN_PARMS];
 
 	client = svs.clients + clientnum;
 
@@ -725,7 +727,7 @@ void SV_WriteClientdataToMessage (ServerEntity_t *ent, sizebuf_t *msg)
 	//johnfitz
 }
 
-bool SV_SendClientDatagram (client_t *client)
+bool SV_SendClientDatagram(ServerClient_t *client)
 {
 	byte		buf[MAX_DATAGRAM];
 	sizebuf_t	msg;
@@ -764,8 +766,8 @@ bool SV_SendClientDatagram (client_t *client)
 
 void SV_UpdateToReliableMessages (void)
 {
-	int			i, j;
-	client_t *client;
+	int				i, j;
+	ServerClient_t	*client;
 
 // check for changes to be sent over the reliable streams
 	for (i=0, host_client = svs.clients ; i<svs.maxclients ; i++, host_client++)
@@ -799,7 +801,7 @@ void SV_UpdateToReliableMessages (void)
 /*	Send a nop message without trashing or sending the accumulated client
 	message buffer
 */
-void SV_SendNop (client_t *client)
+void SV_SendNop(ServerClient_t *client)
 {
 	sizebuf_t	msg;
 	byte		buf[4];
@@ -1120,7 +1122,7 @@ void SV_SpawnServer(char *server)
 	SV_ClearWorld ();
 
 	sv.sound_precache[0]	= "";
-	sv.cParticlePrecache[0]	= "";
+	sv.sprite_precache[0]	= "";
 	sv.model_precache[0]	= "";
 	sv.model_precache[1]	= sv.modelname;
 
@@ -1303,14 +1305,13 @@ void Server_PrecacheResource(int iType, const char *ccResource)
 		Console_ErrorMessage(false, ccResource, "Overflow!");
 		break;
 	case RESOURCE_SPRITE:
-		sprintf(name, PATH_SPRITES"%s", ccResource);
 		for (i = 0; i < MAX_PARTICLES; i++)
-			if (!sv.cParticlePrecache[i])
+			if (!sv.sprite_precache[i])
 			{
-				sv.cParticlePrecache[i] = (char*)ccResource;
+				sv.sprite_precache[i] = (char*)ccResource;
 				return;
 			}
-			else if (!strcmp(name, sv.cParticlePrecache[i]))
+			else if (!strcmp(ccResource, sv.sprite_precache[i]))
 				return;
 
 		Console_ErrorMessage(false, ccResource, "Overflow!");
@@ -1338,8 +1339,8 @@ Console Messages
 
 void Server_SinglePrint(ServerEntity_t *eEntity, char *cMessage)
 {
-	client_t	*cClient;
-	int			iEntity = NUM_FOR_EDICT(eEntity);
+	ServerClient_t	*cClient;
+	int				iEntity = NUM_FOR_EDICT(eEntity);
 
 	if (iEntity > svs.maxclients)
 	{
@@ -1357,8 +1358,8 @@ void Server_SinglePrint(ServerEntity_t *eEntity, char *cMessage)
 // [18/7/2012] Renamed to Server_CenterPrint ~hogsy
 void Server_CenterPrint(ServerEntity_t *ent, char *msg)
 {
-	client_t	*client;
-	int			entnum = NUM_FOR_EDICT(ent);
+	ServerClient_t	*client;
+	int				entnum = NUM_FOR_EDICT(ent);
 
 	if (entnum < 1 || entnum > svs.maxclients)
 	{

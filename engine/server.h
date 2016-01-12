@@ -33,7 +33,7 @@ typedef struct
 	char			*model_precache[MAX_MODELS];	// NULL terminated
 	struct model_s	*models[MAX_MODELS];
 	char			*sound_precache[MAX_SOUNDS];	// NULL terminated
-	char			*cParticlePrecache[MAX_PARTICLES];
+	char			*sprite_precache[MAX_PARTICLES];
 	char			*lightstyles[MAX_LIGHTSTYLES];
 	int				num_edicts;
 	int				max_edicts;
@@ -71,12 +71,12 @@ typedef struct client_s
 	struct qsocket_s *netconnection;	// communications handle
 
 	ClientCommand_t		cmd;				// movement
-	vec3_t			wishdir;			// intended motion calced from cmd
+	MathVector3f_t		wishdir;			// intended motion calced from cmd
 
 	sizebuf_t		message;			// can be added to at any time,
 										// copied and clear once per frame
-	byte			msgbuf[MAX_MSGLEN];
-	ServerEntity_t			*edict;				// EDICT_NUM(clientnum+1)
+	uint8_t			msgbuf[MAX_MSGLEN];
+	ServerEntity_t	*edict;				// EDICT_NUM(clientnum+1)
 	char			name[32];			// for printing to other people
 	int				colors;
 
@@ -88,7 +88,7 @@ typedef struct client_s
 
 	// client known data for deltas
 	int				old_frags;
-} client_t;
+} ServerClient_t;
 
 extern	cvar_t	teamplay;
 extern	cvar_t	skill;
@@ -106,7 +106,7 @@ extern "C" {
 };
 #endif
 
-extern	client_t	*host_client;
+extern	ServerClient_t	*host_client;
 
 extern	jmp_buf 	host_abortserver;
 

@@ -34,15 +34,15 @@ char	cSkyBoxName[32];
 gltexture_t	*gSkyBoxTexture[6],
 			*gCloudTexture;
 
-extern cvar_t gl_farclip;
-cvar_t	r_fastsky			= {	"r_fastsky",		"0"		},
-		r_sky_quality		= {	"r_sky_quality",	"8"		},
-		r_skyalpha			= {	"r_skyalpha",		"1"		},
-		r_skyfog			= {	"r_skyfog",			"0.5"	},
-		cv_video_drawclouds = { "sky_drawclouds", "1", true, false, "Toggles rendering of clouds." },
-		cv_sky_scrollspeed = { "sky_scrollspeed", "2.0", false, false, "Changes the speed at which the clouds scroll." };
+extern ConsoleVariable_t gl_farclip;
+ConsoleVariable_t	r_fastsky = { "r_fastsky", "0" },
+					r_sky_quality = { "r_sky_quality", "8" },
+					r_skyalpha = { "r_skyalpha", "1" },
+					r_skyfog = { "r_skyfog", "0.5" },
+					cv_video_drawclouds = { "sky_drawclouds", "1", true, false, "Toggles rendering of clouds." },
+					cv_sky_scrollspeed = { "sky_scrollspeed", "2.0", false, false, "Changes the speed at which the clouds scroll." };
 
-int		skytexorder[6] = {0,2,1,3,4,5}; //for skybox
+int	skytexorder[6] = {0,2,1,3,4,5}; //for skybox
 
 MathVector3f_t vSkyClip[6] =
 {

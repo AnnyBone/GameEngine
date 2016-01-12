@@ -373,7 +373,7 @@ void Player_PostThink(ServerEntity_t *ePlayer)
 	char	snd[32];
 
 	// If round has not started then don't go through this!
-	if ((ePlayer->Monster.state == MONSTER_STATE_DEAD) || !Server.bRoundStarted)
+	if ((ePlayer->Monster.state == MONSTER_STATE_DEAD) || !Server.round_started)
 		return;
 	// Check if we're in a vehicle.
 	else if(ePlayer->local.eVehicle)
@@ -460,13 +460,13 @@ void Player_PostThink(ServerEntity_t *ePlayer)
 
 void Player_PreThink(ServerEntity_t *ePlayer)
 {
-	if(Server.bRoundStarted && !Server.bPlayersSpawned)
+	if (Server.round_started && !Server.bPlayersSpawned)
 	{
 		// Spawn the player!
 		Player_Spawn(ePlayer);
 		return;
 	}
-	else if(!Server.bRoundStarted)
+	else if(!Server.round_started)
 		return;
 
 	Weapon_CheckFrames(ePlayer);

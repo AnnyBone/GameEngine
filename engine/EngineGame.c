@@ -338,7 +338,7 @@ void Particle(MathVector3f_t org, MathVector3f_t dir,float scale,char *texture,i
 
 void LightStyle(int style,char *val)
 {
-	client_t	*client;
+	ServerClient_t	*client;
 	int			j;
 
 	sv.lightstyles[style] = val;

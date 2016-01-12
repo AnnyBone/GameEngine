@@ -70,6 +70,29 @@ void Point_NullSpawn(ServerEntity_t *eEntity)
 	Entity_SetOrigin(eEntity,eEntity->v.origin);
 }
 
+/*
+	Sky Camera
+*/
+
+void Point_SkyCameraSpawn(ServerEntity_t *entity)
+{
+	if (Server.skycam)
+	{
+		Console_Warning("Multiple sky cameras on level! (%i %i %i)\n",
+			(int)entity->v.origin[0], (int)entity->v.origin[1], (int)entity->v.origin[2]);
+		return;
+	}
+
+	Math_VectorCopy(entity->v.origin, Server.skycam_position);
+
+	// Enable skycam, which in turn will let us know to inform the client about it.
+	Server.skycam = true;
+
+	Entity_Remove(entity);
+}
+
+/**/
+
 #ifdef GAME_OPENKATANA
 void Prisoner_Spawn(ServerEntity_t *ePrisoner);	// [2/10/2012] See monster_prisoner.c ~hogsy
 void LaserGat_Spawn(ServerEntity_t *eLaserGat);	// [14/2/2013] See monster_lasergat.c ~hogsy

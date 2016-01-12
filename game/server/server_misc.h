@@ -53,6 +53,7 @@ void Point_VehicleSpawn(ServerEntity_t *eVehicle);
 void Point_MonsterSpawn(ServerEntity_t *eMonster);
 void Point_MultiTriggerSpawn(ServerEntity_t *eEntity);
 void Point_NullSpawn(ServerEntity_t *eEntity);
+void Point_SkyCameraSpawn(ServerEntity_t *entity);
 void Point_ParticleSpawn(ServerEntity_t *ent);
 void Point_PropSpawn(ServerEntity_t *eEntity);
 void Point_SoundSpawn(ServerEntity_t *eEntity);

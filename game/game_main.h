@@ -52,6 +52,8 @@ extern "C" {
 };
 #endif
 
+#define	Console_Warning(a) Engine.Con_Warning(a);
+
 typedef struct
 {
 	bool bActive;	// Is the server active?
@@ -73,8 +75,11 @@ typedef struct
 		iClients,		// Number of connected clients.
 		iMonsters;		// Number of monsters within the level.
 
+	bool			skycam;				// Is the map using a skycam?
+	MathVector3f_t	skycam_position;	// What's its position?
+
 	// Gamemode
-	bool	bRoundStarted,			// Has the round started yet?
+	bool	round_started,			// Has the round started yet?
 			bPlayersSpawned;		// Have the players been spawned for the current mode?
 } GameServer_t;
 

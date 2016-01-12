@@ -87,7 +87,7 @@ SpawnList_t SpawnList[] =
 	{ "point_multitrigger", Point_MultiTriggerSpawn },
 	{ "point_vehicle", Point_VehicleSpawn },
 	{ "point_null", Point_NullSpawn },
-	{ "point_skycamera", Point_NullSpawn },				// Used as reference for 3D skybox.
+	{ "point_skycamera", Point_SkyCameraSpawn },			// Used as reference for 3D skybox.
 	{ "point_particle", Point_ParticleSpawn },
 	{ "point_prop", Point_PropSpawn },
 	{ "point_sound", Point_SoundSpawn },
@@ -188,10 +188,11 @@ void Server_Spawn(ServerEntity_t *seEntity)
 	Server.eWorld = seEntity;
 
 	// Set defaults.
-	Server.dWaypointSpawnDelay = ((double)cvServerWaypointDelay.value);
-	Server.bRoundStarted =
-	Server.bPlayersSpawned = false;
-	Server.iMonsters = 0;
+	Server.dWaypointSpawnDelay	= ((double)cvServerWaypointDelay.value);
+	Server.round_started		=
+	Server.bPlayersSpawned		= false;
+	Server.iMonsters			= 0;
+	Server.skycam				= false;
 
 	// Set these to their defaults.
 	bIsDeathmatch	= false;
@@ -209,7 +210,7 @@ void Server_Spawn(ServerEntity_t *seEntity)
 	}
 	else
 		// Round has always immediately started in single player.
-		Server.bRoundStarted = true;
+		Server.round_started = true;
 
 	// Initialize waypoints.
 	Waypoint_Initialize();
@@ -354,7 +355,6 @@ void Server_PreFrame(void)
 
 #ifdef GAME_OPENKATANA
 	Deathmatch_Frame();
-#elif GAME_ADAMAS
 #endif
 }
 
@@ -365,6 +365,9 @@ void Server_EntityFrame(ServerEntity_t *entity)
 {
 	Monster_Frame(entity);
 }
+
+void Server_SendClientInformation(ServerClient_t *client)
+{}
 
 /*	Called by the engine.
 	Called for the "kill" command.
