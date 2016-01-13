@@ -4,9 +4,10 @@ sprite_access
 
 	$skin
 	{
+		$blend "1"
+	
 		$map "materials/sprites/base/access"
 		{
-			$flags "ALPHA"
 		}
 	}
 }
