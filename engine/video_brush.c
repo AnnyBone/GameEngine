@@ -127,9 +127,7 @@ void Surface_DrawMirror(msurface_t *Surface);
 
 void R_DrawSequentialPoly(msurface_t *s)
 {
-	float fAlpha;
-
-	fAlpha = ENTALPHA_DECODE(currententity->alpha);
+	float alpha = ENTALPHA_DECODE(currententity->alpha);
 
 	if((s->flags & SURF_DRAWSKY) || (s->flags & SURFACE_SKIP))
 		return;
@@ -148,11 +146,11 @@ void R_DrawSequentialPoly(msurface_t *s)
 
 		if(currententity->alpha == ENTALPHA_DEFAULT)
 			// Use the materials alpha.
-			fAlpha = Math_Clamp(0.0, mCurrent->fAlpha, 1.0f);
+			alpha = Math_Clamp(0.0, mCurrent->fAlpha, 1.0f);
 		else
 			// Use the entity alpha.
-			fAlpha = Math_Clamp(0.0, ENTALPHA_DECODE(currententity->alpha), 1.0f);
-		if(fAlpha < 1.0f)
+			alpha = Math_Clamp(0.0, ENTALPHA_DECODE(currententity->alpha), 1.0f);
+		if (alpha < 1.0f)
 		{
 			VideoLayer_DepthMask(false);
 			VideoLayer_Enable(VIDEO_BLEND);
@@ -169,7 +167,7 @@ void R_DrawSequentialPoly(msurface_t *s)
 
 		Material_Draw(mCurrent, 0, 0, 0, 0, true);
 
-		if (fAlpha < 1.0f)
+		if (alpha < 1.0f)
 		{
 			VideoLayer_DepthMask(true);
 			VideoLayer_Disable(VIDEO_BLEND);
@@ -179,7 +177,7 @@ void R_DrawSequentialPoly(msurface_t *s)
 	{
 		if (!r_showtris.bValue)
 		{
-			if (fAlpha < 1.0f)
+			if (alpha < 1.0f)
 			{
 				VideoLayer_DepthMask(false);
 				VideoLayer_Enable(VIDEO_BLEND);
@@ -193,22 +191,22 @@ void R_DrawSequentialPoly(msurface_t *s)
 
 			VideoLayer_Enable(VIDEO_TEXTURE_2D);
 
-			Video_SelectTexture(VIDEO_TEXTURE_DIFFUSE);
+			Video_SelectTexture(0);
 		}
 
-		Video_DrawSurface(s, fAlpha, s->texinfo->texture->material, 0);
+		Video_DrawSurface(s, alpha, s->texinfo->texture->material, 0);
 
 		if (!r_showtris.bValue)
 		{
-			if (fAlpha < 1.0f)
+			if (alpha < 1.0f)
 			{
 				VideoLayer_DepthMask(true);
 				VideoLayer_Disable(VIDEO_BLEND);
 			}
 
 			Video_SelectTexture(VIDEO_TEXTURE_LIGHT);
-
 			VideoLayer_Disable(VIDEO_TEXTURE_2D);
+			Video_SelectTexture(0);
 		}
 
 		rs_brushpasses++;
