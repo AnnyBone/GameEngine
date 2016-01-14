@@ -834,6 +834,8 @@ void Sky_Draw3DWorld(void)
 
 	R_SetupView();
 
+	VideoLayer_DepthMask(false);
+
 	glPushMatrix();
 	glScalef(2.0f, 2.0f, 2.0f);
 
@@ -842,6 +844,8 @@ void Sky_Draw3DWorld(void)
 	r_refdef.sky = false;
 
 	glPopMatrix();
+
+	VideoLayer_DepthMask(true);
 
 	// Restore view position.
 	Math_VectorCopy(oldorg, r_refdef.vieworg);
@@ -859,6 +863,10 @@ void Sky_Draw(void)
 	// In these special render modes, the sky faces are handled in the normal world/brush renderer
 	if (r_drawflat_cheatsafe || r_lightmap_cheatsafe || !cv_video_drawsky.bValue)
 		return;
+
+	// 3D skybox support.
+	if (cl.worldmodel && (cl.worldmodel->flags & MODEL_FLAG_3DSKY))
+		Sky_Draw3DWorld();
 
 #if 1
 	// Reset sky bounds.
@@ -907,12 +915,4 @@ void Sky_Draw(void)
 
 	Fog_EnableGFog();
 #endif
-
-	//VideoLayer_Disable(VIDEO_DEPTH_TEST);
-
-	// 3D skybox support.
-//	if (cl.worldmodel && (cl.worldmodel->flags & MODEL_FLAG_3DSKY))
-//		Sky_Draw3DWorld();
-
-	//VideoLayer_Enable(VIDEO_DEPTH_FALSE);
 }
