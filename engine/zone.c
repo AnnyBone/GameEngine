@@ -524,10 +524,6 @@ void Cache_Report (void)
 	Con_DPrintf("%4.1f megabyte data cache\n", (hunk_size - hunk_high_used - hunk_low_used) / (float)(1024*1024) );
 }
 
-void Cache_Compact (void)
-{
-}
-
 void Cache_Init (void)
 {
 	cache_head.next = cache_head.prev = &cache_head;
@@ -611,7 +607,7 @@ void *Cache_Alloc (cache_user_t *c, int size, char *name)
 		if(cache_head.lru_prev == &cache_head)
 			Sys_Error("Cache_Alloc: out of memory"); // not enough memory at all
 
-		Cache_Free(cache_head.lru_prev->user,TRUE); //johnfitz -- added second argument
+		Cache_Free(cache_head.lru_prev->user,true); //johnfitz -- added second argument
 	}
 
 	return Cache_Check (c);
