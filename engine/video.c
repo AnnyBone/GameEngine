@@ -75,8 +75,6 @@ struct gltexture_s *gEffectTexture[MAX_EFFECTS];
 
 bool bVideoIgnoreCapabilities = false;
 
-unsigned int uiVideoDrawObjectCalls = 0;
-
 void Video_DebugCommand(void);
 
 Video_t	Video;
@@ -534,15 +532,6 @@ void Video_ObjectColour(VideoObjectVertex_t *voObject, float R, float G, float B
 	Drawing
 */
 
-/*	Draw terrain.
-	Unfinished
-*/
-void Video_DrawTerrain(VideoObjectVertex_t *voTerrain)
-{
-	if(!voTerrain)
-		Sys_Error("Invalid video object!\n");
-}
-
 /*  Draw a simple rectangle.
 */
 void Video_DrawFill(VideoObjectVertex_t *voFill, Material_t *mMaterial, int iSkin)
@@ -580,60 +569,31 @@ void Video_DrawSurface(msurface_t *mSurface,float fAlpha, Material_t *mMaterial,
 /*	Draw 3D object.
 	TODO: Add support for VBOs ?
 */
-void Video_DrawObject(
-	VideoObjectVertex_t *voObject, VideoPrimitive_t vpPrimitiveType, unsigned int uiVerts,
-	Material_t *mMaterial, int iSkin)
+void Video_DrawObject(VideoObjectVertex_t *vobject, VideoPrimitive_t primitive, 
+	unsigned int numverts, Material_t *mMaterial, int iSkin)
 {
-	unsigned int i;
-
-	if (uiVerts <= 0)
+	if (numverts == 0)
 		return;
 
 	if (Video.debug_frame)
-	{
-		uiVideoDrawObjectCalls++;
-		plWriteLog(cv_video_log.string, "Drawing object (%i) (%i)\n", uiVerts, vpPrimitiveType);
-	}
+		plWriteLog(cv_video_log.string, "Drawing object (%i) (%i)\n", numverts, primitive);
 
 	bVideoIgnoreCapabilities = true;
 
-	Material_Draw(mMaterial, iSkin, voObject, vpPrimitiveType, uiVerts, false);
+	Material_Draw(mMaterial, iSkin, vobject, primitive, numverts, false);
 
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glVertexPointer(3, GL_FLOAT, sizeof(VideoObjectVertex_t), voObject->mvPosition);
+	VideoObject_EnableDrawState();
+	VideoObject_SetupPointers(vobject);
 
-	glEnableClientState(GL_COLOR_ARRAY);
-	glColorPointer(4, GL_FLOAT, sizeof(VideoObjectVertex_t), voObject->mvColour);
-
-	glEnableClientState(GL_NORMAL_ARRAY);
-	glNormalPointer(GL_FLOAT, sizeof(VideoObjectVertex_t), voObject->mvNormal);
-
-	for (i = 0; i < VIDEO_MAX_UNITS; i++)
-		if (Video.textureunit_state[i])
-		{
-			glClientActiveTexture(Video_GetTextureUnit(i));
-			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-			glTexCoordPointer(2, GL_FLOAT, sizeof(VideoObjectVertex_t), voObject->mvST[i]);
-		}
-
-	bool bShowWireframe = r_showtris.bValue;
+	bool showwireframe = r_showtris.bValue;
 	if (mMaterial && mMaterial->override_wireframe)
-		bShowWireframe = false;
+		showwireframe = false;
 
-	VideoLayer_DrawArrays(vpPrimitiveType, uiVerts, bShowWireframe);
+	VideoLayer_DrawArrays(primitive, numverts, showwireframe);
 
-	glDisableClientState(GL_COLOR_ARRAY);
-	glDisableClientState(GL_VERTEX_ARRAY);
-	glDisableClientState(GL_NORMAL_ARRAY);
+	VideoObject_DisableDrawState();
 
-	for (i = 0; i < VIDEO_MAX_UNITS; i++)
-		if (Video.textureunit_state[i])
-		{
-			glClientActiveTexture(Video_GetTextureUnit(i));
-			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-		}
-
-	Material_Draw(mMaterial, iSkin, voObject, vpPrimitiveType, uiVerts, true);
+	Material_Draw(mMaterial, iSkin, vobject, primitive, numverts, true);
 
 	bVideoIgnoreCapabilities = false;
 }

@@ -33,6 +33,7 @@
 
 GameExport_t	Export;	// Game exports.
 ModuleImport_t	Engine;	// Engine imports.
+ModuleImport_t	*g_engine;
 
 GameServer_t Server;
 GameClient_t Client;
@@ -268,6 +269,8 @@ pMODULE_EXPORT GameExport_t *Game_Main(ModuleImport_t *Import)
 	Engine.Server_GetFrameTime		= Import->Server_GetFrameTime;
 	Engine.Server_GetNumEdicts		= Import->Server_GetNumEdicts;
 	Engine.Server_GetEdicts			= Import->Server_GetEdicts;
+
+	g_engine = &Engine;
 
 	// Exports...
 

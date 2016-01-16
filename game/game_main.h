@@ -47,7 +47,8 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-	extern ModuleImport_t Engine;
+	extern ModuleImport_t Engine;		// TODO: Obsolete!
+	extern ModuleImport_t *g_engine;
 #ifdef __cplusplus
 };
 #endif

@@ -375,6 +375,11 @@ void VideoLayer_DeleteVertexBuffer(unsigned int *uiBuffer)
 
 // FRAME BUFFER OBJECTS
 
+void VideoLayer_ClearStencilBuffer(void)
+{
+	glClear(GL_STENCIL_BUFFER_BIT);
+}
+
 /*	Generates a single framebuffer.
 	glGenFramebuffers
 */
@@ -513,21 +518,22 @@ VideoPrimitives_t vpVideoPrimitiveList[] =
 	{ VIDEO_PRIMITIVE_TRIANGLE_STRIP, GL_TRIANGLE_STRIP, "TRIANGLE_STRIP" }
 };
 
+unsigned int VideoLayer_TranslatePrimitiveType(const VideoPrimitive_t primitive)
+{
+	int	i;
+	for (i = 0; i < sizeof(vpVideoPrimitiveList); i++)
+		if (primitive == vpVideoPrimitiveList[i].vpPrimitive)
+			return vpVideoPrimitiveList[i].uiGL;
+
+	return VIDEO_PRIMITIVE_IGNORE;
+}
+
 /*	Deals with tris view and different primitive types, then finally draws
 	the given arrays.
 */
 void VideoLayer_DrawArrays(const VideoPrimitive_t vpPrimitiveType, unsigned int uiSize, bool bWireframe)
 {
-	unsigned int uiPrimitiveType = VIDEO_PRIMITIVE_IGNORE;
-
-	int i;
-	for (i = 0; i < sizeof(vpVideoPrimitiveList); i++)
-		if (vpPrimitiveType == vpVideoPrimitiveList[i].vpPrimitive)
-		{
-			uiPrimitiveType = vpVideoPrimitiveList[i].uiGL;
-			break;
-		}
-
+	unsigned int uiPrimitiveType = VideoLayer_TranslatePrimitiveType(vpPrimitiveType);
 	if (uiPrimitiveType == VIDEO_PRIMITIVE_IGNORE)
 		Sys_Error("Invalid primitive type! (%i)\n", vpPrimitiveType);
 

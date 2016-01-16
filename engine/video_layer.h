@@ -72,6 +72,7 @@ extern "C" {
 	void VideoLayer_DeleteVertexBuffer(unsigned int *uiBuffer);
 	
 	// Frame Buffer
+	void VideoLayer_ClearStencilBuffer(void);
 	void VideoLayer_GenerateFrameBuffer(unsigned int *uiBuffer);
 	void VideoLayer_CheckFrameBufferStatus();
 	void VideoLayer_BindFrameBuffer(VideoFBOTarget_t vtTarget, unsigned int uiBuffer);

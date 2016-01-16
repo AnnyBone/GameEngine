@@ -149,46 +149,6 @@ void Shadow_Draw(ClientEntity_t *ent)
 
 	lheight = ent->origin[2] - lightspot[2];
 
-	{
-		/*	TODO:
-			Trace down to get plane and set angles to that
-			clip based on surface extents?
-		*/
-		VideoObjectVertex_t	voShadow[4] = { { { 0 } } };
-
-		Video_ResetCapabilities(false);
-
-		glPushMatrix();
-
-		Video_SetBlend(VIDEO_BLEND_IGNORE, VIDEO_DEPTH_FALSE);
-
-		glTranslatef(ent->origin[0], ent->origin[1], ent->origin[2]);
-		glTranslatef(0, 0, -lheight + 0.1f);
-
-		Video_ObjectVertex(&voShadow[0], -fShadowScale[0], fShadowScale[1], 0);
-		Video_ObjectTexture(&voShadow[0], VIDEO_TEXTURE_DIFFUSE, 0, 0);
-		Video_ObjectColour(&voShadow[0], 1.0f, 1.0f, 1.0f, 1.0f);
-
-		Video_ObjectVertex(&voShadow[1], fShadowScale[0], fShadowScale[1], 0);
-		Video_ObjectTexture(&voShadow[1], VIDEO_TEXTURE_DIFFUSE, 1.0f, 0);
-		Video_ObjectColour(&voShadow[1], 1.0f, 1.0f, 1.0f, 1.0f);
-
-		Video_ObjectVertex(&voShadow[2], fShadowScale[0], -fShadowScale[1], 0);
-		Video_ObjectTexture(&voShadow[2], VIDEO_TEXTURE_DIFFUSE, 1.0f, 1.0f);
-		Video_ObjectColour(&voShadow[2], 1.0f, 1.0f, 1.0f, 1.0f);
-
-		Video_ObjectVertex(&voShadow[3], -fShadowScale[0], -fShadowScale[1], 0);
-		Video_ObjectTexture(&voShadow[3], VIDEO_TEXTURE_DIFFUSE, 0, 1.0f);
-		Video_ObjectColour(&voShadow[3], 1.0f, 1.0f, 1.0f, 1.0f);
-
-		Video_DrawFill(voShadow, g_mBlobShadow, 0);
-
-		glTranslatef(0, 0, lheight + 0.1);
-		glPopMatrix();
-
-		Video_ResetCapabilities(true);
-	}
-
 	// Player doesn't get animated, so don't bother with planar shadows for him.
 	if (ent != &cl_entities[cl.viewentity])
 		if ((r_shadows.value >= 2) && (ent->model->type == MODEL_TYPE_MD2))
@@ -223,8 +183,8 @@ void Shadow_Draw(ClientEntity_t *ent)
 
 			Video_ResetCapabilities(false);
 
-			Video_EnableCapabilities(VIDEO_BLEND | VIDEO_STENCIL_TEST);
-			Video_DisableCapabilities(VIDEO_TEXTURE_2D);
+			VideoLayer_Enable(VIDEO_BLEND | VIDEO_STENCIL_TEST);
+			VideoLayer_Disable(VIDEO_TEXTURE_2D);
 			Video_SetBlend(VIDEO_BLEND_IGNORE, VIDEO_DEPTH_FALSE);
 
 			glStencilFunc(GL_EQUAL, 1, 2);
@@ -242,7 +202,8 @@ void Shadow_Draw(ClientEntity_t *ent)
 
 			glPopMatrix();
 
-			Video_ResetCapabilities(true);
+			VideoLayer_Disable(VIDEO_BLEND | VIDEO_STENCIL_TEST);
+			VideoLayer_Enable(VIDEO_TEXTURE_2D);
 		}
 #endif
 }

@@ -198,7 +198,7 @@ void R_DrawSequentialPoly(msurface_t *s)
 
 		if (!r_showtris.bValue)
 		{
-			if (alpha < 1.0f)
+			if (alpha < 1)
 			{
 				VideoLayer_DepthMask(true);
 				VideoLayer_Disable(VIDEO_BLEND);

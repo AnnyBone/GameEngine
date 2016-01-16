@@ -1487,9 +1487,9 @@ void Model_LoadMD2(model_t *mModel,void *Buffer)
 	);
 
 	// Allocate vertex array.
-	loadmodel->object.iVertices = mMD2Model->numtris * 3;
-	loadmodel->object.ovVertices = (VideoObjectVertex_t*)malloc(loadmodel->object.iVertices * sizeof(VideoObjectVertex_t));
-	memset(loadmodel->object.ovVertices, 0, loadmodel->object.iVertices * sizeof(VideoObjectVertex_t));
+	loadmodel->object.numverts = mMD2Model->numtris * 3;
+	loadmodel->object.vertices = (VideoObjectVertex_t*)malloc(loadmodel->object.numverts * sizeof(VideoObjectVertex_t));
+	memset(loadmodel->object.vertices, 0, loadmodel->object.numverts * sizeof(VideoObjectVertex_t));
 
 	Model_LoadMD2Textures(mModel);
 

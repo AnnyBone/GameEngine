@@ -89,14 +89,26 @@ private:
 };
 #endif
 
-void VideoObject_Begin(VideoObject_t *voObject, VideoPrimitive_t vpPrimitive);
-void VideoObject_Vertex(VideoObject_t *voObject, float x, float y, float z);
-void VideoObject_VertexVector(VideoObject_t *oObject, MathVector3f_t mvVertex);
-void VideoObject_Normal(VideoObject_t *voObject, float x, float y, float z);
-void VideoObject_Colour(VideoObject_t *voObject, float r, float g, float b, float a);
-void VideoObject_ColourVector(VideoObject_t *voObject, MathVector4f_t mvColour);
-void VideoObject_End(VideoObject_t *voObject);
-void VideoObject_Clip(VideoObject_t *voObject, MathVector4f_t mvClipDimensions);
-void VideoObject_Draw(VideoObject_t *voObject);
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+	void VideoObject_SetupPointers(VideoObjectVertex_t *vobject);
+	void VideoObject_EnableDrawState(void);
+	void VideoObject_DisableDrawState(void);
+
+	void VideoObject_Begin(VideoObject_t *voObject, VideoPrimitive_t vpPrimitive);
+	void VideoObject_Vertex(VideoObject_t *voObject, float x, float y, float z);
+	void VideoObject_VertexVector(VideoObject_t *oObject, MathVector3f_t mvVertex);
+	void VideoObject_Normal(VideoObject_t *voObject, float x, float y, float z);
+	void VideoObject_Colour(VideoObject_t *voObject, float r, float g, float b, float a);
+	void VideoObject_ColourVector(VideoObject_t *voObject, MathVector4f_t mvColour);
+	void VideoObject_End(VideoObject_t *voObject);
+	void VideoObject_Clip(VideoObject_t *voObject, MathVector4f_t mvClipDimensions);
+	void VideoObject_Draw(VideoObject_t *voObject);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // !VIDEO_OBJECT_H

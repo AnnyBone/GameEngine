@@ -196,27 +196,29 @@ void R_DrawTextureChains_Drawflat (void)
 	srand ((int) (cl.time * 1000));
 }
 
-void Surface_DrawMirror(msurface_t *Surface)
+void R_SetupView(void);
+void R_RenderScene(void);
+
+void Surface_DrawMirror(msurface_t *surface)
 {
-	float dir;
+	MathVector3f_t	oldorg;
+	float			dir;
 
 	// Prevent recursion...
 	if (!cv_video_drawmirrors.bValue || r_refdef.bMirror)
 		return;
 
-	// Copy the matrix.
-	memcpy(r_base_world_matrix, r_world_matrix, sizeof(r_base_world_matrix));
-
 #if 1
-	dir = Math_DotProduct(r_refdef.vieworg, Surface->plane->normal) - Surface->plane->dist;
-	Math_VectorMA(r_refdef.vieworg, -2 * dir, Surface->plane->normal, r_refdef.vieworg);
+//	Math_VectorCopy(r_refdef.vieworg, oldorg);
+	dir = Math_DotProduct(r_refdef.vieworg, surface->plane->normal) - surface->plane->dist;
+	Math_VectorMA(r_refdef.vieworg, -2 * dir, surface->plane->normal, r_refdef.vieworg);
 
 //	fDirection = Math_DotProduct(vpn, Surface->plane->normal);
 //	Math_VectorMA(vpn, -2 * fDirection, Surface->plane->normal, vpn);
 
 //	r_refdef.viewangles[0] = -asinf(vpn[2]) / pMath_PI * 180.0f;
-///	r_refdef.viewangles[1] = atan2f(vpn[1], vpn[0]) / pMath_PI * 180.0f;
-	//r_refdef.viewangles[2] = -r_refdef.viewangles[2];
+//	r_refdef.viewangles[1] = atan2f(vpn[1], vpn[0]) / pMath_PI * 180.0f;
+//	r_refdef.viewangles[2] = -r_refdef.viewangles[2];
 #else
 //	Math_VectorMA(r_refdef.vieworg, -2, Surface->plane->normal, r_refdef.vieworg);
 //	Math_VectorMA(vpn, -2, Surface->plane->normal, vpn);
@@ -227,6 +229,8 @@ void Surface_DrawMirror(msurface_t *Surface)
 //	r_refdef.viewangles[2] = -r_refdef.viewangles[2];
 #endif
 
+	R_SetupView();
+
 	VideoLayer_Enable(VIDEO_STENCIL_TEST);
 
 	glStencilFunc(GL_ALWAYS, 1, 255);
@@ -235,7 +239,7 @@ void Surface_DrawMirror(msurface_t *Surface)
 	VideoLayer_DepthMask(false);
 	glClear(GL_STENCIL_BUFFER_BIT);
 
-	Video_DrawSurface(Surface, 0, g_mGlobalColour, 0);
+	Video_DrawSurface(surface, 0, g_mGlobalColour, 0);
 
 	glStencilFunc(GL_EQUAL, 1, 255);
 	glStencilMask(0);
@@ -248,18 +252,16 @@ void Surface_DrawMirror(msurface_t *Surface)
 		cl_numvisedicts++;
 	}
 
-	r_refdef.bMirror = true;
-	{
-		R_SetupScene();
+	glDepthRange(0, 0.5);
+	glPushMatrix();
+	glScalef(1.0f, -1.0f, 1.0f);
 
-		glDepthRange(0, 0.5);
-		glScalef(1.0f, -1.0f, 1.0f);
-		
-		World_Draw();
-
-		glDepthRange(0, 1);
-	}
+	r_refdef.bMirror = true;		
+	World_Draw();
 	r_refdef.bMirror = false;
+
+	glPopMatrix();
+	glDepthRange(0, 1);
 
 	if (cl_numvisedicts < (MAX_VISEDICTS-1))
 	{
@@ -269,8 +271,10 @@ void Surface_DrawMirror(msurface_t *Surface)
 
 	VideoLayer_Disable(VIDEO_STENCIL_TEST);
 
-	// Restore the original matrix.
-	glLoadMatrixf(r_base_world_matrix);
+	// Restore view position.
+	Math_VectorCopy(oldorg, r_refdef.vieworg);
+
+	R_SetupView();
 
 #if 0
 	// Blend the final surface on top.

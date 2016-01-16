@@ -103,15 +103,16 @@ typedef struct
 // Object
 typedef struct
 {
-	VideoObjectVertex_t *ovVertices;	// Array of vertices for the object.
+	VideoObjectVertex_t *vertices;	// Array of vertices for the object.
 
-	int iVertices;						// Number of vertices.
+	unsigned int numverts;	// Number of vertices.
 
-	VideoPrimitive_t vpPrimitiveType;
+	VideoPrimitive_t primitive;
 
-	unsigned int uiVertexBuffer;
-	unsigned int uiColourBuffer;
-	unsigned int uiTextureBuffer;
+	unsigned int 
+		buffer_vertex, 
+		buffer_colour, 
+		buffer_texture;
 } VideoObject_t;
 
 // Canvas
