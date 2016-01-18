@@ -584,7 +584,7 @@ void R_RenderScene(void)
 
 	R_DrawShadows();
 	R_DrawEntitiesOnList(false);
-	World_DrawWaterTextureChains();
+	World_DrawWater();
 	R_DrawEntitiesOnList(true);
 	Particle_Draw();
 	Light_Draw();

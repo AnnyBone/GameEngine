@@ -76,7 +76,10 @@ int	FindTexinfo( BSPTextureInfo_t *t )
 	if (/*(miptex[t->iMipTex][0] == '*' && !waterlightmap) || */
 		!Q_strncasecmp(miptex[t->iMipTex], "sky", 3) || 
 		!Q_strncasecmp(miptex[t->iMipTex], "sky3d", 5))
-		t->iFlags |= BSP_TEXTURE_SPECIAL;
+		t->iFlags |= BSP_TEXTURE_SKY;
+
+	if ((miptex[t->iMipTex][0] == '*') || (miptex[t->iMipTex][0] == '#'))
+		t->iFlags |= BSP_TEXTURE_WATER;
 
 	tex = texinfo;
 	for( i = 0; i < numtexinfo; i++, tex++ )

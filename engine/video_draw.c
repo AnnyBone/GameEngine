@@ -129,7 +129,7 @@ extern gltexture_t	*gMenuTexture[128];
 
 void Draw_MaterialSurface(Material_t *mMaterial, int iSkin,	int x, int y, int w, int h,	float fAlpha)
 {
-	VideoObjectVertex_t voSurface[4];
+	VideoVertex_t voSurface[4];
 
 	// Sloppy, but in the case that there's nothing valid...
 	if (!mMaterial)
@@ -191,7 +191,7 @@ void Draw_ExternPic(char *path,float alpha,int x,int y,int w,int h)
 	Video_DisableCapabilities(VIDEO_DEPTH_TEST);
 
 	{
-		VideoObjectVertex_t	voPicture[4];
+		VideoVertex_t	voPicture[4];
 
 		for(i = 0; i < 4; i++)
 		{
@@ -339,9 +339,9 @@ void Draw_Init (void)
 
 void Draw_Character(int x, int y, int num)
 {
-	VideoObjectVertex_t		voCharacter[4] = { { { 0 } } };
-	int						row, col;
-	float					frow,fcol,size;
+	VideoVertex_t		voCharacter[4] = { { { 0 } } };
+	int					row, col;
+	float				frow,fcol,size;
 
 	if(y <= -8)
 		return;			// totally off screen
@@ -454,7 +454,7 @@ void Draw_TileClear (int x, int y, int w, int h)
 
 void Draw_Line(MathVector3f_t mvStart, MathVector3f_t mvEnd)
 {
-	VideoObjectVertex_t	voLine[2] = { { { 0 } } };
+	VideoVertex_t	voLine[2] = { { { 0 } } };
 
 	Video_ObjectVertex(&voLine[0], mvStart[0], mvStart[1], mvStart[2]);
 	Video_ObjectColour(&voLine[0], 1.0f, 0, 0, 1.0f);
@@ -468,7 +468,7 @@ void Draw_Line(MathVector3f_t mvStart, MathVector3f_t mvEnd)
 */
 void Draw_CoordinateAxes(float x,float y,float z)
 {
-	VideoObjectVertex_t voLine[2] = { { { 0 } } };
+	VideoVertex_t voLine[2] = { { { 0 } } };
 
 	Video_ObjectVertex(&voLine[0], 0, 0, 0);
 	Video_ObjectColour(&voLine[0], 1.0f, 0, 0, 1.0f);
@@ -556,7 +556,7 @@ void Draw_Grid(float x, float y, float z, int grid_size)
 
 void Draw_Rectangle(int x, int y, int w, int h, Colour_t colour)
 {
-	VideoObjectVertex_t	voFill[4];
+	VideoVertex_t	voFill[4];
 
 	Math_Vector4Copy(colour, voFill[0].mvColour);
 	Math_Vector4Copy(colour, voFill[1].mvColour);
@@ -585,7 +585,7 @@ void Draw_Rectangle(int x, int y, int w, int h, Colour_t colour)
 
 void Draw_GradientFill(int x, int y, int w, int h, Colour_t mvTopColour, Colour_t mvBottomColour)
 {
-	VideoObjectVertex_t	voFill[4];
+	VideoVertex_t	voFill[4];
 
 	if ((mvTopColour[3] < 1) || (mvBottomColour[3] < 1))
 		VideoLayer_Enable(VIDEO_BLEND);
@@ -609,7 +609,7 @@ void Draw_GradientFill(int x, int y, int w, int h, Colour_t mvTopColour, Colour_
 
 void Draw_FadeScreen (void)
 {
-	VideoObjectVertex_t	voFade[4];
+	VideoVertex_t	voFade[4];
 
 	GL_SetCanvas(CANVAS_DEFAULT);
 

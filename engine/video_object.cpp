@@ -136,6 +136,12 @@ void VideoDrawStatic::Draw()
 	C Wrapper
 */
 
+VideoObject_t *VideoObject_Create(void)
+{
+	VideoObject_t *object = new VideoObject_t;
+	return object;
+}
+
 /*
 	Traditional style interface
 */
@@ -233,18 +239,18 @@ void VideoObject_DisableDrawState(void)
 		}
 }
 
-void VideoObject_SetupPointers(VideoObjectVertex_t *vobject)
+void VideoObject_SetupPointers(VideoVertex_t *vobject)
 {
-	glVertexPointer(3, GL_FLOAT, sizeof(VideoObjectVertex_t), vobject->mvPosition);
-	glColorPointer(4, GL_FLOAT, sizeof(VideoObjectVertex_t), vobject->mvColour);
-	glNormalPointer(GL_FLOAT, sizeof(VideoObjectVertex_t), vobject->mvNormal);
+	glVertexPointer(3, GL_FLOAT, sizeof(VideoVertex_t), vobject->mvPosition);
+	glColorPointer(4, GL_FLOAT, sizeof(VideoVertex_t), vobject->mvColour);
+	glNormalPointer(GL_FLOAT, sizeof(VideoVertex_t), vobject->mvNormal);
 
 	for (int i = 0; i < VIDEO_MAX_UNITS; i++)
 		if (Video.textureunit_state[i])
 		{
 			glClientActiveTexture(Video_GetTextureUnit(i));
 			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-			glTexCoordPointer(2, GL_FLOAT, sizeof(VideoObjectVertex_t), vobject->mvST[i]);
+			glTexCoordPointer(2, GL_FLOAT, sizeof(VideoVertex_t), vobject->mvST[i]);
 		}
 }
 

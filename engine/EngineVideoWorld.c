@@ -284,48 +284,58 @@ void Surface_DrawMirror(msurface_t *surface)
 #endif
 }
 
-void World_DrawWaterTextureChains(void)
+void World_DrawWater(void)
 {
 	int			i;
 	msurface_t	*s;
 	texture_t	*t;
-	glpoly_t	*p;
 
-	if (r_drawflat_cheatsafe || r_lightmap_cheatsafe || !r_drawworld_cheatsafe)
+	if (!r_drawworld_cheatsafe)
 		return;
-
-	VideoLayer_Enable(VIDEO_TEXTURE_2D | VIDEO_BLEND);
 
 	for (i = 0; i < cl.worldmodel->numtextures; i++)
 	{
 		t = cl.worldmodel->textures[i];
-		if (!t || !t->texturechain || !(t->texturechain->flags & SURF_DRAWTURB))
+		if (!t || !t->texturechain || !(t->material->iFlags & MATERIAL_FLAG_WATER))
 			continue;
 
-		if (t->material->fAlpha < 1)
-			// TODO: uh... this is the default state is it not?
-			VideoLayer_DepthMask(true);
+		t->material->bBind = true;
 
 		for (s = t->texturechain; s; s = s->texturechain)
-			if(!s->culled)
+		{
+			if (!s->culled)
 			{
-				Material_Draw(t->material, 0, 0, VIDEO_PRIMITIVE_IGNORE, 0, false);
-
-				for(p = s->polys->next; p; p = p->next)
+				if (t->material->bBind && !r_showtris.bValue)
 				{
-					Warp_DrawWaterPoly(p, t->material);
+					Video_SelectTexture(VIDEO_TEXTURE_LIGHT);
+					VideoLayer_Enable(VIDEO_TEXTURE_2D);
 
-					rs_brushpasses++;
+					t->material->bBind = false;
 				}
 
-				Material_Draw(t->material, 0, 0, VIDEO_PRIMITIVE_IGNORE, 0, true);
+				if (!r_showtris.bValue)
+				{
+					Video_SelectTexture(VIDEO_TEXTURE_LIGHT);
+
+					Video_SetTexture(lightmap_textures[s->lightmaptexturenum]);
+					R_RenderDynamicLightmaps(s);
+					R_UploadLightmap(s->lightmaptexturenum);
+
+					Video_SelectTexture(0);
+				}
+
+				Surface_DrawWater(s->polys, t->material);
 			}
+		}
 	}
 
-	VideoLayer_Disable(VIDEO_TEXTURE_2D | VIDEO_BLEND);
+	// Disable light texture
+	Video_SelectTexture(VIDEO_TEXTURE_LIGHT);
+	VideoLayer_Disable(VIDEO_TEXTURE_2D);
+	Video_SelectTexture(0);
 }
 
-void World_Draw(void)
+void World_Draw(bool waterpass)
 {
 	int			i;
 	msurface_t	*s;
@@ -337,7 +347,7 @@ void World_Draw(void)
 	for(i = 0; i < cl.worldmodel->numtextures; i++)
 	{
 		t = cl.worldmodel->textures[i];
-		if(!t || !t->texturechain || t->texturechain->flags & (SURF_DRAWTILED | SURF_NOTEXTURE))
+		if(!t || !t->texturechain || t->texturechain->flags & (SURF_DRAWTILED | SURF_NOTEXTURE) || (t->material->iFlags & MATERIAL_FLAG_WATER))
 			continue;
 
 		t->material->bBind = true;

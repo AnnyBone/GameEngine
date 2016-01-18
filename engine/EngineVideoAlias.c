@@ -83,12 +83,12 @@ void Alias_SetupLighting(ClientEntity_t *entity)
 
 void Alias_DrawFrame(MD2_t *mModel, ClientEntity_t *entity, lerpdata_t lLerpData)
 {
-	VideoObjectVertex_t	*voModel;
-	MD2TriangleVertex_t	*verts1, *verts2;
-	MD2Frame_t			*frame1, *frame2;
-	float				ilerp, fAlpha = 1.0f;
-	unsigned int		uiVerts = 0;
-	int					*order, count;
+	VideoVertex_t			*voModel;
+	MD2TriangleVertex_t		*verts1, *verts2;
+	MD2Frame_t				*frame1, *frame2;
+	float					ilerp, fAlpha = 1.0f;
+	unsigned int			uiVerts = 0;
+	int						*order, count;
 
 	ilerp = 1.0f - lLerpData.blend;
 	if (bShading && !r_showtris.bValue)
@@ -111,7 +111,7 @@ void Alias_DrawFrame(MD2_t *mModel, ClientEntity_t *entity, lerpdata_t lLerpData
 	order = (int*)((uint8_t*)mModel + mModel->ofs_glcmds);
 
 	// TODO: Stupid stupid stupid temporary shit until we do this properly.
-	voModel = (VideoObjectVertex_t*)malloc(sizeof(VideoObjectVertex_t) * mModel->num_xyz);
+	voModel = (VideoVertex_t*)malloc(sizeof(VideoVertex_t) * mModel->num_xyz);
 	if (!voModel)
 		Sys_Error("Failed to allocate data for model frame!\n");
 	memset(voModel, 0, sizeof(voModel));

@@ -1,0 +1,1 @@
+$(ApplicationName)=android;$(AndroidAppLibName)=android;$(projectname)=android.Android.Packaging;$(androidapilevel)=android-19;

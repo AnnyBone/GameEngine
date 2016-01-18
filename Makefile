@@ -12,7 +12,6 @@ PLATFORM_OBJS := platform/platform.o \
 	platform/platform_log.o \
 	platform/platform_math.o \
 	platform/platform_module.o \
-	platform/platform_string.o \
 	platform/platform_window.o
 
 ENGINE_BIN  := bin/engine.x64.so

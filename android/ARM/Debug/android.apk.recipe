@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<project>
+  <SOLibPaths />
+  <OObjPaths />
+  <Configuration />
+  <Platform />
+  <AndroidArchitecture />
+  <!--links to other recipe files-->
+  <RecipeFiles>C:\Users\Mark\Source\Repos\KatanaEngine\android\ARM\Debug\libandroid.so.recipe</RecipeFiles>
+</project>

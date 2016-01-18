@@ -369,13 +369,13 @@ void Server_EntityFrame(ServerEntity_t *entity)
 */
 void Server_SendClientInformation(ServerClient_t *client)
 {
-	Engine.MSG_WriteByte(&client->message, MESSAGE_SERVER_SKYCAMERA);
-	Engine.MSG_WriteByte(&client->message, Server.skycam);
+	g_engine->MSG_WriteByte(&client->message, MESSAGE_SERVER_SKYCAMERA);
+	g_engine->MSG_WriteByte(&client->message, Server.skycam);
 	if (Server.skycam)
 	{
-		Engine.MSG_WriteCoord(&client->message, Server.skycam_position[0]);
-		Engine.MSG_WriteCoord(&client->message, Server.skycam_position[1]);
-		Engine.MSG_WriteCoord(&client->message, Server.skycam_position[2]);
+		g_engine->MSG_WriteCoord(&client->message, Server.skycam_position[0]);
+		g_engine->MSG_WriteCoord(&client->message, Server.skycam_position[1]);
+		g_engine->MSG_WriteCoord(&client->message, Server.skycam_position[2]);
 	}
 }
 

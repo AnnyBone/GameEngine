@@ -488,7 +488,7 @@ void Model_LoadBSPTextureInfo(BSPLump_t *blLump)
 		//johnfitz -- rewrote this section
 		if (miptex >= loadmodel->numtextures-1 || !loadmodel->textures[miptex])
 		{
-			if(out->flags & BSP_TEXTURE_SPECIAL)
+			if (out->flags & BSP_TEXTURE_SKY)
 				out->texture = loadmodel->textures[loadmodel->numtextures-1];
 			else
 				out->texture = loadmodel->textures[loadmodel->numtextures-2];
@@ -502,7 +502,6 @@ void Model_LoadBSPTextureInfo(BSPLump_t *blLump)
 
 	//johnfitz: report missing textures
 	if (missing && loadmodel->numtextures > 1)
-		// [11/7/2012] Updated ~hogsy
 		Con_Warning("Textures missing from BSP file! (%i)\n",missing);
 	//johnfitz
 }
@@ -533,7 +532,7 @@ void CalcSurfaceExtents (msurface_t *s)
 
 		for (j=0 ; j<2 ; j++)
 		{
-			// [24/11/2013] Double cast, suggestion from LordHavoc ~hogsy
+			// Double cast, suggestion from LordHavoc.
 			val =	(double)	v->fPoint[0]*tex->vecs[j][0]+
 								v->fPoint[1]*tex->vecs[j][1]+
 								v->fPoint[2]*tex->vecs[j][2]+
@@ -553,7 +552,7 @@ void CalcSurfaceExtents (msurface_t *s)
 		s->texturemins[i] = bmins[i]*16;
 		s->extents[i] = (bmaxs[i]-bmins[i])*16;
 
-		if(!(tex->flags & BSP_TEXTURE_SPECIAL) && s->extents[i] > 2000) //johnfitz -- was 512 in glquake, 256 in winquake
+		if (!(tex->flags & BSP_TEXTURE_SKY) && s->extents[i] > 2000) //johnfitz -- was 512 in glquake, 256 in winquake
 			Con_Warning("Bad surface extents\n");
 	}
 }
@@ -719,12 +718,14 @@ void Model_LoadBSPFaces(BSPLump_t *blLump)
 		}
 		else if (mMaterial->iFlags & MATERIAL_FLAG_WATER) // warp surface
 		{
+#if 0
 			out->flags |= (SURF_DRAWTURB | SURF_DRAWTILED);
 
 			if ((!out->samples && SURF_DRAWTURB) || (out->samples && SURF_DRAWTILED))
 				Mod_PolyForUnlitSurface(out);
 
 			GL_SubdivideSurface (out);
+#endif
 		}
 		else if (mMaterial->iFlags & MATERIAL_FLAG_MIRROR)
 			out->flags |= SURFACE_MIRROR;
@@ -1488,8 +1489,8 @@ void Model_LoadMD2(model_t *mModel,void *Buffer)
 
 	// Allocate vertex array.
 	loadmodel->object.numverts = mMD2Model->numtris * 3;
-	loadmodel->object.vertices = (VideoObjectVertex_t*)malloc(loadmodel->object.numverts * sizeof(VideoObjectVertex_t));
-	memset(loadmodel->object.vertices, 0, loadmodel->object.numverts * sizeof(VideoObjectVertex_t));
+	loadmodel->object.vertices = (VideoVertex_t*)malloc(loadmodel->object.numverts * sizeof(VideoVertex_t));
+	memset(loadmodel->object.vertices, 0, loadmodel->object.numverts * sizeof(VideoVertex_t));
 
 	Model_LoadMD2Textures(mModel);
 

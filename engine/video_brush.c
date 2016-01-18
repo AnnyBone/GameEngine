@@ -87,7 +87,7 @@ texture_t *R_TextureAnimation (texture_t *base, int frame)
 
 void DrawGLPoly(glpoly_t *p)
 {
-	VideoObjectVertex_t	voObject[512] = { { { 0 } } };
+	VideoVertex_t	voObject[512] = { { { 0 } } };
 	float			*v;
 	int				i;
 
@@ -160,8 +160,7 @@ void R_DrawSequentialPoly(msurface_t *s)
 
 		for(pBrushPoly = s->polys->next; pBrushPoly; pBrushPoly = pBrushPoly->next)
 		{
-			Warp_DrawWaterPoly(pBrushPoly, mCurrent);
-
+			Surface_DrawWater(pBrushPoly, mCurrent);
 			rs_brushpasses++;
 		}
 
@@ -177,7 +176,7 @@ void R_DrawSequentialPoly(msurface_t *s)
 	{
 		if (!r_showtris.bValue)
 		{
-			if (alpha < 1.0f)
+			if (alpha < 1)
 			{
 				VideoLayer_DepthMask(false);
 				VideoLayer_Enable(VIDEO_BLEND);

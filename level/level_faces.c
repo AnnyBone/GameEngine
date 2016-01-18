@@ -94,7 +94,7 @@ void SplitFace( face_t *in, plane_t *split, face_t **front, face_t **back )
 int SubdivideFace( face_t *f, face_t **prevptr )
 {
 	int					i, axis;
-	int					subdivides;
+	int					subdivides, subsize = subdivide_size;
 	vec_t				mins, maxs, v;
 	plane_t				plane;
 	winding_t			*w;
@@ -102,8 +102,11 @@ int SubdivideFace( face_t *f, face_t **prevptr )
 	BSPTextureInfo_t	*tex = &texinfo[f->texturenum];
 
 	// special (non-surface cached) faces don't need subdivision
-	if( tex->iFlags & BSP_TEXTURE_SPECIAL )
+	if (tex->iFlags & BSP_TEXTURE_SKY)
 		return 0;
+
+	if (tex->iFlags & BSP_TEXTURE_WATER)
+		subsize = 128;
 
 	subdivides = 0;
 	for( axis = 0; axis < 2 ; axis++ )
@@ -123,7 +126,7 @@ int SubdivideFace( face_t *f, face_t **prevptr )
 					maxs = v;
 			}
 
-			if( maxs - mins <= subdivide_size )
+			if (maxs - mins <= subsize)
 				break;
 
 			// split it
@@ -131,7 +134,7 @@ int SubdivideFace( face_t *f, face_t **prevptr )
 			v = VectorNormalize( plane.normal );
 			if( !v )
 				Error( "SubdivideFace: zero length normal" );
-			plane.dist = (mins + subdivide_size - 16) / v;
+			plane.dist = (mins + subsize - 16) / v;
 
 			next = f->next;
 			SplitFace( f, &plane, &front, &back );

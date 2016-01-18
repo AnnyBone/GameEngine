@@ -161,13 +161,13 @@ extern "C" {
 	void Video_PreFrame(void);
 	void Video_PostFrame(void);
 	void Video_Frame(void);
-	void Video_ObjectTexture(VideoObjectVertex_t *voObject, unsigned int uiTextureUnit, float S, float T);
-	void Video_ObjectVertex(VideoObjectVertex_t *voObject, float X, float Y, float Z);
-	void Video_ObjectNormal(VideoObjectVertex_t *voObject, float X, float Y, float Z);
-	void Video_ObjectColour(VideoObjectVertex_t *voObject, float R, float G, float B, float A);
-	void Video_DrawFill(VideoObjectVertex_t *voFill, Material_t *mMaterial, int iSkin);
+	void Video_ObjectTexture(VideoVertex_t *voObject, unsigned int uiTextureUnit, float S, float T);
+	void Video_ObjectVertex(VideoVertex_t *voObject, float X, float Y, float Z);
+	void Video_ObjectNormal(VideoVertex_t *voObject, float X, float Y, float Z);
+	void Video_ObjectColour(VideoVertex_t *voObject, float R, float G, float B, float A);
+	void Video_DrawFill(VideoVertex_t *voFill, Material_t *mMaterial, int iSkin);
 	void Video_DrawSurface(msurface_t *mSurface, float fAlpha, Material_t *mMaterial, unsigned int uiSkin);
-	void Video_DrawObject(VideoObjectVertex_t *voObject, VideoPrimitive_t vpPrimitiveType, unsigned int uiVerts, Material_t *mMaterial, int iSkin);
+	void Video_DrawObject(VideoVertex_t *voObject, VideoPrimitive_t vpPrimitiveType, unsigned int uiVerts, Material_t *mMaterial, int iSkin);
 	void Video_Shutdown(void);
 
 	unsigned int Video_GetTextureUnit(unsigned int uiTarget);
@@ -245,7 +245,7 @@ void R_UploadLightmap(int lmap);
 */
 
 void World_Draw(void);
-void World_DrawWaterTextureChains(void);
+void World_DrawWater(void);
 
 /*
 	Brush
@@ -259,6 +259,6 @@ void DrawGLPoly(glpoly_t *p);
 	Warp
 */
 
-void Warp_DrawWaterPoly(glpoly_t *p, Material_t *mCurrent);
+void Surface_DrawWater(glpoly_t *p, Material_t *mCurrent);
 
 #endif // !VIDEO_H

@@ -206,69 +206,39 @@ void GL_SubdivideSurface(msurface_t *fa)
 		- Firstly save each iteration of our water, so we can keep track of colour etc.
 		- Recalc colour for different dynamic moving lights.
 */
-void Warp_DrawWaterPoly(glpoly_t *p, Material_t *mCurrent)
+void Surface_DrawWater(glpoly_t *p, Material_t *material)
 {
-	VideoObjectVertex_t	*voWaterPoly;
-	MathVector3f_t vWave,vLightColour;
-	float *fVert,fWaterAlpha;
-	int	i;
+	VideoVertex_t		*voWaterPoly;
+	MathVector3f_t		vWave,vLightColour;
+	float				*vertex, fWaterAlpha;
 
-	voWaterPoly = (VideoObjectVertex_t*)Hunk_TempAlloc(p->numverts*sizeof(VideoObjectVertex_t));
+	voWaterPoly = (VideoVertex_t*)Hunk_TempAlloc(p->numverts*sizeof(VideoVertex_t));
 	if(!voWaterPoly)
 	{
 		Sys_Error("Failed to allocate water poly!\n");
 		return;
 	}
 
-	fWaterAlpha = Math_Clamp(0, mCurrent->fAlpha, 1.0f);
+	fWaterAlpha = Math_Clamp(0, material->fAlpha, 1.0f);
 
-	fVert = p->verts[0];
-	for (i = 0; i < p->numverts; i++, fVert += VERTEXSIZE)
+	vertex = p->verts[0];
+	for (int i = 0; i < p->numverts; i++, vertex += VERTEXSIZE)
 	{
-		Video_ObjectTexture(&voWaterPoly[i], 0, WARPCALC(fVert[3], fVert[4]), WARPCALC(fVert[4], fVert[3]));
+		Math_VectorCopy(vertex, vWave);
 
-		Math_VectorCopy(fVert, vWave);
-
-		// Shitty lit water, use dynamic light points in the future...
-		// Use vWave position BEFORE we move it, otherwise the water will flicker.
-		// Additionally, these should be saved so that we aren't trying to light these every frame, URGH.
-		if (r_oldwater.iValue == 1)
-		{
-			MathVector_t mvLightColour = Light_GetSample(vWave);
-
-			Math_MVToVector(mvLightColour, vLightColour);
-			Math_VectorScale(vLightColour, 1.0f / 200.0f, vLightColour);
-			Math_VectorDivide(vLightColour, 0.5f, vLightColour);
-		}
-		else if (r_oldwater.iValue == 2)
-			Math_VectorSet(1.0f, vLightColour);
-		else
-		{
-			// Other method using dynamic light points, apparently slower? So needs to be optimised.
-			DynamicLight_t *dLight = Light_GetDynamic(vWave, true);
-			if (!dLight)
-				Math_VectorSet(0.1f, vLightColour);
-			else
-			{
-				MathVector3f_t vDistance;
-				Math_VectorSubtract(vWave, dLight->origin, vDistance);
-				Math_VectorCopy(dLight->color, vLightColour);
-				Math_VectorSubtractValue(vLightColour, (dLight->radius - Math_Length(vDistance)) / 100.0f, vLightColour);
-				Math_VectorScale(vLightColour, 1.0f / 200.0f, vLightColour);
-				Math_VectorDivide(vLightColour, 0.5f, vLightColour);
-			}
-		}
-
-		Video_ObjectColour(&voWaterPoly[i], vLightColour[0], vLightColour[1], vLightColour[2], fWaterAlpha);
+		Video_ObjectTexture(&voWaterPoly[i], VIDEO_TEXTURE_DIFFUSE, vertex[3], vertex[4]);
+		//Video_ObjectTexture(&voWaterPoly[i], VIDEO_TEXTURE_DIFFUSE, WARPCALC(fVert[3], fVert[4]), WARPCALC(fVert[4], fVert[3]));
+		Video_ObjectTexture(&voWaterPoly[i], VIDEO_TEXTURE_LIGHT, vertex[5], vertex[6]);
+		Video_ObjectColour(&voWaterPoly[i], 1.0f, 1.0f, 1.0f, fWaterAlpha);
 
 		// Subtle water bobbing, based on this code http://www.quake-1.com/docs/quakesrc.org/26.html
-		vWave[2] =	fVert[2]+
-			2.0f*(float)sin(fVert[0] * 0.025f + cl.time)*(float)sin(fVert[2] * 0.05f + cl.time) +
-			2.0f*(float)sin(fVert[1] * 0.025f + cl.time*2.0f)*(float)sin(fVert[2] * 0.05f + cl.time);
+		vWave[2] = vertex[2] +
+			2.0f*(float)sin(vertex[0] * 0.025f + cl.time)*(float)sin(vertex[2] * 0.05f + cl.time) +
+			2.0f*(float)sin(vertex[1] * 0.025f + cl.time*2.0f)*(float)sin(vertex[2] * 0.05f + cl.time);
 		Video_ObjectVertex(&voWaterPoly[i], vWave[0], vWave[1], vWave[2]);
 	}
 
-	Video_DrawObject(voWaterPoly, VIDEO_PRIMITIVE_TRIANGLE_FAN, p->numverts, mCurrent, 0);
+	Video_DrawObject(voWaterPoly, VIDEO_PRIMITIVE_TRIANGLE_FAN, p->numverts, material, 0);
 }
 
 //==============================================================================

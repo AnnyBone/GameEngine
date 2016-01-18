@@ -98,12 +98,12 @@ typedef struct
 	MathVector3f_t mvNormal;				// Vertex normal.
 
 	MathVector2f_t mvST[VIDEO_MAX_UNITS];	// Vertex texture coord, per unit.
-} VideoObjectVertex_t;
+} VideoVertex_t;
 
 // Object
 typedef struct
 {
-	VideoObjectVertex_t *vertices;	// Array of vertices for the object.
+	VideoVertex_t *vertices;	// Array of vertices for the object.
 
 	unsigned int numverts;	// Number of vertices.
 

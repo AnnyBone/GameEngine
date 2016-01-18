@@ -461,7 +461,7 @@ void Particle_Draw(void)
 
 	for (pParticle = pActiveParticles; pParticle; pParticle = pParticle->next)
 	{
-		VideoObjectVertex_t	voParticle[4];
+		VideoVertex_t	voParticle[4];
 
 		Video_ObjectVertex(&voParticle[0],
 			pParticle->vOrigin[0], pParticle->vOrigin[1], pParticle->vOrigin[2]);

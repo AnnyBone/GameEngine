@@ -638,7 +638,7 @@ void LightFace( BSPFace_t *f, const lightchain_t *lightchain, const directlight_
 		f->iLightOffset = -1;
 
 		// return if it's not a lightmapped surface
-		if(texinfo[f->iTexInfo].iFlags & BSP_TEXTURE_SPECIAL)
+		if (texinfo[f->iTexInfo].iFlags & BSP_TEXTURE_SKY)
 			return;
 		// return if we've run out of lightmap data space
 		else if(ranout)

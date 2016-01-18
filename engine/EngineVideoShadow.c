@@ -46,8 +46,8 @@ void Shadow_DrawBlob(ClientEntity_t *Entity)
 	if (!lightplane)
 		return;
 
-	VideoObjectVertex_t	voShadow[4] = { { { 0 } } };
-	float fBlobHeight, fShadowScale[2];
+	VideoVertex_t	voShadow[4] = { { { 0 } } };
+	float			fBlobHeight, fShadowScale[2];
 
 	// TODO: This should be averaged out to the size of an entity.
 	fShadowScale[0] = fShadowScale[1] = SHADOW_BLOB_SCALE;

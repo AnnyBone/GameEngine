@@ -85,8 +85,8 @@ void Light_Draw(void)
 		{
 			int				j,c = 0;
 			float			a,a2,b,rad;
-			vec3_t			v;
-			VideoObjectVertex_t	voLight[17];
+			MathVector3f_t	v;
+			VideoVertex_t	voLight[17];
 
 			Math_VectorSubtract(dlLight->origin,r_origin,v);
 

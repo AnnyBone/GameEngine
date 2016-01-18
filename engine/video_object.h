@@ -93,7 +93,7 @@ private:
 extern "C" {
 #endif
 
-	void VideoObject_SetupPointers(VideoObjectVertex_t *vobject);
+	void VideoObject_SetupPointers(VideoVertex_t *vobject);
 	void VideoObject_EnableDrawState(void);
 	void VideoObject_DisableDrawState(void);
 

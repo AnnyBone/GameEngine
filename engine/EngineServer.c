@@ -1367,7 +1367,7 @@ void Server_CenterPrint(ServerEntity_t *ent, char *msg)
 }
 
 /*
-Utilities
+	Utilities
 */
 
 double Server_GetFrameTime(void)

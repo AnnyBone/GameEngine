@@ -36,7 +36,7 @@ extern "C" {
 	void Material_Initialize(void);
 	void Material_ClearAll(void);
 	void Material_Clear(Material_t *mMaterial);
-	void Material_Draw(Material_t *Material, int Skin, VideoObjectVertex_t *ObjectVertex, VideoPrimitive_t ObjectPrimitive, unsigned int ObjectSize, bool bPost);
+	void Material_Draw(Material_t *Material, int Skin, VideoVertex_t *ObjectVertex, VideoPrimitive_t ObjectPrimitive, unsigned int ObjectSize, bool bPost);
 
 	bool Material_Precache(const char *ccPath);
 

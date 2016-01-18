@@ -956,7 +956,7 @@ extern ConsoleVariable_t gl_fullbrights;
 /*	Typically called before an object is drawn.
 */
 void Material_Draw(Material_t *Material, int Skin, 
-	VideoObjectVertex_t *ObjectVertex, VideoPrimitive_t ObjectPrimitive, unsigned int ObjectSize,
+	VideoVertex_t *ObjectVertex, VideoPrimitive_t ObjectPrimitive, unsigned int ObjectSize,
 	bool ispost)
 {
 	if (r_drawflat_cheatsafe || !Material)

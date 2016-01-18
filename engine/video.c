@@ -500,27 +500,27 @@ void Video_SelectTexture(unsigned int uiTarget)
 
 MathVector4f_t mvVideoGlobalColour;
 
-void Video_ObjectTexture(VideoObjectVertex_t *voObject, unsigned int uiTextureUnit, float S, float T)
+void Video_ObjectTexture(VideoVertex_t *voObject, unsigned int uiTextureUnit, float S, float T)
 {
 	voObject->mvST[uiTextureUnit][0] = S;
 	voObject->mvST[uiTextureUnit][1] = T;
 }
 
-void Video_ObjectVertex(VideoObjectVertex_t *voObject, float X, float Y, float Z)
+void Video_ObjectVertex(VideoVertex_t *voObject, float X, float Y, float Z)
 {
 	voObject->mvPosition[0] = X;
 	voObject->mvPosition[1] = Y;
 	voObject->mvPosition[2] = Z;
 }
 
-void Video_ObjectNormal(VideoObjectVertex_t *voObject, float X, float Y, float Z)
+void Video_ObjectNormal(VideoVertex_t *voObject, float X, float Y, float Z)
 {
 	voObject->mvNormal[0] = X;
 	voObject->mvNormal[1] = Y;
 	voObject->mvNormal[2] = Z;
 }
 
-void Video_ObjectColour(VideoObjectVertex_t *voObject, float R, float G, float B, float A)
+void Video_ObjectColour(VideoVertex_t *voObject, float R, float G, float B, float A)
 {
 	voObject->mvColour[pRED] = R;
 	voObject->mvColour[pGREEN] = G;
@@ -534,7 +534,7 @@ void Video_ObjectColour(VideoObjectVertex_t *voObject, float R, float G, float B
 
 /*  Draw a simple rectangle.
 */
-void Video_DrawFill(VideoObjectVertex_t *voFill, Material_t *mMaterial, int iSkin)
+void Video_DrawFill(VideoVertex_t *voFill, Material_t *mMaterial, int iSkin)
 {
 	Video_DrawObject(voFill, VIDEO_PRIMITIVE_TRIANGLE_FAN, 4, mMaterial, iSkin);
 }
@@ -543,11 +543,11 @@ void Video_DrawFill(VideoObjectVertex_t *voFill, Material_t *mMaterial, int iSki
 */
 void Video_DrawSurface(msurface_t *mSurface,float fAlpha, Material_t *mMaterial, unsigned int uiSkin)
 {
-	VideoObjectVertex_t	*drawsurf;
-	float				*fVert;
-	int					i;
+	VideoVertex_t	*drawsurf;
+	float			*fVert;
+	int				i;
 
-	drawsurf = (VideoObjectVertex_t*)Hunk_TempAlloc(mSurface->polys->numverts*sizeof(VideoObjectVertex_t));
+	drawsurf = (VideoVertex_t*)Hunk_TempAlloc(mSurface->polys->numverts*sizeof(VideoVertex_t));
 	if (!drawsurf)
 		Sys_Error("Failed to allocate surface video object!\n");
 
@@ -564,12 +564,14 @@ void Video_DrawSurface(msurface_t *mSurface,float fAlpha, Material_t *mMaterial,
 	}
 
 	Video_DrawObject(drawsurf, VIDEO_PRIMITIVE_TRIANGLE_FAN, mSurface->polys->numverts, mMaterial, 0);
+
+	rs_brushpasses++;
 }
 
 /*	Draw 3D object.
 	TODO: Add support for VBOs ?
 */
-void Video_DrawObject(VideoObjectVertex_t *vobject, VideoPrimitive_t primitive, 
+void Video_DrawObject(VideoVertex_t *vobject, VideoPrimitive_t primitive,
 	unsigned int numverts, Material_t *mMaterial, int iSkin)
 {
 	if (numverts == 0)

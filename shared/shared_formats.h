@@ -160,13 +160,10 @@ extern float vHullSizes[BSP_HULL_MAX][2][3];
 #define	BSP_MAX_LIGHTMAPS		4
 #define	BSP_MAX_VISIBILITY		0x400000		//0x1000000
 
-enum
-{
-	BSP_TEXTURE_SPECIAL = 1,	// Used for sky or water.
-	BSP_TEXTURE_SKIP,			// Surface to be skipped during rendering (and lighting).
-
-	BSP_TEXTURE_MISSING			// Indicates that the texture is missing.
-};
+#define	BSP_TEXTURE_SKY			(1 << 0)
+#define	BSP_TEXTURE_WATER		(1 << 1)
+#define	BSP_TEXTURE_SKIP		(1 << 2)	// Surface to be skipped during rendering (and lighting).
+#define	BSP_TEXTURE_MISSING		(1 << 3)	// Indicates that the texture is missing.
 
 /*	Different content types
 	set for brushes by Katana Level.
