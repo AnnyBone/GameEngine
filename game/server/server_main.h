@@ -114,6 +114,7 @@ extern "C" {
 #define Entity_SetDamagedFunction(a,b)	(a->local.DamagedFunction = b)
 #define	Entity_SetBlockedFunction(a,b)	(a->v.BlockedFunction = b)
 #define Entity_SetTouchFunction(a,b)	(a->v.TouchFunction = b)
+#define	Entity_SetThinkFunction(a,b)	(a->v.think = b)
 
 #ifdef __cplusplus
 };
