@@ -18,7 +18,10 @@
 
 #include "server_main.h"
 
-#define	BARREL_MAX_HEALTH 45
+#include "server_effects.h"
+
+#define	BARREL_MAX_HEALTH	30
+#define	BARREL_MAX_DAMAGE	32
 
 typedef enum
 {
@@ -26,55 +29,61 @@ typedef enum
 	BARREL_STYLE_EXPLODE
 } BarrelStyle_t;
 
-void Barrel_Killed(ServerEntity_t *eBarrel, ServerEntity_t *seOther)
+void Barrel_Think(ServerEntity_t *barrel)
 {
-	if (eBarrel->local.style == BARREL_STYLE_EXPLODE)
-	{
-		Entity_RadiusDamage(eBarrel, MONSTER_RANGE_NEAR, 30, DAMAGE_TYPE_EXPLODE);
+	ServerEffect_Explosion(barrel->v.origin);
 
-		if (Engine.Server_PointContents(eBarrel->v.origin) <= BSP_CONTENTS_WATER)
-			Sound(eBarrel, CHAN_AUTO, SOUND_EXPLODE_UNDERWATER0, 255, ATTN_NORM);
-		else
-			Sound(eBarrel, CHAN_AUTO, SOUND_EXPLODE, 255, ATTN_NORM);
-	}
+	Entity_RadiusDamage(barrel, MONSTER_RANGE_NEAR, BARREL_MAX_DAMAGE, DAMAGE_TYPE_EXPLODE);
 
-	// TODO: gib
+	if (Engine.Server_PointContents(barrel->v.origin) <= BSP_CONTENTS_WATER)
+		Sound(barrel, CHAN_AUTO, SOUND_EXPLODE_UNDERWATER0, 255, ATTN_NORM);
+	else
+		Sound(barrel, CHAN_AUTO, SOUND_EXPLODE, 255, ATTN_NORM);
 
-	// Update the model so it looks like it's actually exploded.
-	Entity_SetModel(eBarrel, MODEL_DECORATION_BARREL3);
+	Entity_Remove(barrel);
+}
 
+void Barrel_Killed(ServerEntity_t *barrel, ServerEntity_t *seOther)
+{
 	// Don't take damage anymore.
-	eBarrel->v.bTakeDamage = false;
+	barrel->v.bTakeDamage = false;
 
-	// Set it so it's no longer solid.
-	eBarrel->Physics.iSolid = SOLID_NOT;
+	if (barrel->local.style == BARREL_STYLE_EXPLODE)
+	{
+		Entity_SetThinkFunction(barrel, Barrel_Think);
+		barrel->v.dNextThink = Server.dTime + 0.275;
+	}
+	else
+		Entity_SetModel(barrel, MODEL_DECORATION_BARREL3);
 }
 
 void Barrel_Damaged(ServerEntity_t *seBarrel, ServerEntity_t *seOther)
 {
+	char rockpath[MAX_QPATH];
 	// TODO: play sound, wobble, or react in some way...
 
-	// Health has changed, update model.
-	if (seBarrel->v.iHealth < 30)
+	if (seBarrel->v.iHealth < 10)
 	{
-		if (seBarrel->v.iHealth < 10)
+		if (strcmp(seBarrel->v.model, MODEL_DECORATION_BARREL2))
 		{
-			if (strcmp(seBarrel->v.model, MODEL_DECORATION_BARREL2))
-			{
-				// TODO: Spawn some gibs.
+			PHYSICS_MODEL_ROCK(rockpath);
 
-				Entity_SetModel(seBarrel, MODEL_DECORATION_BARREL2);
-				Entity_SetSize(seBarrel, -10, -10, -15, 10, 9, 10);
-				return;
-			}
+			ThrowGib(seBarrel->v.origin, g_mvOrigin3f, rockpath, 0, false);
+
+			Entity_SetModel(seBarrel, MODEL_DECORATION_BARREL2);
+			return;
 		}
-
+	}
+	// Health has changed, update model.
+	else if (seBarrel->v.iHealth < 25)
+	{
 		if (strcmp(seBarrel->v.model, MODEL_DECORATION_BARREL1))
 		{
-			// TODO: Spawn some gibs.
+			PHYSICS_MODEL_ROCK(rockpath);
+
+			ThrowGib(seBarrel->v.origin, g_mvOrigin3f, rockpath, 0, false);
 
 			Entity_SetModel(seBarrel, MODEL_DECORATION_BARREL1);
-			Entity_SetSize(seBarrel, -10, -10, -15, 10, 9, 10);
 			return;
 		}
 	}
@@ -88,14 +97,14 @@ void Barrel_Spawn(ServerEntity_t *eBarrel)
 	Server_PrecacheModel(MODEL_DECORATION_BARREL3);
 
 	eBarrel->v.iHealth = BARREL_MAX_HEALTH;
-	eBarrel->v.movetype = MOVETYPE_PUSH;
+	eBarrel->v.movetype = MOVETYPE_TOSS;
 	eBarrel->v.bTakeDamage = true;
 
 	eBarrel->local.iOldHealth = BARREL_MAX_HEALTH;
 	eBarrel->local.cOldModel = MODEL_DECORATION_BARREL0;
 
 	Entity_SetModel(eBarrel, MODEL_DECORATION_BARREL0);
-	Entity_SetSize(eBarrel, -10, -10, -15, 10, 9, 10);
+	Entity_SetSize(eBarrel, -16, -16, -15, 16, 16, 10);
 	Entity_SetPhysics(eBarrel, SOLID_SLIDEBOX, 2.0f, 5.0f);
 
 	Entity_SetKilledFunction(eBarrel, Barrel_Killed);
