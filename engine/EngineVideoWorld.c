@@ -335,7 +335,7 @@ void World_DrawWater(void)
 	Video_SelectTexture(0);
 }
 
-void World_Draw(bool waterpass)
+void World_Draw(void)
 {
 	int			i;
 	msurface_t	*s;
