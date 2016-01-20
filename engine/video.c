@@ -588,7 +588,7 @@ void Video_DrawObject(VideoVertex_t *vobject, VideoPrimitive_t primitive,
 	VideoObject_SetupPointers(vobject);
 
 	bool showwireframe = r_showtris.bValue;
-	if (mMaterial && mMaterial->override_wireframe)
+	if ((mMaterial && mMaterial->override_wireframe) && (r_showtris.iValue == 1))
 		showwireframe = false;
 
 	VideoLayer_DrawArrays(primitive, numverts, showwireframe);

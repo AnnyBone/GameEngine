@@ -962,7 +962,7 @@ void Material_Draw(Material_t *Material, int Skin,
 	if (r_drawflat_cheatsafe || !Material)
 		return;
 
-	if (!Material->override_wireframe && (r_lightmap_cheatsafe || r_showtris.bValue))
+	if ((Material->override_wireframe && (r_showtris.iValue != 1) || !Material->override_wireframe) && (r_lightmap_cheatsafe || r_showtris.bValue))
 	{
 		if (!ispost)
 		{
