@@ -984,7 +984,7 @@ void Material_Draw(Material_t *Material, int Skin,
 		Sys_Error("Failed to get valid skin! (%s)\n", Material->cName);
 
 	// Handle any generic blending.
-	if (msCurrentSkin->uiFlags & MATERIAL_FLAG_BLEND)
+	if ((msCurrentSkin->uiFlags & MATERIAL_FLAG_BLEND) || (Material->fAlpha < 1))
 	{
 		if (!ispost)
 		{
