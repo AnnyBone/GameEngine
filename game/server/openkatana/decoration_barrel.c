@@ -59,16 +59,15 @@ void Barrel_Killed(ServerEntity_t *barrel, ServerEntity_t *seOther)
 
 void Barrel_Damaged(ServerEntity_t *seBarrel, ServerEntity_t *seOther)
 {
-	char rockpath[MAX_QPATH];
+	char gibpath[MAX_QPATH];
 	// TODO: play sound, wobble, or react in some way...
 
 	if (seBarrel->v.iHealth < 10)
 	{
 		if (strcmp(seBarrel->v.model, MODEL_DECORATION_BARREL2))
 		{
-			PHYSICS_MODEL_ROCK(rockpath);
-
-			ThrowGib(seBarrel->v.origin, g_mvOrigin3f, rockpath, 0, false);
+			PHYSICS_MODEL_ROCK(gibpath);
+			ThrowGib(seBarrel->v.origin, g_mvOrigin3f, gibpath, 0, false);
 
 			Entity_SetModel(seBarrel, MODEL_DECORATION_BARREL2);
 			return;
@@ -79,9 +78,8 @@ void Barrel_Damaged(ServerEntity_t *seBarrel, ServerEntity_t *seOther)
 	{
 		if (strcmp(seBarrel->v.model, MODEL_DECORATION_BARREL1))
 		{
-			PHYSICS_MODEL_ROCK(rockpath);
-
-			ThrowGib(seBarrel->v.origin, g_mvOrigin3f, rockpath, 0, false);
+			PHYSICS_MODEL_ROCK(gibpath);
+			ThrowGib(seBarrel->v.origin, g_mvOrigin3f, gibpath, 0, false);
 
 			Entity_SetModel(seBarrel, MODEL_DECORATION_BARREL1);
 			return;

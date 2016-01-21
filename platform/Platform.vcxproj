@@ -29,6 +29,7 @@
   <ItemGroup>
     <ClCompile Include="platform.c" />
     <ClCompile Include="platform_filesystem.c" />
+    <ClCompile Include="platform_image.c" />
     <ClCompile Include="platform_log.c" />
     <ClCompile Include="platform_math.c" />
     <ClCompile Include="platform_module.c" />
@@ -37,6 +38,7 @@
   <ItemGroup>
     <ClInclude Include="include\platform.h" />
     <ClInclude Include="include\platform_filesystem.h" />
+    <ClInclude Include="include\platform_image.h" />
     <ClInclude Include="include\platform_inttypes.h" />
     <ClInclude Include="include\platform_log.h" />
     <ClInclude Include="include\platform_math.h" />
