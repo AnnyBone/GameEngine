@@ -23,15 +23,18 @@
 extern "C" {
 #endif
 
-	extern void	plGetUserName(char *out);
-	extern void plScanDirectory(const char *path, const char *extension, void(*Function)(char *filepath));
-	extern void	plGetWorkingDirectory(char *out);
-	extern void	plLowerCasePath(char *out);
+	extern void		plGetUserName(char *out);
+	extern void		plScanDirectory(const char *path, const char *extension, void(*Function)(char *filepath));
+	extern void		plGetWorkingDirectory(char *out);
+	extern void		plLowerCasePath(char *out);
+	extern bool		plCreateDirectory(const char *path);
+	extern bool		plIsFileModified(time_t oldtime, const char *path);
+	extern time_t	plGetFileModifiedTime(const char *path);
 
-	extern bool	plCreateDirectory(const char *path);
-	extern bool plIsFileModified(time_t oldtime, const char *path);
-
-	extern time_t plGetFileModifiedTime(const char *path);
+	// File I/O
+	extern bool		plFileExists(const char *path);
+	extern int		plGetLittleShort(FILE *fin);
+	extern int		plGetLittleLong(FILE *fin);
 
 #ifdef __cplusplus
 }

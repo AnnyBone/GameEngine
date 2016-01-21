@@ -249,3 +249,31 @@ void plGetWorkingDirectory(char *out)
 	strcat(out, "\\");
 	pFUNCTION_END
 }
+
+/*
+	File I/O
+*/
+
+/*	Checks if a file exists or not.
+*/
+bool plFileExists(const char *path)
+{
+	struct stat buffer;
+	return (stat(path, &buffer) == 0);
+}
+
+int	plGetLittleShort(FILE *fin)
+{
+	int	b1 = fgetc(fin);
+	int	b2 = fgetc(fin);
+	return (short)(b1 + b2 * 256);
+}
+
+int plGetLittleLong(FILE *fin)
+{
+	int b1 = fgetc(fin);
+	int	b2 = fgetc(fin);
+	int	b3 = fgetc(fin);
+	int	b4 = fgetc(fin);
+	return b1 + (b2 << 8) + (b3 << 16) + (b4 << 24);
+}
