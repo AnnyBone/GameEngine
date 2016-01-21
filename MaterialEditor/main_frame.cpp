@@ -30,7 +30,7 @@ void MainViewportPanel::Draw()
 
 	engine->DrawResetCanvas();
 	engine->DrawSetCanvas(CANVAS_DEFAULT);
-	engine->DrawString(10, 10, "Hello World!");
+	engine->DrawString(10, 10, "Camera Viewport");
 }
 
 class XViewportPanel : public BaseViewportPanel
@@ -49,6 +49,7 @@ void XViewportPanel::Draw()
 	engine->DrawResetCanvas();
 	engine->DrawSetCanvas(CANVAS_DEFAULT);
 	engine->DrawGrid(0, 0, 0, 8);
+	engine->DrawString(10, 10, "X Viewport");
 }
 
 enum
@@ -278,7 +279,6 @@ CEditorFrame::CEditorFrame(const wxString & title, const wxPoint & pos, const wx
 	viewport = new MainViewportPanel(this);
 	viewport->Initialize();
 	wxAuiPaneInfo viewportInfo;
-	viewportInfo.Caption("Camera Viewport");
 	viewportInfo.Center();
 	viewportInfo.Movable(true);
 	viewportInfo.Floatable(true);
@@ -290,7 +290,6 @@ CEditorFrame::CEditorFrame(const wxString & title, const wxPoint & pos, const wx
 
 	XViewportPanel *viewport_top = new XViewportPanel(this);
 	viewport_top->Initialize();
-	viewportInfo.Caption("Top Viewport");
 //	viewportInfo.Top();
 	viewportInfo.Right();
 	viewport_top->StartDrawing();
@@ -298,7 +297,6 @@ CEditorFrame::CEditorFrame(const wxString & title, const wxPoint & pos, const wx
 
 	viewport_top = new XViewportPanel(this);
 	viewport_top->Initialize();
-	viewportInfo.Caption("Side Viewport");
 //	viewportInfo.Bottom();
 //	viewportInfo.Left();
 	viewport_top->StartDrawing();
