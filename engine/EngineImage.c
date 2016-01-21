@@ -21,10 +21,11 @@
 #include "engine_base.h"
 
 #include "platform_filesystem.h"
+#include "platform_image.h"
 
 char loadfilename[PLATFORM_MAX_PATH]; //file scope so that error messages can use it
 
-bool bPNGSupported = false;
+bool image_pngsupport = false;
 
 uint8_t *Image_LoadPNG(FILE *fin, unsigned int *width, unsigned int *height);
 
@@ -32,11 +33,11 @@ uint8_t *Image_LoadPNG(FILE *fin, unsigned int *width, unsigned int *height);
 */
 uint8_t *Image_LoadImage(char *name, unsigned int *width, unsigned int *height)
 {
-	uint8_t	*bImage;
-	FILE *f;
+	uint8_t		*bImage;
+	FILE		*f;
 
 	// PNG
-	if (bPNGSupported)
+	if (image_pngsupport)
 	{
 		sprintf(loadfilename, "%s.png", name);
 		COM_FOpenFile(loadfilename, &f);
@@ -58,32 +59,40 @@ uint8_t *Image_LoadImage(char *name, unsigned int *width, unsigned int *height)
 			return bImage;
 	}
 
+	// BMP
+	sprintf(loadfilename, "%s.bmp", name);
+	COM_FOpenFile(loadfilename, &f);
+	if (f)
+	{
+		bImage = plLoadBMPImage(f, width, height);
+		if (bImage)
+			return bImage;
+	}
+
+	// FTX
+	sprintf(loadfilename, "%s.ftx", name);
+	COM_FOpenFile(loadfilename, &f);
+	if (f)
+	{
+		bImage = plLoadFTXImage(f, width, height);
+		if (bImage)
+			return bImage;
+	}
+
+	// PPM
+	sprintf(loadfilename, "%s.ppm", name);
+	COM_FOpenFile(loadfilename, &f);
+	if (f)
+	{
+		bImage = plLoadPPMImage(f, width, height);
+		if (bImage)
+			return bImage;
+	}
+
 	// Throw a warning after we've tried all options.
 	Con_Warning("Failed to load image! (%s)\n", loadfilename);
 
 	return NULL;
-}
-
-int fgetLittleShort(FILE *f)
-{
-	uint8_t	b1, b2;
-
-	b1 = fgetc(f);
-	b2 = fgetc(f);
-
-	return (short)(b1 + b2 * 256);
-}
-
-int fgetLittleLong(FILE *f)
-{
-	uint8_t	b1, b2, b3, b4;
-
-	b1 = fgetc(f);
-	b2 = fgetc(f);
-	b3 = fgetc(f);
-	b4 = fgetc(f);
-
-	return b1 + (b2 << 8) + (b3 << 16) + (b4 << 24);
 }
 
 /*
@@ -110,9 +119,9 @@ targaheader_t targa_header;
 */
 bool Image_WriteTGA(char *name, uint8_t *data,int width,int height,int bpp,bool upsidedown)
 {
-	int	handle, i, size, temp, bytes;
-	char pathname[PLATFORM_MAX_PATH];
-	uint8_t	header[TARGAHEADERSIZE];
+	int			handle, i, size, temp, bytes;
+	char		pathname[PLATFORM_MAX_PATH];
+	uint8_t		header[TARGAHEADERSIZE];
 
 	if (!plCreateDirectory(com_gamedir)) //if we've switched to a nonexistant gamedir, create it now so we don't crash
 		Sys_Error("Failed to create directory!\n");
@@ -157,13 +166,13 @@ uint8_t *Image_LoadTGA (FILE *fin, unsigned int *width, unsigned int *height)
 	targa_header.id_length			= fgetc(fin);
 	targa_header.colormap_type		= fgetc(fin);
 	targa_header.image_type			= fgetc(fin);
-	targa_header.colormap_index		= fgetLittleShort(fin);
-	targa_header.colormap_length	= fgetLittleShort(fin);
+	targa_header.colormap_index		= plGetLittleShort(fin);
+	targa_header.colormap_length	= plGetLittleShort(fin);
 	targa_header.colormap_size		= fgetc(fin);
-	targa_header.x_origin			= fgetLittleShort(fin);
-	targa_header.y_origin			= fgetLittleShort(fin);
-	targa_header.width				= fgetLittleShort(fin);
-	targa_header.height				= fgetLittleShort(fin);
+	targa_header.x_origin			= plGetLittleShort(fin);
+	targa_header.y_origin			= plGetLittleShort(fin);
+	targa_header.width				= plGetLittleShort(fin);
+	targa_header.height				= plGetLittleShort(fin);
 	targa_header.pixel_size			= fgetc(fin);
 	targa_header.attributes			= fgetc(fin);
 
@@ -390,7 +399,7 @@ void Image_InitializePNG()
 		}
 	}
 
-	bPNGSupported = true;
+	image_pngsupport = true;
 }
 
 void Image_PNGError(png_structp pPNG, const char *ccString)
