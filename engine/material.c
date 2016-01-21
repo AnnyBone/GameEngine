@@ -130,6 +130,7 @@ Material_t *Material_Allocate(void)
 	mMaterials[iMaterialCount].iIdentification		= iMaterialCount;
 	mMaterials[iMaterialCount].fAlpha				= 1.0f;
 	mMaterials[iMaterialCount].bBind				= true;
+	mMaterials[iMaterialCount].current_skin			= 0;
 	mMaterials[iMaterialCount].override_wireframe	= false;
 	mMaterials[iMaterialCount].override_lightmap	= false;
 
@@ -181,7 +182,7 @@ void Material_ClearAll(void)
 	// TODO: Reshuffle and move preserved to start.
 }
 
-MaterialSkin_t *Material_GetSkin(Material_t *mMaterial,int iSkin)
+MaterialSkin_t *Material_GetSkin(Material_t *mMaterial, int iSkin)
 {
 	if (iSkin < 0 || iSkin > MATERIAL_MAX_SKINS)
 		Sys_Error("Invalid skin identification, should be greater than 0 and less than %i! (%i)\n", MATERIAL_MAX_SKINS, iSkin);
@@ -207,7 +208,7 @@ MaterialSkin_t *Material_GetAnimatedSkin(Material_t *mMaterial)
 		mMaterial->dAnimationTime = cl.time + ((double)mMaterial->fAnimationSpeed);
 	}
 
-	return Material_GetSkin(mMaterial,mMaterial->iAnimationFrame);
+	return Material_GetSkin(mMaterial, mMaterial->iAnimationFrame);
 }
 
 /*	Returns a material from the given ID.

@@ -122,7 +122,9 @@ typedef struct Material_s
 		cPath[PLATFORM_MAX_PATH],	// Path of the material.
 		cName[64];					// Name of the material.
 
-	MaterialSkin_t msSkin[MATERIAL_MAX_SKINS];
+	// Skins
+	MaterialSkin_t	msSkin[MATERIAL_MAX_SKINS];
+	unsigned int	current_skin;
 
 	bool 
 		bBind,
