@@ -208,15 +208,13 @@ void Model_Touch(char *cName)
 			Cache_Check(&mModel->cache);
 }
 
-void ModelU3D_Load(model_t *model, void *buffer);
-
 typedef struct
 {
 	const char *extension;
 
 	int type;
 
-	void (*Function)(model_t *model, void *buffer);
+	bool (*Function)(model_t *model);
 } ModelLoadInterface;
 
 ModelLoadInterface model_formatlist[] =
@@ -282,7 +280,14 @@ model_t *Model_Load(model_t *model)
 					// Set the default type, we can change later.
 					model->type = (ModelType_t)model_formatlist[i].type;
 
-					model_formatlist[i].Function(model, buf);
+					if (!model_formatlist[i].Function(model))
+					{
+						Con_Warning("Failed to load model!\n");
+
+						free(buf);
+
+						return NULL;
+					}
 					break;
 				}
 			}
@@ -290,6 +295,7 @@ model_t *Model_Load(model_t *model)
 
 		// If we reach this point, definately not supported.
 		Con_Warning("Unsupported model type! (%s)\n", model->name);
+
 		model = NULL;
 	}
 
