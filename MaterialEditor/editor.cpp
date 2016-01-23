@@ -40,6 +40,7 @@ bool CEditorApp::OnInit()
 
 	wxImage::AddHandler(new wxPNGHandler);
 	wxImage::AddHandler(new wxGIFHandler);
+	wxImage::AddHandler(new wxICOHandler);
 	bSplashScreen.LoadFile("resource/splash-editor.png", wxBITMAP_TYPE_PNG);
 	bSmallMDL.LoadFile("resource/icon-mdl-small.png", wxBITMAP_TYPE_PNG);
 	bSmallAuto.LoadFile("resource/view-auto.png", wxBITMAP_TYPE_PNG);

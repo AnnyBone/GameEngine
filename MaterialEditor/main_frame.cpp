@@ -120,7 +120,7 @@ CEditorFrame::CEditorFrame(const wxString & title, const wxPoint & pos, const wx
 	manager = new wxAuiManager(this);
 
 	plWriteLog(EDITOR_LOG, "Setting frame icon...\n");
-	SetIcon(wxIcon("resource/icon-engine.png", wxBITMAP_TYPE_PNG));
+	SetIcon(wxIcon("resource/icon-engine.ico", wxBITMAP_TYPE_ICO));
 
 	// Display the splash screen...
 

@@ -294,7 +294,7 @@ wxEND_EVENT_TABLE()
 CMaterialFrame::CMaterialFrame(wxWindow* parent, wxWindowID id)
 	: wxFrame(parent, id, WAD_TITLE, wxDefaultPosition, wxSize(1024, 640))
 {
-	SetIcon(wxIcon("resource/icon-material.png", wxBITMAP_TYPE_PNG));
+	SetIcon(wxIcon("resource/icon-material.ico", wxBITMAP_TYPE_ICO));
 
 	mManager = new wxAuiManager(this);
 	

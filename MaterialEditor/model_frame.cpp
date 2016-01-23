@@ -99,7 +99,7 @@ wxEND_EVENT_TABLE()
 ModelFrame::ModelFrame(wxWindow *parent)
 	: wxFrame(parent, EDITOR_WINDOW_MODEL, MODEL_TITLE, wxDefaultPosition, wxSize(640, 480))
 {
-	SetIcon(wxIcon("resource/icon-mdl.png", wxBITMAP_TYPE_PNG));
+	SetIcon(wxIcon("resource/icon-mdl.ico", wxBITMAP_TYPE_ICO));
 
 	// Setup the menu...
 	wxMenuBar *menubar = new wxMenuBar;
