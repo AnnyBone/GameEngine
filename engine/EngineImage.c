@@ -60,6 +60,7 @@ uint8_t *Image_LoadImage(char *name, unsigned int *width, unsigned int *height)
 	}
 
 	// BMP
+#if 0
 	sprintf(loadfilename, "%s.bmp", name);
 	COM_FOpenFile(loadfilename, &f);
 	if (f)
@@ -68,6 +69,7 @@ uint8_t *Image_LoadImage(char *name, unsigned int *width, unsigned int *height)
 		if (bImage)
 			return bImage;
 	}
+#endif
 
 	// FTX
 	sprintf(loadfilename, "%s.ftx", name);

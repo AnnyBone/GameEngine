@@ -73,12 +73,15 @@ enum
 	BMP_COMPRESSION_BITFIELDS,	// RGB bitmap with RGB masks.
 };
 
+#if 0
 uint8_t *plLoadBMPImage(FILE *fin, unsigned int *width, unsigned int *height)
 {
 	BMPInfoHeader_t		*infoheader;
 	BMPFileHeader_t		header;
 	int					infosize, size;
 	uint8_t				*image;
+
+	plSetErrorFunction("plLoadPPMImage");
 
 	if (fread(&header, sizeof(BMPFileHeader_t), 1, fin) < 1)
 	{
@@ -99,6 +102,7 @@ uint8_t *plLoadBMPImage(FILE *fin, unsigned int *width, unsigned int *height)
 	infosize = (header.offset - sizeof(BMPFileHeader_t));
 	//if ((infoheader = (BMPIn)
 }
+#endif
 
 /*
 	FTX Support
@@ -117,6 +121,8 @@ uint8_t *plLoadFTXImage(FILE *fin, unsigned int *width, unsigned int *height)
 {
 	FTXHeader_t		header;
 	uint8_t			*image;
+
+	plSetErrorFunction("plLoadPPMImage");
 
 	header.width	= plGetLittleLong(fin);
 	header.height	= plGetLittleLong(fin);
