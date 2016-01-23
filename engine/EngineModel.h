@@ -23,8 +23,6 @@
 
 #include "shared_model.h"
 
-//============================================================================
-
 void	Model_Initialize(void);
 void	Model_ClearAll(void);
 model_t *Mod_ForName(const char *cName);
@@ -39,5 +37,15 @@ MathVector_t Model_GenerateNormal3f(float aX, float aY, float aZ,float bX, float
 
 // OBJ Support (TODO: We can be smarter, why have specific drawing routines? Abstract things out.)
 void Model_DrawOBJ(ClientEntity_t *eEntity);
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+	bool ModelU3D_Load(model_t *model, void *buf);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // !ENGINE_MODEL_H

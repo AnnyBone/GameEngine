@@ -18,20 +18,66 @@
 
 #include "engine_base.h"
 
-extern "C" {
+using namespace std;
 
-	void ModelU3D_Load(model_t *model, void *buffer)
+bool ModelU3D_Load(model_t *model, void *buf)
+{
+	U3DDataHeader_t			dataheader;
+	U3DAnimationHeader_t	animheader;
+	U3DTriangle_t			*poly;
+	FILE					*dataf, *animf;
+
+	COM_FOpenFile(model->name, &dataf);
+	if (!dataf)
 	{
-#if 0
-		U3DDataHeader		dataheader;
-		U3DAnimationHeader	animheader;
-		void				*anim_buffer, *data_buffer;
-
-		// U3D models are animated per-vertex.
-		model->type = MODEL_TYPE_VERTEX;
-
-		//	COM_LoadFile()
-#endif
+		Con_Warning("Failed to load data file!\n");
+		return false;
 	}
 
+	// Try to figure out the data string we used
+	// then erase it.
+	string newpath(model->name);
+	size_t strpos = newpath.find("_d.3d");
+	if (strpos != -1)
+		newpath.erase(strpos);
+	else
+	{
+		// Some legacy models use _Data...
+		strpos = newpath.find("_Data.3d");
+		if (strpos != -1)
+			newpath.erase(strpos);
+		else
+		{
+			fclose(dataf);
+
+			Con_Warning("Invalid file name! (%s)\n", newpath.c_str());
+			return false;
+		}
+	}
+	newpath.append("_a.3d");
+
+	// Attempt to load the animation file.
+	COM_FOpenFile(newpath.c_str(), &animf);
+	if (!animf)
+	{
+		// Some legacy models use _Anim...
+		newpath.erase(newpath.length() - 2);
+		newpath.append("_Anim.3d");
+
+		COM_FOpenFile(newpath.c_str(), &animf);
+		if (!animf)
+		{
+			fclose(animf);
+			fclose(dataf);
+
+			// Welp, I give up *drops everything and walks out*
+			Con_Warning("Failed to load animation file!\n");
+			return false;
+		}
+	}
+
+	fclose(animf);
+	fclose(dataf);
+
+	return true;
 }

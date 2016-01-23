@@ -32,7 +32,7 @@ typedef struct
 {
 	uint16_t	frames;	// Number of frames.
 	uint16_t	size;	// Size of each frame.
-} U3DAnimationHeader;
+} U3DAnimationHeader_t;
 
 typedef struct
 {
@@ -47,12 +47,7 @@ typedef struct
 
 	uint32_t	fixscale;
 	uint32_t	unused[3];
-} U3DDataHeader;
-
-typedef struct
-{
-	int32_t x, y, z;
-} U3DVertex;
+} U3DDataHeader_t;
 
 enum U3DFlags
 {
@@ -74,6 +69,11 @@ enum U3DType
 
 typedef struct
 {
+	int32_t x, y, z;
+} U3DVertex_t;
+
+typedef struct
+{
 	uint16_t	vertex[3];	// Vertex indices
 	
 	uint8_t	type;		// Triangle type
@@ -81,6 +81,6 @@ typedef struct
 	uint8_t ST[3][2];	// Texture coords
 	uint8_t texturenum;	// Texture offset
 	uint8_t flags;		// Triangle flags
-} U3DTriangle;
+} U3DTriangle_t;
 
 #endif // !FORMAT_U3D_H
