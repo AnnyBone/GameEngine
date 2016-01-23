@@ -33,7 +33,6 @@ char	loadname[32];	// for hunk tags
 
 void Model_LoadBSP(model_t *mod, void *buffer);
 void Model_LoadMD2(model_t *mod,void *buffer);
-void Model_LoadOBJ(model_t *mModel, void *Buffer);
 
 model_t *Model_Load(model_t *mod);
 
@@ -217,6 +216,8 @@ typedef struct
 	bool (*Function)(model_t *model, void *buf);
 } ModelLoadInterface;
 
+bool Model_LoadOBJ(model_t *model, void *buf);
+
 ModelLoadInterface model_formatlist[] =
 {
 	{ "3d",		MODEL_TYPE_STATIC,	ModelU3D_Load },
@@ -280,7 +281,7 @@ model_t *Model_Load(model_t *model)
 					// Set the default type, we can change later.
 					model->type = (ModelType_t)model_formatlist[i].type;
 
-					if (model_formatlist[i].Function(model))
+					if (model_formatlist[i].Function(model, buf))
 					{
 						free(buf);
 						return model;
@@ -1519,7 +1520,7 @@ void Model_LoadMD2(model_t *mModel,void *Buffer)
 	OBJ Support
 */
 
-void Model_LoadOBJ(model_t *mModel,void *Buffer)
+bool Model_LoadOBJ(model_t *model,void *buf)
 {
 #if 0
 	char	cExtension[4];
@@ -1557,6 +1558,8 @@ void Model_LoadOBJ(model_t *mModel,void *Buffer)
 		}
 	}
 #endif
+
+	return false;
 }
 
 /**/
