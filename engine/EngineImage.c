@@ -92,7 +92,7 @@ uint8_t *Image_LoadImage(char *name, unsigned int *width, unsigned int *height)
 	}
 
 	// Throw a warning after we've tried all options.
-	Con_Warning("Failed to load image! (%s)\n", loadfilename);
+	Con_Warning("Failed to load image! (%s)\n", name);
 
 	return NULL;
 }
