@@ -520,7 +520,7 @@ void Cmd_AddCommand (char *cmd_name, xcommand_t function)
 	cmd_function_t	*cmd;
 	cmd_function_t	*cursor,*prev; //johnfitz -- sorted list insert
 
-	if(bHostInitialized)	// because hunk allocation would get stomped
+	if (g_hostinitialized)	// because hunk allocation would get stomped
 		Sys_Error("Cmd_AddCommand after host_initialized");
 
 	// Fail if the command is a variable name

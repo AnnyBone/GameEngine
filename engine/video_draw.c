@@ -380,6 +380,25 @@ void Draw_Character(int x, int y, int num)
 	VideoLayer_Enable(VIDEO_DEPTH_TEST);
 }
 
+/*	Draws a simple string of text on the screen.
+*/
+void Draw_String(int x, int y, char *msg)
+{
+	if (y <= -8)
+		return;
+
+	Material_Draw(g_mGlobalColour, 0, NULL, 0, 0, false);
+
+	while (*msg)
+	{
+		Draw_Character(x, y, *msg);
+		msg++;
+		x += 8;
+	}
+
+	Material_Draw(g_mGlobalColour, 0, NULL, 0, 0, true);
+}
+
 void Draw_ConsoleBackground(void)
 {
 	float		alpha = cvConsoleAlpha.value;
@@ -744,21 +763,6 @@ void Draw_ResetCanvas(void)
 	GL_SetCanvas(CANVAS_DEFAULT);
 
 	glColor4f(1, 1, 1, 1);
-}
-
-/*	Draws a simple string of text on the screen.
-*/
-void Draw_String(int x, int y, char *msg)
-{
-	if (y <= -8)
-		return;
-
-	while (*msg)
-	{
-		Draw_Character(x, y, *msg);
-		msg++;
-		x += 8;
-	}
 }
 
 /*

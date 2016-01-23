@@ -26,12 +26,12 @@ EngineGlobal_t g_state;
 
 bool Engine_IsRunning(void)
 {
-	return bHostInitialized;
+	return g_hostinitialized;
 }
 
 char *Engine_GetBasePath(void)
 {
-	return host_parms.cBasePath;
+	return host_parms.basepath;
 }
 
 char *Engine_GetMaterialPath(void)

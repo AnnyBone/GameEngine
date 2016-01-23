@@ -39,7 +39,7 @@
 #endif
 
 //	Build needs to be updated each day that work is done on the engine.
-#define ENGINE_VERSION_BUILD	1072	// 20/01/2016
+#define ENGINE_VERSION_BUILD	1075	// 23/01/2016
 
 #define	ENGINE_LOG	"engine"
 
@@ -122,7 +122,7 @@ typedef struct
 	void	*membase;
 	int		memsize;
 
-	char	cBasePath[MAX_QPATH];	// Base directory for game assets.
+	char	basepath[MAX_QPATH];	// Base directory for game assets.
 } EngineParameters_t;
 
 
@@ -138,7 +138,7 @@ extern ConsoleVariable_t sys_nostdout;
 extern ConsoleVariable_t developer;
 extern ConsoleVariable_t max_edicts; //johnfitz
 
-extern	bool		bHostInitialized;		// True if into command execution
+extern	bool		g_hostinitialized;	// True if into command execution
 extern	double		host_frametime;
 extern	int			host_framecount;	// incremented every frame, never reset
 extern	double		realtime;			// not bounded in any way, changed at

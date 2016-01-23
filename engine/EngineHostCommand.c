@@ -150,7 +150,7 @@ void Host_Game_f (void)
 
 		strcpy(com_gamedir, pakfile);
 
-		if(Q_strcasecmp(Cmd_Argv(1),host_parms.cBasePath)) //game is not id1
+		if (Q_strcasecmp(Cmd_Argv(1), host_parms.basepath)) //game is not id1
 		{
 			search = (searchpath_t*)calloc_or_die(1, sizeof(searchpath_t));
 			strcpy(search->filename, pakfile);

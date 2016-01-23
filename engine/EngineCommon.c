@@ -1257,7 +1257,7 @@ void FileSystem_AddGameDirectory(char *dir)
 */
 void _FileSystem_SetBasePath(char *cArg)
 {
-	strncpy(host_parms.cBasePath, cArg, PLATFORM_MAX_PATH);
+	strncpy(host_parms.basepath, cArg, PLATFORM_MAX_PATH);
 }
 
 void _FileSystem_SetMaterialPath(char *cArg)
@@ -1400,8 +1400,8 @@ void FileSystem_Initialize(void)
 	}
 
 	// Start up with the default path
-	FileSystem_AddGameDirectory(va("%s/%s",basedir,host_parms.cBasePath));
-	strncpy(com_gamedir, va("%s/%s", basedir, host_parms.cBasePath), sizeof(com_gamedir));
+	FileSystem_AddGameDirectory(va("%s/%s", basedir, host_parms.basepath));
+	strncpy(com_gamedir, va("%s/%s", basedir, host_parms.basepath), sizeof(com_gamedir));
 
 	i = COM_CheckParm ("-game");
 	if (i && i < com_argc-1)

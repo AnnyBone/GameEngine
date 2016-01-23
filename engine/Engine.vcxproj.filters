@@ -82,6 +82,12 @@
     <Filter Include="Client\Video\Shaders\Water">
       <UniqueIdentifier>{68fc86c4-1c0c-4bb3-8e5c-1d546491e637}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Client\Video\Effects">
+      <UniqueIdentifier>{60be56f8-d500-46fa-bdef-6a0f418c8948}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Client\Video\Models">
+      <UniqueIdentifier>{fc383661-239f-4081-b971-fb38f314c32f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="menu.c">
@@ -295,17 +301,8 @@
       <Filter>Client\Video</Filter>
     </ClCompile>
     <ClCompile Include="engine_exception.cpp" />
-    <ClCompile Include="model_u3d.cpp">
-      <Filter>Client</Filter>
-    </ClCompile>
     <ClCompile Include="video_draw.c">
       <Filter>Client\Video</Filter>
-    </ClCompile>
-    <ClCompile Include="client\effect_sprite.cpp">
-      <Filter>Client</Filter>
-    </ClCompile>
-    <ClCompile Include="client\effect_particle.cpp">
-      <Filter>Client</Filter>
     </ClCompile>
     <ClCompile Include="video_layer.c">
       <Filter>Client\Video</Filter>
@@ -313,14 +310,23 @@
     <ClCompile Include="video_brush.c">
       <Filter>Client\Video</Filter>
     </ClCompile>
-    <ClCompile Include="client\effect_decal.cpp">
-      <Filter>Client</Filter>
-    </ClCompile>
     <ClCompile Include="shader_water.cpp">
       <Filter>Client\Video\Shaders\Water</Filter>
     </ClCompile>
     <ClCompile Include="material.c">
       <Filter>Client</Filter>
+    </ClCompile>
+    <ClCompile Include="model_u3d.cpp">
+      <Filter>Client\Video\Models</Filter>
+    </ClCompile>
+    <ClCompile Include="client\effect_sprite.cpp">
+      <Filter>Client\Video\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="client\effect_particle.cpp">
+      <Filter>Client\Video\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="client\effect_decal.cpp">
+      <Filter>Client\Video\Effects</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -519,9 +525,6 @@
     <ClInclude Include="..\shared\format_obj.h">
       <Filter>Shared\Formats</Filter>
     </ClInclude>
-    <ClInclude Include="client\effect_sprite.h">
-      <Filter>Client</Filter>
-    </ClInclude>
     <ClInclude Include="video_layer.h">
       <Filter>Client\Video</Filter>
     </ClInclude>
@@ -554,6 +557,9 @@
     </ClInclude>
     <ClInclude Include="material.h">
       <Filter>Client</Filter>
+    </ClInclude>
+    <ClInclude Include="client\effect_sprite.h">
+      <Filter>Client\Video\Effects</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

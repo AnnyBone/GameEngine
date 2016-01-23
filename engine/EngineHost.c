@@ -44,7 +44,7 @@
 
 EngineParameters_t host_parms;
 
-bool	bHostInitialized;		// True if into command execution
+bool	g_hostinitialized;		// True if into command execution
 
 double		host_frametime,
 			dServerTime,
@@ -229,7 +229,7 @@ void Host_WriteConfiguration(void)
 	/*	Dedicated servers initialize the host but don't parse and set the
 		config.cfg cvars.
 	*/
-	if(bHostInitialized & !bIsDedicated)
+	if (g_hostinitialized & !bIsDedicated)
 	{
 		FILE	*fConfig;
 		char	cString[256];
@@ -740,7 +740,7 @@ void Host_Initialize(EngineParameters_t *epParameters)
 	Hunk_AllocName(0,"-HOST_HUNKLEVEL-");
 	host_hunklevel = Hunk_LowMark ();
 
-	bHostInitialized = true;
+	g_hostinitialized = true;
 }
 
 /*	FIXME: this is a callback from Sys_Quit and Sys_Error.  It would be better

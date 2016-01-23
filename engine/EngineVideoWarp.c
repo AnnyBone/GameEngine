@@ -209,7 +209,7 @@ void GL_SubdivideSurface(msurface_t *fa)
 void Surface_DrawWater(glpoly_t *p, Material_t *material)
 {
 	VideoVertex_t		*voWaterPoly;
-	MathVector3f_t		vWave,vLightColour;
+	MathVector3f_t		vWave;
 	float				*vertex, fWaterAlpha;
 
 	voWaterPoly = (VideoVertex_t*)Hunk_TempAlloc(p->numverts*sizeof(VideoVertex_t));

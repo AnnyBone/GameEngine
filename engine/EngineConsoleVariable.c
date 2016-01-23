@@ -287,7 +287,7 @@ void Cvar_Set (const char *var_name, char *value)
 	Cvar_UpdateValues(var);
 
 	//johnfitz -- during initialization, update default too
-	if (!bHostInitialized)
+	if (!g_hostinitialized)
 	{
 		free(var->default_string);
 		var->default_string = (char*)malloc_or_die(strlen(value) + 1);
