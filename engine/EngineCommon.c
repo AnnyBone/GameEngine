@@ -953,8 +953,8 @@ void FileSystem_CreatePath(char *path)
 */
 void FileSystem_CopyFile(char *netpath,char *cachepath)
 {
-	int             in, out;
-	int             remaining, count;
+	int		in, out;
+	int		remaining, count;
 	char    buf[4096];
 
 	remaining = Sys_FileOpenRead (netpath, &in);
@@ -983,9 +983,8 @@ int COM_FindFile (const char *filename, int *handle, FILE **file)
 {
 	pack_t			*pak;
 	searchpath_t    *search;
-	char            netpath[PLATFORM_MAX_PATH], cachepath[PLATFORM_MAX_PATH];
+	char            netpath[PLATFORM_MAX_PATH];
 	int             i;
-	int             findtime, cachetime;
 
 	if(!file && !handle)
 	{
@@ -1031,29 +1030,9 @@ int COM_FindFile (const char *filename, int *handle, FILE **file)
 		{
 			sprintf(netpath, "%s/%s", search->filename, filename);
 
-			findtime = Sys_FileTime (netpath);
-			if (findtime == -1)
+			// Check if the file exists or not.
+			if (!plFileExists(netpath))
 				continue;
-
-		// see if the file needs to be updated in the cache
-			if (!com_cachedir[0])
-				strcpy(cachepath, netpath);
-			else
-			{
-#if defined(_WIN32)
-				if ((strlen(netpath) < 2) || (netpath[1] != ':'))
-					sprintf (cachepath,"%s%s", com_cachedir, netpath);
-				else
-					sprintf (cachepath,"%s%s", com_cachedir, netpath+2);
-#else
-				sprintf (cachepath,"%s%s", com_cachedir, netpath);
-#endif
-
-				cachetime = Sys_FileTime (cachepath);
-				if (cachetime < findtime)
-					FileSystem_CopyFile(netpath,cachepath);
-				strcpy(netpath, cachepath);
-			}
 
 			Sys_Printf ("FindFile: %s\n",netpath);
 			com_filesize = Sys_FileOpenRead (netpath, &i);

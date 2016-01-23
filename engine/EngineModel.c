@@ -214,7 +214,7 @@ typedef struct
 
 	int type;
 
-	bool (*Function)(model_t *model);
+	bool (*Function)(model_t *model, void *buf);
 } ModelLoadInterface;
 
 ModelLoadInterface model_formatlist[] =
@@ -280,13 +280,10 @@ model_t *Model_Load(model_t *model)
 					// Set the default type, we can change later.
 					model->type = (ModelType_t)model_formatlist[i].type;
 
-					if (!model_formatlist[i].Function(model))
+					if (model_formatlist[i].Function(model))
 					{
-						Con_Warning("Failed to load model!\n");
-
 						free(buf);
-
-						return NULL;
+						return model;
 					}
 					break;
 				}
@@ -294,7 +291,7 @@ model_t *Model_Load(model_t *model)
 		}
 
 		// If we reach this point, definately not supported.
-		Con_Warning("Unsupported model type! (%s)\n", model->name);
+		Con_Warning("Failed to load model type! (%s)\n", model->name);
 
 		model = NULL;
 	}
