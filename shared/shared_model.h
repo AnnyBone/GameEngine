@@ -208,7 +208,6 @@ typedef struct model_s
 	ModelType_t	type;
 
 	int			version;
-	int			numframes;
 
 	int			flags;
 
@@ -272,7 +271,9 @@ typedef struct model_s
 	// Material System
 	struct Material_s	*mAssignedMaterials;
 
-	VideoObject_t object;
+	VideoObject_t	*objects;
+	unsigned int	numtriangles;	// Static counter for triangles.
+	int				numframes;		// Number of objects / frames.
 } model_t;
 
 #endif // !SHARED_MODEL_H

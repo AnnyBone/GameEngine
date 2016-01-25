@@ -26,7 +26,7 @@
 	http://paulbourke.net/dataformats/unreal/
 */
 
-#define	FORMAT_U3D_EXTENSION ".3d"
+#define	U3D_FILE_EXTENSION "3d"
 
 typedef struct
 {
@@ -39,7 +39,7 @@ typedef struct
 	uint16_t	numpolys;	// Number of polygons.
 	uint16_t	numverts;	// Number of vertices.
 	uint16_t	rotation;	// Mesh rotation?
-	uint16_t	frame;		// Initial frame??
+	uint16_t	frame;		// Initial frame.
 
 	uint32_t	norm_x;
 	uint32_t	norm_y;
@@ -49,13 +49,10 @@ typedef struct
 	uint32_t	unused[3];
 } U3DDataHeader_t;
 
-enum U3DFlags
-{
-	U3D_FLAG_TEXTURED,
-	U3D_FLAG_FLAT,
-	U3D_FLAG_TRANSPARENT,
-	U3D_FLAG_MASKED
-};
+#define	U3D_FLAG_UNLIT			16
+#define	U3D_FLAG_FLAT			32
+#define	U3D_FLAG_ENVIRONMENT	64
+#define	U3D_FLAG_NEAREST		128
 
 enum U3DType
 {
@@ -69,12 +66,15 @@ enum U3DType
 
 typedef struct
 {
-	int32_t x, y, z;
+	// This is a bit funky...
+	int32_t x : 11;
+	int32_t y : 11;
+	int32_t z : 10;
 } U3DVertex_t;
 
 typedef struct
 {
-	uint16_t	vertex[3];	// Vertex indices
+	uint16_t vertex[3];	// Vertex indices
 	
 	uint8_t	type;		// Triangle type
 	uint8_t colour;		// Triangle colour

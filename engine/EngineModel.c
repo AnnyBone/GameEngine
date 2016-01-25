@@ -220,7 +220,7 @@ bool Model_LoadOBJ(model_t *model, void *buf);
 
 ModelLoadInterface model_formatlist[] =
 {
-	{ "3d",		MODEL_TYPE_STATIC,	ModelU3D_Load },
+	{ U3D_FILE_EXTENSION, MODEL_TYPE_STATIC, ModelU3D_Load },
 	{ "obj",	MODEL_TYPE_STATIC,	Model_LoadOBJ }
 };
 
@@ -228,9 +228,9 @@ ModelLoadInterface model_formatlist[] =
 */
 model_t *Model_Load(model_t *model)
 {
-	char		exten[64];
-	void		*d;
-	int			i;
+	char	exten[64];
+	void	*d;
+	int		i;
 
 	if (!model->bNeedLoad)
 	{
@@ -282,10 +282,8 @@ model_t *Model_Load(model_t *model)
 					model->type = (ModelType_t)model_formatlist[i].type;
 
 					if (model_formatlist[i].Function(model, buf))
-					{
-						free(buf);
 						return model;
-					}
+
 					break;
 				}
 			}
@@ -1491,10 +1489,12 @@ void Model_LoadMD2(model_t *mModel,void *Buffer)
 		mMD2Model->num_skins*MAX_QPATH
 	);
 
+#if 0
 	// Allocate vertex array.
 	loadmodel->object.numverts = mMD2Model->numtris * 3;
 	loadmodel->object.vertices = (VideoVertex_t*)malloc(loadmodel->object.numverts * sizeof(VideoVertex_t));
 	memset(loadmodel->object.vertices, 0, loadmodel->object.numverts * sizeof(VideoVertex_t));
+#endif
 
 	Model_LoadMD2Textures(mModel);
 

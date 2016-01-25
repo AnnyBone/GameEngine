@@ -54,8 +54,8 @@ void Shadow_DrawBlob(ClientEntity_t *Entity)
 
 	fBlobHeight = Entity->origin[2] - lightspot[2];
 
-	VideoLayer_DepthMask(false);
-	VideoLayer_PushMatrix();
+	vlDepthMask(false);
+	vlPushMatrix();
 
 	glTranslatef(Entity->origin[0], Entity->origin[1], Entity->origin[2]);
 	glTranslatef(0, 0, -fBlobHeight + 0.1f);
@@ -80,8 +80,8 @@ void Shadow_DrawBlob(ClientEntity_t *Entity)
 
 	glTranslatef(0, 0, fBlobHeight + 0.1);
 
-	VideoLayer_PopMatrix();
-	VideoLayer_DepthMask(true);
+	vlPopMatrix();
+	vlDepthMask(true);
 }
 
 void Shadow_DrawMap(ClientEntity_t *Entity)
@@ -94,8 +94,8 @@ void Shadow_DrawMap(ClientEntity_t *Entity)
 	{
 		// TODO: Load up light protection matrix...
 
-		VideoLayer_PushMatrix();
-		VideoLayer_PopMatrix();
+		vlPushMatrix();
+		vlPopMatrix();
 	}
 }
 

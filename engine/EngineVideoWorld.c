@@ -236,14 +236,14 @@ void Surface_DrawMirror(msurface_t *surface)
 	glStencilFunc(GL_ALWAYS, 1, 255);
 	glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE);
 	glStencilMask(255);
-	VideoLayer_DepthMask(false);
+	vlDepthMask(false);
 	glClear(GL_STENCIL_BUFFER_BIT);
 
 	Video_DrawSurface(surface, 0, g_mGlobalColour, 0);
 
 	glStencilFunc(GL_EQUAL, 1, 255);
 	glStencilMask(0);
-	VideoLayer_DepthMask(true);
+	vlDepthMask(true);
 
 	ClientEntity_t *ViewEntity = &cl_entities[cl.viewentity];
 	if (cl_numvisedicts < MAX_VISEDICTS)

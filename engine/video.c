@@ -272,12 +272,10 @@ void Video_ClearBuffer(void)
 		return;
 
 	int clear = 0;
-	if (r_showtris.bValue || (cls.state != ca_connected) || g_state.embedded)
-		clear |= GL_COLOR_BUFFER_BIT;
 	if (cv_video_drawmirrors.bValue)
 		clear |= GL_STENCIL_BUFFER_BIT;
 
-	glClear(GL_DEPTH_BUFFER_BIT | clear);
+	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT | clear);
 }
 
 /*	Displays the depth buffer for testing purposes.
@@ -574,30 +572,42 @@ void Video_DrawSurface(msurface_t *mSurface,float fAlpha, Material_t *mMaterial,
 void Video_DrawObject(VideoVertex_t *vobject, VideoPrimitive_t primitive,
 	unsigned int numverts, Material_t *mMaterial, int iSkin)
 {
-	if (numverts == 0)
+	if(numverts == 0)
 		return;
 
-	if (Video.debug_frame)
-		plWriteLog(cv_video_log.string, "Drawing object (%i) (%i)\n", numverts, primitive);
-
-	bVideoIgnoreCapabilities = true;
-
-	Material_Draw(mMaterial, iSkin, vobject, primitive, numverts, false);
-
-	VideoObject_EnableDrawState();
-	VideoObject_SetupPointers(vobject);
+	VideoObject_t tempobj;
+	tempobj.vertices		= vobject;
+	tempobj.numverts		= numverts;
+	tempobj.numtriangles	= numverts;
+	tempobj.primitive		= primitive;
 
 	bool showwireframe = r_showtris.bValue;
 	if ((mMaterial && mMaterial->override_wireframe) && (r_showtris.iValue == 1))
 		showwireframe = false;
+	if (showwireframe)
+	{
+		switch (primitive)
+		{
+		case VIDEO_PRIMITIVE_LINES:
+			break;
+		case VIDEO_PRIMITIVE_TRIANGLES:
+			tempobj.primitive = VIDEO_PRIMITIVE_LINES;
+			break;
+		default:
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		}
+	}
 
-	VideoLayer_DrawArrays(primitive, numverts, showwireframe);
+	Material_Draw(mMaterial, iSkin, vobject, tempobj.primitive, numverts, false);
+	VideoObject_DrawImmediate(&tempobj);
+	Material_Draw(mMaterial, iSkin, vobject, tempobj.primitive, numverts, true);
 
-	VideoObject_DisableDrawState();
-
-	Material_Draw(mMaterial, iSkin, vobject, primitive, numverts, true);
-
-	bVideoIgnoreCapabilities = false;
+	if (showwireframe)
+	{
+		if ((primitive != VIDEO_PRIMITIVE_LINES) &&
+			(primitive != VIDEO_PRIMITIVE_TRIANGLES))
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	}
 }
 
 /*
@@ -745,7 +755,7 @@ void Video_ResetCapabilities(bool bClearActive)
 		}
 
 		VideoLayer_BlendFunc(VIDEO_BLEND_DEFAULT);
-		VideoLayer_DepthMask(true);
+		vlDepthMask(true);
 
 		bVideoIgnoreCapabilities = false;
 

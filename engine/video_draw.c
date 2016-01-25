@@ -480,7 +480,7 @@ void Draw_Line(MathVector3f_t mvStart, MathVector3f_t mvEnd)
 	Video_ObjectVertex(&voLine[1], mvEnd[0], mvEnd[1], mvEnd[2]);
 	Video_ObjectColour(&voLine[1], 1.0f, 0, 0, 1.0f);
 
-	Video_DrawObject(voLine, VIDEO_PRIMITIVE_LINE, 2, NULL, 0);
+	Video_DrawObject(voLine, VIDEO_PRIMITIVE_LINES, 2, NULL, 0);
 }
 
 /*	Debugging tool.
@@ -493,19 +493,19 @@ void Draw_CoordinateAxes(float x,float y,float z)
 	Video_ObjectColour(&voLine[0], 1.0f, 0, 0, 1.0f);
 	Video_ObjectVertex(&voLine[1], 1.0f, 0, 0);
 	Video_ObjectColour(&voLine[1], 1.0f, 0, 0, 1.0f);
-	Video_DrawObject(voLine, VIDEO_PRIMITIVE_LINE, 2, NULL, 0);
+	Video_DrawObject(voLine, VIDEO_PRIMITIVE_LINES, 2, NULL, 0);
 
 	Video_ObjectVertex(&voLine[0], 0, 0, 0);
 	Video_ObjectColour(&voLine[0], 0, 1.0f, 0, 1.0f);
 	Video_ObjectVertex(&voLine[1], 0, 1.0f, 0);
 	Video_ObjectColour(&voLine[1], 0, 1.0f, 0, 1.0f);
-	Video_DrawObject(voLine, VIDEO_PRIMITIVE_LINE, 2, NULL, 0);
+	Video_DrawObject(voLine, VIDEO_PRIMITIVE_LINES, 2, NULL, 0);
 
 	Video_ObjectVertex(&voLine[0], 0, 0, 0);
 	Video_ObjectColour(&voLine[0], 0, 0, 1.0f, 1.0f);
 	Video_ObjectVertex(&voLine[1], 0, 0, 1.0f);
 	Video_ObjectColour(&voLine[1], 0, 0, 1.0f, 1.0f);
-	Video_DrawObject(voLine, VIDEO_PRIMITIVE_LINE, 2, NULL, 0);
+	Video_DrawObject(voLine, VIDEO_PRIMITIVE_LINES, 2, NULL, 0);
 }
 
 void Draw_Grid(float x, float y, float z, int grid_size)
@@ -769,8 +769,20 @@ void Draw_ResetCanvas(void)
 	Entities
 */
 
+/*	Calls up buffer and draws it.
+*/
 void Draw_StaticEntity(ClientEntity_t *entity)
-{}
+{
+	// TODO: TEMPORARY DEBUGGING STUFF!!!!
+	glPushMatrix();
+
+	R_RotateForEntity(entity->origin, entity->angles);
+
+	VideoObject_DrawImmediate(&entity->model->objects[0]);
+
+	glPopMatrix();
+	// TODO: TEMPORARY DEBUGGING STUFF!!!!
+}
 
 void Draw_VertexEntity(ClientEntity_t *entity)
 {}

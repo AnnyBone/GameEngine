@@ -20,13 +20,14 @@
 
 using namespace std;
 
+/*	Loads a U3D model file.
+*/
 bool ModelU3D_Load(model_t *model, void *buf)
 {
-	U3DDataHeader_t			dataheader;
-	U3DAnimationHeader_t	animheader;
-	U3DTriangle_t			*poly;
-	FILE					*dataf, *animf;
+	// We don't need your kind here!
+	free(buf);
 
+	FILE *dataf;
 	COM_FOpenFile(model->name, &dataf);
 	if (!dataf)
 	{
@@ -57,6 +58,7 @@ bool ModelU3D_Load(model_t *model, void *buf)
 	newpath.append("_a.3d");
 
 	// Attempt to load the animation file.
+	FILE *animf;
 	COM_FOpenFile(newpath.c_str(), &animf);
 	if (!animf)
 	{
@@ -67,7 +69,6 @@ bool ModelU3D_Load(model_t *model, void *buf)
 		COM_FOpenFile(newpath.c_str(), &animf);
 		if (!animf)
 		{
-			fclose(animf);
 			fclose(dataf);
 
 			// Welp, I give up *drops everything and walks out*
@@ -76,8 +77,120 @@ bool ModelU3D_Load(model_t *model, void *buf)
 		}
 	}
 
+	// Attempt to read the animation header.
+	U3DAnimationHeader_t animheader;
+	if (fread(&animheader, sizeof(U3DAnimationHeader_t), 1, animf) != 1)
+	{
+		fclose(animf);
+		fclose(dataf);
+
+		Con_Warning("Failed to read animation file!\n");
+		return false;
+	}
+
+	// Attempt to read the data header.
+	U3DDataHeader_t	dataheader;
+	if (fread(&dataheader, sizeof(U3DDataHeader_t), 1, dataf) != 1)
+	{
+		fclose(animf);
+		fclose(dataf);
+
+		Con_Warning("Failed to read data file!\n");
+		return false;
+	}
+
+	// Store the information we've gathered.
+	model->numtriangles		= dataheader.numpolys;
+	model->numvertexes		= dataheader.numverts;
+	model->numframes		= animheader.frames;
+
+	// Allocate an object for each frame.
+	model->objects = (VideoObject_t*)calloc(model->numframes, sizeof(VideoObject_t));
+
+	// If it has more than one frame, we're gonna want to interp between
+	// it all later.
+	if (model->numframes > 1)
+		model->type = MODEL_TYPE_VERTEX;
+
+	fseek(dataf, 12, SEEK_CUR);
+
+	// Process all the triangles...
+	U3DTriangle_t *utriangles = (U3DTriangle_t*)calloc(model->numtriangles, sizeof(U3DTriangle_t));
+	for (unsigned int i = 0; i < model->numtriangles; i++)
+	{
+		size_t retsize = fread(&utriangles[i], sizeof(U3DTriangle_t), 1, dataf);
+		if (retsize != 1)
+		{
+			free(utriangles);
+
+			fclose(animf);
+			fclose(dataf);
+
+			Con_Warning("Failed to process triangles! (%i)\n", retsize);
+			return false;
+		}
+	}
+
+	// Process all the vertices...
+	U3DVertex_t *uvertices = (U3DVertex_t*)calloc((model->numvertexes * model->numframes), sizeof(U3DVertex_t));
+	for (int i = 0; i < model->numframes; i++)
+	{
+		// Allocate vertices.
+		model->objects[i].vertices		= (VideoVertex_t*)calloc(model->numvertexes, sizeof(VideoVertex_t));
+		model->objects[i].numverts		= model->numvertexes;
+		model->objects[i].numtriangles	= model->numtriangles;
+		model->objects[i].primitive		= VIDEO_PRIMITIVE_TRIANGLES;
+		model->objects[i].indices		= (uint8_t*)calloc(model->numtriangles * 3, sizeof(uint8_t));
+
+		size_t retsize = fread(&uvertices[i], sizeof(U3DVertex_t), model->numvertexes, animf);
+		if (retsize != (size_t)model->numvertexes)
+		{
+			free(uvertices);
+			fclose(animf);
+			free(utriangles);
+			fclose(dataf);
+
+			Con_Warning("Failed to process vertices! (%i)\n", retsize);
+			return false;
+		}
+
+		// Copy the indices over.
+		for (unsigned int j = 0, k = 0; j < model->numtriangles; j++)
+		{
+			model->objects[i].indices[k] = utriangles[j].vertex[0];	k++;
+			model->objects[i].indices[k] = utriangles[j].vertex[1];	k++;
+			model->objects[i].indices[k] = utriangles[j].vertex[2];	k++;
+		}
+
+		// Copy each of the vertices over.
+		for (int j = 0; j < model->numvertexes; j++)
+		{
+			model->objects[i].vertices[j].mvPosition[0] = (float)uvertices[j].x;
+			model->objects[i].vertices[j].mvPosition[1] = (float)uvertices[j].y;
+			model->objects[i].vertices[j].mvPosition[2] = (float)uvertices[j].z;
+		}
+
+		fseek(animf, animheader.size - model->numvertexes * sizeof(U3DVertex_t), SEEK_CUR);
+	}
+	free(uvertices);
 	fclose(animf);
+	free(utriangles);
 	fclose(dataf);
 
+#if 0
+		for (unsigned int j = 0, verts = 0; j < model->numtriangles; j++)
+		{
+			for (int k = 0; k < 3; k++)
+			{
+				model->objects[i].vertices[utriangles[j].vertex[k]].mvPosition[0] = (float)uvertices[utriangles[j].vertex[k]].x;
+				model->objects[i].vertices[utriangles[j].vertex[k]].mvPosition[1] = (float)uvertices[utriangles[j].vertex[k]].y;
+				model->objects[i].vertices[utriangles[j].vertex[k]].mvPosition[2] = (float)uvertices[utriangles[j].vertex[k]].z;
+				Math_Vector4Copy(g_colourwhite, model->objects[i].vertices[utriangles[j].vertex[k]].mvColour);
+				verts++;
+			}
+		}
+#endif
+
+	// Everything checks out!
 	return true;
 }

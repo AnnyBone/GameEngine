@@ -989,7 +989,7 @@ void Material_Draw(Material_t *Material, int Skin,
 	{
 		if (!ispost)
 		{
-			VideoLayer_DepthMask(false);
+			vlDepthMask(false);
 
 			VideoLayer_Enable(VIDEO_BLEND);
 
@@ -999,7 +999,7 @@ void Material_Draw(Material_t *Material, int Skin,
 		}
 		else
 		{
-			VideoLayer_DepthMask(true);
+			vlDepthMask(true);
 
 			VideoLayer_Disable(VIDEO_BLEND);
 
@@ -1090,14 +1090,14 @@ void Material_Draw(Material_t *Material, int Skin,
 
 					if ((msCurrentSkin->uiFlags & MATERIAL_FLAG_ALPHATRICK) && (cv_video_alphatrick.bValue && (ObjectSize > 0)))
 					{
-						VideoLayer_DepthMask(false);
+						vlDepthMask(false);
 						VideoLayer_Enable(VIDEO_BLEND);
 
 						// Draw the object again (don't bother passing material).
 						Video_DrawObject(ObjectVertex, ObjectPrimitive, ObjectSize, NULL, 0);
 
 						VideoLayer_Disable(VIDEO_BLEND);
-						VideoLayer_DepthMask(true);
+						vlDepthMask(true);
 					}
 				}
 

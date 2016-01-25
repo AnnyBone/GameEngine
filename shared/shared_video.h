@@ -36,9 +36,10 @@
 // Primitive Types
 typedef enum
 {
-	VIDEO_PRIMITIVE_IGNORE,
+	VIDEO_PRIMITIVE_IGNORE = -1,
 
-	VIDEO_PRIMITIVE_LINE,
+	VIDEO_PRIMITIVE_LINES,
+	VIDEO_PRIMITIVE_POINTS,
 	VIDEO_PRIMITIVE_TRIANGLES,
 	VIDEO_PRIMITIVE_TRIANGLE_STRIP,
 	VIDEO_PRIMITIVE_TRIANGLE_FAN,
@@ -105,10 +106,14 @@ typedef struct
 {
 	VideoVertex_t *vertices;	// Array of vertices for the object.
 
-	unsigned int numverts;	// Number of vertices.
+	unsigned int numverts;		// Number of vertices.
+	unsigned int numtriangles;	// Number of triangles.
+	
+	uint8_t	*indices;	// List of indeces.
 
 	VideoPrimitive_t primitive;
 
+	unsigned int object_vertexarrays;
 	unsigned int 
 		buffer_vertex, 
 		buffer_colour, 

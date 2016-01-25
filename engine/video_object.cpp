@@ -20,6 +20,8 @@
 
 #include "video.h"
 
+#if 0
+
 /*
 	Vertex
 */
@@ -57,18 +59,18 @@ VideoDrawStatic::VideoDrawStatic(VideoPrimitive_t pPrimitiveType)
 VideoDrawStatic::~VideoDrawStatic()
 {
 	VIDEO_FUNCTION_START
-	VideoLayer_DeleteVertexBuffer(&uiVertexBuffer);
-	VideoLayer_DeleteVertexBuffer(&uiColourBuffer);
-	VideoLayer_DeleteVertexBuffer(&uiTextureBuffer);
+	vlDeleteVertexBuffer(&uiVertexBuffer);
+	vlDeleteVertexBuffer(&uiColourBuffer);
+	vlDeleteVertexBuffer(&uiTextureBuffer);
 	VIDEO_FUNCTION_END
 }
 
 void VideoDrawStatic::Begin()
 {
 	VIDEO_FUNCTION_START
-	VideoLayer_GenerateVertexBuffer(&uiVertexBuffer);
-	VideoLayer_GenerateVertexBuffer(&uiColourBuffer);
-	VideoLayer_GenerateVertexBuffer(&uiTextureBuffer);
+	vlGenerateVertexBuffer(&uiVertexBuffer);
+	vlGenerateVertexBuffer(&uiColourBuffer);
+	vlGenerateVertexBuffer(&uiTextureBuffer);
 	VIDEO_FUNCTION_END
 }
 
@@ -124,7 +126,7 @@ void VideoDrawStatic::Draw()
 			glTexCoordPointer(2, GL_FLOAT, 0, 0);
 		}
 
-	VideoLayer_DrawArrays(pPrimitiveType, uiVertices /*replace me*/, r_showtris.bValue);
+	vlDrawArrays(pPrimitiveType, 0, uiVertices);
 
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_COLOR_ARRAY);
@@ -132,24 +134,31 @@ void VideoDrawStatic::Draw()
 	VIDEO_FUNCTION_END
 }
 
+#endif
+
 /*
-	C Wrapper
+	Legacy Interface
 */
 
-VideoObject_t *VideoObject_Create(void)
+void VideoObject_Setup(VideoObject_t *object)
 {
-	VideoObject_t *object = new VideoObject_t;
-	return object;
+	// Create the vertex array object.
+	vlGenerateVertexArray(&object->object_vertexarrays);
+	vlBindVertexArray(object->object_vertexarrays);
+
+	// Create each of the buffers.
+	vlGenerateVertexBuffer(&object->buffer_vertex);
+	vlGenerateVertexBuffer(&object->buffer_colour);
+	vlGenerateVertexBuffer(&object->buffer_texture);
 }
 
-/*
-	Traditional style interface
-*/
-
-void VideoObject_Begin(VideoObject_t *voObject, VideoPrimitive_t vpPrimitive)
+void VideoObject_Destroy(VideoObject_t *object)
 {
-	VIDEO_FUNCTION_START
-	VIDEO_FUNCTION_END
+	vlDeleteVertexBuffer(&object->buffer_colour);
+	vlDeleteVertexBuffer(&object->buffer_vertex);
+	vlDeleteVertexBuffer(&object->buffer_texture);
+
+	glDeleteVertexArrays(1, &object->object_vertexarrays);
 }
 
 void VideoObject_Vertex(VideoObject_t *voObject, float x, float y, float z)
@@ -162,13 +171,6 @@ void VideoObject_Vertex(VideoObject_t *voObject, float x, float y, float z)
 	voObject->vertices[voObject->numverts].mvPosition[0] = x;
 	voObject->vertices[voObject->numverts].mvPosition[1] = y;
 	voObject->vertices[voObject->numverts].mvPosition[2] = z;
-	VIDEO_FUNCTION_END
-}
-
-void VideoObject_VertexVector(VideoObject_t *oObject, MathVector3f_t mvVertex)
-{
-	VIDEO_FUNCTION_START
-	VideoObject_Vertex(oObject, mvVertex[0], mvVertex[1], mvVertex[2]);
 	VIDEO_FUNCTION_END
 }
 
@@ -198,9 +200,11 @@ void VideoObject_ColourVector(VideoObject_t *voObject, MathVector4f_t mvColour)
 	VIDEO_FUNCTION_END
 }
 
-void VideoObject_End(VideoObject_t *voObject)
+void VideoObject_End(VideoObject_t *object)
 {
 	VIDEO_FUNCTION_START
+	vlBindBuffer(GL_ARRAY_BUFFER, object->buffer_vertex);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(object->vertices), object->vertices, GL_STATIC_DRAW);
 	VIDEO_FUNCTION_END
 }
 
@@ -218,67 +222,60 @@ void VideoObject_Clip(VideoObject_t *voObject, MathVector4f_t mvClipDimensions)
 	Rendering
 */
 
-void VideoObject_EnableDrawState(void)
+void VideoObject_Draw(VideoObject_t *object)
 {
+	glEnableVertexAttribArray(0);
+
+	vlBindBuffer(GL_ARRAY_BUFFER, object->buffer_vertex);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+
+	vlDrawArrays(object->primitive, 0, object->numtriangles);
+
+	glDisableVertexAttribArray(0);
+}
+
+/*	Draw object using immediate mode.
+*/
+void VideoObject_DrawImmediate(VideoObject_t *object)
+{
+	VIDEO_FUNCTION_START
+	if (object->numverts == 0)
+		return;
+
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_COLOR_ARRAY);
 	glEnableClientState(GL_NORMAL_ARRAY);
-}
 
-void VideoObject_DisableDrawState(void)
-{
+	VideoVertex_t *vert = object->vertices;
+	glVertexPointer(3, GL_FLOAT, sizeof(VideoVertex_t), vert->mvPosition);
+	glColorPointer(4, GL_FLOAT, sizeof(VideoVertex_t), vert->mvColour);
+	glNormalPointer(GL_FLOAT, sizeof(VideoVertex_t), vert->mvNormal);
+	for (int i = 0; i < VIDEO_MAX_UNITS; i++)
+		if (Video.textureunit_state[i])
+		{
+			glClientActiveTexture(Video_GetTextureUnit(i));
+			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+			glTexCoordPointer(2, GL_FLOAT, sizeof(VideoVertex_t), vert->mvST[i]);
+		}
+
+	if (object->primitive == VIDEO_PRIMITIVE_TRIANGLES)
+		vlDrawElements(
+			object->primitive,
+			object->numtriangles * 3,
+			GL_UNSIGNED_BYTE,
+			object->indices
+		);
+	else
+		vlDrawArrays(object->primitive, 0, object->numverts);
+
 	glDisableClientState(GL_COLOR_ARRAY);
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_NORMAL_ARRAY);
-
 	for (int i = 0; i < VIDEO_MAX_UNITS; i++)
 		if (Video.textureunit_state[i])
 		{
 			glClientActiveTexture(Video_GetTextureUnit(i));
 			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 		}
-}
-
-void VideoObject_SetupPointers(VideoVertex_t *vobject)
-{
-	glVertexPointer(3, GL_FLOAT, sizeof(VideoVertex_t), vobject->mvPosition);
-	glColorPointer(4, GL_FLOAT, sizeof(VideoVertex_t), vobject->mvColour);
-	glNormalPointer(GL_FLOAT, sizeof(VideoVertex_t), vobject->mvNormal);
-
-	for (int i = 0; i < VIDEO_MAX_UNITS; i++)
-		if (Video.textureunit_state[i])
-		{
-			glClientActiveTexture(Video_GetTextureUnit(i));
-			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-			glTexCoordPointer(2, GL_FLOAT, sizeof(VideoVertex_t), vobject->mvST[i]);
-		}
-}
-
-void VideoObject_Draw(VideoObject_t *object)
-{
-	VIDEO_FUNCTION_START
-
-	VideoObject_EnableDrawState();
-
-	glBindBuffer(GL_ARRAY_BUFFER, object->buffer_vertex);
-	glVertexPointer(3, GL_FLOAT, 0, 0);
-
-	glBindBuffer(GL_ARRAY_BUFFER, object->buffer_colour);
-	glColorPointer(4, GL_FLOAT, 0, 0);
-
-	glBindBuffer(GL_ARRAY_BUFFER, object->buffer_texture);
-
-	for (int i = 0; i < VIDEO_MAX_UNITS; i++)
-		if (Video.textureunit_state[i])
-		{
-			glClientActiveTexture(Video_GetTextureUnit(i));
-			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-			glTexCoordPointer(2, GL_FLOAT, 0, 0);
-		}
-
-	VideoLayer_DrawArrays(object->primitive, object->numverts, r_showtris.bValue);
-
-	VideoObject_DisableDrawState();
-
 	VIDEO_FUNCTION_END
 }

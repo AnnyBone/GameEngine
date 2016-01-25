@@ -46,10 +46,10 @@ typedef enum
 extern "C" {
 #endif
 
-	char *VideoLayer_GetErrorMessage(unsigned int uiGLError);
+	char *vlGetErrorString(unsigned int er);
 
-	void VideoLayer_PushMatrix(void);
-	void VideoLayer_PopMatrix(void);
+	void vlPushMatrix(void);
+	void vlPopMatrix(void);
 
 	void VideoLayer_SetupTexture(VideoTextureFormat_t InternalFormat, VideoTextureFormat_t Format, unsigned int Width, unsigned int Height);
 	void VideoLayer_SetTextureFilter(VideoTextureFilter_t FilterMode);
@@ -59,20 +59,26 @@ extern "C" {
 	void VideoLayer_Disable(unsigned int uiCapabilities);
 
 	void VideoLayer_BlendFunc(VideoBlend_t modea, VideoBlend_t modeb);
-	void VideoLayer_DepthMask(bool mode);
+	void vlDepthMask(bool mode);
 
 	// Shaders
 	void VideoLayer_UseProgram(unsigned int program);
 
 	// Drawing
-	void VideoLayer_DrawArrays(const VideoPrimitive_t vpPrimitiveType, unsigned int uiSize, bool bWireframe);
+	void vlDrawArrays(VideoPrimitive_t mode, unsigned int first, unsigned int count);
+	void vlDrawElements(VideoPrimitive_t mode, unsigned int count, unsigned int type, const void *indices);
+
+	// Vertex Array
+	void vlGenerateVertexArray(unsigned int *arrays);
+	void vlBindVertexArray(unsigned int array);
 
 	// Vertex Buffer
-	void VideoLayer_GenerateVertexBuffer(unsigned int *uiBuffer);
-	void VideoLayer_DeleteVertexBuffer(unsigned int *uiBuffer);
+	void vlGenerateVertexBuffer(unsigned int *uiBuffer);
+	void vlBindBuffer(unsigned int target, unsigned int buffer);
+	void vlDeleteVertexBuffer(unsigned int *uiBuffer);
 	
 	// Frame Buffer
-	void VideoLayer_ClearStencilBuffer(void);
+	void vlClearStencilBuffer(void);
 	void VideoLayer_GenerateFrameBuffer(unsigned int *uiBuffer);
 	void VideoLayer_CheckFrameBufferStatus();
 	void VideoLayer_BindFrameBuffer(VideoFBOTarget_t vtTarget, unsigned int uiBuffer);
@@ -81,7 +87,7 @@ extern "C" {
 	void VideoLayer_DeleteFrameBuffer(unsigned int *uiBuffer);
 
 	// Render Buffer
-	void VideoLayer_GenerateRenderBuffer(unsigned int *buffer);
+	void vlGenerateRenderBuffer(unsigned int *buffer);
 	void VideoLayer_BindRenderBuffer(unsigned int buffer);
 	void VideoLayer_RenderBufferStorage(int format, int samples, unsigned int width, unsigned int height);
 	void VideoLayer_DeleteRenderBuffer(unsigned int *buffer);

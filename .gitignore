@@ -47,7 +47,6 @@ editor_legacy/Debug/RCa07736
 *.lastcodeanalysissucceeded
 *.lock
 *.index
-*.java
 *.DS_Store
 *.prefs
 *.version

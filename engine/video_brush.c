@@ -152,7 +152,7 @@ void R_DrawSequentialPoly(msurface_t *s)
 			alpha = Math_Clamp(0.0, ENTALPHA_DECODE(currententity->alpha), 1.0f);
 		if (alpha < 1.0f)
 		{
-			VideoLayer_DepthMask(false);
+			vlDepthMask(false);
 			VideoLayer_Enable(VIDEO_BLEND);
 		}
 
@@ -168,7 +168,7 @@ void R_DrawSequentialPoly(msurface_t *s)
 
 		if (alpha < 1.0f)
 		{
-			VideoLayer_DepthMask(true);
+			vlDepthMask(true);
 			VideoLayer_Disable(VIDEO_BLEND);
 		}
 	}
@@ -178,7 +178,7 @@ void R_DrawSequentialPoly(msurface_t *s)
 		{
 			if (alpha < 1)
 			{
-				VideoLayer_DepthMask(false);
+				vlDepthMask(false);
 				VideoLayer_Enable(VIDEO_BLEND);
 			}
 
@@ -199,7 +199,7 @@ void R_DrawSequentialPoly(msurface_t *s)
 		{
 			if (alpha < 1)
 			{
-				VideoLayer_DepthMask(true);
+				vlDepthMask(true);
 				VideoLayer_Disable(VIDEO_BLEND);
 			}
 

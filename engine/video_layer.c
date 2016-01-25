@@ -31,10 +31,10 @@
 
 /*	Checks glGetError and returns a generic string describing the fault.
 */
-char *VideoLayer_GetErrorMessage(unsigned int uiGLError)
+char *vlGetErrorString(unsigned int er)
 {
 	VIDEO_FUNCTION_START
-	switch (uiGLError)
+	switch (er)
 	{
 	case GL_NO_ERROR:
 		return "No error has been recorded.";
@@ -64,7 +64,7 @@ char *VideoLayer_GetErrorMessage(unsigned int uiGLError)
 
 static bool vl_matrixpushed = false;
 
-void VideoLayer_PushMatrix(void)
+void vlPushMatrix(void)
 {
 	VIDEO_FUNCTION_START
 	if (vl_matrixpushed)
@@ -75,7 +75,7 @@ void VideoLayer_PushMatrix(void)
 	VIDEO_FUNCTION_END
 }
 
-void VideoLayer_PopMatrix(void)
+void vlPopMatrix(void)
 {
 	VIDEO_FUNCTION_START
 	if (!vl_matrixpushed)
@@ -289,7 +289,7 @@ void VideoLayer_BlendFunc(VideoBlend_t modea, VideoBlend_t modeb)
 
 /*	Enable or disable writing into the depth buffer.
 */
-void VideoLayer_DepthMask(bool mode)
+void vlDepthMask(bool mode)
 {
 	VIDEO_FUNCTION_START
 	static bool cur_state = true;
@@ -300,12 +300,12 @@ void VideoLayer_DepthMask(bool mode)
 }
 
 /*===========================
-	OPENGL BUFFERS
+	OPENGL OBJECTS
 ===========================*/
 
 // RENDER BUFFER OBJECTS
 
-void VideoLayer_GenerateRenderBuffer(unsigned int *buffer)
+void vlGenerateRenderBuffer(unsigned int *buffer)
 {
 	VIDEO_FUNCTION_START
 	glGenRenderbuffers(1, buffer);
@@ -347,8 +347,30 @@ void VideoLayer_RenderBufferStorage(int format, int samples, unsigned int width,
 			// This should *NEVER* occur.
 			break;
 		}
-		Sys_Error("%s\n%s", VideoLayer_GetErrorMessage(glerror), errorstring);
+		Sys_Error("%s\n%s", vlGetErrorString(glerror), errorstring);
 	}
+}
+
+// VERTEX ARRAY OBJECTS
+
+/*	Generates a single vertex array.
+	glGenVertexArrays
+*/
+void vlGenerateVertexArray(unsigned int *arrays)
+{
+	VIDEO_FUNCTION_START
+	glGenVertexArrays(1, arrays);
+	VIDEO_FUNCTION_END
+}
+
+/*	Binds the given vertex array.
+	glBindVertexArray
+*/
+void vlBindVertexArray(unsigned int array)
+{
+	VIDEO_FUNCTION_START
+	glBindVertexArray(array);
+	VIDEO_FUNCTION_END
 }
 
 // VERTEX BUFFER OBJECTS
@@ -356,7 +378,7 @@ void VideoLayer_RenderBufferStorage(int format, int samples, unsigned int width,
 /*	Generates a single OpenGL buffer.
 	glGenBuffers
 */
-void VideoLayer_GenerateVertexBuffer(unsigned int *uiBuffer) 
+void vlGenerateVertexBuffer(unsigned int *uiBuffer)
 {
 	VIDEO_FUNCTION_START
 	glGenBuffers(1, uiBuffer);
@@ -366,16 +388,26 @@ void VideoLayer_GenerateVertexBuffer(unsigned int *uiBuffer)
 /*	Deletes a single OpenGL buffer.
 	glDeleteBuffers
 */
-void VideoLayer_DeleteVertexBuffer(unsigned int *uiBuffer)
+void vlDeleteVertexBuffer(unsigned int *uiBuffer)
 {
 	VIDEO_FUNCTION_START
 	glDeleteBuffers(1, uiBuffer);
 	VIDEO_FUNCTION_END
 }
 
+/*	Binds the given buffer.
+	glBindBuffer
+*/
+void vlBindBuffer(unsigned int target, unsigned int buffer)
+{
+	VIDEO_FUNCTION_START
+	glBindBuffer(target, buffer);
+	VIDEO_FUNCTION_END
+}
+
 // FRAME BUFFER OBJECTS
 
-void VideoLayer_ClearStencilBuffer(void)
+void vlClearStencilBuffer(void)
 {
 	glClear(GL_STENCIL_BUFFER_BIT);
 }
@@ -402,7 +434,7 @@ void VideoLayer_CheckFrameBufferStatus()
 
 	// Generic GL error.
 	if (status == 0)
-		Sys_Error("An error occured when checking framebuffer! (%s)\n", VideoLayer_GetErrorMessage(glGetError()));
+		Sys_Error("An error occured when checking framebuffer! (%s)\n", vlGetErrorString(glGetError()));
 
 	switch (status)
 	{
@@ -467,7 +499,7 @@ void VideoLayer_BindFrameBuffer(VideoFBOTarget_t vtTarget, unsigned int uiBuffer
 			// This should *NEVER* occur.
 			break;
 		}
-		Sys_Error("%s\n%s", VideoLayer_GetErrorMessage(glerror), errorstring);
+		Sys_Error("%s\n%s", vlGetErrorString(glerror), errorstring);
 	}
 	VIDEO_FUNCTION_END
 }
@@ -502,58 +534,52 @@ void VideoLayer_AttachFrameBufferTexture(gltexture_t *buffer)
 
 typedef struct
 {
-	VideoPrimitive_t vpPrimitive;
+	VideoPrimitive_t primitive;
 
-	unsigned int uiGL;
+	unsigned int gl;
 
-	const char *ccIdentifier;
+	const char *name;
 } VideoPrimitives_t;
 
-VideoPrimitives_t vpVideoPrimitiveList[] =
+VideoPrimitives_t vl_primitives[] =
 {
-	{ VIDEO_PRIMITIVE_LINE, GL_LINES, "LINES" },
+	{ VIDEO_PRIMITIVE_LINES, GL_LINES, "LINES" },
+	{ VIDEO_PRIMITIVE_POINTS, GL_POINTS, "POINTS" },
 	{ VIDEO_PRIMITIVE_TRIANGLES, GL_TRIANGLES, "TRIANGLES" },
 	{ VIDEO_PRIMITIVE_TRIANGLE_FAN, GL_TRIANGLE_FAN, "TRIANGLE_FAN" },
 	{ VIDEO_PRIMITIVE_TRIANGLE_FAN_LINE, GL_LINES, "TRIANGLE_FAN_LINE" },
 	{ VIDEO_PRIMITIVE_TRIANGLE_STRIP, GL_TRIANGLE_STRIP, "TRIANGLE_STRIP" }
 };
 
-unsigned int VideoLayer_TranslatePrimitiveType(const VideoPrimitive_t primitive)
+unsigned int vlTranslatePrimitiveType(VideoPrimitive_t primitive)
 {
-	int	i;
-	for (i = 0; i < sizeof(vpVideoPrimitiveList); i++)
-		if (primitive == vpVideoPrimitiveList[i].vpPrimitive)
-			return vpVideoPrimitiveList[i].uiGL;
+	for (int i = 0; i < pARRAYELEMENTS(vl_primitives); i++)
+		if (primitive == vl_primitives[i].primitive)
+			return vl_primitives[i].gl;
 
-	return VIDEO_PRIMITIVE_IGNORE;
+	return GL_POINTS;
 }
 
 /*	Deals with tris view and different primitive types, then finally draws
 	the given arrays.
 */
-void VideoLayer_DrawArrays(const VideoPrimitive_t vpPrimitiveType, unsigned int uiSize, bool bWireframe)
+void vlDrawArrays(VideoPrimitive_t mode, unsigned int first, unsigned int count)
 {
-	unsigned int uiPrimitiveType = VideoLayer_TranslatePrimitiveType(vpPrimitiveType);
-	if (uiPrimitiveType == VIDEO_PRIMITIVE_IGNORE)
-		Sys_Error("Invalid primitive type! (%i)\n", vpPrimitiveType);
+	if ((mode == VIDEO_PRIMITIVE_IGNORE) || (count == 0))
+		return;
 
-	if (bWireframe)
-	{
-		switch (vpPrimitiveType)
-		{
-		case VIDEO_PRIMITIVE_LINE:
-		case VIDEO_PRIMITIVE_TRIANGLES:
-			uiPrimitiveType = GL_LINES;
-			break;
-		default:
-			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		}
-	}
+	unsigned int glmode = vlTranslatePrimitiveType(mode);
+	glDrawArrays(glmode, first, count);
+}
 
-	glDrawArrays(uiPrimitiveType, 0, uiSize);
+void vlDrawElements(VideoPrimitive_t mode, unsigned int count, unsigned int type, const void *indices)
+{
+	if ((mode == VIDEO_PRIMITIVE_IGNORE) || (count == 0))
+		return;
 
-	if (bWireframe)
-		if ((vpPrimitiveType != VIDEO_PRIMITIVE_LINE) &&
-			(vpPrimitiveType != VIDEO_PRIMITIVE_TRIANGLES))
-			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	if (!indices)
+		Sys_Error("Invalid indices when drawing object! (%i) (%i) (%i)\n", mode, count, type);
+
+	unsigned int glmode = vlTranslatePrimitiveType(mode);
+	glDrawElements(glmode, count, type,	indices);
 }

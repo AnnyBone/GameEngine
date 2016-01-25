@@ -834,8 +834,6 @@ void Sky_Draw3DWorld(void)
 
 	R_SetupView();
 
-	VideoLayer_DepthMask(false);
-
 	glPushMatrix();
 	glScalef(2.0f, 2.0f, 2.0f);
 
@@ -844,8 +842,6 @@ void Sky_Draw3DWorld(void)
 	r_refdef.sky = false;
 
 	glPopMatrix();
-
-	VideoLayer_DepthMask(true);
 
 	// Restore view position.
 	Math_VectorCopy(oldorg, r_refdef.vieworg);
@@ -864,11 +860,6 @@ void Sky_Draw(void)
 	if (r_drawflat_cheatsafe || r_lightmap_cheatsafe || !cv_video_drawsky.bValue)
 		return;
 
-	// 3D skybox support.
-	if (cl.worldmodel && (cl.worldmodel->flags & MODEL_FLAG_3DSKY))
-		Sky_Draw3DWorld();
-
-#if 1
 	// Reset sky bounds.
 	for(i = 0; i < 6; i++)
 	{
@@ -914,5 +905,8 @@ void Sky_Draw(void)
 	}
 
 	Fog_EnableGFog();
-#endif
+
+	// 3D skybox support.
+	if (cl.worldmodel && (cl.worldmodel->flags & MODEL_FLAG_3DSKY))
+		Sky_Draw3DWorld();
 }

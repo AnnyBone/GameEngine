@@ -134,10 +134,12 @@ void Alias_DrawFrame(MD2_t *mModel, ClientEntity_t *entity, lerpdata_t lLerpData
 				(verts2[order[2]].v[1] * frame2->scale[1] + frame2->translate[1])*lLerpData.blend,
 				(verts1[order[2]].v[2] * frame1->scale[2] + frame1->translate[2])*ilerp +
 				(verts2[order[2]].v[2] * frame2->scale[2] + frame2->translate[2])*lLerpData.blend);
+#if 0
 			Video_ObjectNormal(&voModel[uiVerts],
 				entity->model->object.vertices[uiVerts].mvNormal[0],
 				entity->model->object.vertices[uiVerts].mvNormal[1],
 				entity->model->object.vertices[uiVerts].mvNormal[2]);
+#endif
 			Video_ObjectColour(&voModel[uiVerts], alias_lightcolour[0], alias_lightcolour[1], alias_lightcolour[2], fAlpha);
 
 			uiVerts++;
@@ -186,6 +188,7 @@ void Alias_SetupFrame(MD2_t *mModel,ClientEntity_t *ceCurrent,lerpdata_t *ldLerp
 		ldLerp->blend = 1.0f;
 }
 
+// TODO: abstract this out so it can be applied for movement in general.
 void Alias_SetupEntityTransform(ClientEntity_t *ceEntity, lerpdata_t *lerpdata)
 {
 	float			blend;

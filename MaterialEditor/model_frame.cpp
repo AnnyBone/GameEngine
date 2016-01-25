@@ -30,7 +30,7 @@ ModelViewportPanel::ModelViewportPanel(wxWindow *parent) : BaseViewportPanel(par
 	if (entity)
 	{
 		entity->alpha = 255;
-		entity->origin[0] = 50.0f;
+		entity->origin[0] = 50;
 		entity->origin[1] = 0;
 		entity->origin[2] = 0;
 		entity->model = NULL;

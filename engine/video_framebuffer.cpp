@@ -27,7 +27,7 @@ VideoRenderBuffer::VideoRenderBuffer(unsigned int w, unsigned int h)
 	width	= w;
 	height	= h;
 
-	VideoLayer_GenerateRenderBuffer(&instance);
+	vlGenerateRenderBuffer(&instance);
 }
 
 VideoRenderBuffer::~VideoRenderBuffer()
