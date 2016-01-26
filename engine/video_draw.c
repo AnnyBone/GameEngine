@@ -778,14 +778,24 @@ void Draw_StaticEntity(ClientEntity_t *entity)
 
 	R_RotateForEntity(entity->origin, entity->angles);
 
-	VideoObject_DrawImmediate(&entity->model->objects[0]);
+	Material_Draw(entity->model->mAssignedMaterials, 0, 0, 0, 0, false);
+	VideoObject_DrawImmediate(&entity->model->objects[entity->frame]);
+	Material_Draw(entity->model->mAssignedMaterials, 0, 0, 0, 0, true);
 
 	glPopMatrix();
 	// TODO: TEMPORARY DEBUGGING STUFF!!!!
 }
 
 void Draw_VertexEntity(ClientEntity_t *entity)
-{}
+{
+	glPushMatrix();
+
+	R_RotateForEntity(entity->origin, entity->angles);
+
+	VideoObject_DrawImmediate(&entity->model->objects[entity->frame]);
+
+	glPopMatrix();
+}
 
 void Draw_Entity(ClientEntity_t *entity)
 {

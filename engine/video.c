@@ -578,7 +578,6 @@ void Video_DrawObject(VideoVertex_t *vobject, VideoPrimitive_t primitive,
 	VideoObject_t tempobj;
 	tempobj.vertices		= vobject;
 	tempobj.numverts		= numverts;
-	tempobj.numtriangles	= numverts;
 	tempobj.primitive		= primitive;
 
 	bool showwireframe = r_showtris.bValue;
