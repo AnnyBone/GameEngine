@@ -76,8 +76,8 @@ typedef struct
 
 typedef struct
 {
-	pUCHAR	v[3];				// scaled byte to fit in frame mins/maxs
-	pUCHAR	lightnormalindex;
+	pl_uchar	v[3];				// scaled byte to fit in frame mins/maxs
+	pl_uchar	lightnormalindex;
 } MD2TriangleVertex_t;
 
 typedef struct
@@ -301,7 +301,7 @@ typedef struct
 	unsigned	int		uiFirstMarkSurface,
 						uiNumMarkSurfaces;
 
-	pUCHAR				bAmbientLevel[BSP_AMBIENT_END];
+	pl_uchar			bAmbientLevel[BSP_AMBIENT_END];
 } BSPLeaf_t;
 
 // Obsolete
