@@ -1,7 +1,7 @@
-CFLAGS   := -Wall -fPIC -ggdb
-CXXFLAGS := $(CFLAGS) -std=c++11
+CFLAGS   := -Wall -fPIC -ggdb -std=c99
+CXXFLAGS := -Wall -fPIC -ggdb -std=c++11
 
-INCLUDE := -I./platform/include/ -I./shared/ $(shell pkg-config sdl2 --cflags)
+INCLUDE := -I./platform/include/ -I./shared/ $(shell pkg-config sdl2 openal --cflags)
 
 LAUNCHER_BIN  := bin/launcher
 LAUNCHER_OBJS := launcher/launcher.o
@@ -9,16 +9,17 @@ LAUNCHER_LIBS := -ldl -lX11 -lpthread
 
 PLATFORM_OBJS := platform/platform.o \
 	platform/platform_filesystem.o \
+	platform/platform_image.o \
 	platform/platform_log.o \
 	platform/platform_math.o \
 	platform/platform_module.o \
 	platform/platform_window.o
 
 ENGINE_BIN  := bin/engine.x64.so
-ENGINE_OBJS := engine/cmdlib.o \
+ENGINE_OBJS := engine/audio.o \
+	engine/cmdlib.o \
 	engine/conproc.o \
 	engine/crc.o \
-	engine/EngineAudio.o \
 	engine/EngineAudioDirectSound.o \
 	engine/EngineAudioDMA.o \
 	engine/EngineAudioDummy.o \
@@ -90,7 +91,7 @@ ENGINE_OBJS := engine/cmdlib.o \
 	engine/client/effect_particle.o \
 	engine/client/effect_sprite.o \
 	shared/SharedFormats.o
-ENGINE_LIBS := -lglee $(shell pkg-config sdl2 --libs)
+ENGINE_LIBS := -lglee $(shell pkg-config sdl2 openal --libs)
 
 MENU_BIN  := bin/menu.x64.so
 MENU_OBJS := menu/menu_hud.o \

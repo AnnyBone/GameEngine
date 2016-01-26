@@ -25,6 +25,12 @@
 
 #include <SDL.h>
 
+#ifndef _WIN32
+#include <sys/time.h>
+#include <sys/types.h>
+#include <unistd.h>
+#endif
+
 // Platform library
 #include "platform_window.h"
 #include "platform_filesystem.h"
