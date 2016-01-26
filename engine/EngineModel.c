@@ -1256,25 +1256,25 @@ MathVector_t Model_GenerateNormal3f(
 	return Model_GenerateNormal(a, b, c);
 }
 
+void Model_LoadRelativeMaterial(model_t *model)
+{
+	char out[PLATFORM_MAX_PATH];
+
+	COM_StripExtension(model->name, out);
+
+	model->mAssignedMaterials = Material_Load(out);
+	if (!model->mAssignedMaterials)
+	{
+		Con_Warning("Failed to load material for model! (%s) (%s)\n", model->name, out);
+
+		// Set us up to just use the dummy material instead.
+		model->mAssignedMaterials = g_mMissingMaterial;
+	}
+}
+
 /*
 	MD2 Models
 */
-
-void Model_LoadMD2Textures(model_t *mModel)
-{
-	char cOutName[PLATFORM_MAX_PATH];
-
-	COM_StripExtension(mModel->name,cOutName);
-
-	mModel->mAssignedMaterials = Material_Load(cOutName);
-	if (!mModel->mAssignedMaterials)
-	{
-		Con_Warning("Failed to load material for model! (%s) (%s)\n",mModel->name,cOutName);
-
-		// Set us up to just use the dummy material instead.
-		mModel->mAssignedMaterials = g_mMissingMaterial;
-	}
-}
 
 /*	Calculate bounds of alias model for nonrotated, yawrotated, and fullrotated cases
 */
@@ -1496,7 +1496,7 @@ void Model_LoadMD2(model_t *mModel,void *Buffer)
 	memset(loadmodel->object.vertices, 0, loadmodel->object.numverts * sizeof(VideoVertex_t));
 #endif
 
-	Model_LoadMD2Textures(mModel);
+	Model_LoadRelativeMaterial(mModel);
 
 	// Process the appropriate model bounds.
 	Model_CalculateMD2Bounds(mModel, mMD2Model);

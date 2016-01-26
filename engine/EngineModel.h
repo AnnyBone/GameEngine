@@ -35,12 +35,11 @@ uint8_t	*Mod_LeafPVS (mleaf_t *leaf, model_t *model);
 MathVector_t Model_GenerateNormal(MathVector3f_t a, MathVector3f_t b, MathVector3f_t c);
 MathVector_t Model_GenerateNormal3f(float aX, float aY, float aZ,float bX, float bY, float bZ,float cX, float cY, float cZ);
 
-// OBJ Support (TODO: We can be smarter, why have specific drawing routines? Abstract things out.)
-void Model_DrawOBJ(ClientEntity_t *eEntity);
-
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+	void Model_LoadRelativeMaterial(model_t *model);
 
 	bool ModelU3D_Load(model_t *model, void *buf);
 

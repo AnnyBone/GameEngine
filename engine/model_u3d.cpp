@@ -160,6 +160,13 @@ bool ModelU3D_Load(model_t *model, void *buf)
 			model->objects[i].indices[k] = utriangles[j].vertex[0];	k++;
 			model->objects[i].indices[k] = utriangles[j].vertex[1];	k++;
 			model->objects[i].indices[k] = utriangles[j].vertex[2];	k++;
+
+			model->objects[i].vertices[utriangles[j].vertex[0]].mvST[0][0] = utriangles[j].ST[0][0];
+			model->objects[i].vertices[utriangles[j].vertex[0]].mvST[0][1] = utriangles[j].ST[0][1];
+			model->objects[i].vertices[utriangles[j].vertex[1]].mvST[0][0] = utriangles[j].ST[1][0];
+			model->objects[i].vertices[utriangles[j].vertex[1]].mvST[0][1] = utriangles[j].ST[1][1];
+			model->objects[i].vertices[utriangles[j].vertex[2]].mvST[0][0] = utriangles[j].ST[2][0];
+			model->objects[i].vertices[utriangles[j].vertex[2]].mvST[0][1] = utriangles[j].ST[2][1];
 		}
 
 		// Copy each of the vertices over.
@@ -168,6 +175,8 @@ bool ModelU3D_Load(model_t *model, void *buf)
 			model->objects[i].vertices[j].mvPosition[0] = (float)uvertices[j].x;
 			model->objects[i].vertices[j].mvPosition[1] = (float)uvertices[j].y;
 			model->objects[i].vertices[j].mvPosition[2] = (float)uvertices[j].z;
+
+			Math_Vector4Copy(g_colourwhite, model->objects[i].vertices[j].mvColour);
 		}
 
 		fseek(animf, animheader.size - model->numvertexes * sizeof(U3DVertex_t), SEEK_CUR);
@@ -185,11 +194,13 @@ bool ModelU3D_Load(model_t *model, void *buf)
 				model->objects[i].vertices[utriangles[j].vertex[k]].mvPosition[0] = (float)uvertices[utriangles[j].vertex[k]].x;
 				model->objects[i].vertices[utriangles[j].vertex[k]].mvPosition[1] = (float)uvertices[utriangles[j].vertex[k]].y;
 				model->objects[i].vertices[utriangles[j].vertex[k]].mvPosition[2] = (float)uvertices[utriangles[j].vertex[k]].z;
-				Math_Vector4Copy(g_colourwhite, model->objects[i].vertices[utriangles[j].vertex[k]].mvColour);
+				
 				verts++;
 			}
 		}
 #endif
+
+	Model_LoadRelativeMaterial(model);
 
 	// Everything checks out!
 	return true;
