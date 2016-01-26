@@ -121,7 +121,7 @@ void Light_Draw(void)
 					v[j] = dlLight->origin[j]+vright[j]*cos(a)*rad+vup[j]*sin(a)*rad;
 
 				Math_VectorCopy(v,voLight[c].mvPosition);
-				Math_ColorNormalize(dlLight->color,vColour);
+				plColourNormalize(dlLight->color, vColour);
 				Math_VectorCopy(vColour,voLight[c].mvColour);
 
 				voLight[c].mvColour[3] = 0.5f;
