@@ -112,7 +112,13 @@ typedef struct
 
 } client_static_t;
 
-extern client_static_t	cls;
+#ifdef __cplusplus
+extern "C" {
+#endif
+	extern client_static_t	cls;
+#ifdef __cplusplus
+}
+#endif
 
 /*	The client_state_t structure is wiped completely at every
 	server signon.

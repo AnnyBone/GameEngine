@@ -321,11 +321,12 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
-      <OutputFile>..\bin\engine.x86.dll</OutputFile>
-      <AdditionalDependencies>opengl32.lib;comctl32.lib;winmm.lib;wsock32.lib;SDL2.lib;platform.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\lib\x86;..\external\sdl2\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <OutputFile>..\bin\engine.dll</OutputFile>
+      <AdditionalDependencies>opengl32.lib;comctl32.lib;winmm.lib;wsock32.lib;OpenAL32.lib;SDL2.lib;platform.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateMapFile>false</GenerateMapFile>
       <MapExports>false</MapExports>
+      <ImageHasSafeExceptionHandlers>true</ImageHasSafeExceptionHandlers>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug (Ictus)|Win32'">
@@ -634,7 +635,7 @@
     <ClCompile Include="video_framebuffer.cpp" />
     <ClCompile Include="EngineVideoParticle.c" />
     <ClCompile Include="EngineVideoAlias.c" />
-    <ClCompile Include="EngineAudio.c" />
+    <ClCompile Include="audio.cpp" />
     <ClCompile Include="video_shader.cpp" />
     <ClCompile Include="engine_client.c" />
     <ClCompile Include="EngineConsoleCommand.c" />
@@ -731,7 +732,7 @@
     <ClInclude Include="engine_exception.h" />
     <ClInclude Include="EngineMaterialEditor.h" />
     <ClInclude Include="EngineVideoDraw.h" />
-    <ClInclude Include="EngineAudio.h" />
+    <ClInclude Include="audio.h" />
     <ClInclude Include="video_framebuffer.h" />
     <ClInclude Include="video_layer.h" />
     <ClInclude Include="video_object.h" />

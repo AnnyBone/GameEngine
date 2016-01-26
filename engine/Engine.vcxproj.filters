@@ -183,9 +183,6 @@
     <ClCompile Include="EngineVideoTextureManager.c">
       <Filter>Legacy\Client\Video</Filter>
     </ClCompile>
-    <ClCompile Include="EngineAudio.c">
-      <Filter>Legacy\Client\Audio</Filter>
-    </ClCompile>
     <ClCompile Include="EngineVideoParticle.c">
       <Filter>Legacy\Client\Video</Filter>
     </ClCompile>
@@ -328,6 +325,9 @@
     <ClCompile Include="client\effect_decal.cpp">
       <Filter>Client\Video\Effects</Filter>
     </ClCompile>
+    <ClCompile Include="audio.cpp">
+      <Filter>Client\Audio</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\shared\shared_client.h">
@@ -413,9 +413,6 @@
     </ClInclude>
     <ClInclude Include="EngineVideoTextureManager.h">
       <Filter>Legacy\Client\Video</Filter>
-    </ClInclude>
-    <ClInclude Include="EngineAudio.h">
-      <Filter>Legacy\Client\Audio</Filter>
     </ClInclude>
     <ClInclude Include="EngineVideoParticle.h">
       <Filter>Legacy\Client\Video</Filter>
@@ -560,6 +557,9 @@
     </ClInclude>
     <ClInclude Include="client\effect_sprite.h">
       <Filter>Client\Video\Effects</Filter>
+    </ClInclude>
+    <ClInclude Include="audio.h">
+      <Filter>Client\Audio</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

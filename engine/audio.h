@@ -36,14 +36,18 @@ typedef struct
 	unsigned int	buffers[AUDIO_MAX_BUFFERS];
 } Audio_t;
 
-plEXTERN_C_START
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-extern Audio_t g_audio;
+	extern Audio_t g_audio;
 
-void Audio_Initialize(void);
-void Audio_Frame(void);
-void Audio_Shutdown(void);
+	void Audio_Initialize(void);
+	void Audio_Frame(void);
+	void Audio_Shutdown(void);
 
-plEXTERN_C_END
+#ifdef __cplusplus
+}
+#endif
 
 #endif // !AUDIO_H

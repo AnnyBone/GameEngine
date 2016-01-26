@@ -39,6 +39,7 @@
 #	include <stdlib.h>
 #	include <stdarg.h>
 #	include <stdlib.h>
+#	include <stdbool.h>
 #	ifdef _MSC_VER	// MSVC doesn't support stdint...
 #		ifndef __cplusplus
 #			include "platform_inttypes.h"
@@ -161,46 +162,6 @@
 #	define PLATFORM_CPU   "x64"
 #else
 #	define PLATFORM_CPU   "x86"
-#endif
-
-/*
-	Boolean
-	The boolean data type doesn't really exist in C, so this is
-	a custom implementation of it.
-*/
-
-// Use these if you want to show reliance on this library
-// or want stricter conformance.
-#ifdef PLATFORM_STRICT_BOOL
-	typedef enum {
-		pl_false, pl_true
-	} plBoolean_t;
-	typedef plBoolean_t pl_bool;
-#else
-	enum {
-		pl_false, pl_true
-	};
-	typedef unsigned char pl_bool;
-#endif
-
-// These are probably what you're going to want to use.
-#ifndef __cplusplus
-#	ifdef bool
-#		undef bool
-#	endif
-#	ifdef true
-#		undef true
-#	endif
-#	ifdef false
-#		undef false
-#	endif
-#	ifndef PLATFORM_STRICT_BOOL
-		// Using _Bool data type
-		enum {
-			true, false
-		};
-		typedef _Bool bool;
-#	endif
 #endif
 
 // These are usually expected to be defined already, but in-case they're not then we define them here.

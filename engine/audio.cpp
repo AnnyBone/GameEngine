@@ -37,7 +37,6 @@ Audio_t g_audio;
 ALCdevice	*audio_device;
 ALCcontext	*audio_context;
 
-
 bool audio_initialized = false;
 
 void Audio_PlayCommand(void);
@@ -46,6 +45,8 @@ void Audio_Initialize(void)
 {
 	if (audio_initialized)
 		return;
+
+	Con_Printf("Initializing audio...\n");
 
 	Cmd_AddCommand("audio_play", Audio_PlayCommand);
 
