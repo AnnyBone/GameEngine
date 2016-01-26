@@ -19,15 +19,11 @@
 #ifndef PLATFORM_LOG_H
 #define	PLATFORM_LOG_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+plEXTERN_C_START
 
 	void plWriteLog(const char *path, const char *msg, ...);
-	void plClearLog(const char *ccPath);
+	void plClearLog(const char *path);
 
-#ifdef __cplusplus
-}
-#endif
+plEXTERN_C_END
 
 #endif // !PLATFORM_LOG_H

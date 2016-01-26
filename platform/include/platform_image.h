@@ -19,15 +19,11 @@
 #ifndef PLATFORM_IMAGE_H
 #define	PLATFORM_IMAGE_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+plEXTERN_C_START
 
 	extern uint8_t *plLoadFTXImage(FILE *fin, unsigned int *width, unsigned int *height);	// Ritual's FTX image format.
 	extern uint8_t *plLoadPPMImage(FILE *fin, unsigned int *width, unsigned int *height);	// Load old PPM image format.
 
-#ifdef __cplusplus
-}
-#endif
+plEXTERN_C_END
 
 #endif // !PLATFORM_IMAGE_H

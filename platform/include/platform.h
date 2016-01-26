@@ -31,6 +31,7 @@
 
 // pIGNORE_SHARED_HEADERS
 // pIGNORE_PLATFORM_HEADERS
+// PLATFORM_STRICT_BOOL
 
 // Shared headers
 #ifndef pIGNORE_SHARED_HEADERS
@@ -97,7 +98,7 @@
 #			define	snprintf	_snprintf
 #		endif
 #		ifndef unlink
-#			define unlink		_unlink
+#			define	unlink		_unlink
 #		endif
 #	endif
 #elif __APPLE__	// Mac OS X
@@ -147,7 +148,13 @@
 #	define	PLATFORM_MAX_USER	256			// Maximum length allowed for a username.
 #endif
 
-#define	pEXTERN_C extern "C"
+#ifdef __cplusplus
+#	define	plEXTERN_C_START	extern "C" {
+#	define	plEXTERN_C_END		}
+#else
+#	define	plEXTERN_C_START
+#	define	plEXTERN_C_END
+#endif
 
 // Helper to allow us to determine the type of CPU; this is used for the module interfaces.
 #if defined(__amd64) || defined(__amd64__)
@@ -162,29 +169,37 @@
 	a custom implementation of it.
 */
 
+// Use these if you want to show reliance on this library
+// or want stricter conformance.
+#ifdef PLATFORM_STRICT_BOOL
+	typedef enum {
+		pl_false, pl_true
+	} plBoolean_t;
+	typedef plBoolean_t pl_bool;
+#else
+	enum {
+		pl_false, pl_true
+	};
+	typedef unsigned char pl_bool;
+#endif
+
 // These are probably what you're going to want to use.
 #ifndef __cplusplus
-#	if 0	// Internal solution
-#		ifdef bool
-#			undef bool
-#		endif
-#		ifdef true
-#			undef true
-#		endif
-#		ifdef false
-#			undef false
-#		endif
-		typedef enum
-		{
-			false,	// "false", nothing.
-			true	// "true", otherwise just a positive number.
-		} PlatformBoolean_t;
-		typedef PlatformBoolean_t bool;
-#	else	// Using _Bool data type
+#	ifdef bool
+#		undef bool
+#	endif
+#	ifdef true
+#		undef true
+#	endif
+#	ifdef false
+#		undef false
+#	endif
+#	ifndef PLATFORM_STRICT_BOOL
+		// Using _Bool data type
+		enum {
+			true, false
+		};
 		typedef _Bool bool;
-
-#		define	true 1
-#		define false 0
 #	endif
 #endif
 
@@ -199,16 +214,6 @@
 #	define FALSE false
 #endif
 
-// Use these if you want to show reliance on this library.
-typedef bool pBOOL;
-#if 0
-typedef true pTRUE;
-typedef false pFALSE;
-#else
-#define pTRUE true
-#define pFALSE false
-#endif
-
 /**/
 
 #ifdef _MSC_VER	// MSVC doesn't support __func__ either...
@@ -219,8 +224,8 @@ typedef false pFALSE;
 
 #define	pARRAYELEMENTS(a)	(sizeof(a)/sizeof(*(a)))	// Returns the number of elements within an array.
 
-typedef unsigned int	pUINT;
-typedef	unsigned char	pUCHAR;
+typedef unsigned int	pl_uint;
+typedef	unsigned char	pl_uchar;
 
 #include "platform_log.h"
 #include "platform_window.h"
@@ -243,9 +248,7 @@ plSetErrorFunction(pFUNCTION);
 #endif
 #define pFUNCTION_END 		}
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+plEXTERN_C_START
 
 	extern void	plResetError(void);									// Resets the error message to "null", so you can ensure you have the correct message from the library.
 	extern void	plSetError(const char *msg, ...);					// Sets the error message, so we can grab it outside the library.
@@ -254,9 +257,7 @@ extern "C" {
 	extern char *plGetSystemError(void);	// Returns the error message currently given by the operating system.
 	extern char	*plGetError(void);			// Returns the last recorded error.
 
-#ifdef __cplusplus
-}
-#endif
+plEXTERN_C_END
 
 /**/
 

@@ -24,9 +24,7 @@
 #	include <X11/Xlib.h>
 #endif
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+plEXTERN_C_START
 
 	extern void plMessageBox(const char *title, const char *msg, ...);
 	extern void plShowCursor(bool show);
@@ -36,8 +34,6 @@ extern "C" {
 	extern int plGetScreenHeight(void);	// Returns height of current screen.
 	extern int plGetScreenCount(void);	// Returns number of avaliable screens.
 
-#ifdef __cplusplus
-}
-#endif
+plEXTERN_C_END
 
 #endif // !PLATFORM_WINDOW_H

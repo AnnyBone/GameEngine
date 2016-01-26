@@ -29,18 +29,16 @@ typedef struct
 	void **Function;
 } pModuleFunction_t;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+plEXTERN_C_START
 
 #ifdef _WIN32
-#define	pMODULE_EXTENSION	".dll"
-#define	pMODULE_EXPORT		__declspec(dllexport)
-#define pMODULE_IMPORT		__declspec(dllimport)
+#	define	pMODULE_EXTENSION	".dll"
+#	define	pMODULE_EXPORT		__declspec(dllexport)
+#	define pMODULE_IMPORT		__declspec(dllimport)
 #else   // Linux
-#define	pMODULE_EXTENSION	".so"
-#define pMODULE_EXPORT		__attribute__((visibility("default")))
-#define pMODULE_IMPORT		__attribute__((visibility("hidden")))
+#	define	pMODULE_EXTENSION	".so"
+#	define pMODULE_EXPORT		__attribute__((visibility("default")))
+#	define pMODULE_IMPORT		__attribute__((visibility("hidden")))
 #endif
 
 	extern pFARPROC plFindModuleFunction(pINSTANCE instance, const char *function);
@@ -50,8 +48,6 @@ extern "C" {
 	extern void plUnloadModule(pINSTANCE instance);
 	extern void *plLoadModuleInterface(pINSTANCE instance, const char *path, const char *entry, void *handle);
 
-#ifdef __cplusplus
-}
-#endif
+plEXTERN_C_END
 
 #endif // !PLATFORM_MODULE_H

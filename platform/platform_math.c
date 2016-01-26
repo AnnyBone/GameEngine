@@ -219,25 +219,25 @@ MathVectorf_t Math_DotProduct(MathVector3f_t a, MathVector3f_t b)
 	return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
 }
 
-void _Math_VectorCopy(MathVector3f_t a, MathVector3f_t b)
+void plVectorCopy3f(MathVector3f_t in, MathVector3f_t out)
 {
-	b[0] = a[0];
-	b[1] = a[1];
-	b[2] = a[2];
+	out[0] = in[0];
+	out[1] = in[1];
+	out[2] = in[2];
 }
 
-void _Math_VectorScale(MathVector3f_t in, MathVectorf_t scale, MathVector3f_t out)
+void plVectorScale3f(MathVector3f_t in, MathVectorf_t scale, MathVector3f_t out)
 {
 	out[0] = in[0] * scale;
 	out[1] = in[1] * scale;
 	out[2] = in[2] * scale;
 }
 
-void _Math_VectorAdd(MathVector3f_t a, MathVector3f_t b, MathVector3f_t c)
+void plVectorAdd3f(MathVector3f_t in, MathVector3f_t add, MathVector3f_t out)
 {
-	c[0] = a[0] + b[0];
-	c[1] = a[1] + b[1];
-	c[2] = a[2] + b[2];
+	out[0] = in[0] + add[0];
+	out[1] = in[1] + add[1];
+	out[2] = in[2] + add[2];
 }
 
 void _Math_VectorSubtract(MathVector3f_t a, MathVector3f_t b, MathVector3f_t c)
@@ -245,6 +245,13 @@ void _Math_VectorSubtract(MathVector3f_t a, MathVector3f_t b, MathVector3f_t c)
 	c[0] = a[0] - b[0];
 	c[1] = a[1] - b[1];
 	c[2] = a[2] - b[2];
+}
+
+void plVectorMultiply3f(MathVector3f_t in, MathVector3f_t multi, MathVector3f_t out)
+{
+	out[0] = in[0] * multi[0];
+	out[1] = in[1] * multi[1];
+	out[2] = in[2] * multi[2];
 }
 
 // [23/2/2013] Added Math_VectorMake ~eukos
@@ -257,23 +264,19 @@ void Math_VectorMake(MathVector3f_t veca, float scale, MathVector3f_t vecb, Math
 
 /*	Stolen from Quake 2.
 */
-MathVectorf_t Math_ColorNormalize(MathVector3f_t in, MathVector3f_t out)
+MathVectorf_t plColourNormalize(MathVector3f_t in, MathVector3f_t out)
 {
 	float	max, scale;
-
 	max = in[0];
 	if (in[1] > max)
 		max = in[1];
 	else if (in[2] > max)
 		max = in[2];
-
 	if (!max)
 		return 0;
 
 	scale = 1.0f / max;
-
 	Math_VectorScale(in, scale, out);
-
 	return max;
 }
 

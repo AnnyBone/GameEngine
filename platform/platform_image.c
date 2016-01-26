@@ -105,6 +105,12 @@ uint8_t *plLoadBMPImage(FILE *fin, unsigned int *width, unsigned int *height)
 #endif
 
 /*
+	DDS Support
+*/
+
+
+
+/*
 	FTX Support
 */
 

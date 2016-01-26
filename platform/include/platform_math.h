@@ -21,11 +21,9 @@
 #ifndef PLATFORM_MATH_H
 #define	PLATFORM_MATH_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include "platform.h"
+
+plEXTERN_C_START
 
 #ifdef __cplusplus
 	/*
@@ -190,9 +188,6 @@ enum PlatformMathRGBA
 */
 
 void	_Math_VectorSubtract(MathVector3f_t a, MathVector3f_t b, MathVector3f_t c);
-void	_Math_VectorAdd(MathVector3f_t a, MathVector3f_t b, MathVector3f_t c);
-void	_Math_VectorCopy(MathVector3f_t a, MathVector3f_t b);
-void	_Math_VectorScale(MathVector3f_t in, MathVectorf_t scale, MathVector3f_t out);
 
 struct	mplane_s;
 
@@ -220,7 +215,6 @@ MathVectord_t Math_Lengthd(MathVector3d_t a);
 #endif
 
 MathVectorf_t Math_VectorNormalize(MathVector3f_t a);
-MathVectorf_t Math_ColorNormalize(MathVector3f_t in, MathVector3f_t out);
 MathVectorf_t Math_DotProduct(MathVector3f_t a, MathVector3f_t b);
 
 MathVector_t Math_VectorToAngles(MathVector3f_t vValue);
@@ -245,8 +239,13 @@ float Math_InOutBack(float x);
 float Math_Impulse(float x, float k);
 float Math_ExpPulse(float x, float k, float n);
 
-#ifdef __cplusplus
-}
-#endif
+	MathVectorf_t plColourNormalize(MathVector3f_t in, MathVector3f_t out);
+
+	void plVectorMultiply3f(MathVector3f_t in, MathVector3f_t multi, MathVector3f_t out);
+	void plVectorAdd3f(MathVector3f_t in, MathVector3f_t add, MathVector3f_t out);
+	void plVectorCopy3f(MathVector3f_t in, MathVector3f_t out);
+	void plVectorScale3f(MathVector3f_t in, MathVectorf_t scale, MathVector3f_t out);
+
+plEXTERN_C_END
 
 #endif // !PLATFORM_MATH_H

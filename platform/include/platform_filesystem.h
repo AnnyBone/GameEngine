@@ -19,9 +19,7 @@
 #ifndef PLATFORM_FILESYSTEM_H
 #define	PLATFORM_FILESYSTEM_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+plEXTERN_C_START
 
 	extern void		plGetUserName(char *out);
 	extern void		plScanDirectory(const char *path, const char *extension, void(*Function)(char *filepath));
@@ -36,8 +34,6 @@ extern "C" {
 	extern int		plGetLittleShort(FILE *fin);
 	extern int		plGetLittleLong(FILE *fin);
 
-#ifdef __cplusplus
-}
-#endif
+plEXTERN_C_END
 
 #endif // !PLATFORM_FILESYSTEM_H
