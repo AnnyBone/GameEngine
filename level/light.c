@@ -85,7 +85,7 @@ void Light_CalculateTextureReflectivity(void)
 			vTextureReflectivity[i][j] = r;
 		}
 
-		scale = Math_ColorNormalize(vTextureReflectivity[i],vTextureReflectivity[i]);
+		scale = plColourNormalize(vTextureReflectivity[i],vTextureReflectivity[i]);
 		if(scale < 0.5f)
 		{
 			scale *= 2.0f;
