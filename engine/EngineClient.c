@@ -28,37 +28,38 @@
 // references them even when on a unix system.
 
 // these two are not intended to be set directly
-cvar_t	cl_name		= {"_cl_name",		"player",	true	};
-cvar_t	cl_color	= {"_cl_color",		"0",		true	};
-cvar_t	cl_shownet	= {"cl_shownet",	"0"					};	// can be 0, 1, or 2
-cvar_t	cl_nolerp	= {"cl_nolerp",		"0"					};
-cvar_t	cl_maxpitch = {"cl_maxpitch",	"90",		true	}; //johnfitz -- variable pitch clamping
-cvar_t	cl_minpitch = {"cl_minpitch",	"-90",		true	}; //johnfitz -- variable pitch clamping
+ConsoleVariable_t	cl_name = { "_cl_name", "player", true };
+ConsoleVariable_t	cl_color = { "_cl_color", "0", true };
+ConsoleVariable_t	cl_shownet = { "cl_shownet", "0" };	// can be 0, 1, or 2
+ConsoleVariable_t	cl_nolerp = { "cl_nolerp", "0" };
+ConsoleVariable_t	cl_maxpitch = { "cl_maxpitch", "90", true }; //johnfitz -- variable pitch clamping
+ConsoleVariable_t	cl_minpitch = { "cl_minpitch", "-90", true }; //johnfitz -- variable pitch clamping
 
-cvar_t	lookspring	= {"lookspring",	"0", true	};
-cvar_t	lookstrafe	= {"lookstrafe",	"0", true	};
-cvar_t	sensitivity = {"sensitivity",	"3", true	};
+ConsoleVariable_t	lookspring = { "lookspring", "0", true };
+ConsoleVariable_t	lookstrafe = { "lookstrafe", "0", true };
+ConsoleVariable_t	sensitivity = { "sensitivity", "3", true };
 
-cvar_t	m_pitch		= {"m_pitch",	"0.022",	true	};
-cvar_t	m_yaw		= {"m_yaw",		"0.022",	true	};
-cvar_t	m_forward	= {"m_forward",	"1",		true	};
-cvar_t	m_side		= {"m_side",	"0.8",		true	};
+ConsoleVariable_t	m_pitch = { "m_pitch", "0.022", true };
+ConsoleVariable_t	m_yaw = { "m_yaw", "0.022", true };
+ConsoleVariable_t	m_forward = { "m_forward", "1", true };
+ConsoleVariable_t	m_side = { "m_side", "0.8", true };
 
 client_static_t	cls;
 client_state_t	cl;
 // FIXME: put these on hunk?
 efrag_t			cl_efrags[MAX_EFRAGS];
-entity_t		cl_static_entities[MAX_STATIC_ENTITIES];
+ClientEntity_t	cl_static_entities[MAX_STATIC_ENTITIES];
 lightstyle_t	cl_lightstyle[MAX_LIGHTSTYLES];
-DynamicLight_t	cl_dlights[MAX_DLIGHTS];
 
-entity_t		*cl_entities; //johnfitz -- was a static array, now on hunk
+DynamicLight_t	*cl_dlights;
+
+ClientEntity_t	*cl_entities; //johnfitz -- was a static array, now on hunk
 int				cl_max_edicts; //johnfitz -- only changes when new map loads
 
 int				cl_numvisedicts;
-entity_t		*cl_visedicts[MAX_VISEDICTS];
+ClientEntity_t	*cl_visedicts[MAX_VISEDICTS];
 
-extern cvar_t	r_lerpmodels, r_lerpmove; //johnfitz
+extern ConsoleVariable_t r_lerpmodels, r_lerpmove; //johnfitz
 
 void CL_ClearState (void)
 {
@@ -74,14 +75,15 @@ void CL_ClearState (void)
 
 	// Clear other arrays
 	memset(cl_efrags,0,sizeof(cl_efrags));
-	memset(cl_dlights,0,sizeof(cl_dlights));
 	memset(cl_lightstyle,0,sizeof(cl_lightstyle));
 	memset(cl_temp_entities,0,sizeof(cl_temp_entities));
 	memset(cl_beams,0,sizeof(cl_beams));
 
+	cl_dlights = (DynamicLight_t*)Hunk_AllocName(cv_max_dlights.iValue * sizeof(DynamicLight_t), "cl_dlights");
+
 	//johnfitz -- cl_entities is now dynamically allocated
-	cl_max_edicts = Math_Clamp(MIN_EDICTS, (int)max_edicts.value, MAX_EDICTS);
-	cl_entities		= (entity_t*)Hunk_AllocName(cl_max_edicts*sizeof(entity_t),"cl_entities");
+	cl_max_edicts	= Math_Clamp(MIN_EDICTS, (int)max_edicts.value, MAX_EDICTS);
+	cl_entities		= (ClientEntity_t*)Hunk_AllocName(cl_max_edicts*sizeof(ClientEntity_t), "cl_entities");
 	//johnfitz
 
 	// allocate the efrags and chain together into a free list
@@ -153,7 +155,7 @@ void CL_EstablishConnection (char *host)
 	cls.state	= ca_connected;
 	cls.signon	= 0;			// need all the signon messages before playing
 
-	// [11/7/2012] Baker's NAT fix ~hogsy
+	// Baker's NAT fix.
 	MSG_WriteByte(&cls.message,CLC_NOP);
 }
 

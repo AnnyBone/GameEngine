@@ -233,28 +233,24 @@ void Sprite::Draw()
 	C Interface
 */
 
-extern "C" {
+void Sprite_DrawSimple(Material_t *material, MathVector3f_t position, float scale)
+{
+	// Create the new sprite.
+	Sprite *rendersprite = new Sprite();
 
-	void Sprite_DrawSimple(Material_t *material, MathVector3f_t position, float scale)
-	{
-		// Create the new sprite.
-		Sprite *rendersprite = new Sprite();
+	// Set it up.
+	rendersprite->SetActive(true);
+	rendersprite->SetColour(1.0f, 1.0f, 1.0f, 0.5f);
+	rendersprite->SetPosition(position);
+	rendersprite->SetScale(scale);
+	rendersprite->SetMaterial(material);
 
-		// Set it up.
-		rendersprite->SetActive(true);
-		rendersprite->SetColour(1.0f, 1.0f, 1.0f, 0.5f);
-		rendersprite->SetPosition(position);
-		rendersprite->SetScale(scale);
-		rendersprite->SetMaterial(material);
+	// Simulate it and then draw.
+	rendersprite->Simulate();
+	rendersprite->Draw();
 
-		// Simulate it and then draw.
-		rendersprite->Simulate();
-		rendersprite->Draw();
-
-		// Delete it.
-		delete rendersprite;
-	}
-
+	// Delete it.
+	delete rendersprite;
 }
 
 /**/

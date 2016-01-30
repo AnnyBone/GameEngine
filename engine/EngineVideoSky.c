@@ -796,6 +796,8 @@ void Sky_DrawFace (int axis)
 	Hunk_FreeToLowMark(start);
 }
 
+// Sky Camera
+
 void R_SetupView(void);
 void R_RenderScene(void);
 
@@ -829,26 +831,31 @@ void Sky_Draw3DWorld(void)
 		return;
 
 	// Update view position.
-	Math_VectorCopy(r_refdef.vieworg, oldorg);
-	Math_VectorCopy(sky_camerapos, r_refdef.vieworg);
-
+	plVectorCopy3f(r_refdef.vieworg, oldorg);
+	plVectorCopy3f(sky_camerapos, r_refdef.vieworg);
+	
 	R_SetupView();
+	R_SetupScene();
 
-	glPushMatrix();
 	glScalef(2.0f, 2.0f, 2.0f);
+	glTranslatef(
+		sky_camerapos[0] - oldorg[0],
+		sky_camerapos[1] - oldorg[1],
+		sky_camerapos[2] - oldorg[2]
+	);
 
 	r_refdef.sky = true;
-	R_RenderScene();
+	World_Draw();
 	r_refdef.sky = false;
 
-	glPopMatrix();
-
 	// Restore view position.
-	Math_VectorCopy(oldorg, r_refdef.vieworg);
+	plVectorCopy3f(oldorg, r_refdef.vieworg);
 
 	// Setup the view again, urgh.
 	R_SetupView();
 }
+
+//
 
 /*	Called once per frame before drawing anything else
 */

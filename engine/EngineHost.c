@@ -61,6 +61,7 @@ cvar_t	host_speeds		= {	"host_speeds",		"0"						};	// Set for running times
 cvar_t	host_maxfps		= {	"host_maxfps",		"300",	true			};	//johnfitz
 cvar_t	host_timescale	= {	"host_timescale",	"0"						};	//johnfitz
 cvar_t	max_edicts		= {	"max_edicts",		"2048",	true			};	//johnfitz
+ConsoleVariable_t	cv_max_dlights = { "max_dlights", "1024", true };
 cvar_t	sys_ticrate		= {	"sys_ticrate",		"0.05"					};	// dedicated server
 cvar_t	serverprofile	= {	"serverprofile",	"0"						};
 cvar_t	teamplay		= {	"teamplay",			"0",	false,	true	};
@@ -201,6 +202,7 @@ void Host_InitLocal (void)
 	Cvar_RegisterVariable(&host_maxfps, NULL); //johnfitz
 	Cvar_RegisterVariable(&host_timescale, NULL); //johnfitz
 	Cvar_RegisterVariable(&max_edicts, Max_Edicts_f); //johnfitz
+	Cvar_RegisterVariable(&cv_max_dlights, NULL);
 	Cvar_RegisterVariable(&devstats, NULL); //johnfitz
 	Cvar_RegisterVariable(&sys_ticrate, NULL);
 	Cvar_RegisterVariable(&serverprofile, NULL);

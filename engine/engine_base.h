@@ -39,7 +39,7 @@
 #endif
 
 //	Build needs to be updated each day that work is done on the engine.
-#define ENGINE_VERSION_BUILD	1076	// 24/01/2016
+#define ENGINE_VERSION_BUILD	1082	// 30/01/2016
 
 #define	ENGINE_LOG	"engine"
 
@@ -137,6 +137,7 @@ extern ConsoleVariable_t sys_ticrate;
 extern ConsoleVariable_t sys_nostdout;
 extern ConsoleVariable_t developer;
 extern ConsoleVariable_t max_edicts; //johnfitz
+extern ConsoleVariable_t cv_max_dlights;
 
 extern	bool		g_hostinitialized;	// True if into command execution
 extern	double		host_frametime;
