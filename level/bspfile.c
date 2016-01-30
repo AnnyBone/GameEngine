@@ -466,7 +466,7 @@ void BSP_RemoveSkipSurfaces(void)
 			texture = (miptex_t *)((uint8_t *)textures + miptexlump->dataofs[ti->iMipTex]);
 			name = texture->name;
 
-			if(!Q_strcasecmp(name,"skip"))
+			if (!Q_strcasecmp(name, "skip") || !Q_strcasecmp(name, "nodraw"))
 			{
 				// copy each remaining marksurface to previous slot
 				for (k = j; k < leaf->uiNumMarkSurfaces-1; k++)
@@ -496,7 +496,7 @@ void BSP_RemoveSkipSurfaces(void)
 			texture = (miptex_t *) ((uint8_t *) textures + miptexlump->dataofs[ti->iMipTex]);
 			name = texture->name;
 
-			if(!Q_strcasecmp(name,"skip"))
+			if (!Q_strcasecmp(name, "skip") || !Q_strcasecmp(name, "nodraw"))
 			{
 				// copy each remaining face to previous slot
 				for (k = j; k < model->iNumFaces-1; k++)
