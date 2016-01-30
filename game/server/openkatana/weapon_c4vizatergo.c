@@ -134,8 +134,6 @@ void C4Vizatergo_Explode(ServerEntity_t *eVizatergo)
 {
 	Sound(eVizatergo,CHAN_AUTO,va("fx/explosion%i.wav",rand()%6+1),255,ATTN_NORM);
 
-	eVizatergo->local.eOwner->local.bomb = 0;
-
 	Entity_RadiusDamage(eVizatergo,MONSTER_RANGE_NEAR,40,DAMAGE_TYPE_EXPLODE);
 	Entity_Remove(eVizatergo);
 }
@@ -230,8 +228,6 @@ void C4Vizatergo_PrimaryAttack(ServerEntity_t *eOwner)
 	c4ball->Physics.fMass = 0.9f;
 	c4ball->Physics.eIgnore = eOwner;
 	c4ball->Physics.fGravity = SERVER_GRAVITY;
-
-	eOwner->local.bomb = c4ball;
 
 	Math_MVToVector(Weapon_Aim(eOwner), mvDirection);
 	Math_VectorScale(mvDirection, C4VIZATERGO_MAX_RANGE, c4ball->v.velocity);
