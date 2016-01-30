@@ -19,92 +19,18 @@
 #ifndef VIDEO_OBJECT_H
 #define VIDEO_OBJECT_H
 
-#ifdef __cplusplus
-class VideoVertex
-{
-public:
-	VideoVertex(float x, float y, float z);
-protected:
-private:
-	MathVector3f_t
-		mvPosition,
-		mvNormal;
+plEXTERN_C_START
 
-	MathVector2f_t mvST[VIDEO_MAX_UNITS];
+void VideoObject_Vertex(VideoObject_t *object, float x, float y, float z);
+void VideoObject_Normal(VideoObject_t *object, float x, float y, float z);
+void VideoObject_Colour(VideoObject_t *object, float r, float g, float b, float a);
+void VideoObject_ColourVector(VideoObject_t *object, MathVector4f_t mvColour);
+void VideoObject_End(VideoObject_t *object);
+void VideoObject_Clip(VideoObject_t *object, MathVector4f_t mvClipDimensions);
 
-	Colour_t cColour;
-};
+void VideoObject_Draw(VideoObject_t *object);
+void VideoObject_DrawImmediate(VideoObject_t *object);
 
-class DrawObject
-{
-public:
-	virtual void Begin() = 0;
-	virtual void End() = 0;
-	virtual void Draw() = 0;
-
-protected:
-	VideoPrimitive_t primitive;
-
-	std::vector<VideoVertex> vertices;
-};
-
-class DrawDynamicObject : public DrawObject
-{
-public:
-	DrawDynamicObject(VideoPrimitive_t primitive = VIDEO_PRIMITIVE_TRIANGLE_FAN);
-	~DrawDynamicObject();
-
-	virtual void Begin();
-	virtual void End();
-	virtual void Draw();
-
-protected:
-private:
-};
-
-class VideoDrawStatic
-{
-public:
-	VideoDrawStatic(VideoPrimitive_t pPrimitiveType = VIDEO_PRIMITIVE_TRIANGLE_FAN);
-	~VideoDrawStatic();
-
-	void Begin();
-	void AddVertex(float x, float y, float z);
-	void Colour(float r, float g, float b, float a = 1.0f);
-	void End();
-
-	virtual void Draw();
-
-protected:
-	VideoPrimitive_t pPrimitiveType;
-
-private:
-	unsigned int uiVertexBuffer;
-	unsigned int uiColourBuffer;
-	unsigned int uiTextureBuffer;
-
-	VideoVertex *VertexList;
-
-	unsigned int uiVertices;
-};
-#endif
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-	void VideoObject_Vertex(VideoObject_t *object, float x, float y, float z);
-	void VideoObject_Normal(VideoObject_t *object, float x, float y, float z);
-	void VideoObject_Colour(VideoObject_t *object, float r, float g, float b, float a);
-	void VideoObject_ColourVector(VideoObject_t *object, MathVector4f_t mvColour);
-	void VideoObject_End(VideoObject_t *object);
-	void VideoObject_Clip(VideoObject_t *object, MathVector4f_t mvClipDimensions);
-
-	void VideoObject_Draw(VideoObject_t *object);
-	void VideoObject_DrawImmediate(VideoObject_t *object);
-
-#ifdef __cplusplus
-}
-#endif
+plEXTERN_C_END
 
 #endif // !VIDEO_OBJECT_H

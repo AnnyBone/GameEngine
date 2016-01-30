@@ -20,126 +20,6 @@
 
 #include "video.h"
 
-#if 0
-
-/*
-	Vertex
-*/
-
-VideoVertex::VideoVertex(float x, float y, float z)
-{
-	mvPosition[0] = x; 
-	mvPosition[1] = y; 
-	mvPosition[2] = z;
-
-	Math_VectorClear(mvNormal);
-
-	Math_Vector4Set(1.0f, cColour);
-}
-
-/*
-	Object
-*/
-
-VideoDrawStatic::VideoDrawStatic(VideoPrimitive_t pPrimitiveType)
-{
-	VIDEO_FUNCTION_START
-	this->pPrimitiveType = pPrimitiveType;
-	
-	uiVertexBuffer = 0;
-	uiColourBuffer = 0;
-	uiTextureBuffer = 0;
-
-	VertexList = NULL;
-
-	uiVertices = 0;
-	VIDEO_FUNCTION_END
-}
-
-VideoDrawStatic::~VideoDrawStatic()
-{
-	VIDEO_FUNCTION_START
-	vlDeleteVertexBuffer(&uiVertexBuffer);
-	vlDeleteVertexBuffer(&uiColourBuffer);
-	vlDeleteVertexBuffer(&uiTextureBuffer);
-	VIDEO_FUNCTION_END
-}
-
-void VideoDrawStatic::Begin()
-{
-	VIDEO_FUNCTION_START
-	vlGenerateVertexBuffer(&uiVertexBuffer);
-	vlGenerateVertexBuffer(&uiColourBuffer);
-	vlGenerateVertexBuffer(&uiTextureBuffer);
-	VIDEO_FUNCTION_END
-}
-
-void VideoDrawStatic::AddVertex(float x, float y, float z)
-{
-}
-
-void VideoDrawStatic::Colour(float r, float g, float b, float a)
-{
-}
-
-void VideoDrawStatic::End()
-{
-	VIDEO_FUNCTION_START
-	glBindBuffer(GL_ARRAY_BUFFER, uiVertexBuffer);
-	glVertexPointer(3, GL_FLOAT, 0, 0);
-
-	glBindBuffer(GL_ARRAY_BUFFER, uiColourBuffer);
-	glColorPointer(4, GL_FLOAT, 0, 0);
-
-	glBindBuffer(GL_ARRAY_BUFFER, uiTextureBuffer);
-	
-	int i;
-	for (i = 0; i < VIDEO_MAX_UNITS; i++)
-		if (Video.textureunit_state[i])
-		{
-			glClientActiveTexture(Video_GetTextureUnit(i));
-
-			glTexCoordPointer(2, GL_FLOAT, 0, 0);
-		}
-	VIDEO_FUNCTION_END
-}
-
-void VideoDrawStatic::Draw()
-{
-	VIDEO_FUNCTION_START
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glBindBuffer(GL_ARRAY_BUFFER, uiVertexBuffer);
-	glVertexPointer(3, GL_FLOAT, 0, 0);
-
-	glEnableClientState(GL_COLOR_ARRAY);
-	glBindBuffer(GL_ARRAY_BUFFER, uiColourBuffer);
-	glColorPointer(4, GL_FLOAT, 0, 0);
-
-	glBindBuffer(GL_ARRAY_BUFFER, uiTextureBuffer);
-
-	int i;
-	for (i = 0; i < VIDEO_MAX_UNITS; i++)
-		if (Video.textureunit_state[i])
-		{
-			glClientActiveTexture(Video_GetTextureUnit(i));
-			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-			glTexCoordPointer(2, GL_FLOAT, 0, 0);
-		}
-
-	vlDrawArrays(pPrimitiveType, 0, uiVertices);
-
-	glDisableClientState(GL_VERTEX_ARRAY);
-	glDisableClientState(GL_COLOR_ARRAY);
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-	VIDEO_FUNCTION_END
-}
-
-#endif
-
-/*
-	Legacy Interface
-*/
-
 void VideoObject_Setup(VideoObject_t *object)
 {
 	// Create the vertex array object.
@@ -246,7 +126,7 @@ void VideoObject_DrawImmediate(VideoObject_t *object)
 	glEnableClientState(GL_COLOR_ARRAY);
 	glEnableClientState(GL_NORMAL_ARRAY);
 
-	VideoVertex_t *vert = object->vertices;
+	VideoVertex_t *vert = &object->vertices[0];
 	glVertexPointer(3, GL_FLOAT, sizeof(VideoVertex_t), vert->mvPosition);
 	glColorPointer(4, GL_FLOAT, sizeof(VideoVertex_t), vert->mvColour);
 	glNormalPointer(GL_FLOAT, sizeof(VideoVertex_t), vert->mvNormal);
