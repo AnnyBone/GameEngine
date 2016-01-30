@@ -358,8 +358,46 @@ void Area_RotateSpawn(ServerEntity_t *eArea)
 }
 
 /*
+	AREA_TRIGGERFIELD
+*/
+
+ServerEntity_t *Area_SpawnTriggerField(ServerEntity_t *owner, MathVector3f_t mins, MathVector3f_t maxs, void (*TriggerFunction)(ServerEntity_t *entity, ServerEntity_t *other))
+{
+	if (Math_VectorCompare(g_mvOrigin3f, mins) ||
+		Math_VectorCompare(g_mvOrigin3f, maxs))
+	{
+		g_engine->Con_Warning("Invalid size for trigger field!");
+		return NULL;
+	}
+
+	ServerEntity_t *field = Entity_Spawn();
+	field->v.movetype		= MOVETYPE_NONE;
+	field->local.eOwner		= owner;
+
+	Entity_SetTouchFunction(field, TriggerFunction);
+	Entity_SetPhysics(field, SOLID_TRIGGER, 0, 0);
+	
+	// Set the size of it.
+	MathVector3f_t tmins, tmaxs;
+	Math_VectorCopy(mins, tmins);
+	Math_VectorCopy(maxs, tmaxs);
+	tmins[0] -= 60;	tmins[1] -= 60;	tmins[2] -= 8;
+	tmaxs[0] += 60;	tmaxs[1] += 60;	tmaxs[2] += 8;
+	Entity_SetSizeVector(field, tmins, tmaxs);
+
+	return field;
+}
+
+/*
 	AREA_DOOR
 */
+
+// Spawn flags.
+#define	DOOR_FLAG_TRIGGERTOUCH		1	// Triggered by touch.
+#define	DOOR_FLAG_TRIGGERUSE		2	// Triggered by use command.
+#define	DOOR_FLAG_TRIGGERAUTO		4	// Automatically open door on approach.
+#define	DOOR_FLAG_TRIGGERDAMAGE		8	// Triggered by damage.
+#define	DOOR_FLAG_LINK				16	// Link the door with others in prox.
 
 // Various states for doors.
 #define STATE_TOP			0	// Brush is at the top.
@@ -369,54 +407,35 @@ void Area_RotateSpawn(ServerEntity_t *eArea)
 
 void Area_DoorDone(ServerEntity_t *eArea, ServerEntity_t *eOther)
 {
-	eArea->local.iValue = 0;
-
-	if(eArea->local.cSoundStop)
-		Sound(eArea,CHAN_VOICE,eArea->local.cSoundStop,255,ATTN_NORM);
+	if (eArea->local.sound_stop[0] != ' ')
+		Sound(eArea, CHAN_VOICE, eArea->local.sound_stop, 255, ATTN_NORM);
 }
 
 void Area_DoorReturn(ServerEntity_t *eArea)
 {
 	eArea->local.iLocalFlags = STATE_DOWN;
 
-	Area_CalculateMovement(eArea,eArea->local.pos1,eArea->local.speed,Area_DoorDone);
+	Area_CalculateMovement(eArea, eArea->local.pos1, eArea->local.speed, Area_DoorDone);
 
-	if(eArea->local.cSoundReturn)
+	if(eArea->local.cSoundReturn[0] != ' ')
 		Sound(eArea,CHAN_BODY,eArea->local.cSoundReturn,255,ATTN_NORM);
-	if(eArea->local.cSoundMoving)
+	if(eArea->local.cSoundMoving[0] != ' ')
 		Sound(eArea,CHAN_VOICE,eArea->local.cSoundMoving,255,ATTN_NORM);
 }
 
-void Area_DoorWait(ServerEntity_t *eArea, ServerEntity_t *eOther)
+void Area_DoorWait(ServerEntity_t *door, ServerEntity_t *eOther)
 {
-	UseTargets(eArea, eOther);
+	UseTargets(door, eOther);
 
-	eArea->local.iLocalFlags = STATE_TOP;
-	eArea->local.iValue = 1;
+	door->local.iLocalFlags = STATE_TOP;
 
-	if(eArea->local.dWait >= 0)
-		eArea->v.dNextThink	= Server.dTime+eArea->local.dWait;
+	if (door->local.dWait >= 0)
+		door->v.dNextThink = Server.dTime + door->local.dWait;
 
-	eArea->v.think = Area_DoorReturn;
+	door->v.think = Area_DoorReturn;
 
-	if(eArea->local.cSoundStop)
-		Sound(eArea,CHAN_VOICE,eArea->local.cSoundStop,255,ATTN_NORM);
-}
-
-void Area_DoorTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
-{
-	if (eArea->local.iLocalFlags == STATE_UP || eArea->local.iLocalFlags == STATE_TOP)
-		return;
-	if((eOther->Monster.iType != MONSTER_PLAYER) && eOther->v.iHealth <= 0)
-		return;
-
-	eArea->local.iLocalFlags = STATE_UP;
-	Area_CalculateMovement(eArea,eArea->local.pos2,eArea->local.speed,Area_DoorWait);
-
-	if(eArea->local.cSoundStart)
-		Sound(eArea,CHAN_BODY,eArea->local.cSoundStart,255,ATTN_NORM);
-	if(eArea->local.cSoundMoving)
-		Sound(eArea,CHAN_VOICE,eArea->local.cSoundMoving,255,ATTN_NORM);
+	if (door->local.sound_stop[0] != ' ')
+		Sound(door, CHAN_VOICE, door->local.sound_stop, 255, ATTN_NORM);
 }
 
 void Area_DoorUse(ServerEntity_t *eArea)
@@ -434,62 +453,180 @@ void Area_DoorUse(ServerEntity_t *eArea)
 		Sound(eArea,CHAN_VOICE,eArea->local.cSoundMoving,255,ATTN_NORM);
 }
 
-void Area_DoorBlocked(ServerEntity_t *eArea, ServerEntity_t *eOther)
+void Area_DoorTouch(ServerEntity_t *door, ServerEntity_t *other)
 {
-	Entity_Damage(eOther, eArea, eArea->local.iDamage, 0);
+	if (door->local.iLocalFlags == STATE_UP || door->local.iLocalFlags == STATE_TOP)
+		return;
+	if ((other->Monster.iType != MONSTER_PLAYER) && other->v.iHealth <= 0)
+		return;
+
+	// Door is linked!
+	if (door->v.spawnflags & DOOR_FLAG_LINK)
+	{
+		ServerEntity_t *linked = door->local.activator;
+		if (linked)
+		{
+			do
+			{
+				Area_DoorUse(linked);
+				linked = linked->local.activator;
+			} while (linked);
+		}
+		else
+			g_engine->Con_Warning("No doors linked! (%i %i %i)\n",
+			(int)door->v.origin[0],
+			(int)door->v.origin[1],
+			(int)door->v.origin[2]);
+	}
+
+	door->local.iLocalFlags = STATE_UP;
+	Area_CalculateMovement(door, door->local.pos2, door->local.speed, Area_DoorWait);
+
+	if (door->local.cSoundStart)
+		Sound(door, CHAN_BODY, door->local.cSoundStart, 255, ATTN_NORM);
+	if (door->local.cSoundMoving)
+		Sound(door, CHAN_VOICE, door->local.cSoundMoving, 255, ATTN_NORM);
 }
 
-void Area_DoorSpawn(ServerEntity_t *eArea)
+void Area_DoorBlocked(ServerEntity_t *door, ServerEntity_t *other)
 {
-	int		i;
-	float	fDist;
-	MathVector3f_t vMoveDir;
+	Entity_Damage(other, door, door->local.iDamage, DAMAGE_TYPE_CRUSH);
+}
 
-	if(!eArea->v.spawnflags)
-		eArea->v.spawnflags = 0;
+/*	Links doors together into a list.
 
-	if(eArea->local.cSoundStart)
-		Server_PrecacheSound(eArea->local.cSoundStart);
-	if(eArea->local.cSoundStop)
-		Server_PrecacheSound(eArea->local.cSoundStop);
-	if(eArea->local.cSoundMoving)
-		Server_PrecacheSound(eArea->local.cSoundMoving);
-	if(eArea->local.cSoundReturn)
-		Server_PrecacheSound(eArea->local.cSoundReturn);
+	This is based on the original QC code; 
+	https://github.com/maikmerten/zernichter/blob/master/id1/src/doors.qc#L316
+*/
+void Area_DoorLink(ServerEntity_t *door)
+{
+	ServerEntity_t	*prev;
 
-	eArea->v.movetype = MOVETYPE_PUSH;
+	// Don't link if we've already done so.
+	if (door->local.activator)
+		return;
 
-	eArea->Physics.iSolid = SOLID_BSP;
+	// TODO: calculate overall scale of door?
+	ServerEntity_t *link = g_engine->Server_FindRadius(door->v.origin, 700.0f);
+	if (!link)
+		return;
 
-	eArea->local.iValue = 0;
+	// We're the master, yo.
+	door->local.activator	= door;
+	prev					= door;
 
-	Entity_SetModel(eArea,eArea->v.model);
-	Entity_SetOrigin(eArea,eArea->v.origin);
-	Entity_SetSizeVector(eArea,eArea->v.mins,eArea->v.maxs);
+	MathVector3f_t	smaxs, smins;
+	Math_VectorSet(0, smins);
+	Math_VectorSet(0, smaxs);
 
-	if(eArea->local.lip == 0.0f)
-		eArea->local.lip = 4.0f;
+	// Copy the size over, which we'll use for the trigger field.
+	plVectorCopy3f(door->v.mins, smins);
+	plVectorCopy3f(door->v.maxs, smaxs);
 
-	Math_VectorCopy(eArea->v.origin,eArea->local.pos1);
+	do
+	{
+		// Only link doors which will support it!
+		if (!(link->v.spawnflags & DOOR_FLAG_LINK))
+			// Skip to the next one.
+			goto SKIP;
 
-	Area_SetMoveDirection(eArea->v.angles, eArea->v.movedir);
+		if (Entity_IsTouching(prev, link))
+		{
+			if (link->local.activator)
+			{
+				g_engine->Con_Warning("Door already has activator assigned! (%i %i %i)\n", 
+					(int)link->v.origin[0], (int)link->v.origin[1], (int)link->v.origin[2]);
+				goto SKIP;
+			}
+
+			link->local.activator	= prev;
+			prev					= link;
+
+			// Update the bounds, which we'll use for the trigger field.
+			if (link->v.mins[0] < smins[0])
+				smins[0] = link->v.mins[0];
+			if (link->v.mins[1] < smins[1])
+				smins[1] = link->v.mins[1];
+			if (link->v.mins[2] < smins[2])
+				smins[2] = link->v.mins[2];
+			if (link->v.maxs[0] > smaxs[0])
+				smaxs[0] = link->v.maxs[0];
+			if (link->v.maxs[1] > smaxs[1])
+				smaxs[1] = link->v.maxs[1];
+			if (link->v.maxs[2] > smaxs[2])
+				smaxs[2] = link->v.maxs[2];
+		}
+
+SKIP:
+		link = link->v.chain;
+	} while (link);
+
+	door->local.trigger_field = Area_SpawnTriggerField(door, smins, smaxs, Area_DoorTouch);
+}
+
+void Area_DoorSpawn(ServerEntity_t *door)
+{
+	int				i;
+	float			movedist;
+	MathVector3f_t	movedir;
+
+	if (door->local.cSoundStart)
+		Server_PrecacheSound(door->local.cSoundStart);
+	if (door->local.sound_stop)
+		Server_PrecacheSound(door->local.sound_stop);
+	if (door->local.cSoundMoving)
+		Server_PrecacheSound(door->local.cSoundMoving);
+	if (door->local.cSoundReturn)
+		Server_PrecacheSound(door->local.cSoundReturn);
+
+	door->v.movetype = MOVETYPE_PUSH;
+
+	Entity_SetPhysics(door, SOLID_BSP, 1.0f, 1.0f);
+	Entity_SetModel(door, door->v.model);
+	Entity_SetOrigin(door, door->v.origin);
+	Entity_SetSizeVector(door, door->v.mins, door->v.maxs);
+
+	if (door->local.lip == 0)
+		door->local.lip = 4.0f;
+
+	Math_VectorCopy(door->v.origin, door->local.pos1);
+
+	Area_SetMoveDirection(door->v.angles, door->v.movedir);
 
 	for(i = 0; i < 3; i++)
-		vMoveDir[i] = (float)fabs(eArea->v.movedir[i]);
+		movedir[i] = (float)fabs(door->v.movedir[i]);
 
-	fDist = vMoveDir[0]*eArea->v.size[0]+vMoveDir[1]*eArea->v.size[1]+vMoveDir[2]*eArea->v.size[2]-eArea->local.lip;
+	movedist =
+		movedir[0] * door->v.size[0] + 
+		movedir[1] * door->v.size[1] + 
+		movedir[2] * door->v.size[2] - 
+		door->local.lip;
 
-	Math_VectorMake(eArea->local.pos1,fDist,eArea->v.movedir,eArea->local.pos2);
+	Math_VectorMake(door->local.pos1, movedist, door->v.movedir, door->local.pos2);
 
-	eArea->local.iLocalFlags = STATE_BOTTOM;
+	door->local.iLocalFlags = STATE_BOTTOM;
 
-	if(eArea->v.spawnflags != 32) // Toggle
-		eArea->v.TouchFunction = Area_DoorTouch;
+	// Set the spawn flags up.
+	if (door->v.spawnflags & DOOR_FLAG_TRIGGERUSE)
+		door->v.use = Area_DoorUse;
+	if (door->v.spawnflags & DOOR_FLAG_TRIGGERTOUCH)
+		door->v.TouchFunction = Area_DoorTouch;
+	if (door->v.spawnflags & DOOR_FLAG_TRIGGERAUTO)
+	{
 
-	if (eArea->local.iDamage)
-		Entity_SetBlockedFunction(eArea, Area_DoorBlocked);
+	}
+	if (door->v.spawnflags & DOOR_FLAG_TRIGGERDAMAGE)
+	{
+		// Give it at least one HP.
+		if (!door->v.iHealth)
+			door->v.iHealth = 1;
 
-	eArea->v.use = Area_DoorUse;
+		door->v.bTakeDamage = true;
+		Entity_SetDamagedFunction(door, Area_DoorTouch);
+	}
+
+	if (door->local.iDamage)
+		Entity_SetBlockedFunction(door, Area_DoorBlocked);
 }
 
 /*
@@ -729,8 +866,8 @@ void Area_ButtonDone(ServerEntity_t *eArea, ServerEntity_t *eOther)
 	eArea->local.iLocalFlags = STATE_DOWN;
 	eArea->local.iValue = 0;
 
-	if(eArea->local.cSoundStop)
-		Sound(eArea,CHAN_VOICE,eArea->local.cSoundStop,255,ATTN_NORM);
+	if (eArea->local.sound_stop)
+		Sound(eArea, CHAN_VOICE, eArea->local.sound_stop, 255, ATTN_NORM);
 }
 
 void Area_ButtonReturn(ServerEntity_t *eArea)
@@ -753,8 +890,8 @@ void Area_ButtonWait(ServerEntity_t *eArea, ServerEntity_t *eOther)
 	eArea->v.think		= Area_ButtonReturn;
 	eArea->v.dNextThink	= eArea->v.ltime + 4;
 
-	if(eArea->local.cSoundStop)
-		Sound(eArea,CHAN_VOICE,eArea->local.cSoundStop,255,ATTN_NORM);
+	if (eArea->local.sound_stop)
+		Sound(eArea, CHAN_VOICE, eArea->local.sound_stop, 255, ATTN_NORM);
 }
 
 void Area_ButtonTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
@@ -805,8 +942,8 @@ void Area_ButtonSpawn(ServerEntity_t *eArea)
 
 	if(eArea->local.cSoundStart)
 		Server_PrecacheSound(eArea->local.cSoundStart);
-	if(eArea->local.cSoundStop)
-		Server_PrecacheSound(eArea->local.cSoundStop);
+	if (eArea->local.sound_stop)
+		Server_PrecacheSound(eArea->local.sound_stop);
 	if(eArea->local.cSoundMoving)
 		Server_PrecacheSound(eArea->local.cSoundMoving);
 	if(eArea->local.cSoundReturn)
@@ -864,8 +1001,8 @@ void Area_PlatformDone(ServerEntity_t *eArea, ServerEntity_t *eOther)
 	eArea->local.iValue = 0;
 	eArea->v.think	= NULL;
 
-	if(eArea->local.cSoundStop)
-		Sound(eArea,CHAN_VOICE,eArea->local.cSoundStop,255,ATTN_NORM);
+	if (eArea->local.sound_stop)
+		Sound(eArea, CHAN_VOICE, eArea->local.sound_stop, 255, ATTN_NORM);
 }
 
 void Area_PlatformReturn(ServerEntity_t *eArea)
@@ -890,8 +1027,8 @@ void Area_PlatformWait(ServerEntity_t *eArea, ServerEntity_t *eOther)
 	if(eArea->local.dWait >= 0)
 	eArea->v.dNextThink	= eArea->v.ltime + eArea->local.dWait;
 
-	if(eArea->local.cSoundStop)
-		Sound(eArea,CHAN_VOICE,eArea->local.cSoundStop,255,ATTN_NORM);
+	if (eArea->local.sound_stop)
+		Sound(eArea, CHAN_VOICE, eArea->local.sound_stop, 255, ATTN_NORM);
 }
 
 void Area_PlatformTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
@@ -942,8 +1079,8 @@ void Area_PlatformSpawn(ServerEntity_t *eArea)
 
 	if(eArea->local.cSoundStart)
 		Server_PrecacheSound(eArea->local.cSoundStart);
-	if(eArea->local.cSoundStop)
-		Server_PrecacheSound(eArea->local.cSoundStop);
+	if (eArea->local.sound_stop)
+		Server_PrecacheSound(eArea->local.sound_stop);
 	if(eArea->local.cSoundMoving)
 		Server_PrecacheSound(eArea->local.cSoundMoving);
 	if(eArea->local.cSoundReturn)

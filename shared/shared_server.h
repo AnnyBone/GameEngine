@@ -226,7 +226,7 @@ typedef struct
 
 	char
 		*cSoundStart,
-		*cSoundStop,
+		*sound_stop,
 		*cSoundMoving,
 		*cSoundReturn;
 
@@ -273,7 +273,7 @@ typedef struct
 
 	// Misc
 	char			*cInfoMessage;				// see server_point > Point_InfoMessage.
-	bool			bBleed;						// Do we bleed?
+	bool			bBleed;						// Do we bleed? TODO: Move this into monster struct!
 
 	int	iDamageType;	// The type of damage this entity can recieve.
 	int	iMaxHealth;		// An entities maximum health, they can't gain anymore than this.
@@ -304,10 +304,12 @@ typedef struct
 	double			delay;			// Delay before doing a task.
 	ServerEntity_t	*trigger_field;
 	int				iFireMode;		// Active fire mode for weapons.
-	ServerEntity_t	*bomb,
-		*activator;
+
+	ServerEntity_t	*activator;
+
 	char			*cOldModel;		// Last model.
 	char			cOldStyle;
+
 	double 			dLadderTime;
 	double 			dLadderJump;
 	double			dZeroGTime;
@@ -473,7 +475,7 @@ typedef struct GlobalVariables_e
 	void(*use)(ServerEntity_t *seEntity);
 	void(*think)(ServerEntity_t *seEntity);
 	void(*BlockedFunction)(ServerEntity_t *seEntity, ServerEntity_t *seOther);	// Called when an entity is blocked against another.
-} GlobalVariables_t;
+} BaseVariables_t;
 
 /*	If this is changed remember
 to recompile the engine too!    */
@@ -492,7 +494,7 @@ typedef struct ServerEntity_s
 
 	float fFreeTime;
 
-	GlobalVariables_t	v;
+	BaseVariables_t	v;
 
 	ModelVariables_t	Model;		// Variables that affect the model used for the entity.
 	PhysicsVariables_t	Physics;	// Variables affecting how the entity is physically treated.

@@ -90,7 +90,7 @@ ServerEntityField_t	entity_fields[] =
 	// Local (move these at some point)
 	{ "sound", ENTITY_FIELD(local.sound), EV_STRING },
 	{ "soundstart", ENTITY_FIELD(local.cSoundStart), EV_STRING },
-	{ "soundstop", ENTITY_FIELD(local.cSoundStop), EV_STRING },
+	{ "soundstop", ENTITY_FIELD(local.sound_stop), EV_STRING },
 	{ "soundmoving", ENTITY_FIELD(local.cSoundMoving), EV_STRING },
 	{ "soundreturn", ENTITY_FIELD(local.cSoundReturn), EV_STRING },
 	{ "target1", ENTITY_FIELD(local.cTarget1), EV_STRING },
