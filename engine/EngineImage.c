@@ -450,6 +450,10 @@ uint8_t *Image_LoadPNG(FILE *fin, unsigned int *width, unsigned int *height)
 	// Get the width and height.
 	iWidth = PNG_GetImageWidth(pPNG, pInfo);
 	iHeight = PNG_GetImageHeight(pPNG, pInfo);
+
+	/* TODO: Is this a memory leak, or one of the many fragile things upon
+	 * which everything barely balances?
+	*/
 	iImageBuffer = (uint8_t*)Hunk_Alloc((iHeight + iWidth) * 4);
 
 	PNG_DestroyReadStruct(&pPNG, &pInfo, NULL);

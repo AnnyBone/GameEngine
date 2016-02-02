@@ -87,8 +87,6 @@ void SideWinder_Deploy(ServerEntity_t *ent)
 
 void SideWinder_MissileExplode(ServerEntity_t *ent,ServerEntity_t *other)
 {
-	MathVector3f_t vVelocity;
-
 	if(other && (other == ent->local.eOwner))
 	{
 		SideWinder_Think(ent);
@@ -96,8 +94,6 @@ void SideWinder_MissileExplode(ServerEntity_t *ent,ServerEntity_t *other)
 	}
 
 	Entity_RadiusDamage(ent, MONSTER_RANGE_NEAR, 30, DAMAGE_TYPE_EXPLODE);
-
-	Math_VectorNegate(ent->v.velocity,vVelocity);
 
 	if (Engine.Server_PointContents(ent->v.origin) <= BSP_CONTENTS_WATER)
 		Sound(ent, CHAN_AUTO, SOUND_EXPLODE_UNDERWATER0, 255, ATTN_NORM);

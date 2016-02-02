@@ -22,4 +22,4 @@
 void HUD_Initialize();
 void HUD_Draw(void);
 
-#endif !MENU_HUD_H
+#endif /* !MENU_HUD_H */

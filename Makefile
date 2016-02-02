@@ -1,7 +1,10 @@
 CFLAGS   := -Wall -fPIC -ggdb -std=c99
 CXXFLAGS := -Wall -fPIC -ggdb -std=c++11
 
-INCLUDE := -I./platform/include/ -I./shared/ $(shell pkg-config sdl2 openal --cflags)
+INCLUDE := -D_POSIX_C_SOURCE=200809L \
+	-I./platform/include/ \
+	-I./shared/ \
+	$(shell pkg-config sdl2 openal --cflags)
 
 LAUNCHER_BIN  := bin/launcher
 LAUNCHER_OBJS := launcher/launcher.o

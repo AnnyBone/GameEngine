@@ -39,13 +39,13 @@ bool ModelU3D_Load(model_t *model, void *buf)
 	// then erase it.
 	string newpath(model->name);
 	size_t strpos = newpath.find("_d.3d");
-	if (strpos != -1)
+	if (strpos != string::npos)
 		newpath.erase(strpos);
 	else
 	{
 		// Some legacy models use _Data...
 		strpos = newpath.find("_Data.3d");
-		if (strpos != -1)
+		if (strpos != string::npos)
 			newpath.erase(strpos);
 		else
 		{
