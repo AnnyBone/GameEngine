@@ -132,7 +132,6 @@ extern "C" {
 	int COM_FOpenFile(const char *filename, FILE **file);
 	void COM_CloseFile(int h);
 
-	uint8_t *COM_LoadTempFile(const char *path);
 	uint8_t *COM_LoadHunkFile(char *path);
 	void    *COM_LoadHeapFile(const char *path);
 

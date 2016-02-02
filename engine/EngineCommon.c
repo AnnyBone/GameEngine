@@ -1106,8 +1106,6 @@ static uint8_t *COM_LoadFile(const char *path, int usehunk)
 
 	if (usehunk == 1)
 		buf = (uint8_t*)Hunk_AllocName(len + 1, base);
-	else if (usehunk == 2)
-		buf = (uint8_t*)Hunk_TempAlloc(len + 1);
 	else if (usehunk == 0)
 		buf = (uint8_t*)malloc_or_die(len + 1);
 	else
@@ -1133,11 +1131,6 @@ static uint8_t *COM_LoadFile(const char *path, int usehunk)
 uint8_t *COM_LoadHunkFile(char *path)
 {
 	return COM_LoadFile(path,1);
-}
-
-uint8_t *COM_LoadTempFile(const char *path)
-{
-	return COM_LoadFile (path,2);
 }
 
 void *COM_LoadHeapFile(const char *path)
