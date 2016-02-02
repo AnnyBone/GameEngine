@@ -18,6 +18,8 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#include <stdlib.h>
+
 #include "engine_base.h"
 
 /*
@@ -208,22 +210,19 @@ void GL_SubdivideSurface(msurface_t *fa)
 */
 void Surface_DrawWater(glpoly_t *p, Material_t *material)
 {
-	VideoVertex_t		*voWaterPoly;
-	MathVector3f_t		vWave;
-	float				*vertex, fWaterAlpha;
-
-	voWaterPoly = (VideoVertex_t*)Hunk_TempAlloc(p->numverts*sizeof(VideoVertex_t));
+	VideoVertex_t *voWaterPoly = calloc(p->numverts, sizeof(VideoVertex_t));
 	if(!voWaterPoly)
 	{
 		Sys_Error("Failed to allocate water poly!\n");
 		return;
 	}
 
-	fWaterAlpha = Math_Clamp(0, material->fAlpha, 1.0f);
+	float fWaterAlpha = Math_Clamp(0, material->fAlpha, 1.0f);
 
-	vertex = p->verts[0];
+	float *vertex = p->verts[0];
 	for (int i = 0; i < p->numverts; i++, vertex += VERTEXSIZE)
 	{
+		MathVector3f_t vWave;
 		Math_VectorCopy(vertex, vWave);
 
 		Video_ObjectTexture(&voWaterPoly[i], VIDEO_TEXTURE_DIFFUSE, vertex[3], vertex[4]);
@@ -239,6 +238,8 @@ void Surface_DrawWater(glpoly_t *p, Material_t *material)
 	}
 
 	Video_DrawObject(voWaterPoly, VIDEO_PRIMITIVE_TRIANGLE_FAN, p->numverts, material, 0);
+
+	free(voWaterPoly);
 }
 
 //==============================================================================

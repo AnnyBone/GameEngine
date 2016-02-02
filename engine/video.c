@@ -16,6 +16,8 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#include <stdlib.h>
+
 #include "engine_base.h"
 
 #include "video.h"
@@ -541,16 +543,12 @@ void Video_DrawFill(VideoVertex_t *voFill, Material_t *mMaterial, int iSkin)
 */
 void Video_DrawSurface(msurface_t *mSurface,float fAlpha, Material_t *mMaterial, unsigned int uiSkin)
 {
-	VideoVertex_t	*drawsurf;
-	float			*fVert;
-	int				i;
-
-	drawsurf = (VideoVertex_t*)Hunk_TempAlloc(mSurface->polys->numverts*sizeof(VideoVertex_t));
+	VideoVertex_t *drawsurf = calloc(mSurface->polys->numverts, sizeof(VideoVertex_t));
 	if (!drawsurf)
 		Sys_Error("Failed to allocate surface video object!\n");
 
-	fVert = mSurface->polys->verts[0];
-	for (i = 0; i < mSurface->polys->numverts; i++, fVert += VERTEXSIZE)
+	float *fVert = mSurface->polys->verts[0];
+	for(int i = 0; i < mSurface->polys->numverts; i++, fVert += VERTEXSIZE)
 	{
 #ifdef _MSC_VER
 #pragma warning(suppress: 6011)
@@ -562,6 +560,8 @@ void Video_DrawSurface(msurface_t *mSurface,float fAlpha, Material_t *mMaterial,
 	}
 
 	Video_DrawObject(drawsurf, VIDEO_PRIMITIVE_TRIANGLE_FAN, mSurface->polys->numverts, mMaterial, 0);
+
+	free(drawsurf);
 
 	rs_brushpasses++;
 }
