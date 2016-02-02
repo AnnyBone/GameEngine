@@ -18,6 +18,8 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#include <stdio.h>
+
 #include "engine_base.h"
 
 #include "EngineScript.h"
@@ -342,25 +344,27 @@ ScriptKey_t	skScriptKeys[]=
 */
 bool Script_Load(const char *ccPath)
 {
-	uint8_t *data;
-
-	data = COM_LoadTempFile(ccPath);
+	char *data = COM_LoadHeapFile(ccPath);
 	if (!data)
 	{
 		Con_Warning("Failed to load script! (%s)\n",ccPath);
 		return false;
 	}
-	
-	Script_StartTokenParsing((char*)data);
+
+	Script_StartTokenParsing(data);
 
 	if(!Script_GetToken(true))
 	{
 		Con_Warning("Failed to get initial token! (%s) (%i)\n",ccPath,iScriptLine);
+
+		free(data);
 		return false;
 	}
 	else if(strcmp(cToken, "{"))
 	{
 		Con_Warning("Missing '{'! (%s) (%i)\n",ccPath,iScriptLine);
+
+		free(data);
 		return false;
 	}
 
@@ -398,5 +402,6 @@ bool Script_Load(const char *ccPath)
 		}
 	} while(true);
 
+	free(data);
 	return true;
 }

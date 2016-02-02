@@ -16,6 +16,8 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#include <stdlib.h>
+
 #include "engine_base.h"
 
 #include "video.h"
@@ -241,7 +243,6 @@ qpic_t	*Draw_CachePic(char *path)
 {
 	cachepic_t	*pic;
 	int			i;
-	qpic_t		*dat;
 	glpic_t		*gl;
 
 	for (pic=menu_cachepics, i=0 ; i<menu_numcachepics ; pic++, i++)
@@ -255,7 +256,7 @@ qpic_t	*Draw_CachePic(char *path)
 	strncpy(pic->name, path, sizeof(pic->name));
 
 	// load the pic from disk
-	dat = (qpic_t *)COM_LoadTempFile (path);
+	qpic_t *dat = COM_LoadHeapFile(path);
 	if(!dat)
 	{
 		Con_Warning("Failed to load cached texture (%s)!\n", path);
@@ -274,6 +275,8 @@ qpic_t	*Draw_CachePic(char *path)
 	gl->sh = (float)dat->width/(float)TexMgr_PadConditional(dat->width); //johnfitz
 	gl->tl = 0;
 	gl->th = (float)dat->height/(float)TexMgr_PadConditional(dat->height); //johnfitz
+
+	free(dat);
 
 	return &pic->pic;
 }
