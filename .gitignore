@@ -60,3 +60,4 @@ editor_legacy/Debug/RCa07736
 /.vs/
 /Debug (Ictus)/
 /Debug/
+*.o
