@@ -70,9 +70,6 @@ int		hunk_size;
 int		hunk_low_used;
 int		hunk_high_used;
 
-bool	hunk_tempactive;
-int		hunk_tempmark;
-
 void R_FreeTextures (void);
 
 /*	Run consistancy and sentinal trahing checks
@@ -228,22 +225,11 @@ void Hunk_FreeToLowMark (int mark)
 
 int	Hunk_HighMark (void)
 {
-	if (hunk_tempactive)
-	{
-		hunk_tempactive = false;
-		Hunk_FreeToHighMark(hunk_tempmark);
-	}
-
 	return hunk_high_used;
 }
 
 void Hunk_FreeToHighMark(int mark)
 {
-	if(hunk_tempactive)
-	{
-		hunk_tempactive = FALSE;
-		Hunk_FreeToHighMark (hunk_tempmark);
-	}
 	if (mark < 0 || mark > hunk_high_used)
 		Sys_Error ("Hunk_FreeToHighMark: bad mark %i", mark);
 	memset (hunk_base + hunk_size - hunk_high_used, 0, hunk_high_used - mark);
@@ -256,12 +242,6 @@ void *Hunk_HighAllocName(int size,char *name)
 
 	if (size < 0)
 		Sys_Error ("Hunk_HighAllocName: bad size: %i", size);
-
-	if (hunk_tempactive)
-	{
-		Hunk_FreeToHighMark (hunk_tempmark);
-		hunk_tempactive = FALSE;
-	}
 
 #ifdef PARANOID
 	Hunk_Check ();
@@ -286,30 +266,6 @@ void *Hunk_HighAllocName(int size,char *name)
 	strncpy(h->name, name, 8);
 
 	return (void *)(h+1);
-}
-
-
-/*	Return space from the top of the hunk
-*/
-void *Hunk_TempAlloc (int size)
-{
-	void	*buf;
-
-	size = (size+15)&~15;
-
-	if (hunk_tempactive)
-	{
-		Hunk_FreeToHighMark (hunk_tempmark);
-		hunk_tempactive = FALSE;
-	}
-
-	hunk_tempmark = Hunk_HighMark ();
-
-	buf = Hunk_HighAllocName (size, "temp");
-
-	hunk_tempactive = TRUE;
-
-	return buf;
 }
 
 /*
