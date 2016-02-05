@@ -246,7 +246,7 @@ void Video_Initialize(void)
 	Video.vertical_sync = cv_video_verticlesync.bValue;
 
 #ifdef VIDEO_SUPPORT_SHADERS
-	VideoShader_Initialize();
+	Shader_Initialize();
 #endif
 
 	Video.bInitialized = true;
@@ -597,9 +597,9 @@ void Video_DrawObject(VideoVertex_t *vobject, VideoPrimitive_t primitive,
 		}
 	}
 
-	Material_Draw(mMaterial, iSkin, vobject, tempobj.primitive, numverts, false);
+	Material_Draw(mMaterial, vobject, tempobj.primitive, numverts, false);
 	VideoObject_DrawImmediate(&tempobj);
-	Material_Draw(mMaterial, iSkin, vobject, tempobj.primitive, numverts, true);
+	Material_Draw(mMaterial, vobject, tempobj.primitive, numverts, true);
 
 	if (showwireframe)
 	{

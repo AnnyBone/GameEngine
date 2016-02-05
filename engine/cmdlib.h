@@ -7,6 +7,8 @@
 #include <errno.h>
 #include <time.h>
 
+plEXTERN_C_START
+
 typedef unsigned char byte;
 
 // set these before calling CheckParm
@@ -67,4 +69,7 @@ unsigned short CRC_Value(unsigned short crcvalue);
 
 extern	bool		archive;
 extern	char		archivedir[1024];
+
+plEXTERN_C_END
+
 #endif
