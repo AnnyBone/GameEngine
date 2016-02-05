@@ -81,7 +81,7 @@ typedef struct
 	void(*DrawGradientBackground)();
 	void(*DrawFPS)();
 	void(*DrawGrid)(float x, float y, float z, int grid_size);
-	void(*DrawString)(int x, int y, char *cMsg);
+	void(*DrawString)(int x, int y, const char *cMsg);
 	void(*DrawLine)(MathVector3f_t mvStart, MathVector3f_t mvEnd);
 	void(*DrawMaterialSurface)(Material_t *mMaterial, int iSkin, int x, int y, int w, int h, float fAlpha);
 	void(*DrawEntity)(ClientEntity_t *Entity);

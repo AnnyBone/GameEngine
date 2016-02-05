@@ -628,7 +628,7 @@ void Cmd_ExecuteString(char *text,cmd_source_t src)
 
 	// Check if we're trying to use a modifier.
 	if (strstr(text, COMMAND_USER))
-		text = Cmd_UpdateString(text, COMMAND_USER, g_state.cLocalName);
+		text = Cmd_UpdateString(text, COMMAND_USER, g_state.host_username);
 
 	cmd_source = src;
 	Cmd_TokenizeString(text);

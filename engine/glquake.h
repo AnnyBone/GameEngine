@@ -32,6 +32,8 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 
+plEXTERN_C_START
+
 void GL_BeginRendering (int *x, int *y, int *width, int *height);
 void GL_EndRendering (void);
 
@@ -157,5 +159,7 @@ void Fog_Init (void);
 
 bool R_CullModelForEntity(entity_t *e);
 void R_RotateForEntity(vec3_t origin,vec3_t angles);
+
+plEXTERN_C_END
 
 #endif // !GLQUAKE_H

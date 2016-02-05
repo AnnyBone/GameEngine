@@ -21,6 +21,12 @@
 using namespace std;
 
 /*	Loads a U3D model file.
+	TODO: 
+		Reverse faces.
+		Get and set UV coords correctly.
+		Crash occuring when failing to get name?
+		Support for multiple textures, somehow...
+		Animated frames are mangled.
 */
 bool ModelU3D_Load(model_t *model, void *buf)
 {

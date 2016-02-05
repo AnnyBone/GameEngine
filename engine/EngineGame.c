@@ -503,7 +503,7 @@ void Game_Initialize(void)
 	Import.Server_GetNumEdicts		= Game_GetNumEdicts;
 	Import.Server_GetEdicts			= Game_GetEdicts;
 
-	Game = (GameExport_t*)plLoadModuleInterface(hGameInstance, va("%s/%s" MODULE_GAME, com_gamedir, g_state.cModulePath), "Game_Main", &Import);
+	Game = (GameExport_t*)plLoadModuleInterface(hGameInstance, va("%s/%s" MODULE_GAME, com_gamedir, g_state.path_modules), "Game_Main", &Import);
 	if(!Game)
 		Con_Warning(plGetError(), com_gamedir, MODULE_GAME);
 	else if (Game->iVersion != GAME_VERSION)

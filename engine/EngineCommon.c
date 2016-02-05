@@ -1149,12 +1149,12 @@ void *COM_LoadHeapFile(const char *path)
 */
 pack_t *FileSystem_LoadPackage(char *packfile)
 {
-	dpackheader_t   header;
-	int                             i;
+	dpackheader_t			header;
+	int						i;
 	packfile_t              *newfiles;
-	int                             numpackfiles;
+	int						numpackfiles;
 	pack_t                  *pack;
-	int                             packhandle;
+	int						packhandle;
 	dpackfile_t             *info;
 	unsigned short          crc;
 
@@ -1167,7 +1167,6 @@ pack_t *FileSystem_LoadPackage(char *packfile)
 	header.dirlen = LittleLong (header.dirlen);
 
 	numpackfiles = header.dirlen / sizeof(dpackfile_t);
-
 	if (numpackfiles > MAX_FILES_IN_PACK)
 		Sys_Error ("%s has %i files", packfile, numpackfiles);
 
@@ -1257,42 +1256,42 @@ void _FileSystem_SetBasePath(char *cArg)
 
 void _FileSystem_SetMaterialPath(char *cArg)
 {
-	strncpy(g_state.cMaterialPath, cArg, PLATFORM_MAX_PATH);
+	strncpy(g_state.path_materials, cArg, PLATFORM_MAX_PATH);
 }
 
 void _FileSystem_SetTexturePath(char *cArg)
 {
-	strncpy(g_state.cTexturePath, cArg, PLATFORM_MAX_PATH);
+	strncpy(g_state.path_textures, cArg, PLATFORM_MAX_PATH);
 }
 
 void _FileSystem_SetSoundPath(char *cArg)
 {
-	strncpy(g_state.cSoundPath, cArg, PLATFORM_MAX_PATH);
+	strncpy(g_state.path_sounds, cArg, PLATFORM_MAX_PATH);
 }
 
 void _FileSystem_SetLevelPath(char *cArg)
 {
-	strncpy(g_state.cLevelPath, cArg, PLATFORM_MAX_PATH);
+	strncpy(g_state.path_levels, cArg, PLATFORM_MAX_PATH);
 }
 
 void _FileSystem_SetFontPath(char *cArg)
 {
-	strncpy(g_state.cFontPath, cArg, PLATFORM_MAX_PATH);
+	strncpy(g_state.path_fonts, cArg, PLATFORM_MAX_PATH);
 }
 
 void _FileSystem_SetScreenshotPath(char *cArg)
 {
-	strncpy(g_state.cScreenshotPath, cArg, PLATFORM_MAX_PATH);
+	strncpy(g_state.path_screenshots, cArg, PLATFORM_MAX_PATH);
 }
 
 void _FileSystem_SetModulePath(char *cArg)
 {
-	strncpy(g_state.cModulePath, cArg, PLATFORM_MAX_PATH);
+	strncpy(g_state.path_modules, cArg, PLATFORM_MAX_PATH);
 }
 
 void _FileSystem_SetShaderPath(char *cArg)
 {
-	strncpy(g_state.cShaderPath, cArg, PLATFORM_MAX_PATH);
+	strncpy(g_state.path_shaders, cArg, PLATFORM_MAX_PATH);
 }
 
 /*	Script specific function that adds a new data path.
@@ -1352,47 +1351,14 @@ void FileSystem_Initialize(void)
 		// TODO: Close down in this instance, though I might change so we try to load "base" instead? ~hogsy
 		Sys_Error("Base path wasn't set in paths script!\n");
 
-	if (g_state.cLevelPath[0] == ' ')
-	{
-		Con_Warning("Levels path wasn't set in paths script!\n");
-		sprintf(g_state.cLevelPath, "levels/");
-	}
-
-	if (g_state.cMaterialPath[0] == ' ')
-	{
-		Con_Warning("Materials path wasn't set in paths script!\n");
-		sprintf(g_state.cMaterialPath, "materials/");
-	}
-
-	if (g_state.cScreenshotPath[0] == ' ')
-	{
-		Con_Warning("Screenshots path wasn't set in paths script!\n");
-		sprintf(g_state.cScreenshotPath, "screenshots/");
-	}
-
-	if (g_state.cSoundPath[0] == ' ')
-	{
-		Con_Warning("Sounds path wasn't set in paths script!\n");
-		sprintf(g_state.cSoundPath, "sounds/");
-	}
-
-	if (g_state.cFontPath[0] == ' ')
-	{
-		Con_Warning("Sounds path wasn't set in paths script!\n");
-		sprintf(g_state.cFontPath, "fonts/");
-	}
-
-	if (g_state.cTexturePath[0] == ' ')
-	{
-		Con_Warning("Textures path wasn't set in paths script!\n");
-		sprintf(g_state.cTexturePath, "textures/");
-	}
-
-	if (g_state.cShaderPath[0] == ' ')
-	{
-		Con_Warning("Shaders path wasn't set in paths script!\n");
-		sprintf(g_state.cShaderPath, "shaders/");
-	}
+	// Check if paths have been set, otherwise set default.
+	if (g_state.path_levels[0] == ' ')			sprintf(g_state.path_levels, "levels/");
+	if (g_state.path_materials[0] == ' ')		sprintf(g_state.path_materials, "materials/");
+	if (g_state.path_screenshots[0] == ' ')		sprintf(g_state.path_screenshots, "screenshots/");
+	if (g_state.path_sounds[0] == ' ')			sprintf(g_state.path_sounds, "sounds/");
+	if (g_state.path_fonts[0] == ' ')			sprintf(g_state.path_fonts, "fonts/");
+	if (g_state.path_textures[0] == ' ')		sprintf(g_state.path_textures, "textures/");
+	if (g_state.path_shaders[0] == ' ')			sprintf(g_state.path_shaders, "shaders/");
 
 	// Start up with the default path
 	FileSystem_AddGameDirectory(va("%s/%s", basedir, host_parms.basepath));

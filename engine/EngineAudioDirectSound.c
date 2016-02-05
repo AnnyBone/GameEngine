@@ -25,7 +25,10 @@
 #include "winquake.h"
 
 #include "audio.h"
-#include "video.h"
+
+/*
+	Legacy DirectSound Interface
+*/
 
 #define iDirectSoundCreate(a,b,c)	pDirectSoundCreate(a,b,c)
 

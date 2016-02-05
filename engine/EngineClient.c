@@ -24,6 +24,8 @@
 #include "EngineInput.h"
 #include "EngineMenu.h"
 
+#include "video_light.h"
+
 // we need to declare some mouse variables here, because the menu system
 // references them even when on a unix system.
 
@@ -79,7 +81,9 @@ void CL_ClearState (void)
 	memset(cl_temp_entities,0,sizeof(cl_temp_entities));
 	memset(cl_beams,0,sizeof(cl_beams));
 
-	cl_dlights = (DynamicLight_t*)Hunk_AllocName(cv_max_dlights.iValue * sizeof(DynamicLight_t), "cl_dlights");
+	// Initialize lights, which in turn clears
+	// any existing ones.
+	Light_Initialize();
 
 	//johnfitz -- cl_entities is now dynamically allocated
 	cl_max_edicts	= Math_Clamp(MIN_EDICTS, (int)max_edicts.value, MAX_EDICTS);

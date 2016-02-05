@@ -60,7 +60,7 @@ typedef struct
 // light.c
 extern	int			c_occluded;
 extern	bool		relight,
-					bLightDirty;	// AO/Dirty lighting.
+					g_lightdirty;	// AO/Dirty lighting.
 
 extern	int			num_directlights;
 extern	directlight_t directlights[MAP_DIRECTLIGHTS];

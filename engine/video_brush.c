@@ -153,10 +153,10 @@ void R_DrawSequentialPoly(msurface_t *s)
 		if (alpha < 1.0f)
 		{
 			vlDepthMask(false);
-			VideoLayer_Enable(VIDEO_BLEND);
+			vlEnable(VIDEO_BLEND);
 		}
 
-		Material_Draw(mCurrent, 0, 0, 0, 0, false);
+		Material_Draw(mCurrent, 0, 0, 0, false);
 
 		for(pBrushPoly = s->polys->next; pBrushPoly; pBrushPoly = pBrushPoly->next)
 		{
@@ -164,12 +164,12 @@ void R_DrawSequentialPoly(msurface_t *s)
 			rs_brushpasses++;
 		}
 
-		Material_Draw(mCurrent, 0, 0, 0, 0, true);
+		Material_Draw(mCurrent, 0, 0, 0, true);
 
 		if (alpha < 1.0f)
 		{
 			vlDepthMask(true);
-			VideoLayer_Disable(VIDEO_BLEND);
+			vlDisable(VIDEO_BLEND);
 		}
 	}
 	else
@@ -179,7 +179,7 @@ void R_DrawSequentialPoly(msurface_t *s)
 			if (alpha < 1)
 			{
 				vlDepthMask(false);
-				VideoLayer_Enable(VIDEO_BLEND);
+				vlEnable(VIDEO_BLEND);
 			}
 
 			Video_SelectTexture(VIDEO_TEXTURE_LIGHT);
@@ -188,7 +188,7 @@ void R_DrawSequentialPoly(msurface_t *s)
 			R_RenderDynamicLightmaps(s);
 			R_UploadLightmap(s->lightmaptexturenum);
 
-			VideoLayer_Enable(VIDEO_TEXTURE_2D);
+			vlEnable(VIDEO_TEXTURE_2D);
 
 			Video_SelectTexture(0);
 		}
@@ -200,11 +200,11 @@ void R_DrawSequentialPoly(msurface_t *s)
 			if (alpha < 1)
 			{
 				vlDepthMask(true);
-				VideoLayer_Disable(VIDEO_BLEND);
+				vlDisable(VIDEO_BLEND);
 			}
 
 			Video_SelectTexture(VIDEO_TEXTURE_LIGHT);
-			VideoLayer_Disable(VIDEO_TEXTURE_2D);
+			vlDisable(VIDEO_TEXTURE_2D);
 			Video_SelectTexture(0);
 		}
 

@@ -16,38 +16,13 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef ENGINE_MAIN_H
-#define ENGINE_MAIN_H
-
-#include "SharedModule.h"
-#include "shared_engine.h"
-
-typedef struct
-{
-	// Host Information
-	char	host_username[PLATFORM_MAX_USER];	// Current system username.
-
-	char	
-		path_materials[PLATFORM_MAX_PATH],
-		path_textures[PLATFORM_MAX_PATH],
-		path_levels[PLATFORM_MAX_PATH],
-		path_screenshots[PLATFORM_MAX_PATH],
-		path_modules[PLATFORM_MAX_PATH],
-		path_fonts[PLATFORM_MAX_PATH],
-		path_shaders[PLATFORM_MAX_PATH],
-		path_sounds[PLATFORM_MAX_PATH];
-
-	bool embedded;
-} EngineGlobal_t;
+#ifndef VIDEO_LIGHT_H
+#define	VIDEO_LIGHT_H
 
 plEXTERN_C_START
 
-extern EngineGlobal_t	g_state;
-extern EngineImport_t	g_launcher;
-
-// System
-double System_DoubleTime(void);
+void Light_Initialize(void);
 
 plEXTERN_C_END
 
-#endif
+#endif // !VIDEO_LIGHT_H

@@ -43,6 +43,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documents", "Documents", "{
 		snipped.txt = snipped.txt
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Data", "utils\data\Data.vcxproj", "{6F9D9A5F-6200-4117-AF38-2868DB90AC87}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug (Adamas)|Win32 = Debug (Adamas)|Win32
@@ -148,6 +150,18 @@ Global
 		{DDDBE2D3-7AFE-4CBF-8DE5-636374F63DF2}.Release|Win32.Build.0 = Release|Win32
 		{DDDBE2D3-7AFE-4CBF-8DE5-636374F63DF2}.Release|x64.ActiveCfg = Release|x64
 		{DDDBE2D3-7AFE-4CBF-8DE5-636374F63DF2}.Release|x64.Build.0 = Release|x64
+		{6F9D9A5F-6200-4117-AF38-2868DB90AC87}.Debug (Adamas)|Win32.ActiveCfg = Debug|Win32
+		{6F9D9A5F-6200-4117-AF38-2868DB90AC87}.Debug (Adamas)|Win32.Build.0 = Debug|Win32
+		{6F9D9A5F-6200-4117-AF38-2868DB90AC87}.Debug (Adamas)|x64.ActiveCfg = Debug|Win32
+		{6F9D9A5F-6200-4117-AF38-2868DB90AC87}.Debug (OpenKatana)|Win32.ActiveCfg = Debug|Win32
+		{6F9D9A5F-6200-4117-AF38-2868DB90AC87}.Debug (OpenKatana)|Win32.Build.0 = Debug|Win32
+		{6F9D9A5F-6200-4117-AF38-2868DB90AC87}.Debug (OpenKatana)|x64.ActiveCfg = Debug|Win32
+		{6F9D9A5F-6200-4117-AF38-2868DB90AC87}.Debug|Win32.ActiveCfg = Debug|Win32
+		{6F9D9A5F-6200-4117-AF38-2868DB90AC87}.Debug|Win32.Build.0 = Debug|Win32
+		{6F9D9A5F-6200-4117-AF38-2868DB90AC87}.Debug|x64.ActiveCfg = Debug|Win32
+		{6F9D9A5F-6200-4117-AF38-2868DB90AC87}.Release|Win32.ActiveCfg = Release|Win32
+		{6F9D9A5F-6200-4117-AF38-2868DB90AC87}.Release|Win32.Build.0 = Release|Win32
+		{6F9D9A5F-6200-4117-AF38-2868DB90AC87}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -159,5 +173,6 @@ Global
 		{6BA71186-7156-4A79-ABAD-FC46D4492EA0} = {C752AD1B-A414-4403-A927-1F6D033C9418}
 		{549FB9B3-C358-4A95-B768-6027A04F1985} = {F8F2B76F-AEE3-4130-9A78-94BF985EACC2}
 		{DDDBE2D3-7AFE-4CBF-8DE5-636374F63DF2} = {A1423832-9C78-4437-AB29-7C59F21B1D4A}
+		{6F9D9A5F-6200-4117-AF38-2868DB90AC87} = {F8F2B76F-AEE3-4130-9A78-94BF985EACC2}
 	EndGlobalSection
 EndGlobal

@@ -55,8 +55,8 @@ extern "C" {
 	void VideoLayer_SetTextureFilter(VideoTextureFilter_t FilterMode);
 	void VideoLayer_SetTextureEnvironmentMode(VideoTextureEnvironmentMode_t TextureEnvironmentMode);
 
-	void VideoLayer_Enable(unsigned int uiCapabilities);
-	void VideoLayer_Disable(unsigned int uiCapabilities);
+	void vlEnable(unsigned int uiCapabilities);
+	void vlDisable(unsigned int uiCapabilities);
 
 	void VideoLayer_BlendFunc(VideoBlend_t modea, VideoBlend_t modeb);
 	void vlDepthMask(bool mode);

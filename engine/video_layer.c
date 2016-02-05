@@ -229,7 +229,7 @@ VideoLayerCapabilities_t capabilities[] =
 
 /*	Enables video capabilities.
 */
-void VideoLayer_Enable(unsigned int uiCapabilities)
+void vlEnable(unsigned int uiCapabilities)
 {
 	VIDEO_FUNCTION_START
 	int i;
@@ -253,7 +253,7 @@ void VideoLayer_Enable(unsigned int uiCapabilities)
 	VIDEO_FUNCTION_END
 }
 
-void VideoLayer_Disable(unsigned int uiCapabilities)
+void vlDisable(unsigned int uiCapabilities)
 {
 	VIDEO_FUNCTION_START
 	int i;

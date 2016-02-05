@@ -18,8 +18,7 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef SHARED_FLAGS_H
-#define SHARED_FLAGS_H
+#pragma once
 
 #ifdef _MSC_VER
 #pragma warning(disable:4100)	// unreferenced formal parameter
@@ -61,14 +60,14 @@ enum
 
 typedef enum
 {
-	EV_STRING,
-	EV_FLOAT,
-	EV_DOUBLE,
-	EV_VECTOR,
-	EV_VECTOR4,
-	ev_entity,
-	EV_INTEGER,
-	EV_BOOLEAN,
+	DATA_STRING,
+	DATA_FLOAT,
+	DATA_DOUBLE,
+	DATA_VECTOR3,
+	DATA_VECTOR4,
+	DATA_INTEGER,
+	DATA_BOOLEAN,
+	DATA_FUNCTION,
 
 	EV_NONE
 } DataType_t;
@@ -176,5 +175,3 @@ typedef enum
 {
 	STOC_SPAWNSPRITE
 } STOCMessage_t;
-
-#endif // !SHARED_FLAGS_H

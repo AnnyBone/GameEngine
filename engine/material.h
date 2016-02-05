@@ -16,40 +16,35 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef ENGINE_MATERIAL_H
-#define ENGINE_MATERIAL_H
+#pragma once
 
 #include "shared_material.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+plEXTERN_C_START
 
-	// Global materials
-	extern Material_t
-		*g_mHDAccess,
-		*g_mMissingMaterial,	// Used for materials that are missing.
-		*g_mBlobShadow,	// Self explanitory.
-		*g_mGlobalColour,
-		*g_mGlobalConChars;		// Used for the console font.
+// Global materials
+extern Material_t
+	*g_mHDAccess,
+	*g_mMissingMaterial,	// Used for materials that are missing.
+	*g_mBlobShadow,			// Self explanitory.
+	*g_mGlobalColour,
+	*g_mGlobalConChars;		// Used for the console font.
 
-	void Material_Initialize(void);
-	void Material_ClearAll(void);
-	void Material_Clear(Material_t *mMaterial);
-	void Material_Draw(Material_t *Material, int Skin, VideoVertex_t *ObjectVertex, VideoPrimitive_t ObjectPrimitive, unsigned int ObjectSize, bool bPost);
+void Material_Initialize(void);
+void Material_ClearAll(void);
+void Material_Clear(Material_t *material);
+void Material_Draw(Material_t *material, VideoVertex_t *ObjectVertex, VideoPrimitive_t ObjectPrimitive, unsigned int ObjectSize, bool ispost);
 
-	bool Material_Precache(const char *ccPath);
+bool Material_Precache(const char *path);
 
-	Material_t *Material_Load(const char *ccPath);
-	Material_t *Material_Get(int iMaterialID);
-	Material_t *Material_GetByPath(const char *ccPath);
-	Material_t *Material_GetByName(const char *ccMaterialName);
+Material_t *Material_Load(const char *path);
+Material_t *Material_Get(int id);
+Material_t *Material_GetByPath(const char *path);
+Material_t *Material_GetByName(const char *name);
 
-	MaterialSkin_t *Material_GetSkin(Material_t *mMaterial, int iSkin);
-	MaterialSkin_t *Material_GetAnimatedSkin(Material_t *mMaterial);
+void Material_SetSkin(Material_t *material, unsigned int skin);
 
-#ifdef __cplusplus
-}
-#endif
+MaterialSkin_t *Material_GetSkin(Material_t *material, unsigned int skin);
+MaterialSkin_t *Material_GetAnimatedSkin(Material_t *material);
 
-#endif // ENGINE_MATERIAL_H
+plEXTERN_C_END

@@ -60,9 +60,6 @@ int	Client_GetEffect(const char *cPath)
 	return 0;
 }
 
-// [30/7/2013] "Fixed" so that VS doesn't give us any trouble ~hogsy
-gltexture_t	*gMenuTexture[128];
-
 /*	Precache client-side resources.
 */
 void Client_PrecacheResource(int iType,char *cResource)
@@ -122,23 +119,6 @@ void Client_PrecacheResource(int iType,char *cResource)
 		// TODO: Implement material caching support.
 		break;
 	case RESOURCE_TEXTURE:
-		for(i = 0; i < sizeof(gMenuTexture); i++)
-			if(!gMenuTexture[i])
-			{
-				bData = Image_LoadImage(cResource,&w,&h);
-				if(!bData)
-				{
-					Con_Warning("Failed to load %s!\n",cResource);
-					return;
-				}
-
-				gMenuTexture[i] = TexMgr_LoadImage(NULL,cResource,w,h,SRC_RGBA,bData,cResource,0,TEXPREF_ALPHA);
-				return;
-			}
-			else if(!strcmp(cResource,gMenuTexture[i]->name))
-				return;
-
-		Console_ErrorMessage(false,cResource,"Overflow!");
 		break;
 	default:
 		Con_Warning("Attempted to precache an undefined type! (%s)\n",cResource);

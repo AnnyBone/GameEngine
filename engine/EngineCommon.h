@@ -6,17 +6,11 @@ typedef unsigned char 		byte;
 #define BYTE_DEFINED 1
 #endif
 
-#if __cplusplus
-extern "C" {
-#endif
-
-	char *va(const char *format, ...);
-
-#if __cplusplus
-};
-#endif
-
 #include "shared_common.h"
+
+plEXTERN_C_START
+
+char *va(const char *format, ...);
 
 //============================================================================
 
@@ -118,32 +112,26 @@ char *va(const char *format, ...);
 
 //============================================================================
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+extern int com_filesize;
+struct cache_user_s;
 
-	extern int com_filesize;
-	struct cache_user_s;
+extern char com_gamedir[PLATFORM_MAX_PATH];
 
-	extern char com_gamedir[PLATFORM_MAX_PATH];
+void FileSystem_WriteFile(const char *ccFileName, void *data, int len);
+int COM_OpenFile(const char *filename, int *hndl);
+int COM_FOpenFile(const char *filename, FILE **file);
+void COM_CloseFile(int h);
 
-	void FileSystem_WriteFile(const char *ccFileName, void *data, int len);
-	int COM_OpenFile(const char *filename, int *hndl);
-	int COM_FOpenFile(const char *filename, FILE **file);
-	void COM_CloseFile(int h);
+uint8_t *COM_LoadHunkFile(char *path);
+void    *COM_LoadHeapFile(const char *path);
 
-	uint8_t *COM_LoadHunkFile(char *path);
-	void    *COM_LoadHeapFile(const char *path);
+/*
+	File System
+*/
 
-	/*
-		File System
-	*/
+void FileSystem_Initialize(void);
+void FileSystem_UpdatePath(char cPath[]);
 
-	void FileSystem_Initialize(void);
-	void FileSystem_UpdatePath(char cPath[]);
-
-#ifdef __cplusplus
-}
-#endif
+plEXTERN_C_END
 
 #endif	// COMMON_H

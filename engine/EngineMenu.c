@@ -35,8 +35,8 @@ int Menu_GetScreenHeight(void);
 
 void Menu_Initialize(void)
 {
-	bool bMenuLoaded = false;
-	ModuleImport_t mImport;
+	bool			loaded = false;
+	ModuleImport_t	mImport;
 
 	if (g_menu)
 		plUnloadModule(hMenuInstance);
@@ -63,15 +63,15 @@ void Menu_Initialize(void)
 	mImport.Client_PrecacheResource		= Client_PrecacheResource;
 	mImport.Client_SetMenuCanvas		= GL_SetCanvas;
 
-	g_menu = (MenuExport_t*)plLoadModuleInterface(hMenuInstance, va("%s/%s" MODULE_MENU, com_gamedir, g_state.cModulePath), "Menu_Main", &mImport);
+	g_menu = (MenuExport_t*)plLoadModuleInterface(hMenuInstance, va("%s/%s" MODULE_MENU, com_gamedir, g_state.path_modules), "Menu_Main", &mImport);
 	if (!g_menu)
 		Con_Warning(plGetError(), com_gamedir, MODULE_MENU);
 	else if (g_menu->iVersion != MENU_VERSION)
 		Con_Warning("Size mismatch (recieved %i, expected %i)!\n", g_menu->iVersion, MENU_VERSION);
 	else
-		bMenuLoaded = true;
+		loaded = true;
 
-	if(!bMenuLoaded)
+	if (!loaded)
 	{
 		// Unload our module.
 		plUnloadModule(hMenuInstance);

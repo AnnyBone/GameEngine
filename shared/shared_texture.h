@@ -16,8 +16,7 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef SHARED_TEXTURE_H
-#define	SHARED_TEXTURE_H
+#pragma once
 
 #include "shared_model.h"
 
@@ -50,5 +49,3 @@ typedef struct gltexture_s
 	//used for rendering
 	int								visframe;				// Matches r_framecount if texture was bound this frame
 } gltexture_t;
-
-#endif // !SHARED_TEXTURE_H

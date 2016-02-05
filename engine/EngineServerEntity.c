@@ -335,7 +335,7 @@ void ED_WriteGlobals (FILE *f)
 			continue;
 		type &= ~DEF_SAVEGLOBAL;
 
-		if(type != EV_STRING && type != EV_FLOAT && type != ev_entity)
+		if(type != DATA_STRING && type != DATA_FLOAT && type != ev_entity)
 			continue;
 
 		name = pr_strings + def->s_name;

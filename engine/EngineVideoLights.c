@@ -21,11 +21,16 @@
 #include "engine_base.h"
 
 #include "video.h"
-#include "EngineEditor.h"
+#include "video_light.h"
 
 int	r_dlightframecount;
 
-extern cvar_t r_flatlightstyles; //johnfitz
+extern ConsoleVariable_t r_flatlightstyles; //johnfitz
+
+void Light_Initialize(void)
+{
+	cl_dlights = (DynamicLight_t*)Hunk_AllocName(cv_max_dlights.iValue * sizeof(DynamicLight_t), "cl_dlights");
+}
 
 void Light_Animate(void)
 {
@@ -61,16 +66,17 @@ void Light_Animate(void)
 
 void Light_Draw(void)
 {
+#if 0
 	int				i;
 	DynamicLight_t	*dlLight;
 
-	if(!gl_flashblend.bValue && !cvEditorLightPreview.bValue)
+	if(!gl_flashblend.bValue)
 		return;
 
 	// Because the count hasn't advanced yet for this frame.
 	r_dlightframecount = r_framecount+1;
 
-	VideoLayer_Enable(VIDEO_BLEND);
+	vlEnable(VIDEO_BLEND);
 	VideoLayer_BlendFunc(VIDEO_BLEND_ONE, VIDEO_BLEND_ONE);
 
 	dlLight = cl_dlights;
@@ -134,7 +140,8 @@ void Light_Draw(void)
 	}
 
 	VideoLayer_BlendFunc(VIDEO_BLEND_DEFAULT);
-	VideoLayer_Disable(VIDEO_BLEND);
+	vlDisable(VIDEO_BLEND);
+#endif
 }
 
 void Light_MarkLights(DynamicLight_t *light,int bit,mnode_t *node)

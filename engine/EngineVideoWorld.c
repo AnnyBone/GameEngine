@@ -231,7 +231,7 @@ void Surface_DrawMirror(msurface_t *surface)
 
 	R_SetupView();
 
-	VideoLayer_Enable(VIDEO_STENCIL_TEST);
+	vlEnable(VIDEO_STENCIL_TEST);
 
 	glStencilFunc(GL_ALWAYS, 1, 255);
 	glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE);
@@ -269,7 +269,7 @@ void Surface_DrawMirror(msurface_t *surface)
 		cl_numvisedicts--;
 	}
 
-	VideoLayer_Disable(VIDEO_STENCIL_TEST);
+	vlDisable(VIDEO_STENCIL_TEST);
 
 	// Restore view position.
 	Math_VectorCopy(oldorg, r_refdef.vieworg);
@@ -278,9 +278,9 @@ void Surface_DrawMirror(msurface_t *surface)
 
 #if 0
 	// Blend the final surface on top.
-	VideoLayer_Enable(VIDEO_BLEND);
+	vlEnable(VIDEO_BLEND);
 	Video_DrawSurface(Surface, 0.5f, g_mGlobalColour, 1);
-	VideoLayer_Disable(VIDEO_BLEND);
+	vlDisable(VIDEO_BLEND);
 #endif
 }
 
@@ -308,7 +308,7 @@ void World_DrawWater(void)
 				if (t->material->bBind && !r_showtris.bValue)
 				{
 					Video_SelectTexture(VIDEO_TEXTURE_LIGHT);
-					VideoLayer_Enable(VIDEO_TEXTURE_2D);
+					vlEnable(VIDEO_TEXTURE_2D);
 
 					t->material->bBind = false;
 				}
@@ -331,7 +331,7 @@ void World_DrawWater(void)
 
 	// Disable light texture
 	Video_SelectTexture(VIDEO_TEXTURE_LIGHT);
-	VideoLayer_Disable(VIDEO_TEXTURE_2D);
+	vlDisable(VIDEO_TEXTURE_2D);
 	Video_SelectTexture(0);
 }
 
@@ -358,7 +358,7 @@ void World_Draw(void)
 				if (t->material->bBind && !r_showtris.bValue)
 				{
 					Video_SelectTexture(VIDEO_TEXTURE_LIGHT);
-					VideoLayer_Enable(VIDEO_TEXTURE_2D);
+					vlEnable(VIDEO_TEXTURE_2D);
 
 					t->material->bBind = false;
 				}
@@ -382,6 +382,6 @@ void World_Draw(void)
 
 	// Disable light texture
 	Video_SelectTexture(VIDEO_TEXTURE_LIGHT);
-	VideoLayer_Disable(VIDEO_TEXTURE_2D);
+	vlDisable(VIDEO_TEXTURE_2D);
 	Video_SelectTexture(0);
 }

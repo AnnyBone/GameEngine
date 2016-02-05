@@ -36,7 +36,7 @@ char *Engine_GetBasePath(void)
 
 char *Engine_GetMaterialPath(void)
 {
-	return g_state.cMaterialPath;
+	return g_state.path_materials;
 }
 
 char *Engine_GetVersion(void)

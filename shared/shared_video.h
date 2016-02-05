@@ -81,6 +81,8 @@ typedef enum VideoDepth_e
 // Texture Environment Modes
 typedef enum VideoTextureEnvironmentMode_e
 {
+	VIDEO_TEXTURE_MODE_IGNORE = -1,
+
 	VIDEO_TEXTURE_MODE_ADD,
 	VIDEO_TEXTURE_MODE_MODULATE,
 	VIDEO_TEXTURE_MODE_DECAL,

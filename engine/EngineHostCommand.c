@@ -188,12 +188,9 @@ void Host_Game_f (void)
 
 			Draw_NewGame();
 
-			// [20/9/2012] Initialize the client ~hogsy
-			// [27/9/2012] Updated to use the new Client_Init function ~hogsy
 			Game->Client_Initialize();
 		}
 
-		// [20/9/2012] Initialize the server ~hogsy
 		Game->Server_Initialize();
 
 		ExtraMaps_NewGame();
@@ -219,14 +216,17 @@ extralevel_t	*extralevels;
 void ExtraMaps_Add (char *name)
 {
 	extralevel_t	*level,*cursor,*prev;
+	char			stripped[128];
+
+	COM_StripExtension(name + 5, stripped);
 
 	// Ignore duplicates
 	for(level = extralevels; level; level = level->next)
-		if(!strcmp(name,level->name))
+		if (!strcmp(stripped, level->name))
 			return;
 
 	level = (extralevel_t*)malloc_or_die(sizeof(extralevel_t));
-	strcpy(level->name, name);
+	strcpy(level->name, stripped);
 
 	// Insert each entry in alphabetical order
 	if (extralevels == NULL || Q_strcasecmp(level->name,extralevels->name) < 0) //insert at front
@@ -251,7 +251,7 @@ void ExtraMaps_Add (char *name)
 void ExtraMaps_Init(void)
 {
 	char            cMapName[128],
-		filestring[PLATFORM_MAX_PATH];
+					filestring[PLATFORM_MAX_PATH];
 	searchpath_t    *search;
 	pack_t          *pak;
 	int             i;
@@ -260,44 +260,8 @@ void ExtraMaps_Init(void)
 	{
 		if(*search->filename) //directory
 		{
-#ifdef _WIN32
-			WIN32_FIND_DATA	FindFileData;
-			HANDLE			Find;
-
-			sprintf(filestring, "%s/%s*"BSP_EXTENSION, search->filename, g_state.cLevelPath);
-
-			Find = FindFirstFile(filestring,&FindFileData);
-			if(Find == INVALID_HANDLE_VALUE)
-				continue;
-				
-			do
-			{
-				COM_StripExtension(FindFileData.cFileName,cMapName);
-
-				ExtraMaps_Add(cMapName);
-			} while(FindNextFile(Find,&FindFileData));
-#else // linux
-			DIR             *dDirectory;
-			struct  dirent  *dEntry;
-
-			sprintf(filestring,"%s/%s",search->filename,g_state.cLevelPath);
-
-			dDirectory = opendir(filestring);
-			if(dDirectory)
-			{
-				while((dEntry = readdir(dDirectory)))
-				{
-					if(strstr(dEntry->d_name,BSP_EXTENSION))
-					{
-						COM_StripExtension(dEntry->d_name,cMapName);
-
-						ExtraMaps_Add(cMapName);
-					}
-				}
-
-				closedir(dDirectory);
-			}
-#endif
+			sprintf(filestring, "%s/%s", search->filename, g_state.path_levels);
+			plScanDirectory(filestring, BSP_EXTENSION, ExtraMaps_Add);
 		}
 		else //pakfile
 		{
@@ -814,7 +778,7 @@ void Host_Changelevel_f (void)
 	}
 
 	//johnfitz -- check for client having map before anything else
-	sprintf(level, "%s/%s"BSP_EXTENSION, g_state.cLevelPath, Cmd_Argv(1));
+	sprintf(level, "%s/%s"BSP_EXTENSION, g_state.path_levels, Cmd_Argv(1));
 	if (COM_OpenFile (level, &i) == -1)
 		Host_Error ("cannot find map %s", level);
 	//johnfitz

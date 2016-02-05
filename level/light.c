@@ -3,7 +3,7 @@
 #include "shared_editor.h"
 
 bool	lightvis,
-		bLightDirty,
+		g_lightdirty,
 		relight,
 		verbose;
 
@@ -25,8 +25,8 @@ byte		currentvis[(BSP_MAX_LEAFS+7)/8];
 
 int			c_occluded;
 
-int			num_directlights;
-directlight_t directlights[MAP_DIRECTLIGHTS];
+int				num_directlights;
+directlight_t	directlights[MAP_DIRECTLIGHTS];
 
 /*
 ==============================================================================
@@ -40,9 +40,10 @@ If a light has a targetname, generate a unique style in the 32-63 range
 int		numlighttargets;
 char	lighttargets[32][128];
 
-vec3_t	vTextureReflectivity[BSP_MAX_TEXINFO];
+vec3_t	texreflectivity[BSP_MAX_TEXINFO];
 
-// [22/7/2012] Taken from Quake 2's BSP tools ~hogsy
+/*	Taken from Quake 2's BSP tools.
+*/
 void Light_CalculateTextureReflectivity(void)
 {
 #if 0
@@ -53,14 +54,14 @@ void Light_CalculateTextureReflectivity(void)
 	miptex_t	*mt;
 
 	// Always set index 0 even if no textures
-	VectorSet(vTextureReflectivity[0],0.5,0.5,0.5);
+	VectorSet(texreflectivity[0], 0.5, 0.5, 0.5);
 
 	for(i = 0; i < numtexinfo; i++)
 	{
 		for(j = 0; j < i; j++)
 			if(!strcmp(miptex[i],miptex[j]))
 			{
-				VectorCopy(vTextureReflectivity[j],vTextureReflectivity[i]);
+				VectorCopy(texreflectivity[j], texreflectivity[i]);
 				break;
 			}
 
@@ -74,7 +75,7 @@ void Light_CalculateTextureReflectivity(void)
 		// [1/8/2012] TODO: How to do for 32bpp images :/ ~hogsy
 		for(j = 0; j < texels; j++)
 		{
-			texel = ((byte*)mt)[LittleLong(mt->offsets[o])+j];
+			texel = ((uint8_t*)mt)[LittleLong(mt->offsets[o])+j];
 			for(k = 0; k < 3; k++)
 				vColor[k] += palette
 		}
@@ -82,14 +83,14 @@ void Light_CalculateTextureReflectivity(void)
 		for(j = 0; j < 3; j++)
 		{
 			r = vColor[j]/texels/255.0f;
-			vTextureReflectivity[i][j] = r;
+			texreflectivity[i][j] = r;
 		}
 
-		scale = plColourNormalize(vTextureReflectivity[i],vTextureReflectivity[i]);
+		scale = plColourNormalize(texreflectivity[i], texreflectivity[i]);
 		if(scale < 0.5f)
 		{
 			scale *= 2.0f;
-			VectorScale(vTextureReflectivity[i],scale,vTextureReflectivity[i]);
+			VectorScale(texreflectivity[i], scale, texreflectivity[i]);
 		}
 	}
 #endif
@@ -117,12 +118,12 @@ int LightStyleForTargetname( char *targetname )
 
 void ParseLightEntities( void )
 {
-	int	i, j;
-	entity_t *ent;
-	char *value, *targetname, *style;
-	directlight_t *l;
-	double vec[4], color2[3];
-	bool isLight, is_skylight, is_spotlight;
+	int				i, j;
+	entity_t		*ent;
+	char			*value, *targetname, *style;
+	directlight_t	*l;
+	double			vec[4];
+	bool			is_light, is_skylight, is_spotlight;
 
 	num_directlights = 0;
 	for( i = 0, ent = entities; i < num_entities; i++, ent++ )
@@ -130,29 +131,26 @@ void ParseLightEntities( void )
 		value = ValueForKey(ent,"classname");
 
 		// Reset these each time, just to be safe.
-		is_skylight = false;
-		is_spotlight = false;
-		isLight = false;
+		is_skylight		= 
+		is_spotlight	= 
+		is_light		= false;
 
-		if(strncmp(value,"light", 5))
+		if (strncmp(value, "light", 5))
 			continue;
 
-		if (!strcmp(value, "light"))
-			isLight = true;
-		else if (!strcmp(value, "light_spot"))
-			is_spotlight = true;
-		else if (!strcmp(value, "light_environment"))
-			is_skylight = true;
+		// Figure out which type of light it is.
+		if (!strcmp(value, "light_spot"))				is_spotlight = true;
+		else if (!strcmp(value, "light_environment"))	is_skylight = true;
+		else if (!strcmp(value, "light"))				is_light = true;
 
 		if( num_directlights == MAP_DIRECTLIGHTS )
-			Error( "numdirectlights == MAP_DIRECTLIGHTS" );
+			Error( "Direct light count has exceeded limit! (%i)\n", num_directlights);
 
 		l = &directlights[num_directlights++];
 		memset( l, 0, sizeof (*l) );
 
-		color2[0] = color2[1] = color2[2] = 1.0f;
 		l->color[0] = l->color[1] = l->color[2] = 1.0f;
-		GetVectorForKey(ent,"origin",l->origin);
+		GetVectorForKey(ent, "origin", l->origin);
 
 		if (is_skylight)
 			l->type = LIGHTTYPE_SUN;
@@ -160,6 +158,7 @@ void ParseLightEntities( void )
 			l->spotcone = -cos(20.0f*Q_PI / 180.0f);
 		else
 			l->type = defaultlighttype;
+
 		j = FloatForKey(ent,"delay");
 		if(!overridelighttypes && j)
 		{
@@ -174,8 +173,6 @@ void ParseLightEntities( void )
 
 		l->angle = FloatForKey(ent,"angle");
 
-		VectorClear(l->spotdir);
-
 		value = ValueForKey(ent, "angles");
 		if (value[0] && (l->type == LIGHTTYPE_SUN))
 		{
@@ -188,47 +185,19 @@ void ParseLightEntities( void )
 			VectorCopy(vec, l->spotdir);
 		}
 
-		value = ValueForKey(ent,"color");
-		if( !value[0] )
-			value = ValueForKey(ent,"_color");
-		if( value[0] )
-			if( sscanf(value,"%lf %lf %lf",&color2[0],&color2[1],&color2[2]) != 3 )
-				Error("error in light at %.0f %.0f %.0f:\ncolor must be given 3 values", l->origin[0], l->origin[1], l->origin[2] );
-
 		value = ValueForKey(ent,"light");
-		if( !value[0] )
-			value = ValueForKey(ent,"_light");
 		if( value[0] )
 		{
 			j = sscanf(value,"%lf %lf %lf %lf",&vec[0],&vec[1],&vec[2],&vec[3]);
-
-			// TODO: Make this check obsolete? Decay is always HL lights.
-			switch( j )
-			{
-				case 4:// HalfLife light
-					l->color[0] = vec[0];
-					l->color[1] = vec[1];
-					l->color[2] = vec[2];
-					l->radius	= vec[3];
-					break;
-				case 1: // quake light
-					l->radius	= vec[0];
-					l->color[0] = vec[0];
-					l->color[1] = vec[0];
-					l->color[2] = vec[0];
-					break;
-				default:
-					Error( "error in light at %.0f %.0f %.0f:\n_light (or light) key must be 1 (Quake) or 4 (HalfLife) numbers, \"%s\" is not valid\n", l->origin[0], l->origin[1], l->origin[2], value );
-			}
+			if (j != 4)
+				Error("error in light at %.0f %.0f %.0f:\n_light (or light) key must be 1 (Quake) or 4 (HalfLife) numbers, \"%s\" is not valid\n", l->origin[0], l->origin[1], l->origin[2], value);
+			
+			VectorCopy(vec, l->color);
+			l->radius = vec[3];
 		}
 
-		if( !l->radius )
-		{
-			l->radius	= DEFAULTLIGHTLEVEL;
-			l->color[0] = DEFAULTLIGHTLEVEL;
-			l->color[1] = DEFAULTLIGHTLEVEL;
-			l->color[2] = DEFAULTLIGHTLEVEL;
-		}
+		if (!l->radius)
+			Error("Light has an invalid radius! (%.0f %.0f %.0f)\n", l->origin[0], l->origin[1], l->origin[2]);
 
 		// for some reason this * 0.5 is needed to match quake light
 		VectorScale(l->color, 0.5, l->color);
@@ -266,19 +235,18 @@ void ParseLightEntities( void )
 			break;
 		}
 
-		l->color[0] *= color2[0] * globallightscale;
-		l->color[1] *= color2[1] * globallightscale;
-		l->color[2] *= color2[2] * globallightscale;
+		l->color[0] *= globallightscale;
+		l->color[1] *= globallightscale;
+		l->color[2] *= globallightscale;
 
 		// this confines the light to a specified radius (typically used on RECIPX and RECIPXX)
 		vec[0] = FloatForKey( ent, "_lightradius" );
 		if (vec[0])
 			l->clampradius = vec[0];
 
-		if( isLight )
+		if( is_light )
 		{
 			value = ValueForKey( ent, "targetname" );
-
 			if( value[0] && !l->style )
 			{
 				char s[16];
@@ -350,13 +318,13 @@ void ParseLightEntities( void )
 
 #define LIGHTCHAINS (BSP_MAX_FACES * 64)
 
-lightchain_t *surfacelightchain[BSP_MAX_FACES];
-lightchain_t lightchainbuf[LIGHTCHAINS];
-byte surfacehit[BSP_MAX_FACES];
-const directlight_t *novislight[BSP_MAX_ENTITIES];
-const directlight_t *alllight[BSP_MAX_ENTITIES];
-int novislights, alllights;
-int lightchainbufindex;
+lightchain_t			*surfacelightchain[BSP_MAX_FACES];
+lightchain_t			lightchainbuf[LIGHTCHAINS];
+uint8_t					surfacehit[BSP_MAX_FACES];
+const directlight_t		*novislight[BSP_MAX_ENTITIES];
+const directlight_t		*alllight[BSP_MAX_ENTITIES];
+int						novislights, alllights;
+int						lightchainbufindex;
 
 void LightWorld( void )
 {
@@ -541,7 +509,7 @@ int Light_Main( int argc, char **argv )
 
 	extrasamplesbit         = 0;
 	lightvis                = true;
-	bLightDirty				=
+	g_lightdirty			=
 	relight                 = false;
 	globallightscale        = 1.0;
 	globallightradiusscale  = 1.0;
@@ -563,7 +531,7 @@ int Light_Main( int argc, char **argv )
 		}
 		else if (!strcmp(argv[i], "-dirty"))
 		{
-			bLightDirty = true;
+			g_lightdirty = true;
 
 			printf("Dirty lighting enabled\n");
 		}

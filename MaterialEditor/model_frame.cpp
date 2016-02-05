@@ -37,6 +37,8 @@ ModelViewportPanel::ModelViewportPanel(wxWindow *parent) : BaseViewportPanel(par
 	}
 	else
 		plWriteLog(EDITOR_LOG, "Failed to create client entity!\n");
+
+	rotate = true;
 }
 
 void ModelViewportPanel::Draw()
@@ -50,8 +52,9 @@ void ModelViewportPanel::Draw()
 			entity->frame = 0;
 
 		engine->DrawEntity(entity);
+
 		// Dolly rotate
-		//if (rotate)
+		if (rotate)
 			entity->angles[1] += 0.5f;
 	}
 }

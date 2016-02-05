@@ -626,17 +626,17 @@ void Screen_DrawConsole(void)
 
 void SCR_ScreenShot_f (void)
 {
-	uint8_t	*buffer;
-	char	tganame[32], checkname[PLATFORM_MAX_PATH];
-	int		i;
+	uint8_t		*buffer;
+	char		tganame[32], checkname[PLATFORM_MAX_PATH];
+	int			i;
 
-	if (!plCreateDirectory(va("%s/%s", com_gamedir, g_state.cScreenshotPath)))
+	if (!plCreateDirectory(va("%s/%s", com_gamedir, g_state.path_screenshots)))
 		Sys_Error("Failed to create directory!\n%s", plGetError());
 
 	// find a file name to save it to
 	for (i = 0; i < 10000; i++)
 	{
-		sprintf(tganame, "%s%04i.tga", g_state.cScreenshotPath, i);
+		sprintf(tganame, "%s%04i.tga", g_state.path_screenshots, i);
 		sprintf(checkname,"%s/%s",com_gamedir,tganame);
 		if(Sys_FileTime(checkname) == -1)
 			break;	// file doesn't exist
@@ -869,12 +869,12 @@ void SCR_UpdateScreen (void)
 	Screen_SetUpToDrawConsole();
 
 	if (cv_video_msaasamples.iValue > 0)
-		VideoLayer_Enable(VIDEO_MULTISAMPLE);
+		vlEnable(VIDEO_MULTISAMPLE);
 
 	V_RenderView ();
 
 	if (cv_video_msaasamples.iValue > 0)
-		VideoLayer_Disable(VIDEO_MULTISAMPLE);
+		vlDisable(VIDEO_MULTISAMPLE);
 
 	Draw_ResetCanvas();
 

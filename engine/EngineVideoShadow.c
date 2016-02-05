@@ -183,8 +183,8 @@ void Shadow_Draw(ClientEntity_t *ent)
 
 			Video_ResetCapabilities(false);
 
-			VideoLayer_Enable(VIDEO_BLEND | VIDEO_STENCIL_TEST);
-			VideoLayer_Disable(VIDEO_TEXTURE_2D);
+			vlEnable(VIDEO_BLEND | VIDEO_STENCIL_TEST);
+			vlDisable(VIDEO_TEXTURE_2D);
 			Video_SetBlend(VIDEO_BLEND_IGNORE, VIDEO_DEPTH_FALSE);
 
 			glStencilFunc(GL_EQUAL, 1, 2);
@@ -202,8 +202,8 @@ void Shadow_Draw(ClientEntity_t *ent)
 
 			glPopMatrix();
 
-			VideoLayer_Disable(VIDEO_BLEND | VIDEO_STENCIL_TEST);
-			VideoLayer_Enable(VIDEO_TEXTURE_2D);
+			vlDisable(VIDEO_BLEND | VIDEO_STENCIL_TEST);
+			vlEnable(VIDEO_TEXTURE_2D);
 		}
 #endif
 }

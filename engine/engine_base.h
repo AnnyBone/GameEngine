@@ -18,8 +18,7 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef ENGINE_BASE_H
-#define ENGINE_BASE_H
+#pragma once
 
 // Platform Library
 #include "platform.h"
@@ -39,7 +38,7 @@
 #endif
 
 //	Build needs to be updated each day that work is done on the engine.
-#define ENGINE_VERSION_BUILD	1082	// 30/01/2016
+#define ENGINE_VERSION_BUILD	1088	// 05/02/2016
 
 #define	ENGINE_LOG	"engine"
 
@@ -144,27 +143,23 @@ extern	double		host_frametime;
 extern	int			host_framecount;	// incremented every frame, never reset
 extern	double		realtime;			// not bounded in any way, changed at
 										// start of every frame, never reset
-#ifdef __cplusplus
-extern "C" {
-#endif
+plEXTERN_C_START
 
-	void Host_ClearMemory(void);
-	void Host_ServerFrame(void);
-	void Host_InitCommands(void);
-	void Host_Initialize(EngineParameters_t *parms);
-	void Host_Shutdown(void);
-	void Host_Error(char *error, ...);
-	void Host_EndGame(char *message, ...);
-	void Host_Frame(float time);
-	void Host_Quit_f(void);
-	void Host_ClientCommands(char *fmt, ...);
-	void Host_ShutdownServer(bool crash);
+void Host_ClearMemory(void);
+void Host_ServerFrame(void);
+void Host_InitCommands(void);
+void Host_Initialize(EngineParameters_t *parms);
+void Host_Shutdown(void);
+void Host_Error(char *error, ...);
+void Host_EndGame(char *message, ...);
+void Host_Frame(float time);
+void Host_Quit_f(void);
+void Host_ClientCommands(char *fmt, ...);
+void Host_ShutdownServer(bool crash);
 
-#ifdef __cplusplus
-}
-#endif
+plEXTERN_C_END
 
-extern bool		msg_suppress_1;		// suppresses resolution and cache size console output
+extern bool		msg_suppress_1;			// suppresses resolution and cache size console output
 										//  an fullscreen DIB focus gain/loss
 extern int			current_skill;		// skill level for currently loaded level (in case
 										//  the user changes the cvar while the level is
@@ -179,5 +174,3 @@ void TraceLine(MathVector3f_t start, MathVector3f_t end, MathVector3f_t impact);
 
 void Chase_Init(void);
 void Chase_UpdateForDrawing(void); //johnfitz
-
-#endif // !ENGINE_BASE_H

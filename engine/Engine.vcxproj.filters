@@ -294,9 +294,6 @@
     <ClCompile Include="video_sdlwindow.c">
       <Filter>Client\Video\Interfaces</Filter>
     </ClCompile>
-    <ClCompile Include="video.c">
-      <Filter>Client\Video</Filter>
-    </ClCompile>
     <ClCompile Include="engine_exception.cpp" />
     <ClCompile Include="video_draw.c">
       <Filter>Client\Video</Filter>
@@ -327,6 +324,9 @@
     </ClCompile>
     <ClCompile Include="audio.cpp">
       <Filter>Client\Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="video.cpp">
+      <Filter>Client\Video</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -560,6 +560,9 @@
     </ClInclude>
     <ClInclude Include="audio.h">
       <Filter>Client\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="video_light.h">
+      <Filter>Legacy\Client\Video</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

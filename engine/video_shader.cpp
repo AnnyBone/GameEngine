@@ -77,12 +77,12 @@ bool VideoShader::Load(const char *path)
 	unsigned int uiShaderType;
 	if (type == VIDEO_SHADER_FRAGMENT)
 	{
-		sprintf(source_path, "%s%s_fragment.shader", g_state.cShaderPath, path);
+		sprintf(source_path, "%s%s_fragment.shader", g_state.path_shaders, path);
 		uiShaderType = GL_FRAGMENT_SHADER;
 	}
 	else
 	{
-		sprintf(source_path, "%s%s_vertex.shader", g_state.cShaderPath, path);
+		sprintf(source_path, "%s%s_vertex.shader", g_state.path_shaders, path);
 		uiShaderType = GL_VERTEX_SHADER;
 	}
 
@@ -308,7 +308,7 @@ VideoShader *base_fragment, *base_vertex;
 // Uniforms
 int	iDiffuseUniform;
 
-void VideoShader_Initialize(void)
+void Shader_Initialize(void)
 {
 	// Program needs to be created first.
 	base_program = new VideoShaderProgram();

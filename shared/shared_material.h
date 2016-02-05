@@ -16,8 +16,7 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef SHARED_MATERIAL_H
-#define	SHARED_MATERIAL_H
+#pragma once
 
 #include "shared_texture.h"
 
@@ -82,7 +81,7 @@ typedef struct
 
 	MathVector2f_t	vScroll;
 
-	float	fRotate;
+	float	fRotate, scale;
 
 	unsigned int uiWidth, uiHeight;	// Width and height of the texture.
 	unsigned int uiFlags;			// Size of the texture.
@@ -113,10 +112,9 @@ typedef struct
 
 typedef struct Material_s
 {
-	int		
-		iIdentification,	// Unique ID for the material.
-		iFlags,				// Global material flags, flags that take priority over all additional skins.
-		iSkins;				// Number of skins provided by this material.
+	int
+		id,					// Unique ID for the material.
+		iFlags;				// Global material flags, flags that take priority over all additional skins.			
 
 	char	
 		cPath[PLATFORM_MAX_PATH],	// Path of the material.
@@ -124,6 +122,7 @@ typedef struct Material_s
 
 	// Skins
 	MaterialSkin_t	msSkin[MATERIAL_MAX_SKINS];
+	unsigned int	iSkins;							// Number of skins provided by this material.
 	unsigned int	current_skin;
 
 	bool 
@@ -134,9 +133,7 @@ typedef struct Material_s
 	float fAlpha;	// Alpha override.
 
 	// Animation
-	float	fAnimationSpeed;	// Speed to scroll through skins, if animation is enabled.
-	double	dAnimationTime;		// Time until we animate again.
-	int		iAnimationFrame;	// Current frame of the animation.
+	float			animation_speed;	// Speed to scroll through skins, if animation is enabled.
+	unsigned int	animation_frame;	// Current frame for animation.
+	double			animation_time;		// Time until we animate again.
 } Material_t;
-
-#endif // !SHARED_MATERIAL_H

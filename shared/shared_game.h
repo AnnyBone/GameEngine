@@ -151,17 +151,17 @@ typedef struct
 	void(*Client_AddMenuState)(int iState);						// Adds a new state to the clients menu.
 	void(*Client_RemoveMenuState)(int iState);					// Removes a state from the clients menu.
 
-	ClientEntity_t		*(*Client_GetViewEntity)(void);							// Returns the entity representing the players view model.
-	ClientEntity_t		*(*Client_GetPlayerEntity)(void);						// Returns the entity representing the player.
+	ClientEntity_t		*(*Client_GetViewEntity)(void);		// Returns the entity representing the players view model.
+	ClientEntity_t		*(*Client_GetPlayerEntity)(void);	// Returns the entity representing the player.
 
-	DynamicLight_t	*(*Client_AllocateDlight)(int key);						// Allocate a new dynamic light.
+	DynamicLight_t	*(*Client_AllocateDlight)(int key);		// Allocate a new dynamic light.
 
-	Particle_t		*(*Client_AllocateParticle)(void);						// Allocate a new particle effect.
+	Particle_t		*(*Client_AllocateParticle)(void);	// Allocate a new particle effect.
 
 	// Global
 	MathVectorf_t	*(*GetLightSample)(MathVector3f_t vOrigin);	// Gets the current lightmap sample for the specified entity.
 
-	bool(*Material_Precache)(const char *ccPath);
+	bool(*Material_Precache)(const char *path);
 
 	// Pre 9/4/2012 (Update all these)
 	void(*Con_Printf)(const char *fmt, ...);	// Appears to client in console. Standard message.

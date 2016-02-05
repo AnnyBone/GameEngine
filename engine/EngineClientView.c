@@ -410,9 +410,9 @@ void View_PolyBlend(void)
 	if (!gl_polyblend.value || !cl.cshifts[CSHIFT_CONTENTS].percent)
 		return;
 
-	VideoLayer_Disable(VIDEO_DEPTH_TEST);
+	vlDisable(VIDEO_DEPTH_TEST);
 	Draw_Rectangle(0, 0, Video.iWidth, Video.iHeight, vViewBlend);
-	VideoLayer_Enable(VIDEO_DEPTH_TEST);
+	vlEnable(VIDEO_DEPTH_TEST);
 }
 
 /*

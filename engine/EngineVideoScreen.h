@@ -21,6 +21,8 @@
 #ifndef __ENGINEVIDEOSCREEN__
 #define __ENGINEVIDEOSCREEN__
 
+plEXTERN_C_START
+
 void SCR_Init (void);
 void SCR_UpdateScreen (void);
 void SCR_SizeUp (void);
@@ -58,5 +60,7 @@ extern	cvar_t		scr_crosshairscale;
 //johnfitz
 
 extern int scr_tileclear_updates; //johnfitz
+
+plEXTERN_C_END
 
 #endif

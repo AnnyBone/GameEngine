@@ -37,7 +37,7 @@
 EngineExport_t *engine;
 EngineImport_t *launcher;
 
-pINSTANCE hEngineInstance;
+pINSTANCE instance;
 
 /*	TODO:
 		List of things I want access to from the engine...
@@ -55,7 +55,7 @@ int main(int argc,char *argv[])
 
 	// Load the module interface for the engine module.
 	engine = (EngineExport_t*)plLoadModuleInterface(
-		hEngineInstance,
+		instance,
 		"./" MODULE_ENGINE,
 		"Engine_Main",
 		&launcher);
@@ -74,7 +74,7 @@ int main(int argc,char *argv[])
 	{
 		plWriteLog(LAUNCHER_LOG, "Launcher is outdated, please rebuild! (%i)\n", engine->iVersion);
 		plMessageBox("Launcher", "Launcher is outdated, please rebuild!");
-		plUnloadModule(hEngineInstance);
+		plUnloadModule(instance);
 		return -1;
 	}
 
@@ -83,7 +83,7 @@ int main(int argc,char *argv[])
 	{
 		plWriteLog(LAUNCHER_LOG, "Engine failed to initialize, check engine log!\n");
 		plMessageBox("Launcher", "Failed to initialize engine!");
-		plUnloadModule(hEngineInstance);
+		plUnloadModule(instance);
 		return -1;
 	}
 
@@ -91,7 +91,7 @@ int main(int argc,char *argv[])
 		engine->Loop();
 
 	// Unload once the engine has stopped running.
-	plUnloadModule(hEngineInstance);
+	plUnloadModule(instance);
 
 	return -1;
 }

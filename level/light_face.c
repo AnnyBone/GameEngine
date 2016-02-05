@@ -525,7 +525,7 @@ static void SingleLightFace( const directlight_t *light, lightinfo_t *l )
 	}
 
 	// Check if we're using AO/Dirty lighting.
-	if (bLightDirty)
+	if (g_lightdirty)
 		LightFace_Dirt(light,l);
 
 	dist = DotProduct( light->origin, l->facenormal ) - l->facedist;

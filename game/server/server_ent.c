@@ -63,51 +63,51 @@ typedef struct
 
 ServerEntityField_t	entity_fields[] =
 {
-	{ "classname", ENTITY_FIELD(v.cClassname), EV_STRING },
-	{ "name", ENTITY_FIELD(v.cName), EV_STRING },
-	{ "model", ENTITY_FIELD(v.model), EV_STRING },
-	{ "targetname", ENTITY_FIELD(v.targetname), EV_STRING },
-	{ "noise", ENTITY_FIELD(v.noise), EV_STRING },
-	{ "message", ENTITY_FIELD(v.message), EV_STRING },
-	{ "origin", ENTITY_FIELD(v.origin), EV_VECTOR },
-	{ "angles", ENTITY_FIELD(v.angles), EV_VECTOR },
-	{ "light", ENTITY_FIELD(v.vLight), EV_VECTOR4 },
-	{ "health", ENTITY_FIELD(v.iHealth), EV_INTEGER },
-	{ "spawnflags", ENTITY_FIELD(v.spawnflags), EV_INTEGER },
-	{ "bTakeDamage", ENTITY_FIELD(v.bTakeDamage), EV_BOOLEAN },
-	{ "takedamage", ENTITY_FIELD(v.bTakeDamage), EV_BOOLEAN },
-	{ "alpha", ENTITY_FIELD(alpha), EV_INTEGER },
+	{ "classname", ENTITY_FIELD(v.cClassname), DATA_STRING },
+	{ "name", ENTITY_FIELD(v.cName), DATA_STRING },
+	{ "model", ENTITY_FIELD(v.model), DATA_STRING },
+	{ "targetname", ENTITY_FIELD(v.targetname), DATA_STRING },
+	{ "noise", ENTITY_FIELD(v.noise), DATA_STRING },
+	{ "message", ENTITY_FIELD(v.message), DATA_STRING },
+	{ "origin", ENTITY_FIELD(v.origin), DATA_VECTOR3 },
+	{ "angles", ENTITY_FIELD(v.angles), DATA_VECTOR3 },
+	{ "light", ENTITY_FIELD(v.vLight), DATA_VECTOR4 },
+	{ "health", ENTITY_FIELD(v.iHealth), DATA_INTEGER },
+	{ "spawnflags", ENTITY_FIELD(v.spawnflags), DATA_INTEGER },
+	{ "bTakeDamage", ENTITY_FIELD(v.bTakeDamage), DATA_BOOLEAN },
+	{ "takedamage", ENTITY_FIELD(v.bTakeDamage), DATA_BOOLEAN },
+	{ "alpha", ENTITY_FIELD(alpha), DATA_INTEGER },
 
 	// Model properties
-	{ "model_skin", ENTITY_FIELD(Model.iSkin), EV_INTEGER },
-	{ "scale", ENTITY_FIELD(Model.fScale), EV_FLOAT },
+	{ "model_skin", ENTITY_FIELD(Model.iSkin), DATA_INTEGER },
+	{ "scale", ENTITY_FIELD(Model.fScale), DATA_FLOAT },
 
 	// Physical properties
-	{ "physics_solid", ENTITY_FIELD(Physics.iSolid), EV_INTEGER },
-	{ "physics_mass", ENTITY_FIELD(Physics.fMass), EV_FLOAT },
-	{ "physics_gravity", ENTITY_FIELD(Physics.fGravity), EV_FLOAT },
+	{ "physics_solid", ENTITY_FIELD(Physics.iSolid), DATA_INTEGER },
+	{ "physics_mass", ENTITY_FIELD(Physics.fMass), DATA_FLOAT },
+	{ "physics_gravity", ENTITY_FIELD(Physics.fGravity), DATA_FLOAT },
 
 	// Local (move these at some point)
-	{ "sound", ENTITY_FIELD(local.sound), EV_STRING },
-	{ "soundstart", ENTITY_FIELD(local.cSoundStart), EV_STRING },
-	{ "soundstop", ENTITY_FIELD(local.sound_stop), EV_STRING },
-	{ "soundmoving", ENTITY_FIELD(local.cSoundMoving), EV_STRING },
-	{ "soundreturn", ENTITY_FIELD(local.cSoundReturn), EV_STRING },
-	{ "target1", ENTITY_FIELD(local.cTarget1), EV_STRING },
-	{ "target2", ENTITY_FIELD(local.cTarget2), EV_STRING },
-	{ "speed", ENTITY_FIELD(local.speed), EV_FLOAT },
-	{ "delay", ENTITY_FIELD(local.delay), EV_FLOAT },
-	{ "lip", ENTITY_FIELD(local.lip), EV_FLOAT },
-	{ "wait", ENTITY_FIELD(local.dWait), EV_DOUBLE },
-	{ "damage", ENTITY_FIELD(local.iDamage), EV_INTEGER },
-	{ "volume", ENTITY_FIELD(local.volume), EV_INTEGER },
-	{ "style", ENTITY_FIELD(local.style), EV_INTEGER },
-	{ "count", ENTITY_FIELD(local.count), EV_INTEGER },
-	{ "pTeam", ENTITY_FIELD(local.pTeam), EV_INTEGER },
-	{ "attack_finished", ENTITY_FIELD(local.dAttackFinished), EV_DOUBLE },
+	{ "sound", ENTITY_FIELD(local.sound), DATA_STRING },
+	{ "soundstart", ENTITY_FIELD(local.cSoundStart), DATA_STRING },
+	{ "soundstop", ENTITY_FIELD(local.sound_stop), DATA_STRING },
+	{ "soundmoving", ENTITY_FIELD(local.cSoundMoving), DATA_STRING },
+	{ "soundreturn", ENTITY_FIELD(local.cSoundReturn), DATA_STRING },
+	{ "target1", ENTITY_FIELD(local.cTarget1), DATA_STRING },
+	{ "target2", ENTITY_FIELD(local.cTarget2), DATA_STRING },
+	{ "speed", ENTITY_FIELD(local.speed), DATA_FLOAT },
+	{ "delay", ENTITY_FIELD(local.delay), DATA_FLOAT },
+	{ "lip", ENTITY_FIELD(local.lip), DATA_FLOAT },
+	{ "wait", ENTITY_FIELD(local.dWait), DATA_DOUBLE },
+	{ "damage", ENTITY_FIELD(local.iDamage), DATA_INTEGER },
+	{ "volume", ENTITY_FIELD(local.volume), DATA_INTEGER },
+	{ "style", ENTITY_FIELD(local.style), DATA_INTEGER },
+	{ "count", ENTITY_FIELD(local.count), DATA_INTEGER },
+	{ "pTeam", ENTITY_FIELD(local.pTeam), DATA_INTEGER },
+	{ "attack_finished", ENTITY_FIELD(local.dAttackFinished), DATA_DOUBLE },
 
 	// hacks
-	{ "angle", ENTITY_FIELD(v.angles), EV_VECTOR, FL_ANGLEHACK },
+	{ "angle", ENTITY_FIELD(v.angles), DATA_VECTOR3, FL_ANGLEHACK },
 
 	// Ignore these global fields.
 	{ "wad", 0, EV_NONE },
@@ -124,18 +124,16 @@ ServerEntityField_t	entity_fields[] =
 */
 void ServerEntity_ParseField(char *key, char *value, ServerEntity_t *entity)
 {
-	ServerEntityField_t *field;
-
-	for (field = entity_fields; field->varname; field++)
+	for (ServerEntityField_t *field = entity_fields; field->varname; field++)
 	{
 		if (!strncmp(field->varname, key, sizeof(field->varname)))
 		{
 			switch (field->datatype)
 			{
-			case EV_STRING:
+			case DATA_STRING:
 				*(char**)((uint8_t*)entity + field->offset) = Entity_AllocateString(value);
 				break;
-			case EV_VECTOR:
+			case DATA_VECTOR3:
 				if (field->flags & FL_ANGLEHACK)
 				{
 					((float*)((uint8_t*)entity + field->offset))[0] = 0;
@@ -153,31 +151,31 @@ void ServerEntity_ParseField(char *key, char *value, ServerEntity_t *entity)
 					((float*)((uint8_t*)entity + field->offset))[2] = vector[2];
 				}
 				break;
-			case EV_VECTOR4:
-				{
-					MathVector4f_t vector;
-					Math_VectorSet(0, vector);
-					if (sscanf(value, "%f %f %f %f", &vector[0], &vector[1], &vector[2], &vector[3]) < 4)
-						Engine.Con_Warning("Field did not return expected number of arguments! (%s)\n", value);
-					((float*)((uint8_t*)entity + field->offset))[0] = vector[0];
-					((float*)((uint8_t*)entity + field->offset))[1] = vector[1];
-					((float*)((uint8_t*)entity + field->offset))[2] = vector[2];
-					((float*)((uint8_t*)entity + field->offset))[3] = vector[3];
-				}
-				break;
-			case EV_FLOAT:
+			case DATA_VECTOR4:
+			{
+				MathVector4f_t vector;
+				Math_VectorSet(0, vector);
+				if (sscanf(value, "%f %f %f %f", &vector[0], &vector[1], &vector[2], &vector[3]) < 4)
+					Engine.Con_Warning("Field did not return expected number of arguments! (%s)\n", value);
+				((float*)((uint8_t*)entity + field->offset))[0] = vector[0];
+				((float*)((uint8_t*)entity + field->offset))[1] = vector[1];
+				((float*)((uint8_t*)entity + field->offset))[2] = vector[2];
+				((float*)((uint8_t*)entity + field->offset))[3] = vector[3];
+			}
+			break;
+			case DATA_FLOAT:
 				*(float*)((uint8_t*)entity + field->offset) = strtof(value, NULL);
 				break;
-			case EV_DOUBLE:
+			case DATA_DOUBLE:
 				*(double*)((uint8_t*)entity + field->offset) = strtod(value, NULL);
 				break;
-			case EV_BOOLEAN:
+			case DATA_BOOLEAN:
 				if (!strcmp(value, "true"))
 					value = "1";
 				else if (!strcmp(value, "false"))
 					value = "0";
 				// Booleans are handled in the same way as integers, so don't break here!
-			case EV_INTEGER:
+			case DATA_INTEGER:
 				*(int*)((uint8_t*)entity + field->offset) = atoi(value);
 				break;
 			case EV_NONE:

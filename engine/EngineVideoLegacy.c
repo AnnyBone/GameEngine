@@ -483,10 +483,10 @@ void Video_ShowBoundingBoxes(void)
 	if (!r_showbboxes.value || (cl.maxclients > 1) || !r_drawentities.value || (!sv.active && !g_state.embedded))
 		return;
 
-	VideoLayer_Disable(VIDEO_DEPTH_TEST | VIDEO_TEXTURE_2D);
-	VideoLayer_Enable(VIDEO_BLEND);
+	vlDisable(VIDEO_DEPTH_TEST | VIDEO_TEXTURE_2D);
+	vlEnable(VIDEO_BLEND);
 
-	for (i=0, ed=NEXT_EDICT(sv.edicts) ; i<sv.num_edicts ; i++, ed=NEXT_EDICT(ed))
+	for (i = 0, ed = NEXT_EDICT(sv.edicts); i<sv.num_edicts; i++, ed = NEXT_EDICT(ed))
 	{
 		if(ed == sv_player && !chase_active.value)
 			continue;
@@ -509,8 +509,8 @@ void Video_ShowBoundingBoxes(void)
 	for (i = 0, clEntity = cl_temp_entities; i < cl_numvisedicts; i++, clEntity++)
 		Video_DrawClientBoundingBox(clEntity);
 
-	VideoLayer_Disable(VIDEO_BLEND);
-	VideoLayer_Enable(VIDEO_TEXTURE_2D | VIDEO_DEPTH_TEST);
+	vlDisable(VIDEO_BLEND);
+	vlEnable(VIDEO_TEXTURE_2D | VIDEO_DEPTH_TEST);
 }
 
 void R_DrawShadows (void)
@@ -563,7 +563,7 @@ void R_SetupScene(void)
 	else
 		glDisable(GL_CULL_FACE);
 
-	VideoLayer_Enable(VIDEO_DEPTH_TEST);
+	vlEnable(VIDEO_DEPTH_TEST);
 }
 
 void R_RenderScene(void)

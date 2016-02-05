@@ -114,6 +114,19 @@ bool plCreateDirectory(const char *ccPath)
 	pFUNCTION_END
 }
 
+void plGetFileExtension(char *in, char *out)
+{
+	int i;
+	while (*in && *in != '.')
+		in++;
+	if (!*in)
+		strncpy(out, "", sizeof(out));
+	in++;
+	for (i = 0; i < 7 && *in; i++, in++)
+		out[i] = *in;
+	out[i] = 0;
+}
+
 /*	Returns the name of the systems	current user.
 	TODO:
 		Move this into platform_system

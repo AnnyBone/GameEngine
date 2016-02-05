@@ -1108,7 +1108,7 @@ void SV_SpawnServer(char *server)
 	sv.time		= 1.0;
 
 	strcpy(sv.name, server);
-	sprintf(sv.modelname, "%s%s"BSP_EXTENSION, g_state.cLevelPath, server);
+	sprintf(sv.modelname, "%s%s"BSP_EXTENSION, g_state.path_levels, server);
 	sv.worldmodel = Mod_ForName(sv.modelname);
 	if(!sv.worldmodel)
 	{
@@ -1184,10 +1184,10 @@ void Server_ParseGlobalField(char *cKey, char *cValue)
 		{
 			switch (eField->eDataType)
 			{
-			case EV_STRING:
+			case DATA_STRING:
 				*(char**)((byte*)eEntity + eField->iOffset) = ED_NewString(cValue);
 				break;
-			case EV_VECTOR:
+			case DATA_VECTOR3:
 				switch (eField->iFlags)
 				{
 				case FL_ANGLEHACK:
@@ -1202,26 +1202,26 @@ void Server_ParseGlobalField(char *cKey, char *cValue)
 					((float*)((byte*)eEntity + eField->iOffset))[2] = vVector[2];
 				}
 				break;
-			case EV_VECTOR4:
+			case DATA_VECTOR4:
 				sscanf(cValue, "%f %f %f %f", &vVector[0], &vVector[1], &vVector[2], &vVector[3]);
 				((float*)((byte*)eEntity + eField->iOffset))[0] = vVector[0];
 				((float*)((byte*)eEntity + eField->iOffset))[1] = vVector[1];
 				((float*)((byte*)eEntity + eField->iOffset))[2] = vVector[2];
 				((float*)((byte*)eEntity + eField->iOffset))[3] = vVector[3];
 				break;
-			case EV_FLOAT:
+			case DATA_FLOAT:
 				*(float*)((byte*)eEntity + eField->iOffset) = strtof(cValue, NULL);
 				break;
-			case EV_DOUBLE:
+			case DATA_DOUBLE:
 				*(double*)((byte*)eEntity + eField->iOffset) = strtod(cValue, NULL);
 				break;
-			case EV_BOOLEAN:
+			case DATA_BOOLEAN:
 				if (!Q_strcasecmp(cValue, "true"))
 					cValue = "1";
 				else if (!Q_strcasecmp(cValue, "false"))
 					cValue = "0";
 				// [2/1/2013] Booleans are handled in the same way as integers, so don't break here! ~hogsy
-			case EV_INTEGER:
+			case DATA_INTEGER:
 				*(int*)((byte*)eEntity + eField->iOffset) = atoi(cValue);
 				break;
 				// [22/11/2012] Just ignore anything that has skip set! ~hogsy

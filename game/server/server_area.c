@@ -348,7 +348,7 @@ void Area_RotateSpawn(ServerEntity_t *eArea)
 
 	eArea->v.movetype	= MOVETYPE_PUSH;
 	eArea->v.think		= Area_RotateThink;
-	eArea->v.dNextThink	= Server.dTime+1000000000.0;
+	eArea->v.dNextThink	= Server.dTime+1000000000.0;	// TODO: This is a hack. A dirty filthy hack. Curse it and its family!
 
 	eArea->Physics.iSolid = SOLID_BSP;
 
@@ -1321,4 +1321,6 @@ void Area_KillSpawn(ServerEntity_t *area)
 	Entity_SetModel(area, area->v.model);
 	Entity_SetOrigin(area, area->v.origin);
 	Entity_SetTouchFunction(area, Area_KillTouch);
+
+	area->v.model = 0;
 }

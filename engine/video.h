@@ -16,12 +16,13 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef VIDEO_H
-#define VIDEO_H
+#pragma once
 
 //#define	VIDEO_SUPPORT_FRAMEBUFFERS
 #define	VIDEO_SUPPORT_SHADERS
 #define	VIDEO_LIGHTMAP_HACKS
+
+plEXTERN_C_START
 
 extern ConsoleVariable_t
 	cv_video_shaders,
@@ -38,40 +39,34 @@ extern ConsoleVariable_t
 	cv_video_drawbrushes,			// Draw brush entities?
 	cvLitParticles;					// Should particles be lit or not?
 
-#if __cplusplus
-extern "C" {
-#endif
+extern	ConsoleVariable_t	r_showtris;
+extern  ConsoleVariable_t	r_drawentities;
+extern	ConsoleVariable_t	r_drawworld;
+extern	ConsoleVariable_t	r_drawviewmodel;
+extern	ConsoleVariable_t	r_speeds;
+extern	ConsoleVariable_t	r_waterwarp;
+extern	ConsoleVariable_t	r_fullbright;
+extern	ConsoleVariable_t	r_lightmap;
+extern	ConsoleVariable_t	r_shadows;
+extern	ConsoleVariable_t	r_dynamic;
+extern	ConsoleVariable_t	r_novis;
+extern	ConsoleVariable_t	r_nocull;
+extern	ConsoleVariable_t	gl_cull;
+extern	ConsoleVariable_t	gl_polyblend;
+extern	ConsoleVariable_t	gl_flashblend;
+extern	ConsoleVariable_t	gl_max_size;
 
-	extern	ConsoleVariable_t	r_showtris;
-	extern  ConsoleVariable_t	r_drawentities;
-	extern	ConsoleVariable_t	r_drawworld;
-	extern	ConsoleVariable_t	r_drawviewmodel;
-	extern	ConsoleVariable_t	r_speeds;
-	extern	ConsoleVariable_t	r_waterwarp;
-	extern	ConsoleVariable_t	r_fullbright;
-	extern	ConsoleVariable_t	r_lightmap;
-	extern	ConsoleVariable_t	r_shadows;
-	extern	ConsoleVariable_t	r_dynamic;
-	extern	ConsoleVariable_t	r_novis;
-	extern	ConsoleVariable_t	r_nocull;
-	extern	ConsoleVariable_t	gl_cull;
-	extern	ConsoleVariable_t	gl_polyblend;
-	extern	ConsoleVariable_t	gl_flashblend;
-	extern	ConsoleVariable_t	gl_max_size;
-
-	extern ConsoleVariable_t cv_video_drawshadowmap;
-	extern ConsoleVariable_t cv_video_drawshadowblob;
-	extern ConsoleVariable_t cv_video_drawdetail;	// TODO: Move into EngineMaterial ?
-	extern ConsoleVariable_t cv_video_drawsky;
-	extern ConsoleVariable_t cv_video_detailscale; // TODO: Move into EngineMaterial ?
-
-#ifdef __cplusplus
-};
-#endif
+extern ConsoleVariable_t cv_video_drawshadowmap;
+extern ConsoleVariable_t cv_video_drawshadowblob;
+extern ConsoleVariable_t cv_video_drawdetail;	// TODO: Move into EngineMaterial ?
+extern ConsoleVariable_t cv_video_drawsky;
+extern ConsoleVariable_t cv_video_detailscale; // TODO: Move into EngineMaterial ?
 
 extern bool	bVideoIgnoreCapabilities;
 
 extern struct gltexture_s *gEffectTexture[MAX_EFFECTS];
+
+plEXTERN_C_END
 
 #define	VIDEO_TEXTURE_DIFFUSE	0
 #define	VIDEO_TEXTURE_LIGHT		1
@@ -142,57 +137,59 @@ typedef struct
 	VideoExtensions	extensions;
 } Video_t;
 
-#if __cplusplus
-extern "C" {
-#endif
+plEXTERN_C_START
 
-	extern Video_t Video;
+extern Video_t Video;
 
-	void Video_Initialize(void);
-	void Video_UpdateWindow(void);
-	void Video_ClearBuffer(void);
-	void Video_GenerateSphereCoordinates(void);
-	void Video_SetTexture(gltexture_t *gTexture);
-	void Video_SetViewportSize(int w, int h);
-	void Video_SelectTexture(unsigned int uiTarget);
-	void Video_EnableCapabilities(unsigned int iCapabilities);
-	void Video_DisableCapabilities(unsigned int iCapabilities);
-	void Video_ResetCapabilities(bool bClearActive);
-	void Video_PreFrame(void);
-	void Video_PostFrame(void);
-	void Video_Frame(void);
-	void Video_ObjectTexture(VideoVertex_t *voObject, unsigned int uiTextureUnit, float S, float T);
-	void Video_ObjectVertex(VideoVertex_t *voObject, float X, float Y, float Z);
-	void Video_ObjectNormal(VideoVertex_t *voObject, float X, float Y, float Z);
-	void Video_ObjectColour(VideoVertex_t *voObject, float R, float G, float B, float A);
-	void Video_DrawFill(VideoVertex_t *voFill, Material_t *mMaterial, int iSkin);
-	void Video_DrawSurface(msurface_t *mSurface, float fAlpha, Material_t *mMaterial, unsigned int uiSkin);
-	void Video_DrawObject(VideoVertex_t *voObject, VideoPrimitive_t vpPrimitiveType, unsigned int uiVerts, Material_t *mMaterial, int iSkin);
-	void Video_Shutdown(void);
+void Video_Initialize(void);
+void Video_UpdateWindow(void);
+void Video_ClearBuffer(void);
+void Video_GenerateSphereCoordinates(void);
+void Video_SetTexture(gltexture_t *gTexture);
+void Video_SetViewportSize(int w, int h);
+void Video_SelectTexture(unsigned int uiTarget);
+void Video_EnableCapabilities(unsigned int iCapabilities);
+void Video_DisableCapabilities(unsigned int iCapabilities);
+void Video_ResetCapabilities(bool bClearActive);
+void Video_PreFrame(void);
+void Video_PostFrame(void);
+void Video_Frame(void);
+void Video_ObjectTexture(VideoVertex_t *voObject, unsigned int uiTextureUnit, float S, float T);
+void Video_ObjectVertex(VideoVertex_t *voObject, float X, float Y, float Z);
+void Video_ObjectNormal(VideoVertex_t *voObject, float X, float Y, float Z);
+void Video_ObjectColour(VideoVertex_t *voObject, float R, float G, float B, float A);
+void Video_DrawFill(VideoVertex_t *voFill, Material_t *mMaterial, int iSkin);
+void Video_DrawSurface(msurface_t *mSurface, float fAlpha, Material_t *mMaterial, unsigned int uiSkin);
+void Video_DrawObject(VideoVertex_t *voObject, VideoPrimitive_t vpPrimitiveType, unsigned int uiVerts, Material_t *mMaterial, int iSkin);
+void Video_ShowBoundingBoxes(void);
+void Video_Shutdown(void);
 
-	unsigned int Video_GetTextureUnit(unsigned int uiTarget);
+unsigned int Video_GetTextureUnit(unsigned int uiTarget);
 
-	bool Video_GetCapability(unsigned int iCapability);
+bool Video_GetCapability(unsigned int iCapability);
 
-	// Temporary
-	void DEBUG_FrameBufferInitialization();
-	void DEBUG_FrameBufferBind();
-	void DEBUG_FrameBufferDraw();
+// Temporary
+void DEBUG_FrameBufferInitialization();
+void DEBUG_FrameBufferBind();
+void DEBUG_FrameBufferDraw();
 
-	// Legacy
-	void R_EmitWirePoint(MathVector3f_t origin);
-	void R_EmitWireBox(MathVector3f_t mins, MathVector3f_t maxs, float r, float g, float b);
-	bool R_CullBox(MathVector3f_t emins, MathVector3f_t emaxs);
+// Legacy
+void R_EmitWirePoint(MathVector3f_t origin);
+void R_EmitWireBox(MathVector3f_t mins, MathVector3f_t maxs, float r, float g, float b);
+bool R_CullBox(MathVector3f_t emins, MathVector3f_t emaxs);
 
-	// Brush
-	void GL_BuildLightmaps();
-	void R_RebuildAllLightmaps();
+// Brush
+void GL_BuildLightmaps();
+void R_RebuildAllLightmaps();
 
-	MathVector_t Light_GetSample(MathVector3f_t vPoint);
+MathVector_t Light_GetSample(MathVector3f_t vPoint);
 
-#if __cplusplus
-};
-#endif
+// Legacy
+extern float r_world_matrix[16], r_base_world_matrix[16];
+void R_SetupGenericView(void);
+void R_SetupScene(void);
+
+plEXTERN_C_END
 
 // TODO: Reintroduce tracking functionality.
 #define	VIDEO_FUNCTION_START \
@@ -207,19 +204,11 @@ extern "C" {
 #define	VIDEO_FUNCTION_END \
 }
 
-// Legacy
-extern float r_world_matrix[16], r_base_world_matrix[16];
-
-void Video_ShowBoundingBoxes(void);
-
 #include "video_layer.h"
 #include "video_object.h"
 
 // Legacy
 #include "EngineVideoAlias.h"
-
-void R_SetupGenericView(void);
-void R_SetupScene(void);
 
 /*
 	Sky
@@ -260,5 +249,3 @@ void DrawGLPoly(glpoly_t *p);
 */
 
 void Surface_DrawWater(glpoly_t *p, Material_t *mCurrent);
-
-#endif // !VIDEO_H

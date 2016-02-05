@@ -17,8 +17,7 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef VIDEO_SHADER_H
-#define VIDEO_SHADER_H
+#pragma once
 
 typedef enum
 {
@@ -152,12 +151,10 @@ public:
 extern "C" {
 #endif
 
-	void VideoShader_Initialize(void);
+	void Shader_Initialize(void);
 
 	extern int iDiffuseUniform;
 
 #ifdef __cplusplus
 }
 #endif
-
-#endif	// VIDEO_SHADER_H

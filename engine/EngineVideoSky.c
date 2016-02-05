@@ -83,7 +83,7 @@ void Sky_LoadCloudTexture(const char *cPath)
 	if(!cPath[0])
 		return;
 
-	sprintf(cFileName, "%ssky/%scloud", g_state.cTexturePath, cPath);
+	sprintf(cFileName, "%ssky/%scloud", g_state.path_textures, cPath);
 
 	bData = Image_LoadImage(cFileName,&iWidth,&iHeight);
 	if(bData)
@@ -137,7 +137,7 @@ void Sky_LoadSkyBox (char *name)
 	{
 		mark = Hunk_LowMark ();
 
-		sprintf(filename, "%ssky/%s%s", g_state.cTexturePath, name, suf[i]);
+		sprintf(filename, "%ssky/%s%s", g_state.path_textures, name, suf[i]);
 		data = Image_LoadImage (filename, &width, &height);
 		if (data)
 		{
@@ -622,8 +622,8 @@ void Sky_DrawSkyBox (void)
 
 			c = Fog_GetColor();
 
-			VideoLayer_Enable(VIDEO_BLEND);
-			VideoLayer_Disable(VIDEO_TEXTURE_2D);
+			vlEnable(VIDEO_BLEND);
+			vlDisable(VIDEO_TEXTURE_2D);
 
 			glColor4f(c[0], c[1], c[2], Math_Clamp(0, r_skyfog.value, 1.0f));
 
@@ -636,8 +636,8 @@ void Sky_DrawSkyBox (void)
 
 			glColor3f(1.0f,1.0f,1.0f);
 
-			VideoLayer_Enable(VIDEO_TEXTURE_2D);
-			VideoLayer_Disable(VIDEO_BLEND);
+			vlEnable(VIDEO_TEXTURE_2D);
+			vlDisable(VIDEO_BLEND);
 
 			rs_skypasses++;
 		}
@@ -700,7 +700,7 @@ void Sky_DrawFaceQuad(glpoly_t *p)
 
 	Video_SetTexture(gCloudTexture);
 
-	VideoLayer_Enable(VIDEO_BLEND);
+	vlEnable(VIDEO_BLEND);
 	VideoLayer_BlendFunc(VIDEO_BLEND_ONE, VIDEO_BLEND_ONE);
 
 	glBegin(GL_QUADS);
@@ -724,7 +724,7 @@ void Sky_DrawFaceQuad(glpoly_t *p)
 	{
 		float *c = Fog_GetColor();
 
-		VideoLayer_Disable(VIDEO_TEXTURE_2D);
+		vlDisable(VIDEO_TEXTURE_2D);
 
 		glColor4f(c[0], c[1], c[2], Math_Clamp(0.0, r_skyfog.value, 1.0));
 
@@ -735,12 +735,12 @@ void Sky_DrawFaceQuad(glpoly_t *p)
 
 		glColor3f(1.0f,1.0f,1.0f);
 
-		VideoLayer_Enable(VIDEO_TEXTURE_2D);
+		vlEnable(VIDEO_TEXTURE_2D);
 
 		rs_skypasses++;
 	}
 
-	VideoLayer_Disable(VIDEO_BLEND);
+	vlDisable(VIDEO_BLEND);
 }
 
 void Sky_DrawFace (int axis)
@@ -877,7 +877,7 @@ void Sky_Draw(void)
 	// Process world and bmodels: draw flat-shaded sky surfs, and update skybounds
 	Fog_DisableGFog();
 
-	VideoLayer_Disable(VIDEO_TEXTURE_2D);
+	vlDisable(VIDEO_TEXTURE_2D);
 
 	if(Fog_GetDensity() > 0)
 		glColor3fv(Fog_GetColor());
@@ -889,12 +889,12 @@ void Sky_Draw(void)
 
 	glColor3f(1.0f,1.0f,1.0f);
 
-	VideoLayer_Enable(VIDEO_TEXTURE_2D);
+	vlEnable(VIDEO_TEXTURE_2D);
 
 	// Render slow sky: cloud layers or skybox
 	if(!r_fastsky.value && !(Fog_GetDensity() > 0 && r_skyfog.value >= 1))
 	{
-		VideoLayer_Disable(VIDEO_DEPTH_TEST);
+		vlDisable(VIDEO_DEPTH_TEST);
 
 		// By default we use a skybox.
 		if(cSkyBoxName[0])
@@ -908,7 +908,7 @@ void Sky_Draw(void)
 					Sky_DrawFace(i);
 		}
 
-		VideoLayer_Enable(VIDEO_DEPTH_TEST);
+		vlEnable(VIDEO_DEPTH_TEST);
 	}
 
 	Fog_EnableGFog();

@@ -321,7 +321,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
-      <OutputFile>..\bin\engine.dll</OutputFile>
+      <OutputFile>..\bin\engine.x86.dll</OutputFile>
       <AdditionalDependencies>opengl32.lib;comctl32.lib;winmm.lib;wsock32.lib;OpenAL32.lib;SDL2.lib;platform.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateMapFile>false</GenerateMapFile>
@@ -663,7 +663,7 @@
     <ClCompile Include="EngineVideoScreen.c" />
     <ClCompile Include="EngineScript.c" />
     <ClCompile Include="EngineVideoSprite.c" />
-    <ClCompile Include="video.c" />
+    <ClCompile Include="video.cpp" />
     <ClCompile Include="EngineClientView.c" />
     <ClCompile Include="EngineServerWorld.c" />
     <ClCompile Include="video_draw.c" />
@@ -735,6 +735,7 @@
     <ClInclude Include="audio.h" />
     <ClInclude Include="video_framebuffer.h" />
     <ClInclude Include="video_layer.h" />
+    <ClInclude Include="video_light.h" />
     <ClInclude Include="video_object.h" />
     <ClInclude Include="video_shader.h" />
     <ClInclude Include="video_window.h" />

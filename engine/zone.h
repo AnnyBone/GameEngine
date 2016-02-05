@@ -18,6 +18,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
+
+#ifndef ZONE_H
+#define	ZONE_H
+
 /*
  memory allocation
 
@@ -79,6 +83,8 @@ Zone block
 
 */
 
+plEXTERN_C_START
+
 void *malloc_or_die(size_t size);
 void *calloc_or_die(size_t nmemb, size_t size);
 
@@ -113,5 +119,6 @@ void *Cache_Alloc(cache_user_t *c,int size,char *name);
 
 void Cache_Report (void);
 
+plEXTERN_C_END
 
-
+#endif // !ZONE_H

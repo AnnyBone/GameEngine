@@ -204,7 +204,7 @@ void Sprite::Draw()
 		return;
 
 	if (colour[3] < 1.0f)
-		VideoLayer_Enable(VIDEO_BLEND);
+		vlEnable(VIDEO_BLEND);
 
 #if 0	// TODO
 	// Draw it via the VideoObject interface.
@@ -212,7 +212,7 @@ void Sprite::Draw()
 #endif
 
 	if (colour[3] < 1.0f)
-		VideoLayer_Disable(VIDEO_BLEND);
+		vlDisable(VIDEO_BLEND);
 
 	if (cvSpriteDebugSize.bValue)
 	{

@@ -16,8 +16,7 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef SHARED_MODEL_H
-#define	SHARED_MODEL_H
+#pragma once
 
 #include "shared_formats.h"
 #include "shared_zone.h"
@@ -275,5 +274,3 @@ typedef struct model_s
 	unsigned int	numtriangles;	// Static counter for triangles.
 	int				numframes;		// Number of objects / frames.
 } model_t;
-
-#endif // !SHARED_MODEL_H

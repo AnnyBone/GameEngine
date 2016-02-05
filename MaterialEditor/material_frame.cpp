@@ -95,8 +95,8 @@ void MaterialGlobalProperties::GetProperties(Material_t *newmaterial)
 
 	name->SetValue(material->cName);
 	path->SetValue(material->cPath);
-	skins->SetValue(material->iSkins);
-	animation_speed->SetValue(material->fAnimationSpeed);
+//	skins->SetValue(material->iSkins);
+	animation_speed->SetValue(material->animation_speed);
 
 	if (material->iFlags & MATERIAL_FLAG_PRESERVE)
 		preserve->SetValue(true);
@@ -198,16 +198,33 @@ void MaterialViewportPanel::Draw()
 {
 	engine->DrawGradientBackground();
 
+	std::string strout = "Model: ";
 	if (preview_entity && preview_entity->model)
 	{
 		engine->DrawEntity(preview_entity);
 		preview_entity->angles[1] += 0.5f;
+
+		strout.append(preview_entity->model->name);
 	}
-	else // Plane
+
+	engine->DrawResetCanvas();
+	engine->DrawSetCanvas(CANVAS_DEFAULT);
+
+	if (!preview_entity->model)
 	{
-		engine->DrawResetCanvas();
-		engine->DrawSetCanvas(CANVAS_DEFAULT);
 		engine->DrawMaterialSurface(preview_material, 0, 0, 0, GetDrawCanvasWidth(), GetDrawCanvasHeight(), 1.0f);
+		strout.append("Plane");
+	}
+
+	engine->DrawString(10, 10, strout.c_str());
+
+	if (preview_material)
+	{
+		std::string strfame = "Skin: ";
+		if (preview_material->iFlags & MATERIAL_FLAG_ANIMATED)	strfame += std::to_string(preview_material->animation_frame + 1);
+		else													strfame += std::to_string(preview_material->current_skin + 1);
+		strfame += "/" + std::to_string(preview_material->iSkins);
+		engine->DrawString(10, 20, strfame.c_str());
 	}
 }
 
@@ -410,7 +427,7 @@ CMaterialFrame::CMaterialFrame(wxWindow* parent, wxWindowID id)
 
 	//
 
-	CreateStatusBar();
+	CreateStatusBar(3);
 	SetStatusText("Initialized");
 
 	Layout();

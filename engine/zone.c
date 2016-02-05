@@ -33,7 +33,7 @@ void *malloc_or_die(size_t size)
 	if(!ptr)
 	{
 		// Windows doesn't implement z size flag
-		Sys_Error("Failed to allocate memory (%llu bytes)!\n",
+		Sys_Error("Failed to allocate memory! (%llu bytes)\n",
 			(unsigned long long int)(size));
 	}
 
@@ -46,7 +46,7 @@ void *calloc_or_die(size_t nmemb, size_t size)
 	if(!ptr)
 	{
 		// Windows doesn't implement z size flag
-		Sys_Error("Failed to allocate memory (%llu * %llu bytes)!\n",
+		Sys_Error("Failed to allocate memory! (%llu * %llu bytes)\n",
 			(unsigned long long int)(nmemb), (unsigned long long int)(size));
 	}
 
@@ -64,8 +64,8 @@ typedef struct
 	char	name[8];
 } hunk_t;
 
-byte	*hunk_base;
-int		hunk_size;
+uint8_t		*hunk_base;
+int			hunk_size;
 
 int		hunk_low_used;
 int		hunk_high_used;
@@ -78,13 +78,13 @@ void Hunk_Check (void)
 {
 	hunk_t	*h;
 
-	for (h = (hunk_t *)hunk_base ; (byte *)h != hunk_base + hunk_low_used ; )
+	for (h = (hunk_t *)hunk_base; (uint8_t *)h != hunk_base + hunk_low_used;)
 	{
 		if (h->sentinal != HUNK_SENTINAL)
 			Sys_Error ("Hunk_Check: trahsed sentinal");
-		if (h->size < 16 || h->size + (byte *)h - hunk_base > hunk_size)
+		if (h->size < 16 || h->size + (uint8_t *)h - hunk_base > hunk_size)
 			Sys_Error ("Hunk_Check: bad size");
-		h = (hunk_t *)((byte *)h+h->size);
+		h = (hunk_t *)((uint8_t *)h+h->size);
 	}
 }
 
@@ -132,10 +132,10 @@ void Hunk_Print (bool all)
 	//
 		if (h->sentinal != HUNK_SENTINAL)
 			Sys_Error ("Hunk_Check: trahsed sentinal");
-		if (h->size < 16 || h->size + (byte *)h - hunk_base > hunk_size)
+		if (h->size < 16 || h->size + (uint8_t *)h - hunk_base > hunk_size)
 			Sys_Error ("Hunk_Check: bad size");
 
-		next = (hunk_t *)((byte *)h+h->size);
+		next = (hunk_t *)((uint8_t *)h + h->size);
 		count++;
 		totalblocks++;
 		sum += h->size;
@@ -324,7 +324,7 @@ void Cache_FreeLow (int new_low_hunk)
 		c = cache_head.next;
 		if (c == &cache_head)
 			return;		// nothing in cache at all
-		if ((byte *)c >= hunk_base + new_low_hunk)
+		if ((uint8_t *)c >= hunk_base + new_low_hunk)
 			return;		// there is space to grow the hunk
 		Cache_Move ( c );	// reclaim the space
 	}
@@ -342,10 +342,10 @@ void Cache_FreeHigh (int new_high_hunk)
 		c = cache_head.prev;
 		if (c == &cache_head)
 			return;		// nothing in cache at all
-		if ( (byte *)c + c->size <= hunk_base + hunk_size - new_high_hunk)
+		if ((uint8_t *)c + c->size <= hunk_base + hunk_size - new_high_hunk)
 			return;		// there is space to grow the hunk
 		if (prev && (c == prev))
-			Cache_Free(c->user,TRUE);	// didn't move out of the way //johnfitz -- added second argument
+			Cache_Free(c->user, true);	// didn't move out of the way //johnfitz -- added second argument
 		else
 		{
 			Cache_Move (c);	// try to move it
@@ -418,7 +418,7 @@ cache_system_t *Cache_TryAlloc (int size, bool nobottom)
 	{
 		if (!nobottom || cs != cache_head.next)
 		{
-			if ((byte *)cs - (byte *)newc >= size)
+			if ((uint8_t *)cs - (uint8_t *)newc >= size)
 			{	// found space
 				memset(newc, 0, sizeof(*newc));
 				newc->size = size;
@@ -435,13 +435,13 @@ cache_system_t *Cache_TryAlloc (int size, bool nobottom)
 		}
 
 	// continue looking
-		newc = (cache_system_t *)((byte *)cs + cs->size);
+		newc = (cache_system_t *)((uint8_t *)cs + cs->size);
 		cs = cs->next;
 
 	} while (cs != &cache_head);
 
 // try to allocate one at the very end
-	if (hunk_base + hunk_size - hunk_high_used - (byte *)newc >= size)
+	if (hunk_base + hunk_size - hunk_high_used - (uint8_t *)newc >= size)
 	{
 		memset(newc, 0, sizeof(*newc));
 		newc->size = size;
@@ -464,7 +464,7 @@ cache_system_t *Cache_TryAlloc (int size, bool nobottom)
 void Cache_Flush (void)
 {
 	while(cache_head.next != &cache_head)
-		Cache_Free(cache_head.next->user,TRUE); // reclaim the space //johnfitz -- added second argument
+		Cache_Free(cache_head.next->user, true); // reclaim the space //johnfitz -- added second argument
 }
 
 void Cache_Print (void)

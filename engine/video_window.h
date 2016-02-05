@@ -26,6 +26,8 @@
 #define WINDOW_MINIMUM_WIDTH	640
 #define WINDOW_MINIMUM_HEIGHT	480
 
+plEXTERN_C_START
+
 void Window_InitializeVideo(void);
 void Window_UpdateVideo(void);
 void Window_GetGamma(unsigned short *usRamp, int iRampSize);
@@ -45,5 +47,7 @@ typedef struct
 } Window_t;
 
 extern Window_t g_mainwindow;
+
+plEXTERN_C_END
 
 #endif // !VIDEO_WINDOW_H
