@@ -523,8 +523,12 @@ void CEditorFrame::OnOpen(wxCommandEvent &event)
 		{
 			OpenWADTool(filedialog->GetPath());
 		}
-		else if (filename.EndsWith(".md2"))
+		else if (
+			filename.EndsWith(".md2") || 
+			filename.EndsWith(".3d"))
 		{
+			frame_model->LoadModel(filedialog->GetPath());
+			frame_model->Show();
 		}
 
 		currentFilePath = filedialog->GetPath();
