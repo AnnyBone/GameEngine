@@ -275,9 +275,6 @@ CEditorFrame::CEditorFrame(const wxString & title, const wxPoint & pos, const wx
 	Center();
 	Show();
 
-	// Create the engine viewport...
-	viewport = new MainViewportPanel(this);
-	viewport->Initialize();
 	wxAuiPaneInfo viewportInfo;
 	viewportInfo.Center();
 	viewportInfo.Movable(true);
@@ -285,7 +282,11 @@ CEditorFrame::CEditorFrame(const wxString & title, const wxPoint & pos, const wx
 	viewportInfo.Dockable(true);
 	viewportInfo.MaximizeButton(true);
 	viewportInfo.CloseButton(false);
-	viewportInfo.Gripper(false);
+	viewportInfo.CenterPane();
+
+	// Create the engine viewport...
+	viewport = new MainViewportPanel(this);
+	viewport->Initialize();
 	manager->AddPane(viewport, viewportInfo);
 
 	XViewportPanel *viewport_top = new XViewportPanel(this);
