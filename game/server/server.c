@@ -157,6 +157,25 @@ void Server_SetGameMode(void)
 	Server.iLastGameMode = cvServerGameMode.iValue;
 }
 
+#ifdef _DEBUG
+
+/*	Teleports server host to given spot.
+*/
+void Server_Teleport(void)
+{
+	if (g_engine->Cmd_Argc() != 2)
+	{
+		g_engine->Con_Warning("Invalid parameter!\n");
+		return;
+	}
+
+	MathVector3f_t origin;
+	sscanf(g_engine->Cmd_Argv(1), "%f %f %f", &origin[0], &origin[1], &origin[2]);
+	Entity_SetOrigin(g_engine->GetHostEntity(), origin);
+}
+
+#endif
+
 /*	Called by the engine.
 */
 void Server_Initialize(void)
@@ -178,6 +197,10 @@ void Server_Initialize(void)
 	Engine.Cvar_RegisterVariable(&cvServerGravity, NULL);
 	Engine.Cvar_RegisterVariable(&cvServerRespawnDelay, NULL);
 	Engine.Cvar_RegisterVariable(&cvServerAim, NULL);
+
+#ifdef _DEBUG
+	g_engine->Cmd_AddCommand("server_teleport", Server_Teleport);
+#endif
 
 	Server.bActive = false;							// We're not active when we've only just initialized.
 	Server.iLastGameMode = cvServerGameMode.iValue;	// Last mode is equal to the current mode initially.

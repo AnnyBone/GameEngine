@@ -1131,9 +1131,7 @@ void Area_ClimbTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
 
 	float fForwardSpeed;
 
-	if (eOther->v.waterlevel > 1)
-		return;
-	if (eOther->v.flags & FL_WATERJUMP)
+	if ((eOther->local.dLadderJump > Server.dTime) || (eOther->v.waterlevel > 1) || (eOther->v.flags & FL_WATERJUMP))
 		return;
 
 	Math_AngleVectors(eOther->v.angles, vForward, vRight, vUp);
@@ -1142,14 +1140,6 @@ void Area_ClimbTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
 
 	if (eOther->v.button[2])
 		Math_VectorCopy(eOther->v.velocity, vPlayerVec);
-
-	if (eOther->local.dLadderJump > Server.dTime)
-		return;
-
-	Math_AngleVectors(eOther->v.angles, vForward, vRight, vUp);
-
-	if (Math_DotProduct(vForward, eArea->v.movedir) < -0.5) // only continue when facing the ladder ~eukara
-		return;
 
 	// ignore 8 units of the top edge
 	if (eOther->v.origin[2] + eOther->v.mins[2] + 8 >= eArea->v.absmax[2]){

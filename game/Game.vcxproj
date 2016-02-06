@@ -118,7 +118,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="client\client_effects.c" />
+    <ClCompile Include="client\client_effects.cpp" />
     <ClCompile Include="client\client.c" />
     <ClCompile Include="client\client_player.c" />
     <ClCompile Include="client\client_view.c" />
@@ -256,8 +256,8 @@
     <ClCompile Include="server\server_weapon.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\shared\SharedEngine.h" />
     <ClInclude Include="..\shared\shared_common.h" />
+    <ClInclude Include="..\shared\shared_engine.h" />
     <ClInclude Include="..\shared\shared_flags.h" />
     <ClInclude Include="..\shared\shared_material.h" />
     <ClInclude Include="..\shared\shared_model.h" />

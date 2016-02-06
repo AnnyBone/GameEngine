@@ -44,14 +44,12 @@
 #	define GAME_NAME	"Katana"
 #endif
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-	extern ModuleImport_t Engine;		// TODO: Obsolete!
-	extern ModuleImport_t *g_engine;
-#ifdef __cplusplus
-};
-#endif
+plEXTERN_C_START
+
+extern ModuleImport_t Engine;		// TODO: Obsolete!
+extern ModuleImport_t *g_engine;
+
+plEXTERN_C_END
 
 #define	Console_Warning(a) Engine.Con_Warning(a);
 
@@ -91,8 +89,12 @@ typedef struct
 	ClientEntity_t *ent;
 } GameClient_t;
 
+plEXTERN_C_START
+
 extern GameServer_t Server;
 extern GameClient_t Client;
+
+plEXTERN_C_END
 
 #define	DEAD_NO				0	// Entity isn't dead
 #define DEAD_DEAD			2	// Entity is dead

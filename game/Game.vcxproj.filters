@@ -42,9 +42,6 @@
     <ClInclude Include="..\shared\shared_video.h">
       <Filter>Shared</Filter>
     </ClInclude>
-    <ClInclude Include="..\shared\SharedEngine.h">
-      <Filter>Shared</Filter>
-    </ClInclude>
     <ClInclude Include="..\shared\SharedModule.h">
       <Filter>Shared</Filter>
     </ClInclude>
@@ -76,6 +73,9 @@
       <Filter>Client</Filter>
     </ClInclude>
     <ClInclude Include="..\shared\shared_common.h">
+      <Filter>Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\shared_engine.h">
       <Filter>Shared</Filter>
     </ClInclude>
   </ItemGroup>
@@ -162,9 +162,6 @@
     </ClCompile>
     <ClCompile Include="server\openkatana\mode_deathmatch.c">
       <Filter>Server\Decay</Filter>
-    </ClCompile>
-    <ClCompile Include="client\client_effects.c">
-      <Filter>Client</Filter>
     </ClCompile>
     <ClCompile Include="server\adamas\adamas_player.c">
       <Filter>Server\Adamas</Filter>
@@ -291,6 +288,9 @@
       <Filter>Client\Menu</Filter>
     </ClCompile>
     <ClCompile Include="client\client_player.c">
+      <Filter>Client</Filter>
+    </ClCompile>
+    <ClCompile Include="client\client_effects.cpp">
       <Filter>Client</Filter>
     </ClCompile>
   </ItemGroup>

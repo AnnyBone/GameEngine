@@ -410,14 +410,14 @@ void Game_WriteEntity(int mode, ServerEntity_t *ent)
 	MSG_WriteShort(Game_WriteDest(mode),NUM_FOR_EDICT(ent));
 }
 
-void Game_AddCommand(char *c,void (*Function)(void))
-{
-	Cmd_AddCommand(c,(xcommand_t)Function);
-}
-
 void Game_SetMessageEntity(ServerEntity_t *eEntity)
 {
 	eMessageEntity = eEntity;
+}
+
+ServerEntity_t *Game_GetHostEntity(void)
+{
+	return svs.clients[0].edict;
 }
 
 void Host_Restart_f(void);
@@ -449,8 +449,14 @@ void Game_Initialize(void)
 	Import.Cvar_SetValue			= Cvar_SetValue;
 	Import.LightStyle				= LightStyle;
 	Import.CenterPrint				= Server_CenterPrint;
-	Import.Cmd_AddCommand			= Game_AddCommand;
-	Import.LoadMaterial				= Material_Load;
+
+	Import.Cmd_AddCommand	= Cmd_AddCommand;
+	Import.Cmd_Argc			= Cmd_Argc;
+	Import.Cmd_Argv			= Cmd_Argv;
+
+	Import.GetHostEntity	= Game_GetHostEntity;
+
+	Import.LoadMaterial	= Material_Load;
 
 	Import.ReadByte			= MSG_ReadByte;
 	Import.ReadCoord		= MSG_ReadCoord;

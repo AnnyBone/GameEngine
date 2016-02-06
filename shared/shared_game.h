@@ -205,7 +205,13 @@ typedef struct
 	void(*Cvar_RegisterVariable)(ConsoleVariable_t *variable, void(*Function)(void));
 	void(*Cvar_SetValue)(const char *var_name, float value);
 	void(*LightStyle)(int style, char *val);
-	void(*Cmd_AddCommand)(char *cmd_name, void(*function)(void));
+
+	void(*Cmd_AddCommand)(char *cmd_name, xcommand_t function);
+	char*(*Cmd_Argv)(int arg);
+	int(*Cmd_Argc)(void);
+
+	ServerEntity_t*(*GetHostEntity)(void);
+
 	void(*WriteByte)(int mode, int command);
 	void(*WriteCoord)(int mode, float f);
 	void(*WriteAngle)(int mode, float f);

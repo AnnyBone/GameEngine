@@ -572,7 +572,7 @@ void _Host_Frame (float time)
 // if running the server locally, make intentions now
 	if (sv.active)
 		CL_SendCmd ();
-
+	
 //-------------------
 //
 // server operations

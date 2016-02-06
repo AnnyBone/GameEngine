@@ -28,8 +28,6 @@
 
 pINSTANCE hMenuInstance;
 
-void Game_AddCommand(char *c,void (*Function)(void));	// [21/5/2013] TEMP: See engine_game.c ~hogsy
-
 int	Menu_GetScreenWidth(void);
 int Menu_GetScreenHeight(void);
 
@@ -58,7 +56,7 @@ void Menu_Initialize(void)
 	mImport.GetScreenHeight				= Menu_GetScreenHeight;
 	mImport.ShowCursor					= plShowCursor;
 	mImport.GetCursorPosition			= Window_GetCursorPosition;
-	mImport.Cmd_AddCommand				= Game_AddCommand;
+	mImport.Cmd_AddCommand				= Cmd_AddCommand;
 	mImport.Client_GetStat				= Client_GetStat;
 	mImport.Client_PrecacheResource		= Client_PrecacheResource;
 	mImport.Client_SetMenuCanvas		= GL_SetCanvas;
