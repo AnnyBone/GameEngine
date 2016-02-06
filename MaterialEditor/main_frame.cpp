@@ -489,14 +489,14 @@ void CEditorFrame::OnOpen(wxCommandEvent &event)
 		engine->GetBasePath(),
 		"",
 
-		"Supported files (*.material;*.map;*.level;*.md2;*.wad)|"
-		"*.material;*.level;*.md2;*.wad|"
+		"Supported files (*.material;*.map;*.level;*.md2;*.3d;*.wad)|"
+		"*.material;*.level;*.md2;*.3d;*.wad|"
 
 		"Material files (*.material)|"
 		"*.material|"
 
-		"Model files (*.md2;*.u3d;*.obj)|"
-		"*.md2;*.u3d;*.obj|"
+		"Model files (*.md2;*.3d;*.obj)|"
+		"*.md2;*.3d;*.obj|"
 
 		"Level files (*.level;*.map)|"
 		"*.level;*.map|"
