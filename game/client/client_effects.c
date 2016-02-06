@@ -24,12 +24,17 @@ Material_t *mat_blood = NULL;
 Material_t *mat_smoke = NULL;
 Material_t *mat_spark = NULL;
 
+Sprite *spr_debug = NULL;
+
 void ClientEffect_Initialize()
 {
 	// Load default set of particles.
-	mat_blood = Engine.LoadMaterial("particles/blood");
-	mat_smoke = Engine.LoadMaterial("particles/smoke");
-	mat_spark = Engine.LoadMaterial("particles/spark");
+	mat_blood = g_engine->LoadMaterial("particles/blood");
+	mat_smoke = g_engine->LoadMaterial("particles/smoke");
+	mat_spark = g_engine->LoadMaterial("particles/spark");
+
+	spr_debug = g_engine->AddSprite();
+	g_engine->SetSpriteMaterial(spr_debug, g_engine->LoadMaterial("debug/debug_sprite"));
 }
 
 /*
@@ -237,5 +242,7 @@ void ClientEffect_IonBallTrail(MathVector3f_t position)
 
 		Math_VectorClear(part->vVelocity);
 	}
+
+	g_engine->SetSpritePosition(spr_debug, position);
 }
 #endif

@@ -29,6 +29,8 @@
 */
 typedef struct
 {
+	int	iVersion;
+
 	bool(*Initialize)(int argc, char *argv[], bool bEmbedded);	// Initializes the engine.
 	bool(*IsRunning)();
 
@@ -90,19 +92,17 @@ typedef struct
 
 	// Material Editor
 	void(*MaterialEditorInitialize)(void);					// Initializes the material editor.
-
-	int	iVersion;
 } EngineExport_t;
 
 /*	Functions imported by the engine.
 */
 typedef struct
 {
+	int	iVersion;
+
 	void(*PrintMessage)(char *text);
 	void(*PrintWarning)(char *text);
 	void(*PrintError)(char *text);
-
-	int	iVersion;
 } EngineImport_t;
 
 #define ENGINE_VERSION	(sizeof(EngineImport_t)+sizeof(EngineExport_t))

@@ -214,62 +214,7 @@ pMODULE_EXPORT GameExport_t *Game_Main(ModuleImport_t *Import)
 {
 	// Imports...
 
-	Engine.Con_Printf				= Import->Con_Printf;
-	Engine.Con_DPrintf				= Import->Con_DPrintf;
-	Engine.Con_Warning				= Import->Con_Warning;
-	Engine.Sys_Error				= Import->Sys_Error;
-	Engine.SetMessageEntity			= Import->SetMessageEntity;
-	Engine.SetModel					= Import->SetModel;
-	Engine.Sound					= Import->Sound;
-	Engine.LinkEntity				= Import->LinkEntity;
-	Engine.FreeEntity				= Import->FreeEntity;
-	Engine.Spawn					= Import->Spawn;
-	Engine.Cvar_RegisterVariable	= Import->Cvar_RegisterVariable;
-	Engine.Cvar_SetValue			= Import->Cvar_SetValue;
-	Engine.ReadByte					= Import->ReadByte;
-	Engine.ReadCoord				= Import->ReadCoord;
-	Engine.ReadFloat				= Import->ReadFloat;
-	Engine.WriteByte				= Import->WriteByte;
-	Engine.WriteCoord				= Import->WriteCoord;
-	Engine.WriteAngle				= Import->WriteAngle;
-	Engine.WriteEntity				= Import->WriteEntity;
-	Engine.Server_Move				= Import->Server_Move;
-	Engine.LightStyle				= Import->LightStyle;
-	Engine.Particle					= Import->Particle;
-	Engine.Flare					= Import->Flare;
-	Engine.CenterPrint				= Import->CenterPrint;
-	Engine.Cmd_AddCommand			= Import->Cmd_AddCommand;
-	Engine.GetLightSample			= Import->GetLightSample;
-	Engine.Hunk_AllocateName		= Import->Hunk_AllocateName;
-	Engine.Hunk_Alloc				= Import->Hunk_Alloc;
-	Engine.LoadMaterial				= Import->LoadMaterial;
-
-	Engine.MSG_WriteAngle = Import->MSG_WriteAngle;
-	Engine.MSG_WriteByte = Import->MSG_WriteByte;
-	Engine.MSG_WriteCoord = Import->MSG_WriteCoord;
-
-	Engine.Client_GetEffect			= Import->Client_GetEffect;
-	Engine.Client_AllocateDlight	= Import->Client_AllocateDlight;
-	Engine.Client_AllocateParticle	= Import->Client_AllocateParticle;
-	Engine.Client_PrecacheResource	= Import->Client_PrecacheResource;
-	Engine.Client_GetPlayerEntity	= Import->Client_GetPlayerEntity;
-	Engine.Client_GetViewEntity		= Import->Client_GetViewEntity;
-
-	Engine.Server_PointContents		= Import->Server_PointContents;
-	Engine.Server_MakeStatic		= Import->Server_MakeStatic;
-	Engine.Server_PrecacheResource	= Import->Server_PrecacheResource;
-	Engine.Server_BroadcastPrint	= Import->Server_BroadcastPrint;
-	Engine.Server_SinglePrint		= Import->Server_SinglePrint;
-	Engine.Server_FindRadius		= Import->Server_FindRadius;
-	Engine.Server_FindEntity		= Import->Server_FindEntity;
-	Engine.Server_Restart			= Import->Server_Restart;
-	Engine.Server_ChangeLevel		= Import->Server_ChangeLevel;
-	Engine.Server_AmbientSound		= Import->Server_AmbientSound;
-	Engine.Server_GetLevelName		= Import->Server_GetLevelName;
-	Engine.Server_GetFrameTime		= Import->Server_GetFrameTime;
-	Engine.Server_GetNumEdicts		= Import->Server_GetNumEdicts;
-	Engine.Server_GetEdicts			= Import->Server_GetEdicts;
-
+	Engine = *Import;
 	g_engine = &Engine;
 
 	// Exports...

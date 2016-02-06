@@ -492,19 +492,19 @@ void Draw_CoordinateAxes(float x,float y,float z)
 
 	Video_ObjectVertex(&voLine[0], 0, 0, 0);
 	Video_ObjectColour(&voLine[0], 1.0f, 0, 0, 1.0f);
-	Video_ObjectVertex(&voLine[1], 1.0f, 0, 0);
+	Video_ObjectVertex(&voLine[1], 10, 0, 0);
 	Video_ObjectColour(&voLine[1], 1.0f, 0, 0, 1.0f);
 	Video_DrawObject(voLine, VIDEO_PRIMITIVE_LINES, 2, NULL, 0);
 
 	Video_ObjectVertex(&voLine[0], 0, 0, 0);
 	Video_ObjectColour(&voLine[0], 0, 1.0f, 0, 1.0f);
-	Video_ObjectVertex(&voLine[1], 0, 1.0f, 0);
+	Video_ObjectVertex(&voLine[1], 0, 10, 0);
 	Video_ObjectColour(&voLine[1], 0, 1.0f, 0, 1.0f);
 	Video_DrawObject(voLine, VIDEO_PRIMITIVE_LINES, 2, NULL, 0);
 
 	Video_ObjectVertex(&voLine[0], 0, 0, 0);
 	Video_ObjectColour(&voLine[0], 0, 0, 1.0f, 1.0f);
-	Video_ObjectVertex(&voLine[1], 0, 0, 1.0f);
+	Video_ObjectVertex(&voLine[1], 0, 0, 10);
 	Video_ObjectColour(&voLine[1], 0, 0, 1.0f, 1.0f);
 	Video_DrawObject(voLine, VIDEO_PRIMITIVE_LINES, 2, NULL, 0);
 }

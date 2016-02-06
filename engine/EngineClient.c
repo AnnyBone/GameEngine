@@ -26,6 +26,8 @@
 
 #include "video_light.h"
 
+#include "client/effect_sprite.h"
+
 // we need to declare some mouse variables here, because the menu system
 // references them even when on a unix system.
 
@@ -84,6 +86,8 @@ void CL_ClearState (void)
 	// Initialize lights, which in turn clears
 	// any existing ones.
 	Light_Initialize();
+
+	SpriteManager_Clear();
 
 	//johnfitz -- cl_entities is now dynamically allocated
 	cl_max_edicts	= Math_Clamp(MIN_EDICTS, (int)max_edicts.value, MAX_EDICTS);
@@ -673,5 +677,14 @@ void CL_Init (void)
 	Cmd_AddCommand ("tracepos", CL_Tracepos_f); //johnfitz
 	Cmd_AddCommand ("viewpos", CL_Viewpos_f); //johnfitz
 	Cmd_AddCommand("client_modelcache", Client_ListModelCache);
+}
+
+/*
+	Client Simulation
+*/
+
+void Client_Simulate(void)
+{
+	SpriteManager_Simulate();
 }
 

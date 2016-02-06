@@ -21,9 +21,9 @@
 #include "../video.h"		// TODO: make this a base include
 #include "effect_sprite.h"
 
-ConsoleVariable_t cvSpriteDebugSize = { "sprite_debugsize", "0", false, false, "If enabled, shows the area that the sprite covers." };
+ConsoleVariable_t cv_sprite_debugsize = { "sprite_debugsize", "0", false, false, "If enabled, shows the area that the sprite covers." };
 
-SpriteManager *g_spritemanager;
+SpriteManager *g_spritemanager = nullptr;
 
 // Sprite Manager
 
@@ -31,15 +31,18 @@ SpriteManager *g_spritemanager;
 
 SpriteManager::SpriteManager()
 {
+	initialized = false;
 }
 
 void SpriteManager::Initialize()
 {
 	Con_Printf("Initializing Sprite Manager...\n");
 
-	Cvar_RegisterVariable(&cvSpriteDebugSize, NULL);
+	Cvar_RegisterVariable(&cv_sprite_debugsize, NULL);
 
 	sprites.reserve(SPRITE_DEFAULT_MAX);
+
+	initialized = true;
 }
 
 /*	Add a new sprite to the manager.
@@ -51,19 +54,33 @@ Sprite *SpriteManager::Add()
 	return sprite;
 }
 
+/*	Removes a single sprite.
+*/
+void SpriteManager::Remove(Sprite *sprite)
+{
+	for (auto iterator = sprites.begin(); iterator != sprites.end(); iterator++)
+		if (sprite == *iterator)
+			sprites.erase(iterator);
+}
+
+/*	Clears out all sprites.
+*/
+void SpriteManager::Clear()
+{
+	//sprites.clear();
+}
+
 /*	Run through and simulate each sprite individually.
 */
 void SpriteManager::Simulate()
 {
-	unsigned int i;
-	for (i = 0; i < sprites.size(); i++)
+	for (unsigned int i = 0; i < sprites.size(); i++)
 		sprites[i]->Simulate();
 }
 
 void SpriteManager::Draw()
 {
-	unsigned int i;
-	for (i = 0; i < sprites.size(); i++)
+	for (unsigned int i = 0; i < sprites.size(); i++)
 	{
 		// Skip sprites that aren't currently visible.
 		if (!sprites[i]->IsVisible())
@@ -77,7 +94,10 @@ void SpriteManager::Shutdown()
 {
 	Con_Printf("Shutting down Sprite Manager...\n");
 
-	sprites.clear();
+	Clear();
+
+	// Clear out mem.
+	sprites.shrink_to_fit();
 }
 
 /*
@@ -87,10 +107,10 @@ void SpriteManager::Shutdown()
 Sprite::Sprite()
 {
 	ident		= 0;
-	isactive	= false;
+	isactive	= true;
 	islit		= false;
 	isvisible	= false;
-	scale		= 1.0f;
+	scale		= 5.0f;
 	material	= g_mMissingMaterial;
 
 	Math_VectorClear(position);
@@ -214,7 +234,7 @@ void Sprite::Draw()
 	if (colour[3] < 1.0f)
 		vlDisable(VIDEO_BLEND);
 
-	if (cvSpriteDebugSize.bValue)
+	if (cv_sprite_debugsize.bValue)
 	{
 		// We need the size relative to the current position.
 		MathVector3f_t NewMins, NewMaxs;
@@ -222,7 +242,7 @@ void Sprite::Draw()
 		Math_VectorAdd(maxs, position, NewMaxs);
 
 		// Draw a point representing the current position.
-		R_EmitWirePoint(position);
+		Draw_CoordinateAxes(position[0], position[1], position[2]);
 
 		// Draw the bounding box.
 		R_EmitWireBox(NewMins, NewMaxs, 0, 1.0f, 0);
@@ -233,24 +253,58 @@ void Sprite::Draw()
 	C Interface
 */
 
-void Sprite_DrawSimple(Material_t *material, MathVector3f_t position, float scale)
+// Sprite Manager
+
+extern "C" void SpriteManager_Simulate(void)
 {
-	// Create the new sprite.
-	Sprite *rendersprite = new Sprite();
+	g_spritemanager->Simulate();
+}
 
-	// Set it up.
-	rendersprite->SetActive(true);
-	rendersprite->SetColour(1.0f, 1.0f, 1.0f, 0.5f);
-	rendersprite->SetPosition(position);
-	rendersprite->SetScale(scale);
-	rendersprite->SetMaterial(material);
+extern "C" void SpriteManager_Draw(void)
+{
+	g_spritemanager->Draw();
+}
 
-	// Simulate it and then draw.
-	rendersprite->Simulate();
-	rendersprite->Draw();
+extern "C" Sprite *SpriteManager_Add(void)
+{
+	return g_spritemanager->Add();
+}
 
-	// Delete it.
-	delete rendersprite;
+extern "C" void SpriteManager_Remove(Sprite *sprite)
+{
+	g_spritemanager->Remove(sprite);
+}
+
+extern "C" void SpriteManager_Clear(void)
+{
+	g_spritemanager->Clear();
+}
+
+// Sprite
+
+extern "C" void Sprite_SetPosition(Sprite *sprite, MathVector3f_t position)
+{
+	sprite->SetPosition(position);
+}
+
+extern "C" void Sprite_SetColour(Sprite *sprite, float r, float g, float b, float a)
+{
+	sprite->SetColour(r, g, b, a);
+}
+
+extern "C" void Sprite_SetType(Sprite *sprite, SpriteType_t type)
+{
+	sprite->SetType(type);
+}
+
+extern "C" void Sprite_SetScale(Sprite *sprite, float scale)
+{
+	sprite->SetScale(scale);
+}
+
+extern "C" void Sprite_SetMaterial(Sprite *sprite, Material_t *material)
+{
+	sprite->SetMaterial(material);
 }
 
 /**/

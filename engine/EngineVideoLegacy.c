@@ -25,6 +25,8 @@
 #include "EngineVideoParticle.h"
 #include "EngineVideoShadow.h"
 
+#include "client/effect_sprite.h"
+
 MathVector3f_t modelorg, r_entorigin;
 ClientEntity_t *currententity;
 
@@ -586,7 +588,9 @@ void R_RenderScene(void)
 	R_DrawEntitiesOnList(false);
 	World_DrawWater();
 	R_DrawEntitiesOnList(true);
+
 	Particle_Draw();
+	SpriteManager_Draw();
 	Light_Draw();
 
 	Fog_DisableGFog();

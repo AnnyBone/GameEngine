@@ -378,20 +378,27 @@ void vlBindVertexArray(unsigned int array)
 /*	Generates a single OpenGL buffer.
 	glGenBuffers
 */
-void vlGenerateVertexBuffer(unsigned int *uiBuffer)
+void vlGenerateVertexBuffer(unsigned int *buffer)
 {
 	VIDEO_FUNCTION_START
-	glGenBuffers(1, uiBuffer);
+	glGenBuffers(1, buffer);
+	VIDEO_FUNCTION_END
+}
+
+void vlGenerateVertexBuffers(int num, unsigned int *buffers)
+{
+	VIDEO_FUNCTION_START
+	glGenBuffers(num, buffers);
 	VIDEO_FUNCTION_END
 }
 
 /*	Deletes a single OpenGL buffer.
 	glDeleteBuffers
 */
-void vlDeleteVertexBuffer(unsigned int *uiBuffer)
+void vlDeleteVertexBuffer(unsigned int *buffer)
 {
 	VIDEO_FUNCTION_START
-	glDeleteBuffers(1, uiBuffer);
+	glDeleteBuffers(1, buffer);
 	VIDEO_FUNCTION_END
 }
 

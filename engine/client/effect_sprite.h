@@ -16,61 +16,9 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef EFFECT_SPRITE_H
-#define	EFFECT_SPRITE_H
+#pragma once
 
-typedef enum
-{
-	SPRITE_TYPE_DEFAULT,	// Depth-test, scaled manually and oriented.
-	SPRITE_TYPE_SCALE,		// Depth-test, scale by view and oriented.
-	SPRITE_TYPE_FLARE		// No depth-test, scale by view, always fullbright and oriented.
-} SpriteType_t;
-
-class Sprite
-{
-public:
-	Sprite();
-	virtual ~Sprite();
-
-	void SetPosition(float x, float y, float z);
-	void SetPosition(MathVector3f_t position);
-	void SetColour(float r, float g, float b, float a = 1.0f);
-	void SetType(SpriteType_t type);
-	void SetActive(bool active) { isactive = active; }
-	void SetScale(float scale);
-	void SetMaterial(Material_t *material);
-
-	virtual void Simulate();
-	virtual void Draw();
-
-	bool IsVisible() { return isvisible; }
-	bool IsActive()	{ return isactive; }
-	bool IsLit() { return islit; }
-
-	float GetScale() { return scale; }
-
-	SpriteType_t GetType() { return type; }
-
-private:
-	float scale;
-
-	int	ident;
-
-	bool
-		islit,		// Is the sprite intended to be lit?
-		isvisible,	// Is the sprite currently visible?
-		isactive;	// Is the sprite considered active?
-
-	MathVector3f_t
-		position,
-		mins, maxs;
-
-	SpriteType_t type;
-
-	Colour_t colour;
-
-	Material_t *material;
-};
+#ifdef __cplusplus
 
 class SpriteManager
 {
@@ -78,6 +26,8 @@ public:
 	SpriteManager();
 
 	Sprite *Add();
+	void Remove(Sprite *sprite);
+	void Clear();
 
 	void Initialize();
 	void Simulate();
@@ -86,8 +36,25 @@ public:
 
 private:
 	std::vector<Sprite*> sprites;
+
+	bool initialized;
 };
 
 extern SpriteManager *g_spritemanager;
 
-#endif // !EFFECT_SPRITE_H
+#else
+
+Sprite *SpriteManager_Add(void);
+
+void SpriteManager_Remove(Sprite *sprite);
+void SpriteManager_Clear(void);
+void SpriteManager_Simulate(void);
+void SpriteManager_Draw(void);
+
+void Sprite_SetPosition(Sprite *sprite, MathVector3f_t position);
+void Sprite_SetColour(Sprite *sprite, float r, float g, float b, float a);
+void Sprite_SetType(Sprite *sprite, SpriteType_t type);
+void Sprite_SetScale(Sprite *sprite, float scale);
+void Sprite_SetMaterial(Sprite *sprite, Material_t *material);
+
+#endif

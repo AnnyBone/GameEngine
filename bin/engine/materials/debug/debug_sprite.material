@@ -1,0 +1,24 @@
+debug_sprite
+{
+	$flags "ANIMATED"
+	
+	$animation_speed 0.5
+
+	$skin
+	{
+		$additive "1"
+	
+		$map "materials/debug/sprite0"
+		{
+		}
+	}
+	
+	$skin
+	{
+		$additive "1"
+		
+		$map "materials/debug/sprite1"
+		{
+		}
+	}
+}

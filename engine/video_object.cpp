@@ -20,6 +20,150 @@
 
 #include "video.h"
 
+class VideoObject
+{
+public:
+	VideoObject();
+	~VideoObject();
+
+	void Begin(VideoPrimitive_t mode);
+	void Vertex(float x, float y, float z);
+	void Colour(float r, float g, float b);
+	void Normal(float x, float y, float z);
+	void TexCoord(float s, float t);
+	void End();
+
+	void Draw();
+	void DrawImmediate();
+
+	uint8_t *GetIndices() { return indices; }
+	unsigned int *GetBuffers() { return buffers; }
+	VideoPrimitive_t GetPrimitiveType() { return primitive; }
+protected:
+private:
+	void Clear();
+
+	std::vector<VideoVertex_t*> vertices;
+
+	VideoPrimitive_t primitive;
+
+	unsigned int *buffers;
+
+	unsigned int num_triangles;
+
+	VideoVertex_t *current_vertex;
+
+	uint8_t	*indices;
+};
+
+VideoObject::VideoObject()
+{
+	indices		= nullptr;
+	buffers		= nullptr;
+	primitive	= VIDEO_PRIMITIVE_IGNORE;
+
+	num_triangles = 0;
+
+	current_vertex = nullptr;
+}
+
+void VideoObject::Begin(VideoPrimitive_t mode)
+{
+	if ((mode <= VIDEO_PRIMITIVE_IGNORE) || (mode >= VIDEO_PRIMITIVE_END))
+		Sys_Error("Invalid primitive mode for object!\n");
+
+	// Clear the vectors, shrink so we can free mem.
+	Clear();
+
+	// and then reserve.
+	vertices.reserve(4);
+}
+
+void VideoObject::Vertex(float x, float y, float z)
+{
+	VideoVertex_t *vertex = new VideoVertex_t;
+	current_vertex = vertex;
+	vertices.push_back(vertex);
+}
+
+void VideoObject::Normal(float x, float y, float z)
+{
+	if (!current_vertex)
+		Sys_Error("Invalid vertex for video object!\n");
+	current_vertex->mvNormal[0] = x;
+	current_vertex->mvNormal[0] = y;
+	current_vertex->mvNormal[0] = z;
+}
+
+void VideoObject::TexCoord(float s, float t)
+{
+	if (!current_vertex)
+		Sys_Error("Invalid vertex for video object!\n");
+	current_vertex->mvST[0][0] = s;
+	current_vertex->mvST[0][1] = t;
+}
+
+void VideoObject::End()
+{
+	// TODO: Upload it to the GPU
+}
+
+void VideoObject::Clear()
+{
+	vertices.clear();
+	vertices.shrink_to_fit();
+}
+
+void VideoObject::Draw()
+{}
+
+void VideoObject::DrawImmediate()
+{
+	VIDEO_FUNCTION_START
+	if (vertices.size() == 0)
+		return;
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_COLOR_ARRAY);
+	glEnableClientState(GL_NORMAL_ARRAY);
+
+	VideoVertex_t *vert = vertices[0];
+	glVertexPointer(3, GL_FLOAT, sizeof(VideoVertex_t), vert->mvPosition);
+	glColorPointer(4, GL_FLOAT, sizeof(VideoVertex_t), vert->mvColour);
+	glNormalPointer(GL_FLOAT, sizeof(VideoVertex_t), vert->mvNormal);
+	for (int i = 0; i < VIDEO_MAX_UNITS; i++)
+		if (Video.textureunit_state[i])
+		{
+			glClientActiveTexture(Video_GetTextureUnit(i));
+			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+			glTexCoordPointer(2, GL_FLOAT, sizeof(VideoVertex_t), vert->mvST[i]);
+		}
+
+	if (primitive == VIDEO_PRIMITIVE_TRIANGLES)
+		vlDrawElements(
+			primitive,
+			num_triangles * 3,
+			GL_UNSIGNED_BYTE,
+			indices
+		);
+	else
+		vlDrawArrays(primitive, 0, vertices.size());
+
+	glDisableClientState(GL_COLOR_ARRAY);
+	glDisableClientState(GL_VERTEX_ARRAY);
+	glDisableClientState(GL_NORMAL_ARRAY);
+	for (int i = 0; i < VIDEO_MAX_UNITS; i++)
+		if (Video.textureunit_state[i])
+		{
+			glClientActiveTexture(Video_GetTextureUnit(i));
+			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+		}
+	VIDEO_FUNCTION_END
+}
+
+/*
+	C Interface
+*/
+
 void VideoObject_Setup(VideoObject_t *object)
 {
 	// Create the vertex array object.

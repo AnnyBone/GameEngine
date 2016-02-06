@@ -363,6 +363,7 @@ void Point_SpriteSpawn(ServerEntity_t *seSprite)
 	Engine.WriteCoord(MSG_BROADCAST, seSprite->v.origin[1]);
 	Engine.WriteCoord(MSG_BROADCAST, seSprite->v.origin[2]);
 #endif
+
 	Entity_Remove(seSprite);
 }
 

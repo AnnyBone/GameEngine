@@ -21,6 +21,7 @@
 
 #include "shared_material.h"
 #include "shared_server.h"
+#include "shared_client_effect.h"
 
 typedef enum
 {
@@ -150,6 +151,17 @@ typedef struct
 	void(*Client_SetMenuCanvas)(VideoCanvasType_t Canvas);		// Set the canvas type that the menu will use.
 	void(*Client_AddMenuState)(int iState);						// Adds a new state to the clients menu.
 	void(*Client_RemoveMenuState)(int iState);					// Removes a state from the clients menu.
+
+	// SPRITE START
+	Sprite*(*AddSprite)(void);
+
+	void(*RemoveSprite)(Sprite *sprite);
+	void(*SetSpritePosition)(Sprite *sprite, MathVector3f_t position);
+	void(*SetSpriteColour)(Sprite *sprite, float r, float g, float b, float a);
+	void(*SetSpriteType)(Sprite *sprite, SpriteType_t type);
+	void(*SetSpriteScale)(Sprite *sprite, float scale);
+	void(*SetSpriteMaterial)(Sprite *sprite, Material_t *material);
+	// SPRITE END
 
 	ClientEntity_t		*(*Client_GetViewEntity)(void);		// Returns the entity representing the players view model.
 	ClientEntity_t		*(*Client_GetPlayerEntity)(void);	// Returns the entity representing the player.

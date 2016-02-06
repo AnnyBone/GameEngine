@@ -10,8 +10,6 @@ typedef unsigned char 		byte;
 
 plEXTERN_C_START
 
-char *va(const char *format, ...);
-
 //============================================================================
 
 void SZ_Alloc (sizebuf_t *buf, int startsize);

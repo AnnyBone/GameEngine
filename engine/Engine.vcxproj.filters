@@ -249,9 +249,6 @@
     <ClCompile Include="EngineClientInput.c">
       <Filter>Legacy\Client</Filter>
     </ClCompile>
-    <ClCompile Include="EngineVideoSprite.c">
-      <Filter>Legacy\Client\Video</Filter>
-    </ClCompile>
     <ClCompile Include="EngineVideoLegacy2.c">
       <Filter>Legacy\Client\Video\Legacy</Filter>
     </ClCompile>
@@ -563,6 +560,9 @@
     </ClInclude>
     <ClInclude Include="video_light.h">
       <Filter>Legacy\Client\Video</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\shared_client_effect.h">
+      <Filter>Shared</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

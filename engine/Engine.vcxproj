@@ -662,7 +662,6 @@
     <ClCompile Include="EngineServerPhysics.c" />
     <ClCompile Include="EngineVideoScreen.c" />
     <ClCompile Include="EngineScript.c" />
-    <ClCompile Include="EngineVideoSprite.c" />
     <ClCompile Include="video.cpp" />
     <ClCompile Include="EngineClientView.c" />
     <ClCompile Include="EngineServerWorld.c" />
@@ -704,6 +703,7 @@
     <ClInclude Include="..\shared\format_obj.h" />
     <ClInclude Include="..\shared\format_u3d.h" />
     <ClInclude Include="..\shared\shared_client.h" />
+    <ClInclude Include="..\shared\shared_client_effect.h" />
     <ClInclude Include="..\shared\shared_editor.h" />
     <ClInclude Include="..\shared\shared_engine.h" />
     <ClInclude Include="..\shared\shared_flags.h" />

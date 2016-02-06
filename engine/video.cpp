@@ -22,6 +22,8 @@
 #include "video_shader.h"
 #include "video_light.h"
 
+#include "client/effect_sprite.h"
+
 /*
 	Video System
 
@@ -248,6 +250,10 @@ void Video_Initialize(void)
 	Shader_Initialize();
 #endif
 	Light_Initialize();
+
+	// Initialize the sprite manager.
+	g_spritemanager = new SpriteManager();
+	g_spritemanager->Initialize();
 
 	Video.bInitialized = true;
 }
@@ -847,6 +853,9 @@ void Video_Shutdown(void)
 
 	// Let us know that we're shutting down the video sub-system.
 	Con_Printf("Shutting down video...\n");
+
+	g_spritemanager->Shutdown();
+	delete g_spritemanager;
 
 	if (!g_state.embedded)
 		Window_Shutdown();

@@ -604,6 +604,7 @@ void _Host_Frame (float time)
 		CL_ReadFromServer();
 
 		Particle_Frame(); //johnfitz -- seperated from rendering
+		Client_Simulate();
 	}
 	else if (cls.state == CLIENT_STATE_EDITOR)
 		Editor_Frame();

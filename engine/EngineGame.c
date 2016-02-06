@@ -25,6 +25,8 @@
 #include "EngineServer.h"
 #include "EngineVideoParticle.h"
 
+#include "client/effect_sprite.h"
+
 #include "SharedModule.h"
 
 /*
@@ -502,6 +504,13 @@ void Game_Initialize(void)
 	Import.Server_GetFrameTime		= Server_GetFrameTime;
 	Import.Server_GetNumEdicts		= Game_GetNumEdicts;
 	Import.Server_GetEdicts			= Game_GetEdicts;
+
+	Import.AddSprite			= SpriteManager_Add;
+	Import.SetSpriteColour		= Sprite_SetColour;
+	Import.SetSpritePosition	= Sprite_SetPosition;
+	Import.SetSpriteScale		= Sprite_SetScale;
+	Import.SetSpriteType		= Sprite_SetType;
+	Import.SetSpriteMaterial	= Sprite_SetMaterial;
 
 	Game = (GameExport_t*)plLoadModuleInterface(hGameInstance, va("%s/%s" MODULE_GAME, com_gamedir, g_state.path_modules), "Game_Main", &Import);
 	if(!Game)

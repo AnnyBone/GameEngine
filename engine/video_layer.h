@@ -74,6 +74,7 @@ extern "C" {
 
 	// Vertex Buffer
 	void vlGenerateVertexBuffer(unsigned int *uiBuffer);
+	void vlGenerateVertexBuffers(int num, unsigned int *buffers);
 	void vlBindBuffer(unsigned int target, unsigned int buffer);
 	void vlDeleteVertexBuffer(unsigned int *uiBuffer);
 	
