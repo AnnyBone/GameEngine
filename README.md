@@ -12,6 +12,7 @@ Katana is a heavily modified version of the FitzQuake engine.
 - FBO support
 - Blob and point-based planar shadows
 - Support for MD2 model format
+- Primitive support for Unreal's 3D format.
 - Support for both TGA and PNG image formats
 - Scripted material system
 - Sphere-mapping and texture detail, variable animation rates, multiple skins and contextual parameters
