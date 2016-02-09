@@ -452,6 +452,7 @@ void Draw_GradientBackground(void)
 */
 void Draw_TileClear (int x, int y, int w, int h)
 {
+#if 0
 	glpic_t	*gl;
 
 	gl = (glpic_t *)draw_backtile->data;
@@ -470,6 +471,9 @@ void Draw_TileClear (int x, int y, int w, int h)
 	glTexCoord2f(x/64.0,(y+h)/64.0);
 	glVertex2f(x,y+h);
 	glEnd();
+#else
+// TODO: implement this using new pipeline
+#endif
 }
 
 void Draw_Line(MathVector3f_t mvStart, MathVector3f_t mvEnd)
@@ -762,8 +766,6 @@ void Draw_ResetCanvas(void)
 	currentcanvas = (VideoCanvasType_t)-1;
 
 	GL_SetCanvas(CANVAS_DEFAULT);
-
-	glColor4f(1, 1, 1, 1);
 }
 
 /*
