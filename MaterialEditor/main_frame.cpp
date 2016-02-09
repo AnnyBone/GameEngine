@@ -104,6 +104,8 @@ wxBEGIN_EVENT_TABLE(CEditorFrame, wxFrame)
 	EVT_MENU(FRAME_EVENT_MATERIALTOOL, CEditorFrame::OnTool)
 	EVT_MENU(MAIN_EVENT_MODELVIEWER, CEditorFrame::OnTool)
 
+	EVT_MOUSE_EVENTS(CEditorFrame::OnMouseEvent)
+
 	EVT_TIMER(-1, CEditorFrame::OnTimer)
 
 wxEND_EVENT_TABLE()
@@ -610,11 +612,10 @@ void CEditorFrame::OnPreferences(wxCommandEvent &event)
 }
 
 void CEditorFrame::OnProperties(wxCommandEvent &event)
+{}
+
+void CEditorFrame::OnMouseEvent(wxMouseEvent &event)
 {
-#if 0
-	propertyWindow->Show(!propertyWindow->IsShown());
-	propertyWindow->SetPosition(wxPoint(GetPosition().x - 256, GetPosition().y));
-#endif
 }
 
 /*	Reload the currently active document.

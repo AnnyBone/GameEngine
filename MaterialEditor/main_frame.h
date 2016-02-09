@@ -71,6 +71,7 @@ private:
 	void OnPreferences(wxCommandEvent &event);
 	void OnKey(wxKeyEvent &event);
 	void OnTimer(wxTimerEvent &event);
+	void OnMouseEvent(wxMouseEvent &event);
 
 	void ReloadCurrentDocument();
 
