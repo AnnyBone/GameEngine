@@ -129,11 +129,11 @@ void Prisoner_Run(ServerEntity_t *ePrisoner)
 //	Monster_MoveToGoal(ePrisoner, ePrisoner->Monster.mvMoveTarget, 20.0f);
 }
 
-void Prisoner_Pain(ServerEntity_t *ePrisoner, ServerEntity_t *eOther)
+void Prisoner_Pain(ServerEntity_t *ePrisoner, ServerEntity_t *eOther, ServerDamageType_t type)
 {
 }
 
-void Prisoner_Die(ServerEntity_t *ePrisoner, ServerEntity_t *eOther)
+void Prisoner_Die(ServerEntity_t *ePrisoner, ServerEntity_t *eOther, ServerDamageType_t type)
 {
 	if(ePrisoner->v.iHealth < PRISONER_MIN_HEALTH)
 	{

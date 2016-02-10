@@ -16,25 +16,24 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef SERVER_MAIN_H
-#define SERVER_MAIN_H
+#pragma once
 
 #include "game_main.h"
 
-#include "shared_game.h"
 #include "shared_server.h"
+#include "shared_game.h"
 
 // Base includes
 #ifdef __cplusplus
 #	include "server_entity.h"
 #endif
-
-// Legacy base includes
 #include "server_physics.h"
 #include "server_mode.h"
 #include "server_waypoint.h"
 #include "server_monster.h"
 #include "server_misc.h"
+
+plEXTERN_C_START
 
 extern	ConsoleVariable_t	cvServerSkill;			// The difficulty level.
 extern	ConsoleVariable_t	cvServerSelfDamage;		// If the player can directly kill themselves or not.
@@ -55,60 +54,56 @@ extern	ConsoleVariable_t	cvServerGravityTweak;	// For detailed "tweaking" withou
 extern	ConsoleVariable_t	cvServerGravity;		// The absolute gravity amount.
 extern	ConsoleVariable_t	cvServerAim;			// Auto-aiming.
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+void Server_Initialize(void);
+void Server_EntityFrame(ServerEntity_t *eEntity);
 
-	void Server_Initialize(void);
-	void Server_EntityFrame(ServerEntity_t *eEntity);
+// Server to client
+void Server_KillClient(ServerEntity_t *eClient);
+void Server_UpdateClientMenu(ServerEntity_t *eClient, int iMenuState, bool bShow);
 
-	// Server to client
-	void Server_KillClient(ServerEntity_t *eClient);
-	void Server_UpdateClientMenu(ServerEntity_t *eClient, int iMenuState, bool bShow);
+bool Server_SpawnEntity(ServerEntity_t *ent);
 
-	bool Server_SpawnEntity(ServerEntity_t *ent);
+#define Server_PrecacheModel(a)			g_engine->Server_PrecacheResource(RESOURCE_MODEL,a)
+#define	Server_PrecacheSound(a)			g_engine->Server_PrecacheResource(RESOURCE_SOUND,a)
+#define Server_WorldLightStyle(a,b)		g_engine->LightStyle(a,b)
 
-#define Server_PrecacheModel(a)			Engine.Server_PrecacheResource(RESOURCE_MODEL,a)
-#define	Server_PrecacheSound(a)			Engine.Server_PrecacheResource(RESOURCE_SOUND,a)
-#define Server_WorldLightStyle(a,b)		Engine.LightStyle(a,b)
+/*
+	Entity Functions
+*/
 
-	/*
-		Entity Functions
-	*/
+ServerEntity_t	*Entity_Spawn(void);
 
-	ServerEntity_t	*Entity_Spawn(void);
+bool Entity_CanDamage(ServerEntity_t *entity, ServerEntity_t *target, ServerDamageType_t type);
+bool Entity_IsPlayer(ServerEntity_t *entity);
+bool Entity_IsMonster(ServerEntity_t *entity);
+bool Entity_IsAnimating(ServerEntity_t *entity);
+bool Entity_IsTouching(ServerEntity_t *entity, ServerEntity_t *other);
+bool Entity_IsOnGround(ServerEntity_t *entity);
+bool Entity_DropToFloor(ServerEntity_t *entity);
 
-	bool Entity_CanDamage(ServerEntity_t *eEntity, ServerEntity_t *eTarget, int iDamageType);
-	bool Entity_IsPlayer(ServerEntity_t *eEntity);
-	bool Entity_IsMonster(ServerEntity_t *eEntity);
-	bool Entity_IsTouching(ServerEntity_t *eEntity, ServerEntity_t *eOther);
-	bool Entity_IsOnGround(ServerEntity_t *entity);
-	bool Entity_DropToFloor(ServerEntity_t *eEntity);
+void ServerEntity_ParseField(char *key, char *value, ServerEntity_t *entity);
 
-	void ServerEntity_ParseField(char *key, char *value, ServerEntity_t *entity);
-
-	void Entity_SetOrigin(ServerEntity_t *eEntity, MathVector3f_t vOrigin);
-	void Entity_SetAngles(ServerEntity_t *eEntity, MathVector3f_t vAngles);
-	void Entity_SetModel(ServerEntity_t *eEntity, char *cModelPath);
-	void Entity_SetSizeVector(ServerEntity_t *eEntity, MathVector3f_t vMin, MathVector3f_t vMax);
-	void Entity_SetSize(ServerEntity_t *eEntity, float fMinA, float fMinB, float fMinC, float fMaxA, float fMaxB, float fMaxC);
-	void Entity_SetPhysics(ServerEntity_t *seEntity, PhysicsSolidTypes_t pstSolidType, float fMass, float fFriction);
-	void Entity_RadiusDamage(ServerEntity_t *eInflictor, float fRadius, int iDamage, int iDamageType);
-	void Entity_Damage(ServerEntity_t *seEntity, ServerEntity_t *seInflictor, int iDamage, DamageType_t dtType);
-	void Entity_Remove(ServerEntity_t *eEntity);
-	void Entity_CheckFrames(ServerEntity_t *eEntity);
-	void Entity_ResetAnimation(ServerEntity_t *eEntity);
-	void Entity_Animate(ServerEntity_t *eEntity, EntityFrame_t *efAnimation);
-	bool Entity_IsAnimating(ServerEntity_t *entity);
-	void Entity_Link(ServerEntity_t *eEntity, bool bTouchTriggers);
-	void Entity_Unlink(ServerEntity_t *eEntity);
-	void Entity_MakeVectors(ServerEntity_t *eEntity);
-	void Entity_AddEffects(ServerEntity_t *eEntity, int iEffects);
-	void Entity_RemoveEffects(ServerEntity_t *eEntity, int iEffects);
-	void Entity_ClearEffects(ServerEntity_t *eEntity);
-	void Entity_AddFlags(ServerEntity_t *eEntity, int iFlags);
-	void Entity_RemoveFlags(ServerEntity_t *eEntity, int iFlags);
-	void Entity_ClearFlags(ServerEntity_t *eEntity, int iFlags);
+void Entity_SetOrigin(ServerEntity_t *entity, MathVector3f_t vOrigin);
+void Entity_SetAngles(ServerEntity_t *entity, MathVector3f_t vAngles);
+void Entity_SetModel(ServerEntity_t *entity, char *cModelPath);
+void Entity_SetSizeVector(ServerEntity_t *entity, MathVector3f_t vMin, MathVector3f_t vMax);
+void Entity_SetSize(ServerEntity_t *entity, float fMinA, float fMinB, float fMinC, float fMaxA, float fMaxB, float fMaxC);
+void Entity_SetPhysics(ServerEntity_t *entity, ServerSolidType_t pstSolidType, float fMass, float fFriction);
+void Entity_RadiusDamage(ServerEntity_t *eInflictor, float fRadius, int iDamage, ServerDamageType_t type);
+void Entity_Damage(ServerEntity_t *entity, ServerEntity_t *seInflictor, int damage, ServerDamageType_t type);
+void Entity_Remove(ServerEntity_t *eEntity);
+void Entity_CheckFrames(ServerEntity_t *eEntity);
+void Entity_ResetAnimation(ServerEntity_t *eEntity);
+void Entity_Animate(ServerEntity_t *eEntity, EntityFrame_t *efAnimation);
+void Entity_Link(ServerEntity_t *eEntity, bool bTouchTriggers);
+void Entity_Unlink(ServerEntity_t *eEntity);
+void Entity_MakeVectors(ServerEntity_t *eEntity);
+void Entity_AddEffects(ServerEntity_t *eEntity, int iEffects);
+void Entity_RemoveEffects(ServerEntity_t *eEntity, int iEffects);
+void Entity_ClearEffects(ServerEntity_t *eEntity);
+void Entity_AddFlags(ServerEntity_t *entity, int flags);
+void Entity_RemoveFlags(ServerEntity_t *entity, int flags);
+void Entity_ClearFlags(ServerEntity_t *entity, int flags);
 
 #define Entity_SetKilledFunction(a,b)	(a->local.KilledFunction = b)
 #define Entity_SetDamagedFunction(a,b)	(a->local.DamagedFunction = b)
@@ -116,8 +111,4 @@ extern "C" {
 #define Entity_SetTouchFunction(a,b)	(a->v.TouchFunction = b)
 #define	Entity_SetThinkFunction(a,b)	(a->v.think = b)
 
-#ifdef __cplusplus
-};
-#endif
-
-#endif	// SERVER_MAIN_H
+plEXTERN_C_END

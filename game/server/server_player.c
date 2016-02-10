@@ -23,6 +23,7 @@
 #include "server_weapon.h"
 #include "server_item.h"
 #include "server_menu.h"
+#include "server_effects.h"
 
 /*
 	Code specific towards the player. This includes code for
@@ -345,7 +346,7 @@ void Player_CheckFootsteps(ServerEntity_t *player)
 		dDelay = Math_Clamp(0.1, (double)(1.0f / (fForce / 100.0f)), 1.0);
 
 		// TODO: Check if we're in water or not and change this accordingly :)
-		Sound(player, CHAN_VOICE, va("physics/concrete%i_footstep.wav", rand() % 4), 150, ATTN_NORM);
+		Sound(player, CHAN_BODY, va("physics/concrete%i_footstep.wav", rand() % 4), 150, ATTN_NORM);
 
 		player->local.dStepTime = Server.dTime + dDelay;
 	}
@@ -369,9 +370,6 @@ void Player_CheckWater(ServerEntity_t *ePlayer)
 
 void Player_PostThink(ServerEntity_t *ePlayer)
 {
-	int		iFlag = CHAN_VOICE;
-	char	snd[32];
-
 	// If round has not started then don't go through this!
 	if ((ePlayer->Monster.state == MONSTER_STATE_DEAD) || !Server.round_started)
 		return;
@@ -396,10 +394,12 @@ void Player_PostThink(ServerEntity_t *ePlayer)
 
 	Weapon_CheckInput(ePlayer);
 
-	if ((ePlayer->local.fJumpVelocity < -300.0f) &&
-		(ePlayer->v.flags & FL_ONGROUND)		&&
+	if ((ePlayer->local.fJumpVelocity < -300.0f)	&&
+		(ePlayer->v.flags & FL_ONGROUND)			&&
 		(ePlayer->v.iHealth > 0))
 	{
+		char snd[32];
+
 		if(ePlayer->v.watertype == BSP_CONTENTS_WATER)
 			sprintf(snd,"player/h2ojump.wav");
 		else if (ePlayer->local.fJumpVelocity < -650.0f)
@@ -420,16 +420,14 @@ void Player_PostThink(ServerEntity_t *ePlayer)
 		else
 		{
 			// Land sounds DO NOT use CHAN_VOICE otherwise they get horribly cut out!
-			iFlag = CHAN_AUTO;
-
-			sprintf(snd,"player/playerland%i.wav",rand()%4+1);
+			strncpy(snd, "player/land0.wav", sizeof(snd));
 
 			// Give him a little punch...
 			// TODO: Switch these over purely to the client.
 			ePlayer->v.punchangle[0] -= ePlayer->local.fJumpVelocity / 100.0f;
 		}
 
-		Sound(ePlayer,iFlag,snd,255,ATTN_NORM);
+		Sound(ePlayer, CHAN_VOICE, snd, 255, ATTN_NORM);
 
 		ePlayer->local.fJumpVelocity = 0;
 	}
@@ -458,14 +456,12 @@ void Player_PostThink(ServerEntity_t *ePlayer)
 
 void Player_PreThink(ServerEntity_t *ePlayer)
 {
+	if (!Server.round_started)
+		return;
+
 	if (Server.round_started && !Server.players_spawned)
-	{
 		// Spawn the player!
 		Player_Spawn(ePlayer);
-		return;
-	}
-	else if(!Server.round_started)
-		return;
 
 	Weapon_CheckFrames(ePlayer);
 	Entity_CheckFrames(ePlayer);
@@ -582,7 +578,22 @@ void Player_PreThink(ServerEntity_t *ePlayer)
 	}
 }
 
-void Player_Die(ServerEntity_t *ePlayer, ServerEntity_t *other)
+void Player_Gib(ServerEntity_t *player)
+{
+	Sound(player, CHAN_VOICE, "misc/gib1.wav", 255, ATTN_NORM);
+
+	// [13/9/2012] Updated paths ~hogsy
+	ThrowGib(player->v.origin, player->v.velocity, PHYSICS_MODEL_GIB0, (float)player->v.iHealth*-1, true);
+	ThrowGib(player->v.origin, player->v.velocity, PHYSICS_MODEL_GIB1, (float)player->v.iHealth*-1, true);
+	ThrowGib(player->v.origin, player->v.velocity, PHYSICS_MODEL_GIB2, (float)player->v.iHealth*-1, true);
+	ThrowGib(player->v.origin, player->v.velocity, PHYSICS_MODEL_GIB3, (float)player->v.iHealth*-1, true);
+
+	ServerEffect_BloodCloud(player->v.origin, BLOOD_TYPE_RED);
+	
+	Entity_SetModel(player, "");
+}
+
+void Player_Die(ServerEntity_t *ePlayer, ServerEntity_t *other, ServerDamageType_t type)
 {
 	char s[32];
 
@@ -622,25 +633,6 @@ void Player_Die(ServerEntity_t *ePlayer, ServerEntity_t *other)
 	}
 #endif
 
-	if(ePlayer->v.iHealth < PLAYER_MIN_HEALTH)
-	{
-		Sound(ePlayer,CHAN_VOICE,"misc/gib1.wav",255,ATTN_NORM);
-
-		// [13/9/2012] Updated paths ~hogsy
-		ThrowGib(ePlayer->v.origin,ePlayer->v.velocity,PHYSICS_MODEL_GIB0,(float)ePlayer->v.iHealth*-1,true);
-		ThrowGib(ePlayer->v.origin,ePlayer->v.velocity,PHYSICS_MODEL_GIB1,(float)ePlayer->v.iHealth*-1,true);
-		ThrowGib(ePlayer->v.origin,ePlayer->v.velocity,PHYSICS_MODEL_GIB2,(float)ePlayer->v.iHealth*-1,true);
-		ThrowGib(ePlayer->v.origin, ePlayer->v.velocity, PHYSICS_MODEL_GIB3, (float)ePlayer->v.iHealth*-1, true);
-
-		Engine.Particle(ePlayer->v.origin,ePlayer->v.velocity,10.0f,"blood",20);
-
-		// [2/10/2013] Hide the model ~hogsy
-		// [17/11/2013] Fixed ~hogsy
-		Entity_SetModel(ePlayer,"");
-
-		return;
-	}
-
 	if(ePlayer->v.waterlevel == 3)
 		sprintf(s,"player/playerwaterdeath.wav");
 	else
@@ -661,7 +653,7 @@ void Player_Die(ServerEntity_t *ePlayer, ServerEntity_t *other)
 	}
 }
 
-void Player_Pain(ServerEntity_t *ent, ServerEntity_t *other)
+void Player_Pain(ServerEntity_t *ent, ServerEntity_t *other, ServerDamageType_t type)
 {
 	char cSound[24];
 

@@ -16,8 +16,7 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef GAME_MAIN_H
-#define GAME_MAIN_H
+#pragma once
 
 /*
 	Main header for the game module.
@@ -29,10 +28,10 @@
 
 #include "shared_flags.h"
 #include "SharedModule.h"
+#include "shared_engine.h"
+#include "shared_game.h"
 #include "shared_menu.h"
 #include "shared_formats.h"
-#include "shared_game.h"
-#include "shared_engine.h"
 
 #include "game_resources.h"
 
@@ -100,6 +99,12 @@ plEXTERN_C_END
 #define DEAD_DEAD			2	// Entity is dead
 #define DEAD_RESPAWNABLE	3	// Entity can respawn
 
+typedef enum
+{
+	BLOOD_TYPE_RED,
+	BLOOD_TYPE_GREEN
+} BloodType_t;
+
 /*
 	Items
 */
@@ -110,7 +115,7 @@ plEXTERN_C_END
 #define WEAPON_LASERS		1		// NPC weapon
 #define WEAPON_KATANA		2		// Simple Katana / Melee
 #define	WEAPON_DAIKATANA	3		// The Daikatana / Melee+
-#define	WEAPON_IONBLASTER	4		// Basic projectile-based weapon
+#define	WEAPON_IONRIFLE		4		// Basic projectile-based weapon
 #define	WEAPON_C4VIZATERGO	5		// Explosive projectile weapon
 #define	WEAPON_SHOTCYCLER	6		// Futuristic shotgun
 #define	WEAPON_SIDEWINDER	7		// Explosive projectile weapon (+)
@@ -131,8 +136,6 @@ plEXTERN_C_END
 #define	ITEM_OXYLUNG		22		// Provides oxygen
 // Episode Four
 #define	WEAPON_GLOCK		50		// Standard pistol
-// Universal
-#define	WEAPON_IONRIFLE		70		// Talon Brave's weapon
 #elif GAME_ADAMAS
 #	define ITEM_LIFE	50
 #endif
@@ -142,27 +145,21 @@ plEXTERN_C_END
 
 extern int	iRedScore, iBlueScore;	// TODO: Move these somewhere else, likely into the gamemode stuff...
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+plEXTERN_C_START
 
-	char *va(char *format,...);
+char *va(char *format,...);
 
-	void Flare(MathVector3f_t org,float r,float g,float b,float a,float scale,char *texture);
+void Flare(MathVector3f_t org,float r,float g,float b,float a,float scale,char *texture);
 
-	void Sound(ServerEntity_t *ent, AudioChannel_t channel, char *sound, int volume, float attenuation);
+void Sound(ServerEntity_t *ent, AudioChannel_t channel, char *sound, int volume, float attenuation);
 
-	void SetAngle(ServerEntity_t *ent, MathVector3f_t vAngle);
-	void PutClientInServer(ServerEntity_t *ent);
-	void WriteByte(int mode,int c);
-	void ChangeYaw(ServerEntity_t *ent);
+void SetAngle(ServerEntity_t *ent, MathVector3f_t vAngle);
+void PutClientInServer(ServerEntity_t *ent);
+void WriteByte(int mode,int c);
+void ChangeYaw(ServerEntity_t *ent);
 
-	trace_t Traceline(ServerEntity_t *ent, MathVector3f_t vStart, MathVector3f_t vEnd, int type);
+trace_t Traceline(ServerEntity_t *ent, MathVector3f_t vStart, MathVector3f_t vEnd, int type);
 
-	void UseTargets(ServerEntity_t *ent, ServerEntity_t *other);
+void UseTargets(ServerEntity_t *ent, ServerEntity_t *other);
 
-#ifdef __cplusplus
-};
-#endif
-
-#endif	// !GAME_MAIN_H
+plEXTERN_C_END

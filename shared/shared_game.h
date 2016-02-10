@@ -16,25 +16,11 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef SHARED_GAME_H
-#define SHARED_GAME_H
+#pragma once
 
 #include "shared_material.h"
 #include "shared_server.h"
 #include "shared_client_effect.h"
-
-typedef enum
-{
-	DAMAGE_TYPE_NORMAL,
-	DAMAGE_TYPE_EXPLODE,
-	DAMAGE_TYPE_BURN,
-	DAMAGE_TYPE_FREEZE,
-	DAMAGE_TYPE_GRAVITY,
-	DAMAGE_TYPE_CRUSH,
-	DAMAGE_TYPE_FALL,
-
-	DAMAGE_TYPE_NONE
-} DamageType_t;
 
 /*
 	Waypoints
@@ -60,9 +46,6 @@ typedef struct waypoint_s
 	const char			*cName;		// The name for the waypoint
 	int					number;		// Each point is assigned it's own number
 	ServerEntity_t		*eEntity;	// The entity currently occupying that waypoint
-#ifdef DEBUG_WAYPOINT
-	ServerEntity_t		*eDebug;	// Entity to use for displaying waypoint position
-#endif
 	struct	waypoint_s	*next;		// The next point to target.
 	struct	waypoint_s	*last;		// The last point we were at.
 	MathVector3f_t		position;	// The waypoints position.
@@ -282,5 +265,3 @@ typedef struct
 } GameExport_t;
 
 #define GAME_VERSION (sizeof(GameExport_t)+sizeof(ModuleImport_t)+sizeof(BaseVariables_t*))	// Version check that's used for Menu and Launcher.
-
-#endif // !SHARED_GAME_H

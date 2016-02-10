@@ -38,12 +38,11 @@ Item_t Items[] =
 
 	// Weapons
 	{	WEAPON_DAIKATANA,	"Daikatana",	"models/weapons/w_daikatana.md2",	"items/weaponpickup.wav",	true	},
-	{	WEAPON_IONBLASTER,	"Ion Blaster",	"models/weapons/w_ionblaster.md2",	"items/weaponpickup.wav",	true	},
+	{	WEAPON_IONRIFLE,	"Ion Rifle",	"models/weapons/w_ionblaster.md2",	"items/weaponpickup.wav",	true	},
 	{	WEAPON_C4VIZATERGO,	"C4 Vizatergo",	"models/weapons/w_c4.md2",			"items/weaponpickup.wav",	true	},
 	{	WEAPON_SHOTCYCLER,	"Shotcycler-6",	"models/weapons/w_shotcycler.md2",	"items/weaponpickup.wav",	true	},
 	{	WEAPON_SIDEWINDER,	"Sidewinder",	"models/weapons/w_sidewinder.md2",	"items/weaponpickup.wav",	true	},
 	{	WEAPON_SHOCKWAVE,	"Shockwave",	"models/weapons/w_shockwave.md2",	"items/weaponpickup.wav",	true	},
-	{	WEAPON_IONRIFLE,	"Ion Rifle",	"models/weapons/w_ionrifle.md2",	"items/weaponpickup.wav",	true	},
 
 	// Unused weapons
 	{	WEAPON_GLOCK,		"Glock",		"models/weapons/w_glock.md2",		"items/weaponpickup.wav",	true	},
@@ -269,7 +268,7 @@ void Item_Touch(ServerEntity_t *eItem,ServerEntity_t *eOther)
 			eOther->v.iHealth = eOther->local.iMaxHealth;
 		break;
 	/* Episode 1 */
-	case WEAPON_IONBLASTER:
+	case WEAPON_IONRIFLE:
 		eOther->local.ionblaster_ammo += 25;
 
 		Item_AddInventory(iItem,eOther);

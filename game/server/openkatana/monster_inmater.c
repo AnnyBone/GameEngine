@@ -83,11 +83,11 @@ EntityFrame_t efInmaterDeath[]=
 #define	INMATER_MIN_HEALTH	-35
 #define	INMATER_MIN_BOREDOM	-45
 
-void Inmater_Pain(ServerEntity_t *eInmater, ServerEntity_t *eOther)
+void Inmater_Pain(ServerEntity_t *eInmater, ServerEntity_t *eOther, ServerDamageType_t type)
 {
 }
 
-void Inmater_Die(ServerEntity_t *eInmater, ServerEntity_t *eOther)
+void Inmater_Die(ServerEntity_t *eInmater, ServerEntity_t *eOther, ServerDamageType_t type)
 {
 	if(eInmater->v.iHealth < INMATER_MIN_HEALTH)
 	{

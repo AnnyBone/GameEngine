@@ -44,8 +44,8 @@ public:
 	virtual void Spawn();
 	virtual void Precache() {};
 
-	bool CanDamage(ServerEntity *target, DamageType_t damagetype);
-	void Damage(ServerEntity *inflictor, int damage, DamageType_t damagetype);
+	bool CanDamage(ServerEntity *target, ServerDamageType_t damagetype);
+	void Damage(ServerEntity *inflictor, int damage, ServerDamageType_t damagetype);
 	virtual void Killed(ServerEntity *inflictor)	{};
 	virtual void Damaged(ServerEntity *inflictor) {};
 

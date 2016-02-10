@@ -189,7 +189,7 @@ void ServerEntity::RemoveFlags(int flags)
 	Damage
 */
 
-void ServerEntity::Damage(ServerEntity *inflictor, int damage, DamageType_t damagetype)
+void ServerEntity::Damage(ServerEntity *inflictor, int damage, ServerDamageType_t damagetype)
 {
 	// Don't bother if there's no actual damage inflicted.
 	if (damage <= 0)
@@ -210,7 +210,7 @@ void ServerEntity::Damage(ServerEntity *inflictor, int damage, DamageType_t dama
 	Damaged(inflictor);
 }
 
-bool ServerEntity::CanDamage(ServerEntity *target, DamageType_t damagetype)
+bool ServerEntity::CanDamage(ServerEntity *target, ServerDamageType_t damagetype)
 {
 	if (!target->GetInstance()->v.bTakeDamage)
 		return false;

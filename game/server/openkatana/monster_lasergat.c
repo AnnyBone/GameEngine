@@ -80,7 +80,7 @@ void LaserGat_Explode(ServerEntity_t *eLaserGat)
 	Entity_Remove(eLaserGat);
 }
 
-void LaserGat_Die(ServerEntity_t *eLaserGat,ServerEntity_t *eOther)
+void LaserGat_Die(ServerEntity_t *eLaserGat, ServerEntity_t *eOther, ServerDamageType_t type)
 {
 	eLaserGat->v.think		= LaserGat_Explode;
 	eLaserGat->v.dNextThink	= Server.dTime + 5.0;
@@ -175,12 +175,12 @@ void LaserGat_Think(ServerEntity_t *eLaserGat)
 		eLaserGat->v.angles[0] = -60.0f;
 }
 
-void LaserGat_BasePain(ServerEntity_t *eBase,ServerEntity_t *eOther)
+void LaserGat_BasePain(ServerEntity_t *eBase, ServerEntity_t *eOther, ServerDamageType_t type)
 {
 	Sound(eBase,CHAN_BODY,PHYSICS_SOUND_METAL2,255,ATTN_STATIC);
 }
 
-void LaserGat_BaseDie(ServerEntity_t *eBase,ServerEntity_t *eOther)
+void LaserGat_BaseDie(ServerEntity_t *eBase, ServerEntity_t *eOther, ServerDamageType_t type)
 {
 	Entity_SetModel(eBase,LASERGAT_MODEL_BROKEN);
 
@@ -198,7 +198,7 @@ void LaserGat_BaseDie(ServerEntity_t *eBase,ServerEntity_t *eOther)
 			(float)eBase->v.iHealth,
 			eBase->local.eOwner->v.avelocity);
 
-		Monster_Killed(eBase->local.eOwner,eOther);
+		Monster_Killed(eBase->local.eOwner, eOther, type);
 	}
 }
 

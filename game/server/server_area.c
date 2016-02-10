@@ -167,7 +167,7 @@ void Area_CreateGib(ServerEntity_t *eArea, const char *cModel)
 	}
 }
 
-void Area_BreakableDie(ServerEntity_t *eArea, ServerEntity_t *eOther)
+void Area_BreakableDie(ServerEntity_t *eArea, ServerEntity_t *eOther, ServerDamageType_t type)
 {
 	int	i;
 	char cSound[128], cModel[PLATFORM_MAX_PATH];
@@ -208,7 +208,7 @@ void Area_BreakableDie(ServerEntity_t *eArea, ServerEntity_t *eOther)
 
 void Area_BreakableUse(ServerEntity_t *eArea)
 {
-	Area_BreakableDie(eArea, eArea->local.activator);
+	Area_BreakableDie(eArea, eArea->local.activator, DAMAGE_TYPE_NONE);
 }
 
 void Area_BreakableSpawn(ServerEntity_t *eArea)
@@ -622,7 +622,8 @@ void Area_DoorSpawn(ServerEntity_t *door)
 			door->v.iHealth = 1;
 
 		door->v.bTakeDamage = true;
-		Entity_SetDamagedFunction(door, Area_DoorTouch);
+		// TODO: add handler for this!
+//		Entity_SetDamagedFunction(door, Area_DoorTouch);
 	}
 
 	if (door->local.iDamage)
@@ -1129,8 +1130,6 @@ void Area_ClimbTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
 {
 	MathVector3f_t vLadVelocity, vPlayerVec, vForward, vRight, vUp;
 
-	float fForwardSpeed;
-
 	if ((eOther->local.dLadderJump > Server.dTime) || (eOther->v.waterlevel > 1) || (eOther->v.flags & FL_WATERJUMP))
 		return;
 
@@ -1139,7 +1138,7 @@ void Area_ClimbTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
 	Math_VectorScale(vPlayerVec, 250, vPlayerVec);
 
 	if (eOther->v.button[2])
-		Math_VectorCopy(eOther->v.velocity, vPlayerVec);
+ 		Math_VectorCopy(eOther->v.velocity, vPlayerVec);
 
 	// ignore 8 units of the top edge
 	if (eOther->v.origin[2] + eOther->v.mins[2] + 8 >= eArea->v.absmax[2]){
@@ -1172,7 +1171,7 @@ void Area_ClimbTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
 		return;
 	}
 
-	fForwardSpeed = Math_DotProduct(vForward, eOther->v.velocity);
+	float fForwardSpeed = Math_DotProduct(vForward, eOther->v.velocity);
 	Math_VectorClear(vLadVelocity);
 
 	// up (facing up/forward)
@@ -1229,7 +1228,7 @@ void Area_ClimbTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
 		vLadVelocity[2] = -1 * 100;
 
 	// do it manually! VectorCopy won't work with this
-	Math_VectorCopy(vLadVelocity, eOther->v.velocity);
+	plVectorCopy3f(vLadVelocity, eOther->v.velocity);
 }
 
 void Area_ClimbSpawn(ServerEntity_t *eArea)

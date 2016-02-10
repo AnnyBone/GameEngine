@@ -36,12 +36,6 @@ static char *largv[MAX_NUM_ARGVS + NUM_SAFE_ARGVS + 1], *argvdummy = " ";
 static char *safeargvs[NUM_SAFE_ARGVS] =
 	{"-stdvid", "-nolan", "-nosound", "-nocdaudio", "-nojoy", "-nomouse", "-dibonly"};
 
-bool msg_suppress_1 = 0;
-
-// if a packfile directory differs from this, it is assumed to be hacked
-#define PAK0_COUNT              339
-#define PAK0_CRC                32981
-
 char	com_token[1024];
 int		com_argc;
 char	**com_argv;

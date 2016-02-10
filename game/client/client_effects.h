@@ -22,7 +22,8 @@ plEXTERN_C_START
 
 void ClientEffect_Initialize();
 void ClientEffect_ParticleField(MathVector3f_t position, MathVector3f_t mins, MathVector3f_t maxs, float density);
-void ClientEffect_BloodSpray(MathVector3f_t position);
+void ClientEffect_BloodPuff(MathVector3f_t position);
+void ClientEffect_BloodCloud(MathVector3f_t position, BloodType_t type);
 void ClientEffect_Smoke(MathVector3f_t position);
 void ClientEffect_Explosion(MathVector3f_t position);
 #ifdef GAME_OPENKATANA

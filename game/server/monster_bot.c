@@ -127,8 +127,8 @@ const char *BotNames[] =
 };
 
 void Bot_Run(ServerEntity_t *entity);
-void Bot_Pain(ServerEntity_t *entity, ServerEntity_t *other);
-void Bot_Die(ServerEntity_t *entity, ServerEntity_t *other);
+void Bot_Pain(ServerEntity_t *entity, ServerEntity_t *other, ServerDamageType_t type);
+void Bot_Die(ServerEntity_t *entity, ServerEntity_t *other, ServerDamageType_t type);
 void Bot_Stand(ServerEntity_t *entity);
 void Bot_Walk(ServerEntity_t *entity);
 void Bot_Frame(ServerEntity_t *entity);
@@ -313,7 +313,7 @@ void Bot_BroadcastMessage(ServerEntity_t *eBot, ServerEntity_t *other)
 	);
 }
 
-void Bot_Pain(ServerEntity_t *ent, ServerEntity_t *other)
+void Bot_Pain(ServerEntity_t *ent, ServerEntity_t *other, ServerDamageType_t type)
 {
 	char sound[MAX_QPATH];
 	Weapon_t *wMyWeapon, *wHisWeapon;
@@ -423,7 +423,7 @@ void Bot_Walk(ServerEntity_t *eBot)
 	eBot->v.velocity[1] -= 10.0f;
 }
 
-void Bot_Die(ServerEntity_t *eBot,ServerEntity_t *eOther)
+void Bot_Die(ServerEntity_t *eBot, ServerEntity_t *eOther, ServerDamageType_t type)
 {
 	char sound[MAX_QPATH];
 

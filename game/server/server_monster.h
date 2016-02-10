@@ -112,12 +112,12 @@ int	Monster_GetRelationship(ServerEntity_t *eMonster, ServerEntity_t *eTarget);
 
 float MONSTER_GetRange(ServerEntity_t *ent, MathVector3f_t target);
 
-void Monster_Damage(ServerEntity_t *target, ServerEntity_t *inflictor, int iDamage, int iDamageType);
+void Monster_Damage(ServerEntity_t *target, ServerEntity_t *inflictor, int iDamage, ServerDamageType_t type);
 void Monster_Jump(ServerEntity_t *eMonster, float fVelocity);
 void Monster_MoveToGoal(ServerEntity_t *ent, MathVector3f_t goal, float distance);
 void Monster_MoveRandom(ServerEntity_t *eMonster, float fSpeed);
 void Monster_Frame(ServerEntity_t *eMonster);
-void Monster_Killed(ServerEntity_t *eTarget, ServerEntity_t *eAttacker);
+void Monster_Killed(ServerEntity_t *monster, ServerEntity_t *attacker, ServerDamageType_t type);
 
 Waypoint_t *Monster_GetMoveTarget(ServerEntity_t *Monster);
 

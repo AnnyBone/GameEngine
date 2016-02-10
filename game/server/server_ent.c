@@ -354,20 +354,20 @@ bool Entity_CanDamage(ServerEntity_t *eEntity, ServerEntity_t *eTarget, int iDam
 	return false;
 }
 
-void Entity_Damage(ServerEntity_t *seEntity, ServerEntity_t *seInflictor, int iDamage, DamageType_t dtType)
+void Entity_Damage(ServerEntity_t *seEntity, ServerEntity_t *seInflictor, int iDamage, ServerDamageType_t type)
 {
 	// Don't bother if there's no actual damage inflicted.
 	if (iDamage <= 0)
 		return;
 
 	// Only continue if we can damage the entity.
-	if (!Entity_CanDamage(seInflictor, seEntity, dtType))
+	if (!Entity_CanDamage(seInflictor, seEntity, type))
 		return;
 
 	// If it's a monster or player, hand it over to the monster code.
 	if (Entity_IsMonster(seEntity) || Entity_IsPlayer(seEntity))
 	{
-		Monster_Damage(seEntity, seInflictor, iDamage, dtType);
+		Monster_Damage(seEntity, seInflictor, iDamage, type);
 		return;
 	}
 
@@ -377,12 +377,12 @@ void Entity_Damage(ServerEntity_t *seEntity, ServerEntity_t *seInflictor, int iD
 	if (seEntity->v.iHealth <= 0)
 	{
 		if (seEntity->local.KilledFunction)
-			seEntity->local.KilledFunction(seEntity, seInflictor);
+			seEntity->local.KilledFunction(seEntity, seInflictor, type);
 		return;
 	}
 
 	if (seEntity->local.DamagedFunction)
-		seEntity->local.DamagedFunction(seEntity, seInflictor);
+		seEntity->local.DamagedFunction(seEntity, seInflictor, type);
 }
 
 /*	Damage entities within a specific radius.
@@ -551,7 +551,7 @@ bool Entity_IsMonster(ServerEntity_t *eEntity)
 
 /*	Sets up the physical properties for the entity.
 */
-void Entity_SetPhysics(ServerEntity_t *seEntity, PhysicsSolidTypes_t pstSolidType, float fMass, float fFriction)
+void Entity_SetPhysics(ServerEntity_t *seEntity, ServerSolidType_t pstSolidType, float fMass, float fFriction)
 {
 	seEntity->Physics.iSolid = pstSolidType;
 	seEntity->Physics.fMass = fMass;

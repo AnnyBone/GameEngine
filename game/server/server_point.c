@@ -712,7 +712,7 @@ enum
 	BREAKABLE_METAL
 };
 
-void Area_BreakableDie(ServerEntity_t *eArea,ServerEntity_t *eOther);
+void Area_BreakableDie(ServerEntity_t *eArea, ServerEntity_t *eOther, ServerDamageType_t type);
 
 void Point_PropTouch(ServerEntity_t *eEntity, ServerEntity_t *eOther)
 {

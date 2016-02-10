@@ -20,20 +20,35 @@
 
 #include "server_effects.h"
 
-void ServerEffect_BloodSpray(MathVector3f_t position)
+/*	Simple puff of blood.
+*/
+void ServerEffect_BloodPuff(MathVector3f_t position)
 {
-	Engine.WriteByte(MSG_BROADCAST, SVC_TEMPENTITY);
-	Engine.WriteByte(MSG_BROADCAST, CTE_BLOODSPRAY);
-	Engine.WriteCoord(MSG_BROADCAST, position[0]);
-	Engine.WriteCoord(MSG_BROADCAST, position[1]);
-	Engine.WriteCoord(MSG_BROADCAST, position[2]);
+	g_engine->WriteByte(MSG_BROADCAST, SVC_TEMPENTITY);
+	g_engine->WriteByte(MSG_BROADCAST, CTE_BLOODPUFF);
+
+	for (int i = 0; i < 3; i++)
+		g_engine->WriteCoord(MSG_BROADCAST, position[i]);
+}
+
+/*	Cloud of blood.
+*/
+void ServerEffect_BloodCloud(MathVector3f_t position, BloodType_t type)
+{
+	g_engine->WriteByte(MSG_BROADCAST, SVC_TEMPENTITY);
+	g_engine->WriteByte(MSG_BROADCAST, CTE_BLOODCLOUD);
+
+	for (int i = 0; i < 3; i++)
+		g_engine->WriteCoord(MSG_BROADCAST, position[i]);
+
+	g_engine->WriteByte(MSG_BROADCAST, type);
 }
 
 void ServerEffect_Explosion(MathVector3f_t position)
 {
-	Engine.WriteByte(MSG_BROADCAST, SVC_TEMPENTITY);
-	Engine.WriteByte(MSG_BROADCAST, CTE_EXPLOSION);
-	Engine.WriteCoord(MSG_BROADCAST, position[0]);
-	Engine.WriteCoord(MSG_BROADCAST, position[1]);
-	Engine.WriteCoord(MSG_BROADCAST, position[2]);
+	g_engine->WriteByte(MSG_BROADCAST, SVC_TEMPENTITY);
+	g_engine->WriteByte(MSG_BROADCAST, CTE_EXPLOSION);
+
+	for (int i = 0; i < 3; i++)
+		g_engine->WriteCoord(MSG_BROADCAST, position[i]);
 }

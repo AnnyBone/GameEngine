@@ -54,7 +54,7 @@ Weapon_t Weapons[] =
 	},
 
 	{
-		WEAPON_IONBLASTER,
+		WEAPON_IONRIFLE,
 		"models/weapons/v_ionblaster.md2",
 		IonBlaster_Deploy,
 
@@ -105,21 +105,6 @@ Weapon_t Weapons[] =
 		// Primary
 		AM_LASER,
 		Shockwave_PrimaryAttack
-	},
-
-	// Secret Weapons
-	{
-		WEAPON_IONRIFLE,
-		"models/weapons/v_ionrifle.md2",	// TEMP
-		IonRifle_Deploy,
-
-		// Primary
-		AM_IONS,
-		IonRifle_PrimaryAttack,
-
-		// Secondary
-		AM_NONE,
-		IonRifle_SecondaryAttack
 	},
 
 	// Monster Weapons
@@ -759,12 +744,11 @@ void Weapon_CheatCommand(ServerEntity_t *eEntity)
 	eEntity->local.iC4Ammo			= 300;
 
 	Item_AddInventory(Item_GetItem(WEAPON_DAIKATANA),eEntity);
-	Item_AddInventory(Item_GetItem(WEAPON_IONBLASTER),eEntity);
+	Item_AddInventory(Item_GetItem(WEAPON_IONRIFLE), eEntity);
 	Item_AddInventory(Item_GetItem(WEAPON_C4VIZATERGO),eEntity);
 	Item_AddInventory(Item_GetItem(WEAPON_SHOTCYCLER),eEntity);
 	Item_AddInventory(Item_GetItem(WEAPON_SIDEWINDER),eEntity);
 	Item_AddInventory(Item_GetItem(WEAPON_SHOCKWAVE),eEntity);
-	Item_AddInventory(Item_GetItem(WEAPON_IONRIFLE),eEntity);
 
 	wWeapon = Weapon_GetWeapon(WEAPON_DAIKATANA);
 	if(wWeapon)
@@ -789,7 +773,7 @@ void Weapon_CheckInput(ServerEntity_t *eEntity)
 		{
 #ifdef GAME_OPENKATANA
 		case 1:
-			iNewWeapon = WEAPON_IONBLASTER;
+			iNewWeapon = WEAPON_IONRIFLE;
 			break;
 		case 2:
 			iNewWeapon = WEAPON_C4VIZATERGO;
@@ -805,9 +789,6 @@ void Weapon_CheckInput(ServerEntity_t *eEntity)
 			break;
 		case 6:
 			iNewWeapon = WEAPON_DAIKATANA;
-			break;
-		case 7:
-			iNewWeapon = WEAPON_IONRIFLE;
 			break;
 #endif
 		default:

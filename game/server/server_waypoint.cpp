@@ -80,12 +80,6 @@ void Waypoint_Delete(Waypoint_t *wPoint)
 	if(!wPoint)
 		return;
 
-#ifdef	DEBUG_WAYPOINT
-	// [23/3/2013] If we have an entity set for debugging, then remove it! ~hogsy
-	if(wPoint->eDebug)
-		Entity_Remove(wPoint->eDebug);
-#endif
-
 	free((void*)wPoint);
 
 	waypoint_count--;
@@ -167,9 +161,6 @@ void Waypoint_Frame()
 
 void Waypoint_Spawn(MathVector3f_t vOrigin,WaypointType_t type)
 {
-#ifdef	DEBUG_WAYPOINT
-	char		*cModelName = WAYPOINT_MODEL_BASE;
-#endif
 	int			iPointContents;
 	Waypoint_t	*wPoint;
 
@@ -223,16 +214,10 @@ void Waypoint_Spawn(MathVector3f_t vOrigin,WaypointType_t type)
 	{
 	case WAYPOINT_ITEM:
 		wPoint->cName = "item";
-#ifdef DEBUG_WAYPOINT
-		cModelName	= WAYPOINT_MODEL_ITEM;
-#endif
 		break;
 	case WAYPOINT_CLIMB:
 		wPoint->cName = "climb";
 		// TODO: Check that there's a ladder nearby.
-#ifdef DEBUG_WAYPOINT
-		cModelName	= WAYPOINT_MODEL_CLIMB;
-#endif
 		break;
 	case WAYPOINT_COVER:
 		wPoint->cName = "cover";
@@ -241,9 +226,6 @@ void Waypoint_Spawn(MathVector3f_t vOrigin,WaypointType_t type)
 	case WAYPOINT_TYPE_JUMP:
 		wPoint->cName = "jump";
 		// [27/12/2012] TODO: Check if this is actually a jump by tracing out ahead ~hogsy
-#ifdef DEBUG_WAYPOINT
-		cModelName	= WAYPOINT_MODEL_JUMP;
-#endif
 		break;
 	case WAYPOINT_TYPE_SWIM:
 		if(iPointContents != BSP_CONTENTS_WATER)
@@ -258,9 +240,6 @@ void Waypoint_Spawn(MathVector3f_t vOrigin,WaypointType_t type)
 		}
 
 		wPoint->cName = "swim";
-#ifdef DEBUG_WAYPOINT
-		cModelName	= WAYPOINT_MODEL_SWIM;
-#endif
 		break;
 	case WAYPOINT_TYPE_DEFAULT:
 		wPoint->cName = "default";
@@ -287,23 +266,4 @@ void Waypoint_Spawn(MathVector3f_t vOrigin,WaypointType_t type)
 	}
 	else if(wPoint->last != wPoint && wPoint->last->next)
 		wPoint->last->next = wPoint;
-
-#ifdef DEBUG_WAYPOINT
-	wPoint->eDebug = Entity_Spawn();
-	if(wPoint->eDebug)
-	{
-		wPoint->eDebug->v.effects = EF_MOTION_ROTATE;
-
-		Entity_SetModel(wPoint->eDebug,cModelName);
-		Entity_SetSizeVector(wPoint->eDebug,g_mvOrigin3f,g_mvOrigin3f);
-		Entity_SetOrigin(wPoint->eDebug,wPoint->position);
-	}
-
-	Engine.Con_DPrintf("Waypoint placed (%i %i %i)\n",
-		(int)wPoint->position[0],
-		(int)wPoint->position[1],
-		(int)wPoint->position[2]);
-	Engine.Con_DPrintf(" number: %i\n",wPoint->number);
-	Engine.Con_DPrintf(" type:   %i\n",wPoint->wType);
-#endif
 }

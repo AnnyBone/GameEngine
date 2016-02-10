@@ -311,16 +311,6 @@ void Server_Spawn(ServerEntity_t *seEntity)
 	Server_PrecacheModel("models/blip.md2");
 #endif
 
-#ifdef DEBUG_WAYPOINT
-	Server_PrecacheModel(WAYPOINT_MODEL_BASE);
-	Server_PrecacheModel(WAYPOINT_MODEL_CLIMB);
-	Server_PrecacheModel(WAYPOINT_MODEL_ITEM);
-	Server_PrecacheModel(WAYPOINT_MODEL_JUMP);
-	Server_PrecacheModel(WAYPOINT_MODEL_SPAWN);
-	Server_PrecacheModel(WAYPOINT_MODEL_SWIM);
-	Server_PrecacheModel(WAYPOINT_MODEL_WEAPON);
-#endif
-
 	// Precache any multiplayer content.
 	if(bIsMultiplayer)
 	{

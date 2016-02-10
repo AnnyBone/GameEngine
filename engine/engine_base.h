@@ -27,7 +27,7 @@
 #include "platform_module.h"
 
 #ifdef _DEBUG
-#include <assert.h>
+#	include <assert.h>
 #endif
 
 #ifdef _MSC_VER
@@ -38,7 +38,7 @@
 #endif
 
 //	Build needs to be updated each day that work is done on the engine.
-#define ENGINE_VERSION_BUILD	1088	// 05/02/2016
+#define ENGINE_VERSION_BUILD	1091	// 10/02/2016
 
 #define	ENGINE_LOG	"engine"
 
@@ -70,6 +70,7 @@
 #include "sys.h"
 #include "zone.h"
 
+#include "shared_game.h"
 #include "shared_server.h"
 #include "shared_client.h"
 #include "shared_engine.h"
@@ -127,6 +128,8 @@ typedef struct
 
 //=============================================================================
 
+plEXTERN_C_START
+
 extern bool noclip_anglehack;
 
 // host
@@ -142,8 +145,7 @@ extern	bool		g_hostinitialized;	// True if into command execution
 extern	double		host_frametime;
 extern	int			host_framecount;	// incremented every frame, never reset
 extern	double		realtime;			// not bounded in any way, changed at
-										// start of every frame, never reset
-plEXTERN_C_START
+										// start of every frame, never rese
 
 void Host_ClearMemory(void);
 void Host_ServerFrame(void);
@@ -157,15 +159,13 @@ void Host_Quit_f(void);
 void Host_ClientCommands(char *fmt, ...);
 void Host_ShutdownServer(bool crash);
 
-plEXTERN_C_END
-
-extern bool		msg_suppress_1;			// suppresses resolution and cache size console output
-										//  an fullscreen DIB focus gain/loss
-extern int			current_skill;		// skill level for currently loaded level (in case
-										//  the user changes the cvar while the level is
-										//  running, this reflects the level actually in use)
+extern int	current_skill;		// skill level for currently loaded level (in case
+								//  the user changes the cvar while the level is
+								//  running, this reflects the level actually in use)
 
 extern bool	bIsDedicated;
+
+// TODO: Move these somewhere more appropriate
 
 // chase
 extern ConsoleVariable_t chase_active;
@@ -174,3 +174,5 @@ void TraceLine(MathVector3f_t start, MathVector3f_t end, MathVector3f_t impact);
 
 void Chase_Init(void);
 void Chase_UpdateForDrawing(void); //johnfitz
+
+plEXTERN_C_END

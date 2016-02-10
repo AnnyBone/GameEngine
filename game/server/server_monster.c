@@ -440,7 +440,7 @@ bool Monster_SetState(ServerEntity_t *eMonster, MonsterState_t msState)
 
 /*	Called when a monster/entity gets killed.
 */
-void Monster_Killed(ServerEntity_t *eTarget, ServerEntity_t *eAttacker)
+void Monster_Killed(ServerEntity_t *eTarget, ServerEntity_t *eAttacker, ServerDamageType_t type)
 {
 	if (eTarget->Monster.state == MONSTER_STATE_DEAD)
 		return;
@@ -466,7 +466,7 @@ void Monster_Killed(ServerEntity_t *eTarget, ServerEntity_t *eAttacker)
 
 		if(eTarget == eAttacker)
 		{
-			cDeathMessage = "%s killed himself!\n";
+			cDeathMessage = "%s killed himself\n";
 
 			eAttacker->v.iScore--;
 		}
@@ -491,9 +491,8 @@ void Monster_Killed(ServerEntity_t *eTarget, ServerEntity_t *eAttacker)
 
 				eAttacker->v.iScore += 2;
 			}
-
 			// Extra points!
-			if(!(eTarget->v.flags & FL_ONGROUND))
+			else if(!(eTarget->v.flags & FL_ONGROUND))
 			{
 				// TODO: Play sound
 				Engine.CenterPrint(eAttacker,"WATCH THEM DROP!\n");
@@ -502,16 +501,40 @@ void Monster_Killed(ServerEntity_t *eTarget, ServerEntity_t *eAttacker)
 
 				eAttacker->v.iScore += 2;
 			}
+			else
+			{
+				switch (type)
+				{
+				case DAMAGE_TYPE_BURN:
+					cDeathMessage = "%s was cooked pretty good by %s\n";
+					break;
+				case DAMAGE_TYPE_CRUSH:
+					cDeathMessage = "%s was crushed by %s's fat ass\n";
+					break;
+				case DAMAGE_TYPE_EXPLODE:
+					cDeathMessage = "%s was reduced to a bloody mess by %s\n";
+					break;
+				case DAMAGE_TYPE_FALL:
+					cDeathMessage = "%s fell. Probably pushed by the cunning %s\n";
+					break;
+				case DAMAGE_TYPE_FREEZE:
+					cDeathMessage = "%s is part of the decor, nice job %s!\n";
+					break;
+				case DAMAGE_TYPE_GRAVITY:
+					cDeathMessage = "%s was killed by some gravity-induced weaponised thingy, by %s\n";
+					break;
+				}
+			}
 		}
 
 		// Update number of frags for client.
 		Engine.SetMessageEntity(eAttacker);
-		Engine.WriteByte(MSG_ONE,SVC_UPDATESTAT);
-		Engine.WriteByte(MSG_ONE,STAT_FRAGS);
-		Engine.WriteByte(MSG_ONE,eAttacker->v.iScore);
+		Engine.WriteByte(MSG_ONE, SVC_UPDATESTAT);
+		Engine.WriteByte(MSG_ONE, STAT_FRAGS);
+		Engine.WriteByte(MSG_ONE, eAttacker->v.iScore);
 
 		// TODO: move Kill messages into mode_deathmatch (?) Create Weapon specific kill messages and more variations! ~eukos
-		Engine.Server_BroadcastPrint(cDeathMessage,eTarget->v.netname,eAttacker->v.netname);
+		Engine.Server_BroadcastPrint(cDeathMessage, eTarget->v.netname, eAttacker->v.netname);
 	}
 	else
 		eTarget->v.bTakeDamage = false;
@@ -535,12 +558,11 @@ void Monster_Killed(ServerEntity_t *eTarget, ServerEntity_t *eAttacker)
 
 	// Update our current state.
 	eTarget->Monster.state = MONSTER_STATE_DEAD;
-
 	if (eTarget->local.KilledFunction)
-		eTarget->local.KilledFunction(eTarget, eAttacker);
+		eTarget->local.KilledFunction(eTarget, eAttacker, type);
 }
 
-void Monster_Damage(ServerEntity_t *target, ServerEntity_t *inflictor, int iDamage, int iDamageType)
+void Monster_Damage(ServerEntity_t *target, ServerEntity_t *inflictor, int iDamage, ServerDamageType_t type)
 {
 	/*	TODO
 		If the new inflicted damage is greater
@@ -555,7 +577,7 @@ void Monster_Damage(ServerEntity_t *target, ServerEntity_t *inflictor, int iDama
 	*/
 
 	if (target->local.bBleed)
-		ServerEffect_BloodSpray(target->v.origin);
+		ServerEffect_BloodPuff(target->v.origin);
 
 	// Only do this for players.
 	if(Entity_IsPlayer(inflictor))
@@ -584,9 +606,9 @@ void Monster_Damage(ServerEntity_t *target, ServerEntity_t *inflictor, int iDama
 
 	target->v.iHealth -= iDamage;
 	if(target->v.iHealth <= 0)
-		Monster_Killed(target,inflictor);
+		Monster_Killed(target, inflictor, type);
 	else if (target->Monster.Pain)
-		target->Monster.Pain(target, inflictor);
+		target->Monster.Pain(target, inflictor, type);
 }
 
 void MONSTER_WaterMove(ServerEntity_t *ent)

@@ -16,8 +16,7 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef SHARED_SERVER_H
-#define SHARED_SERVER_H
+#pragma once
 
 #define	SERVER_GRAVITY	600.0f
 
@@ -103,7 +102,22 @@ typedef enum
 	SOLID_BBOX,		// Entity is solid.
 	SOLID_SLIDEBOX,	// Entity is solid and moves.
 	SOLID_BSP
-} PhysicsSolidTypes_t;
+} ServerSolidType_t;
+
+/*	Different type's of damage.
+*/
+typedef enum
+{
+	DAMAGE_TYPE_NORMAL,
+	DAMAGE_TYPE_EXPLODE,
+	DAMAGE_TYPE_BURN,
+	DAMAGE_TYPE_FREEZE,
+	DAMAGE_TYPE_GRAVITY,
+	DAMAGE_TYPE_CRUSH,
+	DAMAGE_TYPE_FALL,
+
+	DAMAGE_TYPE_NONE
+} ServerDamageType_t;
 
 typedef struct ServerEntity_s ServerEntity_t;
 
@@ -122,7 +136,7 @@ typedef struct
 	float fGravity;		// Sets the gravity which is enforced on the entity.
 	float fFriction;	// Sets the amount of friction that effects this entity and others.
 
-	PhysicsSolidTypes_t	iSolid;		// Sets the collision/solid type for the entity.
+	ServerSolidType_t	iSolid;		// Sets the collision/solid type for the entity.
 
 	ServerEntity_t	*eIgnore;	// Tells the entity to ignore collisions with this entity.
 } PhysicsVariables_t;
@@ -138,7 +152,7 @@ typedef struct
 	void(*Idle)(ServerEntity_t *entity);
 	void(*Jump)(ServerEntity_t *entity);
 	void(*Land)(ServerEntity_t *entity);
-	void(*Pain)(ServerEntity_t *entity, ServerEntity_t *other);
+	void(*Pain)(ServerEntity_t *entity, ServerEntity_t *other, ServerDamageType_t type);
 
 	// Current thought state
 	int	state;			// Current physical state.
@@ -341,9 +355,9 @@ typedef struct
 	// Weapons
 	int	iBarrelCount;			// For cycling barrel animations.
 
-	void(*KilledFunction)(ServerEntity_t *seEntity, ServerEntity_t *seOther);
-	void(*RespawnFunction)(ServerEntity_t *seEntity);
-	void(*DamagedFunction)(ServerEntity_t *seEntity, ServerEntity_t *seOther);
+	void(*KilledFunction)(ServerEntity_t *self, ServerEntity_t *other, ServerDamageType_t type);
+	void(*RespawnFunction)(ServerEntity_t *self);
+	void(*DamagedFunction)(ServerEntity_t *self, ServerEntity_t *other, ServerDamageType_t type);
 } GameVariables_t;
 
 //----------------------------
@@ -551,5 +565,3 @@ typedef struct
 	int						serverflags;		// episode completion information
 	bool					bChangingLevel;		// cleared when at SV_SpawnServer
 } ServerStatic_t;
-
-#endif // !SHARED_SERVER_H

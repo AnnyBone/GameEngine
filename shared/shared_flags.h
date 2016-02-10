@@ -55,7 +55,9 @@ enum
 	MSG_BROADCAST,	// Unreliable to all
 	MSG_ONE,		// Reliable to one (msg_entity)
 	MSG_ALL,		// Reliable to all
-	MSG_INIT		// Write to the init string
+	MSG_INIT,		// Write to the init string
+
+	MSG_END
 };
 
 typedef enum
@@ -129,49 +131,60 @@ enum
 	MOVETYPE_FLYMISSILE,	// extra size to monsters
 	MOVETYPE_BOUNCE,		// Bounces upon hitting the ground
 	MOVETYPE_FLYBOUNCE,		// Fly and bounce
-	MOVETYPE_PHYSICS		// Sets the entity to use realistic physics
+	MOVETYPE_PHYSICS,		// Sets the entity to use realistic physics
+
+	MOVETYPE_END
 };
 
 #define	MOVE_NORMAL		0
 #define	MOVE_NOMONSTERS	1
 #define	MOVE_MISSILE	2
 
-#define	FL_FLY				1		// Entity can fly.
-#define	FL_SWIM				2		// Entity can swim.
-#define FL_ANGLEHACK		4		// Used for setting up dumb angles from editor.
-#define	FL_INWATER			16		// Entity is in the water.
-#define	FL_GODMODE			64
-#define	FL_NOTARGET			128
-#define	FL_ITEM				256		// Entity is an item.
-#define	FL_ONGROUND			512		// Entity is on the ground.
-#define	FL_PARTIALGROUND	1024	// Entity is partially on the ground.
-#define	FL_WATERJUMP		2048
-#define	FL_JUMPRELEASED		4096	// Entity has released jump.
-#define	FL_CROUCHING		8192	// Entity is crouching.
+enum
+{
+	FL_FLY				= (1 << 0),		// Entity can fly.
+	FL_SWIM				= (1 << 1),		// Entity can swim.
+	FL_ANGLEHACK		= (1 << 2),		// Used for setting up dumb angles from editor.
+	FL_INWATER			= (1 << 3),		// Entity is in the water.
+	FL_GODMODE			= (1 << 4),
+	FL_NOTARGET			= (1 << 5),
+	FL_ITEM				= (1 << 6),		// Entity is an item.
+	FL_ONGROUND			= (1 << 7),		// Entity is on the ground.
+	FL_PARTIALGROUND	= (1 << 8),		// Entity is partially on the ground.
+	FL_WATERJUMP		= (1 << 9),	
+	FL_JUMPRELEASED		= (1 << 10),
+	FL_CROUCHING		= (1 << 11),
 
-#define	EF_BRIGHTFIELD		(1 << 0)
-#define	EF_MUZZLEFLASH		(1 << 1)
-#define	EF_BRIGHTLIGHT 		(1 << 2)
-#define	EF_DIMLIGHT 		(1 << 3)
-#define	EF_GLOW_RED			(1 << 4)
-#define EF_LIGHT_GREEN		(1 << 5)
-#define	EF_MOTION_ROTATE	(1 << 6)	// Client-side rotation
-#define EF_MOTION_FLOAT		(1 << 7)	// Adds a nice floating motion for the entity
-#define EF_GLOW_BLUE		(1 << 8)	// Simple blue dlight glow.
-#define EF_GLOW_WHITE		(1 << 9)	// Simple white dlight glow.
-#define	EF_PARTICLE_BLOOD	(1 << 10)	// Blood particle trail.
-#define	EF_PARTICLE_SMOKE	(1 << 11)	// Smoke particle trail.
-#define EF_FULLBRIGHT		(1 << 12)
-#define	EF_GRENADE			(1 << 13)	// leave a trail.
-#define	EF_GIB				(1 << 14)	// leave a trail.
-#define	EF_TRACER			(1 << 15)	// green split trail.
-#define	EF_TRACER2			(1 << 16)	// orange split trail + rotate.
-#define	EF_TRACER3			(1 << 17)	// purple trail.
-#define	EF_INVISIBLE		(1 << 18)	// Entity is invisible.
-#define EF_LIGHT_BLUE		(1 << 19)	// A constant blue dynamic light.
-#define EF_LIGHT_RED		(1 << 20)	// A constant red dynamic light.
+	FL_END
+};
+
+enum
+{
+	EF_MUZZLEFLASH	= (1 << 0),
+	EF_BRIGHTLIGHT	= (1 << 1),
+	EF_DIMLIGHT		= (1 << 2),
+	EF_FULLBRIGHT	= (1 << 3),
+
+	EF_MOTION_ROTATE	= (1 << 4),		// Client-side rotation
+	EF_MOTION_FLOAT		= (1 << 5),		// Adds a nice floating motion for the entity
+
+	EF_GLOW_BLUE	= (1 << 6),			// Simple blue dlight glow.
+	EF_GLOW_WHITE	= (1 << 7),
+	EF_GLOW_RED		= (1 << 8),
+
+	EF_PARTICLE_BLOOD	= (1 << 15),	// Blood particle trail.
+	EF_PARTICLE_SMOKE	= (1 << 16),	// Smoke particle trail.
+
+	EF_LIGHT_GREEN	= (1 << 20),		// A constant green dynamic light.
+	EF_LIGHT_BLUE	= (1 << 21),		// A constant blue dynamic light.
+	EF_LIGHT_RED	= (1 << 22),		// A constant red dynamic light.
+
+	EF_END
+};
 
 typedef enum
 {
 	STOC_SPAWNSPRITE
 } STOCMessage_t;
+
+#define	SHARED_FLAGS_VERSION	(FL_END + EF_END + MOVETYPE_END + MSG_END)

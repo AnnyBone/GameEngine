@@ -49,13 +49,13 @@ void Deathmatch_Spawn(ServerEntity_t *ePlayer)
 
 	// Add the default inventory.
 	Item_AddInventory(Item_GetItem(WEAPON_DAIKATANA),ePlayer);
-	Item_AddInventory(Item_GetItem(WEAPON_IONBLASTER),ePlayer);
+	Item_AddInventory(Item_GetItem(WEAPON_IONRIFLE), ePlayer);
 
 	// Add ammo before setting it as active!
 	ePlayer->local.ionblaster_ammo = 45;
 
 	// Set the IonBlaster as our active weapon.
-	Weapon_SetActive(Weapon_GetWeapon(WEAPON_IONBLASTER), ePlayer, true);
+	Weapon_SetActive(Weapon_GetWeapon(WEAPON_IONRIFLE), ePlayer, true);
 
 	ServerMenu_UpdateClient(ePlayer, MENU_STATE_HUD, true);
 }

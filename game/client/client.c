@@ -73,7 +73,7 @@ void Client_ParseTemporaryEntity(void)
 	type = Engine.ReadByte();
 	switch (type)
 	{
-	case CTE_EXPLOSION:
+		case CTE_EXPLOSION:
 		{
 			int				i;
 			MathVector3f_t	position;
@@ -84,18 +84,30 @@ void Client_ParseTemporaryEntity(void)
 			ClientEffect_Explosion(position);
 		}
 		break;
-	case CTE_BLOODSPRAY:
+
+		case CTE_BLOODPUFF:
 		{
-			int				i;
 			MathVector3f_t	position;
 
-			for(i = 0; i < 3; i++)
+			for(int i = 0; i < 3; i++)
 				position[i] = Engine.ReadCoord();
 
-			ClientEffect_BloodSpray(position);
+			ClientEffect_BloodPuff(position);
 		}
 		break;
-	case CTE_PARTICLE_FIELD:
+
+		case CTE_BLOODCLOUD:
+		{
+			MathVector3f_t position;
+
+			for (int i = 0; i < 3; i++)
+				position[i] = g_engine->ReadCoord();
+
+			ClientEffect_BloodCloud(position, g_engine->ReadByte());
+		}
+		break;
+
+		case CTE_PARTICLE_FIELD:
 		{
 			int				i;
 			float			density;
@@ -115,8 +127,9 @@ void Client_ParseTemporaryEntity(void)
 			ClientEffect_ParticleField(position, mins, maxs, density);
 		}
 		break;
-	default:
-		Engine.Con_Warning("Unknown temporary entity type! (%i)\n", type);
+
+		default:
+			Engine.Con_Warning("Unknown temporary entity type! (%i)\n", type);
 	}
 }
 
@@ -127,7 +140,6 @@ void Client_RelinkEntities(ClientEntity_t *entity, int i, double dTime)
 	MathVector3f_t	f,r,u;
 	DynamicLight_t	*light;
 
-	// [6/5/2012] Keep client time updated (temp) ~hogsy
 	// TODO: Move over to somewhere more appropriate please
 	Client.time = dTime;
 
@@ -141,7 +153,7 @@ void Client_RelinkEntities(ClientEntity_t *entity, int i, double dTime)
 		ClientEffect_Smoke(entity->origin);
 
 	if (entity->effects & EF_PARTICLE_BLOOD)
-		ClientEffect_BloodSpray(entity->origin);
+		ClientEffect_BloodPuff(entity->origin);
 
 	if (entity->effects & EF_LIGHT_GREEN)
 	{
