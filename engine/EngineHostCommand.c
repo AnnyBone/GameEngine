@@ -303,7 +303,10 @@ void Host_Maps_f (void)
 	}
 
 	for (level=extralevels, i=0; level; level=level->next, i++)
-		Con_SafePrintf ("   %s\n", level->name);
+	{
+		const char *name = plGetFileName(level->name);
+		Con_SafePrintf ("   %s\n", name);
+	}
 
 	if (i)
 		Con_SafePrintf ("%i map(s)\n", i);

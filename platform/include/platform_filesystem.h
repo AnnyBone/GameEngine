@@ -26,6 +26,7 @@ extern void	plGetWorkingDirectory(char *out);
 
 extern void plStripExtension(char *dest, const char *in);
 extern char *plGetFileExtension(char *dest, const char *in);
+extern const char *plGetFileName(const char *path);
 
 extern void		plScanDirectory(const char *path, const char *extension, void(*Function)(char *filepath));
 extern void		plLowerCasePath(char *out);

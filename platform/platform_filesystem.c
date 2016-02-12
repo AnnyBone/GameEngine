@@ -137,6 +137,18 @@ void plStripExtension(char *dest, const char *in)
 	*dest = 0;
 }
 
+/* Returns a pointer to the last component in the given filename. */
+const char *plGetFileName(const char *path)
+{
+	const char *lslash = strrchr(path, '/');
+	if(lslash != NULL)
+	{
+		path = lslash + 1;
+	}
+	
+	return path;
+}
+
 /*	Returns the name of the systems	current user.
 	TODO:
 		Move this into platform_system
