@@ -87,7 +87,7 @@ pINSTANCE plLoadModule(const char *path)
 		printf("%s", plGetError());
 
 		// Attempt to load under a different directory.
-		sprintf(newpath, PLATFORM_CPU"/%s"pMODULE_EXTENSION, path);
+		sprintf(newpath, PL_CPU_ID"/%s"pMODULE_EXTENSION, path);
 		instance =
 #ifdef _WIN32
 			LoadLibrary(newpath);
@@ -116,7 +116,7 @@ void *plLoadModuleInterface(pINSTANCE instance, const char *path, const char *en
 	char	newpath[PLATFORM_MAX_PATH];
 	void	*(*EntryFunction)(void*);
 
-	sprintf(newpath, "%s."PLATFORM_CPU, path);
+	sprintf(newpath, "%s."PL_CPU_ID, path);
 	instance = plLoadModule(newpath);
 	if(!instance)
 		return NULL;

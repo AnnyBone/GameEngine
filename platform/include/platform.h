@@ -77,11 +77,11 @@
 #	endif
 
 	// Information
-#	define	PLATFORM_NAME	"WINDOWS"	// Platform name.
+#	define	PL_NAME	"WINDOWS"	// Platform name.
 
 	// Limits
 #	define	PLATFORM_MAX_PATH	MAX_PATH-1	// Maximum path length.
-#	define	PLATFORM_MAX_USER	UNLEN
+#	define	PL_MAX_USERNAME		UNLEN
 
 	// Other
 #	ifdef _MSC_VER
@@ -101,10 +101,13 @@
 #		ifndef unlink
 #			define	unlink		_unlink
 #		endif
+#		ifndef strcasecmp
+#			define	strcasecmp	_stricmp
+#		endif
 #	endif
 #elif __APPLE__	// Mac OS X
 	// Information
-#	define	PLATFORM_NAME	"APPLE"
+#	define	PL_NAME	"APPLE"
 
 	// Limits
 #	define	PLATFORM_MAX_PATH	256	// Supposedly "unlimited", but we'll limit this anyway.
@@ -122,11 +125,11 @@
 #	endif
 
 	// Information
-#	define	PLATFORM_NAME	"LINUX"
+#	define	PL_NAME	"LINUX"
 
 	// Limits
 #	define	PLATFORM_MAX_PATH	256	// Maximum path length.
-#	define	PLATFORM_MAX_USER	32
+#	define	PL_MAX_USERNAME		32
 #endif
 
 // Other
@@ -139,14 +142,14 @@
 
 // Set the defaults if nothing's been set for any of these...
 
-#ifndef PLATFORM_NAME
-#	define	PLATFORM_NAME	"Unknown"
+#ifndef PL_NAME
+#	define	PL_NAME	"Unknown"
 #endif
 #ifndef PLATFORM_MAX_PATH
 #	define	PLATFORM_MAX_PATH	256
 #endif
-#ifndef PLATFORM_MAX_USER
-#	define	PLATFORM_MAX_USER	256			// Maximum length allowed for a username.
+#ifndef PL_MAX_USERNAME
+#	define	PL_MAX_USERNAME		256			// Maximum length allowed for a username.
 #endif
 
 #ifdef __cplusplus
@@ -159,9 +162,9 @@
 
 // Helper to allow us to determine the type of CPU; this is used for the module interfaces.
 #if defined(__amd64) || defined(__amd64__)
-#	define PLATFORM_CPU   "x64"
+#	define PL_CPU_ID   "x64"
 #else
-#	define PLATFORM_CPU   "x86"
+#	define PL_CPU_ID   "x86"
 #endif
 
 // These are usually expected to be defined already, but in-case they're not then we define them here.

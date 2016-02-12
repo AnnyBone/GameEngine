@@ -26,13 +26,13 @@
 
 plEXTERN_C_START
 
-	extern void plMessageBox(const char *title, const char *msg, ...);
-	extern void plShowCursor(bool show);
-	extern void plGetCursorPosition(int *x, int *y);
+extern void plMessageBox(const char *title, const char *msg, ...);
+extern void plShowCursor(bool show);
+extern void plGetCursorPosition(int *x, int *y);
 
-	extern int plGetScreenWidth(void);	// Returns width of current screen.
-	extern int plGetScreenHeight(void);	// Returns height of current screen.
-	extern int plGetScreenCount(void);	// Returns number of avaliable screens.
+extern int plGetScreenWidth(void);	// Returns width of current screen.
+extern int plGetScreenHeight(void);	// Returns height of current screen.
+extern int plGetScreenCount(void);	// Returns number of avaliable screens.
 
 plEXTERN_C_END
 

@@ -99,7 +99,6 @@ void COM_Init(void);
 void COM_InitArgv (int argc, char **argv);
 
 char *FileSystem_SkipPath(char *pathname);
-void COM_StripExtension (char *in, char *out);
 void COM_FileBase (const char *in, char *out);
 void COM_DefaultExtension (char *path, char *extension);
 char *COM_FileExtension(char *in);

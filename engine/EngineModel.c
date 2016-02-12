@@ -1260,7 +1260,7 @@ void Model_LoadRelativeMaterial(model_t *model)
 {
 	char out[PLATFORM_MAX_PATH];
 
-	COM_StripExtension(model->name, out);
+	plStripExtension(out, model->name);
 
 	model->mAssignedMaterials = Material_Load(out);
 	if (!model->mAssignedMaterials)

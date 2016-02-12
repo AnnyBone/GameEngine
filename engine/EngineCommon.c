@@ -632,16 +632,9 @@ char *FileSystem_SkipPath(char *pathname)
 	return last;
 }
 
-void COM_StripExtension (char *in, char *out)
-{
-	while (*in && *in != '.')
-		*out++ = *in++;
-	*out = 0;
-}
-
 char *COM_FileExtension(char *in)
 {
-	static char exten[8];
+static char exten[8];
 	int			i;
 
 	while (*in && *in != '.')

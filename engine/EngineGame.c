@@ -531,6 +531,6 @@ void Game_Initialize(void)
 		plUnloadModule(hGameInstance);
 
 		// Let the user know the module failed to load.
-		Sys_Error("Failed to load %s/%s."PLATFORM_CPU""pMODULE_EXTENSION"!\nCheck log for details.\n",com_gamedir,MODULE_GAME);
+		Sys_Error("Failed to load %s/%s."PL_CPU_ID""pMODULE_EXTENSION"!\nCheck log for details.\n", com_gamedir, MODULE_GAME);
 	}
 }

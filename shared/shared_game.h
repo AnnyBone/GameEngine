@@ -264,4 +264,4 @@ typedef struct
 	bool(*Physics_CheckWater)(ServerEntity_t *eEntity);
 } GameExport_t;
 
-#define GAME_VERSION (sizeof(GameExport_t)+sizeof(ModuleImport_t)+sizeof(BaseVariables_t*))	// Version check that's used for Menu and Launcher.
+#define GAME_VERSION (sizeof(GameExport_t)+sizeof(ModuleImport_t)+sizeof(ServerBaseVariables_t*))	// Version check that's used for Menu and Launcher.

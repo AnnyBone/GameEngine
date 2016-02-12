@@ -16,8 +16,7 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef ENGINE_MAIN_H
-#define ENGINE_MAIN_H
+#pragma once
 
 #include "SharedModule.h"
 #include "shared_engine.h"
@@ -25,7 +24,7 @@
 typedef struct
 {
 	// Host Information
-	char	host_username[PLATFORM_MAX_USER];	// Current system username.
+	char	host_username[PL_MAX_USERNAME];	// Current system username.
 
 	char	
 		path_materials[PLATFORM_MAX_PATH],
@@ -49,5 +48,3 @@ extern EngineImport_t	g_launcher;
 double System_DoubleTime(void);
 
 plEXTERN_C_END
-
-#endif

@@ -114,17 +114,27 @@ bool plCreateDirectory(const char *ccPath)
 	pFUNCTION_END
 }
 
-void plGetFileExtension(char *in, char *out)
+/*	Returns the extension for the file.
+*/
+char *plGetFileExtension(char *dest, const char *in)
 {
-	int i;
-	while (*in && *in != '.')
-		in++;
-	if (!*in)
-		strncpy(out, "", sizeof(out));
-	in++;
-	for (i = 0; i < 7 && *in; i++, in++)
-		out[i] = *in;
-	out[i] = 0;
+	dest = strrchr(in, '.') + 1;
+	return dest;
+}
+
+/*	Strips the extension from the filename.
+*/
+void plStripExtension(char *dest, const char *in)
+{
+	if (in[0] == ' ')
+	{
+		*dest = 0;
+		return;
+	}
+
+	char *s = strrchr(in, '.');
+	while (in < s) *dest++ = *in++;
+	*dest = 0;
 }
 
 /*	Returns the name of the systems	current user.
@@ -136,7 +146,7 @@ void plGetUserName(char *out)
 	pFUNCTION_START
 
 #ifdef _WIN32
-	char	userstring[PLATFORM_MAX_USER];
+	char	userstring[PL_MAX_USERNAME];
 	DWORD	name;
 
 	// Set these AFTER we update active function.

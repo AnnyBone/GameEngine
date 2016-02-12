@@ -93,7 +93,7 @@ typedef struct
 	float fScale;
 
 	int	iSkin;
-} ModelVariables_t;
+} ServerModelVariables_t;
 
 typedef enum
 {
@@ -139,7 +139,7 @@ typedef struct
 	ServerSolidType_t	iSolid;		// Sets the collision/solid type for the entity.
 
 	ServerEntity_t	*eIgnore;	// Tells the entity to ignore collisions with this entity.
-} PhysicsVariables_t;
+} ServerPhysicsVariables_t;
 
 // Monster specific variables
 typedef struct
@@ -176,17 +176,17 @@ typedef struct
 typedef struct
 {
 	int		iPassengers,									// Current number of passengers.
-		iMaxPassengers;									// Maximum passengers the vehicle can carry.
+		iMaxPassengers;										// Maximum passengers the vehicle can carry.
 	int		iSlot[4];
 	int		iFuel,											// Current amount of fuel in the vehicle.
-		iMaxFuel;										// Maximum amount of fuel that can be in the vehicle.
+		iMaxFuel;											// Maximum amount of fuel that can be in the vehicle.
 	int		iType;											// Type of vehicle.
 
 	float	fMaxSpeed;										// Maximum velocity that the vehicle can travel.
 
 	bool	bActive;										// Is the vehicle turned on or not?
 
-	void(*Enter)(ServerEntity_t *eVehicle, ServerEntity_t *eOther);	// Function to call when a player enters the vehicle.
+	void(*Enter)(ServerEntity_t *eVehicle, ServerEntity_t *eOther);		// Function to call when a player enters the vehicle.
 	void(*Exit)(ServerEntity_t *eVehicle, ServerEntity_t *eOther);		// Function to call when a player leaves the vehicle.
 	void(*Kill)(ServerEntity_t *eVehicle, ServerEntity_t *eOther);		// Function to call when the vehicle is destroyed.
 } VehicleVariables_t;
@@ -358,7 +358,7 @@ typedef struct
 	void(*KilledFunction)(ServerEntity_t *self, ServerEntity_t *other, ServerDamageType_t type);
 	void(*RespawnFunction)(ServerEntity_t *self);
 	void(*DamagedFunction)(ServerEntity_t *self, ServerEntity_t *other, ServerDamageType_t type);
-} GameVariables_t;
+} ServerGameVariables_t;
 
 //----------------------------
 
@@ -382,8 +382,8 @@ typedef struct
 typedef struct
 {
 	bool	bAllSolid,		// If true, plane is not valid.
-		bStartSolid,	// If true, the initial point was in a solid area.
-		bOpen, bWater;
+			bStartSolid,	// If true, the initial point was in a solid area.
+			bOpen, bWater;
 
 	float	fraction;		// time completed, 1.0 = didn't hit anything
 
@@ -489,7 +489,7 @@ typedef struct GlobalVariables_e
 	void(*use)(ServerEntity_t *seEntity);
 	void(*think)(ServerEntity_t *seEntity);
 	void(*BlockedFunction)(ServerEntity_t *seEntity, ServerEntity_t *seOther);	// Called when an entity is blocked against another.
-} BaseVariables_t;
+} ServerBaseVariables_t;
 
 /*	If this is changed remember
 to recompile the engine too!    */
@@ -508,11 +508,11 @@ typedef struct ServerEntity_s
 
 	float fFreeTime;
 
-	BaseVariables_t	v;
+	ServerBaseVariables_t	v;
 
-	ModelVariables_t	Model;		// Variables that affect the model used for the entity.
-	PhysicsVariables_t	Physics;	// Variables affecting how the entity is physically treated.
-	GameVariables_t		local;		// All variables specific towards the game, that aren't used by the engine.
+	ServerModelVariables_t		Model;		// Variables that affect the model used for the entity.
+	ServerPhysicsVariables_t	Physics;	// Variables affecting how the entity is physically treated.
+	ServerGameVariables_t		local;		// All variables specific towards the game, that aren't used by the engine.
 	MonsterVariables_t	Monster;	// Specific towards AI/monsters.
 	VehicleVariables_t	Vehicle;	// Vehicle variables.
 } ServerEntity_t;

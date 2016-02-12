@@ -184,7 +184,7 @@ void Host_Game_f (void)
 		if(!bIsDedicated)
 		{
 			// Delete all textures where TEXPREF_PERSIST is unset
-			TextureManager_FreeTextures(0,TEXPREF_PERSIST);
+			TextureManager_FreeTextures(0, TEXPREF_PERSIST);
 
 			Draw_NewGame();
 
@@ -216,20 +216,20 @@ extralevel_t	*extralevels;
 void ExtraMaps_Add (char *name)
 {
 	extralevel_t	*level,*cursor,*prev;
-	char			stripped[128];
+	char			stripped[128] = { 0 };
 
-	COM_StripExtension(name + 5, stripped);
+	plStripExtension(stripped, name + strlen(host_parms.basepath));
 
 	// Ignore duplicates
 	for(level = extralevels; level; level = level->next)
 		if (!strcmp(stripped, level->name))
 			return;
-
+	
 	level = (extralevel_t*)malloc_or_die(sizeof(extralevel_t));
 	strcpy(level->name, stripped);
-
+	
 	// Insert each entry in alphabetical order
-	if (extralevels == NULL || Q_strcasecmp(level->name,extralevels->name) < 0) //insert at front
+	if (extralevels == NULL || strcasecmp(level->name,extralevels->name) < 0) //insert at front
 	{
 		level->next = extralevels;
 		extralevels = level;
@@ -238,7 +238,7 @@ void ExtraMaps_Add (char *name)
 	{
 		prev = extralevels;
 		cursor = extralevels->next;
-		while(cursor && (Q_strcasecmp(level->name,cursor->name) > 0))
+		while (cursor && (strcasecmp(level->name, cursor->name) > 0))
 		{
 			prev = cursor;
 			cursor = cursor->next;
@@ -250,8 +250,7 @@ void ExtraMaps_Add (char *name)
 
 void ExtraMaps_Init(void)
 {
-	char            cMapName[128],
-					filestring[PLATFORM_MAX_PATH];
+	char            filestring[PLATFORM_MAX_PATH];
 	searchpath_t    *search;
 	pack_t          *pak;
 	int             i;
@@ -267,11 +266,7 @@ void ExtraMaps_Init(void)
 		{
 			for(i = 0,pak = search->pack; i < pak->numfiles; i++)
 				if(strstr(pak->files[i].name,BSP_EXTENSION))
-					if(pak->files[i].filelen > 32*1024) // Don't list files under 32k (ammo boxes etc)
-					{
-						COM_StripExtension(pak->files[i].name+5,cMapName);
-						ExtraMaps_Add(cMapName);
-					}
+					ExtraMaps_Add(pak->files[i].name);
 		}
 	}
 }
@@ -419,14 +414,14 @@ void Host_Mapname_f (void)
 
 	if (sv.active)
 	{
-		COM_StripExtension (sv.worldmodel->name + 5, name);
+		plStripExtension(name, sv.worldmodel->name);
 		Con_Printf ("\"mapname\" is \"%s\"\n", name);
 		return;
 	}
 
 	if (cls.state == ca_connected)
 	{
-		COM_StripExtension (cl.worldmodel->name + 5, name);
+		plStripExtension(name, cl.worldmodel->name);
 		Con_Printf ("\"mapname\" is \"%s\"\n", name);
 		return;
 	}
@@ -1132,7 +1127,7 @@ void Host_Name_f (void)
 
 void Host_Version(void)
 {
-	Con_Printf("Katana (%i) ("PLATFORM_NAME""PLATFORM_CPU")\n", ENGINE_VERSION_BUILD);
+	Con_Printf("Katana (%i) ("PL_NAME""PL_CPU_ID")\n", ENGINE_VERSION_BUILD);
 	Con_Printf("Compiled: "__TIME__" "__DATE__"\n");
 }
 
