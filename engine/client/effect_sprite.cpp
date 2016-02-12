@@ -67,7 +67,9 @@ void SpriteManager::Remove(Sprite *sprite)
 */
 void SpriteManager::Clear()
 {
-	//sprites.clear();
+	sprites.clear();						// Clear the vector.
+	sprites.shrink_to_fit();				// Clear out mem.
+	sprites.reserve(SPRITE_DEFAULT_MAX);	// Reserve default amount, again.
 }
 
 /*	Run through and simulate each sprite individually.
@@ -95,9 +97,6 @@ void SpriteManager::Shutdown()
 	Con_Printf("Shutting down Sprite Manager...\n");
 
 	Clear();
-
-	// Clear out mem.
-	sprites.shrink_to_fit();
 }
 
 /*
