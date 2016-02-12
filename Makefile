@@ -71,7 +71,6 @@ ENGINE_OBJS := engine/audio.o \
 	engine/EngineVideoScreen.o \
 	engine/EngineVideoShadow.o \
 	engine/EngineVideoSky.o \
-	engine/EngineVideoSprite.o \
 	engine/EngineVideoTextureManager.o \
 	engine/EngineVideoWarp.o \
 	engine/EngineVideoWorld.o \
