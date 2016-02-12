@@ -342,7 +342,7 @@ void Entity_ClearFlags(ServerEntity_t *eEntity, int iFlags)
 
 /*	Simple function for checking if an entity can be damaged or not.
 */
-bool Entity_CanDamage(ServerEntity_t *eEntity, ServerEntity_t *eTarget, int iDamageType)
+bool Entity_CanDamage(ServerEntity_t *eEntity, ServerEntity_t *eTarget, ServerDamageType_t iDamageType)
 {
 	// Can't damage people on the same team.
 	if(eEntity->local.pTeam && (eEntity->local.pTeam == eTarget->local.pTeam))
@@ -387,7 +387,7 @@ void Entity_Damage(ServerEntity_t *seEntity, ServerEntity_t *seInflictor, int iD
 
 /*	Damage entities within a specific radius.
 */
-void Entity_RadiusDamage(ServerEntity_t *eInflictor, float fRadius, int iDamage, int iDamageType)
+void Entity_RadiusDamage(ServerEntity_t *eInflictor, float fRadius, int iDamage, ServerDamageType_t iDamageType)
 {
 	int		i;
 	float	fDistance;
