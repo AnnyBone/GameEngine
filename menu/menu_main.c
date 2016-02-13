@@ -381,26 +381,7 @@ void Input_Key(int iKey)
 
 pMODULE_EXPORT MenuExport_t *Menu_Main(ModuleImport_t *Import)
 {
-	Engine.Con_DPrintf = Import->Con_DPrintf;
-	Engine.Con_Printf = Import->Con_Printf;
-	Engine.Con_Warning = Import->Con_Warning;
-	Engine.LoadMaterial = Import->LoadMaterial;
-	Engine.Sys_Error = Import->Sys_Error;
-	Engine.Cvar_RegisterVariable = Import->Cvar_RegisterVariable;
-
-	Engine.DrawString			= Import->DrawString;
-	Engine.DrawRectangle		= Import->DrawRectangle;
-	Engine.DrawMaterialSurface	= Import->DrawMaterialSurface;
-
-	Engine.Cvar_SetValue = Import->Cvar_SetValue;
-	Engine.GetScreenHeight = Import->GetScreenHeight;
-	Engine.GetScreenWidth = Import->GetScreenWidth;
-	Engine.GetCursorPosition = Import->GetCursorPosition;
-	Engine.ShowCursor = Import->ShowCursor;
-	Engine.Client_PrecacheResource = Import->Client_PrecacheResource;
-	Engine.Cmd_AddCommand = Import->Cmd_AddCommand;
-	Engine.Client_GetStat = Import->Client_GetStat;
-	Engine.Client_SetMenuCanvas = Import->Client_SetMenuCanvas;
+	Engine = *Import;
 
 	Export.iVersion = MENU_VERSION;
 	Export.Initialize = Menu_Initialize;
