@@ -30,9 +30,6 @@ using namespace std;
 */
 bool ModelU3D_Load(model_t *model, void *buf)
 {
-	// We don't need your kind here!
-	free(buf);
-
 	FILE *dataf;
 	COM_FOpenFile(model->name, &dataf);
 	if (!dataf)
@@ -69,7 +66,7 @@ bool ModelU3D_Load(model_t *model, void *buf)
 	if (!animf)
 	{
 		// Some legacy models use _Anim...
-		newpath.erase(newpath.length() - 2);
+		newpath.erase(newpath.length() - 5);
 		newpath.append("_Anim.3d");
 
 		COM_FOpenFile(newpath.c_str(), &animf);
