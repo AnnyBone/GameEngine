@@ -297,12 +297,6 @@ int Q_strncasecmp (char *s1, char *s2, int n)
 	}
 }
 
-int Q_strcasecmp (char *s1, char *s2)
-{
-  return Q_strncasecmp (s1, s2, 99999);
-}
-
-
 char *Q_strupr (char *start)
 {
   char	*in;
@@ -348,15 +342,15 @@ Returns the argument number (1 to argc-1) or 0 if not present
 */
 int CheckParm (char *check)
 {
-  int             i;
+	int             i;
 
-  for (i = 1;i<myargc;i++)
+	for (i = 1; i<myargc; i++)
 	{
-	  if ( !Q_strcasecmp(check, myargv[i]) )
-	return i;
+		if (!strcasecmp(check, myargv[i]))
+			return i;
 	}
 
-  return 0;
+	return 0;
 }
 
 int Q_filelength (FILE *f)

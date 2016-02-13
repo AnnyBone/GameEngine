@@ -16,9 +16,9 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef VIDEO_FRAMEBUFFER_H
-#define	VIDEO_FRAMEBUFFER_H
 #pragma once
+
+#include "video_shader.h"
 
 class VideoRenderBuffer
 {
@@ -97,6 +97,4 @@ private:
 
 	VideoShaderProgram *program;
 };
-
-#endif // !VIDEO_FRAMEBUFFER_H
 

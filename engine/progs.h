@@ -54,8 +54,8 @@ void ED_WriteGlobals (FILE *f);
 void ED_ParseGlobals (char *data);
 void ED_LoadFromFile (char *data);
 
-ServerEntity_t *EDICT_NUM(int n);
-int NUM_FOR_EDICT(ServerEntity_t *e);
+ServerEntity_t *EDICT_NUM(unsigned int n);
+unsigned int NUM_FOR_EDICT(ServerEntity_t *e);
 
 //============================================================================
 

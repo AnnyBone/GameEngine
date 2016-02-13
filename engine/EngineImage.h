@@ -18,6 +18,10 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#pragma once
+
+plEXTERN_C_START
+
 void Image_InitializePNG();
 void Image_Shutdown();
 
@@ -26,3 +30,5 @@ uint8_t *Image_LoadTGA (FILE *f, unsigned int *width, unsigned int *height);
 uint8_t *Image_LoadImage (char *name, unsigned int *width, unsigned int *height);
 
 bool Image_WriteTGA(char *name, uint8_t *data,int width,int height,int bpp,bool upsidedown);
+
+plEXTERN_C_END

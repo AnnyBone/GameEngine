@@ -18,31 +18,4 @@
 
 #include "../engine_base.h"
 
-class CParticle
-{
-public:
-	void Draw();
-protected:
-private:
-	MathVector3f_t Position;
 
-	float Scale;
-};
-
-void CParticle::Draw()
-{
-}
-
-class CParticleManager
-{
-public:
-	CParticleManager(const char *ScriptPath);
-protected:
-private:
-};
-
-CParticleManager::CParticleManager(const char *ScriptPath)
-{
-	if (!ScriptPath)
-		throw EngineException("Invalid particle script path!\n");
-}

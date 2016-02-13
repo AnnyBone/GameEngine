@@ -210,6 +210,8 @@ plEXTERN_C_END
 // Legacy
 #include "EngineVideoAlias.h"
 
+plEXTERN_C_START
+
 /*
 	Sky
 */
@@ -249,3 +251,5 @@ void DrawGLPoly(glpoly_t *p);
 */
 
 void Surface_DrawWater(glpoly_t *p, Material_t *mCurrent);
+
+plEXTERN_C_END

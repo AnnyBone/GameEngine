@@ -462,7 +462,8 @@ void Model_LoadBSPTextureInfo(BSPLump_t *blLump)
 {
 	BSPTextureInfo_t	*in;
 	mtexinfo_t			*out;
-	int 				i, j, count, miptex;
+	int 				i, j, count;
+	unsigned int		miptex;
 	float				len1, len2;
 	int					missing = 0; //johnfitz
 
@@ -757,9 +758,10 @@ void Mod_SetParent (mnode_t *node, mnode_t *parent)
 
 void Model_LoadBSPNodes(BSPLump_t *blLump)
 {
-	int			i, j, count, p;
-	BSPNode_t	*in;
-	mnode_t 	*out;
+	int				j;
+	unsigned int	i, p, count;
+	BSPNode_t		*in;
+	mnode_t 		*out;
 
 	in = (BSPNode_t *)(mod_base + blLump->iFileOffset);
 	if (blLump->iFileLength % sizeof(*in))
@@ -771,7 +773,7 @@ void Model_LoadBSPNodes(BSPLump_t *blLump)
 	loadmodel->nodes = out;
 	loadmodel->numnodes = count;
 
-	for ( i=0 ; i<count ; i++, in++, out++)
+	for (i = 0; i<count; i++, in++, out++)
 	{
 		for (j=0 ; j<3 ; j++)
 		{
@@ -1111,10 +1113,11 @@ void Mod_BoundsFromClipNode (model_t *mod, int hull, int nodenum)
 
 void Model_LoadBSP(model_t *mod,void *buffer)
 {
-	int			version,i,j;
-	BSPHeader_t	*bhHeader;
-	BSPModel_t 	*bm;
-	float		radius; //johnfitz
+	int				version;
+	unsigned int	i, j;
+	BSPHeader_t		*bhHeader;
+	BSPModel_t 		*bm;
+	float			radius; //johnfitz
 
 	bhHeader = (BSPHeader_t*)buffer;
 

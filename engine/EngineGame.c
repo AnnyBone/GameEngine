@@ -68,9 +68,9 @@ char *Server_GetLevelName(void)
 
 ServerEntity_t *Server_FindRadius(MathVector3f_t origin, float radius)
 {
-	int		i,j;
-	ServerEntity_t *eEntity, *eChain;
-	MathVector3f_t	eorg;
+	unsigned int		i,j;
+	ServerEntity_t		*eEntity, *eChain;
+	MathVector3f_t		eorg;
 
 	eChain = sv.edicts;
 
@@ -341,7 +341,7 @@ void Particle(MathVector3f_t org, MathVector3f_t dir,float scale,char *texture,i
 void LightStyle(int style,char *val)
 {
 	ServerClient_t	*client;
-	int				j;
+	unsigned int	j;
 	
 	sv.lightstyles[style] = val;
 
@@ -361,9 +361,7 @@ ServerEntity_t	*eMessageEntity;
 
 sizebuf_t *Game_MessageOne(ServerEntity_t *seMessage)
 {
-	int iEntity;
-
-	iEntity = NUM_FOR_EDICT(seMessage);
+	unsigned int iEntity = NUM_FOR_EDICT(seMessage);
 	if (iEntity < 1 || iEntity > svs.maxclients)
 		Con_Error("Attempted to send message to a non-client! (%i) (%s)", iEntity, seMessage->v.cClassname);
 

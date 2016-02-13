@@ -53,7 +53,7 @@ PollProcedure	slistPollProcedure = {NULL, 0.0, Slist_Poll};
 
 
 sizebuf_t		net_message;
-int				iActiveNetConnections = 0;
+unsigned int	net_active_connections = 0;
 
 int messagesSent = 0;
 int messagesReceived = 0;
@@ -99,7 +99,7 @@ qsocket_t *NET_NewQSocket (void)
 	if (net_freeSockets == NULL)
 		return NULL;
 
-	if(iActiveNetConnections >= svs.maxclients)
+	if (net_active_connections >= svs.maxclients)
 		return NULL;
 
 	// get one from free list
@@ -356,7 +356,7 @@ qsocket_t *NET_Connect (char *host)
 
 	if (host)
 	{
-		if (Q_strcasecmp (host, "local") == 0)
+		if (strcasecmp(host, "local") == 0)
 		{
 			numdrivers = 1;
 			goto JustDoIt;
@@ -365,7 +365,7 @@ qsocket_t *NET_Connect (char *host)
 		if (hostCacheCount)
 		{
 			for (n = 0; n < hostCacheCount; n++)
-				if (Q_strcasecmp (host, hostcache[n].name) == 0)
+				if (strcasecmp(host, hostcache[n].name) == 0)
 				{
 					host = hostcache[n].cname;
 					break;
@@ -391,7 +391,7 @@ qsocket_t *NET_Connect (char *host)
 
 	if (hostCacheCount)
 		for (n = 0; n < hostCacheCount; n++)
-			if (Q_strcasecmp (host, hostcache[n].name) == 0)
+			if (strcasecmp(host, hostcache[n].name) == 0)
 			{
 				host = hostcache[n].cname;
 				break;
@@ -598,11 +598,11 @@ bool NET_CanSendMessage (qsocket_t *sock)
 
 int NET_SendToAll(sizebuf_t *data, int blocktime)
 {
-	double	start;
-	int		i;
-	int		count = 0;
-	bool	state1 [MAX_SCOREBOARD],
-			state2 [MAX_SCOREBOARD];
+	double			start;
+	unsigned int	i;
+	int				count = 0;
+	bool			state1 [MAX_SCOREBOARD],
+					state2 [MAX_SCOREBOARD];
 
 	for (i=0, host_client = svs.clients ; i<svs.maxclients ; i++, host_client++)
 	{

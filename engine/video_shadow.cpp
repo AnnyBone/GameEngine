@@ -19,18 +19,25 @@
 #include "engine_base.h"
 
 #include "video.h"
-#include "EngineVideoShadow.h"
-
-/*
-	Contains all basic drawing routines.
-*/
+#include "video_shadow.h"
+#include "video_framebuffer.h"
 
 #define	SHADOW_MAP_RESOLUTION	512	// TODO: Make this a console variable?
 
 #define	SHADOW_BLOB_SCALE	20.0f	// Default blob scale.
 
+plEXTERN_C_START
 extern MathVector3f_t lightspot;
 extern mplane_t	*lightplane;		// Plane underneath the entity.
+plEXTERN_C_END
+
+VideoFrameBuffer *shadow_fbo;
+
+void Shadow_Initialize()
+{
+	shadow_fbo = new VideoFrameBuffer(SHADOW_MAP_RESOLUTION, SHADOW_MAP_RESOLUTION);
+	shadow_fbo->GenerateBuffers();
+}
 
 /*	Draws a simple rectangular blob under an entity.
 	TODO:

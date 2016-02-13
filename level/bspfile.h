@@ -72,7 +72,7 @@ extern	unsigned int		numtexinfo;
 extern	BSPTextureInfo_t	texinfo[BSP_MAX_TEXINFO];
 extern	unsigned int		numfaces;
 extern	BSPFace_t			dfaces[BSP_MAX_FACES];
-extern	int					numclipnodes;
+extern	unsigned int		numclipnodes;
 extern	BSPClipNode_t		dclipnodes[BSP_MAX_CLIPNODES];
 extern	unsigned int		numedges;
 extern	BSPEdge_t			dedges[BSP_MAX_EDGES];

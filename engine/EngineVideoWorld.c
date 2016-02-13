@@ -47,8 +47,7 @@ void R_MarkSurfaces (void)
 	mleaf_t			*leaf;
 	mnode_t			*node;
 	msurface_t		*surf, **mark;
-	int				i;
-	unsigned int	j;
+	unsigned int	j, i;
 	bool			nearwaterportal;
 
 	// clear lightmap chains
@@ -286,9 +285,9 @@ void Surface_DrawMirror(msurface_t *surface)
 
 void World_DrawWater(void)
 {
-	int			i;
-	msurface_t	*s;
-	texture_t	*t;
+	unsigned int	i;
+	msurface_t		*s;
+	texture_t		*t;
 
 	if (!r_drawworld_cheatsafe)
 		return;
@@ -337,9 +336,9 @@ void World_DrawWater(void)
 
 void World_Draw(void)
 {
-	int			i;
-	msurface_t	*s;
-	texture_t	*t;
+	unsigned int	i;
+	msurface_t		*s;
+	texture_t		*t;
 
 	if(!r_drawworld_cheatsafe)
 		return;

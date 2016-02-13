@@ -386,7 +386,7 @@ bool Script_Load(const char *ccPath)
 			{
 				for(sKey = skScriptKeys; sKey->cKey; sKey++)
 					// Remain case sensitive.
-					if(!Q_strcasecmp(sKey->cKey,cToken+1))
+					if (!strcasecmp(sKey->cKey, cToken + 1))
 					{
 						Script_GetToken(false);
 

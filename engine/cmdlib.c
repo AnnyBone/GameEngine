@@ -159,7 +159,7 @@ skipwhite:
 	if (c == '\"')
 	{
 		data++;
-		do
+		for (;;)
 		{
 			c = *data++;
 			if (c=='\"')
@@ -169,7 +169,7 @@ skipwhite:
 			}
 			com_token[len] = (char)c;
 			len++;
-		} while (1);
+		}
 	}
 
 	// parse single characters
@@ -225,11 +225,6 @@ int Q_strncasecmp (const char *s1, const char *s2, int n)
 	return -1;
 }
 
-int Q_strcasecmp (const char *s1, const char *s2)
-{
-	return Q_strncasecmp (s1, s2, 99999);
-}
-
 char *strlower (char *start)
 {
 	char	*in;
@@ -248,7 +243,7 @@ int CheckParm (char *check)
 
 	for (i = 1;i<myargc;i++)
 	{
-		if ( !Q_strcasecmp(check, myargv[i]) )
+		if (!strcasecmp(check, myargv[i]))
 			return i;
 	}
 

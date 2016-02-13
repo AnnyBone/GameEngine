@@ -60,7 +60,7 @@ BSPTextureInfo_t	texinfo[BSP_MAX_TEXINFO];
 unsigned int	numfaces;
 BSPFace_t		dfaces[BSP_MAX_FACES];
 
-int				numclipnodes;
+unsigned int	numclipnodes;
 BSPClipNode_t	dclipnodes[BSP_MAX_CLIPNODES];
 
 unsigned int	numedges;
@@ -221,8 +221,8 @@ int SB_Tell (swappedbuffer_t *sbuf)
 
 void LoadBSPFile(char *filename)
 {
-	int				j, headerend;
-	unsigned int	i;
+	int				j;
+	unsigned int	i, headerend;
 	swappedbuffer_t	sb;
 	BSPLump_t		lumps[HEADER_LUMPS], *lump;
 
@@ -439,9 +439,8 @@ void LoadBSPFile(char *filename)
 	Ripped from RMQ.
 */
 void BSP_RemoveSkipSurfaces(void)
-{
-	int					i, skipcount;
-	unsigned int		*leafmarks,j,k;
+{				
+	unsigned int		*leafmarks, j, k, i, skipcount;
 	BSPLeaf_t			*leaf;
 	BSPFace_t			*face;
 	BSPTextureInfo_t	*ti;
@@ -466,7 +465,7 @@ void BSP_RemoveSkipSurfaces(void)
 			texture = (miptex_t *)((uint8_t *)textures + miptexlump->dataofs[ti->iMipTex]);
 			name = texture->name;
 
-			if (!Q_strcasecmp(name, "skip") || !Q_strcasecmp(name, "nodraw"))
+			if (!strcasecmp(name, "skip") || !strcasecmp(name, "nodraw"))
 			{
 				// copy each remaining marksurface to previous slot
 				for (k = j; k < leaf->uiNumMarkSurfaces-1; k++)
@@ -496,7 +495,7 @@ void BSP_RemoveSkipSurfaces(void)
 			texture = (miptex_t *) ((uint8_t *) textures + miptexlump->dataofs[ti->iMipTex]);
 			name = texture->name;
 
-			if (!Q_strcasecmp(name, "skip") || !Q_strcasecmp(name, "nodraw"))
+			if (!strcasecmp(name, "skip") || !strcasecmp(name, "nodraw"))
 			{
 				// copy each remaining face to previous slot
 				for (k = j; k < model->iNumFaces-1; k++)

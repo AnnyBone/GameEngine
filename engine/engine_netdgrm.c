@@ -139,7 +139,7 @@ void NET_Ban_f (void)
 			break;
 
 		case 2:
-			if (Q_strcasecmp(Cmd_Argv(1), "off") == 0)
+			if (strcasecmp(Cmd_Argv(1), "off") == 0)
 				banAddr = 0x00000000;
 			else
 				banAddr = inet_addr(Cmd_Argv(1));
@@ -502,11 +502,11 @@ void NET_Stats_f (void)
 	else
 	{
 		for (s = net_activeSockets; s; s = s->next)
-			if (Q_strcasecmp(Cmd_Argv(1), s->address) == 0)
+			if (strcasecmp(Cmd_Argv(1), s->address) == 0)
 				break;
 		if (s == NULL)
 			for (s = net_freeSockets; s; s = s->next)
-				if (Q_strcasecmp(Cmd_Argv(1), s->address) == 0)
+				if (strcasecmp(Cmd_Argv(1), s->address) == 0)
 					break;
 		if (s == NULL)
 			return;
@@ -747,7 +747,7 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 		MSG_WriteString(&net_message, dfunc.AddrToString(&newaddr));
 		MSG_WriteString(&net_message, hostname.string);
 		MSG_WriteString(&net_message, sv.name);
-		MSG_WriteByte(&net_message, iActiveNetConnections);
+		MSG_WriteByte(&net_message, net_active_connections);
 		MSG_WriteByte(&net_message, svs.maxclients);
 		MSG_WriteByte(&net_message, NET_PROTOCOL_VERSION);
 		*((int *)net_message.data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
@@ -760,7 +760,7 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 	{
 		int				playerNumber;
 		int				activeNumber;
-		int				clientNumber;
+		unsigned int	clientNumber;
 		ServerClient_t	*client;
 
 		playerNumber = MSG_ReadByte();
@@ -1077,7 +1077,7 @@ static void _Datagram_SearchForHosts(bool xmit)
 		{
 			if (i == n)
 				continue;
-			if (Q_strcasecmp (hostcache[n].name, hostcache[i].name) == 0)
+			if (strcasecmp(hostcache[n].name, hostcache[i].name) == 0)
 			{
 				i = strlen(hostcache[n].name);
 				if (i < 15 && hostcache[n].name[i-1] > '8')

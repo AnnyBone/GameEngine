@@ -47,7 +47,7 @@ int MipTexUsed(char *texname)
 {
 	int i;
 	for (i = 0;i < nummiptex;i++)
-		if (!Q_strcasecmp(miptex[i], texname))
+		if (!strcasecmp(miptex[i], texname))
 			return true;
 	return false;
 }
@@ -60,7 +60,7 @@ miptexfile_t *FindMipTexFile(char *texname)
 	while (*texname)
 	{
 		for(i = 0; i < nummiptexfiles; i++)
-			if(!Q_strcasecmp(miptexfile[i].name,texname))
+			if (!strcasecmp(miptexfile[i].name, texname))
 				return miptexfile+i;
 
 		if(strchr(texname,'/'))

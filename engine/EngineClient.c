@@ -58,9 +58,9 @@ lightstyle_t	cl_lightstyle[MAX_LIGHTSTYLES];
 DynamicLight_t	*cl_dlights;
 
 ClientEntity_t	*cl_entities; //johnfitz -- was a static array, now on hunk
-int				cl_max_edicts; //johnfitz -- only changes when new map loads
+unsigned int	cl_max_edicts; //johnfitz -- only changes when new map loads
 
-int				cl_numvisedicts;
+unsigned int	cl_numvisedicts;
 ClientEntity_t	*cl_visedicts[MAX_VISEDICTS];
 
 extern ConsoleVariable_t r_lerpmodels, r_lerpmove; //johnfitz
@@ -232,8 +232,8 @@ void CL_NextDemo (void)
 
 void CL_PrintEntities_f (void)
 {
-	entity_t	*ent;
-	int			i;
+	ClientEntity_t	*ent;
+	unsigned int	i;
 
 	for(i = 0,ent = cl_entities; i < cl.num_entities; i++,ent++)
 	{
@@ -370,10 +370,10 @@ float CL_LerpPoint(void)
 
 void CL_RelinkEntities (void)
 {
-	entity_t	*ent;
-	int			i, j;
-	float		frac, f, d;
-	vec3_t		delta;
+	entity_t		*ent;
+	unsigned int	i, j;
+	float			frac, f, d;
+	vec3_t			delta;
 
 	if(cl.bIsPaused)
 		return;

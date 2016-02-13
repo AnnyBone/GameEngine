@@ -553,7 +553,7 @@ brush_t *LoadBrush (entity_t *eCurrent, mbrush_t *mb, int brushnum, int hullnum)
 		name = miptex[texinfo[f->texinfo].iMipTex];
 		if (hullnum == 0)
 			// textures which don't show up in the drawing hull
-			if (!Q_strcasecmp(name, "clip"))
+			if (!strcasecmp(name, "clip"))
 				return NULL;
 	}
 

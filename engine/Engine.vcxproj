@@ -651,7 +651,7 @@
     <ClCompile Include="EngineInput.c" />
     <ClCompile Include="EngineVideoLights.c" />
     <ClCompile Include="EngineMain.c" />
-    <ClCompile Include="material.c">
+    <ClCompile Include="material.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="EngineMenu.c" />
@@ -677,7 +677,7 @@
     <ClCompile Include="EngineHost.c" />
     <ClCompile Include="EngineHostCommand.c" />
     <ClCompile Include="EngineImage.c" />
-    <ClCompile Include="EngineVideoShadow.c" />
+    <ClCompile Include="video_shadow.cpp" />
     <ClCompile Include="keys.c" />
     <ClCompile Include="menu.c" />
     <ClCompile Include="engine_netdgrm.c" />
@@ -757,7 +757,7 @@
     <ClInclude Include="EngineVideoTextureManager.h" />
     <ClInclude Include="EngineImage.h" />
     <ClInclude Include="EngineVideoAlias.h" />
-    <ClInclude Include="EngineVideoShadow.h" />
+    <ClInclude Include="video_shadow.h" />
     <ClInclude Include="keys.h" />
     <ClInclude Include="menu.h" />
     <ClInclude Include="EngineNetwork.h" />

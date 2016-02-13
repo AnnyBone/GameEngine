@@ -24,8 +24,8 @@ typedef struct
 	char			*sound_precache[MAX_SOUNDS];	// NULL terminated
 	char			*sprite_precache[SERVER_MAX_TEXTURES];
 	char			*lightstyles[MAX_LIGHTSTYLES];
-	int				num_edicts;
-	int				max_edicts;
+	unsigned int	num_edicts;
+	unsigned int	max_edicts;
 	ServerEntity_t	*edicts;		// can NOT be array indexed, because
 									// ServerEntity_t is variable sized, but can
 									// be used to reference the world ent

@@ -459,9 +459,8 @@ nextmsg:
 
 void SV_RunClients (void)
 {
-	int	i;
-
-	for (i=0, host_client = svs.clients ; i<svs.maxclients ; i++, host_client++)
+	unsigned int i;
+	for (i = 0, host_client = svs.clients; i<svs.maxclients; i++, host_client++)
 	{
 		if (!host_client->active)
 			continue;

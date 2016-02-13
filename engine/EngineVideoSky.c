@@ -447,9 +447,9 @@ void Sky_ProcessPoly (glpoly_t	*p)
 
 void Sky_ProcessTextureChains(void)
 {
-	int			i;
-	msurface_t	*s;
-	texture_t	*tTexture;
+	unsigned int	i;
+	msurface_t		*s;
+	texture_t		*tTexture;
 
 	if(!r_drawworld_cheatsafe)
 		return;
@@ -468,7 +468,7 @@ void Sky_ProcessTextureChains(void)
 
 void Sky_ProcessEntities(void)
 {
-	int				i,k,mark;
+	int				k,mark;
 	unsigned int	j;
 	float			dot;
 	bool			bRotated;
@@ -480,7 +480,7 @@ void Sky_ProcessEntities(void)
 	if (!r_drawentities.value)
 		return;
 
-	for (i=0 ; i<cl_numvisedicts ; i++)
+	for (unsigned int i=0 ; i<cl_numvisedicts ; i++)
 	{
 		e = cl_visedicts[i];
 

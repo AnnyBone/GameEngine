@@ -134,7 +134,7 @@ void TexMgr_TextureMode_f (void)
 		if (arg[0] == 'G' || arg[0] == 'g')
 		{
 			for (i=0; i<NUM_GLMODES; i++)
-				if(!Q_strcasecmp(modes[i].name,arg))
+				if (!strcasecmp(modes[i].name, arg))
 				{
 					gl_texturemode = i;
 					goto stuff;

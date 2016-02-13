@@ -256,9 +256,9 @@ extern unsigned short ntohs (unsigned short netshort);
 //
 //============================================================================
 
-extern	double		net_time;
-extern	sizebuf_t	net_message;
-extern	int			iActiveNetConnections;
+extern	double			net_time;
+extern	sizebuf_t		net_message;
+extern	unsigned int	net_active_connections;
 
 void		Network_Initialize(void);
 void		NET_Shutdown (void);

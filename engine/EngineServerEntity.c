@@ -51,8 +51,8 @@ void Edict_Clear(ServerEntity_t *eEntity, bool bFreeEntity)
 */
 ServerEntity_t *ED_Alloc (void)
 {
-	int i;
-	ServerEntity_t *e;
+	unsigned int	i;
+	ServerEntity_t	*e;
 
 	for ( i=svs.maxclients+1 ; i<sv.num_edicts ; i++)
 	{
@@ -250,35 +250,31 @@ void ED_PrintNum (int ent)
 */
 void ED_PrintEdicts (void)
 {
-	int		i;
-
 	Con_Printf ("%i entities\n", sv.num_edicts);
-	for (i=0 ; i<sv.num_edicts ; i++)
+	for (unsigned int i=0 ; i<sv.num_edicts ; i++)
 		ED_PrintNum (i);
 }
 
-/*	For debugging, prints a single edicy
+/*	For debugging, prints a single edict.
 */
 void ED_PrintEdict_f (void)
 {
-	int		i;
-
-	i = Q_atoi (Cmd_Argv(1));
+	unsigned int i = Q_atoi (Cmd_Argv(1));
 	if (i >= sv.num_edicts)
 	{
 		Con_Printf("Bad edict number\n");
 		return;
 	}
-	ED_PrintNum (i);
+	ED_PrintNum(i);
 }
 
 /*	For debugging
 */
 void ED_Count (void)
 {
-	int		i;
+	unsigned int 	i;
 	ServerEntity_t	*ent;
-	int		active,models,solid,step;
+	int				active,models,solid,step;
 
 	active = models = solid = step = 0;
 	for(i = 0; i < sv.num_edicts; i++)
@@ -497,7 +493,7 @@ void PR_Init (void)
 	Cmd_AddCommand("edictcount",ED_Count);
 }
 
-ServerEntity_t *EDICT_NUM(int n)
+ServerEntity_t *EDICT_NUM(unsigned int n)
 {
 	if (n < 0 || n >= sv.max_edicts)
 		Sys_Error ("EDICT_NUM: bad number %i", n);
@@ -505,11 +501,9 @@ ServerEntity_t *EDICT_NUM(int n)
 	return (ServerEntity_t*)((uint8_t*)sv.edicts + sizeof(ServerEntity_t)*(n));
 }
 
-int NUM_FOR_EDICT(ServerEntity_t *e)
+unsigned int NUM_FOR_EDICT(ServerEntity_t *e)
 {
-	int		b;
-
-	b = ((uint8_t*)e - (uint8_t*)sv.edicts) / sizeof(ServerEntity_t);
+	unsigned int b = ((uint8_t*)e - (uint8_t*)sv.edicts) / sizeof(ServerEntity_t);
 	if(b < 0 || b >= sv.num_edicts)
 		Sys_Error ("NUM_FOR_EDICT: bad pointer");
 

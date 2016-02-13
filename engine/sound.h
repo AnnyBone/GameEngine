@@ -63,14 +63,14 @@ typedef struct
 
 typedef struct
 {
-	sfx_t	*sfx;			// sfx number
-	int		leftvol;		// 0-255 volume
-	int		rightvol;		// 0-255 volume
-	int		end;			// end time in global paintsamples
-	int 	pos;			// sample position in sfx
-	int		looping;		// where to loop, -1 = no looping
-	int		entnum;			// to allow overriding a specific sound
-	int		entchannel;		//
+	sfx_t			*sfx;			// sfx number
+	int				leftvol;		// 0-255 volume
+	int				rightvol;		// 0-255 volume
+	int				end;			// end time in global paintsamples
+	int 			pos;			// sample position in sfx
+	int				looping;		// where to loop, -1 = no looping
+	unsigned int	entnum;			// to allow overriding a specific sound
+	int				entchannel;		//
 
 	MathVector3f_t origin;			// origin of sound effect
 
@@ -91,9 +91,9 @@ typedef struct
 void S_Init (void);
 void S_Startup (void);
 void S_Shutdown (void);
-void S_StartSound(int entnum, int entchannel, sfx_t *sfx, MathVector3f_t origin, float fvol, float attenuation);
+void S_StartSound(unsigned int entnum, int entchannel, sfx_t *sfx, MathVector3f_t origin, float fvol, float attenuation);
 void S_StaticSound(sfx_t *sfx, MathVector3f_t origin, float vol, float attenuation);
-void S_StopSound (int entnum, int entchannel);
+void S_StopSound(unsigned int entnum, int entchannel);
 void S_StopAllSounds(void);
 void S_ClearBuffer (void);
 void S_Update(MathVector3f_t origin, MathVector3f_t v_forward, MathVector3f_t v_right, MathVector3f_t v_up);
@@ -105,7 +105,7 @@ void S_PaintChannels(int endtime);
 void S_InitPaintChannels (void);
 
 // picks a channel based on priorities, empty slots, number of channels
-channel_t *SND_PickChannel(int entnum, int entchannel);
+channel_t *SND_PickChannel(unsigned int entnum, int entchannel);
 
 // spatializes a channel
 void SND_Spatialize(channel_t *ch);

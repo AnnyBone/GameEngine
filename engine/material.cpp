@@ -293,9 +293,9 @@ gltexture_t *Material_LoadTexture(Material_t *mMaterial, MaterialSkin_t *mCurren
 	{
 		cArg++;
 
-		if (!Q_strcasecmp(cArg, "notexture"))
+		if (!strcasecmp(cArg, "notexture"))
 			return notexture;
-		else if (!Q_strcasecmp(cArg, "lightmap"))
+		else if (!strcasecmp(cArg, "lightmap"))
 		{
 			mMaterial->override_lightmap = true;
 			mCurrentSkin->mtTexture[mCurrentSkin->uiTextures].mttType = MATERIAL_TEXTURE_LIGHTMAP;
@@ -805,7 +805,7 @@ void Material_CheckFunctions(Material_t *mNewMaterial)
 	// Find the related function.
 	for (mKey = MaterialFunctions; mKey->key; mKey++)
 		// Remain case sensitive.
-		if (!Q_strcasecmp(mKey->key, cToken + 1))
+		if (!strcasecmp(mKey->key, cToken + 1))
 		{
 			/*	todo
 				account for texture slots etc
@@ -844,7 +844,7 @@ void Material_ParseFunction(Material_t *material)
 	// Find the related function.
 	for (MaterialFunction_t *entry = material_functions; entry->key; entry++)
 		// Remain case sensitive.
-		if (!Q_strcasecmp(entry->key, cToken + 1))
+		if (!strcasecmp(entry->key, cToken + 1))
 		{
 			Script_GetToken(false);
 
@@ -1014,7 +1014,9 @@ bool Material_Precache(const char *path)
 	Rendering
 */
 
+plEXTERN_C_START
 extern ConsoleVariable_t gl_fullbrights;
+plEXTERN_C_END
 
 /*	Typically called before an object is drawn.
 */

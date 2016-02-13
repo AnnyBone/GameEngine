@@ -33,7 +33,7 @@ key up events are sent even if in console mode
 
 #define		MAXCMDLINE	256
 char	key_lines[32][MAXCMDLINE];
-int		key_linepos;
+unsigned int		key_linepos;
 int		shift_down=false;
 int		key_lastpress;
 int		key_insert;	//johnfitz -- insert key toggle (for editing)
@@ -225,10 +225,11 @@ void Key_Console (int key)
 		if (keydown[K_CTRL])
 		{
 			//skip initial empty lines
-			int		i, x;
-			char	*line;
-			extern int con_current, con_linewidth;
-			extern char *con_text;
+			unsigned int			i, x;
+			char					*line;
+			extern unsigned int		con_current;
+			extern unsigned int		con_linewidth;
+			extern char				*con_text;
 
 			for (i = con_current - con_totallines + 1 ; i <= con_current ; i++)
 			{
@@ -253,7 +254,7 @@ void Key_Console (int key)
 		return;
 	case K_PGUP:
 		con_backscroll += keydown[K_CTRL] ? ((con_vislines>>3) - 4) : 2;
-		if (con_backscroll > con_totallines-(Video.iHeight>>3)-1)
+		if (con_backscroll > con_totallines - (Video.iHeight >> 3) - 1)
 			con_backscroll = con_totallines - (Video.iHeight>>3) - 1;
 		return;
 	case K_PGDN:
@@ -370,7 +371,7 @@ void Key_Console (int key)
 	//johnfitz -- stolen from darkplaces
 	if (key_linepos < MAXCMDLINE-1)
 	{
-		int i;
+		unsigned int i;
 
 		key_tabpartial[0] = 0; //johnfitz
 
@@ -378,7 +379,6 @@ void Key_Console (int key)
 		{
 			// can't do strcpy to move string to right
 			i = strlen(key_lines[edit_line]) - 1;
-
 			if (i == 254)
 				i--;
 
@@ -472,7 +472,7 @@ int Key_StringToKeynum (char *str)
 
 	for (kn=keynames ; kn->name ; kn++)
 	{
-		if (!Q_strcasecmp(str,kn->name))
+		if (!strcasecmp(str, kn->name))
 			return kn->keynum;
 	}
 

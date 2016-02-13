@@ -223,14 +223,14 @@ typedef struct model_s
 	// brush model
 	unsigned int	firstmodelsurface, nummodelsurfaces;
 
-	int			numsubmodels;
-	BSPModel_t	*submodels;
+	unsigned int	numsubmodels;
+	BSPModel_t		*submodels;
 
 	int			numplanes;
 	mplane_t	*planes;
 
-	int			numleafs;		// number of visible leafs, not counting 0
-	mleaf_t		*leafs;
+	unsigned int	numleafs;		// number of visible leafs, not counting 0
+	mleaf_t			*leafs;
 
 	int			numvertexes;
 	BSPVertex_t	*vertexes;
@@ -238,8 +238,8 @@ typedef struct model_s
 	int			numedges;
 	medge_t		*edges;
 
-	int			numnodes;
-	mnode_t		*nodes;
+	unsigned int	numnodes;
+	mnode_t			*nodes;
 
 	int			numtexinfo;
 	mtexinfo_t	*texinfo;
@@ -250,7 +250,7 @@ typedef struct model_s
 	int				numsurfedges;
 	int				*surfedges;
 
-	int				numclipnodes;
+	unsigned int	numclipnodes;
 	BSPClipNode_t	*clipnodes; //johnfitz -- was dclipnode_t
 
 	int				nummarksurfaces;
@@ -258,7 +258,7 @@ typedef struct model_s
 
 	hull_t			hulls[BSP_MAX_HULLS];
 
-	int				numtextures;
+	unsigned int	numtextures;
 	texture_t		**textures;
 
 	uint8_t			*visdata, *lightdata;

@@ -112,7 +112,7 @@ extern ConsoleVariable_t devstats;
 typedef struct {
 	int		packetsize;
 	int		edicts;
-	int		visedicts;
+	unsigned int	visedicts;
 	int		efrags;
 	int		tempents;
 	int		beams;

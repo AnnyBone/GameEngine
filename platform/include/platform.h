@@ -86,6 +86,7 @@
 	// Other
 #	ifdef _MSC_VER
 #		pragma warning(disable : 4152)
+#		pragma warning(disable : 4800)	// 'type' : forcing value to bool 'true' or 'false' (performance warning)
 
 #		define pIGNORE_INTERNAL_STANDARD
 

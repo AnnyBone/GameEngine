@@ -251,12 +251,13 @@ typedef struct
 
 typedef struct
 {
-	int					iPlaneNum,
-						iChildren[2];
+	unsigned int		iPlaneNum;
+	
+	int					iChildren[2];
 
 	float				fMins[3],fMaxs[3];
 
-	unsigned	int		usFirstFace,
+	unsigned int		usFirstFace,
 						usNumFaces;
 } BSPNode_t;
 
@@ -268,9 +269,9 @@ typedef struct
 
 typedef struct
 {
-	float	v[2][4];
-	int		iMipTex,
-			iFlags;
+	float			v[2][4];
+	unsigned int	iMipTex;
+	int				iFlags;
 } BSPTextureInfo_t;
 
 typedef struct

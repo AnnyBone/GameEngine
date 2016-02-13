@@ -183,7 +183,7 @@ void R_Init (void)
 
 void R_NewMap (void)
 {
-	int	i;
+	unsigned int	i;
 
 	for(i = 0; i < 256; i++)
 		d_lightstylevalue[i] = 264;		// normal light value

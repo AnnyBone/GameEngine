@@ -150,7 +150,7 @@ void Host_Game_f (void)
 
 		strcpy(com_gamedir, pakfile);
 
-		if (Q_strcasecmp(Cmd_Argv(1), host_parms.basepath)) //game is not id1
+		if (strcasecmp(Cmd_Argv(1), host_parms.basepath)) //game is not id1
 		{
 			search = (searchpath_t*)calloc_or_die(1, sizeof(searchpath_t));
 			strcpy(search->filename, pakfile);
@@ -438,7 +438,7 @@ void Host_Status_f (void)
 	int				seconds;
 	int				minutes;
 	int				hours = 0;
-	int				j;
+	unsigned int	j;
 	void			(*print) (const char *fmt, ...);
 
 	if (cmd_source == src_command)
@@ -458,7 +458,7 @@ void Host_Status_f (void)
 	if (tcpipAvailable)
 		print ("tcp/ip:  %s\n", my_tcpip_address);
 	print("map:     %s\n", sv.name);
-	print("players: %i active (%i max)\n\n", iActiveNetConnections, svs.maxclients);
+	print("players: %i active (%i max)\n\n", net_active_connections, svs.maxclients);
 	for (j=0, client = svs.clients ; j<svs.maxclients ; j++, client++)
 	{
 		if (!client->active)
@@ -671,7 +671,7 @@ void Host_Fly_f (void)
 
 void Host_Ping_f (void)
 {
-	int				i, j;
+	unsigned int	i, j;
 	float			total;
 	ServerClient_t	*client;
 
@@ -861,10 +861,10 @@ void Host_SavegameComment (char *text)
 
 void Host_Savegame_f (void)
 {
-	char	name[256];
-	FILE	*f;
-	int		i;
-	char	comment[SAVEGAME_COMMENT_LENGTH+1];
+	char			name[256];
+	FILE			*f;
+	unsigned int	i;
+	char			comment[SAVEGAME_COMMENT_LENGTH+1];
 
 	if (cmd_source != src_command)
 		return;
@@ -1137,7 +1137,7 @@ void Host_Version(void)
 void Host_Say(bool bTeamOnly)
 {
 	ServerClient_t		*client, *save;
-	int					j;
+	unsigned int		j;
 	char				*p;
 	unsigned char		text[64];
 	bool				bFromServer = false;
@@ -1175,7 +1175,7 @@ void Host_Say(bool bTeamOnly)
 	else
 		sprintf((char*)text, "%c<%s> ", 1, hostname.string);
 
-	j = sizeof(text)-2-strlen((char*)text);  // -2 for /n and null terminator
+	j = sizeof(text) - 2 - strlen((char*)text);  // -2 for /n and null terminator
 	if(strlen(p) > j)
 		p[j] = 0;
 
@@ -1210,7 +1210,7 @@ void Host_Say_Team_f(void)
 void Host_Tell_f(void)
 {
 	ServerClient_t	*client, *save;
-	int				j;
+	unsigned int	j;
 	char			*p,text[64];
 
 	if(cmd_source == src_command)
@@ -1245,7 +1245,7 @@ void Host_Tell_f(void)
 	{
 		if(!client->active || !client->bSpawned)
 			continue;
-		if(Q_strcasecmp(client->name, Cmd_Argv(1)))
+		if (strcasecmp(client->name, Cmd_Argv(1)))
 			continue;
 		host_client = client;
 		SV_ClientPrintf("%s", text);
@@ -1359,7 +1359,7 @@ void Host_PreSpawn_f (void)
 
 void Host_Spawn_f(void)
 {
-	int				i;
+	unsigned int	i;
 	ServerClient_t	*client;
 	ServerEntity_t	*eClient;
 
@@ -1486,7 +1486,7 @@ void Host_Kick_f (void)
 	char			*who,
 					*message = NULL;
 	ServerClient_t	*save;
-	int				i;
+	unsigned int	i;
 	bool			bByNumber = false;
 
 	if (cmd_source == src_command)
@@ -1521,7 +1521,7 @@ void Host_Kick_f (void)
 			if(!host_client->active)
 				continue;
 
-			if(Q_strcasecmp(host_client->name,Cmd_Argv(1)) == 0)
+			if (strcasecmp(host_client->name, Cmd_Argv(1)) == 0)
 				break;
 		}
 	}
@@ -1674,7 +1674,7 @@ void Host_Give_f (void)
 
 ServerEntity_t	*FindViewthing (void)
 {
-	int		i;
+	unsigned int	i;
 	ServerEntity_t	*e;
 
 	for (i=0 ; i<sv.num_edicts ; i++)

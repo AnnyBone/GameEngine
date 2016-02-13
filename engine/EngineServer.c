@@ -153,8 +153,8 @@ CLIENT SPAWNING
 */
 void SV_SendServerinfo(ServerClient_t *client)
 {
-	char	**s,message[2048];
-	int		i; //johnfitz
+	char			**s,message[2048];
+	unsigned int	i; //johnfitz
 
 	MSG_WriteByte(&client->message,svc_print);
 	sprintf(message, "%c\n%s Server\n   Katana (%i)\n", 2, Game->Name, ENGINE_VERSION_BUILD); //johnfitz -- include fitzquake version
@@ -291,7 +291,7 @@ void SV_ConnectClient (int clientnum)
 void SV_CheckForNewClients (void)
 {
 	struct qsocket_s	*ret;
-	int				i;
+	unsigned int		i;
 
 	// check for new connections
 	for(;;)
@@ -310,7 +310,7 @@ void SV_CheckForNewClients (void)
 		svs.clients[i].netconnection = ret;
 		SV_ConnectClient (i);
 
-		iActiveNetConnections++;
+		net_active_connections++;
 	}
 }
 
@@ -407,10 +407,11 @@ bool SV_VisibleToClient(ServerEntity_t *client,ServerEntity_t *test,model_t *wor
 
 void SV_WriteEntitiesToClient (ServerEntity_t	*clent, sizebuf_t *msg)
 {
-	int		e,i,bits;
-	byte	*pvs;
-	vec3_t	org;
-	float	miss;
+	unsigned int	e;
+	int				i, bits;
+	uint8_t			*pvs;
+	vec3_t			org;
+	float			miss;
 	ServerEntity_t	*ent;
 
 // find the client's PVS
@@ -573,16 +574,6 @@ stats:
 	dev_stats.packetsize = msg->cursize;
 	dev_peakstats.packetsize = Math_Max(msg->cursize,dev_peakstats.packetsize);
 	//johnfitz
-}
-
-void SV_CleanupEnts (void)
-{
-	int		e;
-	ServerEntity_t	*ent;
-
-	ent = NEXT_EDICT(sv.edicts);
-	for (e=1 ; e<sv.num_edicts ; e++, ent = NEXT_EDICT(ent))
-		ent->v.effects &= ~EF_MUZZLEFLASH;
 }
 
 void SV_WriteClientdataToMessage (ServerEntity_t *ent, sizebuf_t *msg)
@@ -767,7 +758,7 @@ bool SV_SendClientDatagram(ServerClient_t *client)
 
 void SV_UpdateToReliableMessages (void)
 {
-	int				i, j;
+	unsigned int	i, j;
 	ServerClient_t	*client;
 
 // check for changes to be sent over the reliable streams
@@ -821,12 +812,11 @@ void SV_SendNop(ServerClient_t *client)
 
 void SV_SendClientMessages (void)
 {
-	int	i;
-
 // update frags, names, etc
 	SV_UpdateToReliableMessages ();
 
 // build individual updates
+	unsigned int i;
 	for (i=0, host_client = svs.clients ; i<svs.maxclients ; i++, host_client++)
 	{
 		if(!host_client->active)
@@ -881,9 +871,6 @@ void SV_SendClientMessages (void)
 			}
 		}
 	}
-
-	// clear muzzle flashes
-	SV_CleanupEnts();
 }
 
 int SV_ModelIndex (char *name)
@@ -920,11 +907,11 @@ int SV_ModelIndex (char *name)
 
 void SV_CreateBaseline (void)
 {
-	int		i;
-	ServerEntity_t	*svent;
-	int		entnum,bits; //johnfitz -- PROTOCOL_FITZQUAKE
+	int					i;
+	ServerEntity_t		*svent;
+	int					bits; //johnfitz -- PROTOCOL_FITZQUAKE
 
-	for (entnum = 0; entnum < sv.num_edicts ; entnum++)
+	for (unsigned int entnum = 0; entnum < sv.num_edicts ; entnum++)
 	{
 	// get the current server version
 		svent = EDICT_NUM(entnum);
@@ -1026,10 +1013,9 @@ void SV_SendReconnect (void)
 */
 void SV_SaveSpawnparms (void)
 {
-	int		i, j;
+	unsigned int	i, j;
 
 	svs.serverflags = pr_global_struct.serverflags;
-
 	for (i=0, host_client = svs.clients ; i<svs.maxclients ; i++, host_client++)
 	{
 		if (!host_client->active)
@@ -1047,7 +1033,7 @@ extern float scr_centertime_off;
 void SV_SpawnServer(char *server)
 {
 	ServerEntity_t	*ent;
-	int		i;
+	unsigned int	i;
 
 	// Let's not have any servers with no name
 	if(hostname.string[0] == 0)
@@ -1180,7 +1166,7 @@ void Server_ParseGlobalField(char *cKey, char *cValue)
 
 	for (eField = GlobalFields; eField->cFieldName; eField++)
 	{
-		if (!Q_strcasecmp((char*)eField->cFieldName, cKey))
+		if (!strcasecmp((char*)eField->cFieldName, cKey))
 		{
 			switch (eField->eDataType)
 			{
@@ -1216,9 +1202,9 @@ void Server_ParseGlobalField(char *cKey, char *cValue)
 				*(double*)((byte*)eEntity + eField->iOffset) = strtod(cValue, NULL);
 				break;
 			case DATA_BOOLEAN:
-				if (!Q_strcasecmp(cValue, "true"))
+				if (!strcasecmp(cValue, "true"))
 					cValue = "1";
-				else if (!Q_strcasecmp(cValue, "false"))
+				else if (!strcasecmp(cValue, "false"))
 					cValue = "0";
 				// [2/1/2013] Booleans are handled in the same way as integers, so don't break here! ~hogsy
 			case DATA_INTEGER:
@@ -1240,7 +1226,6 @@ void Server_ParseGlobalField(char *cKey, char *cValue)
 
 ServerEntity_t *Server_FindEntity(ServerEntity_t *eStartEntity, char *cName, bool bClassname)
 {
-	int	i;
 	ServerEntity_t *eEntity = eStartEntity;
 
 	// Ensure that the first entity is valid.
@@ -1250,7 +1235,7 @@ ServerEntity_t *Server_FindEntity(ServerEntity_t *eStartEntity, char *cName, boo
 		return NULL;
 	}
 
-	for (i = 0; i < sv.num_edicts; i++, eEntity = NEXT_EDICT(eEntity))
+	for (unsigned int i = 0; i < sv.num_edicts; i++, eEntity = NEXT_EDICT(eEntity))
 	{
 		if (eEntity->free)
 			continue;
@@ -1333,7 +1318,7 @@ Console Messages
 void Server_SinglePrint(ServerEntity_t *eEntity, char *cMessage)
 {
 	ServerClient_t	*cClient;
-	int				iEntity = NUM_FOR_EDICT(eEntity);
+	unsigned int	iEntity = NUM_FOR_EDICT(eEntity);
 
 	if (iEntity > svs.maxclients)
 	{
@@ -1352,7 +1337,7 @@ void Server_SinglePrint(ServerEntity_t *eEntity, char *cMessage)
 void Server_CenterPrint(ServerEntity_t *ent, char *msg)
 {
 	ServerClient_t	*client;
-	int				entnum = NUM_FOR_EDICT(ent);
+	unsigned int	entnum = NUM_FOR_EDICT(ent);
 
 	if (entnum < 1 || entnum > svs.maxclients)
 	{

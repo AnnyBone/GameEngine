@@ -177,9 +177,6 @@
     <ClCompile Include="EngineAudioDummy.c">
       <Filter>Legacy\Client\Audio\Interfaces</Filter>
     </ClCompile>
-    <ClCompile Include="EngineVideoShadow.c">
-      <Filter>Legacy\Client\Video</Filter>
-    </ClCompile>
     <ClCompile Include="EngineVideoTextureManager.c">
       <Filter>Legacy\Client\Video</Filter>
     </ClCompile>
@@ -304,9 +301,6 @@
     <ClCompile Include="shader_water.cpp">
       <Filter>Client\Video\Shaders\Water</Filter>
     </ClCompile>
-    <ClCompile Include="material.c">
-      <Filter>Client</Filter>
-    </ClCompile>
     <ClCompile Include="model_u3d.cpp">
       <Filter>Client\Video\Models</Filter>
     </ClCompile>
@@ -324,6 +318,12 @@
     </ClCompile>
     <ClCompile Include="video.cpp">
       <Filter>Client\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="video_shadow.cpp">
+      <Filter>Client\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="material.cpp">
+      <Filter>Client</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -401,9 +401,6 @@
     </ClInclude>
     <ClInclude Include="engine_netdgrm.h">
       <Filter>Legacy\Network</Filter>
-    </ClInclude>
-    <ClInclude Include="EngineVideoShadow.h">
-      <Filter>Legacy\Client\Video</Filter>
     </ClInclude>
     <ClInclude Include="EngineVideoAlias.h">
       <Filter>Legacy\Client\Video</Filter>
@@ -563,6 +560,9 @@
     </ClInclude>
     <ClInclude Include="..\shared\shared_client_effect.h">
       <Filter>Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="video_shadow.h">
+      <Filter>Client\Video</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

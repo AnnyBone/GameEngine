@@ -559,7 +559,7 @@ typedef struct ServerClient_s
 
 typedef struct
 {
-	int						maxclients;
+	unsigned int			maxclients;
 	int						maxclientslimit;
 	struct ServerClient_s	*clients;			// [maxclients]
 	int						serverflags;		// episode completion information

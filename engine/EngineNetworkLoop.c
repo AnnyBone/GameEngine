@@ -54,7 +54,7 @@ void Loop_SearchForHosts (bool xmit)
 	else
 		strcpy(hostcache[0].name, hostname.string);
 	strcpy(hostcache[0].map, sv.name);
-	hostcache[0].users = iActiveNetConnections;
+	hostcache[0].users = net_active_connections;
 	hostcache[0].maxusers = svs.maxclients;
 	hostcache[0].driver = net_driverlevel;
 	strcpy(hostcache[0].cname, "local");

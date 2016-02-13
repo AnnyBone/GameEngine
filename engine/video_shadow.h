@@ -18,14 +18,8 @@
 
 #pragma once
 
-#include "common/SCRIPLIB.H"
-
-#define	SCRIPT_SYMBOL_FUNCTION	'$'
-#define	SCRIPT_SYMBOL_VARIABLE	'%'
-
-#define SCRIPT_START			'{'
-#define	SCRIPT_END				'}'
-
 plEXTERN_C_START
-bool Script_Load(const char *ccPath);
+
+void Shadow_Draw(ClientEntity_t *ent);
+
 plEXTERN_C_END

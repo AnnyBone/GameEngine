@@ -28,7 +28,7 @@
 #include "EngineInput.h"
 #include "video.h"
 
-int 		con_linewidth;
+unsigned int 	con_linewidth;
 
 float		con_cursorspeed = 4;
 
@@ -39,10 +39,10 @@ int			con_buffersize; //johnfitz -- user can now override default
 
 bool 	con_forcedup;		// because no entities to refresh
 
-int			con_totallines;		// total lines in console scrollback
-int			con_backscroll;		// lines up from bottom to display
-int			con_current;		// where next message will be printed
-int			con_x;				// offset in current line for next print
+unsigned int	con_totallines;		// total lines in console scrollback
+unsigned int	con_backscroll;		// lines up from bottom to display
+unsigned int	con_current;		// where next message will be printed
+unsigned int	con_x;				// offset in current line for next print
 
 char		*con_text=0;
 
@@ -57,9 +57,9 @@ float		con_times[NUM_CON_TIMES];	// realtime time the line was generated
 int			con_vislines;
 
 #define		MAXCMDLINE	256
-extern	char	key_lines[32][MAXCMDLINE];
-extern	int		edit_line;
-extern	int		key_linepos;
+extern	char			key_lines[32][MAXCMDLINE];
+extern	int				edit_line;
+extern	unsigned int	key_linepos;
 
 bool	bConsoleInitialized;
 
@@ -69,16 +69,15 @@ extern void M_Menu_Main_f (void);
 
 	includes a newline, unless len >= con_linewidth.
 */
-char *Con_Quakebar (int len)
+char *Con_Quakebar (unsigned int len)
 {
 	static char bar[42];
-	int i;
 
 	len = Math_Min(len,sizeof(bar)-2);
 	len = Math_Min(len,con_linewidth);
 
 	bar[0] = '\35';
-	for (i = 1; i < len - 1; i++)
+	for (unsigned int i = 1; i < len - 1; i++)
 		bar[i] = '\36';
 	bar[len-1] = '\37';
 
@@ -157,9 +156,10 @@ void Con_MessageMode2_f (void)
 */
 void Con_CheckResize(void)
 {
-	int		i, j, width, oldwidth, oldtotallines, numlines, numchars;
-	char	*tbuf; //johnfitz -- tbuf no longer a static array
-	int 	mark; //johnfitz
+	int				oldtotallines;
+	unsigned int	i, j, width, oldwidth, numlines, numchars;
+	char			*tbuf; //johnfitz -- tbuf no longer a static array
+	int 			mark; //johnfitz
 
 	width = (vid.conwidth >> 3)-2; //johnfitz -- use vid.conwidth instead of vid.width
 	if(width == con_linewidth)
@@ -259,8 +259,9 @@ void Con_Linefeed (void)
 */
 void Con_Print (char *txt)
 {
-	int			mask,y,c,l;
-	static int	cr;
+	int				mask, y, c;
+	unsigned int	l;
+	static int		cr;
 
 	//con_backscroll = 0; //johnfitz -- better console scrolling
 
@@ -483,14 +484,14 @@ void Con_SafePrintf (const char *fmt, ...)
 	scr_disabled_for_loading = temp;
 }
 
-void Con_CenterPrintf (int linewidth, char *fmt, ...)
+void Con_CenterPrintf (unsigned int linewidth, char *fmt, ...)
 {
-	va_list	argptr;
-	char	msg[MAXPRINTMSG]; //the original message
-	char	line[MAXPRINTMSG]; //one line from the message
-	char	spaces[21]; //buffer for spaces
-	char	*src, *dst;
-	int		len, s;
+	va_list			argptr;
+	char			msg[MAXPRINTMSG]; //the original message
+	char			line[MAXPRINTMSG]; //one line from the message
+	char			spaces[21]; //buffer for spaces
+	char			*src, *dst;
+	unsigned int	len, s;
 
 	va_start (argptr,fmt);
 	vsprintf (msg,fmt,argptr);
@@ -757,9 +758,8 @@ DRAWING
 */
 void Con_DrawNotify(void)
 {
-	int				x,v;
+	unsigned int	i, x, v;
 	char			*text;
-	int				i;
 	float			time;
 	extern	char	chat_buffer[];
 
@@ -769,9 +769,6 @@ void Con_DrawNotify(void)
 
 	for(i = con_current-NUM_CON_TIMES+1; i <= con_current; i++)
 	{
-		if(i < 0)
-			continue;
-
 		time = con_times[i % NUM_CON_TIMES];
 		if(time == 0)
 			continue;
@@ -856,8 +853,8 @@ void Con_DrawInput (void)
 */
 void Con_DrawConsole(int lines, bool drawinput)
 {
-	int		i,x,y,j,sb,rows;
-	char	ver[64],*text;
+	unsigned int	i,x,y,j,sb,rows;
+	char			ver[64],*text;
 
 	if(lines <= 0)
 		return;

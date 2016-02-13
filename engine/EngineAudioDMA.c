@@ -286,7 +286,7 @@ sfx_t *S_PrecacheSound (char *name)
 
 //=============================================================================
 
-channel_t *SND_PickChannel(int entnum, int entchannel)
+channel_t *SND_PickChannel(unsigned int entnum, int entchannel)
 {
 	int ch_idx,first_to_die,life_left;
 
@@ -367,7 +367,7 @@ void SND_Spatialize(channel_t *ch)
 		ch->leftvol = 0;
 }
 
-void S_StartSound(int entnum, int entchannel, sfx_t *sfx, vec3_t origin, float fvol, float attenuation)
+void S_StartSound(unsigned int entnum, int entchannel, sfx_t *sfx, vec3_t origin, float fvol, float attenuation)
 {
 	channel_t *target_chan, *check;
 	sfxcache_t	*sc;
@@ -428,7 +428,7 @@ void S_StartSound(int entnum, int entchannel, sfx_t *sfx, vec3_t origin, float f
 	}
 }
 
-void S_StopSound(int entnum, int entchannel)
+void S_StopSound(unsigned int entnum, int entchannel)
 {
 	int i;
 
@@ -757,11 +757,11 @@ void S_Play(void)
 
 void S_PlayVol(void)
 {
-	static int hash=543;
-	int i;
-	float vol;
-	char name[256];
-	sfx_t	*sfx;
+	static unsigned int		hash=543;
+	int						i;
+	float					vol;
+	char					name[256];
+	sfx_t					*sfx;
 
 	i = 1;
 	while (i<Cmd_Argc())

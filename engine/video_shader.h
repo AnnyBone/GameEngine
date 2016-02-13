@@ -147,14 +147,12 @@ public:
 
 	std::vector<VideoShader*> shaders;
 };
-
-extern "C" {
 #endif
 
-	void Shader_Initialize(void);
+plEXTERN_C_START
 
-	extern int iDiffuseUniform;
+void Shader_Initialize(void);
 
-#ifdef __cplusplus
-}
-#endif
+extern int iDiffuseUniform;
+
+plEXTERN_C_END

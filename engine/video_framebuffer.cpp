@@ -19,7 +19,6 @@
 #include "engine_base.h"
 
 #include "video.h"
-#include "video_shader.h"
 #include "video_framebuffer.h"
 
 VideoRenderBuffer::VideoRenderBuffer(unsigned int w, unsigned int h)

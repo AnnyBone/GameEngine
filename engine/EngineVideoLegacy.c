@@ -23,7 +23,7 @@
 #include "EngineEditor.h"
 #include "video.h"
 #include "EngineVideoParticle.h"
-#include "EngineVideoShadow.h"
+#include "video_shadow.h"
 
 #include "client/effect_sprite.h"
 
@@ -330,13 +330,11 @@ void R_SetupView (void)
 
 void R_DrawEntitiesOnList(bool bAlphaPass) //johnfitz -- added parameter
 {
-	int i;
-
 	if(!r_drawentities.value)
 		return;
 
 	//johnfitz -- sprites are not a special case
-	for(i = 0; i < cl_numvisedicts; i++)
+	for(unsigned int i = 0; i < cl_numvisedicts; i++)
 	{
 		currententity = cl_visedicts[i];
 
@@ -480,7 +478,7 @@ void Video_ShowBoundingBoxes(void)
 	MathVector3f_t			mins, maxs;
 	ClientEntity_t			*clEntity;
 	ServerEntity_t			*ed;
-	int						i;
+	unsigned int			i;
 
 	if (!r_showbboxes.value || (cl.maxclients > 1) || !r_drawentities.value || (!sv.active && !g_state.embedded))
 		return;
@@ -517,12 +515,10 @@ void Video_ShowBoundingBoxes(void)
 
 void R_DrawShadows (void)
 {
-	int i;
-
 	if(!r_shadows.value || !r_drawentities.value || r_drawflat_cheatsafe || r_lightmap_cheatsafe)
 		return;
 
-	for(i = 0; i < cl_numvisedicts; i++)
+	for(unsigned int i = 0; i < cl_numvisedicts; i++)
 	{
 		currententity = cl_visedicts[i];
 		if(currententity == &cl.viewent)

@@ -99,7 +99,7 @@ overflowtimes_t dev_overflows;
 
 /*	This error checks and tracks the total number of entities.
 */
-entity_t	*CL_EntityNum (int num)
+ClientEntity_t *CL_EntityNum (unsigned int num)
 {
 	//johnfitz -- check minimum number too
 	if (num < 0)
@@ -123,10 +123,11 @@ entity_t	*CL_EntityNum (int num)
 
 void CL_ParseStartSoundPacket(void)
 {
-	MathVector3f_t pos;
-	int 	channel,ent,sound_num,iVolume,field_mask;
-	float 	attenuation;
-	int		i;
+	MathVector3f_t	pos;
+	int 			channel,sound_num,iVolume,field_mask;
+	unsigned int	ent;
+	float 			attenuation;
+	int				i;
 
 	field_mask = MSG_ReadByte();
 

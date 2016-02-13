@@ -278,9 +278,9 @@ void SV_ClientPrintf (const char *fmt, ...)
 */
 void SV_BroadcastPrintf(char *fmt, ...)
 {
-	va_list		argptr;
-	char		string[1024];
-	int			i;
+	va_list			argptr;
+	char			string[1024];
+	unsigned int	i;
 
 	va_start(argptr,fmt);
 	vsprintf(string,fmt,argptr);
@@ -314,7 +314,6 @@ void Host_ClientCommands (char *fmt, ...)
 */
 void SV_DropClient(bool crash)
 {
-	int				i;
 	ServerClient_t	*client;
 
 	if(!crash)
@@ -342,10 +341,11 @@ void SV_DropClient(bool crash)
 	host_client->name[0]	= 0;
 	host_client->old_frags	= -999999;
 
-	iActiveNetConnections--;
+	net_active_connections--;
 
 	// Send notification to all clients
-	for(i = 0,client = svs.clients; i < svs.maxclients; i++,client++)
+	unsigned int i;
+	for(i = 0, client = svs.clients; i < svs.maxclients; i++,client++)
 	{
 		if(!client->active)
 			continue;
@@ -366,10 +366,11 @@ void SV_DropClient(bool crash)
 */
 void Host_ShutdownServer(bool crash)
 {
-	int			i,count;
-	sizebuf_t	buf;
-	char		message[4];
-	double		start;
+	int				count;
+	unsigned int	i;
+	sizebuf_t		buf;
+	char			message[4];
+	double			start;
 
 	if (!sv.active)
 		return;
@@ -492,8 +493,7 @@ void Host_ServerFrame (void)
 	static double	dAccumulated = 0, dOldTime;
 	const double	dDelta = (1.0 / 72.0);
 	double			dAlpha, dNewFrameTime;
-
-	int	i, active; //johnfitz
+	int				active; //johnfitz
 
 	dAccumulated += host_frametime;
 
@@ -531,6 +531,7 @@ void Host_ServerFrame (void)
 	{
 		ServerEntity_t *eEnttiy;
 
+		unsigned int i;
 		for (i=0, active=0; i<sv.num_edicts; i++)
 		{
 			eEnttiy = EDICT_NUM(i);
@@ -645,7 +646,7 @@ void Host_Frame (float time)
 	double			time1,time2;
 	static	double	timetotal;
 	static	int		timecount;
-	int				i,c,m;
+	int				c,m;
 
 	if (!serverprofile.value)
 	{
@@ -667,7 +668,7 @@ void Host_Frame (float time)
 	timecount = 0;
 	timetotal = 0;
 	c = 0;
-	for (i=0 ; i<svs.maxclients ; i++)
+	for (unsigned int i=0 ; i<svs.maxclients ; i++)
 	{
 		if (svs.clients[i].active)
 			c++;

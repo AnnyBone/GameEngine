@@ -47,8 +47,8 @@ void Physics_Toss(ServerEntity_t *ent);
 
 void SV_CheckAllEnts (void)
 {
-	int	e;
-	ServerEntity_t *check;
+	unsigned int	e;
+	ServerEntity_t	*check;
 
 	// See if any solid entities are inside the final position
 	check = NEXT_EDICT(sv.edicts);
@@ -273,11 +273,10 @@ PUSHMOVE
 
 void SV_PushMove (ServerEntity_t *pusher, float movetime)
 {
-	int					i, e;
+	unsigned int		i, e, num_moved;
 	ServerEntity_t		*check, *block;
 	MathVector3f_t		mins, maxs, move;
 	MathVector3f_t		entorig, pushorig;
-	int					num_moved;
 	ServerEntity_t		**moved_edict; //johnfitz -- dynamically allocate
 	MathVector3f_t		*moved_from; //johnfitz -- dynamically allocate
 	int					mark; //johnfitz
@@ -393,7 +392,8 @@ void SV_PushMove (ServerEntity_t *pusher, float movetime)
 // [18/5/2013] TODO: Merge with SV_PushMove ~hogsy
 static void Server_PushRotate(ServerEntity_t *pusher,float movetime)
 {
-	int				i,e,num_moved,slaves_moved;
+	int				i,num_moved,slaves_moved;
+	unsigned int	e;
 	ServerEntity_t	*check,*block,*moved_edict[MAX_EDICTS],*ground,*slave,*master;
 	MathVector3f_t	move,a,amove,entorig,pushorig,moved_from[MAX_EDICTS],org,org2,forward,right,up;
 	bool			bMoveIt;
@@ -1003,16 +1003,13 @@ void Physics_AddFriction(ServerEntity_t *eEntity, MathVector3f_t vVelocity, Math
 
 void Physics_ServerFrame(void)
 {
-	int	i;
-	ServerEntity_t	*eEntity;
-
 	// Let the progs know that a new frame has started
 	// TODO: should we pass the time to this?
 	Game->Server_PreFrame();
 
 	// Treat each object in turn
-	eEntity = sv.edicts;
-	for(i = 0; i < sv.num_edicts; i++,eEntity = NEXT_EDICT(eEntity))
+	ServerEntity_t	*eEntity = sv.edicts;
+	for(unsigned int i = 0; i < sv.num_edicts; i++,eEntity = NEXT_EDICT(eEntity))
 	{
 		if(eEntity->free)
 			continue;
