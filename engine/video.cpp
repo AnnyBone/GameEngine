@@ -589,36 +589,12 @@ void Video_DrawObject(VideoVertex_t *vobject, VideoPrimitive_t primitive,
 	tempobj.numverts		= numverts;
 	tempobj.primitive		= primitive;
 
-	bool showwireframe = r_showtris.bValue;
-	if ((mMaterial && mMaterial->override_wireframe) && (r_showtris.iValue == 1))
-		showwireframe = false;
-	if (showwireframe)
-	{
-		switch (primitive)
-		{
-		case VIDEO_PRIMITIVE_LINES:
-			break;
-		case VIDEO_PRIMITIVE_TRIANGLES:
-			tempobj.primitive = VIDEO_PRIMITIVE_LINES;
-			break;
-		default:
-			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		}
-	}
-
 	// Set the skin and ensure it's valid.
 	Material_SetSkin(mMaterial, iSkin);
 
-	Material_Draw(mMaterial, vobject, tempobj.primitive, numverts, false);
+	Material_DrawObject(mMaterial, &tempobj, false);
 	VideoObject_DrawImmediate(&tempobj);
-	Material_Draw(mMaterial, vobject, tempobj.primitive, numverts, true);
-
-	if (showwireframe)
-	{
-		if ((primitive != VIDEO_PRIMITIVE_LINES) &&
-			(primitive != VIDEO_PRIMITIVE_TRIANGLES))
-			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	}
+	Material_DrawObject(mMaterial, &tempobj, true);
 }
 
 /*

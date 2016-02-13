@@ -1018,6 +1018,50 @@ plEXTERN_C_START
 extern ConsoleVariable_t gl_fullbrights;
 plEXTERN_C_END
 
+/*	TODO: Replace Material_Draw with this!
+*/
+void Material_DrawObject(Material_t *material, VideoObject_t *object, bool ispost)
+{
+	bool showwireframe = r_showtris.bValue;
+	if ((material && material->override_wireframe) && (r_showtris.iValue == 1))
+		showwireframe = false;
+
+	if (showwireframe)
+	{
+		if (!ispost)
+		{
+			switch (object->primitive)
+			{
+			case VIDEO_PRIMITIVE_LINES:
+				break;
+			case VIDEO_PRIMITIVE_TRIANGLES:
+				object->primitive_restore = VIDEO_PRIMITIVE_TRIANGLES;
+				object->primitive = VIDEO_PRIMITIVE_LINES;
+				break;
+			default:
+				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+			}
+		}
+		else
+		{ 
+			if ((object->primitive != VIDEO_PRIMITIVE_LINES) &&
+				(object->primitive != VIDEO_PRIMITIVE_TRIANGLES))
+				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+			else if (object->primitive == VIDEO_PRIMITIVE_TRIANGLES)
+				object->primitive = object->primitive_restore;
+		}
+	}
+
+	Material_Draw
+	(
+		material,
+		object->vertices,
+		object->primitive,
+		object->numverts,
+		ispost
+	);
+}
+
 /*	Typically called before an object is drawn.
 */
 void Material_Draw(Material_t *material, VideoVertex_t *ObjectVertex, VideoPrimitive_t ObjectPrimitive, unsigned int ObjectSize, bool ispost)

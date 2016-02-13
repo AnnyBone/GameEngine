@@ -115,7 +115,7 @@ typedef struct
 	
 	uint8_t	*indices;	// List of indeces.
 
-	VideoPrimitive_t primitive;
+	VideoPrimitive_t primitive, primitive_restore;
 
 	unsigned int object_vertexarrays;
 	unsigned int 

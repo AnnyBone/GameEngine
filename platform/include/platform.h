@@ -16,8 +16,7 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef PLATFORM_H
-#define PLATFORM_H
+#pragma once
 
 /*
 	Platform Library
@@ -104,6 +103,9 @@
 #		endif
 #		ifndef strcasecmp
 #			define	strcasecmp	_stricmp
+#		endif
+#		ifndef strncasecmp
+#			define	strncasecmp	_str
 #		endif
 #	endif
 #elif __APPLE__	// Mac OS X
@@ -225,5 +227,3 @@ plEXTERN_C_START
 plEXTERN_C_END
 
 /**/
-
-#endif	// PLATFORM_H
