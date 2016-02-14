@@ -383,15 +383,15 @@ pMODULE_EXPORT MenuExport_t *Menu_Main(ModuleImport_t *Import)
 {
 	Engine = *Import;
 
-	Export.iVersion = MENU_VERSION;
-	Export.Initialize = Menu_Initialize;
-	Export.Shutdown = Menu_Shutdown;
-	Export.Draw = Menu_Draw;
-	Export.Input = Input_Key;
-	Export.SetState = Menu_SetState;
-	Export.RemoveState = Menu_RemoveState;
-	Export.AddState = Menu_AddState;
-	Export.GetState = Menu_GetState;
+	Export.iVersion		= MENU_VERSION;
+	Export.Initialize	= Menu_Initialize;
+	Export.Shutdown		= Menu_Shutdown;
+	Export.Draw			= Menu_Draw;
+	Export.Input		= Input_Key;
+	Export.SetState		= Menu_SetState;
+	Export.RemoveState	= Menu_RemoveState;
+	Export.AddState		= Menu_AddState;
+	Export.GetState		= Menu_GetState;
 
 	return &Export;
 }
