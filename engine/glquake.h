@@ -18,8 +18,7 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef GLQUAKE_H
-#define	GLQUAKE_H
+#pragma once
 
 #ifdef _MSC_VER
 #pragma warning(disable : 4244)     // MIPS
@@ -27,10 +26,17 @@
 #pragma warning(disable : 4051)     // ALPHA
 #endif
 
-#include "GLee.h"
+//#define	KATANA_CORE_GL
 
-#include <GL/gl.h>
+// TODO: 
+//		move these into video_layer.c once everything
+//		is abstracted out
+#ifdef KATANA_CORE_GL
+#include <GL/glcorearb.h>
+#else
+#include "GLee.h"
 #include <GL/glu.h>
+#endif
 
 plEXTERN_C_START
 
@@ -157,9 +163,7 @@ void Fog_NewMap (void);
 void Fog_Init (void);
 //johnfitz
 
-bool R_CullModelForEntity(entity_t *e);
-void R_RotateForEntity(vec3_t origin,vec3_t angles);
+bool R_CullModelForEntity(ClientEntity_t *e);
+void R_RotateForEntity(MathVector3f_t origin, MathVector3f_t angles);
 
 plEXTERN_C_END
-
-#endif // !GLQUAKE_H
