@@ -39,7 +39,7 @@ void plWriteLog(const char *path, const char *msg, ...)
 	sprintf(newpath, "%s"LOG_FILE_EXTENSION, path);
 
 	va_start(args, msg);
-	vsprintf(buffer, msg, args);
+	vsnprintf(buffer, sizeof(buffer), msg, args);
 	va_end(args);
 
 	size = strlen(buffer);
