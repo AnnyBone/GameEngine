@@ -162,7 +162,7 @@ void Video_Initialize(void)
 	if (!g_state.embedded)
 		Window_InitializeVideo();
 
-	glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &Video.num_textureunits);
+	vlGetMaxTextureImageUnits(&Video.num_textureunits);
 	if (Video.num_textureunits < VIDEO_MAX_UNITS)
 		Sys_Error("Your system doesn't support the required number of TMUs! (%i)\n", Video.num_textureunits);
 
@@ -181,7 +181,7 @@ void Video_Initialize(void)
 	// All units are initially disabled.
 	memset(Video.textureunit_state, 0, sizeof(Video.textureunit_state));
 
-	glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &Video.fMaxAnisotropy);
+	vlGetMaxTextureAnistropy(&Video.fMaxAnisotropy);
 
 	// Get any information that will be presented later.
 	Video.gl_vendor			= (char*)glGetString(GL_VENDOR);
@@ -231,7 +231,7 @@ void Video_Initialize(void)
 	Video_SelectTexture(VIDEO_TEXTURE_LIGHT);
 
 	// Overbrights.
-	VideoLayer_SetTextureEnvironmentMode(VIDEO_TEXTURE_MODE_COMBINE);
+	vlSetTextureEnvironmentMode(VIDEO_TEXTURE_MODE_COMBINE);
 	glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
 	glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_PREVIOUS);
 	glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_TEXTURE);
@@ -729,7 +729,7 @@ void Video_ResetCapabilities(bool bClearActive)
 		bVideoIgnoreCapabilities = true;
 
 		// Set this back too...
-		VideoLayer_SetTextureEnvironmentMode(VIDEO_TEXTURE_MODE_MODULATE);
+		vlSetTextureEnvironmentMode(VIDEO_TEXTURE_MODE_MODULATE);
 
 		// Clear out capability list.
 		for (i = 0; i < VIDEO_MAX_UNITS; i++)
@@ -741,7 +741,7 @@ void Video_ResetCapabilities(bool bClearActive)
 			Video.textureunits[i].capabilities[1] = 0;
 		}
 
-		VideoLayer_BlendFunc(VIDEO_BLEND_DEFAULT);
+		vlBlendFunc(VIDEO_BLEND_DEFAULT);
 		vlDepthMask(true);
 
 		bVideoIgnoreCapabilities = false;

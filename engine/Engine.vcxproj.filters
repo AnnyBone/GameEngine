@@ -325,6 +325,9 @@
     <ClCompile Include="material.cpp">
       <Filter>Client</Filter>
     </ClCompile>
+    <ClCompile Include="video_testbed.cpp">
+      <Filter>Client\Video</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\shared\shared_client.h">

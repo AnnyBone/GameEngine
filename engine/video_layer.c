@@ -26,6 +26,26 @@
 */
 
 /*===========================
+	OPENGL GET
+===========================*/
+
+void vlGetMaxTextureImageUnits(int *params)
+{
+	VIDEO_FUNCTION_START
+	glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, params);
+	VIDEO_FUNCTION_END
+}
+
+void vlGetMaxTextureAnistropy(float *params)
+{
+	VIDEO_FUNCTION_START
+	glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, params);
+	VIDEO_FUNCTION_END
+}
+
+// String
+
+/*===========================
 	OPENGL ERROR HANDLING
 ===========================*/
 
@@ -92,10 +112,12 @@ void vlPopMatrix(void)
 
 void VideoLayer_UseProgram(unsigned int program)
 {
+	VIDEO_FUNCTION_START
 	if (program == Video.current_program)
 		return;
 	glUseProgram(program);
 	Video.current_program = program;
+	VIDEO_FUNCTION_END
 }
 
 /*===========================
@@ -104,6 +126,7 @@ void VideoLayer_UseProgram(unsigned int program)
 
 unsigned int VideoLayer_TranslateFormat(VideoTextureFormat_t Format)
 {
+	VIDEO_FUNCTION_START
 	switch (Format)
 	{
 	case VIDEO_TEXTURE_FORMAT_BGR:
@@ -122,9 +145,10 @@ unsigned int VideoLayer_TranslateFormat(VideoTextureFormat_t Format)
 
 	// Won't be hit but meh, compiler will complain otherwise.
 	return 0;
+	VIDEO_FUNCTION_END
 }
 
-void VideoLayer_SetupTexture(VideoTextureFormat_t InternalFormat, VideoTextureFormat_t Format, unsigned int Width, unsigned int Height)
+void vlSetupTexture(VideoTextureFormat_t InternalFormat, VideoTextureFormat_t Format, unsigned int Width, unsigned int Height)
 {
 	VIDEO_FUNCTION_START
 	glTexImage2D(GL_TEXTURE_2D, 0, 
@@ -138,7 +162,7 @@ void VideoLayer_SetupTexture(VideoTextureFormat_t InternalFormat, VideoTextureFo
 /*	TODO:
 		Modify this so it works as a replacement for TexMgr_SetFilterModes.
 */
-void VideoLayer_SetTextureFilter(VideoTextureFilter_t FilterMode)
+void vlSetTextureFilter(VideoTextureFilter_t FilterMode)
 {
 	VIDEO_FUNCTION_START
 	unsigned int SetFilter = 0;
@@ -186,7 +210,7 @@ int VideoLayer_TranslateTextureEnvironmentMode(VideoTextureEnvironmentMode_t Tex
 	VIDEO_FUNCTION_END
 }
 
-void VideoLayer_SetTextureEnvironmentMode(VideoTextureEnvironmentMode_t TextureEnvironmentMode)
+void vlSetTextureEnvironmentMode(VideoTextureEnvironmentMode_t TextureEnvironmentMode)
 {
 	VIDEO_FUNCTION_START
 	// Ensure there's actually been a change.
@@ -256,8 +280,7 @@ void vlEnable(unsigned int uiCapabilities)
 void vlDisable(unsigned int uiCapabilities)
 {
 	VIDEO_FUNCTION_START
-	int i;
-	for (i = 0; i < sizeof(capabilities); i++)
+	for (int i = 0; i < sizeof(capabilities); i++)
 	{
 		// Check if we reached the end of the list yet.
 		if (!capabilities[i].uiFirst)
@@ -278,12 +301,12 @@ void vlDisable(unsigned int uiCapabilities)
 
 /*	TODO: Want more control over the dynamics of this...
 */
-void VideoLayer_BlendFunc(VideoBlend_t modea, VideoBlend_t modeb)
+void vlBlendFunc(VideoBlend_t modea, VideoBlend_t modeb)
 {
 	VIDEO_FUNCTION_START
-	glBlendFunc(modea, modeb);
 	if (Video.debug_frame)
 		plWriteLog(VIDEO_LOG, "Video: Setting blend mode (%i) (%i)\n", modea, modeb);
+	glBlendFunc(modea, modeb);
 	VIDEO_FUNCTION_END
 }
 
@@ -312,21 +335,21 @@ void vlGenerateRenderBuffer(unsigned int *buffer)
 	VIDEO_FUNCTION_END
 }
 
-void VideoLayer_DeleteRenderBuffer(unsigned int *buffer)
+void vlDeleteRenderBuffer(unsigned int *buffer)
 {
 	VIDEO_FUNCTION_START
 	glDeleteRenderbuffers(1, buffer);
 	VIDEO_FUNCTION_END
 }
 
-void VideoLayer_BindRenderBuffer(unsigned int buffer)
+void vlBindRenderBuffer(unsigned int buffer)
 {
 	VIDEO_FUNCTION_START
 	glBindRenderbuffer(GL_RENDERBUFFER, buffer);
 	VIDEO_FUNCTION_END
 }
 
-void VideoLayer_RenderBufferStorage(int format, int samples, unsigned int width, unsigned int height)
+void vlRenderBufferStorage(int format, int samples, unsigned int width, unsigned int height)
 {
 	glRenderbufferStorageMultisample(GL_RENDERBUFFER, samples, format, width, height);
 
@@ -422,17 +445,17 @@ void vlClearStencilBuffer(void)
 /*	Generates a single framebuffer.
 	glGenFramebuffers
 */
-void VideoLayer_GenerateFrameBuffer(unsigned int *uiBuffer) 
+void vlGenerateFrameBuffer(unsigned int *buffer)
 {
 	VIDEO_FUNCTION_START
-	glGenFramebuffers(1, uiBuffer);
+	glGenFramebuffers(1, buffer);
 	VIDEO_FUNCTION_END
 }
 
 /*	Ensures that the framebuffer is valid, otherwise throws an error.
 	glCheckFramebufferStatus
 */
-void VideoLayer_CheckFrameBufferStatus()
+void vlCheckFrameBufferStatus()
 {
 	int status;
 	status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
@@ -469,7 +492,7 @@ void VideoLayer_CheckFrameBufferStatus()
 /*	Binds the given framebuffer.
 	glBindFramebuffer
 */
-void VideoLayer_BindFrameBuffer(VideoFBOTarget_t vtTarget, unsigned int uiBuffer)
+void vlBindFrameBuffer(VideoFBOTarget_t vtTarget, unsigned int uiBuffer)
 {
 	VIDEO_FUNCTION_START
 	unsigned int outtarget;
@@ -514,21 +537,25 @@ void VideoLayer_BindFrameBuffer(VideoFBOTarget_t vtTarget, unsigned int uiBuffer
 /*	Deletes the given framebuffer.
 	glDeleteFramebuffers
 */
-void VideoLayer_DeleteFrameBuffer(unsigned int *uiBuffer)
+void vlDeleteFrameBuffer(unsigned int *uiBuffer)
 {
 	VIDEO_FUNCTION_START
 	glDeleteFramebuffers(1, uiBuffer);
 	VIDEO_FUNCTION_END
 }
 
-void VideoLayer_AttachFrameBufferRenderBuffer(unsigned int attachment, unsigned int buffer)
+/*	glFramebufferRenderbuffer
+*/
+void vlAttachFrameBufferRenderBuffer(unsigned int attachment, unsigned int buffer)
 {
 	VIDEO_FUNCTION_START
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, attachment, GL_RENDERBUFFER, buffer);
 	VIDEO_FUNCTION_END
 }
 
-void VideoLayer_AttachFrameBufferTexture(gltexture_t *buffer)
+/*	glFramebufferTexture2D
+*/
+void vlAttachFrameBufferTexture(gltexture_t *buffer)
 {
 	VIDEO_FUNCTION_START
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, buffer->texnum, 0);
@@ -550,12 +577,13 @@ typedef struct
 
 VideoPrimitives_t vl_primitives[] =
 {
-	{ VIDEO_PRIMITIVE_LINES, GL_LINES, "LINES" },
-	{ VIDEO_PRIMITIVE_POINTS, GL_POINTS, "POINTS" },
-	{ VIDEO_PRIMITIVE_TRIANGLES, GL_TRIANGLES, "TRIANGLES" },
-	{ VIDEO_PRIMITIVE_TRIANGLE_FAN, GL_TRIANGLE_FAN, "TRIANGLE_FAN" },
-	{ VIDEO_PRIMITIVE_TRIANGLE_FAN_LINE, GL_LINES, "TRIANGLE_FAN_LINE" },
-	{ VIDEO_PRIMITIVE_TRIANGLE_STRIP, GL_TRIANGLE_STRIP, "TRIANGLE_STRIP" }
+	{ VIDEO_PRIMITIVE_LINES,				GL_LINES,			"LINES" },
+	{ VIDEO_PRIMITIVE_POINTS,				GL_POINTS,			"POINTS" },
+	{ VIDEO_PRIMITIVE_TRIANGLES,			GL_TRIANGLES,		"TRIANGLES" },
+	{ VIDEO_PRIMITIVE_TRIANGLE_FAN,			GL_TRIANGLE_FAN,	"TRIANGLE_FAN" },
+	{ VIDEO_PRIMITIVE_TRIANGLE_FAN_LINE,	GL_LINES,			"TRIANGLE_FAN_LINE" },
+	{ VIDEO_PRIMITIVE_TRIANGLE_STRIP,		GL_TRIANGLE_STRIP,	"TRIANGLE_STRIP" },
+	{ VIDEO_PRIMITIVE_QUADS,				GL_QUADS,			"QUADS" }
 };
 
 unsigned int vlTranslatePrimitiveType(VideoPrimitive_t primitive)
@@ -569,24 +597,56 @@ unsigned int vlTranslatePrimitiveType(VideoPrimitive_t primitive)
 
 /*	Deals with tris view and different primitive types, then finally draws
 	the given arrays.
+	glDrawArrays
 */
 void vlDrawArrays(VideoPrimitive_t mode, unsigned int first, unsigned int count)
 {
 	if ((mode == VIDEO_PRIMITIVE_IGNORE) || (count == 0))
 		return;
 
-	unsigned int glmode = vlTranslatePrimitiveType(mode);
-	glDrawArrays(glmode, first, count);
+	glDrawArrays(vlTranslatePrimitiveType(mode), first, count);
 }
 
+/*	glDrawElements
+*/
 void vlDrawElements(VideoPrimitive_t mode, unsigned int count, unsigned int type, const void *indices)
 {
+	VIDEO_FUNCTION_START
 	if ((mode == VIDEO_PRIMITIVE_IGNORE) || (count == 0))
 		return;
 
 	if (!indices)
 		Sys_Error("Invalid indices when drawing object! (%i) (%i) (%i)\n", mode, count, type);
 
-	unsigned int glmode = vlTranslatePrimitiveType(mode);
-	glDrawElements(glmode, count, type,	indices);
+	glDrawElements(vlTranslatePrimitiveType(mode), count, type, indices);
+	VIDEO_FUNCTION_END
 }
+
+VideoObject_t video_curobject;
+
+void vlBegin(VideoPrimitive_t mode)
+{
+	if ((mode <= VIDEO_PRIMITIVE_IGNORE) || (mode >= VIDEO_PRIMITIVE_END))
+		Sys_Error("Invalid primitive mode for object!\n");
+
+	// Set cur primitive.
+	video_curobject.primitive = mode;
+}
+
+void vlVertex3f(float x, float y, float z)
+{}
+
+void vlNormal3f(float x, float y, float z)
+{}
+
+void vlColor3f(float r, float g, float b)
+{}
+
+void vlEnd(void)
+{
+	VideoObject_DrawImmediate(&video_curobject);
+
+	// We're done, don't use this again.
+	video_curobject.primitive = VIDEO_PRIMITIVE_IGNORE;
+}
+

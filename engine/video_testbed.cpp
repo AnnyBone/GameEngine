@@ -16,19 +16,13 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#pragma once
+#include "engine_base.h"
 
-plEXTERN_C_START
+#include "video.h"
 
-void VideoObject_Begin(VideoObject_t *object, VideoPrimitive_t primitive);
-void VideoObject_Vertex3f(VideoObject_t *object, float x, float y, float z);
-void VideoObject_Normal(VideoObject_t *object, float x, float y, float z);
-void VideoObject_Colour4f(VideoObject_t *object, float r, float g, float b, float a);
-void VideoObject_Colour4fv(VideoObject_t *object, MathVector4f_t colour);
-void VideoObject_End(VideoObject_t *object);
-void VideoObject_Clip(VideoObject_t *object, MathVector4f_t mvClipDimensions);
-
-void VideoObject_Draw(VideoObject_t *object);
-void VideoObject_DrawImmediate(VideoObject_t *object);
-
-plEXTERN_C_END
+/*
+	TEST BED
+	The following code is for testing the design
+	of the material system, rendering API and other
+	fun toybox stuff.
+*/

@@ -20,43 +20,11 @@
 
 #include "video.h"
 
-class VideoObject
-{
-public:
-	VideoObject();
-	~VideoObject();
+#if 0
 
-	void Begin(VideoPrimitive_t mode);
-	void Vertex(float x, float y, float z);
-	void Colour(float r, float g, float b);
-	void Normal(float x, float y, float z);
-	void TexCoord(float s, float t);
-	void End();
+using namespace video;
 
-	void Draw();
-	void DrawImmediate();
-
-	uint8_t *GetIndices() { return indices; }
-	unsigned int *GetBuffers() { return buffers; }
-	VideoPrimitive_t GetPrimitiveType() { return primitive; }
-protected:
-private:
-	void Clear();
-
-	std::vector<VideoVertex_t*> vertices;
-
-	VideoPrimitive_t primitive;
-
-	unsigned int *buffers;
-
-	unsigned int num_triangles;
-
-	VideoVertex_t *current_vertex;
-
-	uint8_t	*indices;
-};
-
-VideoObject::VideoObject()
+DrawObject::DrawObject()
 {
 	indices		= nullptr;
 	buffers		= nullptr;
@@ -67,7 +35,7 @@ VideoObject::VideoObject()
 	current_vertex = nullptr;
 }
 
-void VideoObject::Begin(VideoPrimitive_t mode)
+void DrawObject::Begin(VideoPrimitive_t mode)
 {
 	if ((mode <= VIDEO_PRIMITIVE_IGNORE) || (mode >= VIDEO_PRIMITIVE_END))
 		Sys_Error("Invalid primitive mode for object!\n");
@@ -79,14 +47,14 @@ void VideoObject::Begin(VideoPrimitive_t mode)
 	vertices.reserve(4);
 }
 
-void VideoObject::Vertex(float x, float y, float z)
+void DrawObject::Vertex(float x, float y, float z)
 {
 	VideoVertex_t *vertex = new VideoVertex_t;
 	current_vertex = vertex;
 	vertices.push_back(vertex);
 }
 
-void VideoObject::Normal(float x, float y, float z)
+void DrawObject::Normal(float x, float y, float z)
 {
 	if (!current_vertex)
 		Sys_Error("Invalid vertex for video object!\n");
@@ -95,7 +63,7 @@ void VideoObject::Normal(float x, float y, float z)
 	current_vertex->mvNormal[0] = z;
 }
 
-void VideoObject::TexCoord(float s, float t)
+void DrawObject::TexCoord(float s, float t)
 {
 	if (!current_vertex)
 		Sys_Error("Invalid vertex for video object!\n");
@@ -103,62 +71,18 @@ void VideoObject::TexCoord(float s, float t)
 	current_vertex->mvST[0][1] = t;
 }
 
-void VideoObject::End()
+void DrawObject::End()
 {
 	// TODO: Upload it to the GPU
 }
 
-void VideoObject::Clear()
+void DrawObject::Clear()
 {
 	vertices.clear();
 	vertices.shrink_to_fit();
 }
 
-void VideoObject::Draw()
-{}
-
-void VideoObject::DrawImmediate()
-{
-	VIDEO_FUNCTION_START
-	if (vertices.size() == 0)
-		return;
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_COLOR_ARRAY);
-	glEnableClientState(GL_NORMAL_ARRAY);
-
-	VideoVertex_t *vert = vertices[0];
-	glVertexPointer(3, GL_FLOAT, sizeof(VideoVertex_t), vert->mvPosition);
-	glColorPointer(4, GL_FLOAT, sizeof(VideoVertex_t), vert->mvColour);
-	glNormalPointer(GL_FLOAT, sizeof(VideoVertex_t), vert->mvNormal);
-	for (int i = 0; i < VIDEO_MAX_UNITS; i++)
-		if (Video.textureunit_state[i])
-		{
-			glClientActiveTexture(Video_GetTextureUnit(i));
-			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-			glTexCoordPointer(2, GL_FLOAT, sizeof(VideoVertex_t), vert->mvST[i]);
-		}
-
-	if (primitive == VIDEO_PRIMITIVE_TRIANGLES)
-		vlDrawElements(
-			primitive,
-			num_triangles * 3,
-			GL_UNSIGNED_BYTE,
-			indices
-		);
-	else
-		vlDrawArrays(primitive, 0, vertices.size());
-
-	glDisableClientState(GL_COLOR_ARRAY);
-	glDisableClientState(GL_VERTEX_ARRAY);
-	glDisableClientState(GL_NORMAL_ARRAY);
-	for (int i = 0; i < VIDEO_MAX_UNITS; i++)
-		if (Video.textureunit_state[i])
-		{
-			glClientActiveTexture(Video_GetTextureUnit(i));
-			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-		}
-	VIDEO_FUNCTION_END
-}
+#endif
 
 /*
 	C Interface
@@ -185,29 +109,39 @@ void VideoObject_Destroy(VideoObject_t *object)
 	glDeleteVertexArrays(1, &object->object_vertexarrays);
 }
 
-void VideoObject_Vertex(VideoObject_t *voObject, float x, float y, float z)
+void VideoObject_Begin(VideoObject_t *object, VideoPrimitive_t primitive)
+{
+	object->primitive = primitive;
+}
+
+void VideoObject_AddVertex(VideoObject_t *object)
+{
+
+}
+
+void VideoObject_Vertex3f(VideoObject_t *object, float x, float y, float z)
 {
 	VIDEO_FUNCTION_START
-	voObject->numverts++;
+	object->numverts++;
 
 	// TODO: Add new vertex to list.
 
-	voObject->vertices[voObject->numverts].mvPosition[0] = x;
-	voObject->vertices[voObject->numverts].mvPosition[1] = y;
-	voObject->vertices[voObject->numverts].mvPosition[2] = z;
+	object->vertices[object->numverts].mvPosition[0] = x;
+	object->vertices[object->numverts].mvPosition[1] = y;
+	object->vertices[object->numverts].mvPosition[2] = z;
 	VIDEO_FUNCTION_END
 }
 
-void VideoObject_Normal(VideoObject_t *voObject, float x, float y, float z)
+void VideoObject_Normal(VideoObject_t *object, float x, float y, float z)
 {
 	VIDEO_FUNCTION_START
-	voObject->vertices[voObject->numverts].mvNormal[0] = x;
-	voObject->vertices[voObject->numverts].mvNormal[1] = y;
-	voObject->vertices[voObject->numverts].mvNormal[2] = z;
+	object->vertices[object->numverts].mvNormal[0] = x;
+	object->vertices[object->numverts].mvNormal[1] = y;
+	object->vertices[object->numverts].mvNormal[2] = z;
 	VIDEO_FUNCTION_END
 }
 
-void VideoObject_Colour(VideoObject_t *voObject, float r, float g, float b, float a)
+void VideoObject_Colour4f(VideoObject_t *voObject, float r, float g, float b, float a)
 {
 	VIDEO_FUNCTION_START
 	voObject->vertices[voObject->numverts].mvColour[0] = r;
@@ -217,10 +151,10 @@ void VideoObject_Colour(VideoObject_t *voObject, float r, float g, float b, floa
 	VIDEO_FUNCTION_END
 }
 
-void VideoObject_ColourVector(VideoObject_t *voObject, MathVector4f_t mvColour)
+void VideoObject_Colour4fv(VideoObject_t *voObject, MathVector4f_t mvColour)
 {
 	VIDEO_FUNCTION_START
-	VideoObject_Colour(voObject, mvColour[0], mvColour[1], mvColour[2], mvColour[3]);
+	VideoObject_Colour4f(voObject, mvColour[0], mvColour[1], mvColour[2], mvColour[3]);
 	VIDEO_FUNCTION_END
 }
 
@@ -240,6 +174,35 @@ void VideoObject_Clip(VideoObject_t *voObject, MathVector4f_t mvClipDimensions)
 {
 	VIDEO_FUNCTION_START
 	VIDEO_FUNCTION_END
+}
+
+/*
+	Lighting
+*/
+
+void VideoObject_CalculateLighting(VideoObject_t *object, DynamicLight_t *light)
+{
+	float angle;
+
+	for (int i = 0; i < object->numverts; i++)
+	{
+		/*
+		x = Object->Vertices_normalStat[count].x;
+		y = Object->Vertices_normalStat[count].y;
+		z = Object->Vertices_normalStat[count].z;
+
+		angle = (LightDist*((x * Object->Spotlight.x) + (y * Object->Spotlight.y) + (z * Object->Spotlight.z) ));
+		if (angle<0 )
+		{	Object->Vertices_screen[count].r = 0;
+		Object->Vertices_screen[count].b = 0;
+		Object->Vertices_screen[count].g = 0;
+		} else
+		{	Object->Vertices_screen[count].r = Object->Vertices_local[count].r * angle;
+		Object->Vertices_screen[count].b = Object->Vertices_local[count].b * angle;
+		Object->Vertices_screen[count].g = Object->Vertices_local[count].g * angle;
+		}
+		*/
+	}
 }
 
 /*

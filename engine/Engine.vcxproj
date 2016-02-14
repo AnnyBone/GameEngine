@@ -696,6 +696,7 @@
     <ClCompile Include="EngineServerUser.c" />
     <ClCompile Include="shader_base.cpp" />
     <ClCompile Include="sys_win.c" />
+    <ClCompile Include="video_testbed.cpp" />
     <ClCompile Include="zone.c" />
   </ItemGroup>
   <ItemGroup>

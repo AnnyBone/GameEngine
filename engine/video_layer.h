@@ -16,8 +16,7 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef VIDEO_LAYER_H
-#define	VIDEO_LAYER_H
+#pragma once
 
 typedef enum
 {
@@ -42,59 +41,56 @@ typedef enum
 	VIDEO_TEXTURE_FORMAT_LUMINANCE,
 } VideoTextureFormat_t;
 
-#if __cplusplus
-extern "C" {
-#endif
+plEXTERN_C_START
 
-	char *vlGetErrorString(unsigned int er);
+char *vlGetErrorString(unsigned int er);
 
-	void vlPushMatrix(void);
-	void vlPopMatrix(void);
+void vlGetMaxTextureImageUnits(int *params);
+void vlGetMaxTextureAnistropy(float *params);
 
-	void VideoLayer_SetupTexture(VideoTextureFormat_t InternalFormat, VideoTextureFormat_t Format, unsigned int Width, unsigned int Height);
-	void VideoLayer_SetTextureFilter(VideoTextureFilter_t FilterMode);
-	void VideoLayer_SetTextureEnvironmentMode(VideoTextureEnvironmentMode_t TextureEnvironmentMode);
+void vlPushMatrix(void);
+void vlPopMatrix(void);
 
-	void vlEnable(unsigned int uiCapabilities);
-	void vlDisable(unsigned int uiCapabilities);
+void vlSetupTexture(VideoTextureFormat_t InternalFormat, VideoTextureFormat_t Format, unsigned int Width, unsigned int Height);
+void vlSetTextureFilter(VideoTextureFilter_t FilterMode);
+void vlSetTextureEnvironmentMode(VideoTextureEnvironmentMode_t TextureEnvironmentMode);
 
-	void VideoLayer_BlendFunc(VideoBlend_t modea, VideoBlend_t modeb);
-	void vlDepthMask(bool mode);
+void vlEnable(unsigned int uiCapabilities);
+void vlDisable(unsigned int uiCapabilities);
 
-	// Shaders
-	void VideoLayer_UseProgram(unsigned int program);
+void vlBlendFunc(VideoBlend_t modea, VideoBlend_t modeb);
+void vlDepthMask(bool mode);
 
-	// Drawing
-	void vlDrawArrays(VideoPrimitive_t mode, unsigned int first, unsigned int count);
-	void vlDrawElements(VideoPrimitive_t mode, unsigned int count, unsigned int type, const void *indices);
+// Shaders
+void VideoLayer_UseProgram(unsigned int program);
 
-	// Vertex Array
-	void vlGenerateVertexArray(unsigned int *arrays);
-	void vlBindVertexArray(unsigned int array);
+// Drawing
+void vlDrawArrays(VideoPrimitive_t mode, unsigned int first, unsigned int count);
+void vlDrawElements(VideoPrimitive_t mode, unsigned int count, unsigned int type, const void *indices);
 
-	// Vertex Buffer
-	void vlGenerateVertexBuffer(unsigned int *uiBuffer);
-	void vlGenerateVertexBuffers(int num, unsigned int *buffers);
-	void vlBindBuffer(unsigned int target, unsigned int buffer);
-	void vlDeleteVertexBuffer(unsigned int *uiBuffer);
+// Vertex Array
+void vlGenerateVertexArray(unsigned int *arrays);
+void vlBindVertexArray(unsigned int array);
+
+// Vertex Buffer
+void vlGenerateVertexBuffer(unsigned int *uiBuffer);
+void vlGenerateVertexBuffers(int num, unsigned int *buffers);
+void vlBindBuffer(unsigned int target, unsigned int buffer);
+void vlDeleteVertexBuffer(unsigned int *uiBuffer);
 	
-	// Frame Buffer
-	void vlClearStencilBuffer(void);
-	void VideoLayer_GenerateFrameBuffer(unsigned int *uiBuffer);
-	void VideoLayer_CheckFrameBufferStatus();
-	void VideoLayer_BindFrameBuffer(VideoFBOTarget_t vtTarget, unsigned int uiBuffer);
-	void VideoLayer_AttachFrameBufferRenderBuffer(unsigned int attachment, unsigned int buffer);
-	void VideoLayer_AttachFrameBufferTexture(gltexture_t *buffer);
-	void VideoLayer_DeleteFrameBuffer(unsigned int *uiBuffer);
+// Frame Buffer
+void vlClearStencilBuffer(void);
+void vlGenerateFrameBuffer(unsigned int *buffer);
+void vlCheckFrameBufferStatus();
+void vlBindFrameBuffer(VideoFBOTarget_t target, unsigned int buffer);
+void vlAttachFrameBufferRenderBuffer(unsigned int attachment, unsigned int buffer);
+void vlAttachFrameBufferTexture(gltexture_t *buffer);
+void vlDeleteFrameBuffer(unsigned int *uiBuffer);
 
-	// Render Buffer
-	void vlGenerateRenderBuffer(unsigned int *buffer);
-	void VideoLayer_BindRenderBuffer(unsigned int buffer);
-	void VideoLayer_RenderBufferStorage(int format, int samples, unsigned int width, unsigned int height);
-	void VideoLayer_DeleteRenderBuffer(unsigned int *buffer);
+// Render Buffer
+void vlGenerateRenderBuffer(unsigned int *buffer);
+void vlBindRenderBuffer(unsigned int buffer);
+void vlRenderBufferStorage(int format, int samples, unsigned int width, unsigned int height);
+void vlDeleteRenderBuffer(unsigned int *buffer);
 
-#if __cplusplus
-};
-#endif
-
-#endif
+plEXTERN_C_END

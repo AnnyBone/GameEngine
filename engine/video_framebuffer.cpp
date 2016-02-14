@@ -31,27 +31,27 @@ VideoRenderBuffer::VideoRenderBuffer(unsigned int w, unsigned int h)
 
 VideoRenderBuffer::~VideoRenderBuffer()
 {
-	VideoLayer_DeleteRenderBuffer(&instance);
+	vlDeleteRenderBuffer(&instance);
 }
 
 void VideoRenderBuffer::Attach()
 {
-	VideoLayer_AttachFrameBufferRenderBuffer(GL_DEPTH_STENCIL_ATTACHMENT, instance);
+	vlAttachFrameBufferRenderBuffer(GL_DEPTH_STENCIL_ATTACHMENT, instance);
 }
 
 void VideoRenderBuffer::Bind()
 {
-	VideoLayer_BindRenderBuffer(instance);
+	vlBindRenderBuffer(instance);
 }
 
 void VideoRenderBuffer::Unbind()
 {
-	VideoLayer_BindRenderBuffer(0);
+	vlBindRenderBuffer(0);
 }
 
 void VideoRenderBuffer::Storage(int format, int samples)
 {
-	VideoLayer_RenderBufferStorage(format, samples, width, height);
+	vlRenderBufferStorage(format, samples, width, height);
 }
 
 /*
@@ -88,14 +88,14 @@ VideoFrameBuffer::VideoFrameBuffer(unsigned int w, unsigned int h)
 	height		= h;
 
 	// Generate an fbo for this object.
-	VideoLayer_GenerateFrameBuffer(&instance);
+	vlGenerateFrameBuffer(&instance);
 }
 
 VideoFrameBuffer::~VideoFrameBuffer()
 {
 	delete buf_depth;
 
-	VideoLayer_DeleteFrameBuffer(&instance);
+	vlDeleteFrameBuffer(&instance);
 }
 
 /*	TODO: Make this more abstract; need more control over what this is doing.
@@ -112,11 +112,11 @@ void VideoFrameBuffer::GenerateBuffers()
 		Video_SetTexture(buf_colour);
 
 		// Set the texture up.
-		VideoLayer_SetupTexture(VIDEO_TEXTURE_FORMAT_RGB, VIDEO_TEXTURE_FORMAT_RGB, width, height);
-		VideoLayer_SetTextureFilter(VIDEO_TEXTURE_FILTER_LINEAR);
+		vlSetupTexture(VIDEO_TEXTURE_FORMAT_RGB, VIDEO_TEXTURE_FORMAT_RGB, width, height);
+		vlSetTextureFilter(VIDEO_TEXTURE_FILTER_LINEAR);
 
 		// Attach the texture to this framebuffer.
-		VideoLayer_AttachFrameBufferTexture(buf_colour);
+		vlAttachFrameBufferTexture(buf_colour);
 	}
 
 	// Depth buffer
@@ -125,7 +125,7 @@ void VideoFrameBuffer::GenerateBuffers()
 	buf_depth->Storage(GL_DEPTH24_STENCIL8, 0);
 	buf_depth->Attach();
 
-	VideoLayer_CheckFrameBufferStatus();
+	vlCheckFrameBufferStatus();
 }
 
 void VideoFrameBuffer::Bind()
@@ -133,7 +133,7 @@ void VideoFrameBuffer::Bind()
 	if (isbound)
 		return;
 
-	VideoLayer_BindFrameBuffer(VIDEO_FBO_DEFAULT, instance);
+	vlBindFrameBuffer(VIDEO_FBO_DEFAULT, instance);
 
 	isbound = true;
 }
@@ -143,7 +143,7 @@ void VideoFrameBuffer::Unbind()
 	if (!isbound)
 		return;
 
-	VideoLayer_BindFrameBuffer(VIDEO_FBO_DEFAULT, 0);
+	vlBindFrameBuffer(VIDEO_FBO_DEFAULT, 0);
 
 	isbound = false;
 }

@@ -526,7 +526,7 @@ void Draw_Grid(float x, float y, float z, int grid_size)
 	vlEnable(VIDEO_BLEND);
 	vlDisable(VIDEO_TEXTURE_2D);
 
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+//	vlBlendFunc(VIDEO_BLEND_DEFAULT);
 
 	glColor4f(0, 0, 1.0f, 0.5f);
 

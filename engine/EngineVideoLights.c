@@ -77,7 +77,7 @@ void Light_Draw(void)
 	r_dlightframecount = r_framecount+1;
 
 	vlEnable(VIDEO_BLEND);
-	VideoLayer_BlendFunc(VIDEO_BLEND_ONE, VIDEO_BLEND_ONE);
+	vlBlendFunc(VIDEO_BLEND_ONE, VIDEO_BLEND_ONE);
 
 	dlLight = cl_dlights;
 	for(i = 0; i < MAX_DLIGHTS; i++,dlLight++)
@@ -139,7 +139,7 @@ void Light_Draw(void)
 		}
 	}
 
-	VideoLayer_BlendFunc(VIDEO_BLEND_DEFAULT);
+	vlBlendFunc(VIDEO_BLEND_DEFAULT);
 	vlDisable(VIDEO_BLEND);
 #endif
 }

@@ -16,8 +16,7 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef SHARED_VIDEO_H
-#define	SHARED_VIDEO_H
+#pragma once
 
 #define	VIDEO_MAX_UNITS	16
 
@@ -44,6 +43,7 @@ typedef enum
 	VIDEO_PRIMITIVE_TRIANGLE_STRIP,
 	VIDEO_PRIMITIVE_TRIANGLE_FAN,
 	VIDEO_PRIMITIVE_TRIANGLE_FAN_LINE,
+	VIDEO_PRIMITIVE_QUADS,				// Advised to avoid this.
 
 	VIDEO_PRIMITIVE_END
 } VideoPrimitive_t;
@@ -53,10 +53,11 @@ typedef enum VideoBlend_e
 {
 	VIDEO_BLEND_ZERO,
 	VIDEO_BLEND_ONE,
-	/*	As nice as it would be, these shouldn't 
-		use GL macros directly,	otherwise we'll 
-		need to include GL headers for game and 
-		menu projects.
+	/*	As nice as it would be to use the
+		existing defs, we do this ourselves
+		so if we decide to use a different
+		graphics API, for whatever reason,
+		we can just translate these.
 	*/
 	VIDEO_BLEND_SRC_COLOR			= 0x0300,
 	VIDEO_BLEND_ONE_MINUS_SRC_COLOR = 0x0301,
@@ -138,5 +139,3 @@ typedef enum
 	CANVAS_BOTTOMRIGHT,
 	CANVAS_TOPRIGHT
 } VideoCanvasType_t;
-
-#endif // !SHARED_VIDEO_H

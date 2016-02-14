@@ -701,7 +701,7 @@ void Sky_DrawFaceQuad(glpoly_t *p)
 	Video_SetTexture(gCloudTexture);
 
 	vlEnable(VIDEO_BLEND);
-	VideoLayer_BlendFunc(VIDEO_BLEND_ONE, VIDEO_BLEND_ONE);
+	vlBlendFunc(VIDEO_BLEND_ONE, VIDEO_BLEND_ONE);
 
 	glBegin(GL_QUADS);
 
@@ -715,7 +715,7 @@ void Sky_DrawFaceQuad(glpoly_t *p)
 
 	glEnd();
 
-	VideoLayer_BlendFunc(VIDEO_BLEND_DEFAULT);
+	vlBlendFunc(VIDEO_BLEND_DEFAULT);
 
 	rs_skypolys++;
 	rs_skypasses++;

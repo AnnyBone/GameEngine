@@ -1102,7 +1102,7 @@ void Material_Draw(Material_t *material, VideoVertex_t *ObjectVertex, VideoPrimi
 
 			if (msCurrentSkin->uiFlags & MATERIAL_FLAG_ADDITIVE)
 				// Additive blending isn't done by default.
-				VideoLayer_BlendFunc(VIDEO_BLEND_ADDITIVE);
+				vlBlendFunc(VIDEO_BLEND_ADDITIVE);
 		}
 		// Alpha-testing
 		else if (msCurrentSkin->uiFlags & MATERIAL_FLAG_ALPHA)
@@ -1166,7 +1166,7 @@ void Material_Draw(Material_t *material, VideoVertex_t *ObjectVertex, VideoPrimi
 				}
 			}
 
-			VideoLayer_SetTextureEnvironmentMode(texture->EnvironmentMode);
+			vlSetTextureEnvironmentMode(texture->EnvironmentMode);
 		}
 
 		switch (texture->mttType)
@@ -1174,7 +1174,7 @@ void Material_Draw(Material_t *material, VideoVertex_t *ObjectVertex, VideoPrimi
 		case MATERIAL_TEXTURE_LIGHTMAP:
 			if (!ispost)
 			{
-				VideoLayer_SetTextureEnvironmentMode(VIDEO_TEXTURE_MODE_COMBINE);
+				vlSetTextureEnvironmentMode(VIDEO_TEXTURE_MODE_COMBINE);
 				glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
 				glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_PREVIOUS);
 				glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_TEXTURE);
@@ -1232,7 +1232,7 @@ void Material_Draw(Material_t *material, VideoVertex_t *ObjectVertex, VideoPrimi
 				glMatrixMode(GL_MODELVIEW);
 			}
 
-			VideoLayer_SetTextureEnvironmentMode(VIDEO_TEXTURE_MODE_MODULATE);
+			vlSetTextureEnvironmentMode(VIDEO_TEXTURE_MODE_MODULATE);
 
 			// Disable the texture.
 			vlDisable(VIDEO_TEXTURE_2D);
@@ -1250,7 +1250,7 @@ void Material_Draw(Material_t *material, VideoVertex_t *ObjectVertex, VideoPrimi
 
 			if (msCurrentSkin->uiFlags & MATERIAL_FLAG_ADDITIVE)
 				// Return blend mode to its default.
-				VideoLayer_BlendFunc(VIDEO_BLEND_DEFAULT);
+				vlBlendFunc(VIDEO_BLEND_DEFAULT);
 		}
 		// Alpha-testing
 		else if (msCurrentSkin->uiFlags & MATERIAL_FLAG_ALPHA)
