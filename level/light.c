@@ -21,7 +21,7 @@ int			overridelighttypes;
 int			minlight;
 int			ambientlight;
 
-byte		currentvis[(BSP_MAX_LEAFS+7)/8];
+uint8_t		currentvis[(BSP_MAX_LEAFS+7)/8];
 
 int			c_occluded;
 
@@ -98,9 +98,7 @@ void Light_CalculateTextureReflectivity(void)
 
 int LightStyleForTargetname( char *targetname )
 {
-	int		i;
-
-	for( i = 0; i < numlighttargets; i++ )
+	for( int i = 0; i < numlighttargets; i++ )
 		if( !strcmp( lighttargets[i], targetname ) )
 			return 32 + i;
 
@@ -129,14 +127,13 @@ void ParseLightEntities( void )
 	for( i = 0, ent = entities; i < num_entities; i++, ent++ )
 	{
 		value = ValueForKey(ent,"classname");
-
-		// Reset these each time, just to be safe.
-		is_skylight		= 
-		is_spotlight	= 
-		is_light		= false;
-
 		if (strncmp(value, "light", 5))
 			continue;
+
+		// Reset these each time, just to be safe.
+		is_skylight =
+		is_spotlight =
+		is_light = false;
 
 		// Figure out which type of light it is.
 		if (!strcmp(value, "light_spot"))				is_spotlight = true;
@@ -149,13 +146,16 @@ void ParseLightEntities( void )
 		l = &directlights[num_directlights++];
 		memset( l, 0, sizeof (*l) );
 
-		l->color[0] = l->color[1] = l->color[2] = 1.0f;
+		VectorSet(l->color, 1, 1, 1);
 		GetVectorForKey(ent, "origin", l->origin);
 
 		if (is_skylight)
 			l->type = LIGHTTYPE_SUN;
 		else if (is_spotlight)
+		{
 			l->spotcone = -cos(20.0f*Q_PI / 180.0f);
+			l->type = defaultlighttype;
+		}
 		else
 			l->type = defaultlighttype;
 
@@ -165,6 +165,8 @@ void ParseLightEntities( void )
 			if (j < 0 || j >= LIGHTTYPE_TOTAL)
 				Error("error in light at %.0f %.0f %.0f:\nunknown light type \"delay\" \"%s\"\n", l->origin[0], l->origin[1], l->origin[2], ValueForKey( ent, "delay" ));
 			l->type = (lighttype_t)j;
+
+			printf("%i\n", (int)l->type);
 		}
 
 		l->style = FloatForKey( ent, "style" );
@@ -173,6 +175,7 @@ void ParseLightEntities( void )
 
 		l->angle = FloatForKey(ent,"angle");
 
+#if 0
 		value = ValueForKey(ent, "angles");
 		if (value[0] && (l->type == LIGHTTYPE_SUN))
 		{
@@ -184,13 +187,14 @@ void ParseLightEntities( void )
 
 			VectorCopy(vec, l->spotdir);
 		}
+#endif
 
 		value = ValueForKey(ent,"light");
 		if( value[0] )
 		{
 			j = sscanf(value,"%lf %lf %lf %lf",&vec[0],&vec[1],&vec[2],&vec[3]);
 			if (j != 4)
-				Error("error in light at %.0f %.0f %.0f:\n_light (or light) key must be 1 (Quake) or 4 (HalfLife) numbers, \"%s\" is not valid\n", l->origin[0], l->origin[1], l->origin[2], value);
+				Error("Invalid light parameter for light! (%.0f %.0f %.0f)\n", l->origin[0], l->origin[1], l->origin[2], value);
 			
 			VectorCopy(vec, l->color);
 			l->radius = vec[3];
@@ -246,7 +250,7 @@ void ParseLightEntities( void )
 
 		if( is_light )
 		{
-			value = ValueForKey( ent, "targetname" );
+			value = ValueForKey( ent, "name" );
 			if( value[0] && !l->style )
 			{
 				char s[16];
@@ -272,8 +276,8 @@ void ParseLightEntities( void )
 			if( i == j )
 				continue;
 
-			targetname = ValueForKey(&entities[j],"targetname");
-			if(!strcmp(targetname,value))
+			targetname = ValueForKey(&entities[j],"name");
+			if (!strcmp(targetname, value))
 			{
 				vec3_t origin;
 

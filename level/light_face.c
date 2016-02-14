@@ -719,7 +719,7 @@ void LightFace( BSPFace_t *f, const lightchain_t *lightchain, const directlight_
 			VectorMA(l.sample[0][i].n, d, l.facenormal, l.sample[0][i].n);
 		}
 	}
-
+	
 	// save out the values
 	if( relight )
 	{

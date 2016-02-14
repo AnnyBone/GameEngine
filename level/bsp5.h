@@ -224,6 +224,16 @@ extern	int		valid;
 
 // misc functions
 
+typedef enum
+{
+	MSG_NORMAL,
+	MSG_WARNING,
+	MSG_ERROR,
+	MSG_VERBOSE,
+} LevelMessageType_t;
+
+void Level_Log(LevelMessageType_t msgtype, const char *msg, ...);
+
 void qprintf( char *fmt, ... );
 
 #endif

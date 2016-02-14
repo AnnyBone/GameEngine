@@ -139,7 +139,7 @@ void CreateHulls (void)
 	}
 
 	// create the hulls sequentially
-	printf("building hulls sequentially...\n");
+	Level_Log(MSG_NORMAL, "Building hulls sequentially...\n");
 
 	hullinfo.numhulls	=
 	hullinfo.filehulls	= BSP_MAX_HULLS;
@@ -187,14 +187,37 @@ void ProcessFile(char *sourcebase)
 	FinishBSPFile ();
 }
 
+#define	LEVEL_LOG	"level"
+
+void Level_Log(LevelMessageType_t msgtype, const char *msg, ...)
+{
+	va_list		args;
+	char		buffer[1024];
+
+	if (msgtype == MSG_VERBOSE && !verbose)
+		return;
+
+	va_start(args, msg);
+	vsnprintf(buffer, sizeof(buffer), msg, args);
+	va_end(args);
+
+	// Print it out to console.
+	printf(buffer);
+
+	// Write the message to our log too.
+	plWriteLog(LEVEL_LOG, buffer);
+}
+
 int main(int argc,char **argv)
 {
 	int		i;
 	double	start, end;
 
-	printf("Katana Level (based on hmap2 by LordHavoc and Vic)\n");
-	printf("Compiled: "__DATE__" "__TIME__"\n");
-	printf("\n" );
+	plClearLog(LEVEL_LOG);
+
+	Level_Log(MSG_NORMAL, "Katana Level (based on hmap2 by LordHavoc and Vic)\n");
+	Level_Log(MSG_NORMAL, "Compiled: "__DATE__" "__TIME__"\n");
+	Level_Log(MSG_NORMAL, "\n");
 
 	// Check command line flags
 	if(argc == 1)
@@ -317,8 +340,8 @@ STARTERROR:
 				"-nowaterlightmap	disable darkplaces lightmapped water feature\n"
 				"-notex				store blank textures instead of real ones, smaller bsp if zipped\n");
 
-	printf("Input:	%s\n", filename_map);
-	printf("Output: %s\n", filename_bsp);
+	Level_Log(MSG_NORMAL, "Input:	%s\n", filename_map);
+	Level_Log(MSG_NORMAL, "Output:	%s\n", filename_bsp);
 
 	// Init memory
 	Q_InitMem ();
@@ -329,7 +352,7 @@ STARTERROR:
 	ProcessFile(filename_map);
 
 	end = I_DoubleTime ();
-	printf("%5.1f seconds elapsed\n\n",end-start);
+	Level_Log(MSG_NORMAL, "%5.1f seconds elapsed\n\n", end - start);
 
 	// Print memory stats
 	Q_PrintMem();
