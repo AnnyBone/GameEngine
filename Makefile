@@ -69,7 +69,6 @@ ENGINE_OBJS := engine/audio.o \
 	engine/EngineVideoLights.o \
 	engine/EngineVideoParticle.o \
 	engine/EngineVideoScreen.o \
-	engine/EngineVideoShadow.o \
 	engine/EngineVideoSky.o \
 	engine/EngineVideoTextureManager.o \
 	engine/EngineVideoWarp.o \
@@ -82,6 +81,7 @@ ENGINE_OBJS := engine/audio.o \
 	engine/video_brush.o \
 	engine/video_draw.o \
 	engine/video_layer.o \
+	engine/video_shadow.o \
 	engine/video_sdlwindow.o \
 	engine/zone.o \
 	engine/engine_exception.o \
