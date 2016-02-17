@@ -650,7 +650,11 @@ void SCR_ScreenShot_f (void)
 
 	//get data
 	buffer = (uint8_t*)malloc(glwidth*glheight*3);
+#ifdef KATANA_CORE_GLIDE
+	Con_Warning("IMPLEMENT SCREENSHOT!!\n");
+#else
 	glReadPixels(glx,gly,glwidth,glheight,GL_RGB,GL_UNSIGNED_BYTE,buffer);
+#endif
 
 	// now write the file
 	if(Image_WriteTGA(tganame,buffer,glwidth,glheight,24,false))

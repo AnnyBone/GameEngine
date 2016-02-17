@@ -45,6 +45,14 @@ plEXTERN_C_START
 
 char *vlGetErrorString(unsigned int er);
 
+const char *vlGetString(unsigned int name);
+const char *vlGetVendor(void);
+const char *vlGetRenderer(void);
+const char *vlGetVersion(void);
+const char *vlGetExtensions(void);
+
+void vlClear(void);
+
 void vlGetMaxTextureImageUnits(int *params);
 void vlGetMaxTextureAnistropy(float *params);
 

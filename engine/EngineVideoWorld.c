@@ -191,8 +191,10 @@ void R_BuildLightmapChains (void)
 
 void R_DrawTextureChains_Drawflat (void)
 {
+#ifdef KATANA_CORE_GL
 	glColor3f (1,1,1);
 	srand ((int) (cl.time * 1000));
+#endif
 }
 
 void R_SetupView(void);
@@ -200,6 +202,7 @@ void R_RenderScene(void);
 
 void Surface_DrawMirror(msurface_t *surface)
 {
+#ifdef KATANA_CORE_GL
 	MathVector3f_t	oldorg;
 	float			dir;
 
@@ -252,14 +255,14 @@ void Surface_DrawMirror(msurface_t *surface)
 	}
 
 	glDepthRange(0, 0.5);
-	glPushMatrix();
+	vlPushMatrix();
 	glScalef(1.0f, -1.0f, 1.0f);
 
 	r_refdef.bMirror = true;		
 	World_Draw();
 	r_refdef.bMirror = false;
 
-	glPopMatrix();
+	vlPopMatrix();
 	glDepthRange(0, 1);
 
 	if (cl_numvisedicts < (MAX_VISEDICTS-1))
@@ -280,6 +283,7 @@ void Surface_DrawMirror(msurface_t *surface)
 	vlEnable(VIDEO_BLEND);
 	Video_DrawSurface(Surface, 0.5f, g_mGlobalColour, 1);
 	vlDisable(VIDEO_BLEND);
+#endif
 #endif
 }
 

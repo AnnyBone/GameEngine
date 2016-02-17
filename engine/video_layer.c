@@ -22,24 +22,88 @@
 
 /*
 	This document acts as a layer between the video sub-system
-	and OpenGL. All OpenGL functionality should be here.
+	and the graphics API. 
+
+	All graphics API functionality should be here.
 */
 
 /*===========================
-	OPENGL GET
+	GET
 ===========================*/
+
+const char *vlGetString(unsigned int name)
+{
+	VIDEO_FUNCTION_START
+#ifdef KATANA_CORE_GLIDE
+	return grGetString(name);
+#else
+#endif
+	VIDEO_FUNCTION_END
+}
+
+const char *vlGetVendor(void)
+{
+	VIDEO_FUNCTION_START
+#ifdef KATANA_CORE_GLIDE
+	return grGetString(GR_VENDOR);
+#else
+	return glGetString(GL_VENDOR);
+#endif
+	VIDEO_FUNCTION_END
+}
+
+const char *vlGetRenderer(void)
+{
+	VIDEO_FUNCTION_START
+#ifdef KATANA_CORE_GLIDE
+	return grGetString(GR_RENDERER);
+#else
+	return glGetString(GL_RENDERER);
+#endif
+	VIDEO_FUNCTION_END
+}
+
+const char *vlGetVersion(void)
+{
+	VIDEO_FUNCTION_START
+#ifdef KATANA_CORE_GLIDE
+	return grGetString(GR_VERSION);
+#else
+	return glGetString(GL_VERSION);
+#endif
+	VIDEO_FUNCTION_END
+}
+
+const char *vlGetExtensions(void)
+{
+	VIDEO_FUNCTION_START
+#ifdef KATANA_CORE_GLIDE
+	return grGetString(GR_EXTENSION);
+#else
+	return glGetString(GL_EXTENSION);
+#endif
+	VIDEO_FUNCTION_END
+}
 
 void vlGetMaxTextureImageUnits(int *params)
 {
 	VIDEO_FUNCTION_START
+#ifdef KATANA_CORE_GLIDE
+	grGet(GR_NUM_TMU, sizeof(params), (FxI32*)params);
+#else
 	glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, params);
+#endif
 	VIDEO_FUNCTION_END
 }
 
 void vlGetMaxTextureAnistropy(float *params)
 {
 	VIDEO_FUNCTION_START
+#ifdef KATANA_CORE_GLIDE
+	params = 0;
+#else
 	glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, params);
+#endif
 	VIDEO_FUNCTION_END
 }
 
@@ -56,6 +120,8 @@ char *vlGetErrorString(unsigned int er)
 	VIDEO_FUNCTION_START
 	switch (er)
 	{
+#ifdef KATANA_CORE_GLIDE
+#else
 	case GL_NO_ERROR:
 		return "No error has been recorded.";
 	case GL_INVALID_ENUM:
@@ -72,6 +138,7 @@ char *vlGetErrorString(unsigned int er)
 		return "An attempt has been made to perform an operation that would	cause an internal stack to underflow.";
 	case GL_STACK_OVERFLOW:
 		return "An attempt has been made to perform an operation that would	cause an internal stack to overflow.";
+#endif
 	default:
 		return "An unknown error occured.";
 	}
@@ -89,8 +156,10 @@ void vlPushMatrix(void)
 	VIDEO_FUNCTION_START
 	if (vl_matrixpushed)
 		return;
-
+#ifdef KATANA_CORE_GLIDE
+#else
 	glPushMatrix();
+#endif
 	vl_matrixpushed = true;
 	VIDEO_FUNCTION_END
 }
@@ -100,14 +169,16 @@ void vlPopMatrix(void)
 	VIDEO_FUNCTION_START
 	if (!vl_matrixpushed)
 		return;
-	
+#ifdef KATANA_CORE_GLIDE
+#else
 	glPopMatrix();
+#endif
 	vl_matrixpushed = false;
 	VIDEO_FUNCTION_END
 }
 
 /*===========================
-	OPENGL SHADERS
+	SHADERS
 ===========================*/
 
 void VideoLayer_UseProgram(unsigned int program)
@@ -115,7 +186,9 @@ void VideoLayer_UseProgram(unsigned int program)
 	VIDEO_FUNCTION_START
 	if (program == Video.current_program)
 		return;
+#ifndef KATANA_CORE_GLIDE
 	glUseProgram(program);
+#endif
 	Video.current_program = program;
 	VIDEO_FUNCTION_END
 }
@@ -130,15 +203,30 @@ unsigned int VideoLayer_TranslateFormat(VideoTextureFormat_t Format)
 	switch (Format)
 	{
 	case VIDEO_TEXTURE_FORMAT_BGR:
+#ifdef KATANA_CORE_GLIDE
+#else
 		return GL_BGR;
+#endif
 	case VIDEO_TEXTURE_FORMAT_BGRA:
+#ifdef KATANA_CORE_GLIDE
+#else
 		return GL_BGRA;
+#endif
 	case VIDEO_TEXTURE_FORMAT_LUMINANCE:
+#ifdef KATANA_CORE_GLIDE
+#else
 		return GL_LUMINANCE;
+#endif
 	case VIDEO_TEXTURE_FORMAT_RGB:
+#ifdef KATANA_CORE_GLIDE
+#else
 		return GL_RGB;
+#endif
 	case VIDEO_TEXTURE_FORMAT_RGBA:
+#ifdef KATANA_CORE_GLIDE
+#else
 		return GL_RGBA;
+#endif
 	default:
 		Sys_Error("Unknown texture format! (%i)\n", Format);
 	}
@@ -151,11 +239,14 @@ unsigned int VideoLayer_TranslateFormat(VideoTextureFormat_t Format)
 void vlSetupTexture(VideoTextureFormat_t InternalFormat, VideoTextureFormat_t Format, unsigned int Width, unsigned int Height)
 {
 	VIDEO_FUNCTION_START
+#ifdef KATANA_CORE_GLIDE
+#else
 	glTexImage2D(GL_TEXTURE_2D, 0, 
 		VideoLayer_TranslateFormat(InternalFormat),
 		Width, Height, 0, 
 		VideoLayer_TranslateFormat(Format), 
 		GL_UNSIGNED_BYTE, NULL);
+#endif
 	VIDEO_FUNCTION_END
 }
 
@@ -165,44 +256,73 @@ void vlSetupTexture(VideoTextureFormat_t InternalFormat, VideoTextureFormat_t Fo
 void vlSetTextureFilter(VideoTextureFilter_t FilterMode)
 {
 	VIDEO_FUNCTION_START
-	unsigned int SetFilter = 0;
-
+	unsigned int filter = 0;
 	switch (FilterMode)
 	{
 	case VIDEO_TEXTURE_FILTER_LINEAR:
-		SetFilter = GL_LINEAR;
+#ifdef KATANA_CORE_GLIDE
+		filter = GR_TEXTUREFILTER_BILINEAR;
+#else
+		filter = GL_LINEAR;
+#endif
 		break;
 	case VIDEO_TEXTURE_FILTER_NEAREST:
-		SetFilter = GL_NEAREST;
+#ifdef KATANA_CORE_GLIDE
+		filter = GR_TEXTUREFILTER_POINT_SAMPLED;
+#else
+		filter = GL_NEAREST;
+#endif
 		break;
 	default:
 		Sys_Error("Unknown texture filter type! (%i)\n", FilterMode);
 	}
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, SetFilter);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, SetFilter);
+#ifdef KATANA_CORE_GLIDE
+	grTexFilterMode(Video.current_textureunit, filter, filter);
+#else
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
+#endif
 	VIDEO_FUNCTION_END
 }
 
-int VideoLayer_TranslateTextureEnvironmentMode(VideoTextureEnvironmentMode_t TextureEnvironmentMode)
+int VideoLayer_TranslateTextureEnvironmentMode(VideoTextureEnvironmentMode_t tem)
 {
 	VIDEO_FUNCTION_START
-	switch (TextureEnvironmentMode)
+	switch (tem)
 	{
 	case VIDEO_TEXTURE_MODE_ADD:
+#ifdef KATANA_CORE_GLIDE
+#else
 		return GL_ADD;
+#endif
 	case VIDEO_TEXTURE_MODE_MODULATE:
+#ifdef KATANA_CORE_GLIDE
+#else
 		return GL_MODULATE;
+#endif
 	case VIDEO_TEXTURE_MODE_DECAL:
+#ifdef KATANA_CORE_GLIDE
+#else
 		return GL_DECAL;
+#endif
 	case VIDEO_TEXTURE_MODE_BLEND:
+#ifdef KATANA_CORE_GLIDE
+#else
 		return GL_BLEND;
+#endif
 	case VIDEO_TEXTURE_MODE_REPLACE:
+#ifdef KATANA_CORE_GLIDE
+#else
 		return GL_REPLACE;
+#endif
 	case VIDEO_TEXTURE_MODE_COMBINE:
+#ifdef KATANA_CORE_GLIDE
+#else
 		return GL_COMBINE;
+#endif
 	default:
-		Sys_Error("Unknown texture environment mode! (%i)\n", TextureEnvironmentMode);
+		Sys_Error("Unknown texture environment mode! (%i)\n", tem);
 	}
 
 	// Won't be hit but meh, compiler will complain otherwise.
@@ -217,8 +337,11 @@ void vlSetTextureEnvironmentMode(VideoTextureEnvironmentMode_t TextureEnvironmen
 	if (Video.textureunits[Video.current_textureunit].current_envmode == TextureEnvironmentMode)
 		return;
 
+#ifdef KATANA_CORE_GLIDE
+#else
 	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, 
 		VideoLayer_TranslateTextureEnvironmentMode(TextureEnvironmentMode));
+#endif
 
 	Video.textureunits[Video.current_textureunit].current_envmode = TextureEnvironmentMode;
 	VIDEO_FUNCTION_END
@@ -230,13 +353,15 @@ void vlSetTextureEnvironmentMode(VideoTextureEnvironmentMode_t TextureEnvironmen
 
 typedef struct
 {
-	unsigned int uiFirst, uiSecond;
+	unsigned int first, second;
 
-	const char *ccIdentifier;
+	const char *ident;
 } VideoLayerCapabilities_t;
 
 VideoLayerCapabilities_t capabilities[] =
 {
+#ifdef KATANA_CORE_GLIDE
+#else
 	{ VIDEO_ALPHA_TEST, GL_ALPHA_TEST, "ALPHA_TEST" },
 	{ VIDEO_BLEND, GL_BLEND, "BLEND" },
 	{ VIDEO_DEPTH_TEST, GL_DEPTH_TEST, "DEPTH_TEST" },
@@ -247,6 +372,7 @@ VideoLayerCapabilities_t capabilities[] =
 	{ VIDEO_STENCIL_TEST, GL_STENCIL_TEST, "STENCIL_TEST" },
 	{ VIDEO_NORMALIZE, GL_NORMALIZE, "NORMALIZE" },
 	{ VIDEO_MULTISAMPLE, GL_MULTISAMPLE, "MULTISAMPLE" },
+#endif
 
 	{ 0 }
 };
@@ -256,57 +382,63 @@ VideoLayerCapabilities_t capabilities[] =
 void vlEnable(unsigned int uiCapabilities)
 {
 	VIDEO_FUNCTION_START
-	int i;
-	for (i = 0; i < sizeof(capabilities); i++)
+#ifdef KATANA_CORE_GLIDE
+#else
+	for (int i = 0; i < sizeof(capabilities); i++)
 	{
 		// Check if we reached the end of the list yet.
-		if (!capabilities[i].uiFirst)
+		if (!capabilities[i].first)
 			break;
 
 		if (uiCapabilities & VIDEO_TEXTURE_2D)
 			Video.textureunit_state[Video.current_textureunit] = true;
 
-		if (uiCapabilities & capabilities[i].uiFirst)
+		if (uiCapabilities & capabilities[i].first)
 		{
 			if (Video.debug_frame)
-				plWriteLog(VIDEO_LOG, "Enabling %s (%i)\n", capabilities[i].ccIdentifier, Video.current_textureunit);
+				plWriteLog(VIDEO_LOG, "Enabling %s (%i)\n", capabilities[i].ident, Video.current_textureunit);
 
-			glEnable(capabilities[i].uiSecond);
+			glEnable(capabilities[i].second);
 		}
 	}
+#endif
 	VIDEO_FUNCTION_END
 }
 
 void vlDisable(unsigned int uiCapabilities)
 {
 	VIDEO_FUNCTION_START
+#ifdef KATANA_CORE_GLIDE
+#else
 	for (int i = 0; i < sizeof(capabilities); i++)
 	{
 		// Check if we reached the end of the list yet.
-		if (!capabilities[i].uiFirst)
+		if (!capabilities[i].first)
 			break;
 
 		if (uiCapabilities & VIDEO_TEXTURE_2D)
 			Video.textureunit_state[Video.current_textureunit] = false;
 
-		if (uiCapabilities & capabilities[i].uiFirst)
+		if (uiCapabilities & capabilities[i].first)
 		{
 			// TODO: Implement debugging support.
 
-			glDisable(capabilities[i].uiSecond);
+			glDisable(capabilities[i].second);
 		}
 	}
+#endif
 	VIDEO_FUNCTION_END
 }
 
-/*	TODO: Want more control over the dynamics of this...
-*/
 void vlBlendFunc(VideoBlend_t modea, VideoBlend_t modeb)
 {
 	VIDEO_FUNCTION_START
 	if (Video.debug_frame)
 		plWriteLog(VIDEO_LOG, "Video: Setting blend mode (%i) (%i)\n", modea, modeb);
+#ifdef KATANA_CORE_GLIDE
+#else
 	glBlendFunc(modea, modeb);
+#endif
 	VIDEO_FUNCTION_END
 }
 
@@ -316,9 +448,29 @@ void vlDepthMask(bool mode)
 {
 	VIDEO_FUNCTION_START
 	static bool cur_state = true;
-	if (mode == cur_state) return;
+	if (mode == cur_state) 
+		return;
+#ifdef KATANA_CORE_GLIDE
+	grDepthMask(mode);
+#else
 	glDepthMask(mode);
+#endif
 	cur_state = mode;
+	VIDEO_FUNCTION_END
+}
+
+/*	Enable and disable writing of frame buffer colour components.
+*/
+void vlColorMask(bool red, bool green, bool blue, bool alpha)
+{
+	VIDEO_FUNCTION_START
+#ifdef KATANA_CORE_GLIDE
+	bool rgb = false;
+	if(red || green || blue) rgb = true;
+	grColorMask(rgb, alpha);
+#else
+	glColorMask(red, green, blue, alpha);
+#endif
 	VIDEO_FUNCTION_END
 }
 
@@ -331,26 +483,38 @@ void vlDepthMask(bool mode)
 void vlGenerateRenderBuffer(unsigned int *buffer)
 {
 	VIDEO_FUNCTION_START
+#ifdef KATANA_CORE_GLIDE
+#else
 	glGenRenderbuffers(1, buffer);
+#endif
 	VIDEO_FUNCTION_END
 }
 
 void vlDeleteRenderBuffer(unsigned int *buffer)
 {
 	VIDEO_FUNCTION_START
+#ifdef KATANA_CORE_GLIDE
+#else
 	glDeleteRenderbuffers(1, buffer);
+#endif
 	VIDEO_FUNCTION_END
 }
 
 void vlBindRenderBuffer(unsigned int buffer)
 {
 	VIDEO_FUNCTION_START
+#ifdef KATANA_CORE_GLIDE
+#else
 	glBindRenderbuffer(GL_RENDERBUFFER, buffer);
+#endif
 	VIDEO_FUNCTION_END
 }
 
 void vlRenderBufferStorage(int format, int samples, unsigned int width, unsigned int height)
 {
+	VIDEO_FUNCTION_START
+#ifdef KATANA_CORE_GLIDE
+#else
 	glRenderbufferStorageMultisample(GL_RENDERBUFFER, samples, format, width, height);
 
 	// Ensure there weren't any issues.
@@ -372,27 +536,33 @@ void vlRenderBufferStorage(int format, int samples, unsigned int width, unsigned
 		}
 		Sys_Error("%s\n%s", vlGetErrorString(glerror), errorstring);
 	}
+#endif
+	VIDEO_FUNCTION_END
 }
 
 // VERTEX ARRAY OBJECTS
 
 /*	Generates a single vertex array.
-	glGenVertexArrays
 */
 void vlGenerateVertexArray(unsigned int *arrays)
 {
 	VIDEO_FUNCTION_START
+#ifdef KATANA_CORE_GLIDE
+#else
 	glGenVertexArrays(1, arrays);
+#endif
 	VIDEO_FUNCTION_END
 }
 
 /*	Binds the given vertex array.
-	glBindVertexArray
 */
 void vlBindVertexArray(unsigned int array)
 {
 	VIDEO_FUNCTION_START
+#ifdef KATANA_CORE_GLIDE
+#else
 	glBindVertexArray(array);
+#endif
 	VIDEO_FUNCTION_END
 }
 
@@ -404,14 +574,20 @@ void vlBindVertexArray(unsigned int array)
 void vlGenerateVertexBuffer(unsigned int *buffer)
 {
 	VIDEO_FUNCTION_START
+#ifdef KATANA_CORE_GLIDE
+#else
 	glGenBuffers(1, buffer);
+#endif
 	VIDEO_FUNCTION_END
 }
 
 void vlGenerateVertexBuffers(int num, unsigned int *buffers)
 {
 	VIDEO_FUNCTION_START
+#ifdef KATANA_CORE_GLIDE
+#else
 	glGenBuffers(num, buffers);
+#endif
 	VIDEO_FUNCTION_END
 }
 
@@ -421,7 +597,10 @@ void vlGenerateVertexBuffers(int num, unsigned int *buffers)
 void vlDeleteVertexBuffer(unsigned int *buffer)
 {
 	VIDEO_FUNCTION_START
+#ifdef KATANA_CORE_GLIDE
+#else
 	glDeleteBuffers(1, buffer);
+#endif
 	VIDEO_FUNCTION_END
 }
 
@@ -431,7 +610,10 @@ void vlDeleteVertexBuffer(unsigned int *buffer)
 void vlBindBuffer(unsigned int target, unsigned int buffer)
 {
 	VIDEO_FUNCTION_START
+#ifdef KATANA_CORE_GLIDE
+#else
 	glBindBuffer(target, buffer);
+#endif
 	VIDEO_FUNCTION_END
 }
 
@@ -439,7 +621,28 @@ void vlBindBuffer(unsigned int target, unsigned int buffer)
 
 void vlClearStencilBuffer(void)
 {
+#ifdef KATANA_CORE_GL
 	glClear(GL_STENCIL_BUFFER_BIT);
+#endif
+}
+
+/*	Clears buffers.
+	TODO: expaaaand!!
+*/
+void vlClear(void)
+{
+#ifdef KATANA_CORE_GLIDE
+	grBufferClear(0x00, 0, 0);
+#else
+	if (!cv_video_clearbuffers.bValue)
+		return;
+
+	int clear = 0;
+	if (cv_video_drawmirrors.bValue)
+		clear |= GL_STENCIL_BUFFER_BIT;
+
+	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT | clear);
+#endif
 }
 
 /*	Generates a single framebuffer.
@@ -448,7 +651,10 @@ void vlClearStencilBuffer(void)
 void vlGenerateFrameBuffer(unsigned int *buffer)
 {
 	VIDEO_FUNCTION_START
+#ifdef KATANA_CORE_GLIDE
+#else
 	glGenFramebuffers(1, buffer);
+#endif
 	VIDEO_FUNCTION_END
 }
 
@@ -457,8 +663,10 @@ void vlGenerateFrameBuffer(unsigned int *buffer)
 */
 void vlCheckFrameBufferStatus()
 {
-	int status;
-	status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+	VIDEO_FUNCTION_START
+#ifdef KATANA_CORE_GLIDE
+#else
+	int status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 	if (status == GL_FRAMEBUFFER_COMPLETE)
 		return;
 
@@ -487,6 +695,8 @@ void vlCheckFrameBufferStatus()
 	}
 
 	Sys_Error("An unknown error occured when checking framebuffer status!\n");
+#endif
+	VIDEO_FUNCTION_END
 }
 
 /*	Binds the given framebuffer.
@@ -495,6 +705,8 @@ void vlCheckFrameBufferStatus()
 void vlBindFrameBuffer(VideoFBOTarget_t vtTarget, unsigned int uiBuffer)
 {
 	VIDEO_FUNCTION_START
+#ifdef KATANA_CORE_GLIDE
+#else
 	unsigned int outtarget;
 
 	// TODO: Get these named up so we can easily debug.
@@ -531,39 +743,51 @@ void vlBindFrameBuffer(VideoFBOTarget_t vtTarget, unsigned int uiBuffer)
 		}
 		Sys_Error("%s\n%s", vlGetErrorString(glerror), errorstring);
 	}
+#endif
 	VIDEO_FUNCTION_END
 }
 
 /*	Deletes the given framebuffer.
-	glDeleteFramebuffers
 */
 void vlDeleteFrameBuffer(unsigned int *uiBuffer)
 {
 	VIDEO_FUNCTION_START
+#ifdef KATANA_CORE_GLIDE
+#else
 	glDeleteFramebuffers(1, uiBuffer);
+#endif
 	VIDEO_FUNCTION_END
 }
 
-/*	glFramebufferRenderbuffer
-*/
 void vlAttachFrameBufferRenderBuffer(unsigned int attachment, unsigned int buffer)
 {
 	VIDEO_FUNCTION_START
+#ifdef KATANA_CORE_GLIDE
+#else
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, attachment, GL_RENDERBUFFER, buffer);
+#endif
 	VIDEO_FUNCTION_END
 }
 
-/*	glFramebufferTexture2D
-*/
 void vlAttachFrameBufferTexture(gltexture_t *buffer)
 {
 	VIDEO_FUNCTION_START
+#ifdef KATANA_CORE_GLIDE
+#else
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, buffer->texnum, 0);
+#endif
 	VIDEO_FUNCTION_END
 }
 
+void vlReadPixels(int x, int y, unsigned int width, unsigned int height, unsigned int format, unsigned int type, void *data)
+{
+#ifdef KATANA_CORE_GLIDE
+#else
+#endif
+}
+
 /*===========================
-	OPENGL DRAWING
+	DRAWING
 ===========================*/
 
 typedef struct
@@ -577,6 +801,15 @@ typedef struct
 
 VideoPrimitives_t vl_primitives[] =
 {
+#ifdef KATANA_CORE_GLIDE
+	{ VIDEO_PRIMITIVE_LINES,				GR_LINES,			"LINES" },
+	{ VIDEO_PRIMITIVE_POINTS,				GR_POINTS,			"POINTS" },
+	{ VIDEO_PRIMITIVE_TRIANGLES,			GR_TRIANGLES,		"TRIANGLES" },
+	{ VIDEO_PRIMITIVE_TRIANGLE_FAN,			GR_TRIANGLE_FAN,	"TRIANGLE_FAN" },
+	{ VIDEO_PRIMITIVE_TRIANGLE_FAN_LINE,	GR_LINES,			"TRIANGLE_FAN_LINE" },
+	{ VIDEO_PRIMITIVE_TRIANGLE_STRIP,		GR_TRIANGLE_STRIP,	"TRIANGLE_STRIP" },
+	// TODO: Quads aren't supported; need to translate somehow.
+#else
 	{ VIDEO_PRIMITIVE_LINES,				GL_LINES,			"LINES" },
 	{ VIDEO_PRIMITIVE_POINTS,				GL_POINTS,			"POINTS" },
 	{ VIDEO_PRIMITIVE_TRIANGLES,			GL_TRIANGLES,		"TRIANGLES" },
@@ -584,6 +817,7 @@ VideoPrimitives_t vl_primitives[] =
 	{ VIDEO_PRIMITIVE_TRIANGLE_FAN_LINE,	GL_LINES,			"TRIANGLE_FAN_LINE" },
 	{ VIDEO_PRIMITIVE_TRIANGLE_STRIP,		GL_TRIANGLE_STRIP,	"TRIANGLE_STRIP" },
 	{ VIDEO_PRIMITIVE_QUADS,				GL_QUADS,			"QUADS" }
+#endif
 };
 
 unsigned int vlTranslatePrimitiveType(VideoPrimitive_t primitive)
@@ -592,22 +826,28 @@ unsigned int vlTranslatePrimitiveType(VideoPrimitive_t primitive)
 		if (primitive == vl_primitives[i].primitive)
 			return vl_primitives[i].gl;
 
+#ifdef KATANA_CORE_GLIDE
+	return GR_POINTS;
+#else
 	return GL_POINTS;
+#endif
 }
 
 /*	Deals with tris view and different primitive types, then finally draws
 	the given arrays.
-	glDrawArrays
 */
 void vlDrawArrays(VideoPrimitive_t mode, unsigned int first, unsigned int count)
 {
 	if ((mode == VIDEO_PRIMITIVE_IGNORE) || (count == 0))
 		return;
 
+#ifdef KATANA_CORE_GLIDE
+#else
 	glDrawArrays(vlTranslatePrimitiveType(mode), first, count);
+#endif
 }
 
-/*	glDrawElements
+/*
 */
 void vlDrawElements(VideoPrimitive_t mode, unsigned int count, unsigned int type, const void *indices)
 {
@@ -618,7 +858,10 @@ void vlDrawElements(VideoPrimitive_t mode, unsigned int count, unsigned int type
 	if (!indices)
 		Sys_Error("Invalid indices when drawing object! (%i) (%i) (%i)\n", mode, count, type);
 
+#ifdef KATANA_CORE_GLIDE
+#else
 	glDrawElements(vlTranslatePrimitiveType(mode), count, type, indices);
+#endif
 	VIDEO_FUNCTION_END
 }
 

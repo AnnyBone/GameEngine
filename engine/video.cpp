@@ -164,7 +164,7 @@ void Video_Initialize(void)
 
 	vlGetMaxTextureImageUnits(&Video.num_textureunits);
 	if (Video.num_textureunits < VIDEO_MAX_UNITS)
-		Sys_Error("Your system doesn't support the required number of TMUs! (%i)\n", Video.num_textureunits);
+		Con_Warning("Your system doesn't support the required number of TMUs! (%i)\n", Video.num_textureunits);
 
 	// Attempt to dynamically allocated the number of supported TMUs.
 	Video.textureunits = (VideoTextureMU_t*)Hunk_Alloc(sizeof(VideoTextureMU_t)*Video.num_textureunits);
@@ -184,13 +184,12 @@ void Video_Initialize(void)
 	vlGetMaxTextureAnistropy(&Video.fMaxAnisotropy);
 
 	// Get any information that will be presented later.
-	Video.gl_vendor			= (char*)glGetString(GL_VENDOR);
-	Video.gl_renderer		= (char*)glGetString(GL_RENDERER);
-	Video.gl_version		= (char*)glGetString(GL_VERSION);
-	Video.gl_extensions		= (char*)glGetString(GL_EXTENSIONS);
+	Video.gl_vendor			= vlGetVendor();
+	Video.gl_renderer		= vlGetRenderer();
+	Video.gl_version		= vlGetVersion();
+	Video.gl_extensions		= vlGetExtensions();
 
-	GLeeInit();
-
+#ifdef KATANA_CORE_GL
 	Con_DPrintf(" Checking for extensions...\n");
 
 	// Check that the required capabilities are supported.
@@ -238,6 +237,7 @@ void Video_Initialize(void)
 	glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 4);
 
 	Video_SelectTexture(0);
+#endif
 
 	vid.conwidth = (scr_conwidth.value > 0) ? (int)scr_conwidth.value : (scr_conscale.value > 0) ? (int)(Video.iWidth / scr_conscale.value) : Video.iWidth;
 	vid.conwidth = Math_Clamp(320, vid.conwidth, Video.iWidth);
@@ -246,8 +246,10 @@ void Video_Initialize(void)
 
 	Video.vertical_sync = cv_video_verticlesync.bValue;
 
+#ifdef KATANA_CORE_GL
 #ifdef VIDEO_SUPPORT_SHADERS
 	Shader_Initialize();
+#endif
 #endif
 	Light_Initialize();
 
@@ -272,25 +274,12 @@ void Video_DebugCommand(void)
 
 /**/
 
-/*	Clears the color, stencil and depth buffers.
-*/
-void Video_ClearBuffer(void)
-{
-	if (!cv_video_clearbuffers.bValue)
-		return;
-
-	int clear = 0;
-	if (cv_video_drawmirrors.bValue)
-		clear |= GL_STENCIL_BUFFER_BIT;
-
-	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT | clear);
-}
-
 /*	Displays the depth buffer for testing purposes.
 	Unfinished
 */
 void Video_DrawDepthBuffer(void)
 {
+#ifdef KATANA_CORE_GL
 	static gltexture_t	*depth_texture = NULL;
 	float				*uByte;
 
@@ -324,6 +313,7 @@ void Video_DrawDepthBuffer(void)
 
 	// Free the pixel data.
 	free(uByte);
+#endif
 }
 
 /*
@@ -396,6 +386,7 @@ void Video_SetViewportSize(int w, int h)
 
 void Video_GenerateSphereCoordinates(void)
 {
+#ifdef KATANA_CORE_GL
 #if 0
 	MathMatrix4x4f_t mmMatrix, mmInversed;
 
@@ -419,6 +410,7 @@ void Video_GenerateSphereCoordinates(void)
 	glMatrixMode(GL_MODELVIEW);
 	glPopMatrix();
 #endif
+#endif
 }
 
 /**/
@@ -427,6 +419,7 @@ void Video_GenerateSphereCoordinates(void)
 */
 void Video_SetTexture(gltexture_t *gTexture)
 {
+#ifdef KATANA_CORE_GL
 	if(!gTexture)
 		gTexture = notexture;
 	// If it's the same as the last, don't bother.
@@ -442,6 +435,7 @@ void Video_SetTexture(gltexture_t *gTexture)
 
 	if (Video.debug_frame)
 		plWriteLog(cv_video_log.string, "Video: Bound texture (%s) (%i)\n", gTexture->name, Video.current_textureunit);
+#endif
 }
 
 /*
@@ -452,6 +446,7 @@ void Video_SetTexture(gltexture_t *gTexture)
 */
 unsigned int Video_GetTextureUnit(unsigned int uiTarget)
 {
+#ifdef KATANA_CORE_GL
 	if (Video.debug_frame)
 		plWriteLog(cv_video_log.string, "Video: Attempting to get TMU target %i\n", uiTarget);
 
@@ -482,10 +477,14 @@ unsigned int Video_GetTextureUnit(unsigned int uiTarget)
 		plWriteLog(cv_video_log.string, "Video: Returning TMU %i\n", GL_TEXTURE0 + uiTarget);
 
 	return GL_TEXTURE0 + uiTarget;
+#else
+	return 0;
+#endif
 }
 
 void Video_SelectTexture(unsigned int uiTarget)
 {
+#ifdef KATANA_CORE_GL
 	if (uiTarget == Video.current_textureunit)
 		return;
 
@@ -498,6 +497,7 @@ void Video_SelectTexture(unsigned int uiTarget)
 
 	if (Video.debug_frame)
 		plWriteLog(cv_video_log.string, "Video: Texture Unit %i\n", Video.current_textureunit);
+#endif
 }
 
 /*
@@ -611,6 +611,7 @@ typedef struct
 
 VideoCapabilities_t	vcCapabilityList[]=
 {
+#ifdef KATANA_CORE_GL
 	{ VIDEO_ALPHA_TEST, GL_ALPHA_TEST, "ALPHA_TEST" },
 	{ VIDEO_BLEND, GL_BLEND, "BLEND" },
 	{ VIDEO_DEPTH_TEST, GL_DEPTH_TEST, "DEPTH_TEST" },
@@ -620,6 +621,7 @@ VideoCapabilities_t	vcCapabilityList[]=
 	{ VIDEO_CULL_FACE, GL_CULL_FACE, "CULL_FACE" },
 	{ VIDEO_STENCIL_TEST, GL_STENCIL_TEST, "STENCIL_TEST" },
 	{ VIDEO_NORMALIZE, GL_NORMALIZE, "NORMALIZE" },
+#endif
 
 	{ 0 }
 };
@@ -629,6 +631,7 @@ VideoCapabilities_t	vcCapabilityList[]=
 */
 void Video_EnableCapabilities(unsigned int iCapabilities)
 {
+#ifdef KATANA_CORE_GL
 	int	i;
 
 	if(!iCapabilities)
@@ -651,12 +654,14 @@ void Video_EnableCapabilities(unsigned int iCapabilities)
 			glEnable(vcCapabilityList[i].uiSecond);
 		}
 	}
+#endif
 }
 
 /*	Disables specified capabilities for the current draw.
 */
 void Video_DisableCapabilities(unsigned int iCapabilities)
 {
+#ifdef KATANA_CORE_GL
 	int	i;
 
 	if(!iCapabilities)
@@ -682,6 +687,7 @@ void Video_DisableCapabilities(unsigned int iCapabilities)
 			glDisable(vcCapabilityList[i].uiSecond);
 		}
 	}
+#endif
 }
 
 /*	Checks if the given capability is enabled or not.
@@ -812,8 +818,10 @@ void Video_PostFrame(void)
 
 	Screen_DrawFPS();
 
+#ifdef KATANA_CORE_GL
 	if (cv_video_finish.bValue)
 		glFinish();
+#endif
 
 	if (Video.debug_frame)
 		Video.debug_frame = false;

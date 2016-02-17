@@ -94,12 +94,17 @@ typedef struct
 	bool	shadow;
 	bool	depth_texture;
 	bool	generate_mipmap;
-} VideoExtensions;
+} VideoExtensions_t;
 
 typedef struct
 {
-	// OpenGL Information
-	char	
+	int	num_cards;
+} VideoHardware_t;
+
+typedef struct
+{
+	// Information
+	const char	
 		*gl_vendor,
 		*gl_renderer,
 		*gl_version,
@@ -133,8 +138,8 @@ typedef struct
 		debug_frame,
 		unlocked;						// Can we change the window settings or not?
 
-	// OpenGL Extensions
-	VideoExtensions	extensions;
+	VideoExtensions_t	extensions;		// Extensions
+	VideoHardware_t		hardware;		// Hardware
 } Video_t;
 
 plEXTERN_C_START
@@ -143,7 +148,6 @@ extern Video_t Video;
 
 void Video_Initialize(void);
 void Video_UpdateWindow(void);
-void Video_ClearBuffer(void);
 void Video_GenerateSphereCoordinates(void);
 void Video_SetTexture(gltexture_t *gTexture);
 void Video_SetViewportSize(int w, int h);

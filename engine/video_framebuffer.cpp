@@ -36,7 +36,9 @@ VideoRenderBuffer::~VideoRenderBuffer()
 
 void VideoRenderBuffer::Attach()
 {
+#ifdef KATANA_CORE_GL
 	vlAttachFrameBufferRenderBuffer(GL_DEPTH_STENCIL_ATTACHMENT, instance);
+#endif
 }
 
 void VideoRenderBuffer::Bind()
@@ -102,6 +104,7 @@ VideoFrameBuffer::~VideoFrameBuffer()
 */
 void VideoFrameBuffer::GenerateBuffers()
 {
+#ifdef KATANA_CORE_GL
 	// Colour buffer
 	{
 		// Create a new texture instance and then bind it.
@@ -126,6 +129,7 @@ void VideoFrameBuffer::GenerateBuffers()
 	buf_depth->Attach();
 
 	vlCheckFrameBufferStatus();
+#endif
 }
 
 void VideoFrameBuffer::Bind()

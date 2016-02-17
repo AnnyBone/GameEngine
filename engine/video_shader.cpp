@@ -58,6 +58,7 @@ VideoShader::VideoShader(VideoShaderType_t type)
 
 bool VideoShader::Load(const char *path)
 {
+#ifdef KATANA_CORE_GL
 	VIDEO_FUNCTION_START
 	// Check that the path is valid.
 	if (path[0] == ' ')
@@ -118,19 +119,25 @@ bool VideoShader::Load(const char *path)
 	// Everything worked out okay!
 	return true;
 	VIDEO_FUNCTION_END
+#else
+	return false;
+#endif
 }
 
 VideoShader::~VideoShader()
 {
+#ifdef KATANA_CORE_GL
 	VIDEO_FUNCTION_START
 	glDeleteShader(instance);
 	VIDEO_FUNCTION_END
+#endif
 }
 
 // Compilation
 
 bool VideoShader::CheckCompileStatus()
 {
+#ifdef KATANA_CORE_GL
 	VIDEO_FUNCTION_START
 	int iCompileStatus;
 	glGetObjectParameterivARB(instance, GL_COMPILE_STATUS, &iCompileStatus);
@@ -152,6 +159,9 @@ bool VideoShader::CheckCompileStatus()
 
 	return true;
 	VIDEO_FUNCTION_END
+#else
+	return false;
+#endif
 }
 
 // Information
@@ -178,24 +188,30 @@ VideoShaderProgram::VideoShaderProgram()
 
 VideoShaderProgram::~VideoShaderProgram()
 {
+#ifdef KATANA_CORE_GL
 	glDeleteProgram(instance);
+#endif
 }
 
 void VideoShaderProgram::Initialize()
 {
+#ifdef KATANA_CORE_GL
 	instance = glCreateProgram();
 	if (!instance)
 		Sys_Error("Failed to create shader program!\n");
+#endif
 }
 
 void VideoShaderProgram::Attach(VideoShader *shader)
 {
+#ifdef KATANA_CORE_GL
 	VIDEO_FUNCTION_START
 	if (!shader)
 		Sys_Error("Attempted to attach an invalid shader!\n");
 
 	glAttachShader(instance, shader->GetInstance());
 	VIDEO_FUNCTION_END
+#endif
 }
 
 void VideoShaderProgram::Enable()
@@ -214,6 +230,7 @@ void VideoShaderProgram::Disable()
 
 void VideoShaderProgram::Link()
 {
+#ifdef KATANA_CORE_GL
 	VIDEO_FUNCTION_START
 	glLinkProgram(instance);
 
@@ -237,6 +254,7 @@ void VideoShaderProgram::Link()
 		Sys_Error("Shader program linking failed!\nCheck log for details.\n");
 	}
 	VIDEO_FUNCTION_END
+#endif
 }
 
 void VideoShaderProgram::Shutdown()
@@ -248,49 +266,63 @@ void VideoShaderProgram::Shutdown()
 
 int VideoShaderProgram::GetUniformLocation(const char *name)
 {
+#ifdef KATANA_CORE_GL
 	return glGetUniformLocation(instance, name);
+#else
+	return 0;
+#endif
 }
 
 void VideoShaderProgram::SetVariable(int location, float x, float y, float z)
 {
+#ifdef KATANA_CORE_GL
 	if (!IsActive())
 		Sys_Error("Ensure shader program is enabled before applying variables! (%i) (%i %i %i)\n",
 			location, (int)x, (int)y, (int)z);
 	
 	glUniform3f(location, x, y, z);
+#endif
 }
 
 void VideoShaderProgram::SetVariable(int location, MathVector3f_t vector)
 {
+#ifdef KATANA_CORE_GL
 	if (!IsActive())
 		Sys_Error("Ensure shader program is enabled before applying variables! (%i) (%i %i %i)\n",
 			location, (int)vector[0], (int)vector[1], (int)vector[2]);
 
 	glUniform3fv(location, 3, vector);
+#endif
 }
 
 void VideoShaderProgram::SetVariable(int location, float x, float y, float z, float a)
 {
+#ifdef KATANA_CORE_GL
 	if (!IsActive())
 		Sys_Error("Ensure shader program is enabled before applying variables! (%i) (%i %i %i %i)\n",
 			location, (int)x, (int)y, (int)z, (int)a);
 	glUniform4f(location, x, y, z, a);
+#endif
 }
 
 void VideoShaderProgram::SetVariable(int location, int i)
 {
+#ifdef KATANA_CORE_GL
 	if (!IsActive())
 		Sys_Error("Ensure shader program is enabled before applying variables! (%i) (%i)\n",
 			location, i);
 	glUniform1i(location, i);
+#endif
 }
 
 void VideoShaderProgram::SetVariable(int location, float f)
 {
+#ifdef KATANA_CORE_GL
 	if (!IsActive())
 		Sys_Error("Ensure shader program is enabled before applying variables! (%i) (%i)\n",
 			location, (int)f);
 	glUniform1f(location, f);
+#endif
 }
 
 unsigned int VideoShaderProgram::GetInstance()

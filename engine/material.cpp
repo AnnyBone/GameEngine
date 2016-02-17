@@ -1022,6 +1022,7 @@ plEXTERN_C_END
 */
 void Material_DrawObject(Material_t *material, VideoObject_t *object, bool ispost)
 {
+#ifdef KATANA_CORE_GL
 	bool showwireframe = r_showtris.bValue;
 	if ((material && material->override_wireframe) && (r_showtris.iValue == 1))
 		showwireframe = false;
@@ -1060,6 +1061,7 @@ void Material_DrawObject(Material_t *material, VideoObject_t *object, bool ispos
 		object->numverts,
 		ispost
 	);
+#endif
 }
 
 /*	Typically called before an object is drawn.
@@ -1132,6 +1134,7 @@ void Material_Draw(Material_t *material, VideoVertex_t *ObjectVertex, VideoPrimi
 			// Allow us to manipulate the texture.
 			if (texture->matrixmod)
 			{
+#ifdef KATANA_CORE_GL
 				glMatrixMode(GL_TEXTURE);
 				glLoadIdentity();
 				if ((texture->vScroll[0] > 0) || (texture->vScroll[0] < 0) ||
@@ -1143,6 +1146,7 @@ void Material_Draw(Material_t *material, VideoVertex_t *ObjectVertex, VideoPrimi
 				if ((texture->fRotate > 0) || (texture->fRotate < 0))
 					glRotatef(texture->fRotate*cl.time, 0, 0, 1);
 				glMatrixMode(GL_MODELVIEW);
+#endif
 			}
 
 			// Anything greater than the first unit, copy the coords.
@@ -1175,13 +1179,17 @@ void Material_Draw(Material_t *material, VideoVertex_t *ObjectVertex, VideoPrimi
 			if (!ispost)
 			{
 				vlSetTextureEnvironmentMode(VIDEO_TEXTURE_MODE_COMBINE);
+#ifdef KATANA_CORE_GL
 				glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
 				glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_PREVIOUS);
 				glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_TEXTURE);
 				glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 4);
+#endif
 			}
+#ifdef KATANA_CORE_GL
 			else
 				glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 1);
+#endif
 			break;
 		case MATERIAL_TEXTURE_DETAIL:
 			if (!ispost)
@@ -1191,12 +1199,15 @@ void Material_Draw(Material_t *material, VideoVertex_t *ObjectVertex, VideoPrimi
 					vlDisable(VIDEO_TEXTURE_2D);
 					break;
 				}
-
+#ifdef KATANA_CORE_GL
 				glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
 				glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 2);
+#endif
 			}
+#ifdef KATANA_CORE_GL
 			else
 				glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 1);
+#endif
 			break;
 		case MATERIAL_TEXTURE_FULLBRIGHT:
 			if (!ispost)
@@ -1225,11 +1236,13 @@ void Material_Draw(Material_t *material, VideoVertex_t *ObjectVertex, VideoPrimi
 			// Reset any manipulation within the matrix.
 			if (texture->matrixmod)
 			{
+#ifdef KATANA_CORE_GL
 				glMatrixMode(GL_TEXTURE);
 				glLoadIdentity();
 				glTranslatef(0, 0, 0);
 				glRotatef(0, 0, 0, 0);
 				glMatrixMode(GL_MODELVIEW);
+#endif
 			}
 
 			vlSetTextureEnvironmentMode(VIDEO_TEXTURE_MODE_MODULATE);

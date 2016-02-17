@@ -49,6 +49,7 @@ void Font_Initialize(void)
 */
 void Font_Load(const char *ccName,int iSize)
 {
+#ifdef KATANA_CORE_GL
 	char cPath[PLATFORM_MAX_PATH];
 
 	sprintf(cPath, "%s/%s", g_state.path_fonts, ccName);
@@ -80,6 +81,7 @@ void Font_Load(const char *ccName,int iSize)
 	wglUseFontBitmapsA(NULL, 32, 96, glGenLists(96));
 
 	DeleteObject(hFont);
+#endif
 #endif
 }
 

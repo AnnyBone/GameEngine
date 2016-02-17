@@ -214,6 +214,7 @@ void R_DrawSequentialPoly(msurface_t *s)
 
 void Brush_Draw(ClientEntity_t *e)
 {
+#ifdef KATANA_CORE_GL
 	int				k;
 	unsigned int	i;
 	msurface_t		*psurf;
@@ -254,7 +255,7 @@ void Brush_Draw(ClientEntity_t *e)
 		glRotatef(-e->angles[1],0,0,1);
 		glTranslatef(-e->origin[0],-e->origin[1],-e->origin[2]);
 		glGetFloatv(GL_MODELVIEW_MATRIX,matrix);
-		glPopMatrix();
+		vlPopMatrix();
 
 		for(k = 0; k < MAX_DLIGHTS; k++)
 		{
@@ -312,6 +313,7 @@ void Brush_Draw(ClientEntity_t *e)
 	}
 
 	glPopMatrix();
+#endif
 }
 
 /*
@@ -640,6 +642,7 @@ void R_UploadLightmap(int lmap)
 	bLightmapModified[lmap] = false;
 
 	theRect = &lightmap_rectchange[lmap];
+#ifdef KATANA_CORE_GL
 	glTexSubImage2D(
 		GL_TEXTURE_2D,
 		0,0,
@@ -650,6 +653,7 @@ void R_UploadLightmap(int lmap)
 		GL_BGRA,
 		GL_UNSIGNED_INT_8_8_8_8_REV,
 		lightmaps+(lmap* BLOCK_HEIGHT + theRect->t)*BLOCK_WIDTH*LIGHTMAP_BYTES);
+#endif
 	theRect->l = BLOCK_WIDTH;
 	theRect->t = BLOCK_HEIGHT;
 	theRect->h = 0;
@@ -694,6 +698,7 @@ void R_RebuildAllLightmaps (void)
 
 		Video_SetTexture(lightmap_textures[i]);
 
+#ifdef KATANA_CORE_GL
 		glTexSubImage2D(
 			GL_TEXTURE_2D,
 			0,0,0,
@@ -702,5 +707,6 @@ void R_RebuildAllLightmaps (void)
 			GL_BGRA,
 			GL_UNSIGNED_INT_8_8_8_8_REV,
 			lightmaps+i*BLOCK_WIDTH*BLOCK_HEIGHT*LIGHTMAP_BYTES);
+#endif
 	}
 }

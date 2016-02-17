@@ -422,6 +422,8 @@ void Draw_ConsoleBackground(void)
 
 void Draw_GradientBackground(void)
 {
+#ifdef KATANA_CORE_GLIDE
+#else
 	VideoCanvasType_t vctOldCanvas; //johnfitz
 
 	glMatrixMode(GL_PROJECTION);
@@ -445,6 +447,7 @@ void Draw_GradientBackground(void)
 	glMatrixMode(GL_MODELVIEW);
 	glPopMatrix();
 	glViewport(0, 0, Video.iWidth, Video.iHeight);
+#endif
 }
 
 /*	This repeats a 64*64 tile graphic to fill the screen around a sized down
@@ -515,6 +518,7 @@ void Draw_CoordinateAxes(float x,float y,float z)
 
 void Draw_Grid(float x, float y, float z, int grid_size)
 {
+#ifdef KATANA_CORE_GL
 	int i;
 
 	Video_ResetCapabilities(false);
@@ -576,6 +580,7 @@ void Draw_Grid(float x, float y, float z, int grid_size)
 	glPopMatrix();
 
 	Video_ResetCapabilities(true);
+#endif
 }
 
 void Draw_Rectangle(int x, int y, int w, int h, Colour_t colour)
@@ -661,6 +666,7 @@ void Draw_FadeScreen (void)
 */
 void Draw_BeginDisc(void)
 {
+#ifdef KATANA_CORE_GL
 	//static float fDiscRotation = 0;
 	int	iViewport[4]; //johnfitz
 	VideoCanvasType_t oldcanvas; //johnfitz
@@ -692,10 +698,12 @@ void Draw_BeginDisc(void)
 	glPopMatrix();
 	glViewport(iViewport[0],iViewport[1],iViewport[2],iViewport[3]);
 	//johnfitz
+#endif
 }
 
 void GL_SetCanvas (VideoCanvasType_t newcanvas)
 {
+#ifdef KATANA_CORE_GL
 	extern vrect_t		scr_vrect;
 	float				s;
 	int					lines;
@@ -759,6 +767,7 @@ void GL_SetCanvas (VideoCanvasType_t newcanvas)
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity ();
+#endif
 }
 
 void Draw_ResetCanvas(void)
@@ -777,7 +786,7 @@ void Draw_ResetCanvas(void)
 void Draw_StaticEntity(ClientEntity_t *entity)
 {
 	// TODO: TEMPORARY DEBUGGING STUFF!!!!
-	glPushMatrix();
+	vlPushMatrix();
 
 	R_RotateForEntity(entity->origin, entity->angles);
 
@@ -785,19 +794,19 @@ void Draw_StaticEntity(ClientEntity_t *entity)
 	VideoObject_DrawImmediate(&entity->model->objects[entity->frame]);
 	Material_Draw(entity->model->mAssignedMaterials, 0, 0, 0, true);
 
-	glPopMatrix();
+	vlPopMatrix();
 	// TODO: TEMPORARY DEBUGGING STUFF!!!!
 }
 
 void Draw_VertexEntity(ClientEntity_t *entity)
 {
-	glPushMatrix();
+	vlPushMatrix();
 
 	R_RotateForEntity(entity->origin, entity->angles);
 
 	VideoObject_DrawImmediate(&entity->model->objects[entity->frame]);
 
-	glPopMatrix();
+	vlPopMatrix();
 }
 
 void Draw_Entity(ClientEntity_t *entity)

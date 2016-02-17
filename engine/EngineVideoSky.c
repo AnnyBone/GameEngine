@@ -555,6 +555,7 @@ void Sky_ProcessEntities(void)
 
 void Sky_EmitSkyBoxVertex(float s,float t,int axis)
 {
+#ifdef KATANA_CORE_GL
 	int				j,k;
 	float			w,h;
 	MathVector3f_t	v,b;
@@ -586,10 +587,12 @@ void Sky_EmitSkyBoxVertex(float s,float t,int axis)
 	t = 1.0f-t;
 	glTexCoord2f(s,t);
 	glVertex3fv(v);
+#endif
 }
 
 void Sky_DrawSkyBox (void)
 {
+#ifdef KATANA_CORE_GL
 	int	i;
 
 	for(i = 0; i < 6; i++)
@@ -642,6 +645,7 @@ void Sky_DrawSkyBox (void)
 			rs_skypasses++;
 		}
 	}
+#endif
 }
 
 //==============================================================================
@@ -692,6 +696,7 @@ void Sky_GetTexCoord(MathVector3f_t v,float speed,float *s,float *t)
 
 void Sky_DrawFaceQuad(glpoly_t *p)
 {
+#ifdef KATANA_CORE_GL
 	float	s,t,
 			*v;
 	int		i;
@@ -741,6 +746,7 @@ void Sky_DrawFaceQuad(glpoly_t *p)
 	}
 
 	vlDisable(VIDEO_BLEND);
+#endif
 }
 
 void Sky_DrawFace (int axis)
@@ -824,6 +830,7 @@ void Sky_ReadCameraPosition(void)
 */
 void Sky_Draw3DWorld(void)
 {
+#ifdef KATANA_CORE_GL
 	MathVector3f_t oldorg;
 
 	// Don't let us render twice.
@@ -853,6 +860,7 @@ void Sky_Draw3DWorld(void)
 
 	// Setup the view again, urgh.
 	R_SetupView();
+#endif
 }
 
 //
@@ -861,6 +869,7 @@ void Sky_Draw3DWorld(void)
 */
 void Sky_Draw(void)
 {
+#ifdef KATANA_CORE_GL
 	int	i;
 
 	// In these special render modes, the sky faces are handled in the normal world/brush renderer
@@ -916,4 +925,5 @@ void Sky_Draw(void)
 	// 3D skybox support.
 	if (cl.worldmodel && (cl.worldmodel->flags & MODEL_FLAG_3DSKY))
 		Sky_Draw3DWorld();
+#endif
 }

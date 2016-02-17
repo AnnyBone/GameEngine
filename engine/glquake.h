@@ -27,15 +27,22 @@
 #endif
 
 //#define	KATANA_CORE_GL
+#define	KATANA_CORE_GLIDE
 
 // TODO: 
 //		move these into video_layer.c once everything
 //		is abstracted out
+#if 0
 #ifdef KATANA_CORE_GL
 #include <GL/glcorearb.h>
 #else
 #include "GLee.h"
 #include <GL/glu.h>
+#endif
+#else
+#	define __MSC__
+
+#	include <glide.h>
 #endif
 
 plEXTERN_C_START
