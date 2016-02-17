@@ -125,6 +125,7 @@
 #		include <dirent.h>
 #		include <unistd.h>
 #		include <dlfcn.h>
+#		include <strings.h>
 #	endif
 
 	// Information
