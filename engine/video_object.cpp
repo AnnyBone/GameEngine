@@ -182,9 +182,9 @@ void VideoObject_Clip(VideoObject_t *voObject, MathVector4f_t mvClipDimensions)
 
 void VideoObject_CalculateLighting(VideoObject_t *object, DynamicLight_t *light)
 {
-	float angle;
+//	float angle;
 
-	for (int i = 0; i < object->numverts; i++)
+	for (unsigned int i = 0; i < object->numverts; i++)
 	{
 		/*
 		x = Object->Vertices_normalStat[count].x;
