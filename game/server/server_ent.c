@@ -77,6 +77,7 @@ ServerEntityField_t	entity_fields[] =
 	{ "bTakeDamage", ENTITY_FIELD(v.bTakeDamage), DATA_BOOLEAN },
 	{ "takedamage", ENTITY_FIELD(v.bTakeDamage), DATA_BOOLEAN },
 	{ "alpha", ENTITY_FIELD(alpha), DATA_INTEGER },
+	{ "frame", ENTITY_FIELD(v.frame), DATA_INTEGER },
 
 	// Model properties
 	{ "model_skin", ENTITY_FIELD(Model.iSkin), DATA_INTEGER },
