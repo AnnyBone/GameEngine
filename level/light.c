@@ -131,9 +131,9 @@ void ParseLightEntities( void )
 			continue;
 
 		// Reset these each time, just to be safe.
-		is_skylight =
-		is_spotlight =
-		is_light = false;
+		is_skylight		=
+		is_spotlight	=
+		is_light		= false;
 
 		// Figure out which type of light it is.
 		if (!strcmp(value, "light_spot"))				is_spotlight = true;
@@ -149,46 +149,50 @@ void ParseLightEntities( void )
 		VectorSet(l->color, 1, 1, 1);
 		GetVectorForKey(ent, "origin", l->origin);
 
+		l->type = defaultlighttype;
+
 		if (is_skylight)
 			l->type = LIGHTTYPE_SUN;
 		else if (is_spotlight)
-		{
 			l->spotcone = -cos(20.0f*Q_PI / 180.0f);
-			l->type = defaultlighttype;
-		}
 		else
-			l->type = defaultlighttype;
-
-		j = FloatForKey(ent,"delay");
-		if(!overridelighttypes && j)
 		{
-			if (j < 0 || j >= LIGHTTYPE_TOTAL)
-				Error("error in light at %.0f %.0f %.0f:\nunknown light type \"delay\" \"%s\"\n", l->origin[0], l->origin[1], l->origin[2], ValueForKey( ent, "delay" ));
-			l->type = (lighttype_t)j;
+			// For generic lights, we can use custom types.
+			j = FloatForKey(ent, "delay");
+			if (!overridelighttypes && j)
+			{
+				if (j < 0 || j >= LIGHTTYPE_TOTAL)
+					Error("error in light at %.0f %.0f %.0f:\nunknown light type \"delay\" \"%s\"\n", l->origin[0], l->origin[1], l->origin[2], ValueForKey(ent, "delay"));
+				l->type = (lighttype_t)j;
 
-			printf("%i\n", (int)l->type);
+				printf("%i\n", (int)l->type);
+			}
 		}
 
 		l->style = FloatForKey( ent, "style" );
 		if( (unsigned)l->style > 254 )
 			Error( "error in light at %.0f %.0f %.0f:\nBad light style %i (must be 0-254)", l->origin[0], l->origin[1], l->origin[2], l->style );
 
-		l->angle = FloatForKey(ent,"angle");
+		l->angle = FloatForKey(ent, "angle");
+		if (l->angle && !(l->type = LIGHTTYPE_SUN))
+			l->spotcone = -cos(l->angle / 2.0f*Q_PI / 180.0f);
 
-#if 0
-		value = ValueForKey(ent, "angles");
-		if (value[0] && (l->type == LIGHTTYPE_SUN))
+		if (l->type == LIGHTTYPE_SUN)
 		{
-			j = sscanf(value, "%lf %lf %lf", &vec[0], &vec[1], &vec[2]);
-			if (j != 3)
-				Error("error in light at %.0f %.0f %0.f:\nangles must be given 3 values", l->origin[0], l->origin[1], l->origin[2]);
+			value = ValueForKey(ent, "angles");
+			if (value[0])
+			{
+				j = sscanf(value, "%lf %lf %lf", &vec[0], &vec[1], &vec[2]);
+				if (j != 3)
+					Error("error in light at %.0f %.0f %.0f:\nangles must be given 3 values", l->origin[0], l->origin[1], l->origin[2]);
 
-			printf("%lf %lf %lf\n", vec[0], vec[1], vec[2]);
-
-			VectorCopy(vec, l->spotdir);
+				// This looks awful, but it's similar to how Quake 2 does it.
+				l->spotdir[0] = cosf(vec[YAW] / 180.0f * Q_PI) * cosf(vec[PITCH] / 180.0f * Q_PI);
+				l->spotdir[1] = sinf(vec[YAW] / 180.0f * Q_PI) * cosf(vec[PITCH] / 180.0f * Q_PI);
+				l->spotdir[2] = sinf(vec[PITCH] / 180.0f * Q_PI);
+			}
 		}
-#endif
-
+		
 		value = ValueForKey(ent,"light");
 		if( value[0] )
 		{
@@ -276,7 +280,7 @@ void ParseLightEntities( void )
 			if( i == j )
 				continue;
 
-			targetname = ValueForKey(&entities[j],"name");
+			targetname = ValueForKey(&entities[j], "name");
 			if (!strcmp(targetname, value))
 			{
 				vec3_t origin;
@@ -287,10 +291,8 @@ void ParseLightEntities( void )
 				VectorSubtract( origin, l->origin, l->spotdir );
 				VectorNormalize( l->spotdir );
 
-				if(!l->angle)
-					l->spotcone = -cos(20.0f*Q_PI/180.0f);
-				else
-					l->spotcone = -cos(l->angle/2.0f*Q_PI/180.0f);
+				printf("Sun Angle:\t\t%f\n", l->angle);
+				printf("Sun Direction:\t\t%f %f %f\n", l->spotdir[0], l->spotdir[1], l->spotdir[2]);
 				break;
 			}
 		}
