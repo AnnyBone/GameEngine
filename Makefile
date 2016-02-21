@@ -69,7 +69,6 @@ ENGINE_OBJS := engine/audio.o \
 	engine/EngineVideoLights.o \
 	engine/EngineVideoParticle.o \
 	engine/EngineVideoScreen.o \
-	engine/EngineVideoShadow.o \
 	engine/EngineVideoSky.o \
 	engine/EngineVideoTextureManager.o \
 	engine/EngineVideoWarp.o \
@@ -82,6 +81,7 @@ ENGINE_OBJS := engine/audio.o \
 	engine/video_brush.o \
 	engine/video_draw.o \
 	engine/video_layer.o \
+	engine/video_shadow.o \
 	engine/video_sdlwindow.o \
 	engine/zone.o \
 	engine/engine_exception.o \
@@ -157,7 +157,38 @@ GAME_OBJS := game/client/client.o \
 	game/server/server_weapon.o
 GAME_LIBS :=
 
-all: $(LAUNCHER_BIN) $(ENGINE_BIN) $(MENU_BIN) $(GAME_BIN)
+LEVEL_BIN := bin/level
+LEVEL_OBJS := level/brush.o \
+	level/bsp2prt.o \
+	level/bspfile.o \
+	level/bspinfo.o \
+	level/cmdlib.o \
+	level/csg4.o \
+	level/level_faces.o \
+	level/level_main.o \
+	level/level_outside.o \
+	level/level_portals.o \
+	level/level_tjunc.o \
+	level/level_tree.o \
+	level/level_wad.o \
+	level/level_write.o \
+	level/light.o \
+	level/light_face.o \
+	level/light_trace.o \
+	level/map.o \
+	level/mathlib.o \
+	level/mem.o \
+	level/scriptlib.o \
+	level/solidbsp.o \
+	level/threads.o \
+	level/vis.o \
+	level/vis_flow.o \
+	level/vis_sound.o \
+	level/winding.o \
+	shared/SharedFormats.o
+LEVEL_LIBS := -lm -lpthread -ldl -lX11
+
+all: $(LAUNCHER_BIN) $(ENGINE_BIN) $(MENU_BIN) $(GAME_BIN) $(LEVEL_BIN)
 
 clean:
 	rm -f $(LAUNCHER_BIN) $(LAUNCHER_OBJS)
@@ -165,6 +196,7 @@ clean:
 	rm -f $(ENGINE_BIN)   $(ENGINE_OBJS)
 	rm -f $(MENU_BIN)     $(MENU_OBJS)
 	rm -f $(GAME_BIN)     $(GAME_OBJS)
+	rm -f $(LEVEL_BIN)    $(LEVEL_OBJS)
 
 platform/%.o: platform/%.c
 	$(CC) $(CFLAGS) $(INCLUDE) -c -o $@ $<
@@ -206,3 +238,9 @@ game/%.o: game/%.cpp
 
 $(GAME_BIN): $(GAME_OBJS) $(PLATFORM_OBJS)
 	$(CXX) $(CXXFLAGS) -shared -o $@ $^ $(GAME_LIBS)
+
+level/%.o: level/%.c
+	$(CC) $(CFLAGS) $(INCLUDE) -c -o $@ $<
+
+$(LEVEL_BIN): $(LEVEL_OBJS) $(PLATFORM_OBJS)
+	$(CC) $(CFLAGS) -o $@ $^ $(LEVEL_LIBS)

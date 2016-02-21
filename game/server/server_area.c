@@ -47,12 +47,12 @@ void Area_SetMoveDirection(MathVector3f_t vAngles, MathVector3f_t vMoveDirection
 	MathVector3f_t vDown = { 0, -2, 0 };
 	MathVector3f_t vMoveDown = { 0, 0, -1 };
 
-	if(Math_VectorCompare(vAngles,vUp))
+	if (plVectorCompare(vAngles, vUp))
 		Math_VectorCopy(vMoveUp,vMoveDirection);
-	else if(Math_VectorCompare(vAngles,vDown))
+	else if (plVectorCompare(vAngles, vDown))
 		Math_VectorCopy(vMoveDown,vMoveDirection);
 	else
-		Math_AngleVectors(vAngles,vMoveDirection,NULL,NULL);
+		plAngleVectors(vAngles, vMoveDirection, NULL, NULL);
 
 	Math_VectorClear(vAngles);
 }
@@ -76,7 +76,7 @@ void Area_CalculateMovement(ServerEntity_t *eArea, MathVector3f_t vTDest, float 
 
 	Math_VectorSubtract(vTDest,eArea->v.origin,vdestdelta);
 
-	fTravelTime = (float)Math_VectorLength(vdestdelta)/fSpeed;
+	fTravelTime = (float)plVectorLength(vdestdelta) / fSpeed;
 
 	Math_VectorScale(vdestdelta,1.0f/fTravelTime,eArea->v.velocity);
 
@@ -163,7 +163,7 @@ void Area_CreateGib(ServerEntity_t *eArea, const char *cModel)
 
 		Entity_SetModel(eGib, (char*)cModel);
 		Entity_SetOrigin(eGib, eArea->v.oldorigin);
-		Entity_SetSizeVector(eGib, g_mvOrigin3f, g_mvOrigin3f);
+		Entity_SetSizeVector(eGib, pl_origin3f, pl_origin3f);
 	}
 }
 
@@ -363,8 +363,8 @@ void Area_RotateSpawn(ServerEntity_t *eArea)
 
 ServerEntity_t *Area_SpawnTriggerField(ServerEntity_t *owner, MathVector3f_t mins, MathVector3f_t maxs, void (*TriggerFunction)(ServerEntity_t *entity, ServerEntity_t *other))
 {
-	if (Math_VectorCompare(g_mvOrigin3f, mins) ||
-		Math_VectorCompare(g_mvOrigin3f, maxs))
+	if (plVectorCompare(pl_origin3f, mins) ||
+		plVectorCompare(pl_origin3f, maxs))
 	{
 		g_engine->Con_Warning("Invalid size for trigger field!");
 		return NULL;
@@ -764,7 +764,7 @@ void Area_PushableTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
 		eArea->v.flags = eArea->v.flags - FL_ONGROUND;
 	
 	// Get the right player angle.
-	Math_MVToVector(Math_VectorToAngles(eOther->v.velocity), vPVec); 
+	Math_MVToVector(plVectorToAngles(eOther->v.velocity), vPVec);
 	fYaw = vPVec[1] * ((float)pMath_PI) * 2 / 360;
 	
 	vMVec[0] = cosf(fYaw) * 80.0f;
@@ -773,7 +773,7 @@ void Area_PushableTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
 	vMVec[2] = 0; 
 
 	Math_VectorCopy(vMVec, eArea->v.velocity);
-	Math_MVToVector(Math_VectorToAngles(eArea->v.velocity), eArea->v.avelocity);
+	Math_MVToVector(plVectorToAngles(eArea->v.velocity), eArea->v.avelocity);
 	eArea->v.dNextThink = eArea->v.ltime + 0.5f;
 }
 
@@ -1133,7 +1133,7 @@ void Area_ClimbTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
 	if ((eOther->local.dLadderJump > Server.dTime) || (eOther->v.waterlevel > 1) || (eOther->v.flags & FL_WATERJUMP))
 		return;
 
-	Math_AngleVectors(eOther->v.angles, vForward, vRight, vUp);
+	plAngleVectors(eOther->v.angles, vForward, vRight, vUp);
 	Math_VectorCopy(vForward, vPlayerVec);
 	Math_VectorScale(vPlayerVec, 250, vPlayerVec);
 

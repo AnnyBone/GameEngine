@@ -590,7 +590,7 @@ void CL_Tracepos_f (void)
 	Math_VectorScale(vpn, 8192.0, v);
 	TraceLine(r_refdef.vieworg, v, w);
 
-	if(Math_Length(w) == 0)
+	if (plLengthf(w) == 0)
 		Con_Printf ("Tracepos: trace didn't hit anything\n");
 	else
 		Con_Printf ("Tracepos: (%i %i %i)\n", (int)w[0], (int)w[1], (int)w[2]);

@@ -77,6 +77,7 @@ ServerEntityField_t	entity_fields[] =
 	{ "bTakeDamage", ENTITY_FIELD(v.bTakeDamage), DATA_BOOLEAN },
 	{ "takedamage", ENTITY_FIELD(v.bTakeDamage), DATA_BOOLEAN },
 	{ "alpha", ENTITY_FIELD(alpha), DATA_INTEGER },
+	{ "frame", ENTITY_FIELD(v.frame), DATA_INTEGER },
 
 	// Model properties
 	{ "model_skin", ENTITY_FIELD(Model.iSkin), DATA_INTEGER },
@@ -403,7 +404,7 @@ void Entity_RadiusDamage(ServerEntity_t *eInflictor, float fRadius, int iDamage,
 
 			Math_VectorSubtract(eInflictor->v.origin,vOrigin,vOrigin);
 
-			fDistance = 0.5f*(float)Math_VectorLength(vOrigin);
+			fDistance = 0.5f*(float)plVectorLength(vOrigin);
 			if(fDistance > 0)
 			{
 				Math_VectorInverse(vOrigin);
@@ -553,10 +554,10 @@ bool Entity_IsMonster(ServerEntity_t *eEntity)
 */
 void Entity_SetPhysics(ServerEntity_t *seEntity, ServerSolidType_t pstSolidType, float fMass, float fFriction)
 {
-	seEntity->Physics.iSolid = pstSolidType;
-	seEntity->Physics.fMass = fMass;
-	seEntity->Physics.fGravity = SERVER_GRAVITY;
-	seEntity->Physics.fFriction = fFriction;
+	seEntity->Physics.iSolid		= pstSolidType;
+	seEntity->Physics.fMass			= fMass;
+	seEntity->Physics.fGravity		= SERVER_GRAVITY;
+	seEntity->Physics.fFriction		= fFriction;
 }
 
 /*
@@ -565,7 +566,7 @@ void Entity_SetPhysics(ServerEntity_t *seEntity, ServerSolidType_t pstSolidType,
 
 void Entity_MakeVectors(ServerEntity_t *eEntity)
 {
-	Math_AngleVectors(eEntity->v.v_angle, eEntity->local.vForward, eEntity->local.vRight, eEntity->local.vUp);
+	plAngleVectors(eEntity->v.v_angle, eEntity->local.vForward, eEntity->local.vRight, eEntity->local.vUp);
 }
 
 bool Entity_DropToFloor(ServerEntity_t *eEntity)

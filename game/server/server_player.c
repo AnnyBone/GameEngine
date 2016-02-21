@@ -486,19 +486,19 @@ void Player_PreThink(ServerEntity_t *ePlayer)
 		MathVector3f_t	vStart,vEnd;
 
 		// Check if we can jump onto an edge, was originally in a seperate function but merged here instead.
-		Math_AngleVectors(ePlayer->v.angles, ePlayer->local.vForward, ePlayer->local.vRight, ePlayer->local.vUp);
+		plAngleVectors(ePlayer->v.angles, ePlayer->local.vForward, ePlayer->local.vRight, ePlayer->local.vUp);
 		Math_VectorCopy(ePlayer->v.origin,vStart);
 
 		vStart[pZ] += 8.0f;
 
 		ePlayer->local.vForward[pZ] = 0;
 
-		Math_VectorNormalize(ePlayer->local.vForward);
+		plVectorNormalize(ePlayer->local.vForward);
 
 		for(i = 0; i < 3; i++)
 			vEnd[i] = vStart[i] + ePlayer->local.vForward[i] * 24.0f;
 
-		tTrace = Engine.Server_Move(vStart,vEnd,g_mvOrigin3f,g_mvOrigin3f,true,ePlayer);
+		tTrace = Engine.Server_Move(vStart, vEnd, pl_origin3f, pl_origin3f, true, ePlayer);
 		if(tTrace.fraction < 1.0f)
 		{
 			vStart[pZ] += ePlayer->v.maxs[pZ]-8.0f;
@@ -508,7 +508,7 @@ void Player_PreThink(ServerEntity_t *ePlayer)
 
 			Math_VectorSubtractValue(tTrace.plane.normal,50.0f,ePlayer->v.movedir);
 
-			tTrace = Engine.Server_Move(vStart,vEnd,g_mvOrigin3f,g_mvOrigin3f,true,ePlayer);
+			tTrace = Engine.Server_Move(vStart, vEnd, pl_origin3f, pl_origin3f, true, ePlayer);
 			if(tTrace.fraction == 1.0f)
 			{
 				ePlayer->v.flags		|= FL_WATERJUMP;
@@ -871,7 +871,7 @@ void Player_Jump(ServerEntity_t *ePlayer)
 		ePlayer->local.dLadderJump = Server.dTime + 0.4;
 		ePlayer->v.velocity[2] = 0;
 
-		Math_AngleVectors(ePlayer->v.angles, ePlayer->local.vForward, ePlayer->local.vRight, ePlayer->local.vUp);
+		plAngleVectors(ePlayer->v.angles, ePlayer->local.vForward, ePlayer->local.vRight, ePlayer->local.vUp);
 		ePlayer->v.velocity[0] += (ePlayer->local.vForward[0] * 100);
 		ePlayer->v.velocity[1] += (ePlayer->local.vForward[1] * 100);
 		ePlayer->v.velocity[2] += (ePlayer->local.vForward[2] * 100);
@@ -1114,7 +1114,7 @@ void Player_MoveThink(ServerEntity_t *ePlayer)
 	if(ePlayer->v.movetype == MOVETYPE_NONE)
 		return;
 
-	fLength = Math_VectorNormalize(ePlayer->v.punchangle);
+	fLength = plVectorNormalize(ePlayer->v.punchangle);
 	fLength -= 10*(float)Engine.Server_GetFrameTime();
 	if(fLength < 0)
 		fLength = 0;

@@ -98,7 +98,7 @@ void Light_Draw(void)
 
 			rad = dlLight->radius*0.35f;
 
-			if(!cvEditorLightPreview.bValue && (Math_Length(v) < rad))
+			if(!cvEditorLightPreview.bValue && (plLengthf(v) < rad))
 			{
 				// view is inside the dlight
 				a2 = dlLight->radius*0.0003f;
@@ -417,7 +417,7 @@ DynamicLight_t *Light_GetDynamic(MathVector3f_t vPoint, bool bCheap)
 
 			Math_VectorSubtract(vPoint,cl_dlights[i].origin,vDistance);
 
-			fDistance[0] = cl_dlights[i].radius-Math_Length(vDistance);
+			fDistance[0] = cl_dlights[i].radius - plLengthf(vDistance);
 			if(fDistance[0] > 0)
 			{
 				if(!dlClosestLight)
@@ -426,7 +426,7 @@ DynamicLight_t *Light_GetDynamic(MathVector3f_t vPoint, bool bCheap)
 				{
 					Math_VectorSubtract(dlClosestLight->origin,cl_dlights[i].origin,vDistance);
 
-					fDistance[1] = (cl_dlights[i].radius-Math_Length(vDistance));
+					fDistance[1] = (cl_dlights[i].radius - plLengthf(vDistance));
 					if(fDistance[1] < fDistance[0])
 						dlClosestLight = &cl_dlights[i];
 				}

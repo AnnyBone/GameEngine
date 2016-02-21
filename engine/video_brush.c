@@ -234,7 +234,7 @@ void Brush_Draw(ClientEntity_t *e)
 		vec3_t	temp,forward,right,up;
 
 		Math_VectorCopy (modelorg, temp);
-		Math_AngleVectors(e->angles, forward, right, up);
+		plAngleVectors(e->angles, forward, right, up);
 		modelorg[0] = Math_DotProduct (temp, forward);
 		modelorg[1] = -Math_DotProduct (temp, right);
 		modelorg[2] = Math_DotProduct (temp, up);

@@ -232,7 +232,7 @@ void TexMgr_Imagedump_f(void)
 		while ((c = strchr(tempname, '*'))) *c = '#';
 #endif
 
-		sprintf(tganame, "imagedump/%s.tga", tempname);
+		sprintf(tganame, "imagedump/%i.tga", glt->texnum);
 
 		Video_SetTexture(glt);
 

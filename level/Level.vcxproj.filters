@@ -7,18 +7,12 @@
     <ClCompile Include="bspinfo.c" />
     <ClCompile Include="cmdlib.c" />
     <ClCompile Include="csg4.c" />
-    <ClCompile Include="light.c" />
-    <ClCompile Include="light_face.c" />
-    <ClCompile Include="light_trace.c" />
     <ClCompile Include="map.c" />
     <ClCompile Include="mathlib.c" />
     <ClCompile Include="mem.c" />
     <ClCompile Include="scriptlib.c" />
     <ClCompile Include="solidbsp.c" />
     <ClCompile Include="threads.c" />
-    <ClCompile Include="vis.c" />
-    <ClCompile Include="vis_flow.c" />
-    <ClCompile Include="vis_sound.c" />
     <ClCompile Include="winding.c" />
     <ClCompile Include="level_main.c" />
     <ClCompile Include="level_wad.c" />
@@ -31,26 +25,54 @@
     <ClCompile Include="..\shared\SharedFormats.c">
       <Filter>Shared</Filter>
     </ClCompile>
+    <ClCompile Include="light_trace.c">
+      <Filter>Light</Filter>
+    </ClCompile>
+    <ClCompile Include="light_face.c">
+      <Filter>Light</Filter>
+    </ClCompile>
+    <ClCompile Include="light.c">
+      <Filter>Light</Filter>
+    </ClCompile>
+    <ClCompile Include="vis_sound.c">
+      <Filter>VIS</Filter>
+    </ClCompile>
+    <ClCompile Include="vis_flow.c">
+      <Filter>VIS</Filter>
+    </ClCompile>
+    <ClCompile Include="vis.c">
+      <Filter>VIS</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="bsp5.h" />
     <ClInclude Include="bspfile.h" />
     <ClInclude Include="cmdlib.h" />
-    <ClInclude Include="light.h" />
     <ClInclude Include="map.h" />
     <ClInclude Include="mathlib.h" />
     <ClInclude Include="mem.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="threads.h" />
-    <ClInclude Include="vis.h" />
     <ClInclude Include="winding.h" />
     <ClInclude Include="..\shared\SharedFormats.h">
       <Filter>Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="light.h">
+      <Filter>Light</Filter>
+    </ClInclude>
+    <ClInclude Include="vis.h">
+      <Filter>VIS</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Shared">
       <UniqueIdentifier>{aba33d6d-3c15-4cf5-9fad-0e760e335f39}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Light">
+      <UniqueIdentifier>{f1f12a80-38ca-47e7-8802-9d78f1c2fc9f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="VIS">
+      <UniqueIdentifier>{23bff521-16f7-41a1-95e5-e1e443e8fb5c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

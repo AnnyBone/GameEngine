@@ -67,7 +67,7 @@ void Barrel_Damaged(ServerEntity_t *seBarrel, ServerEntity_t *seOther, ServerDam
 		if (strcmp(seBarrel->v.model, MODEL_DECORATION_BARREL2))
 		{
 			PHYSICS_MODEL_ROCK(gibpath);
-			ThrowGib(seBarrel->v.origin, g_mvOrigin3f, gibpath, 0, false);
+			ThrowGib(seBarrel->v.origin, pl_origin3f, gibpath, 0, false);
 
 			Entity_SetModel(seBarrel, MODEL_DECORATION_BARREL2);
 			return;
@@ -79,7 +79,7 @@ void Barrel_Damaged(ServerEntity_t *seBarrel, ServerEntity_t *seOther, ServerDam
 		if (strcmp(seBarrel->v.model, MODEL_DECORATION_BARREL1))
 		{
 			PHYSICS_MODEL_ROCK(gibpath);
-			ThrowGib(seBarrel->v.origin, g_mvOrigin3f, gibpath, 0, false);
+			ThrowGib(seBarrel->v.origin, pl_origin3f, gibpath, 0, false);
 
 			Entity_SetModel(seBarrel, MODEL_DECORATION_BARREL1);
 			return;

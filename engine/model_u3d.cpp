@@ -179,7 +179,7 @@ bool ModelU3D_Load(model_t *model, void *buf)
 			model->objects[i].vertices[j].mvPosition[1] = (float)uvertices[j].y;
 			model->objects[i].vertices[j].mvPosition[2] = (float)uvertices[j].z;
 
-			Math_Vector4Copy(g_colourwhite, model->objects[i].vertices[j].mvColour);
+			Math_Vector4Copy(pl_white, model->objects[i].vertices[j].mvColour);
 		}
 
 		fseek(animf, animheader.size - model->numvertexes * sizeof(U3DVertex_t), SEEK_CUR);

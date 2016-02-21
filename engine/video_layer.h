@@ -18,49 +18,111 @@
 
 #pragma once
 
+//		VL_MODE_OPENGL
+//		VL_MODE_OPENGL_CORE
+#define	VL_MODE_GLIDE
+//		VL_MODE_DIRECTX
+//		VL_MODE_VULKAN
+
+#if defined (VL_MODE_OPENGL) || (VL_MODE_OPENGL_CORE)
+typedef unsigned int vlVertexArray_t;
+typedef unsigned int vlRenderBuffer_t;
+typedef unsigned int vlFrameBuffer_t;
+#endif
+
+#if defined (VL_MODE_OPENGL) || (VL_MODE_OPENGL_CORE)
+#	define VL_MASK_COLOUR	GL_COLOR_BUFFER_BIT
+#	define VL_MASK_DEPTH	GL_DEPTH_BUFFER_BIT
+#	define VL_MASK_ACCUM	GL_ACCUM_BUFFER_BIT
+#	define VL_MASK_STENCIL	GL_STENCIL_BUFFER_BIT
+#else
+#	define VL_MASK_COLOUR	(1 << 1)
+#	define VL_MASK_DEPTH	(1 << 2)
+#	define VL_MASK_ACCUM	(1 << 3)
+#	define VL_MASK_STENCIL	(1 << 4)
+#endif
+
 typedef enum
 {
-	VIDEO_FBO_DEFAULT,
-
-	VIDEO_FBO_DRAW,
-	VIDEO_FBO_READ
-} VideoFBOTarget_t;
+#if defined (VL_MODE_OPENGL) || (VL_MODE_OPENGL_CORE)
+	// Set these directly to avoid translation.
+	VL_FRAMEBUFFER_DEFAULT	= GL_FRAMEBUFFER,
+	VL_FRAMEBUFFER_DRAW		= GL_DRAW_FRAMEBUFFER,
+	VL_FRAMEBUFFER_READ		= GL_READ_FRAMEBUFFER
+#else
+	VL_FRAMEBUFFER_DEFAULT,
+	VL_FRAMEBUFFER_DRAW,
+	VL_FRAMEBUFFER_READ
+#endif
+} vlFBOTarget_t;
 
 typedef enum
 {
-	VIDEO_TEXTURE_FILTER_NEAREST,
-	VIDEO_TEXTURE_FILTER_LINEAR
-} VideoTextureFilter_t;
+#if defined (VL_MODE_OPENGL) || (VL_MODE_OPENGL_CORE)
+	// Set these directly to avoid translation.
+	VL_TEXTURE_FILTER_NEAREST	= GL_NEAREST,	// Nearest filtering
+	VL_TEXTURE_FILTER_LINEAR	= GL_LINEAR		// Linear filtering
+#else
+	VL_TEXTURE_FILTER_NEAREST,					// Nearest filtering
+	VL_TEXTURE_FILTER_LINEAR					// Linear filtering
+#endif
+} vlTextureFilter_t;
 
 typedef enum
 {
-	VIDEO_TEXTURE_FORMAT_RGB,
-	VIDEO_TEXTURE_FORMAT_RGBA,
-	VIDEO_TEXTURE_FORMAT_BGR,
-	VIDEO_TEXTURE_FORMAT_BGRA,
-	VIDEO_TEXTURE_FORMAT_LUMINANCE,
-} VideoTextureFormat_t;
+#ifdef VL_MODE_OPENGL
+	VL_TEXTURE_FORMAT_RGB			= GL_RGB,
+	VL_TEXTURE_FORMAT_RGBA			= GL_RGBA,
+	VL_TEXTURE_FORMAT_BGR			= GL_BGR,
+	VL_TEXTURE_FORMAT_BGRA			= GL_BGRA,
+#else
+	VL_TEXTURE_FORMAT_RGB,
+	VL_TEXTURE_FORMAT_RGBA,
+	VL_TEXTURE_FORMAT_BGR,
+	VL_TEXTURE_FORMAT_BGRA,
+#endif
+} vlTextureFormat_t;
+
+typedef enum
+{
+#if defined (VL_MODE_OPENGL) || (VL_MODE_OPENGL_CORE)
+	VL_TEXTURE_2D	= GL_TEXTURE_2D
+#else
+	VL_TEXTURE_2D
+#endif
+} vlTextureTarget_t;
+
+typedef enum
+{
+#if defined (VL_MODE_OPENGL) || (VL_MODE_OPENGL_CORE)
+	VL_STRING_RENDERER		= GL_RENDERER,
+	VL_STRING_VERSION		= GL_VERSION,
+	VL_STRING_VENDOR		= GL_VENDOR,
+	VL_STRING_EXTENSIONS	= GL_EXTENSIONS
+#endif
+} vlString_t;
 
 plEXTERN_C_START
 
 char *vlGetErrorString(unsigned int er);
 
-const char *vlGetString(unsigned int name);
-const char *vlGetVendor(void);
 const char *vlGetRenderer(void);
 const char *vlGetVersion(void);
 const char *vlGetExtensions(void);
-
-void vlClear(void);
+const char *vlGetVendor(void);
+const char *vlGetString(vlString_t string);
 
 void vlGetMaxTextureImageUnits(int *params);
 void vlGetMaxTextureAnistropy(float *params);
 
+unsigned int vlGetTextureUnit(unsigned int target);
+
 void vlPushMatrix(void);
 void vlPopMatrix(void);
 
-void vlSetupTexture(VideoTextureFormat_t InternalFormat, VideoTextureFormat_t Format, unsigned int Width, unsigned int Height);
-void vlSetTextureFilter(VideoTextureFilter_t FilterMode);
+void vlActiveTexture(unsigned int texunit);
+void vlTexImage2D(vlTextureTarget_t target, vlTextureFormat_t internal_format, vlTextureFormat_t format, int width, int height, const void *data);
+void vlSetTextureFilter(vlTextureFilter_t FilterMode);
 void vlSetTextureEnvironmentMode(VideoTextureEnvironmentMode_t TextureEnvironmentMode);
 
 void vlEnable(unsigned int uiCapabilities);
@@ -70,7 +132,7 @@ void vlBlendFunc(VideoBlend_t modea, VideoBlend_t modeb);
 void vlDepthMask(bool mode);
 
 // Shaders
-void VideoLayer_UseProgram(unsigned int program);
+void vlUseProgram(unsigned int program);
 
 // Drawing
 void vlDrawArrays(VideoPrimitive_t mode, unsigned int first, unsigned int count);
@@ -81,19 +143,19 @@ void vlGenerateVertexArray(unsigned int *arrays);
 void vlBindVertexArray(unsigned int array);
 
 // Vertex Buffer
-void vlGenerateVertexBuffer(unsigned int *uiBuffer);
+void vlGenerateVertexBuffer(unsigned int *buffer);
 void vlGenerateVertexBuffers(int num, unsigned int *buffers);
 void vlBindBuffer(unsigned int target, unsigned int buffer);
 void vlDeleteVertexBuffer(unsigned int *uiBuffer);
 	
 // Frame Buffer
-void vlClearStencilBuffer(void);
+void vlClear(unsigned int mask);
 void vlGenerateFrameBuffer(unsigned int *buffer);
 void vlCheckFrameBufferStatus();
-void vlBindFrameBuffer(VideoFBOTarget_t target, unsigned int buffer);
+void vlBindFrameBuffer(vlFBOTarget_t target, unsigned int buffer);
 void vlAttachFrameBufferRenderBuffer(unsigned int attachment, unsigned int buffer);
 void vlAttachFrameBufferTexture(gltexture_t *buffer);
-void vlDeleteFrameBuffer(unsigned int *uiBuffer);
+void vlDeleteFrameBuffer(unsigned int *buffer);
 
 // Render Buffer
 void vlGenerateRenderBuffer(unsigned int *buffer);

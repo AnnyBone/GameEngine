@@ -28,6 +28,7 @@ typedef struct
 	vec_t	radius;			// used by all light types except LIGHTTYPE_SUN
 	vec3_t	color;			// color of light in output scale (128 for example, or a huge number for LIGHTTYPE_RECIPX and LIGHTTYPE_RECIPXX)
 	vec_t	angle;			// cone angle for spotlights
+	vec_t	pitch;			// angle pitch for sun / spot
 	int		light;			// light radius from quake light entity
 	int		style;			// which style the light belongs to
 

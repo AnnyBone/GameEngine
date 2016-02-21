@@ -27,15 +27,17 @@ enum
 
 	COMMAND_IDLE_WAIT,		// Delay before switching to idle from attack.
 
-	COMMAND_LOOK_PITCH,		// Should we look up or down?
-	COMMAND_LOOK_YAW,		// Should we look left or right?
-	COMMAND_LOOK_WAIT		// Delay until we start turning again.
+	LASERGAT_COMMAND_LOOK_DISTANCE,		// Distance of travel before stopping.
+	LASERGAT_COMMAND_LOOK_PITCH,		// Should we look up or down?
+	LASERGAT_COMMAND_LOOK_YAW,			// Should we look left or right?
+	LASERGAT_COMMAND_LOOK_WAIT			// Delay until we start turning again.
 };
 
 #define LASERGAT_LOOK_RIGHT	0	// Look right.
 #define	LASERGAT_LOOK_LEFT	1	// Look left.
 #define	LASERGAT_LOOK_DOWN	0	// Look down.
 #define	LASERGAT_LOOK_UP	1	// Look up.
+
 #define LASERGAT_LOOK_NONE	2	// Don't do either.
 
 #define	LASERGAT_MAX_WAIT	rand()%50
@@ -44,11 +46,11 @@ Weapon_t *wLaserWeapon;
 
 void LaserGat_AimTarget(ServerEntity_t *eLaserGat,ServerEntity_t *eTarget)
 {
-	vec3_t	vOrigin;
+	MathVector3f_t	vOrigin;
 
 	Math_VectorSubtract(eLaserGat->v.origin,eTarget->v.origin,vOrigin);
-	Math_VectorNormalize(vOrigin);
-	Math_MVToVector(Math_VectorToAngles(vOrigin),eLaserGat->v.angles);
+	plVectorNormalize(vOrigin);
+	Math_MVToVector(plVectorToAngles(vOrigin), eLaserGat->v.angles);
 	Math_VectorInverse(eLaserGat->v.angles);
 }
 
@@ -56,14 +58,35 @@ void LaserGat_HandleAim(ServerEntity_t *eLaserGat)
 {
 	if (eLaserGat->Monster.think == MONSTER_THINK_IDLE)
 	{
-		if(!eLaserGat->Monster.eTarget)
+		if (!eLaserGat->Monster.eTarget)
 		{
+			if (eLaserGat->Monster.commands[LASERGAT_COMMAND_LOOK_PITCH] == LASERGAT_LOOK_DOWN)
+				eLaserGat->v.angles[0] -= 2;
+			else if (eLaserGat->Monster.commands[LASERGAT_COMMAND_LOOK_YAW] == LASERGAT_LOOK_UP)
+				eLaserGat->v.angles[0] += 2;
+
+			if (eLaserGat->Monster.commands[LASERGAT_COMMAND_LOOK_YAW] == LASERGAT_LOOK_LEFT)
+				eLaserGat->v.angles[1] += 2;
+			else if (eLaserGat->Monster.commands[LASERGAT_COMMAND_LOOK_YAW] == LASERGAT_LOOK_RIGHT)
+				eLaserGat->v.angles[1] -= 2;
 		}
 		else
-			LaserGat_AimTarget(eLaserGat,eLaserGat->Monster.eTarget);
+			LaserGat_AimTarget(eLaserGat, eLaserGat->Monster.eTarget);
 	}
 	else if (eLaserGat->Monster.think == MONSTER_THINK_ATTACKING)
-		LaserGat_AimTarget(eLaserGat,eLaserGat->Monster.eEnemy);
+		LaserGat_AimTarget(eLaserGat, eLaserGat->Monster.eEnemy);
+
+	// Constrain its angles...
+
+	if (eLaserGat->v.angles[0] > 10.0f)
+		eLaserGat->v.angles[0] = 10.0f;
+	else if (eLaserGat->v.angles[0] < -60.0f)
+		eLaserGat->v.angles[0] = -60.0f;
+
+	if (eLaserGat->v.angles[1] > 180)
+		eLaserGat->v.angles[1] = 180;
+	else if (eLaserGat->v.angles[1] < -180)
+		eLaserGat->v.angles[1] = -180;
 }
 
 void LaserGat_Touch(ServerEntity_t *eLaserGat,ServerEntity_t *eOther)
@@ -82,8 +105,8 @@ void LaserGat_Explode(ServerEntity_t *eLaserGat)
 
 void LaserGat_Die(ServerEntity_t *eLaserGat, ServerEntity_t *eOther, ServerDamageType_t type)
 {
-	eLaserGat->v.think		= LaserGat_Explode;
-	eLaserGat->v.dNextThink	= Server.dTime + 5.0;
+	eLaserGat->v.think			= LaserGat_Explode;
+	eLaserGat->v.dNextThink		= Server.dTime + 5.0;
 }
 
 void LaserGat_Think(ServerEntity_t *eLaserGat)
@@ -91,59 +114,28 @@ void LaserGat_Think(ServerEntity_t *eLaserGat)
 	switch (eLaserGat->Monster.think)
 	{
 	case MONSTER_THINK_IDLE:
-		// Check if there are any targets nearby...
-		if (!eLaserGat->Monster.commands[COMMAND_ATTACK_WAIT])
+		eLaserGat->Monster.eTarget = Monster_GetTarget(eLaserGat);
+		if (eLaserGat->Monster.eTarget)
 		{
-			eLaserGat->Monster.eTarget = Monster_GetTarget(eLaserGat);
-			if(eLaserGat->Monster.eTarget)
-			{
-#if 0
-				// [11/6/2013] Try setting the target as an enemy... ~hogsy
-				if (Monster_GetRelationship(eLaserGat, eLaserGat->Monster.eTarget) == MONSTER_RELATIONSHIP_HATE)
-				{
-					// [6/4/2013] Set think and state for next frame ~hogsy
-					Monster_SetThink(eLaserGat,MONSTER_THINK_ATTACKING);
-					Monster_SetState(eLaserGat,MONSTER_STATE_AWAKE);
-					return;
-				}
-#endif
-				{
-					eLaserGat->Monster.eOldTarget	= eLaserGat->Monster.eTarget;
-					eLaserGat->Monster.eTarget		= NULL;
-				}
-			}
-			// [6/4/2013] TODO: Check if it's neutral and worth damaging? ~hogsy
-
-			eLaserGat->Monster.commands[COMMAND_ATTACK_WAIT] = 5;
+			eLaserGat->Monster.eOldTarget	= eLaserGat->Monster.eTarget;
+			eLaserGat->Monster.eTarget		= NULL;
 		}
+
+		if (eLaserGat->Monster.commands[LASERGAT_COMMAND_LOOK_WAIT] <= 0)
+			eLaserGat->Monster.commands[LASERGAT_COMMAND_LOOK_WAIT] = 15;
 		else
-			eLaserGat->Monster.commands[COMMAND_ATTACK_WAIT]--;
-
-		if (!eLaserGat->Monster.commands[COMMAND_LOOK_WAIT])
 		{
-			if (eLaserGat->Monster.commands[COMMAND_LOOK_PITCH] == LASERGAT_LOOK_DOWN)
-				eLaserGat->v.angles[0] -= 0.5f;
-			else if (eLaserGat->Monster.commands[COMMAND_LOOK_YAW] == LASERGAT_LOOK_UP)
-				eLaserGat->v.angles[0] += 0.5f;
+			if (rand() % 2 == 1)
+				eLaserGat->Monster.commands[LASERGAT_COMMAND_LOOK_PITCH] = LASERGAT_LOOK_UP;
+			else
+				eLaserGat->Monster.commands[LASERGAT_COMMAND_LOOK_PITCH] = LASERGAT_LOOK_DOWN;
 
-			if (eLaserGat->Monster.commands[COMMAND_LOOK_YAW] == LASERGAT_LOOK_LEFT)
-				eLaserGat->v.angles[1] += 0.5f;
-			else if (eLaserGat->Monster.commands[COMMAND_LOOK_YAW] == LASERGAT_LOOK_RIGHT)
-				eLaserGat->v.angles[1] -= 0.5f;
+			if (rand() % 2 == 1)
+				eLaserGat->Monster.commands[LASERGAT_COMMAND_LOOK_YAW] = LASERGAT_LOOK_LEFT;
+			else
+				eLaserGat->Monster.commands[LASERGAT_COMMAND_LOOK_YAW] = LASERGAT_LOOK_RIGHT;
 
-			if(rand()%125 == 1)
-			{
-				eLaserGat->Monster.commands[COMMAND_LOOK_WAIT] = LASERGAT_MAX_WAIT;
-				if(rand()%2 == 1)
-					eLaserGat->Monster.commands[COMMAND_LOOK_PITCH] = LASERGAT_LOOK_UP;
-				else
-					eLaserGat->Monster.commands[COMMAND_LOOK_PITCH] = LASERGAT_LOOK_DOWN;
-
-				if(rand()%2 == 1)
-					eLaserGat->Monster.commands[COMMAND_LOOK_YAW] = LASERGAT_LOOK_LEFT;
-				else
-					eLaserGat->Monster.commands[COMMAND_LOOK_YAW] = LASERGAT_LOOK_RIGHT;
-			}
+			eLaserGat->Monster.commands[LASERGAT_COMMAND_LOOK_WAIT]--;
 		}
 		break;
 	case MONSTER_THINK_ATTACKING:
@@ -169,10 +161,7 @@ void LaserGat_Think(ServerEntity_t *eLaserGat)
 	}
 
 	// [22/4/2014] Make sure our pitch doesn't go crazy, heh ~hogsy
-	if(eLaserGat->v.angles[0] > 10.0f)
-		eLaserGat->v.angles[0] = 10.0f;
-	else if(eLaserGat->v.angles[0] < -60.0f)
-		eLaserGat->v.angles[0] = -60.0f;
+	LaserGat_HandleAim(eLaserGat);
 }
 
 void LaserGat_BasePain(ServerEntity_t *eBase, ServerEntity_t *eOther, ServerDamageType_t type)
@@ -223,8 +212,8 @@ void LaserGat_Spawn(ServerEntity_t *eLaserGat)
 	eLaserGat->Monster.iType	= MONSTER_LASERGAT;
 
 	// Make this random so not all turrets start looking in the same directions.
-	eLaserGat->Monster.commands[COMMAND_LOOK_PITCH] = rand() % 2;
-	eLaserGat->Monster.commands[COMMAND_LOOK_YAW]	= rand() % 2;
+	eLaserGat->Monster.commands[LASERGAT_COMMAND_LOOK_PITCH] = rand() % 2;
+	eLaserGat->Monster.commands[LASERGAT_COMMAND_LOOK_YAW] = rand() % 2;
 
 	// Set our physical properties.
 	eLaserGat->Physics.iSolid		= SOLID_BBOX;

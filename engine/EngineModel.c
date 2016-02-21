@@ -481,8 +481,8 @@ void Model_LoadBSPTextureInfo(BSPLump_t *blLump)
 		for (j=0 ; j<8 ; j++)
 			out->vecs[0][j] = LittleFloat (in->v[0][j]);
 
-		len1 = Math_Length(out->vecs[0]);
-		len2 = Math_Length(out->vecs[1]);
+		len1 = plLengthf(out->vecs[0]);
+		len2 = plLengthf(out->vecs[1]);
 		len1 = (len1 + len2)/2;
 
 		miptex = LittleLong (in->iMipTex);
@@ -705,7 +705,7 @@ void Model_LoadBSPFaces(BSPLump_t *blLump)
 		
 		//johnfitz -- this section rewritten
 #ifdef _MSC_VER
-#pragma warning(suppress: 6011)
+#	pragma warning(suppress: 6011)
 #endif
 		if (!strncmp(mMaterial->cName, "sky3d", 5))
 		{
@@ -719,7 +719,7 @@ void Model_LoadBSPFaces(BSPLump_t *blLump)
 			out->flags |= (SURF_DRAWSKY | SURF_DRAWTILED);
 			Mod_PolyForUnlitSurface(out); //no more subdivision
 		}
-		else if (mMaterial->iFlags & MATERIAL_FLAG_WATER) // warp surface
+		else if (mMaterial->flags & MATERIAL_FLAG_WATER) // warp surface
 		{
 #if 0
 			out->flags |= (SURF_DRAWTURB | SURF_DRAWTILED);
@@ -730,7 +730,7 @@ void Model_LoadBSPFaces(BSPLump_t *blLump)
 			GL_SubdivideSurface (out);
 #endif
 		}
-		else if (mMaterial->iFlags & MATERIAL_FLAG_MIRROR)
+		else if (mMaterial->flags & MATERIAL_FLAG_MIRROR)
 			out->flags |= SURFACE_MIRROR;
 		else if(out->texinfo->flags & BSP_TEXTURE_MISSING) // texture is missing from bsp
 		{
@@ -1020,7 +1020,7 @@ float RadiusFromBounds (vec3_t mins, vec3_t maxs)
 	for (i=0 ; i<3 ; i++)
 		corner[i] = fabs(mins[i]) > fabs(maxs[i]) ? fabs(mins[i]) : fabs(maxs[i]);
 
-	return Math_Length(corner);
+	return plLengthf(corner);
 }
 
 void Model_LoadBSPSubmodels(BSPLump_t *blLump)
@@ -1229,7 +1229,7 @@ MathVector_t Model_GenerateNormal(MathVector3f_t a, MathVector3f_t b, MathVector
 	Math_CrossProduct(mvX, mvY, mvNormal);
 
 	// Normalize it.
-	Math_VectorNormalize(mvNormal);
+	plVectorNormalize(mvNormal);
 
 	// Return the normal.
 	Math_VectorToMV(mvNormal, mvOutNormal);
@@ -1328,7 +1328,7 @@ void Model_CalculateMD2Bounds(model_t *mModel, MD2_t *mMD2Model)
 #endif
 
 	// Check that the size is valid.
-	if (Math_VectorCompare(mvMins, g_mvOrigin3f) &&	Math_VectorCompare(mvMaxs, g_mvOrigin3f))
+	if (plVectorCompare(mvMins, pl_origin3f) && plVectorCompare(mvMaxs, pl_origin3f))
 	{
 		// This should never happen, but if it does, give a warning.
 		Con_Warning("Suspicious model size! (%s)\n", mModel->name);

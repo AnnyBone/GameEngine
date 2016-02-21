@@ -96,10 +96,9 @@ double I_DoubleTime (void)
 	// LordHavoc: see top of file to disable this cleanly if your system does not support it
 #include <time.h>
 	struct timeval	tp;
-	struct timezone	tzp;
 	static int		secbase;
 
-	gettimeofday(&tp, &tzp);
+	gettimeofday(&tp, NULL);
 
 	if (!secbase)
 	{

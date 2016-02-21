@@ -188,9 +188,9 @@ void VideoObject_Clip(VideoObject_t *voObject, MathVector4f_t mvClipDimensions)
 
 void VideoObject_CalculateLighting(VideoObject_t *object, DynamicLight_t *light)
 {
-	float angle;
+//	float angle;
 
-	for (int i = 0; i < object->numverts; i++)
+	for (unsigned int i = 0; i < object->numverts; i++)
 	{
 		/*
 		x = Object->Vertices_normalStat[count].x;
@@ -199,13 +199,16 @@ void VideoObject_CalculateLighting(VideoObject_t *object, DynamicLight_t *light)
 
 		angle = (LightDist*((x * Object->Spotlight.x) + (y * Object->Spotlight.y) + (z * Object->Spotlight.z) ));
 		if (angle<0 )
-		{	Object->Vertices_screen[count].r = 0;
-		Object->Vertices_screen[count].b = 0;
-		Object->Vertices_screen[count].g = 0;
-		} else
-		{	Object->Vertices_screen[count].r = Object->Vertices_local[count].r * angle;
-		Object->Vertices_screen[count].b = Object->Vertices_local[count].b * angle;
-		Object->Vertices_screen[count].g = Object->Vertices_local[count].g * angle;
+		{	
+			Object->Vertices_screen[count].r = 0;
+			Object->Vertices_screen[count].b = 0;
+			Object->Vertices_screen[count].g = 0;
+		}
+		else
+		{	
+			Object->Vertices_screen[count].r = Object->Vertices_local[count].r * angle;
+			Object->Vertices_screen[count].b = Object->Vertices_local[count].b * angle;
+			Object->Vertices_screen[count].g = Object->Vertices_local[count].g * angle;
 		}
 		*/
 	}
@@ -250,7 +253,7 @@ void VideoObject_DrawImmediate(VideoObject_t *object)
 	for (int i = 0; i < VIDEO_MAX_UNITS; i++)
 		if (Video.textureunit_state[i])
 		{
-			glClientActiveTexture(Video_GetTextureUnit(i));
+			glClientActiveTexture(vlGetTextureUnit(i));
 			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 			glTexCoordPointer(2, GL_FLOAT, sizeof(VideoVertex_t), vert->mvST[i]);
 		}
@@ -271,7 +274,7 @@ void VideoObject_DrawImmediate(VideoObject_t *object)
 	for (int i = 0; i < VIDEO_MAX_UNITS; i++)
 		if (Video.textureunit_state[i])
 		{
-			glClientActiveTexture(Video_GetTextureUnit(i));
+			glClientActiveTexture(vlGetTextureUnit(i));
 			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 		}
 #endif

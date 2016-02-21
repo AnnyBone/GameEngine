@@ -76,7 +76,7 @@ void SV_SetIdealPitch (void)
 		bottom[1] = top[1];
 		bottom[2] = top[2] - 160;
 
-		tr = SV_Move (top, g_mvOrigin3f, g_mvOrigin3f, bottom, 1, sv_player);
+		tr = SV_Move(top, pl_origin3f, pl_origin3f, bottom, 1, sv_player);
 		if (tr.bAllSolid)
 			return;	// looking at a wall, leave ideal the way is was
 
@@ -121,7 +121,7 @@ void SV_AirAccelerate (MathVector3f_t wishveloc)
 	int			i;
 	float		addspeed, wishspd, accelspeed, currentspeed;
 
-	wishspd = Math_VectorNormalize (wishveloc);
+	wishspd = plVectorNormalize(wishveloc);
 	if (wishspd > 30.0f)
 		wishspd = 30.0f;
 
@@ -147,7 +147,7 @@ void SV_WaterMove (void)
 //
 // user intentions
 //
-	Math_AngleVectors(sv_player->v.v_angle, forward, right, up);
+	plAngleVectors(sv_player->v.v_angle, forward, right, up);
 
 	for (i=0 ; i<3 ; i++)
 		wishvel[i] = forward[i]*cmd.forwardmove + right[i]*cmd.sidemove;
@@ -157,7 +157,7 @@ void SV_WaterMove (void)
 	else
 		wishvel[2] += cmd.upmove;
 
-	wishspd = Math_Length(wishvel);
+	wishspd = plLengthf(wishvel);
 	if (wishspd > sv_maxspeed.value)
 	{
 		Math_VectorScale (wishvel, sv_maxspeed.value/ wishspd, wishvel);
@@ -166,7 +166,7 @@ void SV_WaterMove (void)
 	wishspd *= 0.7f;
 
 	// Water friction
-	speed = Math_Length(velocity);
+	speed = plLengthf(velocity);
 	if(speed)
 	{
 		newspeed = speed-host_frametime*speed*sv_player->Physics.fFriction;
@@ -187,7 +187,7 @@ void SV_WaterMove (void)
 	if (addspeed <= 0)
 		return;
 
-	Math_VectorNormalize (wishvel);
+	plVectorNormalize(wishvel);
 	accelspeed = sv_accelerate.value * wishspd * host_frametime;
 	if (accelspeed > addspeed)
 		accelspeed = addspeed;
@@ -212,7 +212,7 @@ void SV_ClientThink (void)
 	origin		= sv_player->v.origin;
 	velocity	= sv_player->v.velocity;
 
-	fLength = Math_VectorNormalize (sv_player->v.punchangle);
+	fLength = plVectorNormalize(sv_player->v.punchangle);
 
 	fLength -= 10*host_frametime;
 	if(fLength < 0)
@@ -252,16 +252,16 @@ void SV_ClientThink (void)
 	//johnfitz -- alternate noclip
 	if(sv_player->v.movetype == MOVETYPE_NOCLIP && sv_altnoclip.value)
 	{
-		Math_AngleVectors(sv_player->v.v_angle,forward,right,up);
+		plAngleVectors(sv_player->v.v_angle, forward, right, up);
 
 		velocity[0] = forward[0]*cmd.forwardmove+right[0]*cmd.sidemove;
 		velocity[1] = forward[1]*cmd.forwardmove+right[1]*cmd.sidemove;
 		velocity[2] = forward[2]*cmd.forwardmove+right[2]*cmd.sidemove;
 		velocity[2] += cmd.upmove*2; //doubled to match running speed
 
-		if(Math_Length(velocity) > sv_maxspeed.value)
+		if (plLengthf(velocity) > sv_maxspeed.value)
 		{
-			Math_VectorNormalize(velocity);
+			plVectorNormalize(velocity);
 			Math_VectorScale(velocity,sv_maxspeed.value,velocity);
 		}
 	}
@@ -269,7 +269,7 @@ void SV_ClientThink (void)
 		SV_WaterMove ();
 	else
 	{
-		Math_AngleVectors(sv_player->v.angles, forward, right, up);
+		plAngleVectors(sv_player->v.angles, forward, right, up);
 
 		fmove = cmd.forwardmove;
 		smove = cmd.sidemove;
@@ -288,7 +288,7 @@ void SV_ClientThink (void)
 
 		Math_VectorCopy(vWishVelocity,wishdir);
 
-		wishspeed = Math_VectorNormalize(wishdir);
+		wishspeed = plVectorNormalize(wishdir);
 		if(wishspeed > sv_maxspeed.value)
 		{
 			Math_VectorScale(vWishVelocity,sv_maxspeed.value/wishspeed,vWishVelocity);

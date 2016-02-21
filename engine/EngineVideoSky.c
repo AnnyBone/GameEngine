@@ -274,7 +274,7 @@ void Sky_ProjectPoly (int nump, MathVector3f_t vecs)
 	float			*vp;
 
 	// decide which face it maps to
-	Math_VectorCopy (g_mvOrigin3f, v);
+	Math_VectorCopy(pl_origin3f, v);
 	for (i=0, vp=vecs ; i<nump ; i++, vp+=3)
 		Math_VectorAdd (vp, v, v);
 
@@ -498,7 +498,7 @@ void Sky_ProcessEntities(void)
 		{
 			bRotated = true;
 
-			Math_AngleVectors(e->angles, forward, right, up);
+			plAngleVectors(e->angles, forward, right, up);
 			Math_VectorCopy(modelorg,vTemp);
 
 			modelorg[0] = Math_DotProduct(vTemp,forward);

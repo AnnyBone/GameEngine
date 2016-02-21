@@ -217,14 +217,14 @@ void VideoShaderProgram::Attach(VideoShader *shader)
 void VideoShaderProgram::Enable()
 {
 	VIDEO_FUNCTION_START
-	VideoLayer_UseProgram(instance);
+	vlUseProgram(instance);
 	VIDEO_FUNCTION_END
 }
 
 void VideoShaderProgram::Disable()
 {
 	VIDEO_FUNCTION_START
-	VideoLayer_UseProgram(0);
+	vlUseProgram(0);
 	VIDEO_FUNCTION_END
 }
 

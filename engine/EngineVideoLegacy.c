@@ -270,7 +270,7 @@ void R_SetupGenericView(void)
 
 	// Build the transformation matrix for the given view angles
 	Math_VectorCopy(r_refdef.vieworg, r_origin);
-	Math_AngleVectors(r_refdef.viewangles, vpn, vright, vup);
+	plAngleVectors(r_refdef.viewangles, vpn, vright, vup);
 
 	r_fovx = r_refdef.fov_x;
 	r_fovy = r_refdef.fov_y;
@@ -286,7 +286,7 @@ void R_SetupView (void)
 
 // build the transformation matrix for the given view angles
 	Math_VectorCopy(r_refdef.vieworg,r_origin);
-	Math_AngleVectors(r_refdef.viewangles,vpn,vright,vup);
+	plAngleVectors(r_refdef.viewangles, vpn, vright, vup);
 
 	// Current viewleaf
 	r_oldviewleaf	= r_viewleaf;
@@ -651,7 +651,7 @@ void R_RenderView (void)
 		float	eyesep = Math_Clamp(-8.0f, r_stereo.value, 8.0f),
 			fdepth = Math_Clamp(32.0f, r_stereodepth.value, 1024.0f);
 
-		Math_AngleVectors(r_refdef.viewangles, vpn, vright, vup);
+		plAngleVectors(r_refdef.viewangles, vpn, vright, vup);
 
 		// Render left eye (red)
 		glColorMask(true,false,false,true);

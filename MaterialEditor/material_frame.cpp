@@ -95,15 +95,15 @@ void MaterialGlobalProperties::GetProperties(Material_t *newmaterial)
 
 	name->SetValue(material->cName);
 	path->SetValue(material->cPath);
-//	skins->SetValue(material->iSkins);
+//	skins->SetValue(material->num_skins);
 	animation_speed->SetValue(material->animation_speed);
 
-	if (material->iFlags & MATERIAL_FLAG_PRESERVE)
+	if (material->flags & MATERIAL_FLAG_PRESERVE)
 		preserve->SetValue(true);
 	else
 		preserve->SetValue(false);
 
-	if (material->iFlags & MATERIAL_FLAG_ANIMATED)
+	if (material->flags & MATERIAL_FLAG_ANIMATED)
 		animated->SetValue(true);
 	else
 		animated->SetValue(false);
@@ -221,9 +221,9 @@ void MaterialViewportPanel::Draw()
 	if (preview_material)
 	{
 		std::string strfame = "Skin: ";
-		if (preview_material->iFlags & MATERIAL_FLAG_ANIMATED)	strfame += std::to_string(preview_material->animation_frame + 1);
+		if (preview_material->flags & MATERIAL_FLAG_ANIMATED)	strfame += std::to_string(preview_material->animation_frame + 1);
 		else													strfame += std::to_string(preview_material->current_skin + 1);
-		strfame += "/" + std::to_string(preview_material->iSkins);
+		strfame += "/" + std::to_string(preview_material->num_skins);
 		engine->DrawString(10, 20, strfame.c_str());
 	}
 }

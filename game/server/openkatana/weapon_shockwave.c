@@ -107,7 +107,7 @@ void Shockwave_SpawnProjectile(ServerEntity_t *ent)
 		Weapon_Projectile(ent, eLaser, 2000.0f);
 
 		Math_VectorCopy(ent->v.origin,eLaser->v.origin);
-		Math_MVToVector(Math_VectorToAngles(eLaser->v.velocity),eLaser->v.angles);
+		Math_MVToVector(plVectorToAngles(eLaser->v.velocity),eLaser->v.angles);
 
 		eLaser->local.eOwner = ent;
 
@@ -118,7 +118,7 @@ void Shockwave_SpawnProjectile(ServerEntity_t *ent)
 		eLaser->Physics.iSolid	= SOLID_BBOX;
 
 		Entity_SetModel(eLaser,"models/slaser.md2");
-		Entity_SetSizeVector(eLaser,g_mvOrigin3f,g_mvOrigin3f);
+		Entity_SetSizeVector(eLaser, pl_origin3f, pl_origin3f);
 	}
 
 	ent->local.shockwave_ammo--;

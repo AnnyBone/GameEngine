@@ -166,7 +166,7 @@ void Shotcycler_PrimaryAttack(ServerEntity_t *ent)
 {
 	MathVector3f_t	vForward,vTemp;
 
-	Math_AngleVectors(ent->v.v_angle,vForward,vTemp,vTemp);
+	plAngleVectors(ent->v.v_angle,vForward,vTemp,vTemp);
 
 	if(!ent->local.iShotCycle)
 	{

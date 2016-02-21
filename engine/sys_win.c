@@ -159,10 +159,10 @@ int Sys_FileOpenWrite (char *path)
 
 	f = fopen(path, "wb");
 	if (!f)
-		Sys_Error ("Error opening %s: %s", path,strerror(errno));
+		Sys_Error ("Error opening %s\n%s", path,strerror(errno));
 
 #ifdef _MSC_VER	// This is false, since the function above shuts us down, but MSC doesn't understand that.
-#pragma warning(suppress: 6386)
+#	pragma warning(suppress: 6386)
 #endif
 	sys_handles[i] = f;
 

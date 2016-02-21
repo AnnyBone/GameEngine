@@ -99,8 +99,8 @@ void ED_Free(ServerEntity_t *ed)
 	ed->Model.fScale	= 1.0f;
 	ed->alpha			= ENTALPHA_DEFAULT; //johnfitz -- reset alpha for next entity
 
-	Math_VectorCopy(g_mvOrigin3f,ed->v.origin);
-	Math_VectorCopy(g_mvOrigin3f,ed->v.angles);
+	Math_VectorCopy(pl_origin3f, ed->v.origin);
+	Math_VectorCopy(pl_origin3f, ed->v.angles);
 
 	ed->fFreeTime = sv.time;
 }

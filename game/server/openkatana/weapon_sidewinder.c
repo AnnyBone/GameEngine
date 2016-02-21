@@ -170,7 +170,7 @@ void SideWinder_SpawnMissle(ServerEntity_t *ent,float fSpeed,float ox)
 	vOrg[1] += eMissile->local.vForward[1] * 8 + eMissile->local.vRight[1] * ox;
 	vOrg[2] += eMissile->local.vForward[2] * 24;
 
-	Entity_SetSizeVector(eMissile,g_mvOrigin3f,g_mvOrigin3f);
+	Entity_SetSizeVector(eMissile, pl_origin3f, pl_origin3f);
 	Entity_SetOrigin(eMissile,vOrg);
 
 	// Time at which we'll be removed if nothing hit.

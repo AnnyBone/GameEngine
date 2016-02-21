@@ -675,7 +675,7 @@ bool SV_RecursiveHullCheck (hull_t *hull, int num, float p1f, float p2f, vec3_t 
 	}
 	else
 	{
-		Math_VectorSubtract (g_mvOrigin3f, plane->normal, trace->plane.normal);
+		Math_VectorSubtract(pl_origin3f, plane->normal, trace->plane.normal);
 		trace->plane.dist = -plane->dist;
 	}
 
@@ -731,7 +731,7 @@ trace_t SV_ClipMoveToEntity(ServerEntity_t *ent, MathVector3f_t start, MathVecto
 	{
 		MathVector3f_t nforward,nright,nup,ntemp;
 
-		Math_AngleVectors(ent->v.angles, nforward, nright, nup);
+		plAngleVectors(ent->v.angles, nforward, nright, nup);
 
 		Math_VectorCopy (start_l, ntemp);
 		start_l[0] = Math_DotProduct(ntemp, nforward);
@@ -754,7 +754,7 @@ trace_t SV_ClipMoveToEntity(ServerEntity_t *ent, MathVector3f_t start, MathVecto
 		if (trace.fraction != 1)
 		{
 			Math_VectorNegate(ent->v.angles,a);
-			Math_AngleVectors(a,forward,right,up);
+			plAngleVectors(a, forward, right, up);
 
 			Math_VectorCopy(trace.endpos,temp);
 			trace.endpos[0] = Math_DotProduct(temp,forward);

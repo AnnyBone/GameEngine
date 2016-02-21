@@ -121,93 +121,100 @@ void ParseLightEntities( void )
 	char			*value, *targetname, *style;
 	directlight_t	*l;
 	double			vec[4];
-	bool			is_light, is_skylight, is_spotlight;
+	bool			is_skylight, is_spotlight;
 
 	num_directlights = 0;
 	for( i = 0, ent = entities; i < num_entities; i++, ent++ )
 	{
+		if( num_directlights == MAP_DIRECTLIGHTS )
+			Error( "Direct light count has exceeded limit! (%i)\n", num_directlights);
+
+		// Check the initial part of the light.
 		value = ValueForKey(ent,"classname");
 		if (strncmp(value, "light", 5))
 			continue;
 
 		// Reset these each time, just to be safe.
-		is_skylight =
-		is_spotlight =
-		is_light = false;
+		is_skylight		=
+		is_spotlight	= false;
 
 		// Figure out which type of light it is.
-		if (!strcmp(value, "light_spot"))				is_spotlight = true;
-		else if (!strcmp(value, "light_environment"))	is_skylight = true;
-		else if (!strcmp(value, "light"))				is_light = true;
+		if (!strcmp(value, "light_spot"))					is_spotlight = true;
+		else if (!strcmp(value, "light_environment"))		is_skylight = true;
 
-		if( num_directlights == MAP_DIRECTLIGHTS )
-			Error( "Direct light count has exceeded limit! (%i)\n", num_directlights);
-
+		// Add it!
 		l = &directlights[num_directlights++];
 		memset( l, 0, sizeof (*l) );
 
 		VectorSet(l->color, 1, 1, 1);
 		GetVectorForKey(ent, "origin", l->origin);
 
+		l->type = defaultlighttype;
+
 		if (is_skylight)
 			l->type = LIGHTTYPE_SUN;
-		else if (is_spotlight)
-		{
-			l->spotcone = -cos(20.0f*Q_PI / 180.0f);
-			l->type = defaultlighttype;
-		}
 		else
-			l->type = defaultlighttype;
-
-		j = FloatForKey(ent,"delay");
-		if(!overridelighttypes && j)
 		{
-			if (j < 0 || j >= LIGHTTYPE_TOTAL)
-				Error("error in light at %.0f %.0f %.0f:\nunknown light type \"delay\" \"%s\"\n", l->origin[0], l->origin[1], l->origin[2], ValueForKey( ent, "delay" ));
-			l->type = (lighttype_t)j;
+			// For generic lights, we can use custom types.
+			j = FloatForKey(ent, "delay");
+			if (!overridelighttypes && j)
+			{
+				if (j < 0 || j >= LIGHTTYPE_TOTAL)
+					Error("error in light at %.0f %.0f %.0f:\nunknown light type \"delay\" \"%s\"\n", l->origin[0], l->origin[1], l->origin[2], ValueForKey(ent, "delay"));
+				l->type = (lighttype_t)j;
 
-			printf("%i\n", (int)l->type);
+				printf("%i\n", (int)l->type);
+			}
 		}
 
 		l->style = FloatForKey( ent, "style" );
 		if( (unsigned)l->style > 254 )
 			Error( "error in light at %.0f %.0f %.0f:\nBad light style %i (must be 0-254)", l->origin[0], l->origin[1], l->origin[2], l->style );
 
-		l->angle = FloatForKey(ent,"angle");
+		value = ValueForKey(ent, "light");
+		if (!value)
+			Error("Missing light parameter for light! (%.0f %.0f %.0f)\n", l->origin[0], l->origin[1], l->origin[2]);
 
-#if 0
-		value = ValueForKey(ent, "angles");
-		if (value[0] && (l->type == LIGHTTYPE_SUN))
-		{
-			j = sscanf(value, "%lf %lf %lf", &vec[0], &vec[1], &vec[2]);
-			if (j != 3)
-				Error("error in light at %.0f %.0f %0.f:\nangles must be given 3 values", l->origin[0], l->origin[1], l->origin[2]);
-
-			printf("%lf %lf %lf\n", vec[0], vec[1], vec[2]);
-
-			VectorCopy(vec, l->spotdir);
-		}
-#endif
-
-		value = ValueForKey(ent,"light");
-		if( value[0] )
-		{
-			j = sscanf(value,"%lf %lf %lf %lf",&vec[0],&vec[1],&vec[2],&vec[3]);
-			if (j != 4)
-				Error("Invalid light parameter for light! (%.0f %.0f %.0f)\n", l->origin[0], l->origin[1], l->origin[2], value);
-			
-			VectorCopy(vec, l->color);
-			l->radius = vec[3];
-		}
-
-		if (!l->radius)
-			Error("Light has an invalid radius! (%.0f %.0f %.0f)\n", l->origin[0], l->origin[1], l->origin[2]);
-
+		j = sscanf(value, "%lf %lf %lf %lf", &vec[0], &vec[1], &vec[2], &vec[3]);
+		if (j != 4)
+			Error("Invalid light parameter for light! (%.0f %.0f %.0f) (%s)\n", l->origin[0], l->origin[1], l->origin[2], value);
+		
 		// for some reason this * 0.5 is needed to match quake light
-		VectorScale(l->color, 0.5, l->color);
+		VectorScale(vec, 0.5, l->color);
+
+		// Check the radius.
+		if (!vec[3])
+			Error("Light has an invalid radius! (%.0f %.0f %.0f)\n", l->origin[0], l->origin[1], l->origin[2]);
+		l->radius = vec[3];
 
 		// fix tyrlite darklight radius value (but color remains negative)
 		l->radius = fabs(l->radius);
+
+		// Check angle, which applies to spot cone.
+		l->angle = FloatForKey(ent, "angle");
+
+		// Handle angles for spot / sky lights
+		value = ValueForKey(ent, "angles");
+		if ((is_skylight || is_spotlight) && value[0])
+		{
+			j = sscanf(value, "%lf %lf %lf", &vec[0], &vec[1], &vec[2]);
+			if (j != 3)
+				Error("Invalid angles for light, needs to be 3 values! (%.0f %.0f %.0f) (%s)\n", l->origin[0], l->origin[1], l->origin[2], value);
+
+			// This looks awful, but it's similar to how Quake 2 does it.
+			l->spotdir[0] = cosf(vec[YAW] / 180.0f * Q_PI) * cosf(vec[PITCH] / 180.0f * Q_PI);
+			l->spotdir[1] = sinf(vec[YAW] / 180.0f * Q_PI) * cosf(vec[PITCH] / 180.0f * Q_PI);
+			l->spotdir[2] = sinf(vec[PITCH] / 180.0f * Q_PI);
+
+			// Apply spot cone modifier for spotlights.
+			if (is_spotlight)
+			{
+				if (!l->angle)
+					l->spotcone = -cos(20.0f*Q_PI / 180.0f);
+				else
+					l->spotcone = -cos(l->angle / 2.0f*Q_PI / 180.0f);
+			}
+		}
 
 		// apply scaling to radius
 		vec[0] = FloatForKey( ent, "wait" );
@@ -248,59 +255,48 @@ void ParseLightEntities( void )
 		if (vec[0])
 			l->clampradius = vec[0];
 
-		if( is_light )
+		value = ValueForKey( ent, "name" );
+		if( value[0] && !l->style )
 		{
-			value = ValueForKey( ent, "name" );
-			if( value[0] && !l->style )
-			{
-				char s[16];
+			char s[16];
 
-				l->style = LightStyleForTargetname( value );
+			l->style = LightStyleForTargetname( value );
 
-				memset( s, 0, sizeof(s) );
-				sprintf( s, "%i", l->style );
-				SetKeyValue( ent, "style", s );
-			}
+			memset( s, 0, sizeof(s) );
+			sprintf( s, "%i", l->style );
+			SetKeyValue( ent, "style", s );
 		}
 
 		value = ValueForKey( ent, "target" );
-		if( !value[0] )
+		if( value[0] )
 		{
-			if (!is_skylight && (l->type == LIGHTTYPE_SUN))
-				Error("error in light at %.0f %.0f %.0f:\nLIGHTTYPE_SUN (delay 4) requires a target for the sun direction\n", l->origin[0], l->origin[1], l->origin[2]);
-			continue;
-		}
-
-		for( j = 0; j < num_entities; j++ )
-		{
-			if( i == j )
-				continue;
-
-			targetname = ValueForKey(&entities[j],"name");
-			if (!strcmp(targetname, value))
+			printf("target(%s)\n", value);
+			for (j = 0; j < num_entities; j++)
 			{
-				vec3_t origin;
+				if (i == j)
+					continue;
 
-				GetVectorForKey( &entities[j], "origin", origin );
+				targetname = ValueForKey(&entities[j], "name");
+				if (!strcmp(targetname, value))
+				{
+					vec3_t origin;
 
-				// set up spotlight values for lighting code to use
-				VectorSubtract( origin, l->origin, l->spotdir );
-				VectorNormalize( l->spotdir );
+					GetVectorForKey(&entities[j], "origin", origin);
 
-				if(!l->angle)
-					l->spotcone = -cos(20.0f*Q_PI/180.0f);
-				else
-					l->spotcone = -cos(l->angle/2.0f*Q_PI/180.0f);
-				break;
+					// set up spotlight values for lighting code to use
+					VectorSubtract(origin, l->origin, l->spotdir);
+					VectorNormalize(l->spotdir);
+
+					if (!l->angle)
+						l->spotcone = -cos(20.0f*Q_PI / 180.0f);
+					else
+						l->spotcone = -cos(l->angle / 2.0f*Q_PI / 180.0f);
+					break;
+				}
 			}
-		}
 
-		if( j == num_entities )
-		{
-			printf( "warning in light at %.0f %.0f %.0f:\nunmatched spotlight target\n", l->origin[0], l->origin[1], l->origin[2]);
-			if (!is_skylight && (l->type == LIGHTTYPE_SUN))
-				Error("error in light at %.0f %.0f %.0f:\nLIGHTTYPE_SUN (delay 4) requires a target for the sun direction\n", l->origin[0], l->origin[1], l->origin[2]);
-			continue;
+			if (j == num_entities)
+				printf("warning in light at %.0f %.0f %.0f:\nunmatched light target\n", l->origin[0], l->origin[1], l->origin[2]);
 		}
 
 		// set the style on the source ent for switchable lights

@@ -44,7 +44,6 @@ typedef enum
 #define	MATERIAL_COLOUR_BLACK	1
 #define	MATERIAL_COLOUR_BLUE	2
 
-#define	MATERIAL_FLAG_PRESERVE		(1 << 0)	// Preserves the material during clear outs.
 #define	MATERIAL_FLAG_ALPHA			(1 << 1)	// Declares that the given texture has an alpha channel.
 #define	MATERIAL_FLAG_BLEND			(1 << 2)	// Ditto to the above, but tells us to use blending rather than alpha-test.
 #define	MATERIAL_FLAG_ANIMATED		(1 << 3)	// This is a global flag; tells the material system to scroll through all skins.
@@ -53,6 +52,7 @@ typedef enum
 #define	MATERIAL_FLAG_WATER			(1 << 6)	// Must be GLOBAL!
 #define	MATERIAL_FLAG_ADDITIVE		(1 << 7)	// Renders the current skin as an additive.
 #define	MATERIAL_FLAG_ALPHATRICK	(1 << 8)	// Skips/enables the alpha trick (handy for UI elements!)
+#define	MATERIAL_FLAG_PRESERVE		(1 << 9)	// Preserves the material during clear outs.
 
 typedef struct
 {
@@ -79,7 +79,7 @@ typedef struct
 
 	bool	matrixmod;	// Modify texture matrix?
 
-	MathVector2f_t	vScroll;
+	MathVector2f_t	scroll;
 
 	float	fRotate, scale;
 
@@ -88,7 +88,7 @@ typedef struct
 
 	MaterialTextureType_t mttType;	// Sphere, fullbright, or what have you.
 
-	VideoTextureEnvironmentMode_t EnvironmentMode;
+	VideoTextureEnvironmentMode_t env_mode;
 } MaterialTexture_t;
 
 typedef struct
@@ -98,13 +98,13 @@ typedef struct
 
 typedef struct
 {
-	MaterialTexture_t	mtTexture[VIDEO_MAX_UNITS];
+	MaterialTexture_t	texture[VIDEO_MAX_UNITS];
 	MaterialShader_t	shader;
 
 	unsigned int
-		uiFlags,	// Flags assigned for the current skin, affects how it's displayed/loaded.
-		uiTextures,	// Num of textures assigned within the skin.
-		uiType;		// Type of surface, e.g. wood, cement etc.
+		uiFlags,		// Flags assigned for the current skin, affects how it's displayed/loaded.
+		num_textures,	// Num of textures assigned within the skin.
+		uiType;			// Type of surface, e.g. wood, cement etc.
 } MaterialSkin_t;
 
 #define	MATERIAL_MAX		2048	// Should ALWAYS be below the maximum texture allowance.
@@ -114,19 +114,21 @@ typedef struct Material_s
 {
 	int
 		id,					// Unique ID for the material.
-		iFlags;				// Global material flags, flags that take priority over all additional skins.			
+		flags;				// Global material flags, flags that take priority over all additional skins.			
 
 	char	
 		cPath[PLATFORM_MAX_PATH],	// Path of the material.
 		cName[64];					// Name of the material.
 
 	// Skins
-	MaterialSkin_t	msSkin[MATERIAL_MAX_SKINS];
-	unsigned int	iSkins;							// Number of skins provided by this material.
+	MaterialSkin_t	skin[MATERIAL_MAX_SKINS];
+	unsigned int	num_skins;							// Number of skins provided by this material.
 	unsigned int	current_skin;
 
-	bool 
-		bBind,
+	bool bind;	// If true, texture will be bound.
+
+	// Overrides
+	bool
 		override_lightmap,
 		override_wireframe;	// Override tris for this material.
 

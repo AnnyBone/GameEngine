@@ -26,17 +26,17 @@
 	Math Library
 */
 
-MathVector2f_t mv2Origin		= { 0, 0 };
-MathVector3f_t g_mvOrigin3f		= { 0, 0, 0 };
-MathVector4f_t mv4Origin		= { 0, 0, 0, 0 };
+MathVector2f_t pl_origin2f	= { 0, 0 };
+MathVector3f_t pl_origin3f	= { 0, 0, 0 };
+MathVector4f_t pl_origin4f	= { 0, 0, 0, 0 };
 
 // Colours
-Colour_t g_colourwhite	= { 1, 1, 1, 1 };
-Colour_t g_colourred	= { 1, 0, 0, 1 };
-Colour_t g_colourgreen	= { 0, 1, 0, 1 };
-Colour_t g_colourblue	= { 0, 0, 1, 1 };
+Colour_t pl_white		= { 1, 1, 1, 1 };
+Colour_t pl_red			= { 1, 0, 0, 1 };
+Colour_t pl_green		= { 0, 1, 0, 1 };
+Colour_t pl_blue		= { 0, 0, 1, 1 };
 
-MathVector_t Math_VectorToAngles(MathVector3f_t vValue)
+MathVector_t plVectorToAngles(MathVector3f_t vValue)
 {
 	float			fForward, fYaw, fPitch;
 	MathVector_t	mvResult;
@@ -91,48 +91,39 @@ float Math_AngleMod(float a)
 	return a;
 }
 
-MathVectorf_t Math_Lengthf(MathVector3f_t a)
+MathVectorf_t plLengthf(MathVector3f_t a)
 {
-	int		i;
-	float	l;
-
-	l = 0;
-	for (i = 0; i<3; i++)
+	float l = 0;
+	for (int i = 0; i<3; i++)
 		l += a[i] * a[i];
 	l = sqrtf(l);
 
 	return l;
 }
 
-MathVectord_t Math_Lengthd(MathVector3d_t a)
+MathVectord_t plLengthd(MathVector3d_t a)
 {
-	int		i;
-	double	l;
-
-	l = 0;
-	for (i = 0; i<3; i++)
+	double l = 0;
+	for (int i = 0; i<3; i++)
 		l += a[i] * a[i];
 	l = sqrt(l);
 
 	return l;
 }
 
-double Math_VectorLength(MathVector3f_t a)
+double plVectorLength(MathVector3f_t a)
 {
-	int		i;
-	double	length;
-
-	length = 0;
-	for (i = 0; i< 3; i++)
+	double length = 0;
+	for (int i = 0; i< 3; i++)
 		length += a[i] * a[i];
 	length = sqrt(length);
 
 	return length;
 }
 
-MathVectorf_t Math_VectorNormalize(MathVector3f_t a)
+MathVectorf_t plVectorNormalize(MathVector3f_t a)
 {
-	MathVectorf_t i, l = (MathVectorf_t)Math_VectorLength(a);
+	MathVectorf_t i, l = (MathVectorf_t)plVectorLength(a);
 	if (l)
 	{
 		i = 1.0f / l;
@@ -142,7 +133,7 @@ MathVectorf_t Math_VectorNormalize(MathVector3f_t a)
 	return l;
 }
 
-void Math_VectorNormalizeFast(MathVector3f_t vVector)
+void plVectorNormalizeFast(MathVector3f_t vVector)
 {
 	float y, fNumber;
 
@@ -156,18 +147,16 @@ void Math_VectorNormalizeFast(MathVector3f_t vVector)
 	}
 }
 
-bool Math_VectorCompare(MathVector3f_t a, MathVector3f_t b)
+bool plVectorCompare(MathVector3f_t a, MathVector3f_t b)
 {
-	int i;
-
-	for (i = 0; i < 3; i++)
+	for (int i = 0; i < 3; i++)
 		if (a[i] != b[i])
 			return false;
 
 	return true;
 }
 
-void Math_AngleVectors(MathVector3f_t angles, MathVector3f_t forward, MathVector3f_t right, MathVector3f_t up)
+void plAngleVectors(MathVector3f_t angles, MathVector3f_t forward, MathVector3f_t right, MathVector3f_t up)
 {
 	float	angle, sr, sp, sy, cr, cp, cy;
 
@@ -209,7 +198,7 @@ void Math_VectorAngles(const MathVector3f_t forward, MathVector3f_t angles)
 	temp[1] = forward[1];
 	temp[2] = 0;
 
-	angles[PITCH] = -atan2f(forward[2], Math_Length(temp)) / (float)pMath_PI_DIV180;
+	angles[PITCH] = -atan2f(forward[2], plLengthf(temp)) / (float)pMath_PI_DIV180;
 	angles[YAW] = atan2f(forward[1], forward[0]) / (float)pMath_PI_DIV180;
 	angles[ROLL] = 0;
 }
@@ -217,6 +206,11 @@ void Math_VectorAngles(const MathVector3f_t forward, MathVector3f_t angles)
 MathVectorf_t Math_DotProduct(MathVector3f_t a, MathVector3f_t b)
 {
 	return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+}
+
+void plVectorSet3f(MathVector3f_t out, float x, float y, float z)
+{
+	out[0] = x; out[1] = y; out[2] = z;
 }
 
 void plVectorCopy3f(MathVector3f_t in, MathVector3f_t out)
@@ -285,7 +279,7 @@ MathVectorf_t plColourNormalize(MathVector3f_t in, MathVector3f_t out)
 	This is borrowed from http://probesys.blogspot.co.uk/
 */
 
-float Math_Linear(float x)
+float plLinear(float x)
 {
 	if (x < 0)
 		return 0;
@@ -353,40 +347,32 @@ float Math_OutSin(float x)
 
 float Math_InOutSin(float x)
 {
-	if (x < 0)
-		return 0;
-	if (x > 1.0f)
-		return 1.0f;
+	if (x < 0)		return 0;
+	if (x > 1.0f)	return 1.0f;
 
 	return -0.5f * (cosf((float)pMath_PI * x) - 1.0f);
 }
 
 float Math_InExp(float x)
 {
-	if (x < 0)
-		return 0;
-	if (x > 1.0f)
-		return 1.0f;
+	if (x < 0)		return 0;
+	if (x > 1.0f)	return 1.0f;
 
 	return powf(2.0f, 10.0f * (x - 1.0f));
 }
 
-float Math_OutExp(float x)
+float plOutExp(float x)
 {
-	if (x < 0)
-		return 0;
-	if (x > 1.0f)
-		return 1.0f;
+	if (x < 0)		return 0;
+	if (x > 1.0f)	return 1.0f;
 
 	return -powf(2.0f, -1.0f * x) + 1.0f;
 }
 
-float Math_InOutExp(float x)
+float plInOutExp(float x)
 {
-	if (x < 0)
-		return 0;
-	if (x > 1.0f)
-		return 1.0f;
+	if (x < 0)		return 0;
+	if (x > 1.0f)	return 1.0f;
 
 	return x < 0.5f ? 0.5f * powf(2.0f, 10.0f * (2.0f*x - 1.0f)) : 
 		0.5f * (-powf(2.0f, 10.0f * (-2.0f*x + 1.0f)) + 1.0f);
@@ -449,7 +435,7 @@ float Math_InBack(float x)
 	return x * x * ((1.70158f + 1.0f) * x - 1.70158f);
 }
 
-float Math_OutBack(float x)
+float plOutBack(float x)
 {
 	if (x < 0)
 		return 0;
@@ -473,7 +459,7 @@ float Math_InOutBack(float x)
 
 /*	The variable, k, controls the stretching of the function.
 */
-float Math_Impulse(float x, float k)
+float plImpulse(float x, float k)
 {
 	float h = k*x;
 
@@ -491,7 +477,7 @@ float Math_ExpPulse(float x, float k, float n)
 
 /*	Check to see if an area is intersecting another area.
 */
-bool Math_IsIntersecting(
+bool plIsIntersecting(
 	MathVector3f_t mvFirstMins, MathVector3f_t mvFirstMaxs,
 	MathVector3f_t mvSecondMins, MathVector3f_t mvSecondMaxs)
 {

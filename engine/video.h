@@ -154,7 +154,6 @@ void Video_SetViewportSize(int w, int h);
 void Video_SelectTexture(unsigned int uiTarget);
 void Video_EnableCapabilities(unsigned int iCapabilities);
 void Video_DisableCapabilities(unsigned int iCapabilities);
-void Video_ResetCapabilities(bool bClearActive);
 void Video_PreFrame(void);
 void Video_PostFrame(void);
 void Video_Frame(void);
@@ -167,8 +166,6 @@ void Video_DrawSurface(msurface_t *mSurface, float fAlpha, Material_t *mMaterial
 void Video_DrawObject(VideoVertex_t *voObject, VideoPrimitive_t vpPrimitiveType, unsigned int uiVerts, Material_t *mMaterial, int iSkin);
 void Video_ShowBoundingBoxes(void);
 void Video_Shutdown(void);
-
-unsigned int Video_GetTextureUnit(unsigned int uiTarget);
 
 bool Video_GetCapability(unsigned int iCapability);
 
@@ -203,10 +200,8 @@ plEXTERN_C_END
 	{ \
 		callnum++; \
 	} \
-} \
-{
-#define	VIDEO_FUNCTION_END \
 }
+#define	VIDEO_FUNCTION_END \
 
 #include "video_layer.h"
 #include "video_object.h"

@@ -105,7 +105,7 @@ void ChangeYaw(ServerEntity_t *ent)
 */
 trace_t Traceline(ServerEntity_t *ent, MathVector3f_t vStart, MathVector3f_t vEnd, int type)
 {
-	return Engine.Server_Move(vStart, g_mvOrigin3f, g_mvOrigin3f, vEnd, type, ent);
+	return Engine.Server_Move(vStart, pl_origin3f, pl_origin3f, vEnd, type, ent);
 }
 
 /*	Each entity can have eight

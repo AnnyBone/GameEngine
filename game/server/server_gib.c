@@ -47,6 +47,6 @@ void Gib_Spawn(MathVector3f_t mvOrigin, const char *cModel)
 
 		Entity_SetModel(eGib, (char*)cModel);
 		Entity_SetOrigin(eGib, mvOrigin);
-		Entity_SetSizeVector(eGib, g_mvOrigin3f, g_mvOrigin3f);
+		Entity_SetSizeVector(eGib, pl_origin3f, pl_origin3f);
 	}
 }
