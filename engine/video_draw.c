@@ -515,8 +515,7 @@ void Draw_CoordinateAxes(float x,float y,float z)
 
 void Draw_Grid(float x, float y, float z, int grid_size)
 {
-	int i;
-
+#ifdef VL_MODE_OPENGL
 	glPushMatrix();
 
 	glTranslatef(x, y, z);
@@ -524,13 +523,16 @@ void Draw_Grid(float x, float y, float z, int grid_size)
 	vlEnable(VIDEO_BLEND);
 	vlDisable(VIDEO_TEXTURE_2D);
 
-//	vlBlendFunc(VIDEO_BLEND_DEFAULT);
+	vlBlendFunc(VIDEO_BLEND_DEFAULT);
 
-	glColor4f(0, 0, 1.0f, 0.5f);
+	glEnable(GL_LINE_SMOOTH);
 
-	glLineWidth(1.0f);
+	glColor4f(0, 0, 0.5f, 1);
+
+	glLineWidth(0.1f);
 	glBegin(GL_LINES);
 
+	int i;
 	for (i = 0; i <= (4096 / grid_size); i++)
 	{
 		glVertex2i(-4096, (i * grid_size) * -1);
@@ -546,8 +548,8 @@ void Draw_Grid(float x, float y, float z, int grid_size)
 
 	glEnd();
 
-	glColor4f(0, 0, 0.3f, 1.0f);
-	glLineWidth(2.0f);
+	glColor4f(0, 0, 1, 1);
+	glLineWidth(1.0f);
 	glBegin(GL_LINES);
 
 	for (i = 0; i <= 64; i++)
@@ -568,10 +570,13 @@ void Draw_Grid(float x, float y, float z, int grid_size)
 	glLineWidth(1.0f);
 	glColor3f(1, 1, 1);
 
+	glDisable(GL_LINE_SMOOTH);
+
 	vlDisable(VIDEO_BLEND);
 	vlEnable(VIDEO_TEXTURE_2D);
 
 	glPopMatrix();
+#endif
 }
 
 void Draw_Rectangle(int x, int y, int w, int h, Colour_t colour)
