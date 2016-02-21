@@ -106,6 +106,8 @@ const char *vlGetString(vlString_t string)
 		// This works differently in core.
 		return vlGetExtensions();
 	return (const char*)glGetString(string);
+#elif defined VL_MODE_GLIDE
+	return grGetString(string);
 #else
 	return "";
 #endif
@@ -540,6 +542,8 @@ void vlClear(unsigned int mask)
 	VIDEO_FUNCTION_START
 #if defined (VL_MODE_OPENGL) || (VL_MODE_OPENGL_CORE)
 	glClear(mask);
+#elif defined VL_MODE_GLIDE
+	grBufferClear(0)
 #endif
 	VIDEO_FUNCTION_END
 }
