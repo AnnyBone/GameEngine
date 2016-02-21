@@ -69,7 +69,7 @@ float V_CalcRoll(vec3_t angles, vec3_t velocity)
 {
 	float	sign,side,value;
 
-	Math_AngleVectors(angles, forward, right, up);
+	plAngleVectors(angles, forward, right, up);
 	side = Math_DotProduct (velocity, right);
 	sign = side < 0 ? -1 : 1;
 	side = fabs(side);
@@ -238,9 +238,9 @@ void V_ParseDamage (void)
 	ent = &cl_entities[cl.viewentity];
 
 	Math_VectorSubtract(from,ent->origin,from);
-	Math_VectorNormalize(from);
+	plVectorNormalize(from);
 
-	Math_AngleVectors(ent->angles, mvForward, mvRight, mvUp);
+	plAngleVectors(ent->angles, mvForward, mvRight, mvUp);
 
 	side = Math_DotProduct (from, mvRight);
 	v_dmg_roll = count*side*v_kickroll.value;
@@ -549,7 +549,7 @@ void View_ModelDrift(vec3_t vOrigin,vec3_t vAngles,vec3_t vOldAngles)
 	vec3_t			vForward,vRight,vUp,
 					vDifference;
 
-	Math_AngleVectors(vAngles,vForward,vRight,vUp);
+	plAngleVectors(vAngles, vForward, vRight, vUp);
 
 	if(host_frametime != 0.0f)
 	{
@@ -557,14 +557,14 @@ void View_ModelDrift(vec3_t vOrigin,vec3_t vAngles,vec3_t vOldAngles)
 
 		fSpeed = 3.0f;
 
-		fDifference = Math_Lengthf(vDifference);
+		fDifference = plLengthf(vDifference);
 		if((fDifference > cViewModelLag.value) && (cViewModelLag.value > 0.0f ))
 			fSpeed *= fScale = fDifference/cViewModelLag.value;
 
 		for(i = 0; i < 3; i++)
 			svLastFacing[i] += vDifference[i]*(fSpeed*host_frametime);
 
-		Math_VectorNormalize(svLastFacing);
+		plVectorNormalize(svLastFacing);
 
 		for(i = 0; i < 3; i++)
 		{
@@ -657,7 +657,7 @@ void V_CalcRefdef (void)
 	angles[YAW]		= ent->angles[YAW];
 	angles[ROLL]	= ent->angles[ROLL];
 
-	Math_AngleVectors(angles, forward_vector, right_vector, mvUp);
+	plAngleVectors(angles, forward_vector, right_vector, mvUp);
 
 	if(cl.maxclients <= 1) //johnfitz -- moved cheat-protection here from V_RenderView
 		for(i=0; i<3; i++)
@@ -691,7 +691,7 @@ void V_CalcRefdef (void)
 	if(v_gunkick.value) //lerped kick
 	{
 		for(i = 0; i < 3; i++)
-			if(g_mvOrigin3f[i] != v_punchangles[0][i])
+			if (pl_origin3f[i] != v_punchangles[0][i])
 			{
 				// Speed determined by how far we need to lerp in 1/10th of a second
 				delta = (v_punchangles[0][i]-v_punchangles[1][i])*host_frametime*10.0f;

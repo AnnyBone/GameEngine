@@ -31,14 +31,14 @@
 #endif
 
 #ifdef _MSC_VER
-#pragma warning(disable:4115)
-#pragma warning(disable:4996)
-#pragma warning(disable:4229)   // mgraph gets this
-#pragma warning(disable:4305)
+#	pragma warning(disable:4115)
+#	pragma warning(disable:4996)
+#	pragma warning(disable:4229)   // mgraph gets this
+#	pragma warning(disable:4305)
 #endif
 
 //	Build needs to be updated each day that work is done on the engine.
-#define ENGINE_VERSION_BUILD	1096	// 18/02/2016
+#define ENGINE_VERSION_BUILD	1099	// 21/02/2016
 
 #define	ENGINE_LOG	"engine"
 

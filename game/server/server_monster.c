@@ -139,9 +139,9 @@ bool Monster_CheckBottom(ServerEntity_t *ent)
 				start[0]	= stop[0]	= (mins[0]+maxs[0])*0.5f;
 				start[1]	= stop[1]	= (mins[1]+maxs[1])*0.5f;
 
-				stop[2]	= start[2]-2*MONSTER_STEPSIZE;
+				stop[2] = start[2] - 2 * MONSTER_STEPSIZE;
 
-				trace = Engine.Server_Move(start,g_mvOrigin3f,g_mvOrigin3f,stop,true,ent);
+				trace = Engine.Server_Move(start, pl_origin3f, pl_origin3f, stop, true, ent);
 				if(trace.fraction == 1.0)
 					return false;
 
@@ -154,7 +154,7 @@ bool Monster_CheckBottom(ServerEntity_t *ent)
 						start[0] = stop[0] = x ? maxs[0] : mins[0];
 						start[1] = stop[1] = x ? maxs[1] : mins[1];
 
-						trace = Engine.Server_Move(start,g_mvOrigin3f,g_mvOrigin3f,stop,true,ent);
+						trace = Engine.Server_Move(start, pl_origin3f, pl_origin3f, stop, true, ent);
 						if(trace.fraction != 1.0 && trace.endpos[2] > bottom)
 							bottom = trace.endpos[2];
 						if(trace.fraction == 1.0 || mid-trace.endpos[2] > MONSTER_STEPSIZE)
@@ -683,7 +683,7 @@ float MONSTER_GetRange(ServerEntity_t *ent,vec3_t target)
 
 	Math_VectorSubtract(spot1,spot2,spot);
 
-	return (float)Math_VectorLength(spot);
+	return (float)plVectorLength(spot);
 }
 
 bool Monster_IsVisible(ServerEntity_t *ent,ServerEntity_t *target)

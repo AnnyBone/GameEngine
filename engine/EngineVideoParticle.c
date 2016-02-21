@@ -100,7 +100,7 @@ void Particle_CreateEffect(
 					//pParticle->iMaterial = iMaterial;
 
 					Math_VectorAdd(vOrigin, vDirection, pParticle->vOrigin);
-					Math_VectorNormalize(vDirection);
+					plVectorNormalize(vDirection);
 					Math_VectorScale(vDirection, fVelocity, pParticle->vVelocity);
 				}
 		break;
@@ -125,7 +125,7 @@ void Particle_CreateEffect(
 					pParticle->vOrigin[1] = vOrigin[1] + j + (rand() & 3);
 					pParticle->vOrigin[2] = vOrigin[2] + k + (rand() & 3);
 
-					Math_VectorNormalize(vDirection);
+					plVectorNormalize(vDirection);
 					Math_VectorScale(vDirection, fVelocity, pParticle->vVelocity);
 				}
 		break;
@@ -163,7 +163,7 @@ void Particle_RocketTrail(vec3_t start, vec3_t end, int type)
 	static int	tracercount;
 
 	Math_VectorSubtract(end, start, vec);
-	len = Math_VectorNormalize(vec);
+	len = plVectorNormalize(vec);
 	if (type < 128)
 		dec = 3;
 	else
@@ -178,7 +178,7 @@ void Particle_RocketTrail(vec3_t start, vec3_t end, int type)
 
 		p = Particle_Allocate();
 
-		Math_VectorCopy(g_mvOrigin3f, p->vVelocity);
+		Math_VectorCopy(pl_origin3f, p->vVelocity);
 		p->lifetime = cl.time + 2;
 
 		switch (type)

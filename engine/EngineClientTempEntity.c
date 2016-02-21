@@ -103,7 +103,7 @@ void CL_UpdateTEnts (void)
 
 		// Add new entities for the lightning
 		Math_VectorCopy (b->start, org);
-		d = Math_VectorNormalize(dist);
+		d = plVectorNormalize(dist);
 		while (d > 0)
 		{
 			ent = CL_NewTempEntity ();

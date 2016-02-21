@@ -184,10 +184,10 @@ void Video_Initialize(void)
 	vlGetMaxTextureAnistropy(&Video.fMaxAnisotropy);
 
 	// Get any information that will be presented later.
-	Video.gl_vendor			= (char*)glGetString(GL_VENDOR);
-	Video.gl_renderer		= (char*)glGetString(GL_RENDERER);
-	Video.gl_version		= (char*)glGetString(GL_VERSION);
-	Video.gl_extensions		= (char*)glGetString(GL_EXTENSIONS);
+	Video.gl_vendor			= vlGetString(VL_STRING_VENDOR);
+	Video.gl_renderer		= vlGetString(VL_STRING_RENDERER);
+	Video.gl_version		= vlGetString(VL_STRING_VERSION);
+	Video.gl_extensions		= vlGetString(VL_STRING_EXTENSIONS);
 
 	GLeeInit();
 
@@ -279,11 +279,11 @@ void Video_ClearBuffer(void)
 	if (!cv_video_clearbuffers.bValue)
 		return;
 
-	int clear = 0;
+	unsigned int clear = 0;
 	if (cv_video_drawmirrors.bValue)
-		clear |= GL_STENCIL_BUFFER_BIT;
+		clear |= VL_MASK_STENCIL;
 
-	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT | clear);
+	vlClear(VL_MASK_DEPTH | VL_MASK_COLOUR | clear);
 }
 
 /*	Displays the depth buffer for testing purposes.
@@ -291,6 +291,7 @@ void Video_ClearBuffer(void)
 */
 void Video_DrawDepthBuffer(void)
 {
+#if 0
 	static gltexture_t	*depth_texture = NULL;
 	float				*uByte;
 
@@ -316,7 +317,7 @@ void Video_DrawDepthBuffer(void)
 
 	// Draw the buffer to the bottom left corner of the screen.
 	GL_SetCanvas(CANVAS_BOTTOMLEFT);
-	Draw_Rectangle(0, 0, 512, 512, g_colourwhite);
+	Draw_Rectangle(0, 0, 512, 512, pl_white);
 	GL_SetCanvas(CANVAS_DEFAULT);
 
 	// Delete the texture, so we can recreate it later.
@@ -324,6 +325,7 @@ void Video_DrawDepthBuffer(void)
 
 	// Free the pixel data.
 	free(uByte);
+#endif
 }
 
 /*
@@ -448,51 +450,15 @@ void Video_SetTexture(gltexture_t *gTexture)
 	Multitexturing Management
 */
 
-/*	Conversion between our TMU selection and OpenGL.
-*/
-unsigned int Video_GetTextureUnit(unsigned int uiTarget)
-{
-	if (Video.debug_frame)
-		plWriteLog(cv_video_log.string, "Video: Attempting to get TMU target %i\n", uiTarget);
-
-#if 0
-	switch (uiTarget)
-	{
-	case VIDEO_TEXTURE_DIFFUSE:
-		uiUnit = GL_TEXTURE0;
-		break;
-	case VIDEO_TEXTURE_LIGHT:
-		uiUnit = GL_TEXTURE1;
-		break;
-	case VIDEO_TEXTURE_DETAIL:
-		uiUnit = GL_TEXTURE2;
-		break;
-	case VIDEO_TEXTURE_FULLBRIGHT:
-		uiUnit = GL_TEXTURE3;
-		break;
-	case VIDEO_TEXTURE_SPHERE:
-		uiUnit = GL_TEXTURE4;
-		break;
-	default:
-		Sys_Error("Unknown texture unit! (%i)\n", uiTarget);
-	}
-#endif
-
-	if (Video.debug_frame)
-		plWriteLog(cv_video_log.string, "Video: Returning TMU %i\n", GL_TEXTURE0 + uiTarget);
-
-	return GL_TEXTURE0 + uiTarget;
-}
-
 void Video_SelectTexture(unsigned int uiTarget)
 {
 	if (uiTarget == Video.current_textureunit)
 		return;
-
-	if (uiTarget > VIDEO_MAX_UNITS)
+	
+	if (uiTarget > Video.num_textureunits)
 		Sys_Error("Invalid texture unit! (%i)\n",uiTarget);
 
-	glActiveTexture(Video_GetTextureUnit(uiTarget));
+	vlActiveTexture(uiTarget);
 
 	Video.current_textureunit = uiTarget;
 
@@ -506,32 +472,28 @@ void Video_SelectTexture(unsigned int uiTarget)
 
 MathVector4f_t mvVideoGlobalColour;
 
-void Video_ObjectTexture(VideoVertex_t *voObject, unsigned int uiTextureUnit, float S, float T)
+void Video_ObjectTexture(VideoVertex_t *object, unsigned int uiTextureUnit, float S, float T)
 {
-	voObject->mvST[uiTextureUnit][0] = S;
-	voObject->mvST[uiTextureUnit][1] = T;
+	object->mvST[uiTextureUnit][0] = S;
+	object->mvST[uiTextureUnit][1] = T;
 }
 
-void Video_ObjectVertex(VideoVertex_t *voObject, float X, float Y, float Z)
+void Video_ObjectVertex(VideoVertex_t *object, float x, float y, float z)
 {
-	voObject->mvPosition[0] = X;
-	voObject->mvPosition[1] = Y;
-	voObject->mvPosition[2] = Z;
+	plVectorSet3f(object->mvPosition, x, y, z);
 }
 
-void Video_ObjectNormal(VideoVertex_t *voObject, float X, float Y, float Z)
+void Video_ObjectNormal(VideoVertex_t *object, float x, float y, float z)
 {
-	voObject->mvNormal[0] = X;
-	voObject->mvNormal[1] = Y;
-	voObject->mvNormal[2] = Z;
+	plVectorSet3f(object->mvNormal, x, y, z);
 }
 
-void Video_ObjectColour(VideoVertex_t *voObject, float R, float G, float B, float A)
+void Video_ObjectColour(VideoVertex_t *object, float R, float G, float B, float A)
 {
-	voObject->mvColour[pRED] = R;
-	voObject->mvColour[pGREEN] = G;
-	voObject->mvColour[pBLUE] = B;
-	voObject->mvColour[pALPHA] = A;
+	object->mvColour[pRED] = R;
+	object->mvColour[pGREEN] = G;
+	object->mvColour[pBLUE] = B;
+	object->mvColour[pALPHA] = A;
 }
 
 /*
@@ -552,10 +514,8 @@ void Video_DrawSurface(msurface_t *mSurface,float fAlpha, Material_t *mMaterial,
 	VideoVertex_t	*drawsurf;
 	float			*fVert;
 	int				i;
-
-	drawsurf = (VideoVertex_t*)calloc(mSurface->polys->numverts, sizeof(VideoVertex_t));
-	if (!drawsurf)
-		Sys_Error("Failed to allocate surface video object!\n");
+	
+	drawsurf = (VideoVertex_t*)calloc_or_die(mSurface->polys->numverts, sizeof(VideoVertex_t));
 
 	fVert = mSurface->polys->verts[0];
 	for (i = 0; i < mSurface->polys->numverts; i++, fVert += VERTEXSIZE)
@@ -703,53 +663,6 @@ bool Video_GetCapability(unsigned int iCapability)
 	}
 
 	return false;
-}
-
-/*	Resets our capabilities.
-	Give an argument of true to only clear the list, not the capabilities.
-	Also resets active blending mode.
-
-	TODO: GET RID OF THIS!!!!
-*/
-void Video_ResetCapabilities(bool bClearActive)
-{
-	VIDEO_FUNCTION_START
-	int i;
-
-	if (Video.debug_frame)
-		plWriteLog(cv_video_log.string, "Video: Resetting capabilities...\n");
-
-	Video_SelectTexture(VIDEO_TEXTURE_DIFFUSE);
-
-	if(bClearActive)
-	{
-		if (Video.debug_frame)
-			plWriteLog(cv_video_log.string, "Video: Clearing active capabilities...\n");
-
-		bVideoIgnoreCapabilities = true;
-
-		// Set this back too...
-		vlSetTextureEnvironmentMode(VIDEO_TEXTURE_MODE_MODULATE);
-
-		// Clear out capability list.
-		for (i = 0; i < VIDEO_MAX_UNITS; i++)
-		{
-			Video_DisableCapabilities(Video.textureunits[i].capabilities[VIDEO_STATE_ENABLE]);
-			Video_EnableCapabilities(Video.textureunits[i].capabilities[VIDEO_STATE_DISABLE]);
-
-			Video.textureunits[i].capabilities[0] =
-			Video.textureunits[i].capabilities[1] = 0;
-		}
-
-		vlBlendFunc(VIDEO_BLEND_DEFAULT);
-		vlDepthMask(true);
-
-		bVideoIgnoreCapabilities = false;
-
-		if (Video.debug_frame)
-			plWriteLog(cv_video_log.string, "Video: Finished clearing capabilities.\n");
-	}
-	VIDEO_FUNCTION_END
 }
 
 /**/

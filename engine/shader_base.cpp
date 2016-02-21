@@ -70,8 +70,8 @@ SHADER_REGISTER_START(BaseShader)
 	SHADER_REGISTER_UNIFORM(u_alphatest, alpha_test)
 
 	// Lighting
-	SHADER_REGISTER_UNIFORM(u_lightcolour, g_colourwhite)
-	SHADER_REGISTER_UNIFORM(u_lightposition, g_mvOrigin3f)
+	SHADER_REGISTER_UNIFORM(u_lightcolour, pl_white)
+	SHADER_REGISTER_UNIFORM(u_lightposition, pl_origin3f)
 
 	// Vertex scaling
 	SHADER_REGISTER_UNIFORM(u_vertexscale, 1.0f)

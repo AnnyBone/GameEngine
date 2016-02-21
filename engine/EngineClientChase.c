@@ -56,7 +56,7 @@ void Chase_UpdateForDrawing (void)
 	vec3_t	forward, up, right;
 	vec3_t	ideal, crosshair, temp;
 
-	Math_AngleVectors(cl.viewangles, forward, right, up);
+	plAngleVectors(cl.viewangles, forward, right, up);
 
 	// calc ideal camera location before checking for walls
 	for (i=0 ; i<3 ; i++)
@@ -68,7 +68,7 @@ void Chase_UpdateForDrawing (void)
 
 	// make sure camera is not in or behind a wall
 	TraceLine(r_refdef.vieworg, ideal, temp);
-	if(Math_Length(temp) != 0)
+	if (plLengthf(temp) != 0)
 		Math_VectorCopy(temp, ideal);
 
 	// place camera

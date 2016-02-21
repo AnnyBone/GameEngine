@@ -112,8 +112,8 @@ void VideoFrameBuffer::GenerateBuffers()
 		Video_SetTexture(buf_colour);
 
 		// Set the texture up.
-		vlSetupTexture(VIDEO_TEXTURE_FORMAT_RGB, VIDEO_TEXTURE_FORMAT_RGB, width, height);
-		vlSetTextureFilter(VIDEO_TEXTURE_FILTER_LINEAR);
+		vlTexImage2D(VL_TEXTURE_2D, VL_TEXTURE_FORMAT_RGB, VL_TEXTURE_FORMAT_RGB, width, height, NULL);
+		vlSetTextureFilter(VL_TEXTURE_FILTER_LINEAR);
 
 		// Attach the texture to this framebuffer.
 		vlAttachFrameBufferTexture(buf_colour);
@@ -133,7 +133,7 @@ void VideoFrameBuffer::Bind()
 	if (isbound)
 		return;
 
-	vlBindFrameBuffer(VIDEO_FBO_DEFAULT, instance);
+	vlBindFrameBuffer(VL_FRAMEBUFFER_DEFAULT, instance);
 
 	isbound = true;
 }
@@ -143,7 +143,7 @@ void VideoFrameBuffer::Unbind()
 	if (!isbound)
 		return;
 
-	vlBindFrameBuffer(VIDEO_FBO_DEFAULT, 0);
+	vlBindFrameBuffer(VL_FRAMEBUFFER_DEFAULT, 0);
 
 	isbound = false;
 }
@@ -156,7 +156,7 @@ void VideoFrameBuffer::Draw()
 
 	Video_SetTexture(buf_colour);
 
-	Draw_Rectangle(0, 0, 512, 512, g_colourwhite); //Video.iWidth, Video.iHeight,
+	Draw_Rectangle(0, 0, 512, 512, pl_white); //Video.iWidth, Video.iHeight,
 }
 
 VideoFrameBuffer *debug_fbo;
@@ -223,7 +223,7 @@ void VideoPostProcess::Draw()
 
 	GL_SetCanvas(CANVAS_DEFAULT);
 
-	Draw_Rectangle(0, 0, 512, 512, g_colourwhite); //Video.iWidth, Video.iHeight,
+	Draw_Rectangle(0, 0, 512, 512, pl_white); //Video.iWidth, Video.iHeight,
 
 	program->Disable();
 }

@@ -83,7 +83,7 @@ ServerEntity_t *Server_FindRadius(MathVector3f_t origin, float radius)
 		for(j = 0; j < 3; j++)
 			eorg[j] = origin[j]-(eEntity->v.origin[j]+(eEntity->v.mins[j]+eEntity->v.maxs[j])*0.5f);
 
-		if(Math_Length(eorg) > radius)
+		if (plLengthf(eorg) > radius)
 			continue;
 
 		eEntity->v.chain	= eChain;
@@ -167,7 +167,7 @@ void Server_SetModel(ServerEntity_t *ent, char *m)
 	if (mod && mod->type == MODEL_TYPE_LEVEL)
 		Game->Server_SetSizeVector(ent,mod->clipmins,mod->clipmaxs);
 	else
-		Game->Server_SetSizeVector(ent,g_mvOrigin3f,g_mvOrigin3f);
+		Game->Server_SetSizeVector(ent, pl_origin3f, pl_origin3f);
 }
 
 void Game_AmbientSound(MathVectorf_t *vPosition,const char *cPath,int iVolume,int iAttenuation)

@@ -626,7 +626,7 @@ void _Host_Frame (float time)
 		CL_DecayLights();
 	}
 	else
-		S_Update(g_mvOrigin3f, g_mvOrigin3f, g_mvOrigin3f, g_mvOrigin3f);
+		S_Update(pl_origin3f, pl_origin3f, pl_origin3f, pl_origin3f);
 
 	if (host_speeds.value)
 	{

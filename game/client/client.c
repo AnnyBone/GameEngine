@@ -212,7 +212,7 @@ void Client_RelinkEntities(ClientEntity_t *entity, int i, double dTime)
 
 		light->origin[2] += 16.0f;
 
-		Math_AngleVectors(entity->angles, f, r, u);
+		plAngleVectors(entity->angles, f, r, u);
 		Math_VectorMA(light->origin, 18, f, light->origin);
 		
 		light->radius		= 170.0f + (rand() & 31);

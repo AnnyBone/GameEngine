@@ -134,7 +134,7 @@ void Draw_MaterialSurface(Material_t *mMaterial, int iSkin,	int x, int y, int w,
 	// Sloppy, but in the case that there's nothing valid...
 	if (!mMaterial)
 	{
-		Draw_Rectangle(x, y, w, h, g_colourred);
+		Draw_Rectangle(x, y, w, h, pl_red);
 		Draw_String(x, y, "INVALID MATERIAL!");
 		return;
 	}
@@ -517,8 +517,6 @@ void Draw_Grid(float x, float y, float z, int grid_size)
 {
 	int i;
 
-	Video_ResetCapabilities(false);
-
 	glPushMatrix();
 
 	glTranslatef(x, y, z);
@@ -574,8 +572,6 @@ void Draw_Grid(float x, float y, float z, int grid_size)
 	vlEnable(VIDEO_TEXTURE_2D);
 
 	glPopMatrix();
-
-	Video_ResetCapabilities(true);
 }
 
 void Draw_Rectangle(int x, int y, int w, int h, Colour_t colour)

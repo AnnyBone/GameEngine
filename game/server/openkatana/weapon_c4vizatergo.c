@@ -182,7 +182,7 @@ void C4Vizatergo_Think(ServerEntity_t *ent)
 	if(eDistantEnt)
 	{
 		Math_VectorSubtract(eDistantEnt->v.origin,ent->v.origin,vDistance);
-		fDistance = 512.0f-Math_Length(vDistance);
+		fDistance = 512.0f - plLengthf(vDistance);
 
 		Game.Con_Printf("Distance: %f\n",fDistance);
 		if(fDistance > 0)
@@ -234,7 +234,7 @@ void C4Vizatergo_PrimaryAttack(ServerEntity_t *eOwner)
 
 	c4ball->v.velocity[pY] += 20.0f;
 
-	Math_MVToVector(Math_VectorToAngles(c4ball->v.velocity),c4ball->v.angles);
+	Math_MVToVector(plVectorToAngles(c4ball->v.velocity), c4ball->v.angles);
 	Math_VectorCopy(eOwner->v.origin,vOrigin);
 
 	c4ball->v.TouchFunction = C4Vizatergo_C4BallTouch;
@@ -242,7 +242,7 @@ void C4Vizatergo_PrimaryAttack(ServerEntity_t *eOwner)
 	c4ball->v.dNextThink = Server.dTime + 2.5;
 
 	Entity_SetModel(c4ball,"models/c4ammo.md2");
-	Entity_SetSizeVector(c4ball,g_mvOrigin3f,g_mvOrigin3f);
+	Entity_SetSizeVector(c4ball, pl_origin3f, pl_origin3f);
 	Entity_SetOrigin(c4ball,vOrigin);
 
 	if(eOwner->local.attackb_finished > Server.dTime)	// No attack boost...

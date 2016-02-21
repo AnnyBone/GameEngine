@@ -179,7 +179,7 @@ void Shadow_Draw(ClientEntity_t *ent)
 
 			Math_VectorSubtract(ent->origin, dlLight->origin, vDistance);
 
-			fShadowAlpha = (dlLight->radius - Math_Length(vDistance)) / 100.0f;
+			fShadowAlpha = (dlLight->radius - plLengthf(vDistance)) / 100.0f;
 			if (fShadowAlpha <= 0)
 				return;
 

@@ -295,21 +295,21 @@ void World_DrawWater(void)
 	for (i = 0; i < cl.worldmodel->numtextures; i++)
 	{
 		t = cl.worldmodel->textures[i];
-		if (!t || !t->texturechain || !(t->material->iFlags & MATERIAL_FLAG_WATER))
+		if (!t || !t->texturechain || !(t->material->flags & MATERIAL_FLAG_WATER))
 			continue;
 
-		t->material->bBind = true;
+		t->material->bind = true;
 
 		for (s = t->texturechain; s; s = s->texturechain)
 		{
 			if (!s->culled)
 			{
-				if (t->material->bBind && !r_showtris.bValue)
+				if (t->material->bind && !r_showtris.bValue)
 				{
 					Video_SelectTexture(VIDEO_TEXTURE_LIGHT);
 					vlEnable(VIDEO_TEXTURE_2D);
 
-					t->material->bBind = false;
+					t->material->bind = false;
 				}
 
 				if (!r_showtris.bValue)
@@ -346,20 +346,20 @@ void World_Draw(void)
 	for(i = 0; i < cl.worldmodel->numtextures; i++)
 	{
 		t = cl.worldmodel->textures[i];
-		if(!t || !t->texturechain || t->texturechain->flags & (SURF_DRAWTILED | SURF_NOTEXTURE) || (t->material->iFlags & MATERIAL_FLAG_WATER))
+		if (!t || !t->texturechain || t->texturechain->flags & (SURF_DRAWTILED | SURF_NOTEXTURE) || (t->material->flags & MATERIAL_FLAG_WATER))
 			continue;
 
-		t->material->bBind = true;
+		t->material->bind = true;
 
 		for(s = t->texturechain; s; s = s->texturechain)
 			if(!s->culled)
 			{
-				if (t->material->bBind && !r_showtris.bValue)
+				if (t->material->bind && !r_showtris.bValue)
 				{
 					Video_SelectTexture(VIDEO_TEXTURE_LIGHT);
 					vlEnable(VIDEO_TEXTURE_2D);
 
-					t->material->bBind = false;
+					t->material->bind = false;
 				}
 
 				if (!r_showtris.bValue)

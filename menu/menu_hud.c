@@ -85,8 +85,8 @@ void HUD_Draw(void)
 	{
 		// Ensure it's a valid skin.
 		unsigned int skin = cv_menuhudcrosshair.iValue;
-		if (skin > (hud_mcrosshairs->iSkins - 1))
-			skin = (hud_mcrosshairs->iSkins - 1);
+		if (skin > (hud_mcrosshairs->num_skins - 1))
+			skin = (hud_mcrosshairs->num_skins - 1);
 
 		// Draw the crosshair.
 		Engine.Client_SetMenuCanvas(CANVAS_CROSSHAIR);

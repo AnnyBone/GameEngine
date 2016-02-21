@@ -85,8 +85,8 @@ void ClientEffect_LavaSplash(MathVector3f_t position)
 
 				velocity = (float)(50 + (rand() & 63));
 
-				Math_VectorNormalize(direction);
-				Math_VectorScale(direction, velocity, part->vVelocity);
+				plVectorNormalize(direction);
+				plVectorScale3f(direction, velocity, part->vVelocity);
 			}
 }
 
@@ -120,7 +120,7 @@ void ClientEffect_Teleport(MathVector3f_t position)
 
 				velocity = (float)(50 + (rand() & 63));
 
-				Math_VectorNormalize(direction);
+				plVectorNormalize(direction);
 				Math_VectorScale(direction, velocity, part->vVelocity);
 			}
 
@@ -151,7 +151,7 @@ void ClientEffect_BloodPuff(MathVector3f_t position)
 		part->fRamp			= (float)(rand() & 4);
 		part->fScale		= (float)(rand() % 8 + 2);
 		part->material		= mat_blood;
-		part->skin			= (rand() % mat_blood->iSkins);
+		part->skin			= (rand() % mat_blood->num_skins);
 	}
 }
 
@@ -168,7 +168,7 @@ void ClientEffect_BloodCloud(MathVector3f_t position, BloodType_t type)
 	part->lifetime		= (float)(Client.time + 0.3*(rand() % 5));
 	part->fScale		= 20.0f;
 	part->material		= mat_blood;
-	part->skin			= (rand() % mat_bloodcloud->iSkins);
+	part->skin			= (rand() % mat_bloodcloud->num_skins);
 	part->pBehaviour	= PARTICLE_BEHAVIOUR_STATIC;
 }
 
@@ -181,7 +181,7 @@ void ClientEffect_Smoke(MathVector3f_t position)
 			return;
 
 		part->material		= mat_smoke;
-		part->skin			= (rand() % mat_smoke->iSkins);
+		part->skin			= (rand() % mat_smoke->num_skins);
 		part->fRamp			= (float)(rand() & 3);
 		part->fScale		= ((float)(rand() % 15) * 2);
 		part->lifetime		= (Client.time + (rand() % 5));
@@ -207,7 +207,7 @@ void ClientEffect_Explosion(MathVector3f_t position)
 			break;
 
 		part->material		= mat_smoke;
-		part->skin			= (rand() % mat_smoke->iSkins);
+		part->skin			= (rand() % mat_smoke->num_skins);
 		part->fScale		= ((float)(rand() % 5)) + 10.0f*10.0f;
 		part->lifetime		= Client.time + rand() % 4;
 		part->fRamp			= (float)(rand() & 3);

@@ -44,15 +44,14 @@ bool		snd_initialized = false;
 volatile dma_t  *shm = 0;
 volatile dma_t sn;
 
-vec3_t		listener_origin;
-vec3_t		listener_forward;
-vec3_t		listener_right;
-vec3_t		listener_up;
-vec_t		sound_nominal_clip_dist=1000.0;
+MathVector3f_t	listener_origin;
+MathVector3f_t	listener_forward;
+MathVector3f_t	listener_right;
+MathVector3f_t	listener_up;
+MathVectorf_t	sound_nominal_clip_dist=1000.0;
 
 int			soundtime;		// sample PAIRS
 int   		paintedtime; 	// sample PAIRS
-
 
 #define	MAX_SFX		512
 sfx_t		*known_sfx;		// hunk allocated [MAX_SFX]
@@ -326,8 +325,8 @@ channel_t *SND_PickChannel(unsigned int entnum, int entchannel)
 
 void SND_Spatialize(channel_t *ch)
 {
-	vec_t dot,dist,lscale,rscale,scale;
-	vec3_t source_vec;
+	MathVectorf_t	dot,dist,lscale,rscale,scale;
+	MathVector3f_t	source_vec;
 
 	// Anything coming from the view entity will allways be full volume
 	if (ch->entnum == cl.viewentity)
@@ -340,7 +339,7 @@ void SND_Spatialize(channel_t *ch)
 	// Calculate stereo seperation and distance attenuation
 	Math_VectorSubtract(ch->origin, listener_origin, source_vec);
 
-	dist = Math_VectorNormalize(source_vec) * ch->dist_mult;
+	dist = plVectorNormalize(source_vec) * ch->dist_mult;
 
 	dot = Math_DotProduct(listener_right, source_vec);
 
@@ -820,6 +819,6 @@ void S_LocalSound (char *sound)
 		Con_Printf ("S_LocalSound: can't cache %s\n", sound);
 		return;
 	}
-	S_StartSound (cl.viewentity, -1, sfx, g_mvOrigin3f, 255, 1);
+	S_StartSound(cl.viewentity, -1, sfx, pl_origin3f, 255, 1);
 }
 

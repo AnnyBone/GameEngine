@@ -104,7 +104,7 @@ void Audio_Frame(void)
 	MathVector3f_t	position, orientation, velocity;
 
 	// TODO: Have nothing to assign this to yet.
-	Math_VectorCopy(g_mvOrigin3f, velocity);
+	Math_VectorCopy(pl_origin3f, velocity);
 
 	if(cls.signon == SIGNONS)
 	{
@@ -113,8 +113,8 @@ void Audio_Frame(void)
 	}
 	else
 	{
-		Math_VectorCopy(g_mvOrigin3f, position);
-		Math_VectorCopy(g_mvOrigin3f, orientation);
+		Math_VectorCopy(pl_origin3f, position);
+		Math_VectorCopy(pl_origin3f, orientation);
 	}
 	
 	alListenerfv(AL_POSITION, position);

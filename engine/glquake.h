@@ -21,21 +21,19 @@
 #pragma once
 
 #ifdef _MSC_VER
-#pragma warning(disable : 4244)     // MIPS
-#pragma warning(disable : 4136)     // X86
-#pragma warning(disable : 4051)     // ALPHA
+#	pragma warning(disable : 4244)     // MIPS
+#	pragma warning(disable : 4136)     // X86
+#	pragma warning(disable : 4051)     // ALPHA
 #endif
-
-//#define	KATANA_CORE_GL
 
 // TODO: 
 //		move these into video_layer.c once everything
 //		is abstracted out
 #ifdef KATANA_CORE_GL
-#include <GL/glcorearb.h>
+#	include <GL/glcorearb.h>
 #else
-#include "GLee.h"
-#include <GL/glu.h>
+#	include "GLee.h"
+#	include <GL/glu.h>
 #endif
 
 plEXTERN_C_START

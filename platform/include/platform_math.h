@@ -18,8 +18,7 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef PLATFORM_MATH_H
-#define	PLATFORM_MATH_H
+#pragma once
 
 #include "platform.h"
 
@@ -38,13 +37,6 @@ plEXTERN_C_START
 
 typedef double MathVectord_t;	// Double precision
 typedef float MathVectorf_t;	// Floating-point precision
-
-// For compatability...
-#ifdef PLATFORM_MATH_DOUBLE
-#define vec_t MathVectord_t
-#else
-#define vec_t MathVectorf_t
-#endif
 
 #define	pMath_RINT(a)		((a)>0?(int)((a)+0.5):(int)((a)-0.5))
 #define	pMath_DEG2RAD(a)	((a)*pMath_PI_DIV180)
@@ -69,29 +61,40 @@ typedef struct
 		vX, vY, vZ;
 } MathVector_t;
 
-extern MathVector_t		mvOrigin;
-extern MathVector2f_t	mv2Origin;
-extern MathVector3f_t	g_mvOrigin3f;
-extern MathVector4f_t	mv4Origin;
+extern MathVector2f_t	pl_origin2f;
+extern MathVector3f_t	pl_origin3f;
+extern MathVector4f_t	pl_origin4f;
 
 extern Colour_t	
-	g_colourwhite, 
-	g_colourred, 
-	g_colourgreen, 
-	g_colourblue;
+	pl_white,
+	pl_red,
+	pl_green, 
+	pl_blue;
 
-enum PlatformMathWH
-{
-	pWIDTH,	pHEIGHT	// 0, 1
-};
-// For compatability...
-#define	WIDTH	pWIDTH
-#define	HEIGHT	pHEIGHT
+#define	PL_WIDTH	0
+#define	PL_HEIGHT	1
+#define	WIDTH	PL_WIDTH
+#define	HEIGHT	PL_HEIGHT
 
 enum PlatformMathXYZ
 {
 	pX, pY, pZ	// 0, 1, 2
 };
+
+#define	PL_X	0
+#define	PL_Y	1
+#define	PL_Z	2
+#if 0
+#ifndef X
+#	define X PL_X
+#endif
+#ifndef Y
+#	define Y PL_Y
+#endif
+#ifndef Z
+#	define Z PL_Z
+#endif
+#endif
 
 enum PlatformMathPYR
 {
@@ -191,35 +194,28 @@ void	_Math_VectorSubtract(MathVector3f_t a, MathVector3f_t b, MathVector3f_t c);
 
 struct	mplane_s;
 
-void	Math_VectorAngles(const MathVector3f_t forward, MathVector3f_t angles);
-void	Math_AngleVectors(MathVector3f_t angles, MathVector3f_t forward, MathVector3f_t right, MathVector3f_t up);
-void	Math_VectorNormalizeFast(MathVector3f_t vVector);
-void	Math_VectorMake(MathVector3f_t veca, float scale, MathVector3f_t vecb, MathVector3f_t vecc);
+void Math_VectorAngles(const MathVector3f_t forward, MathVector3f_t angles);
+void plAngleVectors(MathVector3f_t angles, MathVector3f_t forward, MathVector3f_t right, MathVector3f_t up);
+void plVectorNormalizeFast(MathVector3f_t vVector);
+void Math_VectorMake(MathVector3f_t veca, float scale, MathVector3f_t vecb, MathVector3f_t vecc);
 
-double	Math_VectorLength(MathVector3f_t a);
+double plVectorLength(MathVector3f_t a);
 
 float	Math_AngleMod(float a);
 float	Math_VectorToYaw(MathVectorf_t *vVector);
 
-bool Math_VectorCompare(MathVector3f_t a, MathVector3f_t b);
-bool Math_IsIntersecting(MathVector3f_t mvFirstMins, MathVector3f_t mvFirstMaxs, MathVector3f_t mvSecondMins, MathVector3f_t mvSecondMaxs);
+bool plVectorCompare(MathVector3f_t a, MathVector3f_t b);
+bool plIsIntersecting(MathVector3f_t mvFirstMins, MathVector3f_t mvFirstMaxs, MathVector3f_t mvSecondMins, MathVector3f_t mvSecondMaxs);
 
-MathVectorf_t Math_Lengthf(MathVector3f_t a);
-MathVectord_t Math_Lengthd(MathVector3d_t a);
-#if 0
-#define Math_Length(a) _Generic((a), \
-	MathVector3d_t: Math_Lengthd(a) \
-	MathVector3f_t: Math_Lengthf(a))(a)
-#else
-#define Math_Length(a) Math_Lengthf(a)
-#endif
+MathVectorf_t plLengthf(MathVector3f_t a);
+MathVectord_t plLengthd(MathVector3d_t a);
 
-MathVectorf_t Math_VectorNormalize(MathVector3f_t a);
+MathVectorf_t plVectorNormalize(MathVector3f_t a);
 MathVectorf_t Math_DotProduct(MathVector3f_t a, MathVector3f_t b);
 
-MathVector_t Math_VectorToAngles(MathVector3f_t vValue);
+MathVector_t plVectorToAngles(MathVector3f_t vValue);
 
-float Math_Linear(float x);
+float plLinear(float x);
 float Math_InPow(float x, float p);
 float Math_OutPow(float x, float p);
 float Math_InOutPow(float x, float p);
@@ -227,25 +223,24 @@ float Math_InSin(float x);
 float Math_OutSin(float x);
 float Math_InOutSin(float x);
 float Math_InExp(float x);
-float Math_OutExp(float x);
-float Math_InOutExp(float x);
+float plOutExp(float x);
+float plInOutExp(float x);
 float Math_InCirc(float x);
 float Math_OutCirc(float x);
 float Math_InOutCirc(float x);
 float Math_Rebound(float x);
 float Math_InBack(float x);
-float Math_OutBack(float x);
+float plOutBack(float x);
 float Math_InOutBack(float x);
-float Math_Impulse(float x, float k);
+float plImpulse(float x, float k);
 float Math_ExpPulse(float x, float k, float n);
 
-	MathVectorf_t plColourNormalize(MathVector3f_t in, MathVector3f_t out);
+MathVectorf_t plColourNormalize(MathVector3f_t in, MathVector3f_t out);
 
-	void plVectorMultiply3f(MathVector3f_t in, MathVector3f_t multi, MathVector3f_t out);
-	void plVectorAdd3f(MathVector3f_t in, MathVector3f_t add, MathVector3f_t out);
-	void plVectorCopy3f(MathVector3f_t in, MathVector3f_t out);
-	void plVectorScale3f(MathVector3f_t in, MathVectorf_t scale, MathVector3f_t out);
+void plVectorSet3f(MathVector3f_t out, float x, float y, float z);
+void plVectorMultiply3f(MathVector3f_t in, MathVector3f_t multi, MathVector3f_t out);
+void plVectorAdd3f(MathVector3f_t in, MathVector3f_t add, MathVector3f_t out);
+void plVectorCopy3f(MathVector3f_t in, MathVector3f_t out);
+void plVectorScale3f(MathVector3f_t in, MathVectorf_t scale, MathVector3f_t out);
 
 plEXTERN_C_END
-
-#endif // !PLATFORM_MATH_H

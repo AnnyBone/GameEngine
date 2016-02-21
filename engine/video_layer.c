@@ -22,40 +22,110 @@
 
 /*
 	This document acts as a layer between the video sub-system
-	and OpenGL. All OpenGL functionality should be here.
+	and the graphics API.
+	
+	All graphics API functionality should be here.
 */
 
 /*===========================
-	OPENGL GET
+	GET
 ===========================*/
 
 void vlGetMaxTextureImageUnits(int *params)
 {
 	VIDEO_FUNCTION_START
+#ifdef VL_MODE_OPENGL
 	glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, params);
+#else
+	params = 0;
+#endif
 	VIDEO_FUNCTION_END
 }
 
 void vlGetMaxTextureAnistropy(float *params)
 {
 	VIDEO_FUNCTION_START
+#ifdef VL_MODE_OPENGL
 	glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, params);
+#else	// Not supported in core?
+	params = 0;
+#endif
+	VIDEO_FUNCTION_END
+}
+
+const char *vlGetVendor(void)
+{
+	VIDEO_FUNCTION_START
+#if defined (VL_MODE_OPENGL) || (VL_MODE_OPENGL_CORE)
+	return (const char*)glGetString(GL_VENDOR);
+#else
+	return "";
+#endif
+	VIDEO_FUNCTION_END
+}
+
+const char *vlGetExtensions(void)
+{
+	VIDEO_FUNCTION_START
+#ifdef VL_MODE_OPENGL
+	return (const char*)glGetString(GL_EXTENSIONS);
+	// TODO: this works differently in core; use glGetStringi instead!
+#else
+	return "";
+#endif
+	VIDEO_FUNCTION_END
+}
+
+const char *vlGetVersion(void)
+{
+	VIDEO_FUNCTION_START
+#if defined (VL_MODE_OPENGL) || (VL_MODE_OPENGL_CORE)
+	return (const char*)glGetString(GL_VERSION);
+#else
+	return "";
+#endif
+	VIDEO_FUNCTION_END
+}
+
+const char *vlGetRenderer(void)
+{
+	VIDEO_FUNCTION_START
+#if defined (VL_MODE_OPENGL) || (VL_MODE_OPENGL_CORE)
+	return (const char*)glGetString(GL_RENDERER);
+#else
+	return "";
+#endif
+	VIDEO_FUNCTION_END
+}
+
+const char *vlGetString(vlString_t string)
+{
+	VIDEO_FUNCTION_START
+#if defined (VL_MODE_OPENGL) || (VL_MODE_OPENGL_CORE)
+	if (string == VL_STRING_EXTENSIONS)
+		// This works differently in core.
+		return vlGetExtensions();
+	return (const char*)glGetString(string);
+#else
+	return "";
+#endif
 	VIDEO_FUNCTION_END
 }
 
 // String
 
 /*===========================
-	OPENGL ERROR HANDLING
+	ERROR HANDLING
 ===========================*/
 
-/*	Checks glGetError and returns a generic string describing the fault.
+/*	Returns a generic string describing the fault.
 */
 char *vlGetErrorString(unsigned int er)
 {
 	VIDEO_FUNCTION_START
 	switch (er)
 	{
+#ifdef VL_MODE_OPENGL
 	case GL_NO_ERROR:
 		return "No error has been recorded.";
 	case GL_INVALID_ENUM:
@@ -72,6 +142,7 @@ char *vlGetErrorString(unsigned int er)
 		return "An attempt has been made to perform an operation that would	cause an internal stack to underflow.";
 	case GL_STACK_OVERFLOW:
 		return "An attempt has been made to perform an operation that would	cause an internal stack to overflow.";
+#endif
 	default:
 		return "An unknown error occured.";
 	}
@@ -79,7 +150,7 @@ char *vlGetErrorString(unsigned int er)
 }
 
 /*===========================
-	OPENGL MATRICES
+	MATRICES
 ===========================*/
 
 static bool vl_matrixpushed = false;
@@ -89,8 +160,9 @@ void vlPushMatrix(void)
 	VIDEO_FUNCTION_START
 	if (vl_matrixpushed)
 		return;
-
+#ifdef VL_MODE_OPENGL
 	glPushMatrix();
+#endif
 	vl_matrixpushed = true;
 	VIDEO_FUNCTION_END
 }
@@ -100,87 +172,77 @@ void vlPopMatrix(void)
 	VIDEO_FUNCTION_START
 	if (!vl_matrixpushed)
 		return;
-	
+#ifdef VL_MODE_OPENGL
 	glPopMatrix();
+#endif
 	vl_matrixpushed = false;
 	VIDEO_FUNCTION_END
 }
 
 /*===========================
-	OPENGL SHADERS
+	SHADERS
 ===========================*/
 
-void VideoLayer_UseProgram(unsigned int program)
+void vlUseProgram(unsigned int program)
 {
 	VIDEO_FUNCTION_START
 	if (program == Video.current_program)
 		return;
+#ifdef VL_MODE_OPENGL
 	glUseProgram(program);
+#endif
 	Video.current_program = program;
 	VIDEO_FUNCTION_END
 }
 
 /*===========================
-	OPENGL TEXTURES
+	TEXTURES
 ===========================*/
 
-unsigned int VideoLayer_TranslateFormat(VideoTextureFormat_t Format)
+void vlTexImage2D(vlTextureTarget_t target, vlTextureFormat_t internal_format, vlTextureFormat_t format, int width, int height, const void *data)
 {
 	VIDEO_FUNCTION_START
-	switch (Format)
-	{
-	case VIDEO_TEXTURE_FORMAT_BGR:
-		return GL_BGR;
-	case VIDEO_TEXTURE_FORMAT_BGRA:
-		return GL_BGRA;
-	case VIDEO_TEXTURE_FORMAT_LUMINANCE:
-		return GL_LUMINANCE;
-	case VIDEO_TEXTURE_FORMAT_RGB:
-		return GL_RGB;
-	case VIDEO_TEXTURE_FORMAT_RGBA:
-		return GL_RGBA;
-	default:
-		Sys_Error("Unknown texture format! (%i)\n", Format);
-	}
-
-	// Won't be hit but meh, compiler will complain otherwise.
-	return 0;
+#ifdef VL_MODE_OPENGL
+	glTexImage2D(target, 0, internal_format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+#endif
 	VIDEO_FUNCTION_END
 }
 
-void vlSetupTexture(VideoTextureFormat_t InternalFormat, VideoTextureFormat_t Format, unsigned int Width, unsigned int Height)
+/*	Checks and returns texture unit for target.
+*/
+unsigned int vlGetTextureUnit(unsigned int target)
+{
+#if defined (VL_MODE_OPENGL) || (VL_MODE_OPENGL_CORE)
+	unsigned int out = GL_TEXTURE0 + target;
+	if (out >(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS - 1))
+		Sys_Error("Attempted to select an invalid texture image unit! (%i)\n", out);
+	return out;
+#else
+	return target;
+#endif
+}
+
+/*	Selects the current active TMU.
+*/
+void vlActiveTexture(unsigned int texunit)
 {
 	VIDEO_FUNCTION_START
-	glTexImage2D(GL_TEXTURE_2D, 0, 
-		VideoLayer_TranslateFormat(InternalFormat),
-		Width, Height, 0, 
-		VideoLayer_TranslateFormat(Format), 
-		GL_UNSIGNED_BYTE, NULL);
+#if defined (VL_MODE_OPENGL) || (VL_MODE_OPENGL_CORE)
+	glActiveTexture(vlGetTextureUnit(texunit));
+#endif
 	VIDEO_FUNCTION_END
 }
 
 /*	TODO:
 		Modify this so it works as a replacement for TexMgr_SetFilterModes.
 */
-void vlSetTextureFilter(VideoTextureFilter_t FilterMode)
+void vlSetTextureFilter(vlTextureFilter_t filter)
 {
 	VIDEO_FUNCTION_START
-	unsigned int SetFilter = 0;
-
-	switch (FilterMode)
-	{
-	case VIDEO_TEXTURE_FILTER_LINEAR:
-		SetFilter = GL_LINEAR;
-		break;
-	case VIDEO_TEXTURE_FILTER_NEAREST:
-		SetFilter = GL_NEAREST;
-		break;
-	default:
-		Sys_Error("Unknown texture filter type! (%i)\n", FilterMode);
-	}
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, SetFilter);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, SetFilter);
+#ifdef VL_MODE_OPENGL
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
+#endif
 	VIDEO_FUNCTION_END
 }
 
@@ -189,6 +251,7 @@ int VideoLayer_TranslateTextureEnvironmentMode(VideoTextureEnvironmentMode_t Tex
 	VIDEO_FUNCTION_START
 	switch (TextureEnvironmentMode)
 	{
+#ifdef VL_MODE_OPENGL
 	case VIDEO_TEXTURE_MODE_ADD:
 		return GL_ADD;
 	case VIDEO_TEXTURE_MODE_MODULATE:
@@ -201,6 +264,7 @@ int VideoLayer_TranslateTextureEnvironmentMode(VideoTextureEnvironmentMode_t Tex
 		return GL_REPLACE;
 	case VIDEO_TEXTURE_MODE_COMBINE:
 		return GL_COMBINE;
+#endif
 	default:
 		Sys_Error("Unknown texture environment mode! (%i)\n", TextureEnvironmentMode);
 	}
@@ -217,26 +281,29 @@ void vlSetTextureEnvironmentMode(VideoTextureEnvironmentMode_t TextureEnvironmen
 	if (Video.textureunits[Video.current_textureunit].current_envmode == TextureEnvironmentMode)
 		return;
 
+#ifdef VL_MODE_OPENGL
 	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, 
 		VideoLayer_TranslateTextureEnvironmentMode(TextureEnvironmentMode));
+#endif
 
 	Video.textureunits[Video.current_textureunit].current_envmode = TextureEnvironmentMode;
 	VIDEO_FUNCTION_END
 }
 
 /*===========================
-	OPENGL CAPABILITIES
+	CAPABILITIES
 ===========================*/
 
 typedef struct
 {
-	unsigned int uiFirst, uiSecond;
+	unsigned int vl_parm, to_parm;
 
-	const char *ccIdentifier;
+	const char *ident;
 } VideoLayerCapabilities_t;
 
 VideoLayerCapabilities_t capabilities[] =
 {
+#ifdef VL_MODE_OPENGL
 	{ VIDEO_ALPHA_TEST, GL_ALPHA_TEST, "ALPHA_TEST" },
 	{ VIDEO_BLEND, GL_BLEND, "BLEND" },
 	{ VIDEO_DEPTH_TEST, GL_DEPTH_TEST, "DEPTH_TEST" },
@@ -247,6 +314,7 @@ VideoLayerCapabilities_t capabilities[] =
 	{ VIDEO_STENCIL_TEST, GL_STENCIL_TEST, "STENCIL_TEST" },
 	{ VIDEO_NORMALIZE, GL_NORMALIZE, "NORMALIZE" },
 	{ VIDEO_MULTISAMPLE, GL_MULTISAMPLE, "MULTISAMPLE" },
+#endif
 
 	{ 0 }
 };
@@ -260,18 +328,20 @@ void vlEnable(unsigned int uiCapabilities)
 	for (i = 0; i < sizeof(capabilities); i++)
 	{
 		// Check if we reached the end of the list yet.
-		if (!capabilities[i].uiFirst)
+		if (!capabilities[i].vl_parm)
 			break;
 
 		if (uiCapabilities & VIDEO_TEXTURE_2D)
 			Video.textureunit_state[Video.current_textureunit] = true;
 
-		if (uiCapabilities & capabilities[i].uiFirst)
+		if (uiCapabilities & capabilities[i].vl_parm)
 		{
 			if (Video.debug_frame)
-				plWriteLog(VIDEO_LOG, "Enabling %s (%i)\n", capabilities[i].ccIdentifier, Video.current_textureunit);
+				plWriteLog(VIDEO_LOG, "Enabling %s (%i)\n", capabilities[i].ident, Video.current_textureunit);
 
-			glEnable(capabilities[i].uiSecond);
+#if defined (VL_MODE_OPENGL) || (VL_MODE_OPENGL_CORE)
+			glEnable(capabilities[i].to_parm);
+#endif
 		}
 	}
 	VIDEO_FUNCTION_END
@@ -283,17 +353,19 @@ void vlDisable(unsigned int uiCapabilities)
 	for (int i = 0; i < sizeof(capabilities); i++)
 	{
 		// Check if we reached the end of the list yet.
-		if (!capabilities[i].uiFirst)
+		if (!capabilities[i].vl_parm)
 			break;
 
 		if (uiCapabilities & VIDEO_TEXTURE_2D)
 			Video.textureunit_state[Video.current_textureunit] = false;
 
-		if (uiCapabilities & capabilities[i].uiFirst)
+		if (uiCapabilities & capabilities[i].vl_parm)
 		{
 			// TODO: Implement debugging support.
 
-			glDisable(capabilities[i].uiSecond);
+#if defined (VL_MODE_OPENGL) || (VL_MODE_OPENGL_CORE)
+			glDisable(capabilities[i].to_parm);
+#endif
 		}
 	}
 	VIDEO_FUNCTION_END
@@ -306,7 +378,9 @@ void vlBlendFunc(VideoBlend_t modea, VideoBlend_t modeb)
 	VIDEO_FUNCTION_START
 	if (Video.debug_frame)
 		plWriteLog(VIDEO_LOG, "Video: Setting blend mode (%i) (%i)\n", modea, modeb);
+#ifdef VL_MODE_OPENGL
 	glBlendFunc(modea, modeb);
+#endif
 	VIDEO_FUNCTION_END
 }
 
@@ -317,40 +391,50 @@ void vlDepthMask(bool mode)
 	VIDEO_FUNCTION_START
 	static bool cur_state = true;
 	if (mode == cur_state) return;
+#ifdef VL_MODE_OPENGL
 	glDepthMask(mode);
+#endif
 	cur_state = mode;
 	VIDEO_FUNCTION_END
 }
 
 /*===========================
-	OPENGL OBJECTS
+	OBJECTS
 ===========================*/
 
 // RENDER BUFFER OBJECTS
 
-void vlGenerateRenderBuffer(unsigned int *buffer)
+void vlGenerateRenderBuffer(vlRenderBuffer_t *buffer)
 {
 	VIDEO_FUNCTION_START
+#ifdef VL_MODE_OPENGL
 	glGenRenderbuffers(1, buffer);
+#endif
 	VIDEO_FUNCTION_END
 }
 
-void vlDeleteRenderBuffer(unsigned int *buffer)
+void vlDeleteRenderBuffer(vlRenderBuffer_t *buffer)
 {
 	VIDEO_FUNCTION_START
+#ifdef VL_MODE_OPENGL
 	glDeleteRenderbuffers(1, buffer);
+#endif
 	VIDEO_FUNCTION_END
 }
 
-void vlBindRenderBuffer(unsigned int buffer)
+void vlBindRenderBuffer(vlRenderBuffer_t buffer)
 {
 	VIDEO_FUNCTION_START
+#ifdef VL_MODE_OPENGL
 	glBindRenderbuffer(GL_RENDERBUFFER, buffer);
+#endif
 	VIDEO_FUNCTION_END
 }
 
 void vlRenderBufferStorage(int format, int samples, unsigned int width, unsigned int height)
 {
+	VIDEO_FUNCTION_START
+#ifdef VL_MODE_OPENGL
 	glRenderbufferStorageMultisample(GL_RENDERBUFFER, samples, format, width, height);
 
 	// Ensure there weren't any issues.
@@ -372,6 +456,8 @@ void vlRenderBufferStorage(int format, int samples, unsigned int width, unsigned
 		}
 		Sys_Error("%s\n%s", vlGetErrorString(glerror), errorstring);
 	}
+#endif
+	VIDEO_FUNCTION_END
 }
 
 // VERTEX ARRAY OBJECTS
@@ -379,20 +465,24 @@ void vlRenderBufferStorage(int format, int samples, unsigned int width, unsigned
 /*	Generates a single vertex array.
 	glGenVertexArrays
 */
-void vlGenerateVertexArray(unsigned int *arrays)
+void vlGenerateVertexArray(vlVertexArray_t *arrays)
 {
 	VIDEO_FUNCTION_START
+#ifdef VL_MODE_OPENGL
 	glGenVertexArrays(1, arrays);
+#endif
 	VIDEO_FUNCTION_END
 }
 
 /*	Binds the given vertex array.
 	glBindVertexArray
 */
-void vlBindVertexArray(unsigned int array)
+void vlBindVertexArray(vlVertexArray_t array)
 {
 	VIDEO_FUNCTION_START
+#ifdef VL_MODE_OPENGL
 	glBindVertexArray(array);
+#endif
 	VIDEO_FUNCTION_END
 }
 
@@ -404,14 +494,18 @@ void vlBindVertexArray(unsigned int array)
 void vlGenerateVertexBuffer(unsigned int *buffer)
 {
 	VIDEO_FUNCTION_START
+#ifdef VL_MODE_OPENGL
 	glGenBuffers(1, buffer);
+#endif
 	VIDEO_FUNCTION_END
 }
 
 void vlGenerateVertexBuffers(int num, unsigned int *buffers)
 {
 	VIDEO_FUNCTION_START
+#ifdef VL_MODE_OPENGL
 	glGenBuffers(num, buffers);
+#endif
 	VIDEO_FUNCTION_END
 }
 
@@ -421,7 +515,9 @@ void vlGenerateVertexBuffers(int num, unsigned int *buffers)
 void vlDeleteVertexBuffer(unsigned int *buffer)
 {
 	VIDEO_FUNCTION_START
+#ifdef VL_MODE_OPENGL
 	glDeleteBuffers(1, buffer);
+#endif
 	VIDEO_FUNCTION_END
 }
 
@@ -431,34 +527,42 @@ void vlDeleteVertexBuffer(unsigned int *buffer)
 void vlBindBuffer(unsigned int target, unsigned int buffer)
 {
 	VIDEO_FUNCTION_START
+#ifdef VL_MODE_OPENGL
 	glBindBuffer(target, buffer);
+#endif
 	VIDEO_FUNCTION_END
 }
 
 // FRAME BUFFER OBJECTS
 
-void vlClearStencilBuffer(void)
+void vlClear(unsigned int mask)
 {
-	glClear(GL_STENCIL_BUFFER_BIT);
+	VIDEO_FUNCTION_START
+#if defined (VL_MODE_OPENGL) || (VL_MODE_OPENGL_CORE)
+	glClear(mask);
+#endif
+	VIDEO_FUNCTION_END
 }
 
 /*	Generates a single framebuffer.
-	glGenFramebuffers
 */
-void vlGenerateFrameBuffer(unsigned int *buffer)
+void vlGenerateFrameBuffer(vlFrameBuffer_t *buffer)
 {
 	VIDEO_FUNCTION_START
+#ifdef VL_MODE_OPENGL
 	glGenFramebuffers(1, buffer);
+#endif
 	VIDEO_FUNCTION_END
 }
 
 /*	Ensures that the framebuffer is valid, otherwise throws an error.
 	glCheckFramebufferStatus
 */
-void vlCheckFrameBufferStatus()
+void vlCheckFrameBufferStatus(vlFBOTarget_t target)
 {
-	int status;
-	status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+	VIDEO_FUNCTION_START
+#ifdef VL_MODE_OPENGL
+	int status = glCheckFramebufferStatus(target);
 	if (status == GL_FRAMEBUFFER_COMPLETE)
 		return;
 
@@ -487,30 +591,17 @@ void vlCheckFrameBufferStatus()
 	}
 
 	Sys_Error("An unknown error occured when checking framebuffer status!\n");
+#endif
+	VIDEO_FUNCTION_END
 }
 
 /*	Binds the given framebuffer.
-	glBindFramebuffer
 */
-void vlBindFrameBuffer(VideoFBOTarget_t vtTarget, unsigned int uiBuffer)
+void vlBindFrameBuffer(vlFBOTarget_t vtTarget, unsigned int uiBuffer)
 {
 	VIDEO_FUNCTION_START
-	unsigned int outtarget;
-
-	// TODO: Get these named up so we can easily debug.
-	switch (vtTarget)
-	{
-	case VIDEO_FBO_DRAW:
-		outtarget = GL_DRAW_BUFFER;
-		break;
-	case VIDEO_FBO_READ:
-		outtarget = GL_READ_BUFFER;
-		break;
-	default:
-		outtarget = GL_FRAMEBUFFER;
-	}
-
-	glBindFramebuffer(outtarget, uiBuffer);
+#ifdef VL_MODE_OPENGL
+	glBindFramebuffer(vtTarget, uiBuffer);
 
 	// Ensure there weren't any issues.
 	unsigned int glerror = glGetError();
@@ -531,39 +622,41 @@ void vlBindFrameBuffer(VideoFBOTarget_t vtTarget, unsigned int uiBuffer)
 		}
 		Sys_Error("%s\n%s", vlGetErrorString(glerror), errorstring);
 	}
+#endif
 	VIDEO_FUNCTION_END
 }
 
 /*	Deletes the given framebuffer.
-	glDeleteFramebuffers
 */
 void vlDeleteFrameBuffer(unsigned int *uiBuffer)
 {
 	VIDEO_FUNCTION_START
+#ifdef VL_MODE_OPENGL
 	glDeleteFramebuffers(1, uiBuffer);
+#endif
 	VIDEO_FUNCTION_END
 }
 
-/*	glFramebufferRenderbuffer
-*/
 void vlAttachFrameBufferRenderBuffer(unsigned int attachment, unsigned int buffer)
 {
 	VIDEO_FUNCTION_START
+#ifdef VL_MODE_OPENGL
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, attachment, GL_RENDERBUFFER, buffer);
+#endif
 	VIDEO_FUNCTION_END
 }
 
-/*	glFramebufferTexture2D
-*/
 void vlAttachFrameBufferTexture(gltexture_t *buffer)
 {
 	VIDEO_FUNCTION_START
+#ifdef VL_MODE_OPENGL
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, buffer->texnum, 0);
+#endif
 	VIDEO_FUNCTION_END
 }
 
 /*===========================
-	OPENGL DRAWING
+	DRAWING
 ===========================*/
 
 typedef struct
@@ -577,6 +670,7 @@ typedef struct
 
 VideoPrimitives_t vl_primitives[] =
 {
+#if defined (VL_MODE_OPENGL) || (VL_MODE_OPENGL_CORE)
 	{ VIDEO_PRIMITIVE_LINES,				GL_LINES,			"LINES" },
 	{ VIDEO_PRIMITIVE_POINTS,				GL_POINTS,			"POINTS" },
 	{ VIDEO_PRIMITIVE_TRIANGLES,			GL_TRIANGLES,		"TRIANGLES" },
@@ -584,45 +678,51 @@ VideoPrimitives_t vl_primitives[] =
 	{ VIDEO_PRIMITIVE_TRIANGLE_FAN_LINE,	GL_LINES,			"TRIANGLE_FAN_LINE" },
 	{ VIDEO_PRIMITIVE_TRIANGLE_STRIP,		GL_TRIANGLE_STRIP,	"TRIANGLE_STRIP" },
 	{ VIDEO_PRIMITIVE_QUADS,				GL_QUADS,			"QUADS" }
+#else
+	{ 0 }
+#endif
 };
 
 unsigned int vlTranslatePrimitiveType(VideoPrimitive_t primitive)
 {
+	VIDEO_FUNCTION_START
 	for (int i = 0; i < pARRAYELEMENTS(vl_primitives); i++)
 		if (primitive == vl_primitives[i].primitive)
 			return vl_primitives[i].gl;
 
-	return GL_POINTS;
+	// Hacky, but just return initial otherwise.
+	return vl_primitives[0].gl;
+	VIDEO_FUNCTION_END
 }
 
 /*	Deals with tris view and different primitive types, then finally draws
 	the given arrays.
-	glDrawArrays
 */
 void vlDrawArrays(VideoPrimitive_t mode, unsigned int first, unsigned int count)
 {
-	if ((mode == VIDEO_PRIMITIVE_IGNORE) || (count == 0))
+	if (count == 0)
 		return;
 
-	glDrawArrays(vlTranslatePrimitiveType(mode), first, count);
+	unsigned int target = vlTranslatePrimitiveType(mode);
+#ifdef VL_MODE_OPENGL
+	glDrawArrays(target, first, count);
+#endif
 }
 
-/*	glDrawElements
-*/
 void vlDrawElements(VideoPrimitive_t mode, unsigned int count, unsigned int type, const void *indices)
 {
 	VIDEO_FUNCTION_START
-	if ((mode == VIDEO_PRIMITIVE_IGNORE) || (count == 0))
+	if ((count == 0) || !indices)
 		return;
 
-	if (!indices)
-		Sys_Error("Invalid indices when drawing object! (%i) (%i) (%i)\n", mode, count, type);
-
-	glDrawElements(vlTranslatePrimitiveType(mode), count, type, indices);
+	unsigned int target = vlTranslatePrimitiveType(mode);
+#ifdef VL_MODE_OPENGL
+	glDrawElements(target, count, type, indices);
+#endif
 	VIDEO_FUNCTION_END
 }
 
-VideoObject_t video_curobject;
+VideoObject_t vl_currentobject;
 
 void vlBegin(VideoPrimitive_t mode)
 {
@@ -630,7 +730,7 @@ void vlBegin(VideoPrimitive_t mode)
 		Sys_Error("Invalid primitive mode for object!\n");
 
 	// Set cur primitive.
-	video_curobject.primitive = mode;
+	vl_currentobject.primitive = mode;
 }
 
 void vlVertex3f(float x, float y, float z)
@@ -642,11 +742,13 @@ void vlNormal3f(float x, float y, float z)
 void vlColor3f(float r, float g, float b)
 {}
 
+/*	Draws the object and then discards it.
+*/
 void vlEnd(void)
 {
-	VideoObject_DrawImmediate(&video_curobject);
+	VideoObject_DrawImmediate(&vl_currentobject);
 
 	// We're done, don't use this again.
-	video_curobject.primitive = VIDEO_PRIMITIVE_IGNORE;
+	vl_currentobject.primitive = VIDEO_PRIMITIVE_IGNORE;
 }
 

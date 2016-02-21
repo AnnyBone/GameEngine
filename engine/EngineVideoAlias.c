@@ -50,7 +50,7 @@ void Alias_SetupLighting(ClientEntity_t *entity)
 			// Approximate light intensity based on distance.
 			Math_VectorSubtract(entity->origin, dlight->origin, distance);
 			Math_VectorCopy(dlight->color, alias_lightcolour);
-			Math_VectorSubtractValue(alias_lightcolour, (dlight->radius - Math_Length(distance)) / 1000.0f, alias_lightcolour);
+			Math_VectorSubtractValue(alias_lightcolour, (dlight->radius - plLengthf(distance)) / 1000.0f, alias_lightcolour);
 			Math_VectorScale(alias_lightcolour, 1.0f / 200.0f, alias_lightcolour);
 			//Math_VectorDivide(alias_lightcolour, 0.3f, alias_lightcolour);
 
@@ -111,9 +111,8 @@ void Alias_DrawFrame(MD2_t *mModel, ClientEntity_t *entity, lerpdata_t lLerpData
 	order = (int*)((uint8_t*)mModel + mModel->ofs_glcmds);
 
 	// TODO: Stupid stupid stupid temporary shit until we do this properly.
-	voModel = (VideoVertex_t*)malloc(sizeof(VideoVertex_t) * mModel->num_xyz);
-	if (!voModel)
-		Sys_Error("Failed to allocate data for model frame!\n");
+	voModel = (VideoVertex_t*)malloc_or_die(sizeof(VideoVertex_t) * mModel->num_xyz);
+
 	memset(voModel, 0, sizeof(voModel));
 
 	for (;;)
@@ -207,7 +206,7 @@ void Alias_SetupEntityTransform(ClientEntity_t *ceEntity, lerpdata_t *lerpdata)
 
 		ceEntity->lerpflags -= LERP_RESETMOVE;
 	}
-	else if (!Math_VectorCompare(ceEntity->origin, ceEntity->currentorigin) || !Math_VectorCompare(ceEntity->angles, ceEntity->currentangles)) // origin/angles changed, start new lerp
+	else if (!plVectorCompare(ceEntity->origin, ceEntity->currentorigin) || !plVectorCompare(ceEntity->angles, ceEntity->currentangles)) // origin/angles changed, start new lerp
 	{
 		ceEntity->movelerpstart = cl.time;
 

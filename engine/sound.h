@@ -74,8 +74,8 @@ typedef struct
 
 	MathVector3f_t origin;			// origin of sound effect
 
-	vec_t	dist_mult;		// distance multiplier (attenuation/clipK)
-	int		master_vol;		// 0-255 master volume
+	MathVectorf_t	dist_mult;		// distance multiplier (attenuation/clipK)
+	int				master_vol;		// 0-255 master volume
 } channel_t;
 
 typedef struct
@@ -148,7 +148,7 @@ extern MathVector3f_t listener_right;
 extern MathVector3f_t listener_up;
 extern volatile dma_t	*shm;
 extern volatile dma_t	sn;
-extern vec_t			sound_nominal_clip_dist;
+extern MathVectorf_t	sound_nominal_clip_dist;
 
 extern	cvar_t loadas8bit;
 extern	cvar_t bgmvolume;

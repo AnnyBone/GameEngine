@@ -149,7 +149,7 @@ void IonBlaster_IonBallTouch(ServerEntity_t *eIonBall, ServerEntity_t *other)
 
 		Math_VectorCopy(eIonBall->v.velocity, vInversed);
 		Math_VectorInverse(vInversed);
-		Math_MVToVector(Math_VectorToAngles(eIonBall->v.velocity), eIonBall->v.angles);
+		Math_MVToVector(plVectorToAngles(eIonBall->v.velocity), eIonBall->v.angles);
 
 		Sound(eIonBall, CHAN_ITEM, "weapons/ionblaster/bounce.wav", 255, ATTN_NORM);
 

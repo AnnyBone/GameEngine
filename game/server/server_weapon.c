@@ -235,7 +235,7 @@ MathVector_t Weapon_Aim(ServerEntity_t *eEntity)
 	Math_VectorCopy(eEntity->local.vForward, mvDirection);
 	Math_VectorMA(mvStart, 2048.0f, mvDirection, mvEnd);
 
-	tAimLine = Engine.Server_Move(mvStart, g_mvOrigin3f, g_mvOrigin3f, mvEnd, 0, eEntity);
+	tAimLine = Engine.Server_Move(mvStart, pl_origin3f, pl_origin3f, mvEnd, 0, eEntity);
 	// See if we encountered anything we can damage.
 	if (tAimLine.ent && tAimLine.ent->v.bTakeDamage)
 	{
@@ -270,14 +270,14 @@ MathVector_t Weapon_Aim(ServerEntity_t *eEntity)
 			mvEnd[j] = eCheck->v.origin[j] + 0.5f * (eCheck->v.mins[j] + eCheck->v.maxs[j]);
 
 		Math_VectorSubtract(mvEnd, mvStart, mvDirection);
-		Math_VectorNormalize(mvDirection);
+		plVectorNormalize(mvDirection);
 
 		fDistance = Math_DotProduct(mvDirection, eEntity->local.vForward);
 		if (fDistance < fBestDistance)
 			// Too far to turn.
 			continue;
 
-		tAimLine = Engine.Server_Move(mvStart, g_mvOrigin3f, g_mvOrigin3f, mvEnd, 0, eEntity);
+		tAimLine = Engine.Server_Move(mvStart, pl_origin3f, pl_origin3f, mvEnd, 0, eEntity);
 		if (tAimLine.ent == eCheck)
 		{
 			// Can shoot at this one.
@@ -298,7 +298,7 @@ MathVector_t Weapon_Aim(ServerEntity_t *eEntity)
 
 		mvEnd[2] = mvDirection[2];
 
-		Math_VectorNormalize(mvEnd);
+		plVectorNormalize(mvEnd);
 		Math_VectorToMV(mvEnd, mvResult);
 	}
 	else
@@ -346,7 +346,7 @@ bool Weapon_CheckTrace(ServerEntity_t *eOwner)
 	// Check to see if there's a target, and it's not the world!
 	if ((tCheck.ent != Server.eWorld) && (tCheck.ent != eOwner))
 		// Are we intersecting with it?
-		if (Math_IsIntersecting(mvTraceMins, mvTraceMaxs, tCheck.ent->v.mins, tCheck.ent->v.maxs))
+		if (plIsIntersecting(mvTraceMins, mvTraceMaxs, tCheck.ent->v.mins, tCheck.ent->v.maxs))
 			return false;
 
 	// Ensure that we're not inside the sky or within a solid.
@@ -409,7 +409,7 @@ void Weapon_BulletProjectile(ServerEntity_t *eEntity,float fSpread,int iDamage,v
 			}
 
 			PARTICLE_SMOKE(cSmoke);
-			Engine.Particle(tTrace.endpos,g_mvOrigin3f,15,cSmoke,15);
+			Engine.Particle(tTrace.endpos, pl_origin3f, 15, cSmoke, 15);
 		}
 	}
 }

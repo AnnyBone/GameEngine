@@ -46,11 +46,11 @@ Weapon_t *wLaserWeapon;
 
 void LaserGat_AimTarget(ServerEntity_t *eLaserGat,ServerEntity_t *eTarget)
 {
-	vec3_t	vOrigin;
+	MathVector3f_t	vOrigin;
 
 	Math_VectorSubtract(eLaserGat->v.origin,eTarget->v.origin,vOrigin);
-	Math_VectorNormalize(vOrigin);
-	Math_MVToVector(Math_VectorToAngles(vOrigin),eLaserGat->v.angles);
+	plVectorNormalize(vOrigin);
+	Math_MVToVector(plVectorToAngles(vOrigin), eLaserGat->v.angles);
 	Math_VectorInverse(eLaserGat->v.angles);
 }
 

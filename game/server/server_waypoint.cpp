@@ -95,8 +95,8 @@ Waypoint_t *Waypoint_GetByVisibility(MathVector3f_t vOrigin)
 	{
 		tTrace = Traceline(NULL,vOrigin,wPoint->position,0);
 		// Given point cannot be in the same place as the given origin.
-		if(	Math_VectorCompare(tTrace.endpos,wPoint->position) && 
-			!Math_VectorCompare(vOrigin,wPoint->position))
+		if (plVectorCompare(tTrace.endpos, wPoint->position) &&
+			!plVectorCompare(vOrigin,wPoint->position))
 			return wPoint;
 	}
 	return NULL;
@@ -122,7 +122,7 @@ Waypoint_t *Waypoint_GetByType(MathVector3f_t position, WaypointType_t type, flo
 		if (point->wType == type)
 		{
 			Math_VectorSubtract(position, point->position, vecdist);
-			if (Math_Length(vecdist) < distance)
+			if (plLengthf(vecdist) < distance)
 				return point;
 		}
 
@@ -140,7 +140,7 @@ Waypoint_t *Waypoint_GetByName(ServerEntity_t *eMonster,char *cName,float fMaxDi
 		{
 			// [20/9/2012] TODO: Needs testing :[ ~hogsy
 			Math_VectorSubtract(eMonster->v.origin,wPoint->position,vDistance);
-			if(Math_Length(vDistance) < fMaxDistance)
+			if (plLengthf(vDistance) < fMaxDistance)
 				return wPoint;
 		}
 
@@ -187,7 +187,7 @@ void Waypoint_Spawn(MathVector3f_t vOrigin,WaypointType_t type)
 			MathVector3f_t vDistance;
 
 			Math_VectorSubtract(wVisibleWaypoint->position,vOrigin,vDistance);
-			if(Math_VectorLength(vDistance) < MONSTER_RANGE_MEDIUM)
+			if(plVectorLength(vDistance) < MONSTER_RANGE_MEDIUM)
 			{
 				Engine.Con_Printf("Invalid waypoint position!\n");
 				return;

@@ -162,7 +162,7 @@ void Menu_Draw(void)
 				mMenuElements[i].fAlpha,
 				mMenuElements[i].iPosition[X],
 				mMenuElements[i].iPosition[Y],
-				mMenuElements[i].iScale[WIDTH],
+				mMenuElements[i].iScale[PL_WIDTH],
 				mMenuElements[i].iScale[HEIGHT]);
 		case MENU_WINDOW:
 		case MENU_BUTTON:
@@ -222,7 +222,7 @@ void Menu_Draw(void)
 			Engine.DrawString(mMenuElements[i].iPosition[X],p,va
 			(
 				"W: %i",
-				mMenuElements[i].iScale[WIDTH]
+				mMenuElements[i].iScale[PL_WIDTH]
 			));
 			p += 12;
 			Engine.DrawString(mMenuElements[i].iPosition[X],p,va
@@ -240,10 +240,10 @@ void Menu_Draw(void)
 //		mMenuElements[i].vPos[1] = mousepos[1];
 		// [3/8/2012] Make sure elements can't go off-screen ~hogsy
 #if 0
-		if(mMenuElements->.vPos[0] > (screenwidth-mMenuElements[i].vScale[WIDTH]))
-			mMenuElements[i].vPos[0] = (float)(screenwidth-mMenuElements[i].vScale[WIDTH]);
-		else if(mMenuElements[i].vPos[0] < (screenwidth+mMenuElements[i].vScale[WIDTH]))
-			mMenuElements[i].vPos[0] = (float)(screenwidth+mMenuElements[i].vScale[WIDTH]);
+		if(mMenuElements->.vPos[0] > (screenwidth-mMenuElements[i].vScale[PL_WIDTH]))
+			mMenuElements[i].vPos[0] = (float)(screenwidth-mMenuElements[i].vScale[PL_WIDTH]);
+		else if(mMenuElements[i].vPos[0] < (screenwidth+mMenuElements[i].vScale[PL_WIDTH]))
+			mMenuElements[i].vPos[0] = (float)(screenwidth+mMenuElements[i].vScale[PL_WIDTH]);
 		if(mMenuElements[i].vPos[1] > (g_menuheight-mMenuElements[i].height))
 			mMenuElements[i].vPos[1] = (float)(screenwidth-mMenuElements[i].height);
 		else if(mMenuElements[i].vPos[1] < (screenwidth+mMenuElements[i].height))
@@ -273,7 +273,7 @@ void Menu_Draw(void)
 				else
 				{
 					// [4/8/2012] Simplified ~hogsy
-					if(Menu_IsMouseOver(mMenuElements[i].iPosition,mMenuElements[i].iScale[WIDTH],mMenuElements[i].iScale[HEIGHT]))
+					if(Menu_IsMouseOver(mMenuElements[i].iPosition,mMenuElements[i].iScale[PL_WIDTH],mMenuElements[i].iScale[HEIGHT]))
 						// [3/8/2012] We're being hovered over, make us more clear ~hogsy
 						mMenuElements[i].fAlpha = 1.0f;
 					else
@@ -289,11 +289,11 @@ void Menu_Draw(void)
 					mMenuElements[i].fAlpha,
 					mMenuElements[i].iPosition[X],
 					mMenuElements[i].iPosition[1],
-					mMenuElements[i].iScale[WIDTH]-2,
+					mMenuElements[i].iScale[PL_WIDTH]-2,
 					20);
 				Engine.DrawPic(MENU_BASEPATH"topclose",
 					mMenuElements[i].fAlpha,
-					mMenuElements[i].iPosition[X]+(mMenuElements[i].iScale[WIDTH]-20),
+					mMenuElements[i].iPosition[X]+(mMenuElements[i].iScale[PL_WIDTH]-20),
 					mMenuElements[i].iPosition[Y],
 					22,
 					20);
@@ -304,7 +304,7 @@ void Menu_Draw(void)
 				Engine.DrawRectangle(
 					mMenuElements[i].iPosition[X],
 					mMenuElements[i].iPosition[Y]+20,
-					mMenuElements[i].iScale[WIDTH],
+					mMenuElements[i].iScale[PL_WIDTH],
 					mMenuElements[i].iScale[HEIGHT]-20,
 					0.5f,
 					0.5f,
@@ -312,7 +312,7 @@ void Menu_Draw(void)
 					mMenuElements[i].fAlpha);
 				break;
 			case MENU_BUTTON:
-				if(Menu_IsMouseOver(mMenuElements[i].iPosition,mMenuElements[i].iScale[WIDTH],mMenuElements[i].iScale[HEIGHT]))
+				if(Menu_IsMouseOver(mMenuElements[i].iPosition,mMenuElements[i].iScale[PL_WIDTH],mMenuElements[i].iScale[HEIGHT]))
 				{}
 			default:
 				Engine.Con_Warning("Unknown menu element type (%i) for %s!\n",mMenuElements[i].mMenuType,mMenuElements[i].cName);

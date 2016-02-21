@@ -109,7 +109,7 @@ void Daikatana_Hit(ServerEntity_t *ent)
 	vec3_t	forward,temp,sndvec;
 	trace_t	trace;
 
-	Math_AngleVectors(ent->v.v_angle,forward,temp,temp);
+	plAngleVectors(ent->v.v_angle, forward, temp, temp);
 
 	sndvec[0] = ent->v.origin[0]  + (forward[0] * 64.0f); // Changed from 120 to 64 ~eukos
 	sndvec[1] = ent->v.origin[1]  + (forward[1] * 64.0f);

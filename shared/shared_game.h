@@ -218,7 +218,7 @@ typedef struct
 	int(*GetScreenWidth)(void);	// Returns the active screen width.
 	int(*GetScreenHeight)(void);	// Returns the active screen height.
 
-	void(*GetCursorPosition)(int *X, int *Y);
+	void(*GetCursorPosition)(int *x, int *y);
 
 	ServerEntity_t	*(*Spawn)(void);
 } ModuleImport_t;

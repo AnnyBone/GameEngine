@@ -113,7 +113,7 @@ void Physics_WallFriction(ServerEntity_t *eEntity, trace_t *trLine)
 	float d, i;
 	MathVector3f_t into, side;
 
-	Math_AngleVectors(eEntity->v.v_angle, forward, right, up);
+	plAngleVectors(eEntity->v.v_angle, forward, right, up);
 	d = Math_DotProduct(trLine->plane.normal, forward);
 
 	d += 0.5;
