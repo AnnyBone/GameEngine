@@ -35,7 +35,7 @@ void BarrierFire(ServerEntity_t *ent)
 
 	ent->local.b_ent = bshield;
 
-	Math_AngleVectors(ent->v.v_angle,forward,temp,temp);
+	plAngleVectors(ent->v.v_angle, forward, temp, temp);
 
 	// [18/4/2012] A nice soft bounce ~hogsy
 	vel[0] = vel[1] = 0;

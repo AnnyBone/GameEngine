@@ -73,12 +73,12 @@ void Ballista_SpawnLogProjectile(ServerEntity_t *ent)
 	Weapon_Projectile(ent, log, 2000.0f);
 
 	Entity_SetModel(log,"models/log.md2");
-	Entity_SetSizeVector(log,g_mvOrigin3f,g_mvOrigin3f);
+	Entity_SetSizeVector(log, pl_origin3f, pl_origin3f);
 
 	Math_VectorCopy(ent->v.origin,log->v.origin);
 	log->v.origin[2] += 15.0f;
 
-	Math_MVToVector(Math_VectorToAngles(log->v.velocity),log->v.angles);
+	Math_MVToVector(plVectorToAngles(log->v.velocity), log->v.angles);
 
 	log->v.TouchFunction = Ballista_LogTouch;
 }

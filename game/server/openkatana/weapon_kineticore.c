@@ -70,7 +70,7 @@ void projectile_iceball(ServerEntity_t *ent, vec3_t orig)
 
 	Entity_SetModel(ionball,"models/iceball.md2");
 
-	Math_MVToVector(Math_VectorToAngles(ionball->v.velocity),ionball->v.angles);
+	Math_MVToVector(plVectorToAngles(ionball->v.velocity), ionball->v.angles);
 
 	Entity_SetSize(ionball,0,0,0,0,0,0);
 	Entity_SetOrigin(ionball, orig);

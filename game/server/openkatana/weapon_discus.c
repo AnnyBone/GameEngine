@@ -29,13 +29,13 @@ void Discus_Follow(ServerEntity_t *ent)
 	vtemp[1] = ent->v.enemy->v.origin[1]-ent->v.origin[1];
 	vtemp[2] = ent->v.enemy->v.origin[2]+22.0f-ent->v.origin[2];
 
-	Math_VectorNormalize(vtemp);
+	plVectorNormalize(vtemp);
 	ent->v.velocity[0] = vtemp[0]*3000.0f;
 	ent->v.velocity[1] = vtemp[1]*3000.0f;
 	ent->v.velocity[2] = vtemp[2]*3000.0f;
 
 	// [25/6/2012] Simplified ~hogsy
-	Math_MVToVector(Math_VectorToAngles(ent->v.velocity),ent->v.angles);
+	Math_MVToVector(plVectorToAngles(ent->v.velocity), ent->v.angles);
 
 	ent->v.think		= Discus_Follow;
 	ent->v.dNextThink	= Server.dTime+0.01;
@@ -115,12 +115,12 @@ void Discus_SpawnProjectile(ServerEntity_t *ent,vec3_t org)
 	Math_MVToVector(Weapon_Aim(ent), mvDirection);
 	Math_VectorScale(mvDirection, 700.0f, eDiscus->v.velocity);
 
-	Math_MVToVector(Math_VectorToAngles(eDiscus->v.velocity), eDiscus->v.angles);
+	Math_MVToVector(plVectorToAngles(eDiscus->v.velocity), eDiscus->v.angles);
 
 	eDiscus->v.TouchFunction = Discus_ProjectileTouch;
 
 	Entity_SetModel(eDiscus, "models/w_daedalus.md2");
-	Entity_SetSizeVector(eDiscus, g_mvOrigin3f, g_mvOrigin3f);
+	Entity_SetSizeVector(eDiscus, pl_origin3f, pl_origin3f);
 	Entity_SetOrigin(eDiscus, org);
 
 	Sound(ent,CHAN_WEAPON,"weapons/discus/discusthrow.wav",255,ATTN_NORM);
