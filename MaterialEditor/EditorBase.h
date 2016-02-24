@@ -97,7 +97,6 @@ extern wxBitmap
 	bSmallAuto,
 	bSmallWAD,
 	bSmallMDL,
-	iconScriptEdit,
 	smallTransform,
 	smallDocumentOpen,
 	iconMediaPause,

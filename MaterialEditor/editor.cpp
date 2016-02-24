@@ -13,7 +13,6 @@ wxBitmap
 	bSmallAuto,
 	bSmallWAD,
 	bSmallMDL,
-	iconScriptEdit,
 	smallTransform,
 	smallDocumentOpen,
 	iconMediaPause,
@@ -59,7 +58,6 @@ bool CEditorApp::OnInit()
 	iconShapeCube.LoadFile("resource/shape-cube.png", wxBITMAP_TYPE_PNG);
 	iconShapeSphere.LoadFile("resource/shape-sphere.png", wxBITMAP_TYPE_PNG);
 	bSmallPlaneIcon.LoadFile("resource/shape-plane.png", wxBITMAP_TYPE_PNG);
-	iconScriptEdit.LoadFile(PATH_16ICONS"apps/accessories-text-editor.png", wxBITMAP_TYPE_PNG);
 	smallTransform.LoadFile(PATH_16ICONS"actions/transform-move.png", wxBITMAP_TYPE_PNG);
 	smallApplicationExit.LoadFile(PATH_16ICONS"actions/application-exit.png", wxBITMAP_TYPE_PNG);
 
