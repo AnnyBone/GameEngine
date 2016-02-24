@@ -86,8 +86,6 @@ Video_t	Video;
 */
 void Video_Initialize(void)
 {
-	int i;
-
 	// Ensure we haven't already been initialized.
 	if(Video.bInitialized)
 		return;
@@ -171,7 +169,7 @@ void Video_Initialize(void)
 	if (!Video.textureunits)
 		Sys_Error("Failed to allocated handler for the number of supported TMUs! (%i)\n", Video.num_textureunits);
 
-	for (i = 0; i < Video.num_textureunits; i++)
+	for (int i = 0; i < Video.num_textureunits; i++)
 	{
 		Video.textureunits[i].isactive			= false;
 		Video.textureunits[i].current_envmode	= VIDEO_TEXTURE_MODE_REPLACE;
@@ -228,7 +226,7 @@ void Video_Initialize(void)
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-	Video_SelectTexture(VIDEO_TEXTURE_LIGHT);
+	vlActiveTexture(VIDEO_TEXTURE_LIGHT);
 
 	// Overbrights.
 	vlSetTextureEnvironmentMode(VIDEO_TEXTURE_MODE_COMBINE);
@@ -237,7 +235,7 @@ void Video_Initialize(void)
 	glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_TEXTURE);
 	glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 4);
 
-	Video_SelectTexture(0);
+	vlActiveTexture(0);
 
 	vid.conwidth = (scr_conwidth.value > 0) ? (int)scr_conwidth.value : (scr_conscale.value > 0) ? (int)(Video.iWidth / scr_conscale.value) : Video.iWidth;
 	vid.conwidth = Math_Clamp(320, vid.conwidth, Video.iWidth);
@@ -444,26 +442,6 @@ void Video_SetTexture(gltexture_t *gTexture)
 
 	if (Video.debug_frame)
 		plWriteLog(cv_video_log.string, "Video: Bound texture (%s) (%i)\n", gTexture->name, Video.current_textureunit);
-}
-
-/*
-	Multitexturing Management
-*/
-
-void Video_SelectTexture(unsigned int uiTarget)
-{
-	if (uiTarget == Video.current_textureunit)
-		return;
-	
-	if (uiTarget > Video.num_textureunits)
-		Sys_Error("Invalid texture unit! (%i)\n",uiTarget);
-
-	vlActiveTexture(uiTarget);
-
-	Video.current_textureunit = uiTarget;
-
-	if (Video.debug_frame)
-		plWriteLog(cv_video_log.string, "Video: Texture Unit %i\n", Video.current_textureunit);
 }
 
 /*

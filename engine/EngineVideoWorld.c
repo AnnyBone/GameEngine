@@ -306,7 +306,7 @@ void World_DrawWater(void)
 			{
 				if (t->material->bind && !r_showtris.bValue)
 				{
-					Video_SelectTexture(VIDEO_TEXTURE_LIGHT);
+					vlActiveTexture(VIDEO_TEXTURE_LIGHT);
 					vlEnable(VIDEO_TEXTURE_2D);
 
 					t->material->bind = false;
@@ -314,13 +314,13 @@ void World_DrawWater(void)
 
 				if (!r_showtris.bValue)
 				{
-					Video_SelectTexture(VIDEO_TEXTURE_LIGHT);
+					vlActiveTexture(VIDEO_TEXTURE_LIGHT);
 
 					Video_SetTexture(lightmap_textures[s->lightmaptexturenum]);
 					R_RenderDynamicLightmaps(s);
 					R_UploadLightmap(s->lightmaptexturenum);
 
-					Video_SelectTexture(0);
+					vlActiveTexture(0);
 				}
 
 				Surface_DrawWater(s->polys, t->material);
@@ -329,9 +329,9 @@ void World_DrawWater(void)
 	}
 
 	// Disable light texture
-	Video_SelectTexture(VIDEO_TEXTURE_LIGHT);
+	vlActiveTexture(VIDEO_TEXTURE_LIGHT);
 	vlDisable(VIDEO_TEXTURE_2D);
-	Video_SelectTexture(0);
+	vlActiveTexture(0);
 }
 
 void World_Draw(void)
@@ -356,7 +356,7 @@ void World_Draw(void)
 			{
 				if (t->material->bind && !r_showtris.bValue)
 				{
-					Video_SelectTexture(VIDEO_TEXTURE_LIGHT);
+					vlActiveTexture(VIDEO_TEXTURE_LIGHT);
 					vlEnable(VIDEO_TEXTURE_2D);
 
 					t->material->bind = false;
@@ -364,13 +364,13 @@ void World_Draw(void)
 
 				if (!r_showtris.bValue)
 				{
-					Video_SelectTexture(VIDEO_TEXTURE_LIGHT);
+					vlActiveTexture(VIDEO_TEXTURE_LIGHT);
 
 					Video_SetTexture(lightmap_textures[s->lightmaptexturenum]);
 					R_RenderDynamicLightmaps(s);
 					R_UploadLightmap(s->lightmaptexturenum);
 
-					Video_SelectTexture(0);
+					vlActiveTexture(0);
 				}
 
 				Video_DrawSurface(s, 1.0f, t->material, 0);
@@ -380,7 +380,7 @@ void World_Draw(void)
 	}
 
 	// Disable light texture
-	Video_SelectTexture(VIDEO_TEXTURE_LIGHT);
+	vlActiveTexture(VIDEO_TEXTURE_LIGHT);
 	vlDisable(VIDEO_TEXTURE_2D);
-	Video_SelectTexture(0);
+	vlActiveTexture(0);
 }

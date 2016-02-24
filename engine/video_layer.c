@@ -215,7 +215,7 @@ unsigned int vlGetTextureUnit(unsigned int target)
 #if defined (VL_MODE_OPENGL) || (VL_MODE_OPENGL_CORE)
 	unsigned int out = GL_TEXTURE0 + target;
 	if (out >(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS - 1))
-		Sys_Error("Attempted to select an invalid texture image unit! (%i)\n", out);
+		Sys_Error("Attempted to select an invalid texture image unit! (%i)\n", target);
 	return out;
 #else
 	return target;
@@ -227,9 +227,19 @@ unsigned int vlGetTextureUnit(unsigned int target)
 void vlActiveTexture(unsigned int texunit)
 {
 	VIDEO_FUNCTION_START
+	if (texunit == Video.current_textureunit)
+		return;
+
+	// Ensure it's valid.
+	if (texunit > (unsigned)Video.num_textureunits)
+		Sys_Error("Attempted to select a texture image unit beyond what's supported by your hardware! (%i)\n", texunit);
+
 #if defined (VL_MODE_OPENGL) || (VL_MODE_OPENGL_CORE)
 	glActiveTexture(vlGetTextureUnit(texunit));
 #endif
+
+	// Keep us up-to-date.
+	Video.current_textureunit = texunit;
 	VIDEO_FUNCTION_END
 }
 

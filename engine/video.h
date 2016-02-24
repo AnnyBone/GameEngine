@@ -147,7 +147,6 @@ void Video_ClearBuffer(void);
 void Video_GenerateSphereCoordinates(void);
 void Video_SetTexture(gltexture_t *gTexture);
 void Video_SetViewportSize(int w, int h);
-void Video_SelectTexture(unsigned int uiTarget);
 void Video_EnableCapabilities(unsigned int iCapabilities);
 void Video_DisableCapabilities(unsigned int iCapabilities);
 void Video_PreFrame(void);

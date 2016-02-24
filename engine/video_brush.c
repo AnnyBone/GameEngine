@@ -182,7 +182,7 @@ void R_DrawSequentialPoly(msurface_t *s)
 				vlEnable(VIDEO_BLEND);
 			}
 
-			Video_SelectTexture(VIDEO_TEXTURE_LIGHT);
+			vlActiveTexture(VIDEO_TEXTURE_LIGHT);
 			Video_SetTexture(lightmap_textures[s->lightmaptexturenum]);
 
 			R_RenderDynamicLightmaps(s);
@@ -190,7 +190,7 @@ void R_DrawSequentialPoly(msurface_t *s)
 
 			vlEnable(VIDEO_TEXTURE_2D);
 
-			Video_SelectTexture(0);
+			vlActiveTexture(0);
 		}
 
 		Video_DrawSurface(s, alpha, s->texinfo->texture->material, 0);
@@ -203,9 +203,9 @@ void R_DrawSequentialPoly(msurface_t *s)
 				vlDisable(VIDEO_BLEND);
 			}
 
-			Video_SelectTexture(VIDEO_TEXTURE_LIGHT);
+			vlActiveTexture(VIDEO_TEXTURE_LIGHT);
 			vlDisable(VIDEO_TEXTURE_2D);
-			Video_SelectTexture(0);
+			vlActiveTexture(0);
 		}
 
 		rs_brushpasses++;

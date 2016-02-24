@@ -1070,7 +1070,7 @@ void Material_Draw(Material_t *material, VideoVertex_t *ObjectVertex, VideoPrimi
 		if (!ispost)
 		{
 			// Select the first TMU.
-			Video_SelectTexture(0);
+			vlActiveTexture(0);
 
 			// Set it as white.
 			Video_SetTexture(g_mGlobalColour->skin[MATERIAL_COLOUR_WHITE].texture->gMap);
@@ -1115,7 +1115,7 @@ void Material_Draw(Material_t *material, VideoVertex_t *ObjectVertex, VideoPrimi
 #endif
 
 		// Attempt to select the unit (if it's already selected, then it'll just return).
-		Video_SelectTexture(unit);
+		vlActiveTexture(unit);
 
 		if (!ispost)
 		{

@@ -85,7 +85,10 @@
     <Filter Include="Client\Video\Effects">
       <UniqueIdentifier>{60be56f8-d500-46fa-bdef-6a0f418c8948}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Client\Video\Models">
+    <Filter Include="Client\Resources">
+      <UniqueIdentifier>{b1d9c578-d636-49c8-aa97-40c994077491}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Client\Resources\Models">
       <UniqueIdentifier>{fc383661-239f-4081-b971-fb38f314c32f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -302,7 +305,7 @@
       <Filter>Client\Video\Shaders\Water</Filter>
     </ClCompile>
     <ClCompile Include="model_u3d.cpp">
-      <Filter>Client\Video\Models</Filter>
+      <Filter>Client\Resources\Models</Filter>
     </ClCompile>
     <ClCompile Include="client\effect_sprite.cpp">
       <Filter>Client\Video\Effects</Filter>
