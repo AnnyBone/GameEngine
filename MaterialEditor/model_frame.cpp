@@ -57,6 +57,24 @@ void ModelViewportPanel::Draw()
 		if (rotate)
 			entity->angles[1] += 0.5f;
 	}
+
+	engine->DrawResetCanvas();
+	engine->DrawSetCanvas(CANVAS_DEFAULT);
+
+	if (entity && entity->model)
+	{
+		std::string strout = "Model: ";
+		strout.append(entity->model->name);
+		engine->DrawString(10, 10, strout.c_str());
+
+		strout.clear();
+		strout = "Frame: ";
+		strout += 
+			std::to_string(entity->frame + 1)
+			+ "/"
+			+ std::to_string(entity->model->numframes);
+		engine->DrawString(10, 20, strout.c_str());
+	}
 }
 
 void ModelViewportPanel::SetModel(model_t *newmodel)
