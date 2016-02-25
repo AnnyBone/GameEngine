@@ -145,6 +145,7 @@ extern "C" {
 	extern	int		key_count;			// incremented every key event
 	extern	int		key_lastpress;
 	extern bool	keydown[256];
+	extern double key_blinktime;
 
 	void Key_Event(int key, bool down);
 	void Key_Init(void);

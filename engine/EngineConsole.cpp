@@ -22,6 +22,7 @@
 #include <unistd.h>
 #endif
 #include <fcntl.h>
+#include <list>
 #include <set>
 
 #include "engine_base.h"
@@ -29,23 +30,16 @@
 #include "EngineInput.h"
 #include "video.h"
 
+static const unsigned int CHAR_WIDTH   = 8;
+static const unsigned int CHAR_HEIGHT  = 8;
+static const unsigned int CONS_WIDTH   = 70;
+static const unsigned int CONS_BACKLOG = 200;
+
 unsigned int 	con_linewidth;
 
 float		con_cursorspeed = 4;
 
-#define		CON_TEXTSIZE 65536 //johnfitz -- new default size
-#define		CON_MINSIZE  16384 //johnfitz -- old default, now the minimum size
-
-int			con_buffersize; //johnfitz -- user can now override default
-
 bool 	con_forcedup;		// because no entities to refresh
-
-unsigned int	con_totallines;		// total lines in console scrollback
-unsigned int	con_backscroll;		// lines up from bottom to display
-unsigned int	con_current;		// where next message will be printed
-unsigned int	con_x;				// offset in current line for next print
-
-char		*con_text=0;
 
 cvar_t		con_notifytime = {"con_notifytime","3"};		//seconds
 cvar_t		con_logcenterprint = {"con_logcenterprint", "1"}; //johnfitz
@@ -55,7 +49,6 @@ char		con_lastcenterstring[1024]; //johnfitz
 #define	NUM_CON_TIMES 4
 float		con_times[NUM_CON_TIMES];	// realtime time the line was generated
 										// for transparent notify lines
-int			con_vislines;
 
 #define		MAXCMDLINE	256
 extern	char			key_lines[32][MAXCMDLINE];
@@ -63,6 +56,225 @@ extern	int				edit_line;
 extern	unsigned int	key_linepos;
 
 bool	bConsoleInitialized;
+
+/* Singleton console instance. */
+Core::Console *con_instance = NULL;
+
+Core::Console::Console():
+	cursor_x(0),
+	cursor_y(0),
+	backscroll(0)
+{
+	lines.emplace_back("");
+}
+
+void Core::Console::Clear()
+{
+	cursor_x = 0;
+	cursor_y = 0;
+
+	lines.clear();
+	lines.emplace_back("");
+}
+
+void Core::Console::Print(const char *text)
+{
+	while(*text)
+	{
+		if(*text == '\n')
+		{
+			linefeed();
+			cursor_x = 0;
+		}
+		else if(*text == '\r')
+		{
+			cursor_x = 0;
+		}
+		else{
+			if(lines[cursor_y].size() > cursor_x)
+			{
+				lines[cursor_y][cursor_x] = *text;
+			}
+			else{
+				lines[cursor_y] += *text;
+			}
+
+			++cursor_x;
+		}
+
+		++text;
+	}
+}
+
+void Core::Console::ScrollUp()
+{
+	// TODO: Clamp this somehow
+	++backscroll;
+}
+
+void Core::Console::ScrollDown()
+{
+	if(backscroll > 0)
+	{
+		--backscroll;
+	}
+}
+
+void Core::Console::ScrollHome()
+{
+	// TODO: Clamp this somehow
+	backscroll = 2000;
+}
+
+void Core::Console::ScrollEnd()
+{
+	backscroll = 0;
+}
+
+void Core::Console::linefeed()
+{
+	lines.emplace_back("");
+
+	if(lines.size() > CONS_BACKLOG)
+	{
+		lines.pop_front();
+	}
+	else{
+		++cursor_y;
+	}
+}
+
+std::list<std::string> Core::Console::prepare_text(unsigned int cols, unsigned int rows)
+{
+	std::list<std::string> wrapped_lines;
+
+	/* Start working back from the end of the deque of lines in the buffer
+	 * until we have enough to fill the visible rows + scrollback
+	*/
+	for(auto l = lines.rbegin(); l != lines.rend() && wrapped_lines.size() < rows + backscroll; ++l)
+	{
+		auto wrapped_line = wrap_line(*l, cols);
+		wrapped_lines.insert(wrapped_lines.begin(), wrapped_line.begin(), wrapped_line.end());
+	}
+
+	/* Chop off the lines currently scrolled back past. */
+	for(unsigned int i = 0; i < backscroll && wrapped_lines.size() > rows; ++i)
+	{
+		wrapped_lines.pop_back();
+	}
+
+	while(wrapped_lines.size() > rows)
+	{
+		wrapped_lines.pop_front();
+	}
+
+	return wrapped_lines;
+}
+
+std::list<std::string> Core::Console::wrap_line(std::string line, unsigned int cols)
+{
+	std::list<std::string> wrapped_line;
+
+	do {
+		size_t frag_len;
+
+		if(line.length() <= cols)
+		{
+			frag_len = line.length();
+		}
+		else{
+			size_t break_space = line.find_last_of(' ', cols);
+
+			if(break_space == std::string::npos)
+			{
+				frag_len = cols;
+			}
+			else{
+				frag_len = break_space;
+			}
+		}
+
+		wrapped_line.emplace_back(line, 0, frag_len);
+		line.erase(0, frag_len);
+	} while(!line.empty());
+
+	return wrapped_line;
+}
+
+void Core::Console::Draw(bool draw_input)
+{
+	// Draw the background
+	Draw_ConsoleBackground();
+
+	GL_SetCanvas(CANVAS_CONSOLE);
+
+	// Starting from the bottom...
+	int y = vid.conheight - CHAR_HEIGHT;
+
+	// ...draw version number in bottom right...
+	{
+		char ver[64];
+		snprintf(ver, sizeof(ver), "Katana (%i)", (int)(ENGINE_VERSION_BUILD));
+
+		size_t vlen = strlen(ver);
+		size_t x    = CONS_WIDTH - vlen;
+
+		for(size_t i = 0; i < vlen; ++i, ++x)
+		{
+			Draw_Character(x * CHAR_WIDTH, y, ver[i]);
+		}
+
+		y -= CHAR_HEIGHT;
+	}
+
+	// ...draw input line...
+	if(draw_input && !(key_dest != key_console && !con_forcedup))
+	{
+		const char *text = key_lines[edit_line];
+
+		// Prestep if horizontally scrolling
+		if (key_linepos >= con_linewidth)
+			text += 1 + key_linepos - con_linewidth;
+
+		// Draw input string
+		for(size_t i = 0;; ++i)
+		{
+			if(text[i] != '\0')
+			{
+				Draw_Character((i+1) * CHAR_WIDTH, y, text[i]);
+			}
+			else{
+				// Why is this even necessary?
+				Draw_Character((i+1) * CHAR_WIDTH, y, ' ');
+				break;
+			}
+		}
+
+		// Draw the blinky cursor
+		if(!((int)((realtime-key_blinktime)*con_cursorspeed) & 1))
+		{
+			Draw_Character((key_linepos+1) * CHAR_WIDTH, y, '_');
+		}
+
+		y -= CHAR_HEIGHT;
+	}
+
+	// ...draw visible console output in remaining space...
+	{
+		std::list<std::string> wrapped_lines = prepare_text(CONS_WIDTH, (y / CHAR_HEIGHT) + 1);
+
+		for(auto line = wrapped_lines.rbegin(); line != wrapped_lines.rend() && y >= 0;)
+		{
+			for(size_t i = 0; i < line->length(); ++i)
+			{
+				Draw_Character((i+1) * CHAR_WIDTH, y, line->at(i));
+			}
+
+			y -= CHAR_HEIGHT;
+			++line;
+		}
+	}
+}
 
 extern "C" void M_Menu_Main_f (void);
 
@@ -104,7 +316,6 @@ void Con_ToggleConsole_f (void)
 			key_dest				= key_game;
 			key_lines[edit_line][1] = 0;	// clear any typing
 			key_linepos				= 1;
-			con_backscroll			= 0; //johnfitz -- toggleconsole should return you to the bottom of the scrollback
 			history_line			= edit_line; //johnfitz -- it should also return you to the bottom of the command history
 
 			Input_ActivateMouse();
@@ -126,9 +337,10 @@ void Con_ToggleConsole_f (void)
 
 void Con_Clear_f (void)
 {
-	if (con_text)
-		memset(con_text, ' ', con_buffersize); //johnfitz -- con_buffersize replaces CON_TEXTSIZE
-	con_backscroll = 0; //johnfitz -- if console is empty, being scrolled up is confusing
+	if(con_instance)
+	{
+		con_instance->Clear();
+	}
 }
 
 void Con_ClearNotify (void)
@@ -153,57 +365,6 @@ void Con_MessageMode2_f (void)
 	team_message = true;
 }
 
-/*	If the line width has changed, reformat the buffer.
-*/
-void Con_CheckResize(void)
-{
-	int				oldtotallines;
-	unsigned int	i, j, width, oldwidth, numlines, numchars;
-	char			*tbuf; //johnfitz -- tbuf no longer a static array
-	int 			mark; //johnfitz
-
-	width = (vid.conwidth >> 3)-2; //johnfitz -- use vid.conwidth instead of vid.width
-	if(width == con_linewidth)
-		return;
-
-	oldwidth 		= con_linewidth;
-	con_linewidth 	= width;
-	oldtotallines 	= con_totallines;
-	// Can't rely on this massively if we're embedded anymore :(
-	if (con_linewidth <= 0)
-		con_totallines = 0;
-	else
-		con_totallines 	= con_buffersize / con_linewidth; //johnfitz -- con_buffersize replaces CON_TEXTSIZE
-	numlines 		= oldtotallines;
-
-	if(con_totallines < numlines)
-		numlines = con_totallines;
-
-	numchars = oldwidth;
-	if(con_linewidth < numchars)
-		numchars = con_linewidth;
-
-	mark = Hunk_LowMark(); //johnfitz
-	tbuf = (char*)Hunk_Alloc(con_buffersize); //johnfitz
-
-	memcpy(tbuf, con_text, con_buffersize);//johnfitz -- con_buffersize replaces CON_TEXTSIZE
-	memset(con_text, ' ', con_buffersize);//johnfitz -- con_buffersize replaces CON_TEXTSIZE
-
-	for(i = 0; i < numlines; i++)
-		for (j = 0; j < numchars; j++)
-		{
-			con_text[(con_totallines-1-i)*con_linewidth+j] =
-					tbuf[((con_current-i+oldtotallines)%oldtotallines)*oldwidth+j];
-		}
-
-	Hunk_FreeToLowMark (mark); //johnfitz
-
-	Con_ClearNotify ();
-
-	con_backscroll = 0;
-	con_current = con_totallines - 1;
-}
-
 void Console_Initialize(void)
 {
 	if (bConsoleInitialized)
@@ -211,26 +372,13 @@ void Console_Initialize(void)
 
 	plClearLog(ENGINE_LOG);
 
-	//johnfitz -- user settable console buffer size
-	if (COM_CheckParm("-consize"))
-		con_buffersize = Math_Max(CON_MINSIZE,Q_atoi(com_argv[COM_CheckParm("-consize")+1])*1024);
-	else
-		con_buffersize = CON_TEXTSIZE;
-	//johnfitz
+	con_instance = new Core::Console();
 
-	con_text = (char*)Hunk_AllocName (con_buffersize, "context");//johnfitz -- con_buffersize replaces CON_TEXTSIZE
-	memset(con_text, ' ', con_buffersize);//johnfitz -- con_buffersize replaces CON_TEXTSIZE
-
-	//johnfitz -- no need to run Con_CheckResize here
 	con_linewidth = 70;
-	con_totallines = con_buffersize / con_linewidth;//johnfitz -- con_buffersize replaces CON_TEXTSIZE
-	con_backscroll = 0;
-	con_current = con_totallines - 1;
-	//johnfitz
 
 	// register our commands
 	Cvar_RegisterVariable (&con_notifytime, NULL);
-	Cvar_RegisterVariable (&con_logcenterprint, NULL); //johnfitz
+	Cvar_RegisterVariable (&con_logcenterprint, NULL);
 
 	Cmd_AddCommand("toggleconsole",Con_ToggleConsole_f);
 	Cmd_AddCommand("messagemode",Con_MessageMode_f);
@@ -240,97 +388,15 @@ void Console_Initialize(void)
 	bConsoleInitialized = true;
 }
 
-void Con_Linefeed (void)
-{
-	//johnfitz -- improved scrolling
-	if (con_backscroll)
-		con_backscroll++;
-	if (con_backscroll > con_totallines - (glheight>>3) - 1)
-		con_backscroll = con_totallines - (glheight>>3) - 1;
-	//johnfitz
-
-	con_x = 0;
-	con_current++;
-	memset(&con_text[(con_current%con_totallines)*con_linewidth], ' ', con_linewidth);
-}
-
 /*	Handles cursor positioning, line wrapping, etc
 	All console printing must go through this in order to be logged to disk
 	If no console is visible, the notify window will pop up.
 */
 void Con_Print (char *txt)
 {
-	int				mask, y, c;
-	unsigned int	l;
-	static int		cr;
-
-	//con_backscroll = 0; //johnfitz -- better console scrolling
-
-	if (txt[0] == 1)
+	if(con_instance)
 	{
-		mask = 128;		// go to colored text
-		S_LocalSound("misc/talk.wav");
-
-		// Play talk wav
-		txt++;
-	}
-	else if (txt[0] == 2)
-	{
-		mask = 128;		// go to colored text
-		txt++;
-	}
-	else
-		mask = 0;
-
-
-	while ( *txt )
-	{
-		c = *txt;
-
-		// Count word length
-		for (l=0 ; l< con_linewidth ; l++)
-			if ( txt[l] <= ' ')
-				break;
-
-		// Word wrap
-		if (l != con_linewidth && (con_x + l > con_linewidth) )
-			con_x = 0;
-
-		txt++;
-
-		if(cr)
-		{
-			con_current--;
-			cr = false;
-		}
-
-		if(!con_x)
-		{
-			Con_Linefeed ();
-
-			// Mark time for transparent overlay
-			if (con_current >= 0)
-				con_times[con_current % NUM_CON_TIMES] = realtime;
-		}
-
-		switch (c)
-		{
-		case '\n':
-			con_x = 0;
-			break;
-		case '\r':
-			con_x = 0;
-			cr = 1;
-			break;
-		default:
-			// Display character and advance
-			y = con_current % con_totallines;
-			con_text[y*con_linewidth+con_x] = c | mask;
-			con_x++;
-			if (con_x >= con_linewidth)
-				con_x = 0;
-			break;
-		}
+		con_instance->Print(txt);
 	}
 }
 
@@ -343,7 +409,6 @@ void Con_Printf (const char *fmt, ...)
 {
 	va_list			argptr;
 	char			msg[MAXPRINTMSG];
-	static bool		inupdate;
 
 	va_start(argptr,fmt);
 	vsprintf(msg,fmt,argptr);
@@ -358,18 +423,7 @@ void Con_Printf (const char *fmt, ...)
 		g_launcher.PrintMessage(msg);
 	else
 	{
-		if (!bConsoleInitialized)
-			return;
-
 		Con_Print(msg);
-
-		if (cls.signon != SIGNONS && !scr_disabled_for_loading)
-			if (!inupdate)
-			{
-				inupdate = true;
-				//SCR_UpdateScreen ();
-				inupdate = false;
-			}
 	}
 }
 
@@ -575,7 +629,7 @@ std::set<tab_suggestion> BuildTabList(const char *partial)
 	return suggestions;
 }
 
-extern "C" void Con_TabComplete(void)
+void Con_TabComplete(void)
 {
 	char		partial[MAXCMDLINE];
 	static char	*c;
@@ -695,9 +749,11 @@ DRAWING
 */
 
 /*	Draws the last few lines of output transparently over the game top
+ * TODO: This
 */
 void Con_DrawNotify(void)
 {
+#if 0
 	unsigned int	i, x, v;
 	char			*text;
 	float			time;
@@ -752,93 +808,52 @@ void Con_DrawNotify(void)
 
 		scr_tileclear_updates = 0; //johnfitz
 	}
-}
-
-/*	johnfitz -- modified to allow insert editing
-
-	The input line scrolls horizontally if typing goes beyond the right edge
-*/
-void Con_DrawInput (void)
-{
-	extern double key_blinktime;
-	unsigned int i;
-	int len;
-	char c[256],*text;
-
-	if(key_dest != key_console && !con_forcedup)
-		return;		// Don't draw anything
-
-	text = strcpy(c, key_lines[edit_line]);
-
-	// Pad with one space so we can draw one past the string (in case the cursor is there)
-	len = strlen(key_lines[edit_line]);
-	text[len] = ' ';
-	text[len+1] = 0;
-
-	// Prestep if horizontally scrolling
-	if (key_linepos >= con_linewidth)
-		text += 1 + key_linepos - con_linewidth;
-
-	// Draw input string
-	for(i = 0; i <= strlen(text)-1; i++) //only write enough letters to go from *text to cursor
-		Draw_Character ((i+1)<<3, vid.conheight - 16, text[i]);
-
-	// johnfitz -- new cursor handling
-	if(!((int)((realtime-key_blinktime)*con_cursorspeed) & 1))
-		Draw_Character((key_linepos+1)<<3,vid.conheight-16,'_');
+#endif
 }
 
 /*	Draws the console with the solid background
 	The typing input line at the bottom should only be drawn if typing is allowed
 */
-void Con_DrawConsole(int lines, bool drawinput)
+void Con_DrawConsole(bool draw_input)
 {
-	unsigned int	i,x,y,j,sb,rows;
-	char			ver[64],*text;
-
-	if(lines <= 0)
-		return;
-
-	con_vislines = lines*vid.conheight/glheight;
-
-	// Draw the background
-	Draw_ConsoleBackground();
-
-	GL_SetCanvas(CANVAS_CONSOLE);
-
-	// Draw the buffer text
-	rows = (con_vislines+7)/8;
-	y = vid.conheight - rows*8;
-	rows -= 2; //for input and version lines
-	sb = (con_backscroll) ? 2 : 0;
-
-	for (i = con_current - rows + 1 ; i <= con_current - sb ; i++, y+=8)
+	if(con_instance)
 	{
-		j = i - con_backscroll;
-		if (j<0)
-			j = 0;
-		text = con_text + (j % con_totallines)*con_linewidth;
-
-		for (x=0 ; x<con_linewidth ; x++)
-			Draw_Character ( (x+1)<<3, y, text[x]);
+		con_instance->Draw(draw_input);
 	}
+}
 
-	// Draw scrollback arrows
-	if(con_backscroll)
+/* TODO: Get rid of these functions, bring more of the engine into C++ land
+ * and let them use the methods of con_instance directly.
+*/
+
+void Con_ScrollUp(void)
+{
+	if(con_instance)
 	{
-		y+=8; // blank line
-		for (x=0 ; x<con_linewidth ; x+=4)
-			Draw_Character ((x+1)<<3, y, '^');
-		y+=8;
+		con_instance->ScrollUp();
 	}
+}
 
-	// draw the input prompt, user text, and cursor
-	if (drawinput)
-		Con_DrawInput ();
+void Con_ScrollDown(void)
+{
+	if(con_instance)
+	{
+		con_instance->ScrollDown();
+	}
+}
 
-	// Draw version number in bottom right
-	y += 8;
-	sprintf(ver,"Katana (%i)", ENGINE_VERSION_BUILD);
-	for(x = 0; x < (signed)strlen(ver); x++)
-		Draw_Character((con_linewidth-strlen(ver)+x+2)<<3,y,ver[x]);
+void Con_ScrollHome(void)
+{
+	if(con_instance)
+	{
+		con_instance->ScrollHome();
+	}
+}
+
+void Con_ScrollEnd(void)
+{
+	if(con_instance)
+	{
+		con_instance->ScrollEnd();
+	}
 }

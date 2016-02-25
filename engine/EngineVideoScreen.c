@@ -566,8 +566,6 @@ void Screen_SetUpToDrawConsole(void)
 	float timescale;
 	//johnfitz
 
-	Con_CheckResize();
-
 	if (g_menu->GetState() & MENU_STATE_LOADING)
 		return;		// never a console with loading plaque
 
@@ -604,9 +602,9 @@ void Screen_SetUpToDrawConsole(void)
 
 void Screen_DrawConsole(void)
 {
-	if (scr_con_current)
+	if(scr_con_current)
 	{
-		Con_DrawConsole (scr_con_current,true);
+		Con_DrawConsole(true);
 		clearconsole = 0;
 	}
 	else
