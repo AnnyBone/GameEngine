@@ -373,24 +373,6 @@ void Con_Printf (const char *fmt, ...)
 	}
 }
 
-void Con_SPrintf (char *dest, int size, char *fmt, ...)
-{
-	int			len;
-	va_list		argptr;
-	char		bigbuffer[MAXPRINTMSG];
-
-	va_start (argptr,fmt);
-	len = vsprintf (bigbuffer,fmt,argptr);
-	va_end (argptr);
-
-	if (len >= size)
-		Con_Printf("Com_sprintf: overflow of %i in %i\n", len, size);
-
-	strncpy(dest, bigbuffer, size - 1);
-
-	Con_Printf (dest);
-}
-
 void Con_Warning (const char *fmt, ...)
 {
 	va_list		argptr;

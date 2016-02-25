@@ -38,7 +38,6 @@ void Console_Initialize(void);
 void Con_DrawConsole(int lines, bool drawinput);
 void Con_Print(char *txt);
 void Con_Printf(const char *fmt, ...);
-void Con_SPrintf(char *dest, int size, char *fmt, ...);
 void Con_Warning(const char *fmt, ...); //johnfitz
 void Con_Error(char *fmt, ...);
 void Con_DPrintf(const char *fmt, ...);
