@@ -22,6 +22,7 @@
 #include <unistd.h>
 #endif
 #include <fcntl.h>
+#include <set>
 
 #include "engine_base.h"
 
@@ -63,7 +64,7 @@ extern	unsigned int	key_linepos;
 
 bool	bConsoleInitialized;
 
-extern void M_Menu_Main_f (void);
+extern "C" void M_Menu_Main_f (void);
 
 /*	johnfitz -- returns a bar of the desired length, but never wider than the console
 
@@ -555,96 +556,54 @@ void Console_ErrorMessage(bool bCrash, const char *ccFile, const char *reason)
 ==============================================================================
 */
 
-//johnfitz -- tab completion stuff
-//unique defs
 char key_tabpartial[MAXCMDLINE];
 
-typedef struct tab_s
+struct tab_suggestion
 {
-	char			name[MAXCMDLINE];
-	char			*type;
-	struct tab_s	*next;
-	struct tab_s	*prev;
-} tab_t;
+	std::string name;
+	std::string type;
 
-tab_t	*tablist;
+	tab_suggestion(const std::string &n, const std::string &t):
+		name(n), type(t) {}
 
-/*	Tablist is a doubly-linked loop, alphabetized by name
-*/
-void AddToTabList (const char *name, char *type)
+	bool operator<(const tab_suggestion &rhs) const
+	{
+		return name < rhs.name;
+	}
+};
+
+std::set<tab_suggestion> BuildTabList(const char *partial)
 {
-	tab_t	*t,*insert;
+	std::set<tab_suggestion> suggestions;
 
-	t = (tab_t*)Hunk_Alloc(sizeof(tab_t));
-	strncpy(t->name, name, sizeof(t->name));
-	t->type = type;
+	size_t len = strlen(partial);
 
-	if (!tablist) //create list
-	{
-		tablist = t;
-		t->next = t;
-		t->prev = t;
-	}
-	else if (strcmp(name, tablist->name) < 0) //insert at front
-	{
-		t->next = tablist;
-		t->prev = tablist->prev;
-		t->next->prev = t;
-		t->prev->next = t;
-		tablist = t;
-	}
-	else //insert later
-	{
-		insert = tablist;
-		do
-		{
-			if (strcmp(name, insert->name) < 0)
-				break;
-			insert = insert->next;
-		} while (insert != tablist);
-
-		t->next = insert;
-		t->prev = insert->prev;
-		t->next->prev = t;
-		t->prev->next = t;
-	}
-}
-
-void BuildTabList (char *partial)
-{
-	cmdalias_t *alias;
-	ConsoleVariable_t *cvar;
-	cmd_function_t *cmd;
-	int len;
-
-	tablist = NULL;
-	len = strlen(partial);
-
-	for (cvar=cConsoleVariables ; cvar ; cvar=cvar->next)
+	for(ConsoleVariable_t *cvar = cConsoleVariables; cvar; cvar = cvar->next)
 		if (!strncmp(partial, cvar->name, len))
-			AddToTabList (cvar->name, "cvar");
+			suggestions.insert(tab_suggestion(cvar->name, "cvar"));
 
-	for (cmd=cmd_functions ; cmd ; cmd=cmd->next)
+	for(cmd_function_t *cmd = cmd_functions; cmd; cmd = cmd->next)
 		if (!strncmp(partial,cmd->name, len))
-			AddToTabList (cmd->name, "command");
+			suggestions.insert(tab_suggestion(cmd->name, "command"));
 
-	for (alias=cmd_alias ; alias ; alias=alias->next)
+	for(cmdalias_t *alias = cmd_alias; alias; alias = alias->next)
 		if (!strncmp(partial, alias->name, len))
-			AddToTabList (alias->name, "alias");
+			suggestions.insert(tab_suggestion(alias->name, "alias"));
+
+	return suggestions;
 }
 
-void Con_TabComplete (void)
+extern "C" void Con_TabComplete(void)
 {
-	char		partial[MAXCMDLINE], match[MAXCMDLINE];
+	char		partial[MAXCMDLINE];
 	static char	*c;
-	tab_t		*t;
-	int			mark, i;
+	int i;
 
-// if editline is empty, return
+	// if editline is empty, return
 	if (key_lines[edit_line][1] == 0)
 		return;
 
-// get partial string (space -> cursor)
+	// get partial string (space -> cursor)
 	if (!strlen(key_tabpartial)) //first time through, find new insert point. (Otherwise, use previous.)
 	{
 		//work back from cursor until you find a space, quote, semicolon, or prompt
@@ -657,64 +616,86 @@ void Con_TabComplete (void)
 		partial[i] = c[i];
 	partial[i] = 0;
 
-//if partial is empty, return
+	//if partial is empty, return
 	if (partial[0] == 0)
 		return;
 
-//trim trailing space becuase it screws up string comparisons
+	//trim trailing space becuase it screws up string comparisons
 	if (i > 0 && partial[i-1] == ' ')
 		partial[i-1] = 0;
 
-// find a match
-	mark = Hunk_LowMark();
+	// find a match
+	std::string match;
+
 	if (!strlen(key_tabpartial)) //first time through
 	{
 		strcpy(key_tabpartial, partial);
-		BuildTabList (key_tabpartial);
+		std::set<tab_suggestion> suggestions = BuildTabList(key_tabpartial);
 
-		if (!tablist)
+		if(suggestions.empty())
+		{
 			return;
+		}
 
 		//print list
-		t = tablist;
-		do
+		for(auto s = suggestions.begin(); s != suggestions.end(); ++s)
 		{
-			Con_SafePrintf("   %s (%s)\n", t->name, t->type);
-			t = t->next;
-		} while (t != tablist);
+			Con_SafePrintf("   %s (%s)\n", s->name.c_str(), s->type.c_str());
+		}
 
 		//get first match
-		strncpy(match, tablist->name, sizeof(match));
+		match = suggestions.begin()->name;
 	}
 	else
 	{
-		BuildTabList (key_tabpartial);
+		std::set<tab_suggestion> suggestions = BuildTabList(key_tabpartial);
 
-		if (!tablist)
-			return;
-
-		//find current match -- can't save a pointer because the list will be rebuilt each time
-		t = tablist;
-		do
+		if(suggestions.empty())
 		{
-			if(!strcmp(t->name, partial))
-				break;
-			t = t->next;
-		} while (t != tablist);
+			return;
+		}
 
-		//use prev or next to find next match
-		strncpy(match, keydown[K_SHIFT] ? t->prev->name : t->next->name, sizeof(match));
+		auto s = suggestions.find(tab_suggestion(partial, ""));
+		if(s == suggestions.end())
+		{
+			Con_SafePrintf("BUG: s == suggestions.end()\n");
+			return;
+		}
+
+		/* Iterate backwards through the suggestions if shift is held
+		 * down. Emulate a cyclic data structure here.
+		*/
+		if(keydown[K_SHIFT])
+		{
+			if(s == suggestions.begin())
+			{
+				s = suggestions.end();
+			}
+
+			--s;
+		}
+		else{
+			if(++s == suggestions.end())
+			{
+				s = suggestions.begin();
+			}
+		}
+
+		match = s->name;
 	}
-	Hunk_FreeToLowMark(mark); //it's okay to free it here becuase match is a pointer to persistent data
 
-	// Insert new match into edit line
-	strcpy(partial, match);								// First copy match string
-	strcat(partial,key_lines[edit_line] + key_linepos); // Then add chars after cursor
-	strcpy(c, partial);									// Now copy all of this into edit line
+	/* Update input text to contain new suggestion and any preexisting
+	 * trailing text.
+	 *
+	 * NOTE: Don't optimise the intermediate buffer away - c points to a
+	 * region within key_lines and everything goes wrong.
+	*/
+	snprintf(partial, sizeof(partial), "%s%s", match.c_str(), (key_lines[edit_line] + key_linepos));
+	strcpy(c, partial);
 
-	key_linepos = c-key_lines[edit_line]+strlen(match); //set new cursor position
+	key_linepos = c - key_lines[edit_line] + match.length(); //set new cursor position
 
-// if cursor is at end of string, let's append a space to make life easier
+	// if cursor is at end of string, let's append a space to make life easier
 	if (key_lines[edit_line][key_linepos] == 0)
 	{
 		key_lines[edit_line][key_linepos] = ' ';
