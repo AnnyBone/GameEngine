@@ -569,29 +569,6 @@ typedef struct tab_s
 
 tab_t	*tablist;
 
-//defs from elsewhere
-extern bool	keydown[256];
-
-typedef struct cmd_function_s
-{
-	struct cmd_function_s	*next;
-	char					*name;
-	xcommand_t				function;
-} cmd_function_t;
-
-extern	cmd_function_t	*cmd_functions;
-
-#define	MAX_ALIAS_NAME	32
-
-typedef struct cmdalias_s
-{
-	struct cmdalias_s	*next;
-	char	name[MAX_ALIAS_NAME];
-	char	*value;
-} cmdalias_t;
-
-extern	cmdalias_t	*cmd_alias;
-
 /*	Tablist is a doubly-linked loop, alphabetized by name
 */
 void AddToTabList (const char *name, char *type)
