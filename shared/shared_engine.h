@@ -27,7 +27,7 @@
 
 /*	Functions exported from the engine.
 */
-typedef struct
+typedef struct EngineExport_e
 {
 	int	iVersion;
 
@@ -77,18 +77,16 @@ typedef struct
 
 	// Video...
 
-	void(*DrawPreFrame)();
-	void(*DrawPostFrame)();
-	void(*DrawConsole)();
-	void(*DrawGradientBackground)();
-	void(*DrawFPS)();
+	void(*DrawPreFrame)(void);
+	void(*DrawPostFrame)(void);
+	void(*DrawGradientBackground)(void);
 	void(*DrawGrid)(float x, float y, float z, int grid_size);
 	void(*DrawString)(int x, int y, const char *cMsg);
 	void(*DrawLine)(MathVector3f_t mvStart, MathVector3f_t mvEnd);
 	void(*DrawMaterialSurface)(Material_t *mMaterial, int iSkin, int x, int y, int w, int h, float fAlpha);
 	void(*DrawEntity)(ClientEntity_t *Entity);
 	void(*DrawSetCanvas)(VideoCanvasType_t Canvas);
-	void(*DrawResetCanvas)();
+	void(*DrawResetCanvas)(void);
 
 	// Material Editor
 	void(*MaterialEditorInitialize)(void);					// Initializes the material editor.

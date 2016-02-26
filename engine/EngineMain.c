@@ -97,18 +97,18 @@ pMODULE_EXPORT EngineExport_t *Engine_Main(EngineImport_t *mImport)
 	exports.PrintDev = Con_DPrintf;
 
 	// Video
-	exports.DrawPostFrame = Video_PostFrame;
-	exports.DrawPreFrame = Video_PreFrame;
-	exports.DrawEntity = Draw_Entity;
-	exports.DrawFPS = Screen_DrawFPS;
-	exports.DrawConsole = Screen_DrawConsole;
-	exports.DrawGrid = Draw_Grid;
-	exports.DrawString = Draw_String;
-	exports.DrawLine = Draw_Line;
-	exports.DrawGradientBackground = Draw_GradientBackground;
-	exports.DrawSetCanvas = GL_SetCanvas;
-	exports.DrawResetCanvas = Draw_ResetCanvas;
-	exports.DrawMaterialSurface = Draw_MaterialSurface;
+	exports.DrawPostFrame			= Video_PostFrame;
+	exports.DrawPreFrame			= Video_PreFrame;
+	exports.DrawEntity				= Draw_Entity;
+	//exports.DrawFPS				= Screen_DrawFPS;
+	//exports.DrawConsole			= Screen_DrawConsole;
+	exports.DrawGrid				= Draw_Grid;
+	exports.DrawString				= Draw_String;
+	exports.DrawLine				= Draw_Line;
+	exports.DrawGradientBackground	= Draw_GradientBackground;
+	exports.DrawSetCanvas			= GL_SetCanvas;
+	exports.DrawResetCanvas			= Draw_ResetCanvas;
+	exports.DrawMaterialSurface		= Draw_MaterialSurface;
 
 	// Material Editor
 	exports.MaterialEditorInitialize = MaterialEditor_Initialize;

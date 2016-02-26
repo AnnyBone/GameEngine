@@ -190,8 +190,6 @@ enum PlatformMathRGBA
 	Utility Functions
 */
 
-void	_Math_VectorSubtract(MathVector3f_t a, MathVector3f_t b, MathVector3f_t c);
-
 struct	mplane_s;
 
 void Math_VectorAngles(const MathVector3f_t forward, MathVector3f_t angles);
@@ -201,8 +199,8 @@ void Math_VectorMake(MathVector3f_t veca, float scale, MathVector3f_t vecb, Math
 
 double plVectorLength(MathVector3f_t a);
 
-float	Math_AngleMod(float a);
-float	Math_VectorToYaw(MathVectorf_t *vVector);
+float Math_AngleMod(float a);
+float plVectorToYaw(MathVectorf_t *vec);
 
 bool plVectorCompare(MathVector3f_t a, MathVector3f_t b);
 bool plIsIntersecting(MathVector3f_t mvFirstMins, MathVector3f_t mvFirstMaxs, MathVector3f_t mvSecondMins, MathVector3f_t mvSecondMaxs);
@@ -216,16 +214,16 @@ MathVectorf_t Math_DotProduct(MathVector3f_t a, MathVector3f_t b);
 MathVector_t plVectorToAngles(MathVector3f_t vValue);
 
 float plLinear(float x);
-float Math_InPow(float x, float p);
-float Math_OutPow(float x, float p);
+float plInPow(float x, float p);
+float plOutPow(float x, float p);
 float Math_InOutPow(float x, float p);
 float Math_InSin(float x);
 float Math_OutSin(float x);
 float Math_InOutSin(float x);
-float Math_InExp(float x);
+float plInExp(float x);
 float plOutExp(float x);
 float plInOutExp(float x);
-float Math_InCirc(float x);
+float plInCirc(float x);
 float Math_OutCirc(float x);
 float Math_InOutCirc(float x);
 float Math_Rebound(float x);
@@ -239,6 +237,7 @@ MathVectorf_t plColourNormalize(MathVector3f_t in, MathVector3f_t out);
 
 void plVectorSet3f(MathVector3f_t out, float x, float y, float z);
 void plVectorMultiply3f(MathVector3f_t in, MathVector3f_t multi, MathVector3f_t out);
+void plVectorSubtract3f(MathVector3f_t in, MathVector3f_t subtract, MathVector3f_t out);
 void plVectorAdd3f(MathVector3f_t in, MathVector3f_t add, MathVector3f_t out);
 void plVectorCopy3f(MathVector3f_t in, MathVector3f_t out);
 void plVectorScale3f(MathVector3f_t in, MathVectorf_t scale, MathVector3f_t out);
