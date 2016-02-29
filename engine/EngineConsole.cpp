@@ -33,10 +33,7 @@
 
 static const unsigned int CHAR_WIDTH   = 8;
 static const unsigned int CHAR_HEIGHT  = 8;
-static const unsigned int CONS_WIDTH   = 70;
 static const unsigned int CONS_BACKLOG = 200;
-
-unsigned int 	con_linewidth;
 
 float		con_cursorspeed = 4;
 
@@ -217,6 +214,9 @@ std::list<std::string> Core::Console::wrap_line(std::string line, unsigned int c
 
 void Core::Console::Draw(bool draw_input)
 {
+	const unsigned int con_cols   = vid.conwidth / CHAR_WIDTH;
+	const unsigned int line_width = con_cols - 3;
+
 	// Draw the background
 	Draw_ConsoleBackground();
 
@@ -231,7 +231,7 @@ void Core::Console::Draw(bool draw_input)
 		snprintf(ver, sizeof(ver), "Katana (%i)", (int)(ENGINE_VERSION_BUILD));
 
 		size_t vlen = strlen(ver);
-		size_t x    = CONS_WIDTH - vlen;
+		size_t x    = con_cols - vlen;
 
 		for(size_t i = 0; i < vlen; ++i, ++x)
 		{
@@ -247,8 +247,8 @@ void Core::Console::Draw(bool draw_input)
 		const char *text = key_lines[edit_line];
 
 		// Prestep if horizontally scrolling
-		if (key_linepos >= con_linewidth)
-			text += 1 + key_linepos - con_linewidth;
+		if (key_linepos >= line_width)
+			text += 1 + key_linepos - line_width;
 
 		// Draw input string
 		for(size_t i = 0;; ++i)
@@ -275,7 +275,9 @@ void Core::Console::Draw(bool draw_input)
 
 	// ...draw visible console output in remaining space...
 	{
-		std::list<std::string> wrapped_lines = prepare_text(CONS_WIDTH, (y / CHAR_HEIGHT) + 1);
+		const unsigned int rows = (y / CHAR_HEIGHT) + 1;
+
+		std::list<std::string> wrapped_lines = prepare_text(line_width, rows);
 
 		for(auto line = wrapped_lines.rbegin(); line != wrapped_lines.rend() && y >= 0;)
 		{
@@ -292,20 +294,18 @@ void Core::Console::Draw(bool draw_input)
 
 extern "C" void M_Menu_Main_f (void);
 
-/*	johnfitz -- returns a bar of the desired length, but never wider than the console
-
-	includes a newline, unless len >= con_linewidth.
-*/
+/* Returns a bar of the desired length, but never wider than the console. */
 char *Con_Quakebar (unsigned int len)
 {
 	static char bar[42];
 
-	len = Math_Min(len,sizeof(bar)-2);
-	len = Math_Min(len,con_linewidth);
+	const unsigned int con_linewidth = (vid.conwidth / CHAR_WIDTH) - 3;
+
+	len = Math_Min(len, sizeof(bar) - 2);
+	len = Math_Min(len, con_linewidth);
 
 	bar[0] = '\35';
-	for (unsigned int i = 1; i < len - 1; i++)
-		bar[i] = '\36';
+	memset(bar + 1, '\36', len - 2);
 	bar[len-1] = '\37';
 
 	if (len < con_linewidth)
@@ -387,8 +387,6 @@ void Console_Initialize(void)
 	plClearLog(ENGINE_LOG);
 
 	con_instance = new Core::Console();
-
-	con_linewidth = 70;
 
 	// register our commands
 	Cvar_RegisterVariable (&con_notifytime, NULL);
@@ -548,7 +546,7 @@ void Con_CenterPrintf (unsigned int linewidth, char *fmt, ...)
 	vsprintf (msg,fmt,argptr);
 	va_end (argptr);
 
-	linewidth = Math_Min (linewidth, con_linewidth);
+	linewidth = std::min(linewidth, (vid.conwidth / CHAR_WIDTH) - 3);
 	for (src = msg; *src; )
 	{
 		dst = line;
