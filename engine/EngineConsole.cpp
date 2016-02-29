@@ -18,12 +18,13 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef _MSC_VER
-#include <unistd.h>
-#endif
+#include <algorithm>
 #include <fcntl.h>
 #include <list>
 #include <set>
+#ifndef _MSC_VER
+#include <unistd.h>
+#endif
 
 #include "engine_base.h"
 
@@ -108,7 +109,6 @@ void Core::Console::Print(const char *text)
 
 void Core::Console::ScrollUp()
 {
-	// TODO: Clamp this somehow
 	++backscroll;
 }
 
@@ -122,8 +122,7 @@ void Core::Console::ScrollDown()
 
 void Core::Console::ScrollHome()
 {
-	// TODO: Clamp this somehow
-	backscroll = 2000;
+	backscroll = -1;
 }
 
 void Core::Console::ScrollEnd()
@@ -151,10 +150,25 @@ std::list<std::string> Core::Console::prepare_text(unsigned int cols, unsigned i
 	/* Start working back from the end of the deque of lines in the buffer
 	 * until we have enough to fill the visible rows + scrollback
 	*/
-	for(auto l = lines.rbegin(); l != lines.rend() && wrapped_lines.size() < rows + backscroll; ++l)
+	for(auto l = lines.rbegin();
+		l != lines.rend() && (backscroll == (size_t)(-1) || wrapped_lines.size() < rows + backscroll);
+		++l)
 	{
 		auto wrapped_line = wrap_line(*l, cols);
 		wrapped_lines.insert(wrapped_lines.begin(), wrapped_line.begin(), wrapped_line.end());
+	}
+
+	/* Clamp the backscroll value to the maximum value for the current
+	 * console size and contents. Doing it here is a little ick, but I can't
+	 * think of a better way to do it without introducing more bits of state
+	 * right now.
+	*/
+	if(lines.size() < rows)
+	{
+		backscroll = 0;
+	}
+	else{
+		backscroll = std::min(backscroll, (lines.size() - rows));
 	}
 
 	/* Chop off the lines currently scrolled back past. */
