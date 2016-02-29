@@ -26,10 +26,6 @@
 
 /*
 	Video System
-
-	TODO:
-		Move all/most API-specific code here.
-		Scale TMU support based on actual hardware, rather than set limitations.
 */
 
 viddef_t vid; // Legacy global video state (TODO: Replace!)

@@ -1281,65 +1281,49 @@ void Model_LoadRelativeMaterial(model_t *model)
 
 /*	Calculate bounds of alias model for nonrotated, yawrotated, and fullrotated cases
 */
-void Model_CalculateMD2Bounds(model_t *mModel, MD2_t *mMD2Model)
+void Model_CalculateMD2Bounds(model_t *model, MD2_t *alias_model)
 {
-	int i, j;
-	MD2Frame_t *mFrame;
-
 	// Reset everything to its maximum size.
+	int	i;
 	for (i = 0; i < 3; i++)
 	{
 		loadmodel->mins[i] = loadmodel->ymins[i] = loadmodel->rmins[i] = 999999.0f;
 		loadmodel->maxs[i] = loadmodel->ymaxs[i] = loadmodel->rmaxs[i] = -999999.0f;
 	}
 
-	mFrame = (MD2Frame_t*)((uint8_t*)mMD2Model + mMD2Model->ofs_frames + mMD2Model->framesize);
-	if(!mFrame)
-		Sys_Error("Invalid frame encountered when calculating MD2 bounds! (%s)\n", mModel->name);
+	MD2Frame_t *curframe = (MD2Frame_t*)((uint8_t*)alias_model + alias_model->ofs_frames + alias_model->framesize);
+	if (!curframe)
+		Sys_Error("Invalid frame encountered when calculating MD2 bounds! (%s)\n", model->name);
 
-#if 1
-	MathVector3f_t
-		mvMins = { 0, 0, 0 }, mvMaxs = { 0, 0, 0 },
-		mvCurMins, mvCurMaxs;
-
-	// Go through all the frames and figure out the best sizing.
-	for (j = 0; j < mMD2Model->num_frames; j++)
+	MathVector3f_t mins = { 0 }, maxs = { 0 }, curmins, curmaxs;
+	MD2TriangleVertex_t *vertices = &curframe->verts[0];
+	for (i = 0; i < alias_model->num_xyz; i++, vertices++)
 	{
-		for (i = 0; i < 3; i++)
+		for (int j = 0; j < 3; j++)
 		{
-			mvCurMins[i] = mFrame->translate[i];
-			mvCurMaxs[i] = mvCurMins[i] + mFrame->scale[i] * 255;
+			curmins[j] = -(vertices->v[j] + curframe->translate[j]);
+			if (curmins[j] < mins[j])
+				mins[j] = curmins[j];
 
-			if (mvCurMins[i] < mvMins[i])
-				mvMins[i] = mvCurMins[i];
-			if (mvCurMaxs[i] > mvMaxs[i])
-				mvMaxs[i] = mvCurMaxs[i];
+			curmaxs[j] = (vertices->v[j] + curframe->translate[j]);
+			if (curmaxs[j] > maxs[j])
+				maxs[j] = curmaxs[j];
 		}
-
-		mFrame++;
 	}
-#else
-	MathVector3f_t mvMins, mvMaxs;
-	for (i = 0; i < 3; i++)
-	{
-		mvMins[i] = mFrame->translate[i];
-		mvMaxs[i] = mvMins[i] + mFrame->scale[i] * 255;
-	}
-#endif
 
 	// Check that the size is valid.
-	if (plVectorCompare(mvMins, pl_origin3f) && plVectorCompare(mvMaxs, pl_origin3f))
+	if (plVectorCompare(mins, pl_origin3f) && plVectorCompare(maxs, pl_origin3f))
 	{
 		// This should never happen, but if it does, give a warning.
-		Con_Warning("Suspicious model size! (%s)\n", mModel->name);
+		Con_Warning("Suspicious bounding box size! (%s)\n", model->name);
 
 		// Then give us a default size.
-		Math_VectorSet(-32, mvMins);
-		Math_VectorSet(32, mvMaxs);
+		Math_VectorSet(-32, mins);
+		Math_VectorSet(32, maxs);
 	}
 
-	Math_VectorCopy(mvMins, loadmodel->mins);
-	Math_VectorCopy(mvMaxs, loadmodel->maxs);
+	Math_VectorCopy(mins, loadmodel->mins);
+	Math_VectorCopy(maxs, loadmodel->maxs);
 
 	Math_VectorCopy(loadmodel->mins, loadmodel->rmins);
 	Math_VectorCopy(loadmodel->maxs, loadmodel->rmaxs);
@@ -1494,9 +1478,9 @@ void Model_LoadMD2(model_t *mModel,void *Buffer)
 
 #if 0
 	// Allocate vertex array.
-	loadmodel->object.numverts = mMD2Model->numtris * 3;
-	loadmodel->object.vertices = (VideoVertex_t*)malloc(loadmodel->object.numverts * sizeof(VideoVertex_t));
-	memset(loadmodel->object.vertices, 0, loadmodel->object.numverts * sizeof(VideoVertex_t));
+	mModel->object.numverts = mMD2Model->numtris * 3;
+	mModel->object.vertices = (VideoVertex_t*)malloc(mModel->object.numverts * sizeof(VideoVertex_t));
+	memset(mModel->object.vertices, 0, mModel->object.numverts * sizeof(VideoVertex_t));
 #endif
 
 	Model_LoadRelativeMaterial(mModel);
@@ -1505,7 +1489,7 @@ void Model_LoadMD2(model_t *mModel,void *Buffer)
 	Model_CalculateMD2Bounds(mModel, mMD2Model);
 
 	// Calculate vertex normals.
-	Model_CalculateMD2Normals(loadmodel, mMD2Model);
+	Model_CalculateMD2Normals(mModel, mMD2Model);
 
 	iEnd = Hunk_LowMark();
 	total = iEnd-iStartHunk;
