@@ -18,8 +18,7 @@ int			harshshade;
 lighttype_t	defaultlighttype;
 int			overridelighttypes;
 
-int			minlight;
-int			ambientlight;
+int	minlight, g_lightambient_uni;
 
 uint8_t		currentvis[(BSP_MAX_LEAFS+7)/8];
 
@@ -152,7 +151,22 @@ void ParseLightEntities( void )
 		l->type = defaultlighttype;
 
 		if (is_skylight)
+		{
 			l->type = LIGHTTYPE_SUN;
+
+			VectorClear(l->ambience);
+
+			value = ValueForKey(ent, "ambient");
+			if (value[0])
+			{
+				j = sscanf(value, "%lf %lf %lf", &l->ambience[0], &l->ambience[1], &l->ambience[2]);
+				if (j != 3)
+					Error("Invalid ambience parameter for light_environment! (%.0f %.0f %.0f) (%s)\n", l->origin[0], l->origin[1], l->origin[2], value);
+
+				// for some reason this * 0.5 is needed to match quake light
+				//VectorScale(l->ambience, 0.5, l->ambience);
+			}
+		}
 		else
 		{
 			// For generic lights, we can use custom types.
@@ -520,8 +534,8 @@ int Light_Main( int argc, char **argv )
 	relight                 = false;
 	globallightscale        = 1.0;
 	globallightradiusscale  = 1.0;
+	g_lightambient_uni		=
 	minlight                = 0;
-	ambientlight            = 0;
 	defaultlighttype        = LIGHTTYPE_MINUSX;
 	overridelighttypes      = false;
 
@@ -570,7 +584,7 @@ int Light_Main( int argc, char **argv )
 			i++;
 			if( i >= argc )
 				Error( "no value was given to -minlight\n" );
-			minlight = atof( argv[i] );
+			minlight = atoi( argv[i] );
 			if( minlight < 0 )
 				minlight = 0;
 		}
@@ -579,9 +593,9 @@ int Light_Main( int argc, char **argv )
 			i++;
 			if( i >= argc )
 				Error( "no value was given to -ambientlight\n" );
-			ambientlight = atof( argv[i] );
-			if( ambientlight < 0 )
-				ambientlight = 0;
+			g_lightambient_uni = atoi(argv[i]);
+			if (g_lightambient_uni < 0)
+				g_lightambient_uni = 0;
 		}
 		else if( !strcmp( argv[i],"-defaulttype" ) )
 		{

@@ -29,6 +29,7 @@ typedef struct
 	vec3_t	color;			// color of light in output scale (128 for example, or a huge number for LIGHTTYPE_RECIPX and LIGHTTYPE_RECIPXX)
 	vec_t	angle;			// cone angle for spotlights
 	vec_t	pitch;			// angle pitch for sun / spot
+	vec3_t	ambience;		// ambience for this particular light
 	int		light;			// light radius from quake light entity
 	int		style;			// which style the light belongs to
 
@@ -73,8 +74,7 @@ extern	vec_t		globallightscale;
 
 extern	int			harshshade;
 
-extern	int			minlight;
-extern	int			ambientlight;
+extern	int	minlight, g_lightambient_uni;
 
 // light_face.c
 void LightFace( BSPFace_t *f, const lightchain_t *lightchain, const directlight_t **novislight, int novislights, const vec3_t faceorg );
