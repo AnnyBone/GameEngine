@@ -434,7 +434,7 @@ void Area_DoorWait(ServerEntity_t *door, ServerEntity_t *eOther)
 
 	door->v.think = Area_DoorReturn;
 
-	if (door->local.sound_stop[0] != ' ')
+	if (door->local.sound_stop)
 		Sound(door, CHAN_VOICE, door->local.sound_stop, 255, ATTN_NORM);
 }
 
