@@ -407,7 +407,7 @@ ServerEntity_t *Area_SpawnTriggerField(ServerEntity_t *owner, MathVector3f_t min
 
 void Area_DoorDone(ServerEntity_t *eArea, ServerEntity_t *eOther)
 {
-	if (eArea->local.sound_stop[0] != ' ')
+	if (eArea->local.sound_stop)
 		Sound(eArea, CHAN_VOICE, eArea->local.sound_stop, 255, ATTN_NORM);
 }
 
@@ -417,9 +417,9 @@ void Area_DoorReturn(ServerEntity_t *eArea)
 
 	Area_CalculateMovement(eArea, eArea->local.pos1, eArea->local.speed, Area_DoorDone);
 
-	if(eArea->local.cSoundReturn[0] != ' ')
+	if(eArea->local.cSoundReturn)
 		Sound(eArea,CHAN_BODY,eArea->local.cSoundReturn,255,ATTN_NORM);
-	if(eArea->local.cSoundMoving[0] != ' ')
+	if(eArea->local.cSoundMoving)
 		Sound(eArea,CHAN_VOICE,eArea->local.cSoundMoving,255,ATTN_NORM);
 }
 
