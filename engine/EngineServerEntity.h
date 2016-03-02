@@ -18,9 +18,8 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef __ENGINESERVERENTITY__
-#define	__ENGINESERVERENTITY__
+#pragma once
 
 void Edict_Clear(ServerEntity_t *eEntity,bool bFreeEntity);
 
-#endif
+model_t *ServerEntity_GetModel(ServerEntity_t *entity);

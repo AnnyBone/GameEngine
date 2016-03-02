@@ -823,7 +823,7 @@ void SCR_UpdateScreen (void)
 			return;
 	}
 
-	if(!bScreenInitialized || !bConsoleInitialized)
+	if(!bScreenInitialized || !g_consoleinitialized)
 		return;				// not initialized yet
 
 	GL_BeginRendering(&glx,&gly,&glwidth,&glheight);

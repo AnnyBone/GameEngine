@@ -122,6 +122,8 @@ typedef struct
 	ServerEntity_t*(*Server_FindEntity)(ServerEntity_t *eStartEntity, char *cName, bool bClassname);						// Finds a specified entity either by classname or by entity name.
 	ServerEntity_t*(*Server_GetEdicts)(void);
 
+	model_t*(*GetServerEntityModel)(ServerEntity_t *entity);
+
 	char		*(*Server_GetLevelName)(void);	// Returns the name of the currently active level.
 
 	double		(*Server_GetFrameTime)(void);	// Returns host time.

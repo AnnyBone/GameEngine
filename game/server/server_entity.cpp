@@ -74,15 +74,13 @@ void ServerEntity::Unlink()
 */
 void ServerEntity::SetSize(MathVector3f_t mins, MathVector3f_t maxs)
 {
-	int i;
-
 	// Ensure the model hasn't already been set.
 	if (!instance->v.model)
 		// Otherwise throw us a warning.
 		Engine.Con_Warning("Setting entity size before model! (%s)\n", instance->v.cClassname);
 
 	// Ensure the mins/maxs are the right way round.
-	for (i = 0; i < 3; i++)
+	for (int i = 0; i < 3; i++)
 		if (mins[i] > maxs[i])
 		{
 			Engine.Con_Warning("Backwards mins/maxs! (%s)\n", instance->v.cClassname);

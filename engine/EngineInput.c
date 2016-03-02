@@ -441,9 +441,7 @@ void Input_DeactivateMouse(void)
 
 void Input_Shutdown(void)
 {
-	int i;
-
-	for(i = 0; i < iNumControllers; i++)
+	for(int i = 0; i < iNumControllers; i++)
 	{
 		// Function originally used here is obsolete. Just do a silly check here instead for safety.
 		if(cController[i].sJoystick)

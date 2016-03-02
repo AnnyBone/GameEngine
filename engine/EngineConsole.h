@@ -73,7 +73,7 @@ extern Core::Console *con_instance;
 plEXTERN_C_START
 
 extern	bool	con_forcedup;	// because no entities to refresh
-extern	bool	bConsoleInitialized;
+extern	bool	g_consoleinitialized;
 
 extern uint8_t *con_chars;
 
