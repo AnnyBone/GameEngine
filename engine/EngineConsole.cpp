@@ -83,6 +83,16 @@ void Core::Console::ClearNotify()
 
 void Core::Console::Print(const char *text)
 {
+	/* A string starting with 0x02 is "coloured" and the characters are
+	 * ORd with 128 so the rendering code highlights them.
+	*/
+	char cbit = 0;
+	if(*text == 0x02)
+	{
+		cbit = 128;
+		++text;
+	}
+
 	while(*text)
 	{
 		if(*text == '\n')
@@ -97,10 +107,10 @@ void Core::Console::Print(const char *text)
 		else{
 			if(lines[cursor_y].text.size() > cursor_x)
 			{
-				lines[cursor_y].text[cursor_x] = *text;
+				lines[cursor_y].text[cursor_x] = (*text | cbit);
 			}
 			else{
-				lines[cursor_y].text += *text;
+				lines[cursor_y].text += (*text | cbit);
 			}
 
 			lines[cursor_y].time = time(NULL);
