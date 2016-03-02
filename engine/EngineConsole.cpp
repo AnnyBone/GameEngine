@@ -22,6 +22,7 @@
 #include <fcntl.h>
 #include <list>
 #include <set>
+#include <time.h>
 #ifndef _MSC_VER
 #include <unistd.h>
 #endif
@@ -31,9 +32,10 @@
 #include "EngineInput.h"
 #include "video.h"
 
-static const unsigned int CHAR_WIDTH   = 8;
-static const unsigned int CHAR_HEIGHT  = 8;
-static const unsigned int CONS_BACKLOG = 200;
+static const unsigned int CHAR_WIDTH     = 8;
+static const unsigned int CHAR_HEIGHT    = 8;
+static const unsigned int CONS_BACKLOG   = 200;
+static const unsigned int CONS_MAXNOTIFY = 10;
 
 float		con_cursorspeed = 4;
 
@@ -43,10 +45,6 @@ cvar_t		con_notifytime = {"con_notifytime","3"};		//seconds
 cvar_t		con_logcenterprint = {"con_logcenterprint", "1"}; //johnfitz
 
 char		con_lastcenterstring[1024]; //johnfitz
-
-#define	NUM_CON_TIMES 4
-float		con_times[NUM_CON_TIMES];	// realtime time the line was generated
-										// for transparent notify lines
 
 #define		MAXCMDLINE	256
 extern	char			key_lines[32][MAXCMDLINE];
@@ -75,6 +73,14 @@ void Core::Console::Clear()
 	lines.emplace_back("");
 }
 
+void Core::Console::ClearNotify()
+{
+	for(auto l = lines.begin(); l != lines.end(); ++l)
+	{
+		l->time = 0;
+	}
+}
+
 void Core::Console::Print(const char *text)
 {
 	while(*text)
@@ -89,13 +95,15 @@ void Core::Console::Print(const char *text)
 			cursor_x = 0;
 		}
 		else{
-			if(lines[cursor_y].size() > cursor_x)
+			if(lines[cursor_y].text.size() > cursor_x)
 			{
-				lines[cursor_y][cursor_x] = *text;
+				lines[cursor_y].text[cursor_x] = *text;
 			}
 			else{
-				lines[cursor_y] += *text;
+				lines[cursor_y].text += *text;
 			}
+
+			lines[cursor_y].time = time(NULL);
 
 			++cursor_x;
 		}
@@ -151,7 +159,7 @@ std::list<std::string> Core::Console::prepare_text(unsigned int cols, unsigned i
 		l != lines.rend() && (backscroll == (size_t)(-1) || wrapped_lines.size() < rows + backscroll);
 		++l)
 	{
-		auto wrapped_line = wrap_line(*l, cols);
+		auto wrapped_line = wrap_line(l->text, cols);
 		wrapped_lines.insert(wrapped_lines.begin(), wrapped_line.begin(), wrapped_line.end());
 	}
 
@@ -292,6 +300,69 @@ void Core::Console::Draw(bool draw_input)
 	}
 }
 
+void Core::Console::DrawNotify()
+{
+	const unsigned int cols = (vid.conwidth / CHAR_WIDTH) - 2;
+
+	GL_SetCanvas(CANVAS_CONSOLE);
+
+	time_t now = time(NULL);
+
+	std::list<std::string> wrapped_lines;
+
+	for(auto l = lines.rbegin(); l != lines.rend() && wrapped_lines.size() < CONS_MAXNOTIFY; ++l)
+	{
+		if(l->time != 0 && (l->time + con_notifytime.iValue) < now)
+		{
+			break;
+		}
+
+		auto wrapped_line = wrap_line(l->text, cols);
+		wrapped_lines.insert(wrapped_lines.begin(), wrapped_line.begin(), wrapped_line.end());
+	}
+
+	unsigned int y = vid.conheight;
+
+	for(auto l = wrapped_lines.begin(); l != wrapped_lines.end(); ++l)
+	{
+		for(size_t i = 0; i < l->size(); ++i)
+		{
+			Draw_Character(((i + 1) * CHAR_WIDTH), y, (*l)[i]);
+		}
+
+		y += CHAR_HEIGHT;
+
+		scr_tileclear_updates = 0; // ???
+	}
+
+	if (key_dest == key_message)
+	{
+		const char *say_prompt = team_message ? "Say (team):" : "Say (all):";
+		size_t plen      = strlen(say_prompt);
+
+		//johnfitz -- distinguish say and say_team
+		if (team_message)
+			say_prompt = "Say (team):";
+		else
+			say_prompt = "Say (all):";
+		//johnfitz
+
+		Draw_String(CHAR_WIDTH, y, say_prompt); //johnfitz
+
+		size_t x = 0;
+		while(chat_buffer[x])
+		{
+			Draw_Character((x + plen + 2) * CHAR_WIDTH, y, chat_buffer[x]);
+			++x;
+		}
+
+		Draw_Character((x + plen + 2) * CHAR_WIDTH, y, 10 + ((int)(realtime*con_cursorspeed)&1));
+		y += CHAR_HEIGHT;
+
+		scr_tileclear_updates = 0; //johnfitz
+	}
+}
+
 extern "C" void M_Menu_Main_f (void);
 
 /* Returns a bar of the desired length, but never wider than the console. */
@@ -345,8 +416,6 @@ void Con_ToggleConsole_f (void)
 	}
 
 	SCR_EndLoadingPlaque();
-
-	memset(con_times,0,sizeof(con_times));
 }
 
 void Con_Clear_f (void)
@@ -359,13 +428,11 @@ void Con_Clear_f (void)
 
 void Con_ClearNotify (void)
 {
-	int		i;
-
-	for (i=0 ; i<NUM_CON_TIMES ; i++)
-		con_times[i] = 0;
+	if(con_instance)
+	{
+		con_instance->ClearNotify();
+	}
 }
-
-extern bool team_message;
 
 void Con_MessageMode_f (void)
 {
@@ -760,67 +827,13 @@ DRAWING
 ==============================================================================
 */
 
-/*	Draws the last few lines of output transparently over the game top
- * TODO: This
-*/
+/* Draws the last few lines of output transparently over the game top. */
 void Con_DrawNotify(void)
 {
-#if 0
-	unsigned int	i, x, v;
-	char			*text;
-	float			time;
-	extern	char	chat_buffer[];
-
-	GL_SetCanvas(CANVAS_CONSOLE); //johnfitz
-
-	v = vid.conheight; //johnfitz
-
-	for(i = con_current-NUM_CON_TIMES+1; i <= con_current; i++)
+	if(con_instance)
 	{
-		time = con_times[i % NUM_CON_TIMES];
-		if(time == 0)
-			continue;
-
-		time = realtime-time;
-		if(time > con_notifytime.value)
-			continue;
-
-		text = con_text + (i % con_totallines)*con_linewidth;
-
-		for(x = 0; x < con_linewidth; x++)
-			Draw_Character((x + 1) << 3, v, text[x]);
-
-		v += 8;
-
-		scr_tileclear_updates = 0; //johnfitz
+		con_instance->DrawNotify();
 	}
-
-	if (key_dest == key_message)
-	{
-		char *say_prompt; //johnfitz
-
-		x = 0;
-
-		//johnfitz -- distinguish say and say_team
-		if (team_message)
-			say_prompt = "Say (team):";
-		else
-			say_prompt = "Say (all):";
-		//johnfitz
-
-		Draw_String(8, v, say_prompt); //johnfitz
-
-		while(chat_buffer[x])
-		{
-			Draw_Character((x+strlen(say_prompt)+2)<<3,v,chat_buffer[x]); //johnfitz
-			x++;
-		}
-		Draw_Character((x+strlen(say_prompt)+2)<<3,v,10+((int)(realtime*con_cursorspeed)&1)); //johnfitz
-		v += 8;
-
-		scr_tileclear_updates = 0; //johnfitz
-	}
-#endif
 }
 
 /*	Draws the console with the solid background

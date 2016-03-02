@@ -23,6 +23,7 @@
 #ifdef __cplusplus
 #include <deque>
 #include <list>
+#include <time.h>
 
 namespace Core
 {
@@ -32,6 +33,7 @@ namespace Core
 			Console();
 
 			void Clear();
+			void ClearNotify();
 
 			void Print(const char *text);
 
@@ -41,12 +43,22 @@ namespace Core
 			void ScrollEnd();
 
 			void Draw(bool draw_input);
+			void DrawNotify();
 
 		private:
+			struct Line
+			{
+				std::string text;
+				time_t time;
+				
+				Line(const std::string &t):
+					text(t), time(0) {}
+			};
+
 			size_t cursor_x, cursor_y;
 			size_t backscroll;
 
-			std::deque<std::string> lines;
+			std::deque<Line> lines;
 
 			void linefeed();
 
