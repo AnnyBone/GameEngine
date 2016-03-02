@@ -20,10 +20,57 @@
 
 #pragma once
 
-plEXTERN_C_START
+#ifdef __cplusplus
+#include <deque>
+#include <list>
+#include <time.h>
 
-extern unsigned int con_totallines;
-extern unsigned int con_backscroll;
+namespace Core
+{
+	class Console
+	{
+		public:
+			Console();
+
+			void Clear();
+			void ClearNotify();
+
+			void Print(const char *text);
+
+			void ScrollUp();
+			void ScrollDown();
+			void ScrollHome();
+			void ScrollEnd();
+
+			void Draw(bool draw_input);
+			void DrawNotify();
+
+		private:
+			struct Line
+			{
+				std::string text;
+				time_t time;
+				
+				Line(const std::string &t):
+					text(t), time(0) {}
+			};
+
+			size_t cursor_x, cursor_y;
+			size_t backscroll;
+
+			std::deque<Line> lines;
+
+			void linefeed();
+
+			std::list<std::string> prepare_text(unsigned int cols, unsigned int rows);
+			static std::list<std::string> wrap_line(std::string line, unsigned int cols);
+	};
+}
+
+extern Core::Console *con_instance;
+#endif
+
+plEXTERN_C_START
 
 extern	bool	con_forcedup;	// because no entities to refresh
 extern	bool	bConsoleInitialized;
@@ -32,13 +79,10 @@ extern uint8_t *con_chars;
 
 extern char con_lastcenterstring[]; //johnfitz
 
-void Con_DrawCharacter(int cx, int line, int num);
-void Con_CheckResize(void);
 void Console_Initialize(void);
-void Con_DrawConsole(int lines, bool drawinput);
+void Con_DrawConsole(bool draw_input);
 void Con_Print(char *txt);
 void Con_Printf(const char *fmt, ...);
-void Con_SPrintf(char *dest, int size, char *fmt, ...);
 void Con_Warning(const char *fmt, ...); //johnfitz
 void Con_Error(char *fmt, ...);
 void Con_DPrintf(const char *fmt, ...);
@@ -48,10 +92,15 @@ void Con_DrawNotify(void);
 void Con_ClearNotify(void);
 void Con_ToggleConsole_f(void);
 void Console_ErrorMessage(bool bCrash, const char *ccFile, const char *reason);
+void Con_TabComplete(void);
+
+void Con_ScrollUp(void);
+void Con_ScrollDown(void);
+void Con_ScrollHome(void);
+void Con_ScrollEnd(void);
 
 // Other crap...
 char *Con_Quakebar(unsigned int len);
 void Con_LogCenterPrint(char *str);
 
 plEXTERN_C_END
-

@@ -144,6 +144,11 @@ extern "C" {
 	extern	int		key_repeats[256];
 	extern	int		key_count;			// incremented every key event
 	extern	int		key_lastpress;
+	extern bool	keydown[256];
+	extern double key_blinktime;
+
+	extern char chat_buffer[];
+	extern bool team_message;
 
 	void Key_Event(int key, bool down);
 	void Key_Init(void);
