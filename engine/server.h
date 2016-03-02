@@ -43,27 +43,23 @@ typedef struct
 	unsigned	protocol; //johnfitz
 } Server_t;
 
+plEXTERN_C_START
+
 extern	ConsoleVariable_t	teamplay;
 extern	ConsoleVariable_t	skill;
 extern	ConsoleVariable_t	deathmatch;
 extern	ConsoleVariable_t	coop;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-	extern	ServerStatic_t	svs;				// persistant server info
-	extern	Server_t		sv;					// local server
-
-#ifdef __cplusplus
-};
-#endif
+extern	ServerStatic_t	svs;				// persistant server info
+extern	Server_t		sv;					// local server
 
 extern	ServerClient_t	*host_client;
 
 extern	jmp_buf 	host_abortserver;
 
 extern	ServerEntity_t		*sv_player;
+
+plEXTERN_C_END
 
 //===========================================================
 

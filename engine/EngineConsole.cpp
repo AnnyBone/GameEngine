@@ -37,9 +37,9 @@ static const unsigned int CHAR_HEIGHT    = 8;
 static const unsigned int CONS_BACKLOG   = 200;
 static const unsigned int CONS_MAXNOTIFY = 10;
 
-float		con_cursorspeed = 4;
+float con_cursorspeed = 4;
 
-bool 	con_forcedup;		// because no entities to refresh
+bool con_forcedup;		// because no entities to refresh
 
 cvar_t		con_notifytime = {"con_notifytime","3"};		//seconds
 cvar_t		con_logcenterprint = {"con_logcenterprint", "1"}; //johnfitz
@@ -47,11 +47,11 @@ cvar_t		con_logcenterprint = {"con_logcenterprint", "1"}; //johnfitz
 char		con_lastcenterstring[1024]; //johnfitz
 
 #define		MAXCMDLINE	256
-extern	char			key_lines[32][MAXCMDLINE];
-extern	int				edit_line;
-extern	unsigned int	key_linepos;
+extern "C" char				key_lines[32][MAXCMDLINE];
+extern "C" int				edit_line;
+extern "C" unsigned int		key_linepos;
 
-bool	bConsoleInitialized;
+bool g_consoleinitialized;
 
 /* Singleton console instance. */
 Core::Console *con_instance = NULL;
@@ -86,7 +86,7 @@ void Core::Console::Print(const char *text)
 	/* A string starting with 0x02 is "coloured" and the characters are
 	 * ORd with 128 so the rendering code highlights them.
 	*/
-	char cbit = 0;
+	unsigned char cbit = 0;
 	if(*text == 0x02)
 	{
 		cbit = 128;
@@ -130,14 +130,12 @@ void Core::Console::ScrollUp()
 void Core::Console::ScrollDown()
 {
 	if(backscroll > 0)
-	{
 		--backscroll;
-	}
 }
 
 void Core::Console::ScrollHome()
 {
-	backscroll = -1;
+	backscroll = CONS_BACKLOG;
 }
 
 void Core::Console::ScrollEnd()
@@ -150,12 +148,9 @@ void Core::Console::linefeed()
 	lines.emplace_back("");
 
 	if(lines.size() > CONS_BACKLOG)
-	{
 		lines.pop_front();
-	}
-	else{
+	else
 		++cursor_y;
-	}
 }
 
 std::list<std::string> Core::Console::prepare_text(unsigned int cols, unsigned int rows)
@@ -179,12 +174,9 @@ std::list<std::string> Core::Console::prepare_text(unsigned int cols, unsigned i
 	 * right now.
 	*/
 	if(lines.size() < rows)
-	{
 		backscroll = 0;
-	}
-	else{
+	else
 		backscroll = std::min(backscroll, (lines.size() - rows));
-	}
 
 	/* Chop off the lines currently scrolled back past. */
 	for(unsigned int i = 0; i < backscroll && wrapped_lines.size() > rows; ++i)
@@ -204,23 +196,20 @@ std::list<std::string> Core::Console::wrap_line(std::string line, unsigned int c
 {
 	std::list<std::string> wrapped_line;
 
-	do {
+	do 
+	{
 		size_t frag_len;
 
 		if(line.length() <= cols)
-		{
 			frag_len = line.length();
-		}
-		else{
+		else
+		{
 			size_t break_space = line.find_last_of(' ', cols);
 
 			if(break_space == std::string::npos)
-			{
 				frag_len = cols;
-			}
-			else{
+			else
 				frag_len = break_space;
-			}
 		}
 
 		wrapped_line.emplace_back(line, 0, frag_len);
@@ -284,9 +273,7 @@ void Core::Console::Draw(bool draw_input)
 
 		// Draw the blinky cursor
 		if(!((int)((realtime-key_blinktime)*con_cursorspeed) & 1))
-		{
 			Draw_Character((key_linepos+1) * CHAR_WIDTH, y, '_');
-		}
 
 		y -= CHAR_HEIGHT;
 	}
@@ -400,10 +387,10 @@ char *Con_Quakebar (unsigned int len)
 	return bar;
 }
 
+extern "C" int history_line; //johnfitz
+
 void Con_ToggleConsole_f (void)
 {
-	extern int history_line; //johnfitz
-
 	if (key_dest == key_console)
 	{
 		if(cls.state == ca_connected)
@@ -458,7 +445,7 @@ void Con_MessageMode2_f (void)
 
 void Console_Initialize(void)
 {
-	if (bConsoleInitialized)
+	if (g_consoleinitialized)
 		return;
 
 	plClearLog(ENGINE_LOG);
@@ -474,7 +461,7 @@ void Console_Initialize(void)
 	Cmd_AddCommand("messagemode2",Con_MessageMode2_f);
 	Cmd_AddCommand("clear",Con_Clear_f);
 
-	bConsoleInitialized = true;
+	g_consoleinitialized = true;
 }
 
 /*	Handles cursor positioning, line wrapping, etc
@@ -681,7 +668,7 @@ void Console_ErrorMessage(bool bCrash, const char *ccFile, const char *reason)
 ==============================================================================
 */
 
-char key_tabpartial[MAXCMDLINE];
+extern "C" char key_tabpartial[MAXCMDLINE];
 
 struct tab_suggestion
 {

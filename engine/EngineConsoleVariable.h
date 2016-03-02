@@ -46,45 +46,41 @@
 	interface from being ambiguous.
 */
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+plEXTERN_C_START
 
-	void Cvar_Init(void);
+void Cvar_Init(void);
 
-	void 	Cvar_RegisterVariable(ConsoleVariable_t *variable, void(*Function)(void)); //johnfitz -- cvar callback
-	// registers a cvar that allready has the name, string, and optionally the
-	// archive elements set.
+void 	Cvar_RegisterVariable(ConsoleVariable_t *variable, void(*Function)(void)); //johnfitz -- cvar callback
+// registers a cvar that allready has the name, string, and optionally the
+// archive elements set.
 
-	void 	Cvar_Set(const char *var_name, char *value);
-	// equivelant to "<name> <variable>" typed at the console
+void 	Cvar_Set(const char *var_name, char *value);
+// equivelant to "<name> <variable>" typed at the console
 
-	void	Cvar_SetValue(const char *var_name, float value);
-	// expands value to a string and calls Cvar_Set
+void	Cvar_SetValue(const char *var_name, float value);
+// expands value to a string and calls Cvar_Set
 
-	float	Cvar_VariableValue(const char *var_name);
-	// returns 0 if not defined or non numeric
+float	Cvar_VariableValue(const char *var_name);
+// returns 0 if not defined or non numeric
 
-	bool ConsoleVariable_GetBoolValue(const char *var_name);
+bool ConsoleVariable_GetBoolValue(const char *var_name);
 
-	char	*Cvar_VariableString(char *var_name);
-	// returns an empty string if not defined
+char	*Cvar_VariableString(char *var_name);
+// returns an empty string if not defined
 
-	bool Cvar_Command(void);
-	// called by Cmd_ExecuteString when Cmd_Argv(0) doesn't match a known
-	// command.  Returns TRUE if the command was a variable reference that
-	// was handled. (print or change)
+bool Cvar_Command(void);
+// called by Cmd_ExecuteString when Cmd_Argv(0) doesn't match a known
+// command.  Returns TRUE if the command was a variable reference that
+// was handled. (print or change)
 
-	void 	Cvar_WriteVariables(FILE *f);
-	// Writes lines containing "set variable value" for all variables
-	// with the archive flag set to TRUE.
+void 	Cvar_WriteVariables(FILE *f);
+// Writes lines containing "set variable value" for all variables
+// with the archive flag set to TRUE.
 
-	void Cvar_Reset(const char *name);
+void Cvar_Reset(const char *name);
 
-	ConsoleVariable_t *Cvar_FindVar(const char *var_name);
-
-#ifdef __cplusplus
-};
-#endif
+ConsoleVariable_t *Cvar_FindVar(const char *var_name);
 
 extern ConsoleVariable_t *cConsoleVariables;
+
+plEXTERN_C_END

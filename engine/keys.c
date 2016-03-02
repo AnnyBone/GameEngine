@@ -176,13 +176,13 @@ keyname_t keynames[] =
 ==============================================================================
 */
 
+char key_tabpartial[MAXCMDLINE];
+
 /*  Interactive line editing and console scrollback
 	johnfitz -- heavy revision
 */
 void Key_Console (int key)
 {
-	extern	char key_tabpartial[MAXCMDLINE];
-
 	switch (key)
 	{
 	case INPUT_KEY_ENTER:
