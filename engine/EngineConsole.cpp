@@ -311,7 +311,16 @@ void Core::Console::DrawNotify()
 	{
 		if(l->time != 0 && (l->time + con_notifytime.iValue) < now)
 		{
+			/* Message has expired, implies all the ones above it
+			 * are also expired, so break here to save on a load of
+			 * pointless work.
+			*/
 			break;
+		}
+		else if(l->time == 0)
+		{
+			/* Message time uninitialised or cleared, skip */
+			continue;
 		}
 
 		auto wrapped_line = wrap_line(l->text, cols);
