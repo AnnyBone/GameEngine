@@ -241,7 +241,7 @@ void Sprite::Draw()
 		Math_VectorAdd(maxs, position, NewMaxs);
 
 		// Draw a point representing the current position.
-		Draw_CoordinateAxes(position[0], position[1], position[2]);
+		Draw_CoordinateAxes(position);
 
 		// Draw the bounding box.
 		R_EmitWireBox(NewMins, NewMaxs, 0, 1.0f, 0);

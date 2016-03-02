@@ -108,7 +108,7 @@ bool ModelU3D_Load(model_t *model, void *buf)
 	model->numframes		= animheader.frames;
 
 	// Allocate an object for each frame.
-	model->objects = (VideoObject_t*)calloc(model->numframes, sizeof(VideoObject_t));
+	model->objects = (VideoObject_t*)calloc_or_die(model->numframes, sizeof(VideoObject_t));
 
 	// If it has more than one frame, we're gonna want to interp between
 	// it all later.
@@ -118,7 +118,7 @@ bool ModelU3D_Load(model_t *model, void *buf)
 	fseek(dataf, 12, SEEK_CUR);
 
 	// Process all the triangles...
-	U3DTriangle_t *utriangles = (U3DTriangle_t*)calloc(model->numtriangles, sizeof(U3DTriangle_t));
+	U3DTriangle_t *utriangles = (U3DTriangle_t*)calloc_or_die(model->numtriangles, sizeof(U3DTriangle_t));
 	for (unsigned int i = 0; i < model->numtriangles; i++)
 	{
 		size_t retsize = fread(&utriangles[i], sizeof(U3DTriangle_t), 1, dataf);
@@ -135,15 +135,15 @@ bool ModelU3D_Load(model_t *model, void *buf)
 	}
 
 	// Process all the vertices...
-	U3DVertex_t *uvertices = (U3DVertex_t*)calloc((model->numvertexes * model->numframes), sizeof(U3DVertex_t));
+	U3DVertex_t *uvertices = (U3DVertex_t*)calloc_or_die((model->numvertexes * model->numframes), sizeof(U3DVertex_t));
 	for (int i = 0; i < model->numframes; i++)
 	{
 		// Allocate vertices.
-		model->objects[i].vertices		= (VideoVertex_t*)calloc(model->numvertexes, sizeof(VideoVertex_t));
+		model->objects[i].vertices		= (VideoVertex_t*)calloc_or_die(model->numvertexes, sizeof(VideoVertex_t));
 		model->objects[i].numverts		= model->numvertexes;
 		model->objects[i].numtriangles	= model->numtriangles;
 		model->objects[i].primitive		= VIDEO_PRIMITIVE_TRIANGLES;
-		model->objects[i].indices		= (uint8_t*)calloc(model->numtriangles * 3, sizeof(uint8_t));
+		model->objects[i].indices		= (uint8_t*)calloc_or_die(model->numtriangles * 3, sizeof(uint8_t));
 
 		size_t retsize = fread(&uvertices[i], sizeof(U3DVertex_t), model->numvertexes, animf);
 		if (retsize != (size_t)model->numvertexes)
@@ -189,19 +189,11 @@ bool ModelU3D_Load(model_t *model, void *buf)
 	free(utriangles);
 	fclose(dataf);
 
-#if 0
-		for (unsigned int j = 0, verts = 0; j < model->numtriangles; j++)
-		{
-			for (int k = 0; k < 3; k++)
-			{
-				model->objects[i].vertices[utriangles[j].vertex[k]].mvPosition[0] = (float)uvertices[utriangles[j].vertex[k]].x;
-				model->objects[i].vertices[utriangles[j].vertex[k]].mvPosition[1] = (float)uvertices[utriangles[j].vertex[k]].y;
-				model->objects[i].vertices[utriangles[j].vertex[k]].mvPosition[2] = (float)uvertices[utriangles[j].vertex[k]].z;
-				
-				verts++;
-			}
-		}
-#endif
+	// Now calculate the normals, since U3D doesn't include them.
+	for (unsigned int i = 0; i < model->objects[0].numverts; i++)
+	{
+		plVectorClear3fv(model->objects[0].vertices[i].mvNormal);
+	}
 
 	Model_LoadRelativeMaterial(model);
 

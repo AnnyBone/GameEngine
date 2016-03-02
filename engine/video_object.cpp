@@ -180,12 +180,45 @@ void VideoObject_Clip(VideoObject_t *voObject, MathVector4f_t mvClipDimensions)
 	Lighting
 */
 
-void VideoObject_CalculateLighting(VideoObject_t *object, DynamicLight_t *light)
+void voDrawVertexNormals(VideoObject_t *object)
 {
-//	float angle;
+	if (!cv_video_shownormals.bValue || (object->primitive == VIDEO_PRIMITIVE_LINES))
+		return;
 
 	for (unsigned int i = 0; i < object->numverts; i++)
 	{
+		MathVector3f_t endpos;
+		plVectorClear3fv(endpos);
+		plVectorScale3fv(object->vertices[i].mvNormal, 2.0f, endpos);
+		plVectorAdd3fv(endpos, object->vertices[i].mvPosition, endpos);
+
+		Draw_Line(object->vertices[i].mvPosition, endpos);
+	}
+}
+
+void VideoObject_CalculateLighting(VideoObject_t *object, DynamicLight_t *light, MathVector3f_t position)
+{
+	// Calculate the distance.
+	MathVector3f_t distvec;
+	Math_VectorSubtract(position, light->origin, distvec);
+	float distance = (light->radius - plLengthf(distvec)) / 100.0f;
+
+	for (unsigned int i = 0; i < object->numverts; i++)
+	{
+		float x = object->vertices[i].mvNormal[0];
+		float y = object->vertices[i].mvNormal[1];
+		float z = object->vertices[i].mvNormal[2];
+
+		float angle = (distance*((x * distvec[0]) + (y * distvec[1]) + (z * distvec[2])));
+		if (angle < 0)
+			plVectorClear3fv(object->vertices[i].mvColour);
+		else
+		{
+			object->vertices[i].mvColour[pRED]		= light->color[pRED] * angle;
+			object->vertices[i].mvColour[pGREEN]	= light->color[pGREEN] * angle;
+			object->vertices[i].mvColour[pBLUE]		= light->color[pBLUE] * angle;
+		}
+
 		/*
 		x = Object->Vertices_normalStat[count].x;
 		y = Object->Vertices_normalStat[count].y;
@@ -231,6 +264,8 @@ void VideoObject_DrawImmediate(VideoObject_t *object)
 	VIDEO_FUNCTION_START
 	if (object->numverts == 0)
 		return;
+
+	voDrawVertexNormals(object);
 
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_COLOR_ARRAY);

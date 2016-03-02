@@ -37,6 +37,9 @@ extern ConsoleVariable_t
 	cv_video_verticlesync,
 	cv_video_lightmapoversample,	// Enable overbrights?
 	cv_video_drawbrushes,			// Draw brush entities?
+
+	cv_video_shownormals,			// Show vertex normals?
+
 	cvLitParticles;					// Should particles be lit or not?
 
 extern	ConsoleVariable_t	r_showtris;

@@ -57,6 +57,8 @@ ConsoleVariable_t
 	cv_video_drawmaterials = { "video_drawmaterials", "1", false, false, "If enabled, materials are drawn." },
 	cv_video_drawsky = { "video_drawsky", "1", false, false, "Toggles rendering of the sky." },
 	cv_video_drawplayershadow = { "video_drawplayershadow", "1", true, false, "If enabled, the players own shadow will be drawn." },
+	
+	cv_video_shownormals = { "video_shownormals", "0", false, false, "If enabled, draws lines representing vertex normals." },
 
 	cv_video_clearbuffers = { "video_clearbuffers", "1", true, false },
 	cv_video_detailscale = { "video_detailscale", "3", true, false, "Changes the scaling used for detail maps." },
@@ -123,6 +125,8 @@ void Video_Initialize(void)
 	Cvar_RegisterVariable(&cv_video_drawplayershadow, NULL);
 	Cvar_RegisterVariable(&cv_video_shaders, NULL);
 	Cvar_RegisterVariable(&cv_video_clearbuffers, NULL);
+
+	Cvar_RegisterVariable(&cv_video_shownormals, NULL);
 
 	Cmd_AddCommand("video_restart",Video_UpdateWindow);
 	Cmd_AddCommand("video_debug",Video_DebugCommand);

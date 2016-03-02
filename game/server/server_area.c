@@ -520,8 +520,8 @@ void Area_DoorLink(ServerEntity_t *door)
 	Math_VectorSet(0, smaxs);
 
 	// Copy the size over, which we'll use for the trigger field.
-	plVectorCopy3f(door->v.mins, smins);
-	plVectorCopy3f(door->v.maxs, smaxs);
+	plVectorCopy3fv(door->v.mins, smins);
+	plVectorCopy3fv(door->v.maxs, smaxs);
 
 	do
 	{
@@ -1228,7 +1228,7 @@ void Area_ClimbTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
 		vLadVelocity[2] = -1 * 100;
 
 	// do it manually! VectorCopy won't work with this
-	plVectorCopy3f(vLadVelocity, eOther->v.velocity);
+	plVectorCopy3fv(vLadVelocity, eOther->v.velocity);
 }
 
 void Area_ClimbSpawn(ServerEntity_t *eArea)

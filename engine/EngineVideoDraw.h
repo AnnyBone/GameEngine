@@ -34,29 +34,29 @@ typedef struct
 extern "C" {
 #endif
 
-	extern	qpic_t *draw_disc;	// also used on sbar
+extern	qpic_t *draw_disc;	// also used on sbar
 
-	void Draw_Init(void);
-	void Draw_Character(int x, int y, int num);
-	void Draw_Pic(int x, int y, qpic_t *pic);
-	void Draw_MaterialSurface(Material_t *mMaterial, int iSkin, int x, int y, int w, int h, float fAlpha);
-	void Draw_ConsoleBackground(void); //johnfitz -- removed parameter int lines
-	void Draw_GradientBackground(void);
-	void Draw_BeginDisc(void);
-	void Draw_TileClear(int x, int y, int w, int h);
-	void Draw_Rectangle(int x, int y, int w, int h, Colour_t colour);
-	void Draw_GradientFill(int x, int y, int w, int h, Colour_t mvTopColour, Colour_t mvBottomColour);
-	void Draw_FadeScreen(void);
-	void Draw_ResetCanvas(void);
-	void Draw_Line(MathVector3f_t mvStart, MathVector3f_t mvEnd);
-	void Draw_Grid(float x, float y, float z, int iGridSize);
-	void Draw_CoordinateAxes(float x, float y, float z);
-	void Draw_String(int x, int y, const char *msg);
-	void Draw_Entity(ClientEntity_t *Entity);
+void Draw_Init(void);
+void Draw_Character(int x, int y, int num);
+void Draw_Pic(int x, int y, qpic_t *pic);
+void Draw_MaterialSurface(Material_t *mMaterial, int iSkin, int x, int y, int w, int h, float fAlpha);
+void Draw_ConsoleBackground(void); //johnfitz -- removed parameter int lines
+void Draw_GradientBackground(void);
+void Draw_BeginDisc(void);
+void Draw_TileClear(int x, int y, int w, int h);
+void Draw_Rectangle(int x, int y, int w, int h, Colour_t colour);
+void Draw_GradientFill(int x, int y, int w, int h, Colour_t mvTopColour, Colour_t mvBottomColour);
+void Draw_FadeScreen(void);
+void Draw_ResetCanvas(void);
+void Draw_Line(MathVector3f_t mvStart, MathVector3f_t mvEnd);
+void Draw_Grid(float x, float y, float z, int iGridSize);
+void Draw_CoordinateAxes(MathVector3f_t position);
+void Draw_String(int x, int y, const char *msg);
+void Draw_Entity(ClientEntity_t *Entity);
 
-	qpic_t *Draw_CachePic(char *path);
+qpic_t *Draw_CachePic(char *path);
 
-	void GL_SetCanvas(VideoCanvasType_t newcanvas); //johnfitz
+void GL_SetCanvas(VideoCanvasType_t newcanvas); //johnfitz
 
 #ifdef __cplusplus
 };

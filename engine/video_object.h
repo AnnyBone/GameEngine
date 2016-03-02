@@ -31,4 +31,6 @@ void VideoObject_Clip(VideoObject_t *object, MathVector4f_t mvClipDimensions);
 void VideoObject_Draw(VideoObject_t *object);
 void VideoObject_DrawImmediate(VideoObject_t *object);
 
+void VideoObject_CalculateLighting(VideoObject_t *object, DynamicLight_t *light, MathVector3f_t position);
+
 plEXTERN_C_END

@@ -86,7 +86,7 @@ void ClientEffect_LavaSplash(MathVector3f_t position)
 				velocity = (float)(50 + (rand() & 63));
 
 				plVectorNormalize(direction);
-				plVectorScale3f(direction, velocity, part->vVelocity);
+				plVectorScale3fv(direction, velocity, part->vVelocity);
 			}
 }
 
@@ -163,7 +163,7 @@ void ClientEffect_BloodCloud(MathVector3f_t position, BloodType_t type)
 
 	// TODO: support for different blood types
 
-	plVectorCopy3f(position, part->vOrigin);
+	plVectorCopy3fv(position, part->vOrigin);
 
 	part->lifetime		= (float)(Client.time + 0.3*(rand() % 5));
 	part->fScale		= 20.0f;

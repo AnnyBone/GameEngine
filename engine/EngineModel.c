@@ -1210,33 +1210,24 @@ void Model_LoadBSP(model_t *mod,void *buffer)
 	}
 }
 
-MathVector_t Model_GenerateNormal(MathVector3f_t a, MathVector3f_t b, MathVector3f_t c)
+MathVector_t Model_GenerateNormal3fv(MathVector3f_t a, MathVector3f_t b, MathVector3f_t c)
 {
-	MathVector_t	mvOutNormal;
-	MathVector3f_t	mvNormal;
-	MathVector3f_t	mvX, mvY;
+	MathVector_t	output;
+	MathVector3f_t	normal, x, y;
 
-#if 0
-	Con_Printf("A : %i %i %i\n", (int)a[0], (int)a[1], (int)a[2]);
-	Con_Printf("B : %i %i %i\n", (int)b[0], (int)b[1], (int)b[2]);
-	Con_Printf("C : %i %i %i\n", (int)c[0], (int)c[1], (int)c[2]);
-#endif
+	Math_VectorSubtract(c, b, x);
+	Math_VectorSubtract(a, b, y);
 
-	Math_VectorSubtract(c, b, mvX);
-	Math_VectorSubtract(a, b, mvY);
-
-	Math_VectorClear(mvNormal);
-	Math_CrossProduct(mvX, mvY, mvNormal);
+	Math_VectorClear(normal);
+	Math_CrossProduct(x, y, normal);
 
 	// Normalize it.
-	plVectorNormalize(mvNormal);
+	plVectorNormalize(normal);
 
 	// Return the normal.
-	Math_VectorToMV(mvNormal, mvOutNormal);
+	Math_VectorToMV(normal, output);
 
-//	Con_Printf("NORMAL (%i %i %i)\n", (int)mvOutNormal.vX, (int)mvOutNormal.vY, (int)mvOutNormal.vZ);
-
-	return mvOutNormal;
+	return output;
 }
 
 MathVector_t Model_GenerateNormal3f(
@@ -1256,7 +1247,7 @@ MathVector_t Model_GenerateNormal3f(
 	b[0] = bX; b[1] = bY; b[2] = bZ;
 	c[0] = cX; c[1] = cY; c[2] = cZ;
 
-	return Model_GenerateNormal(a, b, c);
+	return Model_GenerateNormal3fv(a, b, c);
 }
 
 void Model_LoadRelativeMaterial(model_t *model)

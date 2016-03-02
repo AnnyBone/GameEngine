@@ -490,27 +490,27 @@ void Draw_Line(MathVector3f_t mvStart, MathVector3f_t mvEnd)
 
 /*	Debugging tool.
 */
-void Draw_CoordinateAxes(float x,float y,float z)
+void Draw_CoordinateAxes(MathVector3f_t position)
 {
-	VideoVertex_t voLine[2] = { { { 0 } } };
+	MathVector3f_t start, end;
 
-	Video_ObjectVertex(&voLine[0], 0, 0, 0);
-	Video_ObjectColour(&voLine[0], 1.0f, 0, 0, 1.0f);
-	Video_ObjectVertex(&voLine[1], 10, 0, 0);
-	Video_ObjectColour(&voLine[1], 1.0f, 0, 0, 1.0f);
-	Video_DrawObject(voLine, VIDEO_PRIMITIVE_LINES, 2, NULL, 0);
+	Math_VectorCopy(position, start);
+	Math_VectorCopy(position, end);
+	start[0] += 10;
+	end[0] -= 10;
+	Draw_Line(start, end);
 
-	Video_ObjectVertex(&voLine[0], 0, 0, 0);
-	Video_ObjectColour(&voLine[0], 0, 1.0f, 0, 1.0f);
-	Video_ObjectVertex(&voLine[1], 0, 10, 0);
-	Video_ObjectColour(&voLine[1], 0, 1.0f, 0, 1.0f);
-	Video_DrawObject(voLine, VIDEO_PRIMITIVE_LINES, 2, NULL, 0);
+	Math_VectorCopy(position, start);
+	Math_VectorCopy(position, end);
+	start[1] += 10;
+	end[1] -= 10;
+	Draw_Line(start, end);
 
-	Video_ObjectVertex(&voLine[0], 0, 0, 0);
-	Video_ObjectColour(&voLine[0], 0, 0, 1.0f, 1.0f);
-	Video_ObjectVertex(&voLine[1], 0, 0, 10);
-	Video_ObjectColour(&voLine[1], 0, 0, 1.0f, 1.0f);
-	Video_DrawObject(voLine, VIDEO_PRIMITIVE_LINES, 2, NULL, 0);
+	Math_VectorCopy(position, start);
+	Math_VectorCopy(position, end);
+	start[2] += 10;
+	end[2] -= 10;
+	Draw_Line(start, end);
 }
 
 void Draw_Grid(float x, float y, float z, int grid_size)
@@ -805,25 +805,7 @@ void Draw_Entity(ClientEntity_t *entity)
 {
 	if (!entity->model)
 	{
-		MathVector3f_t start, end;
-
-		Math_VectorCopy(entity->origin, start);
-		Math_VectorCopy(entity->origin, end);
-		start[0] += 5;
-		end[0] -= 5;
-		Draw_Line(start, end);
-
-		Math_VectorCopy(entity->origin, start);
-		Math_VectorCopy(entity->origin, end);
-		start[1] += 5;
-		end[1] -= 5;
-		Draw_Line(start, end);
-
-		Math_VectorCopy(entity->origin, start);
-		Math_VectorCopy(entity->origin, end);
-		start[2] += 5;
-		end[2] -= 5;
-		Draw_Line(start, end);
+		Draw_CoordinateAxes(entity->origin);
 		return;
 	}
 

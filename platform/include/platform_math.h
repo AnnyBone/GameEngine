@@ -236,10 +236,12 @@ float Math_ExpPulse(float x, float k, float n);
 MathVectorf_t plColourNormalize(MathVector3f_t in, MathVector3f_t out);
 
 void plVectorSet3f(MathVector3f_t out, float x, float y, float z);
-void plVectorMultiply3f(MathVector3f_t in, MathVector3f_t multi, MathVector3f_t out);
-void plVectorSubtract3f(MathVector3f_t in, MathVector3f_t subtract, MathVector3f_t out);
-void plVectorAdd3f(MathVector3f_t in, MathVector3f_t add, MathVector3f_t out);
-void plVectorCopy3f(MathVector3f_t in, MathVector3f_t out);
-void plVectorScale3f(MathVector3f_t in, MathVectorf_t scale, MathVector3f_t out);
+
+void plVectorClear3fv(MathVector3f_t out);
+void plVectorMultiply3fv(MathVector3f_t in, MathVector3f_t multi, MathVector3f_t out);
+void plVectorSubtract3fv(MathVector3f_t in, MathVector3f_t subtract, MathVector3f_t out);
+void plVectorAdd3fv(MathVector3f_t in, MathVector3f_t add, MathVector3f_t out);
+void plVectorCopy3fv(MathVector3f_t in, MathVector3f_t out);
+void plVectorScale3fv(MathVector3f_t in, MathVectorf_t scale, MathVector3f_t out);
 
 plEXTERN_C_END
