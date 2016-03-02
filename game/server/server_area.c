@@ -48,20 +48,20 @@ void Area_SetMoveDirection(MathVector3f_t vAngles, MathVector3f_t vMoveDirection
 	MathVector3f_t vMoveDown = { 0, 0, -1 };
 
 	if (plVectorCompare(vAngles, vUp))
-		Math_VectorCopy(vMoveUp,vMoveDirection);
+		plVectorCopy3fv(vMoveUp, vMoveDirection);
 	else if (plVectorCompare(vAngles, vDown))
-		Math_VectorCopy(vMoveDown,vMoveDirection);
+		plVectorCopy3fv(vMoveDown,vMoveDirection);
 	else
 		plAngleVectors(vAngles, vMoveDirection, NULL, NULL);
 
-	Math_VectorClear(vAngles);
+	plVectorClear3fv(vAngles);
 }
 
 void Area_CalculateMovementDone(ServerEntity_t *eArea)
 {
 	Entity_SetOrigin(eArea,eArea->local.finaldest);
 
-	Math_VectorClear(eArea->v.velocity);
+	plVectorClear3fv(eArea->v.velocity);
 
 	if(eArea->local.think1)
 		eArea->local.think1(eArea,eArea);
@@ -70,20 +70,18 @@ void Area_CalculateMovementDone(ServerEntity_t *eArea)
 void Area_CalculateMovement(ServerEntity_t *eArea, MathVector3f_t vTDest, float fSpeed, void(*Function)(ServerEntity_t *eArea, ServerEntity_t *eOther))
 {
 	MathVector3f_t	vdestdelta;
-	float	fTravelTime;
 
-	Math_VectorCopy(vTDest,eArea->local.finaldest);
+	plVectorCopy3fv(vTDest, eArea->local.finaldest);
 
 	Math_VectorSubtract(vTDest,eArea->v.origin,vdestdelta);
 
-	fTravelTime = (float)plVectorLength(vdestdelta) / fSpeed;
-
-	Math_VectorScale(vdestdelta,1.0f/fTravelTime,eArea->v.velocity);
+	float traveltime = (float)plVectorLength(vdestdelta) / fSpeed;
+	plVectorScale3fv(vdestdelta, 1.0f / traveltime, eArea->v.velocity);
 
 	eArea->local.think1	= Function;
 
 	eArea->v.think		= Area_CalculateMovementDone;
-	eArea->v.dNextThink	= eArea->v.ltime+fTravelTime;
+	eArea->v.dNextThink = eArea->v.ltime + traveltime;
 }
 
 /*

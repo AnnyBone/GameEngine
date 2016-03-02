@@ -104,6 +104,8 @@ typedef enum
 	SOLID_BSP
 } ServerSolidType_t;
 
+typedef MaterialProperty_t ServerSurfaceType_t;
+
 /*	Different type's of damage.
 */
 typedef enum
@@ -136,7 +138,8 @@ typedef struct
 	float fGravity;		// Sets the gravity which is enforced on the entity.
 	float fFriction;	// Sets the amount of friction that effects this entity and others.
 
-	ServerSolidType_t	iSolid;		// Sets the collision/solid type for the entity.
+	ServerSolidType_t		iSolid;		// Sets the collision/solid type for the entity.
+	ServerSurfaceType_t		property;	// Type of surface, e.g. wood, rock etc
 
 	ServerEntity_t	*eIgnore;	// Tells the entity to ignore collisions with this entity.
 } ServerPhysicsVariables_t;

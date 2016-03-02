@@ -486,6 +486,13 @@ void ED_LoadFromFile(char *data)
 	}
 }
 
+/*	Returns pointer to entity model.
+*/
+model_t *ServerEntity_GetModel(ServerEntity_t *entity)
+{
+	return sv.models[entity->v.modelindex];
+}
+
 void PR_Init (void)
 {
 	Cmd_AddCommand("edict",ED_PrintEdict_f);

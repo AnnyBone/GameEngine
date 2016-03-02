@@ -24,6 +24,7 @@
 #include "EngineMenu.h"
 #include "EngineServer.h"
 #include "EngineVideoParticle.h"
+#include "EngineServerEntity.h"
 
 #include "client/effect_sprite.h"
 
@@ -447,6 +448,7 @@ void Game_Initialize(void)
 	Import.Cvar_SetValue			= Cvar_SetValue;
 	Import.LightStyle				= LightStyle;
 	Import.CenterPrint				= Server_CenterPrint;
+	Import.GetServerEntityModel		= ServerEntity_GetModel;
 
 	Import.Cmd_AddCommand	= Cmd_AddCommand;
 	Import.Cmd_Argc			= Cmd_Argc;
