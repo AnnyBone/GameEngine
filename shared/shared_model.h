@@ -268,7 +268,7 @@ typedef struct model_s
 	cache_user_t	cache;		// only access through Mod_Extradat
 
 	// Material System
-	struct Material_s	*mAssignedMaterials;
+	struct Material_s *materials;
 
 	VideoObject_t	*objects;
 	unsigned int	numtriangles;	// Static counter for triangles.

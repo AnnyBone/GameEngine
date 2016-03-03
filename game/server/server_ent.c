@@ -634,7 +634,7 @@ Material_t *seGetMaterial(ServerEntity_t *entity)
 		return NULL;
 
 	// Return the initial material.
-	return &model->mAssignedMaterials[0];
+	return &model->materials[0];
 }
 
 MaterialSkin_t *seGetSkin(ServerEntity_t *entity, unsigned int skin)

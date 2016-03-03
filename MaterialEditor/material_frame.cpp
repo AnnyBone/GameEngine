@@ -246,8 +246,8 @@ bool MaterialViewportPanel::SetPreviewMaterial(Material_t *NewMaterial)
 
 	// Update the preview entity to use the new material.
 	preview_material = NewMaterial;
-	CubeModel->mAssignedMaterials = preview_material;
-	SphereModel->mAssignedMaterials = preview_material;
+	CubeModel->materials = preview_material;
+	SphereModel->materials = preview_material;
 
 	return true;
 }

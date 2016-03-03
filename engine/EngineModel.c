@@ -1256,13 +1256,13 @@ void Model_LoadRelativeMaterial(model_t *model)
 
 	plStripExtension(out, model->name);
 
-	model->mAssignedMaterials = Material_Load(out);
-	if (!model->mAssignedMaterials)
+	model->materials = Material_Load(out);
+	if (!model->materials)
 	{
 		Con_Warning("Failed to load material for model! (%s) (%s)\n", model->name, out);
 
 		// Set us up to just use the dummy material instead.
-		model->mAssignedMaterials = g_mMissingMaterial;
+		model->materials = g_mMissingMaterial;
 	}
 }
 

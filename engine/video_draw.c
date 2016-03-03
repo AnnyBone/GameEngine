@@ -782,9 +782,9 @@ void Draw_StaticEntity(ClientEntity_t *entity)
 
 	R_RotateForEntity(entity->origin, entity->angles);
 
-	Material_Draw(entity->model->mAssignedMaterials, 0, 0, 0, false);
+	Material_Draw(entity->model->materials, 0, 0, 0, false);
 	VideoObject_DrawImmediate(&entity->model->objects[entity->frame]);
-	Material_Draw(entity->model->mAssignedMaterials, 0, 0, 0, true);
+	Material_Draw(entity->model->materials, 0, 0, 0, true);
 
 	glPopMatrix();
 	// TODO: TEMPORARY DEBUGGING STUFF!!!!
