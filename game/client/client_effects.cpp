@@ -25,7 +25,7 @@ Material_t *mat_bloodcloud	= nullptr;
 Material_t *mat_smoke		= nullptr;
 Material_t *mat_spark		= nullptr;
 
-Sprite *spr_debug = NULL;
+ISprite *spr_debug = NULL;
 
 void ClientEffect_Initialize()
 {
@@ -34,9 +34,6 @@ void ClientEffect_Initialize()
 	mat_bloodcloud	= g_engine->LoadMaterial("particles/bloodcloud");
 	mat_smoke		= g_engine->LoadMaterial("particles/smoke");
 	mat_spark		= g_engine->LoadMaterial("particles/spark");
-
-	spr_debug = g_engine->AddSprite();
-	g_engine->SetSpriteMaterial(spr_debug, g_engine->LoadMaterial("debug/debug_sprite"));
 }
 
 /*
@@ -262,6 +259,12 @@ void ClientEffect_IonBallTrail(MathVector3f_t position)
 		Math_VectorClear(part->vVelocity);
 	}
 
-	g_engine->SetSpritePosition(spr_debug, position);
+	if (!spr_debug)
+	{
+		spr_debug = g_engine->AddSprite();
+		g_engine->SetSpriteMaterial(spr_debug, g_engine->LoadMaterial("debug/debug_sprite"));
+	}
+
+	spr_debug->SetPosition(position);
 }
 #endif
