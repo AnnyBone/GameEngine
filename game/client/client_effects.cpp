@@ -256,13 +256,13 @@ void ClientEffect_IonBallTrail(MathVector3f_t position)
 		for (j = 0; j < 3; j++)
 			part->vOrigin[j] = position[j] + ((rand() & 15) - 5.0f);
 
-		Math_VectorClear(part->vVelocity);
+		plVectorClear3fv(part->vVelocity);
 	}
 
 	if (!spr_debug)
 	{
 		spr_debug = g_engine->AddSprite();
-		g_engine->SetSpriteMaterial(spr_debug, g_engine->LoadMaterial("debug/debug_sprite"));
+		spr_debug->SetMaterial(g_engine->LoadMaterial("debug/debug_sprite"));
 	}
 
 	spr_debug->SetPosition(position);

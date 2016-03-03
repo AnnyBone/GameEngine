@@ -397,7 +397,7 @@ void Weapon_BulletProjectile(ServerEntity_t *eEntity,float fSpread,int iDamage,M
 			ServerEntity_t *eSmoke = Entity_Spawn();
 			if(eSmoke)
 			{
-				char cSound[32];
+				char cSound[128];
 
 				eSmoke->v.think			= Entity_Remove;
 				eSmoke->v.dNextThink	= Server.dTime+0.5;
