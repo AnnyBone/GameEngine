@@ -195,8 +195,14 @@ void Sprite::Simulate()
 
 	isvisible = true;
 
+	if ((colour[3] <= 0))
+		isvisible = false;
+
 	// Ensure it's on screen.
-	if ((colour[3] <= 0) || R_CullBox(mins, maxs))
+	MathVector3f_t mvmins, mvmaxs;
+	plVectorAdd3fv(position, mins, mvmins);
+	plVectorAdd3fv(position, maxs, mvmaxs);
+	if (R_CullBox(mvmins, mvmaxs))
 		isvisible = false;
 
 	// Simulation depends on type, nothing complex though.
