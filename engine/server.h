@@ -22,7 +22,7 @@ typedef struct
 	char			*model_precache[MAX_MODELS];	// NULL terminated
 	struct model_s	*models[MAX_MODELS];
 	char			*sound_precache[MAX_SOUNDS];	// NULL terminated
-	char			*sprite_precache[SERVER_MAX_TEXTURES];
+	char			*material_precache[SERVER_MAX_TEXTURES];
 	char			*lightstyles[MAX_LIGHTSTYLES];
 	unsigned int	num_edicts;
 	unsigned int	max_edicts;
@@ -43,21 +43,17 @@ typedef struct
 	unsigned	protocol; //johnfitz
 } Server_t;
 
+plEXTERN_C_START
+
 extern	ConsoleVariable_t	teamplay;
 extern	ConsoleVariable_t	skill;
 extern	ConsoleVariable_t	deathmatch;
 extern	ConsoleVariable_t	coop;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+extern	ServerStatic_t	svs;				// persistant server info
+extern	Server_t		sv;					// local server
 
-	extern	ServerStatic_t	svs;				// persistant server info
-	extern	Server_t		sv;					// local server
-
-#ifdef __cplusplus
-};
-#endif
+plEXTERN_C_END
 
 extern	ServerClient_t	*host_client;
 

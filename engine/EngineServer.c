@@ -188,7 +188,7 @@ void SV_SendServerinfo(ServerClient_t *client)
 	MSG_WriteByte(&client->message,0);
 
 	// Throw over all the sprite precaches.
-	for (i = 0, s = sv.sprite_precache + 1; *s; s++, i++)
+	for (i = 0, s = sv.material_precache + 1; *s; s++, i++)
 		MSG_WriteString(&client->message,*s);
 
 	MSG_WriteByte(&client->message,0);
@@ -1108,10 +1108,10 @@ void SV_SpawnServer(char *server)
 	// Clear world interaction links
 	SV_ClearWorld ();
 
-	sv.sound_precache[0]	= "";
-	sv.sprite_precache[0]	= "";
-	sv.model_precache[0]	= "";
-	sv.model_precache[1]	= sv.modelname;
+	sv.sound_precache[0]		= "";
+	sv.material_precache[0]		= "";
+	sv.model_precache[0]		= "";
+	sv.model_precache[1]		= sv.modelname;
 
 	for (i=1 ; i<sv.worldmodel->numsubmodels ; i++)
 	{
@@ -1284,12 +1284,12 @@ void Server_PrecacheResource(int iType, const char *ccResource)
 		break;
 	case RESOURCE_SPRITE:
 		for (i = 0; i < MAX_PARTICLES; i++)
-			if (!sv.sprite_precache[i])
+			if (!sv.material_precache[i])
 			{
-				sv.sprite_precache[i] = (char*)ccResource;
+				sv.material_precache[i] = (char*)ccResource;
 				return;
 			}
-			else if (!strcmp(ccResource, sv.sprite_precache[i]))
+			else if (!strcmp(ccResource, sv.material_precache[i]))
 				return;
 
 		Console_ErrorMessage(false, ccResource, "Overflow!");
