@@ -45,11 +45,14 @@ void ClientEffect_Initialize()
 */
 
 /*	Field of particles, useful for forcefields etc.
+	TODO: get entity pointer, so we can do this per-model instead.
 */
 void ClientEffect_ParticleField(MathVector3f_t position, MathVector3f_t mins, MathVector3f_t maxs, float density)
 {
 	if (density <= 0)
 		return;
+
+
 }
 
 void ClientEffect_LavaSplash(MathVector3f_t position)

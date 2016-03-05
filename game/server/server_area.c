@@ -67,33 +67,20 @@ void Area_CalculateMovementDone(ServerEntity_t *eArea)
 		eArea->local.think1(eArea,eArea);
 }
 
-void Area_CalculateMovement(ServerEntity_t *eArea, MathVector3f_t vTDest, float fSpeed, void(*Function)(ServerEntity_t *eArea, ServerEntity_t *eOther))
+void Area_Move(ServerEntity_t *eArea, MathVector3f_t vTDest, float fSpeed, void(*Function)(ServerEntity_t *eArea, ServerEntity_t *eOther))
 {
 	MathVector3f_t	vdestdelta;
 
 	plVectorCopy3fv(vTDest, eArea->local.finaldest);
+	plVectorSubtract3fv(vTDest, eArea->v.origin, vdestdelta);
 
-	Math_VectorSubtract(vTDest,eArea->v.origin,vdestdelta);
-
-	float traveltime = (float)plVectorLength(vdestdelta) / fSpeed;
+	float traveltime = plLengthf(vdestdelta) / fSpeed;
 	plVectorScale3fv(vdestdelta, 1.0f / traveltime, eArea->v.velocity);
 
 	eArea->local.think1	= Function;
 
 	eArea->v.think		= Area_CalculateMovementDone;
 	eArea->v.dNextThink = eArea->v.ltime + traveltime;
-}
-
-/*
-	Spawn
-*/
-
-/*	Area in which players can be randomly spawned.
-	TODO: Finish this!
-*/
-void Area_PlayerSpawn(ServerEntity_t *eArea)
-{
-	//Waypoint_Spawn(eArea->v.origin,WAYPOINT_SPAWNAREA);
 }
 
 /*
@@ -136,10 +123,7 @@ void Area_BreakableBounce(ServerEntity_t *eGib, ServerEntity_t *eOther)
 
 void Area_CreateGib(ServerEntity_t *eArea, const char *cModel)
 {
-	int	j;
-	ServerEntity_t *eGib;
-
-	eGib = Entity_Spawn();
+	ServerEntity_t *eGib = Entity_Spawn();
 	if (eGib)
 	{
 		eGib->v.cClassname = "entity_gib";
@@ -153,7 +137,7 @@ void Area_CreateGib(ServerEntity_t *eArea, const char *cModel)
 
 		eGib->local.style = eArea->local.style;
 
-		for (j = 0; j < 3; j++)
+		for (int j = 0; j < 3; j++)
 		{
 			eGib->v.velocity[j] =
 				eGib->v.avelocity[j] = (float)(rand() % 5 * eArea->v.iHealth * 5);
@@ -413,7 +397,7 @@ void Area_DoorReturn(ServerEntity_t *eArea)
 {
 	eArea->local.iLocalFlags = STATE_DOWN;
 
-	Area_CalculateMovement(eArea, eArea->local.pos1, eArea->local.speed, Area_DoorDone);
+	Area_Move(eArea, eArea->local.pos1, eArea->local.speed, Area_DoorDone);
 
 	if(eArea->local.cSoundReturn)
 		Sound(eArea,CHAN_BODY,eArea->local.cSoundReturn,255,ATTN_NORM);
@@ -443,7 +427,7 @@ void Area_DoorUse(ServerEntity_t *eArea)
 
 	eArea->local.iLocalFlags = STATE_UP;
 
-	Area_CalculateMovement(eArea,eArea->local.pos2,eArea->local.speed,Area_DoorWait);
+	Area_Move(eArea, eArea->local.pos2, eArea->local.speed, Area_DoorWait);
 
 	if(eArea->local.cSoundStart)
 		Sound(eArea,CHAN_BODY,eArea->local.cSoundStart,255,ATTN_NORM);
@@ -478,7 +462,7 @@ void Area_DoorTouch(ServerEntity_t *door, ServerEntity_t *other)
 	}
 
 	door->local.iLocalFlags = STATE_UP;
-	Area_CalculateMovement(door, door->local.pos2, door->local.speed, Area_DoorWait);
+	Area_Move(door, door->local.pos2, door->local.speed, Area_DoorWait);
 
 	if (door->local.cSoundStart)
 		Sound(door, CHAN_BODY, door->local.cSoundStart, 255, ATTN_NORM);
@@ -871,7 +855,7 @@ void Area_ButtonDone(ServerEntity_t *eArea, ServerEntity_t *eOther)
 
 void Area_ButtonReturn(ServerEntity_t *eArea)
 {
-	Area_CalculateMovement(eArea,eArea->local.pos1,eArea->local.speed,Area_ButtonDone);
+	Area_Move(eArea, eArea->local.pos1, eArea->local.speed, Area_ButtonDone);
 
 	if(eArea->local.cSoundReturn)
 		Sound(eArea,CHAN_BODY,eArea->local.cSoundReturn,255,ATTN_NORM);
@@ -902,7 +886,7 @@ void Area_ButtonTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
 
 	eArea->local.iLocalFlags = STATE_UP;
 
-	Area_CalculateMovement(eArea,eArea->local.pos2,eArea->local.speed,Area_ButtonWait);
+	Area_Move(eArea, eArea->local.pos2, eArea->local.speed, Area_ButtonWait);
 
 	if(eArea->local.cSoundStart)
 		Sound(eArea,CHAN_BODY,eArea->local.cSoundStart,255,ATTN_NORM);
@@ -917,7 +901,7 @@ void Area_ButtonUse(ServerEntity_t *eArea)
 
 	eArea->local.iLocalFlags = STATE_UP;
 
-	Area_CalculateMovement(eArea,eArea->local.pos2,eArea->local.speed,Area_ButtonWait);
+	Area_Move(eArea, eArea->local.pos2, eArea->local.speed, Area_ButtonWait);
 
 	if(eArea->local.cSoundStart)
 		Sound(eArea,CHAN_BODY,eArea->local.cSoundStart,255,ATTN_NORM);
@@ -1006,7 +990,7 @@ void Area_PlatformDone(ServerEntity_t *eArea, ServerEntity_t *eOther)
 
 void Area_PlatformReturn(ServerEntity_t *eArea)
 {
-	Area_CalculateMovement(eArea,eArea->local.pos1,eArea->local.speed,Area_PlatformDone);
+	Area_Move(eArea, eArea->local.pos1, eArea->local.speed, Area_PlatformDone);
 
 	if(eArea->local.cSoundReturn)
 		Sound(eArea,CHAN_BODY,eArea->local.cSoundReturn,255,ATTN_NORM);
@@ -1041,7 +1025,7 @@ void Area_PlatformTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
 
 	eArea->local.iLocalFlags = STATE_UP;
 
-	Area_CalculateMovement(eArea,eArea->local.pos2,eArea->local.speed,Area_PlatformWait);
+	Area_Move(eArea, eArea->local.pos2, eArea->local.speed, Area_PlatformWait);
 
 	if(eArea->local.cSoundStart)
 		Sound(eArea,CHAN_BODY,eArea->local.cSoundStart,255,ATTN_NORM);
@@ -1056,7 +1040,7 @@ void Area_PlatformUse(ServerEntity_t *eArea)
 
 	eArea->local.iLocalFlags = STATE_UP;
 
-	Area_CalculateMovement(eArea,eArea->local.pos2,eArea->local.speed,Area_PlatformWait);
+	Area_Move(eArea,eArea->local.pos2,eArea->local.speed,Area_PlatformWait);
 
 	if(eArea->local.cSoundStart)
 		Sound(eArea,CHAN_BODY,eArea->local.cSoundStart,255,ATTN_NORM);

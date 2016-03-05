@@ -638,15 +638,11 @@ void Weapon_Animate(ServerEntity_t *ent,EntityFrame_t *eFrames)
 void Weapon_Cycle(ServerEntity_t *eEntity, bool bForward)
 {
 	if(eEntity->local.dAttackFinished > Server.dTime)
-	{
 		return;
-	}
 
 	Weapon_t *cur_weapon = Weapon_GetCurrentWeapon(eEntity);
 	if(!cur_weapon)
-	{
 		return;
-	}
 
 	if(cur_weapon < Weapons || cur_weapon > LAST_WEAPON)
 	{

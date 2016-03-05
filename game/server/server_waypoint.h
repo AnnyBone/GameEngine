@@ -16,30 +16,23 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef SERVER_WAYPOINT_H
-#define SERVER_WAYPOINT_H
+#pragma once
 
 //#define	DEBUG_WAYPOINT
 
 #define	MAX_WAYPOINTS	128
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+plEXTERN_C_START
 
-	void Waypoint_Initialize(void);
-	void Waypoint_Delete(Waypoint_t *point);
-	void Waypoint_Spawn(MathVector3f_t vOrigin, WaypointType_t type);
-	void Waypoint_Frame();
+void Waypoint_Initialize(void);
+void Waypoint_Delete(Waypoint_t *point);
+void Waypoint_Spawn(MathVector3f_t vOrigin, WaypointType_t type);
+void Waypoint_Frame();
 
-	Waypoint_t *Waypoint_GetByName(ServerEntity_t *eMonster, char *cName, float fMaxDistance);
-	Waypoint_t *Waypoint_GetByType(MathVector3f_t position, WaypointType_t type, float distance);
-	Waypoint_t *Waypoint_GetByVisibility(MathVector3f_t origin);
+Waypoint_t *Waypoint_GetByName(ServerEntity_t *eMonster, char *cName, float fMaxDistance);
+Waypoint_t *Waypoint_GetByType(MathVector3f_t position, WaypointType_t type, float distance);
+Waypoint_t *Waypoint_GetByVisibility(MathVector3f_t origin);
 
-	bool Waypoint_IsSafe(ServerEntity_t *eMonster, Waypoint_t *wPoint);
+bool Waypoint_IsSafe(ServerEntity_t *eMonster, Waypoint_t *wPoint);
 
-#ifdef __cplusplus
-}
-#endif
-
-#endif // !SERVER_WAYPOINT_H
+plEXTERN_C_END
