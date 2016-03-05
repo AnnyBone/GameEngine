@@ -6,6 +6,12 @@ INCLUDE := -D_POSIX_C_SOURCE=200809L \
 	-I./shared/ \
 	$(shell pkg-config sdl2 openal --cflags)
 
+ifeq ($(strip $(shell uname -m)),x86_64)
+	ARCH := x64
+else
+	ARCH := x86
+endif
+
 LAUNCHER_BIN  := bin/launcher
 LAUNCHER_OBJS := launcher/launcher.o
 LAUNCHER_LIBS := -ldl -lX11 -lpthread
@@ -18,7 +24,7 @@ PLATFORM_OBJS := platform/platform.o \
 	platform/platform_module.o \
 	platform/platform_window.o
 
-ENGINE_BIN  := bin/engine.x64.so
+ENGINE_BIN  := bin/engine.$(ARCH).so
 ENGINE_OBJS := engine/audio.o \
 	engine/cmdlib.o \
 	engine/conproc.o \
@@ -95,13 +101,13 @@ ENGINE_OBJS := engine/audio.o \
 	shared/SharedFormats.o
 ENGINE_LIBS := -lglee $(shell pkg-config sdl2 openal --libs)
 
-MENU_BIN  := bin/menu.x64.so
+MENU_BIN  := bin/menu.$(ARCH).so
 MENU_OBJS := menu/menu_hud.o \
 	menu/menu_main.o \
 	menu/menu_panel.o
 MENU_LIBS :=
 
-GAME_BIN  := bin/game.x64.so
+GAME_BIN  := bin/game.$(ARCH).so
 GAME_OBJS := game/client/client.o \
 	game/client/client_effects.o \
 	game/client/client_player.o \
