@@ -461,6 +461,7 @@ void Game_Initialize(void)
 	Import.ReadByte			= MSG_ReadByte;
 	Import.ReadCoord		= MSG_ReadCoord;
 	Import.ReadFloat		= MSG_ReadFloat;
+	Import.ReadAngle		= MSG_ReadAngle;
 
 	Import.MSG_WriteAngle	= MSG_WriteAngle;
 	Import.MSG_WriteByte	= MSG_WriteByte;
