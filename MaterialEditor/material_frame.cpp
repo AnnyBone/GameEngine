@@ -223,7 +223,7 @@ void MaterialViewportPanel::Draw()
 		std::string strfame = "Skin: ";
 		if (preview_material->flags & MATERIAL_FLAG_ANIMATED)	strfame += std::to_string(preview_material->animation_frame + 1);
 		else													strfame += std::to_string(preview_material->current_skin + 1);
-		strfame += "/" + std::to_string(preview_material->num_skins);
+																strfame += "/" + std::to_string(preview_material->num_skins);
 		engine->DrawString(10, 20, strfame.c_str());
 	}
 }
@@ -246,8 +246,8 @@ bool MaterialViewportPanel::SetPreviewMaterial(Material_t *NewMaterial)
 
 	// Update the preview entity to use the new material.
 	preview_material = NewMaterial;
-	CubeModel->mAssignedMaterials = preview_material;
-	SphereModel->mAssignedMaterials = preview_material;
+	CubeModel->materials = preview_material;
+	SphereModel->materials = preview_material;
 
 	return true;
 }

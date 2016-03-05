@@ -370,7 +370,7 @@ void Weapon_Projectile(ServerEntity_t *eOwner, ServerEntity_t *eProjectile, floa
 	Math_VectorScale(mvDirection, fVelocity, eProjectile->v.velocity);
 }
 
-void Weapon_BulletProjectile(ServerEntity_t *eEntity,float fSpread,int iDamage,vec_t *vDirection)
+void Weapon_BulletProjectile(ServerEntity_t *eEntity,float fSpread,int iDamage,MathVectorf_t *vDirection)
 {
 	int	i;
 	MathVector3f_t vSource, vTarg;
@@ -397,7 +397,7 @@ void Weapon_BulletProjectile(ServerEntity_t *eEntity,float fSpread,int iDamage,v
 			ServerEntity_t *eSmoke = Entity_Spawn();
 			if(eSmoke)
 			{
-				char cSound[32];
+				char cSound[128];
 
 				eSmoke->v.think			= Entity_Remove;
 				eSmoke->v.dNextThink	= Server.dTime+0.5;
@@ -638,15 +638,11 @@ void Weapon_Animate(ServerEntity_t *ent,EntityFrame_t *eFrames)
 void Weapon_Cycle(ServerEntity_t *eEntity, bool bForward)
 {
 	if(eEntity->local.dAttackFinished > Server.dTime)
-	{
 		return;
-	}
 
 	Weapon_t *cur_weapon = Weapon_GetCurrentWeapon(eEntity);
 	if(!cur_weapon)
-	{
 		return;
-	}
 
 	if(cur_weapon < Weapons || cur_weapon > LAST_WEAPON)
 	{

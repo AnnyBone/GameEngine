@@ -224,7 +224,7 @@ ServerEntity_t *Entity_Spawn(void)
 */
 void Entity_SetOrigin(ServerEntity_t *eEntity, MathVector3f_t vOrigin)
 {
-	Math_VectorCopy(vOrigin,eEntity->v.origin);
+	plVectorCopy3fv(vOrigin, eEntity->v.origin);
 
 	Entity_Link(eEntity, false);
 }
@@ -233,8 +233,7 @@ void Entity_SetOrigin(ServerEntity_t *eEntity, MathVector3f_t vOrigin)
 */
 void Entity_SetAngles(ServerEntity_t *eEntity, MathVector3f_t vAngles)
 {
-	Math_VectorCopy(vAngles, eEntity->v.angles);
-
+	plVectorCopy3fv(vAngles, eEntity->v.angles);
 	// TODO: Link?
 }
 
@@ -269,8 +268,8 @@ void Entity_SetSizeVector(ServerEntity_t *eEntity, MathVector3f_t vMin, MathVect
 			return;
 		}
 
-	Math_VectorCopy(vMin,eEntity->v.mins);
-	Math_VectorCopy(vMax,eEntity->v.maxs);
+	plVectorCopy3fv(vMin, eEntity->v.mins);
+	plVectorCopy3fv(vMax, eEntity->v.maxs);
 	Math_VectorSubtract(vMax,vMin,eEntity->v.size);
 
 	Entity_Link(eEntity, false);
@@ -574,7 +573,7 @@ bool Entity_DropToFloor(ServerEntity_t *eEntity)
 	MathVector3f_t vEnd;
 	trace_t	trGround;
 
-	Math_VectorCopy(eEntity->v.origin, vEnd);
+	plVectorCopy3fv(eEntity->v.origin, vEnd);
 
 	vEnd[2] -= 256;
 
@@ -622,3 +621,43 @@ bool Entity_IsOnGround(ServerEntity_t *entity)
 /*
 	IO System
 */
+
+/*
+	Host Content
+*/
+
+Material_t *seGetMaterial(ServerEntity_t *entity)
+{
+	// Try to grab the model.
+	model_t *model = g_engine->GetServerEntityModel(entity);
+	if (!model)
+		return NULL;
+
+	// Return the initial material.
+	return &model->materials[0];
+}
+
+MaterialSkin_t *seGetSkin(ServerEntity_t *entity, unsigned int skin)
+{
+	Material_t *material = seGetMaterial(entity);
+	if (!material)
+		return NULL;
+
+	return &material->skin[skin];
+}
+
+MaterialSkin_t *seGetCurrentSkin(ServerEntity_t *entity)
+{
+	return seGetSkin(entity, entity->Model.iSkin);
+}
+
+MaterialProperty_t seGetSkinPhysicsProperty(ServerEntity_t *entity, MaterialSkin_t *skin)
+{
+	if (!skin)
+	{
+		g_engine->Con_Warning("Passed invalid skin!\n");
+		return MATERIAL_TYPE_NONE;
+	}
+
+	return skin->uiType;
+}

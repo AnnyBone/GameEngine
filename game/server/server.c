@@ -247,10 +247,10 @@ void Server_Spawn(ServerEntity_t *seEntity)
 	Server_PrecacheSound(BASE_SOUND_TALK2);
 	Server_PrecacheSound("misc/gib1.wav");
 
-#ifndef GAME_ADAMAS
 	// Physics
 	Server_PrecacheSound(PHYSICS_SOUND_SPLASH);
 	Server_PrecacheSound(PHYSICS_SOUND_BODY);
+
 	Server_PrecacheSound(PHYSICS_SOUND_RICOCHET0);
 	Server_PrecacheSound(PHYSICS_SOUND_RICOCHET1);
 	Server_PrecacheSound(PHYSICS_SOUND_RICOCHET2);
@@ -258,19 +258,19 @@ void Server_Spawn(ServerEntity_t *seEntity)
 	Server_PrecacheSound(PHYSICS_SOUND_RICOCHET4);
 	Server_PrecacheSound(PHYSICS_SOUND_RICOCHET5);
 	Server_PrecacheSound(PHYSICS_SOUND_RICOCHET6);
-	Server_PrecacheSound(PHYSICS_SOUND_RICOCHET7);
-	Server_PrecacheSound(PHYSICS_SOUND_RICOCHET8);
-	Server_PrecacheSound(PHYSICS_SOUND_RICOCHET9);
+
 	Server_PrecacheSound("fx/explosion1.wav");
 	Server_PrecacheSound("fx/explosion2.wav");
 	Server_PrecacheSound("fx/explosion3.wav");
 	Server_PrecacheSound("fx/explosion4.wav");
 	Server_PrecacheSound("fx/explosion5.wav");
 	Server_PrecacheSound("fx/explosion6.wav");
+
 	Server_PrecacheSound(PHYSICS_SOUND_CONCRETESTEP0);
 	Server_PrecacheSound(PHYSICS_SOUND_CONCRETESTEP1);
 	Server_PrecacheSound(PHYSICS_SOUND_CONCRETESTEP2);
 	Server_PrecacheSound(PHYSICS_SOUND_CONCRETESTEP3);
+
 	Server_PrecacheModel(PHYSICS_MODEL_GIB0);
 	Server_PrecacheModel(PHYSICS_MODEL_GIB1);
 	Server_PrecacheModel(PHYSICS_MODEL_GIB2);
@@ -281,7 +281,6 @@ void Server_Spawn(ServerEntity_t *seEntity)
 	Server_PrecacheSound(SOUND_EXPLODE0);
 	Server_PrecacheSound(SOUND_EXPLODE1);
 	Server_PrecacheSound(SOUND_EXPLODE2);
-#endif
 	
 	// Player
 	Server_PrecacheModel(cvServerPlayerModel.string);

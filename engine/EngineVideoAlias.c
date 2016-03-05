@@ -30,8 +30,11 @@ bool	bShading;		//johnfitz -- if false, disable vertex shading for various reaso
 MathVector3f_t	alias_lightcolour, oldlightcolour;
 MathVector3f_t	lightposition, oldlightposition;
 
+DynamicLight_t *alias_light = NULL;
+
 void Alias_SetupLighting(ClientEntity_t *entity)
 {
+#if 1
 	Math_VectorSet(1.0f, alias_lightcolour);
 
 	if(!bShading || r_showtris.bValue)
@@ -79,10 +82,44 @@ void Alias_SetupLighting(ClientEntity_t *entity)
 		if (mod > 0.0f)
 			Math_VectorAddValue(alias_lightcolour, mod / 3.0f, alias_lightcolour);
 	}
+#else
+	alias_light = Light_GetDynamic(entity->origin, false);
+#endif
 }
 
-void Alias_DrawFrame(MD2_t *mModel, ClientEntity_t *entity, lerpdata_t lLerpData)
+void Alias_DrawFrame(MD2_t *alias, ClientEntity_t *entity, lerpdata_t lLerpData)
 {
+#if 0
+	MD2Frame_t *first = (MD2Frame_t*)((uint8_t*)alias + alias->ofs_frames + (alias->framesize * currententity->draw_lastpose));
+	MD2Frame_t *second = (MD2Frame_t*)((uint8_t*)alias + alias->ofs_frames + (alias->framesize * currententity->draw_pose));
+
+	MD2TriangleVertex_t *vertices = &first->verts[0];
+	MD2TriangleVertex_t *lerpvertices = &second->verts[1];
+
+	// TODO: Stupid stupid stupid temporary shit until we do this properly.
+	VideoObject_t object;
+	object.vertices		= (VideoVertex_t*)malloc_or_die(sizeof(VideoVertex_t) * alias->num_xyz);
+	object.numverts		= alias->num_xyz;
+	object.primitive	= VIDEO_PRIMITIVE_TRIANGLES;
+	object.indices		= (uint8_t*)calloc_or_die(alias->numtris * 3, sizeof(uint8_t));
+	
+	MD2Triangle_t *triangles = (MD2Triangle_t*)((uint8_t*)alias + alias->ofs_tris);
+	for(int i = 0; i < alias->numtris; i++, triangles++)
+	{
+		for(int k = 0; k < 3; k++)
+		{
+			for(int j = 0; j < 3; j++)
+			{
+				
+			}
+		}
+	}
+
+	// TODO: draw
+
+	// TODO: Stupid stupid stupid temporary shit until we do this properly.
+	free(object.vertices);
+#else
 	VideoVertex_t			*voModel;
 	MD2TriangleVertex_t		*verts1, *verts2;
 	MD2Frame_t				*frame1, *frame2;
@@ -95,8 +132,8 @@ void Alias_DrawFrame(MD2_t *mModel, ClientEntity_t *entity, lerpdata_t lLerpData
 		fAlpha	= ENTALPHA_DECODE(entity->alpha);
 
 	//new version by muff - fixes bug, easier to read, faster (well slightly)
-	frame1 = (MD2Frame_t*)((uint8_t*)mModel + mModel->ofs_frames + (mModel->framesize*entity->draw_lastpose));
-	frame2 = (MD2Frame_t*)((uint8_t*)mModel + mModel->ofs_frames + (mModel->framesize*entity->draw_pose));
+	frame1 = (MD2Frame_t*)((uint8_t*)alias + alias->ofs_frames + (alias->framesize*entity->draw_lastpose));
+	frame2 = (MD2Frame_t*)((uint8_t*)alias + alias->ofs_frames + (alias->framesize*entity->draw_pose));
 
 #if 0
 	if ((entity->scale != 1.0f) && (entity->scale > 0.1f))
@@ -108,10 +145,10 @@ void Alias_DrawFrame(MD2_t *mModel, ClientEntity_t *entity, lerpdata_t lLerpData
 	verts1 = &frame1->verts[0];
 	verts2 = &frame2->verts[0];
 
-	order = (int*)((uint8_t*)mModel + mModel->ofs_glcmds);
+	order = (int*)((uint8_t*)alias + alias->ofs_glcmds);
 
 	// TODO: Stupid stupid stupid temporary shit until we do this properly.
-	voModel = (VideoVertex_t*)malloc_or_die(sizeof(VideoVertex_t) * mModel->num_xyz);
+	voModel = (VideoVertex_t*)malloc_or_die(sizeof(VideoVertex_t) * alias->num_xyz);
 
 	memset(voModel, 0, sizeof(voModel));
 
@@ -146,10 +183,11 @@ void Alias_DrawFrame(MD2_t *mModel, ClientEntity_t *entity, lerpdata_t lLerpData
 			order += 3;
 		} while (--count);
 
-		Video_DrawObject(voModel, VIDEO_PRIMITIVE_TRIANGLE_STRIP, uiVerts, entity->model->mAssignedMaterials, entity->skinnum);
+		Video_DrawObject(voModel, VIDEO_PRIMITIVE_TRIANGLE_STRIP, uiVerts, entity->model->materials, entity->skinnum);
 	}
 
 	free(voModel);
+#endif
 }
 
 void Alias_SetupFrame(MD2_t *mModel,ClientEntity_t *ceCurrent,lerpdata_t *ldLerp)

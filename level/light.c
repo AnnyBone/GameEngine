@@ -18,8 +18,7 @@ int			harshshade;
 lighttype_t	defaultlighttype;
 int			overridelighttypes;
 
-int			minlight;
-int			ambientlight;
+int	minlight, g_lightambient_uni;
 
 uint8_t		currentvis[(BSP_MAX_LEAFS+7)/8];
 
@@ -111,7 +110,7 @@ int LightStyleForTargetname( char *targetname )
 }
 
 #ifndef __linux
-#include <Windows.h>
+#	include <Windows.h>
 #endif
 
 void ParseLightEntities( void )
@@ -152,7 +151,22 @@ void ParseLightEntities( void )
 		l->type = defaultlighttype;
 
 		if (is_skylight)
+		{
 			l->type = LIGHTTYPE_SUN;
+
+			VectorClear(l->ambience);
+
+			value = ValueForKey(ent, "ambient");
+			if (value[0])
+			{
+				j = sscanf(value, "%lf %lf %lf", &l->ambience[0], &l->ambience[1], &l->ambience[2]);
+				if (j != 3)
+					Error("Invalid ambience parameter for light_environment! (%.0f %.0f %.0f) (%s)\n", l->origin[0], l->origin[1], l->origin[2], value);
+
+				// for some reason this * 0.5 is needed to match quake light
+				//VectorScale(l->ambience, 0.5, l->ambience);
+			}
+		}
 		else
 		{
 			// For generic lights, we can use custom types.
@@ -162,8 +176,6 @@ void ParseLightEntities( void )
 				if (j < 0 || j >= LIGHTTYPE_TOTAL)
 					Error("error in light at %.0f %.0f %.0f:\nunknown light type \"delay\" \"%s\"\n", l->origin[0], l->origin[1], l->origin[2], ValueForKey(ent, "delay"));
 				l->type = (lighttype_t)j;
-
-				printf("%i\n", (int)l->type);
 			}
 		}
 
@@ -255,48 +267,57 @@ void ParseLightEntities( void )
 		if (vec[0])
 			l->clampradius = vec[0];
 
-		value = ValueForKey( ent, "name" );
-		if( value[0] && !l->style )
+		if (!is_skylight && !is_spotlight)
 		{
-			char s[16];
+			value = ValueForKey(ent, "name");
+			if (value[0] && !l->style)
+			{
+				char s[16];
 
-			l->style = LightStyleForTargetname( value );
+				l->style = LightStyleForTargetname(value);
 
-			memset( s, 0, sizeof(s) );
-			sprintf( s, "%i", l->style );
-			SetKeyValue( ent, "style", s );
+				memset(s, 0, sizeof(s));
+				sprintf(s, "%i", l->style);
+				SetKeyValue(ent, "style", s);
+			}
 		}
 
 		value = ValueForKey( ent, "target" );
-		if( value[0] )
+		if (!value[0])
 		{
-			printf("target(%s)\n", value);
-			for (j = 0; j < num_entities; j++)
+			if (!is_skylight && (l->type == LIGHTTYPE_SUN))
+				Error("error in light at %.0f %.0f %.0f:\nLIGHTTYPE_SUN (delay 4) requires a target for the sun direction\n", l->origin[0], l->origin[1], l->origin[2]);
+			continue;
+		}
+
+		for (j = 0; j < num_entities; j++)
+		{
+			if (i == j)
+				continue;
+
+			targetname = ValueForKey(&entities[j], "name");
+			if (!strcmp(targetname, value))
 			{
-				if (i == j)
-					continue;
+				vec3_t origin;
 
-				targetname = ValueForKey(&entities[j], "name");
-				if (!strcmp(targetname, value))
-				{
-					vec3_t origin;
+				GetVectorForKey(&entities[j], "origin", origin);
 
-					GetVectorForKey(&entities[j], "origin", origin);
+				// set up spotlight values for lighting code to use
+				VectorSubtract(origin, l->origin, l->spotdir);
+				VectorNormalize(l->spotdir);
 
-					// set up spotlight values for lighting code to use
-					VectorSubtract(origin, l->origin, l->spotdir);
-					VectorNormalize(l->spotdir);
-
-					if (!l->angle)
-						l->spotcone = -cos(20.0f*Q_PI / 180.0f);
-					else
-						l->spotcone = -cos(l->angle / 2.0f*Q_PI / 180.0f);
-					break;
-				}
+				if (!l->angle)
+					l->spotcone = -cos(20.0f*Q_PI / 180.0f);
+				else
+					l->spotcone = -cos(l->angle / 2.0f*Q_PI / 180.0f);
+				break;
 			}
+		}
 
-			if (j == num_entities)
-				printf("warning in light at %.0f %.0f %.0f:\nunmatched light target\n", l->origin[0], l->origin[1], l->origin[2]);
+		if (j == num_entities)
+		{
+			printf("warning in light at %.0f %.0f %.0f:\nunmatched light target\n", l->origin[0], l->origin[1], l->origin[2]);
+			continue;
 		}
 
 		// set the style on the source ent for switchable lights
@@ -513,8 +534,8 @@ int Light_Main( int argc, char **argv )
 	relight                 = false;
 	globallightscale        = 1.0;
 	globallightradiusscale  = 1.0;
+	g_lightambient_uni		=
 	minlight                = 0;
-	ambientlight            = 0;
 	defaultlighttype        = LIGHTTYPE_MINUSX;
 	overridelighttypes      = false;
 
@@ -563,7 +584,7 @@ int Light_Main( int argc, char **argv )
 			i++;
 			if( i >= argc )
 				Error( "no value was given to -minlight\n" );
-			minlight = atof( argv[i] );
+			minlight = atoi( argv[i] );
 			if( minlight < 0 )
 				minlight = 0;
 		}
@@ -572,9 +593,9 @@ int Light_Main( int argc, char **argv )
 			i++;
 			if( i >= argc )
 				Error( "no value was given to -ambientlight\n" );
-			ambientlight = atof( argv[i] );
-			if( ambientlight < 0 )
-				ambientlight = 0;
+			g_lightambient_uni = atoi(argv[i]);
+			if (g_lightambient_uni < 0)
+				g_lightambient_uni = 0;
 		}
 		else if( !strcmp( argv[i],"-defaulttype" ) )
 		{

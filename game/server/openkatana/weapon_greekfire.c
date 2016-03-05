@@ -42,12 +42,12 @@ void GreekFire_Throw(ServerEntity_t *ent)
 	Weapon_Projectile(ent,greekfire,800.0f);
 
 	Entity_SetModel(greekfire,"models/w_greekfire.md2");
-	Math_MVToVector(Math_VectorToAngles(greekfire->v.velocity),greekfire->v.angles);
+	Math_MVToVector(plVectorToAngles(greekfire->v.velocity), greekfire->v.angles);
 
 	// Use SetOrigin since it automatically links.
 	Entity_SetOrigin(greekfire, ent->v.origin);
 
-	Entity_SetSizeVector(greekfire,g_mvOrigin3f,g_mvOrigin3f);
+	Entity_SetSizeVector(greekfire, pl_origin3f, pl_origin3f);
 
 	greekfire->v.TouchFunction = GreekfireTouch;
 }

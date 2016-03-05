@@ -122,6 +122,8 @@ typedef struct
 	ServerEntity_t*(*Server_FindEntity)(ServerEntity_t *eStartEntity, char *cName, bool bClassname);						// Finds a specified entity either by classname or by entity name.
 	ServerEntity_t*(*Server_GetEdicts)(void);
 
+	model_t*(*GetServerEntityModel)(ServerEntity_t *entity);
+
 	char		*(*Server_GetLevelName)(void);	// Returns the name of the currently active level.
 
 	double		(*Server_GetFrameTime)(void);	// Returns host time.
@@ -136,14 +138,14 @@ typedef struct
 	void(*Client_RemoveMenuState)(int iState);					// Removes a state from the clients menu.
 
 	// SPRITE START
-	Sprite*(*AddSprite)(void);
+	ISprite*(*AddSprite)(void);
 
-	void(*RemoveSprite)(Sprite *sprite);
-	void(*SetSpritePosition)(Sprite *sprite, MathVector3f_t position);
-	void(*SetSpriteColour)(Sprite *sprite, float r, float g, float b, float a);
-	void(*SetSpriteType)(Sprite *sprite, SpriteType_t type);
-	void(*SetSpriteScale)(Sprite *sprite, float scale);
-	void(*SetSpriteMaterial)(Sprite *sprite, Material_t *material);
+	void(*RemoveSprite)(ISprite *sprite);
+	void(*SetSpritePosition)(ISprite *sprite, MathVector3f_t position);
+	void(*SetSpriteColour)(ISprite *sprite, float r, float g, float b, float a);
+	void(*SetSpriteType)(ISprite *sprite, SpriteType_t type);
+	void(*SetSpriteScale)(ISprite *sprite, float scale);
+	void(*SetSpriteMaterial)(ISprite *sprite, Material_t *material);
 	// SPRITE END
 
 	ClientEntity_t		*(*Client_GetViewEntity)(void);		// Returns the entity representing the players view model.

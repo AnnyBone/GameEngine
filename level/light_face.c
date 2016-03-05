@@ -464,7 +464,7 @@ static void SingleLightFace_Sun( const directlight_t *light, lightinfo_t *l )
 	lightTrace_t	tr;
 
 	shade = -DotProduct( light->spotdir, l->facenormal );
-	if( shade <= 0 )
+	if( shade <= 0 && !light->ambience)
 		return;		// ignore backfaces
 
 	// LordHavoc: FIXME: decide this 0.5 bias based on shader properties (some are dull, some are shiny)
@@ -485,12 +485,20 @@ static void SingleLightFace_Sun( const directlight_t *light, lightinfo_t *l )
 
 		// if trace hits solid don't cast sun
 		Light_TraceLine( &tr, point->v, endpos, true );
-		if( tr.fraction < 1 && tr.endcontents == BSP_CONTENTS_SOLID )
-			continue;
-
-		c[0] = shade * light->color[0]*tr.filter[0];
-		c[1] = shade * light->color[1]*tr.filter[1];
-		c[2] = shade * light->color[2]*tr.filter[2];
+		if (tr.fraction < 1 && tr.endcontents == BSP_CONTENTS_SOLID)
+		{
+			if (!light->ambience)
+				continue;
+				
+			// Apply ambience from sun
+			VectorCopy(light->ambience, c);
+		}
+		else
+		{
+			c[0] = shade * light->color[0] * tr.filter[0];
+			c[1] = shade * light->color[1] * tr.filter[1];
+			c[2] = shade * light->color[2] * tr.filter[2];
+		}
 
 		if( DotProduct(c, c) < (1.0 / 32.0) )
 			continue;	// ignore colors too dim
@@ -665,7 +673,7 @@ void LightFace( BSPFace_t *f, const lightchain_t *lightchain, const directlight_
 		memset( l.sample[i], 0, sizeof( lightsample_t ) * l.numsamples );
 
 	// if -minlight or -ambientlight is used we always allocate style 0
-	if( minlight > 0 || ambientlight > 0 )
+	if (minlight > 0 || g_lightambient_uni > 0)
 		l.lightstyles[0] = 0;
 
 	if( relight )
@@ -684,13 +692,12 @@ void LightFace( BSPFace_t *f, const lightchain_t *lightchain, const directlight_
 		SingleLightFace( *novislight++, &l );
 
 	// apply ambientlight if needed
-	if( ambientlight > 0 )
+	if (g_lightambient_uni > 0)
 	{
 		vec_t d;
 		vec3_t v;
-		v[0] = ambientlight;
-		v[1] = ambientlight;
-		v[2] = ambientlight;
+
+		VectorSet(v, g_lightambient_uni, g_lightambient_uni, g_lightambient_uni);
 		d = VectorLength(v);
 		for( i = 0; i < l.numsamples; i++ )
 		{

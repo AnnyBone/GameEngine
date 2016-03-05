@@ -25,7 +25,7 @@ Material_t *mat_bloodcloud	= nullptr;
 Material_t *mat_smoke		= nullptr;
 Material_t *mat_spark		= nullptr;
 
-Sprite *spr_debug = NULL;
+ISprite *spr_debug = NULL;
 
 void ClientEffect_Initialize()
 {
@@ -34,9 +34,6 @@ void ClientEffect_Initialize()
 	mat_bloodcloud	= g_engine->LoadMaterial("particles/bloodcloud");
 	mat_smoke		= g_engine->LoadMaterial("particles/smoke");
 	mat_spark		= g_engine->LoadMaterial("particles/spark");
-
-	spr_debug = g_engine->AddSprite();
-	g_engine->SetSpriteMaterial(spr_debug, g_engine->LoadMaterial("debug/debug_sprite"));
 }
 
 /*
@@ -48,11 +45,14 @@ void ClientEffect_Initialize()
 */
 
 /*	Field of particles, useful for forcefields etc.
+	TODO: get entity pointer, so we can do this per-model instead.
 */
 void ClientEffect_ParticleField(MathVector3f_t position, MathVector3f_t mins, MathVector3f_t maxs, float density)
 {
 	if (density <= 0)
 		return;
+
+
 }
 
 void ClientEffect_LavaSplash(MathVector3f_t position)
@@ -86,7 +86,7 @@ void ClientEffect_LavaSplash(MathVector3f_t position)
 				velocity = (float)(50 + (rand() & 63));
 
 				plVectorNormalize(direction);
-				plVectorScale3f(direction, velocity, part->vVelocity);
+				plVectorScale3fv(direction, velocity, part->vVelocity);
 			}
 }
 
@@ -163,7 +163,7 @@ void ClientEffect_BloodCloud(MathVector3f_t position, BloodType_t type)
 
 	// TODO: support for different blood types
 
-	plVectorCopy3f(position, part->vOrigin);
+	plVectorCopy3fv(position, part->vOrigin);
 
 	part->lifetime		= (float)(Client.time + 0.3*(rand() % 5));
 	part->fScale		= 20.0f;
@@ -259,9 +259,15 @@ void ClientEffect_IonBallTrail(MathVector3f_t position)
 		for (j = 0; j < 3; j++)
 			part->vOrigin[j] = position[j] + ((rand() & 15) - 5.0f);
 
-		Math_VectorClear(part->vVelocity);
+		plVectorClear3fv(part->vVelocity);
 	}
 
-	g_engine->SetSpritePosition(spr_debug, position);
+	if (!spr_debug)
+	{
+		spr_debug = g_engine->AddSprite();
+		spr_debug->SetMaterial(g_engine->LoadMaterial("debug/debug_sprite"));
+	}
+
+	spr_debug->SetPosition(position);
 }
 #endif

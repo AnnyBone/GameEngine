@@ -16,7 +16,7 @@ void TridentHit(ServerEntity_t *ent)
 	vec3_t	forward,temp,sndvec,vel;
 	trace_t	trace;
 
-	Math_AngleVectors(ent->v.v_angle,forward,temp,temp);
+	plAngleVectors(ent->v.v_angle, forward, temp, temp);
 
 	// [18/4/2012] A nice soft bounce ~hogsy
 	vel[0] = vel[1] = 0;

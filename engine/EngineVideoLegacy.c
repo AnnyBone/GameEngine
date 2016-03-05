@@ -164,7 +164,7 @@ bool R_CullModelForEntity(entity_t *e)
 
 void R_RotateForEntity (vec3_t origin, vec3_t angles)
 {
-#ifdef KATANA_CORE_GL
+#ifdef VL_MODE_OPENGL
 	glTranslatef(origin[0],origin[1],origin[2]);
 	glRotatef(angles[1],0,0,1);
 	glRotatef(-angles[0],0,1,0);
@@ -251,7 +251,7 @@ void R_SetFrustum (float fovx, float fovy)
 float frustum_skew = 0.0; //used by r_stereo
 void GL_SetFrustum(float fovx, float fovy)
 {
-#ifdef KATANA_CORE_GL
+#ifdef VL_MODE_OPENGL
 	float xmax, ymax;
 	xmax = NEARCLIP * tan( fovx * pMath_PI / 360.0 );
 	ymax = NEARCLIP * tan( fovy * pMath_PI / 360.0 );
@@ -370,29 +370,15 @@ void R_DrawViewModel(void)
 	if (!currententity->model || currententity->model->type != MODEL_TYPE_MD2)
 		return;
 
-#ifdef KATANA_CORE_GL
+#ifdef VL_MODE_OPENGL
 	// hack the depth range to prevent view model from poking into walls
 	glDepthRange(0,0.3);
 #endif
 
 	Alias_Draw(currententity);
 
-#ifdef KATANA_CORE_GL
+#ifdef VL_MODE_OPENGL
 	glDepthRange(0,1);
-#endif
-}
-
-void R_EmitWirePoint (MathVector3f_t origin)
-{
-#ifdef KATANA_CORE_GL
-	glBegin(GL_LINES);
-	glVertex3f(origin[0]-4.0f,origin[1],origin[2]);
-	glVertex3f(origin[0]+4.0f,origin[1],origin[2]);
-	glVertex3f(origin[0],origin[1]-4.0f,origin[2]);
-	glVertex3f(origin[0],origin[1]+4.0f,origin[2]);
-	glVertex3f(origin[0],origin[1],origin[2]-4.0f);
-	glVertex3f(origin[0],origin[1],origin[2]+4.0f);
-	glEnd();
 #endif
 }
 
@@ -400,7 +386,7 @@ void R_EmitWireBox(
 	MathVector3f_t mins, MathVector3f_t maxs,
 	float r, float g, float b)
 {
-#ifdef KATANA_CORE_GL
+#ifdef VL_MODE_OPENGL
 	glBegin(GL_QUADS);
 	glVertex3f(mins[0],mins[1],maxs[2]);
 	glVertex3f(maxs[0],mins[1],maxs[2]);
@@ -463,7 +449,7 @@ void R_EmitWireBox(
 
 void Video_DrawClientBoundingBox(ClientEntity_t *clEntity)
 {
-#ifdef KATANA_CORE_GL
+#ifdef VL_MODE_OPENGL
 	MathVector3f_t vMins, vMaxs;
 
 	if (!clEntity->model || ((clEntity == &cl_entities[cl.viewentity]) && !chase_active.bValue) || (clEntity == &cl.viewent))
@@ -507,16 +493,16 @@ void Video_ShowBoundingBoxes(void)
 		if(ed == sv_player && !chase_active.value)
 			continue;
 
-#ifdef KATANA_CORE_GL
+#ifdef VL_MODE_OPENGL
 		glColor3f(1,1,1);
 #endif
 
-		R_EmitWirePoint (ed->v.origin);
+		Draw_CoordinateAxes(ed->v.origin);
 
 		Math_VectorAdd(ed->v.mins,ed->v.origin,mins);
 		Math_VectorAdd(ed->v.maxs,ed->v.origin,maxs);
 
-#ifdef KATANA_CORE_GL
+#ifdef VL_MODE_OPENGL
 		glColor4f(0, 0.5f, 0, 0.5f);
 #endif
 
@@ -554,7 +540,7 @@ void R_DrawShadows (void)
 
 void R_SetupScene(void)
 {
-#ifdef KATANA_CORE_GL
+#ifdef VL_MODE_OPENGL
 	//johnfitz -- rewrote this section
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
@@ -628,7 +614,7 @@ void R_RenderView (void)
 	if (!cl.worldmodel)
 		Sys_Error ("R_RenderView: NULL worldmodel");
 
-#ifdef KATANA_CORE_GL
+#ifdef VL_MODE_OPENGL
 	if(r_speeds.value)
 	{
 		glFinish ();
@@ -644,7 +630,7 @@ void R_RenderView (void)
 
 	vlClear();
 
-#ifdef KATANA_CORE_GL
+#ifdef VL_MODE_OPENGL
 	//johnfitz -- stereo rendering -- full of hacky goodness
 	if (r_stereo.value)
 	{

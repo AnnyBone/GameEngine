@@ -125,7 +125,7 @@ void throw_cordite(ServerEntity_t *ent)
 
 	Entity_SetModel(greekfire,"models/grenade.mdl");
 
-	Math_MVToVector(Math_VectorToAngles(greekfire->v.velocity),greekfire->v.angles);
+	Math_MVToVector(plVectorToAngles(greekfire->v.velocity), greekfire->v.angles);
 
 	Entity_SetSize(greekfire,0,0,0,0,0,0);
 

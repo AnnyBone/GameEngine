@@ -862,7 +862,7 @@ void Monster_MoveRandom(ServerEntity_t *eMonster,float fSpeed)
 		else if (iResult == 1)
 			eMonster->v.velocity[1] -= fSpeed;
 
-		eMonster->v.angles[1] = Math_VectorToYaw(eMonster->v.velocity);
+		eMonster->v.angles[1] = plVectorToYaw(eMonster->v.velocity);
 	}
 	else if (rand() % 150 == 0)
 	{

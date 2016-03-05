@@ -21,8 +21,8 @@
 #pragma once
 
 #ifdef _MSC_VER
-#pragma warning(disable:4100)	// unreferenced formal parameter
-#pragma	warning(disable:4127)	// conditional expression is constant
+#	pragma warning(disable:4100)	// unreferenced formal parameter
+#	pragma warning(disable:4127)	// conditional expression is constant
 #endif
 
 //#define   PARANOID				// Speed sapping error checking.

@@ -37,6 +37,9 @@ extern ConsoleVariable_t
 	cv_video_verticlesync,
 	cv_video_lightmapoversample,	// Enable overbrights?
 	cv_video_drawbrushes,			// Draw brush entities?
+
+	cv_video_shownormals,			// Show vertex normals?
+
 	cvLitParticles;					// Should particles be lit or not?
 
 extern	ConsoleVariable_t	r_showtris;
@@ -151,7 +154,6 @@ void Video_UpdateWindow(void);
 void Video_GenerateSphereCoordinates(void);
 void Video_SetTexture(gltexture_t *gTexture);
 void Video_SetViewportSize(int w, int h);
-void Video_SelectTexture(unsigned int uiTarget);
 void Video_EnableCapabilities(unsigned int iCapabilities);
 void Video_DisableCapabilities(unsigned int iCapabilities);
 void Video_PreFrame(void);
@@ -175,7 +177,6 @@ void DEBUG_FrameBufferBind();
 void DEBUG_FrameBufferDraw();
 
 // Legacy
-void R_EmitWirePoint(MathVector3f_t origin);
 void R_EmitWireBox(MathVector3f_t mins, MathVector3f_t maxs, float r, float g, float b);
 bool R_CullBox(MathVector3f_t emins, MathVector3f_t emaxs);
 

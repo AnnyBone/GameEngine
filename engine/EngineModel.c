@@ -1210,33 +1210,24 @@ void Model_LoadBSP(model_t *mod,void *buffer)
 	}
 }
 
-MathVector_t Model_GenerateNormal(MathVector3f_t a, MathVector3f_t b, MathVector3f_t c)
+MathVector_t Model_GenerateNormal3fv(MathVector3f_t a, MathVector3f_t b, MathVector3f_t c)
 {
-	MathVector_t	mvOutNormal;
-	MathVector3f_t	mvNormal;
-	MathVector3f_t	mvX, mvY;
+	MathVector_t	output;
+	MathVector3f_t	normal, x, y;
 
-#if 0
-	Con_Printf("A : %i %i %i\n", (int)a[0], (int)a[1], (int)a[2]);
-	Con_Printf("B : %i %i %i\n", (int)b[0], (int)b[1], (int)b[2]);
-	Con_Printf("C : %i %i %i\n", (int)c[0], (int)c[1], (int)c[2]);
-#endif
+	Math_VectorSubtract(c, b, x);
+	Math_VectorSubtract(a, b, y);
 
-	Math_VectorSubtract(c, b, mvX);
-	Math_VectorSubtract(a, b, mvY);
-
-	Math_VectorClear(mvNormal);
-	Math_CrossProduct(mvX, mvY, mvNormal);
+	Math_VectorClear(normal);
+	Math_CrossProduct(x, y, normal);
 
 	// Normalize it.
-	plVectorNormalize(mvNormal);
+	plVectorNormalize(normal);
 
 	// Return the normal.
-	Math_VectorToMV(mvNormal, mvOutNormal);
+	Math_VectorToMV(normal, output);
 
-//	Con_Printf("NORMAL (%i %i %i)\n", (int)mvOutNormal.vX, (int)mvOutNormal.vY, (int)mvOutNormal.vZ);
-
-	return mvOutNormal;
+	return output;
 }
 
 MathVector_t Model_GenerateNormal3f(
@@ -1256,7 +1247,7 @@ MathVector_t Model_GenerateNormal3f(
 	b[0] = bX; b[1] = bY; b[2] = bZ;
 	c[0] = cX; c[1] = cY; c[2] = cZ;
 
-	return Model_GenerateNormal(a, b, c);
+	return Model_GenerateNormal3fv(a, b, c);
 }
 
 void Model_LoadRelativeMaterial(model_t *model)
@@ -1265,13 +1256,13 @@ void Model_LoadRelativeMaterial(model_t *model)
 
 	plStripExtension(out, model->name);
 
-	model->mAssignedMaterials = Material_Load(out);
-	if (!model->mAssignedMaterials)
+	model->materials = Material_Load(out);
+	if (!model->materials)
 	{
 		Con_Warning("Failed to load material for model! (%s) (%s)\n", model->name, out);
 
 		// Set us up to just use the dummy material instead.
-		model->mAssignedMaterials = g_mMissingMaterial;
+		model->materials = g_mMissingMaterial;
 	}
 }
 
@@ -1281,65 +1272,49 @@ void Model_LoadRelativeMaterial(model_t *model)
 
 /*	Calculate bounds of alias model for nonrotated, yawrotated, and fullrotated cases
 */
-void Model_CalculateMD2Bounds(model_t *mModel, MD2_t *mMD2Model)
+void Model_CalculateMD2Bounds(model_t *model, MD2_t *alias_model)
 {
-	int i, j;
-	MD2Frame_t *mFrame;
-
 	// Reset everything to its maximum size.
+	int	i;
 	for (i = 0; i < 3; i++)
 	{
 		loadmodel->mins[i] = loadmodel->ymins[i] = loadmodel->rmins[i] = 999999.0f;
 		loadmodel->maxs[i] = loadmodel->ymaxs[i] = loadmodel->rmaxs[i] = -999999.0f;
 	}
 
-	mFrame = (MD2Frame_t*)((uint8_t*)mMD2Model + mMD2Model->ofs_frames + mMD2Model->framesize);
-	if(!mFrame)
-		Sys_Error("Invalid frame encountered when calculating MD2 bounds! (%s)\n", mModel->name);
+	MD2Frame_t *curframe = (MD2Frame_t*)((uint8_t*)alias_model + alias_model->ofs_frames + alias_model->framesize);
+	if (!curframe)
+		Sys_Error("Invalid frame encountered when calculating MD2 bounds! (%s)\n", model->name);
 
-#if 1
-	MathVector3f_t
-		mvMins = { 0, 0, 0 }, mvMaxs = { 0, 0, 0 },
-		mvCurMins, mvCurMaxs;
-
-	// Go through all the frames and figure out the best sizing.
-	for (j = 0; j < mMD2Model->num_frames; j++)
+	MathVector3f_t mins = { 0 }, maxs = { 0 }, curmins, curmaxs;
+	MD2TriangleVertex_t *vertices = &curframe->verts[0];
+	for (i = 0; i < alias_model->num_xyz; i++, vertices++)
 	{
-		for (i = 0; i < 3; i++)
+		for (int j = 0; j < 3; j++)
 		{
-			mvCurMins[i] = mFrame->translate[i];
-			mvCurMaxs[i] = mvCurMins[i] + mFrame->scale[i] * 255;
+			curmins[j] = -(vertices->v[j] + curframe->translate[j]);
+			if (curmins[j] < mins[j])
+				mins[j] = curmins[j];
 
-			if (mvCurMins[i] < mvMins[i])
-				mvMins[i] = mvCurMins[i];
-			if (mvCurMaxs[i] > mvMaxs[i])
-				mvMaxs[i] = mvCurMaxs[i];
+			curmaxs[j] = (vertices->v[j] + curframe->translate[j]);
+			if (curmaxs[j] > maxs[j])
+				maxs[j] = curmaxs[j];
 		}
-
-		mFrame++;
 	}
-#else
-	MathVector3f_t mvMins, mvMaxs;
-	for (i = 0; i < 3; i++)
-	{
-		mvMins[i] = mFrame->translate[i];
-		mvMaxs[i] = mvMins[i] + mFrame->scale[i] * 255;
-	}
-#endif
 
 	// Check that the size is valid.
-	if (plVectorCompare(mvMins, pl_origin3f) && plVectorCompare(mvMaxs, pl_origin3f))
+	if (plVectorCompare(mins, pl_origin3f) && plVectorCompare(maxs, pl_origin3f))
 	{
 		// This should never happen, but if it does, give a warning.
-		Con_Warning("Suspicious model size! (%s)\n", mModel->name);
+		Con_Warning("Suspicious bounding box size! (%s)\n", model->name);
 
 		// Then give us a default size.
-		Math_VectorSet(-32, mvMins);
-		Math_VectorSet(32, mvMaxs);
+		Math_VectorSet(-32, mins);
+		Math_VectorSet(32, maxs);
 	}
 
-	Math_VectorCopy(mvMins, loadmodel->mins);
-	Math_VectorCopy(mvMaxs, loadmodel->maxs);
+	Math_VectorCopy(mins, loadmodel->mins);
+	Math_VectorCopy(maxs, loadmodel->maxs);
 
 	Math_VectorCopy(loadmodel->mins, loadmodel->rmins);
 	Math_VectorCopy(loadmodel->maxs, loadmodel->rmaxs);
@@ -1494,9 +1469,9 @@ void Model_LoadMD2(model_t *mModel,void *Buffer)
 
 #if 0
 	// Allocate vertex array.
-	loadmodel->object.numverts = mMD2Model->numtris * 3;
-	loadmodel->object.vertices = (VideoVertex_t*)malloc(loadmodel->object.numverts * sizeof(VideoVertex_t));
-	memset(loadmodel->object.vertices, 0, loadmodel->object.numverts * sizeof(VideoVertex_t));
+	mModel->object.numverts = mMD2Model->numtris * 3;
+	mModel->object.vertices = (VideoVertex_t*)malloc(mModel->object.numverts * sizeof(VideoVertex_t));
+	memset(mModel->object.vertices, 0, mModel->object.numverts * sizeof(VideoVertex_t));
 #endif
 
 	Model_LoadRelativeMaterial(mModel);
@@ -1505,7 +1480,7 @@ void Model_LoadMD2(model_t *mModel,void *Buffer)
 	Model_CalculateMD2Bounds(mModel, mMD2Model);
 
 	// Calculate vertex normals.
-	Model_CalculateMD2Normals(loadmodel, mMD2Model);
+	Model_CalculateMD2Normals(mModel, mMD2Model);
 
 	iEnd = Hunk_LowMark();
 	total = iEnd-iStartHunk;

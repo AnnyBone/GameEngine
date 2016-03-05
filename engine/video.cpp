@@ -26,10 +26,6 @@
 
 /*
 	Video System
-
-	TODO:
-		Move all/most API-specific code here.
-		Scale TMU support based on actual hardware, rather than set limitations.
 */
 
 viddef_t vid; // Legacy global video state (TODO: Replace!)
@@ -61,6 +57,8 @@ ConsoleVariable_t
 	cv_video_drawmaterials = { "video_drawmaterials", "1", false, false, "If enabled, materials are drawn." },
 	cv_video_drawsky = { "video_drawsky", "1", false, false, "Toggles rendering of the sky." },
 	cv_video_drawplayershadow = { "video_drawplayershadow", "1", true, false, "If enabled, the players own shadow will be drawn." },
+	
+	cv_video_shownormals = { "video_shownormals", "0", false, false, "If enabled, draws lines representing vertex normals." },
 
 	cv_video_clearbuffers = { "video_clearbuffers", "1", true, false },
 	cv_video_detailscale = { "video_detailscale", "3", true, false, "Changes the scaling used for detail maps." },
@@ -86,8 +84,6 @@ Video_t	Video;
 */
 void Video_Initialize(void)
 {
-	int i;
-
 	// Ensure we haven't already been initialized.
 	if(Video.bInitialized)
 		return;
@@ -130,6 +126,8 @@ void Video_Initialize(void)
 	Cvar_RegisterVariable(&cv_video_shaders, NULL);
 	Cvar_RegisterVariable(&cv_video_clearbuffers, NULL);
 
+	Cvar_RegisterVariable(&cv_video_shownormals, NULL);
+
 	Cmd_AddCommand("video_restart",Video_UpdateWindow);
 	Cmd_AddCommand("video_debug",Video_DebugCommand);
 
@@ -171,7 +169,7 @@ void Video_Initialize(void)
 	if (!Video.textureunits)
 		Sys_Error("Failed to allocated handler for the number of supported TMUs! (%i)\n", Video.num_textureunits);
 
-	for (i = 0; i < Video.num_textureunits; i++)
+	for (int i = 0; i < Video.num_textureunits; i++)
 	{
 		Video.textureunits[i].isactive			= false;
 		Video.textureunits[i].current_envmode	= VIDEO_TEXTURE_MODE_REPLACE;
@@ -228,7 +226,7 @@ void Video_Initialize(void)
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-	Video_SelectTexture(VIDEO_TEXTURE_LIGHT);
+	vlActiveTexture(VIDEO_TEXTURE_LIGHT);
 
 	// Overbrights.
 	vlSetTextureEnvironmentMode(VIDEO_TEXTURE_MODE_COMBINE);
@@ -237,8 +235,7 @@ void Video_Initialize(void)
 	glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_TEXTURE);
 	glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 4);
 
-	Video_SelectTexture(0);
-#endif
+	vlActiveTexture(0);
 
 	vid.conwidth = (scr_conwidth.value > 0) ? (int)scr_conwidth.value : (scr_conscale.value > 0) ? (int)(Video.iWidth / scr_conscale.value) : Video.iWidth;
 	vid.conwidth = Math_Clamp(320, vid.conwidth, Video.iWidth);
@@ -247,7 +244,7 @@ void Video_Initialize(void)
 
 	Video.vertical_sync = cv_video_verticlesync.bValue;
 
-#ifdef KATANA_CORE_GL
+#ifdef VL_MODE_OPENGL
 #ifdef VIDEO_SUPPORT_SHADERS
 	Shader_Initialize();
 #endif
@@ -255,7 +252,7 @@ void Video_Initialize(void)
 	Light_Initialize();
 
 	// Initialize the sprite manager.
-	g_spritemanager = new SpriteManager();
+	g_spritemanager = new Core::SpriteManager();
 	g_spritemanager->Initialize();
 
 	Video.bInitialized = true;
@@ -454,25 +451,6 @@ void Video_SetTexture(gltexture_t *gTexture)
 }
 
 /*
-	Multitexturing Management
-*/
-
-void Video_SelectTexture(unsigned int uiTarget)
-{
-#ifdef KATANA_CORE_GL
-	if (uiTarget == Video.current_textureunit)
-		return;
-	
-	if (uiTarget > Video.num_textureunits)
-		Sys_Error("Invalid texture unit! (%i)\n",uiTarget);
-
-	vlActiveTexture(uiTarget);
-
-	Video.current_textureunit = uiTarget;
-
-	if (Video.debug_frame)
-		plWriteLog(cv_video_log.string, "Video: Texture Unit %i\n", Video.current_textureunit);
-#endif
 }
 
 /*

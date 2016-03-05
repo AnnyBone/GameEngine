@@ -493,34 +493,32 @@ void Draw_Line(MathVector3f_t mvStart, MathVector3f_t mvEnd)
 
 /*	Debugging tool.
 */
-void Draw_CoordinateAxes(float x,float y,float z)
+void Draw_CoordinateAxes(MathVector3f_t position)
 {
-	VideoVertex_t voLine[2] = { { { 0 } } };
+	MathVector3f_t start, end;
 
-	Video_ObjectVertex(&voLine[0], 0, 0, 0);
-	Video_ObjectColour(&voLine[0], 1.0f, 0, 0, 1.0f);
-	Video_ObjectVertex(&voLine[1], 10, 0, 0);
-	Video_ObjectColour(&voLine[1], 1.0f, 0, 0, 1.0f);
-	Video_DrawObject(voLine, VIDEO_PRIMITIVE_LINES, 2, NULL, 0);
+	Math_VectorCopy(position, start);
+	Math_VectorCopy(position, end);
+	start[0] += 10;
+	end[0] -= 10;
+	Draw_Line(start, end);
 
-	Video_ObjectVertex(&voLine[0], 0, 0, 0);
-	Video_ObjectColour(&voLine[0], 0, 1.0f, 0, 1.0f);
-	Video_ObjectVertex(&voLine[1], 0, 10, 0);
-	Video_ObjectColour(&voLine[1], 0, 1.0f, 0, 1.0f);
-	Video_DrawObject(voLine, VIDEO_PRIMITIVE_LINES, 2, NULL, 0);
+	Math_VectorCopy(position, start);
+	Math_VectorCopy(position, end);
+	start[1] += 10;
+	end[1] -= 10;
+	Draw_Line(start, end);
 
-	Video_ObjectVertex(&voLine[0], 0, 0, 0);
-	Video_ObjectColour(&voLine[0], 0, 0, 1.0f, 1.0f);
-	Video_ObjectVertex(&voLine[1], 0, 0, 10);
-	Video_ObjectColour(&voLine[1], 0, 0, 1.0f, 1.0f);
-	Video_DrawObject(voLine, VIDEO_PRIMITIVE_LINES, 2, NULL, 0);
+	Math_VectorCopy(position, start);
+	Math_VectorCopy(position, end);
+	start[2] += 10;
+	end[2] -= 10;
+	Draw_Line(start, end);
 }
 
 void Draw_Grid(float x, float y, float z, int grid_size)
 {
-#ifdef KATANA_CORE_GL
-	int i;
-
+#ifdef VL_MODE_OPENGL
 	glPushMatrix();
 
 	glTranslatef(x, y, z);
@@ -528,13 +526,16 @@ void Draw_Grid(float x, float y, float z, int grid_size)
 	vlEnable(VIDEO_BLEND);
 	vlDisable(VIDEO_TEXTURE_2D);
 
-//	vlBlendFunc(VIDEO_BLEND_DEFAULT);
+	vlBlendFunc(VIDEO_BLEND_DEFAULT);
 
-	glColor4f(0, 0, 1.0f, 0.5f);
+	glEnable(GL_LINE_SMOOTH);
 
-	glLineWidth(1.0f);
+	glColor4f(0, 0, 0.5f, 1);
+
+	glLineWidth(0.1f);
 	glBegin(GL_LINES);
 
+	int i;
 	for (i = 0; i <= (4096 / grid_size); i++)
 	{
 		glVertex2i(-4096, (i * grid_size) * -1);
@@ -550,8 +551,8 @@ void Draw_Grid(float x, float y, float z, int grid_size)
 
 	glEnd();
 
-	glColor4f(0, 0, 0.3f, 1.0f);
-	glLineWidth(2.0f);
+	glColor4f(0, 0, 1, 1);
+	glLineWidth(1.0f);
 	glBegin(GL_LINES);
 
 	for (i = 0; i <= 64; i++)
@@ -572,10 +573,13 @@ void Draw_Grid(float x, float y, float z, int grid_size)
 	glLineWidth(1.0f);
 	glColor3f(1, 1, 1);
 
+	glDisable(GL_LINE_SMOOTH);
+
 	vlDisable(VIDEO_BLEND);
 	vlEnable(VIDEO_TEXTURE_2D);
 
 	glPopMatrix();
+#endif
 }
 
 void Draw_Rectangle(int x, int y, int w, int h, Colour_t colour)
@@ -785,9 +789,9 @@ void Draw_StaticEntity(ClientEntity_t *entity)
 
 	R_RotateForEntity(entity->origin, entity->angles);
 
-	Material_Draw(entity->model->mAssignedMaterials, 0, 0, 0, false);
+	Material_Draw(entity->model->materials, 0, 0, 0, false);
 	VideoObject_DrawImmediate(&entity->model->objects[entity->frame]);
-	Material_Draw(entity->model->mAssignedMaterials, 0, 0, 0, true);
+	Material_Draw(entity->model->materials, 0, 0, 0, true);
 
 	vlPopMatrix();
 	// TODO: TEMPORARY DEBUGGING STUFF!!!!
@@ -808,25 +812,7 @@ void Draw_Entity(ClientEntity_t *entity)
 {
 	if (!entity->model)
 	{
-		MathVector3f_t start, end;
-
-		Math_VectorCopy(entity->origin, start);
-		Math_VectorCopy(entity->origin, end);
-		start[0] += 5;
-		end[0] -= 5;
-		Draw_Line(start, end);
-
-		Math_VectorCopy(entity->origin, start);
-		Math_VectorCopy(entity->origin, end);
-		start[1] += 5;
-		end[1] -= 5;
-		Draw_Line(start, end);
-
-		Math_VectorCopy(entity->origin, start);
-		Math_VectorCopy(entity->origin, end);
-		start[2] += 5;
-		end[2] -= 5;
-		Draw_Line(start, end);
+		Draw_CoordinateAxes(entity->origin);
 		return;
 	}
 
