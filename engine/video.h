@@ -173,7 +173,6 @@ void DEBUG_FrameBufferBind();
 void DEBUG_FrameBufferDraw();
 
 // Legacy
-void R_EmitWirePoint(MathVector3f_t origin);
 void R_EmitWireBox(MathVector3f_t mins, MathVector3f_t maxs, float r, float g, float b);
 bool R_CullBox(MathVector3f_t emins, MathVector3f_t emaxs);
 

@@ -23,7 +23,6 @@ void Bot_Spawn(ServerEntity_t *ent);
 
 void CTF_FlagSpawn(ServerEntity_t *eFlag);
 
-void Area_PlayerSpawn(ServerEntity_t *eArea);
 void Area_BreakableSpawn(ServerEntity_t *eArea);
 void Area_ButtonSpawn(ServerEntity_t *eArea);
 void Area_ChangeLevel(ServerEntity_t *eArea);

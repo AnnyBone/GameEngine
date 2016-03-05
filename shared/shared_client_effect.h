@@ -31,54 +31,29 @@ typedef enum
 
 #ifdef __cplusplus
 
-class Sprite
+class ISprite
 {
 public:
-	Sprite();
-	virtual ~Sprite();
+	virtual void SetPosition(float x, float y, float z) = 0;
+	virtual void SetPosition(MathVector3f_t position) = 0;
+	virtual void SetColour(float r, float g, float b, float a = 1.0f) = 0;
+	virtual void SetType(SpriteType_t type) = 0;
+	virtual void SetActive(bool active) = 0;
+	virtual void SetScale(float scale) = 0;
+	virtual void SetMaterial(Material_t *material) = 0;
 
-	void SetPosition(float x, float y, float z);
-	void SetPosition(MathVector3f_t position);
-	void SetColour(float r, float g, float b, float a = 1.0f);
-	void SetType(SpriteType_t type);
-	void SetActive(bool active) { isactive = active; }
-	void SetScale(float scale);
-	void SetMaterial(Material_t *material);
+	virtual bool IsVisible() = 0;
+	virtual bool IsActive() = 0;
+	virtual bool IsLit() = 0;
 
-	virtual void Simulate();
-	virtual void Draw();
-
-	bool IsVisible()	{ return isvisible; }
-	bool IsActive()		{ return isactive; }
-	bool IsLit()		{ return islit; }
-
-	float GetScale()		{ return scale; }
-	int GetIdentifier()		{ return ident; }
-	SpriteType_t GetType()	{ return type; }
-
-private:
-	float scale;
-
-	int	ident;
-
-	bool
-		islit,		// Is the sprite intended to be lit?
-		isvisible,	// Is the sprite currently visible?
-		isactive;	// Is the sprite considered active?
-
-	MathVector3f_t
-		position,
-		mins, maxs;
-
-	SpriteType_t type;
-
-	Colour_t colour;
-
-	Material_t *material;
+	virtual float GetScale() = 0;
+	virtual int GetIdentifier() = 0;
+	virtual SpriteType_t GetType() = 0;
 };
 
 #else
 
+typedef struct ISprite ISprite;
 typedef struct Sprite Sprite;
 
 #endif

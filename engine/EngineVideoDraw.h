@@ -18,8 +18,7 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef __ENGINEVIDEODRAW__
-#define __ENGINEVIDEODRAW__
+#pragma once
 
 // draw.h -- these are the only functions outside the refresh allowed
 // to touch the vid buffer
@@ -27,12 +26,10 @@
 typedef struct
 {
 	int			width, height;
-	byte		data[4];			// variably sized
+	uint8_t		data[4];			// variably sized
 } qpic_t;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+plEXTERN_C_START
 
 extern	qpic_t *draw_disc;	// also used on sbar
 
@@ -58,8 +55,4 @@ qpic_t *Draw_CachePic(char *path);
 
 void GL_SetCanvas(VideoCanvasType_t newcanvas); //johnfitz
 
-#ifdef __cplusplus
-};
-#endif
-
-#endif
+plEXTERN_C_END

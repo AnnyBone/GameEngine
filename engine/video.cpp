@@ -250,7 +250,7 @@ void Video_Initialize(void)
 	Light_Initialize();
 
 	// Initialize the sprite manager.
-	g_spritemanager = new SpriteManager();
+	g_spritemanager = new Core::SpriteManager();
 	g_spritemanager->Initialize();
 
 	Video.bInitialized = true;

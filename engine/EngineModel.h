@@ -18,10 +18,11 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef ENGINE_MODEL_H
-#define ENGINE_MODEL_H
+#pragma once
 
 #include "shared_model.h"
+
+plEXTERN_C_START
 
 void	Model_Initialize(void);
 void	Model_ClearAll(void);
@@ -35,16 +36,8 @@ uint8_t	*Mod_LeafPVS (mleaf_t *leaf, model_t *model);
 MathVector_t Model_GenerateNormal3fv(MathVector3f_t a, MathVector3f_t b, MathVector3f_t c);
 MathVector_t Model_GenerateNormal3f(float aX, float aY, float aZ,float bX, float bY, float bZ,float cX, float cY, float cZ);
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+void Model_LoadRelativeMaterial(model_t *model);
 
-	void Model_LoadRelativeMaterial(model_t *model);
+bool ModelU3D_Load(model_t *model, void *buf);
 
-	bool ModelU3D_Load(model_t *model, void *buf);
-
-#ifdef __cplusplus
-}
-#endif
-
-#endif // !ENGINE_MODEL_H
+plEXTERN_C_END

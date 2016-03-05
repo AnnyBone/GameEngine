@@ -20,41 +20,89 @@
 
 #ifdef __cplusplus
 
-class SpriteManager
+namespace Core
 {
-public:
-	SpriteManager();
+	class Sprite : public ISprite
+	{
+	public:
+		Sprite();
+		virtual ~Sprite();
 
-	Sprite *Add();
-	void Remove(Sprite *sprite);
-	void Clear();
+		void SetPosition(float x, float y, float z);
+		void SetPosition(MathVector3f_t position);
+		void SetColour(float r, float g, float b, float a = 1.0f);
+		void SetType(SpriteType_t type);
+		void SetActive(bool active) { isactive = active; }
+		void SetScale(float scale);
+		void SetMaterial(Material_t *material);
 
-	void Initialize();
-	void Simulate();
-	void Draw();
-	void Shutdown();
+		virtual void Simulate();
+		virtual void Draw();
 
-private:
-	std::vector<Sprite*> sprites;
+		bool IsVisible()	{ return isvisible; }
+		bool IsActive()		{ return isactive; }
+		bool IsLit()		{ return islit; }
 
-	bool initialized;
-};
+		float GetScale()		{ return scale; }
+		int GetIdentifier()		{ return ident; }
+		SpriteType_t GetType()	{ return type; }
 
-extern SpriteManager *g_spritemanager;
+	private:
+		float scale;
+
+		int	ident;
+
+		bool
+			islit,		// Is the sprite intended to be lit?
+			isvisible,	// Is the sprite currently visible?
+			isactive;	// Is the sprite considered active?
+
+		MathVector3f_t
+			position,
+			mins, maxs;
+
+		SpriteType_t type;
+
+		Colour_t colour;
+
+		Material_t *material;
+	};
+
+	class SpriteManager
+	{
+	public:
+		SpriteManager();
+
+		Sprite *Add();
+		void Remove(Sprite *sprite);
+		void Clear();
+
+		void Initialize();
+		void Simulate();
+		void Draw();
+		void Shutdown();
+
+	private:
+		std::vector<Sprite*> sprites;
+
+		bool initialized;
+	};
+}
+
+extern Core::SpriteManager *g_spritemanager;
 
 #else
 
-Sprite *SpriteManager_Add(void);
-
-void SpriteManager_Remove(Sprite *sprite);
+ISprite *SpriteManager_Add(void);
+void SpriteManager_Remove(ISprite *sprite);
 void SpriteManager_Clear(void);
 void SpriteManager_Simulate(void);
 void SpriteManager_Draw(void);
 
-void Sprite_SetPosition(Sprite *sprite, MathVector3f_t position);
-void Sprite_SetColour(Sprite *sprite, float r, float g, float b, float a);
-void Sprite_SetType(Sprite *sprite, SpriteType_t type);
-void Sprite_SetScale(Sprite *sprite, float scale);
-void Sprite_SetMaterial(Sprite *sprite, Material_t *material);
+void Sprite_SetPosition(ISprite *sprite, MathVector3f_t position);
+void Sprite_SetColour(ISprite *sprite, float r, float g, float b, float a);
+void Sprite_SetType(ISprite *sprite, SpriteType_t type);
+void Sprite_SetScale(ISprite *sprite, float scale);
+void Sprite_SetMaterial(ISprite *sprite, Material_t *material);
 
 #endif

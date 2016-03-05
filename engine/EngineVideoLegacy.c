@@ -372,18 +372,6 @@ void R_DrawViewModel(void)
 	glDepthRange(0,1);
 }
 
-void R_EmitWirePoint (MathVector3f_t origin)
-{
-	glBegin(GL_LINES);
-	glVertex3f(origin[0]-4.0f,origin[1],origin[2]);
-	glVertex3f(origin[0]+4.0f,origin[1],origin[2]);
-	glVertex3f(origin[0],origin[1]-4.0f,origin[2]);
-	glVertex3f(origin[0],origin[1]+4.0f,origin[2]);
-	glVertex3f(origin[0],origin[1],origin[2]-4.0f);
-	glVertex3f(origin[0],origin[1],origin[2]+4.0f);
-	glEnd();
-}
-
 void R_EmitWireBox(
 	MathVector3f_t mins, MathVector3f_t maxs,
 	float r, float g, float b)
@@ -493,7 +481,7 @@ void Video_ShowBoundingBoxes(void)
 
 		glColor3f(1,1,1);
 
-		R_EmitWirePoint (ed->v.origin);
+		Draw_CoordinateAxes(ed->v.origin);
 
 		Math_VectorAdd(ed->v.mins,ed->v.origin,mins);
 		Math_VectorAdd(ed->v.maxs,ed->v.origin,maxs);

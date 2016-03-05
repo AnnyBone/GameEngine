@@ -27,6 +27,74 @@
 
 #define	WAYPOINT_MAX_ALLOCATED	2048
 
+namespace AI
+{
+	class WaypointManager
+	{
+	public:
+		WaypointManager() {};
+		~WaypointManager() {};
+
+		void Initialize();
+		void Simulate();
+		void Shutdown();
+
+		Waypoint_t *Add();
+		void Remove(Waypoint_t *waypoint);
+		void Clear();
+	protected:
+	private:
+		std::vector<Waypoint_t*> waypoints;
+	};
+
+	extern WaypointManager *g_waypointmanager;
+}
+
+using namespace AI;
+
+void WaypointManager::Initialize()
+{
+	g_engine->Con_Printf("Initializing Waypoint Manager...\n");
+
+	// Base count is left pretty high, since we're
+	// going to be dynamically tracking things.
+	waypoints.reserve(WAYPOINT_MAX_ALLOCATED);
+}
+
+Waypoint_t *WaypointManager::Add()
+{
+	Waypoint_t *waypoint = new Waypoint_t;
+
+	waypoint->number = waypoints.size();
+
+	waypoints.push_back(waypoint);
+	return waypoint;
+}
+
+void WaypointManager::Clear()
+{
+	waypoints.clear();							// Clear the vector.
+	waypoints.shrink_to_fit();					// Clear out mem.
+	waypoints.reserve(WAYPOINT_MAX_ALLOCATED);	// Reserve default amount, again.
+}
+
+void WaypointManager::Simulate()
+{
+	for (unsigned int i = 0; i < waypoints.size(); i++)
+	{
+	}
+}
+
+void WaypointManager::Shutdown()
+{
+	Clear();
+}
+
+/*
+	LEGACY MANAGEMENT SYSTEM
+	DO NOT USE
+*/
+
 Waypoint_t	wWaypoints[WAYPOINT_MAX_ALLOCATED];
 
 int	waypoint_count,	waypoint_allocated;

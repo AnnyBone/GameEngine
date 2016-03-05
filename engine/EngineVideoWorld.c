@@ -189,12 +189,6 @@ void R_BuildLightmapChains (void)
 //
 //==============================================================================
 
-void R_DrawTextureChains_Drawflat (void)
-{
-	glColor3f (1,1,1);
-	srand ((int) (cl.time * 1000));
-}
-
 void R_SetupView(void);
 void R_RenderScene(void);
 

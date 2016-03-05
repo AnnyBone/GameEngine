@@ -22,7 +22,7 @@ typedef struct
 	char			*model_precache[MAX_MODELS];	// NULL terminated
 	struct model_s	*models[MAX_MODELS];
 	char			*sound_precache[MAX_SOUNDS];	// NULL terminated
-	char			*sprite_precache[SERVER_MAX_TEXTURES];
+	char			*material_precache[SERVER_MAX_TEXTURES];
 	char			*lightstyles[MAX_LIGHTSTYLES];
 	unsigned int	num_edicts;
 	unsigned int	max_edicts;
