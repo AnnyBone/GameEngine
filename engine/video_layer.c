@@ -313,9 +313,9 @@ typedef struct
 	const char *ident;
 } VideoLayerCapabilities_t;
 
-VideoLayerCapabilities_t capabilities[] =
+VideoLayerCapabilities_t vl_capabilities[] =
 {
-#ifdef VL_MODE_OPENGL
+#if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
 	{ VIDEO_ALPHA_TEST, GL_ALPHA_TEST, "ALPHA_TEST" },
 	{ VIDEO_BLEND, GL_BLEND, "BLEND" },
 	{ VIDEO_DEPTH_TEST, GL_DEPTH_TEST, "DEPTH_TEST" },
@@ -326,57 +326,89 @@ VideoLayerCapabilities_t capabilities[] =
 	{ VIDEO_STENCIL_TEST, GL_STENCIL_TEST, "STENCIL_TEST" },
 	{ VIDEO_NORMALIZE, GL_NORMALIZE, "NORMALIZE" },
 	{ VIDEO_MULTISAMPLE, GL_MULTISAMPLE, "MULTISAMPLE" },
+#elif defined (VL_MODE_GLIDE)
 #endif
 
 	{ 0 }
 };
 
+bool vlIsEnabled(unsigned int caps)
+{
+	if (!caps)
+		return false;
+
+	for (int i = 0; i < sizeof(vl_capabilities); i++)
+	{
+		if (!vl_capabilities[i].vl_parm)
+			break;
+
+		if (caps & Video.textureunits[Video.current_textureunit].capabilities)
+			return true;
+	}
+
+	return false;
+}
+
 /*	Enables video capabilities.
 */
-void vlEnable(unsigned int uiCapabilities)
+void vlEnable(unsigned int cap)
 {
 	VIDEO_FUNCTION_START
 	int i;
-	for (i = 0; i < sizeof(capabilities); i++)
+	for (i = 0; i < sizeof(vl_capabilities); i++)
 	{
 		// Check if we reached the end of the list yet.
-		if (!capabilities[i].vl_parm)
+		if (!vl_capabilities[i].vl_parm)
 			break;
 
-		if (uiCapabilities & VIDEO_TEXTURE_2D)
+		if (cap & VIDEO_TEXTURE_2D)
 			Video.textureunit_state[Video.current_textureunit] = true;
 
-		if (uiCapabilities & capabilities[i].vl_parm)
+		if (cap & vl_capabilities[i].vl_parm)
 		{
 			if (Video.debug_frame)
-				plWriteLog(VIDEO_LOG, "Enabling %s (%i)\n", capabilities[i].ident, Video.current_textureunit);
+				plWriteLog(VIDEO_LOG, "Enabling %s (%i)\n", vl_capabilities[i].ident, Video.current_textureunit);
+
+			Video.textureunits[Video.current_textureunit].capabilities |= vl_capabilities[i].vl_parm;
 
 #if defined (VL_MODE_OPENGL) || (VL_MODE_OPENGL_CORE)
-			glEnable(capabilities[i].to_parm);
+			glEnable(vl_capabilities[i].to_parm);
+#elif defined (VL_MODE_GLIDE)
+			grEnable(vl_capabilities[i].to_parm);
 #endif
 		}
 	}
 	VIDEO_FUNCTION_END
 }
 
-void vlDisable(unsigned int uiCapabilities)
+void vlDisable(unsigned int cap)
 {
 	VIDEO_FUNCTION_START
-	for (int i = 0; i < sizeof(capabilities); i++)
+	if (!cap)
+		return;
+
+	for (int i = 0; i < sizeof(vl_capabilities); i++)
 	{
 		// Check if we reached the end of the list yet.
-		if (!capabilities[i].vl_parm)
+		if (!vl_capabilities[i].vl_parm)
 			break;
 
-		if (uiCapabilities & VIDEO_TEXTURE_2D)
+		if (cap & VIDEO_TEXTURE_2D)
 			Video.textureunit_state[Video.current_textureunit] = false;
 
-		if (uiCapabilities & capabilities[i].vl_parm)
+		if (cap & vl_capabilities[i].vl_parm)
 		{
-			// TODO: Implement debugging support.
+			if (Video.debug_frame)
+				plWriteLog(VIDEO_LOG, "Disabling %s (%i)\n", vl_capabilities[i].ident, Video.current_textureunit);
+			
+#if !defined (VL_MODE_OPENGL) && !defined (VL_MODE_OPENG_CORE)	// OpenGL does this itself.
+			Video.textureunits[Video.current_textureunit].capabilities &= ~vl_capabilities[i].vl_parm;
+#endif
 
 #if defined (VL_MODE_OPENGL) || (VL_MODE_OPENGL_CORE)
-			glDisable(capabilities[i].to_parm);
+			glDisable(vl_capabilities[i].to_parm);
+#elif defined (VL_MODE_GLIDE)
+			grDisable(vl_capabilities[i].to_parm);
 #endif
 		}
 	}
@@ -385,13 +417,16 @@ void vlDisable(unsigned int uiCapabilities)
 
 /*	TODO: Want more control over the dynamics of this...
 */
-void vlBlendFunc(VideoBlend_t modea, VideoBlend_t modeb)
+void vlBlendFunc(vlBlend_t modea, vlBlend_t modeb)
 {
 	VIDEO_FUNCTION_START
 	if (Video.debug_frame)
 		plWriteLog(VIDEO_LOG, "Video: Setting blend mode (%i) (%i)\n", modea, modeb);
-#ifdef VL_MODE_OPENGL
+#if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
 	glBlendFunc(modea, modeb);
+#elif defined (VL_MODE_GLIDE)
+	if (vlIsEnabled(VIDEO_BLEND))
+		grAlphaBlendFunction(modea, modeb, modea, modeb);
 #endif
 	VIDEO_FUNCTION_END
 }
@@ -403,8 +438,10 @@ void vlDepthMask(bool mode)
 	VIDEO_FUNCTION_START
 	static bool cur_state = true;
 	if (mode == cur_state) return;
-#ifdef VL_MODE_OPENGL
+#if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
 	glDepthMask(mode);
+#elif defined (VL_MODE_GLIDE)
+	grDepthMask(mode);
 #endif
 	cur_state = mode;
 	VIDEO_FUNCTION_END
@@ -475,7 +512,6 @@ void vlRenderBufferStorage(int format, int samples, unsigned int width, unsigned
 // VERTEX ARRAY OBJECTS
 
 /*	Generates a single vertex array.
-	glGenVertexArrays
 */
 void vlGenerateVertexArray(vlVertexArray_t *arrays)
 {
@@ -487,7 +523,6 @@ void vlGenerateVertexArray(vlVertexArray_t *arrays)
 }
 
 /*	Binds the given vertex array.
-	glBindVertexArray
 */
 void vlBindVertexArray(vlVertexArray_t array)
 {
@@ -501,7 +536,6 @@ void vlBindVertexArray(vlVertexArray_t array)
 // VERTEX BUFFER OBJECTS
 
 /*	Generates a single OpenGL buffer.
-	glGenBuffers
 */
 void vlGenerateVertexBuffer(unsigned int *buffer)
 {
@@ -547,13 +581,15 @@ void vlBindBuffer(unsigned int target, unsigned int buffer)
 
 // FRAME BUFFER OBJECTS
 
+/*	Clears buffers.
+*/
 void vlClear(unsigned int mask)
 {
 	VIDEO_FUNCTION_START
-#if defined (VL_MODE_OPENGL) || (VL_MODE_OPENGL_CORE)
+#if defined(VL_MODE_OPENGL) || defined(VL_MODE_OPENGL_CORE)
 	glClear(mask);
 #elif defined VL_MODE_GLIDE
-	grBufferClear(0)
+	grBufferClear(0, 0, grGet(GR_ZDEPTH_MIN_MAX, 0, 0));
 #endif
 	VIDEO_FUNCTION_END
 }

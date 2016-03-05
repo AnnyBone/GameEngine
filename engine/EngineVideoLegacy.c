@@ -277,7 +277,8 @@ void R_SetupGenericView(void)
 
 	R_SetFrustum(r_fovx, r_fovy);
 
-	vlClear();
+	// TODO: Temporary, until this is all hooked up properly
+	Video_ClearBuffer();
 }
 
 void R_SetupView (void)
@@ -628,7 +629,7 @@ void R_RenderView (void)
 
 	R_SetupView (); //johnfitz -- this does everything that should be done once per frame
 
-	vlClear();
+	Video_ClearBuffer();
 
 #ifdef VL_MODE_OPENGL
 	//johnfitz -- stereo rendering -- full of hacky goodness

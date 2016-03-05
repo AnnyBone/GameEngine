@@ -188,7 +188,7 @@ void Video_Initialize(void)
 	Video.gl_extensions		= vlGetString(VL_STRING_EXTENSIONS);
 
 
-#ifdef KATANA_CORE_GL
+#ifdef VL_MODE_OPENGL
 	Con_DPrintf(" Checking for extensions...\n");
 
 	// Check that the required capabilities are supported.
@@ -236,6 +236,7 @@ void Video_Initialize(void)
 	glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 4);
 
 	vlActiveTexture(0);
+#endif
 
 	vid.conwidth = (scr_conwidth.value > 0) ? (int)scr_conwidth.value : (scr_conscale.value > 0) ? (int)(Video.iWidth / scr_conscale.value) : Video.iWidth;
 	vid.conwidth = Math_Clamp(320, vid.conwidth, Video.iWidth);
@@ -542,120 +543,6 @@ void Video_DrawObject(VideoVertex_t *vobject, VideoPrimitive_t primitive,
 	Material_DrawObject(mMaterial, &tempobj, false);
 	VideoObject_DrawImmediate(&tempobj);
 	Material_DrawObject(mMaterial, &tempobj, true);
-}
-
-/*
-	Capabilities management
-*/
-
-typedef struct
-{
-	unsigned	int	    uiFirst,
-						uiSecond;
-
-	const       char    *ccIdentifier;
-} VideoCapabilities_t;
-
-VideoCapabilities_t	vcCapabilityList[]=
-{
-#ifdef KATANA_CORE_GL
-	{ VIDEO_ALPHA_TEST, GL_ALPHA_TEST, "ALPHA_TEST" },
-	{ VIDEO_BLEND, GL_BLEND, "BLEND" },
-	{ VIDEO_DEPTH_TEST, GL_DEPTH_TEST, "DEPTH_TEST" },
-	{ VIDEO_TEXTURE_2D, GL_TEXTURE_2D, "TEXTURE_2D" },
-	{ VIDEO_TEXTURE_GEN_S, GL_TEXTURE_GEN_S, "TEXTURE_GEN_S" },
-	{ VIDEO_TEXTURE_GEN_T, GL_TEXTURE_GEN_T, "TEXTURE_GEN_T" },
-	{ VIDEO_CULL_FACE, GL_CULL_FACE, "CULL_FACE" },
-	{ VIDEO_STENCIL_TEST, GL_STENCIL_TEST, "STENCIL_TEST" },
-	{ VIDEO_NORMALIZE, GL_NORMALIZE, "NORMALIZE" },
-#endif
-
-	{ 0 }
-};
-
-/*	Set rendering capabilities for current draw.
-	Cleared using Video_DisableCapabilities.
-*/
-void Video_EnableCapabilities(unsigned int iCapabilities)
-{
-#ifdef KATANA_CORE_GL
-	int	i;
-
-	if(!iCapabilities)
-		return;
-
-	for(i = 0; i < sizeof(vcCapabilityList); i++)
-	{
-		if(!vcCapabilityList[i].uiFirst)
-			break;
-
-		if (iCapabilities & VIDEO_TEXTURE_2D)
-			Video.textureunit_state[Video.current_textureunit] = true;
-
-		if(iCapabilities & vcCapabilityList[i].uiFirst)
-		{
-			if(!bVideoIgnoreCapabilities)
-				// Collect up a list of the new capabilities we set.
-				Video.textureunits[Video.current_textureunit].capabilities[VIDEO_STATE_ENABLE] |= vcCapabilityList[i].uiFirst;
-
-			glEnable(vcCapabilityList[i].uiSecond);
-		}
-	}
-#endif
-}
-
-/*	Disables specified capabilities for the current draw.
-*/
-void Video_DisableCapabilities(unsigned int iCapabilities)
-{
-#ifdef KATANA_CORE_GL
-	int	i;
-
-	if(!iCapabilities)
-		return;
-
-	for(i = 0; i < sizeof(vcCapabilityList); i++)
-	{
-		if(!vcCapabilityList[i].uiFirst)
-			break;
-
-		if (iCapabilities & VIDEO_TEXTURE_2D)
-			Video.textureunit_state[Video.current_textureunit] = false;
-
-		if(iCapabilities & vcCapabilityList[i].uiFirst)
-		{
-			if (Video.debug_frame)
-				plWriteLog(cv_video_log.string, "Video: Disabling %s (%i)\n", vcCapabilityList[i].ccIdentifier, Video.current_textureunit);
-
-			if(!bVideoIgnoreCapabilities)
-				// Collect up a list of the new capabilities we disabled.
-				Video.textureunits[Video.current_textureunit].capabilities[VIDEO_STATE_DISABLE] |= vcCapabilityList[i].uiFirst;
-
-			glDisable(vcCapabilityList[i].uiSecond);
-		}
-	}
-#endif
-}
-
-/*	Checks if the given capability is enabled or not.
-*/
-bool Video_GetCapability(unsigned int iCapability)
-{
-	int	i;
-
-	if (!iCapability)
-		return false;
-
-	for (i = 0; i < sizeof(vcCapabilityList); i++)
-	{
-		if (!vcCapabilityList[i].uiFirst)
-			break;
-
-		if (iCapability & Video.textureunits[Video.current_textureunit].capabilities[VIDEO_STATE_ENABLE])
-			return true;
-	}
-
-	return false;
 }
 
 /**/

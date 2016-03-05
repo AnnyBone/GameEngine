@@ -422,7 +422,7 @@ void Draw_ConsoleBackground(void)
 
 void Draw_GradientBackground(void)
 {
-#ifdef KATANA_CORE_GLIDE
+#if defined (VL_MODE_GLIDE)
 #else
 	VideoCanvasType_t vctOldCanvas; //johnfitz
 
@@ -518,15 +518,15 @@ void Draw_CoordinateAxes(MathVector3f_t position)
 
 void Draw_Grid(float x, float y, float z, int grid_size)
 {
+	vlEnable(VIDEO_BLEND);
+	vlDisable(VIDEO_TEXTURE_2D);
+
+	vlBlendFunc(VL_BLEND_DEFAULT);
+
 #ifdef VL_MODE_OPENGL
 	glPushMatrix();
 
 	glTranslatef(x, y, z);
-
-	vlEnable(VIDEO_BLEND);
-	vlDisable(VIDEO_TEXTURE_2D);
-
-	vlBlendFunc(VIDEO_BLEND_DEFAULT);
 
 	glEnable(GL_LINE_SMOOTH);
 
@@ -575,11 +575,11 @@ void Draw_Grid(float x, float y, float z, int grid_size)
 
 	glDisable(GL_LINE_SMOOTH);
 
-	vlDisable(VIDEO_BLEND);
-	vlEnable(VIDEO_TEXTURE_2D);
-
 	glPopMatrix();
 #endif
+
+	vlDisable(VIDEO_BLEND);
+	vlEnable(VIDEO_TEXTURE_2D);
 }
 
 void Draw_Rectangle(int x, int y, int w, int h, Colour_t colour)

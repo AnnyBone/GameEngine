@@ -85,7 +85,7 @@ typedef struct
 	bool isactive;
 
 	unsigned int current_texture;
-	unsigned int capabilities[2];
+	unsigned int capabilities;
 
 	VideoTextureEnvironmentMode_t current_envmode;
 } VideoTextureMU_t;
@@ -154,10 +154,9 @@ void Video_UpdateWindow(void);
 void Video_GenerateSphereCoordinates(void);
 void Video_SetTexture(gltexture_t *gTexture);
 void Video_SetViewportSize(int w, int h);
-void Video_EnableCapabilities(unsigned int iCapabilities);
-void Video_DisableCapabilities(unsigned int iCapabilities);
 void Video_PreFrame(void);
 void Video_PostFrame(void);
+void Video_ClearBuffer(void);
 void Video_Frame(void);
 void Video_ObjectTexture(VideoVertex_t *voObject, unsigned int uiTextureUnit, float S, float T);
 void Video_ObjectVertex(VideoVertex_t *voObject, float X, float Y, float Z);
@@ -168,8 +167,6 @@ void Video_DrawSurface(msurface_t *mSurface, float fAlpha, Material_t *mMaterial
 void Video_DrawObject(VideoVertex_t *voObject, VideoPrimitive_t vpPrimitiveType, unsigned int uiVerts, Material_t *mMaterial, int iSkin);
 void Video_ShowBoundingBoxes(void);
 void Video_Shutdown(void);
-
-bool Video_GetCapability(unsigned int iCapability);
 
 // Temporary
 void DEBUG_FrameBufferInitialization();

@@ -28,7 +28,7 @@ typedef unsigned int vlVertexArray_t;
 typedef unsigned int vlRenderBuffer_t;
 typedef unsigned int vlFrameBuffer_t;
 
-#if defined (VL_MODE_OPENGL) || (VL_MODE_OPENGL_CORE)
+#if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
 #	define VL_MASK_COLOUR	GL_COLOR_BUFFER_BIT
 #	define VL_MASK_DEPTH	GL_DEPTH_BUFFER_BIT
 #	define VL_MASK_ACCUM	GL_ACCUM_BUFFER_BIT
@@ -40,9 +40,12 @@ typedef unsigned int vlFrameBuffer_t;
 #	define VL_MASK_STENCIL	(1 << 4)
 #endif
 
+#define	VL_STATE_DISABLE	0
+#define	VL_STATE_ENABLE		1
+
 typedef enum
 {
-#if defined (VL_MODE_OPENGL) || (VL_MODE_OPENGL_CORE)
+#if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
 	// Set these directly to avoid translation.
 	VL_FRAMEBUFFER_DEFAULT	= GL_FRAMEBUFFER,
 	VL_FRAMEBUFFER_DRAW		= GL_DRAW_FRAMEBUFFER,
@@ -56,10 +59,13 @@ typedef enum
 
 typedef enum
 {
-#if defined (VL_MODE_OPENGL) || (VL_MODE_OPENGL_CORE)
+#if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
 	// Set these directly to avoid translation.
 	VL_TEXTURE_FILTER_NEAREST	= GL_NEAREST,	// Nearest filtering
 	VL_TEXTURE_FILTER_LINEAR	= GL_LINEAR		// Linear filtering
+#elif defined (VL_MODE_GLIDE)
+	VL_TEXTURE_FILTER_NEAREST	= GR_TEXTUREFILTER_POINT_SAMPLED,	// Nearest filtering
+	VL_TEXTURE_FILTER_LINEAR	= GR_TEXTUREFILTER_BILINEAR			// Linear filtering
 #else
 	VL_TEXTURE_FILTER_NEAREST,					// Nearest filtering
 	VL_TEXTURE_FILTER_LINEAR					// Linear filtering
@@ -83,16 +89,61 @@ typedef enum
 
 typedef enum
 {
-#if defined (VL_MODE_OPENGL) || (VL_MODE_OPENGL_CORE)
+#if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
 	VL_TEXTURE_2D	= GL_TEXTURE_2D
 #else
 	VL_TEXTURE_2D
 #endif
 } vlTextureTarget_t;
 
+// Blending Modes
 typedef enum
 {
-#if defined (VL_MODE_OPENGL) || (VL_MODE_OPENGL_CORE)
+#if defined (VL_MODE_OPENGL)
+	VIDEO_BLEND_ZERO					= GL_ZERO,
+	VIDEO_BLEND_ONE						= GL_ONE,
+	VIDEO_BLEND_SRC_COLOR				= GL_SRC_COLOR,
+	VIDEO_BLEND_ONE_MINUS_SRC_COLOR		= GL_ONE_MINUS_SRC_COLOR,
+	VIDEO_BLEND_SRC_ALPHA				= GL_SRC_ALPHA,
+	VIDEO_BLEND_ONE_MINUS_SRC_ALPHA		= GL_ONE_MINUS_SRC_ALPHA,
+	VIDEO_BLEND_DST_ALPHA				= GL_DST_ALPHA,
+	VIDEO_BLEND_ONE_MINUS_DST_ALPHA		= GL_ONE_MINUS_DST_ALPHA,
+	VIDEO_BLEND_DST_COLOR				= GL_DST_COLOR,
+	VIDEO_BLEND_ONE_MINUS_DST_COLOR		= GL_ONE_MINUS_DST_COLOR,
+	VIDEO_BLEND_SRC_ALPHA_SATURATE		= GL_SRC_ALPHA_SATURATE
+#elif defined (VL_MODE_GLIDE)
+	VL_BLEND_ZERO					= GR_BLEND_ZERO,
+	VL_BLEND_ONE					= GR_BLEND_ONE,
+	VL_BLEND_SRC_COLOR				= GR_BLEND_SRC_COLOR,
+	VL_BLEND_ONE_MINUS_SRC_COLOR	= GR_BLEND_ONE_MINUS_SRC_COLOR,
+	VL_BLEND_SRC_ALPHA				= GR_BLEND_SRC_ALPHA,
+	VL_BLEND_ONE_MINUS_SRC_ALPHA	= GR_BLEND_ONE_MINUS_SRC_ALPHA,
+	VL_BLEND_DST_ALPHA				= GR_BLEND_DST_ALPHA,
+	VL_BLEND_ONE_MINUS_DST_ALPHA	= GR_BLEND_ONE_MINUS_DST_ALPHA,
+	VL_BLEND_DST_COLOR				= GR_BLEND_DST_COLOR,
+	VL_BLEND_ONE_MINUS_DST_COLOR	= GR_BLEND_ONE_MINUS_DST_COLOR,
+	VL_BLEND_SRC_ALPHA_SATURATE		= GR_BLEND_ALPHA_SATURATE
+#else
+	VIDEO_BLEND_ZERO,
+	VIDEO_BLEND_ONE,
+	VIDEO_BLEND_SRC_COLOR,
+	VIDEO_BLEND_ONE_MINUS_SRC_COLOR,
+	VIDEO_BLEND_SRC_ALPHA,
+	VIDEO_BLEND_ONE_MINUS_SRC_ALPHA,
+	VIDEO_BLEND_DST_ALPHA,
+	VIDEO_BLEND_ONE_MINUS_DST_ALPHA,
+	VIDEO_BLEND_DST_COLOR,
+	VIDEO_BLEND_ONE_MINUS_DST_COLOR,
+	VIDEO_BLEND_SRC_ALPHA_SATURATE
+#endif
+} vlBlend_t;
+
+#define	VL_BLEND_ADDITIVE	VL_BLEND_SRC_ALPHA, VL_BLEND_ONE
+#define	VL_BLEND_DEFAULT	VL_BLEND_SRC_ALPHA, VL_BLEND_ONE_MINUS_SRC_ALPHA
+
+typedef enum
+{
+#if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
 	VL_STRING_RENDERER		= GL_RENDERER,
 	VL_STRING_VERSION		= GL_VERSION,
 	VL_STRING_VENDOR		= GL_VENDOR,
@@ -136,7 +187,7 @@ void vlSetTextureEnvironmentMode(VideoTextureEnvironmentMode_t TextureEnvironmen
 void vlEnable(unsigned int uiCapabilities);
 void vlDisable(unsigned int uiCapabilities);
 
-void vlBlendFunc(VideoBlend_t modea, VideoBlend_t modeb);
+void vlBlendFunc(vlBlend_t modea, vlBlend_t modeb);
 void vlDepthMask(bool mode);
 
 // Shaders

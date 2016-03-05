@@ -45,7 +45,7 @@ void Shadow_Initialize()
 */
 void Shadow_DrawBlob(ClientEntity_t *Entity)
 {
-#ifdef KATANA_CORE_GL
+#if defined (VL_MODE_OPENGL)
 	if (!cv_video_drawshadowblob.bValue)
 		return;
 

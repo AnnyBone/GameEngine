@@ -696,7 +696,7 @@ void Sky_GetTexCoord(MathVector3f_t v,float speed,float *s,float *t)
 
 void Sky_DrawFaceQuad(glpoly_t *p)
 {
-#ifdef KATANA_CORE_GL
+#if defined (VL_MODE_OPENGL)
 	float	s,t,
 			*v;
 	int		i;
@@ -706,7 +706,7 @@ void Sky_DrawFaceQuad(glpoly_t *p)
 	Video_SetTexture(gCloudTexture);
 
 	vlEnable(VIDEO_BLEND);
-	vlBlendFunc(VIDEO_BLEND_ONE, VIDEO_BLEND_ONE);
+	vlBlendFunc(VL_BLEND_ONE, VL_BLEND_ONE);
 
 	glBegin(GL_QUADS);
 
@@ -720,7 +720,7 @@ void Sky_DrawFaceQuad(glpoly_t *p)
 
 	glEnd();
 
-	vlBlendFunc(VIDEO_BLEND_DEFAULT);
+	vlBlendFunc(VL_BLEND_DEFAULT);
 
 	rs_skypolys++;
 	rs_skypasses++;

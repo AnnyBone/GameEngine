@@ -1100,7 +1100,7 @@ void Material_Draw(Material_t *material, VideoVertex_t *ObjectVertex, VideoPrimi
 
 			if (msCurrentSkin->uiFlags & MATERIAL_FLAG_ADDITIVE)
 				// Additive blending isn't done by default.
-				vlBlendFunc(VIDEO_BLEND_ADDITIVE);
+				vlBlendFunc(VL_BLEND_ADDITIVE);
 		}
 		// Alpha-testing
 		else if (msCurrentSkin->uiFlags & MATERIAL_FLAG_ALPHA)
@@ -1259,7 +1259,7 @@ void Material_Draw(Material_t *material, VideoVertex_t *ObjectVertex, VideoPrimi
 
 			if (msCurrentSkin->uiFlags & MATERIAL_FLAG_ADDITIVE)
 				// Return blend mode to its default.
-				vlBlendFunc(VIDEO_BLEND_DEFAULT);
+				vlBlendFunc(VL_BLEND_DEFAULT);
 		}
 		// Alpha-testing
 		else if (msCurrentSkin->uiFlags & MATERIAL_FLAG_ALPHA)

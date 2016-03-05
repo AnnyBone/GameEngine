@@ -106,7 +106,7 @@ void VideoObject_Destroy(VideoObject_t *object)
 	vlDeleteVertexBuffer(&object->buffer_vertex);
 	vlDeleteVertexBuffer(&object->buffer_texture);
 
-#ifdef KATANA_CORE_GLIDE
+#ifdef VL_MODE_GLIDE
 #else
 	glDeleteVertexArrays(1, &object->object_vertexarrays);
 #endif
@@ -164,7 +164,7 @@ void VideoObject_Colour4fv(VideoObject_t *voObject, MathVector4f_t mvColour)
 void VideoObject_End(VideoObject_t *object)
 {
 	VIDEO_FUNCTION_START
-#ifdef KATANA_CORE_GLIDE
+#ifdef VL_MODE_GLIDE
 #else
 	vlBindBuffer(GL_ARRAY_BUFFER, object->buffer_vertex);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(object->vertices), object->vertices, GL_STATIC_DRAW);
@@ -253,7 +253,7 @@ void VideoObject_CalculateLighting(VideoObject_t *object, DynamicLight_t *light,
 
 void VideoObject_Draw(VideoObject_t *object)
 {
-#ifndef KATANA_CORE_GLIDE
+#ifndef VL_MODE_GLIDE
 	glEnableVertexAttribArray(0);
 
 	vlBindBuffer(GL_ARRAY_BUFFER, object->buffer_vertex);
@@ -270,7 +270,7 @@ void VideoObject_Draw(VideoObject_t *object)
 void VideoObject_DrawImmediate(VideoObject_t *object)
 {
 	VIDEO_FUNCTION_START
-#ifdef KATANA_CORE_GLIDE
+#ifdef VL_MODE_GLIDE
 #else
 	if (object->numverts == 0)
 		return;

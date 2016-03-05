@@ -48,39 +48,6 @@ typedef enum
 	VIDEO_PRIMITIVE_END
 } VideoPrimitive_t;
 
-// Blending Modes
-typedef enum VideoBlend_e
-{
-	VIDEO_BLEND_ZERO,
-	VIDEO_BLEND_ONE,
-	/*	As nice as it would be to use the
-		existing defs, we do this ourselves
-		so if we decide to use a different
-		graphics API, for whatever reason,
-		we can just translate these.
-	*/
-	VIDEO_BLEND_SRC_COLOR			= 0x0300,
-	VIDEO_BLEND_ONE_MINUS_SRC_COLOR = 0x0301,
-	VIDEO_BLEND_SRC_ALPHA			= 0x0302,
-	VIDEO_BLEND_ONE_MINUS_SRC_ALPHA = 0x0303,
-	VIDEO_BLEND_DST_ALPHA			= 0x0304,
-	VIDEO_BLEND_ONE_MINUS_DST_ALPHA = 0x0305,
-	VIDEO_BLEND_DST_COLOR			= 0x0306,
-	VIDEO_BLEND_ONE_MINUS_DST_COLOR = 0x0307,
-	VIDEO_BLEND_SRC_ALPHA_SATURATE	= 0x0308
-} VideoBlend_t;
-
-#define	VIDEO_BLEND_ADDITIVE	VIDEO_BLEND_SRC_ALPHA, VIDEO_BLEND_ONE
-#define	VIDEO_BLEND_DEFAULT		VIDEO_BLEND_SRC_ALPHA, VIDEO_BLEND_ONE_MINUS_SRC_ALPHA
-
-// Depth Modes
-typedef enum VideoDepth_e
-{
-	VIDEO_DEPTH_IGNORE = -1,	// Don't bother changing depth mode.
-	VIDEO_DEPTH_FALSE,			// Don't enable depth mask.
-	VIDEO_DEPTH_TRUE			// Enable depth mask.
-} VideoDepth_t;
-
 // Texture Environment Modes
 typedef enum VideoTextureEnvironmentMode_e
 {
