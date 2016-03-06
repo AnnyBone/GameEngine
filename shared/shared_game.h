@@ -213,9 +213,10 @@ typedef struct
 
 	void(*ShowCursor)(bool bShow);
 
-	int(*ReadByte)();
-	float(*ReadCoord)();
-	float(*ReadFloat)();
+	int(*ReadByte)(void);
+	float(*ReadCoord)(void);
+	float(*ReadFloat)(void);
+	float(*ReadAngle)(void);
 
 	int(*GetScreenWidth)(void);	// Returns the active screen width.
 	int(*GetScreenHeight)(void);	// Returns the active screen height.

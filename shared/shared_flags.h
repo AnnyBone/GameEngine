@@ -160,10 +160,9 @@ enum
 
 enum
 {
-	EF_MUZZLEFLASH	= (1 << 0),
-	EF_BRIGHTLIGHT	= (1 << 1),
-	EF_DIMLIGHT		= (1 << 2),
-	EF_FULLBRIGHT	= (1 << 3),
+	EF_BRIGHTLIGHT	= (1 << 0),
+	EF_DIMLIGHT		= (1 << 1),
+	EF_FULLBRIGHT	= (1 << 2),
 
 	EF_MOTION_ROTATE	= (1 << 4),		// Client-side rotation
 	EF_MOTION_FLOAT		= (1 << 5),		// Adds a nice floating motion for the entity

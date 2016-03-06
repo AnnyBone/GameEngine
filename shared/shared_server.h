@@ -77,7 +77,7 @@ enum ServerMessage
 #define	SERVER_PROTOCOL	(1+(SVC_NONE))
 
 #define	NUM_PING_TIMES		16
-#define	NUM_SPAWN_PARMS		33
+#define	NUM_SPAWN_PARMS		29
 
 #define	SERVER_MAX_TEXTURES	512	// Maximum number of textures we can send.
 
@@ -303,7 +303,7 @@ typedef struct
 		dAttackFinished,			// Time before we can attack again.
 		dMoveFinished;
 
-	float fJumpVelocity;
+	float jump_velocity;
 
 	float swim_flag;					// Time before next splash sound.
 	int	hit;

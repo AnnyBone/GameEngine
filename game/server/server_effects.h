@@ -22,5 +22,6 @@
 void ServerEffect_BloodPuff(MathVector3f_t position);
 void ServerEffect_BloodCloud(MathVector3f_t position, BloodType_t type);
 void ServerEffect_Explosion(MathVector3f_t position);
+void ServerEffect_MuzzleFlash(MathVector3f_t position, MathVector3f_t angles);
 
 #endif // !SERVER_EFFECTS_H

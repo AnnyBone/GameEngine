@@ -128,6 +128,20 @@ void Client_ParseTemporaryEntity(void)
 		}
 		break;
 
+		case CTE_MUZZLEFLASH:
+		{
+			MathVector3f_t position, angles;
+
+			for (int i = 0; i < 3; i++)
+				position[i] = g_engine->ReadCoord();
+
+			for (int i = 0; i < 3; i++)
+				angles[i] = g_engine->ReadAngle();
+
+			ClientEffect_MuzzleFlash(position, angles);
+		}
+		break;
+
 		default:
 			Engine.Con_Warning("Unknown temporary entity type! (%i)\n", type);
 	}
@@ -137,7 +151,6 @@ void Client_ParseTemporaryEntity(void)
 */
 void Client_RelinkEntities(ClientEntity_t *entity, int i, double dTime)
 {
-	MathVector3f_t	f,r,u;
 	DynamicLight_t	*light;
 
 	// TODO: Move over to somewhere more appropriate please
@@ -202,26 +215,6 @@ void Client_RelinkEntities(ClientEntity_t *entity, int i, double dTime)
 		light->minlight			= 32.0f;
 		light->die				= Client.time + 0.01;
 		light->lightmap			= true;
-	}
-
-	if (entity->effects & EF_MUZZLEFLASH)
-	{
-		light = Engine.Client_AllocateDlight(i);
-
-		Math_VectorCopy(entity->origin, light->origin);
-
-		light->origin[2] += 16.0f;
-
-		plAngleVectors(entity->angles, f, r, u);
-		Math_VectorMA(light->origin, 18, f, light->origin);
-		
-		light->radius		= 170.0f + (rand() & 31);
-		light->color[RED]	= 255.0f;
-		light->color[GREEN] = 255.0f;
-		light->color[BLUE]	= 50.0f;
-		light->minlight		= 32.0f;
-		light->die			= Client.time + 0.1;
-		light->lightmap		= true;
 	}
 
 	if (entity->effects & EF_DIMLIGHT)

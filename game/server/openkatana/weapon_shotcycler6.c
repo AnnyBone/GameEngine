@@ -23,6 +23,7 @@
 */
 
 #include "server_player.h"
+#include "server_effects.h"
 
 EntityFrame_t ShotcyclerAnimation_Deploy [] =
 {
@@ -186,7 +187,7 @@ void Shotcycler_PrimaryAttack(ServerEntity_t *ent)
 	Weapon_ViewPunch(ent, 5, false);
 	ent->v.iPrimaryAmmo = ent->local.shotcycler_ammo -= 2;
 
-	Entity_AddEffects(ent, EF_MUZZLEFLASH);
+	ServerEffect_MuzzleFlash(ent->v.origin, ent->v.angles);
 
 	ent->local.iShotCycle--;
 

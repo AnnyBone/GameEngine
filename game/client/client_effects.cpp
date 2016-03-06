@@ -27,7 +27,7 @@ Material_t *mat_spark		= nullptr;
 
 ISprite *spr_debug = NULL;
 
-void ClientEffect_Initialize()
+void ClientEffect_Initialize(void)
 {
 	// Load default set of particles.
 	mat_blood		= g_engine->LoadMaterial("particles/blood");
@@ -235,6 +235,27 @@ void ClientEffect_Explosion(MathVector3f_t position)
 	light->color[2]		= 50.0f;
 	light->minlight		= 32.0f;
 	light->die			= (Client.time + 0.5);
+}
+
+void ClientEffect_MuzzleFlash(MathVector3f_t position, MathVector3f_t angles)
+{
+	DynamicLight_t *light = Engine.Client_AllocateDlight(0);
+
+	Math_VectorCopy(position, light->origin);
+
+	light->origin[2] += 16.0f;
+
+	MathVector3f_t f, r, u;
+	plAngleVectors(angles, f, r, u);
+	Math_VectorMA(light->origin, 18, f, light->origin);
+
+	light->radius			= 170.0f + (rand() & 31);
+	light->color[RED]		= 255.0f;
+	light->color[GREEN]		= 255.0f;
+	light->color[BLUE]		= 50.0f;
+	light->minlight			= 32.0f;
+	light->die				= Client.time + 0.1;
+	light->lightmap			= true;
 }
 
 #ifdef GAME_OPENKATANA

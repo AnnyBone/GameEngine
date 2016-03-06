@@ -52,3 +52,15 @@ void ServerEffect_Explosion(MathVector3f_t position)
 	for (int i = 0; i < 3; i++)
 		g_engine->WriteCoord(MSG_BROADCAST, position[i]);
 }
+
+void ServerEffect_MuzzleFlash(MathVector3f_t position, MathVector3f_t angles)
+{
+	g_engine->WriteByte(MSG_BROADCAST, SVC_TEMPENTITY);
+	g_engine->WriteByte(MSG_BROADCAST, CTE_MUZZLEFLASH);
+
+	for (int i = 0; i < 3; i++)
+		g_engine->WriteCoord(MSG_BROADCAST, position[i]);
+
+	for (int i = 0; i < 3; i++)
+		g_engine->WriteAngle(MSG_BROADCAST, angles[i]);
+}
