@@ -579,6 +579,13 @@ void Monster_Damage(ServerEntity_t *target, ServerEntity_t *inflictor, int iDama
 	if (target->local.bBleed)
 		ServerEffect_BloodPuff(target->v.origin);
 
+	if (Entity_IsMonster(target))
+	{
+		// Automatically wake us up if asleep.
+		if (target->Monster.state == MONSTER_STATE_ASLEEP)
+			Monster_SetState(target, MONSTER_STATE_AWAKE);
+	}
+
 	// Only do this for players.
 	if(Entity_IsPlayer(inflictor))
 	{
@@ -599,16 +606,13 @@ void Monster_Damage(ServerEntity_t *target, ServerEntity_t *inflictor, int iDama
 			iDamage *= 2;
 	}
 
-	if(Entity_IsMonster(target))
-		// Automatically wake us up if asleep.
-		if (target->Monster.state == MONSTER_STATE_ASLEEP)
-			Monster_SetState(target, MONSTER_STATE_AWAKE);
-
 	target->v.iHealth -= iDamage;
-	if(target->v.iHealth <= 0)
+
+	if (target->local.DamagedFunction)
+		target->local.DamagedFunction(target, inflictor, type);
+
+	if ((target->Monster.state != MONSTER_STATE_DEAD) || (target->Monster.state != MONSTER_STATE_DYING))
 		Monster_Killed(target, inflictor, type);
-	else if (target->Monster.Pain)
-		target->Monster.Pain(target, inflictor, type);
 }
 
 void MONSTER_WaterMove(ServerEntity_t *ent)
@@ -683,7 +687,7 @@ float MONSTER_GetRange(ServerEntity_t *ent,vec3_t target)
 
 	Math_VectorSubtract(spot1,spot2,spot);
 
-	return (float)plVectorLength(spot);
+	return plLengthf(spot);
 }
 
 bool Monster_IsVisible(ServerEntity_t *ent,ServerEntity_t *target)

@@ -98,15 +98,16 @@ void Prisoner_Think(ServerEntity_t *ePrisoner)
 	switch (ePrisoner->Monster.think)
 	{
 	case MONSTER_THINK_IDLE:
-#if 0
 		if (ePrisoner->Monster.commands[COMMAND_CHECK_CELL] && !Prisoner_CheckCell(ePrisoner))
 		{
 			if (rand() % 200 == 1)
 				Sound(ePrisoner, CHAN_VOICE, PRISONER_SOUND_HELP, 255, ATTN_NORM);
 		}
-#endif
+
+		Monster_MoveRandom(ePrisoner, 35.0f);
 		break;
 	case MONSTER_THINK_WANDERING:
+		Monster_MoveRandom(ePrisoner, 35.0f);
 		break;
 	}
 }
@@ -131,36 +132,36 @@ void Prisoner_Run(ServerEntity_t *ePrisoner)
 
 void Prisoner_Pain(ServerEntity_t *ePrisoner, ServerEntity_t *eOther, ServerDamageType_t type)
 {
+	if (ePrisoner->v.iHealth < PRISONER_MIN_HEALTH)
+	{
+		bool bSliced = false;
+
+		Sound(ePrisoner, CHAN_VOICE, "misc/gib1.wav", 255, ATTN_NORM);
+
+		if (Entity_IsPlayer(eOther))
+			if (Weapon_GetCurrentWeapon(eOther)->iItem == WEAPON_DAIKATANA)
+				bSliced = true;
+
+		if (bSliced)
+		{
+			ThrowGib(ePrisoner->v.origin, ePrisoner->v.velocity, "models/prisoner_torso.md2", (float)ePrisoner->v.iHealth*-1, true);
+			ThrowGib(ePrisoner->v.origin, ePrisoner->v.velocity, "models/prisoner_torsoless.md2", (float)ePrisoner->v.iHealth*-1, true);
+		}
+		else
+		{
+			ThrowGib(ePrisoner->v.origin, ePrisoner->v.velocity, PHYSICS_MODEL_GIB0, (float)ePrisoner->v.iHealth*-1, true);
+			ThrowGib(ePrisoner->v.origin, ePrisoner->v.velocity, PHYSICS_MODEL_GIB1, (float)ePrisoner->v.iHealth*-1, true);
+			ThrowGib(ePrisoner->v.origin, ePrisoner->v.velocity, PHYSICS_MODEL_GIB2, (float)ePrisoner->v.iHealth*-1, true);
+		}
+
+		Engine.Particle(ePrisoner->v.origin, ePrisoner->v.velocity, 10.0f, "blood", 20);
+
+		Entity_Remove(ePrisoner);
+	}
 }
 
 void Prisoner_Die(ServerEntity_t *ePrisoner, ServerEntity_t *eOther, ServerDamageType_t type)
 {
-	if(ePrisoner->v.iHealth < PRISONER_MIN_HEALTH)
-	{
-		bool bSliced = false;
-
-		Sound(ePrisoner,CHAN_VOICE,"misc/gib1.wav",255,ATTN_NORM);
-
-		if(Entity_IsPlayer(eOther))
-			if(Weapon_GetCurrentWeapon(eOther)->iItem == WEAPON_DAIKATANA)
-				bSliced = true;
-
-		if(bSliced)
-		{
-			ThrowGib(ePrisoner->v.origin,ePrisoner->v.velocity,"models/prisoner_torso.md2",(float)ePrisoner->v.iHealth*-1,true);
-			ThrowGib(ePrisoner->v.origin,ePrisoner->v.velocity,"models/prisoner_torsoless.md2",(float)ePrisoner->v.iHealth*-1,true);
-		}
-		else
-		{
-			ThrowGib(ePrisoner->v.origin,ePrisoner->v.velocity,PHYSICS_MODEL_GIB0,(float)ePrisoner->v.iHealth*-1,true);
-			ThrowGib(ePrisoner->v.origin,ePrisoner->v.velocity,PHYSICS_MODEL_GIB1,(float)ePrisoner->v.iHealth*-1,true);
-			ThrowGib(ePrisoner->v.origin,ePrisoner->v.velocity,PHYSICS_MODEL_GIB2,(float)ePrisoner->v.iHealth*-1,true);
-		}
-
-		Engine.Particle(ePrisoner->v.origin,ePrisoner->v.velocity,10.0f,"blood",20);
-
-		Entity_Remove(ePrisoner);
-	}
 }
 
 void Prisoner_Spawn(ServerEntity_t *ePrisoner)
