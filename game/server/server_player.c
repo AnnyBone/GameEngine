@@ -394,7 +394,7 @@ void Player_PostThink(ServerEntity_t *ePlayer)
 
 	Weapon_CheckInput(ePlayer);
 
-	if ((ePlayer->local.fJumpVelocity < -300.0f)	&&
+	if ((ePlayer->local.jump_velocity < -300.0f) &&
 		(ePlayer->v.flags & FL_ONGROUND)			&&
 		(ePlayer->v.iHealth > 0))
 	{
@@ -402,7 +402,7 @@ void Player_PostThink(ServerEntity_t *ePlayer)
 
 		if(ePlayer->v.watertype == BSP_CONTENTS_WATER)
 			sprintf(snd,"player/h2ojump.wav");
-		else if (ePlayer->local.fJumpVelocity < -650.0f)
+		else if (ePlayer->local.jump_velocity < -650.0f)
 		{
 			// TODO: Figure out if we were pushed by an enemy.
 			// TODO: Base damage on velocity.
@@ -424,16 +424,16 @@ void Player_PostThink(ServerEntity_t *ePlayer)
 
 			// Give him a little punch...
 			// TODO: Switch these over purely to the client.
-			ePlayer->v.punchangle[0] -= ePlayer->local.fJumpVelocity / 100.0f;
+			ePlayer->v.punchangle[0] -= ePlayer->local.jump_velocity / 100.0f;
 		}
 
 		Sound(ePlayer, CHAN_VOICE, snd, 255, ATTN_NORM);
 
-		ePlayer->local.fJumpVelocity = 0;
+		ePlayer->local.jump_velocity = 0;
 	}
 
 	if(!(ePlayer->v.flags & FL_ONGROUND))
-		ePlayer->local.fJumpVelocity = ePlayer->v.velocity[2];
+		ePlayer->local.jump_velocity = ePlayer->v.velocity[2];
 	else if((	(ePlayer->v.velocity[0] < -4.0f || ePlayer->v.velocity[0] > 4.0f)	||
 				(ePlayer->v.velocity[1] < -4.0f || ePlayer->v.velocity[1] > 4.0f))	&&
 				(!ePlayer->local.dAnimationTime || ePlayer->local.iAnimationEnd == 9))
