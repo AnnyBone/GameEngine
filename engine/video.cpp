@@ -160,7 +160,7 @@ void Video_Initialize(void)
 	if (!g_state.embedded)
 		Window_InitializeVideo();
 
-	vlGetMaxTextureImageUnits(&Video.num_textureunits);
+	Video.num_textureunits = vlGetMaxTextureImageUnits();
 	if (Video.num_textureunits < VIDEO_MAX_UNITS)
 		Con_Warning("Your system doesn't support the required number of TMUs! (%i)\n", Video.num_textureunits);
 

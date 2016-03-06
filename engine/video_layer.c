@@ -31,13 +31,37 @@
 	GET
 ===========================*/
 
-void vlGetMaxTextureImageUnits(int *params)
+/*	Returns supported num of texture width.
+*/
+unsigned int vlGetMaxTextureSize(void)
+{
+#if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
+	int size = 0;
+	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &size);
+	return (unsigned)size;
+#elif defined (VL_MODE_GLIDE)
+	FxI32 size = 0;
+	grGet(GR_MAX_TEXTURE_SIZE, sizeof(size), &size);
+	return (unsigned int)size;
+#else
+	// TODO: Is this even safe?
+	return 4096;
+#endif
+}
+
+unsigned int vlGetMaxTextureImageUnits(void)
 {
 	VIDEO_FUNCTION_START
 #ifdef VL_MODE_OPENGL
-	glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, params);
+	int param = 0;
+	glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &param);
+	return (unsigned)param;
+#elif defined (VL_MODE_GLIDE)
+	FxI32 param = 0;
+	grGet(GR_NUM_TMU, sizeof(param), &param);
+	return (unsigned int)param;
 #else
-	params = 0;
+	return 0;
 #endif
 	VIDEO_FUNCTION_END
 }
@@ -58,8 +82,10 @@ const char *vlGetVendor(void)
 	VIDEO_FUNCTION_START
 #if defined (VL_MODE_OPENGL) || (VL_MODE_OPENGL_CORE)
 	return (const char*)glGetString(GL_VENDOR);
+#elif defined (VL_MODE_GLIDE)
+	return grGetString(GR_VENDOR);
 #else
-	return "";
+	return "Unknown";
 #endif
 	VIDEO_FUNCTION_END
 }
@@ -70,6 +96,8 @@ const char *vlGetExtensions(void)
 #ifdef VL_MODE_OPENGL
 	return (const char*)glGetString(GL_EXTENSIONS);
 	// TODO: this works differently in core; use glGetStringi instead!
+#elif defined (VL_MODE_GLIDE)
+	return grGetString(GR_EXTENSION);
 #else
 	return "";
 #endif
@@ -81,6 +109,8 @@ const char *vlGetVersion(void)
 	VIDEO_FUNCTION_START
 #if defined (VL_MODE_OPENGL) || (VL_MODE_OPENGL_CORE)
 	return (const char*)glGetString(GL_VERSION);
+#elif defined (VL_MODE_GLIDE)
+	return grGetString(GR_VERSION);
 #else
 	return "";
 #endif
@@ -92,6 +122,8 @@ const char *vlGetRenderer(void)
 	VIDEO_FUNCTION_START
 #if defined (VL_MODE_OPENGL) || (VL_MODE_OPENGL_CORE)
 	return (const char*)glGetString(GL_RENDERER);
+#elif defined (VL_MODE_GLIDE)
+	return grGetString(GR_RENDERER);
 #else
 	return "";
 #endif
@@ -728,6 +760,24 @@ VideoPrimitives_t vl_primitives[] =
 	{ VIDEO_PRIMITIVE_TRIANGLE_FAN_LINE,	GL_LINES,			"TRIANGLE_FAN_LINE" },
 	{ VIDEO_PRIMITIVE_TRIANGLE_STRIP,		GL_TRIANGLE_STRIP,	"TRIANGLE_STRIP" },
 	{ VIDEO_PRIMITIVE_QUADS,				GL_QUADS,			"QUADS" }
+#elif defined (VL_MODE_GLIDE)
+	{ VIDEO_PRIMITIVE_LINES,				GR_LINES,			"LINES" },
+	{ VL_PRIMITIVE_LINE_STRIP,				GR_LINE_STRIP,		"LINE_STRIP" },
+	{ VIDEO_PRIMITIVE_POINTS,				GR_POINTS,			"POINTS" },
+	{ VIDEO_PRIMITIVE_TRIANGLES,			GR_TRIANGLES,		"TRIANGLES" },
+	{ VIDEO_PRIMITIVE_TRIANGLE_FAN,			GR_TRIANGLE_FAN,	"TRIANGLE_FAN" },
+	{ VIDEO_PRIMITIVE_TRIANGLE_FAN_LINE,	GR_LINES,			"TRIANGLE_FAN_LINE" },
+	{ VIDEO_PRIMITIVE_TRIANGLE_STRIP,		GR_TRIANGLE_STRIP,	"TRIANGLE_STRIP" },
+	{ VIDEO_PRIMITIVE_QUADS,				0,					"QUADS" }
+#elif defined (VL_MODE_DIRECT3D)
+#elif defined (VL_MODE_VULKAN)
+	{ VIDEO_PRIMITIVE_LINES,				VK_PRIMITIVE_TOPOLOGY_LINE_LIST,		"LINES" },
+	{ VIDEO_PRIMITIVE_POINTS,				VK_PRIMITIVE_TOPOLOGY_POINT_LIST,		"POINTS" },
+	{ VIDEO_PRIMITIVE_TRIANGLES,			VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,	"TRIANGLES" },
+	{ VIDEO_PRIMITIVE_TRIANGLE_FAN,			VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN,		"TRIANGLE_FAN" },
+	{ VIDEO_PRIMITIVE_TRIANGLE_FAN_LINE,	VK_PRIMITIVE_TOPOLOGY_LINE_LIST,		"TRIANGLE_FAN_LINE" },
+	{ VIDEO_PRIMITIVE_TRIANGLE_STRIP,		VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP,	"TRIANGLE_STRIP" },
+	{ VIDEO_PRIMITIVE_QUADS,				0,										"QUADS" }
 #else
 	{ 0 }
 #endif
@@ -753,9 +803,8 @@ void vlDrawArrays(VideoPrimitive_t mode, unsigned int first, unsigned int count)
 	if (count == 0)
 		return;
 
-	unsigned int target = vlTranslatePrimitiveType(mode);
 #ifdef VL_MODE_OPENGL
-	glDrawArrays(target, first, count);
+	glDrawArrays(vlTranslatePrimitiveType(mode), first, count);
 #endif
 }
 
@@ -765,9 +814,8 @@ void vlDrawElements(VideoPrimitive_t mode, unsigned int count, unsigned int type
 	if ((count == 0) || !indices)
 		return;
 
-	unsigned int target = vlTranslatePrimitiveType(mode);
 #ifdef VL_MODE_OPENGL
-	glDrawElements(target, count, type, indices);
+	glDrawElements(vlTranslatePrimitiveType(mode), count, type, indices);
 #endif
 	VIDEO_FUNCTION_END
 }

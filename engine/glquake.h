@@ -25,23 +25,6 @@
 #	pragma warning(disable : 4136)     // X86
 #	pragma warning(disable : 4051)     // ALPHA
 #endif
-
-// TODO: 
-//		move these into video_layer.c once everything
-//		is abstracted out
-#if 0
-#ifdef KATANA_CORE_GL
-#	include <GL/glcorearb.h>
-#else
-#	include "GLee.h"
-#	include <GL/glu.h>
-#endif
-#else
-#	define __MSC__
-
-#	include <glide.h>
-#endif
-
 plEXTERN_C_START
 
 void GL_BeginRendering (int *x, int *y, int *width, int *height);
@@ -53,34 +36,6 @@ extern	int glx, gly, glwidth, glheight;
 
 void R_TimeRefresh_f (void);
 texture_t *R_TextureAnimation (texture_t *base, int frame);
-
-typedef struct surfcache_s
-{
-	struct surfcache_s	*next;
-	struct surfcache_s 	**owner;		// NULL is an empty chunk of memory
-	int					lightadj[BSP_MAX_LIGHTMAPS]; // checked for strobe flush
-	int					dlight;
-	int					size;		// including header
-	unsigned			width;
-	unsigned			height;		// DEBUG only needed for debug
-	float				mipscale;
-	struct texture_s	*texture;	// checked for animating textures
-	uint8_t				data[4];	// width*height elements
-} surfcache_t;
-
-
-typedef struct
-{
-	pixel_t		*surfdat;	// destination for generated surface
-	int			rowbytes;	// destination logical width in bytes
-	msurface_t	*surf;		// description for surface to generate
-	int			lightadj[BSP_MAX_LIGHTMAPS];
-							// adjust for lightmap levels for dynamic lighting
-	texture_t	*texture;	// corrected for animating textures
-	int			surfmip;	// mipmapped ratio of surface texels / world pixels
-	int			surfwidth;	// in mipmapped texels
-	int			surfheight;	// in mipmapped texels
-} drawsurf_t;
 
 //====================================================
 
