@@ -303,7 +303,7 @@ typedef struct
 		dAttackFinished,			// Time before we can attack again.
 		dMoveFinished;
 
-	float fJumpVelocity;
+	float jump_velocity;
 
 	float swim_flag;					// Time before next splash sound.
 	int	hit;

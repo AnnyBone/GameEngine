@@ -579,6 +579,13 @@ void Monster_Damage(ServerEntity_t *target, ServerEntity_t *inflictor, int iDama
 	if (target->local.bBleed)
 		ServerEffect_BloodPuff(target->v.origin);
 
+	if (Entity_IsMonster(target))
+	{
+		// Automatically wake us up if asleep.
+		if (target->Monster.state == MONSTER_STATE_ASLEEP)
+			Monster_SetState(target, MONSTER_STATE_AWAKE);
+	}
+
 	// Only do this for players.
 	if(Entity_IsPlayer(inflictor))
 	{
@@ -599,16 +606,13 @@ void Monster_Damage(ServerEntity_t *target, ServerEntity_t *inflictor, int iDama
 			iDamage *= 2;
 	}
 
-	if(Entity_IsMonster(target))
-		// Automatically wake us up if asleep.
-		if (target->Monster.state == MONSTER_STATE_ASLEEP)
-			Monster_SetState(target, MONSTER_STATE_AWAKE);
-
 	target->v.iHealth -= iDamage;
-	if(target->v.iHealth <= 0)
+
+	if (target->local.DamagedFunction)
+		target->local.DamagedFunction(target, inflictor, type);
+
+	if ((target->Monster.state != MONSTER_STATE_DEAD) || (target->Monster.state != MONSTER_STATE_DYING))
 		Monster_Killed(target, inflictor, type);
-	else if (target->Monster.Pain)
-		target->Monster.Pain(target, inflictor, type);
 }
 
 void MONSTER_WaterMove(ServerEntity_t *ent)
@@ -683,7 +687,7 @@ float MONSTER_GetRange(ServerEntity_t *ent,vec3_t target)
 
 	Math_VectorSubtract(spot1,spot2,spot);
 
-	return (float)plVectorLength(spot);
+	return plLengthf(spot);
 }
 
 bool Monster_IsVisible(ServerEntity_t *ent,ServerEntity_t *target)
@@ -758,16 +762,16 @@ void Monster_Frame(ServerEntity_t *entity)
 	Entity_CheckFrames(entity);
 
 	// Handle jumping.
-	if ((entity->local.fJumpVelocity < -300.0f) && (entity->v.flags & FL_ONGROUND))
+	if ((entity->local.jump_velocity < -300.0f) && (entity->v.flags & FL_ONGROUND))
 	{
-		entity->local.fJumpVelocity = 0;
+		entity->local.jump_velocity = 0;
 
 		// Call up land function, so custom sounds can be added.
 		if (entity->Monster.Land)
 			entity->Monster.Land(entity);
 	}
 	else if (!(entity->v.flags & FL_ONGROUND))
-		entity->local.fJumpVelocity = entity->v.velocity[2];
+		entity->local.jump_velocity = entity->v.velocity[2];
 
 	if (entity->Monster.Frame)
 		entity->Monster.Frame(entity);
@@ -848,9 +852,7 @@ void Monster_MoveRandom(ServerEntity_t *eMonster,float fSpeed)
 	// Add some random movement. ~hogsy
 	if (rand() % 50 == 0)
 	{
-		int	iResult;
-		
-		iResult = rand() % 3;
+		int iResult = rand() % 3;
 		if (iResult == 0)
 			eMonster->v.velocity[0] += fSpeed;
 		else if (iResult == 1)
@@ -865,11 +867,7 @@ void Monster_MoveRandom(ServerEntity_t *eMonster,float fSpeed)
 		eMonster->v.angles[1] = plVectorToYaw(eMonster->v.velocity);
 	}
 	else if (rand() % 150 == 0)
-	{
 		Monster_Jump(eMonster, 200.0f);
-
-		Entity_Animate(eMonster, PlayerAnimation_Jump);
-	}
 	else if (rand() % 250 == 0)
 		eMonster->v.angles[1] = (float)(rand() % 360);
 }
@@ -919,7 +917,7 @@ void Monster_TurnLeft(ServerEntity_t *Monster, float fVelocity)
 
 /*	Turn right on the spot.
 */
-void Monster_TurnRight(ServerEntity_t *eMonster)
+void Monster_TurnRight(ServerEntity_t *monster)
 {}
 
 /*	Allows a monster to jump with the given velocity.
