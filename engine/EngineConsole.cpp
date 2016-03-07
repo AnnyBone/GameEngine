@@ -206,7 +206,7 @@ std::list<std::string> Core::Console::wrap_line(std::string line, unsigned int c
 		{
 			size_t break_space = line.find_last_of(' ', cols);
 
-			if(break_space == std::string::npos)
+			if(break_space == std::string::npos || break_space == 0)
 				frag_len = cols;
 			else
 				frag_len = break_space;
