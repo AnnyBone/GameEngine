@@ -342,7 +342,7 @@ void vlEnable(unsigned int uiCapabilities)
 			break;
 
 		if (uiCapabilities & VIDEO_TEXTURE_2D)
-			Video.textureunit_state[Video.current_textureunit] = true;
+			Video.textureunits[Video.current_textureunit].isactive = true;
 
 		if (uiCapabilities & capabilities[i].vl_parm)
 		{
@@ -367,7 +367,7 @@ void vlDisable(unsigned int uiCapabilities)
 			break;
 
 		if (uiCapabilities & VIDEO_TEXTURE_2D)
-			Video.textureunit_state[Video.current_textureunit] = false;
+			Video.textureunits[Video.current_textureunit].isactive = false;
 
 		if (uiCapabilities & capabilities[i].vl_parm)
 		{

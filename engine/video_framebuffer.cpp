@@ -187,11 +187,11 @@ VideoPostProcess::VideoPostProcess(const char *fragpath, const char *vertpath)
 	program = new VideoShaderProgram();
 	program->Initialize();
 
-	VideoShader *frag = new VideoShader(VIDEO_SHADER_FRAGMENT);
+	VideoShader *frag = new VideoShader(VL_SHADER_FRAGMENT);
 	if (!frag->Load(fragpath))
 		Sys_Error("Failed to load fragment shader! (%s)\n", fragpath);
 
-	VideoShader *vert = new VideoShader(VIDEO_SHADER_VERTEX);
+	VideoShader *vert = new VideoShader(VL_SHADER_VERTEX);
 	if (!vert->Load(vertpath))
 		Sys_Error("Failed to load vertex shader! (%s)\n", vertpath);
 

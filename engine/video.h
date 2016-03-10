@@ -84,7 +84,7 @@ typedef struct
 {
 	bool isactive;
 
-	unsigned int current_texture;
+	unsigned int current_texture;	// Current/last binded texture.
 	unsigned int capabilities[2];
 
 	VideoTextureEnvironmentMode_t current_envmode;
@@ -116,8 +116,6 @@ typedef struct
 	VideoTextureMU_t	*textureunits;
 	int					num_textureunits;					// Max number of supported units.
 	unsigned int		current_textureunit;				// Current TMU.
-	unsigned int		current_texture[VIDEO_MAX_UNITS];	// Current/last binded texture.
-	bool				textureunit_state[VIDEO_MAX_UNITS];	// The state of each individual TMU.
 
 	unsigned int current_program;
 

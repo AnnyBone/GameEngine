@@ -47,7 +47,7 @@ void VideoShaderManager::Shutdown()
 
 // Shader
 
-VideoShader::VideoShader(VideoShaderType_t type)
+VideoShader::VideoShader(vlShaderType_t type)
 {
 	instance = 0;
 
@@ -67,7 +67,7 @@ bool VideoShader::Load(const char *path)
 	}
 
 	// Ensure the type is valid.
-	if ((type < VIDEO_SHADER_FRAGMENT) || (type > VIDEO_SHADER_VERTEX))
+	if ((type != VL_SHADER_FRAGMENT) && (type != VL_SHADER_VERTEX))
 	{
 		Con_Warning("Invalid shader type! (%i) (%s)\n", path, type);
 		return false;
@@ -75,7 +75,7 @@ bool VideoShader::Load(const char *path)
 
 	// Ensure we use the correct path and shader.
 	unsigned int uiShaderType;
-	if (type == VIDEO_SHADER_FRAGMENT)
+	if (type == VL_SHADER_FRAGMENT)
 	{
 		sprintf(source_path, "%s%s_fragment.shader", g_state.path_shaders, path);
 		uiShaderType = GL_FRAGMENT_SHADER;
@@ -161,7 +161,7 @@ unsigned int VideoShader::GetInstance()
 	return instance;
 }
 
-VideoShaderType_t VideoShader::GetType()
+vlShaderType_t VideoShader::GetType()
 {
 	return type;
 }
@@ -315,11 +315,11 @@ void Shader_Initialize(void)
 	base_program->Initialize();
 
 	// Followed by the shaders.
-	base_vertex = new VideoShader(VIDEO_SHADER_VERTEX);
+	base_vertex = new VideoShader(VL_SHADER_VERTEX);
 	if (!base_vertex->Load("base"))
 		Sys_Error("Failed to load base vertex shader!\n");
 
-	base_fragment = new VideoShader(VIDEO_SHADER_FRAGMENT);
+	base_fragment = new VideoShader(VL_SHADER_FRAGMENT);
 	if (!base_fragment->Load("base"))
 		Sys_Error("Failed to load base fragment shader!\n");
 

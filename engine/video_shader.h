@@ -19,21 +19,13 @@
 
 #pragma once
 
-typedef enum
-{
-	VIDEO_SHADER_INVALID,
-
-	VIDEO_SHADER_FRAGMENT,
-	VIDEO_SHADER_VERTEX
-} VideoShaderType_t;
-
 typedef int uniform;
 
 #ifdef __cplusplus
 class VideoShader
 {
 public:
-	VideoShader(VideoShaderType_t type);
+	VideoShader(vlShaderType_t type);
 	~VideoShader();
 
 	bool Load(const char *path);
@@ -43,12 +35,12 @@ public:
 	void Disable();
 
 	unsigned int GetInstance();
-	VideoShaderType_t GetType();
+	vlShaderType_t GetType();
 
 private:
 	unsigned int instance;
 
-	VideoShaderType_t type;
+	vlShaderType_t type;
 
 	const char	*source;
 	char		source_path[PLATFORM_MAX_PATH];

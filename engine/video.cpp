@@ -90,8 +90,6 @@ void Video_Initialize(void)
 
 	Con_Printf("Initializing video...\n");
 
-	memset(Video.current_texture, -1, sizeof(int)*VIDEO_MAX_UNITS); // "To avoid unnecessary texture sets"
-
 	// Only enabled if the hardware supports it.
 	Video.extensions.vertex_buffer_object	= false;
 	Video.extensions.generate_mipmap		= false;
@@ -160,24 +158,18 @@ void Video_Initialize(void)
 	if (!g_state.embedded)
 		Window_InitializeVideo();
 
-	vlGetMaxTextureImageUnits(&Video.num_textureunits);
-	if (Video.num_textureunits < VIDEO_MAX_UNITS)
-		Sys_Error("Your system doesn't support the required number of TMUs! (%i)\n", Video.num_textureunits);
-
 	// Attempt to dynamically allocated the number of supported TMUs.
+	vlGetMaxTextureImageUnits(&Video.num_textureunits);
 	Video.textureunits = (VideoTextureMU_t*)Hunk_Alloc(sizeof(VideoTextureMU_t)*Video.num_textureunits);
 	if (!Video.textureunits)
 		Sys_Error("Failed to allocated handler for the number of supported TMUs! (%i)\n", Video.num_textureunits);
 
 	for (int i = 0; i < Video.num_textureunits; i++)
 	{
-		Video.textureunits[i].isactive			= false;
+		Video.textureunits[i].isactive			= false;						// All units are initially disabled.
 		Video.textureunits[i].current_envmode	= VIDEO_TEXTURE_MODE_REPLACE;
-		Video.textureunits[i].current_texture	= 0;
+		Video.textureunits[i].current_texture	= (unsigned int)-1;
 	}
-
-	// All units are initially disabled.
-	memset(Video.textureunit_state, 0, sizeof(Video.textureunit_state));
 
 	vlGetMaxTextureAnistropy(&Video.fMaxAnisotropy);
 
@@ -430,10 +422,10 @@ void Video_SetTexture(gltexture_t *gTexture)
 	if(!gTexture)
 		gTexture = notexture;
 	// If it's the same as the last, don't bother.
-	else if (gTexture->texnum == Video.current_texture[Video.current_textureunit])
+	else if (gTexture->texnum == Video.textureunits[Video.current_textureunit].current_texture)
 		return;
 
-	Video.current_texture[Video.current_textureunit] = gTexture->texnum;
+	Video.textureunits[Video.current_textureunit].current_texture = gTexture->texnum;
 
 	gTexture->visframe = r_framecount;
 
@@ -578,7 +570,7 @@ void Video_EnableCapabilities(unsigned int iCapabilities)
 			break;
 
 		if (iCapabilities & VIDEO_TEXTURE_2D)
-			Video.textureunit_state[Video.current_textureunit] = true;
+			Video.textureunits[Video.current_textureunit].isactive = true;
 
 		if(iCapabilities & vcCapabilityList[i].uiFirst)
 		{
@@ -606,7 +598,7 @@ void Video_DisableCapabilities(unsigned int iCapabilities)
 			break;
 
 		if (iCapabilities & VIDEO_TEXTURE_2D)
-			Video.textureunit_state[Video.current_textureunit] = false;
+			Video.textureunits[Video.current_textureunit].isactive = false;
 
 		if(iCapabilities & vcCapabilityList[i].uiFirst)
 		{

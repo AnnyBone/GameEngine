@@ -30,6 +30,12 @@ typedef unsigned int vlRenderBuffer_t;
 typedef unsigned int vlFrameBuffer_t;
 #endif
 
+typedef enum
+{
+	VL_SHADER_FRAGMENT,
+	VL_SHADER_VERTEX
+} vlShaderType_t;
+
 #if defined (VL_MODE_OPENGL) || (VL_MODE_OPENGL_CORE)
 #	define VL_MASK_COLOUR	GL_COLOR_BUFFER_BIT
 #	define VL_MASK_DEPTH	GL_DEPTH_BUFFER_BIT
