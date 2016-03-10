@@ -176,16 +176,13 @@ keyname_t keynames[] =
 ==============================================================================
 */
 
-void Con_TabComplete(void); // [25/11/2013] See console.c ~hogsy
+char key_tabpartial[MAXCMDLINE];
 
 /*  Interactive line editing and console scrollback
 	johnfitz -- heavy revision
 */
 void Key_Console (int key)
 {
-	extern	int con_vislines;
-	extern	char key_tabpartial[MAXCMDLINE];
-
 	switch (key)
 	{
 	case INPUT_KEY_ENTER:
@@ -224,43 +221,22 @@ void Key_Console (int key)
 	case K_HOME:
 		if (keydown[K_CTRL])
 		{
-			//skip initial empty lines
-			unsigned int			i, x;
-			char					*line;
-			extern unsigned int		con_current;
-			extern unsigned int		con_linewidth;
-			extern char				*con_text;
-
-			for (i = con_current - con_totallines + 1 ; i <= con_current ; i++)
-			{
-				line = con_text + (i%con_totallines)*con_linewidth;
-				for (x=0 ; x<con_linewidth ; x++)
-					if (line[x] != ' ')
-						break;
-				if (x != con_linewidth)
-					break;
-			}
-
-			con_backscroll = Math_Clamp(0, con_current - i%con_totallines - 2, con_totallines - (glheight >> 3) - 1);
+			Con_ScrollHome();
 		}
 		else
 			key_linepos = 1;
 		return;
 	case K_END:
 		if (keydown[K_CTRL])
-			con_backscroll = 0;
+			Con_ScrollEnd();
 		else
 			key_linepos = strlen(key_lines[edit_line]);
 		return;
 	case K_PGUP:
-		con_backscroll += keydown[K_CTRL] ? ((con_vislines>>3) - 4) : 2;
-		if (con_backscroll > con_totallines - (Video.iHeight >> 3) - 1)
-			con_backscroll = con_totallines - (Video.iHeight>>3) - 1;
+		Con_ScrollUp();
 		return;
 	case K_PGDN:
-		con_backscroll -= keydown[K_CTRL] ? ((con_vislines>>3) - 4) : 2;
-		if (con_backscroll < 0)
-			con_backscroll = 0;
+		Con_ScrollDown();
 		return;
 	case K_LEFTARROW:
 		if (key_linepos > 1)

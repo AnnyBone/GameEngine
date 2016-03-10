@@ -73,6 +73,9 @@
 #		include <CommCtrl.h>
 #		include <direct.h>
 #		include <lmcons.h>
+
+#		undef min
+#		undef max
 #	endif
 
 	// Information

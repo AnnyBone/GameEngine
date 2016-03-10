@@ -53,13 +53,13 @@ extern	ConsoleVariable_t	coop;
 extern	ServerStatic_t	svs;				// persistant server info
 extern	Server_t		sv;					// local server
 
-plEXTERN_C_END
-
 extern	ServerClient_t	*host_client;
 
 extern	jmp_buf 	host_abortserver;
 
 extern	ServerEntity_t		*sv_player;
+
+plEXTERN_C_END
 
 //===========================================================
 

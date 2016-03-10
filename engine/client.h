@@ -247,8 +247,6 @@ extern	unsigned int	cl_numvisedicts;
 extern	ClientEntity_t	*cl_entities; //johnfitz -- was a static array, now on hunk
 extern	unsigned int	cl_max_edicts; //johnfitz -- only changes when new map loads
 
-plEXTERN_C_END
-
 //=============================================================================
 
 //
@@ -318,3 +316,5 @@ void V_SetContentsColor (int contents);
 //
 void CL_InitTEnts (void);
 void CL_SignonReply (void);
+
+plEXTERN_C_END
