@@ -200,8 +200,8 @@ Waypoint_t *Waypoint_GetByType(MathVector3f_t position, WaypointType_t type, flo
 // [20/9/2012] Lets us find a specific waypoint by name ~hogsy
 Waypoint_t *Waypoint_GetByName(ServerEntity_t *eMonster,char *cName,float fMaxDistance)
 {
-	Waypoint_t	*wPoint;
-	vec3_t		vDistance;
+	Waypoint_t			*wPoint;
+	plVector3f_t		vDistance;
 
 	for (wPoint = wWaypoints; wPoint->number < waypoint_count; wPoint++)
 		if(strcmp(wPoint->cName,cName))

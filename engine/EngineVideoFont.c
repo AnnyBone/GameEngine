@@ -85,7 +85,7 @@ void Font_Load(const char *ccName,int iSize)
 
 /*	Basic routine for drawing fonts onto the screen.
 */
-void Font_Draw(Font_t *fFont,const char *ccMessage,vec3_t vPos,vec3_t vColour)
+void Font_Draw(Font_t *fFont, const char *ccMessage, plVector3f_t vPos, plVector3f_t vColour)
 {
 	VideoVertex_t voFont[4] = { { { 0 } } };
 

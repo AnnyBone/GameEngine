@@ -59,13 +59,13 @@ float	v_dmg_time, v_dmg_roll, v_dmg_pitch;
 
 extern	int	in_forward, in_forward2, in_back;
 
-vec3_t	v_punchangles[2]; //johnfitz -- copied from cl.punchangle.  0 is current, 1 is previous value. never the same unless map just loaded
+plVector3f_t	v_punchangles[2]; //johnfitz -- copied from cl.punchangle.  0 is current, 1 is previous value. never the same unless map just loaded
 
-vec3_t	forward, right, up;
+plVector3f_t	forward, right, up;
 
 /*	Used by view and sv_user
 */
-float V_CalcRoll(vec3_t angles, vec3_t velocity)
+float V_CalcRoll(plVector3f_t angles, plVector3f_t velocity)
 {
 	float	sign,side,value;
 
@@ -541,13 +541,13 @@ void V_CalcIntermissionRefdef (void)
 
 /*	Adds a delay to the view model (such as a weapon) in the players view.
 */
-void View_ModelDrift(vec3_t vOrigin,vec3_t vAngles,vec3_t vOldAngles)
+void View_ModelDrift(plVector3f_t vOrigin, plVector3f_t vAngles, plVector3f_t vOldAngles)
 {
-	int				i;
-	float			fScale,fSpeed,fDifference;
-	static	vec3_t	svLastFacing;
-	vec3_t			vForward,vRight,vUp,
-					vDifference;
+	int						i;
+	float					fScale,fSpeed,fDifference;
+	static	plVector3f_t	svLastFacing;
+	plVector3f_t			vForward, vRight, vUp,
+							vDifference;
 
 	plAngleVectors(vAngles, vForward, vRight, vUp);
 

@@ -138,7 +138,7 @@ bool R_CullBox (MathVector3f_t emins, MathVector3f_t emaxs)
 
 bool R_CullModelForEntity(entity_t *e)
 {
-	vec3_t mins, maxs;
+	plVector3f_t mins, maxs;
 
 	if(e == &cl.viewent)
 		return false;
@@ -162,7 +162,7 @@ bool R_CullModelForEntity(entity_t *e)
 	return R_CullBox(mins, maxs);
 }
 
-void R_RotateForEntity (vec3_t origin, vec3_t angles)
+void R_RotateForEntity(plVector3f_t origin, plVector3f_t angles)
 {
 	glTranslatef(origin[0],origin[1],origin[2]);
 	glRotatef(angles[1],0,0,1);
@@ -211,7 +211,7 @@ int SignbitsForPlane (mplane_t *out)
 	assumes side and forward are perpendicular, and normalized
 	to turn away from side, use a negative angle
 */
-void TurnVector (vec3_t out, const vec3_t forward, const vec3_t side, float angle)
+void TurnVector(plVector3f_t out, const plVector3f_t forward, const plVector3f_t side, float angle)
 {
 	float scale_forward, scale_side;
 

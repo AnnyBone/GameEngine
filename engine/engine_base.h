@@ -38,7 +38,7 @@
 #endif
 
 //	Build needs to be updated each day that work is done on the engine.
-#define ENGINE_VERSION_BUILD	1113	// 10/03/2016
+#define ENGINE_VERSION_BUILD	1116	// 12/03/2016
 
 #define	ENGINE_LOG	"engine"
 
@@ -77,6 +77,7 @@
 #include "shared_formats.h"
 
 #ifdef __cplusplus
+#	include "engine_class.h"
 #	include "engine_exception.h"
 #endif
 

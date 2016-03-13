@@ -166,13 +166,13 @@ bool Monster_CheckBottom(ServerEntity_t *ent)
 	return true;
 }
 
-bool Monster_MoveStep(ServerEntity_t *ent,vec3_t move,bool bRelink)
+bool Monster_MoveStep(ServerEntity_t *ent, plVector3f_t move, bool bRelink)
 {
 #if 0 // obsolete
-	float	dz;
-	vec3_t	vNewOrigin,end;
-	trace_t	trace;
-	int		i;
+	float			dz;
+	plVector3f_t	vNewOrigin,end;
+	trace_t			trace;
+	int				i;
 
 	Math_VectorClear(vNewOrigin);
 
@@ -283,8 +283,8 @@ bool Monster_MoveStep(ServerEntity_t *ent,vec3_t move,bool bRelink)
 bool Monster_StepDirection(ServerEntity_t *ent,float yaw,float dist)
 {
 #if 0
-	vec3_t	move,oldorg;
-	float	delta;
+	plVector3f_t	move,oldorg;
+	float			delta;
 
 	ent->v.ideal_yaw	= yaw;
 	ChangeYaw(ent);
@@ -674,9 +674,9 @@ void Monster_MoveToGoal(ServerEntity_t *ent,MathVector3f_t goal,float distance)
 /*	Returns the range from an entity to a target.
 	TODO: Make this into a util type function.
 */
-float MONSTER_GetRange(ServerEntity_t *ent,vec3_t target)
+float MONSTER_GetRange(ServerEntity_t *ent, plVector3f_t target)
 {
-	vec3_t spot,spot1,spot2;
+	plVector3f_t spot, spot1, spot2;
 
 	spot1[0] = ent->v.origin[0]+ent->v.view_ofs[0];
 	spot1[1] = ent->v.origin[1]+ent->v.view_ofs[1];

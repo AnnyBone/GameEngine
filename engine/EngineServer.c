@@ -341,7 +341,7 @@ crosses a waterline.
 int		fatbytes;
 byte	fatpvs[BSP_MAX_LEAFS/8];
 
-void SV_AddToFatPVS (vec3_t org, mnode_t *node, model_t *worldmodel) //johnfitz -- added worldmodel as a parameter
+void SV_AddToFatPVS(plVector3f_t org, mnode_t *node, model_t *worldmodel) //johnfitz -- added worldmodel as a parameter
 {
 	int		i;
 	byte	*pvs;
@@ -379,7 +379,7 @@ void SV_AddToFatPVS (vec3_t org, mnode_t *node, model_t *worldmodel) //johnfitz 
 /*	Calculates a PVS that is the inclusive or of all leafs within 8 pixels of the
 	given point.
 */
-byte *SV_FatPVS (vec3_t org, model_t *worldmodel) //johnfitz -- added worldmodel as a parameter
+byte *SV_FatPVS(plVector3f_t org, model_t *worldmodel) //johnfitz -- added worldmodel as a parameter
 {
 	fatbytes = (worldmodel->numleafs+31)>>3;
 	memset(fatpvs, 0, fatbytes);
@@ -391,9 +391,9 @@ byte *SV_FatPVS (vec3_t org, model_t *worldmodel) //johnfitz -- added worldmodel
 */
 bool SV_VisibleToClient(ServerEntity_t *client,ServerEntity_t *test,model_t *worldmodel)
 {
-	byte	*pvs;
-	vec3_t	org;
-	int		i;
+	byte			*pvs;
+	plVector3f_t	org;
+	int				i;
 
 	Math_VectorAdd (client->v.origin, client->v.view_ofs, org);
 	pvs = SV_FatPVS (org, worldmodel);
@@ -407,12 +407,12 @@ bool SV_VisibleToClient(ServerEntity_t *client,ServerEntity_t *test,model_t *wor
 
 void SV_WriteEntitiesToClient (ServerEntity_t	*clent, sizebuf_t *msg)
 {
-	unsigned int	e;
-	int				i, bits;
-	uint8_t			*pvs;
-	vec3_t			org;
-	float			miss;
-	ServerEntity_t	*ent;
+	unsigned int			e;
+	int						i, bits;
+	uint8_t					*pvs;
+	plVector3f_t			org;
+	float					miss;
+	ServerEntity_t			*ent;
 
 // find the client's PVS
 	Math_VectorAdd(clent->v.origin,clent->v.view_ofs,org);

@@ -262,7 +262,6 @@ model_t *Model_Load(model_t *model)
 
 	switch (LittleLong(*(unsigned*)buf))
 	{
-	case MD2E_HEADER:
 	case MD2_HEADER:
 		Model_LoadMD2(model, buf);
 		break;
@@ -569,11 +568,11 @@ TODO: merge this into BuildSurfaceDisplayList?
 */
 void Mod_PolyForUnlitSurface (msurface_t *fa)
 {
-	vec3_t		verts[64];
-	int			numverts, i, lindex;
-	float		*vec;
-	glpoly_t	*poly;
-	float		texscale;
+	plVector3f_t	verts[64];
+	int				numverts, i, lindex;
+	float			*vec;
+	glpoly_t		*poly;
+	float			texscale;
 
 	if (fa->flags & (SURF_DRAWTURB | SURF_DRAWSKY))
 		texscale = (1.0/128.0); //warp animation repeats every 128
@@ -1012,12 +1011,11 @@ void Model_LoadBSPPlanes(BSPLump_t *blLump)
 	}
 }
 
-float RadiusFromBounds (vec3_t mins, vec3_t maxs)
+float RadiusFromBounds(plVector3f_t mins, plVector3f_t maxs)
 {
-	int		i;
-	vec3_t	corner;
+	plVector3f_t	corner;
 
-	for (i=0 ; i<3 ; i++)
+	for (int i=0 ; i<3 ; i++)
 		corner[i] = fabs(mins[i]) > fabs(maxs[i]) ? fabs(mins[i]) : fabs(maxs[i]);
 
 	return plLengthf(corner);
@@ -1376,9 +1374,9 @@ void Model_LoadMD2(model_t *mModel,void *Buffer)
 	pinmodel = (MD2_t*)Buffer;
 
 	iVersion = LittleLong(pinmodel->version);
-	if ((iVersion != MD2_VERSION) && (iVersion != MD2E_VERSION))
+	if (iVersion != MD2_VERSION)
 	{
-		Con_Error("%s has wrong version number (%i should be %i or %i)\n", mModel->name, iVersion, MD2_VERSION, MD2E_VERSION);
+		Con_Error("%s has wrong version number (%i should be %i)\n", mModel->name, iVersion, MD2_VERSION);
 		return;
 	}
 

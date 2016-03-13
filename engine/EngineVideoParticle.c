@@ -153,14 +153,14 @@ void Particle_CreateEffect(
 	}
 }
 
-void Particle_RocketTrail(vec3_t start, vec3_t end, int type)
+void Particle_RocketTrail(plVector3f_t start, plVector3f_t end, int type)
 {
-	vec3_t		vec;
-	float		len;
-	int			j;
-	Particle_t	*p;
-	int			dec;
-	static int	tracercount;
+	plVector3f_t		vec;
+	float				len;
+	int					j;
+	Particle_t			*p;
+	int					dec;
+	static int			tracercount;
 
 	Math_VectorSubtract(end, start, vec);
 	len = plVectorNormalize(vec);
@@ -273,18 +273,18 @@ void Particle_Parse(void)
 #if 0
 #define NUMVERTEXNORMALS	162
 
-vec3_t	avelocities[NUMVERTEXNORMALS], avelocity = { 23, 7, 3 };
+plVector3f_t	avelocities[NUMVERTEXNORMALS], avelocity = { 23, 7, 3 };
 
 float	beamlength = 16;
 
 void Client_EntityParticles(entity_t *ent)
 {
-	int			i;
-	Particle_t	*p;
-	float		angle,
-		sr, sp, sy, cr, cp, cy,
-		dist = 64.0f;
-	vec3_t		forward;
+	int					i;
+	Particle_t			*p;
+	float				angle,
+						sr, sp, sy, cr, cp, cy,
+						dist = 64.0f;
+	plVector3f_t		forward;
 
 	if (!avelocities[0][0])
 		for (i = 0; i<NUMVERTEXNORMALS * 3; i++)

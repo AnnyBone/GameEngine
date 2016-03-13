@@ -160,9 +160,9 @@ void Shadow_Draw(ClientEntity_t *ent)
 	if (ent != &cl_entities[cl.viewentity])
 		if ((r_shadows.value >= 2) && (ent->model->type == MODEL_TYPE_MD2))
 		{
-			MD2_t			*pmd2;
-			DynamicLight_t	*dlLight;
-			vec3_t			vDistance;
+			MD2_t					*pmd2;
+			DynamicLight_t			*dlLight;
+			plVector3f_t			vDistance;
 
 			pmd2 = (MD2_t*)Mod_Extradata(ent->model);
 

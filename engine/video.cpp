@@ -80,6 +80,8 @@ void Video_DebugCommand(void);
 
 Video_t	Video;
 
+Core::ShaderManager *g_shadermanager = nullptr;
+
 /*	Initialize the renderer
 */
 void Video_Initialize(void)
@@ -236,10 +238,11 @@ void Video_Initialize(void)
 
 	Video.vertical_sync = cv_video_verticlesync.bValue;
 
-#ifdef VIDEO_SUPPORT_SHADERS
-	Shader_Initialize();
-#endif
 	Light_Initialize();
+
+	// Initialize the shader manager.
+	g_shadermanager = new Core::ShaderManager();
+	g_shadermanager->Initialize();
 
 	// Initialize the sprite manager.
 	g_spritemanager = new Core::SpriteManager();
@@ -491,7 +494,7 @@ void Video_DrawSurface(msurface_t *mSurface,float fAlpha, Material_t *mMaterial,
 	for (i = 0; i < mSurface->polys->numverts; i++, fVert += VERTEXSIZE)
 	{
 #ifdef _MSC_VER
-#pragma warning(suppress: 6011)
+#	pragma warning(suppress: 6011)
 #endif
 		Video_ObjectVertex(&drawsurf[i], fVert[0], fVert[1], fVert[2]);
 		Video_ObjectTexture(&drawsurf[i], VIDEO_TEXTURE_DIFFUSE, fVert[3], fVert[4]);
@@ -667,19 +670,7 @@ void Video_Frame(void)
 	if (Video.debug_frame)
 		plWriteLog(cv_video_log.string, "Video: Start of frame\n");
 
-#ifdef VIDEO_SUPPORT_SHADERS
-#ifdef VIDEO_SUPPORT_FRAMEBUFFERS
-	//VideoPostProcess_BindFrameBuffer();
-	DEBUG_FrameBufferBind();
-#endif
-#endif
-
 	SCR_UpdateScreen();
-
-#if 0
-	// Attempt to draw the depth buffer.
-	Video_DrawDepthBuffer();
-#endif
 
 	GL_EndRendering();
 
@@ -714,7 +705,10 @@ void Video_Shutdown(void)
 	Con_Printf("Shutting down video...\n");
 
 	g_spritemanager->Shutdown();
+	g_shadermanager->Shutdown();
+
 	delete g_spritemanager;
+	delete g_shadermanager;
 
 	if (!g_state.embedded)
 		Window_Shutdown();

@@ -184,14 +184,14 @@ void DEBUG_FrameBufferDraw()
 VideoPostProcess::VideoPostProcess(const char *fragpath, const char *vertpath)
 	: VideoFrameBuffer(Video.iWidth, Video.iHeight)
 {
-	program = new VideoShaderProgram();
+	program = new Core::ShaderProgram();
 	program->Initialize();
 
-	VideoShader *frag = new VideoShader(VL_SHADER_FRAGMENT);
+	Core::Shader *frag = new Core::Shader(VL_SHADER_FRAGMENT);
 	if (!frag->Load(fragpath))
 		Sys_Error("Failed to load fragment shader! (%s)\n", fragpath);
 
-	VideoShader *vert = new VideoShader(VL_SHADER_VERTEX);
+	Core::Shader *vert = new Core::Shader(VL_SHADER_VERTEX);
 	if (!vert->Load(vertpath))
 		Sys_Error("Failed to load vertex shader! (%s)\n", vertpath);
 
@@ -202,7 +202,7 @@ VideoPostProcess::VideoPostProcess(const char *fragpath, const char *vertpath)
 	uniform_diffuse = program->GetUniformLocation("SampleTexture");
 }
 
-VideoPostProcess::VideoPostProcess(VideoShaderProgram *PostProcessProgram)
+VideoPostProcess::VideoPostProcess(Core::ShaderProgram *PostProcessProgram)
 	: VideoFrameBuffer(512, 512)	//Video.iWidth, Video.iHeight)
 {
 	if (!PostProcessProgram)

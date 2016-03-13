@@ -63,7 +63,7 @@ typedef struct
 	unsigned int	entity;
 	struct model_s	*model;
 	float			endtime;
-	vec3_t			start, end;
+	plVector3f_t	start, end;
 } beam_t;
 
 #define	MAX_EFRAGS		2048 //johnfitz -- was 640
@@ -143,13 +143,13 @@ typedef struct
 // sent to the server each frame.  The server sets punchangle when
 // the view is temporarliy offset, and an angle reset commands at the start
 // of each level and after teleporting.
-	vec3_t		mviewangles[2];	// during demo playback viewangles is lerped
+	plVector3f_t		mviewangles[2];	// during demo playback viewangles is lerped
 								// between these
-	vec3_t		viewangles;
-	vec3_t		mvelocity[2];	// update by server, used for lean+bob
+	plVector3f_t		viewangles;
+	plVector3f_t		mvelocity[2];	// update by server, used for lean+bob
 								// (0 is newest)
-	vec3_t		velocity;		// lerped between mvelocity[0] and [1]
-	vec3_t		punchangle;		// temporary offset
+	plVector3f_t		velocity;		// lerped between mvelocity[0] and [1]
+	plVector3f_t		punchangle;		// temporary offset
 
 // pitch drifting vars
 	float		idealpitch;

@@ -94,7 +94,7 @@ void Misc_GibThink(ServerEntity_t *ent)
 	Entity_Remove(ent);
 }
 
-void ThrowGib(vec3_t origin,vec3_t velocity,char *model,float damage,bool bleed)
+void ThrowGib(plVector3f_t origin, plVector3f_t velocity, char *model, float damage, bool bleed)
 {
 	ServerEntity_t *gib = Entity_Spawn();
 

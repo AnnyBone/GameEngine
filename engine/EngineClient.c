@@ -373,7 +373,7 @@ void CL_RelinkEntities (void)
 	entity_t		*ent;
 	unsigned int	i, j;
 	float			frac, f, d;
-	vec3_t			delta;
+	plVector3f_t	delta;
 
 	if(cl.bIsPaused)
 		return;
@@ -585,7 +585,7 @@ void CL_SendCmd(void)
 */
 void CL_Tracepos_f (void)
 {
-	vec3_t	v, w;
+	plVector3f_t	v, w;
 
 	Math_VectorScale(vpn, 8192.0, v);
 	TraceLine(r_refdef.vieworg, v, w);

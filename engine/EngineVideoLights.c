@@ -119,7 +119,7 @@ void Light_Draw(void)
 
 			for(i = 16; i >= 0; i--,c++)
 			{
-				vec3_t	vColour;
+				plVector3f_t	vColour;
 
 				a = i/16.0f*pMath_PI*2.0f;
 
@@ -412,8 +412,8 @@ DynamicLight_t *Light_GetDynamic(MathVector3f_t vPoint, bool bCheap)
 
 		if ((cl_dlights[i].die >= cl.time) || (!cl_dlights[i].lightmap && cl_dlights[i].radius))
 		{
-			float	fDistance[2];
-			vec3_t	vDistance;
+			float			fDistance[2];
+			plVector3f_t	vDistance;
 
 			Math_VectorSubtract(vPoint,cl_dlights[i].origin,vDistance);
 
@@ -441,13 +441,13 @@ extern unsigned	blocklights[128*128*3];
 
 void R_AddDynamicLights(msurface_t *surf)
 {
-	int			lnum,sd,td,s,t,i,smax,tmax;
-	float		dist,rad,minlight,cred,cgreen,cblue,brightness;
+	int					lnum,sd,td,s,t,i,smax,tmax;
+	float				dist,rad,minlight,cred,cgreen,cblue,brightness;
 	//johnfitz -- lit support via lordhavoc
-	unsigned	*bl;
+	unsigned			*bl;
 	//johnfitz
-	vec3_t		impact, local;
-	mtexinfo_t	*tex;
+	plVector3f_t		impact, local;
+	mtexinfo_t			*tex;
 
 	smax	= (surf->extents[0]>>4)+1;
 	tmax	= (surf->extents[1]>>4)+1;

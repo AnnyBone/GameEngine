@@ -16,22 +16,15 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef ENGINE_CLASS_H
-#define	ENGINE_CLASS_H
 #pragma once
 
 /*
 	Base Abstract Classes
 */
 
-class EngineSubSystem
+class CoreManager
 {
 public:
-	EngineSubSystem();
-
 	virtual void Initialize() = 0;
-	virtual void Frame() = 0;
 	virtual void Shutdown() = 0;
 };
-
-#endif // !ENGINE_CLASS_H

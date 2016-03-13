@@ -175,9 +175,9 @@ void C4Vizatergo_C4BallTouch(ServerEntity_t *ent,ServerEntity_t *eOther)
 void C4Vizatergo_Think(ServerEntity_t *ent)
 {
 #if 0	// TODO: Finish?
-	float	fDistance;
-	vec3_t	vDistance;
-	ServerEntity_t *eDistantEnt = Game.Server_FindRadius(ent->v.origin,512.0f);
+	float			fDistance;
+	plVector3f_t	vDistance;
+	ServerEntity_t	*eDistantEnt = Game.Server_FindRadius(ent->v.origin,512.0f);
 
 	if(eDistantEnt)
 	{

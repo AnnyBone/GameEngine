@@ -88,7 +88,7 @@ msurface_t	*warpface;
 
 cvar_t gl_subdivide_size = {"gl_subdivide_size", "128", true, false, "Changes the number of subdevides used for water.\nCan result in better water quality while resulting in dropped performance." };
 
-void BoundPoly (int numverts, float *verts, vec3_t mins, vec3_t maxs)
+void BoundPoly(int numverts, float *verts, plVector3f_t mins, plVector3f_t maxs)
 {
 	int		i, j;
 	float	*v;
@@ -108,16 +108,16 @@ void BoundPoly (int numverts, float *verts, vec3_t mins, vec3_t maxs)
 
 void SubdividePolygon (int numverts, float *verts)
 {
-	int		i, j, k;
-	vec3_t	mins, maxs;
-	float	m;
-	float	*v;
-	vec3_t	front[64], back[64];
-	int		f, b;
-	float	dist[64] = { 0 };
-	float	frac;
-	glpoly_t	*poly;
-	float	s, t;
+	int				i, j, k;
+	plVector3f_t	mins, maxs;
+	float			m;
+	float			*v;
+	plVector3f_t	front[64], back[64];
+	int				f, b;
+	float			dist[64] = { 0 };
+	float			frac;
+	glpoly_t		*poly;
+	float			s, t;
 
 	if(numverts > 60)
 		Sys_Error ("numverts = %i", numverts);
@@ -191,8 +191,8 @@ void SubdividePolygon (int numverts, float *verts)
 
 void GL_SubdivideSurface(msurface_t *fa)
 {
-	vec3_t	verts[64];
-	int		i;
+	plVector3f_t	verts[64];
+	int				i;
 
 	warpface = fa;
 

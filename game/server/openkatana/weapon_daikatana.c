@@ -105,9 +105,9 @@ void Daikatana_Deploy(ServerEntity_t *ent)
 
 void Daikatana_Hit(ServerEntity_t *ent)
 {
-	int		i;
-	vec3_t	forward,temp,sndvec;
-	trace_t	trace;
+	int				i;
+	plVector3f_t	forward, temp, sndvec;
+	trace_t			trace;
 
 	plAngleVectors(ent->v.v_angle, forward, temp, temp);
 
@@ -129,8 +129,8 @@ void Daikatana_Hit(ServerEntity_t *ent)
 			Entity_Damage(trace.ent, ent, 35, 0);
 		else
 		{
-			char    cSmokeTexture[8];
-			vec3_t	vBounce;
+			char			cSmokeTexture[8];
+			plVector3f_t	vBounce;
 
 			// [6/6/2013] Fix ~hogsy
 			Math_VectorClear(vBounce);

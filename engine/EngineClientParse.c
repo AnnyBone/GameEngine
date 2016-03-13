@@ -767,9 +767,9 @@ void CL_ParseStatic (int version) //johnfitz -- added a parameter
 
 void CL_ParseStaticSound (int version) //johnfitz -- added argument
 {
-	vec3_t		org;
-	int			sound_num, vol, atten;
-	int			i;
+	plVector3f_t	org;
+	int				sound_num, vol, atten;
+	int				i;
 
 	for (i=0 ; i<3 ; i++)
 		org[i] = MSG_ReadCoord ();
