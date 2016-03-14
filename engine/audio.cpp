@@ -23,14 +23,14 @@
 #include <AL/al.h>
 #include <AL/alc.h>
 #include <AL/alext.h>
+#include <AL/efx-presets.h>
 
 /*
 	Audio System
-	Unfinished
 */
 
-#define AUDIO_NUM_BUFFERS	1
-#define AUDIO_NUM_SOURCES	512
+ConsoleVariable_t cv_audio_volume			= { "audio_volume", "1", true };
+ConsoleVariable_t cv_audio_volume_music		= { "audio_volume_music", "1", true };
 
 Audio_t g_audio;
 
@@ -41,9 +41,33 @@ bool audio_initialized = false;
 
 void Audio_PlayCommand(void);
 
+LPALGENEFFECTS alGenEffects;
+LPALDELETEEFFECTS alDeleteEffects;
+LPALISEFFECT alIsEffect;
+LPALEFFECTI alEffecti;
+LPALEFFECTIV alEffectiv;
+LPALEFFECTF alEffectf;
+LPALEFFECTFV alEffectfv;
+LPALGETEFFECTI alGetEffecti;
+LPALGETEFFECTIV alGetEffectiv;
+LPALGETEFFECTF alGetEffectf;
+LPALGETEFFECTFV alGetEffectfv;
+
+LPALGENAUXILIARYEFFECTSLOTS alGenAuxiliaryEffectSlots;
+LPALDELETEAUXILIARYEFFECTSLOTS alDeleteAuxiliaryEffectSlots;
+LPALISAUXILIARYEFFECTSLOT alIsAuxiliaryEffectSlot;
+LPALAUXILIARYEFFECTSLOTI alAuxiliaryEffectSloti;
+LPALAUXILIARYEFFECTSLOTIV alAuxiliaryEffectSlotiv;
+LPALAUXILIARYEFFECTSLOTF alAuxiliaryEffectSlotf;
+LPALAUXILIARYEFFECTSLOTFV alAuxiliaryEffectSlotfv;
+LPALGETAUXILIARYEFFECTSLOTI alGetAuxiliaryEffectSloti;
+LPALGETAUXILIARYEFFECTSLOTIV alGetAuxiliaryEffectSlotiv;
+LPALGETAUXILIARYEFFECTSLOTF alGetAuxiliaryEffectSlotf;
+LPALGETAUXILIARYEFFECTSLOTFV alGetAuxiliaryEffectSlotfv;
+
 void Audio_Initialize(void)
 {
-	if (audio_initialized)
+	if (audio_initialized || COM_CheckParm("-nosound") || COM_CheckParm("-noaudio"))
 		return;
 
 	Con_Printf("Initializing audio...\n");
@@ -59,7 +83,7 @@ void Audio_Initialize(void)
 
 	int attr[]=
 	{
-		ALC_FREQUENCY,	AUDIO_SAMPLE_RATE,
+		ALC_FREQUENCY, AUDIO_SAMPLE_SPEED,
 		0
 	};
 	
@@ -77,10 +101,36 @@ void Audio_Initialize(void)
 	{
 		Audio_Shutdown();
 
-		Con_Warning("Failed to create audio buffers!\n");
+		Con_Warning("Failed to create audio buffers! (%i)\n", AUDIO_MAX_BUFFERS);
 		return;
 	}
 
+	alGenSources(AUDIO_MAX_SOURCES, g_audio.sources);
+	if (alGetError() != AL_NO_ERROR)
+	{
+		Audio_Shutdown();
+		
+		Con_Warning("Failed to create audio sources! (%i)\n", AUDIO_MAX_SOURCES);
+		return;
+	}
+
+	// Check for extensions...
+
+	g_audio.extensions.efx					=
+	g_audio.extensions.soft_buffer_samples	= false;
+
+	if (alcIsExtensionPresent(alcGetContextsDevice(audio_context), "ALC_EXT_EFX"))
+	{
+		Con_Printf(" EFX support detected!\n");
+
+		alGenEffects = (LPALGENEFFECTS)alGetProcAddress("alGenEffects");
+
+		g_audio.extensions.efx = true;
+	}
+	if (alIsExtensionPresent("AL_SOFT_buffer_samples"))
+		g_audio.extensions.soft_buffer_samples = true;
+
+	// We're done, initialized!
 	audio_initialized = true;
 }
 
@@ -89,12 +139,35 @@ void Audio_Initialize(void)
 void Audio_PlayCommand(void)
 {}
 
-void Audio_PlaySound(AudioSound_t *sample)
-{}
+void Audio_PlaySound(const AudioSound_t *sample)
+{
+	if (!sample)
+		return;
+
+	alSourcefv(sample->source, AL_POSITION, sample->position);
+	alSourcefv(sample->source, AL_VELOCITY, sample->velocity);
+
+	// Play the source.
+	alSourcePlay(g_audio.sources[sample->source]);
+}
+
+void Audio_StopSound(const AudioSound_t *sample)
+{
+	if (!sample)
+		return;
+
+	// Stop the source.
+	alSourceStop(sample->source);
+}
 
 AudioSound_t *Audio_LoadSound(const char *path)
 {
 	return NULL;
+}
+
+void Audio_DeleteSound(AudioSound_t *sample)
+{
+	
 }
 
 /*	Called per-frame to update listener position and more!
@@ -104,17 +177,17 @@ void Audio_Frame(void)
 	MathVector3f_t	position, orientation, velocity;
 
 	// TODO: Have nothing to assign this to yet.
-	Math_VectorCopy(pl_origin3f, velocity);
+	plVectorCopy3fv(pl_origin3f, velocity);
 
 	if(cls.signon == SIGNONS)
 	{
-		Math_VectorCopy(r_refdef.vieworg, position);
-		Math_VectorCopy(r_refdef.viewangles, orientation);
+		plVectorCopy3fv(r_refdef.vieworg, position);
+		plVectorCopy3fv(r_refdef.viewangles, orientation);
 	}
 	else
 	{
-		Math_VectorCopy(pl_origin3f, position);
-		Math_VectorCopy(pl_origin3f, orientation);
+		plVectorCopy3fv(pl_origin3f, position);
+		plVectorCopy3fv(pl_origin3f, orientation);
 	}
 	
 	alListenerfv(AL_POSITION, position);
@@ -131,6 +204,7 @@ void Audio_Shutdown(void)
 		if (audio_context)
 		{
 			alDeleteBuffers(AUDIO_MAX_BUFFERS, g_audio.buffers);
+			alDeleteSources(AUDIO_MAX_SOURCES, g_audio.sources);
 
 			alcMakeContextCurrent(NULL);
 			alcDestroyContext(audio_context);

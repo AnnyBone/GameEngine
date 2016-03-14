@@ -20,8 +20,7 @@
 */
 // sound.h -- client sound i/o functions
 
-#ifndef __SOUND__
-#define __SOUND__
+#pragma once
 
 #define DEFAULT_SOUND_PACKET_VOLUME 255
 #define DEFAULT_SOUND_PACKET_ATTENUATION 1.0
@@ -92,16 +91,12 @@ typedef struct
 extern "C" {
 #endif
 
-void S_Init (void);
 void S_Startup (void);
-void S_Shutdown (void);
 void S_StartSound(unsigned int entnum, int entchannel, sfx_t *sfx, MathVector3f_t origin, float fvol, float attenuation);
 void S_StaticSound(sfx_t *sfx, MathVector3f_t origin, float vol, float attenuation);
 void S_StopSound(unsigned int entnum, int entchannel);
 void S_StopAllSounds(void);
 void S_ClearBuffer (void);
-void S_Update(MathVector3f_t origin, MathVector3f_t v_forward, MathVector3f_t v_right, MathVector3f_t v_up);
-void S_ExtraUpdate (void);
 
 sfx_t *S_PrecacheSound (char *sample);
 void S_TouchSound (char *sample);
@@ -172,6 +167,4 @@ void SNDDMA_Submit(void);
 
 #ifdef __cplusplus
 }
-#endif
-
 #endif

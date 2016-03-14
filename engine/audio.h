@@ -16,17 +16,29 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef AUDIO_H
-#define AUDIO_H
+#pragma once
 
-#define	AUDIO_MAX_BUFFERS	1024
+#define AUDIO_MAX_BUFFERS	4
+#define AUDIO_MAX_SOURCES	1
 
-#define	AUDIO_SAMPLE_RATE	44100
+#define	AUDIO_SAMPLE_SPEED	44100	//22050
+#define	AUDIO_SAMPLE_BITS	16
 
 typedef struct
 {
 	unsigned int buffer;
+	unsigned int source;
+	unsigned int effect;
+
+	plVector3f_t position;
+	plVector3f_t velocity;
 } AudioSound_t;
+
+typedef struct
+{
+	bool	efx;					// EFX support.
+	bool	soft_buffer_samples;
+} AudioExtensions_t;
 
 typedef struct
 {
@@ -34,20 +46,17 @@ typedef struct
 					current_buffer;	// Current buffer.
 
 	unsigned int	buffers[AUDIO_MAX_BUFFERS];
+	unsigned int	sources[AUDIO_MAX_SOURCES];
+
+	AudioExtensions_t	extensions;
 } Audio_t;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+plEXTERN_C_START
 
-	extern Audio_t g_audio;
+extern Audio_t g_audio;
 
-	void Audio_Initialize(void);
-	void Audio_Frame(void);
-	void Audio_Shutdown(void);
+void Audio_Initialize(void);
+void Audio_Frame(void);
+void Audio_Shutdown(void);
 
-#ifdef __cplusplus
-}
-#endif
-
-#endif // !AUDIO_H
+plEXTERN_C_END

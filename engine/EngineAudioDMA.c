@@ -209,23 +209,6 @@ void S_Init (void)
 	S_StopAllSounds();
 }
 
-void S_Shutdown(void)
-{
-	if (!sound_started)
-		return;
-
-	if (shm)
-		shm->gamealive = 0;
-
-	shm = 0;
-	sound_started = 0;
-
-#ifdef KATANA_AUDIO_DIRECTSOUND
-	if (!fakedma)
-		SNDDMA_Shutdown();
-#endif
-}
-
 sfx_t *S_FindName (char *name)
 {
 	int		i;
@@ -710,14 +693,6 @@ void GetSoundtime(void)
 
 	soundtime = buffers*fullsamples + samplepos/shm->channels;
 #endif
-}
-
-void S_ExtraUpdate (void)
-{
-	if (snd_noextraupdate.value)
-		return;		// Don't pollute timings
-
-	S_Update_();
 }
 
 /*

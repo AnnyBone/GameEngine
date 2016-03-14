@@ -179,7 +179,7 @@ sndinitstat SNDDMA_InitDirect(void)
 
 	shm->channels = 2;
 	shm->samplebits = 16;
-	shm->speed = AUDIO_SAMPLE_RATE;
+	shm->speed = AUDIO_SAMPLE_SPEED;
 
 	memset(&format, 0, sizeof(format));
 	format.wFormatTag = WAVE_FORMAT_PCM;
@@ -409,7 +409,7 @@ bool SNDDMA_InitWav(void)
 
 	shm->channels = 2;
 	shm->samplebits = 16;
-	shm->speed = AUDIO_SAMPLE_RATE;
+	shm->speed = AUDIO_SAMPLE_SPEED;
 
 	memset(&format, 0, sizeof(format));
 	format.wFormatTag = WAVE_FORMAT_PCM;
