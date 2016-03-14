@@ -131,6 +131,7 @@ plModel_t *plLoadU3DModel(const char *path)
 		model->frames[i].triangles = new plTriangle_t[model->num_triangles];
 	}
 
+	// Skip unused header data.
 	std::fseek(pl_u3d_dataf, 12, SEEK_CUR);
 
 	// Go through each triangle.
