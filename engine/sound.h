@@ -98,7 +98,7 @@ void S_StopSound(unsigned int entnum, int entchannel);
 void S_StopAllSounds(void);
 void S_ClearBuffer (void);
 
-sfx_t *S_PrecacheSound (char *sample);
+sfx_t *S_PrecacheSound (const char *sample);
 void S_TouchSound (char *sample);
 void S_PaintChannels(int endtime);
 void S_InitPaintChannels (void);

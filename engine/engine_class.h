@@ -24,7 +24,4 @@
 
 class CoreManager
 {
-public:
-	virtual void Initialize() = 0;
-	virtual void Shutdown() = 0;
 };

@@ -18,20 +18,28 @@
 
 #pragma once
 
-#define AUDIO_MAX_BUFFERS	4
-#define AUDIO_MAX_SOURCES	1
+#define	AUDIO_MAX_SOUNDS	2048
+#define AUDIO_MAX_SOURCES	2
 
 #define	AUDIO_SAMPLE_SPEED	44100	//22050
 #define	AUDIO_SAMPLE_BITS	16
 
+typedef unsigned int AudioSource_t;
+typedef unsigned int AudioBuffer_t;
+typedef unsigned int AudioEffect_t;
+
 typedef struct
 {
-	unsigned int buffer;
-	unsigned int source;
-	unsigned int effect;
+	AudioBuffer_t	buffer;
+	AudioEffect_t	effect;
+	AudioSource_t	source;
+
+	sfx_t *sfx;
 
 	plVector3f_t position;
 	plVector3f_t velocity;
+
+	bool started;
 } AudioSound_t;
 
 typedef struct
@@ -40,20 +48,7 @@ typedef struct
 	bool	soft_buffer_samples;
 } AudioExtensions_t;
 
-typedef struct
-{
-	unsigned int	current_source,	// Current source.
-					current_buffer;	// Current buffer.
-
-	unsigned int	buffers[AUDIO_MAX_BUFFERS];
-	unsigned int	sources[AUDIO_MAX_SOURCES];
-
-	AudioExtensions_t	extensions;
-} Audio_t;
-
 plEXTERN_C_START
-
-extern Audio_t g_audio;
 
 void Audio_Initialize(void);
 void Audio_Frame(void);

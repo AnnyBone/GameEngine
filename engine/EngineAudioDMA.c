@@ -209,7 +209,7 @@ void S_Init (void)
 	S_StopAllSounds();
 }
 
-sfx_t *S_FindName (char *name)
+sfx_t *S_FindName (const char *name)
 {
 	int		i;
 	sfx_t	*sfx;
@@ -250,7 +250,7 @@ void S_TouchSound (char *name)
 	Cache_Check (&sfx->cache);
 }
 
-sfx_t *S_PrecacheSound (char *name)
+sfx_t *S_PrecacheSound (const char *name)
 {
 	sfx_t	*sfx;
 
