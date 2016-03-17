@@ -24,8 +24,6 @@
 #ifdef KATANA_AUDIO_DIRECTSOUND
 #include "winquake.h"
 
-#include "audio.h"
-
 /*
 	Legacy DirectSound Interface
 */
@@ -676,13 +674,6 @@ void SNDDMA_Submit(void)
 			return;
 		}
 	}
-}
-
-/*	Reset the sound device for exiting
-*/
-void SNDDMA_Shutdown(void)
-{
-	FreeSound();
 }
 
 #endif

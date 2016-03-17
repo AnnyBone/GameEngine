@@ -315,7 +315,7 @@ void Client_ParseServerInfo(void)
 		}
 
 		strcpy(cSoundPrecache[numsounds], str);
-		S_TouchSound (str);
+		Audio_TouchSample(str);
 	}
 
 	// [6/6/2013] Precache textures ~hogsy
@@ -377,7 +377,7 @@ void Client_ParseServerInfo(void)
 
 	for (i=1 ; i<numsounds ; i++)
 	{
-		cl.sound_precache[i] = S_PrecacheSound(cSoundPrecache[i]);
+		cl.sound_precache[i] = Audio_PrecacheSample(cSoundPrecache[i]);
 		CL_KeepaliveMessage ();
 	}
 

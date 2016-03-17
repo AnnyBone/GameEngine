@@ -108,7 +108,7 @@ void CL_ClearState (void)
 void CL_Disconnect (void)
 {
 	// Stop sounds (especially looping!)
-	S_StopAllSounds();
+	Audio_StopSounds();
 
 	// If running a local server, shut it down
 	if (cls.demoplayback)

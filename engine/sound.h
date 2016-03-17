@@ -95,12 +95,7 @@ void S_Startup (void);
 void S_StartSound(unsigned int entnum, int entchannel, sfx_t *sfx, MathVector3f_t origin, float fvol, float attenuation);
 void S_StaticSound(sfx_t *sfx, MathVector3f_t origin, float vol, float attenuation);
 void S_StopSound(unsigned int entnum, int entchannel);
-void S_StopAllSounds(void);
-void S_ClearBuffer (void);
 
-sfx_t *S_PrecacheSound (const char *sample);
-void S_TouchSound (char *sample);
-void S_PaintChannels(int endtime);
 void S_InitPaintChannels (void);
 
 // picks a channel based on priorities, empty slots, number of channels
@@ -114,9 +109,6 @@ bool SNDDMA_Init(void);
 
 // gets the current DMA position
 int SNDDMA_GetDMAPos(void);
-
-// shutdown the DMA xfer.
-void SNDDMA_Shutdown(void);
 
 // ====================================================================
 // User-setable variables

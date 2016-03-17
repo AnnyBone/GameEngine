@@ -28,12 +28,11 @@
 	support.
 */
 
-// pIGNORE_SHARED_HEADERS
-// pIGNORE_PLATFORM_HEADERS
-// PLATFORM_STRICT_BOOL
+// PL_IGNORE_SHARED_HEADERS
+// PL_IGNORE_PLATFORM_HEADERS
 
 // Shared headers
-#ifndef pIGNORE_SHARED_HEADERS
+#ifndef PL_IGNORE_SHARED_HEADERS
 #	include <stdio.h>
 #	include <stdlib.h>
 #	include <stdarg.h>
@@ -67,12 +66,16 @@
 // Windows
 #ifdef _WIN32
 	// Headers
-#	ifndef pIGNORE_PLATFORM_HEADERS
+#	ifndef PL_IGNORE_PLATFORM_HEADERS
 #		include <Windows.h>
 #		include <WindowsX.h>
 #		include <CommCtrl.h>
 #		include <direct.h>
 #		include <lmcons.h>
+
+#		ifdef PlaySound
+#			undef PlaySound
+#		endif
 
 #		undef min
 #		undef max
@@ -129,7 +132,7 @@
 #	endif
 #else	// Linux
 	// Headers
-#	ifndef pIGNORE_PLATFORM_HEADERS
+#	ifndef PL_IGNORE_PLATFORM_HEADERS
 #		include <dirent.h>
 #		include <unistd.h>
 #		include <dlfcn.h>

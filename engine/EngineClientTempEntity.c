@@ -36,7 +36,7 @@ sfx_t *sExplosionSound;
 
 void CL_InitTEnts(void)
 {
-	sExplosionSound = S_PrecacheSound("weapons/r_exp3.wav");
+	sExplosionSound = Audio_PrecacheSample("weapons/r_exp3.wav");
 }
 
 ClientEntity_t *CL_NewTempEntity (void)
