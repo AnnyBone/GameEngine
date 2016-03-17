@@ -315,23 +315,18 @@ void Client_ParseServerInfo(void)
 		}
 
 		strcpy(cSoundPrecache[numsounds], str);
-		Audio_TouchSample(str);
+		Audio_PrecacheSample(str);
 	}
 
-	// [6/6/2013] Precache textures ~hogsy
+	// Precache textures...
 	memset(&gEffectTexture, 0, sizeof(gEffectTexture));
-
+	for(unsigned int i = 1; ; i++)
 	{
-		int iTextures;
+		str = MSG_ReadString();
+		if(!str[0])
+			break;
 
-		for(iTextures = 1; ; iTextures++)
-		{
-			str = MSG_ReadString();
-			if(!str[0])
-				break;
-
-			Client_PrecacheResource(RESOURCE_SPRITE,str);
-		}
+		Client_PrecacheResource(RESOURCE_SPRITE,str);
 	}
 
 	// TODO: just check the level out client-side and add the lights ourselves, rather than passing from server!!! ~hogsy

@@ -217,7 +217,7 @@ void DumpChunks(void)
 	} while (data_p < iff_end);
 }
 
-wavinfo_t GetWavinfo (char *name, byte *wav, int wavlength)
+wavinfo_t GetWavinfo (const char *name, byte *wav, int wavlength)
 {
 	wavinfo_t	info;
 	int			i,format,samples;

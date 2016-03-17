@@ -34,7 +34,7 @@ typedef struct
 	AudioEffect_t	effect;
 	AudioSource_t	source;
 
-	sfx_t *sfx;
+	sfxcache_t *cache;
 
 	plVector3f_t position;	// Position of the sound.
 	plVector3f_t velocity;	// Speed of movement.
@@ -65,20 +65,20 @@ namespace Core
 		void Frame();
 
 		AudioSound_t *AddSound();
-		void DeleteSound(AudioSound_t *sample);
+		void DeleteSound(AudioSound_t *sound);
 
-		void PlaySound(const AudioSound_t *sample);
+		void PlaySound(const AudioSound_t *sound);
 		void PlaySound(const char *path);
-		void LoadSound(AudioSound_t *sample, const char *path);
-		void StopSound(const AudioSound_t *sample);
-		void PauseSound(const AudioSound_t *sample);
+		void LoadSound(AudioSound_t *sound, const char *path);
+		void StopSound(const AudioSound_t *sound);
+		void PauseSound(const AudioSound_t *sound);
 
-		bool IsSoundPlaying(const AudioSound_t *sample);
-		bool IsSoundPaused(const AudioSound_t *sample);
+		bool IsSoundPlaying(const AudioSound_t *sound);
+		bool IsSoundPaused(const AudioSound_t *sound);
 
-		sfx_t *FindSample(const char *path);
-		sfx_t *PrecacheSample(const char *path);
-		void TouchSample(const char *path);
+		sfxcache_t *FindSample(const char *path);
+		sfxcache_t *PrecacheSample(const char *path);
+		sfxcache_t *LoadSample(const char *path);
 
 		void StopSounds();		// Stops all sounds from playing.
 		void ClearSounds();		// Clears all sounds.
@@ -88,7 +88,8 @@ namespace Core
 		AudioExtensions_t extensions;
 
 		std::vector<AudioSound_t*> sounds;
-		std::vector<sfx_t*> samples;
+
+		std::unordered_map<std::string, sfxcache_t*> samples;
 	};
 }
 
@@ -101,7 +102,6 @@ void Audio_Frame(void);
 void Audio_StopSounds(void);
 void Audio_Shutdown(void);
 
-void Audio_TouchSample(const char *name);
-sfx_t *Audio_PrecacheSample(const char *path);
+sfxcache_t *Audio_PrecacheSample(const char *path);
 
 plEXTERN_C_END

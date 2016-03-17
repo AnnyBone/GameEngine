@@ -30,6 +30,7 @@
 
 // PL_IGNORE_SHARED_HEADERS
 // PL_IGNORE_PLATFORM_HEADERS
+// PL_IGNORE_STD_HEADERS
 
 // Shared headers
 #ifndef PL_IGNORE_SHARED_HEADERS
@@ -55,11 +56,17 @@
 #	include <sys/types.h>
 
 	// C++
-#	ifdef __cplusplus
-#		include <stdint.h>
-#		include <memory>
-#		include <string>
-#		include <vector>
+#	ifndef PL_IGNORE_STD_HEADERS
+#		ifdef __cplusplus
+#			include <stdint.h>
+#			include <memory>
+#			include <string>
+#			include <vector>
+#			include <set>
+#			include <unordered_set>
+#			include <map>
+#			include <unordered_map>
+#		endif
 #	endif
 #endif
 
