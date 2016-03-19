@@ -644,7 +644,6 @@ void CL_Init (void)
 	SZ_Alloc(&cls.message,1024);
 
 	CL_InitInput();
-	CL_InitTEnts();
 
 	Cvar_RegisterVariable (&cl_name, NULL);
 	Cvar_RegisterVariable (&cl_color, NULL);

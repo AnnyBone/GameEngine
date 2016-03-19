@@ -99,7 +99,7 @@ AudioManager::AudioManager()
 	ALCcontext *context = alcCreateContext(device, attr);
 	if (!context || alcMakeContextCurrent(context) == FALSE)
 		throw EngineException("Failed to create audio context!\n");
-
+	
 	// Check for extensions...
 	if (alcIsExtensionPresent(alcGetContextsDevice(context), "ALC_EXT_EFX"))
 	{
@@ -155,16 +155,26 @@ void AudioManager::Frame()
 	alListenerfv(AL_POSITION, position);
 	alListener3f(AL_ORIENTATION, orientation[0], orientation[1], orientation[2]);
 	alListenerfv(AL_VELOCITY, velocity);
+
+	// Check if there's any sounds we can delete.
+#if 0
+	for (unsigned int i = 0; i < sounds.size(); i++)
+		if (sounds[i]->auto_delete && !IsSoundPlaying(sounds[i]))
+			DeleteSound(sounds[i]);
+#endif
 }
 
 AudioSound_t *AudioManager::AddSound()
 {
-	AudioSound_t *sample = new AudioSound_t;
-	sounds.push_back(sample);
+	AudioSound_t *sound = new AudioSound_t;
+	if (!sound)
+		throw EngineException("Failed to allocate new sound!\n");
 
-	memset(sample, 0, sizeof(AudioSound_t));
+	sounds.push_back(sound);
 
-	alGenSources(1, &sample->source);
+	memset(sound, 0, sizeof(AudioSound_t));
+
+	alGenSources(1, &sound->source);
 	switch (alGetError())
 	{
 	case AL_OUT_OF_MEMORY:
@@ -179,7 +189,7 @@ AudioSound_t *AudioManager::AddSound()
 	default:break;
 	}
 
-	alGenBuffers(1, &sample->buffer);
+	alGenBuffers(1, &sound->buffer);
 	switch (alGetError())
 	{
 	case AL_INVALID_VALUE:
@@ -191,31 +201,60 @@ AudioSound_t *AudioManager::AddSound()
 	default:break;
 	}
 
-	alGenEffects(1, &sample->effect);
+	alGenEffects(1, &sound->effect);
 	if (alGetError() != AL_NO_ERROR)
 		Con_Warning("Failed to create audio effect!\n");
 
-	sample->volume			= 1.0f;
-	sample->pitch			= 1.0f;
-	sample->max_distance	= 1024.0f;
+	sound->volume			= 1.0f;
+	sound->pitch			= 1.0f;
+	sound->max_distance		= 1024.0f;
 
-	return sample;
+	return sound;
 }
 
-void AudioManager::PlaySound(const AudioSound_t *sample)
+void AudioManager::PlaySound(const AudioSound_t *sound)
 {
-	if (!sample || IsSoundPlaying(sample))
+	if (!sound || IsSoundPlaying(sound))
 		return;
 
-	alSourcefv(sample->source, AL_POSITION, sample->position);
-	alSourcefv(sample->source, AL_VELOCITY, sample->velocity);
+	alSourcefv(sound->source, AL_POSITION, sound->position);
+	alSourcefv(sound->source, AL_VELOCITY, sound->velocity);
 
-	alSourcef(sample->source, AL_PITCH, sample->pitch);
-	alSourcef(sample->source, AL_GAIN, sample->volume);
-	alSourcef(sample->source, AL_MAX_DISTANCE, sample->max_distance);
+	alSourcef(sound->source, AL_PITCH, sound->pitch);
+	alSourcef(sound->source, AL_GAIN, sound->volume);
+	alSourcef(sound->source, AL_MAX_DISTANCE, sound->max_distance);
+	
+	if (sound->local)
+	{
+		alSourcei(sound->source, AL_SOURCE_RELATIVE, AL_TRUE);
+		alSourcef(sound->source, AL_ROLLOFF_FACTOR, 0);
+	}
+	else
+	{
+		alSourcei(sound->source, AL_SOURCE_RELATIVE, AL_TRUE);
+		alSourcef(sound->source, AL_ROLLOFF_FACTOR, 1.0f);
+	}
 
 	// Play the source.
-	alSourcePlay(sample->source);
+	alSourcePlay(sound->source);
+}
+
+void AudioManager::PlaySound(ClientEntity_t *entity, const AudioSample_t *cache, float volume)
+{
+	if (!cache)
+	{
+		Con_Warning("Invalid sound!\n");
+		return;
+	}
+
+	AudioSound_t *sound = AddSound();
+	sound->auto_delete	= true;
+	sound->volume		= volume;
+	sound->cache		= cache;
+
+	plVectorCopy3fv(entity->origin, sound->position);
+
+	PlaySound(sound);
 }
 
 void AudioManager::PlaySound(const char *path)
@@ -227,6 +266,9 @@ void AudioManager::PlaySound(const char *path)
 	}
 
 	AudioSound_t *sound = AddSound();
+	sound->auto_delete	= true;
+	sound->local		= true;
+
 	LoadSound(sound, path);
 	PlaySound(sound);
 }
@@ -248,12 +290,25 @@ void AudioManager::LoadSound(AudioSound_t *sound, const char *path)
 		return;
 	}
 
-	alBufferData(
-		sound->buffer, 
-		AL_FORMAT_MONO16, 
-		sound->cache->data, 
-		sound->cache->length,
-		sound->cache->speed);
+	// Check the format.
+	int format = AL_FORMAT_MONO16;
+	if (sound->cache->width == 1)
+		format = AL_FORMAT_MONO8;
+
+	alBufferData(sound->buffer, format, sound->cache->data, sound->cache->size, sound->cache->speed);
+	switch (alGetError())
+	{
+	case AL_OUT_OF_MEMORY:
+		Con_Warning("There is not enough memory avaliable to create this audio buffer!\n");
+		break;
+	case AL_INVALID_VALUE:
+		Con_Warning("The size parameter is not valid for the format specified, the audio buffer is in use, or the data is a NULL pointer!\n");
+		break;
+	case AL_INVALID_ENUM:
+		Con_Warning("The specified format does not exist!\n");
+		break;
+	default:break;
+	}
 }
 
 void AudioManager::StopSound(const AudioSound_t *sound)
@@ -277,7 +332,7 @@ void AudioManager::PauseSound(const AudioSound_t *sound)
 void AudioManager::DeleteSound(AudioSound_t *sound)
 {
 	if (!sound)
-		return;
+		throw EngineException("Attempted to delete an invalid sound!\n");
 
 	StopSound(sound);
 
@@ -288,6 +343,9 @@ void AudioManager::DeleteSound(AudioSound_t *sound)
 		alDeleteEffects(1, &sound->effect);
 	if (alIsSource(sound->source))
 		alDeleteSources(1, &sound->source);
+
+	// Set cache as null.
+	sound->cache = nullptr;
 
 	// Remove it from the list.
 	for (auto iterator = sounds.begin(); iterator != sounds.end(); iterator++)
@@ -319,7 +377,7 @@ bool AudioManager::IsSoundPaused(const AudioSound_t *sample)
 
 // Samples
 
-sfxcache_t *AudioManager::FindSample(const char *path)
+AudioSample_t *AudioManager::FindSample(const char *path)
 {
 	if (!path || (path[0] == ' '))
 	{
@@ -335,7 +393,7 @@ sfxcache_t *AudioManager::FindSample(const char *path)
 	return nullptr;
 }
 
-sfxcache_t *AudioManager::PrecacheSample(const char *path)
+AudioSample_t *AudioManager::PrecacheSample(const char *path)
 {
 	if (!path || (path[0] == ' '))
 	{
@@ -343,7 +401,7 @@ sfxcache_t *AudioManager::PrecacheSample(const char *path)
 		return nullptr;
 	}
 
-	sfxcache_t *cache = FindSample(path);
+	AudioSample_t *cache = FindSample(path);
 	if (cache)
 		return cache;
 
@@ -351,7 +409,7 @@ sfxcache_t *AudioManager::PrecacheSample(const char *path)
 	return cache;
 }
 
-sfxcache_t *AudioManager::LoadSample(const char *path)
+AudioSample_t *AudioManager::LoadSample(const char *path)
 {
 	if (!path || (path[0] == ' '))
 	{
@@ -373,18 +431,24 @@ sfxcache_t *AudioManager::LoadSample(const char *path)
 	float stepscale = (float)info.rate / AUDIO_SAMPLE_SPEED;
 	int len = info.samples / stepscale;
 	len *= info.width * info.channels;
-
-	sfxcache_t *cache = new sfxcache_t;
-	samples.emplace(path, cache);
-
-	cache->length		= info.samples;
+	
+	AudioSample_t *cache = new AudioSample_t;
+	cache->length		= info.samples;		// Length of the sample.
 	cache->loopstart	= info.loopstart;
-	cache->speed		= info.rate;
+	cache->speed		= info.rate;		// Rate of the sample.
 	cache->width		= info.width;
-	cache->stereo		= info.channels;
+	cache->stereo		= info.channels;	// Stereo / Mono.
+	cache->size			= com_filesize;		// Size of the sample.
+
+	strncpy(cache->path, path, sizeof(cache->path));
+
+	// Add it to the global list.
+	samples.emplace(path, cache);
 
 	// Now resample the sample...
 #if 0
+	uint8_t *dataofs = data + info.dataofs;
+
 	stepscale = (float)cache->speed / AUDIO_SAMPLE_SPEED;
 	int outcount = cache->length / stepscale;
 	cache->length = outcount;
@@ -399,7 +463,7 @@ sfxcache_t *AudioManager::LoadSample(const char *path)
 	{
 		// Fast special case.
 		for (int i = 0; i < outcount; i++)
-			((signed char *)cache->data)[i] = (int)((unsigned char)(data[i]) - 128);
+			((signed char *)cache->data)[i] = (int)((unsigned char)(dataofs[i]) - 128);
 	}
 	else
 	{
@@ -408,7 +472,6 @@ sfxcache_t *AudioManager::LoadSample(const char *path)
 			samplefrac = 0, 
 			srcsample, sample,
 			fracstep = stepscale * 256;
-		uint8_t *dataofs = data + info.dataofs;
 		for (int i = 0; i < outcount; i++)
 		{
 			srcsample = samplefrac >> 8;
@@ -432,6 +495,21 @@ sfxcache_t *AudioManager::LoadSample(const char *path)
 	return cache;
 }
 
+void AudioManager::DeleteSample(AudioSample_t *sample)
+{
+	samples.erase(sample->path);
+}
+
+void AudioManager::ClearSamples()
+{
+#if 0
+	for (auto &sample : samples)
+		DeleteSample(sample.second);
+#endif
+
+	samples.clear();
+}
+
 // Global
 
 void AudioManager::StopSounds()
@@ -451,7 +529,7 @@ void AudioManager::ClearSounds()
 
 void AudioManager::ListSounds()
 {
-	int			mem = 0, size;
+	int	mem = 0, size;
 
 	for (auto &sample : samples)
 	{
@@ -527,6 +605,11 @@ void Audio_PlayLocalSound(const char *path)
 	g_audiomanager->PlaySound(path);
 }
 
+void Audio_PlayTemporarySound(ClientEntity_t *entity, const AudioSample_t *cache, float volume)
+{
+	g_audiomanager->PlaySound(entity, cache, volume);
+}
+
 void Audio_StopSound(const AudioSound_t *sample)
 {
 	g_audiomanager->StopSound(sample);
@@ -537,10 +620,7 @@ void Audio_StopSounds(void)
 	g_audiomanager->StopSounds();
 }
 
-void Audio_LoadSound(AudioSound_t *sample, const char *path)
-{}
-
-sfxcache_t *Audio_PrecacheSample(const char *path)
+AudioSample_t *Audio_PrecacheSample(const char *path)
 {
 	return g_audiomanager->PrecacheSample(path);
 }

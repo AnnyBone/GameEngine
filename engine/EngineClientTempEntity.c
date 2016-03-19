@@ -32,13 +32,6 @@ int	num_temp_entities;
 ClientEntity_t cl_temp_entities[MAX_TEMP_ENTITIES];
 beam_t cl_beams[MAX_BEAMS];
 
-sfx_t *sExplosionSound;
-
-void CL_InitTEnts(void)
-{
-	sExplosionSound = Audio_PrecacheSample("weapons/r_exp3.wav");
-}
-
 ClientEntity_t *CL_NewTempEntity (void)
 {
 	ClientEntity_t *ent;

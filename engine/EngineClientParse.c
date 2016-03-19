@@ -174,7 +174,7 @@ void CL_ParseStartSoundPacket(void)
 #ifdef _MSC_VER
 #pragma warning(suppress: 6385)
 #endif
-	S_StartSound(ent, channel, cl.sound_precache[sound_num], pos, iVolume, attenuation);
+	Audio_PlayTemporarySound(&cl_temp_entities[ent], &cl.sound_precache[sound_num], iVolume);
 }
 
 /*	When the client is taking a long time to load stuff, send keepalive messages
@@ -315,7 +315,6 @@ void Client_ParseServerInfo(void)
 		}
 
 		strcpy(cSoundPrecache[numsounds], str);
-		Audio_PrecacheSample(str);
 	}
 
 	// Precache textures...
@@ -372,7 +371,7 @@ void Client_ParseServerInfo(void)
 
 	for (i=1 ; i<numsounds ; i++)
 	{
-		cl.sound_precache[i] = Audio_PrecacheSample(cSoundPrecache[i]);
+		Audio_PrecacheSample(cSoundPrecache[i]);
 		CL_KeepaliveMessage ();
 	}
 
@@ -779,7 +778,7 @@ void CL_ParseStaticSound (int version) //johnfitz -- added argument
 	vol = MSG_ReadByte ();
 	atten = MSG_ReadByte ();
 
-	S_StaticSound (cl.sound_precache[sound_num], org, vol, atten);
+//	S_StaticSound (cl.sound_precache[sound_num], org, vol, atten);
 }
 
 #define SHOWNET(x) if(cl_shownet.value==2)Con_Printf ("%3i:%s\n", msg_readcount-1, x);
@@ -905,6 +904,7 @@ void CL_ParseServerMessage(void)
 					total += cl_lightstyle[i].cMap[j] - 'a';
 					cl_lightstyle[i].peak = Math_Max(cl_lightstyle[i].peak, cl_lightstyle[i].cMap[j]);
 				}
+				
 				cl_lightstyle[i].average = total / cl_lightstyle[i].length + 'a';
 			}
 			else
@@ -916,7 +916,7 @@ void CL_ParseServerMessage(void)
 			break;
 		case SVC_STOPSOUND:
 			i = MSG_ReadShort();
-			S_StopSound(i>>3, i&7);
+			//S_StopSound(i>>3, i&7);
 			break;
 		case svc_updatename:
 			i = MSG_ReadByte ();

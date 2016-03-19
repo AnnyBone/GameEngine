@@ -109,14 +109,8 @@ void S_Startup (void)
 	sound_started = 1;
 }
 
-void S_Play(void);
-void S_PlayVol(void);
-
 void S_Init (void)
 {
-	Cmd_AddCommand("play", S_Play);
-	Cmd_AddCommand("playvol",S_PlayVol);
-
 	Cvar_RegisterVariable(&nosound, NULL);
 	Cvar_RegisterVariable(&volume, NULL);
 	Cvar_RegisterVariable(&precache, NULL);
@@ -155,7 +149,7 @@ void S_Init (void)
 //	if (shm->buffer)
 //		shm->buffer[4] = shm->buffer[5] = 0x7f;	// force a pop for debugging
 
-	ambient_sfx[BSP_AMBIENT_WATER] = Audio_PrecacheSample("ambience/water_loop0.wav");
+	//ambient_sfx[BSP_AMBIENT_WATER] = Audio_PrecacheSample("ambience/water_loop0.wav");
 	//ambient_sfx[BSP_AMBIENT_SKY]	= Audio_PrecacheSample("ambience/wind2.wav");
 }
 
@@ -241,117 +235,6 @@ void SND_Spatialize(channel_t *ch)
 	if (ch->leftvol < 0)
 		ch->leftvol = 0;
 }
-
-void S_StartSound(unsigned int entnum, int entchannel, sfx_t *sfx, plVector3f_t origin, float fvol, float attenuation)
-{
-	channel_t *target_chan, *check;
-	sfxcache_t	*sc;
-	int		vol;
-	int		ch_idx;
-	int		skip;
-
-	if(!sound_started || !sfx || nosound.value)
-		return;
-
-	vol = fvol;
-
-// pick a channel to play on
-	target_chan = SND_PickChannel(entnum, entchannel);
-	if (!target_chan)
-		return;
-
-// spatialize
-	memset (target_chan, 0, sizeof(*target_chan));
-	Math_VectorCopy(origin, target_chan->origin);
-	target_chan->dist_mult	= attenuation / sound_nominal_clip_dist;
-	target_chan->master_vol = vol;
-	target_chan->entnum		= entnum;
-	target_chan->entchannel = entchannel;
-	SND_Spatialize(target_chan);
-
-	if(!target_chan->leftvol && !target_chan->rightvol)
-		return;		// not audible at all
-
-// new channel
-	sc = S_LoadSound(sfx);
-	if(!sc)
-	{
-		target_chan->sfx = NULL;
-		return;		// couldn't load the sound's data
-	}
-
-	target_chan->sfx = sfx;
-	target_chan->pos = 0.0;
-	target_chan->end = paintedtime + sc->length;
-
-	// if an identical sound has also been started this frame, offset the pos
-	// a bit to keep it from just making the first one louder
-	check = &channels[BSP_AMBIENT_END];
-	for (ch_idx=BSP_AMBIENT_END ; ch_idx < BSP_AMBIENT_END + MAX_DYNAMIC_CHANNELS ; ch_idx++, check++)
-	{
-		if (check == target_chan)
-			continue;
-		if (check->sfx == sfx && !check->pos)
-		{
-			skip = rand () % (int)(0.1*shm->speed);
-			if (skip >= target_chan->end)
-				skip = target_chan->end - 1;
-			target_chan->pos += skip;
-			target_chan->end -= skip;
-			break;
-		}
-	}
-}
-
-void S_StopSound(unsigned int entnum, int entchannel)
-{
-	int i;
-
-	for(i = 0; i < MAX_DYNAMIC_CHANNELS; i++)
-		if(channels[i].entnum == entnum && channels[i].entchannel == entchannel)
-		{
-			channels[i].end = 0;
-			channels[i].sfx = NULL;
-			return;
-		}
-}
-
-void S_StaticSound(sfx_t *sfx, plVector3f_t origin, float vol, float attenuation)
-{
-	channel_t	*ss;
-	sfxcache_t	*sc;
-
-	if (!sfx)
-		return;
-
-	if (total_channels == MAX_CHANNELS)
-	{
-		Con_Printf ("total_channels == MAX_CHANNELS\n");
-		return;
-	}
-
-	ss = &channels[total_channels];
-	total_channels++;
-
-	sc = S_LoadSound (sfx);
-	if (!sc)
-		return;
-
-	if(sc->loopstart == -1)
-	{
-		Con_Printf ("Sound %s not looped\n", sfx->name);
-		return;
-	}
-
-	ss->sfx = sfx;
-	Math_VectorCopy (origin, ss->origin);
-	ss->master_vol = vol;
-	ss->dist_mult = (attenuation/64) / sound_nominal_clip_dist;
-	ss->end = paintedtime + sc->length;
-
-	SND_Spatialize (ss);
-}
-
 
 //=============================================================================
 
@@ -489,83 +372,5 @@ void S_Update(plVector3f_t origin, plVector3f_t forward, plVector3f_t right, plV
 
 		Con_Printf ("----(%i)----\n", total);
 	}
-}
-
-/*
-===============================================================================
-
-console functions
-
-===============================================================================
-*/
-
-void S_Play(void)
-{
-	static int hash=345;
-	int 	i;
-	char name[256];
-	sfx_t	*sfx;
-
-	i = 1;
-	while (i<Cmd_Argc())
-	{
-		if(!strrchr(Cmd_Argv(i), '.'))
-		{
-			strcpy(name, Cmd_Argv(i));
-			strcat(name,".wav");
-		}
-		else
-			strcpy(name, Cmd_Argv(i));
-
-		sfx = Audio_PrecacheSample(name);
-
-		S_StartSound(hash++,0,sfx,listener_origin,255,1.0);
-
-		i++;
-	}
-}
-
-void S_PlayVol(void)
-{
-	static unsigned int		hash=543;
-	int						i;
-	float					vol;
-	char					name[256];
-	sfx_t					*sfx;
-
-	i = 1;
-	while (i<Cmd_Argc())
-	{
-		if (!strrchr(Cmd_Argv(i), '.'))
-		{
-			strcpy(name, Cmd_Argv(i));
-			strcat(name, ".wav");
-		}
-		else
-			strcpy(name, Cmd_Argv(i));
-
-		sfx = Audio_PrecacheSample(name);
-		vol = Q_atof(Cmd_Argv(i+1));
-		S_StartSound(hash++, 0, sfx, listener_origin, vol, 1.0);
-		i+=2;
-	}
-}
-
-void S_LocalSound (char *sound)
-{
-	sfx_t	*sfx;
-
-	if (nosound.value)
-		return;
-	if (!sound_started)
-		return;
-
-	sfx = Audio_PrecacheSample(sound);
-	if (!sfx)
-	{
-		Con_Printf ("S_LocalSound: can't cache %s\n", sound);
-		return;
-	}
-	S_StartSound(cl.viewentity, -1, sfx, pl_origin3f, 255, 1);
 }
 

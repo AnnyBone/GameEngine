@@ -23,6 +23,22 @@
 #define	AUDIO_SAMPLE_SPEED	44100	//22050
 #define	AUDIO_SAMPLE_BITS	16
 
+typedef struct
+{
+	int 	length;
+	int 	loopstart;
+	int 	speed;		// Frequency of the sample.
+	int 	width;
+	int 	stereo;
+	int		size;
+
+	uint8_t	data[1];		// variable sized
+
+	char path[MAX_QPATH];
+
+	unsigned int id;
+} AudioSample_t;
+
 typedef unsigned int AudioSource_t;
 typedef unsigned int AudioBuffer_t;
 typedef unsigned int AudioEffect_t;
@@ -34,7 +50,7 @@ typedef struct
 	AudioEffect_t	effect;
 	AudioSource_t	source;
 
-	sfxcache_t *cache;
+	const AudioSample_t *cache;
 
 	plVector3f_t position;	// Position of the sound.
 	plVector3f_t velocity;	// Speed of movement.
@@ -44,6 +60,10 @@ typedef struct
 	float max_distance;		// Maximum distance.
 	float pitch;			// Pitch of the sound.
 	float volume;			// Volume of the sound.
+
+	bool local;
+
+	bool auto_delete;
 } AudioSound_t;
 
 typedef struct
@@ -66,30 +86,33 @@ namespace Core
 
 		AudioSound_t *AddSound();
 		void DeleteSound(AudioSound_t *sound);
-
 		void PlaySound(const AudioSound_t *sound);
+		void PlaySound(ClientEntity_t *entity, const AudioSample_t *cache, float volume);
 		void PlaySound(const char *path);
 		void LoadSound(AudioSound_t *sound, const char *path);
 		void StopSound(const AudioSound_t *sound);
 		void PauseSound(const AudioSound_t *sound);
 
-		bool IsSoundPlaying(const AudioSound_t *sound);
-		bool IsSoundPaused(const AudioSound_t *sound);
-
-		sfxcache_t *FindSample(const char *path);
-		sfxcache_t *PrecacheSample(const char *path);
-		sfxcache_t *LoadSample(const char *path);
-
 		void StopSounds();		// Stops all sounds from playing.
 		void ClearSounds();		// Clears all sounds.
 		void ListSounds();		// Lists all currently active sounds.
+
+		bool IsSoundPlaying(const AudioSound_t *sound);
+		bool IsSoundPaused(const AudioSound_t *sound);
+
+		AudioSample_t *FindSample(const char *path);
+		AudioSample_t *PrecacheSample(const char *path);
+		AudioSample_t *LoadSample(const char *path);
+		void DeleteSample(AudioSample_t *sample);
+
+		void ClearSamples();	// Clears all loaded samples.
 	protected:
 	private:
 		AudioExtensions_t extensions;
 
 		std::vector<AudioSound_t*> sounds;
 
-		std::unordered_map<std::string, sfxcache_t*> samples;
+		std::unordered_map<std::string, AudioSample_t*> samples;
 	};
 }
 
@@ -99,9 +122,10 @@ plEXTERN_C_START
 
 void Audio_Initialize(void);
 void Audio_Frame(void);
+void Audio_PlayTemporarySound(ClientEntity_t *entity, const AudioSample_t *cache, float volume);
 void Audio_StopSounds(void);
 void Audio_Shutdown(void);
 
-sfxcache_t *Audio_PrecacheSample(const char *path);
+AudioSample_t *Audio_PrecacheSample(const char *path);
 
 plEXTERN_C_END

@@ -39,16 +39,6 @@ typedef struct sfx_s
 
 typedef struct
 {
-	int 	length;
-	int 	loopstart;
-	int 	speed;
-	int 	width;
-	int 	stereo;
-	byte	data[1];		// variable sized
-} sfxcache_t;
-
-typedef struct
-{
 	bool			gamealive,soundalive,
 					splitbuffer;
 	int				channels;
@@ -92,9 +82,6 @@ extern "C" {
 #endif
 
 void S_Startup (void);
-void S_StartSound(unsigned int entnum, int entchannel, sfx_t *sfx, MathVector3f_t origin, float fvol, float attenuation);
-void S_StaticSound(sfx_t *sfx, MathVector3f_t origin, float vol, float attenuation);
-void S_StopSound(unsigned int entnum, int entchannel);
 
 void S_InitPaintChannels (void);
 
@@ -148,9 +135,6 @@ extern	cvar_t volume;
 extern bool	snd_initialized;
 
 extern int		snd_blocked;
-
-void S_LocalSound (char *s);
-sfxcache_t *S_LoadSound (sfx_t *s);
 
 wavinfo_t GetWavinfo (const char *name, byte *wav, int wavlength);
 

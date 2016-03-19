@@ -252,81 +252,8 @@ CHANNEL MIXING
 ===============================================================================
 */
 
-void SND_PaintChannelFrom8(channel_t *ch, sfxcache_t *sc, int endtime);
-void SND_PaintChannelFrom16(channel_t *ch, sfxcache_t *sc, int endtime);
-
-void S_PaintChannels(int endtime)
-{
-	int 	i;
-	int 	end;
-	channel_t *ch;
-	sfxcache_t	*sc;
-	int		ltime, count;
-
-	while (paintedtime < endtime)
-	{
-		// if paintbuffer is smaller than DMA buffer
-		end = endtime;
-		if (endtime - paintedtime > PAINTBUFFER_SIZE)
-			end = paintedtime + PAINTBUFFER_SIZE;
-
-		// clear the paint buffer
-		memset(paintbuffer, 0, (end - paintedtime) * sizeof(portable_samplepair_t));
-
-		// paint in the channels.
-		ch = channels;
-		for (i = 0; i<total_channels; i++, ch++)
-		{
-			if (!ch->sfx)
-				continue;
-			if (!ch->leftvol && !ch->rightvol)
-				continue;
-			sc = S_LoadSound(ch->sfx);
-			if (!sc)
-				continue;
-
-			ltime = paintedtime;
-
-			while (ltime < end)
-			{	// paint up to end
-				if (ch->end < end)
-					count = ch->end - ltime;
-				else
-					count = end - ltime;
-
-				if (count > 0)
-				{
-					if (sc->width == 1)
-						SND_PaintChannelFrom8(ch, sc, count);
-					else
-						SND_PaintChannelFrom16(ch, sc, count);
-
-					ltime += count;
-				}
-
-				// if at end of loop, restart
-				if (ltime >= ch->end)
-				{
-					if (sc->loopstart >= 0)
-					{
-						ch->pos = sc->loopstart;
-						ch->end = ltime + sc->length - ch->pos;
-					}
-					else
-					{	// channel just stopped
-						ch->sfx = NULL;
-						break;
-					}
-				}
-			}
-
-		}
-
-		// transfer out according to DMA format
-		S_TransferPaintBuffer(end);
-		paintedtime = end;
-	}
-}
+void SND_PaintChannelFrom8(channel_t *ch, AudioSample_t *sc, int endtime);
+void SND_PaintChannelFrom16(channel_t *ch, AudioSample_t *sc, int endtime);
 
 void SND_InitScaletable(void)
 {
@@ -337,7 +264,7 @@ void SND_InitScaletable(void)
 			snd_scaletable[i][j] = ((signed char)j) * i * 8;
 }
 
-void SND_PaintChannelFrom8(channel_t *ch, sfxcache_t *sc, int count)
+void SND_PaintChannelFrom8(channel_t *ch, AudioSample_t *sc, int count)
 {
 	int 	data;
 	int		*lscale, *rscale;
@@ -363,7 +290,7 @@ void SND_PaintChannelFrom8(channel_t *ch, sfxcache_t *sc, int count)
 	ch->pos += count;
 }
 
-void SND_PaintChannelFrom16(channel_t *ch, sfxcache_t *sc, int count)
+void SND_PaintChannelFrom16(channel_t *ch, AudioSample_t *sc, int count)
 {
 	int data;
 	int left, right;

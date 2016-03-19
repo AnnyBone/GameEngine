@@ -33,9 +33,9 @@ void ResampleSfx (sfx_t *sfx, int inrate, int inwidth, byte *data)
 	float	stepscale;
 	int		i;
 	int		sample, samplefrac, fracstep;
-	sfxcache_t	*sc;
+	AudioSample_t	*sc;
 
-	sc = (sfxcache_t*)Cache_Check (&sfx->cache);
+	sc = (AudioSample_t*)Cache_Check(&sfx->cache);
 	if(!sc)
 		return;
 
@@ -80,57 +80,6 @@ void ResampleSfx (sfx_t *sfx, int inrate, int inwidth, byte *data)
 				((signed char *)sc->data)[i] = sample >> 8;
 		}
 	}
-}
-
-sfxcache_t *S_LoadSound (sfx_t *s)
-{
-    char		namebuffer[512];
-	wavinfo_t	info;
-	int			len;
-	float		stepscale;
-	sfxcache_t	*sc;
-
-	// see if still in memory
-	sc = (sfxcache_t*)Cache_Check(&s->cache);
-	if(sc)
-		return sc;
-
-	// load it in
-	strncpy(namebuffer, g_state.path_sounds, sizeof(namebuffer));
-	strcat(namebuffer, s->name);
-
-	uint8_t *data = (uint8_t*)COM_LoadHeapFile(namebuffer);
-	if (!data)
-	{
-		Con_Warning("Couldn't load %s\n", namebuffer);
-		return NULL;
-	}
-
-	info = GetWavinfo (s->name, data, com_filesize);
-
-	stepscale = (float)info.rate / shm->speed;
-	len = info.samples / stepscale;
-
-	len = len * info.width * info.channels;
-
-	sc = (sfxcache_t*)Cache_Alloc ( &s->cache, len + sizeof(sfxcache_t), s->name);
-	if (!sc)
-	{
-		free(data);
-		return NULL;
-	}
-
-	sc->length = info.samples;
-	sc->loopstart = info.loopstart;
-	sc->speed = info.rate;
-	sc->width = info.width;
-	sc->stereo = info.channels;
-
-	ResampleSfx (s, sc->speed, sc->width, data + info.dataofs);
-
-	free(data);
-
-	return sc;
 }
 
 /*
