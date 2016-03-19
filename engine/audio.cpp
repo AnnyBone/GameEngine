@@ -26,7 +26,12 @@
 /*
 	Audio System
 
-	Samples represent each 
+	Samples represent the actual sound data.
+	Sounds represent the individual emitters of each sound.
+
+	Confused?
+
+	You should be.
 */
 
 ConsoleVariable_t cv_audio_volume			= { "audio_volume", "1", true };
@@ -160,12 +165,31 @@ AudioSound_t *AudioManager::AddSound()
 	memset(sample, 0, sizeof(AudioSound_t));
 
 	alGenSources(1, &sample->source);
-	if (alGetError() != AL_NO_ERROR)
-		Con_Warning("Failed to create audio source!\n");
+	switch (alGetError())
+	{
+	case AL_OUT_OF_MEMORY:
+		Con_Warning("There is not enough memory to generate the requested sound source!\n");
+		break;
+	case AL_INVALID_VALUE:
+		Con_Warning("");
+		break;
+	case AL_INVALID_OPERATION:
+		Con_Warning("Invalid context for creation of sound source!\n");
+		break;
+	default:break;
+	}
 
 	alGenBuffers(1, &sample->buffer);
-	if (alGetError() != AL_NO_ERROR)
-		Con_Warning("Failed to create audio buffer!\n");
+	switch (alGetError())
+	{
+	case AL_INVALID_VALUE:
+		Con_Warning("Sound buffer isn't large enough to hold buffer!\n");
+		break;
+	case AL_OUT_OF_MEMORY:
+		Con_Warning("There isn't enough memory to generate the requested sound buffer!\n");
+		break;
+	default:break;
+	}
 
 	alGenEffects(1, &sample->effect);
 	if (alGetError() != AL_NO_ERROR)
