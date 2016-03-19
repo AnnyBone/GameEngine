@@ -19,6 +19,7 @@
 */
 
 #include <algorithm>
+#include <ctype.h>
 #include <fcntl.h>
 #include <list>
 #include <set>
@@ -36,6 +37,8 @@ static const unsigned int CHAR_WIDTH     = 8;
 static const unsigned int CHAR_HEIGHT    = 8;
 static const unsigned int CONS_BACKLOG   = 200;
 static const unsigned int CONS_MAXNOTIFY = 10;
+static const unsigned int CONS_HISTORY   = 32;
+static const char        *CONS_PS1       = "]";
 
 float con_cursorspeed = 4;
 
@@ -46,11 +49,6 @@ cvar_t		con_logcenterprint = {"con_logcenterprint", "1"}; //johnfitz
 
 char		con_lastcenterstring[1024]; //johnfitz
 
-#define		MAXCMDLINE	256
-extern "C" char				key_lines[32][MAXCMDLINE];
-extern "C" int				edit_line;
-extern "C" unsigned int		key_linepos;
-
 bool g_consoleinitialized;
 
 /* Singleton console instance. */
@@ -59,7 +57,10 @@ Core::Console *con_instance = NULL;
 Core::Console::Console():
 	cursor_x(0),
 	cursor_y(0),
-	backscroll(0)
+	backscroll(0),
+	input_hiter(input_history.end()),
+	input_cursor_pos(0),
+	input_draw_off(0)
 {
 	lines.emplace_back("");
 }
@@ -141,6 +142,189 @@ void Core::Console::ScrollHome()
 void Core::Console::ScrollEnd()
 {
 	backscroll = 0;
+}
+
+void Core::Console::InputKey(int key, bool ctrl, bool shift)
+{
+	if(key == INPUT_KEY_TAB)
+	{
+		TabComplete(shift);
+		return;
+	}
+	else{
+		/* Reset the tab completion state machine */
+		tab_suggestions.clear();
+	}
+
+	// TODO: Move clipboard stuff into platform lib
+#ifdef _WIN32
+	if(tolower(key) == 'v' && ctrl)
+	{
+		/* Paste... */
+
+		if(OpenClipboard(NULL))
+		{
+			HANDLE th = GetClipboardData(CF_TEXT);
+			if(th)
+			{
+				const char *clipText = (const char*)GlobalLock(th);
+				if(clipText)
+				{
+					/* Insert text from the clipboard up to
+					 * the first newline, carridge return or
+					 * backspace character.
+					*/
+
+					size_t len = strcspn(clipText, "\n\r\b");
+
+					input_line.insert(input_cursor_pos, clipText, len);
+					input_cursor_pos += len;
+				}
+
+				GlobalUnlock(th);
+			}
+
+			CloseClipboard();
+		}
+	}
+#endif
+
+	switch(key)
+	{
+		case INPUT_KEY_ENTER:
+		case KP_ENTER:
+		{
+			std::string line = input_line;
+			InputClear();
+
+			input_history.push_back(line);
+			if(input_history.size() > CONS_HISTORY)
+			{
+				input_history.pop_front();
+			}
+
+			Cbuf_AddText(line.c_str());
+			Cbuf_AddText("\n");
+
+			break;
+		}
+
+		case K_BACKSPACE:
+		{
+			if(input_cursor_pos > 0)
+				input_line.erase(--input_cursor_pos, 1);
+
+			break;
+		}
+
+		case K_DEL:
+		{
+			if(input_line.length() > input_cursor_pos)
+				input_line.erase(input_cursor_pos, 1);
+
+			break;
+		}
+
+		case K_HOME:
+		{
+			if(ctrl)
+				ScrollHome();
+			else
+				input_cursor_pos = 0;
+
+			break;
+		}
+
+		case K_END:
+		{
+			if(ctrl)
+				ScrollEnd();
+			else
+				input_cursor_pos = input_line.length();
+
+			break;
+		}
+
+		case K_PGUP:
+		{
+			ScrollUp();
+			break;
+		}
+
+		case K_PGDN:
+		{
+			ScrollDown();
+			break;
+		}
+
+		case K_LEFTARROW:
+		{
+			if(input_cursor_pos > 0)
+				--input_cursor_pos;
+
+			break;
+		}
+
+		case K_RIGHTARROW:
+		{
+			if(input_cursor_pos < input_line.length())
+				++input_cursor_pos;
+
+			break;
+		}
+
+		case K_UPARROW:
+		{
+			if(input_hiter != input_history.begin())
+			{
+				--input_hiter;
+				input_line       = *input_hiter;
+				input_cursor_pos = input_line.length();
+			}
+
+			break;
+		}
+
+		case K_DOWNARROW:
+		{
+			if(input_hiter == input_history.end()
+				|| ++input_hiter == input_history.end())
+			{
+				/* Pressed down on or beyond the last element
+				 * in the history, just clear the input.
+				*/
+
+				input_line.clear();
+				input_cursor_pos = 0;
+			}
+			else{
+				input_line       = *input_hiter;
+				input_cursor_pos = input_line.length();
+			}
+
+			break;
+		}
+
+		default:
+		{
+			if(isprint(key) && !ctrl)
+			{
+				input_line.insert(input_cursor_pos, 1, key);
+				++input_cursor_pos;
+			}
+
+			break;
+		}
+	}
+}
+
+void Core::Console::InputClear()
+{
+	input_line.clear();
+	input_cursor_pos  = 0;
+	input_draw_off = 0;
+
+	input_hiter = input_history.end();
 }
 
 void Core::Console::linefeed()
@@ -251,29 +435,36 @@ void Core::Console::Draw(bool draw_input)
 	// ...draw input line...
 	if(draw_input && !(key_dest != key_console && !con_forcedup))
 	{
-		const char *text = key_lines[edit_line];
+		const char *text = input_line.c_str();
 
-		// Prestep if horizontally scrolling
-		if (key_linepos >= line_width)
-			text += 1 + key_linepos - line_width;
-
-		// Draw input string
-		for(size_t i = 0;; ++i)
+		// Clamp input_draw_off
+		
+		input_draw_off = std::min(input_draw_off, input_cursor_pos - !!input_cursor_pos);
+		
+		if(input_cursor_pos >= (line_width - strlen(CONS_PS1)))
 		{
-			if(text[i] != '\0')
-			{
-				Draw_Character((i+1) * CHAR_WIDTH, y, text[i]);
-			}
-			else{
-				// Why is this even necessary?
-				Draw_Character((i+1) * CHAR_WIDTH, y, ' ');
-				break;
-			}
+			input_draw_off = std::max(input_draw_off, input_cursor_pos - (line_width - strlen(CONS_PS1)));
+		}
+
+		int x = CHAR_WIDTH;
+
+		// Draw prompt
+		for(const char *p = CONS_PS1; *p != '\0'; ++p)
+		{
+			Draw_Character(x, y, *p);
+			x += CHAR_WIDTH;
 		}
 
 		// Draw the blinky cursor
 		if(!((int)((realtime-key_blinktime)*con_cursorspeed) & 1))
-			Draw_Character((key_linepos+1) * CHAR_WIDTH, y, '_');
+			Draw_Character(x + ((input_cursor_pos - input_draw_off) * CHAR_WIDTH), y + 2, '_');
+
+		// Draw input string
+		for(size_t i = input_draw_off; i < input_line.length(); ++i)
+		{
+			Draw_Character(x, y, input_line[i]);
+			x += CHAR_WIDTH;
+		}
 
 		y -= CHAR_HEIGHT;
 	}
@@ -404,10 +595,8 @@ void Con_ToggleConsole_f (void)
 	{
 		if(cls.state == ca_connected)
 		{
-			key_dest				= key_game;
-			key_lines[edit_line][1] = 0;	// clear any typing
-			key_linepos				= 1;
-			history_line			= edit_line; //johnfitz -- it should also return you to the bottom of the command history
+			key_dest = key_game;
+			con_instance->InputClear(); // clear any typing
 
 			Input_ActivateMouse();
 		}
@@ -677,8 +866,6 @@ void Console_ErrorMessage(bool bCrash, const char *ccFile, const char *reason)
 ==============================================================================
 */
 
-extern "C" char key_tabpartial[MAXCMDLINE];
-
 struct tab_suggestion
 {
 	std::string name;
@@ -714,115 +901,64 @@ std::set<tab_suggestion> BuildTabList(const char *partial)
 	return suggestions;
 }
 
-void Con_TabComplete(void)
+void Core::Console::TabComplete(bool reverse)
 {
-	char		partial[MAXCMDLINE];
-	static char	*c;
-	int i;
-
 	// if editline is empty, return
-	if (key_lines[edit_line][1] == 0)
+	if(input_line.empty())
 		return;
 
-	// get partial string (space -> cursor)
-	if (!strlen(key_tabpartial)) //first time through, find new insert point. (Otherwise, use previous.)
+	if(tab_suggestions.empty())
 	{
-		//work back from cursor until you find a space, quote, semicolon, or prompt
-		c = key_lines[edit_line] + key_linepos - 1; //start one space left of cursor
-		while (*c!=' ' && *c!='\"' && *c!=';' && c!=key_lines[edit_line])
-			c--;
-		c++; //start 1 char after the seperator we just found
-	}
-	for (i = 0; c + i < key_lines[edit_line] + key_linepos; i++)
-		partial[i] = c[i];
-	partial[i] = 0;
+		/* Find the start of the current word */
+		size_t partial_start = input_line.find_last_of(" \";", input_cursor_pos);
+		if(partial_start == std::string::npos)
+			partial_start = 0;
+		else if(partial_start < input_cursor_pos)
+			++partial_start;
 
-	//if partial is empty, return
-	if (partial[0] == 0)
-		return;
+		std::string partial = input_line.substr(partial_start, input_cursor_pos - partial_start);
 
-	//trim trailing space becuase it screws up string comparisons
-	if (i > 0 && partial[i-1] == ' ')
-		partial[i-1] = 0;
+		//if partial is empty, return
+		if(partial.empty())
+			return;
 
-	// find a match
-	std::string match;
-
-	if (!strlen(key_tabpartial)) //first time through
-	{
-		strcpy(key_tabpartial, partial);
-		std::set<tab_suggestion> suggestions = BuildTabList(key_tabpartial);
+		std::set<tab_suggestion> suggestions = BuildTabList(partial.c_str());
 
 		if(suggestions.empty())
-		{
 			return;
-		}
 
 		//print list
 		for(auto s = suggestions.begin(); s != suggestions.end(); ++s)
 		{
 			Con_SafePrintf("   %s (%s)\n", s->name.c_str(), s->type.c_str());
+			tab_suggestions.push_back(s->name.substr(partial.length()));
 		}
-
-		//get first match
-		match = suggestions.begin()->name;
+		
+		tab_siter = tab_suggestions.begin();
 	}
-	else
-	{
-		std::set<tab_suggestion> suggestions = BuildTabList(key_tabpartial);
+	else{
+		input_cursor_pos -= tab_siter->length();
+		input_line.erase(input_cursor_pos, tab_siter->length());
 
-		if(suggestions.empty())
+		if(reverse)
 		{
-			return;
-		}
-
-		auto s = suggestions.find(tab_suggestion(partial, ""));
-		if(s == suggestions.end())
-		{
-			Con_SafePrintf("BUG: s == suggestions.end()\n");
-			return;
-		}
-
-		/* Iterate backwards through the suggestions if shift is held
-		 * down. Emulate a cyclic data structure here.
-		*/
-		if(keydown[K_SHIFT])
-		{
-			if(s == suggestions.begin())
+			if(tab_siter == tab_suggestions.begin())
 			{
-				s = suggestions.end();
+				tab_siter = tab_suggestions.end();
 			}
 
-			--s;
+			--tab_siter;
 		}
 		else{
-			if(++s == suggestions.end())
+			if(++tab_siter == tab_suggestions.end())
 			{
-				s = suggestions.begin();
+				tab_siter = tab_suggestions.begin();
 			}
 		}
-
-		match = s->name;
 	}
 
-	/* Update input text to contain new suggestion and any preexisting
-	 * trailing text.
-	 *
-	 * NOTE: Don't optimise the intermediate buffer away - c points to a
-	 * region within key_lines and everything goes wrong.
-	*/
-	snprintf(partial, sizeof(partial), "%s%s", match.c_str(), (key_lines[edit_line] + key_linepos));
-	strcpy(c, partial);
-
-	key_linepos = c - key_lines[edit_line] + match.length(); //set new cursor position
-
-	// if cursor is at end of string, let's append a space to make life easier
-	if (key_lines[edit_line][key_linepos] == 0)
-	{
-		key_lines[edit_line][key_linepos] = ' ';
-		key_linepos++;
-		key_lines[edit_line][key_linepos] = 0;
-	}
+	input_line.insert(input_cursor_pos, *tab_siter);
+	input_cursor_pos += tab_siter->length();
 }
 
 /*
@@ -857,34 +993,10 @@ void Con_DrawConsole(bool draw_input)
  * and let them use the methods of con_instance directly.
 */
 
-void Con_ScrollUp(void)
+void Con_InputKey(int key, bool ctrl, bool shift)
 {
 	if(con_instance)
 	{
-		con_instance->ScrollUp();
-	}
-}
-
-void Con_ScrollDown(void)
-{
-	if(con_instance)
-	{
-		con_instance->ScrollDown();
-	}
-}
-
-void Con_ScrollHome(void)
-{
-	if(con_instance)
-	{
-		con_instance->ScrollHome();
-	}
-}
-
-void Con_ScrollEnd(void)
-{
-	if(con_instance)
-	{
-		con_instance->ScrollEnd();
+		con_instance->InputKey(key, ctrl, shift);
 	}
 }

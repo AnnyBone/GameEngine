@@ -32,8 +32,6 @@ key up events are sent even if in console mode
 
 
 #define		MAXCMDLINE	256
-char	key_lines[32][MAXCMDLINE];
-unsigned int		key_linepos;
 int		shift_down=false;
 int		key_lastpress;
 int		key_insert;	//johnfitz -- insert key toggle (for editing)
@@ -175,203 +173,6 @@ keyname_t keynames[] =
 
 ==============================================================================
 */
-
-char key_tabpartial[MAXCMDLINE];
-
-/*  Interactive line editing and console scrollback
-	johnfitz -- heavy revision
-*/
-void Key_Console (int key)
-{
-	switch (key)
-	{
-	case INPUT_KEY_ENTER:
-	case KP_ENTER:
-		key_tabpartial[0] = 0;
-		Cbuf_AddText (key_lines[edit_line]+1);	// skip the prompt
-		Cbuf_AddText ("\n");
-		Con_Printf ("%s\n",key_lines[edit_line]);
-		edit_line = (edit_line + 1) & 31;
-		history_line = edit_line;
-		key_lines[edit_line][0] = ']';
-		key_lines[edit_line][1] = 0; //johnfitz -- otherwise old history items show up in the new edit line
-		key_linepos = 1;
-		if (cls.state == ca_disconnected)
-			SCR_UpdateScreen (); // force an update, because the command may take some time
-		return;
-	case INPUT_KEY_TAB:
-		Con_TabComplete ();
-		return;
-	case K_BACKSPACE:
-		key_tabpartial[0] = 0;
-		if (key_linepos > 1)
-		{
-			strcpy(key_lines[edit_line] + key_linepos - 1, key_lines[edit_line] + key_linepos);
-			key_linepos--;
-		}
-		return;
-	case K_INS:
-		key_insert ^= 1;
-		return;
-	case K_DEL:
-		key_tabpartial[0] = 0;
-		if ((unsigned)key_linepos < strlen(key_lines[edit_line]))
-			strcpy(key_lines[edit_line] + key_linepos, key_lines[edit_line] + key_linepos + 1);
-		return;
-	case K_HOME:
-		if (keydown[K_CTRL])
-		{
-			Con_ScrollHome();
-		}
-		else
-			key_linepos = 1;
-		return;
-	case K_END:
-		if (keydown[K_CTRL])
-			Con_ScrollEnd();
-		else
-			key_linepos = strlen(key_lines[edit_line]);
-		return;
-	case K_PGUP:
-		Con_ScrollUp();
-		return;
-	case K_PGDN:
-		Con_ScrollDown();
-		return;
-	case K_LEFTARROW:
-		if (key_linepos > 1)
-		{
-			key_linepos--;
-			key_blinktime = realtime;
-		}
-		return;
-	case K_RIGHTARROW:
-		if (strlen(key_lines[edit_line]) == key_linepos)
-		{
-			if (strlen(key_lines[(edit_line + 31) & 31]) <= (unsigned)key_linepos)
-				return; // no character to get
-
-			key_lines[edit_line][key_linepos] = key_lines[(edit_line + 31) & 31][key_linepos];
-			key_linepos++;
-			key_lines[edit_line][key_linepos] = 0;
-		}
-		else
-		{
-			key_linepos++;
-			key_blinktime = realtime;
-		}
-		return;
-	case K_UPARROW:
-		key_tabpartial[0] = 0;
-		do
-		{
-			history_line = (history_line - 1) & 31;
-		} while (history_line != edit_line
-				&& !key_lines[history_line][1]);
-		if (history_line == edit_line)
-			history_line = (edit_line+1)&31;
-		strcpy(key_lines[edit_line], key_lines[history_line]);
-		key_linepos = strlen(key_lines[edit_line]);
-		return;
-	case K_DOWNARROW:
-		key_tabpartial[0] = 0;
-
-		if (history_line == edit_line)
-		{
-			//clear editline
-			key_lines[edit_line][1] = 0;
-			key_linepos = 1;
-			return;
-		}
-
-		do {
-			history_line = (history_line + 1) & 31;
-		} while (history_line != edit_line
-			&& !key_lines[history_line][1]);
-		if (history_line == edit_line)
-		{
-			key_lines[edit_line][0] = ']';
-			key_linepos = 1;
-		}
-		else
-		{
-			strcpy(key_lines[edit_line], key_lines[history_line]);
-			key_linepos = strlen(key_lines[edit_line]);
-		}
-		return;
-	}
-
-//johnfitz -- clipboard pasting, stolen from zquake
-//TODO: move win32 specific code to sys_win.c
-#ifdef _WIN32
-	if((key=='V' || key=='v') && keydown[K_CTRL])
-	{
-		HANDLE	th;
-		char	*clipText;
-		int		i;
-
-		if(OpenClipboard(NULL))
-		{
-			th = GetClipboardData(CF_TEXT);
-			if(th)
-			{
-				clipText = (char*)GlobalLock(th);
-				if (clipText)
-				{
-					for (i=0; clipText[i]; i++)
-						if (clipText[i]=='\n' || clipText[i]=='\r' || clipText[i]=='\b')
-							break;
-					if (i + strlen(key_lines[edit_line]) > MAXCMDLINE-1)
-						i = MAXCMDLINE-1 - strlen(key_lines[edit_line]);
-					if (i > 0)
-					{	// insert the string
-						memmove (key_lines[edit_line] + key_linepos + i,
-							key_lines[edit_line] + key_linepos, strlen(key_lines[edit_line]) - key_linepos + 1);
-						memcpy (key_lines[edit_line] + key_linepos, clipText, i);
-						key_linepos += i;
-					}
-				}
-
-				GlobalUnlock(th);
-			}
-
-			CloseClipboard();
-		}
-		return;
-	}
-#endif
-
-	if (key < 32 || key > 127)
-		return;	// non printable
-
-	//johnfitz -- stolen from darkplaces
-	if (key_linepos < MAXCMDLINE-1)
-	{
-		unsigned int i;
-
-		key_tabpartial[0] = 0; //johnfitz
-
-		if (key_insert)	// check insert mode
-		{
-			// can't do strcpy to move string to right
-			i = strlen(key_lines[edit_line]) - 1;
-			if (i == 254)
-				i--;
-
-			for (; i >= key_linepos; i--)
-				key_lines[edit_line][i + 1] = key_lines[edit_line][i];
-		}
-
-		// only null terminate if at the end
-		i = key_lines[edit_line][key_linepos];
-		key_lines[edit_line][key_linepos] = key;
-		key_linepos++;
-
-		if (!i)
-			key_lines[edit_line][key_linepos] = 0;
-	}
-	//johnfitz
-}
 
 //============================================================================
 
@@ -605,13 +406,6 @@ void Key_Init (void)
 {
 	int		i;
 
-	for (i=0 ; i<32 ; i++)
-	{
-		key_lines[i][0] = ']';
-		key_lines[i][1] = 0;
-	}
-	key_linepos = 1;
-
 	key_blinktime = realtime; //johnfitz
 
 	// Init ascii characters in console mode
@@ -840,7 +634,7 @@ void Key_Event(int key,bool down)
 		break;
 	case key_game:
 	case key_console:
-		Key_Console(key);
+		Con_InputKey(key, keydown[K_CTRL], keydown[K_SHIFT]);
 		break;
 	default:
 		Con_Warning("Bad key destination! (%i)",key);

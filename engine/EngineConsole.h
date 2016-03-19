@@ -42,6 +42,9 @@ namespace Core
 			void ScrollHome();
 			void ScrollEnd();
 
+			void InputKey(int key, bool ctrl, bool shift);
+			void InputClear();
+
 			void Draw(bool draw_input);
 			void DrawNotify();
 
@@ -60,10 +63,39 @@ namespace Core
 
 			std::deque<Line> lines;
 
+			std::list<std::string> input_history;
+			std::list<std::string>::iterator input_hiter;
+
+			std::string input_line;
+			size_t input_cursor_pos;
+			size_t input_draw_off;
+
 			void linefeed();
 
 			std::list<std::string> prepare_text(unsigned int cols, unsigned int rows);
 			static std::list<std::string> wrap_line(std::string line, unsigned int cols);
+
+			/* Tab completion state machine
+			 *
+			 * Initial state: tab_suggestions is empty, signifying
+			 * there is no tab completion active. The other tab_
+			 * values are undefined in this case.
+			 *
+			 * Active state: tab_suggestions is not empty, tab_siter
+			 * points to the element in tab_suggestions which has
+			 * been inserted into input_line, tab_insert_pos is the
+			 * offset into input_line the cursor was at when we
+			 * went into active state and where suggestions should
+			 * be inserted at.
+			 *
+			 * NOTE: tab_suggestions should be cleared when normal
+			 * editing is resumed.
+			*/
+
+			std::list<std::string> tab_suggestions;
+			std::list<std::string>::iterator tab_siter;
+
+			void TabComplete(bool reverse);
 	};
 }
 
@@ -92,12 +124,8 @@ void Con_DrawNotify(void);
 void Con_ClearNotify(void);
 void Con_ToggleConsole_f(void);
 void Console_ErrorMessage(bool bCrash, const char *ccFile, const char *reason);
-void Con_TabComplete(void);
 
-void Con_ScrollUp(void);
-void Con_ScrollDown(void);
-void Con_ScrollHome(void);
-void Con_ScrollEnd(void);
+void Con_InputKey(int key, bool ctrl, bool shift);
 
 // Other crap...
 char *Con_Quakebar(unsigned int len);
