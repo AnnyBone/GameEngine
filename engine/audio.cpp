@@ -384,7 +384,7 @@ sfxcache_t *AudioManager::LoadSample(const char *path)
 	cache->stereo		= info.channels;
 
 	// Now resample the sample...
-
+#if 0
 	stepscale = (float)cache->speed / AUDIO_SAMPLE_SPEED;
 	int outcount = cache->length / stepscale;
 	cache->length = outcount;
@@ -425,6 +425,7 @@ sfxcache_t *AudioManager::LoadSample(const char *path)
 			}
 		}
 	}
+#endif
 
 	free(data);
 
@@ -456,17 +457,30 @@ void AudioManager::ListSounds()
 	{
 		size = sample.second->length * sample.second->width * (sample.second->stereo + 1);
 		mem += size;
+		Con_SafePrintf(" Sample : ");
 		if (sample.second->loopstart >= 0)
-			Con_SafePrintf("L");
+			Con_SafePrintf("Loop(true) ");
 		else
-			Con_SafePrintf(" ");
-		Con_SafePrintf(" Sample : (%2db) %6i\n", sample.second->width * 8, size);
+			Con_SafePrintf("Loop(false) ");
+		Con_SafePrintf("Length(%i) Speed(%i) Stereo(%i) Size(%6i)\n",
+			sample.second->length, 
+			sample.second->speed,
+			sample.second->stereo,
+			size);
 	}
 
+	Con_Printf("\n");
+
 	for (unsigned int i = 0; i < sounds.size(); i++)
-	{
-		Con_SafePrintf(" Sound : ");
-	}
+		Con_SafePrintf(" Sound : Volume(%5.1f) Velocity(%i %i %i) Position(%i %i %i) Pitch(%5.1f)\n",
+			sounds[i]->volume,
+			(int)sounds[i]->velocity[0],
+			(int)sounds[i]->velocity[1],
+			(int)sounds[i]->velocity[2],
+			(int)sounds[i]->position[0],
+			(int)sounds[i]->position[1],
+			(int)sounds[i]->position[2],
+			sounds[i]->pitch);
 
 	Con_Printf("%i sounds, %i bytes\n", samples.size(), mem);
 }
