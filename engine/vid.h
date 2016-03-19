@@ -37,8 +37,12 @@ typedef struct
 	unsigned		conheight;
 } viddef_t;
 
+plEXTERN_C_START
+
 extern	viddef_t	vid;				// global video state
 
 extern void (*vid_menudrawfn)(void);
 extern void (*vid_menukeyfn)(int key);
 extern void (*vid_menucmdfn)(void); //johnfitz
+
+plEXTERN_C_END

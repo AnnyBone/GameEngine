@@ -28,7 +28,9 @@
 	Video System
 */
 
-viddef_t vid; // Legacy global video state (TODO: Replace!)
+extern "C" {
+	viddef_t vid; // Legacy global video state (TODO: Replace!)
+}
 
 bool 
 	r_drawflat_cheatsafe, 
