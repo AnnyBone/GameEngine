@@ -214,7 +214,7 @@ void R_DrawSequentialPoly(msurface_t *s)
 
 void Brush_Draw(ClientEntity_t *e)
 {
-#ifdef KATANA_CORE_GL
+#ifdef VL_MODE_OPENGL
 	int				k;
 	unsigned int	i;
 	msurface_t		*psurf;
@@ -642,7 +642,7 @@ void R_UploadLightmap(int lmap)
 	bLightmapModified[lmap] = false;
 
 	theRect = &lightmap_rectchange[lmap];
-#ifdef KATANA_CORE_GL
+#ifdef VL_MODE_OPENGL
 	glTexSubImage2D(
 		GL_TEXTURE_2D,
 		0,0,
@@ -698,7 +698,7 @@ void R_RebuildAllLightmaps (void)
 
 		Video_SetTexture(lightmap_textures[i]);
 
-#ifdef KATANA_CORE_GL
+#ifdef VL_MODE_OPENGL
 		glTexSubImage2D(
 			GL_TEXTURE_2D,
 			0,0,0,

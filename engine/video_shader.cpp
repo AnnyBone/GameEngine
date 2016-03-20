@@ -78,7 +78,7 @@ Shader::Shader(vlShaderType_t type)
 
 bool Shader::Load(const char *path)
 {
-#ifdef KATANA_CORE_GL
+#ifdef VL_MODE_OPENGL
 	VIDEO_FUNCTION_START
 	// Check that the path is valid.
 	if (path[0] == ' ')
@@ -146,7 +146,7 @@ bool Shader::Load(const char *path)
 
 Shader::~Shader()
 {
-#ifdef KATANA_CORE_GL
+#ifdef VL_MODE_OPENGL
 	VIDEO_FUNCTION_START
 	glDeleteShader(instance);
 	VIDEO_FUNCTION_END
@@ -157,7 +157,7 @@ Shader::~Shader()
 
 bool Shader::CheckCompileStatus()
 {
-#ifdef KATANA_CORE_GL
+#ifdef VL_MODE_OPENGL
 	VIDEO_FUNCTION_START
 	int iCompileStatus;
 	glGetObjectParameterivARB(instance, GL_COMPILE_STATUS, &iCompileStatus);
@@ -208,14 +208,14 @@ ShaderProgram::ShaderProgram()
 
 ShaderProgram::~ShaderProgram()
 {
-#ifdef KATANA_CORE_GL
+#ifdef VL_MODE_OPENGL
 	glDeleteProgram(instance);
 #endif
 }
 
 void ShaderProgram::Initialize()
 {
-#ifdef KATANA_CORE_GL
+#ifdef VL_MODE_OPENGL
 	instance = glCreateProgram();
 	if (!instance)
 		Sys_Error("Failed to create shader program!\n");
@@ -224,7 +224,7 @@ void ShaderProgram::Initialize()
 
 void ShaderProgram::Attach(Shader *shader)
 {
-#ifdef KATANA_CORE_GL
+#ifdef VL_MODE_OPENGL
 	VIDEO_FUNCTION_START
 	if (!shader)
 		Sys_Error("Attempted to attach an invalid shader!\n");
@@ -250,7 +250,7 @@ void ShaderProgram::Disable()
 
 void ShaderProgram::Link()
 {
-#ifdef KATANA_CORE_GL
+#ifdef VL_MODE_OPENGL
 	VIDEO_FUNCTION_START
 	glLinkProgram(instance);
 
@@ -286,7 +286,7 @@ void ShaderProgram::Shutdown()
 
 int ShaderProgram::GetUniformLocation(const char *name)
 {
-#ifdef KATANA_CORE_GL
+#ifdef VL_MODE_OPENGL
 	return glGetUniformLocation(instance, name);
 #else
 	return 0;
@@ -295,7 +295,7 @@ int ShaderProgram::GetUniformLocation(const char *name)
 
 void ShaderProgram::SetVariable(int location, float x, float y, float z)
 {
-#ifdef KATANA_CORE_GL
+#ifdef VL_MODE_OPENGL
 	if (!IsActive())
 		Sys_Error("Ensure shader program is enabled before applying variables! (%i) (%i %i %i)\n",
 			location, (int)x, (int)y, (int)z);
@@ -306,7 +306,7 @@ void ShaderProgram::SetVariable(int location, float x, float y, float z)
 
 void ShaderProgram::SetVariable(int location, MathVector3f_t vector)
 {
-#ifdef KATANA_CORE_GL
+#ifdef VL_MODE_OPENGL
 	if (!IsActive())
 		Sys_Error("Ensure shader program is enabled before applying variables! (%i) (%i %i %i)\n",
 			location, (int)vector[0], (int)vector[1], (int)vector[2]);
@@ -317,7 +317,7 @@ void ShaderProgram::SetVariable(int location, MathVector3f_t vector)
 
 void ShaderProgram::SetVariable(int location, float x, float y, float z, float a)
 {
-#ifdef KATANA_CORE_GL
+#ifdef VL_MODE_OPENGL
 	if (!IsActive())
 		Sys_Error("Ensure shader program is enabled before applying variables! (%i) (%i %i %i %i)\n",
 			location, (int)x, (int)y, (int)z, (int)a);
@@ -327,7 +327,7 @@ void ShaderProgram::SetVariable(int location, float x, float y, float z, float a
 
 void ShaderProgram::SetVariable(int location, int i)
 {
-#ifdef KATANA_CORE_GL
+#ifdef VL_MODE_OPENGL
 	if (!IsActive())
 		Sys_Error("Ensure shader program is enabled before applying variables! (%i) (%i)\n",
 			location, i);
@@ -337,7 +337,7 @@ void ShaderProgram::SetVariable(int location, int i)
 
 void ShaderProgram::SetVariable(int location, float f)
 {
-#ifdef KATANA_CORE_GL
+#ifdef VL_MODE_OPENGL
 	if (!IsActive())
 		Sys_Error("Ensure shader program is enabled before applying variables! (%i) (%i)\n",
 			location, (int)f);

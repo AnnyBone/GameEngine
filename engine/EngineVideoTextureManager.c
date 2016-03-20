@@ -66,7 +66,7 @@ typedef struct
 
 glmode_t modes[] =
 {
-#ifdef KATANA_CORE_GL
+#ifdef VL_MODE_OPENGL
 	{ GL_NEAREST, GL_NEAREST, "GL_NEAREST" },
 	{ GL_NEAREST, GL_NEAREST_MIPMAP_NEAREST, "GL_NEAREST_MIPMAP_NEAREST" },
 	{ GL_NEAREST, GL_NEAREST_MIPMAP_LINEAR, "GL_NEAREST_MIPMAP_LINEAR" },
@@ -96,7 +96,7 @@ void TexMgr_DescribeTextureModes_f (void)
 
 void TexMgr_SetFilterModes (gltexture_t *glt)
 {
-#ifdef KATANA_CORE_GL
+#ifdef VL_MODE_OPENGL
 	Video_SetTexture(glt);
 
 	if (glt->flags & TEXPREF_NEAREST)
@@ -178,7 +178,7 @@ stuff:
 */
 void TexMgr_Anisotropy_f(void)
 {
-#ifdef KATANA_CORE_GL
+#ifdef VL_MODE_OPENGL
 	gltexture_t	*glt;
 
 	Cvar_SetValue("gl_texture_anisotropy", Math_Clamp(1.0f, gl_texture_anisotropy.value, Video.fMaxAnisotropy));
@@ -211,7 +211,7 @@ void TexMgr_Imagelist_f (void)
 
 void TexMgr_Imagedump_f(void)
 {
-#ifdef KATANA_CORE_GL
+#ifdef VL_MODE_OPENGL
 	char		tganame[PLATFORM_MAX_PATH], tempname[PLATFORM_MAX_PATH], dirname[PLATFORM_MAX_PATH];
 	gltexture_t	*glt;
 	uint8_t		*buffer;
@@ -323,7 +323,7 @@ gltexture_t *TexMgr_NewTexture (void)
 	glt->next			= active_gltextures;
 	active_gltextures	= glt;
 
-#ifdef KATANA_CORE_GL
+#ifdef VL_MODE_OPENGL
 	glGenTextures(1, &glt->texnum);
 #endif
 
@@ -334,7 +334,7 @@ gltexture_t *TexMgr_NewTexture (void)
 
 void TexMgr_FreeTexture (gltexture_t *kill)
 {
-#ifdef KATANA_CORE_GL
+#ifdef VL_MODE_OPENGL
 	gltexture_t *glt;
 
 	if (kill == NULL)
@@ -442,7 +442,7 @@ void TexMgr_RecalcWarpImageSize (void)
 		if (glt->flags & TEXPREF_WARPIMAGE)
 		{
 			Video_SetTexture(glt);
-#ifdef KATANA_CORE_GL
+#ifdef VL_MODE_OPENGL
 			glTexImage2D (GL_TEXTURE_2D, 0, gl_solid_format, gl_warpimagesize, gl_warpimagesize, 0, GL_RGBA, GL_UNSIGNED_BYTE, dummy);
 #endif
 			glt->width = glt->height = gl_warpimagesize;
@@ -489,10 +489,10 @@ void TextureManager_Initialize(void)
 	Cmd_AddCommand("image_reloadtextures", &TexMgr_ReloadImages);
 
 	// poll max size from hardware
-#ifdef KATANA_CORE_GL
+#ifdef VL_MODE_OPENGL
 	glGetIntegerv (GL_MAX_TEXTURE_SIZE, &gl_hardware_maxsize);
 #endif
-
+	
 	notexture = TexMgr_LoadImage(NULL,"notexture",2,2,SRC_RGBA,notexture_data,"",(unsigned)notexture_data,TEXPREF_NEAREST|TEXPREF_PERSIST|TEXPREF_NOPICMIP);
 
 	//have to assign these here becuase Mod_Init is called before TexMgr_Init
@@ -861,7 +861,7 @@ void TexMgr_LoadImage32(gltexture_t *glt, uint8_t *data)
 	// upload
 	Video_SetTexture(glt);
 	internalformat = (glt->flags & TEXPREF_ALPHA) ? gl_alpha_format : gl_solid_format;
-#ifdef KATANA_CORE_GL
+#ifdef VL_MODE_OPENGL
 	if ((glt->flags & TEXPREF_MIPMAP) && Video.extensions.generate_mipmap)
 		glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
 	glTexImage2D (GL_TEXTURE_2D, 0, internalformat, glt->width, glt->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
@@ -890,7 +890,7 @@ void TexMgr_LoadImage32(gltexture_t *glt, uint8_t *data)
 				mipheight >>= 1;
 			}
 
-#ifdef KATANA_CORE_GL
+#ifdef VL_MODE_OPENGL
 			glTexImage2D(GL_TEXTURE_2D, miplevel, internalformat, mipwidth, mipheight, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 #endif
 		}
@@ -981,7 +981,7 @@ void TexMgr_LoadLightmap(gltexture_t *glt,byte *data)
 	// Upload it
 	Video_SetTexture(glt);
 
-#ifdef KATANA_CORE_GL
+#ifdef VL_MODE_OPENGL
 	glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,glt->width,glt->height,0,GL_BGRA,GL_UNSIGNED_INT_8_8_8_8_REV,data);
 #endif
 
@@ -1173,7 +1173,7 @@ invalid:
 */
 void TexMgr_ReloadImages (void)
 {
-#ifdef KATANA_CORE_GL
+#ifdef VL_MODE_OPENGL
 	gltexture_t *glt;
 
 	for (glt=active_gltextures; glt; glt=glt->next)

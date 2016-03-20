@@ -309,7 +309,7 @@
       <TypeLibraryName>.\Release\Fitzquake.tlb</TypeLibraryName>
     </Midl>
     <ResourceCompile>
-      <Culture>0x0409</Culture>
+      <Culture>0x0809</Culture>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Bscmake>
@@ -322,7 +322,7 @@
       <SubSystem>Windows</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <OutputFile>..\bin\engine.x86.dll</OutputFile>
-      <AdditionalDependencies>glide3x.lib;comctl32.lib;winmm.lib;wsock32.lib;OpenAL32.lib;platform.lib;SDL2.lib;SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glew32.lib;comctl32.lib;winmm.lib;wsock32.lib;OpenAL32.lib;platform.lib;SDL2.lib;SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateMapFile>false</GenerateMapFile>
       <MapExports>false</MapExports>
@@ -630,9 +630,11 @@
     <ClCompile Include="engine_exception.cpp" />
     <ClCompile Include="model_u3d.cpp" />
     <ClCompile Include="shader_water.cpp" />
-    <ClCompile Include="video_glidewindow.c" />
-    <ClCompile Include="video_sdlwindow.c">
+    <ClCompile Include="video_glidewindow.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="video_sdlwindow.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="video_framebuffer.cpp" />
     <ClCompile Include="EngineVideoParticle.c" />

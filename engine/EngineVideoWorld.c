@@ -225,7 +225,7 @@ void Surface_DrawMirror(msurface_t *surface)
 
 	R_SetupView();
 
-	vlEnable(VIDEO_STENCIL_TEST);
+	vlEnable(VL_CAPABILITY_STENCIL_TEST);
 
 	glStencilFunc(GL_ALWAYS, 1, 255);
 	glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE);
@@ -233,7 +233,7 @@ void Surface_DrawMirror(msurface_t *surface)
 	vlDepthMask(false);
 	glClear(GL_STENCIL_BUFFER_BIT);
 
-	Video_DrawSurface(surface, 0, g_mGlobalColour, 0);
+	Video_DrawSurface(surface, 1, g_mGlobalColour, 0);
 
 	glStencilFunc(GL_EQUAL, 1, 255);
 	glStencilMask(0);
@@ -263,7 +263,7 @@ void Surface_DrawMirror(msurface_t *surface)
 		cl_numvisedicts--;
 	}
 
-	vlDisable(VIDEO_STENCIL_TEST);
+	vlDisable(VL_CAPABILITY_STENCIL_TEST);
 
 	// Restore view position.
 	Math_VectorCopy(oldorg, r_refdef.vieworg);

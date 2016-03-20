@@ -665,7 +665,7 @@ void Draw_FadeScreen (void)
 */
 void Draw_BeginDisc(void)
 {
-#ifdef KATANA_CORE_GL
+#ifdef VL_MODE_OPENGL
 	//static float fDiscRotation = 0;
 	int	iViewport[4]; //johnfitz
 	VideoCanvasType_t oldcanvas; //johnfitz
@@ -702,7 +702,7 @@ void Draw_BeginDisc(void)
 
 void GL_SetCanvas (VideoCanvasType_t newcanvas)
 {
-#ifdef KATANA_CORE_GL
+#ifdef VL_MODE_OPENGL
 	extern vrect_t		scr_vrect;
 	float				s;
 	int					lines;

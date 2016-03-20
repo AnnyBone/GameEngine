@@ -33,7 +33,7 @@ SDL_GLContext	sMainContext;
 SDL_DisplayMode	sDisplayMode;
 SDL_SysWMinfo	sSystemInfo;
 
-Window_t g_mainwindow;
+plWindow_t g_mainwindow;
 
 void Window_InitializeVideo(void)
 {

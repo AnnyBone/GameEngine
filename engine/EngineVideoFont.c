@@ -49,7 +49,7 @@ void Font_Initialize(void)
 */
 void Font_Load(const char *ccName,int iSize)
 {
-#ifdef KATANA_CORE_GL
+#ifdef VL_MODE_OPENGL
 	char cPath[PLATFORM_MAX_PATH];
 
 	sprintf(cPath, "%s/%s", g_state.path_fonts, ccName);

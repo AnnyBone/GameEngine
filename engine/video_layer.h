@@ -18,14 +18,17 @@
 
 #pragma once
 
-//		VL_MODE_OPENGL
-//		VL_MODE_OPENGL_CORE
-#define	VL_MODE_GLIDE
-//		VL_MODE_DIRECT3D
-//		VL_MODE_VULKAN
+#define		VL_MODE_OPENGL
+//			VL_MODE_OPENGL_CORE
+//#define	VL_MODE_GLIDE
+//			VL_MODE_DIRECT3D
+//			VL_MODE_VULKAN
 
 #if defined (VL_MODE_OPENGL)
-#	include "GLee.h"
+#	include <GL/glew.h>
+#	ifdef _WIN32
+#		include <GL/wglew.h>
+#	endif
 
 #	include <GL/glu.h>
 #elif defined (VL_MODE_OPENGL_CORE)
@@ -82,8 +85,19 @@ typedef enum
 typedef enum
 {
 #if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
-	VL_COLOURFORMAT_ARGB	= GL_ARGB,
-	VL_COLOURFORMAT_ABGR	= GL_ABGR,
+	VL_CULL_POSTIVE,
+	VL_CULL_NEGATIVE,
+#else
+	VL_CULL_POSTIVE,
+	VL_CULL_NEGATIVE,
+#endif
+} VLCull_t;
+
+typedef enum
+{
+#if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
+	VL_COLOURFORMAT_ARGB,
+	VL_COLOURFORMAT_ABGR,
 	VL_COLOURFORMAT_RGBA	= GL_RGBA,
 	VL_COLOURFORMAT_BGRA	= GL_BGRA,
 #elif defined (VL_MODE_GLIDE)
@@ -294,8 +308,13 @@ void vlRenderBufferStorage(int format, int samples, unsigned int width, unsigned
 void vlDeleteRenderBuffer(unsigned int *buffer);
 
 void vlSwapBuffers(void);
-void vlClearColour(float r, float g, float b, float a);
+void vlSetClearColour(float r, float g, float b, float a);
+void vlSetClearColour4fv(plColour_t rgba);
 void vlClearBuffers(unsigned int mask);
 void vlColourMask(bool red, bool green, bool blue, bool alpha);
+
+// Misc
+void vlSetCullMode(VLCull_t mode);
+void vlFinish(void);
 
 plEXTERN_C_END

@@ -162,6 +162,8 @@ void Video_Initialize(void)
 	if (!g_state.embedded)
 		Window_InitializeVideo();
 
+	vlInit();
+
 	// Attempt to dynamically allocated the number of supported TMUs.
 	vlGetMaxTextureImageUnits(&Video.num_textureunits);
 	Video.textureunits = (VideoTextureMU_t*)Hunk_Alloc(sizeof(VideoTextureMU_t)*Video.num_textureunits);
@@ -183,57 +185,30 @@ void Video_Initialize(void)
 	Video.gl_version		= vlGetString(VL_STRING_VERSION);
 	Video.gl_extensions		= vlGetString(VL_STRING_EXTENSIONS);
 
-#ifdef VL_MODE_OPENGL
-	Con_DPrintf(" Checking for extensions...\n");
-
-	GLeeInit();
-
-	// Check that the required capabilities are supported.
-	if (!GLEE_ARB_multitexture) Sys_Error("Video hardware incapable of multi-texturing!\n");
-	else if (!GLEE_ARB_texture_env_combine && !GLEE_EXT_texture_env_combine) Sys_Error("ARB/EXT_texture_env_combine isn't supported by your hardware!\n");
-	else if (!GLEE_ARB_texture_env_add && !GLEE_EXT_texture_env_add) Sys_Error("ARB/EXT_texture_env_add isn't supported by your hardware!\n");
-	//else if (!GLEE_EXT_fog_coord) Sys_Error("EXT_fog_coord isn't supported by your hardware!\n");
-#ifdef VIDEO_SUPPORT_SHADERS
-	else if (!GLEE_ARB_vertex_program || !GLEE_ARB_fragment_program) Sys_Error("Shaders aren't supported by this hardware!\n");
-#endif
-
-	// Optional capabilities.
-	if (GLEE_SGIS_generate_mipmap) Video.extensions.generate_mipmap = true;
-	else Con_Warning("Hardware mipmap generation isn't supported!\n");
-	if (GLEE_ARB_depth_texture) Video.extensions.depth_texture = true;
-	else Con_Warning("ARB_depth_texture isn't supported by your hardware!\n");
-	if (GLEE_ARB_shadow) Video.extensions.shadow = true;
-	else Con_Warning("ARB_shadow isn't supported by your hardware!\n");
-	if (GLEE_ARB_vertex_buffer_object) Video.extensions.vertex_buffer_object = true;
-	else Con_Warning("Hardware doesn't support Vertex Buffer Objects!\n");
-
 	// Set the default states...
-
-	glCullFace(GL_BACK);
-	glFrontFace(GL_CW);
+	vlSetCullMode(VL_CULL_NEGATIVE);
+#ifdef VL_MODE_OPENGL
 	glAlphaFunc(GL_GREATER, 0.5f);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 	glDepthRange(0, 1);
 	glDepthFunc(GL_LEQUAL);
 	glClearStencil(1);
-
+	
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-	vlActiveTexture(VIDEO_TEXTURE_LIGHT);
-
 	// Overbrights.
+	vlActiveTexture(VIDEO_TEXTURE_LIGHT);
 	vlSetTextureEnvironmentMode(VIDEO_TEXTURE_MODE_COMBINE);
 	glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
 	glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_PREVIOUS);
 	glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_TEXTURE);
 	glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 4);
-
-	vlActiveTexture(0);
 #endif
+	vlActiveTexture(0);
 
 	vid.conwidth = (scr_conwidth.value > 0) ? (int)scr_conwidth.value : (scr_conscale.value > 0) ? (int)(Video.iWidth / scr_conscale.value) : Video.iWidth;
 	vid.conwidth = Math_Clamp(320, vid.conwidth, Video.iWidth);
@@ -391,7 +366,7 @@ void Video_SetViewportSize(int w, int h)
 
 void Video_GenerateSphereCoordinates(void)
 {
-#ifdef KATANA_CORE_GL
+#ifdef VL_MODE_OPENGL
 #if 0
 	MathMatrix4x4f_t mmMatrix, mmInversed;
 
@@ -424,7 +399,7 @@ void Video_GenerateSphereCoordinates(void)
 */
 void Video_SetTexture(gltexture_t *gTexture)
 {
-#ifdef KATANA_CORE_GL
+#ifdef VL_MODE_OPENGL
 	if(!gTexture)
 		gTexture = notexture;
 	// If it's the same as the last, don't bother.
@@ -585,10 +560,8 @@ void Video_PostFrame(void)
 
 	Screen_DrawFPS();
 
-#ifdef KATANA_CORE_GL
 	if (cv_video_finish.bValue)
-		glFinish();
-#endif
+		vlFinish();
 
 	if (Video.debug_frame)
 		Video.debug_frame = false;

@@ -36,7 +36,7 @@ VideoRenderBuffer::~VideoRenderBuffer()
 
 void VideoRenderBuffer::Attach()
 {
-#ifdef KATANA_CORE_GL
+#ifdef VL_MODE_OPENGL
 	vlAttachFrameBufferRenderBuffer(GL_DEPTH_STENCIL_ATTACHMENT, instance);
 #endif
 }
@@ -104,7 +104,6 @@ VideoFrameBuffer::~VideoFrameBuffer()
 */
 void VideoFrameBuffer::GenerateBuffers()
 {
-#ifdef KATANA_CORE_GL
 	// Colour buffer
 	{
 		// Create a new texture instance and then bind it.
@@ -116,20 +115,21 @@ void VideoFrameBuffer::GenerateBuffers()
 
 		// Set the texture up.
 		vlTexImage2D(VL_TEXTURE_2D, VL_TEXTUREFORMAT_RGB, VL_TEXTUREFORMAT_RGB, width, height, NULL);
-		vlSetTextureFilter(VL_TEXTURE_FILTER_LINEAR);
+		vlSetTextureFilter(VL_TEXTUREFILTER_LINEAR);
 
 		// Attach the texture to this framebuffer.
 		vlAttachFrameBufferTexture(buf_colour);
 	}
 
 	// Depth buffer
+#ifdef VL_MODE_OPENGL
 	buf_depth = new VideoRenderBuffer(width, height);
 	buf_depth->Bind();
 	buf_depth->Storage(GL_DEPTH24_STENCIL8, 0);
 	buf_depth->Attach();
+#endif
 
 	vlCheckFrameBufferStatus();
-#endif
 }
 
 void VideoFrameBuffer::Bind()

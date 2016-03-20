@@ -1018,7 +1018,7 @@ plEXTERN_C_END
 */
 void Material_DrawObject(Material_t *material, VideoObject_t *object, bool ispost)
 {
-#ifdef KATANA_CORE_GL
+#ifdef VL_MODE_OPENGL
 	bool showwireframe = r_showtris.bValue;
 	if ((material && material->override_wireframe) && (r_showtris.iValue == 1))
 		showwireframe = false;
@@ -1130,7 +1130,7 @@ void Material_Draw(Material_t *material, VideoVertex_t *ObjectVertex, VideoPrimi
 			// Allow us to manipulate the texture.
 			if (texture->matrixmod)
 			{
-#ifdef KATANA_CORE_GL
+#ifdef VL_MODE_OPENGL
 				glMatrixMode(GL_TEXTURE);
 				glLoadIdentity();
 				if ((texture->scroll[0] > 0) || (texture->scroll[0] < 0) ||
@@ -1175,14 +1175,14 @@ void Material_Draw(Material_t *material, VideoVertex_t *ObjectVertex, VideoPrimi
 			if (!ispost)
 			{
 				vlSetTextureEnvironmentMode(VIDEO_TEXTURE_MODE_COMBINE);
-#ifdef KATANA_CORE_GL
+#ifdef VL_MODE_OPENGL
 				glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
 				glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_PREVIOUS);
 				glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_TEXTURE);
 				glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 4);
 #endif
 			}
-#ifdef KATANA_CORE_GL
+#ifdef VL_MODE_OPENGL
 			else
 				glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 1);
 #endif
@@ -1195,12 +1195,12 @@ void Material_Draw(Material_t *material, VideoVertex_t *ObjectVertex, VideoPrimi
 					vlDisable(VL_CAPABILITY_TEXTURE_2D);
 					break;
 				}
-#ifdef KATANA_CORE_GL
+#ifdef VL_MODE_OPENGL
 				glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
 				glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 2);
 #endif
 			}
-#ifdef KATANA_CORE_GL
+#ifdef VL_MODE_OPENGL
 			else
 				glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 1);
 #endif
@@ -1232,7 +1232,7 @@ void Material_Draw(Material_t *material, VideoVertex_t *ObjectVertex, VideoPrimi
 			// Reset any manipulation within the matrix.
 			if (texture->matrixmod)
 			{
-#ifdef KATANA_CORE_GL
+#ifdef VL_MODE_OPENGL
 				glMatrixMode(GL_TEXTURE);
 				glLoadIdentity();
 				glTranslatef(0, 0, 0);

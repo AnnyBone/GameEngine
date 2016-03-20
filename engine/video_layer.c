@@ -40,6 +40,8 @@ typedef struct
 
 	unsigned int capabilities;
 
+	VLCull_t	current_cullmode;
+
 	unsigned int num_cards;	// Number of video cards.
 } VLstate_t;
 
@@ -93,12 +95,33 @@ void _vlGlideErrorCallback(const char *string, FxBool fatal)
 */
 void vlInit(void)
 {
-	plVectorSet3f(vl_state.buffer_clearcolour, 1, 1, 1);
-	vl_state.buffer_clearcolour[3] = 0;
+	plVectorSet3f(vl_state.buffer_clearcolour, 0, 0, 0);
+	vl_state.buffer_clearcolour[3] = 1;
 
-	vl_state.capabilities = 0;
+	vl_state.capabilities		= 0;
+	vl_state.current_cullmode	= -1;
 
 #if defined (VL_MODE_OPENGL)
+	unsigned int err = glewInit();
+	if(err != GLEW_OK)
+		Sys_Error("Failed to initialize glew!\n%s\n", glewGetErrorString(err));
+
+	// Check that the required capabilities are supported.
+	if (!GLEW_ARB_multitexture) Sys_Error("Video hardware incapable of multi-texturing!\n");
+	else if (!GLEW_ARB_texture_env_combine && !GLEW_EXT_texture_env_combine) Sys_Error("ARB/EXT_texture_env_combine isn't supported by your hardware!\n");
+	else if (!GLEW_ARB_texture_env_add && !GLEW_EXT_texture_env_add) Sys_Error("ARB/EXT_texture_env_add isn't supported by your hardware!\n");
+	//else if (!GLEE_EXT_fog_coord) Sys_Error("EXT_fog_coord isn't supported by your hardware!\n");
+	else if (!GLEW_ARB_vertex_program || !GLEW_ARB_fragment_program) Sys_Error("Shaders aren't supported by this hardware!\n");
+
+	// Optional capabilities.
+	if (GLEW_SGIS_generate_mipmap) Video.extensions.generate_mipmap = true;
+	else Con_Warning("Hardware mipmap generation isn't supported!\n");
+	if (GLEW_ARB_depth_texture) Video.extensions.depth_texture = true;
+	else Con_Warning("ARB_depth_texture isn't supported by your hardware!\n");
+	if (GLEW_ARB_shadow) Video.extensions.shadow = true;
+	else Con_Warning("ARB_shadow isn't supported by your hardware!\n");
+	if (GLEW_ARB_vertex_buffer_object) Video.extensions.vertex_buffer_object = true;
+	else Con_Warning("Hardware doesn't support Vertex Buffer Objects!\n");
 #elif defined (VL_MODE_GLIDE)
 	grGet(GR_NUM_BOARDS, sizeof(vl_state.num_cards), (FxI32*)&vl_state.num_cards);
 	if (vl_state.num_cards == 0)
@@ -110,12 +133,9 @@ void vlInit(void)
 	grErrorSetCallback(_vlGlideErrorCallback);
 #endif
 
-	// Set this, just so we know it's the same.
-	vlClearColour(
-		vl_state.buffer_clearcolour[0],
-		vl_state.buffer_clearcolour[1],
-		vl_state.buffer_clearcolour[2],
-		vl_state.buffer_clearcolour[3]);
+	// Set default states.
+	vlSetClearColour4fv(vl_state.buffer_clearcolour);
+	vlSetCullMode(VL_CULL_NEGATIVE);
 }
 
 /*===========================
@@ -375,7 +395,7 @@ void vlSetTextureFilter(VLTextureFilter_t filter)
 	VIDEO_FUNCTION_END
 }
 
-int VideoLayer_TranslateTextureEnvironmentMode(VideoTextureEnvironmentMode_t TextureEnvironmentMode)
+int _vlTranslateTextureEnvironmentMode(VideoTextureEnvironmentMode_t TextureEnvironmentMode)
 {
 	VIDEO_FUNCTION_START
 	switch (TextureEnvironmentMode)
@@ -412,7 +432,7 @@ void vlSetTextureEnvironmentMode(VideoTextureEnvironmentMode_t TextureEnvironmen
 
 #ifdef VL_MODE_OPENGL
 	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, 
-		VideoLayer_TranslateTextureEnvironmentMode(TextureEnvironmentMode));
+		_vlTranslateTextureEnvironmentMode(TextureEnvironmentMode));
 #endif
 
 	Video.textureunits[Video.current_textureunit].current_envmode = TextureEnvironmentMode;
@@ -428,9 +448,9 @@ typedef struct
 	unsigned int vl_parm, to_parm;
 
 	const char *ident;
-} VideoLayerCapabilities_t;
+} VLCapabilities_t;
 
-VideoLayerCapabilities_t vl_capabilities[] =
+VLCapabilities_t vl_capabilities[] =
 {
 #if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
 	{ VL_CAPABILITY_ALPHA_TEST, GL_ALPHA_TEST, "ALPHA_TEST" },
@@ -488,7 +508,7 @@ void vlEnable(unsigned int cap)
 
 		if (Video.debug_frame)
 			plWriteLog(VIDEO_LOG, "Enabling %s (%i)\n", vl_capabilities[i].ident, Video.current_textureunit);
-
+		
 		if (cap & VL_CAPABILITY_TEXTURE_2D)
 			Video.textureunits[Video.current_textureunit].isactive = true;
 #if defined (VL_MODE_GLIDE)
@@ -498,7 +518,7 @@ void vlEnable(unsigned int cap)
 		if (cap & VL_CAPABILITY_DEPTH_TEST)
 			grDepthBufferMode(GR_DEPTHBUFFER_ZBUFFER);
 		if (cap & VL_CAPABILITY_CULL_FACE)
-			grCullMode(GR_CULL_NEGATIVE);
+			grCullMode(vl_state.current_cullmode);
 #endif
 
 		if (cap & vl_capabilities[i].vl_parm)
@@ -538,7 +558,7 @@ void vlDisable(unsigned int cap)
 		if (cap & VL_CAPABILITY_DEPTH_TEST)
 			grDepthBufferMode(GR_DEPTHBUFFER_DISABLE);
 		if (cap & VL_CAPABILITY_CULL_FACE)
-			grCullMode(GR_CULL_DISABLE);
+			grCullMode(vl_state.current_cullmode);
 #endif
 		
 		if (cap & vl_capabilities[i].vl_parm)
@@ -638,9 +658,7 @@ void vlRenderBufferStorage(int format, int samples, unsigned int width, unsigned
 		case GL_OUT_OF_MEMORY:
 			errorstring = "Unable to create a data store of the requested size!";
 			break;
-		default:
-			// This should *NEVER* occur.
-			break;
+		default:break;
 		}
 		Sys_Error("%s\n%s", vlGetErrorString(glerror), errorstring);
 	}
@@ -722,7 +740,7 @@ void vlBindBuffer(unsigned int target, unsigned int buffer)
 
 /*	Sets clear colour for colour buffer.
 */
-void vlClearColour(float r, float g, float b, float a)
+void vlSetClearColour(float r, float g, float b, float a)
 {
 	if ((r == vl_state.buffer_clearcolour[0]) &&
 		(g == vl_state.buffer_clearcolour[1]) &&
@@ -733,6 +751,11 @@ void vlClearColour(float r, float g, float b, float a)
 	glClearColor(r, g, b, a);
 #endif
 	plColourSetf(vl_state.buffer_clearcolour, r, g, b, a);
+}
+
+void vlSetClearColour4fv(plColour_t rgba)
+{
+	vlSetClearColour(rgba[0], rgba[1], rgba[2], rgba[3]);
 }
 
 /*	Clears all the buffers.
@@ -947,7 +970,7 @@ VideoPrimitives_t vl_primitives[] =
 #endif
 };
 
-unsigned int vlTranslatePrimitiveType(VideoPrimitive_t primitive)
+unsigned int _vlTranslatePrimitiveType(VideoPrimitive_t primitive)
 {
 	VIDEO_FUNCTION_START
 	for (int i = 0; i < pARRAYELEMENTS(vl_primitives); i++)
@@ -968,7 +991,7 @@ void vlDrawArrays(VideoPrimitive_t mode, unsigned int first, unsigned int count)
 		return;
 
 #ifdef VL_MODE_OPENGL
-	glDrawArrays(vlTranslatePrimitiveType(mode), first, count);
+	glDrawArrays(_vlTranslatePrimitiveType(mode), first, count);
 #endif
 }
 
@@ -979,7 +1002,7 @@ void vlDrawElements(VideoPrimitive_t mode, unsigned int count, unsigned int type
 		return;
 
 #ifdef VL_MODE_OPENGL
-	glDrawElements(vlTranslatePrimitiveType(mode), count, type, indices);
+	glDrawElements(_vlTranslatePrimitiveType(mode), count, type, indices);
 #endif
 	VIDEO_FUNCTION_END
 }
@@ -1014,3 +1037,35 @@ void vlEnd(void)
 	vl_currentobject.primitive = VIDEO_PRIMITIVE_IGNORE;
 }
 
+/*===========================
+	MISC
+===========================*/
+
+void vlSetCullMode(VLCull_t mode)
+{
+	if (mode == vl_state.current_cullmode)
+		return;
+
+#if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
+	glCullFace(GL_BACK);
+	switch (mode)
+	{
+	case VL_CULL_NEGATIVE:
+		glFrontFace(GL_CW);
+		break;
+	case VL_CULL_POSTIVE:
+		glFrontFace(GL_CCW);
+		break;
+	}
+#endif
+	vl_state.current_cullmode = mode;
+}
+
+void vlFinish(void)
+{
+#if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
+	glFinish();
+#elif defined (VL_MODE_GLIDE)
+	grFinish();
+#endif
+}

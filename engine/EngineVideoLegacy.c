@@ -176,7 +176,7 @@ void R_RotateForEntity(plVector3f_t origin, plVector3f_t angles)
 */
 void GL_PolygonOffset (int offset)
 {
-#ifdef KATANA_CORE_GL
+#ifdef VL_MODE_OPENGL
 	if (offset > 0)
 	{
 		glEnable (GL_POLYGON_OFFSET_FILL);

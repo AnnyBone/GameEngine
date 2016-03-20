@@ -77,7 +77,7 @@ void R_OldSkyLeaf_f (void)
 */
 void R_Envmap_f(void)
 {
-#ifdef KATANA_CORE_GL
+#ifdef VL_MODE_OPENGL
 	uint8_t buffer[256*256*4];
 
 	glDrawBuffer(GL_FRONT);
@@ -214,7 +214,7 @@ void R_NewMap (void)
 */
 void R_TimeRefresh_f (void)
 {
-#ifdef KATANA_CORE_GL
+#ifdef VL_MODE_OPENGL
 	int			i;
 	float		start, stop, time;
 
