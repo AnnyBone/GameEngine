@@ -43,7 +43,6 @@ typedef float MathVectorf_t;	// Floating-point precision
 #define	pMath_ISNAN(a)		(((*(int*)&a)&255<<23)==255<<23)
 
 typedef MathVectorf_t MathVector2f_t[2], MathVector3f_t[3], MathVector4f_t[4];
-typedef MathVector4f_t Colour_t, MathMatrix4x4f_t[4];
 
 typedef float plVector2f_t[2], plVector3f_t[3], plVector4f_t[4];
 typedef int plVector3i_t[3];
@@ -67,7 +66,7 @@ extern MathVector2f_t	pl_origin2f;
 extern MathVector3f_t	pl_origin3f;
 extern MathVector4f_t	pl_origin4f;
 
-extern Colour_t	
+extern plColour_t	
 	pl_white,
 	pl_red,
 	pl_green, 
@@ -75,13 +74,6 @@ extern Colour_t
 
 #define	PL_WIDTH	0
 #define	PL_HEIGHT	1
-#define	WIDTH	PL_WIDTH
-#define	HEIGHT	PL_HEIGHT
-
-enum PlatformMathXYZ
-{
-	pX, pY, pZ	// 0, 1, 2
-};
 
 #define	PL_X	0
 #define	PL_Y	1
@@ -97,6 +89,10 @@ enum PlatformMathXYZ
 #	define Z PL_Z
 #endif
 #endif
+
+#define PL_PITCH	0
+#define	PL_YAW		1
+#define	PL_ROLL		2
 
 enum PlatformMathPYR
 {
@@ -236,6 +232,8 @@ float plImpulse(float x, float k);
 float Math_ExpPulse(float x, float k, float n);
 
 MathVectorf_t plColourNormalize(MathVector3f_t in, MathVector3f_t out);
+
+void plColourSetf(plColour_t in, float r, float g, float b, float a);
 
 void plVectorSet3f(MathVector3f_t out, float x, float y, float z);
 

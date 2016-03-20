@@ -115,7 +115,7 @@ void VideoFrameBuffer::GenerateBuffers()
 		Video_SetTexture(buf_colour);
 
 		// Set the texture up.
-		vlTexImage2D(VL_TEXTURE_2D, VL_TEXTURE_FORMAT_RGB, VL_TEXTURE_FORMAT_RGB, width, height, NULL);
+		vlTexImage2D(VL_TEXTURE_2D, VL_TEXTUREFORMAT_RGB, VL_TEXTUREFORMAT_RGB, width, height, NULL);
 		vlSetTextureFilter(VL_TEXTURE_FILTER_LINEAR);
 
 		// Attach the texture to this framebuffer.

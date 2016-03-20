@@ -41,8 +41,8 @@ void Draw_ConsoleBackground(void); //johnfitz -- removed parameter int lines
 void Draw_GradientBackground(void);
 void Draw_BeginDisc(void);
 void Draw_TileClear(int x, int y, int w, int h);
-void Draw_Rectangle(int x, int y, int w, int h, Colour_t colour);
-void Draw_GradientFill(int x, int y, int w, int h, Colour_t mvTopColour, Colour_t mvBottomColour);
+void Draw_Rectangle(int x, int y, int w, int h, plColour_t colour);
+void Draw_GradientFill(int x, int y, int w, int h, plColour_t mvTopColour, plColour_t mvBottomColour);
 void Draw_FadeScreen(void);
 void Draw_ResetCanvas(void);
 void Draw_Line(MathVector3f_t mvStart, MathVector3f_t mvEnd);

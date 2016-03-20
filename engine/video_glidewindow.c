@@ -86,13 +86,9 @@ void Window_InitializeVideo(void)
 	else
 		Con_Warning("Failed to get WM information! (%s)\n", SDL_GetError());
 #endif
-	
-	grGet(GR_NUM_BOARDS, sizeof(Video.hardware.num_cards), (FxI32*)&Video.hardware.num_cards);
-	if (Video.hardware.num_cards == 0)
-		Sys_Error("No Glide capable hardware detected!\n");
 
 	// Initialize Glide.
-	grGlideInit();
+	vlInit();
 
 	// Glide only supports a limited set of resolutions.
 	int res;
@@ -171,7 +167,7 @@ void Window_Swap(void)
 	if(!grSelectContext(window_glidecontext))
 	{ }
 
-	grBufferSwap(0);
+	vlSwapBuffers();
 }
 
 /*	Set the gamma level.

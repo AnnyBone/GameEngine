@@ -25,7 +25,98 @@
 	and the graphics API.
 	
 	All graphics API functionality should be here.
+
+	TODO:
+		- This shouldn't rely on Katana.
+		- Move this into platform?
+		- Add OpenGL style lighting pipeline.
+		- Matrix functionality, linked in with platform lib.
+		- Add some... Object manager of sorts?
 */
+
+typedef struct
+{
+	plColour_t	buffer_clearcolour;
+
+	unsigned int capabilities;
+
+	unsigned int num_cards;	// Number of video cards.
+} VLstate_t;
+
+VLstate_t vl_state;
+
+/*===========================
+	INITIALIZATION
+===========================*/
+
+#if defined (VL_MODE_GLIDE)
+/*	Convert RGBA colour to something glide can understand.
+*/
+GrColor_t _vlConvertColour4f(VLColourFormat_t format, float r, float g, float b, float a)
+{
+	GrColor_t
+		gr = (GrColor_t)(r / 255),
+		gg = (GrColor_t)(g / 255),
+		gb = (GrColor_t)(b / 255),
+		ga = (GrColor_t)(a / 255);
+	switch (format)
+	{
+	case VL_COLOURFORMAT_ABGR:
+		return (ga << 24) | (gb << 16) | (gg << 8) | gr;
+	case VL_COLOURFORMAT_ARGB:
+		return (ga << 24) | (gr << 16) | (gg << 8) | gb;
+	case VL_COLOURFORMAT_BGRA:
+		return (gb << 24) | (gg << 16) | (gr << 8) | ga;
+	case VL_COLOURFORMAT_RGBA:
+		return (gr << 24) | (gg << 16) | (gb << 8) | ga;
+	default:return 0;
+	}
+}
+
+/*	Convert RGBA colour to something glide can understand.
+*/
+GrColor_t _vlConvertColour4fv(VLColourFormat_t format, plColour_t colour)
+{
+	return _vlConvertColour4f(format, colour[0], colour[1], colour[2], colour[3]);
+}
+
+void _vlGlideErrorCallback(const char *string, FxBool fatal)
+{
+	if (fatal)
+		Sys_Error(string);
+
+	Con_Warning(string);
+}
+#endif
+
+/*	Function used for initialization in general.
+*/
+void vlInit(void)
+{
+	plVectorSet3f(vl_state.buffer_clearcolour, 1, 0, 0);
+	vl_state.buffer_clearcolour[3] = 1;
+
+	vl_state.capabilities = 0;
+
+#if defined (VL_MODE_OPENGL)
+#elif defined (VL_MODE_GLIDE)
+	grGet(GR_NUM_BOARDS, sizeof(vl_state.num_cards), (FxI32*)&vl_state.num_cards);
+	if (vl_state.num_cards == 0)
+		Sys_Error("No Glide capable hardware detected!\n");
+
+	// Initialize Glide.
+	grGlideInit();
+
+	grErrorSetCallback(_vlGlideErrorCallback);
+#endif
+
+	// Set this, just so we know it's the same.
+	vlClearColour(
+		vl_state.buffer_clearcolour[0],
+		vl_state.buffer_clearcolour[1],
+		vl_state.buffer_clearcolour[2],
+		vl_state.buffer_clearcolour[3]);
+}
 
 /*===========================
 	GET
@@ -49,19 +140,15 @@ unsigned int vlGetMaxTextureSize(void)
 #endif
 }
 
-unsigned int vlGetMaxTextureImageUnits(void)
+void vlGetMaxTextureImageUnits(int *param)
 {
 	VIDEO_FUNCTION_START
 #ifdef VL_MODE_OPENGL
-	int param = 0;
-	glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &param);
-	return (unsigned)param;
+	glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, param);
 #elif defined (VL_MODE_GLIDE)
-	FxI32 param = 0;
-	grGet(GR_NUM_TMU, sizeof(param), &param);
-	return (unsigned int)param;
+	grGet(GR_NUM_TMU, sizeof(param), (FxI32*)param);
 #else
-	return 0;
+	param = 0;
 #endif
 	VIDEO_FUNCTION_END
 }
@@ -130,7 +217,7 @@ const char *vlGetRenderer(void)
 	VIDEO_FUNCTION_END
 }
 
-const char *vlGetString(vlString_t string)
+const char *vlGetString(VLString_t string)
 {
 	VIDEO_FUNCTION_START
 #if defined (VL_MODE_OPENGL) || (VL_MODE_OPENGL_CORE)
@@ -145,8 +232,6 @@ const char *vlGetString(vlString_t string)
 #endif
 	VIDEO_FUNCTION_END
 }
-
-// String
 
 /*===========================
 	ERROR HANDLING
@@ -280,7 +365,7 @@ void vlActiveTexture(unsigned int texunit)
 /*	TODO:
 		Modify this so it works as a replacement for TexMgr_SetFilterModes.
 */
-void vlSetTextureFilter(vlTextureFilter_t filter)
+void vlSetTextureFilter(VLTextureFilter_t filter)
 {
 	VIDEO_FUNCTION_START
 #ifdef VL_MODE_OPENGL
@@ -348,17 +433,25 @@ typedef struct
 VideoLayerCapabilities_t vl_capabilities[] =
 {
 #if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
-	{ VIDEO_ALPHA_TEST, GL_ALPHA_TEST, "ALPHA_TEST" },
-	{ VIDEO_BLEND, GL_BLEND, "BLEND" },
-	{ VIDEO_DEPTH_TEST, GL_DEPTH_TEST, "DEPTH_TEST" },
-	{ VIDEO_TEXTURE_2D, GL_TEXTURE_2D, "TEXTURE_2D" },
-	{ VIDEO_TEXTURE_GEN_S, GL_TEXTURE_GEN_S, "TEXTURE_GEN_S" },
-	{ VIDEO_TEXTURE_GEN_T, GL_TEXTURE_GEN_T, "TEXTURE_GEN_T" },
-	{ VIDEO_CULL_FACE, GL_CULL_FACE, "CULL_FACE" },
-	{ VIDEO_STENCIL_TEST, GL_STENCIL_TEST, "STENCIL_TEST" },
-	{ VIDEO_NORMALIZE, GL_NORMALIZE, "NORMALIZE" },
-	{ VIDEO_MULTISAMPLE, GL_MULTISAMPLE, "MULTISAMPLE" },
-#elif defined (VL_MODE_GLIDE)
+	{ VL_CAPABILITY_ALPHA_TEST, GL_ALPHA_TEST, "ALPHA_TEST" },
+	{ VL_CAPABILITY_BLEND, GL_BLEND, "BLEND" },
+	{ VL_CAPABILITY_DEPTH_TEST, GL_DEPTH_TEST, "DEPTH_TEST" },
+	{ VL_CAPABILITY_TEXTURE_2D, GL_TEXTURE_2D, "TEXTURE_2D" },
+	{ VL_CAPABILITY_TEXTURE_GEN_S, GL_TEXTURE_GEN_S, "TEXTURE_GEN_S" },
+	{ VL_CAPABILITY_TEXTURE_GEN_T, GL_TEXTURE_GEN_T, "TEXTURE_GEN_T" },
+	{ VL_CAPABILITY_CULL_FACE, GL_CULL_FACE, "CULL_FACE" },
+	{ VL_CAPABILITY_STENCIL_TEST, GL_STENCIL_TEST, "STENCIL_TEST" },
+	{ VL_CAPABILITY_MULTISAMPLE, GL_MULTISAMPLE, "MULTISAMPLE" },
+#else
+	{ VL_CAPABILITY_ALPHA_TEST, 0, "ALPHA_TEST" },
+	{ VL_CAPABILITY_BLEND, 0, "BLEND" },
+	{ VL_CAPABILITY_DEPTH_TEST, 0, "DEPTH_TEST" },
+	{ VL_CAPABILITY_TEXTURE_2D, 0, "TEXTURE_2D" },
+	{ VL_CAPABILITY_TEXTURE_GEN_S, 0, "TEXTURE_GEN_S" },
+	{ VL_CAPABILITY_TEXTURE_GEN_T, 0, "TEXTURE_GEN_T" },
+	{ VL_CAPABILITY_CULL_FACE, 0, "CULL_FACE" },
+	{ VL_CAPABILITY_STENCIL_TEST, 0, "STENCIL_TEST" },
+	{ VL_CAPABILITY_MULTISAMPLE, 0, "MULTISAMPLE" },
 #endif
 
 	{ 0 }
@@ -374,7 +467,7 @@ bool vlIsEnabled(unsigned int caps)
 		if (!vl_capabilities[i].vl_parm)
 			break;
 
-		if (caps & Video.textureunits[Video.current_textureunit].capabilities)
+		if (caps & vl_state.capabilities)
 			return true;
 	}
 
@@ -393,22 +486,31 @@ void vlEnable(unsigned int cap)
 		if (!vl_capabilities[i].vl_parm)
 			break;
 
-		if (uiCapabilities & VIDEO_TEXTURE_2D)
+		if (Video.debug_frame)
+			plWriteLog(VIDEO_LOG, "Enabling %s (%i)\n", vl_capabilities[i].ident, Video.current_textureunit);
+
+		if (cap & VL_CAPABILITY_TEXTURE_2D)
 			Video.textureunits[Video.current_textureunit].isactive = true;
+#if defined (VL_MODE_GLIDE)
+		if (cap & VL_CAPABILITY_FOG)
+			// TODO: need to check this is supported...
+			grFogMode(GR_FOG_WITH_TABLE_ON_FOGCOORD_EXT);
+		if (cap & VL_CAPABILITY_DEPTH_TEST)
+			grDepthBufferMode(GR_DEPTHBUFFER_ZBUFFER);
+		if (cap & VL_CAPABILITY_CULL_FACE)
+			grCullMode(GR_CULL_NEGATIVE);
+#endif
 
 		if (cap & vl_capabilities[i].vl_parm)
-		{
-			if (Video.debug_frame)
-				plWriteLog(VIDEO_LOG, "Enabling %s (%i)\n", vl_capabilities[i].ident, Video.current_textureunit);
-
-			Video.textureunits[Video.current_textureunit].capabilities |= vl_capabilities[i].vl_parm;
-
 #if defined (VL_MODE_OPENGL) || (VL_MODE_OPENGL_CORE)
 			glEnable(vl_capabilities[i].to_parm);
 #elif defined (VL_MODE_GLIDE)
-			grEnable(vl_capabilities[i].to_parm);
+			// Hacky, but just to be safe...
+			if (vl_capabilities[i].to_parm != 0)
+				grEnable(vl_capabilities[i].to_parm);
 #endif
-		}
+
+		vl_state.capabilities |= vl_capabilities[i].vl_parm;
 	}
 	VIDEO_FUNCTION_END
 }
@@ -425,24 +527,30 @@ void vlDisable(unsigned int cap)
 		if (!vl_capabilities[i].vl_parm)
 			break;
 
-		if (uiCapabilities & VIDEO_TEXTURE_2D)
+		if (Video.debug_frame)
+			plWriteLog(VIDEO_LOG, "Disabling %s (%i)\n", vl_capabilities[i].ident, Video.current_textureunit);
+
+		if (cap & VL_CAPABILITY_TEXTURE_2D)
 			Video.textureunits[Video.current_textureunit].isactive = false;
-
-		if (cap & vl_capabilities[i].vl_parm)
-		{
-			if (Video.debug_frame)
-				plWriteLog(VIDEO_LOG, "Disabling %s (%i)\n", vl_capabilities[i].ident, Video.current_textureunit);
-			
-#if !defined (VL_MODE_OPENGL) && !defined (VL_MODE_OPENG_CORE)	// OpenGL does this itself.
-			Video.textureunits[Video.current_textureunit].capabilities &= ~vl_capabilities[i].vl_parm;
+#if defined (VL_MODE_GLIDE)
+		if (cap & VL_CAPABILITY_FOG)
+			grFogMode(GR_FOG_DISABLE);
+		if (cap & VL_CAPABILITY_DEPTH_TEST)
+			grDepthBufferMode(GR_DEPTHBUFFER_DISABLE);
+		if (cap & VL_CAPABILITY_CULL_FACE)
+			grCullMode(GR_CULL_DISABLE);
 #endif
-
+		
+		if (cap & vl_capabilities[i].vl_parm)
 #if defined (VL_MODE_OPENGL) || (VL_MODE_OPENGL_CORE)
 			glDisable(vl_capabilities[i].to_parm);
 #elif defined (VL_MODE_GLIDE)
-			grDisable(vl_capabilities[i].to_parm);
+			// Hacky, but just to be safe...
+			if (vl_capabilities[i].to_parm != 0)
+				grDisable(vl_capabilities[i].to_parm);
 #endif
-		}
+
+		vl_state.capabilities &= ~vl_capabilities[i].vl_parm;
 	}
 	VIDEO_FUNCTION_END
 }
@@ -457,8 +565,7 @@ void vlBlendFunc(vlBlend_t modea, vlBlend_t modeb)
 #if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
 	glBlendFunc(modea, modeb);
 #elif defined (VL_MODE_GLIDE)
-	if (vlIsEnabled(VIDEO_BLEND))
-		grAlphaBlendFunction(modea, modeb, modea, modeb);
+	grAlphaBlendFunction(modea, modeb, modea, modeb);
 #endif
 	VIDEO_FUNCTION_END
 }
@@ -613,17 +720,60 @@ void vlBindBuffer(unsigned int target, unsigned int buffer)
 
 // FRAME BUFFER OBJECTS
 
-/*	Clears buffers.
+/*	Sets clear colour for colour buffer.
 */
-void vlClear(unsigned int mask)
+void vlClearColour(float r, float g, float b, float a)
+{
+	if ((r == vl_state.buffer_clearcolour[0]) &&
+		(g == vl_state.buffer_clearcolour[1]) &&
+		(b == vl_state.buffer_clearcolour[2]) &&
+		(a == vl_state.buffer_clearcolour[3]))
+		return;
+#if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
+	glClearColor(r, g, b, a);
+#endif
+	plColourSetf(vl_state.buffer_clearcolour, r, g, b, a);
+}
+
+/*	Clears all the buffers.
+*/
+void vlClearBuffers(unsigned int mask)
 {
 	VIDEO_FUNCTION_START
-#if defined(VL_MODE_OPENGL) || defined(VL_MODE_OPENGL_CORE)
+#if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
 	glClear(mask);
-#elif defined VL_MODE_GLIDE
-	grBufferClear(0, 0, grGet(GR_ZDEPTH_MIN_MAX, 0, 0));
+#elif defined (VL_MODE_GLIDE)
+	// Glide only supports clearing a single buffer.
+	grBufferClear(
+		// Convert buffer_clearcolour to something that works with Glide.
+		_vlConvertColour4fv(VL_COLOURFORMAT_RGBA, vl_state.buffer_clearcolour), 
+		0, 
+		grGet(GR_ZDEPTH_MIN_MAX, 0, 0));
 #endif
 	VIDEO_FUNCTION_END
+}
+
+void vlColourMask(bool red, bool green, bool blue, bool alpha)
+{
+#if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
+	glColorMask(red, green, blue, alpha);
+#elif defined (VL_MODE_GLIDE)
+	bool rgb = false;
+	if (red || green || blue) rgb = true;
+	grColorMask(rgb, alpha);
+#endif
+}
+
+void vlSwapBuffers(void)
+{
+#if defined (VL_MODE_OPENGL)
+	// Platform library takes care of this.
+	plSwapBuffers(&g_mainwindow);
+#elif defined (VL_MODE_GLIDE)
+	// Glide is pretty neat about this
+	// and actually handles it for us.
+	grBufferSwap(0);
+#endif
 }
 
 /*	Generates a single framebuffer.
@@ -640,7 +790,7 @@ void vlGenerateFrameBuffer(vlFrameBuffer_t *buffer)
 /*	Ensures that the framebuffer is valid, otherwise throws an error.
 	glCheckFramebufferStatus
 */
-void vlCheckFrameBufferStatus(vlFBOTarget_t target)
+void vlCheckFrameBufferStatus(VLFBOTarget_t target)
 {
 	VIDEO_FUNCTION_START
 #ifdef VL_MODE_OPENGL
@@ -679,11 +829,11 @@ void vlCheckFrameBufferStatus(vlFBOTarget_t target)
 
 /*	Binds the given framebuffer.
 */
-void vlBindFrameBuffer(vlFBOTarget_t vtTarget, unsigned int uiBuffer)
+void vlBindFrameBuffer(VLFBOTarget_t target, unsigned int buffer)
 {
 	VIDEO_FUNCTION_START
 #ifdef VL_MODE_OPENGL
-	glBindFramebuffer(vtTarget, uiBuffer);
+	glBindFramebuffer(target, buffer);
 
 	// Ensure there weren't any issues.
 	unsigned int glerror = glGetError();
@@ -735,6 +885,21 @@ void vlAttachFrameBufferTexture(gltexture_t *buffer)
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, buffer->texnum, 0);
 #endif
 	VIDEO_FUNCTION_END
+}
+
+/*===========================
+	FOG
+===========================*/
+
+/*	Sets global colour for fog.
+*/
+void vlFogColour3fv(plColour_t rgba)
+{
+#if defined (VL_MODE_OPENGL)
+	glFogfv(GL_FOG_COLOR, rgba);
+#elif defined (VL_MODE_GLIDE)
+	grFogColorValue(_vlConvertColour4fv(VL_COLOURFORMAT_RGBA, rgba));
+#endif
 }
 
 /*===========================

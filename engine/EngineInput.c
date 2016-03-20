@@ -311,8 +311,8 @@ void Input_Frame(void)
 				// Originally handled this differently for fullscreen but this works fine apparently!
 				if(((unsigned)sEvent.motion.x != (Video.iWidth/2)) || ((unsigned)sEvent.motion.y != (Video.iHeight/2)))
 				{
-					iMousePosition[pX]	= sEvent.motion.xrel*5;
-					iMousePosition[pY]	= sEvent.motion.yrel*5;
+					iMousePosition[PL_X]	= sEvent.motion.xrel*5;
+					iMousePosition[PL_Y]	= sEvent.motion.yrel*5;
 					// [22/12/2013] TODO: This currently isn't accounting for any frame-loss... Ugh ~hogsy
 					if(	((unsigned)sEvent.motion.x < Video.iWidth)	||
 						((unsigned)sEvent.motion.x > Video.iWidth)	||
@@ -378,39 +378,39 @@ void Input_ClientFrame(ClientCommand_t *ccInput)
 
 	if(cvInputMouseFilter.value)
 	{
-		iMousePosition[pX] += iOldMousePosition[pX]*cvInputMouseFilter.value;
-		iMousePosition[pY] += iOldMousePosition[pY]*cvInputMouseFilter.value;
+		iMousePosition[PL_X] += iOldMousePosition[PL_X] * cvInputMouseFilter.value;
+		iMousePosition[PL_Y] += iOldMousePosition[PL_Y] * cvInputMouseFilter.value;
 
-		iOldMousePosition[pX]	= iMousePosition[pX];
-		iOldMousePosition[pY]	= iMousePosition[pY];
+		iOldMousePosition[PL_X] = iMousePosition[PL_X];
+		iOldMousePosition[PL_Y] = iMousePosition[PL_Y];
 	}
 
-	iMousePosition[pX] *= sensitivity.value;
-	iMousePosition[pY] *= sensitivity.value;
+	iMousePosition[PL_X] *= sensitivity.value;
+	iMousePosition[PL_Y] *= sensitivity.value;
 
 	if(!cvInputMouseLook.value)
 	{
 		// Copied from Raynorpat's code.
 		if(in_strafe.state & 1)
-			ccInput->sidemove += m_side.value*iMousePosition[pX];
+			ccInput->sidemove += m_side.value*iMousePosition[PL_X];
 
-		ccInput->forwardmove -= m_forward.value*iMousePosition[pY];
+		ccInput->forwardmove -= m_forward.value*iMousePosition[PL_Y];
 	}
 	else
 	{
 		// Prevent the camera from resetting.
 		V_StopPitchDrift();
 
-		cl.viewangles[YAW]		-= m_yaw.value*iMousePosition[pX];
-		cl.viewangles[PITCH]	+= m_pitch.value*iMousePosition[pY];
+		cl.viewangles[PL_YAW] -= m_yaw.value*iMousePosition[PL_X];
+		cl.viewangles[PL_PITCH] += m_pitch.value*iMousePosition[PL_Y];
 
-		if(cl.viewangles[PITCH] > cl_maxpitch.value)
-			cl.viewangles[PITCH] = cl_maxpitch.value;
-		if(cl.viewangles[PITCH] < cl_minpitch.value)
-			cl.viewangles[PITCH] = cl_minpitch.value;
+		if(cl.viewangles[PL_PITCH] > cl_maxpitch.value)
+			cl.viewangles[PL_PITCH] = cl_maxpitch.value;
+		if (cl.viewangles[PL_PITCH] < cl_minpitch.value)
+			cl.viewangles[PL_PITCH] = cl_minpitch.value;
 	}
 
-	iMousePosition[pX] = iMousePosition[pY] = 0;
+	iMousePosition[PL_X] = iMousePosition[PL_Y] = 0;
 }
 
 void Input_ActivateMouse(void)

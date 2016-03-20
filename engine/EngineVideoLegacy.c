@@ -450,7 +450,6 @@ void R_EmitWireBox(
 
 void Video_DrawClientBoundingBox(ClientEntity_t *clEntity)
 {
-#ifdef VL_MODE_OPENGL
 	MathVector3f_t vMins, vMaxs;
 
 	if (!clEntity->model || ((clEntity == &cl_entities[cl.viewentity]) && !chase_active.bValue) || (clEntity == &cl.viewent))
@@ -463,14 +462,17 @@ void Video_DrawClientBoundingBox(ClientEntity_t *clEntity)
 	{
 	case MODEL_TYPE_LEVEL:
 		// Only draw wires for the BSP, since otherwise it's difficult to see anything else.
+#ifdef VL_MODE_OPENGL
 		glColor4f(0, 0, 0, 0);
+#endif
 		R_EmitWireBox(vMins, vMaxs, 0, 1, 0);
 		break;
 	default:
+#ifdef VL_MODE_OPENGL
 		glColor4f(0.5f, 0, 0, 0.5f);
+#endif
 		R_EmitWireBox(vMins, vMaxs, 1, 0, 0);
 	}
-#endif
 }
 
 /*	draw bounding boxes -- the server-side boxes, not the renderer cullboxes
@@ -486,8 +488,8 @@ void Video_ShowBoundingBoxes(void)
 	if (!r_showbboxes.value || (cl.maxclients > 1) || !r_drawentities.value || (!sv.active && !g_state.embedded))
 		return;
 
-	vlDisable(VIDEO_DEPTH_TEST | VIDEO_TEXTURE_2D);
-	vlEnable(VIDEO_BLEND);
+	vlDisable(VL_CAPABILITY_DEPTH_TEST | VL_CAPABILITY_TEXTURE_2D);
+	vlEnable(VL_CAPABILITY_BLEND);
 
 	for (i = 0, ed = NEXT_EDICT(sv.edicts); i<sv.num_edicts; i++, ed = NEXT_EDICT(ed))
 	{
@@ -516,8 +518,8 @@ void Video_ShowBoundingBoxes(void)
 	for (i = 0, clEntity = cl_temp_entities; i < cl_numvisedicts; i++, clEntity++)
 		Video_DrawClientBoundingBox(clEntity);
 
-	vlDisable(VIDEO_BLEND);
-	vlEnable(VIDEO_TEXTURE_2D | VIDEO_DEPTH_TEST);
+	vlDisable(VL_CAPABILITY_BLEND);
+	vlEnable(VL_CAPABILITY_TEXTURE_2D | VL_CAPABILITY_DEPTH_TEST);
 }
 
 void R_DrawShadows (void)
@@ -570,7 +572,7 @@ void R_SetupScene(void)
 		glDisable(GL_CULL_FACE);
 #endif
 
-	vlEnable(VIDEO_DEPTH_TEST);
+	vlEnable(VL_CAPABILITY_DEPTH_TEST);
 }
 
 void R_RenderScene(void)

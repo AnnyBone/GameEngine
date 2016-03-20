@@ -184,7 +184,7 @@ typedef struct
 
 	// Draw Functions
 	void(*DrawString)(int x, int y, char *msg);
-	void(*DrawRectangle)(int x, int y, int w, int h, Colour_t colour);
+	void(*DrawRectangle)(int x, int y, int w, int h, plColour_t colour);
 	void(*DrawMaterialSurface)(Material_t *mMaterial, int iSkin, int x, int y, int w, int h, float fAlpha);
 
 	void(*Cvar_RegisterVariable)(ConsoleVariable_t *variable, void(*Function)(void));

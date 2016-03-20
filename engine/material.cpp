@@ -1096,7 +1096,7 @@ void Material_Draw(Material_t *material, VideoVertex_t *ObjectVertex, VideoPrimi
 		{ 
 			vlDepthMask(false);
 
-			vlEnable(VIDEO_BLEND);
+			vlEnable(VL_CAPABILITY_BLEND);
 
 			if (msCurrentSkin->uiFlags & MATERIAL_FLAG_ADDITIVE)
 				// Additive blending isn't done by default.
@@ -1104,7 +1104,7 @@ void Material_Draw(Material_t *material, VideoVertex_t *ObjectVertex, VideoPrimi
 		}
 		// Alpha-testing
 		else if (msCurrentSkin->uiFlags & MATERIAL_FLAG_ALPHA)
-			vlEnable(VIDEO_ALPHA_TEST);
+			vlEnable(VL_CAPABILITY_ALPHA_TEST);
 	}
 
 	MaterialTexture_t *texture = &msCurrentSkin->texture[0];
@@ -1122,7 +1122,7 @@ void Material_Draw(Material_t *material, VideoVertex_t *ObjectVertex, VideoPrimi
 		if (!ispost)
 		{
 			// Enable it.
-			vlEnable(VIDEO_TEXTURE_2D);
+			vlEnable(VL_CAPABILITY_TEXTURE_2D);
 
 			// Bind it.
 			Video_SetTexture(texture->gMap);
@@ -1192,7 +1192,7 @@ void Material_Draw(Material_t *material, VideoVertex_t *ObjectVertex, VideoPrimi
 			{
 				if (!cv_video_drawdetail.bValue)
 				{
-					vlDisable(VIDEO_TEXTURE_2D);
+					vlDisable(VL_CAPABILITY_TEXTURE_2D);
 					break;
 				}
 #ifdef KATANA_CORE_GL
@@ -1210,7 +1210,7 @@ void Material_Draw(Material_t *material, VideoVertex_t *ObjectVertex, VideoPrimi
 			{
 				if (!gl_fullbrights.bValue)
 				{
-					vlDisable(VIDEO_TEXTURE_2D);
+					vlDisable(VL_CAPABILITY_TEXTURE_2D);
 					break;
 				}
 			}
@@ -1220,10 +1220,10 @@ void Material_Draw(Material_t *material, VideoVertex_t *ObjectVertex, VideoPrimi
 			{
 				Video_GenerateSphereCoordinates();
 
-				vlEnable(VIDEO_TEXTURE_GEN_S | VIDEO_TEXTURE_GEN_T);
+				vlEnable(VL_CAPABILITY_TEXTURE_GEN_S | VL_CAPABILITY_TEXTURE_GEN_T);
 			}
 			else
-				vlDisable(VIDEO_TEXTURE_GEN_S | VIDEO_TEXTURE_GEN_T);
+				vlDisable(VL_CAPABILITY_TEXTURE_GEN_S | VL_CAPABILITY_TEXTURE_GEN_T);
 			break;
 		}
 
@@ -1244,7 +1244,7 @@ void Material_Draw(Material_t *material, VideoVertex_t *ObjectVertex, VideoPrimi
 			vlSetTextureEnvironmentMode(VIDEO_TEXTURE_MODE_MODULATE);
 
 			// Disable the texture.
-			vlDisable(VIDEO_TEXTURE_2D);
+			vlDisable(VL_CAPABILITY_TEXTURE_2D);
 		}
 	}
 
@@ -1255,7 +1255,7 @@ void Material_Draw(Material_t *material, VideoVertex_t *ObjectVertex, VideoPrimi
 		{
 			vlDepthMask(true);
 
-			vlDisable(VIDEO_BLEND);
+			vlDisable(VL_CAPABILITY_BLEND);
 
 			if (msCurrentSkin->uiFlags & MATERIAL_FLAG_ADDITIVE)
 				// Return blend mode to its default.
@@ -1264,17 +1264,17 @@ void Material_Draw(Material_t *material, VideoVertex_t *ObjectVertex, VideoPrimi
 		// Alpha-testing
 		else if (msCurrentSkin->uiFlags & MATERIAL_FLAG_ALPHA)
 		{
-			vlDisable(VIDEO_ALPHA_TEST);
+			vlDisable(VL_CAPABILITY_ALPHA_TEST);
 
 			if ((msCurrentSkin->uiFlags & MATERIAL_FLAG_ALPHATRICK) && (cv_video_alphatrick.bValue && (ObjectSize > 0)))
 			{
 				vlDepthMask(false);
-				vlEnable(VIDEO_BLEND);
+				vlEnable(VL_CAPABILITY_BLEND);
 
 				// Draw the object again (don't bother passing material).
 				Video_DrawObject(ObjectVertex, ObjectPrimitive, ObjectSize, NULL, 0);
 
-				vlDisable(VIDEO_BLEND);
+				vlDisable(VL_CAPABILITY_BLEND);
 				vlDepthMask(true);
 			}
 		}

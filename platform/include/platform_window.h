@@ -55,6 +55,9 @@ extern int plGetScreenWidth(void);	// Returns width of current screen.
 extern int plGetScreenHeight(void);	// Returns height of current screen.
 extern int plGetScreenCount(void);	// Returns number of avaliable screens.
 
+// Rendering
+extern void plSwapBuffers(plWindow_t *window);
+
 plEXTERN_C_END
 
 #endif // !PLATFORM_WINDOW_H

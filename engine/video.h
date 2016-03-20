@@ -101,11 +101,6 @@ typedef struct
 
 typedef struct
 {
-	int	num_cards;
-} VideoHardware_t;
-
-typedef struct
-{
 	// Information
 	const char	
 		*gl_vendor,
@@ -140,7 +135,6 @@ typedef struct
 		unlocked;						// Can we change the window settings or not?
 
 	VideoExtensions_t	extensions;		// Extensions
-	VideoHardware_t		hardware;		// Hardware
 } Video_t;
 
 plEXTERN_C_START

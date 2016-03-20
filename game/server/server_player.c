@@ -489,9 +489,9 @@ void Player_PreThink(ServerEntity_t *ePlayer)
 		plAngleVectors(ePlayer->v.angles, ePlayer->local.vForward, ePlayer->local.vRight, ePlayer->local.vUp);
 		Math_VectorCopy(ePlayer->v.origin,vStart);
 
-		vStart[pZ] += 8.0f;
+		vStart[PL_Z] += 8.0f;
 
-		ePlayer->local.vForward[pZ] = 0;
+		ePlayer->local.vForward[PL_Z] = 0;
 
 		plVectorNormalize(ePlayer->local.vForward);
 
@@ -501,7 +501,7 @@ void Player_PreThink(ServerEntity_t *ePlayer)
 		tTrace = Engine.Server_Move(vStart, vEnd, pl_origin3f, pl_origin3f, true, ePlayer);
 		if(tTrace.fraction < 1.0f)
 		{
-			vStart[pZ] += ePlayer->v.maxs[pZ]-8.0f;
+			vStart[PL_Z] += ePlayer->v.maxs[PL_Z]-8.0f;
 
 			for(i = 0; i < 3; i++)
 				vEnd[i] = vStart[i] + ePlayer->local.vForward[i] * 24.0f;
@@ -513,7 +513,7 @@ void Player_PreThink(ServerEntity_t *ePlayer)
 			{
 				ePlayer->v.flags		|= FL_WATERJUMP;
 				ePlayer->v.flags		-= (ePlayer->v.flags & FL_JUMPRELEASED);
-				ePlayer->v.velocity[pZ]	= 225.0f;
+				ePlayer->v.velocity[PL_Z]	= 225.0f;
 			}
 		}
 	}

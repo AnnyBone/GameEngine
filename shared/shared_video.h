@@ -20,18 +20,6 @@
 
 #define	VIDEO_MAX_UNITS	16
 
-// Video Capabilities
-#define	VIDEO_ALPHA_TEST	1	// Alpha-testing
-#define	VIDEO_BLEND			2	// Blending
-#define	VIDEO_TEXTURE_2D	4	// Enables/disables textures.
-#define	VIDEO_DEPTH_TEST	8	// Depth-testing.
-#define	VIDEO_TEXTURE_GEN_T	16	// Generate T coordinate.
-#define	VIDEO_TEXTURE_GEN_S	32	// Generate S coordinate.
-#define	VIDEO_CULL_FACE		64	// Automatically cull faces.
-#define	VIDEO_STENCIL_TEST	128	// Stencil-testing.
-#define	VIDEO_NORMALIZE		256	// Normalization for scaled models that are lit.
-#define	VIDEO_MULTISAMPLE	512	// Multisampling.
-
 // Primitive Types
 typedef enum
 {

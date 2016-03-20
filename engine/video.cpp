@@ -183,7 +183,6 @@ void Video_Initialize(void)
 	Video.gl_version		= vlGetString(VL_STRING_VERSION);
 	Video.gl_extensions		= vlGetString(VL_STRING_EXTENSIONS);
 
-
 #ifdef VL_MODE_OPENGL
 	Con_DPrintf(" Checking for extensions...\n");
 
@@ -277,11 +276,7 @@ void Video_ClearBuffer(void)
 	if (!cv_video_clearbuffers.bValue)
 		return;
 
-	unsigned int clear = 0;
-	if (cv_video_drawmirrors.bValue)
-		clear |= VL_MASK_STENCIL;
-
-	vlClear(VL_MASK_DEPTH | VL_MASK_COLOUR | clear);
+	vlClearBuffers(VL_MASK_DEPTH | VL_MASK_COLOUR | VL_MASK_STENCIL);
 }
 
 /*	Displays the depth buffer for testing purposes.

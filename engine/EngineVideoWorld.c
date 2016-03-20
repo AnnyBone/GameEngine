@@ -303,7 +303,7 @@ void World_DrawWater(void)
 				if (t->material->bind && !r_showtris.bValue)
 				{
 					vlActiveTexture(VIDEO_TEXTURE_LIGHT);
-					vlEnable(VIDEO_TEXTURE_2D);
+					vlEnable(VL_CAPABILITY_TEXTURE_2D);
 
 					t->material->bind = false;
 				}
@@ -326,7 +326,7 @@ void World_DrawWater(void)
 
 	// Disable light texture
 	vlActiveTexture(VIDEO_TEXTURE_LIGHT);
-	vlDisable(VIDEO_TEXTURE_2D);
+	vlDisable(VL_CAPABILITY_TEXTURE_2D);
 	vlActiveTexture(0);
 }
 
@@ -353,7 +353,7 @@ void World_Draw(void)
 				if (t->material->bind && !r_showtris.bValue)
 				{
 					vlActiveTexture(VIDEO_TEXTURE_LIGHT);
-					vlEnable(VIDEO_TEXTURE_2D);
+					vlEnable(VL_CAPABILITY_TEXTURE_2D);
 
 					t->material->bind = false;
 				}
@@ -377,6 +377,6 @@ void World_Draw(void)
 
 	// Disable light texture
 	vlActiveTexture(VIDEO_TEXTURE_LIGHT);
-	vlDisable(VIDEO_TEXTURE_2D);
+	vlDisable(VL_CAPABILITY_TEXTURE_2D);
 	vlActiveTexture(0);
 }
