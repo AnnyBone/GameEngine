@@ -25,6 +25,8 @@
 
 typedef struct
 {
+	char path[MAX_QPATH];
+
 	int 	length;
 	int 	loopstart;
 	int 	speed;		// Frequency of the sample.
@@ -32,11 +34,9 @@ typedef struct
 	int 	stereo;
 	int		size;
 
-	uint8_t	data[1];		// variable sized
-
-	char path[MAX_QPATH];
-
 	unsigned int id;
+
+	uint8_t	data[1];	// variable sized
 } AudioSample_t;
 
 typedef unsigned int AudioSource_t;
