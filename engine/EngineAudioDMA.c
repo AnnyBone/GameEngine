@@ -366,7 +366,7 @@ void SND_Spatialize(channel_t *ch)
 		ch->leftvol = 0;
 }
 
-void S_StartSound(unsigned int entnum, int entchannel, sfx_t *sfx, vec3_t origin, float fvol, float attenuation)
+void S_StartSound(unsigned int entnum, int entchannel, sfx_t *sfx, plVector3f_t origin, float fvol, float attenuation)
 {
 	channel_t *target_chan, *check;
 	sfxcache_t	*sc;
@@ -471,7 +471,7 @@ void S_ClearBuffer (void)
 	memset(shm->buffer, clear, shm->samples * shm->samplebits / 8);
 }
 
-void S_StaticSound (sfx_t *sfx, vec3_t origin, float vol, float attenuation)
+void S_StaticSound(sfx_t *sfx, plVector3f_t origin, float vol, float attenuation)
 {
 	channel_t	*ss;
 	sfxcache_t	*sc;
@@ -598,7 +598,7 @@ void S_Update_(void)
 
 /*	Called once each time through the main loop
 */
-void S_Update(vec3_t origin, vec3_t forward, vec3_t right, vec3_t up)
+void S_Update(plVector3f_t origin, plVector3f_t forward, plVector3f_t right, plVector3f_t up)
 {
 	int			i, j;
 	int			total;

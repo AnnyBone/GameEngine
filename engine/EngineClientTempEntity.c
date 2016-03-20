@@ -56,13 +56,13 @@ ClientEntity_t *CL_NewTempEntity (void)
 
 void CL_UpdateTEnts (void)
 {
-	int			i, j; //johnfitz -- use j instead of using i twice, so we don't corrupt memory
-	beam_t		*b;
-	vec3_t		dist, org;
-	float		d;
-	entity_t	*ent;
-	float		yaw, pitch;
-	float		forward;
+	int				i, j; //johnfitz -- use j instead of using i twice, so we don't corrupt memory
+	beam_t			*b;
+	plVector3f_t	dist, org;
+	float			d;
+	entity_t		*ent;
+	float			yaw, pitch;
+	float			forward;
 
 	num_temp_entities = 0;
 

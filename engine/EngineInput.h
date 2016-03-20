@@ -21,6 +21,10 @@
 #ifndef __ENGINEINPUT__
 #define __ENGINEINPUT__
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 extern bool bMouseActive;
 
 void Input_Initialize(void);
@@ -29,5 +33,9 @@ void Input_ClientFrame(ClientCommand_t *ucCommand);
 void Input_ActivateMouse(void);
 void Input_DeactivateMouse(void);
 void Input_Shutdown(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

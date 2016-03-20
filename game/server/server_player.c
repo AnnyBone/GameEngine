@@ -1108,8 +1108,8 @@ void Player_Use(ServerEntity_t *entity)
 void Player_MoveThink(ServerEntity_t *ePlayer)
 {
 #if 0
-	vec3_t	vViewAngle;
-	float	fLength,*fPlayerAngles;
+	plVector3f_t	vViewAngle;
+	float			fLength,*fPlayerAngles;
 
 	if(ePlayer->v.movetype == MOVETYPE_NONE)
 		return;

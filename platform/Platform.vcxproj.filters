@@ -8,6 +8,7 @@
     <ClCompile Include="platform_math.c" />
     <ClCompile Include="platform_log.c" />
     <ClCompile Include="platform_image.c" />
+    <ClCompile Include="platform_model.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\platform.h">
@@ -35,6 +36,9 @@
       <Filter>Include</Filter>
     </ClInclude>
     <ClInclude Include="include\platform_image.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\platform_model.h">
       <Filter>Include</Filter>
     </ClInclude>
   </ItemGroup>

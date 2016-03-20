@@ -142,7 +142,7 @@ void IonRifle_PrimaryAttack(ServerEntity_t *eOwner)
 			eIonBall = Entity_Spawn();
 			if(eIonBall)
 			{
-				vec3_t	vOrigin;
+				plVector3f_t vOrigin;
 
 				eIonBall->v.cClassname = "ionball";
 				eIonBall->v.movetype = MOVETYPE_FLY;
@@ -211,7 +211,7 @@ void IonRifle_PrimaryAttack(ServerEntity_t *eOwner)
 			eIonBall = Entity_Spawn();
 			if(eIonBall)
 			{
-				vec3_t	vOrigin;
+				plVector3f_t vOrigin;
 
 				eIonBall->v.cClassname		= "ionball";
 				eIonBall->v.movetype		= MOVETYPE_FLY;
@@ -226,7 +226,7 @@ void IonRifle_PrimaryAttack(ServerEntity_t *eOwner)
 				eIonBall->local.eOwner	= eOwner;
 				eIonBall->local.style	= 0;		// [29/1/2014] Preserve our firemode ~hogsy
 
-				Math_VectorCopy(eOwner->v.origin,vOrigin);
+				plVectorCopy3fv(eOwner->v.origin,vOrigin);
 
 				vOrigin[2] += 25.0f;
 

@@ -73,6 +73,9 @@
 #		include <CommCtrl.h>
 #		include <direct.h>
 #		include <lmcons.h>
+
+#		undef min
+#		undef max
 #	endif
 
 	// Information
@@ -106,6 +109,11 @@
 #		endif
 #		ifndef strncasecmp
 #			define	strncasecmp	_str
+#		endif
+#		ifdef __cplusplus
+#			ifndef nothrow
+//#				define nothrow __nothrow
+#			endif
 #		endif
 #	endif
 #elif __APPLE__	// Mac OS X

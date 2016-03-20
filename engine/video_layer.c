@@ -393,8 +393,8 @@ void vlEnable(unsigned int cap)
 		if (!vl_capabilities[i].vl_parm)
 			break;
 
-		if (cap & VIDEO_TEXTURE_2D)
-			Video.textureunit_state[Video.current_textureunit] = true;
+		if (uiCapabilities & VIDEO_TEXTURE_2D)
+			Video.textureunits[Video.current_textureunit].isactive = true;
 
 		if (cap & vl_capabilities[i].vl_parm)
 		{
@@ -425,8 +425,8 @@ void vlDisable(unsigned int cap)
 		if (!vl_capabilities[i].vl_parm)
 			break;
 
-		if (cap & VIDEO_TEXTURE_2D)
-			Video.textureunit_state[Video.current_textureunit] = false;
+		if (uiCapabilities & VIDEO_TEXTURE_2D)
+			Video.textureunits[Video.current_textureunit].isactive = false;
 
 		if (cap & vl_capabilities[i].vl_parm)
 		{

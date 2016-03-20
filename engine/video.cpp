@@ -28,7 +28,9 @@
 	Video System
 */
 
-viddef_t vid; // Legacy global video state (TODO: Replace!)
+extern "C" {
+	viddef_t vid; // Legacy global video state (TODO: Replace!)
+}
 
 bool 
 	r_drawflat_cheatsafe, 
@@ -80,6 +82,8 @@ void Video_DebugCommand(void);
 
 Video_t	Video;
 
+Core::ShaderManager *g_shadermanager = nullptr;
+
 /*	Initialize the renderer
 */
 void Video_Initialize(void)
@@ -89,8 +93,6 @@ void Video_Initialize(void)
 		return;
 
 	Con_Printf("Initializing video...\n");
-
-	memset(Video.current_texture, -1, sizeof(int)*VIDEO_MAX_UNITS); // "To avoid unnecessary texture sets"
 
 	// Only enabled if the hardware supports it.
 	Video.extensions.vertex_buffer_object	= false;
@@ -160,24 +162,18 @@ void Video_Initialize(void)
 	if (!g_state.embedded)
 		Window_InitializeVideo();
 
-	Video.num_textureunits = vlGetMaxTextureImageUnits();
-	if (Video.num_textureunits < VIDEO_MAX_UNITS)
-		Con_Warning("Your system doesn't support the required number of TMUs! (%i)\n", Video.num_textureunits);
-
 	// Attempt to dynamically allocated the number of supported TMUs.
+	vlGetMaxTextureImageUnits(&Video.num_textureunits);
 	Video.textureunits = (VideoTextureMU_t*)Hunk_Alloc(sizeof(VideoTextureMU_t)*Video.num_textureunits);
 	if (!Video.textureunits)
 		Sys_Error("Failed to allocated handler for the number of supported TMUs! (%i)\n", Video.num_textureunits);
 
 	for (int i = 0; i < Video.num_textureunits; i++)
 	{
-		Video.textureunits[i].isactive			= false;
+		Video.textureunits[i].isactive			= false;						// All units are initially disabled.
 		Video.textureunits[i].current_envmode	= VIDEO_TEXTURE_MODE_REPLACE;
-		Video.textureunits[i].current_texture	= 0;
+		Video.textureunits[i].current_texture	= (unsigned int)-1;
 	}
-
-	// All units are initially disabled.
-	memset(Video.textureunit_state, 0, sizeof(Video.textureunit_state));
 
 	vlGetMaxTextureAnistropy(&Video.fMaxAnisotropy);
 
@@ -190,6 +186,8 @@ void Video_Initialize(void)
 
 #ifdef VL_MODE_OPENGL
 	Con_DPrintf(" Checking for extensions...\n");
+
+	GLeeInit();
 
 	// Check that the required capabilities are supported.
 	if (!GLEE_ARB_multitexture) Sys_Error("Video hardware incapable of multi-texturing!\n");
@@ -245,12 +243,11 @@ void Video_Initialize(void)
 
 	Video.vertical_sync = cv_video_verticlesync.bValue;
 
-#ifdef VL_MODE_OPENGL
-#ifdef VIDEO_SUPPORT_SHADERS
-	Shader_Initialize();
-#endif
-#endif
 	Light_Initialize();
+
+	// Initialize the shader manager.
+	g_shadermanager = new Core::ShaderManager();
+	g_shadermanager->Initialize();
 
 	// Initialize the sprite manager.
 	g_spritemanager = new Core::SpriteManager();
@@ -436,10 +433,10 @@ void Video_SetTexture(gltexture_t *gTexture)
 	if(!gTexture)
 		gTexture = notexture;
 	// If it's the same as the last, don't bother.
-	else if (gTexture->texnum == Video.current_texture[Video.current_textureunit])
+	else if (gTexture->texnum == Video.textureunits[Video.current_textureunit].current_texture)
 		return;
 
-	Video.current_texture[Video.current_textureunit] = gTexture->texnum;
+	Video.textureunits[Video.current_textureunit].current_texture = gTexture->texnum;
 
 	gTexture->visframe = r_framecount;
 
@@ -509,7 +506,7 @@ void Video_DrawSurface(msurface_t *mSurface,float fAlpha, Material_t *mMaterial,
 	for (i = 0; i < mSurface->polys->numverts; i++, fVert += VERTEXSIZE)
 	{
 #ifdef _MSC_VER
-#pragma warning(suppress: 6011)
+#	pragma warning(suppress: 6011)
 #endif
 		Video_ObjectVertex(&drawsurf[i], fVert[0], fVert[1], fVert[2]);
 		Video_ObjectTexture(&drawsurf[i], VIDEO_TEXTURE_DIFFUSE, fVert[3], fVert[4]);
@@ -577,19 +574,7 @@ void Video_Frame(void)
 	if (Video.debug_frame)
 		plWriteLog(cv_video_log.string, "Video: Start of frame\n");
 
-#ifdef VIDEO_SUPPORT_SHADERS
-#ifdef VIDEO_SUPPORT_FRAMEBUFFERS
-	//VideoPostProcess_BindFrameBuffer();
-	DEBUG_FrameBufferBind();
-#endif
-#endif
-
 	SCR_UpdateScreen();
-
-#if 0
-	// Attempt to draw the depth buffer.
-	Video_DrawDepthBuffer();
-#endif
 
 	GL_EndRendering();
 
@@ -626,7 +611,10 @@ void Video_Shutdown(void)
 	Con_Printf("Shutting down video...\n");
 
 	g_spritemanager->Shutdown();
+	g_shadermanager->Shutdown();
+
 	delete g_spritemanager;
+	delete g_shadermanager;
 
 	if (!g_state.embedded)
 		Window_Shutdown();

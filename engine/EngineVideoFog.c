@@ -272,7 +272,7 @@ void Fog_StartAdditive (void)
 #ifdef KATANA_CORE_GL
 	if (Fog_GetDensity() > 0)
 	{
-		vec3_t vColour = {0,0,0};
+		plVector3f_t vColour = { 0, 0, 0 };
 
 		glFogfv(GL_FOG_COLOR,vColour);
 	}

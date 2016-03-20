@@ -219,9 +219,6 @@
     <ClCompile Include="EngineClient.c">
       <Filter>Legacy\Client</Filter>
     </ClCompile>
-    <ClCompile Include="EngineConsole.c">
-      <Filter>Legacy\Console</Filter>
-    </ClCompile>
     <ClCompile Include="EngineVideoEFrag.c">
       <Filter>Legacy\Client\Video</Filter>
     </ClCompile>
@@ -330,6 +327,9 @@
     </ClCompile>
     <ClCompile Include="video_glidewindow.c">
       <Filter>Client\Video\Interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineConsole.cpp">
+      <Filter>Legacy\Console</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

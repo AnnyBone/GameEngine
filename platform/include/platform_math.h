@@ -45,8 +45,10 @@ typedef float MathVectorf_t;	// Floating-point precision
 typedef MathVectorf_t MathVector2f_t[2], MathVector3f_t[3], MathVector4f_t[4];
 typedef MathVector4f_t Colour_t, MathMatrix4x4f_t[4];
 
-// For compatability...
-#define	vec3_t	MathVector3f_t
+typedef float plVector2f_t[2], plVector3f_t[3], plVector4f_t[4];
+typedef int plVector3i_t[3];
+
+typedef plVector4f_t plColour_t;
 
 typedef MathVectord_t MathVector2d_t[2], MathVector3d_t[3], MathVector4d_t[4];
 typedef MathVector4d_t MathMatrix4x4d_t[4];

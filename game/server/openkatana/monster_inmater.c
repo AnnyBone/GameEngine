@@ -99,9 +99,9 @@ void Inmater_Die(ServerEntity_t *eInmater, ServerEntity_t *eOther, ServerDamageT
 		// [13/9/2012] Updated paths ~hogsy
 		for(i = 0; i < iGibs; i++)
 		{
-			char	cModel[64];
-			int		j;
-			vec3_t	vOrigin,vGibVelocity;
+			char			cModel[64];
+			int				j;
+			plVector3f_t	vOrigin,vGibVelocity;
 
 			for(j = 0; j < 3; j++)
 				vOrigin[j]	= eInmater->v.origin[j]+((eInmater->v.mins[j]+eInmater->v.maxs[j])*(rand()%10));

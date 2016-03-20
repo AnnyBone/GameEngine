@@ -572,15 +572,15 @@ ServerEntity_t	*SV_TestEntityPosition (ServerEntity_t *ent)
 // 1/32 epsilon to keep floating point happy
 #define	DIST_EPSILON	(0.03125)
 
-bool SV_RecursiveHullCheck (hull_t *hull, int num, float p1f, float p2f, vec3_t p1, vec3_t p2, trace_t *trace)
+bool SV_RecursiveHullCheck(hull_t *hull, int num, float p1f, float p2f, plVector3f_t p1, plVector3f_t p2, trace_t *trace)
 {
-	float			t1,t2,
-					frac,
-					midf;
-	int				i,side;
-	BSPClipNode_t	*node;
-	mplane_t		*plane;
-	vec3_t			mid;
+	float					t1,t2,
+							frac,
+							midf;
+	int						i,side;
+	BSPClipNode_t			*node;
+	mplane_t				*plane;
+	plVector3f_t			mid;
 
 // check for empty
 	if (num < 0)

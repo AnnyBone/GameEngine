@@ -231,7 +231,7 @@ void Brush_Draw(ClientEntity_t *e)
 	Math_VectorSubtract(r_refdef.vieworg,e->origin,modelorg);
 	if(e->angles[0] || e->angles[1] || e->angles[2])
 	{
-		vec3_t	temp,forward,right,up;
+		plVector3f_t	temp, forward, right, up;
 
 		Math_VectorCopy (modelorg, temp);
 		plAngleVectors(e->angles, forward, right, up);

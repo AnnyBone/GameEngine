@@ -625,8 +625,8 @@
     <ClCompile Include="cmdlib.c" />
     <ClCompile Include="EngineCommon.c" />
     <ClCompile Include="conproc.c" />
-    <ClCompile Include="EngineConsole.c" />
     <ClCompile Include="crc.c" />
+    <ClCompile Include="EngineConsole.cpp" />
     <ClCompile Include="engine_exception.cpp" />
     <ClCompile Include="model_u3d.cpp" />
     <ClCompile Include="shader_water.cpp" />

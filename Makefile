@@ -123,26 +123,13 @@ GAME_OBJS := game/client/client.o \
 	game/server/openkatana/monster_inmater.o \
 	game/server/openkatana/monster_lasergat.o \
 	game/server/openkatana/monster_prisoner.o \
-	game/server/openkatana/weapon_axe.o \
-	game/server/openkatana/weapon_ballista.o \
-	game/server/openkatana/weapon_barrier.o \
 	game/server/openkatana/weapon_c4vizatergo.o \
-	game/server/openkatana/weapon_crossbow.o \
 	game/server/openkatana/weapon_daikatana.o \
-	game/server/openkatana/weapon_discus.o \
-	game/server/openkatana/weapon_glock.o \
-	game/server/openkatana/weapon_greekfire.o \
-	game/server/openkatana/weapon_hermes.o \
 	game/server/openkatana/weapon_ionblaster.o \
 	game/server/openkatana/weapon_ionrifle.o \
-	game/server/openkatana/weapon_kineticore.o \
-	game/server/openkatana/weapon_midas.o \
-	game/server/openkatana/weapon_pulserifle.o \
 	game/server/openkatana/weapon_shockwave.o \
 	game/server/openkatana/weapon_shotcycler6.o \
 	game/server/openkatana/weapon_sidewinder.o \
-	game/server/openkatana/weapon_trident.o \
-	game/server/openkatana/weapon_zeus.o \
 	game/server/server_animated.o \
 	game/server/server_area.o \
 	game/server/server.o \

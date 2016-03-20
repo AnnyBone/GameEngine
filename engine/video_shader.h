@@ -19,75 +19,70 @@
 
 #pragma once
 
-typedef enum
-{
-	VIDEO_SHADER_INVALID,
-
-	VIDEO_SHADER_FRAGMENT,
-	VIDEO_SHADER_VERTEX
-} VideoShaderType_t;
-
 typedef int uniform;
 
 #ifdef __cplusplus
-class VideoShader
+namespace Core
 {
-public:
-	VideoShader(VideoShaderType_t type);
-	~VideoShader();
+	class Shader
+	{
+	public:
+		Shader(vlShaderType_t type);
+		~Shader();
 
-	bool Load(const char *path);
-	bool CheckCompileStatus();
+		bool Load(const char *path);
+		bool CheckCompileStatus();
 
-	void Enable();
-	void Disable();
+		void Enable();
+		void Disable();
 
-	unsigned int GetInstance();
-	VideoShaderType_t GetType();
+		unsigned int GetInstance();
+		vlShaderType_t GetType();
 
-private:
-	unsigned int instance;
+	private:
+		unsigned int instance;
 
-	VideoShaderType_t type;
+		vlShaderType_t type;
 
-	const char	*source;
-	char		source_path[PLATFORM_MAX_PATH];
-	int			source_length;
-};
+		const char	*source;
+		char		source_path[PLATFORM_MAX_PATH];
+		int			source_length;
+	};
 
-class VideoShaderProgram
-{
-public:
-	VideoShaderProgram();
-	~VideoShaderProgram();
+	class ShaderProgram
+	{
+	public:
+		ShaderProgram();
+		~ShaderProgram();
 
-	void Initialize();
-	void Attach(VideoShader *shader);
-	void Enable();
-	void Disable();
-	void Link();
-	void Shutdown();
+		void Initialize();
+		void Attach(Core::Shader *shader);
+		void Enable();
+		void Disable();
+		void Link();
+		void Shutdown();
 
-	bool IsActive() 
-	{ 
-		return (Video.current_program == instance); 
-	}
+		bool IsActive()
+		{
+			return (Video.current_program == instance);
+		}
 
-	void SetVariable(int location, float x, float y, float z);
-	void SetVariable(int location, MathVector3f_t vector);
-	void SetVariable(int location, float x, float y, float z, float a);
-	void SetVariable(int location, int i);
-	void SetVariable(int location, float f);
+		void SetVariable(int location, float x, float y, float z);
+		void SetVariable(int location, MathVector3f_t vector);
+		void SetVariable(int location, float x, float y, float z, float a);
+		void SetVariable(int location, int i);
+		void SetVariable(int location, float f);
 
-	int GetUniformLocation(const char *name);
+		int GetUniformLocation(const char *name);
 
-	unsigned int GetInstance();
-protected:
-private:
-	bool isenabled;
+		unsigned int GetInstance();
+	protected:
+	private:
+		bool isenabled;
 
-	unsigned int instance;
-};
+		unsigned int instance;
+	};
+}
 
 #define SHADER_IMPLEMENT(name)		\
 	public:							\
@@ -97,13 +92,13 @@ private:
 	void name::RegisterShaders() {
 #define SHADER_REGISTER_END()		\
 	}
-#define	SHADER_REGISTER_SCRIPT(name, type)						\
-	{															\
-	VideoShader *shader_ = new VideoShader(type);				\
-	if(!shader_->Load(#name))									\
-		Sys_Error("Failed to load "#name" shader!\n");			\
-	program->Attach(shader_);									\
-	shaders.push_back(shader_);									\
+#define	SHADER_REGISTER_SCRIPT(name, type)							\
+	{																\
+	Core::Shader *shader_ = new Core::Shader(type);					\
+	if(!shader_->Load(#name))										\
+		Sys_Error("Failed to load "#name" shader!\n");				\
+	program->Attach(shader_);										\
+	shaders.push_back(shader_);										\
 	}
 #define	SHADER_REGISTER_LINK()	\
 	program->Link();
@@ -143,10 +138,27 @@ public:
 			program->Disable();
 	}
 
-	VideoShaderProgram *program;
+	Core::ShaderProgram *program;
 
-	std::vector<VideoShader*> shaders;
+	std::vector<Core::Shader*> shaders;
 };
+
+namespace Core
+{
+	class ShaderManager : public CoreManager
+	{
+	public:
+		ShaderManager();
+		~ShaderManager();
+
+		void Initialize();
+		void Shutdown();
+
+	protected:
+	private:
+		std::vector<ShaderProgram*> programs;
+	};
+}
 #endif
 
 plEXTERN_C_START

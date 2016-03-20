@@ -36,7 +36,7 @@ mnode_t	*r_pefragtopnode;
 
 efrag_t		**lastlink;
 
-vec3_t		r_emins, r_emaxs;
+plVector3f_t		r_emins, r_emaxs;
 
 entity_t	*r_addent;
 
@@ -77,7 +77,7 @@ void R_RemoveEfrags (entity_t *ent)
 	ent->efrag = NULL;
 }
 
-int World_BoxOnPlaneSide(vec3_t emins, vec3_t emaxs, mplane_t *p);	// server_world.c
+int World_BoxOnPlaneSide(plVector3f_t emins, plVector3f_t emaxs, mplane_t *p);	// server_world.c
 
 void R_SplitEntityOnNode (mnode_t *node)
 {

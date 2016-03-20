@@ -53,8 +53,8 @@ void TraceLine (MathVector3f_t start, MathVector3f_t end, MathVector3f_t impact)
 void Chase_UpdateForDrawing (void)
 {
 	int		i;
-	vec3_t	forward, up, right;
-	vec3_t	ideal, crosshair, temp;
+	plVector3f_t	forward, up, right;
+	plVector3f_t	ideal, crosshair, temp;
 
 	plAngleVectors(cl.viewangles, forward, right, up);
 
