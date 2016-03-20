@@ -223,6 +223,8 @@ void AudioManager::PlaySound(const AudioSound_t *sound)
 	alSourcef(sound->source, AL_PITCH, sound->pitch);
 	alSourcef(sound->source, AL_GAIN, sound->volume);
 	alSourcef(sound->source, AL_MAX_DISTANCE, sound->max_distance);
+
+	alSourcei(sound->source, AL_BUFFER, sound->buffer);
 	
 	if (sound->local)
 	{
@@ -446,7 +448,6 @@ AudioSample_t *AudioManager::LoadSample(const char *path)
 	samples.emplace(path, cache);
 
 	// Now resample the sample...
-#if 0
 	uint8_t *dataofs = data + info.dataofs;
 
 	stepscale = (float)cache->speed / AUDIO_SAMPLE_SPEED;
@@ -488,7 +489,6 @@ AudioSample_t *AudioManager::LoadSample(const char *path)
 			}
 		}
 	}
-#endif
 
 	free(data);
 
