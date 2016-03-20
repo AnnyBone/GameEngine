@@ -870,6 +870,8 @@ void SCR_UpdateScreen (void)
 	// do 3D refresh drawing, and then update the screen
 	Screen_SetUpToDrawConsole();
 
+	Video_ClearBuffer();
+
 	if (cv_video_msaasamples.iValue > 0)
 		vlEnable(VL_CAPABILITY_MULTISAMPLE);
 

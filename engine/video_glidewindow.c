@@ -44,7 +44,6 @@ void Window_InitializeVideo(void)
 		SDL_WINDOW_FULLSCREEN;
 	SDL_Surface	*icon;
 
-	// [28/7/2013] Moved check here and corrected, seems more secure ~hogsy
 	if (SDL_VideoInit(NULL) < 0)
 		Sys_Error("Failed to initialize video!\n%s\n", SDL_GetError());
 

@@ -55,10 +55,10 @@ VLstate_t vl_state;
 GrColor_t _vlConvertColour4f(VLColourFormat_t format, float r, float g, float b, float a)
 {
 	GrColor_t
-		gr = (GrColor_t)(r / 255),
-		gg = (GrColor_t)(g / 255),
-		gb = (GrColor_t)(b / 255),
-		ga = (GrColor_t)(a / 255);
+		gr = (GrColor_t)r,
+		gg = (GrColor_t)g,
+		gb = (GrColor_t)b,
+		ga = (GrColor_t)a;
 	switch (format)
 	{
 	case VL_COLOURFORMAT_ABGR:
@@ -93,8 +93,8 @@ void _vlGlideErrorCallback(const char *string, FxBool fatal)
 */
 void vlInit(void)
 {
-	plVectorSet3f(vl_state.buffer_clearcolour, 1, 0, 0);
-	vl_state.buffer_clearcolour[3] = 1;
+	plVectorSet3f(vl_state.buffer_clearcolour, 1, 1, 1);
+	vl_state.buffer_clearcolour[3] = 0;
 
 	vl_state.capabilities = 0;
 
@@ -747,8 +747,7 @@ void vlClearBuffers(unsigned int mask)
 	grBufferClear(
 		// Convert buffer_clearcolour to something that works with Glide.
 		_vlConvertColour4fv(VL_COLOURFORMAT_RGBA, vl_state.buffer_clearcolour), 
-		0, 
-		grGet(GR_ZDEPTH_MIN_MAX, 0, 0));
+		1, 1);
 #endif
 	VIDEO_FUNCTION_END
 }

@@ -631,8 +631,6 @@ void R_RenderView (void)
 
 	R_SetupView (); //johnfitz -- this does everything that should be done once per frame
 
-	Video_ClearBuffer();
-
 #ifdef VL_MODE_OPENGL
 	//johnfitz -- stereo rendering -- full of hacky goodness
 	if (r_stereo.value)

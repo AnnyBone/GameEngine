@@ -63,7 +63,7 @@ typedef enum
 	VL_MASK_ACCUM		= (1 << 2),
 	VL_MASK_STENCIL		= (1 << 3),
 #endif
-} VLenum_t;
+} VLMask_t;
 
 typedef enum
 {
