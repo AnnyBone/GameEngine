@@ -352,7 +352,10 @@ void AudioManager::DeleteSound(AudioSound_t *sound)
 	// Remove it from the list.
 	for (auto iterator = sounds.begin(); iterator != sounds.end(); iterator++)
 		if (sound == *iterator)
+		{
 			sounds.erase(iterator);
+			break;
+		}
 }
 
 bool AudioManager::IsSoundPlaying(const AudioSound_t *sample)
