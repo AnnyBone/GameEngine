@@ -36,7 +36,7 @@ typedef struct
 
 	unsigned int id;
 
-	uint8_t	data[1];	// variable sized
+	uint8_t	*data;
 } AudioSample_t;
 
 typedef unsigned int AudioSource_t;

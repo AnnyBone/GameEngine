@@ -448,6 +448,7 @@ AudioSample_t *AudioManager::LoadSample(const char *path)
 	samples.emplace(path, cache);
 
 	// Now resample the sample...
+#if 1
 	uint8_t *dataofs = data + info.dataofs;
 
 	stepscale = (float)cache->speed / AUDIO_SAMPLE_SPEED;
@@ -456,6 +457,7 @@ AudioSample_t *AudioManager::LoadSample(const char *path)
 	if (cache->loopstart != -1)
 		cache->loopstart = cache->loopstart / stepscale;
 
+	cache->id		= samples.size();
 	cache->speed	= AUDIO_SAMPLE_SPEED;
 	cache->stereo	= 0;
 
@@ -464,7 +466,7 @@ AudioSample_t *AudioManager::LoadSample(const char *path)
 	{
 		// Fast special case.
 		for (int i = 0; i < outcount; i++)
-			((signed char *)cache->data)[i] = (int)((unsigned char)(dataofs[i]) - 128);
+			((signed char *)data)[i] = (int)((unsigned char)(dataofs[i]) - 128);
 	}
 	else
 	{
@@ -480,17 +482,30 @@ AudioSample_t *AudioManager::LoadSample(const char *path)
 			if (cache->width == 2)
 			{
 				sample = LittleShort(((short*)dataofs)[srcsample]);
-				((short*)cache->data)[i] = sample;
+				((short*)data)[i] = sample;
 			}
 			else
 			{
 				sample = (int)((unsigned char)(dataofs[srcsample]) - 128) << 8;
-				((signed char*)cache->data)[i] = sample >> 8;
+				((signed char*)data)[i] = sample >> 8;
 			}
 		}
 	}
+#else
+/*	if (cache->width == 2)
+	{
+		int num_samples = info.samples;
+		if (LittleShort(256) != 256)
+		{
+			if (info.channels == 2)
+				num_samples <<= 1;
 
-	free(data);
+			for (int i = 0; i < info.samples; i++)
+				((short*)data)[i] = LittleShort(((short*)data)[i]);
+		}
+	}*/
+#endif
+	cache->data = data;
 
 	return cache;
 }
