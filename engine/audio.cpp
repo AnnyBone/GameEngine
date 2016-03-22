@@ -157,11 +157,9 @@ void AudioManager::Frame()
 	alListenerfv(AL_VELOCITY, velocity);
 
 	// Check if there's any sounds we can delete.
-#if 0
 	for (unsigned int i = 0; i < sounds.size(); i++)
 		if (sounds[i]->auto_delete && !IsSoundPlaying(sounds[i]))
 			DeleteSound(sounds[i]);
-#endif
 }
 
 AudioSound_t *AudioManager::AddSound()
@@ -382,6 +380,17 @@ bool AudioManager::IsSoundPaused(const AudioSound_t *sample)
 
 // Samples
 
+AudioSample_t *AudioManager::AddSample(const char *path)
+{
+	AudioSample_t *cache = new AudioSample_t;
+	strncpy(cache->path, path, sizeof(cache->path));
+
+	// Add it to the global list.
+	samples.emplace(path, cache);
+
+	return cache;
+}
+
 AudioSample_t *AudioManager::FindSample(const char *path)
 {
 	if (!path || (path[0] == ' '))
@@ -436,19 +445,14 @@ AudioSample_t *AudioManager::LoadSample(const char *path)
 	float stepscale = (float)info.rate / AUDIO_SAMPLE_SPEED;
 	int len = info.samples / stepscale;
 	len *= info.width * info.channels;
-	
-	AudioSample_t *cache = new AudioSample_t;
+
+	AudioSample_t *cache = AddSample(path);
 	cache->length		= info.samples;		// Length of the sample.
 	cache->loopstart	= info.loopstart;
 	cache->speed		= info.rate;		// Rate of the sample.
 	cache->width		= info.width;
 	cache->stereo		= info.channels;	// Stereo / Mono.
 	cache->size			= com_filesize;		// Size of the sample.
-
-	strncpy(cache->path, path, sizeof(cache->path));
-
-	// Add it to the global list.
-	samples.emplace(path, cache);
 
 	// Now resample the sample...
 #if 1

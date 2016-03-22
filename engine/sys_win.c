@@ -545,11 +545,6 @@ bool System_Main(int iArgumentCount,char *cArguments[], bool bEmbedded)
 
 	Sys_InitFloatTime();
 
-#ifdef KATANA_AUDIO_DIRECTSOUND
-	// Because sound is off until we become active
-	S_BlockSound();
-#endif
-
 	Sys_Printf("Host_Initialize\n");
 
 	Host_Initialize(&epParameters);

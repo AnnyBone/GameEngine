@@ -182,11 +182,11 @@ void CL_ParseStartSoundPacket(void)
 */
 void CL_KeepaliveMessage (void)
 {
-	float	time;
-	static float lastmsg;
-	int		ret;
-	sizebuf_t	old;
-	byte		olddata[8192];
+	float			time;
+	static float	lastmsg;
+	int				ret;
+	sizebuf_t		old;
+	byte			olddata[8192];
 
 	if (sv.active)
 		return;		// no need if server is local

@@ -231,8 +231,8 @@ void Server_Sound(ServerEntity_t *ent, int channel, char *sample, int iVolume, f
 	else if(sv.datagram.cursize > MAX_DATAGRAM-16)
 		return;
 
-	for(sound_num=1 ; sound_num<MAX_SOUNDS && sv.sound_precache[sound_num] ; sound_num++)
-		if(!strcmp(sample,sv.sound_precache[sound_num]))
+	for (sound_num = 1; sound_num<MAX_SOUNDS && sv.sound_precache[sound_num]; sound_num++)
+		if (!strcmp(sample, sv.sound_precache[sound_num]))
 			break;
 
 	if(sound_num == MAX_SOUNDS || !sv.sound_precache[sound_num])

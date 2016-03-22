@@ -34,6 +34,8 @@ typedef struct
 	int 	stereo;
 	int		size;
 
+	bool persist;
+
 	unsigned int id;
 
 	uint8_t	*data;
@@ -55,13 +57,15 @@ typedef struct
 	plVector3f_t position;	// Position of the sound.
 	plVector3f_t velocity;	// Speed of movement.
 
-	unsigned int entity;	// Points to an entity.
+	ClientEntity_t	*entity;	// Owner, typically sound will follow this.
+	int				channel;	// Only really relevent for legacy stuff!
 
 	float max_distance;		// Maximum distance.
 	float pitch;			// Pitch of the sound.
 	float volume;			// Volume of the sound.
 
-	bool local;
+	bool local;		// Only played locally.
+	bool loop;		// Loop the sound?
 
 	bool auto_delete;
 } AudioSound_t;
@@ -100,10 +104,11 @@ namespace Core
 		bool IsSoundPlaying(const AudioSound_t *sound);
 		bool IsSoundPaused(const AudioSound_t *sound);
 
+		AudioSample_t *AddSample(const char *path);
+		void DeleteSample(AudioSample_t *sample);
 		AudioSample_t *FindSample(const char *path);
 		AudioSample_t *PrecacheSample(const char *path);
 		AudioSample_t *LoadSample(const char *path);
-		void DeleteSample(AudioSample_t *sample);
 
 		void ClearSamples();	// Clears all loaded samples.
 	protected:
