@@ -371,7 +371,7 @@ void Client_ParseServerInfo(void)
 
 	for (i=1 ; i<numsounds ; i++)
 	{
-		Audio_PrecacheSample(cSoundPrecache[i]);
+		Audio_PrecacheSample(cSoundPrecache[i], false);
 		CL_KeepaliveMessage ();
 	}
 

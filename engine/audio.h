@@ -34,9 +34,7 @@ typedef struct
 	int 	stereo;
 	int		size;
 
-	bool persist;
-
-	unsigned int id;
+	bool preserve;	// Allow this to be deleted.
 
 	uint8_t	*data;
 } AudioSample_t;
@@ -70,12 +68,6 @@ typedef struct
 	bool auto_delete;
 } AudioSound_t;
 
-typedef struct
-{
-	bool	efx;					// EFX support.
-	bool	soft_buffer_samples;
-} AudioExtensions_t;
-
 #ifdef __cplusplus
 
 namespace Core
@@ -107,13 +99,18 @@ namespace Core
 		AudioSample_t *AddSample(const char *path);
 		void DeleteSample(AudioSample_t *sample);
 		AudioSample_t *FindSample(const char *path);
-		AudioSample_t *PrecacheSample(const char *path);
-		AudioSample_t *LoadSample(const char *path);
+		void PrecacheSample(const char *path, bool preserve);
+		void LoadSample(AudioSample_t *cache, const char *path);
 
 		void ClearSamples();	// Clears all loaded samples.
 	protected:
 	private:
-		AudioExtensions_t extensions;
+		struct AudioExtensions
+		{
+			bool	efx;					// EFX support.
+			bool	soft_buffer_samples;
+		};
+		AudioExtensions extensions;
 
 		std::vector<AudioSound_t*> sounds;
 
@@ -129,8 +126,7 @@ void Audio_Initialize(void);
 void Audio_Frame(void);
 void Audio_PlayTemporarySound(ClientEntity_t *entity, const AudioSample_t *cache, float volume);
 void Audio_StopSounds(void);
+void Audio_PrecacheSample(const char *path, bool preserve);
 void Audio_Shutdown(void);
-
-AudioSample_t *Audio_PrecacheSample(const char *path);
 
 plEXTERN_C_END

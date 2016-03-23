@@ -283,10 +283,10 @@ void AudioManager::LoadSound(AudioSound_t *sound, const char *path)
 	else if (!sound)
 		return;
 
-	sound->cache = PrecacheSample(path);
+	sound->cache = FindSample(path);
 	if (!sound->cache)
 	{
-		Con_Warning("Failed to load sound! (%s)\n", path);
+		Con_Warning("Failed to load sound, please ensure it's been cached! (%s)\n", path);
 		return;
 	}
 
@@ -407,28 +407,31 @@ AudioSample_t *AudioManager::FindSample(const char *path)
 	return nullptr;
 }
 
-AudioSample_t *AudioManager::PrecacheSample(const char *path)
+void AudioManager::PrecacheSample(const char *path, bool preserve)
 {
 	if (!path || (path[0] == ' '))
 	{
 		Con_Warning("Invalid path for audio sample!\n");
-		return nullptr;
+		return;
 	}
 
 	AudioSample_t *cache = FindSample(path);
-	if (cache)
-		return cache;
+	if (!cache)
+	{
+		cache = AddSample(path);
+		LoadSample(cache, path);
+	}
 
-	cache = LoadSample(path);
-	return cache;
+	if (preserve)
+		cache->preserve = true;
 }
 
-AudioSample_t *AudioManager::LoadSample(const char *path)
+void AudioManager::LoadSample(AudioSample_t *cache, const char *path)
 {
 	if (!path || (path[0] == ' '))
 	{
 		Con_Warning("Invalid path for audio sample!\n");
-		return nullptr;
+		return;
 	}
 
 	std::string complete_path(g_state.path_sounds);
@@ -438,7 +441,7 @@ AudioSample_t *AudioManager::LoadSample(const char *path)
 	if (!data)
 	{
 		Con_Warning("Failed to load audio sample! (%s)\n", path);
-		return nullptr;
+		return;
 	}
 
 	wavinfo_t info = GetWavinfo(path, data, com_filesize);
@@ -446,7 +449,6 @@ AudioSample_t *AudioManager::LoadSample(const char *path)
 	int len = info.samples / stepscale;
 	len *= info.width * info.channels;
 
-	AudioSample_t *cache = AddSample(path);
 	cache->length		= info.samples;		// Length of the sample.
 	cache->loopstart	= info.loopstart;
 	cache->speed		= info.rate;		// Rate of the sample.
@@ -464,7 +466,6 @@ AudioSample_t *AudioManager::LoadSample(const char *path)
 	if (cache->loopstart != -1)
 		cache->loopstart = cache->loopstart / stepscale;
 
-	cache->id		= samples.size();
 	cache->speed	= AUDIO_SAMPLE_SPEED;
 	cache->stereo	= 0;
 
@@ -513,8 +514,6 @@ AudioSample_t *AudioManager::LoadSample(const char *path)
 	}*/
 #endif
 	cache->data = data;
-
-	return cache;
 }
 
 void AudioManager::DeleteSample(AudioSample_t *sample)
@@ -642,9 +641,9 @@ void Audio_StopSounds(void)
 	g_audiomanager->StopSounds();
 }
 
-AudioSample_t *Audio_PrecacheSample(const char *path)
+void Audio_PrecacheSample(const char *path, bool preserve)
 {
-	return g_audiomanager->PrecacheSample(path);
+	return g_audiomanager->PrecacheSample(path, preserve);
 }
 
 /*	Deletes the sound.
