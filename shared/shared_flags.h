@@ -26,9 +26,6 @@
 #endif
 
 //#define   PARANOID				// Speed sapping error checking.
-#ifdef _WIN32
-#define	KATANA_AUDIO_DIRECTSOUND	// DirectSound implementation.
-#endif
 
 #define	SHARED_FORMATS_C
 
