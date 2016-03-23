@@ -688,9 +688,7 @@
     <ClCompile Include="EngineServerEntity.c" />
     <ClCompile Include="video_brush.c" />
     <ClCompile Include="EngineVideoWorld.c" />
-    <ClCompile Include="EngineAudioDMA.c" />
-    <ClCompile Include="EngineAudioMem.c" />
-    <ClCompile Include="EngineAudioMix.c" />
+    <ClCompile Include="audio_wav.c" />
     <ClCompile Include="EngineAudioDirectSound.c" />
     <ClCompile Include="EngineServer.c" />
     <ClCompile Include="EngineServerUser.c" />
