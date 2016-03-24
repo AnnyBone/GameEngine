@@ -78,6 +78,7 @@ AudioManager::AudioManager()
 
 	Cmd_AddCommand("audio_playsound", Audio_PlaySoundCommand);
 	Cmd_AddCommand("audio_listsounds", Audio_ListSoundsCommand);
+	Cmd_AddCommand("audio_stopsounds", Audio_StopSounds);
 
 	// Reserve up to AUDIO_MAX_SOUNDS, and we can expand on this as necessary.
 	sounds.reserve(AUDIO_MAX_SOUNDS * 2);
@@ -109,16 +110,27 @@ AudioManager::AudioManager()
 		alDeleteEffects		= (LPALDELETEEFFECTS)alGetProcAddress("alDeleteEffects");
 		alIsEffect			= (LPALISEFFECT)alGetProcAddress("alIsEffect");
 		alEffecti			= (LPALEFFECTI)alGetProcAddress("alEffecti");
+		alEffectf			= (LPALEFFECTF)alGetProcAddress("alEffectf");
+		
+		alGenAuxiliaryEffectSlots		= (LPALGENAUXILIARYEFFECTSLOTS)alGetProcAddress("alGenAuxiliaryEffectSlots");
+		alDeleteAuxiliaryEffectSlots	= (LPALDELETEAUXILIARYEFFECTSLOTS)alGetProcAddress("alDeleteAuxiliaryEffectSlots");
+		alIsAuxiliaryEffectSlot			= (LPALISAUXILIARYEFFECTSLOT)alGetProcAddress("alIsAuxiliaryEffectSlot");
+		alAuxiliaryEffectSloti			= (LPALAUXILIARYEFFECTSLOTI)alGetProcAddress("alAuxiliaryEffectSloti");
 
 		extensions.efx = true;
 	}
 	if (alIsExtensionPresent("AL_SOFT_buffer_samples"))
 		extensions.soft_buffer_samples = true;
+
+	effect_global = AddEffect();
+	SetEffectReverb(effect_global, AUDIO_REVERB_AUDITORIUM);
 }
 
 AudioManager::~AudioManager()
 {
 	Con_Printf("Shutting down Audio Manager...\n");
+
+	DeleteEffect(effect_global);
 
 	ALCcontext *context = alcGetCurrentContext();
 	if (context)
@@ -158,7 +170,7 @@ void AudioManager::Frame()
 
 	// Check if there's any sounds we can delete.
 	for (unsigned int i = 0; i < sounds.size(); i++)
-		if (sounds[i]->auto_delete && !IsSoundPlaying(sounds[i]))
+		if ((sounds[i]->preserve == false) && (!IsSoundPlaying(sounds[i]) && !IsSoundPaused(sounds[i])))
 			DeleteSound(sounds[i]);
 }
 
@@ -199,9 +211,9 @@ AudioSound_t *AudioManager::AddSound()
 	default:break;
 	}
 
-	alGenEffects(1, &sound->effect);
+	alGenAuxiliaryEffectSlots(1, &sound->effect_slot);
 	if (alGetError() != AL_NO_ERROR)
-		Con_Warning("Failed to create audio effect!\n");
+		Con_Warning("Failed to create audio effect slot!\n");
 
 	sound->volume			= 1.0f;
 	sound->pitch			= 1.0f;
@@ -235,6 +247,8 @@ void AudioManager::PlaySound(const AudioSound_t *sound)
 		alSourcef(sound->source, AL_ROLLOFF_FACTOR, 1.0f);
 	}
 
+	alAuxiliaryEffectSloti(sound->effect_slot, AL_EFFECTSLOT_EFFECT, effect_global->id);
+
 	// Play the source.
 	alSourcePlay(sound->source);
 }
@@ -247,10 +261,9 @@ void AudioManager::PlaySound(ClientEntity_t *entity, const AudioSample_t *cache,
 		return;
 	}
 
-	AudioSound_t *sound = AddSound();
-	sound->auto_delete	= true;
-	sound->volume		= volume;
-	sound->cache		= cache;
+	AudioSound_t *sound		= AddSound();
+	sound->volume			= volume;
+	sound->cache			= cache;
 
 	plVectorCopy3fv(entity->origin, sound->position);
 
@@ -265,10 +278,10 @@ void AudioManager::PlaySound(const char *path)
 		return;
 	}
 
-	AudioSound_t *sound = AddSound();
-	sound->auto_delete	= true;
-	sound->local		= true;
+	AudioSound_t *sound		= AddSound();
+	sound->local			= true;
 
+	PrecacheSample(path, false);
 	LoadSound(sound, path);
 	PlaySound(sound);
 }
@@ -339,10 +352,10 @@ void AudioManager::DeleteSound(AudioSound_t *sound)
 	// Delete OpenAL-specific data.
 	if (alIsBuffer(sound->buffer))
 		alDeleteBuffers(1, &sound->buffer);
-	if (alIsEffect(sound->effect))
-		alDeleteEffects(1, &sound->effect);
 	if (alIsSource(sound->source))
 		alDeleteSources(1, &sound->source);
+	if (alIsAuxiliaryEffectSlot(sound->effect_slot))
+		alDeleteAuxiliaryEffectSlots(1, &sound->effect_slot);
 
 	// Set cache as null.
 	sound->cache = nullptr;
@@ -356,11 +369,64 @@ void AudioManager::DeleteSound(AudioSound_t *sound)
 		}
 }
 
-bool AudioManager::IsSoundPlaying(const AudioSound_t *sample)
+void AudioManager::SetEffectReverb(const AudioEffect_t *effect, AudioEffectReverb_t mode)
+{
+	EFXEAXREVERBPROPERTIES reverb = EFX_REVERB_PRESET_GENERIC;
+	switch (mode)
+	{
+	case AUDIO_REVERB_ALLEY:
+		reverb = EFX_REVERB_PRESET_ALLEY;
+		break;
+	case AUDIO_REVERB_ARENA:
+		reverb = EFX_REVERB_PRESET_ARENA;
+		break;
+	case AUDIO_REVERB_AUDITORIUM:
+		reverb = EFX_REVERB_PRESET_AUDITORIUM;
+		break;
+	case AUDIO_REVERB_BATHROOM:
+		reverb = EFX_REVERB_PRESET_BATHROOM;
+		break;
+	case AUDIO_REVERB_CARPETEDHALLWAY:
+		reverb = EFX_REVERB_PRESET_CARPETEDHALLWAY;
+		break;
+	case AUDIO_REVERB_CAVE:
+		reverb = EFX_REVERB_PRESET_CAVE;
+		break;
+	case AUDIO_REVERB_CHAPEL:
+		reverb = EFX_REVERB_PRESET_CHAPEL;
+		break;
+	case AUDIO_REVERB_CITY:
+		reverb = EFX_REVERB_PRESET_CITY;
+		break;
+	default:Con_Warning("Unknown reverb mode! (%i)\n", mode);
+		return;
+	}
+
+	alEffecti(effect->id, AL_EFFECT_TYPE, AL_EFFECT_REVERB);
+	alEffectf(effect->id, AL_REVERB_DENSITY, reverb.flDensity);
+	alEffectf(effect->id, AL_REVERB_DIFFUSION, reverb.flDiffusion);
+	alEffectf(effect->id, AL_REVERB_GAIN, reverb.flGain);
+	alEffectf(effect->id, AL_REVERB_GAINHF, reverb.flGainHF);
+	alEffectf(effect->id, AL_REVERB_DECAY_TIME, reverb.flDecayTime);
+	alEffectf(effect->id, AL_REVERB_DECAY_HFRATIO, reverb.flDecayHFRatio);
+	alEffectf(effect->id, AL_REVERB_REFLECTIONS_GAIN, reverb.flReflectionsGain);
+	alEffectf(effect->id, AL_REVERB_REFLECTIONS_DELAY, reverb.flReflectionsDelay);
+	alEffectf(effect->id, AL_REVERB_LATE_REVERB_GAIN, reverb.flLateReverbGain);
+	alEffectf(effect->id, AL_REVERB_LATE_REVERB_DELAY, reverb.flLateReverbDelay);
+	alEffectf(effect->id, AL_REVERB_AIR_ABSORPTION_GAINHF, reverb.flAirAbsorptionGainHF);
+	alEffectf(effect->id, AL_REVERB_ROOM_ROLLOFF_FACTOR, reverb.flRoomRolloffFactor);
+	alEffecti(effect->id, AL_REVERB_DECAY_HFLIMIT, reverb.iDecayHFLimit);
+	
+	int err = alGetError();
+	if (err != AL_NO_ERROR)
+		Con_Warning("Failed to apply reverb effect!\n%s\n", alGetString(err));
+}
+
+bool AudioManager::IsSoundPlaying(const AudioSound_t *sound)
 {
 	int state;
 
-	alGetSourcei(sample->source, AL_SOURCE_STATE, &state);
+	alGetSourcei(sound->source, AL_SOURCE_STATE, &state);
 	if (state == AL_PLAYING)
 		return true;
 
@@ -376,6 +442,31 @@ bool AudioManager::IsSoundPaused(const AudioSound_t *sample)
 		return true;
 	
 	return false;
+}
+
+// Effects
+
+AudioEffect_t *AudioManager::AddEffect()
+{
+	AudioEffect_t *effect = new AudioEffect_t;
+	alGenEffects(1, &effect->id);
+	if (alGetError() != AL_NO_ERROR)
+	{
+		Con_Warning("Failed to create audio effect!\n");
+
+		delete effect;
+		return nullptr;
+	}
+
+	return effect;
+}
+
+void AudioManager::DeleteEffect(AudioEffect_t *effect)
+{
+	if (alIsEffect(effect->id))
+		alDeleteEffects(1, &effect->id);
+
+	delete effect;
 }
 
 // Samples
@@ -523,11 +614,6 @@ void AudioManager::DeleteSample(AudioSample_t *sample)
 
 void AudioManager::ClearSamples()
 {
-#if 0
-	for (auto &sample : samples)
-		DeleteSample(sample.second);
-#endif
-
 	samples.clear();
 }
 
@@ -556,7 +642,7 @@ void AudioManager::ListSounds()
 	{
 		size = sample.second->length * sample.second->width * (sample.second->stereo + 1);
 		mem += size;
-		Con_SafePrintf(" Sample : ");
+		Con_SafePrintf(" Sample(%s) : ", sample.first.c_str());
 		if (sample.second->loopstart >= 0)
 			Con_SafePrintf("Loop(true) ");
 		else
@@ -581,7 +667,7 @@ void AudioManager::ListSounds()
 			(int)sounds[i]->position[2],
 			sounds[i]->pitch);
 
-	Con_Printf("%i sounds, %i bytes\n", samples.size(), mem);
+	Con_Printf("%i samples, %i sounds, %i bytes\n", samples.size(), sounds.size(), mem);
 }
 
 /*
@@ -626,8 +712,11 @@ void Audio_PlayLocalSound(const char *path)
 	g_audiomanager->PlaySound(path);
 }
 
-void Audio_PlayTemporarySound(ClientEntity_t *entity, const AudioSample_t *cache, float volume)
+void Audio_PlayTemporarySound(ClientEntity_t *entity, const char *path, float volume)
 {
+	AudioSample_t *cache = g_audiomanager->FindSample(path);
+	if (!cache)
+		return;
 	g_audiomanager->PlaySound(entity, cache, volume);
 }
 

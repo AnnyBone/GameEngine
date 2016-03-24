@@ -174,7 +174,7 @@ void CL_ParseStartSoundPacket(void)
 #ifdef _MSC_VER
 #pragma warning(suppress: 6385)
 #endif
-	Audio_PlayTemporarySound(&cl_temp_entities[ent], &cl.sound_precache[sound_num], iVolume);
+	Audio_PlayTemporarySound(&cl_temp_entities[ent], cl.sound_precache[sound_num], iVolume);
 }
 
 /*	When the client is taking a long time to load stuff, send keepalive messages
@@ -372,6 +372,9 @@ void Client_ParseServerInfo(void)
 	for (i=1 ; i<numsounds ; i++)
 	{
 		Audio_PrecacheSample(cSoundPrecache[i], false);
+
+		strncpy(cl.sound_precache[i], cSoundPrecache[i], sizeof(cl.sound_precache[i]));
+
 		CL_KeepaliveMessage ();
 	}
 

@@ -19,12 +19,6 @@
     <Filter Include="Legacy\Client">
       <UniqueIdentifier>{f0ccfc9a-bab0-4174-9895-f5246a8ab4fb}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Legacy\Client\Audio">
-      <UniqueIdentifier>{08d41959-b691-4200-8939-61ac28b06306}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Legacy\Client\Audio\Interfaces">
-      <UniqueIdentifier>{4068ff62-f40e-400d-aa30-a573d3113102}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Legacy\Client\Video">
       <UniqueIdentifier>{77ea4c2d-fc29-4aeb-bb27-3c33e9606552}</UniqueIdentifier>
     </Filter>
@@ -164,12 +158,6 @@
     </ClCompile>
     <ClCompile Include="EngineClientChase.c">
       <Filter>Legacy\Client</Filter>
-    </ClCompile>
-    <ClCompile Include="EngineAudioDirectSound.c">
-      <Filter>Legacy\Client\Audio\Interfaces</Filter>
-    </ClCompile>
-    <ClCompile Include="EngineAudioDummy.c">
-      <Filter>Legacy\Client\Audio\Interfaces</Filter>
     </ClCompile>
     <ClCompile Include="EngineVideoTextureManager.c">
       <Filter>Legacy\Client\Video</Filter>
@@ -323,7 +311,7 @@
       <Filter>Legacy\Console</Filter>
     </ClCompile>
     <ClCompile Include="audio_wav.c">
-      <Filter>Legacy\Client\Audio</Filter>
+      <Filter>Client\Audio</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

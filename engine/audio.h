@@ -39,16 +39,59 @@ typedef struct
 	uint8_t	*data;
 } AudioSample_t;
 
+typedef struct
+{
+	unsigned int id;
+} AudioEffect_t;
+
+typedef unsigned int AudioAuxiliaryEffect_t;
 typedef unsigned int AudioSource_t;
 typedef unsigned int AudioBuffer_t;
-typedef unsigned int AudioEffect_t;
+
+/*	To keep reverb implementation
+	as easy to use as possible,
+	we're just going to rely on
+	these preset types for now
+	that are provided by OpenAL.
+	(okay not all of them, but most)
+*/
+typedef enum
+{
+	AUDIO_REVERB_GENERIC,
+	AUDIO_REVERB_PADDEDCELL,
+	AUDIO_REVERB_ROOM,
+	AUDIO_REVERB_BATHROOM,
+	AUDIO_REVERB_LIVINGROOM,
+	AUDIO_REVERB_STONEROOM,
+	AUDIO_REVERB_AUDITORIUM,
+	AUDIO_REVERB_CONCERTHALL,
+	AUDIO_REVERB_CAVE,
+	AUDIO_REVERB_ARENA,
+	AUDIO_REVERB_HANGAR,
+	AUDIO_REVERB_CARPETEDHALLWAY,
+	AUDIO_REVERB_HALLWAY,
+	AUDIO_REVERB_STONECORRIDOR,
+	AUDIO_REVERB_ALLEY,
+	AUDIO_REVERB_FOREST,
+	AUDIO_REVERB_CITY,
+	AUDIO_REVERB_MOUNTAINS,
+	AUDIO_REVERB_QUARRY,
+	AUDIO_REVERB_PLAIN,
+	AUDIO_REVERB_PARKINGLOT,
+	AUDIO_REVERB_SEWERPIPE,
+	AUDIO_REVERB_UNDERWATER,
+	AUDIO_REVERB_DRUGGED,
+	AUDIO_REVERB_DIZZY,
+	AUDIO_REVERB_PSYCHOTIC,
+	AUDIO_REVERB_CHAPEL
+} AudioEffectReverb_t;
 
 typedef struct
 {
 	// OpenAL-specific data.
-	AudioBuffer_t	buffer;
-	AudioEffect_t	effect;
-	AudioSource_t	source;
+	AudioBuffer_t			buffer;
+	AudioAuxiliaryEffect_t	effect_slot;
+	AudioSource_t			source;
 
 	const AudioSample_t *cache;
 
@@ -65,7 +108,7 @@ typedef struct
 	bool local;		// Only played locally.
 	bool loop;		// Loop the sound?
 
-	bool auto_delete;
+	bool preserve;
 } AudioSound_t;
 
 #ifdef __cplusplus
@@ -88,6 +131,10 @@ namespace Core
 		void LoadSound(AudioSound_t *sound, const char *path);
 		void StopSound(const AudioSound_t *sound);
 		void PauseSound(const AudioSound_t *sound);
+
+		AudioEffect_t *AddEffect();
+		void DeleteEffect(AudioEffect_t *effect);
+		void SetEffectReverb(const AudioEffect_t *effect, AudioEffectReverb_t mode);
 
 		void StopSounds();		// Stops all sounds from playing.
 		void ClearSounds();		// Clears all sounds.
@@ -112,6 +159,8 @@ namespace Core
 		};
 		AudioExtensions extensions;
 
+		AudioEffect_t *effect_global;
+
 		std::vector<AudioSound_t*> sounds;
 
 		std::unordered_map<std::string, AudioSample_t*> samples;
@@ -124,7 +173,7 @@ plEXTERN_C_START
 
 void Audio_Initialize(void);
 void Audio_Frame(void);
-void Audio_PlayTemporarySound(ClientEntity_t *entity, const AudioSample_t *cache, float volume);
+void Audio_PlayTemporarySound(ClientEntity_t *entity, const char *path, float volume);
 void Audio_StopSounds(void);
 void Audio_PrecacheSample(const char *path, bool preserve);
 void Audio_Shutdown(void);

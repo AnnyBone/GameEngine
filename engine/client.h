@@ -178,7 +178,7 @@ typedef struct
 
 	// Information that is static for the entire time connected to a server
 	struct model_s		*model_precache[MAX_MODELS];
-	char				*sound_precache[MAX_SOUNDS];
+	char				sound_precache[MAX_SOUNDS][MAX_QPATH];
 
 	char			levelname[128];	// for display on solo scoreboard //johnfitz -- was 40.
 	unsigned int	viewentity;		// cl_entitites[cl.viewentity] = player
