@@ -95,8 +95,8 @@ typedef struct
 
 	const AudioSample_t *cache;
 
-	plVector3f_t position;	// Position of the sound.
-	plVector3f_t velocity;	// Speed of movement.
+	plVector3f_t current_position;	// Position of the sound.
+	plVector3f_t current_velocity;	// Speed of movement.
 
 	ClientEntity_t	*entity;	// Owner, typically sound will follow this.
 	int				channel;	// Only really relevent for legacy stuff!
@@ -126,11 +126,13 @@ namespace Core
 		AudioSound_t *AddSound();
 		void DeleteSound(AudioSound_t *sound);
 		void PlaySound(const AudioSound_t *sound);
-		void PlaySound(ClientEntity_t *entity, const AudioSample_t *cache, float volume);
 		void PlaySound(const char *path);
 		void LoadSound(AudioSound_t *sound, const char *path);
 		void StopSound(const AudioSound_t *sound);
 		void PauseSound(const AudioSound_t *sound);
+
+		void SetSoundPosition(AudioSound_t *sound, plVector3f_t position);
+		void SetSoundVelocity(AudioSound_t *sound, plVector3f_t velocity);
 
 		AudioEffect_t *AddEffect();
 		void DeleteEffect(AudioEffect_t *effect);

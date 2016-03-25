@@ -117,6 +117,12 @@ AudioManager::AudioManager()
 		alIsAuxiliaryEffectSlot			= (LPALISAUXILIARYEFFECTSLOT)alGetProcAddress("alIsAuxiliaryEffectSlot");
 		alAuxiliaryEffectSloti			= (LPALAUXILIARYEFFECTSLOTI)alGetProcAddress("alAuxiliaryEffectSloti");
 
+#if 0
+		alGenAuxiliaryEffectSlots(1, &sound->effect_slot);
+		if (alGetError() != AL_NO_ERROR)
+			Con_Warning("Failed to create audio effect slot!\n");
+#endif
+
 		extensions.efx = true;
 	}
 	if (alIsExtensionPresent("AL_SOFT_buffer_samples"))
@@ -148,7 +154,7 @@ AudioManager::~AudioManager()
 
 void AudioManager::Frame()
 {
-	MathVector3f_t	position, orientation, velocity;
+	plVector3f_t	position, orientation, velocity;
 
 	// TODO: Have nothing to assign this to yet.
 	plVectorCopy3fv(pl_origin3f, velocity);
@@ -165,13 +171,30 @@ void AudioManager::Frame()
 	}
 
 	alListenerfv(AL_POSITION, position);
-	alListener3f(AL_ORIENTATION, orientation[0], orientation[1], orientation[2]);
+
+	plVector3f_t forward, right, up;
+	plAngleVectors(orientation, forward, right, up);
+	float lis_orientation[6];
+	lis_orientation[0] = forward[0];
+	lis_orientation[1] = forward[1];
+	lis_orientation[2] = forward[2];
+	lis_orientation[3] = up[0];
+	lis_orientation[4] = up[1];
+	lis_orientation[5] = up[2];
+	alListenerfv(AL_ORIENTATION, lis_orientation);
 	alListenerfv(AL_VELOCITY, velocity);
 
 	// Check if there's any sounds we can delete.
 	for (unsigned int i = 0; i < sounds.size(); i++)
+	{
 		if ((sounds[i]->preserve == false) && (!IsSoundPlaying(sounds[i]) && !IsSoundPaused(sounds[i])))
 			DeleteSound(sounds[i]);
+		else if (IsSoundPlaying(sounds[i]))
+		{
+			if (sounds[i]->entity)
+				SetSoundPosition(sounds[i], sounds[i]->entity->origin);
+		}
+	}
 }
 
 AudioSound_t *AudioManager::AddSound()
@@ -211,24 +234,42 @@ AudioSound_t *AudioManager::AddSound()
 	default:break;
 	}
 
-	alGenAuxiliaryEffectSlots(1, &sound->effect_slot);
-	if (alGetError() != AL_NO_ERROR)
-		Con_Warning("Failed to create audio effect slot!\n");
-
 	sound->volume			= 1.0f;
 	sound->pitch			= 1.0f;
-	sound->max_distance		= 1024.0f;
+	sound->max_distance		= 0.5f;
 
 	return sound;
+}
+
+void AudioManager::SetSoundPosition(AudioSound_t *sound, plVector3f_t position)
+{
+	// Check that it's actually moved.
+	if (plVectorCompare(position, sound->current_position))
+		return;
+
+	alSourcefv(sound->source, AL_POSITION, position);
+	Con_Printf("origin: %f %f %f\n", position[0], position[1], position[2]);
+	
+	// Keep cur position updated.
+	plVectorCopy3fv(position, sound->current_position);
+}
+
+void AudioManager::SetSoundVelocity(AudioSound_t *sound, plVector3f_t velocity)
+{
+	// Check that current velocity has changed.
+	if (plVectorCompare(velocity, sound->current_velocity))
+		return;
+
+	alSourcefv(sound->source, AL_VELOCITY, velocity);	// todo
+
+	// Keep cur velocity updated.
+	plVectorCopy3fv(velocity, sound->current_velocity);
 }
 
 void AudioManager::PlaySound(const AudioSound_t *sound)
 {
 	if (!sound || IsSoundPlaying(sound))
 		return;
-
-	alSourcefv(sound->source, AL_POSITION, sound->position);
-	alSourcefv(sound->source, AL_VELOCITY, sound->velocity);
 
 	alSourcef(sound->source, AL_PITCH, sound->pitch);
 	alSourcef(sound->source, AL_GAIN, sound->volume);
@@ -243,7 +284,7 @@ void AudioManager::PlaySound(const AudioSound_t *sound)
 	}
 	else
 	{
-		alSourcei(sound->source, AL_SOURCE_RELATIVE, AL_TRUE);
+		alSourcei(sound->source, AL_SOURCE_RELATIVE, AL_FALSE);
 		alSourcef(sound->source, AL_ROLLOFF_FACTOR, 1.0f);
 	}
 
@@ -251,23 +292,6 @@ void AudioManager::PlaySound(const AudioSound_t *sound)
 
 	// Play the source.
 	alSourcePlay(sound->source);
-}
-
-void AudioManager::PlaySound(ClientEntity_t *entity, const AudioSample_t *cache, float volume)
-{
-	if (!cache)
-	{
-		Con_Warning("Invalid sound!\n");
-		return;
-	}
-
-	AudioSound_t *sound		= AddSound();
-	sound->volume			= volume;
-	sound->cache			= cache;
-
-	plVectorCopy3fv(entity->origin, sound->position);
-
-	PlaySound(sound);
 }
 
 void AudioManager::PlaySound(const char *path)
@@ -659,12 +683,12 @@ void AudioManager::ListSounds()
 	for (unsigned int i = 0; i < sounds.size(); i++)
 		Con_SafePrintf(" Sound : Volume(%5.1f) Velocity(%i %i %i) Position(%i %i %i) Pitch(%5.1f)\n",
 			sounds[i]->volume,
-			(int)sounds[i]->velocity[0],
-			(int)sounds[i]->velocity[1],
-			(int)sounds[i]->velocity[2],
-			(int)sounds[i]->position[0],
-			(int)sounds[i]->position[1],
-			(int)sounds[i]->position[2],
+			(int)sounds[i]->current_velocity[0],
+			(int)sounds[i]->current_velocity[1],
+			(int)sounds[i]->current_velocity[2],
+			(int)sounds[i]->current_position[0],
+			(int)sounds[i]->current_position[1],
+			(int)sounds[i]->current_position[2],
 			sounds[i]->pitch);
 
 	Con_Printf("%i samples, %i sounds, %i bytes\n", samples.size(), sounds.size(), mem);
@@ -714,10 +738,14 @@ void Audio_PlayLocalSound(const char *path)
 
 void Audio_PlayTemporarySound(ClientEntity_t *entity, const char *path, float volume)
 {
-	AudioSample_t *cache = g_audiomanager->FindSample(path);
-	if (!cache)
-		return;
-	g_audiomanager->PlaySound(entity, cache, volume);
+	AudioSound_t *sound		= g_audiomanager->AddSound();
+	sound->entity			= entity;
+	sound->volume			= volume;
+
+	g_audiomanager->SetSoundPosition(sound, entity->origin);
+
+	g_audiomanager->LoadSound(sound, path);
+	g_audiomanager->PlaySound(sound);
 }
 
 void Audio_StopSound(const AudioSound_t *sample)
