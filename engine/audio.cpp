@@ -131,6 +131,8 @@ AudioManager::AudioManager()
 	if (alIsExtensionPresent("AL_SOFT_buffer_samples"))
 		extensions.soft_buffer_samples = true;
 
+	alDopplerFactor(2.0f);
+
 	effect_global = AddEffect();
 	SetEffectReverb(effect_global, AUDIO_REVERB_AUDITORIUM);
 }
@@ -157,7 +159,7 @@ AudioManager::~AudioManager()
 
 void AudioManager::Frame()
 {
-	plVector3f_t	position, orientation, velocity;
+	plVector3f_t position, orientation, velocity;
 
 	// TODO: Have nothing to assign this to yet.
 	plVectorCopy3fv(pl_origin3f, velocity);
@@ -173,17 +175,15 @@ void AudioManager::Frame()
 		plVectorCopy3fv(pl_origin3f, orientation);
 	}
 
-	alListenerfv(AL_POSITION, position);
-
+	// Convert orientation to something OpenAL can use.
 	plVector3f_t forward, right, up;
 	plAngleVectors(orientation, forward, right, up);
 	float lis_orientation[6];
-	lis_orientation[0] = forward[0];
-	lis_orientation[1] = forward[1];
-	lis_orientation[2] = forward[2];
-	lis_orientation[3] = up[0];
-	lis_orientation[4] = up[1];
-	lis_orientation[5] = up[2];
+	lis_orientation[0] = forward[0]; lis_orientation[3] = up[0];
+	lis_orientation[1] = forward[1]; lis_orientation[4] = up[1];
+	lis_orientation[2] = forward[2]; lis_orientation[5] = up[2];
+
+	alListenerfv(AL_POSITION, position);
 	alListenerfv(AL_ORIENTATION, lis_orientation);
 	alListenerfv(AL_VELOCITY, velocity);
 
@@ -275,7 +275,8 @@ void AudioManager::PlaySound(const AudioSound_t *sound)
 
 	alSourcef(sound->source, AL_PITCH, sound->pitch);
 	alSourcef(sound->source, AL_GAIN, sound->volume);
-	alSourcef(sound->source, AL_MAX_DISTANCE, sound->max_distance);
+	alSourcef(sound->source, AL_REFERENCE_DISTANCE, 300.0f);
+	//alSourcef(sound->source, AL_MAX_DISTANCE, sound->max_distance);
 
 	alSourcei(sound->source, AL_BUFFER, sound->buffer);
 	if (sound->cache->loopstart >= 0)
