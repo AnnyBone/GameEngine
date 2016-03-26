@@ -278,6 +278,8 @@ void AudioManager::PlaySound(const AudioSound_t *sound)
 	alSourcef(sound->source, AL_MAX_DISTANCE, sound->max_distance);
 
 	alSourcei(sound->source, AL_BUFFER, sound->buffer);
+	if (sound->cache->loopstart >= 0)
+		alSourcei(sound->source, AL_LOOPING, AL_TRUE);
 	
 	if (sound->local)
 	{
@@ -744,7 +746,8 @@ void Audio_PlayTemporarySound(plVector3f_t position, bool local, const char *pat
 	sound->volume			= volume;
 	sound->local			= local;
 
-	g_audiomanager->SetSoundPosition(sound, position);
+	if (!sound->local)
+		g_audiomanager->SetSoundPosition(sound, position);
 
 	g_audiomanager->LoadSound(sound, path);
 	g_audiomanager->PlaySound(sound);

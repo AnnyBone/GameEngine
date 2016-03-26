@@ -781,7 +781,7 @@ void CL_ParseStaticSound (int version) //johnfitz -- added argument
 	vol = MSG_ReadByte ();
 	atten = MSG_ReadByte ();
 
-//	S_StaticSound (cl.sound_precache[sound_num], org, vol, atten);
+	Audio_PlayTemporarySound(org, false, cl.sound_precache[sound_num], ((float)vol) / 255.0f);
 }
 
 #define SHOWNET(x) if(cl_shownet.value==2)Con_Printf ("%3i:%s\n", msg_readcount-1, x);

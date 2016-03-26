@@ -106,7 +106,6 @@ typedef struct
 	float volume;			// Volume of the sound.
 
 	bool local;		// Only played locally.
-	bool loop;		// Loop the sound?
 
 	bool preserve;
 } AudioSound_t;
