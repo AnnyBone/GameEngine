@@ -175,7 +175,7 @@ plEXTERN_C_START
 
 void Audio_Initialize(void);
 void Audio_Frame(void);
-void Audio_PlayTemporarySound(ClientEntity_t *entity, const char *path, float volume);
+void Audio_PlayTemporarySound(plVector3f_t position, bool local, const char *path, float volume);
 void Audio_StopSounds(void);
 void Audio_PrecacheSample(const char *path, bool preserve);
 void Audio_Shutdown(void);

@@ -32,6 +32,9 @@
 	Confused?
 
 	You should be.
+
+	TODO:
+		- Add 'channel' override to support some hacky shit
 */
 
 ConsoleVariable_t cv_audio_volume			= { "audio_volume", "1", true };
@@ -214,7 +217,7 @@ AudioSound_t *AudioManager::AddSound()
 		Con_Warning("There is not enough memory to generate the requested sound source!\n");
 		break;
 	case AL_INVALID_VALUE:
-		Con_Warning("");
+		Con_Warning("someshittywarning.lol\n");
 		break;
 	case AL_INVALID_OPERATION:
 		Con_Warning("Invalid context for creation of sound source!\n");
@@ -248,7 +251,6 @@ void AudioManager::SetSoundPosition(AudioSound_t *sound, plVector3f_t position)
 		return;
 
 	alSourcefv(sound->source, AL_POSITION, position);
-	Con_Printf("origin: %f %f %f\n", position[0], position[1], position[2]);
 	
 	// Keep cur position updated.
 	plVectorCopy3fv(position, sound->current_position);
@@ -736,13 +738,13 @@ void Audio_PlayLocalSound(const char *path)
 	g_audiomanager->PlaySound(path);
 }
 
-void Audio_PlayTemporarySound(ClientEntity_t *entity, const char *path, float volume)
+void Audio_PlayTemporarySound(plVector3f_t position, bool local, const char *path, float volume)
 {
 	AudioSound_t *sound		= g_audiomanager->AddSound();
-	sound->entity			= entity;
 	sound->volume			= volume;
+	sound->local			= local;
 
-	g_audiomanager->SetSoundPosition(sound, entity->origin);
+	g_audiomanager->SetSoundPosition(sound, position);
 
 	g_audiomanager->LoadSound(sound, path);
 	g_audiomanager->PlaySound(sound);
