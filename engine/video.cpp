@@ -500,9 +500,10 @@ void Video_DrawObject(VideoVertex_t *vobject, VideoPrimitive_t primitive,
 		return;
 
 	VideoObject_t tempobj;
-	tempobj.vertices		= vobject;
-	tempobj.numverts		= numverts;
-	tempobj.primitive		= primitive;
+	tempobj.vertices			= vobject;
+	tempobj.numverts			= numverts;
+	tempobj.primitive			= primitive;
+	tempobj.primitive_restore	= primitive;
 
 	// Set the skin and ensure it's valid.
 	Material_SetSkin(mMaterial, iSkin);

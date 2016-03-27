@@ -49,7 +49,7 @@ int	allocated[MAX_LIGHTMAPS][BLOCK_WIDTH];
 // main memory so texsubimage can update properly
 uint8_t	lightmaps[LIGHTMAP_BYTES*MAX_LIGHTMAPS*BLOCK_WIDTH*BLOCK_HEIGHT];
 
-void R_BuildLightMap (msurface_t *surf, byte *dest, int stride);
+void R_BuildLightMap (msurface_t *surf, uint8_t *dest, int stride);
 
 /*	johnfitz -- added "frame" param to eliminate use of "currententity" global
 */
@@ -255,7 +255,7 @@ void Brush_Draw(ClientEntity_t *e)
 		glRotatef(-e->angles[1],0,0,1);
 		glTranslatef(-e->origin[0],-e->origin[1],-e->origin[2]);
 		glGetFloatv(GL_MODELVIEW_MATRIX,matrix);
-		vlPopMatrix();
+		glPopMatrix();
 
 		for(k = 0; k < MAX_DLIGHTS; k++)
 		{
@@ -594,7 +594,6 @@ void R_BuildLightMap (msurface_t *surf, byte *dest, int stride)
 		if (lightmap)
 			for(maps = 0; maps < BSP_MAX_LIGHTMAPS && surf->styles[maps] != 255; maps++)
 			{
-				// [16/5/2013] Let us scale the lightmap ~hogsy
 				scale = d_lightstylevalue[surf->styles[maps]];
 				surf->cached_light[maps] = scale;	// 8.8 fraction
 				//johnfitz -- lit support via lordhavoc
@@ -624,7 +623,7 @@ void R_BuildLightMap (msurface_t *surf, byte *dest, int stride)
 		{
 			t = *bl++ >> cv_video_lightmapoversample.iValue; if (t > 255) t = 255; dest[2] = t;
 			t = *bl++ >> cv_video_lightmapoversample.iValue; if (t > 255) t = 255; dest[1] = t;
-			t = *bl++ >> cv_video_lightmapoversample.iValue;if (t > 255) t = 255;dest[0] = t;
+			t = *bl++ >> cv_video_lightmapoversample.iValue; if (t > 255) t = 255;dest[0] = t;
 
 			dest[3] = 255;
 		}
