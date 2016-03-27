@@ -28,9 +28,6 @@
     <Filter Include="Legacy\Client\Video">
       <UniqueIdentifier>{77ea4c2d-fc29-4aeb-bb27-3c33e9606552}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Legacy\Client\Video\Legacy">
-      <UniqueIdentifier>{77b73aa0-88f4-466f-af2f-4bbaf7543669}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Legacy\Client\Editor">
       <UniqueIdentifier>{21f0f25d-e661-4ea9-8dd5-b90a159a2702}</UniqueIdentifier>
     </Filter>
@@ -107,9 +104,6 @@
     </ClCompile>
     <ClCompile Include="crc.c">
       <Filter>Legacy</Filter>
-    </ClCompile>
-    <ClCompile Include="..\external\glee\GLee.c">
-      <Filter>Legacy\External</Filter>
     </ClCompile>
     <ClCompile Include="conproc.c">
       <Filter>Legacy</Filter>
@@ -246,12 +240,6 @@
     <ClCompile Include="EngineClientInput.c">
       <Filter>Legacy\Client</Filter>
     </ClCompile>
-    <ClCompile Include="EngineVideoLegacy2.c">
-      <Filter>Legacy\Client\Video\Legacy</Filter>
-    </ClCompile>
-    <ClCompile Include="EngineVideoLegacy.c">
-      <Filter>Legacy\Client\Video\Legacy</Filter>
-    </ClCompile>
     <ClCompile Include="EngineImage.c">
       <Filter>Legacy\Client</Filter>
     </ClCompile>
@@ -328,8 +316,17 @@
     <ClCompile Include="video_testbed.cpp">
       <Filter>Client\Video</Filter>
     </ClCompile>
+    <ClCompile Include="video_glidewindow.c">
+      <Filter>Client\Video\Interfaces</Filter>
+    </ClCompile>
     <ClCompile Include="EngineConsole.cpp">
       <Filter>Legacy\Console</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineVideoLegacy.c">
+      <Filter>Legacy\Client\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineVideoLegacy2.c">
+      <Filter>Legacy\Client\Video</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

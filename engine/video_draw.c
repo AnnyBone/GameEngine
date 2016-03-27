@@ -140,7 +140,7 @@ void Draw_MaterialSurface(Material_t *mMaterial, int iSkin,	int x, int y, int w,
 	}
 
 	// Disable depth testing.
-	vlDisable(VIDEO_DEPTH_TEST);
+	vlDisable(VL_CAPABILITY_DEPTH_TEST);
 
 	// Set the colour.
 	Video_ObjectColour(&voSurface[0], 1.0f, 1.0f, 1.0f, fAlpha);
@@ -163,7 +163,7 @@ void Draw_MaterialSurface(Material_t *mMaterial, int iSkin,	int x, int y, int w,
 	// Throw it off to the rendering pipeline.
 	Video_DrawFill(voSurface, mMaterial, iSkin);
 
-	vlEnable(VIDEO_DEPTH_TEST);
+	vlEnable(VL_CAPABILITY_DEPTH_TEST);
 }
 
 /*	TODO: Make me obsolete!
@@ -358,7 +358,7 @@ void Draw_Character(int x, int y, int num)
 	fcol = col*0.0625f;
 	size = 0.0625f;
 
-	vlDisable(VIDEO_DEPTH_TEST);
+	vlDisable(VL_CAPABILITY_DEPTH_TEST);
 
 	Video_ObjectVertex(&voCharacter[0], x, y, 0);
 	Video_ObjectColour(&voCharacter[0], 1.0f, 1.0f, 1.0f, 1.0f);
@@ -378,7 +378,7 @@ void Draw_Character(int x, int y, int num)
 
 	Video_DrawFill(voCharacter, g_mGlobalConChars, 0);
 
-	vlEnable(VIDEO_DEPTH_TEST);
+	vlEnable(VL_CAPABILITY_DEPTH_TEST);
 }
 
 /*	Draws a simple string of text on the screen.
@@ -403,7 +403,7 @@ void Draw_String(int x, int y, const char *msg)
 void Draw_ConsoleBackground(void)
 {
 	float		alpha = cvConsoleAlpha.value;
-	Colour_t	black, lightblack;
+	plColour_t	black, lightblack;
 
 	if (cls.state != ca_connected)
 		// TODO: we're not clearing buffers when disconnected...
@@ -422,6 +422,8 @@ void Draw_ConsoleBackground(void)
 
 void Draw_GradientBackground(void)
 {
+#if defined (VL_MODE_GLIDE)
+#else
 	VideoCanvasType_t vctOldCanvas; //johnfitz
 
 	glMatrixMode(GL_PROJECTION);
@@ -435,7 +437,7 @@ void Draw_GradientBackground(void)
 	GL_SetCanvas(CANVAS_DEFAULT);
 	currentcanvas = vctOldCanvas;
 
-	Colour_t
+	plColour_t
 		cTop	= { 0.1f, 0.1f, 0.1f, 1.0f },
 		cBottom = { 0.5f, 0.5f, 0.5f, 1.0f };
 	Draw_GradientFill(0, 0, Video.iWidth, Video.iHeight, cTop, cBottom);
@@ -445,6 +447,7 @@ void Draw_GradientBackground(void)
 	glMatrixMode(GL_MODELVIEW);
 	glPopMatrix();
 	glViewport(0, 0, Video.iWidth, Video.iHeight);
+#endif
 }
 
 /*	This repeats a 64*64 tile graphic to fill the screen around a sized down
@@ -476,7 +479,7 @@ void Draw_TileClear (int x, int y, int w, int h)
 #endif
 }
 
-void Draw_Line(MathVector3f_t mvStart, MathVector3f_t mvEnd)
+void Draw_Line(plVector3f_t mvStart, plVector3f_t mvEnd)
 {
 	VideoVertex_t	voLine[2] = { { { 0 } } };
 
@@ -490,9 +493,9 @@ void Draw_Line(MathVector3f_t mvStart, MathVector3f_t mvEnd)
 
 /*	Debugging tool.
 */
-void Draw_CoordinateAxes(MathVector3f_t position)
+void Draw_CoordinateAxes(plVector3f_t position)
 {
-	MathVector3f_t start, end;
+	plVector3f_t start, end;
 
 	Math_VectorCopy(position, start);
 	Math_VectorCopy(position, end);
@@ -515,15 +518,15 @@ void Draw_CoordinateAxes(MathVector3f_t position)
 
 void Draw_Grid(float x, float y, float z, int grid_size)
 {
+	vlEnable(VL_CAPABILITY_BLEND);
+	vlDisable(VL_CAPABILITY_TEXTURE_2D);
+
+	vlBlendFunc(VL_BLEND_DEFAULT);
+
 #ifdef VL_MODE_OPENGL
 	glPushMatrix();
 
 	glTranslatef(x, y, z);
-
-	vlEnable(VIDEO_BLEND);
-	vlDisable(VIDEO_TEXTURE_2D);
-
-	vlBlendFunc(VIDEO_BLEND_DEFAULT);
 
 	glEnable(GL_LINE_SMOOTH);
 
@@ -572,14 +575,14 @@ void Draw_Grid(float x, float y, float z, int grid_size)
 
 	glDisable(GL_LINE_SMOOTH);
 
-	vlDisable(VIDEO_BLEND);
-	vlEnable(VIDEO_TEXTURE_2D);
-
 	glPopMatrix();
 #endif
+
+	vlDisable(VL_CAPABILITY_BLEND);
+	vlEnable(VL_CAPABILITY_TEXTURE_2D);
 }
 
-void Draw_Rectangle(int x, int y, int w, int h, Colour_t colour)
+void Draw_Rectangle(int x, int y, int w, int h, plColour_t colour)
 {
 	VideoVertex_t	voFill[4];
 
@@ -589,8 +592,8 @@ void Draw_Rectangle(int x, int y, int w, int h, Colour_t colour)
 	Math_Vector4Copy(colour, voFill[3].mvColour);
 
 	if (colour[3] < 1)
-		vlEnable(VIDEO_BLEND);
-	vlDisable(VIDEO_DEPTH_TEST | VIDEO_TEXTURE_2D);
+		vlEnable(VL_CAPABILITY_BLEND);
+	vlDisable(VL_CAPABILITY_DEPTH_TEST | VL_CAPABILITY_TEXTURE_2D);
 
 	Video_ObjectVertex(&voFill[0], x, y, 0);
 	Video_ObjectTexture(&voFill[0], 0, h, w);
@@ -604,17 +607,17 @@ void Draw_Rectangle(int x, int y, int w, int h, Colour_t colour)
 	Video_DrawFill(voFill, NULL, 0);
 
 	if (colour[3] < 1)
-		vlDisable(VIDEO_BLEND);
-	vlEnable(VIDEO_DEPTH_TEST | VIDEO_TEXTURE_2D);
+		vlDisable(VL_CAPABILITY_BLEND);
+	vlEnable(VL_CAPABILITY_DEPTH_TEST | VL_CAPABILITY_TEXTURE_2D);
 }
 
-void Draw_GradientFill(int x, int y, int w, int h, Colour_t mvTopColour, Colour_t mvBottomColour)
+void Draw_GradientFill(int x, int y, int w, int h, plColour_t mvTopColour, plColour_t mvBottomColour)
 {
 	VideoVertex_t	voFill[4];
 
 	if ((mvTopColour[3] < 1) || (mvBottomColour[3] < 1))
-		vlEnable(VIDEO_BLEND);
-	vlDisable(VIDEO_DEPTH_TEST | VIDEO_TEXTURE_2D);
+		vlEnable(VL_CAPABILITY_BLEND);
+	vlDisable(VL_CAPABILITY_DEPTH_TEST | VL_CAPABILITY_TEXTURE_2D);
 
 	Video_ObjectVertex(&voFill[0], x, y, 0);
 	Video_ObjectColour(&voFill[0], mvTopColour[0], mvTopColour[1], mvTopColour[2], mvTopColour[3]);
@@ -628,8 +631,8 @@ void Draw_GradientFill(int x, int y, int w, int h, Colour_t mvTopColour, Colour_
 	Video_DrawFill(voFill, NULL, 0);
 
 	if ((mvTopColour[3] < 1) || (mvBottomColour[3] < 1))
-		vlDisable(VIDEO_BLEND);
-	vlEnable(VIDEO_DEPTH_TEST | VIDEO_TEXTURE_2D);
+		vlDisable(VL_CAPABILITY_BLEND);
+	vlEnable(VL_CAPABILITY_DEPTH_TEST | VL_CAPABILITY_TEXTURE_2D);
 }
 
 void Draw_FadeScreen (void)
@@ -638,7 +641,7 @@ void Draw_FadeScreen (void)
 
 	GL_SetCanvas(CANVAS_DEFAULT);
 
-	vlEnable(VIDEO_BLEND);
+	vlEnable(VL_CAPABILITY_BLEND);
 
 	Video_ObjectVertex(&voFade[0], 0, 0, 0);
 	Video_ObjectColour(&voFade[0], 1.0f, 1.0f, 1.0f, 0.5f);
@@ -654,7 +657,7 @@ void Draw_FadeScreen (void)
 
 	Video_DrawFill(voFade, NULL, 0);
 
-	vlDisable(VIDEO_BLEND);
+	vlDisable(VL_CAPABILITY_BLEND);
 }
 
 /*	Draws the little blue disc in the corner of the screen.
@@ -662,6 +665,7 @@ void Draw_FadeScreen (void)
 */
 void Draw_BeginDisc(void)
 {
+#ifdef VL_MODE_OPENGL
 	//static float fDiscRotation = 0;
 	int	iViewport[4]; //johnfitz
 	VideoCanvasType_t oldcanvas; //johnfitz
@@ -693,10 +697,12 @@ void Draw_BeginDisc(void)
 	glPopMatrix();
 	glViewport(iViewport[0],iViewport[1],iViewport[2],iViewport[3]);
 	//johnfitz
+#endif
 }
 
 void GL_SetCanvas (VideoCanvasType_t newcanvas)
 {
+#ifdef VL_MODE_OPENGL
 	extern vrect_t		scr_vrect;
 	float				s;
 	int					lines;
@@ -760,6 +766,7 @@ void GL_SetCanvas (VideoCanvasType_t newcanvas)
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity ();
+#endif
 }
 
 void Draw_ResetCanvas(void)
@@ -778,7 +785,7 @@ void Draw_ResetCanvas(void)
 void Draw_StaticEntity(ClientEntity_t *entity)
 {
 	// TODO: TEMPORARY DEBUGGING STUFF!!!!
-	glPushMatrix();
+	vlPushMatrix();
 
 	R_RotateForEntity(entity->origin, entity->angles);
 
@@ -786,19 +793,19 @@ void Draw_StaticEntity(ClientEntity_t *entity)
 	VideoObject_DrawImmediate(&entity->model->objects[entity->frame]);
 	Material_Draw(entity->model->materials, 0, 0, 0, true);
 
-	glPopMatrix();
+	vlPopMatrix();
 	// TODO: TEMPORARY DEBUGGING STUFF!!!!
 }
 
 void Draw_VertexEntity(ClientEntity_t *entity)
 {
-	glPushMatrix();
+	vlPushMatrix();
 
 	R_RotateForEntity(entity->origin, entity->angles);
 
 	VideoObject_DrawImmediate(&entity->model->objects[entity->frame]);
 
-	glPopMatrix();
+	vlPopMatrix();
 }
 
 void Draw_Entity(ClientEntity_t *entity)

@@ -114,9 +114,10 @@ Sprite::Sprite()
 	scale		= 5.0f;
 	material	= g_mMissingMaterial;
 
-	Math_VectorClear(position);
-	Math_VectorClear(mins);
-	Math_VectorClear(maxs);
+	plVectorClear3fv(position);
+	plVectorClear3fv(mins);
+	plVectorClear3fv(maxs);
+
 	Math_Vector4Set(1.0f, colour);
 }
 
@@ -164,8 +165,8 @@ void Sprite::SetType(SpriteType_t stype)
 	case SPRITE_TYPE_FLARE:
 	case SPRITE_TYPE_SCALE:
 		// Flares get clipped by origin position, so no additional size.
-		Math_VectorClear(mins);
-		Math_VectorClear(maxs);
+		plVectorClear3fv(mins);
+		plVectorClear3fv(maxs);
 		break;
 	}
 }
@@ -231,7 +232,7 @@ void Sprite::Draw()
 		return;
 
 	if (colour[3] < 1.0f)
-		vlEnable(VIDEO_BLEND);
+		vlEnable(VL_CAPABILITY_BLEND);
 
 #if 0	// TODO
 	// Draw it via the VideoObject interface.
@@ -239,7 +240,7 @@ void Sprite::Draw()
 #endif
 
 	if (colour[3] < 1.0f)
-		vlDisable(VIDEO_BLEND);
+		vlDisable(VL_CAPABILITY_BLEND);
 
 	if (cv_sprite_debugsize.bValue)
 	{

@@ -45,6 +45,7 @@ void Shadow_Initialize()
 */
 void Shadow_DrawBlob(ClientEntity_t *Entity)
 {
+#if defined (VL_MODE_OPENGL)
 	if (!cv_video_drawshadowblob.bValue)
 		return;
 
@@ -89,6 +90,7 @@ void Shadow_DrawBlob(ClientEntity_t *Entity)
 
 	vlPopMatrix();
 	vlDepthMask(true);
+#endif
 }
 
 void Shadow_DrawMap(ClientEntity_t *Entity)

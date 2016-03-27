@@ -555,6 +555,7 @@ void Sky_ProcessEntities(void)
 
 void Sky_EmitSkyBoxVertex(float s,float t,int axis)
 {
+#ifdef VL_MODE_OPENGL
 	int				j,k;
 	float			w,h;
 	MathVector3f_t	v,b;
@@ -586,10 +587,12 @@ void Sky_EmitSkyBoxVertex(float s,float t,int axis)
 	t = 1.0f-t;
 	glTexCoord2f(s,t);
 	glVertex3fv(v);
+#endif
 }
 
 void Sky_DrawSkyBox (void)
 {
+#ifdef VL_MODE_OPENGL
 	int	i;
 
 	for(i = 0; i < 6; i++)
@@ -622,8 +625,8 @@ void Sky_DrawSkyBox (void)
 
 			c = Fog_GetColor();
 
-			vlEnable(VIDEO_BLEND);
-			vlDisable(VIDEO_TEXTURE_2D);
+			vlEnable(VL_CAPABILITY_BLEND);
+			vlDisable(VL_CAPABILITY_TEXTURE_2D);
 
 			glColor4f(c[0], c[1], c[2], Math_Clamp(0, r_skyfog.value, 1.0f));
 
@@ -636,12 +639,13 @@ void Sky_DrawSkyBox (void)
 
 			glColor3f(1.0f,1.0f,1.0f);
 
-			vlEnable(VIDEO_TEXTURE_2D);
-			vlDisable(VIDEO_BLEND);
+			vlEnable(VL_CAPABILITY_TEXTURE_2D);
+			vlDisable(VL_CAPABILITY_BLEND);
 
 			rs_skypasses++;
 		}
 	}
+#endif
 }
 
 //==============================================================================
@@ -692,6 +696,7 @@ void Sky_GetTexCoord(MathVector3f_t v,float speed,float *s,float *t)
 
 void Sky_DrawFaceQuad(glpoly_t *p)
 {
+#if defined (VL_MODE_OPENGL)
 	float	s,t,
 			*v;
 	int		i;
@@ -700,8 +705,8 @@ void Sky_DrawFaceQuad(glpoly_t *p)
 
 	Video_SetTexture(gCloudTexture);
 
-	vlEnable(VIDEO_BLEND);
-	vlBlendFunc(VIDEO_BLEND_ONE, VIDEO_BLEND_ONE);
+	vlEnable(VL_CAPABILITY_BLEND);
+	vlBlendFunc(VL_BLEND_ONE, VL_BLEND_ONE);
 
 	glBegin(GL_QUADS);
 
@@ -715,7 +720,7 @@ void Sky_DrawFaceQuad(glpoly_t *p)
 
 	glEnd();
 
-	vlBlendFunc(VIDEO_BLEND_DEFAULT);
+	vlBlendFunc(VL_BLEND_DEFAULT);
 
 	rs_skypolys++;
 	rs_skypasses++;
@@ -724,7 +729,7 @@ void Sky_DrawFaceQuad(glpoly_t *p)
 	{
 		float *c = Fog_GetColor();
 
-		vlDisable(VIDEO_TEXTURE_2D);
+		vlDisable(VL_CAPABILITY_TEXTURE_2D);
 
 		glColor4f(c[0], c[1], c[2], Math_Clamp(0.0, r_skyfog.value, 1.0));
 
@@ -735,12 +740,13 @@ void Sky_DrawFaceQuad(glpoly_t *p)
 
 		glColor3f(1.0f,1.0f,1.0f);
 
-		vlEnable(VIDEO_TEXTURE_2D);
+		vlEnable(VL_CAPABILITY_TEXTURE_2D);
 
 		rs_skypasses++;
 	}
 
-	vlDisable(VIDEO_BLEND);
+	vlDisable(VL_CAPABILITY_BLEND);
+#endif
 }
 
 void Sky_DrawFace (int axis)
@@ -824,6 +830,7 @@ void Sky_ReadCameraPosition(void)
 */
 void Sky_Draw3DWorld(void)
 {
+#ifdef VL_MODE_OPENGL
 	MathVector3f_t oldorg;
 
 	// Don't let us render twice.
@@ -859,6 +866,7 @@ void Sky_Draw3DWorld(void)
 
 	// Setup the view again, urgh.
 	R_SetupView();
+#endif
 }
 
 //
@@ -867,6 +875,7 @@ void Sky_Draw3DWorld(void)
 */
 void Sky_Draw(void)
 {
+#ifdef VL_MODE_OPENGL
 	int	i;
 
 	// In these special render modes, the sky faces are handled in the normal world/brush renderer
@@ -883,7 +892,7 @@ void Sky_Draw(void)
 	// Process world and bmodels: draw flat-shaded sky surfs, and update skybounds
 	Fog_DisableGFog();
 
-	vlDisable(VIDEO_TEXTURE_2D);
+	vlDisable(VL_CAPABILITY_TEXTURE_2D);
 
 	if(Fog_GetDensity() > 0)
 		glColor3fv(Fog_GetColor());
@@ -895,12 +904,12 @@ void Sky_Draw(void)
 
 	glColor3f(1.0f,1.0f,1.0f);
 
-	vlEnable(VIDEO_TEXTURE_2D);
+	vlEnable(VL_CAPABILITY_TEXTURE_2D);
 
 	// Render slow sky: cloud layers or skybox
 	if(!r_fastsky.value && !(Fog_GetDensity() > 0 && r_skyfog.value >= 1))
 	{
-		vlDisable(VIDEO_DEPTH_TEST);
+		vlDisable(VL_CAPABILITY_DEPTH_TEST);
 
 		// By default we use a skybox.
 		if(cSkyBoxName[0])
@@ -914,7 +923,7 @@ void Sky_Draw(void)
 					Sky_DrawFace(i);
 		}
 
-		vlEnable(VIDEO_DEPTH_TEST);
+		vlEnable(VL_CAPABILITY_DEPTH_TEST);
 	}
 
 	Fog_EnableGFog();
@@ -922,4 +931,5 @@ void Sky_Draw(void)
 	// 3D skybox support.
 	if (cl.worldmodel && (cl.worldmodel->flags & MODEL_FLAG_3DSKY))
 		Sky_Draw3DWorld();
+#endif
 }

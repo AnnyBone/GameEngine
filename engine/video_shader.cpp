@@ -78,6 +78,7 @@ Shader::Shader(vlShaderType_t type)
 
 bool Shader::Load(const char *path)
 {
+#ifdef VL_MODE_OPENGL
 	VIDEO_FUNCTION_START
 	// Check that the path is valid.
 	if (path[0] == ' ')
@@ -138,19 +139,25 @@ bool Shader::Load(const char *path)
 	// Everything worked out okay!
 	return true;
 	VIDEO_FUNCTION_END
+#else
+	return false;
+#endif
 }
 
 Shader::~Shader()
 {
+#ifdef VL_MODE_OPENGL
 	VIDEO_FUNCTION_START
 	glDeleteShader(instance);
 	VIDEO_FUNCTION_END
+#endif
 }
 
 // Compilation
 
 bool Shader::CheckCompileStatus()
 {
+#ifdef VL_MODE_OPENGL
 	VIDEO_FUNCTION_START
 	int iCompileStatus;
 	glGetObjectParameterivARB(instance, GL_COMPILE_STATUS, &iCompileStatus);
@@ -172,6 +179,9 @@ bool Shader::CheckCompileStatus()
 
 	return true;
 	VIDEO_FUNCTION_END
+#else
+	return false;
+#endif
 }
 
 // Information
@@ -198,24 +208,30 @@ ShaderProgram::ShaderProgram()
 
 ShaderProgram::~ShaderProgram()
 {
+#ifdef VL_MODE_OPENGL
 	glDeleteProgram(instance);
+#endif
 }
 
 void ShaderProgram::Initialize()
 {
+#ifdef VL_MODE_OPENGL
 	instance = glCreateProgram();
 	if (!instance)
 		Sys_Error("Failed to create shader program!\n");
+#endif
 }
 
 void ShaderProgram::Attach(Shader *shader)
 {
+#ifdef VL_MODE_OPENGL
 	VIDEO_FUNCTION_START
 	if (!shader)
 		Sys_Error("Attempted to attach an invalid shader!\n");
 
 	glAttachShader(instance, shader->GetInstance());
 	VIDEO_FUNCTION_END
+#endif
 }
 
 void ShaderProgram::Enable()
@@ -234,6 +250,7 @@ void ShaderProgram::Disable()
 
 void ShaderProgram::Link()
 {
+#ifdef VL_MODE_OPENGL
 	VIDEO_FUNCTION_START
 	glLinkProgram(instance);
 
@@ -257,6 +274,7 @@ void ShaderProgram::Link()
 		Sys_Error("Shader program linking failed!\nCheck log for details.\n");
 	}
 	VIDEO_FUNCTION_END
+#endif
 }
 
 void ShaderProgram::Shutdown()
@@ -268,49 +286,63 @@ void ShaderProgram::Shutdown()
 
 int ShaderProgram::GetUniformLocation(const char *name)
 {
+#ifdef VL_MODE_OPENGL
 	return glGetUniformLocation(instance, name);
+#else
+	return 0;
+#endif
 }
 
 void ShaderProgram::SetVariable(int location, float x, float y, float z)
 {
+#ifdef VL_MODE_OPENGL
 	if (!IsActive())
 		Sys_Error("Ensure shader program is enabled before applying variables! (%i) (%i %i %i)\n",
 			location, (int)x, (int)y, (int)z);
 	
 	glUniform3f(location, x, y, z);
+#endif
 }
 
 void ShaderProgram::SetVariable(int location, MathVector3f_t vector)
 {
+#ifdef VL_MODE_OPENGL
 	if (!IsActive())
 		Sys_Error("Ensure shader program is enabled before applying variables! (%i) (%i %i %i)\n",
 			location, (int)vector[0], (int)vector[1], (int)vector[2]);
 
 	glUniform3fv(location, 3, vector);
+#endif
 }
 
 void ShaderProgram::SetVariable(int location, float x, float y, float z, float a)
 {
+#ifdef VL_MODE_OPENGL
 	if (!IsActive())
 		Sys_Error("Ensure shader program is enabled before applying variables! (%i) (%i %i %i %i)\n",
 			location, (int)x, (int)y, (int)z, (int)a);
 	glUniform4f(location, x, y, z, a);
+#endif
 }
 
 void ShaderProgram::SetVariable(int location, int i)
 {
+#ifdef VL_MODE_OPENGL
 	if (!IsActive())
 		Sys_Error("Ensure shader program is enabled before applying variables! (%i) (%i)\n",
 			location, i);
 	glUniform1i(location, i);
+#endif
 }
 
 void ShaderProgram::SetVariable(int location, float f)
 {
+#ifdef VL_MODE_OPENGL
 	if (!IsActive())
 		Sys_Error("Ensure shader program is enabled before applying variables! (%i) (%i)\n",
 			location, (int)f);
 	glUniform1f(location, f);
+#endif
 }
 
 unsigned int ShaderProgram::GetInstance()

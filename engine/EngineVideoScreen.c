@@ -471,7 +471,7 @@ devstats_t dev_stats, dev_peakstats;
 
 void SCR_DrawDevStats (void)
 {
-	Colour_t	colour_dark = { 0, 0, 0, 0.5f };
+	plColour_t	colour_dark = { 0, 0, 0, 0.5f };
 	char		str[40];
 	int			y = 25-9; //9=number of lines to print
 	int			x = 0; //margin
@@ -648,7 +648,11 @@ void SCR_ScreenShot_f (void)
 
 	//get data
 	buffer = (uint8_t*)malloc(glwidth*glheight*3);
+#if defined( VL_MODE_GLIDE )
+	Con_Warning("IMPLEMENT SCREENSHOT!!\n");
+#else
 	glReadPixels(glx,gly,glwidth,glheight,GL_RGB,GL_UNSIGNED_BYTE,buffer);
+#endif
 
 	// now write the file
 	if(Image_WriteTGA(tganame,buffer,glwidth,glheight,24,false))
@@ -866,13 +870,15 @@ void SCR_UpdateScreen (void)
 	// do 3D refresh drawing, and then update the screen
 	Screen_SetUpToDrawConsole();
 
+	Video_ClearBuffer();
+
 	if (cv_video_msaasamples.iValue > 0)
-		vlEnable(VIDEO_MULTISAMPLE);
+		vlEnable(VL_CAPABILITY_MULTISAMPLE);
 
 	V_RenderView ();
 
 	if (cv_video_msaasamples.iValue > 0)
-		vlDisable(VIDEO_MULTISAMPLE);
+		vlDisable(VL_CAPABILITY_MULTISAMPLE);
 
 	Draw_ResetCanvas();
 

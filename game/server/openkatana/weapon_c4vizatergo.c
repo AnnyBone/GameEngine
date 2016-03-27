@@ -232,7 +232,7 @@ void C4Vizatergo_PrimaryAttack(ServerEntity_t *eOwner)
 	Math_MVToVector(Weapon_Aim(eOwner), mvDirection);
 	Math_VectorScale(mvDirection, C4VIZATERGO_MAX_RANGE, c4ball->v.velocity);
 
-	c4ball->v.velocity[pY] += 20.0f;
+	c4ball->v.velocity[PL_Y] += 20.0f;
 
 	Math_MVToVector(plVectorToAngles(c4ball->v.velocity), c4ball->v.angles);
 	Math_VectorCopy(eOwner->v.origin,vOrigin);

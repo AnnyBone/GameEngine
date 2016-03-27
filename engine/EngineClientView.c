@@ -188,7 +188,7 @@ cshift_t	cshift_water	= { {	0,		0,	100	},	100	};
 cshift_t	cshift_slime	= { {	0,		25,	5	},	150 };
 cshift_t	cshift_lava		= { {	255,	80,	0	},	150 };
 
-Colour_t vViewBlend = { 0, 0, 0, 255.0f };	// rgba 0.0 - 1.0
+plColour_t vViewBlend = { 0, 0, 0, 255.0f };	// rgba 0.0 - 1.0
 
 void V_ParseDamage (void)
 {
@@ -330,9 +330,9 @@ void V_CalcPowerupCshift (void)
 // [26/3/2013] Revised ~hogsy
 void View_CalculateBlend(void)
 {
-	Colour_t vColour;
-	float	fAlpha;
-	int		j;
+	plColour_t	vColour;
+	float		fAlpha;
+	int			j;
 
 	Math_VectorClear(vColour);
 
@@ -410,9 +410,9 @@ void View_PolyBlend(void)
 	if (!gl_polyblend.value || !cl.cshifts[CSHIFT_CONTENTS].percent)
 		return;
 
-	vlDisable(VIDEO_DEPTH_TEST);
+	vlDisable(VL_CAPABILITY_DEPTH_TEST);
 	Draw_Rectangle(0, 0, Video.iWidth, Video.iHeight, vViewBlend);
-	vlEnable(VIDEO_DEPTH_TEST);
+	vlEnable(VL_CAPABILITY_DEPTH_TEST);
 }
 
 /*

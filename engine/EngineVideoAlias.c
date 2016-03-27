@@ -307,7 +307,7 @@ void Alias_Draw(ClientEntity_t *eEntity)
 	Alias_SetupFrame(mModel,eEntity,&lLerpData);
 	Alias_SetupEntityTransform(eEntity, &lLerpData);
 
-	glPushMatrix();
+	vlPushMatrix();
 
 	R_RotateForEntity(eEntity->origin,eEntity->angles);
 
@@ -318,5 +318,5 @@ void Alias_Draw(ClientEntity_t *eEntity)
 		// Restore randomness
 		srand((int)(cl.time*1000));
 
-	glPopMatrix();
+	vlPopMatrix();
 }

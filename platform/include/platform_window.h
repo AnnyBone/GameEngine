@@ -24,15 +24,39 @@
 #	include <X11/Xlib.h>
 #endif
 
+typedef struct
+{
+	char	*title,	*classname;
+
+	unsigned int width, height;
+
+	int		x, y;
+
+	bool	is_active, is_fullscreen;
+
+#ifdef _WIN32
+	HWND	instance;
+	HDC		dc;
+#else	// Linux
+	Window  wInstance;
+#endif
+} plWindow_t;
+
 plEXTERN_C_START
 
 extern void plMessageBox(const char *title, const char *msg, ...);
 extern void plShowCursor(bool show);
 extern void plGetCursorPosition(int *x, int *y);
 
+// Window Management
+extern void plCreateWindow(plWindow_t *window);
+
 extern int plGetScreenWidth(void);	// Returns width of current screen.
 extern int plGetScreenHeight(void);	// Returns height of current screen.
 extern int plGetScreenCount(void);	// Returns number of avaliable screens.
+
+// Rendering
+extern void plSwapBuffers(plWindow_t *window);
 
 plEXTERN_C_END
 

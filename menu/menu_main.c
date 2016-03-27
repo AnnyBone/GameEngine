@@ -119,7 +119,7 @@ void Menu_Draw(void)
 
 	if(iMenuState & MENU_STATE_MENU)
 	{
-		Colour_t col = { 0, 0, 0, 0.8f };
+		plColour_t col = { 0, 0, 0, 0.8f };
 		Engine.DrawRectangle(0, 0, g_menuwidth, g_menuheight, col);
 
 		Engine.DrawString(110,80,">");
@@ -163,7 +163,7 @@ void Menu_Draw(void)
 				mMenuElements[i].iPosition[X],
 				mMenuElements[i].iPosition[Y],
 				mMenuElements[i].iScale[PL_WIDTH],
-				mMenuElements[i].iScale[HEIGHT]);
+				mMenuElements[i].iScale[PL_HEIGHT]);
 		case MENU_WINDOW:
 		case MENU_BUTTON:
 		case MENU_MODEL:
@@ -228,7 +228,7 @@ void Menu_Draw(void)
 			Engine.DrawString(mMenuElements[i].iPosition[X],p,va
 			(
 				"H: %i",
-				mMenuElements[i].iScale[HEIGHT]
+				mMenuElements[i].iScale[PL_HEIGHT]
 			));
 		}
 	}
@@ -273,7 +273,7 @@ void Menu_Draw(void)
 				else
 				{
 					// [4/8/2012] Simplified ~hogsy
-					if(Menu_IsMouseOver(mMenuElements[i].iPosition,mMenuElements[i].iScale[PL_WIDTH],mMenuElements[i].iScale[HEIGHT]))
+					if(Menu_IsMouseOver(mMenuElements[i].iPosition,mMenuElements[i].iScale[PL_WIDTH],mMenuElements[i].iScale[PL_HEIGHT]))
 						// [3/8/2012] We're being hovered over, make us more clear ~hogsy
 						mMenuElements[i].fAlpha = 1.0f;
 					else
@@ -305,14 +305,14 @@ void Menu_Draw(void)
 					mMenuElements[i].iPosition[X],
 					mMenuElements[i].iPosition[Y]+20,
 					mMenuElements[i].iScale[PL_WIDTH],
-					mMenuElements[i].iScale[HEIGHT]-20,
+					mMenuElements[i].iScale[PL_HEIGHT]-20,
 					0.5f,
 					0.5f,
 					0.5f,
 					mMenuElements[i].fAlpha);
 				break;
 			case MENU_BUTTON:
-				if(Menu_IsMouseOver(mMenuElements[i].iPosition,mMenuElements[i].iScale[PL_WIDTH],mMenuElements[i].iScale[HEIGHT]))
+				if (Menu_IsMouseOver(mMenuElements[i].iPosition, mMenuElements[i].iScale[PL_WIDTH], mMenuElements[i].iScale[PL_HEIGHT]))
 				{}
 			default:
 				Engine.Con_Warning("Unknown menu element type (%i) for %s!\n",mMenuElements[i].mMenuType,mMenuElements[i].cName);

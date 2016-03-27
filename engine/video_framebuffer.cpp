@@ -36,7 +36,9 @@ VideoRenderBuffer::~VideoRenderBuffer()
 
 void VideoRenderBuffer::Attach()
 {
+#ifdef VL_MODE_OPENGL
 	vlAttachFrameBufferRenderBuffer(GL_DEPTH_STENCIL_ATTACHMENT, instance);
+#endif
 }
 
 void VideoRenderBuffer::Bind()
@@ -112,18 +114,20 @@ void VideoFrameBuffer::GenerateBuffers()
 		Video_SetTexture(buf_colour);
 
 		// Set the texture up.
-		vlTexImage2D(VL_TEXTURE_2D, VL_TEXTURE_FORMAT_RGB, VL_TEXTURE_FORMAT_RGB, width, height, NULL);
-		vlSetTextureFilter(VL_TEXTURE_FILTER_LINEAR);
+		vlTexImage2D(VL_TEXTURE_2D, VL_TEXTUREFORMAT_RGB, VL_TEXTUREFORMAT_RGB, width, height, NULL);
+		vlSetTextureFilter(VL_TEXTUREFILTER_LINEAR);
 
 		// Attach the texture to this framebuffer.
 		vlAttachFrameBufferTexture(buf_colour);
 	}
 
 	// Depth buffer
+#ifdef VL_MODE_OPENGL
 	buf_depth = new VideoRenderBuffer(width, height);
 	buf_depth->Bind();
 	buf_depth->Storage(GL_DEPTH24_STENCIL8, 0);
 	buf_depth->Attach();
+#endif
 
 	vlCheckFrameBufferStatus();
 }

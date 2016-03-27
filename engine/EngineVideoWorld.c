@@ -194,6 +194,7 @@ void R_RenderScene(void);
 
 void Surface_DrawMirror(msurface_t *surface)
 {
+#ifdef VL_MODE_OPENGL
 	MathVector3f_t	oldorg;
 	float			dir;
 
@@ -224,7 +225,7 @@ void Surface_DrawMirror(msurface_t *surface)
 
 	R_SetupView();
 
-	vlEnable(VIDEO_STENCIL_TEST);
+	vlEnable(VL_CAPABILITY_STENCIL_TEST);
 
 	glStencilFunc(GL_ALWAYS, 1, 255);
 	glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE);
@@ -232,7 +233,7 @@ void Surface_DrawMirror(msurface_t *surface)
 	vlDepthMask(false);
 	glClear(GL_STENCIL_BUFFER_BIT);
 
-	Video_DrawSurface(surface, 0, g_mGlobalColour, 0);
+	Video_DrawSurface(surface, 1, g_mGlobalColour, 0);
 
 	glStencilFunc(GL_EQUAL, 1, 255);
 	glStencilMask(0);
@@ -246,14 +247,14 @@ void Surface_DrawMirror(msurface_t *surface)
 	}
 
 	glDepthRange(0, 0.5);
-	glPushMatrix();
+	vlPushMatrix();
 	glScalef(1.0f, -1.0f, 1.0f);
 
 	r_refdef.bMirror = true;		
 	World_Draw();
 	r_refdef.bMirror = false;
 
-	glPopMatrix();
+	vlPopMatrix();
 	glDepthRange(0, 1);
 
 	if (cl_numvisedicts < (MAX_VISEDICTS-1))
@@ -262,7 +263,7 @@ void Surface_DrawMirror(msurface_t *surface)
 		cl_numvisedicts--;
 	}
 
-	vlDisable(VIDEO_STENCIL_TEST);
+	vlDisable(VL_CAPABILITY_STENCIL_TEST);
 
 	// Restore view position.
 	Math_VectorCopy(oldorg, r_refdef.vieworg);
@@ -274,6 +275,7 @@ void Surface_DrawMirror(msurface_t *surface)
 	vlEnable(VIDEO_BLEND);
 	Video_DrawSurface(Surface, 0.5f, g_mGlobalColour, 1);
 	vlDisable(VIDEO_BLEND);
+#endif
 #endif
 }
 
@@ -301,7 +303,7 @@ void World_DrawWater(void)
 				if (t->material->bind && !r_showtris.bValue)
 				{
 					vlActiveTexture(VIDEO_TEXTURE_LIGHT);
-					vlEnable(VIDEO_TEXTURE_2D);
+					vlEnable(VL_CAPABILITY_TEXTURE_2D);
 
 					t->material->bind = false;
 				}
@@ -324,7 +326,7 @@ void World_DrawWater(void)
 
 	// Disable light texture
 	vlActiveTexture(VIDEO_TEXTURE_LIGHT);
-	vlDisable(VIDEO_TEXTURE_2D);
+	vlDisable(VL_CAPABILITY_TEXTURE_2D);
 	vlActiveTexture(0);
 }
 
@@ -351,7 +353,7 @@ void World_Draw(void)
 				if (t->material->bind && !r_showtris.bValue)
 				{
 					vlActiveTexture(VIDEO_TEXTURE_LIGHT);
-					vlEnable(VIDEO_TEXTURE_2D);
+					vlEnable(VL_CAPABILITY_TEXTURE_2D);
 
 					t->material->bind = false;
 				}
@@ -375,6 +377,6 @@ void World_Draw(void)
 
 	// Disable light texture
 	vlActiveTexture(VIDEO_TEXTURE_LIGHT);
-	vlDisable(VIDEO_TEXTURE_2D);
+	vlDisable(VL_CAPABILITY_TEXTURE_2D);
 	vlActiveTexture(0);
 }

@@ -31,10 +31,10 @@ MathVector3f_t pl_origin3f	= { 0, 0, 0 };
 MathVector4f_t pl_origin4f	= { 0, 0, 0, 0 };
 
 // Colours
-Colour_t pl_white		= { 1, 1, 1, 1 };
-Colour_t pl_red			= { 1, 0, 0, 1 };
-Colour_t pl_green		= { 0, 1, 0, 1 };
-Colour_t pl_blue		= { 0, 0, 1, 1 };
+plColour_t pl_white		= { 1, 1, 1, 1 };
+plColour_t pl_red		= { 1, 0, 0, 1 };
+plColour_t pl_green		= { 0, 1, 0, 1 };
+plColour_t pl_blue		= { 0, 0, 1, 1 };
 
 MathVector_t plVectorToAngles(MathVector3f_t vValue)
 {
@@ -250,6 +250,11 @@ void plVectorMultiply3fv(MathVector3f_t in, MathVector3f_t multi, MathVector3f_t
 	out[0] = in[0] * multi[0];
 	out[1] = in[1] * multi[1];
 	out[2] = in[2] * multi[2];
+}
+
+void plColourSetf(plColour_t in, float r, float g, float b, float a)
+{
+	in[0] = r; in[1] = g; in[2] = b; in[3] = a;
 }
 
 // [23/2/2013] Added Math_VectorMake ~eukos
@@ -495,3 +500,15 @@ bool plIsIntersecting(
 
 	return true;
 }
+
+/*
+*/
+
+static float pl_identity[16] =
+{
+	1, 0, 0, 0,
+	0, 1, 0, 0,
+	0, 0, 1, 0,
+	0, 0, 0, 1
+};
+

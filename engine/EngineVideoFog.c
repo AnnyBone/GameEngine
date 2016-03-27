@@ -19,6 +19,8 @@
 */
 #include "engine_base.h"
 
+#include "video.h"
+
 //==============================================================================
 //
 //  GLOBAL FOG
@@ -239,44 +241,54 @@ float Fog_GetDensity(void)
 */
 void Fog_SetupFrame (void)
 {
+#ifdef VL_MODE_OPENGL
 	glFogfv(GL_FOG_COLOR, Fog_GetColor());
 	glFogf(GL_FOG_DENSITY, Fog_GetDensity() / 64.0);
+#endif
 }
 
 /*	Called before drawing stuff that should be fogged
 */
 void Fog_EnableGFog (void)
 {
+#ifdef VL_MODE_OPENGL
 	if (Fog_GetDensity() > 0)
 		glEnable(GL_FOG);
+#endif
 }
 
 /*	Called after drawing stuff that should be fogged
 */
 void Fog_DisableGFog (void)
 {
+#ifdef VL_MODE_OPENGL
 	if (Fog_GetDensity() > 0)
 		glDisable(GL_FOG);
+#endif
 }
 
 /*	Called before drawing stuff that is additive blended -- sets fog color to black
 */
 void Fog_StartAdditive (void)
 {
+#ifdef VL_MODE_OPENGL
 	if (Fog_GetDensity() > 0)
 	{
 		plVector3f_t vColour = { 0, 0, 0 };
 
 		glFogfv(GL_FOG_COLOR,vColour);
 	}
+#endif
 }
 
 /*	Called after drawing stuff that is additive blended -- restores fog color
 */
 void Fog_StopAdditive (void)
 {
+#ifdef VL_MODE_OPENGL
 	if (Fog_GetDensity() > 0)
 		glFogfv(GL_FOG_COLOR, Fog_GetColor());
+#endif
 }
 
 //==============================================================================
@@ -318,5 +330,7 @@ void Fog_Init (void)
 	fog_green	= 0.3f;
 	fog_blue	= 0.3f;
 
+#ifdef VL_MODE_OPENGL
 	glFogi(GL_FOG_MODE,GL_EXP2);
+#endif
 }

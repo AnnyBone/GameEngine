@@ -66,12 +66,16 @@ typedef struct
 
 glmode_t modes[] =
 {
+#ifdef VL_MODE_OPENGL
 	{ GL_NEAREST, GL_NEAREST, "GL_NEAREST" },
 	{ GL_NEAREST, GL_NEAREST_MIPMAP_NEAREST, "GL_NEAREST_MIPMAP_NEAREST" },
 	{ GL_NEAREST, GL_NEAREST_MIPMAP_LINEAR, "GL_NEAREST_MIPMAP_LINEAR" },
 	{ GL_LINEAR, GL_LINEAR, "GL_LINEAR" },
 	{ GL_LINEAR, GL_LINEAR_MIPMAP_NEAREST, "GL_LINEAR_MIPMAP_NEAREST" },
 	{ GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, "GL_LINEAR_MIPMAP_LINEAR" },
+#else
+	{ 0 },
+#endif
 };
 
 #define NUM_GLMODES 6
@@ -92,6 +96,7 @@ void TexMgr_DescribeTextureModes_f (void)
 
 void TexMgr_SetFilterModes (gltexture_t *glt)
 {
+#ifdef VL_MODE_OPENGL
 	Video_SetTexture(glt);
 
 	if (glt->flags & TEXPREF_NEAREST)
@@ -116,6 +121,7 @@ void TexMgr_SetFilterModes (gltexture_t *glt)
 	}
 
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, gl_texture_anisotropy.value);
+#endif
 }
 
 void TexMgr_TextureMode_f (void)
@@ -172,12 +178,14 @@ stuff:
 */
 void TexMgr_Anisotropy_f(void)
 {
+#ifdef VL_MODE_OPENGL
 	gltexture_t	*glt;
 
 	Cvar_SetValue("gl_texture_anisotropy", Math_Clamp(1.0f, gl_texture_anisotropy.value, Video.fMaxAnisotropy));
 
 	for (glt=active_gltextures; glt; glt=glt->next)
 		TexMgr_SetFilterModes(glt);
+#endif
 }
 
 /*	Report loaded textures
@@ -203,6 +211,7 @@ void TexMgr_Imagelist_f (void)
 
 void TexMgr_Imagedump_f(void)
 {
+#ifdef VL_MODE_OPENGL
 	char		tganame[PLATFORM_MAX_PATH], tempname[PLATFORM_MAX_PATH], dirname[PLATFORM_MAX_PATH];
 	gltexture_t	*glt;
 	uint8_t		*buffer;
@@ -244,6 +253,7 @@ void TexMgr_Imagedump_f(void)
 	}
 
 	Con_Printf ("dumped %i textures to %s\n", numgltextures, dirname);
+#endif
 }
 
 /*	Report texture memory usage for this frame
@@ -313,7 +323,9 @@ gltexture_t *TexMgr_NewTexture (void)
 	glt->next			= active_gltextures;
 	active_gltextures	= glt;
 
+#ifdef VL_MODE_OPENGL
 	glGenTextures(1, &glt->texnum);
+#endif
 
 	numgltextures++;
 
@@ -322,6 +334,7 @@ gltexture_t *TexMgr_NewTexture (void)
 
 void TexMgr_FreeTexture (gltexture_t *kill)
 {
+#ifdef VL_MODE_OPENGL
 	gltexture_t *glt;
 
 	if (kill == NULL)
@@ -356,6 +369,7 @@ void TexMgr_FreeTexture (gltexture_t *kill)
 	}
 
 	Con_Printf ("TexMgr_FreeTexture: not found\n");
+#endif
 }
 
 /*	Compares each bit in "flags" to the one in glt->flags only if that bit is active in "mask"
@@ -428,7 +442,9 @@ void TexMgr_RecalcWarpImageSize (void)
 		if (glt->flags & TEXPREF_WARPIMAGE)
 		{
 			Video_SetTexture(glt);
+#ifdef VL_MODE_OPENGL
 			glTexImage2D (GL_TEXTURE_2D, 0, gl_solid_format, gl_warpimagesize, gl_warpimagesize, 0, GL_RGBA, GL_UNSIGNED_BYTE, dummy);
+#endif
 			glt->width = glt->height = gl_warpimagesize;
 		}
 	}
@@ -473,8 +489,10 @@ void TextureManager_Initialize(void)
 	Cmd_AddCommand("image_reloadtextures", &TexMgr_ReloadImages);
 
 	// poll max size from hardware
+#ifdef VL_MODE_OPENGL
 	glGetIntegerv (GL_MAX_TEXTURE_SIZE, &gl_hardware_maxsize);
-
+#endif
+	
 	notexture = TexMgr_LoadImage(NULL,"notexture",2,2,SRC_RGBA,notexture_data,"",(unsigned)notexture_data,TEXPREF_NEAREST|TEXPREF_PERSIST|TEXPREF_NOPICMIP);
 
 	//have to assign these here becuase Mod_Init is called before TexMgr_Init
@@ -843,11 +861,13 @@ void TexMgr_LoadImage32(gltexture_t *glt, uint8_t *data)
 	// upload
 	Video_SetTexture(glt);
 	internalformat = (glt->flags & TEXPREF_ALPHA) ? gl_alpha_format : gl_solid_format;
+#ifdef VL_MODE_OPENGL
 	if ((glt->flags & TEXPREF_MIPMAP) && Video.extensions.generate_mipmap)
 		glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
 	glTexImage2D (GL_TEXTURE_2D, 0, internalformat, glt->width, glt->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 	if ((glt->flags & TEXPREF_MIPMAP) && Video.extensions.generate_mipmap)
 		glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE);
+#endif
 
 	// upload mipmaps
 	if ((glt->flags & TEXPREF_MIPMAP) && !Video.extensions.generate_mipmap)
@@ -869,7 +889,10 @@ void TexMgr_LoadImage32(gltexture_t *glt, uint8_t *data)
 				TexMgr_MipMapH(data, mipwidth, mipheight);
 				mipheight >>= 1;
 			}
+
+#ifdef VL_MODE_OPENGL
 			glTexImage2D(GL_TEXTURE_2D, miplevel, internalformat, mipwidth, mipheight, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+#endif
 		}
 	}
 
@@ -958,7 +981,9 @@ void TexMgr_LoadLightmap(gltexture_t *glt,byte *data)
 	// Upload it
 	Video_SetTexture(glt);
 
+#ifdef VL_MODE_OPENGL
 	glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,glt->width,glt->height,0,GL_BGRA,GL_UNSIGNED_INT_8_8_8_8_REV,data);
+#endif
 
 	// Set filter modes
 	TexMgr_SetFilterModes(glt);
@@ -1148,6 +1173,7 @@ invalid:
 */
 void TexMgr_ReloadImages (void)
 {
+#ifdef VL_MODE_OPENGL
 	gltexture_t *glt;
 
 	for (glt=active_gltextures; glt; glt=glt->next)
@@ -1155,4 +1181,5 @@ void TexMgr_ReloadImages (void)
 		glGenTextures(1, &glt->texnum);
 		TexMgr_ReloadImage (glt, -1, -1);
 	}
+#endif
 }

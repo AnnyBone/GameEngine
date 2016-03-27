@@ -21,7 +21,7 @@
 #ifndef __ENGINECLIENTVIEW_H__
 #define __ENGINECLIENTVIEW_H__
 
-extern Colour_t vViewBlend;
+extern plColour_t vViewBlend;
 
 void V_Init (void);
 void V_RenderView (void);

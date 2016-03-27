@@ -28,6 +28,8 @@
 		Introduce generic return types (e.g. PLATFORM_ERROR_FILENOTFOUND)
 */
 
+/*	ERROR HANDLING	*/
+
 #define	MAX_FUNCTION_LENGTH	64
 #define	MAX_ERROR_LENGTH	2048
 

@@ -1,19 +1,19 @@
 /*	Copyright (C) 2011-2016 OldTimes Software
 
-	This program is free software; you can redistribute it and/or
-	modify it under the terms of the GNU General Public License
-	as published by the Free Software Foundation; either version 2
-	of the License, or (at your option) any later version.
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-	See the GNU General Public License for more details.
+See the GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "engine_base.h"
@@ -33,17 +33,17 @@ SDL_GLContext	sMainContext;
 SDL_DisplayMode	sDisplayMode;
 SDL_SysWMinfo	sSystemInfo;
 
+GrContext_t	window_glidecontext;
+
 plWindow_t g_mainwindow;
 
 void Window_InitializeVideo(void)
 {
 	int	iFlags =
 		SDL_WINDOW_SHOWN |
-		SDL_WINDOW_OPENGL |
 		SDL_WINDOW_FULLSCREEN;
-	SDL_Surface	*sIcon;
+	SDL_Surface	*icon;
 
-	// [28/7/2013] Moved check here and corrected, seems more secure ~hogsy
 	if (SDL_VideoInit(NULL) < 0)
 		Sys_Error("Failed to initialize video!\n%s\n", SDL_GetError());
 
@@ -56,25 +56,6 @@ void Window_InitializeVideo(void)
 	if (!Video.fullscreen)
 		iFlags &= ~SDL_WINDOW_FULLSCREEN;
 
-#if 0
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-#endif
-	SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
-	SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
-	SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
-	SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
-	SDL_GL_SetAttribute(SDL_GL_ACCUM_RED_SIZE, 8);
-	SDL_GL_SetAttribute(SDL_GL_ACCUM_GREEN_SIZE, 8);
-	SDL_GL_SetAttribute(SDL_GL_ACCUM_BLUE_SIZE, 8);
-	SDL_GL_SetAttribute(SDL_GL_ACCUM_ALPHA_SIZE, 8);
-#if 0
-	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
-	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 8);
-#endif
-	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
-	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
-	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-
 	sMainWindow = SDL_CreateWindow(
 		Game->Name,				// [9/7/2013] Window name is based on the name given by Game ~hogsy
 		SDL_WINDOWPOS_CENTERED,
@@ -86,23 +67,17 @@ void Window_InitializeVideo(void)
 		Sys_Error("Failed to create window!\n%s\n", SDL_GetError());
 
 	// Attempt to grab the window icon from the game directory.
-	sIcon = SDL_LoadBMP(va("%s/icon.bmp", com_gamedir));
-	if (sIcon)
+	icon = SDL_LoadBMP(va("%s/icon.bmp", com_gamedir));
+	if (icon)
 	{
 		// [25/3/2014] Set the transparency key... ~hogsy
-		SDL_SetColorKey(sIcon, true, SDL_MapRGB(sIcon->format, 0, 0, 0));
-		SDL_SetWindowIcon(sMainWindow, sIcon);
-		SDL_FreeSurface(sIcon);
+		SDL_SetColorKey(icon, true, SDL_MapRGB(icon->format, 0, 0, 0));
+		SDL_SetWindowIcon(sMainWindow, icon);
+		SDL_FreeSurface(icon);
 	}
 	else
 		// Give us a warning, but continue.
 		Con_Warning("Failed to load window icon! (%s)\n", SDL_GetError());
-
-	sMainContext = SDL_GL_CreateContext(sMainWindow);
-	if (!sMainContext)
-		Sys_Error("Failed to create context!\n%s\n", SDL_GetError());
-
-	SDL_GL_SetSwapInterval(0);
 
 #ifdef _WIN32
 	if (SDL_GetWindowWMInfo(sMainWindow, &sSystemInfo))
@@ -110,6 +85,36 @@ void Window_InitializeVideo(void)
 	else
 		Con_Warning("Failed to get WM information! (%s)\n", SDL_GetError());
 #endif
+
+	// Initialize Glide.
+	vlInit();
+
+	// Glide only supports a limited set of resolutions.
+	int res;
+	if (g_mainwindow.instance)
+		res = GR_RESOLUTION_NONE;
+	else
+	{
+		if ((Video.iWidth > 1024) && (Video.iHeight > 768))			res = GR_RESOLUTION_MAX;
+		else if ((Video.iWidth == 1024) && (Video.iHeight == 768))	res = GR_RESOLUTION_1024x768;
+		else if ((Video.iWidth == 800) && (Video.iHeight == 600))	res = GR_RESOLUTION_800x600;
+		else														res = GR_RESOLUTION_640x480;
+	}
+	
+	// Select the graphics card.
+	grSstSelect(0);
+	window_glidecontext = grSstWinOpen(
+		(FxU32)g_mainwindow.instance,
+		res,
+		GR_REFRESH_60Hz,
+		GR_COLORFORMAT_RGBA,
+		GR_ORIGIN_UPPER_LEFT,
+		2,
+		1);
+	if (!window_glidecontext)
+		Sys_Error("Failed to create window!\n");
+
+	grClipWindow(0, 0, Video.iWidth, Video.iHeight);
 }
 
 void Window_UpdateVideo(void)
@@ -150,11 +155,22 @@ void Window_UpdateVideo(void)
 
 void Window_Swap(void)
 {
-	SDL_GL_SwapWindow(sMainWindow);
+	/*	"To gracefully handle the loss of resources 
+		(e.g. to another 3D application being scheduled 
+		by the Windows 95 operating system), an application 
+		is required to periodically (typically once per frame)
+		query with grSelectContext() to determine if Glide’s resources 
+		have be reallocated by the system. context is a context 
+		handle returned from a successful call to grWinOpen()."
+	*/
+	if(!grSelectContext(window_glidecontext))
+	{ }
+
+	vlSwapBuffers();
 }
 
 /*	Set the gamma level.
-	Based on Darkplaces implementation.
+Based on Darkplaces implementation.
 */
 void Window_SetGamma(unsigned short *usRamp, int iRampSize)
 {
@@ -163,7 +179,7 @@ void Window_SetGamma(unsigned short *usRamp, int iRampSize)
 }
 
 /*	Get gamma level.
-	Based on the Darkplaces implementation.
+Based on the Darkplaces implementation.
 */
 void Window_GetGamma(unsigned short *usRamp, int iRampSize)
 {
@@ -188,9 +204,9 @@ void Window_GetCursorPosition(int *x, int *y)
 
 void Window_Shutdown(void)
 {
-	if (sMainContext)
+	if (window_glidecontext)
 		// Delete the current context.
-		SDL_GL_DeleteContext(sMainContext);
+		grSstWinClose(window_glidecontext);
 
 	if (sMainWindow)
 		// Destory our window.
@@ -198,4 +214,6 @@ void Window_Shutdown(void)
 
 	// Quit the SDL subsystem.
 	SDL_QuitSubSystem(SDL_INIT_VIDEO);
+
+	grGlideShutdown();
 }

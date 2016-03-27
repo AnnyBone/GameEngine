@@ -162,6 +162,8 @@ void Video_Initialize(void)
 	if (!g_state.embedded)
 		Window_InitializeVideo();
 
+	vlInit();
+
 	// Attempt to dynamically allocated the number of supported TMUs.
 	vlGetMaxTextureImageUnits(&Video.num_textureunits);
 	Video.textureunits = (VideoTextureMU_t*)Hunk_Alloc(sizeof(VideoTextureMU_t)*Video.num_textureunits);
@@ -183,54 +185,29 @@ void Video_Initialize(void)
 	Video.gl_version		= vlGetString(VL_STRING_VERSION);
 	Video.gl_extensions		= vlGetString(VL_STRING_EXTENSIONS);
 
-	GLeeInit();
-
-	Con_DPrintf(" Checking for extensions...\n");
-
-	// Check that the required capabilities are supported.
-	if (!GLEE_ARB_multitexture) Sys_Error("Video hardware incapable of multi-texturing!\n");
-	else if (!GLEE_ARB_texture_env_combine && !GLEE_EXT_texture_env_combine) Sys_Error("ARB/EXT_texture_env_combine isn't supported by your hardware!\n");
-	else if (!GLEE_ARB_texture_env_add && !GLEE_EXT_texture_env_add) Sys_Error("ARB/EXT_texture_env_add isn't supported by your hardware!\n");
-	//else if (!GLEE_EXT_fog_coord) Sys_Error("EXT_fog_coord isn't supported by your hardware!\n");
-#ifdef VIDEO_SUPPORT_SHADERS
-	else if (!GLEE_ARB_vertex_program || !GLEE_ARB_fragment_program) Sys_Error("Shaders aren't supported by this hardware!\n");
-#endif
-
-	// Optional capabilities.
-	if (GLEE_SGIS_generate_mipmap) Video.extensions.generate_mipmap = true;
-	else Con_Warning("Hardware mipmap generation isn't supported!\n");
-	if (GLEE_ARB_depth_texture) Video.extensions.depth_texture = true;
-	else Con_Warning("ARB_depth_texture isn't supported by your hardware!\n");
-	if (GLEE_ARB_shadow) Video.extensions.shadow = true;
-	else Con_Warning("ARB_shadow isn't supported by your hardware!\n");
-	if (GLEE_ARB_vertex_buffer_object) Video.extensions.vertex_buffer_object = true;
-	else Con_Warning("Hardware doesn't support Vertex Buffer Objects!\n");
-
 	// Set the default states...
-
-	glCullFace(GL_BACK);
-	glFrontFace(GL_CW);
+	vlSetCullMode(VL_CULL_NEGATIVE);
+#ifdef VL_MODE_OPENGL
 	glAlphaFunc(GL_GREATER, 0.5f);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 	glDepthRange(0, 1);
 	glDepthFunc(GL_LEQUAL);
 	glClearStencil(1);
-
+	
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-	vlActiveTexture(VIDEO_TEXTURE_LIGHT);
-
 	// Overbrights.
+	vlActiveTexture(VIDEO_TEXTURE_LIGHT);
 	vlSetTextureEnvironmentMode(VIDEO_TEXTURE_MODE_COMBINE);
 	glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
 	glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_PREVIOUS);
 	glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_TEXTURE);
 	glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 4);
-
+#endif
 	vlActiveTexture(0);
 
 	vid.conwidth = (scr_conwidth.value > 0) ? (int)scr_conwidth.value : (scr_conscale.value > 0) ? (int)(Video.iWidth / scr_conscale.value) : Video.iWidth;
@@ -274,11 +251,7 @@ void Video_ClearBuffer(void)
 	if (!cv_video_clearbuffers.bValue)
 		return;
 
-	unsigned int clear = 0;
-	if (cv_video_drawmirrors.bValue)
-		clear |= VL_MASK_STENCIL;
-
-	vlClear(VL_MASK_DEPTH | VL_MASK_COLOUR | clear);
+	vlClearBuffers(VL_MASK_DEPTH | VL_MASK_COLOUR | VL_MASK_STENCIL);
 }
 
 /*	Displays the depth buffer for testing purposes.
@@ -393,6 +366,7 @@ void Video_SetViewportSize(int w, int h)
 
 void Video_GenerateSphereCoordinates(void)
 {
+#ifdef VL_MODE_OPENGL
 #if 0
 	MathMatrix4x4f_t mmMatrix, mmInversed;
 
@@ -416,6 +390,7 @@ void Video_GenerateSphereCoordinates(void)
 	glMatrixMode(GL_MODELVIEW);
 	glPopMatrix();
 #endif
+#endif
 }
 
 /**/
@@ -424,6 +399,7 @@ void Video_GenerateSphereCoordinates(void)
 */
 void Video_SetTexture(gltexture_t *gTexture)
 {
+#ifdef VL_MODE_OPENGL
 	if(!gTexture)
 		gTexture = notexture;
 	// If it's the same as the last, don't bother.
@@ -439,6 +415,10 @@ void Video_SetTexture(gltexture_t *gTexture)
 
 	if (Video.debug_frame)
 		plWriteLog(cv_video_log.string, "Video: Bound texture (%s) (%i)\n", gTexture->name, Video.current_textureunit);
+#endif
+}
+
+/*
 }
 
 /*
@@ -520,9 +500,10 @@ void Video_DrawObject(VideoVertex_t *vobject, VideoPrimitive_t primitive,
 		return;
 
 	VideoObject_t tempobj;
-	tempobj.vertices		= vobject;
-	tempobj.numverts		= numverts;
-	tempobj.primitive		= primitive;
+	tempobj.vertices			= vobject;
+	tempobj.numverts			= numverts;
+	tempobj.primitive			= primitive;
+	tempobj.primitive_restore	= primitive;
 
 	// Set the skin and ensure it's valid.
 	Material_SetSkin(mMaterial, iSkin);
@@ -530,114 +511,6 @@ void Video_DrawObject(VideoVertex_t *vobject, VideoPrimitive_t primitive,
 	Material_DrawObject(mMaterial, &tempobj, false);
 	VideoObject_DrawImmediate(&tempobj);
 	Material_DrawObject(mMaterial, &tempobj, true);
-}
-
-/*
-	Capabilities management
-*/
-
-typedef struct
-{
-	unsigned	int	    uiFirst,
-						uiSecond;
-
-	const       char    *ccIdentifier;
-} VideoCapabilities_t;
-
-VideoCapabilities_t	vcCapabilityList[]=
-{
-	{ VIDEO_ALPHA_TEST, GL_ALPHA_TEST, "ALPHA_TEST" },
-	{ VIDEO_BLEND, GL_BLEND, "BLEND" },
-	{ VIDEO_DEPTH_TEST, GL_DEPTH_TEST, "DEPTH_TEST" },
-	{ VIDEO_TEXTURE_2D, GL_TEXTURE_2D, "TEXTURE_2D" },
-	{ VIDEO_TEXTURE_GEN_S, GL_TEXTURE_GEN_S, "TEXTURE_GEN_S" },
-	{ VIDEO_TEXTURE_GEN_T, GL_TEXTURE_GEN_T, "TEXTURE_GEN_T" },
-	{ VIDEO_CULL_FACE, GL_CULL_FACE, "CULL_FACE" },
-	{ VIDEO_STENCIL_TEST, GL_STENCIL_TEST, "STENCIL_TEST" },
-	{ VIDEO_NORMALIZE, GL_NORMALIZE, "NORMALIZE" },
-
-	{ 0 }
-};
-
-/*	Set rendering capabilities for current draw.
-	Cleared using Video_DisableCapabilities.
-*/
-void Video_EnableCapabilities(unsigned int iCapabilities)
-{
-	int	i;
-
-	if(!iCapabilities)
-		return;
-
-	for(i = 0; i < sizeof(vcCapabilityList); i++)
-	{
-		if(!vcCapabilityList[i].uiFirst)
-			break;
-
-		if (iCapabilities & VIDEO_TEXTURE_2D)
-			Video.textureunits[Video.current_textureunit].isactive = true;
-
-		if(iCapabilities & vcCapabilityList[i].uiFirst)
-		{
-			if(!bVideoIgnoreCapabilities)
-				// Collect up a list of the new capabilities we set.
-				Video.textureunits[Video.current_textureunit].capabilities[VIDEO_STATE_ENABLE] |= vcCapabilityList[i].uiFirst;
-
-			glEnable(vcCapabilityList[i].uiSecond);
-		}
-	}
-}
-
-/*	Disables specified capabilities for the current draw.
-*/
-void Video_DisableCapabilities(unsigned int iCapabilities)
-{
-	int	i;
-
-	if(!iCapabilities)
-		return;
-
-	for(i = 0; i < sizeof(vcCapabilityList); i++)
-	{
-		if(!vcCapabilityList[i].uiFirst)
-			break;
-
-		if (iCapabilities & VIDEO_TEXTURE_2D)
-			Video.textureunits[Video.current_textureunit].isactive = false;
-
-		if(iCapabilities & vcCapabilityList[i].uiFirst)
-		{
-			if (Video.debug_frame)
-				plWriteLog(cv_video_log.string, "Video: Disabling %s (%i)\n", vcCapabilityList[i].ccIdentifier, Video.current_textureunit);
-
-			if(!bVideoIgnoreCapabilities)
-				// Collect up a list of the new capabilities we disabled.
-				Video.textureunits[Video.current_textureunit].capabilities[VIDEO_STATE_DISABLE] |= vcCapabilityList[i].uiFirst;
-
-			glDisable(vcCapabilityList[i].uiSecond);
-		}
-	}
-}
-
-/*	Checks if the given capability is enabled or not.
-*/
-bool Video_GetCapability(unsigned int iCapability)
-{
-	int	i;
-
-	if (!iCapability)
-		return false;
-
-	for (i = 0; i < sizeof(vcCapabilityList); i++)
-	{
-		if (!vcCapabilityList[i].uiFirst)
-			break;
-
-		if (iCapability & Video.textureunits[Video.current_textureunit].capabilities[VIDEO_STATE_ENABLE])
-			return true;
-	}
-
-	return false;
 }
 
 /**/
@@ -689,7 +562,7 @@ void Video_PostFrame(void)
 	Screen_DrawFPS();
 
 	if (cv_video_finish.bValue)
-		glFinish();
+		vlFinish();
 
 	if (Video.debug_frame)
 		Video.debug_frame = false;

@@ -106,7 +106,10 @@ void VideoObject_Destroy(VideoObject_t *object)
 	vlDeleteVertexBuffer(&object->buffer_vertex);
 	vlDeleteVertexBuffer(&object->buffer_texture);
 
+#ifdef VL_MODE_GLIDE
+#else
 	glDeleteVertexArrays(1, &object->object_vertexarrays);
+#endif
 }
 
 void VideoObject_Begin(VideoObject_t *object, VideoPrimitive_t primitive)
@@ -161,8 +164,11 @@ void VideoObject_Colour4fv(VideoObject_t *voObject, MathVector4f_t mvColour)
 void VideoObject_End(VideoObject_t *object)
 {
 	VIDEO_FUNCTION_START
+#ifdef VL_MODE_GLIDE
+#else
 	vlBindBuffer(GL_ARRAY_BUFFER, object->buffer_vertex);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(object->vertices), object->vertices, GL_STATIC_DRAW);
+#endif
 	VIDEO_FUNCTION_END
 }
 
@@ -247,6 +253,7 @@ void VideoObject_CalculateLighting(VideoObject_t *object, DynamicLight_t *light,
 
 void VideoObject_Draw(VideoObject_t *object)
 {
+#ifndef VL_MODE_GLIDE
 	glEnableVertexAttribArray(0);
 
 	vlBindBuffer(GL_ARRAY_BUFFER, object->buffer_vertex);
@@ -255,6 +262,7 @@ void VideoObject_Draw(VideoObject_t *object)
 	vlDrawArrays(object->primitive, 0, object->numtriangles);
 
 	glDisableVertexAttribArray(0);
+#endif
 }
 
 /*	Draw object using immediate mode.
@@ -262,6 +270,8 @@ void VideoObject_Draw(VideoObject_t *object)
 void VideoObject_DrawImmediate(VideoObject_t *object)
 {
 	VIDEO_FUNCTION_START
+#ifdef VL_MODE_GLIDE
+#else
 	if (object->numverts == 0)
 		return;
 
@@ -302,5 +312,6 @@ void VideoObject_DrawImmediate(VideoObject_t *object)
 			glClientActiveTexture(vlGetTextureUnit(i));
 			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 		}
+#endif
 	VIDEO_FUNCTION_END
 }

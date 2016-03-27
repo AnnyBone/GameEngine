@@ -292,7 +292,7 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
-      <AdditionalIncludeDirectories>.;.\new;..\;..\platform\include;..\include;..\shared;..\external\sdl2\include;..\external\sdl2_ttf\include;..\external\glee;..\external\lpng1618;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;.\new;..\;..\include;..\include\3DFX;..\shared;..\platform\include;..\external\lpng1618;..\external\SDL2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;_AFX_SECURE_NO_WARNINGS;_ATL_SECURE_NO_WARNINGS;KATANA;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AssemblerListingLocation>.\Release\</AssemblerListingLocation>
       <BrowseInformation>true</BrowseInformation>
@@ -309,7 +309,7 @@
       <TypeLibraryName>.\Release\Fitzquake.tlb</TypeLibraryName>
     </Midl>
     <ResourceCompile>
-      <Culture>0x0409</Culture>
+      <Culture>0x0809</Culture>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Bscmake>
@@ -322,11 +322,11 @@
       <SubSystem>Windows</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <OutputFile>..\bin\engine.x86.dll</OutputFile>
-      <AdditionalDependencies>opengl32.lib;comctl32.lib;winmm.lib;wsock32.lib;OpenAL32.lib;SDL2.lib;platform.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glew32.lib;comctl32.lib;winmm.lib;wsock32.lib;OpenAL32.lib;platform.lib;SDL2.lib;SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateMapFile>false</GenerateMapFile>
       <MapExports>false</MapExports>
-      <ImageHasSafeExceptionHandlers>true</ImageHasSafeExceptionHandlers>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug (Ictus)|Win32'">
@@ -607,7 +607,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\external\glee\GLee.c" />
     <ClCompile Include="..\shared\SharedFormats.c" />
     <ClCompile Include="client\effect_decal.cpp" />
     <ClCompile Include="client\effect_particle.cpp">
@@ -631,7 +630,12 @@
     <ClCompile Include="engine_exception.cpp" />
     <ClCompile Include="model_u3d.cpp" />
     <ClCompile Include="shader_water.cpp" />
-    <ClCompile Include="video_sdlwindow.c" />
+    <ClCompile Include="video_glidewindow.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="video_sdlwindow.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="video_framebuffer.cpp" />
     <ClCompile Include="EngineVideoParticle.c" />
     <ClCompile Include="EngineVideoAlias.c" />

@@ -39,14 +39,7 @@ void Window_Shutdown(void);
 int Window_GetWidth(void);
 int Window_GetHeight(void);
 
-typedef struct
-{
-#ifdef _WIN32
-	HWND instance;
-#endif
-} Window_t;
-
-extern Window_t g_mainwindow;
+extern plWindow_t g_mainwindow;
 
 plEXTERN_C_END
 

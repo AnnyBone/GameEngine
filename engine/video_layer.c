@@ -25,19 +25,150 @@
 	and the graphics API.
 	
 	All graphics API functionality should be here.
+
+	TODO:
+		- This shouldn't rely on Katana.
+		- Move this into platform?
+		- Add OpenGL style lighting pipeline.
+		- Matrix functionality, linked in with platform lib.
+		- Add some... Object manager of sorts?
 */
+
+typedef struct
+{
+	plColour_t	buffer_clearcolour;
+
+	unsigned int capabilities;
+
+	VLCull_t	current_cullmode;
+
+	unsigned int num_cards;	// Number of video cards.
+} VLstate_t;
+
+VLstate_t vl_state;
+
+/*===========================
+	INITIALIZATION
+===========================*/
+
+#if defined (VL_MODE_GLIDE)
+/*	Convert RGBA colour to something glide can understand.
+*/
+GrColor_t _vlConvertColour4f(VLColourFormat_t format, float r, float g, float b, float a)
+{
+	GrColor_t
+		gr = (GrColor_t)r,
+		gg = (GrColor_t)g,
+		gb = (GrColor_t)b,
+		ga = (GrColor_t)a;
+	switch (format)
+	{
+	case VL_COLOURFORMAT_ABGR:
+		return (ga << 24) | (gb << 16) | (gg << 8) | gr;
+	case VL_COLOURFORMAT_ARGB:
+		return (ga << 24) | (gr << 16) | (gg << 8) | gb;
+	case VL_COLOURFORMAT_BGRA:
+		return (gb << 24) | (gg << 16) | (gr << 8) | ga;
+	case VL_COLOURFORMAT_RGBA:
+		return (gr << 24) | (gg << 16) | (gb << 8) | ga;
+	default:return 0;
+	}
+}
+
+/*	Convert RGBA colour to something glide can understand.
+*/
+GrColor_t _vlConvertColour4fv(VLColourFormat_t format, plColour_t colour)
+{
+	return _vlConvertColour4f(format, colour[0], colour[1], colour[2], colour[3]);
+}
+
+void _vlGlideErrorCallback(const char *string, FxBool fatal)
+{
+	if (fatal)
+		Sys_Error(string);
+
+	Con_Warning(string);
+}
+#endif
+
+/*	Function used for initialization in general.
+*/
+void vlInit(void)
+{
+	plVectorSet3f(vl_state.buffer_clearcolour, 0, 0, 0);
+	vl_state.buffer_clearcolour[3] = 1;
+
+	vl_state.capabilities		= 0;
+	vl_state.current_cullmode	= -1;
+
+#if defined (VL_MODE_OPENGL)
+	unsigned int err = glewInit();
+	if(err != GLEW_OK)
+		Sys_Error("Failed to initialize glew!\n%s\n", glewGetErrorString(err));
+
+	// Check that the required capabilities are supported.
+	if (!GLEW_ARB_multitexture) Sys_Error("Video hardware incapable of multi-texturing!\n");
+	else if (!GLEW_ARB_texture_env_combine && !GLEW_EXT_texture_env_combine) Sys_Error("ARB/EXT_texture_env_combine isn't supported by your hardware!\n");
+	else if (!GLEW_ARB_texture_env_add && !GLEW_EXT_texture_env_add) Sys_Error("ARB/EXT_texture_env_add isn't supported by your hardware!\n");
+	//else if (!GLEE_EXT_fog_coord) Sys_Error("EXT_fog_coord isn't supported by your hardware!\n");
+	else if (!GLEW_ARB_vertex_program || !GLEW_ARB_fragment_program) Sys_Error("Shaders aren't supported by this hardware!\n");
+
+	// Optional capabilities.
+	if (GLEW_SGIS_generate_mipmap) Video.extensions.generate_mipmap = true;
+	else Con_Warning("Hardware mipmap generation isn't supported!\n");
+	if (GLEW_ARB_depth_texture) Video.extensions.depth_texture = true;
+	else Con_Warning("ARB_depth_texture isn't supported by your hardware!\n");
+	if (GLEW_ARB_shadow) Video.extensions.shadow = true;
+	else Con_Warning("ARB_shadow isn't supported by your hardware!\n");
+	if (GLEW_ARB_vertex_buffer_object) Video.extensions.vertex_buffer_object = true;
+	else Con_Warning("Hardware doesn't support Vertex Buffer Objects!\n");
+#elif defined (VL_MODE_GLIDE)
+	grGet(GR_NUM_BOARDS, sizeof(vl_state.num_cards), (FxI32*)&vl_state.num_cards);
+	if (vl_state.num_cards == 0)
+		Sys_Error("No Glide capable hardware detected!\n");
+
+	// Initialize Glide.
+	grGlideInit();
+
+	grErrorSetCallback(_vlGlideErrorCallback);
+#endif
+
+	// Set default states.
+	vlSetClearColour4fv(vl_state.buffer_clearcolour);
+	vlSetCullMode(VL_CULL_NEGATIVE);
+}
 
 /*===========================
 	GET
 ===========================*/
 
-void vlGetMaxTextureImageUnits(int *params)
+/*	Returns supported num of texture width.
+*/
+unsigned int vlGetMaxTextureSize(void)
+{
+#if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
+	int size = 0;
+	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &size);
+	return (unsigned)size;
+#elif defined (VL_MODE_GLIDE)
+	FxI32 size = 0;
+	grGet(GR_MAX_TEXTURE_SIZE, sizeof(size), &size);
+	return (unsigned int)size;
+#else
+	// TODO: Is this even safe?
+	return 4096;
+#endif
+}
+
+void vlGetMaxTextureImageUnits(int *param)
 {
 	VIDEO_FUNCTION_START
 #ifdef VL_MODE_OPENGL
-	glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, params);
+	glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, param);
+#elif defined (VL_MODE_GLIDE)
+	grGet(GR_NUM_TMU, sizeof(param), (FxI32*)param);
 #else
-	params = 0;
+	param = 0;
 #endif
 	VIDEO_FUNCTION_END
 }
@@ -58,8 +189,10 @@ const char *vlGetVendor(void)
 	VIDEO_FUNCTION_START
 #if defined (VL_MODE_OPENGL) || (VL_MODE_OPENGL_CORE)
 	return (const char*)glGetString(GL_VENDOR);
+#elif defined (VL_MODE_GLIDE)
+	return grGetString(GR_VENDOR);
 #else
-	return "";
+	return "Unknown";
 #endif
 	VIDEO_FUNCTION_END
 }
@@ -70,6 +203,8 @@ const char *vlGetExtensions(void)
 #ifdef VL_MODE_OPENGL
 	return (const char*)glGetString(GL_EXTENSIONS);
 	// TODO: this works differently in core; use glGetStringi instead!
+#elif defined (VL_MODE_GLIDE)
+	return grGetString(GR_EXTENSION);
 #else
 	return "";
 #endif
@@ -81,6 +216,8 @@ const char *vlGetVersion(void)
 	VIDEO_FUNCTION_START
 #if defined (VL_MODE_OPENGL) || (VL_MODE_OPENGL_CORE)
 	return (const char*)glGetString(GL_VERSION);
+#elif defined (VL_MODE_GLIDE)
+	return grGetString(GR_VERSION);
 #else
 	return "";
 #endif
@@ -92,13 +229,15 @@ const char *vlGetRenderer(void)
 	VIDEO_FUNCTION_START
 #if defined (VL_MODE_OPENGL) || (VL_MODE_OPENGL_CORE)
 	return (const char*)glGetString(GL_RENDERER);
+#elif defined (VL_MODE_GLIDE)
+	return grGetString(GR_RENDERER);
 #else
 	return "";
 #endif
 	VIDEO_FUNCTION_END
 }
 
-const char *vlGetString(vlString_t string)
+const char *vlGetString(VLString_t string)
 {
 	VIDEO_FUNCTION_START
 #if defined (VL_MODE_OPENGL) || (VL_MODE_OPENGL_CORE)
@@ -106,13 +245,13 @@ const char *vlGetString(vlString_t string)
 		// This works differently in core.
 		return vlGetExtensions();
 	return (const char*)glGetString(string);
+#elif defined VL_MODE_GLIDE
+	return grGetString(string);
 #else
 	return "";
 #endif
 	VIDEO_FUNCTION_END
 }
-
-// String
 
 /*===========================
 	ERROR HANDLING
@@ -246,7 +385,7 @@ void vlActiveTexture(unsigned int texunit)
 /*	TODO:
 		Modify this so it works as a replacement for TexMgr_SetFilterModes.
 */
-void vlSetTextureFilter(vlTextureFilter_t filter)
+void vlSetTextureFilter(VLTextureFilter_t filter)
 {
 	VIDEO_FUNCTION_START
 #ifdef VL_MODE_OPENGL
@@ -256,7 +395,7 @@ void vlSetTextureFilter(vlTextureFilter_t filter)
 	VIDEO_FUNCTION_END
 }
 
-int VideoLayer_TranslateTextureEnvironmentMode(VideoTextureEnvironmentMode_t TextureEnvironmentMode)
+int _vlTranslateTextureEnvironmentMode(VideoTextureEnvironmentMode_t TextureEnvironmentMode)
 {
 	VIDEO_FUNCTION_START
 	switch (TextureEnvironmentMode)
@@ -293,7 +432,7 @@ void vlSetTextureEnvironmentMode(VideoTextureEnvironmentMode_t TextureEnvironmen
 
 #ifdef VL_MODE_OPENGL
 	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, 
-		VideoLayer_TranslateTextureEnvironmentMode(TextureEnvironmentMode));
+		_vlTranslateTextureEnvironmentMode(TextureEnvironmentMode));
 #endif
 
 	Video.textureunits[Video.current_textureunit].current_envmode = TextureEnvironmentMode;
@@ -309,87 +448,144 @@ typedef struct
 	unsigned int vl_parm, to_parm;
 
 	const char *ident;
-} VideoLayerCapabilities_t;
+} VLCapabilities_t;
 
-VideoLayerCapabilities_t capabilities[] =
+VLCapabilities_t vl_capabilities[] =
 {
-#ifdef VL_MODE_OPENGL
-	{ VIDEO_ALPHA_TEST, GL_ALPHA_TEST, "ALPHA_TEST" },
-	{ VIDEO_BLEND, GL_BLEND, "BLEND" },
-	{ VIDEO_DEPTH_TEST, GL_DEPTH_TEST, "DEPTH_TEST" },
-	{ VIDEO_TEXTURE_2D, GL_TEXTURE_2D, "TEXTURE_2D" },
-	{ VIDEO_TEXTURE_GEN_S, GL_TEXTURE_GEN_S, "TEXTURE_GEN_S" },
-	{ VIDEO_TEXTURE_GEN_T, GL_TEXTURE_GEN_T, "TEXTURE_GEN_T" },
-	{ VIDEO_CULL_FACE, GL_CULL_FACE, "CULL_FACE" },
-	{ VIDEO_STENCIL_TEST, GL_STENCIL_TEST, "STENCIL_TEST" },
-	{ VIDEO_NORMALIZE, GL_NORMALIZE, "NORMALIZE" },
-	{ VIDEO_MULTISAMPLE, GL_MULTISAMPLE, "MULTISAMPLE" },
+#if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
+	{ VL_CAPABILITY_ALPHA_TEST, GL_ALPHA_TEST, "ALPHA_TEST" },
+	{ VL_CAPABILITY_BLEND, GL_BLEND, "BLEND" },
+	{ VL_CAPABILITY_DEPTH_TEST, GL_DEPTH_TEST, "DEPTH_TEST" },
+	{ VL_CAPABILITY_TEXTURE_2D, GL_TEXTURE_2D, "TEXTURE_2D" },
+	{ VL_CAPABILITY_TEXTURE_GEN_S, GL_TEXTURE_GEN_S, "TEXTURE_GEN_S" },
+	{ VL_CAPABILITY_TEXTURE_GEN_T, GL_TEXTURE_GEN_T, "TEXTURE_GEN_T" },
+	{ VL_CAPABILITY_CULL_FACE, GL_CULL_FACE, "CULL_FACE" },
+	{ VL_CAPABILITY_STENCIL_TEST, GL_STENCIL_TEST, "STENCIL_TEST" },
+	{ VL_CAPABILITY_MULTISAMPLE, GL_MULTISAMPLE, "MULTISAMPLE" },
+#else
+	{ VL_CAPABILITY_ALPHA_TEST, 0, "ALPHA_TEST" },
+	{ VL_CAPABILITY_BLEND, 0, "BLEND" },
+	{ VL_CAPABILITY_DEPTH_TEST, 0, "DEPTH_TEST" },
+	{ VL_CAPABILITY_TEXTURE_2D, 0, "TEXTURE_2D" },
+	{ VL_CAPABILITY_TEXTURE_GEN_S, 0, "TEXTURE_GEN_S" },
+	{ VL_CAPABILITY_TEXTURE_GEN_T, 0, "TEXTURE_GEN_T" },
+	{ VL_CAPABILITY_CULL_FACE, 0, "CULL_FACE" },
+	{ VL_CAPABILITY_STENCIL_TEST, 0, "STENCIL_TEST" },
+	{ VL_CAPABILITY_MULTISAMPLE, 0, "MULTISAMPLE" },
 #endif
 
 	{ 0 }
 };
 
+bool vlIsEnabled(unsigned int caps)
+{
+	if (!caps)
+		return false;
+
+	for (int i = 0; i < sizeof(vl_capabilities); i++)
+	{
+		if (!vl_capabilities[i].vl_parm)
+			break;
+
+		if (caps & vl_state.capabilities)
+			return true;
+	}
+
+	return false;
+}
+
 /*	Enables video capabilities.
 */
-void vlEnable(unsigned int uiCapabilities)
+void vlEnable(unsigned int cap)
 {
 	VIDEO_FUNCTION_START
 	int i;
-	for (i = 0; i < sizeof(capabilities); i++)
+	for (i = 0; i < sizeof(vl_capabilities); i++)
 	{
 		// Check if we reached the end of the list yet.
-		if (!capabilities[i].vl_parm)
+		if (!vl_capabilities[i].vl_parm)
 			break;
 
-		if (uiCapabilities & VIDEO_TEXTURE_2D)
+		if (Video.debug_frame)
+			plWriteLog(VIDEO_LOG, "Enabling %s (%i)\n", vl_capabilities[i].ident, Video.current_textureunit);
+		
+		if (cap & VL_CAPABILITY_TEXTURE_2D)
 			Video.textureunits[Video.current_textureunit].isactive = true;
-
-		if (uiCapabilities & capabilities[i].vl_parm)
-		{
-			if (Video.debug_frame)
-				plWriteLog(VIDEO_LOG, "Enabling %s (%i)\n", capabilities[i].ident, Video.current_textureunit);
-
-#if defined (VL_MODE_OPENGL) || (VL_MODE_OPENGL_CORE)
-			glEnable(capabilities[i].to_parm);
+#if defined (VL_MODE_GLIDE)
+		if (cap & VL_CAPABILITY_FOG)
+			// TODO: need to check this is supported...
+			grFogMode(GR_FOG_WITH_TABLE_ON_FOGCOORD_EXT);
+		if (cap & VL_CAPABILITY_DEPTH_TEST)
+			grDepthBufferMode(GR_DEPTHBUFFER_ZBUFFER);
+		if (cap & VL_CAPABILITY_CULL_FACE)
+			grCullMode(vl_state.current_cullmode);
 #endif
-		}
+
+		if (cap & vl_capabilities[i].vl_parm)
+#if defined (VL_MODE_OPENGL) || (VL_MODE_OPENGL_CORE)
+			glEnable(vl_capabilities[i].to_parm);
+#elif defined (VL_MODE_GLIDE)
+			// Hacky, but just to be safe...
+			if (vl_capabilities[i].to_parm != 0)
+				grEnable(vl_capabilities[i].to_parm);
+#endif
+
+		vl_state.capabilities |= vl_capabilities[i].vl_parm;
 	}
 	VIDEO_FUNCTION_END
 }
 
-void vlDisable(unsigned int uiCapabilities)
+void vlDisable(unsigned int cap)
 {
 	VIDEO_FUNCTION_START
-	for (int i = 0; i < sizeof(capabilities); i++)
+	if (!cap)
+		return;
+
+	for (int i = 0; i < sizeof(vl_capabilities); i++)
 	{
 		// Check if we reached the end of the list yet.
-		if (!capabilities[i].vl_parm)
+		if (!vl_capabilities[i].vl_parm)
 			break;
 
-		if (uiCapabilities & VIDEO_TEXTURE_2D)
+		if (Video.debug_frame)
+			plWriteLog(VIDEO_LOG, "Disabling %s (%i)\n", vl_capabilities[i].ident, Video.current_textureunit);
+
+		if (cap & VL_CAPABILITY_TEXTURE_2D)
 			Video.textureunits[Video.current_textureunit].isactive = false;
-
-		if (uiCapabilities & capabilities[i].vl_parm)
-		{
-			// TODO: Implement debugging support.
-
-#if defined (VL_MODE_OPENGL) || (VL_MODE_OPENGL_CORE)
-			glDisable(capabilities[i].to_parm);
+#if defined (VL_MODE_GLIDE)
+		if (cap & VL_CAPABILITY_FOG)
+			grFogMode(GR_FOG_DISABLE);
+		if (cap & VL_CAPABILITY_DEPTH_TEST)
+			grDepthBufferMode(GR_DEPTHBUFFER_DISABLE);
+		if (cap & VL_CAPABILITY_CULL_FACE)
+			grCullMode(vl_state.current_cullmode);
 #endif
-		}
+		
+		if (cap & vl_capabilities[i].vl_parm)
+#if defined (VL_MODE_OPENGL) || (VL_MODE_OPENGL_CORE)
+			glDisable(vl_capabilities[i].to_parm);
+#elif defined (VL_MODE_GLIDE)
+			// Hacky, but just to be safe...
+			if (vl_capabilities[i].to_parm != 0)
+				grDisable(vl_capabilities[i].to_parm);
+#endif
+
+		vl_state.capabilities &= ~vl_capabilities[i].vl_parm;
 	}
 	VIDEO_FUNCTION_END
 }
 
 /*	TODO: Want more control over the dynamics of this...
 */
-void vlBlendFunc(VideoBlend_t modea, VideoBlend_t modeb)
+void vlBlendFunc(vlBlend_t modea, vlBlend_t modeb)
 {
 	VIDEO_FUNCTION_START
 	if (Video.debug_frame)
 		plWriteLog(VIDEO_LOG, "Video: Setting blend mode (%i) (%i)\n", modea, modeb);
-#ifdef VL_MODE_OPENGL
+#if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
 	glBlendFunc(modea, modeb);
+#elif defined (VL_MODE_GLIDE)
+	grAlphaBlendFunction(modea, modeb, modea, modeb);
 #endif
 	VIDEO_FUNCTION_END
 }
@@ -401,8 +597,10 @@ void vlDepthMask(bool mode)
 	VIDEO_FUNCTION_START
 	static bool cur_state = true;
 	if (mode == cur_state) return;
-#ifdef VL_MODE_OPENGL
+#if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
 	glDepthMask(mode);
+#elif defined (VL_MODE_GLIDE)
+	grDepthMask(mode);
 #endif
 	cur_state = mode;
 	VIDEO_FUNCTION_END
@@ -460,9 +658,7 @@ void vlRenderBufferStorage(int format, int samples, unsigned int width, unsigned
 		case GL_OUT_OF_MEMORY:
 			errorstring = "Unable to create a data store of the requested size!";
 			break;
-		default:
-			// This should *NEVER* occur.
-			break;
+		default:break;
 		}
 		Sys_Error("%s\n%s", vlGetErrorString(glerror), errorstring);
 	}
@@ -473,7 +669,6 @@ void vlRenderBufferStorage(int format, int samples, unsigned int width, unsigned
 // VERTEX ARRAY OBJECTS
 
 /*	Generates a single vertex array.
-	glGenVertexArrays
 */
 void vlGenerateVertexArray(vlVertexArray_t *arrays)
 {
@@ -485,7 +680,6 @@ void vlGenerateVertexArray(vlVertexArray_t *arrays)
 }
 
 /*	Binds the given vertex array.
-	glBindVertexArray
 */
 void vlBindVertexArray(vlVertexArray_t array)
 {
@@ -499,7 +693,6 @@ void vlBindVertexArray(vlVertexArray_t array)
 // VERTEX BUFFER OBJECTS
 
 /*	Generates a single OpenGL buffer.
-	glGenBuffers
 */
 void vlGenerateVertexBuffer(unsigned int *buffer)
 {
@@ -545,13 +738,64 @@ void vlBindBuffer(unsigned int target, unsigned int buffer)
 
 // FRAME BUFFER OBJECTS
 
-void vlClear(unsigned int mask)
+/*	Sets clear colour for colour buffer.
+*/
+void vlSetClearColour(float r, float g, float b, float a)
+{
+	if ((r == vl_state.buffer_clearcolour[0]) &&
+		(g == vl_state.buffer_clearcolour[1]) &&
+		(b == vl_state.buffer_clearcolour[2]) &&
+		(a == vl_state.buffer_clearcolour[3]))
+		return;
+#if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
+	glClearColor(r, g, b, a);
+#endif
+	plColourSetf(vl_state.buffer_clearcolour, r, g, b, a);
+}
+
+void vlSetClearColour4fv(plColour_t rgba)
+{
+	vlSetClearColour(rgba[0], rgba[1], rgba[2], rgba[3]);
+}
+
+/*	Clears all the buffers.
+*/
+void vlClearBuffers(unsigned int mask)
 {
 	VIDEO_FUNCTION_START
-#if defined (VL_MODE_OPENGL) || (VL_MODE_OPENGL_CORE)
+#if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
 	glClear(mask);
+#elif defined (VL_MODE_GLIDE)
+	// Glide only supports clearing a single buffer.
+	grBufferClear(
+		// Convert buffer_clearcolour to something that works with Glide.
+		_vlConvertColour4fv(VL_COLOURFORMAT_RGBA, vl_state.buffer_clearcolour), 
+		1, 1);
 #endif
 	VIDEO_FUNCTION_END
+}
+
+void vlColourMask(bool red, bool green, bool blue, bool alpha)
+{
+#if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
+	glColorMask(red, green, blue, alpha);
+#elif defined (VL_MODE_GLIDE)
+	bool rgb = false;
+	if (red || green || blue) rgb = true;
+	grColorMask(rgb, alpha);
+#endif
+}
+
+void vlSwapBuffers(void)
+{
+#if defined (VL_MODE_OPENGL)
+	// Platform library takes care of this.
+	plSwapBuffers(&g_mainwindow);
+#elif defined (VL_MODE_GLIDE)
+	// Glide is pretty neat about this
+	// and actually handles it for us.
+	grBufferSwap(0);
+#endif
 }
 
 /*	Generates a single framebuffer.
@@ -568,7 +812,7 @@ void vlGenerateFrameBuffer(vlFrameBuffer_t *buffer)
 /*	Ensures that the framebuffer is valid, otherwise throws an error.
 	glCheckFramebufferStatus
 */
-void vlCheckFrameBufferStatus(vlFBOTarget_t target)
+void vlCheckFrameBufferStatus(VLFBOTarget_t target)
 {
 	VIDEO_FUNCTION_START
 #ifdef VL_MODE_OPENGL
@@ -607,11 +851,11 @@ void vlCheckFrameBufferStatus(vlFBOTarget_t target)
 
 /*	Binds the given framebuffer.
 */
-void vlBindFrameBuffer(vlFBOTarget_t vtTarget, unsigned int uiBuffer)
+void vlBindFrameBuffer(VLFBOTarget_t target, unsigned int buffer)
 {
 	VIDEO_FUNCTION_START
 #ifdef VL_MODE_OPENGL
-	glBindFramebuffer(vtTarget, uiBuffer);
+	glBindFramebuffer(target, buffer);
 
 	// Ensure there weren't any issues.
 	unsigned int glerror = glGetError();
@@ -666,6 +910,21 @@ void vlAttachFrameBufferTexture(gltexture_t *buffer)
 }
 
 /*===========================
+	FOG
+===========================*/
+
+/*	Sets global colour for fog.
+*/
+void vlFogColour3fv(plColour_t rgba)
+{
+#if defined (VL_MODE_OPENGL)
+	glFogfv(GL_FOG_COLOR, rgba);
+#elif defined (VL_MODE_GLIDE)
+	grFogColorValue(_vlConvertColour4fv(VL_COLOURFORMAT_RGBA, rgba));
+#endif
+}
+
+/*===========================
 	DRAWING
 ===========================*/
 
@@ -688,12 +947,30 @@ VideoPrimitives_t vl_primitives[] =
 	{ VIDEO_PRIMITIVE_TRIANGLE_FAN_LINE,	GL_LINES,			"TRIANGLE_FAN_LINE" },
 	{ VIDEO_PRIMITIVE_TRIANGLE_STRIP,		GL_TRIANGLE_STRIP,	"TRIANGLE_STRIP" },
 	{ VIDEO_PRIMITIVE_QUADS,				GL_QUADS,			"QUADS" }
+#elif defined (VL_MODE_GLIDE)
+	{ VIDEO_PRIMITIVE_LINES,				GR_LINES,			"LINES" },
+	{ VL_PRIMITIVE_LINE_STRIP,				GR_LINE_STRIP,		"LINE_STRIP" },
+	{ VIDEO_PRIMITIVE_POINTS,				GR_POINTS,			"POINTS" },
+	{ VIDEO_PRIMITIVE_TRIANGLES,			GR_TRIANGLES,		"TRIANGLES" },
+	{ VIDEO_PRIMITIVE_TRIANGLE_FAN,			GR_TRIANGLE_FAN,	"TRIANGLE_FAN" },
+	{ VIDEO_PRIMITIVE_TRIANGLE_FAN_LINE,	GR_LINES,			"TRIANGLE_FAN_LINE" },
+	{ VIDEO_PRIMITIVE_TRIANGLE_STRIP,		GR_TRIANGLE_STRIP,	"TRIANGLE_STRIP" },
+	{ VIDEO_PRIMITIVE_QUADS,				0,					"QUADS" }
+#elif defined (VL_MODE_DIRECT3D)
+#elif defined (VL_MODE_VULKAN)
+	{ VIDEO_PRIMITIVE_LINES,				VK_PRIMITIVE_TOPOLOGY_LINE_LIST,		"LINES" },
+	{ VIDEO_PRIMITIVE_POINTS,				VK_PRIMITIVE_TOPOLOGY_POINT_LIST,		"POINTS" },
+	{ VIDEO_PRIMITIVE_TRIANGLES,			VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,	"TRIANGLES" },
+	{ VIDEO_PRIMITIVE_TRIANGLE_FAN,			VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN,		"TRIANGLE_FAN" },
+	{ VIDEO_PRIMITIVE_TRIANGLE_FAN_LINE,	VK_PRIMITIVE_TOPOLOGY_LINE_LIST,		"TRIANGLE_FAN_LINE" },
+	{ VIDEO_PRIMITIVE_TRIANGLE_STRIP,		VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP,	"TRIANGLE_STRIP" },
+	{ VIDEO_PRIMITIVE_QUADS,				0,										"QUADS" }
 #else
 	{ 0 }
 #endif
 };
 
-unsigned int vlTranslatePrimitiveType(VideoPrimitive_t primitive)
+unsigned int _vlTranslatePrimitiveType(VideoPrimitive_t primitive)
 {
 	VIDEO_FUNCTION_START
 	for (int i = 0; i < pARRAYELEMENTS(vl_primitives); i++)
@@ -713,9 +990,8 @@ void vlDrawArrays(VideoPrimitive_t mode, unsigned int first, unsigned int count)
 	if (count == 0)
 		return;
 
-	unsigned int target = vlTranslatePrimitiveType(mode);
 #ifdef VL_MODE_OPENGL
-	glDrawArrays(target, first, count);
+	glDrawArrays(_vlTranslatePrimitiveType(mode), first, count);
 #endif
 }
 
@@ -725,9 +1001,8 @@ void vlDrawElements(VideoPrimitive_t mode, unsigned int count, unsigned int type
 	if ((count == 0) || !indices)
 		return;
 
-	unsigned int target = vlTranslatePrimitiveType(mode);
 #ifdef VL_MODE_OPENGL
-	glDrawElements(target, count, type, indices);
+	glDrawElements(_vlTranslatePrimitiveType(mode), count, type, indices);
 #endif
 	VIDEO_FUNCTION_END
 }
@@ -762,3 +1037,35 @@ void vlEnd(void)
 	vl_currentobject.primitive = VIDEO_PRIMITIVE_IGNORE;
 }
 
+/*===========================
+	MISC
+===========================*/
+
+void vlSetCullMode(VLCull_t mode)
+{
+	if (mode == vl_state.current_cullmode)
+		return;
+
+#if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
+	glCullFace(GL_BACK);
+	switch (mode)
+	{
+	case VL_CULL_NEGATIVE:
+		glFrontFace(GL_CW);
+		break;
+	case VL_CULL_POSTIVE:
+		glFrontFace(GL_CCW);
+		break;
+	}
+#endif
+	vl_state.current_cullmode = mode;
+}
+
+void vlFinish(void)
+{
+#if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
+	glFinish();
+#elif defined (VL_MODE_GLIDE)
+	grFinish();
+#endif
+}

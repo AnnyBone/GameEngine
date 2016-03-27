@@ -106,30 +106,16 @@ pINSTANCE iGlobalInstance;
 bool is_cursorvisible = true;		// Are we showing the cursor?
 
 int	iActive = 0,	// Number of current active windows.
-iScreen;		// Default screen.
+iScreen;			// Default screen.
 
-typedef struct
+void plShowWindow(plWindow_t *window)
 {
-	char	*cTitle,
-		*cClass;
-
-	int		iWidth, iHeight,
-		x, y;
-
-	bool	bActive,
-		bFullscreen;
-
 #ifdef _WIN32
-	HWND	hWindow;
-	HDC		hDeviceContext;
-#else	// Linux
-	Window  wInstance;
+	ShowWindow(window->instance, SW_SHOWDEFAULT);
 #endif
-} plWindow_t;
+}
 
 /*	Create a new window.
-	TODO:
-		Rewrite this...
 */
 void plCreateWindow(plWindow_t *window)
 {
@@ -162,19 +148,6 @@ void plCreateWindow(plWindow_t *window)
 #ifdef _WIN32
 	{
 	    WNDCLASSEX wWindowClass;
-#if 0
-		INITCOMMONCONTROLSEX iCommonControls;
-
-		iCommonControls.dwICC	= 0;
-		iCommonControls.dwSize	= sizeof(INITCOMMONCONTROLSEX);
-
-		if(!InitCommonControlsEx(&iCommonControls))
-		{
-			Platform_SetError("Failed to initialize common controls!\n");
-
-			return;
-		}
-#endif
 
 		wWindowClass.cbClsExtra		= 0;
 		wWindowClass.cbSize			= sizeof(WNDCLASSEX);
@@ -185,7 +158,7 @@ void plCreateWindow(plWindow_t *window)
 		wWindowClass.hIconSm		= 0;
 		wWindowClass.hInstance		= iGlobalInstance;
 		wWindowClass.lpfnWndProc	= NULL;	// (WNDPROC)Platform_WindowProcedure;
-		wWindowClass.lpszClassName	= window->cClass;
+		wWindowClass.lpszClassName	= window->classname;
 		wWindowClass.lpszMenuName	= 0;
 		wWindowClass.style			= CS_OWNDC;
 
@@ -195,31 +168,30 @@ void plCreateWindow(plWindow_t *window)
 			return;
 		}
 
-		window->hWindow = CreateWindowEx(
+		window->instance = CreateWindowEx(
 			0,
-			window->cClass,
-			window->cTitle,
+			window->classname,
+			window->title,
 			WS_OVERLAPPED|WS_BORDER|WS_CAPTION|WS_SYSMENU|WS_MINIMIZEBOX|WS_CLIPCHILDREN|WS_CLIPSIBLINGS,
 			window->x,
 			window->y,
-			window->iWidth,
-			window->iHeight,
+			window->width,
+			window->height,
 			NULL,NULL,
 			iGlobalInstance,
 			NULL);
-		if (!window->hWindow)
+		if (!window->instance)
 		{
 			plSetError("Failed to create window!\n");
 			return;
 		}
 
-		ShowWindow(window->hWindow, SW_SHOWDEFAULT);
+		plShowWindow(window);
 
-		UpdateWindow(window->hWindow);
+		UpdateWindow(window->instance);
+		SetForegroundWindow(window->instance);
 
-		SetForegroundWindow(window->hWindow);
-
-		window->hDeviceContext = GetDC(window->hWindow);
+		window->dc = GetDC(window->instance);
 	}
 #else	// Linux
 	{
@@ -245,19 +217,17 @@ void plCreateWindow(plWindow_t *window)
 	}
 #endif
 
-	window->bActive = true;
-
-	iActive++;
+	window->is_active = true;
 }
 
 void plDestroyWindow(plWindow_t *window)
 {
 #ifdef _WIN32
-	if (!window->hWindow)
+	if (!window->instance)
 		return;
 
 	// Destroy our window.
-	DestroyWindow(window->hWindow);
+	DestroyWindow(window->instance);
 #else	// Linux
 	// Close our display instance.
 	if(dMainDisplay)
@@ -364,7 +334,7 @@ void plMessageBox(const char *ccTitle, const char *ccMessage, ...)
 void plSwapBuffers(plWindow_t *window)
 {
 #ifdef _WIN32
-	SwapBuffers(window->hDeviceContext);
+	SwapBuffers(window->dc);
 #else	// Linux
 	//glXSwapBuffers() // todo
 #endif

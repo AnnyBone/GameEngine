@@ -1018,6 +1018,7 @@ plEXTERN_C_END
 */
 void Material_DrawObject(Material_t *material, VideoObject_t *object, bool ispost)
 {
+#ifdef VL_MODE_OPENGL
 	bool showwireframe = r_showtris.bValue;
 	if ((material && material->override_wireframe) && (r_showtris.iValue == 1))
 		showwireframe = false;
@@ -1056,6 +1057,7 @@ void Material_DrawObject(Material_t *material, VideoObject_t *object, bool ispos
 		object->numverts,
 		ispost
 	);
+#endif
 }
 
 /*	Typically called before an object is drawn.
@@ -1094,15 +1096,15 @@ void Material_Draw(Material_t *material, VideoVertex_t *ObjectVertex, VideoPrimi
 		{ 
 			vlDepthMask(false);
 
-			vlEnable(VIDEO_BLEND);
+			vlEnable(VL_CAPABILITY_BLEND);
 
 			if (msCurrentSkin->uiFlags & MATERIAL_FLAG_ADDITIVE)
 				// Additive blending isn't done by default.
-				vlBlendFunc(VIDEO_BLEND_ADDITIVE);
+				vlBlendFunc(VL_BLEND_ADDITIVE);
 		}
 		// Alpha-testing
 		else if (msCurrentSkin->uiFlags & MATERIAL_FLAG_ALPHA)
-			vlEnable(VIDEO_ALPHA_TEST);
+			vlEnable(VL_CAPABILITY_ALPHA_TEST);
 	}
 
 	MaterialTexture_t *texture = &msCurrentSkin->texture[0];
@@ -1120,7 +1122,7 @@ void Material_Draw(Material_t *material, VideoVertex_t *ObjectVertex, VideoPrimi
 		if (!ispost)
 		{
 			// Enable it.
-			vlEnable(VIDEO_TEXTURE_2D);
+			vlEnable(VL_CAPABILITY_TEXTURE_2D);
 
 			// Bind it.
 			Video_SetTexture(texture->gMap);
@@ -1128,6 +1130,7 @@ void Material_Draw(Material_t *material, VideoVertex_t *ObjectVertex, VideoPrimi
 			// Allow us to manipulate the texture.
 			if (texture->matrixmod)
 			{
+#ifdef VL_MODE_OPENGL
 				glMatrixMode(GL_TEXTURE);
 				glLoadIdentity();
 				if ((texture->scroll[0] > 0) || (texture->scroll[0] < 0) ||
@@ -1139,6 +1142,7 @@ void Material_Draw(Material_t *material, VideoVertex_t *ObjectVertex, VideoPrimi
 				if ((texture->fRotate > 0) || (texture->fRotate < 0))
 					glRotatef(texture->fRotate*cl.time, 0, 0, 1);
 				glMatrixMode(GL_MODELVIEW);
+#endif
 			}
 
 			// Anything greater than the first unit, copy the coords.
@@ -1171,35 +1175,42 @@ void Material_Draw(Material_t *material, VideoVertex_t *ObjectVertex, VideoPrimi
 			if (!ispost)
 			{
 				vlSetTextureEnvironmentMode(VIDEO_TEXTURE_MODE_COMBINE);
+#ifdef VL_MODE_OPENGL
 				glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
 				glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_PREVIOUS);
 				glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_TEXTURE);
 				glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 4);
+#endif
 			}
+#ifdef VL_MODE_OPENGL
 			else
 				glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 1);
+#endif
 			break;
 		case MATERIAL_TEXTURE_DETAIL:
 			if (!ispost)
 			{
 				if (!cv_video_drawdetail.bValue)
 				{
-					vlDisable(VIDEO_TEXTURE_2D);
+					vlDisable(VL_CAPABILITY_TEXTURE_2D);
 					break;
 				}
-
+#ifdef VL_MODE_OPENGL
 				glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
 				glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 2);
+#endif
 			}
+#ifdef VL_MODE_OPENGL
 			else
 				glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 1);
+#endif
 			break;
 		case MATERIAL_TEXTURE_FULLBRIGHT:
 			if (!ispost)
 			{
 				if (!gl_fullbrights.bValue)
 				{
-					vlDisable(VIDEO_TEXTURE_2D);
+					vlDisable(VL_CAPABILITY_TEXTURE_2D);
 					break;
 				}
 			}
@@ -1209,10 +1220,10 @@ void Material_Draw(Material_t *material, VideoVertex_t *ObjectVertex, VideoPrimi
 			{
 				Video_GenerateSphereCoordinates();
 
-				vlEnable(VIDEO_TEXTURE_GEN_S | VIDEO_TEXTURE_GEN_T);
+				vlEnable(VL_CAPABILITY_TEXTURE_GEN_S | VL_CAPABILITY_TEXTURE_GEN_T);
 			}
 			else
-				vlDisable(VIDEO_TEXTURE_GEN_S | VIDEO_TEXTURE_GEN_T);
+				vlDisable(VL_CAPABILITY_TEXTURE_GEN_S | VL_CAPABILITY_TEXTURE_GEN_T);
 			break;
 		}
 
@@ -1221,17 +1232,19 @@ void Material_Draw(Material_t *material, VideoVertex_t *ObjectVertex, VideoPrimi
 			// Reset any manipulation within the matrix.
 			if (texture->matrixmod)
 			{
+#ifdef VL_MODE_OPENGL
 				glMatrixMode(GL_TEXTURE);
 				glLoadIdentity();
 				glTranslatef(0, 0, 0);
 				glRotatef(0, 0, 0, 0);
 				glMatrixMode(GL_MODELVIEW);
+#endif
 			}
 
 			vlSetTextureEnvironmentMode(VIDEO_TEXTURE_MODE_MODULATE);
 
 			// Disable the texture.
-			vlDisable(VIDEO_TEXTURE_2D);
+			vlDisable(VL_CAPABILITY_TEXTURE_2D);
 		}
 	}
 
@@ -1242,26 +1255,26 @@ void Material_Draw(Material_t *material, VideoVertex_t *ObjectVertex, VideoPrimi
 		{
 			vlDepthMask(true);
 
-			vlDisable(VIDEO_BLEND);
+			vlDisable(VL_CAPABILITY_BLEND);
 
 			if (msCurrentSkin->uiFlags & MATERIAL_FLAG_ADDITIVE)
 				// Return blend mode to its default.
-				vlBlendFunc(VIDEO_BLEND_DEFAULT);
+				vlBlendFunc(VL_BLEND_DEFAULT);
 		}
 		// Alpha-testing
 		else if (msCurrentSkin->uiFlags & MATERIAL_FLAG_ALPHA)
 		{
-			vlDisable(VIDEO_ALPHA_TEST);
+			vlDisable(VL_CAPABILITY_ALPHA_TEST);
 
 			if ((msCurrentSkin->uiFlags & MATERIAL_FLAG_ALPHATRICK) && (cv_video_alphatrick.bValue && (ObjectSize > 0)))
 			{
 				vlDepthMask(false);
-				vlEnable(VIDEO_BLEND);
+				vlEnable(VL_CAPABILITY_BLEND);
 
 				// Draw the object again (don't bother passing material).
 				Video_DrawObject(ObjectVertex, ObjectPrimitive, ObjectSize, NULL, 0);
 
-				vlDisable(VIDEO_BLEND);
+				vlDisable(VL_CAPABILITY_BLEND);
 				vlDepthMask(true);
 			}
 		}

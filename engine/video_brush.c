@@ -49,7 +49,7 @@ int	allocated[MAX_LIGHTMAPS][BLOCK_WIDTH];
 // main memory so texsubimage can update properly
 uint8_t	lightmaps[LIGHTMAP_BYTES*MAX_LIGHTMAPS*BLOCK_WIDTH*BLOCK_HEIGHT];
 
-void R_BuildLightMap (msurface_t *surf, byte *dest, int stride);
+void R_BuildLightMap (msurface_t *surf, uint8_t *dest, int stride);
 
 /*	johnfitz -- added "frame" param to eliminate use of "currententity" global
 */
@@ -153,7 +153,7 @@ void R_DrawSequentialPoly(msurface_t *s)
 		if (alpha < 1.0f)
 		{
 			vlDepthMask(false);
-			vlEnable(VIDEO_BLEND);
+			vlEnable(VL_CAPABILITY_BLEND);
 		}
 
 		Material_Draw(mCurrent, 0, 0, 0, false);
@@ -169,7 +169,7 @@ void R_DrawSequentialPoly(msurface_t *s)
 		if (alpha < 1.0f)
 		{
 			vlDepthMask(true);
-			vlDisable(VIDEO_BLEND);
+			vlDisable(VL_CAPABILITY_BLEND);
 		}
 	}
 	else
@@ -179,7 +179,7 @@ void R_DrawSequentialPoly(msurface_t *s)
 			if (alpha < 1)
 			{
 				vlDepthMask(false);
-				vlEnable(VIDEO_BLEND);
+				vlEnable(VL_CAPABILITY_BLEND);
 			}
 
 			vlActiveTexture(VIDEO_TEXTURE_LIGHT);
@@ -188,7 +188,7 @@ void R_DrawSequentialPoly(msurface_t *s)
 			R_RenderDynamicLightmaps(s);
 			R_UploadLightmap(s->lightmaptexturenum);
 
-			vlEnable(VIDEO_TEXTURE_2D);
+			vlEnable(VL_CAPABILITY_TEXTURE_2D);
 
 			vlActiveTexture(0);
 		}
@@ -200,11 +200,11 @@ void R_DrawSequentialPoly(msurface_t *s)
 			if (alpha < 1)
 			{
 				vlDepthMask(true);
-				vlDisable(VIDEO_BLEND);
+				vlDisable(VL_CAPABILITY_BLEND);
 			}
 
 			vlActiveTexture(VIDEO_TEXTURE_LIGHT);
-			vlDisable(VIDEO_TEXTURE_2D);
+			vlDisable(VL_CAPABILITY_TEXTURE_2D);
 			vlActiveTexture(0);
 		}
 
@@ -214,6 +214,7 @@ void R_DrawSequentialPoly(msurface_t *s)
 
 void Brush_Draw(ClientEntity_t *e)
 {
+#ifdef VL_MODE_OPENGL
 	int				k;
 	unsigned int	i;
 	msurface_t		*psurf;
@@ -312,6 +313,7 @@ void Brush_Draw(ClientEntity_t *e)
 	}
 
 	glPopMatrix();
+#endif
 }
 
 /*
@@ -592,7 +594,6 @@ void R_BuildLightMap (msurface_t *surf, byte *dest, int stride)
 		if (lightmap)
 			for(maps = 0; maps < BSP_MAX_LIGHTMAPS && surf->styles[maps] != 255; maps++)
 			{
-				// [16/5/2013] Let us scale the lightmap ~hogsy
 				scale = d_lightstylevalue[surf->styles[maps]];
 				surf->cached_light[maps] = scale;	// 8.8 fraction
 				//johnfitz -- lit support via lordhavoc
@@ -622,7 +623,7 @@ void R_BuildLightMap (msurface_t *surf, byte *dest, int stride)
 		{
 			t = *bl++ >> cv_video_lightmapoversample.iValue; if (t > 255) t = 255; dest[2] = t;
 			t = *bl++ >> cv_video_lightmapoversample.iValue; if (t > 255) t = 255; dest[1] = t;
-			t = *bl++ >> cv_video_lightmapoversample.iValue;if (t > 255) t = 255;dest[0] = t;
+			t = *bl++ >> cv_video_lightmapoversample.iValue; if (t > 255) t = 255;dest[0] = t;
 
 			dest[3] = 255;
 		}
@@ -640,6 +641,7 @@ void R_UploadLightmap(int lmap)
 	bLightmapModified[lmap] = false;
 
 	theRect = &lightmap_rectchange[lmap];
+#ifdef VL_MODE_OPENGL
 	glTexSubImage2D(
 		GL_TEXTURE_2D,
 		0,0,
@@ -650,6 +652,7 @@ void R_UploadLightmap(int lmap)
 		GL_BGRA,
 		GL_UNSIGNED_INT_8_8_8_8_REV,
 		lightmaps+(lmap* BLOCK_HEIGHT + theRect->t)*BLOCK_WIDTH*LIGHTMAP_BYTES);
+#endif
 	theRect->l = BLOCK_WIDTH;
 	theRect->t = BLOCK_HEIGHT;
 	theRect->h = 0;
@@ -694,6 +697,7 @@ void R_RebuildAllLightmaps (void)
 
 		Video_SetTexture(lightmap_textures[i]);
 
+#ifdef VL_MODE_OPENGL
 		glTexSubImage2D(
 			GL_TEXTURE_2D,
 			0,0,0,
@@ -702,5 +706,6 @@ void R_RebuildAllLightmaps (void)
 			GL_BGRA,
 			GL_UNSIGNED_INT_8_8_8_8_REV,
 			lightmaps+i*BLOCK_WIDTH*BLOCK_HEIGHT*LIGHTMAP_BYTES);
+#endif
 	}
 }

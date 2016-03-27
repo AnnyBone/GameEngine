@@ -20,24 +20,13 @@
 
 #define	VIDEO_MAX_UNITS	16
 
-// Video Capabilities
-#define	VIDEO_ALPHA_TEST	1	// Alpha-testing
-#define	VIDEO_BLEND			2	// Blending
-#define	VIDEO_TEXTURE_2D	4	// Enables/disables textures.
-#define	VIDEO_DEPTH_TEST	8	// Depth-testing.
-#define	VIDEO_TEXTURE_GEN_T	16	// Generate T coordinate.
-#define	VIDEO_TEXTURE_GEN_S	32	// Generate S coordinate.
-#define	VIDEO_CULL_FACE		64	// Automatically cull faces.
-#define	VIDEO_STENCIL_TEST	128	// Stencil-testing.
-#define	VIDEO_NORMALIZE		256	// Normalization for scaled models that are lit.
-#define	VIDEO_MULTISAMPLE	512	// Multisampling.
-
 // Primitive Types
 typedef enum
 {
 	VIDEO_PRIMITIVE_IGNORE = -1,
 
 	VIDEO_PRIMITIVE_LINES,
+	VL_PRIMITIVE_LINE_STRIP,
 	VIDEO_PRIMITIVE_POINTS,
 	VIDEO_PRIMITIVE_TRIANGLES,
 	VIDEO_PRIMITIVE_TRIANGLE_STRIP,
@@ -47,39 +36,6 @@ typedef enum
 
 	VIDEO_PRIMITIVE_END
 } VideoPrimitive_t;
-
-// Blending Modes
-typedef enum VideoBlend_e
-{
-	VIDEO_BLEND_ZERO,
-	VIDEO_BLEND_ONE,
-	/*	As nice as it would be to use the
-		existing defs, we do this ourselves
-		so if we decide to use a different
-		graphics API, for whatever reason,
-		we can just translate these.
-	*/
-	VIDEO_BLEND_SRC_COLOR			= 0x0300,
-	VIDEO_BLEND_ONE_MINUS_SRC_COLOR = 0x0301,
-	VIDEO_BLEND_SRC_ALPHA			= 0x0302,
-	VIDEO_BLEND_ONE_MINUS_SRC_ALPHA = 0x0303,
-	VIDEO_BLEND_DST_ALPHA			= 0x0304,
-	VIDEO_BLEND_ONE_MINUS_DST_ALPHA = 0x0305,
-	VIDEO_BLEND_DST_COLOR			= 0x0306,
-	VIDEO_BLEND_ONE_MINUS_DST_COLOR = 0x0307,
-	VIDEO_BLEND_SRC_ALPHA_SATURATE	= 0x0308
-} VideoBlend_t;
-
-#define	VIDEO_BLEND_ADDITIVE	VIDEO_BLEND_SRC_ALPHA, VIDEO_BLEND_ONE
-#define	VIDEO_BLEND_DEFAULT		VIDEO_BLEND_SRC_ALPHA, VIDEO_BLEND_ONE_MINUS_SRC_ALPHA
-
-// Depth Modes
-typedef enum VideoDepth_e
-{
-	VIDEO_DEPTH_IGNORE = -1,	// Don't bother changing depth mode.
-	VIDEO_DEPTH_FALSE,			// Don't enable depth mask.
-	VIDEO_DEPTH_TRUE			// Enable depth mask.
-} VideoDepth_t;
 
 // Texture Environment Modes
 typedef enum VideoTextureEnvironmentMode_e

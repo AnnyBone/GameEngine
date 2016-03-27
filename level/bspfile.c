@@ -221,8 +221,8 @@ int SB_Tell (swappedbuffer_t *sbuf)
 
 void LoadBSPFile(char *filename)
 {
-	int				j;
-	unsigned int	i, headerend;
+	int				j, headerend;
+	unsigned int	i;
 	swappedbuffer_t	sb;
 	BSPLump_t		lumps[HEADER_LUMPS], *lump;
 
@@ -254,7 +254,7 @@ void LoadBSPFile(char *filename)
 	headerend = 4+sizeof(lumps);
 	for (i = 0; i < HEADER_LUMPS; i++)
 	{
-		if(headerend >= 4+(i+1)*sizeof(lumps[0]))
+		if(headerend >= (int)(4+(i+1)*sizeof(lumps[0])))
 		{
 			lumps[i].iFileOffset = SB_ReadInt (&sb);
 			lumps[i].iFileLength = SB_ReadInt (&sb);
