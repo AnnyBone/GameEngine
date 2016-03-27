@@ -145,7 +145,7 @@ namespace Core
 		bool IsSoundPaused(const AudioSound_t *sound);
 
 		AudioSample_t *AddSample(const char *path);
-		void DeleteSample(AudioSample_t *sample);
+		void DeleteSample(AudioSample_t *sample, bool force);
 		AudioSample_t *FindSample(const char *path);
 		void PrecacheSample(const char *path, bool preserve);
 		void LoadSample(AudioSample_t *cache, const char *path);
@@ -174,6 +174,7 @@ plEXTERN_C_START
 
 void Audio_Initialize(void);
 void Audio_Frame(void);
+void Audio_PlayAmbientSound(plVector3f_t position, const char *path, float volume);
 void Audio_PlayTemporarySound(plVector3f_t position, bool local, const char *path, float volume);
 void Audio_StopSounds(void);
 void Audio_PrecacheSample(const char *path, bool preserve);

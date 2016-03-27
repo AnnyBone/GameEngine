@@ -206,9 +206,8 @@ AudioSound_t *AudioManager::AddSound()
 	if (!sound)
 		throw EngineException("Failed to allocate new sound!\n");
 
-	sounds.push_back(sound);
-
 	memset(sound, 0, sizeof(AudioSound_t));
+	sounds.push_back(sound);
 
 	alGenSources(1, &sound->source);
 	switch (alGetError())
@@ -270,7 +269,7 @@ void AudioManager::SetSoundVelocity(AudioSound_t *sound, plVector3f_t velocity)
 
 void AudioManager::PlaySound(const AudioSound_t *sound)
 {
-	if (!sound || IsSoundPlaying(sound))
+	if (!sound || IsSoundPlaying(sound) || !sound->cache)
 		return;
 
 	alSourcef(sound->source, AL_PITCH, sound->pitch);
@@ -323,7 +322,7 @@ void AudioManager::LoadSound(AudioSound_t *sound, const char *path)
 		return;
 	}
 	else if (!sound)
-		return;
+		Sys_Error("Passed invalid sound pointer to LoadSound!\n");
 
 	sound->cache = FindSample(path);
 	if (!sound->cache)
@@ -332,19 +331,27 @@ void AudioManager::LoadSound(AudioSound_t *sound, const char *path)
 		return;
 	}
 
+#if 0
+	Con_Printf("PATH: %s\n", sound->cache->path);
+	Con_Printf("LENGTH: %i\n", sound->cache->length);
+	Con_Printf("DATA: %p\n", sound->cache->data);
+#endif
+
 	// Check the format.
 	int format = AL_FORMAT_MONO16;
 	if (sound->cache->width == 1)
 		format = AL_FORMAT_MONO8;
 
 	alBufferData(sound->buffer, format, sound->cache->data, sound->cache->size, sound->cache->speed);
-	switch (alGetError())
+
+	int err = alGetError();
+	switch (err)
 	{
 	case AL_OUT_OF_MEMORY:
 		Con_Warning("There is not enough memory avaliable to create this audio buffer!\n");
 		break;
 	case AL_INVALID_VALUE:
-		Con_Warning("The size parameter is not valid for the format specified, the audio buffer is in use, or the data is a NULL pointer!\n");
+		Con_Warning("Invalid audio buffer data!\n");
 		break;
 	case AL_INVALID_ENUM:
 		Con_Warning("The specified format does not exist!\n");
@@ -385,9 +392,6 @@ void AudioManager::DeleteSound(AudioSound_t *sound)
 		alDeleteSources(1, &sound->source);
 	if (alIsAuxiliaryEffectSlot(sound->effect_slot))
 		alDeleteAuxiliaryEffectSlots(1, &sound->effect_slot);
-
-	// Set cache as null.
-	sound->cache = nullptr;
 
 	// Remove it from the list.
 	for (auto iterator = sounds.begin(); iterator != sounds.end(); iterator++)
@@ -503,7 +507,6 @@ void AudioManager::DeleteEffect(AudioEffect_t *effect)
 AudioSample_t *AudioManager::AddSample(const char *path)
 {
 	AudioSample_t *cache = new AudioSample_t;
-	strncpy(cache->path, path, sizeof(cache->path));
 
 	// Add it to the global list.
 	samples.emplace(path, cache);
@@ -538,12 +541,22 @@ void AudioManager::PrecacheSample(const char *path, bool preserve)
 	AudioSample_t *cache = FindSample(path);
 	if (!cache)
 	{
-		cache = AddSample(path);
+		cache = new AudioSample_t;
+		memset(cache, 0, sizeof(AudioSample_t));
+
 		LoadSample(cache, path);
+		if (!cache->data)
+		{
+			Con_Warning("Failed to precache audio sample! (%s)\n", path);
+			delete cache;
+			return;
+		}
 	}
 
 	if (preserve)
 		cache->preserve = true;
+
+	samples.emplace(path, cache);
 }
 
 void AudioManager::LoadSample(AudioSample_t *cache, const char *path)
@@ -577,7 +590,7 @@ void AudioManager::LoadSample(AudioSample_t *cache, const char *path)
 	cache->size			= com_filesize;		// Size of the sample.
 
 	// Now resample the sample...
-#if 1
+#if 0
 	uint8_t *dataofs = data + info.dataofs;
 
 	stepscale = (float)cache->speed / AUDIO_SAMPLE_SPEED;
@@ -620,7 +633,7 @@ void AudioManager::LoadSample(AudioSample_t *cache, const char *path)
 		}
 	}
 #else
-/*	if (cache->width == 2)
+	if (cache->width == 2)
 	{
 		int num_samples = info.samples;
 		if (LittleShort(256) != 256)
@@ -631,13 +644,17 @@ void AudioManager::LoadSample(AudioSample_t *cache, const char *path)
 			for (int i = 0; i < info.samples; i++)
 				((short*)data)[i] = LittleShort(((short*)data)[i]);
 		}
-	}*/
+	}
 #endif
 	cache->data = data;
+
+	strncpy(cache->path, path, sizeof(cache->path));
 }
 
-void AudioManager::DeleteSample(AudioSample_t *sample)
+void AudioManager::DeleteSample(AudioSample_t *sample, bool force)
 {
+	if (sample->preserve && !force)
+		return;
 	samples.erase(sample->path);
 }
 
@@ -741,11 +758,22 @@ void Audio_PlayLocalSound(const char *path)
 	g_audiomanager->PlaySound(path);
 }
 
+void Audio_PlayAmbientSound(plVector3f_t position, const char *path, float volume)
+{
+	AudioSound_t *sound		= g_audiomanager->AddSound();
+	sound->volume			= volume;
+
+	g_audiomanager->SetSoundPosition(sound, position);
+	g_audiomanager->LoadSound(sound, path);
+	g_audiomanager->PlaySound(sound);
+}
+
 void Audio_PlayTemporarySound(plVector3f_t position, bool local, const char *path, float volume)
 {
 	AudioSound_t *sound		= g_audiomanager->AddSound();
 	sound->volume			= volume;
 	sound->local			= local;
+	sound->pitch			= 1.0f - ((rand() % 3) / 10.0f);
 
 	if (!sound->local)
 		g_audiomanager->SetSoundPosition(sound, position);
