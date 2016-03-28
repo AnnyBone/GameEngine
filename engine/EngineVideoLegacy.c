@@ -564,15 +564,7 @@ void R_SetupScene(void)
 	glRotatef(-r_refdef.viewangles[1], 0, 0, 1);
 	glTranslatef(-r_refdef.vieworg[0], -r_refdef.vieworg[1], -r_refdef.vieworg[2]);
 	glGetFloatv(GL_MODELVIEW_MATRIX, r_world_matrix);
-
-	// set drawing parms
-	if (gl_cull.value)
-		glEnable(GL_CULL_FACE);
-	else
-		glDisable(GL_CULL_FACE);
 #endif
-
-	vlEnable(VL_CAPABILITY_DEPTH_TEST);
 }
 
 void R_RenderScene(void)
@@ -583,6 +575,14 @@ void R_RenderScene(void)
 	r_framecount++;
 
 	R_SetupScene();
+
+	// Set drawing parms.
+	if (gl_cull.value)
+		vlEnable(VL_CAPABILITY_CULL_FACE);
+	else
+		vlDisable(VL_CAPABILITY_CULL_FACE);
+
+	vlEnable(VL_CAPABILITY_DEPTH_TEST);
 
 	Fog_EnableGFog(); //johnfitz
 
