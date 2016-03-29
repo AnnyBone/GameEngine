@@ -836,36 +836,31 @@ void Sky_Draw3DWorld(void)
 	// Don't let us render twice.
 	if (!sky_camera || r_refdef.sky)
 		return;
-
-	// Copy the matrix over.
-	memcpy(r_base_world_matrix, r_world_matrix, sizeof(r_base_world_matrix));
-
+	
 	// Update view position.
 	plVectorCopy3fv(r_refdef.vieworg, oldorg);
-	plVectorCopy3fv(sky_camerapos, r_refdef.vieworg);
+	//plVectorCopy3fv(sky_camerapos, r_refdef.vieworg);
+	Math_VectorAdd(oldorg, sky_camerapos, r_refdef.vieworg);
 	
 	R_SetupView();
 	R_SetupScene();
 
-	glScalef(2.0f, 2.0f, 2.0f);
-	glTranslatef(
-		r_refdef.vieworg[0],
-		r_refdef.vieworg[1],
-		r_refdef.vieworg[2]
-	);
+	glMatrixMode(GL_PROJECTION);
+	glScalef(4, 4, 4);
+//	glTranslatef(sky_camerapos[0], sky_camerapos[1], sky_camerapos[2]);
+	glMatrixMode(GL_MODELVIEW);
 
 	r_refdef.sky = true;
+	Sky_Draw();
 	World_Draw();
 	r_refdef.sky = false;
 
 	// Restore view position.
 	plVectorCopy3fv(oldorg, r_refdef.vieworg);
 
-	// Restore the original matrix.
-	glLoadMatrixf(r_base_world_matrix);
-
 	// Setup the view again, urgh.
 	R_SetupView();
+	R_SetupScene();
 #endif
 }
 
