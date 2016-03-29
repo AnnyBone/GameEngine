@@ -131,8 +131,8 @@ AudioManager::AudioManager()
 	if (alIsExtensionPresent("AL_SOFT_buffer_samples"))
 		extensions.soft_buffer_samples = true;
 
-	alDopplerFactor(2);
-	alDopplerVelocity(300);
+	alDopplerFactor(4.0f);
+	alDopplerVelocity(350.0f);
 
 	effect_global = AddEffect();
 	SetEffectReverb(effect_global, AUDIO_REVERB_AUDITORIUM);
