@@ -88,6 +88,9 @@
     <Filter Include="Client\Resources\Models">
       <UniqueIdentifier>{fc383661-239f-4081-b971-fb38f314c32f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Client\Video\Camera">
+      <UniqueIdentifier>{1af946ca-960a-4afe-a405-127c0c5d77f6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="menu.c">
@@ -327,6 +330,9 @@
     </ClCompile>
     <ClCompile Include="EngineVideoLegacy2.c">
       <Filter>Legacy\Client\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="client\video_camera.cpp">
+      <Filter>Client\Video</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
