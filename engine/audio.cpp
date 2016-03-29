@@ -131,7 +131,8 @@ AudioManager::AudioManager()
 	if (alIsExtensionPresent("AL_SOFT_buffer_samples"))
 		extensions.soft_buffer_samples = true;
 
-	alDopplerFactor(2.0f);
+	alDopplerFactor(2);
+	alDopplerVelocity(300);
 
 	effect_global = AddEffect();
 	SetEffectReverb(effect_global, AUDIO_REVERB_AUDITORIUM);
@@ -161,18 +162,17 @@ void AudioManager::Frame()
 {
 	plVector3f_t position, orientation, velocity;
 
-	// TODO: Have nothing to assign this to yet.
-	plVectorCopy3fv(pl_origin3f, velocity);
-
 	if (cls.signon == SIGNONS)
 	{
 		plVectorCopy3fv(r_refdef.vieworg, position);
 		plVectorCopy3fv(r_refdef.viewangles, orientation);
+		plVectorCopy3fv(cl.velocity, velocity);
 	}
 	else
 	{
 		plVectorCopy3fv(pl_origin3f, position);
 		plVectorCopy3fv(pl_origin3f, orientation);
+		plVectorCopy3fv(pl_origin3f, velocity);
 	}
 
 	// Convert orientation to something OpenAL can use.
