@@ -79,46 +79,25 @@ AudioManager::AudioManager()
 
 	Con_Printf("Initializing Audio Manager...\n");
 
-	Cmd_AddCommand("audio_playsound", Audio_PlaySoundCommand);
-	Cmd_AddCommand("audio_listsounds", Audio_ListSoundsCommand);
-	Cmd_AddCommand("audio_stopsounds", Audio_StopSounds);
-
-	// Reserve up to AUDIO_MAX_SOUNDS, and we can expand on this as necessary.
-	sounds.reserve(AUDIO_MAX_SOUNDS * 2);
-	samples.reserve(AUDIO_MAX_SOUNDS);
-
 	ALCdevice *device = alcOpenDevice(NULL);
 	if (!device)
-	{
-		Con_Warning("Failed to open audio device!\n");
-		return;
-	}
+		throw EngineException("Failed to open audio device!\n");
 
-	int attr[] =
-	{
-		ALC_FREQUENCY, AUDIO_SAMPLE_SPEED,
-		0
-	};
-
-	ALCcontext *context = alcCreateContext(device, attr);
-	if (!context || alcMakeContextCurrent(context) == FALSE)
-		throw EngineException("Failed to create audio context!\n");
-	
 	// Check for extensions...
-	if (alcIsExtensionPresent(alcGetContextsDevice(context), "ALC_EXT_EFX"))
+	if (alcIsExtensionPresent(device, "ALC_EXT_EFX"))
 	{
 		Con_Printf(" EFX support detected!\n");
 
-		alGenEffects		= (LPALGENEFFECTS)alGetProcAddress("alGenEffects");
-		alDeleteEffects		= (LPALDELETEEFFECTS)alGetProcAddress("alDeleteEffects");
-		alIsEffect			= (LPALISEFFECT)alGetProcAddress("alIsEffect");
-		alEffecti			= (LPALEFFECTI)alGetProcAddress("alEffecti");
-		alEffectf			= (LPALEFFECTF)alGetProcAddress("alEffectf");
-		
-		alGenAuxiliaryEffectSlots		= (LPALGENAUXILIARYEFFECTSLOTS)alGetProcAddress("alGenAuxiliaryEffectSlots");
-		alDeleteAuxiliaryEffectSlots	= (LPALDELETEAUXILIARYEFFECTSLOTS)alGetProcAddress("alDeleteAuxiliaryEffectSlots");
-		alIsAuxiliaryEffectSlot			= (LPALISAUXILIARYEFFECTSLOT)alGetProcAddress("alIsAuxiliaryEffectSlot");
-		alAuxiliaryEffectSloti			= (LPALAUXILIARYEFFECTSLOTI)alGetProcAddress("alAuxiliaryEffectSloti");
+		alGenEffects = (LPALGENEFFECTS)alGetProcAddress("alGenEffects");
+		alDeleteEffects = (LPALDELETEEFFECTS)alGetProcAddress("alDeleteEffects");
+		alIsEffect = (LPALISEFFECT)alGetProcAddress("alIsEffect");
+		alEffecti = (LPALEFFECTI)alGetProcAddress("alEffecti");
+		alEffectf = (LPALEFFECTF)alGetProcAddress("alEffectf");
+
+		alGenAuxiliaryEffectSlots = (LPALGENAUXILIARYEFFECTSLOTS)alGetProcAddress("alGenAuxiliaryEffectSlots");
+		alDeleteAuxiliaryEffectSlots = (LPALDELETEAUXILIARYEFFECTSLOTS)alGetProcAddress("alDeleteAuxiliaryEffectSlots");
+		alIsAuxiliaryEffectSlot = (LPALISAUXILIARYEFFECTSLOT)alGetProcAddress("alIsAuxiliaryEffectSlot");
+		alAuxiliaryEffectSloti = (LPALAUXILIARYEFFECTSLOTI)alGetProcAddress("alAuxiliaryEffectSloti");
 
 #if 0
 		alGenAuxiliaryEffectSlots(1, &sound->effect_slot);
@@ -128,11 +107,31 @@ AudioManager::AudioManager()
 
 		extensions.efx = true;
 	}
+
+	int attr[] =
+	{
+		ALC_FREQUENCY,				AUDIO_SAMPLE_SPEED,
+		ALC_MAX_AUXILIARY_SENDS,	4,
+		0
+	};
+
+	ALCcontext *context = alcCreateContext(device, attr);
+	if (!context || alcMakeContextCurrent(context) == FALSE)
+		throw EngineException("Failed to create audio context!\n");
+
 	if (alIsExtensionPresent("AL_SOFT_buffer_samples"))
 		extensions.soft_buffer_samples = true;
 
 	alDopplerFactor(4.0f);
 	alDopplerVelocity(350.0f);
+
+	Cmd_AddCommand("audio_playsound", Audio_PlaySoundCommand);
+	Cmd_AddCommand("audio_listsounds", Audio_ListSoundsCommand);
+	Cmd_AddCommand("audio_stopsounds", Audio_StopSounds);
+
+	// Reserve up to AUDIO_MAX_SOUNDS, and we can expand on this as necessary.
+	sounds.reserve(AUDIO_MAX_SOUNDS * 2);
+	samples.reserve(AUDIO_MAX_SOUNDS);
 
 	effect_global = AddEffect();
 	SetEffectReverb(effect_global, AUDIO_REVERB_AUDITORIUM);
@@ -261,7 +260,7 @@ void AudioManager::SetSoundVelocity(AudioSound_t *sound, plVector3f_t velocity)
 	if (plVectorCompare(velocity, sound->current_velocity))
 		return;
 
-	alSourcefv(sound->source, AL_VELOCITY, velocity);	// todo
+	alSourcefv(sound->source, AL_VELOCITY, velocity);
 
 	// Keep cur velocity updated.
 	plVectorCopy3fv(velocity, sound->current_velocity);
@@ -269,7 +268,7 @@ void AudioManager::SetSoundVelocity(AudioSound_t *sound, plVector3f_t velocity)
 
 void AudioManager::PlaySound(const AudioSound_t *sound)
 {
-	if (!sound || IsSoundPlaying(sound) || !sound->cache)
+	if (!sound || !sound->cache || IsSoundPlaying(sound))
 		return;
 
 	alSourcef(sound->source, AL_PITCH, sound->pitch);
@@ -293,6 +292,7 @@ void AudioManager::PlaySound(const AudioSound_t *sound)
 	}
 
 	alAuxiliaryEffectSloti(sound->effect_slot, AL_EFFECTSLOT_EFFECT, effect_global->id);
+	alSource3i(sound->source, AL_AUXILIARY_SEND_FILTER, sound->effect_slot, 0, 0);
 
 	// Play the source.
 	alSourcePlay(sound->source);
@@ -342,10 +342,8 @@ void AudioManager::LoadSound(AudioSound_t *sound, const char *path)
 	if (sound->cache->width == 1)
 		format = AL_FORMAT_MONO8;
 
-	alBufferData(sound->buffer, format, sound->cache->data, sound->cache->size, sound->cache->speed);
-
-	int err = alGetError();
-	switch (err)
+	alBufferData(sound->buffer, format, sound->cache->data, sound->cache->length * 2, sound->cache->speed);
+	switch (alGetError())
 	{
 	case AL_OUT_OF_MEMORY:
 		Con_Warning("There is not enough memory avaliable to create this audio buffer!\n");
@@ -402,36 +400,61 @@ void AudioManager::DeleteSound(AudioSound_t *sound)
 		}
 }
 
+typedef struct
+{
+	int in;
+
+	EFXEAXREVERBPROPERTIES out;
+} AudioReverbEffect_t;
+
+// We have to translate this manually, or rather, suffer because
+// we don't want to include any of the OpenAL headers outside
+// of audio.cpp
+//
+// Why do this? It's mainly if we ever need to switch away from
+// OpenAL in the future.
+AudioReverbEffect_t audio_reverb_effects[] =
+{
+	{ AUDIO_REVERB_GENERIC, EFX_REVERB_PRESET_GENERIC },
+	{ AUDIO_REVERB_ALLEY, EFX_REVERB_PRESET_ALLEY },
+	{ AUDIO_REVERB_ARENA, EFX_REVERB_PRESET_ARENA },
+	{ AUDIO_REVERB_AUDITORIUM, EFX_REVERB_PRESET_AUDITORIUM },
+	{ AUDIO_REVERB_BATHROOM, EFX_REVERB_PRESET_BATHROOM },
+	{ AUDIO_REVERB_CARPETEDHALLWAY, EFX_REVERB_PRESET_CARPETEDHALLWAY },
+	{ AUDIO_REVERB_CAVE, EFX_REVERB_PRESET_CAVE },
+	{ AUDIO_REVERB_CHAPEL, EFX_REVERB_PRESET_CHAPEL },
+	{ AUDIO_REVERB_CITY, EFX_REVERB_PRESET_CITY },
+	{ AUDIO_REVERB_CONCERTHALL, EFX_REVERB_PRESET_CONCERTHALL },
+	{ AUDIO_REVERB_DIZZY, EFX_REVERB_PRESET_DIZZY },
+	{ AUDIO_REVERB_DRUGGED, EFX_REVERB_PRESET_DRUGGED },
+	{ AUDIO_REVERB_FOREST, EFX_REVERB_PRESET_FOREST },
+	{ AUDIO_REVERB_HALLWAY, EFX_REVERB_PRESET_HALLWAY },
+	{ AUDIO_REVERB_HANGAR, EFX_REVERB_PRESET_HANGAR },
+	{ AUDIO_REVERB_LIVINGROOM, EFX_REVERB_PRESET_LIVINGROOM },
+	{ AUDIO_REVERB_MOUNTAINS, EFX_REVERB_PRESET_MOUNTAINS },
+	{ AUDIO_REVERB_PADDEDCELL, EFX_REVERB_PRESET_PADDEDCELL },
+	{ AUDIO_REVERB_PARKINGLOT, EFX_REVERB_PRESET_PARKINGLOT },
+	{ AUDIO_REVERB_PLAIN, EFX_REVERB_PRESET_PLAIN },
+	{ AUDIO_REVERB_PSYCHOTIC, EFX_REVERB_PRESET_PSYCHOTIC },
+};
+
 void AudioManager::SetEffectReverb(const AudioEffect_t *effect, AudioEffectReverb_t mode)
 {
-	EFXEAXREVERBPROPERTIES reverb = EFX_REVERB_PRESET_GENERIC;
-	switch (mode)
+	// Translate it for OpenAL.
+	EFXEAXREVERBPROPERTIES reverb = { 0 };
+	for (unsigned int i = 0; i < pARRAYELEMENTS(audio_reverb_effects); i++)
 	{
-	case AUDIO_REVERB_ALLEY:
-		reverb = EFX_REVERB_PRESET_ALLEY;
-		break;
-	case AUDIO_REVERB_ARENA:
-		reverb = EFX_REVERB_PRESET_ARENA;
-		break;
-	case AUDIO_REVERB_AUDITORIUM:
-		reverb = EFX_REVERB_PRESET_AUDITORIUM;
-		break;
-	case AUDIO_REVERB_BATHROOM:
-		reverb = EFX_REVERB_PRESET_BATHROOM;
-		break;
-	case AUDIO_REVERB_CARPETEDHALLWAY:
-		reverb = EFX_REVERB_PRESET_CARPETEDHALLWAY;
-		break;
-	case AUDIO_REVERB_CAVE:
-		reverb = EFX_REVERB_PRESET_CAVE;
-		break;
-	case AUDIO_REVERB_CHAPEL:
-		reverb = EFX_REVERB_PRESET_CHAPEL;
-		break;
-	case AUDIO_REVERB_CITY:
-		reverb = EFX_REVERB_PRESET_CITY;
-		break;
-	default:Con_Warning("Unknown reverb mode! (%i)\n", mode);
+		if (audio_reverb_effects[i].in == mode)
+		{
+			reverb = audio_reverb_effects[i].out;
+			break;
+		}
+	}
+
+	// This is sort of dumb, but whatever...
+	if (reverb.flGain <= 0)
+	{
+		Con_Warning("Invalid reverb effect! (%i)\n", mode);
 		return;
 	}
 
@@ -590,7 +613,7 @@ void AudioManager::LoadSample(AudioSample_t *cache, const char *path)
 	cache->size			= com_filesize;		// Size of the sample.
 
 	// Now resample the sample...
-#if 0
+#if 1
 	uint8_t *dataofs = data + info.dataofs;
 
 	stepscale = (float)cache->speed / AUDIO_SAMPLE_SPEED;
