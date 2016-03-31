@@ -312,10 +312,11 @@
     </ClCompile>
     <ClCompile Include="client\video_camera.cpp">
       <Filter>Client\Video</Filter>
-	</ClCompile>
+    </ClCompile>
     <ClCompile Include="audio_wav.c">
       <Filter>Client\Audio</Filter>
     </ClCompile>
+    <ClCompile Include="EngineAudioDummy.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\shared\shared_client.h">
@@ -554,6 +555,9 @@
     </ClInclude>
     <ClInclude Include="video_shadow.h">
       <Filter>Client\Video</Filter>
+    </ClInclude>
+    <ClInclude Include="client\shader_base.h">
+      <Filter>Client\Video\Shaders\Base</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

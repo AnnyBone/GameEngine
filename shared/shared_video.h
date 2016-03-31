@@ -18,8 +18,6 @@
 
 #pragma once
 
-#define	VIDEO_MAX_UNITS	16
-
 // Primitive Types
 typedef enum
 {
@@ -49,6 +47,8 @@ typedef enum VideoTextureEnvironmentMode_e
 	VIDEO_TEXTURE_MODE_REPLACE,
 	VIDEO_TEXTURE_MODE_COMBINE
 } VideoTextureEnvironmentMode_t;
+
+#define	VIDEO_MAX_UNITS	16
 
 // Vertex
 typedef struct

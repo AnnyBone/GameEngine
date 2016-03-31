@@ -724,6 +724,7 @@
     <ClInclude Include="..\shared\shared_zone.h" />
     <ClInclude Include="client.h" />
     <ClInclude Include="client\effect_sprite.h" />
+    <ClInclude Include="client\shader_base.h" />
     <ClInclude Include="engine_class.h" />
     <ClInclude Include="EngineClientTempEntity.h" />
     <ClInclude Include="EngineConsoleCommand.h" />

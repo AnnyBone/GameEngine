@@ -285,7 +285,7 @@ void VideoObject_DrawImmediate(VideoObject_t *object)
 	glVertexPointer(3, GL_FLOAT, sizeof(VideoVertex_t), vert->mvPosition);
 	glColorPointer(4, GL_FLOAT, sizeof(VideoVertex_t), vert->mvColour);
 	glNormalPointer(GL_FLOAT, sizeof(VideoVertex_t), vert->mvNormal);
-	for (int i = 0; i < VIDEO_MAX_UNITS; i++)
+	for (int i = 0; i < Video.num_textureunits; i++)
 		if (Video.textureunits[i].isactive)
 		{
 			glClientActiveTexture(vlGetTextureUnit(i));
@@ -306,7 +306,7 @@ void VideoObject_DrawImmediate(VideoObject_t *object)
 	glDisableClientState(GL_COLOR_ARRAY);
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_NORMAL_ARRAY);
-	for (int i = 0; i < VIDEO_MAX_UNITS; i++)
+	for (int i = 0; i < Video.num_textureunits; i++)
 		if (Video.textureunits[i].isactive)
 		{
 			glClientActiveTexture(vlGetTextureUnit(i));

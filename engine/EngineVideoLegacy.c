@@ -360,7 +360,7 @@ void R_DrawEntitiesOnList(bool bAlphaPass) //johnfitz -- added parameter
 		Draw_Entity(currententity);
 	}
 #else	// Draw per-material
-	for (unsigned int i = 0; i < material_count; i++)
+	for (int i = 0; i < material_count; i++)
 	{
 		for (unsigned int j = 0; j < cl_numvisedicts; j++)
 		{

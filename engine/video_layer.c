@@ -625,7 +625,7 @@ unsigned int vlCreateShaderProgram(void)
 void vlDeleteShaderProgram(unsigned int *program)
 {
 #ifdef VL_MODE_OPENGL
-	glDeleteProgram(program);
+	glDeleteProgram(*program);
 	program = NULL;
 #endif
 }

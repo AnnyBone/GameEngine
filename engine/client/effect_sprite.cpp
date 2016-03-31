@@ -33,18 +33,18 @@ SpriteManager *g_spritemanager = nullptr;
 
 SpriteManager::SpriteManager()
 {
-	initialized = false;
-}
-
-void SpriteManager::Initialize()
-{
 	Con_Printf("Initializing Sprite Manager...\n");
 
 	Cvar_RegisterVariable(&cv_sprite_debugsize, NULL);
 
 	sprites.reserve(SPRITE_DEFAULT_MAX);
+}
 
-	initialized = true;
+SpriteManager::~SpriteManager()
+{
+	Con_Printf("Shutting down Sprite Manager...\n");
+
+	Clear();
 }
 
 /*	Add a new sprite to the manager.
@@ -60,18 +60,23 @@ Sprite *SpriteManager::Add()
 */
 void SpriteManager::Remove(Sprite *sprite)
 {
-	for (auto iterator = sprites.begin(); iterator != sprites.end(); iterator++)
+	for (auto iterator = sprites.begin(); iterator != sprites.end(); ++iterator)
 		if (sprite == *iterator)
+		{
 			sprites.erase(iterator);
+			delete (*iterator);
+			break;
+		}
 }
 
 /*	Clears out all sprites.
 */
 void SpriteManager::Clear()
 {
-	sprites.clear();						// Clear the vector.
-	sprites.shrink_to_fit();				// Clear out mem.
-	sprites.reserve(SPRITE_DEFAULT_MAX);	// Reserve default amount, again.
+	for (auto sprite = sprites.begin(); sprite != sprites.end(); ++sprite)
+		delete (*sprite);
+
+	sprites.clear();	// Clear the vector.
 }
 
 /*	Run through and simulate each sprite individually.
@@ -92,13 +97,6 @@ void SpriteManager::Draw()
 
 		sprites[i]->Draw();
 	}
-}
-
-void SpriteManager::Shutdown()
-{
-	Con_Printf("Shutting down Sprite Manager...\n");
-
-	Clear();
 }
 
 /*

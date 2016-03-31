@@ -217,13 +217,8 @@ void Video_Initialize(void)
 
 	Light_Initialize();
 
-	// Initialize the shader manager.
 	g_shadermanager = new Core::ShaderManager();
-	g_shadermanager->Initialize();
-
-	// Initialize the sprite manager.
 	g_spritemanager = new Core::SpriteManager();
-	g_spritemanager->Initialize();
 
 	Video.bInitialized = true;
 }
@@ -576,9 +571,6 @@ void Video_Shutdown(void)
 
 	// Let us know that we're shutting down the video sub-system.
 	Con_Printf("Shutting down video...\n");
-
-	g_spritemanager->Shutdown();
-	g_shadermanager->Shutdown();
 
 	delete g_spritemanager;
 	delete g_shadermanager;

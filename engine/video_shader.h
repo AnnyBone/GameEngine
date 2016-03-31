@@ -75,7 +75,7 @@ namespace Core
 
 		int GetUniformLocation(const char *name);
 
-		unsigned int GetInstance() { return instance };
+		unsigned int GetInstance() { return instance; };
 	protected:
 	private:
 		bool isenabled;
