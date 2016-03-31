@@ -21,6 +21,8 @@
 #include "video.h"
 #include "video_shader.h"
 
+#include "client/shader_base.h"
+
 /*
 	TODO:
 		Move all GL functionality over into VideoLayer.
@@ -49,7 +51,7 @@ void ShaderManager::Shutdown()
 
 // Manager
 
-void VideoShaderManager::Initialize()
+void ShaderInstance::Initialize()
 {
 	program = new ShaderProgram();
 	program->Initialize();
@@ -57,7 +59,7 @@ void VideoShaderManager::Initialize()
 	RegisterShaders();
 }
 
-void VideoShaderManager::Shutdown()
+void ShaderInstance::Shutdown()
 {
 	program->Shutdown();
 

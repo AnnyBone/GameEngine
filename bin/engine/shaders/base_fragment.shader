@@ -15,28 +15,9 @@
 	along with this program; if not, write to the Free Software
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
+#version 120
 
-varying vec4 v_diffusecolour;
-varying vec4 v_normalcolour;
-
-uniform sampler2D	u_diffusemap;
-uniform sampler2D	u_detailmap;
-uniform sampler2D	u_fullbrightmap;
-uniform sampler2D	u_spheremap;
-
-uniform	float	u_alphaclamp;
-uniform	bool	u_alphatest;
-
-void main()
+void main(void)
 {
-	vec4 diffuse = texture2D(u_diffusemap, gl_TexCoord[0].st);
-
-	// Alpha-testing.
-	if(u_alphatest == true)
-		if(diffuse.a > u_alphaclamp)
-			discard;
-
-	//gl_FragColor = diffuse;
-	gl_FragColor = vec4(v_diffusecolour.xyz, 1.0) * diffuse;
-	//gl_FragColor = normalize(v_normalcolour);
+	gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
 }

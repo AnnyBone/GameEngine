@@ -25,7 +25,7 @@
 	Implementation for a water shader.
 */
 
-class WaterShader : public VideoShaderManager
+class WaterShader : public ShaderInstance
 {
 	SHADER_IMPLEMENT(WaterShader);
 

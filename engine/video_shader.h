@@ -106,17 +106,17 @@ namespace Core
 	name = program->GetUniformLocation(#name);	\
 	program->SetVariable(name, def);
 
-class VideoShaderManager
+class ShaderInstance
 {
 public:
-	VideoShaderManager() 
+	ShaderInstance()
 	{
 		program = NULL;
 
 		shaders.reserve(2);
 	}
 
-	~VideoShaderManager() 
+	~ShaderInstance() 
 	{
 		delete program;
 	}
@@ -156,7 +156,7 @@ namespace Core
 
 	protected:
 	private:
-		std::vector<ShaderProgram*> programs;
+		std::vector<std::*> programs;
 	};
 }
 #endif

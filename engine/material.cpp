@@ -34,7 +34,7 @@
 
 bool material_initialized = false;
 
-Material_t	materials[MATERIAL_MAX];	// Global array.
+Material_t	g_materials[MATERIAL_MAX];	// Global array.
 
 MaterialType_t	material_surface_types[]=
 {
@@ -104,10 +104,10 @@ void Material_List(void)
 
 	for (i = 0; i < material_count; i++)
 	{
-		if (!materials[i].cName[0] && !materials[i].cPath[0])
+		if (!g_materials[i].cName[0] && !g_materials[i].cPath[0])
 			continue;
 
-		Con_Printf(" %s (%s) (%i)\n", materials[i].cName, materials[i].cPath, materials[i].num_skins);
+		Con_Printf(" %s (%s) (%i)\n", g_materials[i].cName, g_materials[i].cPath, g_materials[i].num_skins);
 	}
 
 	Con_Printf("\nListed %i active materials!\n", i);
@@ -126,15 +126,15 @@ Material_t *Material_Allocate(void)
 #ifdef _MSC_VER
 #	pragma warning(suppress: 6386)
 #endif
-	materials[material_count].cName[0]				= 0;
-	materials[material_count].id					= material_count;
-	materials[material_count].fAlpha				= 1.0f;
-	materials[material_count].bind					= true;
-	materials[material_count].current_skin			= 0;
-	materials[material_count].override_wireframe	= false;
-	materials[material_count].override_lightmap		= false;
+	g_materials[material_count].cName[0] = 0;
+	g_materials[material_count].id = material_count;
+	g_materials[material_count].fAlpha = 1.0f;
+	g_materials[material_count].bind = true;
+	g_materials[material_count].current_skin = 0;
+	g_materials[material_count].override_wireframe = false;
+	g_materials[material_count].override_lightmap = false;
 
-	return &materials[material_count];
+	return &g_materials[material_count];
 }
 
 /*	Clears out the specific skin.
@@ -172,7 +172,7 @@ void Material_ClearAll(void)
 	int	i;
 
 	for (i = material_count; i > 0; i--)
-		Material_Clear(&materials[i]);
+		Material_Clear(&g_materials[i]);
 
 	// TODO: Reshuffle and move preserved to start.
 }
@@ -231,11 +231,10 @@ Material_t *Material_Get(int iMaterialID)
 	}
 
 	for (i = 0; i < material_count; i++)
-		if (materials[i].id == iMaterialID)
+		if (g_materials[i].id == iMaterialID)
 		{
-			materials[i].bind = true;
-
-			return &materials[i];
+			g_materials[i].bind = true;
+			return &g_materials[i];
 		}
 
 	return NULL;
@@ -256,9 +255,9 @@ Material_t *Material_GetByName(const char *ccMaterialName)
 
 	for (i = 0; i < material_count; i++)
 		// If the material has no name, then it's not valid.
-		if (materials[i].cName[0])
-			if (!strncmp(materials[i].cName, ccMaterialName, sizeof(materials[i].cName)))
-				return &materials[i];
+		if (g_materials[i].cName[0])
+			if (!strncmp(g_materials[i].cName, ccMaterialName, sizeof(g_materials[i].cName)))
+				return &g_materials[i];
 
 	return NULL;
 }
@@ -274,9 +273,9 @@ Material_t *Material_GetByPath(const char *ccPath)
 	}
 	
 	for (i = 0; i < material_count; i++)
-		if (materials[i].cPath[0])
-			if (!strncmp(materials[i].cPath, ccPath, sizeof(materials[i].cPath)))
-				return &materials[i];
+		if (g_materials[i].cPath[0])
+			if (!strncmp(g_materials[i].cPath, ccPath, sizeof(g_materials[i].cPath)))
+				return &g_materials[i];
 
 	return NULL;
 }

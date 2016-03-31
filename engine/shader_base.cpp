@@ -21,32 +21,9 @@
 #include "video.h"
 #include "video_shader.h"
 
-class BaseShader : public VideoShaderManager
-{
-	SHADER_IMPLEMENT(BaseShader);
+#include "client/shader_base.h"
 
-	void EnableAlphaTest();
-	void DisableAlphaTest();
-protected:
-private:
-	uniform u_alphaclamp;
-	uniform u_alphatest;
-
-	uniform	u_diffusemap;
-	uniform	u_detailmap;
-	uniform	u_fullbrightmap;
-	uniform	u_spheremap;
-
-	uniform u_lightposition;
-	uniform u_lightcolour;
-
-	uniform u_vertexscale;
-
-	bool	alpha_test;
-	float	alpha_clamp;
-};
-
-BaseShader::BaseShader() : VideoShaderManager()
+BaseShader::BaseShader() : ShaderInstance()
 {
 	alpha_test		= false;
 	alpha_clamp		= 0.5f;

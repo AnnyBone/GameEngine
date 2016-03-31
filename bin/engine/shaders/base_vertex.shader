@@ -15,21 +15,13 @@
 	along with this program; if not, write to the Free Software
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
+#version 120
 
-varying vec4 v_diffusecolour;
-varying vec4 v_normalcolour;
+attribute vec2 coord;
 
-uniform vec3	u_lightposition;
-uniform vec3	u_lightcolour;
-uniform float	u_vertexscale;
-
-void main()
+void main(void)
 {
-	v_normalcolour = vec4(gl_Normal, 1.0);
-	v_diffusecolour = vec4(1.0, 1.0, 1.0, 1.0);
-
-	gl_TexCoord[0] = gl_MultiTexCoord0;
-	gl_Position = ftransform();
+	gl_Position = vec4(coord, 0.0, 1.0);
 
 	// Sphere-mapping
 	/*
@@ -40,14 +32,4 @@ void main()
 	gl_TexCoord[1].s = r.x / m + 0.5;
 	gl_TexCoord[1].t = r.y / m + 0.5;
 	*/
-	
-/*
-	vec3 viewVertex = normalize(gl_ModelViewMatrix * gl_Vertex);
-	vec3 viewNormal = normalize(gl_NormalMatrix * gl_Normal);
-	vec3 viewLightPosition = normalize(gl_NormalMatrix * u_lightposition);
-	
-	float dist = distance(viewNormal, viewLightPosition);
-	
-	v_diffusecolour = vec4((lightColour * 2.0) * dist,1.0) * max(dot(viewNormal, viewLightPosition), 0.0);
-*/
 }

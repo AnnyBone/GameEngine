@@ -30,6 +30,9 @@ extern Material_t
 	*g_mGlobalColour,
 	*g_mGlobalConChars;		// Used for the console font.
 
+extern Material_t g_materials[MATERIAL_MAX];
+extern int material_count;
+
 void Material_Initialize(void);
 void Material_ClearAll(void);
 void Material_Clear(Material_t *material);
