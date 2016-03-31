@@ -32,7 +32,7 @@
 
 using namespace Core;
 
-Core::ShaderManager *g_shadermanager = nullptr;
+ShaderManager *g_shadermanager = nullptr;
 
 ShaderManager::ShaderManager()
 {
@@ -46,7 +46,7 @@ ShaderManager::ShaderManager()
 
 ShaderManager::~ShaderManager()
 {
-	programs.clear();
+	Clear();
 }
 
 void ShaderManager::Add(ShaderProgram *program, std::string name)
@@ -58,9 +58,10 @@ void ShaderManager::Add(ShaderProgram *program, std::string name)
 
 void ShaderManager::Delete(ShaderProgram *_program)
 {
-	for (auto program = programs.begin(); program != programs.end();)
+	for (auto program = programs.begin(); program != programs.end(); ++program)
 		if (program->second == _program)
 		{
+			delete program->second;
 			programs.erase(program);
 			break;
 		}
@@ -68,7 +69,20 @@ void ShaderManager::Delete(ShaderProgram *_program)
 
 void ShaderManager::Delete(std::string name)
 {
-	programs.erase(name);
+	auto program = programs.find(name);
+	if (program != programs.end())
+	{
+		delete program->second;
+		programs.erase(program);
+	}
+}
+
+void ShaderManager::Clear()
+{
+	for (auto program = programs.begin(); program != programs.end(); ++program)
+		delete program->second;
+
+	programs.clear();
 }
 
 ShaderProgram *ShaderManager::Find(std::string name)

@@ -96,6 +96,7 @@ namespace Core
 		void Add(ShaderProgram *program, std::string name);
 		void Delete(ShaderProgram *_program);
 		void Delete(std::string name);
+		void Clear();
 		ShaderProgram *Find(std::string name);
 
 	protected:
