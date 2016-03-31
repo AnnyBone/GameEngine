@@ -93,12 +93,10 @@ namespace Core
 		ShaderManager();
 		~ShaderManager();
 
-		void Initialize();
-		void Shutdown();
-
-		void Add(const ShaderProgram *program, const char *name);
-		void Delete(ShaderProgram *program);
-		ShaderProgram *Find(const char *name);
+		void Add(ShaderProgram *program, std::string name);
+		void Delete(ShaderProgram *_program);
+		void Delete(std::string name);
+		ShaderProgram *Find(std::string name);
 
 	protected:
 	private:

@@ -36,33 +36,48 @@ Core::ShaderManager *g_shadermanager = nullptr;
 
 ShaderManager::ShaderManager()
 {
+	Con_Printf("Initializing Shader Manager...\n");
+
+	programs.reserve(16);
+
 	Add(new BaseShader(), "base");
+	//Add(new WaterShader(), "water");
 }
 
 ShaderManager::~ShaderManager()
-{}
-
-void ShaderManager::Initialize()
 {
-	programs.reserve(16);
+	programs.clear();
 }
 
-void ShaderManager::Add(const ShaderProgram *program, const char *name)
+void ShaderManager::Add(ShaderProgram *program, std::string name)
 {
-	if (!name || (name[0] == ' '))
-	{
-		Con_Warning("Invalid name for shader!\n");
-		return;
-	}
-
 	program->Initialize();
 
 	programs.emplace(name, program);
 }
 
-void ShaderManager::Shutdown()
+void ShaderManager::Delete(ShaderProgram *_program)
 {
-	programs.clear();
+	for (auto program = programs.begin(); program != programs.end();)
+		if (program->second == _program)
+		{
+			programs.erase(program);
+			break;
+		}
+}
+
+void ShaderManager::Delete(std::string name)
+{
+	programs.erase(name);
+}
+
+ShaderProgram *ShaderManager::Find(std::string name)
+{
+	auto program = programs.find(name);
+	if (program != programs.end())
+		return program->second;
+
+	return nullptr;
 }
 
 // Shader
