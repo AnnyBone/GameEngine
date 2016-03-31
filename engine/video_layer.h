@@ -20,6 +20,7 @@
 
 #define		VL_MODE_OPENGL
 //			VL_MODE_OPENGL_CORE
+//			VL_MODE_OPENGL_ES
 //#define	VL_MODE_GLIDE
 //			VL_MODE_DIRECT3D
 //			VL_MODE_VULKAN
@@ -46,6 +47,8 @@
 typedef unsigned int vlVertexArray_t;
 typedef unsigned int vlRenderBuffer_t;
 typedef unsigned int vlFrameBuffer_t;
+
+typedef unsigned int vlShaderProgram_t;
 
 typedef enum
 {
@@ -277,7 +280,9 @@ void vlBlendFunc(vlBlend_t modea, vlBlend_t modeb);
 void vlDepthMask(bool mode);
 
 // Shaders
-void vlUseProgram(unsigned int program);
+vlShaderProgram_t vlCreateShaderProgram(void);
+void vlUseProgram(vlShaderProgram_t program);
+void vlDeleteShaderProgram(vlShaderProgram_t *program);
 
 // Drawing
 void vlDrawArrays(VideoPrimitive_t mode, unsigned int first, unsigned int count);

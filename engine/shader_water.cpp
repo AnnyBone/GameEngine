@@ -25,9 +25,13 @@
 	Implementation for a water shader.
 */
 
-class WaterShader : public ShaderInstance
+class WaterShader : public Core::ShaderProgram
 {
-	SHADER_IMPLEMENT(WaterShader);
+public:
+	WaterShader();
+	~WaterShader();
+
+	void Initialize();
 
 	void SetTime(float curtime);
 private:
@@ -37,18 +41,17 @@ private:
 	uniform	u_time;
 };
 
-SHADER_REGISTER_START(WaterShader)
+void WaterShader::Initialize()
+{
+	RegisterShader("base", VL_SHADER_VERTEX);
+	RegisterShader("water", VL_SHADER_FRAGMENT);
 
-	SHADER_REGISTER_SCRIPT(base, VL_SHADER_VERTEX)
-	SHADER_REGISTER_SCRIPT(water, VL_SHADER_FRAGMENT)
+	Link();
 
-	SHADER_REGISTER_LINK()
-
-	SHADER_REGISTER_UNIFORM(u_diffusemap, 0)
-	SHADER_REGISTER_UNIFORM(u_normalmap, 0)
-	SHADER_REGISTER_UNIFORM(u_time, 0)
-
-SHADER_REGISTER_END()
+	SHADER_REGISTER_UNIFORM(u_diffusemap, 0);
+	SHADER_REGISTER_UNIFORM(u_normalmap, 0);
+	SHADER_REGISTER_UNIFORM(u_time, 0);
+}
 
 void WaterShader::SetTime(float curtime)
 {
@@ -56,7 +59,7 @@ VIDEO_FUNCTION_START
 	static float time = 0;
 	if (curtime == time)
 		return;
-	program->SetVariable(u_time, curtime);
+	SetVariable(u_time, curtime);
 	time = curtime;
 VIDEO_FUNCTION_END
 }

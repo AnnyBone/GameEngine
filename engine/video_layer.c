@@ -106,6 +106,9 @@ void vlInit(void)
 	if(err != GLEW_OK)
 		Sys_Error("Failed to initialize glew!\n%s\n", glewGetErrorString(err));
 
+	if (!GLEW_VERSION_2_0)
+		Sys_Error("Your hardware does not support OpenGL 2.0!\n");
+
 	// Check that the required capabilities are supported.
 	if (!GLEW_ARB_multitexture) Sys_Error("Video hardware incapable of multi-texturing!\n");
 	else if (!GLEW_ARB_texture_env_combine && !GLEW_EXT_texture_env_combine) Sys_Error("ARB/EXT_texture_env_combine isn't supported by your hardware!\n");
@@ -609,6 +612,23 @@ void vlDepthMask(bool mode)
 /*===========================
 	OBJECTS
 ===========================*/
+
+// SHADER PROGRAM
+
+unsigned int vlCreateShaderProgram(void)
+{
+#ifdef VL_MODE_OPENGL
+	return glCreateProgram();
+#endif
+}
+
+void vlDeleteShaderProgram(unsigned int *program)
+{
+#ifdef VL_MODE_OPENGL
+	glDeleteProgram(program);
+	program = NULL;
+#endif
+}
 
 // RENDER BUFFER OBJECTS
 

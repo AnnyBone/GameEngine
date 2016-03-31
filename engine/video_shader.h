@@ -52,99 +52,41 @@ namespace Core
 	class ShaderProgram
 	{
 	public:
-		ShaderProgram();
+		ShaderProgram(std::string name);
 		~ShaderProgram();
 
-		void Initialize();
+		virtual void Initialize() = 0;
+
+		void RegisterShader(std::string path, vlShaderType_t type);
+
 		void Attach(Core::Shader *shader);
 		void Enable();
 		void Disable();
 		void Link();
 		void Shutdown();
 
-		bool IsActive()
-		{
-			return (Video.current_program == instance);
-		}
+		bool IsActive()	{ return (Video.current_program == instance); }
 
 		void SetVariable(int location, float x, float y, float z);
-		void SetVariable(int location, MathVector3f_t vector);
+		void SetVariable(int location, plVector3f_t vector);
 		void SetVariable(int location, float x, float y, float z, float a);
 		void SetVariable(int location, int i);
 		void SetVariable(int location, float f);
 
 		int GetUniformLocation(const char *name);
 
-		unsigned int GetInstance();
+		unsigned int GetInstance() { return instance };
 	protected:
 	private:
 		bool isenabled;
 
-		unsigned int instance;
+		std::vector<Core::Shader*> shaders;
+
+		std::string name;
+
+		vlShaderProgram_t instance;
 	};
-}
 
-#define SHADER_IMPLEMENT(name)		\
-	public:							\
-	name();							\
-	virtual void RegisterShaders();
-#define	SHADER_REGISTER_START(name)	\
-	void name::RegisterShaders() {
-#define SHADER_REGISTER_END()		\
-	}
-#define	SHADER_REGISTER_SCRIPT(name, type)							\
-	{																\
-	Core::Shader *shader_ = new Core::Shader(type);					\
-	if(!shader_->Load(#name))										\
-		Sys_Error("Failed to load "#name" shader!\n");				\
-	program->Attach(shader_);										\
-	shaders.push_back(shader_);										\
-	}
-#define	SHADER_REGISTER_LINK()	\
-	program->Link();
-#define	SHADER_REGISTER_UNIFORM(name, def)		\
-	name = program->GetUniformLocation(#name);	\
-	program->SetVariable(name, def);
-
-class ShaderInstance
-{
-public:
-	ShaderInstance()
-	{
-		program = NULL;
-
-		shaders.reserve(2);
-	}
-
-	~ShaderInstance() 
-	{
-		delete program;
-	}
-
-	virtual void Initialize();
-	virtual void Shutdown();
-
-	virtual void RegisterShaders() = 0;
-
-	virtual void Enable()
-	{
-		if (program)
-			program->Enable();
-	}
-
-	virtual void Disable()
-	{
-		if (program)
-			program->Disable();
-	}
-
-	Core::ShaderProgram *program;
-
-	std::vector<Core::Shader*> shaders;
-};
-
-namespace Core
-{
 	class ShaderManager : public CoreManager
 	{
 	public:
@@ -154,17 +96,19 @@ namespace Core
 		void Initialize();
 		void Shutdown();
 
+		void Add(const ShaderProgram *program, const char *name);
+		void Delete(ShaderProgram *program);
+		ShaderProgram *Find(const char *name);
+
 	protected:
 	private:
-		std::vector<std::*> programs;
+		std::unordered_map<std::string, ShaderProgram*> programs;
 	};
 }
+
+extern Core::ShaderManager *g_shadermanager;
+
+#define	SHADER_REGISTER_UNIFORM(name, def)	\
+	name = GetUniformLocation(#name);		\
+	SetVariable(name, def)
 #endif
-
-plEXTERN_C_START
-
-void Shader_Initialize(void);
-
-extern int iDiffuseUniform;
-
-plEXTERN_C_END

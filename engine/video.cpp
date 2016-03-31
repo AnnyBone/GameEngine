@@ -82,8 +82,6 @@ void Video_DebugCommand(void);
 
 Video_t	Video;
 
-Core::ShaderManager *g_shadermanager = nullptr;
-
 /*	Initialize the renderer
 */
 void Video_Initialize(void)

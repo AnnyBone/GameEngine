@@ -32,8 +32,12 @@
 
 using namespace Core;
 
+Core::ShaderManager *g_shadermanager = nullptr;
+
 ShaderManager::ShaderManager()
-{}
+{
+	Add(new BaseShader(), "base");
+}
 
 ShaderManager::~ShaderManager()
 {}
@@ -43,28 +47,22 @@ void ShaderManager::Initialize()
 	programs.reserve(16);
 }
 
+void ShaderManager::Add(const ShaderProgram *program, const char *name)
+{
+	if (!name || (name[0] == ' '))
+	{
+		Con_Warning("Invalid name for shader!\n");
+		return;
+	}
+
+	program->Initialize();
+
+	programs.emplace(name, program);
+}
+
 void ShaderManager::Shutdown()
 {
 	programs.clear();
-	programs.shrink_to_fit();
-}
-
-// Manager
-
-void ShaderInstance::Initialize()
-{
-	program = new ShaderProgram();
-	program->Initialize();
-
-	RegisterShaders();
-}
-
-void ShaderInstance::Shutdown()
-{
-	program->Shutdown();
-
-	shaders.clear();
-	shaders.shrink_to_fit();
 }
 
 // Shader
@@ -97,16 +95,16 @@ bool Shader::Load(const char *path)
 	}
 
 	// Ensure we use the correct path and shader.
-	unsigned int uiShaderType;
+	unsigned int stype;
 	if (type == VL_SHADER_FRAGMENT)
 	{
 		sprintf(source_path, "%s%s_fragment.shader", g_state.path_shaders, path);
-		uiShaderType = GL_FRAGMENT_SHADER;
+		stype = GL_FRAGMENT_SHADER;
 	}
 	else
 	{
 		sprintf(source_path, "%s%s_vertex.shader", g_state.path_shaders, path);
-		uiShaderType = GL_VERTEX_SHADER;
+		stype = GL_VERTEX_SHADER;
 	}
 
 	// Attempt to load it.
@@ -119,7 +117,7 @@ bool Shader::Load(const char *path)
 
 	// Ensure it's a valid length.
 #ifdef _MSC_VER
-#pragma warning(suppress: 6387)
+#	pragma warning(suppress: 6387)
 #endif
 	source_length = strlen(source);
 	if (source_length <= 1)
@@ -128,8 +126,16 @@ bool Shader::Load(const char *path)
 		return false;
 	}
 
-	instance = glCreateShader(uiShaderType);
-	glShaderSource(instance, 1, &source, &source_length);
+	instance = glCreateShader(stype);
+	const char *full_source[] = {
+#if defined (VL_MODE_OPENGL)
+		"#version 120\n",	// OpenGL 2.1
+#elif defined (VL_MODE_OPENGL_ES)
+		"#version 100\n",	// OpenGL ES 2.0
+#endif
+		source
+	};
+	glShaderSource(instance, 2, full_source, NULL);
 	glCompileShader(instance);
 
 	if (!CheckCompileStatus())
@@ -161,17 +167,16 @@ bool Shader::CheckCompileStatus()
 {
 #ifdef VL_MODE_OPENGL
 	VIDEO_FUNCTION_START
-	int iCompileStatus;
-	glGetObjectParameterivARB(instance, GL_COMPILE_STATUS, &iCompileStatus);
-	if (!iCompileStatus)
+	int compile;
+	glGetObjectParameterivARB(instance, GL_COMPILE_STATUS, &compile);
+	if (!compile)
 	{
-		int iLength = 0, sLength = 0;
-		glGetShaderiv(instance, GL_INFO_LOG_LENGTH, &iLength);
-
-		if (iLength > 1)
+		int length = 0;
+		glGetShaderiv(instance, GL_INFO_LOG_LENGTH, &length);
+		if (length > 1)
 		{
-			char *cLog = new char[iLength];
-			glGetInfoLogARB(instance, iLength, &sLength, cLog);
+			char *cLog = new char[length];
+			glGetShaderInfoLog(instance, length, NULL, cLog);
 			Con_Warning("%s\n", cLog);
 			delete[] cLog;
 		}
@@ -202,38 +207,41 @@ vlShaderType_t Shader::GetType()
 	Shader Program
 */
 
-ShaderProgram::ShaderProgram()
+ShaderProgram::ShaderProgram(std::string _name) : 
+	name(_name), 
+	instance(0),
+	isenabled(false)
 {
-	instance	= 0;
-	isenabled	= false;
+	instance = vlCreateShaderProgram();
+	if (!instance)
+		throw EngineException("Failed to create shader program!\n");
 }
 
 ShaderProgram::~ShaderProgram()
 {
-#ifdef VL_MODE_OPENGL
-	glDeleteProgram(instance);
-#endif
+	vlDeleteShaderProgram(&instance);
 }
 
-void ShaderProgram::Initialize()
+void ShaderProgram::RegisterShader(std::string path, vlShaderType_t type)
 {
-#ifdef VL_MODE_OPENGL
-	instance = glCreateProgram();
-	if (!instance)
-		Sys_Error("Failed to create shader program!\n");
-#endif
+	Shader *shader_ = new Shader(type);
+	if (!shader_->Load(path.c_str()))
+		throw EngineException("Failed to load shader! (%s)\n", path);
+
+	Attach(shader_);
 }
 
 void ShaderProgram::Attach(Shader *shader)
 {
-#ifdef VL_MODE_OPENGL
 	VIDEO_FUNCTION_START
 	if (!shader)
-		Sys_Error("Attempted to attach an invalid shader!\n");
+		throw EngineException("Attempted to attach an invalid shader!\n");
 
+#ifdef VL_MODE_OPENGL
 	glAttachShader(instance, shader->GetInstance());
-	VIDEO_FUNCTION_END
 #endif
+	shaders.push_back(shader);
+	VIDEO_FUNCTION_END
 }
 
 void ShaderProgram::Enable()
@@ -265,10 +273,8 @@ void ShaderProgram::Link()
 		glGetProgramiv(instance, GL_INFO_LOG_LENGTH, &iLength);
 		if (iLength > 1)
 		{
-			int iLoser = 0;
-
 			char *cLog = new char[iLength];
-			glGetInfoLogARB(instance, iLength, &iLoser, cLog);
+			glGetProgramInfoLog(instance, iLength, NULL, cLog);
 			Con_Warning("%s\n", cLog);
 			delete[] cLog;
 		}
@@ -345,52 +351,4 @@ void ShaderProgram::SetVariable(int location, float f)
 			location, (int)f);
 	glUniform1f(location, f);
 #endif
-}
-
-unsigned int ShaderProgram::GetInstance()
-{
-	return instance;
-}
-
-/*
-	C Wrapper
-*/
-
-ShaderProgram *base_program;
-Shader *base_fragment, *base_vertex;
-
-// Uniforms
-int	iDiffuseUniform;
-
-void Shader_Initialize(void)
-{
-	// Program needs to be created first.
-	base_program = new ShaderProgram();
-	base_program->Initialize();
-
-	// Followed by the shaders.
-	base_vertex = new Shader(VL_SHADER_VERTEX);
-	if (!base_vertex->Load("base"))
-		Sys_Error("Failed to load base vertex shader!\n");
-
-	base_fragment = new Shader(VL_SHADER_FRAGMENT);
-	if (!base_fragment->Load("base"))
-		Sys_Error("Failed to load base fragment shader!\n");
-
-	// Attach and link it, if this fails then it fails.
-	base_program->Attach(base_vertex);
-	base_program->Attach(base_fragment);
-	base_program->Link();
-
-	iDiffuseUniform = base_program->GetUniformLocation("diffuseTexture");
-}
-
-void VideoShader_Shutdown()
-{
-	// Check if it's initialized first, just in-case.
-	if (base_program)
-	{
-		base_program->Shutdown();
-		delete base_program;
-	}
 }
