@@ -22,6 +22,7 @@
 #include "video_shader.h"
 
 #include "client/shader_base.h"
+#include "client/shader_water.h"
 
 /*
 	TODO:
@@ -41,7 +42,15 @@ ShaderManager::ShaderManager()
 	programs.reserve(16);
 
 	Add(new BaseShader(), "base");
-	//Add(new WaterShader(), "water");
+#if 0
+	Add(new WaterShader(), "water");
+#endif
+
+	// Base starts off enabled, sloppy, I know but this will likely
+	// change.
+	ShaderProgram *program = Find("base");
+	if (program)
+		program->Enable();
 }
 
 ShaderManager::~ShaderManager()
@@ -51,6 +60,9 @@ ShaderManager::~ShaderManager()
 
 void ShaderManager::Add(ShaderProgram *program, std::string name)
 {
+	Con_Printf("Adding new shader: %s\n", name.c_str());
+
+	// todo: do we really want to do this here!?
 	program->Initialize();
 
 	programs.emplace(name, program);
@@ -255,7 +267,7 @@ void ShaderProgram::RegisterShader(std::string path, vlShaderType_t type)
 {
 	Shader *shader_ = new Shader(type);
 	if (!shader_->Load(path.c_str()))
-		throw EngineException("Failed to load shader! (%s)\n", path);
+		throw EngineException("Failed to load shader! (%s)\n", path.c_str());
 
 	Attach(shader_);
 }

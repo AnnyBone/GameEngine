@@ -16,41 +16,20 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "engine_base.h"
+#pragma once
 
-#include "video.h"
-#include "video_shader.h"
-
-#include "client/shader_water.h"
-
-/*
-	Implementation for a water shader.
-*/
-
-WaterShader::WaterShader() : ShaderProgram("water")
+class WaterShader : public Core::ShaderProgram
 {
-}
+public:
+	WaterShader();
+	~WaterShader();
 
-void WaterShader::Initialize()
-{
-	RegisterShader("base", VL_SHADER_VERTEX);
-	RegisterShader("water", VL_SHADER_FRAGMENT);
+	void Initialize();
 
-	Link();
+	void SetTime(float curtime);
+private:
+	uniform u_diffusemap;
+	uniform	u_normalmap;
 
-	SHADER_REGISTER_UNIFORM(u_diffusemap, 0);
-	SHADER_REGISTER_UNIFORM(u_normalmap, 0);
-	SHADER_REGISTER_UNIFORM(u_time, 0);
-}
-
-void WaterShader::SetTime(float curtime)
-{
-VIDEO_FUNCTION_START
-	static float time = 0;
-	if (curtime == time)
-		return;
-	SetVariable(u_time, curtime);
-	time = curtime;
-VIDEO_FUNCTION_END
-}
-
+	uniform	u_time;
+};

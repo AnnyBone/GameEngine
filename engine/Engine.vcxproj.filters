@@ -559,6 +559,9 @@
     <ClInclude Include="client\shader_base.h">
       <Filter>Client\Video\Shaders\Base</Filter>
     </ClInclude>
+    <ClInclude Include="client\shader_water.h">
+      <Filter>Client\Video\Shaders\Water</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="engine.rc" />
