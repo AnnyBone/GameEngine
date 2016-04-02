@@ -107,6 +107,10 @@ enum PlatformMathRGBA
 {
 	pRED, pGREEN, pBLUE, pALPHA	// 0, 1, 2, 3
 };
+#define	PL_RED		0
+#define	PL_GREEN	1
+#define	PL_BLUE		2
+#define	PL_ALPHA	3
 // For compatability...
 #define	RED		pRED
 #define	GREEN	pGREEN

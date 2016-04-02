@@ -44,6 +44,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documents", "Documents", "{
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Data", "utils\data\Data.vcxproj", "{6F9D9A5F-6200-4117-AF38-2868DB90AC87}"
+	ProjectSection(ProjectDependencies) = postProject
+		{DDDBE2D3-7AFE-4CBF-8DE5-636374F63DF2} = {DDDBE2D3-7AFE-4CBF-8DE5-636374F63DF2}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
