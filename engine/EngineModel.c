@@ -1468,8 +1468,8 @@ void Model_LoadMD2(model_t *mModel,void *Buffer)
 #if 0
 	// Allocate vertex array.
 	mModel->object.numverts = mMD2Model->numtris * 3;
-	mModel->object.vertices = (VideoVertex_t*)malloc(mModel->object.numverts * sizeof(VideoVertex_t));
-	memset(mModel->object.vertices, 0, mModel->object.numverts * sizeof(VideoVertex_t));
+	mModel->object.vertices = (VLvertex*)malloc(mModel->object.numverts * sizeof(VLvertex));
+	memset(mModel->object.vertices, 0, mModel->object.numverts * sizeof(VLvertex));
 #endif
 
 	Model_LoadRelativeMaterial(mModel);

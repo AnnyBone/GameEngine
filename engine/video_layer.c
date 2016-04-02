@@ -325,7 +325,22 @@ void vlPopMatrix(void)
 	SHADERS
 ===========================*/
 
-void vlUseProgram(unsigned int program)
+unsigned int vlCreateShaderProgram(void)
+{
+#ifdef VL_MODE_OPENGL
+	return glCreateProgram();
+#endif
+}
+
+void vlDeleteShaderProgram(unsigned int *program)
+{
+#ifdef VL_MODE_OPENGL
+	glDeleteProgram(*program);
+	program = NULL;
+#endif
+}
+
+void vlUseShaderProgram(unsigned int program)
 {
 	VIDEO_FUNCTION_START
 	if (program == Video.current_program)
@@ -612,23 +627,6 @@ void vlDepthMask(bool mode)
 /*===========================
 	OBJECTS
 ===========================*/
-
-// SHADER PROGRAM
-
-unsigned int vlCreateShaderProgram(void)
-{
-#ifdef VL_MODE_OPENGL
-	return glCreateProgram();
-#endif
-}
-
-void vlDeleteShaderProgram(unsigned int *program)
-{
-#ifdef VL_MODE_OPENGL
-	glDeleteProgram(*program);
-	program = NULL;
-#endif
-}
 
 // RENDER BUFFER OBJECTS
 
@@ -1027,7 +1025,7 @@ void vlDrawElements(VideoPrimitive_t mode, unsigned int count, unsigned int type
 	VIDEO_FUNCTION_END
 }
 
-VideoObject_t vl_currentobject;
+VLdraw vl_currentobject;
 
 void vlBegin(VideoPrimitive_t mode)
 {
@@ -1051,10 +1049,106 @@ void vlColor3f(float r, float g, float b)
 */
 void vlEnd(void)
 {
-	VideoObject_DrawImmediate(&vl_currentobject);
+	vlDrawImmediate(&vl_currentobject);
 
 	// We're done, don't use this again.
 	vl_currentobject.primitive = VIDEO_PRIMITIVE_IGNORE;
+}
+
+/*	Draw object using immediate mode.
+*/
+void vlDrawImmediate(VLdraw *object)
+{
+	VIDEO_FUNCTION_START
+#ifdef VL_MODE_GLIDE
+#else
+	if (object->numverts == 0)
+		return;
+
+	//voDrawVertexNormals(object);
+
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_COLOR_ARRAY);
+	glEnableClientState(GL_NORMAL_ARRAY);
+
+	VLvertex *vert = &object->vertices[0];
+	glVertexPointer(3, GL_FLOAT, sizeof(VLvertex), vert->position);
+	glColorPointer(4, GL_FLOAT, sizeof(VLvertex), vert->colour);
+	glNormalPointer(GL_FLOAT, sizeof(VLvertex), vert->normal);
+	for (int i = 0; i < Video.num_textureunits; i++)
+		if (Video.textureunits[i].isactive)
+		{
+			glClientActiveTexture(vlGetTextureUnit(i));
+			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+			glTexCoordPointer(2, GL_FLOAT, sizeof(VLvertex), vert->ST[i]);
+		}
+
+	if (object->primitive == VIDEO_PRIMITIVE_TRIANGLES)
+		vlDrawElements(
+			object->primitive,
+			object->numtriangles * 3,
+			GL_UNSIGNED_BYTE,
+			object->indices
+		);
+	else
+		vlDrawArrays(object->primitive, 0, object->numverts);
+
+	glDisableClientState(GL_COLOR_ARRAY);
+	glDisableClientState(GL_VERTEX_ARRAY);
+	glDisableClientState(GL_NORMAL_ARRAY);
+	for (int i = 0; i < Video.num_textureunits; i++)
+		if (Video.textureunits[i].isactive)
+		{
+			glClientActiveTexture(vlGetTextureUnit(i));
+			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+		}
+#endif
+	VIDEO_FUNCTION_END
+}
+
+void vlCalculateLighting(VLdraw *object, DynamicLight_t *light, plVector3f_t position)
+{
+	// Calculate the distance.
+	plVector3f_t distvec;
+	Math_VectorSubtract(position, light->origin, distvec);
+	float distance = (light->radius - plLengthf(distvec)) / 100.0f;
+
+	for (unsigned int i = 0; i < object->numverts; i++)
+	{
+		float x = object->vertices[i].normal[0];
+		float y = object->vertices[i].normal[1];
+		float z = object->vertices[i].normal[2];
+
+		float angle = (distance*((x * distvec[0]) + (y * distvec[1]) + (z * distvec[2])));
+		if (angle < 0)
+			plVectorClear3fv(object->vertices[i].colour);
+		else
+		{
+			object->vertices[i].colour[pRED] = light->color[pRED] * angle;
+			object->vertices[i].colour[pGREEN] = light->color[pGREEN] * angle;
+			object->vertices[i].colour[pBLUE] = light->color[pBLUE] * angle;
+		}
+
+		/*
+		x = Object->Vertices_normalStat[count].x;
+		y = Object->Vertices_normalStat[count].y;
+		z = Object->Vertices_normalStat[count].z;
+
+		angle = (LightDist*((x * Object->Spotlight.x) + (y * Object->Spotlight.y) + (z * Object->Spotlight.z) ));
+		if (angle<0 )
+		{
+		Object->Vertices_screen[count].r = 0;
+		Object->Vertices_screen[count].b = 0;
+		Object->Vertices_screen[count].g = 0;
+		}
+		else
+		{
+		Object->Vertices_screen[count].r = Object->Vertices_local[count].r * angle;
+		Object->Vertices_screen[count].b = Object->Vertices_local[count].b * angle;
+		Object->Vertices_screen[count].g = Object->Vertices_local[count].g * angle;
+		}
+		*/
+	}
 }
 
 /*===========================

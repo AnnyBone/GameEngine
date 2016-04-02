@@ -50,36 +50,8 @@ typedef enum VideoTextureEnvironmentMode_e
 
 #define	VIDEO_MAX_UNITS	16
 
-// Vertex
-typedef struct
-{
-	MathVector3f_t mvPosition;				// Vertex position.
-
-	MathVector4f_t mvColour;				// Vertex RGBA.
-
-	MathVector3f_t mvNormal;				// Vertex normal.
-
-	MathVector2f_t mvST[VIDEO_MAX_UNITS];	// Vertex texture coord, per unit.
-} VideoVertex_t;
-
-// Object
-typedef struct
-{
-	VideoVertex_t *vertices;	// Array of vertices for the object.
-
-	unsigned int numverts;		// Number of vertices.
-	unsigned int numtriangles;	// Number of triangles.
-	
-	uint8_t	*indices;	// List of indeces.
-
-	VideoPrimitive_t primitive, primitive_restore;
-
-	unsigned int object_vertexarrays;
-	unsigned int 
-		buffer_vertex, 
-		buffer_colour, 
-		buffer_texture;
-} VideoObject_t;
+typedef struct VLvertex_struct VLvertex;
+typedef struct VLdraw_struct VLdraw;
 
 // Canvas
 typedef enum

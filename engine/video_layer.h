@@ -245,6 +245,38 @@ typedef enum
 #endif
 } vlBlend_t;
 
+//-----------------
+// Draw Object
+
+typedef struct VLvertex_struct
+{
+	plVector3f_t position;
+	plVector3f_t normal;
+
+	plVector2f_t ST[16];
+	
+	plColour_t colour;
+} VLvertex;
+
+typedef struct VLdraw_struct
+{
+	VLvertex *vertices;	// Array of vertices for the object.
+
+	unsigned int numverts;		// Number of vertices.
+	unsigned int numtriangles;	// Number of triangles.
+
+	uint8_t	*indices;	// List of indeces.
+
+	VideoPrimitive_t primitive, primitive_restore;
+
+	unsigned int object_vertexarrays;
+	unsigned int
+		buffer_vertex,
+		buffer_colour,
+		buffer_texture;
+} VLdraw;
+//-----------------
+
 #define	VL_BLEND_ADDITIVE	VL_BLEND_SRC_ALPHA, VL_BLEND_ONE
 #define	VL_BLEND_DEFAULT	VL_BLEND_SRC_ALPHA, VL_BLEND_ONE_MINUS_SRC_ALPHA
 
@@ -281,12 +313,14 @@ void vlDepthMask(bool mode);
 
 // Shaders
 vlShaderProgram_t vlCreateShaderProgram(void);
-void vlUseProgram(vlShaderProgram_t program);
+void vlUseShaderProgram(vlShaderProgram_t program);
 void vlDeleteShaderProgram(vlShaderProgram_t *program);
 
 // Drawing
 void vlDrawArrays(VideoPrimitive_t mode, unsigned int first, unsigned int count);
 void vlDrawElements(VideoPrimitive_t mode, unsigned int count, unsigned int type, const void *indices);
+void vlDrawImmediate(VLdraw *object);
+void vlCalculateLighting(VLdraw *object, DynamicLight_t *light, plVector3f_t position);
 
 // Vertex Array
 void vlGenerateVertexArray(unsigned int *arrays);

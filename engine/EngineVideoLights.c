@@ -92,7 +92,7 @@ void Light_Draw(void)
 			int				j,c = 0;
 			float			a,a2,b,rad;
 			MathVector3f_t	v;
-			VideoVertex_t	voLight[17];
+			VLvertex		voLight[17];
 
 			Math_VectorSubtract(dlLight->origin,r_origin,v);
 

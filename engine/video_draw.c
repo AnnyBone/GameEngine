@@ -129,7 +129,7 @@ void Scrap_Upload (void)
 
 void Draw_MaterialSurface(Material_t *mMaterial, int iSkin,	int x, int y, int w, int h,	float fAlpha)
 {
-	VideoVertex_t voSurface[4];
+	VLvertex voSurface[4];
 
 	// Sloppy, but in the case that there's nothing valid...
 	if (!mMaterial)
@@ -191,7 +191,7 @@ void Draw_ExternPic(char *path,float alpha,int x,int y,int w,int h)
 	Video_DisableCapabilities(VIDEO_DEPTH_TEST);
 
 	{
-		VideoVertex_t	voPicture[4];
+		VLvertex	voPicture[4];
 
 		for(i = 0; i < 4; i++)
 		{
@@ -340,9 +340,9 @@ void Draw_Init (void)
 
 void Draw_Character(int x, int y, int num)
 {
-	VideoVertex_t		voCharacter[4] = { { { 0 } } };
-	int					row, col;
-	float				frow,fcol,size;
+	VLvertex		voCharacter[4] = { { { 0 } } };
+	int				row, col;
+	float			frow,fcol,size;
 
 	if(y <= -8)
 		return;			// totally off screen
@@ -481,7 +481,7 @@ void Draw_TileClear (int x, int y, int w, int h)
 
 void Draw_Line(plVector3f_t mvStart, plVector3f_t mvEnd)
 {
-	VideoVertex_t	voLine[2] = { { { 0 } } };
+	VLvertex voLine[2] = { { { 0 } } };
 
 	Video_ObjectVertex(&voLine[0], mvStart[0], mvStart[1], mvStart[2]);
 	Video_ObjectColour(&voLine[0], 1.0f, 0, 0, 1.0f);
@@ -584,12 +584,12 @@ void Draw_Grid(float x, float y, float z, int grid_size)
 
 void Draw_Rectangle(int x, int y, int w, int h, plColour_t colour)
 {
-	VideoVertex_t	voFill[4];
+	VLvertex	voFill[4];
 
-	Math_Vector4Copy(colour, voFill[0].mvColour);
-	Math_Vector4Copy(colour, voFill[1].mvColour);
-	Math_Vector4Copy(colour, voFill[2].mvColour);
-	Math_Vector4Copy(colour, voFill[3].mvColour);
+	Math_Vector4Copy(colour, voFill[0].colour);
+	Math_Vector4Copy(colour, voFill[1].colour);
+	Math_Vector4Copy(colour, voFill[2].colour);
+	Math_Vector4Copy(colour, voFill[3].colour);
 
 	if (colour[3] < 1)
 		vlEnable(VL_CAPABILITY_BLEND);
@@ -613,7 +613,7 @@ void Draw_Rectangle(int x, int y, int w, int h, plColour_t colour)
 
 void Draw_GradientFill(int x, int y, int w, int h, plColour_t mvTopColour, plColour_t mvBottomColour)
 {
-	VideoVertex_t	voFill[4];
+	VLvertex	voFill[4];
 
 	if ((mvTopColour[3] < 1) || (mvBottomColour[3] < 1))
 		vlEnable(VL_CAPABILITY_BLEND);
@@ -637,7 +637,7 @@ void Draw_GradientFill(int x, int y, int w, int h, plColour_t mvTopColour, plCol
 
 void Draw_FadeScreen (void)
 {
-	VideoVertex_t	voFade[4];
+	VLvertex	voFade[4];
 
 	GL_SetCanvas(CANVAS_DEFAULT);
 
@@ -790,7 +790,7 @@ void Draw_StaticEntity(ClientEntity_t *entity)
 	R_RotateForEntity(entity->origin, entity->angles);
 
 	Material_Draw(entity->model->materials, 0, 0, 0, false);
-	VideoObject_DrawImmediate(&entity->model->objects[entity->frame]);
+	vlDrawImmediate(&entity->model->objects[entity->frame]);
 	Material_Draw(entity->model->materials, 0, 0, 0, true);
 
 	vlPopMatrix();
@@ -803,7 +803,7 @@ void Draw_VertexEntity(ClientEntity_t *entity)
 
 	R_RotateForEntity(entity->origin, entity->angles);
 
-	VideoObject_DrawImmediate(&entity->model->objects[entity->frame]);
+	vlDrawImmediate(&entity->model->objects[entity->frame]);
 
 	vlPopMatrix();
 }

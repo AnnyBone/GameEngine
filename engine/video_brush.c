@@ -87,9 +87,9 @@ texture_t *R_TextureAnimation (texture_t *base, int frame)
 
 void DrawGLPoly(glpoly_t *p)
 {
-	VideoVertex_t	voObject[512] = { { { 0 } } };
-	float			*v;
-	int				i;
+	VLvertex	voObject[512] = { { { 0 } } };
+	float		*v;
+	int			i;
 
 	v = p->verts[0];
 	for(i = 0; i < p->numverts; i++,v += VERTEXSIZE)
@@ -98,18 +98,18 @@ void DrawGLPoly(glpoly_t *p)
 		{
 			srand((unsigned int)p);
 
-			voObject[i].mvColour[0]	= rand()%256/255.0;
-			voObject[i].mvColour[1]	= rand()%256/255.0;
-			voObject[i].mvColour[2]	= rand()%256/255.0;
+			voObject[i].colour[0]	= rand()%256/255.0;
+			voObject[i].colour[1]	= rand()%256/255.0;
+			voObject[i].colour[2]	= rand()%256/255.0;
 		}
 
 		if(!r_showtris.value)
 		{
-			voObject[i].mvST[0][0] = v[3];
-			voObject[i].mvST[0][1] = v[4];
+			voObject[i].ST[0][0] = v[3];
+			voObject[i].ST[0][1] = v[4];
 		}
 
-		Math_VectorCopy(v,voObject[i].mvPosition);
+		Math_VectorCopy(v,voObject[i].position);
 	}
 
 	Video_DrawObject(voObject,VIDEO_PRIMITIVE_TRIANGLE_FAN,p->numverts,NULL,0);

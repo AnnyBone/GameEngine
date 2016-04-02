@@ -288,14 +288,14 @@ void ShaderProgram::Attach(Shader *shader)
 void ShaderProgram::Enable()
 {
 	VIDEO_FUNCTION_START
-	vlUseProgram(instance);
+	vlUseShaderProgram(instance);
 	VIDEO_FUNCTION_END
 }
 
 void ShaderProgram::Disable()
 {
 	VIDEO_FUNCTION_START
-	vlUseProgram(0);
+	vlUseShaderProgram(0);
 	VIDEO_FUNCTION_END
 }
 
@@ -353,7 +353,7 @@ void ShaderProgram::SetVariable(int location, float x, float y, float z)
 #endif
 }
 
-void ShaderProgram::SetVariable(int location, MathVector3f_t vector)
+void ShaderProgram::SetVariable(int location, plVector3f_t vector)
 {
 #ifdef VL_MODE_OPENGL
 	if (!IsActive())

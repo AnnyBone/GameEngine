@@ -1015,7 +1015,7 @@ plEXTERN_C_END
 
 /*	TODO: Replace Material_Draw with this!
 */
-void Material_DrawObject(Material_t *material, VideoObject_t *object, bool ispost)
+void Material_DrawObject(Material_t *material, VLdraw *object, bool ispost)
 {
 #ifdef VL_MODE_OPENGL
 	bool showwireframe = r_showtris.bValue;
@@ -1061,7 +1061,7 @@ void Material_DrawObject(Material_t *material, VideoObject_t *object, bool ispos
 
 /*	Typically called before an object is drawn.
 */
-void Material_Draw(Material_t *material, VideoVertex_t *ObjectVertex, VideoPrimitive_t ObjectPrimitive, unsigned int ObjectSize, bool ispost)
+void Material_Draw(Material_t *material, VLvertex *ObjectVertex, VideoPrimitive_t ObjectPrimitive, unsigned int ObjectSize, bool ispost)
 {
 	if (r_drawflat_cheatsafe || !material)
 		return;
@@ -1156,8 +1156,8 @@ void Material_Draw(Material_t *material, VideoVertex_t *ObjectVertex, VideoPrimi
 						// Copy over original texture coords.
 						Video_ObjectTexture(&ObjectVertex[j], unit,
 							// Use base texture coordinates as a reference.
-							ObjectVertex[j].mvST[0][0] * texture->scale,
-							ObjectVertex[j].mvST[0][1] * texture->scale);
+							ObjectVertex[j].ST[0][0] * texture->scale,
+							ObjectVertex[j].ST[0][1] * texture->scale);
 
 						// TODO: Modify them to the appropriate scale.
 

@@ -18,6 +18,8 @@
 
 #include "engine_base.h"
 
+#include "video.h"
+
 using namespace std;
 
 /*	Loads a U3D model file.
@@ -108,7 +110,7 @@ bool ModelU3D_Load(model_t *model, void *buf)
 	model->numframes		= animheader.frames;
 
 	// Allocate an object for each frame.
-	model->objects = (VideoObject_t*)calloc_or_die(model->numframes, sizeof(VideoObject_t));
+	model->objects = (VLdraw*)calloc_or_die(model->numframes, sizeof(VLdraw));
 
 	// If it has more than one frame, we're gonna want to interp between
 	// it all later.
@@ -139,7 +141,7 @@ bool ModelU3D_Load(model_t *model, void *buf)
 	for (int i = 0; i < model->numframes; i++)
 	{
 		// Allocate vertices.
-		model->objects[i].vertices		= (VideoVertex_t*)calloc_or_die(model->numvertexes, sizeof(VideoVertex_t));
+		model->objects[i].vertices		= (VLvertex*)calloc_or_die(model->numvertexes, sizeof(VLvertex));
 		model->objects[i].numverts		= model->numvertexes;
 		model->objects[i].numtriangles	= model->numtriangles;
 		model->objects[i].primitive		= VIDEO_PRIMITIVE_TRIANGLES;
@@ -164,22 +166,22 @@ bool ModelU3D_Load(model_t *model, void *buf)
 			model->objects[i].indices[k] = utriangles[j].vertex[1];	k++;
 			model->objects[i].indices[k] = utriangles[j].vertex[2];	k++;
 
-			model->objects[i].vertices[utriangles[j].vertex[0]].mvST[0][0] = utriangles[j].ST[0][0];
-			model->objects[i].vertices[utriangles[j].vertex[0]].mvST[0][1] = utriangles[j].ST[0][1];
-			model->objects[i].vertices[utriangles[j].vertex[1]].mvST[0][0] = utriangles[j].ST[1][0];
-			model->objects[i].vertices[utriangles[j].vertex[1]].mvST[0][1] = utriangles[j].ST[1][1];
-			model->objects[i].vertices[utriangles[j].vertex[2]].mvST[0][0] = utriangles[j].ST[2][0];
-			model->objects[i].vertices[utriangles[j].vertex[2]].mvST[0][1] = utriangles[j].ST[2][1];
+			model->objects[i].vertices[utriangles[j].vertex[0]].ST[0][0] = utriangles[j].ST[0][0];
+			model->objects[i].vertices[utriangles[j].vertex[0]].ST[0][1] = utriangles[j].ST[0][1];
+			model->objects[i].vertices[utriangles[j].vertex[1]].ST[0][0] = utriangles[j].ST[1][0];
+			model->objects[i].vertices[utriangles[j].vertex[1]].ST[0][1] = utriangles[j].ST[1][1];
+			model->objects[i].vertices[utriangles[j].vertex[2]].ST[0][0] = utriangles[j].ST[2][0];
+			model->objects[i].vertices[utriangles[j].vertex[2]].ST[0][1] = utriangles[j].ST[2][1];
 		}
 
 		// Copy each of the vertices over.
 		for (int j = 0; j < model->numvertexes; j++)
 		{
-			model->objects[i].vertices[j].mvPosition[0] = (float)uvertices[j].x;
-			model->objects[i].vertices[j].mvPosition[1] = (float)uvertices[j].y;
-			model->objects[i].vertices[j].mvPosition[2] = (float)uvertices[j].z;
+			model->objects[i].vertices[j].position[0] = (float)uvertices[j].x;
+			model->objects[i].vertices[j].position[1] = (float)uvertices[j].y;
+			model->objects[i].vertices[j].position[2] = (float)uvertices[j].z;
 
-			Math_Vector4Copy(pl_white, model->objects[i].vertices[j].mvColour);
+			Math_Vector4Copy(pl_white, model->objects[i].vertices[j].colour);
 		}
 
 		fseek(animf, animheader.size - model->numvertexes * sizeof(U3DVertex_t), SEEK_CUR);
@@ -192,7 +194,7 @@ bool ModelU3D_Load(model_t *model, void *buf)
 	// Now calculate the normals, since U3D doesn't include them.
 	for (unsigned int i = 0; i < model->objects[0].numverts; i++)
 	{
-		plVectorClear3fv(model->objects[0].vertices[i].mvNormal);
+		plVectorClear3fv(model->objects[0].vertices[i].normal);
 	}
 
 	Model_LoadRelativeMaterial(model);
