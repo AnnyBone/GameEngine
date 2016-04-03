@@ -195,11 +195,7 @@ bool Shader::Load(const char *path)
 
 Shader::~Shader()
 {
-#ifdef VL_MODE_OPENGL
-	VIDEO_FUNCTION_START
-	glDeleteShader(instance);
-	VIDEO_FUNCTION_END
-#endif
+	vlDeleteShader(&instance);
 }
 
 // Compilation
@@ -278,9 +274,7 @@ void ShaderProgram::Attach(Shader *shader)
 	if (!shader)
 		throw EngineException("Attempted to attach an invalid shader!\n");
 
-#ifdef VL_MODE_OPENGL
-	glAttachShader(instance, shader->GetInstance());
-#endif
+	vlAttachShader(instance, shader->GetInstance());
 	shaders.push_back(shader);
 	VIDEO_FUNCTION_END
 }

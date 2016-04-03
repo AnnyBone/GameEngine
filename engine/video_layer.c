@@ -32,20 +32,21 @@
 		- Add OpenGL style lighting pipeline.
 		- Matrix functionality, linked in with platform lib.
 		- Add some... Object manager of sorts?
+		- Simulate quads primitive type
 */
 
-typedef struct
+typedef struct VLstate_struct
 {
 	plColour_t	buffer_clearcolour;
 
 	unsigned int capabilities;
 
-	VLCull_t	current_cullmode;
+	vlCull_t	current_cullmode;
 
 	unsigned int num_cards;	// Number of video cards.
-} VLstate_t;
+} VLstate;
 
-VLstate_t vl_state;
+VLstate vl_state;
 
 /*===========================
 	INITIALIZATION
@@ -54,7 +55,7 @@ VLstate_t vl_state;
 #if defined (VL_MODE_GLIDE)
 /*	Convert RGBA colour to something glide can understand.
 */
-GrColor_t _vlConvertColour4f(VLColourFormat_t format, float r, float g, float b, float a)
+GrColor_t _vlConvertColour4f(VLcolourformat format, float r, float g, float b, float a)
 {
 	GrColor_t
 		gr = (GrColor_t)r,
@@ -77,7 +78,7 @@ GrColor_t _vlConvertColour4f(VLColourFormat_t format, float r, float g, float b,
 
 /*	Convert RGBA colour to something glide can understand.
 */
-GrColor_t _vlConvertColour4fv(VLColourFormat_t format, plColour_t colour)
+GrColor_t _vlConvertColour4fv(VLcolourformat format, plColour_t colour)
 {
 	return _vlConvertColour4f(format, colour[0], colour[1], colour[2], colour[3]);
 }
@@ -187,19 +188,6 @@ void vlGetMaxTextureAnistropy(float *params)
 	VIDEO_FUNCTION_END
 }
 
-const char *vlGetVendor(void)
-{
-	VIDEO_FUNCTION_START
-#if defined (VL_MODE_OPENGL) || (VL_MODE_OPENGL_CORE)
-	return (const char*)glGetString(GL_VENDOR);
-#elif defined (VL_MODE_GLIDE)
-	return grGetString(GR_VENDOR);
-#else
-	return "Unknown";
-#endif
-	VIDEO_FUNCTION_END
-}
-
 const char *vlGetExtensions(void)
 {
 	VIDEO_FUNCTION_START
@@ -214,33 +202,7 @@ const char *vlGetExtensions(void)
 	VIDEO_FUNCTION_END
 }
 
-const char *vlGetVersion(void)
-{
-	VIDEO_FUNCTION_START
-#if defined (VL_MODE_OPENGL) || (VL_MODE_OPENGL_CORE)
-	return (const char*)glGetString(GL_VERSION);
-#elif defined (VL_MODE_GLIDE)
-	return grGetString(GR_VERSION);
-#else
-	return "";
-#endif
-	VIDEO_FUNCTION_END
-}
-
-const char *vlGetRenderer(void)
-{
-	VIDEO_FUNCTION_START
-#if defined (VL_MODE_OPENGL) || (VL_MODE_OPENGL_CORE)
-	return (const char*)glGetString(GL_RENDERER);
-#elif defined (VL_MODE_GLIDE)
-	return grGetString(GR_RENDERER);
-#else
-	return "";
-#endif
-	VIDEO_FUNCTION_END
-}
-
-const char *vlGetString(VLString_t string)
+const char *vlGetString(vlString_t string)
 {
 	VIDEO_FUNCTION_START
 #if defined (VL_MODE_OPENGL) || (VL_MODE_OPENGL_CORE)
@@ -325,14 +287,14 @@ void vlPopMatrix(void)
 	SHADERS
 ===========================*/
 
-unsigned int vlCreateShaderProgram(void)
+vlShaderProgram_t vlCreateShaderProgram(void)
 {
 #ifdef VL_MODE_OPENGL
 	return glCreateProgram();
 #endif
 }
 
-void vlDeleteShaderProgram(unsigned int *program)
+void vlDeleteShaderProgram(vlShaderProgram_t *program)
 {
 #ifdef VL_MODE_OPENGL
 	glDeleteProgram(*program);
@@ -340,7 +302,7 @@ void vlDeleteShaderProgram(unsigned int *program)
 #endif
 }
 
-void vlUseShaderProgram(unsigned int program)
+void vlUseShaderProgram(vlShaderProgram_t program)
 {
 	VIDEO_FUNCTION_START
 	if (program == Video.current_program)
@@ -350,6 +312,21 @@ void vlUseShaderProgram(unsigned int program)
 #endif
 	Video.current_program = program;
 	VIDEO_FUNCTION_END
+}
+
+void vlAttachShader(vlShaderProgram_t program, vlShader_t shader)
+{
+#if defined (VL_MODE_OPENGL)
+	glAttachShader(program, shader);
+#endif
+}
+
+void vlDeleteShader(vlShader_t *shader)
+{
+#if defined (VL_MODE_OPENGL)
+	glDeleteShader(*shader);
+#endif
+	shader = NULL;
 }
 
 /*===========================
@@ -403,7 +380,7 @@ void vlActiveTexture(unsigned int texunit)
 /*	TODO:
 		Modify this so it works as a replacement for TexMgr_SetFilterModes.
 */
-void vlSetTextureFilter(VLTextureFilter_t filter)
+void vlSetTextureFilter(vlTextureFilter_t filter)
 {
 	VIDEO_FUNCTION_START
 #ifdef VL_MODE_OPENGL
@@ -413,7 +390,7 @@ void vlSetTextureFilter(VLTextureFilter_t filter)
 	VIDEO_FUNCTION_END
 }
 
-int _vlTranslateTextureEnvironmentMode(VideoTextureEnvironmentMode_t TextureEnvironmentMode)
+int _vlTranslateTextureEnvironmentMode(vlTextureEnvironmentMode_t TextureEnvironmentMode)
 {
 	VIDEO_FUNCTION_START
 	switch (TextureEnvironmentMode)
@@ -441,7 +418,7 @@ int _vlTranslateTextureEnvironmentMode(VideoTextureEnvironmentMode_t TextureEnvi
 	VIDEO_FUNCTION_END
 }
 
-void vlSetTextureEnvironmentMode(VideoTextureEnvironmentMode_t TextureEnvironmentMode)
+void vlSetTextureEnvironmentMode(vlTextureEnvironmentMode_t TextureEnvironmentMode)
 {
 	VIDEO_FUNCTION_START
 	// Ensure there's actually been a change.
@@ -830,7 +807,7 @@ void vlGenerateFrameBuffer(vlFrameBuffer_t *buffer)
 /*	Ensures that the framebuffer is valid, otherwise throws an error.
 	glCheckFramebufferStatus
 */
-void vlCheckFrameBufferStatus(VLFBOTarget_t target)
+void vlCheckFrameBufferStatus(vlFBOTarget_t target)
 {
 	VIDEO_FUNCTION_START
 #ifdef VL_MODE_OPENGL
@@ -869,7 +846,7 @@ void vlCheckFrameBufferStatus(VLFBOTarget_t target)
 
 /*	Binds the given framebuffer.
 */
-void vlBindFrameBuffer(VLFBOTarget_t target, unsigned int buffer)
+void vlBindFrameBuffer(vlFBOTarget_t target, unsigned int buffer)
 {
 	VIDEO_FUNCTION_START
 #ifdef VL_MODE_OPENGL
@@ -946,49 +923,49 @@ void vlFogColour3fv(plColour_t rgba)
 	DRAWING
 ===========================*/
 
-typedef struct
+typedef struct _VLprimitivetranslate_struct
 {
-	VideoPrimitive_t primitive;
+	vlPrimitive_t primitive;
 
 	unsigned int gl;
 
 	const char *name;
-} VideoPrimitives_t;
+} _VLprimitivetranslate;
 
-VideoPrimitives_t vl_primitives[] =
+_VLprimitivetranslate vl_primitives[] =
 {
 #if defined (VL_MODE_OPENGL) || (VL_MODE_OPENGL_CORE)
-	{ VIDEO_PRIMITIVE_LINES,				GL_LINES,			"LINES" },
-	{ VIDEO_PRIMITIVE_POINTS,				GL_POINTS,			"POINTS" },
-	{ VIDEO_PRIMITIVE_TRIANGLES,			GL_TRIANGLES,		"TRIANGLES" },
-	{ VIDEO_PRIMITIVE_TRIANGLE_FAN,			GL_TRIANGLE_FAN,	"TRIANGLE_FAN" },
-	{ VIDEO_PRIMITIVE_TRIANGLE_FAN_LINE,	GL_LINES,			"TRIANGLE_FAN_LINE" },
-	{ VIDEO_PRIMITIVE_TRIANGLE_STRIP,		GL_TRIANGLE_STRIP,	"TRIANGLE_STRIP" },
-	{ VIDEO_PRIMITIVE_QUADS,				GL_QUADS,			"QUADS" }
+	{ VL_PRIMITIVE_LINES,					GL_LINES,			"LINES" },
+	{ VL_PRIMITIVE_POINTS,					GL_POINTS,			"POINTS" },
+	{ VL_PRIMITIVE_TRIANGLES,				GL_TRIANGLES,		"TRIANGLES" },
+	{ VL_PRIMITIVE_TRIANGLE_FAN,			GL_TRIANGLE_FAN,	"TRIANGLE_FAN" },
+	{ VL_PRIMITIVE_TRIANGLE_FAN_LINE,		GL_LINES,			"TRIANGLE_FAN_LINE" },
+	{ VL_PRIMITIVE_TRIANGLE_STRIP,			GL_TRIANGLE_STRIP,	"TRIANGLE_STRIP" },
+	{ VL_PRIMITIVE_QUADS,					GL_QUADS,			"QUADS" }
 #elif defined (VL_MODE_GLIDE)
-	{ VIDEO_PRIMITIVE_LINES,				GR_LINES,			"LINES" },
+	{ VL_PRIMITIVE_LINES,					GR_LINES,			"LINES" },
 	{ VL_PRIMITIVE_LINE_STRIP,				GR_LINE_STRIP,		"LINE_STRIP" },
-	{ VIDEO_PRIMITIVE_POINTS,				GR_POINTS,			"POINTS" },
-	{ VIDEO_PRIMITIVE_TRIANGLES,			GR_TRIANGLES,		"TRIANGLES" },
-	{ VIDEO_PRIMITIVE_TRIANGLE_FAN,			GR_TRIANGLE_FAN,	"TRIANGLE_FAN" },
-	{ VIDEO_PRIMITIVE_TRIANGLE_FAN_LINE,	GR_LINES,			"TRIANGLE_FAN_LINE" },
-	{ VIDEO_PRIMITIVE_TRIANGLE_STRIP,		GR_TRIANGLE_STRIP,	"TRIANGLE_STRIP" },
-	{ VIDEO_PRIMITIVE_QUADS,				0,					"QUADS" }
+	{ VL_PRIMITIVE_POINTS,					GR_POINTS,			"POINTS" },
+	{ VL_PRIMITIVE_TRIANGLES,				GR_TRIANGLES,		"TRIANGLES" },
+	{ VL_PRIMITIVE_TRIANGLE_FAN,			GR_TRIANGLE_FAN,	"TRIANGLE_FAN" },
+	{ VL_PRIMITIVE_TRIANGLE_FAN_LINE,		GR_LINES,			"TRIANGLE_FAN_LINE" },
+	{ VL_PRIMITIVE_TRIANGLE_STRIP,			GR_TRIANGLE_STRIP,	"TRIANGLE_STRIP" },
+	{ VL_PRIMITIVE_QUADS,					0,					"QUADS" }
 #elif defined (VL_MODE_DIRECT3D)
 #elif defined (VL_MODE_VULKAN)
-	{ VIDEO_PRIMITIVE_LINES,				VK_PRIMITIVE_TOPOLOGY_LINE_LIST,		"LINES" },
-	{ VIDEO_PRIMITIVE_POINTS,				VK_PRIMITIVE_TOPOLOGY_POINT_LIST,		"POINTS" },
-	{ VIDEO_PRIMITIVE_TRIANGLES,			VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,	"TRIANGLES" },
-	{ VIDEO_PRIMITIVE_TRIANGLE_FAN,			VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN,		"TRIANGLE_FAN" },
-	{ VIDEO_PRIMITIVE_TRIANGLE_FAN_LINE,	VK_PRIMITIVE_TOPOLOGY_LINE_LIST,		"TRIANGLE_FAN_LINE" },
-	{ VIDEO_PRIMITIVE_TRIANGLE_STRIP,		VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP,	"TRIANGLE_STRIP" },
-	{ VIDEO_PRIMITIVE_QUADS,				0,										"QUADS" }
+	{ VL_PRIMITIVE_LINES,					VK_PRIMITIVE_TOPOLOGY_LINE_LIST,		"LINES" },
+	{ VL_PRIMITIVE_POINTS,					VK_PRIMITIVE_TOPOLOGY_POINT_LIST,		"POINTS" },
+	{ VL_PRIMITIVE_TRIANGLES,				VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,	"TRIANGLES" },
+	{ VL_PRIMITIVE_TRIANGLE_FAN,			VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN,		"TRIANGLE_FAN" },
+	{ VL_PRIMITIVE_TRIANGLE_FAN_LINE,		VK_PRIMITIVE_TOPOLOGY_LINE_LIST,		"TRIANGLE_FAN_LINE" },
+	{ VL_PRIMITIVE_TRIANGLE_STRIP,			VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP,	"TRIANGLE_STRIP" },
+	{ VL_PRIMITIVE_QUADS,					0,										"QUADS" }
 #else
 	{ 0 }
 #endif
 };
 
-unsigned int _vlTranslatePrimitiveType(VideoPrimitive_t primitive)
+unsigned int _vlTranslatePrimitiveType(vlPrimitive_t primitive)
 {
 	VIDEO_FUNCTION_START
 	for (int i = 0; i < pARRAYELEMENTS(vl_primitives); i++)
@@ -1003,7 +980,7 @@ unsigned int _vlTranslatePrimitiveType(VideoPrimitive_t primitive)
 /*	Deals with tris view and different primitive types, then finally draws
 	the given arrays.
 */
-void vlDrawArrays(VideoPrimitive_t mode, unsigned int first, unsigned int count)
+void vlDrawArrays(vlPrimitive_t mode, unsigned int first, unsigned int count)
 {
 	if (count == 0)
 		return;
@@ -1013,7 +990,7 @@ void vlDrawArrays(VideoPrimitive_t mode, unsigned int first, unsigned int count)
 #endif
 }
 
-void vlDrawElements(VideoPrimitive_t mode, unsigned int count, unsigned int type, const void *indices)
+void vlDrawElements(vlPrimitive_t mode, unsigned int count, unsigned int type, const void *indices)
 {
 	VIDEO_FUNCTION_START
 	if ((count == 0) || !indices)
@@ -1025,11 +1002,11 @@ void vlDrawElements(VideoPrimitive_t mode, unsigned int count, unsigned int type
 	VIDEO_FUNCTION_END
 }
 
-VLdraw vl_currentobject;
+vlDraw_t vl_currentobject;
 
-void vlBegin(VideoPrimitive_t mode)
+void vlBegin(vlPrimitive_t mode)
 {
-	if ((mode <= VIDEO_PRIMITIVE_IGNORE) || (mode >= VIDEO_PRIMITIVE_END))
+	if ((mode <= VL_PRIMITIVE_IGNORE) || (mode >= VL_PRIMITIVE_END))
 		Sys_Error("Invalid primitive mode for object!\n");
 
 	// Set cur primitive.
@@ -1052,12 +1029,12 @@ void vlEnd(void)
 	vlDrawImmediate(&vl_currentobject);
 
 	// We're done, don't use this again.
-	vl_currentobject.primitive = VIDEO_PRIMITIVE_IGNORE;
+	vl_currentobject.primitive = VL_PRIMITIVE_IGNORE;
 }
 
 /*	Draw object using immediate mode.
 */
-void vlDrawImmediate(VLdraw *object)
+void vlDrawImmediate(vlDraw_t *object)
 {
 	VIDEO_FUNCTION_START
 #ifdef VL_MODE_GLIDE
@@ -1071,19 +1048,19 @@ void vlDrawImmediate(VLdraw *object)
 	glEnableClientState(GL_COLOR_ARRAY);
 	glEnableClientState(GL_NORMAL_ARRAY);
 
-	VLvertex *vert = &object->vertices[0];
-	glVertexPointer(3, GL_FLOAT, sizeof(VLvertex), vert->position);
-	glColorPointer(4, GL_FLOAT, sizeof(VLvertex), vert->colour);
-	glNormalPointer(GL_FLOAT, sizeof(VLvertex), vert->normal);
+	vlVertex_t *vert = &object->vertices[0];
+	glVertexPointer(3, GL_FLOAT, sizeof(vlVertex_t), vert->position);
+	glColorPointer(4, GL_FLOAT, sizeof(vlVertex_t), vert->colour);
+	glNormalPointer(GL_FLOAT, sizeof(vlVertex_t), vert->normal);
 	for (int i = 0; i < Video.num_textureunits; i++)
 		if (Video.textureunits[i].isactive)
 		{
 			glClientActiveTexture(vlGetTextureUnit(i));
 			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-			glTexCoordPointer(2, GL_FLOAT, sizeof(VLvertex), vert->ST[i]);
+			glTexCoordPointer(2, GL_FLOAT, sizeof(vlVertex_t), vert->ST[i]);
 		}
 
-	if (object->primitive == VIDEO_PRIMITIVE_TRIANGLES)
+	if (object->primitive == VL_PRIMITIVE_TRIANGLES)
 		vlDrawElements(
 			object->primitive,
 			object->numtriangles * 3,
@@ -1106,11 +1083,15 @@ void vlDrawImmediate(VLdraw *object)
 	VIDEO_FUNCTION_END
 }
 
-void vlCalculateLighting(VLdraw *object, DynamicLight_t *light, plVector3f_t position)
+/*===========================
+	LIGHTING
+===========================*/
+
+void vlApplyLighting(vlDraw_t *object, VLlight *light, plVector3f_t position)
 {
 	// Calculate the distance.
 	plVector3f_t distvec;
-	Math_VectorSubtract(position, light->origin, distvec);
+	Math_VectorSubtract(position, light->position, distvec);
 	float distance = (light->radius - plLengthf(distvec)) / 100.0f;
 
 	for (unsigned int i = 0; i < object->numverts; i++)
@@ -1124,9 +1105,9 @@ void vlCalculateLighting(VLdraw *object, DynamicLight_t *light, plVector3f_t pos
 			plVectorClear3fv(object->vertices[i].colour);
 		else
 		{
-			object->vertices[i].colour[pRED] = light->color[pRED] * angle;
-			object->vertices[i].colour[pGREEN] = light->color[pGREEN] * angle;
-			object->vertices[i].colour[pBLUE] = light->color[pBLUE] * angle;
+			object->vertices[i].colour[pRED] = light->colour[pRED] * angle;
+			object->vertices[i].colour[pGREEN] = light->colour[pGREEN] * angle;
+			object->vertices[i].colour[pBLUE] = light->colour[pBLUE] * angle;
 		}
 
 		/*
@@ -1155,11 +1136,10 @@ void vlCalculateLighting(VLdraw *object, DynamicLight_t *light, plVector3f_t pos
 	MISC
 ===========================*/
 
-void vlSetCullMode(VLCull_t mode)
+void vlSetCullMode(vlCull_t mode)
 {
 	if (mode == vl_state.current_cullmode)
 		return;
-
 #if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
 	glCullFace(GL_BACK);
 	switch (mode)

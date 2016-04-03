@@ -18,25 +18,59 @@
 
 #pragma once
 
+#define	VIDEO_MAX_UNITS	16
+
+// Drawing
+
 // Primitive Types
 typedef enum
 {
-	VIDEO_PRIMITIVE_IGNORE = -1,
+	VL_PRIMITIVE_IGNORE = -1,
 
-	VIDEO_PRIMITIVE_LINES,
+	VL_PRIMITIVE_LINES,
 	VL_PRIMITIVE_LINE_STRIP,
-	VIDEO_PRIMITIVE_POINTS,
-	VIDEO_PRIMITIVE_TRIANGLES,
-	VIDEO_PRIMITIVE_TRIANGLE_STRIP,
-	VIDEO_PRIMITIVE_TRIANGLE_FAN,
-	VIDEO_PRIMITIVE_TRIANGLE_FAN_LINE,
-	VIDEO_PRIMITIVE_QUADS,				// Advised to avoid this.
+	VL_PRIMITIVE_POINTS,
+	VL_PRIMITIVE_TRIANGLES,
+	VL_PRIMITIVE_TRIANGLE_STRIP,
+	VL_PRIMITIVE_TRIANGLE_FAN,
+	VL_PRIMITIVE_TRIANGLE_FAN_LINE,
+	VL_PRIMITIVE_QUADS,				// Advised to avoid this.
 
-	VIDEO_PRIMITIVE_END
-} VideoPrimitive_t;
+	VL_PRIMITIVE_END
+} vlPrimitive_t;
+
+typedef struct
+{
+	plVector3f_t position;
+	plVector3f_t normal;
+
+	plVector2f_t ST[16];
+
+	plColour_t colour;
+} vlVertex_t;
+
+typedef struct
+{
+	vlVertex_t *vertices;	// Array of vertices for the object.
+
+	unsigned int numverts;		// Number of vertices.
+	unsigned int numtriangles;	// Number of triangles.
+
+	uint8_t	*indices;	// List of indeces.
+
+	vlPrimitive_t primitive, primitive_restore;
+
+	unsigned int object_vertexarrays;
+	unsigned int
+		buffer_vertex,
+		buffer_colour,
+		buffer_texture;
+} vlDraw_t;
+
+// Textures
 
 // Texture Environment Modes
-typedef enum VideoTextureEnvironmentMode_e
+typedef enum
 {
 	VIDEO_TEXTURE_MODE_IGNORE = -1,
 
@@ -46,12 +80,7 @@ typedef enum VideoTextureEnvironmentMode_e
 	VIDEO_TEXTURE_MODE_BLEND,
 	VIDEO_TEXTURE_MODE_REPLACE,
 	VIDEO_TEXTURE_MODE_COMBINE
-} VideoTextureEnvironmentMode_t;
-
-#define	VIDEO_MAX_UNITS	16
-
-typedef struct VLvertex_struct VLvertex;
-typedef struct VLdraw_struct VLdraw;
+} vlTextureEnvironmentMode_t;
 
 // Canvas
 typedef enum

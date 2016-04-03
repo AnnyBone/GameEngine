@@ -48,14 +48,6 @@ typedef unsigned int vlVertexArray_t;
 typedef unsigned int vlRenderBuffer_t;
 typedef unsigned int vlFrameBuffer_t;
 
-typedef unsigned int vlShaderProgram_t;
-
-typedef enum
-{
-	VL_SHADER_FRAGMENT,
-	VL_SHADER_VERTEX
-} vlShaderType_t;
-
 typedef enum
 {
 #if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
@@ -94,9 +86,9 @@ typedef enum
 	VL_CULL_POSTIVE,
 	VL_CULL_NEGATIVE,
 #endif
-} VLCull_t;
+} vlCull_t;
 
-typedef enum
+typedef enum VLcolourformat_struct
 {
 #if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
 	VL_COLOURFORMAT_ARGB,
@@ -114,27 +106,31 @@ typedef enum
 	VL_COLOURFORMAT_RGBA	= 2,
 	VL_COLOURFORMAT_BGRA	= 3,
 #endif
-} VLColourFormat_t;
+
+	VL_COLOURFORMAT_END
+} VLcolourformat;
 
 typedef enum
 {
 #if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
-	VL_STRING_RENDERER		= GL_RENDERER,
-	VL_STRING_VERSION		= GL_VERSION,
-	VL_STRING_VENDOR		= GL_VENDOR,
-	VL_STRING_EXTENSIONS	= GL_EXTENSIONS,
+	VL_STRING_RENDERER = GL_RENDERER,
+	VL_STRING_VERSION = GL_VERSION,
+	VL_STRING_VENDOR = GL_VENDOR,
+	VL_STRING_EXTENSIONS = GL_EXTENSIONS,
 #elif defined VL_MODE_GLIDE
-	VL_STRING_RENDERER = GR_RENDERER,
-	VL_STRING_VERSION = GR_VERSION,
-	VL_STRING_VENDOR = GR_VENDOR,
-	VL_STRING_EXTENSIONS = GR_EXTENSION,
+	VL_STRING_RENDERER		= GR_RENDERER,
+	VL_STRING_VERSION		= GR_VERSION,
+	VL_STRING_VENDOR		= GR_VENDOR,
+	VL_STRING_EXTENSIONS	= GR_EXTENSION,
 #else
-	VL_STRING_RENDERER = 0,
-	VL_STRING_VERSION = 1,
-	VL_STRING_VENDOR = 2,
-	VL_STRING_EXTENSIONS = 3,
+	VL_STRING_RENDERER		= 0,
+	VL_STRING_VERSION		= 1,
+	VL_STRING_VENDOR		= 2,
+	VL_STRING_EXTENSIONS	= 3,
 #endif
-} VLString_t;
+
+	VL_STRING_END
+} vlString_t;
 
 typedef enum
 {
@@ -148,7 +144,7 @@ typedef enum
 	VL_FRAMEBUFFER_DRAW,
 	VL_FRAMEBUFFER_READ
 #endif
-} VLFBOTarget_t;
+} vlFBOTarget_t;
 
 typedef enum
 {
@@ -163,7 +159,7 @@ typedef enum
 	VL_TEXTUREFILTER_NEAREST,				// Nearest filtering
 	VL_TEXTUREFILTER_LINEAR					// Linear filtering
 #endif
-} VLTextureFilter_t;
+} vlTextureFilter_t;
 
 typedef enum
 {
@@ -197,10 +193,12 @@ typedef enum
 typedef enum
 {
 #if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
-	VL_TEXTURE_2D	= GL_TEXTURE_2D
+	VL_TEXTURE_2D	= GL_TEXTURE_2D,
 #else
-	VL_TEXTURE_2D
+	VL_TEXTURE_2D,
 #endif
+
+	VL_TEXTURE_END
 } vlTextureTarget_t;
 
 // Blending Modes
@@ -217,7 +215,7 @@ typedef enum
 	VL_BLEND_ONE_MINUS_DST_ALPHA	= GL_ONE_MINUS_DST_ALPHA,
 	VL_BLEND_DST_COLOR				= GL_DST_COLOR,
 	VL_BLEND_ONE_MINUS_DST_COLOR	= GL_ONE_MINUS_DST_COLOR,
-	VL_BLEND_SRC_ALPHA_SATURATE		= GL_SRC_ALPHA_SATURATE
+	VL_BLEND_SRC_ALPHA_SATURATE		= GL_SRC_ALPHA_SATURATE,
 #elif defined (VL_MODE_GLIDE)
 	VL_BLEND_ZERO					= GR_BLEND_ZERO,
 	VL_BLEND_ONE					= GR_BLEND_ONE,
@@ -243,39 +241,9 @@ typedef enum
 	VL_BLEND_ONE_MINUS_DST_COLOR,
 	VL_BLEND_SRC_ALPHA_SATURATE
 #endif
+
+	VL_BLEND_END
 } vlBlend_t;
-
-//-----------------
-// Draw Object
-
-typedef struct VLvertex_struct
-{
-	plVector3f_t position;
-	plVector3f_t normal;
-
-	plVector2f_t ST[16];
-	
-	plColour_t colour;
-} VLvertex;
-
-typedef struct VLdraw_struct
-{
-	VLvertex *vertices;	// Array of vertices for the object.
-
-	unsigned int numverts;		// Number of vertices.
-	unsigned int numtriangles;	// Number of triangles.
-
-	uint8_t	*indices;	// List of indeces.
-
-	VideoPrimitive_t primitive, primitive_restore;
-
-	unsigned int object_vertexarrays;
-	unsigned int
-		buffer_vertex,
-		buffer_colour,
-		buffer_texture;
-} VLdraw;
-//-----------------
 
 #define	VL_BLEND_ADDITIVE	VL_BLEND_SRC_ALPHA, VL_BLEND_ONE
 #define	VL_BLEND_DEFAULT	VL_BLEND_SRC_ALPHA, VL_BLEND_ONE_MINUS_SRC_ALPHA
@@ -286,11 +254,8 @@ void vlInit(void);
 
 char *vlGetErrorString(unsigned int er);
 
-const char *vlGetRenderer(void);
-const char *vlGetVersion(void);
 const char *vlGetExtensions(void);
-const char *vlGetVendor(void);
-const char *vlGetString(VLString_t string);
+const char *vlGetString(vlString_t string);
 
 void vlGetMaxTextureAnistropy(float *params);
 void vlGetMaxTextureImageUnits(int *param);
@@ -302,8 +267,8 @@ void vlPopMatrix(void);
 
 void vlActiveTexture(unsigned int texunit);
 void vlTexImage2D(vlTextureTarget_t target, vlTextureFormat_t internal_format, vlTextureFormat_t format, int width, int height, const void *data);
-void vlSetTextureFilter(VLTextureFilter_t FilterMode);
-void vlSetTextureEnvironmentMode(VideoTextureEnvironmentMode_t TextureEnvironmentMode);
+void vlSetTextureFilter(vlTextureFilter_t filter);
+void vlSetTextureEnvironmentMode(vlTextureEnvironmentMode_t TextureEnvironmentMode);
 
 void vlEnable(unsigned int cap);
 void vlDisable(unsigned int cap);
@@ -311,16 +276,48 @@ void vlDisable(unsigned int cap);
 void vlBlendFunc(vlBlend_t modea, vlBlend_t modeb);
 void vlDepthMask(bool mode);
 
+//-----------------
 // Shaders
+
+typedef unsigned int vlShaderProgram_t;
+typedef unsigned int vlShader_t;
+
+typedef enum
+{
+	VL_SHADER_FRAGMENT,
+	VL_SHADER_VERTEX,
+
+	VL_SHADER_END
+} vlShaderType_t;
+
 vlShaderProgram_t vlCreateShaderProgram(void);
 void vlUseShaderProgram(vlShaderProgram_t program);
 void vlDeleteShaderProgram(vlShaderProgram_t *program);
+void vlAttachShader(vlShaderProgram_t program, vlShader_t shader);
+void vlDeleteShader(vlShader_t *shader);
 
+//-----------------
 // Drawing
-void vlDrawArrays(VideoPrimitive_t mode, unsigned int first, unsigned int count);
-void vlDrawElements(VideoPrimitive_t mode, unsigned int count, unsigned int type, const void *indices);
-void vlDrawImmediate(VLdraw *object);
-void vlCalculateLighting(VLdraw *object, DynamicLight_t *light, plVector3f_t position);
+
+void vlDrawArrays(vlPrimitive_t mode, unsigned int first, unsigned int count);
+void vlDrawElements(vlPrimitive_t mode, unsigned int count, unsigned int type, const void *indices);
+void vlDrawImmediate(vlDraw_t *object);
+
+//-----------------
+// Lighting
+
+typedef struct VLlight_struct
+{
+	plVector3f_t	position;
+
+	plColour_t	colour;
+
+	float radius;
+} VLlight;
+
+void vlApplyLighting(vlDraw_t *object, VLlight *light, plVector3f_t position);
+
+//-----------------
 
 // Vertex Array
 void vlGenerateVertexArray(unsigned int *arrays);
@@ -335,7 +332,7 @@ void vlDeleteVertexBuffer(unsigned int *uiBuffer);
 // Frame Buffer
 void vlGenerateFrameBuffer(unsigned int *buffer);
 void vlCheckFrameBufferStatus();
-void vlBindFrameBuffer(VLFBOTarget_t target, unsigned int buffer);
+void vlBindFrameBuffer(vlFBOTarget_t target, unsigned int buffer);
 void vlAttachFrameBufferRenderBuffer(unsigned int attachment, unsigned int buffer);
 void vlAttachFrameBufferTexture(gltexture_t *buffer);
 void vlDeleteFrameBuffer(unsigned int *buffer);
@@ -353,7 +350,7 @@ void vlClearBuffers(unsigned int mask);
 void vlColourMask(bool red, bool green, bool blue, bool alpha);
 
 // Misc
-void vlSetCullMode(VLCull_t mode);
+void vlSetCullMode(vlCull_t mode);
 void vlFinish(void);
 
 plEXTERN_C_END

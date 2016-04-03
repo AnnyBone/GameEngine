@@ -221,7 +221,7 @@ bool Model_LoadOBJ(model_t *model, void *buf);
 ModelLoadInterface model_formatlist[] =
 {
 	{ U3D_FILE_EXTENSION, MODEL_TYPE_STATIC, ModelU3D_Load },
-	{ "obj",	MODEL_TYPE_STATIC,	Model_LoadOBJ }
+	{ "obj", MODEL_TYPE_STATIC, Model_LoadOBJ }
 };
 
 /*	Loads a model into the cache
@@ -1468,8 +1468,8 @@ void Model_LoadMD2(model_t *mModel,void *Buffer)
 #if 0
 	// Allocate vertex array.
 	mModel->object.numverts = mMD2Model->numtris * 3;
-	mModel->object.vertices = (VLvertex*)malloc(mModel->object.numverts * sizeof(VLvertex));
-	memset(mModel->object.vertices, 0, mModel->object.numverts * sizeof(VLvertex));
+	mModel->object.vertices = (vlVertex_t*)malloc(mModel->object.numverts * sizeof(vlVertex_t));
+	memset(mModel->object.vertices, 0, mModel->object.numverts * sizeof(vlVertex_t));
 #endif
 
 	Model_LoadRelativeMaterial(mModel);

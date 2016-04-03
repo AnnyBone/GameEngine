@@ -20,10 +20,10 @@
 
 plEXTERN_C_START
 
-void VideoObject_Begin(VLdraw *object, VideoPrimitive_t primitive);
-void VideoObject_Vertex3f(VLdraw *object, float x, float y, float z);
-void VideoObject_Normal(VLdraw *object, float x, float y, float z);
-void VideoObject_Colour4f(VLdraw *object, float r, float g, float b, float a);
-void VideoObject_Colour4fv(VLdraw *object, MathVector4f_t colour);
+void VideoObject_Begin(vlDraw_t *object, vlPrimitive_t primitive);
+void VideoObject_Vertex3f(vlDraw_t *object, float x, float y, float z);
+void VideoObject_Normal(vlDraw_t *object, float x, float y, float z);
+void VideoObject_Colour4f(vlDraw_t *object, float r, float g, float b, float a);
+void VideoObject_Colour4fv(vlDraw_t *object, MathVector4f_t colour);
 
 plEXTERN_C_END

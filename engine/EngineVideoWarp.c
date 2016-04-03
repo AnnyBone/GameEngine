@@ -210,7 +210,7 @@ void GL_SubdivideSurface(msurface_t *fa)
 */
 void Surface_DrawWater(glpoly_t *p, Material_t *material)
 {
-	VLvertex *voWaterPoly = calloc(p->numverts, sizeof(VLvertex));
+	vlVertex_t *voWaterPoly = calloc(p->numverts, sizeof(vlVertex_t));
 	if(!voWaterPoly)
 	{
 		Sys_Error("Failed to allocate water poly!\n");
@@ -237,7 +237,7 @@ void Surface_DrawWater(glpoly_t *p, Material_t *material)
 		Video_ObjectVertex(&voWaterPoly[i], vWave[0], vWave[1], vWave[2]);
 	}
 
-	Video_DrawObject(voWaterPoly, VIDEO_PRIMITIVE_TRIANGLE_FAN, p->numverts, material, 0);
+	Video_DrawObject(voWaterPoly, VL_PRIMITIVE_TRIANGLE_FAN, p->numverts, material, 0);
 
 	free(voWaterPoly);
 }

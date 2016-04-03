@@ -20,6 +20,24 @@
 
 #include "platform_model.h"
 
+plModel_t *plCreateModel()
+{
+	plSetErrorFunction("plCreateModel");
+
+	return nullptr;
+}
+
+void plDeleteModel(plModel_t *model)
+{
+	if (!model)
+	{
+		plSetError("Invalid model!\n");
+		return;
+	}
+
+	delete model;
+}
+
 /*
 	UNREAL 3D Model Format
 

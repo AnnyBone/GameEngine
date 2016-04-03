@@ -610,7 +610,7 @@ typedef struct
 {
 	const char *name;
 
-	VideoTextureEnvironmentMode_t mode;
+	vlTextureEnvironmentMode_t mode;
 } MaterialTextureEnvironmentModeType_t;
 
 MaterialTextureEnvironmentModeType_t material_textureenvmode[] =
@@ -1015,7 +1015,7 @@ plEXTERN_C_END
 
 /*	TODO: Replace Material_Draw with this!
 */
-void Material_DrawObject(Material_t *material, VLdraw *object, bool ispost)
+void Material_DrawObject(Material_t *material, vlDraw_t *object, bool ispost)
 {
 #ifdef VL_MODE_OPENGL
 	bool showwireframe = r_showtris.bValue;
@@ -1028,11 +1028,11 @@ void Material_DrawObject(Material_t *material, VLdraw *object, bool ispost)
 		{
 			switch (object->primitive)
 			{
-			case VIDEO_PRIMITIVE_LINES:
+			case VL_PRIMITIVE_LINES:
 				break;
-			case VIDEO_PRIMITIVE_TRIANGLES:
-				object->primitive_restore = VIDEO_PRIMITIVE_TRIANGLES;
-				object->primitive = VIDEO_PRIMITIVE_LINES;
+			case VL_PRIMITIVE_TRIANGLES:
+				object->primitive_restore = VL_PRIMITIVE_TRIANGLES;
+				object->primitive = VL_PRIMITIVE_LINES;
 				break;
 			default:
 				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -1040,10 +1040,10 @@ void Material_DrawObject(Material_t *material, VLdraw *object, bool ispost)
 		}
 		else
 		{ 
-			if ((object->primitive != VIDEO_PRIMITIVE_LINES) &&
-				(object->primitive != VIDEO_PRIMITIVE_TRIANGLES))
+			if ((object->primitive != VL_PRIMITIVE_LINES) &&
+				(object->primitive != VL_PRIMITIVE_TRIANGLES))
 				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-			else if (object->primitive == VIDEO_PRIMITIVE_TRIANGLES)
+			else if (object->primitive == VL_PRIMITIVE_TRIANGLES)
 				object->primitive = object->primitive_restore;
 		}
 	}
@@ -1061,7 +1061,7 @@ void Material_DrawObject(Material_t *material, VLdraw *object, bool ispost)
 
 /*	Typically called before an object is drawn.
 */
-void Material_Draw(Material_t *material, VLvertex *ObjectVertex, VideoPrimitive_t ObjectPrimitive, unsigned int ObjectSize, bool ispost)
+void Material_Draw(Material_t *material, vlVertex_t *ObjectVertex, vlPrimitive_t ObjectPrimitive, unsigned int ObjectSize, bool ispost)
 {
 	if (r_drawflat_cheatsafe || !material)
 		return;

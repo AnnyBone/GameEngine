@@ -88,7 +88,7 @@ typedef struct
 	unsigned int current_texture;
 	unsigned int capabilities;
 
-	VideoTextureEnvironmentMode_t current_envmode;
+	vlTextureEnvironmentMode_t current_envmode;
 } VideoTextureMU_t;
 
 typedef struct
@@ -151,13 +151,13 @@ void Video_PreFrame(void);
 void Video_PostFrame(void);
 void Video_ClearBuffer(void);
 void Video_Frame(void);
-void Video_ObjectTexture(VLvertex *voObject, unsigned int uiTextureUnit, float S, float T);
-void Video_ObjectVertex(VLvertex *voObject, float X, float Y, float Z);
-void Video_ObjectNormal(VLvertex *voObject, float X, float Y, float Z);
-void Video_ObjectColour(VLvertex *voObject, float R, float G, float B, float A);
-void Video_DrawFill(VLvertex *voFill, Material_t *mMaterial, int iSkin);
+void Video_ObjectTexture(vlVertex_t *voObject, unsigned int uiTextureUnit, float S, float T);
+void Video_ObjectVertex(vlVertex_t *voObject, float X, float Y, float Z);
+void Video_ObjectNormal(vlVertex_t *voObject, float X, float Y, float Z);
+void Video_ObjectColour(vlVertex_t *voObject, float R, float G, float B, float A);
+void Video_DrawFill(vlVertex_t *voFill, Material_t *mMaterial, int iSkin);
 void Video_DrawSurface(msurface_t *mSurface, float fAlpha, Material_t *mMaterial, unsigned int uiSkin);
-void Video_DrawObject(VLvertex *voObject, VideoPrimitive_t vpPrimitiveType, unsigned int uiVerts, Material_t *mMaterial, int iSkin);
+void Video_DrawObject(vlVertex_t *voObject, vlPrimitive_t vpPrimitiveType, unsigned int uiVerts, Material_t *mMaterial, int iSkin);
 void Video_ShowBoundingBoxes(void);
 void Video_Shutdown(void);
 

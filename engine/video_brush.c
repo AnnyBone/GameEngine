@@ -87,7 +87,7 @@ texture_t *R_TextureAnimation (texture_t *base, int frame)
 
 void DrawGLPoly(glpoly_t *p)
 {
-	VLvertex	voObject[512] = { { { 0 } } };
+	vlVertex_t	voObject[512] = { { { 0 } } };
 	float		*v;
 	int			i;
 
@@ -112,7 +112,7 @@ void DrawGLPoly(glpoly_t *p)
 		Math_VectorCopy(v,voObject[i].position);
 	}
 
-	Video_DrawObject(voObject,VIDEO_PRIMITIVE_TRIANGLE_FAN,p->numverts,NULL,0);
+	Video_DrawObject(voObject, VL_PRIMITIVE_TRIANGLE_FAN, p->numverts, NULL, 0);
 }
 
 /*

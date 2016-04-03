@@ -420,28 +420,28 @@ void Video_SetTexture(gltexture_t *gTexture)
 
 MathVector4f_t mvVideoGlobalColour;
 
-void Video_ObjectTexture(VLvertex *object, unsigned int uiTextureUnit, float S, float T)
+void Video_ObjectTexture(vlVertex_t *object, unsigned int uiTextureUnit, float S, float T)
 {
 	object->ST[uiTextureUnit][0] = S;
 	object->ST[uiTextureUnit][1] = T;
 }
 
-void Video_ObjectVertex(VLvertex *object, float x, float y, float z)
+void Video_ObjectVertex(vlVertex_t *object, float x, float y, float z)
 {
 	plVectorSet3f(object->position, x, y, z);
 }
 
-void Video_ObjectNormal(VLvertex *object, float x, float y, float z)
+void Video_ObjectNormal(vlVertex_t *object, float x, float y, float z)
 {
 	plVectorSet3f(object->normal, x, y, z);
 }
 
-void Video_ObjectColour(VLvertex *object, float R, float G, float B, float A)
+void Video_ObjectColour(vlVertex_t *object, float R, float G, float B, float A)
 {
-	object->colour[pRED]	= R;
-	object->colour[pGREEN]	= G;
-	object->colour[pBLUE]	= B;
-	object->colour[pALPHA]	= A;
+	object->colour[PL_RED]		= R;
+	object->colour[PL_GREEN]	= G;
+	object->colour[PL_BLUE]		= B;
+	object->colour[PL_ALPHA]	= A;
 }
 
 /*
@@ -450,20 +450,20 @@ void Video_ObjectColour(VLvertex *object, float R, float G, float B, float A)
 
 /*  Draw a simple rectangle.
 */
-void Video_DrawFill(VLvertex *voFill, Material_t *mMaterial, int iSkin)
+void Video_DrawFill(vlVertex_t *voFill, Material_t *mMaterial, int iSkin)
 {
-	Video_DrawObject(voFill, VIDEO_PRIMITIVE_TRIANGLE_FAN, 4, mMaterial, iSkin);
+	Video_DrawObject(voFill, VL_PRIMITIVE_TRIANGLE_FAN, 4, mMaterial, iSkin);
 }
 
 /*	Surfaces
 */
 void Video_DrawSurface(msurface_t *mSurface,float fAlpha, Material_t *mMaterial, unsigned int uiSkin)
 {
-	VLvertex	*drawsurf;
+	vlVertex_t	*drawsurf;
 	float		*fVert;
 	int			i;
 	
-	drawsurf = (VLvertex*)calloc_or_die(mSurface->polys->numverts, sizeof(VLvertex));
+	drawsurf = (vlVertex_t*)calloc_or_die(mSurface->polys->numverts, sizeof(vlVertex_t));
 
 	fVert = mSurface->polys->verts[0];
 	for (i = 0; i < mSurface->polys->numverts; i++, fVert += VERTEXSIZE)
@@ -477,7 +477,7 @@ void Video_DrawSurface(msurface_t *mSurface,float fAlpha, Material_t *mMaterial,
 		Video_ObjectColour(&drawsurf[i], 1.0f, 1.0f, 1.0f, fAlpha);
 	}
 
-	Video_DrawObject(drawsurf, VIDEO_PRIMITIVE_TRIANGLE_FAN, mSurface->polys->numverts, mMaterial, 0);
+	Video_DrawObject(drawsurf, VL_PRIMITIVE_TRIANGLE_FAN, mSurface->polys->numverts, mMaterial, 0);
 	free(drawsurf);
 
 	rs_brushpasses++;
@@ -486,13 +486,13 @@ void Video_DrawSurface(msurface_t *mSurface,float fAlpha, Material_t *mMaterial,
 /*	Draw 3D object.
 	TODO: Add support for VBOs ?
 */
-void Video_DrawObject(VLvertex *vobject, VideoPrimitive_t primitive,
+void Video_DrawObject(vlVertex_t *vobject, vlPrimitive_t primitive,
 	unsigned int numverts, Material_t *mMaterial, int iSkin)
 {
 	if(numverts == 0)
 		return;
 
-	VLdraw tempobj;
+	vlDraw_t tempobj;
 	tempobj.vertices			= vobject;
 	tempobj.numverts			= numverts;
 	tempobj.primitive			= primitive;

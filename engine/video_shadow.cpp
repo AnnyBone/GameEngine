@@ -54,7 +54,7 @@ void Shadow_DrawBlob(ClientEntity_t *Entity)
 	if (!lightplane)
 		return;
 
-	VLvertex	voShadow[4] = { { { 0 } } };
+	vlVertex_t	voShadow[4] = { { { 0 } } };
 	float		fBlobHeight, fShadowScale[2];
 
 	// TODO: This should be averaged out to the size of an entity.

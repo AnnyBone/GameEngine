@@ -98,9 +98,9 @@ void Alias_DrawFrame(MD2_t *alias, ClientEntity_t *entity, lerpdata_t lLerpData)
 
 	// TODO: Stupid stupid stupid temporary shit until we do this properly.
 	VideoObject_t object;
-	object.vertices		= (VLvertex*)malloc_or_die(sizeof(VLvertex) * alias->num_xyz);
+	object.vertices		= (vlVertex_t*)malloc_or_die(sizeof(vlVertex_t) * alias->num_xyz);
 	object.numverts		= alias->num_xyz;
-	object.primitive	= VIDEO_PRIMITIVE_TRIANGLES;
+	object.primitive	= VL_PRIMITIVE_TRIANGLES;
 	object.indices		= (uint8_t*)calloc_or_die(alias->numtris * 3, sizeof(uint8_t));
 	
 	MD2Triangle_t *triangles = (MD2Triangle_t*)((uint8_t*)alias + alias->ofs_tris);
@@ -119,8 +119,9 @@ void Alias_DrawFrame(MD2_t *alias, ClientEntity_t *entity, lerpdata_t lLerpData)
 
 	// TODO: Stupid stupid stupid temporary shit until we do this properly.
 	free(object.vertices);
+	free(object.indices);
 #else
-	VLvertex				*voModel;
+	vlVertex_t				*voModel;
 	MD2TriangleVertex_t		*verts1, *verts2;
 	MD2Frame_t				*frame1, *frame2;
 	float					ilerp, fAlpha = 1.0f;
@@ -148,7 +149,7 @@ void Alias_DrawFrame(MD2_t *alias, ClientEntity_t *entity, lerpdata_t lLerpData)
 	order = (int*)((uint8_t*)alias + alias->ofs_glcmds);
 
 	// TODO: Stupid stupid stupid temporary shit until we do this properly.
-	voModel = (VLvertex*)malloc_or_die(sizeof(VLvertex) * alias->num_xyz);
+	voModel = (vlVertex_t*)malloc_or_die(sizeof(vlVertex_t) * alias->num_xyz);
 
 	memset(voModel, 0, sizeof(voModel));
 
@@ -183,7 +184,7 @@ void Alias_DrawFrame(MD2_t *alias, ClientEntity_t *entity, lerpdata_t lLerpData)
 			order += 3;
 		} while (--count);
 
-		Video_DrawObject(voModel, VIDEO_PRIMITIVE_TRIANGLE_STRIP, uiVerts, entity->model->materials, entity->skinnum);
+		Video_DrawObject(voModel, VL_PRIMITIVE_TRIANGLE_STRIP, uiVerts, entity->model->materials, entity->skinnum);
 	}
 
 	free(voModel);

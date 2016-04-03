@@ -89,7 +89,7 @@ void Font_Load(const char *ccName,int iSize)
 */
 void Font_Draw(Font_t *fFont, const char *ccMessage, plVector3f_t vPos, plVector3f_t vColour)
 {
-	VLvertex voFont[4] = { { { 0 } } };
+	vlVertex_t voFont[4] = { { { 0 } } };
 
 	/*	todo:
 			need to reserve bind slot.

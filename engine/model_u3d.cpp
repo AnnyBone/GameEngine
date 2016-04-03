@@ -110,7 +110,7 @@ bool ModelU3D_Load(model_t *model, void *buf)
 	model->numframes		= animheader.frames;
 
 	// Allocate an object for each frame.
-	model->objects = (VLdraw*)calloc_or_die(model->numframes, sizeof(VLdraw));
+	model->objects = (vlDraw_t*)calloc_or_die(model->numframes, sizeof(vlDraw_t));
 
 	// If it has more than one frame, we're gonna want to interp between
 	// it all later.
@@ -141,10 +141,10 @@ bool ModelU3D_Load(model_t *model, void *buf)
 	for (int i = 0; i < model->numframes; i++)
 	{
 		// Allocate vertices.
-		model->objects[i].vertices		= (VLvertex*)calloc_or_die(model->numvertexes, sizeof(VLvertex));
+		model->objects[i].vertices		= (vlVertex_t*)calloc_or_die(model->numvertexes, sizeof(vlVertex_t));
 		model->objects[i].numverts		= model->numvertexes;
 		model->objects[i].numtriangles	= model->numtriangles;
-		model->objects[i].primitive		= VIDEO_PRIMITIVE_TRIANGLES;
+		model->objects[i].primitive		= VL_PRIMITIVE_TRIANGLES;
 		model->objects[i].indices		= (uint8_t*)calloc_or_die(model->numtriangles * 3, sizeof(uint8_t));
 
 		size_t retsize = fread(&uvertices[i], sizeof(U3DVertex_t), model->numvertexes, animf);
