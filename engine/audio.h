@@ -98,8 +98,8 @@ typedef struct
 	plVector3f_t current_position;	// Position of the sound.
 	plVector3f_t current_velocity;	// Speed of movement.
 
-	ClientEntity_t	*entity;	// Owner, typically sound will follow this.
-	int				channel;	// Only really relevent for legacy stuff!
+	int				ident;		// Unique identifier.
+	AudioChannel_t	channel;	// Used for channel overriding.
 
 	float max_distance;		// Maximum distance.
 	float pitch;			// Pitch of the sound.
@@ -150,7 +150,7 @@ namespace Core
 		void PrecacheSample(const char *path, bool preserve);
 		void LoadSample(AudioSample_t *cache, const char *path);
 
-		void ClearSamples();	// Clears all loaded samples.
+		void ClearSamples(bool force);	// Clears all loaded samples.
 	protected:
 	private:
 		struct AudioExtensions
