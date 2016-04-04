@@ -665,7 +665,7 @@ void SCR_ScreenShot_f (void)
 
 void SCR_BeginLoadingPlaque (void)
 {
-	S_StopAllSounds();
+	Audio_StopSounds();
 
 	if(cls.state != ca_connected || cls.signon != SIGNONS)
 		return;
@@ -745,8 +745,6 @@ int SCR_ModalMessage (char *text, float timeout) //johnfitz -- timeout
 	bDrawDialog = true;
 	Video_Frame();
 	bDrawDialog = false;
-
-	S_ClearBuffer ();		// so dma doesn't loop current sound
 
 	time1 = System_DoubleTime () + timeout; //johnfitz -- timeout
 	time2 = 0.0f; //johnfitz -- timeout

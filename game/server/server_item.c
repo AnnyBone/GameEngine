@@ -30,23 +30,23 @@ Item_t Items[] =
 {
 #ifdef GAME_OPENKATANA
 	// Ammo
-	{	AMMO_IONBALLS,		"Ion Cells",			"models/ammo/ammo_ionblaster.md2",	"items/weaponpickup.wav",	true	},
-	{	AMMO_C4BOMBS,		"C4 Bombs",				"models/ammo/ammo_c4viz.md2",		"items/weaponpickup.wav",	true	},
-	{	AMMO_SLUGS,			"Shotcycler Round",		"models/ammo/ammo_shotcycler.md2",	"items/weaponpickup.wav",	true	},
-	{	AMMO_WINDROCKET,	"Sidewinder Rockets",	"models/ammo/ammo_sidewinder.md2",	"items/weaponpickup.wav",	true	},
-	{	AMMO_SHOCKWAVE,		"Shockwave Cells",		"models/ammo/ammo_shockwave.md2",	"items/weaponpickup.wav",	true	},
+	{	AMMO_IONBALLS,		"Ion Cells",			"models/ammo/ammo_ionblaster.md2",	SOUND_WEAPON_PICKUP,	true	},
+	{	AMMO_C4BOMBS,		"C4 Bombs",				"models/ammo/ammo_c4viz.md2",		SOUND_WEAPON_PICKUP,	true	},
+	{	AMMO_SLUGS,			"Shotcycler Round",		"models/ammo/ammo_shotcycler.md2",	SOUND_WEAPON_PICKUP,	true	},
+	{	AMMO_WINDROCKET,	"Sidewinder Rockets",	"models/ammo/ammo_sidewinder.md2",	SOUND_WEAPON_PICKUP,	true	},
+	{	AMMO_SHOCKWAVE,		"Shockwave Cells",		"models/ammo/ammo_shockwave.md2",	SOUND_WEAPON_PICKUP,	true	},
 
 	// Weapons
-	{	WEAPON_DAIKATANA,	"Daikatana",	"models/weapons/w_daikatana.md2",	"items/weaponpickup.wav",	true	},
-	{	WEAPON_IONRIFLE,	"Ion Rifle",	"models/weapons/w_ionblaster.md2",	"items/weaponpickup.wav",	true	},
-	{	WEAPON_C4VIZATERGO,	"C4 Vizatergo",	"models/weapons/w_c4.md2",			"items/weaponpickup.wav",	true	},
-	{	WEAPON_SHOTCYCLER,	"Shotcycler-6",	"models/weapons/w_shotcycler.md2",	"items/weaponpickup.wav",	true	},
-	{	WEAPON_SIDEWINDER,	"Sidewinder",	"models/weapons/w_sidewinder.md2",	"items/weaponpickup.wav",	true	},
-	{	WEAPON_SHOCKWAVE,	"Shockwave",	"models/weapons/w_shockwave.md2",	"items/weaponpickup.wav",	true	},
+	{	WEAPON_DAIKATANA,	"Daikatana",	"models/weapons/w_daikatana.md2",	SOUND_WEAPON_PICKUP,	true	},
+	{	WEAPON_IONRIFLE,	"Ion Rifle",	"models/weapons/w_ionblaster.md2",	SOUND_WEAPON_PICKUP,	true	},
+	{	WEAPON_C4VIZATERGO,	"C4 Vizatergo",	"models/weapons/w_c4.md2",			SOUND_WEAPON_PICKUP,	true	},
+	{	WEAPON_SHOTCYCLER,	"Shotcycler-6",	"models/weapons/w_shotcycler.md2",	SOUND_WEAPON_PICKUP,	true	},
+	{	WEAPON_SIDEWINDER,	"Sidewinder",	"models/weapons/w_sidewinder.md2",	SOUND_WEAPON_PICKUP,	true	},
+	{	WEAPON_SHOCKWAVE,	"Shockwave",	"models/weapons/w_shockwave.md2",	SOUND_WEAPON_PICKUP,	true	},
 
 	// Unused weapons
-	{	WEAPON_GLOCK,		"Glock",		"models/weapons/w_glock.md2",		"items/weaponpickup.wav",	true	},
-	{   WEAPON_LASERS,      "Lasers",       "",                                 "",							false	},
+	{	WEAPON_GLOCK,		"Glock",		"models/weapons/w_glock.md2",		SOUND_WEAPON_PICKUP,	true	},
+	{   WEAPON_LASERS,      "Lasers",       "",                                 "",						false	},
 
 	// Items
 	{	ITEM_PLASTEELARMOR,	"PLASTEEL ARMOR",	"models/plasteel.md2",			"items/armorpickup1.wav",						true	},
@@ -206,7 +206,7 @@ void Item_Touch(ServerEntity_t *eItem,ServerEntity_t *eOther)
 	}
 
 	if (iItem->cSound)
-		Sound(eOther, CHAN_ITEM, iItem->cSound, 255, ATTN_NORM);
+		Sound(eOther, CHAN_ITEM, iItem->cSound, 150, ATTN_NORM);
 	else
 		Engine.Con_Warning("No pickup sound set for %s!", iItem->cName);
 

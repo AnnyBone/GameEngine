@@ -463,7 +463,7 @@ void Point_AmbientSpawn(ServerEntity_t *eEntity)
 
 	Server_PrecacheSound(eEntity->v.noise);
 
-	Engine.Server_AmbientSound(eEntity->v.origin,eEntity->v.noise,eEntity->local.volume,iAttenuation);
+	g_engine->Server_AmbientSound(eEntity->v.origin,eEntity->v.noise,eEntity->local.volume,iAttenuation);
 }
 
 /*

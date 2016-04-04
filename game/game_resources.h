@@ -25,6 +25,9 @@
 #define	SOUND_EXPLODE1 "effects/explode1.wav"
 #define SOUND_EXPLODE2 "effects/explode2.wav"
 
+#define SOUND_WEAPON_PICKUP "weapons/pickup.wav"
+#define	SOUND_WEAPON_SWITCH "weapons/switch.wav"
+
 #define	SOUND_SIDEWINDER_FIRE "weapons/sidewinder/fire.wav"
 
 #ifdef GAME_OPENKATANA

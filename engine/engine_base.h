@@ -39,7 +39,7 @@
 #endif
 
 //	Build needs to be updated each day that work is done on the engine.
-#define ENGINE_VERSION_BUILD	1124	// 20/03/2016
+#define ENGINE_VERSION_BUILD	1130	// 26/03/2016
 
 #define	ENGINE_LOG	"engine"
 
@@ -91,6 +91,7 @@
 #include "EngineProtocol.h"
 #include "EngineConsoleCommand.h"
 #include "sound.h"
+#include "audio.h"
 #include "render.h"
 #include "client.h"
 #include "EngineClientTempEntity.h"

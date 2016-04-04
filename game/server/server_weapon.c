@@ -152,6 +152,8 @@ Weapon_t *Weapon_GetWeapon(int iWeaponID)
 void Weapon_Precache(void)
 {
 #ifdef GAME_OPENKATANA
+	Server_PrecacheSound(SOUND_WEAPON_SWITCH);
+
 	Server_PrecacheModel(DAIKATANA_MODEL_VIEW);
 	Server_PrecacheModel("models/weapons/v_ionblaster.md2");
 	Server_PrecacheModel("models/weapons/v_c4.md2");
@@ -184,7 +186,6 @@ void Weapon_Precache(void)
 	// Ion Blaster
 	Server_PrecacheSound("weapons/ionblaster/explode.wav");
 	Server_PrecacheSound("weapons/ionblaster/fire.wav");
-	Server_PrecacheSound("weapons/ionblaster/ionready.wav");
 	Server_PrecacheSound("weapons/ionblaster/bounce.wav");
 	Server_PrecacheModel("models/ionball.md2");
 

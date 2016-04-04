@@ -92,7 +92,7 @@ EntityFrame_t IonBlasterAnimation_Fire2[] =
 
 void IonBlaster_Deploy(ServerEntity_t *ent)
 {
-	Sound(ent,CHAN_WEAPON,"weapons/ionblaster/ionready.wav",255,ATTN_NORM);
+	Sound(ent, CHAN_WEAPON, SOUND_WEAPON_SWITCH, 255, ATTN_NORM);
 
 	Weapon_Animate(ent,IonBlasterAnimation_Deploy);
 }

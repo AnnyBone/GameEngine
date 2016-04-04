@@ -613,9 +613,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="client\effect_sprite.cpp" />
-    <ClCompile Include="EngineAudioDummy.c">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="EngineClientChase.c" />
     <ClCompile Include="EngineClientDemo.c" />
     <ClCompile Include="EngineClientInput.c" />
@@ -692,10 +689,7 @@
     <ClCompile Include="EngineServerEntity.c" />
     <ClCompile Include="video_brush.c" />
     <ClCompile Include="EngineVideoWorld.c" />
-    <ClCompile Include="EngineAudioDMA.c" />
-    <ClCompile Include="EngineAudioMem.c" />
-    <ClCompile Include="EngineAudioMix.c" />
-    <ClCompile Include="EngineAudioDirectSound.c" />
+    <ClCompile Include="audio_wav.c" />
     <ClCompile Include="EngineServer.c" />
     <ClCompile Include="EngineServerUser.c" />
     <ClCompile Include="shader_base.cpp" />

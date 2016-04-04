@@ -22,19 +22,11 @@
 
 #include <windows.h>
 
-#include <dsound.h>
-
-extern LPDIRECTSOUND pDS;
-extern LPDIRECTSOUNDBUFFER pDSBuf;
-
 extern DWORD gSndBufSize;
 
 extern bool	winsock_lib_initialized;
 
 extern HANDLE	hinput, houtput;
-
-void S_BlockSound (void);
-void S_UnblockSound (void);
 
 int (PASCAL FAR *pWSAStartup)(WORD wVersionRequired, LPWSADATA lpWSAData);
 int (PASCAL FAR *pWSACleanup)(void);

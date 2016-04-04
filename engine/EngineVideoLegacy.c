@@ -589,8 +589,6 @@ void R_RenderScene(void)
 	Sky_Draw();		//johnfitz
 	World_Draw();
 
-	S_ExtraUpdate(); // don't let sound get messed up if going slow
-
 	R_DrawShadows();
 	R_DrawEntitiesOnList(false);
 	World_DrawWater();

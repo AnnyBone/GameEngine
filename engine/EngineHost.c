@@ -27,7 +27,6 @@
 #include "video.h"
 #include "EngineServerPhysics.h"
 #include "engine_client.h"
-#include "audio.h"
 #include "EngineVideoParticle.h"
 
 #include "shared_server.h"
@@ -620,13 +619,7 @@ void _Host_Frame (float time)
 		time2 = System_DoubleTime ();
 
 	if (cls.signon == SIGNONS)
-	{
-		S_Update(r_origin, vpn, vright, vup);
-
 		CL_DecayLights();
-	}
-	else
-		S_Update(pl_origin3f, pl_origin3f, pl_origin3f, pl_origin3f);
 
 	if (host_speeds.value)
 	{
@@ -721,7 +714,6 @@ void Host_Initialize(EngineParameters_t *epParameters)
 	{
 		Video_Initialize();
 		Input_Initialize();
-		Audio_Initialize();
 
 		TextureManager_Initialize(); //johnfitz
 		Material_Initialize();
@@ -731,7 +723,8 @@ void Host_Initialize(EngineParameters_t *epParameters)
 		g_menu->Initialize();
 
 		R_Init();
-		S_Init();
+
+		Audio_Initialize();
 
 		Game->Client_Initialize();
 		CL_Init();
@@ -779,8 +772,6 @@ void Host_Shutdown(void)
 
 	if (cls.state != ca_dedicated)
 	{
-		S_Shutdown();
-
 		Audio_Shutdown();
 		Video_Shutdown();
 

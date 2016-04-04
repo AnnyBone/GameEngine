@@ -854,7 +854,6 @@ typedef struct
 
 #define MAX_FILES_IN_PACK       2048
 
-char    com_cachedir[PLATFORM_MAX_PATH];
 char    com_gamedir[PLATFORM_MAX_PATH];
 
 typedef struct searchpath_s
@@ -1312,19 +1311,6 @@ void FileSystem_Initialize(void)
 	if (j > 0)
 		if ((basedir[j-1] == '\\') || (basedir[j-1] == '/'))
 			basedir[j-1] = 0;
-
-	i = COM_CheckParm ("-cachedir");
-	if (i && i < com_argc-1)
-	{
-		if (com_argv[i+1][0] == '-')
-			com_cachedir[0] = 0;
-		else
-			strcpy(com_cachedir, com_argv[i + 1]);
-	}
-	else if (host_parms.cachedir)
-		strncpy(com_cachedir, host_parms.cachedir, sizeof(com_cachedir));
-	else
-		com_cachedir[0] = 0;
 
 	// Add the engine directory to our search paths.
 	FileSystem_AddGameDirectory(va("%s/engine", basedir));

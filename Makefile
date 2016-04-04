@@ -26,14 +26,10 @@ PLATFORM_OBJS := platform/platform.o \
 
 ENGINE_BIN  := bin/engine.$(ARCH).so
 ENGINE_OBJS := engine/audio.o \
+	engine/audio_wav.o \
 	engine/cmdlib.o \
 	engine/conproc.o \
 	engine/crc.o \
-	engine/EngineAudioDirectSound.o \
-	engine/EngineAudioDMA.o \
-	engine/EngineAudioDummy.o \
-	engine/EngineAudioMem.o \
-	engine/EngineAudioMix.o \
 	engine/engine_client.o \
 	engine/EngineClient.o \
 	engine/EngineClientChase.o \

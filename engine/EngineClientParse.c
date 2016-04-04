@@ -172,9 +172,9 @@ void CL_ParseStartSoundPacket(void)
 		pos[i] = MSG_ReadCoord();
 
 #ifdef _MSC_VER
-#pragma warning(suppress: 6385)
+#	pragma warning(suppress: 6385)
 #endif
-	S_StartSound(ent, channel, cl.sound_precache[sound_num], pos, iVolume, attenuation);
+	Audio_PlayTemporarySound(ent, channel, pos, (ent == cl.viewentity), cl.sound_precache[sound_num], ((float)iVolume) / 255.0f);
 }
 
 /*	When the client is taking a long time to load stuff, send keepalive messages
@@ -182,11 +182,11 @@ void CL_ParseStartSoundPacket(void)
 */
 void CL_KeepaliveMessage (void)
 {
-	float	time;
-	static float lastmsg;
-	int		ret;
-	sizebuf_t	old;
-	byte		olddata[8192];
+	float			time;
+	static float	lastmsg;
+	int				ret;
+	sizebuf_t		old;
+	byte			olddata[8192];
 
 	if (sv.active)
 		return;		// no need if server is local
@@ -315,23 +315,17 @@ void Client_ParseServerInfo(void)
 		}
 
 		strcpy(cSoundPrecache[numsounds], str);
-		S_TouchSound (str);
 	}
 
-	// [6/6/2013] Precache textures ~hogsy
+	// Precache textures...
 	memset(&gEffectTexture, 0, sizeof(gEffectTexture));
-
+	for(unsigned int i = 1; ; i++)
 	{
-		int iTextures;
+		str = MSG_ReadString();
+		if(!str[0])
+			break;
 
-		for(iTextures = 1; ; iTextures++)
-		{
-			str = MSG_ReadString();
-			if(!str[0])
-				break;
-
-			Client_PrecacheResource(RESOURCE_SPRITE,str);
-		}
+		Client_PrecacheResource(RESOURCE_SPRITE,str);
 	}
 
 	// TODO: just check the level out client-side and add the lights ourselves, rather than passing from server!!! ~hogsy
@@ -377,7 +371,10 @@ void Client_ParseServerInfo(void)
 
 	for (i=1 ; i<numsounds ; i++)
 	{
-		cl.sound_precache[i] = S_PrecacheSound(cSoundPrecache[i]);
+		Audio_PrecacheSample(cSoundPrecache[i], false);
+
+		strncpy(cl.sound_precache[i], cSoundPrecache[i], sizeof(cl.sound_precache[i]));
+
 		CL_KeepaliveMessage ();
 	}
 
@@ -784,7 +781,7 @@ void CL_ParseStaticSound (int version) //johnfitz -- added argument
 	vol = MSG_ReadByte ();
 	atten = MSG_ReadByte ();
 
-	S_StaticSound (cl.sound_precache[sound_num], org, vol, atten);
+	Audio_PlayAmbientSound(org, cl.sound_precache[sound_num], ((float)vol) / 255.0f);
 }
 
 #define SHOWNET(x) if(cl_shownet.value==2)Con_Printf ("%3i:%s\n", msg_readcount-1, x);
@@ -910,6 +907,7 @@ void CL_ParseServerMessage(void)
 					total += cl_lightstyle[i].cMap[j] - 'a';
 					cl_lightstyle[i].peak = Math_Max(cl_lightstyle[i].peak, cl_lightstyle[i].cMap[j]);
 				}
+				
 				cl_lightstyle[i].average = total / cl_lightstyle[i].length + 'a';
 			}
 			else
@@ -921,7 +919,7 @@ void CL_ParseServerMessage(void)
 			break;
 		case SVC_STOPSOUND:
 			i = MSG_ReadShort();
-			S_StopSound(i>>3, i&7);
+			//S_StopSound(i>>3, i&7);
 			break;
 		case svc_updatename:
 			i = MSG_ReadByte ();
