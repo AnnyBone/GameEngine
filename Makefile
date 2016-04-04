@@ -4,7 +4,7 @@ CXXFLAGS := -Wall -fPIC -ggdb -std=c++11
 INCLUDE := -D_POSIX_C_SOURCE=200809L \
 	-I./platform/include/ \
 	-I./shared/ \
-	$(shell pkg-config sdl2 openal --cflags)
+	$(shell pkg-config sdl2 openal glew --cflags)
 
 ifeq ($(strip $(shell uname -m)),x86_64)
 	ARCH := x64
@@ -95,7 +95,7 @@ ENGINE_OBJS := engine/audio.o \
 	engine/client/effect_particle.o \
 	engine/client/effect_sprite.o \
 	shared/SharedFormats.o
-ENGINE_LIBS := -lglee $(shell pkg-config sdl2 openal --libs)
+ENGINE_LIBS := -lglee $(shell pkg-config sdl2 openal glew --libs)
 
 MENU_BIN  := bin/menu.$(ARCH).so
 MENU_OBJS := menu/menu_hud.o \
