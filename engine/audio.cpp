@@ -241,7 +241,7 @@ AudioSound_t *AudioManager::AddSound()
 	sound->pitch			= 1.0f;
 	sound->max_distance		= 0.5f;
 	sound->channel			= CHAN_AUTO;
-	sound->ident			= -1;
+	sound->entity			= 0;
 
 	return sound;
 }
@@ -298,14 +298,15 @@ void AudioManager::PlaySound(const AudioSound_t *sound)
 	alAuxiliaryEffectSloti(sound->effect_slot, AL_EFFECTSLOT_EFFECT, effect_global->id);
 	alSource3i(sound->source, AL_AUXILIARY_SEND_FILTER, sound->effect_slot, 0, 0);
 
-	if ((sound->channel != CHAN_AUTO) && (sound->ident != -1))
-	{
+	if ((sound->channel != CHAN_AUTO) && (sound->entity > 0))
 		// See if a sound is already playing on this channel.
 		for (unsigned int i = 0; i < sounds.size(); i++)
-		{
-
-		}
-	}
+			// Linked to the same entity.
+			if ((sounds[i]->entity == sound->entity) && (sounds[i]->channel == sound->channel))
+			{
+				StopSound(sounds[i]);
+				break;
+			}
 
 	// Play the source.
 	alSourcePlay(sound->source);
@@ -814,12 +815,13 @@ void Audio_PlayAmbientSound(plVector3f_t position, const char *path, float volum
 	g_audiomanager->PlaySound(sound);
 }
 
-void Audio_PlayTemporarySound(plVector3f_t position, bool local, const char *path, float volume)
+void Audio_PlayTemporarySound(unsigned int ent, AudioChannel_t channel, plVector3f_t position, bool local, const char *path, float volume)
 {
 	AudioSound_t *sound		= g_audiomanager->AddSound();
 	sound->volume			= volume;
 	sound->local			= local;
 	sound->pitch			= 1.0f - ((rand() % 3) / 10.0f);
+	sound->entity			= ent;
 
 	if (!sound->local)
 		g_audiomanager->SetSoundPosition(sound, position);
