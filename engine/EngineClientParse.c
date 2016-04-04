@@ -174,7 +174,7 @@ void CL_ParseStartSoundPacket(void)
 #ifdef _MSC_VER
 #	pragma warning(suppress: 6385)
 #endif
-	Audio_PlayTemporarySound(pos, (ent == cl.viewentity), cl.sound_precache[sound_num], ((float)iVolume) / 255.0f);
+	Audio_PlayTemporarySound(ent, channel, pos, (ent == cl.viewentity), cl.sound_precache[sound_num], ((float)iVolume) / 255.0f);
 }
 
 /*	When the client is taking a long time to load stuff, send keepalive messages

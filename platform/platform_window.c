@@ -201,8 +201,8 @@ void plCreateWindow(plWindow_t *window)
 			RootWindow(dMainDisplay,iScreen),
 			window->x,
 			window->y,
-			window->iWidth,
-			window->iHeight,
+			window->width,
+			window->height,
 			1,
 			BlackPixel(dMainDisplay,iScreen),
 			WhitePixel(dMainDisplay,iScreen));
@@ -213,7 +213,7 @@ void plCreateWindow(plWindow_t *window)
 		}
 
 		// Set the window title.
-		XStoreName(dMainDisplay,window->wInstance,window->cTitle);
+		XStoreName(dMainDisplay,window->wInstance,window->title);
 	}
 #endif
 

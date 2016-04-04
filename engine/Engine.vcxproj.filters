@@ -316,7 +316,6 @@
     <ClCompile Include="audio_wav.c">
       <Filter>Client\Audio</Filter>
     </ClCompile>
-    <ClCompile Include="EngineAudioDummy.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\shared\shared_client.h">
