@@ -23,7 +23,7 @@
 // Drawing
 
 // Primitive Types
-typedef enum
+typedef enum vlPrimitive_s
 {
 	VL_PRIMITIVE_IGNORE = -1,
 
@@ -39,7 +39,7 @@ typedef enum
 	VL_PRIMITIVE_END
 } vlPrimitive_t;
 
-typedef struct
+typedef struct vlVertex_s
 {
 	plVector3f_t position;
 	plVector3f_t normal;
@@ -49,7 +49,7 @@ typedef struct
 	plColour_t colour;
 } vlVertex_t;
 
-typedef struct
+typedef struct vlDraw_s
 {
 	vlVertex_t *vertices;	// Array of vertices for the object.
 
@@ -60,9 +60,8 @@ typedef struct
 
 	vlPrimitive_t primitive, primitive_restore;
 
-	unsigned int object_vertexarrays;
 	unsigned int
-		buffer_vertex,
+		buffer_triangle,
 		buffer_colour,
 		buffer_texture;
 } vlDraw_t;

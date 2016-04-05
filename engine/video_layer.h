@@ -86,7 +86,7 @@ typedef enum
 	VL_CULL_POSTIVE,
 	VL_CULL_NEGATIVE,
 #endif
-} vlCull_t;
+} vlCullMode_t;
 
 typedef enum VLcolourformat_struct
 {
@@ -299,23 +299,33 @@ void vlDeleteShader(vlShader_t *shader);
 //-----------------
 // Drawing
 
-void vlDrawArrays(vlPrimitive_t mode, unsigned int first, unsigned int count);
-void vlDrawElements(vlPrimitive_t mode, unsigned int count, unsigned int type, const void *indices);
-void vlDrawImmediate(vlDraw_t *object);
+typedef enum vlDrawMode_s
+{
+#if defined (VL_MODE_OPENGL)
+	VL_DRAWMODE_STATIC		= GL_STATIC_DRAW,
+	VL_DRAWMODE_DYNAMIC		= GL_DYNAMIC_DRAW,
+#else
+	VL_DRAWMODE_STATIC,
+	VL_DRAWMODE_DYNAMIC,
+#endif
+} vlDrawMode_t;
+
+void vlGenerateDraw(vlDraw_t *draw);
+void vlDraw(vlDraw_t *draw);
 
 //-----------------
 // Lighting
 
-typedef struct VLlight_struct
+typedef struct vlLight_s
 {
 	plVector3f_t	position;
 
 	plColour_t	colour;
 
 	float radius;
-} VLlight;
+} vlLight_t;
 
-void vlApplyLighting(vlDraw_t *object, VLlight *light, plVector3f_t position);
+void vlApplyLighting(vlDraw_t *object, vlLight_t *light, plVector3f_t position);
 
 //-----------------
 
@@ -350,7 +360,7 @@ void vlClearBuffers(unsigned int mask);
 void vlColourMask(bool red, bool green, bool blue, bool alpha);
 
 // Misc
-void vlSetCullMode(vlCull_t mode);
+void vlSetCullMode(vlCullMode_t mode);
 void vlFinish(void);
 
 plEXTERN_C_END

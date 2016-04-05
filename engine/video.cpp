@@ -502,7 +502,7 @@ void Video_DrawObject(vlVertex_t *vobject, vlPrimitive_t primitive,
 	Material_SetSkin(mMaterial, iSkin);
 
 	Material_DrawObject(mMaterial, &tempobj, false);
-	vlDrawImmediate(&tempobj);
+	vlDraw(&tempobj);
 	Material_DrawObject(mMaterial, &tempobj, true);
 }
 

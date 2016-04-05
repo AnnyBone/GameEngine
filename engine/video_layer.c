@@ -35,18 +35,18 @@
 		- Simulate quads primitive type
 */
 
-typedef struct VLstate_struct
+typedef struct
 {
 	plColour_t	buffer_clearcolour;
 
 	unsigned int capabilities;
 
-	vlCull_t	current_cullmode;
+	vlCullMode_t	current_cullmode;
 
 	unsigned int num_cards;	// Number of video cards.
-} VLstate;
+} vlState_t;
 
-VLstate vl_state;
+vlState_t vl_state;
 
 /*===========================
 	INITIALIZATION
@@ -923,16 +923,107 @@ void vlFogColour3fv(plColour_t rgba)
 	DRAWING
 ===========================*/
 
-typedef struct _VLprimitivetranslate_struct
+vlDraw_t *vl_draw_current = NULL;
+
+#define _VL_DRAW_VERTICES	4	// Default vertex count.
+
+/*	Generates each of the buffers and other
+	data necessary for the draw call.
+*/
+void vlGenerateDraw(vlDraw_t *draw)
+{
+	vlGenerateVertexBuffer(draw->buffer_triangle);
+	vlGenerateVertexBuffer(draw->buffer_colour);
+	vlGenerateVertexBuffer(draw->buffer_texture);
+}
+
+void vlUnbindDraw(void)
+{
+	if (!vl_draw_current)
+		return;
+
+
+
+	vl_draw_current = NULL;
+}
+
+void vlDeleteDraw(vlDraw_t *draw)
+{
+	if (!draw)
+		Sys_Error("Draw object has not been initialized!\n");
+
+	vlDeleteVertexBuffer(draw->buffer_colour);
+	vlDeleteVertexBuffer(draw->buffer_texture);
+	vlDeleteVertexBuffer(draw->buffer_triangle);
+
+	if (vl_draw_current == draw)
+		vlBindDraw(0);
+
+	free(draw);
+	draw = NULL;
+}
+
+vlVertex_t	*vl_draw_vertex = NULL;
+int			vl_draw_curvert = -1;
+
+void vlBeginDraw(vlDraw_t *draw, vlPrimitive_t primitive, unsigned int size)
+{
+	if (!draw || (draw == vl_draw_current))
+		return;
+
+	if ((primitive == VL_PRIMITIVE_IGNORE) || (primitive >= VL_PRIMITIVE_END))
+		Sys_Error("Invalid primitive type!\n");
+
+	vl_draw_current = draw;
+
+	vl_draw_vertex = &vl_draw_current->vertices[0];
+	vl_draw_curvert = -1;
+
+	vl_draw_current->primitive = primitive;
+	vl_draw_current->vertices = (vlVertex_t*)calloc(sizeof(vlVertex_t), size);
+	if (!vl_draw_current->vertices)
+		Sys_Error("Failed to allocated vertices, vlGenerateDraw failed!\n");
+
+	vl_draw_current->numverts = size;
+}
+
+void vlDrawVertex3fv(plVector3f_t position)
+{
+	vl_draw_curvert++;
+	plVectorCopy3fv(position, vl_draw_vertex[vl_draw_curvert].position);
+}
+
+void vlDrawNormal3fv(vlDraw_t *draw, plVector3f_t position)
+{
+	plVectorCopy3fv(position, vl_draw_vertex[vl_draw_curvert].normal);
+}
+
+void vlEndDraw(void)
+{
+	if (!vl_draw_current)
+		Sys_Error("Invalid vlEndDraw call!\n");
+
+#if defined (VL_MODE_OPENGL)
+	glBindBuffer(GL_ARRAY_BUFFER, vl_draw_current->buffer_triangle);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vl_draw_current->vertices), vl_draw_current->vertices, GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+#endif
+
+	free(vl_draw_current->vertices);
+	vl_draw_current->vertices = NULL;
+}
+
+typedef struct _vlPrimitiveTranslate_s
 {
 	vlPrimitive_t primitive;
 
 	unsigned int gl;
 
 	const char *name;
-} _VLprimitivetranslate;
+} _vlPrimitiveTranslate_t;
 
-_VLprimitivetranslate vl_primitives[] =
+_vlPrimitiveTranslate_t vl_primitives[] =
 {
 #if defined (VL_MODE_OPENGL) || (VL_MODE_OPENGL_CORE)
 	{ VL_PRIMITIVE_LINES,					GL_LINES,			"LINES" },
@@ -965,7 +1056,7 @@ _VLprimitivetranslate vl_primitives[] =
 #endif
 };
 
-unsigned int _vlTranslatePrimitiveType(vlPrimitive_t primitive)
+unsigned int _vlTranslatePrimitiveMode(vlPrimitive_t primitive)
 {
 	VIDEO_FUNCTION_START
 	for (int i = 0; i < pARRAYELEMENTS(vl_primitives); i++)
@@ -980,75 +1071,46 @@ unsigned int _vlTranslatePrimitiveType(vlPrimitive_t primitive)
 /*	Deals with tris view and different primitive types, then finally draws
 	the given arrays.
 */
-void vlDrawArrays(vlPrimitive_t mode, unsigned int first, unsigned int count)
+void _vlDrawArrays(vlPrimitive_t mode, unsigned int first, unsigned int count)
 {
 	if (count == 0)
 		return;
+	// Ensure that first isn't going to kill us.
+	else if (first >= count)
+		first = 0;
 
 #ifdef VL_MODE_OPENGL
-	glDrawArrays(_vlTranslatePrimitiveType(mode), first, count);
+	glDrawArrays(_vlTranslatePrimitiveMode(mode), first, count);
 #endif
 }
 
-void vlDrawElements(vlPrimitive_t mode, unsigned int count, unsigned int type, const void *indices)
+void _vlDrawElements(vlPrimitive_t mode, unsigned int count, unsigned int type, const void *indices)
 {
 	VIDEO_FUNCTION_START
 	if ((count == 0) || !indices)
 		return;
 
 #ifdef VL_MODE_OPENGL
-	glDrawElements(_vlTranslatePrimitiveType(mode), count, type, indices);
+	glDrawElements(_vlTranslatePrimitiveMode(mode), count, type, indices);
 #endif
 	VIDEO_FUNCTION_END
 }
 
-vlDraw_t vl_currentobject;
-
-void vlBegin(vlPrimitive_t mode)
-{
-	if ((mode <= VL_PRIMITIVE_IGNORE) || (mode >= VL_PRIMITIVE_END))
-		Sys_Error("Invalid primitive mode for object!\n");
-
-	// Set cur primitive.
-	vl_currentobject.primitive = mode;
-}
-
-void vlVertex3f(float x, float y, float z)
-{}
-
-void vlNormal3f(float x, float y, float z)
-{}
-
-void vlColor3f(float r, float g, float b)
-{}
-
-/*	Draws the object and then discards it.
-*/
-void vlEnd(void)
-{
-	vlDrawImmediate(&vl_currentobject);
-
-	// We're done, don't use this again.
-	vl_currentobject.primitive = VL_PRIMITIVE_IGNORE;
-}
-
 /*	Draw object using immediate mode.
 */
-void vlDrawImmediate(vlDraw_t *object)
+void _vlDrawImmediate(vlDraw_t *draw)
 {
 	VIDEO_FUNCTION_START
 #ifdef VL_MODE_GLIDE
 #else
-	if (object->numverts == 0)
+	if (draw->numverts == 0)
 		return;
-
-	//voDrawVertexNormals(object);
 
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_COLOR_ARRAY);
 	glEnableClientState(GL_NORMAL_ARRAY);
 
-	vlVertex_t *vert = &object->vertices[0];
+	vlVertex_t *vert = &draw->vertices[0];
 	glVertexPointer(3, GL_FLOAT, sizeof(vlVertex_t), vert->position);
 	glColorPointer(4, GL_FLOAT, sizeof(vlVertex_t), vert->colour);
 	glNormalPointer(GL_FLOAT, sizeof(vlVertex_t), vert->normal);
@@ -1060,15 +1122,15 @@ void vlDrawImmediate(vlDraw_t *object)
 			glTexCoordPointer(2, GL_FLOAT, sizeof(vlVertex_t), vert->ST[i]);
 		}
 
-	if (object->primitive == VL_PRIMITIVE_TRIANGLES)
-		vlDrawElements(
-			object->primitive,
-			object->numtriangles * 3,
-			GL_UNSIGNED_BYTE,
-			object->indices
+	if (draw->primitive == VL_PRIMITIVE_TRIANGLES)
+		_vlDrawElements(
+		draw->primitive,
+		draw->numtriangles * 3,
+		GL_UNSIGNED_BYTE,
+		draw->indices
 		);
 	else
-		vlDrawArrays(object->primitive, 0, object->numverts);
+		_vlDrawArrays(draw->primitive, 0, draw->numverts);
 
 	glDisableClientState(GL_COLOR_ARRAY);
 	glDisableClientState(GL_VERTEX_ARRAY);
@@ -1083,11 +1145,16 @@ void vlDrawImmediate(vlDraw_t *object)
 	VIDEO_FUNCTION_END
 }
 
+void vlDraw(vlDraw_t *draw)
+{
+	_vlDrawImmediate(draw);
+}
+
 /*===========================
 	LIGHTING
 ===========================*/
 
-void vlApplyLighting(vlDraw_t *object, VLlight *light, plVector3f_t position)
+void vlApplyLighting(vlDraw_t *object, vlLight_t *light, plVector3f_t position)
 {
 	// Calculate the distance.
 	plVector3f_t distvec;
@@ -1105,9 +1172,9 @@ void vlApplyLighting(vlDraw_t *object, VLlight *light, plVector3f_t position)
 			plVectorClear3fv(object->vertices[i].colour);
 		else
 		{
-			object->vertices[i].colour[pRED] = light->colour[pRED] * angle;
-			object->vertices[i].colour[pGREEN] = light->colour[pGREEN] * angle;
-			object->vertices[i].colour[pBLUE] = light->colour[pBLUE] * angle;
+			object->vertices[i].colour[PL_RED] = light->colour[PL_RED] * angle;
+			object->vertices[i].colour[PL_GREEN] = light->colour[PL_GREEN] * angle;
+			object->vertices[i].colour[PL_BLUE] = light->colour[PL_BLUE] * angle;
 		}
 
 		/*
@@ -1136,7 +1203,7 @@ void vlApplyLighting(vlDraw_t *object, VLlight *light, plVector3f_t position)
 	MISC
 ===========================*/
 
-void vlSetCullMode(vlCull_t mode)
+void vlSetCullMode(vlCullMode_t mode)
 {
 	if (mode == vl_state.current_cullmode)
 		return;

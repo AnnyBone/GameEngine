@@ -136,19 +136,19 @@ bool R_CullBox (MathVector3f_t emins, MathVector3f_t emaxs)
 	return false;
 }
 
-bool R_CullModelForEntity(entity_t *e)
+bool R_CullModelForEntity(ClientEntity_t *e)
 {
 	plVector3f_t mins, maxs;
 
 	if(e == &cl.viewent)
 		return false;
 
-	if(e->angles[PITCH] || e->angles[ROLL])
+	if(e->angles[PL_PITCH] || e->angles[PL_ROLL])
 	{
 		Math_VectorAdd (e->origin, e->model->rmins, mins);
 		Math_VectorAdd (e->origin, e->model->rmaxs, maxs);
 	}
-	else if(e->angles[YAW])
+	else if(e->angles[PL_YAW])
 	{
 		Math_VectorAdd (e->origin, e->model->ymins, mins);
 		Math_VectorAdd (e->origin, e->model->ymaxs, maxs);
