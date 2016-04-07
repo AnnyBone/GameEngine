@@ -37,16 +37,29 @@
 
 typedef struct
 {
-	plColour_t	buffer_clearcolour;
-
-	unsigned int capabilities;
+	unsigned int num_cards;		// Number of video cards.
 
 	vlCullMode_t	current_cullmode;
+	plColour_t		current_clearcolour;
+	unsigned int	current_capabilities;	// Enabled capabilities.
 
-	unsigned int num_cards;	// Number of video cards.
+	bool	mode_debug;
 } vlState_t;
 
 vlState_t vl_state;
+
+/*	TODO:
+- Add somewhere we can store tracking
+data for each of these functions
+- Do this in another thread if possible
+- Display that data as an overlay
+*/
+#define	_VL_UTIL_TRACK(name)			\
+	{									\
+		unsigned static int _t = 0;		\
+		if(vl_state.mode_debug)			\
+			_t++;						\
+	}
 
 /*===========================
 	INITIALIZATION
@@ -96,11 +109,9 @@ void _vlGlideErrorCallback(const char *string, FxBool fatal)
 */
 void vlInit(void)
 {
-	plVectorSet3f(vl_state.buffer_clearcolour, 0, 0, 0);
-	vl_state.buffer_clearcolour[3] = 1;
+	_VL_UTIL_TRACK(vlInit);
 
-	vl_state.capabilities		= 0;
-	vl_state.current_cullmode	= -1;
+	memset(&vl_state, 0, sizeof(vl_state));
 
 #if defined (VL_MODE_OPENGL)
 	unsigned int err = glewInit();
@@ -137,8 +148,12 @@ void vlInit(void)
 	grErrorSetCallback(_vlGlideErrorCallback);
 #endif
 
-	// Set default states.
-	vlSetClearColour4fv(vl_state.buffer_clearcolour);
+	// Set default states...
+
+	plColour_t clear;
+	plColourSetf(clear, 0, 0, 0, 1);
+	vlSetClearColour4fv(clear);
+
 	vlSetCullMode(VL_CULL_NEGATIVE);
 }
 
@@ -150,6 +165,8 @@ void vlInit(void)
 */
 unsigned int vlGetMaxTextureSize(void)
 {
+	_VL_UTIL_TRACK(vlGetMaxTextureSize);
+
 #if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
 	int size = 0;
 	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &size);
@@ -166,7 +183,8 @@ unsigned int vlGetMaxTextureSize(void)
 
 void vlGetMaxTextureImageUnits(int *param)
 {
-	VIDEO_FUNCTION_START
+	_VL_UTIL_TRACK(vlGetMaxTextureImageUnits);
+
 #ifdef VL_MODE_OPENGL
 	glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, param);
 #elif defined (VL_MODE_GLIDE)
@@ -174,23 +192,23 @@ void vlGetMaxTextureImageUnits(int *param)
 #else
 	param = 0;
 #endif
-	VIDEO_FUNCTION_END
 }
 
 void vlGetMaxTextureAnistropy(float *params)
 {
-	VIDEO_FUNCTION_START
+	_VL_UTIL_TRACK(vlGetMaxTextureAnistropy);
+
 #ifdef VL_MODE_OPENGL
 	glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, params);
 #else	// Not supported in core?
 	params = 0;
 #endif
-	VIDEO_FUNCTION_END
 }
 
 const char *vlGetExtensions(void)
 {
-	VIDEO_FUNCTION_START
+	_VL_UTIL_TRACK(vlGetExtensions);
+
 #ifdef VL_MODE_OPENGL
 	return (const char*)glGetString(GL_EXTENSIONS);
 	// TODO: this works differently in core; use glGetStringi instead!
@@ -199,12 +217,12 @@ const char *vlGetExtensions(void)
 #else
 	return "";
 #endif
-	VIDEO_FUNCTION_END
 }
 
 const char *vlGetString(vlString_t string)
 {
-	VIDEO_FUNCTION_START
+	_VL_UTIL_TRACK(vlGetString);
+
 #if defined (VL_MODE_OPENGL) || (VL_MODE_OPENGL_CORE)
 	if (string == VL_STRING_EXTENSIONS)
 		// This works differently in core.
@@ -215,7 +233,6 @@ const char *vlGetString(vlString_t string)
 #else
 	return "";
 #endif
-	VIDEO_FUNCTION_END
 }
 
 /*===========================
@@ -226,7 +243,8 @@ const char *vlGetString(vlString_t string)
 */
 char *vlGetErrorString(unsigned int er)
 {
-	VIDEO_FUNCTION_START
+	_VL_UTIL_TRACK(vlGetErrorString);
+
 	switch (er)
 	{
 #ifdef VL_MODE_OPENGL
@@ -250,7 +268,6 @@ char *vlGetErrorString(unsigned int er)
 	default:
 		return "An unknown error occured.";
 	}
-	VIDEO_FUNCTION_END
 }
 
 /*===========================
@@ -261,26 +278,26 @@ static bool vl_matrixpushed = false;
 
 void vlPushMatrix(void)
 {
-	VIDEO_FUNCTION_START
+	_VL_UTIL_TRACK(vlPushMatrix);
+
 	if (vl_matrixpushed)
 		return;
 #ifdef VL_MODE_OPENGL
 	glPushMatrix();
 #endif
 	vl_matrixpushed = true;
-	VIDEO_FUNCTION_END
 }
 
 void vlPopMatrix(void)
 {
-	VIDEO_FUNCTION_START
+	_VL_UTIL_TRACK(vlPopMatrix);
+
 	if (!vl_matrixpushed)
 		return;
 #ifdef VL_MODE_OPENGL
 	glPopMatrix();
 #endif
 	vl_matrixpushed = false;
-	VIDEO_FUNCTION_END
 }
 
 /*===========================
@@ -289,6 +306,8 @@ void vlPopMatrix(void)
 
 vlShaderProgram_t vlCreateShaderProgram(void)
 {
+	_VL_UTIL_TRACK(vlCreateShaderProgram);
+
 #ifdef VL_MODE_OPENGL
 	return glCreateProgram();
 #endif
@@ -296,6 +315,8 @@ vlShaderProgram_t vlCreateShaderProgram(void)
 
 void vlDeleteShaderProgram(vlShaderProgram_t *program)
 {
+	_VL_UTIL_TRACK(vlDeleteShaderProgram);
+
 #ifdef VL_MODE_OPENGL
 	glDeleteProgram(*program);
 	program = NULL;
@@ -304,18 +325,46 @@ void vlDeleteShaderProgram(vlShaderProgram_t *program)
 
 void vlUseShaderProgram(vlShaderProgram_t program)
 {
-	VIDEO_FUNCTION_START
+	_VL_UTIL_TRACK(vlUseShaderProgram);
+
 	if (program == Video.current_program)
 		return;
 #ifdef VL_MODE_OPENGL
 	glUseProgram(program);
 #endif
 	Video.current_program = program;
-	VIDEO_FUNCTION_END
+}
+
+void vlLinkShaderProgram(vlShaderProgram_t *program)
+{
+	_VL_UTIL_TRACK(vlLinkShaderProgram);
+
+#ifdef VL_MODE_OPENGL
+	glLinkProgram(*program);
+
+	int status;
+	glGetProgramiv(*program, GL_LINK_STATUS, &status);
+	if (!status)
+	{
+		int length = 0;
+		glGetProgramiv(*program, GL_INFO_LOG_LENGTH, &length);
+		if (length > 1)
+		{
+			char *cLog = (char*)calloc_or_die(sizeof(char), length);
+			glGetProgramInfoLog(*program, length, NULL, cLog);
+			Con_Warning("%s\n", cLog);
+			free(cLog);
+		}
+
+		Sys_Error("Shader program linking failed!\nCheck log for details.\n");
+	}
+#endif
 }
 
 void vlAttachShader(vlShaderProgram_t program, vlShader_t shader)
 {
+	_VL_UTIL_TRACK(vlAttachShader);
+
 #if defined (VL_MODE_OPENGL)
 	glAttachShader(program, shader);
 #endif
@@ -323,10 +372,23 @@ void vlAttachShader(vlShaderProgram_t program, vlShader_t shader)
 
 void vlDeleteShader(vlShader_t *shader)
 {
+	_VL_UTIL_TRACK(vlDeleteShader);
+
 #if defined (VL_MODE_OPENGL)
 	glDeleteShader(*shader);
 #endif
 	shader = NULL;
+}
+
+vlAttribute_t vlGetAttributeLocation(vlShaderProgram_t *program, const char *name)
+{
+	_VL_UTIL_TRACK(vlGetAttributeLocation);
+
+#if defined (VL_MODE_OPENGL)
+	return glGetAttribLocation(*program, name);
+#else
+	return 0;
+#endif
 }
 
 /*===========================
@@ -335,11 +397,9 @@ void vlDeleteShader(vlShader_t *shader)
 
 void vlTexImage2D(vlTextureTarget_t target, vlTextureFormat_t internal_format, vlTextureFormat_t format, int width, int height, const void *data)
 {
-	VIDEO_FUNCTION_START
 #ifdef VL_MODE_OPENGL
 	glTexImage2D(target, 0, internal_format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
 #endif
-	VIDEO_FUNCTION_END
 }
 
 /*	Checks and returns texture unit for target.
@@ -352,7 +412,7 @@ unsigned int vlGetTextureUnit(unsigned int target)
 		Sys_Error("Attempted to select an invalid texture image unit! (%i)\n", target);
 	return out;
 #else
-	return target;
+	return 0;
 #endif
 }
 
@@ -360,7 +420,8 @@ unsigned int vlGetTextureUnit(unsigned int target)
 */
 void vlActiveTexture(unsigned int texunit)
 {
-	VIDEO_FUNCTION_START
+	_VL_UTIL_TRACK(vlActiveTexture);
+
 	if (texunit == Video.current_textureunit)
 		return;
 
@@ -374,7 +435,6 @@ void vlActiveTexture(unsigned int texunit)
 
 	// Keep us up-to-date.
 	Video.current_textureunit = texunit;
-	VIDEO_FUNCTION_END
 }
 
 /*	TODO:
@@ -382,12 +442,12 @@ void vlActiveTexture(unsigned int texunit)
 */
 void vlSetTextureFilter(vlTextureFilter_t filter)
 {
-	VIDEO_FUNCTION_START
+	_VL_UTIL_TRACK(vlSetTextureFilter);
+
 #ifdef VL_MODE_OPENGL
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
 #endif
-	VIDEO_FUNCTION_END
 }
 
 int _vlTranslateTextureEnvironmentMode(vlTextureEnvironmentMode_t TextureEnvironmentMode)
@@ -474,6 +534,8 @@ VLCapabilities_t vl_capabilities[] =
 
 bool vlIsEnabled(unsigned int caps)
 {
+	_VL_UTIL_TRACK(vlIsEnabled);
+
 	if (!caps)
 		return false;
 
@@ -482,7 +544,7 @@ bool vlIsEnabled(unsigned int caps)
 		if (!vl_capabilities[i].vl_parm)
 			break;
 
-		if (caps & vl_state.capabilities)
+		if (caps & vl_state.current_capabilities)
 			return true;
 	}
 
@@ -493,9 +555,9 @@ bool vlIsEnabled(unsigned int caps)
 */
 void vlEnable(unsigned int cap)
 {
-	VIDEO_FUNCTION_START
-	int i;
-	for (i = 0; i < sizeof(vl_capabilities); i++)
+	_VL_UTIL_TRACK(vlEnable);
+
+	for (unsigned int i = 0; i < sizeof(vl_capabilities); i++)
 	{
 		// Check if we reached the end of the list yet.
 		if (!vl_capabilities[i].vl_parm)
@@ -525,18 +587,18 @@ void vlEnable(unsigned int cap)
 				grEnable(vl_capabilities[i].to_parm);
 #endif
 
-		vl_state.capabilities |= vl_capabilities[i].vl_parm;
+		vl_state.current_capabilities |= vl_capabilities[i].vl_parm;
 	}
-	VIDEO_FUNCTION_END
 }
 
 void vlDisable(unsigned int cap)
 {
-	VIDEO_FUNCTION_START
+	_VL_UTIL_TRACK(vlDisable);
+
 	if (!cap)
 		return;
 
-	for (int i = 0; i < sizeof(vl_capabilities); i++)
+	for (unsigned int i = 0; i < sizeof(vl_capabilities); i++)
 	{
 		// Check if we reached the end of the list yet.
 		if (!vl_capabilities[i].vl_parm)
@@ -565,16 +627,16 @@ void vlDisable(unsigned int cap)
 				grDisable(vl_capabilities[i].to_parm);
 #endif
 
-		vl_state.capabilities &= ~vl_capabilities[i].vl_parm;
+		vl_state.current_capabilities &= ~vl_capabilities[i].vl_parm;
 	}
-	VIDEO_FUNCTION_END
 }
 
 /*	TODO: Want more control over the dynamics of this...
 */
 void vlBlendFunc(vlBlend_t modea, vlBlend_t modeb)
 {
-	VIDEO_FUNCTION_START
+	_VL_UTIL_TRACK(vlBlendFunc);
+
 	if (Video.debug_frame)
 		plWriteLog(VIDEO_LOG, "Video: Setting blend mode (%i) (%i)\n", modea, modeb);
 #if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
@@ -582,14 +644,14 @@ void vlBlendFunc(vlBlend_t modea, vlBlend_t modeb)
 #elif defined (VL_MODE_GLIDE)
 	grAlphaBlendFunction(modea, modeb, modea, modeb);
 #endif
-	VIDEO_FUNCTION_END
 }
 
 /*	Enable or disable writing into the depth buffer.
 */
 void vlDepthMask(bool mode)
 {
-	VIDEO_FUNCTION_START
+	_VL_UTIL_TRACK(vlDepthMask);
+
 	static bool cur_state = true;
 	if (mode == cur_state) return;
 #if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
@@ -598,7 +660,6 @@ void vlDepthMask(bool mode)
 	grDepthMask(mode);
 #endif
 	cur_state = mode;
-	VIDEO_FUNCTION_END
 }
 
 /*===========================
@@ -609,34 +670,29 @@ void vlDepthMask(bool mode)
 
 void vlGenerateRenderBuffer(vlRenderBuffer_t *buffer)
 {
-	VIDEO_FUNCTION_START
+	_VL_UTIL_TRACK(vlGenerateRenderBuffer);
+
 #ifdef VL_MODE_OPENGL
 	glGenRenderbuffers(1, buffer);
 #endif
-	VIDEO_FUNCTION_END
 }
 
 void vlDeleteRenderBuffer(vlRenderBuffer_t *buffer)
 {
-	VIDEO_FUNCTION_START
 #ifdef VL_MODE_OPENGL
 	glDeleteRenderbuffers(1, buffer);
 #endif
-	VIDEO_FUNCTION_END
 }
 
 void vlBindRenderBuffer(vlRenderBuffer_t buffer)
 {
-	VIDEO_FUNCTION_START
 #ifdef VL_MODE_OPENGL
 	glBindRenderbuffer(GL_RENDERBUFFER, buffer);
 #endif
-	VIDEO_FUNCTION_END
 }
 
 void vlRenderBufferStorage(int format, int samples, unsigned int width, unsigned int height)
 {
-	VIDEO_FUNCTION_START
 #ifdef VL_MODE_OPENGL
 	glRenderbufferStorageMultisample(GL_RENDERBUFFER, samples, format, width, height);
 
@@ -658,7 +714,6 @@ void vlRenderBufferStorage(int format, int samples, unsigned int width, unsigned
 		Sys_Error("%s\n%s", vlGetErrorString(glerror), errorstring);
 	}
 #endif
-	VIDEO_FUNCTION_END
 }
 
 // VERTEX ARRAY OBJECTS
@@ -667,44 +722,27 @@ void vlRenderBufferStorage(int format, int samples, unsigned int width, unsigned
 */
 void vlGenerateVertexArray(vlVertexArray_t *arrays)
 {
-	VIDEO_FUNCTION_START
 #ifdef VL_MODE_OPENGL
 	glGenVertexArrays(1, arrays);
 #endif
-	VIDEO_FUNCTION_END
 }
 
 /*	Binds the given vertex array.
 */
 void vlBindVertexArray(vlVertexArray_t array)
 {
-	VIDEO_FUNCTION_START
 #ifdef VL_MODE_OPENGL
 	glBindVertexArray(array);
 #endif
-	VIDEO_FUNCTION_END
 }
 
 // VERTEX BUFFER OBJECTS
 
-/*	Generates a single OpenGL buffer.
-*/
-void vlGenerateVertexBuffer(unsigned int *buffer)
-{
-	VIDEO_FUNCTION_START
-#ifdef VL_MODE_OPENGL
-	glGenBuffers(1, buffer);
-#endif
-	VIDEO_FUNCTION_END
-}
-
 void vlGenerateVertexBuffers(int num, unsigned int *buffers)
 {
-	VIDEO_FUNCTION_START
 #ifdef VL_MODE_OPENGL
 	glGenBuffers(num, buffers);
 #endif
-	VIDEO_FUNCTION_END
 }
 
 /*	Deletes a single OpenGL buffer.
@@ -712,11 +750,9 @@ void vlGenerateVertexBuffers(int num, unsigned int *buffers)
 */
 void vlDeleteVertexBuffer(unsigned int *buffer)
 {
-	VIDEO_FUNCTION_START
 #ifdef VL_MODE_OPENGL
 	glDeleteBuffers(1, buffer);
 #endif
-	VIDEO_FUNCTION_END
 }
 
 /*	Binds the given buffer.
@@ -724,11 +760,9 @@ void vlDeleteVertexBuffer(unsigned int *buffer)
 */
 void vlBindBuffer(unsigned int target, unsigned int buffer)
 {
-	VIDEO_FUNCTION_START
 #ifdef VL_MODE_OPENGL
 	glBindBuffer(target, buffer);
 #endif
-	VIDEO_FUNCTION_END
 }
 
 // FRAME BUFFER OBJECTS
@@ -737,15 +771,17 @@ void vlBindBuffer(unsigned int target, unsigned int buffer)
 */
 void vlSetClearColour(float r, float g, float b, float a)
 {
-	if ((r == vl_state.buffer_clearcolour[0]) &&
-		(g == vl_state.buffer_clearcolour[1]) &&
-		(b == vl_state.buffer_clearcolour[2]) &&
-		(a == vl_state.buffer_clearcolour[3]))
+	_VL_UTIL_TRACK(vlSetClearColour);
+
+	if ((r == vl_state.current_clearcolour[0]) &&
+		(g == vl_state.current_clearcolour[1]) &&
+		(b == vl_state.current_clearcolour[2]) &&
+		(a == vl_state.current_clearcolour[3]))
 		return;
 #if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
 	glClearColor(r, g, b, a);
 #endif
-	plColourSetf(vl_state.buffer_clearcolour, r, g, b, a);
+	plColourSetf(vl_state.current_clearcolour, r, g, b, a);
 }
 
 void vlSetClearColour4fv(plColour_t rgba)
@@ -757,7 +793,8 @@ void vlSetClearColour4fv(plColour_t rgba)
 */
 void vlClearBuffers(unsigned int mask)
 {
-	VIDEO_FUNCTION_START
+	_VL_UTIL_TRACK(vlClearBuffers);
+
 #if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
 	glClear(mask);
 #elif defined (VL_MODE_GLIDE)
@@ -767,11 +804,12 @@ void vlClearBuffers(unsigned int mask)
 		_vlConvertColour4fv(VL_COLOURFORMAT_RGBA, vl_state.buffer_clearcolour), 
 		1, 1);
 #endif
-	VIDEO_FUNCTION_END
 }
 
 void vlColourMask(bool red, bool green, bool blue, bool alpha)
 {
+	_VL_UTIL_TRACK(vlColourMask);
+
 #if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
 	glColorMask(red, green, blue, alpha);
 #elif defined (VL_MODE_GLIDE)
@@ -797,11 +835,9 @@ void vlSwapBuffers(void)
 */
 void vlGenerateFrameBuffer(vlFrameBuffer_t *buffer)
 {
-	VIDEO_FUNCTION_START
 #ifdef VL_MODE_OPENGL
 	glGenFramebuffers(1, buffer);
 #endif
-	VIDEO_FUNCTION_END
 }
 
 /*	Ensures that the framebuffer is valid, otherwise throws an error.
@@ -809,7 +845,6 @@ void vlGenerateFrameBuffer(vlFrameBuffer_t *buffer)
 */
 void vlCheckFrameBufferStatus(vlFBOTarget_t target)
 {
-	VIDEO_FUNCTION_START
 #ifdef VL_MODE_OPENGL
 	int status = glCheckFramebufferStatus(target);
 	if (status == GL_FRAMEBUFFER_COMPLETE)
@@ -841,15 +876,15 @@ void vlCheckFrameBufferStatus(vlFBOTarget_t target)
 
 	Sys_Error("An unknown error occured when checking framebuffer status!\n");
 #endif
-	VIDEO_FUNCTION_END
 }
 
 /*	Binds the given framebuffer.
 */
 void vlBindFrameBuffer(vlFBOTarget_t target, unsigned int buffer)
 {
-	VIDEO_FUNCTION_START
-#ifdef VL_MODE_OPENGL
+	_VL_UTIL_TRACK(vlBindFrameBuffer);
+	
+#if defined (VL_MODE_OPENGL)
 	glBindFramebuffer(target, buffer);
 
 	// Ensure there weren't any issues.
@@ -879,29 +914,23 @@ void vlBindFrameBuffer(vlFBOTarget_t target, unsigned int buffer)
 */
 void vlDeleteFrameBuffer(unsigned int *uiBuffer)
 {
-	VIDEO_FUNCTION_START
 #ifdef VL_MODE_OPENGL
 	glDeleteFramebuffers(1, uiBuffer);
 #endif
-	VIDEO_FUNCTION_END
 }
 
 void vlAttachFrameBufferRenderBuffer(unsigned int attachment, unsigned int buffer)
 {
-	VIDEO_FUNCTION_START
 #ifdef VL_MODE_OPENGL
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, attachment, GL_RENDERBUFFER, buffer);
 #endif
-	VIDEO_FUNCTION_END
 }
 
 void vlAttachFrameBufferTexture(gltexture_t *buffer)
 {
-	VIDEO_FUNCTION_START
 #ifdef VL_MODE_OPENGL
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, buffer->texnum, 0);
 #endif
-	VIDEO_FUNCTION_END
 }
 
 /*===========================
@@ -912,6 +941,8 @@ void vlAttachFrameBufferTexture(gltexture_t *buffer)
 */
 void vlFogColour3fv(plColour_t rgba)
 {
+	_VL_UTIL_TRACK(vlFogColour3fv);
+
 #if defined (VL_MODE_OPENGL)
 	glFogfv(GL_FOG_COLOR, rgba);
 #elif defined (VL_MODE_GLIDE)
@@ -930,21 +961,29 @@ vlDraw_t *vl_draw_current = NULL;
 /*	Generates each of the buffers and other
 	data necessary for the draw call.
 */
-void vlGenerateDraw(vlDraw_t *draw)
+vlDraw_t *vlCreateDraw(vlPrimitive_t primitive, unsigned int num_tris, unsigned int num_verts)
 {
-	vlGenerateVertexBuffer(draw->buffer_triangle);
-	vlGenerateVertexBuffer(draw->buffer_colour);
-	vlGenerateVertexBuffer(draw->buffer_texture);
-}
+	_VL_UTIL_TRACK(vlCreateDraw);
 
-void vlUnbindDraw(void)
-{
-	if (!vl_draw_current)
-		return;
+	if ((primitive == VL_PRIMITIVE_IGNORE) || (primitive >= VL_PRIMITIVE_END))
+		Sys_Error("Invalid primitive for draw object!\n");
+	else if ((num_tris == 0) && (primitive == VL_PRIMITIVE_TRIANGLES))
+		Sys_Error("Invalid number of triangles!\n");
 
+	vlDraw_t *_draw = (vlDraw_t*)calloc_or_die(sizeof(vlDraw_t), 1);
+	memset(_draw, 0, sizeof(vlDraw_t));
+	_draw->primitive			= primitive;
+	_draw->primitive_restore	= primitive;
 
+	_draw->vertices = (vlVertex_t*)calloc_or_die(sizeof(vlDraw_t), num_verts);
+	_draw->numverts			= num_verts;
+	_draw->numtriangles		= num_tris;
 
-	vl_draw_current = NULL;
+#ifdef VL_MODE_OPENGL
+	glGenBuffers(1, &_draw->vbo_vertices);
+#endif
+
+	return _draw;
 }
 
 void vlDeleteDraw(vlDraw_t *draw)
@@ -952,40 +991,27 @@ void vlDeleteDraw(vlDraw_t *draw)
 	if (!draw)
 		Sys_Error("Draw object has not been initialized!\n");
 
-	vlDeleteVertexBuffer(draw->buffer_colour);
-	vlDeleteVertexBuffer(draw->buffer_texture);
-	vlDeleteVertexBuffer(draw->buffer_triangle);
-
-	if (vl_draw_current == draw)
-		vlBindDraw(0);
+#if defined (VL_MODE_OPENGL)
+	glDeleteBuffers(1, &draw->vbo_vertices);
+#endif
 
 	free(draw);
 	draw = NULL;
 }
 
+void vlBeginDraw(vlDraw_t *draw)
+{
+	if (!draw)
+		Sys_Error("Passed invalid draw object to vlBeginDraw!\n");
+}
+
+void vlDrawVertex3fv(plVector3f_t position)
+{
+
+}
+
 vlVertex_t	*vl_draw_vertex = NULL;
 int			vl_draw_curvert = -1;
-
-void vlBeginDraw(vlDraw_t *draw, vlPrimitive_t primitive, unsigned int size)
-{
-	if (!draw || (draw == vl_draw_current))
-		return;
-
-	if ((primitive == VL_PRIMITIVE_IGNORE) || (primitive >= VL_PRIMITIVE_END))
-		Sys_Error("Invalid primitive type!\n");
-
-	vl_draw_current = draw;
-
-	vl_draw_vertex = &vl_draw_current->vertices[0];
-	vl_draw_curvert = -1;
-
-	vl_draw_current->primitive = primitive;
-	vl_draw_current->vertices = (vlVertex_t*)calloc(sizeof(vlVertex_t), size);
-	if (!vl_draw_current->vertices)
-		Sys_Error("Failed to allocated vertices, vlGenerateDraw failed!\n");
-
-	vl_draw_current->numverts = size;
-}
 
 void vlDrawVertex3fv(plVector3f_t position)
 {
@@ -1004,7 +1030,7 @@ void vlEndDraw(void)
 		Sys_Error("Invalid vlEndDraw call!\n");
 
 #if defined (VL_MODE_OPENGL)
-	glBindBuffer(GL_ARRAY_BUFFER, vl_draw_current->buffer_triangle);
+	glBindBuffer(GL_ARRAY_BUFFER, vl_draw_current->vbo_vertices);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vl_draw_current->vertices), vl_draw_current->vertices, GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -1100,12 +1126,10 @@ void _vlDrawElements(vlPrimitive_t mode, unsigned int count, unsigned int type, 
 */
 void _vlDrawImmediate(vlDraw_t *draw)
 {
-	VIDEO_FUNCTION_START
+	_VL_UTIL_TRACK(_vlDrawImmediate);
+
 #ifdef VL_MODE_GLIDE
 #else
-	if (draw->numverts == 0)
-		return;
-
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_COLOR_ARRAY);
 	glEnableClientState(GL_NORMAL_ARRAY);
@@ -1124,10 +1148,10 @@ void _vlDrawImmediate(vlDraw_t *draw)
 
 	if (draw->primitive == VL_PRIMITIVE_TRIANGLES)
 		_vlDrawElements(
-		draw->primitive,
-		draw->numtriangles * 3,
-		GL_UNSIGNED_BYTE,
-		draw->indices
+			draw->primitive,
+			draw->numtriangles * 3,
+			GL_UNSIGNED_BYTE,
+			draw->indices
 		);
 	else
 		_vlDrawArrays(draw->primitive, 0, draw->numverts);
@@ -1142,12 +1166,20 @@ void _vlDrawImmediate(vlDraw_t *draw)
 			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 		}
 #endif
-	VIDEO_FUNCTION_END
 }
 
 void vlDraw(vlDraw_t *draw)
 {
+	_VL_UTIL_TRACK(vlDraw);
+
+	if(draw->numverts == 0)
+		return;
+
+#if 1
+	
+#else
 	_vlDrawImmediate(draw);
+#endif
 }
 
 /*===========================

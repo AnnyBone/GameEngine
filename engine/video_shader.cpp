@@ -295,29 +295,10 @@ void ShaderProgram::Disable()
 
 void ShaderProgram::Link()
 {
-#ifdef VL_MODE_OPENGL
-	VIDEO_FUNCTION_START
-	glLinkProgram(instance);
+	vlLinkShaderProgram(&instance);
 
-	int iLinkStatus;
-	glGetProgramiv(instance, GL_LINK_STATUS, &iLinkStatus);
-	if (!iLinkStatus)
-	{
-		int iLength = 0;
-
-		glGetProgramiv(instance, GL_INFO_LOG_LENGTH, &iLength);
-		if (iLength > 1)
-		{
-			char *cLog = new char[iLength];
-			glGetProgramInfoLog(instance, iLength, NULL, cLog);
-			Con_Warning("%s\n", cLog);
-			delete[] cLog;
-		}
-
-		Sys_Error("Shader program linking failed!\nCheck log for details.\n");
-	}
-	VIDEO_FUNCTION_END
-#endif
+	// Register all the base attributes.
+	SHADER_REGISTER_ATTRIBUTE(a_vertices, 0);
 }
 
 void ShaderProgram::Shutdown()
@@ -325,18 +306,30 @@ void ShaderProgram::Shutdown()
 	Disable();
 }
 
+// Attribute Handling
+
+vlAttribute_t ShaderProgram::GetAttributeLocation(std::string name)
+{
+	return vlGetAttributeLocation(&instance, name.c_str());
+}
+
+void ShaderProgram::SetAttributeVariable(int location, plVector3f_t vector)
+{
+
+}
+
 // Uniform Handling
 
-int ShaderProgram::GetUniformLocation(const char *name)
+int ShaderProgram::GetUniformLocation(std::string name)
 {
 #ifdef VL_MODE_OPENGL
-	return glGetUniformLocation(instance, name);
+	return glGetUniformLocation(instance, name.c_str());
 #else
 	return 0;
 #endif
 }
 
-void ShaderProgram::SetVariable(int location, float x, float y, float z)
+void ShaderProgram::SetUniformVariable(int location, float x, float y, float z)
 {
 #ifdef VL_MODE_OPENGL
 	if (!IsActive())
@@ -347,7 +340,7 @@ void ShaderProgram::SetVariable(int location, float x, float y, float z)
 #endif
 }
 
-void ShaderProgram::SetVariable(int location, plVector3f_t vector)
+void ShaderProgram::SetUniformVariable(int location, plVector3f_t vector)
 {
 #ifdef VL_MODE_OPENGL
 	if (!IsActive())
@@ -358,7 +351,7 @@ void ShaderProgram::SetVariable(int location, plVector3f_t vector)
 #endif
 }
 
-void ShaderProgram::SetVariable(int location, float x, float y, float z, float a)
+void ShaderProgram::SetUniformVariable(int location, float x, float y, float z, float a)
 {
 #ifdef VL_MODE_OPENGL
 	if (!IsActive())
@@ -368,7 +361,7 @@ void ShaderProgram::SetVariable(int location, float x, float y, float z, float a
 #endif
 }
 
-void ShaderProgram::SetVariable(int location, int i)
+void ShaderProgram::SetUniformVariable(int location, int i)
 {
 #ifdef VL_MODE_OPENGL
 	if (!IsActive())
@@ -378,7 +371,7 @@ void ShaderProgram::SetVariable(int location, int i)
 #endif
 }
 
-void ShaderProgram::SetVariable(int location, float f)
+void ShaderProgram::SetUniformVariable(int location, float f)
 {
 #ifdef VL_MODE_OPENGL
 	if (!IsActive())

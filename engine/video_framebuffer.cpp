@@ -226,7 +226,7 @@ void VideoPostProcess::Draw()
 	Video_SetTexture(buf_colour);
 
 #if 0
-	program->SetVariable(iDiffuseUniform, 0);
+	program->SetUniformVariable(iDiffuseUniform, 0);
 #endif
 
 	GL_SetCanvas(CANVAS_DEFAULT);

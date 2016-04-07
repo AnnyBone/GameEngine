@@ -1,6 +1,5 @@
 /*	Copyright (C) 2011-2016 OldTimes Software
 
-
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License
 	as published by the Free Software Foundation; either version 2
@@ -18,8 +17,6 @@
 */
 
 #pragma once
-
-typedef int uniform;
 
 #ifdef __cplusplus
 namespace Core
@@ -56,6 +53,7 @@ namespace Core
 		~ShaderProgram();
 
 		virtual void Initialize() = 0;
+		virtual void Draw() = 0;
 
 		void RegisterShader(std::string path, vlShaderType_t type);
 
@@ -67,13 +65,16 @@ namespace Core
 
 		bool IsActive()	{ return (Video.current_program == instance); }
 
-		void SetVariable(int location, float x, float y, float z);
-		void SetVariable(int location, plVector3f_t vector);
-		void SetVariable(int location, float x, float y, float z, float a);
-		void SetVariable(int location, int i);
-		void SetVariable(int location, float f);
+		void SetUniformVariable(vlUniform_t location, float x, float y, float z);
+		void SetUniformVariable(vlUniform_t location, plVector3f_t vector);
+		void SetUniformVariable(vlUniform_t location, float x, float y, float z, float a);
+		void SetUniformVariable(vlUniform_t location, int i);
+		void SetUniformVariable(vlUniform_t location, float f);
 
-		int GetUniformLocation(const char *name);
+		void SetAttributeVariable(int location, plVector3f_t vector);
+
+		int GetUniformLocation(std::string name);
+		int GetAttributeLocation(std::string name);
 
 		unsigned int GetInstance() { return instance; };
 	protected:
@@ -85,6 +86,9 @@ namespace Core
 		std::string name;
 
 		vlShaderProgram_t instance;
+
+		// Set of base attributes.
+		vlAttribute_t a_vertices;
 	};
 
 	class ShaderManager : public CoreManager
@@ -109,5 +113,8 @@ extern Core::ShaderManager *g_shadermanager;
 
 #define	SHADER_REGISTER_UNIFORM(name, def)	\
 	name = GetUniformLocation(#name);		\
-	SetVariable(name, def)
+	SetUniformVariable(name, def)
+
+#define	SHADER_REGISTER_ATTRIBUTE(name, def)	\
+	name = GetAttributeLocation(#name);
 #endif

@@ -49,6 +49,19 @@ void *calloc_or_die(size_t nmemb, size_t size)
 	return ptr;
 }
 
+void *realloc_or_die(void *ptr, size_t new_size)
+{
+	void *ptr = realloc(ptr, new_size);
+	if (!ptr)
+	{
+		// Windows doesn't implement z size flag
+		Sys_Error("Failed to reallocate memory! (%llu bytes)\n",
+			(unsigned long long int)(new_size));
+	}
+
+	return ptr;
+}
+
 //============================================================================
 
 #define	HUNK_SENTINAL	0x1df001ed

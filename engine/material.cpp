@@ -126,13 +126,13 @@ Material_t *Material_Allocate(void)
 #ifdef _MSC_VER
 #	pragma warning(suppress: 6386)
 #endif
-	g_materials[material_count].cName[0] = 0;
-	g_materials[material_count].id = material_count;
-	g_materials[material_count].fAlpha = 1.0f;
-	g_materials[material_count].bind = true;
-	g_materials[material_count].current_skin = 0;
-	g_materials[material_count].override_wireframe = false;
-	g_materials[material_count].override_lightmap = false;
+	g_materials[material_count].cName[0]			= 0;
+	g_materials[material_count].id					= material_count;
+	g_materials[material_count].fAlpha				= 1.0f;
+	g_materials[material_count].bind				= true;
+	g_materials[material_count].current_skin		= 0;
+	g_materials[material_count].override_wireframe	= false;
+	g_materials[material_count].override_lightmap	= false;
 
 	return &g_materials[material_count];
 }

@@ -48,6 +48,9 @@ typedef unsigned int vlVertexArray_t;
 typedef unsigned int vlRenderBuffer_t;
 typedef unsigned int vlFrameBuffer_t;
 
+typedef int vlUniform_t;
+typedef int vlAttribute_t;
+
 typedef enum
 {
 #if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
@@ -135,7 +138,6 @@ typedef enum
 typedef enum
 {
 #if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
-	// Set these directly to avoid translation.
 	VL_FRAMEBUFFER_DEFAULT	= GL_FRAMEBUFFER,
 	VL_FRAMEBUFFER_DRAW		= GL_DRAW_FRAMEBUFFER,
 	VL_FRAMEBUFFER_READ		= GL_READ_FRAMEBUFFER
@@ -149,15 +151,14 @@ typedef enum
 typedef enum
 {
 #if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
-	// Set these directly to avoid translation.
 	VL_TEXTUREFILTER_NEAREST	= GL_NEAREST,	// Nearest filtering
 	VL_TEXTUREFILTER_LINEAR		= GL_LINEAR		// Linear filtering
 #elif defined (VL_MODE_GLIDE)
 	VL_TEXTUREFILTER_NEAREST	= GR_TEXTUREFILTER_POINT_SAMPLED,	// Nearest filtering
 	VL_TEXTUREFILTER_LINEAR		= GR_TEXTUREFILTER_BILINEAR			// Linear filtering
 #else
-	VL_TEXTUREFILTER_NEAREST,				// Nearest filtering
-	VL_TEXTUREFILTER_LINEAR					// Linear filtering
+	VL_TEXTUREFILTER_NEAREST,	// Nearest filtering
+	VL_TEXTUREFILTER_LINEAR		// Linear filtering
 #endif
 } vlTextureFilter_t;
 
@@ -173,7 +174,7 @@ typedef enum
 	VL_TEXTURECLAMP_CLAMP,
 	VL_TEXTURECLAMP_WRAP,
 #endif
-} VLTextureClamp_t;
+} vlTextureClamp_t;
 
 typedef enum
 {
@@ -293,8 +294,11 @@ typedef enum
 vlShaderProgram_t vlCreateShaderProgram(void);
 void vlUseShaderProgram(vlShaderProgram_t program);
 void vlDeleteShaderProgram(vlShaderProgram_t *program);
+void vlLinkShaderProgram(vlShaderProgram_t *program);
 void vlAttachShader(vlShaderProgram_t program, vlShader_t shader);
 void vlDeleteShader(vlShader_t *shader);
+
+vlAttribute_t vlGetAttributeLocation(vlShaderProgram_t *program, const char *name);
 
 //-----------------
 // Drawing
@@ -334,7 +338,6 @@ void vlGenerateVertexArray(unsigned int *arrays);
 void vlBindVertexArray(unsigned int array);
 
 // Vertex Buffer
-void vlGenerateVertexBuffer(unsigned int *buffer);
 void vlGenerateVertexBuffers(int num, unsigned int *buffers);
 void vlBindBuffer(unsigned int target, unsigned int buffer);
 void vlDeleteVertexBuffer(unsigned int *uiBuffer);

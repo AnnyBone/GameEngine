@@ -36,7 +36,6 @@ void BaseShader::Initialize()
 
 	Link();
 
-#if 0
 	// Textures
 	SHADER_REGISTER_UNIFORM(u_diffusemap, 0);
 	SHADER_REGISTER_UNIFORM(u_detailmap, 0);
@@ -53,7 +52,10 @@ void BaseShader::Initialize()
 
 	// Vertex scaling
 	SHADER_REGISTER_UNIFORM(u_vertexscale, 1.0f);
-#endif
+}
+
+void BaseShader::Draw()
+{
 }
 
 void BaseShader::EnableAlphaTest()
@@ -61,7 +63,7 @@ void BaseShader::EnableAlphaTest()
 VIDEO_FUNCTION_START
 	if (alpha_test)
 		return;
-	SetVariable(u_alphatest, 1);
+	SetUniformVariable(u_alphatest, 1);
 	alpha_test = true;
 VIDEO_FUNCTION_END
 }
@@ -71,7 +73,7 @@ void BaseShader::DisableAlphaTest()
 VIDEO_FUNCTION_START
 	if (!alpha_test)
 		return;
-	SetVariable(u_alphatest, 0);
+	SetUniformVariable(u_alphatest, 0);
 	alpha_test = false;
 VIDEO_FUNCTION_END
 }

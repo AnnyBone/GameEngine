@@ -49,7 +49,7 @@ VIDEO_FUNCTION_START
 	static float time = 0;
 	if (curtime == time)
 		return;
-	SetVariable(u_time, curtime);
+	SetUniformVariable(u_time, curtime);
 	time = curtime;
 VIDEO_FUNCTION_END
 }
