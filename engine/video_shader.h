@@ -53,13 +53,14 @@ namespace Core
 		~ShaderProgram();
 
 		virtual void Initialize() = 0;
-		virtual void Draw() = 0;
 
 		void RegisterShader(std::string path, vlShaderType_t type);
+		virtual void RegisterAttributes();
 
 		void Attach(Core::Shader *shader);
 		void Enable();
 		void Disable();
+		void Draw();
 		void Link();
 		void Shutdown();
 
@@ -77,7 +78,7 @@ namespace Core
 		int GetAttributeLocation(std::string name);
 
 		unsigned int GetInstance() { return instance; };
-	protected:
+
 	private:
 		bool isenabled;
 
@@ -103,7 +104,6 @@ namespace Core
 		void Clear();
 		ShaderProgram *Find(std::string name);
 
-	protected:
 	private:
 		std::unordered_map<std::string, ShaderProgram*> programs;
 	};

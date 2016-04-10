@@ -26,3 +26,9 @@
 	of the material system, rendering API and other
 	fun toybox stuff.
 */
+
+vlDraw_t *base_draw = nullptr;
+
+void DrawExampleInit()
+{
+}

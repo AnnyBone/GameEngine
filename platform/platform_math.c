@@ -207,7 +207,7 @@ MathVectorf_t Math_DotProduct(MathVector3f_t a, MathVector3f_t b)
 	return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
 }
 
-void plVectorClear3fv(MathVector3f_t out)
+void plVectorClear(MathVector3f_t out)
 {
 	out[0] = out[1] = out[2] = 0;
 }
@@ -217,14 +217,19 @@ void plVectorSet3f(MathVector3f_t out, float x, float y, float z)
 	out[0] = x; out[1] = y; out[2] = z;
 }
 
-void plVectorCopy3fv(MathVector3f_t in, MathVector3f_t out)
+void plVectorSet2f(plVector2f_t out, float a, float b)
+{
+	out[0] = a; out[1] = b;
+}
+
+void plVectorCopy(MathVector3f_t in, MathVector3f_t out)
 {
 	out[0] = in[0];
 	out[1] = in[1];
 	out[2] = in[2];
 }
 
-void plVectorScale3fv(MathVector3f_t in, MathVectorf_t scale, MathVector3f_t out)
+void plVectorScalef(MathVector3f_t in, float scale, MathVector3f_t out)
 {
 	out[0] = in[0] * scale;
 	out[1] = in[1] * scale;

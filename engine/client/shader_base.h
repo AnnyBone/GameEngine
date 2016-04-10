@@ -31,18 +31,18 @@ public:
 	void DisableAlphaTest();
 protected:
 private:
-	uniform u_alphaclamp;
-	uniform u_alphatest;
+	vlUniform_t u_alphaclamp;
+	vlUniform_t u_alphatest;
 
-	uniform	u_diffusemap;
-	uniform	u_detailmap;
-	uniform	u_fullbrightmap;
-	uniform	u_spheremap;
+	vlUniform_t	u_diffusemap;
+	vlUniform_t	u_detailmap;
+	vlUniform_t	u_fullbrightmap;
+	vlUniform_t	u_spheremap;
 
-	uniform u_lightposition;
-	uniform u_lightcolour;
+	vlUniform_t u_lightposition;
+	vlUniform_t u_lightcolour;
 
-	uniform u_vertexscale;
+	vlUniform_t u_vertexscale;
 
 	bool	alpha_test;
 	float	alpha_clamp;

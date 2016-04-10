@@ -314,7 +314,18 @@ typedef enum vlDrawMode_s
 #endif
 } vlDrawMode_t;
 
-void vlGenerateDraw(vlDraw_t *draw);
+vlDraw_t *vlCreateDraw(vlPrimitive_t primitive, uint32_t num_tris, uint32_t num_verts);
+void vlDeleteDraw(vlDraw_t *draw);
+
+void vlBeginDraw(vlDraw_t *draw);
+void vlEndDraw(vlDraw_t *draw);
+void vlDrawVertex3f(float x, float y, float z);
+void vlDrawVertex3fv(plVector3f_t position);
+void vlDrawColour4f(float r, float g, float b, float a);
+void vlDrawColour4fv(plColour_t rgba);
+void vlDrawNormal3fv(plVector3f_t position);
+void vlDrawTexCoord2f(unsigned int target, float s, float t);
+
 void vlDraw(vlDraw_t *draw);
 
 //-----------------
@@ -333,15 +344,6 @@ void vlApplyLighting(vlDraw_t *object, vlLight_t *light, plVector3f_t position);
 
 //-----------------
 
-// Vertex Array
-void vlGenerateVertexArray(unsigned int *arrays);
-void vlBindVertexArray(unsigned int array);
-
-// Vertex Buffer
-void vlGenerateVertexBuffers(int num, unsigned int *buffers);
-void vlBindBuffer(unsigned int target, unsigned int buffer);
-void vlDeleteVertexBuffer(unsigned int *uiBuffer);
-	
 // Frame Buffer
 void vlGenerateFrameBuffer(unsigned int *buffer);
 void vlCheckFrameBufferStatus();
@@ -357,12 +359,10 @@ void vlRenderBufferStorage(int format, int samples, unsigned int width, unsigned
 void vlDeleteRenderBuffer(unsigned int *buffer);
 
 void vlSwapBuffers(void);
-void vlSetClearColour(float r, float g, float b, float a);
+void vlSetClearColour4f(float r, float g, float b, float a);
 void vlSetClearColour4fv(plColour_t rgba);
 void vlClearBuffers(unsigned int mask);
 void vlColourMask(bool red, bool green, bool blue, bool alpha);
-
-// Misc
 void vlSetCullMode(vlCullMode_t mode);
 void vlFinish(void);
 

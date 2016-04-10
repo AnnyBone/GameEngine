@@ -163,15 +163,15 @@ void AudioManager::Frame()
 
 	if (cls.signon == SIGNONS)
 	{
-		plVectorCopy3fv(r_refdef.vieworg, position);
-		plVectorCopy3fv(r_refdef.viewangles, orientation);
-		plVectorCopy3fv(cl.velocity, velocity);
+		plVectorCopy(r_refdef.vieworg, position);
+		plVectorCopy(r_refdef.viewangles, orientation);
+		plVectorCopy(cl.velocity, velocity);
 	}
 	else
 	{
-		plVectorCopy3fv(pl_origin3f, position);
-		plVectorCopy3fv(pl_origin3f, orientation);
-		plVectorCopy3fv(pl_origin3f, velocity);
+		plVectorCopy(pl_origin3f, position);
+		plVectorCopy(pl_origin3f, orientation);
+		plVectorCopy(pl_origin3f, velocity);
 	}
 
 	// Convert orientation to something OpenAL can use.
@@ -255,7 +255,7 @@ void AudioManager::SetSoundPosition(AudioSound_t *sound, plVector3f_t position)
 	alSourcefv(sound->source, AL_POSITION, position);
 	
 	// Keep cur position updated.
-	plVectorCopy3fv(position, sound->current_position);
+	plVectorCopy(position, sound->current_position);
 }
 
 void AudioManager::SetSoundVelocity(AudioSound_t *sound, plVector3f_t velocity)
@@ -267,7 +267,7 @@ void AudioManager::SetSoundVelocity(AudioSound_t *sound, plVector3f_t velocity)
 	alSourcefv(sound->source, AL_VELOCITY, velocity);
 
 	// Keep cur velocity updated.
-	plVectorCopy3fv(velocity, sound->current_velocity);
+	plVectorCopy(velocity, sound->current_velocity);
 }
 
 void AudioManager::PlaySound(const AudioSound_t *sound)

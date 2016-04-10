@@ -49,8 +49,6 @@ typedef struct vlVertex_s
 	plColour_t colour;
 } vlVertex_t;
 
-typedef unsigned int vlVBO_t;
-
 typedef struct vlDraw_s
 {
 	vlVertex_t *vertices;	// Array of vertices for the object.
@@ -62,7 +60,7 @@ typedef struct vlDraw_s
 
 	vlPrimitive_t primitive, primitive_restore;
 
-	vlVBO_t	vbo_vertices;
+	unsigned int _gl_vbo[16];
 } vlDraw_t;
 
 // Textures

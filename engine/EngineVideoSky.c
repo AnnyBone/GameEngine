@@ -838,8 +838,8 @@ void Sky_Draw3DWorld(void)
 		return;
 	
 	// Update view position.
-	plVectorCopy3fv(r_refdef.vieworg, oldorg);
-	//plVectorCopy3fv(sky_camerapos, r_refdef.vieworg);
+	plVectorCopy(r_refdef.vieworg, oldorg);
+	//plVectorCopy(sky_camerapos, r_refdef.vieworg);
 	Math_VectorAdd(oldorg, sky_camerapos, r_refdef.vieworg);
 	
 	R_SetupView();
@@ -856,7 +856,7 @@ void Sky_Draw3DWorld(void)
 	r_refdef.sky = false;
 
 	// Restore view position.
-	plVectorCopy3fv(oldorg, r_refdef.vieworg);
+	plVectorCopy(oldorg, r_refdef.vieworg);
 
 	// Setup the view again, urgh.
 	R_SetupView();

@@ -27,9 +27,10 @@ public:
 	void Initialize();
 
 	void SetTime(float curtime);
-private:
-	uniform u_diffusemap;
-	uniform	u_normalmap;
 
-	uniform	u_time;
+private:
+	vlUniform_t u_diffusemap;
+	vlUniform_t	u_normalmap;
+
+	vlUniform_t	u_time;
 };

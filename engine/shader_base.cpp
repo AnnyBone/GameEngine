@@ -31,10 +31,14 @@ BaseShader::BaseShader() : ShaderProgram("base")
 
 void BaseShader::Initialize()
 {
+	Enable();
+
 	RegisterShader("base", VL_SHADER_VERTEX);
 	RegisterShader("base", VL_SHADER_FRAGMENT);
 
 	Link();
+
+	RegisterAttributes();
 
 	// Textures
 	SHADER_REGISTER_UNIFORM(u_diffusemap, 0);
@@ -52,10 +56,8 @@ void BaseShader::Initialize()
 
 	// Vertex scaling
 	SHADER_REGISTER_UNIFORM(u_vertexscale, 1.0f);
-}
 
-void BaseShader::Draw()
-{
+	Disable();
 }
 
 void BaseShader::EnableAlphaTest()

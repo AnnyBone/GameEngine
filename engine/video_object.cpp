@@ -24,28 +24,6 @@
 	C Interface
 */
 
-void VideoObject_Vertex3f(vlDraw_t *object, float x, float y, float z)
-{
-	VIDEO_FUNCTION_START
-	object->numverts++;
-
-	// TODO: Add new vertex to list.
-
-	object->vertices[object->numverts].position[0] = x;
-	object->vertices[object->numverts].position[1] = y;
-	object->vertices[object->numverts].position[2] = z;
-	VIDEO_FUNCTION_END
-}
-
-void VideoObject_Normal(vlDraw_t *object, float x, float y, float z)
-{
-	VIDEO_FUNCTION_START
-	object->vertices[object->numverts].normal[0] = x;
-	object->vertices[object->numverts].normal[1] = y;
-	object->vertices[object->numverts].normal[2] = z;
-	VIDEO_FUNCTION_END
-}
-
 void VideoObject_Colour4f(vlDraw_t *voObject, float r, float g, float b, float a)
 {
 	VIDEO_FUNCTION_START

@@ -194,26 +194,26 @@ enum PlatformMathRGBA
 
 struct	mplane_s;
 
-void Math_VectorAngles(const MathVector3f_t forward, MathVector3f_t angles);
-void plAngleVectors(MathVector3f_t angles, MathVector3f_t forward, MathVector3f_t right, MathVector3f_t up);
+void Math_VectorAngles(const plVector3f_t forward, plVector3f_t angles);
+void plAngleVectors(MathVector3f_t angles, plVector3f_t forward, plVector3f_t right, plVector3f_t up);
 void plVectorNormalizeFast(MathVector3f_t vVector);
-void Math_VectorMake(MathVector3f_t veca, float scale, MathVector3f_t vecb, MathVector3f_t vecc);
+void Math_VectorMake(MathVector3f_t veca, float scale, plVector3f_t vecb, plVector3f_t vecc);
 
 double plVectorLength(MathVector3f_t a);
 
 float Math_AngleMod(float a);
 float plVectorToYaw(MathVectorf_t *vec);
 
-bool plVectorCompare(MathVector3f_t a, MathVector3f_t b);
-bool plIsIntersecting(MathVector3f_t mvFirstMins, MathVector3f_t mvFirstMaxs, MathVector3f_t mvSecondMins, MathVector3f_t mvSecondMaxs);
+bool plVectorCompare(plVector3f_t a, plVector3f_t b);
+bool plIsIntersecting(plVector3f_t mvFirstMins, plVector3f_t mvFirstMaxs, plVector3f_t mvSecondMins, MathVector3f_t mvSecondMaxs);
 
-MathVectorf_t plLengthf(MathVector3f_t a);
-MathVectord_t plLengthd(MathVector3d_t a);
+float plLengthf(plVector3f_t a);
+double plLengthd(MathVector3d_t a);
 
-MathVectorf_t plVectorNormalize(MathVector3f_t a);
-MathVectorf_t Math_DotProduct(MathVector3f_t a, MathVector3f_t b);
+float plVectorNormalize(plVector3f_t a);
+float Math_DotProduct(MathVector3f_t a, MathVector3f_t b);
 
-MathVector_t plVectorToAngles(MathVector3f_t vValue);
+MathVector_t plVectorToAngles(plVector3f_t vValue);
 
 float plLinear(float x);
 float plInPow(float x, float p);
@@ -235,17 +235,18 @@ float Math_InOutBack(float x);
 float plImpulse(float x, float k);
 float Math_ExpPulse(float x, float k, float n);
 
-MathVectorf_t plColourNormalize(MathVector3f_t in, MathVector3f_t out);
+float plColourNormalize(plVector3f_t in, plVector3f_t out);
 
 void plColourSetf(plColour_t in, float r, float g, float b, float a);
 
-void plVectorSet3f(MathVector3f_t out, float x, float y, float z);
+void plVectorSet3f(plVector3f_t out, float x, float y, float z);
+void plVectorSet2f(plVector2f_t out, float a, float b);
 
-void plVectorClear3fv(MathVector3f_t out);
-void plVectorMultiply3fv(MathVector3f_t in, MathVector3f_t multi, MathVector3f_t out);
-void plVectorSubtract3fv(MathVector3f_t in, MathVector3f_t subtract, MathVector3f_t out);
-void plVectorAdd3fv(MathVector3f_t in, MathVector3f_t add, MathVector3f_t out);
-void plVectorCopy3fv(MathVector3f_t in, MathVector3f_t out);
-void plVectorScale3fv(MathVector3f_t in, MathVectorf_t scale, MathVector3f_t out);
+void plVectorClear(plVector3f_t out);
+void plVectorMultiply3fv(plVector3f_t in, plVector3f_t multi, plVector3f_t out);
+void plVectorSubtract3fv(plVector3f_t in, plVector3f_t subtract, plVector3f_t out);
+void plVectorAdd3fv(plVector3f_t in, plVector3f_t add, plVector3f_t out);
+void plVectorCopy(plVector3f_t in, plVector3f_t out);
+void plVectorScalef(plVector3f_t in, float scale, plVector3f_t out);
 
 plEXTERN_C_END

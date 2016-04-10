@@ -38,6 +38,6 @@ MathVector_t Model_GenerateNormal3f(float aX, float aY, float aZ,float bX, float
 
 void Model_LoadRelativeMaterial(model_t *model);
 
-bool ModelU3D_Load(model_t *model, void *buf);
+bool ModelU3D_Load(model_t *model);
 
 plEXTERN_C_END

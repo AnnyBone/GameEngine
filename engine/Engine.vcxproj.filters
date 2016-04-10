@@ -228,9 +228,6 @@
     <ClCompile Include="EngineScript.c">
       <Filter>Legacy</Filter>
     </ClCompile>
-    <ClCompile Include="EngineModel.c">
-      <Filter>Legacy</Filter>
-    </ClCompile>
     <ClCompile Include="EngineMain.c">
       <Filter>Legacy</Filter>
     </ClCompile>
@@ -315,6 +312,10 @@
     </ClCompile>
     <ClCompile Include="audio_wav.c">
       <Filter>Client\Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineAudioDummy.c" />
+    <ClCompile Include="EngineModel.c">
+      <Filter>Legacy</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -471,9 +472,6 @@
     <ClInclude Include="EngineProtocol.h">
       <Filter>Legacy</Filter>
     </ClInclude>
-    <ClInclude Include="EngineModel.h">
-      <Filter>Legacy</Filter>
-    </ClInclude>
     <ClInclude Include="EngineMain.h">
       <Filter>Legacy</Filter>
     </ClInclude>
@@ -560,6 +558,9 @@
     </ClInclude>
     <ClInclude Include="client\shader_water.h">
       <Filter>Client\Video\Shaders\Water</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineModel.h">
+      <Filter>Legacy</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

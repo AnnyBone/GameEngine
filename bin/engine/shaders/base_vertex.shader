@@ -16,11 +16,19 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-uniform vec2 coord;
+varying vec4 v_normalcolour;
+varying vec4 v_diffusecolour;
+
+uniform float u_vertexscale;
+
+attribute vec3 a_coords;
 
 void main(void)
 {
-	gl_Position = vec4(coord, 0.0, 1.0);
+	//gl_Position = vec4(a_coords, 1.0);
+
+	gl_TexCoord[0] = gl_MultiTexCoord0;
+	gl_Position = ftransform();
 
 	// Sphere-mapping
 	/*

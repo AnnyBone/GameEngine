@@ -270,7 +270,7 @@ typedef struct model_s
 	// Material System
 	struct Material_s *materials;
 
-	vlDraw_t		*objects;
+	vlDraw_t		**objects;
 	unsigned int	numtriangles;	// Static counter for triangles.
 	int				numframes;		// Number of objects / frames.
 } model_t;

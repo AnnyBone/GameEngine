@@ -112,9 +112,9 @@ Sprite::Sprite()
 	scale		= 5.0f;
 	material	= g_mMissingMaterial;
 
-	plVectorClear3fv(position);
-	plVectorClear3fv(mins);
-	plVectorClear3fv(maxs);
+	plVectorClear(position);
+	plVectorClear(mins);
+	plVectorClear(maxs);
 
 	Math_Vector4Set(1.0f, colour);
 }
@@ -163,8 +163,8 @@ void Sprite::SetType(SpriteType_t stype)
 	case SPRITE_TYPE_FLARE:
 	case SPRITE_TYPE_SCALE:
 		// Flares get clipped by origin position, so no additional size.
-		plVectorClear3fv(mins);
-		plVectorClear3fv(maxs);
+		plVectorClear(mins);
+		plVectorClear(maxs);
 		break;
 	}
 }

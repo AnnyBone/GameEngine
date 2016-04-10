@@ -35,7 +35,7 @@
 		- Simulate quads primitive type
 */
 
-typedef struct
+typedef struct vlState_s
 {
 	unsigned int num_cards;		// Number of video cards.
 
@@ -209,7 +209,7 @@ const char *vlGetExtensions(void)
 {
 	_VL_UTIL_TRACK(vlGetExtensions);
 
-#ifdef VL_MODE_OPENGL
+#if defined(VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
 	return (const char*)glGetString(GL_EXTENSIONS);
 	// TODO: this works differently in core; use glGetStringi instead!
 #elif defined (VL_MODE_GLIDE)
@@ -223,7 +223,7 @@ const char *vlGetString(vlString_t string)
 {
 	_VL_UTIL_TRACK(vlGetString);
 
-#if defined (VL_MODE_OPENGL) || (VL_MODE_OPENGL_CORE)
+#if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
 	if (string == VL_STRING_EXTENSIONS)
 		// This works differently in core.
 		return vlGetExtensions();
@@ -498,14 +498,14 @@ void vlSetTextureEnvironmentMode(vlTextureEnvironmentMode_t TextureEnvironmentMo
 	CAPABILITIES
 ===========================*/
 
-typedef struct
+typedef struct vlCapabilities_s
 {
 	unsigned int vl_parm, to_parm;
 
 	const char *ident;
-} VLCapabilities_t;
+} vlCapabilities_t;
 
-VLCapabilities_t vl_capabilities[] =
+vlCapabilities_t vl_capabilities[] =
 {
 #if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
 	{ VL_CAPABILITY_ALPHA_TEST, GL_ALPHA_TEST, "ALPHA_TEST" },
@@ -716,62 +716,13 @@ void vlRenderBufferStorage(int format, int samples, unsigned int width, unsigned
 #endif
 }
 
-// VERTEX ARRAY OBJECTS
-
-/*	Generates a single vertex array.
-*/
-void vlGenerateVertexArray(vlVertexArray_t *arrays)
-{
-#ifdef VL_MODE_OPENGL
-	glGenVertexArrays(1, arrays);
-#endif
-}
-
-/*	Binds the given vertex array.
-*/
-void vlBindVertexArray(vlVertexArray_t array)
-{
-#ifdef VL_MODE_OPENGL
-	glBindVertexArray(array);
-#endif
-}
-
-// VERTEX BUFFER OBJECTS
-
-void vlGenerateVertexBuffers(int num, unsigned int *buffers)
-{
-#ifdef VL_MODE_OPENGL
-	glGenBuffers(num, buffers);
-#endif
-}
-
-/*	Deletes a single OpenGL buffer.
-	glDeleteBuffers
-*/
-void vlDeleteVertexBuffer(unsigned int *buffer)
-{
-#ifdef VL_MODE_OPENGL
-	glDeleteBuffers(1, buffer);
-#endif
-}
-
-/*	Binds the given buffer.
-	glBindBuffer
-*/
-void vlBindBuffer(unsigned int target, unsigned int buffer)
-{
-#ifdef VL_MODE_OPENGL
-	glBindBuffer(target, buffer);
-#endif
-}
-
 // FRAME BUFFER OBJECTS
 
 /*	Sets clear colour for colour buffer.
 */
-void vlSetClearColour(float r, float g, float b, float a)
+void vlSetClearColour4f(float r, float g, float b, float a)
 {
-	_VL_UTIL_TRACK(vlSetClearColour);
+	_VL_UTIL_TRACK(vlSetClearColour4f);
 
 	if ((r == vl_state.current_clearcolour[0]) &&
 		(g == vl_state.current_clearcolour[1]) &&
@@ -786,7 +737,12 @@ void vlSetClearColour(float r, float g, float b, float a)
 
 void vlSetClearColour4fv(plColour_t rgba)
 {
-	vlSetClearColour(rgba[0], rgba[1], rgba[2], rgba[3]);
+	vlSetClearColour4f(rgba[0], rgba[1], rgba[2], rgba[3]);
+}
+
+void vlSetClearColour3f(float r, float g, float b)
+{
+	vlSetClearColour4f(r, g, b, vl_state.current_clearcolour[3]);
 }
 
 /*	Clears all the buffers.
@@ -954,14 +910,13 @@ void vlFogColour3fv(plColour_t rgba)
 	DRAWING
 ===========================*/
 
-vlDraw_t *vl_draw_current = NULL;
-
-#define _VL_DRAW_VERTICES	4	// Default vertex count.
+#define	_VL_BUFFER_VERTICES	0
+#define _VL_BUFFER_INDICES	1
 
 /*	Generates each of the buffers and other
 	data necessary for the draw call.
 */
-vlDraw_t *vlCreateDraw(vlPrimitive_t primitive, unsigned int num_tris, unsigned int num_verts)
+vlDraw_t *vlCreateDraw(vlPrimitive_t primitive, uint32_t num_tris, uint32_t num_verts)
 {
 	_VL_UTIL_TRACK(vlCreateDraw);
 
@@ -976,11 +931,18 @@ vlDraw_t *vlCreateDraw(vlPrimitive_t primitive, unsigned int num_tris, unsigned 
 	_draw->primitive_restore	= primitive;
 
 	_draw->vertices = (vlVertex_t*)calloc_or_die(sizeof(vlDraw_t), num_verts);
+	memset(_draw->vertices, 0, sizeof(vlVertex_t));
 	_draw->numverts			= num_verts;
 	_draw->numtriangles		= num_tris;
 
+	if (primitive == VL_PRIMITIVE_TRIANGLES)
+	{
+		_draw->indices = (uint8_t*)calloc_or_die(_draw->numtriangles * 3, sizeof(uint8_t));
+		memset(_draw->indices, 0, sizeof(_draw->indices));
+	}
+
 #ifdef VL_MODE_OPENGL
-	glGenBuffers(1, &_draw->vbo_vertices);
+	glGenBuffers(1, &_draw->_gl_vbo[_VL_BUFFER_VERTICES]);
 #endif
 
 	return _draw;
@@ -988,57 +950,98 @@ vlDraw_t *vlCreateDraw(vlPrimitive_t primitive, unsigned int num_tris, unsigned 
 
 void vlDeleteDraw(vlDraw_t *draw)
 {
+	_VL_UTIL_TRACK(vlDeleteDraw);
+
 	if (!draw)
 		Sys_Error("Draw object has not been initialized!\n");
 
 #if defined (VL_MODE_OPENGL)
-	glDeleteBuffers(1, &draw->vbo_vertices);
+	glDeleteBuffers(1, &draw->_gl_vbo[_VL_BUFFER_VERTICES]);
 #endif
+
+	if (draw->vertices)
+		free(draw->vertices);
+	if (draw->indices)
+		free(draw->indices);
 
 	free(draw);
 	draw = NULL;
 }
 
+vlVertex_t *vl_draw_vertex = NULL;
+
 void vlBeginDraw(vlDraw_t *draw)
 {
+	_VL_UTIL_TRACK(vlBeginDraw);
+
 	if (!draw)
 		Sys_Error("Passed invalid draw object to vlBeginDraw!\n");
+
+	memset(draw->vertices, 0, sizeof(draw->vertices));
+	vl_draw_vertex = &draw->vertices[0];
+}
+
+void vlDrawVertex3f(float x, float y, float z)
+{
+	_VL_UTIL_TRACK(vlDrawVertex3f);
+
+	plVectorSet3f(vl_draw_vertex->position, x, y, z);
+	vl_draw_vertex++;
 }
 
 void vlDrawVertex3fv(plVector3f_t position)
 {
+	_VL_UTIL_TRACK(vlDrawVertex3fv);
 
+	plVectorCopy(position, vl_draw_vertex->position);
+	vl_draw_vertex++;
 }
 
-vlVertex_t	*vl_draw_vertex = NULL;
-int			vl_draw_curvert = -1;
-
-void vlDrawVertex3fv(plVector3f_t position)
+void vlDrawColour4f(float r, float g, float b, float a)
 {
-	vl_draw_curvert++;
-	plVectorCopy3fv(position, vl_draw_vertex[vl_draw_curvert].position);
+	_VL_UTIL_TRACK(vlDrawColour4f);
+
+	plColourSetf(vl_draw_vertex->colour, r, g, b, a);
 }
 
-void vlDrawNormal3fv(vlDraw_t *draw, plVector3f_t position)
+void vlDrawColour4fv(plColour_t rgba)
 {
-	plVectorCopy3fv(position, vl_draw_vertex[vl_draw_curvert].normal);
+	_VL_UTIL_TRACK(vlDrawColour4fv);
+
+	plVectorCopy(rgba, vl_draw_vertex->colour);
 }
 
-void vlEndDraw(void)
+void vlDrawNormal3fv(plVector3f_t position)
 {
-	if (!vl_draw_current)
-		Sys_Error("Invalid vlEndDraw call!\n");
+	_VL_UTIL_TRACK(vlDrawNormal3fv);
 
+	plVectorCopy(position, vl_draw_vertex->normal);
+}
+
+void vlDrawTexCoord2f(unsigned int target, float s, float t)
+{
+	plVectorSet2f(vl_draw_vertex->ST[target], s, t);
+}
+
+void vlEndDraw(vlDraw_t *draw)
+{
 #if defined (VL_MODE_OPENGL)
-	glBindBuffer(GL_ARRAY_BUFFER, vl_draw_current->vbo_vertices);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vl_draw_current->vertices), vl_draw_current->vertices, GL_STATIC_DRAW);
-
+	glBindBuffer(GL_ARRAY_BUFFER, draw->_gl_vbo[_VL_BUFFER_VERTICES]);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(draw->vertices), draw->vertices, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	if (draw->primitive == VL_PRIMITIVE_TRIANGLES)
+	{
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, draw->_gl_vbo[_VL_BUFFER_INDICES]);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, (draw->numtriangles * 3) * sizeof(uint8_t), draw->indices, GL_STATIC_DRAW);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	}
 #endif
 
-	free(vl_draw_current->vertices);
-	vl_draw_current->vertices = NULL;
+	vl_draw_vertex = NULL;
 }
+
+//--
 
 typedef struct _vlPrimitiveTranslate_s
 {
@@ -1099,11 +1102,9 @@ unsigned int _vlTranslatePrimitiveMode(vlPrimitive_t primitive)
 */
 void _vlDrawArrays(vlPrimitive_t mode, unsigned int first, unsigned int count)
 {
-	if (count == 0)
-		return;
+	if (count == 0) return;
 	// Ensure that first isn't going to kill us.
-	else if (first >= count)
-		first = 0;
+	else if (first >= count) first = 0;
 
 #ifdef VL_MODE_OPENGL
 	glDrawArrays(_vlTranslatePrimitiveMode(mode), first, count);
@@ -1112,14 +1113,12 @@ void _vlDrawArrays(vlPrimitive_t mode, unsigned int first, unsigned int count)
 
 void _vlDrawElements(vlPrimitive_t mode, unsigned int count, unsigned int type, const void *indices)
 {
-	VIDEO_FUNCTION_START
-	if ((count == 0) || !indices)
-		return;
+	_VL_UTIL_TRACK(_vlDrawElements);
 
+	if ((count == 0) || !indices) return;
 #ifdef VL_MODE_OPENGL
 	glDrawElements(_vlTranslatePrimitiveMode(mode), count, type, indices);
 #endif
-	VIDEO_FUNCTION_END
 }
 
 /*	Draw object using immediate mode.
@@ -1128,8 +1127,8 @@ void _vlDrawImmediate(vlDraw_t *draw)
 {
 	_VL_UTIL_TRACK(_vlDrawImmediate);
 
-#ifdef VL_MODE_GLIDE
-#else
+#if defined (VL_MODE_GLIDE)
+#elif defined (VL_MODE_OPENGL)
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_COLOR_ARRAY);
 	glEnableClientState(GL_NORMAL_ARRAY);
@@ -1175,11 +1174,7 @@ void vlDraw(vlDraw_t *draw)
 	if(draw->numverts == 0)
 		return;
 
-#if 1
-	
-#else
 	_vlDrawImmediate(draw);
-#endif
 }
 
 /*===========================
@@ -1201,7 +1196,7 @@ void vlApplyLighting(vlDraw_t *object, vlLight_t *light, plVector3f_t position)
 
 		float angle = (distance*((x * distvec[0]) + (y * distvec[1]) + (z * distvec[2])));
 		if (angle < 0)
-			plVectorClear3fv(object->vertices[i].colour);
+			plVectorClear(object->vertices[i].colour);
 		else
 		{
 			object->vertices[i].colour[PL_RED] = light->colour[PL_RED] * angle;

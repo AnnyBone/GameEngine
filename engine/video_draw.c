@@ -779,17 +779,16 @@ void Draw_ResetCanvas(void)
 	Models
 */
 
-void Draw_VertexNormals(model_t *model)
+void Draw_VertexNormals(vlDraw_t *object)
 {
-	vlDraw_t *object = &model->objects[0];
 	if (!cv_video_shownormals.bValue || (object->primitive == VL_PRIMITIVE_LINES))
 		return;
 
 	for (unsigned int i = 0; i < object->numverts; i++)
 	{
 		MathVector3f_t endpos;
-		plVectorClear3fv(endpos);
-		plVectorScale3fv(object->vertices[i].normal, 2.0f, endpos);
+		plVectorClear(endpos);
+		plVectorScalef(object->vertices[i].normal, 2.0f, endpos);
 		plVectorAdd3fv(endpos, object->vertices[i].position, endpos);
 
 		Draw_Line(object->vertices[i].position, endpos);
@@ -810,7 +809,7 @@ void Draw_StaticEntity(ClientEntity_t *entity)
 	R_RotateForEntity(entity->origin, entity->angles);
 
 	Material_Draw(entity->model->materials, 0, 0, 0, false);
-	vlDraw(&entity->model->objects[entity->frame]);
+	vlDraw(entity->model->objects[entity->frame]);
 	Material_Draw(entity->model->materials, 0, 0, 0, true);
 
 	vlPopMatrix();
@@ -823,7 +822,7 @@ void Draw_VertexEntity(ClientEntity_t *entity)
 
 	R_RotateForEntity(entity->origin, entity->angles);
 
-	vlDraw(&entity->model->objects[entity->frame]);
+	vlDraw(entity->model->objects[entity->frame]);
 
 	vlPopMatrix();
 }

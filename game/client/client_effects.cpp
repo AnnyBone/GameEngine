@@ -86,7 +86,7 @@ void ClientEffect_LavaSplash(MathVector3f_t position)
 				velocity = (float)(50 + (rand() & 63));
 
 				plVectorNormalize(direction);
-				plVectorScale3fv(direction, velocity, part->vVelocity);
+				plVectorScalef(direction, velocity, part->vVelocity);
 			}
 }
 
@@ -163,7 +163,7 @@ void ClientEffect_BloodCloud(MathVector3f_t position, BloodType_t type)
 
 	// TODO: support for different blood types
 
-	plVectorCopy3fv(position, part->vOrigin);
+	plVectorCopy(position, part->vOrigin);
 
 	part->lifetime		= (float)(Client.time + 0.3*(rand() % 5));
 	part->fScale		= 20.0f;
@@ -280,7 +280,7 @@ void ClientEffect_IonBallTrail(MathVector3f_t position)
 		for (j = 0; j < 3; j++)
 			part->vOrigin[j] = position[j] + ((rand() & 15) - 5.0f);
 
-		plVectorClear3fv(part->vVelocity);
+		plVectorClear(part->vVelocity);
 	}
 
 	if (!spr_debug)

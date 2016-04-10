@@ -48,20 +48,20 @@ void Area_SetMoveDirection(MathVector3f_t vAngles, MathVector3f_t vMoveDirection
 	MathVector3f_t vMoveDown = { 0, 0, -1 };
 
 	if (plVectorCompare(vAngles, vUp))
-		plVectorCopy3fv(vMoveUp, vMoveDirection);
+		plVectorCopy(vMoveUp, vMoveDirection);
 	else if (plVectorCompare(vAngles, vDown))
-		plVectorCopy3fv(vMoveDown,vMoveDirection);
+		plVectorCopy(vMoveDown, vMoveDirection);
 	else
 		plAngleVectors(vAngles, vMoveDirection, NULL, NULL);
 
-	plVectorClear3fv(vAngles);
+	plVectorClear(vAngles);
 }
 
 void Area_CalculateMovementDone(ServerEntity_t *eArea)
 {
 	Entity_SetOrigin(eArea,eArea->local.finaldest);
 
-	plVectorClear3fv(eArea->v.velocity);
+	plVectorClear(eArea->v.velocity);
 
 	if(eArea->local.think1)
 		eArea->local.think1(eArea,eArea);
@@ -71,11 +71,11 @@ void Area_Move(ServerEntity_t *eArea, MathVector3f_t vTDest, float fSpeed, void(
 {
 	MathVector3f_t	vdestdelta;
 
-	plVectorCopy3fv(vTDest, eArea->local.finaldest);
+	plVectorCopy(vTDest, eArea->local.finaldest);
 	plVectorSubtract3fv(vTDest, eArea->v.origin, vdestdelta);
 
 	float traveltime = plLengthf(vdestdelta) / fSpeed;
-	plVectorScale3fv(vdestdelta, 1.0f / traveltime, eArea->v.velocity);
+	plVectorScalef(vdestdelta, 1.0f / traveltime, eArea->v.velocity);
 
 	eArea->local.think1	= Function;
 
@@ -502,8 +502,8 @@ void Area_DoorLink(ServerEntity_t *door)
 	Math_VectorSet(0, smaxs);
 
 	// Copy the size over, which we'll use for the trigger field.
-	plVectorCopy3fv(door->v.mins, smins);
-	plVectorCopy3fv(door->v.maxs, smaxs);
+	plVectorCopy(door->v.mins, smins);
+	plVectorCopy(door->v.maxs, smaxs);
 
 	do
 	{
@@ -1210,7 +1210,7 @@ void Area_ClimbTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
 		vLadVelocity[2] = -1 * 100;
 
 	// do it manually! VectorCopy won't work with this
-	plVectorCopy3fv(vLadVelocity, eOther->v.velocity);
+	plVectorCopy(vLadVelocity, eOther->v.velocity);
 }
 
 void Area_ClimbSpawn(ServerEntity_t *eArea)

@@ -82,6 +82,9 @@ void Video_DebugCommand(void);
 
 Video_t	Video;
 
+texture_t	*r_notexture_mip;
+texture_t	*r_notexture_mip2;	//johnfitz -- used for non-lightmapped surfs with a missing texture
+
 /*	Initialize the renderer
 */
 void Video_Initialize(void)
@@ -207,6 +210,16 @@ void Video_Initialize(void)
 	glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 4);
 #endif
 	vlActiveTexture(0);
+
+	//johnfitz -- create notexture miptex
+	r_notexture_mip = (texture_t*)Hunk_AllocName(sizeof(texture_t), "r_notexture_mip");
+	strcpy(r_notexture_mip->name, "notexture");
+	r_notexture_mip->height = r_notexture_mip->width = 32;
+
+	r_notexture_mip2 = (texture_t*)Hunk_AllocName(sizeof(texture_t), "r_notexture_mip2");
+	strcpy(r_notexture_mip2->name, "notexture2");
+	r_notexture_mip2->height = r_notexture_mip2->width = 32;
+	//johnfitz
 
 	vid.conwidth = (scr_conwidth.value > 0) ? (int)scr_conwidth.value : (scr_conscale.value > 0) ? (int)(Video.iWidth / scr_conscale.value) : Video.iWidth;
 	vid.conwidth = Math_Clamp(320, vid.conwidth, Video.iWidth);

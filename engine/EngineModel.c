@@ -213,10 +213,10 @@ typedef struct
 
 	int type;
 
-	bool (*Function)(model_t *model, void *buf);
+	bool (*Function)(model_t *model);
 } ModelLoadInterface;
 
-bool Model_LoadOBJ(model_t *model, void *buf);
+bool Model_LoadOBJ(model_t *model);
 
 ModelLoadInterface model_formatlist[] =
 {
@@ -280,7 +280,7 @@ model_t *Model_Load(model_t *model)
 					// Set the default type, we can change later.
 					model->type = (ModelType_t)model_formatlist[i].type;
 
-					if (model_formatlist[i].Function(model, buf))
+					if (model_formatlist[i].Function(model))
 						return model;
 
 					break;
@@ -1496,7 +1496,7 @@ void Model_LoadMD2(model_t *mModel,void *Buffer)
 	OBJ Support
 */
 
-bool Model_LoadOBJ(model_t *model,void *buf)
+bool Model_LoadOBJ(model_t *model)
 {
 #if 0
 	char	cExtension[4];

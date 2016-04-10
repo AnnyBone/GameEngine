@@ -30,7 +30,7 @@ using namespace std;
 		Support for multiple textures, somehow...
 		Animated frames are mangled.
 */
-bool ModelU3D_Load(model_t *model, void *buf)
+bool ModelU3D_Load(model_t *model)
 {
 	FILE *dataf;
 	COM_FOpenFile(model->name, &dataf);
@@ -110,7 +110,7 @@ bool ModelU3D_Load(model_t *model, void *buf)
 	model->numframes		= animheader.frames;
 
 	// Allocate an object for each frame.
-	model->objects = (vlDraw_t*)calloc_or_die(model->numframes, sizeof(vlDraw_t));
+	model->objects = (vlDraw_t**)calloc_or_die(model->numframes, sizeof(*model->objects));
 
 	// If it has more than one frame, we're gonna want to interp between
 	// it all later.
@@ -140,12 +140,7 @@ bool ModelU3D_Load(model_t *model, void *buf)
 	U3DVertex_t *uvertices = (U3DVertex_t*)calloc_or_die((model->numvertexes * model->numframes), sizeof(U3DVertex_t));
 	for (int i = 0; i < model->numframes; i++)
 	{
-		// Allocate vertices.
-		model->objects[i].vertices		= (vlVertex_t*)calloc_or_die(model->numvertexes, sizeof(vlVertex_t));
-		model->objects[i].numverts		= model->numvertexes;
-		model->objects[i].numtriangles	= model->numtriangles;
-		model->objects[i].primitive		= VL_PRIMITIVE_TRIANGLES;
-		model->objects[i].indices		= (uint8_t*)calloc_or_die(model->numtriangles * 3, sizeof(uint8_t));
+		model->objects[i] = vlCreateDraw(VL_PRIMITIVE_TRIANGLES, model->numtriangles, model->numvertexes);
 
 		size_t retsize = fread(&uvertices[i], sizeof(U3DVertex_t), model->numvertexes, animf);
 		if (retsize != (size_t)model->numvertexes)
@@ -162,27 +157,30 @@ bool ModelU3D_Load(model_t *model, void *buf)
 		// Copy the indices over.
 		for (unsigned int j = 0, k = 0; j < model->numtriangles; j++)
 		{
-			model->objects[i].indices[k] = utriangles[j].vertex[0];	k++;
-			model->objects[i].indices[k] = utriangles[j].vertex[1];	k++;
-			model->objects[i].indices[k] = utriangles[j].vertex[2];	k++;
+			model->objects[i]->indices[k] = utriangles[j].vertex[0]; k++;
+			model->objects[i]->indices[k] = utriangles[j].vertex[1]; k++;
+			model->objects[i]->indices[k] = utriangles[j].vertex[2]; k++;
 
-			model->objects[i].vertices[utriangles[j].vertex[0]].ST[0][0] = utriangles[j].ST[0][0];
-			model->objects[i].vertices[utriangles[j].vertex[0]].ST[0][1] = utriangles[j].ST[0][1];
-			model->objects[i].vertices[utriangles[j].vertex[1]].ST[0][0] = utriangles[j].ST[1][0];
-			model->objects[i].vertices[utriangles[j].vertex[1]].ST[0][1] = utriangles[j].ST[1][1];
-			model->objects[i].vertices[utriangles[j].vertex[2]].ST[0][0] = utriangles[j].ST[2][0];
-			model->objects[i].vertices[utriangles[j].vertex[2]].ST[0][1] = utriangles[j].ST[2][1];
+		//	model->objects[i].vertices[utriangles[j].vertex[0]].ST[0][0] = utriangles[j].ST[0][0];
+		//	model->objects[i].vertices[utriangles[j].vertex[0]].ST[0][1] = utriangles[j].ST[0][1];
+		//	model->objects[i].vertices[utriangles[j].vertex[1]].ST[0][0] = utriangles[j].ST[1][0];
+		//	model->objects[i].vertices[utriangles[j].vertex[1]].ST[0][1] = utriangles[j].ST[1][1];
+		//	model->objects[i].vertices[utriangles[j].vertex[2]].ST[0][0] = utriangles[j].ST[2][0];
+		//	model->objects[i].vertices[utriangles[j].vertex[2]].ST[0][1] = utriangles[j].ST[2][1];
 		}
+
+		vlBeginDraw(model->objects[i]);
 
 		// Copy each of the vertices over.
 		for (int j = 0; j < model->numvertexes; j++)
 		{
-			model->objects[i].vertices[j].position[0] = (float)uvertices[j].x;
-			model->objects[i].vertices[j].position[1] = (float)uvertices[j].y;
-			model->objects[i].vertices[j].position[2] = (float)uvertices[j].z;
+			vlDrawColour4fv(pl_white);
+			vlDrawVertex3f((float)uvertices[j].x, (float)uvertices[j].y, (float)uvertices[j].z);
 
-			Math_Vector4Copy(pl_white, model->objects[i].vertices[j].colour);
+			// todo: calculate and apply normals.
 		}
+
+		vlEndDraw(model->objects[i]);
 
 		fseek(animf, animheader.size - model->numvertexes * sizeof(U3DVertex_t), SEEK_CUR);
 	}
@@ -190,12 +188,6 @@ bool ModelU3D_Load(model_t *model, void *buf)
 	fclose(animf);
 	free(utriangles);
 	fclose(dataf);
-
-	// Now calculate the normals, since U3D doesn't include them.
-	for (unsigned int i = 0; i < model->objects[0].numverts; i++)
-	{
-		plVectorClear3fv(model->objects[0].vertices[i].normal);
-	}
 
 	Model_LoadRelativeMaterial(model);
 

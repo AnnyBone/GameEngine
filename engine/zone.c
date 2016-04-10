@@ -51,15 +51,15 @@ void *calloc_or_die(size_t nmemb, size_t size)
 
 void *realloc_or_die(void *ptr, size_t new_size)
 {
-	void *ptr = realloc(ptr, new_size);
-	if (!ptr)
+	void *_ptr = realloc(ptr, new_size);
+	if (!_ptr)
 	{
 		// Windows doesn't implement z size flag
 		Sys_Error("Failed to reallocate memory! (%llu bytes)\n",
 			(unsigned long long int)(new_size));
 	}
 
-	return ptr;
+	return _ptr;
 }
 
 //============================================================================

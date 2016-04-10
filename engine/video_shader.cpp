@@ -45,12 +45,6 @@ ShaderManager::ShaderManager()
 #if 0
 	Add(new WaterShader(), "water");
 #endif
-
-	// Base starts off enabled, sloppy, I know but this will likely
-	// change.
-	ShaderProgram *program = Find("base");
-	if (program)
-		program->Enable();
 }
 
 ShaderManager::~ShaderManager()
@@ -268,6 +262,12 @@ void ShaderProgram::RegisterShader(std::string path, vlShaderType_t type)
 	Attach(shader_);
 }
 
+void ShaderProgram::RegisterAttributes()
+{
+	// Register all the base attributes.
+	SHADER_REGISTER_ATTRIBUTE(a_vertices, 0);
+}
+
 void ShaderProgram::Attach(Shader *shader)
 {
 	VIDEO_FUNCTION_START
@@ -293,12 +293,16 @@ void ShaderProgram::Disable()
 	VIDEO_FUNCTION_END
 }
 
+void ShaderProgram::Draw()
+{
+	Enable();
+
+	glEnableVertexAttribArray(a_vertices);
+}
+
 void ShaderProgram::Link()
 {
 	vlLinkShaderProgram(&instance);
-
-	// Register all the base attributes.
-	SHADER_REGISTER_ATTRIBUTE(a_vertices, 0);
 }
 
 void ShaderProgram::Shutdown()
