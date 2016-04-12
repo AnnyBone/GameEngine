@@ -25,14 +25,12 @@
 
 void MainViewportPanel::Draw()
 {
-#if 0
 	// Currently doing nothing...
 	engine->DrawGrid(0, 0, -16, 16);
 
 	engine->DrawResetCanvas();
 	engine->DrawSetCanvas(CANVAS_DEFAULT);
 	engine->DrawString(10, 10, "Camera Viewport");
-#endif
 }
 
 class XViewportPanel : public BaseViewportPanel

@@ -1179,7 +1179,7 @@ void vlDraw(vlDraw_t *draw)
 	if(draw->numverts == 0)
 		return;
 
-#if 0
+#if 1
 	_vlDrawImmediate(draw);
 #else
 	if (draw->primitive == VL_PRIMITIVE_TRIANGLES)
