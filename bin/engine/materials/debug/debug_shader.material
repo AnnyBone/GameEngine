@@ -1,0 +1,11 @@
+debug_shader
+{
+	$skin
+    {
+		$shader base
+	
+		$map "textures/hmirror"
+		{
+		}
+    }
+}

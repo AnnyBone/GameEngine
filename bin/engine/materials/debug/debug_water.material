@@ -1,0 +1,16 @@
+debug_water
+{
+	$skin
+    {
+		$shader water
+
+		$map "materials/debug/water_diffuse"
+		{
+		}
+
+		$map "materials/debug/water_normal"
+		{
+			$type "normal"
+		}
+    }
+}
