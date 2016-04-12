@@ -44,7 +44,7 @@ ModelViewportPanel::ModelViewportPanel(wxWindow *parent) : BaseViewportPanel(par
 void ModelViewportPanel::Draw()
 {
 	engine->DrawGradientBackground();
-#if 0
+
 	if (entity && entity->model)
 	{
 		entity->frame++;
@@ -75,7 +75,6 @@ void ModelViewportPanel::Draw()
 			+ std::to_string(entity->model->numframes);
 		engine->DrawString(10, 20, strout.c_str());
 	}
-#endif
 }
 
 void ModelViewportPanel::SetModel(model_t *newmodel)

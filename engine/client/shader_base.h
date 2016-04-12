@@ -25,7 +25,6 @@ public:
 	~BaseShader();
 
 	void Initialize();
-	void Draw();
 
 	void EnableAlphaTest();
 	void DisableAlphaTest();

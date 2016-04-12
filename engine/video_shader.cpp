@@ -102,13 +102,11 @@ ShaderProgram *ShaderManager::Find(std::string name)
 
 // Shader
 
-Shader::Shader(vlShaderType_t type)
+Shader::Shader(vlShaderType_t type) : 
+	instance(0), 
+	source_length(0), 
+	type(type)
 {
-	instance = 0;
-
-	this->type = type;
-
-	source_length = 0;
 }
 
 bool Shader::Load(const char *path)
@@ -293,11 +291,20 @@ void ShaderProgram::Disable()
 	VIDEO_FUNCTION_END
 }
 
-void ShaderProgram::Draw()
+void ShaderProgram::Draw(vlDraw_t *object)
 {
-	Enable();
-
 	glEnableVertexAttribArray(a_vertices);
+	glBindBuffer(GL_ARRAY_BUFFER, object->_gl_vbo[0]);
+	glVertexAttribPointer(
+		a_vertices,
+		3,
+		GL_FLOAT,
+		GL_FALSE,
+		0,0);
+
+	vlDraw(object);
+
+	glDisableVertexAttribArray(a_vertices);
 }
 
 void ShaderProgram::Link()

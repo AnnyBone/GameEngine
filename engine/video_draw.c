@@ -799,34 +799,6 @@ void Draw_VertexNormals(vlDraw_t *object)
 	Entities
 */
 
-/*	Calls up buffer and draws it.
-*/
-void Draw_StaticEntity(ClientEntity_t *entity)
-{
-	// TODO: TEMPORARY DEBUGGING STUFF!!!!
-	vlPushMatrix();
-
-	R_RotateForEntity(entity->origin, entity->angles);
-
-	Material_Draw(entity->model->materials, 0, 0, 0, false);
-	vlDraw(entity->model->objects[entity->frame]);
-	Material_Draw(entity->model->materials, 0, 0, 0, true);
-
-	vlPopMatrix();
-	// TODO: TEMPORARY DEBUGGING STUFF!!!!
-}
-
-void Draw_VertexEntity(ClientEntity_t *entity)
-{
-	vlPushMatrix();
-
-	R_RotateForEntity(entity->origin, entity->angles);
-
-	vlDraw(entity->model->objects[entity->frame]);
-
-	vlPopMatrix();
-}
-
 void Draw_Entity(ClientEntity_t *entity)
 {
 	if (!entity->model)

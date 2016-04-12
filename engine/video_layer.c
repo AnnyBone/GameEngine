@@ -1025,11 +1025,16 @@ void vlDrawTexCoord2f(unsigned int target, float s, float t)
 
 void vlEndDraw(vlDraw_t *draw)
 {
+	if (!draw)
+		Sys_Error("Passed invalid draw object to vlBeginDraw!\n");
+
 #if defined (VL_MODE_OPENGL)
 	glBindBuffer(GL_ARRAY_BUFFER, draw->_gl_vbo[_VL_BUFFER_VERTICES]);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(draw->vertices), draw->vertices, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+#endif
 
+#if defined (VL_MODE_OPENGL)
 	if (draw->primitive == VL_PRIMITIVE_TRIANGLES)
 	{
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, draw->_gl_vbo[_VL_BUFFER_INDICES]);
@@ -1174,7 +1179,19 @@ void vlDraw(vlDraw_t *draw)
 	if(draw->numverts == 0)
 		return;
 
+#if 0
 	_vlDrawImmediate(draw);
+#else
+	if (draw->primitive == VL_PRIMITIVE_TRIANGLES)
+		_vlDrawElements(
+			draw->primitive,
+			draw->numtriangles * 3,
+			GL_UNSIGNED_BYTE,
+			draw->indices
+		);
+	else
+		_vlDrawArrays(draw->primitive, 0, draw->numverts);
+#endif
 }
 
 /*===========================

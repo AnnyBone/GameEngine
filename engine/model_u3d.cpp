@@ -189,7 +189,7 @@ bool ModelU3D_Load(model_t *model)
 	free(utriangles);
 	fclose(dataf);
 
-	Model_LoadRelativeMaterial(model);
+//	Model_LoadRelativeMaterial(model);
 
 	// Everything checks out!
 	return true;

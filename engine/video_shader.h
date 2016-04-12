@@ -60,7 +60,7 @@ namespace Core
 		void Attach(Core::Shader *shader);
 		void Enable();
 		void Disable();
-		void Draw();
+		void Draw(vlDraw_t *object);
 		void Link();
 		void Shutdown();
 

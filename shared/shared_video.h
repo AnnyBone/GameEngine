@@ -51,7 +51,7 @@ typedef struct vlVertex_s
 
 typedef struct vlDraw_s
 {
-	vlVertex_t *vertices;	// Array of vertices for the object.
+	vlVertex_t *vertices;		// Array of vertices for the object.
 
 	unsigned int numverts;		// Number of vertices.
 	unsigned int numtriangles;	// Number of triangles.

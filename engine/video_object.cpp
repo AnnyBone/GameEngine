@@ -19,24 +19,42 @@
 #include "engine_base.h"
 
 #include "video.h"
+#include "video_shader.h"
 
-/*
-	C Interface
+/*	Calls up buffer and draws it.
 */
-
-void VideoObject_Colour4f(vlDraw_t *voObject, float r, float g, float b, float a)
+void Draw_StaticEntity(ClientEntity_t *entity)
 {
-	VIDEO_FUNCTION_START
-	voObject->vertices[voObject->numverts].colour[0] = r;
-	voObject->vertices[voObject->numverts].colour[1] = g;
-	voObject->vertices[voObject->numverts].colour[2] = b;
-	voObject->vertices[voObject->numverts].colour[3] = a;
-	VIDEO_FUNCTION_END
+	// TODO: TEMPORARY DEBUGGING STUFF!!!!
+	vlPushMatrix();
+
+	R_RotateForEntity(entity->origin, entity->angles);
+
+	Core::ShaderProgram *sp_base = g_shadermanager->Find("base");
+	if (sp_base)
+	{
+		sp_base->Enable();
+		sp_base->Draw(entity->model->objects[entity->frame]);
+		sp_base->Disable();
+	}
+	else
+	{
+		Material_Draw(entity->model->materials, 0, VL_PRIMITIVE_IGNORE, 0, false);
+		vlDraw(entity->model->objects[entity->frame]);
+		Material_Draw(entity->model->materials, 0, VL_PRIMITIVE_IGNORE, 0, true);
+	}
+
+	vlPopMatrix();
+	// TODO: TEMPORARY DEBUGGING STUFF!!!!
 }
 
-void VideoObject_Colour4fv(vlDraw_t *voObject, MathVector4f_t mvColour)
+void Draw_VertexEntity(ClientEntity_t *entity)
 {
-	VIDEO_FUNCTION_START
-	VideoObject_Colour4f(voObject, mvColour[0], mvColour[1], mvColour[2], mvColour[3]);
-	VIDEO_FUNCTION_END
+	vlPushMatrix();
+
+	R_RotateForEntity(entity->origin, entity->angles);
+
+	vlDraw(entity->model->objects[entity->frame]);
+
+	vlPopMatrix();
 }
