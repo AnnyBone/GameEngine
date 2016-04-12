@@ -82,7 +82,8 @@ void Video_DebugCommand(void);
 
 Video_t	Video;
 
-Core::ShaderManager *g_shadermanager = nullptr;
+texture_t	*r_notexture_mip;
+texture_t	*r_notexture_mip2;	//johnfitz -- used for non-lightmapped surfs with a missing texture
 
 /*	Initialize the renderer
 */
@@ -210,6 +211,16 @@ void Video_Initialize(void)
 #endif
 	vlActiveTexture(0);
 
+	//johnfitz -- create notexture miptex
+	r_notexture_mip = (texture_t*)Hunk_AllocName(sizeof(texture_t), "r_notexture_mip");
+	strcpy(r_notexture_mip->name, "notexture");
+	r_notexture_mip->height = r_notexture_mip->width = 32;
+
+	r_notexture_mip2 = (texture_t*)Hunk_AllocName(sizeof(texture_t), "r_notexture_mip2");
+	strcpy(r_notexture_mip2->name, "notexture2");
+	r_notexture_mip2->height = r_notexture_mip2->width = 32;
+	//johnfitz
+
 	vid.conwidth = (scr_conwidth.value > 0) ? (int)scr_conwidth.value : (scr_conscale.value > 0) ? (int)(Video.iWidth / scr_conscale.value) : Video.iWidth;
 	vid.conwidth = Math_Clamp(320, vid.conwidth, Video.iWidth);
 	vid.conwidth &= 0xFFFFFFF8;
@@ -219,13 +230,8 @@ void Video_Initialize(void)
 
 	Light_Initialize();
 
-	// Initialize the shader manager.
 	g_shadermanager = new Core::ShaderManager();
-	g_shadermanager->Initialize();
-
-	// Initialize the sprite manager.
 	g_spritemanager = new Core::SpriteManager();
-	g_spritemanager->Initialize();
 
 	Video.bInitialized = true;
 }
@@ -427,28 +433,28 @@ void Video_SetTexture(gltexture_t *gTexture)
 
 MathVector4f_t mvVideoGlobalColour;
 
-void Video_ObjectTexture(VideoVertex_t *object, unsigned int uiTextureUnit, float S, float T)
+void Video_ObjectTexture(vlVertex_t *object, unsigned int uiTextureUnit, float S, float T)
 {
-	object->mvST[uiTextureUnit][0] = S;
-	object->mvST[uiTextureUnit][1] = T;
+	object->ST[uiTextureUnit][0] = S;
+	object->ST[uiTextureUnit][1] = T;
 }
 
-void Video_ObjectVertex(VideoVertex_t *object, float x, float y, float z)
+void Video_ObjectVertex(vlVertex_t *object, float x, float y, float z)
 {
-	plVectorSet3f(object->mvPosition, x, y, z);
+	plVectorSet3f(object->position, x, y, z);
 }
 
-void Video_ObjectNormal(VideoVertex_t *object, float x, float y, float z)
+void Video_ObjectNormal(vlVertex_t *object, float x, float y, float z)
 {
-	plVectorSet3f(object->mvNormal, x, y, z);
+	plVectorSet3f(object->normal, x, y, z);
 }
 
-void Video_ObjectColour(VideoVertex_t *object, float R, float G, float B, float A)
+void Video_ObjectColour(vlVertex_t *object, float R, float G, float B, float A)
 {
-	object->mvColour[pRED] = R;
-	object->mvColour[pGREEN] = G;
-	object->mvColour[pBLUE] = B;
-	object->mvColour[pALPHA] = A;
+	object->colour[PL_RED]		= R;
+	object->colour[PL_GREEN]	= G;
+	object->colour[PL_BLUE]		= B;
+	object->colour[PL_ALPHA]	= A;
 }
 
 /*
@@ -457,20 +463,20 @@ void Video_ObjectColour(VideoVertex_t *object, float R, float G, float B, float 
 
 /*  Draw a simple rectangle.
 */
-void Video_DrawFill(VideoVertex_t *voFill, Material_t *mMaterial, int iSkin)
+void Video_DrawFill(vlVertex_t *voFill, Material_t *mMaterial, int iSkin)
 {
-	Video_DrawObject(voFill, VIDEO_PRIMITIVE_TRIANGLE_FAN, 4, mMaterial, iSkin);
+	Video_DrawObject(voFill, VL_PRIMITIVE_TRIANGLE_FAN, 4, mMaterial, iSkin);
 }
 
 /*	Surfaces
 */
 void Video_DrawSurface(msurface_t *mSurface,float fAlpha, Material_t *mMaterial, unsigned int uiSkin)
 {
-	VideoVertex_t	*drawsurf;
-	float			*fVert;
-	int				i;
+	vlVertex_t	*drawsurf;
+	float		*fVert;
+	int			i;
 	
-	drawsurf = (VideoVertex_t*)calloc_or_die(mSurface->polys->numverts, sizeof(VideoVertex_t));
+	drawsurf = (vlVertex_t*)calloc_or_die(mSurface->polys->numverts, sizeof(vlVertex_t));
 
 	fVert = mSurface->polys->verts[0];
 	for (i = 0; i < mSurface->polys->numverts; i++, fVert += VERTEXSIZE)
@@ -484,7 +490,7 @@ void Video_DrawSurface(msurface_t *mSurface,float fAlpha, Material_t *mMaterial,
 		Video_ObjectColour(&drawsurf[i], 1.0f, 1.0f, 1.0f, fAlpha);
 	}
 
-	Video_DrawObject(drawsurf, VIDEO_PRIMITIVE_TRIANGLE_FAN, mSurface->polys->numverts, mMaterial, 0);
+	Video_DrawObject(drawsurf, VL_PRIMITIVE_TRIANGLE_FAN, mSurface->polys->numverts, mMaterial, 0);
 	free(drawsurf);
 
 	rs_brushpasses++;
@@ -493,13 +499,13 @@ void Video_DrawSurface(msurface_t *mSurface,float fAlpha, Material_t *mMaterial,
 /*	Draw 3D object.
 	TODO: Add support for VBOs ?
 */
-void Video_DrawObject(VideoVertex_t *vobject, VideoPrimitive_t primitive,
+void Video_DrawObject(vlVertex_t *vobject, vlPrimitive_t primitive,
 	unsigned int numverts, Material_t *mMaterial, int iSkin)
 {
 	if(numverts == 0)
 		return;
 
-	VideoObject_t tempobj;
+	vlDraw_t tempobj;
 	tempobj.vertices			= vobject;
 	tempobj.numverts			= numverts;
 	tempobj.primitive			= primitive;
@@ -509,7 +515,7 @@ void Video_DrawObject(VideoVertex_t *vobject, VideoPrimitive_t primitive,
 	Material_SetSkin(mMaterial, iSkin);
 
 	Material_DrawObject(mMaterial, &tempobj, false);
-	VideoObject_DrawImmediate(&tempobj);
+	vlDraw(&tempobj);
 	Material_DrawObject(mMaterial, &tempobj, true);
 }
 
@@ -578,9 +584,6 @@ void Video_Shutdown(void)
 
 	// Let us know that we're shutting down the video sub-system.
 	Con_Printf("Shutting down video...\n");
-
-	g_spritemanager->Shutdown();
-	g_shadermanager->Shutdown();
 
 	delete g_spritemanager;
 	delete g_shadermanager;

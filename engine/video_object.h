@@ -20,17 +20,7 @@
 
 plEXTERN_C_START
 
-void VideoObject_Begin(VideoObject_t *object, VideoPrimitive_t primitive);
-void VideoObject_Vertex3f(VideoObject_t *object, float x, float y, float z);
-void VideoObject_Normal(VideoObject_t *object, float x, float y, float z);
-void VideoObject_Colour4f(VideoObject_t *object, float r, float g, float b, float a);
-void VideoObject_Colour4fv(VideoObject_t *object, MathVector4f_t colour);
-void VideoObject_End(VideoObject_t *object);
-void VideoObject_Clip(VideoObject_t *object, MathVector4f_t mvClipDimensions);
-
-void VideoObject_Draw(VideoObject_t *object);
-void VideoObject_DrawImmediate(VideoObject_t *object);
-
-void VideoObject_CalculateLighting(VideoObject_t *object, DynamicLight_t *light, MathVector3f_t position);
+void Draw_StaticEntity(ClientEntity_t *entity);
+void Draw_VertexEntity(ClientEntity_t *entity);
 
 plEXTERN_C_END

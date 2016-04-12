@@ -88,7 +88,7 @@ typedef struct
 
 	MaterialTextureType_t mttType;	// Sphere, fullbright, or what have you.
 
-	VideoTextureEnvironmentMode_t env_mode;
+	vlTextureEnvironmentMode_t env_mode;
 } MaterialTexture_t;
 
 typedef struct

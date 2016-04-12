@@ -129,7 +129,7 @@ void Scrap_Upload (void)
 
 void Draw_MaterialSurface(Material_t *mMaterial, int iSkin,	int x, int y, int w, int h,	float fAlpha)
 {
-	VideoVertex_t voSurface[4];
+	vlVertex_t voSurface[4];
 
 	// Sloppy, but in the case that there's nothing valid...
 	if (!mMaterial)
@@ -191,7 +191,7 @@ void Draw_ExternPic(char *path,float alpha,int x,int y,int w,int h)
 	Video_DisableCapabilities(VIDEO_DEPTH_TEST);
 
 	{
-		VideoVertex_t	voPicture[4];
+		vlVertex_t	voPicture[4];
 
 		for(i = 0; i < 4; i++)
 		{
@@ -340,9 +340,9 @@ void Draw_Init (void)
 
 void Draw_Character(int x, int y, int num)
 {
-	VideoVertex_t		voCharacter[4] = { { { 0 } } };
-	int					row, col;
-	float				frow,fcol,size;
+	vlVertex_t		voCharacter[4] = { { { 0 } } };
+	int				row, col;
+	float			frow,fcol,size;
 
 	if(y <= -8)
 		return;			// totally off screen
@@ -481,14 +481,14 @@ void Draw_TileClear (int x, int y, int w, int h)
 
 void Draw_Line(plVector3f_t mvStart, plVector3f_t mvEnd)
 {
-	VideoVertex_t	voLine[2] = { { { 0 } } };
+	vlVertex_t voLine[2] = { { { 0 } } };
 
 	Video_ObjectVertex(&voLine[0], mvStart[0], mvStart[1], mvStart[2]);
 	Video_ObjectColour(&voLine[0], 1.0f, 0, 0, 1.0f);
 	Video_ObjectVertex(&voLine[1], mvEnd[0], mvEnd[1], mvEnd[2]);
 	Video_ObjectColour(&voLine[1], 1.0f, 0, 0, 1.0f);
 
-	Video_DrawObject(voLine, VIDEO_PRIMITIVE_LINES, 2, NULL, 0);
+	Video_DrawObject(voLine, VL_PRIMITIVE_LINES, 2, NULL, 0);
 }
 
 /*	Debugging tool.
@@ -584,12 +584,12 @@ void Draw_Grid(float x, float y, float z, int grid_size)
 
 void Draw_Rectangle(int x, int y, int w, int h, plColour_t colour)
 {
-	VideoVertex_t	voFill[4];
+	vlVertex_t	voFill[4];
 
-	Math_Vector4Copy(colour, voFill[0].mvColour);
-	Math_Vector4Copy(colour, voFill[1].mvColour);
-	Math_Vector4Copy(colour, voFill[2].mvColour);
-	Math_Vector4Copy(colour, voFill[3].mvColour);
+	Math_Vector4Copy(colour, voFill[0].colour);
+	Math_Vector4Copy(colour, voFill[1].colour);
+	Math_Vector4Copy(colour, voFill[2].colour);
+	Math_Vector4Copy(colour, voFill[3].colour);
 
 	if (colour[3] < 1)
 		vlEnable(VL_CAPABILITY_BLEND);
@@ -613,7 +613,7 @@ void Draw_Rectangle(int x, int y, int w, int h, plColour_t colour)
 
 void Draw_GradientFill(int x, int y, int w, int h, plColour_t mvTopColour, plColour_t mvBottomColour)
 {
-	VideoVertex_t	voFill[4];
+	vlVertex_t	voFill[4];
 
 	if ((mvTopColour[3] < 1) || (mvBottomColour[3] < 1))
 		vlEnable(VL_CAPABILITY_BLEND);
@@ -637,7 +637,7 @@ void Draw_GradientFill(int x, int y, int w, int h, plColour_t mvTopColour, plCol
 
 void Draw_FadeScreen (void)
 {
-	VideoVertex_t	voFade[4];
+	vlVertex_t	voFade[4];
 
 	GL_SetCanvas(CANVAS_DEFAULT);
 
@@ -666,7 +666,6 @@ void Draw_FadeScreen (void)
 void Draw_BeginDisc(void)
 {
 #ifdef VL_MODE_OPENGL
-	//static float fDiscRotation = 0;
 	int	iViewport[4]; //johnfitz
 	VideoCanvasType_t oldcanvas; //johnfitz
 
@@ -777,36 +776,28 @@ void Draw_ResetCanvas(void)
 }
 
 /*
+	Models
+*/
+
+void Draw_VertexNormals(vlDraw_t *object)
+{
+	if (!cv_video_shownormals.bValue || (object->primitive == VL_PRIMITIVE_LINES))
+		return;
+
+	for (unsigned int i = 0; i < object->numverts; i++)
+	{
+		MathVector3f_t endpos;
+		plVectorClear(endpos);
+		plVectorScalef(object->vertices[i].normal, 2.0f, endpos);
+		plVectorAdd3fv(endpos, object->vertices[i].position, endpos);
+
+		Draw_Line(object->vertices[i].position, endpos);
+	}
+}
+
+/*
 	Entities
 */
-
-/*	Calls up buffer and draws it.
-*/
-void Draw_StaticEntity(ClientEntity_t *entity)
-{
-	// TODO: TEMPORARY DEBUGGING STUFF!!!!
-	vlPushMatrix();
-
-	R_RotateForEntity(entity->origin, entity->angles);
-
-	Material_Draw(entity->model->materials, 0, 0, 0, false);
-	VideoObject_DrawImmediate(&entity->model->objects[entity->frame]);
-	Material_Draw(entity->model->materials, 0, 0, 0, true);
-
-	vlPopMatrix();
-	// TODO: TEMPORARY DEBUGGING STUFF!!!!
-}
-
-void Draw_VertexEntity(ClientEntity_t *entity)
-{
-	vlPushMatrix();
-
-	R_RotateForEntity(entity->origin, entity->angles);
-
-	VideoObject_DrawImmediate(&entity->model->objects[entity->frame]);
-
-	vlPopMatrix();
-}
 
 void Draw_Entity(ClientEntity_t *entity)
 {

@@ -87,6 +87,7 @@ plEXTERN_C_START
 
 void *malloc_or_die(size_t size);
 void *calloc_or_die(size_t nmemb, size_t size);
+void *realloc_or_die(void *ptr, size_t new_size);
 
 void Memory_Init (void *buf, int size);
 

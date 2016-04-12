@@ -21,34 +21,27 @@
 #include "video.h"
 #include "video_shader.h"
 
+#include "client/shader_water.h"
+
 /*
 	Implementation for a water shader.
 */
 
-class WaterShader : public VideoShaderManager
+WaterShader::WaterShader() : ShaderProgram("water")
 {
-	SHADER_IMPLEMENT(WaterShader);
+}
 
-	void SetTime(float curtime);
-private:
-	uniform u_diffusemap;
-	uniform	u_normalmap;
+void WaterShader::Initialize()
+{
+	RegisterShader("base", VL_SHADER_VERTEX);
+	RegisterShader("water", VL_SHADER_FRAGMENT);
 
-	uniform	u_time;
-};
+	Link();
 
-SHADER_REGISTER_START(WaterShader)
-
-	SHADER_REGISTER_SCRIPT(base, VL_SHADER_VERTEX)
-	SHADER_REGISTER_SCRIPT(water, VL_SHADER_FRAGMENT)
-
-	SHADER_REGISTER_LINK()
-
-	SHADER_REGISTER_UNIFORM(u_diffusemap, 0)
-	SHADER_REGISTER_UNIFORM(u_normalmap, 0)
-	SHADER_REGISTER_UNIFORM(u_time, 0)
-
-SHADER_REGISTER_END()
+	SHADER_REGISTER_UNIFORM(u_diffusemap, 0);
+	SHADER_REGISTER_UNIFORM(u_normalmap, 0);
+	SHADER_REGISTER_UNIFORM(u_time, 0);
+}
 
 void WaterShader::SetTime(float curtime)
 {
@@ -56,7 +49,7 @@ VIDEO_FUNCTION_START
 	static float time = 0;
 	if (curtime == time)
 		return;
-	program->SetVariable(u_time, curtime);
+	SetUniformVariable(u_time, curtime);
 	time = curtime;
 VIDEO_FUNCTION_END
 }

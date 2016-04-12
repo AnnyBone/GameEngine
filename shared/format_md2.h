@@ -22,8 +22,8 @@
 	MD2 Model Format
 */
 
-#define MD2_HEADER		(('2'<<24)+('P'<<16)+('D'<<8)+'I')
-#define	MD2_EXTENSION	".md2"
+#define MD2_HEADER			(('2'<<24)+('P'<<16)+('D'<<8)+'I')
+#define	MD2_FILE_EXTENSION	".md2"
 
 #define	MD2_VERSION	8
 

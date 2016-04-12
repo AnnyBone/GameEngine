@@ -270,7 +270,7 @@ void Waypoint_Spawn(MathVector3f_t vOrigin,WaypointType_t type)
 		return;
 	}
 
-	plVectorCopy3fv(vOrigin, wPoint->position);
+	plVectorCopy(vOrigin, wPoint->position);
 
 	wPoint->number	= waypoint_count;
 	wPoint->bOpen	= false;

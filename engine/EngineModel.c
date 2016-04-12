@@ -213,15 +213,15 @@ typedef struct
 
 	int type;
 
-	bool (*Function)(model_t *model, void *buf);
+	bool (*Function)(model_t *model);
 } ModelLoadInterface;
 
-bool Model_LoadOBJ(model_t *model, void *buf);
+bool Model_LoadOBJ(model_t *model);
 
 ModelLoadInterface model_formatlist[] =
 {
 	{ U3D_FILE_EXTENSION, MODEL_TYPE_STATIC, ModelU3D_Load },
-	{ "obj",	MODEL_TYPE_STATIC,	Model_LoadOBJ }
+	{ "obj", MODEL_TYPE_STATIC, Model_LoadOBJ }
 };
 
 /*	Loads a model into the cache
@@ -280,7 +280,7 @@ model_t *Model_Load(model_t *model)
 					// Set the default type, we can change later.
 					model->type = (ModelType_t)model_formatlist[i].type;
 
-					if (model_formatlist[i].Function(model, buf))
+					if (model_formatlist[i].Function(model))
 						return model;
 
 					break;
@@ -1468,8 +1468,8 @@ void Model_LoadMD2(model_t *mModel,void *Buffer)
 #if 0
 	// Allocate vertex array.
 	mModel->object.numverts = mMD2Model->numtris * 3;
-	mModel->object.vertices = (VideoVertex_t*)malloc(mModel->object.numverts * sizeof(VideoVertex_t));
-	memset(mModel->object.vertices, 0, mModel->object.numverts * sizeof(VideoVertex_t));
+	mModel->object.vertices = (vlVertex_t*)malloc(mModel->object.numverts * sizeof(vlVertex_t));
+	memset(mModel->object.vertices, 0, mModel->object.numverts * sizeof(vlVertex_t));
 #endif
 
 	Model_LoadRelativeMaterial(mModel);
@@ -1496,7 +1496,7 @@ void Model_LoadMD2(model_t *mModel,void *Buffer)
 	OBJ Support
 */
 
-bool Model_LoadOBJ(model_t *model,void *buf)
+bool Model_LoadOBJ(model_t *model)
 {
 #if 0
 	char	cExtension[4];

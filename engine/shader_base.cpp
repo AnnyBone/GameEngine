@@ -21,69 +21,51 @@
 #include "video.h"
 #include "video_shader.h"
 
-class BaseShader : public VideoShaderManager
-{
-	SHADER_IMPLEMENT(BaseShader);
+#include "client/shader_base.h"
 
-	void EnableAlphaTest();
-	void DisableAlphaTest();
-protected:
-private:
-	uniform u_alphaclamp;
-	uniform u_alphatest;
-
-	uniform	u_diffusemap;
-	uniform	u_detailmap;
-	uniform	u_fullbrightmap;
-	uniform	u_spheremap;
-
-	uniform u_lightposition;
-	uniform u_lightcolour;
-
-	uniform u_vertexscale;
-
-	bool	alpha_test;
-	float	alpha_clamp;
-};
-
-BaseShader::BaseShader() : VideoShaderManager()
+BaseShader::BaseShader() : ShaderProgram("base")
 {
 	alpha_test		= false;
 	alpha_clamp		= 0.5f;
 }
 
-SHADER_REGISTER_START(BaseShader)
+void BaseShader::Initialize()
+{
+	Enable();
 
-	SHADER_REGISTER_SCRIPT(base, VL_SHADER_VERTEX)
-	SHADER_REGISTER_SCRIPT(base, VL_SHADER_FRAGMENT)
+	RegisterShader("base", VL_SHADER_VERTEX);
+	RegisterShader("base", VL_SHADER_FRAGMENT);
 
-	SHADER_REGISTER_LINK()
+	Link();
+
+	RegisterAttributes();
 
 	// Textures
-	SHADER_REGISTER_UNIFORM(u_diffusemap, 0)
-	SHADER_REGISTER_UNIFORM(u_detailmap, 0)
-	SHADER_REGISTER_UNIFORM(u_fullbrightmap, 0)
-	SHADER_REGISTER_UNIFORM(u_spheremap, 0)
-
+	SHADER_REGISTER_UNIFORM(u_diffusemap, 0);
+	SHADER_REGISTER_UNIFORM(u_detailmap, 0);
+	SHADER_REGISTER_UNIFORM(u_fullbrightmap, 0);
+	SHADER_REGISTER_UNIFORM(u_spheremap, 0);
+	
 	// Alpha
-	SHADER_REGISTER_UNIFORM(u_alphaclamp, alpha_clamp)
-	SHADER_REGISTER_UNIFORM(u_alphatest, alpha_test)
+	SHADER_REGISTER_UNIFORM(u_alphaclamp, alpha_clamp);
+	SHADER_REGISTER_UNIFORM(u_alphatest, alpha_test);
 
 	// Lighting
-	SHADER_REGISTER_UNIFORM(u_lightcolour, pl_white)
-	SHADER_REGISTER_UNIFORM(u_lightposition, pl_origin3f)
+	SHADER_REGISTER_UNIFORM(u_lightcolour, pl_white);
+	SHADER_REGISTER_UNIFORM(u_lightposition, pl_origin3f);
 
 	// Vertex scaling
-	SHADER_REGISTER_UNIFORM(u_vertexscale, 1.0f)
+	SHADER_REGISTER_UNIFORM(u_vertexscale, 1.0f);
 
-SHADER_REGISTER_END()
+	Disable();
+}
 
 void BaseShader::EnableAlphaTest()
 {
 VIDEO_FUNCTION_START
 	if (alpha_test)
 		return;
-	program->SetVariable(u_alphatest, 1);
+	SetUniformVariable(u_alphatest, 1);
 	alpha_test = true;
 VIDEO_FUNCTION_END
 }
@@ -93,7 +75,7 @@ void BaseShader::DisableAlphaTest()
 VIDEO_FUNCTION_START
 	if (!alpha_test)
 		return;
-	program->SetVariable(u_alphatest, 0);
+	SetUniformVariable(u_alphatest, 0);
 	alpha_test = false;
 VIDEO_FUNCTION_END
 }

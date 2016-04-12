@@ -59,8 +59,7 @@ float	v_dmg_time, v_dmg_roll, v_dmg_pitch;
 
 extern	int	in_forward, in_forward2, in_back;
 
-plVector3f_t	v_punchangles[2]; //johnfitz -- copied from cl.punchangle.  0 is current, 1 is previous value. never the same unless map just loaded
-
+plVector3f_t	v_punchangles[2]; 
 plVector3f_t	forward, right, up;
 
 /*	Used by view and sv_user

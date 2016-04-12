@@ -188,6 +188,7 @@ void DEBUG_FrameBufferDraw()
 VideoPostProcess::VideoPostProcess(const char *fragpath, const char *vertpath)
 	: VideoFrameBuffer(Video.iWidth, Video.iHeight)
 {
+#if 0
 	program = new Core::ShaderProgram();
 	program->Initialize();
 
@@ -204,6 +205,7 @@ VideoPostProcess::VideoPostProcess(const char *fragpath, const char *vertpath)
 	program->Link();
 
 	uniform_diffuse = program->GetUniformLocation("SampleTexture");
+#endif
 }
 
 VideoPostProcess::VideoPostProcess(Core::ShaderProgram *PostProcessProgram)
@@ -223,7 +225,9 @@ void VideoPostProcess::Draw()
 
 	Video_SetTexture(buf_colour);
 
-	program->SetVariable(iDiffuseUniform, 0);
+#if 0
+	program->SetUniformVariable(iDiffuseUniform, 0);
+#endif
 
 	GL_SetCanvas(CANVAS_DEFAULT);
 

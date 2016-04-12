@@ -226,7 +226,7 @@ void IonRifle_PrimaryAttack(ServerEntity_t *eOwner)
 				eIonBall->local.eOwner	= eOwner;
 				eIonBall->local.style	= 0;		// [29/1/2014] Preserve our firemode ~hogsy
 
-				plVectorCopy3fv(eOwner->v.origin,vOrigin);
+				plVectorCopy(eOwner->v.origin, vOrigin);
 
 				vOrigin[2] += 25.0f;
 

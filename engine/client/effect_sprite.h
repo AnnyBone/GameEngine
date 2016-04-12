@@ -72,15 +72,14 @@ namespace Core
 	{
 	public:
 		SpriteManager();
+		~SpriteManager();
 
 		Sprite *Add();
 		void Remove(Sprite *sprite);
 		void Clear();
 
-		void Initialize();
 		void Simulate();
 		void Draw();
-		void Shutdown();
 
 	private:
 		std::vector<Sprite*> sprites;

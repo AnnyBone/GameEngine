@@ -46,10 +46,12 @@ private:
 
 void XViewportPanel::Draw()
 {
+#if 0
 	engine->DrawResetCanvas();
 	engine->DrawSetCanvas(CANVAS_DEFAULT);
 	engine->DrawGrid(0, 0, 0, 8);
 	engine->DrawString(10, 10, "X Viewport");
+#endif
 }
 
 enum

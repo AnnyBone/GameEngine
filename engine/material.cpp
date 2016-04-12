@@ -34,7 +34,7 @@
 
 bool material_initialized = false;
 
-Material_t	materials[MATERIAL_MAX];	// Global array.
+Material_t	g_materials[MATERIAL_MAX];	// Global array.
 
 MaterialType_t	material_surface_types[]=
 {
@@ -104,10 +104,10 @@ void Material_List(void)
 
 	for (i = 0; i < material_count; i++)
 	{
-		if (!materials[i].cName[0] && !materials[i].cPath[0])
+		if (!g_materials[i].cName[0] && !g_materials[i].cPath[0])
 			continue;
 
-		Con_Printf(" %s (%s) (%i)\n", materials[i].cName, materials[i].cPath, materials[i].num_skins);
+		Con_Printf(" %s (%s) (%i)\n", g_materials[i].cName, g_materials[i].cPath, g_materials[i].num_skins);
 	}
 
 	Con_Printf("\nListed %i active materials!\n", i);
@@ -126,15 +126,15 @@ Material_t *Material_Allocate(void)
 #ifdef _MSC_VER
 #	pragma warning(suppress: 6386)
 #endif
-	materials[material_count].cName[0]				= 0;
-	materials[material_count].id					= material_count;
-	materials[material_count].fAlpha				= 1.0f;
-	materials[material_count].bind					= true;
-	materials[material_count].current_skin			= 0;
-	materials[material_count].override_wireframe	= false;
-	materials[material_count].override_lightmap		= false;
+	g_materials[material_count].cName[0]			= 0;
+	g_materials[material_count].id					= material_count;
+	g_materials[material_count].fAlpha				= 1.0f;
+	g_materials[material_count].bind				= true;
+	g_materials[material_count].current_skin		= 0;
+	g_materials[material_count].override_wireframe	= false;
+	g_materials[material_count].override_lightmap	= false;
 
-	return &materials[material_count];
+	return &g_materials[material_count];
 }
 
 /*	Clears out the specific skin.
@@ -172,7 +172,7 @@ void Material_ClearAll(void)
 	int	i;
 
 	for (i = material_count; i > 0; i--)
-		Material_Clear(&materials[i]);
+		Material_Clear(&g_materials[i]);
 
 	// TODO: Reshuffle and move preserved to start.
 }
@@ -231,11 +231,10 @@ Material_t *Material_Get(int iMaterialID)
 	}
 
 	for (i = 0; i < material_count; i++)
-		if (materials[i].id == iMaterialID)
+		if (g_materials[i].id == iMaterialID)
 		{
-			materials[i].bind = true;
-
-			return &materials[i];
+			g_materials[i].bind = true;
+			return &g_materials[i];
 		}
 
 	return NULL;
@@ -256,9 +255,9 @@ Material_t *Material_GetByName(const char *ccMaterialName)
 
 	for (i = 0; i < material_count; i++)
 		// If the material has no name, then it's not valid.
-		if (materials[i].cName[0])
-			if (!strncmp(materials[i].cName, ccMaterialName, sizeof(materials[i].cName)))
-				return &materials[i];
+		if (g_materials[i].cName[0])
+			if (!strncmp(g_materials[i].cName, ccMaterialName, sizeof(g_materials[i].cName)))
+				return &g_materials[i];
 
 	return NULL;
 }
@@ -274,9 +273,9 @@ Material_t *Material_GetByPath(const char *ccPath)
 	}
 	
 	for (i = 0; i < material_count; i++)
-		if (materials[i].cPath[0])
-			if (!strncmp(materials[i].cPath, ccPath, sizeof(materials[i].cPath)))
-				return &materials[i];
+		if (g_materials[i].cPath[0])
+			if (!strncmp(g_materials[i].cPath, ccPath, sizeof(g_materials[i].cPath)))
+				return &g_materials[i];
 
 	return NULL;
 }
@@ -611,7 +610,7 @@ typedef struct
 {
 	const char *name;
 
-	VideoTextureEnvironmentMode_t mode;
+	vlTextureEnvironmentMode_t mode;
 } MaterialTextureEnvironmentModeType_t;
 
 MaterialTextureEnvironmentModeType_t material_textureenvmode[] =
@@ -1016,7 +1015,7 @@ plEXTERN_C_END
 
 /*	TODO: Replace Material_Draw with this!
 */
-void Material_DrawObject(Material_t *material, VideoObject_t *object, bool ispost)
+void Material_DrawObject(Material_t *material, vlDraw_t *object, bool ispost)
 {
 #ifdef VL_MODE_OPENGL
 	bool showwireframe = r_showtris.bValue;
@@ -1029,11 +1028,11 @@ void Material_DrawObject(Material_t *material, VideoObject_t *object, bool ispos
 		{
 			switch (object->primitive)
 			{
-			case VIDEO_PRIMITIVE_LINES:
+			case VL_PRIMITIVE_LINES:
 				break;
-			case VIDEO_PRIMITIVE_TRIANGLES:
-				object->primitive_restore = VIDEO_PRIMITIVE_TRIANGLES;
-				object->primitive = VIDEO_PRIMITIVE_LINES;
+			case VL_PRIMITIVE_TRIANGLES:
+				object->primitive_restore = VL_PRIMITIVE_TRIANGLES;
+				object->primitive = VL_PRIMITIVE_LINES;
 				break;
 			default:
 				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -1041,10 +1040,10 @@ void Material_DrawObject(Material_t *material, VideoObject_t *object, bool ispos
 		}
 		else
 		{ 
-			if ((object->primitive != VIDEO_PRIMITIVE_LINES) &&
-				(object->primitive != VIDEO_PRIMITIVE_TRIANGLES))
+			if ((object->primitive != VL_PRIMITIVE_LINES) &&
+				(object->primitive != VL_PRIMITIVE_TRIANGLES))
 				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-			else if (object->primitive == VIDEO_PRIMITIVE_TRIANGLES)
+			else if (object->primitive == VL_PRIMITIVE_TRIANGLES)
 				object->primitive = object->primitive_restore;
 		}
 	}
@@ -1062,7 +1061,7 @@ void Material_DrawObject(Material_t *material, VideoObject_t *object, bool ispos
 
 /*	Typically called before an object is drawn.
 */
-void Material_Draw(Material_t *material, VideoVertex_t *ObjectVertex, VideoPrimitive_t ObjectPrimitive, unsigned int ObjectSize, bool ispost)
+void Material_Draw(Material_t *material, vlVertex_t *ObjectVertex, vlPrimitive_t ObjectPrimitive, unsigned int ObjectSize, bool ispost)
 {
 	if (r_drawflat_cheatsafe || !material)
 		return;
@@ -1157,8 +1156,8 @@ void Material_Draw(Material_t *material, VideoVertex_t *ObjectVertex, VideoPrimi
 						// Copy over original texture coords.
 						Video_ObjectTexture(&ObjectVertex[j], unit,
 							// Use base texture coordinates as a reference.
-							ObjectVertex[j].mvST[0][0] * texture->scale,
-							ObjectVertex[j].mvST[0][1] * texture->scale);
+							ObjectVertex[j].ST[0][0] * texture->scale,
+							ObjectVertex[j].ST[0][1] * texture->scale);
 
 						// TODO: Modify them to the appropriate scale.
 

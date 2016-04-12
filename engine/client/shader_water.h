@@ -16,19 +16,21 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "engine_base.h"
+#pragma once
 
-#include "video.h"
-
-/*
-	TEST BED
-	The following code is for testing the design
-	of the material system, rendering API and other
-	fun toybox stuff.
-*/
-
-vlDraw_t *base_draw = nullptr;
-
-void DrawExampleInit()
+class WaterShader : public Core::ShaderProgram
 {
-}
+public:
+	WaterShader();
+	~WaterShader();
+
+	void Initialize();
+
+	void SetTime(float curtime);
+
+private:
+	vlUniform_t u_diffusemap;
+	vlUniform_t	u_normalmap;
+
+	vlUniform_t	u_time;
+};

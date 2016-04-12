@@ -30,11 +30,14 @@ extern Material_t
 	*g_mGlobalColour,
 	*g_mGlobalConChars;		// Used for the console font.
 
+extern Material_t g_materials[MATERIAL_MAX];
+extern int material_count;
+
 void Material_Initialize(void);
 void Material_ClearAll(void);
 void Material_Clear(Material_t *material);
-void Material_DrawObject(Material_t *material, VideoObject_t *object, bool ispost);
-void Material_Draw(Material_t *material, VideoVertex_t *ObjectVertex, VideoPrimitive_t ObjectPrimitive, unsigned int ObjectSize, bool ispost);
+void Material_DrawObject(Material_t *material, vlDraw_t *object, bool ispost);
+void Material_Draw(Material_t *material, vlVertex_t *ObjectVertex, vlPrimitive_t ObjectPrimitive, unsigned int ObjectSize, bool ispost);
 
 bool Material_Precache(const char *path);
 

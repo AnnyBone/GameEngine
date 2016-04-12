@@ -82,6 +82,9 @@
     <Filter Include="Client\Resources\Models">
       <UniqueIdentifier>{fc383661-239f-4081-b971-fb38f314c32f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Client\Video\Camera">
+      <UniqueIdentifier>{1af946ca-960a-4afe-a405-127c0c5d77f6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="menu.c">
@@ -231,9 +234,6 @@
     <ClCompile Include="EngineScript.c">
       <Filter>Legacy</Filter>
     </ClCompile>
-    <ClCompile Include="EngineModel.c">
-      <Filter>Legacy</Filter>
-    </ClCompile>
     <ClCompile Include="EngineMain.c">
       <Filter>Legacy</Filter>
     </ClCompile>
@@ -307,8 +307,20 @@
     <ClCompile Include="EngineConsole.cpp">
       <Filter>Legacy\Console</Filter>
     </ClCompile>
+    <ClCompile Include="EngineVideoLegacy.c">
+      <Filter>Legacy\Client\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineVideoLegacy2.c">
+      <Filter>Legacy\Client\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="client\video_camera.cpp">
+      <Filter>Client\Video</Filter>
+    </ClCompile>
     <ClCompile Include="audio_wav.c">
       <Filter>Client\Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineModel.c">
+      <Filter>Legacy</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -465,9 +477,6 @@
     <ClInclude Include="EngineProtocol.h">
       <Filter>Legacy</Filter>
     </ClInclude>
-    <ClInclude Include="EngineModel.h">
-      <Filter>Legacy</Filter>
-    </ClInclude>
     <ClInclude Include="EngineMain.h">
       <Filter>Legacy</Filter>
     </ClInclude>
@@ -548,6 +557,15 @@
     </ClInclude>
     <ClInclude Include="video_shadow.h">
       <Filter>Client\Video</Filter>
+    </ClInclude>
+    <ClInclude Include="client\shader_base.h">
+      <Filter>Client\Video\Shaders\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="client\shader_water.h">
+      <Filter>Client\Video\Shaders\Water</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineModel.h">
+      <Filter>Legacy</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

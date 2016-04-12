@@ -21,6 +21,9 @@
 #include "video.h"
 #include "video_shader.h"
 
+#include "client/shader_base.h"
+#include "client/shader_water.h"
+
 /*
 	TODO:
 		Move all GL functionality over into VideoLayer.
@@ -30,50 +33,80 @@
 
 using namespace Core;
 
+ShaderManager *g_shadermanager = nullptr;
+
 ShaderManager::ShaderManager()
-{}
+{
+	Con_Printf("Initializing Shader Manager...\n");
+
+	programs.reserve(16);
+
+	Add(new BaseShader(), "base");
+#if 0
+	Add(new WaterShader(), "water");
+#endif
+}
 
 ShaderManager::~ShaderManager()
-{}
-
-void ShaderManager::Initialize()
 {
-	programs.reserve(16);
+	Clear();
 }
 
-void ShaderManager::Shutdown()
+void ShaderManager::Add(ShaderProgram *program, std::string name)
 {
-	programs.clear();
-	programs.shrink_to_fit();
-}
+	Con_Printf("Adding new shader: %s\n", name.c_str());
 
-// Manager
-
-void VideoShaderManager::Initialize()
-{
-	program = new ShaderProgram();
+	// todo: do we really want to do this here!?
 	program->Initialize();
 
-	RegisterShaders();
+	programs.emplace(name, program);
 }
 
-void VideoShaderManager::Shutdown()
+void ShaderManager::Delete(ShaderProgram *_program)
 {
-	program->Shutdown();
+	for (auto program = programs.begin(); program != programs.end(); ++program)
+		if (program->second == _program)
+		{
+			delete program->second;
+			programs.erase(program);
+			break;
+		}
+}
 
-	shaders.clear();
-	shaders.shrink_to_fit();
+void ShaderManager::Delete(std::string name)
+{
+	auto program = programs.find(name);
+	if (program != programs.end())
+	{
+		delete program->second;
+		programs.erase(program);
+	}
+}
+
+void ShaderManager::Clear()
+{
+	for (auto program = programs.begin(); program != programs.end(); ++program)
+		delete program->second;
+
+	programs.clear();
+}
+
+ShaderProgram *ShaderManager::Find(std::string name)
+{
+	auto program = programs.find(name);
+	if (program != programs.end())
+		return program->second;
+
+	return nullptr;
 }
 
 // Shader
 
-Shader::Shader(vlShaderType_t type)
+Shader::Shader(vlShaderType_t type) : 
+	instance(0), 
+	source_length(0), 
+	type(type)
 {
-	instance = 0;
-
-	this->type = type;
-
-	source_length = 0;
 }
 
 bool Shader::Load(const char *path)
@@ -95,16 +128,16 @@ bool Shader::Load(const char *path)
 	}
 
 	// Ensure we use the correct path and shader.
-	unsigned int uiShaderType;
+	unsigned int stype;
 	if (type == VL_SHADER_FRAGMENT)
 	{
 		sprintf(source_path, "%s%s_fragment.shader", g_state.path_shaders, path);
-		uiShaderType = GL_FRAGMENT_SHADER;
+		stype = GL_FRAGMENT_SHADER;
 	}
 	else
 	{
 		sprintf(source_path, "%s%s_vertex.shader", g_state.path_shaders, path);
-		uiShaderType = GL_VERTEX_SHADER;
+		stype = GL_VERTEX_SHADER;
 	}
 
 	// Attempt to load it.
@@ -117,7 +150,7 @@ bool Shader::Load(const char *path)
 
 	// Ensure it's a valid length.
 #ifdef _MSC_VER
-#pragma warning(suppress: 6387)
+#	pragma warning(suppress: 6387)
 #endif
 	source_length = strlen(source);
 	if (source_length <= 1)
@@ -126,8 +159,16 @@ bool Shader::Load(const char *path)
 		return false;
 	}
 
-	instance = glCreateShader(uiShaderType);
-	glShaderSource(instance, 1, &source, &source_length);
+	instance = glCreateShader(stype);
+	const char *full_source[] = {
+#if defined (VL_MODE_OPENGL)
+		"#version 120\n",	// OpenGL 2.1
+#elif defined (VL_MODE_OPENGL_ES)
+		"#version 100\n",	// OpenGL ES 2.0
+#endif
+		source
+	};
+	glShaderSource(instance, 2, full_source, NULL);
 	glCompileShader(instance);
 
 	if (!CheckCompileStatus())
@@ -146,11 +187,7 @@ bool Shader::Load(const char *path)
 
 Shader::~Shader()
 {
-#ifdef VL_MODE_OPENGL
-	VIDEO_FUNCTION_START
-	glDeleteShader(instance);
-	VIDEO_FUNCTION_END
-#endif
+	vlDeleteShader(&instance);
 }
 
 // Compilation
@@ -159,17 +196,16 @@ bool Shader::CheckCompileStatus()
 {
 #ifdef VL_MODE_OPENGL
 	VIDEO_FUNCTION_START
-	int iCompileStatus;
-	glGetObjectParameterivARB(instance, GL_COMPILE_STATUS, &iCompileStatus);
-	if (!iCompileStatus)
+	int compile;
+	glGetObjectParameterivARB(instance, GL_COMPILE_STATUS, &compile);
+	if (!compile)
 	{
-		int iLength = 0, sLength = 0;
-		glGetShaderiv(instance, GL_INFO_LOG_LENGTH, &iLength);
-
-		if (iLength > 1)
+		int length = 0;
+		glGetShaderiv(instance, GL_INFO_LOG_LENGTH, &length);
+		if (length > 1)
 		{
-			char *cLog = new char[iLength];
-			glGetInfoLogARB(instance, iLength, &sLength, cLog);
+			char *cLog = new char[length];
+			glGetShaderInfoLog(instance, length, NULL, cLog);
 			Con_Warning("%s\n", cLog);
 			delete[] cLog;
 		}
@@ -200,81 +236,80 @@ vlShaderType_t Shader::GetType()
 	Shader Program
 */
 
-ShaderProgram::ShaderProgram()
+ShaderProgram::ShaderProgram(std::string _name) : 
+	name(_name), 
+	instance(0),
+	isenabled(false)
 {
-	instance	= 0;
-	isenabled	= false;
+	instance = vlCreateShaderProgram();
+	if (!instance)
+		throw EngineException("Failed to create shader program!\n");
 }
 
 ShaderProgram::~ShaderProgram()
 {
-#ifdef VL_MODE_OPENGL
-	glDeleteProgram(instance);
-#endif
+	vlDeleteShaderProgram(&instance);
 }
 
-void ShaderProgram::Initialize()
+void ShaderProgram::RegisterShader(std::string path, vlShaderType_t type)
 {
-#ifdef VL_MODE_OPENGL
-	instance = glCreateProgram();
-	if (!instance)
-		Sys_Error("Failed to create shader program!\n");
-#endif
+	Shader *shader_ = new Shader(type);
+	if (!shader_->Load(path.c_str()))
+		throw EngineException("Failed to load shader! (%s)\n", path.c_str());
+
+	Attach(shader_);
+}
+
+void ShaderProgram::RegisterAttributes()
+{
+	// Register all the base attributes.
+	SHADER_REGISTER_ATTRIBUTE(a_vertices, 0);
 }
 
 void ShaderProgram::Attach(Shader *shader)
 {
-#ifdef VL_MODE_OPENGL
 	VIDEO_FUNCTION_START
 	if (!shader)
-		Sys_Error("Attempted to attach an invalid shader!\n");
+		throw EngineException("Attempted to attach an invalid shader!\n");
 
-	glAttachShader(instance, shader->GetInstance());
+	vlAttachShader(instance, shader->GetInstance());
+	shaders.push_back(shader);
 	VIDEO_FUNCTION_END
-#endif
 }
 
 void ShaderProgram::Enable()
 {
 	VIDEO_FUNCTION_START
-	vlUseProgram(instance);
+	vlUseShaderProgram(instance);
 	VIDEO_FUNCTION_END
 }
 
 void ShaderProgram::Disable()
 {
 	VIDEO_FUNCTION_START
-	vlUseProgram(0);
+	vlUseShaderProgram(0);
 	VIDEO_FUNCTION_END
+}
+
+void ShaderProgram::Draw(vlDraw_t *object)
+{
+	glEnableVertexAttribArray(a_vertices);
+	glBindBuffer(GL_ARRAY_BUFFER, object->_gl_vbo[0]);
+	glVertexAttribPointer(
+		a_vertices,
+		3,
+		GL_FLOAT,
+		GL_FALSE,
+		0,0);
+
+	vlDraw(object);
+
+	glDisableVertexAttribArray(a_vertices);
 }
 
 void ShaderProgram::Link()
 {
-#ifdef VL_MODE_OPENGL
-	VIDEO_FUNCTION_START
-	glLinkProgram(instance);
-
-	int iLinkStatus;
-	glGetProgramiv(instance, GL_LINK_STATUS, &iLinkStatus);
-	if (!iLinkStatus)
-	{
-		int iLength = 0;
-
-		glGetProgramiv(instance, GL_INFO_LOG_LENGTH, &iLength);
-		if (iLength > 1)
-		{
-			int iLoser = 0;
-
-			char *cLog = new char[iLength];
-			glGetInfoLogARB(instance, iLength, &iLoser, cLog);
-			Con_Warning("%s\n", cLog);
-			delete[] cLog;
-		}
-
-		Sys_Error("Shader program linking failed!\nCheck log for details.\n");
-	}
-	VIDEO_FUNCTION_END
-#endif
+	vlLinkShaderProgram(&instance);
 }
 
 void ShaderProgram::Shutdown()
@@ -282,18 +317,30 @@ void ShaderProgram::Shutdown()
 	Disable();
 }
 
+// Attribute Handling
+
+vlAttribute_t ShaderProgram::GetAttributeLocation(std::string name)
+{
+	return vlGetAttributeLocation(&instance, name.c_str());
+}
+
+void ShaderProgram::SetAttributeVariable(int location, plVector3f_t vector)
+{
+
+}
+
 // Uniform Handling
 
-int ShaderProgram::GetUniformLocation(const char *name)
+int ShaderProgram::GetUniformLocation(std::string name)
 {
 #ifdef VL_MODE_OPENGL
-	return glGetUniformLocation(instance, name);
+	return glGetUniformLocation(instance, name.c_str());
 #else
 	return 0;
 #endif
 }
 
-void ShaderProgram::SetVariable(int location, float x, float y, float z)
+void ShaderProgram::SetUniformVariable(int location, float x, float y, float z)
 {
 #ifdef VL_MODE_OPENGL
 	if (!IsActive())
@@ -304,7 +351,7 @@ void ShaderProgram::SetVariable(int location, float x, float y, float z)
 #endif
 }
 
-void ShaderProgram::SetVariable(int location, MathVector3f_t vector)
+void ShaderProgram::SetUniformVariable(int location, plVector3f_t vector)
 {
 #ifdef VL_MODE_OPENGL
 	if (!IsActive())
@@ -315,7 +362,7 @@ void ShaderProgram::SetVariable(int location, MathVector3f_t vector)
 #endif
 }
 
-void ShaderProgram::SetVariable(int location, float x, float y, float z, float a)
+void ShaderProgram::SetUniformVariable(int location, float x, float y, float z, float a)
 {
 #ifdef VL_MODE_OPENGL
 	if (!IsActive())
@@ -325,7 +372,7 @@ void ShaderProgram::SetVariable(int location, float x, float y, float z, float a
 #endif
 }
 
-void ShaderProgram::SetVariable(int location, int i)
+void ShaderProgram::SetUniformVariable(int location, int i)
 {
 #ifdef VL_MODE_OPENGL
 	if (!IsActive())
@@ -335,7 +382,7 @@ void ShaderProgram::SetVariable(int location, int i)
 #endif
 }
 
-void ShaderProgram::SetVariable(int location, float f)
+void ShaderProgram::SetUniformVariable(int location, float f)
 {
 #ifdef VL_MODE_OPENGL
 	if (!IsActive())
@@ -343,52 +390,4 @@ void ShaderProgram::SetVariable(int location, float f)
 			location, (int)f);
 	glUniform1f(location, f);
 #endif
-}
-
-unsigned int ShaderProgram::GetInstance()
-{
-	return instance;
-}
-
-/*
-	C Wrapper
-*/
-
-ShaderProgram *base_program;
-Shader *base_fragment, *base_vertex;
-
-// Uniforms
-int	iDiffuseUniform;
-
-void Shader_Initialize(void)
-{
-	// Program needs to be created first.
-	base_program = new ShaderProgram();
-	base_program->Initialize();
-
-	// Followed by the shaders.
-	base_vertex = new Shader(VL_SHADER_VERTEX);
-	if (!base_vertex->Load("base"))
-		Sys_Error("Failed to load base vertex shader!\n");
-
-	base_fragment = new Shader(VL_SHADER_FRAGMENT);
-	if (!base_fragment->Load("base"))
-		Sys_Error("Failed to load base fragment shader!\n");
-
-	// Attach and link it, if this fails then it fails.
-	base_program->Attach(base_vertex);
-	base_program->Attach(base_fragment);
-	base_program->Link();
-
-	iDiffuseUniform = base_program->GetUniformLocation("diffuseTexture");
-}
-
-void VideoShader_Shutdown()
-{
-	// Check if it's initialized first, just in-case.
-	if (base_program)
-	{
-		base_program->Shutdown();
-		delete base_program;
-	}
 }

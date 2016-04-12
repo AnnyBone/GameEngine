@@ -613,6 +613,10 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="client\effect_sprite.cpp" />
+    <ClCompile Include="client\video_camera.cpp" />
+    <ClCompile Include="EngineAudioDummy.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="EngineClientChase.c" />
     <ClCompile Include="EngineClientDemo.c" />
     <ClCompile Include="EngineClientInput.c" />
@@ -629,6 +633,7 @@
     <ClCompile Include="shader_water.cpp" />
     <ClCompile Include="video_glidewindow.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="video_sdlwindow.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
@@ -719,6 +724,8 @@
     <ClInclude Include="..\shared\shared_zone.h" />
     <ClInclude Include="client.h" />
     <ClInclude Include="client\effect_sprite.h" />
+    <ClInclude Include="client\shader_base.h" />
+    <ClInclude Include="client\shader_water.h" />
     <ClInclude Include="engine_class.h" />
     <ClInclude Include="EngineClientTempEntity.h" />
     <ClInclude Include="EngineConsoleCommand.h" />

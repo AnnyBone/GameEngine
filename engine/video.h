@@ -37,6 +37,7 @@ extern ConsoleVariable_t
 	cv_video_verticlesync,
 	cv_video_lightmapoversample,	// Enable overbrights?
 	cv_video_drawbrushes,			// Draw brush entities?
+	cv_video_clearbuffers,			// Clear buffers?
 
 	cv_video_shownormals,			// Show vertex normals?
 
@@ -87,7 +88,7 @@ typedef struct
 	unsigned int current_texture;
 	unsigned int capabilities;
 
-	VideoTextureEnvironmentMode_t current_envmode;
+	vlTextureEnvironmentMode_t current_envmode;
 } VideoTextureMU_t;
 
 typedef struct
@@ -150,13 +151,13 @@ void Video_PreFrame(void);
 void Video_PostFrame(void);
 void Video_ClearBuffer(void);
 void Video_Frame(void);
-void Video_ObjectTexture(VideoVertex_t *voObject, unsigned int uiTextureUnit, float S, float T);
-void Video_ObjectVertex(VideoVertex_t *voObject, float X, float Y, float Z);
-void Video_ObjectNormal(VideoVertex_t *voObject, float X, float Y, float Z);
-void Video_ObjectColour(VideoVertex_t *voObject, float R, float G, float B, float A);
-void Video_DrawFill(VideoVertex_t *voFill, Material_t *mMaterial, int iSkin);
+void Video_ObjectTexture(vlVertex_t *voObject, unsigned int uiTextureUnit, float S, float T);
+void Video_ObjectVertex(vlVertex_t *voObject, float X, float Y, float Z);
+void Video_ObjectNormal(vlVertex_t *voObject, float X, float Y, float Z);
+void Video_ObjectColour(vlVertex_t *voObject, float R, float G, float B, float A);
+void Video_DrawFill(vlVertex_t *voFill, Material_t *mMaterial, int iSkin);
 void Video_DrawSurface(msurface_t *mSurface, float fAlpha, Material_t *mMaterial, unsigned int uiSkin);
-void Video_DrawObject(VideoVertex_t *voObject, VideoPrimitive_t vpPrimitiveType, unsigned int uiVerts, Material_t *mMaterial, int iSkin);
+void Video_DrawObject(vlVertex_t *voObject, vlPrimitive_t vpPrimitiveType, unsigned int uiVerts, Material_t *mMaterial, int iSkin);
 void Video_ShowBoundingBoxes(void);
 void Video_Shutdown(void);
 

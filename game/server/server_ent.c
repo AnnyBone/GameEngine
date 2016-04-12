@@ -224,7 +224,7 @@ ServerEntity_t *Entity_Spawn(void)
 */
 void Entity_SetOrigin(ServerEntity_t *eEntity, MathVector3f_t vOrigin)
 {
-	plVectorCopy3fv(vOrigin, eEntity->v.origin);
+	plVectorCopy(vOrigin, eEntity->v.origin);
 
 	Entity_Link(eEntity, false);
 }
@@ -233,7 +233,7 @@ void Entity_SetOrigin(ServerEntity_t *eEntity, MathVector3f_t vOrigin)
 */
 void Entity_SetAngles(ServerEntity_t *eEntity, MathVector3f_t vAngles)
 {
-	plVectorCopy3fv(vAngles, eEntity->v.angles);
+	plVectorCopy(vAngles, eEntity->v.angles);
 	// TODO: Link?
 }
 
@@ -268,8 +268,8 @@ void Entity_SetSizeVector(ServerEntity_t *eEntity, MathVector3f_t vMin, MathVect
 			return;
 		}
 
-	plVectorCopy3fv(vMin, eEntity->v.mins);
-	plVectorCopy3fv(vMax, eEntity->v.maxs);
+	plVectorCopy(vMin, eEntity->v.mins);
+	plVectorCopy(vMax, eEntity->v.maxs);
 	Math_VectorSubtract(vMax,vMin,eEntity->v.size);
 
 	Entity_Link(eEntity, false);
@@ -573,7 +573,7 @@ bool Entity_DropToFloor(ServerEntity_t *eEntity)
 	MathVector3f_t vEnd;
 	trace_t	trGround;
 
-	plVectorCopy3fv(eEntity->v.origin, vEnd);
+	plVectorCopy(eEntity->v.origin, vEnd);
 
 	vEnd[2] -= 256;
 

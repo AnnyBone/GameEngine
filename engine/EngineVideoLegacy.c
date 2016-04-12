@@ -136,19 +136,19 @@ bool R_CullBox (MathVector3f_t emins, MathVector3f_t emaxs)
 	return false;
 }
 
-bool R_CullModelForEntity(entity_t *e)
+bool R_CullModelForEntity(ClientEntity_t *e)
 {
 	plVector3f_t mins, maxs;
 
 	if(e == &cl.viewent)
 		return false;
 
-	if(e->angles[PITCH] || e->angles[ROLL])
+	if(e->angles[PL_PITCH] || e->angles[PL_ROLL])
 	{
 		Math_VectorAdd (e->origin, e->model->rmins, mins);
 		Math_VectorAdd (e->origin, e->model->rmaxs, maxs);
 	}
-	else if(e->angles[YAW])
+	else if(e->angles[PL_YAW])
 	{
 		Math_VectorAdd (e->origin, e->model->ymins, mins);
 		Math_VectorAdd (e->origin, e->model->ymaxs, maxs);
@@ -340,6 +340,7 @@ void R_DrawEntitiesOnList(bool bAlphaPass) //johnfitz -- added parameter
 	if(!r_drawentities.value)
 		return;
 
+#if 0
 	//johnfitz -- sprites are not a special case
 	for(unsigned int i = 0; i < cl_numvisedicts; i++)
 	{
@@ -358,6 +359,28 @@ void R_DrawEntitiesOnList(bool bAlphaPass) //johnfitz -- added parameter
 
 		Draw_Entity(currententity);
 	}
+#else	// Draw per-material
+	for (int i = 0; i < material_count; i++)
+	{
+		for (unsigned int j = 0; j < cl_numvisedicts; j++)
+		{
+			currententity = cl_visedicts[j];
+			if (!currententity->model)
+				continue;
+				
+			if (currententity->model->materials == &g_materials[i])
+			{
+				//johnfitz -- if alphapass is true, draw only alpha entites this time
+				//if alphapass is false, draw only nonalpha entities this time
+				if ((ENTALPHA_DECODE(currententity->alpha) < 1 && !bAlphaPass) ||
+					(ENTALPHA_DECODE(currententity->alpha) == 1 && bAlphaPass))
+					continue;
+
+				Draw_Entity(currententity);
+			}
+		}
+	}
+#endif
 }
 
 void R_DrawViewModel(void)
@@ -590,9 +613,16 @@ void R_RenderScene(void)
 	World_Draw();
 
 	R_DrawShadows();
+
+#if 0
 	R_DrawEntitiesOnList(false);
 	World_DrawWater();
 	R_DrawEntitiesOnList(true);
+#else
+	R_DrawEntitiesOnList(false);
+
+	World_DrawWater();
+#endif
 
 	Particle_Draw();
 	SpriteManager_Draw();

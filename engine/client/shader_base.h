@@ -16,19 +16,33 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "engine_base.h"
+#pragma once
 
-#include "video.h"
-
-/*
-	TEST BED
-	The following code is for testing the design
-	of the material system, rendering API and other
-	fun toybox stuff.
-*/
-
-vlDraw_t *base_draw = nullptr;
-
-void DrawExampleInit()
+class BaseShader : public Core::ShaderProgram
 {
-}
+public:
+	BaseShader();
+	~BaseShader();
+
+	void Initialize();
+
+	void EnableAlphaTest();
+	void DisableAlphaTest();
+protected:
+private:
+	vlUniform_t u_alphaclamp;
+	vlUniform_t u_alphatest;
+
+	vlUniform_t	u_diffusemap;
+	vlUniform_t	u_detailmap;
+	vlUniform_t	u_fullbrightmap;
+	vlUniform_t	u_spheremap;
+
+	vlUniform_t u_lightposition;
+	vlUniform_t u_lightcolour;
+
+	vlUniform_t u_vertexscale;
+
+	bool	alpha_test;
+	float	alpha_clamp;
+};
