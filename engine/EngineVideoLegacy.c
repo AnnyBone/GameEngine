@@ -340,7 +340,7 @@ void R_DrawEntitiesOnList(bool bAlphaPass) //johnfitz -- added parameter
 	if(!r_drawentities.value)
 		return;
 
-#if 0
+#if 1
 	//johnfitz -- sprites are not a special case
 	for(unsigned int i = 0; i < cl_numvisedicts; i++)
 	{
@@ -614,15 +614,9 @@ void R_RenderScene(void)
 
 	R_DrawShadows();
 
-#if 0
 	R_DrawEntitiesOnList(false);
 	World_DrawWater();
 	R_DrawEntitiesOnList(true);
-#else
-	R_DrawEntitiesOnList(false);
-
-	World_DrawWater();
-#endif
 
 	Particle_Draw();
 	SpriteManager_Draw();

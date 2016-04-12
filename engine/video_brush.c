@@ -37,6 +37,7 @@ typedef struct glRect_s {
 	unsigned char l,t,w,h;
 } glRect_t;
 
+// TODO: move these into a unified struct.
 glpoly_t	*lightmap_polys[MAX_LIGHTMAPS];
 bool		bLightmapModified[MAX_LIGHTMAPS];
 glRect_t	lightmap_rectchange[MAX_LIGHTMAPS];

@@ -293,6 +293,7 @@ void ShaderProgram::Disable()
 
 void ShaderProgram::Draw(vlDraw_t *object)
 {
+#if defined (VL_MODE_OPENGL)
 	glEnableVertexAttribArray(a_vertices);
 	glBindBuffer(GL_ARRAY_BUFFER, object->_gl_vbo[0]);
 	glVertexAttribPointer(
@@ -305,6 +306,7 @@ void ShaderProgram::Draw(vlDraw_t *object)
 	vlDraw(object);
 
 	glDisableVertexAttribArray(a_vertices);
+#endif
 }
 
 void ShaderProgram::Link()
