@@ -129,7 +129,6 @@ typedef enum
 {
 	key_game,				// Game input mode.
 	KEY_EDITOR,				// Editor input mode.
-	KEY_EDITOR_MATERIAL,	// Material editor mode.
 	key_console,			// Console input mode.
 	key_message,			// Message input mode.
 	key_menu				// Menu input mode.

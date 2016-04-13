@@ -938,7 +938,7 @@ vlDraw_t *vlCreateDraw(vlPrimitive_t primitive, uint32_t num_tris, uint32_t num_
 	if (primitive == VL_PRIMITIVE_TRIANGLES)
 	{
 		_draw->indices = (uint8_t*)calloc_or_die(_draw->numtriangles * 3, sizeof(uint8_t));
-		memset(_draw->indices, 0, sizeof(_draw->indices));
+		memset(_draw->indices, 0, sizeof(uint8_t));
 	}
 
 #ifdef VL_MODE_OPENGL
@@ -1030,7 +1030,7 @@ void vlEndDraw(vlDraw_t *draw)
 
 #if defined (VL_MODE_OPENGL)
 	glBindBuffer(GL_ARRAY_BUFFER, draw->_gl_vbo[_VL_BUFFER_VERTICES]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(draw->vertices), draw->vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, draw->numverts * sizeof(vlVertex_t), draw->vertices, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 #endif
 
@@ -1192,6 +1192,22 @@ void vlDraw(vlDraw_t *draw)
 	else
 		_vlDrawArrays(draw->primitive, 0, draw->numverts);
 #endif
+}
+
+void vlDrawVertexNormals(vlDraw_t *draw)
+{
+	if (draw->primitive == VL_PRIMITIVE_LINES)
+		return;
+
+	for (unsigned int i = 0; i < draw->numverts; i++)
+	{
+		MathVector3f_t endpos;
+		plVectorClear(endpos);
+		plVectorScalef(draw->vertices[i].normal, 2.0f, endpos);
+		plVectorAdd3fv(endpos, draw->vertices[i].position, endpos);
+
+		Draw_Line(draw->vertices[i].position, endpos);
+	}
 }
 
 /*===========================

@@ -322,7 +322,6 @@ void Waypoint_Spawn(MathVector3f_t vOrigin,WaypointType_t type)
 		return;
 	}
 
-	// [30/1/2013] Pathetic reordering... Ugh ~hogsy
 	if(!wPoint->last)
 	{
 		wPoint->last = Waypoint_GetByVisibility(vOrigin);

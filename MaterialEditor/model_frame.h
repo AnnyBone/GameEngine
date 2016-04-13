@@ -52,6 +52,9 @@ private:
 
 	ModelViewportPanel *viewport;
 
+	wxMenuItem *v_showbboxes;
+	wxMenuItem *v_rotate;
+
 	// Events
 	void FileEvent(wxCommandEvent &event);
 	void ViewEvent(wxCommandEvent &event);

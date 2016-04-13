@@ -776,28 +776,10 @@ void Draw_ResetCanvas(void)
 }
 
 /*
-	Models
-*/
-
-void Draw_VertexNormals(vlDraw_t *object)
-{
-	if (!cv_video_shownormals.bValue || (object->primitive == VL_PRIMITIVE_LINES))
-		return;
-
-	for (unsigned int i = 0; i < object->numverts; i++)
-	{
-		MathVector3f_t endpos;
-		plVectorClear(endpos);
-		plVectorScalef(object->vertices[i].normal, 2.0f, endpos);
-		plVectorAdd3fv(endpos, object->vertices[i].position, endpos);
-
-		Draw_Line(object->vertices[i].position, endpos);
-	}
-}
-
-/*
 	Entities
 */
+
+extern ConsoleVariable_t r_showbboxes;
 
 void Draw_Entity(ClientEntity_t *entity)
 {
@@ -827,5 +809,12 @@ void Draw_Entity(ClientEntity_t *entity)
 		break;
 	default:
 		Console_ErrorMessage(false, entity->model->name, "Unrecognised model type.");
+	}
+
+	if (r_showbboxes.bValue)
+	{
+		vlEnable(VL_CAPABILITY_BLEND);
+		Video_DrawClientBoundingBox(entity);
+		vlDisable(VL_CAPABILITY_BLEND);
 	}
 }

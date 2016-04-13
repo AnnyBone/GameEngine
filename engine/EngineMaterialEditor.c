@@ -24,6 +24,4 @@
 void MaterialEditor_Initialize(void)
 {
 	cls.state = CLIENT_STATE_EDITOR;
-
-	key_dest = KEY_EDITOR_MATERIAL;
 }

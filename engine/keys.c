@@ -830,8 +830,6 @@ void Key_Event(int key,bool down)
 	case KEY_EDITOR:
 		Editor_Input(key);
 		break;
-	case KEY_EDITOR_MATERIAL:
-		break;
 	case key_message:
 		Key_Message(key);
 		break;

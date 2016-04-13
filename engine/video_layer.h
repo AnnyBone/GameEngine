@@ -327,6 +327,7 @@ void vlDrawNormal3fv(plVector3f_t position);
 void vlDrawTexCoord2f(unsigned int target, float s, float t);
 
 void vlDraw(vlDraw_t *draw);
+void vlDrawVertexNormals(vlDraw_t *draw);
 
 //-----------------
 // Lighting

@@ -38,7 +38,7 @@ ModelViewportPanel::ModelViewportPanel(wxWindow *parent) : BaseViewportPanel(par
 	else
 		plWriteLog(EDITOR_LOG, "Failed to create client entity!\n");
 
-	rotate = true;
+	rotate = false;
 }
 
 void ModelViewportPanel::Draw()
@@ -81,9 +81,15 @@ void ModelViewportPanel::SetModel(model_t *newmodel)
 {
 	if (entity->model)
 	{
-		// TODO: unload it.
+		engine->Print("TODO: UNLOAD PREVIOUS MODEL!!!!\n");
 	}
 	entity->model = newmodel;
+
+	entity->origin[0] = 0;
+	for (unsigned int i = 0; i < 1000; i++)
+	{
+		
+	}
 }
 
 void ModelViewportPanel::SetRotate(bool dorotate)
@@ -102,6 +108,7 @@ void ModelViewportPanel::SetRotate(bool dorotate)
 enum
 {
 	MODELFRAME_EVENT_ROTATE,
+	MODELFRAME_VIEW_BBOX,
 };
 
 wxBEGIN_EVENT_TABLE(ModelFrame, wxFrame)
@@ -110,47 +117,37 @@ EVT_MENU(wxID_OPEN, ModelFrame::FileEvent)
 EVT_MENU(wxID_EXIT, ModelFrame::FileEvent)
 
 EVT_MENU(MODELFRAME_EVENT_ROTATE, ModelFrame::ViewEvent)
+EVT_MENU(MODELFRAME_VIEW_BBOX, ModelFrame::ViewEvent)
 
 EVT_CLOSE(ModelFrame::CloseEvent)
 
 wxEND_EVENT_TABLE()
 
-#define	MODEL_TITLE	"Model Viewer"
+#define	MODELFRAME_TITLE	"Model Viewer"
 
 ModelFrame::ModelFrame(wxWindow *parent)
-	: wxFrame(parent, EDITOR_WINDOW_MODEL, MODEL_TITLE, wxDefaultPosition, wxSize(640, 480))
+	: wxFrame(parent, EDITOR_WINDOW_MODEL, MODELFRAME_TITLE, wxDefaultPosition, wxSize(640, 480))
 {
 	SetIcon(wxIcon("resource/icon-mdl.ico", wxBITMAP_TYPE_ICO));
 
-	// Setup the menu...
 	wxMenuBar *menubar = new wxMenuBar;
-	{
-		// File
-		{
-			wxMenu *menu_file = new wxMenu;
-
-			wxMenuItem *menu_file_open = new wxMenuItem(menu_file, wxID_OPEN);
-			menu_file->Append(menu_file_open);
-
-			wxMenuItem *menu_file_close = new wxMenuItem(menu_file, wxID_CLOSE);
-			menu_file->Append(menu_file_close);
-
-			wxMenuItem *menu_file_exit = new wxMenuItem(menu_file, wxID_EXIT);
-			menu_file->Append(menu_file_exit);
-
-			menubar->Append(menu_file, "&File");
-		}
+	
+	// File
+	wxMenu *menu_file = new wxMenu;
+	menu_file->Append(new wxMenuItem(menu_file, wxID_OPEN));
+	menu_file->Append(new wxMenuItem(menu_file, wxID_CLOSE));
+	menu_file->Append(new wxMenuItem(menu_file, wxID_EXIT));
+	menubar->Append(menu_file, "&File");
 		
-		// View
-		{
-			wxMenu *menu_view = new wxMenu;
-
-			wxMenuItem *menu_view_rotate = new wxMenuItem(menu_view, MODELFRAME_EVENT_ROTATE, "&Rotate", "Dolly rotates the current preview");
-			menu_view->Append(menu_view_rotate);
-
-			menubar->Append(menu_view, "&View");
-		}
-	}
+	// View
+	wxMenu *menu_view = new wxMenu;
+	v_rotate = new wxMenuItem(menu_view, MODELFRAME_EVENT_ROTATE, "&Rotate", "Dolly rotates the current preview", wxITEM_CHECK);
+	menu_view->Append(v_rotate);
+	menu_view->AppendSeparator();
+	v_showbboxes = new wxMenuItem(menu_view, MODELFRAME_VIEW_BBOX, "&Show bounding box", "Show renderable area for the model", wxITEM_CHECK);
+	menu_view->Append(v_showbboxes);
+	menubar->Append(menu_view, "&View");
+	
 	SetMenuBar(menubar);
 
 	viewport = new ModelViewportPanel(this);
@@ -165,7 +162,7 @@ void ModelFrame::LoadModel(wxString path)
 	int stringmod = newpath.Find(wxString("models/").RemoveLast(1));
 	if (stringmod == wxNOT_FOUND)
 	{
-		wxMessageBox(wxString("Failed to update path! (" + newpath + ")\nPlease ensure your model is inside the game directory."), MODEL_TITLE);
+		wxMessageBox(wxString("Failed to update path! (" + newpath + ")\nPlease ensure your model is inside the game directory."), MODELFRAME_TITLE);
 		return;
 	}
 	newpath.Remove(0, stringmod);
@@ -176,7 +173,7 @@ void ModelFrame::LoadModel(wxString path)
 
 	viewport->SetModel(model);
 
-	SetTitle(newpath + " - " MODEL_TITLE);
+	SetTitle(newpath + " - " MODELFRAME_TITLE);
 }
 
 void ModelFrame::FileEvent(wxCommandEvent &event)
@@ -207,8 +204,13 @@ void ModelFrame::ViewEvent(wxCommandEvent &event)
 	switch (event.GetId())
 	{
 	case MODELFRAME_EVENT_ROTATE:
-		viewport->SetRotate(false);
+		viewport->SetRotate(v_rotate->IsChecked());
 		break;
+	case MODELFRAME_VIEW_BBOX:
+		engine->SetConsoleVariable("r_showbboxes", v_showbboxes->IsChecked() ? "1" : "0");
+		break;
+	default:
+		engine->Print("Unknown view event!\n");
 	}
 }
 

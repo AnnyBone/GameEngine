@@ -21,7 +21,7 @@ varying vec4 v_diffusecolour;
 
 uniform float u_vertexscale;
 
-attribute vec3 a_coords;
+//attribute vec3 a_coords;
 
 void main(void)
 {

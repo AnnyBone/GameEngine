@@ -162,7 +162,9 @@ bool Shader::Load(const char *path)
 	instance = glCreateShader(stype);
 	const char *full_source[] = {
 #if defined (VL_MODE_OPENGL)
+		//"#version 110\n",	// OpenGL 2.0
 		"#version 120\n",	// OpenGL 2.1
+		//"#version 450\n",	// OpenGL 4.5
 #elif defined (VL_MODE_OPENGL_ES)
 		"#version 100\n",	// OpenGL ES 2.0
 #endif
@@ -294,6 +296,7 @@ void ShaderProgram::Disable()
 void ShaderProgram::Draw(vlDraw_t *object)
 {
 #if defined (VL_MODE_OPENGL)
+#if 0
 	glEnableVertexAttribArray(a_vertices);
 	glBindBuffer(GL_ARRAY_BUFFER, object->_gl_vbo[0]);
 	glVertexAttribPointer(
@@ -302,10 +305,13 @@ void ShaderProgram::Draw(vlDraw_t *object)
 		GL_FLOAT,
 		GL_FALSE,
 		0,0);
+#endif
 
 	vlDraw(object);
 
+#if 0
 	glDisableVertexAttribArray(a_vertices);
+#endif
 #endif
 }
 

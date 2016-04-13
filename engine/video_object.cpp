@@ -30,7 +30,6 @@ void Draw_StaticEntity(ClientEntity_t *entity)
 
 	R_RotateForEntity(entity->origin, entity->angles);
 
-#if 0
 	Core::ShaderProgram *sp_base = g_shadermanager->Find("base");
 	if (sp_base)
 	{
@@ -39,7 +38,6 @@ void Draw_StaticEntity(ClientEntity_t *entity)
 		sp_base->Disable();
 	}
 	else
-#endif
 	{
 		Material_Draw(entity->model->materials, 0, VL_PRIMITIVE_IGNORE, 0, false);
 		vlDraw(entity->model->objects[entity->frame]);
