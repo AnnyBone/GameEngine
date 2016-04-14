@@ -180,12 +180,14 @@
 #if defined(_MSC_VER)
 #	define PL_EXTERN	extern
 #	define PL_CALL		__stdcall
+#	define PL_INLINE	__forceinline
 
 	// MSVC doesn't support __func__
 #	define PL_FUNCTION	__FUNCTION__    // Returns the active function.
 #else
 #	define PL_EXTERN	extern
 #	define PL_CALL		
+#	define PL_INLINE	inline
 
 #	define PL_FUNCTION	__func__	    // Returns the active function.
 #endif

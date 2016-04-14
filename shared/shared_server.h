@@ -250,7 +250,8 @@ typedef struct
 
 #ifdef GAME_OPENKATANA
 	// Powerups
-	double		power_finished, power_time,		// Power Boost.
+	double		
+		power_finished, power_time,		// Power Boost.
 		speed_finished, speed_time,		// Speed Boost.
 		acro_finished, acro_time,		// Acro Boost.
 		attackb_finished, attackb_time,	// Attack Boost.
