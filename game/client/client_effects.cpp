@@ -190,7 +190,7 @@ void ClientEffect_Smoke(MathVector3f_t position)
 		for (int j = 0; j < 3; j++)
 			part->vOrigin[j] = position[j] + ((rand() & 8) - 5.0f);
 
-		Math_VectorClear(part->vVelocity);
+		plVectorClear(part->vVelocity);
 	}
 }
 

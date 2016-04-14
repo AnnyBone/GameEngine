@@ -602,7 +602,7 @@ void Player_Die(ServerEntity_t *ePlayer, ServerEntity_t *other, ServerDamageType
 		Camera should follow the entity that killed us?
 	*/
 
-	Math_VectorClear(ePlayer->v.view_ofs);
+	plVectorClear(ePlayer->v.view_ofs);
 
 	ePlayer->v.modelindex	= iPlayerModelIndex;
 	ePlayer->v.view_ofs[2]	= -8.0f;
@@ -727,8 +727,8 @@ void Player_Spawn(ServerEntity_t *ePlayer)
 	ePlayer->local.bBleed = true;								// The player bleeds!
 
 	// Clear the velocity and current view offset.
-	Math_VectorClear(ePlayer->v.velocity);
-	Math_VectorClear(ePlayer->v.view_ofs);
+	plVectorClear(ePlayer->v.velocity);
+	plVectorClear(ePlayer->v.view_ofs);
 
 	ePlayer->v.bFixAngle = true;
 	ePlayer->v.view_ofs[2] = 28.0f;
@@ -838,8 +838,8 @@ void Player_Spawn(ServerEntity_t *ePlayer)
 	{
 		Engine.Con_Warning("Failed to find spawn point for player! (%s)\n",ePlayer->v.netname);
 
-		Math_VectorClear(ePlayer->v.angles);
-		Math_VectorClear(ePlayer->v.origin);
+		plVectorClear(ePlayer->v.angles);
+		plVectorClear(ePlayer->v.origin);
 	}
 
 	// Ensure we haven't spawned within the world.
@@ -1055,15 +1055,13 @@ void Player_CheckPowerups(ServerEntity_t *ePlayer)
 }
 #endif
 
-// [23/3/2013] Countdown is now done for cooperative mode too! ~hogsy
 void Player_DeathThink(ServerEntity_t *entity)
 {
 	if (entity->v.button[0] ||
 		entity->v.button[1] ||
 		entity->v.button[2])
 	{
-		// [25/8/2012] Simplified ~hogsy
-		Math_VectorClear(entity->v.button);
+		plVectorClear(entity->v.button);
 
 		if (!entity->local.fSpawnDelay)
 		{

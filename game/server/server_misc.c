@@ -80,7 +80,7 @@ void WEAPON_StickThink(ServerEntity_t *ent)
 	{
 		Entity_SetOrigin(ent,ent->v.enemy->v.origin);
 		if(!ent->v.velocity)
-			Math_VectorClear(ent->v.avelocity);
+			plVectorClear(ent->v.avelocity);
 	}
 	else
 		Entity_Remove(ent);

@@ -146,7 +146,7 @@ void Bot_Spawn(ServerEntity_t *eBot)
 	if(!cvServerBots.value)
 		return;
 
-	Math_VectorClear(eBot->v.velocity);
+	plVectorClear(eBot->v.velocity);
 
 	switch(eBot->local.style)
 	{

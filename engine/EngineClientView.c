@@ -333,7 +333,7 @@ void View_CalculateBlend(void)
 	float		fAlpha;
 	int			j;
 
-	Math_VectorClear(vColour);
+	plVectorClear(vColour);
 
 	for(j = 0; j < NUM_CSHIFTS; j++)
 	{

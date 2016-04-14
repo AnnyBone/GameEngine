@@ -257,22 +257,25 @@ void plVectorMultiply3fv(MathVector3f_t in, MathVector3f_t multi, MathVector3f_t
 	out[2] = in[2] * multi[2];
 }
 
-void plColourSetf(plColour_t in, float r, float g, float b, float a)
-{
-	in[0] = r; in[1] = g; in[2] = b; in[3] = a;
-}
-
-// [23/2/2013] Added Math_VectorMake ~eukos
-void Math_VectorMake(MathVector3f_t veca, float scale, MathVector3f_t vecb, MathVector3f_t vecc)
+void Math_VectorMake(plVector3f_t veca, float scale, plVector3f_t vecb, plVector3f_t vecc)
 {
 	vecc[0] = veca[0] + scale*vecb[0];
 	vecc[1] = veca[1] + scale*vecb[1];
 	vecc[2] = veca[2] + scale*vecb[2];
 }
 
+/*
+	Colour
+*/
+
+void plColourSetf(plColour_t in, float r, float g, float b, float a)
+{
+	in[0] = r; in[1] = g; in[2] = b; in[3] = a;
+}
+
 /*	Stolen from Quake 2.
 */
-MathVectorf_t plColourNormalize(MathVector3f_t in, MathVector3f_t out)
+float plColourNormalize(plVector3f_t in, plVector3f_t out)
 {
 	float	max, scale;
 	max = in[0];
@@ -476,7 +479,6 @@ float Math_InOutBack(float x)
 float plImpulse(float x, float k)
 {
 	float h = k*x;
-
 	return h*expf(1.0f - h);
 }
 
@@ -488,6 +490,14 @@ float Math_ExpPulse(float x, float k, float n)
 /*
 	Utility
 */
+
+char *plVectorToString(plVector3f_t vector)
+{
+	static char s[32];
+	memset(s, 0, 32 * sizeof(char));
+	sprintf(s, "%i %i %i", (int)vector[0], (int)vector[1], (int)vector[2]);
+	return s;
+}
 
 /*	Check to see if an area is intersecting another area.
 */
@@ -504,6 +514,26 @@ bool plIsIntersecting(
 		return false;
 
 	return true;
+}
+
+void plNormalizeAngles(plVector3f_t angles)
+{
+	while (angles[0] > 360)
+		angles[0] -= 360;
+	while (angles[0] < 0)
+		angles[0] += 360;
+	while (angles[1] > 360)
+		angles[1] -= 360;
+	while (angles[1] < 0)
+		angles[1] += 360;
+}
+
+float plSnapToEights(float x)
+{
+	x *= 8.0f;
+	if (x > 0) x += 0.5f;
+	else x -= 0.5f;
+	return 0.125f * (int)x;
 }
 
 /*

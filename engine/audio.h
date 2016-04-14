@@ -126,7 +126,7 @@ namespace Core
 		void DeleteSound(AudioSound_t *sound);
 		void PlaySound(const AudioSound_t *sound);
 		void PlaySound(const char *path);
-		void LoadSound(AudioSound_t *sound, const char *path);
+		void LoadSound(AudioSound_t *sound, std::string path);
 		void StopSound(const AudioSound_t *sound);
 		void PauseSound(const AudioSound_t *sound);
 
@@ -144,9 +144,9 @@ namespace Core
 		bool IsSoundPlaying(const AudioSound_t *sound);
 		bool IsSoundPaused(const AudioSound_t *sound);
 
-		AudioSample_t *AddSample(const char *path);
+		AudioSample_t *AddSample(std::string path);
 		void DeleteSample(AudioSample_t *sample, bool force);
-		AudioSample_t *FindSample(const char *path);
+		AudioSample_t *GetSample(std::string path);
 		void PrecacheSample(const char *path, bool preserve);
 		void LoadSample(AudioSample_t *cache, const char *path);
 

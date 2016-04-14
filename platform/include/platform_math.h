@@ -192,7 +192,7 @@ enum PlatformMathRGBA
 	Utility Functions
 */
 
-struct	mplane_s;
+struct mplane_s;
 
 void Math_VectorAngles(const plVector3f_t forward, plVector3f_t angles);
 void plAngleVectors(MathVector3f_t angles, plVector3f_t forward, plVector3f_t right, plVector3f_t up);
@@ -205,7 +205,6 @@ float Math_AngleMod(float a);
 float plVectorToYaw(MathVectorf_t *vec);
 
 bool plVectorCompare(plVector3f_t a, plVector3f_t b);
-bool plIsIntersecting(plVector3f_t mvFirstMins, plVector3f_t mvFirstMaxs, plVector3f_t mvSecondMins, MathVector3f_t mvSecondMaxs);
 
 float plLengthf(plVector3f_t a);
 double plLengthd(MathVector3d_t a);
@@ -248,5 +247,11 @@ void plVectorSubtract3fv(plVector3f_t in, plVector3f_t subtract, plVector3f_t ou
 void plVectorAdd3fv(plVector3f_t in, plVector3f_t add, plVector3f_t out);
 void plVectorCopy(plVector3f_t in, plVector3f_t out);
 void plVectorScalef(plVector3f_t in, float scale, plVector3f_t out);
+
+void plNormalizeAngles(plVector3f_t angles);
+
+// Utility
+char *plVectorToString(plVector3f_t vector);
+bool plIsIntersecting(plVector3f_t mvFirstMins, plVector3f_t mvFirstMaxs, plVector3f_t mvSecondMins, MathVector3f_t mvSecondMaxs);
 
 plEXTERN_C_END

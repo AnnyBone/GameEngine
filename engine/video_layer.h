@@ -287,6 +287,7 @@ typedef enum
 {
 	VL_SHADER_FRAGMENT,
 	VL_SHADER_VERTEX,
+	VL_SHADER_GEOMETRY,
 
 	VL_SHADER_END
 } vlShaderType_t;

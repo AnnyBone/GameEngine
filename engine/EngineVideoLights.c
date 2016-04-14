@@ -371,7 +371,7 @@ MathVector_t Light_GetSample(MathVector3f_t vPoint)
 	vEnd[1] = vPoint[1];
 	vEnd[2] = vPoint[2]-2048.0f;
 
-	Math_VectorClear(vLightColour);
+	plVectorClear(vLightColour);
 
 	RecursiveLightPoint(vLightColour,cl.worldmodel->nodes,vPoint,vEnd);
 

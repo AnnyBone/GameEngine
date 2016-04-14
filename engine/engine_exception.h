@@ -20,11 +20,14 @@
 #define	ENGINE_EXCEPTION_H
 #pragma once
 
-class EngineException : public std::exception
+namespace Core
 {
-public:
-	EngineException(const char *message, ...);
-};
+	class Exception : public std::exception
+	{
+	public:
+		Exception(const char *message, ...);
+	};
+}
 
 #endif // !ENGINE_EXCEPTION_H
 

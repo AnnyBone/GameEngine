@@ -81,7 +81,7 @@ AudioManager::AudioManager()
 
 	ALCdevice *device = alcOpenDevice(NULL);
 	if (!device)
-		throw EngineException("Failed to open audio device!\n");
+		throw Core::Exception("Failed to open audio device!\n");
 
 	// Check for extensions...
 	if (alcIsExtensionPresent(device, "ALC_EXT_EFX"))
@@ -117,7 +117,7 @@ AudioManager::AudioManager()
 
 	ALCcontext *context = alcCreateContext(device, attr);
 	if (!context || alcMakeContextCurrent(context) == FALSE)
-		throw EngineException("Failed to create audio context!\n");
+		throw Core::Exception("Failed to create audio context!\n");
 
 	if (alIsExtensionPresent("AL_SOFT_buffer_samples"))
 		extensions.soft_buffer_samples = true;
@@ -205,7 +205,7 @@ AudioSound_t *AudioManager::AddSound()
 {
 	AudioSound_t *sound = new AudioSound_t;
 	if (!sound)
-		throw EngineException("Failed to allocate new sound!\n");
+		throw Core::Exception("Failed to allocate new sound!\n");
 
 	memset(sound, 0, sizeof(AudioSound_t));
 	sounds.push_back(sound);
@@ -328,9 +328,9 @@ void AudioManager::PlaySound(const char *path)
 	PlaySound(sound);
 }
 
-void AudioManager::LoadSound(AudioSound_t *sound, const char *path)
+void AudioManager::LoadSound(AudioSound_t *sound, std::string path)
 {
-	if (!path || (path[0] == ' '))
+	if (path[0] == ' ')
 	{
 		Con_Warning("Invalid path for sound!\n");
 		return;
@@ -338,7 +338,7 @@ void AudioManager::LoadSound(AudioSound_t *sound, const char *path)
 	else if (!sound)
 		Sys_Error("Passed invalid sound pointer to LoadSound!\n");
 
-	sound->cache = FindSample(path);
+	sound->cache = GetSample(path);
 	if (!sound->cache)
 	{
 		Con_Warning("Failed to load sound, please ensure it's been cached! (%s)\n", path);
@@ -346,9 +346,9 @@ void AudioManager::LoadSound(AudioSound_t *sound, const char *path)
 	}
 
 #if 0
-	Con_Printf("PATH: %s\n", sound->cache->path);
+	Con_Printf("PATH:   %s\n", sound->cache->path);
 	Con_Printf("LENGTH: %i\n", sound->cache->length);
-	Con_Printf("DATA: %p\n", sound->cache->data);
+	Con_Printf("DATA:   %p\n", sound->cache->data);
 #endif
 
 	// Check the format.
@@ -393,7 +393,7 @@ void AudioManager::PauseSound(const AudioSound_t *sound)
 void AudioManager::DeleteSound(AudioSound_t *sound)
 {
 	if (!sound)
-		throw EngineException("Attempted to delete an invalid sound!\n");
+		throw Core::Exception("Attempted to delete an invalid sound!\n");
 
 	StopSound(sound);
 
@@ -543,7 +543,7 @@ void AudioManager::DeleteEffect(AudioEffect_t *effect)
 
 // Samples
 
-AudioSample_t *AudioManager::AddSample(const char *path)
+AudioSample_t *AudioManager::AddSample(std::string path)
 {
 	AudioSample_t *cache = new AudioSample_t;
 
@@ -553,9 +553,9 @@ AudioSample_t *AudioManager::AddSample(const char *path)
 	return cache;
 }
 
-AudioSample_t *AudioManager::FindSample(const char *path)
+AudioSample_t *AudioManager::GetSample(std::string path)
 {
-	if (!path || (path[0] == ' '))
+	if (path[0] == ' ')
 	{
 		Con_Warning("Invalid path for audio sample!\n");
 		return nullptr;
@@ -577,7 +577,7 @@ void AudioManager::PrecacheSample(const char *path, bool preserve)
 		return;
 	}
 
-	AudioSample_t *cache = FindSample(path);
+	AudioSample_t *cache = GetSample(path);
 	if (!cache)
 	{
 		cache = new AudioSample_t;

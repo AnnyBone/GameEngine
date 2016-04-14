@@ -767,7 +767,7 @@ void Area_PushableSpawn(ServerEntity_t *eArea)
 	}
 */
 	//eArea->Physics.fGravity = cvServerGravity.value;
-	Math_VectorClear(eArea->v.angles);
+	plVectorClear(eArea->v.angles);
 
 	eArea->Physics.iSolid = SOLID_SLIDEBOX;
 	eArea->v.movetype = MOVETYPE_STEP;
@@ -1136,7 +1136,7 @@ void Area_ClimbTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
 
 	if (Math_DotProduct(vRight, eOther->v.velocity) > 25) 
 	{
-		Math_VectorClear(eOther->v.velocity);
+		plVectorClear(eOther->v.velocity);
 		eOther->v.origin[0] += vRight[0] * 0.5f;
 		eOther->v.origin[1] += vRight[1] * 0.5f;
 		eOther->v.origin[2] += vRight[2] * 0.5f;
@@ -1145,7 +1145,7 @@ void Area_ClimbTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
 	}
 	else if (Math_DotProduct(vRight, eOther->v.velocity) < -25) 
 	{
-		Math_VectorClear(eOther->v.velocity);
+		plVectorClear(eOther->v.velocity);
 		eOther->v.origin[0] -= vRight[0] * 0.5f;
 		eOther->v.origin[1] -= vRight[1] * 0.5f;
 		eOther->v.origin[2] -= vRight[2] * 0.5f;
@@ -1154,7 +1154,7 @@ void Area_ClimbTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
 	}
 
 	float fForwardSpeed = Math_DotProduct(vForward, eOther->v.velocity);
-	Math_VectorClear(vLadVelocity);
+	plVectorClear(vLadVelocity);
 
 	// up (facing up/forward)
 	if ((eOther->v.v_angle[0] <= 15) && (fForwardSpeed > 0))

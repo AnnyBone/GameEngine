@@ -90,7 +90,7 @@ void R_Envmap_f(void)
 	r_refdef.vrect.width	=
 	r_refdef.vrect.height	= 256;
 
-	Math_VectorClear(r_refdef.viewangles);
+	plVectorClear(r_refdef.viewangles);
 
 	GL_BeginRendering (&glx, &gly, &glwidth, &glheight);
 	R_RenderView ();

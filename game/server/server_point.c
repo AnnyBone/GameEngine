@@ -719,7 +719,7 @@ void Point_PropTouch(ServerEntity_t *eEntity, ServerEntity_t *eOther)
 	if(!eOther->v.iHealth)
 		return;
 
-	Math_VectorClear(eEntity->v.velocity);
+	plVectorClear(eEntity->v.velocity);
 	Math_VectorScale(eOther->v.velocity,0.25f,eEntity->v.velocity);
 }
 

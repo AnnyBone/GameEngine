@@ -174,7 +174,7 @@ bool Monster_MoveStep(ServerEntity_t *ent, plVector3f_t move, bool bRelink)
 	trace_t			trace;
 	int				i;
 
-	Math_VectorClear(vNewOrigin);
+	plVectorClear(vNewOrigin);
 
 	// Flying monsters don't step up
 	if(ent->v.flags & (FL_SWIM|FL_FLY))

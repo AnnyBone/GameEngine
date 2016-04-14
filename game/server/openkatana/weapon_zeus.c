@@ -38,7 +38,7 @@ void Zeus_Hit(ServerEntity_t *ent)
 	vTarg[1] = vSource[1] + (mvDirection[1] * 250);
 	vTarg[2] = vSource[2] + (mvDirection[2] * 250);
 
-	Math_VectorClear(vel);
+	plVectorClear(vel);
 
 	trace = Traceline(ent,vSource,vTarg,0);
 	if(trace.fraction != 1.0f)

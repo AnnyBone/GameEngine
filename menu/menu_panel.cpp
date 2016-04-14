@@ -18,35 +18,18 @@
 
 #include "menu_main.h"
 
-class MenuPanel
+#include "menu_panel.h"
+
+Menu::Panel::Panel() : 
+	x(0), y(0),
+	width(128), height(128)
 {
-public:
-	MenuPanel();
-	~MenuPanel();
-
-	bool IsInside(int xpos, int ypos);
-	bool IsInside(MenuPanel *panel);
-
-	virtual void Draw();
-protected:
-private:
-	int x, y;			// Position coordinates.
-
-	int width, height;
-};
-
-MenuPanel::MenuPanel()
-{
-	x = 0;
-	y = 0;
-	width = 128;
-	height = 128;
 }
 
-MenuPanel::~MenuPanel()
+Menu::Panel::~Panel()
 {}
 
-bool MenuPanel::IsInside(int xpos, int ypos)
+bool Menu::Panel::IsInside(int xpos, int ypos)
 {
 	if ((xpos < x) || (ypos < y) || (xpos >(x + width)) || (ypos >(y + height)))
 		return false;
@@ -54,12 +37,12 @@ bool MenuPanel::IsInside(int xpos, int ypos)
 	return true;
 }
 
-bool MenuPanel::IsInside(MenuPanel *panel)
+bool Menu::Panel::IsInside(Menu::Panel *panel)
 {
 	return IsInside(panel->x, panel->y);
 }
 
-void MenuPanel::Draw()
+void Menu::Panel::Draw()
 {
 	/*
 		VideoDrawObject *draw = engine->CreateDrawObject();

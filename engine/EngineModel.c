@@ -1216,7 +1216,7 @@ MathVector_t Model_GenerateNormal3fv(MathVector3f_t a, MathVector3f_t b, MathVec
 	Math_VectorSubtract(c, b, x);
 	Math_VectorSubtract(a, b, y);
 
-	Math_VectorClear(normal);
+	plVectorClear(normal);
 	Math_CrossProduct(x, y, normal);
 
 	// Normalize it.

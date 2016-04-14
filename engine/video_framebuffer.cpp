@@ -212,7 +212,7 @@ VideoPostProcess::VideoPostProcess(Core::ShaderProgram *PostProcessProgram)
 	: VideoFrameBuffer(512, 512)	//Video.iWidth, Video.iHeight)
 {
 	if (!PostProcessProgram)
-		throw EngineException("Invalid shader program!\n");
+		throw Core::Exception("Invalid shader program!\n");
 
 	this->program = PostProcessProgram;
 }

@@ -129,15 +129,17 @@ bool Shader::Load(const char *path)
 
 	// Ensure we use the correct path and shader.
 	unsigned int stype;
-	if (type == VL_SHADER_FRAGMENT)
+	switch (type)
 	{
+	case VL_SHADER_FRAGMENT:
 		sprintf(source_path, "%s%s_fragment.shader", g_state.path_shaders, path);
 		stype = GL_FRAGMENT_SHADER;
-	}
-	else
-	{
+		break;
+	case VL_SHADER_GEOMETRY:
 		sprintf(source_path, "%s%s_vertex.shader", g_state.path_shaders, path);
 		stype = GL_VERTEX_SHADER;
+		break;
+	default:throw Core::Exception("Unknown shader type! (%i) (%s)\n", type, path);
 	}
 
 	// Attempt to load it.
@@ -245,7 +247,7 @@ ShaderProgram::ShaderProgram(std::string _name) :
 {
 	instance = vlCreateShaderProgram();
 	if (!instance)
-		throw EngineException("Failed to create shader program!\n");
+		throw Core::Exception("Failed to create shader program!\n");
 }
 
 ShaderProgram::~ShaderProgram()
@@ -257,7 +259,7 @@ void ShaderProgram::RegisterShader(std::string path, vlShaderType_t type)
 {
 	Shader *shader_ = new Shader(type);
 	if (!shader_->Load(path.c_str()))
-		throw EngineException("Failed to load shader! (%s)\n", path.c_str());
+		throw Core::Exception("Failed to load shader! (%s)\n", path.c_str());
 
 	Attach(shader_);
 }
@@ -272,7 +274,7 @@ void ShaderProgram::Attach(Shader *shader)
 {
 	VIDEO_FUNCTION_START
 	if (!shader)
-		throw EngineException("Attempted to attach an invalid shader!\n");
+		throw Core::Exception("Attempted to attach an invalid shader!\n");
 
 	vlAttachShader(instance, shader->GetInstance());
 	shaders.push_back(shader);

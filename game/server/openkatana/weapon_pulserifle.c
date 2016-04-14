@@ -94,7 +94,7 @@ void CorditeExplode(ServerEntity_t *ent)
 	Engine.Particle(ent->v.origin,vel,5,"spark",17);
 
 	// [25/6/2012] Simplified ~hogsy
-	Math_VectorClear(ent->v.velocity);
+	plVectorClear(ent->v.velocity);
 
 	Entity_Remove(ent);
 }
