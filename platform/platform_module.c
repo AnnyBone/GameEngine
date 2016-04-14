@@ -24,13 +24,13 @@
 	Module management
 */
 
-pFARPROC plFindModuleFunction(pINSTANCE instance, const char *function)
+PL_FARPROC plFindModuleFunction(PL_INSTANCE instance, const char *function)
 {
 	pFUNCTION_UPDATE();
 
 	if(instance)
 	{
-		pFARPROC address;
+		PL_FARPROC address;
 
 #ifdef _WIN32
 		address = GetProcAddress(instance, function);
@@ -44,7 +44,7 @@ pFARPROC plFindModuleFunction(pINSTANCE instance, const char *function)
 	return (NULL);
 }
 
-void plUnloadModule(pINSTANCE instance)
+void plUnloadModule(PL_INSTANCE instance)
 {
 	pFUNCTION_UPDATE();
 
@@ -63,9 +63,9 @@ void plUnloadModule(pINSTANCE instance)
 
 /*	Function to allow direct loading of an external module.
 */
-pINSTANCE plLoadModule(const char *path)
+PL_INSTANCE plLoadModule(const char *path)
 {
-	pINSTANCE	instance;
+	PL_INSTANCE	instance;
 	char		newpath[PLATFORM_MAX_PATH];
 
 	pFUNCTION_UPDATE();
@@ -109,7 +109,7 @@ pINSTANCE plLoadModule(const char *path)
 
 /*	Generic interface to allow loading of an external module.
 */
-void *plLoadModuleInterface(pINSTANCE instance, const char *path, const char *entry, void *handle)
+void *plLoadModuleInterface(PL_INSTANCE instance, const char *path, const char *entry, void *handle)
 {
 //	pFUNCTION_START
 

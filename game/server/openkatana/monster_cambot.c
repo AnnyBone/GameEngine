@@ -18,6 +18,11 @@
 
 #include "server_monster.h"
 
-void CamBot_Spawn(ServerEntity_t *eCamBot)
+#define	CAMBOT_MODEL	"models/placeholders/sphere.md2"
+
+void CamBot_Spawn(ServerEntity_t *entity)
 {
+	Server_PrecacheModel(CAMBOT_MODEL);
+
+	Entity_SetModel(entity, CAMBOT_MODEL);
 }

@@ -20,23 +20,18 @@
 
 /*	Create a new entity instance.
 */
-ServerEntity::ServerEntity()
+ServerEntity::ServerEntity() : instance(0)
 {
-	// Reset everything...
-	instance = 0;
 }
 
 ServerEntity::~ServerEntity()
 {
-	// Ensure that it's free before we delete ourself.
 	Free();
 }
 
 void ServerEntity::Spawn()
 {
-	// Check to see if we've already spawned.
 	if (instance)
-		// If we have, free us, then let us spawn again.
 		Free();
 
 	// Set physics properties to their defaults!
@@ -50,13 +45,11 @@ void ServerEntity::Spawn()
 
 void ServerEntity::Free()
 {
-	// Check to see if we've actually been spawned yet.
 	if (!instance)
-		// If not, then return.
 		return;
 
-	// Free us!
 	Engine.FreeEntity(instance);
+	instance = 0;
 }
 
 void ServerEntity::Link(bool touchtriggers)
@@ -76,7 +69,6 @@ void ServerEntity::SetSize(MathVector3f_t mins, MathVector3f_t maxs)
 {
 	// Ensure the model hasn't already been set.
 	if (!instance->v.model)
-		// Otherwise throw us a warning.
 		Engine.Con_Warning("Setting entity size before model! (%s)\n", instance->v.cClassname);
 
 	// Ensure the mins/maxs are the right way round.
@@ -122,7 +114,7 @@ void ServerEntity::SetSize(
 */
 void ServerEntity::SetOrigin(MathVector3f_t origin)
 {
-	Math_VectorCopy(origin, instance->v.origin);
+	plVectorCopy(origin, instance->v.origin);
 
 	Link(false);
 }
@@ -131,7 +123,7 @@ void ServerEntity::SetOrigin(MathVector3f_t origin)
 */
 void ServerEntity::SetAngles(MathVector3f_t angles)
 {
-	Math_VectorCopy(angles, instance->v.angles);
+	plVectorCopy(angles, instance->v.angles);
 
 	// TODO: Link?
 }
@@ -140,7 +132,7 @@ void ServerEntity::SetAngles(MathVector3f_t angles)
 */
 void ServerEntity::SetModel(char *path)
 {
-	Engine.SetModel(instance, path);
+	g_engine->SetModel(instance, path);
 }
 
 /*

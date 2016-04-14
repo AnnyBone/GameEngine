@@ -343,7 +343,7 @@ uint8_t *Image_LoadTGA (FILE *fin, unsigned int *width, unsigned int *height)
 // Use a direct path, mainly for Linux's sake.
 #include "../external/lpng1618/png.h"
 
-pINSTANCE iPNGLibraryInstance;
+PL_INSTANCE iPNGLibraryInstance;
 
 static png_structp(*PNG_CreateReadStruct)(png_const_charp user_png_ver, png_voidp error_ptr, png_error_ptr error_fn, png_error_ptr warn_fn);
 

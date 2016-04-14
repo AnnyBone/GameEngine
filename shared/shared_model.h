@@ -36,7 +36,7 @@ typedef struct efrag_s
 // !!! if this is changed, it must be changed in asm_i386.h too !!!
 typedef struct mplane_s
 {
-	MathVector3f_t	normal;
+	plVector3f_t	normal;
 	float			dist;
 	uint8_t			type;			// for texture axis selection and fast side tests
 	uint8_t			signbits;		// signx + signy<<1 + signz<<1

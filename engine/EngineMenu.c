@@ -26,7 +26,7 @@
 
 #include "platform_window.h"
 
-pINSTANCE hMenuInstance;
+PL_INSTANCE hMenuInstance;
 
 int	Menu_GetScreenWidth(void);
 int Menu_GetScreenHeight(void);

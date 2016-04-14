@@ -37,7 +37,7 @@
 		Move Server_ functions into KatServer
 */
 
-pINSTANCE hGameInstance;
+PL_INSTANCE hGameInstance;
 
 GameExport_t *Game;
 
@@ -430,10 +430,13 @@ void Game_Initialize(void)
 	if(Game)
 		plUnloadModule(hGameInstance);
 
-	// Server
-	Import.Con_Printf				= Con_Printf;
-	Import.Con_DPrintf				= Con_DPrintf;
-	Import.Con_Warning				= Con_Warning;
+	Import.Con_Printf				= Con_Printf;	// todo: obsolete!
+	Import.Con_DPrintf				= Con_DPrintf;	// todo: obsolete!
+	Import.Con_Warning				= Con_Warning;	// todo: obsolete!
+
+	Import.Print	= Con_Printf;
+	Import.Warning	= Con_Warning;
+
 	Import.Sys_Error				= Sys_Error;
 	Import.SetModel					= Server_SetModel;
 	Import.Particle					= Particle;

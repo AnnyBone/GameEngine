@@ -20,40 +20,39 @@
 
 #include "platform_math.h"
 
-typedef struct
+typedef struct plVertex_s
 {
 	plVector3f_t position, normal;
 
-	float ST[2];
+	plVector2f_t ST;
 
 	plColour_t colour;
 } plVertex_t;
 
-typedef struct
+typedef struct plTriangle_s
 {
 	unsigned int indices[3];
 } plTriangle_t;
 
-typedef enum
-{
-	PL_MODEL_TYPE_STATIC,		// Static.
-	PL_MODEL_TYPE_ANIMATED,		// Per-vertex animation.
-	PL_MODEL_TYPE_SKELETAL		// Skeletal animation.
-} plModelType_t;
-
-typedef struct
+typedef struct plModelFrame_s
 {
 	plTriangle_t	*triangles;
 	plVertex_t		*vertices;
 } plModelFrame_t;
 
-typedef struct
+typedef struct plStaticModel_s
+{
+	unsigned int num_triangles;
+	unsigned int num_vertices;
+
+	plModelFrame_t	frame;
+} plStaticModel_t;
+
+typedef struct plAnimatedModel_s
 {
 	unsigned int num_triangles;
 	unsigned int num_vertices;
 	unsigned int num_frames;
 
-	plModelType_t type;
-
-	plModelFrame_t	*frames;
-} plModel_t;
+	plModelFrame_t *frames;
+} plAnimatedModel_t;

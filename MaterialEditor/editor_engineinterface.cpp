@@ -9,7 +9,7 @@
 EngineExport_t *engine;
 EngineImport_t editor;
 
-pINSTANCE engineInstance;
+PL_INSTANCE engineInstance;
 
 void EngineInterface_PrintMessage(char *text)
 {

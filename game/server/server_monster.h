@@ -55,7 +55,7 @@ typedef enum
 	MONSTER_STATE_ASLEEP,	// Monster is asleep.
 
 	MONSTER_STATE_NONE		// Monster has no state.
-} MonsterState_t;
+} AIState_t;
 
 #define	MONSTER_RANGE_MELEE		48.0f
 #define MONSTER_RANGE_NEAR		256.0f
@@ -85,28 +85,27 @@ typedef enum
 
 /*	Various emotions.
 */
-enum
+typedef enum
 {
-	EMOTION_BOREDOM,
-	EMOTION_FEAR,
-	EMOTION_JOY,
-	EMOTION_ANGER,
-	EMOTION_SADNESS,
-	EMOTION_DISGUST,
-	EMOTION_SURPRISE,
-	EMOTION_CONTEMPT,
-	EMOTION_INTEREST,
+	AI_EMOTION_BOREDOM,
+	AI_EMOTION_FEAR,
+	AI_EMOTION_JOY,
+	AI_EMOTION_ANGER,
+	AI_EMOTION_SADNESS,
+	AI_EMOTION_DISGUST,
+	AI_EMOTION_SURPRISE,
+	AI_EMOTION_CONTEMPT,
+	AI_EMOTION_INTEREST,
 
-	EMOTION_NONE
-};
+	AI_EMOTION_END
+} AIEmotion_t;
 
 ServerEntity_t *Monster_GetTarget(ServerEntity_t *eMonster);
 ServerEntity_t *Monster_GetEnemy(ServerEntity_t *Monster);
 
-bool Monster_SetState(ServerEntity_t *eMonster, MonsterState_t msState);
+bool Monster_SetState(ServerEntity_t *eMonster, AIState_t msState);
 bool Monster_SetThink(ServerEntity_t *eMonster, MonsterThink_t mtThink);
 bool Monster_IsVisible(ServerEntity_t *ent, ServerEntity_t *target);
-bool Monster_EmotionReset(ServerEntity_t *eMonster, int iEmotion);
 
 int	Monster_GetRelationship(ServerEntity_t *eMonster, ServerEntity_t *eTarget);
 
@@ -115,11 +114,14 @@ float MONSTER_GetRange(ServerEntity_t *ent, MathVector3f_t target);
 void Monster_Damage(ServerEntity_t *target, ServerEntity_t *inflictor, int iDamage, ServerDamageType_t type);
 void Monster_Jump(ServerEntity_t *eMonster, float fVelocity);
 void Monster_MoveToGoal(ServerEntity_t *ent, MathVector3f_t goal, float distance);
-void Monster_MoveRandom(ServerEntity_t *eMonster, float fSpeed);
-void Monster_Frame(ServerEntity_t *eMonster);
+void AI_RandomMovement(ServerEntity_t *eMonster, float fSpeed);
+void AI_Frame(ServerEntity_t *entity);
 void Monster_Killed(ServerEntity_t *monster, ServerEntity_t *attacker, ServerDamageType_t type);
 
-Waypoint_t *Monster_GetMoveTarget(ServerEntity_t *Monster);
+void AI_Initialize(ServerEntity_t *entity);
+
+// AI Movement
+Waypoint_t *AI_GetVisibleWaypoint(ServerEntity_t *Monster);
 
 /*
     Bots

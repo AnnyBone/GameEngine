@@ -374,7 +374,7 @@ void Server_PreFrame(void)
 */
 void Server_EntityFrame(ServerEntity_t *entity)
 {
-	Monster_Frame(entity);
+	AI_Frame(entity);
 }
 
 /*	Called by the engine.

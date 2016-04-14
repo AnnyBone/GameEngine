@@ -158,9 +158,10 @@ typedef struct
 	void(*Pain)(ServerEntity_t *entity, ServerEntity_t *other, ServerDamageType_t type);
 
 	// Current thought state
-	int	state;			// Current physical state.
-	int	think;			// Current thought process.
-	int	commands[64];	// List of sub-commands for the monster to execute.
+	int	state;					// Current physical state.
+	int	think;					// Current thought process.
+	int	commands[64];			// List of sub-commands for the monster to execute.
+	unsigned int emotions[16];	// Current emotional states.
 
 	float attack_delay;		// Delay before attempting to attack again.
 
@@ -172,7 +173,7 @@ typedef struct
 	ServerEntity_t *eOldFriend;	// Last friend.
 	ServerEntity_t *eTarget;	// Current target.
 	ServerEntity_t *eOldTarget;	// Last target.
-} MonsterVariables_t;
+} ServerMonsterVariables_t;
 
 /*	Variables used for vehicles.
 */
@@ -516,8 +517,8 @@ typedef struct ServerEntity_s
 	ServerModelVariables_t		Model;		// Variables that affect the model used for the entity.
 	ServerPhysicsVariables_t	Physics;	// Variables affecting how the entity is physically treated.
 	ServerGameVariables_t		local;		// All variables specific towards the game, that aren't used by the engine.
-	MonsterVariables_t	Monster;	// Specific towards AI/monsters.
-	VehicleVariables_t	Vehicle;	// Vehicle variables.
+	ServerMonsterVariables_t	Monster;	// Specific towards AI/monsters.
+	VehicleVariables_t			Vehicle;	// Vehicle variables.
 } ServerEntity_t;
 
 #define	NEXT_EDICT(e)			((ServerEntity_t *)( (uint8_t *)e + sizeof(ServerEntity_t)))

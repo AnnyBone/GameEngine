@@ -83,6 +83,55 @@ cvar_t	r_showbboxes			= {	"r_showbboxes",			"0"					};
 cvar_t	r_lerpmodels			= {	"r_lerpmodels",			"1"					};
 cvar_t	r_lerpmove				= {	"r_lerpmove",			"1"					};
 
+/*	Tests to see if the bounding box is completely inside
+	the frustum or not.
+*/
+bool R_BoxInsideFrustum(plVector3f_t mins, plVector3f_t maxs)
+{
+	for (unsigned int i = 0; i < 4; i++)
+	{
+		mplane_t *p = frustum + i;
+		switch (p->signbits)
+		{
+		default:
+		case 0:
+			if (p->normal[0] * maxs[0] + p->normal[1] * maxs[1] + p->normal[2] * maxs[2] < p->dist)
+				return true;
+			break;
+		case 1:
+			if (p->normal[0] * mins[0] + p->normal[1] * maxs[1] + p->normal[2] * maxs[2] < p->dist)
+				return true;
+			break;
+		case 2:
+			if (p->normal[0] * maxs[0] + p->normal[1] * mins[1] + p->normal[2] * maxs[2] < p->dist)
+				return true;
+			break;
+		case 3:
+			if (p->normal[0] * mins[0] + p->normal[1] * mins[1] + p->normal[2] * maxs[2] < p->dist)
+				return true;
+			break;
+		case 4:
+			if (p->normal[0] * maxs[0] + p->normal[1] * maxs[1] + p->normal[2] * mins[2] < p->dist)
+				return true;
+			break;
+		case 5:
+			if (p->normal[0] * mins[0] + p->normal[1] * maxs[1] + p->normal[2] * mins[2] < p->dist)
+				return true;
+			break;
+		case 6:
+			if (p->normal[0] * maxs[0] + p->normal[1] * mins[1] + p->normal[2] * mins[2] < p->dist)
+				return true;
+			break;
+		case 7:
+			if (p->normal[0] * mins[0] + p->normal[1] * mins[1] + p->normal[2] * mins[2] < p->dist)
+				return true;
+			break;
+		}
+	}
+
+	return false;
+}
+
 /*	Returns true if the box is completely outside the frustum
 */
 bool R_CullBox (MathVector3f_t emins, MathVector3f_t emaxs)

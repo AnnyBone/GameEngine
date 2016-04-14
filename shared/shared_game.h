@@ -165,6 +165,9 @@ typedef struct
 	void(*Con_DPrintf)(const char *fmt, ...);	// Only appears if launched/running in developer mode.
 	void(*Con_Warning)(const char *fmt, ...);	// Highlighted message to indicate an issue.
 
+	void(*Warning)(const char *fmt, ...);	// Highlighted message to indicate an issue.
+	void(*Print)(const char *fmt, ...);		// Appears to client in console. Standard message.
+
 	void(*SetMessageEntity)(ServerEntity_t *ent);
 	void(*CenterPrint)(ServerEntity_t *ent, char *msg);	// Sends a message to the specified client and displays the message at the center of the screen.
 	void(*Sys_Error)(const char *error, ...);

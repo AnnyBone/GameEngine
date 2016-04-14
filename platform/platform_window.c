@@ -101,9 +101,7 @@ int plGetScreenCount(void)
 	Window Creation
 */
 
-pINSTANCE iGlobalInstance;
-
-bool is_cursorvisible = true;		// Are we showing the cursor?
+PL_INSTANCE iGlobalInstance;
 
 int	iActive = 0,	// Number of current active windows.
 iScreen;			// Default screen.
@@ -244,13 +242,14 @@ void plDestroyWindow(plWindow_t *window)
 */
 void plShowCursor(bool show)
 {
-	if (show == is_cursorvisible)
+	static bool _cursorvisible = true;
+	if (show == _cursorvisible)
 		return;
 #ifdef _WIN32
 	ShowCursor(show);
 #else	// Linux
 #endif
-	is_cursorvisible = show;
+	_cursorvisible = show;
 }
 
 /*	Gets the position of the cursor.

@@ -145,7 +145,7 @@ void Inmater_Think(ServerEntity_t *eInmater)
 			if(!eInmater->local.dAnimationTime || (eInmater->local.iAnimationCurrent == eInmater->local.iAnimationEnd))
 				Entity_Animate(eInmater,efInmaterIdle);
 
-			Monster_MoveRandom(eInmater, INMATER_MAX_SPEED);
+			AI_RandomMovement(eInmater, INMATER_MAX_SPEED);
 			break;
 		}
 		break;

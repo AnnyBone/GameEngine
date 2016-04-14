@@ -27,32 +27,35 @@
 
 #define	WAYPOINT_MAX_ALLOCATED	2048
 
-namespace AI
+namespace Game
 {
-	class WaypointManager
+	namespace AI
 	{
-	public:
-		WaypointManager() {};
-		~WaypointManager() {};
+		class WaypointManager
+		{
+		public:
+			WaypointManager() {};
+			~WaypointManager() {};
 
-		void Initialize();
-		void Simulate();
-		void Shutdown();
+			void Initialize();
+			void Simulate();
+			void Shutdown();
 
-		Waypoint_t *Add();
-		void Remove(Waypoint_t *waypoint);
-		void Clear();
-	protected:
-	private:
-		std::vector<Waypoint_t*> waypoints;
-	};
+			Waypoint_t *Add();
+			void Remove(Waypoint_t *waypoint);
+			void Clear();
+		protected:
+		private:
+			std::vector<Waypoint_t*> waypoints;
+		};
 
-	extern WaypointManager *g_waypointmanager;
+		extern WaypointManager *g_waypointmanager;
+	}
 }
 
-using namespace AI;
+using namespace Game;
 
-void WaypointManager::Initialize()
+void AI::WaypointManager::Initialize()
 {
 	g_engine->Con_Printf("Initializing Waypoint Manager...\n");
 
@@ -61,31 +64,35 @@ void WaypointManager::Initialize()
 	waypoints.reserve(WAYPOINT_MAX_ALLOCATED);
 }
 
-Waypoint_t *WaypointManager::Add()
+Waypoint_t *AI::WaypointManager::Add()
 {
 	Waypoint_t *waypoint = new Waypoint_t;
+	waypoints.push_back(waypoint);
 
 	waypoint->number = waypoints.size();
 
-	waypoints.push_back(waypoint);
 	return waypoint;
 }
 
-void WaypointManager::Clear()
+void AI::WaypointManager::Remove(Waypoint_t *waypoint)
+{
+}
+
+void AI::WaypointManager::Clear()
 {
 	waypoints.clear();							// Clear the vector.
 	waypoints.shrink_to_fit();					// Clear out mem.
 	waypoints.reserve(WAYPOINT_MAX_ALLOCATED);	// Reserve default amount, again.
 }
 
-void WaypointManager::Simulate()
+void AI::WaypointManager::Simulate()
 {
 	for (unsigned int i = 0; i < waypoints.size(); i++)
 	{
 	}
 }
 
-void WaypointManager::Shutdown()
+void AI::WaypointManager::Shutdown()
 {
 	Clear();
 }

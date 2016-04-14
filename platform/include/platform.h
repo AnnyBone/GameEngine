@@ -155,23 +155,39 @@
 #endif
 
 // Other
-#ifndef pINSTANCE
-#	define	pINSTANCE	void *	// Instance definition.
+#ifndef PL_INSTANCE
+#	define	PL_INSTANCE	void *	// Instance definition.
 #endif
-#ifndef pFARPROC
-#	define	pFARPROC	void *	// Function pointer.
+#ifndef PL_FARPROC
+#	define	PL_FARPROC	void *	// Function pointer.
 #endif
 
 // Set the defaults if nothing's been set for any of these...
 
 #ifndef PL_NAME
-#	define	PL_NAME	"Unknown"
+#	define PL_NAME "Unknown"	// Platform name.
 #endif
 #ifndef PLATFORM_MAX_PATH
-#	define	PLATFORM_MAX_PATH	256
+#	define PLATFORM_MAX_PATH 256	// Max path supported on platform.
+#endif
+#ifndef PL_MAX_PATH
+#	define PL_MAX_PATH 256	// Max path supported on platform.
 #endif
 #ifndef PL_MAX_USERNAME
-#	define	PL_MAX_USERNAME		256			// Maximum length allowed for a username.
+#	define PL_MAX_USERNAME 256	// Maximum length allowed for a username.
+#endif
+
+#if defined(_MSC_VER)
+#	define PL_EXTERN	extern
+#	define PL_CALL		__stdcall
+
+	// MSVC doesn't support __func__
+#	define PL_FUNCTION	__FUNCTION__    // Returns the active function.
+#else
+#	define PL_EXTERN	extern
+#	define PL_CALL		
+
+#	define PL_FUNCTION	__func__	    // Returns the active function.
 #endif
 
 #ifdef __cplusplus
@@ -199,14 +215,11 @@
 #ifndef FALSE
 #	define FALSE false
 #endif
+#define	PL_BOOL		uint8_t
+#define PL_TRUE		1
+#define	PL_FALSE	0
 
 /**/
-
-#ifdef _MSC_VER	// MSVC doesn't support __func__ either...
-#	define	pFUNCTION	__FUNCTION__    // Returns the active function.
-#else
-#	define	pFUNCTION	__func__	    // Returns the active function.
-#endif
 
 #define	pARRAYELEMENTS(a)	(sizeof(a)/sizeof(*(a)))	// Returns the number of elements within an array.
 
@@ -224,12 +237,12 @@ typedef	unsigned char	pl_uchar;
 
 #define	pFUNCTION_UPDATE()			\
 	plResetError();					\
-	plSetErrorFunction(pFUNCTION)
+	plSetErrorFunction(PL_FUNCTION)
 #ifndef __cplusplus
-#define	pFUNCTION_START		plSetErrorFunction(pFUNCTION); {
+#define	pFUNCTION_START		plSetErrorFunction(PL_FUNCTION); {
 #else
 #define	pFUNCTION_START	\
-plSetErrorFunction(pFUNCTION);
+plSetErrorFunction(PL_FUNCTION);
 // TRY whatever
 #endif
 #define pFUNCTION_END 		}

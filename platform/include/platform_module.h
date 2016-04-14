@@ -32,21 +32,21 @@ typedef struct
 plEXTERN_C_START
 
 #ifdef _WIN32
-#	define	pMODULE_EXTENSION	".dll"
-#	define	pMODULE_EXPORT		__declspec(dllexport)
+#	define pMODULE_EXTENSION	".dll"
+#	define pMODULE_EXPORT		__declspec(dllexport)
 #	define pMODULE_IMPORT		__declspec(dllimport)
 #else   // Linux
-#	define	pMODULE_EXTENSION	".so"
+#	define pMODULE_EXTENSION	".so"
 #	define pMODULE_EXPORT		__attribute__((visibility("default")))
 #	define pMODULE_IMPORT		__attribute__((visibility("hidden")))
 #endif
 
-	extern pFARPROC plFindModuleFunction(pINSTANCE instance, const char *function);
+PL_EXTERN PL_FARPROC plFindModuleFunction(PL_INSTANCE instance, const char *function);
 
-	pINSTANCE plLoadModule(const char *path);
+PL_INSTANCE plLoadModule(const char *path);
 
-	extern void plUnloadModule(pINSTANCE instance);
-	extern void *plLoadModuleInterface(pINSTANCE instance, const char *path, const char *entry, void *handle);
+PL_EXTERN void plUnloadModule(PL_INSTANCE instance);
+PL_EXTERN void *plLoadModuleInterface(PL_INSTANCE instance, const char *path, const char *entry, void *handle);
 
 plEXTERN_C_END
 

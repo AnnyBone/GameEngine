@@ -20,19 +20,37 @@
 
 #include "platform_model.h"
 
-plModel_t *plCreateModel()
+plAnimatedModel_t *plCreateAnimatedModel()
 {
 	plSetErrorFunction("plCreateModel");
 
-	return nullptr;
+	plAnimatedModel_t *model = new plAnimatedModel_t;
+	if (!model)
+		return nullptr;
+
+	memset(model, 0, sizeof(plAnimatedModel_t));
+
+	return model;
 }
 
-void plDeleteModel(plModel_t *model)
+void plDeleteAnimatedModel(plAnimatedModel_t *model)
 {
 	if (!model)
 	{
 		plSetError("Invalid model!\n");
 		return;
+	}
+
+	for (unsigned int i = 0; i < model->num_frames; i++)
+	{
+		if (&model->frames[i])
+		{
+			if (model->frames[i].triangles)
+				delete model->frames[i].triangles;
+			if (model->frames[i].vertices)
+				delete model->frames[i].vertices;
+			delete &model->frames[i];
+		}
 	}
 
 	delete model;
@@ -45,7 +63,62 @@ void plDeleteModel(plModel_t *model)
 	http://paulbourke.net/dataformats/unreal/
 */
 
-#include "../shared/format_u3d.h"
+#define	U3D_FILE_EXTENSION "3d"
+
+typedef struct U3DAnimationHeader_s
+{
+	uint16_t	frames;	// Number of frames.
+	uint16_t	size;	// Size of each frame.
+} U3DAnimationHeader_t;
+
+typedef struct U3DDataHeader_s
+{
+	uint16_t	numpolys;	// Number of polygons.
+	uint16_t	numverts;	// Number of vertices.
+	uint16_t	rotation;	// Mesh rotation?
+	uint16_t	frame;		// Initial frame.
+
+	uint32_t	norm_x;
+	uint32_t	norm_y;
+	uint32_t	norm_z;
+
+	uint32_t	fixscale;
+	uint32_t	unused[3];
+} U3DDataHeader_t;
+
+#define	U3D_FLAG_UNLIT			16
+#define	U3D_FLAG_FLAT			32
+#define	U3D_FLAG_ENVIRONMENT	64
+#define	U3D_FLAG_NEAREST		128
+
+enum U3DType
+{
+	U3D_TYPE_NORMAL,
+	U3D_TYPE_NORMALTWOSIDED,
+	U3D_TYPE_TRANSLUCENT,
+	U3D_TYPE_MASKED,
+	U3D_TYPE_MODULATE,
+	U3D_TYPE_ATTACHMENT
+};
+
+typedef struct U3DVertex_s
+{
+	// This is a bit funky...
+	int32_t x : 11;
+	int32_t y : 11;
+	int32_t z : 10;
+} U3DVertex_t;
+
+typedef struct U3DTriangle_s
+{
+	uint16_t vertex[3];	// Vertex indices
+
+	uint8_t	type;		// Triangle type
+	uint8_t colour;		// Triangle colour
+	uint8_t ST[3][2];	// Texture coords
+	uint8_t texturenum;	// Texture offset
+	uint8_t flags;		// Triangle flags
+} U3DTriangle_t;
 
 FILE *pl_u3d_dataf = nullptr;
 FILE *pl_u3d_animf = nullptr;
@@ -58,7 +131,7 @@ void _plUnloadU3DFiles()
 		std::fclose(pl_u3d_dataf);
 }
 
-plModel_t *plLoadU3DModel(const char *path)
+plAnimatedModel_t *plLoadU3DModel(const char *path)
 {
 	plSetErrorFunction("plLoadU3DModel");
 
@@ -128,18 +201,12 @@ plModel_t *plLoadU3DModel(const char *path)
 		return nullptr;
 	}
 
-	// TODO: replace
-	plModel_t *model = new plModel_t;
+	plAnimatedModel_t *model = new plAnimatedModel_t;
 
 	// Store the information we've gathered.
 	model->num_frames		= animheader.frames;
 	model->num_triangles	= dataheader.numpolys;
 	model->num_vertices		= dataheader.numverts;
-
-	// If it has more than one frame, we're gonna want to interp between
-	// it all later.
-	if (model->num_frames > 1)
-		model->type = PL_MODEL_TYPE_ANIMATED;
 
 	// Allocate the triangle/vertex arrays.
 	model->frames = new plModelFrame_t[model->num_frames];

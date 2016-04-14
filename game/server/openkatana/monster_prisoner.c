@@ -16,34 +16,14 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#include "server_main.h"
+
 #include "server_monster.h"
+#include "server_weapon.h"
 
 /*
 	The Prisoner
 	One of the victims of Mishima's evil plans.
-*/
-
-#include "server_weapon.h"
-
-/*	Notes
-		We don't need to check if we're dead or not in
-		think functions, this is done in the main Monster_Think.
-		It may be worth checking the players health but that's
-		about it.
-		Prisoners do NOT take anger into account since they have
-		nothing to attack with.
-
-	[20/9/2012]
-		Revised Prisoner_Stand. ~hogsy
-		Firstly prisoners are usually in cells,
-		so checking for an enemy here is useless
-		and instead we're just going to check if
-		we're fleeing instead. We'll start fleeing
-		if we're actually under attack anyway, we
-		could probably mark any attacking ent as
-		a "threat" and then check that here instead! ~hogsy
-	[21/10/2012]
-		Revision #2 of Prisoner_Stand. ~hogsy
 */
 
 enum
@@ -104,10 +84,10 @@ void Prisoner_Think(ServerEntity_t *ePrisoner)
 				Sound(ePrisoner, CHAN_VOICE, PRISONER_SOUND_HELP, 255, ATTN_NORM);
 		}
 
-		Monster_MoveRandom(ePrisoner, 35.0f);
+		AI_RandomMovement(ePrisoner, 35.0f);
 		break;
 	case MONSTER_THINK_WANDERING:
-		Monster_MoveRandom(ePrisoner, 35.0f);
+		AI_RandomMovement(ePrisoner, 35.0f);
 		break;
 	}
 }
@@ -117,8 +97,6 @@ void Prisoner_Walk(ServerEntity_t *ePrisoner)
 	// Check our health before we attempt to move!
 	if(ePrisoner->v.iHealth <= 0)
 		return;
-
-//	Monster_MoveToGoal(ePrisoner, ePrisoner->Monster.mvMoveTarget, 10.0f);
 }
 
 void Prisoner_Run(ServerEntity_t *ePrisoner)

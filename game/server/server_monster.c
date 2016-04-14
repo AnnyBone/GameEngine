@@ -408,7 +408,7 @@ bool Monster_SetThink(ServerEntity_t *entity, MonsterThink_t newthink)
 
 /*	Automatically sets the state for the monster.
 */
-bool Monster_SetState(ServerEntity_t *eMonster, MonsterState_t msState)
+bool Monster_SetState(ServerEntity_t *eMonster, AIState_t msState)
 {
 	if (eMonster->Monster.state == msState)
 		return true;
@@ -750,10 +750,16 @@ ServerEntity_t *Monster_GetEnemy(ServerEntity_t *Monster)
 #define	MONSTER_EMOTION_RESET		30
 #define	MONSTER_EMOTION_THRESHOLD	50
 
+void AI_Initialize(ServerEntity_t *entity)
+{
+	Monster_SetState(entity, MONSTER_STATE_ASLEEP);
+	Monster_SetThink(entity, MONSTER_THINK_IDLE);
+}
+
 /*	Used to go over each monster state then update it, and then calls the monsters
 	assigned think function.
 */
-void Monster_Frame(ServerEntity_t *entity)
+void AI_Frame(ServerEntity_t *entity)
 {
 	// The following is only valid for actual monsters.
 	if (!Entity_IsMonster(entity))
@@ -778,6 +784,15 @@ void Monster_Frame(ServerEntity_t *entity)
 }
 
 /*
+	Targetting
+*/
+
+Waypoint_t *AI_GetVisibleWaypoint(ServerEntity_t *entity)
+{
+	return Waypoint_GetByVisibility(entity->v.origin);
+}
+
+/*
 	Animation
 */
 
@@ -785,28 +800,30 @@ void Monster_Frame(ServerEntity_t *entity)
 	States
 */
 
+void AI_SetState(ServerEntity_t *entity, AIState_t state)
+{
+	if (entity->Monster.state == state)
+		return;
+	else if (entity->)
+
+	switch (state)
+	{
+	case MONSTER_STATE_ASLEEP:
+	case MONSTER_STATE_AWAKE:
+	case MONSTER_STATE_DEAD:
+	case MONSTER_STATE_DYING:
+	default:
+		g_engine->Warning("Attempted to set an unknown state! (%s) (%i)\n", entity->v.cClassname, state);
+	}
+}
+
 /*
 	Emotions
 */
 
-/*	Check if it's time to reset the emotion state or not.
-*/
-bool Monster_EmotionReset(ServerEntity_t *eMonster, int iEmotion)
+void AI_ResetEmotion(ServerEntity_t *entity, AIEmotion_t emotion)
 {
-/*	if (eMonster->Monster.meEmotion[iEmotion].dResetDelay > Server.dTime)
-	{
-		eMonster->Monster.meEmotion[iEmotion].iEmotion = 0;
-
-		eMonster->Monster.meEmotion[iEmotion].dResetDelay = Server.dTime + MONSTER_EMOTION_RESET;
-
-#ifdef MONSTER_DEBUG
-		Engine.Con_DPrintf("Reset emotional state for %s\n", eMonster->v.cClassname);
-#endif
-
-		return true;
-	}*/
-
-	return false;
+	entity->Monster.emotions[emotion] = 0;
 }
 
 /*
@@ -847,7 +864,7 @@ int	Monster_GetRelationship(ServerEntity_t *eMonster, ServerEntity_t *eTarget)
 
 /*	Can be used to debug monster movement / apply random movement.
 */
-void Monster_MoveRandom(ServerEntity_t *eMonster,float fSpeed)
+void AI_RandomMovement(ServerEntity_t *eMonster, float fSpeed)
 {
 	// Add some random movement. ~hogsy
 	if (rand() % 50 == 0)
@@ -872,20 +889,15 @@ void Monster_MoveRandom(ServerEntity_t *eMonster,float fSpeed)
 		eMonster->v.angles[1] = (float)(rand() % 360);
 }
 
-void Monster_MoveToWaypoint(ServerEntity_t *monster, Waypoint_t *target, float velocity)
-{
-	if (!target)
-		return;
-}
+void AI_RunMovement(ServerEntity_t *entity)
+{}
 
-Waypoint_t *Monster_GetMoveTarget(ServerEntity_t *Monster)
-{
-	return Waypoint_GetByVisibility(Monster->v.origin);
-}
+void AI_WalkMovement(ServerEntity_t *entity)
+{}
 
 /*	Move the monster forwards.
 */
-void Monster_MoveForward(ServerEntity_t *monster, float velocity)
+void AI_ForwardMovement(ServerEntity_t *entity, float velocity)
 {
 #if 0	// Ensure we're on the ground?
 	if (!Entity_IsOnGround(monster))
@@ -894,31 +906,6 @@ void Monster_MoveForward(ServerEntity_t *monster, float velocity)
 
 	//MathVector3f_t angles;
 }
-
-/*	Move the monster backwards.
-*/
-void Monster_MoveBackward(ServerEntity_t *eMonster)
-{}
-
-/*	Strafe right.
-*/
-void Monster_MoveLeft(ServerEntity_t *Monster, float fVelocity)
-{}
-
-/*	Strafe left.
-*/
-void Monster_MoveRight(ServerEntity_t *eMonster)
-{}
-
-/*	Turn left on the spot.
-*/
-void Monster_TurnLeft(ServerEntity_t *Monster, float fVelocity)
-{}
-
-/*	Turn right on the spot.
-*/
-void Monster_TurnRight(ServerEntity_t *monster)
-{}
 
 /*	Allows a monster to jump with the given velocity.
 */

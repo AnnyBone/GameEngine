@@ -121,7 +121,7 @@ int WINS_Init (void)
 	char		*p;
 	int			r;
 	WORD		wVersionRequested;
-	pINSTANCE	hInst;
+	PL_INSTANCE	hInst;
 
 // initialize the Winsock function vectors (we do this instead of statically linking
 // so we can run on Win 3.1, where there isn't necessarily Winsock)

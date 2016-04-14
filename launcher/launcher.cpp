@@ -37,7 +37,7 @@
 EngineExport_t *engine;
 EngineImport_t *launcher;
 
-pINSTANCE instance;
+PL_INSTANCE instance;
 
 /*	TODO:
 		List of things I want access to from the engine...
