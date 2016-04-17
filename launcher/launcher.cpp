@@ -17,9 +17,8 @@
 */
 
 // Platform Library
+#include "platform.h"
 #include "platform_module.h"
-#include "platform_window.h"
-#include "platform_math.h"
 
 // Shared Library
 #include "shared_flags.h"

@@ -103,20 +103,21 @@ void SpriteManager::Draw()
 	Sprite
 */
 
-Sprite::Sprite()
+Sprite::Sprite() :
+	ident(0),
+	isactive(false),
+	islit(false),
+	isvisible(false),
+	scale(5.0f),
+	material(g_mMissingMaterial)
 {
-	ident		= 0;
-	isactive	= true;
-	islit		= false;
-	isvisible	= false;
-	scale		= 5.0f;
-	material	= g_mMissingMaterial;
-
 	plVectorClear(position);
 	plVectorClear(mins);
 	plVectorClear(maxs);
 
 	Math_Vector4Set(1.0f, colour);
+
+	draw = vlCreateDraw(VL_PRIMITIVE_TRIANGLES, 2, 4);
 }
 
 Sprite::~Sprite()
@@ -232,10 +233,14 @@ void Sprite::Draw()
 	if (colour[3] < 1.0f)
 		vlEnable(VL_CAPABILITY_BLEND);
 
-#if 0	// TODO
-	// Draw it via the VideoObject interface.
-	vertexobj->Draw();
-#endif
+	vlBeginDraw(draw);
+	vlDrawVertex3f(-scale, scale, 0);
+	vlDrawVertex3f(scale, scale, 0);
+	vlDrawVertex3f(scale, -scale, 0);
+	vlDrawVertex3f(-scale, -scale, 0);
+	vlEndDraw(draw);
+
+	vlDraw(draw);
 
 	if (colour[3] < 1.0f)
 		vlDisable(VL_CAPABILITY_BLEND);

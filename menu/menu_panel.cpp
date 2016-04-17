@@ -29,7 +29,7 @@ Menu::Panel::Panel() :
 Menu::Panel::~Panel()
 {}
 
-bool Menu::Panel::IsInside(int xpos, int ypos)
+bool Menu::Panel::IsInside(unsigned int xpos, unsigned int ypos)
 {
 	if ((xpos < x) || (ypos < y) || (xpos >(x + width)) || (ypos >(y + height)))
 		return false;

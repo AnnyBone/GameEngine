@@ -804,7 +804,6 @@ void AI_SetState(ServerEntity_t *entity, AIState_t state)
 {
 	if (entity->Monster.state == state)
 		return;
-	else if (entity->)
 
 	switch (state)
 	{

@@ -486,14 +486,14 @@ void _Material_AddTexture(Material_t *material, MaterialContext_t mftContext, ch
 		Sys_Error("Failed to get skin!\n");
 
 #ifdef _MSC_VER
-#pragma warning(suppress: 6011)
+#	pragma warning(suppress: 6011)
 #endif
 	MaterialTexture_t *curtexture = &curskin->texture[curskin->num_textures];
 	memset(curtexture, 0, sizeof(MaterialTexture_t));
 	if (curskin->num_textures > 0) // If we have more textures, use decal mode.
-		curtexture->env_mode = VIDEO_TEXTURE_MODE_DECAL;
+		curtexture->env_mode = VIDEO_TEXTUREMODE_DECAL;
 	else // By default textures are modulated... Inherited Quake behaviour, yay.
-		curtexture->env_mode = VIDEO_TEXTURE_MODE_MODULATE;
+		curtexture->env_mode = VIDEO_TEXTUREMODE_MODULATE;
 	curtexture->scale = 1;
 
 	char texturepath[MAX_QPATH];
@@ -566,14 +566,14 @@ void _Material_SetTextureType(Material_t *material, MaterialContext_t context, c
 			switch (curtex->mttType)
 			{
 			case MATERIAL_TEXTURE_DETAIL:
-				curtex->env_mode	= VIDEO_TEXTURE_MODE_COMBINE;
+				curtex->env_mode	= VIDEO_TEXTUREMODE_COMBINE;
 				curtex->scale		= cv_video_detailscale.value;
 				break;
 			case MATERIAL_TEXTURE_FULLBRIGHT:
-				curtex->env_mode = VIDEO_TEXTURE_MODE_ADD;
+				curtex->env_mode = VIDEO_TEXTUREMODE_ADD;
 				break;
 			case MATERIAL_TEXTURE_SPHERE:
-				curtex->env_mode = VIDEO_TEXTURE_MODE_COMBINE;
+				curtex->env_mode = VIDEO_TEXTUREMODE_COMBINE;
 				break;
 			}
 			break;
@@ -615,12 +615,12 @@ typedef struct
 
 MaterialTextureEnvironmentModeType_t material_textureenvmode[] =
 {
-	{ "add",		VIDEO_TEXTURE_MODE_ADD },
-	{ "modulate",	VIDEO_TEXTURE_MODE_MODULATE },
-	{ "decal",		VIDEO_TEXTURE_MODE_DECAL },
-	{ "blend",		VIDEO_TEXTURE_MODE_BLEND },
-	{ "replace",	VIDEO_TEXTURE_MODE_REPLACE },
-	{ "combine",	VIDEO_TEXTURE_MODE_COMBINE }
+	{ "add",		VIDEO_TEXTUREMODE_ADD },
+	{ "modulate",	VIDEO_TEXTUREMODE_MODULATE },
+	{ "decal",		VIDEO_TEXTUREMODE_DECAL },
+	{ "blend",		VIDEO_TEXTUREMODE_BLEND },
+	{ "replace",	VIDEO_TEXTUREMODE_REPLACE },
+	{ "combine",	VIDEO_TEXTUREMODE_COMBINE }
 };
 
 void _Material_SetTextureEnvironmentMode(Material_t *material, MaterialContext_t context, char *arg)
@@ -1173,7 +1173,7 @@ void Material_Draw(Material_t *material, vlVertex_t *ObjectVertex, vlPrimitive_t
 		case MATERIAL_TEXTURE_LIGHTMAP:
 			if (!ispost)
 			{
-				vlSetTextureEnvironmentMode(VIDEO_TEXTURE_MODE_COMBINE);
+				vlSetTextureEnvironmentMode(VIDEO_TEXTUREMODE_COMBINE);
 #ifdef VL_MODE_OPENGL
 				glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
 				glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_PREVIOUS);
@@ -1240,7 +1240,7 @@ void Material_Draw(Material_t *material, vlVertex_t *ObjectVertex, vlPrimitive_t
 #endif
 			}
 
-			vlSetTextureEnvironmentMode(VIDEO_TEXTURE_MODE_MODULATE);
+			vlSetTextureEnvironmentMode(VIDEO_TEXTUREMODE_MODULATE);
 
 			// Disable the texture.
 			vlDisable(VL_CAPABILITY_TEXTURE_2D);

@@ -747,7 +747,7 @@ void Area_PushableTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
 	
 	// Get the right player angle.
 	Math_MVToVector(plVectorToAngles(eOther->v.velocity), vPVec);
-	fYaw = vPVec[1] * ((float)pMath_PI) * 2 / 360;
+	fYaw = vPVec[1] * ((float)PL_PI) * 2 / 360;
 	
 	vMVec[0] = cosf(fYaw) * 80.0f;
 	vMVec[1] = sinf(fYaw) * 80.0f;

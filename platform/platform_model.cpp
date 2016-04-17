@@ -20,6 +20,47 @@
 
 #include "platform_model.h"
 
+/*
+	PLATFORM MODEL LOADER
+*/
+
+/*
+	Static Model
+*/
+
+plStaticModel_t *plCreateStaticModel(void)
+{
+	plSetErrorFunction("plCreateStaticModel");
+
+	plStaticModel_t *model = new plStaticModel_t;
+	if (!model)
+		return nullptr;
+
+	memset(model, 0, sizeof(plStaticModel_t));
+
+	return model;
+}
+
+void plDeleteStaticModel(plStaticModel_t *model)
+{
+	if (!model)
+	{
+		plSetError("Invalid model!\n");
+		return;
+	}
+
+	if (model->frame.triangles)
+		delete model->frame.triangles;
+	if (model->frame.vertices)
+		delete model->frame.vertices;
+
+	delete model;
+}
+
+/*	
+	Animated Model
+*/
+
 plAnimatedModel_t *plCreateAnimatedModel()
 {
 	plSetErrorFunction("plCreateModel");
@@ -57,7 +98,16 @@ void plDeleteAnimatedModel(plAnimatedModel_t *model)
 }
 
 /*
-	UNREAL 3D Model Format
+	UNREAL PSKX Static Model Format
+
+	Model format introduced in Unreal Engine 2.0, sadly rather
+	hard to dig up much information about it.
+*/
+
+#define PSKX_EXTENSION "pskx"
+
+/*
+	UNREAL 3D Animated Model Format
 
 	The following is based on information from the following page...
 	http://paulbourke.net/dataformats/unreal/

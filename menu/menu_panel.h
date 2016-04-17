@@ -26,8 +26,8 @@ namespace Menu
 		Panel();
 		~Panel();
 
-		bool IsInside(int xpos, int ypos);	// Within x and y coords.
-		bool IsInside(Panel *panel);		// Test if we're inside another panel.
+		bool IsInside(unsigned int xpos, unsigned int ypos);	// Within x and y coords.
+		bool IsInside(Panel *panel);							// Test if we're inside another panel.
 
 		// Events
 		virtual void Click(float x, float y) {}

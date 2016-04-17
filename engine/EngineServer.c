@@ -566,7 +566,7 @@ void SV_WriteEntitiesToClient (ServerEntity_t	*clent, sizebuf_t *msg)
 		if (bits & U_MODEL2)
 			MSG_WriteByte(msg, ent->v.modelindex >> 8);
 		if (bits & U_LERPFINISH)
-			MSG_WriteByte(msg,(byte)(pMath_RINT((ent->v.dNextThink-sv.time)*255)));
+			MSG_WriteByte(msg,(uint8_t)(PL_RINT((ent->v.dNextThink-sv.time)*255)));
 	}
 
 	//johnfitz -- devstats

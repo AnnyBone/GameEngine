@@ -18,12 +18,7 @@
 
 #pragma once
 
-#define		VL_MODE_OPENGL
-//			VL_MODE_OPENGL_CORE
-//			VL_MODE_OPENGL_ES
-//#define	VL_MODE_GLIDE
-//			VL_MODE_DIRECT3D
-//			VL_MODE_VULKAN
+#include "platform_video_layer.h"
 
 #if defined (VL_MODE_OPENGL)
 #	include <GL/glew.h>
@@ -44,13 +39,6 @@
 #elif defined (VL_MODE_VULKAN)
 #endif
 
-typedef unsigned int vlVertexArray_t;
-typedef unsigned int vlRenderBuffer_t;
-typedef unsigned int vlFrameBuffer_t;
-
-typedef int vlUniform_t;
-typedef int vlAttribute_t;
-
 typedef enum
 {
 #if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
@@ -65,31 +53,6 @@ typedef enum
 	VL_MASK_STENCIL		= (1 << 3),
 #endif
 } VLMask_t;
-
-typedef enum
-{
-	VL_CAPABILITY_FOG				= (1 << 0),	// Fog.
-	VL_CAPABILITY_ALPHA_TEST		= (1 << 1),	// Alpha-testing.
-	VL_CAPABILITY_BLEND				= (1 << 2), // Blending.
-	VL_CAPABILITY_TEXTURE_2D		= (1 << 3),	// Enables/disables textures.
-	VL_CAPABILITY_TEXTURE_GEN_S		= (1 << 4),	// Generate S coordinate.
-	VL_CAPABILITY_TEXTURE_GEN_T		= (1 << 5), // Generate T coordinate.
-	VL_CAPABILITY_DEPTH_TEST		= (1 << 6),	// Depth-testing.
-	VL_CAPABILITY_STENCIL_TEST		= (1 << 7),	// Stencil-testing.
-	VL_CAPABILITY_MULTISAMPLE		= (1 << 8), // Multisampling.
-	VL_CAPABILITY_CULL_FACE			= (1 << 9),	// Automatically cull faces.
-} VLCapability_t;
-
-typedef enum
-{
-#if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
-	VL_CULL_POSTIVE,
-	VL_CULL_NEGATIVE,
-#else
-	VL_CULL_POSTIVE,
-	VL_CULL_NEGATIVE,
-#endif
-} vlCullMode_t;
 
 typedef enum VLcolourformat_struct
 {
@@ -246,9 +209,6 @@ typedef enum
 	VL_BLEND_END
 } vlBlend_t;
 
-#define	VL_BLEND_ADDITIVE	VL_BLEND_SRC_ALPHA, VL_BLEND_ONE
-#define	VL_BLEND_DEFAULT	VL_BLEND_SRC_ALPHA, VL_BLEND_ONE_MINUS_SRC_ALPHA
-
 plEXTERN_C_START
 
 void vlInit(void);
@@ -279,18 +239,6 @@ void vlDepthMask(bool mode);
 
 //-----------------
 // Shaders
-
-typedef unsigned int vlShaderProgram_t;
-typedef unsigned int vlShader_t;
-
-typedef enum
-{
-	VL_SHADER_FRAGMENT,
-	VL_SHADER_VERTEX,
-	VL_SHADER_GEOMETRY,
-
-	VL_SHADER_END
-} vlShaderType_t;
 
 vlShaderProgram_t vlCreateShaderProgram(void);
 void vlUseShaderProgram(vlShaderProgram_t program);
@@ -332,15 +280,6 @@ void vlDrawVertexNormals(vlDraw_t *draw);
 
 //-----------------
 // Lighting
-
-typedef struct vlLight_s
-{
-	plVector3f_t	position;
-
-	plColour_t	colour;
-
-	float radius;
-} vlLight_t;
 
 void vlApplyLighting(vlDraw_t *object, vlLight_t *light, plVector3f_t position);
 

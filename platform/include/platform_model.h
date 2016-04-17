@@ -18,8 +18,6 @@
 
 #pragma once
 
-#include "platform_math.h"
-
 typedef struct plVertex_s
 {
 	plVector3f_t position, normal;
@@ -40,6 +38,8 @@ typedef struct plModelFrame_s
 	plVertex_t		*vertices;
 } plModelFrame_t;
 
+/*	Static animated mesh.
+*/
 typedef struct plStaticModel_s
 {
 	unsigned int num_triangles;
@@ -48,6 +48,8 @@ typedef struct plStaticModel_s
 	plModelFrame_t	frame;
 } plStaticModel_t;
 
+/*	Per-vertex animated mesh.
+*/
 typedef struct plAnimatedModel_s
 {
 	unsigned int num_triangles;
@@ -56,3 +58,13 @@ typedef struct plAnimatedModel_s
 
 	plModelFrame_t *frames;
 } plAnimatedModel_t;
+
+/*	Mesh with bone structure.
+*/
+typedef struct plSkeletalModel_s
+{
+	unsigned int num_triangles;
+	unsigned int num_vertices;
+
+	// Unfinished...
+} plSkeletalModel_t;

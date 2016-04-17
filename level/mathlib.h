@@ -92,10 +92,6 @@ typedef struct
 #define bound(a,b,c) ((a) >= (c) ? (a) : (b) < (a) ? (a) : (b) > (c) ? (c) : (b))
 #define clamp(a,b,c) ((b) >= (c) ? (a)=(b) : (a) < (b) ? (a)=(b) : (a) > (c) ? (a)=(c) : (a))
 
-#define PITCH	0
-#define	YAW		1
-#define	ROLL	2
-
 #define DotProduct(x,y) ((x)[0]*(y)[0]+(x)[1]*(y)[1]+(x)[2]*(y)[2])
 #define VectorSet(a,x,y,z) ((a)[0]=(x),(a)[1]=(y),(a)[2]=(z))
 #define VectorSet4(a,x,y,z,w) ((a)[0]=(x),(a)[1]=(y),(a)[2]=(z),(a)[3]=(w))

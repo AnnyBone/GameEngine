@@ -357,13 +357,13 @@ void Sky_ClipPoly (int nump, MathVector3f_t vecs, int stage)
 	for (i=0, v = vecs ; i<nump ; i++, v+=3)
 	{
 		d = Math_DotProduct (v, norm);
-		if (d > pMath_EPSILON_ON)
+		if (d > PL_EPSILON_ON)
 		{
 			bFront = true;
 
 			sides[i] = SIDE_FRONT;
 		}
-		else if (d < pMath_EPSILON_ON)
+		else if (d < PL_EPSILON_ON)
 		{
 			bBack = true;
 

@@ -16,11 +16,9 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef MENU_MAIN_H
-#define MENU_MAIN_H
+#pragma once
 
 #include "platform.h"
-#include "platform_math.h"
 
 #include "shared_flags.h"
 #include "shared_video.h"
@@ -45,5 +43,3 @@ void	Menu_SetState(int iState);
 void	Menu_RemoveState(int iState);
 
 char *va(char *format,...);	// Temporary convenience function, please don't get comfortable with this :(
-
-#endif

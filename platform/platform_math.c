@@ -20,8 +20,6 @@
 
 #include "platform.h"
 
-#include "platform_math.h"
-
 /*
 	Math Library
 */
@@ -51,12 +49,12 @@ MathVector_t plVectorToAngles(MathVector3f_t vValue)
 	}
 	else
 	{
-		fYaw = (float)(atan2(vValue[1], vValue[0]) * 180 / pMath_PI);
+		fYaw = (float)(atan2(vValue[1], vValue[0]) * 180 / PL_PI);
 		if (fYaw < 0)
 			fYaw += 360.0f;
 
 		fForward = (float)sqrt(vValue[0] * vValue[0] + vValue[1] * vValue[1]);
-		fPitch = (float)(atan2(vValue[2], fForward) * 180 / pMath_PI);
+		fPitch = (float)(atan2(vValue[2], fForward) * 180 / PL_PI);
 		if (fPitch < 0)
 			fPitch += 360.0f;
 	}
@@ -75,7 +73,7 @@ float plVectorToYaw(MathVectorf_t *vec)
 		result = 0;
 	else
 	{
-		result = (float)(atan2(vec[1], vec[0])*180.0f / pMath_PI);
+		result = (float)(atan2(vec[1], vec[0])*180.0f / PL_PI);
 		if (result < 0)
 			result += 360.0f;
 	}
@@ -159,13 +157,13 @@ void plAngleVectors(MathVector3f_t angles, MathVector3f_t forward, MathVector3f_
 {
 	float	angle, sr, sp, sy, cr, cp, cy;
 
-	angle = angles[pYAW] * ((float)pMath_PI * 2 / 360);
+	angle = angles[PL_YAW] * ((float)PL_PI * 2 / 360);
 	sy = (float)sin(angle);
 	cy = (float)cos(angle);
-	angle = angles[pPITCH] * ((float)pMath_PI * 2 / 360);
+	angle = angles[PL_PITCH] * ((float)PL_PI * 2 / 360);
 	sp = (float)sin(angle);
 	cp = (float)cos(angle);
-	angle = angles[pROLL] * ((float)pMath_PI * 2 / 360);
+	angle = angles[PL_ROLL] * ((float)PL_PI * 2 / 360);
 	sr = (float)sin(angle);
 	cr = (float)cos(angle);
 
@@ -197,8 +195,8 @@ void Math_VectorAngles(const MathVector3f_t forward, MathVector3f_t angles)
 	temp[1] = forward[1];
 	temp[2] = 0;
 
-	angles[PITCH] = -atan2f(forward[2], plLengthf(temp)) / (float)pMath_PI_DIV180;
-	angles[YAW] = atan2f(forward[1], forward[0]) / (float)pMath_PI_DIV180;
+	angles[PITCH] = -atan2f(forward[2], plLengthf(temp)) / (float)PL_PI;
+	angles[YAW] = atan2f(forward[1], forward[0]) / (float)PL_PI;
 	angles[ROLL] = 0;
 }
 
@@ -349,7 +347,7 @@ float Math_InSin(float x)
 	if (x > 1.0f)
 		return 1.0f;
 
-	return -cosf(x * ((float)pMath_PI / 2.0f)) + 1.0f;
+	return -cosf(x * ((float)PL_PI / 2.0f)) + 1.0f;
 }
 
 float Math_OutSin(float x)
@@ -359,7 +357,7 @@ float Math_OutSin(float x)
 	if (x > 1.0f)
 		return 1.0f;
 
-	return sinf(x * ((float)pMath_PI / 2.0f));
+	return sinf(x * ((float)PL_PI / 2.0f));
 }
 
 float Math_InOutSin(float x)
@@ -367,7 +365,7 @@ float Math_InOutSin(float x)
 	if (x < 0)		return 0;
 	if (x > 1.0f)	return 1.0f;
 
-	return -0.5f * (cosf((float)pMath_PI * x) - 1.0f);
+	return -0.5f * (cosf((float)PL_PI * x) - 1.0f);
 }
 
 float plInExp(float x)
@@ -490,6 +488,23 @@ float Math_ExpPulse(float x, float k, float n)
 /*
 	Utility
 */
+
+/*	turn forward towards side on the plane defined by forward and side
+	if angle = 90, the result will be equal to side
+	assumes side and forward are perpendicular, and normalized
+	to turn away from side, use a negative angle
+*/
+void plTurnVector(plVector3f_t out, const plVector3f_t forward, const plVector3f_t side, float angle)
+{
+	float scale_forward, scale_side;
+
+	scale_forward = cos(PL_DEG2RAD(angle));
+	scale_side = sin(PL_DEG2RAD(angle));
+
+	out[0] = scale_forward*forward[0] + scale_side*side[0];
+	out[1] = scale_forward*forward[1] + scale_side*side[1];
+	out[2] = scale_forward*forward[2] + scale_side*side[2];
+}
 
 char *plVectorToString(plVector3f_t vector)
 {

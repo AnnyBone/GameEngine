@@ -406,7 +406,7 @@ void Particle_Frame(void)
 			pParticle->vOrigin[i] += pParticle->vVelocity[i] * fFrameTime;
 
 		// Keep the alpha updated.
-		pParticle->vColour[pALPHA] = Math_Clamp(0, pParticle->lifetime - cl.time, 1.0f);
+		pParticle->vColour[ALPHA] = Math_Clamp(0, pParticle->lifetime - cl.time, 1.0f);
 
 		// Lighting support was here, but for now it's being left out since I want to implement a better solution.
 

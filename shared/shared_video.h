@@ -20,64 +20,6 @@
 
 #define	VIDEO_MAX_UNITS	16
 
-// Drawing
-
-// Primitive Types
-typedef enum vlPrimitive_s
-{
-	VL_PRIMITIVE_IGNORE = -1,
-
-	VL_PRIMITIVE_LINES,
-	VL_PRIMITIVE_LINE_STRIP,
-	VL_PRIMITIVE_POINTS,
-	VL_PRIMITIVE_TRIANGLES,
-	VL_PRIMITIVE_TRIANGLE_STRIP,
-	VL_PRIMITIVE_TRIANGLE_FAN,
-	VL_PRIMITIVE_TRIANGLE_FAN_LINE,
-	VL_PRIMITIVE_QUADS,				// Advised to avoid this.
-
-	VL_PRIMITIVE_END
-} vlPrimitive_t;
-
-typedef struct vlVertex_s
-{
-	plVector3f_t position;
-	plVector3f_t normal;
-
-	plVector2f_t ST[16];
-
-	plColour_t colour;
-} vlVertex_t;
-
-typedef struct vlDraw_s
-{
-	vlVertex_t *vertices;		// Array of vertices for the object.
-
-	unsigned int numverts;		// Number of vertices.
-	unsigned int numtriangles;	// Number of triangles.
-
-	uint8_t	*indices;	// List of indeces.
-
-	vlPrimitive_t primitive, primitive_restore;
-
-	unsigned int _gl_vbo[16];
-} vlDraw_t;
-
-// Textures
-
-// Texture Environment Modes
-typedef enum
-{
-	VIDEO_TEXTURE_MODE_IGNORE = -1,
-
-	VIDEO_TEXTURE_MODE_ADD,
-	VIDEO_TEXTURE_MODE_MODULATE,
-	VIDEO_TEXTURE_MODE_DECAL,
-	VIDEO_TEXTURE_MODE_BLEND,
-	VIDEO_TEXTURE_MODE_REPLACE,
-	VIDEO_TEXTURE_MODE_COMBINE
-} vlTextureEnvironmentMode_t;
-
 // Canvas
 typedef enum
 {

@@ -20,27 +20,20 @@
 
 #pragma once
 
-#include "platform.h"
-
 plEXTERN_C_START
-
-#ifdef __cplusplus
-	/*
-	TODO: C++ Math Classes
-	*/
-#endif
-
-#define pMath_PI			3.14159265358979323846
-#define	pMath_PI_DIV180		(pMath_PI/180.0)
-#define	pMath_EPSILON_ON	0.1						// Point on plane side epsilon.
-#define	pMath_EPSILON_EQUAL	0.001
 
 typedef double MathVectord_t;	// Double precision
 typedef float MathVectorf_t;	// Floating-point precision
 
-#define	pMath_RINT(a)		((a)>0?(int)((a)+0.5):(int)((a)-0.5))
-#define	pMath_DEG2RAD(a)	((a)*pMath_PI_DIV180)
-#define	pMath_ISNAN(a)		(((*(int*)&a)&255<<23)==255<<23)
+#define PL_PI			3.14159265358979323846
+#define	PL_PI_DIV180	(PL_PI/180.0)
+
+#define PL_EPSILON_ON		0.1						// Point on plane side epsilon.
+#define	PL_EPSILON_EQUAL	0.001
+
+#define	PL_RINT(a)		((a)>0?(int)((a)+0.5):(int)((a)-0.5))
+#define	PL_DEG2RAD(a)	((a)*PL_PI_DIV180)
+#define	PL_ISNAN(a)		(((*(int*)&a)&255<<23)==255<<23)
 
 typedef MathVectorf_t MathVector2f_t[2], MathVector3f_t[3], MathVector4f_t[4];
 
@@ -62,9 +55,9 @@ typedef struct
 		vX, vY, vZ;
 } MathVector_t;
 
-extern MathVector2f_t	pl_origin2f;
-extern MathVector3f_t	pl_origin3f;
-extern MathVector4f_t	pl_origin4f;
+extern plVector2f_t	pl_origin2f;
+extern plVector3f_t	pl_origin3f;
+extern plVector4f_t	pl_origin4f;
 
 extern plColour_t	
 	pl_white,
@@ -74,6 +67,12 @@ extern plColour_t
 
 #define	PL_WIDTH	0
 #define	PL_HEIGHT	1
+#ifndef WIDTH
+#	define WIDTH	PL_WIDTH
+#endif
+#ifndef HEIGHT
+#	define HEIGHT	PL_HEIGHT
+#endif
 
 #define	PL_X	0
 #define	PL_Y	1
@@ -93,29 +92,32 @@ extern plColour_t
 #define PL_PITCH	0
 #define	PL_YAW		1
 #define	PL_ROLL		2
+#ifndef PITCH
+#	define PITCH	PL_PITCH
+#endif
+#ifndef YAW
+#	define YAW		PL_YAW
+#endif
+#ifndef ROLL
+#	define ROLL		PL_ROLL
+#endif
 
-enum PlatformMathPYR
-{
-	pPITCH, pYAW, pROLL	// 0, 1, 2
-};
-// For compatability...
-#define PITCH	pPITCH
-#define	YAW		pYAW
-#define	ROLL	pROLL
-
-enum PlatformMathRGBA
-{
-	pRED, pGREEN, pBLUE, pALPHA	// 0, 1, 2, 3
-};
 #define	PL_RED		0
 #define	PL_GREEN	1
 #define	PL_BLUE		2
 #define	PL_ALPHA	3
-// For compatability...
-#define	RED		pRED
-#define	GREEN	pGREEN
-#define	BLUE	pBLUE
-#define	ALPHA	pALPHA
+#ifndef RED
+#	define RED		PL_RED
+#endif
+#ifndef GREEN
+#	define GREEN	PL_GREEN
+#endif
+#ifndef BLUE
+#	define BLUE		PL_BLUE
+#endif
+#ifndef ALPHA
+#	define ALPHA	PL_ALPHA
+#endif
 
 /*
 	Utility Defines
@@ -251,6 +253,7 @@ void plVectorScalef(plVector3f_t in, float scale, plVector3f_t out);
 void plNormalizeAngles(plVector3f_t angles);
 
 // Utility
+void plTurnVector(plVector3f_t out, const plVector3f_t forward, const plVector3f_t side, float angle);
 char *plVectorToString(plVector3f_t vector);
 bool plIsIntersecting(plVector3f_t mvFirstMins, plVector3f_t mvFirstMaxs, plVector3f_t mvSecondMins, MathVector3f_t mvSecondMaxs);
 

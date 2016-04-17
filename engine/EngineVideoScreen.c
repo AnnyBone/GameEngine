@@ -223,9 +223,9 @@ float CalcFovy (float fov_x, float width, float height)
 	if (fov_x < 1 || fov_x > 179)
 		Sys_Error ("Bad fov: %f", fov_x);
 
-	x = width/tan(fov_x/360*pMath_PI);
+	x = width / tan(fov_x / 360 * PL_PI);
 	a = atan (height/x);
-	a = a*360.0f/pMath_PI;
+	a = a*360.0f / PL_PI;
 	return a;
 }
 
@@ -330,10 +330,6 @@ void SCR_Init (void)
 	Cmd_AddCommand("screenshot",SCR_ScreenShot_f);
 	Cmd_AddCommand("sizeup",SCR_SizeUp_f);
 	Cmd_AddCommand("sizedown",SCR_SizeDown_f);
-
-#ifdef VIDEO_SUPPORT_FRAMEBUFFERS
-	DEBUG_FrameBufferInitialization();
-#endif
 
 	bScreenInitialized = true;
 }
@@ -899,13 +895,6 @@ void SCR_UpdateScreen (void)
 	else
 	{
 		g_menu->Draw();
-
-#ifdef VIDEO_SUPPORT_SHADERS
-#ifdef VIDEO_SUPPORT_FRAMEBUFFERS
-		//VideoPostProcess_Draw();
-		DEBUG_FrameBufferDraw();
-#endif
-#endif
 
 		SCR_DrawNet();
 		SCR_DrawTurtle();

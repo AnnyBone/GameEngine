@@ -9,6 +9,7 @@
     <ClCompile Include="platform_log.c" />
     <ClCompile Include="platform_image.c" />
     <ClCompile Include="platform_model.cpp" />
+    <ClCompile Include="platform_video_layer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\platform.h">
@@ -39,6 +40,9 @@
       <Filter>Include</Filter>
     </ClInclude>
     <ClInclude Include="include\platform_model.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\platform_video_layer.h">
       <Filter>Include</Filter>
     </ClInclude>
   </ItemGroup>

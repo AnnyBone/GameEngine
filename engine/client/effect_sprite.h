@@ -52,6 +52,8 @@ namespace Core
 
 		int	ident;
 
+		vlDraw_t *draw;
+
 		bool
 			islit,		// Is the sprite intended to be lit?
 			isvisible,	// Is the sprite currently visible?

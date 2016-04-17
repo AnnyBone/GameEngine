@@ -18,8 +18,8 @@
 
 #pragma once
 
-//#define	VIDEO_SUPPORT_FRAMEBUFFERS
-#define	VIDEO_SUPPORT_SHADERS
+#include "platform_video_layer.h"
+
 #define	VIDEO_LIGHTMAP_HACKS
 
 plEXTERN_C_START

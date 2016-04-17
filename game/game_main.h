@@ -23,7 +23,6 @@
 */
 
 #include "platform.h"
-#include "platform_math.h"
 #include "platform_filesystem.h"
 
 #include "shared_flags.h"

@@ -361,7 +361,7 @@ void MSG_WriteString (sizebuf_t *sb, const char *s)
 //johnfitz -- original behavior, 13.3 fixed point coords, max range +-4096
 void MSG_WriteCoord16 (sizebuf_t *sb, float f)
 {
-	MSG_WriteShort (sb, pMath_RINT(f*8));
+	MSG_WriteShort (sb, PL_RINT(f*8));
 }
 
 //johnfitz -- 16.8 fixed point coords, max range +-32768
@@ -388,13 +388,13 @@ void MSG_WriteCoord (sizebuf_t *sb, float f)
 
 void MSG_WriteAngle (sizebuf_t *sb, float f)
 {
-	MSG_WriteByte (sb, pMath_RINT(f * 256.0 / 360.0) & 255); //johnfitz -- use pMath_RINT instead of (int)
+	MSG_WriteByte (sb, PL_RINT(f * 256.0 / 360.0) & 255);
 }
 
 //johnfitz -- for PROTOCOL_FITZQUAKE
 void MSG_WriteAngle16 (sizebuf_t *sb, float f)
 {
-	MSG_WriteShort (sb, pMath_RINT(f * 65536.0 / 360.0) & 65535);
+	MSG_WriteShort(sb, PL_RINT(f * 65536.0 / 360.0) & 65535);
 }
 //johnfitz
 

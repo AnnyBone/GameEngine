@@ -34,6 +34,7 @@
     <ClCompile Include="platform_math.c" />
     <ClCompile Include="platform_model.cpp" />
     <ClCompile Include="platform_module.c" />
+    <ClCompile Include="platform_video_layer.cpp" />
     <ClCompile Include="platform_window.c" />
   </ItemGroup>
   <ItemGroup>
@@ -46,6 +47,7 @@
     <ClInclude Include="include\platform_model.h" />
     <ClInclude Include="include\platform_module.h" />
     <ClInclude Include="include\platform_stdint.h" />
+    <ClInclude Include="include\platform_video_layer.h" />
     <ClInclude Include="include\platform_window.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals" />

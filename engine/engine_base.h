@@ -22,10 +22,8 @@
 
 // Platform Library
 #include "platform.h"
-#include "platform_math.h"
 #include "platform_filesystem.h"
 #include "platform_module.h"
-#include "platform_window.h"
 
 #ifdef _DEBUG
 #	include <assert.h>
@@ -39,7 +37,7 @@
 #endif
 
 //	Build needs to be updated each day that work is done on the engine.
-#define ENGINE_VERSION_BUILD	1144	// 15/04/2016
+#define ENGINE_VERSION_BUILD	1146	// 17/04/2016
 
 #define	ENGINE_LOG	"engine"
 

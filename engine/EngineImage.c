@@ -29,12 +29,23 @@ bool image_pngsupport = false;
 
 uint8_t *Image_LoadPNG(FILE *fin, unsigned int *width, unsigned int *height);
 
+//#define IMAGE_SUPPORT_KTX
+
 /*	Returns a pointer to hunk allocated RGBA data
 */
 uint8_t *Image_LoadImage(char *name, unsigned int *width, unsigned int *height)
 {
 	uint8_t		*bImage;
 	FILE		*f;
+
+#if defined (IMAGE_SUPPORT_KTX)
+	sprintf(loadfilename, "%s.ktx", name);
+	COM_FOpenFile(loadfilename, &f);
+	if (f)
+	{
+		
+	}
+#endif
 
 	// PNG
 	if (image_pngsupport)

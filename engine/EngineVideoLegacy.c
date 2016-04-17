@@ -83,55 +83,6 @@ cvar_t	r_showbboxes			= {	"r_showbboxes",			"0"					};
 cvar_t	r_lerpmodels			= {	"r_lerpmodels",			"1"					};
 cvar_t	r_lerpmove				= {	"r_lerpmove",			"1"					};
 
-/*	Tests to see if the bounding box is completely inside
-	the frustum or not.
-*/
-bool R_BoxInsideFrustum(plVector3f_t mins, plVector3f_t maxs)
-{
-	for (unsigned int i = 0; i < 4; i++)
-	{
-		mplane_t *p = frustum + i;
-		switch (p->signbits)
-		{
-		default:
-		case 0:
-			if (p->normal[0] * maxs[0] + p->normal[1] * maxs[1] + p->normal[2] * maxs[2] < p->dist)
-				return true;
-			break;
-		case 1:
-			if (p->normal[0] * mins[0] + p->normal[1] * maxs[1] + p->normal[2] * maxs[2] < p->dist)
-				return true;
-			break;
-		case 2:
-			if (p->normal[0] * maxs[0] + p->normal[1] * mins[1] + p->normal[2] * maxs[2] < p->dist)
-				return true;
-			break;
-		case 3:
-			if (p->normal[0] * mins[0] + p->normal[1] * mins[1] + p->normal[2] * maxs[2] < p->dist)
-				return true;
-			break;
-		case 4:
-			if (p->normal[0] * maxs[0] + p->normal[1] * maxs[1] + p->normal[2] * mins[2] < p->dist)
-				return true;
-			break;
-		case 5:
-			if (p->normal[0] * mins[0] + p->normal[1] * maxs[1] + p->normal[2] * mins[2] < p->dist)
-				return true;
-			break;
-		case 6:
-			if (p->normal[0] * maxs[0] + p->normal[1] * mins[1] + p->normal[2] * mins[2] < p->dist)
-				return true;
-			break;
-		case 7:
-			if (p->normal[0] * mins[0] + p->normal[1] * mins[1] + p->normal[2] * mins[2] < p->dist)
-				return true;
-			break;
-		}
-	}
-
-	return false;
-}
-
 /*	Returns true if the box is completely outside the frustum
 */
 bool R_CullBox (MathVector3f_t emins, MathVector3f_t emaxs)
@@ -182,6 +133,7 @@ bool R_CullBox (MathVector3f_t emins, MathVector3f_t emaxs)
 			break;
 		}
 	}
+
 	return false;
 }
 
@@ -259,23 +211,6 @@ int SignbitsForPlane (mplane_t *out)
 	return bits;
 }
 
-/*	turn forward towards side on the plane defined by forward and side
-	if angle = 90, the result will be equal to side
-	assumes side and forward are perpendicular, and normalized
-	to turn away from side, use a negative angle
-*/
-void TurnVector(plVector3f_t out, const plVector3f_t forward, const plVector3f_t side, float angle)
-{
-	float scale_forward, scale_side;
-
-	scale_forward = cos(pMath_DEG2RAD(angle));
-	scale_side = sin(pMath_DEG2RAD(angle));
-
-	out[0] = scale_forward*forward[0] + scale_side*side[0];
-	out[1] = scale_forward*forward[1] + scale_side*side[1];
-	out[2] = scale_forward*forward[2] + scale_side*side[2];
-}
-
 void R_SetFrustum (float fovx, float fovy)
 {
 	int		i;
@@ -283,10 +218,10 @@ void R_SetFrustum (float fovx, float fovy)
 	if (r_stereo.value)
 		fovx += 10; //silly hack so that polygons don't drop out becuase of stereo skew
 
-	TurnVector(frustum[0].normal, vpn, vright, fovx/2 - 90); //left plane
-	TurnVector(frustum[1].normal, vpn, vright, 90 - fovx/2); //right plane
-	TurnVector(frustum[2].normal, vpn, vup, 90 - fovy/2); //bottom plane
-	TurnVector(frustum[3].normal, vpn, vup, fovy/2 - 90); //top plane
+	plTurnVector(frustum[0].normal, vpn, vright, fovx / 2 - 90); //left plane
+	plTurnVector(frustum[1].normal, vpn, vright, 90 - fovx / 2); //right plane
+	plTurnVector(frustum[2].normal, vpn, vup, 90 - fovy / 2); //bottom plane
+	plTurnVector(frustum[3].normal, vpn, vup, fovy / 2 - 90); //top plane
 
 	for (i=0 ; i<4 ; i++)
 	{
@@ -302,8 +237,8 @@ void GL_SetFrustum(float fovx, float fovy)
 {
 #ifdef VL_MODE_OPENGL
 	float xmax, ymax;
-	xmax = NEARCLIP * tan( fovx * pMath_PI / 360.0 );
-	ymax = NEARCLIP * tan( fovy * pMath_PI / 360.0 );
+	xmax = NEARCLIP * tan(fovx * PL_PI / 360.0);
+	ymax = NEARCLIP * tan(fovy * PL_PI / 360.0);
 	glFrustum(-xmax + frustum_skew, xmax + frustum_skew, -ymax, ymax, NEARCLIP, gl_farclip.value);
 #endif
 }
@@ -355,8 +290,8 @@ void R_SetupView (void)
 		if (contents == BSP_CONTENTS_WATER || contents == BSP_CONTENTS_SLIME || contents == BSP_CONTENTS_LAVA)
 		{
 			//variance is a percentage of width, where width = 2 * tan(fov / 2) otherwise the effect is too dramatic at high FOV and too subtle at low FOV.  what a mess!
-			r_fovx = atan(tan(pMath_DEG2RAD(r_refdef.fov_x) / 2) * (0.97 + sin(cl.time * 1.5) * 0.03)) * 2 / pMath_PI_DIV180;
-			r_fovy = atan(tan(pMath_DEG2RAD(r_refdef.fov_y) / 2) * (1.03 - sin(cl.time * 1.5) * 0.03)) * 2 / pMath_PI_DIV180;
+			r_fovx = atan(tan(PL_DEG2RAD(r_refdef.fov_x) / 2) * (0.97 + sin(cl.time * 1.5) * 0.03)) * 2 / PL_PI_DIV180;
+			r_fovy = atan(tan(PL_DEG2RAD(r_refdef.fov_y) / 2) * (1.03 - sin(cl.time * 1.5) * 0.03)) * 2 / PL_PI_DIV180;
 		}
 	}
 	//johnfitz
@@ -553,7 +488,6 @@ void Video_ShowBoundingBoxes(void)
 {
 	extern ServerEntity_t	*sv_player;
 	MathVector3f_t			mins, maxs;
-	ClientEntity_t			*clEntity;
 	ServerEntity_t			*ed;
 	unsigned int			i;
 

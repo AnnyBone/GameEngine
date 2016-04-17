@@ -456,17 +456,17 @@ int _vlTranslateTextureEnvironmentMode(vlTextureEnvironmentMode_t TextureEnviron
 	switch (TextureEnvironmentMode)
 	{
 #ifdef VL_MODE_OPENGL
-	case VIDEO_TEXTURE_MODE_ADD:
+	case VIDEO_TEXTUREMODE_ADD:
 		return GL_ADD;
-	case VIDEO_TEXTURE_MODE_MODULATE:
+	case VIDEO_TEXTUREMODE_MODULATE:
 		return GL_MODULATE;
-	case VIDEO_TEXTURE_MODE_DECAL:
+	case VIDEO_TEXTUREMODE_DECAL:
 		return GL_DECAL;
-	case VIDEO_TEXTURE_MODE_BLEND:
+	case VIDEO_TEXTUREMODE_BLEND:
 		return GL_BLEND;
-	case VIDEO_TEXTURE_MODE_REPLACE:
+	case VIDEO_TEXTUREMODE_REPLACE:
 		return GL_REPLACE;
-	case VIDEO_TEXTURE_MODE_COMBINE:
+	case VIDEO_TEXTUREMODE_COMBINE:
 		return GL_COMBINE;
 #endif
 	default:

@@ -62,7 +62,7 @@ void SV_SetIdealPitch (void)
 	if(!(sv_player->v.flags & FL_ONGROUND))
 		return;
 
-	angleval = sv_player->v.angles[YAW] * pMath_PI*2 / 360;
+	angleval = sv_player->v.angles[YAW] * PL_PI * 2 / 360;
 	sinval = sin(angleval);
 	cosval = cos(angleval);
 
@@ -91,10 +91,10 @@ void SV_SetIdealPitch (void)
 	for (j=1 ; j<i ; j++)
 	{
 		step = z[j] - z[j-1];
-		if (step > -pMath_EPSILON_ON && step < pMath_EPSILON_ON)
+		if (step > -PL_EPSILON_ON && step < PL_EPSILON_ON)
 			continue;
 
-		if (dir && (step - dir > pMath_EPSILON_ON || step - dir < -pMath_EPSILON_ON))
+		if (dir && (step - dir > PL_EPSILON_ON || step - dir < -PL_EPSILON_ON))
 			return;		// mixed changes
 
 		steps++;

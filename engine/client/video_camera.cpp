@@ -32,16 +32,20 @@ namespace Core
 			void Simulate();
 
 			void SetAngles(float x, float y, float z);
-
 			void PrintAngles();
+
+			void SetFrustum(float fovx, float fovy);
+
+			bool IsBoxInsideFrustum(plVector3f_t mins, plVector3f_t maxs);
+			bool IsBoxOutsideFrustum(plVector3f_t mins, plVector3f_t maxs);
 
 			void ForceCenter() { angles[PL_PITCH] = 0; }	// Forces the pitch to become centered.
 		protected:
 		private:
+			mplane_t frustum[4];
+
 			plVector3f_t forward, right, up;
-
-			plVector3f_t punchangles[2];	//johnfitz -- copied from cl.punchangle.  0 is current, 1 is previous value. never the same unless map just loaded
-
+			plVector3f_t punchangles[2];		//johnfitz -- copied from cl.punchangle.  0 is current, 1 is previous value. never the same unless map just loaded
 			plVector3f_t angles, position;
 		};
 
@@ -94,6 +98,121 @@ void Camera::Draw()
 void Camera::Simulate()
 {
 }
+
+// Frustum
+
+extern "C" {
+	int SignbitsForPlane(mplane_t *out);
+}
+
+void Camera::SetFrustum(float fovx, float fovy)
+{
+	plTurnVector(frustum[0].normal, position, right, fovx / 2 - 90);	// Left plane
+	plTurnVector(frustum[1].normal, position, right, 90 - fovx / 2);	// Right plane
+	plTurnVector(frustum[2].normal, position, up, 90 - fovy / 2);		// Bottom plane
+	plTurnVector(frustum[3].normal, position, up, fovy / 2 - 90);		// Top plane
+
+	for (int i = 0; i < 4; i++)
+	{
+		frustum[i].type = PLANE_ANYZ;
+		frustum[i].dist = Math_DotProduct(r_origin, frustum[i].normal); // FIXME: shouldn't this always be zero?
+		frustum[i].signbits = SignbitsForPlane(&frustum[i]);
+	}
+}
+
+bool Camera::IsBoxInsideFrustum(plVector3f_t mins, plVector3f_t maxs)
+{
+	for (int i = 0; i < 4; i++)
+	{
+		mplane_t *p = frustum + i;
+		switch (p->signbits)
+		{
+		default:
+		case 0:
+			if (p->normal[0] * maxs[0] + p->normal[1] * maxs[1] + p->normal[2] * maxs[2] > p->dist)
+				return true;
+			break;
+		case 1:
+			if (p->normal[0] * mins[0] + p->normal[1] * maxs[1] + p->normal[2] * maxs[2] > p->dist)
+				return true;
+			break;
+		case 2:
+			if (p->normal[0] * maxs[0] + p->normal[1] * mins[1] + p->normal[2] * maxs[2] > p->dist)
+				return true;
+			break;
+		case 3:
+			if (p->normal[0] * mins[0] + p->normal[1] * mins[1] + p->normal[2] * maxs[2] > p->dist)
+				return true;
+			break;
+		case 4:
+			if (p->normal[0] * maxs[0] + p->normal[1] * maxs[1] + p->normal[2] * mins[2] > p->dist)
+				return true;
+			break;
+		case 5:
+			if (p->normal[0] * mins[0] + p->normal[1] * maxs[1] + p->normal[2] * mins[2] > p->dist)
+				return true;
+			break;
+		case 6:
+			if (p->normal[0] * maxs[0] + p->normal[1] * mins[1] + p->normal[2] * mins[2] > p->dist)
+				return true;
+			break;
+		case 7:
+			if (p->normal[0] * mins[0] + p->normal[1] * mins[1] + p->normal[2] * mins[2] > p->dist)
+				return true;
+			break;
+		}
+	}
+
+	return false;
+}
+
+bool Camera::IsBoxOutsideFrustum(plVector3f_t mins, plVector3f_t maxs)
+{
+	for (int i = 0; i < 4; i++)
+	{
+		mplane_t *p = frustum + i;
+		switch (p->signbits)
+		{
+		default:
+		case 0:
+			if (p->normal[0] * maxs[0] + p->normal[1] * maxs[1] + p->normal[2] * maxs[2] < p->dist)
+				return true;
+			break;
+		case 1:
+			if (p->normal[0] * mins[0] + p->normal[1] * maxs[1] + p->normal[2] * maxs[2] < p->dist)
+				return true;
+			break;
+		case 2:
+			if (p->normal[0] * maxs[0] + p->normal[1] * mins[1] + p->normal[2] * maxs[2] < p->dist)
+				return true;
+			break;
+		case 3:
+			if (p->normal[0] * mins[0] + p->normal[1] * mins[1] + p->normal[2] * maxs[2] < p->dist)
+				return true;
+			break;
+		case 4:
+			if (p->normal[0] * maxs[0] + p->normal[1] * maxs[1] + p->normal[2] * mins[2] < p->dist)
+				return true;
+			break;
+		case 5:
+			if (p->normal[0] * mins[0] + p->normal[1] * maxs[1] + p->normal[2] * mins[2] < p->dist)
+				return true;
+			break;
+		case 6:
+			if (p->normal[0] * maxs[0] + p->normal[1] * mins[1] + p->normal[2] * mins[2] < p->dist)
+				return true;
+			break;
+		case 7:
+			if (p->normal[0] * mins[0] + p->normal[1] * mins[1] + p->normal[2] * mins[2] < p->dist)
+				return true;
+			break;
+		}
+	}
+
+	return false;
+}
+
+// Angles
 
 void Camera::SetAngles(float x, float y, float z)
 {

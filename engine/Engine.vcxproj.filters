@@ -222,15 +222,6 @@
     <ClCompile Include="EngineClientInput.c">
       <Filter>Legacy\Client</Filter>
     </ClCompile>
-    <ClCompile Include="EngineVideoLegacy2.c">
-      <Filter>Legacy\Client\Video\Legacy</Filter>
-    </ClCompile>
-    <ClCompile Include="EngineVideoLegacy.c">
-      <Filter>Legacy\Client\Video\Legacy</Filter>
-    </ClCompile>
-    <ClCompile Include="EngineImage.c">
-      <Filter>Legacy\Client</Filter>
-    </ClCompile>
     <ClCompile Include="EngineScript.c">
       <Filter>Legacy</Filter>
     </ClCompile>
@@ -321,6 +312,12 @@
     </ClCompile>
     <ClCompile Include="EngineModel.c">
       <Filter>Legacy</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineAudioDummy.c" />
+    <ClCompile Include="EngineVideoLegacy.c" />
+    <ClCompile Include="EngineVideoLegacy2.c" />
+    <ClCompile Include="EngineImage.c">
+      <Filter>Client</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -468,9 +465,6 @@
     <ClInclude Include="EngineServer.h">
       <Filter>Legacy\Server</Filter>
     </ClInclude>
-    <ClInclude Include="EngineImage.h">
-      <Filter>Legacy\Client</Filter>
-    </ClInclude>
     <ClInclude Include="EngineScript.h">
       <Filter>Legacy</Filter>
     </ClInclude>
@@ -566,6 +560,9 @@
     </ClInclude>
     <ClInclude Include="EngineModel.h">
       <Filter>Legacy</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineImage.h">
+      <Filter>Client</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

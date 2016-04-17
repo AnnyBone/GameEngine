@@ -174,7 +174,7 @@ void Video_Initialize(void)
 	for (int i = 0; i < Video.num_textureunits; i++)
 	{
 		Video.textureunits[i].isactive			= false;						// All units are initially disabled.
-		Video.textureunits[i].current_envmode	= VIDEO_TEXTURE_MODE_REPLACE;
+		Video.textureunits[i].current_envmode	= VIDEO_TEXTUREMODE_REPLACE;
 		Video.textureunits[i].current_texture	= (unsigned int)-1;
 	}
 
@@ -203,7 +203,7 @@ void Video_Initialize(void)
 
 	// Overbrights.
 	vlActiveTexture(VIDEO_TEXTURE_LIGHT);
-	vlSetTextureEnvironmentMode(VIDEO_TEXTURE_MODE_COMBINE);
+	vlSetTextureEnvironmentMode(VIDEO_TEXTUREMODE_COMBINE);
 	glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
 	glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_PREVIOUS);
 	glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_TEXTURE);
@@ -585,8 +585,10 @@ void Video_Shutdown(void)
 	// Let us know that we're shutting down the video sub-system.
 	Con_Printf("Shutting down video...\n");
 
-	delete g_spritemanager;
-	delete g_shadermanager;
+	if (g_spritemanager)
+		delete g_spritemanager;
+	if (g_shadermanager)
+		delete g_shadermanager;
 
 	if (!g_state.embedded)
 		Window_Shutdown();
