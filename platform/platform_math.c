@@ -489,6 +489,17 @@ float Math_ExpPulse(float x, float k, float n)
 	Utility
 */
 
+void plSphereFromBounds(plVector3f_t mins, plVector3f_t maxs, plVector3f_t origin, float *radius)
+{
+	plVectorAdd3fv(mins, maxs, origin);
+	plVectorScalef(origin, 0.5f, origin);
+
+	plVector3f_t temp;
+	plVectorSubtract3fv(maxs, origin, temp);
+
+	*radius = plVectorLength(temp);
+}
+
 /*	turn forward towards side on the plane defined by forward and side
 	if angle = 90, the result will be equal to side
 	assumes side and forward are perpendicular, and normalized
