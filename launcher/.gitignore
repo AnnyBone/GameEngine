@@ -1,2 +1,4 @@
 *.aps
 /Debug (OpenKatana)/
+/Debug/
+/Debug (Alliance)/
