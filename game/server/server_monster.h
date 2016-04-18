@@ -36,6 +36,7 @@ typedef struct
 #define	MONSTER_PRISONER	3
 #define	MONSTER_LASERGAT	4
 #define	MONSTER_INMATER		5
+#define MONSTER_SCANBOT		6
 
 #define MONSTER_MIKIKO      50  // Added for sanity sake.
 #define MONSTER_SUPERFLY    51  // Added for sanity sake.

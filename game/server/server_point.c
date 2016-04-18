@@ -96,6 +96,7 @@ void Point_SkyCameraSpawn(ServerEntity_t *entity)
 void Prisoner_Spawn(ServerEntity_t *ePrisoner);	// [2/10/2012] See monster_prisoner.c ~hogsy
 void LaserGat_Spawn(ServerEntity_t *eLaserGat);	// [14/2/2013] See monster_lasergat.c ~hogsy
 void Inmater_Spawn(ServerEntity_t *eInmater);		// [3/3/2013] See monster_inmater.c ~hogsy
+void ScanBot_Spawn(ServerEntity_t *entity);
 #elif GAME_ADAMAS
 void Hurler_Spawn(ServerEntity_t *eHurler);
 #endif
@@ -128,6 +129,10 @@ void Point_MonsterSpawn(ServerEntity_t *eMonster)
 	case MONSTER_INMATER:
 		eMonster->v.cClassname = "monster_inmater";
 		Inmater_Spawn(eMonster);
+		break;
+	case MONSTER_SCANBOT:
+		eMonster->v.cClassname = "monster_scanbot";
+		ScanBot_Spawn(eMonster);
 		break;
 #elif GAME_ADAMAS
 	case MONSTER_HURLER:

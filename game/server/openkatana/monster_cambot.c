@@ -18,17 +18,35 @@
 
 #include "server_monster.h"
 
-#define	CAMBOT_MODEL	"models/placeholders/sphere.md2"
-#define	CAMBOT_HEALTH	40
+/*
+	SCAN BOT
 
-void CamBot_Spawn(ServerEntity_t *entity)
+	The Scan Bot, is a placeholder name, for the robots that fly around 
+	Mishima’s fortress looking out for intruders. Of course it’s possible 
+	these bots could also roam entire cities in the game world, looking out 
+	for people that might be seeking to go against Mishima or otherwise 
+	looking to break the law.
+
+	The Scan Bot has no weapons but upon spotting anything hostile or 
+	otherwise suspicious, it will immediately start an alarm and tell its 
+	target to stay put.
+*/
+
+#define	SCANBOT_MODEL		"models/placeholders/sphere.md2"
+#define	SCANBOT_HEALTH		40
+#define	SCANBOT_MASS		0
+#define	SCANBOT_FRICTION	1.0f
+
+void ScanBot_Spawn(ServerEntity_t *entity)
 {
-	Server_PrecacheModel(CAMBOT_MODEL);
+	Server_PrecacheModel(SCANBOT_MODEL);
 
-	entity->v.netname		= "Camera Drone";
+	entity->v.netname		= "Scan Bot";
 	entity->v.movetype		= MOVETYPE_FLY;
-	entity->v.iHealth		= CAMBOT_HEALTH;
+	entity->v.iHealth		= SCANBOT_HEALTH;
 	entity->v.bTakeDamage	= true;
 
-	Entity_SetModel(entity, CAMBOT_MODEL);
+	Entity_SetPhysics(entity, SOLID_BBOX, SCANBOT_MASS, SCANBOT_FRICTION);
+	Entity_SetModel(entity, SCANBOT_MODEL);
+	Entity_SetSize(entity, -16, -16, -16, 16, 16, 16);
 }
