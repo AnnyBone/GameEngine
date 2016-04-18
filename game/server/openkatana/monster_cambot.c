@@ -19,10 +19,16 @@
 #include "server_monster.h"
 
 #define	CAMBOT_MODEL	"models/placeholders/sphere.md2"
+#define	CAMBOT_HEALTH	40
 
 void CamBot_Spawn(ServerEntity_t *entity)
 {
 	Server_PrecacheModel(CAMBOT_MODEL);
+
+	entity->v.netname		= "Camera Drone";
+	entity->v.movetype		= MOVETYPE_FLY;
+	entity->v.iHealth		= CAMBOT_HEALTH;
+	entity->v.bTakeDamage	= true;
 
 	Entity_SetModel(entity, CAMBOT_MODEL);
 }

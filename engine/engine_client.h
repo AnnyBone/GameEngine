@@ -1,5 +1,4 @@
-#ifndef __KATCLIENT__
-#define __KATCLIENT__
+#pragma once
 
 #include "engine_base.h"
 
@@ -16,5 +15,3 @@ entity_t *Client_GetPlayerEntity(void);
 entity_t *Client_GetViewEntity(void);
 
 void Client_Simulate(void);
-
-#endif

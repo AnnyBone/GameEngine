@@ -140,10 +140,14 @@ typedef struct ClientEntity_s
 	int				update_type;
 	EntityState_t	baseline;		// to fill in defaults in updates
 	double			msgtime;		// time of last update
-	MathVector3f_t msg_origins[2];	// last two updates (0 is newest)
-	MathVector3f_t origin;
-	MathVector3f_t msg_angles[2];	// last two updates (0 is newest)
-	MathVector3f_t angles;
+
+	plVector3f_t msg_origins[2];	// last two updates (0 is newest)
+	plVector3f_t origin;
+	plVector3f_t msg_angles[2];		// last two updates (0 is newest)
+	plVector3f_t angles;
+
+	plVector3f_t velocity;		// Velocity of the entity (roughly).
+
 	int				draw_lastpose,
 					draw_pose;
 	float			draw_lerpstart;
@@ -160,8 +164,9 @@ typedef struct ClientEntity_s
 	int				dlightbits;
 
 	struct mnode_s	*topnode;		// for bmodels, first world node
-											//  that splits bmodel, or NULL if
-											//  not split
+									//  that splits bmodel, or NULL if
+									//  not split
+
 	uint8_t			alpha;			//johnfitz -- alpha
 	uint8_t			lerpflags;		//johnfitz -- lerping
 	float			lerpstart;		//johnfitz -- animation lerping
@@ -169,12 +174,13 @@ typedef struct ClientEntity_s
 	short			previouspose;	//johnfitz -- animation lerping
 	short			currentpose;	//johnfitz -- animation lerping
 	float			movelerpstart;	//johnfitz -- transform lerping
-	MathVector3f_t previousorigin;	//johnfitz -- transform lerping
-	MathVector3f_t currentorigin;	//johnfitz -- transform lerping
-	MathVector3f_t previousangles;	//johnfitz -- transform lerping
-	MathVector3f_t currentangles;	//johnfitz -- transform lerping
 
-	float			scale;			// Sets the model scale.
+	plVector3f_t previousorigin;	//johnfitz -- transform lerping
+	plVector3f_t currentorigin;	//johnfitz -- transform lerping
+	plVector3f_t previousangles;	//johnfitz -- transform lerping
+	plVector3f_t currentangles;	//johnfitz -- transform lerping
+
+	float	scale;	// Sets the model scale.
 } ClientEntity_t;
 
 #define entity_t ClientEntity_t
