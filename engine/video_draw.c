@@ -781,6 +781,32 @@ void Draw_ResetCanvas(void)
 
 extern ConsoleVariable_t r_showbboxes;
 
+void Draw_EntityBoundingBox(ClientEntity_t *entity)
+{
+	if (!entity->model || ((entity == &cl_entities[cl.viewentity]) && !chase_active.bValue) || (entity == &cl.viewent))
+		return;
+
+	plVector3f_t vMins, vMaxs;
+	Math_VectorAdd(entity->model->rmins, entity->origin, vMins);
+	Math_VectorAdd(entity->model->rmaxs, entity->origin, vMaxs);
+
+	switch (entity->model->type)
+	{
+	case MODEL_TYPE_LEVEL:
+		// Only draw wires for the BSP, since otherwise it's difficult to see anything else.
+#ifdef VL_MODE_OPENGL
+		glColor4f(0, 0, 0, 0);
+#endif
+		R_EmitWireBox(vMins, vMaxs, 0, 1, 0);
+		break;
+	default:
+#ifdef VL_MODE_OPENGL
+		glColor4f(0.5f, 0, 0, 0.5f);
+#endif
+		R_EmitWireBox(vMins, vMaxs, 1, 0, 0);
+	}
+}
+
 void Draw_Entity(ClientEntity_t *entity)
 {
 	if (!entity->model)
@@ -814,7 +840,7 @@ void Draw_Entity(ClientEntity_t *entity)
 	if (r_showbboxes.bValue)
 	{
 		vlEnable(VL_CAPABILITY_BLEND);
-		Video_DrawClientBoundingBox(entity);
+		Draw_EntityBoundingBox(entity);
 		vlDisable(VL_CAPABILITY_BLEND);
 	}
 }

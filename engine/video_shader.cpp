@@ -135,7 +135,7 @@ bool Shader::Load(const char *path)
 		sprintf(source_path, "%s%s_fragment.shader", g_state.path_shaders, path);
 		stype = GL_FRAGMENT_SHADER;
 		break;
-	case VL_SHADER_GEOMETRY:
+	case VL_SHADER_VERTEX:
 		sprintf(source_path, "%s%s_vertex.shader", g_state.path_shaders, path);
 		stype = GL_VERTEX_SHADER;
 		break;

@@ -25,7 +25,7 @@
 	BMP Support
 */
 
-typedef struct
+typedef struct BMPFileHeader_s
 {
 	unsigned short	type;
 	unsigned int	size;
@@ -34,7 +34,7 @@ typedef struct
 	unsigned int	offset;
 } BMPFileHeader_t;
 
-typedef struct
+typedef struct BMPRGBQuad_s
 {
 	unsigned char	blue;
 	unsigned char	green;
@@ -42,7 +42,7 @@ typedef struct
 	unsigned char	reserved;
 } BMPRGBQuad_t;
 
-typedef struct
+typedef struct BMPInfoHeader_s
 {
 	unsigned int	size;
 	int				width;
@@ -57,7 +57,7 @@ typedef struct
 	unsigned int	imp_colours;
 } BMPInfoHeader_t;
 
-typedef struct
+typedef struct BMPInfo_s
 {
 	BMPInfoHeader_t		header;
 	BMPRGBQuad_t		colours[256];
@@ -123,16 +123,14 @@ typedef struct
 
 uint8_t *plLoadFTXImage(FILE *fin, unsigned int *width, unsigned int *height)
 {
-	FTXHeader_t		header;
-	uint8_t			*image;
-
 	plSetErrorFunction("plLoadPPMImage");
 
+	FTXHeader_t	header;
 	header.width	= plGetLittleLong(fin);
 	header.height	= plGetLittleLong(fin);
 	header.alpha	= plGetLittleLong(fin);
 
-	image = (uint8_t*)malloc(header.width * header.height * 4);
+	uint8_t	*image = (uint8_t*)malloc(header.width * header.height * 4);
 	fread(image, sizeof(uint8_t), header.width * header.height * 4, fin);
 	fclose(fin);
 
@@ -149,13 +147,9 @@ uint8_t *plLoadFTXImage(FILE *fin, unsigned int *width, unsigned int *height)
 
 uint8_t *plLoadPPMImage(FILE *fin, unsigned int *width, unsigned int *height)
 {
-	int				i, d;
-	unsigned int	w, h;
-	uint8_t			*image;
-	char			header[PPM_HEADER_SIZE];
-
 	plSetErrorFunction("plLoadPPMImage");
 
+	char header[PPM_HEADER_SIZE];
 	fgets(header, PPM_HEADER_SIZE, fin);
 	if (strncmp(header, "P6", 2))
 	{
@@ -165,7 +159,8 @@ uint8_t *plLoadPPMImage(FILE *fin, unsigned int *width, unsigned int *height)
 		return NULL;
 	}
 
-	i = 0;
+	int i = 0, d;
+	unsigned int w, h;
 	while (i < 3)
 	{
 		fgets(header, PPM_HEADER_SIZE, fin);
@@ -180,7 +175,7 @@ uint8_t *plLoadPPMImage(FILE *fin, unsigned int *width, unsigned int *height)
 			i += sscanf(header, "%d", &d);
 	}
 
-	image = (uint8_t*)malloc(sizeof(uint8_t) * w * h * 3);
+	uint8_t	*image = (uint8_t*)malloc(sizeof(uint8_t) * w * h * 3);
 	fread(image, sizeof(uint8_t), w * h * 3, fin);
 	fclose(fin);
 

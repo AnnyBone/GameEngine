@@ -18,6 +18,8 @@
 
 #pragma once
 
+#include "platform_video_layer.h"
+
 #define	VIDEO_MAX_UNITS	16
 
 // Canvas

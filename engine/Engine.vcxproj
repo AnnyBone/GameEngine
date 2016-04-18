@@ -614,9 +614,6 @@
     </ClCompile>
     <ClCompile Include="client\effect_sprite.cpp" />
     <ClCompile Include="client\video_camera.cpp" />
-    <ClCompile Include="EngineAudioDummy.c">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="EngineClientChase.c" />
     <ClCompile Include="EngineClientDemo.c" />
     <ClCompile Include="EngineClientInput.c" />

@@ -455,33 +455,6 @@ void R_EmitWireBox(
 #endif
 }
 
-void Video_DrawClientBoundingBox(ClientEntity_t *clEntity)
-{
-	MathVector3f_t vMins, vMaxs;
-
-	if (!clEntity->model || ((clEntity == &cl_entities[cl.viewentity]) && !chase_active.bValue) || (clEntity == &cl.viewent))
-		return;
-
-	Math_VectorAdd(clEntity->model->rmins, clEntity->origin, vMins);
-	Math_VectorAdd(clEntity->model->rmaxs, clEntity->origin, vMaxs);
-
-	switch (clEntity->model->type)
-	{
-	case MODEL_TYPE_LEVEL:
-		// Only draw wires for the BSP, since otherwise it's difficult to see anything else.
-#ifdef VL_MODE_OPENGL
-		glColor4f(0, 0, 0, 0);
-#endif
-		R_EmitWireBox(vMins, vMaxs, 0, 1, 0);
-		break;
-	default:
-#ifdef VL_MODE_OPENGL
-		glColor4f(0.5f, 0, 0, 0.5f);
-#endif
-		R_EmitWireBox(vMins, vMaxs, 1, 0, 0);
-	}
-}
-
 /*	draw bounding boxes -- the server-side boxes, not the renderer cullboxes
 */
 void Video_ShowBoundingBoxes(void)

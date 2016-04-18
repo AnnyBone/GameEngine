@@ -310,7 +310,6 @@
     <ClCompile Include="EngineModel.c">
       <Filter>Legacy</Filter>
     </ClCompile>
-    <ClCompile Include="EngineAudioDummy.c" />
     <ClCompile Include="EngineVideoLegacy.c" />
     <ClCompile Include="EngineVideoLegacy2.c" />
     <ClCompile Include="EngineImage.c">

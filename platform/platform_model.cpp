@@ -61,9 +61,9 @@ void plDeleteStaticModel(plStaticModel_t *model)
 	Animated Model
 */
 
-plAnimatedModel_t *plCreateAnimatedModel()
+plAnimatedModel_t *plCreateAnimatedModel(void)
 {
-	plSetErrorFunction("plCreateModel");
+	plSetErrorFunction("plCreateAnimatedModel");
 
 	plAnimatedModel_t *model = new plAnimatedModel_t;
 	if (!model)
@@ -76,6 +76,8 @@ plAnimatedModel_t *plCreateAnimatedModel()
 
 void plDeleteAnimatedModel(plAnimatedModel_t *model)
 {
+	plSetErrorFunction("plDeleteAnimatedModel");
+
 	if (!model)
 	{
 		plSetError("Invalid model!\n");

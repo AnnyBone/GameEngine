@@ -497,7 +497,7 @@ void plSphereFromBounds(plVector3f_t mins, plVector3f_t maxs, plVector3f_t origi
 	plVector3f_t temp;
 	plVectorSubtract3fv(maxs, origin, temp);
 
-	*radius = plVectorLength(temp);
+	*radius = plLengthf(temp);
 }
 
 /*	turn forward towards side on the plane defined by forward and side
@@ -509,8 +509,8 @@ void plTurnVector(plVector3f_t out, const plVector3f_t forward, const plVector3f
 {
 	float scale_forward, scale_side;
 
-	scale_forward = cos(PL_DEG2RAD(angle));
-	scale_side = sin(PL_DEG2RAD(angle));
+	scale_forward = cosf((float)PL_DEG2RAD(angle));
+	scale_side = sinf((float)PL_DEG2RAD(angle));
 
 	out[0] = scale_forward*forward[0] + scale_side*side[0];
 	out[1] = scale_forward*forward[1] + scale_side*side[1];
