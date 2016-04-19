@@ -36,7 +36,6 @@ void Vehicle_Kill(ServerEntity_t *eVehicle,ServerEntity_t *eAttacker)
 	if(eVehicle->v.iHealth <= VEHICLE_MAX_DAMAGE)
 	{
 		// [12/4/2013] TODO: Explode! ~hogsy
-		eVehicle->Monster.state = MONSTER_STATE_DEAD;
 		eVehicle->v.movetype		= MOVETYPE_NONE;
 
 		if(eVehicle->Vehicle.Kill)
@@ -48,7 +47,7 @@ void Vehicle_Kill(ServerEntity_t *eVehicle,ServerEntity_t *eAttacker)
 */
 void Vehicle_Damage(ServerEntity_t *eVehicle,ServerEntity_t *eAttacker,int iDamage)
 {
-	if(eVehicle->Monster.state == MONSTER_STATE_DEAD)
+	if(eVehicle->Monster.state == AI_STATE_DEAD)
 		return;
 
 	eVehicle->v.iHealth -= iDamage;

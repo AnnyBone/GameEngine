@@ -223,7 +223,7 @@ void LaserGat_Spawn(ServerEntity_t *eLaserGat)
 	Entity_SetModel(eLaserGat, LASERGAT_MODEL_HEAD);
 	Entity_SetSize(eLaserGat, -6.20f, -18.70f, -8.0f, 19.46f, 18.71f, 7.53f);
 
-	Monster_SetState(eLaserGat, MONSTER_STATE_AWAKE);
+	Monster_SetState(eLaserGat, AI_STATE_AWAKE);
 	Monster_SetThink(eLaserGat, MONSTER_THINK_IDLE);
 
 	// Now set up the base...

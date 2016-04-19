@@ -390,7 +390,7 @@ void Monster_NewChaseDirection(ServerEntity_t *ent, MathVector3f_t target, float
 		ent->v.flags |= FL_PARTIALGROUND;
 }
 
-bool Monster_SetThink(ServerEntity_t *entity, MonsterThink_t newthink)
+bool Monster_SetThink(ServerEntity_t *entity, unsigned int newthink)
 {
 	if (entity->Monster.think == newthink)
 		// Return false, then we might decide it's time for a different state.
@@ -408,27 +408,27 @@ bool Monster_SetThink(ServerEntity_t *entity, MonsterThink_t newthink)
 
 /*	Automatically sets the state for the monster.
 */
-bool Monster_SetState(ServerEntity_t *eMonster, AIState_t msState)
+bool Monster_SetState(ServerEntity_t *eMonster, unsigned int msState)
 {
 	if (eMonster->Monster.state == msState)
 		return true;
 
 	switch(msState)
 	{
-	case MONSTER_STATE_AWAKE:
-		if (eMonster->Monster.state == MONSTER_STATE_DEAD)
+	case AI_STATE_AWAKE:
+		if (eMonster->Monster.state == AI_STATE_DEAD)
 			return false;
 
-		eMonster->Monster.state = MONSTER_STATE_AWAKE;
+		eMonster->Monster.state = AI_STATE_AWAKE;
 		break;
-	case MONSTER_STATE_ASLEEP:
-		if (eMonster->Monster.state == MONSTER_STATE_DEAD)
+	case AI_STATE_ASLEEP:
+		if (eMonster->Monster.state == AI_STATE_DEAD)
 			return false;
 
-		eMonster->Monster.state = MONSTER_STATE_ASLEEP;
+		eMonster->Monster.state = AI_STATE_ASLEEP;
 		break;
-	case MONSTER_STATE_DEAD:
-		eMonster->Monster.state = MONSTER_STATE_DEAD;
+	case AI_STATE_DEAD:
+		eMonster->Monster.state = AI_STATE_DEAD;
 		break;
 	default:
 		Engine.Con_Warning("Tried to set an unknown state for %s (%i)!\n",eMonster->v.cClassname,msState);
@@ -442,7 +442,7 @@ bool Monster_SetState(ServerEntity_t *eMonster, AIState_t msState)
 */
 void Monster_Killed(ServerEntity_t *eTarget, ServerEntity_t *eAttacker, ServerDamageType_t type)
 {
-	if (eTarget->Monster.state == MONSTER_STATE_DEAD)
+	if (eTarget->Monster.state == AI_STATE_DEAD)
 		return;
 
 	if(Entity_IsMonster(eTarget))
@@ -557,7 +557,7 @@ void Monster_Killed(ServerEntity_t *eTarget, ServerEntity_t *eAttacker, ServerDa
 	}
 
 	// Update our current state.
-	eTarget->Monster.state = MONSTER_STATE_DEAD;
+	eTarget->Monster.state = AI_STATE_DEAD;
 	if (eTarget->local.KilledFunction)
 		eTarget->local.KilledFunction(eTarget, eAttacker, type);
 }
@@ -582,8 +582,8 @@ void Monster_Damage(ServerEntity_t *target, ServerEntity_t *inflictor, int iDama
 	if (Entity_IsMonster(target))
 	{
 		// Automatically wake us up if asleep.
-		if (target->Monster.state == MONSTER_STATE_ASLEEP)
-			Monster_SetState(target, MONSTER_STATE_AWAKE);
+		if (target->Monster.state == AI_STATE_ASLEEP)
+			Monster_SetState(target, AI_STATE_AWAKE);
 	}
 
 	// Only do this for players.
@@ -611,7 +611,7 @@ void Monster_Damage(ServerEntity_t *target, ServerEntity_t *inflictor, int iDama
 	if (target->local.DamagedFunction)
 		target->local.DamagedFunction(target, inflictor, type);
 
-	if ((target->Monster.state != MONSTER_STATE_DEAD) || (target->Monster.state != MONSTER_STATE_DYING))
+	if ((target->v.iHealth <= 0) && ((target->Monster.state != AI_STATE_DEAD) || (target->Monster.state != AI_STATE_DYING)))
 		Monster_Killed(target, inflictor, type);
 }
 
@@ -747,13 +747,13 @@ ServerEntity_t *Monster_GetEnemy(ServerEntity_t *Monster)
 //	NEW IMPLEMENTATION
 /////////////////////////////////////////////////////////////////////////////
 
-#define	MONSTER_EMOTION_RESET		30
-#define	MONSTER_EMOTION_THRESHOLD	50
-
 void AI_Initialize(ServerEntity_t *entity)
 {
-	Monster_SetState(entity, MONSTER_STATE_ASLEEP);
-	Monster_SetThink(entity, MONSTER_THINK_IDLE);
+	// Reset AI struct for this entity.
+//	memset(&entity->ai, 0, sizeof(ServerEntityBaseVariables_t));
+
+	entity->ai.current_movement		= AI_MOVEMENT_RUNNING;
+	entity->ai.current_movespeed	= 20.0f;
 }
 
 /*	Used to go over each monster state then update it, and then calls the monsters
@@ -773,23 +773,35 @@ void AI_Frame(ServerEntity_t *entity)
 		entity->local.jump_velocity = 0;
 
 		// Call up land function, so custom sounds can be added.
-		if (entity->Monster.Land)
-			entity->Monster.Land(entity);
+		if (entity->ai.Land)
+			entity->ai.Land(entity);
 	}
 	else if (!(entity->v.flags & FL_ONGROUND))
 		entity->local.jump_velocity = entity->v.velocity[2];
 
-	if (entity->Monster.Frame)
-		entity->Monster.Frame(entity);
+	if (entity->ai.Think)
+		entity->ai.Think(entity);
+
+	AI_Movement(entity);
 }
 
 /*
 	Targetting
 */
 
-Waypoint_t *AI_GetVisibleWaypoint(ServerEntity_t *entity)
+Waypoint_t *AI_GetVisibleMoveTarget(ServerEntity_t *entity)
 {
-	return Waypoint_GetByVisibility(entity->v.origin);
+	Waypoint_t *new_waypoint = Waypoint_GetByVisibility(entity->v.origin);
+	if (entity->ai.target_move && (new_waypoint == entity->ai.target_move))
+	{
+		// Try to get a different waypoint.
+		if (new_waypoint->next)
+			return new_waypoint->next;
+		else if (new_waypoint->last)
+			return new_waypoint->last;
+	}
+
+	return new_waypoint;
 }
 
 /*
@@ -800,29 +812,20 @@ Waypoint_t *AI_GetVisibleWaypoint(ServerEntity_t *entity)
 	States
 */
 
-void AI_SetState(ServerEntity_t *entity, AIState_t state)
+void AI_SetState(ServerEntity_t *entity, unsigned int state)
 {
 	if (entity->Monster.state == state)
 		return;
 
 	switch (state)
 	{
-	case MONSTER_STATE_ASLEEP:
-	case MONSTER_STATE_AWAKE:
-	case MONSTER_STATE_DEAD:
-	case MONSTER_STATE_DYING:
+	case AI_STATE_ASLEEP:
+	case AI_STATE_AWAKE:
+	case AI_STATE_DEAD:
+	case AI_STATE_DYING:
 	default:
 		g_engine->Warning("Attempted to set an unknown state! (%s) (%i)\n", entity->v.cClassname, state);
 	}
-}
-
-/*
-	Emotions
-*/
-
-void AI_ResetEmotion(ServerEntity_t *entity, AIEmotion_t emotion)
-{
-	entity->Monster.emotions[emotion] = 0;
 }
 
 /*
@@ -861,6 +864,92 @@ int	Monster_GetRelationship(ServerEntity_t *eMonster, ServerEntity_t *eTarget)
 	Movement
 */
 
+// Base...
+
+void AI_Movement(ServerEntity_t *entity)
+{
+	// Let entities override this.
+	if (entity->ai.Movement)
+	{
+		entity->ai.Movement(entity);
+		return;
+	}
+
+	// We don't move while asleep.
+	if ((entity->ai.current_state == AI_STATE_ASLEEP) || (entity->ai.current_state == AI_STATE_DEAD))
+		return;
+	
+	switch (entity->ai.current_movement)
+	{
+	default:
+	case AI_MOVEMENT_RUNNING:
+		AI_RunMovement(entity);
+		break;
+	case AI_MOVEMENT_FLYING:
+		AI_FlyMovement(entity);
+		break;
+	}
+}
+
+// Running
+void AI_RunMovement(ServerEntity_t *entity)
+{
+	// Ensure we're on the ground?
+	if (!Entity_IsOnGround(entity))
+		return;
+}
+
+// Flying
+void AI_FlyMovement(ServerEntity_t *entity)
+{
+	// Ensure we're on the ground?
+	if (Entity_IsOnGround(entity))
+		return;
+
+	if (entity->ai.target_move)
+	{
+		// todo: interp for this over a few frames...
+		plVector3f_t targetangles;
+		plVectorSubtract3fv(entity->v.origin, entity->ai.target_move->position, targetangles);
+		plVectorNormalize(targetangles);
+		Math_MVToVector(plVectorToAngles(targetangles), targetangles);
+		Math_VectorInverse(targetangles);
+		plVectorCopy(targetangles, entity->v.angles);
+
+		AI_ForwardMovement(entity, entity->ai.current_movespeed);
+
+		// Link us up, Scotty(?)
+		Entity_Link(entity, false);
+	}
+}
+
+void AI_ForwardMovement(ServerEntity_t *entity, float velocity)
+{
+	plVector3f_t direction, end;
+
+	Entity_MakeVectors(entity);
+	plVectorCopy(entity->local.vForward, direction);
+	Math_VectorMA(entity->v.origin, velocity, direction, end);
+	plVectorScalef(direction, velocity, entity->v.velocity);
+}
+
+// Everything else...
+
+/*	Allows a monster to jump with the given velocity.
+*/
+void AI_JumpMovement(ServerEntity_t *monster, float velocity)
+{
+	if (monster->v.velocity[2] != 0 || Entity_IsOnGround(monster))
+		return;
+
+	// Allow the monster to add additional sounds/movement if required.
+	if (monster->Monster.Jump)
+		monster->Monster.Jump(monster);
+
+	monster->v.flags -= FL_ONGROUND;
+	monster->v.velocity[2] = velocity;
+}
+
 /*	Can be used to debug monster movement / apply random movement.
 */
 void AI_RandomMovement(ServerEntity_t *eMonster, float fSpeed)
@@ -883,40 +972,9 @@ void AI_RandomMovement(ServerEntity_t *eMonster, float fSpeed)
 		eMonster->v.angles[1] = plVectorToYaw(eMonster->v.velocity);
 	}
 	else if (rand() % 150 == 0)
-		Monster_Jump(eMonster, 200.0f);
+		AI_JumpMovement(eMonster, 200.0f);
 	else if (rand() % 250 == 0)
 		eMonster->v.angles[1] = (float)(rand() % 360);
 }
 
-void AI_RunMovement(ServerEntity_t *entity)
-{}
-
-void AI_WalkMovement(ServerEntity_t *entity)
-{}
-
-/*	Move the monster forwards.
-*/
-void AI_ForwardMovement(ServerEntity_t *entity, float velocity)
-{
-#if 0	// Ensure we're on the ground?
-	if (!Entity_IsOnGround(monster))
-		return;
-#endif
-
-	//MathVector3f_t angles;
-}
-
-/*	Allows a monster to jump with the given velocity.
-*/
-void Monster_Jump(ServerEntity_t *monster, float velocity)
-{
-	if (monster->v.velocity[2] != 0 || Entity_IsOnGround(monster))
-		return;
-
-	// Allow the monster to add additional sounds/movement if required.
-	if (monster->Monster.Jump)
-		monster->Monster.Jump(monster);
-
-	monster->v.flags -= FL_ONGROUND;
-	monster->v.velocity[2] = velocity;
-}
+/////////////////////////////////////////////

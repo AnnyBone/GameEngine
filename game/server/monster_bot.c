@@ -223,7 +223,7 @@ void Bot_Spawn(ServerEntity_t *eBot)
 	Entity_SetModel(eBot,eBot->v.model);
 	Entity_SetSize(eBot,-16.0f,-16.0f,-24.0f,16.0f,16.0f,32.0f);
 
-	Monster_SetState(eBot, MONSTER_STATE_AWAKE);
+	Monster_SetState(eBot, AI_STATE_AWAKE);
 	Monster_SetThink(eBot, MONSTER_THINK_IDLE);
 
 	// Make sure we're not in the air.
@@ -258,7 +258,7 @@ void Bot_Idle(ServerEntity_t *entity)
 
 void Bot_Frame(ServerEntity_t *entity)
 {
-	if ((entity->Monster.state == MONSTER_STATE_DEAD) || (entity->Monster.state == MONSTER_STATE_DYING))
+	if ((entity->Monster.state == AI_STATE_DEAD) || (entity->Monster.state == AI_STATE_DYING))
 		return;
 
 	switch (entity->Monster.think)
@@ -427,11 +427,11 @@ void Bot_Die(ServerEntity_t *eBot, ServerEntity_t *eOther, ServerDamageType_t ty
 {
 	char sound[MAX_QPATH];
 
-	if (eBot->Monster.state == MONSTER_STATE_DEAD)
+	if (eBot->Monster.state == AI_STATE_DEAD)
 		return;
 
 	// He's dead, Jim.
-	Monster_SetState(eBot, MONSTER_STATE_DEAD);
+	Monster_SetState(eBot, AI_STATE_DEAD);
 
 	eBot->v.movetype	= MOVETYPE_TOSS;
 	eBot->v.flags		-= (eBot->v.flags & FL_ONGROUND);

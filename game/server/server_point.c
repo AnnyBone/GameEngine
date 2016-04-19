@@ -101,52 +101,54 @@ void ScanBot_Spawn(ServerEntity_t *entity);
 void Hurler_Spawn(ServerEntity_t *eHurler);
 #endif
 
-void Point_MonsterSpawn(ServerEntity_t *eMonster)
+void Point_MonsterSpawn(ServerEntity_t *entity)
 {
 	if (cvServerMonsters.value <= 0)
 	{
-		Entity_Remove(eMonster);
+		Entity_Remove(entity);
 		return;
 	}
 
 	// Set its origin and angles...
-	Entity_SetOrigin(eMonster, eMonster->v.origin);
-	Entity_SetAngles(eMonster, eMonster->v.angles);
+	Entity_SetOrigin(entity, entity->v.origin);
+	Entity_SetAngles(entity, entity->v.angles);
 
 	Server.iMonsters++;
 
-	switch(eMonster->local.style)
+	AI_Initialize(entity);
+
+	switch (entity->local.style)
 	{
 #ifdef GAME_OPENKATANA
 	case MONSTER_PRISONER:
-		eMonster->v.cClassname = "monster_prisoner";
-		Prisoner_Spawn(eMonster);
+		entity->v.cClassname = "monster_prisoner";
+		Prisoner_Spawn(entity);
 		break;
 	case MONSTER_LASERGAT:
-		eMonster->v.cClassname = "monster_lasergat";
-		LaserGat_Spawn(eMonster);
+		entity->v.cClassname = "monster_lasergat";
+		LaserGat_Spawn(entity);
 		break;
 	case MONSTER_INMATER:
-		eMonster->v.cClassname = "monster_inmater";
-		Inmater_Spawn(eMonster);
+		entity->v.cClassname = "monster_inmater";
+		Inmater_Spawn(entity);
 		break;
 	case MONSTER_SCANBOT:
-		eMonster->v.cClassname = "monster_scanbot";
-		ScanBot_Spawn(eMonster);
+		entity->v.cClassname = "monster_scanbot";
+		ScanBot_Spawn(entity);
 		break;
 #elif GAME_ADAMAS
 	case MONSTER_HURLER:
-		eMonster->v.cClassname = "monster_hurler";
-		Hurler_Spawn(eMonster);
+		entity->v.cClassname = "monster_hurler";
+		Hurler_Spawn(entity);
 		break;
 #endif
 	default:
-		Engine.Con_Warning("Invalid monster type (%i)!\n",eMonster->local.style);
+		g_engine->Con_Warning("Invalid monster type (%i)!\n", entity->local.style);
 
-		// Reduce the monster count. ~hogsy
+		// Reduce the monster count.
 		Server.iMonsters--;
 
-		Entity_Remove(eMonster);
+		Entity_Remove(entity);
 	}
 }
 

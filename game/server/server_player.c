@@ -371,7 +371,7 @@ void Player_CheckWater(ServerEntity_t *ePlayer)
 void Player_PostThink(ServerEntity_t *ePlayer)
 {
 	// If round has not started then don't go through this!
-	if ((ePlayer->Monster.state == MONSTER_STATE_DEAD) || !Server.round_started)
+	if ((ePlayer->Monster.state == AI_STATE_DEAD) || !Server.round_started)
 		return;
 	// Check if we're in a vehicle.
 	else if(ePlayer->local.eVehicle)
@@ -467,7 +467,7 @@ void Player_PreThink(ServerEntity_t *ePlayer)
 	Entity_CheckFrames(ePlayer);
 	Player_CheckWater(ePlayer);
 
-	if (ePlayer->Monster.state == MONSTER_STATE_DEAD)
+	if (ePlayer->Monster.state == AI_STATE_DEAD)
 	{
 		Player_DeathThink(ePlayer);
 		return;
@@ -610,7 +610,7 @@ void Player_Die(ServerEntity_t *ePlayer, ServerEntity_t *other, ServerDamageType
 	ePlayer->v.movetype		= MOVETYPE_TOSS;
 	ePlayer->v.angles[0]	= ePlayer->v.angles[2] = 0;
 
-	ePlayer->Monster.state = MONSTER_STATE_DEAD;
+	ePlayer->Monster.state = AI_STATE_DEAD;
 
 	ePlayer->Physics.iSolid	= SOLID_NOT;
 

@@ -37,16 +37,51 @@
 #define	SCANBOT_MASS		0
 #define	SCANBOT_FRICTION	1.0f
 
+void ScanBot_Think(ServerEntity_t *entity);
+void ScanBot_State(ServerEntity_t *entity);
+
 void ScanBot_Spawn(ServerEntity_t *entity)
 {
 	Server_PrecacheModel(SCANBOT_MODEL);
 
 	entity->v.netname		= "Scan Bot";
-	entity->v.movetype		= MOVETYPE_FLY;
+	entity->v.movetype		= MOVETYPE_WALK;
 	entity->v.iHealth		= SCANBOT_HEALTH;
 	entity->v.bTakeDamage	= true;
 
 	Entity_SetPhysics(entity, SOLID_BBOX, SCANBOT_MASS, SCANBOT_FRICTION);
 	Entity_SetModel(entity, SCANBOT_MODEL);
 	Entity_SetSize(entity, -16, -16, -16, 16, 16, 16);
+
+	// todo: redo this, legacy crap.
+	entity->Monster.iType = MONSTER_SCANBOT;
+
+	entity->ai.current_movement		= AI_MOVEMENT_FLYING;
+
+	entity->ai.Think	= ScanBot_Think;
+	entity->ai.State	= ScanBot_State;
+}
+
+void ScanBot_Think(ServerEntity_t *entity)
+{
+#if 0
+	switch (entity->ai.current_think)
+	{
+	default:
+	case MONSTER_THINK_IDLE:
+		break;
+	}
+#else
+	entity->ai.target_move = AI_GetVisibleMoveTarget(entity);
+#endif
+}
+
+void ScanBot_State(ServerEntity_t *entity)
+{
+	switch (entity->ai.current_state)
+	{
+	default:
+	case AI_STATE_ASLEEP:
+		break;
+	}
 }

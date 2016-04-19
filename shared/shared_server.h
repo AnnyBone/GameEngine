@@ -158,8 +158,8 @@ typedef struct
 	void(*Pain)(ServerEntity_t *entity, ServerEntity_t *other, ServerDamageType_t type);
 
 	// Current thought state
-	int	state;					// Current physical state.
-	int	think;					// Current thought process.
+	unsigned int	state;					// Current physical state.
+	unsigned int	think;					// Current thought process.
 	int	commands[64];			// List of sub-commands for the monster to execute.
 	unsigned int emotions[16];	// Current emotional states.
 
@@ -369,6 +369,39 @@ typedef struct
 
 #define TE_EXPLOSION		3
 
+/*
+	Waypoints
+*/
+
+typedef enum
+{
+	WAYPOINT_TYPE_DEFAULT,	// Basic point
+
+	WAYPOINT_TYPE_JUMP,		// Next waypoint needs a jump
+	WAYPOINT_CLIMB,		// Next waypoint needs a climb
+	WAYPOINT_COVER,		// Is behind cover
+	WAYPOINT_ITEM,		// Has an item nearby
+	WAYPOINT_WEAPON,	// Has a weapon nearby
+	WAYPOINT_TYPE_INTEREST,	// Waypoint that exists purely just for points of interest.
+	WAYPOINT_SPAWN,		// Near a spawn point
+	WAYPOINT_SPAWNAREA,	// Near a spawn area
+	WAYPOINT_TYPE_SWIM		// Underwater
+} WaypointType_t;
+
+typedef struct waypoint_s
+{
+	const char			*cName;		// The name for the waypoint
+	int					number;		// Each point is assigned it's own number
+	ServerEntity_t		*eEntity;	// The entity currently occupying that waypoint
+	struct	waypoint_s	*next;		// The next point to target.
+	struct	waypoint_s	*last;		// The last point we were at.
+	MathVector3f_t		position;	// The waypoints position.
+	bool				bOpen;		// Check to see if the waypoint currently is occupied.
+	WaypointType_t		wType;		// Type of point (duck, jump, climb etc.)
+} Waypoint_t;
+
+/**/
+
 #include "shared_client.h"
 
 #ifndef KATANA	// TODO: Sort this out!!!
@@ -399,7 +432,7 @@ typedef struct
 	ServerEntity_t	*ent;			// entity the surface is on
 } trace_t;
 
-typedef struct GlobalVariables_e
+typedef struct ServerEntityBaseVariables_s
 {
 	// Weapons
 	int			iSecondaryAmmo, iPrimaryAmmo;
@@ -494,10 +527,28 @@ typedef struct GlobalVariables_e
 	void(*use)(ServerEntity_t *seEntity);
 	void(*think)(ServerEntity_t *seEntity);
 	void(*BlockedFunction)(ServerEntity_t *seEntity, ServerEntity_t *seOther);	// Called when an entity is blocked against another.
-} ServerBaseVariables_t;
+} ServerEntityBaseVariables_t;
+
+typedef struct ServerEntityAIVariables_s
+{
+	void(*Think)(ServerEntity_t *entity);
+	void(*State)(ServerEntity_t *entity);
+
+	// Movement overrides.
+	void(*Movement)(ServerEntity_t *entity);	// Overrides complete movement functionality.
+	void(*Jump)(ServerEntity_t *entity);		// Called after the jump has been started; typically used for sounds / animation.
+	void(*Land)(ServerEntity_t *entity);		// Called upon landing from a jump.
+
+	Waypoint_t *target_move;
+
+	unsigned int current_state, current_think;
+	unsigned int current_movement;
+
+	float current_movespeed;
+} ServerEntityAIVariables_t;
 
 /*	If this is changed remember
-to recompile the engine too!    */
+	to recompile the engine too! */
 typedef struct ServerEntity_s
 {
 	// Shared
@@ -513,12 +564,13 @@ typedef struct ServerEntity_s
 
 	float fFreeTime;
 
-	ServerBaseVariables_t	v;
+	ServerEntityBaseVariables_t		v;		// Global / Base variables, shared between game and engine.
+	ServerEntityAIVariables_t		ai;		// Specific towards AI/monsters.
 
 	ServerModelVariables_t		Model;		// Variables that affect the model used for the entity.
 	ServerPhysicsVariables_t	Physics;	// Variables affecting how the entity is physically treated.
 	ServerGameVariables_t		local;		// All variables specific towards the game, that aren't used by the engine.
-	ServerMonsterVariables_t	Monster;	// Specific towards AI/monsters.
+	ServerMonsterVariables_t	Monster;	
 	VehicleVariables_t			Vehicle;	// Vehicle variables.
 } ServerEntity_t;
 

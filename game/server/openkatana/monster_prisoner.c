@@ -72,7 +72,7 @@ bool Prisoner_CheckCell(ServerEntity_t *ePrisoner)
 
 void Prisoner_Think(ServerEntity_t *ePrisoner)
 {
-	if (ePrisoner->Monster.state != MONSTER_STATE_AWAKE)
+	if (ePrisoner->Monster.state != AI_STATE_AWAKE)
 		return;
 
 	switch (ePrisoner->Monster.think)
@@ -197,7 +197,7 @@ PRISONER_GENERATEKEY:
 	ePrisoner->Monster.Frame = Prisoner_Think;
 
 	// State must be set before think!
-	Monster_SetState(ePrisoner, MONSTER_STATE_AWAKE);
+	Monster_SetState(ePrisoner, AI_STATE_AWAKE);
 	Monster_SetThink(ePrisoner, MONSTER_THINK_IDLE);
 
 	Entity_SetModel(ePrisoner,PRISONER_MODEL_BODY);

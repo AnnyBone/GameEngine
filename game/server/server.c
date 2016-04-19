@@ -396,6 +396,6 @@ void Server_SendClientInformation(ServerClient_t *client)
 */
 void Server_KillClient(ServerEntity_t *eClient)
 {
-	if (eClient->Monster.state != MONSTER_STATE_DEAD)
+	if (eClient->Monster.state != AI_STATE_DEAD)
 		Entity_Damage(eClient, eClient, eClient->v.iHealth, DAMAGE_TYPE_NORMAL);
 }

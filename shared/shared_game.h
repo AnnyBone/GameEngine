@@ -22,37 +22,6 @@
 #include "shared_server.h"
 #include "shared_client_effect.h"
 
-/*
-	Waypoints
-*/
-
-typedef enum
-{
-	WAYPOINT_TYPE_DEFAULT,	// Basic point
-
-	WAYPOINT_TYPE_JUMP,		// Next waypoint needs a jump
-	WAYPOINT_CLIMB,		// Next waypoint needs a climb
-	WAYPOINT_COVER,		// Is behind cover
-	WAYPOINT_ITEM,		// Has an item nearby
-	WAYPOINT_WEAPON,	// Has a weapon nearby
-	WAYPOINT_TYPE_INTEREST,	// Waypoint that exists purely just for points of interest.
-	WAYPOINT_SPAWN,		// Near a spawn point
-	WAYPOINT_SPAWNAREA,	// Near a spawn area
-	WAYPOINT_TYPE_SWIM		// Underwater
-} WaypointType_t;
-
-typedef struct waypoint_s
-{
-	const char			*cName;		// The name for the waypoint
-	int					number;		// Each point is assigned it's own number
-	ServerEntity_t		*eEntity;	// The entity currently occupying that waypoint
-	struct	waypoint_s	*next;		// The next point to target.
-	struct	waypoint_s	*last;		// The last point we were at.
-	MathVector3f_t		position;	// The waypoints position.
-	bool				bOpen;		// Check to see if the waypoint currently is occupied.
-	WaypointType_t		wType;		// Type of point (duck, jump, climb etc.)
-} Waypoint_t;
-
 /**/
 
 typedef struct
@@ -270,4 +239,4 @@ typedef struct
 	bool(*Physics_CheckWater)(ServerEntity_t *eEntity);
 } GameExport_t;
 
-#define GAME_VERSION (sizeof(GameExport_t)+sizeof(ModuleImport_t)+sizeof(ServerBaseVariables_t*))	// Version check that's used for Menu and Launcher.
+#define GAME_VERSION (sizeof(GameExport_t)+sizeof(ModuleImport_t)+sizeof(ServerEntityBaseVariables_t*))	// Version check that's used for Menu and Launcher.
