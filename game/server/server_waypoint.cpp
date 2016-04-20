@@ -254,6 +254,7 @@ void Waypoint_Spawn(MathVector3f_t vOrigin,WaypointType_t type)
 		return;
 	}
 
+#if 0
 	{
 		Waypoint_t *wVisibleWaypoint = Waypoint_GetByVisibility(vOrigin);
 		// [30/1/2013] Oops! Check we actually have a visible waypoint!! ~hogsy
@@ -269,6 +270,7 @@ void Waypoint_Spawn(MathVector3f_t vOrigin,WaypointType_t type)
 			}
 		}
 	}
+#endif
 
 	wPoint = Waypoint_Allocate();
 	if(!wPoint)
@@ -340,4 +342,16 @@ void Waypoint_Spawn(MathVector3f_t vOrigin,WaypointType_t type)
 	}
 	else if(wPoint->last != wPoint && wPoint->last->next)
 		wPoint->last->next = wPoint;
+}
+
+void Waypoint_Draw(void)
+{
+	for (Waypoint_t *point = wWaypoints; point->number < waypoint_count; point++)
+	{
+		if (point->next)
+			g_engine->DrawLine(point->position, point->next->position);
+		if (point->last)
+			g_engine->DrawLine(point->position, point->last->position);
+		g_engine->DrawCoordinateAxes(point->position);
+	}
 }

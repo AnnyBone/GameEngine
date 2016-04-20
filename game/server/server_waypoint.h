@@ -28,6 +28,7 @@ void Waypoint_Initialize(void);
 void Waypoint_Delete(Waypoint_t *point);
 void Waypoint_Spawn(MathVector3f_t vOrigin, WaypointType_t type);
 void Waypoint_Frame();
+void Waypoint_Draw(void);
 
 Waypoint_t *Waypoint_GetByName(ServerEntity_t *eMonster, char *cName, float fMaxDistance);
 Waypoint_t *Waypoint_GetByType(MathVector3f_t position, WaypointType_t type, float distance);

@@ -78,6 +78,9 @@
     <ClInclude Include="..\shared\shared_engine.h">
       <Filter>Shared</Filter>
     </ClInclude>
+    <ClInclude Include="server\server_debug.h">
+      <Filter>Server</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Client">

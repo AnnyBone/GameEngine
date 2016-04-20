@@ -548,6 +548,8 @@ void R_SetupScene(void)
 #endif
 }
 
+#include "EngineGame.h"
+
 void R_RenderScene(void)
 {
 	R_PushDlights();
@@ -584,6 +586,10 @@ void R_RenderScene(void)
 
 	R_DrawViewModel();
 	Video_ShowBoundingBoxes();
+
+	// Debug stuff...
+	if (cl.maxclients <= 1)
+		Game->Server_Draw();
 }
 
 void R_RenderView (void)

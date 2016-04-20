@@ -434,6 +434,12 @@ void Game_Initialize(void)
 	Import.Con_DPrintf				= Con_DPrintf;	// todo: obsolete!
 	Import.Con_Warning				= Con_Warning;	// todo: obsolete!
 
+	Import.DrawLine				= Draw_Line;
+	Import.DrawMaterialSurface	= Draw_MaterialSurface;
+	Import.DrawRectangle		= Draw_Rectangle;
+	Import.DrawCoordinateAxes	= Draw_CoordinateAxes;
+	Import.DrawString			= Draw_String;
+
 	Import.Print	= Con_Printf;
 	Import.Warning	= Con_Warning;
 

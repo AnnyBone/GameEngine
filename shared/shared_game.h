@@ -157,6 +157,8 @@ typedef struct
 	// Draw Functions
 	void(*DrawString)(int x, int y, char *msg);
 	void(*DrawRectangle)(int x, int y, int w, int h, plColour_t colour);
+	void(*DrawLine)(plVector3f_t start, plVector3f_t end);
+	void(*DrawCoordinateAxes)(plVector3f_t position);
 	void(*DrawMaterialSurface)(Material_t *mMaterial, int iSkin, int x, int y, int w, int h, float fAlpha);
 
 	void(*Cvar_RegisterVariable)(ConsoleVariable_t *variable, void(*Function)(void));
@@ -202,12 +204,13 @@ typedef struct
 {
 	int	iVersion;
 
-	void	(*Initialize)(void);
-	void	(*Shutdown)(void);
-	void	(*Draw)(void);			// Called during video processing.
+	void(*Initialize)(void);
+	void(*Shutdown)(void);
+
+	void(*Draw)(void);			// Called during video processing.
 
 	//	Game
-	char	*Name;																						// Name of the currently active game (used as the name for the window).
+	char *Name;																						// Name of the currently active game (used as the name for the window).
 	bool(*Game_Init)(int state, ServerEntity_t *ent, double dTime);											// For both server-side and client-side entry
 	void(*ChangeYaw)(ServerEntity_t *ent);
 	void(*SetSize)(ServerEntity_t *ent, float mina, float minb, float minc, float maxa, float maxb, float maxc);	// Sets the size of an entity.
@@ -218,6 +221,7 @@ typedef struct
 	void(*Client_ViewFrame)(void);																	// Called per-frame to handle players view.
 
 	void(*Server_Initialize)(void);																	// Initializes the server.
+	void(*Server_Draw)(void); // Draw host stuff, for debugging.
 	void(*Server_EntityFrame)(ServerEntity_t *eEntity);
 	void(*Server_KillClient)(ServerEntity_t *eClient);												// Tells the specified client to die.
 	void(*Server_SetSizeVector)(ServerEntity_t *eEntity, MathVector3f_t vMin, MathVector3f_t vMax);	// Set the size of an entity by vector.
@@ -226,6 +230,7 @@ typedef struct
 	void(*Server_PostFrame)(void);																	// Called at the end of each physics frame.
 	void(*Server_SendClientInformation)(ServerClient_t *client);
 	void(*Server_ParseEntityField)(char *key, char *value, ServerEntity_t *entity);					// Parse the given field and value into an entities struct.
+	
 	bool(*Server_SpawnEntity)(ServerEntity_t *ent);													// Puts a specific entity into the server.
 
 	void(*Physics_SetGravity)(ServerEntity_t *eEntity);			// Sets the current gravity for the given entity.

@@ -18,9 +18,7 @@
 
 #include "server_main.h"
 
-/*	Draws a line between two points.
-*/
-void ServerDebug_DrawLine(MathVector3f_t start, MathVector3f_t end)
+void Server_Draw(void)
 {
-	// TODO: This is NEEDED for debugging waypoints, get this done ASAP!
+	Waypoint_Draw();
 }

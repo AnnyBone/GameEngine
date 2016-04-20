@@ -30,6 +30,7 @@
 // Server
 #include "server_main.h"
 #include "server_player.h"
+#include "server_debug.h"
 
 GameExport_t	Export;	// Game exports.
 ModuleImport_t	Engine;	// Engine imports.
@@ -243,6 +244,9 @@ pMODULE_EXPORT GameExport_t *Game_Main(ModuleImport_t *Import)
 	Export.Server_ParseEntityField			= ServerEntity_ParseField;
 	Export.Server_SpawnPlayer				= Player_Spawn;
 	Export.Server_SendClientInformation		= Server_SendClientInformation;
+
+	// Debugging
+	Export.Server_Draw = Server_Draw;
 
 	// Physics
 	Export.Physics_SetGravity				= Physics_SetGravity;
