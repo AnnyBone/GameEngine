@@ -20,9 +20,6 @@
 
 /*
 	Used for both navigation and as basic reference points within levels.
-
-	TODO:
-		Save our waypoints to a map specific document.
 */
 
 #define	WAYPOINT_MAX_ALLOCATED	2048
@@ -31,33 +28,54 @@ namespace Game
 {
 	namespace AI
 	{
+		ConsoleVariable_t waypoint_debug = {
+			"waypoint_debug",
+#if defined(_DEBUG)
+			"1",
+#else
+			"0",
+#endif
+			false, true, "If enabled, waypoints will be drawn for host." 
+		};
+
 		class WaypointManager
 		{
 		public:
 			WaypointManager() {};
 			~WaypointManager() {};
 
-			void Initialize();
-			void Simulate();
-			void Shutdown();
+			void Initialize();	// Initialization.
+			void Simulate();	// Simulation of the waypoints.
+			void Draw();		// Used for debugging.
+			void Shutdown();	// Shutdown.
 
 			Waypoint_t *Add();
+			Waypoint_t *Get(std::string name);
 			void Remove(Waypoint_t *waypoint);
 			void Clear();
+
+			float GetDistance(Waypoint_t *waypoint, plVector3f_t position);
+
+			bool IsClear(Waypoint_t *waypoint);
 		protected:
 		private:
 			std::vector<Waypoint_t*> waypoints;
 		};
-
-		extern WaypointManager *g_waypointmanager;
 	}
+
+	extern AI::WaypointManager *waypoint_manager;
 }
 
 using namespace Game;
 
+AI::WaypointManager *waypoint_manager = nullptr;
+
 void AI::WaypointManager::Initialize()
 {
 	g_engine->Con_Printf("Initializing Waypoint Manager...\n");
+
+	// Register console variables.
+	g_engine->Cvar_RegisterVariable(&waypoint_debug, nullptr);
 
 	// Base count is left pretty high, since we're
 	// going to be dynamically tracking things.
@@ -67,15 +85,42 @@ void AI::WaypointManager::Initialize()
 Waypoint_t *AI::WaypointManager::Add()
 {
 	Waypoint_t *waypoint = new Waypoint_t;
+	memset(waypoint, 0, sizeof(Waypoint_t));
+
 	waypoints.push_back(waypoint);
 
 	waypoint->number = waypoints.size();
 
+	Waypoint_t *last_waypoint = waypoints[waypoint->number - 1];
+	if (last_waypoint)
+	{
+		waypoint->last = last_waypoint;
+		last_waypoint->next = waypoint;
+	}
+
 	return waypoint;
+}
+
+Waypoint_t *AI::WaypointManager::Get(std::string name)
+{
+	for (auto &point : waypoints)
+		if (std::strcmp(point->cName, name.c_str()))
+			return point;
+
+	return nullptr;
 }
 
 void AI::WaypointManager::Remove(Waypoint_t *waypoint)
 {
+	for (unsigned int i; i < waypoints.size(); i++)
+	{
+		if (waypoints[i] == waypoint)
+		{
+			waypoints.erase(waypoints.begin() + i);
+			delete waypoint;
+			break;
+		}
+	}
 }
 
 void AI::WaypointManager::Clear()
@@ -85,10 +130,29 @@ void AI::WaypointManager::Clear()
 	waypoints.reserve(WAYPOINT_MAX_ALLOCATED);	// Reserve default amount, again.
 }
 
+float AI::WaypointManager::GetDistance(Waypoint_t *waypoint, plVector3f_t position)
+{
+	plVector3f_t vecdist;
+	plVectorSubtract3fv(position, waypoint->position, vecdist);
+	return plLengthf(vecdist);
+}
+
 void AI::WaypointManager::Simulate()
 {
-	for (unsigned int i = 0; i < waypoints.size(); i++)
+	for (auto &point : waypoints)
 	{
+	}
+}
+
+void AI::WaypointManager::Draw()
+{
+	for (auto &point : waypoints)
+	{
+		if (point->next)
+			g_engine->DrawLine(point->position, point->next->position);
+		if (point->last)
+			g_engine->DrawLine(point->position, point->last->position);
+		g_engine->DrawCoordinateAxes(point->position);
 	}
 }
 
@@ -104,7 +168,7 @@ void AI::WaypointManager::Shutdown()
 
 Waypoint_t	wWaypoints[WAYPOINT_MAX_ALLOCATED];
 
-int	waypoint_count,	waypoint_allocated;
+int	waypoint_count;
 
 void Waypoint_Shutdown(void);
 
@@ -155,10 +219,9 @@ void Waypoint_Delete(Waypoint_t *wPoint)
 	if(!wPoint)
 		return;
 
-	free((void*)wPoint);
+	memset(wPoint, 0, sizeof(Waypoint_t));
 
 	waypoint_count--;
-	waypoint_allocated--;
 }
 
 Waypoint_t *Waypoint_GetByVisibility(MathVector3f_t vOrigin)
@@ -204,7 +267,6 @@ Waypoint_t *Waypoint_GetByType(MathVector3f_t position, WaypointType_t type, flo
 	return NULL;
 }
 
-// [20/9/2012] Lets us find a specific waypoint by name ~hogsy
 Waypoint_t *Waypoint_GetByName(ServerEntity_t *eMonster,char *cName,float fMaxDistance)
 {
 	Waypoint_t			*wPoint;
@@ -213,13 +275,11 @@ Waypoint_t *Waypoint_GetByName(ServerEntity_t *eMonster,char *cName,float fMaxDi
 	for (wPoint = wWaypoints; wPoint->number < waypoint_count; wPoint++)
 		if(strcmp(wPoint->cName,cName))
 		{
-			// [20/9/2012] TODO: Needs testing :[ ~hogsy
 			Math_VectorSubtract(eMonster->v.origin,wPoint->position,vDistance);
 			if (plLengthf(vDistance) < fMaxDistance)
 				return wPoint;
 		}
 
-	// [20/9/2012] Welp we didn't find anything, return null ~hogsy
 	return NULL;
 }
 
@@ -231,6 +291,14 @@ void Waypoint_Frame()
 	Waypoint_t *point;
 	for (point = wWaypoints; point->number < waypoint_count; point++)
 	{
+		if (point->next)
+		{
+			trace_t trace = g_engine->Server_Move(point->position, pl_origin3f, pl_origin3f, point->next->position, 0, nullptr);
+			if (!plVectorCompare(point->next->position, trace.endpos))
+			{
+
+			}
+		}
 	}
 }
 

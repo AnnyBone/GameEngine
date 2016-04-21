@@ -588,7 +588,7 @@ void R_RenderScene(void)
 	Video_ShowBoundingBoxes();
 
 	// Debug stuff...
-	if (cl.maxclients <= 1)
+	if ((cl.maxclients <= 1) && !bIsDedicated)
 		Game->Server_Draw();
 }
 
