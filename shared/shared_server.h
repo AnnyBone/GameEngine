@@ -480,7 +480,7 @@ typedef struct ServerEntityBaseVariables_s
 	int	items;
 	int	iInventory[128];
 
-	MathVector4f_t	vLight;
+	plColour_t	vLight;
 
 	bool bTakeDamage;		// TODO: Make local.
 

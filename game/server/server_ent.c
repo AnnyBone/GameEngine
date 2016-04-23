@@ -154,7 +154,7 @@ void ServerEntity_ParseField(char *key, char *value, ServerEntity_t *entity)
 				break;
 			case DATA_VECTOR4:
 			{
-				MathVector4f_t vector;
+				plVector4f_t vector;
 				Math_VectorSet(0, vector);
 				if (sscanf(value, "%f %f %f %f", &vector[0], &vector[1], &vector[2], &vector[3]) < 4)
 					Engine.Con_Warning("Field did not return expected number of arguments! (%s)\n", value);
@@ -403,7 +403,7 @@ void Entity_RadiusDamage(ServerEntity_t *eInflictor, float fRadius, int iDamage,
 
 			Math_VectorSubtract(eInflictor->v.origin,vOrigin,vOrigin);
 
-			fDistance = 0.5f*(float)plVectorLength(vOrigin);
+			fDistance = 0.5f*plLengthf(vOrigin);
 			if(fDistance > 0)
 			{
 				Math_VectorInverse(vOrigin);

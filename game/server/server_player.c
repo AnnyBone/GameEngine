@@ -319,7 +319,7 @@ void Player_CheckFootsteps(ServerEntity_t *player)
 {
 	float			fForce;
 	double			dDelay;
-	MathVector2f_t	vStep;
+	plVector2f_t	vStep;
 
 	// Also check movetype so we don't do steps while noclipping/flying.
 	if ((player->v.movetype == MOVETYPE_WALK) && player->v.flags & FL_ONGROUND)

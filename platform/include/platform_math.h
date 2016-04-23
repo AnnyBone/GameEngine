@@ -22,9 +22,6 @@
 
 plEXTERN_C_START
 
-typedef double MathVectord_t;	// Double precision
-typedef float MathVectorf_t;	// Floating-point precision
-
 #define PL_PI			3.14159265358979323846
 #define	PL_PI_DIV180	(PL_PI/180.0)
 
@@ -35,22 +32,23 @@ typedef float MathVectorf_t;	// Floating-point precision
 #define	PL_DEG2RAD(a)	((a)*PL_PI_DIV180)
 #define	PL_ISNAN(a)		(((*(int*)&a)&255<<23)==255<<23)
 
-typedef MathVectorf_t MathVector2f_t[2], MathVector3f_t[3], MathVector4f_t[4];
+typedef float MathVector3f_t[3];
 
-typedef float plVector2f_t[2], plVector3f_t[3], plVector4f_t[4];
-typedef int plVector3i_t[3];
+typedef float plVector2f_t[2], plVector3f_t[3], plVector4f_t[4];	// Floating-point precision.
+typedef double plVector2d_t[2], plVector3d_t[3], plVector4d_t[4];	// Double precision.
+typedef int plVector2i[2], plVector3i_t[3];							// Integer precision.
+
+typedef plVector3f_t plMatrix3x3f_t[3];
+typedef plVector4f_t plMatrix4x4f_t[4];
 
 typedef plVector4f_t plColour_t;
-
-typedef MathVectord_t MathVector2d_t[2], MathVector3d_t[3], MathVector4d_t[4];
-typedef MathVector4d_t MathMatrix4x4d_t[4];
 
 typedef struct
 {
 #ifdef PLATFORM_MATH_DOUBLE
-	MathVectord_t
+	double
 #else
-	MathVectorf_t 
+	float
 #endif
 		vX, vY, vZ;
 } MathVector_t;
@@ -201,15 +199,11 @@ void plAngleVectors(MathVector3f_t angles, plVector3f_t forward, plVector3f_t ri
 void plVectorNormalizeFast(MathVector3f_t vVector);
 void Math_VectorMake(MathVector3f_t veca, float scale, plVector3f_t vecb, plVector3f_t vecc);
 
-double plVectorLength(MathVector3f_t a);
-
 float Math_AngleMod(float a);
-float plVectorToYaw(MathVectorf_t *vec);
-
-bool plVectorCompare(plVector3f_t a, plVector3f_t b);
+float plVectorToYaw(float *vec);
 
 float plLengthf(plVector3f_t a);
-double plLengthd(MathVector3d_t a);
+double plLengthd(plVector3d_t a);
 
 float plVectorNormalize(plVector3f_t a);
 float Math_DotProduct(MathVector3f_t a, MathVector3f_t b);
@@ -240,19 +234,84 @@ float plColourNormalize(plVector3f_t in, plVector3f_t out);
 
 void plColourSetf(plColour_t in, float r, float g, float b, float a);
 
-void plVectorSet3f(plVector3f_t out, float x, float y, float z);
-void plVectorSet2f(plVector2f_t out, float a, float b);
+// Vector3
 
-void plVectorClear(plVector3f_t out);
-void plVectorMultiply3fv(plVector3f_t in, plVector3f_t multi, plVector3f_t out);
-void plVectorSubtract3fv(plVector3f_t in, plVector3f_t subtract, plVector3f_t out);
-void plVectorAdd3fv(plVector3f_t in, plVector3f_t add, plVector3f_t out);
-void plVectorCopy(plVector3f_t in, plVector3f_t out);
-void plVectorScalef(plVector3f_t in, float scale, plVector3f_t out);
+inline static bool plVectorCompare(plVector3f_t a, plVector3f_t b)
+{
+	for (int i = 0; i < 3; i++)
+		if (a[i] != b[i])
+			return false;
 
-void plNormalizeAngles(plVector3f_t angles);
+	return true;
+}
+
+inline static void plVectorAdd3fv(plVector3f_t in, plVector3f_t add, plVector3f_t out)
+{
+	out[0] = in[0] + add[0];
+	out[1] = in[1] + add[1];
+	out[2] = in[2] + add[2];
+}
+
+inline static void plVectorSubtract3fv(plVector3f_t in, plVector3f_t subtract, plVector3f_t out)
+{
+	out[0] = in[0] - subtract[0];
+	out[1] = in[1] - subtract[1];
+	out[2] = in[2] - subtract[2];
+}
+
+inline static void plVectorMultiply3fv(plVector3f_t in, plVector3f_t multi, plVector3f_t out)
+{
+	out[0] = in[0] * multi[0];
+	out[1] = in[1] * multi[1];
+	out[2] = in[2] * multi[2];
+}
+
+inline static void plVectorSet3f(plVector3f_t out, float x, float y, float z)
+{
+	out[0] = x; out[1] = y; out[2] = z;
+}
+
+inline static void plVectorCopy(plVector3f_t in, plVector3f_t out)
+{
+	out[0] = in[0];
+	out[1] = in[1];
+	out[2] = in[2];
+}
+
+inline static void plVectorScalef(plVector3f_t in, float scale, plVector3f_t out)
+{
+	out[0] = in[0] * scale;
+	out[1] = in[1] * scale;
+	out[2] = in[2] * scale;
+}
+
+inline static void plVectorClear(plVector3f_t out)
+{
+	out[0] = out[1] = out[2] = 0;
+}
+
+inline static float plVectorNormalize(plVector3f_t a)
+{
+	float i, l = (float)plLengthf(a);
+	if (l)
+	{
+		i = 1.0f / l;
+		plVectorScalef(a, i, a);
+	}
+
+	return l;
+}
+
+// Vector2
+
+inline static void plVector2Set2f(plVector2f_t out, float a, float b)
+{
+	out[0] = a; out[1] = b;
+}
 
 // Utility
+
+void plNormalizeAngles(plVector3f_t angles);
 void plTurnVector(plVector3f_t out, const plVector3f_t forward, const plVector3f_t side, float angle);
 char *plVectorToString(plVector3f_t vector);
 bool plIsIntersecting(plVector3f_t mvFirstMins, plVector3f_t mvFirstMaxs, plVector3f_t mvSecondMins, MathVector3f_t mvSecondMaxs);

@@ -1250,7 +1250,7 @@ void Area_PushTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
 	if(!Entity_IsPlayer(eOther))
 		return;
 
-	Math_VectorScale(eArea->v.movedir,eArea->local.speed*10,eOther->v.velocity);
+	plVectorScalef(eArea->v.movedir, eArea->local.speed * 10, eOther->v.velocity);
 
 	// [9/12/2013] Corrected a mistake that was made here. ~hogsy
 	if(eArea->v.spawnflags & PUSH_ONCE)

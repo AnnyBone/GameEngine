@@ -171,7 +171,7 @@ void Server_SetModel(ServerEntity_t *ent, char *m)
 		Game->Server_SetSizeVector(ent, pl_origin3f, pl_origin3f);
 }
 
-void Game_AmbientSound(MathVectorf_t *vPosition,const char *cPath,int iVolume,int iAttenuation)
+void Game_AmbientSound(float *vPosition, const char *cPath, int iVolume, int iAttenuation)
 {
 	char		**cCheck;
 	int			i,iSoundNumber;

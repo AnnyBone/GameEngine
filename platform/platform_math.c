@@ -24,9 +24,9 @@
 	Math Library
 */
 
-MathVector2f_t pl_origin2f	= { 0, 0 };
-MathVector3f_t pl_origin3f	= { 0, 0, 0 };
-MathVector4f_t pl_origin4f	= { 0, 0, 0, 0 };
+plVector2f_t pl_origin2f = { 0, 0 };
+plVector3f_t pl_origin3f = { 0, 0, 0 };
+plVector4f_t pl_origin4f	= { 0, 0, 0, 0 };
 
 // Colours
 plColour_t pl_white		= { 1, 1, 1, 1 };
@@ -34,7 +34,7 @@ plColour_t pl_red		= { 1, 0, 0, 1 };
 plColour_t pl_green		= { 0, 1, 0, 1 };
 plColour_t pl_blue		= { 0, 0, 1, 1 };
 
-MathVector_t plVectorToAngles(MathVector3f_t vValue)
+MathVector_t plVectorToAngles(plVector3f_t vValue)
 {
 	float			fForward, fYaw, fPitch;
 	MathVector_t	mvResult;
@@ -66,7 +66,7 @@ MathVector_t plVectorToAngles(MathVector3f_t vValue)
 	return mvResult;
 }
 
-float plVectorToYaw(MathVectorf_t *vec)
+float plVectorToYaw(float *vec)
 {
 	float result;
 	if (vec[1] == 0 && vec[0] == 0)
@@ -88,7 +88,7 @@ float Math_AngleMod(float a)
 	return a;
 }
 
-MathVectorf_t plLengthf(MathVector3f_t a)
+float plLengthf(plVector3f_t a)
 {
 	float l = 0;
 	for (int i = 0; i<3; i++)
@@ -98,7 +98,7 @@ MathVectorf_t plLengthf(MathVector3f_t a)
 	return l;
 }
 
-MathVectord_t plLengthd(MathVector3d_t a)
+double plLengthd(plVector3d_t a)
 {
 	double l = 0;
 	for (int i = 0; i<3; i++)
@@ -108,29 +108,7 @@ MathVectord_t plLengthd(MathVector3d_t a)
 	return l;
 }
 
-double plVectorLength(MathVector3f_t a)
-{
-	double length = 0;
-	for (int i = 0; i< 3; i++)
-		length += a[i] * a[i];
-	length = sqrt(length);
-
-	return length;
-}
-
-MathVectorf_t plVectorNormalize(MathVector3f_t a)
-{
-	MathVectorf_t i, l = (MathVectorf_t)plVectorLength(a);
-	if (l)
-	{
-		i = 1.0f / l;
-		Math_VectorScale(a, i, a);
-	}
-
-	return l;
-}
-
-void plVectorNormalizeFast(MathVector3f_t vVector)
+void plVectorNormalizeFast(plVector3f_t vVector)
 {
 	float y, fNumber;
 
@@ -144,16 +122,7 @@ void plVectorNormalizeFast(MathVector3f_t vVector)
 	}
 }
 
-bool plVectorCompare(MathVector3f_t a, MathVector3f_t b)
-{
-	for (int i = 0; i < 3; i++)
-		if (a[i] != b[i])
-			return false;
-
-	return true;
-}
-
-void plAngleVectors(MathVector3f_t angles, MathVector3f_t forward, MathVector3f_t right, MathVector3f_t up)
+void plAngleVectors(plVector3f_t angles, plVector3f_t forward, plVector3f_t right, plVector3f_t up)
 {
 	float	angle, sr, sp, sy, cr, cp, cy;
 
@@ -187,9 +156,9 @@ void plAngleVectors(MathVector3f_t angles, MathVector3f_t forward, MathVector3f_
 	}
 }
 
-void Math_VectorAngles(const MathVector3f_t forward, MathVector3f_t angles)
+void Math_VectorAngles(const plVector3f_t forward, plVector3f_t angles)
 {
-	MathVector3f_t temp;
+	plVector3f_t temp;
 
 	temp[0] = forward[0];
 	temp[1] = forward[1];
@@ -200,59 +169,9 @@ void Math_VectorAngles(const MathVector3f_t forward, MathVector3f_t angles)
 	angles[ROLL] = 0;
 }
 
-MathVectorf_t Math_DotProduct(MathVector3f_t a, MathVector3f_t b)
+float Math_DotProduct(plVector3f_t a, plVector3f_t b)
 {
 	return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
-}
-
-void plVectorClear(MathVector3f_t out)
-{
-	out[0] = out[1] = out[2] = 0;
-}
-
-void plVectorSet3f(MathVector3f_t out, float x, float y, float z)
-{
-	out[0] = x; out[1] = y; out[2] = z;
-}
-
-void plVectorSet2f(plVector2f_t out, float a, float b)
-{
-	out[0] = a; out[1] = b;
-}
-
-void plVectorCopy(MathVector3f_t in, MathVector3f_t out)
-{
-	out[0] = in[0];
-	out[1] = in[1];
-	out[2] = in[2];
-}
-
-void plVectorScalef(MathVector3f_t in, float scale, MathVector3f_t out)
-{
-	out[0] = in[0] * scale;
-	out[1] = in[1] * scale;
-	out[2] = in[2] * scale;
-}
-
-void plVectorAdd3fv(MathVector3f_t in, MathVector3f_t add, MathVector3f_t out)
-{
-	out[0] = in[0] + add[0];
-	out[1] = in[1] + add[1];
-	out[2] = in[2] + add[2];
-}
-
-void plVectorSubtract3fv(MathVector3f_t in, MathVector3f_t subtract, MathVector3f_t out)
-{
-	out[0] = in[0] - subtract[0];
-	out[1] = in[1] - subtract[1];
-	out[2] = in[2] - subtract[2];
-}
-
-void plVectorMultiply3fv(MathVector3f_t in, MathVector3f_t multi, MathVector3f_t out)
-{
-	out[0] = in[0] * multi[0];
-	out[1] = in[1] * multi[1];
-	out[2] = in[2] * multi[2];
 }
 
 void Math_VectorMake(plVector3f_t veca, float scale, plVector3f_t vecb, plVector3f_t vecc)

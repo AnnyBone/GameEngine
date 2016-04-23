@@ -1020,7 +1020,7 @@ void vlDrawNormal3fv(plVector3f_t position)
 
 void vlDrawTexCoord2f(unsigned int target, float s, float t)
 {
-	plVectorSet2f(vl_draw_vertex->ST[target], s, t);
+	plVector2Set2f(vl_draw_vertex->ST[target], s, t);
 }
 
 void vlEndDraw(vlDraw_t *draw)

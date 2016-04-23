@@ -54,7 +54,7 @@ void Alias_SetupLighting(ClientEntity_t *entity)
 			Math_VectorSubtract(entity->origin, dlight->origin, distance);
 			Math_VectorCopy(dlight->color, alias_lightcolour);
 			Math_VectorSubtractValue(alias_lightcolour, (dlight->radius - plLengthf(distance)) / 1000.0f, alias_lightcolour);
-			Math_VectorScale(alias_lightcolour, 1.0f / 200.0f, alias_lightcolour);
+			plVectorScalef(alias_lightcolour, 1.0f / 200.0f, alias_lightcolour);
 			//Math_VectorDivide(alias_lightcolour, 0.3f, alias_lightcolour);
 
 
@@ -66,7 +66,7 @@ void Alias_SetupLighting(ClientEntity_t *entity)
 		else
 		{
 			Math_MVToVector(Light_GetSample(entity->origin), alias_lightcolour);
-			Math_VectorScale(alias_lightcolour, 1.0f / 200.0f, alias_lightcolour);
+			plVectorScalef(alias_lightcolour, 1.0f / 200.0f, alias_lightcolour);
 
 #if 0	// TODO: DO THIS ON A PER ENTITY BASIS, RATHER THAN PER MESH!!!!
 			VideoShader_SetVariable3f(iLightPositionUniform, entity->origin[0], entity->origin[1], entity->origin[2]);

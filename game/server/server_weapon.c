@@ -371,7 +371,7 @@ void Weapon_Projectile(ServerEntity_t *eOwner, ServerEntity_t *eProjectile, floa
 	Math_VectorScale(mvDirection, fVelocity, eProjectile->v.velocity);
 }
 
-void Weapon_BulletProjectile(ServerEntity_t *eEntity,float fSpread,int iDamage,MathVectorf_t *vDirection)
+void Weapon_BulletProjectile(ServerEntity_t *eEntity, float fSpread, int iDamage, float *vDirection)
 {
 	int	i;
 	MathVector3f_t vSource, vTarg;

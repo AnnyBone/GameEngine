@@ -112,7 +112,7 @@ Waypoint_t *AI::WaypointManager::Get(std::string name)
 
 void AI::WaypointManager::Remove(Waypoint_t *waypoint)
 {
-	for (unsigned int i; i < waypoints.size(); i++)
+	for (unsigned int i = 0; i < waypoints.size(); i++)
 	{
 		if (waypoints[i] == waypoint)
 		{
@@ -139,9 +139,9 @@ float AI::WaypointManager::GetDistance(Waypoint_t *waypoint, plVector3f_t positi
 
 void AI::WaypointManager::Simulate()
 {
-	for (auto &point : waypoints)
-	{
-	}
+//	for (auto &point : waypoints)
+//	{
+//	}
 }
 
 void AI::WaypointManager::Draw()

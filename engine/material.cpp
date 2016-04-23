@@ -583,7 +583,7 @@ void _Material_SetTextureType(Material_t *material, MaterialContext_t context, c
 void _Material_SetTextureScroll(Material_t *material, MaterialContext_t context, char *arg)
 {
 	MaterialSkin_t	*curskin;
-	MathVector2f_t	scroll;
+	plVector2f_t	scroll;
 
 	// Ensure there's the correct number of arguments being given.
 	if (sscanf(arg, "%f %f", &scroll[0], &scroll[1]) != 2)

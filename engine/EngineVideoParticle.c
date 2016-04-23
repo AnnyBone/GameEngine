@@ -101,7 +101,7 @@ void Particle_CreateEffect(
 
 					Math_VectorAdd(vOrigin, vDirection, pParticle->vOrigin);
 					plVectorNormalize(vDirection);
-					Math_VectorScale(vDirection, fVelocity, pParticle->vVelocity);
+					plVectorScalef(vDirection, fVelocity, pParticle->vVelocity);
 				}
 		break;
 	case PARTICLE_TYPE_TELEPORTSPLASH:

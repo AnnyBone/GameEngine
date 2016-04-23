@@ -83,7 +83,7 @@ typedef struct
 	void(*Server_PrecacheResource)(int iType, const char *ccResource);									// Precaches the specified resource.
 	void(*Server_Restart)(void);																		// Restarts the server.
 	void(*Server_ChangeLevel)(const char *ccNewLevel);													// Changes the level.
-	void(*Server_AmbientSound)(MathVectorf_t *vPosition, const char *cPath, int iVolume, int iAttenuation);		// Plays an ambient sound (a constant sound) from the given location.
+	void(*Server_AmbientSound)(float *vPosition, const char *cPath, int iVolume, int iAttenuation);		// Plays an ambient sound (a constant sound) from the given location.
 
 	trace_t(*Server_Move)(MathVector3f_t start, MathVector3f_t mins, MathVector3f_t maxs, MathVector3f_t end, int type, ServerEntity_t *passedict);
 
@@ -125,7 +125,7 @@ typedef struct
 	Particle_t		*(*Client_AllocateParticle)(void);	// Allocate a new particle effect.
 
 	// Global
-	MathVectorf_t	*(*GetLightSample)(MathVector3f_t vOrigin);	// Gets the current lightmap sample for the specified entity.
+	float*(*GetLightSample)(MathVector3f_t vOrigin);	// Gets the current lightmap sample for the specified entity.
 
 	bool(*Material_Precache)(const char *path);
 

@@ -79,7 +79,7 @@ typedef struct
 
 	bool	matrixmod;	// Modify texture matrix?
 
-	MathVector2f_t	scroll;
+	plVector2f_t	scroll;
 
 	float	fRotate, scale;
 
