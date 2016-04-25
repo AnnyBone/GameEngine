@@ -314,8 +314,8 @@ void Monster_NewChaseDirection(ServerEntity_t *ent, MathVector3f_t target, float
 {
 	float	deltax,deltay,d[3],tdir,olddir,turnaround;
 
-	olddir = Math_AngleMod((ent->v.ideal_yaw/45.0f)*45.0f);
-	turnaround = Math_AngleMod(olddir-180);
+	olddir = plAngleMod((ent->v.ideal_yaw / 45.0f)*45.0f);
+	turnaround = plAngleMod(olddir-180);
 
 	deltax	= target[0]-ent->v.origin[0];
 	deltay	= target[1]-ent->v.origin[1];

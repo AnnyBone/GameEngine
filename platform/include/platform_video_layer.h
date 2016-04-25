@@ -108,7 +108,36 @@ typedef struct vlDraw_s
 typedef unsigned int vlShaderProgram_t;
 typedef unsigned int vlShader_t;
 
+typedef enum vlUnformType_s
+{
+	VL_UNIFORM_FLOAT,
+	VL_UNIFORM_INT,
+	VL_UNIFORM_UINT,
+	VL_UNIFORM_BOOL,
+	VL_UNIFORM_DOUBLE,
+
+	// Vectors
+	VL_UNIFORM_VEC2,
+	VL_UNIFORM_VEC3,
+	VL_UNIFORM_VEC4,
+
+	// Matrices
+	VL_UNIFORM_MAT3,
+
+	VL_UNIFORM_END
+} vlUniformType_t;
+
+#if 1
 typedef int vlUniform_t;
+#else
+typedef struct vlUniform_s
+{
+	int location;	// Location within the shader.
+
+	vlUniformType_t type;	// Data type.
+} vlUniform_t;
+#endif
+
 typedef int vlAttribute_t;
 
 typedef enum

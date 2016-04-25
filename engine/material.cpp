@@ -36,7 +36,7 @@ bool material_initialized = false;
 
 Material_t	g_materials[MATERIAL_MAX];	// Global array.
 
-MaterialType_t	material_surface_types[]=
+MaterialType_t material_surface_types[]=
 {
 	{ MATERIAL_TYPE_NONE,		"default" },
 	{ MATERIAL_TYPE_METAL,		"metal" },
@@ -685,9 +685,11 @@ void _Material_SetAlphaTrick(Material_t *material, MaterialContext_t context, ch
 
 void _Material_SetShader(Material_t *material, MaterialContext_t context, char *arg)
 {
-	strncpy(material->skin[material->num_skins].shader.name, arg, sizeof(material->skin[material->num_skins].shader.name));
+	CoreShaderProgram *shader = g_shadermanager->GetProgram(arg);
+	if (!shader)
+		Sys_Error("Shader program isn't registered! (%s)\n", arg);
 
-	// TODO: set shader up correctly (ensure it's loaded, blah blah blah)
+	material->skin[material->num_skins].shader = shader;
 }
 
 // Universal Functions...

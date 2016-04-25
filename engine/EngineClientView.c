@@ -424,7 +424,7 @@ void View_PolyBlend(void)
 
 float angledelta (float a)
 {
-	a = Math_AngleMod(a);
+	a = plAngleMod(a);
 	if (a > 180)
 		a -= 360;
 

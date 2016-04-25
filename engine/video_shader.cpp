@@ -91,7 +91,7 @@ void ShaderManager::Clear()
 	programs.clear();
 }
 
-ShaderProgram *ShaderManager::Find(std::string name)
+ShaderProgram *ShaderManager::GetProgram(std::string name)
 {
 	auto program = programs.find(name);
 	if (program != programs.end())
@@ -264,6 +264,16 @@ void ShaderProgram::RegisterShader(std::string path, vlShaderType_t type)
 	Attach(shader_);
 }
 
+void ShaderProgram::RegisterUniform(std::string name, vlUniform_t location)
+{
+	// Ensure we don't have it registered already.
+	auto uniform = uniforms.find(name);
+	if (uniform == uniforms.end())
+		return;
+
+	uniforms.emplace(name, location);
+}
+
 void ShaderProgram::RegisterAttributes()
 {
 	// Register all the base attributes.
@@ -341,8 +351,13 @@ void ShaderProgram::SetAttributeVariable(int location, plVector3f_t vector)
 
 // Uniform Handling
 
-int ShaderProgram::GetUniformLocation(std::string name)
+vlUniform_t ShaderProgram::GetUniformLocation(std::string name)
 {
+	// See if we have it registered already.
+	auto uniform = uniforms.find(name);
+	if (uniform != uniforms.end())
+		return uniform->second;
+
 #ifdef VL_MODE_OPENGL
 	return glGetUniformLocation(instance, name.c_str());
 #else

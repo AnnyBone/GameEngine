@@ -19,6 +19,7 @@
 #pragma once
 
 #ifdef __cplusplus
+
 namespace Core
 {
 	class Shader
@@ -55,6 +56,8 @@ namespace Core
 		virtual void Initialize() = 0;
 
 		void RegisterShader(std::string path, vlShaderType_t type);
+		void RegisterUniform(std::string name, vlUniform_t location);
+		void RegisterAttribute(std::string name, vlUniform_t location);
 		virtual void RegisterAttributes();
 
 		void Attach(Core::Shader *shader);
@@ -74,22 +77,21 @@ namespace Core
 
 		void SetAttributeVariable(int location, plVector3f_t vector);
 
-		int GetUniformLocation(std::string name);
-		int GetAttributeLocation(std::string name);
+		vlUniform_t GetUniformLocation(std::string name);
+		vlUniform_t GetAttributeLocation(std::string name);
 
 		unsigned int GetInstance() { return instance; };
 
 	private:
 		bool isenabled;
 
-		std::vector<Core::Shader*> shaders;
+		std::vector<Core::Shader*>						shaders;
+		std::unordered_map<std::string, vlAttribute_t>	attributes;
+		std::unordered_map<std::string, vlUniform_t>	uniforms;
 
 		std::string name;
 
 		vlShaderProgram_t instance;
-
-		// Set of base attributes.
-		vlAttribute_t a_vertices;
 	};
 
 	class ShaderManager : public CoreManager
@@ -102,7 +104,8 @@ namespace Core
 		void Delete(ShaderProgram *_program);
 		void Delete(std::string name);
 		void Clear();
-		ShaderProgram *Find(std::string name);
+
+		ShaderProgram *GetProgram(std::string name);
 
 	private:
 		std::unordered_map<std::string, ShaderProgram*> programs;
@@ -111,10 +114,20 @@ namespace Core
 
 extern Core::ShaderManager *g_shadermanager;
 
-#define	SHADER_REGISTER_UNIFORM(name, def)	\
-	name = GetUniformLocation(#name);		\
-	SetUniformVariable(name, def)
+#define	SHADER_REGISTER_UNIFORM(name, def)		\
+	{											\
+		auto var = GetUniformLocation(#name);	\
+		RegisterUniform(#name, var);			\
+		SetUniformVariable(var, def);			\
+	}
 
-#define	SHADER_REGISTER_ATTRIBUTE(name, def)	\
-	name = GetAttributeLocation(#name);
+#define	SHADER_REGISTER_ATTRIBUTE(name, def)		\
+	{												\
+		auto var = GetAttributeLocation(#name);		\
+		RegisterAttribute(#name, var);				\
+	}
+
+// TODO: dumb hack because of C++ / C mixing!
+typedef Core::ShaderProgram CoreShaderProgram;
+
 #endif

@@ -70,7 +70,7 @@ void ChangeYaw(ServerEntity_t *ent)
 #if 0
 	float ideal,current,move,speed;
 
-	current	= Math_AngleMod(ent->v.angles[1]);
+	current	= plAngleMod(ent->v.angles[1]);
 	ideal	= ent->v.ideal_yaw;
 	speed	= ent->v.yaw_speed;
 
@@ -94,7 +94,7 @@ void ChangeYaw(ServerEntity_t *ent)
 	else if(move < -speed)
 		move = -speed;
 
-	ent->v.angles[1] = Math_AngleMod(current+move);
+	ent->v.angles[1] = plAngleMod(current+move);
 #endif
 }
 

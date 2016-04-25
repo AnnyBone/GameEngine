@@ -160,7 +160,7 @@ void Client_RelinkEntities(ClientEntity_t *entity, int i, double dTime)
 		entity->origin[2] += ((float)sin(Client.time*2.0f))*5.0f;
 
 	if (entity->effects & EF_MOTION_ROTATE)
-		entity->angles[YAW] = Math_AngleMod((float)(100.0*Client.time));
+		entity->angles[YAW] = plAngleMod((float)(100.0*Client.time));
 
 	if (entity->effects & EF_PARTICLE_SMOKE)
 		ClientEffect_Smoke(entity->origin);

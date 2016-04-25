@@ -80,7 +80,7 @@ void Chase_UpdateForDrawing (void)
 
 	// calculate camera angles to look at the same spot
 	Math_VectorSubtract(crosshair,r_refdef.vieworg,temp);
-	Math_VectorAngles (temp, r_refdef.viewangles);
+	plVectorAngles(temp, r_refdef.viewangles);
 	if (r_refdef.viewangles[PITCH] == 90 || r_refdef.viewangles[PITCH] == -90)
 		r_refdef.viewangles[YAW] = cl.viewangles[YAW];
 }

@@ -225,7 +225,7 @@ MathVector_t Weapon_Aim(ServerEntity_t *eEntity)
 	MathVector3f_t	mvStart, mvEnd, mvDirection, mvBestDirection;
 
 	// Copy the entity's origin as our starting position.
-	Math_VectorCopy(eEntity->v.origin, mvStart);
+	plVectorCopy(eEntity->v.origin, mvStart);
 
 	// Move the starting position up a little.
 	mvStart[2] += 20.0f;
@@ -233,7 +233,7 @@ MathVector_t Weapon_Aim(ServerEntity_t *eEntity)
 	Entity_MakeVectors(eEntity);
 
 	// Try tracing straight.
-	Math_VectorCopy(eEntity->local.vForward, mvDirection);
+	plVectorCopy(eEntity->local.vForward, mvDirection);
 	Math_VectorMA(mvStart, 2048.0f, mvDirection, mvEnd);
 
 	tAimLine = Engine.Server_Move(mvStart, pl_origin3f, pl_origin3f, mvEnd, 0, eEntity);
@@ -270,7 +270,7 @@ MathVector_t Weapon_Aim(ServerEntity_t *eEntity)
 		for (j = 0; j < 3; j++)
 			mvEnd[j] = eCheck->v.origin[j] + 0.5f * (eCheck->v.mins[j] + eCheck->v.maxs[j]);
 
-		Math_VectorSubtract(mvEnd, mvStart, mvDirection);
+		plVectorSubtract3fv(mvEnd, mvStart, mvDirection);
 		plVectorNormalize(mvDirection);
 
 		fDistance = Math_DotProduct(mvDirection, eEntity->local.vForward);
@@ -291,11 +291,11 @@ MathVector_t Weapon_Aim(ServerEntity_t *eEntity)
 
 	if (eBest)
 	{
-		Math_VectorSubtract(eBest->v.origin, eEntity->v.origin, mvDirection);
+		plVectorSubtract3fv(eBest->v.origin, eEntity->v.origin, mvDirection);
 
 		fDistance = Math_DotProduct(mvDirection, eEntity->local.vForward);
 
-		Math_VectorScale(eEntity->local.vForward, fDistance, mvEnd);
+		plVectorScalef(eEntity->local.vForward, fDistance, mvEnd);
 
 		mvEnd[2] = mvDirection[2];
 
@@ -330,7 +330,7 @@ bool Weapon_CheckTrace(ServerEntity_t *eOwner)
 	trace_t tCheck;
 
 	// Copy over the players origin.
-	Math_VectorCopy(eOwner->v.origin, mvSource);
+	plVectorCopy(eOwner->v.origin, mvSource);
 
 	// Update the origin to the correct view offset.
 	mvSource[2] += eOwner->v.view_ofs[2];
@@ -368,7 +368,7 @@ void Weapon_Projectile(ServerEntity_t *eOwner, ServerEntity_t *eProjectile, floa
 	Math_MVToVector(Weapon_Aim(eOwner), mvDirection);
 
 	// Scale with the speed and copy over the angled velocity.
-	Math_VectorScale(mvDirection, fVelocity, eProjectile->v.velocity);
+	plVectorScalef(mvDirection, fVelocity, eProjectile->v.velocity);
 }
 
 void Weapon_BulletProjectile(ServerEntity_t *eEntity, float fSpread, int iDamage, float *vDirection)
@@ -377,12 +377,12 @@ void Weapon_BulletProjectile(ServerEntity_t *eEntity, float fSpread, int iDamage
 	MathVector3f_t vSource, vTarg;
 	trace_t	tTrace;
 
-	Math_VectorCopy(eEntity->v.origin,vSource);
+	plVectorCopy(eEntity->v.origin,vSource);
 
 	vSource[2] += eEntity->v.view_ofs[2];
 
 	for(i = 0; i < 3; i++)
-		vTarg[i] = vSource[i]+(vDirection[i]*2048.0f)+(fSpread*Math_CRandom()*20.0f);
+		vTarg[i] = vSource[i]+(vDirection[i]*2048.0f)+(fSpread*plCRandom()*20.0f);
 
 	tTrace = Traceline(eEntity,vSource,vTarg,0);
 	if ((tTrace.fraction == 1.0f) || (Engine.Server_PointContents(tTrace.endpos) == BSP_CONTENTS_SKY))

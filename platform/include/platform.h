@@ -100,8 +100,6 @@
 #		pragma warning(disable : 4152)
 #		pragma warning(disable : 4800)	// 'type' : forcing value to bool 'true' or 'false' (performance warning)
 
-#		define pIGNORE_INTERNAL_STANDARD
-
 #		ifndef itoa
 #			define	itoa		_itoa
 #		endif
@@ -180,7 +178,7 @@
 #if defined(_MSC_VER)
 #	define PL_EXTERN	extern
 #	define PL_CALL		__stdcall
-#	define PL_INLINE	__forceinline
+#	define PL_INLINE	__inline
 
 	// MSVC doesn't support __func__
 #	define PL_FUNCTION	__FUNCTION__    // Returns the active function.

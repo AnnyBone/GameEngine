@@ -91,15 +91,15 @@ typedef struct
 	vlTextureEnvironmentMode_t env_mode;
 } MaterialTexture_t;
 
-typedef struct
-{
-	char name[128];
-} MaterialShader_t;
+#ifndef __cplusplus	// TODO: dumb hack because of C++ / C mixing!
+typedef struct CoreShaderProgram CoreShaderProgram;
+#endif
 
-typedef struct
+typedef struct MaterialSkin_s
 {
-	MaterialTexture_t	texture[VIDEO_MAX_UNITS];
-	MaterialShader_t	shader;
+	MaterialTexture_t texture[VIDEO_MAX_UNITS];
+
+	CoreShaderProgram *shader;	// Current shader.
 
 	unsigned int
 		uiFlags,		// Flags assigned for the current skin, affects how it's displayed/loaded.

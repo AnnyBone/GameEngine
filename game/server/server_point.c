@@ -812,11 +812,11 @@ void Point_ShakeThink (ServerEntity_t *eEntity)
 	{
 		if(!(eEnts->v.movetype == MOVETYPE_NONE) && !(eEnts->v.movetype == MOVETYPE_FLY))
 		{
-			eEnts->v.velocity[0] += Math_CRandom()*250;
-			eEnts->v.velocity[1] += Math_CRandom()*250;
+			eEnts->v.velocity[0] += plCRandom()*250;
+			eEnts->v.velocity[1] += plCRandom() * 250;
 
-			eEnts->v.punchangle[0] += Math_CRandom()*8;
-			eEnts->v.punchangle[2] += Math_CRandom()*8;
+			eEnts->v.punchangle[0] += plCRandom() * 8;
+			eEnts->v.punchangle[2] += plCRandom() * 8;
 
 			if(eEnts->v.flags & FL_ONGROUND)
 				eEnts->v.velocity[2] = eEntity->local.speed;
