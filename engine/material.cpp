@@ -823,11 +823,11 @@ void Material_CheckFunctions(Material_t *mNewMaterial)
 
 typedef struct
 {
-	const char					*key;
-	int							offset;
-	DataType_t					type;
-	MaterialContext_t			context;
-	void						(*Function)(Material_t *material, MaterialContext_t context, char *arg);
+	const char				*key;
+	int						offset;
+	DataType_t				type;
+	MaterialContext_t		context;
+	void					(*Function)(Material_t *material, MaterialContext_t context, char *arg);
 } MaterialFunction_t;
 
 MaterialFunction_t material_fixed_variables[] =

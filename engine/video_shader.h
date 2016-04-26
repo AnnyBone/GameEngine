@@ -34,8 +34,8 @@ namespace Core
 		void Enable();
 		void Disable();
 
-		unsigned int GetInstance();
-		vlShaderType_t GetType();
+		unsigned int GetInstance() { return instance; }
+		vlShaderType_t GetType() { return type; }
 
 	private:
 		unsigned int instance;
@@ -56,8 +56,7 @@ namespace Core
 		virtual void Initialize() = 0;
 
 		void RegisterShader(std::string path, vlShaderType_t type);
-		void RegisterUniform(std::string name, vlUniform_t location);
-		void RegisterAttribute(std::string name, vlUniform_t location);
+		
 		virtual void RegisterAttributes();
 
 		void Attach(Core::Shader *shader);
@@ -69,25 +68,27 @@ namespace Core
 
 		bool IsActive()	{ return (Video.current_program == instance); }
 
-		void SetUniformVariable(vlUniform_t location, float x, float y, float z);
-		void SetUniformVariable(vlUniform_t location, plVector3f_t vector);
-		void SetUniformVariable(vlUniform_t location, float x, float y, float z, float a);
-		void SetUniformVariable(vlUniform_t location, int i);
-		void SetUniformVariable(vlUniform_t location, float f);
+		vlUniform_t *RegisterUniform(std::string name, vlUniformType_t type);
+		void SetUniformVariable(vlUniform_t *uniform, float x, float y, float z);
+		void SetUniformVariable(vlUniform_t *uniform, plVector3f_t vector);
+		void SetUniformVariable(vlUniform_t *uniform, float x, float y, float z, float a);
+		void SetUniformVariable(vlUniform_t *uniform, int i);
+		void SetUniformVariable(vlUniform_t *uniform, float f);
+		int GetUniformLocation(std::string name);
+		vlUniform_t *GetUniform(std::string name);
 
+		void RegisterAttribute(std::string name, vlAttribute_t location);
 		void SetAttributeVariable(int location, plVector3f_t vector);
+		int GetAttributeLocation(std::string name);
 
-		vlUniform_t GetUniformLocation(std::string name);
-		vlUniform_t GetAttributeLocation(std::string name);
-
-		unsigned int GetInstance() { return instance; };
+		unsigned int GetInstance() { return instance; }
 
 	private:
 		bool isenabled;
 
 		std::vector<Core::Shader*>						shaders;
 		std::unordered_map<std::string, vlAttribute_t>	attributes;
-		std::unordered_map<std::string, vlUniform_t>	uniforms;
+		std::unordered_map<std::string, vlUniform_t*>	uniforms;
 
 		std::string name;
 
@@ -114,11 +115,10 @@ namespace Core
 
 extern Core::ShaderManager *g_shadermanager;
 
-#define	SHADER_REGISTER_UNIFORM(name, def)		\
-	{											\
-		auto var = GetUniformLocation(#name);	\
-		RegisterUniform(#name, var);			\
-		SetUniformVariable(var, def);			\
+#define	SHADER_REGISTER_UNIFORM(name, type, def)	\
+	{												\
+		name = RegisterUniform(#name, type);		\
+		SetUniformVariable(name, def);				\
 	}
 
 #define	SHADER_REGISTER_ATTRIBUTE(name, def)		\

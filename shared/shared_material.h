@@ -91,8 +91,14 @@ typedef struct
 	vlTextureEnvironmentMode_t env_mode;
 } MaterialTexture_t;
 
-#ifndef __cplusplus	// TODO: dumb hack because of C++ / C mixing!
+#ifdef __cplusplus	// TODO: dumb hack because of C++ / C mixing!
+
+// todo: C++ interface for this across shared codebase... blergh
+
+#else
+
 typedef struct CoreShaderProgram CoreShaderProgram;
+
 #endif
 
 typedef struct MaterialSkin_s

@@ -31,8 +31,6 @@ BaseShader::BaseShader() : ShaderProgram("base")
 
 void BaseShader::Initialize()
 {
-	Enable();
-
 	RegisterShader("base", VL_SHADER_VERTEX);
 	RegisterShader("base", VL_SHADER_FRAGMENT);
 
@@ -41,41 +39,37 @@ void BaseShader::Initialize()
 	RegisterAttributes();
 
 	// Textures
-	SHADER_REGISTER_UNIFORM(u_diffusemap, 0);
-	SHADER_REGISTER_UNIFORM(u_detailmap, 0);
-	SHADER_REGISTER_UNIFORM(u_fullbrightmap, 0);
-	SHADER_REGISTER_UNIFORM(u_spheremap, 0);
+	SHADER_REGISTER_UNIFORM(u_diffusemap, VL_UNIFORM_TEXTURE2D, 0);
+	SHADER_REGISTER_UNIFORM(u_detailmap, VL_UNIFORM_TEXTURE2D, 0);
+	SHADER_REGISTER_UNIFORM(u_fullbrightmap, VL_UNIFORM_TEXTURE2D, 0);
+	SHADER_REGISTER_UNIFORM(u_spheremap, VL_UNIFORM_TEXTURE2D, 0);
 	
 	// Alpha
-	SHADER_REGISTER_UNIFORM(u_alphaclamp, alpha_clamp);
-	SHADER_REGISTER_UNIFORM(u_alphatest, alpha_test);
+	SHADER_REGISTER_UNIFORM(u_alphaclamp, VL_UNIFORM_FLOAT, alpha_clamp);
+	SHADER_REGISTER_UNIFORM(u_alphatest, VL_UNIFORM_BOOL, alpha_test);
 
 	// Lighting
-	SHADER_REGISTER_UNIFORM(u_lightcolour, pl_white);
-	SHADER_REGISTER_UNIFORM(u_lightposition, pl_origin3f);
+	SHADER_REGISTER_UNIFORM(u_lightcolour, VL_UNIFORM_VEC4, pl_white);
+	SHADER_REGISTER_UNIFORM(u_lightposition, VL_UNIFORM_VEC3, pl_origin3f);
 
 	// Vertex scaling
-	SHADER_REGISTER_UNIFORM(u_vertexscale, 1.0f);
-
-	Disable();
+	SHADER_REGISTER_UNIFORM(u_vertexscale, VL_UNIFORM_FLOAT, 1.0f);
 }
 
 void BaseShader::EnableAlphaTest()
 {
-VIDEO_FUNCTION_START
 	if (alpha_test)
 		return;
-	SetUniformVariable(u_alphatest, 1);
+
 	alpha_test = true;
-VIDEO_FUNCTION_END
+	SetUniformVariable(u_alphatest, alpha_test);	
 }
 
 void BaseShader::DisableAlphaTest()
 {
-VIDEO_FUNCTION_START
 	if (!alpha_test)
 		return;
-	SetUniformVariable(u_alphatest, 0);
+
 	alpha_test = false;
-VIDEO_FUNCTION_END
+	SetUniformVariable(u_alphatest, alpha_test);
 }

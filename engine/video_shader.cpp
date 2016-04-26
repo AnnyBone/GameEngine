@@ -24,13 +24,6 @@
 #include "client/shader_base.h"
 #include "client/shader_water.h"
 
-/*
-	TODO:
-		Move all GL functionality over into VideoLayer.
-		Better tracking and error checking?
-		Evaluate whether the hardware supports shaders or not.
-*/
-
 using namespace Core;
 
 ShaderManager *g_shadermanager = nullptr;
@@ -38,13 +31,11 @@ ShaderManager *g_shadermanager = nullptr;
 ShaderManager::ShaderManager()
 {
 	Con_Printf("Initializing Shader Manager...\n");
-
+	
 	programs.reserve(16);
 
 	Add(new BaseShader(), "base");
-#if 0
 	Add(new WaterShader(), "water");
-#endif
 }
 
 ShaderManager::~ShaderManager()
@@ -57,7 +48,9 @@ void ShaderManager::Add(ShaderProgram *program, std::string name)
 	Con_Printf("Adding new shader: %s\n", name.c_str());
 
 	// todo: do we really want to do this here!?
+	program->Enable();
 	program->Initialize();
+	program->Disable();
 
 	programs.emplace(name, program);
 }
@@ -112,7 +105,6 @@ Shader::Shader(vlShaderType_t type) :
 bool Shader::Load(const char *path)
 {
 #ifdef VL_MODE_OPENGL
-	VIDEO_FUNCTION_START
 	// Check that the path is valid.
 	if (path[0] == ' ')
 	{
@@ -121,7 +113,7 @@ bool Shader::Load(const char *path)
 	}
 
 	// Ensure the type is valid.
-	if ((type != VL_SHADER_FRAGMENT) && (type != VL_SHADER_VERTEX))
+	if ((type <= VL_SHADER_START) || (type >= VL_SHADER_END))
 	{
 		Con_Warning("Invalid shader type! (%i) (%s)\n", path, type);
 		return false;
@@ -183,7 +175,6 @@ bool Shader::Load(const char *path)
 
 	// Everything worked out okay!
 	return true;
-	VIDEO_FUNCTION_END
 #else
 	return false;
 #endif
@@ -252,6 +243,16 @@ ShaderProgram::ShaderProgram(std::string _name) :
 
 ShaderProgram::~ShaderProgram()
 {
+	for (auto uniform = uniforms.begin(); uniform != uniforms.end(); ++uniform)
+		delete uniform->second;
+	uniforms.clear();
+
+#if 0
+	for (auto attribute = attributes.begin(); attribute != attributes.end(); ++attribute)
+		delete attribute->second;
+#endif
+	attributes.clear();
+
 	vlDeleteShaderProgram(&instance);
 }
 
@@ -262,16 +263,6 @@ void ShaderProgram::RegisterShader(std::string path, vlShaderType_t type)
 		throw Core::Exception("Failed to load shader! (%s)\n", path.c_str());
 
 	Attach(shader_);
-}
-
-void ShaderProgram::RegisterUniform(std::string name, vlUniform_t location)
-{
-	// Ensure we don't have it registered already.
-	auto uniform = uniforms.find(name);
-	if (uniform == uniforms.end())
-		return;
-
-	uniforms.emplace(name, location);
 }
 
 void ShaderProgram::RegisterAttributes()
@@ -351,13 +342,27 @@ void ShaderProgram::SetAttributeVariable(int location, plVector3f_t vector)
 
 // Uniform Handling
 
-vlUniform_t ShaderProgram::GetUniformLocation(std::string name)
+vlUniform_t *ShaderProgram::RegisterUniform(std::string name, vlUniformType_t type)
 {
-	// See if we have it registered already.
-	auto uniform = uniforms.find(name);
-	if (uniform != uniforms.end())
-		return uniform->second;
+	if (type >= VL_UNIFORM_END)
+		throw Core::Exception("Invalid unform type! (%s) (%i)\n", name.c_str(), type);
 
+	// Ensure we don't have it registered already.
+	auto uniform = uniforms.find(name);
+	if (uniform == uniforms.end())
+		return;
+
+	// Allocate a new uniform pointer.
+	vlUniform_t *uni = new vlUniform_t;
+	memset(uni, 0, sizeof(vlUniform_t));
+	uni->location	= GetUniformLocation(name);
+	uni->type		= type;
+	uniforms.emplace(name, uni);
+}
+
+// Retrieves the uniform location from the shader.
+int ShaderProgram::GetUniformLocation(std::string name)
+{
 #ifdef VL_MODE_OPENGL
 	return glGetUniformLocation(instance, name.c_str());
 #else
@@ -365,54 +370,67 @@ vlUniform_t ShaderProgram::GetUniformLocation(std::string name)
 #endif
 }
 
-void ShaderProgram::SetUniformVariable(int location, float x, float y, float z)
+vlUniform_t *ShaderProgram::GetUniform(std::string name)
 {
-#ifdef VL_MODE_OPENGL
+	// See if we have it registered already.
+	auto uniform = uniforms.find(name);
+	if (uniform != uniforms.end())
+		return uniform->second;
+
+	return nullptr;
+}
+
+void ShaderProgram::SetUniformVariable(vlUniform_t *uniform, float x, float y, float z)
+{
 	if (!IsActive())
 		Sys_Error("Ensure shader program is enabled before applying variables! (%i) (%i %i %i)\n",
-			location, (int)x, (int)y, (int)z);
-	
-	glUniform3f(location, x, y, z);
+		uniform->location, (int)x, (int)y, (int)z);
+
+#ifdef VL_MODE_OPENGL	
+	glUniform3f(uniform->location, x, y, z);
 #endif
 }
 
-void ShaderProgram::SetUniformVariable(int location, plVector3f_t vector)
+void ShaderProgram::SetUniformVariable(vlUniform_t *uniform, plVector3f_t vector)
 {
-#ifdef VL_MODE_OPENGL
 	if (!IsActive())
 		Sys_Error("Ensure shader program is enabled before applying variables! (%i) (%i %i %i)\n",
-			location, (int)vector[0], (int)vector[1], (int)vector[2]);
+		uniform->location, (int)vector[0], (int)vector[1], (int)vector[2]);
 
-	glUniform3fv(location, 3, vector);
+#ifdef VL_MODE_OPENGL
+	glUniform3fv(uniform->location, 3, vector);
 #endif
 }
 
-void ShaderProgram::SetUniformVariable(int location, float x, float y, float z, float a)
+void ShaderProgram::SetUniformVariable(vlUniform_t *uniform, float x, float y, float z, float a)
 {
-#ifdef VL_MODE_OPENGL
 	if (!IsActive())
 		Sys_Error("Ensure shader program is enabled before applying variables! (%i) (%i %i %i %i)\n",
-			location, (int)x, (int)y, (int)z, (int)a);
-	glUniform4f(location, x, y, z, a);
+		uniform->location, (int)x, (int)y, (int)z, (int)a);
+
+#ifdef VL_MODE_OPENGL
+	glUniform4f(uniform->location, x, y, z, a);
 #endif
 }
 
-void ShaderProgram::SetUniformVariable(int location, int i)
+void ShaderProgram::SetUniformVariable(vlUniform_t *uniform, int i)
 {
-#ifdef VL_MODE_OPENGL
 	if (!IsActive())
 		Sys_Error("Ensure shader program is enabled before applying variables! (%i) (%i)\n",
-			location, i);
-	glUniform1i(location, i);
+		uniform->location, i);
+
+#ifdef VL_MODE_OPENGL
+	glUniform1i(uniform->location, i);
 #endif
 }
 
-void ShaderProgram::SetUniformVariable(int location, float f)
+void ShaderProgram::SetUniformVariable(vlUniform_t *uniform, float f)
 {
-#ifdef VL_MODE_OPENGL
 	if (!IsActive())
 		Sys_Error("Ensure shader program is enabled before applying variables! (%i) (%i)\n",
-			location, (int)f);
-	glUniform1f(location, f);
+		uniform->location, (int)f);
+
+#ifdef VL_MODE_OPENGL
+	glUniform1f(uniform->location, f);
 #endif
 }

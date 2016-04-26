@@ -30,6 +30,24 @@ public:
 	void DisableAlphaTest();
 protected:
 private:
+
+	// Textures
+	vlUniform_t *u_diffusemap;
+	vlUniform_t *u_detailmap;
+	vlUniform_t *u_fullbrightmap;
+	vlUniform_t *u_spheremap;
+
+	// Alpha
+	vlUniform_t *u_alphaclamp;
+	vlUniform_t *u_alphatest;
+
+	// Lighting
+	vlUniform_t *u_lightcolour;
+	vlUniform_t *u_lightposition;
+
+	// Vertex scaling
+	vlUniform_t *u_vertexscale;
+
 	bool	alpha_test;
 	float	alpha_clamp;
 };

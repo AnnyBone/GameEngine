@@ -14,16 +14,20 @@ typedef unsigned int vlVertexArray_t;
 typedef unsigned int vlRenderBuffer_t;
 typedef unsigned int vlFrameBuffer_t;
 
-typedef enum
+typedef enum vlCullMode_s
 {
+	VL_CULL_START = -1,
+
 	VL_CULL_POSTIVE,
 	VL_CULL_NEGATIVE,
 
 	VL_CULL_END
 } vlCullMode_t;
 
-typedef enum
+typedef enum vlCapability_s
 {
+	VL_CAPABILITY_START = -1,
+
 	VL_CAPABILITY_FOG				= (1 << 0),	// Fog.
 	VL_CAPABILITY_ALPHA_TEST		= (1 << 1),	// Alpha-testing.
 	VL_CAPABILITY_BLEND				= (1 << 2), // Blending.
@@ -48,6 +52,8 @@ typedef enum
 // Texture Environment Modes
 typedef enum vlTextureEnvironmentMode_s
 {
+	VL_TEXTUREMODE_START = -1,
+
 	VIDEO_TEXTUREMODE_ADD,
 	VIDEO_TEXTUREMODE_MODULATE,
 	VIDEO_TEXTUREMODE_DECAL,
@@ -55,7 +61,7 @@ typedef enum vlTextureEnvironmentMode_s
 	VIDEO_TEXTUREMODE_REPLACE,
 	VIDEO_TEXTUREMODE_COMBINE,
 
-	VIDEO_TEXTUREMODE_END
+	VL_TEXTUREMODE_END
 } vlTextureEnvironmentMode_t;
 
 //-----------------
@@ -110,11 +116,20 @@ typedef unsigned int vlShader_t;
 
 typedef enum vlUnformType_s
 {
+	VL_UNIFORM_START = -1,
+
 	VL_UNIFORM_FLOAT,
 	VL_UNIFORM_INT,
 	VL_UNIFORM_UINT,
 	VL_UNIFORM_BOOL,
 	VL_UNIFORM_DOUBLE,
+
+	// Textures
+	VL_UNIFORM_TEXTURE1D,
+	VL_UNIFORM_TEXTURE2D,
+	VL_UNIFORM_TEXTURE3D,
+	VL_UNIFORM_TEXTURECUBE,
+	VL_UNIFORM_TEXTUREBUFFER,
 
 	// Vectors
 	VL_UNIFORM_VEC2,
@@ -127,7 +142,7 @@ typedef enum vlUnformType_s
 	VL_UNIFORM_END
 } vlUniformType_t;
 
-#if 1
+#if 0
 typedef int vlUniform_t;
 #else
 typedef struct vlUniform_s
@@ -142,6 +157,8 @@ typedef int vlAttribute_t;
 
 typedef enum
 {
+	VL_SHADER_START = -1,
+
 	VL_SHADER_FRAGMENT,
 	VL_SHADER_VERTEX,
 	VL_SHADER_GEOMETRY,

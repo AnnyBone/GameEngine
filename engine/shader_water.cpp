@@ -38,19 +38,21 @@ void WaterShader::Initialize()
 
 	Link();
 
-	SHADER_REGISTER_UNIFORM(u_diffusemap, 0);
-	SHADER_REGISTER_UNIFORM(u_normalmap, 0);
-	SHADER_REGISTER_UNIFORM(u_time, 0);
+	RegisterAttributes();
+
+	// Textures
+	SHADER_REGISTER_UNIFORM(u_diffusemap, VL_UNIFORM_TEXTURE2D, 0);
+	SHADER_REGISTER_UNIFORM(u_normalmap, VL_UNIFORM_TEXTURE2D, 0);
+
+	SHADER_REGISTER_UNIFORM(u_time, VL_UNIFORM_FLOAT, 0);
 }
 
 void WaterShader::SetTime(float curtime)
 {
-VIDEO_FUNCTION_START
 	static float time = 0;
 	if (curtime == time)
 		return;
 	SetUniformVariable(u_time, curtime);
 	time = curtime;
-VIDEO_FUNCTION_END
 }
 

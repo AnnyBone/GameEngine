@@ -54,7 +54,7 @@ extern "C" unsigned int		key_linepos;
 bool g_consoleinitialized;
 
 /* Singleton console instance. */
-Core::Console *con_instance = NULL;
+Core::Console *con_instance = nullptr;
 
 Core::Console::Console():
 	cursor_x(0),
