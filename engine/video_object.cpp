@@ -30,7 +30,7 @@ void Draw_StaticEntity(ClientEntity_t *entity)
 
 	R_RotateForEntity(entity->origin, entity->angles);
 
-	Core::ShaderProgram *sp_base = g_shadermanager->Find("base");
+	Core::ShaderProgram *sp_base = g_shadermanager->GetProgram("base");
 	if (sp_base)
 	{
 		sp_base->Enable();

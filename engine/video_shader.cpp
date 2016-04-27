@@ -215,18 +215,6 @@ bool Shader::CheckCompileStatus()
 #endif
 }
 
-// Information
-
-unsigned int Shader::GetInstance()
-{
-	return instance;
-}
-
-vlShaderType_t Shader::GetType()
-{
-	return type;
-}
-
 /*
 	Shader Program
 */
@@ -350,7 +338,7 @@ vlUniform_t *ShaderProgram::RegisterUniform(std::string name, vlUniformType_t ty
 	// Ensure we don't have it registered already.
 	auto uniform = uniforms.find(name);
 	if (uniform == uniforms.end())
-		return;
+		return uniform->second;
 
 	// Allocate a new uniform pointer.
 	vlUniform_t *uni = new vlUniform_t;
@@ -358,6 +346,8 @@ vlUniform_t *ShaderProgram::RegisterUniform(std::string name, vlUniformType_t ty
 	uni->location	= GetUniformLocation(name);
 	uni->type		= type;
 	uniforms.emplace(name, uni);
+
+	return uni;
 }
 
 // Retrieves the uniform location from the shader.

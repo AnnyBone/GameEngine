@@ -560,6 +560,9 @@
     <ClInclude Include="EngineImage.h">
       <Filter>Client</Filter>
     </ClInclude>
+    <ClInclude Include="..\shared\shared_client_shader.h">
+      <Filter>Shared</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="engine.rc" />

@@ -22,7 +22,7 @@
 
 namespace Core
 {
-	class Shader
+	class Shader : public IShader
 	{
 	public:
 		Shader(vlShaderType_t type);
@@ -47,7 +47,7 @@ namespace Core
 		int			source_length;
 	};
 
-	class ShaderProgram
+	class ShaderProgram : public IShaderProgram
 	{
 	public:
 		ShaderProgram(std::string name);
@@ -126,8 +126,5 @@ extern Core::ShaderManager *g_shadermanager;
 		auto var = GetAttributeLocation(#name);		\
 		RegisterAttribute(#name, var);				\
 	}
-
-// TODO: dumb hack because of C++ / C mixing!
-typedef Core::ShaderProgram CoreShaderProgram;
 
 #endif

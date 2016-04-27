@@ -705,6 +705,7 @@
     <ClInclude Include="..\shared\format_u3d.h" />
     <ClInclude Include="..\shared\shared_client.h" />
     <ClInclude Include="..\shared\shared_client_effect.h" />
+    <ClInclude Include="..\shared\shared_client_shader.h" />
     <ClInclude Include="..\shared\shared_editor.h" />
     <ClInclude Include="..\shared\shared_engine.h" />
     <ClInclude Include="..\shared\shared_flags.h" />
