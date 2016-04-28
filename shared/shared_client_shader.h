@@ -28,23 +28,28 @@ namespace Core
 		virtual bool Load(const char *path) = 0;
 		virtual bool CheckCompileStatus() = 0;
 
-		virtual void Enable() = 0;
-		virtual void Disable() = 0;
+		virtual unsigned int GetInstance() = 0;
+
+		virtual vlShaderType_t GetType() = 0;
 	};
 
 	class IShaderProgram
 	{
 	public:
 		virtual void Initialize() = 0;
+
 		virtual void RegisterShader(std::string, vlShaderType_t) = 0;
 		virtual void RegisterAttributes() = 0;
+		virtual void Link() = 0;
 
 		virtual void Enable() = 0;
 		virtual void Disable() = 0;
-		virtual void Link() = 0;
+
 		virtual void Shutdown() = 0;
 
 		virtual bool IsActive() = 0;
+
+		virtual unsigned int GetInstance() = 0;
 	};
 }
 

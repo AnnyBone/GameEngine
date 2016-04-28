@@ -91,7 +91,7 @@ typedef struct
 	vlTextureEnvironmentMode_t env_mode;
 } MaterialTexture_t;
 
-#include "shared_client_shader.h"
+#include "./shared_client_shader.h"
 
 typedef struct MaterialSkin_s
 {
