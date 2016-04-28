@@ -1,11 +1,10 @@
 debug_shader
 {
-	$skin
+	$skin base
     {
-		$shader base
-	
-		$map "textures/hmirror"
-		{
-		}
+		$scroll "0.1 0.2"
+		
+		%u_diffuse "foo"
+		%u_normal "bar"
     }
 }

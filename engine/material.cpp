@@ -428,8 +428,21 @@ void _Material_SetAnimationSpeed(Material_t *mCurrentMaterial, MaterialContext_t
 
 // Skin Functions...
 
-void _Material_AddSkin(Material_t *mCurrentMaterial, MaterialContext_t mftContext, char *cArg)
+void _Material_ParseSkin(Material_t *material, MaterialContext_t mftContext, char *args)
 {
+	MaterialSkin_t *skin = Material_GetSkin(material, material->num_skins);
+
+	CoreShaderProgram *program = nullptr;
+	if (Script_GetToken(false))
+	{
+		program = g_shadermanager->GetProgram(args);
+		if (!program)
+			Sys_Error("Shader program isn't registered! (%s)\n", args);
+
+		// Update the skin to use the given shader.
+		skin->program = program;
+	}
+
 	// Proceed to the next line.
 	Script_GetToken(true);
 
@@ -439,7 +452,7 @@ void _Material_AddSkin(Material_t *mCurrentMaterial, MaterialContext_t mftContex
 		{
 			if (!Script_GetToken(true))
 			{
-				Con_Warning("End of field without closing brace! (%s) (%i)\n", mCurrentMaterial->cPath, iScriptLine);
+				Con_Warning("End of field without closing brace! (%s) (%i)\n", material->cPath, iScriptLine);
 				break;
 			}
 
@@ -447,68 +460,18 @@ void _Material_AddSkin(Material_t *mCurrentMaterial, MaterialContext_t mftContex
 
 			if (cToken[0] == '}')
 			{
-				mCurrentMaterial->num_skins++;
+				material->num_skins++;
 				break;
 			}
 			// '$' declares that the following is a function.
 			else if (cToken[0] == SCRIPT_SYMBOL_FUNCTION)
-				Material_CheckFunctions(mCurrentMaterial);
+				Material_CheckFunctions(material);
 			// '%' declares that the following is a variable.
 			else if (cToken[0] == SCRIPT_SYMBOL_VARIABLE)
 			{
-				/*	TODO:
-				* Collect variable
-				* Check it against internal solutions
-				* Otherwise declare it, figure out where/how it's used
-				*/
-			}
-			else
-			{
-				Con_Warning("Invalid field! (%s) (%i)\n", mCurrentMaterial->cPath, iScriptLine);
-				break;
-			}
-		}
-	}
-	else
-		Con_Warning("Invalid skin, no opening brace! (%s) (%i)\n", mCurrentMaterial->cPath, iScriptLine);
-}
+				if (!program)
+					continue;
 
-// Shader Functions
-
-void Material_ParseShader(Material_t *mat, MaterialContext_t context, char *args)
-{
-	CoreShaderProgram *program = g_shadermanager->GetProgram(args);
-	if (!program)
-		Sys_Error("Shader program isn't registered! (%s)\n", args);
-
-	// Update the skin to use the given shader.
-	MaterialSkin_t *skin = Material_GetSkin(mat, mat->num_skins);
-	skin->program = program;
-
-	// Get following line.
-	Script_GetToken(true);
-
-	if (cToken[0] == '{')
-	{
-		// Update state.
-		material_currentcontext = MATERIAL_CONTEXT_SHADER;
-
-		for (;;)
-		{
-			if (!Script_GetToken(true))
-			{
-				Con_Warning("End of field without closing brace! (%s) (%i)\n", mat->cPath, iScriptLine);
-				break;
-			}
-
-			if (cToken[0] == '}')
-				break;
-			// '$' declares that the following is a function.
-			else if (cToken[0] == SCRIPT_SYMBOL_FUNCTION)
-				Material_CheckFunctions(mat);
-			// '%' declares that the following is a variable.
-			else if (cToken[0] == SCRIPT_SYMBOL_VARIABLE)
-			{
 				vlUniform_t *var = program->GetUniform(cToken + 1);
 				if (!var)
 				{
@@ -550,7 +513,7 @@ void Material_ParseShader(Material_t *mat, MaterialContext_t context, char *args
 						texture->env_mode = VIDEO_TEXTUREMODE_MODULATE;
 					texture->scale = 1;
 
-					texture->gMap = Material_LoadTexture(mat, skin, cToken);
+					texture->gMap = Material_LoadTexture(material, skin, cToken);
 					skin->num_textures++;
 				}
 				case VL_UNIFORM_UINT:
@@ -589,13 +552,13 @@ void Material_ParseShader(Material_t *mat, MaterialContext_t context, char *args
 			}
 			else
 			{
-				Con_Warning("Invalid field! (%s) (%i)\n", mat->cPath, iScriptLine);
+				Con_Warning("Invalid field! (%s) (%i)\n", material->cPath, iScriptLine);
 				break;
 			}
 		}
 	}
 	else
-		Con_Warning("Invalid shader, no opening brace! (%s) (%i)\n", mat->cPath, iScriptLine);
+		Con_Warning("Invalid skin, no opening brace! (%s) (%i)\n", material->cPath, iScriptLine);
 }
 
 // Texture Functions...
@@ -887,11 +850,10 @@ MaterialKey_t material_fixed_functions[]=
 	{ "override_wireframe", _Material_SetWireframe, MATERIAL_CONTEXT_GLOBAL },
 	{ "override_lightmap", _Material_SetLightmap, MATERIAL_CONTEXT_GLOBAL },
 	{ "animation_speed", _Material_SetAnimationSpeed, MATERIAL_CONTEXT_GLOBAL },
-	{ "skin", _Material_AddSkin, MATERIAL_CONTEXT_GLOBAL },
+	{ "skin", _Material_ParseSkin, MATERIAL_CONTEXT_GLOBAL },
 	{ "alpha", _Material_SetAlpha, MATERIAL_CONTEXT_GLOBAL },
 
 	// Skin
-	{ "shader", Material_ParseShader, MATERIAL_CONTEXT_SKIN },
 	{ "map", _Material_AddTexture, MATERIAL_CONTEXT_SKIN },
 	{ "texture", _Material_AddTexture, MATERIAL_CONTEXT_SKIN },
 	{ "additive", _Material_SetAdditive, MATERIAL_CONTEXT_SKIN },
