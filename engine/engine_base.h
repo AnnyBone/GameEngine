@@ -36,8 +36,7 @@
 #	pragma warning(disable:4305)
 #endif
 
-//	Build needs to be updated each day that work is done on the engine.
-#define ENGINE_VERSION_BUILD	1152	// 22/04/2016
+#include "engine_build.h"
 
 #define	ENGINE_LOG	"engine"
 

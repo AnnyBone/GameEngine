@@ -724,6 +724,7 @@
     <ClInclude Include="client\effect_sprite.h" />
     <ClInclude Include="client\shader_base.h" />
     <ClInclude Include="client\shader_water.h" />
+    <ClInclude Include="engine_build.h" />
     <ClInclude Include="engine_class.h" />
     <ClInclude Include="EngineClientTempEntity.h" />
     <ClInclude Include="EngineConsoleCommand.h" />

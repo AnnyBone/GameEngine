@@ -31,9 +31,6 @@ namespace Core
 		bool Load(const char *path);
 		bool CheckCompileStatus();
 
-		void Enable();
-		void Disable();
-
 		unsigned int GetInstance() { return instance; }
 		vlShaderType_t GetType() { return type; }
 
@@ -77,7 +74,7 @@ namespace Core
 		int GetUniformLocation(std::string name);
 		vlUniform_t *GetUniform(std::string name);
 
-		void RegisterAttribute(std::string name, vlAttribute_t location);
+		void RegisterAttribute(std::string name, int location);
 		void SetAttributeVariable(int location, plVector3f_t vector);
 		int GetAttributeLocation(std::string name);
 

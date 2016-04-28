@@ -35,7 +35,7 @@ ShaderManager::ShaderManager()
 	programs.reserve(16);
 
 	Add(new BaseShader(), "base");
-	Add(new WaterShader(), "water");
+	//Add(new WaterShader(), "water");
 }
 
 ShaderManager::~ShaderManager()
@@ -256,32 +256,31 @@ void ShaderProgram::RegisterShader(std::string path, vlShaderType_t type)
 void ShaderProgram::RegisterAttributes()
 {
 	// Register all the base attributes.
-	SHADER_REGISTER_ATTRIBUTE(a_vertices, 0);
+	RegisterAttribute("a_vertcies", GetAttributeLocation("a_vertices"));
+}
+
+void ShaderProgram::RegisterAttribute(std::string name, int location)
+{
+	// todo
 }
 
 void ShaderProgram::Attach(Shader *shader)
 {
-	VIDEO_FUNCTION_START
 	if (!shader)
 		throw Core::Exception("Attempted to attach an invalid shader!\n");
 
 	vlAttachShader(instance, shader->GetInstance());
 	shaders.push_back(shader);
-	VIDEO_FUNCTION_END
 }
 
 void ShaderProgram::Enable()
 {
-	VIDEO_FUNCTION_START
 	vlUseShaderProgram(instance);
-	VIDEO_FUNCTION_END
 }
 
 void ShaderProgram::Disable()
 {
-	VIDEO_FUNCTION_START
 	vlUseShaderProgram(0);
-	VIDEO_FUNCTION_END
 }
 
 void ShaderProgram::Draw(vlDraw_t *object)
@@ -337,7 +336,7 @@ vlUniform_t *ShaderProgram::RegisterUniform(std::string name, vlUniformType_t ty
 
 	// Ensure we don't have it registered already.
 	auto uniform = uniforms.find(name);
-	if (uniform == uniforms.end())
+	if (uniform != uniforms.end())
 		return uniform->second;
 
 	// Allocate a new uniform pointer.
