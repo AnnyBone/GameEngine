@@ -97,7 +97,7 @@ typedef struct MaterialSkin_s
 {
 	MaterialTexture_t texture[VIDEO_MAX_UNITS];
 
-	CoreShaderProgram *shader;	// Current shader.
+	CoreShaderProgram *program;	// Current shader.
 
 	unsigned int
 		uiFlags,		// Flags assigned for the current skin, affects how it's displayed/loaded.

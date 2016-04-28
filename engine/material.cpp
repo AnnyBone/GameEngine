@@ -245,15 +245,13 @@ Material_t *Material_Get(int iMaterialID)
 */
 Material_t *Material_GetByName(const char *ccMaterialName)
 {
-	int i;
-
 	if(ccMaterialName[0] == ' ')
 	{
 		Con_Warning("Attempted to find material, but recieved invalid material name!\n");
 		return NULL;
 	}
 
-	for (i = 0; i < material_count; i++)
+	for (int i = 0; i < material_count; i++)
 		// If the material has no name, then it's not valid.
 		if (g_materials[i].cName[0])
 			if (!strncmp(g_materials[i].cName, ccMaterialName, sizeof(g_materials[i].cName)))
@@ -264,15 +262,13 @@ Material_t *Material_GetByName(const char *ccMaterialName)
 
 Material_t *Material_GetByPath(const char *ccPath)
 {
-	int i;
-
 	if(ccPath[0] == ' ')
 	{
 		Con_Warning("Attempted to find material, but recieved invalid path!\n");
 		return NULL;
 	}
 	
-	for (i = 0; i < material_count; i++)
+	for (int i = 0; i < material_count; i++)
 		if (g_materials[i].cPath[0])
 			if (!strncmp(g_materials[i].cPath, ccPath, sizeof(g_materials[i].cPath)))
 				return &g_materials[i];
@@ -307,11 +303,11 @@ gltexture_t *Material_LoadTexture(Material_t *mMaterial, MaterialSkin_t *mCurren
 	if (etex)
 #ifdef _DEBUG	// Debugging
 	{
-		Con_Printf("Found already existing texture (%s) (%s)\n", etex->name, mMaterial->cPath);
+		Con_DPrintf("Texture already cached (%s) (%s)\n", etex->name, mMaterial->cPath);
 		return etex;
 	}
 #else
-		return etex;
+	return etex;
 #endif
 
 	uint8_t *tex = Image_LoadImage(cArg,
@@ -324,7 +320,6 @@ gltexture_t *Material_LoadTexture(Material_t *mMaterial, MaterialSkin_t *mCurren
 		// Warn about incorrect sizes.
 		if ((mCurrentSkin->texture[mCurrentSkin->num_textures].uiWidth % 2) || (mCurrentSkin->texture[mCurrentSkin->num_textures].uiHeight % 2))
 		{
-
 			Con_Warning("Texture size is not multiple of 2! (%s) (%ix%i)\n", cArg,
 				mCurrentSkin->texture[mCurrentSkin->num_textures].uiWidth,
 				mCurrentSkin->texture[mCurrentSkin->num_textures].uiHeight);
@@ -362,6 +357,7 @@ typedef enum
 	MATERIAL_CONTEXT_GLOBAL,		// Material
 	MATERIAL_CONTEXT_SKIN,			// Skin
 	MATERIAL_CONTEXT_TEXTURE,		// Texture
+	MATERIAL_CONTEXT_SHADER,		// Shader
 } MaterialContext_t;
 MaterialContext_t material_currentcontext;	// Indicates that any settings applied are global.
 
@@ -477,6 +473,131 @@ void _Material_AddSkin(Material_t *mCurrentMaterial, MaterialContext_t mftContex
 		Con_Warning("Invalid skin, no opening brace! (%s) (%i)\n", mCurrentMaterial->cPath, iScriptLine);
 }
 
+// Shader Functions
+
+void Material_ParseShader(Material_t *mat, MaterialContext_t context, char *args)
+{
+	CoreShaderProgram *program = g_shadermanager->GetProgram(args);
+	if (!program)
+		Sys_Error("Shader program isn't registered! (%s)\n", args);
+
+	// Update the skin to use the given shader.
+	MaterialSkin_t *skin = Material_GetSkin(mat, mat->num_skins);
+	skin->program = program;
+
+	// Get following line.
+	Script_GetToken(true);
+
+	if (cToken[0] == '{')
+	{
+		// Update state.
+		material_currentcontext = MATERIAL_CONTEXT_SHADER;
+
+		for (;;)
+		{
+			if (!Script_GetToken(true))
+			{
+				Con_Warning("End of field without closing brace! (%s) (%i)\n", mat->cPath, iScriptLine);
+				break;
+			}
+
+			if (cToken[0] == '}')
+				break;
+			// '$' declares that the following is a function.
+			else if (cToken[0] == SCRIPT_SYMBOL_FUNCTION)
+				Material_CheckFunctions(mat);
+			// '%' declares that the following is a variable.
+			else if (cToken[0] == SCRIPT_SYMBOL_VARIABLE)
+			{
+				vlUniform_t *var = program->GetUniform(cToken + 1);
+				if (!var)
+				{
+					Con_Warning("Invalid shader uniform! (%s) (%i)\n", cToken, iScriptLine);
+					continue;
+				}
+
+				Script_GetToken(false);
+
+				switch (var->type)
+				{
+				case VL_UNIFORM_DOUBLE:
+					program->SetUniformVariable(var, std::strtod(cToken, NULL));
+					break;
+				case VL_UNIFORM_FLOAT:
+					program->SetUniformVariable(var, std::strtof(cToken, NULL));
+					break;
+				case VL_UNIFORM_BOOL:
+				{
+					bool _val = false;
+					if (!strncmp(cToken, "true", sizeof(cToken)))
+						_val = true;
+					else if (strncmp(cToken, "false", sizeof(cToken)))
+						Con_Warning("Invalid value returned for boolean! (%s) (%i)\n", cToken, iScriptLine);
+					program->SetUniformVariable(var, _val);
+				}
+				case VL_UNIFORM_INT:
+					program->SetUniformVariable(var, std::atoi(cToken));
+					break;
+				case VL_UNIFORM_TEXTURE2D:
+				{
+					program->SetUniformVariable(var, skin->num_textures);
+
+					MaterialTexture_t *texture = &skin->texture[skin->num_textures];
+					memset(texture, 0, sizeof(MaterialTexture_t));
+					if (skin->num_textures > 0) // If we have more textures, use decal mode.
+						texture->env_mode = VIDEO_TEXTUREMODE_DECAL;
+					else // By default textures are modulated... Inherited Quake behaviour, yay.
+						texture->env_mode = VIDEO_TEXTUREMODE_MODULATE;
+					texture->scale = 1;
+
+					texture->gMap = Material_LoadTexture(mat, skin, cToken);
+					skin->num_textures++;
+				}
+				case VL_UNIFORM_UINT:
+				{
+					unsigned int _val = std::strtoul(cToken, NULL, 0);
+					program->SetUniformVariable(var, _val);
+				}
+				break;
+				case VL_UNIFORM_VEC2:
+				{
+					plVector2f_t vec = { 0 };
+					if (sscanf(cToken, "%f %f", &vec[0], &vec[1]) < 2)
+						Con_Warning("Field did not return expected number of arguments! (%s) (%i)\n", cToken, iScriptLine);
+					program->SetUniformVariable(var, vec);
+				}
+				break;
+				case VL_UNIFORM_VEC3:
+				{
+					plVector3f_t vec = { 0 };
+					if (sscanf(cToken, "%f %f %f", &vec[0], &vec[1], &vec[2]) < 3)
+						Con_Warning("Field did not return expected number of arguments! (%s) (%i)\n", cToken, iScriptLine);
+					program->SetUniformVariable(var, vec);
+				}
+				break;
+				case VL_UNIFORM_VEC4:
+				{
+					plVector4f_t vec = { 0 };
+					if (sscanf(cToken, "%f %f %f %f", &vec[0], &vec[1], &vec[2], &vec[3]) < 4)
+						Con_Warning("Field did not return expected number of arguments! (%s) (%i)\n", cToken, iScriptLine);
+					program->SetUniformVariable(var, vec);
+				}
+				break;
+				default:
+					Con_Warning("Unsupported or invalid data type! (%s) (%i)\n", cToken, iScriptLine);
+				}
+			}
+			else
+			{
+				Con_Warning("Invalid field! (%s) (%i)\n", mat->cPath, iScriptLine);
+				break;
+			}
+		}
+	}
+	else
+		Con_Warning("Invalid shader, no opening brace! (%s) (%i)\n", mat->cPath, iScriptLine);
+}
+
 // Texture Functions...
 
 void _Material_AddTexture(Material_t *material, MaterialContext_t mftContext, char *cArg)
@@ -504,6 +625,9 @@ void _Material_AddTexture(Material_t *material, MaterialContext_t mftContext, ch
 
 	if (cToken[0] == '{')
 	{
+		// Update state.
+		material_currentcontext = MATERIAL_CONTEXT_TEXTURE;
+
 		for (;;)
 		{
 			if (!Script_GetToken(true))
@@ -511,9 +635,6 @@ void _Material_AddTexture(Material_t *material, MaterialContext_t mftContext, ch
 				Con_Warning("End of field without closing brace! (%s) (%i)\n", material->cPath, iScriptLine);
 				break;
 			}
-
-			// Update state.
-			material_currentcontext = MATERIAL_CONTEXT_TEXTURE;
 
 			if (cToken[0] == '}')
 			{
@@ -542,7 +663,7 @@ void _Material_AddTexture(Material_t *material, MaterialContext_t mftContext, ch
 	}
 	else
 #if 1
-		Con_Warning("Invalid skin, no opening brace! (%s) (%i)\n", material->cPath, iScriptLine);
+		Con_Warning("Invalid texture, no opening brace! (%s) (%i)\n", material->cPath, iScriptLine);
 #else
 	{
 		msSkin->texture[msSkin->num_textures].gMap = Material_LoadTexture(mCurrentMaterial, msSkin, cTexturePath);
@@ -683,15 +804,6 @@ void _Material_SetAlphaTrick(Material_t *material, MaterialContext_t context, ch
 		material->skin[material->num_skins].uiFlags &= ~MATERIAL_FLAG_ALPHATRICK;
 }
 
-void _Material_SetShader(Material_t *material, MaterialContext_t context, char *arg)
-{
-	CoreShaderProgram *shader = g_shadermanager->GetProgram(arg);
-	if (!shader)
-		Sys_Error("Shader program isn't registered! (%s)\n", arg);
-
-	material->skin[material->num_skins].shader = shader;
-}
-
 // Universal Functions...
 
 typedef struct
@@ -779,13 +891,15 @@ MaterialKey_t material_fixed_functions[]=
 	{ "alpha", _Material_SetAlpha, MATERIAL_CONTEXT_GLOBAL },
 
 	// Skin
-	{ "shader", _Material_SetShader, MATERIAL_CONTEXT_SKIN },
+	{ "shader", Material_ParseShader, MATERIAL_CONTEXT_SKIN },
 	{ "map", _Material_AddTexture, MATERIAL_CONTEXT_SKIN },
 	{ "texture", _Material_AddTexture, MATERIAL_CONTEXT_SKIN },
 	{ "additive", _Material_SetAdditive, MATERIAL_CONTEXT_SKIN },
 	{ "blend", _Material_SetBlend, MATERIAL_CONTEXT_SKIN },
 	{ "alpha_test", _Material_SetAlphaTest, MATERIAL_CONTEXT_SKIN },
 	{ "alpha_trick", _Material_SetAlphaTrick, MATERIAL_CONTEXT_SKIN },
+
+	// Shader
 
 	// Texture
 	{ "scroll", _Material_SetTextureScroll, MATERIAL_CONTEXT_TEXTURE },

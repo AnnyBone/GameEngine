@@ -413,6 +413,17 @@ void ShaderProgram::SetUniformVariable(vlUniform_t *uniform, int i)
 #endif
 }
 
+void ShaderProgram::SetUniformVariable(vlUniform_t *uniform, unsigned int i)
+{
+	if (!IsActive())
+		Sys_Error("Ensure shader program is enabled before applying variables! (%i) (%i)\n",
+		uniform->location, i);
+
+#ifdef VL_MODE_OPENGL
+	glUniform1ui(uniform->location, i);
+#endif
+}
+
 void ShaderProgram::SetUniformVariable(vlUniform_t *uniform, float f)
 {
 	if (!IsActive())
@@ -421,5 +432,16 @@ void ShaderProgram::SetUniformVariable(vlUniform_t *uniform, float f)
 
 #ifdef VL_MODE_OPENGL
 	glUniform1f(uniform->location, f);
+#endif
+}
+
+void ShaderProgram::SetUniformVariable(vlUniform_t *uniform, double d)
+{
+	if (!IsActive())
+		Sys_Error("Ensure shader program is enabled before applying variables! (%i) (%i)\n",
+		uniform->location, (int)d);
+
+#ifdef VL_MODE_OPENGL
+	glUniform1d(uniform->location, d);
 #endif
 }

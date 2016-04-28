@@ -66,11 +66,15 @@ namespace Core
 		bool IsActive()	{ return (Video.current_program == instance); }
 
 		vlUniform_t *RegisterUniform(std::string name, vlUniformType_t type);
+
 		void SetUniformVariable(vlUniform_t *uniform, float x, float y, float z);
 		void SetUniformVariable(vlUniform_t *uniform, plVector3f_t vector);
 		void SetUniformVariable(vlUniform_t *uniform, float x, float y, float z, float a);
 		void SetUniformVariable(vlUniform_t *uniform, int i);
+		void SetUniformVariable(vlUniform_t *uniform, unsigned int i);
 		void SetUniformVariable(vlUniform_t *uniform, float f);
+		void SetUniformVariable(vlUniform_t *uniform, double d);
+
 		int GetUniformLocation(std::string name);
 		vlUniform_t *GetUniform(std::string name);
 

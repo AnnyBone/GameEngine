@@ -42,6 +42,16 @@ namespace Core
 		virtual void RegisterAttributes() = 0;
 		virtual void Link() = 0;
 
+		virtual vlUniform_t *GetUniform(std::string name) = 0;
+
+		virtual void SetUniformVariable(vlUniform_t *uniform, float x, float y, float z) = 0;
+		virtual void SetUniformVariable(vlUniform_t *uniform, plVector3f_t vector) = 0;
+		virtual void SetUniformVariable(vlUniform_t *uniform, float x, float y, float z, float a) = 0;
+		virtual void SetUniformVariable(vlUniform_t *uniform, int i) = 0;
+		virtual void SetUniformVariable(vlUniform_t *uniform, unsigned int i) = 0;
+		virtual void SetUniformVariable(vlUniform_t *uniform, float f) = 0;
+		virtual void SetUniformVariable(vlUniform_t *uniform, double d) = 0;
+
 		virtual void Enable() = 0;
 		virtual void Disable() = 0;
 
