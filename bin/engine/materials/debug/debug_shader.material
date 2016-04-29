@@ -2,9 +2,10 @@ debug_shader
 {
 	$skin base
     {
-		$scroll "0.1 0.2"
+		%u_lightcolour "1.0 1.0 0 1.0"
+		%u_vertexscale "1.0"
 		
-		%u_diffuse "foo"
-		%u_normal "bar"
+		%u_alphatest "true"
+		%u_alphaclamp "0.6"
     }
 }

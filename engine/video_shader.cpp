@@ -1,16 +1,16 @@
 /*	Copyright (C) 2011-2016 OldTimes Software
-	
+
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License
 	as published by the Free Software Foundation; either version 2
 	of the License, or (at your option) any later version.
-	
+
 	This program is distributed in the hope that it will be useful,
 	but WITHOUT ANY WARRANTY; without even the implied warranty of
 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-	
+
 	See the GNU General Public License for more details.
-	
+
 	You should have received a copy of the GNU General Public License
 	along with this program; if not, write to the Free Software
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -190,7 +190,6 @@ Shader::~Shader()
 bool Shader::CheckCompileStatus()
 {
 #ifdef VL_MODE_OPENGL
-	VIDEO_FUNCTION_START
 	int compile;
 	glGetObjectParameterivARB(instance, GL_COMPILE_STATUS, &compile);
 	if (!compile)
@@ -209,7 +208,6 @@ bool Shader::CheckCompileStatus()
 	}
 
 	return true;
-	VIDEO_FUNCTION_END
 #else
 	return false;
 #endif
@@ -221,8 +219,7 @@ bool Shader::CheckCompileStatus()
 
 ShaderProgram::ShaderProgram(std::string _name) : 
 	name(_name), 
-	instance(0),
-	isenabled(false)
+	instance(0)
 {
 	instance = vlCreateShaderProgram();
 	if (!instance)
@@ -275,11 +272,17 @@ void ShaderProgram::Attach(Shader *shader)
 
 void ShaderProgram::Enable()
 {
+	if (IsActive())
+		return;
+
 	vlUseShaderProgram(instance);
 }
 
 void ShaderProgram::Disable()
 {
+	if (!IsActive())
+		return;
+
 	vlUseShaderProgram(0);
 }
 
@@ -353,7 +356,10 @@ vlUniform_t *ShaderProgram::RegisterUniform(std::string name, vlUniformType_t ty
 int ShaderProgram::GetUniformLocation(std::string name)
 {
 #ifdef VL_MODE_OPENGL
-	return glGetUniformLocation(instance, name.c_str());
+	int loc = glGetUniformLocation(instance, name.c_str());
+	if (loc == -1)
+		Con_Warning("Failed to get uniform location! (%s)\n", name.c_str());
+	return loc;
 #else
 	return 0;
 #endif
@@ -387,7 +393,7 @@ void ShaderProgram::SetUniformVariable(vlUniform_t *uniform, plVector3f_t vector
 		uniform->location, (int)vector[0], (int)vector[1], (int)vector[2]);
 
 #ifdef VL_MODE_OPENGL
-	glUniform3fv(uniform->location, 3, vector);
+	glUniform3f(uniform->location, vector[0], vector[1], vector[2]);
 #endif
 }
 

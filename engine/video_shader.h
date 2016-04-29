@@ -85,8 +85,6 @@ namespace Core
 		unsigned int GetInstance() { return instance; }
 
 	private:
-		bool isenabled;
-
 		std::vector<Core::Shader*>						shaders;
 		std::unordered_map<std::string, vlAttribute_t>	attributes;
 		std::unordered_map<std::string, vlUniform_t*>	uniforms;

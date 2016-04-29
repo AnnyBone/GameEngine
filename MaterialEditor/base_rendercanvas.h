@@ -1,5 +1,19 @@
-#ifndef VIEWPORT_CANVAS_H
-#define	VIEWPORT_CANVAS_H
+/*	DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+	Version 2, December 2004
+
+	Copyright (C) 2011-2016 Mark E Sowden <markelswo@gmail.com>
+
+	Everyone is permitted to copy and distribute verbatim or modified
+	copies of this license document, and changing it is allowed as long
+	as the name is changed.
+
+	DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+	TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
+
+	0. You just DO WHAT THE FUCK YOU WANT TO.
+*/
+
+#pragma once
 
 class BaseDrawCanvas : public wxGLCanvas
 {
@@ -32,6 +46,4 @@ public:
 };
 
 extern EditorDrawContext *g_rendercontext;
-
-#endif // !VIEWPORT_CANVAS_H
 

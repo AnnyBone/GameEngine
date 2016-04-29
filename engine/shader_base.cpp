@@ -25,8 +25,7 @@
 
 BaseShader::BaseShader() : ShaderProgram("base")
 {
-	alpha_test		= false;
-	alpha_clamp		= 0.5f;
+	alpha_test	= false;
 }
 
 void BaseShader::Initialize()
@@ -45,7 +44,7 @@ void BaseShader::Initialize()
 	SHADER_REGISTER_UNIFORM(u_spheremap, VL_UNIFORM_TEXTURE2D, 0);
 	
 	// Alpha
-	SHADER_REGISTER_UNIFORM(u_alphaclamp, VL_UNIFORM_FLOAT, alpha_clamp);
+	SHADER_REGISTER_UNIFORM(u_alphaclamp, VL_UNIFORM_FLOAT, 0.6f);
 	SHADER_REGISTER_UNIFORM(u_alphatest, VL_UNIFORM_BOOL, alpha_test);
 
 	// Lighting

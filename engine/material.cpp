@@ -433,7 +433,7 @@ void _Material_ParseSkin(Material_t *material, MaterialContext_t mftContext, cha
 	MaterialSkin_t *skin = Material_GetSkin(material, material->num_skins);
 
 	CoreShaderProgram *program = nullptr;
-	if (Script_GetToken(false))
+	if (args && ((args[0] != '\0') && (args[0] != ' ')))
 	{
 		program = g_shadermanager->GetProgram(args);
 		if (!program)
@@ -472,6 +472,8 @@ void _Material_ParseSkin(Material_t *material, MaterialContext_t mftContext, cha
 				if (!program)
 					continue;
 
+				program->Enable();
+
 				vlUniform_t *var = program->GetUniform(cToken + 1);
 				if (!var)
 				{
@@ -490,14 +492,10 @@ void _Material_ParseSkin(Material_t *material, MaterialContext_t mftContext, cha
 					program->SetUniformVariable(var, std::strtof(cToken, NULL));
 					break;
 				case VL_UNIFORM_BOOL:
-				{
-					bool _val = false;
 					if (!strncmp(cToken, "true", sizeof(cToken)))
-						_val = true;
+						strncpy(cToken, "1", sizeof(cToken));
 					else if (strncmp(cToken, "false", sizeof(cToken)))
-						Con_Warning("Invalid value returned for boolean! (%s) (%i)\n", cToken, iScriptLine);
-					program->SetUniformVariable(var, _val);
-				}
+						strncpy(cToken, "0", sizeof(cToken));
 				case VL_UNIFORM_INT:
 					program->SetUniformVariable(var, std::atoi(cToken));
 					break;
@@ -549,10 +547,12 @@ void _Material_ParseSkin(Material_t *material, MaterialContext_t mftContext, cha
 				default:
 					Con_Warning("Unsupported or invalid data type! (%s) (%i)\n", cToken, iScriptLine);
 				}
+
+				program->Disable();
 			}
 			else
 			{
-				Con_Warning("Invalid field! (%s) (%i)\n", material->cPath, iScriptLine);
+				Con_Warning("Invalid field! (%s) (%i) (%s)\n", cToken, iScriptLine, material->cPath);
 				break;
 			}
 		}
@@ -1095,13 +1095,13 @@ plEXTERN_C_END
 */
 void Material_DrawObject(Material_t *material, vlDraw_t *object, bool ispost)
 {
-#ifdef VL_MODE_OPENGL
 	bool showwireframe = r_showtris.bValue;
 	if ((material && material->override_wireframe) && (r_showtris.iValue == 1))
 		showwireframe = false;
 
 	if (showwireframe)
 	{
+#ifdef VL_MODE_OPENGL
 		if (!ispost)
 		{
 			switch (object->primitive)
@@ -1124,6 +1124,7 @@ void Material_DrawObject(Material_t *material, vlDraw_t *object, bool ispost)
 			else if (object->primitive == VL_PRIMITIVE_TRIANGLES)
 				object->primitive = object->primitive_restore;
 		}
+#endif
 	}
 
 	Material_Draw
@@ -1134,7 +1135,6 @@ void Material_DrawObject(Material_t *material, vlDraw_t *object, bool ispost)
 		object->numverts,
 		ispost
 	);
-#endif
 }
 
 /*	Typically called before an object is drawn.
@@ -1168,6 +1168,9 @@ void Material_Draw(Material_t *material, vlVertex_t *ObjectVertex, vlPrimitive_t
 	// Handle any skin effects.
 	if (!ispost)
 	{
+		if (msCurrentSkin->program)
+			msCurrentSkin->program->Enable();
+
 		// Handle any generic blending.
 		if ((msCurrentSkin->uiFlags & MATERIAL_FLAG_BLEND) || (material->fAlpha < 1))
 		{ 
@@ -1355,6 +1358,9 @@ void Material_Draw(Material_t *material, vlVertex_t *ObjectVertex, vlPrimitive_t
 				vlDepthMask(true);
 			}
 		}
+
+		if (msCurrentSkin->program)
+			msCurrentSkin->program->Disable();
 	}
 }
 

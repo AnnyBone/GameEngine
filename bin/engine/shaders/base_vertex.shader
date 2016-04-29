@@ -1,31 +1,30 @@
-/*	Copyright (C) 2011-2016 OldTimes Software
+/*	DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+	Version 2, December 2004
 
-	This program is free software; you can redistribute it and/or
-	modify it under the terms of the GNU General Public License
-	as published by the Free Software Foundation; either version 2
-	of the License, or (at your option) any later version.
+	Copyright (C) 2011-2016 Mark E Sowden <markelswo@gmail.com>
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+	Everyone is permitted to copy and distribute verbatim or modified
+	copies of this license document, and changing it is allowed as long
+	as the name is changed.
 
-	See the GNU General Public License for more details.
+	DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+	TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+	0. You just DO WHAT THE FUCK YOU WANT TO.
 */
 
-varying vec4 v_normalcolour;
 varying vec4 v_diffusecolour;
+varying vec4 v_normalcolour;
 
-uniform float u_vertexscale;
+uniform vec3	u_lightposition;
+uniform vec4	u_lightcolour;
 
-//attribute vec3 a_coords;
+uniform float	u_vertexscale;
 
-void main(void)
+void main()
 {
-	//gl_Position = vec4(a_coords, 1.0);
+	v_normalcolour = vec4(gl_Normal, 1.0);
+	v_diffusecolour = vec4(1.0, 1.0, 1.0, 1.0);
 
 	gl_TexCoord[0] = gl_MultiTexCoord0;
 	gl_Position = ftransform();
@@ -38,5 +37,15 @@ void main(void)
 	float m = 2.0 * sqrt(r.x*r.x + r.y*r.y + (r.z + 1.0)*(r.z + 1.0));
 	gl_TexCoord[1].s = r.x / m + 0.5;
 	gl_TexCoord[1].t = r.y / m + 0.5;
+	*/
+
+	/*
+	vec3 viewVertex = normalize(gl_ModelViewMatrix * gl_Vertex);
+	vec3 viewNormal = normalize(gl_NormalMatrix * gl_Normal);
+	vec3 viewLightPosition = normalize(gl_NormalMatrix * u_lightposition);
+
+	float dist = distance(viewNormal, viewLightPosition);
+
+	v_diffusecolour = vec4((lightColour * 2.0) * dist,1.0) * max(dot(viewNormal, viewLightPosition), 0.0);
 	*/
 }
