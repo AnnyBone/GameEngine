@@ -47,9 +47,8 @@ namespace Menu
 	private:
 	};
 
-	HUDPanel::HUDPanel(Panel *parent)
+	HUDPanel::HUDPanel(Panel *parent) : Panel(parent)
 	{
-
 	}
 }
 

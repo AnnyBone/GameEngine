@@ -28,6 +28,8 @@
 #define	MENU_BASE_PATH	"menu/"
 #define MENU_HUD_PATH	"menu/hud/"
 
+plEXTERN_C_START
+
 extern ModuleImport_t Engine;
 
 extern int	iMenuState;				// Global menu state.
@@ -40,3 +42,5 @@ void	Menu_SetState(int iState);
 void	Menu_RemoveState(int iState);
 
 char *va(char *format,...);	// Temporary convenience function, please don't get comfortable with this :(
+
+plEXTERN_C_END

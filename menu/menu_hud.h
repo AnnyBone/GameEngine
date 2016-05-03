@@ -18,5 +18,9 @@
 
 #pragma once
 
+plEXTERN_C_START
+
 void HUD_Initialize();
 void HUD_Draw(void);
+
+plEXTERN_C_END
