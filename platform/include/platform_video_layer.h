@@ -150,6 +150,8 @@ typedef struct vlUniform_s
 	int location;	// Location within the shader.
 
 	vlUniformType_t type;	// Data type.
+
+	char def[16];
 } vlUniform_t;
 #endif
 

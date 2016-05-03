@@ -1,19 +1,16 @@
-/*	Copyright (C) 2011-2016 OldTimes Software
+/*	DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+	Version 2, December 2004
 
-	This program is free software; you can redistribute it and/or
-	modify it under the terms of the GNU General Public License
-	as published by the Free Software Foundation; either version 2
-	of the License, or (at your option) any later version.
+	Copyright (C) 2011-2016 Mark E Sowden <markelswo@gmail.com>
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+	Everyone is permitted to copy and distribute verbatim or modified
+	copies of this license document, and changing it is allowed as long
+	as the name is changed.
 
-	See the GNU General Public License for more details.
+	DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+	TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+	0. You just DO WHAT THE FUCK YOU WANT TO.
 */
 
 #pragma once
@@ -23,7 +20,7 @@ namespace Menu
 	class Panel
 	{
 	public:
-		Panel();
+		Panel(Panel *parent);
 		~Panel();
 
 		bool IsInside(unsigned int xpos, unsigned int ypos);	// Within x and y coords.
@@ -35,14 +32,27 @@ namespace Menu
 		virtual void Deactivated() {}
 		virtual void MouseMove(float x, float y) {}
 		virtual void MouseLeave() {}
+		virtual void Moved(int nx, int ny);
+		virtual void Close() {}
+		virtual void Open() {}
 
 		virtual void Draw();
+
+		void AddChild(Panel *child);
+		void RemoveChild(Panel *child);
+
+		virtual void SetWidth(unsigned int w) { width = w; }
+		virtual void SetHeight(unsigned int h) { height = h; }
+
+		unsigned int GetWidth() { return width; }
+		unsigned int GetHeight() { return height; }
+
+		unsigned int width, height;	// Size.
+		unsigned int x, y;			// Position coordinates.
 	protected:
 	private:
-		unsigned int x, y;			// Position coordinates.
+		std::vector<Panel*> children;
 
 		Panel *parent;
-
-		unsigned int width, height;
 	};
 }

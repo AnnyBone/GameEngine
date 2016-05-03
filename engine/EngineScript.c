@@ -18,108 +18,10 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include <stdio.h>
-
 #include "engine_base.h"
 
 #include "EngineScript.h"
 #include "EngineGame.h"
-
-/*
-	Python scripting system that's used for both
-	game-logic additions and for the creation
-	of menu elements.
-
-	TODO:
-		Move the following out into its own shared module.
-*/
-
-#if 0
-#include "Python.h"
-
-bool bInitialized = false;
-
-static PyObject *Script_SystemError(PyObject *poSelf,PyObject *poArguments)
-{
-}
-
-/*
-	Server Functions.
-*/
-
-/*
-	Client Functions.
-*/
-
-/**/
-
-static struct PyMethodDef pmdKatanaMethods[]=
-{
-	{
-		"SystemError",	Script_SystemError,	METH_VARARGS,
-		"Causes the engine to give a system error."
-	},
-
-	{	NULL,	NULL	}
-};
-
-/*	Initialize scripting system.
-*/
-void Script_Initialize(void)
-{
-	PyObject *poModule;
-
-	if(bInitialized)
-		return;
-
-	Con_Printf("Initializing python...\n");
-
-	Py_SetProgramName(com_argv[0]);
-	Py_Initialize();
-
-	poModule = Py_InitModule("Katana",pmdKatanaMethods);
-	if(!poModule)
-		Sys_Error("Failed to initialize python module!\n");
-
-	bInitialized = true;
-}
-
-/*	Execute a script.
-*/
-void Script_Execute(char *ccPath)
-{
-	byte *bScriptFile;
-
-	if(!bInitialized)
-		return;
-
-	bScriptFile = COM_LoadTempFile(ccPath);
-	if(!bScriptFile)
-	{
-		Con_Warning("Failed to load script! (%s)\n",ccPath);
-		return;
-	}
-
-	PyRun_SimpleFile((FILE*)bScriptFile,ccPath);
-}
-
-/*	Shutdown scripting system.
-*/
-void Script_Shutdown(void)
-{
-	if(!bInitialized)
-		return;
-
-	if(Py_IsInitialized())
-		Py_Finalize();
-
-	bInitialized = false;
-}
-#endif
-
-/*
-	Old script stuff...
-*/
 
 /*
 	Script Library

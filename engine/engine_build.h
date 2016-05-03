@@ -43,5 +43,4 @@ static PL_INLINE unsigned int GetBuildNumber(void)
 	return (unsigned int)-floor(difftime(StringToTime("Jun 1 2011"), StringToTime(__DATE__)) / (60 * 60 * 24));
 }
 
-//	Build is updated each day that work is done on the engine.
 #define ENGINE_VERSION_BUILD GetBuildNumber()

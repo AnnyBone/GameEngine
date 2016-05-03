@@ -619,33 +619,6 @@ void CEditorFrame::OnMouseEvent(wxMouseEvent &event)
 */
 void CEditorFrame::ReloadCurrentDocument()
 {
-#if 0
-	Material_t *current = editorMaterialProperties->GetCurrent();
-	if (!current)
-		return;
-
-	// Ensure things have actually changed.
-	currentTimeModified = plGetFileModifiedTime(currentFilePath);
-	if (currentTimeModified == lastTimeModified)
-		return;
-
-	char cPath[PLATFORM_MAX_PATH];
-	strcpy(cPath, current->cPath);
-
-	engine->UnloadMaterial(current);
-
-	Material_t *reloadedMat = engine->LoadMaterial(cPath);
-	if (reloadedMat)
-	{
-		// Keep this up to date.
-		lastTimeModified = currentTimeModified;
-
-		engine->MaterialEditorDisplay(reloadedMat);
-
-		editorMaterialProperties->SetCurrentMaterial(reloadedMat);
-		editorMaterialProperties->Update();
-	}
-#endif
 }
 
 void CEditorFrame::PrintMessage(char *text)

@@ -114,10 +114,11 @@ namespace Core
 
 extern Core::ShaderManager *g_shadermanager;
 
-#define	SHADER_REGISTER_UNIFORM(name, type, def)	\
-	{												\
-		name = RegisterUniform(#name, type);		\
-		SetUniformVariable(name, def);				\
+#define	SHADER_REGISTER_UNIFORM(name, type, def)		\
+	{													\
+		name = RegisterUniform(#name, type);			\
+		SetUniformVariable(name, def);					\
+		strncpy(name->def, #def, sizeof(name->def));	\
 	}
 
 #define	SHADER_REGISTER_ATTRIBUTE(name, def)		\

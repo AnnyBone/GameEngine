@@ -17,13 +17,10 @@
     <ClCompile Include="menu_main.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="menu_hud.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="menu_panel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="WindowBase.cpp">
+    <ClCompile Include="menu_hud.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -16,14 +16,39 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef SHARED_ENGINE_H
-#define SHARED_ENGINE_H
+#pragma once
 
 #include "platform.h"
 
 #include "shared_flags.h"
 #include "shared_material.h"
 #include "shared_client.h"
+
+#ifdef __cplusplus
+
+namespace Core
+{
+	class IEngine
+	{
+	public:
+		virtual void Initialize(int argc, char *argv[]) = 0;
+		virtual void Shutdown() = 0;
+
+		virtual const char *GetBasePath() = 0;
+		virtual const char *GetMaterialPath() = 0;
+		virtual const char *GetModelPath() = 0;
+		virtual const char *GetVersion() = 0;
+
+		virtual void SetViewportSize(unsigned int w, unsigned int h) = 0;
+
+		virtual Material_t *LoadMaterial(const char *path) = 0;
+		virtual model_t *LoadModel(const char *path) = 0;
+
+		virtual void UnloadMaterial(Material_t *material, bool force) = 0;
+	};
+}
+
+#endif
 
 /*	Functions exported from the engine.
 */
@@ -45,7 +70,7 @@ typedef struct EngineExport_e
 
 	Material_t*(*LoadMaterial)(const char *cPath);
 
-	void(*UnloadMaterial)(Material_t *mMaterial);
+	void(*UnloadMaterial)(Material_t *material, bool force);
 
 	model_t*(*LoadModel)(const char *path);
 
@@ -104,5 +129,3 @@ typedef struct
 } EngineImport_t;
 
 #define ENGINE_VERSION	(sizeof(EngineImport_t)+sizeof(EngineExport_t))
-
-#endif // !SHARED_ENGINE_H

@@ -123,16 +123,14 @@ Material_t *Material_Allocate(void)
 	if (material_count > MATERIAL_MAX)
 		Sys_Error("Failed to add new material onto global array! (%i)\n", material_count);
 
+	memset(&g_materials[material_count], 0, sizeof(Material_t));
+
 #ifdef _MSC_VER
 #	pragma warning(suppress: 6386)
 #endif
-	g_materials[material_count].cName[0]			= 0;
-	g_materials[material_count].id					= material_count;
-	g_materials[material_count].fAlpha				= 1.0f;
-	g_materials[material_count].bind				= true;
-	g_materials[material_count].current_skin		= 0;
-	g_materials[material_count].override_wireframe	= false;
-	g_materials[material_count].override_lightmap	= false;
+	g_materials[material_count].id		= material_count;
+	g_materials[material_count].fAlpha	= 1.0f;
+	g_materials[material_count].bind	= true;
 
 	return &g_materials[material_count];
 }
@@ -152,17 +150,17 @@ void Material_ClearSkin(Material_t *material, unsigned int skinnum)
 		TexMgr_FreeTexture(skin->texture[i].gMap);
 }
 
-void Material_Clear(Material_t *material)
+void Material_Clear(Material_t *material, bool force)
 {
-	if (!(material->flags & MATERIAL_FLAG_PRESERVE))
-	{
-		for (unsigned int i = 0; i < material->num_skins; i++)
-			Material_ClearSkin(material, i);
+	if (!force && (material->flags & MATERIAL_FLAG_PRESERVE))
+		return;
 
-		memset(material, 0, sizeof(Material_t));
+	for (unsigned int i = 0; i < material->num_skins; i++)
+		Material_ClearSkin(material, i);
 
-		material_count--;
-	}
+	memset(material, 0, sizeof(Material_t));
+
+	material_count--;
 }
 
 /*	Clears all the currently active materials.
@@ -172,7 +170,7 @@ void Material_ClearAll(void)
 	int	i;
 
 	for (i = material_count; i > 0; i--)
-		Material_Clear(&g_materials[i]);
+		Material_Clear(&g_materials[i], false);
 
 	// TODO: Reshuffle and move preserved to start.
 }

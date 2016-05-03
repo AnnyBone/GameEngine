@@ -18,6 +18,7 @@
 
 #include "menu_main.h"
 
+#include "menu_panel.h"
 #include "menu_hud.h"
 
 ConsoleVariable_t	cv_menuhudshow = { "menu_hud_show", "1", false, false, "Toggles the display of the HUD." };
@@ -35,6 +36,22 @@ enum
 
 	HUD_ICON_ARMORWAVE0,
 };
+
+namespace Menu
+{
+	class HUDPanel : public Panel
+	{
+	public:
+		HUDPanel(Panel *parent);
+
+	private:
+	};
+
+	HUDPanel::HUDPanel(Panel *parent)
+	{
+
+	}
+}
 
 void HUD_Initialize()
 {

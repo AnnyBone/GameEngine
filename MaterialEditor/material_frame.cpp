@@ -454,7 +454,7 @@ void CMaterialFrame::ReloadMaterial()
 
 	// Unload it.
 	wxString sOldPath = currentmat->cPath;
-	engine->UnloadMaterial(currentmat);
+	engine->UnloadMaterial(currentmat, true);
 
 	// Reload it.
 	currentmat = engine->LoadMaterial(sOldPath);
@@ -529,7 +529,7 @@ void CMaterialFrame::UnloadMaterial()
 
 	cMaterialScript->ClearAll();
 
-	engine->UnloadMaterial(mCurrent);
+	engine->UnloadMaterial(mCurrent, false);
 }
 
 bool CMaterialFrame::Destroy()

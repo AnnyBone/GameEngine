@@ -1,54 +1,81 @@
-/*	Copyright (C) 2011-2016 OldTimes Software
+/*	DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+	Version 2, December 2004
 
-	This program is free software; you can redistribute it and/or
-	modify it under the terms of the GNU General Public License
-	as published by the Free Software Foundation; either version 2
-	of the License, or (at your option) any later version.
+	Copyright (C) 2011-2016 Mark E Sowden <markelswo@gmail.com>
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+	Everyone is permitted to copy and distribute verbatim or modified
+	copies of this license document, and changing it is allowed as long
+	as the name is changed.
 
-	See the GNU General Public License for more details.
+	DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+	TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+	0. You just DO WHAT THE FUCK YOU WANT TO.
 */
 
 #include "menu_main.h"
 
 #include "menu_panel.h"
 
-Menu::Panel::Panel() : 
-	x(0), y(0),
-	width(128), height(128)
+namespace Menu
 {
-}
+	Panel::Panel(Panel *parent) :
+		x(0), y(0),
+		width(128), height(128)
+	{
+		if (!parent)
+			Engine.Con_Warning("Invalid parent!\n");
 
-Menu::Panel::~Panel()
-{}
+		this->parent = parent;
+	}
 
-bool Menu::Panel::IsInside(unsigned int xpos, unsigned int ypos)
-{
-	if ((xpos < x) || (ypos < y) || (xpos >(x + width)) || (ypos >(y + height)))
-		return false;
-	
-	return true;
-}
+	Panel::~Panel()
+	{}
 
-bool Menu::Panel::IsInside(Menu::Panel *panel)
-{
-	return IsInside(panel->x, panel->y);
-}
+	bool Panel::IsInside(unsigned int xpos, unsigned int ypos)
+	{
+		if ((xpos < x) || (ypos < y) || (xpos >(x + width)) || (ypos >(y + height)))
+			return false;
 
-void Menu::Panel::Draw()
-{
-	/*
-		VideoDrawObject *draw = engine->CreateDrawObject();
-		if(!draw)
-			engine->Sys_Error("something");
+		return true;
+	}
 
+	bool Panel::IsInside(Menu::Panel *panel)
+	{
+		return IsInside(panel->x, panel->y);
+	}
 
-	*/
+	//=========================
+	// Sorting
+	//=========================
+
+	void Panel::AddChild(Panel *child)
+	{
+		if (!child)
+			return;
+		children.push_back(child);
+	}
+
+	void Panel::RemoveChild(Panel *child)
+	{
+		if (!child)
+			return;
+	}
+
+	//=========================
+	// Events
+	//=========================
+
+	void Panel::Moved(int nx, int ny)
+	{
+		// Let all the children know we've moved.
+		for (unsigned int i = 0; i < children.size(); i++)
+			children.at(i)->Moved(nx, ny);
+	}
+
+	//=========================
+
+	void Panel::Draw()
+	{
+	}
 }

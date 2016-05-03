@@ -19,7 +19,7 @@ varying vec4 v_normalcolour;
 uniform vec3	u_lightposition;
 uniform vec4	u_lightcolour;
 
-uniform float	u_vertexscale;
+uniform float u_vertexscale;
 
 void main()
 {
@@ -27,7 +27,12 @@ void main()
 	v_diffusecolour = vec4(1.0, 1.0, 1.0, 1.0);
 
 	gl_TexCoord[0] = gl_MultiTexCoord0;
-	gl_Position = ftransform();
+	
+	float scale = u_vertexscale;
+	if(scale == 0)
+		scale = 1.0;
+		
+	gl_Position = ftransform() * scale;
 
 	// Sphere-mapping
 	/*
