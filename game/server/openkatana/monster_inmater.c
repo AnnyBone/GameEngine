@@ -123,7 +123,7 @@ void Inmater_Die(ServerEntity_t *eInmater, ServerEntity_t *eOther, ServerDamageT
 
 	Entity_Animate(eInmater,efInmaterDeath);
 
-	Monster_SetState(eInmater, AI_STATE_DEAD);
+	AI_SetState(eInmater, AI_STATE_DEAD);
 }
 
 void Inmater_Think(ServerEntity_t *eInmater)
@@ -133,8 +133,8 @@ void Inmater_Think(ServerEntity_t *eInmater)
 	case AI_STATE_ASLEEP:
 		//if (eInmater->Monster.meEmotion[EMOTION_BOREDOM].iEmotion > INMATER_MAX_BOREDOM)
 		{
-			Monster_SetState(eInmater, AI_STATE_AWAKE);
-			Monster_SetThink(eInmater, MONSTER_THINK_WANDERING);
+			AI_SetState(eInmater, AI_STATE_AWAKE);
+			AI_SetThink(eInmater, MONSTER_THINK_WANDERING);
 			return;
 		}
 		break;
@@ -152,7 +152,7 @@ void Inmater_Think(ServerEntity_t *eInmater)
 	case AI_STATE_DEAD:
 		break;
 	default:
-		Monster_SetState(eInmater, AI_STATE_ASLEEP);
+		AI_SetState(eInmater, AI_STATE_ASLEEP);
 	}
 }
 
@@ -175,8 +175,8 @@ void Inmater_Spawn(ServerEntity_t *eInmater)
 	eInmater->v.frame = 0;
 	eInmater->local.iMaxHealth = INMATER_MAX_HEALTH;
 
-	Monster_SetState(eInmater, AI_STATE_AWAKE);
-	Monster_SetThink(eInmater, MONSTER_THINK_IDLE);
+	AI_SetState(eInmater, AI_STATE_AWAKE);
+	AI_SetThink(eInmater, MONSTER_THINK_IDLE);
 
 	Entity_SetModel(eInmater, MODEL_INMATER_BODY);
 	Entity_SetSize(eInmater, -16.0f, -16.0f, -24.0f, 16.0f, 16.0f, 32.0f);

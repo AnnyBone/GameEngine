@@ -24,6 +24,6 @@
 
 class CoreManager
 {
-	virtual void Frame()	{}
-	virtual void Draw()		{}
+	virtual void Frame() {}
+	virtual void Draw()	{}
 };

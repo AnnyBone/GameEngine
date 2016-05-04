@@ -108,10 +108,11 @@ typedef enum
 	Items
 */
 
-#define	WEAPON_NONE			-1
+#define	ITEM_WEAPON_NONE			-1
 #ifdef GAME_OPENKATANA
+
 // Episode One
-#define WEAPON_LASERS		1		// NPC weapon
+#define ITEM_WEAPON_LASERS		1		// NPC weapon
 #define WEAPON_KATANA		2		// Simple Katana / Melee
 #define	WEAPON_DAIKATANA	3		// The Daikatana / Melee+
 #define	WEAPON_IONRIFLE		4		// Basic projectile-based weapon
@@ -119,11 +120,13 @@ typedef enum
 #define	WEAPON_SHOTCYCLER	6		// Futuristic shotgun
 #define	WEAPON_SIDEWINDER	7		// Explosive projectile weapon (+)
 #define	WEAPON_SHOCKWAVE	8		// Powerful Shockwave Rifle
+
 #define	AMMO_IONBALLS		9		// Used for the Ion Blaster
 #define	AMMO_C4BOMBS		10		// Used for the C4 Vizatergo
 #define	AMMO_SLUGS			11		// Used for the ShotCycler
 #define	AMMO_WINDROCKET		12		// Used for the Sidewinder
 #define	AMMO_SHOCKWAVE		13		// Used for the Shockwave Rifle
+
 #define	ITEM_ATTACKBOOST	14
 #define	ITEM_POWERBOOST		15
 #define	ITEM_VITABOOST		16
@@ -133,11 +136,13 @@ typedef enum
 #define	ITEM_PLASTEELARMOR	20		// Provides armor
 #define	ITEM_ENVIROSUIT		21		// Provides protection
 #define	ITEM_OXYLUNG		22		// Provides oxygen
+
 // Episode Four
 #define	WEAPON_GLOCK		50		// Standard pistol
 #elif GAME_ADAMAS
 #	define ITEM_LIFE	50
 #endif
+
 #define ITEM_FLAG			1000	// Neutral flag for CTF
 #define	ITEM_REDFLAG		1001	// Red flag for CTF
 #define	ITEM_BLUEFLAG		1002	// Blue flag for CTF

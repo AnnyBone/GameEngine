@@ -115,7 +115,7 @@ void Point_MonsterSpawn(ServerEntity_t *entity)
 
 	Server.iMonsters++;
 
-	AI_Initialize(entity);
+	AI_Spawn(entity);
 
 	switch (entity->local.style)
 	{

@@ -46,7 +46,7 @@ Item_t Items[] =
 
 	// Unused weapons
 	{	WEAPON_GLOCK,		"Glock",		"models/weapons/w_glock.md2",		SOUND_WEAPON_PICKUP,	true	},
-	{   WEAPON_LASERS,      "Lasers",       "",                                 "",						false	},
+	{ ITEM_WEAPON_LASERS, "Lasers", "", "", false },
 
 	// Items
 	{	ITEM_PLASTEELARMOR,	"PLASTEEL ARMOR",	"models/plasteel.md2",			"items/armorpickup1.wav",						true	},

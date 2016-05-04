@@ -45,18 +45,6 @@ typedef struct
 #define MONSTER_HURLER	    3
 #endif
 
-/*	Various states for the AI.
-*/
-enum
-{
-	AI_STATE_DEAD = 1,	// Monster is dead.
-	AI_STATE_DYING,		// In-between dead and alive.
-	AI_STATE_AWAKE,		// Monster is awake.
-	AI_STATE_ASLEEP,	// Monster is asleep.
-
-	MONSTER_STATE_NONE		// Monster has no state.
-};
-
 #define	MONSTER_RANGE_MELEE		48.0f
 #define MONSTER_RANGE_NEAR		256.0f
 #define MONSTER_RANGE_MEDIUM	700.0f
@@ -74,18 +62,22 @@ enum
 
 /*	Various thought processes.
 */
-typedef enum
+typedef enum AIThink_s
 {
-	MONSTER_THINK_IDLE = 1,		// Monster is idle.
-	MONSTER_THINK_FLEEING,		// Monster is fleeing.
-	MONSTER_THINK_PURSUING,		// Monster is following.
-	MONSTER_THINK_ATTACKING,	// Monster is attacking.
-	MONSTER_THINK_WANDERING		// Monster is just walking around.
+	AI_THINK_START,
+
+	AI_THINK_IDLE,			// Monster is idle.
+	AI_THINK_FLEEING,		// Monster is fleeing.
+	AI_THINK_PURSUING,		// Monster is following.
+	AI_THINK_ATTACKING,		// Monster is attacking.
+	AI_THINK_WANDERING,		// Monster is just walking around.
+
+	AI_THINK_END
 } AIThink_t;
 
 /*	Various emotions.
 */
-typedef enum
+typedef enum AIEmotion_s
 {
 	AI_EMOTION_BOREDOM,
 	AI_EMOTION_FEAR,
@@ -109,8 +101,6 @@ enum
 ServerEntity_t *Monster_GetTarget(ServerEntity_t *eMonster);
 ServerEntity_t *Monster_GetEnemy(ServerEntity_t *Monster);
 
-bool Monster_SetState(ServerEntity_t *entity, unsigned int state);
-bool Monster_SetThink(ServerEntity_t *entity, unsigned int newthink);
 bool Monster_IsVisible(ServerEntity_t *entity, ServerEntity_t *target);
 
 int	Monster_GetRelationship(ServerEntity_t *eMonster, ServerEntity_t *eTarget);
@@ -121,16 +111,8 @@ void Monster_Damage(ServerEntity_t *target, ServerEntity_t *inflictor, int iDama
 void AI_JumpMovement(ServerEntity_t *eMonster, float fVelocity);
 void Monster_MoveToGoal(ServerEntity_t *ent, MathVector3f_t goal, float distance);
 void AI_RandomMovement(ServerEntity_t *eMonster, float fSpeed);
-void AI_Frame(ServerEntity_t *entity);
+
 void Monster_Killed(ServerEntity_t *monster, ServerEntity_t *attacker, ServerDamageType_t type);
-
-void AI_Initialize(ServerEntity_t *entity);
-
-// AI Movement
-void AI_Movement(ServerEntity_t *entity);
-void AI_RunMovement(ServerEntity_t *entity);
-void AI_FlyMovement(ServerEntity_t *entity);
-void AI_ForwardMovement(ServerEntity_t *entity, float velocity);
 
 Waypoint_t *AI_GetVisibleMoveTarget(ServerEntity_t *Monster);
 

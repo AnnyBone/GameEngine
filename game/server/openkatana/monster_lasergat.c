@@ -142,7 +142,7 @@ void LaserGat_Think(ServerEntity_t *eLaserGat)
 		{
 			if(!eLaserGat->Monster.eEnemy)
 			{
-				Monster_SetThink(eLaserGat, MONSTER_THINK_IDLE);
+				AI_SetThink(eLaserGat, MONSTER_THINK_IDLE);
 				return;
 			}
 			else if(!eLaserGat->Monster.eEnemy->v.iHealth)
@@ -157,7 +157,7 @@ void LaserGat_Think(ServerEntity_t *eLaserGat)
 		}
 		break;
 	default:
-		Monster_SetThink(eLaserGat, MONSTER_THINK_IDLE);
+		AI_SetThink(eLaserGat, MONSTER_THINK_IDLE);
 	}
 
 	// [22/4/2014] Make sure our pitch doesn't go crazy, heh ~hogsy
@@ -198,7 +198,7 @@ void LaserGat_Spawn(ServerEntity_t *eLaserGat)
 	Server_PrecacheModel(LASERGAT_MODEL_HEAD);
 
 	// Get our weapon.
-	Item_AddInventory(Item_GetItem(WEAPON_LASERS), eLaserGat);
+	Item_AddInventory(Item_GetItem(ITEM_WEAPON_LASERS), eLaserGat);
 
 	eLaserGat->v.netname		= "Laser Turret";
 	eLaserGat->v.movetype		= MOVETYPE_NONE;
@@ -223,8 +223,8 @@ void LaserGat_Spawn(ServerEntity_t *eLaserGat)
 	Entity_SetModel(eLaserGat, LASERGAT_MODEL_HEAD);
 	Entity_SetSize(eLaserGat, -6.20f, -18.70f, -8.0f, 19.46f, 18.71f, 7.53f);
 
-	Monster_SetState(eLaserGat, AI_STATE_AWAKE);
-	Monster_SetThink(eLaserGat, MONSTER_THINK_IDLE);
+	AI_SetState(eLaserGat, AI_STATE_AWAKE);
+	AI_SetThink(eLaserGat, MONSTER_THINK_IDLE);
 
 	// Now set up the base...
 	ServerEntity_t	*eBase = Entity_Spawn();

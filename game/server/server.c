@@ -20,6 +20,7 @@
 
 #include "server_weapon.h"
 #include "server_item.h"
+#include "server_ai.h"
 
 #ifdef GAME_OPENKATANA
 #	include "openkatana/openkatana.h"

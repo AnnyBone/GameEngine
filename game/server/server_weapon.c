@@ -29,7 +29,7 @@
 Weapon_t Weapons[] =
 {
 	{
-		WEAPON_NONE
+		ITEM_WEAPON_NONE
 	},
 
 #ifdef GAME_OPENKATANA
@@ -107,9 +107,9 @@ Weapon_t Weapons[] =
 		Shockwave_PrimaryAttack
 	},
 
-	// Monster Weapons
+	// AI Weapons
 	{
-		WEAPON_LASERS,
+		ITEM_WEAPON_LASERS,
 		NULL,
 		NULL,
 
@@ -789,7 +789,7 @@ void Weapon_CheckInput(ServerEntity_t *eEntity)
 			break;
 #endif
 		default:
-			iNewWeapon = WEAPON_NONE;
+			iNewWeapon = ITEM_WEAPON_NONE;
 		}
 
 		// Check our actual inventory!

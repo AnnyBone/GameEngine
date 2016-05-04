@@ -21,6 +21,7 @@
 #include "server_monster.h"
 #include "server_weapon.h"
 #include "server_player.h"
+#include "server_ai.h"
 
 /*
 	Katana Bot
@@ -223,8 +224,8 @@ void Bot_Spawn(ServerEntity_t *eBot)
 	Entity_SetModel(eBot,eBot->v.model);
 	Entity_SetSize(eBot,-16.0f,-16.0f,-24.0f,16.0f,16.0f,32.0f);
 
-	Monster_SetState(eBot, AI_STATE_AWAKE);
-	Monster_SetThink(eBot, MONSTER_THINK_IDLE);
+	AI_SetState(eBot, AI_STATE_AWAKE);
+	AI_SetThink(eBot, MONSTER_THINK_IDLE);
 
 	// Make sure we're not in the air.
 	Entity_DropToFloor(eBot);
@@ -245,7 +246,7 @@ void Bot_Idle(ServerEntity_t *entity)
 	if (enttarg && Monster_IsVisible(entity, enttarg))
 	{
 		Engine.Con_DPrintf("I see you!\n");
-		Monster_SetThink(entity, MONSTER_THINK_PURSUING);
+		AI_SetThink(entity, MONSTER_THINK_PURSUING);
 		return;
 	}
 
@@ -326,7 +327,7 @@ void Bot_Pain(ServerEntity_t *ent, ServerEntity_t *other, ServerDamageType_t typ
 	wHisWeapon	= Weapon_GetCurrentWeapon(other);
 	if(!wMyWeapon || (!Weapon_CheckPrimaryAmmo(wMyWeapon,ent) && wMyWeapon->iPrimaryType != AM_MELEE))
 	{
-		Monster_SetThink(ent, MONSTER_THINK_FLEEING);
+		AI_SetThink(ent, MONSTER_THINK_FLEEING);
 		return;
 	}
 	// Otherwise check what we can see our enemy having (don't check ammo since it's unrealistic).
@@ -335,7 +336,7 @@ void Bot_Pain(ServerEntity_t *ent, ServerEntity_t *other, ServerDamageType_t typ
 		// We see you!
 		if(Monster_IsVisible(ent,other))
 		{
-			Monster_SetThink(ent, MONSTER_THINK_ATTACKING);
+			AI_SetThink(ent, MONSTER_THINK_ATTACKING);
 			return;
 		}
 	}
@@ -362,7 +363,7 @@ POINTCHECK:
 			point->type == WAYPOINT_COVER	||
 			point->type == WAYPOINT_TYPE_DEFAULT)
 		{
-			Monster_SetThink(ent,MONSTER);
+			AI_SetThink(ent,MONSTER);
 
 			// [15/7/2012] Set the position we'll move to next ~hogsy
 			Math_VectorCopy(ent->Monster.target,point->position);
@@ -431,7 +432,7 @@ void Bot_Die(ServerEntity_t *eBot, ServerEntity_t *eOther, ServerDamageType_t ty
 		return;
 
 	// He's dead, Jim.
-	Monster_SetState(eBot, AI_STATE_DEAD);
+	AI_SetState(eBot, AI_STATE_DEAD);
 
 	eBot->v.movetype	= MOVETYPE_TOSS;
 	eBot->v.flags		-= (eBot->v.flags & FL_ONGROUND);

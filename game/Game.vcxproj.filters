@@ -81,6 +81,9 @@
     <ClInclude Include="server\server_debug.h">
       <Filter>Server</Filter>
     </ClInclude>
+    <ClInclude Include="server\server_ai.h">
+      <Filter>Server</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Client">
@@ -295,6 +298,9 @@
     </ClCompile>
     <ClCompile Include="client\client_effects.cpp">
       <Filter>Client</Filter>
+    </ClCompile>
+    <ClCompile Include="server\server_ai.cpp">
+      <Filter>Server</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

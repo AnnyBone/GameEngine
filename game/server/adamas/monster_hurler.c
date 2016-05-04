@@ -45,8 +45,8 @@ void Hurler_Spawn(ServerEntity_t *eHurler)
 	eHurler->v.netname			= "Hurler";
 	eHurler->v.TouchFunction	= Hurler_Touch;
 
-	Monster_SetState(eHurler, MONSTER_STATE_AWAKE);
-	Monster_SetThink(eHurler, MONSTER_THINK_IDLE);
+	AI_SetState(eHurler, MONSTER_STATE_AWAKE);
+	AI_SetThink(eHurler, MONSTER_THINK_IDLE);
 
 	// Add to the count of Hurlers currently in the game. ~hogsy
 	iHurlers++;
@@ -89,7 +89,7 @@ void Hurler_Think(ServerEntity_t *eHurler)
 
 			eHurler->Monster.eEnemy = Monster_GetEnemy(eHurler);
 			if (eHurler->Monster.eEnemy)
-				Monster_SetThink(eHurler, MONSTER_THINK_PURSUING);
+				AI_SetThink(eHurler, MONSTER_THINK_PURSUING);
 		}
 		break;
 	case MONSTER_THINK_ATTACKING:
@@ -106,12 +106,12 @@ void Hurler_Think(ServerEntity_t *eHurler)
 		}
 
 		if(MONSTER_GetRange(eHurler,eHurler->Monster.eEnemy->v.origin) > MONSTER_RANGE_MELEE)
-			Monster_SetThink(eHurler, MONSTER_THINK_PURSUING);
+			AI_SetThink(eHurler, MONSTER_THINK_PURSUING);
 		break;
 	case MONSTER_THINK_PURSUING:
 		if(!eHurler->Monster.eEnemy || eHurler->Monster.eEnemy->v.iHealth <= 0)
 		{
-			Monster_SetThink(eHurler, MONSTER_THINK_IDLE);
+			AI_SetThink(eHurler, MONSTER_THINK_IDLE);
 			return;
 		}
 
@@ -179,7 +179,7 @@ void Hurler_Touch(ServerEntity_t *eHurler,ServerEntity_t *eOther)
 	{
 		if (eHurler->Monster.think != MONSTER_THINK_ATTACKING)
 		{
-			Monster_SetThink(eHurler, MONSTER_THINK_ATTACKING);
+			AI_SetThink(eHurler, MONSTER_THINK_ATTACKING);
 			return;
 		}
 
@@ -194,7 +194,7 @@ void Hurler_Touch(ServerEntity_t *eHurler,ServerEntity_t *eOther)
 			Math_VectorInverse(vOrigin);
 			Math_VectorAdd(eHurler->v.velocity,vOrigin,eHurler->v.velocity);
 
-			Monster_SetThink(eHurler, MONSTER_THINK_PURSUING);
+			AI_SetThink(eHurler, MONSTER_THINK_PURSUING);
 		}
 	}
 }
@@ -213,7 +213,7 @@ void Hurler_Pain(ServerEntity_t *eHurler,ServerEntity_t *eOther)
 	Math_VectorAdd(eHurler->v.velocity,vOrigin,eHurler->v.velocity);
 	Math_MVToVector(Math_VectorToAngles(vOrigin),eHurler->v.angles);
 
-	Monster_SetThink(eHurler, MONSTER_THINK_PURSUING);
+	AI_SetThink(eHurler, MONSTER_THINK_PURSUING);
 }
 
 void Hurler_Die(ServerEntity_t *eHurler,ServerEntity_t *eOther)

@@ -529,6 +529,9 @@ typedef struct ServerEntityBaseVariables_s
 	void(*BlockedFunction)(ServerEntity_t *seEntity, ServerEntity_t *seOther);	// Called when an entity is blocked against another.
 } ServerEntityBaseVariables_t;
 
+//-----------------
+// AI
+
 typedef struct ServerEntityAIVariables_s
 {
 	void(*Think)(ServerEntity_t *entity);
@@ -545,7 +548,9 @@ typedef struct ServerEntityAIVariables_s
 	unsigned int current_movement;
 
 	float current_movespeed;
-} ServerEntityAIVariables_t;
+} AIVariables_t;
+
+//-----------------
 
 /*	If this is changed remember
 	to recompile the engine too! */
@@ -565,7 +570,7 @@ typedef struct ServerEntity_s
 	float fFreeTime;
 
 	ServerEntityBaseVariables_t		v;		// Global / Base variables, shared between game and engine.
-	ServerEntityAIVariables_t		ai;		// Specific towards AI/monsters.
+	AIVariables_t					ai;		// Specific towards AI/monsters.
 
 	ServerModelVariables_t		Model;		// Variables that affect the model used for the entity.
 	ServerPhysicsVariables_t	Physics;	// Variables affecting how the entity is physically treated.

@@ -390,54 +390,6 @@ void Monster_NewChaseDirection(ServerEntity_t *ent, MathVector3f_t target, float
 		ent->v.flags |= FL_PARTIALGROUND;
 }
 
-bool Monster_SetThink(ServerEntity_t *entity, unsigned int newthink)
-{
-	if (entity->Monster.think == newthink)
-		// Return false, then we might decide it's time for a different state.
-		return false;
-	else if (entity->Monster.state >= MONSTER_STATE_NONE)
-	{
-		Engine.Con_Warning("Attempted to set a think without a state! (%s)\n", entity->v.cClassname);
-		return false;
-	}
-
-	entity->Monster.think = newthink;
-
-	return true;
-}
-
-/*	Automatically sets the state for the monster.
-*/
-bool Monster_SetState(ServerEntity_t *eMonster, unsigned int msState)
-{
-	if (eMonster->Monster.state == msState)
-		return true;
-
-	switch(msState)
-	{
-	case AI_STATE_AWAKE:
-		if (eMonster->Monster.state == AI_STATE_DEAD)
-			return false;
-
-		eMonster->Monster.state = AI_STATE_AWAKE;
-		break;
-	case AI_STATE_ASLEEP:
-		if (eMonster->Monster.state == AI_STATE_DEAD)
-			return false;
-
-		eMonster->Monster.state = AI_STATE_ASLEEP;
-		break;
-	case AI_STATE_DEAD:
-		eMonster->Monster.state = AI_STATE_DEAD;
-		break;
-	default:
-		Engine.Con_Warning("Tried to set an unknown state for %s (%i)!\n",eMonster->v.cClassname,msState);
-		return false;
-	}
-
-	return true;
-}
-
 /*	Called when a monster/entity gets killed.
 */
 void Monster_Killed(ServerEntity_t *eTarget, ServerEntity_t *eAttacker, ServerDamageType_t type)
@@ -542,7 +494,7 @@ void Monster_Killed(ServerEntity_t *eTarget, ServerEntity_t *eAttacker, ServerDa
 	// Drop the currently equipped item for the player to pick up!
 	Weapon_t *wActive = Weapon_GetCurrentWeapon(eTarget);
 #ifdef GAME_OPENKATANA
-	if(wActive && (wActive->iItem != WEAPON_LASERS))
+	if (wActive && (wActive->iItem != ITEM_WEAPON_LASERS))
 #else
 	if (wActive)
 #endif
@@ -747,43 +699,7 @@ ServerEntity_t *Monster_GetEnemy(ServerEntity_t *Monster)
 //	NEW IMPLEMENTATION
 /////////////////////////////////////////////////////////////////////////////
 
-void AI_Initialize(ServerEntity_t *entity)
-{
-	// Reset AI struct for this entity.
-//	memset(&entity->ai, 0, sizeof(ServerEntityBaseVariables_t));
 
-	entity->ai.current_movement		= AI_MOVEMENT_RUNNING;
-	entity->ai.current_movespeed	= 20.0f;
-}
-
-/*	Used to go over each monster state then update it, and then calls the monsters
-	assigned think function.
-*/
-void AI_Frame(ServerEntity_t *entity)
-{
-	// The following is only valid for actual monsters.
-	if (!Entity_IsMonster(entity))
-		return;
-
-	Entity_CheckFrames(entity);
-
-	// Handle jumping.
-	if ((entity->local.jump_velocity < -300.0f) && (entity->v.flags & FL_ONGROUND))
-	{
-		entity->local.jump_velocity = 0;
-
-		// Call up land function, so custom sounds can be added.
-		if (entity->ai.Land)
-			entity->ai.Land(entity);
-	}
-	else if (!(entity->v.flags & FL_ONGROUND))
-		entity->local.jump_velocity = entity->v.velocity[2];
-
-	if (entity->ai.Think)
-		entity->ai.Think(entity);
-
-	AI_Movement(entity);
-}
 
 /*
 	Targetting
@@ -866,30 +782,7 @@ int	Monster_GetRelationship(ServerEntity_t *eMonster, ServerEntity_t *eTarget)
 
 // Base...
 
-void AI_Movement(ServerEntity_t *entity)
-{
-	// Let entities override this.
-	if (entity->ai.Movement)
-	{
-		entity->ai.Movement(entity);
-		return;
-	}
 
-	// We don't move while asleep.
-	if ((entity->ai.current_state == AI_STATE_ASLEEP) || (entity->ai.current_state == AI_STATE_DEAD))
-		return;
-	
-	switch (entity->ai.current_movement)
-	{
-	default:
-	case AI_MOVEMENT_RUNNING:
-		AI_RunMovement(entity);
-		break;
-	case AI_MOVEMENT_FLYING:
-		AI_FlyMovement(entity);
-		break;
-	}
-}
 
 // Running
 void AI_RunMovement(ServerEntity_t *entity)

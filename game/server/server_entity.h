@@ -16,8 +16,7 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef SERVER_ENTITY_H
-#define	SERVER_ENTITY_H
+#pragma once
 
 class ServerEntity
 {
@@ -69,5 +68,3 @@ public:
 private:
 	ServerEntity_t *instance;
 };
-
-#endif	// SERVER_ENTITY_H
