@@ -19,7 +19,11 @@
 #include "base_viewportpanel.h"
 
 wxBEGIN_EVENT_TABLE(BaseViewportPanel, wxPanel)
+
 EVT_TIMER(-1, BaseViewportPanel::OnTimer)
+
+EVT_CHAR_HOOK(BaseViewportPanel::OnKey)
+
 wxEND_EVENT_TABLE()
 
 BaseViewportPanel::BaseViewportPanel(wxWindow *wParent, const wxSize &size)

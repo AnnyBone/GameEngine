@@ -56,7 +56,7 @@ void LaserGat_AimTarget(ServerEntity_t *eLaserGat,ServerEntity_t *eTarget)
 
 void LaserGat_HandleAim(ServerEntity_t *eLaserGat)
 {
-	if (eLaserGat->Monster.think == MONSTER_THINK_IDLE)
+	if (eLaserGat->Monster.think == AI_THINK_IDLE)
 	{
 		if (!eLaserGat->Monster.eTarget)
 		{
@@ -73,7 +73,7 @@ void LaserGat_HandleAim(ServerEntity_t *eLaserGat)
 		else
 			LaserGat_AimTarget(eLaserGat, eLaserGat->Monster.eTarget);
 	}
-	else if (eLaserGat->Monster.think == MONSTER_THINK_ATTACKING)
+	else if (eLaserGat->Monster.think == AI_THINK_ATTACKING)
 		LaserGat_AimTarget(eLaserGat, eLaserGat->Monster.eEnemy);
 
 	// Constrain its angles...
@@ -113,7 +113,7 @@ void LaserGat_Think(ServerEntity_t *eLaserGat)
 {
 	switch (eLaserGat->Monster.think)
 	{
-	case MONSTER_THINK_IDLE:
+	case AI_THINK_IDLE:
 		eLaserGat->Monster.eTarget = Monster_GetTarget(eLaserGat);
 		if (eLaserGat->Monster.eTarget)
 		{
@@ -138,11 +138,11 @@ void LaserGat_Think(ServerEntity_t *eLaserGat)
 			eLaserGat->Monster.commands[LASERGAT_COMMAND_LOOK_WAIT]--;
 		}
 		break;
-	case MONSTER_THINK_ATTACKING:
+	case AI_THINK_ATTACKING:
 		{
 			if(!eLaserGat->Monster.eEnemy)
 			{
-				AI_SetThink(eLaserGat, MONSTER_THINK_IDLE);
+				AI_SetThink(eLaserGat, AI_THINK_IDLE);
 				return;
 			}
 			else if(!eLaserGat->Monster.eEnemy->v.iHealth)
@@ -157,7 +157,7 @@ void LaserGat_Think(ServerEntity_t *eLaserGat)
 		}
 		break;
 	default:
-		AI_SetThink(eLaserGat, MONSTER_THINK_IDLE);
+		AI_SetThink(eLaserGat, AI_THINK_IDLE);
 	}
 
 	// [22/4/2014] Make sure our pitch doesn't go crazy, heh ~hogsy
@@ -224,7 +224,7 @@ void LaserGat_Spawn(ServerEntity_t *eLaserGat)
 	Entity_SetSize(eLaserGat, -6.20f, -18.70f, -8.0f, 19.46f, 18.71f, 7.53f);
 
 	AI_SetState(eLaserGat, AI_STATE_AWAKE);
-	AI_SetThink(eLaserGat, MONSTER_THINK_IDLE);
+	AI_SetThink(eLaserGat, AI_THINK_IDLE);
 
 	// Now set up the base...
 	ServerEntity_t	*eBase = Entity_Spawn();

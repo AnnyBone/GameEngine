@@ -21,7 +21,6 @@
 #include "server_monster.h"
 #include "server_weapon.h"
 #include "server_player.h"
-#include "server_ai.h"
 
 /*
 	Katana Bot
@@ -225,7 +224,7 @@ void Bot_Spawn(ServerEntity_t *eBot)
 	Entity_SetSize(eBot,-16.0f,-16.0f,-24.0f,16.0f,16.0f,32.0f);
 
 	AI_SetState(eBot, AI_STATE_AWAKE);
-	AI_SetThink(eBot, MONSTER_THINK_IDLE);
+	AI_SetThink(eBot, AI_THINK_IDLE);
 
 	// Make sure we're not in the air.
 	Entity_DropToFloor(eBot);
@@ -246,7 +245,7 @@ void Bot_Idle(ServerEntity_t *entity)
 	if (enttarg && Monster_IsVisible(entity, enttarg))
 	{
 		Engine.Con_DPrintf("I see you!\n");
-		AI_SetThink(entity, MONSTER_THINK_PURSUING);
+		AI_SetThink(entity, AI_THINK_PURSUING);
 		return;
 	}
 
@@ -264,16 +263,16 @@ void Bot_Frame(ServerEntity_t *entity)
 
 	switch (entity->Monster.think)
 	{
-	case MONSTER_THINK_ATTACKING:
+	case AI_THINK_ATTACKING:
 		break;
-	case MONSTER_THINK_FLEEING:
+	case AI_THINK_FLEEING:
 		break;
-	case MONSTER_THINK_IDLE:
+	case AI_THINK_IDLE:
 		Bot_Idle(entity);
 		break;
-	case MONSTER_THINK_PURSUING:
+	case AI_THINK_PURSUING:
 		break;
-	case MONSTER_THINK_WANDERING:
+	case AI_THINK_WANDERING:
 		break;
 	}
 }
@@ -327,7 +326,7 @@ void Bot_Pain(ServerEntity_t *ent, ServerEntity_t *other, ServerDamageType_t typ
 	wHisWeapon	= Weapon_GetCurrentWeapon(other);
 	if(!wMyWeapon || (!Weapon_CheckPrimaryAmmo(wMyWeapon,ent) && wMyWeapon->iPrimaryType != AM_MELEE))
 	{
-		AI_SetThink(ent, MONSTER_THINK_FLEEING);
+		AI_SetThink(ent, AI_THINK_FLEEING);
 		return;
 	}
 	// Otherwise check what we can see our enemy having (don't check ammo since it's unrealistic).
@@ -336,7 +335,7 @@ void Bot_Pain(ServerEntity_t *ent, ServerEntity_t *other, ServerDamageType_t typ
 		// We see you!
 		if(Monster_IsVisible(ent,other))
 		{
-			AI_SetThink(ent, MONSTER_THINK_ATTACKING);
+			AI_SetThink(ent, AI_THINK_ATTACKING);
 			return;
 		}
 	}

@@ -76,32 +76,32 @@ MonsterRelationship_t MonsterRelationship[]=
 {
 #ifdef GAME_OPENKATANA
 	// LaserGat
-	{	MONSTER_LASERGAT,	MONSTER_LASERGAT,	RELATIONSHIP_LIKE				},
-	{	MONSTER_LASERGAT,	MONSTER_INMATER,	RELATIONSHIP_LIKE				},
-	{	MONSTER_LASERGAT,	MONSTER_PRISONER,	RELATIONSHIP_NEUTRAL			},
-	{	MONSTER_LASERGAT,	MONSTER_COMPANION,	MONSTER_RELATIONSHIP_HATE		},
-	{	MONSTER_LASERGAT,	MONSTER_PLAYER,		MONSTER_RELATIONSHIP_HATE		},
+	{	MONSTER_LASERGAT,	MONSTER_LASERGAT,	AI_RELATIONSHIP_LIKE		},
+	{	MONSTER_LASERGAT,	MONSTER_INMATER,	AI_RELATIONSHIP_LIKE		},
+	{	MONSTER_LASERGAT,	MONSTER_PRISONER,	AI_RELATIONSHIP_NEUTRAL		},
+	{	MONSTER_LASERGAT,	MONSTER_COMPANION,	AI_RELATIONSHIP_HATE		},
+	{	MONSTER_LASERGAT,	MONSTER_PLAYER,		AI_RELATIONSHIP_HATE		},
 
 	// Inmater
-	{	MONSTER_INMATER,	MONSTER_INMATER,	RELATIONSHIP_LIKE				},
-	{	MONSTER_INMATER,	MONSTER_LASERGAT,	RELATIONSHIP_LIKE				},
-	{	MONSTER_INMATER,	MONSTER_PRISONER,	RELATIONSHIP_NEUTRAL			},
-	{	MONSTER_INMATER,	MONSTER_PLAYER,		MONSTER_RELATIONSHIP_HATE		},
-	{	MONSTER_INMATER,	MONSTER_COMPANION,	MONSTER_RELATIONSHIP_HATE		},
+	{	MONSTER_INMATER,	MONSTER_INMATER,	AI_RELATIONSHIP_LIKE		},
+	{	MONSTER_INMATER,	MONSTER_LASERGAT,	AI_RELATIONSHIP_LIKE		},
+	{	MONSTER_INMATER,	MONSTER_PRISONER,	AI_RELATIONSHIP_NEUTRAL		},
+	{	MONSTER_INMATER,	MONSTER_PLAYER,		AI_RELATIONSHIP_HATE		},
+	{	MONSTER_INMATER,	MONSTER_COMPANION,	AI_RELATIONSHIP_HATE		},
 
 	// Prisoner
-	{	MONSTER_PRISONER,	MONSTER_PRISONER,	RELATIONSHIP_LIKE			},
-	{	MONSTER_PRISONER,	MONSTER_PLAYER,		RELATIONSHIP_LIKE			},
-	{	MONSTER_PRISONER,	MONSTER_COMPANION,	RELATIONSHIP_LIKE			},
-	{	MONSTER_PRISONER,	MONSTER_LASERGAT,	MONSTER_RELATIONSHIP_HATE	},
-	{	MONSTER_PRISONER,	MONSTER_INMATER,	MONSTER_RELATIONSHIP_HATE	},
+	{	MONSTER_PRISONER,	MONSTER_PRISONER,	AI_RELATIONSHIP_LIKE	},
+	{	MONSTER_PRISONER,	MONSTER_PLAYER,		AI_RELATIONSHIP_LIKE	},
+	{	MONSTER_PRISONER,	MONSTER_COMPANION,	AI_RELATIONSHIP_LIKE	},
+	{	MONSTER_PRISONER,	MONSTER_LASERGAT,	AI_RELATIONSHIP_HATE	},
+	{	MONSTER_PRISONER,	MONSTER_INMATER,	AI_RELATIONSHIP_HATE	},
 
 	// Companion
-	{	MONSTER_COMPANION,	MONSTER_COMPANION,	RELATIONSHIP_LIKE			},
-	{	MONSTER_COMPANION,	MONSTER_PLAYER,		RELATIONSHIP_LIKE			},
-	{	MONSTER_COMPANION,	MONSTER_PRISONER,	RELATIONSHIP_LIKE			},
-	{	MONSTER_COMPANION,	MONSTER_LASERGAT,	MONSTER_RELATIONSHIP_HATE	},
-	{	MONSTER_COMPANION,	MONSTER_INMATER,	MONSTER_RELATIONSHIP_HATE	},
+	{	MONSTER_COMPANION,	MONSTER_COMPANION,	AI_RELATIONSHIP_LIKE	},
+	{	MONSTER_COMPANION,	MONSTER_PLAYER,		AI_RELATIONSHIP_LIKE	},
+	{	MONSTER_COMPANION,	MONSTER_PRISONER,	AI_RELATIONSHIP_LIKE	},
+	{	MONSTER_COMPANION,	MONSTER_LASERGAT,	AI_RELATIONSHIP_HATE	},
+	{	MONSTER_COMPANION,	MONSTER_INMATER,	AI_RELATIONSHIP_HATE	},
 #elif GAME_ADAMAS
 	// Hurler
 	{	MONSTER_HURLER,		MONSTER_PLAYER,		MONSTER_RELATIONSHIP_HATE	},
@@ -535,7 +535,7 @@ void Monster_Damage(ServerEntity_t *target, ServerEntity_t *inflictor, int iDama
 	{
 		// Automatically wake us up if asleep.
 		if (target->Monster.state == AI_STATE_ASLEEP)
-			Monster_SetState(target, AI_STATE_AWAKE);
+			AI_SetState(target, AI_STATE_AWAKE);
 	}
 
 	// Only do this for players.
@@ -689,7 +689,7 @@ ServerEntity_t *Monster_GetEnemy(ServerEntity_t *Monster)
 	if (!Target)
 		return NULL;
 
-	if (Monster_GetRelationship(Monster, Target) == MONSTER_RELATIONSHIP_HATE)
+	if (Monster_GetRelationship(Monster, Target) == AI_RELATIONSHIP_HATE)
 		return Target;
 
 	return NULL;
@@ -721,45 +721,18 @@ Waypoint_t *AI_GetVisibleMoveTarget(ServerEntity_t *entity)
 }
 
 /*
-	Animation
-*/
-
-/*
-	States
-*/
-
-void AI_SetState(ServerEntity_t *entity, unsigned int state)
-{
-	if (entity->Monster.state == state)
-		return;
-
-	switch (state)
-	{
-	case AI_STATE_ASLEEP:
-	case AI_STATE_AWAKE:
-	case AI_STATE_DEAD:
-	case AI_STATE_DYING:
-	default:
-		g_engine->Warning("Attempted to set an unknown state! (%s) (%i)\n", entity->v.cClassname, state);
-	}
-}
-
-/*
 	Relationships
 */
 
 /*	Checks our relationship against a table and returns how	we'll
 	treat the current target.
 */
-int	Monster_GetRelationship(ServerEntity_t *eMonster, ServerEntity_t *eTarget)
+int	Monster_GetRelationship(ServerEntity_t *entity, ServerEntity_t *target)
 {
 	int	i;
 
-	if (!eMonster->Monster.iType)
-	{
-		Engine.Con_Warning("Attempted to get a relationship, but no monster type set! (%s)\n", eMonster->v.cClassname);
-		return RELATIONSHIP_NEUTRAL;
-	}
+	if (!entity->Monster.iType)
+		return AI_RELATIONSHIP_NEUTRAL;
 
 	// Run through the relationship table...
 	for (i = 0; i < pARRAYELEMENTS(MonsterRelationship); i++)
@@ -768,106 +741,10 @@ int	Monster_GetRelationship(ServerEntity_t *eMonster, ServerEntity_t *eTarget)
 		if (!MonsterRelationship[i].iFirstType)
 			break;
 
-		if ((eMonster->Monster.iType == MonsterRelationship[i].iFirstType) &&
-			(eTarget->Monster.iType == MonsterRelationship[i].iSecondType))
+		if ((entity->Monster.iType == MonsterRelationship[i].iFirstType) &&
+			(target->Monster.iType == MonsterRelationship[i].iSecondType))
 			return MonsterRelationship[i].iRelationship;
 	}
 
-	return RELATIONSHIP_NEUTRAL;
+	return AI_RELATIONSHIP_NEUTRAL;
 }
-
-/*
-	Movement
-*/
-
-// Base...
-
-
-
-// Running
-void AI_RunMovement(ServerEntity_t *entity)
-{
-	// Ensure we're on the ground?
-	if (!Entity_IsOnGround(entity))
-		return;
-}
-
-// Flying
-void AI_FlyMovement(ServerEntity_t *entity)
-{
-	// Ensure we're on the ground?
-	if (Entity_IsOnGround(entity))
-		return;
-
-	if (entity->ai.target_move)
-	{
-		// todo: interp for this over a few frames...
-		plVector3f_t targetangles;
-		plVectorSubtract3fv(entity->v.origin, entity->ai.target_move->position, targetangles);
-		plVectorNormalize(targetangles);
-		Math_MVToVector(plVectorToAngles(targetangles), targetangles);
-		Math_VectorInverse(targetangles);
-		plVectorCopy(targetangles, entity->v.angles);
-
-		AI_ForwardMovement(entity, entity->ai.current_movespeed);
-
-		// Link us up, Scotty(?)
-		Entity_Link(entity, false);
-	}
-}
-
-void AI_ForwardMovement(ServerEntity_t *entity, float velocity)
-{
-	plVector3f_t direction, end;
-
-	Entity_MakeVectors(entity);
-	plVectorCopy(entity->local.vForward, direction);
-	Math_VectorMA(entity->v.origin, velocity, direction, end);
-	plVectorScalef(direction, velocity, entity->v.velocity);
-}
-
-// Everything else...
-
-/*	Allows a monster to jump with the given velocity.
-*/
-void AI_JumpMovement(ServerEntity_t *monster, float velocity)
-{
-	if (monster->v.velocity[2] != 0 || Entity_IsOnGround(monster))
-		return;
-
-	// Allow the monster to add additional sounds/movement if required.
-	if (monster->Monster.Jump)
-		monster->Monster.Jump(monster);
-
-	monster->v.flags -= FL_ONGROUND;
-	monster->v.velocity[2] = velocity;
-}
-
-/*	Can be used to debug monster movement / apply random movement.
-*/
-void AI_RandomMovement(ServerEntity_t *eMonster, float fSpeed)
-{
-	// Add some random movement. ~hogsy
-	if (rand() % 50 == 0)
-	{
-		int iResult = rand() % 3;
-		if (iResult == 0)
-			eMonster->v.velocity[0] += fSpeed;
-		else if (iResult == 1)
-			eMonster->v.velocity[0] -= fSpeed;
-
-		iResult = rand() % 3;
-		if (iResult == 0)
-			eMonster->v.velocity[1] += fSpeed;
-		else if (iResult == 1)
-			eMonster->v.velocity[1] -= fSpeed;
-
-		eMonster->v.angles[1] = plVectorToYaw(eMonster->v.velocity);
-	}
-	else if (rand() % 150 == 0)
-		AI_JumpMovement(eMonster, 200.0f);
-	else if (rand() % 250 == 0)
-		eMonster->v.angles[1] = (float)(rand() % 360);
-}
-
-/////////////////////////////////////////////

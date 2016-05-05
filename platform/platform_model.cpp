@@ -24,6 +24,59 @@
 	PLATFORM MODEL LOADER
 */
 
+std::vector<float> plGenerateNormal(plVector3f_t a, plVector3f_t b, plVector3f_t c)
+{
+	plVector3f_t x, y;
+	plVectorSubtract3fv(c, b, x);
+	plVectorSubtract3fv(a, b, y);
+
+	plVector3f_t normal;
+	plVectorClear(normal);
+	Math_CrossProduct(x, y, normal);
+	plVectorNormalize(normal);
+
+	std::vector<float> vnorm = { normal[0], normal[1], normal[2] };
+	return vnorm;
+}
+
+void plGenerateStaticModelNormals(plStaticModel_t *model)
+{
+	plModelFrame_t *frame = &model->frame;
+#if 0 // per face...
+	for (int i = 0; i < model->num_triangles; i++)
+	{
+		std::vector<float> normal = plGenerateNormal(
+			frame->vertices[frame->triangles[i].indices[0]].position,
+			frame->vertices[frame->triangles[i].indices[1]].position,
+			frame->vertices[frame->triangles[i].indices[2]].position);
+		
+		frame->triangles[i].normal[PL_X] = normal[PL_X];
+		frame->triangles[i].normal[PL_Y] = normal[PL_Y];
+		frame->triangles[i].normal[PL_Z] = normal[PL_Z];
+	}
+#else // per vertex...
+	for (plVertex_t *vertex = &frame->vertices[0]; vertex; ++vertex)
+	{
+		for (plTriangle_t *triangle = &frame->triangles[0]; triangle; ++triangle)
+		{
+
+		}
+	}
+#endif
+}
+
+void plGenerateAnimatedModelNormals(plAnimatedModel_t *model)
+{
+	if (!model)
+		return;
+}
+
+void plGenerateSkeletalModelNormals(plSkeletalModel_t *model)
+{
+	if (!model)
+		return;
+}
+
 /*
 	Static Model
 */
@@ -68,7 +121,7 @@ plAnimatedModel_t *plCreateAnimatedModel(void)
 	plAnimatedModel_t *model = new plAnimatedModel_t;
 	if (!model)
 		return nullptr;
-
+	
 	memset(model, 0, sizeof(plAnimatedModel_t));
 
 	return model;
@@ -97,6 +150,76 @@ void plDeleteAnimatedModel(plAnimatedModel_t *model)
 	}
 
 	delete model;
+}
+
+/*
+	MD2 Model Format
+
+	Model format introduced in id Software's Quake 2.
+*/
+
+#define MD2_HEADER			(('2'<<24)+('P'<<16)+('D'<<8)+'I')
+#define	MD2_FILE_EXTENSION	".md2"
+#define	MD2_VERSION			8
+
+#define	MD2_MAX_FRAMES		1024
+#define MD2_MAX_SKINS		32
+#define MD2_MAX_TRIANGLES	4096
+#define	MD2_MAX_VERTICES	8192
+
+typedef struct
+{
+	short	index_xyz[3];
+	short	index_st[3];
+} MD2Triangle_t;
+
+typedef struct
+{
+	pl_uchar v[3];				// scaled byte to fit in frame mins/maxs
+	pl_uchar lightnormalindex;
+} MD2TriangleVertex_t;
+
+typedef struct
+{
+	float scale[3];					// multiply byte verts by this
+	float translate[3];				// then add this
+
+	char name[16];					// frame name from grabbing
+	MD2TriangleVertex_t	verts[1];	// variable sized
+} MD2Frame_t;
+
+typedef struct
+{
+	short	S, T;
+} MD2TextureCoordinate_t;
+
+typedef struct
+{
+	int			    ident;
+	int			    version;
+	unsigned    int	skinwidth;
+	unsigned    int	skinheight;
+	int			    framesize;		// Byte size of each frame.
+	int			    num_skins;
+	int			    num_xyz;
+	int			    num_st;			// Greater than num_xyz for seams.
+	int			    numtris;
+	int			    num_glcmds;		// Dwords in strip/fan command list.
+	int			    num_frames;
+	int			    ofs_skins;		// Each skin is a MAX_SKINNAME string.
+	int			    ofs_st;			// Byte offset from start for stverts.
+	int			    ofs_tris;		// Offset for dtriangles.
+	int			    ofs_frames;		// Offset for first frame.
+	int			    ofs_glcmds;
+	int			    ofs_end;		// End of file.
+} MD2_t;
+
+plAnimatedModel_t *plLoadMD2Model(const char *path)
+{
+	if (!path || path[0] == ' ')
+		return nullptr;
+
+	return nullptr;
 }
 
 /*
@@ -253,7 +376,14 @@ plAnimatedModel_t *plLoadU3DModel(const char *path)
 		return nullptr;
 	}
 
-	plAnimatedModel_t *model = new plAnimatedModel_t;
+	plAnimatedModel_t *model = plCreateAnimatedModel();
+	if (!model)
+	{
+		plSetError("Failed to allocate animated model!\n");
+		
+		_plUnloadU3DFiles();
+		return nullptr;
+	}
 
 	// Store the information we've gathered.
 	model->num_frames		= animheader.frames;
@@ -279,6 +409,8 @@ plAnimatedModel_t *plLoadU3DModel(const char *path)
 		{
 			plSetError("Failed to process triangles! (%i)\n", i);
 
+			plDeleteAnimatedModel(model);
+
 			_plUnloadU3DFiles();
 			return nullptr;
 		}
@@ -297,6 +429,8 @@ plAnimatedModel_t *plLoadU3DModel(const char *path)
 		{
 			plSetError("Failed to process vertex! (%i)\n", i);
 
+			plDeleteAnimatedModel(model);
+
 			_plUnloadU3DFiles();
 			return nullptr;
 		}
@@ -308,6 +442,7 @@ plAnimatedModel_t *plLoadU3DModel(const char *path)
 	}
 
 	// Calculate normals.
+	plGenerateAnimatedModelNormals(model);
 
 	_plUnloadU3DFiles();
 

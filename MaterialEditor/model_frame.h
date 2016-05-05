@@ -24,6 +24,8 @@ public:
 	void Draw();
 	void SetModel(model_t *newmodel);
 	void SetRotate(bool dorotate);
+
+	virtual void OnKey(wxKeyEvent &event);
 protected:
 private:
 

@@ -56,7 +56,7 @@ void ScanBot_Spawn(ServerEntity_t *entity)
 	// todo: redo this, legacy crap.
 	entity->Monster.iType = MONSTER_SCANBOT;
 
-	entity->ai.current_movement		= AI_MOVEMENT_FLYING;
+	entity->ai.current_movement	= AI_MOVEMENT_FLYING;
 
 	entity->ai.Think	= ScanBot_Think;
 	entity->ai.State	= ScanBot_State;

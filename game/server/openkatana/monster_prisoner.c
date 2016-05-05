@@ -62,7 +62,7 @@ bool Prisoner_CheckCell(ServerEntity_t *ePrisoner)
 			//	Math_VectorCopy(wCellDoorWaypoint->position, ePrisoner->Monster.mvMoveTarget);
 
 				// Set the state to wandering so we walk over to the selected waypoint.
-				AI_SetThink(ePrisoner, MONSTER_THINK_WANDERING);
+				AI_SetThink(ePrisoner, AI_THINK_WANDERING);
 			}
 			return true;
 		}
@@ -77,7 +77,7 @@ void Prisoner_Think(ServerEntity_t *ePrisoner)
 
 	switch (ePrisoner->Monster.think)
 	{
-	case MONSTER_THINK_IDLE:
+	case AI_THINK_IDLE:
 		if (ePrisoner->Monster.commands[COMMAND_CHECK_CELL] && !Prisoner_CheckCell(ePrisoner))
 		{
 			if (rand() % 200 == 1)
@@ -86,7 +86,7 @@ void Prisoner_Think(ServerEntity_t *ePrisoner)
 
 		AI_RandomMovement(ePrisoner, 35.0f);
 		break;
-	case MONSTER_THINK_WANDERING:
+	case AI_THINK_WANDERING:
 		AI_RandomMovement(ePrisoner, 35.0f);
 		break;
 	}
@@ -198,7 +198,7 @@ PRISONER_GENERATEKEY:
 
 	// State must be set before think!
 	AI_SetState(ePrisoner, AI_STATE_AWAKE);
-	AI_SetThink(ePrisoner, MONSTER_THINK_IDLE);
+	AI_SetThink(ePrisoner, AI_THINK_IDLE);
 
 	Entity_SetModel(ePrisoner,PRISONER_MODEL_BODY);
 	Entity_SetSize(ePrisoner,-16.0f,-16.0f,-24.0f,16.0f,16.0f,32.0f);

@@ -29,6 +29,8 @@ typedef struct plVertex_s
 
 typedef struct plTriangle_s
 {
+	plVector3f_t normal;
+
 	unsigned int indices[3];
 } plTriangle_t;
 
@@ -68,3 +70,10 @@ typedef struct plSkeletalModel_s
 
 	// Unfinished...
 } plSkeletalModel_t;
+
+plEXTERN_C_START
+
+// Animated
+plAnimatedModel_t *plLoadU3DModel(const char *path);
+
+plEXTERN_C_END

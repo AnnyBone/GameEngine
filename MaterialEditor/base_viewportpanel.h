@@ -34,6 +34,8 @@ public:
 	int GetDrawCanvasHeight()		{ return viewport_canvas->GetHeight(); }
 	void CreateDrawCanvas(wxWindow *parent);
 
+	virtual void OnKey(wxKeyEvent &event) { engine->Print("Unhandled input for viewport!\n"); }
+
 private:
 
 	// Events

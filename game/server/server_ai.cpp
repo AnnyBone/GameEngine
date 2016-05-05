@@ -15,8 +15,6 @@
 
 #include "server_main.h"
 
-#include "server_ai.h"
-
 void AI_Spawn(ServerEntity_t *entity)
 {
 	// Reset AI struct for this entity.
@@ -33,7 +31,7 @@ void AI_SetThink(ServerEntity_t *entity, unsigned int think)
 {
 	if (entity->ai.current_think == think)
 		return;
-	else if ((think >= AI_THINK_END) || (think <= AI_THINK_START))
+	else if (think <= AI_THINK_START)
 	{
 		g_engine->Con_Printf("Invalid think! (%s) (%i)\n", entity->v.cClassname, think);
 		return;
@@ -49,7 +47,7 @@ void AI_SetState(ServerEntity_t *entity, unsigned int state)
 {
 	if (entity->ai.current_state == state)
 		return;
-	else if ((state >= AI_STATE_END) || (state <= AI_STATE_START))
+	else if (state <= AI_STATE_START)
 	{
 		g_engine->Con_Printf("Invalid state! (%s) (%i)\n", entity->v.cClassname, state);
 		return;
@@ -116,4 +114,87 @@ void AI_Movement(ServerEntity_t *entity)
 		AI_FlyMovement(entity);
 		break;
 	}
+}
+
+// Flying
+void AI_FlyMovement(ServerEntity_t *entity)
+{
+	// Ensure we're on the ground?
+	if (Entity_IsOnGround(entity))
+		return;
+
+	if (entity->ai.target_move)
+	{
+		// todo: interp for this over a few frames...
+		plVector3f_t targetangles;
+		plVectorSubtract3fv(entity->v.origin, entity->ai.target_move->position, targetangles);
+		plVectorNormalize(targetangles);
+		Math_MVToVector(plVectorToAngles(targetangles), targetangles);
+		Math_VectorInverse(targetangles);
+		plVectorCopy(targetangles, entity->v.angles);
+
+		AI_ForwardMovement(entity, entity->ai.current_movespeed);
+
+		// Link us up, Scotty(?)
+		Entity_Link(entity, false);
+	}
+}
+
+// Running
+void AI_RunMovement(ServerEntity_t *entity)
+{
+	// Ensure we're on the ground?
+	if (!Entity_IsOnGround(entity))
+		return;
+}
+
+void AI_ForwardMovement(ServerEntity_t *entity, float velocity)
+{
+	plVector3f_t direction, end;
+
+	Entity_MakeVectors(entity);
+	plVectorCopy(entity->local.vForward, direction);
+	Math_VectorMA(entity->v.origin, velocity, direction, end);
+	plVectorScalef(direction, velocity, entity->v.velocity);
+}
+
+/*	Allows a monster to jump with the given velocity.
+*/
+void AI_JumpMovement(ServerEntity_t *entity, float velocity)
+{
+	if (entity->v.velocity[2] != 0 || Entity_IsOnGround(entity))
+		return;
+
+	// Allow the monster to add additional sounds/movement if required.
+	if (entity->ai.Jump)
+		entity->ai.Jump(entity);
+
+	entity->v.flags -= FL_ONGROUND;
+	entity->v.velocity[2] = velocity;
+}
+
+/*	Can be used to debug monster movement / apply random movement.
+*/
+void AI_RandomMovement(ServerEntity_t *entity, float velocity)
+{
+	if (rand() % 50 == 0)
+	{
+		int result = rand() % 3;
+		if (result == 0)
+			entity->v.velocity[0] += velocity;
+		else if (result == 1)
+			entity->v.velocity[0] -= velocity;
+
+		result = rand() % 3;
+		if (result == 0)
+			entity->v.velocity[1] += velocity;
+		else if (result == 1)
+			entity->v.velocity[1] -= velocity;
+
+		entity->v.angles[1] = plVectorToYaw(entity->v.velocity);
+	}
+	else if (rand() % 150 == 0)
+		AI_JumpMovement(entity, 200.0f);
+	else if (rand() % 250 == 0)
+		entity->v.angles[1] = (float)(rand() % 360);
 }

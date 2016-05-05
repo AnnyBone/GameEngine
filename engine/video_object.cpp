@@ -30,19 +30,9 @@ void Draw_StaticEntity(ClientEntity_t *entity)
 
 	R_RotateForEntity(entity->origin, entity->angles);
 
-	Core::ShaderProgram *sp_base = g_shadermanager->GetProgram("base");
-	if (sp_base)
-	{
-		sp_base->Enable();
-		sp_base->Draw(entity->model->objects[entity->frame]);
-		sp_base->Disable();
-	}
-	else
-	{
-		Material_Draw(entity->model->materials, 0, VL_PRIMITIVE_IGNORE, 0, false);
-		vlDraw(entity->model->objects[entity->frame]);
-		Material_Draw(entity->model->materials, 0, VL_PRIMITIVE_IGNORE, 0, true);
-	}
+	Material_Draw(entity->model->materials, 0, VL_PRIMITIVE_IGNORE, 0, false);
+	vlDraw(entity->model->objects[entity->frame]);
+	Material_Draw(entity->model->materials, 0, VL_PRIMITIVE_IGNORE, 0, true);
 
 	vlPopMatrix();
 	// TODO: TEMPORARY DEBUGGING STUFF!!!!

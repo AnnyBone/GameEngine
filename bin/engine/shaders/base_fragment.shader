@@ -38,6 +38,6 @@ void main()
 			discard;
 
 	//gl_FragColor = diffuse;
-	gl_FragColor = vec4(v_diffusecolour.xyz, 1.0) * diffuse;
-	//gl_FragColor = normalize(v_normalcolour);
+	//gl_FragColor = vec4(v_diffusecolour.xyz, 1.0) * diffuse;
+	gl_FragColor = normalize(v_normalcolour);
 }

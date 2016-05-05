@@ -98,6 +98,24 @@ void ModelViewportPanel::SetRotate(bool dorotate)
 	rotate = dorotate;
 }
 
+// Handle input.
+void ModelViewportPanel::OnKey(wxKeyEvent &event)
+{
+	switch (event.GetKeyCode())
+	{
+	case WXK_UP:
+		entity->origin[0] -= 2.0f;
+		break;
+	case WXK_DOWN:
+		entity->origin[0] += 2.0f;
+		break;
+	case WXK_LEFT:
+	case WXK_RIGHT:
+	default:
+		break;
+	}
+}
+
 /*
 	Frame
 */

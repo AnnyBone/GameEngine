@@ -50,54 +50,6 @@ typedef struct
 #define MONSTER_RANGE_MEDIUM	700.0f
 #define MONSTER_RANGE_FAR		2000.0f
 
-/*	Relationship states.
-	Neutral is the default relationship state.
-*/
-enum
-{
-	MONSTER_RELATIONSHIP_HATE,
-	RELATIONSHIP_NEUTRAL,
-	RELATIONSHIP_LIKE
-};
-
-/*	Various thought processes.
-*/
-typedef enum AIThink_s
-{
-	AI_THINK_START,
-
-	AI_THINK_IDLE,			// Monster is idle.
-	AI_THINK_FLEEING,		// Monster is fleeing.
-	AI_THINK_PURSUING,		// Monster is following.
-	AI_THINK_ATTACKING,		// Monster is attacking.
-	AI_THINK_WANDERING,		// Monster is just walking around.
-
-	AI_THINK_END
-} AIThink_t;
-
-/*	Various emotions.
-*/
-typedef enum AIEmotion_s
-{
-	AI_EMOTION_BOREDOM,
-	AI_EMOTION_FEAR,
-	AI_EMOTION_JOY,
-	AI_EMOTION_ANGER,
-	AI_EMOTION_SADNESS,
-	AI_EMOTION_DISGUST,
-	AI_EMOTION_SURPRISE,
-	AI_EMOTION_CONTEMPT,
-	AI_EMOTION_INTEREST,
-
-	AI_EMOTION_END
-} AIEmotion_t;
-
-enum
-{
-	AI_MOVEMENT_RUNNING,	// Walking / Running
-	AI_MOVEMENT_FLYING,
-};
-
 ServerEntity_t *Monster_GetTarget(ServerEntity_t *eMonster);
 ServerEntity_t *Monster_GetEnemy(ServerEntity_t *Monster);
 
@@ -108,7 +60,7 @@ int	Monster_GetRelationship(ServerEntity_t *eMonster, ServerEntity_t *eTarget);
 float MONSTER_GetRange(ServerEntity_t *ent, MathVector3f_t target);
 
 void Monster_Damage(ServerEntity_t *target, ServerEntity_t *inflictor, int iDamage, ServerDamageType_t type);
-void AI_JumpMovement(ServerEntity_t *eMonster, float fVelocity);
+
 void Monster_MoveToGoal(ServerEntity_t *ent, MathVector3f_t goal, float distance);
 void AI_RandomMovement(ServerEntity_t *eMonster, float fSpeed);
 

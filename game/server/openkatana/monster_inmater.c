@@ -134,14 +134,14 @@ void Inmater_Think(ServerEntity_t *eInmater)
 		//if (eInmater->Monster.meEmotion[EMOTION_BOREDOM].iEmotion > INMATER_MAX_BOREDOM)
 		{
 			AI_SetState(eInmater, AI_STATE_AWAKE);
-			AI_SetThink(eInmater, MONSTER_THINK_WANDERING);
+			AI_SetThink(eInmater, AI_THINK_WANDERING);
 			return;
 		}
 		break;
 	case AI_STATE_AWAKE:
 		switch (eInmater->Monster.think)
 		{
-		case MONSTER_THINK_IDLE:
+		case AI_THINK_IDLE:
 			if(!eInmater->local.dAnimationTime || (eInmater->local.iAnimationCurrent == eInmater->local.iAnimationEnd))
 				Entity_Animate(eInmater,efInmaterIdle);
 
@@ -176,7 +176,7 @@ void Inmater_Spawn(ServerEntity_t *eInmater)
 	eInmater->local.iMaxHealth = INMATER_MAX_HEALTH;
 
 	AI_SetState(eInmater, AI_STATE_AWAKE);
-	AI_SetThink(eInmater, MONSTER_THINK_IDLE);
+	AI_SetThink(eInmater, AI_THINK_IDLE);
 
 	Entity_SetModel(eInmater, MODEL_INMATER_BODY);
 	Entity_SetSize(eInmater, -16.0f, -16.0f, -24.0f, 16.0f, 16.0f, 32.0f);

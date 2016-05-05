@@ -615,6 +615,11 @@ void CEditorFrame::OnMouseEvent(wxMouseEvent &event)
 {
 }
 
+void CEditorFrame::OnKey(wxKeyEvent &event)
+{
+	engine->Print("test\n");
+}
+
 /*	Reload the currently active document.
 */
 void CEditorFrame::ReloadCurrentDocument()
