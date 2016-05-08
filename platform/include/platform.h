@@ -233,6 +233,7 @@ typedef	unsigned char	pl_uchar;
 #include "platform_log.h"
 #include "platform_window.h"
 #include "platform_math.h"
+#include "platform_video_layer.h"
 
 /*
 	Error Management Functionality

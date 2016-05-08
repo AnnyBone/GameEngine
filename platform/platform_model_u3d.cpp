@@ -87,7 +87,7 @@ typedef struct U3DTriangle_s
 FILE *pl_u3d_dataf = nullptr;
 FILE *pl_u3d_animf = nullptr;
 
-void _plUnloadU3DFiles()
+void _plUnloadU3DModel()
 {
 	if (pl_u3d_animf)
 		std::fclose(pl_u3d_animf);
@@ -120,7 +120,7 @@ plAnimatedModel_t *plLoadU3DModel(const char *path)
 	{
 		plSetError("Invalid file name! (%s)\n", newpath.c_str());
 
-		_plUnloadU3DFiles();
+		_plUnloadU3DModel();
 		return nullptr;
 	}
 	newpath.append("_a.3d");
@@ -138,7 +138,7 @@ plAnimatedModel_t *plLoadU3DModel(const char *path)
 		{
 			plSetError("Failed to load U3D animation data! (%s)\n", newpath.c_str());
 
-			_plUnloadU3DFiles();
+			_plUnloadU3DModel();
 			return nullptr;
 		}
 	}
@@ -149,7 +149,7 @@ plAnimatedModel_t *plLoadU3DModel(const char *path)
 	{
 		plSetError("Failed to read animation file!\n");
 
-		_plUnloadU3DFiles();
+		_plUnloadU3DModel();
 		return nullptr;
 	}
 
@@ -159,7 +159,7 @@ plAnimatedModel_t *plLoadU3DModel(const char *path)
 	{
 		plSetError("Failed to read data file!\n");
 
-		_plUnloadU3DFiles();
+		_plUnloadU3DModel();
 		return nullptr;
 	}
 
@@ -168,7 +168,7 @@ plAnimatedModel_t *plLoadU3DModel(const char *path)
 	{
 		plSetError("Failed to allocate animated model!\n");
 
-		_plUnloadU3DFiles();
+		_plUnloadU3DModel();
 		return nullptr;
 	}
 
@@ -198,7 +198,7 @@ plAnimatedModel_t *plLoadU3DModel(const char *path)
 
 			plDeleteAnimatedModel(model);
 
-			_plUnloadU3DFiles();
+			_plUnloadU3DModel();
 			return nullptr;
 		}
 
@@ -218,7 +218,7 @@ plAnimatedModel_t *plLoadU3DModel(const char *path)
 
 			plDeleteAnimatedModel(model);
 
-			_plUnloadU3DFiles();
+			_plUnloadU3DModel();
 			return nullptr;
 		}
 
@@ -231,7 +231,7 @@ plAnimatedModel_t *plLoadU3DModel(const char *path)
 	// Calculate normals.
 	plGenerateAnimatedModelNormals(model);
 
-	_plUnloadU3DFiles();
+	_plUnloadU3DModel();
 
 	return model;
 }

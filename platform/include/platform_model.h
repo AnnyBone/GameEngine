@@ -47,6 +47,8 @@ typedef struct plStaticModel_s
 	unsigned int num_triangles;
 	unsigned int num_vertices;
 
+	vlPrimitive_t primitive;
+
 	plModelFrame_t	frame;
 } plStaticModel_t;
 
@@ -58,6 +60,8 @@ typedef struct plAnimatedModel_s
 	unsigned int num_vertices;
 	unsigned int num_frames;
 
+	vlPrimitive_t primitive;
+
 	plModelFrame_t *frames;
 } plAnimatedModel_t;
 
@@ -67,6 +71,8 @@ typedef struct plSkeletalModel_s
 {
 	unsigned int num_triangles;
 	unsigned int num_vertices;
+
+	vlPrimitive_t primitive;
 
 	// Unfinished...
 } plSkeletalModel_t;

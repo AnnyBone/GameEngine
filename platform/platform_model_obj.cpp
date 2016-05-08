@@ -36,28 +36,56 @@ enum
 	OBJ_SYNTAX_FACE				= 'f',
 };
 
+typedef struct OBJFace_s
+{
+
+} OBJFace_t;
+
+std::vector<float*> vertices;
+std::vector<float*> normals;
+
+std::ifstream pl_obj_data;
+
+void _plUnloadOBJModel()
+{
+	if (pl_obj_data.is_open())
+		pl_obj_data.close();
+
+	// Clear out all the allocated memory.
+	for (unsigned int i = 0; i < vertices.size(); i++)
+		if (vertices[i]) delete vertices[i];
+	for (unsigned int i = 0; i < normals.size(); i++)
+		if (normals[i]) delete normals[i];
+
+	// Shrink our vectors down.
+	vertices.empty();
+	vertices.shrink_to_fit();
+	normals.empty();
+	normals.shrink_to_fit();
+}
+
 plStaticModel_t *plLoadOBJModel(const char *path)
 {
 	plSetErrorFunction("plLoadOBJModel");
 
-	std::ifstream pl_obj_data(path, std::ifstream::binary);
+	pl_obj_data.open(path, std::ifstream::binary);
 	if (!pl_obj_data)
 	{
 		plSetError("Failed to load file! (%s)\n", path);
 		return nullptr;
 	}
 
+	// Get the length of the file.
 	pl_obj_data.seekg(0, pl_obj_data.end);
 	std::streamoff length = pl_obj_data.tellg();
 	pl_obj_data.seekg(0, pl_obj_data.beg);
 	if (length <= 0)
 	{
+		_plUnloadOBJModel();
+
 		plSetError("Invalid OBJ model! (%s)\n", path);
 		return nullptr;
 	}
-
-	std::vector<float*> vertices;
-	std::vector<float*> normals;
 
 	std::string line;
 	while (std::getline(pl_obj_data, line))
@@ -95,13 +123,37 @@ plStaticModel_t *plLoadOBJModel(const char *path)
 		}
 		break;
 		default:
+			// Materials are ignored for now, do we want these?
 			if (!strncmp("mtllib", line.c_str(), 6))
 				continue;
 			else if (!strncmp("usemtl", line.c_str(), 6))
-			{ }
+				continue;
 			break;
 		}
 	}
 
-	return nullptr;
+	plStaticModel_t *model = plCreateStaticModel();
+	if (!model)
+	{
+		plSetError("Failed to create static model!\n");
+
+		_plUnloadOBJModel();
+		return nullptr;
+	}
+
+	model->num_triangles	= 0;
+	model->num_vertices		= vertices.size();
+	model->primitive		= VL_PRIMITIVE_POINTS;
+
+	// Allocate vertex/triangle arrays.
+	model->frame.vertices = new plVertex_t[model->num_vertices];
+	for (unsigned int i = 0; i < model->num_vertices; i++)
+	{
+		plVertex_t *vertex = &model->frame.vertices[0];
+		plVectorCopy(vertices[i], vertex->position);
+	}
+
+	_plUnloadOBJModel();
+
+	return model;
 }
