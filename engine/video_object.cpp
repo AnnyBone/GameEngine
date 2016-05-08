@@ -25,14 +25,18 @@
 */
 void Draw_StaticEntity(ClientEntity_t *entity)
 {
+	model_t *model = entity->model;
+	if (!model)
+		return;
+
 	// TODO: TEMPORARY DEBUGGING STUFF!!!!
 	vlPushMatrix();
 
 	R_RotateForEntity(entity->origin, entity->angles);
 
-	Material_Draw(entity->model->materials, 0, VL_PRIMITIVE_IGNORE, 0, false);
-	vlDraw(entity->model->objects[entity->frame]);
-	Material_Draw(entity->model->materials, 0, VL_PRIMITIVE_IGNORE, 0, true);
+	Material_Draw(model->materials, 0, VL_PRIMITIVE_IGNORE, 0, false);
+	vlDraw(model->objects[entity->frame]);
+	Material_Draw(model->materials, 0, VL_PRIMITIVE_IGNORE, 0, true);
 
 	vlPopMatrix();
 	// TODO: TEMPORARY DEBUGGING STUFF!!!!
@@ -40,11 +44,15 @@ void Draw_StaticEntity(ClientEntity_t *entity)
 
 void Draw_VertexEntity(ClientEntity_t *entity)
 {
+	model_t *model = entity->model;
+	if (!model)
+		return;
+
 	vlPushMatrix();
 
 	R_RotateForEntity(entity->origin, entity->angles);
 
-	vlDraw(entity->model->objects[entity->frame]);
+	vlDraw(model->objects[entity->frame]);
 
 	vlPopMatrix();
 }

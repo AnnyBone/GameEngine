@@ -383,6 +383,9 @@ void R_DrawViewModel(void)
 	glDepthRange(0,0.3);
 #endif
 
+	// TODO: Hack until we sort this properly... blergh!
+	currententity->distance_alpha = 1.0f;
+
 	Alias_Draw(currententity);
 
 #ifdef VL_MODE_OPENGL

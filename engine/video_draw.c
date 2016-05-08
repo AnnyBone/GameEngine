@@ -815,6 +815,20 @@ void Draw_Entity(ClientEntity_t *entity)
 		return;
 	}
 
+	entity->distance_alpha = 1.0f;
+	if (cv_video_entity_fade.bValue)
+	{
+		plVector3f_t vdist;
+		plVectorSubtract3fv(r_refdef.vieworg, entity->origin, vdist);
+		float distance = plLengthf(vdist);
+		if (distance > cv_video_entity_distance.value)
+		{
+			entity->distance_alpha = 1.0f - (((distance - cv_video_entity_distance.value) / 100.0f) / 1.0f);
+			if (entity->distance_alpha < 0.01)
+				return;
+		}
+	}
+
 	switch (entity->model->type)
 	{
 #if 1	// Old legacy draws

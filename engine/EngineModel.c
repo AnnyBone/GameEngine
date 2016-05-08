@@ -1510,46 +1510,9 @@ bool Model_LoadOBJ(model_t *model)
 		return false;
 	}
 
-	model->type = MODEL_TYPE_STATIC;
+	model->type	= MODEL_TYPE_STATIC;
 
-#if 0
-	char	cExtension[4];
-	OBJ_t	*oObject;
-
-	mModel->type = MODEL_TYPE_OBJ;
-
-	// Parse OBJ file...
-	for(;;)
-	{
-		char cLine[128];
-
-		if(fscanf(Buffer,"%s",cLine) == EOF)
-			break;
-
-		if(cLine[0] == 'v')
-		{
-			switch(cLine[1])
-			{
-			case 't':
-				// Ignore for now... ~hogsy
-			case 'n':
-				// Ignore for now... ~hogsy
-				break;
-			default:
-				fscanf(Buffer,"%f %f %f\n",
-					&oObject->ovVertex->vVertex[0],
-					&oObject->ovVertex->vVertex[1],
-					&oObject->ovVertex->vVertex[2]);
-			}
-		}
-		else if(cLine[0] == 'f')
-		{
-			// Ignore for now... ~hogsy
-		}
-	}
-#endif
-
-	return false;
+	return true;
 }
 
 /**/

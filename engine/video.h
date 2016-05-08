@@ -41,6 +41,9 @@ extern ConsoleVariable_t
 
 	cv_video_shownormals,			// Show vertex normals?
 
+	cv_video_entity_distance,
+	cv_video_entity_fade,
+
 	cvLitParticles;					// Should particles be lit or not?
 
 extern	ConsoleVariable_t	r_showtris;

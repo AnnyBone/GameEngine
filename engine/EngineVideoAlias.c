@@ -132,6 +132,10 @@ void Alias_DrawFrame(MD2_t *alias, ClientEntity_t *entity, lerpdata_t lLerpData)
 	if (bShading && !r_showtris.bValue)
 		fAlpha	= ENTALPHA_DECODE(entity->alpha);
 
+	fAlpha = Math_Clamp(0, fAlpha, entity->distance_alpha);
+	if (fAlpha < 1.0f)
+		vlEnable(VL_CAPABILITY_BLEND);
+
 	//new version by muff - fixes bug, easier to read, faster (well slightly)
 	frame1 = (MD2Frame_t*)((uint8_t*)alias + alias->ofs_frames + (alias->framesize*entity->draw_lastpose));
 	frame2 = (MD2Frame_t*)((uint8_t*)alias + alias->ofs_frames + (alias->framesize*entity->draw_pose));
@@ -186,6 +190,9 @@ void Alias_DrawFrame(MD2_t *alias, ClientEntity_t *entity, lerpdata_t lLerpData)
 
 		Video_DrawObject(voModel, VL_PRIMITIVE_TRIANGLE_STRIP, uiVerts, entity->model->materials, entity->skinnum);
 	}
+
+	if (fAlpha < 1.0f)
+		vlDisable(VL_CAPABILITY_BLEND);
 
 	free(voModel);
 #endif

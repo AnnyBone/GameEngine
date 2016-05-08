@@ -175,6 +175,9 @@ typedef struct ClientEntity_s
 	short			currentpose;	//johnfitz -- animation lerping
 	float			movelerpstart;	//johnfitz -- transform lerping
 
+	// LOD
+	float distance_alpha;
+
 	plVector3f_t previousorigin;	//johnfitz -- transform lerping
 	plVector3f_t currentorigin;	//johnfitz -- transform lerping
 	plVector3f_t previousangles;	//johnfitz -- transform lerping

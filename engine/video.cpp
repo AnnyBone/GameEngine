@@ -70,6 +70,9 @@ ConsoleVariable_t
 ConsoleVariable_t cv_video_drawshadowmap = { "video_draw_shadowmap", "1", true, false, "Enables/disables the rendering of shadow maps." };
 ConsoleVariable_t cv_video_drawshadowblob = { "video_draw_shadowblob", "1", true, false, "Enables/disables the rendering of a shadow blob." };
 
+ConsoleVariable_t cv_video_entity_distance = { "video_entity_distance", "50" };
+ConsoleVariable_t cv_video_entity_fade = { "video_entity_fade", "1" };
+
 #define VIDEO_MAX_SAMPLES	cv_video_msaamaxsamples.iValue
 #define VIDEO_MIN_SAMPLES	0
 
@@ -128,6 +131,9 @@ void Video_Initialize(void)
 	Cvar_RegisterVariable(&cv_video_drawplayershadow, NULL);
 	Cvar_RegisterVariable(&cv_video_shaders, NULL);
 	Cvar_RegisterVariable(&cv_video_clearbuffers, NULL);
+
+	Cvar_RegisterVariable(&cv_video_entity_distance, NULL);
+	Cvar_RegisterVariable(&cv_video_entity_fade, NULL);
 
 	Cvar_RegisterVariable(&cv_video_shownormals, NULL);
 
