@@ -202,7 +202,8 @@ void ModelFrame::FileEvent(wxCommandEvent &event)
 				"Open Model",
 				wxString(engine->GetBasePath()) + "/models",
 				"",
-				"Supported files (*.3d;*.md2)|*.3d;*.md2",
+				"Supported files"
+				"(*.3d;*.md2;*.obj)|*.3d;*.md2;*.obj",
 				wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 			if (filed->ShowModal() == wxID_OK)
 				LoadModel(filed->GetPath());

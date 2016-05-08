@@ -1086,7 +1086,9 @@ bool Material_Precache(const char *path)
 */
 
 plEXTERN_C_START
+
 extern ConsoleVariable_t gl_fullbrights;
+
 plEXTERN_C_END
 
 /*	TODO: Replace Material_Draw with this!

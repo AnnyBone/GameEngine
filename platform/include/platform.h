@@ -66,6 +66,10 @@
 #			include <unordered_set>
 #			include <map>
 #			include <unordered_map>
+
+			// istream
+#			include <fstream>
+#			include <iostream>
 #		endif
 #	endif
 #endif

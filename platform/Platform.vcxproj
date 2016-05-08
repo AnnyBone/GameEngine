@@ -33,6 +33,8 @@
     <ClCompile Include="platform_log.c" />
     <ClCompile Include="platform_math.c" />
     <ClCompile Include="platform_model.cpp" />
+    <ClCompile Include="platform_model_obj.cpp" />
+    <ClCompile Include="platform_model_u3d.cpp" />
     <ClCompile Include="platform_module.c" />
     <ClCompile Include="platform_video_layer.cpp" />
     <ClCompile Include="platform_window.c" />
@@ -45,6 +47,8 @@
     <ClInclude Include="include\platform_log.h" />
     <ClInclude Include="include\platform_math.h" />
     <ClInclude Include="include\platform_model.h" />
+    <ClInclude Include="include\platform_model_obj.h" />
+    <ClInclude Include="include\platform_model_u3d.h" />
     <ClInclude Include="include\platform_module.h" />
     <ClInclude Include="include\platform_stdint.h" />
     <ClInclude Include="include\platform_video_layer.h" />

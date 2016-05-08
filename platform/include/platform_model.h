@@ -71,9 +71,24 @@ typedef struct plSkeletalModel_s
 	// Unfinished...
 } plSkeletalModel_t;
 
+#include "platform_model_u3d.h"
+#include "platform_model_obj.h"
+
 plEXTERN_C_START
 
+// Static
+plStaticModel_t *plCreateStaticModel(void);
+void plDeleteStaticModel(plStaticModel_t *model);
+
 // Animated
+plAnimatedModel_t *plCreateAnimatedModel(void);
+void plDeleteAnimatedModel(plAnimatedModel_t *model);
+
 plAnimatedModel_t *plLoadU3DModel(const char *path);
+
+// Utility
+void plGenerateStaticModelNormals(plStaticModel_t *model);
+void plGenerateAnimatedModelNormals(plAnimatedModel_t *model);
+void plGenerateSkeletalModelNormals(plSkeletalModel_t *model);
 
 plEXTERN_C_END

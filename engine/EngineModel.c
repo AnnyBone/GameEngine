@@ -23,6 +23,8 @@
 #include "EngineScript.h"
 #include "video.h"
 
+#include "platform_model.h"
+
 /*
 	Model Loading and Caching
 	Models are the only shared resource between a client and server running on the same machine.
@@ -1498,6 +1500,18 @@ void Model_LoadMD2(model_t *mModel,void *Buffer)
 
 bool Model_LoadOBJ(model_t *model)
 {
+	char fullp[PL_MAX_PATH];
+	sprintf(fullp, "%s/%s", host_parms.basepath, model->name);
+	
+	plStaticModel_t *obj_model = plLoadOBJModel(fullp);
+	if (!obj_model)
+	{
+		Con_Warning("Failed to load OBJ model! (%s)\n", model->name);
+		return false;
+	}
+
+	model->type = MODEL_TYPE_STATIC;
+
 #if 0
 	char	cExtension[4];
 	OBJ_t	*oObject;
