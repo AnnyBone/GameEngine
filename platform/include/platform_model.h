@@ -18,6 +18,17 @@
 
 #pragma once
 
+enum
+{
+	PL_MODELTYPE_START,
+
+	PL_MODELTYPE_STATIC,
+	PL_MODELTYPE_ANIMATED,
+	PL_MODELTYPE_SKELETAL,
+
+	PL_MODELTYPE_END
+};
+
 typedef struct plVertex_s
 {
 	plVector3f_t position, normal;
@@ -84,10 +95,12 @@ plEXTERN_C_START
 
 // Static
 plStaticModel_t *plCreateStaticModel(void);
+plStaticModel_t *plLoadStaticModel(const char *path);
 void plDeleteStaticModel(plStaticModel_t *model);
 
 // Animated
 plAnimatedModel_t *plCreateAnimatedModel(void);
+plAnimatedModel_t *plLoadAnimatedModel(const char *path);
 void plDeleteAnimatedModel(plAnimatedModel_t *model);
 
 plAnimatedModel_t *plLoadU3DModel(const char *path);

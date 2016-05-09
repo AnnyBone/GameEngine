@@ -315,6 +315,9 @@
     <ClCompile Include="EngineImage.c">
       <Filter>Client</Filter>
     </ClCompile>
+    <ClCompile Include="client\mesh.cpp">
+      <Filter>Client</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\shared\shared_client.h">

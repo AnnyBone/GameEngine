@@ -140,13 +140,6 @@ void Alias_DrawFrame(MD2_t *alias, ClientEntity_t *entity, lerpdata_t lLerpData)
 	frame1 = (MD2Frame_t*)((uint8_t*)alias + alias->ofs_frames + (alias->framesize*entity->draw_lastpose));
 	frame2 = (MD2Frame_t*)((uint8_t*)alias + alias->ofs_frames + (alias->framesize*entity->draw_pose));
 
-#if 0
-	if ((entity->scale != 1.0f) && (entity->scale > 0.1f))
-		VideoShader_SetVariablef(iScaleUniform, entity->scale);
-	else
-		VideoShader_SetVariablef(iScaleUniform, 1.0f);
-#endif
-
 	verts1 = &frame1->verts[0];
 	verts2 = &frame2->verts[0];
 

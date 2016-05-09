@@ -632,7 +632,7 @@ char *FileSystem_SkipPath(char *pathname)
 	return last;
 }
 
-char *COM_FileExtension(char *in)
+char *COM_FileExtension(const char *in)
 {
 static char exten[8];
 	int			i;

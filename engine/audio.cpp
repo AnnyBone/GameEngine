@@ -32,9 +32,6 @@
 	Confused?
 
 	You should be.
-
-	TODO:
-		- Add 'channel' override to support some hacky shit
 */
 
 ConsoleVariable_t cv_audio_volume			= { "audio_volume", "1", true };
