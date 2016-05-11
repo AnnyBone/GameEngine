@@ -105,6 +105,14 @@ plStaticModel_t *plCreateStaticModel(void)
 	return model;
 }
 
+plStaticModel_t *plLoadStaticModel(const char *path)
+{
+	if (!path || path[0] == ' ')
+		return nullptr;
+
+	return nullptr;
+}
+
 void plDeleteStaticModel(plStaticModel_t *model)
 {
 	if (!model)
@@ -136,6 +144,14 @@ plAnimatedModel_t *plCreateAnimatedModel(void)
 	memset(model, 0, sizeof(plAnimatedModel_t));
 
 	return model;
+}
+
+plAnimatedModel_t *plLoadAnimatedModel(const char *path)
+{
+	if (!path || path[0] == ' ')
+		return nullptr;
+
+	return nullptr;
 }
 
 void plDeleteAnimatedModel(plAnimatedModel_t *model)

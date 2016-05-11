@@ -191,92 +191,93 @@ void R_BuildLightmapChains (void)
 
 void R_SetupView(void);
 void R_RenderScene(void);
+void R_RenderWorldScene(void);
 
 void Surface_DrawMirror(msurface_t *surface)
 {
 #ifdef VL_MODE_OPENGL
-	MathVector3f_t	oldorg;
-	float			dir;
-
 	// Prevent recursion...
 	if (!cv_video_drawmirrors.bValue || r_refdef.bMirror)
 		return;
 
-#if 1
-//	Math_VectorCopy(r_refdef.vieworg, oldorg);
-	dir = Math_DotProduct(r_refdef.vieworg, surface->plane->normal) - surface->plane->dist;
-	Math_VectorMA(r_refdef.vieworg, -2 * dir, surface->plane->normal, r_refdef.vieworg);
+	plVector3f_t oldorigin;
+	plVectorCopy(r_refdef.vieworg, oldorigin);
 
-//	fDirection = Math_DotProduct(vpn, Surface->plane->normal);
-//	Math_VectorMA(vpn, -2 * fDirection, Surface->plane->normal, vpn);
+//	float dir = Math_DotProduct(r_refdef.vieworg, surface->plane->normal) - surface->plane->dist;
+//	Math_VectorMA(r_refdef.vieworg, dir, surface->plane->normal, r_refdef.vieworg);
 
-//	r_refdef.viewangles[0] = -asinf(vpn[2]) / pMath_PI * 180.0f;
-//	r_refdef.viewangles[1] = atan2f(vpn[1], vpn[0]) / pMath_PI * 180.0f;
-//	r_refdef.viewangles[2] = -r_refdef.viewangles[2];
-#else
-//	Math_VectorMA(r_refdef.vieworg, -2, Surface->plane->normal, r_refdef.vieworg);
-//	Math_VectorMA(vpn, -2, Surface->plane->normal, vpn);
+	//	Math_VectorMA(r_refdef.vieworg, -2, Surface->plane->normal, r_refdef.vieworg);
+	//	Math_VectorMA(vpn, -2, Surface->plane->normal, vpn);
 
-	//Math_VectorInverse(r_refdef.viewangles);
-//	r_refdef.viewangles[0] = -asinf(vpn[2]) / pMath_PI * 180.0f;
-//	r_refdef.viewangles[1] = atan2f(vpn[1], vpn[0]) / pMath_PI * 180.0f;
-//	r_refdef.viewangles[2] = -r_refdef.viewangles[2];
-#endif
+	//r_refdef.viewangles[0] = -asinf(vpn[2]) / PL_PI * 180.0f;
+	//r_refdef.viewangles[1] = atan2f(vpn[1], vpn[0]) / PL_PI * 180.0f;
+	//r_refdef.viewangles[2] = -r_refdef.viewangles[2];
 
 	R_SetupView();
+	R_SetupScene();
 
+#if 0
 	vlEnable(VL_CAPABILITY_STENCIL_TEST);
+	vlDisable(VL_CAPABILITY_DEPTH_TEST);
 
 	glStencilFunc(GL_ALWAYS, 1, 255);
 	glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE);
 	glStencilMask(255);
-	vlDepthMask(false);
+
 	glClear(GL_STENCIL_BUFFER_BIT);
 
-	Video_DrawSurface(surface, 1, g_mGlobalColour, 0);
+	Video_DrawSurface(surface, 1.0f, g_mGlobalColour, 0);
 
 	glStencilFunc(GL_EQUAL, 1, 255);
 	glStencilMask(0);
-	vlDepthMask(true);
 
-	ClientEntity_t *ViewEntity = &cl_entities[cl.viewentity];
-	if (cl_numvisedicts < MAX_VISEDICTS)
-	{
-		cl_visedicts[cl_numvisedicts] = ViewEntity;
-		cl_numvisedicts++;
-	}
+	vlEnable(VL_CAPABILITY_DEPTH_TEST);
 
 	glDepthRange(0, 0.5);
-	vlPushMatrix();
-	glScalef(1.0f, -1.0f, 1.0f);
+#endif
 
-	r_refdef.bMirror = true;		
-	World_Draw();
+	vlPushMatrix();
+	glScalef(1, 1, -surface->plane->normal[2]);
+
+	r_refdef.bMirror = true;
+	{
+		ClientEntity_t *ViewEntity = &cl_entities[cl.viewentity];
+		if (cl_numvisedicts < MAX_VISEDICTS)
+		{
+			cl_visedicts[cl_numvisedicts] = ViewEntity;
+			cl_numvisedicts++;
+		}
+
+		World_Draw();
+
+		if (cl_numvisedicts < (MAX_VISEDICTS - 1))
+		{
+			cl_visedicts[cl_numvisedicts] = NULL;
+			cl_numvisedicts--;
+		}
+	}
 	r_refdef.bMirror = false;
 
 	vlPopMatrix();
-	glDepthRange(0, 1);
-
-	if (cl_numvisedicts < (MAX_VISEDICTS-1))
-	{
-		cl_visedicts[cl_numvisedicts] = NULL;
-		cl_numvisedicts--;
-	}
-
-	vlDisable(VL_CAPABILITY_STENCIL_TEST);
-
-	// Restore view position.
-	Math_VectorCopy(oldorg, r_refdef.vieworg);
-
-	R_SetupView();
 
 #if 0
-	// Blend the final surface on top.
-	vlEnable(VIDEO_BLEND);
-	Video_DrawSurface(Surface, 0.5f, g_mGlobalColour, 1);
-	vlDisable(VIDEO_BLEND);
+	glDepthRange(0, 1);
+
+
+	vlDisable(VL_CAPABILITY_STENCIL_TEST);
 #endif
+
+	// Restore view position.
+	plVectorCopy(oldorigin, r_refdef.vieworg);
+
+	R_SetupView();
+	R_SetupScene();
 #endif
+}
+
+void World_DrawMirror(void)
+{
+
 }
 
 void World_DrawWater(void)
@@ -339,6 +340,15 @@ void World_Draw(void)
 	if(!r_drawworld_cheatsafe)
 		return;
 
+	for (i = 0; i < cl.worldmodel->numtextures; i++)
+	{
+		t = cl.worldmodel->textures[i];
+		if (!t || !t->texturechain || !(t->material->flags & MATERIAL_FLAG_MIRROR))
+			continue;
+
+		Surface_DrawMirror(t->texturechain);
+	}
+
 	for(i = 0; i < cl.worldmodel->numtextures; i++)
 	{
 		t = cl.worldmodel->textures[i];
@@ -368,8 +378,12 @@ void World_Draw(void)
 
 					vlActiveTexture(0);
 				}
-
-				Video_DrawSurface(s, 1.0f, t->material, 0);
+				
+				if (t->material->flags & MATERIAL_FLAG_MIRROR)
+					// Blend the final surface on top.
+					Video_DrawSurface(s, t->material->fAlpha, t->material, 0);
+				else
+					Video_DrawSurface(s, 1.0f, t->material, 0);
 
 				rs_brushpasses++;
 			}

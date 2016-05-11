@@ -553,6 +553,23 @@ void R_SetupScene(void)
 
 #include "EngineGame.h"
 
+// Split out so this can be used for reflections.
+void R_RenderWorldScene(void)
+{
+	Sky_Draw();		//johnfitz
+	World_Draw();
+
+	R_DrawShadows();
+
+	R_DrawEntitiesOnList(false);
+	World_DrawWater();
+	R_DrawEntitiesOnList(true);
+
+	Particle_Draw();
+	SpriteManager_Draw();
+	Light_Draw();
+}
+
 void R_RenderScene(void)
 {
 	R_PushDlights();
@@ -572,18 +589,7 @@ void R_RenderScene(void)
 
 	Fog_EnableGFog(); //johnfitz
 
-	Sky_Draw();		//johnfitz
-	World_Draw();
-
-	R_DrawShadows();
-
-	R_DrawEntitiesOnList(false);
-	World_DrawWater();
-	R_DrawEntitiesOnList(true);
-
-	Particle_Draw();
-	SpriteManager_Draw();
-	Light_Draw();
+	R_RenderWorldScene();
 
 	Fog_DisableGFog();
 

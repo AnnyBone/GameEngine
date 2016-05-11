@@ -35,12 +35,12 @@ namespace Core
 		MeshManager();
 		~MeshManager();
 
-		void Frame();
+		void Frame() {}
 
 		Mesh_t *LoadMesh(std::string path);	// Loads a new mesh.
 		Mesh_t *GetMesh(std::string path);	// Gets an existing mesh.
 
-		void ClearMeshes();	// Clear all meshes.
+		void ClearMeshes() {}	// Clear all meshes.
 
 	private:
 		Mesh_t *LoadStaticModel(plStaticModel_t *model);
@@ -98,7 +98,7 @@ namespace Core
 						Con_Warning("Failed to load static model!\n");
 						return nullptr;
 					}
-				} 
+				}
 				break;
 				case PL_MODELTYPE_ANIMATED:
 				{}
