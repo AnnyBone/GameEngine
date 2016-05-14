@@ -61,9 +61,9 @@ void Menu_Initialize(void)
 	mImport.Client_PrecacheResource		= Client_PrecacheResource;
 	mImport.Client_SetMenuCanvas		= GL_SetCanvas;
 
-	g_menu = (MenuExport_t*)plLoadModuleInterface(hMenuInstance, va("%s/%s" MODULE_MENU, com_gamedir, g_state.path_modules), "Menu_Main", &mImport);
+	g_menu = (MenuExport_t*)plLoadModuleInterface(hMenuInstance, va("%s/%s" MENU_MODULE, com_gamedir, g_state.path_modules), "Menu_Main", &mImport);
 	if (!g_menu)
-		Con_Warning(plGetError(), com_gamedir, MODULE_MENU);
+		Con_Warning(plGetError(), com_gamedir, MENU_MODULE);
 	else if (g_menu->iVersion != MENU_VERSION)
 		Con_Warning("Size mismatch (recieved %i, expected %i)!\n", g_menu->iVersion, MENU_VERSION);
 	else
@@ -75,7 +75,7 @@ void Menu_Initialize(void)
 		plUnloadModule(hMenuInstance);
 
 		// Let the user know the module failed to load. ~hogsy
-		Sys_Error("Failed to load %s/%s."PL_CPU_ID""pMODULE_EXTENSION"!\nCheck log for details.\n", com_gamedir, MODULE_MENU);
+		Sys_Error("Failed to load %s/%s."PL_CPU_ID""pMODULE_EXTENSION"!\nCheck log for details.\n", com_gamedir, MENU_MODULE);
 	}
 }
 

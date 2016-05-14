@@ -65,6 +65,102 @@ extern plColour_t
 	pl_green, 
 	pl_blue;
 
+#ifdef __cplusplus
+
+namespace pl
+{
+	class Vector
+	{};
+
+	class Vector3f : public Vector
+	{
+	public:
+		Vector3f()
+		{
+			memset(vector, 0, sizeof(float[3]));
+		}
+
+		std::vector<float> Get()
+		{
+			return std::vector<float> { vector[0], vector[1], vector[2] };
+		}
+
+		void Set(float x, float y, float z)
+		{
+			vector[0] = x;
+			vector[1] = y;
+			vector[2] = z;
+		}
+
+	protected:
+	private:
+		float vector[3];
+	};
+
+	class Colour
+	{
+	public:
+		Colour() 
+		{ 
+			memset(colour, 255, sizeof(pl_uchar[4]));
+		}
+
+		Colour(pl_uchar _colour[4])
+		{  
+			Set(_colour);
+		}
+
+		Colour(pl_uchar _r, pl_uchar _g, pl_uchar _b, pl_uchar _a = 255)
+		{ 
+			Set(_r, _g, _b, _a);
+		}
+
+		std::vector<unsigned char> Get()
+		{
+			 return std::vector<unsigned char> { colour[0], colour[1], colour[2], colour[3] };
+		}
+
+		void Set(pl_uchar _colour[4])
+		{
+			colour[0] = _colour[0];
+			colour[1] = _colour[1];
+			colour[2] = _colour[2];
+			colour[3] = _colour[3];
+		}
+
+		void Set(pl_uchar _r, pl_uchar _g, pl_uchar _b, pl_uchar _a = 255)
+		{
+			colour[0] = _r;
+			colour[1] = _g;
+			colour[2] = _b;
+			colour[3] = _a;
+		}
+
+		void Set(float _r, float _g, float _b, float _a = 1.0f)
+		{
+			colour[0] = (unsigned char)(_r / 255.0f);
+			colour[1] = (unsigned char)(_g / 255.0f);
+			colour[2] = (unsigned char)(_b / 255.0f);
+			colour[3] = (unsigned char)(_a / 255.0f);
+		}
+
+		void Set(plVector3f_t _colour)
+		{
+			plVector3f_t in;
+			plVectorCopy(_colour, in);
+			plVectorNormalize(in);
+
+			Set(in[0], in[1], in[2]);
+		}
+
+	protected:
+	private:
+		pl_uchar colour[4]; // RGBA
+	};
+}
+
+#endif
+
 #define	PL_WIDTH	0
 #define	PL_HEIGHT	1
 #ifndef WIDTH

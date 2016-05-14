@@ -76,6 +76,7 @@ typedef struct
 	int		(*GetState)(void);			// Get the menus current state so we can check it.
 } MenuExport_t;
 
+#define MENU_MODULE		"menu"
 #define	MENU_VERSION	(sizeof(MenuExport_t)+sizeof(ModuleImport_t))
 
 #endif

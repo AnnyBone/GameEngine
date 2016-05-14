@@ -197,7 +197,7 @@ void Surface_DrawMirror(msurface_t *surface)
 {
 #ifdef VL_MODE_OPENGL
 	// Prevent recursion...
-	if (!cv_video_drawmirrors.bValue || r_refdef.bMirror)
+	if (!cv_video_drawmirrors.bValue || r_refdef.mode_mirror)
 		return;
 
 	plVector3f_t oldorigin;
@@ -206,12 +206,12 @@ void Surface_DrawMirror(msurface_t *surface)
 //	float dir = Math_DotProduct(r_refdef.vieworg, surface->plane->normal) - surface->plane->dist;
 //	Math_VectorMA(r_refdef.vieworg, dir, surface->plane->normal, r_refdef.vieworg);
 
-	//	Math_VectorMA(r_refdef.vieworg, -2, Surface->plane->normal, r_refdef.vieworg);
-	//	Math_VectorMA(vpn, -2, Surface->plane->normal, vpn);
+//	Math_VectorMA(r_refdef.vieworg, -2, surface->plane->normal, r_refdef.vieworg);
+//	Math_VectorMA(vpn, -2, surface->plane->normal, vpn);
 
-	//r_refdef.viewangles[0] = -asinf(vpn[2]) / PL_PI * 180.0f;
-	//r_refdef.viewangles[1] = atan2f(vpn[1], vpn[0]) / PL_PI * 180.0f;
-	//r_refdef.viewangles[2] = -r_refdef.viewangles[2];
+//	r_refdef.viewangles[0] = -asinf(vpn[2]) / PL_PI * 180.0f;
+//	r_refdef.viewangles[1] = atan2f(vpn[1], vpn[0]) / PL_PI * 180.0f;
+//	r_refdef.viewangles[2] = -r_refdef.viewangles[2];
 
 	R_SetupView();
 	R_SetupScene();
@@ -236,10 +236,13 @@ void Surface_DrawMirror(msurface_t *surface)
 	glDepthRange(0, 0.5);
 #endif
 
+	Con_Printf("%i\n", (int)surface->polys->verts[0][2]);
+	
 	vlPushMatrix();
-	glScalef(1, 1, -surface->plane->normal[2]);
+	glTranslatef(0, 0, surface->polys->verts[0][2] * 2);
+	glScalef(1, 1, -1);
 
-	r_refdef.bMirror = true;
+	r_refdef.mode_mirror = true;
 	{
 		ClientEntity_t *ViewEntity = &cl_entities[cl.viewentity];
 		if (cl_numvisedicts < MAX_VISEDICTS)
@@ -256,7 +259,7 @@ void Surface_DrawMirror(msurface_t *surface)
 			cl_numvisedicts--;
 		}
 	}
-	r_refdef.bMirror = false;
+	r_refdef.mode_mirror = false;
 
 	vlPopMatrix();
 
@@ -273,11 +276,6 @@ void Surface_DrawMirror(msurface_t *surface)
 	R_SetupView();
 	R_SetupScene();
 #endif
-}
-
-void World_DrawMirror(void)
-{
-
 }
 
 void World_DrawWater(void)
@@ -354,6 +352,9 @@ void World_Draw(void)
 		t = cl.worldmodel->textures[i];
 		if (!t || !t->texturechain || t->texturechain->flags & (SURF_DRAWTILED | SURF_NOTEXTURE) || (t->material->flags & MATERIAL_FLAG_WATER))
 			continue;
+		// temp
+		else if ((t->material->flags & MATERIAL_FLAG_MIRROR) && r_refdef.mode_mirror)
+			continue;
 
 		t->material->bind = true;
 
@@ -379,7 +380,7 @@ void World_Draw(void)
 					vlActiveTexture(0);
 				}
 				
-				if (t->material->flags & MATERIAL_FLAG_MIRROR)
+				if ((t->material->flags & MATERIAL_FLAG_MIRROR) && !r_refdef.mode_mirror)
 					// Blend the final surface on top.
 					Video_DrawSurface(s, t->material->fAlpha, t->material, 0);
 				else

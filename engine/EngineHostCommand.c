@@ -344,7 +344,7 @@ void Modlist_Init(void) //TODO: move win32 specific stuff to sys_win.c
 
 	do
 	{
-		sprintf (childstring,"%s/%s/%s",host_parms.basedir,FindFileData.cFileName,MODULE_GAME);
+		sprintf(childstring, "%s/%s/%s", host_parms.basedir, FindFileData.cFileName, GAME_MODULE);
 		FindGame = FindFirstFile(childstring, &FindChildData);
 
 		if(FindGame != INVALID_HANDLE_VALUE)

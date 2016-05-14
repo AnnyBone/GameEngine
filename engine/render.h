@@ -70,7 +70,7 @@ typedef struct
 
 	bool sky;				// Sky context.
 
-	bool bMirror;			// Mirror context.
+	bool mode_mirror;		// Mirror context.
 	bool bEnvironmentMap;	// Environment map context.
 } refdef_t;
 
@@ -93,12 +93,6 @@ extern "C" {
 	void R_RemoveEfrags(ClientEntity_t *ent);
 	void R_NewMap(void);
 	void R_PushDlights(void);
-
-	// surface cache related
-	int	D_SurfaceCacheForRes(int width, int height);
-	void D_DeleteSurfaceCache(void);
-	void D_InitCaches(void *buffer, int size);
-	void R_SetVrect(vrect_t *pvrect, vrect_t *pvrectin, int lineadj);
 
 #ifdef __cplusplus
 }

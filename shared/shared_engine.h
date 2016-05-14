@@ -128,4 +128,5 @@ typedef struct
 	void(*PrintError)(char *text);
 } EngineImport_t;
 
+#define ENGINE_MODULE	"engine"
 #define ENGINE_VERSION	(sizeof(EngineImport_t)+sizeof(EngineExport_t))

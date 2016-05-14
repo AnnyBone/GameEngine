@@ -27,6 +27,8 @@ namespace Core
 		class Camera
 		{
 		public:
+			Camera();
+			Camera(plVector3f_t position);
 
 			void Draw();
 			void Simulate();
@@ -36,6 +38,8 @@ namespace Core
 
 			void SetFrustum(float fovx, float fovy);
 
+			bool IsPointInsideFrustum(plVector3f_t position);
+			bool IsPointOutsideFrustum(plVector3f_t position);
 			bool IsBoxInsideFrustum(plVector3f_t mins, plVector3f_t maxs);
 			bool IsBoxOutsideFrustum(plVector3f_t mins, plVector3f_t maxs);
 
@@ -115,9 +119,33 @@ void Camera::SetFrustum(float fovx, float fovy)
 	for (int i = 0; i < 4; i++)
 	{
 		frustum[i].type = PLANE_ANYZ;
-		frustum[i].dist = Math_DotProduct(r_origin, frustum[i].normal); // FIXME: shouldn't this always be zero?
+		frustum[i].dist = Math_DotProduct(position, frustum[i].normal); // FIXME: shouldn't this always be zero?
 		frustum[i].signbits = SignbitsForPlane(&frustum[i]);
 	}
+}
+
+bool Camera::IsPointInsideFrustum(plVector3f_t position)
+{
+	for (int i = 0; i < 4; i++)
+	{
+		mplane_t *p = frustum + i;
+		if (p->normal[0] * position[0] + p->normal[1] * position[1] + p->normal[2] * position[2] > p->dist)
+			return false;
+	}
+
+	return true;
+}
+
+bool Camera::IsPointOutsideFrustum(plVector3f_t position)
+{
+	for (int i = 0; i < 4; i++)
+	{
+		mplane_t *p = frustum + i;
+		if (p->normal[0] * position[0] + p->normal[1] * position[1] + p->normal[2] * position[2] < p->dist)
+			return false;
+	}
+
+	return true;
 }
 
 bool Camera::IsBoxInsideFrustum(plVector3f_t mins, plVector3f_t maxs)

@@ -52,7 +52,7 @@ int main(int argc,char *argv[])
 	// Load the module interface for the engine module.
 	engine = (EngineExport_t*)plLoadModuleInterface(
 		instance,
-		"./" MODULE_ENGINE,
+		"./" ENGINE_MODULE,
 		"Engine_Main",
 		&launcher);
 	// Let us know if it failed to load.

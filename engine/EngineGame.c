@@ -528,9 +528,9 @@ void Game_Initialize(void)
 	Import.SetSpriteType		= Sprite_SetType;
 	Import.SetSpriteMaterial	= Sprite_SetMaterial;
 
-	Game = (GameExport_t*)plLoadModuleInterface(hGameInstance, va("%s/%s" MODULE_GAME, com_gamedir, g_state.path_modules), "Game_Main", &Import);
+	Game = (GameExport_t*)plLoadModuleInterface(hGameInstance, va("%s/%s" GAME_MODULE, com_gamedir, g_state.path_modules), "Game_Main", &Import);
 	if(!Game)
-		Con_Warning(plGetError(), com_gamedir, MODULE_GAME);
+		Con_Warning(plGetError(), com_gamedir, GAME_MODULE);
 	else if (Game->iVersion != GAME_VERSION)
 		Con_Warning("Size mismatch (recieved %i, expected %i)!\n", Game->iVersion, GAME_VERSION);
 	else
@@ -541,6 +541,6 @@ void Game_Initialize(void)
 		plUnloadModule(hGameInstance);
 
 		// Let the user know the module failed to load.
-		Sys_Error("Failed to load %s/%s."PL_CPU_ID""pMODULE_EXTENSION"!\nCheck log for details.\n", com_gamedir, MODULE_GAME);
+		Sys_Error("Failed to load %s/%s."PL_CPU_ID""pMODULE_EXTENSION"!\nCheck log for details.\n", com_gamedir, GAME_MODULE);
 	}
 }
