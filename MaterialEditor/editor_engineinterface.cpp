@@ -17,8 +17,6 @@
 
 #include "editor.h"
 
-#include "SharedModule.h"
-
 #include "platform_module.h"
 
 EngineExport_t *engine;

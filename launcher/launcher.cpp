@@ -19,7 +19,6 @@
 
 // Shared Library
 #include "shared_flags.h"
-#include "SharedModule.h"
 #include "shared_engine.h"
 
 /*
@@ -58,11 +57,10 @@ int main(int argc,char *argv[])
 	// Let us know if it failed to load.
 	if (!engine)
 	{
-		char err[2048];
-		snprintf(err, sizeof(err), "%s", plGetError());
+		std::string err = plGetError();
 
-		plWriteLog(LAUNCHER_LOG, "Failed to load engine!\n%s", err);
-		plMessageBox("Launcher", "%s", err);
+		plWriteLog(LAUNCHER_LOG, "Failed to load engine!\n%s", err.c_str());
+		plMessageBox("Launcher", "%s", err.c_str());
 		return -1;
 	}
 	// Also ensure that the engine version hasn't changed.
