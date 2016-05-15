@@ -20,7 +20,6 @@
 #include "shared_flags.h"
 #include "shared_video.h"
 #include "shared_menu.h"
-#include "SharedModule.h"
 #include "shared_engine.h"
 #include "shared_material.h"
 #include "shared_game.h"

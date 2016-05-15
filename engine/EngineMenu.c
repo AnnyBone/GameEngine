@@ -22,8 +22,6 @@
 #include "video.h"
 #include "engine_client.h"
 
-#include "SharedModule.h"
-
 #include "platform_window.h"
 
 PL_INSTANCE hMenuInstance;

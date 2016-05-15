@@ -16,16 +16,28 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef __ENGINEEDITOR__
-#define	__ENGINEEDITOR__
+#include "game_main.h"
 
-extern	cvar_t	
-cvEditorLightPreview;
+#include "game_mode.h"
 
-#include "EngineMaterialEditor.h"
+GameMode::GameMode(const char *_description) : description(_description)
+{}
 
-void Editor_Initialize(void);
-void Editor_Frame(void);
-void Editor_Input(int iKey);
+GameMode::~GameMode()
+{}
 
-#endif
+// Server
+
+void GameMode::ServerInitialize()
+{}
+
+void GameMode::ServerShutdown()
+{}
+
+// Client
+
+void GameMode::ClientInitialize()
+{}
+
+void GameMode::ClientShutdown()
+{}

@@ -28,8 +28,6 @@
 
 #include "client/effect_sprite.h"
 
-#include "SharedModule.h"
-
 /*
 	Game Interface
 

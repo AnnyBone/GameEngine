@@ -18,7 +18,6 @@
 
 #pragma once
 
-#include "SharedModule.h"
 #include "shared_engine.h"
 
 typedef struct

@@ -437,8 +437,6 @@ void Video_SetTexture(gltexture_t *gTexture)
 	Object Management
 */
 
-plColour_t mvVideoGlobalColour;
-
 void Video_ObjectTexture(vlVertex_t *object, unsigned int uiTextureUnit, float S, float T)
 {
 	object->ST[uiTextureUnit][0] = S;

@@ -13,9 +13,6 @@
     <ClInclude Include="server\openkatana\openkatana.h">
       <Filter>Server\Decay</Filter>
     </ClInclude>
-    <ClInclude Include="server\server_gamemode.h">
-      <Filter>Server</Filter>
-    </ClInclude>
     <ClInclude Include="server\server_gib.c">
       <Filter>Server</Filter>
     </ClInclude>
@@ -40,9 +37,6 @@
       <Filter>Shared</Filter>
     </ClInclude>
     <ClInclude Include="..\shared\shared_video.h">
-      <Filter>Shared</Filter>
-    </ClInclude>
-    <ClInclude Include="..\shared\SharedModule.h">
       <Filter>Shared</Filter>
     </ClInclude>
     <ClInclude Include="..\shared\shared_texture.h">
@@ -84,6 +78,7 @@
     <ClInclude Include="server\server_ai.h">
       <Filter>Server</Filter>
     </ClInclude>
+    <ClInclude Include="game_mode.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Client">
@@ -302,5 +297,6 @@
     <ClCompile Include="server\server_ai.cpp">
       <Filter>Server</Filter>
     </ClCompile>
+    <ClCompile Include="game_mode.cpp" />
   </ItemGroup>
 </Project>

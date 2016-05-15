@@ -16,16 +16,40 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef __ENGINEEDITOR__
-#define	__ENGINEEDITOR__
+#pragma once
 
-extern	cvar_t	
-cvEditorLightPreview;
+class GameMode
+{
+	GameMode(const char *_description);
+	~GameMode();
 
-#include "EngineMaterialEditor.h"
+	static void CreateBaseMode()
+	{
+		if (g_gamemode)
+			return;
 
-void Editor_Initialize(void);
-void Editor_Frame(void);
-void Editor_Input(int iKey);
+		g_gamemode = new GameMode("base");
+		if (!g_gamemode)
+			g_engine->Sys_Error("Failed to create mode for game!\n");
+	}
 
-#endif
+	// Server
+
+	virtual void ServerInitialize();
+	virtual void ServerShutdown();
+
+	virtual void ServerEntityFrame();
+	
+	virtual void ServerSpawnEntity();
+	virtual void ServerSpawnPlayer();
+
+	// Client
+
+	virtual void ClientInitialize();
+	virtual void ClientShutdown();
+
+private:
+	const char *description;
+};
+
+GameMode *g_gamemode;

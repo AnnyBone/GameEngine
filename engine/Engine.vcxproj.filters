@@ -440,9 +440,6 @@
     <ClInclude Include="EngineVideoDraw.h">
       <Filter>Legacy\Client\Video</Filter>
     </ClInclude>
-    <ClInclude Include="..\shared\SharedModule.h">
-      <Filter>Shared</Filter>
-    </ClInclude>
     <ClInclude Include="EngineNetwork.h">
       <Filter>Legacy\Network</Filter>
     </ClInclude>

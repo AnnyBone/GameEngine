@@ -124,6 +124,7 @@
     <ClCompile Include="client\client_view.c" />
     <ClCompile Include="client\menu\menu.cpp" />
     <ClCompile Include="game.c" />
+    <ClCompile Include="game_mode.cpp" />
     <ClCompile Include="server\adamas\adamas_blazer.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (OpenKatana)|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (Adamas)|Win32'">true</ExcludedFromBuild>
@@ -262,7 +263,6 @@
     <ClInclude Include="..\shared\shared_flags.h" />
     <ClInclude Include="..\shared\shared_material.h" />
     <ClInclude Include="..\shared\shared_model.h" />
-    <ClInclude Include="..\shared\SharedModule.h" />
     <ClInclude Include="..\shared\shared_texture.h" />
     <ClInclude Include="..\shared\shared_zone.h" />
     <ClInclude Include="..\Shared\shared_client.h" />
@@ -276,6 +276,7 @@
     <ClInclude Include="client\client.h" />
     <ClInclude Include="client\client_player.h" />
     <ClInclude Include="game_main.h" />
+    <ClInclude Include="game_mode.h" />
     <ClInclude Include="game_resources.h" />
     <ClInclude Include="server\adamas\adamas.h" />
     <ClInclude Include="server\server_ai.h" />
@@ -285,7 +286,6 @@
     <ClInclude Include="server\openkatana\openkatana.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (Adamas)|Win32'">true</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="server\server_gamemode.h" />
     <ClInclude Include="server\server_gib.c" />
     <ClInclude Include="server\server_menu.h" />
   </ItemGroup>

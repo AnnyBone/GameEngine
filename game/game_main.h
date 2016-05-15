@@ -26,7 +26,6 @@
 #include "platform_filesystem.h"
 
 #include "shared_flags.h"
-#include "SharedModule.h"
 #include "shared_engine.h"
 #include "shared_game.h"
 #include "shared_menu.h"
