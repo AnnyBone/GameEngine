@@ -25,7 +25,7 @@
 #include "EngineMenu.h"
 #include "EngineEditor.h"
 #include "video.h"
-#include "EngineInput.h"
+#include "input.h"
 
 /*
 

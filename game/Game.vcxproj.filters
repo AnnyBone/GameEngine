@@ -126,6 +126,9 @@
     <Filter Include="Client\Menu">
       <UniqueIdentifier>{dca7b097-d524-4784-8388-19076585d650}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Server\War Pigs">
+      <UniqueIdentifier>{347a4c60-48b2-41a2-9473-030d0085a566}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="server\monster_bot.c">

@@ -702,7 +702,7 @@ SERVER TRANSITIONS
 ===============================================================================
 */
 
-#include "EngineInput.h"
+#include "input.h"
 
 /*	handle a
 	map <servername>

@@ -106,6 +106,8 @@ MonsterRelationship_t MonsterRelationship[]=
 	// Hurler
 	{	MONSTER_HURLER,		MONSTER_PLAYER,		MONSTER_RELATIONSHIP_HATE	},
 	{	MONSTER_HURLER,		MONSTER_HURLER,		RELATIONSHIP_LIKE			},
+#else
+	{ 0 },
 #endif
 };
 

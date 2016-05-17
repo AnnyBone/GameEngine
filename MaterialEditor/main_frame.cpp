@@ -30,6 +30,34 @@ void MainViewportPanel::Draw()
 	engine->DrawString(10, 10, "Camera Viewport");
 }
 
+void MainViewportPanel::OnKey(wxKeyEvent &event)
+{
+	switch (event.GetKeyCode())
+	{
+
+	// ARROW KEYS
+	case WXK_UP:
+	case WXK_DOWN:
+	case WXK_LEFT:
+	case WXK_RIGHT:
+		break;
+
+	// WASD
+	case WXK_CONTROL_W:
+		engine->Print("W was pressed\n");
+		break;
+	case WXK_CONTROL_A:
+		engine->Print("A was pressed\n");
+		break;
+	case WXK_CONTROL_S:
+	case WXK_CONTROL_D:
+
+	default:
+		// Something unhandled, so just pass it over.
+		event.GetRawKeyCode();
+	}
+}
+
 class XViewportPanel : public BaseViewportPanel
 {
 public:

@@ -23,25 +23,10 @@ class GameMode
 	GameMode(const char *_description);
 	~GameMode();
 
-	static void CreateBaseMode()
-	{
-		if (g_gamemode)
-			return;
-
-		g_gamemode = new GameMode("base");
-		if (!g_gamemode)
-			g_engine->Sys_Error("Failed to create mode for game!\n");
-	}
-
 	// Server
 
 	virtual void ServerInitialize();
 	virtual void ServerShutdown();
-
-	virtual void ServerEntityFrame();
-	
-	virtual void ServerSpawnEntity();
-	virtual void ServerSpawnPlayer();
 
 	// Client
 

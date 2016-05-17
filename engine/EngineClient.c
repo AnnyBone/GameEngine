@@ -21,7 +21,7 @@
 #include "engine_base.h"
 
 #include "EngineGame.h"
-#include "EngineInput.h"
+#include "input.h"
 #include "EngineMenu.h"
 
 #include "video_light.h"

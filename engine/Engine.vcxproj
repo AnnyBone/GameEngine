@@ -627,6 +627,7 @@
     <ClCompile Include="crc.c" />
     <ClCompile Include="EngineConsole.cpp" />
     <ClCompile Include="engine_exception.cpp" />
+    <ClCompile Include="model_iqm.cpp" />
     <ClCompile Include="model_u3d.cpp" />
     <ClCompile Include="shader_water.cpp" />
     <ClCompile Include="video_glidewindow.c">
@@ -652,7 +653,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="EngineGame.c" />
-    <ClCompile Include="EngineInput.c" />
+    <ClCompile Include="input.c" />
     <ClCompile Include="EngineVideoLights.c" />
     <ClCompile Include="EngineMain.c" />
     <ClCompile Include="material.cpp">
@@ -750,7 +751,7 @@
     <ClInclude Include="EngineVideoParticle.h" />
     <ClInclude Include="material.h" />
     <ClInclude Include="EngineGame.h" />
-    <ClInclude Include="EngineInput.h" />
+    <ClInclude Include="input.h" />
     <ClInclude Include="EngineMain.h" />
     <ClInclude Include="EngineMenu.h" />
     <ClInclude Include="EngineServerPhysics.h" />

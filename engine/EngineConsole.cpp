@@ -29,7 +29,7 @@
 
 #include "engine_base.h"
 
-#include "EngineInput.h"
+#include "input.h"
 #include "video.h"
 
 static const unsigned int CHAR_WIDTH     = 8;

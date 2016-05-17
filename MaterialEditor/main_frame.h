@@ -34,6 +34,8 @@ public:
 	MainViewportPanel(wxWindow *parent) : BaseViewportPanel(parent) {}
 
 	virtual void Draw();
+
+	virtual void OnKey(wxKeyEvent &event);
 protected:
 private:
 };

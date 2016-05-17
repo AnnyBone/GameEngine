@@ -23,7 +23,7 @@
 #include "EngineGame.h"
 #include "EngineMenu.h"
 #include "EngineEditor.h"
-#include "EngineInput.h"
+#include "input.h"
 #include "video.h"
 #include "EngineServerPhysics.h"
 #include "engine_client.h"

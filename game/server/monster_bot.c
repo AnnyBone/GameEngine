@@ -233,12 +233,7 @@ void Bot_Spawn(ServerEntity_t *eBot)
 void Bot_Idle(ServerEntity_t *entity)
 {
 	if (!Entity_IsAnimating(entity))
-	{
-		if (entity->v.iActiveWeapon == WEAPON_DAIKATANA)
-			Entity_Animate(entity, PlayerAnimation_KatanaIdle);
-		else
-			Entity_Animate(entity, PlayerAnimation_Idle);
-	}
+		Entity_Animate(entity, PlayerAnimation_Idle);
 
 	// Attempt to find an enemy.
 	ServerEntity_t *enttarg = Monster_GetEnemy(entity);

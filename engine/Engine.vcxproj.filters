@@ -25,9 +25,6 @@
     <Filter Include="Legacy\Client\Editor">
       <UniqueIdentifier>{21f0f25d-e661-4ea9-8dd5-b90a159a2702}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Legacy\Client\Input">
-      <UniqueIdentifier>{5e44a34d-a9ac-4eff-b4d5-40e9f55bc6f6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Legacy\Modules">
       <UniqueIdentifier>{c5611a4d-2e07-4438-aae7-3789ee89b3e0}</UniqueIdentifier>
     </Filter>
@@ -158,9 +155,6 @@
     </ClCompile>
     <ClCompile Include="EngineVideoParticle.c">
       <Filter>Legacy\Client\Video</Filter>
-    </ClCompile>
-    <ClCompile Include="EngineInput.c">
-      <Filter>Legacy\Client\Input</Filter>
     </ClCompile>
     <ClCompile Include="EngineServerEntity.c">
       <Filter>Legacy\Server</Filter>
@@ -318,6 +312,12 @@
     <ClCompile Include="client\mesh.cpp">
       <Filter>Client</Filter>
     </ClCompile>
+    <ClCompile Include="model_iqm.cpp">
+      <Filter>Client\Resources\Models</Filter>
+    </ClCompile>
+    <ClCompile Include="input.c">
+      <Filter>Client\Input</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\shared\shared_client.h">
@@ -403,9 +403,6 @@
     </ClInclude>
     <ClInclude Include="EngineVideoParticle.h">
       <Filter>Legacy\Client\Video</Filter>
-    </ClInclude>
-    <ClInclude Include="EngineInput.h">
-      <Filter>Legacy\Client\Input</Filter>
     </ClInclude>
     <ClInclude Include="EngineServerEntity.h">
       <Filter>Legacy\Server</Filter>
@@ -564,6 +561,9 @@
       <Filter>Shared</Filter>
     </ClInclude>
     <ClInclude Include="engine_build.h" />
+    <ClInclude Include="input.h">
+      <Filter>Client\Input</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="engine.rc" />

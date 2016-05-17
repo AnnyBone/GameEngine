@@ -16,8 +16,7 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef GAME_RESOURCES_H
-#define	GAME_RESOURCES_H
+#pragma once
 
 #define SOUND_EXPLODE_UNDERWATER0 "effects/explode_underwater0.wav"
 #define SOUND_EXPLODE va("effects/explode%i.wav",rand()%3)
@@ -191,5 +190,3 @@
 
 #define	HURLER_MODEL_BODY	"models/hurler.bsp"
 #endif
-
-#endif // !GAME_RESOURCES
