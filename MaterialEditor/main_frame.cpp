@@ -43,14 +43,14 @@ void MainViewportPanel::OnKey(wxKeyEvent &event)
 		break;
 
 	// WASD
-	case WXK_CONTROL_W:
+	case 'w':
 		engine->Print("W was pressed\n");
 		break;
-	case WXK_CONTROL_A:
+	case 'a':
 		engine->Print("A was pressed\n");
 		break;
-	case WXK_CONTROL_S:
-	case WXK_CONTROL_D:
+	case 's':
+	case 'd':
 
 	default:
 		// Something unhandled, so just pass it over.

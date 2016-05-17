@@ -74,7 +74,7 @@ bool CEditorApp::OnInit()
 	iconShapeSphere.LoadFile("resource/shape-sphere.png", wxBITMAP_TYPE_PNG);
 	bSmallPlaneIcon.LoadFile("resource/shape-plane.png", wxBITMAP_TYPE_PNG);
 	smallTransform.LoadFile(PATH_16ICONS"actions/transform-move.png", wxBITMAP_TYPE_PNG);
-	smallApplicationExit.LoadFile(PATH_16ICONS"actions/application-exit.png", wxBITMAP_TYPE_PNG);
+	smallApplicationExit.LoadFile(PATH_16ICONS"actions/system-log-out.png", wxBITMAP_TYPE_PNG);
 
 	plWriteLog(EDITOR_LOG, "Creating main frame...\n");
 

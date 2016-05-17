@@ -110,7 +110,11 @@ void ModelViewportPanel::OnKey(wxKeyEvent &event)
 		entity->origin[0] += 2.0f;
 		break;
 	case WXK_LEFT:
+		entity->angles[1] -= 2.0f;
+		break;
 	case WXK_RIGHT:
+		entity->angles[1] += 2.0f;
+		break;
 	default:
 		break;
 	}
@@ -138,7 +142,7 @@ EVT_CLOSE(ModelFrame::CloseEvent)
 
 wxEND_EVENT_TABLE()
 
-#define	MODELFRAME_TITLE	"Model Viewer"
+#define	MODELFRAME_TITLE "Model Viewer"
 
 ModelFrame::ModelFrame(wxWindow *parent)
 	: wxFrame(parent, EDITOR_WINDOW_MODEL, MODELFRAME_TITLE, wxDefaultPosition, wxSize(640, 480))
