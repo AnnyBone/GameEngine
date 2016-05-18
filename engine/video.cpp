@@ -66,12 +66,13 @@ ConsoleVariable_t
 	cv_video_detailscale = { "video_detailscale", "3", true, false, "Changes the scaling used for detail maps." },
 	cv_video_alphatrick = { "video_alphatrick", "1", true, false, "If enabled, draws alpha-tested surfaces twice for extra quality." },
 	cv_video_finish = { "video_finish", "0", true, false, "If enabled, calls glFinish at the end of the frame." },
-	cv_video_log = { "video_debuglog", "video", true, false, "The name of the output log for video debugging." };
-ConsoleVariable_t cv_video_drawshadowmap = { "video_draw_shadowmap", "1", true, false, "Enables/disables the rendering of shadow maps." };
-ConsoleVariable_t cv_video_drawshadowblob = { "video_draw_shadowblob", "1", true, false, "Enables/disables the rendering of a shadow blob." };
+	cv_video_log = { "video_debuglog", "video", true, false, "The name of the output log for video debugging." },
 
-ConsoleVariable_t cv_video_entity_distance = { "video_entity_distance", "50" };
-ConsoleVariable_t cv_video_entity_fade = { "video_entity_fade", "1" };
+	cv_video_drawshadowmap = { "video_draw_shadowmap", "1", true, false, "Enables/disables the rendering of shadow maps." },
+	cv_video_drawshadowblob = { "video_draw_shadowblob", "1", true, false, "Enables/disables the rendering of a shadow blob." },
+
+	cv_video_entity_distance = { "video_entity_distance", "50" },
+	cv_video_entity_fade = { "video_entity_fade", "1" };
 
 #define VIDEO_MAX_SAMPLES	cv_video_msaamaxsamples.iValue
 #define VIDEO_MIN_SAMPLES	0

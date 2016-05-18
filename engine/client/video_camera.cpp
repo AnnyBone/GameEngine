@@ -51,6 +51,8 @@ namespace Core
 			plVector3f_t forward, right, up;
 			plVector3f_t punchangles[2];		//johnfitz -- copied from cl.punchangle.  0 is current, 1 is previous value. never the same unless map just loaded
 			plVector3f_t angles, position;
+
+			ClientEntity_t *view_entity;
 		};
 
 		class CameraManager : public CoreManager

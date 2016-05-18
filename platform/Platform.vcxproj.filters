@@ -13,6 +13,7 @@
     <ClCompile Include="platform_model_obj.cpp" />
     <ClCompile Include="platform_model_u3d.cpp" />
     <ClCompile Include="platform_model_iqm.cpp" />
+    <ClCompile Include="platform_model_md2.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\platform.h">

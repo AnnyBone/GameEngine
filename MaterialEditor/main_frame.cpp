@@ -136,10 +136,10 @@ wxBEGIN_EVENT_TABLE(CEditorFrame, wxFrame)
 wxEND_EVENT_TABLE()
 
 ConsoleVariable_t
-	cvEditorAutoReload		= { "editor_ar", "1", true, false, "Enable or disable automatic reloading." },
-	cvEditorAutoReloadDelay = { "editor_ar_delay", "5", true, false, "Delay before attempting to automatically reload content." },
-	cvEditorShowProperties	= { "editor_showproperties", "1", true, false, "Can show/hide the properties." },
-	cvEditorShowConsole		= { "editor_showconsole", "1", true, false, "Can show/hide the console." };
+	cv_editor_autoreload		= { "editor_ar", "1", true, false, "Enable or disable automatic reloading." },
+	cv_editor_autoreload_delay	= { "editor_ar_delay", "5", true, false, "Delay before attempting to automatically reload content." },
+	cv_editor_showproperties	= { "editor_showproperties", "1", true, false, "Can show/hide the properties." },
+	cv_editor_showconsole		= { "editor_showconsole", "1", true, false, "Can show/hide the console." };
 
 CEditorFrame::CEditorFrame(const wxString & title, const wxPoint & pos, const wxSize & size)
 	: wxFrame(NULL, wxID_ANY, title, pos, size)
@@ -363,14 +363,14 @@ CEditorFrame::~CEditorFrame()
 void CEditorFrame::Initialize()
 {
 	// TODO: These need to be able to update the editor, when modified.
-	engine->RegisterConsoleVariable(&cvEditorShowConsole, NULL);
-	engine->RegisterConsoleVariable(&cvEditorShowProperties, NULL);
-	engine->RegisterConsoleVariable(&cvEditorAutoReload, NULL);
-	engine->RegisterConsoleVariable(&cvEditorAutoReloadDelay, NULL);
+	engine->RegisterConsoleVariable(&cv_editor_showconsole, NULL);
+	engine->RegisterConsoleVariable(&cv_editor_showproperties, NULL);
+	engine->RegisterConsoleVariable(&cv_editor_autoreload, NULL);
+	engine->RegisterConsoleVariable(&cv_editor_autoreload_delay, NULL);
 
 	viewport->StartDrawing();
 
-	dAutoReloadDelay = cvEditorAutoReloadDelay.value;
+	dAutoReloadDelay = cv_editor_autoreload_delay.value;
 }
 
 void CEditorFrame::OpenWADTool(wxString sPath)
@@ -394,7 +394,7 @@ void CEditorFrame::OpenMaterial(wxString path)
 void CEditorFrame::StartEngineLoop()
 {
 	// TODO: This isn't working...
-	if (!cvEditorShowConsole.bValue)
+	if (!cv_editor_showconsole.bValue)
 	{
 		manager->GetPane(pConsole).Show(false);
 		manager->Update();
@@ -437,7 +437,7 @@ void CEditorFrame::OnTimer(wxTimerEvent &event)
 		if (tool_material && tool_material->IsActive())
 			tool_material->ReloadMaterial();
 
-		dAutoReloadDelay = dClientTime + cvEditorAutoReloadDelay.value;
+		dAutoReloadDelay = dClientTime + cv_editor_autoreload_delay.value;
 	}
 }
 
@@ -620,12 +620,12 @@ void CEditorFrame::OnConsole(wxCommandEvent &event)
 	if (manager->GetPane(pConsole).IsShown())
 	{
 		manager->GetPane(pConsole).Show(false);
-		engine->SetConsoleVariable(cvEditorShowConsole.name, "0");
+		engine->SetConsoleVariable(cv_editor_showconsole.name, "0");
 	}
 	else
 	{
 		manager->GetPane(pConsole).Show(true);
-		engine->SetConsoleVariable(cvEditorShowConsole.name, "1");
+		engine->SetConsoleVariable(cv_editor_showconsole.name, "1");
 	}
 
 	manager->Update();

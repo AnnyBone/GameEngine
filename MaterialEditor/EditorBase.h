@@ -60,7 +60,7 @@
 
 #define	EDITOR_TITLE	"Katana World Editor"
 #define	EDITOR_LOG		"editor"
-#define	EDITOR_VERSION	"v0.1"
+#define	EDITOR_VERSION	"V0.2"
 
 #define	PATH_16ICONS	"resource/16x16/"
 #define	PATH_32ICONS	"resource/32x32/"
@@ -112,10 +112,10 @@ extern wxBitmap bSmallPrefIcon;
 
 // Console Variables
 extern ConsoleVariable_t
-	cvEditorAutoReload,
-	cvEditorAutoReloadDelay,
-	cvEditorShowProperties,
-	cvEditorShowConsole;
+	cv_editor_autoreload,
+	cv_editor_autoreload_delay,
+	cv_editor_showproperties,
+	cv_editor_showconsole;
 
 #include "base_rendercanvas.h"
 #include "base_viewportpanel.h"

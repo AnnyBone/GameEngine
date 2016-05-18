@@ -176,8 +176,8 @@ void CPreferencesDialog::HandleCommandEvent(wxCommandEvent &event)
 */
 void CPreferencesDialog::SyncSettings()
 {
-	AutoReload->SetValue(cvEditorAutoReload.bValue);
-	AutoReloadDelay->SetValue(cvEditorAutoReloadDelay.iValue);
+	AutoReload->SetValue(cv_editor_autoreload.bValue);
+	AutoReloadDelay->SetValue(cv_editor_autoreload_delay.iValue);
 
 	// Video Settings
 	VideoLegacyMode->SetValue(engine->GetConsoleVariableBoolValue("video_legacy"));
@@ -188,10 +188,10 @@ void CPreferencesDialog::ApplySettings()
 	char buf[16];
 
 	snprintf(buf, sizeof(buf), "%i", AutoReload->GetValue());
-	engine->SetConsoleVariable(cvEditorAutoReload.name, buf);
+	engine->SetConsoleVariable(cv_editor_autoreload.name, buf);
 
 	snprintf(buf, sizeof(buf), "%i", AutoReloadDelay->GetValue());
-	engine->SetConsoleVariable(cvEditorAutoReloadDelay.name, buf);
+	engine->SetConsoleVariable(cv_editor_autoreload_delay.name, buf);
 
 	snprintf(buf, sizeof(buf), "%i", VideoLegacyMode->GetValue());
 	engine->SetConsoleVariable("video_legacy", buf);
