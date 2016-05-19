@@ -219,6 +219,13 @@ static PL_INLINE void plVectorAdd3fv(plVector3f_t in, plVector3f_t add, plVector
 	out[2] = in[2] + add[2];
 }
 
+static PL_INLINE void plVectorAddf(plVector3f_t in, float add, plVector3f_t out)
+{
+	out[0] = in[0] + add;
+	out[1] = in[1] + add;
+	out[2] = in[2] + add;
+}
+
 static PL_INLINE void plVectorSubtract3fv(plVector3f_t in, plVector3f_t subtract, plVector3f_t out)
 {
 	out[0] = in[0] - subtract[0];

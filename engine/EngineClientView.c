@@ -514,7 +514,6 @@ void V_CalcViewRoll(void)
 		r_refdef.viewangles[ROLL] = 80.0f;	// dead view angle
 		return;
 	}
-
 }
 
 void V_CalcIntermissionRefdef (void)
@@ -732,19 +731,6 @@ void V_CalcRefdef (void)
 		Chase_UpdateForDrawing (); //johnfitz
 }
 
-/*	TODO: Draws a muzzleflash in-front of the weapon.
-*/
-void View_DrawMuzzleFlash(void)
-{
-	// Get players active weapon
-
-	// Set up position of sprite
-
-	// Draw
-
-	// Reset
-}
-
 /*	The player's clipping box goes from (-16 -16 -24) to (16 16 32) from
 	the entity origin, so any view position inside that will be valid
 */
@@ -762,9 +748,6 @@ void V_RenderView (void)
 		Game->Client_ViewFrame();
 		V_CalcRefdef();
 	}
-
-	// Draw first since we'll draw the gun on top of this for effect :)
-	View_DrawMuzzleFlash();
 
 	R_RenderView();
 
