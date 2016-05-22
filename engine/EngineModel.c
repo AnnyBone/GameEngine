@@ -275,7 +275,7 @@ model_t *Model_Load(model_t *model)
 		strncpy(exten, COM_FileExtension(model->name), sizeof(exten));
 		if (exten[0] != ' ')
 		{
-			for (i = 0; i < pARRAYELEMENTS(model_formatlist); i++)
+			for (i = 0; i < plArrayElements(model_formatlist); i++)
 			{
 				if (!strcmp(model_formatlist[i].extension, exten))
 				{
@@ -1275,8 +1275,7 @@ void Model_LoadRelativeMaterial(model_t *model)
 void Model_CalculateMD2Bounds(model_t *model, MD2_t *alias_model)
 {
 	// Reset everything to its maximum size.
-	int	i;
-	for (i = 0; i < 3; i++)
+	for (int i = 0; i < 3; i++)
 	{
 		loadmodel->mins[i] = loadmodel->ymins[i] = loadmodel->rmins[i] = 999999.0f;
 		loadmodel->maxs[i] = loadmodel->ymaxs[i] = loadmodel->rmaxs[i] = -999999.0f;
@@ -1284,23 +1283,27 @@ void Model_CalculateMD2Bounds(model_t *model, MD2_t *alias_model)
 
 	MD2Frame_t *curframe = (MD2Frame_t*)((uint8_t*)alias_model + alias_model->ofs_frames + alias_model->framesize);
 	if (!curframe)
-		Sys_Error("Invalid frame encountered when calculating MD2 bounds! (%s)\n", model->name);
-
-	MathVector3f_t mins = { 0 }, maxs = { 0 }, curmins, curmaxs;
-	MD2TriangleVertex_t *vertices = &curframe->verts[0];
-	for (i = 0; i < alias_model->num_xyz; i++, vertices++)
 	{
+		Con_Warning("Invalid frame encountered when calculating MD2 bounds! (%s)\n", model->name);
+		return;
+	}
+
+	float size = 0;
+	MD2TriangleVertex_t *vertices = &curframe->verts[0];
+	for (int i = 0; i < alias_model->num_xyz; i++)
+	{
+		plVector3f_t cursize = { 0 };
 		for (int j = 0; j < 3; j++)
 		{
-			curmins[j] = -(vertices->v[j] + curframe->translate[j]);
-			if (curmins[j] < mins[j])
-				mins[j] = curmins[j];
-
-			curmaxs[j] = (vertices->v[j] + curframe->translate[j]);
-			if (curmaxs[j] > maxs[j])
-				maxs[j] = curmaxs[j];
+			cursize[j] = vertices[i].v[j] * curframe->scale[i] + curframe->translate[j];
+			if (cursize[j] > size)
+				size = cursize[j];
 		}
 	}
+
+	plVector3f_t mins = { 0 }, maxs = { 0 };
+	plVectorSet3f(mins, -size, -size, -size);
+	plVectorSet3f(maxs, size, size, size);
 
 	// Check that the size is valid.
 	if (plVectorCompare(mins, pl_origin3f) && plVectorCompare(maxs, pl_origin3f))

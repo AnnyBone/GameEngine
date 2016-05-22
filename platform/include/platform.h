@@ -32,13 +32,17 @@
 // PL_IGNORE_PLATFORM_HEADERS
 // PL_IGNORE_STD_HEADERS
 
+// PL_INCLUDE_STD_BOOL
+
 // Shared headers
 #ifndef PL_IGNORE_SHARED_HEADERS
 #	include <stdio.h>
 #	include <stdlib.h>
 #	include <stdarg.h>
 #	include <stdlib.h>
-#	include <stdbool.h>
+#	ifdef PL_INCLUDE_STD_BOOL
+#		include <stdbool.h>
+#	endif
 #	ifdef _MSC_VER	// MSVC doesn't support stdint...
 #		ifndef __cplusplus
 #			include "platform_inttypes.h"
@@ -51,6 +55,7 @@
 #	include <math.h>
 #	include <setjmp.h>
 #	include <errno.h>
+#	include <time.h>
 
 #	include <sys/stat.h>
 #	include <sys/types.h>
@@ -210,25 +215,51 @@
 #endif
 
 // These are usually expected to be defined already, but in-case they're not then we define them here.
-#ifndef BOOL
-#	define BOOL bool
+#ifndef __cplusplus
+#	ifndef BOOL
+#		define BOOL	_Bool
+#	endif
+#	ifndef TRUE
+#		define TRUE 1
+#	endif
+#	ifndef FALSE
+#		define FALSE 0
+#	endif
+
+#	ifndef PL_INCLUDE_STD_BOOL
+#		ifndef bool
+#			define bool BOOL
+#		endif
+#		ifndef true
+#			define true TRUE
+#		endif
+#		ifndef false
+#			define false FALSE
+#		endif
+#	endif
+#else
+#	ifndef BOOL
+#		define BOOL	bool
+#	endif
+#	ifndef TRUE
+#		define TRUE true
+#	endif
+#	ifndef FALSE
+#		define FALSE false
+#	endif
 #endif
-#ifndef TRUE
-#	define TRUE true
-#endif
-#ifndef FALSE
-#	define FALSE false
-#endif
-#define	PL_BOOL		uint8_t
-#define PL_TRUE		1
-#define	PL_FALSE	0
+
+#define PL_BOOL		BOOL
+#define PL_TRUE		TRUE
+#define PL_FALSE	FALSE
 
 /**/
 
-#define	pARRAYELEMENTS(a)	(sizeof(a)/sizeof(*(a)))	// Returns the number of elements within an array.
+#define	plArrayElements(a)	(sizeof(a)/sizeof(*(a)))	// Returns the number of elements within an array.
 
 typedef unsigned int	pl_uint;
 typedef	unsigned char	pl_uchar;
+typedef unsigned char	pl_bool;
 
 #include "platform_log.h"
 #include "platform_window.h"
@@ -263,5 +294,25 @@ plEXTERN_C_START
 	extern char	*plGetError(void);			// Returns the last recorded error.
 
 plEXTERN_C_END
+
+/*	Converts string to time.
+	http://stackoverflow.com/questions/1765014/convert-string-from-date-into-a-time-t
+*/
+static PL_INLINE time_t plStringToTime(const char *ts)
+{
+	char s_month[5];
+	int day, year;
+	sscanf(ts, "%s %d %d", s_month, &day, &year);
+
+	static const char months[] = "JanFebMarAprMayJunJulAugSepOctNovDec";
+	int month = (strstr(months, s_month) - months) / 3;
+	struct tm time = { 0 };
+	time.tm_mon = month;
+	time.tm_mday = day;
+	time.tm_year = year - 1900;
+	time.tm_isdst = -1;
+
+	return mktime(&time);
+}
 
 /**/

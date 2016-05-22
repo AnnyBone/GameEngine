@@ -308,6 +308,13 @@ static PL_INLINE void plVectorNormalizeFast(plVector3f_t vec)
 	}
 }
 
+static PL_INLINE float plVectorDifference(plVector3f_t a, plVector3f_t b)
+{
+	plVector3f_t spot;
+	plVectorSubtract3fv(a, b, spot);
+	return plLengthf(spot);
+}
+
 /*
 	Vector2f
 */

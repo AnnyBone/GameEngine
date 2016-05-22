@@ -126,17 +126,27 @@ void AI_FlyMovement(ServerEntity_t *entity)
 	if (entity->ai.target_move)
 	{
 		// todo: interp for this over a few frames...
-		plVector3f_t targetangles;
-		plVectorSubtract3fv(entity->v.origin, entity->ai.target_move->position, targetangles);
-		plVectorNormalize(targetangles);
-		Math_MVToVector(plVectorToAngles(targetangles), targetangles);
-		Math_VectorInverse(targetangles);
-		plVectorCopy(targetangles, entity->v.angles);
+		
+		plVector3f_t angles;
+		plVectorSubtract3fv(entity->v.origin, entity->ai.target_move->position, angles);
+		plVectorNormalize(angles);
+		
+		MathVector_t vangles = plVectorToAngles(angles);
+		entity->v.angles[PL_YAW] = -vangles.vY;
+		entity->v.v_angle[PL_YAW] = entity->v.angles[PL_YAW];
 
 		AI_ForwardMovement(entity, entity->ai.current_movespeed);
 
 		// Link us up, Scotty(?)
 		Entity_Link(entity, false);
+
+		if (plVectorDifference(entity->v.origin, entity->ai.target_move->position) <= MONSTER_RANGE_MEDIUM)
+		{
+			g_engine->Con_DPrintf("Arrived at target!\n");
+
+			entity->ai.target_move = nullptr;
+			return;
+		}
 	}
 }
 
@@ -150,12 +160,11 @@ void AI_RunMovement(ServerEntity_t *entity)
 
 void AI_ForwardMovement(ServerEntity_t *entity, float velocity)
 {
-	plVector3f_t direction, end;
+	plVector3f_t end;
 
 	Entity_MakeVectors(entity);
-	plVectorCopy(entity->local.vForward, direction);
-	Math_VectorMA(entity->v.origin, velocity, direction, end);
-	plVectorScalef(direction, velocity, entity->v.velocity);
+	Math_VectorMA(entity->v.origin, velocity, entity->local.vForward, end);
+	plVectorScalef(entity->local.vForward, velocity, entity->v.velocity);
 }
 
 /*	Allows a monster to jump with the given velocity.

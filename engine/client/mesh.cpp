@@ -84,7 +84,7 @@ namespace Core
 		}
 
 		std::string fullpath = (host_parms.basepath + path);
-		for (unsigned int i = 0; i < pARRAYELEMENTS(mesh_formatlist); i++)
+		for (unsigned int i = 0; i < plArrayElements(mesh_formatlist); i++)
 		{
 			if (strcmp(mesh_formatlist[i].extension, extension))
 			{
@@ -101,7 +101,14 @@ namespace Core
 				}
 				break;
 				case PL_MODELTYPE_ANIMATED:
-				{}
+				{
+					plAnimatedModel_t *animated_model = plLoadAnimatedModel(path.c_str());
+					if (!animated_model)
+					{
+						Con_Warning("Failed to load animated model!\n");
+						return nullptr;
+					}
+				}
 				break;
 				case PL_MODELTYPE_SKELETAL:
 					break;

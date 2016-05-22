@@ -154,7 +154,7 @@ void Bot_Spawn(ServerEntity_t *eBot)
 		iSpawnType = INFO_PLAYER_DEATHMATCH;
 
 		eBot->v.model = cvServerPlayerModel.string;
-		strncpy(eBot->v.netname, BotNames[(rand() % pARRAYELEMENTS(BotNames))], 64);
+		strncpy(eBot->v.netname, BotNames[(rand() % plArrayElements(BotNames))], 64);
 
 		eBot->Monster.iType	= MONSTER_PLAYER;
 		break;
@@ -280,18 +280,18 @@ void Bot_BroadcastMessage(ServerEntity_t *eBot, ServerEntity_t *other)
 		return;
 
 	if(eBot->v.iHealth <= 0)
-		cPhrase = BotDeathPhrases[(rand()%pARRAYELEMENTS(BotDeathPhrases))];
+		cPhrase = BotDeathPhrases[(rand() % plArrayElements(BotDeathPhrases))];
 	else
 	{
 #if 0
 		if(eBot->Monster.meEmotion[EMOTION_ANGER].iEmotion > 50)
-			cPhrase = BotAngryPhrases[(rand()%pARRAYELEMENTS(BotAngryPhrases))];
+			cPhrase = BotAngryPhrases[(rand()%plArrayElements(BotAngryPhrases))];
 		else if (eBot->Monster.meEmotion[EMOTION_BOREDOM].iEmotion > 50)
-			cPhrase = BotBoredPhrases[(rand()%pARRAYELEMENTS(BotBoredPhrases))];
+			cPhrase = BotBoredPhrases[(rand()%plArrayElements(BotBoredPhrases))];
 		else if (eBot->Monster.meEmotion[EMOTION_FEAR].iEmotion > 50)
-			cPhrase = BotFearPhrases[(rand()%pARRAYELEMENTS(BotFearPhrases))];
+			cPhrase = BotFearPhrases[(rand()%plArrayElements(BotFearPhrases))];
 		else if (eBot->Monster.meEmotion[EMOTION_JOY].iEmotion > 50)
-			cPhrase = BotJoyPhrases[(rand()%pARRAYELEMENTS(BotJoyPhrases))];
+			cPhrase = BotJoyPhrases[(rand() % plArrayElements(BotJoyPhrases))];
 		else
 #endif
 			// Emotions don't give us anything worth saying...

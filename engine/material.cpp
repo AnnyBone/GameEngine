@@ -48,7 +48,7 @@ MaterialType_t material_surface_types[]=
 	{ MATERIAL_TYPE_WATER,		"water" },
 	{ MATERIAL_TYPE_FLESH,		"flesh" },
 	{ MATERIAL_TYPE_SNOW,		"snow" },
-	{ MATERIAL_TYPE_MUD,		"mud" }
+	{ MATERIAL_TYPE_MUD,		"mud" },
 };
 
 int	material_count = -1;
@@ -641,7 +641,7 @@ void _Material_SetTextureType(Material_t *material, MaterialContext_t context, c
 	MaterialTexture_t	*curtex = &curskin->texture[curskin->num_textures];
 
 	// Search through and copy each flag into the materials list of flags.
-	for (int i = 0; i < pARRAYELEMENTS(material_types); i++)
+	for (int i = 0; i < plArrayElements(material_types); i++)
 		if (strstr(arg, material_types[i].name))
 		{
 			curtex->mttType = material_types[i].type;
@@ -710,7 +710,7 @@ void _Material_SetTextureEnvironmentMode(Material_t *material, MaterialContext_t
 	MaterialSkin_t *sCurrentSkin;
 	sCurrentSkin = Material_GetSkin(material, material->num_skins);
 	
-	for (int i = 0; i < pARRAYELEMENTS(material_textureenvmode); i++)
+	for (int i = 0; i < plArrayElements(material_textureenvmode); i++)
 		if (!strncmp(material_textureenvmode[i].name, arg, strlen(material_textureenvmode[i].name)))
 		{
 			sCurrentSkin->texture[sCurrentSkin->num_textures].env_mode = material_textureenvmode[i].mode;
@@ -796,7 +796,7 @@ MaterialFlag_t	mfMaterialFlags[] =
 void _Material_SetFlags(Material_t *mCurrentMaterial, MaterialContext_t mftContext, char *cArg)
 {
 	// Search through and copy each flag into the materials list of flags.
-	for (int i = 0; i < pARRAYELEMENTS(mfMaterialFlags); i++)
+	for (int i = 0; i < plArrayElements(mfMaterialFlags); i++)
 	{
 		if (strstr(cArg, mfMaterialFlags[i].ccName))
 		{

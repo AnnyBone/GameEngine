@@ -88,7 +88,7 @@ bool Item_CheckInventory(Item_t *iItem,ServerEntity_t *eEntity)
 {
 	int i;
 
-	for(i = 0; i < pARRAYELEMENTS(Items); i++)
+	for (i = 0; i < plArrayElements(Items); i++)
 		if(eEntity->v.iInventory[i] == iItem->iNumber)
 			return true;
 		

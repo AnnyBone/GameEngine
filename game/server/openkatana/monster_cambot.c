@@ -45,7 +45,7 @@ void ScanBot_Spawn(ServerEntity_t *entity)
 	Server_PrecacheModel(SCANBOT_MODEL);
 
 	entity->v.netname		= "Scan Bot";
-	entity->v.movetype		= MOVETYPE_WALK;
+	entity->v.movetype		= MOVETYPE_FLY;
 	entity->v.iHealth		= SCANBOT_HEALTH;
 	entity->v.bTakeDamage	= true;
 
@@ -56,7 +56,8 @@ void ScanBot_Spawn(ServerEntity_t *entity)
 	// todo: redo this, legacy crap.
 	entity->Monster.iType = MONSTER_SCANBOT;
 
-	entity->ai.current_movement	= AI_MOVEMENT_FLYING;
+	entity->ai.current_movement		= AI_MOVEMENT_FLYING;
+	entity->ai.current_movespeed	= 100.0f;
 
 	entity->ai.Think	= ScanBot_Think;
 	entity->ai.State	= ScanBot_State;
@@ -72,7 +73,8 @@ void ScanBot_Think(ServerEntity_t *entity)
 		break;
 	}
 #else
-	entity->ai.target_move = AI_GetVisibleMoveTarget(entity);
+	if (!entity->ai.target_move)
+		entity->ai.target_move = AI_GetVisibleMoveTarget(entity);
 #endif
 }
 

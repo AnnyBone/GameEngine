@@ -403,7 +403,7 @@ void Image_InitializePNG()
 
 	// TODO: Introduce new Platform functionality to do this itself?
 	int i;
-	for (i = 0; i < pARRAYELEMENTS(PNGFunctions); i++)
+	for (i = 0; i < plArrayElements(PNGFunctions); i++)
 	{
 		*(PNGFunctions[i].Function) = plFindModuleFunction(iPNGLibraryInstance, PNGFunctions[i].ccFunctionName);
 		if (!PNGFunctions[i].Function)

@@ -1093,7 +1093,7 @@ _vlPrimitiveTranslate_t vl_primitives[] =
 unsigned int _vlTranslatePrimitiveMode(vlPrimitive_t primitive)
 {
 	VIDEO_FUNCTION_START
-	for (int i = 0; i < pARRAYELEMENTS(vl_primitives); i++)
+	for (int i = 0; i < plArrayElements(vl_primitives); i++)
 		if (primitive == vl_primitives[i].primitive)
 			return vl_primitives[i].gl;
 

@@ -71,7 +71,7 @@ ConsoleVariable_t
 	cv_video_drawshadowmap = { "video_draw_shadowmap", "1", true, false, "Enables/disables the rendering of shadow maps." },
 	cv_video_drawshadowblob = { "video_draw_shadowblob", "1", true, false, "Enables/disables the rendering of a shadow blob." },
 
-	cv_video_entity_distance = { "video_entity_distance", "50" },
+	cv_video_entity_distance = { "video_entity_distance", "1000" },
 	cv_video_entity_fade = { "video_entity_fade", "1" };
 
 #define VIDEO_MAX_SAMPLES	cv_video_msaamaxsamples.iValue

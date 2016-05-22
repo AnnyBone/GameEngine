@@ -123,7 +123,7 @@ Weapon_t Weapons[] =
 	{	0,	NULL,	NULL,	AM_NONE, NULL,	AM_NONE,	NULL	}
 };
 
-static Weapon_t *LAST_WEAPON = Weapons + (pARRAYELEMENTS(Weapons) - 2);
+static Weapon_t *LAST_WEAPON = Weapons + (plArrayElements(Weapons) - 2);
 
 /*	Returns the entities current active weapon.
 */

@@ -713,10 +713,8 @@ Waypoint_t *AI_GetVisibleMoveTarget(ServerEntity_t *entity)
 	if (entity->ai.target_move && (new_waypoint == entity->ai.target_move))
 	{
 		// Try to get a different waypoint.
-		if (new_waypoint->next)
-			return new_waypoint->next;
-		else if (new_waypoint->last)
-			return new_waypoint->last;
+		if (new_waypoint->next)			return new_waypoint->next;
+		else if (new_waypoint->last)	return new_waypoint->last;
 	}
 
 	return new_waypoint;
@@ -737,7 +735,7 @@ int	Monster_GetRelationship(ServerEntity_t *entity, ServerEntity_t *target)
 		return AI_RELATIONSHIP_NEUTRAL;
 
 	// Run through the relationship table...
-	for (i = 0; i < pARRAYELEMENTS(MonsterRelationship); i++)
+	for (i = 0; i < plArrayElements(MonsterRelationship); i++)
 	{
 		// If the first type returns 0, then assume we've reached the end.
 		if (!MonsterRelationship[i].iFirstType)

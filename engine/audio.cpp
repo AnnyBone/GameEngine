@@ -455,7 +455,7 @@ void AudioManager::SetEffectReverb(const AudioEffect_t *effect, AudioEffectRever
 {
 	// Translate it for OpenAL.
 	EFXEAXREVERBPROPERTIES reverb = { 0 };
-	for (unsigned int i = 0; i < pARRAYELEMENTS(audio_reverb_effects); i++)
+	for (unsigned int i = 0; i < plArrayElements(audio_reverb_effects); i++)
 	{
 		if (audio_reverb_effects[i].in == mode)
 		{

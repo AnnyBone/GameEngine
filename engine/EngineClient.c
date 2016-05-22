@@ -609,7 +609,7 @@ void Client_ListModelCache(void)
 
 	Con_Printf("Listing cached models...\n");
 
-	for (i = 0; i < pARRAYELEMENTS(cl.model_precache); i++)
+	for (i = 0; i < plArrayElements(cl.model_precache); i++)
 		if (cl.model_precache[i])
 			Con_Printf(" %s\n", cl.model_precache[i]->name);
 }

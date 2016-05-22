@@ -166,69 +166,6 @@ void Draw_MaterialSurface(Material_t *mMaterial, int iSkin,	int x, int y, int w,
 	vlEnable(VL_CAPABILITY_DEPTH_TEST);
 }
 
-/*	TODO: Make me obsolete!
-*/
-void Draw_ExternPic(char *path,float alpha,int x,int y,int w,int h)
-{
-#if 0
-	int	i;
-
-	// [15/9/2013] Fixed somewhat (clean this up) ~hogsy
-	for(i = 0; i < sizeof(gMenuTexture); i++)
-		if(!gMenuTexture[i])
-		{
-			Video_SetTexture(notexture);
-			break;
-		}
-		else if(!strcmp(gMenuTexture[i]->name,path))
-		{
-			Video_SetTexture(gMenuTexture[i]);
-			break;
-		}
-
-	Video_ResetCapabilities(false);
-	Video_EnableCapabilities(VIDEO_BLEND);
-	Video_DisableCapabilities(VIDEO_DEPTH_TEST);
-
-	{
-		vlVertex_t	voPicture[4];
-
-		for(i = 0; i < 4; i++)
-		{
-			// Set RGB values to 1.0f...
-			Math_VectorSet(1.0f,voPicture[i].mvColour);
-
-			// Alpha needs to be set last, to the given value...
-			voPicture[i].mvColour[3] = alpha;
-		}
-
-		// Give each vertex the coord it needs...
-		voPicture[0].mvPosition[1]	=
-		voPicture[1].mvPosition[1]	= y;
-		voPicture[2].mvPosition[1]	=
-		voPicture[3].mvPosition[1]	= y+h;
-		voPicture[1].mvPosition[0]	=
-		voPicture[2].mvPosition[0]	= x+w;
-		voPicture[0].mvPosition[0]	=
-		voPicture[3].mvPosition[0]	= x;
-
-		// Give each texture coord the coord it needs...
-		voPicture[0].mvST[0][0]	=
-		voPicture[0].mvST[0][1]	=
-		voPicture[1].mvST[0][1]	=
-		voPicture[3].mvST[0][0]	= 0;
-		voPicture[1].mvST[0][0]	=
-		voPicture[2].mvST[0][0]	=
-		voPicture[2].mvST[0][1]	=
-		voPicture[3].mvST[0][1]	= 1.0f;
-
-		// Throw it off to the rendering pipeline.
-		Video_DrawFill(voPicture,NULL, 0);
-	}
-
-	Video_ResetCapabilities(true);
-#endif
-}
 //==================================================================
 
 void SwapPic (qpic_t *pic)
