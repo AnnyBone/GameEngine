@@ -34,6 +34,11 @@ namespace Core
 		ConsoleVariable_t cv_camera_modellag = { "camera_modellag", "0.2", true };
 		ConsoleVariable_t cv_camera_modelposition = { "camera_modelposition", "1", true };
 
+		ConsoleVariable_t cv_camera_rollangle = { "camera_rollangle", "2.0", true };
+		ConsoleVariable_t cv_camera_rollspeed = { "camera_rollspeed", "200", true };
+
+		ConsoleVariable_t cv_camera_punch = { "camera_punch", "1", true };
+
 		class Camera
 		{
 		public:
@@ -71,7 +76,8 @@ namespace Core
 			void CalculateRoll();
 
 #ifdef CAMERA_LEGACY
-			void SimulateModel();
+			void SimulateViewEntity();
+			void SimulateParentEntity();
 #endif
 
 			bool			bobcam;
@@ -123,6 +129,11 @@ CameraManager::CameraManager()
 	Cvar_RegisterVariable(&cv_camera_forwardcycle, NULL);
 	Cvar_RegisterVariable(&cv_camera_sidecycle, NULL);
 	Cvar_RegisterVariable(&cv_camera_upcycle, NULL);
+
+	Cvar_RegisterVariable(&cv_camera_modellag, NULL);
+	Cvar_RegisterVariable(&cv_camera_modelposition, NULL);
+
+	Cvar_RegisterVariable(&cv_camera_punch, NULL);
 }
 
 void CameraManager::Draw()
@@ -226,25 +237,34 @@ void Camera::CalculateBob()
 
 void Camera::CalculateRoll()
 {
-	// todo
+	float side = Math_DotProduct(cl.velocity, right);
+	float sign = side < 0 ? -1 : 1;
+	side = fabsf(side);
+
+	float value = cv_camera_rollangle.value;
+	if (side < cv_camera_rollspeed.value)
+		side *= value / cv_camera_rollspeed.value;
+	else
+		side = value;
+
+	side *= sign;
+	angles[PL_ROLL] += side;
+
+#if 0 // TODO: Move into seperate class?? Game specific...
+	static double dmg_time = 0;
+	if (dmg_time = 0)
+	{
+		angles[PL_ROLL] += dmg_time /
+		angles[PL_PITCH] += dmg_time
+	}
+
+	if (cl.stats[STAT_HEALTH] <= 0)
+		angles[PL_ROLL] = 80.0f;
+#endif
 }
 
 void Camera::Simulate()
 {
-#ifdef CAMERA_LEGACY
-	// Parent is the player model (visible when out of body).
-	parententity = &cl_entities[cl.viewentity];
-
-	// Transform the view offset by the model's matrix to get the offset from
-	// model origin for the view.
-	parententity->angles[YAW]		= angles[YAW];
-	parententity->angles[PITCH]		= -angles[PITCH];
-	parententity->angles[ROLL]		= -angles[ROLL];
-
-	// Refresh view position.
-	SetPosition(parententity->origin);
-#endif
-
 	CalculateBob();
 	CalculateRoll();
 
@@ -260,38 +280,33 @@ void Camera::Simulate()
 	plVectorAddf(position, 1.0f / 32.0f, position);
 
 #ifdef CAMERA_LEGACY
-	SimulateModel();
-
-	// Offsets
-	angles[PL_PITCH]	= -parententity->angles[PL_PITCH];	// Because entity pitches are actually backward.
-	angles[PL_YAW]		= parententity->angles[PL_YAW];
-	angles[PL_ROLL]		= parententity->angles[PL_ROLL];
-
-	/*	
-	Absolutely bound refresh reletive to entity clipping hull
-	so the view can never be inside a solid wall.
-	*/
-	if (position[0] < (parententity->origin[0] - 14.0f))
-		position[0] = parententity->origin[0] - 14.0f;
-	else if (position[0] > (parententity->origin[0] + 14.0f))
-		position[0] = parententity->origin[0] + 14.0f;
-
-	if (position[1] < (parententity->origin[1] - 14.0f))
-		position[1] = parententity->origin[1] - 14.0f;
-	else if (position[1] > (parententity->origin[1] + 14.0f))
-		position[1] = parententity->origin[1] + 14.0f;
-
-	if (position[2] < (parententity->origin[2] - 22.0f))
-		position[2] = parententity->origin[2] - 22.0f;
-	else if (position[2] > (parententity->origin[2] + 30.0f))
-		position[2] = parententity->origin[2] + 30.0f;
+	SimulateParentEntity();
+	SimulateViewEntity();
 #endif
+
+	// Apply camera punch, if it's enabled.
+	if (cv_camera_punch.value)
+	{
+		static MathVector3f_t punch = { 0, 0, 0 };
+		for (int i = 0; i < 3; i++)
+			if (pl_origin3f[i] != punchangles[0][i])
+			{
+				// Speed determined by how far we need to lerp in 1/10th of a second.
+				float delta = (punchangles[0][i] - punchangles[1][i]) * host_frametime * 10.0f;
+				if (delta > 0)
+					punch[i] = Math_Min(punch[i] + delta, punchangles[0][i]);
+				else if (delta < 0)
+					punch[i] = Math_Max(punch[i] + delta, punchangles[0][i]);
+			}
+
+		plVectorAdd3fv(r_refdef.viewangles, punch, r_refdef.viewangles);
+	}
 
 	plAngleVectors(angles, forward, right, up);
 }
 
 #ifdef CAMERA_LEGACY
-void Camera::SimulateModel()
+void Camera::SimulateViewEntity()
 {
 	// View is the weapon model (only visible from inside body).
 	viewmodel = &cl.viewent;
@@ -365,6 +380,45 @@ void Camera::SimulateModel()
 
 	for (int i = 0; i < 3; i++)
 		viewmodel->origin[i] += forward[i] + offset * right[i] + up[i];
+}
+
+void Camera::SimulateParentEntity()
+{
+	// Parent is the player model (visible when out of body).
+	parententity = &cl_entities[cl.viewentity];
+
+	// Transform the view offset by the model's matrix to get the offset from
+	// model origin for the view.
+	parententity->angles[YAW]		= angles[YAW];
+	parententity->angles[PITCH]		= -angles[PITCH];
+	parententity->angles[ROLL]		= -angles[ROLL];
+
+	// Refresh view position.
+	SetPosition(parententity->origin);
+
+	// Offsets
+	angles[PL_PITCH]	= -parententity->angles[PL_PITCH];	// Because entity pitches are actually backward.
+	angles[PL_YAW]		= parententity->angles[PL_YAW];
+	angles[PL_ROLL]		= parententity->angles[PL_ROLL];
+
+	/*
+	Absolutely bound refresh reletive to entity clipping hull
+	so the view can never be inside a solid wall.
+	*/
+	if (position[0] < (parententity->origin[0] - 14.0f))
+		position[0] = parententity->origin[0] - 14.0f;
+	else if (position[0] > (parententity->origin[0] + 14.0f))
+		position[0] = parententity->origin[0] + 14.0f;
+
+	if (position[1] < (parententity->origin[1] - 14.0f))
+		position[1] = parententity->origin[1] - 14.0f;
+	else if (position[1] > (parententity->origin[1] + 14.0f))
+		position[1] = parententity->origin[1] + 14.0f;
+
+	if (position[2] < (parententity->origin[2] - 22.0f))
+		position[2] = parententity->origin[2] - 22.0f;
+	else if (position[2] > (parententity->origin[2] + 30.0f))
+		position[2] = parententity->origin[2] + 30.0f;
 }
 #endif
 

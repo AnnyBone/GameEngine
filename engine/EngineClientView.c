@@ -600,14 +600,14 @@ void V_CalcRefdef (void)
 	// [10/5/2013] Forward cycle ~hogsy
 	fCycle[0] = (cl.time-(int)(cl.time/cl_bobcycle.value)*cl_bobcycle.value)/cl_bobcycle.value;
 	if(fCycle[0] < cl_bobup.value)
-		fCycle[0] = PL_PI*fCycle[0] / cl_bobup.value;
+		fCycle[0] = PL_PI * fCycle[0] / cl_bobup.value;
 	else
-		fCycle[0] = PL_PI + PL_PI*(fCycle[0] - cl_bobup.value) / (1.0f - cl_bobup.value);
+		fCycle[0] = PL_PI + PL_PI * (fCycle[0] - cl_bobup.value) / (1.0f - cl_bobup.value);
 
 	// [10/5/2013] Side cycle ~hogsy
 	fCycle[1] = (cl.time-(int)(cl.time/cSideBobCycle.value)*cSideBobCycle.value)/cSideBobCycle.value;
 	if(fCycle[1] < cSideBobUp.value)
-		fCycle[1] = PL_PI*fCycle[1] / cSideBobUp.value;
+		fCycle[1] = PL_PI * fCycle[1] / cSideBobUp.value;
 	else
 		fCycle[1] = PL_PI + PL_PI*(fCycle[1] - cSideBobUp.value) / (1.0f - cSideBobUp.value);
 
