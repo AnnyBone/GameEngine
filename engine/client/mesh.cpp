@@ -111,7 +111,10 @@ namespace Core
 				}
 				break;
 				case PL_MODELTYPE_SKELETAL:
-					break;
+				{
+
+				}
+				break;
 				default:
 					Con_Warning("Unknown or unsupported model type!\n");
 					return nullptr;

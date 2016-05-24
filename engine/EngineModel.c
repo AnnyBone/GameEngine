@@ -1288,22 +1288,21 @@ void Model_CalculateMD2Bounds(model_t *model, MD2_t *alias_model)
 		return;
 	}
 
-	float size = 0;
+	MathVector3f_t mins = { 0 }, maxs = { 0 }, curmins, curmaxs;
 	MD2TriangleVertex_t *vertices = &curframe->verts[0];
-	for (int i = 0; i < alias_model->num_xyz; i++)
+	for (int i = 0; i < alias_model->num_xyz; i++, vertices++)
 	{
-		plVector3f_t cursize = { 0 };
 		for (int j = 0; j < 3; j++)
 		{
-			cursize[j] = vertices[i].v[j] * curframe->scale[i] + curframe->translate[j];
-			if (cursize[j] > size)
-				size = cursize[j];
+			curmins[j] = -(vertices->v[j] + curframe->translate[j]);
+			if (curmins[j] < mins[j])
+				mins[j] = curmins[j];
+
+			curmaxs[j] = (vertices->v[j] + curframe->translate[j]);
+			if (curmaxs[j] > maxs[j])
+				maxs[j] = curmaxs[j];
 		}
 	}
-
-	plVector3f_t mins = { 0 }, maxs = { 0 };
-	plVectorSet3f(mins, -size, -size, -size);
-	plVectorSet3f(maxs, size, size, size);
 
 	// Check that the size is valid.
 	if (plVectorCompare(mins, pl_origin3f) && plVectorCompare(maxs, pl_origin3f))

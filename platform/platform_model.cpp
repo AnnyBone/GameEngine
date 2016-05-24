@@ -78,7 +78,7 @@ void plGenerateAnimatedModelNormals(plAnimatedModel_t *model)
 		{
 			for (plTriangle_t *triangle = &frame->triangles[0]; triangle; ++triangle)
 			{
-
+				
 			}
 		}
 	}
@@ -107,10 +107,17 @@ plStaticModel_t *plCreateStaticModel(void)
 	return model;
 }
 
+// Less direct implementation to load a model (less efficient too).
 plStaticModel_t *plLoadStaticModel(const char *path)
 {
 	if (!path || path[0] == ' ')
 		return nullptr;
+
+	std::string extension(path);
+	if (extension.find(".pskx") != std::string::npos)
+		return plLoadOBJModel(path);
+	else if (extension.find(".obj") != std::string::npos)
+		return plLoadOBJModel(path);
 
 	return nullptr;
 }
@@ -131,6 +138,11 @@ void plDeleteStaticModel(plStaticModel_t *model)
 	delete model;
 }
 
+void plGenerateStaticModelBounds(plStaticModel_t *model)
+{
+
+}
+
 /*	
 	Animated Model
 */
@@ -148,10 +160,16 @@ plAnimatedModel_t *plCreateAnimatedModel(void)
 	return model;
 }
 
+// Less direct implementation to load a model (less efficient too).
 plAnimatedModel_t *plLoadAnimatedModel(const char *path)
 {
+	plSetErrorFunction("plLoadAnimatedModel");
+
 	if (!path || path[0] == ' ')
+	{
+		plSetError("Invalid path!\n");
 		return nullptr;
+	}
 
 	return nullptr;
 }
@@ -180,8 +198,6 @@ void plDeleteAnimatedModel(plAnimatedModel_t *model)
 
 	delete model;
 }
-
-
 
 /*
 	UNREAL PSKX Static Model Format
