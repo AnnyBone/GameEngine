@@ -484,23 +484,15 @@ void Video_ShowBoundingBoxes(void)
 
 		Draw_CoordinateAxes(ed->v.origin);
 
-		Math_VectorAdd(ed->v.mins,ed->v.origin,mins);
-		Math_VectorAdd(ed->v.maxs,ed->v.origin,maxs);
+		Math_VectorAdd(ed->v.mins, ed->v.origin, mins);
+		Math_VectorAdd(ed->v.maxs, ed->v.origin, maxs);
 
 #ifdef VL_MODE_OPENGL
 		glColor4f(0, 0.5f, 0, 0.5f);
 #endif
 
-		R_EmitWireBox(mins,maxs, 1, 1, 1);
+		R_EmitWireBox(mins, maxs, 1, 1, 1);
 	}
-
-#if 0
-	// Cycle through client-side entities.
-	for (i = 0, clEntity = cl_entities; i < cl.num_entities; i++, clEntity++)
-		Video_DrawClientBoundingBox(clEntity);
-	for (i = 0, clEntity = cl_temp_entities; i < cl_numvisedicts; i++, clEntity++)
-		Video_DrawClientBoundingBox(clEntity);
-#endif
 
 	vlDisable(VL_CAPABILITY_BLEND);
 	vlEnable(VL_CAPABILITY_TEXTURE_2D | VL_CAPABILITY_DEPTH_TEST);

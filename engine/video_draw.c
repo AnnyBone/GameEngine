@@ -723,9 +723,7 @@ void Draw_EntityBoundingBox(ClientEntity_t *entity)
 	if (!entity->model || ((entity == &cl_entities[cl.viewentity]) && !chase_active.bValue) || (entity == &cl.viewent))
 		return;
 
-	plVector3f_t vMins, vMaxs;
-	Math_VectorAdd(entity->model->rmins, entity->origin, vMins);
-	Math_VectorAdd(entity->model->rmaxs, entity->origin, vMaxs);
+	plVector3f_t mins, maxs;
 
 	switch (entity->model->type)
 	{
@@ -734,13 +732,29 @@ void Draw_EntityBoundingBox(ClientEntity_t *entity)
 #ifdef VL_MODE_OPENGL
 		glColor4f(0, 0, 0, 0);
 #endif
-		R_EmitWireBox(vMins, vMaxs, 0, 1, 0);
+
+		Math_VectorAdd(entity->model->mins, entity->origin, mins);
+		Math_VectorAdd(entity->model->maxs, entity->origin, maxs);
+		R_EmitWireBox(mins, maxs, 0, 1, 0);
 		break;
 	default:
+	{
 #ifdef VL_MODE_OPENGL
 		glColor4f(0.5f, 0, 0, 0.5f);
 #endif
-		R_EmitWireBox(vMins, vMaxs, 1, 0, 0);
+		Math_VectorAdd(entity->model->rmins, entity->origin, mins);
+		Math_VectorAdd(entity->model->rmaxs, entity->origin, maxs);
+		R_EmitWireBox(mins, maxs, 1, 0, 0);
+
+		Math_VectorAdd(entity->model->ymins, entity->origin, mins);
+		Math_VectorAdd(entity->model->ymaxs, entity->origin, maxs);
+		R_EmitWireBox(mins, maxs, 0, 1, 0);
+
+		Math_VectorAdd(entity->model->mins, entity->origin, mins);
+		Math_VectorAdd(entity->model->maxs, entity->origin, maxs);
+		R_EmitWireBox(mins, maxs, 0, 0, 1);
+	}
+	break;
 	}
 }
 

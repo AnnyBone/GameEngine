@@ -109,11 +109,11 @@ mleaf_t *Mod_PointInLeaf (MathVector3f_t p, model_t *model)
 	return (mleaf_t*)node;
 }
 
-byte *Mod_DecompressVis (byte *in, model_t *model)
+uint8_t *Mod_DecompressVis(uint8_t *in, model_t *model)
 {
-	static byte	decompressed[BSP_MAX_LEAFS/8];
+	static uint8_t	decompressed[BSP_MAX_LEAFS / 8];
 	int		c;
-	byte	*out;
+	uint8_t	*out;
 	int		row;
 
 	row = (model->numleafs+7)>>3;
@@ -1274,33 +1274,30 @@ void Model_LoadRelativeMaterial(model_t *model)
 */
 void Model_CalculateMD2Bounds(model_t *model, MD2_t *alias_model)
 {
-	// Reset everything to its maximum size.
-	for (int i = 0; i < 3; i++)
-	{
-		model->mins[i] = model->ymins[i] = model->rmins[i] = 999999.0f;
-		model->maxs[i] = model->ymaxs[i] = model->rmaxs[i] = -999999.0f;
-	}
-
-	MD2Frame_t *curframe = (MD2Frame_t*)((uint8_t*)alias_model + alias_model->ofs_frames + alias_model->framesize);
-	if (!curframe)
-	{
-		Con_Warning("Invalid frame encountered when calculating MD2 bounds! (%s)\n", model->name);
-		return;
-	}
-
 	MathVector3f_t mins = { 0 }, maxs = { 0 }, curmins, curmaxs;
-	MD2TriangleVertex_t *vertices = &curframe->verts[0];
-	for (int i = 0; i < alias_model->num_xyz; i++, vertices++)
+	for (int i = 0; i < alias_model->num_frames; i++)
 	{
-		for (int j = 0; j < 3; j++)
+		MD2Frame_t *curframe = (MD2Frame_t*)((uint8_t*)alias_model + alias_model->ofs_frames + (alias_model->framesize * i));
+		if (!curframe)
 		{
-			curmins[j] = -(vertices->v[j] + curframe->translate[j]);
-			if (curmins[j] < mins[j])
-				mins[j] = curmins[j];
+			Con_Warning("Invalid frame encountered when calculating MD2 bounds! (%i) (%s)\n", i, model->name);
+			break;
+		}
 
-			curmaxs[j] = (vertices->v[j] + curframe->translate[j]);
-			if (curmaxs[j] > maxs[j])
-				maxs[j] = curmaxs[j];
+		MD2TriangleVertex_t *vertices = &curframe->verts[0];
+		for (int j = 0; j < alias_model->num_xyz; j++)
+		{
+			for (int k = 0; k < 3; k++)
+			{
+				curmins[k] = -(vertices->v[k] * curframe->scale[k] + curframe->translate[k]);
+				if (curmins[k] < mins[k])
+					mins[k] = curmins[k];
+
+				curmaxs[k] = (vertices->v[k] * curframe->scale[k] + curframe->translate[k]);
+				if (curmaxs[k] > maxs[k])
+					maxs[k] = curmaxs[k];
+			}
+			vertices++;
 		}
 	}
 
@@ -1318,10 +1315,13 @@ void Model_CalculateMD2Bounds(model_t *model, MD2_t *alias_model)
 	Math_VectorCopy(mins, model->mins);
 	Math_VectorCopy(maxs, model->maxs);
 
-	Math_VectorCopy(model->mins, model->rmins);
-	Math_VectorCopy(model->maxs, model->rmaxs);
+	// todo rotate and stuff for y and r
+
 	Math_VectorCopy(model->mins, model->ymins);
 	Math_VectorCopy(model->maxs, model->ymaxs);
+
+	Math_VectorCopy(model->mins, model->rmins);
+	Math_VectorCopy(model->maxs, model->rmaxs);
 }
 
 /*	Calculate the normals for MD2 models.

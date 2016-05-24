@@ -138,11 +138,6 @@ void plDeleteStaticModel(plStaticModel_t *model)
 	delete model;
 }
 
-void plGenerateStaticModelBounds(plStaticModel_t *model)
-{
-
-}
-
 /*	
 	Animated Model
 */
