@@ -912,10 +912,13 @@ void Sky_Draw(void)
 
 		if(cv_video_drawclouds.value && gCloudTexture)
 		{
+#if 0
 			// Draw the scrolling clouds...
 			for(i = 0; i < 6; i++)
 				if(skymins[0][i] < skymaxs[0][i] && skymins[1][i] < skymaxs[1][i])
 					Sky_DrawFace(i);
+#else // new implementation using plane.
+#endif
 		}
 
 		vlEnable(VL_CAPABILITY_DEPTH_TEST);

@@ -1032,9 +1032,7 @@ void vlEndDraw(vlDraw_t *draw)
 	glBindBuffer(GL_ARRAY_BUFFER, draw->_gl_vbo[_VL_BUFFER_VERTICES]);
 	glBufferData(GL_ARRAY_BUFFER, draw->numverts * sizeof(vlVertex_t), draw->vertices, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-#endif
 
-#if defined (VL_MODE_OPENGL)
 	if (draw->primitive == VL_PRIMITIVE_TRIANGLES)
 	{
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, draw->_gl_vbo[_VL_BUFFER_INDICES]);

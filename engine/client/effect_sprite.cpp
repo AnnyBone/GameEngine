@@ -120,6 +120,7 @@ Sprite::Sprite() :
 
 Sprite::~Sprite()
 {
+	vlDeleteDraw(draw);
 }
 
 void Sprite::SetColour(float r, float g, float b, float a)
@@ -215,9 +216,9 @@ void Sprite::Simulate()
 	case SPRITE_TYPE_SCALE:
 		// Scale the sprite, dependant on view position.
 		scale *=
-			(position[0] - r_origin[0])*vpn[0] +
-			(position[1] - r_origin[1])*vpn[1] +
-			(position[2] - r_origin[2])*vpn[2];
+			(position[0] - r_origin[0]) * vpn[0] +
+			(position[1] - r_origin[1]) * vpn[1] +
+			(position[2] - r_origin[2]) * vpn[2];
 		break;
 	}
 }

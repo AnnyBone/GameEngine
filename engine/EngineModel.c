@@ -1277,8 +1277,8 @@ void Model_CalculateMD2Bounds(model_t *model, MD2_t *alias_model)
 	// Reset everything to its maximum size.
 	for (int i = 0; i < 3; i++)
 	{
-		loadmodel->mins[i] = loadmodel->ymins[i] = loadmodel->rmins[i] = 999999.0f;
-		loadmodel->maxs[i] = loadmodel->ymaxs[i] = loadmodel->rmaxs[i] = -999999.0f;
+		model->mins[i] = model->ymins[i] = model->rmins[i] = 999999.0f;
+		model->maxs[i] = model->ymaxs[i] = model->rmaxs[i] = -999999.0f;
 	}
 
 	MD2Frame_t *curframe = (MD2Frame_t*)((uint8_t*)alias_model + alias_model->ofs_frames + alias_model->framesize);
@@ -1315,13 +1315,13 @@ void Model_CalculateMD2Bounds(model_t *model, MD2_t *alias_model)
 		Math_VectorSet(32, maxs);
 	}
 
-	Math_VectorCopy(mins, loadmodel->mins);
-	Math_VectorCopy(maxs, loadmodel->maxs);
+	Math_VectorCopy(mins, model->mins);
+	Math_VectorCopy(maxs, model->maxs);
 
-	Math_VectorCopy(loadmodel->mins, loadmodel->rmins);
-	Math_VectorCopy(loadmodel->maxs, loadmodel->rmaxs);
-	Math_VectorCopy(loadmodel->mins, loadmodel->ymins);
-	Math_VectorCopy(loadmodel->maxs, loadmodel->ymaxs);
+	Math_VectorCopy(model->mins, model->rmins);
+	Math_VectorCopy(model->maxs, model->rmaxs);
+	Math_VectorCopy(model->mins, model->ymins);
+	Math_VectorCopy(model->maxs, model->ymaxs);
 }
 
 /*	Calculate the normals for MD2 models.

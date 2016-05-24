@@ -98,11 +98,7 @@ void Alias_DrawFrame(MD2_t *alias, ClientEntity_t *entity, lerpdata_t lLerpData)
 	MD2TriangleVertex_t *lerpvertices = &second->verts[1];
 
 	// TODO: Stupid stupid stupid temporary shit until we do this properly.
-	VideoObject_t object;
-	object.vertices		= (vlVertex_t*)malloc_or_die(sizeof(vlVertex_t) * alias->num_xyz);
-	object.numverts		= alias->num_xyz;
-	object.primitive	= VL_PRIMITIVE_TRIANGLES;
-	object.indices		= (uint8_t*)calloc_or_die(alias->numtris * 3, sizeof(uint8_t));
+	vlDraw_t *draw = vlCreateDraw(VL_PRIMITIVE_TRIANGLES, alias->numtris, alias->num_xyz);
 	
 	MD2Triangle_t *triangles = (MD2Triangle_t*)((uint8_t*)alias + alias->ofs_tris);
 	for(int i = 0; i < alias->numtris; i++, triangles++)
@@ -116,20 +112,15 @@ void Alias_DrawFrame(MD2_t *alias, ClientEntity_t *entity, lerpdata_t lLerpData)
 		}
 	}
 
-	// TODO: draw
+	Material_Draw(entity->model->materials, draw->vertices, draw->primitive, draw->numverts, false);
+	vlDraw(draw);
+	Material_Draw(entity->model->materials, draw->vertices, draw->primitive, draw->numverts, true);
 
 	// TODO: Stupid stupid stupid temporary shit until we do this properly.
-	free(object.vertices);
-	free(object.indices);
+	vlDeleteDraw(draw);
 #else
-	vlVertex_t				*voModel;
-	MD2TriangleVertex_t		*verts1, *verts2;
-	MD2Frame_t				*frame1, *frame2;
-	float					ilerp, fAlpha = 1.0f;
-	unsigned int			uiVerts = 0;
-	int						*order, count;
-
-	ilerp = 1.0f - lLerpData.blend;
+	float fAlpha = 1;
+	float ilerp = 1.0f - lLerpData.blend;
 	if (bShading && !r_showtris.bValue)
 		fAlpha	= ENTALPHA_DECODE(entity->alpha);
 
@@ -138,19 +129,20 @@ void Alias_DrawFrame(MD2_t *alias, ClientEntity_t *entity, lerpdata_t lLerpData)
 		vlEnable(VL_CAPABILITY_BLEND);
 
 	//new version by muff - fixes bug, easier to read, faster (well slightly)
-	frame1 = (MD2Frame_t*)((uint8_t*)alias + alias->ofs_frames + (alias->framesize*entity->draw_lastpose));
-	frame2 = (MD2Frame_t*)((uint8_t*)alias + alias->ofs_frames + (alias->framesize*entity->draw_pose));
+	MD2Frame_t *frame1 = (MD2Frame_t*)((uint8_t*)alias + alias->ofs_frames + (alias->framesize*entity->draw_lastpose));
+	MD2Frame_t *frame2 = (MD2Frame_t*)((uint8_t*)alias + alias->ofs_frames + (alias->framesize*entity->draw_pose));
 
-	verts1 = &frame1->verts[0];
-	verts2 = &frame2->verts[0];
+	MD2TriangleVertex_t *verts1 = &frame1->verts[0];
+	MD2TriangleVertex_t *verts2 = &frame2->verts[0];
 
-	order = (int*)((uint8_t*)alias + alias->ofs_glcmds);
+	int *order = (int*)((uint8_t*)alias + alias->ofs_glcmds);
 
 	// TODO: Stupid stupid stupid temporary shit until we do this properly.
-	voModel = (vlVertex_t*)malloc_or_die(sizeof(vlVertex_t) * alias->num_xyz);
+	vlVertex_t *vertices = (vlVertex_t*)malloc_or_die(sizeof(vlVertex_t) * alias->num_xyz);
+	memset(vertices, 0, sizeof(vertices));
 
-	memset(voModel, 0, sizeof(voModel));
-
+	unsigned int uiVerts = 0;
+	int count;
 	for (;;)
 	{
 		count = *(order++);
@@ -161,34 +153,29 @@ void Alias_DrawFrame(MD2_t *alias, ClientEntity_t *entity, lerpdata_t lLerpData)
 
 		do
 		{
-			Video_ObjectTexture(&voModel[uiVerts], 0, ((float*)order)[0], ((float*)order)[1]);
-			Video_ObjectVertex(&voModel[uiVerts],
+			Video_ObjectTexture(&vertices[uiVerts], 0, ((float*)order)[0], ((float*)order)[1]);
+			Video_ObjectVertex(&vertices[uiVerts],
 				(verts1[order[2]].v[0] * frame1->scale[0] + frame1->translate[0])*ilerp +
 				(verts2[order[2]].v[0] * frame2->scale[0] + frame2->translate[0])*lLerpData.blend,
 				(verts1[order[2]].v[1] * frame1->scale[1] + frame1->translate[1])*ilerp +
 				(verts2[order[2]].v[1] * frame2->scale[1] + frame2->translate[1])*lLerpData.blend,
 				(verts1[order[2]].v[2] * frame1->scale[2] + frame1->translate[2])*ilerp +
 				(verts2[order[2]].v[2] * frame2->scale[2] + frame2->translate[2])*lLerpData.blend);
-#if 0
-			Video_ObjectNormal(&voModel[uiVerts],
-				entity->model->object.vertices[uiVerts].mvNormal[0],
-				entity->model->object.vertices[uiVerts].mvNormal[1],
-				entity->model->object.vertices[uiVerts].mvNormal[2]);
-#endif
-			Video_ObjectColour(&voModel[uiVerts], alias_lightcolour[0], alias_lightcolour[1], alias_lightcolour[2], fAlpha);
+
+			Video_ObjectColour(&vertices[uiVerts], alias_lightcolour[0], alias_lightcolour[1], alias_lightcolour[2], fAlpha);
 
 			uiVerts++;
 
 			order += 3;
 		} while (--count);
 
-		Video_DrawObject(voModel, VL_PRIMITIVE_TRIANGLE_STRIP, uiVerts, entity->model->materials, entity->skinnum);
+		Video_DrawObject(vertices, VL_PRIMITIVE_TRIANGLE_STRIP, uiVerts, entity->model->materials, entity->skinnum);
 	}
 
 	if (fAlpha < 1.0f)
 		vlDisable(VL_CAPABILITY_BLEND);
 
-	free(voModel);
+	free(vertices);
 #endif
 }
 
