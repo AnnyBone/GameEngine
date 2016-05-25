@@ -1,129 +1,45 @@
-/*	Copyright (C) 2011-2016 OldTimes Software
+/*	
+Copyright (C) 1996-2001 Id Software, Inc.
+Copyright (C) 2011-2016 OldTimes Software
 
-	This program is free software; you can redistribute it and/or
-	modify it under the terms of the GNU General Public License
-	as published by the Free Software Foundation; either version 2
-	of the License, or (at your option) any later version.
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-	See the GNU General Public License for more details.
+See the GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "engine_base.h"
 
 #include "video.h"
+#include "video_camera.h"
 
-#define	CAMERA_LEGACY	// Camera automatically follows parent entity.
-
-namespace Core
-{
-	namespace Client
-	{
-		ConsoleVariable_t cv_camera_forwardcycle = { "camera_forwardcycle", "0.43", true };
-		ConsoleVariable_t cv_camera_sidecycle = { "camera_sidecycle", "0.86", true };
-		ConsoleVariable_t cv_camera_upcycle = { "camera_upcycle", "0.45", true };
-		ConsoleVariable_t cv_camera_bob = { "camera_bob", "0.002", true };
-
-		ConsoleVariable_t cv_camera_modellag = { "camera_modellag", "0.2", true };
-		ConsoleVariable_t cv_camera_modelposition = { "camera_modelposition", "1", true };
-
-		ConsoleVariable_t cv_camera_rollangle = { "camera_rollangle", "2.0", true };
-		ConsoleVariable_t cv_camera_rollspeed = { "camera_rollspeed", "200", true };
-
-		ConsoleVariable_t cv_camera_punch = { "camera_punch", "1", true };
-
-		class Camera
-		{
-		public:
-			Camera();
-			Camera(plVector3f_t position);
-
-			void Draw();
-			void Simulate();
-
-			void SetAngles(float x, float y, float z);
-			void PrintAngles();
-
-			void SetFrustum(float fovx, float fovy);
-
-			void SetPosition(float x, float y, float z);
-			void SetPosition(plVector3f_t _position);
-			void PrintPosition();
-
-			bool IsPointInsideFrustum(plVector3f_t position);
-			bool IsPointOutsideFrustum(plVector3f_t position);
-			bool IsBoxInsideFrustum(plVector3f_t mins, plVector3f_t maxs);
-			bool IsBoxOutsideFrustum(plVector3f_t mins, plVector3f_t maxs);
-
-			std::vector<float> GetForward() { return std::vector<float> { forward[0], forward[1], forward[2]}; }
-			std::vector<float> GetRight() { return std::vector<float> { right[0], right[1], right[2] }; }
-			std::vector<float> GetUp() { return std::vector<float> { up[0], up[1], up[2] }; }
-
-			void EnableBob() { bobcam = true; }
-			void DisableBob() { bobcam = false; }
-
-			void ForceCenter() { angles[PL_PITCH] = 0; }	// Forces the pitch to become centered.
-		protected:
-		private:
-			void CalculateBob();
-			void CalculateRoll();
-
-#ifdef CAMERA_LEGACY
-			void SimulateViewEntity();
-			void SimulateParentEntity();
-#endif
-
-			bool			bobcam;
-			plVector2f_t	bobamount;
-
-			mplane_t frustum[4];
-
-			plVector3f_t forward, right, up;
-			plVector3f_t punchangles[2];		//johnfitz -- copied from cl.punchangle.  0 is current, 1 is previous value. never the same unless map just loaded
-			plVector3f_t angles, position;
-
-			float height;	// Additional height of the camera.
-
-#ifdef CAMERA_LEGACY
-			// TODO: Move these over into a seperate class,
-			// they don't really make sense here for the camera codebase
-			ClientEntity_t *viewmodel, *parententity;
-#endif
-		};
-
-		class CameraManager : public CoreManager
-		{
-		public:
-			CameraManager();
-			~CameraManager();
-
-			void Draw();
-			void Simulate();
-		protected:
-		private:
-			std::vector<Camera*> cameras;
-		};
-
-		CameraManager *g_cameramanager;
-	}
-}
-
-using namespace Core::Client;
+using namespace Core;
 
 /*
-	Camera Manager
+Camera Manager
+
+This doesn't explicitly manage your cameras for you beyond
+drawing and simulating them automatically. Otherwise the
+expectation is you would create a camera, and then set
+that up depending on its needs yourself.
 */
 
 CameraManager::CameraManager()
 {
-	cameras.reserve(5);
+	Con_Printf("Initializing Camera Manager...\n");
+
+	// Reserve for up to four cameras.
+	cameras.reserve(4);
 
 	Cvar_RegisterVariable(&cv_camera_bob, NULL);
 	Cvar_RegisterVariable(&cv_camera_forwardcycle, NULL);
@@ -136,30 +52,65 @@ CameraManager::CameraManager()
 	Cvar_RegisterVariable(&cv_camera_punch, NULL);
 }
 
+/* Camera Creation */
+
+Camera *CameraManager::CreateCamera()
+{
+	Camera *camera = new Camera();
+	if (!camera)
+		throw Core::Exception("Failed to allocate new camera!\n");
+
+	memset(camera, 0, sizeof(Camera));
+
+	cameras.push_back(camera);
+
+	return camera;
+}
+
+void CameraManager::DeleteCamera(Camera *_camera)
+{
+	// Already deleted, probably.
+	if (!_camera) return;
+
+	// Remove it from the list.
+	for (auto iterator = cameras.begin(); iterator != cameras.end(); iterator++)
+		if (_camera == *iterator)
+		{
+			cameras.erase(iterator);
+			break;
+		}
+
+	delete _camera;
+}
+
+/**/
+
+void CameraManager::SetCurrentCamera(Camera *_camera)
+{
+	if (!_camera) return;
+	current_camera = _camera;
+}
+
+/**/
+
 void CameraManager::Draw()
 {
 	for (unsigned int i = 0; i < cameras.size(); i++)
+	{
+		SetCurrentCamera(cameras[i]);
+
 		cameras[i]->Draw();
+	}
 }
 
 void CameraManager::Simulate()
 {
 	for (unsigned int i = 0; i < cameras.size(); i++)
+	{
+		SetCurrentCamera(cameras[i]);
+
 		cameras[i]->Simulate();
-}
-
-// C Interface
-
-void CameraManager_Draw(void)
-{
-	if (g_cameramanager)
-		g_cameramanager->Draw();
-}
-
-void CameraManager_Simulate(void)
-{
-	if (g_cameramanager)
-		g_cameramanager->Simulate();
+	}
 }
 
 /*
@@ -294,9 +245,9 @@ void Camera::Simulate()
 				// Speed determined by how far we need to lerp in 1/10th of a second.
 				float delta = (punchangles[0][i] - punchangles[1][i]) * host_frametime * 10.0f;
 				if (delta > 0)
-					punch[i] = Math_Min(punch[i] + delta, punchangles[0][i]);
+					punch[i] = std::fminf(punch[i] + delta, punchangles[0][i]);
 				else if (delta < 0)
-					punch[i] = Math_Max(punch[i] + delta, punchangles[0][i]);
+					punch[i] = std::fmaxf(punch[i] + delta, punchangles[0][i]);
 			}
 
 		plVectorAdd3fv(r_refdef.viewangles, punch, r_refdef.viewangles);
@@ -306,10 +257,38 @@ void Camera::Simulate()
 }
 
 #ifdef CAMERA_LEGACY
+void Camera::SetParentEntity(ClientEntity_t *_parent)
+{
+	if (!_parent)
+	{
+		// Clear it out, not an issue since we
+		// want to support switching between these.
+		parententity = nullptr;
+		return;
+	}
+
+	parententity = _parent;
+
+	SetPosition(parententity->origin);
+	position[2] += height;
+}
+
+void Camera::SetViewEntity(ClientEntity_t *_child)
+{
+	if (!_child)
+	{
+		// Clear it out, not an issue since we
+		// want to support switching between these.
+		viewmodel = nullptr;
+		return;
+	}
+
+	viewmodel = _child;
+}
+
 void Camera::SimulateViewEntity()
 {
 	// View is the weapon model (only visible from inside body).
-	viewmodel = &cl.viewent;
 	if (!viewmodel)
 		return;
 
@@ -385,7 +364,8 @@ void Camera::SimulateViewEntity()
 void Camera::SimulateParentEntity()
 {
 	// Parent is the player model (visible when out of body).
-	parententity = &cl_entities[cl.viewentity];
+	if (!parententity)
+		return;
 
 	// Transform the view offset by the model's matrix to get the offset from
 	// model origin for the view.

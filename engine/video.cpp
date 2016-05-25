@@ -21,6 +21,7 @@
 #include "video.h"
 #include "video_shader.h"
 #include "video_light.h"
+#include "client/video_camera.h"
 
 #include "client/effect_sprite.h"
 
@@ -237,8 +238,11 @@ void Video_Initialize(void)
 
 	Light_Initialize();
 
+	g_cameramanager = new Core::CameraManager();
 	g_shadermanager = new Core::ShaderManager();
 	g_spritemanager = new Core::SpriteManager();
+
+	g_cameramanager->CreateCamera();
 
 	Video.bInitialized = true;
 }

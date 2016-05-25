@@ -722,6 +722,7 @@
     <ClInclude Include="..\shared\shared_video.h" />
     <ClInclude Include="..\shared\shared_zone.h" />
     <ClInclude Include="client.h" />
+    <ClInclude Include="client\video_camera.h" />
     <ClInclude Include="client\effect_sprite.h" />
     <ClInclude Include="client\shader_base.h" />
     <ClInclude Include="client\shader_water.h" />
