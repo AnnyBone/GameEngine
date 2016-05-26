@@ -129,9 +129,6 @@
     <ClCompile Include="EngineVideoWarp.c">
       <Filter>Legacy\Client\Video</Filter>
     </ClCompile>
-    <ClCompile Include="EngineVideoWorld.c">
-      <Filter>Legacy\Client\Video</Filter>
-    </ClCompile>
     <ClCompile Include="EngineVideoAlias.c">
       <Filter>Legacy\Client\Video</Filter>
     </ClCompile>
@@ -244,13 +241,7 @@
       <Filter>Client\Video\Interfaces</Filter>
     </ClCompile>
     <ClCompile Include="engine_exception.cpp" />
-    <ClCompile Include="video_draw.c">
-      <Filter>Client\Video</Filter>
-    </ClCompile>
     <ClCompile Include="video_layer.c">
-      <Filter>Client\Video</Filter>
-    </ClCompile>
-    <ClCompile Include="video_brush.c">
       <Filter>Client\Video</Filter>
     </ClCompile>
     <ClCompile Include="shader_water.cpp">
@@ -317,6 +308,15 @@
     </ClCompile>
     <ClCompile Include="input.c">
       <Filter>Client\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="video_brush.cpp">
+      <Filter>Client\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="video_draw.cpp">
+      <Filter>Client\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineVideoWorld.cpp">
+      <Filter>Legacy\Client\Video</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -244,8 +244,6 @@ void GL_SetFrustum(float fovx, float fovy)
 }
 
 void R_RenderScene(void);
-void R_MarkSurfaces(void);          // [25/11/2013] See r_world.c ~hogsy
-void R_CullSurfaces(void);          // [25/11/2013] See r_world.c ~hogsy
 void R_UpdateWarpTextures(void);    // [25/11/2013] See gl_warp.c ~hogsy
 
 void R_SetupGenericView(void)

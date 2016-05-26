@@ -63,13 +63,11 @@ void GL_Overbright_f(void)
 
 void R_Novis_f (void)
 {
-	extern bool bVisibilityChanged;
 	bVisibilityChanged = true;
 }
 
 void R_OldSkyLeaf_f (void)
 {
-	extern bool bVisibilityChanged;
 	bVisibilityChanged = true;
 }
 

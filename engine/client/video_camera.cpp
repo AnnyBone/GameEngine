@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "engine_base.h"
 
 #include "video.h"
-#include "video_camera.h"
+#include "client/video_camera.h"
 
 using namespace Core;
 
@@ -33,6 +33,21 @@ drawing and simulating them automatically. Otherwise the
 expectation is you would create a camera, and then set
 that up depending on its needs yourself.
 */
+
+ConsoleVariable_t cv_camera_forwardcycle = { "camera_forwardcycle", "0.43", true };
+ConsoleVariable_t cv_camera_sidecycle = { "camera_sidecycle", "0.86", true };
+ConsoleVariable_t cv_camera_upcycle = { "camera_upcycle", "0.45", true };
+ConsoleVariable_t cv_camera_bob = { "camera_bob", "0.002", true };
+
+ConsoleVariable_t cv_camera_modellag = { "camera_modellag", "0.2", true };
+ConsoleVariable_t cv_camera_modelposition = { "camera_modelposition", "1", true };
+
+ConsoleVariable_t cv_camera_rollangle = { "camera_rollangle", "2.0", true };
+ConsoleVariable_t cv_camera_rollspeed = { "camera_rollspeed", "200", true };
+
+ConsoleVariable_t cv_camera_punch = { "camera_punch", "1", true };
+
+CameraManager *g_cameramanager;
 
 CameraManager::CameraManager()
 {
@@ -250,7 +265,7 @@ void Camera::Simulate()
 					punch[i] = std::fmaxf(punch[i] + delta, punchangles[0][i]);
 			}
 
-		plVectorAdd3fv(r_refdef.viewangles, punch, r_refdef.viewangles);
+		plVectorAdd3fv(angles, punch, angles);
 	}
 
 	plAngleVectors(angles, forward, right, up);

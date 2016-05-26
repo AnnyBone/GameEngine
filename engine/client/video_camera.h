@@ -24,19 +24,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 namespace Core
 {
-	ConsoleVariable_t cv_camera_forwardcycle = { "camera_forwardcycle", "0.43", true };
-	ConsoleVariable_t cv_camera_sidecycle = { "camera_sidecycle", "0.86", true };
-	ConsoleVariable_t cv_camera_upcycle = { "camera_upcycle", "0.45", true };
-	ConsoleVariable_t cv_camera_bob = { "camera_bob", "0.002", true };
-
-	ConsoleVariable_t cv_camera_modellag = { "camera_modellag", "0.2", true };
-	ConsoleVariable_t cv_camera_modelposition = { "camera_modelposition", "1", true };
-
-	ConsoleVariable_t cv_camera_rollangle = { "camera_rollangle", "2.0", true };
-	ConsoleVariable_t cv_camera_rollspeed = { "camera_rollspeed", "200", true };
-
-	ConsoleVariable_t cv_camera_punch = { "camera_punch", "1", true };
-
 	class Camera
 	{
 	public:
@@ -46,11 +33,13 @@ namespace Core
 		void Draw();
 		void Simulate();
 
+		std::vector<float> GetAngles() { return std::vector<float> { angles[0], angles[1], angles[2] }; }
 		void SetAngles(float x, float y, float z);
 		void PrintAngles();
 
 		void SetFrustum(float fovx, float fovy);
 
+		std::vector<float> GetPosition() { return std::vector<float> { position[0], position[1], position[2] }; }
 		void SetPosition(float x, float y, float z);
 		void SetPosition(plVector3f_t _position);
 		void PrintPosition();
@@ -121,4 +110,4 @@ namespace Core
 	};
 }
 
-Core::CameraManager *g_cameramanager;
+extern Core::CameraManager *g_cameramanager;

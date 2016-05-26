@@ -21,6 +21,7 @@
 #include "engine_base.h"
 
 #include "video.h"
+#include "client/video_camera.h"
 
 /*
 	Brush Model rendering.
@@ -31,7 +32,7 @@ extern ConsoleVariable_t gl_fullbrights, r_drawflat, r_oldwater; //johnfitz
 #define	BLOCK_WIDTH		128
 #define	BLOCK_HEIGHT	BLOCK_WIDTH
 
-unsigned	blocklights[BLOCK_WIDTH*BLOCK_HEIGHT*3]; //johnfitz -- was 18*18, added lit support (*3) and loosened surface extents maximum (BLOCK_WIDTH*BLOCK_HEIGHT)
+unsigned blocklights[BLOCK_WIDTH*BLOCK_HEIGHT*3]; //johnfitz -- was 18*18, added lit support (*3) and loosened surface extents maximum (BLOCK_WIDTH*BLOCK_HEIGHT)
 
 typedef struct glRect_s {
 	unsigned char l,t,w,h;
@@ -157,7 +158,7 @@ void R_DrawSequentialPoly(msurface_t *s)
 			vlEnable(VL_CAPABILITY_BLEND);
 		}
 
-		Material_Draw(mCurrent, 0, 0, 0, false);
+		Material_Draw(mCurrent, 0, VL_PRIMITIVE_IGNORE, 0, false);
 
 		for(pBrushPoly = s->polys->next; pBrushPoly; pBrushPoly = pBrushPoly->next)
 		{
@@ -165,7 +166,7 @@ void R_DrawSequentialPoly(msurface_t *s)
 			rs_brushpasses++;
 		}
 
-		Material_Draw(mCurrent, 0, 0, 0, true);
+		Material_Draw(mCurrent, 0, VL_PRIMITIVE_IGNORE, 0, true);
 
 		if (alpha < 1.0f)
 		{
@@ -229,7 +230,8 @@ void Brush_Draw(ClientEntity_t *e)
 	currententity = e;
 	clmodel = e->model;
 
-	Math_VectorSubtract(r_refdef.vieworg,e->origin,modelorg);
+	Core::Camera *camera = g_cameramanager->GetCurrentCamera();
+	Math_VectorSubtract(camera->GetPosition(), e->origin,modelorg);
 	if(e->angles[0] || e->angles[1] || e->angles[2])
 	{
 		plVector3f_t	temp, forward, right, up;
@@ -567,7 +569,7 @@ void GL_BuildLightmaps()
 	}
 }
 
-extern void R_AddDynamicLights(msurface_t *surf);
+extern "C" void R_AddDynamicLights(msurface_t *surf);
 
 void R_BuildLightMap (msurface_t *surf, byte *dest, int stride)
 {

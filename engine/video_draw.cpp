@@ -21,6 +21,8 @@
 #include "engine_base.h"
 
 #include "video.h"
+#include "client/video_camera.h"
+
 #include "engine_client.h"	// [28/7/2013] Added for precache functions ~hogsy
 
 #define	BLOCK_WIDTH		256
@@ -191,7 +193,7 @@ qpic_t	*Draw_CachePic(char *path)
 	strncpy(pic->name, path, sizeof(pic->name));
 
 	// load the pic from disk
-	qpic_t *dat = COM_LoadHeapFile(path);
+	qpic_t *dat = (qpic_t*)COM_LoadHeapFile(path);
 	if(!dat)
 	{
 		Con_Warning("Failed to load cached texture (%s)!\n", path);
@@ -241,6 +243,8 @@ qpic_t *Draw_MakePic (char *name, int width, int height, byte *data)
 //  INIT
 //
 //==============================================================================
+
+extern "C" void Draw_NewGame(void);
 
 void Draw_NewGame (void)
 {
@@ -325,7 +329,7 @@ void Draw_String(int x, int y, const char *msg)
 	if (y <= -8)
 		return;
 
-	Material_Draw(g_mGlobalColour, NULL, 0, 0, false);
+	Material_Draw(g_mGlobalColour, NULL, VL_PRIMITIVE_IGNORE, 0, false);
 
 	while (*msg)
 	{
@@ -334,7 +338,7 @@ void Draw_String(int x, int y, const char *msg)
 		x += 8;
 	}
 
-	Material_Draw(g_mGlobalColour, NULL, 0, 0, true);
+	Material_Draw(g_mGlobalColour, NULL, VL_PRIMITIVE_IGNORE, 0, true);
 }
 
 void Draw_ConsoleBackground(void)
@@ -716,7 +720,7 @@ void Draw_ResetCanvas(void)
 	Entities
 */
 
-extern ConsoleVariable_t r_showbboxes;
+extern "C" ConsoleVariable_t r_showbboxes;
 
 void Draw_EntityBoundingBox(ClientEntity_t *entity)
 {
@@ -770,7 +774,8 @@ void Draw_Entity(ClientEntity_t *entity)
 	if (cv_video_entity_fade.bValue)
 	{
 		plVector3f_t vdist;
-		plVectorSubtract3fv(r_refdef.vieworg, entity->origin, vdist);
+		Core::Camera *camera = g_cameramanager->GetCurrentCamera();
+		plVectorSubtract3fv(&camera->GetPosition()[0], entity->origin, vdist);
 		float distance = plLengthf(vdist);
 		if (distance > cv_video_entity_distance.value)
 		{

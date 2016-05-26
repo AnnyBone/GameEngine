@@ -575,6 +575,7 @@ void View_ModelDrift(plVector3f_t vOrigin, plVector3f_t vAngles, plVector3f_t vO
 
 void V_CalcRefdef (void)
 {
+#if 0
 	int				i;
 	float			fBob[2],fCycle[2],
 					delta;
@@ -729,6 +730,7 @@ void V_CalcRefdef (void)
 
 	if(chase_active.value)
 		Chase_UpdateForDrawing (); //johnfitz
+#endif
 }
 
 /*	The player's clipping box goes from (-16 -16 -24) to (16 16 32) from

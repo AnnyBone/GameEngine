@@ -52,6 +52,7 @@ void TraceLine (MathVector3f_t start, MathVector3f_t end, MathVector3f_t impact)
 // TODO: stay at least 8 units away from all walls in this leaf
 void Chase_UpdateForDrawing (void)
 {
+#if 0
 	int		i;
 	plVector3f_t	forward, up, right;
 	plVector3f_t	ideal, crosshair, temp;
@@ -83,5 +84,6 @@ void Chase_UpdateForDrawing (void)
 	plVectorAngles(temp, r_refdef.viewangles);
 	if (r_refdef.viewangles[PITCH] == 90 || r_refdef.viewangles[PITCH] == -90)
 		r_refdef.viewangles[YAW] = cl.viewangles[YAW];
+#endif
 }
 

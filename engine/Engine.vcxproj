@@ -670,7 +670,7 @@
     <ClCompile Include="video.cpp" />
     <ClCompile Include="EngineClientView.c" />
     <ClCompile Include="EngineServerWorld.c" />
-    <ClCompile Include="video_draw.c" />
+    <ClCompile Include="video_draw.cpp" />
     <ClCompile Include="EngineVideoFog.c" />
     <ClCompile Include="EngineModel.c" />
     <ClCompile Include="EngineVideoEFrag.c" />
@@ -691,8 +691,8 @@
     <ClCompile Include="EngineNetworkWindows.c" />
     <ClCompile Include="EngineNetworkWinsock.c" />
     <ClCompile Include="EngineServerEntity.c" />
-    <ClCompile Include="video_brush.c" />
-    <ClCompile Include="EngineVideoWorld.c" />
+    <ClCompile Include="video_brush.cpp" />
+    <ClCompile Include="EngineVideoWorld.cpp" />
     <ClCompile Include="audio_wav.c" />
     <ClCompile Include="EngineServer.c" />
     <ClCompile Include="EngineServerUser.c" />

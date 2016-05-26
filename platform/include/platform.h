@@ -32,7 +32,7 @@
 // PL_IGNORE_PLATFORM_HEADERS
 // PL_IGNORE_STD_HEADERS
 
-// PL_INCLUDE_STD_BOOL
+#define PL_INCLUDE_STD_BOOL
 
 // Shared headers
 #ifndef PL_IGNORE_SHARED_HEADERS
@@ -71,6 +71,7 @@
 #			include <unordered_set>
 #			include <map>
 #			include <unordered_map>
+#			include <algorithm>
 
 			// istream
 #			include <fstream>
@@ -215,38 +216,14 @@
 #endif
 
 // These are usually expected to be defined already, but in-case they're not then we define them here.
-#ifndef __cplusplus
-#	ifndef BOOL
-#		define BOOL	_Bool
-#	endif
-#	ifndef TRUE
-#		define TRUE 1
-#	endif
-#	ifndef FALSE
-#		define FALSE 0
-#	endif
-
-#	ifndef PL_INCLUDE_STD_BOOL
-#		ifndef bool
-#			define bool BOOL
-#		endif
-#		ifndef true
-#			define true TRUE
-#		endif
-#		ifndef false
-#			define false FALSE
-#		endif
-#	endif
-#else
-#	ifndef BOOL
-#		define BOOL	bool
-#	endif
-#	ifndef TRUE
-#		define TRUE true
-#	endif
-#	ifndef FALSE
-#		define FALSE false
-#	endif
+#ifndef BOOL
+#	define BOOL	bool
+#endif
+#ifndef TRUE
+#	define TRUE true
+#endif
+#ifndef FALSE
+#	define FALSE false
 #endif
 
 #define PL_BOOL		BOOL

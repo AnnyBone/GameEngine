@@ -234,6 +234,11 @@ void R_UploadLightmap(int lmap);
 void World_Draw(void);
 void World_DrawWater(void);
 
+void R_CullSurfaces(void);
+void R_MarkSurfaces(void);
+
+extern bool bVisibilityChanged;
+
 /*
 	Brush
 */

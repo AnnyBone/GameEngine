@@ -19,6 +19,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "engine_base.h"
 
+#include "video.h"
+#include "client/video_camera.h"
+
 #include <AL/al.h>
 #include <AL/alc.h>
 #include <AL/alext.h>
@@ -159,10 +162,11 @@ void AudioManager::Frame()
 {
 	plVector3f_t position, orientation, velocity;
 
-	if (cls.signon == SIGNONS)
+	Camera *camera = g_cameramanager->GetCurrentCamera();
+	if (camera && (cls.signon == SIGNONS))
 	{
-		plVectorCopy(r_refdef.vieworg, position);
-		plVectorCopy(r_refdef.viewangles, orientation);
+		plVectorCopy(&camera->GetPosition()[0], position);
+		plVectorCopy(&camera->GetAngles()[0], orientation);
 		plVectorCopy(cl.velocity, velocity);
 	}
 	else
@@ -171,7 +175,7 @@ void AudioManager::Frame()
 		plVectorCopy(pl_origin3f, orientation);
 		plVectorCopy(pl_origin3f, velocity);
 	}
-
+	
 	// Convert orientation to something OpenAL can use.
 	plVector3f_t forward, right, up;
 	plAngleVectors(orientation, forward, right, up);
