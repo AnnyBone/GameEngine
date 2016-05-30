@@ -61,17 +61,7 @@ typedef struct
 	float		xOrigin;			// should probably allways be 0.5
 	float		yOrigin;			// between be around 0.3 to 0.5
 
-	MathVector3f_t vieworg;
-	MathVector3f_t viewangles;
-
-	float		fov_x, fov_y;
-
-	int			ambientlight;
-
-	bool sky;				// Sky context.
-
-	bool mode_mirror;		// Mirror context.
-	bool bEnvironmentMap;	// Environment map context.
+	int	ambientlight;
 } refdef_t;
 
 // refresh
@@ -81,7 +71,6 @@ extern "C" {
 #endif
 
 	extern refdef_t	r_refdef;
-	extern MathVector3f_t r_origin, vpn, vright, vup;
 
 	void R_Init(void);
 	void R_InitTextures(void);

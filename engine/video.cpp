@@ -23,7 +23,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "video_shader.h"
 #include "video_light.h"
 
+#include "client/video_viewport.h"
 #include "client/video_camera.h"
+
 #include "client/effect_sprite.h"
 
 /*
@@ -91,6 +93,8 @@ Video_t	Video;
 texture_t	*r_notexture_mip;
 texture_t	*r_notexture_mip2;	//johnfitz -- used for non-lightmapped surfs with a missing texture
 
+Core::Viewport *g_mainviewport = nullptr;
+
 /*	Initialize the renderer
 */
 void Video_Initialize(void)
@@ -140,8 +144,8 @@ void Video_Initialize(void)
 
 	Cvar_RegisterVariable(&cv_video_shownormals, NULL);
 
-	Cmd_AddCommand("video_restart",Video_UpdateWindow);
-	Cmd_AddCommand("video_debug",Video_DebugCommand);
+	Cmd_AddCommand("video_restart", Video_UpdateWindow);
+	Cmd_AddCommand("video_debug", Video_DebugCommand);
 
 	// Figure out what resolution we're going to use.
 	if (COM_CheckParm("-window"))
@@ -243,7 +247,11 @@ void Video_Initialize(void)
 	g_shadermanager = new Core::ShaderManager();
 	g_spritemanager = new Core::SpriteManager();
 
-	g_cameramanager->CreateCamera();
+	g_mainviewport = new Core::Viewport(Video.iWidth, Video.iHeight);
+	if (!g_mainviewport)
+		throw Core::Exception("Failed to allocate viewport!\n");
+
+	g_mainviewport->SetCamera(new Core::Camera);
 
 	Video.bInitialized = true;
 }
@@ -561,7 +569,12 @@ void Video_Frame(void)
 	if (Video.debug_frame)
 		plWriteLog(cv_video_log.string, "Video: Start of frame\n");
 
-	SCR_UpdateScreen();
+	Video.framecount++;
+	// Don't let us exceed a limited count.
+	if (Video.framecount > 100000)
+		Video.framecount = 0;
+
+	g_mainviewport->Draw();
 
 	GL_EndRendering();
 
@@ -570,15 +583,7 @@ void Video_Frame(void)
 
 void Video_PostFrame(void)
 {
-	VIDEO_FUNCTION_START
-	VIDEO_FUNCTION_END
-
 	Draw_ResetCanvas();
-
-	Screen_DrawFPS();
-
-	if (cv_video_finish.bValue)
-		vlFinish();
 
 	if (Video.debug_frame)
 		Video.debug_frame = false;

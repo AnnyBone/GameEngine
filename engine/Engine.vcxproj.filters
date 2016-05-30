@@ -318,6 +318,9 @@
     <ClCompile Include="EngineVideoWorld.cpp">
       <Filter>Legacy\Client\Video</Filter>
     </ClCompile>
+    <ClCompile Include="client\video_viewport.cpp">
+      <Filter>Client\Video</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\shared\shared_client.h">
@@ -565,6 +568,9 @@
       <Filter>Client\Input</Filter>
     </ClInclude>
     <ClInclude Include="client\video_camera.h">
+      <Filter>Client\Video</Filter>
+    </ClInclude>
+    <ClInclude Include="client\video_viewport.h">
       <Filter>Client\Video</Filter>
     </ClInclude>
   </ItemGroup>

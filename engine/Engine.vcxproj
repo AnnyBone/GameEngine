@@ -615,6 +615,7 @@
     <ClCompile Include="client\effect_sprite.cpp" />
     <ClCompile Include="client\mesh.cpp" />
     <ClCompile Include="client\video_camera.cpp" />
+    <ClCompile Include="client\video_viewport.cpp" />
     <ClCompile Include="EngineClientChase.c" />
     <ClCompile Include="EngineClientDemo.c" />
     <ClCompile Include="EngineClientInput.c" />
@@ -726,6 +727,7 @@
     <ClInclude Include="client\effect_sprite.h" />
     <ClInclude Include="client\shader_base.h" />
     <ClInclude Include="client\shader_water.h" />
+    <ClInclude Include="client\video_viewport.h" />
     <ClInclude Include="engine_build.h" />
     <ClInclude Include="engine_class.h" />
     <ClInclude Include="EngineClientTempEntity.h" />

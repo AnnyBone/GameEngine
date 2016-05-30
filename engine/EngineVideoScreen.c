@@ -246,26 +246,6 @@ void Screen_UpdateSize(void)
 	else if(scr_viewsize.value > 120)
 		Cvar_Set("viewsize","120");
 
-	// Bound fov
-	if(scr_fov.value < 10)
-		Cvar_Set ("fov","10");
-	else if(scr_fov.value > 170)
-		Cvar_Set ("fov","170");
-
-	//johnfitz -- rewrote this section
-	size = scr_viewsize.value;
-	scale = Math_Clamp(1.0, scr_sbarscale.value, (float)glwidth / 320.0);
-
-	if (size >= 120 || cl.intermission || scr_sbaralpha.value < 1) //johnfitz -- scr_sbaralpha.value
-		sb_lines = 0;
-	else if (size >= 110)
-		sb_lines = 24*scale;
-	else
-		sb_lines = 48*scale;
-
-	size = Math_Min(scr_viewsize.value,100)/100;
-	//johnfitz
-
 	//johnfitz -- rewrote this section
 	r_refdef.vrect.width = Math_Max(glwidth * size, 96); //no smaller than 96, for icons
 	r_refdef.vrect.height = Math_Min(glheight * size, glheight - sb_lines); //make room for sbar
@@ -358,12 +338,12 @@ void Screen_DrawFPS(void)
 	int				x,y,frames;
 
 	time = realtime-oldtime;
-	frames = Video.iFrameCount - oldframecount;
+	frames = Video.framecount - oldframecount;
 
 	if(time < 0 || frames < 0)
 	{
 		oldtime = realtime;
-		oldframecount = Video.iFrameCount;
+		oldframecount = Video.framecount;
 		return;
 	}
 
@@ -372,7 +352,7 @@ void Screen_DrawFPS(void)
 	{
 		fps = frames / time;
 		oldtime = realtime;
-		oldframecount = Video.iFrameCount;
+		oldframecount = Video.framecount;
 	}
 
 	if(scr_showfps.value) //draw it
@@ -598,6 +578,9 @@ void Screen_SetUpToDrawConsole(void)
 
 void Screen_DrawConsole(void)
 {
+	if (!g_consoleinitialized)
+		return;
+
 	if(scr_con_current)
 	{
 		Con_DrawConsole(true);
@@ -809,75 +792,11 @@ void V_UpdateBlend(void);	            // [24/2/2014] See engine_view.c ~hogsy
 */
 void SCR_UpdateScreen (void)
 {
-	if(scr_disabled_for_loading)
-	{
-		if(realtime-scr_disabled_time > 60.0f)
-		{
-			scr_disabled_for_loading = false;
-
-			Con_Printf ("load failed.\n");
-		}
-		else
-			return;
-	}
-
-	if(!bScreenInitialized || !g_consoleinitialized)
-		return;				// not initialized yet
-
-	GL_BeginRendering(&glx,&gly,&glwidth,&glheight);
-
-	Video.iFrameCount++;
-	// Don't let us exceed a limited count.
-	if (Video.iFrameCount > 100000)
-		Video.iFrameCount = 0;
-
-	// determine size of refresh window
-	if(oldfov != scr_fov.value)
-	{
-		oldfov = scr_fov.value;
-		vid.bRecalcRefDef = true;
-	}
-
-	if (oldscreensize != scr_viewsize.value)
-	{
-		oldscreensize = scr_viewsize.value;
-		vid.bRecalcRefDef = true;
-	}
-
-	//johnfitz -- added oldsbarscale and oldsbaralpha
-	if (oldsbarscale != scr_sbarscale.value)
-	{
-		oldsbarscale = scr_sbarscale.value;
-		vid.bRecalcRefDef = true;
-	}
-
-	if (oldsbaralpha != scr_sbaralpha.value)
-	{
-		oldsbaralpha = scr_sbaralpha.value;
-		vid.bRecalcRefDef = true;
-	}
-	//johnfitz
-
-	if (vid.bRecalcRefDef)
-		Screen_UpdateSize();
-
 	// do 3D refresh drawing, and then update the screen
 	Screen_SetUpToDrawConsole();
 
-	Video_ClearBuffer();
-
-	if (cv_video_msaasamples.iValue > 0)
-		vlEnable(VL_CAPABILITY_MULTISAMPLE);
-
 	V_RenderView ();
 
-	if (cv_video_msaasamples.iValue > 0)
-		vlDisable(VL_CAPABILITY_MULTISAMPLE);
-
-	Draw_ResetCanvas();
-
-	//FIXME: only call this when needed
-	SCR_TileClear();
 
 	if(bDrawDialog) //new game confirm
 	{
@@ -897,7 +816,6 @@ void SCR_UpdateScreen (void)
 		g_menu->Draw();
 
 		SCR_DrawNet();
-		SCR_DrawTurtle();
 		SCR_DrawPause();
 		SCR_CheckDrawCenterString ();
 		SCR_DrawDevStats(); //johnfitz
@@ -905,6 +823,4 @@ void SCR_UpdateScreen (void)
 		Screen_DrawConsole();
 		Screen_DrawFPS(); //johnfitz
 	}
-
-	V_UpdateBlend(); //johnfitz -- V_UpdatePalette cleaned up and renamed
 }

@@ -16,8 +16,7 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef VIDEO_WINDOW_H
-#define	VIDEO_WINDOW_H
+#pragma once
 
 /*
 	Generic Window Header
@@ -42,5 +41,3 @@ int Window_GetHeight(void);
 extern plWindow_t g_mainwindow;
 
 plEXTERN_C_END
-
-#endif // !VIDEO_WINDOW_H

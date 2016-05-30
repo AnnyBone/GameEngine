@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "engine_base.h"
 
 #include "video.h"
+#include "client/video_viewport.h"
 #include "client/video_camera.h"
 
 using namespace Core;
@@ -132,27 +133,94 @@ void CameraManager::Simulate()
 	Camera
 */
 
-Camera::Camera() : 
-#ifdef CAMERA_LEGACY
-	parententity(nullptr),
-	viewmodel(nullptr),
-#endif
-	bobcam(false)
+Camera::Camera()
 {
 	plVectorClear(position);
 	plVectorClear(angles);
 	plVectorClear(bobamount);
 
 	plAngleVectors(angles, forward, right, up);
+
+	SetFOV(90);
 }
+
+Camera::Camera(Viewport *viewport) : _viewport(viewport)
+{
+	Camera();
+}
+
+#ifdef CAMERA_LEGACY
+void Camera::DrawViewEntity()
+{
+	if (!r_drawviewmodel.bValue || !viewmodel || !viewmodel->model)
+		return;
+
+#ifdef VL_MODE_OPENGL
+	// Hack the depth range to prevent view model from poking into walls.
+	glDepthRange(0, 0.3);
+#endif
+
+	Draw_Entity(viewmodel);
+
+#ifdef VL_MODE_OPENGL
+	glDepthRange(0, 1);
+#endif
+}
+#endif
 
 void Camera::Draw()
 {
+	Fog_SetupFrame();	// todo, really necessary to call this at the start of every draw call!?
+
+	float fovxx = fovx, fovyy = fovy;
+	if (cl.worldmodel)
+	{
+		// Current view leaf.
+		oldleaf = leaf;
+		leaf = Mod_PointInLeaf(position, cl.worldmodel);
+
+		if (r_waterwarp.value)
+		{
+			int contents = Mod_PointInLeaf(position, cl.worldmodel)->contents;
+			if (contents == BSP_CONTENTS_WATER || contents == BSP_CONTENTS_SLIME || contents == BSP_CONTENTS_LAVA)
+			{
+				//variance is a percentage of width, where width = 2 * tan(fov / 2) otherwise the effect is too dramatic at high FOV and too subtle at low FOV.  what a mess!
+				fovxx = atanf(tan(PL_DEG2RAD(fovx) / 2) * (0.97 + sin(cl.time * 1.5) * 0.03)) * 2 / PL_PI_DIV180;
+				fovyy = atanf(tan(PL_DEG2RAD(fovy) / 2) * (1.03 - sin(cl.time * 1.5) * 0.03)) * 2 / PL_PI_DIV180;
+			}
+		}
+
+		R_MarkSurfaces();
+		R_CullSurfaces();
+	}
+
+	SetFrustum(fovxx, fovyy);
+
+#if 0
+	//johnfitz -- cheat-protect some draw modes
+	r_drawflat_cheatsafe = r_fullbright_cheatsafe = r_lightmap_cheatsafe = false;
+	r_drawworld_cheatsafe = true;
+	if (cl.maxclients == 1)
+	{
+		if (!r_drawworld.value)
+			r_drawworld_cheatsafe = false;
+
+		if (r_drawflat.value)
+			r_drawflat_cheatsafe = true;
+		else if (r_fullbright.value || !cl.worldmodel->lightdata)
+			r_fullbright_cheatsafe = true;
+		else if (r_lightmap.value)
+			r_lightmap_cheatsafe = true;
+	}
+	//johnfitz
+#endif
+
+
 }
 
 /*	Calculate and add view bobbing.
 */
-void Camera::CalculateBob()
+void Camera::SimulateBob()
 {
 	if (!bobcam) return;
 
@@ -201,7 +269,7 @@ void Camera::CalculateBob()
 	bobamount[1] = bob[1];
 }
 
-void Camera::CalculateRoll()
+void Camera::SimulateRoll()
 {
 	float side = Math_DotProduct(cl.velocity, right);
 	float sign = side < 0 ? -1 : 1;
@@ -231,8 +299,13 @@ void Camera::CalculateRoll()
 
 void Camera::Simulate()
 {
-	CalculateBob();
-	CalculateRoll();
+	if(cl.bIsPaused)
+		return;
+
+	SimulateFrustum();
+
+	SimulateBob();
+	SimulateRoll();
 
 	// Add height (needs to be done after bob).
 	position[2] += height;
@@ -417,14 +490,44 @@ void Camera::SimulateParentEntity()
 }
 #endif
 
-// Frustum
+/*	Frustum	*/
+
+void Camera::SetFOV(float fov)
+{
+	// Clamp the FOV to ensure we don't
+	// get anything rediculous.
+	Math_Clamp(10, fov, 170);
+
+	_fov = fov;
+	fovx = _fov;
+
+	unsigned int width = 640, height = 480;
+	if (_viewport)
+	{
+		width = _viewport->GetWidth();
+		height = _viewport->GetHeight();
+	}
+	
+	// Taken from CalcFovy.
+	float x = width * std::tanf(fovx / 360.0f * PL_PI);
+	float a = std::atanf(height / x);
+	a *= 360.0f / PL_PI;
+
+	fovy = a;
+}
+
+void Camera::SetFrustum(float _fovx, float _fovy)
+{
+	fovx = _fovx; fovy = _fovy;
+}
 
 extern "C" {
 	int SignbitsForPlane(mplane_t *out);
 }
 
-void Camera::SetFrustum(float fovx, float fovy)
+void Camera::SimulateFrustum()
 {
+	// Update the frustum.
 	plTurnVector(frustum[0].normal, position, right, fovx / 2 - 90);	// Left plane
 	plTurnVector(frustum[1].normal, position, right, 90 - fovx / 2);	// Right plane
 	plTurnVector(frustum[2].normal, position, up, 90 - fovy / 2);		// Bottom plane

@@ -39,6 +39,8 @@ extern ConsoleVariable_t
 	cv_video_drawbrushes,			// Draw brush entities?
 	cv_video_clearbuffers,			// Clear buffers?
 
+	cv_video_finish,				// Call vlFinish at end of frame?
+
 	cv_video_shownormals,			// Show vertex normals?
 
 	cv_video_entity_distance,
@@ -130,7 +132,7 @@ typedef struct
 
 	unsigned int iWidth,iHeight;
 
-	int iFrameCount;	// An alternative to r_framecount, which is slightly more reliable.
+	int framecount;	// An alternative to r_framecount, which is slightly more reliable.
 
 	bool
 		bInitialized,					// Is the video system started?

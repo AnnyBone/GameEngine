@@ -17,6 +17,7 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 #include "../engine_base.h"
 
 #include "../video.h"		// TODO: make this a base include
+#include "video_camera.h"
 #include "effect_sprite.h"
 
 using namespace Core;
@@ -131,7 +132,7 @@ void Sprite::SetColour(float r, float g, float b, float a)
 	colour[3] = a;
 }
 
-void Sprite::SetPosition(MathVector3f_t nposition)
+void Sprite::SetPosition(plVector3f_t nposition)
 {
 	// Just use the other func.
 	SetPosition(nposition[0], nposition[1], nposition[2]);
@@ -194,7 +195,7 @@ void Sprite::Simulate()
 
 	isvisible = true;
 
-	if ((colour[3] <= 0))
+	if (colour[3] <= 0)
 		isvisible = false;
 
 	// Ensure it's on screen.
@@ -203,8 +204,17 @@ void Sprite::Simulate()
 	plVectorAdd3fv(position, maxs, mvmaxs);
 	if (R_CullBox(mvmins, mvmaxs))
 		isvisible = false;
+}
 
-	// Simulation depends on type, nothing complex though.
+void Sprite::Draw()
+{
+	Camera *camera = g_cameramanager->GetCurrentCamera();
+	if (!camera)
+		return;
+
+	// Not visible.
+	if (!isvisible)	return;
+
 	switch (type)
 	{
 	default:
@@ -216,18 +226,11 @@ void Sprite::Simulate()
 	case SPRITE_TYPE_SCALE:
 		// Scale the sprite, dependant on view position.
 		scale *=
-			(position[0] - r_origin[0]) * vpn[0] +
-			(position[1] - r_origin[1]) * vpn[1] +
-			(position[2] - r_origin[2]) * vpn[2];
+			(position[0] - camera->GetPosition()[0]) * camera->GetForward()[0] +
+			(position[1] - camera->GetPosition()[1]) * camera->GetForward()[1] +
+			(position[2] - camera->GetPosition()[2]) * camera->GetForward()[2];
 		break;
 	}
-}
-
-void Sprite::Draw()
-{
-	// Not visible.
-	if (!isvisible)
-		return;
 
 	if (colour[3] < 1.0f)
 		vlEnable(VL_CAPABILITY_BLEND);
@@ -247,7 +250,7 @@ void Sprite::Draw()
 	if (cv_sprite_debugsize.bValue)
 	{
 		// We need the size relative to the current position.
-		MathVector3f_t NewMins, NewMaxs;
+		plVector3f_t NewMins, NewMaxs;
 		Math_VectorAdd(mins, position, NewMins);
 		Math_VectorAdd(maxs, position, NewMaxs);
 
@@ -292,7 +295,7 @@ extern "C" void SpriteManager_Clear(void)
 
 // Sprite
 
-extern "C" void Sprite_SetPosition(ISprite *sprite, MathVector3f_t position)
+extern "C" void Sprite_SetPosition(ISprite *sprite, plVector3f_t position)
 {
 	sprite->SetPosition(position);
 }

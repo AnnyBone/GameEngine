@@ -24,11 +24,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 namespace Core
 {
+	class Viewport;
+
 	class Camera
 	{
 	public:
 		Camera();
-		Camera(plVector3f_t position);
+		Camera(Viewport *viewport);
 
 		void Draw();
 		void Simulate();
@@ -37,7 +39,11 @@ namespace Core
 		void SetAngles(float x, float y, float z);
 		void PrintAngles();
 
-		void SetFrustum(float fovx, float fovy);
+		float GetFOV() { return fovx; }
+
+		void SetFOV(float fov);
+		void SetFrustum(float _fovx, float _fovy);
+		void SetViewport(Viewport *viewport);
 
 		std::vector<float> GetPosition() { return std::vector<float> { position[0], position[1], position[2] }; }
 		void SetPosition(float x, float y, float z);
@@ -48,6 +54,9 @@ namespace Core
 		void SetParentEntity(ClientEntity_t *_parent);
 		void SetViewEntity(ClientEntity_t *_child);
 #endif
+
+		Viewport *GetViewport() { return _viewport; }
+		void SetViewport();
 
 		bool IsPointInsideFrustum(plVector3f_t position);
 		bool IsPointOutsideFrustum(plVector3f_t position);
@@ -62,14 +71,22 @@ namespace Core
 		void DisableBob() { bobcam = false; }
 
 		void ForceCenter() { angles[PL_PITCH] = 0; }	// Forces the pitch to become centered.
+	
+		mleaf_t *leaf, *oldleaf;
 	protected:
 	private:
-		void CalculateBob();
-		void CalculateRoll();
+		Viewport *_viewport;
+
+		void SimulateFrustum();
+		void SimulateBob();
+		void SimulateRoll();
 
 #ifdef CAMERA_LEGACY
 		void SimulateViewEntity();
 		void SimulateParentEntity();
+
+		void DrawViewEntity();
+		void DrawParentEntity();
 
 		// TODO: Move these over into a seperate class,
 		// they don't really make sense here for the camera codebase
@@ -84,6 +101,9 @@ namespace Core
 		plVector3f_t forward, right, up;
 		plVector3f_t punchangles[2];		//johnfitz -- copied from cl.punchangle.  0 is current, 1 is previous value. never the same unless map just loaded
 		plVector3f_t angles, position;
+
+		float fovx, fovy;
+		float _fov;
 
 		float height;	// Additional height of the camera.
 	};

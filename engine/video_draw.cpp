@@ -728,7 +728,6 @@ void Draw_EntityBoundingBox(ClientEntity_t *entity)
 		return;
 
 	plVector3f_t mins, maxs;
-
 	switch (entity->model->type)
 	{
 	case MODEL_TYPE_LEVEL:

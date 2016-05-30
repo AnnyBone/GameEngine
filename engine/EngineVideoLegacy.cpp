@@ -51,8 +51,6 @@ float r_fovx, r_fovy; //johnfitz -- rendering fov may be different becuase of r_
 // screen size info
 refdef_t	r_refdef;
 
-mleaf_t		*r_viewleaf,*r_oldviewleaf;
-
 int		d_lightstylevalue[256];	// 8.8 fraction of base light value
 
 cvar_t	r_norefresh				= {	"r_norefresh",			"0"					};
@@ -246,77 +244,6 @@ void GL_SetFrustum(float fovx, float fovy)
 void R_RenderScene(void);
 void R_UpdateWarpTextures(void);    // [25/11/2013] See gl_warp.c ~hogsy
 
-void R_SetupGenericView(void)
-{
-	Fog_SetupFrame();
-
-	// Build the transformation matrix for the given view angles
-	Math_VectorCopy(r_refdef.vieworg, r_origin);
-	plAngleVectors(r_refdef.viewangles, vpn, vright, vup);
-
-	r_fovx = r_refdef.fov_x;
-	r_fovy = r_refdef.fov_y;
-
-	R_SetFrustum(r_fovx, r_fovy);
-
-	// TODO: Temporary, until this is all hooked up properly
-	Video_ClearBuffer();
-}
-
-void R_SetupView (void)
-{
-	Fog_SetupFrame (); //johnfitz
-
-// build the transformation matrix for the given view angles
-	Math_VectorCopy(r_refdef.vieworg,r_origin);
-	plAngleVectors(r_refdef.viewangles, vpn, vright, vup);
-
-	// Current viewleaf
-	r_oldviewleaf	= r_viewleaf;
-	r_viewleaf		= Mod_PointInLeaf (r_origin, cl.worldmodel);
-
-	V_SetContentsColor(r_viewleaf->contents);
-
-	View_CalculateBlend();
-
-	//johnfitz -- calculate r_fovx and r_fovy here
-	r_fovx = r_refdef.fov_x;
-	r_fovy = r_refdef.fov_y;
-	if (r_waterwarp.value)
-	{
-		int contents = Mod_PointInLeaf (r_origin, cl.worldmodel)->contents;
-		if (contents == BSP_CONTENTS_WATER || contents == BSP_CONTENTS_SLIME || contents == BSP_CONTENTS_LAVA)
-		{
-			//variance is a percentage of width, where width = 2 * tan(fov / 2) otherwise the effect is too dramatic at high FOV and too subtle at low FOV.  what a mess!
-			r_fovx = atan(tan(PL_DEG2RAD(r_refdef.fov_x) / 2) * (0.97 + sin(cl.time * 1.5) * 0.03)) * 2 / PL_PI_DIV180;
-			r_fovy = atan(tan(PL_DEG2RAD(r_refdef.fov_y) / 2) * (1.03 - sin(cl.time * 1.5) * 0.03)) * 2 / PL_PI_DIV180;
-		}
-	}
-	//johnfitz
-
-	R_SetFrustum(r_fovx, r_fovy); //johnfitz -- use r_fov* vars
-	R_MarkSurfaces(); //johnfitz -- create texture chains from PVS
-	R_CullSurfaces(); //johnfitz -- do after R_SetFrustum and R_MarkSurfaces
-	R_UpdateWarpTextures(); //johnfitz -- do this before R_Clear
-
-	//johnfitz -- cheat-protect some draw modes
-	r_drawflat_cheatsafe = r_fullbright_cheatsafe = r_lightmap_cheatsafe = false;
-	r_drawworld_cheatsafe = true;
-	if (cl.maxclients == 1)
-	{
-		if (!r_drawworld.value)
-			r_drawworld_cheatsafe = false;
-
-		if (r_drawflat.value)
-			r_drawflat_cheatsafe = true;
-		else if (r_fullbright.value || !cl.worldmodel->lightdata)
-			r_fullbright_cheatsafe = true;
-		else if (r_lightmap.value)
-			r_lightmap_cheatsafe = true;
-	}
-	//johnfitz
-}
-
 void R_DrawEntitiesOnList(bool bAlphaPass) //johnfitz -- added parameter
 {
 	if(!r_drawentities.value)
@@ -362,32 +289,6 @@ void R_DrawEntitiesOnList(bool bAlphaPass) //johnfitz -- added parameter
 			}
 		}
 	}
-#endif
-}
-
-void R_DrawViewModel(void)
-{
-	if (!cv_video_drawmodels.value || !r_drawviewmodel.value || !r_drawentities.value || chase_active.value || r_refdef.bEnvironmentMap)
-		return;
-	else if(cl.stats[STAT_HEALTH] <= 0)
-		return;
-
-	currententity = &cl.viewent;
-	if (!currententity->model || currententity->model->type != MODEL_TYPE_MD2)
-		return;
-
-#ifdef VL_MODE_OPENGL
-	// hack the depth range to prevent view model from poking into walls
-	glDepthRange(0,0.3);
-#endif
-
-	// TODO: Hack until we sort this properly... blergh!
-	currententity->distance_alpha = 1.0f;
-
-	Alias_Draw(currententity);
-
-#ifdef VL_MODE_OPENGL
-	glDepthRange(0,1);
 #endif
 }
 

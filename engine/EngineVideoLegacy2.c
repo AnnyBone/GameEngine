@@ -52,8 +52,7 @@ void GL_BeginRendering(int *x,int *y,int *width,int *height)
 
 void GL_EndRendering(void)
 {
-	if (!Video.bSkipUpdate)
-		Window_Swap();
+	
 }
 
 void GL_Overbright_f(void)
@@ -75,6 +74,7 @@ void R_OldSkyLeaf_f (void)
 */
 void R_Envmap_f(void)
 {
+#if 0 // todo, needs rethink for new camera stuff
 #ifdef VL_MODE_OPENGL
 	uint8_t buffer[256*256*4];
 
@@ -133,6 +133,7 @@ void R_Envmap_f(void)
 	glReadBuffer(GL_BACK);
 
 	GL_EndRendering();
+#endif
 #endif
 }
 
@@ -193,8 +194,6 @@ void R_NewMap (void)
 	for(i = 0; i < cl.worldmodel->numleafs; i++)
 		cl.worldmodel->leafs[i].efrags = NULL;
 
-	r_viewleaf = NULL;
-
 	Particle_ClearAll();
 
 	GL_BuildLightmaps ();
@@ -212,6 +211,7 @@ void R_NewMap (void)
 */
 void R_TimeRefresh_f (void)
 {
+#if 0 // todo
 #ifdef VL_MODE_OPENGL
 	int			i;
 	float		start, stop, time;
@@ -233,5 +233,6 @@ void R_TimeRefresh_f (void)
 
 	glDrawBuffer (GL_BACK);
 	GL_EndRendering ();
+#endif
 #endif
 }

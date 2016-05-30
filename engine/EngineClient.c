@@ -585,8 +585,9 @@ void CL_SendCmd(void)
 */
 void CL_Tracepos_f (void)
 {
-	plVector3f_t	v, w;
+	// todo, get current camera etc
 
+	plVector3f_t v, w;
 	Math_VectorScale(vpn, 8192.0, v);
 	TraceLine(r_refdef.vieworg, v, w);
 

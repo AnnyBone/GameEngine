@@ -24,6 +24,7 @@
 */
 
 #include "video.h"
+#include "client/video_camera.h"
 #include "EngineVideoEFrag.h"
 
 extern cvar_t gl_fullbrights, r_drawflat, r_oldwater, r_oldskyleaf, r_showtris; //johnfitz
@@ -50,26 +51,30 @@ void R_MarkSurfaces (void)
 	unsigned int	j, i;
 	bool			nearwaterportal;
 
+	Core::Camera *camera = g_cameramanager->GetCurrentCamera();
+	if (!camera)
+		return;
+
 	// clear lightmap chains
 	memset(lightmap_polys,0,sizeof(lightmap_polys));
 
 	// check this leaf for water portals
 	// TODO: loop through all water surfs and use distance to leaf cullbox
 	nearwaterportal = false;
-	for (i=0, mark = r_viewleaf->firstmarksurface; i < r_viewleaf->nummarksurfaces; i++, mark++)
+	for (i=0, mark = camera->leaf->firstmarksurface; i < camera->leaf->nummarksurfaces; i++, mark++)
 		if ((*mark)->flags & SURF_DRAWTURB)
 			nearwaterportal = true;
 
 	// Choose vis data
-	if (r_novis.value || r_viewleaf->contents == BSP_CONTENTS_SOLID || r_viewleaf->contents == BSP_CONTENTS_SKY)
+	if (r_novis.value || camera->leaf->contents == BSP_CONTENTS_SOLID || camera->leaf->contents == BSP_CONTENTS_SKY)
 		vis = &mod_novis[0];
 	else if(nearwaterportal)
-		vis = SV_FatPVS (r_origin, cl.worldmodel);
+		vis = SV_FatPVS (&camera->GetPosition()[0], cl.worldmodel);
 	else
-		vis = Mod_LeafPVS (r_viewleaf, cl.worldmodel);
+		vis = Mod_LeafPVS (camera->leaf, cl.worldmodel);
 
 	// if surface chains don't need regenerating, just add static entities and return
-	if (r_oldviewleaf == r_viewleaf && !bVisibilityChanged && !nearwaterportal)
+	if (camera->oldleaf == camera->leaf && !bVisibilityChanged && !nearwaterportal)
 	{
 		leaf = &cl.worldmodel->leafs[1];
 		for (i=0 ; i<cl.worldmodel->numleafs ; i++, leaf++)
@@ -80,7 +85,7 @@ void R_MarkSurfaces (void)
 	}
 
 	r_visframecount++;
-	r_oldviewleaf = r_viewleaf;
+	camera->oldleaf = camera->leaf;
 
 	// iterate through leaves, marking surfaces
 	leaf = &cl.worldmodel->leafs[1];
@@ -120,21 +125,24 @@ void R_MarkSurfaces (void)
 
 bool R_BackFaceCull (msurface_t *surf)
 {
-	double dot;
+	Core::Camera *camera = g_cameramanager->GetCurrentCamera();
+	if (!camera)
+		return;
 
+	double dot;
 	switch (surf->plane->type)
 	{
 	case PLANE_X:
-		dot = r_refdef.vieworg[0]-surf->plane->dist;
+		dot = camera->GetPosition()[0] - surf->plane->dist;
 		break;
 	case PLANE_Y:
-		dot = r_refdef.vieworg[1]-surf->plane->dist;
+		dot = camera->GetPosition()[1] - surf->plane->dist;
 		break;
 	case PLANE_Z:
-		dot = r_refdef.vieworg[2]-surf->plane->dist;
+		dot = camera->GetPosition()[2] - surf->plane->dist;
 		break;
 	default:
-		dot = Math_DotProduct(r_refdef.vieworg,surf->plane->normal)-surf->plane->dist;
+		dot = Math_DotProduct(&camera->GetPosition()[0], surf->plane->normal) - surf->plane->dist;
 		break;
 	}
 
@@ -178,9 +186,9 @@ void R_BuildLightmapChains (void)
 
 	// now rebuild them
 	s = &cl.worldmodel->surfaces[cl.worldmodel->firstmodelsurface];
-	for (i=0 ; i<cl.worldmodel->nummodelsurfaces ; i++, s++)
-		if (s->visframe == r_visframecount && !R_CullBox(s->mins, s->maxs) && !R_BackFaceCull (s))
-			R_RenderDynamicLightmaps (s);
+	for (i = 0; i<cl.worldmodel->nummodelsurfaces; i++, s++)
+		if (s->visframe == r_visframecount && !R_CullBox(s->mins, s->maxs) && !R_BackFaceCull(s))
+			R_RenderDynamicLightmaps(s);
 }
 
 //==============================================================================
@@ -195,13 +203,18 @@ void R_RenderWorldScene(void);
 
 void Surface_DrawMirror(msurface_t *surface)
 {
+#if 0	// needs some thought for new camera system
 #ifdef VL_MODE_OPENGL
+	Core::Camera *camera = g_cameramanager->GetCurrentCamera();
+	if (!camera)
+		return;
+
 	// Prevent recursion...
 	if (!cv_video_drawmirrors.bValue || r_refdef.mode_mirror)
 		return;
 
 	plVector3f_t oldorigin;
-	plVectorCopy(r_refdef.vieworg, oldorigin);
+	plVectorCopy(&camera->GetPosition()[0], oldorigin);
 
 //	float dir = Math_DotProduct(r_refdef.vieworg, surface->plane->normal) - surface->plane->dist;
 //	Math_VectorMA(r_refdef.vieworg, dir, surface->plane->normal, r_refdef.vieworg);
@@ -275,6 +288,7 @@ void Surface_DrawMirror(msurface_t *surface)
 
 	R_SetupView();
 	R_SetupScene();
+#endif
 #endif
 }
 
@@ -353,7 +367,7 @@ void World_Draw(void)
 		if (!t || !t->texturechain || t->texturechain->flags & (SURF_DRAWTILED | SURF_NOTEXTURE) || (t->material->flags & MATERIAL_FLAG_WATER))
 			continue;
 		// temp
-		else if ((t->material->flags & MATERIAL_FLAG_MIRROR) && r_refdef.mode_mirror)
+		else if ((t->material->flags & MATERIAL_FLAG_MIRROR))
 			continue;
 
 		t->material->bind = true;
@@ -380,7 +394,7 @@ void World_Draw(void)
 					vlActiveTexture(0);
 				}
 				
-				if ((t->material->flags & MATERIAL_FLAG_MIRROR) && !r_refdef.mode_mirror)
+				if ((t->material->flags & MATERIAL_FLAG_MIRROR))
 					// Blend the final surface on top.
 					Video_DrawSurface(s, t->material->fAlpha, t->material, 0);
 				else

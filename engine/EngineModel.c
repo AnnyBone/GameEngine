@@ -94,9 +94,7 @@ mleaf_t *Mod_PointInLeaf (MathVector3f_t p, model_t *model)
 	node = model->nodes;
 	for(;;)
 	{
-		if(node->contents < 0)
-			// [5/3/2013] Break here so we DO reach the end and don't create dumb warnings. Seriously. ~hogsy
-			break;
+		if(node->contents < 0) break;
 
 		plane = node->plane;
 		d = Math_DotProduct (p,plane->normal) - plane->dist;
