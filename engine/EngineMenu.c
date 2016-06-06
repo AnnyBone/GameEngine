@@ -62,8 +62,8 @@ void Menu_Initialize(void)
 	g_menu = (MenuExport_t*)plLoadModuleInterface(hMenuInstance, va("%s/%s" MENU_MODULE, com_gamedir, g_state.path_modules), "Menu_Main", &mImport);
 	if (!g_menu)
 		Con_Warning(plGetError(), com_gamedir, MENU_MODULE);
-	else if (g_menu->iVersion != MENU_VERSION)
-		Con_Warning("Size mismatch (recieved %i, expected %i)!\n", g_menu->iVersion, MENU_VERSION);
+	else if (g_menu->version != MENU_VERSION)
+		Con_Warning("Size mismatch (recieved %i, expected %i)!\n", g_menu->version, MENU_VERSION);
 	else
 		loaded = true;
 

@@ -42,6 +42,7 @@ void Viewport::Draw()
 	if (scr_disabled_for_loading)
 		return;
 
+	vlScissor(_x, _y, _width, _height);
 	vlClearBuffers(VL_MASK_DEPTH | VL_MASK_COLOUR | VL_MASK_STENCIL);
 
 	double time1;
@@ -75,8 +76,10 @@ void Viewport::Draw()
 
 	Draw_ResetCanvas();
 
-	g_menu->Draw();
+	g_menu->Draw(this);
 
+	// todo, move the following into the menu.
+	Screen_DrawNet();
 	Screen_DrawConsole();
 	Screen_DrawFPS();
 
@@ -89,20 +92,24 @@ void Viewport::Draw()
 
 /*	Camera	*/
 
-void Viewport::SetCamera(Camera *camera)
+void Viewport::SetCamera(ICamera *camera)
 {
-	if (!camera)
+	Camera *newcam = dynamic_cast<Camera*>(camera);
+	if (!newcam)
 	{
 		Con_Warning("Attempted to assign invalid camera to viewport!\n");
 		return;
 	}
 
-	_camera = camera;
+	_camera = newcam;
 }
 
 /*	Size	*/
 
 void Viewport::SetSize(unsigned int width, unsigned int height)
 {
+	if (width == 0) width = 1;
+	if (height == 0) height = 1;
 
+	_width = width; _height = height;
 }

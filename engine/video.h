@@ -136,7 +136,6 @@ typedef struct
 
 	bool
 		bInitialized,					// Is the video system started?
-		fullscreen,						// Is the window fullscreen or not?
 		vertical_sync,					// Sync the swap interval to the refresh rate?
 		bActive,						// Is the window active or not?
 		bSkipUpdate,					// Skip screen update.
@@ -154,7 +153,7 @@ void Video_Initialize(void);
 void Video_UpdateWindow(void);
 void Video_GenerateSphereCoordinates(void);
 void Video_SetTexture(gltexture_t *gTexture);
-void Video_SetViewportSize(int w, int h);
+void Video_SetViewportSize(unsigned int w, unsigned int h);
 void Video_PreFrame(void);
 void Video_PostFrame(void);
 void Video_ClearBuffer(void);

@@ -93,9 +93,9 @@ void Menu_DrawMouse(void)
 	//Engine.DrawPic(MENU_BASE_PATH"cursor", 1.0f, iMousePosition[0], iMousePosition[1], 16, 16);
 }
 
-void Menu_Draw(void)
+void Menu_Draw(CoreViewport *viewport)
 {
-	if (!cv_menushow.bValue)
+	if (!cv_menushow.bValue || !viewport)
 		return;
 
 	Menu_UpdateScreenSize();
@@ -121,9 +121,9 @@ void Menu_Draw(void)
 	{
 		plColour_t col = { 0, 0, 0, 0.8f };
 		Engine.DrawRectangle(0, 0, g_menuwidth, g_menuheight, col);
-
-		Engine.DrawString(110,80,">");
-		Engine.DrawString(190,80,"<");
+		
+		Engine.DrawString(110, 80, ">");
+		Engine.DrawString(190, 80, "<");
 
 #if 0
 		switch(iMenuDisplaySelection)
@@ -383,7 +383,7 @@ pMODULE_EXPORT MenuExport_t *Menu_Main(ModuleImport_t *Import)
 {
 	Engine = *Import;
 
-	Export.iVersion		= MENU_VERSION;
+	Export.version		= MENU_VERSION;
 	Export.Initialize	= Menu_Initialize;
 	Export.Shutdown		= Menu_Shutdown;
 	Export.Draw			= Menu_Draw;

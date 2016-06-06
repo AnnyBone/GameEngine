@@ -95,6 +95,7 @@ typedef struct
 
 typedef struct MaterialSkin_s
 {
+	// todo, this shouldn't be hardcoded size!!!!!
 	MaterialTexture_t texture[VIDEO_MAX_UNITS];
 
 	CoreShaderProgram *program;	// Current shader.

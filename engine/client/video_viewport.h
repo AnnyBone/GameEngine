@@ -1,21 +1,17 @@
 /*
-Copyright (C) 1996-2001 Id Software, Inc.
-Copyright (C) 2011-2016 OldTimes Software
+DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+Version 2, December 2004
 
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
+Copyright (C) 2011-2016 Mark E Sowden <markelswo@gmail.com>
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+Everyone is permitted to copy and distribute verbatim or modified
+copies of this license document, and changing it is allowed as long
+as the name is changed.
 
-See the GNU General Public License for more details.
+DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+0. You just DO WHAT THE FUCK YOU WANT TO.
 */
 
 #pragma once
@@ -24,7 +20,7 @@ namespace Core
 {
 	class Camera;
 
-	class Viewport
+	class Viewport : public IViewport
 	{
 	public:
 		Viewport(unsigned int width, unsigned int height);
@@ -34,8 +30,8 @@ namespace Core
 		unsigned int GetHeight() { return _height; }													// Returns height.
 		void SetSize(unsigned int width, unsigned int height);
 
-		Camera *GetCamera() { return _camera; }
-		void SetCamera(Camera *camera);
+		ICamera *GetCamera() { return _camera; }
+		void SetCamera(ICamera *camera);
 
 		std::vector<int> GetPosition() { return std::vector<int> { _x, _y }; }	// Returns position on screen.
 		void SetPosition(int x, int y);

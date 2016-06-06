@@ -79,10 +79,10 @@ typedef enum VLcolourformat_struct
 typedef enum
 {
 #if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
-	VL_STRING_RENDERER = GL_RENDERER,
-	VL_STRING_VERSION = GL_VERSION,
-	VL_STRING_VENDOR = GL_VENDOR,
-	VL_STRING_EXTENSIONS = GL_EXTENSIONS,
+	VL_STRING_RENDERER		= GL_RENDERER,
+	VL_STRING_VERSION		= GL_VERSION,
+	VL_STRING_VENDOR		= GL_VENDOR,
+	VL_STRING_EXTENSIONS	= GL_EXTENSIONS,
 #elif defined VL_MODE_GLIDE
 	VL_STRING_RENDERER		= GR_RENDERER,
 	VL_STRING_VERSION		= GR_VERSION,
@@ -303,6 +303,7 @@ void vlSwapBuffers(void);
 void vlSetClearColour4f(float r, float g, float b, float a);
 void vlSetClearColour4fv(plColour_t rgba);
 void vlClearBuffers(unsigned int mask);
+void vlScissor(int x, int y, unsigned int width, unsigned int height);
 void vlColourMask(bool red, bool green, bool blue, bool alpha);
 void vlSetCullMode(vlCullMode_t mode);
 void vlFinish(void);

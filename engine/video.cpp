@@ -112,9 +112,7 @@ void Video_Initialize(void)
 	Video.extensions.shadow					= false;
 
 	// Give everything within the video sub-system its default value.
-	Video.debug_frame		= false;	// Not debugging the initial frame!
-	Video.bActive			= true;		// Window is intially assumed active.
-	Video.unlocked			= true;		// Video mode is initially locked.
+	Video.debug_frame		= false;	// Not debugging the initial frame!	
 	Video.current_program	= 0;
 
 	Cvar_RegisterVariable(&cv_video_msaasamples, NULL);
@@ -147,34 +145,8 @@ void Video_Initialize(void)
 	Cmd_AddCommand("video_restart", Video_UpdateWindow);
 	Cmd_AddCommand("video_debug", Video_DebugCommand);
 
-	// Figure out what resolution we're going to use.
-	if (COM_CheckParm("-window"))
-	{
-		Video.fullscreen = false;
-		Video.unlocked = false;
-	}
-	else
-		// Otherwise set us as fullscreen.
-		Video.fullscreen = cv_video_fullscreen.bValue;
-
-	if (COM_CheckParm("-width"))
-	{
-		Video.iWidth = atoi(com_argv[COM_CheckParm("-width") + 1]);
-		Video.unlocked = false;
-	}
-	else
-		Video.iWidth = cv_video_width.iValue;
-
-	if (COM_CheckParm("-height"))
-	{
-		Video.iHeight = atoi(com_argv[COM_CheckParm("-height") + 1]);
-		Video.unlocked = false;
-	}
-	else
-		Video.iHeight = cv_video_height.iValue;
-
 	if (!g_state.embedded)
-		Window_InitializeVideo();
+		Window_Initialize();
 
 	vlInit();
 
@@ -224,6 +196,9 @@ void Video_Initialize(void)
 #endif
 	vlActiveTexture(0);
 
+	// This is always active, since our viewports need it.
+	vlEnable(VL_CAPABILITY_SCISSOR_TEST);
+
 	//johnfitz -- create notexture miptex
 	r_notexture_mip = (texture_t*)Hunk_AllocName(sizeof(texture_t), "r_notexture_mip");
 	strcpy(r_notexture_mip->name, "notexture");
@@ -246,8 +221,8 @@ void Video_Initialize(void)
 	g_cameramanager = new Core::CameraManager();
 	g_shadermanager = new Core::ShaderManager();
 	g_spritemanager = new Core::SpriteManager();
-
-	g_mainviewport = new Core::Viewport(Video.iWidth, Video.iHeight);
+	
+	g_mainviewport = new Core::Viewport(g_mainwindow.width, g_mainwindow.height);
 	if (!g_mainviewport)
 		throw Core::Exception("Failed to allocate viewport!\n");
 
@@ -342,44 +317,15 @@ void Video_UpdateWindow(void)
 		return;
 	}
 
-	// Ensure the given width and height are within reasonable bounds.
-	if (cv_video_width.iValue < WINDOW_MINIMUM_WIDTH ||
-		cv_video_height.iValue < WINDOW_MINIMUM_HEIGHT)
-	{
-		Con_Warning("Failed to get an appropriate resolution!\n");
-
-		Cvar_SetValue(cv_video_width.name, WINDOW_MINIMUM_WIDTH);
-		Cvar_SetValue(cv_video_height.name, WINDOW_MINIMUM_HEIGHT);
-	}
-	// If we're not fullscreen, then constrain our window size to the size of the desktop.
-	else if (!Video.fullscreen && ((cv_video_width.iValue > plGetScreenWidth()) || (cv_video_height.iValue > plGetScreenHeight())))
-	{
-		Con_Warning("Attempted to set resolution beyond scope of desktop!\n");
-
-		Cvar_SetValue(cv_video_width.name, plGetScreenWidth());
-		Cvar_SetValue(cv_video_height.name, plGetScreenHeight());
-	}
-
-	Video.iWidth = cv_video_width.iValue;
-	Video.iHeight = cv_video_height.iValue;
-
-	Window_UpdateVideo();
+	Window_Update();
 
 	// Update console size.
 	SCR_Conwidth_f();
 }
 
-void Video_SetViewportSize(int w, int h)
+void Video_SetViewportSize(unsigned int w, unsigned int h)
 {
-	if (w <= 0)
-		w = 1;
-	if (h <= 0)
-		h = 1;
-
-	Video.iWidth = w;
-	Video.iHeight = h;
-
-	vid.bRecalcRefDef = true;
+	g_mainviewport->SetSize(w, h);
 
 	// Update console size.
 	vid.conwidth = Video.iWidth & 0xFFFFFFF8;

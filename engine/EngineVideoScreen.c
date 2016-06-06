@@ -511,9 +511,8 @@ void SCR_DrawTurtle (void)
 #endif
 }
 
-void SCR_DrawNet(void)
+void Screen_DrawNet(void)
 {
-#if 0
 	// [24/7/2012] Don't display when we're not even connected ~hogsy
 	if(	cl.maxclients <= 1	||
 		cls.demoplayback || realtime-cl.last_received_message < 0.3f)
@@ -522,7 +521,6 @@ void SCR_DrawNet(void)
 	GL_SetCanvas(CANVAS_DEFAULT); //johnfitz
 
 	Draw_ExternPic("textures/interface/net",1.0f,scr_vrect.x+64,scr_vrect.y,64,64);
-#endif
 }
 
 void SCR_DrawPause (void)
@@ -749,37 +747,6 @@ int SCR_ModalMessage (char *text, float timeout) //johnfitz -- timeout
 	//johnfitz
 
 	return key_lastpress == 'y';
-}
-
-void SCR_TileClear (void)
-{
-	if (r_refdef.vrect.x > 0)
-	{
-		// left
-		Draw_TileClear (0,
-						0,
-						r_refdef.vrect.x,
-						glheight - sb_lines);
-		// right
-		Draw_TileClear (r_refdef.vrect.x + r_refdef.vrect.width,
-						0,
-						glwidth - r_refdef.vrect.x - r_refdef.vrect.width,
-						glheight - sb_lines);
-	}
-
-	if (r_refdef.vrect.y > 0)
-	{
-		// top
-		Draw_TileClear (r_refdef.vrect.x,
-						0,
-						r_refdef.vrect.width,
-						r_refdef.vrect.y);
-		// bottom
-		Draw_TileClear (r_refdef.vrect.x,
-						r_refdef.vrect.y + r_refdef.vrect.height,
-						r_refdef.vrect.width,
-						glheight - r_refdef.vrect.y - r_refdef.vrect.height - sb_lines);
-	}
 }
 
 void V_UpdateBlend(void);	            // [24/2/2014] See engine_view.c ~hogsy

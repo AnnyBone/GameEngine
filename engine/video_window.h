@@ -1,42 +1,42 @@
-/*	Copyright (C) 2011-2016 OldTimes Software
+/*
+DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+Version 2, December 2004
 
-	This program is free software; you can redistribute it and/or
-	modify it under the terms of the GNU General Public License
-	as published by the Free Software Foundation; either version 2
-	of the License, or (at your option) any later version.
+Copyright (C) 2011-2016 Mark E Sowden <markelswo@gmail.com>
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+Everyone is permitted to copy and distribute verbatim or modified
+copies of this license document, and changing it is allowed as long
+as the name is changed.
 
-	See the GNU General Public License for more details.
+DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+0. You just DO WHAT THE FUCK YOU WANT TO.
 */
 
 #pragma once
 
-/*
-	Generic Window Header
-*/
+/*	Generic Window Header	*/
 
 #define WINDOW_MINIMUM_WIDTH	640
 #define WINDOW_MINIMUM_HEIGHT	480
 
 plEXTERN_C_START
 
-void Window_InitializeVideo(void);
-void Window_UpdateVideo(void);
+void Window_Initialize(void);
+void Window_Update(void);
 void Window_GetGamma(unsigned short *usRamp, int iRampSize);
 void Window_SetGamma(unsigned short *usRamp, int iRampSize);
+
 void Window_GetCursorPosition(int *x, int *y);
 void Window_Swap(void);
 void Window_Shutdown(void);
 
-int Window_GetWidth(void);
-int Window_GetHeight(void);
+void Window_SetFullscreen(bool fullscreen);
+void Window_SetSize(unsigned int width, unsigned int height);
+
+int Window_GetWidth(void);	// todo, this should be unsigned
+int Window_GetHeight(void);	// todo, this should be unsigned
 
 extern plWindow_t g_mainwindow;
 

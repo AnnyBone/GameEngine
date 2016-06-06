@@ -65,7 +65,7 @@ typedef struct EngineExport_e
 	char*(*GetVersion)();		// Returns the current engine version (as a string).
 
 	void(*Loop)();										// Main loop.
-	void(*SetViewportSize)(int iWidth, int iHeight);
+	void(*SetViewportSize)(unsigned int width, unsigned int height);
 	void(*Shutdown)();									// Shutdown.
 
 	Material_t*(*LoadMaterial)(const char *cPath);

@@ -517,6 +517,7 @@ vlCapabilities_t vl_capabilities[] =
 	{ VL_CAPABILITY_CULL_FACE, GL_CULL_FACE, "CULL_FACE" },
 	{ VL_CAPABILITY_STENCIL_TEST, GL_STENCIL_TEST, "STENCIL_TEST" },
 	{ VL_CAPABILITY_MULTISAMPLE, GL_MULTISAMPLE, "MULTISAMPLE" },
+	{ VL_CAPABILITY_SCISSOR_TEST, GL_SCISSOR_TEST, "SCISSOR_TEST" },
 #else
 	{ VL_CAPABILITY_ALPHA_TEST, 0, "ALPHA_TEST" },
 	{ VL_CAPABILITY_BLEND, 0, "BLEND" },
@@ -759,6 +760,17 @@ void vlClearBuffers(unsigned int mask)
 		// Convert buffer_clearcolour to something that works with Glide.
 		_vlConvertColour4fv(VL_COLOURFORMAT_RGBA, vl_state.buffer_clearcolour), 
 		1, 1);
+#endif
+}
+
+void vlScissor(int x, int y, unsigned int width, unsigned int height)
+{
+	_VL_UTIL_TRACK(vlScissor);
+
+#if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
+	glScissor(x, y, width, height);
+#elif defined (VL_MODE_DIRECT3D)
+	// SetScissorRect
 #endif
 }
 

@@ -17,9 +17,6 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-// a pixel can be one, two, or four bytes
-typedef byte pixel_t;
-
 typedef struct vrect_s
 {
 	int				x,y,width,height;
@@ -31,7 +28,6 @@ typedef struct
 {
 	bool			bRecalcRefDef;	// if TRUE, recalc vid-based stuff
 
-	unsigned		rowbytes;		// may be > width if displayed in a window
 	unsigned		bpp;
 	unsigned		conwidth;
 	unsigned		conheight;

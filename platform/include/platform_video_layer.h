@@ -51,6 +51,7 @@ typedef enum vlCapability_s
 	VL_CAPABILITY_STENCIL_TEST		= (1 << 7),	// Stencil-testing.
 	VL_CAPABILITY_MULTISAMPLE		= (1 << 8), // Multisampling.
 	VL_CAPABILITY_CULL_FACE			= (1 << 9),	// Automatically cull faces.
+	VL_CAPABILITY_SCISSOR_TEST		= (1 << 10), // Scissor test for buffer clear.
 
 	VL_CAPABILITY_END
 } vlCapability_t;

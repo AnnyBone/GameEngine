@@ -675,7 +675,7 @@
     <ClCompile Include="EngineVideoFog.c" />
     <ClCompile Include="EngineModel.c" />
     <ClCompile Include="EngineVideoEFrag.c" />
-    <ClCompile Include="EngineVideoLegacy.c" />
+    <ClCompile Include="EngineVideoLegacy.cpp" />
     <ClCompile Include="EngineVideoLegacy2.c" />
     <ClCompile Include="EngineVideoSky.c" />
     <ClCompile Include="EngineVideoTextureManager.c" />

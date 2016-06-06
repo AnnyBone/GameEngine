@@ -55,7 +55,7 @@ CameraManager::CameraManager()
 	Con_Printf("Initializing Camera Manager...\n");
 
 	// Reserve for up to four cameras.
-	cameras.reserve(4);
+	_cameras.reserve(4);
 
 	Cvar_RegisterVariable(&cv_camera_bob, NULL);
 	Cvar_RegisterVariable(&cv_camera_forwardcycle, NULL);
@@ -78,25 +78,25 @@ Camera *CameraManager::CreateCamera()
 
 	memset(camera, 0, sizeof(Camera));
 
-	cameras.push_back(camera);
+	_cameras.push_back(camera);
 
 	return camera;
 }
 
-void CameraManager::DeleteCamera(Camera *_camera)
+void CameraManager::DeleteCamera(Camera *camera)
 {
 	// Already deleted, probably.
-	if (!_camera) return;
+	if (!camera) return;
 
 	// Remove it from the list.
-	for (auto iterator = cameras.begin(); iterator != cameras.end(); iterator++)
-		if (_camera == *iterator)
+	for (auto iterator = _cameras.begin(); iterator != _cameras.end(); iterator++)
+		if (camera == *iterator)
 		{
-			cameras.erase(iterator);
+			_cameras.erase(iterator);
 			break;
 		}
 
-	delete _camera;
+	delete camera;
 }
 
 /**/
@@ -104,28 +104,28 @@ void CameraManager::DeleteCamera(Camera *_camera)
 void CameraManager::SetCurrentCamera(Camera *_camera)
 {
 	if (!_camera) return;
-	current_camera = _camera;
+	_current_camera = _camera;
 }
 
 /**/
 
 void CameraManager::Draw()
 {
-	for (unsigned int i = 0; i < cameras.size(); i++)
+	for (unsigned int i = 0; i < _cameras.size(); i++)
 	{
-		SetCurrentCamera(cameras[i]);
+		SetCurrentCamera(_cameras[i]);
 
-		cameras[i]->Draw();
+		_cameras[i]->Draw();
 	}
 }
 
 void CameraManager::Simulate()
 {
-	for (unsigned int i = 0; i < cameras.size(); i++)
+	for (unsigned int i = 0; i < _cameras.size(); i++)
 	{
-		SetCurrentCamera(cameras[i]);
+		SetCurrentCamera(_cameras[i]);
 
-		cameras[i]->Simulate();
+		_cameras[i]->Simulate();
 	}
 }
 
@@ -144,9 +144,9 @@ Camera::Camera()
 	SetFOV(90);
 }
 
-Camera::Camera(Viewport *viewport) : _viewport(viewport)
+Camera::Camera(Viewport *viewport) : Camera()
 {
-	Camera();
+	SetViewport(viewport);
 }
 
 #ifdef CAMERA_LEGACY

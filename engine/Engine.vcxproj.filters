@@ -280,9 +280,6 @@
     <ClCompile Include="EngineConsole.cpp">
       <Filter>Legacy\Console</Filter>
     </ClCompile>
-    <ClCompile Include="EngineVideoLegacy.c">
-      <Filter>Legacy\Client\Video</Filter>
-    </ClCompile>
     <ClCompile Include="EngineVideoLegacy2.c">
       <Filter>Legacy\Client\Video</Filter>
     </ClCompile>
@@ -320,6 +317,9 @@
     </ClCompile>
     <ClCompile Include="client\video_viewport.cpp">
       <Filter>Client\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineVideoLegacy.cpp">
+      <Filter>Legacy\Client\Video</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

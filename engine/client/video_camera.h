@@ -26,7 +26,7 @@ namespace Core
 {
 	class Viewport;
 
-	class Camera
+	class Camera : public ICamera
 	{
 	public:
 		Camera();
@@ -43,7 +43,6 @@ namespace Core
 
 		void SetFOV(float fov);
 		void SetFrustum(float _fovx, float _fovy);
-		void SetViewport(Viewport *viewport);
 
 		std::vector<float> GetPosition() { return std::vector<float> { position[0], position[1], position[2] }; }
 		void SetPosition(float x, float y, float z);
@@ -55,8 +54,8 @@ namespace Core
 		void SetViewEntity(ClientEntity_t *_child);
 #endif
 
-		Viewport *GetViewport() { return _viewport; }
-		void SetViewport();
+		IViewport *GetViewport() { return _viewport; }
+		void SetViewport(IViewport *viewport);
 
 		bool IsPointInsideFrustum(plVector3f_t position);
 		bool IsPointOutsideFrustum(plVector3f_t position);
@@ -115,18 +114,18 @@ namespace Core
 		~CameraManager();
 
 		Camera *CreateCamera();
-		void DeleteCamera(Camera *_camera);
+		void DeleteCamera(Camera *camera);
 
-		Camera *GetCurrentCamera() { return current_camera; }
-		void SetCurrentCamera(Camera *_camera);
+		Camera *GetCurrentCamera() { return _current_camera; }
+		void SetCurrentCamera(Camera *camera);
 
 		void Draw();
 		void Simulate();
 	protected:
 	private:
-		std::vector<Camera*> cameras;
+		std::vector<Camera*> _cameras;
 
-		Camera *current_camera;
+		Camera *_current_camera;
 	};
 }
 
