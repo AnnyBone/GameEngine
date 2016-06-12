@@ -43,18 +43,6 @@ extern float load_subdivide_size; //johnfitz -- remember what subdivide_size val
 
 extern ConsoleVariable_t gl_subdivide_size; //johnfitz -- moved here from gl_model.c
 
-void GL_BeginRendering(int *x,int *y,int *width,int *height)
-{
-	*x = *y = 0;
-	*width	= Video.iWidth;
-	*height = Video.iHeight;
-}
-
-void GL_EndRendering(void)
-{
-	
-}
-
 void GL_Overbright_f(void)
 {
 	R_RebuildAllLightmaps ();

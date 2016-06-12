@@ -23,18 +23,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "video_shader.h"
 #include "video_light.h"
 
-#include "client/video_viewport.h"
-#include "client/video_camera.h"
-
 #include "client/effect_sprite.h"
 
 /*
-	Video System
+Video System
 */
-
-extern "C" {
-	viddef_t vid; // Legacy global video state (TODO: Replace!)
-}
 
 bool 
 	r_drawflat_cheatsafe, 
@@ -78,15 +71,8 @@ ConsoleVariable_t
 	cv_video_entity_distance = { "video_entity_distance", "1000" },
 	cv_video_entity_fade = { "video_entity_fade", "1" };
 
-#define VIDEO_MAX_SAMPLES	cv_video_msaamaxsamples.iValue
-#define VIDEO_MIN_SAMPLES	0
-
 // TODO: Move this? It's used mainly for silly client stuff...
 struct gltexture_s *gEffectTexture[MAX_EFFECTS];
-
-bool bVideoIgnoreCapabilities = false;
-
-void Video_DebugCommand(void);
 
 Video_t	Video;
 
@@ -94,8 +80,6 @@ texture_t	*r_notexture_mip;
 texture_t	*r_notexture_mip2;	//johnfitz -- used for non-lightmapped surfs with a missing texture
 
 using namespace Core;
-
-Viewport *g_mainviewport = nullptr;
 
 /*	Initialize the renderer
 */
@@ -114,8 +98,7 @@ void Video_Initialize(void)
 	Video.extensions.shadow					= false;
 
 	// Give everything within the video sub-system its default value.
-	Video.debug_frame		= false;	// Not debugging the initial frame!	
-	Video.current_program	= 0;
+	Video.debug_frame		= false;	// Not debugging the initial frame!
 
 	Cvar_RegisterVariable(&cv_video_msaasamples, NULL);
 	Cvar_RegisterVariable(&cv_video_drawmodels, NULL);
@@ -138,17 +121,18 @@ void Video_Initialize(void)
 	Cvar_RegisterVariable(&cv_video_drawplayershadow, NULL);
 	Cvar_RegisterVariable(&cv_video_shaders, NULL);
 	Cvar_RegisterVariable(&cv_video_clearbuffers, NULL);
-
 	Cvar_RegisterVariable(&cv_video_entity_distance, NULL);
 	Cvar_RegisterVariable(&cv_video_entity_fade, NULL);
-
 	Cvar_RegisterVariable(&cv_video_shownormals, NULL);
 
-	Cmd_AddCommand("video_restart", Video_UpdateWindow);
-	Cmd_AddCommand("video_debug", Video_DebugCommand);
+	Cmd_AddCommand("video_restart", Window_Update);
 
 	if (!g_state.embedded)
+	{
 		Window_Initialize();
+
+		CreatePrimaryViewport();
+	}
 
 	vlInit();
 
@@ -186,101 +170,17 @@ void Video_Initialize(void)
 	g_cameramanager = new CameraManager();
 	g_shadermanager = new ShaderManager();
 	g_spritemanager = new SpriteManager();
-	
-	g_mainviewport = new Viewport(g_mainwindow.width, g_mainwindow.height);
-	if (!g_mainviewport)
-		throw Exception("Failed to allocate viewport!\n");
-
-	g_mainviewport->SetCamera(new Camera);
 
 	Video.bInitialized = true;
-}
-
-/*
-	Video Commands
-*/
-
-void Video_DebugCommand(void)
-{
-	if (!Video.debug_frame)
-		Video.debug_frame = true;
-
-	plClearLog(cv_video_log.string);
-}
-
-/**/
-
-/*	Displays the depth buffer for testing purposes.
-	Unfinished
-*/
-void Video_DrawDepthBuffer(void)
-{
-#if 0
-	static gltexture_t	*depth_texture = NULL;
-	float				*uByte;
-
-	if(!cv_video_drawdepth.bValue)
-		return;
-
-	// Allocate the pixel data.
-	uByte = (float*)malloc(Video.iWidth*Video.iHeight*sizeof(float));
-	if (!uByte)
-		return;
-
-	// Read le pixels, and copy them to uByte.
-	glReadPixels(0, 0, Video.iWidth, Video.iHeight, GL_DEPTH_COMPONENT, GL_FLOAT, uByte);
-
-	// Create our depth texture.
-	depth_texture = TexMgr_NewTexture();
-
-	// Set the texture.
-	Video_SetTexture(depth_texture);
-
-	// Copy it to the texture.
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, Video.iWidth, Video.iHeight, 0, GL_LUMINANCE, GL_FLOAT, uByte);
-
-	// Draw the buffer to the bottom left corner of the screen.
-	GL_SetCanvas(CANVAS_BOTTOMLEFT);
-	Draw_Rectangle(0, 0, 512, 512, pl_white);
-	GL_SetCanvas(CANVAS_DEFAULT);
-
-	// Delete the texture, so we can recreate it later.
-	TexMgr_FreeTexture(depth_texture);
-
-	// Free the pixel data.
-	free(uByte);
-#endif
 }
 
 /*
 	Window Management
 */
 
-void Video_UpdateWindow(void)
-{
-	if (g_state.embedded || !Video.bInitialized || !Video.bActive)
-		return;
-
-	if (!Video.unlocked)
-	{
-		Cvar_SetValue(cv_video_fullscreen.name, (float)Video.fullscreen);
-		Cvar_SetValue(cv_video_width.name, (float)Video.iWidth);
-		Cvar_SetValue(cv_video_height.name, (float)Video.iHeight);
-		Cvar_SetValue(cv_video_verticlesync.name, (float)Video.vertical_sync);
-
-		Video.unlocked = true;
-		return;
-	}
-
-	Window_Update();
-
-	// Update console size.
-	SCR_Conwidth_f();
-}
-
 void Video_SetViewportSize(unsigned int w, unsigned int h)
 {
-	g_mainviewport->SetSize(w, h);
+	GetPrimaryViewport()->SetSize(w, h);
 }
 
 /*
@@ -442,7 +342,6 @@ void Video_PreFrame(void)
 
 	GL_BeginRendering(&glx, &gly, &glwidth, &glheight);
 
-	Screen_UpdateSize();
 	Screen_SetUpToDrawConsole();
 
 	R_SetupGenericView();
@@ -471,7 +370,7 @@ void Video_Frame(void)
 	if (Video.framecount > 100000)
 		Video.framecount = 0;
 
-	g_mainviewport->Draw();
+	GetPrimaryViewport()->Draw();
 
 	GL_EndRendering();
 
@@ -502,7 +401,7 @@ void Video_Shutdown(void)
 
 	if (!g_state.embedded)
 	{
-		if (g_mainviewport) delete g_mainviewport;
+		DestroyPrimaryViewport();
 
 		Window_Shutdown();
 	}

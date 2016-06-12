@@ -74,8 +74,6 @@ console is:
 
 */
 
-int			glx, gly, glwidth, glheight;
-
 float		scr_con_current;
 float		scr_conlines;		// lines of console to display
 float		oldscreensize, oldfov, oldsbarscale, oldsbaralpha; //johnfitz -- added oldsbarscale and oldsbaralpha
@@ -216,75 +214,6 @@ void SCR_CheckDrawCenterString (void)
 
 //=============================================================================
 
-float CalcFovy (float fov_x, float width, float height)
-{
-	float   a, x;
-
-	if (fov_x < 1 || fov_x > 179)
-		Sys_Error ("Bad fov: %f", fov_x);
-
-	x = width / tan(fov_x / 360 * PL_PI);
-	a = atan (height/x);
-	a = a*360.0f / PL_PI;
-	return a;
-}
-
-/*	Must be called whenever vid changes
-	Internal use only
-*/
-void Screen_UpdateSize(void)
-{
-	float size, scale; //johnfitz -- scale
-
-//	vid.bRecalcRefDef = false;
-
-	scr_tileclear_updates = 0; //johnfitz
-
-// bound viewsize
-	if(scr_viewsize.value < 30)
-		Cvar_Set("viewsize","30");
-	else if(scr_viewsize.value > 120)
-		Cvar_Set("viewsize","120");
-
-	//johnfitz -- rewrote this section
-	r_refdef.vrect.width = Math_Max(glwidth * size, 96); //no smaller than 96, for icons
-	r_refdef.vrect.height = Math_Min(glheight * size, glheight - sb_lines); //make room for sbar
-	r_refdef.vrect.x = (glwidth - r_refdef.vrect.width)/2;
-	r_refdef.vrect.y = (glheight - sb_lines - r_refdef.vrect.height)/2;
-	//johnfitz
-
-	r_refdef.fov_x = scr_fov.value;
-	r_refdef.fov_y = CalcFovy (r_refdef.fov_x, r_refdef.vrect.width, r_refdef.vrect.height);
-
-	scr_vrect = r_refdef.vrect;
-}
-
-/*	Keybinding command
-*/
-void SCR_SizeUp_f (void)
-{
-	Cvar_SetValue ("viewsize",scr_viewsize.value+10);
-//	vid.bRecalcRefDef = true;
-}
-
-/*	Keybinding command
-*/
-void SCR_SizeDown_f (void)
-{
-	Cvar_SetValue ("viewsize",scr_viewsize.value-10);
-//	vid.bRecalcRefDef = true;
-}
-
-/*	Called when scr_conwidth or scr_conscale changes
-*/
-void SCR_Conwidth_f (void)
-{
-	vid.conwidth = (scr_conwidth.value > 0) ? (int)scr_conwidth.value : (scr_conscale.value > 0) ? (int)(Video.iWidth/scr_conscale.value) : Video.iWidth;
-	vid.conwidth = Math_Clamp(320, vid.conwidth, Video.iWidth);
-	vid.conwidth &= 0xFFFFFFF8;
-	vid.conheight = vid.conwidth *Video.iHeight/Video.iWidth;
-}
-
 void Screen_ResetFPS(void);
 
 void SCR_Init (void)
@@ -292,8 +221,8 @@ void SCR_Init (void)
 	Cvar_RegisterVariable(&scr_menuscale,NULL);
 	Cvar_RegisterVariable(&scr_sbarscale,NULL);
 	Cvar_RegisterVariable(&scr_sbaralpha,NULL);
-	Cvar_RegisterVariable(&scr_conwidth,&SCR_Conwidth_f);
-	Cvar_RegisterVariable(&scr_conscale,&SCR_Conwidth_f);
+	Cvar_RegisterVariable(&scr_conwidth,NULL);
+	Cvar_RegisterVariable(&scr_conscale,NULL);
 	Cvar_RegisterVariable(&scr_crosshairscale,NULL);
 	Cvar_RegisterVariable(&scr_showfps,&Screen_ResetFPS);
 	Cvar_RegisterVariable(&scr_fps_rate,NULL);
@@ -307,9 +236,7 @@ void SCR_Init (void)
 	Cvar_RegisterVariable(&scr_centertime,NULL);
 	Cvar_RegisterVariable(&scr_printspeed,NULL);
 
-	Cmd_AddCommand("screenshot",SCR_ScreenShot_f);
-	Cmd_AddCommand("sizeup",SCR_SizeUp_f);
-	Cmd_AddCommand("sizedown",SCR_SizeDown_f);
+	Cmd_AddCommand("screenshot", SCR_ScreenShot_f);
 
 	bScreenInitialized = true;
 }
@@ -487,32 +414,9 @@ void SCR_DrawDevStats (void)
 	Draw_String(x, (y++) * 8 - x, str);
 }
 
-void SCR_DrawTurtle (void)
-{
-#if 0
-	static int	count;
-
-	if (!scr_showturtle.value)
-		return;
-
-	if (host_frametime < 0.1)
-	{
-		count = 0;
-		return;
-	}
-
-	count++;
-	if (count < 3)
-		return;
-
-	GL_SetCanvas (CANVAS_DEFAULT); //johnfitz
-
-	Draw_Pic (scr_vrect.x, scr_vrect.y, scr_turtle);
-#endif
-}
-
 void Screen_DrawNet(void)
 {
+#if 0
 	// [24/7/2012] Don't display when we're not even connected ~hogsy
 	if(	cl.maxclients <= 1	||
 		cls.demoplayback || realtime-cl.last_received_message < 0.3f)
@@ -521,14 +425,7 @@ void Screen_DrawNet(void)
 	GL_SetCanvas(CANVAS_DEFAULT); //johnfitz
 
 	Draw_ExternPic("textures/interface/net",1.0f,scr_vrect.x+64,scr_vrect.y,64,64);
-}
-
-void SCR_DrawPause (void)
-{
-	if(!cl.bIsPaused || !scr_showpause.value)
-		return;
-
-	scr_tileclear_updates = 0; //johnfitz
+#endif
 }
 
 //=============================================================================
@@ -759,6 +656,7 @@ void V_UpdateBlend(void);	            // [24/2/2014] See engine_view.c ~hogsy
 */
 void SCR_UpdateScreen (void)
 {
+#if 0
 	// do 3D refresh drawing, and then update the screen
 	Screen_SetUpToDrawConsole();
 
@@ -790,4 +688,5 @@ void SCR_UpdateScreen (void)
 		Screen_DrawConsole();
 		Screen_DrawFPS(); //johnfitz
 	}
+#endif
 }

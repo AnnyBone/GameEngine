@@ -16,6 +16,8 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
 #pragma once
 
+#ifdef __cplusplus
+
 namespace Core
 {
 	class Camera;
@@ -30,7 +32,7 @@ namespace Core
 		unsigned int GetHeight() { return _height; }													// Returns height.
 		void SetSize(unsigned int width, unsigned int height);
 
-		ICamera *GetCamera() { return _camera; }
+		Camera *GetCamera() { return _camera; }
 		void SetCamera(ICamera *camera);
 
 		std::vector<int> GetPosition() { return std::vector<int> { _x, _y }; }	// Returns position on screen.
@@ -46,4 +48,10 @@ namespace Core
 
 		int _x, _y;
 	};
+
+	static void CreatePrimaryViewport();
+	static Viewport *GetPrimaryViewport();
+	static void DestroyPrimaryViewport();
 }
+
+#endif

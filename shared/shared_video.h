@@ -76,8 +76,6 @@ namespace Core
 
 		virtual void SetFrustum(float fovx, float fovy) = 0;
 
-		virtual void SetViewport(IViewport *viewport) = 0;
-
 		virtual std::vector<float> GetPosition() = 0;
 		virtual void SetPosition(float x, float y, float z) = 0;
 		virtual void SetPosition(plVector3f_t position) = 0;

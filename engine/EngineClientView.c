@@ -406,12 +406,14 @@ void V_UpdateBlend(void)
 
 void View_PolyBlend(void)
 {
+#if 0
 	if (!gl_polyblend.value || !cl.cshifts[CSHIFT_CONTENTS].percent)
 		return;
 
 	vlDisable(VL_CAPABILITY_DEPTH_TEST);
 	Draw_Rectangle(0, 0, Video.iWidth, Video.iHeight, vViewBlend);
 	vlEnable(VL_CAPABILITY_DEPTH_TEST);
+#endif
 }
 
 /*
@@ -431,93 +433,9 @@ float angledelta (float a)
 	return a;
 }
 
-void View_ModelAngle(void)
-{
-	int		i;
-	float	fOffsetAmount;
-
-	// Don't bother if we don't have a view model to show!
-	if(!cl.viewent.model)
-		return;
-
-	// Stripped this all down to this, it's all we need. ~hogsy
-	cl.viewent.angles[YAW]		= r_refdef.viewangles[YAW];
-	cl.viewent.angles[PITCH]	= -(r_refdef.viewangles[PITCH]-(sin(cl.time*1.5f)*0.2f));
-	cl.viewent.angles[ROLL]		= -(r_refdef.viewangles[ROLL]-(sin(cl.time*1.5f)*0.2f));
-
-	if(cViewModelPosition.iValue == 0)
-		return;	// We're already centered, so don't bother.
-	else if(cViewModelPosition.iValue == 1)
-		fOffsetAmount = -5.0f;
-	else
-		fOffsetAmount = 5.0f;
-
-	// TODO: Could this be done better? ~hogsy
-	for(i = 0; i < 3; i++)
-		cl.viewent.origin[i] += forward[i]+fOffsetAmount*right[i]+up[i];
-}
-
-void V_BoundOffsets (void)
-{
-	entity_t *eViewEntity;
-
-	eViewEntity = &cl_entities[cl.viewentity];
-	if(eViewEntity)
-	{
-		/*	Absolutely bound refresh reletive to entity clipping hull
-			so the view can never be inside a solid wall.
-		*/
-		if(r_refdef.vieworg[0] < eViewEntity->origin[0]-14.0f)
-			r_refdef.vieworg[0] = eViewEntity->origin[0]-14.0f;
-		else if(r_refdef.vieworg[0] > eViewEntity->origin[0]+14.0f)
-			r_refdef.vieworg[0] = eViewEntity->origin[0]+14.0f;
-
-		if(r_refdef.vieworg[1] < eViewEntity->origin[1]-14.0f)
-			r_refdef.vieworg[1] = eViewEntity->origin[1]-14.0f;
-		else if (r_refdef.vieworg[1] > eViewEntity->origin[1]+14.0f)
-			r_refdef.vieworg[1] = eViewEntity->origin[1]+14.0f;
-
-		if(r_refdef.vieworg[2] < eViewEntity->origin[2]-22.0f)
-			r_refdef.vieworg[2] = eViewEntity->origin[2]-22.0f;
-		else if (r_refdef.vieworg[2] > eViewEntity->origin[2]+30.0f)
-			r_refdef.vieworg[2] = eViewEntity->origin[2]+30.0f;
-	}
-}
-
-/*	Idle swaying
-*/
-void V_AddIdle(void)
-{
-	r_refdef.viewangles[ROLL]	+= v_idlescale.value*sin(cl.time*v_iroll_cycle.value)*v_iroll_level.value;
-	r_refdef.viewangles[PITCH]	+= v_idlescale.value*sin(cl.time*v_ipitch_cycle.value)*v_ipitch_level.value;
-	r_refdef.viewangles[YAW]	+= v_idlescale.value*sin(cl.time*v_iyaw_cycle.value)*v_iyaw_level.value;
-}
-
-/*	Roll is induced by movement and damage
-*/
-void V_CalcViewRoll(void)
-{
-	float		side;
-
-	side = V_CalcRoll (cl_entities[cl.viewentity].angles, cl.velocity);
-	r_refdef.viewangles[ROLL] += side;
-
-	if (v_dmg_time > 0)
-	{
-		r_refdef.viewangles[ROLL] += v_dmg_time/v_kicktime.value*v_dmg_roll;
-		r_refdef.viewangles[PITCH] += v_dmg_time/v_kicktime.value*v_dmg_pitch;
-		v_dmg_time -= host_frametime;
-	}
-
-	if (cl.stats[STAT_HEALTH] <= 0)
-	{
-		r_refdef.viewangles[ROLL] = 80.0f;	// dead view angle
-		return;
-	}
-}
-
 void V_CalcIntermissionRefdef (void)
 {
+#if 0
 	entity_t	*ent, *view;
 	float		old;
 
@@ -535,6 +453,7 @@ void V_CalcIntermissionRefdef (void)
 	v_idlescale.value = 1;
 	V_AddIdle ();
 	v_idlescale.value = old;
+#endif
 }
 
 /*	Adds a delay to the view model (such as a weapon) in the players view.

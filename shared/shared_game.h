@@ -155,7 +155,7 @@ typedef struct
 	void*(*Hunk_Alloc)(int size);
 
 	// Draw Functions
-	void(*DrawString)(int x, int y, char *msg);
+	void(*DrawString)(int x, int y, const char *msg);
 	void(*DrawRectangle)(int x, int y, int w, int h, plColour_t colour);
 	void(*DrawLine)(plVector3f_t start, plVector3f_t end);
 	void(*DrawCoordinateAxes)(plVector3f_t position);
@@ -185,7 +185,7 @@ typedef struct
 	void(*MSG_WriteCoord)(sizebuf_t *sb, float f);
 	void(*MSG_WriteAngle)(sizebuf_t *sb, float f);
 
-	void(*ShowCursor)(bool bShow);
+	void(*ShowCursor)(PLbool bShow);
 
 	int(*ReadByte)(void);
 	float(*ReadCoord)(void);

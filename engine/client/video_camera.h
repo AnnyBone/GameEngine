@@ -1,24 +1,22 @@
 /*
-Copyright (C) 1996-2001 Id Software, Inc.
-Copyright (C) 2011-2016 OldTimes Software
+DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+Version 2, December 2004
 
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
+Copyright (C) 2011-2016 Mark E Sowden <markelswo@gmail.com>
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+Everyone is permitted to copy and distribute verbatim or modified
+copies of this license document, and changing it is allowed as long
+as the name is changed.
 
-See the GNU General Public License for more details.
+DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+0. You just DO WHAT THE FUCK YOU WANT TO.
 */
 
 #pragma once
+
+#ifdef __cplusplus
 
 #define	CAMERA_LEGACY	// Camera automatically follows parent entity.
 
@@ -48,6 +46,7 @@ namespace Core
 		void SetPosition(float x, float y, float z);
 		void SetPosition(plVector3f_t _position);
 		void PrintPosition();
+		void TracePosition();
 
 #ifdef CAMERA_LEGACY
 		void SetParentEntity(ClientEntity_t *_parent);
@@ -62,9 +61,9 @@ namespace Core
 		bool IsBoxInsideFrustum(plVector3f_t mins, plVector3f_t maxs);
 		bool IsBoxOutsideFrustum(plVector3f_t mins, plVector3f_t maxs);
 
-		std::vector<float> GetForward() { return std::vector<float> { forward[0], forward[1], forward[2]}; }
-		std::vector<float> GetRight() { return std::vector<float> { right[0], right[1], right[2] }; }
-		std::vector<float> GetUp() { return std::vector<float> { up[0], up[1], up[2] }; }
+		std::vector<float> GetForward() { return std::vector<float> { _forward[0], _forward[1], _forward[2]}; }
+		std::vector<float> GetRight() { return std::vector<float> { _right[0], _right[1], _right[2] }; }
+		std::vector<float> GetUp() { return std::vector<float> { _up[0], _up[1], _up[2] }; }
 
 		void EnableBob() { bobcam = true; }
 		void DisableBob() { bobcam = false; }
@@ -97,7 +96,7 @@ namespace Core
 
 		mplane_t frustum[4];
 
-		plVector3f_t forward, right, up;
+		plVector3f_t _forward, _right, _up;
 		plVector3f_t punchangles[2];		//johnfitz -- copied from cl.punchangle.  0 is current, 1 is previous value. never the same unless map just loaded
 		plVector3f_t angles, position;
 
@@ -130,3 +129,5 @@ namespace Core
 }
 
 extern Core::CameraManager *g_cameramanager;
+
+#endif

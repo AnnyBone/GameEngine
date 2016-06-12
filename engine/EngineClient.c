@@ -581,22 +581,6 @@ void CL_SendCmd(void)
 	SZ_Clear (&cls.message);
 }
 
-/*	Display impact point of trace along VPN
-*/
-void CL_Tracepos_f (void)
-{
-	// todo, get current camera etc
-
-	plVector3f_t v, w;
-	Math_VectorScale(vpn, 8192.0, v);
-	TraceLine(r_refdef.vieworg, v, w);
-
-	if (plLengthf(w) == 0)
-		Con_Printf ("Tracepos: trace didn't hit anything\n");
-	else
-		Con_Printf ("Tracepos: (%i %i %i)\n", (int)w[0], (int)w[1], (int)w[2]);
-}
-
 void CL_Viewpos_f (void)
 {
 
@@ -656,7 +640,6 @@ void CL_Init (void)
 	Cmd_AddCommand ("stop", CL_Stop_f);
 	Cmd_AddCommand ("playdemo", CL_PlayDemo_f);
 	Cmd_AddCommand ("timedemo", CL_TimeDemo_f);
-	Cmd_AddCommand ("tracepos", CL_Tracepos_f); //johnfitz
 	Cmd_AddCommand ("viewpos", CL_Viewpos_f); //johnfitz
 	Cmd_AddCommand("client_modelcache", Client_ListModelCache);
 }

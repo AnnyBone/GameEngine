@@ -37,7 +37,7 @@
     <ClCompile Include="platform_model_md2.cpp" />
     <ClCompile Include="platform_model_obj.cpp" />
     <ClCompile Include="platform_model_u3d.cpp" />
-    <ClCompile Include="platform_module.c" />
+    <ClCompile Include="platform_library.c" />
     <ClCompile Include="platform_video_layer.cpp" />
     <ClCompile Include="platform_window.c" />
   </ItemGroup>
@@ -51,7 +51,7 @@
     <ClInclude Include="include\platform_model.h" />
     <ClInclude Include="include\platform_model_obj.h" />
     <ClInclude Include="include\platform_model_u3d.h" />
-    <ClInclude Include="include\platform_module.h" />
+    <ClInclude Include="include\platform_library.h" />
     <ClInclude Include="include\platform_stdint.h" />
     <ClInclude Include="include\platform_video_layer.h" />
     <ClInclude Include="include\platform_window.h" />

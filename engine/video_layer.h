@@ -244,6 +244,7 @@ void vlDepthMask(bool mode);
 // Shaders
 
 vlShaderProgram_t vlCreateShaderProgram(void);
+vlShaderProgram_t vlGetCurrentShaderProgram(void);
 void vlUseShaderProgram(vlShaderProgram_t program);
 void vlDeleteShaderProgram(vlShaderProgram_t *program);
 void vlLinkShaderProgram(vlShaderProgram_t *program);
@@ -301,6 +302,8 @@ void vlGenerateRenderBuffer(unsigned int *buffer);
 void vlBindRenderBuffer(unsigned int buffer);
 void vlRenderBufferStorage(int format, int samples, unsigned int width, unsigned int height);
 void vlDeleteRenderBuffer(unsigned int *buffer);
+
+void vlViewport(int x, int y, unsigned int width, unsigned int height);
 
 void vlSwapBuffers(void);
 void vlSetClearColour4f(float r, float g, float b, float a);

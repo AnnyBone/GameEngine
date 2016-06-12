@@ -36,8 +36,6 @@ void Screen_DrawNet(void);
 void Screen_DrawFPS(void);
 void Screen_DrawConsole(void);
 void Screen_SetUpToDrawConsole(void);
-void Screen_UpdateSize(void);
-void SCR_Conwidth_f(void);
 
 int SCR_ModalMessage (char *text, float timeout); //johnfitz -- added timeout
 

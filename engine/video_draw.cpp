@@ -83,6 +83,45 @@ void Draw::ClearBuffers()
 	vlClearBuffers(VL_MASK_DEPTH | VL_MASK_COLOUR | VL_MASK_STENCIL);
 }
 
+void Draw::DrawDepthBuffer()
+{
+#if 0
+	static gltexture_t	*depth_texture = NULL;
+	float				*uByte;
+
+	if (!cv_video_drawdepth.bValue)
+		return;
+
+	// Allocate the pixel data.
+	uByte = (float*)malloc(Video.iWidth*Video.iHeight*sizeof(float));
+	if (!uByte)
+		return;
+
+	// Read le pixels, and copy them to uByte.
+	glReadPixels(0, 0, Video.iWidth, Video.iHeight, GL_DEPTH_COMPONENT, GL_FLOAT, uByte);
+
+	// Create our depth texture.
+	depth_texture = TexMgr_NewTexture();
+
+	// Set the texture.
+	Video_SetTexture(depth_texture);
+
+	// Copy it to the texture.
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, Video.iWidth, Video.iHeight, 0, GL_LUMINANCE, GL_FLOAT, uByte);
+
+	// Draw the buffer to the bottom left corner of the screen.
+	GL_SetCanvas(CANVAS_BOTTOMLEFT);
+	Draw_Rectangle(0, 0, 512, 512, pl_white);
+	GL_SetCanvas(CANVAS_DEFAULT);
+
+	// Delete the texture, so we can recreate it later.
+	TexMgr_FreeTexture(depth_texture);
+
+	// Free the pixel data.
+	free(uByte);
+#endif
+}
+
 //==============================================================================
 //
 //  PIC CACHING
@@ -406,32 +445,36 @@ void Draw_ConsoleBackground(void)
 
 void Draw_GradientBackground(void)
 {
-#if defined (VL_MODE_GLIDE)
-#else
-	VideoCanvasType_t vctOldCanvas; //johnfitz
+	Viewport *viewport = GetPrimaryViewport();
+	if (!viewport)
+		return;
 
+#if defined (VL_MODE_OPENGL)
 	glMatrixMode(GL_PROJECTION);
 	glPushMatrix();
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
+#endif
 
 	Draw_ResetCanvas();
 
-	vctOldCanvas = (VideoCanvasType_t)currentcanvas;
+	VideoCanvasType_t vctOldCanvas = (VideoCanvasType_t)currentcanvas;
 	GL_SetCanvas(CANVAS_DEFAULT);
 	currentcanvas = vctOldCanvas;
 
 	plColour_t
 		cTop	= { 0.1f, 0.1f, 0.1f, 1.0f },
 		cBottom = { 0.5f, 0.5f, 0.5f, 1.0f };
-	Draw_GradientFill(0, 0, Video.iWidth, Video.iHeight, cTop, cBottom);
+	Draw_GradientFill(0, 0, viewport->GetWidth(), viewport->GetHeight(), cTop, cBottom);
 
+#if defined (VL_MODE_OPENGL)
 	glMatrixMode(GL_PROJECTION);
 	glPopMatrix();
 	glMatrixMode(GL_MODELVIEW);
 	glPopMatrix();
-	glViewport(0, 0, Video.iWidth, Video.iHeight);
 #endif
+
+	vlViewport(0, 0, viewport->GetWidth(), viewport->GetHeight());
 }
 
 /*	This repeats a 64*64 tile graphic to fill the screen around a sized down
@@ -678,7 +721,7 @@ void Draw_BeginDisc(void)
 	glPopMatrix();
 	glMatrixMode(GL_MODELVIEW);
 	glPopMatrix();
-	glViewport(iViewport[0],iViewport[1],iViewport[2],iViewport[3]);
+	vlViewport(iViewport[0], iViewport[1], iViewport[2], iViewport[3]);
 	//johnfitz
 #endif
 }
@@ -701,47 +744,47 @@ void GL_SetCanvas (VideoCanvasType_t newcanvas)
 	{
 	case CANVAS_DEFAULT:
 		glOrtho (0, glwidth, glheight, 0, -99999, 99999);
-		glViewport (glx, gly, glwidth, glheight);
+		vlViewport(glx, gly, glwidth, glheight);
 		break;
 	case CANVAS_CONSOLE:
 		lines = vid.conheight - (scr_con_current * vid.conheight / glheight);
 		glOrtho(0,vid.conwidth,vid.conheight + lines,lines,-99999,99999);
-		glViewport (glx, gly, glwidth, glheight);
+		vlViewport(glx, gly, glwidth, glheight);
 		break;
 	case CANVAS_MENU:
 		s = Math_Min((float)glwidth / 640.0, (float)glheight / 480.0);
 		s = Math_Clamp(1.0, scr_menuscale.value, s);
 		glOrtho (0, 640, 480, 0, -99999, 99999);
-		glViewport (glx, gly, glwidth, glheight);
+		vlViewport(glx, gly, glwidth, glheight);
 		break;
 	case CANVAS_SBAR:
 		s = Math_Clamp(1.0, scr_sbarscale.value, (float)glwidth / 320.0);
 		glOrtho (0, 320, 48, 0, -99999, 99999);
-		glViewport (glx + (glwidth - 320*s) / 2, gly, 320*s, 48*s);
+		vlViewport(glx + (glwidth - 320 * s) / 2, gly, 320 * s, 48 * s);
 		break;
 	case CANVAS_WARPIMAGE:
 		glOrtho (0, 128, 0, 128, -99999, 99999);
-		glViewport (glx, gly+glheight-gl_warpimagesize, gl_warpimagesize, gl_warpimagesize);
+		vlViewport(glx, gly + glheight - gl_warpimagesize, gl_warpimagesize, gl_warpimagesize);
 		break;
 	case CANVAS_CROSSHAIR: //0,0 is center of viewport
 		s = Math_Clamp(1.0, scr_crosshairscale.value, 10.0);
 		glOrtho (scr_vrect.width/-2/s, scr_vrect.width/2/s, scr_vrect.height/2/s, scr_vrect.height/-2/s, -99999, 99999);
-		glViewport (scr_vrect.x, glheight - scr_vrect.y - scr_vrect.height, scr_vrect.width & ~1, scr_vrect.height & ~1);
+		vlViewport(scr_vrect.x, glheight - scr_vrect.y - scr_vrect.height, scr_vrect.width & ~1, scr_vrect.height & ~1);
 		break;
 	case CANVAS_BOTTOMLEFT: //used by devstats
 		s = (float)glwidth/vid.conwidth; //use console scale
 		glOrtho (0, 320, 200, 0, -99999, 99999);
-		glViewport (glx, gly, 320*s, 200*s);
+		vlViewport(glx, gly, 320 * s, 200 * s);
 		break;
 	case CANVAS_BOTTOMRIGHT: //used by fps/clock
 		s = (float)glwidth/vid.conwidth; //use console scale
 		glOrtho (0, 320, 200, 0, -99999, 99999);
-		glViewport (glx+glwidth-320*s, gly, 320*s, 200*s);
+		vlViewport(glx + glwidth - 320 * s, gly, 320 * s, 200 * s);
 		break;
 	case CANVAS_TOPRIGHT: //used by disc
 		s = 1;
 		glOrtho (0, 320, 200, 0, -99999, 99999);
-		glViewport (glx+glwidth-320*s, gly+glheight-200*s, 320*s, 200*s);
+		vlViewport(glx + glwidth - 320 * s, gly + glheight - 200 * s, 320 * s, 200 * s);
 		break;
 	default:
 		Sys_Error ("GL_SetCanvas: bad canvas type");

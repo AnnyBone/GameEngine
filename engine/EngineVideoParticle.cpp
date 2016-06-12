@@ -459,6 +459,10 @@ void Particle_Draw(void)
 	if (!pActiveParticles || !cv_video_drawparticles.value)
 		return;
 
+	Core::Camera *camera = g_cameramanager->GetCurrentCamera();
+	if (!camera)
+		return;
+
 	for (pParticle = pActiveParticles; pParticle; pParticle = pParticle->next)
 	{
 		vlVertex_t	voParticle[4];
@@ -469,17 +473,17 @@ void Particle_Draw(void)
 			pParticle->vColour[0], pParticle->vColour[1], pParticle->vColour[2], pParticle->vColour[3]);
 		Video_ObjectTexture(&voParticle[0], 0, 0, 0);
 
-		Math_VectorMA(pParticle->vOrigin, pParticle->fScale, vup, voParticle[1].position);
+		Math_VectorMA(pParticle->vOrigin, pParticle->fScale, camera->GetUp(), voParticle[1].position);
 		Video_ObjectColour(&voParticle[1],
 			pParticle->vColour[0], pParticle->vColour[1], pParticle->vColour[2], pParticle->vColour[3]);
 		Video_ObjectTexture(&voParticle[1], 0, 1.0f, 0);
 
-		Math_VectorMA(voParticle[1].position, pParticle->fScale, vright, voParticle[2].position);
+		Math_VectorMA(voParticle[1].position, pParticle->fScale, camera->GetRight(), voParticle[2].position);
 		Video_ObjectColour(&voParticle[2],
 			pParticle->vColour[0], pParticle->vColour[1], pParticle->vColour[2], pParticle->vColour[3]);
 		Video_ObjectTexture(&voParticle[2], 0, 1.0f, 1.0f);
 
-		Math_VectorMA(pParticle->vOrigin, pParticle->fScale, vright, voParticle[3].position);
+		Math_VectorMA(pParticle->vOrigin, pParticle->fScale, camera->GetRight(), voParticle[3].position);
 		Video_ObjectColour(&voParticle[3],
 			pParticle->vColour[0], pParticle->vColour[1], pParticle->vColour[2], pParticle->vColour[3]);
 		Video_ObjectTexture(&voParticle[3], 0, 0, 1.0f);

@@ -422,7 +422,7 @@ void R_SetupScene(void)
 	//johnfitz -- rewrote this section
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glViewport(glx + r_refdef.vrect.x,
+	vlViewport(glx + r_refdef.vrect.x,
 		gly + glheight - r_refdef.vrect.y - r_refdef.vrect.height,
 		r_refdef.vrect.width,
 		r_refdef.vrect.height);

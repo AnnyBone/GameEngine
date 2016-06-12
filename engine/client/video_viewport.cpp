@@ -21,14 +21,46 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "engine_base.h"
 
 #include "video.h"
-#include "video_camera.h"
-#include "video_viewport.h"
 
 #include "EngineMenu.h"
 
 /*	Viewport Manager	*/
 
 using namespace Core;
+
+Viewport *viewport_main = nullptr;
+
+// Creates a new viewport and camera for that viewport.
+void CreatePrimaryViewport()
+{
+	if (viewport_main)
+		return;
+
+	viewport_main = new Viewport(g_mainwindow.width, g_mainwindow.height);
+	if (!viewport_main)
+		throw Exception("Failed to allocate primary viewport!\n");
+
+	viewport_main->SetCamera(new Camera);
+}
+
+Viewport *GetPrimaryViewport()
+{
+	if (!viewport_main)
+	{
+		Con_Warning("Attempted to get viewport, despite not yet being initialized!\n");
+		return nullptr;
+	}
+
+	return viewport_main;
+}
+
+void DestroyPrimaryViewport()
+{
+	if (!viewport_main) return;
+	delete viewport_main;
+}
+
+////////////////////////////////////////////////////////////////////////////////
 
 Viewport::Viewport(unsigned int width, unsigned int height)
 	: _width(width), _height(height)
@@ -40,7 +72,9 @@ void Viewport::Draw()
 	if (scr_disabled_for_loading)
 		return;
 
+	vlViewport(_x, _y, _width, _height);
 	vlScissor(_x, _y, _width, _height);
+
 	vlClearBuffers(VL_MASK_DEPTH | VL_MASK_COLOUR | VL_MASK_STENCIL);
 
 	double time1;

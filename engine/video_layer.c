@@ -44,13 +44,19 @@ typedef struct vlState_s
 	plColour_t		current_clearcolour;
 	unsigned int	current_capabilities;	// Enabled capabilities.
 
+	// Shader state.
+	vlShaderProgram_t	current_program;
+
 	// Hardware / Driver information.
 	const char *hw_vendor;
 	const char *hw_renderer;
 	const char *hw_version;
 	const char *hw_extensions;
 
-	bool	mode_debug;
+	int viewport_x, viewport_y;
+	unsigned int viewport_width, viewport_height;
+
+	bool mode_debug;
 } vlState_t;
 
 vlState_t vl_state;
@@ -168,15 +174,6 @@ void _vlInitDirect3D(void)
 
 	backbuffer->lpVtbl->Release(backbuffer);
 
-	// Create and set the viewport.
-	D3D11_VIEWPORT viewport;
-	memset(&viewport, 0, sizeof(D3D11_VIEWPORT));
-	viewport.TopLeftX = 0;
-	viewport.TopLeftY = 0;
-	//viewport.Width = // todo, api call to get window handle for video layer??
-	//viewport.Height = // todo, api call to get window handle for video layer??
-	vl_d3d_context->lpVtbl->RSSetViewports(vl_d3d_context, 1, &viewport);
-
 	D3D11_RASTERIZER_DESC rasterizerdesc;
 	memset(&rasterizerdesc, 0, sizeof(D3D11_RASTERIZER_DESC));
 	vl_d3d_device->lpVtbl->CreateRasterizerState(
@@ -204,6 +201,9 @@ bool vl_gl_depth_texture			= false;
 bool vl_gl_shadow					= false;
 bool vl_gl_vertex_buffer_object		= false;
 
+unsigned int vl_gl_version_major = 0;
+unsigned int vl_gl_version_minor = 0;
+
 void _vlInitOpenGL(void)
 {
 	unsigned int err = glewInit();
@@ -229,6 +229,10 @@ void _vlInitOpenGL(void)
 	else Con_Warning("ARB_shadow isn't supported by your hardware!\n");
 	if (GLEW_ARB_vertex_buffer_object) Video.extensions.vertex_buffer_object = true;
 	else Con_Warning("Hardware doesn't support Vertex Buffer Objects!\n");
+
+	const char *version = vlGetString(VL_STRING_VERSION);
+	vl_gl_version_major = (unsigned int)version[0];
+	vl_gl_version_minor = (unsigned int)version[2];
 }
 
 void _vlShutdownOpenGL(void)
@@ -444,6 +448,12 @@ vlShaderProgram_t vlCreateShaderProgram(void)
 #endif
 }
 
+vlShaderProgram_t vlGetCurrentShaderProgram(void)
+{
+	_VL_UTIL_TRACK(vlGetCurrentShaderProgram);
+	return vl_state.current_program;
+}
+
 void vlDeleteShaderProgram(vlShaderProgram_t *program)
 {
 	_VL_UTIL_TRACK(vlDeleteShaderProgram);
@@ -458,12 +468,12 @@ void vlUseShaderProgram(vlShaderProgram_t program)
 {
 	_VL_UTIL_TRACK(vlUseShaderProgram);
 
-	if (program == Video.current_program)
+	if (program == vl_state.current_program)
 		return;
 #ifdef VL_MODE_OPENGL
 	glUseProgram(program);
 #endif
-	Video.current_program = program;
+	vl_state.current_program = program;
 }
 
 void vlLinkShaderProgram(vlShaderProgram_t *program)
@@ -1420,6 +1430,34 @@ void vlApplyLighting(vlDraw_t *object, vlLight_t *light, plVector3f_t position)
 /*===========================
 	MISC
 ===========================*/
+
+void vlViewport(int x, int y, unsigned int width, unsigned int height)
+{
+	_VL_UTIL_TRACK(vlViewport);
+
+	if (((x == vl_state.viewport_x) && (y == vl_state.viewport_y)) &&
+		((width == vl_state.viewport_width) && (height == vl_state.viewport_height)))
+		return;
+
+#if defined (VL_MODE_OPENGL)
+	glViewport(x, y, width, height);
+
+	vl_state.viewport_x = x;
+	vl_state.viewport_y = y;
+	vl_state.viewport_width = width;
+	vl_state.viewport_height = height;
+#elif defined (VL_MODE_DIRECT3D)
+	D3D11_VIEWPORT viewport;
+	memset(&viewport, 0, sizeof(D3D11_VIEWPORT));
+
+	vl_state.viewport_x			= viewport.TopLeftX		= x;
+	vl_state.viewport_y			= viewport.TopLeftY		= y;
+	vl_state.viewport_width		= viewport.Width		= width;
+	vl_state.viewport_height	= viewport.Height		= height;
+
+	vl_d3d_context->lpVtbl->RSSetViewports(vl_d3d_context, 1, &viewport);
+#endif
+}
 
 void vlSetCullMode(vlCullMode_t mode)
 {

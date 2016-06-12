@@ -50,7 +50,7 @@ void System_Loop(void);
 EngineImport_t g_launcher;
 EngineExport_t exports;
 
-pMODULE_EXPORT EngineExport_t *Engine_Main(EngineImport_t *mImport)
+PL_MODULE_EXPORT EngineExport_t *Engine_Main(EngineImport_t *mImport)
 {
 	// Imports
 	g_launcher.iVersion = mImport->iVersion;

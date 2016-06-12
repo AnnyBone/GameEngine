@@ -197,6 +197,17 @@ void Window_Update(void)
 	if (g_state.embedded) 
 		return;
 
+	if (!g_mainwindow.is_unlocked)
+	{
+		Cvar_SetValue(cv_video_fullscreen.name, (float)g_mainwindow.is_fullscreen);
+		Cvar_SetValue(cv_video_width.name, (float)g_mainwindow.width);
+		Cvar_SetValue(cv_video_height.name, (float)g_mainwindow.height);
+		Cvar_SetValue(cv_video_verticlesync.name, (float)g_mainwindow.vsync_interval);
+
+		g_mainwindow.is_unlocked = true;
+		return;
+	}
+
 	Window_SetSize(cv_video_width.iValue, cv_video_height.iValue);
 	Window_SetVerticalSync(cv_video_verticlesync.iValue);
 	Window_SetFullscreen(cv_video_fullscreen.bValue);

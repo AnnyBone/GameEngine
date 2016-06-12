@@ -436,11 +436,15 @@ void Sky_ProcessPoly (glpoly_t	*p)
 
 	rs_brushpasses++;
 
+	Core::Camera *camera = g_cameramanager->GetCurrentCamera();
+	if (!camera)
+		return;
+
 	// Update sky bounds
 	if (!r_fastsky.value)
 	{
 		for (i=0 ; i<p->numverts ; i++)
-			Math_VectorSubtract (p->verts[i], r_origin, verts[i]);
+			Math_VectorSubtract (p->verts[i], camera->GetPosition(), verts[i]);
 		Sky_ClipPoly (p->numverts, verts[0], 0);
 	}
 }
@@ -480,6 +484,10 @@ void Sky_ProcessEntities(void)
 	if (!r_drawentities.value)
 		return;
 
+	Core::Camera *camera = g_cameramanager->GetCurrentCamera();
+	if (!camera)
+		return;
+
 	for (unsigned int i=0 ; i<cl_numvisedicts ; i++)
 	{
 		e = cl_visedicts[i];
@@ -493,7 +501,7 @@ void Sky_ProcessEntities(void)
 		if(e->alpha == ENTALPHA_ZERO)
 			continue;
 
-		Math_VectorSubtract (r_refdef.vieworg, e->origin, modelorg);
+		Math_VectorSubtract (camera->GetPosition(), e->origin, modelorg);
 		if(e->angles[0] || e->angles[1] || e->angles[2])
 		{
 			bRotated = true;
@@ -560,6 +568,10 @@ void Sky_EmitSkyBoxVertex(float s,float t,int axis)
 	float			w,h;
 	MathVector3f_t	v,b;
 
+	Core::Camera *camera = g_cameramanager->GetCurrentCamera();
+	if (!camera)
+		return;
+
 	b[0] = s*10.0f;
 	b[1] = t*10.0f;
 	b[2] = 10.0f;
@@ -571,7 +583,7 @@ void Sky_EmitSkyBoxVertex(float s,float t,int axis)
 			v[j] = -b[-k - 1];
 		else
 			v[j] = b[k - 1];
-		v[j] += r_origin[j];
+		v[j] += camera->GetPosition()[j];
 	}
 
 	// convert from range [-1,1] to [0,1]
@@ -659,6 +671,10 @@ void Sky_SetBoxVert (float s, float t, int axis, MathVector3f_t v)
 	MathVector3f_t	b;
 	int				j, k;
 
+	Core::Camera *camera = g_cameramanager->GetCurrentCamera();
+	if (!camera)
+		return;
+
 	b[0] = s * 10.0f;
 	b[1] = t * 10.0f;
 	b[2] = 10.0f;
@@ -670,7 +686,7 @@ void Sky_SetBoxVert (float s, float t, int axis, MathVector3f_t v)
 			v[j] = -b[-k - 1];
 		else
 			v[j] = b[k - 1];
-		v[j] += r_origin[j];
+		v[j] += camera->GetPosition()[j];
 	}
 }
 
@@ -679,7 +695,11 @@ void Sky_GetTexCoord(MathVector3f_t v,float speed,float *s,float *t)
 	MathVector3f_t	vDirection;
 	float			fLength,fScroll;
 
-	Math_VectorSubtract(v,r_origin,vDirection);
+	Core::Camera *camera = g_cameramanager->GetCurrentCamera();
+	if (!camera)
+		return;
+
+	Math_VectorSubtract(v,camera->GetPosition(),vDirection);
 
 	vDirection[2] *= 3.0f;	// Flatten the sphere
 
@@ -834,13 +854,17 @@ void Sky_Draw3DWorld(void)
 	MathVector3f_t oldorg;
 
 	// Don't let us render twice.
-	if (!sky_camera || r_refdef.sky)
+	if (!sky_camera /*|| r_refdef.sky*/)
+		return;
+
+	Core::Camera *camera = g_cameramanager->GetCurrentCamera();
+	if (!camera)
 		return;
 	
 	// Update view position.
-	plVectorCopy(r_refdef.vieworg, oldorg);
+	plVectorCopy(&camera->GetPosition()[0], oldorg);
 	//plVectorCopy(sky_camerapos, r_refdef.vieworg);
-	Math_VectorAdd(oldorg, sky_camerapos, r_refdef.vieworg);
+	Math_VectorAdd(oldorg, sky_camerapos, camera->GetPosition());
 	
 	R_SetupView();
 	R_SetupScene();
@@ -850,13 +874,13 @@ void Sky_Draw3DWorld(void)
 //	glTranslatef(sky_camerapos[0], sky_camerapos[1], sky_camerapos[2]);
 	glMatrixMode(GL_MODELVIEW);
 
-	r_refdef.sky = true;
+	//r_refdef.sky = true;
 	Sky_Draw();
 	World_Draw();
-	r_refdef.sky = false;
+	//r_refdef.sky = false;
 
 	// Restore view position.
-	plVectorCopy(oldorg, r_refdef.vieworg);
+	plVectorCopy(oldorg, &camera->GetPosition()[0]);
 
 	// Setup the view again, urgh.
 	R_SetupView();

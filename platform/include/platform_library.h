@@ -27,7 +27,7 @@ typedef struct
 	void **Function;
 } pModuleFunction_t;
 
-plEXTERN_C_START
+PL_EXTERN_C
 
 #ifdef _WIN32
 #	define PL_MODULE_EXTENSION	".dll"
@@ -45,4 +45,4 @@ PL_EXTERN PLvoid *plLoadLibraryInterface(PL_INSTANCE instance, const PLchar *pat
 PL_INSTANCE plLoadLibrary(const PLchar *path);	// Loads new library instance.
 PL_EXTERN PLvoid plUnloadLibrary(PL_INSTANCE instance);	// Unloads library instance.
 
-plEXTERN_C_END
+PL_EXTERN_C_END

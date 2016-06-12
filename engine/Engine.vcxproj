@@ -639,7 +639,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="video_framebuffer.cpp" />
-    <ClCompile Include="EngineVideoParticle.c" />
+    <ClCompile Include="EngineVideoParticle.cpp" />
     <ClCompile Include="EngineVideoAlias.c" />
     <ClCompile Include="audio.cpp" />
     <ClCompile Include="video_shader.cpp" />
@@ -654,13 +654,13 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="EngineGame.c" />
-    <ClCompile Include="input.c" />
+    <ClCompile Include="input.cpp" />
     <ClCompile Include="EngineVideoLights.c" />
     <ClCompile Include="EngineMain.c" />
     <ClCompile Include="material.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="EngineMenu.c" />
+    <ClCompile Include="EngineMenu.cpp" />
     <ClCompile Include="EngineNetworkDummy.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (Ictus)|Win32'">true</ExcludedFromBuild>
@@ -677,8 +677,8 @@
     <ClCompile Include="EngineVideoEFrag.c" />
     <ClCompile Include="EngineVideoLegacy.cpp" />
     <ClCompile Include="EngineVideoLegacy2.c" />
-    <ClCompile Include="EngineVideoSky.c" />
-    <ClCompile Include="EngineVideoTextureManager.c" />
+    <ClCompile Include="EngineVideoSky.cpp" />
+    <ClCompile Include="EngineVideoTextureManager.cpp" />
     <ClCompile Include="EngineVideoWarp.c" />
     <ClCompile Include="EngineHost.c" />
     <ClCompile Include="EngineHostCommand.c" />
@@ -727,6 +727,7 @@
     <ClInclude Include="client\effect_sprite.h" />
     <ClInclude Include="client\shader_base.h" />
     <ClInclude Include="client\shader_water.h" />
+    <ClInclude Include="client\video_draw.h" />
     <ClInclude Include="client\video_viewport.h" />
     <ClInclude Include="engine_build.h" />
     <ClInclude Include="engine_class.h" />

@@ -3,7 +3,6 @@
   <ItemGroup>
     <ClCompile Include="platform.c" />
     <ClCompile Include="platform_filesystem.c" />
-    <ClCompile Include="platform_module.c" />
     <ClCompile Include="platform_window.c" />
     <ClCompile Include="platform_math.c" />
     <ClCompile Include="platform_log.c" />
@@ -14,6 +13,7 @@
     <ClCompile Include="platform_model_u3d.cpp" />
     <ClCompile Include="platform_model_iqm.cpp" />
     <ClCompile Include="platform_model_md2.cpp" />
+    <ClCompile Include="platform_library.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\platform.h">
@@ -26,9 +26,6 @@
       <Filter>Include</Filter>
     </ClInclude>
     <ClInclude Include="include\platform_math.h">
-      <Filter>Include</Filter>
-    </ClInclude>
-    <ClInclude Include="include\platform_module.h">
       <Filter>Include</Filter>
     </ClInclude>
     <ClInclude Include="include\platform_stdint.h">
@@ -53,6 +50,9 @@
       <Filter>Include</Filter>
     </ClInclude>
     <ClInclude Include="include\platform_model_obj.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\platform_library.h">
       <Filter>Include</Filter>
     </ClInclude>
   </ItemGroup>

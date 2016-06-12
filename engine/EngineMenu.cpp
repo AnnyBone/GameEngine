@@ -85,14 +85,22 @@ void Menu_Initialize(void)
 */
 int	Menu_GetScreenWidth(void)
 {
-	return Video.iWidth;
+	Core::Viewport *viewport = Core::GetPrimaryViewport();
+	if (!viewport)
+		return 640;
+
+	return viewport->GetWidth();
 }
 
 /*  Gets the height of the current viewport.
 */
 int Menu_GetScreenHeight(void)
 {
-	return Video.iHeight;
+	Core::Viewport *viewport = Core::GetPrimaryViewport();
+	if (!viewport)
+		return 480;
+
+	return viewport->GetHeight();
 }
 
 /*

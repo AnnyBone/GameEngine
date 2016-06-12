@@ -16,16 +16,17 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
 #pragma once
 
+#ifdef __cplusplus
+
 namespace Core
 {
-	class Draw
+	namespace Draw
 	{
-	public:
-		static void SetDefaultState();
-		
-		static void ClearBuffers();	// Clears the color, stencil and depth buffers.
+		static void SetDefaultState();	// Sets default rendering state.
+		static void ClearBuffers();		// Clears the color, stencil and depth buffers.
 
-	protected:
-	private:
-	};
+		static void DrawDepthBuffer();
+	}
 }
+
+#endif

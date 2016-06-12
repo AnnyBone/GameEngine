@@ -123,9 +123,6 @@
     <ClCompile Include="EngineVideoScreen.c">
       <Filter>Legacy\Client\Video</Filter>
     </ClCompile>
-    <ClCompile Include="EngineVideoSky.c">
-      <Filter>Legacy\Client\Video</Filter>
-    </ClCompile>
     <ClCompile Include="EngineVideoWarp.c">
       <Filter>Legacy\Client\Video</Filter>
     </ClCompile>
@@ -146,12 +143,6 @@
     </ClCompile>
     <ClCompile Include="EngineClientChase.c">
       <Filter>Legacy\Client</Filter>
-    </ClCompile>
-    <ClCompile Include="EngineVideoTextureManager.c">
-      <Filter>Legacy\Client\Video</Filter>
-    </ClCompile>
-    <ClCompile Include="EngineVideoParticle.c">
-      <Filter>Legacy\Client\Video</Filter>
     </ClCompile>
     <ClCompile Include="EngineServerEntity.c">
       <Filter>Legacy\Server</Filter>
@@ -176,9 +167,6 @@
     </ClCompile>
     <ClCompile Include="EngineConsoleVariable.c">
       <Filter>Legacy\Console</Filter>
-    </ClCompile>
-    <ClCompile Include="EngineMenu.c">
-      <Filter>Legacy\Modules</Filter>
     </ClCompile>
     <ClCompile Include="EngineEditor.c">
       <Filter>Legacy\Client\Editor</Filter>
@@ -292,7 +280,6 @@
     <ClCompile Include="EngineModel.c">
       <Filter>Legacy</Filter>
     </ClCompile>
-    <ClCompile Include="EngineVideoLegacy.c" />
     <ClCompile Include="EngineVideoLegacy2.c" />
     <ClCompile Include="EngineImage.c">
       <Filter>Client</Filter>
@@ -302,9 +289,6 @@
     </ClCompile>
     <ClCompile Include="model_iqm.cpp">
       <Filter>Client\Resources\Models</Filter>
-    </ClCompile>
-    <ClCompile Include="input.c">
-      <Filter>Client\Input</Filter>
     </ClCompile>
     <ClCompile Include="video_brush.cpp">
       <Filter>Client\Video</Filter>
@@ -319,6 +303,21 @@
       <Filter>Client\Video</Filter>
     </ClCompile>
     <ClCompile Include="EngineVideoLegacy.cpp">
+      <Filter>Legacy\Client\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineVideoTextureManager.cpp">
+      <Filter>Legacy\Client\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineVideoParticle.cpp">
+      <Filter>Legacy\Client\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="input.cpp">
+      <Filter>Client\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineMenu.cpp">
+      <Filter>Legacy\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineVideoSky.cpp">
       <Filter>Legacy\Client\Video</Filter>
     </ClCompile>
   </ItemGroup>
@@ -571,6 +570,9 @@
       <Filter>Client\Video</Filter>
     </ClInclude>
     <ClInclude Include="client\video_viewport.h">
+      <Filter>Client\Video</Filter>
+    </ClInclude>
+    <ClInclude Include="client\video_draw.h">
       <Filter>Client\Video</Filter>
     </ClInclude>
   </ItemGroup>

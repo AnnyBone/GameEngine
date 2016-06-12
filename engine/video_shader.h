@@ -61,7 +61,7 @@ namespace Core
 		void Link();
 		void Shutdown();
 
-		bool IsActive()	{ return (Video.current_program == instance); }
+		bool IsActive()	{ return (vlGetCurrentShaderProgram() == instance); }
 
 		vlUniform_t *RegisterUniform(std::string name, vlUniformType_t type);
 

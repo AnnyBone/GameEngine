@@ -184,7 +184,7 @@ void DEBUG_FrameBufferDraw()
 // Post Processing Object
 
 VideoPostProcess::VideoPostProcess(const char *fragpath, const char *vertpath)
-	: VideoFrameBuffer(Video.iWidth, Video.iHeight)
+	: VideoFrameBuffer(0, 0)
 {
 #if 0
 	program = new Core::ShaderProgram();

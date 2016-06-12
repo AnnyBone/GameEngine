@@ -750,12 +750,10 @@ void Key_Event(int key,bool down)
 	// Allow users to use ALT and ENTER to toggle fullscreen.
 	if((key == INPUT_KEY_ENTER) && keydown[K_ALT])
 	{
-		if (cv_video_fullscreen.value)
-			Cvar_SetValue("video_fullscreen",0);
-		else
-			Cvar_SetValue("video_fullscreen",1);
+		if (cv_video_fullscreen.value)	Cvar_SetValue("video_fullscreen",0);
+		else							Cvar_SetValue("video_fullscreen",1);
 
-		Video_UpdateWindow();
+		Window_Update();
 		return;
 	}
 

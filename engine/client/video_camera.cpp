@@ -21,8 +21,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "engine_base.h"
 
 #include "video.h"
-#include "client/video_viewport.h"
-#include "client/video_camera.h"
 
 using namespace Core;
 
@@ -139,7 +137,7 @@ Camera::Camera()
 	plVectorClear(angles);
 	plVectorClear(bobamount);
 
-	plAngleVectors(angles, forward, right, up);
+	plAngleVectors(angles, _forward, _right, _up);
 
 	SetFOV(90);
 }
@@ -271,7 +269,7 @@ void Camera::SimulateBob()
 
 void Camera::SimulateRoll()
 {
-	float side = Math_DotProduct(cl.velocity, right);
+	float side = Math_DotProduct(cl.velocity, _right);
 	float sign = side < 0 ? -1 : 1;
 	side = fabsf(side);
 
@@ -341,7 +339,7 @@ void Camera::Simulate()
 		plVectorAdd3fv(angles, punch, angles);
 	}
 
-	plAngleVectors(angles, forward, right, up);
+	plAngleVectors(angles, _forward, _right, _up);
 }
 
 #ifdef CAMERA_LEGACY
@@ -400,8 +398,8 @@ void Camera::SimulateViewEntity()
 	{
 		for (int i = 0; i < 3; i++)
 			viewmodel->origin[i] +=
-			(up[i] * bobamount[0] * 0.2f) +
-			(right[i] * bobamount[1] * 0.3f);
+			(_up[i] * bobamount[0] * 0.2f) +
+			(_right[i] * bobamount[1] * 0.3f);
 
 		viewmodel->origin[2] += bobamount[0];
 	}
@@ -411,7 +409,7 @@ void Camera::SimulateViewEntity()
 	{
 		static plVector3f_t lastforward;
 		plVector3f_t difference;
-		plVectorSubtract3fv(forward, lastforward, difference);
+		plVectorSubtract3fv(_forward, lastforward, difference);
 
 		float speed = 3.0f, scale = 0;
 		float diff = plLengthf(difference);
@@ -446,7 +444,7 @@ void Camera::SimulateViewEntity()
 	else return;
 
 	for (int i = 0; i < 3; i++)
-		viewmodel->origin[i] += forward[i] + offset * right[i] + up[i];
+		viewmodel->origin[i] += _forward[i] + offset * _right[i] + _up[i];
 }
 
 void Camera::SimulateParentEntity()
@@ -504,8 +502,8 @@ void Camera::SetFOV(float fov)
 	unsigned int width = 640, height = 480;
 	if (_viewport)
 	{
-		width = _viewport->GetWidth();
-		height = _viewport->GetHeight();
+		width	= _viewport->GetWidth();
+		height	= _viewport->GetHeight();
 	}
 	
 	// Taken from CalcFovy.
@@ -528,10 +526,10 @@ extern "C" {
 void Camera::SimulateFrustum()
 {
 	// Update the frustum.
-	plTurnVector(frustum[0].normal, position, right, fovx / 2 - 90);	// Left plane
-	plTurnVector(frustum[1].normal, position, right, 90 - fovx / 2);	// Right plane
-	plTurnVector(frustum[2].normal, position, up, 90 - fovy / 2);		// Bottom plane
-	plTurnVector(frustum[3].normal, position, up, fovy / 2 - 90);		// Top plane
+	plTurnVector(frustum[0].normal, position, _right, fovx / 2 - 90);	// Left plane
+	plTurnVector(frustum[1].normal, position, _right, 90 - fovx / 2);	// Right plane
+	plTurnVector(frustum[2].normal, position, _up, 90 - fovy / 2);		// Bottom plane
+	plTurnVector(frustum[3].normal, position, _up, fovy / 2 - 90);		// Top plane
 
 	for (int i = 0; i < 4; i++)
 	{
@@ -692,4 +690,24 @@ void Camera::PrintPosition()
 		(int)position[0],
 		(int)position[1],
 		(int)position[2]);
+}
+
+void Camera::TracePosition()
+{
+	plVector3f_t v;
+	plVectorScalef(_forward, 8192.0f, v);
+
+	plVector3f_t w;
+	TraceLine(position, v, w);
+
+	if (plLengthf(w) == 0)
+	{
+		Con_Printf("Didn't hit anything!\n");
+		return;
+	}
+	
+	Con_Printf("TRACE POSITION : %i %i %i\n",
+		(int)w[0],
+		(int)w[1],
+		(int)w[2]);
 }

@@ -71,8 +71,6 @@ extern ConsoleVariable_t cv_video_drawdetail;	// TODO: Move into EngineMaterial 
 extern ConsoleVariable_t cv_video_drawsky;
 extern ConsoleVariable_t cv_video_detailscale; // TODO: Move into EngineMaterial ?
 
-extern bool	bVideoIgnoreCapabilities;
-
 extern struct gltexture_s *gEffectTexture[MAX_EFFECTS];
 
 plEXTERN_C_END
@@ -119,8 +117,6 @@ typedef struct
 	int					num_textureunits;					// Max number of supported units.
 	unsigned int		current_textureunit;				// Current TMU.
 
-	unsigned int current_program;
-
 	int msaa_samples;
 
 	int framecount;	// An alternative to r_framecount, which is slightly more reliable.
@@ -141,7 +137,6 @@ plEXTERN_C_START
 extern Video_t Video;
 
 void Video_Initialize(void);
-void Video_UpdateWindow(void);
 void Video_GenerateSphereCoordinates(void);
 void Video_SetTexture(gltexture_t *gTexture);
 void Video_SetViewportSize(unsigned int w, unsigned int h);
@@ -185,6 +180,9 @@ plEXTERN_C_END
 	} \
 }
 #define	VIDEO_FUNCTION_END \
+
+#include "client/video_viewport.h"
+#include "client/video_camera.h"
 
 #include "video_layer.h"
 #include "video_object.h"

@@ -1,21 +1,22 @@
-/*	Copyright (C) 1996-2001 Id Software, Inc.
-	Copyright (C) 2002-2009 John Fitzgibbons and others
-	Copyright (C) 2011-2016 OldTimes Software
+/*	
+Copyright (C) 1996-2001 Id Software, Inc.
+Copyright (C) 2002-2009 John Fitzgibbons and others
+Copyright (C) 2011-2016 OldTimes Software
 
-	This program is free software; you can redistribute it and/or
-	modify it under the terms of the GNU General Public License
-	as published by the Free Software Foundation; either version 2
-	of the License, or (at your option) any later version.
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-	See the GNU General Public License for more details.
+See the GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "engine_base.h"
@@ -27,13 +28,13 @@
 #include <SDL.h>
 
 /*
-	Input System
+Input System
 
-	TODO:
-	Somewhat merge this with the platform library so it's more unified here...
-	Add in XInput support again for windows.
+TODO:
+Somewhat merge this with the platform library so it's more unified here...
+Add in XInput support again for windows.
 
-	Credits to raynorpat for his example.
+Credits to raynorpat for his example.
 */
 
 #define INPUT_MAX_CONTROLLERS	3
@@ -63,7 +64,9 @@ int		iNumControllers;
 int		iMousePosition[2],
 		iOldMousePosition[2];	// [14/7/2013] For filtering ~hogsy
 
-bool bMouseActive = false;
+bool input_mouseactive = false;
+
+using namespace Core;
 
 // [30/1/2013] Found in engine_video.c ~hogsy
 extern SDL_Window *sMainWindow;
@@ -137,9 +140,9 @@ void Input_Initialize(void)
 /*	Convert the given key over to what our engine uses.
 	This is copied straight from raynorpat's example...
 */
-int Input_ConvertKey(int iKey)
+int Input_ConvertKey(int key)
 {
-	switch(iKey)
+	switch (key)
 	{
 		case SDLK_PAGEUP:		return K_PGUP;
 		case SDLK_PAGEDOWN:		return K_PGDN;
@@ -244,7 +247,7 @@ int Input_ConvertKey(int iKey)
 		case SDLK_MINUS:		return '-';
 		case SDLK_PERIOD:		return '.';
 		case SDLK_SLASH:		return '/';
-		default:    			return iKey;
+		default:    			return key;
 	}
 }
 
@@ -285,7 +288,7 @@ void Input_Frame(void)
 					Video.bActive = false;
 
 					// Save our old mouse state.
-					sbOldMouseState = bMouseActive;
+					sbOldMouseState = input_mouseactive;
 
 					Input_DeactivateMouse();
 
@@ -293,7 +296,7 @@ void Input_Frame(void)
 					Key_ClearStates();
 					break;
 				case SDL_WINDOWEVENT_RESIZED:
-					Video_UpdateWindow();
+					Window_Update();
 					break;
 				case SDL_WINDOWEVENT_CLOSE:
 					Sys_Quit();
@@ -305,21 +308,27 @@ void Input_Frame(void)
 				Key_Event(Input_ConvertKey(sEvent.key.keysym.sym),(sEvent.key.state == SDL_PRESSED));
 				break;
 			case SDL_MOUSEMOTION:
-				if (bIsDedicated || !bMouseActive)
+			{
+				if (bIsDedicated || !input_mouseactive)
+					return;
+
+				Viewport *viewport = GetPrimaryViewport();
+				if (!viewport)
 					return;
 
 				// Originally handled this differently for fullscreen but this works fine apparently!
-				if(((unsigned)sEvent.motion.x != (Video.iWidth/2)) || ((unsigned)sEvent.motion.y != (Video.iHeight/2)))
+				if (((unsigned)sEvent.motion.x != (viewport->GetWidth() / 2)) || ((unsigned)sEvent.motion.y != (viewport->GetHeight() / 2)))
 				{
-					iMousePosition[PL_X]	= sEvent.motion.xrel*5;
-					iMousePosition[PL_Y]	= sEvent.motion.yrel*5;
-					if(	((unsigned)sEvent.motion.x < Video.iWidth)	||
-						((unsigned)sEvent.motion.x > Video.iWidth)	||
-						((unsigned)sEvent.motion.y < Video.iHeight)	||
-						((unsigned)sEvent.motion.y > Video.iHeight))
-						SDL_WarpMouseInWindow(sMainWindow,Video.iWidth/2,Video.iHeight/2);
+					iMousePosition[PL_X] = sEvent.motion.xrel * 5;
+					iMousePosition[PL_Y] = sEvent.motion.yrel * 5;
+					if (((unsigned)sEvent.motion.x < viewport->GetWidth()) ||
+						((unsigned)sEvent.motion.x > viewport->GetWidth()) ||
+						((unsigned)sEvent.motion.y < viewport->GetHeight()) ||
+						((unsigned)sEvent.motion.y > viewport->GetHeight()))
+						SDL_WarpMouseInWindow(sMainWindow, viewport->GetWidth() / 2, viewport->GetHeight() / 2);
 				}
-				break;
+			}
+			break;
 			case SDL_MOUSEBUTTONDOWN:
 			case SDL_MOUSEBUTTONUP:
 				if(sEvent.button.button <= 18)
@@ -372,7 +381,7 @@ extern ConsoleVariable_t	cl_maxpitch,
 void Input_ClientFrame(ClientCommand_t *ccInput)
 {
 	// Don't bother if the application isn't active.
-	if(!bMouseActive)
+	if (!input_mouseactive)
 		return;
 
 	if(cvInputMouseFilter.value)
@@ -414,28 +423,31 @@ void Input_ClientFrame(ClientCommand_t *ccInput)
 
 void Input_ActivateMouse(void)
 {
-	if(bMouseActive)
+	if (input_mouseactive)
 		return;
 
 	if(cvInputMouseGrab.bValue)
 	{
 		SDL_ShowCursor(false);
 		SDL_SetWindowGrab(sMainWindow,SDL_TRUE);
-		SDL_WarpMouseInWindow(sMainWindow,Video.iWidth/2,Video.iHeight/2);
+
+		Viewport *viewport = GetPrimaryViewport();
+		if (viewport)
+			SDL_WarpMouseInWindow(sMainWindow,viewport->GetWidth() / 2, viewport->GetHeight() / 2);
 	}
 
-	bMouseActive = true;
+	input_mouseactive = true;
 }
 
 void Input_DeactivateMouse(void)
 {
-	if(!bMouseActive)
+	if (!input_mouseactive)
 		return;
 
 	SDL_ShowCursor(true);
 	SDL_SetWindowGrab(sMainWindow,SDL_FALSE);
 
-	bMouseActive = false;
+	input_mouseactive = false;
 }
 
 void Input_Shutdown(void)
