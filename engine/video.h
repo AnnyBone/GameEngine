@@ -110,13 +110,6 @@ typedef struct
 
 typedef struct
 {
-	// Information
-	const char	
-		*gl_vendor,
-		*gl_renderer,
-		*gl_version,
-		*gl_extensions;
-
 	float	
 		fMaxAnisotropy,	// Max anisotropy amount allowed by the hardware.
 		bpp;			// Bits per-pixel.
@@ -129,8 +122,6 @@ typedef struct
 	unsigned int current_program;
 
 	int msaa_samples;
-
-	unsigned int iWidth,iHeight;
 
 	int framecount;	// An alternative to r_framecount, which is slightly more reliable.
 
@@ -156,7 +147,6 @@ void Video_SetTexture(gltexture_t *gTexture);
 void Video_SetViewportSize(unsigned int w, unsigned int h);
 void Video_PreFrame(void);
 void Video_PostFrame(void);
-void Video_ClearBuffer(void);
 void Video_Frame(void);
 void Video_ObjectTexture(vlVertex_t *voObject, unsigned int uiTextureUnit, float S, float T);
 void Video_ObjectVertex(vlVertex_t *voObject, float X, float Y, float Z);
@@ -167,11 +157,6 @@ void Video_DrawSurface(msurface_t *mSurface, float fAlpha, Material_t *mMaterial
 void Video_DrawObject(vlVertex_t *voObject, vlPrimitive_t vpPrimitiveType, unsigned int uiVerts, Material_t *mMaterial, int iSkin);
 void Video_ShowBoundingBoxes(void);
 void Video_Shutdown(void);
-
-// Temporary
-void DEBUG_FrameBufferInitialization();
-void DEBUG_FrameBufferBind();
-void DEBUG_FrameBufferDraw();
 
 // Legacy
 void R_EmitWireBox(MathVector3f_t mins, MathVector3f_t maxs, float r, float g, float b);
@@ -203,6 +188,7 @@ plEXTERN_C_END
 
 #include "video_layer.h"
 #include "video_object.h"
+#include "client/video_draw.h"
 
 // Legacy
 #include "EngineVideoAlias.h"

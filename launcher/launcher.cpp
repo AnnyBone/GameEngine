@@ -16,7 +16,7 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
 // Platform Library
 #include "platform.h"
-#include "platform_module.h"
+#include "platform_library.h"
 
 // Shared Library
 #include "shared_flags.h"
@@ -50,7 +50,7 @@ int main(int argc,char *argv[])
 	plWriteLog(LAUNCHER_LOG, "Launcher (Interface Version %i)\n", ENGINE_VERSION);
 
 	// Load the module interface for the engine module.
-	engine = (EngineExport_t*)plLoadModuleInterface(
+	engine = (EngineExport_t*)plLoadLibraryInterface(
 		instance,
 		"./" ENGINE_MODULE,
 		"Engine_Main",
@@ -69,7 +69,7 @@ int main(int argc,char *argv[])
 	{
 		plWriteLog(LAUNCHER_LOG, "Launcher is outdated, please rebuild! (%i)\n", engine->iVersion);
 		plMessageBox("Launcher", "Launcher is outdated, please rebuild!");
-		plUnloadModule(instance);
+		plUnloadLibrary(instance);
 		return -1;
 	}
 
@@ -78,7 +78,7 @@ int main(int argc,char *argv[])
 	{
 		plWriteLog(LAUNCHER_LOG, "Engine failed to initialize, check engine log!\n");
 		plMessageBox("Launcher", "Failed to initialize engine!");
-		plUnloadModule(instance);
+		plUnloadLibrary(instance);
 		return -1;
 	}
 
@@ -86,7 +86,7 @@ int main(int argc,char *argv[])
 		engine->Loop();
 
 	// Unload once the engine has stopped running.
-	plUnloadModule(instance);
+	plUnloadLibrary(instance);
 
 	return -1;
 }

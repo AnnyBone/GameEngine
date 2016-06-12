@@ -55,7 +55,7 @@
 
 // Platform Library
 #include "platform.h"
-#include "platform_module.h"
+#include "platform_library.h"
 #include "platform_filesystem.h"
 
 #define	EDITOR_TITLE	"Katana World Editor"

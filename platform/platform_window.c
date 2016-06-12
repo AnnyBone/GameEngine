@@ -1,19 +1,20 @@
-/*	Copyright (C) 2011-2016 OldTimes Software
+/*	
+Copyright (C) 2011-2016 OldTimes Software
 
-	This program is free software; you can redistribute it and/or
-	modify it under the terms of the GNU General Public License
-	as published by the Free Software Foundation; either version 2
-	of the License, or (at your option) any later version.
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-	See the GNU General Public License for more details.
+See the GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "platform.h"
@@ -21,30 +22,22 @@
 #include "platform_window.h"
 
 /*
-	Window/Display management.
-	TODO: BLITZ!!!!!
+Simple Window/Display Handling
 */
 
-/*
-	Display Information
-*/
-
-int	plGetScreenWidth(void)
+PLint plGetScreenWidth(PLvoid)
 {
 #ifdef _WIN32
 	return GetSystemMetrics(SM_CXSCREEN);
 #else
-	Display *display;
-	Screen	*screen;
-
-	display = XOpenDisplay(NULL);
+	Display *display = XOpenDisplay(NULL);
 	if (!display)
 	{
 		plSetError("Failed to open display!\n");
 		return 4000;
 	}
 
-	screen = DefaultScreenOfDisplay(display);
+	Screen *screen = DefaultScreenOfDisplay(display);
 	if (!screen)
 	{
 		plSetError("Failed to get screen of display!\n");
@@ -55,23 +48,20 @@ int	plGetScreenWidth(void)
 #endif
 }
 
-int plGetScreenHeight(void)
+PLint plGetScreenHeight(PLvoid)
 {
 	pFUNCTION_START
 #ifdef _WIN32
 	return GetSystemMetrics(SM_CYSCREEN);
 #else
-	Display *display;
-	Screen	*screen;
-
-	display = XOpenDisplay(NULL);
+	Display *display = XOpenDisplay(NULL);
 	if (!display)
 	{
 		plSetError("Failed to open display!\n");
 		return 4000;
 	}
 
-	screen = DefaultScreenOfDisplay(display);
+	Screen *screen = DefaultScreenOfDisplay(display);
 	if (!screen)
 	{
 		plSetError("Failed to get screen of display!\n");
@@ -88,7 +78,7 @@ Display *dMainDisplay;
 Window  wRootWindow;
 #endif
 
-int plGetScreenCount(void)
+PLint plGetScreenCount(PLvoid)
 {
 #ifdef _WIN32
 	return GetSystemMetrics(SM_CMONITORS);
@@ -105,13 +95,6 @@ PL_INSTANCE iGlobalInstance;
 
 int	iActive = 0,	// Number of current active windows.
 iScreen;			// Default screen.
-
-void plShowWindow(plWindow_t *window)
-{
-#ifdef _WIN32
-	ShowWindow(window->instance, SW_SHOWDEFAULT);
-#endif
-}
 
 /*	Create a new window.
 */
@@ -184,8 +167,6 @@ void plCreateWindow(plWindow_t *window)
 			return;
 		}
 
-		plShowWindow(window);
-
 		UpdateWindow(window->instance);
 		SetForegroundWindow(window->instance);
 
@@ -218,29 +199,9 @@ void plCreateWindow(plWindow_t *window)
 	window->is_active = true;
 }
 
-void plDestroyWindow(plWindow_t *window)
-{
-#ifdef _WIN32
-	if (!window->instance)
-		return;
-
-	// Destroy our window.
-	DestroyWindow(window->instance);
-#else	// Linux
-	// Close our display instance.
-	if(dMainDisplay)
-		XCloseDisplay(dMainDisplay);
-#endif
-
-	free(window);
-
-	iActive--;
-}
-
-/*  Shows or hides the cursor for
-	the active window.
+/*  
 */
-void plShowCursor(bool show)
+PLvoid plShowCursor(PLbool show)
 {
 	static bool _cursorvisible = true;
 	if (show == _cursorvisible)

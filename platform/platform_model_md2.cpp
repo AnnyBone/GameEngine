@@ -1,19 +1,21 @@
-/*	Copyright (C) 2011-2016 OldTimes Software
+/*
+Copyright (C) 1996-2001 Id Software, Inc.
+Copyright (C) 2011-2016 OldTimes Software
 
-	This program is free software; you can redistribute it and/or
-	modify it under the terms of the GNU General Public License
-	as published by the Free Software Foundation; either version 2
-	of the License, or (at your option) any later version.
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-	See the GNU General Public License for more details.
+See the GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "platform.h"
@@ -21,9 +23,9 @@
 #include "platform_model.h"
 
 /*
-	MD2 Model Format
+MD2 Model Format
 
-	Model format introduced in id Software's Quake 2.
+Model format introduced in id Software's Quake 2.
 */
 
 #define MD2_HEADER			(('2'<<24)+('P'<<16)+('D'<<8)+'I')
@@ -37,52 +39,52 @@
 
 typedef struct
 {
-	short	index_xyz[3];
-	short	index_st[3];
+	PLshort	index_xyz[3];
+	PLshort	index_st[3];
 } MD2Triangle_t;
 
 typedef struct
 {
-	pl_uchar v[3];				// scaled byte to fit in frame mins/maxs
-	pl_uchar lightnormalindex;
+	PLuchar v[3];				// scaled byte to fit in frame mins/maxs
+	PLuchar lightnormalindex;
 } MD2TriangleVertex_t;
 
 typedef struct
 {
-	float scale[3];					// multiply byte verts by this
-	float translate[3];				// then add this
+	PLfloat scale[3];					// multiply byte verts by this
+	PLfloat translate[3];				// then add this
 
-	char name[16];					// frame name from grabbing
+	PLchar name[16];				// frame name from grabbing
 	MD2TriangleVertex_t	verts[1];	// variable sized
 } MD2Frame_t;
 
 typedef struct
 {
-	short	S, T;
+	PLshort	S, T;
 } MD2TextureCoordinate_t;
 
 typedef struct
 {
-	int			    ident;
-	int			    version;
-	unsigned    int	skinwidth;
-	unsigned    int	skinheight;
-	int			    framesize;		// Byte size of each frame.
-	int			    num_skins;
-	int			    num_xyz;
-	int			    num_st;			// Greater than num_xyz for seams.
-	int			    numtris;
-	int			    num_glcmds;		// Dwords in strip/fan command list.
-	int			    num_frames;
-	int			    ofs_skins;		// Each skin is a MAX_SKINNAME string.
-	int			    ofs_st;			// Byte offset from start for stverts.
-	int			    ofs_tris;		// Offset for dtriangles.
-	int			    ofs_frames;		// Offset for first frame.
-	int			    ofs_glcmds;
-	int			    ofs_end;		// End of file.
+	PLint	ident;
+	PLint	version;
+	PLuint	skinwidth;
+	PLuint	skinheight;
+	PLint	framesize;		// Byte size of each frame.
+	PLint	num_skins;
+	PLint	num_xyz;
+	PLint	num_st;			// Greater than num_xyz for seams.
+	PLint	numtris;
+	PLint	num_glcmds;		// Dwords in strip/fan command list.
+	PLint	num_frames;
+	PLint	ofs_skins;		// Each skin is a MAX_SKINNAME string.
+	PLint	ofs_st;			// Byte offset from start for stverts.
+	PLint	ofs_tris;		// Offset for dtriangles.
+	PLint	ofs_frames;		// Offset for first frame.
+	PLint	ofs_glcmds;
+	PLint	ofs_end;		// End of file.
 } MD2_t;
 
-plAnimatedModel_t *plLoadMD2Model(const char *path)
+plAnimatedModel_t *plLoadMD2Model(const PLchar *path)
 {
 	if (!path || path[0] == ' ')
 		return nullptr;

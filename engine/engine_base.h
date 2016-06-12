@@ -23,7 +23,7 @@
 // Platform Library
 #include "platform.h"
 #include "platform_filesystem.h"
-#include "platform_module.h"
+#include "platform_library.h"
 
 #ifdef _DEBUG
 #	include <assert.h>

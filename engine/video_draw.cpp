@@ -40,6 +40,49 @@ typedef struct
 
 VideoCanvasType_t currentcanvas = CANVAS_NONE; //johnfitz -- for GL_SetCanvas
 
+using namespace Core;
+
+void Draw::SetDefaultState()
+{
+	plColour_t clear = { 0, 0, 0, 1 };
+	vlSetClearColour4fv(clear);
+
+	vlSetCullMode(VL_CULL_NEGATIVE);
+#if defined (VL_MODE_OPENGL)
+	glAlphaFunc(GL_GREATER, 0.5f);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+	glDepthRange(0, 1);
+	glDepthFunc(GL_LEQUAL);
+	glClearStencil(1);
+
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+	// Overbrights.
+	vlActiveTexture(VIDEO_TEXTURE_LIGHT);
+	vlSetTextureEnvironmentMode(VIDEO_TEXTUREMODE_COMBINE);
+	glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
+	glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_PREVIOUS);
+	glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_TEXTURE);
+	glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 4);
+#endif
+	vlActiveTexture(0);
+
+	// This is always active, since our viewports need it.
+	vlEnable(VL_CAPABILITY_SCISSOR_TEST);
+}
+
+void Draw::ClearBuffers()
+{
+	if (!cv_video_clearbuffers.bValue)
+		return;
+
+	vlClearBuffers(VL_MASK_DEPTH | VL_MASK_COLOUR | VL_MASK_STENCIL);
+}
+
 //==============================================================================
 //
 //  PIC CACHING

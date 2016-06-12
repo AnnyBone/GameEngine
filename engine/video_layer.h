@@ -1,19 +1,17 @@
-/*	Copyright (C) 2011-2016 OldTimes Software
+/*	
+DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+Version 2, December 2004
 
-	This program is free software; you can redistribute it and/or
-	modify it under the terms of the GNU General Public License
-	as published by the Free Software Foundation; either version 2
-	of the License, or (at your option) any later version.
+Copyright (C) 2011-2016 Mark E Sowden <markelswo@gmail.com>
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+Everyone is permitted to copy and distribute verbatim or modified
+copies of this license document, and changing it is allowed as long
+as the name is changed.
 
-	See the GNU General Public License for more details.
+DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+0. You just DO WHAT THE FUCK YOU WANT TO.
 */
 
 #pragma once
@@ -36,6 +34,11 @@
 
 #	include <glide.h>
 #elif defined (VL_MODE_DIRECT3D)
+#	include <d3d11.h>
+
+#	pragma comment (lib, "d3d11.lib")
+#	pragma comment (lib, "d3dx11.lib")
+#	pragma comment (lib, "d3dx10.lib")
 #elif defined (VL_MODE_VULKAN)
 #endif
 
@@ -191,7 +194,7 @@ typedef enum
 	VL_BLEND_ONE_MINUS_DST_ALPHA	= GR_BLEND_ONE_MINUS_DST_ALPHA,
 	VL_BLEND_DST_COLOR				= GR_BLEND_DST_COLOR,
 	VL_BLEND_ONE_MINUS_DST_COLOR	= GR_BLEND_ONE_MINUS_DST_COLOR,
-	VL_BLEND_SRC_ALPHA_SATURATE		= GR_BLEND_ALPHA_SATURATE
+	VL_BLEND_SRC_ALPHA_SATURATE		= GR_BLEND_ALPHA_SATURATE,
 #else
 	VL_BLEND_ZERO,
 	VL_BLEND_ONE,
@@ -203,7 +206,7 @@ typedef enum
 	VL_BLEND_ONE_MINUS_DST_ALPHA,
 	VL_BLEND_DST_COLOR,
 	VL_BLEND_ONE_MINUS_DST_COLOR,
-	VL_BLEND_SRC_ALPHA_SATURATE
+	VL_BLEND_SRC_ALPHA_SATURATE,
 #endif
 
 	VL_BLEND_END

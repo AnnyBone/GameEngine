@@ -236,7 +236,7 @@ void Screen_UpdateSize(void)
 {
 	float size, scale; //johnfitz -- scale
 
-	vid.bRecalcRefDef = false;
+//	vid.bRecalcRefDef = false;
 
 	scr_tileclear_updates = 0; //johnfitz
 
@@ -264,7 +264,7 @@ void Screen_UpdateSize(void)
 void SCR_SizeUp_f (void)
 {
 	Cvar_SetValue ("viewsize",scr_viewsize.value+10);
-	vid.bRecalcRefDef = true;
+//	vid.bRecalcRefDef = true;
 }
 
 /*	Keybinding command
@@ -272,7 +272,7 @@ void SCR_SizeUp_f (void)
 void SCR_SizeDown_f (void)
 {
 	Cvar_SetValue ("viewsize",scr_viewsize.value-10);
-	vid.bRecalcRefDef = true;
+//	vid.bRecalcRefDef = true;
 }
 
 /*	Called when scr_conwidth or scr_conscale changes

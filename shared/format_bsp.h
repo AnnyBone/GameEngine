@@ -206,5 +206,5 @@ typedef struct
 	unsigned	int		uiFirstMarkSurface,
 						uiNumMarkSurfaces;
 
-	pl_uchar			bAmbientLevel[BSP_AMBIENT_END];
+	PLuchar	bAmbientLevel[BSP_AMBIENT_END];
 } BSPLeaf_t;

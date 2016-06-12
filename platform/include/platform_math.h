@@ -700,15 +700,15 @@ namespace pl
 	public:
 		Colour()
 		{
-			memset(colour, 255, sizeof(pl_uchar[4]));
+			memset(colour, 255, sizeof(PLuchar[4]));
 		}
 
-		Colour(pl_uchar _colour[4])
+		Colour(PLuchar _colour[4])
 		{
 			Set(_colour);
 		}
 
-		Colour(pl_uchar _r, pl_uchar _g, pl_uchar _b, pl_uchar _a = 255)
+		Colour(PLuchar _r, PLuchar _g, PLuchar _b, PLuchar _a = 255)
 		{
 			Set(_r, _g, _b, _a);
 		}
@@ -718,7 +718,7 @@ namespace pl
 			return std::vector<unsigned char> { colour[0], colour[1], colour[2], colour[3] };
 		}
 
-		void Set(pl_uchar _colour[4])
+		void Set(PLuchar _colour[4])
 		{
 			colour[0] = _colour[0];
 			colour[1] = _colour[1];
@@ -726,7 +726,7 @@ namespace pl
 			colour[3] = _colour[3];
 		}
 
-		void Set(pl_uchar _r, pl_uchar _g, pl_uchar _b, pl_uchar _a = 255)
+		void Set(PLuchar _r, PLuchar _g, PLuchar _b, PLuchar _a = 255)
 		{
 			colour[0] = _r;
 			colour[1] = _g;
@@ -753,7 +753,7 @@ namespace pl
 
 	protected:
 	private:
-		pl_uchar colour[4]; // RGBA
+		PLuchar colour[4]; // RGBA
 	};
 }
 

@@ -93,7 +93,9 @@ Video_t	Video;
 texture_t	*r_notexture_mip;
 texture_t	*r_notexture_mip2;	//johnfitz -- used for non-lightmapped surfs with a missing texture
 
-Core::Viewport *g_mainviewport = nullptr;
+using namespace Core;
+
+Viewport *g_mainviewport = nullptr;
 
 /*	Initialize the renderer
 */
@@ -165,39 +167,7 @@ void Video_Initialize(void)
 
 	vlGetMaxTextureAnistropy(&Video.fMaxAnisotropy);
 
-	// Get any information that will be presented later.
-	Video.gl_vendor			= vlGetString(VL_STRING_VENDOR);
-	Video.gl_renderer		= vlGetString(VL_STRING_RENDERER);
-	Video.gl_version		= vlGetString(VL_STRING_VERSION);
-	Video.gl_extensions		= vlGetString(VL_STRING_EXTENSIONS);
-
-	// Set the default states...
-	vlSetCullMode(VL_CULL_NEGATIVE);
-#ifdef VL_MODE_OPENGL
-	glAlphaFunc(GL_GREATER, 0.5f);
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-	glDepthRange(0, 1);
-	glDepthFunc(GL_LEQUAL);
-	glClearStencil(1);
-	
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-	// Overbrights.
-	vlActiveTexture(VIDEO_TEXTURE_LIGHT);
-	vlSetTextureEnvironmentMode(VIDEO_TEXTUREMODE_COMBINE);
-	glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
-	glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_PREVIOUS);
-	glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_TEXTURE);
-	glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 4);
-#endif
-	vlActiveTexture(0);
-
-	// This is always active, since our viewports need it.
-	vlEnable(VL_CAPABILITY_SCISSOR_TEST);
+	Draw::SetDefaultState();
 
 	//johnfitz -- create notexture miptex
 	r_notexture_mip = (texture_t*)Hunk_AllocName(sizeof(texture_t), "r_notexture_mip");
@@ -209,24 +179,19 @@ void Video_Initialize(void)
 	r_notexture_mip2->height = r_notexture_mip2->width = 32;
 	//johnfitz
 
-	vid.conwidth = (scr_conwidth.value > 0) ? (int)scr_conwidth.value : (scr_conscale.value > 0) ? (int)(Video.iWidth / scr_conscale.value) : Video.iWidth;
-	vid.conwidth = Math_Clamp(320, vid.conwidth, Video.iWidth);
-	vid.conwidth &= 0xFFFFFFF8;
-	vid.conheight = vid.conwidth*Video.iHeight / Video.iWidth;
-
 	Video.vertical_sync = cv_video_verticlesync.bValue;
 
 	Light_Initialize();
 
-	g_cameramanager = new Core::CameraManager();
-	g_shadermanager = new Core::ShaderManager();
-	g_spritemanager = new Core::SpriteManager();
+	g_cameramanager = new CameraManager();
+	g_shadermanager = new ShaderManager();
+	g_spritemanager = new SpriteManager();
 	
-	g_mainviewport = new Core::Viewport(g_mainwindow.width, g_mainwindow.height);
+	g_mainviewport = new Viewport(g_mainwindow.width, g_mainwindow.height);
 	if (!g_mainviewport)
-		throw Core::Exception("Failed to allocate viewport!\n");
+		throw Exception("Failed to allocate viewport!\n");
 
-	g_mainviewport->SetCamera(new Core::Camera);
+	g_mainviewport->SetCamera(new Camera);
 
 	Video.bInitialized = true;
 }
@@ -244,16 +209,6 @@ void Video_DebugCommand(void)
 }
 
 /**/
-
-/*	Clears the color, stencil and depth buffers.
-*/
-void Video_ClearBuffer(void)
-{
-	if (!cv_video_clearbuffers.bValue)
-		return;
-
-	vlClearBuffers(VL_MASK_DEPTH | VL_MASK_COLOUR | VL_MASK_STENCIL);
-}
 
 /*	Displays the depth buffer for testing purposes.
 	Unfinished
@@ -326,10 +281,6 @@ void Video_UpdateWindow(void)
 void Video_SetViewportSize(unsigned int w, unsigned int h)
 {
 	g_mainviewport->SetSize(w, h);
-
-	// Update console size.
-	vid.conwidth = Video.iWidth & 0xFFFFFFF8;
-	vid.conheight = vid.conwidth*Video.iHeight / Video.iWidth;
 }
 
 /*
@@ -546,13 +497,15 @@ void Video_Shutdown(void)
 	// Let us know that we're shutting down the video sub-system.
 	Con_Printf("Shutting down video...\n");
 
-	if (g_spritemanager)
-		delete g_spritemanager;
-	if (g_shadermanager)
-		delete g_shadermanager;
+	if (g_spritemanager) delete g_spritemanager;
+	if (g_shadermanager) delete g_shadermanager;
 
 	if (!g_state.embedded)
+	{
+		if (g_mainviewport) delete g_mainviewport;
+
 		Window_Shutdown();
+	}
 
 	// Set the initialisation value to false, in-case we want to try again later.
 	Video.bInitialized = false;

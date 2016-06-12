@@ -41,22 +41,25 @@ float con_cursorspeed = 4;
 
 bool con_forcedup;		// because no entities to refresh
 
-cvar_t		con_notifytime = {"con_notifytime","3"};		//seconds
-cvar_t		con_logcenterprint = {"con_logcenterprint", "1"}; //johnfitz
+ConsoleVariable_t con_notifytime = {"con_notifytime","3"};		//seconds
+ConsoleVariable_t con_logcenterprint = { "con_logcenterprint", "1" }; //johnfitz
 
 char		con_lastcenterstring[1024]; //johnfitz
 
-#define		MAXCMDLINE	256
+#define	MAXCMDLINE	256
+
 extern "C" char				key_lines[32][MAXCMDLINE];
 extern "C" int				edit_line;
 extern "C" unsigned int		key_linepos;
 
 bool g_consoleinitialized;
 
-/* Singleton console instance. */
-Core::Console *con_instance = nullptr;
+using namespace Core;
 
-Core::Console::Console():
+/* Singleton console instance. */
+Console *g_consoleinstance = nullptr;
+
+Console::Console() :
 	cursor_x(0),
 	cursor_y(0),
 	backscroll(0)
@@ -64,7 +67,7 @@ Core::Console::Console():
 	lines.emplace_back("");
 }
 
-void Core::Console::Clear()
+void Console::Clear()
 {
 	cursor_x = 0;
 	cursor_y = 0;
@@ -73,7 +76,7 @@ void Core::Console::Clear()
 	lines.emplace_back("");
 }
 
-void Core::Console::ClearNotify()
+void Console::ClearNotify()
 {
 	for(auto l = lines.begin(); l != lines.end(); ++l)
 	{
@@ -81,7 +84,7 @@ void Core::Console::ClearNotify()
 	}
 }
 
-void Core::Console::Print(const char *text)
+void Console::Print(const char *text)
 {
 	/* A string starting with 0x02 is "coloured" and the characters are
 	 * ORd with 128 so the rendering code highlights them.
@@ -106,12 +109,9 @@ void Core::Console::Print(const char *text)
 		}
 		else{
 			if(lines[cursor_y].text.size() > cursor_x)
-			{
 				lines[cursor_y].text[cursor_x] = (*text | cbit);
-			}
-			else{
+			else
 				lines[cursor_y].text += (*text | cbit);
-			}
 
 			lines[cursor_y].time = time(NULL);
 
@@ -122,7 +122,7 @@ void Core::Console::Print(const char *text)
 	}
 }
 
-void Core::Console::ScrollUp()
+void Console::ScrollUp()
 {
 	++backscroll;
 }
@@ -219,9 +219,24 @@ std::list<std::string> Core::Console::wrap_line(std::string line, unsigned int c
 	return wrapped_line;
 }
 
-void Core::Console::Draw(bool draw_input)
+void Console::SetSize(unsigned int width, unsigned int height)
 {
-	const unsigned int con_cols   = vid.conwidth / CHAR_WIDTH;
+	assert((width != 0) || (height != 0));
+
+#if 0	// todo, do we need this?
+	vid.conwidth = (scr_conwidth.value > 0) ? (int)scr_conwidth.value : (scr_conscale.value > 0) ? (int)(Video.iWidth / scr_conscale.value) : Video.iWidth;
+	vid.conwidth = Math_Clamp(320, vid.conwidth, Video.iWidth);
+	vid.conwidth &= 0xFFFFFFF8;
+	vid.conheight = vid.conwidth*Video.iHeight / Video.iWidth;
+#endif
+
+	_width	= width & 0xFFFFFFF8;
+	_height = _width * height / width;
+}
+
+void Console::Draw(bool draw_input)
+{
+	const unsigned int con_cols   = _width / CHAR_WIDTH;
 	const unsigned int line_width = con_cols - 3;
 
 	// Draw the background
@@ -297,7 +312,7 @@ void Core::Console::Draw(bool draw_input)
 	}
 }
 
-void Core::Console::DrawNotify()
+void Console::DrawNotify()
 {
 	const unsigned int cols = (vid.conwidth / CHAR_WIDTH) - 2;
 
@@ -426,17 +441,17 @@ void Con_ToggleConsole_f (void)
 
 void Con_Clear_f (void)
 {
-	if(con_instance)
+	if (g_consoleinstance)
 	{
-		con_instance->Clear();
+		g_consoleinstance->Clear();
 	}
 }
 
 void Con_ClearNotify (void)
 {
-	if(con_instance)
+	if (g_consoleinstance)
 	{
-		con_instance->ClearNotify();
+		g_consoleinstance->ClearNotify();
 	}
 }
 
@@ -459,7 +474,7 @@ void Console_Initialize(void)
 
 	plClearLog(ENGINE_LOG);
 
-	con_instance = new Core::Console();
+	g_consoleinstance = new Core::Console();
 
 	// register our commands
 	Cvar_RegisterVariable (&con_notifytime, NULL);
@@ -479,9 +494,9 @@ void Console_Initialize(void)
 */
 void Con_Print (char *txt)
 {
-	if(con_instance)
+	if (g_consoleinstance)
 	{
-		con_instance->Print(txt);
+		g_consoleinstance->Print(txt);
 	}
 }
 
@@ -836,9 +851,9 @@ DRAWING
 /* Draws the last few lines of output transparently over the game top. */
 void Con_DrawNotify(void)
 {
-	if(con_instance)
+	if (g_consoleinstance)
 	{
-		con_instance->DrawNotify();
+		g_consoleinstance->DrawNotify();
 	}
 }
 
@@ -847,9 +862,9 @@ void Con_DrawNotify(void)
 */
 void Con_DrawConsole(bool draw_input)
 {
-	if(con_instance)
+	if (g_consoleinstance)
 	{
-		con_instance->Draw(draw_input);
+		g_consoleinstance->Draw(draw_input);
 	}
 }
 
@@ -859,32 +874,32 @@ void Con_DrawConsole(bool draw_input)
 
 void Con_ScrollUp(void)
 {
-	if(con_instance)
+	if (g_consoleinstance)
 	{
-		con_instance->ScrollUp();
+		g_consoleinstance->ScrollUp();
 	}
 }
 
 void Con_ScrollDown(void)
 {
-	if(con_instance)
+	if (g_consoleinstance)
 	{
-		con_instance->ScrollDown();
+		g_consoleinstance->ScrollDown();
 	}
 }
 
 void Con_ScrollHome(void)
 {
-	if(con_instance)
+	if (g_consoleinstance)
 	{
-		con_instance->ScrollHome();
+		g_consoleinstance->ScrollHome();
 	}
 }
 
 void Con_ScrollEnd(void)
 {
-	if(con_instance)
+	if (g_consoleinstance)
 	{
-		con_instance->ScrollEnd();
+		g_consoleinstance->ScrollEnd();
 	}
 }

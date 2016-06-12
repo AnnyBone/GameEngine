@@ -1,19 +1,20 @@
-/*	Copyright (C) 2011-2016 OldTimes Software
+/*	
+Copyright (C) 2011-2016 OldTimes Software
 
-	This program is free software; you can redistribute it and/or
-	modify it under the terms of the GNU General Public License
-	as published by the Free Software Foundation; either version 2
-	of the License, or (at your option) any later version.
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-	See the GNU General Public License for more details.
+See the GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "engine_base.h"
@@ -43,6 +44,12 @@ typedef struct vlState_s
 	plColour_t		current_clearcolour;
 	unsigned int	current_capabilities;	// Enabled capabilities.
 
+	// Hardware / Driver information.
+	const char *hw_vendor;
+	const char *hw_renderer;
+	const char *hw_version;
+	const char *hw_extensions;
+
 	bool	mode_debug;
 } vlState_t;
 
@@ -54,11 +61,14 @@ data for each of these functions
 - Do this in another thread if possible
 - Display that data as an overlay
 */
-#define	_VL_UTIL_TRACK(name)			\
-	{									\
-		unsigned static int _t = 0;		\
-		if(vl_state.mode_debug)			\
-			_t++;						\
+#define	_VL_UTIL_TRACK(name)									\
+	{															\
+		unsigned static int _t = 0;								\
+		if(vl_state.mode_debug)									\
+		{														\
+			plWriteLog("pl_video_layer_log", " "#name"\n");		\
+			_t++;												\
+		}														\
 	}
 
 /*===========================
@@ -66,6 +76,7 @@ data for each of these functions
 ===========================*/
 
 #if defined (VL_MODE_GLIDE)
+
 /*	Convert RGBA colour to something glide can understand.
 */
 GrColor_t _vlConvertColour4f(VLcolourformat format, float r, float g, float b, float a)
@@ -98,24 +109,105 @@ GrColor_t _vlConvertColour4fv(VLcolourformat format, plColour_t colour)
 
 void _vlGlideErrorCallback(const char *string, FxBool fatal)
 {
-	if (fatal)
-		Sys_Error(string);
+	if (fatal) Sys_Error(string);
 
 	Con_Warning(string);
 }
-#endif
 
-/*	Function used for initialization in general.
-*/
-void vlInit(void)
+void _vlInitGlide(void)
 {
-	_VL_UTIL_TRACK(vlInit);
+	grGet(GR_NUM_BOARDS, sizeof(vl_state.num_cards), (FxI32*)&vl_state.num_cards);
+	if (vl_state.num_cards == 0)
+		Sys_Error("No Glide capable hardware detected!\n");
 
-	memset(&vl_state, 0, sizeof(vl_state));
+	// Initialize Glide.
+	grGlideInit();
 
-#if defined (VL_MODE_OPENGL)
+	grErrorSetCallback(_vlGlideErrorCallback);
+}
+
+#elif defined (VL_MODE_DIRECT3D)
+
+IDXGISwapChain			*vl_d3d_swapchain;
+ID3D11Device			*vl_d3d_device;
+ID3D11DeviceContext		*vl_d3d_context;
+ID3D11RasterizerState	*vl_d3d_state;
+
+ID3D11RenderTargetView	*vl_d3d_backbuffer;
+
+void _vlInitDirect3D(void)
+{
+	DXGI_SWAP_CHAIN_DESC spdesc;
+	
+	memset(&spdesc, 0, sizeof(DXGI_SWAP_CHAIN_DESC));
+	spdesc.BufferCount			= 1;
+	spdesc.BufferDesc.Format	= DXGI_FORMAT_R8G8B8A8_UNORM;
+	spdesc.BufferUsage			= DXGI_USAGE_RENDER_TARGET_OUTPUT;
+	spdesc.SampleDesc.Count		= 1;
+	spdesc.SampleDesc.Quality	= 0;
+	//spdesc.OutputWindow =	// todo, api call to get window handle for video layer??
+	//spdesc.Windowed = // todo, api call to get window handle for video layer??
+	spdesc.Flags				= DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
+
+	D3D11CreateDeviceAndSwapChain(
+		NULL,
+		D3D_DRIVER_TYPE_HARDWARE,
+		NULL,NULL,NULL,NULL,
+		D3D11_SDK_VERSION,
+		&spdesc,
+		&vl_d3d_swapchain,
+		&vl_d3d_device,
+		D3D_FEATURE_LEVEL_11_0,
+		&vl_d3d_context);
+
+	// Create and assign the backbuffer.
+	ID3D11Texture2D *backbuffer;
+	vl_d3d_swapchain->lpVtbl->GetBuffer(vl_d3d_swapchain, 0, __uuidof(ID3D11Texture2D), (LPVOID*)&backbuffer);
+	vl_d3d_device->lpVtbl->CreateRenderTargetView(vl_d3d_device, backbuffer, NULL, &vl_d3d_backbuffer);
+	vl_d3d_context->lpVtbl->OMSetRenderTargets(vl_d3d_context, 1, &vl_d3d_backbuffer, NULL);
+
+	backbuffer->lpVtbl->Release(backbuffer);
+
+	// Create and set the viewport.
+	D3D11_VIEWPORT viewport;
+	memset(&viewport, 0, sizeof(D3D11_VIEWPORT));
+	viewport.TopLeftX = 0;
+	viewport.TopLeftY = 0;
+	//viewport.Width = // todo, api call to get window handle for video layer??
+	//viewport.Height = // todo, api call to get window handle for video layer??
+	vl_d3d_context->lpVtbl->RSSetViewports(vl_d3d_context, 1, &viewport);
+
+	D3D11_RASTERIZER_DESC rasterizerdesc;
+	memset(&rasterizerdesc, 0, sizeof(D3D11_RASTERIZER_DESC));
+	vl_d3d_device->lpVtbl->CreateRasterizerState(
+		vl_d3d_device,
+		&rasterizerdesc,
+		vl_d3d_state);
+}
+
+void _vlShutdownDirect3D(void)
+{
+	vl_d3d_swapchain->lpVtbl->SetFullscreenState(vl_d3d_swapchain, false, NULL);
+
+	vl_d3d_backbuffer->lpVtbl->Release(vl_d3d_backbuffer);
+
+	vl_d3d_state->lpVtbl->Release(vl_d3d_state);
+	vl_d3d_swapchain->lpVtbl->Release(vl_d3d_swapchain);
+	vl_d3d_device->lpVtbl->Release(vl_d3d_device);
+	vl_d3d_context->lpVtbl->Release(vl_d3d_context);
+}
+
+#elif defined (VL_MODE_OPENGL)
+
+bool vl_gl_generate_mipmap			= false;
+bool vl_gl_depth_texture			= false;
+bool vl_gl_shadow					= false;
+bool vl_gl_vertex_buffer_object		= false;
+
+void _vlInitOpenGL(void)
+{
 	unsigned int err = glewInit();
-	if(err != GLEW_OK)
+	if (err != GLEW_OK)
 		Sys_Error("Failed to initialize glew!\n%s\n", glewGetErrorString(err));
 
 	if (!GLEW_VERSION_2_0)
@@ -137,24 +229,53 @@ void vlInit(void)
 	else Con_Warning("ARB_shadow isn't supported by your hardware!\n");
 	if (GLEW_ARB_vertex_buffer_object) Video.extensions.vertex_buffer_object = true;
 	else Con_Warning("Hardware doesn't support Vertex Buffer Objects!\n");
-#elif defined (VL_MODE_GLIDE)
-	grGet(GR_NUM_BOARDS, sizeof(vl_state.num_cards), (FxI32*)&vl_state.num_cards);
-	if (vl_state.num_cards == 0)
-		Sys_Error("No Glide capable hardware detected!\n");
+}
 
-	// Initialize Glide.
-	grGlideInit();
+void _vlShutdownOpenGL(void)
+{
+	
+}
 
-	grErrorSetCallback(_vlGlideErrorCallback);
 #endif
 
-	// Set default states...
+/*	Function used for initialization in general.
+*/
+void vlInit(void)
+{
+	_VL_UTIL_TRACK(vlInit);
 
-	plColour_t clear;
-	plColourSetf(clear, 0, 0, 0, 1);
-	vlSetClearColour4fv(clear);
+	Con_Printf("Initializing Video Abstraction Layer...\n");
+	
+	memset(&vl_state, 0, sizeof(vl_state));
 
-	vlSetCullMode(VL_CULL_NEGATIVE);
+#if defined (VL_MODE_OPENGL)
+	_vlInitOpenGL();
+#elif defined (VL_MODE_GLIDE)
+	_vlInitGlide();
+#elif defined (VL_MODE_DIRECT3D)
+	_vlInitDirect3D();
+#endif
+
+	// Get any information that will be presented later.
+	vl_state.hw_extensions	= vlGetString(VL_STRING_EXTENSIONS);
+	vl_state.hw_renderer	= vlGetString(VL_STRING_RENDERER);
+	vl_state.hw_vendor		= vlGetString(VL_STRING_VENDOR);
+	vl_state.hw_version		= vlGetString(VL_STRING_VERSION);
+	Con_Printf(" HARDWARE/DRIVER INFORMATION\n");
+	Con_Printf("  RENDERER: %s\n", vl_state.hw_renderer);
+	Con_Printf("  VENDOR:   %s\n", vl_state.hw_vendor);
+	Con_Printf("  VERSION:  %s\n\n", vl_state.hw_version);
+}
+
+void vlShutdown(void)
+{
+	_VL_UTIL_TRACK(vlShutdown);
+
+#if defined (VL_MODE_OPENGL)
+#elif defined (VL_MODE_GLIDE)
+#elif defined (VL_MODE_DIRECT3D)
+	_vlShutdownDirect3D();
+#endif
 }
 
 /*===========================
@@ -228,8 +349,18 @@ const char *vlGetString(vlString_t string)
 		// This works differently in core.
 		return vlGetExtensions();
 	return (const char*)glGetString(string);
-#elif defined VL_MODE_GLIDE
+#elif defined (VL_MODE_GLIDE)
 	return grGetString(string);
+#elif defined (VL_MODE_DIRECT3D)
+	switch(string)
+	{
+	case VL_STRING_RENDERER:
+	case VL_STRING_VERSION:
+	case VL_STRING_VENDOR:
+	case VL_STRING_EXTENSIONS:
+		break;
+	default:return "";
+	}
 #else
 	return "";
 #endif
@@ -732,6 +863,8 @@ void vlSetClearColour4f(float r, float g, float b, float a)
 		return;
 #if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
 	glClearColor(r, g, b, a);
+#elif defined (VL_MODE_DIRECT3D)
+	// Don't need to do anything specific here, colour is set on clear call.
 #endif
 	plColourSetf(vl_state.current_clearcolour, r, g, b, a);
 }
@@ -760,6 +893,11 @@ void vlClearBuffers(unsigned int mask)
 		// Convert buffer_clearcolour to something that works with Glide.
 		_vlConvertColour4fv(VL_COLOURFORMAT_RGBA, vl_state.buffer_clearcolour), 
 		1, 1);
+#elif defined (VL_MODE_DIRECT3D)
+	vl_d3d_context->lpVtbl->ClearRenderTargetView(vl_d3d_context, 
+		vl_d3d_backbuffer, 
+		vl_state.current_clearcolour
+		);
 #endif
 }
 
@@ -771,6 +909,11 @@ void vlScissor(int x, int y, unsigned int width, unsigned int height)
 	glScissor(x, y, width, height);
 #elif defined (VL_MODE_DIRECT3D)
 	// SetScissorRect
+	D3D11_RECT scissor_region;
+	memset(&scissor_region, 0, sizeof(D3D11_RECT));
+	scissor_region.bottom	= height;
+	scissor_region.right	= width;
+	vl_d3d_context->lpVtbl->RSSetScissorRects(vl_d3d_context, 0, &scissor_region);
 #endif
 }
 
@@ -796,6 +939,8 @@ void vlSwapBuffers(void)
 	// Glide is pretty neat about this
 	// and actually handles it for us.
 	grBufferSwap(0);
+#elif defined (VL_MODE_DIRECT3D)
+	vl_d3d_swapchain->lpVtbl->Present(vl_d3d_swapchain,	0, 0);
 #endif
 }
 
@@ -805,6 +950,9 @@ void vlGenerateFrameBuffer(vlFrameBuffer_t *buffer)
 {
 #ifdef VL_MODE_OPENGL
 	glGenFramebuffers(1, buffer);
+#elif defined (VL_MODE_GLIDE)
+	// No support for this.
+#elif defined (VL_MODE_DIRECT3D)
 #endif
 }
 
@@ -1288,6 +1436,11 @@ void vlSetCullMode(vlCullMode_t mode)
 		glFrontFace(GL_CCW);
 		break;
 	}
+#elif defined (VL_MODE_DIRECT3D)
+	// todo, create new render state and somehow get the properties of the
+	// current but update them to reflect the new cull mode.
+
+	vl_d3d_context->lpVtbl->RSSetState(vl_d3d_context, vl_d3d_state);
 #endif
 	vl_state.current_cullmode = mode;
 }
@@ -1298,5 +1451,7 @@ void vlFinish(void)
 	glFinish();
 #elif defined (VL_MODE_GLIDE)
 	grFinish();
+#elif defined (VL_MODE_DIRECT3D)
+	// Not supported, or rather, we don't need this.
 #endif
 }

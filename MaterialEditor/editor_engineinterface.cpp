@@ -17,7 +17,7 @@
 
 #include "editor.h"
 
-#include "platform_module.h"
+#include "platform_library.h"
 
 EngineExport_t *engine;
 EngineImport_t editor;
@@ -46,7 +46,7 @@ void EngineInterface_Load()
 	editor.PrintWarning = EngineInterface_PrintWarning;
 
 	// Load the module interface for the engine module.
-	engine = (EngineExport_t*)plLoadModuleInterface(
+	engine = (EngineExport_t*)plLoadLibraryInterface(
 		engineInstance,
 		"./" ENGINE_MODULE,
 		"Engine_Main",
@@ -61,7 +61,7 @@ void EngineInterface_Load()
 	else if (engine->iVersion != ENGINE_VERSION)
 	{
 		wxMessageBox("Editor is outdated, please rebuild!", EDITOR_TITLE);
-		plUnloadModule(engineInstance);
+		plUnloadLibrary(engineInstance);
 		wxExit();
 	}
 }
@@ -69,5 +69,5 @@ void EngineInterface_Load()
 void EngineInterface_Unload()
 {
 	// Unload the engine module.
-	plUnloadModule(engineInstance);
+	plUnloadLibrary(engineInstance);
 }

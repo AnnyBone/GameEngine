@@ -22,7 +22,7 @@
 	Main Entry
 */
 
-#include "platform_module.h"
+#include "platform_library.h"
 
 // Client
 #include "client.h"

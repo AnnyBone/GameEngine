@@ -26,7 +26,7 @@
 #include "menu_hud.h"
 
 // Platform library
-#include "platform_module.h"
+#include "platform_library.h"
 
 /*	TODO:
 		#	Get menu elements to be handled like objects.

@@ -20,12 +20,12 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 //			VL_MODE_OPENGL_CORE
 //			VL_MODE_OPENGL_ES
 //#define	VL_MODE_GLIDE
-//			VL_MODE_DIRECT3D
+//#define	VL_MODE_DIRECT3D
 //			VL_MODE_VULKAN
 
-typedef unsigned int vlVertexArray_t;
-typedef unsigned int vlRenderBuffer_t;
-typedef unsigned int vlFrameBuffer_t;
+typedef PLuint vlVertexArray_t;
+typedef PLuint vlRenderBuffer_t;
+typedef PLuint vlFrameBuffer_t;
 
 typedef enum vlCullMode_s
 {

@@ -394,7 +394,7 @@ static pModuleFunction_t PNGFunctions[]=
 
 void Image_InitializePNG()
 {
-	iPNGLibraryInstance = plLoadModule("libpng16");
+	iPNGLibraryInstance = plLoadLibrary("libpng16");
 	if (!iPNGLibraryInstance)
 	{
 		Con_Warning("Failed to load libpng!\n");
@@ -405,7 +405,7 @@ void Image_InitializePNG()
 	int i;
 	for (i = 0; i < plArrayElements(PNGFunctions); i++)
 	{
-		*(PNGFunctions[i].Function) = plFindModuleFunction(iPNGLibraryInstance, PNGFunctions[i].ccFunctionName);
+		*(PNGFunctions[i].Function) = plFindLibraryFunction(iPNGLibraryInstance, PNGFunctions[i].ccFunctionName);
 		if (!PNGFunctions[i].Function)
 		{
 			Con_Warning("Failed to find libpng function! (%s)\n", PNGFunctions[i].ccFunctionName);
@@ -480,5 +480,5 @@ uint8_t *Image_LoadPNG(FILE *fin, unsigned int *width, unsigned int *height)
 void Image_Shutdown()
 {
 	if (iPNGLibraryInstance)
-		plUnloadModule(iPNGLibraryInstance);
+		plUnloadLibrary(iPNGLibraryInstance);
 }

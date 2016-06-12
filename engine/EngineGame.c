@@ -426,7 +426,7 @@ void Game_Initialize(void)
 	ModuleImport_t	Import;
 
 	if(Game)
-		plUnloadModule(hGameInstance);
+		plUnloadLibrary(hGameInstance);
 
 	Import.Con_Printf				= Con_Printf;	// todo: obsolete!
 	Import.Con_DPrintf				= Con_DPrintf;	// todo: obsolete!
@@ -526,7 +526,7 @@ void Game_Initialize(void)
 	Import.SetSpriteType		= Sprite_SetType;
 	Import.SetSpriteMaterial	= Sprite_SetMaterial;
 
-	Game = (GameExport_t*)plLoadModuleInterface(hGameInstance, va("%s/%s" GAME_MODULE, com_gamedir, g_state.path_modules), "Game_Main", &Import);
+	Game = (GameExport_t*)plLoadLibraryInterface(hGameInstance, va("%s/%s" GAME_MODULE, com_gamedir, g_state.path_modules), "Game_Main", &Import);
 	if(!Game)
 		Con_Warning(plGetError(), com_gamedir, GAME_MODULE);
 	else if (Game->iVersion != GAME_VERSION)
@@ -536,9 +536,9 @@ void Game_Initialize(void)
 
 	if(!bGameLoaded)
 	{
-		plUnloadModule(hGameInstance);
+		plUnloadLibrary(hGameInstance);
 
 		// Let the user know the module failed to load.
-		Sys_Error("Failed to load %s/%s."PL_CPU_ID""pMODULE_EXTENSION"!\nCheck log for details.\n", com_gamedir, GAME_MODULE);
+		Sys_Error("Failed to load %s/%s."PL_CPU_ID""PL_MODULE_EXTENSION"!\nCheck log for details.\n", com_gamedir, GAME_MODULE);
 	}
 }

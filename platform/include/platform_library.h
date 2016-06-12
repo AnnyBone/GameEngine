@@ -16,12 +16,10 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef PLATFORM_MODULE_H
-#define PLATFORM_MODULE_H
+#pragma once
 
 #include "platform.h"
 
-// Copied from Darkplaces.
 typedef struct
 {
 	const char *ccFunctionName;
@@ -32,22 +30,19 @@ typedef struct
 plEXTERN_C_START
 
 #ifdef _WIN32
-#	define pMODULE_EXTENSION	".dll"
-#	define pMODULE_EXPORT		__declspec(dllexport)
-#	define pMODULE_IMPORT		__declspec(dllimport)
+#	define PL_MODULE_EXTENSION	".dll"
+#	define PL_MODULE_EXPORT		__declspec(dllexport)
+#	define PL_MODULE_IMPORT		__declspec(dllimport)
 #else   // Linux
-#	define pMODULE_EXTENSION	".so"
-#	define pMODULE_EXPORT		__attribute__((visibility("default")))
-#	define pMODULE_IMPORT		__attribute__((visibility("hidden")))
+#	define PL_MODULE_EXTENSION	".so"
+#	define PL_MODULE_EXPORT		__attribute__((visibility("default")))
+#	define PL_MODULE_IMPORT		__attribute__((visibility("hidden")))
 #endif
 
-PL_EXTERN PL_FARPROC plFindModuleFunction(PL_INSTANCE instance, const char *function);
+PL_EXTERN PL_FARPROC plFindLibraryFunction(PL_INSTANCE instance, const PLchar *function);
 
-PL_INSTANCE plLoadModule(const char *path);
-
-PL_EXTERN void plUnloadModule(PL_INSTANCE instance);
-PL_EXTERN void *plLoadModuleInterface(PL_INSTANCE instance, const char *path, const char *entry, void *handle);
+PL_EXTERN PLvoid *plLoadLibraryInterface(PL_INSTANCE instance, const PLchar *path, const PLchar *entry, PLvoid *handle);
+PL_INSTANCE plLoadLibrary(const PLchar *path);	// Loads new library instance.
+PL_EXTERN PLvoid plUnloadLibrary(PL_INSTANCE instance);	// Unloads library instance.
 
 plEXTERN_C_END
-
-#endif // !PLATFORM_MODULE_H

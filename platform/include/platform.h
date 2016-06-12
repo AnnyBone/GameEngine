@@ -1,31 +1,29 @@
-/*	Copyright (C) 2011-2016 OldTimes Software
+/*
+DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+Version 2, December 2004
 
-	This program is free software; you can redistribute it and/or
-	modify it under the terms of the GNU General Public License
-	as published by the Free Software Foundation; either version 2
-	of the License, or (at your option) any later version.
+Copyright (C) 2011-2016 Mark E Sowden <markelswo@gmail.com>
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+Everyone is permitted to copy and distribute verbatim or modified
+copies of this license document, and changing it is allowed as long
+as the name is changed.
 
-	See the GNU General Public License for more details.
+DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+0. You just DO WHAT THE FUCK YOU WANT TO.
 */
 
 #pragma once
 
 /*
-	Platform Library
-	
-	This library includes standard platform headers,
-	gives you some standard functions to interact with
-	the system and includes defines for basic data-types that
-	you can use in your applications for easier multi-platform
-	support.
+Platform Library
+
+This library includes standard platform headers,
+gives you some standard functions to interact with
+the system and includes defines for basic data-types that
+you can use in your applications for easier multi-platform
+support.
 */
 
 // PL_IGNORE_SHARED_HEADERS
@@ -162,16 +160,6 @@
 #	define	PL_MAX_USERNAME		32
 #endif
 
-// Other
-#ifndef PL_INSTANCE
-#	define	PL_INSTANCE	void *	// Instance definition.
-#endif
-#ifndef PL_FARPROC
-#	define	PL_FARPROC	void *	// Function pointer.
-#endif
-
-// Set the defaults if nothing's been set for any of these...
-
 #ifndef PL_NAME
 #	define PL_NAME "Unknown"	// Platform name.
 #endif
@@ -183,6 +171,14 @@
 #endif
 #ifndef PL_MAX_USERNAME
 #	define PL_MAX_USERNAME 256	// Maximum length allowed for a username.
+#endif
+
+// Other
+#ifndef PL_INSTANCE
+#	define	PL_INSTANCE	void *	// Instance definition.
+#endif
+#ifndef PL_FARPROC
+#	define	PL_FARPROC	void *	// Function pointer.
 #endif
 
 #if defined(_MSC_VER)
@@ -208,6 +204,9 @@
 #	define	plEXTERN_C_END
 #endif
 
+#define PL_EXTERN_C			plEXTERN_C_START
+#define PL_EXTERN_C_END		plEXTERN_C_END
+
 // Helper to allow us to determine the type of CPU; this is used for the module interfaces.
 #if defined(__amd64) || defined(__amd64__)
 #	define PL_CPU_ID   "x64"
@@ -230,13 +229,21 @@
 #define PL_TRUE		TRUE
 #define PL_FALSE	FALSE
 
-/**/
-
 #define	plArrayElements(a)	(sizeof(a)/sizeof(*(a)))	// Returns the number of elements within an array.
 
-typedef unsigned int	pl_uint;
-typedef	unsigned char	pl_uchar;
-typedef unsigned char	pl_bool;
+typedef int						PLint;
+typedef long long int			PLint64;
+typedef unsigned int			PLuint;
+typedef unsigned long long int	PLuint64;
+typedef char					PLchar;
+typedef	unsigned char			PLuchar;
+typedef unsigned char			PLbool;
+typedef void					PLvoid;
+typedef float					PLfloat;
+typedef double					PLdouble;
+typedef short					PLshort;
+
+//////////////////////////////////////////////////////////////////
 
 #include "platform_log.h"
 #include "platform_window.h"
@@ -291,5 +298,3 @@ static PL_INLINE time_t plStringToTime(const char *ts)
 
 	return mktime(&time);
 }
-
-/**/
