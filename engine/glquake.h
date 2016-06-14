@@ -27,9 +27,6 @@
 #endif
 plEXTERN_C_START
 
-void GL_BeginRendering (int *x, int *y, int *width, int *height);
-void GL_EndRendering (void);
-
 extern	int glx, gly, glwidth, glheight;
 
 #define BACKFACE_EPSILON	0.01
@@ -45,11 +42,7 @@ extern	int				r_visframecount;	// ??? what difs?
 extern	int				r_framecount;
 extern	mplane_t		frustum[4];
 
-//
-// screen size info
-//
-extern	refdef_t	r_refdef;
-extern	int		d_lightstylevalue[256];	// 8.8 fraction of base light value
+extern int d_lightstylevalue[256];	// 8.8 fraction of base light value
 
 #define OFFSET_NONE		0
 #define OFFSET_DECAL	-1

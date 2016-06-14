@@ -340,8 +340,6 @@ void Video_PreFrame(void)
 {
 	VIDEO_FUNCTION_START
 
-	GL_BeginRendering(&glx, &gly, &glwidth, &glheight);
-
 	Screen_SetUpToDrawConsole();
 
 	R_SetupGenericView();
@@ -371,8 +369,6 @@ void Video_Frame(void)
 		Video.framecount = 0;
 
 	GetPrimaryViewport()->Draw();
-
-	GL_EndRendering();
 
 	Video_PostFrame();
 }

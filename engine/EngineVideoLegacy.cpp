@@ -48,9 +48,6 @@ float r_world_matrix[16], r_base_world_matrix[16];
 
 float r_fovx, r_fovy; //johnfitz -- rendering fov may be different becuase of r_waterwarp and r_stereo
 
-// screen size info
-refdef_t	r_refdef;
-
 int		d_lightstylevalue[256];	// 8.8 fraction of base light value
 
 cvar_t	r_norefresh				= {	"r_norefresh",			"0"					};
@@ -159,18 +156,6 @@ int SignbitsForPlane (mplane_t *out)
 	return bits;
 }
 
-#define NEARCLIP 4
-float frustum_skew = 0.0; //used by r_stereo
-void GL_SetFrustum(float fovx, float fovy)
-{
-#ifdef VL_MODE_OPENGL
-	float xmax, ymax;
-	xmax = NEARCLIP * tan(fovx * PL_PI / 360.0);
-	ymax = NEARCLIP * tan(fovy * PL_PI / 360.0);
-	glFrustum(-xmax + frustum_skew, xmax + frustum_skew, -ymax, ymax, NEARCLIP, gl_farclip.value);
-#endif
-}
-
 void R_RenderScene(void);
 void R_UpdateWarpTextures(void);    // [25/11/2013] See gl_warp.c ~hogsy
 
@@ -202,8 +187,7 @@ void R_RenderView (void)
 	}
 #endif
 
-		R_RenderScene();
-	//johnfitz
+	// stuff
 
 	//johnfitz -- modified r_speeds output
 	time2 = System_DoubleTime();

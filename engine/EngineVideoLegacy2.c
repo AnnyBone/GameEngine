@@ -119,8 +119,6 @@ void R_Envmap_f(void)
 
 	glDrawBuffer(GL_BACK);
 	glReadBuffer(GL_BACK);
-
-	GL_EndRendering();
 #endif
 #endif
 }
@@ -220,7 +218,6 @@ void R_TimeRefresh_f (void)
 	Con_Printf("%f seconds (%f fps)\n",time,128/time);
 
 	glDrawBuffer (GL_BACK);
-	GL_EndRendering ();
 #endif
 #endif
 }

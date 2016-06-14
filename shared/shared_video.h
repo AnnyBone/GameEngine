@@ -62,6 +62,8 @@ namespace Core
 
 		virtual std::vector<int> GetPosition() = 0;
 		virtual void SetPosition(int x, int y) = 0;
+
+		virtual void Draw() = 0;
 	};
 
 	class ICamera

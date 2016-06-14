@@ -34,6 +34,7 @@ void Window_Shutdown(void);
 
 void Window_SetFullscreen(bool fullscreen);
 void Window_SetSize(unsigned int width, unsigned int height);
+void Window_SetVerticalSync(int interval);
 
 int Window_GetWidth(void);	// todo, this should be unsigned
 int Window_GetHeight(void);	// todo, this should be unsigned

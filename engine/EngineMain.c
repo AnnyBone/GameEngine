@@ -99,7 +99,7 @@ PL_MODULE_EXPORT EngineExport_t *Engine_Main(EngineImport_t *mImport)
 	// Video
 	exports.DrawPostFrame			= Video_PostFrame;
 	exports.DrawPreFrame			= Video_PreFrame;
-	exports.DrawEntity				= Draw_Entity;
+	//exports.DrawEntity			= Draw_Entity;
 	//exports.DrawFPS				= Screen_DrawFPS;
 	//exports.DrawConsole			= Screen_DrawConsole;
 	exports.DrawGrid				= Draw_Grid;

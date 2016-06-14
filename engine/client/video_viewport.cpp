@@ -139,6 +139,11 @@ void Viewport::Draw()
 
 /*	Camera	*/
 
+ICamera *Viewport::GetCamera()
+{
+	return dynamic_cast<ICamera*>(_camera);
+}
+
 void Viewport::SetCamera(ICamera *camera)
 {
 	Camera *newcam = dynamic_cast<Camera*>(camera);
@@ -147,7 +152,7 @@ void Viewport::SetCamera(ICamera *camera)
 		Con_Warning("Attempted to assign invalid camera to viewport!\n");
 		return;
 	}
-
+	
 	newcam->SetFOV(90);
 	_camera = newcam;
 }

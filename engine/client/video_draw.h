@@ -22,17 +22,18 @@ namespace Core
 {
 	namespace Draw
 	{
-		static void SetDefaultState();	// Sets default rendering state.
+		void SetDefaultState();	// Sets default rendering state.
 
-		static void ClearBuffers();		// Clears the color, stencil and depth buffers.
-		static void DepthBuffer();		// Draws the depth buffer.
+		void ClearBuffers();	// Clears the color, stencil and depth buffers.
+		void DepthBuffer();		// Draws the depth buffer.
 
-		static void Entities(bool alphapass);
-		static void Shadows();
-		static void BoundingBoxes();
+		void Entities(bool alphapass);
+		void Shadows();
+		void BoundingBoxes();
 
-		static void WireBox(plVector3f_t mins, plVector3f_t maxs, float r, float g, float b);
-		static void CoordinateAxes(plVector3f_t position);
+		void Entity(ClientEntity_t *entity);
+		void WireBox(plVector3f_t mins, plVector3f_t maxs, float r, float g, float b);
+		void CoordinateAxes(plVector3f_t position);
 	}
 }
 

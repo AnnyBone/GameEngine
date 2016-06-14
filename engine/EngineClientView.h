@@ -24,7 +24,6 @@
 extern plColour_t vViewBlend;
 
 void V_Init (void);
-void V_RenderView (void);
 void View_CalculateBlend(void);
 
 float V_CalcRoll(MathVector3f_t angles, MathVector3f_t velocity);

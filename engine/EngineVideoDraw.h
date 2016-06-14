@@ -48,7 +48,6 @@ void Draw_ResetCanvas(void);
 void Draw_Line(MathVector3f_t mvStart, MathVector3f_t mvEnd);
 void Draw_Grid(float x, float y, float z, int iGridSize);
 void Draw_String(int x, int y, const char *msg);
-void Draw_Entity(ClientEntity_t *Entity);
 
 qpic_t *Draw_CachePic(char *path);
 

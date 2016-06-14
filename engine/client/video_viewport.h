@@ -32,7 +32,7 @@ namespace Core
 		unsigned int GetHeight() { return _height; }													// Returns height.
 		void SetSize(unsigned int width, unsigned int height);
 
-		Camera *GetCamera() { return _camera; }
+		ICamera *GetCamera();
 		void SetCamera(ICamera *camera);
 
 		std::vector<int> GetPosition() { return std::vector<int> { _x, _y }; }	// Returns position on screen.
@@ -49,9 +49,9 @@ namespace Core
 		int _x, _y;
 	};
 
-	static void CreatePrimaryViewport();
-	static Viewport *GetPrimaryViewport();
-	static void DestroyPrimaryViewport();
+	void CreatePrimaryViewport();
+	Viewport *GetPrimaryViewport();
+	void DestroyPrimaryViewport();
 }
 
 #endif

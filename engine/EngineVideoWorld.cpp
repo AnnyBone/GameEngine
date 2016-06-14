@@ -42,7 +42,7 @@ bool bVisibilityChanged; //if true, force pvs to be refreshed
 //
 //==============================================================================
 
-void R_MarkSurfaces (void)
+void World_MarkSurfaces(void)
 {
 	uint8_t			*vis;
 	mleaf_t			*leaf;
@@ -127,7 +127,7 @@ bool R_BackFaceCull (msurface_t *surf)
 {
 	Core::Camera *camera = g_cameramanager->GetCurrentCamera();
 	if (!camera)
-		return;
+		return false;
 
 	double dot;
 	switch (surf->plane->type)
@@ -152,20 +152,17 @@ bool R_BackFaceCull (msurface_t *surf)
 	return false;
 }
 
-void R_CullSurfaces (void)
+void World_CullSurfaces(void)
 {
-	msurface_t		*s;
-	unsigned int	i;
-
-	if (!r_drawworld_cheatsafe)
+	if (!cl.worldmodel || !r_drawworld_cheatsafe)
 		return;
 
 	Core::Camera *camera = g_cameramanager->GetCurrentCamera();
 	if (!camera)
 		return;
 
-	s = &cl.worldmodel->surfaces[cl.worldmodel->firstmodelsurface];
-	for (i=0 ; i<cl.worldmodel->nummodelsurfaces ; i++, s++)
+	msurface_t *s = &cl.worldmodel->surfaces[cl.worldmodel->firstmodelsurface];
+	for (unsigned int i = 0; i < cl.worldmodel->nummodelsurfaces; i++, s++)
 	{
 		if (s->visframe == r_visframecount)
 		{

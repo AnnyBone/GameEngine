@@ -190,6 +190,8 @@ void Draw::WireBox(plVector3f_t mins, plVector3f_t maxs, float r, float g, float
 #endif
 }
 
+extern "C" ConsoleVariable_t r_showbboxes;
+
 void Draw::BoundingBoxes()
 {
 	if (!r_showbboxes.value || (cl.maxclients > 1) || !r_drawentities.value || (!sv.active && !g_state.embedded))
@@ -198,10 +200,10 @@ void Draw::BoundingBoxes()
 	vlDisable(VL_CAPABILITY_DEPTH_TEST | VL_CAPABILITY_TEXTURE_2D);
 	vlEnable(VL_CAPABILITY_BLEND);
 
-	int	i;
+	unsigned int i;
 	ServerEntity_t *ed;
 	extern ServerEntity_t *sv_player;
-	for (i = 0, ed = NEXT_EDICT(sv.edicts); i<sv.num_edicts; i++, ed = NEXT_EDICT(ed))
+	for (i = 0, ed = NEXT_EDICT(sv.edicts); i < sv.num_edicts; i++, ed = NEXT_EDICT(ed))
 	{
 		if (ed == sv_player && !chase_active.value)
 			continue;
@@ -261,7 +263,7 @@ void Draw::Entities(bool alphapass)
 			continue;
 
 		currententity = cl_visedicts[i];	// todo, legacy, needs to go!
-		Draw_Entity(cl_visedicts[i]);
+		Draw::Entity(cl_visedicts[i]);
 	}
 #else	// Draw per-material
 	for (int i = 0; i < material_count; i++)
@@ -280,7 +282,7 @@ void Draw::Entities(bool alphapass)
 					(ENTALPHA_DECODE(currententity->alpha) == 1 && bAlphaPass))
 					continue;
 
-				Draw_Entity(currententity);
+				Draw::Entity(currententity);
 			}
 		}
 	}
@@ -939,8 +941,6 @@ void Draw_ResetCanvas(void)
 	Entities
 */
 
-extern "C" ConsoleVariable_t r_showbboxes;
-
 void Draw_EntityBoundingBox(ClientEntity_t *entity)
 {
 	if (!entity->model || ((entity == &cl_entities[cl.viewentity]) && !chase_active.bValue) || (entity == &cl.viewent))
@@ -980,7 +980,7 @@ void Draw_EntityBoundingBox(ClientEntity_t *entity)
 	}
 }
 
-void Draw_Entity(ClientEntity_t *entity)
+void Draw::Entity(ClientEntity_t *entity)
 {
 	if (!entity->model)
 	{

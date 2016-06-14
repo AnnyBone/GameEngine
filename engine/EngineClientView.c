@@ -652,29 +652,6 @@ void V_CalcRefdef (void)
 #endif
 }
 
-/*	The player's clipping box goes from (-16 -16 -24) to (16 16 32) from
-	the entity origin, so any view position inside that will be valid
-*/
-extern vrect_t	scr_vrect;
-
-void V_RenderView (void)
-{
-	if (con_forcedup)
-		return;
-
-	if (cl.intermission)
-		V_CalcIntermissionRefdef();
-	else if (!cl.bIsPaused /* && (cl.maxclients > 1 || key_dest == key_game) */)
-	{
-		Game->Client_ViewFrame();
-		V_CalcRefdef();
-	}
-
-	R_RenderView();
-
-	View_PolyBlend(); //johnfitz -- moved here from R_Renderview ();
-}
-
 /*
 ==============================================================================
 

@@ -164,7 +164,7 @@ void Camera::DrawViewEntity()
 	glDepthRange(0, 0.3);
 #endif
 
-	Draw_Entity(viewmodel);
+	Draw::Entity(viewmodel);
 
 #ifdef VL_MODE_OPENGL
 	glDepthRange(0, 1);
@@ -189,7 +189,7 @@ void Camera::Draw()
 
 	Fog_SetupFrame();	// todo, really necessary to call this at the start of every draw call!?
 
-	float fovxx = fovx, fovyy = fovy;
+	float fovxx = _fovx, fovyy = _fovy;
 	if (cl.worldmodel)
 	{
 		// Current view leaf.
@@ -202,13 +202,13 @@ void Camera::Draw()
 			if (contents == BSP_CONTENTS_WATER || contents == BSP_CONTENTS_SLIME || contents == BSP_CONTENTS_LAVA)
 			{
 				//variance is a percentage of width, where width = 2 * tan(fov / 2) otherwise the effect is too dramatic at high FOV and too subtle at low FOV.  what a mess!
-				fovxx = atanf(tan(PL_DEG2RAD(fovx) / 2) * (0.97 + sin(cl.time * 1.5) * 0.03)) * 2 / PL_PI_DIV180;
-				fovyy = atanf(tan(PL_DEG2RAD(fovy) / 2) * (1.03 - sin(cl.time * 1.5) * 0.03)) * 2 / PL_PI_DIV180;
+				fovxx = atanf(tan(PL_DEG2RAD(_fovx) / 2) * (0.97 + sin(cl.time * 1.5) * 0.03)) * 2 / PL_PI_DIV180;
+				fovyy = atanf(tan(PL_DEG2RAD(_fovy) / 2) * (1.03 - sin(cl.time * 1.5) * 0.03)) * 2 / PL_PI_DIV180;
 			}
 		}
 
-		R_MarkSurfaces();
-		R_CullSurfaces();
+		World_MarkSurfaces();
+		World_CullSurfaces();
 	}
 
 	SetFrustum(fovxx, fovyy);
@@ -338,7 +338,6 @@ void Camera::Simulate()
 		return;
 
 	SimulateFrustum();
-
 	SimulateBob();
 	SimulateRoll();
 
@@ -547,10 +546,9 @@ void Camera::SetFOV(float fov)
 	}
 	
 	// Taken from CalcFovy.
-	float x = width * std::tanf(fovx / 360.0f * PL_PI);
+	float x = width * std::tanf(_fovx / 360.0f * PL_PI);
 	float a = std::atanf(height / x);
 	a *= 360.0f / PL_PI;
-
 	_fovy = a;
 }
 
@@ -572,10 +570,10 @@ extern "C" {
 void Camera::SimulateFrustum()
 {
 	// Update the frustum.
-	plTurnVector(frustum[0].normal, position, _right, fovx / 2 - 90);	// Left plane
-	plTurnVector(frustum[1].normal, position, _right, 90 - fovx / 2);	// Right plane
-	plTurnVector(frustum[2].normal, position, _up, 90 - fovy / 2);		// Bottom plane
-	plTurnVector(frustum[3].normal, position, _up, fovy / 2 - 90);		// Top plane
+	plTurnVector(frustum[0].normal, position, _right, _fovx / 2 - 90);	// Left plane
+	plTurnVector(frustum[1].normal, position, _right, 90 - _fovx / 2);	// Right plane
+	plTurnVector(frustum[2].normal, position, _up, 90 - _fovy / 2);		// Bottom plane
+	plTurnVector(frustum[3].normal, position, _up, _fovy / 2 - 90);		// Top plane
 
 	for (int i = 0; i < 4; i++)
 	{
