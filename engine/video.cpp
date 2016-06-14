@@ -348,7 +348,7 @@ void Video_PreFrame(void)
 
 	r_framecount++;
 
-	R_SetupScene();
+	//R_SetupScene();
 
 	Video_ShowBoundingBoxes();
 

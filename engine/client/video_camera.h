@@ -37,10 +37,10 @@ namespace Core
 		void SetAngles(float x, float y, float z);
 		void PrintAngles();
 
-		float GetFOV() { return fovx; }
+		float GetFOV() { return _fovx; }
 
 		void SetFOV(float fov);
-		void SetFrustum(float _fovx, float _fovy);
+		void SetFrustum(float fovx, float fovy);
 
 		std::vector<float> GetPosition() { return std::vector<float> { position[0], position[1], position[2] }; }
 		void SetPosition(float x, float y, float z);
@@ -100,7 +100,7 @@ namespace Core
 		plVector3f_t punchangles[2];		//johnfitz -- copied from cl.punchangle.  0 is current, 1 is previous value. never the same unless map just loaded
 		plVector3f_t angles, position;
 
-		float fovx, fovy;
+		float _fovx, _fovy;
 		float _fov;
 
 		float height;	// Additional height of the camera.

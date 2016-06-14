@@ -81,66 +81,16 @@ cvar_t	r_showbboxes			= {	"r_showbboxes",			"0"					};
 cvar_t	r_lerpmodels			= {	"r_lerpmodels",			"1"					};
 cvar_t	r_lerpmove				= {	"r_lerpmove",			"1"					};
 
-/*	Returns true if the box is completely outside the frustum
-*/
-bool R_CullBox (MathVector3f_t emins, MathVector3f_t emaxs)
-{
-	int			i;
-	mplane_t	*p;
-
-	if (r_nocull.bValue)
-		return false;
-
-	for (i = 0;i < 4;i++)
-	{
-		p = frustum + i;
-		switch(p->signbits)
-		{
-		default:
-		case 0:
-			if (p->normal[0]*emaxs[0] + p->normal[1]*emaxs[1] + p->normal[2]*emaxs[2] < p->dist)
-				return true;
-			break;
-		case 1:
-			if (p->normal[0]*emins[0] + p->normal[1]*emaxs[1] + p->normal[2]*emaxs[2] < p->dist)
-				return true;
-			break;
-		case 2:
-			if (p->normal[0]*emaxs[0] + p->normal[1]*emins[1] + p->normal[2]*emaxs[2] < p->dist)
-				return true;
-			break;
-		case 3:
-			if (p->normal[0]*emins[0] + p->normal[1]*emins[1] + p->normal[2]*emaxs[2] < p->dist)
-				return true;
-			break;
-		case 4:
-			if (p->normal[0]*emaxs[0] + p->normal[1]*emaxs[1] + p->normal[2]*emins[2] < p->dist)
-				return true;
-			break;
-		case 5:
-			if (p->normal[0]*emins[0] + p->normal[1]*emaxs[1] + p->normal[2]*emins[2] < p->dist)
-				return true;
-			break;
-		case 6:
-			if (p->normal[0]*emaxs[0] + p->normal[1]*emins[1] + p->normal[2]*emins[2] < p->dist)
-				return true;
-			break;
-		case 7:
-			if (p->normal[0]*emins[0] + p->normal[1]*emins[1] + p->normal[2]*emins[2] < p->dist)
-				return true;
-			break;
-		}
-	}
-
-	return false;
-}
-
 bool R_CullModelForEntity(ClientEntity_t *e)
 {
 	plVector3f_t mins, maxs;
 
 	if(e == &cl.viewent)
 		return false;
+
+	Core::Camera *camera = g_cameramanager->GetCurrentCamera();
+	if (!camera)
+		return true;
 
 	if(e->angles[PL_PITCH] || e->angles[PL_ROLL])
 	{
@@ -158,7 +108,7 @@ bool R_CullModelForEntity(ClientEntity_t *e)
 		Math_VectorAdd(e->origin,e->model->maxs,maxs);
 	}
 
-	return R_CullBox(mins, maxs);
+	return camera->IsBoxOutsideFrustum(mins, maxs);
 }
 
 void R_RotateForEntity(plVector3f_t origin, plVector3f_t angles)
@@ -209,26 +159,6 @@ int SignbitsForPlane (mplane_t *out)
 	return bits;
 }
 
-void R_SetFrustum (float fovx, float fovy)
-{
-	int		i;
-
-	if (r_stereo.value)
-		fovx += 10; //silly hack so that polygons don't drop out becuase of stereo skew
-
-	plTurnVector(frustum[0].normal, vpn, vright, fovx / 2 - 90); //left plane
-	plTurnVector(frustum[1].normal, vpn, vright, 90 - fovx / 2); //right plane
-	plTurnVector(frustum[2].normal, vpn, vup, 90 - fovy / 2); //bottom plane
-	plTurnVector(frustum[3].normal, vpn, vup, fovy / 2 - 90); //top plane
-
-	for (i=0 ; i<4 ; i++)
-	{
-		frustum[i].type = PLANE_ANYZ;
-		frustum[i].dist = Math_DotProduct(r_origin, frustum[i].normal); //FIXME: shouldn't this always be zero?
-		frustum[i].signbits = SignbitsForPlane (&frustum[i]);
-	}
-}
-
 #define NEARCLIP 4
 float frustum_skew = 0.0; //used by r_stereo
 void GL_SetFrustum(float fovx, float fovy)
@@ -244,252 +174,12 @@ void GL_SetFrustum(float fovx, float fovy)
 void R_RenderScene(void);
 void R_UpdateWarpTextures(void);    // [25/11/2013] See gl_warp.c ~hogsy
 
-void R_DrawEntitiesOnList(bool bAlphaPass) //johnfitz -- added parameter
-{
-	if(!r_drawentities.value)
-		return;
-
-#if 1
-	//johnfitz -- sprites are not a special case
-	for(unsigned int i = 0; i < cl_numvisedicts; i++)
-	{
-		currententity = cl_visedicts[i];
-
-		//johnfitz -- if alphapass is true, draw only alpha entites this time
-		//if alphapass is false, draw only nonalpha entities this time
-		if ((ENTALPHA_DECODE(currententity->alpha) < 1 && !bAlphaPass) ||
-			(ENTALPHA_DECODE(currententity->alpha) == 1 && bAlphaPass))
-			continue;
-
-		//johnfitz -- chasecam
-		if (currententity == &cl_entities[cl.viewentity])
-			currententity->angles[0] *= 0.3f;
-		//johnfitz
-
-		Draw_Entity(currententity);
-	}
-#else	// Draw per-material
-	for (int i = 0; i < material_count; i++)
-	{
-		for (unsigned int j = 0; j < cl_numvisedicts; j++)
-		{
-			currententity = cl_visedicts[j];
-			if (!currententity->model)
-				continue;
-				
-			if (currententity->model->materials == &g_materials[i])
-			{
-				//johnfitz -- if alphapass is true, draw only alpha entites this time
-				//if alphapass is false, draw only nonalpha entities this time
-				if ((ENTALPHA_DECODE(currententity->alpha) < 1 && !bAlphaPass) ||
-					(ENTALPHA_DECODE(currententity->alpha) == 1 && bAlphaPass))
-					continue;
-
-				Draw_Entity(currententity);
-			}
-		}
-	}
-#endif
-}
-
-void R_EmitWireBox(
-	MathVector3f_t mins, MathVector3f_t maxs,
-	float r, float g, float b)
-{
-#ifdef VL_MODE_OPENGL
-	glBegin(GL_QUADS);
-	glVertex3f(mins[0],mins[1],maxs[2]);
-	glVertex3f(maxs[0],mins[1],maxs[2]);
-	glVertex3fv(maxs);
-	glVertex3f(mins[0],maxs[1],maxs[2]);
-	glVertex3fv(mins);
-	glVertex3f(mins[0],maxs[1],mins[2]);
-	glVertex3f(maxs[0],maxs[1],mins[2]);
-	glVertex3f(maxs[0],mins[1],mins[2]);
-	glVertex3f(mins[0],maxs[1],mins[2]);
-	glVertex3f(mins[0],maxs[1],maxs[2]);
-	glVertex3fv(maxs);
-	glVertex3f(maxs[0],maxs[1],mins[2]);
-	glVertex3fv(mins);
-	glVertex3f(maxs[0],mins[1],mins[2]);
-	glVertex3f(maxs[0],mins[1],maxs[2]);
-	glVertex3f(mins[0],mins[1],maxs[2]);
-	glVertex3f(maxs[0],mins[1],mins[2]);
-	glVertex3f(maxs[0],maxs[1],mins[2]);
-	glVertex3fv(maxs);
-	glVertex3f(maxs[0],mins[1],maxs[2]);
-	glVertex3fv(mins);
-	glVertex3f(mins[0],mins[1],maxs[2]);
-	glVertex3f(mins[0],maxs[1],maxs[2]);
-	glVertex3f(mins[0],maxs[1],mins[2]);
-	glEnd();
-
-	glColor4f(r,g,b,1.0f);
-
-	glBegin(GL_LINES);
-	glVertex3fv(mins);
-	glVertex3f(maxs[0],mins[1],mins[2]);
-	glVertex3fv(mins);
-	glVertex3f(mins[0],maxs[1],mins[2]);
-	glVertex3f(maxs[0],maxs[1],mins[2]);
-	glVertex3f(maxs[0],mins[1],mins[2]);
-	glVertex3f(maxs[0],maxs[1],mins[2]);
-	glVertex3f(mins[0],maxs[1],mins[2]);
-	glVertex3f(mins[0],mins[1],maxs[2]);
-	glVertex3f(maxs[0],mins[1],maxs[2]);
-	glVertex3f(mins[0],mins[1],maxs[2]);
-	glVertex3f(mins[0],maxs[1],maxs[2]);
-	glVertex3fv(maxs);
-	glVertex3f(maxs[0],mins[1],maxs[2]);
-	glVertex3f(maxs[0],maxs[1],maxs[2]);
-	glVertex3f(mins[0],maxs[1],maxs[2]);
-	glVertex3fv(mins);
-	glVertex3f(mins[0],mins[1],maxs[2]);
-	glVertex3f(maxs[0],maxs[1],mins[2]);
-	glVertex3fv(maxs);
-	glVertex3f(mins[0],maxs[1],mins[2]);
-	glVertex3f(mins[0],maxs[1],maxs[2]);
-	glVertex3f(maxs[0],mins[1],mins[2]);
-	glVertex3f(maxs[0],mins[1],maxs[2]);
-	glEnd();
-
-	glColor3f(1, 1, 1);
-#endif
-}
-
-/*	draw bounding boxes -- the server-side boxes, not the renderer cullboxes
-*/
-void Video_ShowBoundingBoxes(void)
-{
-	extern ServerEntity_t	*sv_player;
-	MathVector3f_t			mins, maxs;
-	ServerEntity_t			*ed;
-	unsigned int			i;
-
-	if (!r_showbboxes.value || (cl.maxclients > 1) || !r_drawentities.value || (!sv.active && !g_state.embedded))
-		return;
-
-	vlDisable(VL_CAPABILITY_DEPTH_TEST | VL_CAPABILITY_TEXTURE_2D);
-	vlEnable(VL_CAPABILITY_BLEND);
-
-	for (i = 0, ed = NEXT_EDICT(sv.edicts); i<sv.num_edicts; i++, ed = NEXT_EDICT(ed))
-	{
-		if(ed == sv_player && !chase_active.value)
-			continue;
-
-#ifdef VL_MODE_OPENGL
-		glColor3f(1,1,1);
-#endif
-
-		Draw_CoordinateAxes(ed->v.origin);
-
-		Math_VectorAdd(ed->v.mins, ed->v.origin, mins);
-		Math_VectorAdd(ed->v.maxs, ed->v.origin, maxs);
-
-#ifdef VL_MODE_OPENGL
-		glColor4f(0, 0.5f, 0, 0.5f);
-#endif
-
-		R_EmitWireBox(mins, maxs, 1, 1, 1);
-	}
-
-	vlDisable(VL_CAPABILITY_BLEND);
-	vlEnable(VL_CAPABILITY_TEXTURE_2D | VL_CAPABILITY_DEPTH_TEST);
-}
-
-void R_DrawShadows (void)
-{
-	if(!r_shadows.value || !r_drawentities.value || r_drawflat_cheatsafe || r_lightmap_cheatsafe)
-		return;
-
-	for(unsigned int i = 0; i < cl_numvisedicts; i++)
-	{
-		currententity = cl_visedicts[i];
-		if(currententity == &cl.viewent)
-			return;
-
-		Shadow_Draw(currententity);
-	}
-
-	// Allow us to also render the players own shadow too.
-	if (cv_video_drawplayershadow.bValue)
-		Shadow_Draw(&cl_entities[cl.viewentity]);
-}
-
-void R_SetupScene(void)
-{
-#ifdef VL_MODE_OPENGL
-	//johnfitz -- rewrote this section
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	vlViewport(glx + r_refdef.vrect.x,
-		gly + glheight - r_refdef.vrect.y - r_refdef.vrect.height,
-		r_refdef.vrect.width,
-		r_refdef.vrect.height);
-	//johnfitz
-
-	GL_SetFrustum(r_fovx, r_fovy); //johnfitz -- use r_fov* vars
-
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	glRotatef(-90, 1, 0, 0);	    // put Z going up
-	glRotatef(90, 0, 0, 1);			// put Z going up
-	glRotatef(-r_refdef.viewangles[2], 1, 0, 0);
-	glRotatef(-r_refdef.viewangles[0], 0, 1, 0);
-	glRotatef(-r_refdef.viewangles[1], 0, 0, 1);
-	glTranslatef(-r_refdef.vieworg[0], -r_refdef.vieworg[1], -r_refdef.vieworg[2]);
-	glGetFloatv(GL_MODELVIEW_MATRIX, r_world_matrix);
-#endif
-}
-
-#include "EngineGame.h"
-
-// Split out so this can be used for reflections.
-void R_RenderWorldScene(void)
-{
-	Sky_Draw();		//johnfitz
-	World_Draw();
-
-	R_DrawShadows();
-
-	R_DrawEntitiesOnList(false);
-	World_DrawWater();
-	R_DrawEntitiesOnList(true);
-
-	Particle_Draw();
-	SpriteManager_Draw();
-	Light_Draw();
-}
-
 void R_RenderScene(void)
 {
 	R_PushDlights();
 	Light_Animate();
 
 	r_framecount++;
-
-	R_SetupScene();
-
-	// Set drawing parms.
-	if (gl_cull.value)
-		vlEnable(VL_CAPABILITY_CULL_FACE);
-	else
-		vlDisable(VL_CAPABILITY_CULL_FACE);
-
-	vlEnable(VL_CAPABILITY_DEPTH_TEST);
-
-	Fog_EnableGFog(); //johnfitz
-
-	R_RenderWorldScene();
-
-	Fog_DisableGFog();
-
-	R_DrawViewModel();
-	Video_ShowBoundingBoxes();
-
-	// Debug stuff...
-	if ((cl.maxclients <= 1) && !bIsDedicated)
-		Game->Server_Draw();
 }
 
 void R_RenderView (void)
@@ -499,9 +189,6 @@ void R_RenderView (void)
 
 	if (r_norefresh.value)
 		return;
-
-	if (!cl.worldmodel)
-		Sys_Error ("R_RenderView: NULL worldmodel");
 
 #ifdef VL_MODE_OPENGL
 	if(r_speeds.value)
@@ -515,41 +202,6 @@ void R_RenderView (void)
 	}
 #endif
 
-	R_SetupView (); //johnfitz -- this does everything that should be done once per frame
-
-#ifdef VL_MODE_OPENGL
-	//johnfitz -- stereo rendering -- full of hacky goodness
-	if (r_stereo.value)
-	{
-		float	eyesep = Math_Clamp(-8.0f, r_stereo.value, 8.0f),
-			fdepth = Math_Clamp(32.0f, r_stereodepth.value, 1024.0f);
-
-		plAngleVectors(r_refdef.viewangles, vpn, vright, vup);
-
-		// Render left eye (red)
-		glColorMask(true,false,false,true);
-		Math_VectorMA (r_refdef.vieworg, -0.5f * eyesep, vright, r_refdef.vieworg);
-		frustum_skew = 0.5f*eyesep*NEARCLIP/fdepth;
-		srand((int) (cl.time * 1000)); //sync random stuff between eyes
-
-		R_RenderScene();
-
-		// Render right eye (cyan)
-		glClear (GL_DEPTH_BUFFER_BIT);
-		glColorMask(0, 1, 1, 1);
-		Math_VectorMA (r_refdef.vieworg, 1.0f * eyesep, vright, r_refdef.vieworg);
-		frustum_skew = -frustum_skew;
-		srand((int) (cl.time * 1000)); //sync random stuff between eyes
-
-		R_RenderScene();
-
-		// Restore
-		glColorMask(true,true,true,true);
-		Math_VectorMA (r_refdef.vieworg, -0.5f * eyesep, vright, r_refdef.vieworg);
-		frustum_skew = 0.0f;
-	}
-	else
-#endif
 		R_RenderScene();
 	//johnfitz
 

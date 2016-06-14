@@ -193,27 +193,26 @@ void Sprite::Simulate()
 	if (!isactive || cl.bIsPaused || ((key_dest == key_console) && (svs.maxclients == 1)))
 		return;
 
+	Camera *camera = g_cameramanager->GetCurrentCamera();
+	if (!camera)
+		return;
+
 	isvisible = true;
 
 	if (colour[3] <= 0)
 		isvisible = false;
 
 	// Ensure it's on screen.
-	MathVector3f_t mvmins, mvmaxs;
+	plVector3f_t mvmins, mvmaxs;
 	plVectorAdd3fv(position, mins, mvmins);
 	plVectorAdd3fv(position, maxs, mvmaxs);
-	if (R_CullBox(mvmins, mvmaxs))
+	if (((type == SPRITE_TYPE_FLARE) && camera->IsPointOutsideFrustum(position)) ||
+		camera->IsBoxOutsideFrustum(mvmins, mvmaxs))
 		isvisible = false;
-}
-
-void Sprite::Draw()
-{
-	Camera *camera = g_cameramanager->GetCurrentCamera();
-	if (!camera)
-		return;
 
 	// Not visible.
-	if (!isvisible)	return;
+	if (!isvisible)	
+		return;
 
 	switch (type)
 	{
@@ -231,6 +230,16 @@ void Sprite::Draw()
 			(position[2] - camera->GetPosition()[2]) * camera->GetForward()[2];
 		break;
 	}
+}
+
+void Sprite::Draw()
+{
+	// Not visible.
+	if (!isvisible)	return;
+
+	Camera *camera = g_cameramanager->GetCurrentCamera();
+	if (!camera)
+		return;
 
 	if (colour[3] < 1.0f)
 		vlEnable(VL_CAPABILITY_BLEND);
@@ -255,18 +264,14 @@ void Sprite::Draw()
 		Math_VectorAdd(maxs, position, NewMaxs);
 
 		// Draw a point representing the current position.
-		Draw_CoordinateAxes(position);
+		Draw::CoordinateAxes(position);
 
 		// Draw the bounding box.
-		R_EmitWireBox(NewMins, NewMaxs, 0, 1.0f, 0);
+		Draw::WireBox(NewMins, NewMaxs, 0, 1.0f, 0);
 	}
 }
 
-/*
-	C Interface
-*/
-
-// Sprite Manager
+/*	Sprite Manager C Interface	*/
 
 extern "C" void SpriteManager_Simulate(void)
 {
@@ -293,7 +298,7 @@ extern "C" void SpriteManager_Clear(void)
 	g_spritemanager->Clear();
 }
 
-// Sprite
+/*	Sprite C Interface	*/
 
 extern "C" void Sprite_SetPosition(ISprite *sprite, plVector3f_t position)
 {

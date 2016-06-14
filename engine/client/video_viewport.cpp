@@ -65,6 +65,7 @@ void DestroyPrimaryViewport()
 Viewport::Viewport(unsigned int width, unsigned int height)
 	: _width(width), _height(height)
 {
+	_x = 0; _y = 0;
 }
 
 void Viewport::Draw()
@@ -72,8 +73,20 @@ void Viewport::Draw()
 	if (scr_disabled_for_loading)
 		return;
 
+#if defined (VL_MODE_OPENGL)
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+#endif
+
 	vlViewport(_x, _y, _width, _height);
 	vlScissor(_x, _y, _width, _height);
+
+	/*
+		glx + r_refdef.vrect.x,
+		gly + glheight - r_refdef.vrect.y - r_refdef.vrect.height,
+		r_refdef.vrect.width,
+		r_refdef.vrect.height
+	*/
 
 	vlClearBuffers(VL_MASK_DEPTH | VL_MASK_COLOUR | VL_MASK_STENCIL);
 
@@ -88,14 +101,16 @@ void Viewport::Draw()
 		rs_dynamiclightmaps = rs_aliaspasses = rs_skypasses = rs_brushpasses = 0;
 	}
 
+#if defined (VL_MODE_OPENGL)
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+#endif
+
 	if (_camera && !con_forcedup)
 	{
 		// Let the camera manager know we're drawing from this
 		// camera.
 		g_cameramanager->SetCurrentCamera(_camera);
-
-		// todo: we only need to set this if the viewport size has changed!
-		_camera->SetFOV(90);
 
 		if (cv_video_msaasamples.iValue > 0)
 			vlEnable(VL_CAPABILITY_MULTISAMPLE);
@@ -133,6 +148,7 @@ void Viewport::SetCamera(ICamera *camera)
 		return;
 	}
 
+	newcam->SetFOV(90);
 	_camera = newcam;
 }
 
@@ -144,4 +160,11 @@ void Viewport::SetSize(unsigned int width, unsigned int height)
 	if (height == 0) height = 1;
 
 	_width = width; _height = height;
+
+	if (_camera) _camera->SetFOV(90);
+}
+
+void Viewport::SetPosition(int x, int y)
+{
+	_x = x; _y = y;
 }

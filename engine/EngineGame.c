@@ -435,7 +435,7 @@ void Game_Initialize(void)
 	Import.DrawLine				= Draw_Line;
 	Import.DrawMaterialSurface	= Draw_MaterialSurface;
 	Import.DrawRectangle		= Draw_Rectangle;
-	Import.DrawCoordinateAxes	= Draw_CoordinateAxes;
+	//Import.DrawCoordinateAxes	= Draw_CoordinateAxes;
 	Import.DrawString			= Draw_String;
 
 	Import.Print	= Con_Printf;

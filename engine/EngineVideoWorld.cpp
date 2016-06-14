@@ -160,12 +160,16 @@ void R_CullSurfaces (void)
 	if (!r_drawworld_cheatsafe)
 		return;
 
+	Core::Camera *camera = g_cameramanager->GetCurrentCamera();
+	if (!camera)
+		return;
+
 	s = &cl.worldmodel->surfaces[cl.worldmodel->firstmodelsurface];
 	for (i=0 ; i<cl.worldmodel->nummodelsurfaces ; i++, s++)
 	{
 		if (s->visframe == r_visframecount)
 		{
-			if (R_CullBox(s->mins, s->maxs) || R_BackFaceCull (s))
+			if (camera->IsBoxOutsideFrustum(s->mins, s->maxs) || R_BackFaceCull (s))
 				s->culled = true;
 			else
 			{
@@ -181,13 +185,17 @@ void R_BuildLightmapChains (void)
 	msurface_t		*s;
 	unsigned int	i;
 
+	Core::Camera *camera = g_cameramanager->GetCurrentCamera();
+	if (!camera)
+		return;
+
 	// clear lightmap chains (already done in r_marksurfaces, but clearing them here to be safe becuase of r_stereo)
 	memset (lightmap_polys, 0, sizeof(lightmap_polys));
 
 	// now rebuild them
 	s = &cl.worldmodel->surfaces[cl.worldmodel->firstmodelsurface];
 	for (i = 0; i<cl.worldmodel->nummodelsurfaces; i++, s++)
-		if (s->visframe == r_visframecount && !R_CullBox(s->mins, s->maxs) && !R_BackFaceCull(s))
+		if (s->visframe == r_visframecount && !camera->IsBoxOutsideFrustum(s->mins, s->maxs) && !R_BackFaceCull(s))
 			R_RenderDynamicLightmaps(s);
 }
 
@@ -199,7 +207,6 @@ void R_BuildLightmapChains (void)
 
 void R_SetupView(void);
 void R_RenderScene(void);
-void R_RenderWorldScene(void);
 
 void Surface_DrawMirror(msurface_t *surface)
 {
@@ -345,13 +352,11 @@ void World_DrawWater(void)
 
 void World_Draw(void)
 {
-	unsigned int	i;
-	msurface_t		*s;
-	texture_t		*t;
-
-	if(!r_drawworld_cheatsafe)
+	if (!cl.worldmodel || !r_drawworld_cheatsafe)
 		return;
 
+	texture_t *t;
+	unsigned int i;
 	for (i = 0; i < cl.worldmodel->numtextures; i++)
 	{
 		t = cl.worldmodel->textures[i];
@@ -361,6 +366,7 @@ void World_Draw(void)
 		Surface_DrawMirror(t->texturechain);
 	}
 
+	msurface_t *s;
 	for(i = 0; i < cl.worldmodel->numtextures; i++)
 	{
 		t = cl.worldmodel->textures[i];

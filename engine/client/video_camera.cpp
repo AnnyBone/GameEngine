@@ -21,6 +21,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "engine_base.h"
 
 #include "video.h"
+#include "effect_sprite.h"
+#include "EngineGame.h"
 
 using namespace Core;
 
@@ -44,6 +46,9 @@ ConsoleVariable_t cv_camera_modelposition = { "camera_modelposition", "1", true 
 ConsoleVariable_t cv_camera_rollangle = { "camera_rollangle", "2.0", true };
 ConsoleVariable_t cv_camera_rollspeed = { "camera_rollspeed", "200", true };
 
+ConsoleVariable_t cv_camera_nearclip = { "camera_nearclip", "4", true };
+ConsoleVariable_t cv_camera_farclip = { "camera_farclip", "16384", true };
+
 ConsoleVariable_t cv_camera_punch = { "camera_punch", "1", true };
 
 CameraManager *g_cameramanager;
@@ -62,7 +67,8 @@ CameraManager::CameraManager()
 
 	Cvar_RegisterVariable(&cv_camera_modellag, NULL);
 	Cvar_RegisterVariable(&cv_camera_modelposition, NULL);
-
+	Cvar_RegisterVariable(&cv_camera_nearclip, NULL);
+	Cvar_RegisterVariable(&cv_camera_farclip, NULL);
 	Cvar_RegisterVariable(&cv_camera_punch, NULL);
 }
 
@@ -168,6 +174,19 @@ void Camera::DrawViewEntity()
 
 void Camera::Draw()
 {
+#if defined (VL_MODE_OPENGL)
+	glRotatef(-90, 1, 0, 0);	// Put Z going up.
+	glRotatef(90, 0, 0, 1);		// Put Z going up.
+
+	glRotatef(-angles[2], 1, 0, 0);
+	glRotatef(-angles[0], 0, 1, 0);
+	glRotatef(-angles[1], 0, 0, 1);
+
+	glTranslatef(-position[0], -position[1], -position[2]);
+
+	glGetFloatv(GL_MODELVIEW_MATRIX, r_world_matrix);
+#endif
+
 	Fog_SetupFrame();	// todo, really necessary to call this at the start of every draw call!?
 
 	float fovxx = fovx, fovyy = fovy;
@@ -194,6 +213,26 @@ void Camera::Draw()
 
 	SetFrustum(fovxx, fovyy);
 
+	if(gl_cull.value)	vlEnable(VL_CAPABILITY_CULL_FACE);
+	else				vlDisable(VL_CAPABILITY_CULL_FACE);
+
+	//vlEnableCapability(VL_CAPABILITY_DEPTH_TEST);	// is this needed??
+
+	//Fog_EnableGFog();
+	Sky_Draw();
+	World_Draw();
+	Draw::Shadows();
+	Draw::Entities(false);
+	World_DrawWater();
+	Draw::Entities(true);
+	// todo, particles
+	if (g_spritemanager) g_spritemanager->Draw();
+	Light_Draw();
+	//Fog_DisableGFog();
+	if ((cl.maxclients <= 1) && !bIsDedicated) Game->Server_Draw();
+	DrawViewEntity();
+	Draw::BoundingBoxes();
+
 #if 0
 	//johnfitz -- cheat-protect some draw modes
 	r_drawflat_cheatsafe = r_fullbright_cheatsafe = r_lightmap_cheatsafe = false;
@@ -212,8 +251,6 @@ void Camera::Draw()
 	}
 	//johnfitz
 #endif
-
-
 }
 
 /*	Calculate and add view bobbing.
@@ -340,6 +377,9 @@ void Camera::Simulate()
 	}
 
 	plAngleVectors(angles, _forward, _right, _up);
+
+	// Simulate camera-specific effects...
+	g_spritemanager->Simulate();
 }
 
 #ifdef CAMERA_LEGACY
@@ -495,9 +535,9 @@ void Camera::SetFOV(float fov)
 	// Clamp the FOV to ensure we don't
 	// get anything rediculous.
 	Math_Clamp(10, fov, 170);
-
+	
 	_fov = fov;
-	fovx = _fov;
+	_fovx = _fov;
 
 	unsigned int width = 640, height = 480;
 	if (_viewport)
@@ -511,12 +551,18 @@ void Camera::SetFOV(float fov)
 	float a = std::atanf(height / x);
 	a *= 360.0f / PL_PI;
 
-	fovy = a;
+	_fovy = a;
 }
 
-void Camera::SetFrustum(float _fovx, float _fovy)
+void Camera::SetFrustum(float fovx, float fovy)
 {
-	fovx = _fovx; fovy = _fovy;
+	_fovx = fovx; _fovy = fovy;
+
+	float xmax = cv_camera_nearclip.value * tanf(_fovx * PL_PI / 360);
+	float ymax = cv_camera_nearclip.value * tanf(_fovy * PL_PI / 360);
+#if defined (VL_MODE_OPENGL)
+	glFrustumf(-xmax, xmax, -ymax, ymax, cv_camera_nearclip.value, cv_camera_farclip.value);
+#endif
 }
 
 extern "C" {

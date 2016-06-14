@@ -215,7 +215,7 @@ void R_PushDlights(void)
 	int				i;
 	DynamicLight_t	*dLight;
 
-	if (gl_flashblend.value)
+	if (!cl.worldmodel || gl_flashblend.value)
 		return;
 
 	// Because the count hasn't advanced yet for this frame.

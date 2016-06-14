@@ -153,10 +153,6 @@ void Video_DrawObject(vlVertex_t *voObject, vlPrimitive_t vpPrimitiveType, unsig
 void Video_ShowBoundingBoxes(void);
 void Video_Shutdown(void);
 
-// Legacy
-void R_EmitWireBox(MathVector3f_t mins, MathVector3f_t maxs, float r, float g, float b);
-bool R_CullBox(MathVector3f_t emins, MathVector3f_t emaxs);
-
 // Brush
 void GL_BuildLightmaps();
 void R_RebuildAllLightmaps();
@@ -166,9 +162,8 @@ MathVector_t Light_GetSample(MathVector3f_t vPoint);
 // Legacy
 extern float r_world_matrix[16], r_base_world_matrix[16];
 void R_SetupGenericView(void);
-void R_SetupScene(void);
 
-plEXTERN_C_END
+PL_EXTERN_C_END
 
 // TODO: Reintroduce tracking functionality.
 #define	VIDEO_FUNCTION_START \
@@ -191,7 +186,7 @@ plEXTERN_C_END
 // Legacy
 #include "EngineVideoAlias.h"
 
-plEXTERN_C_START
+PL_EXTERN_C
 
 /*
 	Sky
@@ -238,4 +233,4 @@ void DrawGLPoly(glpoly_t *p);
 
 void Surface_DrawWater(glpoly_t *p, Material_t *mCurrent);
 
-plEXTERN_C_END
+PL_EXTERN_C_END

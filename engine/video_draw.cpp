@@ -22,6 +22,7 @@
 
 #include "video.h"
 #include "client/video_camera.h"
+#include "video_shadow.h"
 
 #include "engine_client.h"	// [28/7/2013] Added for precache functions ~hogsy
 
@@ -83,7 +84,7 @@ void Draw::ClearBuffers()
 	vlClearBuffers(VL_MASK_DEPTH | VL_MASK_COLOUR | VL_MASK_STENCIL);
 }
 
-void Draw::DrawDepthBuffer()
+void Draw::DepthBuffer()
 {
 #if 0
 	static gltexture_t	*depth_texture = NULL;
@@ -119,6 +120,170 @@ void Draw::DrawDepthBuffer()
 
 	// Free the pixel data.
 	free(uByte);
+#endif
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void Draw::WireBox(plVector3f_t mins, plVector3f_t maxs, float r, float g, float b)
+{
+	// todo, rewrite this function...
+
+#if defined (VL_MODE_OPENGL)
+	glBegin(GL_QUADS);
+	glVertex3f(mins[0], mins[1], maxs[2]);
+	glVertex3f(maxs[0], mins[1], maxs[2]);
+	glVertex3fv(maxs);
+	glVertex3f(mins[0], maxs[1], maxs[2]);
+	glVertex3fv(mins);
+	glVertex3f(mins[0], maxs[1], mins[2]);
+	glVertex3f(maxs[0], maxs[1], mins[2]);
+	glVertex3f(maxs[0], mins[1], mins[2]);
+	glVertex3f(mins[0], maxs[1], mins[2]);
+	glVertex3f(mins[0], maxs[1], maxs[2]);
+	glVertex3fv(maxs);
+	glVertex3f(maxs[0], maxs[1], mins[2]);
+	glVertex3fv(mins);
+	glVertex3f(maxs[0], mins[1], mins[2]);
+	glVertex3f(maxs[0], mins[1], maxs[2]);
+	glVertex3f(mins[0], mins[1], maxs[2]);
+	glVertex3f(maxs[0], mins[1], mins[2]);
+	glVertex3f(maxs[0], maxs[1], mins[2]);
+	glVertex3fv(maxs);
+	glVertex3f(maxs[0], mins[1], maxs[2]);
+	glVertex3fv(mins);
+	glVertex3f(mins[0], mins[1], maxs[2]);
+	glVertex3f(mins[0], maxs[1], maxs[2]);
+	glVertex3f(mins[0], maxs[1], mins[2]);
+	glEnd();
+
+	glColor4f(r, g, b, 1.0f);
+
+	glBegin(GL_LINES);
+	glVertex3fv(mins);
+	glVertex3f(maxs[0], mins[1], mins[2]);
+	glVertex3fv(mins);
+	glVertex3f(mins[0], maxs[1], mins[2]);
+	glVertex3f(maxs[0], maxs[1], mins[2]);
+	glVertex3f(maxs[0], mins[1], mins[2]);
+	glVertex3f(maxs[0], maxs[1], mins[2]);
+	glVertex3f(mins[0], maxs[1], mins[2]);
+	glVertex3f(mins[0], mins[1], maxs[2]);
+	glVertex3f(maxs[0], mins[1], maxs[2]);
+	glVertex3f(mins[0], mins[1], maxs[2]);
+	glVertex3f(mins[0], maxs[1], maxs[2]);
+	glVertex3fv(maxs);
+	glVertex3f(maxs[0], mins[1], maxs[2]);
+	glVertex3f(maxs[0], maxs[1], maxs[2]);
+	glVertex3f(mins[0], maxs[1], maxs[2]);
+	glVertex3fv(mins);
+	glVertex3f(mins[0], mins[1], maxs[2]);
+	glVertex3f(maxs[0], maxs[1], mins[2]);
+	glVertex3fv(maxs);
+	glVertex3f(mins[0], maxs[1], mins[2]);
+	glVertex3f(mins[0], maxs[1], maxs[2]);
+	glVertex3f(maxs[0], mins[1], mins[2]);
+	glVertex3f(maxs[0], mins[1], maxs[2]);
+	glEnd();
+
+	glColor3f(1, 1, 1);
+#endif
+}
+
+void Draw::BoundingBoxes()
+{
+	if (!r_showbboxes.value || (cl.maxclients > 1) || !r_drawentities.value || (!sv.active && !g_state.embedded))
+		return;
+
+	vlDisable(VL_CAPABILITY_DEPTH_TEST | VL_CAPABILITY_TEXTURE_2D);
+	vlEnable(VL_CAPABILITY_BLEND);
+
+	int	i;
+	ServerEntity_t *ed;
+	extern ServerEntity_t *sv_player;
+	for (i = 0, ed = NEXT_EDICT(sv.edicts); i<sv.num_edicts; i++, ed = NEXT_EDICT(ed))
+	{
+		if (ed == sv_player && !chase_active.value)
+			continue;
+
+#ifdef VL_MODE_OPENGL
+		glColor3f(1, 1, 1);
+#endif
+
+		Draw::CoordinateAxes(ed->v.origin);
+
+		plVector3f_t mins, maxs;
+		Math_VectorAdd(ed->v.mins, ed->v.origin, mins);
+		Math_VectorAdd(ed->v.maxs, ed->v.origin, maxs);
+
+#ifdef VL_MODE_OPENGL
+		glColor4f(0, 0.5f, 0, 0.5f);
+#endif
+
+		Draw::WireBox(mins, maxs, 1, 1, 1);
+	}
+
+	vlDisable(VL_CAPABILITY_BLEND);
+	vlEnable(VL_CAPABILITY_TEXTURE_2D | VL_CAPABILITY_DEPTH_TEST);
+}
+
+void Draw::Shadows()
+{
+	if (!r_shadows.value || !r_drawentities.value || r_drawflat_cheatsafe || r_lightmap_cheatsafe)
+		return;
+
+	for (unsigned int i = 0; i < cl_numvisedicts; i++)
+	{
+		currententity = cl_visedicts[i];
+		if (currententity == &cl.viewent)
+			return;
+
+		Shadow_Draw(currententity);
+	}
+
+	// Allow us to also render the players own shadow too.
+	if (cv_video_drawplayershadow.bValue)
+		Shadow_Draw(&cl_entities[cl.viewentity]);
+}
+
+void Draw::Entities(bool alphapass)
+{
+	if (!r_drawentities.value)
+		return;
+
+#if 1
+	for (unsigned int i = 0; i < cl_numvisedicts; i++)
+	{
+		//johnfitz -- if alphapass is true, draw only alpha entites this time
+		//if alphapass is false, draw only nonalpha entities this time
+		if ((ENTALPHA_DECODE(cl_visedicts[i]->alpha) < 1 && !alphapass) ||
+			(ENTALPHA_DECODE(cl_visedicts[i]->alpha) == 1 && alphapass))
+			continue;
+
+		currententity = cl_visedicts[i];	// todo, legacy, needs to go!
+		Draw_Entity(cl_visedicts[i]);
+	}
+#else	// Draw per-material
+	for (int i = 0; i < material_count; i++)
+	{
+		for (unsigned int j = 0; j < cl_numvisedicts; j++)
+		{
+			currententity = cl_visedicts[j];
+			if (!currententity->model)
+				continue;
+
+			if (currententity->model->materials == &g_materials[i])
+			{
+				//johnfitz -- if alphapass is true, draw only alpha entites this time
+				//if alphapass is false, draw only nonalpha entities this time
+				if ((ENTALPHA_DECODE(currententity->alpha) < 1 && !bAlphaPass) ||
+					(ENTALPHA_DECODE(currententity->alpha) == 1 && bAlphaPass))
+					continue;
+
+				Draw_Entity(currententity);
+			}
+		}
+	}
 #endif
 }
 
@@ -477,35 +642,6 @@ void Draw_GradientBackground(void)
 	vlViewport(0, 0, viewport->GetWidth(), viewport->GetHeight());
 }
 
-/*	This repeats a 64*64 tile graphic to fill the screen around a sized down
-	refresh window.
-*/
-void Draw_TileClear (int x, int y, int w, int h)
-{
-#if 0
-	glpic_t	*gl;
-
-	gl = (glpic_t *)draw_backtile->data;
-
-	glColor3f(1,1,1);
-
-	Video_SetTexture(gl->gltexture);
-
-	glBegin(GL_QUADS);
-	glTexCoord2f(x/64.0,y/64.0);
-	glVertex2f(x,y);
-	glTexCoord2f((x+w)/64.0,y/64.0);
-	glVertex2f(x+w,y);
-	glTexCoord2f((x+w)/64.0,(y+h)/64.0);
-	glVertex2f(x+w,y+h);
-	glTexCoord2f(x/64.0,(y+h)/64.0);
-	glVertex2f(x,y+h);
-	glEnd();
-#else
-// TODO: implement this using new pipeline
-#endif
-}
-
 void Draw_Line(plVector3f_t mvStart, plVector3f_t mvEnd)
 {
 	vlVertex_t voLine[2] = { { { 0 } } };
@@ -518,26 +654,23 @@ void Draw_Line(plVector3f_t mvStart, plVector3f_t mvEnd)
 	Video_DrawObject(voLine, VL_PRIMITIVE_LINES, 2, NULL, 0);
 }
 
-/*	Debugging tool.
-*/
-void Draw_CoordinateAxes(plVector3f_t position)
+void Draw::CoordinateAxes(plVector3f_t position)
 {
 	plVector3f_t start, end;
-
-	Math_VectorCopy(position, start);
-	Math_VectorCopy(position, end);
+	plVectorCopy(position, start);
+	plVectorCopy(position, end);
 	start[0] += 10;
 	end[0] -= 10;
 	Draw_Line(start, end);
 
-	Math_VectorCopy(position, start);
-	Math_VectorCopy(position, end);
+	plVectorCopy(position, start);
+	plVectorCopy(position, end);
 	start[1] += 10;
 	end[1] -= 10;
 	Draw_Line(start, end);
 
-	Math_VectorCopy(position, start);
-	Math_VectorCopy(position, end);
+	plVectorCopy(position, start);
+	plVectorCopy(position, end);
 	start[2] += 10;
 	end[2] -= 10;
 	Draw_Line(start, end);
@@ -824,7 +957,7 @@ void Draw_EntityBoundingBox(ClientEntity_t *entity)
 
 		Math_VectorAdd(entity->model->mins, entity->origin, mins);
 		Math_VectorAdd(entity->model->maxs, entity->origin, maxs);
-		R_EmitWireBox(mins, maxs, 0, 1, 0);
+		Draw::WireBox(mins, maxs, 0, 1, 0);
 		break;
 	default:
 	{
@@ -833,15 +966,15 @@ void Draw_EntityBoundingBox(ClientEntity_t *entity)
 #endif
 		Math_VectorAdd(entity->model->rmins, entity->origin, mins);
 		Math_VectorAdd(entity->model->rmaxs, entity->origin, maxs);
-		R_EmitWireBox(mins, maxs, 1, 0, 0);
+		Draw::WireBox(mins, maxs, 1, 0, 0);
 
 		Math_VectorAdd(entity->model->ymins, entity->origin, mins);
 		Math_VectorAdd(entity->model->ymaxs, entity->origin, maxs);
-		R_EmitWireBox(mins, maxs, 0, 1, 0);
+		Draw::WireBox(mins, maxs, 0, 1, 0);
 
 		Math_VectorAdd(entity->model->mins, entity->origin, mins);
 		Math_VectorAdd(entity->model->maxs, entity->origin, maxs);
-		R_EmitWireBox(mins, maxs, 0, 0, 1);
+		Draw::WireBox(mins, maxs, 0, 0, 1);
 	}
 	break;
 	}
@@ -851,7 +984,7 @@ void Draw_Entity(ClientEntity_t *entity)
 {
 	if (!entity->model)
 	{
-		Draw_CoordinateAxes(entity->origin);
+		Draw::CoordinateAxes(entity->origin);
 		return;
 	}
 

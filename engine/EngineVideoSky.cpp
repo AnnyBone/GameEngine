@@ -867,7 +867,7 @@ void Sky_Draw3DWorld(void)
 	Math_VectorAdd(oldorg, sky_camerapos, camera->GetPosition());
 	
 	R_SetupView();
-	R_SetupScene();
+	//R_SetupScene();
 
 	glMatrixMode(GL_PROJECTION);
 	glScalef(4, 4, 4);
@@ -884,7 +884,7 @@ void Sky_Draw3DWorld(void)
 
 	// Setup the view again, urgh.
 	R_SetupView();
-	R_SetupScene();
+	//R_SetupScene();
 #endif
 }
 
