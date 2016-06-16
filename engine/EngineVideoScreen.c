@@ -432,6 +432,7 @@ void Screen_DrawNet(void)
 
 void Screen_SetUpToDrawConsole(void)
 {
+#if 0 // todo, rewrite
 	//johnfitz -- let's hack away the problem of slow console when host_timescale is <0
 	extern ConsoleVariable_t host_timescale;
 	float timescale;
@@ -469,6 +470,7 @@ void Screen_SetUpToDrawConsole(void)
 
 	if (!con_forcedup && scr_con_current)
 		scr_tileclear_updates = 0; //johnfitz
+#endif
 }
 
 void Screen_DrawConsole(void)
@@ -498,6 +500,7 @@ void Screen_DrawConsole(void)
 
 void SCR_ScreenShot_f (void)
 {
+#if 0 // todo, rewrite
 	uint8_t		*buffer;
 	char		tganame[32], checkname[PLATFORM_MAX_PATH];
 	int			i;
@@ -535,6 +538,7 @@ void SCR_ScreenShot_f (void)
 		Con_Warning("Failed to write %s\n",tganame);
 
 	free (buffer);
+#endif
 }
 
 void SCR_BeginLoadingPlaque (void)

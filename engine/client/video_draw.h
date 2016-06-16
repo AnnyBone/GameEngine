@@ -32,6 +32,7 @@ namespace Core
 		void BoundingBoxes();
 
 		void Entity(ClientEntity_t *entity);
+		void EntityBoundingBox(ClientEntity_t *entity);
 		void WireBox(plVector3f_t mins, plVector3f_t maxs, float r, float g, float b);
 		void CoordinateAxes(plVector3f_t position);
 	}

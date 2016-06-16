@@ -51,6 +51,8 @@ ConsoleVariable_t cv_camera_farclip = { "camera_farclip", "16384", true };
 
 ConsoleVariable_t cv_camera_punch = { "camera_punch", "1", true };
 
+ConsoleVariable_t cv_camera_fov = { "camera_fov", "90", true };
+
 CameraManager *g_cameramanager;
 
 CameraManager::CameraManager()
@@ -70,6 +72,7 @@ CameraManager::CameraManager()
 	Cvar_RegisterVariable(&cv_camera_nearclip, NULL);
 	Cvar_RegisterVariable(&cv_camera_farclip, NULL);
 	Cvar_RegisterVariable(&cv_camera_punch, NULL);
+	Cvar_RegisterVariable(&cv_camera_fov, NULL);
 }
 
 /* Camera Creation */
@@ -145,7 +148,7 @@ Camera::Camera()
 
 	plAngleVectors(angles, _forward, _right, _up);
 
-	SetFOV(90);
+	SetFOV(cv_camera_fov.value);
 }
 
 Camera::Camera(Viewport *viewport) : Camera()
@@ -563,9 +566,7 @@ void Camera::SetFrustum(float fovx, float fovy)
 #endif
 }
 
-extern "C" {
-	int SignbitsForPlane(mplane_t *out);
-}
+int SignbitsForPlane(mplane_t *out);
 
 void Camera::SimulateFrustum()
 {
@@ -754,4 +755,16 @@ void Camera::TracePosition()
 		(int)w[0],
 		(int)w[1],
 		(int)w[2]);
+}
+
+////////////////////////////////////////////////////
+
+void Camera::SetViewport(IViewport *viewport)
+{
+	_viewport = dynamic_cast<Viewport*>(viewport);
+	if (!_viewport)
+	{
+		Con_Warning("Invalid viewport!\n");
+		return;
+	}
 }

@@ -105,7 +105,7 @@ void Sky_LoadCloudTexture(const char *cPath)
 
 char *suf[6] = {"rt", "bk", "lf", "ft", "up", "dn"};
 
-void Sky_LoadSkyBox (char *name)
+void Sky_LoadSkyBox(const char *name)
 {
 	int		i, mark;
 	unsigned int width, height;
@@ -824,9 +824,6 @@ void Sky_DrawFace (int axis)
 
 // Sky Camera
 
-void R_SetupView(void);
-void R_RenderScene(void);
-
 bool			sky_camera;
 MathVector3f_t	sky_camerapos;
 
@@ -850,6 +847,7 @@ void Sky_ReadCameraPosition(void)
 */
 void Sky_Draw3DWorld(void)
 {
+#if 0 // todo, rewrite
 #ifdef VL_MODE_OPENGL
 	MathVector3f_t oldorg;
 
@@ -885,6 +883,7 @@ void Sky_Draw3DWorld(void)
 	// Setup the view again, urgh.
 	R_SetupView();
 	//R_SetupScene();
+#endif
 #endif
 }
 

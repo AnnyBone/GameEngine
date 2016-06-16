@@ -140,7 +140,6 @@ void Video_Initialize(void);
 void Video_GenerateSphereCoordinates(void);
 void Video_SetTexture(gltexture_t *gTexture);
 void Video_SetViewportSize(unsigned int w, unsigned int h);
-void Video_PreFrame(void);
 void Video_PostFrame(void);
 void Video_Frame(void);
 void Video_ObjectTexture(vlVertex_t *voObject, unsigned int uiTextureUnit, float S, float T);
@@ -181,22 +180,16 @@ PL_EXTERN_C_END
 
 #include "video_layer.h"
 #include "video_object.h"
+
 #include "client/video_draw.h"
+#include "client/video_sky.h"
 
 // Legacy
 #include "EngineVideoAlias.h"
 
 PL_EXTERN_C
 
-/*
-	Sky
-*/
-
-void Sky_Draw(void);
-
-/*
-	Light
-*/
+/*	Light	*/
 
 void Light_Draw(void);
 void Light_Animate(void);

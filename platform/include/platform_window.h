@@ -44,16 +44,16 @@ typedef struct
 
 plEXTERN_C_START
 
-PL_EXTERN void plMessageBox(const char *title, const char *msg, ...);
+PL_EXTERN PLvoid plMessageBox(const char *title, const char *msg, ...);
 PL_EXTERN PLvoid plShowCursor(PLbool show);	// Shows or hides the cursor for the active window.
-PL_EXTERN void plGetCursorPosition(int *x, int *y);
+PL_EXTERN PLvoid plGetCursorPosition(int *x, int *y);
 
 // Window Management
-PL_EXTERN void plCreateWindow(plWindow_t *window);
+PL_EXTERN PLvoid plCreateWindow(plWindow_t *window);
 
-PL_EXTERN int plGetScreenWidth(void);	// Returns width of current screen.
-PL_EXTERN int plGetScreenHeight(void);	// Returns height of current screen.
-PL_EXTERN int plGetScreenCount(void);	// Returns number of avaliable screens.
+PL_EXTERN PLuint plGetScreenWidth(PLvoid);	// Returns width of current screen.
+PL_EXTERN PLuint plGetScreenHeight(PLvoid);	// Returns height of current screen.
+PL_EXTERN PLint plGetScreenCount(PLvoid);	// Returns number of avaliable screens.
 
 // Rendering
 PL_EXTERN PLvoid plSwapBuffers(plWindow_t *window);

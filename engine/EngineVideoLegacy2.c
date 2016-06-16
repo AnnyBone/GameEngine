@@ -24,22 +24,20 @@
 #include "engine_client.h"
 #include "EngineVideoParticle.h"
 
-extern ConsoleVariable_t r_stereo;
-extern ConsoleVariable_t r_stereodepth;
-extern ConsoleVariable_t r_drawflat;
-extern ConsoleVariable_t r_flatlightstyles;
-extern ConsoleVariable_t gl_fullbrights;
-extern ConsoleVariable_t gl_farclip;
+ConsoleVariable_t	r_drawflat = { "r_drawflat", "0" };
+ConsoleVariable_t	r_flatlightstyles = { "r_flatlightstyles", "0" };
+ConsoleVariable_t	gl_fullbrights = { "gl_fullbrights", "1", true };
+ConsoleVariable_t	gl_farclip = { "gl_farclip", "16384", true };
 extern ConsoleVariable_t r_waterquality;
 extern ConsoleVariable_t r_oldwater;
 extern ConsoleVariable_t r_waterwarp;
-extern ConsoleVariable_t r_oldskyleaf;
-extern ConsoleVariable_t r_drawworld;
-extern ConsoleVariable_t r_showbboxes;
-extern ConsoleVariable_t r_lerpmodels;
-extern ConsoleVariable_t r_lerpmove;
-
-extern float load_subdivide_size; //johnfitz -- remember what subdivide_size value was when this map was loaded
+ConsoleVariable_t	r_oldskyleaf = { "r_oldskyleaf", "0" };
+ConsoleVariable_t	r_drawworld = { "r_drawworld", "1" };
+ConsoleVariable_t	r_showbboxes = { "r_showbboxes", "0" };
+ConsoleVariable_t	r_lerpmodels = { "r_lerpmodels", "1" };
+ConsoleVariable_t	r_lerpmove = { "r_lerpmove", "1" };
+ConsoleVariable_t	r_norefresh = { "r_norefresh", "0" };
+ConsoleVariable_t	gl_flashblend = { "gl_flashblend", "0" };;
 
 extern ConsoleVariable_t gl_subdivide_size; //johnfitz -- moved here from gl_model.c
 
@@ -125,8 +123,6 @@ void R_Envmap_f(void)
 
 void R_Init (void)
 {
-	extern cvar_t	r_norefresh;
-
 	Cmd_AddCommand ("timerefresh", R_TimeRefresh_f);
 	Cmd_AddCommand ("envmap", R_Envmap_f);
 
@@ -144,8 +140,6 @@ void R_Init (void)
 	Cvar_RegisterVariable (&gl_cull, NULL);
 	Cvar_RegisterVariable (&gl_polyblend, NULL);
 	Cvar_RegisterVariable (&gl_flashblend, NULL);
-	Cvar_RegisterVariable (&r_stereo, NULL);
-	Cvar_RegisterVariable (&r_stereodepth, NULL);
 	Cvar_RegisterVariable (&r_waterquality, NULL);
 	Cvar_RegisterVariable (&r_oldwater, NULL);
 	Cvar_RegisterVariable (&r_waterwarp, NULL);
@@ -189,8 +183,6 @@ void R_NewMap (void)
 
 	Sky_NewMap (); //johnfitz -- skybox in worldspawn
 	Fog_NewMap (); //johnfitz -- global fog in worldspawn
-
-	load_subdivide_size = gl_subdivide_size.value; //johnfitz -- is this the right place to set this?
 }
 
 /*	For program optimization

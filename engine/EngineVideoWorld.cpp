@@ -27,12 +27,12 @@
 #include "client/video_camera.h"
 #include "EngineVideoEFrag.h"
 
-extern cvar_t gl_fullbrights, r_drawflat, r_oldwater, r_oldskyleaf, r_showtris; //johnfitz
+extern "C" cvar_t gl_fullbrights, r_drawflat, r_oldwater, r_oldskyleaf, r_showtris; //johnfitz
 
 extern glpoly_t	*lightmap_polys[MAX_LIGHTMAPS];
 
-uint8_t *SV_FatPVS(plVector3f_t org, model_t *worldmodel);
-extern uint8_t mod_novis[BSP_MAX_LEAFS/8];
+extern "C" uint8_t *SV_FatPVS(plVector3f_t org, model_t *worldmodel);
+extern "C" uint8_t mod_novis[BSP_MAX_LEAFS/8];
 
 bool bVisibilityChanged; //if true, force pvs to be refreshed
 

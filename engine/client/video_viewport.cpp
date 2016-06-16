@@ -31,7 +31,7 @@ using namespace Core;
 Viewport *viewport_main = nullptr;
 
 // Creates a new viewport and camera for that viewport.
-void CreatePrimaryViewport()
+void Core::CreatePrimaryViewport()
 {
 	if (viewport_main)
 		return;
@@ -43,7 +43,7 @@ void CreatePrimaryViewport()
 	viewport_main->SetCamera(new Camera);
 }
 
-Viewport *GetPrimaryViewport()
+Viewport *Core::GetPrimaryViewport()
 {
 	if (!viewport_main)
 	{
@@ -54,7 +54,7 @@ Viewport *GetPrimaryViewport()
 	return viewport_main;
 }
 
-void DestroyPrimaryViewport()
+void Core::DestroyPrimaryViewport()
 {
 	if (!viewport_main) return;
 	delete viewport_main;
@@ -153,6 +153,7 @@ void Viewport::SetCamera(ICamera *camera)
 		return;
 	}
 	
+	newcam->SetViewport(this);
 	newcam->SetFOV(90);
 	_camera = newcam;
 }

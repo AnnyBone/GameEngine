@@ -575,6 +575,9 @@
     <ClInclude Include="client\video_draw.h">
       <Filter>Client\Video</Filter>
     </ClInclude>
+    <ClInclude Include="client\video_sky.h">
+      <Filter>Client\Video</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="engine.rc" />

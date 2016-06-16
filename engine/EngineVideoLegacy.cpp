@@ -50,7 +50,7 @@ float r_fovx, r_fovy; //johnfitz -- rendering fov may be different becuase of r_
 
 int		d_lightstylevalue[256];	// 8.8 fraction of base light value
 
-cvar_t	r_norefresh				= {	"r_norefresh",			"0"					};
+extern "C" ConsoleVariable_t r_norefresh;
 cvar_t	r_drawentities			= {	"r_drawentities",		"1"					};
 cvar_t	r_drawviewmodel			= {	"r_drawviewmodel",		"1"					},
 	cv_video_drawbrushes = { "video_drawbrushes", "1", false, true, "Toggles whether brushes are drawn in the level." };
@@ -63,20 +63,11 @@ cvar_t	r_novis					= {	"r_novis",				"0"					};
 cvar_t	r_nocull				= {	"r_nocull",				"0"					};
 cvar_t	gl_cull					= {	"gl_cull",				"1"					};
 cvar_t	gl_polyblend			= {	"gl_polyblend",			"1"					};
-cvar_t	gl_flashblend			= {	"gl_flashblend",		"0"					};
-cvar_t	r_stereo				= {	"r_stereo",				"0"					};
-cvar_t	r_stereodepth			= {	"r_stereodepth",		"128"				};
-cvar_t	r_drawflat				= {	"r_drawflat",			"0"					};
-cvar_t	r_flatlightstyles		= {	"r_flatlightstyles",	"0"					};
-cvar_t	gl_fullbrights			= {	"gl_fullbrights",		"1",		true	};
-cvar_t	gl_farclip				= {	"gl_farclip",			"16384",	true	};
+
+
 ConsoleVariable_t cv_video_lightmapoversample = { "video_lightmapoversample", "8", true };
-cvar_t	r_oldskyleaf			= {	"r_oldskyleaf",			"0"					};
-cvar_t	r_drawworld				= {	"r_drawworld",			"1"					};
+
 cvar_t	r_showtris				= {	"r_showtris",			"0"					};
-cvar_t	r_showbboxes			= {	"r_showbboxes",			"0"					};
-cvar_t	r_lerpmodels			= {	"r_lerpmodels",			"1"					};
-cvar_t	r_lerpmove				= {	"r_lerpmove",			"1"					};
 
 bool R_CullModelForEntity(ClientEntity_t *e)
 {

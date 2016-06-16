@@ -87,18 +87,18 @@ PL_MODULE_EXPORT EngineExport_t *Engine_Main(EngineImport_t *mImport)
 	exports.LoadModel = Mod_ForName;
 
 	// Console
-	exports.InsertConsoleCommand = Cbuf_InsertText;
-	exports.RegisterConsoleVariable = Cvar_RegisterVariable;
-	exports.SetConsoleVariable = Cvar_Set;
-	exports.ResetConsoleVariable = Cvar_Reset;
-	exports.GetConsoleVariableValue = Cvar_VariableValue;
+	exports.InsertConsoleCommand		= Cbuf_InsertText;
+	exports.RegisterConsoleVariable		= Cvar_RegisterVariable;
+	exports.SetConsoleVariable			= Cvar_Set;
+	exports.ResetConsoleVariable		= Cvar_Reset;
+	exports.GetConsoleVariableValue		= Cvar_VariableValue;
 	exports.GetConsoleVariableBoolValue = ConsoleVariable_GetBoolValue;
-	exports.Print = Con_Printf;
-	exports.PrintDev = Con_DPrintf;
+	exports.Print						= Con_Printf;
+	exports.PrintDev					= Con_DPrintf;
 
 	// Video
 	exports.DrawPostFrame			= Video_PostFrame;
-	exports.DrawPreFrame			= Video_PreFrame;
+	//exports.DrawPreFrame			= Video_PreFrame;
 	//exports.DrawEntity			= Draw_Entity;
 	//exports.DrawFPS				= Screen_DrawFPS;
 	//exports.DrawConsole			= Screen_DrawConsole;

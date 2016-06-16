@@ -68,8 +68,7 @@ bool input_mouseactive = false;
 
 using namespace Core;
 
-// [30/1/2013] Found in engine_video.c ~hogsy
-extern SDL_Window *sMainWindow;
+extern "C" SDL_Window *sdl_mainwindow;
 
 SDL_Event sEvent;
 
@@ -325,7 +324,7 @@ void Input_Frame(void)
 						((unsigned)sEvent.motion.x > viewport->GetWidth()) ||
 						((unsigned)sEvent.motion.y < viewport->GetHeight()) ||
 						((unsigned)sEvent.motion.y > viewport->GetHeight()))
-						SDL_WarpMouseInWindow(sMainWindow, viewport->GetWidth() / 2, viewport->GetHeight() / 2);
+						SDL_WarpMouseInWindow(sdl_mainwindow, viewport->GetWidth() / 2, viewport->GetHeight() / 2);
 				}
 			}
 			break;
@@ -372,8 +371,8 @@ void Input_Frame(void)
 		}
 }
 
-extern ConsoleVariable_t	cl_maxpitch,
-							cl_minpitch;
+extern "C" ConsoleVariable_t	cl_maxpitch,
+								cl_minpitch;
 
 /*	Process client-specific movement which
 	will be sent to the server.
@@ -429,11 +428,11 @@ void Input_ActivateMouse(void)
 	if(cvInputMouseGrab.bValue)
 	{
 		SDL_ShowCursor(false);
-		SDL_SetWindowGrab(sMainWindow,SDL_TRUE);
+		SDL_SetWindowGrab(sdl_mainwindow, SDL_TRUE);
 
 		Viewport *viewport = GetPrimaryViewport();
 		if (viewport)
-			SDL_WarpMouseInWindow(sMainWindow,viewport->GetWidth() / 2, viewport->GetHeight() / 2);
+			SDL_WarpMouseInWindow(sdl_mainwindow, viewport->GetWidth() / 2, viewport->GetHeight() / 2);
 	}
 
 	input_mouseactive = true;
@@ -445,7 +444,7 @@ void Input_DeactivateMouse(void)
 		return;
 
 	SDL_ShowCursor(true);
-	SDL_SetWindowGrab(sMainWindow,SDL_FALSE);
+	SDL_SetWindowGrab(sdl_mainwindow, SDL_FALSE);
 
 	input_mouseactive = false;
 }

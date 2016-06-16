@@ -36,8 +36,6 @@ ConsoleVariable_t r_oldwater		= {	"r_oldwater",		"1",	true,	false	};
 ConsoleVariable_t r_waterquality = { "r_waterquality", "8" };
 ConsoleVariable_t r_waterwarp = { "r_waterwarp", "1" };
 
-float load_subdivide_size; //johnfitz -- remember what subdivide_size value was when this map was loaded
-
 float turbsin[] =
 {
 	0, 0.19633, 0.392541, 0.588517, 0.784137, 0.979285, 1.17384, 1.3677,

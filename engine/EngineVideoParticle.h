@@ -18,10 +18,11 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef __ENGINEPARTICLE__
-#define	__ENGINEPARTICLE__
+#pragma once
 
 #include "shared_client.h"
+
+PL_EXTERN_C
 
 Particle_t *Particle_Allocate(void);
 
@@ -32,4 +33,4 @@ void Particle_ClearAll(void);
 void Particle_Draw(void);
 void Particle_Frame(void);
 
-#endif
+PL_EXTERN_C_END

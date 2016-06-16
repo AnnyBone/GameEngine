@@ -18,14 +18,8 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
 PL_EXTERN_C
 
-extern GameExport_t	*Game;
-
-/*	Global					*/
-void Game_Initialize(void);
-
-/*	Server-side functions	*/
-void Server_Flare(plVector3f_t org, float r, float g, float b, float a, float scale, char *texture);
-
-/*	Client-side functions	*/
+void Sky_LoadSkyBox(const char *name);
+void Sky_Draw(void);
+void Sky_ReadCameraPosition(void);
 
 PL_EXTERN_C_END

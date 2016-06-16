@@ -191,6 +191,7 @@ void Draw::WireBox(plVector3f_t mins, plVector3f_t maxs, float r, float g, float
 }
 
 extern "C" ConsoleVariable_t r_showbboxes;
+extern "C" ServerEntity_t *sv_player;
 
 void Draw::BoundingBoxes()
 {
@@ -202,7 +203,6 @@ void Draw::BoundingBoxes()
 
 	unsigned int i;
 	ServerEntity_t *ed;
-	extern ServerEntity_t *sv_player;
 	for (i = 0, ed = NEXT_EDICT(sv.edicts); i < sv.num_edicts; i++, ed = NEXT_EDICT(ed))
 	{
 		if (ed == sv_player && !chase_active.value)
@@ -612,7 +612,11 @@ void Draw_ConsoleBackground(void)
 
 void Draw_GradientBackground(void)
 {
-	Viewport *viewport = GetPrimaryViewport();
+	Camera *camera = g_cameramanager->GetCurrentCamera();
+	if (!camera)
+		return;
+
+	Viewport *viewport = dynamic_cast<Viewport*>(camera->GetViewport());
 	if (!viewport)
 		return;
 
@@ -801,6 +805,10 @@ void Draw_FadeScreen (void)
 {
 	vlVertex_t	voFade[4];
 
+	Viewport *viewport = GetPrimaryViewport();
+	if (!viewport)
+		return;
+
 	GL_SetCanvas(CANVAS_DEFAULT);
 
 	vlEnable(VL_CAPABILITY_BLEND);
@@ -808,13 +816,13 @@ void Draw_FadeScreen (void)
 	Video_ObjectVertex(&voFade[0], 0, 0, 0);
 	Video_ObjectColour(&voFade[0], 1.0f, 1.0f, 1.0f, 0.5f);
 
-	Video_ObjectVertex(&voFade[1], glwidth, 0, 0);
+	Video_ObjectVertex(&voFade[1], viewport->GetWidth(), 0, 0);
 	Video_ObjectColour(&voFade[1], 1.0f, 1.0f, 1.0f, 0.5f);
 
-	Video_ObjectVertex(&voFade[2], glwidth, glheight, 0);
+	Video_ObjectVertex(&voFade[2], viewport->GetWidth(), viewport->GetHeight(), 0);
 	Video_ObjectColour(&voFade[2], 1.0f, 1.0f, 1.0f, 0.5f);
 
-	Video_ObjectVertex(&voFade[3], 0, glheight, 0);
+	Video_ObjectVertex(&voFade[3], 0, viewport->GetHeight(), 0);
 	Video_ObjectColour(&voFade[3], 1.0f, 1.0f, 1.0f, 0.5f);
 
 	Video_DrawFill(voFade, NULL, 0);
@@ -864,9 +872,16 @@ void Draw_BeginDisc(void)
 void GL_SetCanvas (VideoCanvasType_t newcanvas)
 {
 #ifdef VL_MODE_OPENGL
-	extern vrect_t		scr_vrect;
-	float				s;
-	int					lines;
+	float s;
+	int	lines;
+
+	Camera *camera = g_cameramanager->GetCurrentCamera();
+	if (!camera)
+		return;
+
+	Viewport *viewport = dynamic_cast<Viewport*>(camera->GetViewport());
+	if (!viewport)
+		return;
 
 	if (newcanvas == currentcanvas)
 		return;
@@ -875,6 +890,8 @@ void GL_SetCanvas (VideoCanvasType_t newcanvas)
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity ();
 
+	unsigned int glwidth = viewport->GetWidth(), glheight = viewport->GetHeight();
+	int glx = viewport->GetPosition()[0], gly = viewport->GetPosition()[1];
 	switch(newcanvas)
 	{
 	case CANVAS_DEFAULT:
@@ -903,8 +920,8 @@ void GL_SetCanvas (VideoCanvasType_t newcanvas)
 		break;
 	case CANVAS_CROSSHAIR: //0,0 is center of viewport
 		s = Math_Clamp(1.0, scr_crosshairscale.value, 10.0);
-		glOrtho (scr_vrect.width/-2/s, scr_vrect.width/2/s, scr_vrect.height/2/s, scr_vrect.height/-2/s, -99999, 99999);
-		vlViewport(scr_vrect.x, glheight - scr_vrect.y - scr_vrect.height, scr_vrect.width & ~1, scr_vrect.height & ~1);
+		glOrtho(glwidth / -2 / s, glwidth / 2 / s, glheight / 2 / s, glheight / -2 / s, -99999, 99999);
+		vlViewport(glx, glheight - gly - glheight, glwidth & ~1, glheight & ~1);
 		break;
 	case CANVAS_BOTTOMLEFT: //used by devstats
 		s = (float)glwidth/vid.conwidth; //use console scale
@@ -941,7 +958,7 @@ void Draw_ResetCanvas(void)
 	Entities
 */
 
-void Draw_EntityBoundingBox(ClientEntity_t *entity)
+void Draw::EntityBoundingBox(ClientEntity_t *entity)
 {
 	if (!entity->model || ((entity == &cl_entities[cl.viewentity]) && !chase_active.bValue) || (entity == &cl.viewent))
 		return;
@@ -1028,7 +1045,7 @@ void Draw::Entity(ClientEntity_t *entity)
 	if (r_showbboxes.bValue)
 	{
 		vlEnable(VL_CAPABILITY_BLEND);
-		Draw_EntityBoundingBox(entity);
+		Draw::EntityBoundingBox(entity);
 		vlDisable(VL_CAPABILITY_BLEND);
 	}
 }

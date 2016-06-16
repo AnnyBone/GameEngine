@@ -25,7 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 Simple Window/Display Handling
 */
 
-PLint plGetScreenWidth(PLvoid)
+PLuint plGetScreenWidth(PLvoid)
 {
 #ifdef _WIN32
 	return GetSystemMetrics(SM_CXSCREEN);
@@ -48,7 +48,7 @@ PLint plGetScreenWidth(PLvoid)
 #endif
 }
 
-PLint plGetScreenHeight(PLvoid)
+PLuint plGetScreenHeight(PLvoid)
 {
 	pFUNCTION_START
 #ifdef _WIN32

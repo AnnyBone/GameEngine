@@ -379,7 +379,7 @@ void Input_Key(int iKey)
 
 }
 
-pMODULE_EXPORT MenuExport_t *Menu_Main(ModuleImport_t *Import)
+PL_MODULE_EXPORT MenuExport_t *Menu_Main(ModuleImport_t *Import)
 {
 	Engine = *Import;
 

@@ -211,7 +211,7 @@ void	Server_PreFrame(void);	// server_main
 void	Server_SendClientInformation(ServerClient_t *client);
 void	Game_Shutdown(void);
 
-pMODULE_EXPORT GameExport_t *Game_Main(ModuleImport_t *Import)
+PL_MODULE_EXPORT GameExport_t *Game_Main(ModuleImport_t *Import)
 {
 	// Imports...
 

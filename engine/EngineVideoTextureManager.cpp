@@ -916,11 +916,12 @@ void TexMgr_LoadImage32(gltexture_t *glt, uint8_t *data)
 	TexMgr_SetFilterModes (glt);
 }
 
+extern "C" ConsoleVariable_t gl_fullbrights;
+
 /*	Handles 8bit source data, then passes it to LoadImage32
 */
 void TexMgr_LoadImage8(gltexture_t *glt, uint8_t *data)
 {
-	extern		cvar_t	gl_fullbrights;
 	bool				padw = false,padh = false;
 	uint8_t				padbyte;
 	unsigned	int		i,*usepal;

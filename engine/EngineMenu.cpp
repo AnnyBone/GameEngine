@@ -29,6 +29,8 @@ PL_INSTANCE hMenuInstance;
 int	Menu_GetScreenWidth(void);
 int Menu_GetScreenHeight(void);
 
+MenuExport_t *g_menu = nullptr;
+
 void Menu_Initialize(void)
 {
 	bool			loaded = false;
@@ -77,28 +79,24 @@ void Menu_Initialize(void)
 	}
 }
 
-/*
-	Export Functions
-*/
-
-/*  Gets the width of the current viewport.
-*/
+// todo, obsolete
 int	Menu_GetScreenWidth(void)
 {
-	Core::Viewport *viewport = Core::GetPrimaryViewport();
-	if (!viewport)
-		return 640;
+	Core::Camera *camera = g_cameramanager->GetCurrentCamera();
+	if (!camera) return 640;
+	Core::Viewport *viewport = dynamic_cast<Core::Viewport*>(camera->GetViewport());
+	if (!viewport) return 640;
 
 	return viewport->GetWidth();
 }
 
-/*  Gets the height of the current viewport.
-*/
+// todo, obsolete
 int Menu_GetScreenHeight(void)
 {
-	Core::Viewport *viewport = Core::GetPrimaryViewport();
-	if (!viewport)
-		return 480;
+	Core::Camera *camera = g_cameramanager->GetCurrentCamera();
+	if (!camera) return 480;
+	Core::Viewport *viewport = dynamic_cast<Core::Viewport*>(camera->GetViewport());
+	if (!viewport) return 480;
 
 	return viewport->GetHeight();
 }

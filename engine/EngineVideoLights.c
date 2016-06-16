@@ -437,7 +437,7 @@ DynamicLight_t *Light_GetDynamic(MathVector3f_t vPoint, bool bCheap)
 	return dlClosestLight;
 }
 
-extern unsigned	blocklights[128*128*3];
+unsigned blocklights[128*128*3];
 
 void R_AddDynamicLights(msurface_t *surf)
 {

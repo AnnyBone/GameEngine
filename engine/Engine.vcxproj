@@ -728,6 +728,7 @@
     <ClInclude Include="client\shader_base.h" />
     <ClInclude Include="client\shader_water.h" />
     <ClInclude Include="client\video_draw.h" />
+    <ClInclude Include="client\video_sky.h" />
     <ClInclude Include="client\video_viewport.h" />
     <ClInclude Include="engine_build.h" />
     <ClInclude Include="engine_class.h" />

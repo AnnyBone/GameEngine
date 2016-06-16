@@ -25,9 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "client/effect_sprite.h"
 
-/*
-Video System
-*/
+/*	Video System	*/
 
 bool 
 	r_drawflat_cheatsafe, 
@@ -332,25 +330,6 @@ void Video_DrawObject(vlVertex_t *vobject, vlPrimitive_t primitive,
 	Material_DrawObject(mMaterial, &tempobj, false);
 	vlDraw(&tempobj);
 	Material_DrawObject(mMaterial, &tempobj, true);
-}
-
-/**/
-
-void Video_PreFrame(void)
-{
-	VIDEO_FUNCTION_START
-
-	Screen_SetUpToDrawConsole();
-
-	R_SetupGenericView();
-
-	r_framecount++;
-
-	//R_SetupScene();
-
-	Video_ShowBoundingBoxes();
-
-	VIDEO_FUNCTION_END
 }
 
 /*	Main rendering loop.

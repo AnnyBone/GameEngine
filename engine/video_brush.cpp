@@ -32,7 +32,7 @@ extern ConsoleVariable_t gl_fullbrights, r_drawflat, r_oldwater; //johnfitz
 #define	BLOCK_WIDTH		128
 #define	BLOCK_HEIGHT	BLOCK_WIDTH
 
-unsigned blocklights[BLOCK_WIDTH*BLOCK_HEIGHT*3]; //johnfitz -- was 18*18, added lit support (*3) and loosened surface extents maximum (BLOCK_WIDTH*BLOCK_HEIGHT)
+extern "C" unsigned blocklights[BLOCK_WIDTH*BLOCK_HEIGHT*3]; //johnfitz -- was 18*18, added lit support (*3) and loosened surface extents maximum (BLOCK_WIDTH*BLOCK_HEIGHT)
 
 typedef struct glRect_s {
 	unsigned char l,t,w,h;
