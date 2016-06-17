@@ -36,16 +36,10 @@ void Core::CreatePrimaryViewport()
 	if (viewport_main)
 		return;
 
-	viewport_main = new Viewport(g_mainwindow.width, g_mainwindow.height);
-	if (!viewport_main)
-		throw Exception("Failed to allocate primary viewport!\n");
-
 	Camera *newcam = g_cameramanager->CreateCamera();
-	if (!newcam)
-		throw Exception("Failed to create camera!\n");
-
 	g_cameramanager->SetCurrentCamera(newcam);
 
+	viewport_main = new Viewport(g_mainwindow.width, g_mainwindow.height);
 	viewport_main->SetCamera(newcam);
 }
 

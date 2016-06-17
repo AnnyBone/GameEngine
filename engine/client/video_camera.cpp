@@ -80,9 +80,6 @@ CameraManager::CameraManager()
 Camera *CameraManager::CreateCamera()
 {
 	Camera *camera = new Camera();
-	if (!camera)
-		throw Exception("Failed to allocate new camera!\n");
-
 	_cameras.push_back(camera);
 
 	return camera;
