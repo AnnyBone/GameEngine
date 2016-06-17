@@ -88,7 +88,7 @@ namespace Core
 
 		// TODO: Move these over into a seperate class,
 		// they don't really make sense here for the camera codebase
-		ClientEntity_t *viewmodel, *parententity;
+		ClientEntity_t *_viewmodel, *parententity;
 #endif
 
 		bool			bobcam;

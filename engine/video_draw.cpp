@@ -231,7 +231,11 @@ void Draw::BoundingBoxes()
 
 void Draw::Shadows()
 {
-	if (!r_shadows.value || !r_drawentities.value || r_drawflat_cheatsafe || r_lightmap_cheatsafe)
+	if (!r_shadows.value		|| 
+		!r_drawentities.value	|| 
+		!cl_numvisedicts		||
+		r_drawflat_cheatsafe	|| 
+		r_lightmap_cheatsafe)
 		return;
 
 	for (unsigned int i = 0; i < cl_numvisedicts; i++)

@@ -40,7 +40,13 @@ void Core::CreatePrimaryViewport()
 	if (!viewport_main)
 		throw Exception("Failed to allocate primary viewport!\n");
 
-	viewport_main->SetCamera(new Camera);
+	Camera *newcam = g_cameramanager->CreateCamera();
+	if (!newcam)
+		throw Exception("Failed to create camera!\n");
+
+	g_cameramanager->SetCurrentCamera(newcam);
+
+	viewport_main->SetCamera(newcam);
 }
 
 Viewport *Core::GetPrimaryViewport()
@@ -153,9 +159,9 @@ void Viewport::SetCamera(ICamera *camera)
 		return;
 	}
 	
-	newcam->SetViewport(this);
-	newcam->SetFOV(90);
 	_camera = newcam;
+	_camera->SetViewport(this);
+	_camera->SetFOV(90);
 }
 
 /*	Size	*/

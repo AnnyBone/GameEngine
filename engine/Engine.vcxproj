@@ -304,6 +304,7 @@
       <CompileAsManaged>false</CompileAsManaged>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <StringPooling>true</StringPooling>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
     </ClCompile>
     <Midl>
       <TypeLibraryName>.\Release\Fitzquake.tlb</TypeLibraryName>

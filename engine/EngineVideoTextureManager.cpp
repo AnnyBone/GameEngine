@@ -425,11 +425,7 @@ void TexMgr_RecalcWarpImageSize (void)
 
 	gl_warpimagesize = TexMgr_SafeTextureSize (512);
 
-	Camera *camera = g_cameramanager->GetCurrentCamera();
-	if (!camera)
-		return;
-
-	Viewport *viewport = dynamic_cast<Viewport*>(camera->GetViewport());
+	Viewport *viewport = Core::GetPrimaryViewport();
 	if (!viewport)
 		return;
 

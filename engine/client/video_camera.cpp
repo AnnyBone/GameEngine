@@ -81,9 +81,7 @@ Camera *CameraManager::CreateCamera()
 {
 	Camera *camera = new Camera();
 	if (!camera)
-		throw Core::Exception("Failed to allocate new camera!\n");
-
-	memset(camera, 0, sizeof(Camera));
+		throw Exception("Failed to allocate new camera!\n");
 
 	_cameras.push_back(camera);
 
@@ -136,11 +134,11 @@ void CameraManager::Simulate()
 	}
 }
 
-/*
-	Camera
-*/
+/*	Camera	*/
 
-Camera::Camera()
+Camera::Camera() :
+	_viewport(nullptr),
+	_viewmodel(nullptr)
 {
 	plVectorClear(position);
 	plVectorClear(angles);
@@ -159,7 +157,7 @@ Camera::Camera(Viewport *viewport) : Camera()
 #ifdef CAMERA_LEGACY
 void Camera::DrawViewEntity()
 {
-	if (!r_drawviewmodel.bValue || !viewmodel || !viewmodel->model)
+	if (!r_drawviewmodel.bValue || !_viewmodel || !_viewmodel->model)
 		return;
 
 #ifdef VL_MODE_OPENGL
@@ -167,7 +165,7 @@ void Camera::DrawViewEntity()
 	glDepthRange(0, 0.3);
 #endif
 
-	Draw::Entity(viewmodel);
+	Draw::Entity(_viewmodel);
 
 #ifdef VL_MODE_OPENGL
 	glDepthRange(0, 1);
@@ -407,43 +405,43 @@ void Camera::SetViewEntity(ClientEntity_t *_child)
 	{
 		// Clear it out, not an issue since we
 		// want to support switching between these.
-		viewmodel = nullptr;
+		_viewmodel = nullptr;
 		return;
 	}
 
-	viewmodel = _child;
+	_viewmodel = _child;
 }
 
 void Camera::SimulateViewEntity()
 {
 	// View is the weapon model (only visible from inside body).
-	if (!viewmodel)
+	if (!_viewmodel)
 		return;
 
-	viewmodel->model = cl.model_precache[cl.stats[STAT_WEAPON]];
-	viewmodel->frame = cl.stats[STAT_WEAPONFRAME];
+	_viewmodel->model = cl.model_precache[cl.stats[STAT_WEAPON]];
+	_viewmodel->frame = cl.stats[STAT_WEAPONFRAME];
 
-	if (!viewmodel->model)
+	if (!_viewmodel->model)
 		return;
 
 	// Apply view model angles.
 	plVector3f_t oldangles;
-	plVectorCopy(viewmodel->angles, oldangles);
-	plVectorCopy(angles, viewmodel->angles);
+	plVectorCopy(_viewmodel->angles, oldangles);
+	plVectorCopy(angles, _viewmodel->angles);
 	
 	// Update view model origin.
-	plVectorCopy(parententity->origin, viewmodel->origin);
-	viewmodel->origin[2] += height;
+	plVectorCopy(parententity->origin, _viewmodel->origin);
+	_viewmodel->origin[2] += height;
 
 	// Apply view model bob.
 	if (bobcam)
 	{
 		for (int i = 0; i < 3; i++)
-			viewmodel->origin[i] +=
+			_viewmodel->origin[i] +=
 			(_up[i] * bobamount[0] * 0.2f) +
 			(_right[i] * bobamount[1] * 0.3f);
 
-		viewmodel->origin[2] += bobamount[0];
+		_viewmodel->origin[2] += bobamount[0];
 	}
 
 	// Apple the view model drift.
@@ -465,17 +463,17 @@ void Camera::SimulateViewEntity()
 
 		for (int i = 0; i < 3; i++)
 		{
-			viewmodel->origin[i] += (difference[i] * -1) * 5;
+			_viewmodel->origin[i] += (difference[i] * -1) * 5;
 
 			// TODO: wait, we're doing this in this loop!? Okay...
 			// This is probably a mistake but I'll wait before I sort this.
-			viewmodel->angles[ROLL] += difference[YAW];
+			_viewmodel->angles[ROLL] += difference[YAW];
 		}
 	}
 
 	// Apply some slight movement.
-	viewmodel->angles[PL_PITCH] = -(angles[PL_PITCH] - (sinf(cl.time * 1.5f) * 0.2f));
-	viewmodel->angles[PL_ROLL] = -(angles[PL_ROLL] - (sinf(cl.time * 1.5f) * 0.2f));
+	_viewmodel->angles[PL_PITCH] = -(angles[PL_PITCH] - (sinf(cl.time * 1.5f) * 0.2f));
+	_viewmodel->angles[PL_ROLL] = -(angles[PL_ROLL] - (sinf(cl.time * 1.5f) * 0.2f));
 
 	// Finally, offset!
 	float offset = 0;
@@ -486,7 +484,7 @@ void Camera::SimulateViewEntity()
 	else return;
 
 	for (int i = 0; i < 3; i++)
-		viewmodel->origin[i] += _forward[i] + offset * _right[i] + _up[i];
+		_viewmodel->origin[i] += _forward[i] + offset * _right[i] + _up[i];
 }
 
 void Camera::SimulateParentEntity()
@@ -562,7 +560,7 @@ void Camera::SetFrustum(float fovx, float fovy)
 	float xmax = cv_camera_nearclip.value * tanf(_fovx * PL_PI / 360);
 	float ymax = cv_camera_nearclip.value * tanf(_fovy * PL_PI / 360);
 #if defined (VL_MODE_OPENGL)
-	glFrustumf(-xmax, xmax, -ymax, ymax, cv_camera_nearclip.value, cv_camera_farclip.value);
+	glFrustum(-xmax, xmax, -ymax, ymax, cv_camera_nearclip.value, cv_camera_farclip.value);
 #endif
 }
 

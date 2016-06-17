@@ -125,6 +125,9 @@ void Video_Initialize(void)
 
 	Cmd_AddCommand("video_restart", Window_Update);
 
+	g_cameramanager = new CameraManager();
+	g_spritemanager = new SpriteManager();
+
 	if (!g_state.embedded)
 	{
 		Window_Initialize();
@@ -149,8 +152,6 @@ void Video_Initialize(void)
 
 	vlGetMaxTextureAnistropy(&Video.fMaxAnisotropy);
 
-	Draw::SetDefaultState();
-
 	//johnfitz -- create notexture miptex
 	r_notexture_mip = (texture_t*)Hunk_AllocName(sizeof(texture_t), "r_notexture_mip");
 	strcpy(r_notexture_mip->name, "notexture");
@@ -163,11 +164,11 @@ void Video_Initialize(void)
 
 	Video.vertical_sync = cv_video_verticlesync.bValue;
 
+	Draw::SetDefaultState();
+
 	Light_Initialize();
 
-	g_cameramanager = new CameraManager();
 	g_shadermanager = new ShaderManager();
-	g_spritemanager = new SpriteManager();
 
 	Video.bInitialized = true;
 }
