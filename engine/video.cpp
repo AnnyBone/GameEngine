@@ -125,16 +125,6 @@ void Video_Initialize(void)
 
 	Cmd_AddCommand("video_restart", Window_Update);
 
-	g_cameramanager = new CameraManager();
-	g_spritemanager = new SpriteManager();
-
-	if (!g_state.embedded)
-	{
-		Window_Initialize();
-
-		CreatePrimaryViewport();
-	}
-
 	vlInit();
 
 	// Attempt to dynamically allocated the number of supported TMUs.
@@ -169,6 +159,19 @@ void Video_Initialize(void)
 	Light_Initialize();
 
 	g_shadermanager = new ShaderManager();
+	g_cameramanager = new CameraManager();
+	g_spritemanager = new SpriteManager();
+
+	if (!g_state.embedded)
+	{
+		Camera *newcam = g_cameramanager->CreateCamera();
+		g_cameramanager->SetCurrentCamera(newcam);
+
+		Viewport *newview = new Viewport(0, 0, g_mainwindow.width, g_mainwindow.height);
+		newview->SetCamera(newcam);
+
+		SetPrimaryViewport(newview);
+	}
 
 	Video.bInitialized = true;
 }
@@ -359,6 +362,9 @@ void Video_PostFrame(void)
 
 	if (Video.debug_frame)
 		Video.debug_frame = false;
+
+	if (!Video.bSkipUpdate)
+		Window_Swap();
 }
 
 /*	Shuts down the video sub-system.

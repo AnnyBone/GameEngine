@@ -25,6 +25,7 @@ namespace Core
 	class Viewport : public IViewport
 	{
 	public:
+		Viewport(int x, int y, unsigned int width, unsigned int height);
 		Viewport(unsigned int width, unsigned int height);
 
 		std::vector<unsigned int> GetSize() { return std::vector<unsigned int> { _width, _height }; }	// Returns array of both width and height.
@@ -49,8 +50,8 @@ namespace Core
 		int _x, _y;
 	};
 
-	void CreatePrimaryViewport();
 	Viewport *GetPrimaryViewport();
+	void SetPrimaryViewport(Viewport *viewport);
 	void DestroyPrimaryViewport();
 }
 

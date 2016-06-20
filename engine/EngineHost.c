@@ -689,7 +689,6 @@ void Host_Initialize(EngineParameters_t *epParameters)
 	Cbuf_Init();
 	Cmd_Init();
 	Cvar_Init(); //johnfitz
-	V_Init();
 	Chase_Init();
 	FileSystem_Initialize();
 	Host_InitLocal();
@@ -709,6 +708,9 @@ void Host_Initialize(EngineParameters_t *epParameters)
 	Host_Version();
 
 	Con_Printf("\n%4.1f megabyte heap\n\n",epParameters->memsize/(1024*1024.0));
+
+	if (!g_state.embedded)
+		Window_Initialize();
 
 	if(cls.state != ca_dedicated)
 	{

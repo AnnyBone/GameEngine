@@ -30,19 +30,6 @@ using namespace Core;
 
 Viewport *viewport_main = nullptr;
 
-// Creates a new viewport and camera for that viewport.
-void Core::CreatePrimaryViewport()
-{
-	if (viewport_main)
-		return;
-
-	Camera *newcam = g_cameramanager->CreateCamera();
-	g_cameramanager->SetCurrentCamera(newcam);
-
-	viewport_main = new Viewport(g_mainwindow.width, g_mainwindow.height);
-	viewport_main->SetCamera(newcam);
-}
-
 Viewport *Core::GetPrimaryViewport()
 {
 	if (!viewport_main)
@@ -54,6 +41,14 @@ Viewport *Core::GetPrimaryViewport()
 	return viewport_main;
 }
 
+void Core::SetPrimaryViewport(Viewport *viewport)
+{
+	if (!viewport)
+		throw Exception("Attempted to assign an invalid viewport as primary!\n");
+
+	viewport_main = viewport;
+}
+
 void Core::DestroyPrimaryViewport()
 {
 	if (!viewport_main) return;
@@ -61,6 +56,11 @@ void Core::DestroyPrimaryViewport()
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+
+Viewport::Viewport(int x, int y, unsigned int width, unsigned int height)
+	: _x(x), _y(y), _width(width), _height(height)
+{
+}
 
 Viewport::Viewport(unsigned int width, unsigned int height)
 	: _width(width), _height(height)
@@ -106,6 +106,7 @@ void Viewport::Draw()
 	glLoadIdentity();
 #endif
 
+#if 0
 	if (_camera && !con_forcedup)
 	{
 		// Let the camera manager know we're drawing from this
@@ -120,21 +121,26 @@ void Viewport::Draw()
 		if (cv_video_msaasamples.iValue > 0)
 			vlDisable(VL_CAPABILITY_MULTISAMPLE);
 	}
+#endif
 
 	Draw_ResetCanvas();
 
 	g_menu->Draw(this);
 
 	// todo, move the following into the menu.
-	Screen_DrawNet();
-	Screen_DrawConsole();
-	Screen_DrawFPS();
+	if (!(g_menu->GetState() & MENU_STATE_LOADING))
+	{
+		g_console->SetSize(_width, _height);
+
+		Screen_SetUpToDrawConsole(_width, _height);
+
+		Screen_DrawNet();
+		Screen_DrawConsole();
+		Screen_DrawFPS();
+	}
 
 	if (cv_video_finish.bValue)
 		vlFinish();
-
-	if (!Video.bSkipUpdate)
-		Window_Swap();
 }
 
 /*	Camera	*/

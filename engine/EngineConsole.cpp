@@ -57,7 +57,7 @@ bool g_consoleinitialized;
 using namespace Core;
 
 /* Singleton console instance. */
-Console *g_consoleinstance = nullptr;
+Console *g_console = nullptr;
 
 Console::Console() :
 	cursor_x(0),
@@ -223,11 +223,11 @@ void Console::SetSize(unsigned int width, unsigned int height)
 {
 	assert((width != 0) || (height != 0));
 
-#if 0	// todo, do we need this?
-	vid.conwidth = (scr_conwidth.value > 0) ? (int)scr_conwidth.value : (scr_conscale.value > 0) ? (int)(Video.iWidth / scr_conscale.value) : Video.iWidth;
-	vid.conwidth = Math_Clamp(320, vid.conwidth, Video.iWidth);
+#if 1	// todo, do we need this?
+	vid.conwidth = (scr_conwidth.value > 0) ? (int)scr_conwidth.value : (scr_conscale.value > 0) ? (int)(width / scr_conscale.value) : width;
+	vid.conwidth = Math_Clamp(320, vid.conwidth, width);
 	vid.conwidth &= 0xFFFFFFF8;
-	vid.conheight = vid.conwidth*Video.iHeight / Video.iWidth;
+	vid.conheight = vid.conwidth* height / width;
 #endif
 
 	_width	= width & 0xFFFFFFF8;
@@ -441,18 +441,14 @@ void Con_ToggleConsole_f (void)
 
 void Con_Clear_f (void)
 {
-	if (g_consoleinstance)
-	{
-		g_consoleinstance->Clear();
-	}
+	if (g_console)
+		g_console->Clear();
 }
 
 void Con_ClearNotify (void)
 {
-	if (g_consoleinstance)
-	{
-		g_consoleinstance->ClearNotify();
-	}
+	if (g_console)
+		g_console->ClearNotify();
 }
 
 void Con_MessageMode_f (void)
@@ -474,7 +470,7 @@ void Console_Initialize(void)
 
 	plClearLog(ENGINE_LOG);
 
-	g_consoleinstance = new Core::Console();
+	g_console = new Core::Console();
 
 	// register our commands
 	Cvar_RegisterVariable (&con_notifytime, NULL);
@@ -494,10 +490,8 @@ void Console_Initialize(void)
 */
 void Con_Print (char *txt)
 {
-	if (g_consoleinstance)
-	{
-		g_consoleinstance->Print(txt);
-	}
+	if (g_console)
+		g_console->Print(txt);
 }
 
 #define	MAXPRINTMSG	4096
@@ -851,10 +845,8 @@ DRAWING
 /* Draws the last few lines of output transparently over the game top. */
 void Con_DrawNotify(void)
 {
-	if (g_consoleinstance)
-	{
-		g_consoleinstance->DrawNotify();
-	}
+	if (g_console)
+		g_console->DrawNotify();
 }
 
 /*	Draws the console with the solid background
@@ -862,10 +854,8 @@ void Con_DrawNotify(void)
 */
 void Con_DrawConsole(bool draw_input)
 {
-	if (g_consoleinstance)
-	{
-		g_consoleinstance->Draw(draw_input);
-	}
+	if (g_console)
+		g_console->Draw(draw_input);
 }
 
 /* TODO: Get rid of these functions, bring more of the engine into C++ land
@@ -874,32 +864,24 @@ void Con_DrawConsole(bool draw_input)
 
 void Con_ScrollUp(void)
 {
-	if (g_consoleinstance)
-	{
-		g_consoleinstance->ScrollUp();
-	}
+	if (g_console)
+		g_console->ScrollUp();
 }
 
 void Con_ScrollDown(void)
 {
-	if (g_consoleinstance)
-	{
-		g_consoleinstance->ScrollDown();
-	}
+	if (g_console)
+		g_console->ScrollDown();
 }
 
 void Con_ScrollHome(void)
 {
-	if (g_consoleinstance)
-	{
-		g_consoleinstance->ScrollHome();
-	}
+	if (g_console)
+		g_console->ScrollHome();
 }
 
 void Con_ScrollEnd(void)
 {
-	if (g_consoleinstance)
-	{
-		g_consoleinstance->ScrollEnd();
-	}
+	if (g_console)
+		g_console->ScrollEnd();
 }

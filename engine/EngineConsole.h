@@ -71,7 +71,7 @@ namespace Core
 	};
 }
 
-extern Core::Console *g_consoleinstance;
+extern Core::Console *g_console;
 #endif
 
 plEXTERN_C_START

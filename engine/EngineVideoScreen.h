@@ -35,7 +35,7 @@ void SCR_EndLoadingPlaque (void);
 void Screen_DrawNet(void);
 void Screen_DrawFPS(void);
 void Screen_DrawConsole(void);
-void Screen_SetUpToDrawConsole(void);
+void Screen_SetUpToDrawConsole(unsigned int width, unsigned int height);
 
 int SCR_ModalMessage (char *text, float timeout); //johnfitz -- added timeout
 

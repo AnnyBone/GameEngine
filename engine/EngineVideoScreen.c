@@ -430,14 +430,8 @@ void Screen_DrawNet(void)
 
 //=============================================================================
 
-void Screen_SetUpToDrawConsole(void)
+void Screen_SetUpToDrawConsole(unsigned int width, unsigned int height)
 {
-#if 0 // todo, rewrite
-	//johnfitz -- let's hack away the problem of slow console when host_timescale is <0
-	extern ConsoleVariable_t host_timescale;
-	float timescale;
-	//johnfitz
-
 	if (g_menu->GetState() & MENU_STATE_LOADING)
 		return;		// never a console with loading plaque
 
@@ -445,16 +439,16 @@ void Screen_SetUpToDrawConsole(void)
 	con_forcedup = !cl.worldmodel || cls.signon != SIGNONS;
 	if(con_forcedup)
 	{
-		scr_conlines = glheight; //full screen //johnfitz -- glheight instead of vid.height
+		scr_conlines = height; //full screen //johnfitz -- glheight instead of vid.height
 		scr_con_current = scr_conlines;
 	}
 	else if (key_dest == key_console)
-		scr_conlines = glheight/2; //half screen //johnfitz -- glheight instead of vid.height
+		scr_conlines = height / 2; //half screen //johnfitz -- glheight instead of vid.height
 	else
 		scr_conlines = 0; //none visible
 
-	timescale = (host_timescale.value > 0) ? host_timescale.value : 1; //johnfitz -- timescale
-
+	extern ConsoleVariable_t host_timescale;
+	float timescale = (host_timescale.value > 0) ? host_timescale.value : 1; //johnfitz -- timescale
 	if (scr_conlines < scr_con_current)
 	{
 		scr_con_current -= scr_conspeed.value*host_frametime/timescale; //johnfitz -- timescale
@@ -470,7 +464,6 @@ void Screen_SetUpToDrawConsole(void)
 
 	if (!con_forcedup && scr_con_current)
 		scr_tileclear_updates = 0; //johnfitz
-#endif
 }
 
 void Screen_DrawConsole(void)
@@ -662,7 +655,7 @@ void SCR_UpdateScreen (void)
 {
 #if 0
 	// do 3D refresh drawing, and then update the screen
-	Screen_SetUpToDrawConsole();
+	
 
 	V_RenderView ();
 
@@ -684,12 +677,10 @@ void SCR_UpdateScreen (void)
 	{
 		g_menu->Draw();
 
-		SCR_DrawNet();
 		SCR_DrawPause();
 		SCR_CheckDrawCenterString ();
 		SCR_DrawDevStats(); //johnfitz
 		SCR_DrawClock(); //johnfitz
-		Screen_DrawConsole();
 		Screen_DrawFPS(); //johnfitz
 	}
 #endif
