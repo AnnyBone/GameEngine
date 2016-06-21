@@ -106,7 +106,6 @@ void Viewport::Draw()
 	glLoadIdentity();
 #endif
 
-#if 0
 	if (_camera && !con_forcedup)
 	{
 		// Let the camera manager know we're drawing from this
@@ -121,7 +120,6 @@ void Viewport::Draw()
 		if (cv_video_msaasamples.iValue > 0)
 			vlDisable(VL_CAPABILITY_MULTISAMPLE);
 	}
-#endif
 
 	Draw_ResetCanvas();
 

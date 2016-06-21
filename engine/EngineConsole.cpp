@@ -276,10 +276,9 @@ void Console::Draw(bool draw_input)
 		for(size_t i = 0;; ++i)
 		{
 			if(text[i] != '\0')
-			{
 				Draw_Character((i+1) * CHAR_WIDTH, y, text[i]);
-			}
-			else{
+			else
+			{
 				// Why is this even necessary?
 				Draw_Character((i+1) * CHAR_WIDTH, y, ' ');
 				break;

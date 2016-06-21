@@ -62,7 +62,7 @@ void _plUnloadOBJModel()
 	normals.shrink_to_fit();
 }
 
-plStaticModel_t *plLoadOBJModel(const char *path)
+plStaticModel_t *plLoadOBJModel(const PLchar *path)
 {
 	plSetErrorFunction("plLoadOBJModel");
 

@@ -343,9 +343,6 @@ void Video_Frame(void)
 	if (g_state.embedded || (Video.bInitialized == false))
 		return;
 
-	if (Video.debug_frame)
-		plWriteLog(cv_video_log.string, "Video: Start of frame\n");
-
 	Video.framecount++;
 	// Don't let us exceed a limited count.
 	if (Video.framecount > 100000)
@@ -359,9 +356,6 @@ void Video_Frame(void)
 void Video_PostFrame(void)
 {
 	Draw_ResetCanvas();
-
-	if (Video.debug_frame)
-		Video.debug_frame = false;
 
 	if (!Video.bSkipUpdate)
 		Window_Swap();

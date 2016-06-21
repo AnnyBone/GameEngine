@@ -46,27 +46,24 @@ void Window_Initialize(void)
 
 	g_mainwindow.is_unlocked	= false;	// Video mode is initially locked.
 	g_mainwindow.is_active		= true;		// Window is intially assumed active.
+	g_mainwindow.is_fullscreen	= false;	// Window is always initially windowed.
 
 	if (COM_CheckParm("-window"))
-	{
-		g_mainwindow.is_fullscreen	= false;
 		g_mainwindow.is_unlocked	= true;
-	}
-	else g_mainwindow.is_fullscreen = cv_video_fullscreen.bValue;
 
 	if (COM_CheckParm("-width"))
 	{
 		g_mainwindow.width			= atoi(com_argv[COM_CheckParm("-width") + 1]);
-		g_mainwindow.is_unlocked	= false;
+		g_mainwindow.is_unlocked	= true;
 	}
-	else g_mainwindow.width = cv_video_width.iValue;
+	else g_mainwindow.width = WINDOW_MINIMUM_WIDTH;
 
 	if (COM_CheckParm("-height"))
 	{
 		g_mainwindow.height			= atoi(com_argv[COM_CheckParm("-height") + 1]);
-		g_mainwindow.is_unlocked	= false;
+		g_mainwindow.is_unlocked	= true;
 	}
-	else g_mainwindow.height = cv_video_height.iValue;
+	else g_mainwindow.height = WINDOW_MINIMUM_HEIGHT;
 
 #if 0
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);

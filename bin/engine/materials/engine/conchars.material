@@ -2,7 +2,7 @@ conchars
 {
 	$flags "PRESERVE"
 	
-	$override_wireframe "1"
+	$override_wireframe "0"
 	
 	$skin
 	{
