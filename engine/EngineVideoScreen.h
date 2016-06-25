@@ -25,10 +25,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 plEXTERN_C_START
 
 void SCR_Init (void);
-void SCR_UpdateScreen (void);
-void SCR_SizeUp (void);
-void SCR_SizeDown (void);
-void SCR_BringDownConsole (void);
 void SCR_CenterPrint (char *str);
 void SCR_BeginLoadingPlaque (void);
 void SCR_EndLoadingPlaque (void);
@@ -46,20 +42,12 @@ extern	int			sb_lines;
 
 extern	bool	scr_disabled_for_loading;
 
-extern	cvar_t		scr_viewsize;
-
-extern	cvar_t		scr_sbaralpha; //johnfitz
-
-void SCR_UpdateWholeScreen (void);
-
 extern	cvar_t		scr_menuscale;
 extern	cvar_t		scr_sbarscale;
 extern	cvar_t		scr_conwidth;
 extern	cvar_t		scr_conscale;
 extern	cvar_t		scr_crosshairscale;
 //johnfitz
-
-extern int scr_tileclear_updates; //johnfitz
 
 plEXTERN_C_END
 

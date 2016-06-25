@@ -105,7 +105,7 @@ PL_MODULE_EXPORT EngineExport_t *Engine_Main(EngineImport_t *mImport)
 	exports.DrawGrid				= Draw_Grid;
 	exports.DrawString				= Draw_String;
 	exports.DrawLine				= Draw_Line;
-	exports.DrawGradientBackground	= Draw_GradientBackground;
+	//exports.DrawGradientBackground	= Draw_GradientBackground;
 	exports.DrawSetCanvas			= GL_SetCanvas;
 	exports.DrawResetCanvas			= Draw_ResetCanvas;
 	exports.DrawMaterialSurface		= Draw_MaterialSurface;

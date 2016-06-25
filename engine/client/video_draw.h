@@ -22,19 +22,12 @@ namespace Core
 {
 	namespace Draw
 	{
-		void SetDefaultState();	// Sets default rendering state.
-
-		void ClearBuffers();	// Clears the color, stencil and depth buffers.
-		void DepthBuffer();		// Draws the depth buffer.
+		PL_MODULE_EXPORT void Entity(ClientEntity_t *entity);				// Draws a single entity.
+		PL_MODULE_EXPORT void EntityBoundingBox(ClientEntity_t *entity);	// Draws entity bounding box.
 
 		void Entities(bool alphapass);
 		void Shadows();
 		void BoundingBoxes();
-
-		void Entity(ClientEntity_t *entity);
-		void EntityBoundingBox(ClientEntity_t *entity);
-		void WireBox(plVector3f_t mins, plVector3f_t maxs, float r, float g, float b);
-		void CoordinateAxes(plVector3f_t position);
 	}
 }
 

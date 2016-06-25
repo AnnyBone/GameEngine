@@ -79,6 +79,8 @@ texture_t	*r_notexture_mip2;	//johnfitz -- used for non-lightmapped surfs with a
 
 using namespace Core;
 
+Viewport *video_viewport = nullptr;
+
 /*	Initialize the renderer
 */
 void Video_Initialize(void)
@@ -167,10 +169,10 @@ void Video_Initialize(void)
 		Camera *newcam = g_cameramanager->CreateCamera();
 		g_cameramanager->SetCurrentCamera(newcam);
 
-		Viewport *newview = new Viewport(0, 0, g_mainwindow.width, g_mainwindow.height);
-		newview->SetCamera(newcam);
+		video_viewport = new Viewport(0, 0, g_mainwindow.width, g_mainwindow.height);
+		video_viewport->SetCamera(newcam);
 
-		SetPrimaryViewport(newview);
+		SetPrimaryViewport(video_viewport);
 	}
 
 	Video.bInitialized = true;
@@ -182,7 +184,7 @@ void Video_Initialize(void)
 
 void Video_SetViewportSize(unsigned int w, unsigned int h)
 {
-	GetPrimaryViewport()->SetSize(w, h);
+	video_viewport->SetSize(w, h);
 }
 
 /*
@@ -348,7 +350,7 @@ void Video_Frame(void)
 	if (Video.framecount > 100000)
 		Video.framecount = 0;
 
-	GetPrimaryViewport()->Draw();
+	video_viewport->Draw();
 
 	Video_PostFrame();
 }
@@ -377,7 +379,7 @@ void Video_Shutdown(void)
 
 	if (!g_state.embedded)
 	{
-		DestroyPrimaryViewport();
+		if (video_viewport) delete video_viewport;
 
 		Window_Shutdown();
 	}

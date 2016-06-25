@@ -40,6 +40,7 @@ namespace Core
 		void SetPosition(int x, int y);
 		
 		void Draw();
+		void Screenshot();
 
 	protected:
 	private:
@@ -50,9 +51,13 @@ namespace Core
 		int _x, _y;
 	};
 
+	// Input, sound and more
 	Viewport *GetPrimaryViewport();
 	void SetPrimaryViewport(Viewport *viewport);
-	void DestroyPrimaryViewport();
+
+	// Rendering
+	Viewport *GetCurrentViewport();
+	void SetCurrentViewport(Viewport *viewport);
 }
 
 #endif

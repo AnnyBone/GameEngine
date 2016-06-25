@@ -80,14 +80,12 @@ float		oldscreensize, oldfov, oldsbarscale, oldsbaralpha; //johnfitz -- added ol
 
 cvar_t	scr_menuscale		= {"scr_menuscale", "1", true };
 cvar_t	scr_sbarscale		= {"scr_sbarscale", "1", true };
-cvar_t	scr_sbaralpha		= {"scr_sbaralpha", "1", true };
 cvar_t	scr_conwidth		= {"scr_conwidth", "0", true };
 cvar_t	scr_conscale		= {"scr_conscale", "1", true};
 cvar_t	scr_crosshairscale	= {"scr_crosshairscale", "1", true };
 cvar_t	scr_showfps			= {"scr_showfps", "0"};
 cvar_t	scr_fps_rate		= { "scr_fps_rate","0.37", true, false, "Changes the rate at which the FPS counter is updated." };
 cvar_t	scr_clock			= { "scr_clock", "0"};
-cvar_t	scr_viewsize		= { "viewsize","120", true};
 cvar_t	scr_fov				= {	"fov",	"90",	true	};	// 10 - 170
 cvar_t	scr_conspeed		= {"scr_conspeed","300"};
 cvar_t	scr_centertime		= {"scr_centertime","2"};
@@ -98,20 +96,16 @@ cvar_t	scr_printspeed		= {"scr_printspeed","8"};
 
 bool	bScreenInitialized;		// ready to draw
 
-qpic_t	*scr_ram,*scr_net,*scr_turtle;
+qpic_t	*scr_net;
 
 int			clearconsole;
 int			sb_lines;
 
 viddef_t	vid;				// global video state
 
-vrect_t		scr_vrect;
-
 bool	scr_disabled_for_loading;
 
 float		scr_disabled_time;
-
-int	scr_tileclear_updates = 0; //johnfitz
 
 void SCR_ScreenShot_f (void);
 
@@ -151,6 +145,7 @@ void SCR_CenterPrint (char *str) //update centerprint data
 
 void SCR_DrawCenterString (void) //actually do the drawing
 {
+#if 0 // todo, rewrite
 	char	*start;
 	int		l,j,x,y,remaining;
 
@@ -193,6 +188,7 @@ void SCR_DrawCenterString (void) //actually do the drawing
 			break;
 		start++;		// skip the \n
 	} while (1);
+#endif
 }
 
 void SCR_CheckDrawCenterString (void)
@@ -220,7 +216,6 @@ void SCR_Init (void)
 {
 	Cvar_RegisterVariable(&scr_menuscale,NULL);
 	Cvar_RegisterVariable(&scr_sbarscale,NULL);
-	Cvar_RegisterVariable(&scr_sbaralpha,NULL);
 	Cvar_RegisterVariable(&scr_conwidth,NULL);
 	Cvar_RegisterVariable(&scr_conscale,NULL);
 	Cvar_RegisterVariable(&scr_crosshairscale,NULL);
@@ -228,7 +223,6 @@ void SCR_Init (void)
 	Cvar_RegisterVariable(&scr_fps_rate,NULL);
 	Cvar_RegisterVariable(&scr_clock,NULL);
 	Cvar_RegisterVariable(&scr_fov,NULL);
-	Cvar_RegisterVariable(&scr_viewsize,NULL);
 	Cvar_RegisterVariable(&scr_conspeed,NULL);
 	Cvar_RegisterVariable(&scr_showram,NULL);
 	Cvar_RegisterVariable(&scr_showturtle,NULL);
@@ -306,8 +300,6 @@ void Screen_DrawFPS(void)
 		GL_SetCanvas(CANVAS_BOTTOMRIGHT);
 
 		Draw_String(x, y, str);
-
-		scr_tileclear_updates = 0;
 	}
 }
 
@@ -366,8 +358,6 @@ void SCR_DrawClock (void)
 	//draw it
 	GL_SetCanvas (CANVAS_BOTTOMRIGHT);
 	Draw_String(320 - (strlen(str) << 3), 200 - 8, str);
-
-	scr_tileclear_updates = 0;
 }
 
 devstats_t dev_stats, dev_peakstats;
@@ -461,9 +451,6 @@ void Screen_SetUpToDrawConsole(unsigned int width, unsigned int height)
 		if (scr_conlines < scr_con_current)
 			scr_con_current = scr_conlines;
 	}
-
-	if (!con_forcedup && scr_con_current)
-		scr_tileclear_updates = 0; //johnfitz
 }
 
 void Screen_DrawConsole(void)
@@ -493,45 +480,7 @@ void Screen_DrawConsole(void)
 
 void SCR_ScreenShot_f (void)
 {
-#if 0 // todo, rewrite
-	uint8_t		*buffer;
-	char		tganame[32], checkname[PLATFORM_MAX_PATH];
-	int			i;
-
-	if (!plCreateDirectory(va("%s/%s", com_gamedir, g_state.path_screenshots)))
-		Sys_Error("Failed to create directory!\n%s", plGetError());
-
-	// find a file name to save it to
-	for (i = 0; i < 10000; i++)
-	{
-		sprintf(tganame, "%s%04i.tga", g_state.path_screenshots, i);
-		sprintf(checkname,"%s/%s",com_gamedir,tganame);
-		if(Sys_FileTime(checkname) == -1)
-			break;	// file doesn't exist
-	}
-
-	if(i >= 10000)
-	{
-		Con_Printf ("SCR_ScreenShot_f: Couldn't find an unused filename\n");
-		return;
-	}
-
-	//get data
-	buffer = (uint8_t*)malloc(glwidth*glheight*3);
-#if defined( VL_MODE_GLIDE )
-	Con_Warning("IMPLEMENT SCREENSHOT!!\n");
-#else
-	glReadPixels(glx,gly,glwidth,glheight,GL_RGB,GL_UNSIGNED_BYTE,buffer);
-#endif
-
-	// now write the file
-	if(Image_WriteTGA(tganame,buffer,glwidth,glheight,24,false))
-		Con_Printf("Wrote %s\n",tganame);
-	else
-		Con_Warning("Failed to write %s\n",tganame);
-
-	free (buffer);
-#endif
+	// todo
 }
 
 void SCR_BeginLoadingPlaque (void)
@@ -570,6 +519,7 @@ bool	bDrawDialog;
 
 void SCR_DrawNotifyString (void)
 {
+#if 0 // todo, rewrite
 	char	*start;
 	int		l,j,x,y;
 
@@ -598,6 +548,7 @@ void SCR_DrawNotifyString (void)
 			break;
 		start++;		// skip the \n
 	} while (1);
+#endif
 }
 
 /*	Displays a text string in the center of the screen and waits for a Y or N
@@ -633,55 +584,10 @@ int SCR_ModalMessage (char *text, float timeout) //johnfitz -- timeout
 				key_lastpress != K_ESCAPE	&&
 				time2 <= time1);
 
-//	SCR_UpdateScreen (); //johnfitz -- commented out
-
 	//johnfitz -- timeout
 	if (time2 > time1)
 		return false;
 	//johnfitz
 
 	return key_lastpress == 'y';
-}
-
-void V_UpdateBlend(void);	            // [24/2/2014] See engine_view.c ~hogsy
-
-/*	This is called every frame, and can also be called explicitly to flush
-	text to the screen.
-
-	WARNING: be very careful calling this from elsewhere, because the refresh
-	needs almost the entire 256k of stack space!
-*/
-void SCR_UpdateScreen (void)
-{
-#if 0
-	// do 3D refresh drawing, and then update the screen
-	
-
-	V_RenderView ();
-
-
-	if(bDrawDialog) //new game confirm
-	{
-		g_menu->Draw();
-
-		Draw_FadeScreen();
-		SCR_DrawNotifyString();
-	}
-	else if (g_menu->GetState() & MENU_STATE_LOADING) //loading
-		g_menu->Draw();
-	else if(cl.intermission == 1 && key_dest == key_game) //end of level
-	{}
-	else if(cl.intermission == 2 && key_dest == key_game) //end of episode
-		SCR_CheckDrawCenterString ();
-	else
-	{
-		g_menu->Draw();
-
-		SCR_DrawPause();
-		SCR_CheckDrawCenterString ();
-		SCR_DrawDevStats(); //johnfitz
-		SCR_DrawClock(); //johnfitz
-		Screen_DrawFPS(); //johnfitz
-	}
-#endif
 }

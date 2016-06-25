@@ -49,19 +49,19 @@ void Draw::SetDefaultState()
 	vlSetClearColour4fv(clear);
 
 	vlSetCullMode(VL_CULL_NEGATIVE);
-#if defined (VL_MODE_OPENGL)
+
+#if 0
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
 	glAlphaFunc(GL_GREATER, 0.5f);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 	glDepthRange(0, 1);
 	glDepthFunc(GL_LEQUAL);
 	glClearStencil(1);
-
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-#endif
 
 	// Overbrights.
 	vlActiveTexture(VIDEO_TEXTURE_LIGHT);
@@ -73,8 +73,8 @@ void Draw::SetDefaultState()
 	glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 4);
 #endif
 	vlActiveTexture(0);
+#endif
 
-	// This is always active, since our viewports need it.
 	vlEnable(VL_CAPABILITY_SCISSOR_TEST);
 }
 
@@ -130,7 +130,6 @@ void Draw::DepthBuffer()
 void Draw::WireBox(plVector3f_t mins, plVector3f_t maxs, float r, float g, float b)
 {
 	// todo, rewrite this function...
-
 #if defined (VL_MODE_OPENGL)
 	glBegin(GL_QUADS);
 	glVertex3f(mins[0], mins[1], maxs[2]);
@@ -534,7 +533,7 @@ void Draw_Init (void)
 //
 //==============================================================================
 
-void Draw_Character(int x, int y, int num)
+void Draw::Character(int x, int y, int num)
 {
 	vlVertex_t		voCharacter[4] = { { { 0 } } };
 	int				row, col;
@@ -588,7 +587,7 @@ void Draw_String(int x, int y, const char *msg)
 
 	while (*msg)
 	{
-		Draw_Character(x, y, *msg);
+		Draw::Character(x, y, *msg);
 		msg++;
 		x += 8;
 	}
@@ -596,33 +595,9 @@ void Draw_String(int x, int y, const char *msg)
 	Material_Draw(g_mGlobalColour, NULL, VL_PRIMITIVE_IGNORE, 0, true);
 }
 
-void Draw_ConsoleBackground(void)
+void Draw::GradientBackground(plColour_t top, plColour_t bottom)
 {
-	float		alpha = cvConsoleAlpha.value;
-	plColour_t	black, lightblack;
-
-	if (cls.state != ca_connected)
-		// TODO: we're not clearing buffers when disconnected...
-		alpha = 1;
-
-	Math_VectorSet(0, black);
-	Math_VectorSet(0, lightblack);
-
-	black[3] = 255.0f;
-	lightblack[3] = alpha;
-
-	GL_SetCanvas(CANVAS_CONSOLE);
-
-	Draw_GradientFill(0, 0, vid.conwidth, vid.conheight, black, lightblack);
-}
-
-void Draw_GradientBackground(void)
-{
-	Camera *camera = g_cameramanager->GetCurrentCamera();
-	if (!camera)
-		return;
-
-	Viewport *viewport = dynamic_cast<Viewport*>(camera->GetViewport());
+	Viewport *viewport = GetCurrentViewport();
 	if (!viewport)
 		return;
 
@@ -635,14 +610,11 @@ void Draw_GradientBackground(void)
 
 	Draw_ResetCanvas();
 
-	VideoCanvasType_t vctOldCanvas = (VideoCanvasType_t)currentcanvas;
+	VideoCanvasType_t oldcanvas = (VideoCanvasType_t)currentcanvas;
 	GL_SetCanvas(CANVAS_DEFAULT);
-	currentcanvas = vctOldCanvas;
+	currentcanvas = oldcanvas;
 
-	plColour_t
-		cTop	= { 0.1f, 0.1f, 0.1f, 1.0f },
-		cBottom = { 0.5f, 0.5f, 0.5f, 1.0f };
-	Draw_GradientFill(0, 0, viewport->GetWidth(), viewport->GetHeight(), cTop, cBottom);
+	Draw_GradientFill(0, 0, viewport->GetWidth(), viewport->GetHeight(), top, bottom);
 
 #if defined (VL_MODE_OPENGL)
 	glMatrixMode(GL_PROJECTION);
@@ -811,7 +783,7 @@ void Draw_FadeScreen (void)
 {
 	vlVertex_t	voFade[4];
 
-	Viewport *viewport = GetPrimaryViewport();
+	Viewport *viewport = GetCurrentViewport();
 	if (!viewport)
 		return;
 

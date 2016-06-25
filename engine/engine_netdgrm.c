@@ -1137,7 +1137,7 @@ static qsocket_t *_Datagram_Connect (char *host)
 	// send the connection request
 	Con_Printf("trying...\n");
 
-	SCR_UpdateScreen();
+	//SCR_UpdateScreen();
 
 	start_time = net_time;
 
@@ -1170,7 +1170,7 @@ static qsocket_t *_Datagram_Connect (char *host)
 					Con_Printf("Expected: %s\n", StrAddr (&sendaddr));
 					Con_Printf("Received: %s\n", StrAddr (&readaddr));
 
-					SCR_UpdateScreen ();
+					//SCR_UpdateScreen ();
 #endif
 					ret = 0;
 					continue;
@@ -1207,7 +1207,7 @@ static qsocket_t *_Datagram_Connect (char *host)
 		while (ret == 0 && (SetNetTime() - start_time) < 2.5);
 		if (ret)
 			break;
-		Con_Printf("still trying...\n"); SCR_UpdateScreen ();
+		//Con_Printf("still trying...\n"); SCR_UpdateScreen ();
 		start_time = SetNetTime();
 	}
 

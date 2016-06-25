@@ -18,13 +18,10 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef __ENGINECLIENTVIEW_H__
-#define __ENGINECLIENTVIEW_H__
+#pragma once
 
 extern plColour_t vViewBlend;
 
 void View_CalculateBlend(void);
 
 float V_CalcRoll(MathVector3f_t angles, MathVector3f_t velocity);
-
-#endif

@@ -34,11 +34,8 @@ plEXTERN_C_START
 extern	qpic_t *draw_disc;	// also used on sbar
 
 void Draw_Init(void);
-void Draw_Character(int x, int y, int num);
 void Draw_Pic(int x, int y, qpic_t *pic);
 void Draw_MaterialSurface(Material_t *mMaterial, int iSkin, int x, int y, int w, int h, float fAlpha);
-void Draw_ConsoleBackground(void); //johnfitz -- removed parameter int lines
-void Draw_GradientBackground(void);
 void Draw_BeginDisc(void);
 void Draw_TileClear(int x, int y, int w, int h);
 void Draw_Rectangle(int x, int y, int w, int h, plColour_t colour);

@@ -29,6 +29,6 @@ void Image_Shutdown();
 uint8_t *Image_LoadTGA (FILE *f, unsigned int *width, unsigned int *height);
 uint8_t *Image_LoadImage (char *name, unsigned int *width, unsigned int *height);
 
-bool Image_WriteTGA(char *name, uint8_t *data,int width,int height,int bpp,bool upsidedown);
+bool Image_WriteTGA(const char *name, uint8_t *data,int width,int height,int bpp,bool upsidedown);
 
 plEXTERN_C_END

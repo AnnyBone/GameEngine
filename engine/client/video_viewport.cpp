@@ -28,7 +28,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 using namespace Core;
 
-Viewport *viewport_main = nullptr;
+Viewport *viewport_main = nullptr, *viewport_current = nullptr;
 
 Viewport *Core::GetPrimaryViewport()
 {
@@ -49,10 +49,23 @@ void Core::SetPrimaryViewport(Viewport *viewport)
 	viewport_main = viewport;
 }
 
-void Core::DestroyPrimaryViewport()
+Viewport *Core::GetCurrentViewport()
 {
-	if (!viewport_main) return;
-	delete viewport_main;
+	if (!viewport_current)
+	{
+		Con_Warning("Attempted to get viewport, despite not yet being initialized!\n");
+		return nullptr;
+	}
+
+	return viewport_current;
+}
+
+void Core::SetCurrentViewport(Viewport *viewport)
+{
+	if (!viewport)
+		throw Exception("Attempted to assign an invalid viewport as primary!\n");
+
+	viewport_current = viewport;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -73,6 +86,8 @@ void Viewport::Draw()
 	if (scr_disabled_for_loading)
 		return;
 
+	SetCurrentViewport(this);
+
 #if defined (VL_MODE_OPENGL)
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
@@ -88,7 +103,7 @@ void Viewport::Draw()
 		r_refdef.vrect.height
 	*/
 
-	vlClearBuffers(VL_MASK_DEPTH | VL_MASK_COLOUR | VL_MASK_STENCIL);
+	Draw::ClearBuffers();
 
 	double time1;
 	if (r_speeds.value)
@@ -106,6 +121,7 @@ void Viewport::Draw()
 	glLoadIdentity();
 #endif
 
+#if 0
 	if (_camera && !con_forcedup)
 	{
 		// Let the camera manager know we're drawing from this
@@ -120,6 +136,7 @@ void Viewport::Draw()
 		if (cv_video_msaasamples.iValue > 0)
 			vlDisable(VL_CAPABILITY_MULTISAMPLE);
 	}
+#endif
 
 	Draw_ResetCanvas();
 
@@ -139,6 +156,41 @@ void Viewport::Draw()
 
 	if (cv_video_finish.bValue)
 		vlFinish();
+}
+
+void Viewport::Screenshot()
+{
+	std::string path(com_gamedir + '/');
+	path.append(g_state.path_screenshots);
+	if (!plCreateDirectory(path.c_str()))
+		throw Exception("Failed to create directory!\n%s\n", plGetError());
+
+	unsigned int i = 0;
+	std::string scrname, localname;
+	while (!plFileExists(scrname.c_str()))
+	{
+		scrname.clear(); localname.clear();
+		localname = g_state.path_screenshots;
+		localname += "screen" + std::to_string(i) + ".tga";
+		scrname.append(com_gamedir + '/' + localname);
+
+		// Technically speaking, this should never happen.
+		i++; if (i == ((unsigned int) - 1)) {
+			Con_Warning("Failed to find an unused filename! (%s)\n", scrname.c_str());
+			return;
+		}
+	}
+
+	PLuchar *buffer = new PLuchar(_height * _width * 3);
+#if defined (VL_MODE_OPENGL)
+	glReadPixels(_x, _y, _width, _height, GL_RGB, GL_UNSIGNED_BYTE, buffer);
+#endif
+
+	if (Image_WriteTGA(localname.c_str(), buffer, _width, _height, 24, false))
+		Con_Printf("Wrote screenshot %s\n", localname.c_str());
+	else Con_Warning("Failed to write screenshot! (%s)\n", localname.c_str());
+
+	delete buffer;
 }
 
 /*	Camera	*/

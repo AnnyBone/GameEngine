@@ -130,7 +130,7 @@ targaheader_t targa_header;
 
 	TODO: support BGRA and BGR formats (since opengl can return them, and we don't have to swap)
 */
-bool Image_WriteTGA(char *name, uint8_t *data,int width,int height,int bpp,bool upsidedown)
+bool Image_WriteTGA(const char *name, uint8_t *data,int width,int height,int bpp,bool upsidedown)
 {
 	int			handle, i, size, temp, bytes;
 	char		pathname[PLATFORM_MAX_PATH];

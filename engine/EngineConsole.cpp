@@ -239,10 +239,16 @@ void Console::Draw(bool draw_input)
 	const unsigned int con_cols   = _width / CHAR_WIDTH;
 	const unsigned int line_width = con_cols - 3;
 
-	// Draw the background
-	Draw_ConsoleBackground();
-
 	GL_SetCanvas(CANVAS_CONSOLE);
+
+	float bgalpha = 0.5f;
+	if (cls.state != ca_connected)
+		bgalpha = 1;
+
+	// Draw the background.
+	plColour_t black = { 0, 0, 0, 255 };
+	plColour_t lightblack = { 0, 0, 0, bgalpha };
+	Draw_GradientFill(0, 0, vid.conwidth, vid.conheight, black, lightblack);
 
 	// Starting from the bottom...
 	int y = vid.conheight - CHAR_HEIGHT;
@@ -257,7 +263,7 @@ void Console::Draw(bool draw_input)
 
 		for(size_t i = 0; i < vlen; ++i, ++x)
 		{
-			Draw_Character(x * CHAR_WIDTH, y, ver[i]);
+			Draw::Character(x * CHAR_WIDTH, y, ver[i]);
 		}
 
 		y -= CHAR_HEIGHT;
@@ -276,18 +282,18 @@ void Console::Draw(bool draw_input)
 		for(size_t i = 0;; ++i)
 		{
 			if(text[i] != '\0')
-				Draw_Character((i+1) * CHAR_WIDTH, y, text[i]);
+				Draw::Character((i+1) * CHAR_WIDTH, y, text[i]);
 			else
 			{
 				// Why is this even necessary?
-				Draw_Character((i+1) * CHAR_WIDTH, y, ' ');
+				Draw::Character((i+1) * CHAR_WIDTH, y, ' ');
 				break;
 			}
 		}
 
 		// Draw the blinky cursor
 		if(!((int)((realtime-key_blinktime)*con_cursorspeed) & 1))
-			Draw_Character((key_linepos+1) * CHAR_WIDTH, y, '_');
+			Draw::Character((key_linepos+1) * CHAR_WIDTH, y, '_');
 
 		y -= CHAR_HEIGHT;
 	}
@@ -301,9 +307,7 @@ void Console::Draw(bool draw_input)
 		for(auto line = wrapped_lines.rbegin(); line != wrapped_lines.rend() && y >= 0;)
 		{
 			for(size_t i = 0; i < line->length(); ++i)
-			{
-				Draw_Character((i+1) * CHAR_WIDTH, y, line->at(i));
-			}
+				Draw::Character((i+1) * CHAR_WIDTH, y, line->at(i));
 
 			y -= CHAR_HEIGHT;
 			++line;
@@ -346,13 +350,9 @@ void Console::DrawNotify()
 	for(auto l = wrapped_lines.begin(); l != wrapped_lines.end(); ++l)
 	{
 		for(size_t i = 0; i < l->size(); ++i)
-		{
-			Draw_Character(((i + 1) * CHAR_WIDTH), y, (*l)[i]);
-		}
+			Draw::Character(((i + 1) * CHAR_WIDTH), y, (*l)[i]);
 
 		y += CHAR_HEIGHT;
-
-		scr_tileclear_updates = 0; // ???
 	}
 
 	if (key_dest == key_message)
@@ -372,14 +372,12 @@ void Console::DrawNotify()
 		size_t x = 0;
 		while(chat_buffer[x])
 		{
-			Draw_Character((x + plen + 2) * CHAR_WIDTH, y, chat_buffer[x]);
+			Draw::Character((x + plen + 2) * CHAR_WIDTH, y, chat_buffer[x]);
 			++x;
 		}
 
-		Draw_Character((x + plen + 2) * CHAR_WIDTH, y, 10 + ((int)(realtime*con_cursorspeed)&1));
+		Draw::Character((x + plen + 2) * CHAR_WIDTH, y, 10 + ((int)(realtime*con_cursorspeed)&1));
 		y += CHAR_HEIGHT;
-
-		scr_tileclear_updates = 0; //johnfitz
 	}
 }
 
@@ -392,9 +390,9 @@ char *Con_Quakebar (unsigned int len)
 
 	const unsigned int con_linewidth = (vid.conwidth / CHAR_WIDTH) - 3;
 
-	len = Math_Min(len, sizeof(bar) - 2);
-	len = Math_Min(len, con_linewidth);
-
+	len = std::min(len, sizeof(bar) - 2);
+	len = std::max(len, con_linewidth);
+	
 	bar[0] = '\35';
 	memset(bar + 1, '\36', len - 2);
 	bar[len-1] = '\37';

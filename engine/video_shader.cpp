@@ -156,12 +156,16 @@ bool Shader::Load(const char *path)
 #if defined (VL_MODE_OPENGL)
 		//"#version 110\n",	// OpenGL 2.0
 		"#version 120\n",	// OpenGL 2.1
+		//"#version 130\n",	// OpenGL 3.0
+		//"#version 140\n",	// OpenGL 3.1
+		//"#version 150\n",	// OpenGL 3.2
 		//"#version 450\n",	// OpenGL 4.5
 #elif defined (VL_MODE_OPENGL_ES)
 		"#version 100\n",	// OpenGL ES 2.0
 #endif
 		source
 	};
+	// todo, introduce pre-processor to catch any custom ones (like include).
 	glShaderSource(instance, 2, full_source, NULL);
 	glCompileShader(instance);
 
