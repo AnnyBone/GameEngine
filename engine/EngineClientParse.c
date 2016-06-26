@@ -318,7 +318,7 @@ void Client_ParseServerInfo(void)
 	}
 
 	// Precache textures...
-	memset(&gEffectTexture, 0, sizeof(gEffectTexture));
+	memset(&g_effecttextures, 0, sizeof(g_effecttextures));
 	for(unsigned int i = 1; ; i++)
 	{
 		str = MSG_ReadString();

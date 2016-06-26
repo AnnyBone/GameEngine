@@ -51,12 +51,12 @@ int	Client_GetEffect(const char *cPath)
 	int i;
 
 	for(i = 0; i < MAX_EFFECTS; i++)
-		if(!gEffectTexture[i])
+		if (!g_effecttextures[i])
 		{
 			Con_Warning("Failed to find effect texture! (%s)\n",cPath);
 			break;
 		}
-		else if(!strcmp(cPath,gEffectTexture[i]->name))
+		else if (!strcmp(cPath, g_effecttextures[i]->name))
 			return i;
 
 	return 0;
@@ -100,7 +100,7 @@ void Client_PrecacheResource(int iType,char *cResource)
 		sprintf(cPath,PATH_SPRITES"%s",cResource);
 
 		for(i = 0; i < MAX_EFFECTS; i++)
-			if(!gEffectTexture[i])
+			if (!g_effecttextures[i])
 			{
 				bData = Image_LoadImage(cPath,&w,&h);
 				if(!bData)
@@ -109,10 +109,10 @@ void Client_PrecacheResource(int iType,char *cResource)
 					return;
 				}
 
-				gEffectTexture[i] = TexMgr_LoadImage(NULL,cResource,w,h,SRC_RGBA,bData,cPath,0,TEXPREF_ALPHA);
+				g_effecttextures[i] = TexMgr_LoadImage(NULL, cResource, w, h, SRC_RGBA, bData, cPath, 0, TEXPREF_ALPHA);
 				return;
 			}
-			else if (!strcmp(gEffectTexture[i]->name,cResource))
+			else if (!strcmp(g_effecttextures[i]->name, cResource))
 				return;
 
 		Console_ErrorMessage(false,cPath,"Overflow!");

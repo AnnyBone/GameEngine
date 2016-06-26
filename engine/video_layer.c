@@ -590,7 +590,8 @@ void vlSetTextureFilter(vlTextureFilter_t filter)
 
 int _vlTranslateTextureEnvironmentMode(vlTextureEnvironmentMode_t TextureEnvironmentMode)
 {
-	VIDEO_FUNCTION_START
+	_VL_UTIL_TRACK(_vlTranslateTextureEnvironmentMode);
+
 	switch (TextureEnvironmentMode)
 	{
 #ifdef VL_MODE_OPENGL
@@ -613,12 +614,12 @@ int _vlTranslateTextureEnvironmentMode(vlTextureEnvironmentMode_t TextureEnviron
 
 	// Won't be hit but meh, compiler will complain otherwise.
 	return 0;
-	VIDEO_FUNCTION_END
 }
 
 void vlSetTextureEnvironmentMode(vlTextureEnvironmentMode_t TextureEnvironmentMode)
 {
-	VIDEO_FUNCTION_START
+	_VL_UTIL_TRACK(vlSetTextureEnvironmentMode);
+
 	// Ensure there's actually been a change.
 	if (Video.textureunits[Video.current_textureunit].current_envmode == TextureEnvironmentMode)
 		return;
@@ -629,7 +630,6 @@ void vlSetTextureEnvironmentMode(vlTextureEnvironmentMode_t TextureEnvironmentMo
 #endif
 
 	Video.textureunits[Video.current_textureunit].current_envmode = TextureEnvironmentMode;
-	VIDEO_FUNCTION_END
 }
 
 /*===========================
@@ -701,8 +701,8 @@ void vlEnable(unsigned int cap)
 		// Check if we reached the end of the list yet.
 		if (!vl_capabilities[i].vl_parm)
 			break;
-
-		if (Video.debug_frame)
+		
+		if (vl_state.mode_debug)
 			plWriteLog(VIDEO_LOG, "Enabling %s (%i)\n", vl_capabilities[i].ident, Video.current_textureunit);
 		
 		if (cap & VL_CAPABILITY_TEXTURE_2D)
@@ -743,7 +743,7 @@ void vlDisable(unsigned int cap)
 		if (!vl_capabilities[i].vl_parm)
 			break;
 
-		if (Video.debug_frame)
+		if (vl_state.mode_debug)
 			plWriteLog(VIDEO_LOG, "Disabling %s (%i)\n", vl_capabilities[i].ident, Video.current_textureunit);
 
 		if (cap & VL_CAPABILITY_TEXTURE_2D)
@@ -776,7 +776,7 @@ void vlBlendFunc(vlBlend_t modea, vlBlend_t modeb)
 {
 	_VL_UTIL_TRACK(vlBlendFunc);
 
-	if (Video.debug_frame)
+	if (vl_state.mode_debug)
 		plWriteLog(VIDEO_LOG, "Video: Setting blend mode (%i) (%i)\n", modea, modeb);
 #if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
 	glBlendFunc(modea, modeb);
@@ -915,7 +915,6 @@ void vlScissor(int x, int y, unsigned int width, unsigned int height)
 #if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
 	glScissor(x, y, width, height);
 #elif defined (VL_MODE_DIRECT3D)
-	// SetScissorRect
 	D3D11_RECT scissor_region;
 	memset(&scissor_region, 0, sizeof(D3D11_RECT));
 	scissor_region.bottom	= height;
@@ -1257,14 +1256,14 @@ _vlPrimitiveTranslate_t vl_primitives[] =
 
 unsigned int _vlTranslatePrimitiveMode(vlPrimitive_t primitive)
 {
-	VIDEO_FUNCTION_START
+	_VL_UTIL_TRACK(_vlTranslatePrimitiveMode);
+
 	for (int i = 0; i < plArrayElements(vl_primitives); i++)
 		if (primitive == vl_primitives[i].primitive)
 			return vl_primitives[i].gl;
 
 	// Hacky, but just return initial otherwise.
 	return vl_primitives[0].gl;
-	VIDEO_FUNCTION_END
 }
 
 /*	Deals with tris view and different primitive types, then finally draws

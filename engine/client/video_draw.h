@@ -25,6 +25,17 @@ namespace Core
 		PL_MODULE_EXPORT void Entity(ClientEntity_t *entity);				// Draws a single entity.
 		PL_MODULE_EXPORT void EntityBoundingBox(ClientEntity_t *entity);	// Draws entity bounding box.
 
+		PL_MODULE_EXPORT void ClearBuffers();		// Clears the color, stencil and depth buffers.
+		PL_MODULE_EXPORT void DepthBuffer();		// Draws the depth buffer.
+
+		PL_MODULE_EXPORT void SetDefaultState();	// Sets default rendering state.
+
+		PL_MODULE_EXPORT void GradientBackground(plColour_t top, plColour_t bottom);
+
+		PL_MODULE_EXPORT void WireBox(plVector3f_t mins, plVector3f_t maxs, float r, float g, float b);
+		PL_MODULE_EXPORT void CoordinateAxes(plVector3f_t position);
+		PL_MODULE_EXPORT void Character(int x, int y, int num);
+
 		void Entities(bool alphapass);
 		void Shadows();
 		void BoundingBoxes();

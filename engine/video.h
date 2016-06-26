@@ -71,7 +71,7 @@ extern ConsoleVariable_t cv_video_drawdetail;	// TODO: Move into EngineMaterial 
 extern ConsoleVariable_t cv_video_drawsky;
 extern ConsoleVariable_t cv_video_detailscale; // TODO: Move into EngineMaterial ?
 
-extern struct gltexture_s *gEffectTexture[MAX_EFFECTS];
+extern struct gltexture_s *g_effecttextures[MAX_EFFECTS];
 
 plEXTERN_C_END
 
@@ -126,7 +126,6 @@ typedef struct
 		vertical_sync,					// Sync the swap interval to the refresh rate?
 		bActive,						// Is the window active or not?
 		bSkipUpdate,					// Skip screen update.
-		debug_frame,
 		unlocked;						// Can we change the window settings or not?
 
 	VideoExtensions_t	extensions;		// Extensions

@@ -70,7 +70,7 @@ ConsoleVariable_t
 	cv_video_entity_fade = { "video_entity_fade", "1" };
 
 // TODO: Move this? It's used mainly for silly client stuff...
-struct gltexture_s *gEffectTexture[MAX_EFFECTS];
+struct gltexture_s *g_effecttextures[MAX_EFFECTS];
 
 Video_t	Video;
 

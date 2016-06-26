@@ -317,9 +317,9 @@ void Particle(MathVector3f_t org, MathVector3f_t dir,float scale,char *texture,i
 	MSG_WriteFloat(&sv.datagram,scale);
 
 	for(i = 0; i < MAX_EFFECTS; i++)
-		if(gEffectTexture[i])
+		if (g_effecttextures[i])
 		{
-			if(!strcmp(texture,gEffectTexture[i]->name))
+			if (!strcmp(texture, g_effecttextures[i]->name))
 			{
 				MSG_WriteByte(&sv.datagram,i);
 				break;
