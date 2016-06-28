@@ -26,6 +26,7 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 typedef PLuint vlVertexArray_t;
 typedef PLuint vlRenderBuffer_t;
 typedef PLuint vlFrameBuffer_t;
+typedef PLuint vlTexture_t;
 
 typedef enum vlCullMode_s
 {

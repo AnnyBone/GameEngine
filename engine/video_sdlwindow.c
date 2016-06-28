@@ -155,6 +155,8 @@ void Window_SetSize(unsigned int width, unsigned int height)
 
 	Cvar_SetValue(cv_video_width.name, g_mainwindow.width);
 	Cvar_SetValue(cv_video_height.name, g_mainwindow.height);
+
+	Video_SetViewportSize(g_mainwindow.width, g_mainwindow.height);
 }
 
 void Window_SetFullscreen(bool fullscreen)

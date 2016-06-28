@@ -422,9 +422,6 @@ void Screen_DrawNet(void)
 
 void Screen_SetUpToDrawConsole(unsigned int width, unsigned int height)
 {
-	if (g_menu->GetState() & MENU_STATE_LOADING)
-		return;		// never a console with loading plaque
-
 	// Decide on the height of the console
 	con_forcedup = !cl.worldmodel || cls.signon != SIGNONS;
 	if(con_forcedup)

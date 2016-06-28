@@ -35,6 +35,8 @@ namespace Core
 		PL_MODULE_EXPORT void WireBox(plVector3f_t mins, plVector3f_t maxs, float r, float g, float b);
 		PL_MODULE_EXPORT void CoordinateAxes(plVector3f_t position);
 		PL_MODULE_EXPORT void Character(int x, int y, int num);
+		PL_MODULE_EXPORT void String(int x, int y, const char *msg);
+		PL_MODULE_EXPORT void MaterialSurface(Material_t *material, int x, int y, unsigned int w, unsigned int h, float alpha);
 
 		void Entities(bool alphapass);
 		void Shadows();

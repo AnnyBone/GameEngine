@@ -157,17 +157,6 @@ typedef enum
 #endif
 } vlTextureFormat_t;
 
-typedef enum
-{
-#if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
-	VL_TEXTURE_2D	= GL_TEXTURE_2D,
-#else
-	VL_TEXTURE_2D,
-#endif
-
-	VL_TEXTURE_END
-} vlTextureTarget_t;
-
 // Blending Modes
 typedef enum
 {
@@ -221,18 +210,8 @@ char *vlGetErrorString(unsigned int er);
 const char *vlGetExtensions(void);
 const char *vlGetString(vlString_t string);
 
-void vlGetMaxTextureAnistropy(float *params);
-void vlGetMaxTextureImageUnits(int *param);
-
-unsigned int vlGetTextureUnit(unsigned int target);
-
 void vlPushMatrix(void);
 void vlPopMatrix(void);
-
-void vlActiveTexture(unsigned int texunit);
-void vlTexImage2D(vlTextureTarget_t target, vlTextureFormat_t internal_format, vlTextureFormat_t format, int width, int height, const void *data);
-void vlSetTextureFilter(vlTextureFilter_t filter);
-void vlSetTextureEnvironmentMode(vlTextureEnvironmentMode_t TextureEnvironmentMode);
 
 void vlEnable(unsigned int cap);
 void vlDisable(unsigned int cap);
@@ -241,10 +220,42 @@ void vlBlendFunc(vlBlend_t modea, vlBlend_t modeb);
 void vlDepthMask(bool mode);
 
 //-----------------
+// Textures
+
+typedef enum
+{
+#if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
+	VL_TEXTURE_1D	= GL_TEXTURE_1D,
+	VL_TEXTURE_2D	= GL_TEXTURE_2D,
+	VL_TEXTURE_3D	= GL_TEXTURE_3D,
+#else
+	VL_TEXTURE_1D,
+	VL_TEXTURE_2D,
+	VL_TEXTURE_3D,
+#endif
+
+	VL_TEXTURE_END
+} vlTextureTarget_t;
+
+void vlGetMaxTextureAnistropy(float *params);
+void vlGetMaxTextureImageUnits(int *param);
+
+unsigned int vlGetTextureUnit(unsigned int target);
+
+void vlActiveTexture(unsigned int texunit);
+void vlTexImage2D(vlTextureTarget_t target, vlTextureFormat_t internal_format, vlTextureFormat_t format, int width, int height, const void *data);
+
+void vlSetTextureFilter(vlTextureFilter_t filter);
+void vlSetTextureEnvironmentMode(vlTextureEnvironmentMode_t TextureEnvironmentMode);
+
+void vlBindTexture(vlTextureTarget_t target, vlTexture_t texture);
+
+//-----------------
 // Shaders
 
 vlShaderProgram_t vlCreateShaderProgram(void);
 vlShaderProgram_t vlGetCurrentShaderProgram(void);
+
 void vlUseShaderProgram(vlShaderProgram_t program);
 void vlDeleteShaderProgram(vlShaderProgram_t *program);
 void vlLinkShaderProgram(vlShaderProgram_t *program);

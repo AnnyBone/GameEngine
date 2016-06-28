@@ -1,19 +1,20 @@
-/*	Copyright (C) 2011-2016 OldTimes Software
+/*
+Copyright (C) 2011-2016 OldTimes Software
 
-	This program is free software; you can redistribute it and/or
-	modify it under the terms of the GNU General Public License
-	as published by the Free Software Foundation; either version 2
-	of the License, or (at your option) any later version.
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-	See the GNU General Public License for more details.
+See the GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include <stdlib.h>
@@ -62,6 +63,7 @@ void Draw::SetDefaultState()
 	glDepthRange(0, 1);
 	glDepthFunc(GL_LEQUAL);
 	glClearStencil(1);
+#endif
 
 	// Overbrights.
 	vlActiveTexture(VIDEO_TEXTURE_LIGHT);
@@ -73,7 +75,6 @@ void Draw::SetDefaultState()
 	glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 4);
 #endif
 	vlActiveTexture(0);
-#endif
 
 	vlEnable(VL_CAPABILITY_SCISSOR_TEST);
 }
@@ -422,6 +423,11 @@ void Draw_MaterialSurface(Material_t *mMaterial, int iSkin,	int x, int y, int w,
 	vlEnable(VL_CAPABILITY_DEPTH_TEST);
 }
 
+void Draw::MaterialSurface(Material_t *material, int x, int y, unsigned int w, unsigned int h, float alpha)
+{
+	Draw_MaterialSurface(material, material->current_skin, x, y, w, h, alpha);
+}
+
 //==================================================================
 
 void SwapPic (qpic_t *pic)
@@ -583,7 +589,7 @@ void Draw_String(int x, int y, const char *msg)
 	if (y <= -8)
 		return;
 
-	Material_Draw(g_mGlobalColour, NULL, VL_PRIMITIVE_IGNORE, 0, false);
+//	Material_Draw(g_mGlobalConChars, NULL, VL_PRIMITIVE_IGNORE, 0, false);
 
 	while (*msg)
 	{
@@ -592,7 +598,12 @@ void Draw_String(int x, int y, const char *msg)
 		x += 8;
 	}
 
-	Material_Draw(g_mGlobalColour, NULL, VL_PRIMITIVE_IGNORE, 0, true);
+//	Material_Draw(g_mGlobalConChars, NULL, VL_PRIMITIVE_IGNORE, 0, true);
+}
+
+void Draw::String(int x, int y, const char *msg)
+{
+	Draw_String(x, y, msg);
 }
 
 void Draw::GradientBackground(plColour_t top, plColour_t bottom)

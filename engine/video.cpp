@@ -97,9 +97,6 @@ void Video_Initialize(void)
 	Video.extensions.depth_texture			= false;
 	Video.extensions.shadow					= false;
 
-	// Give everything within the video sub-system its default value.
-	Video.debug_frame		= false;	// Not debugging the initial frame!
-
 	Cvar_RegisterVariable(&cv_video_msaasamples, NULL);
 	Cvar_RegisterVariable(&cv_video_drawmodels, NULL);
 	Cvar_RegisterVariable(&cv_video_fullscreen, NULL);
@@ -226,7 +223,6 @@ void Video_GenerateSphereCoordinates(void)
 */
 void Video_SetTexture(gltexture_t *gTexture)
 {
-#ifdef VL_MODE_OPENGL
 	if(!gTexture)
 		gTexture = notexture;
 	// If it's the same as the last, don't bother.
@@ -238,14 +234,7 @@ void Video_SetTexture(gltexture_t *gTexture)
 	gTexture->visframe = r_framecount;
 
 	// Bind it.
-	glBindTexture(GL_TEXTURE_2D,gTexture->texnum);
-
-	if (Video.debug_frame)
-		plWriteLog(cv_video_log.string, "Video: Bound texture (%s) (%i)\n", gTexture->name, Video.current_textureunit);
-#endif
-}
-
-/*
+	vlBindTexture(VL_TEXTURE_2D, gTexture->texnum);
 }
 
 /*

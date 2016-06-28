@@ -40,6 +40,7 @@ typedef struct vlState_s
 	vlCullMode_t	current_cullmode;
 	plColour_t		current_clearcolour;
 	unsigned int	current_capabilities;	// Enabled capabilities.
+	vlTexture_t		current_texture;
 
 	// Shader state.
 	vlShaderProgram_t	current_program;
@@ -228,8 +229,8 @@ void _vlInitOpenGL(void)
 	else Con_Warning("Hardware doesn't support Vertex Buffer Objects!\n");
 
 	const char *version = vlGetString(VL_STRING_VERSION);
-	vl_gl_version_major = (unsigned int)version[0];
-	vl_gl_version_minor = (unsigned int)version[2];
+	vl_gl_version_major = (unsigned int)atoi(&version[0]);
+	vl_gl_version_minor = (unsigned int)atoi(&version[2]);
 }
 
 void _vlShutdownOpenGL(void)
@@ -573,6 +574,20 @@ void vlActiveTexture(unsigned int texunit)
 
 	// Keep us up-to-date.
 	Video.current_textureunit = texunit;
+}
+
+void vlBindTexture(PLuint target, vlTexture_t texture)
+{
+	_VL_UTIL_TRACK(vlBindTexture);
+
+	if (texture == vl_state.current_texture)
+		return;
+
+#if defined (VL_MODE_OPENGL)
+	glBindTexture(target, texture);
+#endif
+
+	vl_state.current_texture = texture;
 }
 
 /*	TODO:
@@ -1363,9 +1378,9 @@ void vlDrawVertexNormals(vlDraw_t *draw)
 	if (draw->primitive == VL_PRIMITIVE_LINES)
 		return;
 
+	plVector3f_t endpos;
 	for (unsigned int i = 0; i < draw->numverts; i++)
 	{
-		MathVector3f_t endpos;
 		plVectorClear(endpos);
 		plVectorScalef(draw->vertices[i].normal, 2.0f, endpos);
 		plVectorAdd3fv(endpos, draw->vertices[i].position, endpos);

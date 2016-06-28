@@ -136,7 +136,6 @@ void Viewport::Draw()
 		if (cv_video_msaasamples.iValue > 0)
 			vlDisable(VL_CAPABILITY_MULTISAMPLE);
 	}
-#endif
 
 	Draw_ResetCanvas();
 
@@ -147,8 +146,6 @@ void Viewport::Draw()
 	{
 		g_console->SetSize(_width, _height);
 
-		Screen_SetUpToDrawConsole(_width, _height);
-
 		Screen_DrawNet();
 		Screen_DrawConsole();
 		Screen_DrawFPS();
@@ -156,6 +153,11 @@ void Viewport::Draw()
 
 	if (cv_video_finish.bValue)
 		vlFinish();
+#else
+	Draw_ResetCanvas();
+
+	Draw::MaterialSurface(g_mGlobalConChars, 0, 0, _width, _height, 1.0f);
+#endif
 }
 
 void Viewport::Screenshot()

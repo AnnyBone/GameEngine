@@ -1,31 +1,29 @@
-/*	Copyright (C) 2011-2016 OldTimes Software
+/*
+Copyright (C) 2011-2016 OldTimes Software
 
-	This program is free software; you can redistribute it and/or
-	modify it under the terms of the GNU General Public License
-	as published by the Free Software Foundation; either version 2
-	of the License, or (at your option) any later version.
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-	See the GNU General Public License for more details.
+See the GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "platform.h"
 
 #include "platform_filesystem.h"
 
-/*
-	File System
-*/
+/*	File System	*/
 
-/*	Checks whether a file has been modified or not.
-*/
+// Checks whether a file has been modified or not.
 bool plIsFileModified(time_t oldtime, const char *path)
 {
 	if (!oldtime)
@@ -67,8 +65,7 @@ void plLowerCasePath(char *out)
 	pFUNCTION_END
 }
 
-/*  Creates a folder at the given path.
-*/
+// Creates a folder at the given path.
 bool plCreateDirectory(const char *ccPath)
 {
 	pFUNCTION_START
@@ -114,16 +111,14 @@ bool plCreateDirectory(const char *ccPath)
 	pFUNCTION_END
 }
 
-/*	Returns the extension for the file.
-*/
+// Returns the extension for the file.
 char *plGetFileExtension(char *dest, const char *in)
 {
 	dest = strrchr(in, '.') + 1;
 	return dest;
 }
 
-/*	Strips the extension from the filename.
-*/
+// Strips the extension from the filename.
 void plStripExtension(char *dest, const char *in)
 {
 	if (in[0] == ' ')
@@ -137,8 +132,7 @@ void plStripExtension(char *dest, const char *in)
 	*dest = 0;
 }
 
-/*	Returns a pointer to the last component in the given filename. 
-*/
+// Returns a pointer to the last component in the given filename. 
 const char *plGetFileName(const char *path)
 {
 	const char *lslash = strrchr(path, '/');
@@ -189,9 +183,6 @@ void plGetUserName(char *out)
 
 /*	Scans the given directory.
 	On each found file it calls the given function to handle the file.
-	TODO:
-		Better error management.
-		Finish Linux implementation.
 */
 void plScanDirectory(const char *path, const char *extension, void(*Function)(char *filepath))
 {

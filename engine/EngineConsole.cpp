@@ -232,6 +232,9 @@ void Console::SetSize(unsigned int width, unsigned int height)
 
 	_width	= width & 0xFFFFFFF8;
 	_height = _width * height / width;
+
+	// todo, merge this into here.
+	Screen_SetUpToDrawConsole(width, height);
 }
 
 void Console::Draw(bool draw_input)
