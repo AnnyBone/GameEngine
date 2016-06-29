@@ -169,9 +169,9 @@ void Viewport::Screenshot()
 
 	unsigned int i = 0;
 	std::string scrname, localname;
-	while (!plFileExists(scrname.c_str()))
+	do
 	{
-		scrname.clear(); localname.clear();
+		scrname.clear();
 		localname = g_state.path_screenshots;
 		localname += "screen" + std::to_string(i) + ".tga";
 		scrname.append(com_gamedir + '/' + localname);
@@ -181,7 +181,7 @@ void Viewport::Screenshot()
 			Con_Warning("Failed to find an unused filename! (%s)\n", scrname.c_str());
 			return;
 		}
-	}
+	} while (plFileExists(scrname.c_str()));
 
 	PLuchar *buffer = new PLuchar(_height * _width * 3);
 #if defined (VL_MODE_OPENGL)
