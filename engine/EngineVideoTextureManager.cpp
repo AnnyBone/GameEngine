@@ -1,21 +1,22 @@
-/*	Copyright (C) 1996-2001 Id Software, Inc.
-	Copyright (C) 2002-2009 John Fitzgibbons and others
-	Copyright (C) 2011-2016 OldTimes Software
+/*	
+Copyright (C) 1996-2001 Id Software, Inc.
+Copyright (C) 2002-2009 John Fitzgibbons and others
+Copyright (C) 2011-2016 OldTimes Software
 
-	This program is free software; you can redistribute it and/or
-	modify it under the terms of the GNU General Public License
-	as published by the Free Software Foundation; either version 2
-	of the License, or (at your option) any later version.
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-	See the GNU General Public License for more details.
+See the GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "engine_base.h"
@@ -408,56 +409,6 @@ void TexMgr_FreeTexturesForOwner (model_t *owner)
 ================================================================================
 */
 
-/*	Called during init, and after a vid_restart.
-
-	Choose safe warpimage size and resize existing warpimage textures.
-*/
-void TexMgr_RecalcWarpImageSize (void)
-{
-	int	mark, oldsize;
-	gltexture_t *glt;
-	uint8_t *dummy;
-
-	//
-	// find the new correct size
-	//
-	oldsize = gl_warpimagesize;
-
-	gl_warpimagesize = TexMgr_SafeTextureSize (512);
-
-	Viewport *viewport = Core::GetPrimaryViewport();
-	if (!viewport)
-		return;
-
-	while((unsigned)gl_warpimagesize > viewport->GetWidth())
-		gl_warpimagesize >>= 1;
-	while((unsigned)gl_warpimagesize > viewport->GetHeight())
-		gl_warpimagesize >>= 1;
-
-	if (gl_warpimagesize == oldsize)
-		return;
-
-	//
-	// resize the textures in opengl
-	//
-	mark = Hunk_LowMark();
-	dummy = (uint8_t*)Hunk_Alloc (gl_warpimagesize*gl_warpimagesize*4);
-
-	for (glt=active_gltextures; glt; glt=glt->next)
-	{
-		if (glt->flags & TEXPREF_WARPIMAGE)
-		{
-			Video_SetTexture(glt);
-#ifdef VL_MODE_OPENGL
-			glTexImage2D (GL_TEXTURE_2D, 0, gl_solid_format, gl_warpimagesize, gl_warpimagesize, 0, GL_RGBA, GL_UNSIGNED_BYTE, dummy);
-#endif
-			glt->width = glt->height = gl_warpimagesize;
-		}
-	}
-
-	Hunk_FreeToLowMark (mark);
-}
-
 /*	Must be called before any texture loading
 */
 void TextureManager_Initialize(void)
@@ -495,18 +446,12 @@ void TextureManager_Initialize(void)
 	Cmd_AddCommand("image_reloadtextures", &TexMgr_ReloadImages);
 
 	// poll max size from hardware
-#ifdef VL_MODE_OPENGL
-	glGetIntegerv (GL_MAX_TEXTURE_SIZE, &gl_hardware_maxsize);
-#endif
+	gl_hardware_maxsize = vlGetMaxTextureSize();
 	
 	notexture = TexMgr_LoadImage(NULL,"notexture",2,2,SRC_RGBA,notexture_data,"",(unsigned)notexture_data,TEXPREF_NEAREST|TEXPREF_PERSIST|TEXPREF_NOPICMIP);
 
 	//have to assign these here becuase Mod_Init is called before TexMgr_Init
 	r_notexture_mip->gltexture = r_notexture_mip2->gltexture = notexture;
-
-	//set safe size for warpimages
-	gl_warpimagesize = 0;
-	TexMgr_RecalcWarpImageSize ();
 }
 
 void TextureManager_Shutdown()
@@ -867,15 +812,9 @@ void TexMgr_LoadImage32(gltexture_t *glt, uint8_t *data)
 	// upload
 	Video_SetTexture(glt);
 	internalformat = (glt->flags & TEXPREF_ALPHA) ? gl_alpha_format : gl_solid_format;
-#if defined (VL_MODE_OPENGL)
-	if (glt->flags & TEXPREF_MIPMAP)
-	{
-		if (GLEW_VERSION_3_0)
-			glGenerateMipmap(GL_TEXTURE_2D);
-		else if (Video.extensions.generate_mipmap)
-			glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
-	}
-	
+#ifdef VL_MODE_OPENGL
+	if ((glt->flags & TEXPREF_MIPMAP) && Video.extensions.generate_mipmap)
+		glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
 	glTexImage2D (GL_TEXTURE_2D, 0, internalformat, glt->width, glt->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 	if ((glt->flags & TEXPREF_MIPMAP) && Video.extensions.generate_mipmap)
 		glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE);

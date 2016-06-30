@@ -121,7 +121,6 @@ void Viewport::Draw()
 	glLoadIdentity();
 #endif
 
-#if 0
 	if (_camera && !con_forcedup)
 	{
 		// Let the camera manager know we're drawing from this
@@ -137,6 +136,7 @@ void Viewport::Draw()
 			vlDisable(VL_CAPABILITY_MULTISAMPLE);
 	}
 
+#if 0
 	Draw_ResetCanvas();
 
 	g_menu->Draw(this);

@@ -45,11 +45,16 @@ typedef struct vlState_s
 	// Shader state.
 	vlShaderProgram_t	current_program;
 
-	// Hardware / Driver information.
+	// Hardware / Driver information
+
 	const char *hw_vendor;
 	const char *hw_renderer;
 	const char *hw_version;
 	const char *hw_extensions;
+
+	int hw_maxtexturesize;
+
+	////////////////////////////////////////
 
 	int viewport_x, viewport_y;
 	unsigned int viewport_width, viewport_height;
@@ -286,22 +291,20 @@ void vlShutdown(void)
 
 /*	Returns supported num of texture width.
 */
-unsigned int vlGetMaxTextureSize(void)
+int vlGetMaxTextureSize(void)
 {
 	_VL_UTIL_TRACK(vlGetMaxTextureSize);
 
+	if (vl_state.hw_maxtexturesize != 0)
+		return vl_state.hw_maxtexturesize;
+
 #if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
-	int size = 0;
-	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &size);
-	return (unsigned)size;
+	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &vl_state.hw_maxtexturesize);
 #elif defined (VL_MODE_GLIDE)
-	FxI32 size = 0;
-	grGet(GR_MAX_TEXTURE_SIZE, sizeof(size), &size);
-	return (unsigned int)size;
-#else
-	// TODO: Is this even safe?
-	return 4096;
+	grGet(GR_MAX_TEXTURE_SIZE, sizeof(vl_state.hw_maxtexturesize), &vl_state.hw_maxtexturesize);
 #endif
+
+	return vl_state.hw_maxtexturesize;
 }
 
 void vlGetMaxTextureImageUnits(int *param)
@@ -346,26 +349,17 @@ const char *vlGetString(vlString_t string)
 {
 	_VL_UTIL_TRACK(vlGetString);
 
-#if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
-	if (string == VL_STRING_EXTENSIONS)
-		// This works differently in core.
-		return vlGetExtensions();
-	return (const char*)glGetString(string);
-#elif defined (VL_MODE_GLIDE)
-	return grGetString(string);
-#elif defined (VL_MODE_DIRECT3D)
-	switch(string)
+	switch (string)
 	{
-	case VL_STRING_RENDERER:
-	case VL_STRING_VERSION:
-	case VL_STRING_VENDOR:
 	case VL_STRING_EXTENSIONS:
-		break;
-	default:return "";
-	}
-#else
-	return "";
+		return vlGetExtensions();
+	default:
+#if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
+		return (const char*)glGetString(string);
+#elif defined (VL_MODE_GLIDE)
+		return grGetString(string);
 #endif
+	}
 }
 
 /*===========================

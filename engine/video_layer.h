@@ -240,6 +240,8 @@ typedef enum
 void vlGetMaxTextureAnistropy(float *params);
 void vlGetMaxTextureImageUnits(int *param);
 
+int vlGetMaxTextureSize(void);
+
 unsigned int vlGetTextureUnit(unsigned int target);
 
 void vlActiveTexture(unsigned int texunit);
