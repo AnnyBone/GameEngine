@@ -38,7 +38,10 @@ typedef struct vlState_s
 	unsigned int num_cards;		// Number of video cards.
 
 	vlCullMode_t	current_cullmode;
+
 	plColour_t		current_clearcolour;
+	plColour_t		current_colour;			// Current global colour.
+
 	unsigned int	current_capabilities;	// Enabled capabilities.
 	vlTexture_t		current_texture;
 
@@ -1085,8 +1088,9 @@ void vlFogColour3fv(plColour_t rgba)
 	DRAWING
 ===========================*/
 
-#define	_VL_BUFFER_VERTICES	0
-#define _VL_BUFFER_INDICES	1
+#define	_VL_BUFFER_VERTICES		0
+#define _VL_BUFFER_INDICES		1
+#define _VL_BUFFER_TEXCOORDS	3
 
 /*	Generates each of the buffers and other
 	data necessary for the draw call.
@@ -1116,8 +1120,8 @@ vlDraw_t *vlCreateDraw(vlPrimitive_t primitive, uint32_t num_tris, uint32_t num_
 		memset(_draw->indices, 0, sizeof(uint8_t));
 	}
 
-#ifdef VL_MODE_OPENGL
-	glGenBuffers(1, &_draw->_gl_vbo[_VL_BUFFER_VERTICES]);
+#if defined (VL_MODE_OPENGL)
+	glGenBuffers(sizeof(_draw->_gl_vbo), _draw->_gl_vbo);
 #endif
 
 	return _draw;
@@ -1128,18 +1132,16 @@ void vlDeleteDraw(vlDraw_t *draw)
 	_VL_UTIL_TRACK(vlDeleteDraw);
 
 	if (!draw)
-		Sys_Error("Draw object has not been initialized!\n");
+		return;
 
 #if defined (VL_MODE_OPENGL)
-	glDeleteBuffers(1, &draw->_gl_vbo[_VL_BUFFER_VERTICES]);
+	glDeleteBuffers(sizeof(draw->_gl_vbo), draw->_gl_vbo);
 #endif
 
-	if (draw->vertices)
-		free(draw->vertices);
-	if (draw->indices)
-		free(draw->indices);
-
+	if (draw->vertices)	free(draw->vertices);
+	if (draw->indices)	free(draw->indices);
 	free(draw);
+
 	draw = NULL;
 }
 
@@ -1161,6 +1163,8 @@ void vlDrawVertex3f(float x, float y, float z)
 	_VL_UTIL_TRACK(vlDrawVertex3f);
 
 	plVectorSet3f(vl_draw_vertex->position, x, y, z);
+	plColourSetf(vl_draw_vertex->colour, 1, 1, 1, 1);
+
 	vl_draw_vertex++;
 }
 
@@ -1169,6 +1173,8 @@ void vlDrawVertex3fv(plVector3f_t position)
 	_VL_UTIL_TRACK(vlDrawVertex3fv);
 
 	plVectorCopy(position, vl_draw_vertex->position);
+	plColourSetf(vl_draw_vertex->colour, 1, 1, 1, 1);
+
 	vl_draw_vertex++;
 }
 
@@ -1205,15 +1211,18 @@ void vlEndDraw(vlDraw_t *draw)
 
 #if defined (VL_MODE_OPENGL)
 	glBindBuffer(GL_ARRAY_BUFFER, draw->_gl_vbo[_VL_BUFFER_VERTICES]);
-	glBufferData(GL_ARRAY_BUFFER, draw->numverts * sizeof(vlVertex_t), draw->vertices, GL_STATIC_DRAW);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBufferData(GL_ARRAY_BUFFER, draw->numverts * sizeof(plVector3f_t) * sizeof(vlVertex_t), draw->vertices->position, GL_DYNAMIC_DRAW);
+
+	glBindBuffer(GL_ARRAY_BUFFER, draw->_gl_vbo[_VL_BUFFER_TEXCOORDS]);
+	glBufferData(GL_ARRAY_BUFFER, draw->numverts * sizeof(plVector2f_t) * sizeof(vlVertex_t), draw->vertices->ST, GL_DYNAMIC_DRAW);
 
 	if (draw->primitive == VL_PRIMITIVE_TRIANGLES)
 	{
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, draw->_gl_vbo[_VL_BUFFER_INDICES]);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, (draw->numtriangles * 3) * sizeof(uint8_t), draw->indices, GL_STATIC_DRAW);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, draw->numtriangles * 3 * sizeof(uint8_t), draw->indices, GL_DYNAMIC_DRAW);
 	}
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 #endif
 
 	vl_draw_vertex = NULL;
@@ -1299,52 +1308,6 @@ void _vlDrawElements(vlPrimitive_t mode, unsigned int count, unsigned int type, 
 #endif
 }
 
-/*	Draw object using immediate mode.
-*/
-void _vlDrawImmediate(vlDraw_t *draw)
-{
-	_VL_UTIL_TRACK(_vlDrawImmediate);
-
-#if defined (VL_MODE_GLIDE)
-#elif defined (VL_MODE_OPENGL)
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_COLOR_ARRAY);
-	glEnableClientState(GL_NORMAL_ARRAY);
-
-	vlVertex_t *vert = &draw->vertices[0];
-	glVertexPointer(3, GL_FLOAT, sizeof(vlVertex_t), vert->position);
-	glColorPointer(4, GL_FLOAT, sizeof(vlVertex_t), vert->colour);
-	glNormalPointer(GL_FLOAT, sizeof(vlVertex_t), vert->normal);
-	for (int i = 0; i < Video.num_textureunits; i++)
-		if (Video.textureunits[i].isactive)
-		{
-			glClientActiveTexture(vlGetTextureUnit(i));
-			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-			glTexCoordPointer(2, GL_FLOAT, sizeof(vlVertex_t), vert->ST[i]);
-		}
-
-	if (draw->primitive == VL_PRIMITIVE_TRIANGLES)
-		_vlDrawElements(
-			draw->primitive,
-			draw->numtriangles * 3,
-			GL_UNSIGNED_BYTE,
-			draw->indices
-		);
-	else
-		_vlDrawArrays(draw->primitive, 0, draw->numverts);
-
-	glDisableClientState(GL_COLOR_ARRAY);
-	glDisableClientState(GL_VERTEX_ARRAY);
-	glDisableClientState(GL_NORMAL_ARRAY);
-	for (int i = 0; i < Video.num_textureunits; i++)
-		if (Video.textureunits[i].isactive)
-		{
-			glClientActiveTexture(vlGetTextureUnit(i));
-			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-		}
-#endif
-}
-
 void vlDraw(vlDraw_t *draw)
 {
 	_VL_UTIL_TRACK(vlDraw);
@@ -1352,18 +1315,73 @@ void vlDraw(vlDraw_t *draw)
 	if(draw->numverts == 0)
 		return;
 
-#if 1
-	_vlDrawImmediate(draw);
+#if defined (VL_MODE_GLIDE)
+	// todo, glide needs its own setup here...
 #else
-	if (draw->primitive == VL_PRIMITIVE_TRIANGLES)
-		_vlDrawElements(
-			draw->primitive,
-			draw->numtriangles * 3,
-			GL_UNSIGNED_BYTE,
-			draw->indices
-		);
+	if (draw->_gl_vbo[_VL_BUFFER_VERTICES] != 0)
+	{
+		glBindBuffer(GL_ARRAY_BUFFER, draw->_gl_vbo[_VL_BUFFER_VERTICES]);
+		glVertexPointer(3, GL_FLOAT, sizeof(vlVertex_t), NULL);
+
+		glBindBuffer(GL_ARRAY_BUFFER, draw->_gl_vbo[_VL_BUFFER_TEXCOORDS]);
+		glTexCoordPointer(2, GL_FLOAT, sizeof(vlVertex_t), NULL);
+
+		// todo, switch to using glInterleavedArrays?
+
+		if (draw->primitive == VL_PRIMITIVE_TRIANGLES)
+			_vlDrawElements(
+				draw->primitive,
+				draw->numtriangles * 3,
+				GL_UNSIGNED_BYTE,
+				draw->indices
+			);
+		else
+			_vlDrawArrays(draw->primitive, 0, draw->numverts);
+
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+	}
 	else
-		_vlDrawArrays(draw->primitive, 0, draw->numverts);
+	{
+#if defined (VL_MODE_OPENGL) && !defined (VL_MODE_OPENGL_CORE)
+		// Immediate mode isn't supported in core!
+
+		glEnableClientState(GL_VERTEX_ARRAY);
+		glEnableClientState(GL_COLOR_ARRAY);
+		glEnableClientState(GL_NORMAL_ARRAY);
+
+		vlVertex_t *vert = &draw->vertices[0];
+		glVertexPointer(3, GL_FLOAT, sizeof(vlVertex_t), vert->position);
+		glColorPointer(4, GL_FLOAT, sizeof(vlVertex_t), vert->colour);
+		glNormalPointer(GL_FLOAT, sizeof(vlVertex_t), vert->normal);
+		for (int i = 0; i < Video.num_textureunits; i++)
+			if (Video.textureunits[i].isactive)
+			{
+				glClientActiveTexture(vlGetTextureUnit(i));
+				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+				glTexCoordPointer(2, GL_FLOAT, sizeof(vlVertex_t), vert->ST[i]);
+			}
+
+		if (draw->primitive == VL_PRIMITIVE_TRIANGLES)
+			_vlDrawElements(
+				draw->primitive,
+				draw->numtriangles * 3,
+				GL_UNSIGNED_BYTE,
+				draw->indices
+			);
+		else
+			_vlDrawArrays(draw->primitive, 0, draw->numverts);
+
+		glDisableClientState(GL_COLOR_ARRAY);
+		glDisableClientState(GL_VERTEX_ARRAY);
+		glDisableClientState(GL_NORMAL_ARRAY);
+		for (int i = 0; i < Video.num_textureunits; i++)
+			if (Video.textureunits[i].isactive)
+			{
+				glClientActiveTexture(vlGetTextureUnit(i));
+				glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+			}
+#endif
+	}
 #endif
 }
 
