@@ -389,15 +389,14 @@ extern "C" void M_Menu_Main_f (void);
 /* Returns a bar of the desired length, but never wider than the console. */
 char *Con_Quakebar (unsigned int len)
 {
-	static char bar[42];
-
 	const unsigned int con_linewidth = (vid.conwidth / CHAR_WIDTH) - 3;
 
+	static char bar[42];
 	len = std::min(len, sizeof(bar) - 2);
-	len = std::max(len, con_linewidth);
+	len = std::min(len, con_linewidth);
 	
 	bar[0] = '\35';
-	memset(bar + 1, '\36', len - 2);
+	std::memset(bar + 1, '\36', len - 2);
 	bar[len-1] = '\37';
 
 	if (len < con_linewidth)

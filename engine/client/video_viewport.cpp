@@ -136,7 +136,6 @@ void Viewport::Draw()
 			vlDisable(VL_CAPABILITY_MULTISAMPLE);
 	}
 
-#if 0
 	Draw_ResetCanvas();
 
 	g_menu->Draw(this);
@@ -153,11 +152,6 @@ void Viewport::Draw()
 
 	if (cv_video_finish.bValue)
 		vlFinish();
-#else
-	Draw_ResetCanvas();
-
-	Draw::MaterialSurface(g_mGlobalConChars, 0, 0, _width, _height, 1.0f);
-#endif
 }
 
 void Viewport::Screenshot()
