@@ -589,7 +589,7 @@ void Draw_String(int x, int y, const char *msg)
 	if (y <= -8)
 		return;
 
-//	Material_Draw(g_mGlobalConChars, NULL, VL_PRIMITIVE_IGNORE, 0, false);
+	Material_Draw(g_mGlobalConChars, NULL, VL_PRIMITIVE_IGNORE, 0, false);
 
 	while (*msg)
 	{
@@ -598,7 +598,7 @@ void Draw_String(int x, int y, const char *msg)
 		x += 8;
 	}
 
-//	Material_Draw(g_mGlobalConChars, NULL, VL_PRIMITIVE_IGNORE, 0, true);
+	Material_Draw(g_mGlobalConChars, NULL, VL_PRIMITIVE_IGNORE, 0, true);
 }
 
 void Draw::String(int x, int y, const char *msg)

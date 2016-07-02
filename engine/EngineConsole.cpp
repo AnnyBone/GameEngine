@@ -256,6 +256,8 @@ void Console::Draw(bool draw_input)
 	// Starting from the bottom...
 	int y = vid.conheight - CHAR_HEIGHT;
 
+	Material_Draw(g_mGlobalConChars, NULL, VL_PRIMITIVE_IGNORE, 0, false);
+
 	// ...draw version number in bottom right...
 	{
 		char ver[64];
@@ -316,6 +318,8 @@ void Console::Draw(bool draw_input)
 			++line;
 		}
 	}
+
+	Material_Draw(g_mGlobalConChars, NULL, VL_PRIMITIVE_IGNORE, 0, true);
 }
 
 void Console::DrawNotify()
@@ -350,6 +354,8 @@ void Console::DrawNotify()
 
 	unsigned int y = vid.conheight;
 
+	Material_Draw(g_mGlobalConChars, NULL, VL_PRIMITIVE_IGNORE, 0, false);
+
 	for(auto l = wrapped_lines.begin(); l != wrapped_lines.end(); ++l)
 	{
 		for(size_t i = 0; i < l->size(); ++i)
@@ -382,6 +388,8 @@ void Console::DrawNotify()
 		Draw::Character((x + plen + 2) * CHAR_WIDTH, y, 10 + ((int)(realtime*con_cursorspeed)&1));
 		y += CHAR_HEIGHT;
 	}
+
+	Material_Draw(g_mGlobalConChars, NULL, VL_PRIMITIVE_IGNORE, 0, true);
 }
 
 extern "C" void M_Menu_Main_f (void);
