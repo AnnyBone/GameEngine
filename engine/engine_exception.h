@@ -18,7 +18,7 @@
 
 #pragma once
 
-namespace Core
+namespace core
 {
 	class Exception : public std::exception
 	{

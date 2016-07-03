@@ -37,13 +37,9 @@ void Draw_Init(void);
 void Draw_Pic(int x, int y, qpic_t *pic);
 void Draw_MaterialSurface(Material_t *mMaterial, int iSkin, int x, int y, int w, int h, float fAlpha);
 void Draw_BeginDisc(void);
-void Draw_TileClear(int x, int y, int w, int h);
 void Draw_Rectangle(int x, int y, int w, int h, plColour_t colour);
-void Draw_GradientFill(int x, int y, int w, int h, plColour_t mvTopColour, plColour_t mvBottomColour);
 void Draw_FadeScreen(void);
 void Draw_ResetCanvas(void);
-void Draw_Line(MathVector3f_t mvStart, MathVector3f_t mvEnd);
-void Draw_Grid(float x, float y, float z, int iGridSize);
 void Draw_String(int x, int y, const char *msg);
 
 qpic_t *Draw_CachePic(char *path);

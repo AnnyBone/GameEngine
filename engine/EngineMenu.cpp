@@ -82,10 +82,9 @@ void Menu_Initialize(void)
 // todo, obsolete
 int	Menu_GetScreenWidth(void)
 {
-	Core::Camera *camera = g_cameramanager->GetCurrentCamera();
-	if (!camera) return 640;
-	Core::Viewport *viewport = dynamic_cast<Core::Viewport*>(camera->GetViewport());
-	if (!viewport) return 640;
+	core::Viewport *viewport = core::GetPrimaryViewport();
+	if (!viewport)
+		return 640;
 
 	return viewport->GetWidth();
 }
@@ -93,10 +92,9 @@ int	Menu_GetScreenWidth(void)
 // todo, obsolete
 int Menu_GetScreenHeight(void)
 {
-	Core::Camera *camera = g_cameramanager->GetCurrentCamera();
-	if (!camera) return 480;
-	Core::Viewport *viewport = dynamic_cast<Core::Viewport*>(camera->GetViewport());
-	if (!viewport) return 480;
+	core::Viewport *viewport = core::GetPrimaryViewport();
+	if (!viewport) 
+		return 480;
 
 	return viewport->GetHeight();
 }

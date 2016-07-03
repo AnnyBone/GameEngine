@@ -42,9 +42,9 @@ typedef struct
 
 VideoCanvasType_t currentcanvas = CANVAS_NONE; //johnfitz -- for GL_SetCanvas
 
-using namespace Core;
+using namespace core;
 
-void Draw::SetDefaultState()
+PL_MODULE_EXPORT void draw::SetDefaultState()
 {
 	plColour_t clear = { 0, 0, 0, 1 };
 	vlSetClearColour4fv(clear);
@@ -79,7 +79,7 @@ void Draw::SetDefaultState()
 	vlEnable(VL_CAPABILITY_SCISSOR_TEST);
 }
 
-void Draw::ClearBuffers()
+PL_MODULE_EXPORT void draw::ClearBuffers()
 {
 	if (!cv_video_clearbuffers.bValue)
 		return;
@@ -87,7 +87,7 @@ void Draw::ClearBuffers()
 	vlClearBuffers(VL_MASK_DEPTH | VL_MASK_COLOUR | VL_MASK_STENCIL);
 }
 
-void Draw::DepthBuffer()
+PL_MODULE_EXPORT void draw::DepthBuffer()
 {
 #if 0
 	static gltexture_t	*depth_texture = NULL;
@@ -128,7 +128,7 @@ void Draw::DepthBuffer()
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void Draw::WireBox(plVector3f_t mins, plVector3f_t maxs, float r, float g, float b)
+PL_MODULE_EXPORT void draw::WireBox(plVector3f_t mins, plVector3f_t maxs, float r, float g, float b)
 {
 	// todo, rewrite this function...
 #if defined (VL_MODE_OPENGL)
@@ -195,7 +195,7 @@ void Draw::WireBox(plVector3f_t mins, plVector3f_t maxs, float r, float g, float
 extern "C" ConsoleVariable_t r_showbboxes;
 extern "C" ServerEntity_t *sv_player;
 
-void Draw::BoundingBoxes()
+void draw::BoundingBoxes()
 {
 	if (!r_showbboxes.value || (cl.maxclients > 1) || !r_drawentities.value || (!sv.active && !g_state.embedded))
 		return;
@@ -214,7 +214,7 @@ void Draw::BoundingBoxes()
 		glColor3f(1, 1, 1);
 #endif
 
-		Draw::CoordinateAxes(ed->v.origin);
+		draw::CoordinateAxes(ed->v.origin);
 
 		plVector3f_t mins, maxs;
 		Math_VectorAdd(ed->v.mins, ed->v.origin, mins);
@@ -224,14 +224,14 @@ void Draw::BoundingBoxes()
 		glColor4f(0, 0.5f, 0, 0.5f);
 #endif
 
-		Draw::WireBox(mins, maxs, 1, 1, 1);
+		draw::WireBox(mins, maxs, 1, 1, 1);
 	}
 
 	vlDisable(VL_CAPABILITY_BLEND);
 	vlEnable(VL_CAPABILITY_TEXTURE_2D | VL_CAPABILITY_DEPTH_TEST);
 }
 
-void Draw::Shadows()
+void draw::Shadows()
 {
 	if (!r_shadows.value		|| 
 		!r_drawentities.value	|| 
@@ -254,7 +254,7 @@ void Draw::Shadows()
 		Shadow_Draw(&cl_entities[cl.viewentity]);
 }
 
-void Draw::Entities(bool alphapass)
+void draw::Entities(bool alphapass)
 {
 	if (!r_drawentities.value)
 		return;
@@ -269,7 +269,7 @@ void Draw::Entities(bool alphapass)
 			continue;
 
 		currententity = cl_visedicts[i];	// todo, legacy, needs to go!
-		Draw::Entity(cl_visedicts[i]);
+		draw::Entity(cl_visedicts[i]);
 	}
 #else	// Draw per-material
 	for (int i = 0; i < material_count; i++)
@@ -423,7 +423,7 @@ void Draw_MaterialSurface(Material_t *mMaterial, int iSkin,	int x, int y, int w,
 	vlEnable(VL_CAPABILITY_DEPTH_TEST);
 }
 
-void Draw::MaterialSurface(Material_t *material, int x, int y, unsigned int w, unsigned int h, float alpha)
+void draw::MaterialSurface(Material_t *material, int x, int y, unsigned int w, unsigned int h, float alpha)
 {
 	Draw_MaterialSurface(material, material->current_skin, x, y, w, h, alpha);
 }
@@ -539,7 +539,7 @@ void Draw_Init (void)
 //
 //==============================================================================
 
-void Draw::Character(int x, int y, int num)
+void draw::Character(int x, int y, int num)
 {
 	vlVertex_t		voCharacter[4] = { { { 0 } } };
 	int				row, col;
@@ -593,7 +593,7 @@ void Draw_String(int x, int y, const char *msg)
 
 	while (*msg)
 	{
-		Draw::Character(x, y, *msg);
+		draw::Character(x, y, *msg);
 		msg++;
 		x += 8;
 	}
@@ -601,12 +601,12 @@ void Draw_String(int x, int y, const char *msg)
 	Material_Draw(g_mGlobalConChars, NULL, VL_PRIMITIVE_IGNORE, 0, true);
 }
 
-void Draw::String(int x, int y, const char *msg)
+void draw::String(int x, int y, const char *msg)
 {
 	Draw_String(x, y, msg);
 }
 
-void Draw::GradientBackground(plColour_t top, plColour_t bottom)
+void draw::GradientBackground(plColour_t top, plColour_t bottom)
 {
 	Viewport *viewport = GetCurrentViewport();
 	if (!viewport)
@@ -625,7 +625,7 @@ void Draw::GradientBackground(plColour_t top, plColour_t bottom)
 	GL_SetCanvas(CANVAS_DEFAULT);
 	currentcanvas = oldcanvas;
 
-	Draw_GradientFill(0, 0, viewport->GetWidth(), viewport->GetHeight(), top, bottom);
+	draw::GradientFill(0, 0, viewport->GetWidth(), viewport->GetHeight(), top, bottom);
 
 #if defined (VL_MODE_OPENGL)
 	glMatrixMode(GL_PROJECTION);
@@ -637,41 +637,41 @@ void Draw::GradientBackground(plColour_t top, plColour_t bottom)
 	vlViewport(0, 0, viewport->GetWidth(), viewport->GetHeight());
 }
 
-void Draw_Line(plVector3f_t mvStart, plVector3f_t mvEnd)
+void draw::Line(plVector3f_t start, plVector3f_t end)
 {
-	vlVertex_t voLine[2] = { { { 0 } } };
+	vlVertex_t line[2] = { { { 0 } } };
 
-	Video_ObjectVertex(&voLine[0], mvStart[0], mvStart[1], mvStart[2]);
-	Video_ObjectColour(&voLine[0], 1.0f, 0, 0, 1.0f);
-	Video_ObjectVertex(&voLine[1], mvEnd[0], mvEnd[1], mvEnd[2]);
-	Video_ObjectColour(&voLine[1], 1.0f, 0, 0, 1.0f);
+	Video_ObjectVertex(&line[0], start[0], start[1], start[2]);
+	Video_ObjectColour(&line[0], 1.0f, 0, 0, 1.0f);
+	Video_ObjectVertex(&line[1], end[0], end[1], end[2]);
+	Video_ObjectColour(&line[1], 1.0f, 0, 0, 1.0f);
 
-	Video_DrawObject(voLine, VL_PRIMITIVE_LINES, 2, NULL, 0);
+	Video_DrawObject(line, VL_PRIMITIVE_LINES, 2, NULL, 0);
 }
 
-void Draw::CoordinateAxes(plVector3f_t position)
+void draw::CoordinateAxes(plVector3f_t position)
 {
 	plVector3f_t start, end;
 	plVectorCopy(position, start);
 	plVectorCopy(position, end);
 	start[0] += 10;
 	end[0] -= 10;
-	Draw_Line(start, end);
+	draw::Line(start, end);
 
 	plVectorCopy(position, start);
 	plVectorCopy(position, end);
 	start[1] += 10;
 	end[1] -= 10;
-	Draw_Line(start, end);
+	draw::Line(start, end);
 
 	plVectorCopy(position, start);
 	plVectorCopy(position, end);
 	start[2] += 10;
 	end[2] -= 10;
-	Draw_Line(start, end);
+	draw::Line(start, end);
 }
 
-void Draw_Grid(float x, float y, float z, int grid_size)
+void draw::Grid(plVector3f_t position, PLuint grid_size)
 {
 	vlEnable(VL_CAPABILITY_BLEND);
 	vlDisable(VL_CAPABILITY_TEXTURE_2D);
@@ -681,7 +681,7 @@ void Draw_Grid(float x, float y, float z, int grid_size)
 #ifdef VL_MODE_OPENGL
 	glPushMatrix();
 
-	glTranslatef(x, y, z);
+	glTranslatef(position[0], position[1], position[2]);
 
 	glEnable(GL_LINE_SMOOTH);
 
@@ -690,8 +690,7 @@ void Draw_Grid(float x, float y, float z, int grid_size)
 	glLineWidth(0.1f);
 	glBegin(GL_LINES);
 
-	int i;
-	for (i = 0; i <= (4096 / grid_size); i++)
+	for (PLuint i = 0; i <= (4096 / grid_size); i++)
 	{
 		glVertex2i(-4096, (i * grid_size) * -1);
 		glVertex2i(4096, (i * grid_size) * -1);
@@ -710,7 +709,7 @@ void Draw_Grid(float x, float y, float z, int grid_size)
 	glLineWidth(1.0f);
 	glBegin(GL_LINES);
 
-	for (i = 0; i <= 64; i++)
+	for (PLuint i = 0; i <= 64; i++)
 	{
 		glVertex2i(-4096, (i * 64) * -1);
 		glVertex2i(4096, (i * 64) * -1);
@@ -766,26 +765,26 @@ void Draw_Rectangle(int x, int y, int w, int h, plColour_t colour)
 	vlEnable(VL_CAPABILITY_DEPTH_TEST | VL_CAPABILITY_TEXTURE_2D);
 }
 
-void Draw_GradientFill(int x, int y, int w, int h, plColour_t mvTopColour, plColour_t mvBottomColour)
+void draw::GradientFill(int x, int y, PLuint width, PLuint height, plColour_t top, plColour_t bottom)
 {
 	vlVertex_t	voFill[4];
 
-	if ((mvTopColour[3] < 1) || (mvBottomColour[3] < 1))
+	if ((top[3] < 1) || (bottom[3] < 1))
 		vlEnable(VL_CAPABILITY_BLEND);
 	vlDisable(VL_CAPABILITY_DEPTH_TEST | VL_CAPABILITY_TEXTURE_2D);
 
 	Video_ObjectVertex(&voFill[0], x, y, 0);
-	Video_ObjectColour(&voFill[0], mvTopColour[0], mvTopColour[1], mvTopColour[2], mvTopColour[3]);
-	Video_ObjectVertex(&voFill[1], x + w, y, 0);
-	Video_ObjectColour(&voFill[1], mvTopColour[0], mvTopColour[1], mvTopColour[2], mvTopColour[3]);
-	Video_ObjectVertex(&voFill[2], x + w, y + h, 0);
-	Video_ObjectColour(&voFill[2], mvBottomColour[0], mvBottomColour[1], mvBottomColour[2], mvBottomColour[3]);
-	Video_ObjectVertex(&voFill[3], x, y + h, 0);
-	Video_ObjectColour(&voFill[3], mvBottomColour[0], mvBottomColour[1], mvBottomColour[2], mvBottomColour[3]);
+	Video_ObjectColour(&voFill[0], top[0], top[1], top[2], top[3]);
+	Video_ObjectVertex(&voFill[1], x + width, y, 0);
+	Video_ObjectColour(&voFill[1], top[0], top[1], top[2], top[3]);
+	Video_ObjectVertex(&voFill[2], x + width, y + height, 0);
+	Video_ObjectColour(&voFill[2], bottom[0], bottom[1], bottom[2], bottom[3]);
+	Video_ObjectVertex(&voFill[3], x, y + height, 0);
+	Video_ObjectColour(&voFill[3], bottom[0], bottom[1], bottom[2], bottom[3]);
 
 	Video_DrawFill(voFill, NULL, 0);
 
-	if ((mvTopColour[3] < 1) || (mvBottomColour[3] < 1))
+	if ((top[3] < 1) || (bottom[3] < 1))
 		vlDisable(VL_CAPABILITY_BLEND);
 	vlEnable(VL_CAPABILITY_DEPTH_TEST | VL_CAPABILITY_TEXTURE_2D);
 }
@@ -947,7 +946,7 @@ void Draw_ResetCanvas(void)
 	Entities
 */
 
-void Draw::EntityBoundingBox(ClientEntity_t *entity)
+PL_MODULE_EXPORT void draw::EntityBoundingBox(ClientEntity_t *entity)
 {
 	if (!entity->model || ((entity == &cl_entities[cl.viewentity]) && !chase_active.bValue) || (entity == &cl.viewent))
 		return;
@@ -963,7 +962,7 @@ void Draw::EntityBoundingBox(ClientEntity_t *entity)
 
 		Math_VectorAdd(entity->model->mins, entity->origin, mins);
 		Math_VectorAdd(entity->model->maxs, entity->origin, maxs);
-		Draw::WireBox(mins, maxs, 0, 1, 0);
+		draw::WireBox(mins, maxs, 0, 1, 0);
 		break;
 	default:
 	{
@@ -972,40 +971,43 @@ void Draw::EntityBoundingBox(ClientEntity_t *entity)
 #endif
 		Math_VectorAdd(entity->model->rmins, entity->origin, mins);
 		Math_VectorAdd(entity->model->rmaxs, entity->origin, maxs);
-		Draw::WireBox(mins, maxs, 1, 0, 0);
+		draw::WireBox(mins, maxs, 1, 0, 0);
 
 		Math_VectorAdd(entity->model->ymins, entity->origin, mins);
 		Math_VectorAdd(entity->model->ymaxs, entity->origin, maxs);
-		Draw::WireBox(mins, maxs, 0, 1, 0);
+		draw::WireBox(mins, maxs, 0, 1, 0);
 
 		Math_VectorAdd(entity->model->mins, entity->origin, mins);
 		Math_VectorAdd(entity->model->maxs, entity->origin, maxs);
-		Draw::WireBox(mins, maxs, 0, 0, 1);
+		draw::WireBox(mins, maxs, 0, 0, 1);
 	}
 	break;
 	}
 }
 
-void Draw::Entity(ClientEntity_t *entity)
+PL_MODULE_EXPORT void draw::Entity(ClientEntity_t *entity)
 {
 	if (!entity->model)
 	{
-		Draw::CoordinateAxes(entity->origin);
+		draw::CoordinateAxes(entity->origin);
 		return;
 	}
 
 	entity->distance_alpha = 1.0f;
 	if (cv_video_entity_fade.bValue)
 	{
-		plVector3f_t vdist;
-		Core::Camera *camera = g_cameramanager->GetCurrentCamera();
-		plVectorSubtract3fv(&camera->GetPosition()[0], entity->origin, vdist);
-		float distance = plLengthf(vdist);
-		if (distance > cv_video_entity_distance.value)
+		Camera *camera = g_cameramanager->GetCurrentCamera();
+		if (camera)
 		{
-			entity->distance_alpha = 1.0f - (((distance - cv_video_entity_distance.value) / 100.0f) / 1.0f);
-			if (entity->distance_alpha < 0.01)
-				return;
+			plVector3f_t vdist;
+			plVectorSubtract3fv(&camera->GetPosition()[0], entity->origin, vdist);
+			float distance = plLengthf(vdist);
+			if (distance > cv_video_entity_distance.value)
+			{
+				entity->distance_alpha = 1.0f - (((distance - cv_video_entity_distance.value) / 100.0f) / 1.0f);
+				if (entity->distance_alpha < 0.01)
+					return;
+			}
 		}
 	}
 
@@ -1034,7 +1036,7 @@ void Draw::Entity(ClientEntity_t *entity)
 	if (r_showbboxes.bValue)
 	{
 		vlEnable(VL_CAPABILITY_BLEND);
-		Draw::EntityBoundingBox(entity);
+		draw::EntityBoundingBox(entity);
 		vlDisable(VL_CAPABILITY_BLEND);
 	}
 }

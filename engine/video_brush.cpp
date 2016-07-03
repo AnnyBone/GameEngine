@@ -230,7 +230,7 @@ void Brush_Draw(ClientEntity_t *e)
 	currententity = e;
 	clmodel = e->model;
 
-	Core::Camera *camera = g_cameramanager->GetCurrentCamera();
+	core::Camera *camera = g_cameramanager->GetCurrentCamera();
 	Math_VectorSubtract(camera->GetPosition(), e->origin,modelorg);
 	if(e->angles[0] || e->angles[1] || e->angles[2])
 	{

@@ -76,7 +76,7 @@ bool R_CullModelForEntity(ClientEntity_t *e)
 	if(e == &cl.viewent)
 		return false;
 
-	Core::Camera *camera = g_cameramanager->GetCurrentCamera();
+	core::Camera *camera = g_cameramanager->GetCurrentCamera();
 	if (!camera)
 		return true;
 

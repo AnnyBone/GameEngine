@@ -206,11 +206,11 @@ VideoPostProcess::VideoPostProcess(const char *fragpath, const char *vertpath)
 #endif
 }
 
-VideoPostProcess::VideoPostProcess(Core::ShaderProgram *PostProcessProgram)
+VideoPostProcess::VideoPostProcess(core::ShaderProgram *PostProcessProgram)
 	: VideoFrameBuffer(512, 512)	//Video.iWidth, Video.iHeight)
 {
 	if (!PostProcessProgram)
-		throw Core::Exception("Invalid shader program!\n");
+		throw core::Exception("Invalid shader program!\n");
 
 	this->program = PostProcessProgram;
 }

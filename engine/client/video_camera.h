@@ -20,7 +20,7 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
 #define	CAMERA_LEGACY	// Camera automatically follows parent entity.
 
-namespace Core
+namespace core
 {
 	class Viewport;
 
@@ -128,6 +128,6 @@ namespace Core
 	};
 }
 
-extern Core::CameraManager *g_cameramanager;
+extern core::CameraManager *g_cameramanager;
 
 #endif

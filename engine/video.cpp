@@ -77,7 +77,7 @@ Video_t	Video;
 texture_t	*r_notexture_mip;
 texture_t	*r_notexture_mip2;	//johnfitz -- used for non-lightmapped surfs with a missing texture
 
-using namespace Core;
+using namespace core;
 
 Viewport *video_viewport = nullptr;
 
@@ -153,7 +153,7 @@ void Video_Initialize(void)
 
 	Video.vertical_sync = cv_video_verticlesync.bValue;
 
-	Draw::SetDefaultState();
+	draw::SetDefaultState();
 
 	Light_Initialize();
 

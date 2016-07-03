@@ -18,7 +18,7 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
 #ifdef __cplusplus
 
-namespace Core
+namespace core
 {
 	class Shader : public IShader
 	{
@@ -54,7 +54,7 @@ namespace Core
 		
 		virtual void RegisterAttributes();
 
-		void Attach(Core::Shader *shader);
+		void Attach(Shader *shader);
 		void Enable();
 		void Disable();
 		void Draw(vlDraw_t *object);
@@ -83,7 +83,7 @@ namespace Core
 		unsigned int GetInstance() { return instance; }
 
 	private:
-		std::vector<Core::Shader*>						shaders;
+		std::vector<Shader*>							shaders;
 		std::unordered_map<std::string, vlAttribute_t>	attributes;
 		std::unordered_map<std::string, vlUniform_t*>	uniforms;
 
@@ -110,7 +110,7 @@ namespace Core
 	};
 }
 
-extern Core::ShaderManager *g_shadermanager;
+extern core::ShaderManager *g_shadermanager;
 
 #define	SHADER_REGISTER_UNIFORM(name, type, def)		\
 	{													\

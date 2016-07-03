@@ -436,7 +436,7 @@ void Sky_ProcessPoly (glpoly_t	*p)
 
 	rs_brushpasses++;
 
-	Core::Camera *camera = g_cameramanager->GetCurrentCamera();
+	core::Camera *camera = g_cameramanager->GetCurrentCamera();
 	if (!camera)
 		return;
 
@@ -484,7 +484,7 @@ void Sky_ProcessEntities(void)
 	if (!r_drawentities.value)
 		return;
 
-	Core::Camera *camera = g_cameramanager->GetCurrentCamera();
+	core::Camera *camera = g_cameramanager->GetCurrentCamera();
 	if (!camera)
 		return;
 
@@ -568,7 +568,7 @@ void Sky_EmitSkyBoxVertex(float s,float t,int axis)
 	float			w,h;
 	MathVector3f_t	v,b;
 
-	Core::Camera *camera = g_cameramanager->GetCurrentCamera();
+	core::Camera *camera = g_cameramanager->GetCurrentCamera();
 	if (!camera)
 		return;
 
@@ -671,7 +671,7 @@ void Sky_SetBoxVert (float s, float t, int axis, MathVector3f_t v)
 	MathVector3f_t	b;
 	int				j, k;
 
-	Core::Camera *camera = g_cameramanager->GetCurrentCamera();
+	core::Camera *camera = g_cameramanager->GetCurrentCamera();
 	if (!camera)
 		return;
 
@@ -695,7 +695,7 @@ void Sky_GetTexCoord(MathVector3f_t v,float speed,float *s,float *t)
 	MathVector3f_t	vDirection;
 	float			fLength,fScroll;
 
-	Core::Camera *camera = g_cameramanager->GetCurrentCamera();
+	core::Camera *camera = g_cameramanager->GetCurrentCamera();
 	if (!camera)
 		return;
 

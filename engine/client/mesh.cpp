@@ -18,7 +18,7 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
 #include "platform_model.h"
 
-namespace Core
+namespace core
 {
 	typedef struct Mesh_s
 	{

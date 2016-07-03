@@ -1397,7 +1397,7 @@ void vlDrawVertexNormals(vlDraw_t *draw)
 		plVectorScalef(draw->vertices[i].normal, 2.0f, endpos);
 		plVectorAdd3fv(endpos, draw->vertices[i].position, endpos);
 
-		Draw_Line(draw->vertices[i].position, endpos);
+		//Draw_Line(draw->vertices[i].position, endpos);
 	}
 }
 

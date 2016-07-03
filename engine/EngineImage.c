@@ -390,8 +390,6 @@ static pModuleFunction_t PNGFunctions[]=
 	{ "png_destroy_read_struct", (void**)&PNG_DestroyReadStruct }
 };
 
-#define	IMAGE_PNG_FUNCTION_WARNING(a) Con_Warning("Failed to find libpng function! ("a")\n");
-
 void Image_InitializePNG()
 {
 	iPNGLibraryInstance = plLoadLibrary("libpng16");

@@ -26,11 +26,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 /*	Viewport Manager	*/
 
-using namespace Core;
+using namespace core;
 
 Viewport *viewport_main = nullptr, *viewport_current = nullptr;
 
-Viewport *Core::GetPrimaryViewport()
+Viewport *core::GetPrimaryViewport()
 {
 	if (!viewport_main)
 	{
@@ -41,7 +41,7 @@ Viewport *Core::GetPrimaryViewport()
 	return viewport_main;
 }
 
-void Core::SetPrimaryViewport(Viewport *viewport)
+void core::SetPrimaryViewport(Viewport *viewport)
 {
 	if (!viewport)
 		throw Exception("Attempted to assign an invalid viewport as primary!\n");
@@ -49,7 +49,7 @@ void Core::SetPrimaryViewport(Viewport *viewport)
 	viewport_main = viewport;
 }
 
-Viewport *Core::GetCurrentViewport()
+Viewport *core::GetCurrentViewport()
 {
 	if (!viewport_current)
 	{
@@ -60,7 +60,7 @@ Viewport *Core::GetCurrentViewport()
 	return viewport_current;
 }
 
-void Core::SetCurrentViewport(Viewport *viewport)
+void core::SetCurrentViewport(Viewport *viewport)
 {
 	if (!viewport)
 		throw Exception("Attempted to assign an invalid viewport as primary!\n");
@@ -103,7 +103,7 @@ void Viewport::Draw()
 		r_refdef.vrect.height
 	*/
 
-	Draw::ClearBuffers();
+	draw::ClearBuffers();
 
 	double time1;
 	if (r_speeds.value)

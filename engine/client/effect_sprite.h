@@ -18,7 +18,7 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
 #ifdef __cplusplus
 
-namespace Core
+namespace core
 {
 	class Sprite : public ISprite
 	{
@@ -88,7 +88,7 @@ namespace Core
 	};
 }
 
-extern Core::SpriteManager *g_spritemanager;
+extern core::SpriteManager *g_spritemanager;
 
 #else
 

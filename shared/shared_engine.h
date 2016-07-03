@@ -26,7 +26,7 @@
 
 #ifdef __cplusplus
 
-namespace Core
+namespace core
 {
 	class IEngine
 	{

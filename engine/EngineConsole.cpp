@@ -54,7 +54,7 @@ extern "C" unsigned int		key_linepos;
 
 bool g_consoleinitialized;
 
-using namespace Core;
+using namespace core;
 
 /* Singleton console instance. */
 Console *g_console = nullptr;
@@ -127,23 +127,23 @@ void Console::ScrollUp()
 	++backscroll;
 }
 
-void Core::Console::ScrollDown()
+void Console::ScrollDown()
 {
 	if(backscroll > 0)
 		--backscroll;
 }
 
-void Core::Console::ScrollHome()
+void Console::ScrollHome()
 {
 	backscroll = CONS_BACKLOG;
 }
 
-void Core::Console::ScrollEnd()
+void Console::ScrollEnd()
 {
 	backscroll = 0;
 }
 
-void Core::Console::linefeed()
+void Console::linefeed()
 {
 	lines.emplace_back("");
 
@@ -153,7 +153,7 @@ void Core::Console::linefeed()
 		++cursor_y;
 }
 
-std::list<std::string> Core::Console::prepare_text(unsigned int cols, unsigned int rows)
+std::list<std::string> Console::prepare_text(unsigned int cols, unsigned int rows)
 {
 	std::list<std::string> wrapped_lines;
 
@@ -192,7 +192,7 @@ std::list<std::string> Core::Console::prepare_text(unsigned int cols, unsigned i
 	return wrapped_lines;
 }
 
-std::list<std::string> Core::Console::wrap_line(std::string line, unsigned int cols)
+std::list<std::string> Console::wrap_line(std::string line, unsigned int cols)
 {
 	std::list<std::string> wrapped_line;
 
@@ -251,7 +251,7 @@ void Console::Draw(bool draw_input)
 	// Draw the background.
 	plColour_t black = { 0, 0, 0, 255 };
 	plColour_t lightblack = { 0, 0, 0, bgalpha };
-	Draw_GradientFill(0, 0, vid.conwidth, vid.conheight, black, lightblack);
+	draw::GradientFill(0, 0, vid.conwidth, vid.conheight, black, lightblack);
 
 	// Starting from the bottom...
 	int y = vid.conheight - CHAR_HEIGHT;
@@ -267,9 +267,7 @@ void Console::Draw(bool draw_input)
 		size_t x    = con_cols - vlen;
 
 		for(size_t i = 0; i < vlen; ++i, ++x)
-		{
-			Draw::Character(x * CHAR_WIDTH, y, ver[i]);
-		}
+			draw::Character(x * CHAR_WIDTH, y, ver[i]);
 
 		y -= CHAR_HEIGHT;
 	}
@@ -287,18 +285,18 @@ void Console::Draw(bool draw_input)
 		for(size_t i = 0;; ++i)
 		{
 			if(text[i] != '\0')
-				Draw::Character((i+1) * CHAR_WIDTH, y, text[i]);
+				draw::Character((i + 1) * CHAR_WIDTH, y, text[i]);
 			else
 			{
 				// Why is this even necessary?
-				Draw::Character((i+1) * CHAR_WIDTH, y, ' ');
+				draw::Character((i + 1) * CHAR_WIDTH, y, ' ');
 				break;
 			}
 		}
 
 		// Draw the blinky cursor
 		if(!((int)((realtime-key_blinktime)*con_cursorspeed) & 1))
-			Draw::Character((key_linepos+1) * CHAR_WIDTH, y, '_');
+			draw::Character((key_linepos + 1) * CHAR_WIDTH, y, '_');
 
 		y -= CHAR_HEIGHT;
 	}
@@ -312,7 +310,7 @@ void Console::Draw(bool draw_input)
 		for(auto line = wrapped_lines.rbegin(); line != wrapped_lines.rend() && y >= 0;)
 		{
 			for(size_t i = 0; i < line->length(); ++i)
-				Draw::Character((i+1) * CHAR_WIDTH, y, line->at(i));
+				draw::Character((i + 1) * CHAR_WIDTH, y, line->at(i));
 
 			y -= CHAR_HEIGHT;
 			++line;
@@ -359,7 +357,7 @@ void Console::DrawNotify()
 	for(auto l = wrapped_lines.begin(); l != wrapped_lines.end(); ++l)
 	{
 		for(size_t i = 0; i < l->size(); ++i)
-			Draw::Character(((i + 1) * CHAR_WIDTH), y, (*l)[i]);
+			draw::Character(((i + 1) * CHAR_WIDTH), y, (*l)[i]);
 
 		y += CHAR_HEIGHT;
 	}
@@ -381,11 +379,11 @@ void Console::DrawNotify()
 		size_t x = 0;
 		while(chat_buffer[x])
 		{
-			Draw::Character((x + plen + 2) * CHAR_WIDTH, y, chat_buffer[x]);
+			draw::Character((x + plen + 2) * CHAR_WIDTH, y, chat_buffer[x]);
 			++x;
 		}
 
-		Draw::Character((x + plen + 2) * CHAR_WIDTH, y, 10 + ((int)(realtime*con_cursorspeed)&1));
+		draw::Character((x + plen + 2) * CHAR_WIDTH, y, 10 + ((int)(realtime*con_cursorspeed) & 1));
 		y += CHAR_HEIGHT;
 	}
 
@@ -477,7 +475,7 @@ void Console_Initialize(void)
 
 	plClearLog(ENGINE_LOG);
 
-	g_console = new Core::Console();
+	g_console = new Console();
 
 	// register our commands
 	Cvar_RegisterVariable (&con_notifytime, NULL);
@@ -523,9 +521,7 @@ void Con_Printf (const char *fmt, ...)
 	if (g_state.embedded)
 		g_launcher.PrintMessage(msg);
 	else
-	{
 		Con_Print(msg);
-	}
 }
 
 void Con_Warning (const char *fmt, ...)

@@ -459,7 +459,7 @@ void Particle_Draw(void)
 	if (!pActiveParticles || !cv_video_drawparticles.value)
 		return;
 
-	Core::Camera *camera = g_cameramanager->GetCurrentCamera();
+	core::Camera *camera = g_cameramanager->GetCurrentCamera();
 	if (!camera)
 		return;
 

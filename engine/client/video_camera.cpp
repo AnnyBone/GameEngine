@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "effect_sprite.h"
 #include "EngineGame.h"
 
-using namespace Core;
+using namespace core;
 
 /*
 Camera Manager
@@ -162,7 +162,7 @@ void Camera::DrawViewEntity()
 	glDepthRange(0, 0.3);
 #endif
 
-	Draw::Entity(_viewmodel);
+	draw::Entity(_viewmodel);
 
 #ifdef VL_MODE_OPENGL
 	glDepthRange(0, 1);
@@ -219,17 +219,17 @@ void Camera::Draw()
 	//Fog_EnableGFog();
 	Sky_Draw();
 	World_Draw();
-	Draw::Shadows();
-	Draw::Entities(false);
+	draw::Shadows();
+	draw::Entities(false);
 	World_DrawWater();
-	Draw::Entities(true);
+	draw::Entities(true);
 	// todo, particles
 	if (g_spritemanager) g_spritemanager->Draw();
 	Light_Draw();
 	//Fog_DisableGFog();
 	if ((cl.maxclients <= 1) && !bIsDedicated) Game->Server_Draw();
 	DrawViewEntity();
-	Draw::BoundingBoxes();
+	draw::BoundingBoxes();
 
 #if 0
 	//johnfitz -- cheat-protect some draw modes

@@ -42,9 +42,15 @@ typedef enum
 
 #define CAMERA_LEGACY
 
+#if defined(KATANA)
+#	define ENGINE_FUNCTION PL_MODULE_EXPORT
+#else
+#	define ENGINE_FUNCTION
+#endif
+
 #ifdef __cplusplus
 
-namespace Core
+namespace core
 {
 	class ICamera;
 
@@ -100,10 +106,28 @@ namespace Core
 
 		virtual void ForceCenter() = 0;
 	};
+
+	namespace draw
+	{
+		ENGINE_FUNCTION void ClearBuffers();	// Clears the color, stencil and depth buffers.
+		ENGINE_FUNCTION void DepthBuffer();	// Draws the depth buffer.
+
+		ENGINE_FUNCTION void SetDefaultState();	// Sets default rendering state.
+
+		ENGINE_FUNCTION void GradientBackground(plColour_t top, plColour_t bottom);
+		ENGINE_FUNCTION void GradientFill(int x, int y, PLuint width, PLuint height, plColour_t top, plColour_t bottom);
+		
+		ENGINE_FUNCTION void WireBox(plVector3f_t mins, plVector3f_t maxs, float r, float g, float b);
+		ENGINE_FUNCTION void CoordinateAxes(plVector3f_t position);
+		ENGINE_FUNCTION void Character(PLint x, PLint y, PLint num);
+		ENGINE_FUNCTION void String(int x, int y, const char *msg);
+		ENGINE_FUNCTION void Line(plVector3f_t start, plVector3f_t end);
+		ENGINE_FUNCTION void Grid(plVector3f_t position, PLuint grid_size);
+	}
 }
 
-typedef Core::IViewport CoreViewport;
-typedef Core::ICamera CoreCamera;
+typedef core::IViewport CoreViewport;
+typedef core::ICamera CoreCamera;
 
 #else
 

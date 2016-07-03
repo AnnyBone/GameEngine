@@ -18,7 +18,7 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
 #ifdef __cplusplus
 
-namespace Core
+namespace core
 {
 	class Camera;
 

@@ -66,7 +66,7 @@ int		iMousePosition[2],
 
 bool input_mouseactive = false;
 
-using namespace Core;
+using namespace core;
 
 extern "C" SDL_Window *sdl_mainwindow;
 

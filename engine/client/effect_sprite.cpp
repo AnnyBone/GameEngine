@@ -20,7 +20,7 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 #include "video_camera.h"
 #include "effect_sprite.h"
 
-using namespace Core;
+using namespace core;
 
 ConsoleVariable_t cv_sprite_debugsize = { "sprite_debugsize", "0", false, false, "If enabled, shows the area that the sprite covers." };
 
@@ -264,10 +264,10 @@ void Sprite::Draw()
 		Math_VectorAdd(maxs, position, NewMaxs);
 
 		// Draw a point representing the current position.
-		Draw::CoordinateAxes(position);
-
+		draw::CoordinateAxes(position);
+		
 		// Draw the bounding box.
-		Draw::WireBox(NewMins, NewMaxs, 0, 1.0f, 0);
+		draw::WireBox(NewMins, NewMaxs, 0, 1.0f, 0);
 	}
 }
 

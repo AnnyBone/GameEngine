@@ -18,7 +18,9 @@
 
 #include "engine_base.h"
 
-Core::Exception::Exception(const char *message, ...)
+using namespace core;
+
+Exception::Exception(const char *message, ...)
 {
 	va_list		ArgPtr;
 	char		Out[1024];

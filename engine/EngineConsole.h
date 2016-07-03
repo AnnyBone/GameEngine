@@ -25,7 +25,7 @@
 #include <list>
 #include <time.h>
 
-namespace Core
+namespace core
 {
 	class Console
 	{
@@ -71,7 +71,7 @@ namespace Core
 	};
 }
 
-extern Core::Console *g_console;
+extern core::Console *g_console;
 #endif
 
 plEXTERN_C_START

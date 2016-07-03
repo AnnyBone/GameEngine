@@ -22,7 +22,7 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 #include "client/shader_base.h"
 #include "client/shader_water.h"
 
-using namespace Core;
+using namespace core;
 
 ShaderManager *g_shadermanager = nullptr;
 
@@ -129,7 +129,7 @@ bool Shader::Load(const char *path)
 		sprintf(source_path, "%s%s_vertex.shader", g_state.path_shaders, path);
 		stype = GL_VERTEX_SHADER;
 		break;
-	default:throw Core::Exception("Unknown shader type! (%i) (%s)\n", type, path);
+	default:throw core::Exception("Unknown shader type! (%i) (%s)\n", type, path);
 	}
 
 	// Attempt to load it.
@@ -225,7 +225,7 @@ ShaderProgram::ShaderProgram(std::string _name) :
 {
 	instance = vlCreateShaderProgram();
 	if (!instance)
-		throw Core::Exception("Failed to create shader program!\n");
+		throw core::Exception("Failed to create shader program!\n");
 }
 
 ShaderProgram::~ShaderProgram()
@@ -247,7 +247,7 @@ void ShaderProgram::RegisterShader(std::string path, vlShaderType_t type)
 {
 	Shader *shader_ = new Shader(type);
 	if (!shader_->Load(path.c_str()))
-		throw Core::Exception("Failed to load shader! (%s)\n", path.c_str());
+		throw core::Exception("Failed to load shader! (%s)\n", path.c_str());
 
 	Attach(shader_);
 }
@@ -266,7 +266,7 @@ void ShaderProgram::RegisterAttribute(std::string name, int location)
 void ShaderProgram::Attach(Shader *shader)
 {
 	if (!shader)
-		throw Core::Exception("Attempted to attach an invalid shader!\n");
+		throw core::Exception("Attempted to attach an invalid shader!\n");
 
 	vlAttachShader(instance, shader->GetInstance());
 	shaders.push_back(shader);
@@ -337,7 +337,7 @@ void ShaderProgram::SetAttributeVariable(int location, plVector3f_t vector)
 vlUniform_t *ShaderProgram::RegisterUniform(std::string name, vlUniformType_t type)
 {
 	if (type >= VL_UNIFORM_END)
-		throw Core::Exception("Invalid unform type! (%s) (%i)\n", name.c_str(), type);
+		throw core::Exception("Invalid unform type! (%s) (%i)\n", name.c_str(), type);
 
 	// Ensure we don't have it registered already.
 	auto uniform = uniforms.find(name);

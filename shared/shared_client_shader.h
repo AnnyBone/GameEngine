@@ -20,7 +20,7 @@
 
 #ifdef __cplusplus
 
-namespace Core
+namespace core
 {
 	class IShader
 	{
@@ -63,7 +63,7 @@ namespace Core
 	};
 }
 
-typedef Core::IShaderProgram CoreShaderProgram;
+typedef core::IShaderProgram CoreShaderProgram;
 
 #else
 

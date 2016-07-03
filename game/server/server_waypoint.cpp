@@ -24,9 +24,9 @@
 
 #define	WAYPOINT_MAX_ALLOCATED	2048
 
-namespace Game
+namespace game
 {
-	namespace AI
+	namespace ai
 	{
 		ConsoleVariable_t waypoint_debug = {
 			"waypoint_debug",
@@ -63,14 +63,14 @@ namespace Game
 		};
 	}
 
-	extern AI::WaypointManager *waypoint_manager;
+	extern ai::WaypointManager *waypoint_manager;
 }
 
-using namespace Game;
+using namespace game;
 
-AI::WaypointManager *waypoint_manager = nullptr;
+ai::WaypointManager *waypoint_manager = nullptr;
 
-void AI::WaypointManager::Initialize()
+void ai::WaypointManager::Initialize()
 {
 	g_engine->Con_Printf("Initializing Waypoint Manager...\n");
 
@@ -82,7 +82,7 @@ void AI::WaypointManager::Initialize()
 	waypoints.reserve(WAYPOINT_MAX_ALLOCATED);
 }
 
-Waypoint_t *AI::WaypointManager::Add()
+Waypoint_t *ai::WaypointManager::Add()
 {
 	Waypoint_t *waypoint = new Waypoint_t;
 	memset(waypoint, 0, sizeof(Waypoint_t));
@@ -101,7 +101,7 @@ Waypoint_t *AI::WaypointManager::Add()
 	return waypoint;
 }
 
-Waypoint_t *AI::WaypointManager::Get(std::string name)
+Waypoint_t *ai::WaypointManager::Get(std::string name)
 {
 	for (auto &point : waypoints)
 		if (std::strcmp(point->cName, name.c_str()))
@@ -110,7 +110,7 @@ Waypoint_t *AI::WaypointManager::Get(std::string name)
 	return nullptr;
 }
 
-void AI::WaypointManager::Remove(Waypoint_t *waypoint)
+void ai::WaypointManager::Remove(Waypoint_t *waypoint)
 {
 	for (unsigned int i = 0; i < waypoints.size(); i++)
 	{
@@ -123,28 +123,28 @@ void AI::WaypointManager::Remove(Waypoint_t *waypoint)
 	}
 }
 
-void AI::WaypointManager::Clear()
+void ai::WaypointManager::Clear()
 {
 	waypoints.clear();							// Clear the vector.
 	waypoints.shrink_to_fit();					// Clear out mem.
 	waypoints.reserve(WAYPOINT_MAX_ALLOCATED);	// Reserve default amount, again.
 }
 
-float AI::WaypointManager::GetDistance(Waypoint_t *waypoint, plVector3f_t position)
+float ai::WaypointManager::GetDistance(Waypoint_t *waypoint, plVector3f_t position)
 {
 	plVector3f_t vecdist;
 	plVectorSubtract3fv(position, waypoint->position, vecdist);
 	return plLengthf(vecdist);
 }
 
-void AI::WaypointManager::Simulate()
+void ai::WaypointManager::Simulate()
 {
 //	for (auto &point : waypoints)
 //	{
 //	}
 }
 
-void AI::WaypointManager::Draw()
+void ai::WaypointManager::Draw()
 {
 	for (auto &point : waypoints)
 	{
@@ -152,11 +152,11 @@ void AI::WaypointManager::Draw()
 			g_engine->DrawLine(point->position, point->next->position);
 		if (point->last)
 			g_engine->DrawLine(point->position, point->last->position);
-		g_engine->DrawCoordinateAxes(point->position);
+		core::draw::CoordinateAxes(point->position);
 	}
 }
 
-void AI::WaypointManager::Shutdown()
+void ai::WaypointManager::Shutdown()
 {
 	Clear();
 }

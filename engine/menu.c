@@ -92,7 +92,6 @@ void M_Menu_Main_f (void);
 void M_Main_Draw (void);
 	void M_SinglePlayer_Draw (void);
 		void M_Save_Draw (void);
-	void M_MultiPlayer_Draw (void);
 		void M_Setup_Draw (void);
 		void M_Net_Draw (void);
 		void M_SerialConfig_Draw (void);
@@ -114,7 +113,6 @@ void M_Main_Key (int key);
 		void M_ModemConfig_Key (int key);
 		void M_LanConfig_Key (int key);
 		void M_GameOptions_Key (int key);
-		void M_ServerList_Key (int key);
 	void M_Options_Key (int key);
 		void M_Keys_Key (int key);
 		void M_Video_Key (int key);
@@ -487,25 +485,6 @@ void M_Menu_MultiPlayer_f (void)
 	key_dest = key_menu;
 	m_state = m_multiplayer;
 	m_entersound = TRUE;
-}
-
-void M_MultiPlayer_Draw (void)
-{
-	int		f;
-	qpic_t	*p;
-
-	M_DrawTransPic (16, 4, Draw_CachePic ("gfx/qplaque.lmp") );
-	p = Draw_CachePic ("gfx/p_multi.lmp");
-	M_DrawPic ( (320-p->width)/2, 4, p);
-	M_DrawTransPic (72, 32, Draw_CachePic ("gfx/mp_menu.lmp") );
-
-	f = (int)(realtime * 10)%6; //johnfitz -- was host_time
-
-	M_DrawTransPic (54, 32 + m_multiplayer_cursor * 20,Draw_CachePic( va("gfx/menudot%i.lmp", f+1 ) ) );
-
-	if (serialAvailable || tcpipAvailable)
-		return;
-	M_PrintWhite ((320/2) - ((27*8)/2), 148, "No Communications Available");
 }
 
 void M_MultiPlayer_Key (int key)
@@ -2267,51 +2246,6 @@ void M_ServerList_Draw (void)
 	if (*m_return_reason)
 		M_PrintWhite (16, 148, m_return_reason);
 #endif
-}
-
-
-void M_ServerList_Key (int k)
-{
-	switch (k)
-	{
-	case K_ESCAPE:
-		M_Menu_LanConfig_f ();
-		break;
-
-	case K_SPACE:
-		M_Menu_Search_f ();
-		break;
-
-	case K_UPARROW:
-	case K_LEFTARROW:
-		//S_LocalSound ("misc/menu1.wav");
-		slist_cursor--;
-		if (slist_cursor < 0)
-			slist_cursor = hostCacheCount - 1;
-		break;
-
-	case K_DOWNARROW:
-	case K_RIGHTARROW:
-		//S_LocalSound ("misc/menu1.wav");
-		slist_cursor++;
-		if (slist_cursor >= hostCacheCount)
-			slist_cursor = 0;
-		break;
-
-	case INPUT_KEY_ENTER:
-		//S_LocalSound ("misc/menu2.wav");
-		m_return_state = m_state;
-		m_return_onerror = TRUE;
-		slist_sorted = FALSE;
-		key_dest = key_game;
-		m_state = m_none;
-		Cbuf_AddText ( va ("connect \"%s\"\n", hostcache[slist_cursor].cname) );
-		break;
-
-	default:
-		break;
-	}
-
 }
 
 //=============================================================================

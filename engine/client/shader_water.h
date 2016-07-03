@@ -18,7 +18,7 @@
 
 #pragma once
 
-class WaterShader : public Core::ShaderProgram
+class WaterShader : public core::ShaderProgram
 {
 public:
 	WaterShader();

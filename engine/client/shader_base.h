@@ -18,7 +18,7 @@
 
 #pragma once
 
-class BaseShader : public Core::ShaderProgram
+class BaseShader : public core::ShaderProgram
 {
 public:
 	BaseShader();

@@ -50,7 +50,7 @@ unsigned int d_8to24table_conchars[256];
 unsigned int d_8to24table_shirt[256];
 unsigned int d_8to24table_pants[256];
 
-using namespace Core;
+using namespace core;
 
 /*
 ================================================================================

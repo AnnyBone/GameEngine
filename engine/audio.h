@@ -110,7 +110,7 @@ typedef struct
 
 #ifdef __cplusplus
 
-namespace Core
+namespace core
 {
 	class AudioManager : public CoreManager
 	{

@@ -51,7 +51,7 @@ void World_MarkSurfaces(void)
 	unsigned int	j, i;
 	bool			nearwaterportal;
 
-	Core::Camera *camera = g_cameramanager->GetCurrentCamera();
+	core::Camera *camera = g_cameramanager->GetCurrentCamera();
 	if (!camera)
 		return;
 
@@ -125,7 +125,7 @@ void World_MarkSurfaces(void)
 
 bool R_BackFaceCull (msurface_t *surf)
 {
-	Core::Camera *camera = g_cameramanager->GetCurrentCamera();
+	core::Camera *camera = g_cameramanager->GetCurrentCamera();
 	if (!camera)
 		return false;
 
@@ -157,7 +157,7 @@ void World_CullSurfaces(void)
 	if (!cl.worldmodel || !r_drawworld_cheatsafe)
 		return;
 
-	Core::Camera *camera = g_cameramanager->GetCurrentCamera();
+	core::Camera *camera = g_cameramanager->GetCurrentCamera();
 	if (!camera)
 		return;
 
@@ -182,7 +182,7 @@ void R_BuildLightmapChains (void)
 	msurface_t		*s;
 	unsigned int	i;
 
-	Core::Camera *camera = g_cameramanager->GetCurrentCamera();
+	core::Camera *camera = g_cameramanager->GetCurrentCamera();
 	if (!camera)
 		return;
 

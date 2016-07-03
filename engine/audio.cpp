@@ -65,7 +65,7 @@ LPALGETAUXILIARYEFFECTSLOTIV alGetAuxiliaryEffectSlotiv;
 LPALGETAUXILIARYEFFECTSLOTF alGetAuxiliaryEffectSlotf;
 LPALGETAUXILIARYEFFECTSLOTFV alGetAuxiliaryEffectSlotfv;
 
-using namespace Core;
+using namespace core;
 
 void Audio_PlaySoundCommand(void);
 void Audio_ListSoundsCommand(void);
@@ -82,7 +82,7 @@ AudioManager::AudioManager()
 
 	ALCdevice *device = alcOpenDevice(NULL);
 	if (!device)
-		throw Core::Exception("Failed to open audio device!\n");
+		throw Exception("Failed to open audio device!\n");
 
 	// Check for extensions...
 	if (alcIsExtensionPresent(device, "ALC_EXT_EFX"))
@@ -118,7 +118,7 @@ AudioManager::AudioManager()
 
 	ALCcontext *context = alcCreateContext(device, attr);
 	if (!context || alcMakeContextCurrent(context) == FALSE)
-		throw Core::Exception("Failed to create audio context!\n");
+		throw Exception("Failed to create audio context!\n");
 
 	if (alIsExtensionPresent("AL_SOFT_buffer_samples"))
 		extensions.soft_buffer_samples = true;
@@ -207,7 +207,7 @@ AudioSound_t *AudioManager::AddSound()
 {
 	AudioSound_t *sound = new AudioSound_t;
 	if (!sound)
-		throw Core::Exception("Failed to allocate new sound!\n");
+		throw Exception("Failed to allocate new sound!\n");
 
 	memset(sound, 0, sizeof(AudioSound_t));
 	sounds.push_back(sound);
@@ -395,7 +395,7 @@ void AudioManager::PauseSound(const AudioSound_t *sound)
 void AudioManager::DeleteSound(AudioSound_t *sound)
 {
 	if (!sound)
-		throw Core::Exception("Attempted to delete an invalid sound!\n");
+		throw Exception("Attempted to delete an invalid sound!\n");
 
 	StopSound(sound);
 
