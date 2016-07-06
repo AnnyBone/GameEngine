@@ -160,7 +160,7 @@ typedef struct
 
 	float		viewheight;
 
-	bool		bIsPaused,			// send over by server
+	bool		paused,			// send over by server
 				bIsOnGround,
 				bIsInWater;
 

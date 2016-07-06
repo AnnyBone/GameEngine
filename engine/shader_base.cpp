@@ -20,9 +20,9 @@
 
 #include "client/shader_base.h"
 
-BaseShader::BaseShader() : ShaderProgram("base")
+BaseShader::BaseShader() : ShaderProgram("base"),
+	alpha_test(false)
 {
-	alpha_test	= false;
 }
 
 void BaseShader::Initialize()

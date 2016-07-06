@@ -116,11 +116,6 @@ void Viewport::Draw()
 		rs_dynamiclightmaps = rs_aliaspasses = rs_skypasses = rs_brushpasses = 0;
 	}
 
-#if defined (VL_MODE_OPENGL)
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-#endif
-
 	if (_camera && !con_forcedup)
 	{
 		// Let the camera manager know we're drawing from this

@@ -190,7 +190,7 @@ void Sprite::SetMaterial(Material_t *nmaterial)
 void Sprite::Simulate()
 {
 	// TODO: last bit is a hack, since having the console open doesn't count as being paused...
-	if (!isactive || cl.bIsPaused || ((key_dest == key_console) && (svs.maxclients == 1)))
+	if (!isactive || cl.paused || ((key_dest == key_console) && (svs.maxclients == 1)))
 		return;
 
 	Camera *camera = g_cameramanager->GetCurrentCamera();

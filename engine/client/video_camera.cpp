@@ -172,21 +172,6 @@ void Camera::DrawViewEntity()
 
 void Camera::Draw()
 {
-#if defined (VL_MODE_OPENGL)
-	glRotatef(-90, 1, 0, 0);	// Put Z going up.
-	glRotatef(90, 0, 0, 1);		// Put Z going up.
-
-	glRotatef(-angles[2], 1, 0, 0);
-	glRotatef(-angles[0], 0, 1, 0);
-	glRotatef(-angles[1], 0, 0, 1);
-
-	glTranslatef(-position[0], -position[1], -position[2]);
-
-	glGetFloatv(GL_MODELVIEW_MATRIX, r_world_matrix);
-#endif
-
-	Fog_SetupFrame();	// todo, really necessary to call this at the start of every draw call!?
-
 	float fovxx = _fovx, fovyy = _fovy;
 	if (cl.worldmodel)
 	{
@@ -210,6 +195,25 @@ void Camera::Draw()
 	}
 
 	SetFrustum(fovxx, fovyy);
+
+#if defined (VL_MODE_OPENGL)
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+
+	glRotatef(-90, 1, 0, 0);	// Put Z going up.
+	glRotatef(90, 0, 0, 1);		// Put Z going up.
+
+	glRotatef(-angles[2], 1, 0, 0);
+	glRotatef(-angles[0], 0, 1, 0);
+	glRotatef(-angles[1], 0, 0, 1);
+
+	glTranslatef(-position[0], -position[1], -position[2]);
+
+	// todo, not needed?
+	//glGetFloatv(GL_MODELVIEW_MATRIX, r_world_matrix);
+#endif
+
+	Fog_SetupFrame();	// todo, really necessary to call this at the start of every draw call!?
 
 	if(gl_cull.value)	vlEnable(VL_CAPABILITY_CULL_FACE);
 	else				vlDisable(VL_CAPABILITY_CULL_FACE);
@@ -332,7 +336,7 @@ void Camera::SimulateRoll()
 
 void Camera::Simulate()
 {
-	if(cl.bIsPaused)
+	if(cl.paused)
 		return;
 
 	SimulateFrustum();

@@ -18,53 +18,59 @@
 
 #pragma once
 
-class ServerEntity
+namespace game
 {
-public:
-	ServerEntity();
-	~ServerEntity();
-
-	void SetOrigin(MathVector3f_t origin);
-	void SetAngles(MathVector3f_t angles);
-	void SetSize(MathVector3f_t mins, MathVector3f_t maxs);
-	void SetSize(float fMinA, float fMinB, float fMinC, float fMaxA, float fMaxB, float fMaxC);
-	void SetModel(char *path);
-
-	// Effects
-	void AddEffects(int effects);
-	void RemoveEffects(int effects);
-	void ClearEffects();
-
-	// Flags
-	void AddFlags(int flags);
-	void RemoveFlags(int flags);
-	void ClearFlags();
-
-	virtual void Spawn();
-	virtual void Precache() {};
-
-	bool CanDamage(ServerEntity *target, ServerDamageType_t damagetype);
-	void Damage(ServerEntity *inflictor, int damage, ServerDamageType_t damagetype);
-	virtual void Killed(ServerEntity *inflictor)	{};
-	virtual void Damaged(ServerEntity *inflictor) {};
-
-	// Physics
-	bool IsTouching(ServerEntity *other);
-	bool DropToFloor();
-
-	void Link(bool touchtriggers);
-	void Unlink();
-	void Free();
-
-	/*	Returns the current entity reference for this particular entity.
-	*/
-	ServerEntity_t *GetInstance()
+	namespace server
 	{
-		return instance;
-	};
+		class Entity
+		{
+		public:
+			Entity();
+			~Entity();
 
-	ServerEntity *owner;
+			void SetOrigin(plVector3f_t origin);
+			void SetAngles(plVector3f_t angles);
+			void SetSize(plVector3f_t mins, plVector3f_t maxs);
+			void SetSize(float mina, float minb, float minc, float maxa, float maxb, float maxc);
+			void SetModel(char *path);
 
-private:
-	ServerEntity_t *instance;
-};
+			// Effects
+			void AddEffects(int effects);
+			void RemoveEffects(int effects);
+			void ClearEffects();
+
+			// Flags
+			void AddFlags(int flags);
+			void RemoveFlags(int flags);
+			void ClearFlags();
+
+			virtual void Spawn();
+			virtual void Precache() {};
+
+			bool CanDamage(Entity *target, ServerDamageType_t damagetype);
+			void Damage(Entity *inflictor, int damage, ServerDamageType_t damagetype);
+			virtual void Killed(Entity *inflictor)	{};
+			virtual void Damaged(Entity *inflictor) {};
+
+			// Physics
+			bool IsTouching(Entity *other);
+			bool DropToFloor();
+
+			void Link(bool touchtriggers);
+			void Unlink();
+			void Free();
+
+			/*	Returns the current entity reference for this particular entity.
+			*/
+			ServerEntity_t *GetInstance()
+			{
+				return _instance;
+			};
+
+			Entity *owner;
+
+		private:
+			ServerEntity_t *_instance;
+		};
+	}
+}

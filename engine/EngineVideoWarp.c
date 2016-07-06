@@ -255,7 +255,7 @@ void R_UpdateWarpTextures (void)
 	int i;
 	float x, y, x2, warptess;
 
-	if (r_oldwater.value || cl.bIsPaused || r_drawflat_cheatsafe || r_lightmap_cheatsafe)
+	if (r_oldwater.value || cl.paused || r_drawflat_cheatsafe || r_lightmap_cheatsafe)
 		return;
 
 	warptess = 128.0f / Math_Clamp(3.0f, floor(r_waterquality.value), 64.0f);

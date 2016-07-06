@@ -50,13 +50,17 @@
 #include <wx/notebook.h>
 #include <wx/spinctrl.h>
 
-// Shared Library
-#include "shared_flags.h"
-
 // Platform Library
 #include "platform.h"
 #include "platform_library.h"
 #include "platform_filesystem.h"
+
+// Shared Library
+#include "shared_flags.h"
+extern "C" {
+#include "shared_engine.h"
+}
+#include "shared_video.h"
 
 #define	EDITOR_TITLE	"Katana World Editor"
 #define	EDITOR_LOG		"editor"
@@ -64,10 +68,6 @@
 
 #define	PATH_16ICONS	"resource/16x16/"
 #define	PATH_32ICONS	"resource/32x32/"
-
-extern "C" {
-#include "shared_engine.h"
-}
 
 void EngineInterface_Load();
 void EngineInterface_Unload();

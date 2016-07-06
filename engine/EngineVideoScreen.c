@@ -202,7 +202,7 @@ void SCR_CheckDrawCenterString (void)
 		return;
 	if (key_dest != key_game)
 		return;
-	if (cl.bIsPaused) //johnfitz -- don't show centerprint during a pause
+	if (cl.paused) //johnfitz -- don't show centerprint during a pause
 		return;
 
 	SCR_DrawCenterString ();
@@ -364,7 +364,6 @@ devstats_t dev_stats, dev_peakstats;
 
 void SCR_DrawDevStats (void)
 {
-	plColour_t	colour_dark = { 0, 0, 0, 0.5f };
 	char		str[40];
 	int			y = 25-9; //9=number of lines to print
 	int			x = 0; //margin
@@ -374,6 +373,7 @@ void SCR_DrawDevStats (void)
 
 	GL_SetCanvas (CANVAS_BOTTOMLEFT);
 
+	plColour_t colour_dark = { 0, 0, 0, 0.5f };
 	Draw_Rectangle(x,y*8,152,72, colour_dark); //dark rectangle
 
 	sprintf (str, "devstats |Curr Peak");

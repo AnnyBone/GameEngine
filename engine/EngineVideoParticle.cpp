@@ -45,7 +45,7 @@ Particle_t *Particle_Allocate(void)
 	Particle_t *pParticle;
 
 	// Don't allocate if the client is paused or we're within the console.
-	if (cl.bIsPaused || ((key_dest == key_console) && (svs.maxclients == 1)))
+	if (cl.paused || ((key_dest == key_console) && (svs.maxclients == 1)))
 		return NULL;
 
 	if (!pFreeParticles)
@@ -351,7 +351,7 @@ void Particle_Frame(void)
 		return;
 
 	// Don't continue if the client is either paused or in the console.
-	if (cl.bIsPaused || ((key_dest == key_console) && (svs.maxclients == 1)))
+	if (cl.paused || ((key_dest == key_console) && (svs.maxclients == 1)))
 		return;
 
 	fFrameTime = cl.time - cl.oldtime;

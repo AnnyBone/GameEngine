@@ -954,9 +954,9 @@ void CL_ParseServerMessage(void)
 			Game->Client_ParseTemporaryEntity();
 			break;
 		case SVC_SETPAUSE:
-			cl.bIsPaused = MSG_ReadByte();
+			cl.paused = MSG_ReadByte();
 
-			if(cl.bIsPaused)
+			if (cl.paused)
 				g_menu->AddState(MENU_STATE_PAUSED);
 			else
 				g_menu->RemoveState(MENU_STATE_PAUSED);

@@ -375,7 +375,7 @@ void CL_RelinkEntities (void)
 	float			frac, f, d;
 	plVector3f_t	delta;
 
-	if(cl.bIsPaused)
+	if (cl.paused)
 		return;
 
 	// determine partial update time

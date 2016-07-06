@@ -18,13 +18,19 @@
 
 #include "server_main.h"
 
-class ServerEntityAnimated : public ServerEntity
+namespace game
 {
-public:
-private:
-	int
-		animation_frame,	// Current frame of the current sequence.
-		animation_endframe;	// Last frame of the current sequence.
+	namespace server
+	{
+		class EntityAnimated : public Entity
+		{
+		public:
+		private:
+			int
+				animation_frame,	// Current frame of the current sequence.
+				animation_endframe;	// Last frame of the current sequence.
 
-	double animation_time;	// Speed/time of the animation.
-};
+			double animation_time;	// Speed/time of the animation.
+		};
+	}
+}
