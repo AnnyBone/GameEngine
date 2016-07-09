@@ -40,8 +40,6 @@ typedef enum
 	CANVAS_TOPRIGHT
 } VideoCanvasType_t;
 
-#define CAMERA_LEGACY
-
 #if defined(KATANA)
 #	define ENGINE_FUNCTION PL_MODULE_EXPORT
 #else
@@ -54,6 +52,7 @@ namespace core
 {
 	class ICamera;
 
+	// todo, move this into its own header.
 	class IViewport
 	{
 	public:
@@ -72,6 +71,7 @@ namespace core
 		virtual void Draw() = 0;
 	};
 
+	// todo, move this into its own header.
 	class ICamera
 	{
 	public:

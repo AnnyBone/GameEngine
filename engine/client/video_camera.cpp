@@ -131,17 +131,71 @@ void CameraManager::Simulate()
 	}
 }
 
+/*	Camera Manager C Interface	*/
+
+extern "C" EngineCamera *CM_GetCurrentCamera(void)
+{
+	return g_cameramanager->GetCurrentCamera();
+}
+
+extern "C" EngineCamera *CM_GetPrimaryCamera(void)
+{
+	Viewport *view = GetPrimaryViewport();
+	if (!view)
+	{
+		Con_Warning("Failed to get primary viewport!\n");
+		return nullptr;
+	}
+
+	EngineCamera *camera = dynamic_cast<EngineCamera*>(view->GetCamera());
+	if (!camera)
+	{
+		Con_Warning("Failed to get primary camera!\n");
+		return nullptr;
+	}
+
+	return camera;
+}
+
+#ifdef CAMERA_LEGACY
+
+extern "C" void CM_SetParentEntity(EngineCamera *camera, ClientEntity_t *parent)
+{
+	if (!camera) return;
+	camera->SetParentEntity(parent);
+}
+
+extern "C" void CM_SetViewEntity(EngineCamera *camera, ClientEntity_t *child)
+{
+	if (!camera) return;
+	camera->SetViewEntity(child);
+}
+
+extern "C" ClientEntity_t *CM_GetParentEntity(EngineCamera *camera)
+{
+	if (!camera) return nullptr;
+	return camera->GetParentEntity();
+}
+
+extern "C" ClientEntity_t *CM_GetViewEntity(EngineCamera *camera)
+{
+	if (!camera) return nullptr;
+	return camera->GetParentEntity();
+}
+
+#endif
+
 /*	Camera	*/
 
 Camera::Camera() :
 	_viewport(nullptr),
-	_viewmodel(nullptr)
+	_viewmodel(nullptr),
+	_parententity(nullptr)
 {
-	plVectorClear(position);
-	plVectorClear(angles);
+	plVectorClear(_position);
 	plVectorClear(bobamount);
 
-	plAngleVectors(angles, _forward, _right, _up);
+	plAngleVectors(_angles, _forward, _right, _up);
 
 	SetFOV(cv_camera_fov.value);
 }
@@ -177,11 +231,11 @@ void Camera::Draw()
 	{
 		// Current view leaf.
 		oldleaf = leaf;
-		leaf = Mod_PointInLeaf(position, cl.worldmodel);
+		leaf = Mod_PointInLeaf(_position, cl.worldmodel);
 
 		if (r_waterwarp.value)
 		{
-			int contents = Mod_PointInLeaf(position, cl.worldmodel)->contents;
+			int contents = Mod_PointInLeaf(_position, cl.worldmodel)->contents;
 			if (contents == BSP_CONTENTS_WATER || contents == BSP_CONTENTS_SLIME || contents == BSP_CONTENTS_LAVA)
 			{
 				//variance is a percentage of width, where width = 2 * tan(fov / 2) otherwise the effect is too dramatic at high FOV and too subtle at low FOV.  what a mess!
@@ -203,11 +257,11 @@ void Camera::Draw()
 	glRotatef(-90, 1, 0, 0);	// Put Z going up.
 	glRotatef(90, 0, 0, 1);		// Put Z going up.
 
-	glRotatef(-angles[2], 1, 0, 0);
-	glRotatef(-angles[0], 0, 1, 0);
-	glRotatef(-angles[1], 0, 0, 1);
+	glRotatef(-_angles[2], 1, 0, 0);
+	glRotatef(-_angles[0], 0, 1, 0);
+	glRotatef(-_angles[1], 0, 0, 1);
 
-	glTranslatef(-position[0], -position[1], -position[2]);
+	glTranslatef(-_position[0], -_position[1], -_position[2]);
 
 	// todo, not needed?
 	//glGetFloatv(GL_MODELVIEW_MATRIX, r_world_matrix);
@@ -299,7 +353,7 @@ void Camera::SimulateBob()
 			bob[i] = -7.0f;
 	}
 
-	position[2] += bob[0];
+	_position[2] += bob[0];
 	
 	// Store the bob amount, so it can be used later.
 	bobamount[0] = bob[0];
@@ -319,7 +373,7 @@ void Camera::SimulateRoll()
 		side = value;
 
 	side *= sign;
-	angles[PL_ROLL] += side;
+	_angles[PL_ROLL] += side;
 
 #if 0 // TODO: Move into seperate class?? Game specific...
 	static double dmg_time = 0;
@@ -344,7 +398,7 @@ void Camera::Simulate()
 	SimulateRoll();
 
 	// Add height (needs to be done after bob).
-	position[2] += height;
+	_position[2] += height;
 
 	/*	
 	Never let it sit exactly on a node line, because a water plane can
@@ -352,7 +406,7 @@ void Camera::Simulate()
 
 	The server protocol only specifies to 1/16 pixel, so add 1/32 in each axis.
 	*/
-	plVectorAddf(position, 1.0f / 32.0f, position);
+	plVectorAddf(_position, 1.0f / 32.0f, _position);
 
 #ifdef CAMERA_LEGACY
 	SimulateParentEntity();
@@ -374,30 +428,30 @@ void Camera::Simulate()
 					punch[i] = std::fmaxf(punch[i] + delta, punchangles[0][i]);
 			}
 
-		plVectorAdd3fv(angles, punch, angles);
+		plVectorAdd3fv(_angles, punch, _angles);
 	}
 
-	plAngleVectors(angles, _forward, _right, _up);
+	plAngleVectors(_angles, _forward, _right, _up);
 
 	// Simulate camera-specific effects...
 	g_spritemanager->Simulate();
 }
 
 #ifdef CAMERA_LEGACY
-void Camera::SetParentEntity(ClientEntity_t *_parent)
+void Camera::SetParentEntity(ClientEntity_t *parent)
 {
-	if (!_parent)
+	if (!_parententity)
 	{
 		// Clear it out, not an issue since we
 		// want to support switching between these.
-		parententity = nullptr;
+		_parententity = nullptr;
 		return;
 	}
 
-	parententity = _parent;
+	_parententity = parent;
 
-	SetPosition(parententity->origin);
-	position[2] += height;
+	SetPosition(_parententity->origin);
+	_position[2] += height;
 }
 
 void Camera::SetViewEntity(ClientEntity_t *_child)
@@ -428,10 +482,10 @@ void Camera::SimulateViewEntity()
 	// Apply view model angles.
 	plVector3f_t oldangles;
 	plVectorCopy(_viewmodel->angles, oldangles);
-	plVectorCopy(angles, _viewmodel->angles);
+	plVectorCopy(_angles, _viewmodel->angles);
 	
 	// Update view model origin.
-	plVectorCopy(parententity->origin, _viewmodel->origin);
+	plVectorCopy(_parententity->origin, _viewmodel->origin);
 	_viewmodel->origin[2] += height;
 
 	// Apply view model bob.
@@ -473,8 +527,8 @@ void Camera::SimulateViewEntity()
 	}
 
 	// Apply some slight movement.
-	_viewmodel->angles[PL_PITCH] = -(angles[PL_PITCH] - (sinf(cl.time * 1.5f) * 0.2f));
-	_viewmodel->angles[PL_ROLL] = -(angles[PL_ROLL] - (sinf(cl.time * 1.5f) * 0.2f));
+	_viewmodel->angles[PL_PITCH] = -(_angles[PL_PITCH] - (sinf(cl.time * 1.5f) * 0.2f));
+	_viewmodel->angles[PL_ROLL] = -(_angles[PL_ROLL] - (sinf(cl.time * 1.5f) * 0.2f));
 
 	// Finally, offset!
 	float offset = 0;
@@ -491,41 +545,41 @@ void Camera::SimulateViewEntity()
 void Camera::SimulateParentEntity()
 {
 	// Parent is the player model (visible when out of body).
-	if (!parententity)
+	if (!_parententity)
 		return;
 
 	// Transform the view offset by the model's matrix to get the offset from
 	// model origin for the view.
-	parententity->angles[YAW]		= angles[YAW];
-	parententity->angles[PITCH]		= -angles[PITCH];
-	parententity->angles[ROLL]		= -angles[ROLL];
+	_parententity->angles[YAW]		= _angles[YAW];
+	_parententity->angles[PITCH]	= -_angles[PITCH];
+	_parententity->angles[ROLL]		= -_angles[ROLL];
 
 	// Refresh view position.
-	SetPosition(parententity->origin);
+	SetPosition(_parententity->origin);
 
 	// Offsets
-	angles[PL_PITCH]	= -parententity->angles[PL_PITCH];	// Because entity pitches are actually backward.
-	angles[PL_YAW]		= parententity->angles[PL_YAW];
-	angles[PL_ROLL]		= parententity->angles[PL_ROLL];
+	_angles[PL_PITCH]	= -_parententity->angles[PL_PITCH];	// Because entity pitches are actually backward.
+	_angles[PL_YAW]		= _parententity->angles[PL_YAW];
+	_angles[PL_ROLL]	= _parententity->angles[PL_ROLL];
 
 	/*
 	Absolutely bound refresh reletive to entity clipping hull
 	so the view can never be inside a solid wall.
 	*/
-	if (position[0] < (parententity->origin[0] - 14.0f))
-		position[0] = parententity->origin[0] - 14.0f;
-	else if (position[0] > (parententity->origin[0] + 14.0f))
-		position[0] = parententity->origin[0] + 14.0f;
+	if (_position[0] < (_parententity->origin[0] - 14.0f))
+		_position[0] = _parententity->origin[0] - 14.0f;
+	else if (_position[0] > (_parententity->origin[0] + 14.0f))
+		_position[0] = _parententity->origin[0] + 14.0f;
 
-	if (position[1] < (parententity->origin[1] - 14.0f))
-		position[1] = parententity->origin[1] - 14.0f;
-	else if (position[1] > (parententity->origin[1] + 14.0f))
-		position[1] = parententity->origin[1] + 14.0f;
+	if (_position[1] < (_parententity->origin[1] - 14.0f))
+		_position[1] = _parententity->origin[1] - 14.0f;
+	else if (_position[1] > (_parententity->origin[1] + 14.0f))
+		_position[1] = _parententity->origin[1] + 14.0f;
 
-	if (position[2] < (parententity->origin[2] - 22.0f))
-		position[2] = parententity->origin[2] - 22.0f;
-	else if (position[2] > (parententity->origin[2] + 30.0f))
-		position[2] = parententity->origin[2] + 30.0f;
+	if (_position[2] < (_parententity->origin[2] - 22.0f))
+		_position[2] = _parententity->origin[2] - 22.0f;
+	else if (_position[2] > (_parententity->origin[2] + 30.0f))
+		_position[2] = _parententity->origin[2] + 30.0f;
 }
 #endif
 
@@ -570,15 +624,15 @@ int SignbitsForPlane(mplane_t *out);
 void Camera::SimulateFrustum()
 {
 	// Update the frustum.
-	plTurnVector(frustum[0].normal, position, _right, _fovx / 2 - 90);	// Left plane
-	plTurnVector(frustum[1].normal, position, _right, 90 - _fovx / 2);	// Right plane
-	plTurnVector(frustum[2].normal, position, _up, 90 - _fovy / 2);		// Bottom plane
-	plTurnVector(frustum[3].normal, position, _up, _fovy / 2 - 90);		// Top plane
+	plTurnVector(frustum[0].normal, _position, _right, _fovx / 2 - 90);	// Left plane
+	plTurnVector(frustum[1].normal, _position, _right, 90 - _fovx / 2);	// Right plane
+	plTurnVector(frustum[2].normal, _position, _up, 90 - _fovy / 2);		// Bottom plane
+	plTurnVector(frustum[3].normal, _position, _up, _fovy / 2 - 90);		// Top plane
 
 	for (int i = 0; i < 4; i++)
 	{
 		frustum[i].type = PLANE_ANYZ;
-		frustum[i].dist = Math_DotProduct(position, frustum[i].normal); // FIXME: shouldn't this always be zero?
+		frustum[i].dist = Math_DotProduct(_position, frustum[i].normal); // FIXME: shouldn't this always be zero?
 		frustum[i].signbits = SignbitsForPlane(&frustum[i]);
 	}
 }
@@ -703,37 +757,42 @@ bool Camera::IsBoxOutsideFrustum(plVector3f_t mins, plVector3f_t maxs)
 
 void Camera::SetAngles(float x, float y, float z)
 {
-	plVectorSet3f(angles, x, y, z);
+	plVectorSet3f(_angles, x, y, z);
+}
+
+void Camera::SetAngles(plVector3f_t angles)
+{
+	plVectorCopy(angles, _angles);
 }
 
 void Camera::PrintAngles()
 {
 	Con_Printf("CAMERA ANGLES : %i %i %i\n",
-		(int)angles[PL_PITCH],
-		(int)angles[PL_YAW],
-		(int)angles[PL_ROLL]);
+		(int)_angles[PL_PITCH],
+		(int)_angles[PL_YAW],
+		(int)_angles[PL_ROLL]);
 }
 
 // Position
 
 void Camera::SetPosition(float x, float y, float z)
 {
-	position[0] = x;
-	position[1] = y;
-	position[2] = z;
+	_position[0] = x;
+	_position[1] = y;
+	_position[2] = z;
 }
 
-void Camera::SetPosition(plVector3f_t _position)
+void Camera::SetPosition(plVector3f_t position)
 {
-	plVectorCopy(_position, position);
+	plVectorCopy(position, _position);
 }
 
 void Camera::PrintPosition()
 {
 	Con_Printf("CAMERA POSITION : %i %i %i\n",
-		(int)position[0],
-		(int)position[1],
-		(int)position[2]);
+		(int)_position[0],
+		(int)_position[1],
+		(int)_position[2]);
 }
 
 void Camera::TracePosition()
@@ -742,7 +801,7 @@ void Camera::TracePosition()
 	plVectorScalef(_forward, 8192.0f, v);
 
 	plVector3f_t w;
-	TraceLine(position, v, w);
+	TraceLine(_position, v, w);
 
 	if (plLengthf(w) == 0)
 	{
