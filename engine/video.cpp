@@ -170,9 +170,6 @@ void Video_Initialize(void)
 		video_viewport->SetCamera(newcam);
 
 		SetPrimaryViewport(video_viewport);
-
-		newcam->SetParentEntity(&cl_entities[cl.viewentity]);
-		newcam->SetViewEntity(&cl.viewent);
 	}
 
 	Video.bInitialized = true;

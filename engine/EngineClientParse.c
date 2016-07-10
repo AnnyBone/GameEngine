@@ -882,8 +882,14 @@ void CL_ParseServerMessage(void)
 				cl.viewangles[i] = MSG_ReadAngle ();
 			break;
 		case SVC_SETVIEW:
-			cl.viewentity = MSG_ReadShort ();
-			break;
+		{
+			cl.viewentity = MSG_ReadShort();
+
+			EngineCamera *camera = CameraManager_GetPrimaryCamera();
+			CameraManager_SetViewEntity(camera, &cl.viewent);
+			CameraManager_SetParentEntity(camera, &cl_entities[cl.viewentity]);
+		}
+		break;
 		case SVC_LIGHTSTYLE:
 			i = MSG_ReadByte ();
 			if (i >= MAX_LIGHTSTYLES)

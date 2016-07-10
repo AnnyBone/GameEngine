@@ -650,6 +650,7 @@ void CL_Init (void)
 
 void Client_Simulate(void)
 {
+	CameraManager_Simulate();
 	SpriteManager_Simulate();
 }
 

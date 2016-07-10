@@ -140,15 +140,17 @@ extern core::CameraManager *g_cameramanager;
 
 typedef struct EngineCamera EngineCamera;
 
-#ifdef CAMERA_LEGACY
-void CM_SetParentEntity(EngineCamera *camera, ClientEntity_t *parent);
-void CM_SetViewEntity(EngineCamera *camera, ClientEntity_t *child);
+void CameraManager_Simulate(void);
 
-ClientEntity_t *CM_GetParentEntity(EngineCamera *camera);
-ClientEntity_t *CM_GetViewEntity(EngineCamera *camera);
+#ifdef CAMERA_LEGACY
+void CameraManager_SetParentEntity(EngineCamera *camera, ClientEntity_t *parent);
+void CameraManager_SetViewEntity(EngineCamera *camera, ClientEntity_t *child);
+
+ClientEntity_t *CameraManager_GetParentEntity(EngineCamera *camera);
+ClientEntity_t *CameraManager_GetViewEntity(EngineCamera *camera);
 #endif
 
-EngineCamera *CM_GetCurrentCamera(void);
-EngineCamera *CM_GetPrimaryCamera(void);
+EngineCamera *CameraManager_GetCurrentCamera(void);
+EngineCamera *CameraManager_GetPrimaryCamera(void);
 
 #endif

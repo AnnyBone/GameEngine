@@ -117,12 +117,15 @@ void CameraManager::Draw()
 	{
 		SetCurrentCamera(_cameras[i]);
 
-		_cameras[i]->Draw();
+		// Cameras should only draw if a viewport is available.
+		if (_cameras[i]->GetViewport()) _cameras[i]->Draw();
 	}
 }
 
 void CameraManager::Simulate()
 {
+	if (cl.paused) return;
+
 	for (unsigned int i = 0; i < _cameras.size(); i++)
 	{
 		SetCurrentCamera(_cameras[i]);
@@ -133,12 +136,17 @@ void CameraManager::Simulate()
 
 /*	Camera Manager C Interface	*/
 
-extern "C" EngineCamera *CM_GetCurrentCamera(void)
+extern "C" void CameraManager_Simulate(void)
+{
+	g_cameramanager->Simulate();
+}
+
+extern "C" EngineCamera *CameraManager_GetCurrentCamera(void)
 {
 	return g_cameramanager->GetCurrentCamera();
 }
 
-extern "C" EngineCamera *CM_GetPrimaryCamera(void)
+extern "C" EngineCamera *CameraManager_GetPrimaryCamera(void)
 {
 	Viewport *view = GetPrimaryViewport();
 	if (!view)
@@ -159,25 +167,25 @@ extern "C" EngineCamera *CM_GetPrimaryCamera(void)
 
 #ifdef CAMERA_LEGACY
 
-extern "C" void CM_SetParentEntity(EngineCamera *camera, ClientEntity_t *parent)
+extern "C" void CameraManager_SetParentEntity(EngineCamera *camera, ClientEntity_t *parent)
 {
 	if (!camera) return;
 	camera->SetParentEntity(parent);
 }
 
-extern "C" void CM_SetViewEntity(EngineCamera *camera, ClientEntity_t *child)
+extern "C" void CameraManager_SetViewEntity(EngineCamera *camera, ClientEntity_t *child)
 {
 	if (!camera) return;
 	camera->SetViewEntity(child);
 }
 
-extern "C" ClientEntity_t *CM_GetParentEntity(EngineCamera *camera)
+extern "C" ClientEntity_t *CameraManager_GetParentEntity(EngineCamera *camera)
 {
 	if (!camera) return nullptr;
 	return camera->GetParentEntity();
 }
 
-extern "C" ClientEntity_t *CM_GetViewEntity(EngineCamera *camera)
+extern "C" ClientEntity_t *CameraManager_GetViewEntity(EngineCamera *camera)
 {
 	if (!camera) return nullptr;
 	return camera->GetParentEntity();
@@ -390,9 +398,6 @@ void Camera::SimulateRoll()
 
 void Camera::Simulate()
 {
-	if(cl.paused)
-		return;
-
 	SimulateFrustum();
 	SimulateBob();
 	SimulateRoll();
@@ -440,11 +445,13 @@ void Camera::Simulate()
 #ifdef CAMERA_LEGACY
 void Camera::SetParentEntity(ClientEntity_t *parent)
 {
-	if (!_parententity)
+	// Clear it out, not an issue since we
+	// want to support switching between these.
+	_parententity = nullptr;
+
+	if (!parent)
 	{
-		// Clear it out, not an issue since we
-		// want to support switching between these.
-		_parententity = nullptr;
+		Con_Warning("Failed to set camera parent entity!\n");
 		return;
 	}
 
@@ -456,11 +463,13 @@ void Camera::SetParentEntity(ClientEntity_t *parent)
 
 void Camera::SetViewEntity(ClientEntity_t *_child)
 {
+	// Clear it out, not an issue since we
+	// want to support switching between these.
+	_viewmodel = nullptr;
+
 	if (!_child)
 	{
-		// Clear it out, not an issue since we
-		// want to support switching between these.
-		_viewmodel = nullptr;
+		Con_Warning("Failed to set camera child entity!\n");
 		return;
 	}
 
