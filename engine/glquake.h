@@ -27,8 +27,6 @@
 #endif
 plEXTERN_C_START
 
-extern	int glx, gly, glwidth, glheight;
-
 #define BACKFACE_EPSILON	0.01
 
 void R_TimeRefresh_f (void);

@@ -131,7 +131,7 @@ void Viewport::Draw()
 			vlDisable(VL_CAPABILITY_MULTISAMPLE);
 	}
 
-	Draw_ResetCanvas();
+	draw::ResetCanvas();
 
 	g_menu->Draw(this);
 

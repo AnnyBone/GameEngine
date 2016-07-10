@@ -119,7 +119,7 @@ typedef struct
 
 	int msaa_samples;
 
-	int framecount;	// An alternative to r_framecount, which is slightly more reliable.
+	unsigned int framecount;	// An alternative to r_framecount, which is slightly more reliable.
 
 	bool
 		bInitialized,					// Is the video system started?
@@ -139,7 +139,6 @@ void Video_Initialize(void);
 void Video_GenerateSphereCoordinates(void);
 void Video_SetTexture(gltexture_t *gTexture);
 void Video_SetViewportSize(unsigned int w, unsigned int h);
-void Video_PostFrame(void);
 void Video_Frame(void);
 void Video_ObjectTexture(vlVertex_t *voObject, unsigned int uiTextureUnit, float S, float T);
 void Video_ObjectVertex(vlVertex_t *voObject, float X, float Y, float Z);

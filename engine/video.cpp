@@ -126,7 +126,7 @@ void Video_Initialize(void)
 
 	vlInit();
 
-	// Attempt to dynamically allocated the number of supported TMUs.
+	// Attempt to dynamically allocate the number of supported TMUs.
 	vlGetMaxTextureImageUnits(&Video.num_textureunits);
 	Video.textureunits = (VideoTextureMU_t*)Hunk_Alloc(sizeof(VideoTextureMU_t)*Video.num_textureunits);
 	if (!Video.textureunits)
@@ -170,23 +170,20 @@ void Video_Initialize(void)
 		video_viewport->SetCamera(newcam);
 
 		SetPrimaryViewport(video_viewport);
+		SetCurrentViewport(video_viewport);
 	}
 
 	Video.bInitialized = true;
 }
 
-/*
-	Window Management
-*/
+/*	Window Management	*/
 
 void Video_SetViewportSize(unsigned int w, unsigned int h)
 {
 	video_viewport->SetSize(w, h);
 }
 
-/*
-	Coordinate Generation
-*/
+/*	Coordinate Generation	*/
 
 void Video_GenerateSphereCoordinates(void)
 {
@@ -237,9 +234,7 @@ void Video_SetTexture(gltexture_t *gTexture)
 	vlBindTexture(VL_TEXTURE_2D, gTexture->texnum);
 }
 
-/*
-	Object Management
-*/
+/*	Object Management	*/
 
 void Video_ObjectTexture(vlVertex_t *object, unsigned int uiTextureUnit, float S, float T)
 {
@@ -265,9 +260,7 @@ void Video_ObjectColour(vlVertex_t *object, float R, float G, float B, float A)
 	object->colour[PL_ALPHA]	= A;
 }
 
-/*
-	Drawing
-*/
+/*	Drawing	*/
 
 /*  Draw a simple rectangle.
 */
@@ -334,19 +327,12 @@ void Video_Frame(void)
 	if (g_state.embedded || (Video.bInitialized == false))
 		return;
 
-	Video.framecount++;
 	// Don't let us exceed a limited count.
-	if (Video.framecount > 100000)
-		Video.framecount = 0;
+	Video.framecount++; if (Video.framecount == ((unsigned int)-1)) Video.framecount = 0;
 
 	video_viewport->Draw();
 
-	Video_PostFrame();
-}
-
-void Video_PostFrame(void)
-{
-	Draw_ResetCanvas();
+	draw::ResetCanvas();
 
 	if (!Video.bSkipUpdate)
 		Window_Swap();
@@ -365,6 +351,7 @@ void Video_Shutdown(void)
 
 	if (g_spritemanager) delete g_spritemanager;
 	if (g_shadermanager) delete g_shadermanager;
+	if (g_cameramanager) delete g_cameramanager;
 
 	if (!g_state.embedded)
 	{

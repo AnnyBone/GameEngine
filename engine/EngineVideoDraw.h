@@ -39,7 +39,6 @@ void Draw_MaterialSurface(Material_t *mMaterial, int iSkin, int x, int y, int w,
 void Draw_BeginDisc(void);
 void Draw_Rectangle(int x, int y, int w, int h, plColour_t colour);
 void Draw_FadeScreen(void);
-void Draw_ResetCanvas(void);
 void Draw_String(int x, int y, const char *msg);
 
 qpic_t *Draw_CachePic(char *path);

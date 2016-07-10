@@ -619,7 +619,7 @@ void draw::GradientBackground(plColour_t top, plColour_t bottom)
 	glPushMatrix();
 #endif
 
-	Draw_ResetCanvas();
+	draw::ResetCanvas();
 
 	VideoCanvasType_t oldcanvas = (VideoCanvasType_t)currentcanvas;
 	GL_SetCanvas(CANVAS_DEFAULT);
@@ -863,11 +863,7 @@ void GL_SetCanvas (VideoCanvasType_t newcanvas)
 	float s;
 	int	lines;
 
-	Camera *camera = g_cameramanager->GetCurrentCamera();
-	if (!camera)
-		return;
-
-	Viewport *viewport = dynamic_cast<Viewport*>(camera->GetViewport());
+	Viewport *viewport = GetCurrentViewport();
 	if (!viewport)
 		return;
 
@@ -878,53 +874,87 @@ void GL_SetCanvas (VideoCanvasType_t newcanvas)
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity ();
 
-	unsigned int glwidth = viewport->GetWidth(), glheight = viewport->GetHeight();
-	int glx = viewport->GetPosition()[0], gly = viewport->GetPosition()[1];
 	switch(newcanvas)
 	{
 	case CANVAS_DEFAULT:
-		glOrtho (0, glwidth, glheight, 0, -99999, 99999);
-		vlViewport(glx, gly, glwidth, glheight);
+		glOrtho(0, viewport->GetWidth(), viewport->GetHeight(), 0, -99999, 99999);
+		vlViewport(
+			viewport->GetPosition()[0], 
+			viewport->GetPosition()[1], 
+			viewport->GetWidth(), 
+			viewport->GetHeight());
 		break;
 	case CANVAS_CONSOLE:
-		lines = vid.conheight - (scr_con_current * vid.conheight / glheight);
+		lines = vid.conheight - (scr_con_current * vid.conheight / viewport->GetHeight());
 		glOrtho(0,vid.conwidth,vid.conheight + lines,lines,-99999,99999);
-		vlViewport(glx, gly, glwidth, glheight);
+		vlViewport(
+			viewport->GetPosition()[0], 
+			viewport->GetPosition()[1], 
+			viewport->GetWidth(), 
+			viewport->GetHeight());
 		break;
 	case CANVAS_MENU:
-		s = Math_Min((float)glwidth / 640.0, (float)glheight / 480.0);
+		s = std::fminf((float)viewport->GetWidth() / 640.0, (float)viewport->GetHeight() / 480.0);
 		s = Math_Clamp(1.0, scr_menuscale.value, s);
 		glOrtho (0, 640, 480, 0, -99999, 99999);
-		vlViewport(glx, gly, glwidth, glheight);
+		vlViewport(
+			viewport->GetPosition()[0], 
+			viewport->GetPosition()[1], 
+			viewport->GetWidth(), 
+			viewport->GetHeight());
 		break;
 	case CANVAS_SBAR:
-		s = Math_Clamp(1.0, scr_sbarscale.value, (float)glwidth / 320.0);
+		s = Math_Clamp(1.0, scr_sbarscale.value, (float)viewport->GetWidth() / 320.0);
 		glOrtho (0, 320, 48, 0, -99999, 99999);
-		vlViewport(glx + (glwidth - 320 * s) / 2, gly, 320 * s, 48 * s);
+		vlViewport(
+			viewport->GetPosition()[0] + (viewport->GetWidth() - 320 * s) / 2, 
+			viewport->GetPosition()[1], 
+			320 * s, 
+			48 * s);
 		break;
 	case CANVAS_WARPIMAGE:
 		glOrtho (0, 128, 0, 128, -99999, 99999);
-		vlViewport(glx, gly + glheight - gl_warpimagesize, gl_warpimagesize, gl_warpimagesize);
+		vlViewport(
+			viewport->GetPosition()[0], 
+			viewport->GetPosition()[1] + viewport->GetHeight() - gl_warpimagesize, 
+			gl_warpimagesize, 
+			gl_warpimagesize);
 		break;
 	case CANVAS_CROSSHAIR: //0,0 is center of viewport
 		s = Math_Clamp(1.0, scr_crosshairscale.value, 10.0);
-		glOrtho(glwidth / -2 / s, glwidth / 2 / s, glheight / 2 / s, glheight / -2 / s, -99999, 99999);
-		vlViewport(glx, glheight - gly - glheight, glwidth & ~1, glheight & ~1);
+		glOrtho(viewport->GetWidth() / -2 / s, viewport->GetWidth() / 2 / s, viewport->GetHeight() / 2 / s, viewport->GetHeight() / -2 / s, -99999, 99999);
+		vlViewport(
+			viewport->GetPosition()[0], 
+			viewport->GetHeight() - viewport->GetPosition()[1] - viewport->GetHeight(), 
+			viewport->GetWidth() & ~1, 
+			viewport->GetHeight() & ~1);
 		break;
 	case CANVAS_BOTTOMLEFT: //used by devstats
-		s = (float)glwidth/vid.conwidth; //use console scale
+		s = (float)viewport->GetWidth() / vid.conwidth; //use console scale
 		glOrtho (0, 320, 200, 0, -99999, 99999);
-		vlViewport(glx, gly, 320 * s, 200 * s);
+		vlViewport(
+			viewport->GetPosition()[0],
+			viewport->GetPosition()[1], 
+			320 * s, 
+			200 * s);
 		break;
 	case CANVAS_BOTTOMRIGHT: //used by fps/clock
-		s = (float)glwidth/vid.conwidth; //use console scale
+		s = (float)viewport->GetWidth() / vid.conwidth; //use console scale
 		glOrtho (0, 320, 200, 0, -99999, 99999);
-		vlViewport(glx + glwidth - 320 * s, gly, 320 * s, 200 * s);
+		vlViewport(
+			viewport->GetPosition()[0] + viewport->GetWidth() - 320 * s, 
+			viewport->GetPosition()[1], 
+			320 * s, 
+			200 * s);
 		break;
 	case CANVAS_TOPRIGHT: //used by disc
 		s = 1;
 		glOrtho (0, 320, 200, 0, -99999, 99999);
-		vlViewport(glx + glwidth - 320 * s, gly + glheight - 200 * s, 320 * s, 200 * s);
+		vlViewport(
+			viewport->GetPosition()[0] + viewport->GetWidth() - 320 * s, 
+			viewport->GetPosition()[1] + viewport->GetHeight() - 200 * s, 
+			320 * s, 
+			200 * s);
 		break;
 	default:
 		Sys_Error ("GL_SetCanvas: bad canvas type");
@@ -935,7 +965,7 @@ void GL_SetCanvas (VideoCanvasType_t newcanvas)
 #endif
 }
 
-void Draw_ResetCanvas(void)
+void draw::ResetCanvas()
 {
 	currentcanvas = (VideoCanvasType_t)-1;
 

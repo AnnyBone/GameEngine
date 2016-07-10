@@ -78,12 +78,22 @@ CameraManager::CameraManager()
 
 	Cvar_RegisterVariable(&cv_camera_modellag, NULL);
 	Cvar_RegisterVariable(&cv_camera_modelposition, NULL);
+
 	Cvar_RegisterVariable(&cv_camera_nearclip, NULL);
 	Cvar_RegisterVariable(&cv_camera_farclip, NULL);
+
 	Cvar_RegisterVariable(&cv_camera_punch, NULL);
 	Cvar_RegisterVariable(&cv_camera_fov, NULL);
 
 	Cmd_AddCommand("cm_printpos", _CameraManager_PrintPositions);
+}
+
+CameraManager::~CameraManager()
+{
+	for (auto camera = _cameras.begin(); camera != _cameras.end(); ++camera)
+		delete (*camera);
+
+	_cameras.clear();
 }
 
 /* Camera Creation */
@@ -293,10 +303,10 @@ void Camera::Draw()
 	glTranslatef(-_position[0], -_position[1], -_position[2]);
 
 	// todo, not needed?
-	//glGetFloatv(GL_MODELVIEW_MATRIX, r_world_matrix);
+	glGetFloatv(GL_MODELVIEW_MATRIX, r_world_matrix);
 #endif
 
-	Fog_SetupFrame();	// todo, really necessary to call this at the start of every draw call!?
+	//Fog_SetupFrame();	// todo, really necessary to call this at the start of every draw call!?
 
 	if(gl_cull.value)	vlEnable(VL_CAPABILITY_CULL_FACE);
 	else				vlDisable(VL_CAPABILITY_CULL_FACE);
@@ -314,9 +324,11 @@ void Camera::Draw()
 	if (g_spritemanager) g_spritemanager->Draw();
 	Light_Draw();
 	//Fog_DisableGFog();
-	if ((cl.maxclients <= 1) && !bIsDedicated) Game->Server_Draw();
 	DrawViewEntity();
 	draw::BoundingBoxes();
+
+	if ((cl.maxclients <= 1) && !bIsDedicated)
+		Game->Server_Draw();
 
 #if 0
 	//johnfitz -- cheat-protect some draw modes
@@ -849,6 +861,9 @@ void Camera::TracePosition()
 
 void Camera::SetViewport(IViewport *viewport)
 {
+	if (_viewport && (_viewport == viewport))
+		return;
+
 	_viewport = dynamic_cast<Viewport*>(viewport);
 	if (!_viewport)
 	{

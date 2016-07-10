@@ -60,12 +60,4 @@ namespace core
 	void SetCurrentViewport(Viewport *viewport);
 }
 
-#else
-
-PL_EXTERN_C
-
-void SetPrimaryViewportSize(unsigned int width, unsigned int height);
-
-PL_EXTERN_C_END
-
 #endif

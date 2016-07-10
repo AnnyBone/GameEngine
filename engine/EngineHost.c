@@ -701,7 +701,6 @@ void Host_Initialize(EngineParameters_t *parms)
 	PR_Init();	// todo, merge into server_initialize
 	Model_Initialize();
 	Network_Initialize();
-
 	Game->Server_Initialize();
 	SV_Init();	// todo, merge into server_initialize		
 
