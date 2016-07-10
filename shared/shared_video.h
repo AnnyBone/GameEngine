@@ -123,6 +123,9 @@ namespace core
 		ENGINE_FUNCTION void String(int x, int y, const char *msg);
 		ENGINE_FUNCTION void Line(plVector3f_t start, plVector3f_t end);
 		ENGINE_FUNCTION void Grid(plVector3f_t position, PLuint grid_size);
+
+		// Canvas
+		ENGINE_FUNCTION void ResetCanvas();
 	}
 }
 

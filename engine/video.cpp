@@ -330,9 +330,45 @@ void Video_Frame(void)
 	// Don't let us exceed a limited count.
 	Video.framecount++; if (Video.framecount == ((unsigned int)-1)) Video.framecount = 0;
 
+	r_framecount++;
+
+	double time1 = 0;
+	if (r_speeds.value)
+	{
+		vlFinish();
+
+		time1 = System_DoubleTime();
+
+		//johnfitz -- rendering statistics
+		rs_brushpolys = rs_aliaspolys = rs_skypolys = rs_particles = rs_fogpolys = rs_megatexels =
+			rs_dynamiclightmaps = rs_aliaspasses = rs_skypasses = rs_brushpasses = 0;
+	}
+
 	video_viewport->Draw();
 
-	draw::ResetCanvas();
+	//johnfitz -- modified r_speeds output
+	double time2 = System_DoubleTime();
+	if (r_speeds.value == 2)
+		Con_Printf("%3i ms  %4i/%4i wpoly %4i/%4i epoly %3i lmap %4i/%4i sky %1.1f mtex\n",
+		(int)((time2 - time1) * 1000),
+		rs_brushpolys,
+		rs_brushpasses,
+		rs_aliaspolys,
+		rs_aliaspasses,
+		rs_dynamiclightmaps,
+		rs_skypolys,
+		rs_skypasses,
+		TexMgr_FrameUsage());
+	else if (r_speeds.value)
+		Con_Printf("%3i ms  %4i wpoly %4i epoly %3i lmap\n",
+		(int)((time2 - time1) * 1000),
+		rs_brushpolys,
+		rs_aliaspolys,
+		rs_dynamiclightmaps);
+	//johnfitz
+
+	if (cv_video_finish.bValue)
+		vlFinish();
 
 	if (!Video.bSkipUpdate)
 		Window_Swap();

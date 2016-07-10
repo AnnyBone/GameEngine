@@ -30,9 +30,6 @@ namespace core
 		void Entities(bool alphapass);
 		void Shadows();
 		void BoundingBoxes();
-
-		// Canvas
-		void ResetCanvas();
 	}
 }
 

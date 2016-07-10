@@ -33,20 +33,12 @@ ClientEntity_t *currententity;
 int	r_visframecount,	// bumped when going to a new PVS
 	r_framecount;		// used for dlight push checking
 
-mplane_t frustum[4];
-
 //johnfitz -- rendering statistics
 int rs_brushpolys, rs_aliaspolys, rs_skypolys, rs_particles, rs_fogpolys;
 int rs_dynamiclightmaps, rs_brushpasses, rs_aliaspasses, rs_skypasses;
 float rs_megatexels;
 
-// view origin
-MathVector3f_t	vup,vpn,vright,
-		r_origin;
-
 float r_world_matrix[16], r_base_world_matrix[16];
-
-float r_fovx, r_fovy; //johnfitz -- rendering fov may be different becuase of r_waterwarp and r_stereo
 
 int		d_lightstylevalue[256];	// 8.8 fraction of base light value
 
@@ -155,50 +147,6 @@ void R_RenderScene(void)
 	R_PushDlights();
 	Light_Animate();
 
-	r_framecount++;
-}
-
-void R_RenderView (void)
-{
-	double	time1 = 0,
-			time2;
-
-	if (r_norefresh.value)
-		return;
-
-#ifdef VL_MODE_OPENGL
-	if(r_speeds.value)
-	{
-		glFinish ();
-		time1 = System_DoubleTime();
-
-		//johnfitz -- rendering statistics
-		rs_brushpolys = rs_aliaspolys = rs_skypolys = rs_particles = rs_fogpolys = rs_megatexels =
-		rs_dynamiclightmaps = rs_aliaspasses = rs_skypasses = rs_brushpasses = 0;
-	}
-#endif
-
-	// stuff
-
-	//johnfitz -- modified r_speeds output
-	time2 = System_DoubleTime();
-	if(r_speeds.value == 2)
-		Con_Printf(	"%3i ms  %4i/%4i wpoly %4i/%4i epoly %3i lmap %4i/%4i sky %1.1f mtex\n",
-					(int)((time2-time1)*1000),
-					rs_brushpolys,
-					rs_brushpasses,
-					rs_aliaspolys,
-					rs_aliaspasses,
-					rs_dynamiclightmaps,
-					rs_skypolys,
-					rs_skypasses,
-					TexMgr_FrameUsage ());
-	else if(r_speeds.value)
-		Con_Printf ("%3i ms  %4i wpoly %4i epoly %3i lmap\n",
-					(int)((time2-time1)*1000),
-					rs_brushpolys,
-					rs_aliaspolys,
-					rs_dynamiclightmaps);
-	//johnfitz
+	
 }
 

@@ -96,26 +96,9 @@ void Viewport::Draw()
 	vlViewport(_x, _y, _width, _height);
 	vlScissor(_x, _y, _width, _height);
 
-	/*
-		glx + r_refdef.vrect.x,
-		gly + glheight - r_refdef.vrect.y - r_refdef.vrect.height,
-		r_refdef.vrect.width,
-		r_refdef.vrect.height
-	*/
-
 	draw::ClearBuffers();
 
-	double time1;
-	if (r_speeds.value)
-	{
-		vlFinish();
-
-		time1 = System_DoubleTime();
-
-		rs_brushpolys = rs_aliaspolys = rs_skypolys = rs_particles = rs_fogpolys =
-		rs_dynamiclightmaps = rs_aliaspasses = rs_skypasses = rs_brushpasses = 0;
-	}
-
+#if 0
 	if (_camera && !con_forcedup)
 	{
 		// Let the camera manager know we're drawing from this
@@ -130,6 +113,7 @@ void Viewport::Draw()
 		if (cv_video_msaasamples.iValue > 0)
 			vlDisable(VL_CAPABILITY_MULTISAMPLE);
 	}
+#endif
 
 	draw::ResetCanvas();
 
@@ -145,8 +129,7 @@ void Viewport::Draw()
 		Screen_DrawFPS();
 	}
 
-	if (cv_video_finish.bValue)
-		vlFinish();
+	draw::ResetCanvas();
 }
 
 void Viewport::Screenshot()

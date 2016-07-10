@@ -345,15 +345,11 @@ void Input_Frame(void)
 					Key_Event(K_MWHEELDOWN,false);
 				}
 				break;
-			/*
-				Controller Input
-			*/
+			/*	Controller Input	*/
 			case SDL_CONTROLLERBUTTONDOWN:
 			case SDL_CONTROLLERBUTTONUP:
 				break;
-			/*
-				Joystick Input
-			*/
+			/*	Joystick Input	*/
 			case SDL_JOYAXISMOTION:
 				if((sEvent.jaxis.value > INPUT_MAX_ZONE) || (sEvent.jaxis.value < INPUT_MIN_ZONE))
 				{

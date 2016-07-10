@@ -22,6 +22,8 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 	Viewport
 */
 
+using namespace core;
+
 ModelViewportPanel::ModelViewportPanel(wxWindow *parent) : BaseViewportPanel(parent)
 {
 	entity = engine->CreateClientEntity();
@@ -41,7 +43,7 @@ ModelViewportPanel::ModelViewportPanel(wxWindow *parent) : BaseViewportPanel(par
 
 void ModelViewportPanel::Draw()
 {
-	engine->DrawGradientBackground();
+	draw::GradientBackground(pl_white, pl_black);
 
 	if (entity && entity->model)
 	{
@@ -56,14 +58,14 @@ void ModelViewportPanel::Draw()
 			entity->angles[1] += 0.5f;
 	}
 
-	engine->DrawResetCanvas();
+	draw::ResetCanvas();
 	engine->DrawSetCanvas(CANVAS_DEFAULT);
 
 	if (entity && entity->model)
 	{
 		std::string strout = "Model: ";
 		strout.append(entity->model->name);
-		engine->DrawString(10, 10, strout.c_str());
+		draw::String(10, 10, strout.c_str());
 
 		strout.clear();
 		strout = "Frame: ";
@@ -71,7 +73,7 @@ void ModelViewportPanel::Draw()
 			std::to_string(entity->frame + 1)
 			+ "/"
 			+ std::to_string(entity->model->numframes);
-		engine->DrawString(10, 20, strout.c_str());
+		draw::String(10, 20, strout.c_str());
 	}
 }
 

@@ -63,7 +63,8 @@ extern plColour_t
 	pl_white,
 	pl_red,
 	pl_green, 
-	pl_blue;
+	pl_blue,
+	pl_black;
 
 #define	PL_WIDTH	0
 #define	PL_HEIGHT	1

@@ -33,6 +33,7 @@ plColour_t pl_white		= { 1, 1, 1, 1 };
 plColour_t pl_red		= { 1, 0, 0, 1 };
 plColour_t pl_green		= { 0, 1, 0, 1 };
 plColour_t pl_blue		= { 0, 0, 1, 1 };
+plColour_t pl_black		= { 0, 0, 0, 1 };
 
 MathVector_t plVectorToAngles(plVector3f_t vValue)
 {
