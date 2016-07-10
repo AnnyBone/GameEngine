@@ -23,9 +23,9 @@
 #include "EngineGame.h"
 #include "input.h"
 #include "EngineMenu.h"
-
+#include "EngineVideoParticle.h"
 #include "video_light.h"
-
+#include "client/video_camera.h"
 #include "client/effect_sprite.h"
 
 // we need to declare some mouse variables here, because the menu system
@@ -581,11 +581,6 @@ void CL_SendCmd(void)
 	SZ_Clear (&cls.message);
 }
 
-void CL_Viewpos_f (void)
-{
-
-}
-
 /*	List all the currently cached models.
 */
 void Client_ListModelCache(void)
@@ -640,17 +635,15 @@ void CL_Init (void)
 	Cmd_AddCommand ("stop", CL_Stop_f);
 	Cmd_AddCommand ("playdemo", CL_PlayDemo_f);
 	Cmd_AddCommand ("timedemo", CL_TimeDemo_f);
-	Cmd_AddCommand ("viewpos", CL_Viewpos_f); //johnfitz
 	Cmd_AddCommand("client_modelcache", Client_ListModelCache);
 }
 
-/*
-	Client Simulation
-*/
+/*	Client Simulation	*/
 
 void Client_Simulate(void)
 {
 	CameraManager_Simulate();
+	ParticleManager_Simulate();
 	SpriteManager_Simulate();
 }
 

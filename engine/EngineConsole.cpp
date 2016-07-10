@@ -518,10 +518,9 @@ void Con_Printf (const char *fmt, ...)
 
 	plWriteLog(ENGINE_LOG, "%s", msg);
 
-	if (g_state.embedded)
-		g_launcher.PrintMessage(msg);
-	else
-		Con_Print(msg);
+	if (g_state.embedded) g_launcher.PrintMessage(msg);
+
+	Con_Print(msg);
 }
 
 void Con_Warning (const char *fmt, ...)

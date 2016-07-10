@@ -580,13 +580,13 @@ void *Cache_Alloc (cache_user_t *c, int size, char *name)
 
 //============================================================================
 
-void Memory_Init (void *buf, int size)
+void Memory_Initialize()
 {
-	hunk_base = (uint8_t*)buf;
-	hunk_size = size;
+	hunk_base = (uint8_t*)host_parms.membase;
+	hunk_size = host_parms.memsize;
 	hunk_low_used = 0;
 	hunk_high_used = 0;
-
+	
 	Cache_Init ();
 
 	Cmd_AddCommand ("hunk_print", Hunk_Print_f); //johnfitz

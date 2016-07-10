@@ -603,7 +603,6 @@ void _Host_Frame (float time)
 	{
 		CL_ReadFromServer();
 
-		Particle_Frame(); //johnfitz -- seperated from rendering
 		Client_Simulate();
 	}
 	else if (cls.state == CLIENT_STATE_EDITOR)
@@ -672,66 +671,59 @@ void Host_Frame (float time)
 
 void Host_Version(void);	// [31/3/2013] See host_cmd.c ~hogsy
 
-void Host_Initialize(EngineParameters_t *epParameters)
+void Host_Initialize(EngineParameters_t *parms)
 {
 	if(COM_CheckParm("-minmemory"))
-		epParameters->memsize = MINIMUM_MEMORY;
+		parms->memsize = MINIMUM_MEMORY;
 
-	host_parms = *epParameters;
+	host_parms = *parms;
 
-	if(epParameters->memsize < MINIMUM_MEMORY)
-		Sys_Error("Only %4.1f megs of memory available, can't execute game!\n",epParameters->memsize/(float)0x100000);
+	if (parms->memsize < MINIMUM_MEMORY)
+		Sys_Error("Only %4.1f megs of memory available, can't execute game!\n", parms->memsize / (float)0x100000);
 
-	com_argc = epParameters->argc;
-	com_argv = epParameters->argv;
+	com_argc = parms->argc;
+	com_argv = parms->argv;
 
-	Memory_Init(epParameters->membase, epParameters->memsize);
-	Cbuf_Init();
-	Cmd_Init();
-	Cvar_Init(); //johnfitz
-	Chase_Init();
+	Memory_Initialize();
+	Cbuf_Init();	// todo, remove?
+	Cmd_Init();		// todo, merge into console
+	Cvar_Init();	// todo, merge into console
 	FileSystem_Initialize();
 	Host_InitLocal();
-	Key_Init();
+	Key_Init();	// todo, merge into input
 	Console_Initialize();
+
+	Host_Version();
+	Con_Printf("\n%4.1f megabyte heap\n\n", host_parms.memsize / (1024 * 1024.0));
+
 	Menu_Initialize();
 	Game_Initialize();
-	PR_Init();
+	PR_Init();	// todo, merge into server_initialize
 	Model_Initialize();
 	Network_Initialize();
 
 	Game->Server_Initialize();
-	SV_Init();
-
-	Con_Printf("\n");
-
-	Host_Version();
-
-	Con_Printf("\n%4.1f megabyte heap\n\n",epParameters->memsize/(1024*1024.0));
-
-	if (!g_state.embedded)
-		Window_Initialize();
+	SV_Init();	// todo, merge into server_initialize		
 
 	if(cls.state != ca_dedicated)
 	{
+		Window_Initialize();
 		Video_Initialize();
+		Audio_Initialize();
 		Input_Initialize();
 
 		TextureManager_Initialize(); //johnfitz
 		Material_Initialize();
-		Draw_Init();
-		SCR_Init();
+
+		Draw_Init();	// todo, merge into video_initialize
+		SCR_Init();		// todo, merge into video_initialize
 
 		g_menu->Initialize();
 
-		R_Init();
-
-		Audio_Initialize();
+		R_Init();	// todo, merge into video_initialize
 
 		Game->Client_Initialize();
-		CL_Init();
-
-		Editor_Initialize();
+		CL_Init();	// todo, merge into client_initialize
 	}
 
 	Cbuf_InsertText("exec config/katana.rc");

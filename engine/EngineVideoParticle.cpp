@@ -338,7 +338,7 @@ void Particle_ClearAll(void)
 	pParticles[MAX_PARTICLES - 1].next = NULL;
 }
 
-void Particle_Frame(void)
+void ParticleManager_Simulate(void)
 {
 	Particle_t	*pParticle, *pKill;
 	float		fFrameTime, fDVelocity,

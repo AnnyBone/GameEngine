@@ -124,6 +124,8 @@ namespace core
 
 		void Draw();
 		void Simulate();
+
+		void PrintPositions();
 	protected:
 	private:
 		std::vector<Camera*> _cameras;

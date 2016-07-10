@@ -35,6 +35,9 @@ plWindow_t g_mainwindow;
 
 void Window_Initialize(void)
 {
+	if (g_state.embedded)
+		return;
+
 	if (SDL_VideoInit(NULL) < 0)
 		Sys_Error("Failed to initialize video!\n%s\n", SDL_GetError());
 
@@ -152,6 +155,7 @@ void Window_SetSize(unsigned int width, unsigned int height)
 
 	g_mainwindow.width = width; g_mainwindow.height = height;
 	SDL_SetWindowSize(sdl_mainwindow, g_mainwindow.width, g_mainwindow.height);
+	SDL_SetWindowPosition(sdl_mainwindow, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
 
 	Cvar_SetValue(cv_video_width.name, g_mainwindow.width);
 	Cvar_SetValue(cv_video_height.name, g_mainwindow.height);

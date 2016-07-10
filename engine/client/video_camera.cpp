@@ -55,6 +55,15 @@ ConsoleVariable_t cv_camera_fov = { "camera_fov", "90", true };
 
 CameraManager *g_cameramanager;
 
+// Commands //////////////////////////////////////////////
+
+void _CameraManager_PrintPositions(void)
+{
+	g_cameramanager->PrintPositions();
+}
+
+//////////////////////////////////////////////////////////
+
 CameraManager::CameraManager()
 {
 	Con_Printf("Initializing Camera Manager...\n");
@@ -73,6 +82,8 @@ CameraManager::CameraManager()
 	Cvar_RegisterVariable(&cv_camera_farclip, NULL);
 	Cvar_RegisterVariable(&cv_camera_punch, NULL);
 	Cvar_RegisterVariable(&cv_camera_fov, NULL);
+
+	Cmd_AddCommand("cm_printpos", _CameraManager_PrintPositions);
 }
 
 /* Camera Creation */
@@ -131,6 +142,16 @@ void CameraManager::Simulate()
 		SetCurrentCamera(_cameras[i]);
 
 		_cameras[i]->Simulate();
+	}
+}
+
+// Prints the position of all the currently created cameras.
+void CameraManager::PrintPositions()
+{
+	for (unsigned int i = 0; i < _cameras.size(); i++)
+	{
+		Con_Printf("\nCAMERA %i\n", i);
+		_cameras[i]->PrintPosition();
 	}
 }
 

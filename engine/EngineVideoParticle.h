@@ -31,6 +31,6 @@ void Particle_CreateEffect(ParticleType_t pType, ParticleBehaviour_t pBehaviour,
 void Particle_Parse(void);
 void Particle_ClearAll(void);
 void Particle_Draw(void);
-void Particle_Frame(void);
+void ParticleManager_Simulate(void);
 
 PL_EXTERN_C_END
