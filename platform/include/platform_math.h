@@ -664,6 +664,8 @@ static PL_INLINE float plCRandom(void)
 
 char *plVectorToString(plVector3f_t vector);
 
+plEXTERN_C_END
+
 #ifdef __cplusplus
 
 namespace pl
@@ -758,6 +760,15 @@ namespace pl
 	};
 }
 
-#endif
+#	ifndef PLATFORM_EXCLUDE_GLM
+#		ifdef _MSC_VER
+#			pragma warning(disable: 4201)
+#		endif
+#		include <glm/vec2.hpp>
+#		include <glm/vec3.hpp>
+#		include <glm/vec4.hpp>
+#		include <glm/mat4x4.hpp>
+#		include <glm/common.hpp>
+#	endif
 
-plEXTERN_C_END
+#endif

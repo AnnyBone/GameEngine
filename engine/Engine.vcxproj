@@ -644,7 +644,7 @@
     <ClCompile Include="EngineVideoAlias.c" />
     <ClCompile Include="audio.cpp" />
     <ClCompile Include="video_shader.cpp" />
-    <ClCompile Include="engine_client.c" />
+    <ClCompile Include="engine_client.cpp" />
     <ClCompile Include="EngineConsoleCommand.c" />
     <ClCompile Include="EngineConsoleVariable.c" />
     <ClCompile Include="EngineEditor.c" />

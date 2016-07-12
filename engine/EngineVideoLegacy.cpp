@@ -101,31 +101,6 @@ void R_RotateForEntity(plVector3f_t origin, plVector3f_t angles)
 #endif
 }
 
-/*	Negative offset moves polygon closer to camera
-*/
-void GL_PolygonOffset (int offset)
-{
-#ifdef VL_MODE_OPENGL
-	if (offset > 0)
-	{
-		glEnable (GL_POLYGON_OFFSET_FILL);
-		glEnable (GL_POLYGON_OFFSET_LINE);
-		glPolygonOffset(1, offset);
-	}
-	else if (offset < 0)
-	{
-		glEnable (GL_POLYGON_OFFSET_FILL);
-		glEnable (GL_POLYGON_OFFSET_LINE);
-		glPolygonOffset(-1, offset);
-	}
-	else
-	{
-		glDisable (GL_POLYGON_OFFSET_FILL);
-		glDisable (GL_POLYGON_OFFSET_LINE);
-	}
-#endif
-}
-
 int SignbitsForPlane (mplane_t *out)
 {
 	int	bits, j;

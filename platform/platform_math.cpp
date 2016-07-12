@@ -20,9 +20,7 @@
 
 #include "platform.h"
 
-/*
-	Math Library
-*/
+/*	Math Library	*/
 
 plVector2f_t pl_origin2f = { 0, 0 };
 plVector3f_t pl_origin3f = { 0, 0, 0 };
@@ -91,8 +89,7 @@ char *plVectorToString(plVector3f_t vector)
 	return s;
 }
 
-/*
-*/
+////////////////////////////////////////////////////////////////////////
 
 static float pl_identity[16] =
 {

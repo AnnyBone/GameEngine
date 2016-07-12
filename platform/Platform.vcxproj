@@ -31,7 +31,7 @@
     <ClCompile Include="platform_filesystem.c" />
     <ClCompile Include="platform_image.c" />
     <ClCompile Include="platform_log.c" />
-    <ClCompile Include="platform_math.c" />
+    <ClCompile Include="platform_math.cpp" />
     <ClCompile Include="platform_model.cpp" />
     <ClCompile Include="platform_model_iqm.cpp" />
     <ClCompile Include="platform_model_md2.cpp" />

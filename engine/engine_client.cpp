@@ -1,19 +1,20 @@
-/*	Copyright (C) 2011-2016 OldTimes Software
+/*
+Copyright (C) 2011-2016 OldTimes Software
 
-	This program is free software; you can redistribute it and/or
-	modify it under the terms of the GNU General Public License
-	as published by the Free Software Foundation; either version 2
-	of the License, or (at your option) any later version.
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-	See the GNU General Public License for more details.
+See the GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "engine_base.h"
@@ -24,29 +25,32 @@
 #include "shared_server.h"
 #include "shared_menu.h"
 
-/*
-	Client-side stuff!
-*/
+using namespace core;
 
+namespace core
+{
+	class ClientManager : public CoreManager
+	{
+	};
+}
 
+ClientManager *g_clientmanager = nullptr;
 
-/*
-	Utilities
-*/
+/*	Client C Interface	*/
 
-entity_t *Client_GetPlayerEntity(void)
+extern "C" entity_t *Client_GetPlayerEntity(void)
 {
 	return &cl_entities[cl.viewentity];
 }
 
-entity_t *Client_GetViewEntity(void)
+extern "C" entity_t *Client_GetViewEntity(void)
 {
 	return &cl.viewent;
 }
 
 /*	Gets an effect texture.
 */
-int	Client_GetEffect(const char *cPath)
+extern "C" int Client_GetEffect(const char *cPath)
 {
 	int i;
 
@@ -64,7 +68,7 @@ int	Client_GetEffect(const char *cPath)
 
 /*	Precache client-side resources.
 */
-void Client_PrecacheResource(int iType,char *cResource)
+extern "C" void Client_PrecacheResource(int iType, char *cResource)
 {
 	char			cPath[PLATFORM_MAX_PATH];
 	int				i;
@@ -127,7 +131,7 @@ void Client_PrecacheResource(int iType,char *cResource)
 	}
 }
 
-int Client_GetStat(ClientStat_t csStat)
+extern "C" int Client_GetStat(ClientStat_t csStat)
 {
 	return cl.stats[csStat];
 }

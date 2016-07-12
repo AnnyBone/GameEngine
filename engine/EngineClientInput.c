@@ -216,9 +216,9 @@ void CL_AdjustAngles (void)
 	float	speed,up,down;
 
 	if (in_speed.state & 1)
-		speed = host_frametime*cl_anglespeedkey.value;
+		speed = ((float)host_frametime)*cl_anglespeedkey.value;
 	else
-		speed = host_frametime;
+		speed = (float)host_frametime;
 
 	if (!(in_strafe.state & 1))
 	{
@@ -315,14 +315,14 @@ void CL_SendMove(ClientCommand_t *cmd)
 //
     MSG_WriteByte (&buf, clc_move);
 
-	MSG_WriteFloat (&buf, cl.mtime[0]);	// so server can get ping times
+	MSG_WriteFloat (&buf, (float)cl.mtime[0]);	// so server can get ping times
 
 	for (i=0 ; i<3 ; i++)
 		MSG_WriteAngle16 (&buf, cl.viewangles[i]);
 
-    MSG_WriteShort (&buf, cmd->forwardmove);
-    MSG_WriteShort (&buf, cmd->sidemove);
-    MSG_WriteShort (&buf, cmd->upmove);
+    MSG_WriteShort (&buf, (int)cmd->forwardmove);
+    MSG_WriteShort (&buf, (int)cmd->sidemove);
+    MSG_WriteShort (&buf, (int)cmd->upmove);
 
 //
 // send button bits

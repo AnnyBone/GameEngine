@@ -103,7 +103,7 @@ typedef struct
 	FILE	*demofile;
 	int		td_lastframe;		// to meter out one message a frame
 	int		td_startframe;		// host_framecount at start
-	float	td_starttime;		// realtime at second frame of timedemo
+	double	td_starttime;		// realtime at second frame of timedemo
 
 // connection information
 	int			signon;			// 0 to SIGNONS

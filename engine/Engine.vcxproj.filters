@@ -99,9 +99,6 @@
     <ClCompile Include="conproc.c">
       <Filter>Legacy</Filter>
     </ClCompile>
-    <ClCompile Include="engine_client.c">
-      <Filter>Legacy\Client</Filter>
-    </ClCompile>
     <ClCompile Include="cmdlib.c">
       <Filter>Legacy</Filter>
     </ClCompile>
@@ -319,6 +316,9 @@
     </ClCompile>
     <ClCompile Include="EngineVideoSky.cpp">
       <Filter>Legacy\Client\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="engine_client.cpp">
+      <Filter>Legacy\Client</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

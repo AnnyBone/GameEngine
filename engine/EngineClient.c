@@ -310,7 +310,7 @@ void CL_DecayLights (void)
 {
 	int				i;
 	DynamicLight_t	*dl;
-	float			time;
+	double			time;
 
 	time = cl.time - cl.oldtime;
 
@@ -320,7 +320,7 @@ void CL_DecayLights (void)
 		if(((dl->die < cl.time) && dl->die) || !dl->radius)
 			continue;
 
-		dl->radius -= time*dl->decay;
+		dl->radius -= ((float)time)*dl->decay;
 		if(dl->radius < 0)
 			dl->radius = 0;
 	}
@@ -333,7 +333,7 @@ float CL_LerpPoint(void)
 {
 	float	f, frac;
 
-	f = cl.mtime[0] - cl.mtime[1];
+	f = (float)(cl.mtime[0] - cl.mtime[1]);
 	if(!f || cls.timedemo || sv.active)
 	{
 		cl.time = cl.mtime[0];

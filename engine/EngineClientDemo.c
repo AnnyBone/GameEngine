@@ -296,7 +296,7 @@ void CL_PlayDemo_f (void)
 void CL_FinishTimeDemo (void)
 {
 	int		frames;
-	float	time;
+	double	time;
 
 	cls.timedemo = false;
 

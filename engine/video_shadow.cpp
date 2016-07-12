@@ -45,7 +45,6 @@ void Shadow_Initialize()
 */
 void Shadow_DrawBlob(ClientEntity_t *Entity)
 {
-#if defined (VL_MODE_OPENGL)
 	if (!cv_video_drawshadowblob.bValue)
 		return;
 
@@ -65,8 +64,10 @@ void Shadow_DrawBlob(ClientEntity_t *Entity)
 	vlDepthMask(false);
 	vlPushMatrix();
 
+#if defined (VL_MODE_OPENGL)
 	glTranslatef(Entity->origin[0], Entity->origin[1], Entity->origin[2]);
 	glTranslatef(0, 0, -fBlobHeight + 0.1f);
+#endif
 
 	Video_ObjectVertex(&voShadow[0], -fShadowScale[0], fShadowScale[1], 0);
 	Video_ObjectTexture(&voShadow[0], VIDEO_TEXTURE_DIFFUSE, 0, 0);
@@ -86,11 +87,12 @@ void Shadow_DrawBlob(ClientEntity_t *Entity)
 
 	Video_DrawFill(voShadow, g_mBlobShadow, 0);
 
-	glTranslatef(0, 0, fBlobHeight + 0.1);
+#if defined (VL_MODE_OPENGL)
+	glTranslatef(0, 0, fBlobHeight + 0.1f);
+#endif
 
 	vlPopMatrix();
 	vlDepthMask(true);
-#endif
 }
 
 void Shadow_DrawMap(ClientEntity_t *Entity)
