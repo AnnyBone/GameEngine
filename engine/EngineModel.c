@@ -1217,7 +1217,7 @@ MathVector_t Model_GenerateNormal3fv(MathVector3f_t a, MathVector3f_t b, MathVec
 	Math_VectorSubtract(a, b, y);
 
 	plVectorClear(normal);
-	Math_CrossProduct(x, y, normal);
+	plCrossProduct(x, y, normal);
 
 	// Normalize it.
 	plVectorNormalize(normal);
@@ -1310,16 +1310,16 @@ void Model_CalculateMD2Bounds(model_t *model, MD2_t *alias_model)
 		Math_VectorSet(32, maxs);
 	}
 
-	Math_VectorCopy(mins, model->mins);
-	Math_VectorCopy(maxs, model->maxs);
+	plVectorCopy(mins, model->mins);
+	plVectorCopy(maxs, model->maxs);
 
 	// todo rotate and stuff for y and r
 
-	Math_VectorCopy(model->mins, model->ymins);
-	Math_VectorCopy(model->maxs, model->ymaxs);
+	plVectorCopy(model->mins, model->ymins);
+	plVectorCopy(model->maxs, model->ymaxs);
 
-	Math_VectorCopy(model->mins, model->rmins);
-	Math_VectorCopy(model->maxs, model->rmaxs);
+	plVectorCopy(model->mins, model->rmins);
+	plVectorCopy(model->maxs, model->rmaxs);
 }
 
 /*	Calculate the normals for MD2 models.

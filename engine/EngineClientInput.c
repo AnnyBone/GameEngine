@@ -22,9 +22,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "engine_base.h"
 
-extern cvar_t	cl_maxpitch; //johnfitz -- variable pitch clamping
-extern cvar_t	cl_minpitch; //johnfitz -- variable pitch clamping
-
 /*
 ===============================================================================
 
@@ -229,32 +226,14 @@ void CL_AdjustAngles (void)
 
 	if (in_klook.state & 1)
 	{
-		V_StopPitchDrift ();
 		cl.viewangles[PITCH] -= speed*cl_pitchspeed.value * CL_KeyState (&in_forward);
 		cl.viewangles[PITCH] += speed*cl_pitchspeed.value * CL_KeyState (&in_back);
 	}
 
-	up		= CL_KeyState (&in_lookup);
-	down	= CL_KeyState(&in_lookdown);
-
+	up = CL_KeyState (&in_lookup);
+	down = CL_KeyState(&in_lookdown);
 	cl.viewangles[PITCH] -= speed*cl_pitchspeed.value * up;
 	cl.viewangles[PITCH] += speed*cl_pitchspeed.value * down;
-
-	if (up || down)
-		V_StopPitchDrift ();
-
-	//johnfitz -- variable pitch clamping
-	if (cl.viewangles[PITCH] > cl_maxpitch.value)
-		cl.viewangles[PITCH] = cl_maxpitch.value;
-	if (cl.viewangles[PITCH] < cl_minpitch.value)
-		cl.viewangles[PITCH] = cl_minpitch.value;
-	//johnfitz
-
-	if (cl.viewangles[ROLL] > 50)
-		cl.viewangles[ROLL] = 50;
-	if (cl.viewangles[ROLL] < -50)
-		cl.viewangles[ROLL] = -50;
-
 }
 
 /*	Send the intended movement message to the server

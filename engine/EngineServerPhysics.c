@@ -246,7 +246,7 @@ int SV_FlyMove (ServerEntity_t *ent, float time, trace_t *steptrace)
 				return 7;
 			}
 
-			Math_CrossProduct(planes[0], planes[1], dir);
+			plCrossProduct(planes[0], planes[1], dir);
 			d = Math_DotProduct(dir, ent->v.velocity);
 			Math_VectorScale(dir, d, ent->v.velocity);
 		}

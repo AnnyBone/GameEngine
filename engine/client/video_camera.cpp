@@ -49,6 +49,11 @@ ConsoleVariable_t cv_camera_rollspeed = { "camera_rollspeed", "200", true };
 ConsoleVariable_t cv_camera_nearclip = { "camera_nearclip", "4", true };
 ConsoleVariable_t cv_camera_farclip = { "camera_farclip", "16384", true };
 
+ConsoleVariable_t cv_camera_maxpitch = { "camera_maxpitch", "90" };
+ConsoleVariable_t cv_camera_minpitch = { "camera_minpitch", "-90" };
+ConsoleVariable_t cv_camera_maxroll = { "camera_maxroll", "50" };
+ConsoleVariable_t cv_camera_minroll = { "camera_minroll", "-50" };
+
 ConsoleVariable_t cv_camera_punch = { "camera_punch", "1", true };
 
 ConsoleVariable_t cv_camera_fov = { "camera_fov", "90", true };
@@ -81,6 +86,11 @@ CameraManager::CameraManager()
 
 	Cvar_RegisterVariable(&cv_camera_nearclip, NULL);
 	Cvar_RegisterVariable(&cv_camera_farclip, NULL);
+
+	Cvar_RegisterVariable(&cv_camera_maxpitch, NULL);
+	Cvar_RegisterVariable(&cv_camera_minpitch, NULL);
+	Cvar_RegisterVariable(&cv_camera_maxroll, NULL);
+	Cvar_RegisterVariable(&cv_camera_minroll, NULL);
 
 	Cvar_RegisterVariable(&cv_camera_punch, NULL);
 	Cvar_RegisterVariable(&cv_camera_fov, NULL);
@@ -177,7 +187,7 @@ extern "C" EngineCamera *CameraManager_GetCurrentCamera(void)
 	return g_cameramanager->GetCurrentCamera();
 }
 
-extern "C" EngineCamera *CameraManager_GetPrimaryCamera(void)
+EngineCamera *CameraManager_GetPrimaryCamera(void)
 {
 	Viewport *view = GetPrimaryViewport();
 	if (!view)
@@ -232,6 +242,7 @@ Camera::Camera() :
 	_parententity(nullptr)
 {
 	plVectorClear(_position);
+	plVectorClear(_angles);
 	plVectorClear(bobamount);
 
 	plAngleVectors(_angles, _forward, _right, _up);
@@ -468,6 +479,12 @@ void Camera::Simulate()
 
 		plVectorAdd3fv(_angles, punch, _angles);
 	}
+
+	if (_angles[PL_PITCH] > cv_camera_maxpitch.value) _angles[PL_PITCH] = cv_camera_maxpitch.value;
+	else if (_angles[PL_PITCH] < cv_camera_minpitch.value) _angles[PL_PITCH] = cv_camera_minpitch.value;
+
+	if (_angles[PL_ROLL] > cv_camera_maxroll.value) _angles[PL_ROLL] = cv_camera_maxroll.value;
+	else if (_angles[PL_ROLL] < cv_camera_minroll.value) _angles[PL_ROLL] = cv_camera_minroll.value;
 
 	plAngleVectors(_angles, _forward, _right, _up);
 

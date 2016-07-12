@@ -162,7 +162,7 @@ void AudioManager::Frame()
 {
 	plVector3f_t position, orientation, velocity;
 
-	Camera *camera = g_cameramanager->GetCurrentCamera();
+	Camera *camera = CameraManager_GetPrimaryCamera();
 	if (camera && (cls.signon == SIGNONS))
 	{
 		plVectorCopy(&camera->GetPosition()[0], position);

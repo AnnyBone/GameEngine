@@ -36,8 +36,6 @@ ConsoleVariable_t	cl_name = { "_cl_name", "player", true };
 ConsoleVariable_t	cl_color = { "_cl_color", "0", true };
 ConsoleVariable_t	cl_shownet = { "cl_shownet", "0" };	// can be 0, 1, or 2
 ConsoleVariable_t	cl_nolerp = { "cl_nolerp", "0" };
-ConsoleVariable_t	cl_maxpitch = { "cl_maxpitch", "90", true }; //johnfitz -- variable pitch clamping
-ConsoleVariable_t	cl_minpitch = { "cl_minpitch", "-90", true }; //johnfitz -- variable pitch clamping
 
 ConsoleVariable_t	lookspring = { "lookspring", "0", true };
 ConsoleVariable_t	lookstrafe = { "lookstrafe", "0", true };
@@ -626,8 +624,6 @@ void CL_Init (void)
 	Cvar_RegisterVariable (&m_yaw, NULL);
 	Cvar_RegisterVariable (&m_forward, NULL);
 	Cvar_RegisterVariable (&m_side, NULL);
-	Cvar_RegisterVariable (&cl_maxpitch, NULL); //johnfitz -- variable pitch clamping
-	Cvar_RegisterVariable (&cl_minpitch, NULL); //johnfitz -- variable pitch clamping
 
 	Cmd_AddCommand ("entities", CL_PrintEntities_f);
 	Cmd_AddCommand ("disconnect", CL_Disconnect_f);

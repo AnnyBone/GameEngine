@@ -367,13 +367,10 @@ void Input_Frame(void)
 		}
 }
 
-extern "C" ConsoleVariable_t	cl_maxpitch,
-								cl_minpitch;
-
 /*	Process client-specific movement which
 	will be sent to the server.
 */
-void Input_ClientFrame(ClientCommand_t *ccInput)
+void Input_ClientFrame(ClientCommand_t *input)
 {
 	// Don't bother if the application isn't active.
 	if (!input_mouseactive)
@@ -395,22 +392,21 @@ void Input_ClientFrame(ClientCommand_t *ccInput)
 	{
 		// Copied from Raynorpat's code.
 		if(in_strafe.state & 1)
-			ccInput->sidemove += m_side.value*iMousePosition[PL_X];
+			input->sidemove += m_side.value*iMousePosition[PL_X];
 
-		ccInput->forwardmove -= m_forward.value*iMousePosition[PL_Y];
+		input->forwardmove -= m_forward.value*iMousePosition[PL_Y];
 	}
 	else
 	{
-		// Prevent the camera from resetting.
-		V_StopPitchDrift();
-
 		cl.viewangles[PL_YAW] -= m_yaw.value*iMousePosition[PL_X];
 		cl.viewangles[PL_PITCH] += m_pitch.value*iMousePosition[PL_Y];
 
+#if 0 // todo, handled already, remove?
 		if(cl.viewangles[PL_PITCH] > cl_maxpitch.value)
 			cl.viewangles[PL_PITCH] = cl_maxpitch.value;
 		if (cl.viewangles[PL_PITCH] < cl_minpitch.value)
 			cl.viewangles[PL_PITCH] = cl_minpitch.value;
+#endif
 	}
 
 	iMousePosition[PL_X] = iMousePosition[PL_Y] = 0;

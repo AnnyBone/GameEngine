@@ -27,8 +27,8 @@
 #define	SHADOW_BLOB_SCALE	20.0f	// Default blob scale.
 
 plEXTERN_C_START
-extern MathVector3f_t lightspot;
-extern mplane_t	*lightplane;		// Plane underneath the entity.
+	extern MathVector3f_t lightspot;
+	extern mplane_t	*lightplane;		// Plane underneath the entity.
 plEXTERN_C_END
 
 VideoFrameBuffer *shadow_fbo;
@@ -95,13 +95,13 @@ void Shadow_DrawBlob(ClientEntity_t *Entity)
 	vlDepthMask(true);
 }
 
-void Shadow_DrawMap(ClientEntity_t *Entity)
+void Shadow_DrawMap(ClientEntity_t *entity)
 {
 	if (!cv_video_drawshadowmap.bValue)
 		return;
 
-	DynamicLight_t *dlNearest = Light_GetDynamic(Entity->origin, false);
-	if (dlNearest)
+	DynamicLight_t *nearest = Light_GetDynamic(entity->origin, false);
+	if (nearest)
 	{
 		// TODO: Load up light protection matrix...
 
@@ -110,35 +110,14 @@ void Shadow_DrawMap(ClientEntity_t *Entity)
 	}
 }
 
-/*	Draw multiple shadow types.
-	TODO:
-		Shadow maps.
-		Need a flag, to disable/enable shadows on certain entities.
-*/
-#if 1
-void Shadow_Draw(ClientEntity_t *Entity)
+void Shadow_DrawPlanar(ClientEntity_t *entity)
 {
-	// Only meshes are valid here.
-	if (!Entity->model || Entity->model->type == MODEL_TYPE_LEVEL)
-		return;
-
-	// Make sure the entity is actually visible.
-	if ((Entity == &cl.viewent) || (ENTALPHA_DECODE(Entity->alpha) <= 0) || R_CullModelForEntity(Entity))
-		return;
-
-	// Shadow blob
-	Shadow_DrawBlob(Entity);
-
-	// Shadow map
-	Shadow_DrawMap(Entity);
-#else	// Old shadows...
-void Shadow_Draw(ClientEntity_t *ent)
-{
+#if 0 // todo, legacy... keep?
 	lerpdata_t		lerpdata;
 	float			fShadowMatrix[16] =
-	{	1, 0, 0,	0,
-		0, 1, 0,	0,
-		0, 0, 0,	0,
+	{	1, 0, 0, 0,
+		0, 1, 0, 0,
+		0, 0, 0, 0,
 		0, 0, 0.1f, 1 };
 	float			lheight, fShadowScale[2],
 		fShadowAlpha = 0;
@@ -161,60 +140,78 @@ void Shadow_Draw(ClientEntity_t *ent)
 	lheight = ent->origin[2] - lightspot[2];
 
 	// Player doesn't get animated, so don't bother with planar shadows for him.
-	if (ent != &cl_entities[cl.viewentity])
-		if ((r_shadows.value >= 2) && (ent->model->type == MODEL_TYPE_MD2))
-		{
-			MD2_t					*pmd2;
-			DynamicLight_t			*dlLight;
-			plVector3f_t			vDistance;
+	if ((ent != &cl_entities[cl.viewentity]) &&
+		(r_shadows.value >= 2) && (ent->model->type == MODEL_TYPE_MD2))
+	{
+		MD2_t					*pmd2;
+		DynamicLight_t			*dlLight;
+		plVector3f_t			vDistance;
 
-			pmd2 = (MD2_t*)Mod_Extradata(ent->model);
+		pmd2 = (MD2_t*)Mod_Extradata(ent->model);
 
-			Alias_SetupFrame(pmd2, currententity, &lerpdata);
+		Alias_SetupFrame(pmd2, currententity, &lerpdata);
 
-			bShading = false;
+		bShading = false;
 
-			fShadowMatrix[8] =
-				fShadowMatrix[9] = 0;
+		fShadowMatrix[8] =
+			fShadowMatrix[9] = 0;
 
-			dlLight = Light_GetDynamic(ent->origin, false);
-			if (!dlLight)
-				return;
+		dlLight = Light_GetDynamic(ent->origin, false);
+		if (!dlLight)
+			return;
 
-			Math_VectorSubtract(ent->origin, dlLight->origin, vDistance);
+		Math_VectorSubtract(ent->origin, dlLight->origin, vDistance);
 
-			fShadowAlpha = (dlLight->radius - plLengthf(vDistance)) / 100.0f;
-			if (fShadowAlpha <= 0)
-				return;
+		fShadowAlpha = (dlLight->radius - plLengthf(vDistance)) / 100.0f;
+		if (fShadowAlpha <= 0)
+			return;
 
-			fShadowMatrix[8] = vDistance[0] / 100.0f;
-			fShadowMatrix[9] = vDistance[1] / 100.0f;
+		fShadowMatrix[8] = vDistance[0] / 100.0f;
+		fShadowMatrix[9] = vDistance[1] / 100.0f;
 
-			glPushMatrix();
+		glPushMatrix();
 
-			Video_ResetCapabilities(false);
+		vlEnable(VIDEO_BLEND | VIDEO_STENCIL_TEST);
+		vlDisable(VIDEO_TEXTURE_2D);
+		Video_SetBlend(VIDEO_BLEND_IGNORE, VIDEO_DEPTH_FALSE);
 
-			vlEnable(VIDEO_BLEND | VIDEO_STENCIL_TEST);
-			vlDisable(VIDEO_TEXTURE_2D);
-			Video_SetBlend(VIDEO_BLEND_IGNORE, VIDEO_DEPTH_FALSE);
+		glStencilFunc(GL_EQUAL, 1, 2);
+		Video_SetColour(0, 0, 0, fShadowAlpha);
+		glTranslatef(ent->origin[0], ent->origin[1], ent->origin[2]);
+		glTranslatef(0, 0, -lheight);
+		glMultMatrixf(fShadowMatrix);
+		glTranslatef(0, 0, lheight);
+		glRotatef(ent->angles[1], 0, 0, 1);
+		glRotatef(ent->angles[0], 0, 1, 0);
+		glRotatef(ent->angles[2], 1, 0, 0);
+		glStencilOp(GL_KEEP, GL_KEEP, GL_INCR);
 
-			glStencilFunc(GL_EQUAL, 1, 2);
-			Video_SetColour(0, 0, 0, fShadowAlpha);
-			glTranslatef(ent->origin[0], ent->origin[1], ent->origin[2]);
-			glTranslatef(0, 0, -lheight);
-			glMultMatrixf(fShadowMatrix);
-			glTranslatef(0, 0, lheight);
-			glRotatef(ent->angles[1], 0, 0, 1);
-			glRotatef(ent->angles[0], 0, 1, 0);
-			glRotatef(ent->angles[2], 1, 0, 0);
-			glStencilOp(GL_KEEP, GL_KEEP, GL_INCR);
+		Alias_DrawFrame(pmd2, ent, lerpdata);
 
-			Alias_DrawFrame(pmd2, ent, lerpdata);
+		glPopMatrix();
 
-			glPopMatrix();
-
-			vlDisable(VIDEO_BLEND | VIDEO_STENCIL_TEST);
-			vlEnable(VIDEO_TEXTURE_2D);
-		}
+		vlDisable(VIDEO_BLEND | VIDEO_STENCIL_TEST);
+		vlEnable(VIDEO_TEXTURE_2D);
+	}
 #endif
+}
+
+/*	Draw multiple shadow types.
+	TODO:
+		Shadow maps.
+		Need a flag, to disable/enable shadows on certain entities.
+*/
+void Shadow_Draw(ClientEntity_t *entity)
+{
+	// Only meshes are valid here.
+	if (!entity->model || entity->model->type == MODEL_TYPE_LEVEL)
+		return;
+
+	// Make sure the entity is actually visible.
+	if ((entity == &cl.viewent) || (ENTALPHA_DECODE(entity->alpha) <= 0) || R_CullModelForEntity(entity))
+		return;
+
+	Shadow_DrawBlob(entity);	// Shadow blob
+	Shadow_DrawPlanar(entity);	// Shadow planar
+	Shadow_DrawMap(entity);		// Shadow map
 }

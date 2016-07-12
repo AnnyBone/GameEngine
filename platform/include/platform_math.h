@@ -1,28 +1,27 @@
-/*	Copyright (C) 1996-2001 Id Software, Inc.
-	Copyright (C) 2002-2009 John Fitzgibbons and others
-	Copyright (C) 2011-2016 OldTimes Software
+/*
+Copyright (C) 1996-2001 Id Software, Inc.
+Copyright (C) 2002-2009 John Fitzgibbons and others
+Copyright (C) 2011-2016 OldTimes Software
 
-	This program is free software; you can redistribute it and/or
-	modify it under the terms of the GNU General Public License
-	as published by the Free Software Foundation; either version 2
-	of the License, or (at your option) any later version.
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-	See the GNU General Public License for more details.
+See the GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #pragma once
 
 #include "platform.h"
-
-plEXTERN_C_START
 
 #define PL_PI			3.14159265358979323846
 #define	PL_PI_DIV180	(PL_PI/180.0)
@@ -34,11 +33,13 @@ plEXTERN_C_START
 #define	PL_DEG2RAD(a)	((a)*PL_PI_DIV180)
 #define	PL_ISNAN(a)		(((*(int*)&a)&255<<23)==255<<23)
 
+plEXTERN_C_START
+
 typedef float MathVector3f_t[3];
 
-typedef float plVector2f_t[2], plVector3f_t[3], plVector4f_t[4];	// Floating-point precision.
-typedef double plVector2d_t[2], plVector3d_t[3], plVector4d_t[4];	// Double precision.
-typedef int plVector2i[2], plVector3i_t[3];							// Integer precision.
+typedef float	plVector2f_t[2],	plVector3f_t[3],	plVector4f_t[4];	// Floating-point precision.
+typedef double	plVector2d_t[2],	plVector3d_t[3],	plVector4d_t[4];	// Double precision.
+typedef int		plVector2i[2],		plVector3i_t[3],	plVector4i_t[4];	// Integer precision.
 
 typedef plVector3f_t plMatrix3x3f_t[3];
 typedef plVector4f_t plMatrix4x4f_t[4];
@@ -128,7 +129,6 @@ extern plColour_t
 #define Math_Max(a,b)                   (	((a)>(b))?(a):(b)	                    )
 #define Math_Clamp(mini,x,maxi)			(   (x)<(mini)?(mini):(x)>(maxi)?(maxi):(x) )
 
-#define	Math_MVSet(a,b)					(	b.vX=a,b.vY=a,b.vZ=a			)
 #define	Math_MVToVector(a,b)			(	b[0]=a.vX,b[1]=a.vY,b[2]=a.vZ	)
 
 #define Math_VectorSubtract(a,b,c)		{	c[0]=a[0]-b[0];c[1]=a[1]-b[1];c[2]=a[2]-b[2];								}
@@ -137,7 +137,7 @@ extern plColour_t
 #define Math_VectorScale(a,b,c)			{	c[0]=a[0]*b;c[1]=a[1]*b;c[2]=a[2]*b;										}
 #define	Math_VectorAddValue(a,b,c)		{	c[0]=a[0]+b;c[1]=a[1]+b;c[2]=a[2]+b;										}
 #define	Math_VectorSubtractValue(a,b,c)	{	c[0]=a[0]-b;c[1]=a[1]-b;c[2]=a[2]-b;										}
-#define Math_CrossProduct(a,b,c)		{	c[0]=a[1]*b[2]-a[2]*b[1];c[1]=a[2]*b[0]-a[0]*b[2];c[2]=a[0]*b[1]-a[1]*b[0];	}
+#define plCrossProduct(a,b,c)			{	c[0]=a[1]*b[2]-a[2]*b[1];c[1]=a[2]*b[0]-a[0]*b[2];c[2]=a[0]*b[1]-a[1]*b[0];	}
 #define Math_VectorMA(a,b,c,d)			{	d[0]=a[0]+b*c[0];d[1]=a[1]+b*c[1];d[2]=a[2]+b*c[2];							}
 #define Math_VectorInverse(a)			(	a[0]=-a[0],a[1]=-a[1],a[2]=-a[2]											)
 #define Math_VectorClear(a)				(	a[0]=a[1]=a[2]=0															)
@@ -768,7 +768,10 @@ namespace pl
 #		include <glm/vec3.hpp>
 #		include <glm/vec4.hpp>
 #		include <glm/mat4x4.hpp>
-#		include <glm/common.hpp>
+#		include <glm/gtc/matrix_transform.hpp>
+#		ifdef _MSC_VER
+#			pragma warning(default: 4201)
+#		endif
 #	endif
 
 #endif

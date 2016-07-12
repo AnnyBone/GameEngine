@@ -153,6 +153,11 @@ ClientEntity_t *CameraManager_GetViewEntity(EngineCamera *camera);
 #endif
 
 EngineCamera *CameraManager_GetCurrentCamera(void);
-EngineCamera *CameraManager_GetPrimaryCamera(void);
 
 #endif
+
+PL_EXTERN_C
+
+	EngineCamera *CameraManager_GetPrimaryCamera(void);
+
+PL_EXTERN_C_END

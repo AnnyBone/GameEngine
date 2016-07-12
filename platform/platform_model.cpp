@@ -18,9 +18,7 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
 #include "platform_model.h"
 
-/*
-	PLATFORM MODEL LOADER
-*/
+/*	PLATFORM MODEL LOADER	*/
 
 std::vector<float> plGenerateNormal(plVector3f_t a, plVector3f_t b, plVector3f_t c)
 {
@@ -30,9 +28,9 @@ std::vector<float> plGenerateNormal(plVector3f_t a, plVector3f_t b, plVector3f_t
 
 	plVector3f_t normal;
 	plVectorClear(normal);
-	Math_CrossProduct(x, y, normal);
+	plCrossProduct(x, y, normal);
 	plVectorNormalize(normal);
-
+	
 	std::vector<float> vnorm = { normal[0], normal[1], normal[2] };
 	return vnorm;
 }
