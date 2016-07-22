@@ -28,7 +28,7 @@
 #define	SIDEWINDER_MAXSPEED	600.0f
 #define SIDEWINDER_MINSPEED	50.0f
 
-EntityFrame_t SideWinderAnimation_Deploy [] =
+ServerEntityFrame_t SideWinderAnimation_Deploy[] =
 {
 	{	NULL, 25, 0.02f},
 	{	NULL, 26, 0.02f},
@@ -48,7 +48,7 @@ EntityFrame_t SideWinderAnimation_Deploy [] =
 	{	NULL, 40, 0.02f, TRUE},
 };
 
-EntityFrame_t SideWinderAnimation_Fire [] =
+ServerEntityFrame_t SideWinderAnimation_Fire[] =
 {
 	{	NULL, 1, 0.02f},
 	{	NULL, 2, 0.02f},
@@ -148,8 +148,8 @@ void SideWinder_SpawnMissle(ServerEntity_t *ent,float fSpeed,float ox)
 	eMissile->v.movetype = MOVETYPE_FLYMISSILE;
 	eMissile->v.effects = EF_PARTICLE_SMOKE | EF_DIMLIGHT;
 
-	eMissile->Physics.iSolid	= SOLID_BBOX;
-	eMissile->Physics.eIgnore	= ent;
+	eMissile->Physics.solid	= SOLID_BBOX;
+	eMissile->Physics.ignore = ent;
 
 	eMissile->local.speed	= SIDEWINDER_MAXSPEED;
 	eMissile->local.eOwner	= ent;

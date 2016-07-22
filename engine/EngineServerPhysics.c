@@ -1,21 +1,22 @@
-/*	Copyright (C) 1996-2001 Id Software, Inc.
-	Copyright (C) 2002-2009 John Fitzgibbons and others
-	Copyright (C) 2011-2016 OldTimes Software
+/*
+Copyright (C) 1996-2001 Id Software, Inc.
+Copyright (C) 2002-2009 John Fitzgibbons and others
+Copyright (C) 2011-2016 OldTimes Software
 
-	This program is free software; you can redistribute it and/or
-	modify it under the terms of the GNU General Public License
-	as published by the Free Software Foundation; either version 2
-	of the License, or (at your option) any later version.
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-	See the GNU General Public License for more details.
+See the GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "engine_base.h"
@@ -51,8 +52,8 @@ void SV_CheckAllEnts (void)
 	ServerEntity_t	*check;
 
 	// See if any solid entities are inside the final position
-	check = NEXT_EDICT(sv.edicts);
-	for(e = 1; e < sv.num_edicts; e++, check = NEXT_EDICT(check))
+	check = SERVER_ENTITY_NEXT(sv.edicts);
+	for (e = 1; e < sv.num_edicts; e++, check = SERVER_ENTITY_NEXT(check))
 	{
 		if (check->free)
 			continue;
@@ -189,7 +190,7 @@ int SV_FlyMove (ServerEntity_t *ent, float time, trace_t *steptrace)
 		if (trace.plane.normal[2] > 0.7)
 		{
 			blocked |= 1;		// floor
-			if (trace.ent->Physics.iSolid == SOLID_BSP)
+			if (trace.ent->Physics.solid == SOLID_BSP)
 			{
 				ent->v.flags		|= FL_ONGROUND;
 				ent->v.groundentity = trace.ent;
@@ -310,8 +311,8 @@ void SV_PushMove (ServerEntity_t *pusher, float movetime)
 
 // see if any solid entities are inside the final position
 	num_moved = 0;
-	check = NEXT_EDICT(sv.edicts);
-	for (e=1 ; e<sv.num_edicts ; e++, check = NEXT_EDICT(check))
+	check = SERVER_ENTITY_NEXT(sv.edicts);
+	for (e = 1; e<sv.num_edicts; e++, check = SERVER_ENTITY_NEXT(check))
 	{
 		if (check->free)
 			continue;
@@ -346,9 +347,9 @@ void SV_PushMove (ServerEntity_t *pusher, float movetime)
 		num_moved++;
 
 		// try moving the contacted entity
-		pusher->Physics.iSolid = SOLID_NOT;
+		pusher->Physics.solid = SOLID_NOT;
 		Game->Physics_PushEntity(check, move);
-		pusher->Physics.iSolid = SOLID_BSP;
+		pusher->Physics.solid = SOLID_BSP;
 
 	// if it is still inside the pusher, block
 		block = SV_TestEntityPosition (check);
@@ -356,7 +357,7 @@ void SV_PushMove (ServerEntity_t *pusher, float movetime)
 		{	// fail the move
 			if (check->v.mins[0] == check->v.maxs[0])
 				continue;
-			if (check->Physics.iSolid == SOLID_NOT || check->Physics.iSolid == SOLID_TRIGGER)
+			if (check->Physics.solid == SOLID_NOT || check->Physics.solid == SOLID_TRIGGER)
 			{	// corpse
 				check->v.mins[0] = check->v.mins[1] = 0;
 				Math_VectorCopy(check->v.mins,check->v.maxs);
@@ -416,7 +417,7 @@ static void Server_PushRotate(ServerEntity_t *pusher,float movetime)
 	master = pusher;
 	while(master->v.aiment)
 	{
-		slave = PROG_TO_EDICT(master->v.aiment);
+		slave = SERVER_ENTITY_FROMHANDLE(master->v.aiment);
 
 		slaves_moved++;
 		Math_VectorCopy (slave->v.angles, moved_from[MAX_EDICTS - slaves_moved]);
@@ -445,8 +446,8 @@ static void Server_PushRotate(ServerEntity_t *pusher,float movetime)
 
 	// see if any solid entities are inside the final position
 	num_moved = 0;
-	check = NEXT_EDICT(sv.edicts);
-	for (e = 1; e < sv.num_edicts; e++, check = NEXT_EDICT(check))
+	check = SERVER_ENTITY_NEXT(sv.edicts);
+	for (e = 1; e < sv.num_edicts; e++, check = SERVER_ENTITY_NEXT(check))
 	{
 		if (check->free)
 			continue;
@@ -521,9 +522,9 @@ static void Server_PushRotate(ServerEntity_t *pusher,float movetime)
 		check->v.angles[YAW] += pusher->v.avelocity[YAW] * movetime;
 
 		// try moving the contacted entity
-		pusher->Physics.iSolid = SOLID_NOT;
+		pusher->Physics.solid = SOLID_NOT;
 		Game->Physics_PushEntity(check, move);
-		pusher->Physics.iSolid = SOLID_BSP;
+		pusher->Physics.solid = SOLID_BSP;
 
 		// If it is still inside the pusher, block
 		block = SV_TestEntityPosition (check);
@@ -532,7 +533,7 @@ static void Server_PushRotate(ServerEntity_t *pusher,float movetime)
 			// fail the move
 			if (check->v.mins[0] == check->v.maxs[0])
 				continue;
-			if (check->Physics.iSolid == SOLID_NOT || check->Physics.iSolid == SOLID_TRIGGER)
+			if (check->Physics.solid == SOLID_NOT || check->Physics.solid == SOLID_TRIGGER)
 			{
 				// corpse
 				check->v.mins[0] = check->v.mins[1] = 0;
@@ -595,7 +596,7 @@ void SV_Physics_Pusher (ServerEntity_t *ent)
 	if(movetime)
 	{
 		if((ent->v.avelocity[0] || ent->v.avelocity[1] || ent->v.avelocity[2])
-			&& ent->Physics.iSolid == SOLID_BSP)
+			&& ent->Physics.solid == SOLID_BSP)
 			Server_PushRotate(ent,movetime);
 		else
 			SV_PushMove(ent,movetime);	// advances ent->v.ltime if not blocked
@@ -793,7 +794,7 @@ void SV_WalkMove(ServerEntity_t *ent)
 	downtrace = Game->Physics_PushEntity(ent,downmove);	// FIXME: don't link?
 	if (downtrace.plane.normal[2] > 0.7)
 	{
-		if (ent->Physics.iSolid == SOLID_BSP)
+		if (ent->Physics.solid == SOLID_BSP)
 		{
 			ent->v.flags		= ent->v.flags | FL_ONGROUND;
 			ent->v.groundentity = downtrace.ent;
@@ -984,9 +985,9 @@ void Physics_AddFriction(ServerEntity_t *eEntity, MathVector3f_t vVelocity, Math
 
 	trace = SV_Move(start, pl_origin3f, pl_origin3f, stop, true, eEntity);
 	if(trace.fraction == 1.0f)
-		friction = eEntity->Physics.fFriction*sv_edgefriction.value;
+		friction = eEntity->Physics.friction * sv_edgefriction.value;
 	else
-		friction = eEntity->Physics.fFriction;
+		friction = eEntity->Physics.friction;
 
 	// Apply friction
 	control = speed < cvPhysicsStopSpeed.value ? cvPhysicsStopSpeed.value : speed;
@@ -1009,7 +1010,7 @@ void Physics_ServerFrame(void)
 
 	// Treat each object in turn
 	ServerEntity_t	*eEntity = sv.edicts;
-	for(unsigned int i = 0; i < sv.num_edicts; i++,eEntity = NEXT_EDICT(eEntity))
+	for (unsigned int i = 0; i < sv.num_edicts; i++, eEntity = SERVER_ENTITY_NEXT(eEntity))
 	{
 		if(eEntity->free)
 			continue;

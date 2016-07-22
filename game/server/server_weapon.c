@@ -258,8 +258,8 @@ MathVector_t Weapon_Aim(ServerEntity_t *eEntity)
 	fBestDistance = cvServerAim.value;
 	eBest = NULL;
 
-	eCheck = NEXT_EDICT(Engine.Server_GetEdicts());
-	for (i = 1; i < Engine.Server_GetNumEdicts(); i++, eCheck = NEXT_EDICT(eCheck))
+	eCheck = SERVER_ENTITY_NEXT(Engine.Server_GetEdicts());
+	for (i = 1; i < Engine.Server_GetNumEdicts(); i++, eCheck = SERVER_ENTITY_NEXT(eCheck))
 	{
 		if (eCheck == eEntity)
 			continue;
@@ -592,22 +592,22 @@ void Weapon_CheckFrames(ServerEntity_t *eEntity)
 		return;
 	}
 
-	eEntity->v.iWeaponFrame = eEntity->local.iWeaponFrames[eEntity->local.iWeaponAnimationCurrent].iFrame;
+	eEntity->v.iWeaponFrame = eEntity->local.iWeaponFrames[eEntity->local.iWeaponAnimationCurrent].frame;
 
 #ifdef GAME_OPENKATANA
 	if(eEntity->local.attackb_finished > Server.dTime)
-		eEntity->local.fWeaponAnimationTime = ((float)Server.dTime)+eEntity->local.iWeaponFrames[eEntity->local.iWeaponAnimationCurrent].fSpeed * 0.2f;
+		eEntity->local.fWeaponAnimationTime = ((float)Server.dTime)+eEntity->local.iWeaponFrames[eEntity->local.iWeaponAnimationCurrent].speed * 0.2f;
 	else
 #endif
-		eEntity->local.fWeaponAnimationTime = ((float)Server.dTime)+eEntity->local.iWeaponFrames[eEntity->local.iWeaponAnimationCurrent].fSpeed;
+		eEntity->local.fWeaponAnimationTime = ((float)Server.dTime)+eEntity->local.iWeaponFrames[eEntity->local.iWeaponAnimationCurrent].speed;
 
-	if(eEntity->local.iWeaponFrames[eEntity->local.iWeaponAnimationCurrent].Function)
-		eEntity->local.iWeaponFrames[eEntity->local.iWeaponAnimationCurrent].Function(eEntity);
+	if(eEntity->local.iWeaponFrames[eEntity->local.iWeaponAnimationCurrent].Event)
+		eEntity->local.iWeaponFrames[eEntity->local.iWeaponAnimationCurrent].Event(eEntity);
 
 	eEntity->local.iWeaponAnimationCurrent++;
 }
 
-void Weapon_Animate(ServerEntity_t *ent,EntityFrame_t *eFrames)
+void Weapon_Animate(ServerEntity_t *ent, ServerEntityFrame_t *eFrames)
 {
 	int i;
 
@@ -615,10 +615,10 @@ void Weapon_Animate(ServerEntity_t *ent,EntityFrame_t *eFrames)
 
 	ent->local.iWeaponAnimationCurrent = 0;
 
-	ent->v.iWeaponFrame = eFrames[0].iFrame;
+	ent->v.iWeaponFrame = eFrames[0].frame;
 
 	for(i = 0;; i++)
-		if(eFrames[i].bIsEnd)
+		if(eFrames[i].isend)
 		{
 			ent->local.iWeaponAnimationEnd = i;
 			break;
@@ -628,10 +628,10 @@ void Weapon_Animate(ServerEntity_t *ent,EntityFrame_t *eFrames)
 
 #ifdef GAME_OPENKATANA
 	if(ent->local.attackb_finished > Server.dTime)
-		ent->local.fWeaponAnimationTime = ((float)Server.dTime)+eFrames[0].fSpeed*0.5f;
+		ent->local.fWeaponAnimationTime = ((float)Server.dTime)+eFrames[0].speed*0.5f;
 	else
 #endif
-		ent->local.fWeaponAnimationTime = ((float)Server.dTime)+eFrames[0].fSpeed;
+		ent->local.fWeaponAnimationTime = ((float)Server.dTime)+eFrames[0].speed;
 }
 
 /*	Cycle through currently avaliable weapons.

@@ -71,14 +71,16 @@ void core::SetCurrentViewport(Viewport *viewport)
 ////////////////////////////////////////////////////////////////////////////////
 
 Viewport::Viewport(int x, int y, unsigned int width, unsigned int height)
-	: _x(x), _y(y), _width(width), _height(height)
+	:
+	_x(x), _y(y),
+	_width(width), _height(height),
+	_parent(nullptr),
+	_camera(nullptr)
 {
 }
 
-Viewport::Viewport(unsigned int width, unsigned int height)
-	: _width(width), _height(height)
+Viewport::Viewport(unsigned int width, unsigned int height) : Viewport(0, 0, width, height)
 {
-	_x = 0; _y = 0;
 }
 
 void Viewport::Draw()
@@ -93,12 +95,19 @@ void Viewport::Draw()
 	glLoadIdentity();
 #endif
 
-	vlViewport(_x, _y, _width, _height);
-	vlScissor(_x, _y, _width, _height);
+	// If we've got a parent, we'll need to follow it.
+	int xmod = _x, ymod = _y;
+	if (_parent)
+	{
+		xmod += _parent->GetPosition()[0];
+		ymod += _parent->GetPosition()[1];
+	}
+
+	vlViewport(xmod, ymod, _width, _height);
+	vlScissor(xmod, ymod, _width, _height);
 
 	draw::ClearBuffers();
 
-#if 1
 	if (_camera && !con_forcedup)
 	{
 		// Let the camera manager know we're drawing from this
@@ -113,7 +122,6 @@ void Viewport::Draw()
 		if (cv_video_msaasamples.iValue > 0)
 			vlDisable(VL_CAPABILITY_MULTISAMPLE);
 	}
-#endif
 
 	draw::ResetCanvas();
 
@@ -128,6 +136,10 @@ void Viewport::Draw()
 		Screen_DrawConsole();
 		Screen_DrawFPS();
 	}
+
+#if 0 // todo, support for children, worry about this later...
+	for (auto child = _children[0]; child; ++child) child->Draw();
+#endif
 
 	draw::ResetCanvas();
 }

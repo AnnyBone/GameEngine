@@ -17,12 +17,28 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef __ENGINEEDITOR__
-#define	__ENGINEEDITOR__
+#pragma once
 
-#include "EngineMaterialEditor.h"
+typedef enum EntitySolidType_s
+{
+	SOLID_NOT,		// Entity isn't solid.
+	SOLID_TRIGGER,	// Entity will cause a trigger function.
+	SOLID_BBOX,		// Entity is solid.
+	SOLID_SLIDEBOX,	// Entity is solid and moves.
+	SOLID_BSP
+} EntitySolidType_t;
 
-void Editor_Frame(void);
-void Editor_Input(int iKey);
+/*	Different type's of damage.
+*/
+typedef enum EntityDamageType_s
+{
+	DAMAGE_TYPE_NORMAL,
+	DAMAGE_TYPE_EXPLODE,
+	DAMAGE_TYPE_BURN,
+	DAMAGE_TYPE_FREEZE,
+	DAMAGE_TYPE_GRAVITY,
+	DAMAGE_TYPE_CRUSH,
+	DAMAGE_TYPE_FALL,
 
-#endif
+	DAMAGE_TYPE_NONE
+} EntityDamageType_t;

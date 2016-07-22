@@ -92,11 +92,11 @@ void ED_Free(ServerEntity_t *ed)
 	ed->v.bTakeDamage	= false;
 	ed->v.modelindex	= 0;
 	ed->v.colormap		= 0;
-	ed->Model.iSkin		= 0;
+	ed->Model.skin		= 0;
 	ed->v.frame			= 0;
 	ed->v.dNextThink	= -1;
-	ed->Physics.iSolid	= SOLID_NOT;
-	ed->Model.fScale	= 1.0f;
+	ed->Physics.solid	= SOLID_NOT;
+	ed->Model.scale		= 1.0f;
 	ed->alpha			= ENTALPHA_DEFAULT; //johnfitz -- reset alpha for next entity
 
 	Math_VectorCopy(pl_origin3f, ed->v.origin);
@@ -288,7 +288,7 @@ void ED_Count (void)
 
 		active++;
 
-		if (ent->Physics.iSolid)
+		if (ent->Physics.solid)
 			solid++;
 
 		if (ent->v.model)

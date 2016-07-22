@@ -103,7 +103,7 @@ void LaserGat_Explode(ServerEntity_t *eLaserGat)
 	Entity_Remove(eLaserGat);
 }
 
-void LaserGat_Die(ServerEntity_t *eLaserGat, ServerEntity_t *eOther, ServerDamageType_t type)
+void LaserGat_Die(ServerEntity_t *eLaserGat, ServerEntity_t *eOther, EntityDamageType_t type)
 {
 	eLaserGat->v.think			= LaserGat_Explode;
 	eLaserGat->v.dNextThink		= Server.dTime + 5.0;
@@ -164,12 +164,12 @@ void LaserGat_Think(ServerEntity_t *eLaserGat)
 	LaserGat_HandleAim(eLaserGat);
 }
 
-void LaserGat_BasePain(ServerEntity_t *eBase, ServerEntity_t *eOther, ServerDamageType_t type)
+void LaserGat_BasePain(ServerEntity_t *eBase, ServerEntity_t *eOther, EntityDamageType_t type)
 {
 	Sound(eBase,CHAN_BODY,PHYSICS_SOUND_METAL2,255,ATTN_STATIC);
 }
 
-void LaserGat_BaseDie(ServerEntity_t *eBase, ServerEntity_t *eOther, ServerDamageType_t type)
+void LaserGat_BaseDie(ServerEntity_t *eBase, ServerEntity_t *eOther, EntityDamageType_t type)
 {
 	Entity_SetModel(eBase,LASERGAT_MODEL_BROKEN);
 
@@ -216,9 +216,9 @@ void LaserGat_Spawn(ServerEntity_t *eLaserGat)
 	eLaserGat->Monster.commands[LASERGAT_COMMAND_LOOK_YAW] = rand() % 2;
 
 	// Set our physical properties.
-	eLaserGat->Physics.iSolid		= SOLID_BBOX;
-	eLaserGat->Physics.fGravity		= cvServerGravity.value;
-	eLaserGat->Physics.fMass		= 3.5f;
+	eLaserGat->Physics.solid	= SOLID_BBOX;
+	eLaserGat->Physics.gravity	= cvServerGravity.value;
+	eLaserGat->Physics.mass		= 3.5f;
 
 	Entity_SetModel(eLaserGat, LASERGAT_MODEL_HEAD);
 	Entity_SetSize(eLaserGat, -6.20f, -18.70f, -8.0f, 19.46f, 18.71f, 7.53f);
@@ -236,11 +236,11 @@ void LaserGat_Spawn(ServerEntity_t *eLaserGat)
 		eBase->v.bTakeDamage	= true;
 
 		// Physical properties
-		eBase->Physics.iSolid		= SOLID_BBOX;
-		eBase->Physics.fGravity		= 0;
-		eBase->Physics.fFriction	= 0;
-		eBase->Physics.fMass		= 0;
-		eBase->Physics.eIgnore		= eLaserGat;
+		eBase->Physics.solid		= SOLID_BBOX;
+		eBase->Physics.gravity		= 0;
+		eBase->Physics.friction		= 0;
+		eBase->Physics.mass			= 0;
+		eBase->Physics.ignore		= eLaserGat;
 
 		Entity_SetKilledFunction(eBase, LaserGat_BaseDie);
 		Entity_SetDamagedFunction(eBase, LaserGat_BasePain);

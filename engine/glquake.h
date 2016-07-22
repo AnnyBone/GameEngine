@@ -40,14 +40,12 @@ extern	MathVector3f_t	modelorg, r_entorigin;
 extern	ClientEntity_t	*currententity;
 extern	int				r_visframecount;	// ??? what difs?
 extern	int				r_framecount;
-extern	mplane_t		frustum[4];
 
 extern int d_lightstylevalue[256];	// 8.8 fraction of base light value
 
 //johnfitz -- rendering statistics
 extern int rs_brushpolys, rs_aliaspolys, rs_skypolys, rs_particles, rs_fogpolys;
 extern int rs_dynamiclightmaps, rs_brushpasses, rs_aliaspasses, rs_skypasses;
-extern float rs_megatexels;
 //johnfitz
 
 //johnfitz -- track developer statistics that vary every frame

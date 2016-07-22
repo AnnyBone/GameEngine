@@ -124,7 +124,7 @@ void Alias_DrawFrame(MD2_t *alias, ClientEntity_t *entity, lerpdata_t lLerpData)
 	if (bShading && !r_showtris.bValue)
 		fAlpha	= ENTALPHA_DECODE(entity->alpha);
 
-	fAlpha = Math_Clamp(0, fAlpha, entity->distance_alpha);
+	fAlpha = plClamp(0, fAlpha, entity->distance_alpha);
 	if (fAlpha < 1.0f)
 		vlEnable(VL_CAPABILITY_BLEND);
 
@@ -247,9 +247,9 @@ void Alias_SetupEntityTransform(ClientEntity_t *ceEntity, lerpdata_t *lerpdata)
 	if (r_lerpmove.value && ceEntity != &cl.viewent && ceEntity->lerpflags & LERP_MOVESTEP)
 	{
 		if (ceEntity->lerpflags & LERP_FINISH)
-			blend = Math_Clamp(0, (cl.time - ceEntity->movelerpstart) / (ceEntity->lerpfinish - ceEntity->movelerpstart), 1);
+			blend = plClamp(0, (cl.time - ceEntity->movelerpstart) / (ceEntity->lerpfinish - ceEntity->movelerpstart), 1);
 		else
-			blend = Math_Clamp(0, (cl.time - ceEntity->movelerpstart) / 0.1, 1);
+			blend = plClamp(0, (cl.time - ceEntity->movelerpstart) / 0.1, 1);
 
 		//translation
 		Math_VectorSubtract(ceEntity->currentorigin, ceEntity->previousorigin, d);

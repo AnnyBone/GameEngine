@@ -18,7 +18,7 @@
 
 #include "server_weapon.h"
 
-EntityFrame_t BallistaAnimation_Deploy [] =
+ServerEntityFrame_t BallistaAnimation_Deploy[] =
 {
 	{   NULL, 35, 0.1f    },
 	{   NULL, 36, 0.1f    },

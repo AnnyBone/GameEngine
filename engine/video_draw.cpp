@@ -44,7 +44,7 @@ VideoCanvasType_t currentcanvas = CANVAS_NONE; //johnfitz -- for GL_SetCanvas
 
 using namespace core;
 
-PL_MODULE_EXPORT void draw::SetDefaultState()
+void draw::SetDefaultState()
 {
 	plColour_t clear = { 0, 0, 0, 1 };
 	vlSetClearColour4fv(clear);
@@ -79,7 +79,7 @@ PL_MODULE_EXPORT void draw::SetDefaultState()
 	vlEnable(VL_CAPABILITY_SCISSOR_TEST);
 }
 
-PL_MODULE_EXPORT void draw::ClearBuffers()
+void draw::ClearBuffers()
 {
 	if (!cv_video_clearbuffers.bValue)
 		return;
@@ -87,7 +87,7 @@ PL_MODULE_EXPORT void draw::ClearBuffers()
 	vlClearBuffers(VL_MASK_DEPTH | VL_MASK_COLOUR | VL_MASK_STENCIL);
 }
 
-PL_MODULE_EXPORT void draw::DepthBuffer()
+void draw::DepthBuffer()
 {
 #if 0
 	static gltexture_t	*depth_texture = NULL;
@@ -128,7 +128,7 @@ PL_MODULE_EXPORT void draw::DepthBuffer()
 
 ////////////////////////////////////////////////////////////////////////////////
 
-PL_MODULE_EXPORT void draw::WireBox(plVector3f_t mins, plVector3f_t maxs, float r, float g, float b)
+void draw::WireBox(plVector3f_t mins, plVector3f_t maxs, float r, float g, float b)
 {
 	// todo, rewrite this function...
 #if defined (VL_MODE_OPENGL)
@@ -205,7 +205,7 @@ void draw::BoundingBoxes()
 
 	unsigned int i;
 	ServerEntity_t *ed;
-	for (i = 0, ed = NEXT_EDICT(sv.edicts); i < sv.num_edicts; i++, ed = NEXT_EDICT(ed))
+	for (i = 0, ed = SERVER_ENTITY_NEXT(sv.edicts); i < sv.num_edicts; i++, ed = SERVER_ENTITY_NEXT(ed))
 	{
 		if (ed == sv_player && !chase_active.value)
 			continue;
@@ -288,7 +288,7 @@ void draw::Entities(bool alphapass)
 					(ENTALPHA_DECODE(currententity->alpha) == 1 && bAlphaPass))
 					continue;
 
-				Draw::Entity(currententity);
+				draw::Entity(currententity);
 			}
 		}
 	}
@@ -384,15 +384,15 @@ void Scrap_Upload (void)
 
 //==================================================================
 
-void Draw_MaterialSurface(Material_t *mMaterial, int iSkin,	int x, int y, int w, int h,	float fAlpha)
+void draw::MaterialSurface(Material_t *material, int x, int y, unsigned int w, unsigned int h, float alpha)
 {
 	vlVertex_t voSurface[4];
 
 	// Sloppy, but in the case that there's nothing valid...
-	if (!mMaterial)
+	if (!material)
 	{
-		Draw_Rectangle(x, y, w, h, pl_red);
-		Draw_String(x, y, "INVALID MATERIAL!");
+		draw::Rectangle(x, y, w, h, pl_red);
+		draw::String(x, y, "INVALID MATERIAL!");
 		return;
 	}
 
@@ -400,10 +400,10 @@ void Draw_MaterialSurface(Material_t *mMaterial, int iSkin,	int x, int y, int w,
 	vlDisable(VL_CAPABILITY_DEPTH_TEST);
 
 	// Set the colour.
-	Video_ObjectColour(&voSurface[0], 1.0f, 1.0f, 1.0f, fAlpha);
-	Video_ObjectColour(&voSurface[1], 1.0f, 1.0f, 1.0f, fAlpha);
-	Video_ObjectColour(&voSurface[2], 1.0f, 1.0f, 1.0f, fAlpha);
-	Video_ObjectColour(&voSurface[3], 1.0f, 1.0f, 1.0f, fAlpha);
+	Video_ObjectColour(&voSurface[0], 1.0f, 1.0f, 1.0f, alpha);
+	Video_ObjectColour(&voSurface[1], 1.0f, 1.0f, 1.0f, alpha);
+	Video_ObjectColour(&voSurface[2], 1.0f, 1.0f, 1.0f, alpha);
+	Video_ObjectColour(&voSurface[3], 1.0f, 1.0f, 1.0f, alpha);
 
 	// Set the texture coords.
 	Video_ObjectTexture(&voSurface[0], 0, 0, 0);
@@ -413,19 +413,21 @@ void Draw_MaterialSurface(Material_t *mMaterial, int iSkin,	int x, int y, int w,
 
 	// Set the vertex coords.
 	Video_ObjectVertex(&voSurface[0], x, y, 0);
-	Video_ObjectVertex(&voSurface[1], x+w, y, 0);
-	Video_ObjectVertex(&voSurface[2], x+w, y+h, 0);
-	Video_ObjectVertex(&voSurface[3], x, y+h, 0);
+	Video_ObjectVertex(&voSurface[1], x + w, y, 0);
+	Video_ObjectVertex(&voSurface[2], x + w, y + h, 0);
+	Video_ObjectVertex(&voSurface[3], x, y + h, 0);
 
 	// Throw it off to the rendering pipeline.
-	Video_DrawFill(voSurface, mMaterial, iSkin);
+	Video_DrawFill(voSurface, material, material->current_skin);
 
 	vlEnable(VL_CAPABILITY_DEPTH_TEST);
 }
 
-void draw::MaterialSurface(Material_t *material, int x, int y, unsigned int w, unsigned int h, float alpha)
+void Draw_MaterialSurface(Material_t *mMaterial, int iSkin,	int x, int y, int w, int h,	float fAlpha)
 {
-	Draw_MaterialSurface(material, material->current_skin, x, y, w, h, alpha);
+	Material_SetSkin(mMaterial, iSkin);
+
+	draw::MaterialSurface(mMaterial, x, y, w, h, fAlpha);
 }
 
 //==================================================================
@@ -582,9 +584,7 @@ void draw::Character(int x, int y, int num)
 	vlEnable(VL_CAPABILITY_DEPTH_TEST);
 }
 
-/*	Draws a simple string of text on the screen.
-*/
-void Draw_String(int x, int y, const char *msg)
+void draw::String(int x, int y, const char *msg)
 {
 	if (y <= -8)
 		return;
@@ -601,9 +601,11 @@ void Draw_String(int x, int y, const char *msg)
 	Material_Draw(g_mGlobalConChars, NULL, VL_PRIMITIVE_IGNORE, 0, true);
 }
 
-void draw::String(int x, int y, const char *msg)
+/*	Draws a simple string of text on the screen.
+*/
+void Draw_String(int x, int y, const char *msg)
 {
-	Draw_String(x, y, msg);
+	draw::String(x, y, msg);
 }
 
 void draw::GradientBackground(plColour_t top, plColour_t bottom)
@@ -736,33 +738,39 @@ void draw::Grid(plVector3f_t position, PLuint grid_size)
 	vlEnable(VL_CAPABILITY_TEXTURE_2D);
 }
 
-void Draw_Rectangle(int x, int y, int w, int h, plColour_t colour)
+void draw::Rectangle(PLint x, PLint y, PLuint w, PLuint h, plColour_t colour)
 {
-	vlVertex_t	voFill[4];
+	vlVertex_t fill[4] = { 0 };
 
-	Math_Vector4Copy(colour, voFill[0].colour);
-	Math_Vector4Copy(colour, voFill[1].colour);
-	Math_Vector4Copy(colour, voFill[2].colour);
-	Math_Vector4Copy(colour, voFill[3].colour);
+	Math_Vector4Copy(colour, fill[0].colour);
+	Math_Vector4Copy(colour, fill[1].colour);
+	Math_Vector4Copy(colour, fill[2].colour);
+	Math_Vector4Copy(colour, fill[3].colour);
 
 	if (colour[3] < 1)
 		vlEnable(VL_CAPABILITY_BLEND);
 	vlDisable(VL_CAPABILITY_DEPTH_TEST | VL_CAPABILITY_TEXTURE_2D);
 
-	Video_ObjectVertex(&voFill[0], x, y, 0);
-	Video_ObjectTexture(&voFill[0], 0, h, w);
-	Video_ObjectVertex(&voFill[1], x+w, y, 0);
-	Video_ObjectTexture(&voFill[1], 0, h + w, w);
-	Video_ObjectVertex(&voFill[2], x+w, y+h, 0);
-	Video_ObjectTexture(&voFill[2], 0, h + w, w + h);
-	Video_ObjectVertex(&voFill[3], x, y+h, 0);
-	Video_ObjectTexture(&voFill[0], 0, h, w + h);
+	Video_ObjectVertex(&fill[0], x, y, 0);
+	Video_ObjectTexture(&fill[0], 0, h, w);
+	Video_ObjectVertex(&fill[1], x + w, y, 0);
+	Video_ObjectTexture(&fill[1], 0, h + w, w);
+	Video_ObjectVertex(&fill[2], x + w, y + h, 0);
+	Video_ObjectTexture(&fill[2], 0, h + w, w + h);
+	Video_ObjectVertex(&fill[3], x, y + h, 0);
+	Video_ObjectTexture(&fill[0], 0, h, w + h);
 
-	Video_DrawFill(voFill, NULL, 0);
+	Video_DrawFill(fill, NULL, 0);
 
 	if (colour[3] < 1)
 		vlDisable(VL_CAPABILITY_BLEND);
 	vlEnable(VL_CAPABILITY_DEPTH_TEST | VL_CAPABILITY_TEXTURE_2D);
+}
+
+// C wrapper for draw::rectangle
+void Draw_Rectangle(int x, int y, int w, int h, plColour_t colour)
+{
+	draw::Rectangle(x, y, w, h, colour);
 }
 
 void draw::GradientFill(int x, int y, PLuint width, PLuint height, plColour_t top, plColour_t bottom)
@@ -789,7 +797,7 @@ void draw::GradientFill(int x, int y, PLuint width, PLuint height, plColour_t to
 	vlEnable(VL_CAPABILITY_DEPTH_TEST | VL_CAPABILITY_TEXTURE_2D);
 }
 
-void Draw_FadeScreen (void)
+void draw::ScreenFade()
 {
 	vlVertex_t	voFade[4];
 
@@ -895,7 +903,7 @@ void GL_SetCanvas (VideoCanvasType_t newcanvas)
 		break;
 	case CANVAS_MENU:
 		s = std::fminf((float)viewport->GetWidth() / 640.0, (float)viewport->GetHeight() / 480.0);
-		s = Math_Clamp(1.0, scr_menuscale.value, s);
+		s = plClamp(1.0, scr_menuscale.value, s);
 		glOrtho (0, 640, 480, 0, -99999, 99999);
 		vlViewport(
 			viewport->GetPosition()[0], 
@@ -904,7 +912,7 @@ void GL_SetCanvas (VideoCanvasType_t newcanvas)
 			viewport->GetHeight());
 		break;
 	case CANVAS_SBAR:
-		s = Math_Clamp(1.0, scr_sbarscale.value, (float)viewport->GetWidth() / 320.0);
+		s = plClamp(1.0, scr_sbarscale.value, (float)viewport->GetWidth() / 320.0);
 		glOrtho (0, 320, 48, 0, -99999, 99999);
 		vlViewport(
 			viewport->GetPosition()[0] + (viewport->GetWidth() - 320 * s) / 2, 
@@ -921,7 +929,7 @@ void GL_SetCanvas (VideoCanvasType_t newcanvas)
 			gl_warpimagesize);
 		break;
 	case CANVAS_CROSSHAIR: //0,0 is center of viewport
-		s = Math_Clamp(1.0, scr_crosshairscale.value, 10.0);
+		s = plClamp(1.0, scr_crosshairscale.value, 10.0);
 		glOrtho(viewport->GetWidth() / -2 / s, viewport->GetWidth() / 2 / s, viewport->GetHeight() / 2 / s, viewport->GetHeight() / -2 / s, -99999, 99999);
 		vlViewport(
 			viewport->GetPosition()[0], 

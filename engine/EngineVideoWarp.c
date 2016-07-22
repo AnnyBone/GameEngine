@@ -215,7 +215,7 @@ void Surface_DrawWater(glpoly_t *p, Material_t *material)
 		return;
 	}
 
-	float fWaterAlpha = Math_Clamp(0, material->fAlpha, 1.0f);
+	float fWaterAlpha = plClamp(0, material->fAlpha, 1.0f);
 
 	float *vertex = p->verts[0];
 	for (int i = 0; i < p->numverts; i++, vertex += VERTEXSIZE)
@@ -258,7 +258,7 @@ void R_UpdateWarpTextures (void)
 	if (r_oldwater.value || cl.paused || r_drawflat_cheatsafe || r_lightmap_cheatsafe)
 		return;
 
-	warptess = 128.0f / Math_Clamp(3.0f, floor(r_waterquality.value), 64.0f);
+	warptess = 128.0f / plClamp(3.0f, floor(r_waterquality.value), 64.0f);
 
 	for (i=0; i<cl.worldmodel->numtextures; i++)
 	{

@@ -195,9 +195,9 @@ void SV_SendServerinfo(ServerClient_t *client)
 
 	// [16/1/2014] Send over lights ~hogsy
 	{
-		ServerEntity_t *eLight = NEXT_EDICT(sv.edicts);
+		ServerEntity_t *eLight = SERVER_ENTITY_NEXT(sv.edicts);
 
-		for(i = 1; i < sv.num_edicts; i++,eLight = NEXT_EDICT(eLight))
+		for (i = 1; i < sv.num_edicts; i++, eLight = SERVER_ENTITY_NEXT(eLight))
 		{
 			if(eLight->free)
 				continue;
@@ -419,8 +419,8 @@ void SV_WriteEntitiesToClient (ServerEntity_t	*clent, sizebuf_t *msg)
 	pvs = SV_FatPVS (org, sv.worldmodel);
 
 // send over all entities (excpet the client) that touch the pvs
-	ent = NEXT_EDICT(sv.edicts);
-	for (e=1 ; e<sv.num_edicts ; e++, ent = NEXT_EDICT(ent))
+	ent = SERVER_ENTITY_NEXT(sv.edicts);
+	for (e = 1; e<sv.num_edicts; e++, ent = SERVER_ENTITY_NEXT(ent))
 	{
 		if (ent != clent)	// clent is ALLWAYS sent
 		{
@@ -458,7 +458,7 @@ void SV_WriteEntitiesToClient (ServerEntity_t	*clent, sizebuf_t *msg)
 				bits |= U_ORIGIN1<<i;
 		}
 
-		if(ent->baseline.fScale != ent->Model.fScale)
+		if(ent->baseline.fScale != ent->Model.scale)
 			bits |= U_SCALE;
 		if ( ent->v.angles[0] != ent->baseline.angles[0] )
 			bits |= U_ANGLE1;
@@ -471,7 +471,7 @@ void SV_WriteEntitiesToClient (ServerEntity_t	*clent, sizebuf_t *msg)
 		if (ent->baseline.colormap != ent->v.colormap)
 			bits |= U_COLORMAP;
 
-		if (ent->baseline.skin != ent->Model.iSkin)
+		if (ent->baseline.skin != ent->Model.skin)
 			bits |= U_SKIN;
 
 		if (ent->baseline.frame != ent->v.frame)
@@ -535,13 +535,13 @@ void SV_WriteEntitiesToClient (ServerEntity_t	*clent, sizebuf_t *msg)
 			MSG_WriteByte (msg, ent->v.frame);
 
 		if(bits & U_SCALE)
-			MSG_WriteFloat(msg,ent->Model.fScale);
+			MSG_WriteFloat(msg,ent->Model.scale);
 
 		if (bits & U_COLORMAP)
 			MSG_WriteByte (msg, ent->v.colormap);
 
 		if (bits & U_SKIN)
-			MSG_WriteByte(msg, ent->Model.iSkin);
+			MSG_WriteByte(msg, ent->Model.skin);
 
 		if (bits & U_EFFECTS)
 			// [21/12/2013] Fixed this not being sent over in full form ~hogsy
@@ -925,7 +925,7 @@ void SV_CreateBaseline (void)
 		Math_VectorCopy(svent->v.angles,svent->baseline.angles);
 
 		svent->baseline.frame		= svent->v.frame;
-		svent->baseline.skin		= svent->Model.iSkin;
+		svent->baseline.skin		= svent->Model.skin;
 		svent->baseline.colormap	= 0;
 		svent->baseline.modelindex	= SV_ModelIndex(svent->v.model);
 		svent->baseline.fScale		= 1.0f;
@@ -1066,7 +1066,7 @@ void SV_SpawnServer(char *server)
 	sv.protocol	= SERVER_PROTOCOL;
 
 	// Allocate server memory
-	sv.max_edicts = Math_Clamp(MIN_EDICTS, (int)max_edicts.value, MAX_EDICTS); //johnfitz -- max_edicts cvar
+	sv.max_edicts = plClamp(MIN_EDICTS, (int)max_edicts.value, MAX_EDICTS); //johnfitz -- max_edicts cvar
 	sv.edicts = (ServerEntity_t*)Hunk_AllocName(sv.max_edicts*sizeof(ServerEntity_t),"edicts");
 
 	sv.datagram.maxsize = sizeof(sv.datagram_buf);
@@ -1126,7 +1126,7 @@ void SV_SpawnServer(char *server)
 
 	ent->v.model		= sv.worldmodel->name;
 	ent->v.modelindex	= 1;					// World model
-	ent->Physics.iSolid	= SOLID_BSP;
+	ent->Physics.solid	= SOLID_BSP;
 	ent->v.movetype		= MOVETYPE_PUSH;
 
 	pr_global_struct.mapname		= sv.name;
@@ -1235,7 +1235,7 @@ ServerEntity_t *Server_FindEntity(ServerEntity_t *eStartEntity, char *cName, boo
 		return NULL;
 	}
 
-	for (unsigned int i = 0; i < sv.num_edicts; i++, eEntity = NEXT_EDICT(eEntity))
+	for (unsigned int i = 0; i < sv.num_edicts; i++, eEntity = SERVER_ENTITY_NEXT(eEntity))
 	{
 		if (eEntity->free)
 			continue;

@@ -200,7 +200,7 @@ void CTF_FlagSpawn(ServerEntity_t *eFlag)
 	eFlag->v.movetype	= MOVETYPE_NONE;
 	eFlag->v.items		= ITEM_FLAG;
 
-	eFlag->Physics.iSolid	= SOLID_TRIGGER;
+	eFlag->Physics.solid = SOLID_TRIGGER;
 
 	eFlag->local.iLocalFlags = STATE_FLAG_IDLE;
 

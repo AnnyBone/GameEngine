@@ -13,35 +13,35 @@
 #define	IONRIFLE_IDLEB_FRAME	30
 
 // [17/11/2013] Animation for the primary attack ~hogsy
-EntityFrame_t	efIonRiflePulseFireA[] =
+ServerEntityFrame_t	efIonRiflePulseFireA[] =
 {
 	{	NULL,	10,	0.02f			},
 	{	NULL,	11,	0.02f			},
 	{	NULL,	12,	0.02f,	true	}
 };
 
-EntityFrame_t	efIonRiflePulseFireB[] =
+ServerEntityFrame_t	efIonRiflePulseFireB[] =
 {
 	{	NULL,	13,	0.02f			},
 	{	NULL,	14,	0.02f			},
 	{	NULL,	15,	0.02f,	true	}
 };
 
-EntityFrame_t	efIonRiflePulseFireC[] =
+ServerEntityFrame_t	efIonRiflePulseFireC[] =
 {
 	{	NULL,	16,	0.02f			},
 	{	NULL,	17,	0.02f			},
 	{	NULL,	18,	0.02f,	true	}
 };
 
-EntityFrame_t	efIonRiflePulseFireD[] =
+ServerEntityFrame_t	efIonRiflePulseFireD[] =
 {
 	{	NULL,	19,	0.02f			},
 	{	NULL,	20,	0.02f			},
 	{	NULL,	21,	0.02f,	true	}
 };
 
-EntityFrame_t	efIonRiflePulseFireE[] =
+ServerEntityFrame_t	efIonRiflePulseFireE[] =
 {
 	{	NULL,	22,	0.02f			},
 	{	NULL,	23,	0.02f			},
@@ -49,7 +49,7 @@ EntityFrame_t	efIonRiflePulseFireE[] =
 };
 
 // [17/11/2013] Animation for switching to pulse mode (arms fold in) ~hogsy
-EntityFrame_t	efIonRiflePulseMode[] = 
+ServerEntityFrame_t	efIonRiflePulseMode[] =
 {
 	{	NULL,	29,	0.03f			},
 	{	NULL,	28,	0.03f			},
@@ -59,7 +59,7 @@ EntityFrame_t	efIonRiflePulseMode[] =
 	{	NULL,	24,	0.03f,	true	}
 };
 
-EntityFrame_t	efIonRifleBlastFire[] = 
+ServerEntityFrame_t	efIonRifleBlastFire[] =
 {
 	{	NULL,	32,	0.03f			},
 	{	NULL,	33,	0.03f			},
@@ -69,7 +69,7 @@ EntityFrame_t	efIonRifleBlastFire[] =
 };
 
 // [17/11/2013] Should be just a reverse of the above (arms fold out) ~hogsy
-EntityFrame_t	efIonRifleBlastMode[] = 
+ServerEntityFrame_t	efIonRifleBlastMode[] =
 {
 	{	NULL,	24,	0.03f			},
 	{	NULL,	25,	0.03f			},
@@ -79,7 +79,7 @@ EntityFrame_t	efIonRifleBlastMode[] =
 	{	NULL,	29,	0.03f,	true	}
 };
 
-EntityFrame_t	efIonRifleDeploy[] = 
+ServerEntityFrame_t	efIonRifleDeploy[] =
 {
 	{	NULL,	1,	0.02f			},
 	{	NULL,	2,	0.02f			},
@@ -149,10 +149,10 @@ void IonRifle_PrimaryAttack(ServerEntity_t *eOwner)
 				eIonBall->v.effects = EF_LIGHT_GREEN;
 				eIonBall->v.TouchFunction = IonRifle_IonBallTouch;
 
-				eIonBall->Model.fScale = 2.0f;
+				eIonBall->Model.scale = 2.0f;
 
-				eIonBall->Physics.iSolid	= SOLID_BBOX;
-				eIonBall->Physics.eIgnore	= eOwner;
+				eIonBall->Physics.solid	= SOLID_BBOX;
+				eIonBall->Physics.ignore	= eOwner;
 
 				eIonBall->local.eOwner	= eOwner;
 				eIonBall->local.style	= 1;		// [29/1/2014] Preserve our firemode ~hogsy
@@ -218,10 +218,10 @@ void IonRifle_PrimaryAttack(ServerEntity_t *eOwner)
 				eIonBall->v.effects			= EF_LIGHT_GREEN;
 				eIonBall->v.TouchFunction	= IonRifle_IonBallTouch;
 
-				eIonBall->Model.fScale	= 0.3f;
+				eIonBall->Model.scale = 0.3f;
 
-				eIonBall->Physics.iSolid	= SOLID_BBOX;
-				eIonBall->Physics.eIgnore	= eOwner;
+				eIonBall->Physics.solid	= SOLID_BBOX;
+				eIonBall->Physics.ignore	= eOwner;
 
 				eIonBall->local.eOwner	= eOwner;
 				eIonBall->local.style	= 0;		// [29/1/2014] Preserve our firemode ~hogsy

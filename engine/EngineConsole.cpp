@@ -225,7 +225,7 @@ void Console::SetSize(unsigned int width, unsigned int height)
 
 #if 1	// todo, do we need this?
 	vid.conwidth = (scr_conwidth.value > 0) ? (int)scr_conwidth.value : (scr_conscale.value > 0) ? (int)(width / scr_conscale.value) : width;
-	vid.conwidth = Math_Clamp(320, vid.conwidth, width);
+	vid.conwidth = plClamp(320, vid.conwidth, width);
 	vid.conwidth &= 0xFFFFFFF8;
 	vid.conheight = vid.conwidth* height / width;
 #endif

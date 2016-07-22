@@ -388,6 +388,9 @@ void Input_ClientFrame(ClientCommand_t *input)
 	iMousePosition[PL_X] *= sensitivity.value;
 	iMousePosition[PL_Y] *= sensitivity.value;
 
+	Camera *camera = CameraManager_GetPrimaryCamera();
+	if (!camera) return;
+
 	if(!cvInputMouseLook.value)
 	{
 		// Copied from Raynorpat's code.
@@ -396,18 +399,7 @@ void Input_ClientFrame(ClientCommand_t *input)
 
 		input->forwardmove -= m_forward.value*iMousePosition[PL_Y];
 	}
-	else
-	{
-		cl.viewangles[PL_YAW] -= m_yaw.value*iMousePosition[PL_X];
-		cl.viewangles[PL_PITCH] += m_pitch.value*iMousePosition[PL_Y];
-
-#if 0 // todo, handled already, remove?
-		if(cl.viewangles[PL_PITCH] > cl_maxpitch.value)
-			cl.viewangles[PL_PITCH] = cl_maxpitch.value;
-		if (cl.viewangles[PL_PITCH] < cl_minpitch.value)
-			cl.viewangles[PL_PITCH] = cl_minpitch.value;
-#endif
-	}
+	else camera->Input(iMousePosition, 0);
 
 	iMousePosition[PL_X] = iMousePosition[PL_Y] = 0;
 }

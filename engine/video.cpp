@@ -340,7 +340,7 @@ void Video_Frame(void)
 		time1 = System_DoubleTime();
 
 		//johnfitz -- rendering statistics
-		rs_brushpolys = rs_aliaspolys = rs_skypolys = rs_particles = rs_fogpolys = rs_megatexels =
+		rs_brushpolys = rs_aliaspolys = rs_skypolys = rs_particles = rs_fogpolys =
 			rs_dynamiclightmaps = rs_aliaspasses = rs_skypasses = rs_brushpasses = 0;
 	}
 

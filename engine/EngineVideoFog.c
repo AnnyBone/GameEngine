@@ -124,23 +124,23 @@ void Fog_FogCommand_f (void)
 		break;
 	case 4:
 		Fog_Update(fog_density,
-			Math_Clamp(0.0, atof(Cmd_Argv(1)), 1.0),
-			Math_Clamp(0.0, atof(Cmd_Argv(2)), 1.0),
-			Math_Clamp(0.0, atof(Cmd_Argv(3)), 1.0),
+			plClamp(0.0, atof(Cmd_Argv(1)), 1.0),
+			plClamp(0.0, atof(Cmd_Argv(2)), 1.0),
+			plClamp(0.0, atof(Cmd_Argv(3)), 1.0),
 				   0.0);
 		break;
 	case 5:
 		Fog_Update(Math_Max(0.0,atof(Cmd_Argv(1))),
-			Math_Clamp(0.0, atof(Cmd_Argv(2)), 1.0),
-			Math_Clamp(0.0, atof(Cmd_Argv(3)), 1.0),
-			Math_Clamp(0.0, atof(Cmd_Argv(4)), 1.0),
+			plClamp(0.0, atof(Cmd_Argv(2)), 1.0),
+			plClamp(0.0, atof(Cmd_Argv(3)), 1.0),
+			plClamp(0.0, atof(Cmd_Argv(4)), 1.0),
 				   0.0);
 		break;
 	case 6: //TEST
 		Fog_Update(Math_Max(0.0, atof(Cmd_Argv(1))),
-			Math_Clamp(0.0, atof(Cmd_Argv(2)), 1.0),
-			Math_Clamp(0.0, atof(Cmd_Argv(3)), 1.0),
-			Math_Clamp(0.0, atof(Cmd_Argv(4)), 1.0),
+			plClamp(0.0, atof(Cmd_Argv(2)), 1.0),
+			plClamp(0.0, atof(Cmd_Argv(3)), 1.0),
+			plClamp(0.0, atof(Cmd_Argv(4)), 1.0),
 				   atof(Cmd_Argv(5)));
 		break;
 	}

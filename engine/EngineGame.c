@@ -73,10 +73,10 @@ ServerEntity_t *Server_FindRadius(MathVector3f_t origin, float radius)
 
 	eChain = sv.edicts;
 
-	eEntity = NEXT_EDICT(sv.edicts);
-	for(i = 1; i < sv.num_edicts; i++,eEntity = NEXT_EDICT(eEntity))
+	eEntity = SERVER_ENTITY_NEXT(sv.edicts);
+	for (i = 1; i < sv.num_edicts; i++, eEntity = SERVER_ENTITY_NEXT(eEntity))
 	{
-		if(eEntity->free && eEntity->Physics.iSolid == SOLID_NOT)
+		if(eEntity->free && eEntity->Physics.solid == SOLID_NOT)
 			continue;
 
 		for(j = 0; j < 3; j++)
@@ -129,9 +129,9 @@ void Server_MakeStatic(ServerEntity_t *ent)
 	else
 		MSG_WriteByte(&sv.signon,ent->v.frame);
 
-	MSG_WriteByte(&sv.signon,ent->Model.fScale);
+	MSG_WriteByte(&sv.signon,ent->Model.scale);
 	MSG_WriteByte(&sv.signon,ent->v.colormap);
-	MSG_WriteByte(&sv.signon,ent->Model.iSkin);
+	MSG_WriteByte(&sv.signon,ent->Model.skin);
 	for (i=0 ; i<3 ; i++)
 	{
 		MSG_WriteCoord(&sv.signon, ent->v.origin[i]);

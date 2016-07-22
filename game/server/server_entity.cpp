@@ -1,19 +1,20 @@
-/*	Copyright (C) 2011-2016 OldTimes Software
+/*
+Copyright (C) 2011-2016 OldTimes Software
 
-	This program is free software; you can redistribute it and/or
-	modify it under the terms of the GNU General Public License
-	as published by the Free Software Foundation; either version 2
-	of the License, or (at your option) any later version.
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-	See the GNU General Public License for more details.
+See the GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "server_main.h"
@@ -36,9 +37,9 @@ void Entity::Spawn()
 		Free();
 
 	// Set physics properties to their defaults!
-	_instance->Physics.fMass = 1.0f;
-	_instance->Physics.fFriction = 1.0f;
-	_instance->Physics.fGravity = SERVER_GRAVITY;
+	_instance->Physics.mass = 1.0f;
+	_instance->Physics.friction = 1.0f;
+	_instance->Physics.gravity = SERVER_GRAVITY;
 
 	// Spawn the entity.
 	_instance = g_engine->Spawn();
@@ -172,7 +173,7 @@ void Entity::RemoveFlags(int flags)
 
 /*	Damage	*/
 
-void Entity::Damage(Entity *inflictor, int damage, ServerDamageType_t damagetype)
+void Entity::Damage(Entity *inflictor, int damage, EntityDamageType_t damagetype)
 {
 	// Don't bother if there's no actual damage inflicted.
 	if (damage <= 0)
@@ -193,7 +194,7 @@ void Entity::Damage(Entity *inflictor, int damage, ServerDamageType_t damagetype
 	Damaged(inflictor);
 }
 
-bool Entity::CanDamage(Entity *target, ServerDamageType_t damagetype)
+bool Entity::CanDamage(Entity *target, EntityDamageType_t damagetype)
 {
 	if (!target->GetInstance()->v.bTakeDamage)
 		return false;

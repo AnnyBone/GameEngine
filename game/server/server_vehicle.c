@@ -1,26 +1,22 @@
-/*	Copyright (C) 2011-2016 OldTimes Software
+/*
+DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+Version 2, December 2004
 
-	This program is free software; you can redistribute it and/or
-	modify it under the terms of the GNU General Public License
-	as published by the Free Software Foundation; either version 2
-	of the License, or (at your option) any later version.
+Copyright (C) 2011-2016 Mark E Sowden <markelswo@gmail.com>
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+Everyone is permitted to copy and distribute verbatim or modified
+copies of this license document, and changing it is allowed as long
+as the name is changed.
 
-	See the GNU General Public License for more details.
+DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+0. You just DO WHAT THE FUCK YOU WANT TO.
 */
 
 #include "server_vehicle.h"
 
-/*
-	Base vehicle system.
-*/
+/*	Base vehicle system.	*/
 
 #define	VEHICLE_MAX_DAMAGE	-20
 
@@ -63,20 +59,15 @@ void Vehicle_Damage(ServerEntity_t *eVehicle,ServerEntity_t *eAttacker,int iDama
 */
 void Vehicle_Spawn(ServerEntity_t *eVehicle)
 {
-	int	i;
-
 	// Monster variables
 	eVehicle->Monster.iType	= MONSTER_VEHICLE;
-	eVehicle->Vehicle.iType	= eVehicle->local.style;
 	
 	// Physics
-	eVehicle->Physics.iSolid	= SOLID_SLIDEBOX;
+	eVehicle->Physics.solid		= SOLID_SLIDEBOX;
 	eVehicle->v.movetype		= MOVETYPE_BOUNCE;
-	eVehicle->Physics.fGravity	= cvServerGravity.value;
+	eVehicle->Physics.gravity	= cvServerGravity.value;
 
-	// [15/4/2013] Set all slots to open (in-case of respawn) ~hogsy
-	for(i = 0; i < eVehicle->Vehicle.iMaxPassengers; i++)
-		eVehicle->Vehicle.iSlot[i] = SLOT_OPEN;
+	//memset(&eVehicle->Vehicle.slots, 0, plArrayElements(eVehicle->Vehicle.slots));
 }
 
 /*	Checks the current number of passengers, sets up
@@ -85,14 +76,14 @@ void Vehicle_Spawn(ServerEntity_t *eVehicle)
 */
 void Vehicle_Enter(ServerEntity_t *eVehicle,ServerEntity_t *eOther)
 {
-	if(eVehicle->Vehicle.iPassengers >= eVehicle->Vehicle.iMaxPassengers)
+	if(eVehicle->Vehicle.passengers >= eVehicle->Vehicle.maxpassengers)
 	{
 		Engine.CenterPrint(eOther,"Vehicle is full.\n");
 		// [27/1/2013] TODO: Change to client-specific sound function ~hogsy
 		Engine.Sound(eVehicle,CHAN_AUTO,"misc/deny.wav",255,ATTN_NORM);
 		return;
 	}
-	else if(!eVehicle->Vehicle.iFuel)
+	else if(!eVehicle->Vehicle.fuel)
 	{
 		Engine.CenterPrint(eOther,"Vehicle is out of fuel.\n");
 		// [27/1/2013] TODO: Change to client-specific sound function ~hogsy
@@ -109,17 +100,19 @@ void Vehicle_Enter(ServerEntity_t *eVehicle,ServerEntity_t *eOther)
 	else if(!eOther->v.iHealth || eOther->local.eVehicle)
 		return;
 
-	eVehicle->Vehicle.iPassengers++;
-	if(eVehicle->Vehicle.iPassengers == SLOT_DRIVER)
+#if 0 // todo, rewrite this
+	eVehicle->Vehicle.passengers++;
+	if(eVehicle->Vehicle.passengers == SLOT_DRIVER)
 	{
-		eVehicle->Vehicle.bActive								= true;
+		eVehicle->Vehicle.active = true;
 		eVehicle->Vehicle.iSlot[eVehicle->Vehicle.iPassengers]	= SLOT_DRIVER;
 	}
 	else
 		eVehicle->Vehicle.iSlot[eVehicle->Vehicle.iPassengers]	= SLOT_PASSENGER;
+#endif
 
 	eOther->local.eVehicle		= eVehicle;
-	eOther->local.iVehicleSlot	= eVehicle->Vehicle.iPassengers;
+	eOther->local.iVehicleSlot	= eVehicle->Vehicle.passengers;
 
 	if(eVehicle->Vehicle.Enter)
 		eVehicle->Vehicle.Enter(eVehicle,eOther);
@@ -129,11 +122,13 @@ void Vehicle_Enter(ServerEntity_t *eVehicle,ServerEntity_t *eOther)
 */
 void Vehicle_Exit(ServerEntity_t *eVehicle,ServerEntity_t *eOther)
 {
+#if 0 // todo, rewrite this
 	if(eVehicle->Vehicle.iSlot[eOther->local.iVehicleSlot] == SLOT_DRIVER)
 		eVehicle->Vehicle.bActive = false;
 
 	eVehicle->Vehicle.iPassengers--;
 	eVehicle->Vehicle.iSlot[eOther->local.iVehicleSlot] = SLOT_OPEN;
+#endif
 
 	eOther->local.iVehicleSlot	= 0;
 	eOther->local.eVehicle		= NULL;

@@ -619,7 +619,7 @@
     <ClCompile Include="client\video_viewport.cpp" />
     <ClCompile Include="EngineClientChase.c" />
     <ClCompile Include="EngineClientDemo.c" />
-    <ClCompile Include="EngineClientInput.c" />
+    <ClCompile Include="EngineClientInput.cpp" />
     <ClCompile Include="EngineClient.c" />
     <ClCompile Include="EngineClientParse.c" />
     <ClCompile Include="EngineClientTempEntity.c" />
@@ -712,6 +712,7 @@
     <ClInclude Include="..\shared\shared_client_shader.h" />
     <ClInclude Include="..\shared\shared_editor.h" />
     <ClInclude Include="..\shared\shared_engine.h" />
+    <ClInclude Include="..\shared\shared_entity.h" />
     <ClInclude Include="..\shared\shared_flags.h" />
     <ClInclude Include="..\shared\shared_formats.h" />
     <ClInclude Include="..\shared\shared_game.h" />
@@ -720,6 +721,7 @@
     <ClInclude Include="..\shared\shared_menu.h" />
     <ClInclude Include="..\shared\shared_model.h" />
     <ClInclude Include="..\shared\shared_server.h" />
+    <ClInclude Include="..\shared\shared_server_entity.h" />
     <ClInclude Include="..\shared\shared_texture.h" />
     <ClInclude Include="..\shared\shared_video.h" />
     <ClInclude Include="..\shared\shared_zone.h" />

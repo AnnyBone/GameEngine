@@ -43,7 +43,7 @@ void Barrel_Think(ServerEntity_t *barrel)
 	Entity_Remove(barrel);
 }
 
-void Barrel_Killed(ServerEntity_t *barrel, ServerEntity_t *seOther, ServerDamageType_t type)
+void Barrel_Killed(ServerEntity_t *barrel, ServerEntity_t *seOther, EntityDamageType_t type)
 {
 	// Don't take damage anymore.
 	barrel->v.bTakeDamage = false;
@@ -57,7 +57,7 @@ void Barrel_Killed(ServerEntity_t *barrel, ServerEntity_t *seOther, ServerDamage
 		Entity_SetModel(barrel, MODEL_DECORATION_BARREL3);
 }
 
-void Barrel_Damaged(ServerEntity_t *seBarrel, ServerEntity_t *seOther, ServerDamageType_t type)
+void Barrel_Damaged(ServerEntity_t *seBarrel, ServerEntity_t *seOther, EntityDamageType_t type)
 {
 	char gibpath[MAX_QPATH];
 	// TODO: play sound, wobble, or react in some way...
@@ -110,7 +110,7 @@ void Barrel_Spawn(ServerEntity_t *eBarrel)
 
 	if (eBarrel->local.style == BARREL_STYLE_EXPLODE)
 		// Switch the skin over.
-		eBarrel->Model.iSkin = 1;
+		eBarrel->Model.skin = 1;
 
 	// Link it up.
 	Entity_DropToFloor(eBarrel);

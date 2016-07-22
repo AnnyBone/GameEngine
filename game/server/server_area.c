@@ -1,19 +1,20 @@
-/*	Copyright (C) 2011-2016 OldTimes Software
+/*
+Copyright (C) 2011-2016 OldTimes Software
 
-	This program is free software; you can redistribute it and/or
-	modify it under the terms of the GNU General Public License
-	as published by the Free Software Foundation; either version 2
-	of the License, or (at your option) any later version.
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-	See the GNU General Public License for more details.
+See the GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "server_main.h"
@@ -24,17 +25,17 @@
 	entities and its sub-methods:
 
 	area_breakable 		- Brush that breaks and spawns debris
-	area_rotate		- Rotates around specified axis
-	area_door		- Opens and closes in specified position
+	area_rotate			- Rotates around specified axis
+	area_door			- Opens and closes in specified position
 	area_changelevel	- Changes the current level
 	area_trigger		- Triggers a point entity
 	area_pushable		- Brush that can be pushed around
-	area_wall		- Brush that casts no shadow and can appear/disappear on use
-	area_button		- Trigger a point entity when moved into place
+	area_wall			- Brush that casts no shadow and can appear/disappear on use
+	area_button			- Trigger a point entity when moved into place
 	area_platform		- Platform that travels between two destinations
-	area_climb		- Substitute for a ladder
-	area_noclip		- Brush that casts no light and no collision
-	area_push		- Pushes entities into the specified direction on touch
+	area_climb			- Substitute for a ladder
+	area_noclip			- Brush that casts no light and no collision
+	area_push			- Pushes entities into the specified direction on touch
 
 TODO:
 	area_monsterclip ?	- Blocks ways off for monsters
@@ -83,9 +84,7 @@ void Area_Move(ServerEntity_t *eArea, MathVector3f_t vTDest, float fSpeed, void(
 	eArea->v.dNextThink = eArea->v.ltime + traveltime;
 }
 
-/*
-	Breakable
-*/
+/*	area_breakable	*/
 
 #define BREAKABLE_GLASS	0
 #define	BREAKABLE_WOOD	1
@@ -133,7 +132,7 @@ void Area_CreateGib(ServerEntity_t *eArea, const char *cModel)
 		eGib->v.dNextThink = Server.dTime + 20;
 		eGib->v.bTakeDamage = false;
 
-		eGib->Physics.iSolid = SOLID_TRIGGER;
+		eGib->Physics.solid = SOLID_TRIGGER;
 
 		eGib->local.style = eArea->local.style;
 
@@ -149,7 +148,7 @@ void Area_CreateGib(ServerEntity_t *eArea, const char *cModel)
 	}
 }
 
-void Area_BreakableDie(ServerEntity_t *eArea, ServerEntity_t *eOther, ServerDamageType_t type)
+void Area_BreakableDie(ServerEntity_t *eArea, ServerEntity_t *eOther, EntityDamageType_t type)
 {
 	int	i;
 	char cSound[128], cModel[PLATFORM_MAX_PATH];
@@ -240,7 +239,7 @@ void Area_BreakableSpawn(ServerEntity_t *eArea)
 	if (eArea->v.cName)
 		eArea->v.use = Area_BreakableUse;
 
-	eArea->Physics.iSolid = SOLID_BSP;
+	eArea->Physics.solid = SOLID_BSP;
 
 	eArea->v.movetype = MOVETYPE_PUSH;
 	eArea->v.bTakeDamage = true;
@@ -258,7 +257,7 @@ void Area_BreakableSpawn(ServerEntity_t *eArea)
 	eArea->v.oldorigin[2] = (eArea->v.mins[2] + eArea->v.maxs[2])*0.5f;
 }
 
-/**/
+/*	area_rotate	*/
 
 void Area_RotateBlocked(ServerEntity_t *eArea, ServerEntity_t *eOther)
 {
@@ -332,16 +331,14 @@ void Area_RotateSpawn(ServerEntity_t *eArea)
 	eArea->v.think		= Area_RotateThink;
 	eArea->v.dNextThink	= Server.dTime+1000000000.0;	// TODO: This is a hack. A dirty filthy hack. Curse it and its family!
 
-	eArea->Physics.iSolid = SOLID_BSP;
+	eArea->Physics.solid = SOLID_BSP;
 
 	Entity_SetModel(eArea,eArea->v.model);
 	Entity_SetSizeVector(eArea,eArea->v.mins,eArea->v.maxs);
 	Entity_SetOrigin(eArea,eArea->v.origin);
 }
 
-/*
-	AREA_TRIGGERFIELD
-*/
+/*	area_triggerfield	*/
 
 ServerEntity_t *Area_SpawnTriggerField(ServerEntity_t *owner, MathVector3f_t mins, MathVector3f_t maxs, void (*TriggerFunction)(ServerEntity_t *entity, ServerEntity_t *other))
 {
@@ -370,9 +367,7 @@ ServerEntity_t *Area_SpawnTriggerField(ServerEntity_t *owner, MathVector3f_t min
 	return field;
 }
 
-/*
-	AREA_DOOR
-*/
+/*	area_door	*/
 
 // Spawn flags.
 #define	DOOR_FLAG_TRIGGERTOUCH		1	// Triggered by touch.
@@ -612,9 +607,7 @@ void Area_DoorSpawn(ServerEntity_t *door)
 		Entity_SetBlockedFunction(door, Area_DoorBlocked);
 }
 
-/*
-	Change Level
-*/
+/*	area_changelevel	*/
 
 void Area_ChangeLevelTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
 {
@@ -629,7 +622,7 @@ void Area_ChangeLevelTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
 	eArea->v.think		= Area_ChangelevelStart;
 	eArea->v.dNextThink	= Server.dTime+eArea->local.delay;
 #else
-	eArea->Physics.iSolid		= SOLID_NOT;
+	eArea->Physics.solid = SOLID_NOT;
 
 	// [2/1/2013] Change the level! ~hogsy
 	Engine.Server_ChangeLevel(eArea->v.targetname);
@@ -649,7 +642,7 @@ void Area_ChangeLevel(ServerEntity_t *eArea)
 
 	eArea->v.TouchFunction	= Area_ChangeLevelTouch;
 
-	eArea->Physics.iSolid	= SOLID_TRIGGER;
+	eArea->Physics.solid = SOLID_TRIGGER;
 
 	Entity_SetModel(eArea,eArea->v.model);
 	Entity_SetOrigin(eArea,eArea->v.origin);
@@ -657,9 +650,7 @@ void Area_ChangeLevel(ServerEntity_t *eArea)
 	eArea->v.model = 0;
 }
 
-/*
-	Trigger
-*/
+/*	area_trigger	*/
 
 void Area_TriggerTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
 {
@@ -687,7 +678,7 @@ void Area_TriggerSpawn(ServerEntity_t *eArea)
 
 	eArea->v.TouchFunction = Area_TriggerTouch;
 
-	eArea->Physics.iSolid = SOLID_TRIGGER;
+	eArea->Physics.solid = SOLID_TRIGGER;
 
 	Entity_SetModel(eArea,eArea->v.model);
 	Entity_SetOrigin(eArea,eArea->v.origin);
@@ -695,9 +686,7 @@ void Area_TriggerSpawn(ServerEntity_t *eArea)
 	eArea->v.model = 0;
 }
 
-/*
-	Pushable
-*/
+/*	area_pushable	*/
 
 float IsOnTopOf (ServerEntity_t *eTop, ServerEntity_t *eBottom)
 {
@@ -769,7 +758,7 @@ void Area_PushableSpawn(ServerEntity_t *eArea)
 	//eArea->Physics.fGravity = cvServerGravity.value;
 	plVectorClear(eArea->v.angles);
 
-	eArea->Physics.iSolid = SOLID_SLIDEBOX;
+	eArea->Physics.solid = SOLID_SLIDEBOX;
 	eArea->v.movetype = MOVETYPE_STEP;
 	Entity_SetModel(eArea,eArea->v.model);
 	Entity_SetOrigin(eArea,eArea->v.origin);
@@ -779,24 +768,22 @@ void Area_PushableSpawn(ServerEntity_t *eArea)
 	eArea->v.think = Area_PushableThink;
 }
 
-/*
-	Wall
-*/
+/*	area_wall	*/
 
 void Area_WallUse(ServerEntity_t *eArea)
 {
-	if(eArea->Physics.iSolid == SOLID_BSP)
+	if(eArea->Physics.solid == SOLID_BSP)
 	{
 		eArea->local.cOldModel	= eArea->v.model;
 		eArea->local.iValue		= 0;
 
-		eArea->Physics.iSolid = SOLID_NOT;
+		eArea->Physics.solid = SOLID_NOT;
 
 		eArea->v.model = 0;
 		return;
 	}
 
-	eArea->Physics.iSolid = SOLID_BSP;
+	eArea->Physics.solid = SOLID_BSP;
 	eArea->local.iValue = 1;
 	Entity_SetModel(eArea,eArea->local.cOldModel);
 }
@@ -822,9 +809,8 @@ void Area_WallSpawn(ServerEntity_t *eArea)
 	Entity_SetOrigin(eArea,eArea->v.origin);
 }
 
-/*
-	Detail
-*/
+/*	area_detail	*/
+
 // Just for the compiler ~eukara
 void Area_DetailSpawn(ServerEntity_t *eArea)
 {
@@ -840,9 +826,7 @@ void Area_DetailSpawn(ServerEntity_t *eArea)
 	Entity_SetOrigin(eArea,eArea->v.origin);
 }
 
-/*
-	Button
-*/
+/*	area_button	*/
 
 void Area_ButtonDone(ServerEntity_t *eArea, ServerEntity_t *eOther)
 {
@@ -934,7 +918,7 @@ void Area_ButtonSpawn(ServerEntity_t *eArea)
 
 	eArea->v.movetype = MOVETYPE_PUSH;
 
-	eArea->Physics.iSolid = SOLID_BSP;
+	eArea->Physics.solid = SOLID_BSP;
 
 	// [18/5/2013] Changed to use ! check instead since it's safer here ~hogsy
 	if(eArea->local.lip == 0.0f)
@@ -970,10 +954,7 @@ void Area_ButtonSpawn(ServerEntity_t *eArea)
 	eArea->v.use = Area_ButtonUse;
 }
 
-/*
-	Platform
-*/
-
+/*	area_platform	*/
 
 void Area_PlatformDone(ServerEntity_t *eArea, ServerEntity_t *eOther)
 {
@@ -1071,7 +1052,7 @@ void Area_PlatformSpawn(ServerEntity_t *eArea)
 
 	eArea->v.movetype = MOVETYPE_PUSH;
 
-	eArea->Physics.iSolid = SOLID_BSP;
+	eArea->Physics.solid = SOLID_BSP;
 
 	if(eArea->local.count == 0)
 		eArea->local.count = 100;
@@ -1103,10 +1084,7 @@ void Area_PlatformSpawn(ServerEntity_t *eArea)
 	eArea->v.use = Area_PlatformUse;
 }
 
-
-/*
-	Climb / Ladders
-*/
+/*	area_climb	*/
 
 void Area_ClimbTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
 {
@@ -1218,29 +1196,25 @@ void Area_ClimbSpawn(ServerEntity_t *eArea)
 	Area_SetMoveDirection(eArea->v.angles, eArea->v.movedir);
 	eArea->v.TouchFunction = Area_ClimbTouch;
 
-	eArea->Physics.iSolid	= SOLID_TRIGGER;
+	eArea->Physics.solid = SOLID_TRIGGER;
 
 	Entity_SetModel(eArea,eArea->v.model);
 	Entity_SetOrigin(eArea,eArea->v.origin);
 	eArea->v.model = 0;
 }
 
-/*
-	Noclip
-*/
+/*	area_noclip	*/
 
 void Area_NoclipSpawn(ServerEntity_t *eArea)
 {
-	eArea->v.movetype	= MOVETYPE_PUSH;
-	eArea->Physics.iSolid	= SOLID_NOT;
+	eArea->v.movetype		= MOVETYPE_PUSH;
+	eArea->Physics.solid	= SOLID_NOT;
 
 	Entity_SetModel(eArea,eArea->v.model);
 	Entity_SetOrigin(eArea,eArea->v.origin);
 }
 
-/*
-	Pusher
-*/
+/*	area_push	*/
 
 #define PUSH_ONCE 32
 
@@ -1265,7 +1239,7 @@ void Area_PushSpawn(ServerEntity_t *eArea)
 	Area_SetMoveDirection(eArea->v.angles, eArea->v.movedir);
 
 	eArea->v.TouchFunction	= Area_PushTouch;
-	eArea->Physics.iSolid	= SOLID_TRIGGER;
+	eArea->Physics.solid	= SOLID_TRIGGER;
 
 	Entity_SetModel(eArea,eArea->v.model);
 	Entity_SetOrigin(eArea,eArea->v.origin);
@@ -1287,7 +1261,7 @@ void Area_KillTouch(ServerEntity_t *area, ServerEntity_t *other)
 
 void Area_KillSpawn(ServerEntity_t *area)
 {
-	area->Physics.iSolid = SOLID_TRIGGER;
+	area->Physics.solid = SOLID_TRIGGER;
 
 	Entity_SetModel(area, area->v.model);
 	Entity_SetOrigin(area, area->v.origin);

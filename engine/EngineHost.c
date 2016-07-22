@@ -446,25 +446,25 @@ void Host_ClearMemory(void)
 
 /*	Returns false if the time is too short to run a frame
 */
-bool Host_FilterTime(float time)
+bool Host_FilterTime(double time)
 {
 	float fMaxFrameRate; //johnfitz
 
 	realtime += time;
 
 	//johnfitz -- max fps cvar
-	fMaxFrameRate = Math_Clamp(10.0f, host_maxfps.value, 1000.0f);
-	if(!cls.timedemo && realtime-dOldRealTime < 1.0f/fMaxFrameRate)
+	fMaxFrameRate = plClamp(10.0f, host_maxfps.value, 1000.0f);
+	if (!cls.timedemo && realtime - dOldRealTime < 1.0f / fMaxFrameRate)
 		return false; // framerate is too high
 	//johnfitz
 
-	host_frametime	= realtime-dOldRealTime;
+	host_frametime	= realtime - dOldRealTime;
 	dOldRealTime	= realtime;
 
 	if (host_timescale.value > 0)
 		host_frametime *= host_timescale.value;
 	else // Don't allow really long or short frames
-		host_frametime = Math_Clamp(0.001f, host_frametime, 0.1f); //johnfitz -- use CLAMP
+		host_frametime = plClamp(0.001f, host_frametime, 0.1f); //johnfitz -- use CLAMP
 
 	return true;
 }
@@ -549,7 +549,7 @@ void Host_ServerFrame (void)
 
 /*	Runs all active servers
 */
-void _Host_Frame (float time)
+void _Host_Frame (double time)
 {
 	static double	time1 = 0,
 					time2 = 0,
@@ -633,7 +633,7 @@ void _Host_Frame (float time)
 	host_framecount++;
 }
 
-void Host_Frame (float time)
+void Host_Frame (double time)
 {
 	double			time1,time2;
 	static	double	timetotal;

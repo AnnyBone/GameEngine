@@ -160,7 +160,7 @@ ModelFrame::ModelFrame(wxWindow *parent)
 	menu_file->Append(new wxMenuItem(menu_file, wxID_CLOSE));
 	menu_file->Append(new wxMenuItem(menu_file, wxID_EXIT));
 	menubar->Append(menu_file, "&File");
-		
+	
 	// View
 	wxMenu *menu_view = new wxMenu;
 	v_rotate = new wxMenuItem(menu_view, MODELFRAME_EVENT_ROTATE, "&Rotate", "Dolly rotates the current preview", wxITEM_CHECK);

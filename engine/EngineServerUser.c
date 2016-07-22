@@ -169,7 +169,7 @@ void SV_WaterMove (void)
 	speed = plLengthf(velocity);
 	if(speed)
 	{
-		newspeed = speed-host_frametime*speed*sv_player->Physics.fFriction;
+		newspeed = speed-host_frametime*speed*sv_player->Physics.friction;
 		if (newspeed < 0)
 			newspeed = 0;
 		Math_VectorScale (velocity, newspeed/speed, velocity);

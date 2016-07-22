@@ -33,6 +33,8 @@ namespace core
 		void Draw();
 		void Simulate();
 
+		void Input(plVector2i_t mpos, int key);
+
 		std::vector<float> GetAngles() { return std::vector<float> { _angles[0], _angles[1], _angles[2] }; }
 		void SetAngles(float x, float y, float z);
 		void SetAngles(plVector3f_t angles);
@@ -57,7 +59,7 @@ namespace core
 		ClientEntity_t *GetViewEntity() { return _viewmodel; }
 #endif
 
-		IViewport *GetViewport() { return _viewport; }
+		IViewport *GetViewport() { return reinterpret_cast<IViewport*>(_viewport); }
 		void SetViewport(IViewport *viewport);
 
 		bool IsPointInsideFrustum(plVector3f_t position);
@@ -98,14 +100,15 @@ namespace core
 		bool			bobcam;
 		plVector2f_t	bobamount;
 
-		mplane_t frustum[4];
+		mplane_t _frustum[4];
+
+		glm::mat4x4 _matrix_view, _matrix_projection;
 
 		plVector3f_t _forward, _right, _up;
 		plVector3f_t punchangles[2];		//johnfitz -- copied from cl.punchangle.  0 is current, 1 is previous value. never the same unless map just loaded
 		plVector3f_t _angles, _position;
 
-		float _fovx, _fovy;
-		float _fov;
+		float _fov, _fovx, _fovy;
 
 		float height;	// Additional height of the camera.
 	};
@@ -158,6 +161,9 @@ EngineCamera *CameraManager_GetCurrentCamera(void);
 
 PL_EXTERN_C
 
-	EngineCamera *CameraManager_GetPrimaryCamera(void);
+EngineCamera *CameraManager_GetPrimaryCamera(void);
+
+void Camera_SetPosition(EngineCamera *camera, plVector3f_t position);
+void Camera_SetAngles(EngineCamera *camera, plVector3f_t angles);
 
 PL_EXTERN_C_END

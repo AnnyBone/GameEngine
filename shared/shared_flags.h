@@ -34,7 +34,7 @@
 #define	PATH_RESOURCES	"resource/"
 
 // Still currently used for some older code; switch it all to use uint8_t instead :)
-#define byte uint8_t
+typedef uint8_t byte;
 
 enum
 {

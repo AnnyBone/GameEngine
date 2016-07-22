@@ -394,7 +394,7 @@ void Monster_NewChaseDirection(ServerEntity_t *ent, MathVector3f_t target, float
 
 /*	Called when a monster/entity gets killed.
 */
-void Monster_Killed(ServerEntity_t *eTarget, ServerEntity_t *eAttacker, ServerDamageType_t type)
+void Monster_Killed(ServerEntity_t *eTarget, ServerEntity_t *eAttacker, EntityDamageType_t type)
 {
 	if (eTarget->Monster.state == AI_STATE_DEAD)
 		return;
@@ -516,7 +516,7 @@ void Monster_Killed(ServerEntity_t *eTarget, ServerEntity_t *eAttacker, ServerDa
 		eTarget->local.KilledFunction(eTarget, eAttacker, type);
 }
 
-void Monster_Damage(ServerEntity_t *target, ServerEntity_t *inflictor, int iDamage, ServerDamageType_t type)
+void Monster_Damage(ServerEntity_t *target, ServerEntity_t *inflictor, int iDamage, EntityDamageType_t type)
 {
 	/*	TODO
 		If the new inflicted damage is greater

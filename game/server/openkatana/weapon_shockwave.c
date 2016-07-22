@@ -22,7 +22,7 @@
 
 void Shockwave_SpawnProjectile(ServerEntity_t *ent);
 
-EntityFrame_t ShockwaveAnimation_Deploy [] =
+ServerEntityFrame_t ShockwaveAnimation_Deploy[] =
 {
 	{	NULL, 19, 0.075f},
 	{	NULL, 20, 0.075f},
@@ -36,7 +36,8 @@ EntityFrame_t ShockwaveAnimation_Deploy [] =
 	{	NULL, 28, 0.075f},
 	{	NULL, 29, 0.075f, TRUE},
 };
-EntityFrame_t ShockwaveAnimation_FireA [] =
+
+ServerEntityFrame_t ShockwaveAnimation_FireA[] =
 {
 	{	NULL, 1, 0.075f},
 	{	NULL, 2, 0.075f},
@@ -45,7 +46,8 @@ EntityFrame_t ShockwaveAnimation_FireA [] =
 	{	NULL, 5, 0.075f},
 	{	NULL, 6, 0.075f, TRUE},
 };
-EntityFrame_t ShockwaveAnimation_FireB [] =
+
+ServerEntityFrame_t ShockwaveAnimation_FireB[] =
 {
 	{	NULL, 7, 0.075f},
 	{	NULL, 8, 0.075f},
@@ -54,7 +56,8 @@ EntityFrame_t ShockwaveAnimation_FireB [] =
 	{	NULL, 11, 0.075f},
 	{	NULL, 12, 0.075f, TRUE},
 };
-EntityFrame_t ShockwaveAnimation_FireC [] =
+
+ServerEntityFrame_t ShockwaveAnimation_FireC[] =
 {
 	{	NULL, 13, 0.075f},
 	{	NULL, 14, 0.075f},
@@ -115,7 +118,7 @@ void Shockwave_SpawnProjectile(ServerEntity_t *ent)
 		eLaser->v.TouchFunction = ShockLaser_Touch;
 		eLaser->v.origin[2]		+= 25.0f;
 
-		eLaser->Physics.iSolid	= SOLID_BBOX;
+		eLaser->Physics.solid	= SOLID_BBOX;
 
 		Entity_SetModel(eLaser,"models/slaser.md2");
 		Entity_SetSizeVector(eLaser, pl_origin3f, pl_origin3f);

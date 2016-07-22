@@ -104,13 +104,9 @@ uint8_t *plLoadBMPImage(FILE *fin, unsigned int *width, unsigned int *height)
 }
 #endif
 
-/*
-	DDS Support
-*/
+/*	DDS Support	*/
 
-/*
-	FTX Support
-*/
+/*	FTX Support	*/
 
 typedef struct
 {
@@ -139,9 +135,7 @@ uint8_t *plLoadFTXImage(FILE *fin, unsigned int *width, unsigned int *height)
 	return image;
 }
 
-/*
-	PPM Support
-*/
+/*	PPM Support	*/
 
 #define	PPM_HEADER_SIZE	70
 

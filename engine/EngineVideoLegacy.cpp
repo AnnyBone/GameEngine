@@ -27,7 +27,7 @@
 
 #include "client/effect_sprite.h"
 
-MathVector3f_t modelorg, r_entorigin;
+plVector3f_t modelorg, r_entorigin;
 ClientEntity_t *currententity;
 
 int	r_visframecount,	// bumped when going to a new PVS
@@ -36,7 +36,6 @@ int	r_visframecount,	// bumped when going to a new PVS
 //johnfitz -- rendering statistics
 int rs_brushpolys, rs_aliaspolys, rs_skypolys, rs_particles, rs_fogpolys;
 int rs_dynamiclightmaps, rs_brushpasses, rs_aliaspasses, rs_skypasses;
-float rs_megatexels;
 
 float r_world_matrix[16], r_base_world_matrix[16];
 
@@ -74,18 +73,18 @@ bool R_CullModelForEntity(ClientEntity_t *e)
 
 	if(e->angles[PL_PITCH] || e->angles[PL_ROLL])
 	{
-		Math_VectorAdd (e->origin, e->model->rmins, mins);
-		Math_VectorAdd (e->origin, e->model->rmaxs, maxs);
+		plVectorAdd3fv(e->origin, e->model->rmins, mins);
+		plVectorAdd3fv(e->origin, e->model->rmaxs, maxs);
 	}
 	else if(e->angles[PL_YAW])
 	{
-		Math_VectorAdd (e->origin, e->model->ymins, mins);
-		Math_VectorAdd (e->origin, e->model->ymaxs, maxs);
+		plVectorAdd3fv(e->origin, e->model->ymins, mins);
+		plVectorAdd3fv(e->origin, e->model->ymaxs, maxs);
 	}
 	else //no rotation
 	{
-		Math_VectorAdd(e->origin,e->model->mins,mins);
-		Math_VectorAdd(e->origin,e->model->maxs,maxs);
+		plVectorAdd3fv(e->origin, e->model->mins, mins);
+		plVectorAdd3fv(e->origin, e->model->maxs, maxs);
 	}
 
 	return camera->IsBoxOutsideFrustum(mins, maxs);

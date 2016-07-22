@@ -361,6 +361,156 @@ void Camera::Draw()
 #endif
 }
 
+#ifdef CAMERA_LEGACY
+void Camera::SetParentEntity(ClientEntity_t *parent)
+{
+	// Clear it out, not an issue since we
+	// want to support switching between these.
+	_parententity = nullptr;
+
+	if (!parent)
+	{
+		Con_Warning("Failed to set camera parent entity!\n");
+		return;
+	}
+
+	_parententity = parent;
+
+	SetPosition(_parententity->origin);
+	_position[2] += height;
+}
+
+void Camera::SetViewEntity(ClientEntity_t *_child)
+{
+	// Clear it out, not an issue since we
+	// want to support switching between these.
+	_viewmodel = nullptr;
+
+	if (!_child)
+	{
+		Con_Warning("Failed to set camera child entity!\n");
+		return;
+	}
+
+	_viewmodel = _child;
+}
+
+void Camera::SimulateViewEntity()
+{
+	// View is the weapon model (only visible from inside body).
+	if (!_viewmodel)
+		return;
+
+	_viewmodel->model = cl.model_precache[cl.stats[STAT_WEAPON]];
+	_viewmodel->frame = cl.stats[STAT_WEAPONFRAME];
+
+	if (!_viewmodel->model)
+		return;
+
+	// Apply view model angles.
+	plVector3f_t oldangles;
+	plVectorCopy(_viewmodel->angles, oldangles);
+	plVectorCopy(_angles, _viewmodel->angles);
+
+	// Update view model origin.
+	plVectorCopy(_parententity->origin, _viewmodel->origin);
+	_viewmodel->origin[2] += height;
+
+	// Apply view model bob.
+	if (bobcam)
+	{
+		for (int i = 0; i < 3; i++)
+			_viewmodel->origin[i] +=
+			(_up[i] * bobamount[0] * 0.2f) +
+			(_right[i] * bobamount[1] * 0.3f);
+
+		_viewmodel->origin[2] += bobamount[0];
+	}
+
+	// Apple the view model drift.
+	if (host_frametime != 0)
+	{
+		static plVector3f_t lastforward;
+		plVector3f_t difference;
+		plVectorSubtract3fv(_forward, lastforward, difference);
+
+		float speed = 3.0f, scale = 0;
+		float diff = plLengthf(difference);
+		if ((diff > cv_camera_modellag.value) && (cv_camera_modellag.value > 0))
+			speed *= scale = diff / cv_camera_modellag.value;
+
+		for (int i = 0; i < 3; i++)
+			lastforward[i] += difference[i] * (speed * host_frametime);
+
+		plVectorNormalize(lastforward);
+
+		for (int i = 0; i < 3; i++)
+		{
+			_viewmodel->origin[i] += (difference[i] * -1) * 5;
+
+			// TODO: wait, we're doing this in this loop!? Okay...
+			// This is probably a mistake but I'll wait before I sort this.
+			_viewmodel->angles[ROLL] += difference[YAW];
+		}
+	}
+
+	// Apply some slight movement.
+	_viewmodel->angles[PL_PITCH] = -(_angles[PL_PITCH] - (sinf(cl.time * 1.5f) * 0.2f));
+	_viewmodel->angles[PL_ROLL] = -(_angles[PL_ROLL] - (sinf(cl.time * 1.5f) * 0.2f));
+
+	// Finally, offset!
+	float offset = 0;
+	if (cv_camera_modelposition.iValue == 1)
+		offset = -5;
+	else if (cv_camera_modelposition.iValue == 2)
+		offset = 5;
+	else return;
+
+	for (int i = 0; i < 3; i++)
+		_viewmodel->origin[i] += _forward[i] + offset * _right[i] + _up[i];
+}
+
+void Camera::SimulateParentEntity()
+{
+	// Parent is the player model (visible when out of body).
+	if (!_parententity)
+		return;
+
+	// Transform the view offset by the model's matrix to get the offset from
+	// model origin for the view.
+	_parententity->angles[YAW] = _angles[YAW];
+	_parententity->angles[PITCH] = -_angles[PITCH];
+	_parententity->angles[ROLL] = -_angles[ROLL];
+
+	// Refresh view position.
+	SetPosition(_parententity->origin);
+
+	// Offsets
+	_angles[PL_PITCH] = -_parententity->angles[PL_PITCH];	// Because entity pitches are actually backward.
+	_angles[PL_YAW] = _parententity->angles[PL_YAW];
+	_angles[PL_ROLL] = _parententity->angles[PL_ROLL];
+
+	/*
+	Absolutely bound refresh reletive to entity clipping hull
+	so the view can never be inside a solid wall.
+	*/
+	if (_position[0] < (_parententity->origin[0] - 14.0f))
+		_position[0] = _parententity->origin[0] - 14.0f;
+	else if (_position[0] > (_parententity->origin[0] + 14.0f))
+		_position[0] = _parententity->origin[0] + 14.0f;
+
+	if (_position[1] < (_parententity->origin[1] - 14.0f))
+		_position[1] = _parententity->origin[1] - 14.0f;
+	else if (_position[1] > (_parententity->origin[1] + 14.0f))
+		_position[1] = _parententity->origin[1] + 14.0f;
+
+	if (_position[2] < (_parententity->origin[2] - 22.0f))
+		_position[2] = _parententity->origin[2] - 22.0f;
+	else if (_position[2] > (_parententity->origin[2] + 30.0f))
+		_position[2] = _parententity->origin[2] + 30.0f;
+}
+#endif
+
 /*	Calculate and add view bobbing.
 */
 void Camera::SimulateBob()
@@ -492,155 +642,13 @@ void Camera::Simulate()
 	g_spritemanager->Simulate();
 }
 
-#ifdef CAMERA_LEGACY
-void Camera::SetParentEntity(ClientEntity_t *parent)
+///////////////////////////////////////////////////////////////
+
+void Camera::Input(plVector2i_t mpos, int key)
 {
-	// Clear it out, not an issue since we
-	// want to support switching between these.
-	_parententity = nullptr;
-
-	if (!parent)
-	{
-		Con_Warning("Failed to set camera parent entity!\n");
-		return;
-	}
-
-	_parententity = parent;
-
-	SetPosition(_parententity->origin);
-	_position[2] += height;
+	_angles[PL_YAW] -= m_yaw.value * mpos[PL_X];
+	_angles[PL_PITCH] += m_pitch.value * mpos[PL_Y];
 }
-
-void Camera::SetViewEntity(ClientEntity_t *_child)
-{
-	// Clear it out, not an issue since we
-	// want to support switching between these.
-	_viewmodel = nullptr;
-
-	if (!_child)
-	{
-		Con_Warning("Failed to set camera child entity!\n");
-		return;
-	}
-
-	_viewmodel = _child;
-}
-
-void Camera::SimulateViewEntity()
-{
-	// View is the weapon model (only visible from inside body).
-	if (!_viewmodel)
-		return;
-
-	_viewmodel->model = cl.model_precache[cl.stats[STAT_WEAPON]];
-	_viewmodel->frame = cl.stats[STAT_WEAPONFRAME];
-
-	if (!_viewmodel->model)
-		return;
-
-	// Apply view model angles.
-	plVector3f_t oldangles;
-	plVectorCopy(_viewmodel->angles, oldangles);
-	plVectorCopy(_angles, _viewmodel->angles);
-	
-	// Update view model origin.
-	plVectorCopy(_parententity->origin, _viewmodel->origin);
-	_viewmodel->origin[2] += height;
-
-	// Apply view model bob.
-	if (bobcam)
-	{
-		for (int i = 0; i < 3; i++)
-			_viewmodel->origin[i] +=
-			(_up[i] * bobamount[0] * 0.2f) +
-			(_right[i] * bobamount[1] * 0.3f);
-
-		_viewmodel->origin[2] += bobamount[0];
-	}
-
-	// Apple the view model drift.
-	if (host_frametime != 0)
-	{
-		static plVector3f_t lastforward;
-		plVector3f_t difference;
-		plVectorSubtract3fv(_forward, lastforward, difference);
-
-		float speed = 3.0f, scale = 0;
-		float diff = plLengthf(difference);
-		if ((diff > cv_camera_modellag.value) && (cv_camera_modellag.value > 0))
-			speed *= scale = diff / cv_camera_modellag.value;
-
-		for (int i = 0; i < 3; i++)
-			lastforward[i] += difference[i] * (speed * host_frametime);
-
-		plVectorNormalize(lastforward);
-
-		for (int i = 0; i < 3; i++)
-		{
-			_viewmodel->origin[i] += (difference[i] * -1) * 5;
-
-			// TODO: wait, we're doing this in this loop!? Okay...
-			// This is probably a mistake but I'll wait before I sort this.
-			_viewmodel->angles[ROLL] += difference[YAW];
-		}
-	}
-
-	// Apply some slight movement.
-	_viewmodel->angles[PL_PITCH] = -(_angles[PL_PITCH] - (sinf(cl.time * 1.5f) * 0.2f));
-	_viewmodel->angles[PL_ROLL] = -(_angles[PL_ROLL] - (sinf(cl.time * 1.5f) * 0.2f));
-
-	// Finally, offset!
-	float offset = 0;
-	if (cv_camera_modelposition.iValue == 1)
-		offset = -5;
-	else if (cv_camera_modelposition.iValue == 2)
-		offset = 5;
-	else return;
-
-	for (int i = 0; i < 3; i++)
-		_viewmodel->origin[i] += _forward[i] + offset * _right[i] + _up[i];
-}
-
-void Camera::SimulateParentEntity()
-{
-	// Parent is the player model (visible when out of body).
-	if (!_parententity)
-		return;
-
-	// Transform the view offset by the model's matrix to get the offset from
-	// model origin for the view.
-	_parententity->angles[YAW]		= _angles[YAW];
-	_parententity->angles[PITCH]	= -_angles[PITCH];
-	_parententity->angles[ROLL]		= -_angles[ROLL];
-
-	// Refresh view position.
-	SetPosition(_parententity->origin);
-
-	// Offsets
-	_angles[PL_PITCH]	= -_parententity->angles[PL_PITCH];	// Because entity pitches are actually backward.
-	_angles[PL_YAW]		= _parententity->angles[PL_YAW];
-	_angles[PL_ROLL]	= _parententity->angles[PL_ROLL];
-
-	/*
-	Absolutely bound refresh reletive to entity clipping hull
-	so the view can never be inside a solid wall.
-	*/
-	if (_position[0] < (_parententity->origin[0] - 14.0f))
-		_position[0] = _parententity->origin[0] - 14.0f;
-	else if (_position[0] > (_parententity->origin[0] + 14.0f))
-		_position[0] = _parententity->origin[0] + 14.0f;
-
-	if (_position[1] < (_parententity->origin[1] - 14.0f))
-		_position[1] = _parententity->origin[1] - 14.0f;
-	else if (_position[1] > (_parententity->origin[1] + 14.0f))
-		_position[1] = _parententity->origin[1] + 14.0f;
-
-	if (_position[2] < (_parententity->origin[2] - 22.0f))
-		_position[2] = _parententity->origin[2] - 22.0f;
-	else if (_position[2] > (_parententity->origin[2] + 30.0f))
-		_position[2] = _parententity->origin[2] + 30.0f;
-}
-#endif
 
 /*	Frustum	*/
 
@@ -648,7 +656,7 @@ void Camera::SetFOV(float fov)
 {
 	// Clamp the FOV to ensure we don't
 	// get anything rediculous.
-	Math_Clamp(10, fov, 170);
+	plClamp(10, fov, 180.0f);
 	
 	_fov = fov;
 	_fovx = _fov;
@@ -671,10 +679,23 @@ void Camera::SetFrustum(float fovx, float fovy)
 {
 	_fovx = fovx; _fovy = fovy;
 
+#if 1
 	float xmax = cv_camera_nearclip.value * tanf(_fovx * PL_PI / 360);
 	float ymax = cv_camera_nearclip.value * tanf(_fovy * PL_PI / 360);
 #if defined (VL_MODE_OPENGL)
 	glFrustum(-xmax, xmax, -ymax, ymax, cv_camera_nearclip.value, cv_camera_farclip.value);
+#endif
+#else
+	unsigned int width = 640, height = 480;
+	if (_viewport)
+	{
+		width = _viewport->GetWidth();
+		height = _viewport->GetHeight();
+	}
+	
+	float aspect = (float)width / height;
+	glm::mat4 matrix_projection = glm::perspective(_fovy, aspect, cv_camera_nearclip.value, cv_camera_farclip.value);
+	glLoadMatrixf(glm::value_ptr(matrix_projection));
 #endif
 }
 
@@ -683,16 +704,16 @@ int SignbitsForPlane(mplane_t *out);
 void Camera::SimulateFrustum()
 {
 	// Update the frustum.
-	plTurnVector(frustum[0].normal, _position, _right, _fovx / 2 - 90);	// Left plane
-	plTurnVector(frustum[1].normal, _position, _right, 90 - _fovx / 2);	// Right plane
-	plTurnVector(frustum[2].normal, _position, _up, 90 - _fovy / 2);		// Bottom plane
-	plTurnVector(frustum[3].normal, _position, _up, _fovy / 2 - 90);		// Top plane
+	plTurnVector(_frustum[0].normal, _position, _right, _fovx / 2 - 90);	// Left plane
+	plTurnVector(_frustum[1].normal, _position, _right, 90 - _fovx / 2);	// Right plane
+	plTurnVector(_frustum[2].normal, _position, _up, 90 - _fovy / 2);		// Bottom plane
+	plTurnVector(_frustum[3].normal, _position, _up, _fovy / 2 - 90);		// Top plane
 
 	for (int i = 0; i < 4; i++)
 	{
-		frustum[i].type = PLANE_ANYZ;
-		frustum[i].dist = Math_DotProduct(_position, frustum[i].normal); // FIXME: shouldn't this always be zero?
-		frustum[i].signbits = SignbitsForPlane(&frustum[i]);
+		_frustum[i].type = PLANE_ANYZ;
+		_frustum[i].dist = Math_DotProduct(_position, _frustum[i].normal); // FIXME: shouldn't this always be zero?
+		_frustum[i].signbits = SignbitsForPlane(&_frustum[i]);
 	}
 }
 
@@ -700,7 +721,7 @@ bool Camera::IsPointInsideFrustum(plVector3f_t position)
 {
 	for (int i = 0; i < 4; i++)
 	{
-		mplane_t *p = frustum + i;
+		mplane_t *p = _frustum + i;
 		if (p->normal[0] * position[0] + p->normal[1] * position[1] + p->normal[2] * position[2] > p->dist)
 			return false;
 	}
@@ -712,7 +733,7 @@ bool Camera::IsPointOutsideFrustum(plVector3f_t position)
 {
 	for (int i = 0; i < 4; i++)
 	{
-		mplane_t *p = frustum + i;
+		mplane_t *p = _frustum + i;
 		if (p->normal[0] * position[0] + p->normal[1] * position[1] + p->normal[2] * position[2] < p->dist)
 			return false;
 	}
@@ -724,7 +745,7 @@ bool Camera::IsBoxInsideFrustum(plVector3f_t mins, plVector3f_t maxs)
 {
 	for (int i = 0; i < 4; i++)
 	{
-		mplane_t *p = frustum + i;
+		mplane_t *p = _frustum + i;
 		switch (p->signbits)
 		{
 		default:
@@ -770,7 +791,7 @@ bool Camera::IsBoxOutsideFrustum(plVector3f_t mins, plVector3f_t maxs)
 {
 	for (int i = 0; i < 4; i++)
 	{
-		mplane_t *p = frustum + i;
+		mplane_t *p = _frustum + i;
 		switch (p->signbits)
 		{
 		default:
@@ -887,4 +908,22 @@ void Camera::SetViewport(IViewport *viewport)
 		Con_Warning("Invalid viewport!\n");
 		return;
 	}
+}
+
+/*	Camera C Interface	*/
+
+void Camera_SetPosition(EngineCamera *camera, plVector3f_t position)
+{
+	if (!camera)
+		return;
+
+	camera->SetPosition(position);
+}
+
+void Camera_SetAngles(EngineCamera *camera, plVector3f_t angles)
+{
+	if (!camera)
+		return;
+
+	camera->SetAngles(angles);
 }

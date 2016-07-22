@@ -1,32 +1,31 @@
-/*	Copyright (C) 2011-2016 OldTimes Software
+/*
+Copyright (C) 2011-2016 OldTimes Software
 
-	This program is free software; you can redistribute it and/or
-	modify it under the terms of the GNU General Public License
-	as published by the Free Software Foundation; either version 2
-	of the License, or (at your option) any later version.
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-	See the GNU General Public License for more details.
+See the GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "server_weapon.h"
 
-/*
-	The mighty Daikatana. A magical sword with many hidden properties...
-*/
+/*	The mighty Daikatana. A magical sword with many hidden properties...	*/
 
 #include "server_player.h"
 
 void Daikatana_Hit(ServerEntity_t *ent);
 
-EntityFrame_t DaikatanaAnimation_Deploy [] =
+ServerEntityFrame_t DaikatanaAnimation_Deploy[] =
 {
 	{   NULL, 55, 0.027f		},
 	{   NULL, 56, 0.027f		},
@@ -37,7 +36,7 @@ EntityFrame_t DaikatanaAnimation_Deploy [] =
 	{   NULL, 61, 0.027f, true  }
 };
 
-EntityFrame_t DaikatanaAnimation_Attack1 [] =
+ServerEntityFrame_t DaikatanaAnimation_Attack1[] =
 {
 	{	NULL,	2,	0.015f },
 	{   NULL,	3, 0.015f  },
@@ -65,7 +64,7 @@ EntityFrame_t DaikatanaAnimation_Attack1 [] =
 	{   NULL, 25,	0.02f,	true	}
 };
 
-EntityFrame_t DaikatanaAnimation_Attack2 [] =
+ServerEntityFrame_t DaikatanaAnimation_Attack2[] =
 {
 	{   NULL, 26, 0.015f  },
 	{   NULL, 27, 0.015f  },

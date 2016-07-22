@@ -1,28 +1,27 @@
-/*	Copyright (C) 2011-2016 OldTimes Software
+/*
+Copyright (C) 2011-2016 OldTimes Software
 
-	This program is free software; you can redistribute it and/or
-	modify it under the terms of the GNU General Public License
-	as published by the Free Software Foundation; either version 2
-	of the License, or (at your option) any later version.
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-	See the GNU General Public License for more details.
+See the GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "server_main.h"
 
 // TODO: Rename funcs to ServerEntity_*! This is in consideration of CL implementation.
 
-/*
-	Entity Spawning
-*/
+/*	Entity Spawning	*/
 
 char *Entity_AllocateString(char *string)
 {
@@ -63,52 +62,52 @@ typedef struct
 
 ServerEntityField_t	entity_fields[] =
 {
-	{ "classname", ENTITY_FIELD(v.cClassname), DATA_STRING },
-	{ "name", ENTITY_FIELD(v.cName), DATA_STRING },
-	{ "model", ENTITY_FIELD(v.model), DATA_STRING },
-	{ "targetname", ENTITY_FIELD(v.targetname), DATA_STRING },
-	{ "noise", ENTITY_FIELD(v.noise), DATA_STRING },
-	{ "message", ENTITY_FIELD(v.message), DATA_STRING },
-	{ "origin", ENTITY_FIELD(v.origin), DATA_VECTOR3 },
-	{ "angles", ENTITY_FIELD(v.angles), DATA_VECTOR3 },
-	{ "light", ENTITY_FIELD(v.vLight), DATA_VECTOR4 },
-	{ "health", ENTITY_FIELD(v.iHealth), DATA_INTEGER },
-	{ "spawnflags", ENTITY_FIELD(v.spawnflags), DATA_INTEGER },
-	{ "bTakeDamage", ENTITY_FIELD(v.bTakeDamage), DATA_BOOLEAN },
-	{ "takedamage", ENTITY_FIELD(v.bTakeDamage), DATA_BOOLEAN },
-	{ "alpha", ENTITY_FIELD(alpha), DATA_INTEGER },
-	{ "frame", ENTITY_FIELD(v.frame), DATA_INTEGER },
+	{ "classname", SERVER_ENTITY_FIELD(v.cClassname), DATA_STRING },
+	{ "name", SERVER_ENTITY_FIELD(v.cName), DATA_STRING },
+	{ "model", SERVER_ENTITY_FIELD(v.model), DATA_STRING },
+	{ "targetname", SERVER_ENTITY_FIELD(v.targetname), DATA_STRING },
+	{ "noise", SERVER_ENTITY_FIELD(v.noise), DATA_STRING },
+	{ "message", SERVER_ENTITY_FIELD(v.message), DATA_STRING },
+	{ "origin", SERVER_ENTITY_FIELD(v.origin), DATA_VECTOR3 },
+	{ "angles", SERVER_ENTITY_FIELD(v.angles), DATA_VECTOR3 },
+	{ "light", SERVER_ENTITY_FIELD(v.vLight), DATA_VECTOR4 },
+	{ "health", SERVER_ENTITY_FIELD(v.iHealth), DATA_INTEGER },
+	{ "spawnflags", SERVER_ENTITY_FIELD(v.spawnflags), DATA_INTEGER },
+	{ "bTakeDamage", SERVER_ENTITY_FIELD(v.bTakeDamage), DATA_BOOLEAN },
+	{ "takedamage", SERVER_ENTITY_FIELD(v.bTakeDamage), DATA_BOOLEAN },
+	{ "alpha", SERVER_ENTITY_FIELD(alpha), DATA_INTEGER },
+	{ "frame", SERVER_ENTITY_FIELD(v.frame), DATA_INTEGER },
 
 	// Model properties
-	{ "model_skin", ENTITY_FIELD(Model.iSkin), DATA_INTEGER },
-	{ "scale", ENTITY_FIELD(Model.fScale), DATA_FLOAT },
+	{ "model_skin", SERVER_ENTITY_FIELD(Model.skin), DATA_INTEGER },
+	{ "scale", SERVER_ENTITY_FIELD(Model.scale), DATA_FLOAT },
 
 	// Physical properties
-	{ "physics_solid", ENTITY_FIELD(Physics.iSolid), DATA_INTEGER },
-	{ "physics_mass", ENTITY_FIELD(Physics.fMass), DATA_FLOAT },
-	{ "physics_gravity", ENTITY_FIELD(Physics.fGravity), DATA_FLOAT },
+	{ "physics_solid", SERVER_ENTITY_FIELD(Physics.solid), DATA_INTEGER },
+	{ "physics_mass", SERVER_ENTITY_FIELD(Physics.mass), DATA_FLOAT },
+	{ "physics_gravity", SERVER_ENTITY_FIELD(Physics.gravity), DATA_FLOAT },
 
 	// Local (move these at some point)
-	{ "sound", ENTITY_FIELD(local.sound), DATA_STRING },
-	{ "soundstart", ENTITY_FIELD(local.cSoundStart), DATA_STRING },
-	{ "soundstop", ENTITY_FIELD(local.sound_stop), DATA_STRING },
-	{ "soundmoving", ENTITY_FIELD(local.cSoundMoving), DATA_STRING },
-	{ "soundreturn", ENTITY_FIELD(local.cSoundReturn), DATA_STRING },
-	{ "target1", ENTITY_FIELD(local.cTarget1), DATA_STRING },
-	{ "target2", ENTITY_FIELD(local.cTarget2), DATA_STRING },
-	{ "speed", ENTITY_FIELD(local.speed), DATA_FLOAT },
-	{ "delay", ENTITY_FIELD(local.delay), DATA_FLOAT },
-	{ "lip", ENTITY_FIELD(local.lip), DATA_FLOAT },
-	{ "wait", ENTITY_FIELD(local.dWait), DATA_DOUBLE },
-	{ "damage", ENTITY_FIELD(local.iDamage), DATA_INTEGER },
-	{ "volume", ENTITY_FIELD(local.volume), DATA_INTEGER },
-	{ "style", ENTITY_FIELD(local.style), DATA_INTEGER },
-	{ "count", ENTITY_FIELD(local.count), DATA_INTEGER },
-	{ "pTeam", ENTITY_FIELD(local.pTeam), DATA_INTEGER },
-	{ "attack_finished", ENTITY_FIELD(local.dAttackFinished), DATA_DOUBLE },
+	{ "sound", SERVER_ENTITY_FIELD(local.sound), DATA_STRING },
+	{ "soundstart", SERVER_ENTITY_FIELD(local.cSoundStart), DATA_STRING },
+	{ "soundstop", SERVER_ENTITY_FIELD(local.sound_stop), DATA_STRING },
+	{ "soundmoving", SERVER_ENTITY_FIELD(local.cSoundMoving), DATA_STRING },
+	{ "soundreturn", SERVER_ENTITY_FIELD(local.cSoundReturn), DATA_STRING },
+	{ "target1", SERVER_ENTITY_FIELD(local.cTarget1), DATA_STRING },
+	{ "target2", SERVER_ENTITY_FIELD(local.cTarget2), DATA_STRING },
+	{ "speed", SERVER_ENTITY_FIELD(local.speed), DATA_FLOAT },
+	{ "delay", SERVER_ENTITY_FIELD(local.delay), DATA_FLOAT },
+	{ "lip", SERVER_ENTITY_FIELD(local.lip), DATA_FLOAT },
+	{ "wait", SERVER_ENTITY_FIELD(local.dWait), DATA_DOUBLE },
+	{ "damage", SERVER_ENTITY_FIELD(local.iDamage), DATA_INTEGER },
+	{ "volume", SERVER_ENTITY_FIELD(local.volume), DATA_INTEGER },
+	{ "style", SERVER_ENTITY_FIELD(local.style), DATA_INTEGER },
+	{ "count", SERVER_ENTITY_FIELD(local.count), DATA_INTEGER },
+	{ "pTeam", SERVER_ENTITY_FIELD(local.pTeam), DATA_INTEGER },
+	{ "attack_finished", SERVER_ENTITY_FIELD(local.dAttackFinished), DATA_DOUBLE },
 
 	// hacks
-	{ "angle", ENTITY_FIELD(v.angles), DATA_VECTOR3, FL_ANGLEHACK },
+	{ "angle", SERVER_ENTITY_FIELD(v.angles), DATA_VECTOR3, FL_ANGLEHACK },
 
 	// Ignore these global fields.
 	{ "wad", 0, EV_NONE },
@@ -203,9 +202,9 @@ ServerEntity_t *Entity_Spawn(void)
 	ServerEntity_t *eSpawn = Engine.Spawn();
 
 	// Set physics properties to their defaults!
-	eSpawn->Physics.fMass		= 1.0f;
-	eSpawn->Physics.fFriction	= 1.0f;
-	eSpawn->Physics.fGravity	= SERVER_GRAVITY;
+	eSpawn->Physics.mass		= 1.0f;
+	eSpawn->Physics.friction	= 1.0f;
+	eSpawn->Physics.gravity		= SERVER_GRAVITY;
 
 	return eSpawn;
 }
@@ -342,7 +341,7 @@ void Entity_ClearFlags(ServerEntity_t *eEntity, int iFlags)
 
 /*	Simple function for checking if an entity can be damaged or not.
 */
-bool Entity_CanDamage(ServerEntity_t *eEntity, ServerEntity_t *eTarget, ServerDamageType_t iDamageType)
+bool Entity_CanDamage(ServerEntity_t *eEntity, ServerEntity_t *eTarget, EntityDamageType_t iDamageType)
 {
 	// Can't damage people on the same team.
 	if(eEntity->local.pTeam && (eEntity->local.pTeam == eTarget->local.pTeam))
@@ -354,7 +353,7 @@ bool Entity_CanDamage(ServerEntity_t *eEntity, ServerEntity_t *eTarget, ServerDa
 	return false;
 }
 
-void Entity_Damage(ServerEntity_t *seEntity, ServerEntity_t *seInflictor, int iDamage, ServerDamageType_t type)
+void Entity_Damage(ServerEntity_t *seEntity, ServerEntity_t *seInflictor, int iDamage, EntityDamageType_t type)
 {
 	// Don't bother if there's no actual damage inflicted.
 	if (iDamage <= 0)
@@ -387,7 +386,7 @@ void Entity_Damage(ServerEntity_t *seEntity, ServerEntity_t *seInflictor, int iD
 
 /*	Damage entities within a specific radius.
 */
-void Entity_RadiusDamage(ServerEntity_t *eInflictor, float fRadius, int iDamage, ServerDamageType_t iDamageType)
+void Entity_RadiusDamage(ServerEntity_t *eInflictor, float fRadius, int iDamage, EntityDamageType_t iDamageType)
 {
 	int		i;
 	float	fDistance;
@@ -462,12 +461,12 @@ void Entity_CheckFrames(ServerEntity_t *eEntity)
 		return;
 	}
 
-	eEntity->v.frame = eEntity->local.iFrames[eEntity->local.iAnimationCurrent].iFrame;
+	eEntity->v.frame = eEntity->local.iFrames[eEntity->local.iAnimationCurrent].frame;
 
-	eEntity->local.dAnimationTime = Server.dTime+((double)eEntity->local.iFrames[eEntity->local.iAnimationCurrent].fSpeed);
+	eEntity->local.dAnimationTime = Server.dTime+((double)eEntity->local.iFrames[eEntity->local.iAnimationCurrent].speed);
 
-	if(eEntity->local.iFrames[eEntity->local.iAnimationCurrent].Function)
-		eEntity->local.iFrames[eEntity->local.iAnimationCurrent].Function(eEntity);
+	if(eEntity->local.iFrames[eEntity->local.iAnimationCurrent].Event)
+		eEntity->local.iFrames[eEntity->local.iAnimationCurrent].Event(eEntity);
 
 	eEntity->local.iAnimationCurrent++;
 }
@@ -486,7 +485,7 @@ void Entity_ResetAnimation(ServerEntity_t *eEntity)
 
 /*	Start animating the entity.
 */
-void Entity_Animate(ServerEntity_t *eEntity,EntityFrame_t *efAnimation)
+void Entity_Animate(ServerEntity_t *eEntity, ServerEntityFrame_t *efAnimation)
 {
 	int i = 0;
 
@@ -494,11 +493,11 @@ void Entity_Animate(ServerEntity_t *eEntity,EntityFrame_t *efAnimation)
 
 	eEntity->local.iAnimationCurrent = 0;
 
-	eEntity->v.frame = efAnimation[0].iFrame;
+	eEntity->v.frame = efAnimation[0].frame;
 
 	for(;;)
 	{
-		if(efAnimation[i].bIsEnd)
+		if(efAnimation[i].isend)
 		{
 			eEntity->local.iAnimationEnd = i;
 			break;
@@ -507,7 +506,7 @@ void Entity_Animate(ServerEntity_t *eEntity,EntityFrame_t *efAnimation)
 		i++;
 	}
 
-	eEntity->local.dAnimationTime	= Server.dTime+((double)efAnimation[1].fSpeed);
+	eEntity->local.dAnimationTime	= Server.dTime+((double)efAnimation[1].speed);
 	eEntity->local.iFrames			= efAnimation;
 }
 
@@ -551,12 +550,12 @@ bool Entity_IsMonster(ServerEntity_t *eEntity)
 
 /*	Sets up the physical properties for the entity.
 */
-void Entity_SetPhysics(ServerEntity_t *seEntity, ServerSolidType_t pstSolidType, float fMass, float fFriction)
+void Entity_SetPhysics(ServerEntity_t *seEntity, EntitySolidType_t pstSolidType, float fMass, float fFriction)
 {
-	seEntity->Physics.iSolid		= pstSolidType;
-	seEntity->Physics.fMass			= fMass;
-	seEntity->Physics.fGravity		= SERVER_GRAVITY;
-	seEntity->Physics.fFriction		= fFriction;
+	seEntity->Physics.solid			= pstSolidType;
+	seEntity->Physics.mass			= fMass;
+	seEntity->Physics.gravity		= SERVER_GRAVITY;
+	seEntity->Physics.friction		= fFriction;
 }
 
 /*
@@ -648,7 +647,7 @@ MaterialSkin_t *seGetSkin(ServerEntity_t *entity, unsigned int skin)
 
 MaterialSkin_t *seGetCurrentSkin(ServerEntity_t *entity)
 {
-	return seGetSkin(entity, entity->Model.iSkin);
+	return seGetSkin(entity, entity->Model.skin);
 }
 
 MaterialProperty_t seGetSkinPhysicsProperty(ServerEntity_t *entity, MaterialSkin_t *skin)

@@ -148,10 +148,10 @@ void R_DrawSequentialPoly(msurface_t *s)
 
 		if(currententity->alpha == ENTALPHA_DEFAULT)
 			// Use the materials alpha.
-			alpha = Math_Clamp(0.0, mCurrent->fAlpha, 1.0f);
+			alpha = plClamp(0.0, mCurrent->fAlpha, 1.0f);
 		else
 			// Use the entity alpha.
-			alpha = Math_Clamp(0.0, ENTALPHA_DECODE(currententity->alpha), 1.0f);
+			alpha = plClamp(0.0, ENTALPHA_DECODE(currententity->alpha), 1.0f);
 		if (alpha < 1.0f)
 		{
 			vlDepthMask(false);

@@ -39,7 +39,7 @@ typedef float MathVector3f_t[3];
 
 typedef float	plVector2f_t[2],	plVector3f_t[3],	plVector4f_t[4];	// Floating-point precision.
 typedef double	plVector2d_t[2],	plVector3d_t[3],	plVector4d_t[4];	// Double precision.
-typedef int		plVector2i[2],		plVector3i_t[3],	plVector4i_t[4];	// Integer precision.
+typedef int		plVector2i_t[2],	plVector3i_t[3],	plVector4i_t[4];	// Integer precision.
 
 typedef plVector3f_t plMatrix3x3f_t[3];
 typedef plVector4f_t plMatrix4x4f_t[4];
@@ -127,7 +127,7 @@ extern plColour_t
 
 #define Math_Min(a,b)					(	((a)<(b))?(a):(b)	                    )
 #define Math_Max(a,b)                   (	((a)>(b))?(a):(b)	                    )
-#define Math_Clamp(mini,x,maxi)			(   (x)<(mini)?(mini):(x)>(maxi)?(maxi):(x) )
+#define plClamp(mini,x,maxi)			(   (x)<(mini)?(mini):(x)>(maxi)?(maxi):(x) )
 
 #define	Math_MVToVector(a,b)			(	b[0]=a.vX,b[1]=a.vY,b[2]=a.vZ	)
 
@@ -764,6 +764,7 @@ namespace pl
 #		ifdef _MSC_VER
 #			pragma warning(disable: 4201)
 #		endif
+#		include <glm/gtc/type_ptr.hpp>
 #		include <glm/vec2.hpp>
 #		include <glm/vec3.hpp>
 #		include <glm/vec4.hpp>

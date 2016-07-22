@@ -828,11 +828,11 @@ void CL_ParseServerMessage(void)
 		SHOWNET(svc_strings[cmd]);
 
 	// other commands
-		switch(cmd)
+		switch (cmd)
 		{
 		default:
 #if 1
-			Host_Error("Illegible server message! (%s) (%i)\n",svc_strings[lastcmd],cmd); //johnfitz -- added svc_strings[lastcmd]
+			Host_Error("Illegible server message! (%s) (%i)\n", svc_strings[lastcmd], cmd); //johnfitz -- added svc_strings[lastcmd]
 #else
 			Game->ParseServerMessage(cmd);
 #endif
@@ -841,15 +841,15 @@ void CL_ParseServerMessage(void)
 			break;
 		case SVC_TIME:
 			cl.mtime[1] = cl.mtime[0];
-			cl.mtime[0] = MSG_ReadFloat ();
+			cl.mtime[0] = MSG_ReadFloat();
 			break;
 		case SVC_CLIENTDATA:
-			CL_ParseClientdata (); //johnfitz -- removed bits parameter, we will read this inside CL_ParseClientdata()
+			CL_ParseClientdata(); //johnfitz -- removed bits parameter, we will read this inside CL_ParseClientdata()
 			break;
 		case SVC_VERSION:
-			i = MSG_ReadLong ();
-			if(i != SERVER_PROTOCOL)
-				Host_Error("Server returned protocol version %i, not %i!\n",i,SERVER_PROTOCOL);
+			i = MSG_ReadLong();
+			if (i != SERVER_PROTOCOL)
+				Host_Error("Server returned protocol version %i, not %i!\n", i, SERVER_PROTOCOL);
 			cl.protocol = i;
 			break;
 		case SVC_DISCONNECT:
@@ -858,29 +858,41 @@ void CL_ParseServerMessage(void)
 
 			Host_EndGame("Server disconnected\n");
 		case SVC_PRINT:
-			Con_Printf ("%s", MSG_ReadString ());
+			Con_Printf("%s", MSG_ReadString());
 			break;
 		case SVC_CENTERPRINT:
 			//johnfitz -- log centerprints to console
-			str = MSG_ReadString ();
-			SCR_CenterPrint (str);
-			Con_LogCenterPrint (str);
+			str = MSG_ReadString();
+			SCR_CenterPrint(str);
+			Con_LogCenterPrint(str);
 			//johnfitz
 			break;
 		case SVC_STUFFTEXT:
-			Cbuf_AddText (MSG_ReadString ());
+			Cbuf_AddText(MSG_ReadString());
 			break;
 		case SVC_DAMAGE:
-			V_ParseDamage ();
+			V_ParseDamage();
 			break;
 		case SVC_SERVERINFO:
 			Client_ParseServerInfo();
-//			vid.bRecalcRefDef = true;	// leave intermission full screen
+			//			vid.bRecalcRefDef = true;	// leave intermission full screen
 			break;
 		case SVC_SETANGLE:
+		{
+#if 0
 			for (i=0 ; i<3 ; i++)
-				cl.viewangles[i] = MSG_ReadAngle ();
-			break;
+				cl.viewangles[i] = MSG_ReadAngle();
+#else
+			plVector3f_t angles = { 0 };
+			for (int i = 0; i < 3; i++)
+				angles[i] = MSG_ReadAngle();
+
+			EngineCamera *camera = CameraManager_GetPrimaryCamera();
+			if (camera)
+				Camera_SetAngles(camera, angles);
+#endif
+		}
+		break;
 		case SVC_SETVIEW:
 		{
 			cl.viewentity = MSG_ReadShort();

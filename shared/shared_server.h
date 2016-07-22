@@ -1,19 +1,20 @@
-/*	Copyright (C) 2011-2016 OldTimes Software
+/*
+Copyright (C) 2011-2016 OldTimes Software
 
-	This program is free software; you can redistribute it and/or
-	modify it under the terms of the GNU General Public License
-	as published by the Free Software Foundation; either version 2
-	of the License, or (at your option) any later version.
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-	See the GNU General Public License for more details.
+See the GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #pragma once
@@ -84,65 +85,9 @@ enum ServerMessage
 #include "shared_common.h"
 #include "shared_client.h"
 
-typedef struct
-{
-	/*	Move the following here...
-	frame
-	*/
-
-	float fScale;
-
-	int	iSkin;
-} ServerModelVariables_t;
-
-typedef enum
-{
-	SOLID_NOT,		// Entity isn't solid.
-	SOLID_TRIGGER,	// Entity will cause a trigger function.
-	SOLID_BBOX,		// Entity is solid.
-	SOLID_SLIDEBOX,	// Entity is solid and moves.
-	SOLID_BSP
-} ServerSolidType_t;
-
-typedef MaterialProperty_t ServerSurfaceType_t;
-
-/*	Different type's of damage.
-*/
-typedef enum
-{
-	DAMAGE_TYPE_NORMAL,
-	DAMAGE_TYPE_EXPLODE,
-	DAMAGE_TYPE_BURN,
-	DAMAGE_TYPE_FREEZE,
-	DAMAGE_TYPE_GRAVITY,
-	DAMAGE_TYPE_CRUSH,
-	DAMAGE_TYPE_FALL,
-
-	DAMAGE_TYPE_NONE
-} ServerDamageType_t;
+#include "shared_server_entity.h"
 
 typedef struct ServerEntity_s ServerEntity_t;
-
-typedef struct
-{
-	/*	Move the following here...
-	movetype
-	watertype
-	waterlevel
-	velocity
-	avelocity
-	solid
-	*/
-
-	float fMass;		// Sets the mass of the entity.
-	float fGravity;		// Sets the gravity which is enforced on the entity.
-	float fFriction;	// Sets the amount of friction that effects this entity and others.
-
-	ServerSolidType_t		iSolid;		// Sets the collision/solid type for the entity.
-	ServerSurfaceType_t		property;	// Type of surface, e.g. wood, rock etc
-
-	ServerEntity_t	*eIgnore;	// Tells the entity to ignore collisions with this entity.
-} ServerPhysicsVariables_t;
 
 // Monster specific variables
 typedef struct
@@ -155,7 +100,7 @@ typedef struct
 	void(*Idle)(ServerEntity_t *entity);
 	void(*Jump)(ServerEntity_t *entity);
 	void(*Land)(ServerEntity_t *entity);
-	void(*Pain)(ServerEntity_t *entity, ServerEntity_t *other, ServerDamageType_t type);
+	void(*Pain)(ServerEntity_t *entity, ServerEntity_t *other, EntityDamageType_t type);
 
 	// Current thought state
 	unsigned int	state;					// Current physical state.
@@ -175,26 +120,6 @@ typedef struct
 	ServerEntity_t *eOldTarget;	// Last target.
 } ServerMonsterVariables_t;
 
-/*	Variables used for vehicles.
-*/
-typedef struct
-{
-	int		iPassengers,									// Current number of passengers.
-		iMaxPassengers;										// Maximum passengers the vehicle can carry.
-	int		iSlot[4];
-	int		iFuel,											// Current amount of fuel in the vehicle.
-		iMaxFuel;											// Maximum amount of fuel that can be in the vehicle.
-	int		iType;											// Type of vehicle.
-
-	float	fMaxSpeed;										// Maximum velocity that the vehicle can travel.
-
-	bool	bActive;										// Is the vehicle turned on or not?
-
-	void(*Enter)(ServerEntity_t *eVehicle, ServerEntity_t *eOther);		// Function to call when a player enters the vehicle.
-	void(*Exit)(ServerEntity_t *eVehicle, ServerEntity_t *eOther);		// Function to call when a player leaves the vehicle.
-	void(*Kill)(ServerEntity_t *eVehicle, ServerEntity_t *eOther);		// Function to call when the vehicle is destroyed.
-} VehicleVariables_t;
-
 /*	These are tied in with
 the different flag types
 so please be careful when
@@ -207,17 +132,6 @@ typedef enum
 	TEAM_BLUE,					// For team-based gameplay
 	TEAM_SPECTATOR				// Fags who don't want to play
 } PlayerTeam_t;
-
-typedef struct
-{
-	void(*Function)(ServerEntity_t *eEntity);
-
-	int	iFrame;
-
-	float fSpeed;	// TODO: This is time-based... Change to double instead?
-
-	bool bIsEnd;
-} EntityFrame_t;
 
 // Misc local variables
 typedef struct
@@ -280,15 +194,15 @@ typedef struct
 #endif
 
 	// Animation
-	int	iAnimationCurrent;			// Current frame of current sequence.
-	int iAnimationEnd;				// Last frame of current sequence.
-	double dAnimationTime;			// The speed of the animation.
-	EntityFrame_t *iFrames;			// Active frame group.
-	int	iWeaponAnimationCurrent;	// Current frame of current sequence.
-	int iWeaponAnimationEnd;		// Last frame of current sequence.
-	int iWeaponIdleFrame;			// Frame to return to for "idling" after sequence.
-	float fWeaponAnimationTime;		// The speed of the animation.
-	EntityFrame_t *iWeaponFrames;	// Active weapon frame group.
+	int	iAnimationCurrent;				// Current frame of current sequence.
+	int iAnimationEnd;					// Last frame of current sequence.
+	double dAnimationTime;				// The speed of the animation.
+	ServerEntityFrame_t *iFrames;		// Active frame group.
+	int	iWeaponAnimationCurrent;		// Current frame of current sequence.
+	int iWeaponAnimationEnd;			// Last frame of current sequence.
+	int iWeaponIdleFrame;				// Frame to return to for "idling" after sequence.
+	float fWeaponAnimationTime;			// The speed of the animation.
+	ServerEntityFrame_t *iWeaponFrames;	// Active weapon frame group.
 
 	// Misc
 	char			*cInfoMessage;				// see server_point > Point_InfoMessage.
@@ -360,9 +274,9 @@ typedef struct
 	// Weapons
 	int	iBarrelCount;			// For cycling barrel animations.
 
-	void(*KilledFunction)(ServerEntity_t *self, ServerEntity_t *other, ServerDamageType_t type);
+	void(*KilledFunction)(ServerEntity_t *self, ServerEntity_t *other, EntityDamageType_t type);
 	void(*RespawnFunction)(ServerEntity_t *self);
-	void(*DamagedFunction)(ServerEntity_t *self, ServerEntity_t *other, ServerDamageType_t type);
+	void(*DamagedFunction)(ServerEntity_t *self, ServerEntity_t *other, EntityDamageType_t type);
 } ServerGameVariables_t;
 
 //----------------------------
@@ -572,17 +486,17 @@ typedef struct ServerEntity_s
 	ServerEntityBaseVariables_t		v;		// Global / Base variables, shared between game and engine.
 	AIVariables_t					ai;		// Specific towards AI/monsters.
 
-	ServerModelVariables_t		Model;		// Variables that affect the model used for the entity.
-	ServerPhysicsVariables_t	Physics;	// Variables affecting how the entity is physically treated.
+	ServerEntityModel_t			Model;		// Variables that affect the model used for the entity.
+	ServerEntityPhysics_t		Physics;	// Variables affecting how the entity is physically treated.
 	ServerGameVariables_t		local;		// All variables specific towards the game, that aren't used by the engine.
 	ServerMonsterVariables_t	Monster;	
-	VehicleVariables_t			Vehicle;	// Vehicle variables.
+	ServerEntityVehicle_t		Vehicle;	// Vehicle variables.
 } ServerEntity_t;
 
-#define	NEXT_EDICT(e)			((ServerEntity_t *)( (uint8_t *)e + sizeof(ServerEntity_t)))
-#define	ServerEntity_tO_PROG(e) ((uint8_t*)e-(uint8_t*)sv.edicts)
-#define PROG_TO_EDICT(e)		((ServerEntity_t *)((uint8_t *)sv.edicts + e))
-#define	ENTITY_FIELD(y)			(intptr_t)&(((ServerEntity_t*)0)->y)
+#define	SERVER_ENTITY_NEXT(e)			((ServerEntity_t *)( (uint8_t *)e + sizeof(ServerEntity_t)))
+#define	SERVER_ENTITY_TOHANDLE(e)		((uint8_t*)e-(uint8_t*)sv.edicts)
+#define SERVER_ENTITY_FROMHANDLE(e)		((ServerEntity_t *)((uint8_t *)sv.edicts + e))
+#define	SERVER_ENTITY_FIELD(y)			(intptr_t)&(((ServerEntity_t*)0)->y)
 
 /**/
 

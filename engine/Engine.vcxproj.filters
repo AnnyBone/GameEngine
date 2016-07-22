@@ -192,9 +192,6 @@
     <ClCompile Include="EngineNetworkWinsock.c">
       <Filter>Legacy\Network\Interfaces</Filter>
     </ClCompile>
-    <ClCompile Include="EngineClientInput.c">
-      <Filter>Legacy\Client</Filter>
-    </ClCompile>
     <ClCompile Include="EngineScript.c">
       <Filter>Legacy</Filter>
     </ClCompile>
@@ -318,6 +315,9 @@
       <Filter>Legacy\Client\Video</Filter>
     </ClCompile>
     <ClCompile Include="engine_client.cpp">
+      <Filter>Legacy\Client</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineClientInput.cpp">
       <Filter>Legacy\Client</Filter>
     </ClCompile>
   </ItemGroup>
@@ -577,6 +577,12 @@
     </ClInclude>
     <ClInclude Include="client\video_sky.h">
       <Filter>Client\Video</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\shared_server_entity.h">
+      <Filter>Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\shared_entity.h">
+      <Filter>Shared</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -46,8 +46,10 @@ namespace core
 	private:
 		Camera *_camera;
 
-		unsigned int _width, _height;
+		std::vector<Viewport*> _children;
+		Viewport *_parent;
 
+		unsigned int _width, _height;
 		int _x, _y;
 	};
 

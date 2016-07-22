@@ -108,7 +108,7 @@ void Prisoner_Run(ServerEntity_t *ePrisoner)
 //	Monster_MoveToGoal(ePrisoner, ePrisoner->Monster.mvMoveTarget, 20.0f);
 }
 
-void Prisoner_Pain(ServerEntity_t *ePrisoner, ServerEntity_t *eOther, ServerDamageType_t type)
+void Prisoner_Pain(ServerEntity_t *ePrisoner, ServerEntity_t *eOther, EntityDamageType_t type)
 {
 	if (ePrisoner->v.iHealth < PRISONER_MIN_HEALTH)
 	{
@@ -138,7 +138,7 @@ void Prisoner_Pain(ServerEntity_t *ePrisoner, ServerEntity_t *eOther, ServerDama
 	}
 }
 
-void Prisoner_Die(ServerEntity_t *ePrisoner, ServerEntity_t *eOther, ServerDamageType_t type)
+void Prisoner_Die(ServerEntity_t *ePrisoner, ServerEntity_t *eOther, EntityDamageType_t type)
 {
 }
 
@@ -178,10 +178,10 @@ PRISONER_GENERATEKEY:
 	ePrisoner->v.frame			= 0;
 
 	// Physics Properties
-	ePrisoner->Physics.iSolid		= SOLID_SLIDEBOX;
-	ePrisoner->Physics.fMass		= 1.2f;						
-	ePrisoner->Physics.fGravity		= cvServerGravity.value;
-	ePrisoner->Physics.fFriction	= 1.5f;
+	ePrisoner->Physics.solid	= SOLID_SLIDEBOX;
+	ePrisoner->Physics.mass		= 1.2f;						
+	ePrisoner->Physics.gravity	= cvServerGravity.value;
+	ePrisoner->Physics.friction	= 1.5f;
 
 	// Initial Command States
 	ePrisoner->Monster.commands[COMMAND_CHECK_CELL] = true;

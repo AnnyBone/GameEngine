@@ -22,6 +22,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "engine_base.h"
 
+#include "client/video_camera.h"
+
 /*
 ===============================================================================
 
@@ -210,6 +212,7 @@ cvar_t	cl_anglespeedkey	= {"cl_anglespeedkey",	"1.5"			};
 */
 void CL_AdjustAngles (void)
 {
+#if 0
 	float	speed,up,down;
 
 	if (in_speed.state & 1)
@@ -234,6 +237,7 @@ void CL_AdjustAngles (void)
 	down = CL_KeyState(&in_lookdown);
 	cl.viewangles[PITCH] -= speed*cl_pitchspeed.value * up;
 	cl.viewangles[PITCH] += speed*cl_pitchspeed.value * down;
+#endif
 }
 
 /*	Send the intended movement message to the server
@@ -278,11 +282,8 @@ void CL_BaseMove(ClientCommand_t *cmd)
 
 void CL_SendMove(ClientCommand_t *cmd)
 {
-	int		i;
-	int		bits;
-	sizebuf_t	buf;
-	byte	data[128];
-
+	sizebuf_t buf;
+	uint8_t data[128];
 	buf.maxsize = 128;
 	buf.cursize = 0;
 	buf.data = data;
@@ -296,8 +297,14 @@ void CL_SendMove(ClientCommand_t *cmd)
 
 	MSG_WriteFloat (&buf, (float)cl.mtime[0]);	// so server can get ping times
 
-	for (i=0 ; i<3 ; i++)
-		MSG_WriteAngle16 (&buf, cl.viewangles[i]);
+	core::Camera *camera = CameraManager_GetPrimaryCamera();
+	if (camera)
+	{
+		for (int i = 0; i<3; i++)
+			MSG_WriteAngle16(&buf, camera->GetPosition()[i]);
+	}
+	else for(int i = 0; i < 3; i++)
+		MSG_WriteAngle16(&buf, 0);	
 
     MSG_WriteShort (&buf, (int)cmd->forwardmove);
     MSG_WriteShort (&buf, (int)cmd->sidemove);
@@ -306,7 +313,7 @@ void CL_SendMove(ClientCommand_t *cmd)
 //
 // send button bits
 //
-	bits = 0;
+	int bits = 0;
 
 	if ( in_attack.state & 3 )
 		bits |= 1;

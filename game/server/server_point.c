@@ -260,7 +260,7 @@ void Point_Start(ServerEntity_t *ent)
 
 void Point_ParticleEmit(ServerEntity_t *ent)
 {
-	Engine.Particle(ent->v.origin,ent->v.velocity,ent->Model.fScale,ent->v.model,ent->local.count);
+	Engine.Particle(ent->v.origin, ent->v.velocity, ent->Model.scale, ent->v.model, ent->local.count);
 
 	ent->v.think		= Point_ParticleEmit;
 	ent->v.dNextThink	= Server.dTime+ent->local.dAttackFinished;
@@ -268,7 +268,7 @@ void Point_ParticleEmit(ServerEntity_t *ent)
 
 void Point_ParticleTrigger(ServerEntity_t *ent)
 {
-	Engine.Particle(ent->v.origin,ent->v.velocity,ent->Model.fScale,ent->v.model,ent->local.count);
+	Engine.Particle(ent->v.origin, ent->v.velocity, ent->Model.scale, ent->v.model, ent->local.count);
 }
 
 void Point_ParticleSpawn(ServerEntity_t *ent)
@@ -276,8 +276,8 @@ void Point_ParticleSpawn(ServerEntity_t *ent)
 	if(ent->local.count <= 0)
 		ent->local.count = 1;
 
-	if(ent->Model.fScale <= 0)
-		ent->Model.fScale = 7;
+	if (ent->Model.scale <= 0)
+		ent->Model.scale = 7;
 
 	Engine.Server_PrecacheResource(RESOURCE_SPRITE,ent->v.model);
 
@@ -719,7 +719,7 @@ enum
 	BREAKABLE_METAL
 };
 
-void Area_BreakableDie(ServerEntity_t *eArea, ServerEntity_t *eOther, ServerDamageType_t type);
+void Area_BreakableDie(ServerEntity_t *eArea, ServerEntity_t *eOther, EntityDamageType_t type);
 
 void Point_PropTouch(ServerEntity_t *eEntity, ServerEntity_t *eOther)
 {
@@ -788,9 +788,9 @@ void Point_PropSpawn(ServerEntity_t *eEntity)
 	eEntity->v.movetype			= MOVETYPE_BOUNCE;
 	eEntity->v.TouchFunction	= Point_PropTouch;
 
-	eEntity->Physics.iSolid		= SOLID_BBOX;
-	eEntity->Physics.fGravity	= cvServerGravity.value;
-	eEntity->Physics.fMass		= 0.5f;
+	eEntity->Physics.solid		= SOLID_BBOX;
+	eEntity->Physics.gravity	= cvServerGravity.value;
+	eEntity->Physics.mass		= 0.5f;
 
 	Entity_SetModel(eEntity,eEntity->v.model);
 	Entity_SetOrigin(eEntity,eEntity->v.origin);
