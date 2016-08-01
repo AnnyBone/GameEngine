@@ -217,6 +217,7 @@ void Video_GenerateSphereCoordinates(void)
 /**/
 
 /*	Bind our current texture.
+	todo, move this into texturemanager crap.
 */
 void Video_SetTexture(gltexture_t *gTexture)
 {
@@ -328,7 +329,9 @@ void Video_Frame(void)
 		return;
 
 	// Don't let us exceed a limited count.
-	Video.framecount++; if (Video.framecount == ((unsigned int)-1)) Video.framecount = 0;
+	Video.framecount++; 
+	if (Video.framecount == ((unsigned int)-1)) 
+		Video.framecount = 0;
 
 	r_framecount++;
 
@@ -343,6 +346,8 @@ void Video_Frame(void)
 		rs_brushpolys = rs_aliaspolys = rs_skypolys = rs_particles = rs_fogpolys =
 			rs_dynamiclightmaps = rs_aliaspasses = rs_skypasses = rs_brushpasses = 0;
 	}
+	else if (cv_video_finish.bValue)
+		vlFinish();
 
 	video_viewport->Draw();
 
@@ -366,9 +371,6 @@ void Video_Frame(void)
 		rs_aliaspolys,
 		rs_dynamiclightmaps);
 	//johnfitz
-
-	if (cv_video_finish.bValue)
-		vlFinish();
 
 	if (!Video.bSkipUpdate)
 		Window_Swap();

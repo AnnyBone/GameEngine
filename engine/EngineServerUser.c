@@ -28,9 +28,7 @@
 
 ServerEntity_t	*sv_player;
 
-cvar_t	sv_edgefriction = {"edgefriction", "2"};
-
-extern	cvar_t	cvPhysicsStopSpeed;
+extern ConsoleVariable_t cvPhysicsStopSpeed;
 
 static	MathVector3f_t		forward, right, up;
 
@@ -46,26 +44,27 @@ bool	bIsOnGround;
 
 ClientCommand_t	cmd;
 
-cvar_t	sv_idealpitchscale	= {	"sv_idealpitchscale",	"0.8"			};
-cvar_t	sv_altnoclip		= {	"sv_altnoclip",			"1",	true	}; //johnfitz
+ConsoleVariable_t	sv_edgefriction = { "edgefriction", "2" };
+ConsoleVariable_t	sv_idealpitchscale = { "sv_idealpitchscale", "0.8" };
+ConsoleVariable_t	sv_altnoclip = { "sv_altnoclip", "1", true }; //johnfitz
 
 #define	MAX_FORWARD	6
 void SV_SetIdealPitch (void)
 {
-	float			angleval, sinval, cosval;
 	trace_t			tr;
-	MathVector3f_t	top, bottom;
+	
 	float			z[MAX_FORWARD];
 	int				i, j;
-	int				step, dir, steps;
+	int				step;
 
 	if(!(sv_player->v.flags & FL_ONGROUND))
 		return;
 
-	angleval = sv_player->v.angles[YAW] * PL_PI * 2 / 360;
-	sinval = sin(angleval);
-	cosval = cos(angleval);
+	float angleval = sv_player->v.angles[YAW] * PL_PI * 2 / 360;
+	float sinval = sin(angleval);
+	float cosval = cos(angleval);
 
+	plVector3f_t top, bottom;
 	for (i=0 ; i<MAX_FORWARD ; i++)
 	{
 		top[0] = sv_player->v.origin[0] + cosval*(i+3)*12;
@@ -86,8 +85,7 @@ void SV_SetIdealPitch (void)
 		z[i] = top[2] + tr.fraction*(bottom[2]-top[2]);
 	}
 
-	dir = 0;
-	steps = 0;
+	int dir = 0, steps = 0;
 	for (j=1 ; j<i ; j++)
 	{
 		step = z[j] - z[j-1];
@@ -116,10 +114,9 @@ ConsoleVariable_t
 	sv_maxspeed		= { "sv_maxspeed",		"320",	false,	true	},
 	sv_accelerate	= { "sv_accelerate",	"10"					};
 
-void SV_AirAccelerate (MathVector3f_t wishveloc)
+void SV_AirAccelerate (plVector3f_t wishveloc)
 {
-	int			i;
-	float		addspeed, wishspd, accelspeed, currentspeed;
+	float addspeed, wishspd, accelspeed, currentspeed;
 
 	wishspd = plVectorNormalize(wishveloc);
 	if (wishspd > 30.0f)
@@ -130,11 +127,11 @@ void SV_AirAccelerate (MathVector3f_t wishveloc)
 	if (addspeed <= 0)
 		return;
 //	accelspeed = sv_accelerate.value * host_frametime;
-	accelspeed = sv_accelerate.value*wishspeed * host_frametime;
+	accelspeed = sv_accelerate.value * wishspeed * host_frametime;
 	if (accelspeed > addspeed)
 		accelspeed = addspeed;
 
-	for (i=0 ; i<3 ; i++)
+	for (int i = 0; i < 3; i++)
 		velocity[i] += accelspeed*wishveloc[i];
 }
 
@@ -217,8 +214,8 @@ void SV_ClientThink (void)
 	fLength -= 10*host_frametime;
 	if(fLength < 0)
 		fLength = 0;
-
-	Math_VectorScale(sv_player->v.punchangle,fLength,sv_player->v.punchangle);
+	
+	plVectorScalef(sv_player->v.punchangle, fLength, sv_player->v.punchangle);
 
 	// If dead, behave differently
 	if(sv_player->v.iHealth <= 0)
@@ -227,8 +224,8 @@ void SV_ClientThink (void)
 	// Show 1/3 the pitch angle and all the roll angle
 	cmd = host_client->cmd;
 	angles = sv_player->v.angles;
-
-	Math_VectorAdd (sv_player->v.v_angle, sv_player->v.punchangle, vAngle);
+	
+	plVectorAdd3fv(sv_player->v.v_angle, sv_player->v.punchangle, vAngle);
 	angles[ROLL] = V_CalcRoll (sv_player->v.angles, sv_player->v.velocity)*4;
 	if (!sv_player->v.bFixAngle)
 	{
@@ -262,7 +259,7 @@ void SV_ClientThink (void)
 		if (plLengthf(velocity) > sv_maxspeed.value)
 		{
 			plVectorNormalize(velocity);
-			Math_VectorScale(velocity,sv_maxspeed.value,velocity);
+			plVectorScalef(velocity, sv_maxspeed.value, velocity);
 		}
 	}
 	else if(sv_player->v.waterlevel >= 2 && sv_player->v.movetype != MOVETYPE_NOCLIP)
@@ -285,18 +282,18 @@ void SV_ClientThink (void)
 			vWishVelocity[2] = cmd.upmove;
 		else
 			vWishVelocity[2] = 0;
-
-		Math_VectorCopy(vWishVelocity,wishdir);
+		
+		plVectorCopy(vWishVelocity, wishdir);
 
 		wishspeed = plVectorNormalize(wishdir);
 		if(wishspeed > sv_maxspeed.value)
 		{
-			Math_VectorScale(vWishVelocity,sv_maxspeed.value/wishspeed,vWishVelocity);
+			plVectorScalef(vWishVelocity, sv_maxspeed.value / wishspeed, vWishVelocity);
 			wishspeed = sv_maxspeed.value;
 		}
 
 		if(sv_player->v.movetype == MOVETYPE_NOCLIP)
-			Math_VectorCopy(vWishVelocity, velocity);
+			plVectorCopy(vWishVelocity, velocity);
 		else if(bIsOnGround)
 		{
 			Physics_AddFriction(sv_player,velocity,origin);
@@ -335,7 +332,7 @@ void SV_ReadClientMove (ClientCommand_t *move)
 	for (i=0 ; i<3 ; i++)
 		angle[i] = MSG_ReadAngle16 ();
 
-	Math_VectorCopy(angle,host_client->edict->v.v_angle);
+	plVectorCopy(angle, host_client->edict->v.v_angle);
 
 	// Read movement
 	move->forwardmove	= MSG_ReadShort ();

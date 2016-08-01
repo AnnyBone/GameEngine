@@ -114,7 +114,7 @@ Sprite::Sprite() :
 	plVectorClear(mins);
 	plVectorClear(maxs);
 
-	Math_Vector4Set(1.0f, colour);
+	plVector4Setf(1.0f, colour);
 
 	draw = vlCreateDraw(VL_PRIMITIVE_TRIANGLES, 2, 4);
 }

@@ -17,15 +17,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include <stdlib.h>
-
 #include "engine_base.h"
 
 #include "video.h"
 #include "client/video_camera.h"
 #include "video_shadow.h"
-
-#include "engine_client.h"	// [28/7/2013] Added for precache functions ~hogsy
 
 #define	BLOCK_WIDTH		256
 #define	BLOCK_HEIGHT	BLOCK_WIDTH
@@ -46,7 +42,7 @@ using namespace core;
 
 void draw::SetDefaultState()
 {
-	plColour_t clear = { 0, 0, 0, 1 };
+	plColour_t clear = { 0.5, 0, 0, 1 };
 	vlSetClearColour4fv(clear);
 
 	vlSetCullMode(VL_CULL_NEGATIVE);

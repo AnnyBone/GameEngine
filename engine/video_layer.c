@@ -1318,7 +1318,7 @@ void vlDraw(vlDraw_t *draw)
 #if defined (VL_MODE_GLIDE)
 	// todo, glide needs its own setup here...
 #else
-	if (draw->_gl_vbo[_VL_BUFFER_VERTICES] != 0)
+	if (0)//(draw->_gl_vbo[_VL_BUFFER_VERTICES] != 0)
 	{
 		glBindBuffer(GL_ARRAY_BUFFER, draw->_gl_vbo[_VL_BUFFER_VERTICES]);
 		glVertexPointer(3, GL_FLOAT, sizeof(vlVertex_t), NULL);

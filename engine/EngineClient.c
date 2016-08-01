@@ -74,6 +74,10 @@ void CL_ClearState (void)
 // wipe the entire cl structure
 	memset (&cl, 0, sizeof(cl));
 
+	cl.current_camera = CameraManager_GetPrimaryCamera();
+	if (!cl.current_camera)
+		Sys_Error("Invalid primary camera (was one created?)\n");
+
 	SZ_Clear (&cls.message);
 
 	// Clear other arrays
@@ -387,6 +391,7 @@ void CL_RelinkEntities (void)
 		cl.velocity[i] = cl.mvelocity[1][i] +
 			frac*(cl.mvelocity[0][i] - cl.mvelocity[1][i]);
 
+#if 0 // todo, reimplement me!
 	if(cls.demoplayback)
 	{
 		// interpolate the angles
@@ -397,14 +402,15 @@ void CL_RelinkEntities (void)
 				d -= 360.0f;
 			else if (d < -180.0f)
 				d += 360.0f;
+
 			cl.viewangles[j] = cl.mviewangles[1][j] + frac*d;
 		}
 	}
+#endif
 
 // start on the entity after the world
 	for (i=1,ent=cl_entities+1 ; i<cl.num_entities ; i++,ent++)
 	{
-#if 1
 		if(!ent->model)
 		{
 			// Empty slot
@@ -412,7 +418,6 @@ void CL_RelinkEntities (void)
 				R_RemoveEfrags (ent);	// just became empty
 			continue;
 		}
-#endif
 
 		// if the object wasn't included in the last packet, remove it
 		if (ent->msgtime != cl.mtime[0])

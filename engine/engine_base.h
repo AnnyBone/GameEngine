@@ -1,21 +1,22 @@
-/*	Copyright (C) 1996-2001 Id Software, Inc.
-	Copyright (C) 2002-2009 John Fitzgibbons and others
-	Copyright (C) 2011-2016 OldTimes Software
+/*
+Copyright (C) 1996-2001 Id Software, Inc.
+Copyright (C) 2002-2009 John Fitzgibbons and others
+Copyright (C) 2011-2016 OldTimes Software
 
-	This program is free software; you can redistribute it and/or
-	modify it under the terms of the GNU General Public License
-	as published by the Free Software Foundation; either version 2
-	of the License, or (at your option) any later version.
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-	See the GNU General Public License for more details.
+See the GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #pragma once
@@ -36,11 +37,9 @@
 #	pragma warning(disable:4305)
 #endif
 
+#include "shared_base.h"
+
 #include "engine_build.h"
-
-#define	ENGINE_LOG	"engine"
-
-#include "shared_flags.h"
 
 #define MINIMUM_MEMORY	0x2000000	// 32MB
 
@@ -61,6 +60,16 @@
 #define	SAVEGAME_COMMENT_LENGTH	39
 
 #define	MAX_SCOREBOARD		64
+
+#define	ENGINE_LOG	"engine"
+
+#ifdef _DEBUG
+#	define ENGINE_FUNCTION_START	plWriteLog(ENGINE_LOG, "Function start (%s)\n", PL_FUNCTION);
+#	define ENGINE_FUNCTION_END		plWriteLog(ENGINE_LOG, "Function end (%s)\n", PL_FUNCTION);
+#else
+#	define ENGINE_FUNCTION_START
+#	define ENGINE_FUNCTION_END
+#endif
 
 #include "cmdlib.h"
 #include "EngineCommon.h"
@@ -171,8 +180,5 @@ extern bool	bIsDedicated;
 extern ConsoleVariable_t chase_active;
 
 void TraceLine(MathVector3f_t start, MathVector3f_t end, MathVector3f_t impact);
-
-void Chase_Init(void);
-void Chase_UpdateForDrawing(void); //johnfitz
 
 plEXTERN_C_END

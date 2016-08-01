@@ -334,38 +334,6 @@ void View_PolyBlend(void)
 ==============================================================================
 */
 
-float angledelta (float a)
-{
-	a = plAngleMod(a);
-	if (a > 180)
-		a -= 360;
-
-	return a;
-}
-
-void V_CalcIntermissionRefdef (void)
-{
-#if 0
-	entity_t	*ent, *view;
-	float		old;
-
-// ent is the player model (visible when out of body)
-	ent = &cl_entities[cl.viewentity];
-// view is the weapon model (only visible from inside body)
-	view = &cl.viewent;
-
-	Math_VectorCopy (ent->origin, r_refdef.vieworg);
-	Math_VectorCopy (ent->angles, r_refdef.viewangles);
-	view->model = NULL;
-
-// allways idle in intermission
-	old = v_idlescale.value;
-	v_idlescale.value = 1;
-	V_AddIdle ();
-	v_idlescale.value = old;
-#endif
-}
-
 /*	Adds a delay to the view model (such as a weapon) in the players view.
 */
 void View_ModelDrift(plVector3f_t vOrigin, plVector3f_t vAngles, plVector3f_t vOldAngles)
@@ -380,7 +348,7 @@ void View_ModelDrift(plVector3f_t vOrigin, plVector3f_t vAngles, plVector3f_t vO
 
 	if(host_frametime != 0.0f)
 	{
-		Math_VectorSubtract(vForward,svLastFacing,vDifference);
+		plVectorSubtract3fv(vForward, svLastFacing, vDifference);
 
 		fSpeed = 3.0f;
 
@@ -505,9 +473,6 @@ void V_CalcRefdef (void)
 
 	view->origin[2] += fBob[0];
 
-	// [10/5/2013] Implemented Eukos' suggestion ~hogsy
-	View_ModelDrift(view->origin,view->angles,vOldAngles);
-
 	//johnfitz -- removed all gun position fudging code (was used to keep gun from getting covered by sbar)
 
 	view->model	= cl.model_precache[cl.stats[STAT_WEAPON]];
@@ -556,8 +521,5 @@ void V_CalcRefdef (void)
 	}
 	else
 		oldz = ent->origin[2];
-
-	if(chase_active.value)
-		Chase_UpdateForDrawing (); //johnfitz
 #endif
 }

@@ -922,7 +922,7 @@ void Host_Savegame_f (void)
 	fprintf (f, "%s\n", comment);
 	for (i=0 ; i<NUM_SPAWN_PARMS ; i++)
 		fprintf (f, "%f\n", svs.clients->spawn_parms[i]);
-	fprintf (f, "%d\n", current_skill);
+	//fprintf (f, "%d\n", current_skill);
 	fprintf (f, "%s\n", sv.name);
 	fprintf (f, "%f\n",sv.time);
 
@@ -1000,8 +1000,8 @@ void Host_Loadgame_f (void)
 		fscanf (f, "%f\n", &spawn_parms[i]);
 // this silliness is so we can load 1.06 save files, which have float skill values
 	fscanf (f, "%f\n", &tfloat);
-	current_skill = (int)(tfloat + 0.1);
-	Cvar_SetValue ("skill", (float)current_skill);
+	//current_skill = (int)(tfloat + 0.1);
+	//Cvar_SetValue ("skill", (float)current_skill);
 
 	fscanf (f, "%s\n",mapname);
 	fscanf (f, "%f\n",&time);

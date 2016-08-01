@@ -150,7 +150,6 @@ extern plColour_t
 #define	Math_Vector2Set(a,b)			(	b[0]=b[1]=a			)
 
 #define	Math_Vector4Copy(a,b)			(	b[0]=a[0],b[1]=a[1],b[2]=a[2],b[3]=a[3]	)
-#define	Math_Vector4Set(a,b)			(	b[0]=b[1]=b[2]=b[3]=a					)
 
 #define Math_Matrix4x4Row(a,b,c) { int k; for(k = 0; k < 4; ++k) a[k] = b[c][k]; }
 #define Math_Matrix4x4Negate(a,b) \
@@ -200,9 +199,7 @@ float Math_DotProduct(plVector3f_t a, plVector3f_t b);
 
 MathVector_t plVectorToAngles(plVector3f_t vValue);
 
-/*
-	Vector3f
-*/
+/*	Vector3f	*/
 
 static PL_INLINE bool plVectorCompare(plVector3f_t a, plVector3f_t b)
 {
@@ -316,18 +313,21 @@ static PL_INLINE float plVectorDifference(plVector3f_t a, plVector3f_t b)
 	return plLengthf(spot);
 }
 
-/*
-	Vector2f
-*/
+/*	Vector2f	*/
 
 static PL_INLINE void plVector2Set2f(plVector2f_t out, float a, float b)
 {
 	out[0] = a; out[1] = b;
 }
 
-/*
-	Colour
-*/
+/*	Vector4f	*/
+
+static PL_INLINE void plVector4Setf(float in, plVector4f_t out)
+{
+	out[0] = out[1] = out[2] = out[3] = in;
+}
+
+/*	Colour	*/
 
 static PL_INLINE void plColourSetf(plColour_t in, float r, float g, float b, float a)
 {
@@ -515,13 +515,20 @@ static PL_INLINE float plInOutPow(float x, float p)
 	return (sign / 2.0f * (powf(x - 2.0f, p) + sign * 2.0f));
 }
 
-/*
-	Utility Functions
-*/
+/*	Utility Functions	*/
 
 static PL_INLINE float plAngleMod(float a)
 {
 	return a = (360.0f / 65536)*((int)(a*(65536 / 360.0f)) & 65535);
+}
+
+static PL_INLINE float plAngleDelta(float a)
+{
+	a = plAngleMod(a);
+	if (a > 180)
+		a -= 360;
+
+	return a;
 }
 
 // Calculate a sphere from bounds.

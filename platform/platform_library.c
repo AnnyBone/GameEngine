@@ -21,9 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "platform_library.h"
 
-/*
-Library management
-*/
+/*	Library management	*/
 
 PL_FARPROC plFindLibraryFunction(PL_INSTANCE instance, const PLchar *function)
 {

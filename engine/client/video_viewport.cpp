@@ -47,6 +47,14 @@ void core::SetPrimaryViewport(Viewport *viewport)
 		throw Exception("Attempted to assign an invalid viewport as primary!\n");
 
 	viewport_main = viewport;
+
+#if 0
+	// Temporary, but we'll set the 'current_camera' to the primary viewport camera here.
+	// I know this is stupid...
+	cl.current_camera = dynamic_cast<EngineCamera*>(viewport_main->GetCamera());
+	if (!cl.current_camera)
+		throw Exception("Failed to set client's primary camera!\n");
+#endif
 }
 
 Viewport *core::GetCurrentViewport()
@@ -83,17 +91,14 @@ Viewport::Viewport(unsigned int width, unsigned int height) : Viewport(0, 0, wid
 {
 }
 
+////////////////////////////////////////////////////////////////////////////////
+
 void Viewport::Draw()
 {
 	if (scr_disabled_for_loading)
 		return;
 
 	SetCurrentViewport(this);
-
-#if defined (VL_MODE_OPENGL)
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-#endif
 
 	// If we've got a parent, we'll need to follow it.
 	int xmod = _x, ymod = _y;
@@ -108,6 +113,7 @@ void Viewport::Draw()
 
 	draw::ClearBuffers();
 
+#if 1
 	if (_camera && !con_forcedup)
 	{
 		// Let the camera manager know we're drawing from this
@@ -122,6 +128,7 @@ void Viewport::Draw()
 		if (cv_video_msaasamples.iValue > 0)
 			vlDisable(VL_CAPABILITY_MULTISAMPLE);
 	}
+#endif
 
 	draw::ResetCanvas();
 
@@ -181,7 +188,7 @@ void Viewport::Screenshot()
 
 /*	Camera	*/
 
-ICamera *Viewport::GetCamera()
+ICamera *Viewport::GetCamera() const
 {
 	return dynamic_cast<ICamera*>(_camera);
 }

@@ -20,7 +20,6 @@
 
 #include "shared_formats.h"
 #include "shared_zone.h"
-#include "shared_video.h"
 
 #define	MODEL_FLAG_3DSKY	(1 << 0)	// Let's us know that the model supports 3D skies.
 
@@ -194,8 +193,8 @@ typedef struct
 	int				firstclipnode;
 	int				lastclipnode;
 
-	MathVector3f_t	clip_mins;
-	MathVector3f_t	clip_maxs;
+	plVector3f_t	clip_mins;
+	plVector3f_t	clip_maxs;
 } hull_t;
 
 typedef struct model_s
@@ -211,14 +210,14 @@ typedef struct model_s
 	int			flags;
 
 	// volume occupied by the model graphics
-	MathVector3f_t	mins, maxs;
-	MathVector3f_t	ymins, ymaxs; //johnfitz -- bounds for entities with nonzero yaw
-	MathVector3f_t	rmins, rmaxs; //johnfitz -- bounds for entities with nonzero pitch or roll
+	plVector3f_t	mins, maxs;
+	plVector3f_t	ymins, ymaxs; //johnfitz -- bounds for entities with nonzero yaw
+	plVector3f_t	rmins, rmaxs; //johnfitz -- bounds for entities with nonzero pitch or roll
 	//johnfitz -- removed float radius;
 
 	// solid volume for clipping
 	bool			clipbox;
-	MathVector3f_t	clipmins, clipmaxs;
+	plVector3f_t	clipmins, clipmaxs;
 
 	// brush model
 	unsigned int	firstmodelsurface, nummodelsurfaces;

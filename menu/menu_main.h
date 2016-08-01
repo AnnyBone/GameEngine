@@ -18,11 +18,8 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
 #include "platform.h"
 
-#include "shared_flags.h"
-#include "shared_video.h"
+#include "shared_base.h"
 #include "shared_menu.h"
-#include "shared_engine.h"
-#include "shared_material.h"
 #include "shared_game.h"
 
 #define	MENU_BASE_PATH	"menu/"

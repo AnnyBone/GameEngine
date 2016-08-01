@@ -25,11 +25,9 @@
 #include "platform.h"
 #include "platform_filesystem.h"
 
-#include "shared_flags.h"
-#include "shared_engine.h"
+#include "shared_base.h"
 #include "shared_game.h"
 #include "shared_menu.h"
-#include "shared_formats.h"
 
 #include "game_resources.h"
 

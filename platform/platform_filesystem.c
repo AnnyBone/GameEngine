@@ -59,8 +59,7 @@ time_t plGetFileModifiedTime(const char *path)
 void plLowerCasePath(char *out)
 {
 	pFUNCTION_START
-	int i;
-	for (i = 0; out[i]; i++)
+	for (int i = 0; out[i]; i++) 
 		out[i] = (char)tolower(out[i]);
 	pFUNCTION_END
 }
@@ -69,15 +68,15 @@ void plLowerCasePath(char *out)
 bool plCreateDirectory(const char *ccPath)
 {
 	pFUNCTION_START
-		
+	
 #ifdef _WIN32
-	if(CreateDirectory(ccPath,NULL) || (GetLastError() == ERROR_ALREADY_EXISTS))
+	if(CreateDirectory(ccPath, NULL) || (GetLastError() == ERROR_ALREADY_EXISTS))
 		return true;
 	else if(GetLastError() == ERROR_PATH_NOT_FOUND)
 		plSetError("Failed to find an intermediate directory! (%s)\n", ccPath);
 	else    // Assume it already exists.
 		plSetError("Unknown error! (%s)\n", ccPath);
-#else	// TODO: Won't the below code work fine on Windows too??
+#else
 	{
 		struct stat ssBuffer;
 
@@ -187,7 +186,6 @@ void plGetUserName(char *out)
 void plScanDirectory(const char *path, const char *extension, void(*Function)(char *filepath))
 {
 	pFUNCTION_START
-	char	filestring[PLATFORM_MAX_PATH];
 
 	if (path[0] == ' ')
 	{
@@ -195,6 +193,7 @@ void plScanDirectory(const char *path, const char *extension, void(*Function)(ch
 		return;
 	}
 
+	char filestring[PL_MAX_PATH];
 #ifdef _WIN32
 	{
 		WIN32_FIND_DATA	finddata;
@@ -243,7 +242,7 @@ void plScanDirectory(const char *path, const char *extension, void(*Function)(ch
 void plGetWorkingDirectory(char *out)
 {
 	pFUNCTION_START
-	if (!getcwd(out, PLATFORM_MAX_PATH))
+	if (!getcwd(out, PL_MAX_PATH))
 	{
 		switch(errno)
 		{
@@ -273,9 +272,7 @@ void plGetWorkingDirectory(char *out)
 	pFUNCTION_END
 }
 
-/*
-	File I/O
-*/
+/*	File I/O	*/
 
 /*	Checks if a file exists or not.
 */

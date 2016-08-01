@@ -123,6 +123,9 @@ support.
 #		ifndef strcasecmp
 #			define	strcasecmp	_stricmp
 #		endif
+#		ifndef mkdir
+#			define	mkdir		_mkdir
+#		endif
 #		ifndef strncasecmp
 #			define	strncasecmp	_str
 #		endif
@@ -167,7 +170,11 @@ support.
 #	define PLATFORM_MAX_PATH 256	// Max path supported on platform.
 #endif
 #ifndef PL_MAX_PATH
-#	define PL_MAX_PATH 256	// Max path supported on platform.
+#	ifdef PLATFORM_MAX_PATH
+#		define PL_MAX_PATH PLATFORM_MAX_PATH
+#	else
+#		define PL_MAX_PATH 256	// Max path supported on platform.
+#	endif
 #endif
 #ifndef PL_MAX_USERNAME
 #	define PL_MAX_USERNAME 256	// Maximum length allowed for a username.
@@ -232,8 +239,12 @@ support.
 #define	plArrayElements(a)	(sizeof(a)/sizeof(*(a)))	// Returns the number of elements within an array.
 
 typedef int						PLint;
+typedef short int				PLint16;
+typedef long int				PLint32;
 typedef long long int			PLint64;
 typedef unsigned int			PLuint;
+typedef unsigned short int		PLuint16;
+typedef unsigned long int		PLuint32;
 typedef unsigned long long int	PLuint64;
 typedef char					PLchar;
 typedef	unsigned char			PLuchar;

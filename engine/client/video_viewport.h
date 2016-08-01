@@ -33,12 +33,12 @@ namespace core
 		unsigned int GetHeight() { return _height; }													// Returns height.
 		void SetSize(unsigned int width, unsigned int height);
 
-		ICamera *GetCamera();
+		ICamera *GetCamera() const;
 		void SetCamera(ICamera *camera);
 
 		std::vector<int> GetPosition() { return std::vector<int> { _x, _y }; }	// Returns position on screen.
 		void SetPosition(int x, int y);
-		
+
 		void Draw();
 		void Screenshot();
 
@@ -52,6 +52,26 @@ namespace core
 		unsigned int _width, _height;
 		int _x, _y;
 	};
+
+	namespace client
+	{
+		class ViewportManager : public CoreManager
+		{
+		public:
+			ViewportManager();
+			~ViewportManager();
+
+			Viewport *GetPrimaryViewport() const { return _primary_viewport; }
+			Viewport *GetCurrentViewport() const { return _current_viewport; }
+
+		protected:
+		private:
+			std::vector<Viewport*> _viewports;
+
+			Viewport *_primary_viewport;	// The primary viewport the user controls.
+			Viewport *_current_viewport;	// Current viewport being used for draw.
+		};
+	}
 
 	// Input, sound and more
 	Viewport *GetPrimaryViewport();

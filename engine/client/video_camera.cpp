@@ -118,8 +118,11 @@ Camera *CameraManager::CreateCamera()
 
 void CameraManager::DeleteCamera(Camera *camera)
 {
+	assert(camera);
+
 	// Already deleted, probably.
-	if (!camera) return;
+	if (!camera) 
+		return;
 
 	// Remove it from the list.
 	for (auto iterator = _cameras.begin(); iterator != _cameras.end(); iterator++)
@@ -136,7 +139,14 @@ void CameraManager::DeleteCamera(Camera *camera)
 
 void CameraManager::SetCurrentCamera(Camera *_camera)
 {
-	if (!_camera) return;
+	assert(camera);
+
+	if (!_camera)
+	{
+		Con_Warning("Attempted to set invalid camera as current!\n");
+		return;
+	}
+
 	_current_camera = _camera;
 }
 
@@ -155,7 +165,8 @@ void CameraManager::Draw()
 
 void CameraManager::Simulate()
 {
-	if (cl.paused) return;
+	if (cl.paused)
+		return;
 
 	for (unsigned int i = 0; i < _cameras.size(); i++)
 	{
@@ -210,25 +221,25 @@ EngineCamera *CameraManager_GetPrimaryCamera(void)
 
 extern "C" void CameraManager_SetParentEntity(EngineCamera *camera, ClientEntity_t *parent)
 {
-	if (!camera) return;
+	if (!camera) Sys_Error("Received invalid camera when attempting to set parent entity!\n");
 	camera->SetParentEntity(parent);
 }
 
 extern "C" void CameraManager_SetViewEntity(EngineCamera *camera, ClientEntity_t *child)
 {
-	if (!camera) return;
+	if (!camera) Sys_Error("Received invalid camera when attempting to set view entity!\n");
 	camera->SetViewEntity(child);
 }
 
 extern "C" ClientEntity_t *CameraManager_GetParentEntity(EngineCamera *camera)
 {
-	if (!camera) return nullptr;
+	if (!camera) Sys_Error("Received invalid camera when attempting to get parent entity!\n");
 	return camera->GetParentEntity();
 }
 
 extern "C" ClientEntity_t *CameraManager_GetViewEntity(EngineCamera *camera)
 {
-	if (!camera) return nullptr;
+	if (!camera) Sys_Error("Received invalid camera when attempting to get view entity!\n");
 	return camera->GetParentEntity();
 }
 
@@ -255,6 +266,68 @@ Camera::Camera(Viewport *viewport) : Camera()
 	SetViewport(viewport);
 }
 
+///////////////////////////////////////////////////////////////
+
+void Camera::SetupProjectionMatrix()
+{
+#if defined (VL_MODE_OPENGL)
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+
+	unsigned int width = 640, height = 480;
+	if (_viewport)
+	{
+		width = _viewport->GetWidth();
+		height = _viewport->GetHeight();
+	}
+
+#if 1	// Cheekily stolen from Quake 2.
+	double ymin, ymax;
+	ymax = cv_camera_nearclip.value * tan(_fovy * PL_PI / 360);
+	ymin = -ymax;
+
+	double aspect = width / height;
+	double xmin, xmax;
+	xmin = ymin * aspect;
+	xmax = ymax * aspect;
+
+	glFrustum(xmin, xmax, ymin, ymax, (double)cv_camera_nearclip.value, (double)cv_camera_farclip.value);
+#elif 2
+	float xmax = cv_camera_nearclip.value * tanf(_fovx * PL_PI / 360);
+	float ymax = cv_camera_nearclip.value * tanf(_fovy * PL_PI / 360);
+	glFrustum(-xmax, xmax, -ymax, ymax, cv_camera_nearclip.value, cv_camera_farclip.value);
+#else
+	float aspect = (float)width / height;
+	glm::mat4 matrix_projection = glm::perspective(_fovy, aspect, cv_camera_nearclip.value, cv_camera_farclip.value);
+	glLoadMatrixf(glm::value_ptr(matrix_projection));
+#endif
+#endif
+}
+
+void Camera::SetupViewMatrix()
+{
+#if defined (VL_MODE_OPENGL)
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+
+	glRotatef(-90, 1, 0, 0);	// Z going up.
+	glRotatef(90, 0, 0, 1);		// Z going up.
+
+	glRotatef(-_angles[2], 1, 0, 0);
+	glRotatef(-_angles[0], 0, 1, 0);
+	glRotatef(-_angles[1], 0, 0, 1);
+
+	glTranslatef(-_position[0], -_position[1], -_position[2]);
+
+#if 1
+	// todo, not needed?
+	glGetFloatv(GL_MODELVIEW_MATRIX, r_world_matrix);
+#endif
+#endif
+}
+
+///////////////////////////////////////////////////////////////
+
 #ifdef CAMERA_LEGACY
 void Camera::DrawViewEntity()
 {
@@ -277,13 +350,13 @@ void Camera::DrawViewEntity()
 void Camera::Draw()
 {
 	float fovxx = _fovx, fovyy = _fovy;
-	if (cl.worldmodel)
+	if (cl.worldmodel) 
 	{
 		// Current view leaf.
 		oldleaf = leaf;
 		leaf = Mod_PointInLeaf(_position, cl.worldmodel);
 
-		if (r_waterwarp.value)
+		if (r_waterwarp.value) 
 		{
 			int contents = Mod_PointInLeaf(_position, cl.worldmodel)->contents;
 			if (contents == BSP_CONTENTS_WATER || contents == BSP_CONTENTS_SLIME || contents == BSP_CONTENTS_LAVA)
@@ -293,29 +366,15 @@ void Camera::Draw()
 				fovyy = atanf(tan(PL_DEG2RAD(_fovy) / 2) * (1.03 - sin(cl.time * 1.5) * 0.03)) * 2 / PL_PI_DIV180;
 			}
 		}
-
+		
 		World_MarkSurfaces();
 		World_CullSurfaces();
 	}
 
-	SetFrustum(fovxx, fovyy);
+//	SetFrustum(fovxx, fovyy);
 
-#if defined (VL_MODE_OPENGL)
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-
-	glRotatef(-90, 1, 0, 0);	// Put Z going up.
-	glRotatef(90, 0, 0, 1);		// Put Z going up.
-
-	glRotatef(-_angles[2], 1, 0, 0);
-	glRotatef(-_angles[0], 0, 1, 0);
-	glRotatef(-_angles[1], 0, 0, 1);
-
-	glTranslatef(-_position[0], -_position[1], -_position[2]);
-
-	// todo, not needed?
-	glGetFloatv(GL_MODELVIEW_MATRIX, r_world_matrix);
-#endif
+	SetupProjectionMatrix();
+	SetupViewMatrix();
 
 	//Fog_SetupFrame();	// todo, really necessary to call this at the start of every draw call!?
 
@@ -373,11 +432,10 @@ void Camera::SetParentEntity(ClientEntity_t *parent)
 		Con_Warning("Failed to set camera parent entity!\n");
 		return;
 	}
-
 	_parententity = parent;
 
 	SetPosition(_parententity->origin);
-	_position[2] += height;
+	_position[2] += _height;
 }
 
 void Camera::SetViewEntity(ClientEntity_t *_child)
@@ -391,7 +449,6 @@ void Camera::SetViewEntity(ClientEntity_t *_child)
 		Con_Warning("Failed to set camera child entity!\n");
 		return;
 	}
-
 	_viewmodel = _child;
 }
 
@@ -414,7 +471,7 @@ void Camera::SimulateViewEntity()
 
 	// Update view model origin.
 	plVectorCopy(_parententity->origin, _viewmodel->origin);
-	_viewmodel->origin[2] += height;
+	_viewmodel->origin[2] += _height;
 
 	// Apply view model bob.
 	if (bobcam)
@@ -597,7 +654,7 @@ void Camera::Simulate()
 	SimulateRoll();
 
 	// Add height (needs to be done after bob).
-	_position[2] += height;
+	_position[2] += _height;
 
 	/*	
 	Never let it sit exactly on a node line, because a water plane can
@@ -615,7 +672,7 @@ void Camera::Simulate()
 	// Apply camera punch, if it's enabled.
 	if (cv_camera_punch.value)
 	{
-		static MathVector3f_t punch = { 0, 0, 0 };
+		static plVector3f_t punch = { 0, 0, 0 };
 		for (int i = 0; i < 3; i++)
 			if (pl_origin3f[i] != punchangles[0][i])
 			{
@@ -673,30 +730,6 @@ void Camera::SetFOV(float fov)
 	float a = std::atanf(height / x);
 	a *= 360.0f / PL_PI;
 	_fovy = a;
-}
-
-void Camera::SetFrustum(float fovx, float fovy)
-{
-	_fovx = fovx; _fovy = fovy;
-
-#if 1
-	float xmax = cv_camera_nearclip.value * tanf(_fovx * PL_PI / 360);
-	float ymax = cv_camera_nearclip.value * tanf(_fovy * PL_PI / 360);
-#if defined (VL_MODE_OPENGL)
-	glFrustum(-xmax, xmax, -ymax, ymax, cv_camera_nearclip.value, cv_camera_farclip.value);
-#endif
-#else
-	unsigned int width = 640, height = 480;
-	if (_viewport)
-	{
-		width = _viewport->GetWidth();
-		height = _viewport->GetHeight();
-	}
-	
-	float aspect = (float)width / height;
-	glm::mat4 matrix_projection = glm::perspective(_fovy, aspect, cv_camera_nearclip.value, cv_camera_farclip.value);
-	glLoadMatrixf(glm::value_ptr(matrix_projection));
-#endif
 }
 
 int SignbitsForPlane(mplane_t *out);
@@ -912,7 +945,7 @@ void Camera::SetViewport(IViewport *viewport)
 
 /*	Camera C Interface	*/
 
-void Camera_SetPosition(EngineCamera *camera, plVector3f_t position)
+void Camera_SetPosition(Camera *camera, plVector3f_t position)
 {
 	if (!camera)
 		return;
@@ -920,7 +953,7 @@ void Camera_SetPosition(EngineCamera *camera, plVector3f_t position)
 	camera->SetPosition(position);
 }
 
-void Camera_SetAngles(EngineCamera *camera, plVector3f_t angles)
+void Camera_SetAngles(Camera *camera, plVector3f_t angles)
 {
 	if (!camera)
 		return;

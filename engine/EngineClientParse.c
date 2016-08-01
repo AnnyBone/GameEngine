@@ -237,8 +237,7 @@ void CL_KeepaliveMessage (void)
 */
 void Client_ParseServerInfo(void)
 {
-	int		i,
-			nummodels, numsounds;
+	int		nummodels, numsounds;
 	char	*str,
 			cModelPrecache[MAX_MODELS][MAX_QPATH],
 			cSoundPrecache[MAX_SOUNDS][MAX_QPATH];
@@ -249,7 +248,7 @@ void Client_ParseServerInfo(void)
 	CL_ClearState();
 
 	// Parse protocol version number
-	i = MSG_ReadLong();
+	int i = MSG_ReadLong();
 	if(i != SERVER_PROTOCOL)
 	{
 		Con_Printf("\n");
@@ -319,7 +318,7 @@ void Client_ParseServerInfo(void)
 
 	// Precache textures...
 	memset(&g_effecttextures, 0, sizeof(g_effecttextures));
-	for(unsigned int i = 1; ; i++)
+	for(i = 1; ; i++)
 	{
 		str = MSG_ReadString();
 		if(!str[0])
@@ -637,8 +636,8 @@ void CL_ParseClientdata (void)
 		cl.idealpitch = MSG_ReadChar ();
 	else
 		cl.idealpitch = 0;
-
-	Math_VectorCopy(cl.mvelocity[0],cl.mvelocity[1]);
+	
+	plVectorCopy(cl.mvelocity[0], cl.mvelocity[1]);
 	for (i=0 ; i<3 ; i++)
 	{
 		if (bits & (SU_PUNCH1<<i) )
@@ -655,8 +654,8 @@ void CL_ParseClientdata (void)
 	//johnfitz -- update v_punchangles
 	if (v_punchangles[0][0] != cl.punchangle[0] || v_punchangles[0][1] != cl.punchangle[1] || v_punchangles[0][2] != cl.punchangle[2])
 	{
-		Math_VectorCopy(v_punchangles[0],v_punchangles[1]);
-		Math_VectorCopy(cl.punchangle,v_punchangles[0]);
+		plVectorCopy(v_punchangles[0], v_punchangles[1]);
+		plVectorCopy(cl.punchangle, v_punchangles[0]);
 	}
 	//johnfitz
 
@@ -756,8 +755,8 @@ void CL_ParseStatic (int version) //johnfitz -- added a parameter
 	ent->effects	= ent->baseline.effects;
 	ent->alpha		= ent->baseline.alpha; //johnfitz -- alpha
 
-	Math_VectorCopy (ent->baseline.origin, ent->origin);
-	Math_VectorCopy (ent->baseline.angles, ent->angles);
+	plVectorCopy(ent->baseline.origin, ent->origin);
+	plVectorCopy(ent->baseline.angles, ent->angles);
 
 	R_AddEfrags (ent);
 }
@@ -879,27 +878,20 @@ void CL_ParseServerMessage(void)
 			break;
 		case SVC_SETANGLE:
 		{
-#if 0
-			for (i=0 ; i<3 ; i++)
-				cl.viewangles[i] = MSG_ReadAngle();
-#else
 			plVector3f_t angles = { 0 };
-			for (int i = 0; i < 3; i++)
+			for (i = 0; i < 3; i++)
 				angles[i] = MSG_ReadAngle();
 
-			EngineCamera *camera = CameraManager_GetPrimaryCamera();
-			if (camera)
-				Camera_SetAngles(camera, angles);
-#endif
+			if (cl.current_camera)
+				Camera_SetAngles(cl.current_camera, angles);
 		}
 		break;
 		case SVC_SETVIEW:
 		{
 			cl.viewentity = MSG_ReadShort();
 
-			EngineCamera *camera = CameraManager_GetPrimaryCamera();
-			CameraManager_SetViewEntity(camera, &cl.viewent);
-			CameraManager_SetParentEntity(camera, &cl_entities[cl.viewentity]);
+			CameraManager_SetViewEntity(cl.current_camera, &cl.viewent);
+			CameraManager_SetParentEntity(cl.current_camera, &cl_entities[cl.viewentity]);
 		}
 		break;
 		case SVC_LIGHTSTYLE:

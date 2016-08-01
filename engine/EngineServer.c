@@ -1048,14 +1048,6 @@ void SV_SpawnServer(char *server)
 	if(sv.active)
 		SV_SendReconnect();
 
-	current_skill = (int)(skill.value+0.5f);
-	if (current_skill < 0)
-		current_skill = 0;
-	else if(current_skill > 3)
-		current_skill = 3;
-
-	Cvar_SetValue ("skill", (float)current_skill);
-
 	// Set up the new server
 	Host_ClearMemory ();
 

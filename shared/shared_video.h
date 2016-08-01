@@ -21,8 +21,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 /*	Shared Video Interface */
 
-#include "platform_video_layer.h"
-
 #define	VIDEO_MAX_UNITS	16
 
 // Canvas
@@ -40,12 +38,6 @@ typedef enum
 	CANVAS_TOPRIGHT
 } VideoCanvasType_t;
 
-#if defined(KATANA)
-#	define ENGINE_FUNCTION PL_MODULE_EXPORT
-#else
-#	define ENGINE_FUNCTION
-#endif
-
 #ifdef __cplusplus
 
 namespace core
@@ -62,7 +54,7 @@ namespace core
 		virtual unsigned int GetWidth() = 0;
 		virtual unsigned int GetHeight() = 0;
 
-		virtual ICamera *GetCamera() = 0;
+		virtual ICamera *GetCamera() const = 0;
 		virtual void SetCamera(ICamera *camera) = 0;
 
 		virtual std::vector<int> GetPosition() = 0;
@@ -82,7 +74,8 @@ namespace core
 		virtual float GetFOV() = 0;
 		virtual void SetFOV(float fov) = 0;
 
-		virtual void SetFrustum(float fovx, float fovy) = 0;
+		virtual void SetupProjectionMatrix() = 0;
+		virtual void SetupViewMatrix() = 0;
 
 		virtual std::vector<float> GetPosition() = 0;
 		virtual void SetPosition(float x, float y, float z) = 0;

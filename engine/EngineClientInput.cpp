@@ -50,7 +50,7 @@ kbutton_t	in_klook;
 kbutton_t	in_left, in_right, in_forward, in_back;
 kbutton_t	in_lookup, in_lookdown, in_moveleft, in_moveright;
 kbutton_t	in_strafe, in_speed, kInputUse, in_jump, in_attack, 
-			kInputCrouch;
+			in_crouch;
 kbutton_t	in_up, in_down;
 
 int			in_impulse;
@@ -114,8 +114,8 @@ void KeyUp (kbutton_t *b)
 	b->state |= 4; 		// impulse up
 }
 
-void IN_CrouchDown(void)		{	KeyDown(&kInputCrouch);	}
-void IN_CrouchUp(void)			{	KeyUp(&kInputCrouch);	}
+void IN_CrouchDown(void)		{	KeyDown(&in_crouch);	}
+void IN_CrouchUp(void)			{	KeyUp(&in_crouch);		}
 void IN_KLookDown(void)			{	KeyDown(&in_klook);		}
 void IN_KLookUp(void)			{	KeyUp(&in_klook);		}
 void IN_UpDown(void)			{	KeyDown(&in_up);		}
@@ -297,11 +297,10 @@ void CL_SendMove(ClientCommand_t *cmd)
 
 	MSG_WriteFloat (&buf, (float)cl.mtime[0]);	// so server can get ping times
 
-	core::Camera *camera = CameraManager_GetPrimaryCamera();
-	if (camera)
+	if (cl.current_camera)
 	{
 		for (int i = 0; i<3; i++)
-			MSG_WriteAngle16(&buf, camera->GetPosition()[i]);
+			MSG_WriteAngle16(&buf, cl.current_camera->GetPosition()[i]);
 	}
 	else for(int i = 0; i < 3; i++)
 		MSG_WriteAngle16(&buf, 0);	
@@ -314,7 +313,6 @@ void CL_SendMove(ClientCommand_t *cmd)
 // send button bits
 //
 	int bits = 0;
-
 	if ( in_attack.state & 3 )
 		bits |= 1;
 	in_attack.state &= ~2;
@@ -323,9 +321,9 @@ void CL_SendMove(ClientCommand_t *cmd)
 		bits |= 2;
 	in_jump.state &= ~2;
 
-	if(kInputCrouch.state & 3)
+	if (in_crouch.state & 3)
 		bits |= 4;
-	kInputCrouch.state &= ~2;
+	in_crouch.state &= ~2;
 
 #ifdef IMPLEMENT_ME
 	if(kInputUse.state & 3)

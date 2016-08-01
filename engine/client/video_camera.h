@@ -30,8 +30,8 @@ namespace core
 		Camera();
 		Camera(Viewport *viewport);
 
-		void Draw();
-		void Simulate();
+		virtual void Draw();
+		virtual void Simulate();
 
 		void Input(plVector2i_t mpos, int key);
 
@@ -41,9 +41,10 @@ namespace core
 		void PrintAngles();
 
 		float GetFOV() { return _fovx; }
-
 		void SetFOV(float fov);
-		void SetFrustum(float fovx, float fovy);
+
+		void SetupProjectionMatrix();
+		void SetupViewMatrix();
 
 		std::vector<float> GetPosition() { return std::vector<float> { _position[0], _position[1], _position[2] }; }
 		void SetPosition(float x, float y, float z);
@@ -110,7 +111,7 @@ namespace core
 
 		float _fov, _fovx, _fovy;
 
-		float height;	// Additional height of the camera.
+		float _height;	// Additional height of the camera.
 	};
 
 	class CameraManager : public CoreManager
@@ -137,13 +138,9 @@ namespace core
 	};
 }
 
-typedef core::Camera EngineCamera;
-
 extern core::CameraManager *g_cameramanager;
 
 #else
-
-typedef struct EngineCamera EngineCamera;
 
 void CameraManager_Simulate(void);
 

@@ -42,18 +42,18 @@ namespace Menu
 		void AddChild(Panel *child);
 		void RemoveChild(Panel *child);
 
-		virtual void SetWidth(unsigned int w) { width = w; }
-		virtual void SetHeight(unsigned int h) { height = h; }
+		virtual void SetWidth(unsigned int w) { _width = w; }
+		virtual void SetHeight(unsigned int h) { _height = h; }
 
-		unsigned int GetWidth() { return width; }
-		unsigned int GetHeight() { return height; }
-
-		unsigned int width, height;	// Size.
-		unsigned int x, y;			// Position coordinates.
+		unsigned int GetWidth() { return _width; }
+		unsigned int GetHeight() { return _height; }
 	protected:
 	private:
-		std::vector<Panel*> children;
+		std::vector<Panel*> _children;
 
-		Panel *parent;
+		unsigned int _width, _height;	// Size.
+		unsigned int _x, _y;			// Position coordinates.
+
+		Panel *_parent;
 	};
 }

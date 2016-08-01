@@ -59,7 +59,7 @@ Particle_t *Particle_Allocate(void)
 	pParticle->next = pActiveParticles;
 	pActiveParticles = pParticle;
 
-	Math_Vector4Set(1.0f, pParticle->vColour);
+	plVector4Setf(1.0f, pParticle->vColour);
 
 	return pParticle;
 }

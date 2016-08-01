@@ -40,8 +40,6 @@ typedef enum
 #define	MENU_STATE_MENU			8	// Display the menu.
 #define	MENU_STATE_PAUSED		16	// Display pause menu.
 
-#include "shared_video.h"
-
 // Exported functions
 typedef struct
 {

@@ -74,6 +74,8 @@ int	vec_to_st[6][3] =
 	{	-2,	1,	-3	}
 };
 
+using namespace core;
+
 void Sky_LoadCloudTexture(const char *cPath)
 {
 	char				cFileName[PLATFORM_MAX_PATH];
@@ -824,21 +826,23 @@ void Sky_DrawFace (int axis)
 
 // Sky Camera
 
-bool			sky_camera;
-MathVector3f_t	sky_camerapos;
+bool	sky_cameraenabled = false;
+Camera	*sky_camera = nullptr;
 
 void Sky_ReadCameraPosition(void)
 {
-	MathVector3f_t campos;
-
-	sky_camera = MSG_ReadByte();
-	if (!sky_camera)
+	sky_cameraenabled = MSG_ReadByte();
+	if (!sky_cameraenabled)
 		return;
 
+	plVector3f_t campos;
 	campos[0] = MSG_ReadCoord();
 	campos[1] = MSG_ReadCoord();
 	campos[2] = MSG_ReadCoord();
-	Math_VectorCopy(campos, sky_camerapos);
+
+	if (sky_camera)	delete sky_camera;
+	sky_camera = new Camera(GetPrimaryViewport());
+	sky_camera->SetPosition(campos);
 }
 
 /*	Hacky way of rendering a 3D skybox.
@@ -884,6 +888,11 @@ void Sky_Draw3DWorld(void)
 	R_SetupView();
 	//R_SetupScene();
 #endif
+#else
+	if (!sky_cameraenabled || !sky_camera)
+		return;
+
+
 #endif
 }
 

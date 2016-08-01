@@ -87,7 +87,7 @@ namespace core
 		std::unordered_map<std::string, vlAttribute_t>	attributes;
 		std::unordered_map<std::string, vlUniform_t*>	uniforms;
 
-		std::string name;
+		std::string _name;
 
 		vlShaderProgram_t instance;
 	};

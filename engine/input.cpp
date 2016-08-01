@@ -61,7 +61,7 @@ typedef struct
 Controller_t	cController[INPUT_MAX_CONTROLLERS];
 
 int		iNumControllers;
-int		iMousePosition[2],
+int		cursor_position[2],
 		iOldMousePosition[2];	// [14/7/2013] For filtering ~hogsy
 
 bool input_mouseactive = false;
@@ -71,6 +71,17 @@ using namespace core;
 extern "C" SDL_Window *sdl_mainwindow;
 
 SDL_Event sEvent;
+
+namespace core
+{
+	class Input : CoreManager
+	{
+	public:
+	protected:
+	private:
+		int	cursor_position[2];
+	};
+}
 
 void Input_Initialize(void)
 {
@@ -145,6 +156,9 @@ int Input_ConvertKey(int key)
 	{
 		case SDLK_PAGEUP:		return K_PGUP;
 		case SDLK_PAGEDOWN:		return K_PGDN;
+#if 1	// todo, causing a crash that I'm too lazy to fix right now.
+		case SDLK_PRINTSCREEN:
+#endif
 		case SDLK_HOME:			return K_HOME;
 		case SDLK_END:			return K_END;
 		case SDLK_LEFT:			return K_LEFTARROW;
@@ -262,7 +276,7 @@ static int InputMouseRemap[18]=
 
 void Input_Frame(void)
 {
-	static	bool sbOldMouseState = false;
+	static bool oldmousestate = false;
 
 	while(SDL_PollEvent(&sEvent))
 	{
@@ -275,7 +289,7 @@ void Input_Frame(void)
 					Video.bActive = true;
 
 					// Then restore it.
-					if(sbOldMouseState)
+					if (oldmousestate)
 						Input_ActivateMouse();
 					else
 						Input_DeactivateMouse();
@@ -287,7 +301,7 @@ void Input_Frame(void)
 					Video.bActive = false;
 
 					// Save our old mouse state.
-					sbOldMouseState = input_mouseactive;
+					oldmousestate = input_mouseactive;
 
 					Input_DeactivateMouse();
 
@@ -318,8 +332,8 @@ void Input_Frame(void)
 				// Originally handled this differently for fullscreen but this works fine apparently!
 				if (((unsigned)sEvent.motion.x != (viewport->GetWidth() / 2)) || ((unsigned)sEvent.motion.y != (viewport->GetHeight() / 2)))
 				{
-					iMousePosition[PL_X] = sEvent.motion.xrel * 5;
-					iMousePosition[PL_Y] = sEvent.motion.yrel * 5;
+					cursor_position[PL_X] = sEvent.motion.xrel * 5;
+					cursor_position[PL_Y] = sEvent.motion.yrel * 5;
 					if (((unsigned)sEvent.motion.x < viewport->GetWidth()) ||
 						((unsigned)sEvent.motion.x > viewport->GetWidth()) ||
 						((unsigned)sEvent.motion.y < viewport->GetHeight()) ||
@@ -378,30 +392,33 @@ void Input_ClientFrame(ClientCommand_t *input)
 
 	if(cvInputMouseFilter.value)
 	{
-		iMousePosition[PL_X] += iOldMousePosition[PL_X] * cvInputMouseFilter.value;
-		iMousePosition[PL_Y] += iOldMousePosition[PL_Y] * cvInputMouseFilter.value;
+		cursor_position[PL_X] += iOldMousePosition[PL_X] * cvInputMouseFilter.value;
+		cursor_position[PL_Y] += iOldMousePosition[PL_Y] * cvInputMouseFilter.value;
 
-		iOldMousePosition[PL_X] = iMousePosition[PL_X];
-		iOldMousePosition[PL_Y] = iMousePosition[PL_Y];
+		iOldMousePosition[PL_X] = cursor_position[PL_X];
+		iOldMousePosition[PL_Y] = cursor_position[PL_Y];
 	}
 
-	iMousePosition[PL_X] *= sensitivity.value;
-	iMousePosition[PL_Y] *= sensitivity.value;
-
-	Camera *camera = CameraManager_GetPrimaryCamera();
-	if (!camera) return;
+	cursor_position[PL_X] *= sensitivity.value;
+	cursor_position[PL_Y] *= sensitivity.value;
 
 	if(!cvInputMouseLook.value)
 	{
 		// Copied from Raynorpat's code.
 		if(in_strafe.state & 1)
-			input->sidemove += m_side.value*iMousePosition[PL_X];
+			input->sidemove += m_side.value * cursor_position[PL_X];
 
-		input->forwardmove -= m_forward.value*iMousePosition[PL_Y];
+		input->forwardmove -= m_forward.value * cursor_position[PL_Y];
 	}
-	else camera->Input(iMousePosition, 0);
+	else
+	{
+		if (!cl.current_camera)
+			return;
 
-	iMousePosition[PL_X] = iMousePosition[PL_Y] = 0;
+		cl.current_camera->Input(cursor_position, 0);
+	}
+
+	cursor_position[PL_X] = cursor_position[PL_Y] = 0;
 }
 
 void Input_ActivateMouse(void)

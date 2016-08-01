@@ -215,12 +215,10 @@ bool Shader::CheckCompileStatus()
 #endif
 }
 
-/*
-	Shader Program
-*/
+/*	Shader Program	*/
 
-ShaderProgram::ShaderProgram(std::string _name) : 
-	name(_name), 
+ShaderProgram::ShaderProgram(std::string name) : 
+	_name(name), 
 	instance(0)
 {
 	instance = vlCreateShaderProgram();
