@@ -16,19 +16,46 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
 #pragma once
 
+// wxWidgets Library
 #include <wx/wxprec.h>
-
 #ifndef WX_PRECOMP
 #	include <wx/wx.h>
 #endif
+
+// Platform Library
+#include "platform.h"
+#include "platform_log.h"
+
+// Shared Library
+#include "shared_base.h"
+
+#define XLEVELEDITOR_TITLE	"Xenon Level Editor"
+#define XLEVELEDITOR_LOG	"editor"
+
+class XLevelEditorFrame;
+
+extern ConsoleVariable_t cv_editor_maximize;
 
 class XLevelEditor : public wxApp
 {
 public:
 	virtual bool OnInit();
 
+	XLevelEditorFrame *GetPrimaryFrame() const { return _main_frame; }
+
 protected:
 private:
+	XLevelEditorFrame *_main_frame;
+};
+
+class XLevelEditorFrame : public wxFrame
+{
+public:
+	XLevelEditorFrame(const wxPoint &pos, const wxSize &size);
+
+protected:
+private:
+	wxDECLARE_EVENT_TABLE();
 };
 
 wxDECLARE_APP(XLevelEditor);

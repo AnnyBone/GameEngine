@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.40629.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Modules", "Modules", "{C752AD1B-A414-4403-A927-1F6D033C9418}"
 EndProject
@@ -40,7 +40,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Data", "utils\data\Data.vcx
 		{DDDBE2D3-7AFE-4CBF-8DE5-636374F63DF2} = {DDDBE2D3-7AFE-4CBF-8DE5-636374F63DF2}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XLevelEditor", "editor\LevelEditor\LevelEditor.vcxproj", "{B53844DD-1677-465E-8A63-DEA2325BA1F2}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XLevelEditor", "editor\XLevelEditor\LevelEditor.vcxproj", "{B53844DD-1677-465E-8A63-DEA2325BA1F2}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XSharedWidgets", "editor\XSharedWidgets\XSharedWidgets.vcxproj", "{782ABFB5-4796-4F96-B69D-7C43207358DF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -147,16 +149,34 @@ Global
 		{6F9D9A5F-6200-4117-AF38-2868DB90AC87}.Release|x64.ActiveCfg = Release|Win32
 		{B53844DD-1677-465E-8A63-DEA2325BA1F2}.Debug (OpenKatana)|Win32.ActiveCfg = Debug|Win32
 		{B53844DD-1677-465E-8A63-DEA2325BA1F2}.Debug (OpenKatana)|Win32.Build.0 = Debug|Win32
-		{B53844DD-1677-465E-8A63-DEA2325BA1F2}.Debug (OpenKatana)|x64.ActiveCfg = Debug|Win32
+		{B53844DD-1677-465E-8A63-DEA2325BA1F2}.Debug (OpenKatana)|x64.ActiveCfg = Release|Win32
+		{B53844DD-1677-465E-8A63-DEA2325BA1F2}.Debug (OpenKatana)|x64.Build.0 = Release|Win32
 		{B53844DD-1677-465E-8A63-DEA2325BA1F2}.Debug (War Pigs)|Win32.ActiveCfg = Debug|Win32
 		{B53844DD-1677-465E-8A63-DEA2325BA1F2}.Debug (War Pigs)|Win32.Build.0 = Debug|Win32
-		{B53844DD-1677-465E-8A63-DEA2325BA1F2}.Debug (War Pigs)|x64.ActiveCfg = Debug|Win32
+		{B53844DD-1677-465E-8A63-DEA2325BA1F2}.Debug (War Pigs)|x64.ActiveCfg = Release|Win32
+		{B53844DD-1677-465E-8A63-DEA2325BA1F2}.Debug (War Pigs)|x64.Build.0 = Release|Win32
 		{B53844DD-1677-465E-8A63-DEA2325BA1F2}.Debug|Win32.ActiveCfg = Debug|Win32
 		{B53844DD-1677-465E-8A63-DEA2325BA1F2}.Debug|Win32.Build.0 = Debug|Win32
 		{B53844DD-1677-465E-8A63-DEA2325BA1F2}.Debug|x64.ActiveCfg = Debug|Win32
 		{B53844DD-1677-465E-8A63-DEA2325BA1F2}.Release|Win32.ActiveCfg = Release|Win32
 		{B53844DD-1677-465E-8A63-DEA2325BA1F2}.Release|Win32.Build.0 = Release|Win32
 		{B53844DD-1677-465E-8A63-DEA2325BA1F2}.Release|x64.ActiveCfg = Release|Win32
+		{782ABFB5-4796-4F96-B69D-7C43207358DF}.Debug (OpenKatana)|Win32.ActiveCfg = Debug|Win32
+		{782ABFB5-4796-4F96-B69D-7C43207358DF}.Debug (OpenKatana)|Win32.Build.0 = Debug|Win32
+		{782ABFB5-4796-4F96-B69D-7C43207358DF}.Debug (OpenKatana)|x64.ActiveCfg = Debug|x64
+		{782ABFB5-4796-4F96-B69D-7C43207358DF}.Debug (OpenKatana)|x64.Build.0 = Debug|x64
+		{782ABFB5-4796-4F96-B69D-7C43207358DF}.Debug (War Pigs)|Win32.ActiveCfg = Debug|Win32
+		{782ABFB5-4796-4F96-B69D-7C43207358DF}.Debug (War Pigs)|Win32.Build.0 = Debug|Win32
+		{782ABFB5-4796-4F96-B69D-7C43207358DF}.Debug (War Pigs)|x64.ActiveCfg = Debug|x64
+		{782ABFB5-4796-4F96-B69D-7C43207358DF}.Debug (War Pigs)|x64.Build.0 = Debug|x64
+		{782ABFB5-4796-4F96-B69D-7C43207358DF}.Debug|Win32.ActiveCfg = Debug|Win32
+		{782ABFB5-4796-4F96-B69D-7C43207358DF}.Debug|Win32.Build.0 = Debug|Win32
+		{782ABFB5-4796-4F96-B69D-7C43207358DF}.Debug|x64.ActiveCfg = Debug|x64
+		{782ABFB5-4796-4F96-B69D-7C43207358DF}.Debug|x64.Build.0 = Debug|x64
+		{782ABFB5-4796-4F96-B69D-7C43207358DF}.Release|Win32.ActiveCfg = Release|Win32
+		{782ABFB5-4796-4F96-B69D-7C43207358DF}.Release|Win32.Build.0 = Release|Win32
+		{782ABFB5-4796-4F96-B69D-7C43207358DF}.Release|x64.ActiveCfg = Release|x64
+		{782ABFB5-4796-4F96-B69D-7C43207358DF}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -169,5 +189,6 @@ Global
 		{DDDBE2D3-7AFE-4CBF-8DE5-636374F63DF2} = {A1423832-9C78-4437-AB29-7C59F21B1D4A}
 		{6F9D9A5F-6200-4117-AF38-2868DB90AC87} = {F8F2B76F-AEE3-4130-9A78-94BF985EACC2}
 		{B53844DD-1677-465E-8A63-DEA2325BA1F2} = {F8F2B76F-AEE3-4130-9A78-94BF985EACC2}
+		{782ABFB5-4796-4F96-B69D-7C43207358DF} = {A1423832-9C78-4437-AB29-7C59F21B1D4A}
 	EndGlobalSection
 EndGlobal
