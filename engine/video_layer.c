@@ -1289,6 +1289,8 @@ unsigned int _vlTranslatePrimitiveMode(vlPrimitive_t primitive)
 */
 void _vlDrawArrays(vlPrimitive_t mode, unsigned int first, unsigned int count)
 {
+	_VL_UTIL_TRACK(_vlDrawArrays);
+
 	if (count == 0) return;
 	// Ensure that first isn't going to kill us.
 	else if (first >= count) first = 0;
@@ -1387,6 +1389,8 @@ void vlDraw(vlDraw_t *draw)
 
 void vlDrawVertexNormals(vlDraw_t *draw)
 {
+	_VL_UTIL_TRACK(vlDrawVertexNormals);
+
 	if (draw->primitive == VL_PRIMITIVE_LINES)
 		return;
 
@@ -1407,9 +1411,11 @@ void vlDrawVertexNormals(vlDraw_t *draw)
 
 void vlApplyLighting(vlDraw_t *object, vlLight_t *light, plVector3f_t position)
 {
+	_VL_UTIL_TRACK(vlApplyLighting);
+
 	// Calculate the distance.
 	plVector3f_t distvec;
-	Math_VectorSubtract(position, light->position, distvec);
+	plVectorSubtract3fv(position, light->position, distvec);
 	float distance = (light->radius - plLengthf(distvec)) / 100.0f;
 
 	for (unsigned int i = 0; i < object->numverts; i++)
@@ -1484,6 +1490,8 @@ void vlViewport(int x, int y, unsigned int width, unsigned int height)
 
 void vlSetCullMode(vlCullMode_t mode)
 {
+	_VL_UTIL_TRACK(vlSetCullMode);
+
 	if (mode == vl_state.current_cullmode)
 		return;
 #if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
@@ -1508,6 +1516,8 @@ void vlSetCullMode(vlCullMode_t mode)
 
 void vlFinish(void)
 {
+	_VL_UTIL_TRACK(vlFinish);
+
 #if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
 	glFinish();
 #elif defined (VL_MODE_GLIDE)

@@ -91,10 +91,12 @@ typedef struct
 
 #include "./shared_client_shader.h"
 
+#define	MATERIAL_MAX_TEXTURESLOTS	16
+
 typedef struct MaterialSkin_s
 {
 	// todo, this shouldn't be hardcoded size!!!!!
-	MaterialTexture_t texture[16];
+	MaterialTexture_t texture[MATERIAL_MAX_TEXTURESLOTS];
 
 	CoreShaderProgram *program;	// Current shader.
 

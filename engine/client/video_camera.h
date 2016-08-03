@@ -33,7 +33,7 @@ namespace core
 		virtual void Draw();
 		virtual void Simulate();
 
-		void Input(plVector2i_t mpos, int key);
+		void Input(ClientCommand_t *cmd, plVector2i_t mpos);
 
 		std::vector<float> GetAngles() { return std::vector<float> { _angles[0], _angles[1], _angles[2] }; }
 		void SetAngles(float x, float y, float z);
@@ -85,6 +85,7 @@ namespace core
 		void SimulateFrustum();
 		void SimulateBob();
 		void SimulateRoll();
+		void SimulatePunch();
 
 #ifdef CAMERA_LEGACY
 		void SimulateViewEntity();

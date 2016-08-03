@@ -33,9 +33,6 @@ bool
 	r_lightmap_cheatsafe, 
 	r_drawworld_cheatsafe;
 
-#define VIDEO_STATE_ENABLE   0
-#define VIDEO_STATE_DISABLE  1
-
 ConsoleVariable_t
 	cv_video_shaders = { "video_shaders", "1", true, false, "If enabled, disables usage of shaders and other fancy features." },
 	cvLitParticles = { "video_particles_lit", "0", true, false, "Sets whether or not particles are lit by dynamic lights." },

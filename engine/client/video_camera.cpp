@@ -250,7 +250,9 @@ extern "C" ClientEntity_t *CameraManager_GetViewEntity(EngineCamera *camera)
 Camera::Camera() :
 	_viewport(nullptr),
 	_viewmodel(nullptr),
-	_parententity(nullptr)
+	_parententity(nullptr),
+
+	_height(0)
 {
 	plVectorClear(_position);
 	plVectorClear(_angles);
@@ -319,7 +321,7 @@ void Camera::SetupViewMatrix()
 
 	glTranslatef(-_position[0], -_position[1], -_position[2]);
 
-#if 1
+#if 0
 	// todo, not needed?
 	glGetFloatv(GL_MODELVIEW_MATRIX, r_world_matrix);
 #endif
@@ -371,8 +373,6 @@ void Camera::Draw()
 		World_CullSurfaces();
 	}
 
-//	SetFrustum(fovxx, fovyy);
-
 	SetupProjectionMatrix();
 	SetupViewMatrix();
 
@@ -381,7 +381,7 @@ void Camera::Draw()
 	if(gl_cull.value)	vlEnable(VL_CAPABILITY_CULL_FACE);
 	else				vlDisable(VL_CAPABILITY_CULL_FACE);
 
-	//vlEnableCapability(VL_CAPABILITY_DEPTH_TEST);	// is this needed??
+	vlEnable(VL_CAPABILITY_DEPTH_TEST);	// is this needed??
 
 	//Fog_EnableGFog();
 	Sky_Draw();
@@ -647,6 +647,27 @@ void Camera::SimulateRoll()
 #endif
 }
 
+void Camera::SimulatePunch()
+{
+	// Apply camera punch, if it's enabled.
+	if (!cv_camera_punch.value)
+		return;
+
+	static plVector3f_t punch = { 0, 0, 0 };
+	for (int i = 0; i < 3; i++)
+		if (pl_origin3f[i] != punchangles[0][i])
+		{
+			// Speed determined by how far we need to lerp in 1/10th of a second.
+			float delta = (punchangles[0][i] - punchangles[1][i]) * host_frametime * 10.0f;
+			if (delta > 0)
+				punch[i] = std::fminf(punch[i] + delta, punchangles[0][i]);
+			else if (delta < 0)
+				punch[i] = std::fmaxf(punch[i] + delta, punchangles[0][i]);
+		}
+
+	plVectorAdd3fv(_angles, punch, _angles);
+}
+
 void Camera::Simulate()
 {
 	SimulateFrustum();
@@ -668,24 +689,7 @@ void Camera::Simulate()
 	SimulateParentEntity();
 	SimulateViewEntity();
 #endif
-
-	// Apply camera punch, if it's enabled.
-	if (cv_camera_punch.value)
-	{
-		static plVector3f_t punch = { 0, 0, 0 };
-		for (int i = 0; i < 3; i++)
-			if (pl_origin3f[i] != punchangles[0][i])
-			{
-				// Speed determined by how far we need to lerp in 1/10th of a second.
-				float delta = (punchangles[0][i] - punchangles[1][i]) * host_frametime * 10.0f;
-				if (delta > 0)
-					punch[i] = std::fminf(punch[i] + delta, punchangles[0][i]);
-				else if (delta < 0)
-					punch[i] = std::fmaxf(punch[i] + delta, punchangles[0][i]);
-			}
-
-		plVectorAdd3fv(_angles, punch, _angles);
-	}
+	SimulatePunch();
 
 	if (_angles[PL_PITCH] > cv_camera_maxpitch.value) _angles[PL_PITCH] = cv_camera_maxpitch.value;
 	else if (_angles[PL_PITCH] < cv_camera_minpitch.value) _angles[PL_PITCH] = cv_camera_minpitch.value;
@@ -701,10 +705,12 @@ void Camera::Simulate()
 
 ///////////////////////////////////////////////////////////////
 
-void Camera::Input(plVector2i_t mpos, int key)
+void Camera::Input(ClientCommand_t *cmd, plVector2i_t mpos)
 {
 	_angles[PL_YAW] -= m_yaw.value * mpos[PL_X];
 	_angles[PL_PITCH] += m_pitch.value * mpos[PL_Y];
+
+	plVectorCopy(_angles, cmd->viewangles);
 }
 
 /*	Frustum	*/

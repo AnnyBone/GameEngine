@@ -212,9 +212,10 @@ cvar_t	cl_anglespeedkey	= {"cl_anglespeedkey",	"1.5"			};
 */
 void CL_AdjustAngles (void)
 {
-#if 0
-	float	speed,up,down;
+	if (!cl.current_camera)
+		return;
 
+	float	speed,up,down;
 	if (in_speed.state & 1)
 		speed = ((float)host_frametime)*cl_anglespeedkey.value;
 	else
@@ -222,22 +223,21 @@ void CL_AdjustAngles (void)
 
 	if (!(in_strafe.state & 1))
 	{
-		cl.viewangles[YAW] -= speed*cl_yawspeed.value*CL_KeyState (&in_right);
-		cl.viewangles[YAW] += speed*cl_yawspeed.value*CL_KeyState (&in_left);
-		cl.viewangles[YAW] = plAngleMod(cl.viewangles[YAW]);
+		cl.current_camera->GetAngles()[YAW] -= speed*cl_yawspeed.value*CL_KeyState (&in_right);
+		cl.current_camera->GetAngles()[YAW] += speed*cl_yawspeed.value*CL_KeyState (&in_left);
+		cl.current_camera->GetAngles()[YAW] = plAngleMod(cl.current_camera->GetAngles()[YAW]);
 	}
 
 	if (in_klook.state & 1)
 	{
-		cl.viewangles[PITCH] -= speed*cl_pitchspeed.value * CL_KeyState (&in_forward);
-		cl.viewangles[PITCH] += speed*cl_pitchspeed.value * CL_KeyState (&in_back);
+		cl.current_camera->GetAngles()[PITCH] -= speed*cl_pitchspeed.value * CL_KeyState (&in_forward);
+		cl.current_camera->GetAngles()[PITCH] += speed*cl_pitchspeed.value * CL_KeyState (&in_back);
 	}
 
 	up = CL_KeyState (&in_lookup);
 	down = CL_KeyState(&in_lookdown);
-	cl.viewangles[PITCH] -= speed*cl_pitchspeed.value * up;
-	cl.viewangles[PITCH] += speed*cl_pitchspeed.value * down;
-#endif
+	cl.current_camera->GetAngles()[PITCH] -= speed*cl_pitchspeed.value * up;
+	cl.current_camera->GetAngles()[PITCH] += speed*cl_pitchspeed.value * down;
 }
 
 /*	Send the intended movement message to the server
@@ -247,7 +247,7 @@ void CL_BaseMove(ClientCommand_t *cmd)
 	if (cls.signon != SIGNONS)
 		return;
 
-	CL_AdjustAngles();
+	//CL_AdjustAngles();
 
 	memset(cmd, 0, sizeof(*cmd));
 
@@ -300,7 +300,7 @@ void CL_SendMove(ClientCommand_t *cmd)
 	if (cl.current_camera)
 	{
 		for (int i = 0; i<3; i++)
-			MSG_WriteAngle16(&buf, cl.current_camera->GetPosition()[i]);
+			MSG_WriteAngle16(&buf, cl.current_camera->GetAngles()[i]);
 	}
 	else for(int i = 0; i < 3; i++)
 		MSG_WriteAngle16(&buf, 0);	

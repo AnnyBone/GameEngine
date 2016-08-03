@@ -394,8 +394,8 @@ bool SV_VisibleToClient(ServerEntity_t *client,ServerEntity_t *test,model_t *wor
 	byte			*pvs;
 	plVector3f_t	org;
 	int				i;
-
-	Math_VectorAdd (client->v.origin, client->v.view_ofs, org);
+	
+	plVectorAdd3fv(client->v.origin, client->v.view_ofs, org);
 	pvs = SV_FatPVS (org, worldmodel);
 
 	for (i=0 ; i < test->num_leafs ; i++)

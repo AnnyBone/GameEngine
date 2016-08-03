@@ -415,7 +415,7 @@ void Input_ClientFrame(ClientCommand_t *input)
 		if (!cl.current_camera)
 			return;
 
-		cl.current_camera->Input(cursor_position, 0);
+		cl.current_camera->Input(input, cursor_position);
 	}
 
 	cursor_position[PL_X] = cursor_position[PL_Y] = 0;
