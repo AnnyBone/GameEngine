@@ -38,6 +38,9 @@ namespace core
 		std::vector<float> GetAngles() { return std::vector<float> { _angles[0], _angles[1], _angles[2] }; }
 		void SetAngles(float x, float y, float z);
 		void SetAngles(plVector3f_t angles);
+		void SetPitch(float pitch) { _angles[PL_PITCH] = pitch; }
+		void SetYaw(float yaw) { _angles[PL_YAW] = yaw; }
+		void SetRoll(float roll) { _angles[PL_ROLL] = roll; }
 		void PrintAngles();
 
 		float GetFOV() { return _fovx; }
@@ -78,6 +81,7 @@ namespace core
 		void ForceCenter() { _angles[PL_PITCH] = 0; }	// Forces the pitch to become centered.
 	
 		mleaf_t *leaf, *oldleaf;
+
 	protected:
 	private:
 		Viewport *_viewport;

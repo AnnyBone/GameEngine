@@ -210,12 +210,12 @@ cvar_t	cl_anglespeedkey	= {"cl_anglespeedkey",	"1.5"			};
 
 /*	Moves the local angle positions
 */
-void CL_AdjustAngles (void)
+void CL_AdjustAngles(void)
 {
 	if (!cl.current_camera)
 		return;
 
-	float	speed,up,down;
+	float	speed, up, down;
 	if (in_speed.state & 1)
 		speed = ((float)host_frametime)*cl_anglespeedkey.value;
 	else
@@ -223,21 +223,35 @@ void CL_AdjustAngles (void)
 
 	if (!(in_strafe.state & 1))
 	{
-		cl.current_camera->GetAngles()[YAW] -= speed*cl_yawspeed.value*CL_KeyState (&in_right);
-		cl.current_camera->GetAngles()[YAW] += speed*cl_yawspeed.value*CL_KeyState (&in_left);
-		cl.current_camera->GetAngles()[YAW] = plAngleMod(cl.current_camera->GetAngles()[YAW]);
+		cl.current_camera->SetYaw(
+			cl.current_camera->GetAngles()[YAW] - speed * cl_yawspeed.value * CL_KeyState(&in_right)
+		);
+		cl.current_camera->SetYaw(
+			cl.current_camera->GetAngles()[YAW] + speed * cl_yawspeed.value * CL_KeyState(&in_left)
+		);
+		cl.current_camera->SetYaw(
+			plAngleMod(cl.current_camera->GetAngles()[YAW])
+		);
 	}
 
 	if (in_klook.state & 1)
 	{
-		cl.current_camera->GetAngles()[PITCH] -= speed*cl_pitchspeed.value * CL_KeyState (&in_forward);
-		cl.current_camera->GetAngles()[PITCH] += speed*cl_pitchspeed.value * CL_KeyState (&in_back);
+		cl.current_camera->SetPitch(
+			cl.current_camera->GetAngles()[PL_PITCH] - speed*cl_pitchspeed.value * CL_KeyState(&in_forward)
+		);
+		cl.current_camera->SetPitch(
+			cl.current_camera->GetAngles()[PL_PITCH] + speed*cl_pitchspeed.value * CL_KeyState(&in_back)
+		);
 	}
 
-	up = CL_KeyState (&in_lookup);
+	up = CL_KeyState(&in_lookup);
 	down = CL_KeyState(&in_lookdown);
-	cl.current_camera->GetAngles()[PITCH] -= speed*cl_pitchspeed.value * up;
-	cl.current_camera->GetAngles()[PITCH] += speed*cl_pitchspeed.value * down;
+	cl.current_camera->SetPitch(
+		cl.current_camera->GetAngles()[PITCH] - speed * cl_pitchspeed.value * up
+	);
+	cl.current_camera->SetPitch(
+		cl.current_camera->GetAngles()[PITCH] + speed * cl_pitchspeed.value * down
+	);
 }
 
 /*	Send the intended movement message to the server

@@ -671,7 +671,7 @@ void Camera::SimulatePunch()
 void Camera::Simulate()
 {
 	SimulateFrustum();
-	SimulateBob();
+	//SimulateBob();
 	SimulateRoll();
 
 	// Add height (needs to be done after bob).
