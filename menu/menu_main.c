@@ -53,6 +53,8 @@ int	iMousePosition[2];
 
 int g_menuwidth = 0, g_menuheight = 0;
 
+Material_t *debug_mat = NULL;
+
 // TODO: Why are we doing this!? Should be using the one from the lib
 char *va(char *format,...)
 {
@@ -74,6 +76,8 @@ void Menu_Initialize(void)
 	Menu_UpdateScreenSize();
 
 	Engine.Cvar_RegisterVariable(&cv_menushow, NULL);
+
+	debug_mat = Engine.LoadMaterial("debug/debug_dtx");
 
 	HUD_Initialize();
 }
@@ -114,10 +118,11 @@ void Menu_Draw(CoreViewport *viewport)
 		return;
 	}
 
+	Engine.DrawMaterialSurface(debug_mat, 0, 0, 0, 128, 128, 1.0f);
+
 	if ((iMenuState & MENU_STATE_HUD) && (!(iMenuState & MENU_STATE_SCOREBOARD) && !(iMenuState & MENU_STATE_MENU)))
 		HUD_Draw();
-
-	if(iMenuState & MENU_STATE_MENU)
+	else if(iMenuState & MENU_STATE_MENU)
 	{
 		plColour_t col = { 0, 0, 0, 0.8f };
 		Engine.DrawRectangle(0, 0, g_menuwidth, g_menuheight, col);

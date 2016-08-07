@@ -91,7 +91,7 @@ data for each of these functions
 
 /*	Convert RGBA colour to something glide can understand.
 */
-GrColor_t _vlConvertColour4f(VLcolourformat format, float r, float g, float b, float a)
+GrColor_t _vlConvertColour4f(XColourFormat format, float r, float g, float b, float a)
 {
 	GrColor_t
 		gr = (GrColor_t)r,
@@ -114,7 +114,7 @@ GrColor_t _vlConvertColour4f(VLcolourformat format, float r, float g, float b, f
 
 /*	Convert RGBA colour to something glide can understand.
 */
-GrColor_t _vlConvertColour4fv(VLcolourformat format, plColour_t colour)
+GrColor_t _vlConvertColour4fv(XColourFormat format, plColour_t colour)
 {
 	return _vlConvertColour4f(format, colour[0], colour[1], colour[2], colour[3]);
 }

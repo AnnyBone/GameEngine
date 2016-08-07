@@ -45,8 +45,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "EngineEditor.h"
 #include "video.h"
 
-#define MAXIMUM_MEMORY		0x8000000	// 128MB
-
 #define CONSOLE_ERROR_TIMEOUT	60.0	// # of seconds to wait on Sys_Error running
 										//  dedicated before exiting
 #define PAUSE_SLEEP		50				// sleep time on pause or minimization
@@ -61,8 +59,6 @@ bool			bIsDedicated;
 static bool		sc_return_on_enter = false;
 HANDLE			hinput, houtput;
 #endif
-
-void Sys_InitFloatTime (void);
 
 volatile int sys_checksum;
 
@@ -190,21 +186,6 @@ int Sys_FileWrite(int handle, void *data, int count)
 	return fwrite(data,1,count,sys_handles[handle]);
 }
 
-int	Sys_FileTime (char *path)
-{
-	FILE	*f;
-
-	f = fopen(path, "rb");
-	if (f)
-	{
-		fclose(f);
-
-		return 1;
-	}
-	else
-		return -1;
-}
-
 /*
 ===============================================================================
 
@@ -300,22 +281,6 @@ double System_DoubleTime(void)
 {
 	// [19/7/2013] Copied over from QuakeSpasm ~hogsy
 	return SDL_GetTicks() / 1000.0;
-}
-
-void Sys_InitFloatTime (void)
-{
-	int		j;
-
-	System_DoubleTime ();
-
-	j = COM_CheckParm("-starttime");
-
-	if (j)
-		curtime = (double)(Q_atof(com_argv[j+1]));
-	else
-		curtime = 0.0;
-
-	lastcurtime = curtime;
 }
 
 char *Sys_ConsoleInput (void)
@@ -454,6 +419,7 @@ char *Sys_ConsoleInput (void)
 	return NULL;
 }
 
+/*
 double oldtime, newtime;
 
 bool System_Main(int iArgumentCount,char *cArguments[], bool bEmbedded)
@@ -519,8 +485,6 @@ bool System_Main(int iArgumentCount,char *cArguments[], bool bEmbedded)
 	}
 #endif
 
-	Sys_InitFloatTime();
-
 	Sys_Printf("Host_Initialize\n");
 
 	Host_Initialize(&epParameters);
@@ -565,3 +529,4 @@ void System_Loop(void)
 	Host_Frame(time);
 	oldtime = newtime;
 }
+*/

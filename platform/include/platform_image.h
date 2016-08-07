@@ -1,29 +1,48 @@
-/*	Copyright (C) 2011-2016 OldTimes Software
+/*
+DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+Version 2, December 2004
 
-	This program is free software; you can redistribute it and/or
-	modify it under the terms of the GNU General Public License
-	as published by the Free Software Foundation; either version 2
-	of the License, or (at your option) any later version.
+Copyright (C) 2011-2016 Mark E Sowden <markelswo@gmail.com>
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+Everyone is permitted to copy and distribute verbatim or modified
+copies of this license document, and changing it is allowed as long
+as the name is changed.
 
-	See the GNU General Public License for more details.
+DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+0. You just DO WHAT THE FUCK YOU WANT TO.
 */
 
-#ifndef PLATFORM_IMAGE_H
-#define	PLATFORM_IMAGE_H
+#pragma once
+
+typedef struct PLImage
+{
+	PLbyte *data;
+
+	PLuint width, height;
+	PLuint size;
+
+	PLuint flags;
+} PLImage;
+
+enum
+{
+	PLIMAGE_FLAG_RGBA,
+	PLIMAGE_FLAG_BGRA,
+
+	// S3TC Compression
+	PLIMAGE_FLAG_DXT1 = (1 << 0),
+	PLIMAGE_FLAG_DXT2 = (1 << 1),
+	PLIMAGE_FLAG_DXT3 = (1 << 2),
+	PLIMAGE_FLAG_DXT4 = (1 << 3),
+	PLIMAGE_FLAG_DXT5 = (1 << 4),
+};
 
 plEXTERN_C_START
 
-	extern uint8_t *plLoadFTXImage(FILE *fin, unsigned int *width, unsigned int *height);	// Ritual's FTX image format.
-	extern uint8_t *plLoadPPMImage(FILE *fin, unsigned int *width, unsigned int *height);	// Load old PPM image format.
+extern PLresult plLoadFTXImage(FILE *fin, PLImage *out);	// Ritual's FTX image format.
+extern PLresult plLoadPPMImage(FILE *fin, PLImage *out);	// Load PPM image format.
+extern PLresult plLoadDTXImage(FILE *fin, PLImage *out);	// Lithtech DTX image format.
 
 plEXTERN_C_END
-
-#endif // !PLATFORM_IMAGE_H

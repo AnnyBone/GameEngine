@@ -64,7 +64,7 @@ extern "C" {
 	void TextureManager_Shutdown();
 
 	// IMAGE LOADING
-	gltexture_t *TexMgr_LoadImage(model_t *owner, char *name, int width, int height, enum TextureSourceFormat format,
+	gltexture_t *TexMgr_LoadImage(model_t *owner, char *name, int width, int height, enum XTextureFormat format,
 		uint8_t *data, char *source_file, unsigned int source_offset, unsigned int flags);
 	void TexMgr_ReloadImage(gltexture_t *glt, int shirt, int pants);
 	void TexMgr_ReloadImages(void);

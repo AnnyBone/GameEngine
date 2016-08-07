@@ -33,10 +33,7 @@ Viewport *viewport_main = nullptr, *viewport_current = nullptr;
 Viewport *core::GetPrimaryViewport()
 {
 	if (!viewport_main)
-	{
-		Con_Warning("Attempted to get viewport, despite not yet being initialized!\n");
-		return nullptr;
-	}
+		throw XException("Attempted to get viewport, despite not yet being initialized!\n");
 
 	return viewport_main;
 }
@@ -44,7 +41,7 @@ Viewport *core::GetPrimaryViewport()
 void core::SetPrimaryViewport(Viewport *viewport)
 {
 	if (!viewport)
-		throw Exception("Attempted to assign an invalid viewport as primary!\n");
+		throw XException("Attempted to assign an invalid viewport as primary!\n");
 
 	viewport_main = viewport;
 
@@ -53,17 +50,14 @@ void core::SetPrimaryViewport(Viewport *viewport)
 	// I know this is stupid...
 	cl.current_camera = dynamic_cast<EngineCamera*>(viewport_main->GetCamera());
 	if (!cl.current_camera)
-		throw Exception("Failed to set client's primary camera!\n");
+		throw XException("Failed to set client's primary camera!\n");
 #endif
 }
 
 Viewport *core::GetCurrentViewport()
 {
 	if (!viewport_current)
-	{
-		Con_Warning("Attempted to get viewport, despite not yet being initialized!\n");
-		return nullptr;
-	}
+		throw XException("Attempted to get viewport, despite not yet being initialized!\n");
 
 	return viewport_current;
 }
@@ -71,7 +65,7 @@ Viewport *core::GetCurrentViewport()
 void core::SetCurrentViewport(Viewport *viewport)
 {
 	if (!viewport)
-		throw Exception("Attempted to assign an invalid viewport as primary!\n");
+		throw XException("Attempted to assign an invalid viewport as primary!\n");
 
 	viewport_current = viewport;
 }
@@ -140,7 +134,7 @@ void Viewport::Draw()
 		g_console->SetSize(_width, _height);
 
 		Screen_DrawNet();
-		Screen_DrawConsole();
+		//Screen_DrawConsole();
 		Screen_DrawFPS();
 	}
 
@@ -156,7 +150,7 @@ void Viewport::Screenshot()
 	std::string path(com_gamedir + '/');
 	path.append(g_state.path_screenshots);
 	if (!plCreateDirectory(path.c_str()))
-		throw Exception("Failed to create directory!\n%s\n", plGetError());
+		throw XException("Failed to create directory!\n%s\n", plGetError());
 
 	unsigned int i = 0;
 	std::string scrname, localname;

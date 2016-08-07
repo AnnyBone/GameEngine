@@ -1,21 +1,22 @@
-/*	Copyright (C) 1996-2001 Id Software, Inc.
-	Copyright (C) 2002-2009 John Fitzgibbons and others
-	Copyright (C) 2011-2016 OldTimes Software
+/*
+Copyright (C) 1996-2001 Id Software, Inc.
+Copyright (C) 2002-2009 John Fitzgibbons and others
+Copyright (C) 2011-2016 OldTimes Software
 
-	This program is free software; you can redistribute it and/or
-	modify it under the terms of the GNU General Public License
-	as published by the Free Software Foundation; either version 2
-	of the License, or (at your option) any later version.
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-	See the GNU General Public License for more details.
+See the GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "engine_base.h"
@@ -41,7 +42,7 @@
 	Memory is cleared / released when a server or client begins, not when they end.
 */
 
-EngineParameters_t host_parms;
+XParameters host_parms;
 
 bool	g_hostinitialized;		// True if into command execution
 
@@ -56,20 +57,20 @@ ServerClient_t	*host_client;			// current client
 
 jmp_buf 	host_abortserver;
 
-cvar_t	host_speeds		= {	"host_speeds",		"0"						};	// Set for running times
-cvar_t	host_maxfps		= {	"host_maxfps",		"300",	true			};	//johnfitz
-cvar_t	host_timescale	= {	"host_timescale",	"0"						};	//johnfitz
-cvar_t	max_edicts		= {	"max_edicts",		"2048",	true			};	//johnfitz
-ConsoleVariable_t	cv_max_dlights = { "max_dlights", "1024", true };
-cvar_t	sys_ticrate		= {	"sys_ticrate",		"0.05"					};	// dedicated server
-cvar_t	serverprofile	= {	"serverprofile",	"0"						};
-cvar_t	teamplay		= {	"teamplay",			"0",	false,	true	};
-cvar_t	skill			= {	"skill",			"1"						};	// 0 - 3
-cvar_t	deathmatch		= {	"deathmatch",		"0"						};	// 0, 1, or 2
-cvar_t	coop			= {	"coop",				"0"						};	// 0 or 1
-cvar_t	pausable		= {	"pausable",			"1"						};
-cvar_t	developer		= {	"developer",		"0"						};
-cvar_t	devstats		= {	"devstats",			"0"						};	//johnfitz -- track developer statistics that vary every frame
+ConsoleVariable_t	host_speeds		= {	"host_speeds",		"0"						};	// Set for running times
+ConsoleVariable_t	host_maxfps		= {	"host_maxfps",		"300",	true			};	//johnfitz
+ConsoleVariable_t	host_timescale	= {	"host_timescale",	"0"						};	//johnfitz
+ConsoleVariable_t	max_edicts		= {	"max_edicts",		"2048",	true			};	//johnfitz
+ConsoleVariable_t	cv_max_dlights	= { "max_dlights",		"1024", true			};
+ConsoleVariable_t	sys_ticrate		= {	"sys_ticrate",		"0.05"					};	// dedicated server
+ConsoleVariable_t	serverprofile	= {	"serverprofile",	"0"						};
+ConsoleVariable_t	teamplay		= {	"teamplay",			"0",	false,	true	};
+ConsoleVariable_t	skill			= {	"skill",			"1"						};	// 0 - 3
+ConsoleVariable_t	deathmatch		= {	"deathmatch",		"0"						};	// 0, 1, or 2
+ConsoleVariable_t	coop			= {	"coop",				"0"						};	// 0 or 1
+ConsoleVariable_t	pausable		= {	"pausable",			"1"						};
+ConsoleVariable_t	developer		= {	"developer",		"0"						};
+ConsoleVariable_t	devstats		= {	"devstats",			"0"						};	//johnfitz -- track developer statistics that vary every frame
 
 void Max_Edicts_f(void)
 {
@@ -671,7 +672,7 @@ void Host_Frame (double time)
 
 void Host_Version(void);	// [31/3/2013] See host_cmd.c ~hogsy
 
-void Host_Initialize(EngineParameters_t *parms)
+void Host_Initialize(XParameters *parms)
 {
 	if(COM_CheckParm("-minmemory"))
 		parms->memsize = MINIMUM_MEMORY;

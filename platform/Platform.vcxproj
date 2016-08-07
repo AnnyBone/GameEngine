@@ -29,7 +29,7 @@
   <ItemGroup>
     <ClCompile Include="platform.c" />
     <ClCompile Include="platform_filesystem.c" />
-    <ClCompile Include="platform_image.c" />
+    <ClCompile Include="platform_image.cpp" />
     <ClCompile Include="platform_log.c" />
     <ClCompile Include="platform_math.cpp" />
     <ClCompile Include="platform_model.cpp" />

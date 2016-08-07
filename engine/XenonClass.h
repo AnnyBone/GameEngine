@@ -18,24 +18,24 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
 /*	Base Abstract Classes	*/
 
-class CoreObject
+class XObject
 {
 	virtual void Simulate() = 0;	// Simulate the object.
 	virtual void Draw() = 0;		// Draw the object.
 };
 
-class CoreObjectManager
+class XObjectManager
 {
-	virtual void Add(CoreObject *object) = 0;		// Adds object to manager.
-	virtual void Remove(CoreObject *object) = 0;	// Removes object from manager.
-	virtual void Delete(CoreObject *object) = 0;	// Deletes object entirely.
-	virtual void Clear() = 0;						// Clears objects from manager.
+	virtual void Add(XObject *object) = 0;		// Adds object to manager.
+	virtual void Remove(XObject *object) = 0;	// Removes object from manager.
+	virtual void Delete(XObject *object) = 0;	// Deletes object entirely.
+	virtual void Clear() = 0;					// Clears objects from manager.
 
 	virtual void Draw() = 0;		// Draws all objects assigned.
 	virtual void Simulate() = 0;	// Simulates all objects assigned.
 };
 
-class CoreManager
+class XManager
 {
 	virtual void Simulate() {}
 	virtual void Draw()	{}

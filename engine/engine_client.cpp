@@ -29,7 +29,7 @@ using namespace core;
 
 namespace core
 {
-	class ClientManager : public CoreManager
+	class ClientManager : public XManager
 	{
 	};
 }

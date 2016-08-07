@@ -112,7 +112,7 @@ typedef struct
 
 namespace core
 {
-	class AudioManager : public CoreManager
+	class AudioManager : public XManager
 	{
 	public:
 		AudioManager();

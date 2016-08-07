@@ -105,9 +105,6 @@
     <ClCompile Include="engine_netdgrm.c">
       <Filter>Legacy\Network</Filter>
     </ClCompile>
-    <ClCompile Include="EngineMaterialEditor.c">
-      <Filter>Legacy\Client\Editor</Filter>
-    </ClCompile>
     <ClCompile Include="EngineVideoFog.c">
       <Filter>Legacy\Client\Video</Filter>
     </ClCompile>
@@ -195,9 +192,6 @@
     <ClCompile Include="EngineScript.c">
       <Filter>Legacy</Filter>
     </ClCompile>
-    <ClCompile Include="EngineMain.c">
-      <Filter>Legacy</Filter>
-    </ClCompile>
     <ClCompile Include="EngineHostCommand.c">
       <Filter>Legacy</Filter>
     </ClCompile>
@@ -278,9 +272,6 @@
     <ClCompile Include="EngineImage.c">
       <Filter>Client</Filter>
     </ClCompile>
-    <ClCompile Include="client\mesh.cpp">
-      <Filter>Client</Filter>
-    </ClCompile>
     <ClCompile Include="model_iqm.cpp">
       <Filter>Client\Resources\Models</Filter>
     </ClCompile>
@@ -319,6 +310,13 @@
     </ClCompile>
     <ClCompile Include="EngineClientInput.cpp">
       <Filter>Legacy\Client</Filter>
+    </ClCompile>
+    <ClCompile Include="Xenon.cpp" />
+    <ClCompile Include="XenonTexture.cpp">
+      <Filter>Client</Filter>
+    </ClCompile>
+    <ClCompile Include="client\XenonMesh.cpp">
+      <Filter>Client</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -451,9 +449,6 @@
     <ClInclude Include="EngineNetworkWinsock.h">
       <Filter>Legacy\Network\Interfaces</Filter>
     </ClInclude>
-    <ClInclude Include="EngineMaterialEditor.h">
-      <Filter>Legacy\Client\Editor</Filter>
-    </ClInclude>
     <ClInclude Include="EngineClientTempEntity.h">
       <Filter>Legacy\Client</Filter>
     </ClInclude>
@@ -464,9 +459,6 @@
       <Filter>Legacy</Filter>
     </ClInclude>
     <ClInclude Include="EngineProtocol.h">
-      <Filter>Legacy</Filter>
-    </ClInclude>
-    <ClInclude Include="EngineMain.h">
       <Filter>Legacy</Filter>
     </ClInclude>
     <ClInclude Include="EngineCommon.h">
@@ -495,7 +487,6 @@
     </ClInclude>
     <ClInclude Include="engine_exception.h" />
     <ClInclude Include="engine_base.h" />
-    <ClInclude Include="engine_class.h" />
     <ClInclude Include="..\shared\format_obj.h">
       <Filter>Shared\Formats</Filter>
     </ClInclude>
@@ -584,6 +575,8 @@
     <ClInclude Include="..\shared\shared_entity.h">
       <Filter>Shared</Filter>
     </ClInclude>
+    <ClInclude Include="XenonClass.h" />
+    <ClInclude Include="Xenon.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="engine.rc" />

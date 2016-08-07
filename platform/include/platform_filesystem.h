@@ -21,23 +21,27 @@
 
 plEXTERN_C_START
 
-extern void	plGetUserName(char *out);
-extern void	plGetWorkingDirectory(char *out);
+extern void	plGetUserName(PLchar *out);
+extern void	plGetWorkingDirectory(PLchar *out);
 
-extern void plStripExtension(char *dest, const char *in);
-extern char *plGetFileExtension(char *dest, const char *in);
-extern const char *plGetFileName(const char *path);
+extern void plStripExtension(PLchar *dest, const PLchar *in);
+extern PLchar *plGetFileExtension(PLchar *dest, const PLchar *in);
+extern const PLchar *plGetFileName(const PLchar *path);
 
-extern void		plScanDirectory(const char *path, const char *extension, void(*Function)(char *filepath));
-extern void		plLowerCasePath(char *out);
-extern bool		plCreateDirectory(const char *path);
+extern void	plScanDirectory(const PLchar *path, const PLchar *extension, void(*Function)(PLchar *filepath));
+extern void	plLowerCasePath(PLchar *out);
 
-// File I/O
-extern bool		plFileExists(const char *path);
-extern bool		plIsFileModified(time_t oldtime, const char *path);
-extern time_t	plGetFileModifiedTime(const char *path);
-extern int		plGetLittleShort(FILE *fin);
-extern int		plGetLittleLong(FILE *fin);
+extern PLbool plCreateDirectory(const PLchar *path);
+
+// File I/O ...
+
+extern PLbool plFileExists(const PLchar *path);
+extern PLbool plIsFileModified(time_t oldtime, const PLchar *path);
+
+extern time_t plGetFileModifiedTime(const PLchar *path);
+
+extern PLint plGetLittleShort(FILE *fin);
+extern PLint plGetLittleLong(FILE *fin);
 
 plEXTERN_C_END
 

@@ -308,12 +308,13 @@ gltexture_t *Material_LoadTexture(Material_t *mMaterial, MaterialSkin_t *mCurren
 	return etex;
 #endif
 
-	uint8_t *tex = Image_LoadImage(cArg,
-		&mCurrentSkin->texture[mCurrentSkin->num_textures].uiWidth,
-		&mCurrentSkin->texture[mCurrentSkin->num_textures].uiHeight);
+	PLImage *tex = Image_Load(cArg);
 	if (tex)
 	{
 		int	texflags = TEXPREF_ALPHA | TEXPREF_MIPMAP;
+
+		mCurrentSkin->texture[mCurrentSkin->num_textures].uiWidth = tex->width;
+		mCurrentSkin->texture[mCurrentSkin->num_textures].uiHeight = tex->height;
 
 		// Warn about incorrect sizes.
 		if ((mCurrentSkin->texture[mCurrentSkin->num_textures].uiWidth % 2) || (mCurrentSkin->texture[mCurrentSkin->num_textures].uiHeight % 2))

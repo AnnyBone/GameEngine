@@ -119,7 +119,7 @@ namespace core
 		float _height;	// Additional height of the camera.
 	};
 
-	class CameraManager : public CoreManager
+	class CameraManager : public XManager
 	{
 	public:
 		CameraManager();

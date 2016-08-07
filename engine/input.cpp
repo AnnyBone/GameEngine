@@ -74,7 +74,7 @@ SDL_Event sEvent;
 
 namespace core
 {
-	class Input : CoreManager
+	class Input : XManager
 	{
 	public:
 	protected:

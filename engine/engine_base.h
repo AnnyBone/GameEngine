@@ -61,16 +61,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define	MAX_SCOREBOARD		64
 
-#define	ENGINE_LOG	"engine"
-
-#ifdef _DEBUG
-#	define ENGINE_FUNCTION_START	plWriteLog(ENGINE_LOG, "Function start (%s)\n", PL_FUNCTION);
-#	define ENGINE_FUNCTION_END		plWriteLog(ENGINE_LOG, "Function end (%s)\n", PL_FUNCTION);
-#else
-#	define ENGINE_FUNCTION_START
-#	define ENGINE_FUNCTION_END
-#endif
-
 #include "cmdlib.h"
 #include "EngineCommon.h"
 #include "vid.h"
@@ -80,15 +70,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "shared_game.h"
 #include "shared_server.h"
 #include "shared_client.h"
-#include "shared_engine.h"
 #include "shared_formats.h"
 
 #ifdef __cplusplus
-#	include "engine_class.h"
-#	include "engine_exception.h"
+#	include "XenonClass.h"
+#	include "XenonException.h"
 #endif
 
-#include "EngineMain.h"
+#include "Xenon.h"
 #include "EngineConsoleVariable.h"
 #include "video_window.h"
 #include "EngineVideoDraw.h"
@@ -114,6 +103,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "crc.h"
 #include "glquake.h"
 
+// System
+double System_DoubleTime(void);
+
 #include "material.h"
 
 //=============================================================================
@@ -132,7 +124,7 @@ typedef struct
 	int		memsize;
 
 	char	basepath[MAX_QPATH];	// Base directory for game assets.
-} EngineParameters_t;
+} XParameters;
 
 
 //=============================================================================
@@ -142,7 +134,7 @@ plEXTERN_C_START
 extern bool noclip_anglehack;
 
 // host
-extern EngineParameters_t host_parms;
+extern XParameters host_parms;
 
 extern ConsoleVariable_t sys_ticrate;
 extern ConsoleVariable_t sys_nostdout;
@@ -159,7 +151,7 @@ extern	double		realtime;			// not bounded in any way, changed at
 void Host_ClearMemory(void);
 void Host_ServerFrame(void);
 void Host_InitCommands(void);
-void Host_Initialize(EngineParameters_t *parms);
+void Host_Initialize(XParameters *parms);
 void Host_Shutdown(void);
 void Host_Error(char *error, ...);
 void Host_EndGame(char *message, ...);
@@ -179,6 +171,6 @@ extern bool	bIsDedicated;
 // chase
 extern ConsoleVariable_t chase_active;
 
-void TraceLine(MathVector3f_t start, MathVector3f_t end, MathVector3f_t impact);
+void TraceLine(plVector3f_t start, plVector3f_t end, plVector3f_t impact);
 
 plEXTERN_C_END

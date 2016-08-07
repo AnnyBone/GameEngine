@@ -20,9 +20,6 @@
 
 #include "engine_base.h"
 
-#include "platform_filesystem.h"
-#include "platform_image.h"
-
 char loadfilename[PLATFORM_MAX_PATH]; //file scope so that error messages can use it
 
 bool image_pngsupport = false;
@@ -31,21 +28,50 @@ uint8_t *Image_LoadPNG(FILE *fin, unsigned int *width, unsigned int *height);
 
 //#define IMAGE_SUPPORT_KTX
 
+PLImage *Image_Load(const char *name)
+{
+	PLImage image;
+	memset(&image, 0, sizeof(PLImage));
+
+	FILE *f;
+
+	// DTX
+	sprintf(loadfilename, "%s.dtx", name);
+	COM_FOpenFile(loadfilename, &f);
+	if (f)
+	{
+		PLresult result = plLoadDTXImage(f, &image);
+		fclose(f);
+		if ((result == PL_RESULT_SUCCESS) && image.data)
+			return &image;
+
+		memset(&image, 0, sizeof(PLImage));
+
+		Con_Warning("Failed to load DTX image! (%s)\n", plGetResultString(result));
+	}
+
+	// FTX
+	sprintf(loadfilename, "%s.ftx", name);
+	COM_FOpenFile(loadfilename, &f);
+	if (f)
+	{
+		PLresult result = plLoadFTXImage(f, &image);
+		fclose(f);
+		if ((result == PL_RESULT_SUCCESS) && image.data)
+			return &image;
+
+		Con_Warning("Failed to load FTX image! (%s)\n", plGetResultString(result));
+	}
+
+	return NULL;
+}
+
 /*	Returns a pointer to hunk allocated RGBA data
 */
 uint8_t *Image_LoadImage(char *name, unsigned int *width, unsigned int *height)
 {
 	uint8_t		*bImage;
 	FILE		*f;
-
-#if defined (IMAGE_SUPPORT_KTX)
-	sprintf(loadfilename, "%s.ktx", name);
-	COM_FOpenFile(loadfilename, &f);
-	if (f)
-	{
-		
-	}
-#endif
 
 	// PNG
 	if (image_pngsupport)
@@ -67,38 +93,6 @@ uint8_t *Image_LoadImage(char *name, unsigned int *width, unsigned int *height)
 	{
 		bImage = Image_LoadTGA(f,width,height);
 		if(bImage)
-			return bImage;
-	}
-
-	// BMP
-#if 0
-	sprintf(loadfilename, "%s.bmp", name);
-	COM_FOpenFile(loadfilename, &f);
-	if (f)
-	{
-		bImage = plLoadBMPImage(f, width, height);
-		if (bImage)
-			return bImage;
-	}
-#endif
-
-	// FTX
-	sprintf(loadfilename, "%s.ftx", name);
-	COM_FOpenFile(loadfilename, &f);
-	if (f)
-	{
-		bImage = plLoadFTXImage(f, width, height);
-		if (bImage)
-			return bImage;
-	}
-
-	// PPM
-	sprintf(loadfilename, "%s.ppm", name);
-	COM_FOpenFile(loadfilename, &f);
-	if (f)
-	{
-		bImage = plLoadPPMImage(f, width, height);
-		if (bImage)
 			return bImage;
 	}
 

@@ -45,7 +45,7 @@
   <PropertyGroup Label="Globals">
     <SccProjectName />
     <SccLocalPath />
-    <ProjectName>Engine</ProjectName>
+    <ProjectName>XEngine</ProjectName>
     <ProjectGuid>{5588B942-90A0-63A2-3369-523F456D79C5}</ProjectGuid>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
@@ -149,7 +149,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>.\Debug\</OutDir>
+    <OutDir>..\lib\x86\</OutDir>
     <IntDir>.\Debug\</IntDir>
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
@@ -159,8 +159,8 @@
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>.\lib</OutDir>
-    <IntDir>.\lib</IntDir>
+    <OutDir>..\lib\x86\</OutDir>
+    <IntDir>.\Release</IntDir>
     <LinkIncremental>false</LinkIncremental>
     <TargetName>engine</TargetName>
     <IncludePath>$(IncludePath)</IncludePath>
@@ -614,7 +614,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="client\effect_sprite.cpp" />
-    <ClCompile Include="client\mesh.cpp" />
+    <ClCompile Include="client\XenonMesh.cpp" />
     <ClCompile Include="client\video_camera.cpp" />
     <ClCompile Include="client\video_viewport.cpp" />
     <ClCompile Include="EngineClientChase.c" />
@@ -632,6 +632,7 @@
     <ClCompile Include="model_iqm.cpp" />
     <ClCompile Include="model_u3d.cpp" />
     <ClCompile Include="shader_water.cpp" />
+    <ClCompile Include="XenonTexture.cpp" />
     <ClCompile Include="video_glidewindow.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
@@ -648,7 +649,6 @@
     <ClCompile Include="EngineConsoleCommand.c" />
     <ClCompile Include="EngineConsoleVariable.c" />
     <ClCompile Include="EngineEditor.c" />
-    <ClCompile Include="EngineMaterialEditor.c" />
     <ClCompile Include="video_layer.c" />
     <ClCompile Include="video_object.cpp" />
     <ClCompile Include="EngineVideoFont.c">
@@ -657,7 +657,7 @@
     <ClCompile Include="EngineGame.c" />
     <ClCompile Include="input.cpp" />
     <ClCompile Include="EngineVideoLights.c" />
-    <ClCompile Include="EngineMain.c" />
+    <ClCompile Include="Xenon.cpp" />
     <ClCompile Include="material.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
     </ClCompile>
@@ -734,7 +734,7 @@
     <ClInclude Include="client\video_sky.h" />
     <ClInclude Include="client\video_viewport.h" />
     <ClInclude Include="engine_build.h" />
-    <ClInclude Include="engine_class.h" />
+    <ClInclude Include="XenonClass.h" />
     <ClInclude Include="EngineClientTempEntity.h" />
     <ClInclude Include="EngineConsoleCommand.h" />
     <ClInclude Include="cmdlib.h" />
@@ -744,7 +744,6 @@
     <ClInclude Include="crc.h" />
     <ClInclude Include="EngineConsoleVariable.h" />
     <ClInclude Include="engine_exception.h" />
-    <ClInclude Include="EngineMaterialEditor.h" />
     <ClInclude Include="EngineVideoDraw.h" />
     <ClInclude Include="audio.h" />
     <ClInclude Include="video_framebuffer.h" />
@@ -760,7 +759,7 @@
     <ClInclude Include="material.h" />
     <ClInclude Include="EngineGame.h" />
     <ClInclude Include="input.h" />
-    <ClInclude Include="EngineMain.h" />
+    <ClInclude Include="Xenon.h" />
     <ClInclude Include="EngineMenu.h" />
     <ClInclude Include="EngineServerPhysics.h" />
     <ClInclude Include="EngineScript.h" />

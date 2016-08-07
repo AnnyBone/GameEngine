@@ -92,8 +92,6 @@ void HUD_DrawNumbers(int x, int y, int value, bool offset)
 
 void HUD_Draw(void)
 {
-	int	armor, health;
-
 	if (!cv_menuhudshow.bValue)
 		return;
 
@@ -112,11 +110,11 @@ void HUD_Draw(void)
 	// Draw the rest...
 	Engine.Client_SetMenuCanvas(CANVAS_DEFAULT);
 	
-	health = Engine.Client_GetStat(STAT_HEALTH);
+	int health = Engine.Client_GetStat(STAT_HEALTH);
 	if (health < 0)
 		health = 0;
 
-	armor = Engine.Client_GetStat(STAT_ARMOR);
+	int armor = Engine.Client_GetStat(STAT_ARMOR);
 	if (armor < 0)
 		armor = 0;
 

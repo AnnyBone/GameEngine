@@ -92,7 +92,7 @@ namespace core
 		vlShaderProgram_t instance;
 	};
 
-	class ShaderManager : public CoreManager
+	class ShaderManager : public XManager
 	{
 	public:
 		ShaderManager();

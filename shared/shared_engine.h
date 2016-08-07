@@ -23,49 +23,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 typedef struct Material_s Material_t;
 
-#ifdef __cplusplus
-
-namespace core
-{
-	class IEngine
-	{
-	public:
-		virtual void Initialize(int argc, char *argv[]) = 0;
-		virtual void Shutdown() = 0;
-
-		virtual const char *GetBasePath() = 0;
-		virtual const char *GetMaterialPath() = 0;
-		virtual const char *GetModelPath() = 0;
-		virtual const char *GetVersion() = 0;
-
-		virtual void SetViewportSize(unsigned int w, unsigned int h) = 0;
-
-		virtual Material_t *LoadMaterial(const char *path) = 0;
-		virtual model_t *LoadModel(const char *path) = 0;
-
-		virtual void UnloadMaterial(Material_t *material, bool force) = 0;
-	};
-}
-
-#endif
-
 /*	Functions exported from the engine.
 */
 typedef struct EngineExport_e
 {
-	int	iVersion;
-
-	bool(*Initialize)(int argc, char *argv[], bool bEmbedded);	// Initializes the engine.
-	bool(*IsRunning)();
-
 	char*(*GetBasePath)();		// Returns the currently active game path.
 	char*(*GetMaterialPath)();	// Returns the set material path.
 	//char*(*GetModelPath)();	// Returns the set model path.
-	char*(*GetVersion)();		// Returns the current engine version (as a string).
 
-	void(*Loop)();										// Main loop.
 	void(*SetViewportSize)(unsigned int width, unsigned int height);
-	void(*Shutdown)();									// Shutdown.
 
 	Material_t*(*LoadMaterial)(const char *cPath);
 
@@ -111,10 +77,7 @@ typedef struct EngineExport_e
 	//void(*DrawEntity)(ClientEntity_t *Entity);
 	//void(*DrawSetCanvas)(VideoCanvasType_t Canvas);
 	//void(*DrawResetCanvas)(void);
-
-	// Material Editor
-	void(*MaterialEditorInitialize)(void);					// Initializes the material editor.
-} EngineExport_t;
+} XEngineExport;
 
 /*	Functions imported by the engine.
 */
@@ -125,13 +88,49 @@ typedef struct
 	void(*PrintMessage)(char *text);
 	void(*PrintWarning)(char *text);
 	void(*PrintError)(char *text);
-} EngineImport_t;
+} XEngineImport;
 
-#define ENGINE_MODULE	"engine"
-#define ENGINE_VERSION	(sizeof(EngineImport_t)+sizeof(EngineExport_t))
+/////////////////////////////////////////////////////////////////////////////////
+
+#define ENGINE_MODULE				"engine"
+#define ENGINE_VERSION_INTERFACE	(sizeof(XEngineImport)+sizeof(XEngineExport))
 
 #if defined(KATANA)
 #	define ENGINE_FUNCTION PL_MODULE_EXPORT
 #else
 #	define ENGINE_FUNCTION
+#endif
+
+typedef enum
+{
+	XPATH_BASE,
+
+	XPATH_FONTS,
+	XPATH_LEVELS,
+	XPATH_MATERIALS,
+	XPATH_SCREENSHOTS,
+	XPATH_MODULES,
+	XPATH_SHADERS,
+	XPATH_SOUNDS,
+
+	XPATH_END
+} XPath;
+
+#ifdef __cplusplus
+
+namespace xenon
+{
+	ENGINE_FUNCTION PLresult Initialize(int argc, char *argv[]);
+	ENGINE_FUNCTION void Shutdown();
+	ENGINE_FUNCTION void Loop();
+
+	ENGINE_FUNCTION PLbool IsRunning();
+
+	ENGINE_FUNCTION const PLchar *GetPath(XPath path);
+
+	ENGINE_FUNCTION PLuint32 GetVersion();
+	ENGINE_FUNCTION PLchar *GetVersionString();
+	ENGINE_FUNCTION PLint32 GetInterfaceVersion();
+}
+
 #endif

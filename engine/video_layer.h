@@ -57,7 +57,7 @@ typedef enum
 #endif
 } VLMask_t;
 
-typedef enum VLcolourformat_struct
+typedef enum XColourFormat
 {
 #if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
 	VL_COLOURFORMAT_ARGB,
@@ -77,7 +77,7 @@ typedef enum VLcolourformat_struct
 #endif
 
 	VL_COLOURFORMAT_END
-} VLcolourformat;
+} XColourFormat;
 
 typedef enum
 {

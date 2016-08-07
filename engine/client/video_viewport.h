@@ -55,7 +55,7 @@ namespace core
 
 	namespace client
 	{
-		class ViewportManager : public CoreManager
+		class ViewportManager : public XManager
 		{
 		public:
 			ViewportManager();

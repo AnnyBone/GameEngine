@@ -109,3 +109,21 @@ char *plGetSystemError(void)
 	return sys_error;
 #endif
 }
+
+const PLchar *plGetResultString(PLresult result)
+{
+	switch (result)
+	{
+	// FILE I/O
+	case PL_RESULT_FILEREAD:		return "Failed to read complete file!";
+	case PL_RESULT_FILESIZE:		return "Failed to get valid file size!";
+	case PL_RESULT_FILETYPE:		return "Invalid file type!";
+	case PL_RESULT_FILEVERSION:		return "Unsupported file version!";
+	case PL_RESULT_SUCCESS:			return "Success";
+
+	// MEMORY
+	case PL_RESULT_MEMORYALLOC:		return "Failed to allocate memory!";
+
+	default:						return "An unknown error occured!";
+	}
+}

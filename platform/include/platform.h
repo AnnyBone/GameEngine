@@ -247,8 +247,7 @@ typedef unsigned short int		PLuint16;
 typedef unsigned long int		PLuint32;
 typedef unsigned long long int	PLuint64;
 typedef char					PLchar;
-typedef	unsigned char			PLuchar;
-typedef unsigned char			PLbool;
+typedef	unsigned char			PLuchar, PLbyte, PLbool;
 typedef void					PLvoid;
 typedef float					PLfloat;
 typedef double					PLdouble;
@@ -256,14 +255,21 @@ typedef short					PLshort;
 
 //////////////////////////////////////////////////////////////////
 
-#include "platform_log.h"
-#include "platform_window.h"
-#include "platform_math.h"
-#include "platform_video_layer.h"
+/*	Error Management Functionality	*/
 
-/*
-	Error Management Functionality
-*/
+typedef enum
+{
+	PL_RESULT_SUCCESS,
+	
+	// FILE I/O
+	PL_RESULT_FILEREAD,		// Failed to read file!
+	PL_RESULT_FILETYPE,		// Unexpected file type!
+	PL_RESULT_FILEVERSION,	// Unsupported version!
+	PL_RESULT_FILESIZE,		// Invalid file size!
+
+	// MEMORY
+	PL_RESULT_MEMORYALLOC,	// Ran out of memory!
+} PLresult;
 
 //static jmp_buf jbException;
 
@@ -281,14 +287,18 @@ plSetErrorFunction(PL_FUNCTION);
 
 plEXTERN_C_START
 
-	extern void	plResetError(void);									// Resets the error message to "null", so you can ensure you have the correct message from the library.
-	extern void	plSetError(const char *msg, ...);					// Sets the error message, so we can grab it outside the library.
-	extern void	plSetErrorFunction(const char *function, ...);		// Sets the currently active function, for error reporting.
+extern void	plResetError(void);									// Resets the error message to "null", so you can ensure you have the correct message from the library.
+extern void	plSetError(const char *msg, ...);					// Sets the error message, so we can grab it outside the library.
+extern void	plSetErrorFunction(const char *function, ...);		// Sets the currently active function, for error reporting.
 
-	extern char *plGetSystemError(void);	// Returns the error message currently given by the operating system.
-	extern char	*plGetError(void);			// Returns the last recorded error.
+extern const PLchar *plGetResultString(PLresult result);
+
+extern char *plGetSystemError(void);	// Returns the error message currently given by the operating system.
+extern char	*plGetError(void);			// Returns the last recorded error.
 
 plEXTERN_C_END
+
+//////////////////////////////////////////////////////////////////
 
 /*	Converts string to time.
 	http://stackoverflow.com/questions/1765014/convert-string-from-date-into-a-time-t
@@ -309,3 +319,13 @@ static PL_INLINE time_t plStringToTime(const char *ts)
 
 	return mktime(&time);
 }
+
+//////////////////////////////////////////////////////////////////
+
+#ifndef PL_IGNORE_PLATFORM_HEADERS
+#	include "platform_log.h"
+#	include "platform_window.h"
+#	include "platform_math.h"
+#	include "platform_image.h"
+#	include "platform_video_layer.h"
+#endif
