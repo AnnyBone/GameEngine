@@ -205,9 +205,6 @@ void AudioManager::Frame()
 AudioSound_t *AudioManager::AddSound()
 {
 	AudioSound_t *sound = new AudioSound_t;
-	if (!sound)
-		throw XException("Failed to allocate new sound!\n");
-
 	memset(sound, 0, sizeof(AudioSound_t));
 	sounds.push_back(sound);
 

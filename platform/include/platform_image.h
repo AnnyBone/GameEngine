@@ -22,27 +22,24 @@ typedef struct PLImage
 
 	PLuint width, height;
 	PLuint size;
+	PLuint levels;
+
+	PLchar path[PL_MAX_PATH];
+
+	VLTextureFormat format;
 
 	PLuint flags;
 } PLImage;
 
-enum
-{
-	PLIMAGE_FLAG_RGBA,
-	PLIMAGE_FLAG_BGRA,
-
-	// S3TC Compression
-	PLIMAGE_FLAG_DXT1 = (1 << 0),
-	PLIMAGE_FLAG_DXT2 = (1 << 1),
-	PLIMAGE_FLAG_DXT3 = (1 << 2),
-	PLIMAGE_FLAG_DXT4 = (1 << 3),
-	PLIMAGE_FLAG_DXT5 = (1 << 4),
-};
+#define PLIMAGE_EXTENSION_FTX	".ftx"	// Ritual's FTX image format.
+#define PLIMAGE_EXTENSION_DTX	".dtx"	// Lithtech's DTX image format.
+#define PLIMAGE_EXTENSION_PPM	".ppm"	// Portable Pixel Map format.
+#define PLIMAGE_EXTENSION_TGA	".tga"
 
 plEXTERN_C_START
 
 extern PLresult plLoadFTXImage(FILE *fin, PLImage *out);	// Ritual's FTX image format.
-extern PLresult plLoadPPMImage(FILE *fin, PLImage *out);	// Load PPM image format.
-extern PLresult plLoadDTXImage(FILE *fin, PLImage *out);	// Lithtech DTX image format.
+extern PLresult plLoadPPMImage(FILE *fin, PLImage *out);	// Portable Pixel Map format.
+extern PLresult plLoadDTXImage(FILE *fin, PLImage *out);	// Lithtech's DTX image format.
 
 plEXTERN_C_END

@@ -628,7 +628,7 @@
     <ClCompile Include="conproc.c" />
     <ClCompile Include="crc.c" />
     <ClCompile Include="EngineConsole.cpp" />
-    <ClCompile Include="engine_exception.cpp" />
+    <ClCompile Include="XenonException.cpp" />
     <ClCompile Include="model_iqm.cpp" />
     <ClCompile Include="model_u3d.cpp" />
     <ClCompile Include="shader_water.cpp" />
@@ -733,7 +733,7 @@
     <ClInclude Include="client\video_draw.h" />
     <ClInclude Include="client\video_sky.h" />
     <ClInclude Include="client\video_viewport.h" />
-    <ClInclude Include="engine_build.h" />
+    <ClInclude Include="XenonBuild.h" />
     <ClInclude Include="XenonClass.h" />
     <ClInclude Include="EngineClientTempEntity.h" />
     <ClInclude Include="EngineConsoleCommand.h" />
@@ -743,7 +743,7 @@
     <ClInclude Include="EngineConsole.h" />
     <ClInclude Include="crc.h" />
     <ClInclude Include="EngineConsoleVariable.h" />
-    <ClInclude Include="engine_exception.h" />
+    <ClInclude Include="XenonException.h" />
     <ClInclude Include="EngineVideoDraw.h" />
     <ClInclude Include="audio.h" />
     <ClInclude Include="video_framebuffer.h" />
@@ -792,6 +792,7 @@
     <ClInclude Include="EngineClientView.h" />
     <ClInclude Include="winquake.h" />
     <ClInclude Include="world.h" />
+    <ClInclude Include="XenonTexture.h" />
     <ClInclude Include="zone.h" />
   </ItemGroup>
   <ItemGroup>

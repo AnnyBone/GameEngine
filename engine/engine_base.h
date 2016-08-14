@@ -39,7 +39,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "shared_base.h"
 
-#include "engine_build.h"
+#include "XenonBuild.h"
 
 #define MINIMUM_MEMORY	0x2000000	// 32MB
 
@@ -67,16 +67,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "sys.h"
 #include "zone.h"
 
-#include "shared_game.h"
-#include "shared_server.h"
-#include "shared_client.h"
-#include "shared_formats.h"
-
-#ifdef __cplusplus
-#	include "XenonClass.h"
-#	include "XenonException.h"
-#endif
-
 #include "Xenon.h"
 #include "EngineConsoleVariable.h"
 #include "video_window.h"
@@ -95,6 +85,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "EngineModel.h"
 #include "EngineImage.h" //johnfitz
 #include "EngineVideoTextureManager.h"
+
 #include "world.h"
 #include "keys.h"
 #include "EngineConsole.h"

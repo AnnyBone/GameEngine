@@ -32,21 +32,21 @@ protected:
 private:
 
 	// Textures
-	vlUniform_t *u_diffusemap;
-	vlUniform_t *u_detailmap;
-	vlUniform_t *u_fullbrightmap;
-	vlUniform_t *u_spheremap;
+	VLUniform *u_diffusemap;
+	VLUniform *u_detailmap;
+	VLUniform *u_fullbrightmap;
+	VLUniform *u_spheremap;
 
 	// Alpha
-	vlUniform_t *u_alphaclamp;
-	vlUniform_t *u_alphatest;
+	VLUniform *u_alphaclamp;
+	VLUniform *u_alphatest;
 
 	// Lighting
-	vlUniform_t *u_lightcolour;
-	vlUniform_t *u_lightposition;
+	VLUniform *u_lightcolour;
+	VLUniform *u_lightposition;
 
 	// Vertex scaling
-	vlUniform_t *u_vertexscale;
+	VLUniform *u_vertexscale;
 
 	bool	alpha_test;
 	float	alpha_clamp;

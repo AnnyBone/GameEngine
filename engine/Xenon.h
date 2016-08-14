@@ -16,7 +16,18 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
 #pragma once
 
+#include "shared_game.h"
+#include "shared_server.h"
+#include "shared_client.h"
+#include "shared_formats.h"
 #include "shared_engine.h"
+
+#ifdef __cplusplus
+#	include "XenonClass.h"
+#	include "XenonException.h"
+
+#	include "XenonTexture.h"
+#endif
 
 #define	ENGINE_LOG	"engine"
 

@@ -20,7 +20,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef __ENGINEEDITOR__
 #define	__ENGINEEDITOR__
 
-void Editor_Frame(void);
 void Editor_Input(int iKey);
 
 #endif

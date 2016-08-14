@@ -19,53 +19,53 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 #include "video.h"
 
 /*
-	This document acts as a layer between the video sub-system
-	and the graphics API.
-	
-	All graphics API functionality should be here.
+This document acts as a layer between the video sub-system
+and the graphics API.
 
-	TODO:
-		- This shouldn't rely on Katana.
-		- Move this into platform?
-		- Add OpenGL style lighting pipeline.
-		- Matrix functionality, linked in with platform lib.
-		- Add some... Object manager of sorts?
-		- Simulate quads primitive type
+All graphics API functionality should be here.
+
+TODO:
+- This shouldn't rely on Katana.
+- Move this into platform?
+- Add OpenGL style lighting pipeline.
+- Matrix functionality, linked in with platform lib.
+- Add some... Object manager of sorts?
+- Simulate quads primitive type
 */
 
-typedef struct vlState_s
+typedef struct VLState
 {
 	unsigned int num_cards;		// Number of video cards.
 
-	vlCullMode_t	current_cullmode;
+	VLCullMode	current_cullmode;
 
 	plColour_t		current_clearcolour;
 	plColour_t		current_colour;			// Current global colour.
 
 	unsigned int	current_capabilities;	// Enabled capabilities.
-	vlTexture_t		current_texture;
+	VLTexture		current_texture;
 
 	// Shader state.
 	vlShaderProgram_t	current_program;
 
 	// Hardware / Driver information
 
-	const char *hw_vendor;
-	const char *hw_renderer;
-	const char *hw_version;
-	const char *hw_extensions;
+	const PLchar *hw_vendor;
+	const PLchar *hw_renderer;
+	const PLchar *hw_version;
+	const PLchar *hw_extensions;
 
-	int hw_maxtexturesize;
+	PLint hw_maxtexturesize;
 
 	////////////////////////////////////////
 
-	int viewport_x, viewport_y;
-	unsigned int viewport_width, viewport_height;
+	PLint viewport_x, viewport_y;
+	PLuint viewport_width, viewport_height;
 
-	bool mode_debug;
-} vlState_t;
+	PLbool mode_debug;
+} VLState;
 
-vlState_t vl_state;
+VLState vl_state;
 
 /*	TODO:
 - Add somewhere we can store tracking
@@ -91,7 +91,7 @@ data for each of these functions
 
 /*	Convert RGBA colour to something glide can understand.
 */
-GrColor_t _vlConvertColour4f(XColourFormat format, float r, float g, float b, float a)
+GrColor_t _vlConvertColour4f(VLColourFormat format, float r, float g, float b, float a)
 {
 	GrColor_t
 		gr = (GrColor_t)r,
@@ -114,7 +114,7 @@ GrColor_t _vlConvertColour4f(XColourFormat format, float r, float g, float b, fl
 
 /*	Convert RGBA colour to something glide can understand.
 */
-GrColor_t _vlConvertColour4fv(XColourFormat format, plColour_t colour)
+GrColor_t _vlConvertColour4fv(VLColourFormat format, plColour_t colour)
 {
 	return _vlConvertColour4f(format, colour[0], colour[1], colour[2], colour[3]);
 }
@@ -202,22 +202,37 @@ void _vlShutdownDirect3D(void)
 
 #elif defined (VL_MODE_OPENGL)
 
-bool vl_gl_generate_mipmap			= false;
-bool vl_gl_depth_texture			= false;
-bool vl_gl_shadow					= false;
-bool vl_gl_vertex_buffer_object		= false;
+PLbool vl_gl_generate_mipmap			= false;
+PLbool vl_gl_depth_texture				= false;
+PLbool vl_gl_shadow						= false;
+PLbool vl_gl_vertex_buffer_object		= false;
+PLbool vl_gl_texture_compression		= false;
+PLbool vl_gl_generate_mipmap			= false;
+PLbool vl_gl_texture_compression_s3tc	= false;
 
-unsigned int vl_gl_version_major = 0;
-unsigned int vl_gl_version_minor = 0;
+PLuint vl_gl_version_major = 0;
+PLuint vl_gl_version_minor = 0;
+
+#define VL_GL_VERSION_45	((vl_gl_version_major >= 4) && (vl_gl_version_minor >= 5))
+#define VL_GL_VERSION_44	((vl_gl_version_major >= 4) && (vl_gl_version_minor >= 4))
+#define VL_GL_VERSION_43	((vl_gl_version_major >= 4) && (vl_gl_version_minor >= 3))
+#define VL_GL_VERSION_42	((vl_gl_version_major >= 4) && (vl_gl_version_minor >= 2))
+#define VL_GL_VERSION_41	((vl_gl_version_major >= 4) && (vl_gl_version_minor >= 1))
+#define VL_GL_VERSION_40	(vl_gl_version_major >= 4)
+#define VL_GL_VERSION_33	((vl_gl_version_major >= 3) && (vl_gl_version_minor >= 3))
+#define VL_GL_VERSION_32	((vl_gl_version_major >= 3) && (vl_gl_version_minor >= 2))
+#define VL_GL_VERSION_31	((vl_gl_version_major >= 3) && (vl_gl_version_minor >= 1))
+#define VL_GL_VERSION_30	(vl_gl_version_major >= 3)
+#define VL_GL_VERSION_21	((vl_gl_version_major >= 2) && (vl_gl_version_minor >= 1))
+#define VL_GL_VERSION_20	(vl_gl_version_major >= 2)
+#define VL_GL_VERSION_15	((vl_gl_version_major >= 1) && (vl_gl_version_minor >= 5))
+#define VL_GL_VERSION_14	((vl_gl_version_major >= 1) && (vl_gl_version_minor >= 4))
 
 void _vlInitOpenGL(void)
 {
 	unsigned int err = glewInit();
 	if (err != GLEW_OK)
 		Sys_Error("Failed to initialize glew!\n%s\n", glewGetErrorString(err));
-
-	if (!GLEW_VERSION_2_0)
-		Sys_Error("Your hardware does not support OpenGL 2.0!\n");
 
 	// Check that the required capabilities are supported.
 	if (!GLEW_ARB_multitexture) Sys_Error("Video hardware incapable of multi-texturing!\n");
@@ -226,15 +241,21 @@ void _vlInitOpenGL(void)
 	//else if (!GLEE_EXT_fog_coord) Sys_Error("EXT_fog_coord isn't supported by your hardware!\n");
 	else if (!GLEW_ARB_vertex_program || !GLEW_ARB_fragment_program) Sys_Error("Shaders aren't supported by this hardware!\n");
 
-	// Optional capabilities.
-	if (GLEW_SGIS_generate_mipmap) Video.extensions.generate_mipmap = true;
+	// Optional capabilities...
+
+	if (GLEW_SGIS_generate_mipmap) vl_gl_generate_mipmap = true;
 	else Con_Warning("Hardware mipmap generation isn't supported!\n");
-	if (GLEW_ARB_depth_texture) Video.extensions.depth_texture = true;
+	if (GLEW_ARB_depth_texture) vl_gl_depth_texture = true;
 	else Con_Warning("ARB_depth_texture isn't supported by your hardware!\n");
-	if (GLEW_ARB_shadow) Video.extensions.shadow = true;
+	if (GLEW_ARB_shadow) vl_gl_shadow = true;
 	else Con_Warning("ARB_shadow isn't supported by your hardware!\n");
-	if (GLEW_ARB_vertex_buffer_object) Video.extensions.vertex_buffer_object = true;
+	if (GLEW_ARB_vertex_buffer_object) vl_gl_vertex_buffer_object = true;
 	else Con_Warning("Hardware doesn't support Vertex Buffer Objects!\n");
+
+	if (GLEW_ARB_texture_compression)
+	{
+		if (GLEW_EXT_texture_compression_s3tc) vl_gl_texture_compression_s3tc = true;
+	}
 
 	const char *version = vlGetString(VL_STRING_VERSION);
 	vl_gl_version_major = (unsigned int)atoi(&version[0]);
@@ -348,7 +369,7 @@ const char *vlGetExtensions(void)
 #endif
 }
 
-const char *vlGetString(vlString_t string)
+const char *vlGetString(VLString string)
 {
 	_VL_UTIL_TRACK(vlGetString);
 
@@ -531,10 +552,110 @@ vlAttribute_t vlGetAttributeLocation(vlShaderProgram_t *program, const char *nam
 	TEXTURES
 ===========================*/
 
-void vlTexImage2D(vlTextureTarget_t target, vlTextureFormat_t internal_format, vlTextureFormat_t format, int width, int height, const void *data)
+VLTexture vlGenerateTexture(void)
 {
-#ifdef VL_MODE_OPENGL
-	glTexImage2D(target, 0, internal_format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+#if defined (VL_MODE_OPENGL)
+	PLint id;
+	glGenTextures(1, &id);
+	return id;
+#endif
+}
+
+void vlDeleteTexture(VLTexture *texture)
+{
+#if defined (VL_MODE_OPENGL)
+	glDeleteTextures(1, texture);
+#endif
+}
+
+void vlUploadTexture(VLTexture texture, const VLTextureInfo *upload)
+{
+	vlBindTexture(VL_TEXTURE_2D, texture);
+
+#if defined (VL_MODE_OPENGL_CORE)
+#elif defined (VL_MODE_OPENGL)
+	PLuint levels = upload->levels;
+	if (vlIsEnabled(VL_CAPABILITY_GENERATEMIPMAP))
+	{
+		if(levels == 0) levels = 5;
+		if (!VL_GL_VERSION_30 && VL_GL_VERSION_14)
+		{
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, levels);
+			glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
+		}
+	}
+
+	PLbool compressed = false;
+	// Check the format, to see if we're getting a compressed
+	// format type.
+	switch (upload->format)
+	{
+	case VL_TEXTUREFORMAT_RGBA_DXT1:
+	case VL_TEXTUREFORMAT_RGBA_DXT3:
+	case VL_TEXTUREFORMAT_RGBA_DXT5:
+	case VL_TEXTUREFORMAT_RGB_DXT1:
+	case VL_TEXTUREFORMAT_RGB_FXT1:
+		compressed = true;
+		break;
+	}
+
+	if (VL_GL_VERSION_42)
+	{
+		glTexStorage2D(GL_TEXTURE_2D, levels, upload->format, upload->width, upload->height);
+		if(compressed)
+			glCompressedTexSubImage2D(
+				GL_TEXTURE_2D, 
+				0, 
+				0, 0, 
+				upload->width, upload->height,
+				upload->format, 
+				upload->size, 
+				upload->data);
+		else
+			glTexSubImage2D(
+				GL_TEXTURE_2D, 
+				0, 
+				0, 0, 
+				upload->width, upload->height,
+				upload->format,
+				GL_UNSIGNED_BYTE, 
+				upload->data);
+	}
+	else
+	{
+		if (compressed)
+			glCompressedTexImage2D(
+				GL_TEXTURE_2D,
+				0,
+				upload->format,
+				upload->width, upload->height,
+				0,
+				upload->pixel_format,
+				upload->data);
+		else
+			glTexImage2D(
+				GL_TEXTURE_2D, 
+				0, 
+				upload->format,
+				upload->width, upload->height,
+				0, 
+				upload->pixel_format,
+				GL_UNSIGNED_BYTE, 
+				upload->data);
+	}
+
+	if (vlIsEnabled(VL_CAPABILITY_GENERATEMIPMAP))
+	{
+		if (VL_GL_VERSION_30)
+			glGenerateMipmap(GL_TEXTURE_2D);
+		else if(VL_GL_VERSION_14)
+			glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE);
+		else
+		{
+			// todo, do it in sw
+		}
+	}
 #endif
 }
 
@@ -573,7 +694,7 @@ void vlActiveTexture(unsigned int texunit)
 	Video.current_textureunit = texunit;
 }
 
-void vlBindTexture(PLuint target, vlTexture_t texture)
+void vlBindTexture(PLuint target, VLTexture texture)
 {
 	_VL_UTIL_TRACK(vlBindTexture);
 
@@ -587,20 +708,44 @@ void vlBindTexture(PLuint target, vlTexture_t texture)
 	vl_state.current_texture = texture;
 }
 
-/*	TODO:
-		Modify this so it works as a replacement for TexMgr_SetFilterModes.
-*/
-void vlSetTextureFilter(vlTextureFilter_t filter)
+void vlSetTextureFilter(VLTexture texture, VLTextureFilter filter)
 {
 	_VL_UTIL_TRACK(vlSetTextureFilter);
 
+	vlBindTexture(VL_TEXTURE_2D, texture);
+
 #ifdef VL_MODE_OPENGL
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
+	PLuint filtermin = filter, filtermax = filter;
+	switch (filter)
+	{
+	case VL_TEXTUREFILTER_MIPMAP_LINEAR:
+		filtermax = GL_LINEAR; filtermin = GL_LINEAR_MIPMAP_LINEAR;
+		break;
+	case VL_TEXTUREFILTER_MIPMAP_NEAREST:
+		filtermax = GL_NEAREST; filtermin = GL_NEAREST_MIPMAP_NEAREST;
+		break;
+	case VL_TEXTUREFILTER_MIPMAP_LINEAR_NEAREST:
+		filtermax = GL_LINEAR; filtermin = GL_LINEAR_MIPMAP_NEAREST;
+		break;
+	case VL_TEXTUREFILTER_MIPMAP_NEAREST_LINEAR:
+		filtermax = GL_NEAREST; filtermin = GL_NEAREST_MIPMAP_LINEAR;
+	}
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filtermin);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filtermax);
 #endif
 }
 
-int _vlTranslateTextureEnvironmentMode(vlTextureEnvironmentMode_t TextureEnvironmentMode)
+void vlSetTextureAnisotropy(VLTexture texture, PLfloat amount)
+{
+	vlBindTexture(VL_TEXTURE_2D, texture);
+
+#if defined (VL_MODE_OPENGL)
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, amount);
+#endif
+}
+
+int _vlTranslateTextureEnvironmentMode(VLTextureEnvironmentMode TextureEnvironmentMode)
 {
 	_VL_UTIL_TRACK(_vlTranslateTextureEnvironmentMode);
 
@@ -628,7 +773,7 @@ int _vlTranslateTextureEnvironmentMode(vlTextureEnvironmentMode_t TextureEnviron
 	return 0;
 }
 
-void vlSetTextureEnvironmentMode(vlTextureEnvironmentMode_t TextureEnvironmentMode)
+void vlSetTextureEnvironmentMode(VLTextureEnvironmentMode TextureEnvironmentMode)
 {
 	_VL_UTIL_TRACK(vlSetTextureEnvironmentMode);
 
@@ -784,7 +929,7 @@ void vlDisable(unsigned int cap)
 
 /*	TODO: Want more control over the dynamics of this...
 */
-void vlBlendFunc(vlBlend_t modea, vlBlend_t modeb)
+void vlBlendFunc(VLBlend modea, VLBlend modeb)
 {
 	_VL_UTIL_TRACK(vlBlendFunc);
 
@@ -819,7 +964,7 @@ void vlDepthMask(bool mode)
 
 // RENDER BUFFER OBJECTS
 
-void vlGenerateRenderBuffer(vlRenderBuffer_t *buffer)
+void vlGenerateRenderBuffer(VLRenderBuffer *buffer)
 {
 	_VL_UTIL_TRACK(vlGenerateRenderBuffer);
 
@@ -828,14 +973,14 @@ void vlGenerateRenderBuffer(vlRenderBuffer_t *buffer)
 #endif
 }
 
-void vlDeleteRenderBuffer(vlRenderBuffer_t *buffer)
+void vlDeleteRenderBuffer(VLRenderBuffer *buffer)
 {
 #ifdef VL_MODE_OPENGL
 	glDeleteRenderbuffers(1, buffer);
 #endif
 }
 
-void vlBindRenderBuffer(vlRenderBuffer_t buffer)
+void vlBindRenderBuffer(VLRenderBuffer buffer)
 {
 #ifdef VL_MODE_OPENGL
 	glBindRenderbuffer(GL_RENDERBUFFER, buffer);
@@ -964,7 +1109,7 @@ void vlSwapBuffers(void)
 
 /*	Generates a single framebuffer.
 */
-void vlGenerateFrameBuffer(vlFrameBuffer_t *buffer)
+void vlGenerateFrameBuffer(VLFrameBuffer *buffer)
 {
 #ifdef VL_MODE_OPENGL
 	glGenFramebuffers(1, buffer);
@@ -1095,7 +1240,7 @@ void vlFogColour3fv(plColour_t rgba)
 /*	Generates each of the buffers and other
 	data necessary for the draw call.
 */
-vlDraw_t *vlCreateDraw(vlPrimitive_t primitive, uint32_t num_tris, uint32_t num_verts)
+vlDraw_t *vlCreateDraw(VLPrimitive primitive, uint32_t num_tris, uint32_t num_verts)
 {
 	_VL_UTIL_TRACK(vlCreateDraw);
 
@@ -1232,7 +1377,7 @@ void vlEndDraw(vlDraw_t *draw)
 
 typedef struct _vlPrimitiveTranslate_s
 {
-	vlPrimitive_t primitive;
+	VLPrimitive primitive;
 
 	unsigned int gl;
 
@@ -1272,7 +1417,7 @@ _vlPrimitiveTranslate_t vl_primitives[] =
 #endif
 };
 
-unsigned int _vlTranslatePrimitiveMode(vlPrimitive_t primitive)
+unsigned int _vlTranslatePrimitiveMode(VLPrimitive primitive)
 {
 	_VL_UTIL_TRACK(_vlTranslatePrimitiveMode);
 
@@ -1287,7 +1432,7 @@ unsigned int _vlTranslatePrimitiveMode(vlPrimitive_t primitive)
 /*	Deals with tris view and different primitive types, then finally draws
 	the given arrays.
 */
-void _vlDrawArrays(vlPrimitive_t mode, unsigned int first, unsigned int count)
+void _vlDrawArrays(VLPrimitive mode, unsigned int first, unsigned int count)
 {
 	_VL_UTIL_TRACK(_vlDrawArrays);
 
@@ -1300,7 +1445,7 @@ void _vlDrawArrays(vlPrimitive_t mode, unsigned int first, unsigned int count)
 #endif
 }
 
-void _vlDrawElements(vlPrimitive_t mode, unsigned int count, unsigned int type, const void *indices)
+void _vlDrawElements(VLPrimitive mode, unsigned int count, unsigned int type, const void *indices)
 {
 	_VL_UTIL_TRACK(_vlDrawElements);
 
@@ -1488,7 +1633,7 @@ void vlViewport(int x, int y, unsigned int width, unsigned int height)
 #endif
 }
 
-void vlSetCullMode(vlCullMode_t mode)
+void vlSetCullMode(VLCullMode mode)
 {
 	_VL_UTIL_TRACK(vlSetCullMode);
 

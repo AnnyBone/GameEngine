@@ -22,7 +22,7 @@ typedef struct vlState_s
 {
 	unsigned int num_cards;	// Number of detected video cards.
 
-	vlCullMode_t	current_cullmode;		// Vertex cull mode.
+	VLCullMode		current_cullmode;		// Vertex cull mode.
 	plColour_t		current_clearcolour;	// Buffer clear colour.
 	unsigned int	current_capabilities;	// Enabled capabilities.
 

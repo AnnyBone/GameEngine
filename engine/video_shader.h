@@ -23,19 +23,19 @@ namespace core
 	class Shader : public IShader
 	{
 	public:
-		Shader(vlShaderType_t type);
+		Shader(VLShaderType type);
 		~Shader();
 
 		bool Load(const char *path);
 		bool CheckCompileStatus();
 
 		unsigned int GetInstance() { return instance; }
-		vlShaderType_t GetType() { return type; }
+		VLShaderType GetType() { return type; }
 
 	private:
 		unsigned int instance;
 
-		vlShaderType_t type;
+		VLShaderType type;
 
 		const char	*source;
 		char		source_path[PLATFORM_MAX_PATH];
@@ -50,7 +50,7 @@ namespace core
 
 		virtual void Initialize() = 0;
 
-		void RegisterShader(std::string path, vlShaderType_t type);
+		void RegisterShader(std::string path, VLShaderType type);
 		
 		virtual void RegisterAttributes();
 
@@ -63,18 +63,18 @@ namespace core
 
 		bool IsActive()	{ return (vlGetCurrentShaderProgram() == instance); }
 
-		vlUniform_t *RegisterUniform(std::string name, vlUniformType_t type);
+		VLUniform *RegisterUniform(std::string name, VLUniformType type);
 
-		void SetUniformVariable(vlUniform_t *uniform, float x, float y, float z);
-		void SetUniformVariable(vlUniform_t *uniform, plVector3f_t vector);
-		void SetUniformVariable(vlUniform_t *uniform, float x, float y, float z, float a);
-		void SetUniformVariable(vlUniform_t *uniform, int i);
-		void SetUniformVariable(vlUniform_t *uniform, unsigned int i);
-		void SetUniformVariable(vlUniform_t *uniform, float f);
-		void SetUniformVariable(vlUniform_t *uniform, double d);
+		void SetUniformVariable(VLUniform *uniform, float x, float y, float z);
+		void SetUniformVariable(VLUniform *uniform, plVector3f_t vector);
+		void SetUniformVariable(VLUniform *uniform, float x, float y, float z, float a);
+		void SetUniformVariable(VLUniform *uniform, int i);
+		void SetUniformVariable(VLUniform *uniform, unsigned int i);
+		void SetUniformVariable(VLUniform *uniform, float f);
+		void SetUniformVariable(VLUniform *uniform, double d);
 
 		int GetUniformLocation(std::string name);
-		vlUniform_t *GetUniform(std::string name);
+		VLUniform *GetUniform(std::string name);
 
 		void RegisterAttribute(std::string name, int location);
 		void SetAttributeVariable(int location, plVector3f_t vector);
@@ -85,7 +85,7 @@ namespace core
 	private:
 		std::vector<Shader*>							shaders;
 		std::unordered_map<std::string, vlAttribute_t>	attributes;
-		std::unordered_map<std::string, vlUniform_t*>	uniforms;
+		std::unordered_map<std::string, VLUniform*>	uniforms;
 
 		std::string _name;
 

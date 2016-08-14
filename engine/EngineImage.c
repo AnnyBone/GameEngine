@@ -22,13 +22,13 @@
 
 char loadfilename[PLATFORM_MAX_PATH]; //file scope so that error messages can use it
 
-bool image_pngsupport = false;
+PLbool image_pngsupport = PL_FALSE;
 
-uint8_t *Image_LoadPNG(FILE *fin, unsigned int *width, unsigned int *height);
+uint8_t *Image_LoadPNG(FILE *fin, PLuint *width, PLuint *height);
 
 //#define IMAGE_SUPPORT_KTX
 
-PLImage *Image_Load(const char *name)
+PLImage Image_Load(const char *name)
 {
 	PLImage image;
 	memset(&image, 0, sizeof(PLImage));
@@ -43,7 +43,7 @@ PLImage *Image_Load(const char *name)
 		PLresult result = plLoadDTXImage(f, &image);
 		fclose(f);
 		if ((result == PL_RESULT_SUCCESS) && image.data)
-			return &image;
+			return image;
 
 		memset(&image, 0, sizeof(PLImage));
 
@@ -58,12 +58,12 @@ PLImage *Image_Load(const char *name)
 		PLresult result = plLoadFTXImage(f, &image);
 		fclose(f);
 		if ((result == PL_RESULT_SUCCESS) && image.data)
-			return &image;
+			return image;
 
 		Con_Warning("Failed to load FTX image! (%s)\n", plGetResultString(result));
 	}
 
-	return NULL;
+	return image;
 }
 
 /*	Returns a pointer to hunk allocated RGBA data

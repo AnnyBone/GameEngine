@@ -154,10 +154,12 @@ void Video_Initialize(void)
 
 	Light_Initialize();
 
-	g_shadermanager = new ShaderManager();
-	g_cameramanager = new CameraManager();
-	g_spritemanager = new SpriteManager();
+	g_texturemanager	= new XTextureManager();
+	g_shadermanager		= new ShaderManager();
+	g_cameramanager		= new CameraManager();
+	g_spritemanager		= new SpriteManager();
 
+	// todo, move this all into the game logic.
 	if (!g_state.embedded)
 	{
 		Camera *newcam = g_cameramanager->CreateCamera();
@@ -298,7 +300,7 @@ void Video_DrawSurface(msurface_t *mSurface,float fAlpha, Material_t *mMaterial,
 /*	Draw 3D object.
 	TODO: Add support for VBOs ?
 */
-void Video_DrawObject(vlVertex_t *vobject, vlPrimitive_t primitive,
+void Video_DrawObject(vlVertex_t *vobject, VLPrimitive primitive,
 	unsigned int numverts, Material_t *mMaterial, int iSkin)
 {
 	if(numverts == 0)

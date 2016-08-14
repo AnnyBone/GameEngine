@@ -16,8 +16,7 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef PLATFORM_FILESYSTEM_H
-#define	PLATFORM_FILESYSTEM_H
+#pragma once
 
 plEXTERN_C_START
 
@@ -44,5 +43,3 @@ extern PLint plGetLittleShort(FILE *fin);
 extern PLint plGetLittleLong(FILE *fin);
 
 plEXTERN_C_END
-
-#endif // !PLATFORM_FILESYSTEM_H

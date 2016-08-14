@@ -693,7 +693,7 @@ typedef struct
 {
 	const char *name;
 
-	vlTextureEnvironmentMode_t mode;
+	VLTextureEnvironmentMode mode;
 } MaterialTextureEnvironmentModeType_t;
 
 MaterialTextureEnvironmentModeType_t material_textureenvmode[] =
@@ -708,9 +708,7 @@ MaterialTextureEnvironmentModeType_t material_textureenvmode[] =
 
 void _Material_SetTextureEnvironmentMode(Material_t *material, MaterialContext_t context, char *arg)
 {
-	MaterialSkin_t *sCurrentSkin;
-	sCurrentSkin = Material_GetSkin(material, material->num_skins);
-	
+	MaterialSkin_t *sCurrentSkin = Material_GetSkin(material, material->num_skins);
 	for (int i = 0; i < plArrayElements(material_textureenvmode); i++)
 		if (!strncmp(material_textureenvmode[i].name, arg, strlen(material_textureenvmode[i].name)))
 		{
@@ -723,10 +721,8 @@ void _Material_SetTextureEnvironmentMode(Material_t *material, MaterialContext_t
 
 void _Material_SetRotate(Material_t *mCurrentMaterial, MaterialContext_t mftContext, char *cArg)
 {
-	MaterialSkin_t	*msSkin;
-
 	// Get the current skin.
-	msSkin = Material_GetSkin(mCurrentMaterial, mCurrentMaterial->num_skins);
+	MaterialSkin_t *msSkin = Material_GetSkin(mCurrentMaterial, mCurrentMaterial->num_skins);
 	// Apply the rotate variable.
 	msSkin->texture[msSkin->num_textures].fRotate = strtof(cArg, NULL);
 
@@ -736,7 +732,7 @@ void _Material_SetRotate(Material_t *mCurrentMaterial, MaterialContext_t mftCont
 
 void _Material_SetAdditive(Material_t *material, MaterialContext_t context, char *arg)
 {
-	if (atoi(arg) == TRUE)
+	if (atoi(arg) == PL_TRUE)
 		material->skin[material->num_skins].uiFlags |= MATERIAL_FLAG_ADDITIVE | MATERIAL_FLAG_BLEND;
 	else
 		material->skin[material->num_skins].uiFlags &= ~MATERIAL_FLAG_ADDITIVE | MATERIAL_FLAG_BLEND;
@@ -744,7 +740,7 @@ void _Material_SetAdditive(Material_t *material, MaterialContext_t context, char
 
 void _Material_SetBlend(Material_t *material, MaterialContext_t context, char *arg)
 {
-	if (atoi(arg) == TRUE)
+	if (atoi(arg) == PL_TRUE)
 		material->skin[material->num_skins].uiFlags |= MATERIAL_FLAG_BLEND;
 	else
 		material->skin[material->num_skins].uiFlags &= ~MATERIAL_FLAG_BLEND;
@@ -752,7 +748,7 @@ void _Material_SetBlend(Material_t *material, MaterialContext_t context, char *a
 
 void _Material_SetAlphaTest(Material_t *material, MaterialContext_t context, char *arg)
 {
-	if (atoi(arg) == TRUE)
+	if (atoi(arg) == PL_TRUE)
 		material->skin[material->num_skins].uiFlags |= MATERIAL_FLAG_ALPHA;
 	else
 		material->skin[material->num_skins].uiFlags &= ~MATERIAL_FLAG_ALPHA;
@@ -760,7 +756,7 @@ void _Material_SetAlphaTest(Material_t *material, MaterialContext_t context, cha
 
 void _Material_SetAlphaTrick(Material_t *material, MaterialContext_t context, char *arg)
 {
-	if (atoi(arg) == TRUE)
+	if (atoi(arg) == PL_TRUE)
 		material->skin[material->num_skins].uiFlags |= MATERIAL_FLAG_ALPHATRICK;
 	else
 		material->skin[material->num_skins].uiFlags &= ~MATERIAL_FLAG_ALPHATRICK;
@@ -873,10 +869,8 @@ MaterialKey_t material_fixed_functions[]=
 
 void Material_CheckFunctions(Material_t *mNewMaterial)
 {
-	MaterialKey_t *mKey;
-
 	// Find the related function.
-	for (mKey = material_fixed_functions; mKey->key; mKey++)
+	for (MaterialKey_t *mKey = material_fixed_functions; mKey->key; mKey++)
 		// Remain case sensitive.
 		if (!strcasecmp(mKey->key, cToken + 1))
 		{
@@ -955,7 +949,6 @@ void Material_ParseFunction(Material_t *material)
 */
 Material_t *Material_Load(const char *ccPath)
 {
-	Material_t  *mNewMaterial;
 	void        *cData;
 	char		cPath[PLATFORM_MAX_PATH],
 				cMaterialName[64] = { 0 };
@@ -974,7 +967,7 @@ Material_t *Material_Load(const char *ccPath)
 	sprintf(cPath, "%s%s.material", g_state.path_materials, ccPath);
 
 	// Check if it's been cached already...
-	mNewMaterial = Material_GetByPath(cPath);
+	Material_t *mNewMaterial = Material_GetByPath(cPath);
 	if(mNewMaterial)
 		return mNewMaterial;
 
@@ -1140,7 +1133,7 @@ void Material_DrawObject(Material_t *material, vlDraw_t *object, bool ispost)
 
 /*	Typically called before an object is drawn.
 */
-void Material_Draw(Material_t *material, vlVertex_t *ObjectVertex, vlPrimitive_t ObjectPrimitive, unsigned int ObjectSize, bool ispost)
+void Material_Draw(Material_t *material, vlVertex_t *ObjectVertex, VLPrimitive ObjectPrimitive, unsigned int ObjectSize, bool ispost)
 {
 	if (r_drawflat_cheatsafe || !material)
 		return;
@@ -1193,8 +1186,7 @@ void Material_Draw(Material_t *material, vlVertex_t *ObjectVertex, vlPrimitive_t
 	{
 #ifdef VIDEO_LIGHTMAP_HACKS
 		// Skip the lightmap, since it's manually handled.
-		if (unit == VIDEO_TEXTURE_LIGHT)
-			unit++;
+		if (unit == VIDEO_TEXTURE_LIGHT) unit++;
 #endif
 
 		// Attempt to select the unit (if it's already selected, then it'll just return).

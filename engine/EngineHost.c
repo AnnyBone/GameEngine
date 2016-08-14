@@ -606,8 +606,6 @@ void _Host_Frame (double time)
 
 		Client_Simulate();
 	}
-	else if (cls.state == CLIENT_STATE_EDITOR)
-		Editor_Frame();
 
 	if(host_speeds.value)
 		time1 = System_DoubleTime();

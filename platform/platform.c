@@ -121,6 +121,9 @@ const PLchar *plGetResultString(PLresult result)
 	case PL_RESULT_FILEVERSION:		return "Unsupported file version!";
 	case PL_RESULT_SUCCESS:			return "Success";
 
+	// IMAGE
+	case PL_RESULT_IMAGERESOLUTION:	return "Invalid image resolution!";
+
 	// MEMORY
 	case PL_RESULT_MEMORYALLOC:		return "Failed to allocate memory!";
 

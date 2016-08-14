@@ -95,7 +95,7 @@ typedef struct
 	unsigned int current_texture;
 	unsigned int capabilities;
 
-	vlTextureEnvironmentMode_t current_envmode;
+	VLTextureEnvironmentMode current_envmode;
 } VideoTextureMU_t;
 
 typedef struct
@@ -147,7 +147,7 @@ void Video_ObjectNormal(vlVertex_t *voObject, float X, float Y, float Z);
 void Video_ObjectColour(vlVertex_t *voObject, float R, float G, float B, float A);
 void Video_DrawFill(vlVertex_t *voFill, Material_t *mMaterial, int iSkin);
 void Video_DrawSurface(msurface_t *mSurface, float fAlpha, Material_t *mMaterial, unsigned int uiSkin);
-void Video_DrawObject(vlVertex_t *voObject, vlPrimitive_t vpPrimitiveType, unsigned int uiVerts, Material_t *mMaterial, int iSkin);
+void Video_DrawObject(vlVertex_t *voObject, VLPrimitive vpPrimitiveType, unsigned int uiVerts, Material_t *mMaterial, int iSkin);
 void Video_ShowBoundingBoxes(void);
 void Video_Shutdown(void);
 

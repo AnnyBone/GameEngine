@@ -91,6 +91,9 @@ support.
 #		ifdef PlaySound
 #			undef PlaySound
 #		endif
+#		ifdef LoadImage
+#			undef LoadImage
+#		endif
 
 #		undef min
 #		undef max
@@ -252,6 +255,7 @@ typedef void					PLvoid;
 typedef float					PLfloat;
 typedef double					PLdouble;
 typedef short					PLshort;
+typedef unsigned short			PLushort;
 
 //////////////////////////////////////////////////////////////////
 
@@ -266,6 +270,9 @@ typedef enum
 	PL_RESULT_FILETYPE,		// Unexpected file type!
 	PL_RESULT_FILEVERSION,	// Unsupported version!
 	PL_RESULT_FILESIZE,		// Invalid file size!
+
+	// IMAGE
+	PL_RESULT_IMAGERESOLUTION,	// Invalid image resolution!
 
 	// MEMORY
 	PL_RESULT_MEMORYALLOC,	// Ran out of memory!

@@ -85,18 +85,6 @@ glmode_t modes[] =
 
 int gl_texturemode = 5;
 
-/*	Report available texturemodes
-*/
-void TexMgr_DescribeTextureModes_f (void)
-{
-	int i;
-
-	for (i=0; i<NUM_GLMODES; i++)
-		Con_SafePrintf ("   %2i: %s\n", i + 1, modes[i].name);
-
-	Con_Printf ("%i modes\n", i);
-}
-
 void TexMgr_SetFilterModes (gltexture_t *glt)
 {
 #ifdef VL_MODE_OPENGL
@@ -440,7 +428,6 @@ void TextureManager_Initialize(void)
 	Cvar_RegisterVariable(&gl_picmip, &TexMgr_ReloadImages);
 	Cvar_RegisterVariable (&gl_texture_anisotropy, &TexMgr_Anisotropy_f);
 	Cmd_AddCommand ("gl_texturemode", &TexMgr_TextureMode_f);
-	Cmd_AddCommand ("gl_describetexturemodes", &TexMgr_DescribeTextureModes_f);
 	Cmd_AddCommand ("imagelist", &TexMgr_Imagelist_f);
 	Cmd_AddCommand ("imagedump", &TexMgr_Imagedump_f);
 	Cmd_AddCommand("image_reloadtextures", &TexMgr_ReloadImages);

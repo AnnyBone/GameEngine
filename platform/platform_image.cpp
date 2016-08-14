@@ -17,6 +17,7 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 #include "platform.h"
 
 #include "platform_filesystem.h"
+#include "platform_video_layer.h"
 #include "platform_image.h"
 
 /*	BMP Support	*/
@@ -102,7 +103,7 @@ uint8_t *plLoadBMPImage(FILE *fin, unsigned int *width, unsigned int *height)
 
 /*	DDS Support	*/
 
-/*	FTX Format	*/
+/*	Ritual's FTX Format	*/
 
 typedef struct
 {
@@ -123,8 +124,16 @@ PLresult plLoadFTXImage(FILE *fin, PLImage *out)
 	header.height	= plGetLittleLong(fin);
 	header.alpha	= plGetLittleLong(fin);
 
-	out->data = (uint8_t*)malloc(header.width * header.height * 4);
-	fread(out->data, sizeof(uint8_t), header.width * header.height * 4, fin);
+	if (out->data) free(out->data);
+
+	memset(out, 0, sizeof(PLImage));
+
+	out->size = header.width * header.height * 4;
+	out->data = (uint8_t*)malloc(out->size);
+	if (fread(out->data, sizeof(uint8_t), out->size, fin) != out->size)
+		return PL_RESULT_FILEREAD;
+
+	out->format = VL_TEXTUREFORMAT_RGBA;
 
 	out->width = header.width;
 	out->height = header.height;
@@ -176,7 +185,7 @@ uint8_t *plLoadPPMImage(FILE *fin, unsigned int *width, unsigned int *height)
 	return image;
 }
 
-/*	DTX Format (http://www.cnblogs.com/crsky/p/4702916.html)	*/
+/*	Monolith's DTX Format (http://www.cnblogs.com/crsky/p/4702916.html)	*/
 
 typedef struct
 {
@@ -189,7 +198,7 @@ typedef struct
 
 	PLint32		flags, userflags;
 	PLbyte		extra[12];
-//	PLchar		commandstring[128];
+	PLchar		commandstring[128];
 } DTXHeader;
 
 typedef struct
@@ -213,7 +222,7 @@ typedef struct
 #define DTX_FORMAT(a)	a.extra[2]
 #define DTX_OFFSET(a)	a.extra[3]
 
-enum
+enum DTXFlag
 {
 	DTX_FLAG_FULLBRIGHT		= (1 << 0),
 	DTX_FLAG_16BIT			= (1 << 1),
@@ -221,9 +230,9 @@ enum
 	DTX_FLAG_5551			= (1 << 8),
 	DTX_FLAG_CUBEMAP		= (1 << 10),
 	DTX_FLAG_NORMALMAP		= (1 << 11),
-};
+} DTXFlag;
 
-enum
+enum DTXFormat
 {
 	DTX_FORMAT_8PALLETTE,
 	DTX_FORMAT_8,
@@ -236,7 +245,7 @@ enum
 	DTX_FORMAT_S3TC_DXT5,
 
 	DTX_FORMAT_END
-};
+} DTXFormat;
 
 PLbyte _plGetDTXFormat(DTXHeader *dtx)
 {
@@ -266,6 +275,12 @@ PLresult plLoadDTXImage(FILE *fin, PLImage *out)
 		return PL_RESULT_FILETYPE;
 	else if ((header.version < DTX_VERSION_MAX) || (header.version > DTX_VERSION_MIN))
 		return PL_RESULT_FILEVERSION;
+	else if ((header.width < 8) || (header.height < 8))
+		return PL_RESULT_IMAGERESOLUTION;
+
+	if (out->data) free(out->data);
+
+	memset(out, 0, sizeof(PLImage));
 
 	out->width = header.width;
 	out->height = header.height;
@@ -274,26 +289,30 @@ PLresult plLoadDTXImage(FILE *fin, PLImage *out)
 	{
 	case DTX_FORMAT_8PALLETTE:
 		out->size = header.width * header.height;
+		out->format = VL_TEXTUREFORMAT_RGB;
 		break;
 
 	case DTX_FORMAT_S3TC_DXT1:
 		out->size = (header.width * header.height) >> 1;
-		out->flags &= PLIMAGE_FLAG_DXT1;
+		out->format = VL_TEXTUREFORMAT_RGB_DXT1;
 		break;
 	case DTX_FORMAT_S3TC_DXT3:
 		out->size = header.width * header.height;
-		out->flags &= PLIMAGE_FLAG_DXT3;
+		out->format = VL_TEXTUREFORMAT_RGBA_DXT3;
 		break;
 	case DTX_FORMAT_S3TC_DXT5:
 		out->size = header.width * header.height;
-		out->flags &= PLIMAGE_FLAG_DXT5;
+		out->format = VL_TEXTUREFORMAT_RGBA_DXT5;
 		break;
 
 	case DTX_FORMAT_8:
+		out->size = header.width * header.height;
+		out->format = VL_TEXTUREFORMAT_RGB;
+		break;
 	case DTX_FORMAT_16:
 	case DTX_FORMAT_32:
 		out->size = header.width * header.height * 4;
-		out->flags &= PLIMAGE_FLAG_RGBA;
+		out->format = VL_TEXTUREFORMAT_RGBA;
 		break;
 	}
 

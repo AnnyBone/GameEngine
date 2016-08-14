@@ -93,7 +93,7 @@ ShaderProgram *ShaderManager::GetProgram(std::string name)
 
 // Shader
 
-Shader::Shader(vlShaderType_t type) : 
+Shader::Shader(VLShaderType type) :
 	instance(0), 
 	source_length(0), 
 	type(type)
@@ -241,7 +241,7 @@ ShaderProgram::~ShaderProgram()
 	vlDeleteShaderProgram(&instance);
 }
 
-void ShaderProgram::RegisterShader(std::string path, vlShaderType_t type)
+void ShaderProgram::RegisterShader(std::string path, VLShaderType type)
 {
 	Shader *shader_ = new Shader(type);
 	if (!shader_->Load(path.c_str()))
@@ -332,7 +332,7 @@ void ShaderProgram::SetAttributeVariable(int location, plVector3f_t vector)
 
 // Uniform Handling
 
-vlUniform_t *ShaderProgram::RegisterUniform(std::string name, vlUniformType_t type)
+VLUniform *ShaderProgram::RegisterUniform(std::string name, VLUniformType type)
 {
 	if (type >= VL_UNIFORM_END)
 		throw XException("Invalid unform type! (%s) (%i)\n", name.c_str(), type);
@@ -343,8 +343,8 @@ vlUniform_t *ShaderProgram::RegisterUniform(std::string name, vlUniformType_t ty
 		return uniform->second;
 
 	// Allocate a new uniform pointer.
-	vlUniform_t *uni = new vlUniform_t;
-	memset(uni, 0, sizeof(vlUniform_t));
+	VLUniform *uni = new VLUniform;
+	memset(uni, 0, sizeof(VLUniform));
 	uni->location	= GetUniformLocation(name);
 	uni->type		= type;
 	uniforms.emplace(name, uni);
@@ -365,7 +365,7 @@ int ShaderProgram::GetUniformLocation(std::string name)
 #endif
 }
 
-vlUniform_t *ShaderProgram::GetUniform(std::string name)
+VLUniform *ShaderProgram::GetUniform(std::string name)
 {
 	// See if we have it registered already.
 	auto uniform = uniforms.find(name);
@@ -375,7 +375,7 @@ vlUniform_t *ShaderProgram::GetUniform(std::string name)
 	return nullptr;
 }
 
-void ShaderProgram::SetUniformVariable(vlUniform_t *uniform, float x, float y, float z)
+void ShaderProgram::SetUniformVariable(VLUniform *uniform, float x, float y, float z)
 {
 	if (!IsActive())
 		Sys_Error("Ensure shader program is enabled before applying variables! (%i) (%i %i %i)\n",
@@ -386,7 +386,7 @@ void ShaderProgram::SetUniformVariable(vlUniform_t *uniform, float x, float y, f
 #endif
 }
 
-void ShaderProgram::SetUniformVariable(vlUniform_t *uniform, plVector3f_t vector)
+void ShaderProgram::SetUniformVariable(VLUniform *uniform, plVector3f_t vector)
 {
 	if (!IsActive())
 		Sys_Error("Ensure shader program is enabled before applying variables! (%i) (%i %i %i)\n",
@@ -397,7 +397,7 @@ void ShaderProgram::SetUniformVariable(vlUniform_t *uniform, plVector3f_t vector
 #endif
 }
 
-void ShaderProgram::SetUniformVariable(vlUniform_t *uniform, float x, float y, float z, float a)
+void ShaderProgram::SetUniformVariable(VLUniform *uniform, float x, float y, float z, float a)
 {
 	if (!IsActive())
 		Sys_Error("Ensure shader program is enabled before applying variables! (%i) (%i %i %i %i)\n",
@@ -408,7 +408,7 @@ void ShaderProgram::SetUniformVariable(vlUniform_t *uniform, float x, float y, f
 #endif
 }
 
-void ShaderProgram::SetUniformVariable(vlUniform_t *uniform, int i)
+void ShaderProgram::SetUniformVariable(VLUniform *uniform, int i)
 {
 	if (!IsActive())
 		Sys_Error("Ensure shader program is enabled before applying variables! (%i) (%i)\n",
@@ -419,7 +419,7 @@ void ShaderProgram::SetUniformVariable(vlUniform_t *uniform, int i)
 #endif
 }
 
-void ShaderProgram::SetUniformVariable(vlUniform_t *uniform, unsigned int i)
+void ShaderProgram::SetUniformVariable(VLUniform *uniform, unsigned int i)
 {
 	if (!IsActive())
 		Sys_Error("Ensure shader program is enabled before applying variables! (%i) (%i)\n",
@@ -430,7 +430,7 @@ void ShaderProgram::SetUniformVariable(vlUniform_t *uniform, unsigned int i)
 #endif
 }
 
-void ShaderProgram::SetUniformVariable(vlUniform_t *uniform, float f)
+void ShaderProgram::SetUniformVariable(VLUniform *uniform, float f)
 {
 	if (!IsActive())
 		Sys_Error("Ensure shader program is enabled before applying variables! (%i) (%i)\n",
@@ -441,7 +441,7 @@ void ShaderProgram::SetUniformVariable(vlUniform_t *uniform, float f)
 #endif
 }
 
-void ShaderProgram::SetUniformVariable(vlUniform_t *uniform, double d)
+void ShaderProgram::SetUniformVariable(VLUniform *uniform, double d)
 {
 	if (!IsActive())
 		Sys_Error("Ensure shader program is enabled before applying variables! (%i) (%i)\n",

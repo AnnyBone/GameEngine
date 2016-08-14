@@ -216,7 +216,6 @@
     <ClCompile Include="video_sdlwindow.c">
       <Filter>Client\Video\Interfaces</Filter>
     </ClCompile>
-    <ClCompile Include="engine_exception.cpp" />
     <ClCompile Include="video_layer.c">
       <Filter>Client\Video</Filter>
     </ClCompile>
@@ -312,12 +311,9 @@
       <Filter>Legacy\Client</Filter>
     </ClCompile>
     <ClCompile Include="Xenon.cpp" />
-    <ClCompile Include="XenonTexture.cpp">
-      <Filter>Client</Filter>
-    </ClCompile>
-    <ClCompile Include="client\XenonMesh.cpp">
-      <Filter>Client</Filter>
-    </ClCompile>
+    <ClCompile Include="XenonException.cpp" />
+    <ClCompile Include="client\XenonMesh.cpp" />
+    <ClCompile Include="XenonTexture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\shared\shared_client.h">
@@ -485,8 +481,6 @@
     <ClInclude Include="..\shared\shared_formats.h">
       <Filter>Shared</Filter>
     </ClInclude>
-    <ClInclude Include="engine_exception.h" />
-    <ClInclude Include="engine_base.h" />
     <ClInclude Include="..\shared\format_obj.h">
       <Filter>Shared\Formats</Filter>
     </ClInclude>
@@ -553,7 +547,6 @@
     <ClInclude Include="..\shared\shared_client_shader.h">
       <Filter>Shared</Filter>
     </ClInclude>
-    <ClInclude Include="engine_build.h" />
     <ClInclude Include="input.h">
       <Filter>Client\Input</Filter>
     </ClInclude>
@@ -577,6 +570,12 @@
     </ClInclude>
     <ClInclude Include="XenonClass.h" />
     <ClInclude Include="Xenon.h" />
+    <ClInclude Include="XenonException.h" />
+    <ClInclude Include="XenonTexture.h" />
+    <ClInclude Include="engine_base.h">
+      <Filter>Legacy</Filter>
+    </ClInclude>
+    <ClInclude Include="XenonBuild.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="engine.rc" />

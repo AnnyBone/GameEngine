@@ -23,12 +23,92 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 //#define	VL_MODE_DIRECT3D
 //			VL_MODE_VULKAN
 
-typedef PLuint vlVertexArray_t;
-typedef PLuint vlRenderBuffer_t;
-typedef PLuint vlFrameBuffer_t;
-typedef PLuint vlTexture_t;
+#if defined (VL_MODE_OPENGL)
+#	include <GL/glew.h>
 
-typedef enum vlCullMode_s
+#	ifdef _WIN32
+#		include <GL/wglew.h>
+#	endif
+#elif defined (VL_MODE_OPENGL_CORE)
+#	include <GL/glcorearb.h>
+#elif defined (VL_MODE_GLIDE)
+#	ifdef _MSC_VER
+#		define __MSC__
+#	endif
+
+#	include <glide.h>
+#elif defined (VL_MODE_DIRECT3D)
+#	include <d3d11.h>
+
+#	pragma comment (lib, "d3d11.lib")
+#	pragma comment (lib, "d3dx11.lib")
+#	pragma comment (lib, "d3dx10.lib")
+#elif defined (VL_MODE_VULKAN)
+#endif
+
+typedef PLuint VLVertexArray;
+typedef PLuint VLRenderBuffer;
+typedef PLuint VLFrameBuffer;
+typedef PLuint VLTexture;
+
+typedef enum VLString
+{
+#if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
+	VL_STRING_RENDERER		= GL_RENDERER,
+	VL_STRING_VERSION		= GL_VERSION,
+	VL_STRING_VENDOR		= GL_VENDOR,
+	VL_STRING_EXTENSIONS	= GL_EXTENSIONS,
+#elif defined VL_MODE_GLIDE
+	VL_STRING_RENDERER		= GR_RENDERER,
+	VL_STRING_VERSION		= GR_VERSION,
+	VL_STRING_VENDOR		= GR_VENDOR,
+	VL_STRING_EXTENSIONS	= GR_EXTENSION,
+#else
+	VL_STRING_RENDERER		= 0,
+	VL_STRING_VERSION		= 1,
+	VL_STRING_VENDOR		= 2,
+	VL_STRING_EXTENSIONS	= 3,
+#endif
+} VLString;
+
+typedef enum VLMask
+{
+#if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
+	VL_MASK_COLOUR		= GL_COLOR_BUFFER_BIT,
+	VL_MASK_DEPTH		= GL_DEPTH_BUFFER_BIT,
+	VL_MASK_ACCUM		= GL_ACCUM_BUFFER_BIT,
+	VL_MASK_STENCIL		= GL_STENCIL_BUFFER_BIT,
+#else
+	VL_MASK_COLOUR		= (1 << 0),
+	VL_MASK_DEPTH		= (1 << 1),
+	VL_MASK_ACCUM		= (1 << 2),
+	VL_MASK_STENCIL		= (1 << 3),
+#endif
+} VLMask;
+
+typedef enum VLColourFormat
+{
+#if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
+	VL_COLOURFORMAT_ARGB,
+	VL_COLOURFORMAT_ABGR,
+	VL_COLOURFORMAT_RGB,	= GL_RGB,
+	VL_COLOURFORMAT_BGR,	= GL_BGR,
+	VL_COLOURFORMAT_RGBA	= GL_RGBA,
+	VL_COLOURFORMAT_BGRA	= GL_BGRA,
+#elif defined (VL_MODE_GLIDE)
+	VL_COLOURFORMAT_ARGB	= GR_COLORFORMAT_ARGB,
+	VL_COLOURFORMAT_ABGR	= GR_COLORFORMAT_ABGR,
+	VL_COLOURFORMAT_RGBA	= GR_COLORFORMAT_RGBA,
+	VL_COLOURFORMAT_BGRA	= GR_COLORFORMAT_BGRA,
+#else
+	VL_COLOURFORMAT_ARGB	= 0,
+	VL_COLOURFORMAT_ABGR	= 1,
+	VL_COLOURFORMAT_RGBA	= 2,
+	VL_COLOURFORMAT_BGRA	= 3,
+#endif
+} VLColourFormat;
+
+typedef enum VLCullMode
 {
 	VL_CULL_START = -1,
 
@@ -36,9 +116,9 @@ typedef enum vlCullMode_s
 	VL_CULL_NEGATIVE,
 
 	VL_CULL_END
-} vlCullMode_t;
+} VLCullMode;
 
-typedef enum vlCapability_s
+typedef enum VLCapability
 {
 	VL_CAPABILITY_START = -1,
 
@@ -54,8 +134,53 @@ typedef enum vlCapability_s
 	VL_CAPABILITY_CULL_FACE			= (1 << 9),	// Automatically cull faces.
 	VL_CAPABILITY_SCISSOR_TEST		= (1 << 10), // Scissor test for buffer clear.
 
+	// Texture Generation
+	VL_CAPABILITY_GENERATEMIPMAP	= (1 << 20),
+
 	VL_CAPABILITY_END
-} vlCapability_t;
+} VLCapability;
+
+// Blending Modes
+typedef enum VLBlend
+{
+#if defined (VL_MODE_OPENGL)
+	VL_BLEND_ZERO					= GL_ZERO,
+	VL_BLEND_ONE					= GL_ONE,
+	VL_BLEND_SRC_COLOR				= GL_SRC_COLOR,
+	VL_BLEND_ONE_MINUS_SRC_COLOR	= GL_ONE_MINUS_SRC_COLOR,
+	VL_BLEND_SRC_ALPHA				= GL_SRC_ALPHA,
+	VL_BLEND_ONE_MINUS_SRC_ALPHA	= GL_ONE_MINUS_SRC_ALPHA,
+	VL_BLEND_DST_ALPHA				= GL_DST_ALPHA,
+	VL_BLEND_ONE_MINUS_DST_ALPHA	= GL_ONE_MINUS_DST_ALPHA,
+	VL_BLEND_DST_COLOR				= GL_DST_COLOR,
+	VL_BLEND_ONE_MINUS_DST_COLOR	= GL_ONE_MINUS_DST_COLOR,
+	VL_BLEND_SRC_ALPHA_SATURATE		= GL_SRC_ALPHA_SATURATE,
+#elif defined (VL_MODE_GLIDE)
+	VL_BLEND_ZERO					= GR_BLEND_ZERO,
+	VL_BLEND_ONE					= GR_BLEND_ONE,
+	VL_BLEND_SRC_COLOR				= GR_BLEND_SRC_COLOR,
+	VL_BLEND_ONE_MINUS_SRC_COLOR	= GR_BLEND_ONE_MINUS_SRC_COLOR,
+	VL_BLEND_SRC_ALPHA				= GR_BLEND_SRC_ALPHA,
+	VL_BLEND_ONE_MINUS_SRC_ALPHA	= GR_BLEND_ONE_MINUS_SRC_ALPHA,
+	VL_BLEND_DST_ALPHA				= GR_BLEND_DST_ALPHA,
+	VL_BLEND_ONE_MINUS_DST_ALPHA	= GR_BLEND_ONE_MINUS_DST_ALPHA,
+	VL_BLEND_DST_COLOR				= GR_BLEND_DST_COLOR,
+	VL_BLEND_ONE_MINUS_DST_COLOR	= GR_BLEND_ONE_MINUS_DST_COLOR,
+	VL_BLEND_SRC_ALPHA_SATURATE		= GR_BLEND_ALPHA_SATURATE,
+#else
+	VL_BLEND_ZERO,
+	VL_BLEND_ONE,
+	VL_BLEND_SRC_COLOR,
+	VL_BLEND_ONE_MINUS_SRC_COLOR,
+	VL_BLEND_SRC_ALPHA,
+	VL_BLEND_ONE_MINUS_SRC_ALPHA,
+	VL_BLEND_DST_ALPHA,
+	VL_BLEND_ONE_MINUS_DST_ALPHA,
+	VL_BLEND_DST_COLOR,
+	VL_BLEND_ONE_MINUS_DST_COLOR,
+	VL_BLEND_SRC_ALPHA_SATURATE,
+#endif
+} VLBlend;
 
 // Blending
 #define	VL_BLEND_ADDITIVE	VL_BLEND_SRC_ALPHA, VL_BLEND_ONE
@@ -64,8 +189,63 @@ typedef enum vlCapability_s
 //-----------------
 // Textures
 
+typedef enum VLTextureTarget
+{
+#if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
+	VL_TEXTURE_1D	= GL_TEXTURE_1D,
+	VL_TEXTURE_2D	= GL_TEXTURE_2D,
+	VL_TEXTURE_3D	= GL_TEXTURE_3D,
+#else
+	VL_TEXTURE_1D,
+	VL_TEXTURE_2D,
+	VL_TEXTURE_3D,
+#endif
+} VLTextureTarget;
+
+typedef enum VLTextureFilter
+{
+	VL_TEXTUREFILTER_MIPMAP_NEAREST,	// GL_NEAREST_MIPMAP_NEAREST
+	VL_TEXTUREFILTER_MIPMAP_LINEAR,		// GL_LINEAR_MIPMAP_LINEAR
+
+	VL_TEXTUREFILTER_MIPMAP_LINEAR_NEAREST,	// GL_LINEAR_MIPMAP_NEAREST
+	VL_TEXTUREFILTER_MIPMAP_NEAREST_LINEAR,	// GL_NEAREST_MIPMAP_LINEAR
+
+#if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
+	VL_TEXTUREFILTER_NEAREST	= GL_NEAREST,	// Nearest filtering
+	VL_TEXTUREFILTER_LINEAR		= GL_LINEAR		// Linear filtering
+#elif defined (VL_MODE_GLIDE)
+	VL_TEXTUREFILTER_NEAREST	= GR_TEXTUREFILTER_POINT_SAMPLED,	// Nearest filtering
+	VL_TEXTUREFILTER_LINEAR		= GR_TEXTUREFILTER_BILINEAR			// Linear filtering
+#else
+	VL_TEXTUREFILTER_NEAREST,	// Nearest filtering
+	VL_TEXTUREFILTER_LINEAR		// Linear filtering
+#endif
+} VLTextureFilter;
+
+typedef enum VLTextureFormat
+{
+#if defined (VL_MODE_OPENGL)
+	VL_TEXTUREFORMAT_RGB	= GL_RGB,
+	VL_TEXTUREFORMAT_RGBA	= GL_RGBA,
+	VL_TEXTUREFORMAT_BGR	= GL_BGR,
+	VL_TEXTUREFORMAT_BGRA	= GL_BGRA,
+
+	VL_TEXTUREFORMAT_RGBA_DXT1	= GL_COMPRESSED_RGBA_S3TC_DXT1_EXT,
+	VL_TEXTUREFORMAT_RGB_DXT1	= GL_COMPRESSED_RGB_S3TC_DXT1_EXT,
+	VL_TEXTUREFORMAT_RGBA_DXT3	= GL_COMPRESSED_RGBA_S3TC_DXT3_EXT,
+	VL_TEXTUREFORMAT_RGBA_DXT5	= GL_COMPRESSED_RGBA_S3TC_DXT5_EXT,
+
+	VL_TEXTUREFORMAT_RGB_FXT1	= GL_COMPRESSED_RGB_FXT1_3DFX,
+#else
+	VL_TEXTUREFORMAT_RGB,
+	VL_TEXTUREFORMAT_RGBA,
+	VL_TEXTUREFORMAT_BGR,
+	VL_TEXTUREFORMAT_BGRA,
+#endif
+} VLTextureFormat;
+
 // Texture Environment Modes
-typedef enum vlTextureEnvironmentMode_s
+typedef enum VLTextureEnvironmentMode
 {
 	VL_TEXTUREMODE_START = -1,
 
@@ -77,13 +257,38 @@ typedef enum vlTextureEnvironmentMode_s
 	VIDEO_TEXTUREMODE_COMBINE,
 
 	VL_TEXTUREMODE_END
-} vlTextureEnvironmentMode_t;
+} VLTextureEnvironmentMode;
+
+typedef struct VLTextureInfo
+{
+	PLbyte *data;
+
+	PLuint width, height;
+	PLuint size;
+	PLuint levels;
+
+	VLColourFormat	pixel_format;
+	VLTextureFormat format;
+
+	PLuint flags;
+} VLTextureInfo;
 
 //-----------------
 // Drawing
 
+typedef enum VLDrawMode
+{
+#if defined (VL_MODE_OPENGL)
+	VL_DRAWMODE_STATIC		= GL_STATIC_DRAW,
+	VL_DRAWMODE_DYNAMIC		= GL_DYNAMIC_DRAW,
+#else
+	VL_DRAWMODE_STATIC,
+	VL_DRAWMODE_DYNAMIC,
+#endif
+} VLDrawMode;
+
 // Primitive Types
-typedef enum vlPrimitive_s
+typedef enum VLPrimitive
 {
 	VL_PRIMITIVE_IGNORE = -1,
 
@@ -97,7 +302,7 @@ typedef enum vlPrimitive_s
 	VL_PRIMITIVE_QUADS,				// Advised to avoid this.
 
 	VL_PRIMITIVE_END
-} vlPrimitive_t;
+} VLPrimitive;
 
 typedef struct vlVertex_s
 {
@@ -118,7 +323,7 @@ typedef struct vlDraw_s
 
 	uint8_t	*indices;								// List of indeces.
 
-	vlPrimitive_t primitive, primitive_restore;		// Type of primitive, and primitive to restore to.
+	VLPrimitive primitive, primitive_restore;		// Type of primitive, and primitive to restore to.
 
 	unsigned int _gl_vbo[16];						// Vertex buffer object.
 } vlDraw_t;
@@ -129,7 +334,7 @@ typedef struct vlDraw_s
 typedef unsigned int vlShaderProgram_t;
 typedef unsigned int vlShader_t;
 
-typedef enum vlUnformType_s
+typedef enum VLUniformType
 {
 	VL_UNIFORM_START = -1,
 
@@ -155,24 +360,24 @@ typedef enum vlUnformType_s
 	VL_UNIFORM_MAT3,
 
 	VL_UNIFORM_END
-} vlUniformType_t;
+} VLUniformType;
 
 #if 0
-typedef int vlUniform_t;
+typedef int VLUniform;
 #else
-typedef struct vlUniform_s
+typedef struct VLUniform
 {
 	int location;	// Location within the shader.
 
-	vlUniformType_t type;	// Data type.
+	VLUniformType type;	// Data type.
 
 	char def[16];	// Default value.
-} vlUniform_t;
+} VLUniform;
 #endif
 
 typedef int vlAttribute_t;
 
-typedef enum
+typedef enum VLShaderType
 {
 	VL_SHADER_START = -1,
 
@@ -181,7 +386,7 @@ typedef enum
 	VL_SHADER_GEOMETRY,
 
 	VL_SHADER_END
-} vlShaderType_t;
+} VLShaderType;
 
 //-----------------
 // Lighting
