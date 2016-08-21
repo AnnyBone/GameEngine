@@ -710,7 +710,6 @@ void Host_Initialize(XParameters *parms)
 		Audio_Initialize();
 		Input_Initialize();
 
-		TextureManager_Initialize(); //johnfitz
 		Material_Initialize();
 
 		Draw_Init();	// todo, merge into video_initialize
@@ -766,8 +765,6 @@ void Host_Shutdown(void)
 	{
 		Audio_Shutdown();
 		Video_Shutdown();
-
-		TextureManager_Shutdown();
 	}
 }
 

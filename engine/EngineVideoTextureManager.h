@@ -55,13 +55,10 @@ extern "C" {
 	float TexMgr_FrameUsage(void);
 	gltexture_t *TexMgr_FindTexture(model_t *owner, char *name);
 	gltexture_t *TexMgr_GetTexture(const char *ccPath);
-	gltexture_t *TexMgr_NewTexture(void);
 	void TexMgr_SetFilterModes(gltexture_t *glt);
 	void TexMgr_FreeTexture(gltexture_t *kill);
 	void TextureManager_FreeTextures(unsigned int flags, unsigned int mask);
 	void TexMgr_FreeTexturesForOwner(model_t *owner);
-	void TextureManager_Initialize(void);
-	void TextureManager_Shutdown();
 
 	// IMAGE LOADING
 	gltexture_t *TexMgr_LoadImage(model_t *owner, char *name, int width, int height, enum XTextureFormat format,

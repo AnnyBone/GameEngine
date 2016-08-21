@@ -14,8 +14,6 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 0. You just DO WHAT THE FUCK YOU WANT TO.
 */
 
-#include "platform.h"
-
 #include "platform_video_layer.h"
 
 typedef struct vlState_s

@@ -16,6 +16,9 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
 #pragma once
 
+#include "platform.h"
+#include "platform_math.h"
+
 #define		VL_MODE_OPENGL
 //			VL_MODE_OPENGL_CORE
 //			VL_MODE_OPENGL_ES
@@ -50,6 +53,14 @@ typedef PLuint VLVertexArray;
 typedef PLuint VLRenderBuffer;
 typedef PLuint VLFrameBuffer;
 typedef PLuint VLTexture;
+
+typedef enum VLDataFormat
+{
+#if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
+	VL_UNSIGNED_BYTE				= GL_UNSIGNED_BYTE,
+	VL_UNSIGNED_INT_8_8_8_8_REV		= GL_UNSIGNED_INT_8_8_8_8_REV,
+#endif
+} VLDataFormat;
 
 typedef enum VLString
 {
@@ -91,8 +102,8 @@ typedef enum VLColourFormat
 #if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
 	VL_COLOURFORMAT_ARGB,
 	VL_COLOURFORMAT_ABGR,
-	VL_COLOURFORMAT_RGB,	= GL_RGB,
-	VL_COLOURFORMAT_BGR,	= GL_BGR,
+	VL_COLOURFORMAT_RGB		= GL_RGB,
+	VL_COLOURFORMAT_BGR		= GL_BGR,
 	VL_COLOURFORMAT_RGBA	= GL_RGBA,
 	VL_COLOURFORMAT_BGRA	= GL_BGRA,
 #elif defined (VL_MODE_GLIDE)
@@ -225,10 +236,8 @@ typedef enum VLTextureFilter
 typedef enum VLTextureFormat
 {
 #if defined (VL_MODE_OPENGL)
-	VL_TEXTUREFORMAT_RGB	= GL_RGB,
-	VL_TEXTUREFORMAT_RGBA	= GL_RGBA,
-	VL_TEXTUREFORMAT_BGR	= GL_BGR,
-	VL_TEXTUREFORMAT_BGRA	= GL_BGRA,
+	VL_TEXTUREFORMAT_RGB8	= GL_RGB8,
+	VL_TEXTUREFORMAT_RGBA8	= GL_RGBA8,
 
 	VL_TEXTUREFORMAT_RGBA_DXT1	= GL_COMPRESSED_RGBA_S3TC_DXT1_EXT,
 	VL_TEXTUREFORMAT_RGB_DXT1	= GL_COMPRESSED_RGB_S3TC_DXT1_EXT,
@@ -263,12 +272,17 @@ typedef struct VLTextureInfo
 {
 	PLbyte *data;
 
+	PLuint x, y;
 	PLuint width, height;
 	PLuint size;
 	PLuint levels;
 
 	VLColourFormat	pixel_format;
 	VLTextureFormat format;
+
+	PLbool initial;
+
+	PLuint storage_type;
 
 	PLuint flags;
 } VLTextureInfo;

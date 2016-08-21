@@ -16,7 +16,7 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
 #pragma once
 
-#include "platform.h"
+#include "platform_math.h"
 
 #include "shared_base.h"
 #include "shared_menu.h"

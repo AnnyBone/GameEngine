@@ -16,10 +16,14 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
 #pragma once
 
+#include "platform.h"
+#include "platform_video_layer.h"
+
 typedef struct PLImage
 {
 	PLbyte *data;
 
+	PLuint x, y;
 	PLuint width, height;
 	PLuint size;
 	PLuint levels;
@@ -35,6 +39,7 @@ typedef struct PLImage
 #define PLIMAGE_EXTENSION_DTX	".dtx"	// Lithtech's DTX image format.
 #define PLIMAGE_EXTENSION_PPM	".ppm"	// Portable Pixel Map format.
 #define PLIMAGE_EXTENSION_TGA	".tga"
+#define PLIMAGE_EXTENSION_PNG	".png"
 
 plEXTERN_C_START
 

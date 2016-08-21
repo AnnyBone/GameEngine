@@ -21,6 +21,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #pragma once
 
+#include "platform_image.h"
+
 plEXTERN_C_START
 
 void Image_InitializePNG();
@@ -29,7 +31,7 @@ void Image_Shutdown();
 PLImage *Image_Load(const char *name);
 
 //be sure to free the hunk after using these loading functions
-uint8_t *Image_LoadTGA (FILE *f, unsigned int *width, unsigned int *height);
+PLbyte *Image_LoadTGA (FILE *f, unsigned int *width, unsigned int *height);
 uint8_t *Image_LoadImage (char *name, unsigned int *width, unsigned int *height);
 
 bool Image_WriteTGA(const char *name, uint8_t *data,int width,int height,int bpp,bool upsidedown);

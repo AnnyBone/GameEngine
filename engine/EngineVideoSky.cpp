@@ -109,6 +109,7 @@ char *suf[6] = {"rt", "bk", "lf", "ft", "up", "dn"};
 
 void Sky_LoadSkyBox(const char *name)
 {
+#if 0
 	int		i, mark;
 	unsigned int width, height;
 	char	filename[PLATFORM_MAX_PATH];
@@ -169,6 +170,7 @@ void Sky_LoadSkyBox(const char *name)
 	}
 
 	strcpy(cSkyBoxName, name);
+#endif
 }
 
 void Sky_NewMap (void)
@@ -494,7 +496,7 @@ void Sky_ProcessEntities(void)
 	{
 		e = cl_visedicts[i];
 
-		if (e->model->type != MODEL_TYPE_LEVEL)
+		if (e->model && (e->model->type != MODEL_TYPE_LEVEL))
 			continue;
 
 		if(R_CullModelForEntity(e))

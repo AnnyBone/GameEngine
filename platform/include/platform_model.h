@@ -16,6 +16,10 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
 #pragma once
 
+#include "platform.h"
+#include "platform_math.h"
+#include "platform_video_layer.h"
+
 enum
 {
 	PL_MODELTYPE_START,

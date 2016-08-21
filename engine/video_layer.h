@@ -73,6 +73,8 @@ void vlDeleteTexture(VLTexture *texture);
 void vlGetMaxTextureAnistropy(float *params);
 void vlGetMaxTextureImageUnits(int *param);
 
+VLTexture vlGetCurrentTexture(void);
+
 int vlGetMaxTextureSize(void);
 
 unsigned int vlGetTextureUnit(unsigned int target);

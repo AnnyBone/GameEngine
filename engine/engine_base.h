@@ -22,7 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #pragma once
 
 // Platform Library
-#include "platform.h"
+#include "platform_math.h"
 #include "platform_filesystem.h"
 #include "platform_library.h"
 
@@ -94,8 +94,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "crc.h"
 #include "glquake.h"
 
+PL_EXTERN_C
+
 // System
 double System_DoubleTime(void);
+
+PL_EXTERN_C_END
 
 #include "material.h"
 

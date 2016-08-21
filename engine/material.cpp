@@ -143,11 +143,13 @@ void Material_ClearSkin(Material_t *material, unsigned int skinnum)
 	if (!skin)
 		Sys_Error("Attempted to clear invalid skin! (%s) (%i)\n", material->cPath, skinnum);
 
+#if 0
 #ifdef _MSC_VER
 #	pragma warning(suppress: 6011)
 #endif
 	for (unsigned int i = 0; i < skin->num_textures; i++)
 		TexMgr_FreeTexture(skin->texture[i].gMap);
+#endif
 }
 
 void Material_Clear(Material_t *material, bool force)
@@ -274,81 +276,48 @@ Material_t *Material_GetByPath(const char *ccPath)
 	return NULL;
 }
 
-gltexture_t *Material_LoadTexture(Material_t *mMaterial, MaterialSkin_t *mCurrentSkin, char *cArg)
+XTexture *Material_LoadTexture(Material_t *material, MaterialSkin_t *mCurrentSkin, char *arg)
 {
 	// Check if it's trying to use a built-in texture.
-	if (cArg[0] == '@')
+	if (arg[0] == '@')
 	{
-		cArg++;
+		arg++;
 
-		if (!strcasecmp(cArg, "notexture"))
-			return notexture;
-		else if (!strcasecmp(cArg, "lightmap"))
+		if (!strcasecmp(arg, "notexture"))
+			return textures::nulltexture;
+		else if (!strcasecmp(arg, "lightmap"))
 		{
-			mMaterial->override_lightmap = true;
+			material->override_lightmap = true;
 			mCurrentSkin->texture[mCurrentSkin->num_textures].mttType = MATERIAL_TEXTURE_LIGHTMAP;
-			return notexture;
+			return textures::nulltexture;
 		}
 		else
 		{
-			Con_Warning("Attempted to set invalid internal texture! (%s)\n", mMaterial->cPath);
-			return notexture;
+			Con_Warning("Attempted to set invalid internal texture! (%s)\n", material->cPath);
+			return textures::nulltexture;
 		}
 	}
 
-	// Ensure we haven't loaded the texture in already...
-	gltexture_t *etex = TexMgr_GetTexture(cArg);
-	if (etex)
-#ifdef _DEBUG	// Debugging
+	PLuint texflags = XTEXTURE_FLAG_ALPHA | XTEXTURE_FLAG_MIPMAP;
+	if (material->flags & MATERIAL_FLAG_PRESERVE)
+		texflags |= XTEXTURE_FLAG_PRESERVE;
+	if (material->flags & MATERIAL_FLAG_NEAREST)
+		texflags |= XTEXTURE_FLAG_NEAREST;
+
+	XTexture *tex = g_texturemanager->CreateTexture(arg, texflags);
+	if (!tex)
 	{
-		Con_DPrintf("Texture already cached (%s) (%s)\n", etex->name, mMaterial->cPath);
-		return etex;
-	}
-#else
-	return etex;
-#endif
-
-	PLImage *tex = Image_Load(cArg);
-	if (tex)
-	{
-		int	texflags = TEXPREF_ALPHA | TEXPREF_MIPMAP;
-
-		mCurrentSkin->texture[mCurrentSkin->num_textures].uiWidth = tex->width;
-		mCurrentSkin->texture[mCurrentSkin->num_textures].uiHeight = tex->height;
-
-		// Warn about incorrect sizes.
-		if ((mCurrentSkin->texture[mCurrentSkin->num_textures].uiWidth % 2) || (mCurrentSkin->texture[mCurrentSkin->num_textures].uiHeight % 2))
-		{
-			Con_Warning("Texture size is not multiple of 2! (%s) (%ix%i)\n", cArg,
-				mCurrentSkin->texture[mCurrentSkin->num_textures].uiWidth,
-				mCurrentSkin->texture[mCurrentSkin->num_textures].uiHeight);
-
-#if 1
-			// Pad the image.
-			texflags |= TEXPREF_PAD;
-#endif
-		}
-
-		if (mMaterial->flags & MATERIAL_FLAG_PRESERVE)
-			texflags |= TEXPREF_PERSIST;
-
-		if (mCurrentSkin->uiFlags & MATERIAL_FLAG_NEAREST)
-			texflags |= TEXPREF_NEAREST;
-
-		return TexMgr_LoadImage(NULL, cArg,
-			mCurrentSkin->texture[mCurrentSkin->num_textures].uiWidth,
-			mCurrentSkin->texture[mCurrentSkin->num_textures].uiHeight,
-			SRC_RGBA, tex, cArg, 0, texflags);
+		Con_Warning("Failed to load texture! (%s) (%s)\n", arg, material->cPath);
+		return textures::nulltexture;
 	}
 
-	Con_Warning("Failed to load texture! (%s) (%s)\n", cArg, mMaterial->cPath);
+	mCurrentSkin->texture[mCurrentSkin->num_textures].uiWidth	= tex->GetWidth();
+	mCurrentSkin->texture[mCurrentSkin->num_textures].uiHeight	= tex->GetHeight();
 
-	return notexture;
+	return tex;
 }
 
-/*
-	Scripting
-*/
+/*	Scripting	*/
 
 typedef enum
 {
@@ -473,7 +442,7 @@ void _Material_ParseSkin(Material_t *material, MaterialContext_t mftContext, cha
 
 				program->Enable();
 
-				vlUniform_t *var = program->GetUniform(cToken + 1);
+				VLUniform *var = program->GetUniform(cToken + 1);
 				if (!var)
 				{
 					Con_Warning("Invalid shader uniform! (%s) (%i)\n", cToken, iScriptLine);
@@ -510,7 +479,7 @@ void _Material_ParseSkin(Material_t *material, MaterialContext_t mftContext, cha
 						texture->env_mode = VIDEO_TEXTUREMODE_MODULATE;
 					texture->scale = 1;
 
-					texture->gMap = Material_LoadTexture(material, skin, cToken);
+					texture->instance = Material_LoadTexture(material, skin, cToken);
 					skin->num_textures++;
 				}
 				case VL_UNIFORM_UINT:
@@ -600,7 +569,7 @@ void _Material_AddTexture(Material_t *material, MaterialContext_t mftContext, ch
 
 			if (cToken[0] == '}')
 			{
-				curtexture->gMap = Material_LoadTexture(material, curskin, texturepath);
+				curtexture->instance = Material_LoadTexture(material, curskin, texturepath);
 				curskin->num_textures++;
 				break;
 			}
@@ -1146,7 +1115,7 @@ void Material_Draw(Material_t *material, vlVertex_t *ObjectVertex, VLPrimitive O
 			vlActiveTexture(0);
 
 			// Set it as white.
-			Video_SetTexture(g_mGlobalColour->skin[MATERIAL_COLOUR_WHITE].texture->gMap);
+			g_mGlobalColour->skin[MATERIAL_COLOUR_WHITE].texture->instance->Bind();
 		}
 		return;
 	}
@@ -1198,7 +1167,7 @@ void Material_Draw(Material_t *material, vlVertex_t *ObjectVertex, VLPrimitive O
 			vlEnable(VL_CAPABILITY_TEXTURE_2D);
 
 			// Bind it.
-			Video_SetTexture(texture->gMap);
+			texture->instance->Bind();
 
 			// Allow us to manipulate the texture.
 			if (texture->matrixmod)

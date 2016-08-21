@@ -16,6 +16,8 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
 #pragma once
 
+#include "platform_image.h"
+
 class XTexture;
 
 class XTextureManager
@@ -26,9 +28,9 @@ public:
 
 	PLbool IsValidSize(PLuint width, PLuint height);
 
-	XTexture *CreateTexture(std::string path);
+	XTexture *CreateTexture(std::string path, PLuint flags = 0);
 	XTexture *CreateTexture(std::string path, PLuint width, PLuint height, VLTextureFormat format, PLbyte *data, PLuint size, PLuint flags = 0);
-	XTexture *CreateTexture(PLImage *image);
+	XTexture *CreateTexture(PLImage *image, PLuint flags = 0);
 
 	XTexture *GetTexture(std::string path);
 	XTexture *GetTexture(PLushort crc);
@@ -38,7 +40,9 @@ public:
 protected:
 private:
 
-	std::map<PLshort, XTexture> _textures;
+	PLuint _max_resolution; // Maximum supported resolution.
+
+	std::map<std::string, XTexture*> _textures;
 };
 
 class XTexture
@@ -80,5 +84,10 @@ private:
 
 	VLTextureFormat _format;
 };
+
+namespace textures
+{
+	extern XTexture *nulltexture;
+}
 
 extern XTextureManager *g_texturemanager;

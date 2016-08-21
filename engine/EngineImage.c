@@ -28,44 +28,6 @@ uint8_t *Image_LoadPNG(FILE *fin, PLuint *width, PLuint *height);
 
 //#define IMAGE_SUPPORT_KTX
 
-PLImage Image_Load(const char *name)
-{
-	PLImage image;
-	memset(&image, 0, sizeof(PLImage));
-
-	FILE *f;
-
-	// DTX
-	sprintf(loadfilename, "%s.dtx", name);
-	COM_FOpenFile(loadfilename, &f);
-	if (f)
-	{
-		PLresult result = plLoadDTXImage(f, &image);
-		fclose(f);
-		if ((result == PL_RESULT_SUCCESS) && image.data)
-			return image;
-
-		memset(&image, 0, sizeof(PLImage));
-
-		Con_Warning("Failed to load DTX image! (%s)\n", plGetResultString(result));
-	}
-
-	// FTX
-	sprintf(loadfilename, "%s.ftx", name);
-	COM_FOpenFile(loadfilename, &f);
-	if (f)
-	{
-		PLresult result = plLoadFTXImage(f, &image);
-		fclose(f);
-		if ((result == PL_RESULT_SUCCESS) && image.data)
-			return image;
-
-		Con_Warning("Failed to load FTX image! (%s)\n", plGetResultString(result));
-	}
-
-	return image;
-}
-
 /*	Returns a pointer to hunk allocated RGBA data
 */
 uint8_t *Image_LoadImage(char *name, unsigned int *width, unsigned int *height)
@@ -165,7 +127,7 @@ bool Image_WriteTGA(const char *name, uint8_t *data,int width,int height,int bpp
 	return true;
 }
 
-uint8_t *Image_LoadTGA (FILE *fin, unsigned int *width, unsigned int *height)
+PLbyte *Image_LoadTGA (FILE *fin, unsigned int *width, unsigned int *height)
 {
 	int	columns,rows,numPixels,row,column,realrow;
 	uint8_t	*pixbuf,*targa_rgba;
@@ -194,7 +156,7 @@ uint8_t *Image_LoadTGA (FILE *fin, unsigned int *width, unsigned int *height)
 	numPixels   = columns * rows;
 	upside_down = !(targa_header.attributes & 0x20); //johnfitz -- fix for upside-down targas
 
-	targa_rgba = (uint8_t*)Hunk_Alloc (numPixels*4);
+	targa_rgba = (PLbyte*)malloc (numPixels*4);
 
 	if (targa_header.id_length != 0)
 		fseek(fin, targa_header.id_length, SEEK_CUR);  // skip TARGA image comment
@@ -334,16 +296,12 @@ uint8_t *Image_LoadTGA (FILE *fin, unsigned int *width, unsigned int *height)
 		}
 	}
 
-	fclose(fin);
-
 	*width = (int)(targa_header.width);
 	*height = (int)(targa_header.height);
 	return targa_rgba;
 }
 
-/*
-	PNG Support
-*/
+/*	PNG Support	*/
 
 // Use a direct path, mainly for Linux's sake.
 #include "../external/lpng1618/png.h"
@@ -365,11 +323,7 @@ static void(*PNG_ReadInfo)(png_structrp png_ptr, png_inforp info_ptr);
 static void(*PNG_SetKeepUnknownChunks)(png_structrp png_ptr, int keep, png_const_bytep chunk_list, int num_chunks);
 static void(*PNG_DestroyReadStruct)(png_structpp png_ptr_ptr, png_infopp info_ptr_ptr, png_infopp end_info_ptr_ptr);
 
-/*
-	Add struct, with function pointer + name, then go through it and assign everything automatically?
-*/
-
-static pModuleFunction_t PNGFunctions[]=
+static PLModuleFunction PNGFunctions[]=
 {
 	{ "png_create_read_struct", (void**)&PNG_CreateReadStruct },
 	{ "png_create_info_struct", (void**)&PNG_CreateInfoStruct },
@@ -397,10 +351,10 @@ void Image_InitializePNG()
 	int i;
 	for (i = 0; i < plArrayElements(PNGFunctions); i++)
 	{
-		*(PNGFunctions[i].Function) = plFindLibraryFunction(iPNGLibraryInstance, PNGFunctions[i].ccFunctionName);
+		*(PNGFunctions[i].Function) = plFindLibraryFunction(iPNGLibraryInstance, PNGFunctions[i].name);
 		if (!PNGFunctions[i].Function)
 		{
-			Con_Warning("Failed to find libpng function! (%s)\n", PNGFunctions[i].ccFunctionName);
+			Con_Warning("Failed to find libpng function! (%s)\n", PNGFunctions[i].name);
 			return;
 		}
 	}
@@ -457,7 +411,7 @@ uint8_t *Image_LoadPNG(FILE *fin, unsigned int *width, unsigned int *height)
 
 	/* TODO: Is this a memory leak, or one of the many fragile things upon
 	 * which everything barely balances?
-	*/
+	 */
 	iImageBuffer = (uint8_t*)Hunk_Alloc((iHeight + iWidth) * 4);
 
 	PNG_DestroyReadStruct(&pPNG, &pInfo, NULL);

@@ -528,7 +528,7 @@ void Draw_Init (void)
 	// clear scrap and allocate gltextures
 	memset(&scrap_allocated, 0, sizeof(scrap_allocated));
 	memset(&scrap_texels, 255, sizeof(scrap_texels));
-	Scrap_Upload (); //creates 2 empty textures
+//	Scrap_Upload (); //creates 2 empty textures
 }
 
 //==============================================================================

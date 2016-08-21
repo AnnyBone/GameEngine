@@ -14,11 +14,8 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 0. You just DO WHAT THE FUCK YOU WANT TO.
 */
 
-#include "platform.h"
-
-#include "platform_filesystem.h"
-#include "platform_video_layer.h"
 #include "platform_image.h"
+#include "platform_filesystem.h"
 
 /*	BMP Support	*/
 
@@ -124,8 +121,6 @@ PLresult plLoadFTXImage(FILE *fin, PLImage *out)
 	header.height	= plGetLittleLong(fin);
 	header.alpha	= plGetLittleLong(fin);
 
-	if (out->data) free(out->data);
-
 	memset(out, 0, sizeof(PLImage));
 
 	out->size = header.width * header.height * 4;
@@ -133,7 +128,7 @@ PLresult plLoadFTXImage(FILE *fin, PLImage *out)
 	if (fread(out->data, sizeof(uint8_t), out->size, fin) != out->size)
 		return PL_RESULT_FILEREAD;
 
-	out->format = VL_TEXTUREFORMAT_RGBA;
+	out->format = VL_TEXTUREFORMAT_RGBA8;
 
 	out->width = header.width;
 	out->height = header.height;
@@ -144,7 +139,7 @@ PLresult plLoadFTXImage(FILE *fin, PLImage *out)
 
 #define	PPM_HEADER_SIZE	70
 
-uint8_t *plLoadPPMImage(FILE *fin, unsigned int *width, unsigned int *height)
+PLresult plLoadPPMImage(FILE *fin, PLImage *out)
 {
 	plSetErrorFunction("plLoadPPMImage");
 
@@ -155,9 +150,7 @@ uint8_t *plLoadPPMImage(FILE *fin, unsigned int *width, unsigned int *height)
 	if (strncmp(header, "P6", 2))
 	{
 		plSetError("Unsupported PPM type!\n");
-
-		fclose(fin);
-		return NULL;
+		return PL_RESULT_FILEVERSION;
 	}
 
 	int i = 0, d;
@@ -176,13 +169,18 @@ uint8_t *plLoadPPMImage(FILE *fin, unsigned int *width, unsigned int *height)
 			i += sscanf(header, "%d", &d);
 	}
 
-	uint8_t	*image = (uint8_t*)malloc(sizeof(uint8_t) * w * h * 3);
-	fread(image, sizeof(uint8_t), w * h * 3, fin);
-	fclose(fin);
+	PLuint size = w * h * 3;
+	uint8_t	*image = (uint8_t*)malloc(sizeof(uint8_t) * size);
+	fread(image, sizeof(uint8_t), size, fin);
+	
+	memset(out, 0, sizeof(PLImage));
+	out->size		= size;
+	out->width		= w;
+	out->height		= h;
+	out->data		= image;
+	out->format		= VL_TEXTUREFORMAT_RGB8;
 
-	*width = w;
-	*height = h;
-	return image;
+	return PL_RESULT_SUCCESS;
 }
 
 /*	Monolith's DTX Format (http://www.cnblogs.com/crsky/p/4702916.html)	*/
@@ -255,7 +253,7 @@ PLbyte _plGetDTXFormat(DTXHeader *dtx)
 	// use a pallette anyway.
 	//
 	// tl;dr this is a hack because I'm lazy!
-	if (dtx->version <= DTX_VERSION_2)
+	if (dtx->version >= DTX_VERSION_2)
 		return DTX_FORMAT_8PALLETTE;
 	 
 	return dtx->extra[2];
@@ -278,8 +276,6 @@ PLresult plLoadDTXImage(FILE *fin, PLImage *out)
 	else if ((header.width < 8) || (header.height < 8))
 		return PL_RESULT_IMAGERESOLUTION;
 
-	if (out->data) free(out->data);
-
 	memset(out, 0, sizeof(PLImage));
 
 	out->width = header.width;
@@ -289,7 +285,7 @@ PLresult plLoadDTXImage(FILE *fin, PLImage *out)
 	{
 	case DTX_FORMAT_8PALLETTE:
 		out->size = header.width * header.height;
-		out->format = VL_TEXTUREFORMAT_RGB;
+		out->format = VL_TEXTUREFORMAT_RGB8;
 		break;
 
 	case DTX_FORMAT_S3TC_DXT1:
@@ -307,12 +303,12 @@ PLresult plLoadDTXImage(FILE *fin, PLImage *out)
 
 	case DTX_FORMAT_8:
 		out->size = header.width * header.height;
-		out->format = VL_TEXTUREFORMAT_RGB;
+		out->format = VL_TEXTUREFORMAT_RGB8;
 		break;
 	case DTX_FORMAT_16:
 	case DTX_FORMAT_32:
 		out->size = header.width * header.height * 4;
-		out->format = VL_TEXTUREFORMAT_RGBA;
+		out->format = VL_TEXTUREFORMAT_RGBA8;
 		break;
 	}
 

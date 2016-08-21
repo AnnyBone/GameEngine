@@ -19,9 +19,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #pragma once
 
-#include "shared_client.h"
-
 typedef struct Material_s Material_t;
+typedef struct model_s model_t;
+typedef struct DynamicLight_s DynamicLight_t;
+typedef struct ClientEntity_s ClientEntity_t;
+typedef struct ConsoleVariable_s ConsoleVariable_t;
 
 /*	Functions exported from the engine.
 */

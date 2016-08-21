@@ -82,7 +82,7 @@ typedef struct
 	float	upmove;
 } ClientCommand_t;
 
-typedef struct
+typedef struct DynamicLight_s
 {
 	MathVector3f_t	origin;
 	float	radius;

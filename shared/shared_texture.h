@@ -42,12 +42,22 @@ enum
 	XTEXTURE_FLAG_END
 };
 
+#ifdef __cplusplus
+
+class XTexture;
+
+#else
+
+typedef struct XTexture XTexture;
+
+#endif
+
 typedef struct gltexture_s 
 {
 	//managed by texture manager
 	unsigned int					texnum;
 	struct gltexture_s				*next;
-	model_t							*owner;					// TODO: Make this obsolete!!
+	struct model_s					*owner;					// TODO: Make this obsolete!!
 	//managed by image loading
 	char							name[64];
 	unsigned int					width;					// Size of image as it exists in opengl

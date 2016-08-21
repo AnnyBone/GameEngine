@@ -18,6 +18,8 @@
 
 #pragma once
 
+#include "platform.h"
+
 plEXTERN_C_START
 
 extern void	plGetUserName(PLchar *out);

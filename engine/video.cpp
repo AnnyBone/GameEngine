@@ -389,6 +389,7 @@ void Video_Shutdown(void)
 	if (g_spritemanager) delete g_spritemanager;
 	if (g_shadermanager) delete g_shadermanager;
 	if (g_cameramanager) delete g_cameramanager;
+	if (g_texturemanager) delete g_texturemanager;
 
 	if (!g_state.embedded)
 	{

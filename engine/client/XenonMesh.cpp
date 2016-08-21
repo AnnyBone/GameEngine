@@ -45,12 +45,12 @@ private:
 	std::unordered_map<std::string, XMesh*> meshes;
 };
 
-XMeshManager::MeshManager()
+XMeshManager::XMeshManager()
 {
 	Con_Printf("Initializing Mesh Manager...\n");
 }
 
-XMeshManager::~MeshManager()
+XMeshManager::~XMeshManager()
 {
 	ClearMeshes();
 }

@@ -27,6 +27,12 @@ XTextureManager *g_texturemanager = nullptr;
 
 ConsoleVariable_t cv_texture_anisotropy = { "texture_anisotropy", "16", true };
 
+// Base textures...
+namespace textures
+{
+	XTexture *nulltexture = nullptr;
+}
+
 XTextureManager::XTextureManager()
 {
 	Con_Printf("Initializing Texture Manager...\n");
@@ -34,11 +40,28 @@ XTextureManager::XTextureManager()
 	Cvar_RegisterVariable(&cv_texture_anisotropy, NULL);
 
 	Image_InitializePNG();
+
+	_max_resolution = vlGetMaxTextureSize();
+
+	static PLbyte notexture_data[16] =
+	{
+		255,  0,255, 255,
+		0,  0,  0, 255,
+		0,  0,  0, 255,
+		255,  0,255, 255
+	};
+	textures::nulltexture = CreateTexture(
+		"nulltexture",
+		2, 2, 
+		VL_TEXTUREFORMAT_RGB8, 
+		notexture_data, sizeof(notexture_data), 
+		XTEXTURE_FLAG_PRESERVE | XTEXTURE_FLAG_NEAREST
+	);
 }
 
 XTextureManager::~XTextureManager()
 {
-	_textures.clear();
+	Image_Shutdown();
 }
 
 /*	Utility	*/
@@ -52,7 +75,7 @@ PLbool XTextureManager::IsValidSize(PLuint width, PLuint height)
 		return false;
 	}
 	// Check that it's a multiple of two.
-	else if ((width && !(width & (width - 1))) && (height && !(height & (height - 1))))
+	else if ((width % 2) || (height % 2))
 	{
 		Con_Warning("Resolution isn't a multiple of 2! (%i x %i)\n", width, height);
 		return false;
@@ -61,11 +84,13 @@ PLbool XTextureManager::IsValidSize(PLuint width, PLuint height)
 	return true;
 }
 
-XTexture* XTextureManager::CreateTexture(std::string path)
+XTexture *XTextureManager::CreateTexture(std::string path, PLuint flags)
 {
-	XTexture *texture = GetTexture(path);
-	if (texture) 
-		return texture;
+	{
+		auto texture = _textures.find(path);
+		if (texture != _textures.end())
+			return texture->second;
+	}
 
 	FILE *f;
 	PLImage image;
@@ -80,9 +105,9 @@ XTexture* XTextureManager::CreateTexture(std::string path)
 
 		if (result == PL_RESULT_SUCCESS)
 		{
-			texture = CreateTexture(&image);
+			_textures[path] = CreateTexture(&image, flags);
 			free(image.data);
-			return texture;
+			return _textures[path];
 		}
 	}
 
@@ -96,9 +121,9 @@ XTexture* XTextureManager::CreateTexture(std::string path)
 
 		if (result == PL_RESULT_SUCCESS)
 		{
-			texture = CreateTexture(&image);
+			_textures[path] = CreateTexture(&image, flags);
 			free(image.data);
-			return texture;
+			return _textures[path];
 		}
 	}
 
@@ -115,39 +140,33 @@ XTexture* XTextureManager::CreateTexture(std::string path)
 
 		if (data)
 		{
-			texture = CreateTexture(path, width, height, VL_TEXTUREFORMAT_RGBA, data, (width * height * 4));
+			_textures[path] = CreateTexture(path, width, height, VL_TEXTUREFORMAT_RGBA8, data, (width * height * 4), flags);
 			free(data);
-			return texture;
+			return _textures[path];
 		}
 	}
 
 	Con_Warning("Failed to load texture! (%s)\n", path.c_str());
-
 	return nullptr;
 }
 
-XTexture* XTextureManager::CreateTexture(std::string name, PLuint width, PLuint height, VLTextureFormat format, PLbyte *data, PLuint size, PLuint flags)
+XTexture* XTextureManager::CreateTexture(std::string path, PLuint width, PLuint height, VLTextureFormat format, PLbyte *data, PLuint size, PLuint flags)
 {
 	PLImage image;
 	memset(&image, 0, sizeof(PLImage));
 	image.data		= data;
-	image.flags		= flags;
 	image.format	= format;
 	image.width		= width;
 	image.height	= height;
 	image.size		= size;
+	strncpy(image.path, path.c_str(), sizeof(image.path));
 
-	return CreateTexture(&image);
+	return CreateTexture(&image, flags);
 }
 
-XTexture *XTextureManager::CreateTexture(PLImage *image)
+XTexture *XTextureManager::CreateTexture(PLImage *image, PLuint flags)
 {
 	if (!image || !image->data) throw XException("Invalid image data!\n");
-
-	// Check to see if we already have this texture data.
-	PLushort crc = CRC_Block(image->data, image->size);
-	XTexture *texture = GetTexture(crc);
-	if (texture) return texture;
 
 	// Ensure it's a valid size, do we always want to do this?
 	if (!g_texturemanager->IsValidSize(image->width, image->height))
@@ -155,33 +174,15 @@ XTexture *XTextureManager::CreateTexture(PLImage *image)
 	}
 
 	// Add the new texture to our manager.
-	XTexture tex;
-	tex.SetImage(image);
-	tex.SetCRC(crc);
+	XTexture *tex = new XTexture;
+	tex->AddFlags(flags);
+	tex->SetImage(image);
+	tex->SetCRC(CRC_Block(image->data, image->size));
 
-	return &_textures.emplace(crc, tex).first->second;
+	return tex;
 }
 
 /*	Texture Management	*/
-
-XTexture *XTextureManager::GetTexture(std::string path)
-{
-	auto texture = _textures.begin();
-	while (texture != _textures.end())
-		if (path == texture->second.path)
-			return &texture->second;
-
-	return nullptr;
-}
-
-XTexture *XTextureManager::GetTexture(PLushort crc)
-{
-	auto texture = _textures.find(crc);
-	if (texture != _textures.end())
-		return &texture->second;
-
-	return nullptr;
-}
 
 void XTextureManager::DeleteTexture(XTexture *texture, PLbool force)
 {
@@ -190,12 +191,16 @@ void XTextureManager::DeleteTexture(XTexture *texture, PLbool force)
 
 	// Remove it from the list.
 	auto tex = _textures.begin();
-	while(tex != _textures.end())
-		if (&tex->second == texture)
+	while (tex != _textures.end())
+	{
+		if (tex->second == texture)
 		{
+			delete tex->second;
 			_textures.erase(tex);
 			return;
 		}
+		++tex;
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -203,7 +208,7 @@ void XTextureManager::DeleteTexture(XTexture *texture, PLbool force)
 XTexture::XTexture() :
 	_flags(0),
 	_width(8), _height(8),
-	_format(VL_TEXTUREFORMAT_RGBA),
+	_format(VL_TEXTUREFORMAT_RGBA8),
 	_size(0),
 	path(""),
 	_crc(0)
@@ -218,28 +223,32 @@ XTexture::~XTexture()
 
 void XTexture::SetImage(PLImage *image)
 {
-	PLushort crc = CRC_Block(image->data, image->size);
-
 	_width		= image->width;
 	_height		= image->height;
 	_format		= image->format;
 	_size		= image->size;
 	path		= image->path;
 
-	if (_flags & XTEXTURE_FLAG_MIPMAP)
-		vlEnable(VL_CAPABILITY_GENERATEMIPMAP);
-
 	VLTextureInfo upload;
 	memset(&upload, 0, sizeof(VLTextureInfo));
 	upload.data			= image->data;
 	upload.format		= image->format;
 	if (_flags & XTEXTURE_FLAG_ALPHA)
-		upload.pixel_format = VL_COLOURFORMAT_BGRA;
+		upload.pixel_format = VL_COLOURFORMAT_RGBA;
 	else
-		upload.pixel_format = VL_COLOURFORMAT_BGR;
+		upload.pixel_format = VL_COLOURFORMAT_RGB;
 	upload.width		= image->width;
 	upload.height		= image->height;
 	upload.size			= image->size;
+	upload.initial		= true;
+
+	if (_flags & XTEXTURE_FLAG_MIPMAP)
+	{
+		vlEnable(VL_CAPABILITY_GENERATEMIPMAP);
+
+		upload.levels = 4;
+	}
+	else upload.levels = 1;
 
 	vlUploadTexture(_id, &upload);
 	

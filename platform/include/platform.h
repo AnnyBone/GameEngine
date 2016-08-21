@@ -29,6 +29,7 @@ support.
 // PL_IGNORE_SHARED_HEADERS
 // PL_IGNORE_PLATFORM_HEADERS
 // PL_IGNORE_STD_HEADERS
+// PL_IGNORE_VIDEO_HEADERS
 
 #define PL_INCLUDE_STD_BOOL
 
@@ -328,11 +329,3 @@ static PL_INLINE time_t plStringToTime(const char *ts)
 }
 
 //////////////////////////////////////////////////////////////////
-
-#ifndef PL_IGNORE_PLATFORM_HEADERS
-#	include "platform_log.h"
-#	include "platform_window.h"
-#	include "platform_math.h"
-#	include "platform_image.h"
-#	include "platform_video_layer.h"
-#endif

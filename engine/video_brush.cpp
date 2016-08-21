@@ -43,7 +43,7 @@ glpoly_t	*lightmap_polys[MAX_LIGHTMAPS];
 bool		bLightmapModified[MAX_LIGHTMAPS];
 glRect_t	lightmap_rectchange[MAX_LIGHTMAPS];
 
-gltexture_t *lightmap_textures[MAX_LIGHTMAPS];
+XTexture *lightmap_textures[MAX_LIGHTMAPS];
 
 int	allocated[MAX_LIGHTMAPS][BLOCK_WIDTH];
 
@@ -185,7 +185,7 @@ void R_DrawSequentialPoly(msurface_t *s)
 			}
 
 			vlActiveTexture(VIDEO_TEXTURE_LIGHT);
-			Video_SetTexture(lightmap_textures[s->lightmaptexturenum]);
+			lightmap_textures[s->lightmaptexturenum]->Bind();
 
 			R_RenderDynamicLightmaps(s);
 			R_UploadLightmap(s->lightmaptexturenum);
@@ -554,17 +554,15 @@ void GL_BuildLightmaps()
 		lightmap_rectchange[i].h = 0;
 
 		//johnfitz -- use texture manager
-		sprintf(name, "lightmap%03i",i);
+		std::string namel = "lightmap" + std::to_string(i);
 		data = lightmaps+i*BLOCK_WIDTH*BLOCK_HEIGHT*LIGHTMAP_BYTES;
-		lightmap_textures[i] = TexMgr_LoadImage(
-			cl.worldmodel,
-			name,
+		lightmap_textures[i] = g_texturemanager->CreateTexture(
+			namel,
 			BLOCK_WIDTH,BLOCK_HEIGHT,
-			SRC_LIGHTMAP,
-			data,
-			"",
-			(unsigned)data,
-			TEXPREF_LINEAR|TEXPREF_NOPICMIP);
+			VL_TEXTUREFORMAT_RGB8,	//SRC_LIGHTMAP,
+			data, sizeof(data),
+			XTEXTURE_FLAG_MIPMAP	//TEXPREF_LINEAR|TEXPREF_NOPICMIP
+		);
 		//johnfitz
 	}
 }
@@ -644,18 +642,29 @@ void R_UploadLightmap(int lmap)
 	bLightmapModified[lmap] = false;
 
 	theRect = &lightmap_rectchange[lmap];
-#ifdef VL_MODE_OPENGL
+
+#if 0
 	glTexSubImage2D(
 		GL_TEXTURE_2D,
 		0,0,
 		theRect->t,
 		BLOCK_WIDTH,
 		theRect->h,
-		// [16/6/2013] MH's suggestions ~hogsy
-		GL_BGRA,
-		GL_UNSIGNED_INT_8_8_8_8_REV,
-		lightmaps+(lmap* BLOCK_HEIGHT + theRect->t)*BLOCK_WIDTH*LIGHTMAP_BYTES);
+		);
+#else
+	VLTextureInfo upload;
+	memset(&upload, 0, sizeof(VLTextureInfo));
+	upload.data = lightmaps + (lmap* BLOCK_HEIGHT + theRect->t)*BLOCK_WIDTH*LIGHTMAP_BYTES;
+	upload.format = VL_TEXTUREFORMAT_RGB8;
+	upload.pixel_format = VL_COLOURFORMAT_BGRA;
+	upload.width = BLOCK_WIDTH;
+	upload.height = theRect->h;
+	upload.y = theRect->t;
+	upload.storage_type = VL_UNSIGNED_INT_8_8_8_8_REV;
+
+	vlUploadTexture(vlGetCurrentTexture(), &upload);
 #endif
+
 	theRect->l = BLOCK_WIDTH;
 	theRect->t = BLOCK_HEIGHT;
 	theRect->h = 0;
@@ -698,9 +707,9 @@ void R_RebuildAllLightmaps (void)
 		if(!allocated[i][0])
 			break;
 
-		Video_SetTexture(lightmap_textures[i]);
+		lightmap_textures[i]->Bind();
 
-#ifdef VL_MODE_OPENGL
+#if 0
 		glTexSubImage2D(
 			GL_TEXTURE_2D,
 			0,0,0,
@@ -709,6 +718,17 @@ void R_RebuildAllLightmaps (void)
 			GL_BGRA,
 			GL_UNSIGNED_INT_8_8_8_8_REV,
 			lightmaps+i*BLOCK_WIDTH*BLOCK_HEIGHT*LIGHTMAP_BYTES);
+#else
+		VLTextureInfo upload;
+		memset(&upload, 0, sizeof(VLTextureInfo));
+		upload.data				= lightmaps + i*BLOCK_WIDTH*BLOCK_HEIGHT*LIGHTMAP_BYTES;
+		upload.format			= VL_TEXTUREFORMAT_RGB8;
+		upload.pixel_format		= VL_COLOURFORMAT_BGRA;
+		upload.width			= BLOCK_WIDTH;
+		upload.height			= BLOCK_HEIGHT;
+		upload.storage_type		= VL_UNSIGNED_INT_8_8_8_8_REV;
+
+		vlUploadTexture(vlGetCurrentTexture(), &upload);
 #endif
 	}
 }

@@ -27,6 +27,8 @@
 #include <unistd.h>
 #endif
 
+#include "platform_log.h"
+
 #include "engine_base.h"
 
 #include "input.h"

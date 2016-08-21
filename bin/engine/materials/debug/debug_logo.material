@@ -1,0 +1,11 @@
+debug_logo
+{
+	$skin
+	{
+		$alpha_test "1"
+	
+		$map "materials/debug/xenon_logo"
+		{
+		}
+	}
+}

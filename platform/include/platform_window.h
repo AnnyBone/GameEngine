@@ -16,6 +16,8 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
 #pragma once
 
+#include "platform.h"
+
 #ifdef _WIN32
 #else	// Linux
 #	include <X11/Xlib.h>

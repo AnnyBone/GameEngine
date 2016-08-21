@@ -19,6 +19,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "engine_base.h"
 
+#include "platform_log.h"
+
 XException::XException(const char *message, ...)
 {
 	va_list		ArgPtr;

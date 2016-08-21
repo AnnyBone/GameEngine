@@ -18,12 +18,12 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
 #include "platform.h"
 
-typedef struct
+typedef struct PLModuleFunction
 {
-	const char *ccFunctionName;
+	const char *name;
 
 	void **Function;
-} pModuleFunction_t;
+} PLModuleFunction;
 
 PL_EXTERN_C
 

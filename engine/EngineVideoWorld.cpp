@@ -329,7 +329,8 @@ void World_DrawWater(void)
 				{
 					vlActiveTexture(VIDEO_TEXTURE_LIGHT);
 
-					Video_SetTexture(lightmap_textures[s->lightmaptexturenum]);
+					lightmap_textures[s->lightmaptexturenum]->Bind();
+
 					R_RenderDynamicLightmaps(s);
 					R_UploadLightmap(s->lightmaptexturenum);
 
@@ -390,7 +391,8 @@ void World_Draw(void)
 				{
 					vlActiveTexture(VIDEO_TEXTURE_LIGHT);
 
-					Video_SetTexture(lightmap_textures[s->lightmaptexturenum]);
+					lightmap_textures[s->lightmaptexturenum]->Bind();
+
 					R_RenderDynamicLightmaps(s);
 					R_UploadLightmap(s->lightmaptexturenum);
 

@@ -18,6 +18,8 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
 #include "video.h"
 
+#include "platform_log.h"
+
 /*
 This document acts as a layer between the video sub-system
 and the graphics API.
@@ -207,26 +209,12 @@ PLbool vl_gl_depth_texture				= false;
 PLbool vl_gl_shadow						= false;
 PLbool vl_gl_vertex_buffer_object		= false;
 PLbool vl_gl_texture_compression		= false;
-PLbool vl_gl_generate_mipmap			= false;
 PLbool vl_gl_texture_compression_s3tc	= false;
 
 PLuint vl_gl_version_major = 0;
 PLuint vl_gl_version_minor = 0;
 
-#define VL_GL_VERSION_45	((vl_gl_version_major >= 4) && (vl_gl_version_minor >= 5))
-#define VL_GL_VERSION_44	((vl_gl_version_major >= 4) && (vl_gl_version_minor >= 4))
-#define VL_GL_VERSION_43	((vl_gl_version_major >= 4) && (vl_gl_version_minor >= 3))
-#define VL_GL_VERSION_42	((vl_gl_version_major >= 4) && (vl_gl_version_minor >= 2))
-#define VL_GL_VERSION_41	((vl_gl_version_major >= 4) && (vl_gl_version_minor >= 1))
-#define VL_GL_VERSION_40	(vl_gl_version_major >= 4)
-#define VL_GL_VERSION_33	((vl_gl_version_major >= 3) && (vl_gl_version_minor >= 3))
-#define VL_GL_VERSION_32	((vl_gl_version_major >= 3) && (vl_gl_version_minor >= 2))
-#define VL_GL_VERSION_31	((vl_gl_version_major >= 3) && (vl_gl_version_minor >= 1))
-#define VL_GL_VERSION_30	(vl_gl_version_major >= 3)
-#define VL_GL_VERSION_21	((vl_gl_version_major >= 2) && (vl_gl_version_minor >= 1))
-#define VL_GL_VERSION_20	(vl_gl_version_major >= 2)
-#define VL_GL_VERSION_15	((vl_gl_version_major >= 1) && (vl_gl_version_minor >= 5))
-#define VL_GL_VERSION_14	((vl_gl_version_major >= 1) && (vl_gl_version_minor >= 4))
+#define VL_GL_VERSION(maj, min)	((maj == vl_gl_version_major && min <= vl_gl_version_minor) || maj < vl_gl_version_major)
 
 void _vlInitOpenGL(void)
 {
@@ -555,10 +543,15 @@ vlAttribute_t vlGetAttributeLocation(vlShaderProgram_t *program, const char *nam
 VLTexture vlGenerateTexture(void)
 {
 #if defined (VL_MODE_OPENGL)
-	PLint id;
+	PLuint id;
 	glGenTextures(1, &id);
 	return id;
 #endif
+}
+
+VLTexture vlGetCurrentTexture(void)
+{
+	return vl_state.current_texture;
 }
 
 void vlDeleteTexture(VLTexture *texture)
@@ -568,17 +561,22 @@ void vlDeleteTexture(VLTexture *texture)
 #endif
 }
 
+bool vlIsEnabled(unsigned int caps);
+
 void vlUploadTexture(VLTexture texture, const VLTextureInfo *upload)
 {
 	vlBindTexture(VL_TEXTURE_2D, texture);
+
+	PLuint storage_type = upload->storage_type;
+	if (storage_type == 0) storage_type = GL_UNSIGNED_BYTE;
 
 #if defined (VL_MODE_OPENGL_CORE)
 #elif defined (VL_MODE_OPENGL)
 	PLuint levels = upload->levels;
 	if (vlIsEnabled(VL_CAPABILITY_GENERATEMIPMAP))
 	{
-		if(levels == 0) levels = 5;
-		if (!VL_GL_VERSION_30 && VL_GL_VERSION_14)
+		if(levels <= 1) levels = 4;
+		if (!VL_GL_VERSION(3,0) && VL_GL_VERSION(1,4))
 		{
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, levels);
@@ -597,59 +595,39 @@ void vlUploadTexture(VLTexture texture, const VLTextureInfo *upload)
 	case VL_TEXTUREFORMAT_RGB_DXT1:
 	case VL_TEXTUREFORMAT_RGB_FXT1:
 		compressed = true;
+	default:
 		break;
 	}
 
-	if (VL_GL_VERSION_42)
-	{
+	if(upload->initial) 
 		glTexStorage2D(GL_TEXTURE_2D, levels, upload->format, upload->width, upload->height);
-		if(compressed)
-			glCompressedTexSubImage2D(
-				GL_TEXTURE_2D, 
-				0, 
-				0, 0, 
-				upload->width, upload->height,
-				upload->format, 
-				upload->size, 
-				upload->data);
-		else
-			glTexSubImage2D(
-				GL_TEXTURE_2D, 
-				0, 
-				0, 0, 
-				upload->width, upload->height,
-				upload->format,
-				GL_UNSIGNED_BYTE, 
-				upload->data);
-	}
+
+	if(compressed)
+		glCompressedTexSubImage2D(
+			GL_TEXTURE_2D, 
+			0, 
+			upload->x, upload->y, 
+			upload->width, upload->height,
+			upload->format, 
+			upload->size, 
+			upload->data
+		);
 	else
-	{
-		if (compressed)
-			glCompressedTexImage2D(
-				GL_TEXTURE_2D,
-				0,
-				upload->format,
-				upload->width, upload->height,
-				0,
-				upload->pixel_format,
-				upload->data);
-		else
-			glTexImage2D(
-				GL_TEXTURE_2D, 
-				0, 
-				upload->format,
-				upload->width, upload->height,
-				0, 
-				upload->pixel_format,
-				GL_UNSIGNED_BYTE, 
-				upload->data);
-	}
+		glTexSubImage2D(
+			GL_TEXTURE_2D,
+			0,
+			upload->x, upload->y,
+			upload->width, upload->height,
+			upload->pixel_format,
+			storage_type,
+			upload->data
+		);
 
 	if (vlIsEnabled(VL_CAPABILITY_GENERATEMIPMAP))
 	{
-		if (VL_GL_VERSION_30)
+		if (VL_GL_VERSION(3,0))
 			glGenerateMipmap(GL_TEXTURE_2D);
-		else if(VL_GL_VERSION_14)
+		else if(VL_GL_VERSION(1,4))
 			glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE);
 		else
 		{
@@ -813,6 +791,8 @@ vlCapabilities_t vl_capabilities[] =
 	{ VL_CAPABILITY_STENCIL_TEST, GL_STENCIL_TEST, "STENCIL_TEST" },
 	{ VL_CAPABILITY_MULTISAMPLE, GL_MULTISAMPLE, "MULTISAMPLE" },
 	{ VL_CAPABILITY_SCISSOR_TEST, GL_SCISSOR_TEST, "SCISSOR_TEST" },
+
+	{ VL_CAPABILITY_GENERATEMIPMAP, NULL, "GENERATE_MIPMAP" },
 #else
 	{ VL_CAPABILITY_ALPHA_TEST, 0, "ALPHA_TEST" },
 	{ VL_CAPABILITY_BLEND, 0, "BLEND" },
@@ -874,13 +854,11 @@ void vlEnable(unsigned int cap)
 			grCullMode(vl_state.current_cullmode);
 #endif
 
-		if (cap & vl_capabilities[i].vl_parm)
+		if ((cap & vl_capabilities[i].vl_parm) && (vl_capabilities[i].to_parm != 0))
 #if defined (VL_MODE_OPENGL) || (VL_MODE_OPENGL_CORE)
 			glEnable(vl_capabilities[i].to_parm);
 #elif defined (VL_MODE_GLIDE)
-			// Hacky, but just to be safe...
-			if (vl_capabilities[i].to_parm != 0)
-				grEnable(vl_capabilities[i].to_parm);
+			grEnable(vl_capabilities[i].to_parm);
 #endif
 
 		vl_state.current_capabilities |= vl_capabilities[i].vl_parm;

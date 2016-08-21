@@ -402,13 +402,7 @@ void TexMgr_FreeTexturesForOwner (model_t *owner)
 void TextureManager_Initialize(void)
 {
 	int			i;
-	static uint8_t notexture_data[16] =
-	{
-		255,  0,255, 255,
-		  0,  0,  0, 255,
-		  0,  0,  0, 255,
-		255,  0,255, 255
-	}; //black and pink checker
+	 //black and pink checker
 
 	extern texture_t *r_notexture_mip, *r_notexture_mip2;
 
@@ -431,19 +425,9 @@ void TextureManager_Initialize(void)
 	Cmd_AddCommand ("imagelist", &TexMgr_Imagelist_f);
 	Cmd_AddCommand ("imagedump", &TexMgr_Imagedump_f);
 	Cmd_AddCommand("image_reloadtextures", &TexMgr_ReloadImages);
-
-	// poll max size from hardware
-	gl_hardware_maxsize = vlGetMaxTextureSize();
 	
-	notexture = TexMgr_LoadImage(NULL,"notexture",2,2,SRC_RGBA,notexture_data,"",(unsigned)notexture_data,TEXPREF_NEAREST|TEXPREF_PERSIST|TEXPREF_NOPICMIP);
-
 	//have to assign these here becuase Mod_Init is called before TexMgr_Init
 	r_notexture_mip->gltexture = r_notexture_mip2->gltexture = notexture;
-}
-
-void TextureManager_Shutdown()
-{
-	Image_Shutdown();
 }
 
 /*
@@ -934,24 +918,6 @@ gltexture_t *TexMgr_LoadImage(model_t *owner, char *name, int width, int height,
 	gltexture_t			*glt	= NULL;
 	int					mark;
 
-	// [28/4/2013] TODO: Really? ~hogsy
-	if(bIsDedicated)
-		return NULL;
-
-	// cache check
-	switch (format)
-	{
-		case SRC_INDEXED:
-			crc = CRC_Block(data,width*height);
-			break;
-		case SRC_LIGHTMAP:
-		case SRC_RGBA:
-			crc = CRC_Block(data,width*height*4);
-			break;
-		default:
-			Console_ErrorMessage(true,source_file,va("Unknown source format (%i).",format));
-	}
-
 	if (flags & TEXPREF_OVERWRITE)
 	{
 		glt = TexMgr_FindTexture(owner, name);
@@ -1011,6 +977,7 @@ gltexture_t *TexMgr_LoadImage(model_t *owner, char *name, int width, int height,
 */
 void TexMgr_ReloadImage (gltexture_t *glt, int shirt, int pants)
 {
+#if 0
 	uint8_t	translation[256];
 	uint8_t	*src, *dst, *data = NULL, *translated;
 	int	mark, size, i;
@@ -1104,6 +1071,7 @@ invalid:
 	}
 
 	Hunk_FreeToLowMark(mark);
+#endif
 }
 
 /*	Reloads all texture images. called only by vid_restart

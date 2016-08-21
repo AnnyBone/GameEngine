@@ -18,6 +18,8 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
 /*	Generic Window Header	*/
 
+#include "platform_window.h"
+
 #define WINDOW_MINIMUM_WIDTH	640
 #define WINDOW_MINIMUM_HEIGHT	480
 

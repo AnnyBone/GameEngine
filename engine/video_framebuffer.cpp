@@ -102,6 +102,7 @@ VideoFrameBuffer::~VideoFrameBuffer()
 */
 void VideoFrameBuffer::GenerateBuffers()
 {
+#if 0
 	// Colour buffer
 	{
 		// Create a new texture instance and then bind it.
@@ -118,6 +119,7 @@ void VideoFrameBuffer::GenerateBuffers()
 		// Attach the texture to this framebuffer.
 		vlAttachFrameBufferTexture(buf_colour);
 	}
+#endif
 
 	// Depth buffer
 #ifdef VL_MODE_OPENGL

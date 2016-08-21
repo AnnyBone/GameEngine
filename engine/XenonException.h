@@ -20,5 +20,11 @@ class XException : public std::exception
 {
 public:
 	XException(const char *message, ...);
-};
 
+	class TextureNotFound : public std::exception {
+	public:
+		virtual const char* what() const throw() {
+			return "Unknown texture";
+		}
+	};
+};

@@ -15,11 +15,10 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 */
 
 // Platform Library
-#include "platform.h"
 #include "platform_library.h"
+#include "platform_log.h"
+#include "platform_window.h"
 
-// Shared Library
-#include "shared_flags.h"
 #include "shared_engine.h"
 
 /*
@@ -42,7 +41,7 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 int main(int argc,char *argv[])
 {
 	plClearLog(LAUNCHER_LOG);
-	plWriteLog(LAUNCHER_LOG, "Launcher (Interface Version %i)\n", ENGINE_VERSION_INTERFACE);
+	//plWriteLog(LAUNCHER_LOG, "Launcher (Interface Version %i)\n", ENGINE_VERSION_INTERFACE);
 
 	// Initialize.
 	if (xenon::Initialize(argc, argv) != PL_RESULT_SUCCESS)

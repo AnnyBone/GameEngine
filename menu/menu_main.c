@@ -53,7 +53,7 @@ int	iMousePosition[2];
 
 int g_menuwidth = 0, g_menuheight = 0;
 
-Material_t *debug_mat = NULL;
+Material_t *debug_mat = NULL, *debug_mat2 = NULL;
 
 // TODO: Why are we doing this!? Should be using the one from the lib
 char *va(char *format,...)
@@ -78,6 +78,7 @@ void Menu_Initialize(void)
 	Engine.Cvar_RegisterVariable(&cv_menushow, NULL);
 
 	debug_mat = Engine.LoadMaterial("debug/debug_dtx");
+	debug_mat2 = Engine.LoadMaterial("debug/debug_logo");
 
 	HUD_Initialize();
 }
@@ -104,7 +105,7 @@ void Menu_Draw(CoreViewport *viewport)
 
 	Menu_UpdateScreenSize();
 
-	Engine.Client_SetMenuCanvas(CANVAS_MENU);
+	Engine.Client_SetMenuCanvas(CANVAS_DEFAULT);
 
 	if(iMenuState & MENU_STATE_LOADING)
 	{
@@ -118,7 +119,11 @@ void Menu_Draw(CoreViewport *viewport)
 		return;
 	}
 
-	Engine.DrawMaterialSurface(debug_mat, 0, 0, 0, 128, 128, 1.0f);
+	Engine.DrawMaterialSurface(debug_mat, 0, 0, 0, 256, 256, 1.0f);
+	Engine.DrawMaterialSurface(debug_mat, 1, 256, 0, 256, 256, 1.0f);
+	Engine.DrawMaterialSurface(debug_mat, 2, 512, 0, 256, 256, 1.0f);
+	Engine.DrawMaterialSurface(debug_mat, 3, 1024, 0, 256, 256, 1.0f);
+	Engine.DrawMaterialSurface(debug_mat2, 0, g_menuwidth - 80, g_menuheight - 80, 64, 64, 1.0f);
 
 	if ((iMenuState & MENU_STATE_HUD) && (!(iMenuState & MENU_STATE_SCOREBOARD) && !(iMenuState & MENU_STATE_MENU)))
 		HUD_Draw();
