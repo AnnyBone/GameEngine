@@ -33,11 +33,18 @@ namespace textures
 	XTexture *nulltexture = nullptr;
 }
 
+void _PrintMemoryUsage()
+{
+	g_texturemanager->PrintMemoryUsage();
+}
+
 XTextureManager::XTextureManager()
 {
 	Con_Printf("Initializing Texture Manager...\n");
 
 	Cvar_RegisterVariable(&cv_texture_anisotropy, NULL);
+
+	Cmd_AddCommand("tm_memoryusage", _PrintMemoryUsage);
 
 	Image_InitializePNG();
 
@@ -65,6 +72,29 @@ XTextureManager::~XTextureManager()
 }
 
 /*	Utility	*/
+
+void XTextureManager::PrintMemoryUsage()
+{
+	PLuint texels = 0;
+
+	for(auto tex = _textures.begin(); tex != _textures.end(); ++tex)
+	{
+		XTexture *texture = tex->second;
+		Con_SafePrintf(" %4i x%4i %s\n", 
+			texture->GetWidth(), 
+			texture->GetHeight(), 
+			texture->path.c_str());
+
+		// todo, update this crap...
+		if (texture->GetFlags() & XTEXTURE_FLAG_MIPMAP)
+			texels += texture->GetSize() / texture->levels;
+		else
+			texels += (texture->GetWidth() * texture->GetHeight());
+	}
+
+	PLuint mb = texels * (Video.bpp / 8) / 0x100000;
+	Con_Printf("%i textures %i pixels %1.1f megabytes\n", _textures.size(), texels, mb);
+}
 
 PLbool XTextureManager::IsValidSize(PLuint width, PLuint height)
 {
@@ -211,6 +241,7 @@ XTexture::XTexture() :
 	_format(VL_TEXTUREFORMAT_RGBA8),
 	_size(0),
 	path(""),
+	levels(0),
 	_crc(0)
 {
 	_id = vlGenerateTexture();
@@ -229,6 +260,14 @@ void XTexture::SetImage(PLImage *image)
 	_size		= image->size;
 	path		= image->path;
 
+	levels = 1;
+	if (_flags & XTEXTURE_FLAG_MIPMAP)
+	{
+		vlEnable(VL_CAPABILITY_GENERATEMIPMAP);
+
+		levels = 4;
+	}
+	
 	VLTextureInfo upload;
 	memset(&upload, 0, sizeof(VLTextureInfo));
 	upload.data			= image->data;
@@ -241,14 +280,7 @@ void XTexture::SetImage(PLImage *image)
 	upload.height		= image->height;
 	upload.size			= image->size;
 	upload.initial		= true;
-
-	if (_flags & XTEXTURE_FLAG_MIPMAP)
-	{
-		vlEnable(VL_CAPABILITY_GENERATEMIPMAP);
-
-		upload.levels = 4;
-	}
-	else upload.levels = 1;
+	upload.levels		= levels;
 
 	vlUploadTexture(_id, &upload);
 	

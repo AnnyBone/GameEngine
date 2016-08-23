@@ -1,0 +1,30 @@
+debug_dtx
+{
+	$skin
+	{
+		$map "materials/debug/dtx/barrel2"
+		{
+		}
+	}
+	
+	$skin
+	{
+		$map "materials/debug/dtx/Convict_Head"
+		{
+		}
+	}
+	
+	$skin
+	{
+		$map "materials/debug/dtx/coretop01"
+		{
+		}
+	}
+	
+	$skin
+	{	
+		$map "materials/debug/dtx/eisenberg_head"
+		{
+		}
+	}
+}

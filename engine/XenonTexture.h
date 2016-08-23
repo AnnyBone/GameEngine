@@ -32,6 +32,8 @@ public:
 	XTexture *CreateTexture(std::string path, PLuint width, PLuint height, VLTextureFormat format, PLbyte *data, PLuint size, PLuint flags = 0);
 	XTexture *CreateTexture(PLImage *image, PLuint flags = 0);
 
+	void PrintMemoryUsage();
+
 	XTexture *GetTexture(std::string path);
 	XTexture *GetTexture(PLushort crc);
 
@@ -67,6 +69,8 @@ public:
 	void SetCRC(PLushort crc) { _crc = crc; }
 
 	void Bind();
+
+	PLint levels;
 
 	std::string path;
 

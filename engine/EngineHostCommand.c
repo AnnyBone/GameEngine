@@ -126,6 +126,8 @@ void Host_Game_f (void)
 	pack_t			*pak;
 	char			pakfile[PLATFORM_MAX_PATH]; //FIXME: it's confusing to use this string for two different things
 
+	Con_Printf("DONT USE ME YOU FOOL!!!\n");
+
 	if(Cmd_Argc() > 1)
 	{
 		if(strstr(Cmd_Argv(1),".."))
@@ -184,7 +186,7 @@ void Host_Game_f (void)
 		if(!bIsDedicated)
 		{
 			// Delete all textures where TEXPREF_PERSIST is unset
-			TextureManager_FreeTextures(0, TEXPREF_PERSIST);
+			//TextureManager_FreeTextures(0, TEXPREF_PERSIST);
 
 			Draw_NewGame();
 

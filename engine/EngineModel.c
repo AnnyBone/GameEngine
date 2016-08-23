@@ -165,7 +165,7 @@ void Model_ClearAll(void)
 		{
 			mModel->bNeedLoad = true;
 
-			TexMgr_FreeTexturesForOwner(mModel); //johnfitz
+			//TexMgr_FreeTexturesForOwner(mModel); //johnfitz
 		}
 }
 
