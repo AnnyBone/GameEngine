@@ -63,7 +63,7 @@ namespace core
 
 		SpriteType_t type;
 
-		plColour_t colour;
+		PLColour colour;
 
 		Material_t *material;
 	};

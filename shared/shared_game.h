@@ -156,7 +156,7 @@ typedef struct
 
 	// Draw Functions
 	void(*DrawString)(int x, int y, const char *msg);
-	void(*DrawRectangle)(int x, int y, int w, int h, plColour_t colour);
+	void(*DrawRectangle)(int x, int y, int w, int h, PLColour colour);
 	void(*DrawLine)(plVector3f_t start, plVector3f_t end);
 	void(*DrawCoordinateAxes)(plVector3f_t position);
 	void(*DrawMaterialSurface)(Material_t *mMaterial, int iSkin, int x, int y, int w, int h, float fAlpha);

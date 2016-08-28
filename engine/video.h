@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #pragma once
 
-#include "platform_video_layer.h"
+#include "platform_graphics.h"
 
 #define	VIDEO_LIGHTMAP_HACKS
 
@@ -100,10 +100,6 @@ typedef struct
 
 typedef struct
 {
-	bool	fog_coord;
-	bool	vertex_buffer_object;
-	bool	shadow;
-	bool	depth_texture;
 	bool	generate_mipmap;
 } VideoExtensions_t;
 
@@ -141,13 +137,13 @@ void Video_GenerateSphereCoordinates(void);
 void Video_SetTexture(gltexture_t *gTexture);
 void Video_SetViewportSize(unsigned int w, unsigned int h);
 void Video_Frame(void);
-void Video_ObjectTexture(vlVertex_t *voObject, unsigned int uiTextureUnit, float S, float T);
-void Video_ObjectVertex(vlVertex_t *voObject, float X, float Y, float Z);
-void Video_ObjectNormal(vlVertex_t *voObject, float X, float Y, float Z);
-void Video_ObjectColour(vlVertex_t *voObject, float R, float G, float B, float A);
-void Video_DrawFill(vlVertex_t *voFill, Material_t *mMaterial, int iSkin);
+void Video_ObjectTexture(PLVertex *voObject, unsigned int uiTextureUnit, float S, float T);
+void Video_ObjectVertex(PLVertex *voObject, float X, float Y, float Z);
+void Video_ObjectNormal(PLVertex *voObject, float X, float Y, float Z);
+void Video_ObjectColour(PLVertex *voObject, float R, float G, float B, float A);
+void Video_DrawFill(PLVertex *voFill, Material_t *mMaterial, int iSkin);
 void Video_DrawSurface(msurface_t *mSurface, float fAlpha, Material_t *mMaterial, unsigned int uiSkin);
-void Video_DrawObject(vlVertex_t *voObject, VLPrimitive vpPrimitiveType, unsigned int uiVerts, Material_t *mMaterial, int iSkin);
+void Video_DrawObject(PLVertex *voObject, PLPrimitive vpPrimitiveType, unsigned int uiVerts, Material_t *mMaterial, int iSkin);
 void Video_ShowBoundingBoxes(void);
 void Video_Shutdown(void);
 

@@ -26,6 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // Checks whether a file has been modified or not.
 PLbool plIsFileModified(time_t oldtime, const PLchar *path)
 {
+	plFunctionStart();
 	if (!oldtime)
 	{
 		plSetError("Invalid time, skipping check!\n");
@@ -43,10 +44,12 @@ PLbool plIsFileModified(time_t oldtime, const PLchar *path)
 		return PL_TRUE;
 
 	return PL_FALSE;
+	plFunctionEnd();
 }
 
 time_t plGetFileModifiedTime(const PLchar *path)
 {
+	plFunctionStart();
 	struct stat sAttributes;
 	if (stat(path, &sAttributes) == -1)
 	{
@@ -54,21 +57,21 @@ time_t plGetFileModifiedTime(const PLchar *path)
 		return 0;
 	}
 	return sAttributes.st_mtime;
+	plFunctionEnd();
 }
 
 void plLowerCasePath(PLchar *out)
 {
-	pFUNCTION_START
+	plFunctionStart();
 	for (int i = 0; out[i]; i++) 
 		out[i] = (PLchar)tolower(out[i]);
-	pFUNCTION_END
+	plFunctionEnd();
 }
 
 // Creates a folder at the given path.
 PLbool plCreateDirectory(const PLchar *ccPath)
 {
-	pFUNCTION_START
-	
+	plFunctionStart();
 #ifdef _WIN32
 	if(CreateDirectory(ccPath, NULL) || (GetLastError() == ERROR_ALREADY_EXISTS))
 		return PL_TRUE;
@@ -106,15 +109,16 @@ PLbool plCreateDirectory(const PLchar *ccPath)
 #endif
 
 	return PL_FALSE;
-
-	pFUNCTION_END
+	plFunctionEnd();
 }
 
 // Returns the extension for the file.
 PLchar *plGetFileExtension(PLchar *dest, const PLchar *in)
 {
+	plFunctionStart();
 	dest = strrchr(in, '.') + 1;
 	return dest;
+	plFunctionEnd();
 }
 
 // Strips the extension from the filename.
@@ -145,8 +149,7 @@ const PLchar *plGetFileName(const PLchar *path)
 */
 void plGetUserName(PLchar *out)
 {
-	pFUNCTION_START
-
+	plFunctionStart();
 #ifdef _WIN32
 	PLchar userstring[PL_MAX_USERNAME];
 
@@ -175,8 +178,7 @@ void plGetUserName(PLchar *out)
 	}
 
 	//strncpy(out, cUser, sizeof(out));
-
-	pFUNCTION_END
+	plFunctionEnd();
 }
 
 /*	Scans the given directory.
@@ -184,8 +186,7 @@ void plGetUserName(PLchar *out)
 */
 void plScanDirectory(const PLchar *path, const PLchar *extension, void(*Function)(PLchar *filepath))
 {
-	pFUNCTION_START
-
+	plFunctionStart();
 	if (path[0] == ' ')
 	{
 		plSetError("Invalid path!\n");
@@ -235,7 +236,7 @@ void plScanDirectory(const PLchar *path, const PLchar *extension, void(*Function
 		}
 	}
 #endif
-	pFUNCTION_END
+	plFunctionEnd();
 }
 
 void plGetWorkingDirectory(PLchar *out)

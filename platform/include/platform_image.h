@@ -17,7 +17,7 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 #pragma once
 
 #include "platform.h"
-#include "platform_video_layer.h"
+#include "platform_graphics.h"
 
 typedef struct PLImage
 {
@@ -38,6 +38,7 @@ typedef struct PLImage
 #define PLIMAGE_EXTENSION_FTX	".ftx"	// Ritual's FTX image format.
 #define PLIMAGE_EXTENSION_DTX	".dtx"	// Lithtech's DTX image format.
 #define PLIMAGE_EXTENSION_PPM	".ppm"	// Portable Pixel Map format.
+#define PLIMAGE_EXTENSION_KTX	".ktx"
 #define PLIMAGE_EXTENSION_TGA	".tga"
 #define PLIMAGE_EXTENSION_PNG	".png"
 

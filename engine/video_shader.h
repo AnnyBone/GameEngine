@@ -23,19 +23,19 @@ namespace core
 	class Shader : public IShader
 	{
 	public:
-		Shader(VLShaderType type);
+		Shader(PLShaderType type);
 		~Shader();
 
 		bool Load(const char *path);
 		bool CheckCompileStatus();
 
 		unsigned int GetInstance() { return instance; }
-		VLShaderType GetType() { return type; }
+		PLShaderType GetType() { return type; }
 
 	private:
 		unsigned int instance;
 
-		VLShaderType type;
+		PLShaderType type;
 
 		const char	*source;
 		char		source_path[PLATFORM_MAX_PATH];
@@ -50,7 +50,7 @@ namespace core
 
 		virtual void Initialize() = 0;
 
-		void RegisterShader(std::string path, VLShaderType type);
+		void RegisterShader(std::string path, PLShaderType type);
 		
 		virtual void RegisterAttributes();
 
@@ -61,9 +61,9 @@ namespace core
 		void Link();
 		void Shutdown();
 
-		bool IsActive()	{ return (vlGetCurrentShaderProgram() == instance); }
+		bool IsActive()	{ return (plGetCurrentShaderProgram() == instance); }
 
-		VLUniform *RegisterUniform(std::string name, VLUniformType type);
+		VLUniform *RegisterUniform(std::string name, PLUniformType type);
 
 		void SetUniformVariable(VLUniform *uniform, float x, float y, float z);
 		void SetUniformVariable(VLUniform *uniform, plVector3f_t vector);
@@ -89,7 +89,7 @@ namespace core
 
 		std::string _name;
 
-		vlShaderProgram_t instance;
+		PLShaderProgram instance;
 	};
 
 	class ShaderManager : public XManager

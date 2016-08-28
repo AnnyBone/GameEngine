@@ -39,7 +39,7 @@ public:
 	void ClearMeshes() {}	// Clear all meshes.
 
 private:
-	XMesh *LoadStaticModel(plStaticModel_t *model);
+	XMesh *LoadStaticModel(PLStaticModel *model);
 	XMesh *LoadAnimatedModel(plAnimatedModel_t *model);
 
 	std::unordered_map<std::string, XMesh*> meshes;
@@ -88,7 +88,7 @@ XMesh *XMeshManager::LoadMesh(std::string path)
 			{
 			case PL_MODELTYPE_STATIC:
 			{
-				plStaticModel_t *static_model = plLoadStaticModel(path.c_str());
+				PLStaticModel *static_model = plLoadStaticModel(path.c_str());
 				if (!static_model)
 				{
 					Con_Warning("Failed to load static model!\n");

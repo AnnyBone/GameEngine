@@ -102,7 +102,7 @@ void Viewport::Draw()
 		ymod += _parent->GetPosition()[1];
 	}
 
-	vlViewport(xmod, ymod, _width, _height);
+	plViewport(xmod, ymod, _width, _height);
 	vlScissor(xmod, ymod, _width, _height);
 
 	draw::ClearBuffers();
@@ -115,12 +115,12 @@ void Viewport::Draw()
 		g_cameramanager->SetCurrentCamera(_camera);
 
 		if (cv_video_msaasamples.iValue > 0)
-			vlEnable(VL_CAPABILITY_MULTISAMPLE);
+			plEnableGraphicsStates(VL_CAPABILITY_MULTISAMPLE);
 
 		_camera->Draw();
 
 		if (cv_video_msaasamples.iValue > 0)
-			vlDisable(VL_CAPABILITY_MULTISAMPLE);
+			plDisableGraphicsStates(VL_CAPABILITY_MULTISAMPLE);
 	}
 #endif
 

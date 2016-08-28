@@ -65,11 +65,11 @@ char *Server_GetLevelName(void)
 	return sv.name;
 }
 
-ServerEntity_t *Server_FindRadius(MathVector3f_t origin, float radius)
+ServerEntity_t *Server_FindRadius(PLVector3f origin, float radius)
 {
 	unsigned int		i,j;
 	ServerEntity_t		*eEntity, *eChain;
-	MathVector3f_t		eorg;
+	PLVector3f			eorg;
 
 	eChain = sv.edicts;
 
@@ -283,7 +283,7 @@ void Server_Sound(ServerEntity_t *ent, int channel, char *sample, int iVolume, f
 	Flares
 */
 
-void Server_Flare(MathVector3f_t org,float r,float g,float b,float a,float scale,char *texture)
+void Server_Flare(PLVector3f org,float r,float g,float b,float a,float scale,char *texture)
 {
 }
 
@@ -291,7 +291,7 @@ void Server_Flare(MathVector3f_t org,float r,float g,float b,float a,float scale
 	Particles
 */
 
-void Particle(MathVector3f_t org, MathVector3f_t dir,float scale,char *texture,int count)
+void Particle(PLVector3f org, PLVector3f dir,float scale,char *texture,int count)
 {
 	int	i,v;
 

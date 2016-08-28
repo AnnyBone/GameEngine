@@ -18,6 +18,6 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
 plEXTERN_C_START
 
-plStaticModel_t *plLoadOBJModel(const PLchar *path);
+PLStaticModel *plLoadOBJModel(const PLchar *path);
 
 plEXTERN_C_END

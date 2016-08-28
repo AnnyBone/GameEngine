@@ -378,10 +378,10 @@ void Camera::Draw()
 
 	//Fog_SetupFrame();	// todo, really necessary to call this at the start of every draw call!?
 
-	if(gl_cull.value)	vlEnable(VL_CAPABILITY_CULL_FACE);
-	else				vlDisable(VL_CAPABILITY_CULL_FACE);
+	if(gl_cull.value)	plEnableGraphicsStates(VL_CAPABILITY_CULL_FACE);
+	else				plDisableGraphicsStates(VL_CAPABILITY_CULL_FACE);
 
-	vlEnable(VL_CAPABILITY_DEPTH_TEST);	// is this needed??
+	plEnableGraphicsStates(VL_CAPABILITY_DEPTH_TEST);	// is this needed??
 
 	//Fog_EnableGFog();
 	Sky_Draw();

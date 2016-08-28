@@ -48,7 +48,7 @@ XTextureManager::XTextureManager()
 
 	Image_InitializePNG();
 
-	_max_resolution = vlGetMaxTextureSize();
+	_max_resolution = plGetMaxTextureSize();
 
 	static PLbyte notexture_data[16] =
 	{
@@ -244,12 +244,12 @@ XTexture::XTexture() :
 	levels(0),
 	_crc(0)
 {
-	_id = vlGenerateTexture();
+	 plCreateTexture(&_id);
 }
 
 XTexture::~XTexture()
 {
-	vlDeleteTexture(&_id);
+	plDeleteTexture(&_id);
 }
 
 void XTexture::SetImage(PLImage *image)
@@ -263,13 +263,13 @@ void XTexture::SetImage(PLImage *image)
 	levels = 1;
 	if (_flags & XTEXTURE_FLAG_MIPMAP)
 	{
-		vlEnable(VL_CAPABILITY_GENERATEMIPMAP);
+		plEnableGraphicsStates(VL_CAPABILITY_GENERATEMIPMAP);
 
 		levels = 4;
 	}
 	
-	VLTextureInfo upload;
-	memset(&upload, 0, sizeof(VLTextureInfo));
+	PLTextureInfo upload;
+	memset(&upload, 0, sizeof(PLTextureInfo));
 	upload.data			= image->data;
 	upload.format		= image->format;
 	if (_flags & XTEXTURE_FLAG_ALPHA)
@@ -285,7 +285,7 @@ void XTexture::SetImage(PLImage *image)
 	vlUploadTexture(_id, &upload);
 	
 	if (_flags & XTEXTURE_FLAG_MIPMAP)
-		vlDisable(VL_CAPABILITY_GENERATEMIPMAP);
+		plDisableGraphicsStates(VL_CAPABILITY_GENERATEMIPMAP);
 
 	VLTextureFilter filtermode = VL_TEXTUREFILTER_LINEAR;
 	if (_flags & XTEXTURE_FLAG_MIPMAP)
@@ -296,13 +296,13 @@ void XTexture::SetImage(PLImage *image)
 	else if(_flags & XTEXTURE_FLAG_NEAREST)
 		filtermode = VL_TEXTUREFILTER_NEAREST;
 
-	vlSetTextureFilter(_id, filtermode);
-	vlSetTextureAnisotropy(_id, cv_texture_anisotropy.value);
+	plSetTextureFilter(_id, filtermode);
+	plSetTextureAnisotropy(_id, cv_texture_anisotropy.iValue);
 }
 
 void XTexture::Bind()
 {
-	vlBindTexture(VL_TEXTURE_2D, _id);
+	plSetTexture(_id);
 }
 
 /*	Flags	*/

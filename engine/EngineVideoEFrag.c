@@ -164,7 +164,7 @@ void R_CheckEfrags (void)
 		Con_Warning ("%i efrags exceeds standard limit of 640.\n", count);
 
 	dev_stats.efrags = count;
-	dev_peakstats.efrags = Math_Max(count,dev_peakstats.efrags);
+	dev_peakstats.efrags = plMax(count,dev_peakstats.efrags);
 }
 
 void R_AddEfrags (entity_t *ent)

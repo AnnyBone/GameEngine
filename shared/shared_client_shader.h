@@ -30,7 +30,7 @@ namespace core
 
 		virtual unsigned int GetInstance() = 0;
 
-		virtual VLShaderType GetType() = 0;
+		virtual PLShaderType GetType() = 0;
 	};
 
 	class IShaderProgram
@@ -38,7 +38,7 @@ namespace core
 	public:
 		virtual void Initialize() = 0;
 
-		virtual void RegisterShader(std::string, VLShaderType) = 0;
+		virtual void RegisterShader(std::string, PLShaderType) = 0;
 		virtual void RegisterAttributes() = 0;
 		virtual void Link() = 0;
 

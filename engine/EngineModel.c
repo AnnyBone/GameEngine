@@ -79,7 +79,7 @@ void *Mod_Extradata (model_t *mod)
 	return mod->cache.data;
 }
 
-mleaf_t *Mod_PointInLeaf (MathVector3f_t p, model_t *model)
+mleaf_t *Mod_PointInLeaf (PLVector3f p, model_t *model)
 {
 	mnode_t		*node;
 	float		d;
@@ -1084,21 +1084,21 @@ void Mod_BoundsFromClipNode (model_t *mod, int hull, int nodenum)
 
 	case PLANE_X:
 		if (plane->signbits == 1)
-			mod->clipmins[0] = Math_Min (mod->clipmins[0], -plane->dist - mod->hulls[hull].clip_mins[0]);
+			mod->clipmins[0] = plMin(mod->clipmins[0], -plane->dist - mod->hulls[hull].clip_mins[0]);
 		else
-			mod->clipmaxs[0] = Math_Max (mod->clipmaxs[0], plane->dist - mod->hulls[hull].clip_maxs[0]);
+			mod->clipmaxs[0] = plMax(mod->clipmaxs[0], plane->dist - mod->hulls[hull].clip_maxs[0]);
 		break;
 	case PLANE_Y:
 		if (plane->signbits == 2)
-			mod->clipmins[1] = Math_Min (mod->clipmins[1], -plane->dist - mod->hulls[hull].clip_mins[1]);
+			mod->clipmins[1] = plMin(mod->clipmins[1], -plane->dist - mod->hulls[hull].clip_mins[1]);
 		else
-			mod->clipmaxs[1] = Math_Max (mod->clipmaxs[1], plane->dist - mod->hulls[hull].clip_maxs[1]);
+			mod->clipmaxs[1] = plMax(mod->clipmaxs[1], plane->dist - mod->hulls[hull].clip_maxs[1]);
 		break;
 	case PLANE_Z:
 		if (plane->signbits == 4)
-			mod->clipmins[2] = Math_Min (mod->clipmins[2], -plane->dist - mod->hulls[hull].clip_mins[2]);
+			mod->clipmins[2] = plMin(mod->clipmins[2], -plane->dist - mod->hulls[hull].clip_mins[2]);
 		else
-			mod->clipmaxs[2] = Math_Max (mod->clipmaxs[2], plane->dist - mod->hulls[hull].clip_maxs[2]);
+			mod->clipmaxs[2] = plMax(mod->clipmaxs[2], plane->dist - mod->hulls[hull].clip_maxs[2]);
 		break;
 	default:
 		//skip nonaxial planes; don't need them
@@ -1208,10 +1208,10 @@ void Model_LoadBSP(model_t *mod,void *buffer)
 	}
 }
 
-MathVector_t Model_GenerateNormal3fv(MathVector3f_t a, MathVector3f_t b, MathVector3f_t c)
+MathVector_t Model_GenerateNormal3fv(PLVector3f a, PLVector3f b, PLVector3f c)
 {
 	MathVector_t	output;
-	MathVector3f_t	normal, x, y;
+	PLVector3f		normal, x, y;
 
 	Math_VectorSubtract(c, b, x);
 	Math_VectorSubtract(a, b, y);
@@ -1233,7 +1233,7 @@ MathVector_t Model_GenerateNormal3f(
 	float bX, float bY, float bZ,
 	float cX, float cY, float cZ)
 {
-	MathVector3f_t a, b, c;
+	PLVector3f a, b, c;
 
 #if 0
 	Con_Printf("A : %f %f %f\n", aX, aY, aZ);
@@ -1272,7 +1272,7 @@ void Model_LoadRelativeMaterial(model_t *model)
 */
 void Model_CalculateMD2Bounds(model_t *model, MD2_t *alias_model)
 {
-	MathVector3f_t mins = { 0 }, maxs = { 0 }, curmins, curmaxs;
+	PLVector3f mins = { 0 }, maxs = { 0 }, curmins, curmaxs;
 	for (int i = 0; i < alias_model->num_frames; i++)
 	{
 		MD2Frame_t *curframe = (MD2Frame_t*)((uint8_t*)alias_model + alias_model->ofs_frames + (alias_model->framesize * i));
@@ -1353,7 +1353,7 @@ void Model_CalculateMD2Normals(model_t *model, MD2_t *md2)
 			vertices[triangles[i].index_xyz[2]].v[2] * frame->scale[2] + frame->translate[2]);
 
 		// X Y Z
-		MathVector3f_t normal;
+		PLVector3f normal;
 		Math_MVToVector(normalVector, normal);
 		Math_VectorCopy(normal, model->object.ovVertices[v].mvNormal);
 	}
@@ -1470,8 +1470,8 @@ void Model_LoadMD2(model_t *mModel,void *Buffer)
 #if 0
 	// Allocate vertex array.
 	mModel->object.numverts = mMD2Model->numtris * 3;
-	mModel->object.vertices = (vlVertex_t*)malloc(mModel->object.numverts * sizeof(vlVertex_t));
-	memset(mModel->object.vertices, 0, mModel->object.numverts * sizeof(vlVertex_t));
+	mModel->object.vertices = (PLVertex*)malloc(mModel->object.numverts * sizeof(PLVertex));
+	memset(mModel->object.vertices, 0, mModel->object.numverts * sizeof(PLVertex));
 #endif
 
 	Model_LoadRelativeMaterial(mModel);
@@ -1503,7 +1503,7 @@ bool Model_LoadOBJ(model_t *model)
 	char fullp[PL_MAX_PATH];
 	sprintf(fullp, "%s/%s", host_parms.basepath, model->name);
 	
-	plStaticModel_t *obj_model = plLoadOBJModel(fullp);
+	PLStaticModel *obj_model = plLoadOBJModel(fullp);
 	if (!obj_model)
 	{
 		Con_Warning("Failed to load OBJ model! (%s)\n", model->name);

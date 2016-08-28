@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 PL_FARPROC plFindLibraryFunction(PL_INSTANCE instance, const PLchar *function)
 {
-	pFUNCTION_UPDATE();
+	plFunctionStart();
 
 	if(instance)
 	{
@@ -53,7 +53,7 @@ PLvoid _plFreeLibrary(PL_INSTANCE instance)
 
 PLvoid plUnloadLibrary(PL_INSTANCE instance)
 {
-	pFUNCTION_UPDATE();
+	plFunctionStart();
 
 	if(instance)
 	{
@@ -68,7 +68,7 @@ PLvoid plUnloadLibrary(PL_INSTANCE instance)
 */
 PL_INSTANCE plLoadLibrary(const PLchar *path)
 {
-	pFUNCTION_UPDATE();
+	plFunctionStart();
 	
 	PLchar newpath[PL_MAX_PATH];
 	sprintf(newpath, "%s"PL_MODULE_EXTENSION, path);

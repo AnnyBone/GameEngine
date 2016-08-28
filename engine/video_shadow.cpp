@@ -54,7 +54,7 @@ void Shadow_DrawBlob(ClientEntity_t *Entity)
 	if (!lightplane)
 		return;
 
-	vlVertex_t	voShadow[4] = { { { 0 } } };
+	PLVertex	voShadow[4] = { { { 0 } } };
 	float		fBlobHeight, fShadowScale[2];
 
 	// TODO: This should be averaged out to the size of an entity.
@@ -172,8 +172,8 @@ void Shadow_DrawPlanar(ClientEntity_t *entity)
 
 		glPushMatrix();
 
-		vlEnable(VIDEO_BLEND | VIDEO_STENCIL_TEST);
-		vlDisable(VIDEO_TEXTURE_2D);
+		plEnableGraphicsStates(VIDEO_BLEND | VIDEO_STENCIL_TEST);
+		plDisableGraphicsStates(VIDEO_TEXTURE_2D);
 		Video_SetBlend(VIDEO_BLEND_IGNORE, VIDEO_DEPTH_FALSE);
 
 		glStencilFunc(GL_EQUAL, 1, 2);
@@ -191,8 +191,8 @@ void Shadow_DrawPlanar(ClientEntity_t *entity)
 
 		glPopMatrix();
 
-		vlDisable(VIDEO_BLEND | VIDEO_STENCIL_TEST);
-		vlEnable(VIDEO_TEXTURE_2D);
+		plDisableGraphicsStates(VIDEO_BLEND | VIDEO_STENCIL_TEST);
+		plEnableGraphicsStates(VIDEO_TEXTURE_2D);
 	}
 #endif
 }

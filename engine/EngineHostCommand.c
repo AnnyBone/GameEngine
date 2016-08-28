@@ -850,7 +850,7 @@ void Host_SavegameComment (char *text)
 
 	for (i=0 ; i<SAVEGAME_COMMENT_LENGTH ; i++)
 		text[i] = ' ';
-	memcpy(text,cl.levelname,Math_Min(strlen(cl.levelname),22)); //johnfitz -- only copy 22 chars.
+	memcpy(text,cl.levelname, plMin(strlen(cl.levelname),22)); //johnfitz -- only copy 22 chars.
 	sprintf(kills,"kills:%3i/%3i", cl.stats[STAT_MONSTERS], cl.stats[STAT_TOTALMONSTERS]);
 	memcpy(text+22,kills,strlen(kills));
 

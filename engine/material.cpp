@@ -1,19 +1,17 @@
-/*	Copyright (C) 2011-2016 OldTimes Software
+/*
+DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+Version 2, December 2004
 
-	This program is free software; you can redistribute it and/or
-	modify it under the terms of the GNU General Public License
-	as published by the Free Software Foundation; either version 2
-	of the License, or (at your option) any later version.
+Copyright (C) 2011-2016 Mark E Sowden <markelswo@gmail.com>
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+Everyone is permitted to copy and distribute verbatim or modified
+copies of this license document, and changing it is allowed as long
+as the name is changed.
 
-	See the GNU General Public License for more details.
+DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+0. You just DO WHAT THE FUCK YOU WANT TO.
 */
 
 #include "engine_base.h"
@@ -1102,7 +1100,7 @@ void Material_DrawObject(Material_t *material, vlDraw_t *object, bool ispost)
 
 /*	Typically called before an object is drawn.
 */
-void Material_Draw(Material_t *material, vlVertex_t *ObjectVertex, VLPrimitive ObjectPrimitive, unsigned int ObjectSize, bool ispost)
+void Material_Draw(Material_t *material, PLVertex *ObjectVertex, PLPrimitive ObjectPrimitive, unsigned int ObjectSize, bool ispost)
 {
 	if (r_drawflat_cheatsafe || !material)
 		return;
@@ -1112,7 +1110,7 @@ void Material_Draw(Material_t *material, vlVertex_t *ObjectVertex, VLPrimitive O
 		if (!ispost)
 		{
 			// Select the first TMU.
-			vlActiveTexture(0);
+			plSetTextureUnit(0);
 
 			// Set it as white.
 			g_mGlobalColour->skin[MATERIAL_COLOUR_WHITE].texture->instance->Bind();
@@ -1139,15 +1137,15 @@ void Material_Draw(Material_t *material, vlVertex_t *ObjectVertex, VLPrimitive O
 		{ 
 			vlDepthMask(false);
 
-			vlEnable(VL_CAPABILITY_BLEND);
+			plEnableGraphicsStates(VL_CAPABILITY_BLEND);
 
 			if (msCurrentSkin->uiFlags & MATERIAL_FLAG_ADDITIVE)
 				// Additive blending isn't done by default.
-				vlBlendFunc(VL_BLEND_ADDITIVE);
+				plSetBlendMode(VL_BLEND_ADDITIVE);
 		}
 		// Alpha-testing
 		else if (msCurrentSkin->uiFlags & MATERIAL_FLAG_ALPHA)
-			vlEnable(VL_CAPABILITY_ALPHA_TEST);
+			plEnableGraphicsStates(VL_CAPABILITY_ALPHA_TEST);
 	}
 
 	MaterialTexture_t *texture = &msCurrentSkin->texture[0];
@@ -1159,12 +1157,12 @@ void Material_Draw(Material_t *material, vlVertex_t *ObjectVertex, VLPrimitive O
 #endif
 
 		// Attempt to select the unit (if it's already selected, then it'll just return).
-		vlActiveTexture(unit);
+		plSetTextureUnit(unit);
 
 		if (!ispost)
 		{
 			// Enable it.
-			vlEnable(VL_CAPABILITY_TEXTURE_2D);
+			plEnableGraphicsStates(VL_CAPABILITY_TEXTURE_2D);
 
 			// Bind it.
 			texture->instance->Bind();
@@ -1234,7 +1232,7 @@ void Material_Draw(Material_t *material, vlVertex_t *ObjectVertex, VLPrimitive O
 			{
 				if (!cv_video_drawdetail.bValue)
 				{
-					vlDisable(VL_CAPABILITY_TEXTURE_2D);
+					plDisableGraphicsStates(VL_CAPABILITY_TEXTURE_2D);
 					break;
 				}
 #ifdef VL_MODE_OPENGL
@@ -1252,7 +1250,7 @@ void Material_Draw(Material_t *material, vlVertex_t *ObjectVertex, VLPrimitive O
 			{
 				if (!gl_fullbrights.bValue)
 				{
-					vlDisable(VL_CAPABILITY_TEXTURE_2D);
+					plDisableGraphicsStates(VL_CAPABILITY_TEXTURE_2D);
 					break;
 				}
 			}
@@ -1262,10 +1260,10 @@ void Material_Draw(Material_t *material, vlVertex_t *ObjectVertex, VLPrimitive O
 			{
 				Video_GenerateSphereCoordinates();
 
-				vlEnable(VL_CAPABILITY_TEXTURE_GEN_S | VL_CAPABILITY_TEXTURE_GEN_T);
+				plEnableGraphicsStates(VL_CAPABILITY_TEXTURE_GEN_S | VL_CAPABILITY_TEXTURE_GEN_T);
 			}
 			else
-				vlDisable(VL_CAPABILITY_TEXTURE_GEN_S | VL_CAPABILITY_TEXTURE_GEN_T);
+				plDisableGraphicsStates(VL_CAPABILITY_TEXTURE_GEN_S | VL_CAPABILITY_TEXTURE_GEN_T);
 			break;
 		}
 
@@ -1286,7 +1284,7 @@ void Material_Draw(Material_t *material, vlVertex_t *ObjectVertex, VLPrimitive O
 			vlSetTextureEnvironmentMode(VIDEO_TEXTUREMODE_MODULATE);
 
 			// Disable the texture.
-			vlDisable(VL_CAPABILITY_TEXTURE_2D);
+			plDisableGraphicsStates(VL_CAPABILITY_TEXTURE_2D);
 		}
 	}
 
@@ -1297,26 +1295,26 @@ void Material_Draw(Material_t *material, vlVertex_t *ObjectVertex, VLPrimitive O
 		{
 			vlDepthMask(true);
 
-			vlDisable(VL_CAPABILITY_BLEND);
+			plDisableGraphicsStates(VL_CAPABILITY_BLEND);
 
 			if (msCurrentSkin->uiFlags & MATERIAL_FLAG_ADDITIVE)
 				// Return blend mode to its default.
-				vlBlendFunc(VL_BLEND_DEFAULT);
+				plSetBlendMode(VL_BLEND_DEFAULT);
 		}
 		// Alpha-testing
 		else if (msCurrentSkin->uiFlags & MATERIAL_FLAG_ALPHA)
 		{
-			vlDisable(VL_CAPABILITY_ALPHA_TEST);
+			plDisableGraphicsStates(VL_CAPABILITY_ALPHA_TEST);
 
 			if ((msCurrentSkin->uiFlags & MATERIAL_FLAG_ALPHATRICK) && (cv_video_alphatrick.bValue && (ObjectSize > 0)))
 			{
 				vlDepthMask(false);
-				vlEnable(VL_CAPABILITY_BLEND);
+				plEnableGraphicsStates(VL_CAPABILITY_BLEND);
 
 				// Draw the object again (don't bother passing material).
 				Video_DrawObject(ObjectVertex, ObjectPrimitive, ObjectSize, NULL, 0);
 
-				vlDisable(VL_CAPABILITY_BLEND);
+				plDisableGraphicsStates(VL_CAPABILITY_BLEND);
 				vlDepthMask(true);
 			}
 		}

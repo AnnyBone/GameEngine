@@ -37,7 +37,7 @@ void Draw_Init(void);
 void Draw_Pic(int x, int y, qpic_t *pic);
 void Draw_MaterialSurface(Material_t *mMaterial, int iSkin, int x, int y, int w, int h, float fAlpha);
 void Draw_BeginDisc(void);
-void Draw_Rectangle(int x, int y, int w, int h, plColour_t colour);
+void Draw_Rectangle(int x, int y, int w, int h, PLColour colour);
 void Draw_String(int x, int y, const char *msg);
 
 qpic_t *Draw_CachePic(char *path);

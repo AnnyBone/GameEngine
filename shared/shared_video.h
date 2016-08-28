@@ -105,8 +105,8 @@ namespace core
 
 		ENGINE_FUNCTION void SetDefaultState();	// Sets default rendering state.
 
-		ENGINE_FUNCTION void GradientBackground(plColour_t top, plColour_t bottom);
-		ENGINE_FUNCTION void GradientFill(int x, int y, PLuint width, PLuint height, plColour_t top, plColour_t bottom);
+		ENGINE_FUNCTION void GradientBackground(PLColour top, PLColour bottom);
+		ENGINE_FUNCTION void GradientFill(int x, int y, PLuint width, PLuint height, PLColour top, PLColour bottom);
 		
 		ENGINE_FUNCTION void WireBox(plVector3f_t mins, plVector3f_t maxs, float r, float g, float b);
 		ENGINE_FUNCTION void CoordinateAxes(plVector3f_t position);
@@ -114,7 +114,7 @@ namespace core
 		ENGINE_FUNCTION void String(int x, int y, const char *msg);
 		ENGINE_FUNCTION void Line(plVector3f_t start, plVector3f_t end);
 		ENGINE_FUNCTION void Grid(plVector3f_t position, PLuint grid_size);
-		ENGINE_FUNCTION void Rectangle(PLint x, PLint y, PLuint w, PLuint h, plColour_t colour);
+		ENGINE_FUNCTION void Rectangle(PLint x, PLint y, PLuint w, PLuint h, PLColour colour);
 		
 		ENGINE_FUNCTION void ScreenFade();
 

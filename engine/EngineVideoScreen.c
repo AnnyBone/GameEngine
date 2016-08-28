@@ -373,7 +373,7 @@ void SCR_DrawDevStats (void)
 
 	GL_SetCanvas (CANVAS_BOTTOMLEFT);
 
-	plColour_t colour_dark = { 0, 0, 0, 0.5f };
+	PLColour colour_dark = { 0, 0, 0, 0.5f };
 	Draw_Rectangle(x,y*8,152,72, colour_dark); //dark rectangle
 
 	sprintf (str, "devstats |Curr Peak");

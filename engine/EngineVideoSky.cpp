@@ -641,8 +641,8 @@ void Sky_DrawSkyBox (void)
 
 			c = Fog_GetColor();
 
-			vlEnable(VL_CAPABILITY_BLEND);
-			vlDisable(VL_CAPABILITY_TEXTURE_2D);
+			plEnableGraphicsStates(VL_CAPABILITY_BLEND);
+			plDisableGraphicsStates(VL_CAPABILITY_TEXTURE_2D);
 
 			glColor4f(c[0], c[1], c[2], plClamp(0, r_skyfog.value, 1.0f));
 
@@ -655,8 +655,8 @@ void Sky_DrawSkyBox (void)
 
 			glColor3f(1.0f,1.0f,1.0f);
 
-			vlEnable(VL_CAPABILITY_TEXTURE_2D);
-			vlDisable(VL_CAPABILITY_BLEND);
+			plEnableGraphicsStates(VL_CAPABILITY_TEXTURE_2D);
+			plDisableGraphicsStates(VL_CAPABILITY_BLEND);
 
 			rs_skypasses++;
 		}
@@ -729,8 +729,8 @@ void Sky_DrawFaceQuad(glpoly_t *p)
 
 	Video_SetTexture(gCloudTexture);
 
-	vlEnable(VL_CAPABILITY_BLEND);
-	vlBlendFunc(VL_BLEND_ONE, VL_BLEND_ONE);
+	plEnableGraphicsStates(VL_CAPABILITY_BLEND);
+	plSetBlendMode(VL_BLEND_ONE, VL_BLEND_ONE);
 
 	glBegin(GL_QUADS);
 
@@ -744,7 +744,7 @@ void Sky_DrawFaceQuad(glpoly_t *p)
 
 	glEnd();
 
-	vlBlendFunc(VL_BLEND_DEFAULT);
+	plSetBlendMode(VL_BLEND_DEFAULT);
 
 	rs_skypolys++;
 	rs_skypasses++;
@@ -753,7 +753,7 @@ void Sky_DrawFaceQuad(glpoly_t *p)
 	{
 		float *c = Fog_GetColor();
 
-		vlDisable(VL_CAPABILITY_TEXTURE_2D);
+		plDisableGraphicsStates(VL_CAPABILITY_TEXTURE_2D);
 
 		glColor4f(c[0], c[1], c[2], plClamp(0.0, r_skyfog.value, 1.0));
 
@@ -764,12 +764,12 @@ void Sky_DrawFaceQuad(glpoly_t *p)
 
 		glColor3f(1.0f,1.0f,1.0f);
 
-		vlEnable(VL_CAPABILITY_TEXTURE_2D);
+		plEnableGraphicsStates(VL_CAPABILITY_TEXTURE_2D);
 
 		rs_skypasses++;
 	}
 
-	vlDisable(VL_CAPABILITY_BLEND);
+	plDisableGraphicsStates(VL_CAPABILITY_BLEND);
 #endif
 }
 
@@ -788,11 +788,11 @@ void Sky_DrawFace (int axis)
 
 	start = Hunk_LowMark ();
 	p = (glpoly_t*)Hunk_Alloc(sizeof(glpoly_t));
+	
+	plVectorSubtract3fv(verts[2],verts[3], v_up);
+	plVectorSubtract3fv(verts[2],verts[1], v_right);
 
-	Math_VectorSubtract(verts[2],verts[3], v_up);
-	Math_VectorSubtract(verts[2],verts[1], v_right);
-
-	di = Math_Max((int)r_sky_quality.value,1);
+	di = plMax((int)r_sky_quality.value,1);
 	qi = 1.0f/di;
 	dj = (axis < 4) ? di*2 : di; // Subdivide vertically more than horizontally on skybox sides
 	qj = 1.0f/dj;
@@ -806,18 +806,18 @@ void Sky_DrawFace (int axis)
 				continue;
 
 			//if (i&1 ^ j&1) continue; //checkerboard test
-			Math_VectorScale(v_right, qi*i, temp);
-			Math_VectorScale(v_up, qj*j, temp2);
-			Math_VectorAdd(temp,temp2,temp);
-			Math_VectorAdd(verts[0],temp,p->verts[0]);
+			plVectorScalef(v_right, qi*i, temp);
+			plVectorScalef(v_up, qj*j, temp2);
+			plVectorAdd3fv(temp,temp2,temp);
+			plVectorAdd3fv(verts[0],temp,p->verts[0]);
+			
+			plVectorScalef(v_up, qj, temp);
+			plVectorAdd3fv(p->verts[0],temp,p->verts[1]);
 
-			Math_VectorScale(v_up, qj, temp);
-			Math_VectorAdd(p->verts[0],temp,p->verts[1]);
+			plVectorScalef(v_right, qi, temp);
+			plVectorAdd3fv(p->verts[1],temp,p->verts[2]);
 
-			Math_VectorScale(v_right, qi, temp);
-			Math_VectorAdd(p->verts[1],temp,p->verts[2]);
-
-			Math_VectorAdd(p->verts[0],temp,p->verts[3]);
+			plVectorAdd3fv(p->verts[0],temp,p->verts[3]);
 
 			Sky_DrawFaceQuad(p);
 		}
@@ -837,7 +837,7 @@ void Sky_ReadCameraPosition(void)
 	if (!sky_cameraenabled)
 		return;
 
-	plVector3f_t campos;
+	PLVector3f campos;
 	campos[0] = MSG_ReadCoord();
 	campos[1] = MSG_ReadCoord();
 	campos[2] = MSG_ReadCoord();
@@ -921,7 +921,7 @@ void Sky_Draw(void)
 	// Process world and bmodels: draw flat-shaded sky surfs, and update skybounds
 	Fog_DisableGFog();
 
-	vlDisable(VL_CAPABILITY_TEXTURE_2D);
+	plDisableGraphicsStates(VL_CAPABILITY_TEXTURE_2D);
 
 	if(Fog_GetDensity() > 0)
 		glColor3fv(Fog_GetColor());
@@ -933,12 +933,12 @@ void Sky_Draw(void)
 
 	glColor3f(1.0f,1.0f,1.0f);
 
-	vlEnable(VL_CAPABILITY_TEXTURE_2D);
+	plEnableGraphicsStates(VL_CAPABILITY_TEXTURE_2D);
 
 	// Render slow sky: cloud layers or skybox
 	if(!r_fastsky.value && !(Fog_GetDensity() > 0 && r_skyfog.value >= 1))
 	{
-		vlDisable(VL_CAPABILITY_DEPTH_TEST);
+		plDisableGraphicsStates(VL_CAPABILITY_DEPTH_TEST);
 
 		// By default we use a skybox.
 		if(cSkyBoxName[0])
@@ -955,7 +955,7 @@ void Sky_Draw(void)
 #endif
 		}
 
-		vlEnable(VL_CAPABILITY_DEPTH_TEST);
+		plEnableGraphicsStates(VL_CAPABILITY_DEPTH_TEST);
 	}
 
 	Fog_EnableGFog();

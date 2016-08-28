@@ -89,10 +89,7 @@ void Video_Initialize(void)
 	Con_Printf("Initializing video...\n");
 
 	// Only enabled if the hardware supports it.
-	Video.extensions.vertex_buffer_object	= false;
 	Video.extensions.generate_mipmap		= false;
-	Video.extensions.depth_texture			= false;
-	Video.extensions.shadow					= false;
 
 	Cvar_RegisterVariable(&cv_video_msaasamples, NULL);
 	Cvar_RegisterVariable(&cv_video_drawmodels, NULL);
@@ -121,10 +118,17 @@ void Video_Initialize(void)
 
 	Cmd_AddCommand("video_restart", Window_Update);
 
-	vlInit();
+	PLresult result = plInitGraphics();
+	if (result != PL_RESULT_SUCCESS)
+		Sys_Error
+		(
+			"Failed to initialize platform graphics! (%s) (%s)\n",
+			plGetResultString(result),
+			plGetError()
+		);
 
 	// Attempt to dynamically allocate the number of supported TMUs.
-	vlGetMaxTextureImageUnits(&Video.num_textureunits);
+	Video.num_textureunits = plGetMaxTextureUnits();
 	Video.textureunits = (VideoTextureMU_t*)Hunk_Alloc(sizeof(VideoTextureMU_t)*Video.num_textureunits);
 	if (!Video.textureunits)
 		Sys_Error("Failed to allocated handler for the number of supported TMUs! (%i)\n", Video.num_textureunits);
@@ -136,7 +140,7 @@ void Video_Initialize(void)
 		Video.textureunits[i].current_texture	= (unsigned int)-1;
 	}
 
-	vlGetMaxTextureAnistropy(&Video.fMaxAnisotropy);
+	Video.fMaxAnisotropy = (PLfloat)plGetMaxTextureAnistropy();
 
 	//johnfitz -- create notexture miptex
 	r_notexture_mip = (texture_t*)Hunk_AllocName(sizeof(texture_t), "r_notexture_mip");
@@ -231,28 +235,28 @@ void Video_SetTexture(gltexture_t *gTexture)
 	gTexture->visframe = r_framecount;
 
 	// Bind it.
-	vlBindTexture(VL_TEXTURE_2D, gTexture->texnum);
+	plSetTexture(gTexture->texnum);
 }
 
 /*	Object Management	*/
 
-void Video_ObjectTexture(vlVertex_t *object, unsigned int uiTextureUnit, float S, float T)
+void Video_ObjectTexture(PLVertex *object, unsigned int uiTextureUnit, float S, float T)
 {
 	object->ST[uiTextureUnit][0] = S;
 	object->ST[uiTextureUnit][1] = T;
 }
 
-void Video_ObjectVertex(vlVertex_t *object, float x, float y, float z)
+void Video_ObjectVertex(PLVertex *object, float x, float y, float z)
 {
 	plVectorSet3f(object->position, x, y, z);
 }
 
-void Video_ObjectNormal(vlVertex_t *object, float x, float y, float z)
+void Video_ObjectNormal(PLVertex *object, float x, float y, float z)
 {
 	plVectorSet3f(object->normal, x, y, z);
 }
 
-void Video_ObjectColour(vlVertex_t *object, float R, float G, float B, float A)
+void Video_ObjectColour(PLVertex *object, float R, float G, float B, float A)
 {
 	object->colour[PL_RED]		= R;
 	object->colour[PL_GREEN]	= G;
@@ -264,7 +268,7 @@ void Video_ObjectColour(vlVertex_t *object, float R, float G, float B, float A)
 
 /*  Draw a simple rectangle.
 */
-void Video_DrawFill(vlVertex_t *voFill, Material_t *mMaterial, int iSkin)
+void Video_DrawFill(PLVertex *voFill, Material_t *mMaterial, int iSkin)
 {
 	Video_DrawObject(voFill, VL_PRIMITIVE_TRIANGLE_FAN, 4, mMaterial, iSkin);
 }
@@ -273,11 +277,11 @@ void Video_DrawFill(vlVertex_t *voFill, Material_t *mMaterial, int iSkin)
 */
 void Video_DrawSurface(msurface_t *mSurface,float fAlpha, Material_t *mMaterial, unsigned int uiSkin)
 {
-	vlVertex_t	*drawsurf;
+	PLVertex	*drawsurf;
 	float		*fVert;
 	int			i;
 	
-	drawsurf = (vlVertex_t*)calloc_or_die(mSurface->polys->numverts, sizeof(vlVertex_t));
+	drawsurf = (PLVertex*)calloc_or_die(mSurface->polys->numverts, sizeof(PLVertex));
 
 	fVert = mSurface->polys->verts[0];
 	for (i = 0; i < mSurface->polys->numverts; i++, fVert += VERTEXSIZE)
@@ -300,7 +304,7 @@ void Video_DrawSurface(msurface_t *mSurface,float fAlpha, Material_t *mMaterial,
 /*	Draw 3D object.
 	TODO: Add support for VBOs ?
 */
-void Video_DrawObject(vlVertex_t *vobject, VLPrimitive primitive,
+void Video_DrawObject(PLVertex *vobject, PLPrimitive primitive,
 	unsigned int numverts, Material_t *mMaterial, int iSkin)
 {
 	if(numverts == 0)
@@ -337,7 +341,7 @@ void Video_Frame(void)
 	double time1 = 0;
 	if (r_speeds.value)
 	{
-		vlFinish();
+		plFinish();
 
 		time1 = System_DoubleTime();
 
@@ -346,7 +350,7 @@ void Video_Frame(void)
 			rs_dynamiclightmaps = rs_aliaspasses = rs_skypasses = rs_brushpasses = 0;
 	}
 	else if (cv_video_finish.bValue)
-		vlFinish();
+		plFinish();
 
 	video_viewport->Draw();
 

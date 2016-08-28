@@ -28,15 +28,15 @@ plVector3f_t pl_origin3f = { 0, 0, 0 };
 plVector4f_t pl_origin4f	= { 0, 0, 0, 0 };
 
 // Colours
-plColour_t pl_white		= { 1, 1, 1, 1 };
-plColour_t pl_red		= { 1, 0, 0, 1 };
-plColour_t pl_green		= { 0, 1, 0, 1 };
-plColour_t pl_blue		= { 0, 0, 1, 1 };
-plColour_t pl_black		= { 0, 0, 0, 1 };
+PLColour pl_white		= { 1, 1, 1, 1 };
+PLColour pl_red		= { 1, 0, 0, 1 };
+PLColour pl_green		= { 0, 1, 0, 1 };
+PLColour pl_blue		= { 0, 0, 1, 1 };
+PLColour pl_black		= { 0, 0, 0, 1 };
 
-MathVector_t plVectorToAngles(plVector3f_t vValue)
+MathVector_t plVectorToAngles(PLVector3f vValue)
 {
-	float			fForward, fYaw, fPitch;
+	PLfloat			fForward, fYaw, fPitch;
 	MathVector_t	mvResult;
 
 	if (vValue[1] == 0 && vValue[0] == 0)
@@ -49,12 +49,12 @@ MathVector_t plVectorToAngles(plVector3f_t vValue)
 	}
 	else
 	{
-		fYaw = (float)(atan2(vValue[1], vValue[0]) * 180 / PL_PI);
+		fYaw = (PLfloat)(atan2(vValue[1], vValue[0]) * 180 / PL_PI);
 		if (fYaw < 0)
 			fYaw += 360.0f;
 
-		fForward = (float)sqrt(vValue[0] * vValue[0] + vValue[1] * vValue[1]);
-		fPitch = (float)(atan2(vValue[2], fForward) * 180 / PL_PI);
+		fForward = (PLfloat)sqrt(vValue[0] * vValue[0] + vValue[1] * vValue[1]);
+		fPitch = (PLfloat)(atan2(vValue[2], fForward) * 180 / PL_PI);
 		if (fPitch < 0)
 			fPitch += 360.0f;
 	}
@@ -66,12 +66,12 @@ MathVector_t plVectorToAngles(plVector3f_t vValue)
 	return mvResult;
 }
 
-float Math_DotProduct(plVector3f_t a, plVector3f_t b)
+PLfloat Math_DotProduct(PLVector3f a, PLVector3f b)
 {
 	return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
 }
 
-void Math_VectorMake(plVector3f_t veca, float scale, plVector3f_t vecb, plVector3f_t vecc)
+void Math_VectorMake(PLVector3f veca, PLfloat scale, PLVector3f vecb, PLVector3f vecc)
 {
 	vecc[0] = veca[0] + scale*vecb[0];
 	vecc[1] = veca[1] + scale*vecb[1];
@@ -82,17 +82,17 @@ void Math_VectorMake(plVector3f_t veca, float scale, plVector3f_t vecb, plVector
 	Utility
 */
 
-char *plVectorToString(plVector3f_t vector)
+const PLchar *plVectorToString(PLVector3f vector)
 {
-	static char s[32];
-	memset(s, 0, 32 * sizeof(char));
-	sprintf(s, "%i %i %i", (int)vector[0], (int)vector[1], (int)vector[2]);
+	static PLchar s[32];
+	memset(s, 0, 32 * sizeof(PLchar));
+	sprintf(s, "%i %i %i", (PLint)vector[0], (PLint)vector[1], (PLint)vector[2]);
 	return s;
 }
 
 ////////////////////////////////////////////////////////////////////////
 
-static float pl_identity[16] =
+static PLfloat pl_identity[16] =
 {
 	1, 0, 0, 0,
 	0, 1, 0, 0,

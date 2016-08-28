@@ -139,7 +139,7 @@ void SubdividePolygon (int numverts, float *verts)
 		// wrap cases
 		dist[j] = dist[0];
 		v-=i;
-		Math_VectorCopy (verts, v);
+		plVectorCopy (verts, v);
 
 		f = b = 0;
 		v = verts;
@@ -147,12 +147,12 @@ void SubdividePolygon (int numverts, float *verts)
 		{
 			if (dist[j] >= 0)
 			{
-				Math_VectorCopy (v, front[f]);
+				plVectorCopy(v, front[f]);
 				f++;
 			}
 			if (dist[j] <= 0)
 			{
-				Math_VectorCopy (v, back[b]);
+				plVectorCopy(v, back[b]);
 				b++;
 			}
 			if (dist[j] == 0 || dist[j+1] == 0)
@@ -179,7 +179,7 @@ void SubdividePolygon (int numverts, float *verts)
 	poly->numverts = numverts;
 	for (i=0 ; i<numverts ; i++, verts+= 3)
 	{
-		Math_VectorCopy (verts, poly->verts[i]);
+		plVectorCopy(verts, poly->verts[i]);
 		s = Math_DotProduct (verts, warpface->texinfo->vecs[0]);
 		t = Math_DotProduct (verts, warpface->texinfo->vecs[1]);
 		poly->verts[i][3] = s;
@@ -208,7 +208,7 @@ void GL_SubdivideSurface(msurface_t *fa)
 */
 void Surface_DrawWater(glpoly_t *p, Material_t *material)
 {
-	vlVertex_t *voWaterPoly = calloc(p->numverts, sizeof(vlVertex_t));
+	PLVertex *voWaterPoly = calloc(p->numverts, sizeof(PLVertex));
 	if(!voWaterPoly)
 	{
 		Sys_Error("Failed to allocate water poly!\n");
@@ -220,8 +220,8 @@ void Surface_DrawWater(glpoly_t *p, Material_t *material)
 	float *vertex = p->verts[0];
 	for (int i = 0; i < p->numverts; i++, vertex += VERTEXSIZE)
 	{
-		MathVector3f_t vWave;
-		Math_VectorCopy(vertex, vWave);
+		PLVector3f vWave;
+		plVectorCopy(vertex, vWave);
 
 		Video_ObjectTexture(&voWaterPoly[i], VIDEO_TEXTURE_DIFFUSE, vertex[3], vertex[4]);
 		//Video_ObjectTexture(&voWaterPoly[i], VIDEO_TEXTURE_DIFFUSE, WARPCALC(fVert[3], fVert[4]), WARPCALC(fVert[4], fVert[3]));

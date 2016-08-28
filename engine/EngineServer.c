@@ -572,7 +572,7 @@ void SV_WriteEntitiesToClient (ServerEntity_t	*clent, sizebuf_t *msg)
 	//johnfitz -- devstats
 stats:
 	dev_stats.packetsize = msg->cursize;
-	dev_peakstats.packetsize = Math_Max(msg->cursize,dev_peakstats.packetsize);
+	dev_peakstats.packetsize = plMax(msg->cursize,dev_peakstats.packetsize);
 	//johnfitz
 }
 

@@ -97,7 +97,7 @@ cshift_t	cshift_water	= { {	0,		0,	100	},	100	};
 cshift_t	cshift_slime	= { {	0,		25,	5	},	150 };
 cshift_t	cshift_lava		= { {	255,	80,	0	},	150 };
 
-plColour_t vViewBlend = { 0, 0, 0, 255.0f };	// rgba 0.0 - 1.0
+PLColour vViewBlend = { 0, 0, 0, 255.0f };	// rgba 0.0 - 1.0
 
 void V_ParseDamage (void)
 {
@@ -239,7 +239,7 @@ void V_CalcPowerupCshift (void)
 // [26/3/2013] Revised ~hogsy
 void View_CalculateBlend(void)
 {
-	plColour_t	vColour;
+	PLColour	vColour;
 	float		fAlpha;
 	int			j;
 
@@ -320,9 +320,9 @@ void View_PolyBlend(void)
 	if (!gl_polyblend.value || !cl.cshifts[CSHIFT_CONTENTS].percent)
 		return;
 
-	vlDisable(VL_CAPABILITY_DEPTH_TEST);
+	plDisableGraphicsStates(VL_CAPABILITY_DEPTH_TEST);
 	Draw_Rectangle(0, 0, Video.iWidth, Video.iHeight, vViewBlend);
-	vlEnable(VL_CAPABILITY_DEPTH_TEST);
+	plEnableGraphicsStates(VL_CAPABILITY_DEPTH_TEST);
 #endif
 }
 
@@ -489,9 +489,9 @@ void V_CalcRefdef (void)
 				// Speed determined by how far we need to lerp in 1/10th of a second
 				delta = (v_punchangles[0][i]-v_punchangles[1][i])*host_frametime*10.0f;
 				if(delta > 0)
-					punch[i] = Math_Min(punch[i]+delta,v_punchangles[0][i]);
+					punch[i] = plMin(punch[i]+delta,v_punchangles[0][i]);
 				else if(delta < 0)
-					punch[i] = Math_Max(punch[i]+delta,v_punchangles[0][i]);
+					punch[i] = plMax(punch[i]+delta,v_punchangles[0][i]);
 			}
 
 		Math_VectorAdd(r_refdef.viewangles,punch,r_refdef.viewangles);

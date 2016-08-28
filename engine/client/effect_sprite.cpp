@@ -203,7 +203,7 @@ void Sprite::Simulate()
 		isvisible = false;
 
 	// Ensure it's on screen.
-	plVector3f_t mvmins, mvmaxs;
+	PLVector3f mvmins, mvmaxs;
 	plVectorAdd3fv(position, mins, mvmins);
 	plVectorAdd3fv(position, maxs, mvmaxs);
 	if (((type == SPRITE_TYPE_FLARE) && camera->IsPointOutsideFrustum(position)) ||
@@ -242,7 +242,7 @@ void Sprite::Draw()
 		return;
 
 	if (colour[3] < 1.0f)
-		vlEnable(VL_CAPABILITY_BLEND);
+		plEnableGraphicsStates(VL_CAPABILITY_BLEND);
 
 	vlBeginDraw(draw);
 	vlDrawVertex3f(-scale, scale, 0);
@@ -254,15 +254,15 @@ void Sprite::Draw()
 	vlDraw(draw);
 
 	if (colour[3] < 1.0f)
-		vlDisable(VL_CAPABILITY_BLEND);
+		plDisableGraphicsStates(VL_CAPABILITY_BLEND);
 
 	if (cv_sprite_debugsize.bValue)
 	{
 		// We need the size relative to the current position.
-		plVector3f_t NewMins, NewMaxs;
-		Math_VectorAdd(mins, position, NewMins);
-		Math_VectorAdd(maxs, position, NewMaxs);
-
+		PLVector3f NewMins, NewMaxs;
+		plVectorAdd3fv(mins, position, NewMins);
+		plVectorAdd3fv(maxs, position, NewMaxs);
+		
 		// Draw a point representing the current position.
 		draw::CoordinateAxes(position);
 		

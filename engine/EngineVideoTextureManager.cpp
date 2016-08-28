@@ -332,8 +332,8 @@ unsigned int TexMgr_SafeTextureSize (int s)
 {
 	s = TexMgr_Pad(s);
 	if (gl_max_size.iValue > 0)
-		s = Math_Min(TexMgr_Pad(gl_max_size.iValue), s);
-	s = Math_Min(gl_hardware_maxsize, s);
+		s = plMin(TexMgr_Pad(gl_max_size.iValue), s);
+	s = plMin(gl_hardware_maxsize, s);
 	return s;
 }
 
@@ -641,7 +641,7 @@ void TexMgr_LoadImage32(gltexture_t *glt, uint8_t *data)
 	glt->height = TexMgr_Pad(glt->height);
 
 	// mipmap down
-	picmip = (glt->flags & TEXPREF_NOPICMIP) ? 0 : Math_Max((int)gl_picmip.value, 0);
+	picmip = (glt->flags & TEXPREF_NOPICMIP) ? 0 : plMax((int)gl_picmip.value, 0);
 	mipwidth = TexMgr_SafeTextureSize (glt->width >> picmip);
 	mipheight = TexMgr_SafeTextureSize (glt->height >> picmip);
 	while(glt->width > mipwidth)

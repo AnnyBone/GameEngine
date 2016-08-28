@@ -251,8 +251,8 @@ void Console::Draw(bool draw_input)
 		bgalpha = 1;
 
 	// Draw the background.
-	plColour_t black = { 0, 0, 0, 255 };
-	plColour_t lightblack = { 0, 0, 0, bgalpha };
+	PLColour black = { 0, 0, 0, 255 };
+	PLColour lightblack = { 0, 0, 0, bgalpha };
 	draw::GradientFill(0, 0, vid.conwidth, vid.conheight, black, lightblack);
 
 	// Starting from the bottom...

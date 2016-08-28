@@ -53,7 +53,7 @@ int	iMousePosition[2];
 
 int g_menuwidth = 0, g_menuheight = 0;
 
-Material_t *debug_mat = NULL, *debug_mat2 = NULL;
+Material_t *debug_logo = NULL;
 
 // TODO: Why are we doing this!? Should be using the one from the lib
 char *va(char *format,...)
@@ -77,8 +77,7 @@ void Menu_Initialize(void)
 
 	Engine.Cvar_RegisterVariable(&cv_menushow, NULL);
 
-	debug_mat = Engine.LoadMaterial("debug/debug_dtx");
-	debug_mat2 = Engine.LoadMaterial("debug/debug_logo");
+	debug_logo = Engine.LoadMaterial("debug/debug_logo");
 
 	HUD_Initialize();
 }
@@ -118,18 +117,14 @@ void Menu_Draw(CoreViewport *viewport)
 		//Engine.DrawPic(MENU_BASE_PATH"paused",1.0f,0,0,32,64);
 		return;
 	}
-
-	Engine.DrawMaterialSurface(debug_mat, 0, 0, 0, 256, 256, 1.0f);
-	Engine.DrawMaterialSurface(debug_mat, 1, 256, 0, 256, 256, 1.0f);
-	Engine.DrawMaterialSurface(debug_mat, 2, 512, 0, 256, 256, 1.0f);
-	Engine.DrawMaterialSurface(debug_mat, 3, 1024, 0, 256, 256, 1.0f);
-	Engine.DrawMaterialSurface(debug_mat2, 0, g_menuwidth - 80, g_menuheight - 80, 64, 64, 1.0f);
+	
+	Engine.DrawMaterialSurface(debug_logo, 0, g_menuwidth - 80, g_menuheight - 80, 64, 64, 1.0f);
 
 	if ((iMenuState & MENU_STATE_HUD) && (!(iMenuState & MENU_STATE_SCOREBOARD) && !(iMenuState & MENU_STATE_MENU)))
 		HUD_Draw();
 	else if(iMenuState & MENU_STATE_MENU)
 	{
-		plColour_t col = { 0, 0, 0, 0.8f };
+		PLColour col = { 0, 0, 0, 0.8f };
 		Engine.DrawRectangle(0, 0, g_menuwidth, g_menuheight, col);
 		
 		Engine.DrawString(110, 80, ">");

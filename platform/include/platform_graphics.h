@@ -49,40 +49,19 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 #elif defined (VL_MODE_VULKAN)
 #endif
 
-typedef PLuint VLVertexArray;
-typedef PLuint VLRenderBuffer;
-typedef PLuint VLFrameBuffer;
-typedef PLuint VLTexture;
+typedef PLuint PLVertexArray;
+typedef PLuint PLRenderBuffer;
+typedef PLuint PLFrameBuffer;
 
-typedef enum VLDataFormat
+typedef enum PLDataFormat
 {
 #if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
-	VL_UNSIGNED_BYTE				= GL_UNSIGNED_BYTE,
-	VL_UNSIGNED_INT_8_8_8_8_REV		= GL_UNSIGNED_INT_8_8_8_8_REV,
+	PL_UNSIGNED_BYTE				= GL_UNSIGNED_BYTE,
+	PL_UNSIGNED_INT_8_8_8_8_REV		= GL_UNSIGNED_INT_8_8_8_8_REV,
 #endif
-} VLDataFormat;
+} PLDataFormat;
 
-typedef enum VLString
-{
-#if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
-	VL_STRING_RENDERER		= GL_RENDERER,
-	VL_STRING_VERSION		= GL_VERSION,
-	VL_STRING_VENDOR		= GL_VENDOR,
-	VL_STRING_EXTENSIONS	= GL_EXTENSIONS,
-#elif defined VL_MODE_GLIDE
-	VL_STRING_RENDERER		= GR_RENDERER,
-	VL_STRING_VERSION		= GR_VERSION,
-	VL_STRING_VENDOR		= GR_VENDOR,
-	VL_STRING_EXTENSIONS	= GR_EXTENSION,
-#else
-	VL_STRING_RENDERER		= 0,
-	VL_STRING_VERSION		= 1,
-	VL_STRING_VENDOR		= 2,
-	VL_STRING_EXTENSIONS	= 3,
-#endif
-} VLString;
-
-typedef enum VLMask
+typedef enum PLBufferMask
 {
 #if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
 	VL_MASK_COLOUR		= GL_COLOR_BUFFER_BIT,
@@ -95,7 +74,7 @@ typedef enum VLMask
 	VL_MASK_ACCUM		= (1 << 2),
 	VL_MASK_STENCIL		= (1 << 3),
 #endif
-} VLMask;
+} PLBufferMask;
 
 typedef enum VLColourFormat
 {
@@ -128,28 +107,6 @@ typedef enum VLCullMode
 
 	VL_CULL_END
 } VLCullMode;
-
-typedef enum VLCapability
-{
-	VL_CAPABILITY_START = -1,
-
-	VL_CAPABILITY_FOG				= (1 << 0),	// Fog.
-	VL_CAPABILITY_ALPHA_TEST		= (1 << 1),	// Alpha-testing.
-	VL_CAPABILITY_BLEND				= (1 << 2), // Blending.
-	VL_CAPABILITY_TEXTURE_2D		= (1 << 3),	// Enables/disables textures.
-	VL_CAPABILITY_TEXTURE_GEN_S		= (1 << 4),	// Generate S coordinate.
-	VL_CAPABILITY_TEXTURE_GEN_T		= (1 << 5), // Generate T coordinate.
-	VL_CAPABILITY_DEPTH_TEST		= (1 << 6),	// Depth-testing.
-	VL_CAPABILITY_STENCIL_TEST		= (1 << 7),	// Stencil-testing.
-	VL_CAPABILITY_MULTISAMPLE		= (1 << 8), // Multisampling.
-	VL_CAPABILITY_CULL_FACE			= (1 << 9),	// Automatically cull faces.
-	VL_CAPABILITY_SCISSOR_TEST		= (1 << 10), // Scissor test for buffer clear.
-
-	// Texture Generation
-	VL_CAPABILITY_GENERATEMIPMAP	= (1 << 20),
-
-	VL_CAPABILITY_END
-} VLCapability;
 
 // Blending Modes
 typedef enum VLBlend
@@ -198,7 +155,43 @@ typedef enum VLBlend
 #define	VL_BLEND_DEFAULT	VL_BLEND_SRC_ALPHA, VL_BLEND_ONE_MINUS_SRC_ALPHA
 
 //-----------------
+// Capabilities
+
+typedef enum PLGraphicsCapability
+{
+	VL_CAPABILITY_START = -1,
+
+	VL_CAPABILITY_FOG				= (1 << 0),	// Fog.
+	VL_CAPABILITY_ALPHA_TEST		= (1 << 1),	// Alpha-testing.
+	VL_CAPABILITY_BLEND				= (1 << 2), // Blending.
+	VL_CAPABILITY_TEXTURE_2D		= (1 << 3),	// Enables/disables textures.
+	VL_CAPABILITY_TEXTURE_GEN_S		= (1 << 4),	// Generate S coordinate.
+	VL_CAPABILITY_TEXTURE_GEN_T		= (1 << 5), // Generate T coordinate.
+	VL_CAPABILITY_DEPTH_TEST		= (1 << 6),	// Depth-testing.
+	VL_CAPABILITY_STENCIL_TEST		= (1 << 7),	// Stencil-testing.
+	VL_CAPABILITY_MULTISAMPLE		= (1 << 8), // Multisampling.
+	VL_CAPABILITY_CULL_FACE			= (1 << 9),	// Automatically cull faces.
+	VL_CAPABILITY_SCISSOR_TEST		= (1 << 10), // Scissor test for buffer clear.
+
+	// Texture Generation
+	VL_CAPABILITY_GENERATEMIPMAP	= (1 << 20),
+
+	VL_CAPABILITY_END
+} PLGraphicsCapability;
+
+PL_EXTERN_C
+
+PL_EXTERN PLbool plIsGraphicsStateEnabled(PLuint flags);
+
+PL_EXTERN void plEnableGraphicsStates(PLuint flags);
+PL_EXTERN void plDisableGraphicsStates(PLuint flags);
+
+PL_EXTERN_C_END
+
+//-----------------
 // Textures
+
+typedef PLuint PLTexture;
 
 typedef enum VLTextureTarget
 {
@@ -268,7 +261,7 @@ typedef enum VLTextureEnvironmentMode
 	VL_TEXTUREMODE_END
 } VLTextureEnvironmentMode;
 
-typedef struct VLTextureInfo
+typedef struct PLTextureInfo
 {
 	PLbyte *data;
 
@@ -285,7 +278,26 @@ typedef struct VLTextureInfo
 	PLuint storage_type;
 
 	PLuint flags;
-} VLTextureInfo;
+} PLTextureInfo;
+
+PL_EXTERN_C
+
+PL_EXTERN void plCreateTexture(PLTexture *texture);
+PL_EXTERN void plDeleteTexture(PLTexture *texture);
+
+PL_EXTERN PLuint plGetMaxTextureSize(void);
+PL_EXTERN PLuint plGetMaxTextureUnits(void);
+PL_EXTERN PLuint plGetMaxTextureAnistropy(void);
+
+PL_EXTERN PLTexture plGetCurrentTexture(void);
+PL_EXTERN PLuint plGetCurrentTextureUnit(void);
+
+PL_EXTERN void plSetTexture(PLTexture texture);
+PL_EXTERN void plSetTextureAnisotropy(PLTexture texture, PLuint amount);
+PL_EXTERN void plSetTextureUnit(PLuint target);
+PL_EXTERN void plSetTextureFilter(PLTexture texture, VLTextureFilter filter);
+
+PL_EXTERN_C_END
 
 //-----------------
 // Drawing
@@ -302,7 +314,7 @@ typedef enum VLDrawMode
 } VLDrawMode;
 
 // Primitive Types
-typedef enum VLPrimitive
+typedef enum PLPrimitive
 {
 	VL_PRIMITIVE_IGNORE = -1,
 
@@ -316,39 +328,59 @@ typedef enum VLPrimitive
 	VL_PRIMITIVE_QUADS,				// Advised to avoid this.
 
 	VL_PRIMITIVE_END
-} VLPrimitive;
+} PLPrimitive;
 
-typedef struct vlVertex_s
+typedef struct PLVertex
 {
 	plVector3f_t position;
 	plVector3f_t normal;
 
 	plVector2f_t ST[16];
 
-	plColour_t colour;
-} vlVertex_t;
+	PLColour colour;
+} PLVertex;
 
 typedef struct vlDraw_s
 {
-	vlVertex_t *vertices;							// Array of vertices for the object.
+	PLVertex *vertices;							// Array of vertices for the object.
 
-	unsigned int numverts;							// Number of vertices.
-	unsigned int numtriangles;						// Number of triangles.
+	PLuint numverts;							// Number of vertices.
+	PLuint numtriangles;						// Number of triangles.
 
-	uint8_t	*indices;								// List of indeces.
+	PLuint8	*indices;								// List of indeces.
 
-	VLPrimitive primitive, primitive_restore;		// Type of primitive, and primitive to restore to.
+	PLPrimitive primitive, primitive_restore;		// Type of primitive, and primitive to restore to.
 
 	unsigned int _gl_vbo[16];						// Vertex buffer object.
 } vlDraw_t;
 
+PL_EXTERN_C
+
+PL_EXTERN void plSetBlendMode(VLBlend modea, VLBlend modeb);
+PL_EXTERN void plSetCullMode(VLCullMode mode);
+
+PL_EXTERN_C_END
+
+//-----------------
+// Framebuffers
+
+PL_EXTERN_C
+
+PL_EXTERN void plSetClearColour3f(PLfloat r, PLfloat g, PLfloat b);
+PL_EXTERN void plSetClearColour4f(PLfloat r, PLfloat g, PLfloat b, PLfloat a);
+PL_EXTERN void plSetClearColour4fv(PLColour rgba);
+
+PL_EXTERN void plClearBuffers(PLuint buffers);
+
+PL_EXTERN_C_END
+
 //-----------------
 // Shaders
 
-typedef unsigned int vlShaderProgram_t;
-typedef unsigned int vlShader_t;
+typedef PLuint PLShader;
+typedef PLuint PLShaderProgram;
 
-typedef enum VLUniformType
+typedef enum PLUniformType
 {
 	VL_UNIFORM_START = -1,
 
@@ -374,42 +406,68 @@ typedef enum VLUniformType
 	VL_UNIFORM_MAT3,
 
 	VL_UNIFORM_END
-} VLUniformType;
+} PLUniformType;
 
 #if 0
 typedef int VLUniform;
 #else
 typedef struct VLUniform
 {
-	int location;	// Location within the shader.
+	PLint location;	// Location within the shader.
 
-	VLUniformType type;	// Data type.
+	PLUniformType type;	// Data type.
 
-	char def[16];	// Default value.
+	PLchar def[16];	// Default value.
 } VLUniform;
 #endif
 
 typedef int vlAttribute_t;
 
-typedef enum VLShaderType
+typedef enum PLShaderType
 {
-	VL_SHADER_START = -1,
-
+#if defined (VL_MODE_OPENGL)
+	VL_SHADER_FRAGMENT	= GL_FRAGMENT_SHADER,
+	VL_SHADER_VERTEX	= GL_VERTEX_SHADER,
+	VL_SHADER_GEOMETRY	= GL_GEOMETRY_SHADER,
+#else
 	VL_SHADER_FRAGMENT,
 	VL_SHADER_VERTEX,
 	VL_SHADER_GEOMETRY,
+#endif
+} PLShaderType;
 
-	VL_SHADER_END
-} VLShaderType;
+PL_EXTERN_C
+
+PL_EXTERN void plCreateShader(PLShader *shader, PLShaderType type);
+PL_EXTERN void plDeleteShader(PLShader *shader);
+PL_EXTERN void plCreateShaderProgram(PLShaderProgram *program);
+PL_EXTERN void plDeleteShaderProgram(PLShaderProgram *program);
+
+PL_EXTERN PLShaderProgram plGetCurrentShaderProgram(void);
+
+PL_EXTERN void plSetShaderProgram(PLShaderProgram program);
+
+PL_EXTERN_C_END
 
 //-----------------
 // Lighting
 
-typedef struct vlLight_s
+typedef struct PLLight
 {
-	plVector3f_t	position;
-	plColour_t		colour;
+	PLVector3f		position;
+	PLColour		colour;
 	float			radius;
-} vlLight_t;
+} PLLight;
 
 //-----------------
+
+PL_EXTERN_C
+
+PL_EXTERN void plViewport(int x, int y, PLuint width, PLuint height);
+PL_EXTERN void plFinish(void);
+
+// Initialization
+PL_EXTERN PLresult plInitGraphics(void);
+PL_EXTERN void plShutdownGraphics(void);
+
+PL_EXTERN_C_END

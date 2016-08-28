@@ -243,10 +243,12 @@ support.
 #define	plArrayElements(a)	(sizeof(a)/sizeof(*(a)))	// Returns the number of elements within an array.
 
 typedef int						PLint;
+typedef char					PLint8;
 typedef short int				PLint16;
 typedef long int				PLint32;
 typedef long long int			PLint64;
 typedef unsigned int			PLuint;
+typedef unsigned char			PLuint8;
 typedef unsigned short int		PLuint16;
 typedef unsigned long int		PLuint32;
 typedef unsigned long long int	PLuint64;
@@ -265,12 +267,16 @@ typedef unsigned short			PLushort;
 typedef enum
 {
 	PL_RESULT_SUCCESS,
-	
+
 	// FILE I/O
 	PL_RESULT_FILEREAD,		// Failed to read file!
 	PL_RESULT_FILETYPE,		// Unexpected file type!
 	PL_RESULT_FILEVERSION,	// Unsupported version!
 	PL_RESULT_FILESIZE,		// Invalid file size!
+	PL_RESULT_FILEPATH,		// Invalid path!
+
+	// GRAPHICS
+	PL_RESULT_GRAPHICSINIT,	// Graphics failed to initialise!
 
 	// IMAGE
 	PL_RESULT_IMAGERESOLUTION,	// Invalid image resolution!
@@ -292,6 +298,10 @@ plSetErrorFunction(PL_FUNCTION);
 // TRY whatever
 #endif
 #define pFUNCTION_END 		}
+
+#define plFunctionStart()	\
+	plResetError(); plSetErrorFunction(PL_FUNCTION)
+#define plFunctionEnd()
 
 plEXTERN_C_START
 

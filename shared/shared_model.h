@@ -197,7 +197,7 @@ typedef struct
 	plVector3f_t	clip_maxs;
 } hull_t;
 
-#include "platform_video_layer.h"
+#include "platform_graphics.h"
 
 typedef struct model_s
 {

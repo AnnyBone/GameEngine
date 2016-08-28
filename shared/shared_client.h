@@ -218,7 +218,7 @@ typedef struct particle_s
 	MathVector3f_t		vOrigin,		// The origin of the particle.
 						vVelocity;		// Velocity of the particle.
 
-	plColour_t		vColour;		// RGBA colour of the particle.
+	PLColour		vColour;		// RGBA colour of the particle.
 
 	int	iFrame;							// Frame of animation.
 

@@ -77,7 +77,7 @@ public:
 protected:
 
 private:
-	VLTexture _id;
+	PLTexture _id;
 
 	PLuint _flags;
 	PLuint _width, _height;

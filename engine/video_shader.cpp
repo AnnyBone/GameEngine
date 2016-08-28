@@ -93,7 +93,7 @@ ShaderProgram *ShaderManager::GetProgram(std::string name)
 
 // Shader
 
-Shader::Shader(VLShaderType type) :
+Shader::Shader(PLShaderType type) :
 	instance(0), 
 	source_length(0), 
 	type(type)
@@ -110,24 +110,15 @@ bool Shader::Load(const char *path)
 		return false;
 	}
 
-	// Ensure the type is valid.
-	if ((type <= VL_SHADER_START) || (type >= VL_SHADER_END))
-	{
-		Con_Warning("Invalid shader type! (%i) (%s)\n", path, type);
-		return false;
-	}
-
 	// Ensure we use the correct path and shader.
 	unsigned int stype;
 	switch (type)
 	{
 	case VL_SHADER_FRAGMENT:
 		sprintf(source_path, "%s%s_fragment.shader", g_state.path_shaders, path);
-		stype = GL_FRAGMENT_SHADER;
 		break;
 	case VL_SHADER_VERTEX:
 		sprintf(source_path, "%s%s_vertex.shader", g_state.path_shaders, path);
-		stype = GL_VERTEX_SHADER;
 		break;
 	default:throw XException("Unknown shader type! (%i) (%s)\n", type, path);
 	}
@@ -151,7 +142,7 @@ bool Shader::Load(const char *path)
 		return false;
 	}
 
-	instance = glCreateShader(stype);
+	plCreateShader(&instance, type);
 	const char *full_source[] = {
 #if defined (VL_MODE_OPENGL)
 		//"#version 110\n",	// OpenGL 2.0
@@ -184,7 +175,7 @@ bool Shader::Load(const char *path)
 
 Shader::~Shader()
 {
-	vlDeleteShader(&instance);
+	plDeleteShader(&instance);
 }
 
 // Compilation
@@ -221,7 +212,7 @@ ShaderProgram::ShaderProgram(std::string name) :
 	_name(name), 
 	instance(0)
 {
-	instance = vlCreateShaderProgram();
+	plCreateShaderProgram(&instance);
 	if (!instance)
 		throw XException("Failed to create shader program!\n");
 }
@@ -238,10 +229,10 @@ ShaderProgram::~ShaderProgram()
 #endif
 	attributes.clear();
 
-	vlDeleteShaderProgram(&instance);
+	plDeleteShaderProgram(&instance);
 }
 
-void ShaderProgram::RegisterShader(std::string path, VLShaderType type)
+void ShaderProgram::RegisterShader(std::string path, PLShaderType type)
 {
 	Shader *shader_ = new Shader(type);
 	if (!shader_->Load(path.c_str()))
@@ -275,7 +266,7 @@ void ShaderProgram::Enable()
 	if (IsActive())
 		return;
 
-	vlUseShaderProgram(instance);
+	plSetShaderProgram(instance);
 }
 
 void ShaderProgram::Disable()
@@ -283,7 +274,7 @@ void ShaderProgram::Disable()
 	if (!IsActive())
 		return;
 
-	vlUseShaderProgram(0);
+	plSetShaderProgram(0);
 }
 
 void ShaderProgram::Draw(vlDraw_t *object)
@@ -332,7 +323,7 @@ void ShaderProgram::SetAttributeVariable(int location, plVector3f_t vector)
 
 // Uniform Handling
 
-VLUniform *ShaderProgram::RegisterUniform(std::string name, VLUniformType type)
+VLUniform *ShaderProgram::RegisterUniform(std::string name, PLUniformType type)
 {
 	if (type >= VL_UNIFORM_END)
 		throw XException("Invalid unform type! (%s) (%i)\n", name.c_str(), type);

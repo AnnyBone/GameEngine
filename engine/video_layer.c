@@ -35,56 +35,6 @@ TODO:
 - Simulate quads primitive type
 */
 
-typedef struct VLState
-{
-	unsigned int num_cards;		// Number of video cards.
-
-	VLCullMode	current_cullmode;
-
-	plColour_t		current_clearcolour;
-	plColour_t		current_colour;			// Current global colour.
-
-	unsigned int	current_capabilities;	// Enabled capabilities.
-	VLTexture		current_texture;
-
-	// Shader state.
-	vlShaderProgram_t	current_program;
-
-	// Hardware / Driver information
-
-	const PLchar *hw_vendor;
-	const PLchar *hw_renderer;
-	const PLchar *hw_version;
-	const PLchar *hw_extensions;
-
-	PLint hw_maxtexturesize;
-
-	////////////////////////////////////////
-
-	PLint viewport_x, viewport_y;
-	PLuint viewport_width, viewport_height;
-
-	PLbool mode_debug;
-} VLState;
-
-VLState vl_state;
-
-/*	TODO:
-- Add somewhere we can store tracking
-data for each of these functions
-- Do this in another thread if possible
-- Display that data as an overlay
-*/
-#define	_VL_UTIL_TRACK(name)									\
-	{															\
-		unsigned static int _t = 0;								\
-		if(vl_state.mode_debug)									\
-		{														\
-			plWriteLog("pl_video_layer_log", " "#name"\n");		\
-			_t++;												\
-		}														\
-	}
-
 /*===========================
 	INITIALIZATION
 ===========================*/
@@ -116,7 +66,7 @@ GrColor_t _vlConvertColour4f(VLColourFormat format, float r, float g, float b, f
 
 /*	Convert RGBA colour to something glide can understand.
 */
-GrColor_t _vlConvertColour4fv(VLColourFormat format, plColour_t colour)
+GrColor_t _vlConvertColour4fv(VLColourFormat format, PLColour colour)
 {
 	return _vlConvertColour4f(format, colour[0], colour[1], colour[2], colour[3]);
 }
@@ -202,177 +152,7 @@ void _vlShutdownDirect3D(void)
 	vl_d3d_context->lpVtbl->Release(vl_d3d_context);
 }
 
-#elif defined (VL_MODE_OPENGL)
-
-PLbool vl_gl_generate_mipmap			= false;
-PLbool vl_gl_depth_texture				= false;
-PLbool vl_gl_shadow						= false;
-PLbool vl_gl_vertex_buffer_object		= false;
-PLbool vl_gl_texture_compression		= false;
-PLbool vl_gl_texture_compression_s3tc	= false;
-
-PLuint vl_gl_version_major = 0;
-PLuint vl_gl_version_minor = 0;
-
-#define VL_GL_VERSION(maj, min)	((maj == vl_gl_version_major && min <= vl_gl_version_minor) || maj < vl_gl_version_major)
-
-void _vlInitOpenGL(void)
-{
-	unsigned int err = glewInit();
-	if (err != GLEW_OK)
-		Sys_Error("Failed to initialize glew!\n%s\n", glewGetErrorString(err));
-
-	// Check that the required capabilities are supported.
-	if (!GLEW_ARB_multitexture) Sys_Error("Video hardware incapable of multi-texturing!\n");
-	else if (!GLEW_ARB_texture_env_combine && !GLEW_EXT_texture_env_combine) Sys_Error("ARB/EXT_texture_env_combine isn't supported by your hardware!\n");
-	else if (!GLEW_ARB_texture_env_add && !GLEW_EXT_texture_env_add) Sys_Error("ARB/EXT_texture_env_add isn't supported by your hardware!\n");
-	//else if (!GLEE_EXT_fog_coord) Sys_Error("EXT_fog_coord isn't supported by your hardware!\n");
-	else if (!GLEW_ARB_vertex_program || !GLEW_ARB_fragment_program) Sys_Error("Shaders aren't supported by this hardware!\n");
-
-	// Optional capabilities...
-
-	if (GLEW_SGIS_generate_mipmap) vl_gl_generate_mipmap = true;
-	else Con_Warning("Hardware mipmap generation isn't supported!\n");
-	if (GLEW_ARB_depth_texture) vl_gl_depth_texture = true;
-	else Con_Warning("ARB_depth_texture isn't supported by your hardware!\n");
-	if (GLEW_ARB_shadow) vl_gl_shadow = true;
-	else Con_Warning("ARB_shadow isn't supported by your hardware!\n");
-	if (GLEW_ARB_vertex_buffer_object) vl_gl_vertex_buffer_object = true;
-	else Con_Warning("Hardware doesn't support Vertex Buffer Objects!\n");
-
-	if (GLEW_ARB_texture_compression)
-	{
-		if (GLEW_EXT_texture_compression_s3tc) vl_gl_texture_compression_s3tc = true;
-	}
-
-	const char *version = vlGetString(VL_STRING_VERSION);
-	vl_gl_version_major = (unsigned int)atoi(&version[0]);
-	vl_gl_version_minor = (unsigned int)atoi(&version[2]);
-}
-
-void _vlShutdownOpenGL(void)
-{
-	
-}
-
 #endif
-
-/*	Function used for initialization in general.
-*/
-void vlInit(void)
-{
-	_VL_UTIL_TRACK(vlInit);
-
-	Con_Printf("Initializing Video Abstraction Layer...\n");
-	
-	memset(&vl_state, 0, sizeof(vl_state));
-
-#if defined (VL_MODE_OPENGL)
-	_vlInitOpenGL();
-#elif defined (VL_MODE_GLIDE)
-	_vlInitGlide();
-#elif defined (VL_MODE_DIRECT3D)
-	_vlInitDirect3D();
-#endif
-
-	// Get any information that will be presented later.
-	vl_state.hw_extensions	= vlGetString(VL_STRING_EXTENSIONS);
-	vl_state.hw_renderer	= vlGetString(VL_STRING_RENDERER);
-	vl_state.hw_vendor		= vlGetString(VL_STRING_VENDOR);
-	vl_state.hw_version		= vlGetString(VL_STRING_VERSION);
-	Con_Printf(" HARDWARE/DRIVER INFORMATION\n");
-	Con_Printf("  RENDERER: %s\n", vl_state.hw_renderer);
-	Con_Printf("  VENDOR:   %s\n", vl_state.hw_vendor);
-	Con_Printf("  VERSION:  %s\n\n", vl_state.hw_version);
-}
-
-void vlShutdown(void)
-{
-	_VL_UTIL_TRACK(vlShutdown);
-
-#if defined (VL_MODE_OPENGL)
-#elif defined (VL_MODE_GLIDE)
-#elif defined (VL_MODE_DIRECT3D)
-	_vlShutdownDirect3D();
-#endif
-}
-
-/*===========================
-	GET
-===========================*/
-
-/*	Returns supported num of texture width.
-*/
-int vlGetMaxTextureSize(void)
-{
-	_VL_UTIL_TRACK(vlGetMaxTextureSize);
-
-	if (vl_state.hw_maxtexturesize != 0)
-		return vl_state.hw_maxtexturesize;
-
-#if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
-	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &vl_state.hw_maxtexturesize);
-#elif defined (VL_MODE_GLIDE)
-	grGet(GR_MAX_TEXTURE_SIZE, sizeof(vl_state.hw_maxtexturesize), &vl_state.hw_maxtexturesize);
-#endif
-
-	return vl_state.hw_maxtexturesize;
-}
-
-void vlGetMaxTextureImageUnits(int *param)
-{
-	_VL_UTIL_TRACK(vlGetMaxTextureImageUnits);
-
-#ifdef VL_MODE_OPENGL
-	glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, param);
-#elif defined (VL_MODE_GLIDE)
-	grGet(GR_NUM_TMU, sizeof(param), (FxI32*)param);
-#else
-	param = 0;
-#endif
-}
-
-void vlGetMaxTextureAnistropy(float *params)
-{
-	_VL_UTIL_TRACK(vlGetMaxTextureAnistropy);
-
-#ifdef VL_MODE_OPENGL
-	glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, params);
-#else	// Not supported in core?
-	params = 0;
-#endif
-}
-
-const char *vlGetExtensions(void)
-{
-	_VL_UTIL_TRACK(vlGetExtensions);
-
-#if defined(VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
-	return (const char*)glGetString(GL_EXTENSIONS);
-	// TODO: this works differently in core; use glGetStringi instead!
-#elif defined (VL_MODE_GLIDE)
-	return grGetString(GR_EXTENSION);
-#else
-	return "";
-#endif
-}
-
-const char *vlGetString(VLString string)
-{
-	_VL_UTIL_TRACK(vlGetString);
-
-	switch (string)
-	{
-	case VL_STRING_EXTENSIONS:
-		return vlGetExtensions();
-	default:
-#if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
-		return (const char*)glGetString(string);
-#elif defined (VL_MODE_GLIDE)
-		return grGetString(string);
-#endif
-	}
-}
 
 /*===========================
 	ERROR HANDLING
@@ -382,8 +162,6 @@ const char *vlGetString(VLString string)
 */
 char *vlGetErrorString(unsigned int er)
 {
-	_VL_UTIL_TRACK(vlGetErrorString);
-
 	switch (er)
 	{
 #ifdef VL_MODE_OPENGL
@@ -417,8 +195,6 @@ static bool vl_matrixpushed = false;
 
 void vlPushMatrix(void)
 {
-	_VL_UTIL_TRACK(vlPushMatrix);
-
 	if (vl_matrixpushed)
 		return;
 #ifdef VL_MODE_OPENGL
@@ -429,8 +205,6 @@ void vlPushMatrix(void)
 
 void vlPopMatrix(void)
 {
-	_VL_UTIL_TRACK(vlPopMatrix);
-
 	if (!vl_matrixpushed)
 		return;
 #ifdef VL_MODE_OPENGL
@@ -443,47 +217,8 @@ void vlPopMatrix(void)
 	SHADERS
 ===========================*/
 
-vlShaderProgram_t vlCreateShaderProgram(void)
+void vlLinkShaderProgram(PLShaderProgram *program)
 {
-	_VL_UTIL_TRACK(vlCreateShaderProgram);
-
-#ifdef VL_MODE_OPENGL
-	return glCreateProgram();
-#endif
-}
-
-vlShaderProgram_t vlGetCurrentShaderProgram(void)
-{
-	_VL_UTIL_TRACK(vlGetCurrentShaderProgram);
-	return vl_state.current_program;
-}
-
-void vlDeleteShaderProgram(vlShaderProgram_t *program)
-{
-	_VL_UTIL_TRACK(vlDeleteShaderProgram);
-
-#ifdef VL_MODE_OPENGL
-	glDeleteProgram(*program);
-	program = NULL;
-#endif
-}
-
-void vlUseShaderProgram(vlShaderProgram_t program)
-{
-	_VL_UTIL_TRACK(vlUseShaderProgram);
-
-	if (program == vl_state.current_program)
-		return;
-#ifdef VL_MODE_OPENGL
-	glUseProgram(program);
-#endif
-	vl_state.current_program = program;
-}
-
-void vlLinkShaderProgram(vlShaderProgram_t *program)
-{
-	_VL_UTIL_TRACK(vlLinkShaderProgram);
-
 #ifdef VL_MODE_OPENGL
 	glLinkProgram(*program);
 
@@ -506,29 +241,15 @@ void vlLinkShaderProgram(vlShaderProgram_t *program)
 #endif
 }
 
-void vlAttachShader(vlShaderProgram_t program, vlShader_t shader)
+void vlAttachShader(PLShaderProgram program, PLShader shader)
 {
-	_VL_UTIL_TRACK(vlAttachShader);
-
 #if defined (VL_MODE_OPENGL)
 	glAttachShader(program, shader);
 #endif
 }
 
-void vlDeleteShader(vlShader_t *shader)
+vlAttribute_t vlGetAttributeLocation(PLShaderProgram *program, const char *name)
 {
-	_VL_UTIL_TRACK(vlDeleteShader);
-
-#if defined (VL_MODE_OPENGL)
-	glDeleteShader(*shader);
-#endif
-	shader = NULL;
-}
-
-vlAttribute_t vlGetAttributeLocation(vlShaderProgram_t *program, const char *name)
-{
-	_VL_UTIL_TRACK(vlGetAttributeLocation);
-
 #if defined (VL_MODE_OPENGL)
 	return glGetAttribLocation(*program, name);
 #else
@@ -540,32 +261,9 @@ vlAttribute_t vlGetAttributeLocation(vlShaderProgram_t *program, const char *nam
 	TEXTURES
 ===========================*/
 
-VLTexture vlGenerateTexture(void)
+void vlUploadTexture(PLTexture texture, const PLTextureInfo *upload)
 {
-#if defined (VL_MODE_OPENGL)
-	PLuint id;
-	glGenTextures(1, &id);
-	return id;
-#endif
-}
-
-VLTexture vlGetCurrentTexture(void)
-{
-	return vl_state.current_texture;
-}
-
-void vlDeleteTexture(VLTexture *texture)
-{
-#if defined (VL_MODE_OPENGL)
-	glDeleteTextures(1, texture);
-#endif
-}
-
-bool vlIsEnabled(unsigned int caps);
-
-void vlUploadTexture(VLTexture texture, const VLTextureInfo *upload)
-{
-	vlBindTexture(VL_TEXTURE_2D, texture);
+	plSetTexture(texture);
 
 	PLuint storage_type = upload->storage_type;
 	if (storage_type == 0) storage_type = GL_UNSIGNED_BYTE;
@@ -573,7 +271,7 @@ void vlUploadTexture(VLTexture texture, const VLTextureInfo *upload)
 #if defined (VL_MODE_OPENGL_CORE)
 #elif defined (VL_MODE_OPENGL)
 	PLuint levels = upload->levels;
-	if (vlIsEnabled(VL_CAPABILITY_GENERATEMIPMAP))
+	if (plIsGraphicsStateEnabled(VL_CAPABILITY_GENERATEMIPMAP))
 	{
 		if(levels <= 1) levels = 4;
 		if (!VL_GL_VERSION(3,0) && VL_GL_VERSION(1,4))
@@ -623,7 +321,7 @@ void vlUploadTexture(VLTexture texture, const VLTextureInfo *upload)
 			upload->data
 		);
 
-	if (vlIsEnabled(VL_CAPABILITY_GENERATEMIPMAP))
+	if (plIsGraphicsStateEnabled(VL_CAPABILITY_GENERATEMIPMAP))
 	{
 		if (VL_GL_VERSION(3,0))
 			glGenerateMipmap(GL_TEXTURE_2D);
@@ -637,96 +335,8 @@ void vlUploadTexture(VLTexture texture, const VLTextureInfo *upload)
 #endif
 }
 
-/*	Checks and returns texture unit for target.
-*/
-unsigned int vlGetTextureUnit(unsigned int target)
-{
-#if defined (VL_MODE_OPENGL) || (VL_MODE_OPENGL_CORE)
-	unsigned int out = GL_TEXTURE0 + target;
-	if (out >(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS - 1))
-		Sys_Error("Attempted to select an invalid texture image unit! (%i)\n", target);
-	return out;
-#else
-	return 0;
-#endif
-}
-
-/*	Selects the current active TMU.
-*/
-void vlActiveTexture(unsigned int texunit)
-{
-	_VL_UTIL_TRACK(vlActiveTexture);
-
-	if (texunit == Video.current_textureunit)
-		return;
-
-	// Ensure it's valid.
-	if (texunit > (unsigned)Video.num_textureunits)
-		Sys_Error("Attempted to select a texture image unit beyond what's supported by your hardware! (%i)\n", texunit);
-
-#if defined (VL_MODE_OPENGL) || (VL_MODE_OPENGL_CORE)
-	glActiveTexture(vlGetTextureUnit(texunit));
-#endif
-
-	// Keep us up-to-date.
-	Video.current_textureunit = texunit;
-}
-
-void vlBindTexture(PLuint target, VLTexture texture)
-{
-	_VL_UTIL_TRACK(vlBindTexture);
-
-	if (texture == vl_state.current_texture)
-		return;
-
-#if defined (VL_MODE_OPENGL)
-	glBindTexture(target, texture);
-#endif
-
-	vl_state.current_texture = texture;
-}
-
-void vlSetTextureFilter(VLTexture texture, VLTextureFilter filter)
-{
-	_VL_UTIL_TRACK(vlSetTextureFilter);
-
-	vlBindTexture(VL_TEXTURE_2D, texture);
-
-#ifdef VL_MODE_OPENGL
-	PLuint filtermin = filter, filtermax = filter;
-	switch (filter)
-	{
-	case VL_TEXTUREFILTER_MIPMAP_LINEAR:
-		filtermax = GL_LINEAR; filtermin = GL_LINEAR_MIPMAP_LINEAR;
-		break;
-	case VL_TEXTUREFILTER_MIPMAP_NEAREST:
-		filtermax = GL_NEAREST; filtermin = GL_NEAREST_MIPMAP_NEAREST;
-		break;
-	case VL_TEXTUREFILTER_MIPMAP_LINEAR_NEAREST:
-		filtermax = GL_LINEAR; filtermin = GL_LINEAR_MIPMAP_NEAREST;
-		break;
-	case VL_TEXTUREFILTER_MIPMAP_NEAREST_LINEAR:
-		filtermax = GL_NEAREST; filtermin = GL_NEAREST_MIPMAP_LINEAR;
-	}
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filtermin);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filtermax);
-#endif
-}
-
-void vlSetTextureAnisotropy(VLTexture texture, PLfloat amount)
-{
-	vlBindTexture(VL_TEXTURE_2D, texture);
-
-#if defined (VL_MODE_OPENGL)
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, amount);
-#endif
-}
-
 int _vlTranslateTextureEnvironmentMode(VLTextureEnvironmentMode TextureEnvironmentMode)
 {
-	_VL_UTIL_TRACK(_vlTranslateTextureEnvironmentMode);
-
 	switch (TextureEnvironmentMode)
 	{
 #ifdef VL_MODE_OPENGL
@@ -753,8 +363,6 @@ int _vlTranslateTextureEnvironmentMode(VLTextureEnvironmentMode TextureEnvironme
 
 void vlSetTextureEnvironmentMode(VLTextureEnvironmentMode TextureEnvironmentMode)
 {
-	_VL_UTIL_TRACK(vlSetTextureEnvironmentMode);
-
 	// Ensure there's actually been a change.
 	if (Video.textureunits[Video.current_textureunit].current_envmode == TextureEnvironmentMode)
 		return;
@@ -771,161 +379,10 @@ void vlSetTextureEnvironmentMode(VLTextureEnvironmentMode TextureEnvironmentMode
 	CAPABILITIES
 ===========================*/
 
-typedef struct vlCapabilities_s
-{
-	unsigned int vl_parm, to_parm;
-
-	const char *ident;
-} vlCapabilities_t;
-
-vlCapabilities_t vl_capabilities[] =
-{
-#if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
-	{ VL_CAPABILITY_ALPHA_TEST, GL_ALPHA_TEST, "ALPHA_TEST" },
-	{ VL_CAPABILITY_BLEND, GL_BLEND, "BLEND" },
-	{ VL_CAPABILITY_DEPTH_TEST, GL_DEPTH_TEST, "DEPTH_TEST" },
-	{ VL_CAPABILITY_TEXTURE_2D, GL_TEXTURE_2D, "TEXTURE_2D" },
-	{ VL_CAPABILITY_TEXTURE_GEN_S, GL_TEXTURE_GEN_S, "TEXTURE_GEN_S" },
-	{ VL_CAPABILITY_TEXTURE_GEN_T, GL_TEXTURE_GEN_T, "TEXTURE_GEN_T" },
-	{ VL_CAPABILITY_CULL_FACE, GL_CULL_FACE, "CULL_FACE" },
-	{ VL_CAPABILITY_STENCIL_TEST, GL_STENCIL_TEST, "STENCIL_TEST" },
-	{ VL_CAPABILITY_MULTISAMPLE, GL_MULTISAMPLE, "MULTISAMPLE" },
-	{ VL_CAPABILITY_SCISSOR_TEST, GL_SCISSOR_TEST, "SCISSOR_TEST" },
-
-	{ VL_CAPABILITY_GENERATEMIPMAP, 0, "GENERATE_MIPMAP" },
-#else
-	{ VL_CAPABILITY_ALPHA_TEST, 0, "ALPHA_TEST" },
-	{ VL_CAPABILITY_BLEND, 0, "BLEND" },
-	{ VL_CAPABILITY_DEPTH_TEST, 0, "DEPTH_TEST" },
-	{ VL_CAPABILITY_TEXTURE_2D, 0, "TEXTURE_2D" },
-	{ VL_CAPABILITY_TEXTURE_GEN_S, 0, "TEXTURE_GEN_S" },
-	{ VL_CAPABILITY_TEXTURE_GEN_T, 0, "TEXTURE_GEN_T" },
-	{ VL_CAPABILITY_CULL_FACE, 0, "CULL_FACE" },
-	{ VL_CAPABILITY_STENCIL_TEST, 0, "STENCIL_TEST" },
-	{ VL_CAPABILITY_MULTISAMPLE, 0, "MULTISAMPLE" },
-#endif
-
-	{ 0 }
-};
-
-bool vlIsEnabled(unsigned int caps)
-{
-	_VL_UTIL_TRACK(vlIsEnabled);
-
-	if (!caps)
-		return false;
-
-	for (int i = 0; i < sizeof(vl_capabilities); i++)
-	{
-		if (!vl_capabilities[i].vl_parm)
-			break;
-
-		if (caps & vl_state.current_capabilities)
-			return true;
-	}
-
-	return false;
-}
-
-/*	Enables video capabilities.
-*/
-void vlEnable(unsigned int cap)
-{
-	_VL_UTIL_TRACK(vlEnable);
-
-	for (unsigned int i = 0; i < sizeof(vl_capabilities); i++)
-	{
-		// Check if we reached the end of the list yet.
-		if (!vl_capabilities[i].vl_parm)
-			break;
-		
-		if (vl_state.mode_debug)
-			plWriteLog(VIDEO_LOG, "Enabling %s (%i)\n", vl_capabilities[i].ident, Video.current_textureunit);
-		
-		if (cap & VL_CAPABILITY_TEXTURE_2D)
-			Video.textureunits[Video.current_textureunit].isactive = true;
-#if defined (VL_MODE_GLIDE)
-		if (cap & VL_CAPABILITY_FOG)
-			// TODO: need to check this is supported...
-			grFogMode(GR_FOG_WITH_TABLE_ON_FOGCOORD_EXT);
-		if (cap & VL_CAPABILITY_DEPTH_TEST)
-			grDepthBufferMode(GR_DEPTHBUFFER_ZBUFFER);
-		if (cap & VL_CAPABILITY_CULL_FACE)
-			grCullMode(vl_state.current_cullmode);
-#endif
-
-		if ((cap & vl_capabilities[i].vl_parm) && (vl_capabilities[i].to_parm != 0))
-#if defined (VL_MODE_OPENGL) || (VL_MODE_OPENGL_CORE)
-			glEnable(vl_capabilities[i].to_parm);
-#elif defined (VL_MODE_GLIDE)
-			grEnable(vl_capabilities[i].to_parm);
-#endif
-
-		vl_state.current_capabilities |= vl_capabilities[i].vl_parm;
-	}
-}
-
-void vlDisable(unsigned int cap)
-{
-	_VL_UTIL_TRACK(vlDisable);
-
-	if (!cap)
-		return;
-
-	for (unsigned int i = 0; i < sizeof(vl_capabilities); i++)
-	{
-		// Check if we reached the end of the list yet.
-		if (!vl_capabilities[i].vl_parm)
-			break;
-
-		if (vl_state.mode_debug)
-			plWriteLog(VIDEO_LOG, "Disabling %s (%i)\n", vl_capabilities[i].ident, Video.current_textureunit);
-
-		if (cap & VL_CAPABILITY_TEXTURE_2D)
-			Video.textureunits[Video.current_textureunit].isactive = false;
-#if defined (VL_MODE_GLIDE)
-		if (cap & VL_CAPABILITY_FOG)
-			grFogMode(GR_FOG_DISABLE);
-		if (cap & VL_CAPABILITY_DEPTH_TEST)
-			grDepthBufferMode(GR_DEPTHBUFFER_DISABLE);
-		if (cap & VL_CAPABILITY_CULL_FACE)
-			grCullMode(vl_state.current_cullmode);
-#endif
-		
-		if (cap & vl_capabilities[i].vl_parm)
-#if defined (VL_MODE_OPENGL) || (VL_MODE_OPENGL_CORE)
-			glDisable(vl_capabilities[i].to_parm);
-#elif defined (VL_MODE_GLIDE)
-			// Hacky, but just to be safe...
-			if (vl_capabilities[i].to_parm != 0)
-				grDisable(vl_capabilities[i].to_parm);
-#endif
-
-		vl_state.current_capabilities &= ~vl_capabilities[i].vl_parm;
-	}
-}
-
-/*	TODO: Want more control over the dynamics of this...
-*/
-void vlBlendFunc(VLBlend modea, VLBlend modeb)
-{
-	_VL_UTIL_TRACK(vlBlendFunc);
-
-	if (vl_state.mode_debug)
-		plWriteLog(VIDEO_LOG, "Video: Setting blend mode (%i) (%i)\n", modea, modeb);
-#if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
-	glBlendFunc(modea, modeb);
-#elif defined (VL_MODE_GLIDE)
-	grAlphaBlendFunction(modea, modeb, modea, modeb);
-#endif
-}
-
 /*	Enable or disable writing into the depth buffer.
 */
 void vlDepthMask(bool mode)
 {
-	_VL_UTIL_TRACK(vlDepthMask);
-
 	static bool cur_state = true;
 	if (mode == cur_state) return;
 #if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
@@ -942,23 +399,21 @@ void vlDepthMask(bool mode)
 
 // RENDER BUFFER OBJECTS
 
-void vlGenerateRenderBuffer(VLRenderBuffer *buffer)
+void vlGenerateRenderBuffer(PLRenderBuffer *buffer)
 {
-	_VL_UTIL_TRACK(vlGenerateRenderBuffer);
-
 #ifdef VL_MODE_OPENGL
 	glGenRenderbuffers(1, buffer);
 #endif
 }
 
-void vlDeleteRenderBuffer(VLRenderBuffer *buffer)
+void vlDeleteRenderBuffer(PLRenderBuffer *buffer)
 {
 #ifdef VL_MODE_OPENGL
 	glDeleteRenderbuffers(1, buffer);
 #endif
 }
 
-void vlBindRenderBuffer(VLRenderBuffer buffer)
+void vlBindRenderBuffer(PLRenderBuffer buffer)
 {
 #ifdef VL_MODE_OPENGL
 	glBindRenderbuffer(GL_RENDERBUFFER, buffer);
@@ -992,61 +447,8 @@ void vlRenderBufferStorage(int format, int samples, unsigned int width, unsigned
 
 // FRAME BUFFER OBJECTS
 
-/*	Sets clear colour for colour buffer.
-*/
-void vlSetClearColour4f(float r, float g, float b, float a)
-{
-	_VL_UTIL_TRACK(vlSetClearColour4f);
-
-	if ((r == vl_state.current_clearcolour[0]) &&
-		(g == vl_state.current_clearcolour[1]) &&
-		(b == vl_state.current_clearcolour[2]) &&
-		(a == vl_state.current_clearcolour[3]))
-		return;
-#if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
-	glClearColor(r, g, b, a);
-#elif defined (VL_MODE_DIRECT3D)
-	// Don't need to do anything specific here, colour is set on clear call.
-#endif
-	plColourSetf(vl_state.current_clearcolour, r, g, b, a);
-}
-
-void vlSetClearColour4fv(plColour_t rgba)
-{
-	vlSetClearColour4f(rgba[0], rgba[1], rgba[2], rgba[3]);
-}
-
-void vlSetClearColour3f(float r, float g, float b)
-{
-	vlSetClearColour4f(r, g, b, vl_state.current_clearcolour[3]);
-}
-
-/*	Clears all the buffers.
-*/
-void vlClearBuffers(unsigned int mask)
-{
-	_VL_UTIL_TRACK(vlClearBuffers);
-
-#if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
-	glClear(mask);
-#elif defined (VL_MODE_GLIDE)
-	// Glide only supports clearing a single buffer.
-	grBufferClear(
-		// Convert buffer_clearcolour to something that works with Glide.
-		_vlConvertColour4fv(VL_COLOURFORMAT_RGBA, vl_state.buffer_clearcolour), 
-		1, 1);
-#elif defined (VL_MODE_DIRECT3D)
-	vl_d3d_context->lpVtbl->ClearRenderTargetView(vl_d3d_context, 
-		vl_d3d_backbuffer, 
-		vl_state.current_clearcolour
-		);
-#endif
-}
-
 void vlScissor(int x, int y, unsigned int width, unsigned int height)
 {
-	_VL_UTIL_TRACK(vlScissor);
-
 #if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
 	glScissor(x, y, width, height);
 #elif defined (VL_MODE_DIRECT3D)
@@ -1060,8 +462,6 @@ void vlScissor(int x, int y, unsigned int width, unsigned int height)
 
 void vlColourMask(bool red, bool green, bool blue, bool alpha)
 {
-	_VL_UTIL_TRACK(vlColourMask);
-
 #if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
 	glColorMask(red, green, blue, alpha);
 #elif defined (VL_MODE_GLIDE)
@@ -1087,7 +487,7 @@ void vlSwapBuffers(void)
 
 /*	Generates a single framebuffer.
 */
-void vlGenerateFrameBuffer(VLFrameBuffer *buffer)
+void vlGenerateFrameBuffer(PLFrameBuffer *buffer)
 {
 #ifdef VL_MODE_OPENGL
 	glGenFramebuffers(1, buffer);
@@ -1139,8 +539,6 @@ void vlCheckFrameBufferStatus(vlFBOTarget_t target)
 */
 void vlBindFrameBuffer(vlFBOTarget_t target, unsigned int buffer)
 {
-	_VL_UTIL_TRACK(vlBindFrameBuffer);
-	
 #if defined (VL_MODE_OPENGL)
 	glBindFramebuffer(target, buffer);
 
@@ -1196,10 +594,8 @@ void vlAttachFrameBufferTexture(gltexture_t *buffer)
 
 /*	Sets global colour for fog.
 */
-void vlFogColour3fv(plColour_t rgba)
+void vlFogColour3fv(PLColour rgba)
 {
-	_VL_UTIL_TRACK(vlFogColour3fv);
-
 #if defined (VL_MODE_OPENGL)
 	glFogfv(GL_FOG_COLOR, rgba);
 #elif defined (VL_MODE_GLIDE)
@@ -1218,10 +614,8 @@ void vlFogColour3fv(plColour_t rgba)
 /*	Generates each of the buffers and other
 	data necessary for the draw call.
 */
-vlDraw_t *vlCreateDraw(VLPrimitive primitive, uint32_t num_tris, uint32_t num_verts)
+vlDraw_t *vlCreateDraw(PLPrimitive primitive, uint32_t num_tris, uint32_t num_verts)
 {
-	_VL_UTIL_TRACK(vlCreateDraw);
-
 	if ((primitive == VL_PRIMITIVE_IGNORE) || (primitive >= VL_PRIMITIVE_END))
 		Sys_Error("Invalid primitive for draw object!\n");
 	else if ((num_tris == 0) && (primitive == VL_PRIMITIVE_TRIANGLES))
@@ -1232,8 +626,8 @@ vlDraw_t *vlCreateDraw(VLPrimitive primitive, uint32_t num_tris, uint32_t num_ve
 	_draw->primitive			= primitive;
 	_draw->primitive_restore	= primitive;
 
-	_draw->vertices = (vlVertex_t*)calloc_or_die(sizeof(vlDraw_t), num_verts);
-	memset(_draw->vertices, 0, sizeof(vlVertex_t));
+	_draw->vertices = (PLVertex*)calloc_or_die(sizeof(vlDraw_t), num_verts);
+	memset(_draw->vertices, 0, sizeof(PLVertex));
 	_draw->numverts			= num_verts;
 	_draw->numtriangles		= num_tris;
 
@@ -1268,7 +662,7 @@ void vlDeleteDraw(vlDraw_t *draw)
 	draw = NULL;
 }
 
-vlVertex_t *vl_draw_vertex = NULL;
+PLVertex *vl_draw_vertex = NULL;
 
 void vlBeginDraw(vlDraw_t *draw)
 {
@@ -1308,7 +702,7 @@ void vlDrawColour4f(float r, float g, float b, float a)
 	plColourSetf(vl_draw_vertex->colour, r, g, b, a);
 }
 
-void vlDrawColour4fv(plColour_t rgba)
+void vlDrawColour4fv(PLColour rgba)
 {
 	_VL_UTIL_TRACK(vlDrawColour4fv);
 
@@ -1334,10 +728,10 @@ void vlEndDraw(vlDraw_t *draw)
 
 #if defined (VL_MODE_OPENGL)
 	glBindBuffer(GL_ARRAY_BUFFER, draw->_gl_vbo[_VL_BUFFER_VERTICES]);
-	glBufferData(GL_ARRAY_BUFFER, draw->numverts * sizeof(plVector3f_t) * sizeof(vlVertex_t), draw->vertices->position, GL_DYNAMIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, draw->numverts * sizeof(plVector3f_t) * sizeof(PLVertex), draw->vertices->position, GL_DYNAMIC_DRAW);
 
 	glBindBuffer(GL_ARRAY_BUFFER, draw->_gl_vbo[_VL_BUFFER_TEXCOORDS]);
-	glBufferData(GL_ARRAY_BUFFER, draw->numverts * sizeof(plVector2f_t) * sizeof(vlVertex_t), draw->vertices->ST, GL_DYNAMIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, draw->numverts * sizeof(plVector2f_t) * sizeof(PLVertex), draw->vertices->ST, GL_DYNAMIC_DRAW);
 
 	if (draw->primitive == VL_PRIMITIVE_TRIANGLES)
 	{
@@ -1355,7 +749,7 @@ void vlEndDraw(vlDraw_t *draw)
 
 typedef struct _vlPrimitiveTranslate_s
 {
-	VLPrimitive primitive;
+	PLPrimitive primitive;
 
 	unsigned int gl;
 
@@ -1395,7 +789,7 @@ _vlPrimitiveTranslate_t vl_primitives[] =
 #endif
 };
 
-unsigned int _vlTranslatePrimitiveMode(VLPrimitive primitive)
+unsigned int _vlTranslatePrimitiveMode(PLPrimitive primitive)
 {
 	_VL_UTIL_TRACK(_vlTranslatePrimitiveMode);
 
@@ -1410,7 +804,7 @@ unsigned int _vlTranslatePrimitiveMode(VLPrimitive primitive)
 /*	Deals with tris view and different primitive types, then finally draws
 	the given arrays.
 */
-void _vlDrawArrays(VLPrimitive mode, unsigned int first, unsigned int count)
+void _vlDrawArrays(PLPrimitive mode, unsigned int first, unsigned int count)
 {
 	_VL_UTIL_TRACK(_vlDrawArrays);
 
@@ -1423,7 +817,7 @@ void _vlDrawArrays(VLPrimitive mode, unsigned int first, unsigned int count)
 #endif
 }
 
-void _vlDrawElements(VLPrimitive mode, unsigned int count, unsigned int type, const void *indices)
+void _vlDrawElements(PLPrimitive mode, unsigned int count, unsigned int type, const void *indices)
 {
 	_VL_UTIL_TRACK(_vlDrawElements);
 
@@ -1446,10 +840,10 @@ void vlDraw(vlDraw_t *draw)
 	if (0)//(draw->_gl_vbo[_VL_BUFFER_VERTICES] != 0)
 	{
 		glBindBuffer(GL_ARRAY_BUFFER, draw->_gl_vbo[_VL_BUFFER_VERTICES]);
-		glVertexPointer(3, GL_FLOAT, sizeof(vlVertex_t), NULL);
+		glVertexPointer(3, GL_FLOAT, sizeof(PLVertex), NULL);
 
 		glBindBuffer(GL_ARRAY_BUFFER, draw->_gl_vbo[_VL_BUFFER_TEXCOORDS]);
-		glTexCoordPointer(2, GL_FLOAT, sizeof(vlVertex_t), NULL);
+		glTexCoordPointer(2, GL_FLOAT, sizeof(PLVertex), NULL);
 
 		// todo, switch to using glInterleavedArrays?
 
@@ -1474,16 +868,16 @@ void vlDraw(vlDraw_t *draw)
 		glEnableClientState(GL_COLOR_ARRAY);
 		glEnableClientState(GL_NORMAL_ARRAY);
 
-		vlVertex_t *vert = &draw->vertices[0];
-		glVertexPointer(3, GL_FLOAT, sizeof(vlVertex_t), vert->position);
-		glColorPointer(4, GL_FLOAT, sizeof(vlVertex_t), vert->colour);
-		glNormalPointer(GL_FLOAT, sizeof(vlVertex_t), vert->normal);
+		PLVertex *vert = &draw->vertices[0];
+		glVertexPointer(3, GL_FLOAT, sizeof(PLVertex), vert->position);
+		glColorPointer(4, GL_FLOAT, sizeof(PLVertex), vert->colour);
+		glNormalPointer(GL_FLOAT, sizeof(PLVertex), vert->normal);
 		for (int i = 0; i < Video.num_textureunits; i++)
 			if (Video.textureunits[i].isactive)
 			{
-				glClientActiveTexture(vlGetTextureUnit(i));
+				glClientActiveTexture(plGetTextureUnit(i));
 				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-				glTexCoordPointer(2, GL_FLOAT, sizeof(vlVertex_t), vert->ST[i]);
+				glTexCoordPointer(2, GL_FLOAT, sizeof(PLVertex), vert->ST[i]);
 			}
 
 		if (draw->primitive == VL_PRIMITIVE_TRIANGLES)
@@ -1502,7 +896,7 @@ void vlDraw(vlDraw_t *draw)
 		for (int i = 0; i < Video.num_textureunits; i++)
 			if (Video.textureunits[i].isactive)
 			{
-				glClientActiveTexture(vlGetTextureUnit(i));
+				glClientActiveTexture(plGetTextureUnit(i));
 				glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 			}
 #endif
@@ -1532,10 +926,8 @@ void vlDrawVertexNormals(vlDraw_t *draw)
 	LIGHTING
 ===========================*/
 
-void vlApplyLighting(vlDraw_t *object, vlLight_t *light, plVector3f_t position)
+void vlApplyLighting(vlDraw_t *object, PLLight *light, plVector3f_t position)
 {
-	_VL_UTIL_TRACK(vlApplyLighting);
-
 	// Calculate the distance.
 	plVector3f_t distvec;
 	plVectorSubtract3fv(position, light->position, distvec);
@@ -1577,75 +969,4 @@ void vlApplyLighting(vlDraw_t *object, vlLight_t *light, plVector3f_t position)
 		}
 		*/
 	}
-}
-
-/*===========================
-	MISC
-===========================*/
-
-void vlViewport(int x, int y, unsigned int width, unsigned int height)
-{
-	_VL_UTIL_TRACK(vlViewport);
-
-	if (((x == vl_state.viewport_x) && (y == vl_state.viewport_y)) &&
-		((width == vl_state.viewport_width) && (height == vl_state.viewport_height)))
-		return;
-
-#if defined (VL_MODE_OPENGL)
-	glViewport(x, y, width, height);
-
-	vl_state.viewport_x = x;
-	vl_state.viewport_y = y;
-	vl_state.viewport_width = width;
-	vl_state.viewport_height = height;
-#elif defined (VL_MODE_DIRECT3D)
-	D3D11_VIEWPORT viewport;
-	memset(&viewport, 0, sizeof(D3D11_VIEWPORT));
-
-	vl_state.viewport_x			= viewport.TopLeftX		= x;
-	vl_state.viewport_y			= viewport.TopLeftY		= y;
-	vl_state.viewport_width		= viewport.Width		= width;
-	vl_state.viewport_height	= viewport.Height		= height;
-
-	vl_d3d_context->lpVtbl->RSSetViewports(vl_d3d_context, 1, &viewport);
-#endif
-}
-
-void vlSetCullMode(VLCullMode mode)
-{
-	_VL_UTIL_TRACK(vlSetCullMode);
-
-	if (mode == vl_state.current_cullmode)
-		return;
-#if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
-	glCullFace(GL_BACK);
-	switch (mode)
-	{
-	case VL_CULL_NEGATIVE:
-		glFrontFace(GL_CW);
-		break;
-	case VL_CULL_POSTIVE:
-		glFrontFace(GL_CCW);
-		break;
-	}
-#elif defined (VL_MODE_DIRECT3D)
-	// todo, create new render state and somehow get the properties of the
-	// current but update them to reflect the new cull mode.
-
-	vl_d3d_context->lpVtbl->RSSetState(vl_d3d_context, vl_d3d_state);
-#endif
-	vl_state.current_cullmode = mode;
-}
-
-void vlFinish(void)
-{
-	_VL_UTIL_TRACK(vlFinish);
-
-#if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
-	glFinish();
-#elif defined (VL_MODE_GLIDE)
-	grFinish();
-#elif defined (VL_MODE_DIRECT3D)
-	// Not supported, or rather, we don't need this.
-#endif
 }

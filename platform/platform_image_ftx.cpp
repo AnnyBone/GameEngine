@@ -15,27 +15,26 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 */
 
 #include "platform_image.h"
+#include "platform_filesystem.h"
 
 /*	Ritual's FTX Format	*/
 
-typedef struct
+typedef struct FTXHeader
 {
 	PLuint32 width;
 	PLuint32 height;
 	PLuint32 alpha;
-
-	PLbyte	*data;
-} FTXHeader_t;
+} FTXHeader;
 
 PLresult plLoadFTXImage(FILE *fin, PLImage *out)
 {
 	plSetErrorFunction("plLoadPPMImage");
 
-	FTXHeader_t	header;
-	memset(&header, 0, sizeof(FTXHeader_t));
-	header.width = plGetLittleLong(fin);
-	header.height = plGetLittleLong(fin);
-	header.alpha = plGetLittleLong(fin);
+	FTXHeader header;
+	memset(&header, 0, sizeof(FTXHeader));
+	header.width	= plGetLittleLong(fin);
+	header.height	= plGetLittleLong(fin);
+	header.alpha	= plGetLittleLong(fin);
 
 	memset(out, 0, sizeof(PLImage));
 

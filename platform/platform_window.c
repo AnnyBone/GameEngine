@@ -96,7 +96,7 @@ iScreen;			// Default screen.
 */
 void plCreateWindow(plWindow_t *window)
 {
-	pFUNCTION_UPDATE();
+	plFunctionStart();
 
 	// Make sure the window has been initialized.
 	if (!window)
@@ -230,7 +230,7 @@ void plMessageBox(const char *ccTitle, const char *ccMessage, ...)
 	char	cOut[2048];
 	va_list	vlArguments;
 
-	pFUNCTION_UPDATE();
+	plFunctionStart();
 
 	va_start(vlArguments, ccMessage);
 	vsprintf(cOut, ccMessage, vlArguments);

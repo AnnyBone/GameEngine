@@ -20,8 +20,8 @@
 
 #pragma once
 
-extern plColour_t vViewBlend;
+extern PLColour vViewBlend;
 
 void View_CalculateBlend(void);
 
-float V_CalcRoll(MathVector3f_t angles, MathVector3f_t velocity);
+float V_CalcRoll(PLVector3f angles, PLVector3f velocity);

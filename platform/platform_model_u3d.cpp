@@ -31,23 +31,23 @@
 
 typedef struct U3DAnimationHeader_s
 {
-	uint16_t	frames;	// Number of frames.
-	uint16_t	size;	// Size of each frame.
+	PLuint16	frames;	// Number of frames.
+	PLuint16	size;	// Size of each frame.
 } U3DAnimationHeader_t;
 
 typedef struct U3DDataHeader_s
 {
-	uint16_t	numpolys;	// Number of polygons.
-	uint16_t	numverts;	// Number of vertices.
-	uint16_t	rotation;	// Mesh rotation?
-	uint16_t	frame;		// Initial frame.
+	PLuint16	numpolys;	// Number of polygons.
+	PLuint16	numverts;	// Number of vertices.
+	PLuint16	rotation;	// Mesh rotation?
+	PLuint16	frame;		// Initial frame.
 
-	uint32_t	norm_x;
-	uint32_t	norm_y;
-	uint32_t	norm_z;
+	PLuint32	norm_x;
+	PLuint32	norm_y;
+	PLuint32	norm_z;
 
-	uint32_t	fixscale;
-	uint32_t	unused[3];
+	PLuint32	fixscale;
+	PLuint32	unused[3];
 } U3DDataHeader_t;
 
 #define	U3D_FLAG_UNLIT			16
@@ -68,20 +68,20 @@ enum U3DType
 typedef struct U3DVertex_s
 {
 	// This is a bit funky...
-	int32_t x : 11;
-	int32_t y : 11;
-	int32_t z : 10;
+	PLint32 x : 11;
+	PLint32 y : 11;
+	PLint32 z : 10;
 } U3DVertex_t;
 
 typedef struct U3DTriangle_s
 {
-	uint16_t vertex[3];	// Vertex indices
+	PLuint16 vertex[3];	// Vertex indices
 
-	uint8_t	type;		// Triangle type
-	uint8_t colour;		// Triangle colour
-	uint8_t ST[3][2];	// Texture coords
-	uint8_t texturenum;	// Texture offset
-	uint8_t flags;		// Triangle flags
+	PLuint8	type;		// Triangle type
+	PLuint8 colour;		// Triangle colour
+	PLuint8 ST[3][2];	// Texture coords
+	PLuint8 texturenum;	// Texture offset
+	PLuint8 flags;		// Triangle flags
 } U3DTriangle_t;
 
 FILE *pl_u3d_dataf = nullptr;
@@ -178,7 +178,7 @@ plAnimatedModel_t *plLoadU3DModel(const char *path)
 	model->num_vertices = dataheader.numverts;
 
 	// Allocate the triangle/vertex arrays.
-	model->frames = new plModelFrame_t[model->num_frames];
+	model->frames = new PLModelFrame[model->num_frames];
 	for (unsigned int i = 0; i < model->num_frames; i++)
 	{
 		model->frames[i].vertices = new plVertex_t[model->num_vertices];

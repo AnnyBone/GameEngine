@@ -42,10 +42,10 @@ using namespace core;
 
 void draw::SetDefaultState()
 {
-	plColour_t clear = { 0.5, 0, 0, 1 };
-	vlSetClearColour4fv(clear);
+	PLColour clear = { 0.5, 0, 0, 1 };
+	plSetClearColour4fv(clear);
 
-	vlSetCullMode(VL_CULL_NEGATIVE);
+	plSetCullMode(VL_CULL_NEGATIVE);
 
 #if defined (VL_MODE_OPENGL)
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -62,7 +62,7 @@ void draw::SetDefaultState()
 #endif
 
 	// Overbrights.
-	vlActiveTexture(VIDEO_TEXTURE_LIGHT);
+	plSetTextureUnit(VIDEO_TEXTURE_LIGHT);
 	vlSetTextureEnvironmentMode(VIDEO_TEXTUREMODE_COMBINE);
 #if defined (VL_MODE_OPENGL)
 	glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
@@ -70,9 +70,9 @@ void draw::SetDefaultState()
 	glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_TEXTURE);
 	glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 4);
 #endif
-	vlActiveTexture(0);
+	plSetTextureUnit(0);
 
-	vlEnable(VL_CAPABILITY_SCISSOR_TEST);
+	plEnableGraphicsStates(VL_CAPABILITY_SCISSOR_TEST);
 }
 
 void draw::ClearBuffers()
@@ -80,7 +80,7 @@ void draw::ClearBuffers()
 	if (!cv_video_clearbuffers.bValue)
 		return;
 
-	vlClearBuffers(VL_MASK_DEPTH | VL_MASK_COLOUR | VL_MASK_STENCIL);
+	plClearBuffers(VL_MASK_DEPTH | VL_MASK_COLOUR | VL_MASK_STENCIL);
 }
 
 void draw::DepthBuffer()
@@ -196,8 +196,8 @@ void draw::BoundingBoxes()
 	if (!r_showbboxes.value || (cl.maxclients > 1) || !r_drawentities.value || (!sv.active && !g_state.embedded))
 		return;
 
-	vlDisable(VL_CAPABILITY_DEPTH_TEST | VL_CAPABILITY_TEXTURE_2D);
-	vlEnable(VL_CAPABILITY_BLEND);
+	plDisableGraphicsStates(VL_CAPABILITY_DEPTH_TEST | VL_CAPABILITY_TEXTURE_2D);
+	plEnableGraphicsStates(VL_CAPABILITY_BLEND);
 
 	unsigned int i;
 	ServerEntity_t *ed;
@@ -223,8 +223,8 @@ void draw::BoundingBoxes()
 		draw::WireBox(mins, maxs, 1, 1, 1);
 	}
 
-	vlDisable(VL_CAPABILITY_BLEND);
-	vlEnable(VL_CAPABILITY_TEXTURE_2D | VL_CAPABILITY_DEPTH_TEST);
+	plDisableGraphicsStates(VL_CAPABILITY_BLEND);
+	plEnableGraphicsStates(VL_CAPABILITY_TEXTURE_2D | VL_CAPABILITY_DEPTH_TEST);
 }
 
 void draw::Shadows()
@@ -382,8 +382,6 @@ void Scrap_Upload (void)
 
 void draw::MaterialSurface(Material_t *material, int x, int y, unsigned int w, unsigned int h, float alpha)
 {
-	vlVertex_t voSurface[4];
-
 	// Sloppy, but in the case that there's nothing valid...
 	if (!material)
 	{
@@ -393,30 +391,32 @@ void draw::MaterialSurface(Material_t *material, int x, int y, unsigned int w, u
 	}
 
 	// Disable depth testing.
-	vlDisable(VL_CAPABILITY_DEPTH_TEST);
+	plDisableGraphicsStates(VL_CAPABILITY_DEPTH_TEST);
+
+	PLVertex vertices[4];
 
 	// Set the colour.
-	Video_ObjectColour(&voSurface[0], 1.0f, 1.0f, 1.0f, alpha);
-	Video_ObjectColour(&voSurface[1], 1.0f, 1.0f, 1.0f, alpha);
-	Video_ObjectColour(&voSurface[2], 1.0f, 1.0f, 1.0f, alpha);
-	Video_ObjectColour(&voSurface[3], 1.0f, 1.0f, 1.0f, alpha);
+	Video_ObjectColour(&vertices[0], 1.0f, 1.0f, 1.0f, alpha);
+	Video_ObjectColour(&vertices[1], 1.0f, 1.0f, 1.0f, alpha);
+	Video_ObjectColour(&vertices[2], 1.0f, 1.0f, 1.0f, alpha);
+	Video_ObjectColour(&vertices[3], 1.0f, 1.0f, 1.0f, alpha);
 
 	// Set the texture coords.
-	Video_ObjectTexture(&voSurface[0], 0, 0, 0);
-	Video_ObjectTexture(&voSurface[1], 0, 1.0f, 0);
-	Video_ObjectTexture(&voSurface[2], 0, 1.0f, 1.0f);
-	Video_ObjectTexture(&voSurface[3], 0, 0, 1.0f);
+	Video_ObjectTexture(&vertices[0], 0, 0, 0);
+	Video_ObjectTexture(&vertices[1], 0, 1.0f, 0);
+	Video_ObjectTexture(&vertices[2], 0, 1.0f, 1.0f);
+	Video_ObjectTexture(&vertices[3], 0, 0, 1.0f);
 
 	// Set the vertex coords.
-	Video_ObjectVertex(&voSurface[0], x, y, 0);
-	Video_ObjectVertex(&voSurface[1], x + w, y, 0);
-	Video_ObjectVertex(&voSurface[2], x + w, y + h, 0);
-	Video_ObjectVertex(&voSurface[3], x, y + h, 0);
+	Video_ObjectVertex(&vertices[0], x, y, 0);
+	Video_ObjectVertex(&vertices[1], x + w, y, 0);
+	Video_ObjectVertex(&vertices[2], x + w, y + h, 0);
+	Video_ObjectVertex(&vertices[3], x, y + h, 0);
 
 	// Throw it off to the rendering pipeline.
-	Video_DrawFill(voSurface, material, material->current_skin);
+	Video_DrawFill(vertices, material, material->current_skin);
 
-	vlEnable(VL_CAPABILITY_DEPTH_TEST);
+	plEnableGraphicsStates(VL_CAPABILITY_DEPTH_TEST);
 }
 
 void Draw_MaterialSurface(Material_t *mMaterial, int iSkin,	int x, int y, int w, int h,	float fAlpha)
@@ -539,7 +539,7 @@ void Draw_Init (void)
 
 void draw::Character(int x, int y, int num)
 {
-	vlVertex_t		voCharacter[4] = { { { 0 } } };
+	PLVertex		voCharacter[4] = { { { 0 } } };
 	int				row, col;
 	float			frow,fcol,size;
 
@@ -557,7 +557,7 @@ void draw::Character(int x, int y, int num)
 	fcol = col*0.0625f;
 	size = 0.0625f;
 
-	vlDisable(VL_CAPABILITY_DEPTH_TEST);
+	plDisableGraphicsStates(VL_CAPABILITY_DEPTH_TEST);
 
 	Video_ObjectVertex(&voCharacter[0], x, y, 0);
 	Video_ObjectColour(&voCharacter[0], 1.0f, 1.0f, 1.0f, 1.0f);
@@ -577,7 +577,7 @@ void draw::Character(int x, int y, int num)
 
 	Video_DrawFill(voCharacter, g_mGlobalConChars, 0);
 
-	vlEnable(VL_CAPABILITY_DEPTH_TEST);
+	plEnableGraphicsStates(VL_CAPABILITY_DEPTH_TEST);
 }
 
 void draw::String(int x, int y, const char *msg)
@@ -604,7 +604,7 @@ void Draw_String(int x, int y, const char *msg)
 	draw::String(x, y, msg);
 }
 
-void draw::GradientBackground(plColour_t top, plColour_t bottom)
+void draw::GradientBackground(PLColour top, PLColour bottom)
 {
 	Viewport *viewport = GetCurrentViewport();
 	if (!viewport)
@@ -632,12 +632,12 @@ void draw::GradientBackground(plColour_t top, plColour_t bottom)
 	glPopMatrix();
 #endif
 
-	vlViewport(0, 0, viewport->GetWidth(), viewport->GetHeight());
+	plViewport(0, 0, viewport->GetWidth(), viewport->GetHeight());
 }
 
 void draw::Line(plVector3f_t start, plVector3f_t end)
 {
-	vlVertex_t line[2] = { { { 0 } } };
+	PLVertex line[2] = { { { 0 } } };
 
 	Video_ObjectVertex(&line[0], start[0], start[1], start[2]);
 	Video_ObjectColour(&line[0], 1.0f, 0, 0, 1.0f);
@@ -649,7 +649,7 @@ void draw::Line(plVector3f_t start, plVector3f_t end)
 
 void draw::CoordinateAxes(plVector3f_t position)
 {
-	plVector3f_t start, end;
+	PLVector3f start, end;
 	plVectorCopy(position, start);
 	plVectorCopy(position, end);
 	start[0] += 10;
@@ -671,10 +671,10 @@ void draw::CoordinateAxes(plVector3f_t position)
 
 void draw::Grid(plVector3f_t position, PLuint grid_size)
 {
-	vlEnable(VL_CAPABILITY_BLEND);
-	vlDisable(VL_CAPABILITY_TEXTURE_2D);
+	plEnableGraphicsStates(VL_CAPABILITY_BLEND);
+	plDisableGraphicsStates(VL_CAPABILITY_TEXTURE_2D);
 
-	vlBlendFunc(VL_BLEND_DEFAULT);
+	plSetBlendMode(VL_BLEND_DEFAULT);
 
 #ifdef VL_MODE_OPENGL
 	glPushMatrix();
@@ -730,22 +730,22 @@ void draw::Grid(plVector3f_t position, PLuint grid_size)
 	glPopMatrix();
 #endif
 
-	vlDisable(VL_CAPABILITY_BLEND);
-	vlEnable(VL_CAPABILITY_TEXTURE_2D);
+	plDisableGraphicsStates(VL_CAPABILITY_BLEND);
+	plEnableGraphicsStates(VL_CAPABILITY_TEXTURE_2D);
 }
 
-void draw::Rectangle(PLint x, PLint y, PLuint w, PLuint h, plColour_t colour)
+void draw::Rectangle(PLint x, PLint y, PLuint w, PLuint h, PLColour colour)
 {
-	vlVertex_t fill[4] = { 0 };
-
+	PLVertex fill[4] = { 0 };
+	
 	Math_Vector4Copy(colour, fill[0].colour);
 	Math_Vector4Copy(colour, fill[1].colour);
 	Math_Vector4Copy(colour, fill[2].colour);
 	Math_Vector4Copy(colour, fill[3].colour);
 
 	if (colour[3] < 1)
-		vlEnable(VL_CAPABILITY_BLEND);
-	vlDisable(VL_CAPABILITY_DEPTH_TEST | VL_CAPABILITY_TEXTURE_2D);
+		plEnableGraphicsStates(VL_CAPABILITY_BLEND);
+	plDisableGraphicsStates(VL_CAPABILITY_DEPTH_TEST | VL_CAPABILITY_TEXTURE_2D);
 
 	Video_ObjectVertex(&fill[0], x, y, 0);
 	Video_ObjectTexture(&fill[0], 0, h, w);
@@ -759,23 +759,23 @@ void draw::Rectangle(PLint x, PLint y, PLuint w, PLuint h, plColour_t colour)
 	Video_DrawFill(fill, NULL, 0);
 
 	if (colour[3] < 1)
-		vlDisable(VL_CAPABILITY_BLEND);
-	vlEnable(VL_CAPABILITY_DEPTH_TEST | VL_CAPABILITY_TEXTURE_2D);
+		plDisableGraphicsStates(VL_CAPABILITY_BLEND);
+	plEnableGraphicsStates(VL_CAPABILITY_DEPTH_TEST | VL_CAPABILITY_TEXTURE_2D);
 }
 
 // C wrapper for draw::rectangle
-void Draw_Rectangle(int x, int y, int w, int h, plColour_t colour)
+void Draw_Rectangle(int x, int y, int w, int h, PLColour colour)
 {
 	draw::Rectangle(x, y, w, h, colour);
 }
 
-void draw::GradientFill(int x, int y, PLuint width, PLuint height, plColour_t top, plColour_t bottom)
+void draw::GradientFill(int x, int y, PLuint width, PLuint height, PLColour top, PLColour bottom)
 {
-	vlVertex_t	voFill[4];
+	PLVertex	voFill[4];
 
 	if ((top[3] < 1) || (bottom[3] < 1))
-		vlEnable(VL_CAPABILITY_BLEND);
-	vlDisable(VL_CAPABILITY_DEPTH_TEST | VL_CAPABILITY_TEXTURE_2D);
+		plEnableGraphicsStates(VL_CAPABILITY_BLEND);
+	plDisableGraphicsStates(VL_CAPABILITY_DEPTH_TEST | VL_CAPABILITY_TEXTURE_2D);
 
 	Video_ObjectVertex(&voFill[0], x, y, 0);
 	Video_ObjectColour(&voFill[0], top[0], top[1], top[2], top[3]);
@@ -789,13 +789,13 @@ void draw::GradientFill(int x, int y, PLuint width, PLuint height, plColour_t to
 	Video_DrawFill(voFill, NULL, 0);
 
 	if ((top[3] < 1) || (bottom[3] < 1))
-		vlDisable(VL_CAPABILITY_BLEND);
-	vlEnable(VL_CAPABILITY_DEPTH_TEST | VL_CAPABILITY_TEXTURE_2D);
+		plDisableGraphicsStates(VL_CAPABILITY_BLEND);
+	plEnableGraphicsStates(VL_CAPABILITY_DEPTH_TEST | VL_CAPABILITY_TEXTURE_2D);
 }
 
 void draw::ScreenFade()
 {
-	vlVertex_t	voFade[4];
+	PLVertex	voFade[4];
 
 	Viewport *viewport = GetCurrentViewport();
 	if (!viewport)
@@ -803,7 +803,7 @@ void draw::ScreenFade()
 
 	GL_SetCanvas(CANVAS_DEFAULT);
 
-	vlEnable(VL_CAPABILITY_BLEND);
+	plEnableGraphicsStates(VL_CAPABILITY_BLEND);
 
 	Video_ObjectVertex(&voFade[0], 0, 0, 0);
 	Video_ObjectColour(&voFade[0], 1.0f, 1.0f, 1.0f, 0.5f);
@@ -819,7 +819,7 @@ void draw::ScreenFade()
 
 	Video_DrawFill(voFade, NULL, 0);
 
-	vlDisable(VL_CAPABILITY_BLEND);
+	plDisableGraphicsStates(VL_CAPABILITY_BLEND);
 }
 
 /*	Draws the little blue disc in the corner of the screen.
@@ -856,7 +856,7 @@ void Draw_BeginDisc(void)
 	glPopMatrix();
 	glMatrixMode(GL_MODELVIEW);
 	glPopMatrix();
-	vlViewport(iViewport[0], iViewport[1], iViewport[2], iViewport[3]);
+	plViewport(iViewport[0], iViewport[1], iViewport[2], iViewport[3]);
 	//johnfitz
 #endif
 }
@@ -882,7 +882,7 @@ void GL_SetCanvas (VideoCanvasType_t newcanvas)
 	{
 	case CANVAS_DEFAULT:
 		glOrtho(0, viewport->GetWidth(), viewport->GetHeight(), 0, -99999, 99999);
-		vlViewport(
+		plViewport(
 			viewport->GetPosition()[0], 
 			viewport->GetPosition()[1], 
 			viewport->GetWidth(), 
@@ -891,7 +891,7 @@ void GL_SetCanvas (VideoCanvasType_t newcanvas)
 	case CANVAS_CONSOLE:
 		lines = vid.conheight - (scr_con_current * vid.conheight / viewport->GetHeight());
 		glOrtho(0,vid.conwidth,vid.conheight + lines,lines,-99999,99999);
-		vlViewport(
+		plViewport(
 			viewport->GetPosition()[0], 
 			viewport->GetPosition()[1], 
 			viewport->GetWidth(), 
@@ -901,7 +901,7 @@ void GL_SetCanvas (VideoCanvasType_t newcanvas)
 		s = std::fminf((float)viewport->GetWidth() / 640.0, (float)viewport->GetHeight() / 480.0);
 		s = plClamp(1.0, scr_menuscale.value, s);
 		glOrtho (0, 640, 480, 0, -99999, 99999);
-		vlViewport(
+		plViewport(
 			viewport->GetPosition()[0], 
 			viewport->GetPosition()[1], 
 			viewport->GetWidth(), 
@@ -910,7 +910,7 @@ void GL_SetCanvas (VideoCanvasType_t newcanvas)
 	case CANVAS_SBAR:
 		s = plClamp(1.0, scr_sbarscale.value, (float)viewport->GetWidth() / 320.0);
 		glOrtho (0, 320, 48, 0, -99999, 99999);
-		vlViewport(
+		plViewport(
 			viewport->GetPosition()[0] + (viewport->GetWidth() - 320 * s) / 2, 
 			viewport->GetPosition()[1], 
 			320 * s, 
@@ -918,7 +918,7 @@ void GL_SetCanvas (VideoCanvasType_t newcanvas)
 		break;
 	case CANVAS_WARPIMAGE:
 		glOrtho (0, 128, 0, 128, -99999, 99999);
-		vlViewport(
+		plViewport(
 			viewport->GetPosition()[0], 
 			viewport->GetPosition()[1] + viewport->GetHeight() - gl_warpimagesize, 
 			gl_warpimagesize, 
@@ -927,7 +927,7 @@ void GL_SetCanvas (VideoCanvasType_t newcanvas)
 	case CANVAS_CROSSHAIR: //0,0 is center of viewport
 		s = plClamp(1.0, scr_crosshairscale.value, 10.0);
 		glOrtho(viewport->GetWidth() / -2 / s, viewport->GetWidth() / 2 / s, viewport->GetHeight() / 2 / s, viewport->GetHeight() / -2 / s, -99999, 99999);
-		vlViewport(
+		plViewport(
 			viewport->GetPosition()[0], 
 			viewport->GetHeight() - viewport->GetPosition()[1] - viewport->GetHeight(), 
 			viewport->GetWidth() & ~1, 
@@ -936,7 +936,7 @@ void GL_SetCanvas (VideoCanvasType_t newcanvas)
 	case CANVAS_BOTTOMLEFT: //used by devstats
 		s = (float)viewport->GetWidth() / vid.conwidth; //use console scale
 		glOrtho (0, 320, 200, 0, -99999, 99999);
-		vlViewport(
+		plViewport(
 			viewport->GetPosition()[0],
 			viewport->GetPosition()[1], 
 			320 * s, 
@@ -945,7 +945,7 @@ void GL_SetCanvas (VideoCanvasType_t newcanvas)
 	case CANVAS_BOTTOMRIGHT: //used by fps/clock
 		s = (float)viewport->GetWidth() / vid.conwidth; //use console scale
 		glOrtho (0, 320, 200, 0, -99999, 99999);
-		vlViewport(
+		plViewport(
 			viewport->GetPosition()[0] + viewport->GetWidth() - 320 * s, 
 			viewport->GetPosition()[1], 
 			320 * s, 
@@ -954,7 +954,7 @@ void GL_SetCanvas (VideoCanvasType_t newcanvas)
 	case CANVAS_TOPRIGHT: //used by disc
 		s = 1;
 		glOrtho (0, 320, 200, 0, -99999, 99999);
-		vlViewport(
+		plViewport(
 			viewport->GetPosition()[0] + viewport->GetWidth() - 320 * s, 
 			viewport->GetPosition()[1] + viewport->GetHeight() - 200 * s, 
 			320 * s, 
@@ -1069,8 +1069,8 @@ PL_MODULE_EXPORT void draw::Entity(ClientEntity_t *entity)
 
 	if (r_showbboxes.bValue)
 	{
-		vlEnable(VL_CAPABILITY_BLEND);
+		plEnableGraphicsStates(VL_CAPABILITY_BLEND);
 		draw::EntityBoundingBox(entity);
-		vlDisable(VL_CAPABILITY_BLEND);
+		plDisableGraphicsStates(VL_CAPABILITY_BLEND);
 	}
 }

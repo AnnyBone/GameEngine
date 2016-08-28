@@ -89,7 +89,7 @@ texture_t *R_TextureAnimation (texture_t *base, int frame)
 
 void DrawGLPoly(glpoly_t *p)
 {
-	vlVertex_t	voObject[512] = { { { 0 } } };
+	PLVertex	voObject[512] = { { { 0 } } };
 	float		*v;
 	int			i;
 
@@ -155,7 +155,7 @@ void R_DrawSequentialPoly(msurface_t *s)
 		if (alpha < 1.0f)
 		{
 			vlDepthMask(false);
-			vlEnable(VL_CAPABILITY_BLEND);
+			plEnableGraphicsStates(VL_CAPABILITY_BLEND);
 		}
 
 		Material_Draw(mCurrent, 0, VL_PRIMITIVE_IGNORE, 0, false);
@@ -171,7 +171,7 @@ void R_DrawSequentialPoly(msurface_t *s)
 		if (alpha < 1.0f)
 		{
 			vlDepthMask(true);
-			vlDisable(VL_CAPABILITY_BLEND);
+			plDisableGraphicsStates(VL_CAPABILITY_BLEND);
 		}
 	}
 	else
@@ -181,18 +181,18 @@ void R_DrawSequentialPoly(msurface_t *s)
 			if (alpha < 1)
 			{
 				vlDepthMask(false);
-				vlEnable(VL_CAPABILITY_BLEND);
+				plEnableGraphicsStates(VL_CAPABILITY_BLEND);
 			}
 
-			vlActiveTexture(VIDEO_TEXTURE_LIGHT);
+			plSetTextureUnit(VIDEO_TEXTURE_LIGHT);
 			lightmap_textures[s->lightmaptexturenum]->Bind();
 
 			R_RenderDynamicLightmaps(s);
 			R_UploadLightmap(s->lightmaptexturenum);
 
-			vlEnable(VL_CAPABILITY_TEXTURE_2D);
+			plEnableGraphicsStates(VL_CAPABILITY_TEXTURE_2D);
 
-			vlActiveTexture(0);
+			plSetTextureUnit(0);
 		}
 
 		Video_DrawSurface(s, alpha, s->texinfo->texture->material, 0);
@@ -202,12 +202,12 @@ void R_DrawSequentialPoly(msurface_t *s)
 			if (alpha < 1)
 			{
 				vlDepthMask(true);
-				vlDisable(VL_CAPABILITY_BLEND);
+				plDisableGraphicsStates(VL_CAPABILITY_BLEND);
 			}
 
-			vlActiveTexture(VIDEO_TEXTURE_LIGHT);
-			vlDisable(VL_CAPABILITY_TEXTURE_2D);
-			vlActiveTexture(0);
+			plSetTextureUnit(VIDEO_TEXTURE_LIGHT);
+			plDisableGraphicsStates(VL_CAPABILITY_TEXTURE_2D);
+			plSetTextureUnit(0);
 		}
 
 		rs_brushpasses++;
@@ -652,17 +652,17 @@ void R_UploadLightmap(int lmap)
 		theRect->h,
 		);
 #else
-	VLTextureInfo upload;
-	memset(&upload, 0, sizeof(VLTextureInfo));
+	PLTextureInfo upload;
+	memset(&upload, 0, sizeof(PLTextureInfo));
 	upload.data = lightmaps + (lmap* BLOCK_HEIGHT + theRect->t)*BLOCK_WIDTH*LIGHTMAP_BYTES;
 	upload.format = VL_TEXTUREFORMAT_RGB8;
 	upload.pixel_format = VL_COLOURFORMAT_BGRA;
 	upload.width = BLOCK_WIDTH;
 	upload.height = theRect->h;
 	upload.y = theRect->t;
-	upload.storage_type = VL_UNSIGNED_INT_8_8_8_8_REV;
+	upload.storage_type = PL_UNSIGNED_INT_8_8_8_8_REV;
 
-	vlUploadTexture(vlGetCurrentTexture(), &upload);
+	vlUploadTexture(plGetCurrentTexture(), &upload);
 #endif
 
 	theRect->l = BLOCK_WIDTH;
@@ -719,16 +719,16 @@ void R_RebuildAllLightmaps (void)
 			GL_UNSIGNED_INT_8_8_8_8_REV,
 			lightmaps+i*BLOCK_WIDTH*BLOCK_HEIGHT*LIGHTMAP_BYTES);
 #else
-		VLTextureInfo upload;
-		memset(&upload, 0, sizeof(VLTextureInfo));
+		PLTextureInfo upload;
+		memset(&upload, 0, sizeof(PLTextureInfo));
 		upload.data				= lightmaps + i*BLOCK_WIDTH*BLOCK_HEIGHT*LIGHTMAP_BYTES;
 		upload.format			= VL_TEXTUREFORMAT_RGB8;
 		upload.pixel_format		= VL_COLOURFORMAT_BGRA;
 		upload.width			= BLOCK_WIDTH;
 		upload.height			= BLOCK_HEIGHT;
-		upload.storage_type		= VL_UNSIGNED_INT_8_8_8_8_REV;
+		upload.storage_type		= PL_UNSIGNED_INT_8_8_8_8_REV;
 
-		vlUploadTexture(vlGetCurrentTexture(), &upload);
+		vlUploadTexture(plGetCurrentTexture(), &upload);
 #endif
 	}
 }

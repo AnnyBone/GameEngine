@@ -912,7 +912,7 @@ void CL_ParseServerMessage(void)
 				for (j=0; j<cl_lightstyle[i].length; j++)
 				{
 					total += cl_lightstyle[i].cMap[j] - 'a';
-					cl_lightstyle[i].peak = Math_Max(cl_lightstyle[i].peak, cl_lightstyle[i].cMap[j]);
+					cl_lightstyle[i].peak = plMax(cl_lightstyle[i].peak, cl_lightstyle[i].cMap[j]);
 				}
 				
 				cl_lightstyle[i].average = total / cl_lightstyle[i].length + 'a';

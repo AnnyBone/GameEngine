@@ -56,10 +56,10 @@ char *va(char *format,...)
 	return string;
 }
 
-void SetAngle(ServerEntity_t *ent,MathVector3f_t vAngle)
+void SetAngle(ServerEntity_t *ent, PLVector3f vAngle)
 {
 	// [21/3/2012] Updated ~hogsy
-	Math_VectorCopy(vAngle,ent->v.angles);
+	plVectorCopy(vAngle, ent->v.angles);
 
 	Entity_Link(ent,false);
 }
@@ -104,7 +104,7 @@ void ChangeYaw(ServerEntity_t *ent)
 	also slide box entities	if the
 	tryents flag is set.
 */
-trace_t Traceline(ServerEntity_t *ent, MathVector3f_t vStart, MathVector3f_t vEnd, int type)
+trace_t Traceline(ServerEntity_t *ent, PLVector3f vStart, PLVector3f vEnd, int type)
 {
 	return Engine.Server_Move(vStart, pl_origin3f, pl_origin3f, vEnd, type, ent);
 }

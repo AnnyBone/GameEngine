@@ -234,7 +234,7 @@ void Surface_DrawMirror(msurface_t *surface)
 	R_SetupScene();
 
 #if 0
-	vlEnable(VL_CAPABILITY_STENCIL_TEST);
+	plEnableGraphicsStates(VL_CAPABILITY_STENCIL_TEST);
 	vlDisable(VL_CAPABILITY_DEPTH_TEST);
 
 	glStencilFunc(GL_ALWAYS, 1, 255);
@@ -248,7 +248,7 @@ void Surface_DrawMirror(msurface_t *surface)
 	glStencilFunc(GL_EQUAL, 1, 255);
 	glStencilMask(0);
 
-	vlEnable(VL_CAPABILITY_DEPTH_TEST);
+	plEnableGraphicsStates(VL_CAPABILITY_DEPTH_TEST);
 
 	glDepthRange(0, 0.5);
 #endif
@@ -319,22 +319,22 @@ void World_DrawWater(void)
 			{
 				if (t->material->bind && !r_showtris.bValue)
 				{
-					vlActiveTexture(VIDEO_TEXTURE_LIGHT);
-					vlEnable(VL_CAPABILITY_TEXTURE_2D);
+					plSetTextureUnit(VIDEO_TEXTURE_LIGHT);
+					plEnableGraphicsStates(VL_CAPABILITY_TEXTURE_2D);
 
 					t->material->bind = false;
 				}
 
 				if (!r_showtris.bValue)
 				{
-					vlActiveTexture(VIDEO_TEXTURE_LIGHT);
+					plSetTextureUnit(VIDEO_TEXTURE_LIGHT);
 
 					lightmap_textures[s->lightmaptexturenum]->Bind();
 
 					R_RenderDynamicLightmaps(s);
 					R_UploadLightmap(s->lightmaptexturenum);
 
-					vlActiveTexture(0);
+					plSetTextureUnit(0);
 				}
 
 				Surface_DrawWater(s->polys, t->material);
@@ -343,9 +343,9 @@ void World_DrawWater(void)
 	}
 
 	// Disable light texture
-	vlActiveTexture(VIDEO_TEXTURE_LIGHT);
-	vlDisable(VL_CAPABILITY_TEXTURE_2D);
-	vlActiveTexture(0);
+	plSetTextureUnit(VIDEO_TEXTURE_LIGHT);
+	plDisableGraphicsStates(VL_CAPABILITY_TEXTURE_2D);
+	plSetTextureUnit(0);
 }
 
 void World_Draw(void)
@@ -381,22 +381,22 @@ void World_Draw(void)
 			{
 				if (t->material->bind && !r_showtris.bValue)
 				{
-					vlActiveTexture(VIDEO_TEXTURE_LIGHT);
-					vlEnable(VL_CAPABILITY_TEXTURE_2D);
+					plSetTextureUnit(VIDEO_TEXTURE_LIGHT);
+					plEnableGraphicsStates(VL_CAPABILITY_TEXTURE_2D);
 
 					t->material->bind = false;
 				}
 
 				if (!r_showtris.bValue)
 				{
-					vlActiveTexture(VIDEO_TEXTURE_LIGHT);
+					plSetTextureUnit(VIDEO_TEXTURE_LIGHT);
 
 					lightmap_textures[s->lightmaptexturenum]->Bind();
 
 					R_RenderDynamicLightmaps(s);
 					R_UploadLightmap(s->lightmaptexturenum);
 
-					vlActiveTexture(0);
+					plSetTextureUnit(0);
 				}
 				
 				if ((t->material->flags & MATERIAL_FLAG_MIRROR))
@@ -410,7 +410,7 @@ void World_Draw(void)
 	}
 
 	// Disable light texture
-	vlActiveTexture(VIDEO_TEXTURE_LIGHT);
-	vlDisable(VL_CAPABILITY_TEXTURE_2D);
-	vlActiveTexture(0);
+	plSetTextureUnit(VIDEO_TEXTURE_LIGHT);
+	plDisableGraphicsStates(VL_CAPABILITY_TEXTURE_2D);
+	plSetTextureUnit(0);
 }

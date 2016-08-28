@@ -517,18 +517,18 @@ int CL_ReadFromServer (void)
 
 	//visedicts
 	dev_stats.visedicts = cl_numvisedicts;
-	dev_peakstats.visedicts = Math_Max(cl_numvisedicts, dev_peakstats.visedicts);
+	dev_peakstats.visedicts = plMax(cl_numvisedicts, dev_peakstats.visedicts);
 
 	//temp entities
 	dev_stats.tempents = num_temp_entities;
-	dev_peakstats.tempents = Math_Max(num_temp_entities, dev_peakstats.tempents);
+	dev_peakstats.tempents = plMax(num_temp_entities, dev_peakstats.tempents);
 
 	//beams
 	for (i=0, b=cl_beams ; i< MAX_BEAMS ; i++, b++)
 		if (b->model && b->endtime >= cl.time)
 			num_beams++;
 	dev_stats.beams		= num_beams;
-	dev_peakstats.beams = Math_Max(num_beams, dev_peakstats.beams);
+	dev_peakstats.beams = plMax(num_beams, dev_peakstats.beams);
 
 	//dlights
 	for(i = 0,l = cl_dlights; i < MAX_DLIGHTS; i++,l++)
@@ -536,7 +536,7 @@ int CL_ReadFromServer (void)
 			num_dlights++;
 
 	dev_stats.dlights		= num_dlights;
-	dev_peakstats.dlights	= Math_Max(num_dlights, dev_peakstats.dlights);
+	dev_peakstats.dlights	= plMax(num_dlights, dev_peakstats.dlights);
 
 //johnfitz
 

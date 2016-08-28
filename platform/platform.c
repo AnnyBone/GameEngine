@@ -114,12 +114,14 @@ const PLchar *plGetResultString(PLresult result)
 {
 	switch (result)
 	{
+	case PL_RESULT_SUCCESS:			return "Success";
+
 	// FILE I/O
 	case PL_RESULT_FILEREAD:		return "Failed to read complete file!";
 	case PL_RESULT_FILESIZE:		return "Failed to get valid file size!";
 	case PL_RESULT_FILETYPE:		return "Invalid file type!";
 	case PL_RESULT_FILEVERSION:		return "Unsupported file version!";
-	case PL_RESULT_SUCCESS:			return "Success";
+	case PL_RESULT_FILEPATH:		return "Invalid file path!";
 
 	// IMAGE
 	case PL_RESULT_IMAGERESOLUTION:	return "Invalid image resolution!";
