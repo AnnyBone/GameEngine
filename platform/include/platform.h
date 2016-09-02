@@ -204,7 +204,9 @@ support.
 #	define PL_CALL		
 #	define PL_INLINE	inline
 
-#	define PL_FUNCTION	__func__	    // Returns the active function.
+#	define PL_FUNCTION	__FILE__	    // Returns the active function.
+// todo, we'll need to do some weird hacky shit on Linux for this, since __func__ isn't a string literal like it is
+// on MSVC
 #endif
 
 #ifdef __cplusplus

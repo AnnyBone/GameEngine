@@ -171,7 +171,7 @@ void plCreateWindow(plWindow_t *window)
 #else	// Linux
 	{
 		// Create our window.
-		window->wInstance = XCreateSimpleWindow(
+		window->instance = XCreateSimpleWindow(
 			dMainDisplay,
 			RootWindow(dMainDisplay,iScreen),
 			window->x,
@@ -181,14 +181,14 @@ void plCreateWindow(plWindow_t *window)
 			1,
 			BlackPixel(dMainDisplay,iScreen),
 			WhitePixel(dMainDisplay,iScreen));
-		if(!window->wInstance)
+		if(!window->instance)
 		{
 			plSetError("Failed to create window!\n");
 			return;
 		}
 
 		// Set the window title.
-		XStoreName(dMainDisplay,window->wInstance,window->title);
+		XStoreName(dMainDisplay,window->instance,window->title);
 	}
 #endif
 

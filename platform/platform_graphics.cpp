@@ -82,7 +82,7 @@ PLGraphicsState pl_graphics_state;
 #ifdef _DEBUG
 #	define plGraphicsLog(...) plWriteLog("pl_graphics", __VA_ARGS__)
 #else
-#	define plGraphicsLog(a)
+#	define plGraphicsLog(...)
 #endif
 
 /*	TODO:
