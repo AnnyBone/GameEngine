@@ -1,12 +1,9 @@
-
+# Copyright (C) 2011-2016 Mark E Sowden
+# Public Domain, do what you like. A pirate is you.
 
 include_directories(include)
-file(
-    GLOB
-    PLATFORM_SOURCE_FILES
-    "*.cpp"
-    "*.c"
-)
+
+file(GLOB PLATFORM_SOURCE_FILES "*.cpp" "*.c")
 
 add_library(platform STATIC ${PLATFORM_SOURCE_FILES})
 add_definitions("-D_DEBUG")

@@ -22,14 +22,14 @@ PLresult plLoadImage(const PLchar *path, PLImage *out)
 {
 	plFunctionStart();
 
-	if (path[0] == ' ')
+	if ((path[0] == ' ') || (path[0] == '/0'))
 		return PL_RESULT_FILEREAD;
 	
 	// Xenon uses a lot of long extensions, as do some other modern
 	// applications, so that's why we're using a size 16.
 	PLchar extension[16] = { 0 };
 	plGetFileExtension(extension, path);
-	if (extension[0] == ' ')
+	if ((extension[0] == '/0') || (extension[0] == ' '))
 	{
 		// This is the slowest loader type, now we need to take a stab
 		// at which format this file potentially is using some trickery
@@ -47,20 +47,28 @@ PLresult plLoadImage(const PLchar *path, PLImage *out)
 	}
 	else
 	{
-		if ((extension[0] == 'd') || (extension[0] == 'D'))
-		{
-			if (strncmp(extension, PLIMAGE_EXTENSION_DTX, 3)) {}
-		}
-		else if((extension[0] == 'f') || (extension[0] == 'F'))
-		{ 
-			if (strncmp(extension, PLIMAGE_EXTENSION_FTX, 3)) {}
-		}
-		else if((extension[0] == 'p') || (extension[0] == 'P'))
-		{ 
-			if (strncmp(extension, PLIMAGE_EXTENSION_PNG, 3)) {}
-		}
+		if (strncmp(extension, PLIMAGE_EXTENSION_DTX, 3)) {}
+		else if (strncmp(extension, PLIMAGE_EXTENSION_FTX, 3)) {}
+		else if (strncmp(extension, PLIMAGE_EXTENSION_PNG, 3)) {}
 	}
 
 	plFunctionEnd();
 }
 #endif
+
+PLresult plFreeImage(PLImage *image)
+{
+    plFunctionStart();
+
+    if(!image || !image->data)
+        // Nothing worth freeing.
+        return PL_RESULT_SUCCESS;
+
+    free(image->data);
+
+    image = nullptr;
+
+    return PL_RESULT_SUCCESS;
+
+    plFunctionEnd();
+}

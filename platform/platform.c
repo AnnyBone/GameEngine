@@ -18,12 +18,7 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
 #include "platform_system.h"
 
-/*
-	Generic functions for platform, such as	error handling.
-
-	TODO:
-		Introduce generic return types (e.g. PLATFORM_ERROR_FILENOTFOUND)
-*/
+/*	Generic functions for platform, such as	error handling.	*/
 
 /*	ERROR HANDLING	*/
 

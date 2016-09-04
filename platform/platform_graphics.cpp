@@ -381,9 +381,9 @@ PLbool plIsGraphicsStateEnabled(PLuint flags)
 	_PL_GRAPHICS_TRACK();
 
 	if (flags & pl_graphics_state.current_capabilities)
-		return true;
+		return PL_TRUE;
 
-	return false;
+	return PL_FALSE;
 }
 
 void plEnableGraphicsStates(PLuint flags)
@@ -401,7 +401,7 @@ void plEnableGraphicsStates(PLuint flags)
 			plGraphicsLog("Enabling %s\n", graphics_capabilities[i].ident);
 
 		if (flags & VL_CAPABILITY_TEXTURE_2D)
-			pl_graphics_state.tmu[pl_graphics_state.current_textureunit].active = true;
+			pl_graphics_state.tmu[pl_graphics_state.current_textureunit].active = PL_TRUE;
 #if defined (VL_MODE_GLIDE)
 		if (flags & VL_CAPABILITY_FOG)
 			// TODO: need to check this is supported...
@@ -438,7 +438,7 @@ void plDisableGraphicsStates(PLuint flags)
 			plGraphicsLog("Disabling %s\n", graphics_capabilities[i].ident);
 
 		if (flags & VL_CAPABILITY_TEXTURE_2D)
-			pl_graphics_state.tmu[pl_graphics_state.current_textureunit].active = false;
+			pl_graphics_state.tmu[pl_graphics_state.current_textureunit].active = PL_FALSE;
 #if defined (VL_MODE_GLIDE)
 		if (flags & VL_CAPABILITY_FOG)
 			grFogMode(GR_FOG_DISABLE);
