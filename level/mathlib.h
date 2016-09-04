@@ -5,6 +5,8 @@
 
 #include <math.h>
 
+#include "platform_math.h"
+
 #if _MSC_VER
 # pragma warning(disable : 4244)     // MIPS
 # pragma warning(disable : 4051)     // ALPHA

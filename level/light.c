@@ -1,7 +1,5 @@
 #include "light.h"
 
-#include "shared_editor.h"
-
 bool	lightvis,
 		g_lightdirty,
 		relight,

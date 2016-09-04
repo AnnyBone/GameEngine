@@ -215,7 +215,7 @@ int main(int argc,char **argv)
 
 	plClearLog(LEVEL_LOG);
 
-	Level_Log(MSG_NORMAL, "Katana Level (based on hmap2 by LordHavoc and Vic)\n");
+	Level_Log(MSG_NORMAL, "Xenon Level Utility (based on hmap2 by LordHavoc and Vic)\n");
 	Level_Log(MSG_NORMAL, "Compiled: "__DATE__" "__TIME__"\n");
 	Level_Log(MSG_NORMAL, "\n");
 
