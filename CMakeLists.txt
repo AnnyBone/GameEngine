@@ -19,8 +19,8 @@ add_definitions("-std=c++11" "-D_DEBUG")
 add_subdirectory(platform)
 
 if(XENON_COMPILE_TOOLS)
-    include_directories("${PROJECT_SOURCE_DIR}/level")
     add_subdirectory(level)
 
-    add_subdirectory(editor/FXProto)
+    # Editor
+    add_subdirectory(editor/ModelViewer)
 endif(XENON_COMPILE_TOOLS)
