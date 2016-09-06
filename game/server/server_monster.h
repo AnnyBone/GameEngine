@@ -75,7 +75,7 @@ Waypoint_t *AI_GetVisibleMoveTarget(ServerEntity_t *Monster);
 enum
 {
 	BOT_DEFAULT,
-#ifdef OPENKATANA
+#ifdef GAME_OPENKATANA
 	BOT_COMPANION
 #endif
 };

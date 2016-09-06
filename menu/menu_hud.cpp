@@ -98,7 +98,7 @@ void HUD_Draw(void)
 	if (cv_menuhudcrosshair.iValue >= 0)
 	{
 		// Ensure it's a valid skin.
-		unsigned int skin = cv_menuhudcrosshair.iValue;
+		unsigned int skin = (PLuint)cv_menuhudcrosshair.iValue;
 		if (skin > (hud_mcrosshairs->num_skins - 1))
 			skin = (hud_mcrosshairs->num_skins - 1);
 

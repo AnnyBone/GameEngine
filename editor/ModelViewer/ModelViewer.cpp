@@ -34,7 +34,7 @@ ModelViewerWindow::ModelViewerWindow(FXApp *a)
         MODELVIEWER_WINDOW_WIDTH, MODELVIEWER_WINDOW_HEIGHT)
 {
     FXHorizontalFrame *frame = new FXHorizontalFrame(this, LAYOUT_SIDE_TOP | LAYOUT_FILL_X);
-    new FXMenuCommand()
+   // new FXMenuCommand()
 
 
 }

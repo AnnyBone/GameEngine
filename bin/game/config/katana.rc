@@ -1,0 +1,4 @@
+exec config/default.config
+exec config/$user.config
+
+stuffcmds
