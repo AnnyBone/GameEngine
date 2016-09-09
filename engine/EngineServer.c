@@ -157,7 +157,7 @@ void SV_SendServerinfo(ServerClient_t *client)
 	unsigned int	i; //johnfitz
 
 	MSG_WriteByte(&client->message,svc_print);
-	sprintf(message, "%c\n%s Server\n   Katana (%i)\n", 2, Game->Name, ENGINE_VERSION_BUILD); //johnfitz -- include fitzquake version
+	sprintf(message, "%c\n%s Server\n   Katana (%lu)\n", 2, Game->Name, ENGINE_VERSION_BUILD); //johnfitz -- include fitzquake version
 	MSG_WriteString(&client->message, message);
 
 	MSG_WriteByte(&client->message,svc_serverinfo);

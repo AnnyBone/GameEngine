@@ -183,7 +183,7 @@ void Hunk_Print_f (void)
 	Hunk_Print(false);
 }
 
-void *Hunk_AllocName (int size, char *name)
+void *Hunk_AllocName (int size, const char *name)
 {
 	hunk_t	*h;
 

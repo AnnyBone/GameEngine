@@ -18,6 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "server_weapon.h"
+#include "server_effects.h"
 
 ServerEntityFrame_t efPulseRifleDeploy[] =
 {
@@ -72,7 +73,7 @@ void PulseRifle_PrimaryAttack(ServerEntity_t *ent)
 	Weapon_Animate(ent,efPulseRifleAttack);
 #endif
 
-	ent->v.effects |= EF_MUZZLEFLASH;
+	ServerEffect_MuzzleFlash(ent->v.origin, ent->v.angles);
 
 	ent->v.iPrimaryAmmo	= ent->local.glock_ammo--;
 	ent->local.glock_ammo2--;
@@ -86,7 +87,7 @@ void PulseRifle_PrimaryAttack(ServerEntity_t *ent)
 // [17/7/2012] Revised ~hogsy
 void CorditeExplode(ServerEntity_t *ent)
 {
-	vec3_t vel;
+	PLVector3f vel;
 
 	// [25/6/2012] Simplified ~hogsy
 	Math_VectorCopy(ent->v.velocity,vel);
@@ -118,7 +119,7 @@ void throw_cordite(ServerEntity_t *ent)
 	greekfire->v.cClassname	= "cordite";
 	greekfire->v.movetype	= MOVETYPE_BOUNCE;
 
-	greekfire->Physics.iSolid	= SOLID_BBOX;
+	greekfire->Physics.solid	= SOLID_BBOX;
 
 	greekfire->local.eOwner = ent;
 

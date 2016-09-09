@@ -139,7 +139,7 @@ void CameraManager::DeleteCamera(Camera *camera)
 
 void CameraManager::SetCurrentCamera(Camera *_camera)
 {
-	assert(camera);
+	assert(_camera);
 
 	if (!_camera)
 	{
@@ -730,11 +730,11 @@ void Camera::SetFOV(float fov)
 		width	= _viewport->GetWidth();
 		height	= _viewport->GetHeight();
 	}
-	
+
 	// Taken from CalcFovy.
-	float x = width * std::tanf(_fovx / 360.0f * PL_PI);
-	float a = std::atanf(height / x);
-	a *= 360.0f / PL_PI;
+	float x = width * std::tan(_fovx / 360.0f * PL_PIf);
+	float a = std::atan(height / x);
+	a *= 360.0f / PL_PIf;
 	_fovy = a;
 }
 
@@ -752,7 +752,7 @@ void Camera::SimulateFrustum()
 	{
 		_frustum[i].type = PLANE_ANYZ;
 		_frustum[i].dist = Math_DotProduct(_position, _frustum[i].normal); // FIXME: shouldn't this always be zero?
-		_frustum[i].signbits = SignbitsForPlane(&_frustum[i]);
+		_frustum[i].signbits = (uint8_t)SignbitsForPlane(&_frustum[i]);
 	}
 }
 

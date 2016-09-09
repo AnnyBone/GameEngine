@@ -17,6 +17,7 @@
 */
 
 #include "server_weapon.h"
+#include "server_effects.h"
 
 // [20/5/2013] TODO: Move into game_resources.h ~hogsy
 #define GLOCK_SOUND_NOAMMO	"weapons/glock/glockclick.wav"
@@ -74,8 +75,7 @@ void Glock_PrimaryAttack(ServerEntity_t *ent)
 		//Weapon_Animate(ent,FALSE,16,27,0.03f,10,19,0,FALSE);
 #endif
 
-	// [25/8/2012] Simplified ~hogsy
-	ent->v.effects |= EF_MUZZLEFLASH;
+	ServerEffect_MuzzleFlash(ent->v.origin, ent->v.angles);
 
 	ent->local.glock_ammo--;
 	ent->v.iPrimaryAmmo	= ent->local.glock_ammo;

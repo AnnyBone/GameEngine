@@ -646,8 +646,6 @@ vlDraw_t *vlCreateDraw(PLPrimitive primitive, uint32_t num_tris, uint32_t num_ve
 
 void vlDeleteDraw(vlDraw_t *draw)
 {
-	_VL_UTIL_TRACK(vlDeleteDraw);
-
 	if (!draw)
 		return;
 
@@ -666,8 +664,6 @@ PLVertex *vl_draw_vertex = NULL;
 
 void vlBeginDraw(vlDraw_t *draw)
 {
-	_VL_UTIL_TRACK(vlBeginDraw);
-
 	if (!draw)
 		Sys_Error("Passed invalid draw object to vlBeginDraw!\n");
 
@@ -677,8 +673,6 @@ void vlBeginDraw(vlDraw_t *draw)
 
 void vlDrawVertex3f(float x, float y, float z)
 {
-	_VL_UTIL_TRACK(vlDrawVertex3f);
-
 	plVectorSet3f(vl_draw_vertex->position, x, y, z);
 	plColourSetf(vl_draw_vertex->colour, 1, 1, 1, 1);
 
@@ -687,8 +681,6 @@ void vlDrawVertex3f(float x, float y, float z)
 
 void vlDrawVertex3fv(plVector3f_t position)
 {
-	_VL_UTIL_TRACK(vlDrawVertex3fv);
-
 	plVectorCopy(position, vl_draw_vertex->position);
 	plColourSetf(vl_draw_vertex->colour, 1, 1, 1, 1);
 
@@ -697,22 +689,16 @@ void vlDrawVertex3fv(plVector3f_t position)
 
 void vlDrawColour4f(float r, float g, float b, float a)
 {
-	_VL_UTIL_TRACK(vlDrawColour4f);
-
 	plColourSetf(vl_draw_vertex->colour, r, g, b, a);
 }
 
 void vlDrawColour4fv(PLColour rgba)
 {
-	_VL_UTIL_TRACK(vlDrawColour4fv);
-
 	plVectorCopy(rgba, vl_draw_vertex->colour);
 }
 
 void vlDrawNormal3fv(plVector3f_t position)
 {
-	_VL_UTIL_TRACK(vlDrawNormal3fv);
-
 	plVectorCopy(position, vl_draw_vertex->normal);
 }
 
@@ -791,8 +777,6 @@ _vlPrimitiveTranslate_t vl_primitives[] =
 
 unsigned int _vlTranslatePrimitiveMode(PLPrimitive primitive)
 {
-	_VL_UTIL_TRACK(_vlTranslatePrimitiveMode);
-
 	for (int i = 0; i < plArrayElements(vl_primitives); i++)
 		if (primitive == vl_primitives[i].primitive)
 			return vl_primitives[i].gl;
@@ -806,8 +790,6 @@ unsigned int _vlTranslatePrimitiveMode(PLPrimitive primitive)
 */
 void _vlDrawArrays(PLPrimitive mode, unsigned int first, unsigned int count)
 {
-	_VL_UTIL_TRACK(_vlDrawArrays);
-
 	if (count == 0) return;
 	// Ensure that first isn't going to kill us.
 	else if (first >= count) first = 0;
@@ -819,8 +801,6 @@ void _vlDrawArrays(PLPrimitive mode, unsigned int first, unsigned int count)
 
 void _vlDrawElements(PLPrimitive mode, unsigned int count, unsigned int type, const void *indices)
 {
-	_VL_UTIL_TRACK(_vlDrawElements);
-
 	if ((count == 0) || !indices) return;
 #ifdef VL_MODE_OPENGL
 	glDrawElements(_vlTranslatePrimitiveMode(mode), count, type, indices);
@@ -829,8 +809,6 @@ void _vlDrawElements(PLPrimitive mode, unsigned int count, unsigned int type, co
 
 void vlDraw(vlDraw_t *draw)
 {
-	_VL_UTIL_TRACK(vlDraw);
-
 	if(draw->numverts == 0)
 		return;
 
@@ -906,8 +884,6 @@ void vlDraw(vlDraw_t *draw)
 
 void vlDrawVertexNormals(vlDraw_t *draw)
 {
-	_VL_UTIL_TRACK(vlDrawVertexNormals);
-
 	if (draw->primitive == VL_PRIMITIVE_LINES)
 		return;
 

@@ -13,7 +13,7 @@ void WEAPON_TRIDENT_Precache (void)
 
 void TridentHit(ServerEntity_t *ent)
 {
-	vec3_t	forward,temp,sndvec,vel;
+	PLVector3f	forward,temp,sndvec,vel;
 	trace_t	trace;
 
 	plAngleVectors(ent->v.v_angle, forward, temp, temp);

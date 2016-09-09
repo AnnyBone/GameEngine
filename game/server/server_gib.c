@@ -29,7 +29,7 @@ void Gib_Bounce(ServerEntity_t *entity, ServerEntity_t *other)
 		return;
 
 	char sound[128];
-	switch (entity->Physics.property)
+	switch (entity->Physics.surface)
 	{
 	case MATERIAL_TYPE_GLASS:
 		PHYSICS_SOUND_GLASS(sound);
@@ -74,7 +74,7 @@ void Gib_Spawn(MathVector3f_t mvOrigin, const char *cModel)
 		Entity_SetSizeVector(gib, pl_origin3f, pl_origin3f);
 
 		// Get the physics property for this entity.
-		gib->Physics.property = 
+		gib->Physics.surface =
 			seGetSkinPhysicsProperty(gib, seGetCurrentSkin(gib));
 	}
 }

@@ -9,7 +9,7 @@ void GreekFire_Deploy(ServerEntity_t *ent)
 
 void GreekfireTouch(ServerEntity_t *ent, ServerEntity_t *other)
 {
-	vec3_t vel;
+	PLVector3f vel;
 
 	if (other == ent->local.eOwner)
 		return;
@@ -35,7 +35,7 @@ void GreekFire_Throw(ServerEntity_t *ent)
 	greekfire->v.movetype	= MOVETYPE_BOUNCE;
 	greekfire->v.effects	= EF_DIMLIGHT;
 
-	greekfire->Physics.iSolid = SOLID_BBOX;
+	greekfire->Physics.solid = SOLID_BBOX;
 
 	greekfire->local.eOwner = ent;
 

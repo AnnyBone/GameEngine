@@ -64,7 +64,7 @@ typedef struct
 {
 	int	magfilter;
 	int minfilter;
-	char *name;
+	const char *name;
 } glmode_t;
 
 glmode_t modes[] =
@@ -791,7 +791,7 @@ void TexMgr_LoadLightmap(gltexture_t *glt,byte *data)
 	TexMgr_SetFilterModes(glt);
 }
 
-gltexture_t *TexMgr_LoadImage(model_t *owner, char *name, int width, int height, enum XTextureFormat format, byte *data, char *source_file, unsigned int source_offset, unsigned int flags)
+gltexture_t *TexMgr_LoadImage(model_t *owner, char *name, PLuint width, PLuint height, enum XTextureFormat format, byte *data, char *source_file, unsigned int source_offset, unsigned int flags)
 {
 	unsigned    short   crc		= 0;
 	gltexture_t			*glt	= NULL;

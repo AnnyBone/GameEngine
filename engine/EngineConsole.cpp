@@ -400,7 +400,7 @@ char *Con_Quakebar (unsigned int len)
 	const unsigned int con_linewidth = (vid.conwidth / CHAR_WIDTH) - 3;
 
 	static char bar[42];
-	len = std::min(len, sizeof(bar) - 2);
+	len = std::min(len, (unsigned int)sizeof(bar) - 2);
 	len = std::min(len, con_linewidth);
 	
 	bar[0] = '\35';

@@ -67,7 +67,7 @@ void Axe_Deploy(ServerEntity_t *ent)
 
 void AxeHit(ServerEntity_t *ent)
 {
-	vec3_t	forward,temp,sndvec,vel;
+	PLVector3f forward,temp,sndvec,vel;
 	trace_t	trace;
 
 	plAngleVectors(ent->v.v_angle, forward, temp, temp);

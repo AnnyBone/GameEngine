@@ -25,7 +25,7 @@ void Zeus_Deploy(ServerEntity_t *ent)
 
 void Zeus_Hit(ServerEntity_t *ent)
 {
-	vec3_t	vSource, vTarg, vel, mvDirection;
+	PLVector3f	vSource, vTarg, vel, mvDirection;
 	trace_t	trace;
 
 	Math_MVToVector(Weapon_Aim(ent), mvDirection);

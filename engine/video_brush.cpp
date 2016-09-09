@@ -98,11 +98,17 @@ void DrawGLPoly(glpoly_t *p)
 	{
 		if(r_drawflat_cheatsafe)
 		{
+#if 0
 			srand((unsigned int)p);
 
-			voObject[i].colour[0]	= rand()%256/255.0;
-			voObject[i].colour[1]	= rand()%256/255.0;
-			voObject[i].colour[2]	= rand()%256/255.0;
+			voObject[i].colour[0]	= (PLfloat)(rand()%256/255.0);
+			voObject[i].colour[1]	= (PLfloat)(rand()%256/255.0);
+			voObject[i].colour[2]	= (PLfloat)(rand()%256/255.0);
+#else
+            voObject[i].colour[PL_RED] 		= 1.0f;
+			voObject[i].colour[PL_GREEN] 	= 0.5f;
+			voObject[i].colour[PL_BLUE]	    = 0.5f;
+#endif
 		}
 
 		if(!r_showtris.value)
@@ -111,7 +117,7 @@ void DrawGLPoly(glpoly_t *p)
 			voObject[i].ST[0][1] = v[4];
 		}
 
-		Math_VectorCopy(v,voObject[i].position);
+		plVectorCopy(v,voObject[i].position);
 	}
 
 	Video_DrawObject(voObject, VL_PRIMITIVE_TRIANGLE_FAN, p->numverts, NULL, 0);

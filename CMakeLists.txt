@@ -19,6 +19,7 @@ add_definitions("-std=c++11" "-D_DEBUG")
 add_subdirectory(platform)
 add_subdirectory(menu)
 add_subdirectory(game)
+add_subdirectory(engine)
 
 if(XENON_COMPILE_TOOLS)
     add_subdirectory(level)

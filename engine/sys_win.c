@@ -25,7 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 /*	Old platform specific loop shit. Needs to be rewritten.	*/
 
-#include <SDL.h>
+#include <SDL2/SDL.h>
 
 #ifndef _WIN32
 #	include <sys/time.h>

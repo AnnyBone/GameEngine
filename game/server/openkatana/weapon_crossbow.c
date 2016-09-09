@@ -49,7 +49,7 @@ void Crossbow_Projectile(ServerEntity_t *ent)
 
 		eArrow->v.movetype	= MOVETYPE_FLY;
 
-		eArrow->Physics.iSolid	= SOLID_BBOX;
+		eArrow->Physics.solid	= SOLID_BBOX;
 
 		Math_MVToVector(Weapon_Aim(ent), mvDirection);
 		Math_VectorScale(mvDirection, 2000.0f, eArrow->v.velocity);

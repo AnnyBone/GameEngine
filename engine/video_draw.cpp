@@ -363,6 +363,7 @@ int Scrap_AllocBlock (int w, int h, int *x, int *y)
 	return 0; //johnfitz -- shut up compiler
 }
 
+#if 0
 void Scrap_Upload (void)
 {
 	char name[8];
@@ -371,12 +372,22 @@ void Scrap_Upload (void)
 	for (i=0; i<MAX_SCRAPS; i++)
 	{
 		sprintf (name, "scrap%i", i);
-		scrap_textures[i] = TexMgr_LoadImage (NULL, name, BLOCK_WIDTH, BLOCK_HEIGHT, SRC_INDEXED, scrap_texels[i],
-			"", (unsigned int)scrap_texels[i], TEXPREF_ALPHA | TEXPREF_OVERWRITE | TEXPREF_NOPICMIP);
+		scrap_textures[i] = TexMgr_LoadImage
+				(
+						NULL,
+						name,
+						BLOCK_WIDTH, BLOCK_HEIGHT,
+						SRC_INDEXED,
+						scrap_texels[i],
+						"",
+						(unsigned int)scrap_texels[i],
+						TEXPREF_ALPHA | TEXPREF_OVERWRITE | TEXPREF_NOPICMIP
+				);
 	}
 
 	scrap_dirty = false;
 }
+#endif
 
 //==================================================================
 
@@ -476,6 +487,7 @@ qpic_t	*Draw_CachePic(char *path)
 	return &pic->pic;
 }
 
+#if 0
 qpic_t *Draw_MakePic (char *name, int width, int height, byte *data)
 {
 	int			flags = TEXPREF_NEAREST|TEXPREF_ALPHA|TEXPREF_PERSIST|TEXPREF_NOPICMIP|TEXPREF_PAD;
@@ -487,7 +499,17 @@ qpic_t *Draw_MakePic (char *name, int width, int height, byte *data)
 	pic->height = height;
 
 	gl = (glpic_t *)pic->data;
-	gl->gltexture = TexMgr_LoadImage (NULL, name, width, height, SRC_INDEXED, data, "", (unsigned int)data, flags);
+	gl->gltexture = TexMgr_LoadImage
+            (
+                    NULL,
+                    name,
+                    width, height,
+                    SRC_INDEXED,
+                    data,
+                    "",
+                    (unsigned int)data,
+                    flags
+            );
 	gl->sl = 0;
 	gl->sh = (float)width/(float)TexMgr_PadConditional(width);
 	gl->tl = 0;
@@ -495,6 +517,7 @@ qpic_t *Draw_MakePic (char *name, int width, int height, byte *data)
 
 	return pic;
 }
+#endif
 
 //==============================================================================
 //
@@ -513,7 +536,7 @@ void Draw_NewGame (void)
 	memset(&scrap_allocated,0,sizeof(scrap_allocated));
 	memset(&scrap_texels,255,sizeof(scrap_texels));
 
-	Scrap_Upload (); //creates 2 empty gltextures
+//	Scrap_Upload (); //creates 2 empty gltextures
 
 	// empty lmp cache
 	for (pic = menu_cachepics, i = 0; i < menu_numcachepics; pic++, i++)

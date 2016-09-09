@@ -165,7 +165,7 @@ typedef struct
 	void(*Cvar_SetValue)(const char *var_name, float value);
 	void(*LightStyle)(int style, char *val);
 
-	void(*Cmd_AddCommand)(char *cmd_name, xcommand_t function);
+	void(*Cmd_AddCommand)(const char *cmd_name, xcommand_t function);
 	char*(*Cmd_Argv)(int arg);
 	int(*Cmd_Argc)(void);
 

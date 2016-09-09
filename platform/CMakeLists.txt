@@ -7,4 +7,5 @@ file(GLOB PLATFORM_SOURCE_FILES "*.cpp" "*.c")
 
 add_library(platform STATIC ${PLATFORM_SOURCE_FILES})
 
+target_compile_options(platform PUBLIC -fPIC)
 target_include_directories(platform PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_SYSTEM_INCLUDE_PATH})
