@@ -20,15 +20,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "engine_base.h"
 
 #include "video.h"
-#include "client/video_camera.h"
 #include "video_shadow.h"
 
 #define	BLOCK_WIDTH		256
 #define	BLOCK_HEIGHT	BLOCK_WIDTH
 
 ConsoleVariable_t cvConsoleAlpha = { "screen_consolealpha", "0.7", true, false, "Sets the alpha value for the console background." }; //johnfitz
-
-qpic_t	*draw_backtile;
 
 typedef struct
 {
@@ -63,7 +60,7 @@ void draw::SetDefaultState()
 
 	// Overbrights.
 	plSetTextureUnit(VIDEO_TEXTURE_LIGHT);
-	vlSetTextureEnvironmentMode(VIDEO_TEXTUREMODE_COMBINE);
+    plSetTextureEnvironmentMode(PL_TEXTUREMODE_COMBINE);
 #if defined (VL_MODE_OPENGL)
 	glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
 	glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_PREVIOUS);
@@ -212,7 +209,7 @@ void draw::BoundingBoxes()
 
 		draw::CoordinateAxes(ed->v.origin);
 
-		plVector3f_t mins, maxs;
+		plVector3f_t mins = { 0 }, maxs = { 0 };
 		Math_VectorAdd(ed->v.mins, ed->v.origin, mins);
 		Math_VectorAdd(ed->v.maxs, ed->v.origin, maxs);
 
@@ -301,7 +298,7 @@ typedef struct cachepic_s
 {
 	char		name[MAX_QPATH];
 	qpic_t		pic;
-	uint8_t		padding[32];	// for appended glpic
+	//uint8_t		padding[32];	// for appended glpic
 } cachepic_t;
 
 #define	MAX_CACHED_PICS		128
@@ -319,6 +316,7 @@ uint8_t		scrap_texels[MAX_SCRAPS][BLOCK_WIDTH*BLOCK_HEIGHT]; //johnfitz -- remov
 bool		scrap_dirty;
 gltexture_t	*scrap_textures[MAX_SCRAPS]; //johnfitz
 
+#if 0
 /*	Returns an index into scrap_texnums[] and the position inside it
 */
 int Scrap_AllocBlock (int w, int h, int *x, int *y)
@@ -363,7 +361,6 @@ int Scrap_AllocBlock (int w, int h, int *x, int *y)
 	return 0; //johnfitz -- shut up compiler
 }
 
-#if 0
 void Scrap_Upload (void)
 {
 	char name[8];
@@ -430,94 +427,12 @@ void draw::MaterialSurface(Material_t *material, int x, int y, unsigned int w, u
 	plEnableGraphicsStates(VL_CAPABILITY_DEPTH_TEST);
 }
 
-void Draw_MaterialSurface(Material_t *mMaterial, int iSkin,	int x, int y, int w, int h,	float fAlpha)
+void Draw_MaterialSurface(Material_t *mMaterial, PLuint skin, int x, int y, PLuint w, PLuint h, float fAlpha)
 {
-	Material_SetSkin(mMaterial, iSkin);
+	Material_SetSkin(mMaterial, skin);
 
 	draw::MaterialSurface(mMaterial, x, y, w, h, fAlpha);
 }
-
-//==================================================================
-
-void SwapPic (qpic_t *pic)
-{
-	pic->width	= LittleLong(pic->width);
-	pic->height = LittleLong(pic->height);
-}
-
-qpic_t	*Draw_CachePic(char *path)
-{
-	cachepic_t	*pic;
-	int			i;
-	glpic_t		*gl;
-
-	for (pic=menu_cachepics, i=0 ; i<menu_numcachepics ; pic++, i++)
-		if (!strcmp (path, pic->name))
-			return &pic->pic;
-
-	if (menu_numcachepics == MAX_CACHED_PICS)
-		Sys_Error ("menu_numcachepics == MAX_CACHED_PICS");
-
-	menu_numcachepics++;
-	strncpy(pic->name, path, sizeof(pic->name));
-
-	// load the pic from disk
-	qpic_t *dat = (qpic_t*)COM_LoadHeapFile(path);
-	if(!dat)
-	{
-		Con_Warning("Failed to load cached texture (%s)!\n", path);
-		return NULL;
-	}
-
-	SwapPic(dat);
-
-	pic->pic.width = dat->width;
-	pic->pic.height = dat->height;
-
-	gl = (glpic_t *)pic->pic.data;
-	gl->gltexture = TexMgr_LoadImage (NULL, path, dat->width, dat->height, SRC_INDEXED, dat->data, path,
-									  sizeof(int)*2, TEXPREF_ALPHA | TEXPREF_PAD | TEXPREF_NOPICMIP); //johnfitz -- TexMgr
-	gl->sl = 0;
-	gl->sh = (float)dat->width/(float)TexMgr_PadConditional(dat->width); //johnfitz
-	gl->tl = 0;
-	gl->th = (float)dat->height/(float)TexMgr_PadConditional(dat->height); //johnfitz
-
-	free(dat);
-
-	return &pic->pic;
-}
-
-#if 0
-qpic_t *Draw_MakePic (char *name, int width, int height, byte *data)
-{
-	int			flags = TEXPREF_NEAREST|TEXPREF_ALPHA|TEXPREF_PERSIST|TEXPREF_NOPICMIP|TEXPREF_PAD;
-	qpic_t		*pic;
-	glpic_t		*gl;
-
-	pic = (qpic_t*)Hunk_Alloc (sizeof(qpic_t) - 4 + sizeof (glpic_t));
-	pic->width	= width;
-	pic->height = height;
-
-	gl = (glpic_t *)pic->data;
-	gl->gltexture = TexMgr_LoadImage
-            (
-                    NULL,
-                    name,
-                    width, height,
-                    SRC_INDEXED,
-                    data,
-                    "",
-                    (unsigned int)data,
-                    flags
-            );
-	gl->sl = 0;
-	gl->sh = (float)width/(float)TexMgr_PadConditional(width);
-	gl->tl = 0;
-	gl->th = (float)height/(float)TexMgr_PadConditional(height);
-
-	return pic;
-}
-#endif
 
 //==============================================================================
 //
@@ -672,7 +587,7 @@ void draw::Line(plVector3f_t start, plVector3f_t end)
 
 void draw::CoordinateAxes(plVector3f_t position)
 {
-	PLVector3f start, end;
+	PLVector3f start = { 0 }, end = { 0 };
 	plVectorCopy(position, start);
 	plVectorCopy(position, end);
 	start[0] += 10;
@@ -787,7 +702,7 @@ void draw::Rectangle(PLint x, PLint y, PLuint w, PLuint h, PLColour colour)
 }
 
 // C wrapper for draw::rectangle
-void Draw_Rectangle(int x, int y, int w, int h, PLColour colour)
+void Draw_Rectangle(int x, int y, PLuint w, PLuint h, PLColour colour)
 {
 	draw::Rectangle(x, y, w, h, colour);
 }
@@ -879,7 +794,7 @@ void Draw_BeginDisc(void)
 	glPopMatrix();
 	glMatrixMode(GL_MODELVIEW);
 	glPopMatrix();
-	plViewport(iViewport[0], iViewport[1], iViewport[2], iViewport[3]);
+	plViewport(iViewport[0], iViewport[1], (PLuint)iViewport[2], (PLuint)iViewport[3]);
 	//johnfitz
 #endif
 }
@@ -912,7 +827,7 @@ void GL_SetCanvas (VideoCanvasType_t newcanvas)
 			viewport->GetHeight());
 		break;
 	case CANVAS_CONSOLE:
-		lines = vid.conheight - (scr_con_current * vid.conheight / viewport->GetHeight());
+		lines = vid.conheight - ((PLint)scr_con_current * vid.conheight / viewport->GetHeight());
 		glOrtho(0,vid.conwidth,vid.conheight + lines,lines,-99999,99999);
 		plViewport(
 			viewport->GetPosition()[0], 
@@ -921,8 +836,8 @@ void GL_SetCanvas (VideoCanvasType_t newcanvas)
 			viewport->GetHeight());
 		break;
 	case CANVAS_MENU:
-		s = std::fminf((float)viewport->GetWidth() / 640.0, (float)viewport->GetHeight() / 480.0);
-		s = plClamp(1.0, scr_menuscale.value, s);
+		//s = std::fminf((float)viewport->GetWidth() / 640.0f, (float)viewport->GetHeight() / 480.0f);
+		//s = plClamp(1.0f, scr_menuscale.value, s);
 		glOrtho (0, 640, 480, 0, -99999, 99999);
 		plViewport(
 			viewport->GetPosition()[0], 
@@ -931,24 +846,24 @@ void GL_SetCanvas (VideoCanvasType_t newcanvas)
 			viewport->GetHeight());
 		break;
 	case CANVAS_SBAR:
-		s = plClamp(1.0, scr_sbarscale.value, (float)viewport->GetWidth() / 320.0);
+		s = plClamp(1.0f, scr_sbarscale.value, (PLfloat)viewport->GetWidth() / 320.0f);
 		glOrtho (0, 320, 48, 0, -99999, 99999);
 		plViewport(
-			viewport->GetPosition()[0] + (viewport->GetWidth() - 320 * s) / 2, 
+			viewport->GetPosition()[0] + (viewport->GetWidth() - 320 * (PLint)s) / 2,
 			viewport->GetPosition()[1], 
-			320 * s, 
-			48 * s);
+			320 * (PLuint)s,
+			48 * (PLuint)s);
 		break;
 	case CANVAS_WARPIMAGE:
 		glOrtho (0, 128, 0, 128, -99999, 99999);
 		plViewport(
 			viewport->GetPosition()[0], 
 			viewport->GetPosition()[1] + viewport->GetHeight() - gl_warpimagesize, 
-			gl_warpimagesize, 
-			gl_warpimagesize);
+            (PLuint)gl_warpimagesize,
+            (PLuint)gl_warpimagesize);
 		break;
 	case CANVAS_CROSSHAIR: //0,0 is center of viewport
-		s = plClamp(1.0, scr_crosshairscale.value, 10.0);
+		s = plClamp(1.0f, scr_crosshairscale.value, 10.0f);
 		glOrtho(viewport->GetWidth() / -2 / s, viewport->GetWidth() / 2 / s, viewport->GetHeight() / 2 / s, viewport->GetHeight() / -2 / s, -99999, 99999);
 		plViewport(
 			viewport->GetPosition()[0], 
@@ -962,26 +877,26 @@ void GL_SetCanvas (VideoCanvasType_t newcanvas)
 		plViewport(
 			viewport->GetPosition()[0],
 			viewport->GetPosition()[1], 
-			320 * s, 
-			200 * s);
+			320 * (PLuint)s,
+			200 * (PLuint)s);
 		break;
 	case CANVAS_BOTTOMRIGHT: //used by fps/clock
 		s = (float)viewport->GetWidth() / vid.conwidth; //use console scale
 		glOrtho (0, 320, 200, 0, -99999, 99999);
 		plViewport(
-			viewport->GetPosition()[0] + viewport->GetWidth() - 320 * s, 
+			viewport->GetPosition()[0] + viewport->GetWidth() - 320 * (PLint)s,
 			viewport->GetPosition()[1], 
-			320 * s, 
-			200 * s);
+			320 * (PLuint)s,
+			200 * (PLuint)s);
 		break;
 	case CANVAS_TOPRIGHT: //used by disc
 		s = 1;
 		glOrtho (0, 320, 200, 0, -99999, 99999);
 		plViewport(
-			viewport->GetPosition()[0] + viewport->GetWidth() - 320 * s, 
-			viewport->GetPosition()[1] + viewport->GetHeight() - 200 * s, 
-			320 * s, 
-			200 * s);
+			viewport->GetPosition()[0] + viewport->GetWidth() - 320 * (PLint)s,
+			viewport->GetPosition()[1] + viewport->GetHeight() - 200 * (PLint)s,
+			320 * (PLuint)s,
+			200 * (PLuint)s);
 		break;
 	default:
 		Sys_Error ("GL_SetCanvas: bad canvas type");
@@ -999,16 +914,14 @@ void draw::ResetCanvas()
 	GL_SetCanvas(CANVAS_DEFAULT);
 }
 
-/*
-	Entities
-*/
+/*	Entities	*/
 
 PL_MODULE_EXPORT void draw::EntityBoundingBox(ClientEntity_t *entity)
 {
 	if (!entity->model || ((entity == &cl_entities[cl.viewentity]) && !chase_active.bValue) || (entity == &cl.viewent))
 		return;
 
-	plVector3f_t mins, maxs;
+	plVector3f_t mins = { 0 }, maxs = { 0 };
 	switch (entity->model->type)
 	{
 	case MODEL_TYPE_LEVEL:
@@ -1056,7 +969,7 @@ PL_MODULE_EXPORT void draw::Entity(ClientEntity_t *entity)
 		Camera *camera = g_cameramanager->GetCurrentCamera();
 		if (camera)
 		{
-			plVector3f_t vdist;
+			plVector3f_t vdist = { 0 };
 			plVectorSubtract3fv(&camera->GetPosition()[0], entity->origin, vdist);
 			float distance = plLengthf(vdist);
 			if (distance > cv_video_entity_distance.value)

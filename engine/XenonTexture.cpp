@@ -92,7 +92,8 @@ void XTextureManager::PrintMemoryUsage()
 			texels += (texture->GetWidth() * texture->GetHeight());
 	}
 
-	PLuint mb = texels * (Video.bpp / 8) / 0x100000;
+    // todo, why the hell is bpp a floating-point ????
+	PLuint mb = texels * ((PLuint)Video.bpp / 8) / 0x100000;
 	Con_Printf("%i textures %i pixels %1.1f megabytes\n", _textures.size(), texels, mb);
 }
 
@@ -264,7 +265,6 @@ void XTexture::SetImage(PLImage *image)
 	if (_flags & XTEXTURE_FLAG_MIPMAP)
 	{
 		plEnableGraphicsStates(VL_CAPABILITY_GENERATEMIPMAP);
-
 		levels = 4;
 	}
 	
@@ -282,22 +282,22 @@ void XTexture::SetImage(PLImage *image)
 	upload.initial		= true;
 	upload.levels		= levels;
 
-	vlUploadTexture(_id, &upload);
+	plUploadTexture(_id, &upload);
 	
 	if (_flags & XTEXTURE_FLAG_MIPMAP)
 		plDisableGraphicsStates(VL_CAPABILITY_GENERATEMIPMAP);
 
-	VLTextureFilter filtermode = VL_TEXTUREFILTER_LINEAR;
+	PLTextureFilter filtermode = PL_TEXTUREFILTER_LINEAR;
 	if (_flags & XTEXTURE_FLAG_MIPMAP)
 	{
-		if (_flags & XTEXTURE_FLAG_NEAREST)	filtermode = VL_TEXTUREFILTER_MIPMAP_NEAREST;
-		else								filtermode = VL_TEXTUREFILTER_MIPMAP_LINEAR;
+		if (_flags & XTEXTURE_FLAG_NEAREST)	filtermode = PL_TEXTUREFILTER_MIPMAP_NEAREST;
+		else								filtermode = PL_TEXTUREFILTER_MIPMAP_LINEAR;
 	}
 	else if(_flags & XTEXTURE_FLAG_NEAREST)
-		filtermode = VL_TEXTUREFILTER_NEAREST;
+		filtermode = PL_TEXTUREFILTER_NEAREST;
 
 	plSetTextureFilter(_id, filtermode);
-	plSetTextureAnisotropy(_id, cv_texture_anisotropy.iValue);
+	plSetTextureAnisotropy(_id, (PLuint)cv_texture_anisotropy.iValue);
 }
 
 void XTexture::Bind()

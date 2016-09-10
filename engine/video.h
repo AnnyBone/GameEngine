@@ -95,7 +95,7 @@ typedef struct
 	unsigned int current_texture;
 	unsigned int capabilities;
 
-	VLTextureEnvironmentMode current_envmode;
+	PLTextureEnvironmentMode current_envmode;
 } VideoTextureMU_t;
 
 typedef struct

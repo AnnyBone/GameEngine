@@ -660,15 +660,15 @@ void R_UploadLightmap(int lmap)
 #else
 	PLTextureInfo upload;
 	memset(&upload, 0, sizeof(PLTextureInfo));
-	upload.data = lightmaps + (lmap* BLOCK_HEIGHT + theRect->t)*BLOCK_WIDTH*LIGHTMAP_BYTES;
-	upload.format = VL_TEXTUREFORMAT_RGB8;
-	upload.pixel_format = VL_COLOURFORMAT_BGRA;
-	upload.width = BLOCK_WIDTH;
-	upload.height = theRect->h;
-	upload.y = theRect->t;
-	upload.storage_type = PL_UNSIGNED_INT_8_8_8_8_REV;
+	upload.data 			= lightmaps + (lmap* BLOCK_HEIGHT + theRect->t)*BLOCK_WIDTH*LIGHTMAP_BYTES;
+	upload.format 			= VL_TEXTUREFORMAT_RGB8;
+	upload.pixel_format 	= VL_COLOURFORMAT_BGRA;
+	upload.width 			= BLOCK_WIDTH;
+	upload.height 			= theRect->h;
+	upload.y 				= theRect->t;
+	upload.storage_type 	= PL_UNSIGNED_INT_8_8_8_8_REV;
 
-	vlUploadTexture(plGetCurrentTexture(), &upload);
+	plUploadTexture(plGetCurrentTexture(), &upload);
 #endif
 
 	theRect->l = BLOCK_WIDTH;
@@ -734,7 +734,7 @@ void R_RebuildAllLightmaps (void)
 		upload.height			= BLOCK_HEIGHT;
 		upload.storage_type		= PL_UNSIGNED_INT_8_8_8_8_REV;
 
-		vlUploadTexture(plGetCurrentTexture(), &upload);
+		plUploadTexture(plGetCurrentTexture(), &upload);
 #endif
 	}
 }

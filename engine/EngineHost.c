@@ -23,16 +23,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "EngineGame.h"
 #include "EngineMenu.h"
-#include "EngineEditor.h"
 #include "input.h"
 #include "video.h"
 #include "EngineServerPhysics.h"
 #include "engine_client.h"
-#include "EngineVideoParticle.h"
-
-#include "shared_server.h"
-
-#include "platform_filesystem.h"
 
 /*	A server can allways be started, even if the system started out as a client
 	to a remote system.
@@ -160,7 +154,7 @@ void Host_FindMaxClients(void)
 	{
 		cls.state = ca_dedicated;
 		if (i != (com_argc - 1))
-			svs.maxclients = Q_atoi (com_argv[i+1]);
+			svs.maxclients = (unsigned int)Q_atoi (com_argv[i+1]);
 		else
 			svs.maxclients = 8;
 	}
@@ -173,7 +167,7 @@ void Host_FindMaxClients(void)
 		if (cls.state == ca_dedicated)
 			Sys_Error ("Only one of -dedicated or -listen can be specified");
 		if (i != (com_argc - 1))
-			svs.maxclients = Q_atoi(com_argv[i+1]);
+			svs.maxclients = (unsigned int)Q_atoi(com_argv[i+1]);
 		else
 			svs.maxclients = 8;
 	}
@@ -540,7 +534,7 @@ void Host_ServerFrame (void)
 		}
 
 		dev_stats.edicts = active;
-		dev_peakstats.edicts = Math_Max(active, dev_peakstats.edicts);
+		dev_peakstats.edicts = plMax(active, dev_peakstats.edicts);
 	}
 //johnfitz
 

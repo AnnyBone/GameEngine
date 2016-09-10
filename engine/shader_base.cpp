@@ -27,8 +27,8 @@ BaseShader::BaseShader() : ShaderProgram("base"),
 
 void BaseShader::Initialize()
 {
-	RegisterShader("base", VL_SHADER_VERTEX);
-	RegisterShader("base", VL_SHADER_FRAGMENT);
+	RegisterShader("base", PL_SHADER_VERTEX);
+	RegisterShader("base", PL_SHADER_FRAGMENT);
 
 	Link();
 

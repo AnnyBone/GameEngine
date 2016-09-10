@@ -20,6 +20,7 @@ add_subdirectory(platform)
 add_subdirectory(menu)
 add_subdirectory(game)
 add_subdirectory(engine)
+add_subdirectory(launcher)
 
 if(XENON_COMPILE_TOOLS)
     add_subdirectory(level)

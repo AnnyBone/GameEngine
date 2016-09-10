@@ -28,9 +28,13 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
 #   define PL_SYSTEM_NAME   "MACOS"
 
-#else // Linux
+#elif defined(__linux__) // Linux
 
 #   define PL_SYSTEM_NAME   "LINUX"
+
+#else
+
+#   define PL_SYSTEM_NAME   "UNKNOWN"
 
 #endif
 

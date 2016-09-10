@@ -29,15 +29,6 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
 #define	LAUNCHER_LOG "launcher"
 
-/*	TODO:
-		List of things I want access to from the engine...
-			Engine->GetBasePath()				(Returns current base path)
-			Engine->CreateEntity()				(Returns an entity instance)
-			Engine->LoadMap(file)				(Loads the specified level)
-			Engine->CreateBrush(origin,size)	(Creates a brush)
-			Engine->CreateWindow(x,y,w,h)		(Creates a new window... Need to handle different window instances somehow... Sigh)
-*/
-
 int main(int argc,char *argv[])
 {
 	plClearLog(LAUNCHER_LOG);

@@ -34,7 +34,7 @@ extern int material_count;
 void Material_Initialize(void);
 void Material_ClearAll(void);
 void Material_Clear(Material_t *material, bool force);
-void Material_DrawObject(Material_t *material, vlDraw_t *object, bool ispost);
+void Material_DrawObject(Material_t *material, PLDraw *object, bool ispost);
 void Material_Draw(Material_t *material, PLVertex *ObjectVertex, PLPrimitive ObjectPrimitive, unsigned int ObjectSize, bool ispost);
 
 bool Material_Precache(const char *path);

@@ -137,7 +137,7 @@ void VideoFrameBuffer::Bind()
 	if (isbound)
 		return;
 
-	vlBindFrameBuffer(VL_FRAMEBUFFER_DEFAULT, instance);
+	vlBindFrameBuffer(PL_FRAMEBUFFER_DEFAULT, instance);
 
 	isbound = true;
 }
@@ -147,7 +147,7 @@ void VideoFrameBuffer::Unbind()
 	if (!isbound)
 		return;
 
-	vlBindFrameBuffer(VL_FRAMEBUFFER_DEFAULT, 0);
+	vlBindFrameBuffer(PL_FRAMEBUFFER_DEFAULT, 0);
 
 	isbound = false;
 }
@@ -163,6 +163,7 @@ void VideoFrameBuffer::Draw()
 	Draw_Rectangle(0, 0, 512, 512, pl_white); //Video.iWidth, Video.iHeight,
 }
 
+#if 0
 VideoFrameBuffer *debug_fbo;
 
 void DEBUG_FrameBufferInitialization()
@@ -182,6 +183,7 @@ void DEBUG_FrameBufferDraw()
 {
 	debug_fbo->Draw();
 }
+#endif
 
 // Post Processing Object
 
@@ -236,6 +238,7 @@ void VideoPostProcess::Draw()
 	program->Disable();
 }
 
+#if 0
 VideoPostProcess *post_bloom;
 
 void DEBUG_PostProcessInitialization()
@@ -256,3 +259,4 @@ void DEBUG_PostProcessBind()
 void VideoPostProcess_Initialize() {}
 void VideoPostProcess_BindFrameBuffer() {}
 void VideoPostProcess_Draw() {}
+#endif

@@ -253,7 +253,12 @@ typedef unsigned short int		PLuint16;
 typedef unsigned long int		PLuint32;
 typedef unsigned long long int	PLuint64;
 typedef char					PLchar;
-typedef	unsigned char			PLuchar, PLbyte, PLbool;
+typedef	unsigned char			PLuchar, PLbyte;
+#ifdef __cplusplus
+typedef bool					PLbool;
+#else
+typedef unsigned char			PLbool;
+#endif
 typedef void					PLvoid;
 typedef float					PLfloat;
 typedef double					PLdouble;

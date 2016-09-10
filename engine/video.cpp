@@ -136,7 +136,7 @@ void Video_Initialize(void)
 	for (int i = 0; i < Video.num_textureunits; i++)
 	{
 		Video.textureunits[i].isactive			= false;						// All units are initially disabled.
-		Video.textureunits[i].current_envmode	= VIDEO_TEXTUREMODE_REPLACE;
+		Video.textureunits[i].current_envmode	= PL_TEXTUREMODE_REPLACE;
 		Video.textureunits[i].current_texture	= (unsigned int)-1;
 	}
 
@@ -310,7 +310,7 @@ void Video_DrawObject(PLVertex *vobject, PLPrimitive primitive,
 	if(numverts == 0)
 		return;
 
-	vlDraw_t tempobj;
+	PLDraw tempobj;
 	tempobj.vertices			= vobject;
 	tempobj.numverts			= numverts;
 	tempobj.primitive			= primitive;
@@ -320,7 +320,7 @@ void Video_DrawObject(PLVertex *vobject, PLPrimitive primitive,
 	Material_SetSkin(mMaterial, iSkin);
 
 	Material_DrawObject(mMaterial, &tempobj, false);
-	vlDraw(&tempobj);
+	plDraw(&tempobj);
 	Material_DrawObject(mMaterial, &tempobj, true);
 }
 
@@ -328,7 +328,7 @@ void Video_DrawObject(PLVertex *vobject, PLPrimitive primitive,
 */
 void Video_Frame(void)
 {
-	if (g_state.embedded || (Video.bInitialized == false))
+	if (g_state.embedded || !Video.bInitialized)
 		return;
 
 	// Don't let us exceed a limited count.

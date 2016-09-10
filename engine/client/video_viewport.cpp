@@ -134,7 +134,7 @@ void Viewport::Draw()
 		g_console->SetSize(_width, _height);
 
 		Screen_DrawNet();
-		//Screen_DrawConsole();
+		Screen_DrawConsole();
 		Screen_DrawFPS();
 	}
 

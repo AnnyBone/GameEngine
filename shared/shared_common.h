@@ -25,7 +25,7 @@ typedef struct sizebuf_s
 	bool	overflowed;		// set to true if the buffer size failed
 	uint8_t	*data;
 	int		maxsize;
-	int		cursize;
+	size_t	cursize;
 } sizebuf_t;
 
 #endif // !SHARED_COMMON_H

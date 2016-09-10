@@ -193,38 +193,24 @@ PL_EXTERN_C_END
 
 typedef PLuint PLTexture;
 
-typedef enum VLTextureTarget
+typedef enum PLTextureTarget
 {
-#if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
-	VL_TEXTURE_1D	= GL_TEXTURE_1D,
-	VL_TEXTURE_2D	= GL_TEXTURE_2D,
-	VL_TEXTURE_3D	= GL_TEXTURE_3D,
-#else
-	VL_TEXTURE_1D,
-	VL_TEXTURE_2D,
-	VL_TEXTURE_3D,
-#endif
-} VLTextureTarget;
+	PL_TEXTURE_1D,
+	PL_TEXTURE_2D,
+	PL_TEXTURE_3D
+} PLTextureTarget;
 
-typedef enum VLTextureFilter
+typedef enum PLTextureFilter
 {
-	VL_TEXTUREFILTER_MIPMAP_NEAREST,	// GL_NEAREST_MIPMAP_NEAREST
-	VL_TEXTUREFILTER_MIPMAP_LINEAR,		// GL_LINEAR_MIPMAP_LINEAR
+    PL_TEXTUREFILTER_MIPMAP_NEAREST,	// GL_NEAREST_MIPMAP_NEAREST
+	PL_TEXTUREFILTER_MIPMAP_LINEAR,		// GL_LINEAR_MIPMAP_LINEAR
 
-	VL_TEXTUREFILTER_MIPMAP_LINEAR_NEAREST,	// GL_LINEAR_MIPMAP_NEAREST
-	VL_TEXTUREFILTER_MIPMAP_NEAREST_LINEAR,	// GL_NEAREST_MIPMAP_LINEAR
+	PL_TEXTUREFILTER_MIPMAP_LINEAR_NEAREST,	// GL_LINEAR_MIPMAP_NEAREST
+	PL_TEXTUREFILTER_MIPMAP_NEAREST_LINEAR,	// GL_NEAREST_MIPMAP_LINEAR
 
-#if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
-	VL_TEXTUREFILTER_NEAREST	= GL_NEAREST,	// Nearest filtering
-	VL_TEXTUREFILTER_LINEAR		= GL_LINEAR		// Linear filtering
-#elif defined (VL_MODE_GLIDE)
-	VL_TEXTUREFILTER_NEAREST	= GR_TEXTUREFILTER_POINT_SAMPLED,	// Nearest filtering
-	VL_TEXTUREFILTER_LINEAR		= GR_TEXTUREFILTER_BILINEAR			// Linear filtering
-#else
-	VL_TEXTUREFILTER_NEAREST,	// Nearest filtering
-	VL_TEXTUREFILTER_LINEAR		// Linear filtering
-#endif
-} VLTextureFilter;
+	PL_TEXTUREFILTER_NEAREST,	// Nearest filtering
+	PL_TEXTUREFILTER_LINEAR		// Linear filtering
+} PLTextureFilter;
 
 typedef enum VLTextureFormat
 {
@@ -247,19 +233,15 @@ typedef enum VLTextureFormat
 } VLTextureFormat;
 
 // Texture Environment Modes
-typedef enum VLTextureEnvironmentMode
+typedef enum PLTextureEnvironmentMode
 {
-	VL_TEXTUREMODE_START = -1,
-
-	VIDEO_TEXTUREMODE_ADD,
-	VIDEO_TEXTUREMODE_MODULATE,
-	VIDEO_TEXTUREMODE_DECAL,
-	VIDEO_TEXTUREMODE_BLEND,
-	VIDEO_TEXTUREMODE_REPLACE,
-	VIDEO_TEXTUREMODE_COMBINE,
-
-	VL_TEXTUREMODE_END
-} VLTextureEnvironmentMode;
+    PL_TEXTUREMODE_ADD,
+    PL_TEXTUREMODE_MODULATE,
+    PL_TEXTUREMODE_DECAL,
+    PL_TEXTUREMODE_BLEND,
+    PL_TEXTUREMODE_REPLACE,
+    PL_TEXTUREMODE_COMBINE
+} PLTextureEnvironmentMode;
 
 typedef struct PLTextureInfo
 {
@@ -285,6 +267,8 @@ PL_EXTERN_C
 PL_EXTERN void plCreateTexture(PLTexture *texture);
 PL_EXTERN void plDeleteTexture(PLTexture *texture);
 
+PL_EXTERN void plUploadTexture(PLTexture texture, const PLTextureInfo *upload);
+
 PL_EXTERN PLuint plGetMaxTextureSize(void);
 PL_EXTERN PLuint plGetMaxTextureUnits(void);
 PL_EXTERN PLuint plGetMaxTextureAnistropy(void);
@@ -295,7 +279,8 @@ PL_EXTERN PLuint plGetCurrentTextureUnit(void);
 PL_EXTERN void plSetTexture(PLTexture texture);
 PL_EXTERN void plSetTextureAnisotropy(PLTexture texture, PLuint amount);
 PL_EXTERN void plSetTextureUnit(PLuint target);
-PL_EXTERN void plSetTextureFilter(PLTexture texture, VLTextureFilter filter);
+PL_EXTERN void plSetTextureFilter(PLTexture texture, PLTextureFilter filter);
+PL_EXTERN void plSetTextureEnvironmentMode(PLTextureEnvironmentMode mode);
 
 PL_EXTERN_C_END
 
@@ -340,24 +325,27 @@ typedef struct PLVertex
 	PLColour colour;
 } PLVertex;
 
-typedef struct vlDraw_s
+typedef struct PLDraw
 {
 	PLVertex *vertices;							// Array of vertices for the object.
 
 	PLuint numverts;							// Number of vertices.
 	PLuint numtriangles;						// Number of triangles.
 
-	PLuint8	*indices;								// List of indeces.
+	PLuint8	*indices;								// List of indices.
 
 	PLPrimitive primitive, primitive_restore;		// Type of primitive, and primitive to restore to.
 
 	unsigned int _gl_vbo[16];						// Vertex buffer object.
-} vlDraw_t;
+} PLDraw;
 
 PL_EXTERN_C
 
 PL_EXTERN void plSetBlendMode(VLBlend modea, VLBlend modeb);
 PL_EXTERN void plSetCullMode(VLCullMode mode);
+
+PL_EXTERN void plDraw(PLDraw *draw);
+PL_EXTERN void plDrawVertexNormals(PLDraw *draw);
 
 PL_EXTERN_C_END
 
@@ -382,13 +370,11 @@ typedef PLuint PLShaderProgram;
 
 typedef enum PLUniformType
 {
-	VL_UNIFORM_START = -1,
-
 	VL_UNIFORM_FLOAT,
 	VL_UNIFORM_INT,
 	VL_UNIFORM_UINT,
 	VL_UNIFORM_BOOL,
-	VL_UNIFORM_DOUBLE,
+    PL_UNIFORM_DOUBLE,
 
 	// Textures
 	VL_UNIFORM_TEXTURE1D,
@@ -409,30 +395,30 @@ typedef enum PLUniformType
 } PLUniformType;
 
 #if 0
-typedef int VLUniform;
+typedef int PLUniform;
 #else
-typedef struct VLUniform
+typedef struct PLUniform
 {
 	PLint location;	// Location within the shader.
 
 	PLUniformType type;	// Data type.
 
 	PLchar def[16];	// Default value.
-} VLUniform;
+} PLUniform;
 #endif
 
-typedef int vlAttribute_t;
+typedef int PLAttribute;
 
 typedef enum PLShaderType
 {
 #if defined (VL_MODE_OPENGL)
-	VL_SHADER_FRAGMENT	= GL_FRAGMENT_SHADER,
-	VL_SHADER_VERTEX	= GL_VERTEX_SHADER,
-	VL_SHADER_GEOMETRY	= GL_GEOMETRY_SHADER,
+	PL_SHADER_FRAGMENT	= GL_FRAGMENT_SHADER,
+	PL_SHADER_VERTEX	= GL_VERTEX_SHADER,
+	PL_SHADER_GEOMETRY	= GL_GEOMETRY_SHADER
 #else
-	VL_SHADER_FRAGMENT,
-	VL_SHADER_VERTEX,
-	VL_SHADER_GEOMETRY,
+	PL_SHADER_FRAGMENT,
+	PL_SHADER_VERTEX,
+	PL_SHADER_GEOMETRY
 #endif
 } PLShaderType;
 
@@ -463,7 +449,7 @@ typedef struct PLLight
 
 PL_EXTERN_C
 
-PL_EXTERN void plViewport(int x, int y, PLuint width, PLuint height);
+PL_EXTERN void plViewport(PLint x, PLint y, PLuint width, PLuint height);
 PL_EXTERN void plFinish(void);
 
 // Initialization

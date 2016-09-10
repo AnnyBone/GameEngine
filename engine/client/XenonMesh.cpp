@@ -22,7 +22,7 @@ typedef struct XMesh
 {
 	char name[PL_MAX_PATH];
 
-	vlDraw_t **draw_calls;
+	PLDraw **draw_calls;
 } XMesh;
 
 class XMeshManager : public XManager

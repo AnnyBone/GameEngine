@@ -39,7 +39,7 @@ namespace core
 
 		const char	*source;
 		char		source_path[PLATFORM_MAX_PATH];
-		int			source_length;
+		PLuint		source_length;
 	};
 
 	class ShaderProgram : public IShaderProgram
@@ -57,24 +57,24 @@ namespace core
 		void Attach(Shader *shader);
 		void Enable();
 		void Disable();
-		void Draw(vlDraw_t *object);
+		void Draw(PLDraw *object);
 		void Link();
 		void Shutdown();
 
 		bool IsActive()	{ return (plGetCurrentShaderProgram() == instance); }
 
-		VLUniform *RegisterUniform(std::string name, PLUniformType type);
+		PLUniform *RegisterUniform(std::string name, PLUniformType type);
 
-		void SetUniformVariable(VLUniform *uniform, float x, float y, float z);
-		void SetUniformVariable(VLUniform *uniform, plVector3f_t vector);
-		void SetUniformVariable(VLUniform *uniform, float x, float y, float z, float a);
-		void SetUniformVariable(VLUniform *uniform, int i);
-		void SetUniformVariable(VLUniform *uniform, unsigned int i);
-		void SetUniformVariable(VLUniform *uniform, float f);
-		void SetUniformVariable(VLUniform *uniform, double d);
+		void SetUniformVariable(PLUniform *uniform, float x, float y, float z);
+		void SetUniformVariable(PLUniform *uniform, plVector3f_t vector);
+		void SetUniformVariable(PLUniform *uniform, float x, float y, float z, float a);
+		void SetUniformVariable(PLUniform *uniform, int i);
+		void SetUniformVariable(PLUniform *uniform, unsigned int i);
+		void SetUniformVariable(PLUniform *uniform, float f);
+		void SetUniformVariable(PLUniform *uniform, double d);
 
 		int GetUniformLocation(std::string name);
-		VLUniform *GetUniform(std::string name);
+		PLUniform *GetUniform(std::string name);
 
 		void RegisterAttribute(std::string name, int location);
 		void SetAttributeVariable(int location, plVector3f_t vector);
@@ -84,8 +84,8 @@ namespace core
 
 	private:
 		std::vector<Shader*>							shaders;
-		std::unordered_map<std::string, vlAttribute_t>	attributes;
-		std::unordered_map<std::string, VLUniform*>	uniforms;
+		std::unordered_map<std::string, PLAttribute>	attributes;
+		std::unordered_map<std::string, PLUniform*>		uniforms;
 
 		std::string _name;
 

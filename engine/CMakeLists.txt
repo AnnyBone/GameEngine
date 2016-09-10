@@ -5,9 +5,10 @@ project(engine)
 
 file(GLOB ENGINE_SOURCE_FILES
         *.cpp *.c
-        client/*.cpp client/*.c)
+        client/*.cpp client/*.c
+        ../shared/SharedFormats.c)
 
-add_library(engine MODULE ${ENGINE_SOURCE_FILES})
+add_library(engine SHARED ${ENGINE_SOURCE_FILES})
 
 set_target_properties(engine PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/)
 set_target_properties(engine PROPERTIES PREFIX "")
@@ -18,4 +19,4 @@ target_include_directories(engine PUBLIC
         ${CMAKE_SYSTEM_INCLUDE_PATH}
         client/
         ../)
-target_link_libraries(engine platform dl SDL2-2.0)
+target_link_libraries(engine platform dl GL openal GLEW SDL2-2.0)

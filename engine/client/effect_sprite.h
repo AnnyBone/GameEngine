@@ -50,7 +50,7 @@ namespace core
 
 		int	ident;
 
-		vlDraw_t *draw;
+		PLDraw *draw;
 
 		bool
 			islit,		// Is the sprite intended to be lit?

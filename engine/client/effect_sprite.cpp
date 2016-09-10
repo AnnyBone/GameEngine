@@ -251,7 +251,7 @@ void Sprite::Draw()
 	vlDrawVertex3f(-scale, -scale, 0);
 	vlEndDraw(draw);
 
-	vlDraw(draw);
+	plDraw(draw);
 
 	if (colour[3] < 1.0f)
 		plDisableGraphicsStates(VL_CAPABILITY_BLEND);
@@ -259,7 +259,7 @@ void Sprite::Draw()
 	if (cv_sprite_debugsize.bValue)
 	{
 		// We need the size relative to the current position.
-		PLVector3f NewMins, NewMaxs;
+		PLVector3f NewMins = { 0 }, NewMaxs = { 0 };
 		plVectorAdd3fv(mins, position, NewMins);
 		plVectorAdd3fv(maxs, position, NewMaxs);
 		

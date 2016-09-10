@@ -18,10 +18,10 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
 #include "platform_graphics.h"
 
-typedef enum
+typedef enum PLFBOTarget
 {
 #if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
-	VL_FRAMEBUFFER_DEFAULT	= GL_FRAMEBUFFER,
+    PL_FRAMEBUFFER_DEFAULT	= GL_FRAMEBUFFER,
 	VL_FRAMEBUFFER_DRAW		= GL_DRAW_FRAMEBUFFER,
 	VL_FRAMEBUFFER_READ		= GL_READ_FRAMEBUFFER
 #else
@@ -29,7 +29,7 @@ typedef enum
 	VL_FRAMEBUFFER_DRAW,
 	VL_FRAMEBUFFER_READ
 #endif
-} vlFBOTarget_t;
+} PLFBOTarget;
 
 typedef enum
 {
@@ -57,49 +57,40 @@ void vlPopMatrix(void);
 void vlDepthMask(bool mode);
 
 //-----------------
-// Textures
-
-void vlSetTextureEnvironmentMode(VLTextureEnvironmentMode TextureEnvironmentMode);
-
-void vlUploadTexture(PLTexture texture, const PLTextureInfo *upload);
-
-//-----------------
 // Shaders
 
 void vlLinkShaderProgram(PLShaderProgram *program);
 void vlAttachShader(PLShaderProgram program, PLShader shader);
 
-vlAttribute_t vlGetAttributeLocation(PLShaderProgram *program, const char *name);
+PLAttribute vlGetAttributeLocation(PLShaderProgram *program, const char *name);
 
 //-----------------
 // Drawing
 
-vlDraw_t *vlCreateDraw(PLPrimitive primitive, uint32_t num_tris, uint32_t num_verts);
-void vlDeleteDraw(vlDraw_t *draw);
+PLDraw *vlCreateDraw(PLPrimitive primitive, uint32_t num_tris, uint32_t num_verts);
+void vlDeleteDraw(PLDraw *draw);
 
-void vlBeginDraw(vlDraw_t *draw);
-void vlEndDraw(vlDraw_t *draw);
+void vlBeginDraw(PLDraw *draw);
+void vlEndDraw(PLDraw *draw);
 void vlDrawVertex3f(float x, float y, float z);
 void vlDrawVertex3fv(plVector3f_t position);
 void vlDrawColour4f(float r, float g, float b, float a);
 void vlDrawColour4fv(PLColour rgba);
 void vlDrawNormal3fv(plVector3f_t position);
 void vlDrawTexCoord2f(unsigned int target, float s, float t);
-
-void vlDraw(vlDraw_t *draw);
-void vlDrawVertexNormals(vlDraw_t *draw);
+void vlDrawVertexNormals(PLDraw *draw);
 
 //-----------------
 // Lighting
 
-void vlApplyLighting(vlDraw_t *object, PLLight *light, plVector3f_t position);
+void vlApplyLighting(PLDraw *object, PLLight *light, plVector3f_t position);
 
 //-----------------
 
 // Frame Buffer
 void vlGenerateFrameBuffer(unsigned int *buffer);
 void vlCheckFrameBufferStatus();
-void vlBindFrameBuffer(vlFBOTarget_t target, unsigned int buffer);
+void vlBindFrameBuffer(PLFBOTarget target, unsigned int buffer);
 void vlAttachFrameBufferRenderBuffer(unsigned int attachment, unsigned int buffer);
 void vlAttachFrameBufferTexture(gltexture_t *buffer);
 void vlDeleteFrameBuffer(unsigned int *buffer);

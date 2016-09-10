@@ -92,9 +92,7 @@ PL_INSTANCE plLoadLibrary(const PLchar *path)
 */
 PLvoid *plLoadLibraryInterface(PL_INSTANCE instance, const PLchar *path, const PLchar *entry, PLvoid *handle)
 {
-	PLchar newpath[PLATFORM_MAX_PATH] = { 0 };
-	sprintf(newpath, "%s."PL_CPU_ID, path);
-	instance = plLoadLibrary(newpath);
+	instance = plLoadLibrary(path);
 	if(!instance)
 		return NULL;
 

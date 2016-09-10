@@ -70,7 +70,7 @@ public:
 
 	void Bind();
 
-	PLint levels;
+	PLuint levels;
 
 	std::string path;
 

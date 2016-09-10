@@ -86,7 +86,7 @@ typedef struct
 
 	MaterialTextureType_t mttType;	// Sphere, fullbright, or what have you.
 
-	VLTextureEnvironmentMode env_mode;
+	PLTextureEnvironmentMode env_mode;
 } MaterialTexture_t;
 
 #include "./shared_client_shader.h"

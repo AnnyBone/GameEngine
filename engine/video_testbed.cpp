@@ -25,7 +25,7 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 	fun toybox stuff.
 */
 
-vlDraw_t *base_draw = nullptr;
+PLDraw *base_draw = nullptr;
 
 void Debug_Initialize()
 {

@@ -248,7 +248,7 @@ void vlAttachShader(PLShaderProgram program, PLShader shader)
 #endif
 }
 
-vlAttribute_t vlGetAttributeLocation(PLShaderProgram *program, const char *name)
+PLAttribute vlGetAttributeLocation(PLShaderProgram *program, const char *name)
 {
 #if defined (VL_MODE_OPENGL)
 	return glGetAttribLocation(*program, name);
@@ -261,96 +261,22 @@ vlAttribute_t vlGetAttributeLocation(PLShaderProgram *program, const char *name)
 	TEXTURES
 ===========================*/
 
-void vlUploadTexture(PLTexture texture, const PLTextureInfo *upload)
-{
-	plSetTexture(texture);
-
-	PLuint storage_type = upload->storage_type;
-	if (storage_type == 0) storage_type = GL_UNSIGNED_BYTE;
-
-#if defined (VL_MODE_OPENGL_CORE)
-#elif defined (VL_MODE_OPENGL)
-	PLuint levels = upload->levels;
-	if (plIsGraphicsStateEnabled(VL_CAPABILITY_GENERATEMIPMAP))
-	{
-		if(levels <= 1) levels = 4;
-		if (!VL_GL_VERSION(3,0) && VL_GL_VERSION(1,4))
-		{
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, levels);
-			glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
-		}
-	}
-
-	PLbool compressed = false;
-	// Check the format, to see if we're getting a compressed
-	// format type.
-	switch (upload->format)
-	{
-	case VL_TEXTUREFORMAT_RGBA_DXT1:
-	case VL_TEXTUREFORMAT_RGBA_DXT3:
-	case VL_TEXTUREFORMAT_RGBA_DXT5:
-	case VL_TEXTUREFORMAT_RGB_DXT1:
-	case VL_TEXTUREFORMAT_RGB_FXT1:
-		compressed = true;
-	default:
-		break;
-	}
-
-	if(upload->initial) 
-		glTexStorage2D(GL_TEXTURE_2D, levels, upload->format, upload->width, upload->height);
-
-	if(compressed)
-		glCompressedTexSubImage2D(
-			GL_TEXTURE_2D, 
-			0, 
-			upload->x, upload->y, 
-			upload->width, upload->height,
-			upload->format, 
-			upload->size, 
-			upload->data
-		);
-	else
-		glTexSubImage2D(
-			GL_TEXTURE_2D,
-			0,
-			upload->x, upload->y,
-			upload->width, upload->height,
-			upload->pixel_format,
-			storage_type,
-			upload->data
-		);
-
-	if (plIsGraphicsStateEnabled(VL_CAPABILITY_GENERATEMIPMAP))
-	{
-		if (VL_GL_VERSION(3,0))
-			glGenerateMipmap(GL_TEXTURE_2D);
-		else if(VL_GL_VERSION(1,4))
-			glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE);
-		else
-		{
-			// todo, do it in sw
-		}
-	}
-#endif
-}
-
-int _vlTranslateTextureEnvironmentMode(VLTextureEnvironmentMode TextureEnvironmentMode)
+int _vlTranslateTextureEnvironmentMode(PLTextureEnvironmentMode TextureEnvironmentMode)
 {
 	switch (TextureEnvironmentMode)
 	{
 #ifdef VL_MODE_OPENGL
-	case VIDEO_TEXTUREMODE_ADD:
+	case PL_TEXTUREMODE_ADD:
 		return GL_ADD;
-	case VIDEO_TEXTUREMODE_MODULATE:
+	case PL_TEXTUREMODE_MODULATE:
 		return GL_MODULATE;
-	case VIDEO_TEXTUREMODE_DECAL:
+	case PL_TEXTUREMODE_DECAL:
 		return GL_DECAL;
-	case VIDEO_TEXTUREMODE_BLEND:
+	case PL_TEXTUREMODE_BLEND:
 		return GL_BLEND;
-	case VIDEO_TEXTUREMODE_REPLACE:
+	case PL_TEXTUREMODE_REPLACE:
 		return GL_REPLACE;
-	case VIDEO_TEXTUREMODE_COMBINE:
+	case PL_TEXTUREMODE_COMBINE:
 		return GL_COMBINE;
 #endif
 	default:
@@ -361,7 +287,7 @@ int _vlTranslateTextureEnvironmentMode(VLTextureEnvironmentMode TextureEnvironme
 	return 0;
 }
 
-void vlSetTextureEnvironmentMode(VLTextureEnvironmentMode TextureEnvironmentMode)
+void vlSetTextureEnvironmentMode(PLTextureEnvironmentMode TextureEnvironmentMode)
 {
 	// Ensure there's actually been a change.
 	if (Video.textureunits[Video.current_textureunit].current_envmode == TextureEnvironmentMode)
@@ -500,7 +426,7 @@ void vlGenerateFrameBuffer(PLFrameBuffer *buffer)
 /*	Ensures that the framebuffer is valid, otherwise throws an error.
 	glCheckFramebufferStatus
 */
-void vlCheckFrameBufferStatus(vlFBOTarget_t target)
+void vlCheckFrameBufferStatus(PLFBOTarget target)
 {
 #ifdef VL_MODE_OPENGL
 	int status = glCheckFramebufferStatus(target);
@@ -537,7 +463,7 @@ void vlCheckFrameBufferStatus(vlFBOTarget_t target)
 
 /*	Binds the given framebuffer.
 */
-void vlBindFrameBuffer(vlFBOTarget_t target, unsigned int buffer)
+void vlBindFrameBuffer(PLFBOTarget target, unsigned int buffer)
 {
 #if defined (VL_MODE_OPENGL)
 	glBindFramebuffer(target, buffer);
@@ -614,19 +540,19 @@ void vlFogColour3fv(PLColour rgba)
 /*	Generates each of the buffers and other
 	data necessary for the draw call.
 */
-vlDraw_t *vlCreateDraw(PLPrimitive primitive, uint32_t num_tris, uint32_t num_verts)
+PLDraw *vlCreateDraw(PLPrimitive primitive, uint32_t num_tris, uint32_t num_verts)
 {
 	if ((primitive == VL_PRIMITIVE_IGNORE) || (primitive >= VL_PRIMITIVE_END))
 		Sys_Error("Invalid primitive for draw object!\n");
 	else if ((num_tris == 0) && (primitive == VL_PRIMITIVE_TRIANGLES))
 		Sys_Error("Invalid number of triangles!\n");
 
-	vlDraw_t *_draw = (vlDraw_t*)calloc_or_die(sizeof(vlDraw_t), 1);
-	memset(_draw, 0, sizeof(vlDraw_t));
+	PLDraw *_draw = (PLDraw*)calloc_or_die(sizeof(PLDraw), 1);
+	memset(_draw, 0, sizeof(PLDraw));
 	_draw->primitive			= primitive;
 	_draw->primitive_restore	= primitive;
 
-	_draw->vertices = (PLVertex*)calloc_or_die(sizeof(vlDraw_t), num_verts);
+	_draw->vertices = (PLVertex*)calloc_or_die(sizeof(PLDraw), num_verts);
 	memset(_draw->vertices, 0, sizeof(PLVertex));
 	_draw->numverts			= num_verts;
 	_draw->numtriangles		= num_tris;
@@ -644,7 +570,7 @@ vlDraw_t *vlCreateDraw(PLPrimitive primitive, uint32_t num_tris, uint32_t num_ve
 	return _draw;
 }
 
-void vlDeleteDraw(vlDraw_t *draw)
+void vlDeleteDraw(PLDraw *draw)
 {
 	if (!draw)
 		return;
@@ -662,10 +588,13 @@ void vlDeleteDraw(vlDraw_t *draw)
 
 PLVertex *vl_draw_vertex = NULL;
 
-void vlBeginDraw(vlDraw_t *draw)
+void vlBeginDraw(PLDraw *draw)
 {
 	if (!draw)
-		Sys_Error("Passed invalid draw object to vlBeginDraw!\n");
+    {
+        Sys_Error("Passed invalid draw object to vlBeginDraw!\n");
+        return;
+    }
 
 	memset(draw->vertices, 0, sizeof(draw->vertices));
 	vl_draw_vertex = &draw->vertices[0];
@@ -707,7 +636,7 @@ void vlDrawTexCoord2f(unsigned int target, float s, float t)
 	plVector2Set2f(vl_draw_vertex->ST[target], s, t);
 }
 
-void vlEndDraw(vlDraw_t *draw)
+void vlEndDraw(PLDraw *draw)
 {
 	if (!draw)
 		Sys_Error("Passed invalid draw object to vlBeginDraw!\n");
@@ -729,220 +658,4 @@ void vlEndDraw(vlDraw_t *draw)
 #endif
 
 	vl_draw_vertex = NULL;
-}
-
-//--
-
-typedef struct _vlPrimitiveTranslate_s
-{
-	PLPrimitive primitive;
-
-	unsigned int gl;
-
-	const char *name;
-} _vlPrimitiveTranslate_t;
-
-_vlPrimitiveTranslate_t vl_primitives[] =
-{
-#if defined (VL_MODE_OPENGL) || (VL_MODE_OPENGL_CORE)
-	{ VL_PRIMITIVE_LINES,					GL_LINES,			"LINES" },
-	{ VL_PRIMITIVE_POINTS,					GL_POINTS,			"POINTS" },
-	{ VL_PRIMITIVE_TRIANGLES,				GL_TRIANGLES,		"TRIANGLES" },
-	{ VL_PRIMITIVE_TRIANGLE_FAN,			GL_TRIANGLE_FAN,	"TRIANGLE_FAN" },
-	{ VL_PRIMITIVE_TRIANGLE_FAN_LINE,		GL_LINES,			"TRIANGLE_FAN_LINE" },
-	{ VL_PRIMITIVE_TRIANGLE_STRIP,			GL_TRIANGLE_STRIP,	"TRIANGLE_STRIP" },
-	{ VL_PRIMITIVE_QUADS,					GL_QUADS,			"QUADS" }
-#elif defined (VL_MODE_GLIDE)
-	{ VL_PRIMITIVE_LINES,					GR_LINES,			"LINES" },
-	{ VL_PRIMITIVE_LINE_STRIP,				GR_LINE_STRIP,		"LINE_STRIP" },
-	{ VL_PRIMITIVE_POINTS,					GR_POINTS,			"POINTS" },
-	{ VL_PRIMITIVE_TRIANGLES,				GR_TRIANGLES,		"TRIANGLES" },
-	{ VL_PRIMITIVE_TRIANGLE_FAN,			GR_TRIANGLE_FAN,	"TRIANGLE_FAN" },
-	{ VL_PRIMITIVE_TRIANGLE_FAN_LINE,		GR_LINES,			"TRIANGLE_FAN_LINE" },
-	{ VL_PRIMITIVE_TRIANGLE_STRIP,			GR_TRIANGLE_STRIP,	"TRIANGLE_STRIP" },
-	{ VL_PRIMITIVE_QUADS,					0,					"QUADS" }
-#elif defined (VL_MODE_DIRECT3D)
-#elif defined (VL_MODE_VULKAN)
-	{ VL_PRIMITIVE_LINES,					VK_PRIMITIVE_TOPOLOGY_LINE_LIST,		"LINES" },
-	{ VL_PRIMITIVE_POINTS,					VK_PRIMITIVE_TOPOLOGY_POINT_LIST,		"POINTS" },
-	{ VL_PRIMITIVE_TRIANGLES,				VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,	"TRIANGLES" },
-	{ VL_PRIMITIVE_TRIANGLE_FAN,			VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN,		"TRIANGLE_FAN" },
-	{ VL_PRIMITIVE_TRIANGLE_FAN_LINE,		VK_PRIMITIVE_TOPOLOGY_LINE_LIST,		"TRIANGLE_FAN_LINE" },
-	{ VL_PRIMITIVE_TRIANGLE_STRIP,			VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP,	"TRIANGLE_STRIP" },
-	{ VL_PRIMITIVE_QUADS,					0,										"QUADS" }
-#else
-	{ 0 }
-#endif
-};
-
-unsigned int _vlTranslatePrimitiveMode(PLPrimitive primitive)
-{
-	for (int i = 0; i < plArrayElements(vl_primitives); i++)
-		if (primitive == vl_primitives[i].primitive)
-			return vl_primitives[i].gl;
-
-	// Hacky, but just return initial otherwise.
-	return vl_primitives[0].gl;
-}
-
-/*	Deals with tris view and different primitive types, then finally draws
-	the given arrays.
-*/
-void _vlDrawArrays(PLPrimitive mode, unsigned int first, unsigned int count)
-{
-	if (count == 0) return;
-	// Ensure that first isn't going to kill us.
-	else if (first >= count) first = 0;
-
-#ifdef VL_MODE_OPENGL
-	glDrawArrays(_vlTranslatePrimitiveMode(mode), first, count);
-#endif
-}
-
-void _vlDrawElements(PLPrimitive mode, unsigned int count, unsigned int type, const void *indices)
-{
-	if ((count == 0) || !indices) return;
-#ifdef VL_MODE_OPENGL
-	glDrawElements(_vlTranslatePrimitiveMode(mode), count, type, indices);
-#endif
-}
-
-void vlDraw(vlDraw_t *draw)
-{
-	if(draw->numverts == 0)
-		return;
-
-#if defined (VL_MODE_GLIDE)
-	// todo, glide needs its own setup here...
-#else
-	if (0)//(draw->_gl_vbo[_VL_BUFFER_VERTICES] != 0)
-	{
-		glBindBuffer(GL_ARRAY_BUFFER, draw->_gl_vbo[_VL_BUFFER_VERTICES]);
-		glVertexPointer(3, GL_FLOAT, sizeof(PLVertex), NULL);
-
-		glBindBuffer(GL_ARRAY_BUFFER, draw->_gl_vbo[_VL_BUFFER_TEXCOORDS]);
-		glTexCoordPointer(2, GL_FLOAT, sizeof(PLVertex), NULL);
-
-		// todo, switch to using glInterleavedArrays?
-
-		if (draw->primitive == VL_PRIMITIVE_TRIANGLES)
-			_vlDrawElements(
-				draw->primitive,
-				draw->numtriangles * 3,
-				GL_UNSIGNED_BYTE,
-				draw->indices
-			);
-		else
-			_vlDrawArrays(draw->primitive, 0, draw->numverts);
-
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-	}
-	else
-	{
-#if defined (VL_MODE_OPENGL) && !defined (VL_MODE_OPENGL_CORE)
-		// Immediate mode isn't supported in core!
-
-		glEnableClientState(GL_VERTEX_ARRAY);
-		glEnableClientState(GL_COLOR_ARRAY);
-		glEnableClientState(GL_NORMAL_ARRAY);
-
-		PLVertex *vert = &draw->vertices[0];
-		glVertexPointer(3, GL_FLOAT, sizeof(PLVertex), vert->position);
-		glColorPointer(4, GL_FLOAT, sizeof(PLVertex), vert->colour);
-		glNormalPointer(GL_FLOAT, sizeof(PLVertex), vert->normal);
-		for (int i = 0; i < Video.num_textureunits; i++)
-			if (Video.textureunits[i].isactive)
-			{
-				glClientActiveTexture(plGetTextureUnit(i));
-				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-				glTexCoordPointer(2, GL_FLOAT, sizeof(PLVertex), vert->ST[i]);
-			}
-
-		if (draw->primitive == VL_PRIMITIVE_TRIANGLES)
-			_vlDrawElements(
-				draw->primitive,
-				draw->numtriangles * 3,
-				GL_UNSIGNED_BYTE,
-				draw->indices
-			);
-		else
-			_vlDrawArrays(draw->primitive, 0, draw->numverts);
-
-		glDisableClientState(GL_COLOR_ARRAY);
-		glDisableClientState(GL_VERTEX_ARRAY);
-		glDisableClientState(GL_NORMAL_ARRAY);
-		for (int i = 0; i < Video.num_textureunits; i++)
-			if (Video.textureunits[i].isactive)
-			{
-				glClientActiveTexture(plGetTextureUnit(i));
-				glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-			}
-#endif
-	}
-#endif
-}
-
-void vlDrawVertexNormals(vlDraw_t *draw)
-{
-	if (draw->primitive == VL_PRIMITIVE_LINES)
-		return;
-
-	plVector3f_t endpos;
-	for (unsigned int i = 0; i < draw->numverts; i++)
-	{
-		plVectorClear(endpos);
-		plVectorScalef(draw->vertices[i].normal, 2.0f, endpos);
-		plVectorAdd3fv(endpos, draw->vertices[i].position, endpos);
-
-		//Draw_Line(draw->vertices[i].position, endpos);
-	}
-}
-
-/*===========================
-	LIGHTING
-===========================*/
-
-void vlApplyLighting(vlDraw_t *object, PLLight *light, plVector3f_t position)
-{
-	// Calculate the distance.
-	plVector3f_t distvec;
-	plVectorSubtract3fv(position, light->position, distvec);
-	float distance = (light->radius - plLengthf(distvec)) / 100.0f;
-
-	for (unsigned int i = 0; i < object->numverts; i++)
-	{
-		float x = object->vertices[i].normal[0];
-		float y = object->vertices[i].normal[1];
-		float z = object->vertices[i].normal[2];
-
-		float angle = (distance*((x * distvec[0]) + (y * distvec[1]) + (z * distvec[2])));
-		if (angle < 0)
-			plVectorClear(object->vertices[i].colour);
-		else
-		{
-			object->vertices[i].colour[PL_RED] = light->colour[PL_RED] * angle;
-			object->vertices[i].colour[PL_GREEN] = light->colour[PL_GREEN] * angle;
-			object->vertices[i].colour[PL_BLUE] = light->colour[PL_BLUE] * angle;
-		}
-
-		/*
-		x = Object->Vertices_normalStat[count].x;
-		y = Object->Vertices_normalStat[count].y;
-		z = Object->Vertices_normalStat[count].z;
-
-		angle = (LightDist*((x * Object->Spotlight.x) + (y * Object->Spotlight.y) + (z * Object->Spotlight.z) ));
-		if (angle<0 )
-		{
-		Object->Vertices_screen[count].r = 0;
-		Object->Vertices_screen[count].b = 0;
-		Object->Vertices_screen[count].g = 0;
-		}
-		else
-		{
-		Object->Vertices_screen[count].r = Object->Vertices_local[count].r * angle;
-		Object->Vertices_screen[count].b = Object->Vertices_local[count].b * angle;
-		Object->Vertices_screen[count].g = Object->Vertices_local[count].g * angle;
-		}
-		*/
-	}
 }

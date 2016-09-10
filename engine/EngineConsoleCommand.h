@@ -30,7 +30,7 @@ typedef struct cmd_function_s
 {
 	struct cmd_function_s *next;
 
-	char *name;
+	const char *name;
 	xcommand_t function;
 } cmd_function_t;
 
@@ -112,7 +112,7 @@ void	Cmd_AddCommand (const char *cmd_name, xcommand_t function);
 bool Cmd_Exists (const char *cmd_name);
 // used by the cvar code to check for cvar / command name overlap
 
-char 	*Cmd_CompleteCommand (char *partial);
+const char 	*Cmd_CompleteCommand (char *partial);
 // attempts to match a partial command for automatic command line completion
 // returns NULL if nothing fits
 

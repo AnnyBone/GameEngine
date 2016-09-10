@@ -36,7 +36,7 @@ typedef struct PLTextureMappingUnit
 	PLuint current_texture;
 	PLuint current_capabilities;
 
-	VLTextureEnvironmentMode current_envmode;
+    PLTextureEnvironmentMode current_envmode;
 } PLTextureMappingUnit;
 
 typedef struct PLGraphicsState
@@ -248,7 +248,7 @@ PLresult plInitGraphics(void)
 	}
 	memset(pl_graphics_state.tmu, 0, sizeof(PLTextureMappingUnit));
 	for (PLuint i = 0; i < plGetMaxTextureUnits(); i++) 
-		pl_graphics_state.tmu[i].current_envmode = VIDEO_TEXTUREMODE_REPLACE;
+		pl_graphics_state.tmu[i].current_envmode = PL_TEXTUREMODE_REPLACE;
 
 	// Get any information that will be presented later.
 	pl_graphics_state.hw_extensions		= _plGetHWExtensions();
@@ -500,6 +500,175 @@ void plSetCullMode(VLCullMode mode)
 	pl_graphics_state.current_cullmode = mode;
 }
 
+typedef struct PLTranslatePrimitive
+{
+    PLPrimitive mode;
+
+    PLuint target;
+
+    const PLchar *name;
+} PLTranslatePrimitive;
+
+PLTranslatePrimitive _pl_primitives[]= {
+#if defined (VL_MODE_OPENGL) || (VL_MODE_OPENGL_CORE)
+        { VL_PRIMITIVE_LINES,					GL_LINES,			"LINES" },
+        { VL_PRIMITIVE_POINTS,					GL_POINTS,			"POINTS" },
+        { VL_PRIMITIVE_TRIANGLES,				GL_TRIANGLES,		"TRIANGLES" },
+        { VL_PRIMITIVE_TRIANGLE_FAN,			GL_TRIANGLE_FAN,	"TRIANGLE_FAN" },
+        { VL_PRIMITIVE_TRIANGLE_FAN_LINE,		GL_LINES,			"TRIANGLE_FAN_LINE" },
+        { VL_PRIMITIVE_TRIANGLE_STRIP,			GL_TRIANGLE_STRIP,	"TRIANGLE_STRIP" },
+        { VL_PRIMITIVE_QUADS,					GL_QUADS,			"QUADS" }
+#elif defined (VL_MODE_GLIDE)
+{ VL_PRIMITIVE_LINES,					GR_LINES,			"LINES" },
+	{ VL_PRIMITIVE_LINE_STRIP,				GR_LINE_STRIP,		"LINE_STRIP" },
+	{ VL_PRIMITIVE_POINTS,					GR_POINTS,			"POINTS" },
+	{ VL_PRIMITIVE_TRIANGLES,				GR_TRIANGLES,		"TRIANGLES" },
+	{ VL_PRIMITIVE_TRIANGLE_FAN,			GR_TRIANGLE_FAN,	"TRIANGLE_FAN" },
+	{ VL_PRIMITIVE_TRIANGLE_FAN_LINE,		GR_LINES,			"TRIANGLE_FAN_LINE" },
+	{ VL_PRIMITIVE_TRIANGLE_STRIP,			GR_TRIANGLE_STRIP,	"TRIANGLE_STRIP" },
+	{ VL_PRIMITIVE_QUADS,					0,					"QUADS" }
+#elif defined (VL_MODE_DIRECT3D)
+#elif defined (VL_MODE_VULKAN)
+	{ VL_PRIMITIVE_LINES,					VK_PRIMITIVE_TOPOLOGY_LINE_LIST,		"LINES" },
+	{ VL_PRIMITIVE_POINTS,					VK_PRIMITIVE_TOPOLOGY_POINT_LIST,		"POINTS" },
+	{ VL_PRIMITIVE_TRIANGLES,				VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,	"TRIANGLES" },
+	{ VL_PRIMITIVE_TRIANGLE_FAN,			VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN,		"TRIANGLE_FAN" },
+	{ VL_PRIMITIVE_TRIANGLE_FAN_LINE,		VK_PRIMITIVE_TOPOLOGY_LINE_LIST,		"TRIANGLE_FAN_LINE" },
+	{ VL_PRIMITIVE_TRIANGLE_STRIP,			VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP,	"TRIANGLE_STRIP" },
+	{ VL_PRIMITIVE_QUADS,					0,										"QUADS" }
+#else
+	{ 0 }
+#endif
+};
+
+PLuint _plTranslatePrimitiveMode(PLPrimitive mode)
+{
+    _PL_GRAPHICS_TRACK();
+
+    for(PLint i = 0; i < plArrayElements(_pl_primitives); i++)
+        if(mode == _pl_primitives[i].mode)
+            return _pl_primitives[i].target;
+
+    // Hacky, but just return initial otherwise.
+    return _pl_primitives[0].target;
+}
+
+void _plDrawArrays(PLPrimitive mode, PLuint first, PLuint count)
+{
+    _PL_GRAPHICS_TRACK();
+
+    if((count == 0) || (first > count)) return;
+#if defined(VL_MODE_OPENGL)
+    glDrawArrays(_plTranslatePrimitiveMode(mode), first, count);
+#endif
+}
+
+void _plDrawElements(PLPrimitive mode, PLuint count, PLuint type, const PLvoid *indices)
+{
+    _PL_GRAPHICS_TRACK();
+
+    if((count == 0) || !indices) return;
+#if defined(VL_MODE_OPENGL)
+    glDrawElements(_plTranslatePrimitiveMode(mode), count, type, indices);
+#endif
+}
+
+void plDraw(PLDraw *draw)
+{
+    _PL_GRAPHICS_TRACK();
+
+    if(!draw)
+        return;
+    else if(draw->numverts == 0)
+        return;
+
+#if defined(VL_MODE_GLIDE)
+    // todo, glide needs its own setup here...
+#elif defined(VL_MODE_OPENGL)
+#if 0
+    if(draw->_gl_vbo[_VL_BUFFER_VERTICES] != 0)
+    {
+		glBindBuffer(GL_ARRAY_BUFFER, draw->_gl_vbo[_VL_BUFFER_VERTICES]);
+		glVertexPointer(3, GL_FLOAT, sizeof(PLVertex), NULL);
+
+		glBindBuffer(GL_ARRAY_BUFFER, draw->_gl_vbo[_VL_BUFFER_TEXCOORDS]);
+		glTexCoordPointer(2, GL_FLOAT, sizeof(PLVertex), NULL);
+
+		// todo, switch to using glInterleavedArrays?
+
+		if (draw->primitive == VL_PRIMITIVE_TRIANGLES)
+			_vlDrawElements(
+				draw->primitive,
+				draw->numtriangles * 3,
+				GL_UNSIGNED_BYTE,
+				draw->indices
+			);
+		else
+			_vlDrawArrays(draw->primitive, 0, draw->numverts);
+
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+    }
+    else
+#endif
+    {
+#if !defined(VL_MODE_OPENGL_CORE)   // Immediate mode isn't support in core!
+        glEnableClientState(GL_VERTEX_ARRAY);
+        glEnableClientState(GL_COLOR_ARRAY);
+        glEnableClientState(GL_NORMAL_ARRAY);
+
+        PLVertex *vert = &draw->vertices[0];
+        glVertexPointer(3, GL_FLOAT, sizeof(PLVertex), vert->position);
+        glColorPointer(4, GL_FLOAT, sizeof(PLVertex), vert->colour);
+        glNormalPointer(GL_FLOAT, sizeof(PLVertex), vert->normal);
+        for(PLint i = 0; i < plGetMaxTextureUnits(); i++)
+            if(pl_graphics_state.tmu[i].active)
+            {
+                glClientActiveTexture((GLenum)GL_TEXTURE0 + i);
+                glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+                glTexCoordPointer(2, GL_FLOAT, sizeof(PLVertex), vert->ST[i]);
+            }
+
+        if(draw->primitive == VL_PRIMITIVE_TRIANGLES)
+            _plDrawElements
+            (
+                    draw->primitive,
+                    draw->numtriangles * 3,
+                    GL_UNSIGNED_BYTE,
+                    draw->indices
+            );
+        else
+            _plDrawArrays(draw->primitive, 0, draw->numverts);
+
+        glDisableClientState(GL_COLOR_ARRAY);
+        glDisableClientState(GL_VERTEX_ARRAY);
+        glDisableClientState(GL_NORMAL_ARRAY);
+        for(PLint i = 0; i < plGetMaxTextureUnits(); i++)
+            if(pl_graphics_state.tmu[i].active)
+            {
+                glClientActiveTexture((GLenum)GL_TEXTURE0 + i);
+                glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+            }
+#endif
+    }
+#endif
+}
+
+void plDrawVertexNormals(PLDraw *draw)
+{
+    if(draw->primitive == VL_PRIMITIVE_LINES)
+        return;
+
+    PLVector3f endpos = { 0 };
+    for(PLuint i = 0; i < draw->numverts; i++)
+    {
+        plVectorClear(endpos);
+        plVectorScalef(draw->vertices[i].normal, 2.0f, endpos);
+        plVectorAdd3fv(endpos, draw->vertices[i].position, endpos);
+
+        //plDrawLine blah
+    }
+}
+
 /*===========================
 	SHADERS
 ===========================*/
@@ -569,6 +738,101 @@ void plSetShaderProgram(PLShaderProgram program)
 	TEXTURES
 ===========================*/
 
+PLuint _plTranslateTextureUnit(PLuint target)
+{
+    _PL_GRAPHICS_TRACK();
+
+#if defined (VL_MODE_OPENGL) || (VL_MODE_OPENGL_CORE)
+    PLuint out = GL_TEXTURE0 + target;
+    if (out > (GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS - 1))
+        plGraphicsLog("Attempted to select an invalid texture image unit! (%i)\n", target);
+    return out;
+#else
+    return 0;
+#endif
+}
+
+PLuint _plTranslateTextureTarget(PLTextureTarget target)
+{
+    _PL_GRAPHICS_TRACK();
+
+#if defined(VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
+    switch (target)
+    {
+        default:
+        case PL_TEXTURE_2D: return GL_TEXTURE_2D;
+        case PL_TEXTURE_1D: return GL_TEXTURE_1D;
+        case PL_TEXTURE_3D: return GL_TEXTURE_3D;
+    }
+#elif defined(VL_MODE_GLIDE)
+#elif defined(VL_MODE_DIRECT3D)
+#else
+	// No translation if we're doing this in SW.
+	return (PLuint)format;
+#endif
+}
+
+PLuint _plTranslateTextureEnvironmentMode(PLTextureEnvironmentMode mode)
+{
+#if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
+    switch (mode)
+    {
+        default:
+        case PL_TEXTUREMODE_ADD:        return GL_ADD;
+        case PL_TEXTUREMODE_MODULATE:   return GL_MODULATE;
+        case PL_TEXTUREMODE_DECAL:      return GL_DECAL;
+        case PL_TEXTUREMODE_BLEND:      return GL_BLEND;
+        case PL_TEXTUREMODE_REPLACE:    return GL_REPLACE;
+        case PL_TEXTUREMODE_COMBINE:    return GL_COMBINE;
+    }
+#elif defined (VL_MODE_GLIDE)
+    #elif defined (VL_MODE_DIRECT3D)
+#else
+	// No translation if we're doing this in SW.
+	return (PLuint)format;
+#endif
+}
+
+PLuint _plTranslateTextureFormat(VLTextureFormat format)
+{
+    _PL_GRAPHICS_TRACK();
+
+#if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
+    switch (format)
+    {
+        default:
+        case VL_TEXTUREFORMAT_RGB8:         return GL_RGB8;
+        case VL_TEXTUREFORMAT_RGBA8:        return GL_RGBA8;
+        case VL_TEXTUREFORMAT_RGBA_DXT1:    return GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
+        case VL_TEXTUREFORMAT_RGB_DXT1:     return GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
+        case VL_TEXTUREFORMAT_RGBA_DXT3:    return GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
+        case VL_TEXTUREFORMAT_RGBA_DXT5:    return GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+        case VL_TEXTUREFORMAT_RGB_FXT1:     return GL_COMPRESSED_RGB_FXT1_3DFX;
+    }
+#elif defined (VL_MODE_GLIDE)
+    #elif defined (VL_MODE_DIRECT3D)
+#else
+	// No translation if we're doing this in SW.
+	return (PLuint)format;
+#endif
+}
+
+PLbool _plIsCompressedTextureFormat(VLTextureFormat format)
+{
+    _PL_GRAPHICS_TRACK();
+
+    switch (format)
+    {
+        default:    return PL_FALSE;
+        case VL_TEXTUREFORMAT_RGBA_DXT1:
+        case VL_TEXTUREFORMAT_RGBA_DXT3:
+        case VL_TEXTUREFORMAT_RGBA_DXT5:
+        case VL_TEXTUREFORMAT_RGB_DXT1:
+        case VL_TEXTUREFORMAT_RGB_FXT1:
+            return PL_TRUE;
+    }
+}
+
 void plCreateTexture(PLTexture *texture)
 {
 	_PL_GRAPHICS_TRACK();
@@ -587,17 +851,55 @@ void plDeleteTexture(PLTexture *texture)
 #endif
 }
 
-PLuint _plTranslateTextureUnit(PLuint target)
-{
-	_PL_GRAPHICS_TRACK();
+#define _PL_TEXTURE_LEVELS  4   // Default number of mipmap levels.
 
-#if defined (VL_MODE_OPENGL) || (VL_MODE_OPENGL_CORE)
-	PLuint out = GL_TEXTURE0 + target;
-	if (out >(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS - 1))
-		plGraphicsLog("Attempted to select an invalid texture image unit! (%i)\n", target);
-	return out;
-#else
-	return 0;
+void plUploadTexture(PLTexture texture, const PLTextureInfo *upload)
+{
+    _PL_GRAPHICS_TRACK();
+
+    plSetTexture(texture);
+
+#if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
+    PLuint storage = upload->storage_type;
+    if (!storage) storage = GL_UNSIGNED_BYTE;
+    PLuint format = _plTranslateTextureFormat(upload->format);
+
+    PLuint levels = upload->levels;
+    if (plIsGraphicsStateEnabled(VL_CAPABILITY_GENERATEMIPMAP))
+        if (levels <= 1) levels = _PL_TEXTURE_LEVELS;
+
+    if (upload->initial)
+        glTexStorage2D(GL_TEXTURE_2D, levels, upload->format, upload->width, upload->height);
+
+    // Check the format, to see if we're getting a compressed
+    // format type.
+    if (_plIsCompressedTextureFormat(upload->format))
+        glCompressedTexSubImage2D
+                (
+                        GL_TEXTURE_2D,
+                        0,
+                        upload->x, upload->y,
+                        upload->width, upload->height,
+                        format,
+                        upload->size,
+                        upload->data
+                );
+    else
+        glTexSubImage2D
+                (
+                        GL_TEXTURE_2D,
+                        0,
+                        upload->x, upload->y,
+                        upload->width, upload->height,
+                        format,
+                        storage,
+                        upload->data
+                );
+
+    if (plIsGraphicsStateEnabled(VL_CAPABILITY_GENERATEMIPMAP))
+        glGenerateMipmap(GL_TEXTURE_2D);
+#elif defined (VL_MODE_GLIDE)
+#elif defined (VL_MODE_DIRECT3D)
 #endif
 }
 
@@ -615,6 +917,11 @@ PLuint plGetCurrentTextureUnit(void)
 	return pl_graphics_state.current_textureunit;
 }
 
+#if defined(__GNUC__) || defined(__GNUG__)
+#   pragma GCC diagnostic push
+#   pragma GCC diagnostic ignored "-Wint-to-pointer-cast"
+#endif
+
 PLuint plGetMaxTextureSize(void)
 {
 	_PL_GRAPHICS_TRACK();
@@ -623,7 +930,9 @@ PLuint plGetMaxTextureSize(void)
 		return pl_graphics_state.hw_maxtexturesize;
 
 #if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
-	glGetIntegerv(GL_MAX_TEXTURE_SIZE, (PLint*)pl_graphics_state.hw_maxtexturesize);
+    PLint num_size = 0;
+	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &num_size);
+    pl_graphics_state.hw_maxtexturesize = (PLuint)num_size;
 #elif defined (VL_MODE_GLIDE)
 	grGet(GR_MAX_TEXTURE_SIZE, sizeof(pl_graphics_state.hw_maxtexturesize), &pl_graphics_state.hw_maxtexturesize);
 #endif
@@ -639,7 +948,9 @@ PLuint plGetMaxTextureUnits(void)
 		return pl_graphics_state.hw_maxtextureunits;
 
 #ifdef VL_MODE_OPENGL
-	glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, (PLint*)pl_graphics_state.hw_maxtextureunits);
+    PLint num_units = 0;
+	glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &num_units);
+    pl_graphics_state.hw_maxtextureunits = (PLuint)num_units;
 #elif defined (VL_MODE_GLIDE)
 	grGet(GR_NUM_TMU, sizeof(param), (FxI32*)graphics_state.hw_maxtextureunits);
 #endif
@@ -655,11 +966,17 @@ PLuint plGetMaxTextureAnistropy(void)
 		return pl_graphics_state.hw_maxtextureanistropy;
 
 #if defined (VL_MODE_OPENGL)
-	glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, (PLfloat*)pl_graphics_state.hw_maxtextureanistropy);
+    PLfloat num_anisotropy = 0;
+	glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &num_anisotropy);
+    pl_graphics_state.hw_maxtextureanistropy = (PLuint)num_anisotropy;
 #endif
 
 	return pl_graphics_state.hw_maxtextureanistropy;
 }
+
+#if defined(__GNUC__) || defined(__GNUG__)
+#   pragma GCC diagnostic pop
+#endif
 
 void plSetTexture(PLTexture texture)
 {
@@ -705,7 +1022,7 @@ void plSetTextureAnisotropy(PLTexture texture, PLuint amount)
 #endif
 }
 
-void plSetTextureFilter(PLTexture texture, VLTextureFilter filter)
+void plSetTextureFilter(PLTexture texture, PLTextureFilter filter)
 {
 	_PL_GRAPHICS_TRACK();
 
@@ -715,29 +1032,108 @@ void plSetTextureFilter(PLTexture texture, VLTextureFilter filter)
 	PLuint filtermin = filter, filtermax = filter;
 	switch (filter)
 	{
-	case VL_TEXTUREFILTER_MIPMAP_LINEAR:
+    default:
+    case PL_TEXTUREFILTER_NEAREST:
+        filtermax = GL_NEAREST; filtermin = GL_NEAREST;
+        break;
+    case PL_TEXTUREFILTER_LINEAR:
+        filtermax = GL_LINEAR; filtermin = GL_LINEAR;
+        break;
+	case PL_TEXTUREFILTER_MIPMAP_LINEAR:
 		filtermax = GL_LINEAR; filtermin = GL_LINEAR_MIPMAP_LINEAR;
 		break;
-	case VL_TEXTUREFILTER_MIPMAP_NEAREST:
+	case PL_TEXTUREFILTER_MIPMAP_NEAREST:
 		filtermax = GL_NEAREST; filtermin = GL_NEAREST_MIPMAP_NEAREST;
 		break;
-	case VL_TEXTUREFILTER_MIPMAP_LINEAR_NEAREST:
+	case PL_TEXTUREFILTER_MIPMAP_LINEAR_NEAREST:
 		filtermax = GL_LINEAR; filtermin = GL_LINEAR_MIPMAP_NEAREST;
 		break;
-	case VL_TEXTUREFILTER_MIPMAP_NEAREST_LINEAR:
+	case PL_TEXTUREFILTER_MIPMAP_NEAREST_LINEAR:
 		filtermax = GL_NEAREST; filtermin = GL_NEAREST_MIPMAP_LINEAR;
 	}
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filtermin);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filtermax);
+#elif defined(VL_MODE_GLIDE)
+    // NEAREST > GR_TEXTUREFILTER_POINT_SAMPLED
+    // LINEAR > GR_TEXTUREFILTER_BILINEAR
+    // todo, glide implementation
 #endif
+}
+
+void plSetTextureEnvironmentMode(PLTextureEnvironmentMode mode)
+{
+    _PL_GRAPHICS_TRACK();
+
+    if(pl_graphics_state.tmu[plGetCurrentTextureUnit()].current_envmode == mode)
+        return;
+
+#if defined(VL_MODE_OPENGL)
+    glTexEnvi
+    (
+            GL_TEXTURE_ENV,
+            GL_TEXTURE_ENV_MODE,
+            _plTranslateTextureEnvironmentMode(mode)
+    );
+#endif
+
+    pl_graphics_state.tmu[plGetCurrentTextureUnit()].current_envmode = mode;
+}
+
+/*===========================
+	LIGHTING
+===========================*/
+
+void plApplyLighting(PLDraw *object, PLLight *light, PLVector3f position)
+{
+    // Calculate the distance.
+    PLVector3f distvec = { 0 };
+    plVectorSubtract3fv(position, light->position, distvec);
+    float distance = (light->radius - plLengthf(distvec)) / 100.0f;
+
+    for(PLuint i = 0; i < object->numverts; i++)
+    {
+        float x = object->vertices[i].normal[0];
+        float y = object->vertices[i].normal[1];
+        float z = object->vertices[i].normal[2];
+
+        float angle = (distance * ((x * distvec[0]) + (y * distvec[1]) + (z * distvec[2])));
+        if(angle < 0)
+            plVectorClear(object->vertices[i].colour);
+        else
+        {
+            object->vertices[i].colour[PL_RED]      = light->colour[PL_RED] * angle;
+            object->vertices[i].colour[PL_GREEN]    = light->colour[PL_GREEN] * angle;
+            object->vertices[i].colour[PL_BLUE]     = light->colour[PL_BLUE] * angle;
+        }
+
+        /*
+        x = Object->Vertices_normalStat[count].x;
+        y = Object->Vertices_normalStat[count].y;
+        z = Object->Vertices_normalStat[count].z;
+
+        angle = (LightDist*((x * Object->Spotlight.x) + (y * Object->Spotlight.y) + (z * Object->Spotlight.z) ));
+        if (angle<0 )
+        {
+        Object->Vertices_screen[count].r = 0;
+        Object->Vertices_screen[count].b = 0;
+        Object->Vertices_screen[count].g = 0;
+        }
+        else
+        {
+        Object->Vertices_screen[count].r = Object->Vertices_local[count].r * angle;
+        Object->Vertices_screen[count].b = Object->Vertices_local[count].b * angle;
+        Object->Vertices_screen[count].g = Object->Vertices_local[count].g * angle;
+        }
+        */
+    }
 }
 
 /*===========================
 	UTILITY FUNCTIONS
 ===========================*/
 
-void plViewport(int x, int y, PLuint width, PLuint height)
+void plViewport(PLint x, PLint y, PLuint width, PLuint height)
 {
 	_PL_GRAPHICS_TRACK();
 

@@ -69,7 +69,7 @@ ServerEntity_t *Server_FindRadius(PLVector3f origin, float radius)
 {
 	unsigned int		i,j;
 	ServerEntity_t		*eEntity, *eChain;
-	PLVector3f			eorg;
+	PLVector3f			eorg = { 0 };
 
 	eChain = sv.edicts;
 
@@ -260,7 +260,7 @@ void Server_Sound(ServerEntity_t *ent, int channel, char *sample, int iVolume, f
 	if(field_mask & SND_VOLUME)
 		MSG_WriteByte(&sv.datagram, iVolume);
 	if(field_mask & SND_ATTENUATION)
-		MSG_WriteByte(&sv.datagram,attenuation*64);
+		MSG_WriteByte(&sv.datagram,(PLbyte)attenuation * 64);
 
 	if(field_mask & SND_LARGEENTITY)
 	{
@@ -276,20 +276,10 @@ void Server_Sound(ServerEntity_t *ent, int channel, char *sample, int iVolume, f
 		MSG_WriteByte(&sv.datagram,sound_num);
 
 	for(i=0 ; i<3 ; i++)
-		MSG_WriteCoord(&sv.datagram,ent->v.origin[i]+0.5*(ent->v.mins[i]+ent->v.maxs[i]));
+		MSG_WriteCoord(&sv.datagram,ent->v.origin[i]+0.5f *(ent->v.mins[i]+ent->v.maxs[i]));
 }
 
-/*
-	Flares
-*/
-
-void Server_Flare(PLVector3f org,float r,float g,float b,float a,float scale,char *texture)
-{
-}
-
-/*
-	Particles
-*/
+/*	Particles	*/
 
 void Particle(PLVector3f org, PLVector3f dir,float scale,char *texture,int count)
 {
@@ -444,7 +434,7 @@ void Game_Initialize(void)
 	Import.Sys_Error				= Sys_Error;
 	Import.SetModel					= Server_SetModel;
 	Import.Particle					= Particle;
-	Import.Flare					= Server_Flare;
+	//Import.Flare					= Server_Flare;
 	Import.Sound					= Server_Sound;
 	Import.UnlinkEntity				= SV_UnlinkEdict;
 	Import.LinkEntity				= SV_LinkEdict;

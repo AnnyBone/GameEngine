@@ -151,15 +151,15 @@ typedef struct
 	Material_t*(*LoadMaterial)(const char *cPath);
 
 	// Memory
-	void*(*Hunk_AllocateName)(int size, char *name);
+	void*(*Hunk_AllocateName)(int size, const char *name);
 	void*(*Hunk_Alloc)(int size);
 
 	// Draw Functions
 	void(*DrawString)(int x, int y, const char *msg);
-	void(*DrawRectangle)(int x, int y, int w, int h, PLColour colour);
+	void(*DrawRectangle)(int x, int y, PLuint w, PLuint h, PLColour colour);
 	void(*DrawLine)(plVector3f_t start, plVector3f_t end);
 	void(*DrawCoordinateAxes)(plVector3f_t position);
-	void(*DrawMaterialSurface)(Material_t *mMaterial, int iSkin, int x, int y, int w, int h, float fAlpha);
+	void(*DrawMaterialSurface)(Material_t *mMaterial, PLuint iSkin, int x, int y, PLuint w, PLuint h, float fAlpha);
 
 	void(*Cvar_RegisterVariable)(ConsoleVariable_t *variable, void(*Function)(void));
 	void(*Cvar_SetValue)(const char *var_name, float value);
