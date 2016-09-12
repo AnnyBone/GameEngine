@@ -744,7 +744,7 @@ void Sky_DrawFaceQuad(glpoly_t *p)
 
 	glEnd();
 
-	plSetBlendMode(VL_BLEND_DEFAULT);
+	plSetBlendMode(PL_BLEND_DEFAULT);
 
 	rs_skypolys++;
 	rs_skypasses++;
@@ -755,7 +755,7 @@ void Sky_DrawFaceQuad(glpoly_t *p)
 
 		plDisableGraphicsStates(VL_CAPABILITY_TEXTURE_2D);
 
-		glColor4f(c[0], c[1], c[2], plClamp(0.0, r_skyfog.value, 1.0));
+		glColor4f(c[0], c[1], c[2], (float)plClamp(0.0, r_skyfog.value, 1.0));
 
 		glBegin(GL_QUADS);
 		for(i = 0,v = p->verts[0]; i < 4; i++,v += VERTEXSIZE)

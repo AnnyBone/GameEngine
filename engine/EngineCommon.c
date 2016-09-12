@@ -694,7 +694,7 @@ void COM_DefaultExtension (char *path, char *extension)
 /*	Returns the position (1 to argc-1) in the program's argument list
 	where the given parameter apears, or 0 if not present
 */
-int COM_CheckParm (char *parm)
+int COM_CheckParm (const char *parm)
 {
 	int i;
 

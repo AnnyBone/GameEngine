@@ -667,8 +667,11 @@ void R_UploadLightmap(int lmap)
 	upload.height 			= theRect->h;
 	upload.y 				= theRect->t;
 	upload.storage_type 	= PL_UNSIGNED_INT_8_8_8_8_REV;
-
-	plUploadTexture(plGetCurrentTexture(), &upload);
+#ifdef VIDEO_LIGHTMAP_HACKS
+	plUploadTexture(plGetCurrentTexture(VIDEO_TEXTURE_LIGHT), &upload);
+#else
+#	pragma message("Please implement an alternative solution here!!")
+#endif
 #endif
 
 	theRect->l = BLOCK_WIDTH;
@@ -734,7 +737,11 @@ void R_RebuildAllLightmaps (void)
 		upload.height			= BLOCK_HEIGHT;
 		upload.storage_type		= PL_UNSIGNED_INT_8_8_8_8_REV;
 
-		plUploadTexture(plGetCurrentTexture(), &upload);
+#ifdef VIDEO_LIGHTMAP_HACKS
+		plUploadTexture(plGetCurrentTexture(VIDEO_TEXTURE_LIGHT), &upload);
+#else
+#		pragma message("Please implement an alternative solution here!!")
+#endif
 #endif
 	}
 }

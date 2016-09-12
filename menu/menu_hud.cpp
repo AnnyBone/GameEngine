@@ -52,7 +52,7 @@ namespace Menu
 	}
 }
 
-void HUD_Initialize()
+void HUD_Initialize(void)
 {
 	hud_mnumbers = Engine.LoadMaterial("menu/hud/num");
 	hud_micons = Engine.LoadMaterial("menu/hud/icons");

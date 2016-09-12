@@ -282,9 +282,11 @@ void Input_Frame(void)
 	{
 			switch(sEvent.type)
 			{
+            default:break;
 			case SDL_WINDOWEVENT:
 				switch(sEvent.window.event)
 				{
+				default:break;
 				case SDL_WINDOWEVENT_FOCUS_GAINED:
 					Video.bActive = true;
 

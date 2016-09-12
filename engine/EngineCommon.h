@@ -94,7 +94,7 @@ extern	bool	com_eof;
 extern	int		com_argc;
 extern	char	**com_argv;
 
-int COM_CheckParm (char *parm);
+int COM_CheckParm (const char *parm);
 void COM_Init(void);
 void COM_InitArgv (int argc, char **argv);
 

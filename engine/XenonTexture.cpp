@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "engine_base.h"
 #include "video.h"
-#include "XenonTexture.h"
+//#include "XenonTexture.h"
 
 XTextureManager *g_texturemanager = nullptr;
 
@@ -181,7 +181,7 @@ XTexture *XTextureManager::CreateTexture(std::string path, PLuint flags)
 	return nullptr;
 }
 
-XTexture* XTextureManager::CreateTexture(std::string path, PLuint width, PLuint height, VLTextureFormat format, PLbyte *data, PLuint size, PLuint flags)
+XTexture* XTextureManager::CreateTexture(std::string path, PLuint width, PLuint height, PLTextureFormat format, PLbyte *data, PLuint size, PLuint flags)
 {
 	PLImage image;
 	memset(&image, 0, sizeof(PLImage));

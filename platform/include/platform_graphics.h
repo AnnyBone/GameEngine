@@ -26,6 +26,7 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 //#define	VL_MODE_DIRECT3D
 //			VL_MODE_VULKAN
 
+// todo, move these into platform_graphics.cpp
 #if defined (VL_MODE_OPENGL)
 #	include <GL/glew.h>
 
@@ -76,7 +77,7 @@ typedef enum PLBufferMask
 #endif
 } PLBufferMask;
 
-typedef enum VLColourFormat
+typedef enum PLColourFormat
 {
 #if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
 	VL_COLOURFORMAT_ARGB,
@@ -96,7 +97,7 @@ typedef enum VLColourFormat
 	VL_COLOURFORMAT_RGBA	= 2,
 	VL_COLOURFORMAT_BGRA	= 3,
 #endif
-} VLColourFormat;
+} PLColourFormat;
 
 typedef enum VLCullMode
 {
@@ -109,7 +110,7 @@ typedef enum VLCullMode
 } VLCullMode;
 
 // Blending Modes
-typedef enum VLBlend
+typedef enum PLBlend
 {
 #if defined (VL_MODE_OPENGL)
 	VL_BLEND_ZERO					= GL_ZERO,
@@ -148,19 +149,17 @@ typedef enum VLBlend
 	VL_BLEND_ONE_MINUS_DST_COLOR,
 	VL_BLEND_SRC_ALPHA_SATURATE,
 #endif
-} VLBlend;
+} PLBlend;
 
 // Blending
-#define	VL_BLEND_ADDITIVE	VL_BLEND_SRC_ALPHA, VL_BLEND_ONE
-#define	VL_BLEND_DEFAULT	VL_BLEND_SRC_ALPHA, VL_BLEND_ONE_MINUS_SRC_ALPHA
+#define	PL_BLEND_ADDITIVE	VL_BLEND_SRC_ALPHA, VL_BLEND_ONE
+#define	PL_BLEND_DEFAULT	VL_BLEND_SRC_ALPHA, VL_BLEND_ONE_MINUS_SRC_ALPHA
 
 //-----------------
 // Capabilities
 
 typedef enum PLGraphicsCapability
 {
-	VL_CAPABILITY_START = -1,
-
 	VL_CAPABILITY_FOG				= (1 << 0),	// Fog.
 	VL_CAPABILITY_ALPHA_TEST		= (1 << 1),	// Alpha-testing.
 	VL_CAPABILITY_BLEND				= (1 << 2), // Blending.
@@ -175,8 +174,6 @@ typedef enum PLGraphicsCapability
 
 	// Texture Generation
 	VL_CAPABILITY_GENERATEMIPMAP	= (1 << 20),
-
-	VL_CAPABILITY_END
 } PLGraphicsCapability;
 
 PL_EXTERN_C
@@ -200,6 +197,20 @@ typedef enum PLTextureTarget
 	PL_TEXTURE_3D
 } PLTextureTarget;
 
+typedef enum VLTextureClamp
+{
+#if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
+    VL_TEXTURECLAMP_CLAMP	= GL_CLAMP_TO_EDGE,
+    VL_TEXTURECLAMP_WRAP	= GL_REPEAT,
+#elif defined (VL_MODE_GLIDE)
+    VL_TEXTURECLAMP_CLAMP	= GR_TEXTURECLAMP_CLAMP,
+	VL_TEXTURECLAMP_WRAP	= GR_TEXTURECLAMP_WRAP,
+#else
+	VL_TEXTURECLAMP_CLAMP,
+	VL_TEXTURECLAMP_WRAP,
+#endif
+} VLTextureClamp;
+
 typedef enum PLTextureFilter
 {
     PL_TEXTUREFILTER_MIPMAP_NEAREST,	// GL_NEAREST_MIPMAP_NEAREST
@@ -212,25 +223,25 @@ typedef enum PLTextureFilter
 	PL_TEXTUREFILTER_LINEAR		// Linear filtering
 } PLTextureFilter;
 
-typedef enum VLTextureFormat
+typedef enum PLTextureFormat
 {
 #if defined (VL_MODE_OPENGL)
-	VL_TEXTUREFORMAT_RGB8	= GL_RGB8,
-	VL_TEXTUREFORMAT_RGBA8	= GL_RGBA8,
+	VL_TEXTUREFORMAT_RGB8,
+	VL_TEXTUREFORMAT_RGBA8,
 
-	VL_TEXTUREFORMAT_RGBA_DXT1	= GL_COMPRESSED_RGBA_S3TC_DXT1_EXT,
-	VL_TEXTUREFORMAT_RGB_DXT1	= GL_COMPRESSED_RGB_S3TC_DXT1_EXT,
-	VL_TEXTUREFORMAT_RGBA_DXT3	= GL_COMPRESSED_RGBA_S3TC_DXT3_EXT,
-	VL_TEXTUREFORMAT_RGBA_DXT5	= GL_COMPRESSED_RGBA_S3TC_DXT5_EXT,
+	VL_TEXTUREFORMAT_RGBA_DXT1,
+	VL_TEXTUREFORMAT_RGB_DXT1,
+	VL_TEXTUREFORMAT_RGBA_DXT3,
+	VL_TEXTUREFORMAT_RGBA_DXT5,
 
-	VL_TEXTUREFORMAT_RGB_FXT1	= GL_COMPRESSED_RGB_FXT1_3DFX,
+	VL_TEXTUREFORMAT_RGB_FXT1,
 #else
 	VL_TEXTUREFORMAT_RGB,
 	VL_TEXTUREFORMAT_RGBA,
 	VL_TEXTUREFORMAT_BGR,
 	VL_TEXTUREFORMAT_BGRA,
 #endif
-} VLTextureFormat;
+} PLTextureFormat;
 
 // Texture Environment Modes
 typedef enum PLTextureEnvironmentMode
@@ -252,12 +263,11 @@ typedef struct PLTextureInfo
 	PLuint size;
 	PLuint levels;
 
-	VLColourFormat	pixel_format;
-	VLTextureFormat format;
+	PLColourFormat	pixel_format;
+    PLDataFormat    storage_type;
+    PLTextureFormat format;
 
 	PLbool initial;
-
-	PLuint storage_type;
 
 	PLuint flags;
 } PLTextureInfo;
@@ -273,7 +283,7 @@ PL_EXTERN PLuint plGetMaxTextureSize(void);
 PL_EXTERN PLuint plGetMaxTextureUnits(void);
 PL_EXTERN PLuint plGetMaxTextureAnistropy(void);
 
-PL_EXTERN PLTexture plGetCurrentTexture(void);
+PL_EXTERN PLTexture plGetCurrentTexture(PLuint tmu);
 PL_EXTERN PLuint plGetCurrentTextureUnit(void);
 
 PL_EXTERN void plSetTexture(PLTexture texture);
@@ -341,7 +351,7 @@ typedef struct PLDraw
 
 PL_EXTERN_C
 
-PL_EXTERN void plSetBlendMode(VLBlend modea, VLBlend modeb);
+PL_EXTERN void plSetBlendMode(PLBlend modea, PLBlend modeb);
 PL_EXTERN void plSetCullMode(VLCullMode mode);
 
 PL_EXTERN void plDraw(PLDraw *draw);
@@ -351,6 +361,19 @@ PL_EXTERN_C_END
 
 //-----------------
 // Framebuffers
+
+typedef enum PLFBOTarget
+{
+#if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
+    PL_FRAMEBUFFER_DEFAULT	= GL_FRAMEBUFFER,
+    VL_FRAMEBUFFER_DRAW		= GL_DRAW_FRAMEBUFFER,
+    VL_FRAMEBUFFER_READ		= GL_READ_FRAMEBUFFER
+#else
+    VL_FRAMEBUFFER_DEFAULT,
+	VL_FRAMEBUFFER_DRAW,
+	VL_FRAMEBUFFER_READ
+#endif
+} PLFBOTarget;
 
 PL_EXTERN_C
 

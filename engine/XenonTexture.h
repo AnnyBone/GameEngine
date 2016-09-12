@@ -29,7 +29,7 @@ public:
 	PLbool IsValidSize(PLuint width, PLuint height);
 
 	XTexture *CreateTexture(std::string path, PLuint flags = 0);
-	XTexture *CreateTexture(std::string path, PLuint width, PLuint height, VLTextureFormat format, PLbyte *data, PLuint size, PLuint flags = 0);
+	XTexture *CreateTexture(std::string path, PLuint width, PLuint height, PLTextureFormat format, PLbyte *data, PLuint size, PLuint flags = 0);
 	XTexture *CreateTexture(PLImage *image, PLuint flags = 0);
 
 	void PrintMemoryUsage();
@@ -86,7 +86,7 @@ private:
 
 	PLushort _crc;
 
-	VLTextureFormat _format;
+	PLTextureFormat _format;
 };
 
 namespace textures

@@ -52,8 +52,7 @@ typedef struct PLGraphicsState
 	PLuint	current_textureunit;
 
 	// Texture states.
-	PLTexture				current_texture;
-	PLTextureMappingUnit	*tmu;
+	PLTextureMappingUnit *tmu;
 
 	// Shader states.
 	PLShaderProgram	current_program;
@@ -227,7 +226,7 @@ void _plShutdownOpenGL()
 PLresult plInitGraphics(void)
 {
 	_PL_GRAPHICS_TRACK();
-	
+
 	plGraphicsLog("Initializing graphics abstraction layer...\n");
 
 	memset(&pl_graphics_state, 0, sizeof(PLGraphicsState));
@@ -247,7 +246,7 @@ PLresult plInitGraphics(void)
 		return PL_RESULT_MEMORYALLOC;
 	}
 	memset(pl_graphics_state.tmu, 0, sizeof(PLTextureMappingUnit));
-	for (PLuint i = 0; i < plGetMaxTextureUnits(); i++) 
+	for (PLuint i = 0; i < plGetMaxTextureUnits(); i++)
 		pl_graphics_state.tmu[i].current_envmode = PL_TEXTUREMODE_REPLACE;
 
 	// Get any information that will be presented later.
@@ -463,7 +462,7 @@ void plDisableGraphicsStates(PLuint flags)
 	DRAW
 ===========================*/
 
-void plSetBlendMode(VLBlend modea, VLBlend modeb)
+void plSetBlendMode(PLBlend modea, PLBlend modeb)
 {
 	_PL_GRAPHICS_TRACK();
 
@@ -484,6 +483,7 @@ void plSetCullMode(VLCullMode mode)
 	glCullFace(GL_BACK);
 	switch (mode)
 	{
+    default:
 	case VL_CULL_NEGATIVE:
 		glFrontFace(GL_CW);
 		break;
@@ -689,8 +689,6 @@ void plDeleteShader(PLShader *shader)
 #if defined (VL_MODE_OPENGL)
 	glDeleteShader(*shader);
 #endif
-
-	shader = 0;
 }
 
 void plCreateShaderProgram(PLShaderProgram *program)
@@ -709,8 +707,6 @@ void plDeleteShaderProgram(PLShaderProgram *program)
 #if defined (VL_MODE_OPENGL)
 	glDeleteProgram(*program);
 #endif
-
-	program = 0;
 }
 
 PLShaderProgram plGetCurrentShaderProgram(void)
@@ -752,6 +748,22 @@ PLuint _plTranslateTextureUnit(PLuint target)
 #endif
 }
 
+PLuint _plTranslateTextureStorageFormat(PLDataFormat format)
+{
+    _PL_GRAPHICS_TRACK();
+
+#if defined(VL_MODE_OPENGL) || defined(VL_MODE_OPENGL_CORE)
+    switch(format)
+    {
+        default:
+        case PL_UNSIGNED_BYTE:              return GL_UNSIGNED_BYTE;
+        case PL_UNSIGNED_INT_8_8_8_8_REV:   return GL_UNSIGNED_INT_8_8_8_8_REV;
+    }
+#else
+    return format;
+#endif
+}
+
 PLuint _plTranslateTextureTarget(PLTextureTarget target)
 {
     _PL_GRAPHICS_TRACK();
@@ -764,10 +776,7 @@ PLuint _plTranslateTextureTarget(PLTextureTarget target)
         case PL_TEXTURE_1D: return GL_TEXTURE_1D;
         case PL_TEXTURE_3D: return GL_TEXTURE_3D;
     }
-#elif defined(VL_MODE_GLIDE)
-#elif defined(VL_MODE_DIRECT3D)
 #else
-	// No translation if we're doing this in SW.
 	return (PLuint)format;
 #endif
 }
@@ -793,7 +802,7 @@ PLuint _plTranslateTextureEnvironmentMode(PLTextureEnvironmentMode mode)
 #endif
 }
 
-PLuint _plTranslateTextureFormat(VLTextureFormat format)
+PLuint _plTranslateTextureFormat(PLTextureFormat format)
 {
     _PL_GRAPHICS_TRACK();
 
@@ -817,7 +826,7 @@ PLuint _plTranslateTextureFormat(VLTextureFormat format)
 #endif
 }
 
-PLbool _plIsCompressedTextureFormat(VLTextureFormat format)
+PLbool _plIsCompressedTextureFormat(PLTextureFormat format)
 {
     _PL_GRAPHICS_TRACK();
 
@@ -860,16 +869,15 @@ void plUploadTexture(PLTexture texture, const PLTextureInfo *upload)
     plSetTexture(texture);
 
 #if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
-    PLuint storage = upload->storage_type;
-    if (!storage) storage = GL_UNSIGNED_BYTE;
-    PLuint format = _plTranslateTextureFormat(upload->format);
+    PLuint storage  = _plTranslateTextureStorageFormat(upload->storage_type);
+    PLuint format   = _plTranslateTextureFormat(upload->format);
 
     PLuint levels = upload->levels;
     if (plIsGraphicsStateEnabled(VL_CAPABILITY_GENERATEMIPMAP))
         if (levels <= 1) levels = _PL_TEXTURE_LEVELS;
 
     if (upload->initial)
-        glTexStorage2D(GL_TEXTURE_2D, levels, upload->format, upload->width, upload->height);
+        glTexStorage2D(GL_TEXTURE_2D, levels, format, upload->width, upload->height);
 
     // Check the format, to see if we're getting a compressed
     // format type.
@@ -891,7 +899,7 @@ void plUploadTexture(PLTexture texture, const PLTextureInfo *upload)
                         0,
                         upload->x, upload->y,
                         upload->width, upload->height,
-                        format,
+                        upload->pixel_format,
                         storage,
                         upload->data
                 );
@@ -903,11 +911,11 @@ void plUploadTexture(PLTexture texture, const PLTextureInfo *upload)
 #endif
 }
 
-PLTexture plGetCurrentTexture(void)
+PLTexture plGetCurrentTexture(PLuint tmu)
 {
 	_PL_GRAPHICS_TRACK();
 
-	return pl_graphics_state.current_texture;
+	return pl_graphics_state.tmu[tmu].current_texture;
 }
 
 PLuint plGetCurrentTextureUnit(void)
@@ -982,14 +990,14 @@ void plSetTexture(PLTexture texture)
 {
 	_PL_GRAPHICS_TRACK();
 
-	if (texture == pl_graphics_state.current_texture)
+	if (texture == pl_graphics_state.tmu[plGetCurrentTextureUnit()].current_texture)
 		return;
 
 #if defined (VL_MODE_OPENGL)
 	glBindTexture(GL_TEXTURE_2D, texture);
 #endif
 
-	pl_graphics_state.current_texture = texture;
+    pl_graphics_state.tmu[plGetCurrentTextureUnit()].current_texture = texture;
 }
 
 void plSetTextureUnit(PLuint target)
@@ -1029,7 +1037,7 @@ void plSetTextureFilter(PLTexture texture, PLTextureFilter filter)
 	plSetTexture(texture);
 
 #ifdef VL_MODE_OPENGL
-	PLuint filtermin = filter, filtermax = filter;
+	PLuint filtermin, filtermax;
 	switch (filter)
 	{
     default:

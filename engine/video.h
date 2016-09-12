@@ -77,7 +77,7 @@ extern struct gltexture_s *g_effecttextures[MAX_EFFECTS];
 plEXTERN_C_END
 
 #define	VIDEO_TEXTURE_DIFFUSE		0
-#define	VIDEO_TEXTURE_LIGHT			1
+#define	VIDEO_TEXTURE_LIGHT			1	// currently reserved!
 #define	VIDEO_TEXTURE_FULLBRIGHT	2
 #define	VIDEO_TEXTURE_SPHERE		3
 #define	VIDEO_TEXTURE_DETAIL		4

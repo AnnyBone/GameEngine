@@ -612,7 +612,7 @@ void draw::Grid(plVector3f_t position, PLuint grid_size)
 	plEnableGraphicsStates(VL_CAPABILITY_BLEND);
 	plDisableGraphicsStates(VL_CAPABILITY_TEXTURE_2D);
 
-	plSetBlendMode(VL_BLEND_DEFAULT);
+	plSetBlendMode(PL_BLEND_DEFAULT);
 
 #ifdef VL_MODE_OPENGL
 	glPushMatrix();

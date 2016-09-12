@@ -1177,7 +1177,7 @@ void Material_Draw(Material_t *material, PLVertex *ObjectVertex, PLPrimitive Obj
 
 			if (msCurrentSkin->uiFlags & MATERIAL_FLAG_ADDITIVE)
 				// Additive blending isn't done by default.
-				plSetBlendMode(VL_BLEND_ADDITIVE);
+				plSetBlendMode(PL_BLEND_ADDITIVE);
 		}
 		// Alpha-testing
 		else if (msCurrentSkin->uiFlags & MATERIAL_FLAG_ALPHA)
@@ -1336,7 +1336,7 @@ void Material_Draw(Material_t *material, PLVertex *ObjectVertex, PLPrimitive Obj
 
 			if (msCurrentSkin->uiFlags & MATERIAL_FLAG_ADDITIVE)
 				// Return blend mode to its default.
-				plSetBlendMode(VL_BLEND_DEFAULT);
+				plSetBlendMode(PL_BLEND_DEFAULT);
 		}
 		// Alpha-testing
 		else if (msCurrentSkin->uiFlags & MATERIAL_FLAG_ALPHA)
