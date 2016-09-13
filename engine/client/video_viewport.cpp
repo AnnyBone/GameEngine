@@ -103,7 +103,7 @@ void Viewport::Draw()
 	}
 
 	plViewport(xmod, ymod, _width, _height);
-	vlScissor(xmod, ymod, _width, _height);
+	plScissor(xmod, ymod, _width, _height);
 
 	draw::ClearBuffers();
 
@@ -134,7 +134,7 @@ void Viewport::Draw()
 		g_console->SetSize(_width, _height);
 
 		Screen_DrawNet();
-		Screen_DrawConsole();
+		//Screen_DrawConsole();
 		Screen_DrawFPS();
 	}
 

@@ -62,7 +62,7 @@ void vlApplyLighting(PLDraw *object, PLLight *light, plVector3f_t position);
 
 // Frame Buffer
 void vlGenerateFrameBuffer(unsigned int *buffer);
-void vlCheckFrameBufferStatus();
+void vlCheckFrameBufferStatus(PLFBOTarget target);
 void vlBindFrameBuffer(PLFBOTarget target, unsigned int buffer);
 void vlAttachFrameBufferRenderBuffer(unsigned int attachment, unsigned int buffer);
 void vlAttachFrameBufferTexture(gltexture_t *buffer);
@@ -75,7 +75,6 @@ void vlRenderBufferStorage(int format, int samples, unsigned int width, unsigned
 void vlDeleteRenderBuffer(unsigned int *buffer);
 
 void vlSwapBuffers(void);
-void vlScissor(int x, int y, unsigned int width, unsigned int height);
 void vlColourMask(bool red, bool green, bool blue, bool alpha);
 
 plEXTERN_C_END

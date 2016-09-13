@@ -34,8 +34,10 @@ public:
 
 	void PrintMemoryUsage();
 
+#if 0
 	XTexture *GetTexture(std::string path);
 	XTexture *GetTexture(PLushort crc);
+#endif
 
 	void DeleteTexture(XTexture *texture, PLbool force = false);
 

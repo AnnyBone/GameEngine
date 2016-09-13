@@ -16,6 +16,9 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+// Platform library
+#include "platform_library.h"
+
 #include "menu_main.h"
 
 /*
@@ -24,9 +27,6 @@
 */
 
 #include "menu_hud.h"
-
-// Platform library
-#include "platform_library.h"
 
 /*	TODO:
 		#	Get menu elements to be handled like objects.
@@ -49,11 +49,15 @@ int	iMenuState = 0;
 ConsoleVariable_t	cv_menushow = { "menu_show", "1", false, false, "Toggle the display of any menu elements." };
 ConsoleVariable_t	cv_menudebug = { "menu_debug", "0", false, false, "Toggle the display of any debugging information." };
 
-int	iMousePosition[2];
-
-int g_menuwidth = 0, g_menuheight = 0;
-
 Material_t *debug_logo = NULL;
+
+namespace menu
+{
+	PLuint width = 640, height = 480;
+	PLint cursor_position[2] = { 0 };
+
+	CoreViewport *viewport = nullptr;
+}
 
 // TODO: Why are we doing this!? Should be using the one from the lib
 char *va(char *format,...)
@@ -68,12 +72,9 @@ char *va(char *format,...)
 	return string;
 }
 
-void Menu_Initialize(void)
+void menu::Initialize()
 {
 	Engine.Con_Printf("Initializing menu...\n");
-
-	// Get the current screen size.
-	Menu_UpdateScreenSize();
 
 	Engine.Cvar_RegisterVariable(&cv_menushow, NULL);
 
@@ -82,27 +83,18 @@ void Menu_Initialize(void)
 	HUD_Initialize();
 }
 
-void Menu_UpdateScreenSize(void)
-{
-	g_menuwidth = Engine.GetScreenWidth();
-	g_menuheight = Engine.GetScreenHeight();
-}
-
-void Menu_DrawMouse(void)
+void menu::DrawMouse()
 {
 	Engine.Client_SetMenuCanvas(CANVAS_DEFAULT);
 
-	Engine.GetCursorPosition(&iMousePosition[0], &iMousePosition[1]);
+	Engine.GetCursorPosition(&menu::cursor_position[0], &menu::cursor_position[1]);
 
 	//Engine.DrawPic(MENU_BASE_PATH"cursor", 1.0f, iMousePosition[0], iMousePosition[1], 16, 16);
 }
 
-void Menu_Draw(CoreViewport *viewport)
+void menu::Draw(CoreViewport *viewport)
 {
-	if (!cv_menushow.bValue || !viewport)
-		return;
-
-	Menu_UpdateScreenSize();
+	if (!cv_menushow.bValue || !viewport) return;
 
 	Engine.Client_SetMenuCanvas(CANVAS_DEFAULT);
 
@@ -117,15 +109,18 @@ void Menu_Draw(CoreViewport *viewport)
 		//Engine.DrawPic(MENU_BASE_PATH"paused",1.0f,0,0,32,64);
 		return;
 	}
-	
-	Engine.DrawMaterialSurface(debug_logo, 0, g_menuwidth - 80, g_menuheight - 80, 64, 64, 1.0f);
+
+	Engine.DrawRectangle(0, 0, 32, 32, pl_red);
+	Engine.DrawRectangle(0, 32, 32, 32, pl_green);
+	Engine.DrawRectangle(0, 64, 32, 32, pl_blue);
+	Engine.DrawMaterialSurface(debug_logo, 0, viewport->GetWidth() - 80, viewport->GetHeight() - 80, 64, 64, 1.0f);
 
 	if ((iMenuState & MENU_STATE_HUD) && (!(iMenuState & MENU_STATE_SCOREBOARD) && !(iMenuState & MENU_STATE_MENU)))
 		HUD_Draw();
 	else if(iMenuState & MENU_STATE_MENU)
 	{
 		PLColour col = { 0, 0, 0, 0.8f };
-		Engine.DrawRectangle(0, 0, g_menuwidth, g_menuheight, col);
+		Engine.DrawRectangle(0, 0, viewport->GetWidth(), viewport->GetHeight(), col);
 		
 		Engine.DrawString(110, 80, ">");
 		Engine.DrawString(190, 80, "<");
@@ -150,7 +145,7 @@ void Menu_Draw(CoreViewport *viewport)
 		}
 #endif
 
-		Menu_DrawMouse();
+		menu::DrawMouse();
 	}
 
 #if 0
@@ -343,9 +338,7 @@ void Menu_AddState(int iState)
 	iMenuState |= iState;
 }
 
-/*	Called by the engine.
-	Remove a state from the menus state set.
-*/
+/*	Called by the engine.	*/
 void Menu_RemoveState(int iState)
 {
 	// [17/9/2013] Return since the state is already removed ~hogsy
@@ -355,26 +348,20 @@ void Menu_RemoveState(int iState)
 	iMenuState &= ~iState;
 }
 
-/*	Called by the engine.
-	Force the current menu state to something new.
-*/
+/*	Called by the engine.	*/
 void Menu_SetState(int iState)
 {
 	iMenuState = iState;
 }
 
-/*	Called by the engine.
-	Returns the menus currently active states.
-*/
+/*	Called by the engine.	*/
 int Menu_GetState(void)
 {
 	return iMenuState;
 }
 
-/*	Called by the engine.
-	Shuts down the menu system.
-*/
-void Menu_Shutdown(void)
+/*	Called by the engine.	*/
+void menu::Shutdown()
 {
 	Engine.Con_Printf("Shutting down menu...\n");
 }
@@ -384,14 +371,14 @@ void Input_Key(int iKey)
 
 }
 
-PL_MODULE_EXPORT MenuExport_t *Menu_Main(ModuleImport_t *Import)
+extern "C" PL_MODULE_EXPORT MenuExport_t *Menu_Main(ModuleImport_t *Import)
 {
 	Engine = *Import;
 
 	Export.version		= MENU_VERSION;
-	Export.Initialize	= Menu_Initialize;
-	Export.Shutdown		= Menu_Shutdown;
-	Export.Draw			= Menu_Draw;
+	Export.Initialize	= menu::Initialize;
+	Export.Shutdown		= menu::Shutdown;
+	Export.Draw			= menu::Draw;
 	Export.Input		= Input_Key;
 	Export.SetState		= Menu_SetState;
 	Export.RemoveState	= Menu_RemoveState;

@@ -56,19 +56,12 @@ PLresult plLoadImage(const PLchar *path, PLImage *out)
 }
 #endif
 
-PLresult plFreeImage(PLImage *image)
+void plFreeImage(PLImage *image)
 {
     plFunctionStart();
 
-    if(!image || !image->data)
-        // Nothing worth freeing.
-        return PL_RESULT_SUCCESS;
-
+    if(!image || !image->data) return;
     free(image->data);
-
-    image = nullptr;
-
-    return PL_RESULT_SUCCESS;
 
     plFunctionEnd();
 }

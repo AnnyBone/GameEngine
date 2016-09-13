@@ -473,6 +473,7 @@ typedef struct PLLight
 PL_EXTERN_C
 
 PL_EXTERN void plViewport(PLint x, PLint y, PLuint width, PLuint height);
+PL_EXTERN void plScissor(PLint x, PLint y, PLuint width, PLuint height);
 PL_EXTERN void plFinish(void);
 
 // Initialization

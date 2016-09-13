@@ -30,7 +30,7 @@ typedef struct PLImage
 
 	PLchar path[PL_MAX_PATH];
 
-	VLTextureFormat format;
+	PLTextureFormat format;
 
 	PLuint flags;
 } PLImage;
@@ -43,6 +43,8 @@ typedef struct PLImage
 #define PLIMAGE_EXTENSION_PNG	".png"
 
 plEXTERN_C_START
+
+extern void plFreeImage(PLImage *image);
 
 extern PLresult plLoadFTXImage(FILE *fin, PLImage *out);	// Ritual's FTX image format.
 extern PLresult plLoadPPMImage(FILE *fin, PLImage *out);	// Portable Pixel Map format.

@@ -1171,7 +1171,22 @@ void plViewport(PLint x, PLint y, PLuint width, PLuint height)
 #endif
 }
 
-void plFinish()
+void plScissor(PLint x, PLint y, PLuint width, PLuint height)
+{
+	_PL_GRAPHICS_TRACK();
+
+#if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
+	glScissor(x, y, width, height);
+#elif defined (VL_MODE_DIRECT3D)
+	D3D11_RECT scissor_region;
+	memset(&scissor_region, 0, sizeof(D3D11_RECT));
+	scissor_region.bottom	= height;
+	scissor_region.right	= width;
+	vl_d3d_context->lpVtbl->RSSetScissorRects(vl_d3d_context, 0, &scissor_region);
+#endif
+}
+
+void plFinish(void)
 {
 	_PL_GRAPHICS_TRACK();
 

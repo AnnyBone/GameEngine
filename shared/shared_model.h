@@ -174,13 +174,13 @@ typedef struct mleaf_s
 	struct mnode_s	*parent;
 
 	// leaf specific
-	byte		*compressed_vis;
+	PLbyte		*compressed_vis;
 	efrag_t		*efrags;
 
 	msurface_t	**firstmarksurface;
 	unsigned int	nummarksurfaces;
 	int			key;			// BSP sequence number for leaf's contents
-	byte		ambient_sound_level[BSP_AMBIENT_END];
+	PLbyte		ambient_sound_level[BSP_AMBIENT_END];
 } mleaf_t;
 
 // !!! if this is changed, it must be changed in asm_i386.h too !!!

@@ -39,11 +39,11 @@ void Menu_Initialize(void)
 	if (g_menu)
 		plUnloadLibrary(hMenuInstance);
 
-	mImport.Con_Printf = Con_Printf;
-	mImport.Con_DPrintf = Con_DPrintf;
-	mImport.Con_Warning = Con_Warning;
-	mImport.Sys_Error = Sys_Error;
-	mImport.Cvar_RegisterVariable = Cvar_RegisterVariable;
+	mImport.Con_Printf 				= Con_Printf;
+	mImport.Con_DPrintf 			= Con_DPrintf;
+	mImport.Con_Warning 			= Con_Warning;
+	mImport.Sys_Error 				= Sys_Error;
+	mImport.Cvar_RegisterVariable 	= Cvar_RegisterVariable;
 
 	mImport.LoadMaterial		= Material_Load;
 	mImport.Material_Precache	= Material_Precache;
@@ -52,8 +52,6 @@ void Menu_Initialize(void)
 	mImport.DrawRectangle			= Draw_Rectangle;
 	mImport.DrawMaterialSurface		= Draw_MaterialSurface;
 
-	mImport.GetScreenWidth				= Menu_GetScreenWidth;
-	mImport.GetScreenHeight				= Menu_GetScreenHeight;
 	mImport.ShowCursor					= plShowCursor;
 	mImport.GetCursorPosition			= Window_GetCursorPosition;
 	mImport.Cmd_AddCommand				= Cmd_AddCommand;
@@ -75,7 +73,7 @@ void Menu_Initialize(void)
 		plUnloadLibrary(hMenuInstance);
 
 		// Let the user know the module failed to load. ~hogsy
-		Sys_Error("Failed to load %s/%s." PL_CPU_ID "" PL_MODULE_EXTENSION "!\nCheck log for details.\n", com_gamedir, MENU_MODULE);
+		Sys_Error("Failed to load %s/%s" PL_MODULE_EXTENSION "!\nCheck log for details.\n", com_gamedir, MENU_MODULE);
 	}
 }
 

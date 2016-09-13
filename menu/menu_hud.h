@@ -2,6 +2,7 @@
 DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
 Version 2, December 2004
 
+Copyright (C) 2011-2015 Marco 'eukara' Hladik <eukos@oldtimes-software.com>
 Copyright (C) 2011-2016 Mark E Sowden <markelswo@gmail.com>
 
 Everyone is permitted to copy and distribute verbatim or modified
@@ -16,9 +17,5 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
 #pragma once
 
-plEXTERN_C_START
-
-void HUD_Initialize(void);
-void HUD_Draw(void);
-
-plEXTERN_C_END
+void HUD_Initialize();
+void HUD_Draw();

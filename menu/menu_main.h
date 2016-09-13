@@ -25,15 +25,24 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 #define	MENU_BASE_PATH	"menu/"
 #define MENU_HUD_PATH	"menu/hud/"
 
+namespace menu
+{
+	void Initialize();
+	void Shutdown();
+
+	void Draw(CoreViewport *viewport);
+	void DrawMouse();
+
+	extern PLuint width, height;
+	extern PLint cursor_position[2];
+}
+
 plEXTERN_C_START
 
 extern ModuleImport_t Engine;
 
 extern int	iMenuState;				// Global menu state.
 
-extern int g_menuwidth, g_menuheight;
-
-void	Menu_UpdateScreenSize(void);
 void	Menu_AddState(int iState);
 void	Menu_SetState(int iState);
 void	Menu_RemoveState(int iState);

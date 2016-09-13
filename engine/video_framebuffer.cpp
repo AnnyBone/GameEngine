@@ -129,7 +129,7 @@ void VideoFrameBuffer::GenerateBuffers()
 	buf_depth->Attach();
 #endif
 
-	vlCheckFrameBufferStatus();
+	vlCheckFrameBufferStatus(PL_FRAMEBUFFER_DEFAULT);
 }
 
 void VideoFrameBuffer::Bind()
