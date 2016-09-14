@@ -53,9 +53,9 @@ PL_EXTERN PLvoid plGetCursorPosition(int *x, int *y);
 // Window Management
 PL_EXTERN PLvoid plCreateWindow(plWindow_t *window);
 
-PL_EXTERN PLuint plGetScreenWidth(PLvoid);	// Returns width of current screen.
-PL_EXTERN PLuint plGetScreenHeight(PLvoid);	// Returns height of current screen.
-PL_EXTERN PLint plGetScreenCount(PLvoid);	// Returns number of avaliable screens.
+PL_EXTERN PLuint plGetScreenWidth(void);	// Returns width of current screen.
+PL_EXTERN PLuint plGetScreenHeight(void);	// Returns height of current screen.
+PL_EXTERN PLint plGetScreenCount(void);	// Returns number of avaliable screens.
 
 // Rendering
 PL_EXTERN PLvoid plSwapBuffers(plWindow_t *window);

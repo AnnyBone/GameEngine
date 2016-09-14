@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 /*	Simple Window/Display Handling	*/
 
-PLuint plGetScreenWidth(PLvoid)
+PLuint plGetScreenWidth(void)
 {
 #ifdef _WIN32
 	return GetSystemMetrics(SM_CXSCREEN);
@@ -40,11 +40,11 @@ PLuint plGetScreenWidth(PLvoid)
 		return 4000;
 	}
 
-	return screen->width;
+	return (PLuint)screen->width;
 #endif
 }
 
-PLuint plGetScreenHeight(PLvoid)
+PLuint plGetScreenHeight(void)
 {
 	pFUNCTION_START
 #ifdef _WIN32
@@ -64,7 +64,7 @@ PLuint plGetScreenHeight(PLvoid)
 		return 4000;
 	}
 
-	return screen->height;
+	return (PLuint)screen->height;
 #endif
 	pFUNCTION_END
 }
@@ -74,7 +74,7 @@ Display *dMainDisplay;
 Window  wRootWindow;
 #endif
 
-PLint plGetScreenCount(PLvoid)
+PLint plGetScreenCount(void)
 {
 #ifdef _WIN32
 	return GetSystemMetrics(SM_CMONITORS);
@@ -220,6 +220,7 @@ void plGetCursorPosition(int *x, int *y)
 	GetCursorPos(&pPoint);
 	*x = pPoint.x; *y = pPoint.y;
 #else	// Linux
+	// todo, implement me!
 #endif
 }
 

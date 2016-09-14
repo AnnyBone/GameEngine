@@ -56,14 +56,14 @@ void Window_Initialize(void)
 
 	if (COM_CheckParm("-width"))
 	{
-		g_mainwindow.width			= atoi(com_argv[COM_CheckParm("-width") + 1]);
+		g_mainwindow.width			= (PLuint)atoi(com_argv[COM_CheckParm("-width") + 1]);
 		g_mainwindow.is_unlocked	= true;
 	}
 	else g_mainwindow.width = WINDOW_MINIMUM_WIDTH;
 
 	if (COM_CheckParm("-height"))
 	{
-		g_mainwindow.height			= atoi(com_argv[COM_CheckParm("-height") + 1]);
+		g_mainwindow.height			= (PLuint)atoi(com_argv[COM_CheckParm("-height") + 1]);
 		g_mainwindow.is_unlocked	= true;
 	}
 	else g_mainwindow.height = WINDOW_MINIMUM_HEIGHT;
@@ -81,7 +81,7 @@ void Window_Initialize(void)
 	SDL_GL_SetAttribute(SDL_GL_ACCUM_GREEN_SIZE, 8);
 	SDL_GL_SetAttribute(SDL_GL_ACCUM_BLUE_SIZE, 8);
 	SDL_GL_SetAttribute(SDL_GL_ACCUM_ALPHA_SIZE, 8);
-#if 0
+#if 1
 	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
 	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 8);
 #endif
@@ -89,7 +89,7 @@ void Window_Initialize(void)
 	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
-	int	flags =	SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL | SDL_WINDOW_FULLSCREEN;
+	PLuint flags = SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL | SDL_WINDOW_FULLSCREEN;
 	if (!g_mainwindow.is_fullscreen)
 		flags &= ~SDL_WINDOW_FULLSCREEN;
 
@@ -212,7 +212,7 @@ void Window_Update(void)
 		return;
 	}
 
-	Window_SetSize(cv_video_width.iValue, cv_video_height.iValue);
+	Window_SetSize((PLuint)cv_video_width.iValue, (PLuint)cv_video_height.iValue);
 	Window_SetVerticalSync(cv_video_verticlesync.iValue);
 	Window_SetFullscreen(cv_video_fullscreen.bValue);
 }

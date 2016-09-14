@@ -62,6 +62,15 @@ Material_t *g_mBlobShadow;
 Material_t *g_mGlobalColour;
 Material_t *g_mGlobalConChars;
 
+// Console Variables
+ConsoleVariable_t cv_material_simplified = {
+				"material_simplified",
+				(char*)"0",
+				true,
+				false,
+				"If enabled, this will result in a very basio render for each surface using a material."
+};
+
 void Material_List(void);
 
 void Material_Initialize(void)
@@ -72,6 +81,8 @@ void Material_Initialize(void)
 	Con_Printf("Initializing material system...\n");
 
 	Cmd_AddCommand("material_list", Material_List);
+
+	Cvar_RegisterVariable(&cv_material_simplified, NULL);
 
 	// Must be set to initialized before anything else.
 	material_initialized = true;
@@ -1135,10 +1146,8 @@ void Material_DrawObject(Material_t *material, PLDraw *object, bool ispost)
 */
 void Material_Draw(Material_t *material, PLVertex *ObjectVertex, PLPrimitive ObjectPrimitive, unsigned int ObjectSize, bool ispost)
 {
-	if (r_drawflat_cheatsafe || !material)
-		return;
-
-	if ((material->override_wireframe && (r_showtris.iValue != 1) || !material->override_wireframe) && (r_lightmap_cheatsafe || r_showtris.bValue))
+	if (!material) return; // todo, handle this better... throw error?
+	else if ((material->override_wireframe && (r_showtris.iValue != 1) || !material->override_wireframe) && (r_lightmap_cheatsafe || r_showtris.bValue))
 	{
 		if (!ispost)
 		{
@@ -1148,6 +1157,21 @@ void Material_Draw(Material_t *material, PLVertex *ObjectVertex, PLPrimitive Obj
 			// Set it as white.
 			g_mGlobalColour->skin[MATERIAL_COLOUR_WHITE].texture->instance->Bind();
 		}
+		return;
+	}
+	else if(cv_material_simplified.value == 1)
+	{
+		MaterialSkin_t *skin = Material_GetSkin(material, material->current_skin);
+		if(!skin) { Sys_Error("Failed to get valid skin! (%s)\n", material->cName); return; } // return to keep compiler happy...
+
+		MaterialTexture_t *texture = &skin->texture[0];
+		if(!texture) { Sys_Error("Failed to get valid texture! (%s)\n", material->cName); return; } // return to keep compiler happy...
+		else if(!texture->instance) { Sys_Error("Invalid texture instance! (%s)\n", material->cName); return; } // return to keep compiler happy...
+
+		plSetTextureUnit(0);
+
+		if(!ispost)	texture->instance->Bind();
+		else		texture->instance->Unbind();
 		return;
 	}
 

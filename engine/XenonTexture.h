@@ -71,6 +71,7 @@ public:
 	void SetCRC(PLushort crc) { _crc = crc; }
 
 	void Bind();
+	void Unbind();
 
 	PLuint levels;
 

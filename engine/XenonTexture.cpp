@@ -305,6 +305,13 @@ void XTexture::Bind()
 	plSetTexture(_id);
 }
 
+void XTexture::Unbind()
+{
+	// ONLY do this if it's the current bound texture.
+	if(plGetCurrentTexture(plGetCurrentTextureUnit()) == _id)
+		plSetTexture(0);
+}
+
 /*	Flags	*/
 
 void XTexture::AddFlags(PLuint flags)
