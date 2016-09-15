@@ -564,14 +564,10 @@ static PL_INLINE bool plIsIntersecting(
 
 static PL_INLINE void plNormalizeAngles(PLVector3f angles)
 {
-	while (angles[0] > 360)
-		angles[0] -= 360;
-	while (angles[0] < 0)
-		angles[0] += 360;
-	while (angles[1] > 360)
-		angles[1] -= 360;
-	while (angles[1] < 0)
-		angles[1] += 360;
+	while (angles[0] > 360)		angles[0] -= 360;
+	while (angles[0] < 0)		angles[0] += 360;
+	while (angles[1] > 360)		angles[1] -= 360;
+	while (angles[1] < 0)		angles[1] += 360;
 }
 
 static PL_INLINE PLfloat plVectorToYaw(PLfloat *vec)

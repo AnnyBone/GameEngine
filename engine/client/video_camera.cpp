@@ -48,6 +48,7 @@ ConsoleVariable_t cv_camera_rollspeed = { "camera_rollspeed", "200", true };
 
 ConsoleVariable_t cv_camera_nearclip = { "camera_nearclip", "4", true };
 ConsoleVariable_t cv_camera_farclip = { "camera_farclip", "16384", true };
+ConsoleVariable_t cv_camera_drawfrustum = { "camera_drawfrustum", "0", false, false, "Draws the view frustum." };
 
 ConsoleVariable_t cv_camera_maxpitch = { "camera_maxpitch", "90" };
 ConsoleVariable_t cv_camera_minpitch = { "camera_minpitch", "-90" };
@@ -83,6 +84,7 @@ CameraManager::CameraManager()
 
 	Cvar_RegisterVariable(&cv_camera_nearclip, NULL);
 	Cvar_RegisterVariable(&cv_camera_farclip, NULL);
+	Cvar_RegisterVariable(&cv_camera_drawfrustum, NULL);
 
 	Cvar_RegisterVariable(&cv_camera_maxpitch, NULL);
 	Cvar_RegisterVariable(&cv_camera_minpitch, NULL);
@@ -511,10 +513,8 @@ void Camera::SimulateViewEntity()
 
 	// Finally, offset!
 	float offset = 0;
-	if (cv_camera_modelposition.iValue == 1)
-		offset = -5;
-	else if (cv_camera_modelposition.iValue == 2)
-		offset = 5;
+	if (cv_camera_modelposition.iValue == 1)		offset = -5;
+	else if (cv_camera_modelposition.iValue == 2)	offset = 5;
 	else return;
 
 	for (int i = 0; i < 3; i++)
@@ -737,10 +737,10 @@ int SignbitsForPlane(mplane_t *out);
 void Camera::SimulateFrustum()
 {
 	// Update the frustum.
-	plTurnVector(_frustum[0].normal, _position, _right, _fovx / 2 - 90);	// Left plane
-	plTurnVector(_frustum[1].normal, _position, _right, 90 - _fovx / 2);	// Right plane
-	plTurnVector(_frustum[2].normal, _position, _up, 90 - _fovy / 2);		// Bottom plane
-	plTurnVector(_frustum[3].normal, _position, _up, _fovy / 2 - 90);		// Top plane
+	plTurnVector(_frustum[0].normal, _forward, _right, _fovx / 2 - 90);	// Left plane
+	plTurnVector(_frustum[1].normal, _forward, _right, 90 - _fovx / 2);	// Right plane
+	plTurnVector(_frustum[2].normal, _forward, _up, 90 - _fovy / 2);		// Bottom plane
+	plTurnVector(_frustum[3].normal, _forward, _up, _fovy / 2 - 90);		// Top plane
 
 	for (int i = 0; i < 4; i++)
 	{
