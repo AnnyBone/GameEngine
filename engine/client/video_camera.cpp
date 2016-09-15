@@ -73,9 +73,6 @@ CameraManager::CameraManager()
 {
 	Con_Printf("Initializing Camera Manager...\n");
 
-	// Reserve for up to four cameras.
-	_cameras.reserve(4);
-
 	Cvar_RegisterVariable(&cv_camera_bob, NULL);
 	Cvar_RegisterVariable(&cv_camera_forwardcycle, NULL);
 	Cvar_RegisterVariable(&cv_camera_sidecycle, NULL);
@@ -118,11 +115,8 @@ Camera *CameraManager::CreateCamera()
 
 void CameraManager::DeleteCamera(Camera *camera)
 {
-	assert(camera);
-
 	// Already deleted, probably.
-	if (!camera) 
-		return;
+	if (!camera) return;
 
 	// Remove it from the list.
 	for (auto iterator = _cameras.begin(); iterator != _cameras.end(); iterator++)
@@ -139,8 +133,6 @@ void CameraManager::DeleteCamera(Camera *camera)
 
 void CameraManager::SetCurrentCamera(Camera *_camera)
 {
-	assert(_camera);
-
 	if (!_camera)
 	{
 		Con_Warning("Attempted to set invalid camera as current!\n");
@@ -221,25 +213,25 @@ EngineCamera *CameraManager_GetPrimaryCamera(void)
 
 extern "C" void CameraManager_SetParentEntity(EngineCamera *camera, ClientEntity_t *parent)
 {
-	if (!camera) Sys_Error("Received invalid camera when attempting to set parent entity!\n");
+	if (!camera) { Sys_Error("Received invalid camera when attempting to set parent entity!\n"); return; } // Keep compiler happy...
 	camera->SetParentEntity(parent);
 }
 
 extern "C" void CameraManager_SetViewEntity(EngineCamera *camera, ClientEntity_t *child)
 {
-	if (!camera) Sys_Error("Received invalid camera when attempting to set view entity!\n");
+	if (!camera) { Sys_Error("Received invalid camera when attempting to set view entity!\n"); return; } // Keep compiler happy...
 	camera->SetViewEntity(child);
 }
 
 extern "C" ClientEntity_t *CameraManager_GetParentEntity(EngineCamera *camera)
 {
-	if (!camera) Sys_Error("Received invalid camera when attempting to get parent entity!\n");
+	if (!camera) { Sys_Error("Received invalid camera when attempting to get parent entity!\n"); return NULL; } // Keep compiler happy...
 	return camera->GetParentEntity();
 }
 
 extern "C" ClientEntity_t *CameraManager_GetViewEntity(EngineCamera *camera)
 {
-	if (!camera) Sys_Error("Received invalid camera when attempting to get view entity!\n");
+	if (!camera) { Sys_Error("Received invalid camera when attempting to get view entity!\n"); return NULL; } // Keep compiler happy...
 	return camera->GetParentEntity();
 }
 
@@ -351,7 +343,7 @@ void Camera::DrawViewEntity()
 
 void Camera::Draw()
 {
-	float fovxx = _fovx, fovyy = _fovy;
+	//float fovxx = _fovx, fovyy = _fovy;
 	if (cl.worldmodel) 
 	{
 		// Current view leaf.
@@ -363,9 +355,11 @@ void Camera::Draw()
 			int contents = Mod_PointInLeaf(_position, cl.worldmodel)->contents;
 			if (contents == BSP_CONTENTS_WATER || contents == BSP_CONTENTS_SLIME || contents == BSP_CONTENTS_LAVA)
 			{
+#if 0
 				//variance is a percentage of width, where width = 2 * tan(fov / 2) otherwise the effect is too dramatic at high FOV and too subtle at low FOV.  what a mess!
 				fovxx = atanf(tan(PL_DEG2RAD(_fovx) / 2) * (0.97 + sin(cl.time * 1.5) * 0.03)) * 2 / PL_PI_DIV180;
 				fovyy = atanf(tan(PL_DEG2RAD(_fovy) / 2) * (1.03 - sin(cl.time * 1.5) * 0.03)) * 2 / PL_PI_DIV180;
+#endif
 			}
 		}
 		
@@ -465,7 +459,7 @@ void Camera::SimulateViewEntity()
 		return;
 
 	// Apply view model angles.
-	plVector3f_t oldangles;
+	PLVector3f oldangles = { 0 };
 	plVectorCopy(_viewmodel->angles, oldangles);
 	plVectorCopy(_angles, _viewmodel->angles);
 
@@ -487,14 +481,14 @@ void Camera::SimulateViewEntity()
 	// Apple the view model drift.
 	if (host_frametime != 0)
 	{
-		static plVector3f_t lastforward;
-		plVector3f_t difference;
+		static PLVector3f lastforward;
+		PLVector3f difference = { 0, 0, 0 };
 		plVectorSubtract3fv(_forward, lastforward, difference);
 
-		float speed = 3.0f, scale = 0;
+		float speed = 3.0f;
 		float diff = plLengthf(difference);
 		if ((diff > cv_camera_modellag.value) && (cv_camera_modellag.value > 0))
-			speed *= scale = diff / cv_camera_modellag.value;
+			speed *= diff / cv_camera_modellag.value;
 
 		for (int i = 0; i < 3; i++)
 			lastforward[i] += difference[i] * (speed * host_frametime);
@@ -512,8 +506,8 @@ void Camera::SimulateViewEntity()
 	}
 
 	// Apply some slight movement.
-	_viewmodel->angles[PL_PITCH] = -(_angles[PL_PITCH] - (sinf(cl.time * 1.5f) * 0.2f));
-	_viewmodel->angles[PL_ROLL] = -(_angles[PL_ROLL] - (sinf(cl.time * 1.5f) * 0.2f));
+	_viewmodel->angles[PL_PITCH] = -(_angles[PL_PITCH] - (sinf((float)cl.time * 1.5f) * 0.2f));
+	_viewmodel->angles[PL_ROLL] = -(_angles[PL_ROLL] - (sinf((float)cl.time * 1.5f) * 0.2f));
 
 	// Finally, offset!
 	float offset = 0;
@@ -574,23 +568,23 @@ void Camera::SimulateBob()
 {
 	if (!bobcam) return;
 
-	plVector2f_t cycle;
+	PLVector3f cycle = { 0, 0, 0 };
 
 	// Forward cycle
-	cycle[0] = (cl.time - (int)(cl.time / cv_camera_forwardcycle.value) * cv_camera_forwardcycle.value) / cv_camera_forwardcycle.value;
+	cycle[0] = ((float)cl.time - (int)(cl.time / cv_camera_forwardcycle.value) * cv_camera_forwardcycle.value) / cv_camera_forwardcycle.value;
 	if (cycle[0] < cv_camera_upcycle.value)
-		cycle[0] = PL_PI * cycle[0] / cv_camera_upcycle.value;
+		cycle[0] = PL_PIf * cycle[0] / cv_camera_upcycle.value;
 	else
-		cycle[0] = PL_PI + PL_PI * (cycle[0] - cv_camera_upcycle.value) / (1.0f - cv_camera_upcycle.value);
+		cycle[0] = PL_PIf + PL_PIf * (cycle[0] - cv_camera_upcycle.value) / (1.0f - cv_camera_upcycle.value);
 
 	// Side cycle
-	cycle[1] = (cl.time - (int)(cl.time / cv_camera_sidecycle.value) * cv_camera_sidecycle.value) / cv_camera_sidecycle.value;
+	cycle[1] = ((float)cl.time - (int)(cl.time / cv_camera_sidecycle.value) * cv_camera_sidecycle.value) / cv_camera_sidecycle.value;
 	if (cycle[1] < cv_camera_upcycle.value)
-		cycle[1] = PL_PI * cycle[1] / cv_camera_upcycle.value;
+		cycle[1] = PL_PIf * cycle[1] / cv_camera_upcycle.value;
 	else
-		cycle[1] = PL_PI + PL_PI * (cycle[1] - cv_camera_upcycle.value) / (1.0f - cv_camera_upcycle.value);
+		cycle[1] = PL_PIf + PL_PIf * (cycle[1] - cv_camera_upcycle.value) / (1.0f - cv_camera_upcycle.value);
 
-	plVector2f_t bob;
+	PLVector3f bob = { 0, 0, 0 };
 
 	// Bob is proportional to velocity in the xy plane
 	// (don't count Z, or jumping messes it up)
@@ -653,12 +647,12 @@ void Camera::SimulatePunch()
 	if (!cv_camera_punch.value)
 		return;
 
-	static plVector3f_t punch = { 0, 0, 0 };
+	static PLVector3f punch = { 0, 0, 0 };
 	for (int i = 0; i < 3; i++)
 		if (pl_origin3f[i] != punchangles[0][i])
 		{
 			// Speed determined by how far we need to lerp in 1/10th of a second.
-			float delta = (punchangles[0][i] - punchangles[1][i]) * host_frametime * 10.0f;
+			float delta = (punchangles[0][i] - punchangles[1][i]) * (float)host_frametime * 10.0f;
 			if (delta > 0)
 				punch[i] = std::fminf(punch[i] + delta, punchangles[0][i]);
 			else if (delta < 0)
@@ -916,10 +910,10 @@ void Camera::PrintPosition()
 
 void Camera::TracePosition()
 {
-	plVector3f_t v;
+	PLVector3f v = { 0, 0, 0 };
 	plVectorScalef(_forward, 8192.0f, v);
 
-	plVector3f_t w;
+	PLVector3f w = { 0, 0, 0 };
 	TraceLine(_position, v, w);
 
 	if (plLengthf(w) == 0)
