@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "platform_window.h"
 
 /*	Simple Window/Display Handling	*/
+// todo, rewrite ALL of this.
 
 PLuint plGetScreenWidth(void)
 {
@@ -274,7 +275,7 @@ void plMessageBox(const char *ccTitle, const char *ccMessage, ...)
 
 			if (xEvent.type == Expose)
 			{
-				XDrawString(dMessageDisplay, wMessageWindow, DefaultGC(dMessageDisplay, iDefaultScreen), 10, 10, cOut, strlen(cOut));
+				XDrawString(dMessageDisplay, wMessageWindow, DefaultGC(dMessageDisplay, iDefaultScreen), 10, 10, cOut, (PLint)strlen(cOut));
 				XDrawString(dMessageDisplay, wMessageWindow, DefaultGC(dMessageDisplay, iDefaultScreen), 10, 54, "Press any key to continue...", 32);
 			}
 			else if (xEvent.type == KeyPress)

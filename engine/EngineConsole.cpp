@@ -19,13 +19,8 @@
 */
 
 #include <algorithm>
-#include <fcntl.h>
 #include <list>
 #include <set>
-#include <time.h>
-#ifndef _MSC_VER
-#include <unistd.h>
-#endif
 
 #include "platform_log.h"
 
@@ -263,13 +258,13 @@ void Console::Draw(bool draw_input)
 	// ...draw version number in bottom right...
 	{
 		char ver[64];
-		snprintf(ver, sizeof(ver), "Katana (%i)", (int)(ENGINE_VERSION_BUILD));
+		snprintf(ver, sizeof(ver), "Xenon (%i)", (int)(ENGINE_VERSION_BUILD));
 
 		size_t vlen = strlen(ver);
 		size_t x    = con_cols - vlen;
 
 		for(size_t i = 0; i < vlen; ++i, ++x)
-			draw::Character(x * CHAR_WIDTH, y, ver[i]);
+			draw::Character((PLint)x * CHAR_WIDTH, y, ver[i]);
 
 		y -= CHAR_HEIGHT;
 	}
@@ -287,11 +282,11 @@ void Console::Draw(bool draw_input)
 		for(size_t i = 0;; ++i)
 		{
 			if(text[i] != '\0')
-				draw::Character((i + 1) * CHAR_WIDTH, y, text[i]);
+				draw::Character((PLint)(i + 1) * CHAR_WIDTH, y, text[i]);
 			else
 			{
 				// Why is this even necessary?
-				draw::Character((i + 1) * CHAR_WIDTH, y, ' ');
+				draw::Character((PLint)(i + 1) * CHAR_WIDTH, y, ' ');
 				break;
 			}
 		}
@@ -312,7 +307,7 @@ void Console::Draw(bool draw_input)
 		for(auto line = wrapped_lines.rbegin(); line != wrapped_lines.rend() && y >= 0;)
 		{
 			for(size_t i = 0; i < line->length(); ++i)
-				draw::Character((i + 1) * CHAR_WIDTH, y, line->at(i));
+				draw::Character((PLint)(i + 1) * CHAR_WIDTH, y, line->at(i));
 
 			y -= CHAR_HEIGHT;
 			++line;
@@ -359,7 +354,7 @@ void Console::DrawNotify()
 	for(auto l = wrapped_lines.begin(); l != wrapped_lines.end(); ++l)
 	{
 		for(size_t i = 0; i < l->size(); ++i)
-			draw::Character(((i + 1) * CHAR_WIDTH), y, (*l)[i]);
+			draw::Character((PLint)((i + 1) * CHAR_WIDTH), y, (*l)[i]);
 
 		y += CHAR_HEIGHT;
 	}
@@ -381,12 +376,12 @@ void Console::DrawNotify()
 		size_t x = 0;
 		while(chat_buffer[x])
 		{
-			draw::Character((x + plen + 2) * CHAR_WIDTH, y, chat_buffer[x]);
+			draw::Character((PLint)(x + plen + 2) * CHAR_WIDTH, y, chat_buffer[x]);
 			++x;
 		}
 
-		draw::Character((x + plen + 2) * CHAR_WIDTH, y, 10 + ((int)(realtime*con_cursorspeed) & 1));
-		y += CHAR_HEIGHT;
+		draw::Character((PLint)(x + plen + 2) * CHAR_WIDTH, y, 10 + ((int)(realtime*con_cursorspeed) & 1));
+		//y += CHAR_HEIGHT;
 	}
 
 	Material_Draw(g_mGlobalConChars, NULL, VL_PRIMITIVE_IGNORE, 0, true);
@@ -607,14 +602,13 @@ void Con_SafePrintf (const char *fmt, ...)
 {
 	va_list		argptr;
 	char		msg[1024];
-	int			temp;
 
 	va_start(argptr,fmt);
 	vsprintf(msg,fmt,argptr);
 	va_end(argptr);
 
-	temp = scr_disabled_for_loading;
-	scr_disabled_for_loading = true;
+	PLbool temp = scr_disabled_for_loading;
+	scr_disabled_for_loading = PL_TRUE;
 	Con_Printf ("%s", msg);
 	scr_disabled_for_loading = temp;
 }
@@ -626,12 +620,12 @@ void Con_CenterPrintf (unsigned int linewidth, char *fmt, ...)
 	char			line[MAXPRINTMSG]; //one line from the message
 	char			spaces[21]; //buffer for spaces
 	char			*src, *dst;
-	unsigned int	len, s;
 
 	va_start (argptr,fmt);
 	vsprintf (msg,fmt,argptr);
 	va_end (argptr);
 
+	size_t len, s;
 	linewidth = std::min(linewidth, (vid.conwidth / CHAR_WIDTH) - 3);
 	for (src = msg; *src; )
 	{
@@ -676,10 +670,8 @@ void Con_LogCenterPrint (char *str)
 
 void Console_ErrorMessage(bool bCrash, const char *ccFile, const char *reason)
 {
-	if (bCrash)
-		Sys_Error("Failed to load %s\nReason: %s", ccFile, reason);
-	else
-		Con_Error("Failed to load %s\nReason: %s", ccFile, reason);
+	if (bCrash)	Sys_Error("Failed to load %s\nReason: %s", ccFile, reason);
+	else		Con_Error("Failed to load %s\nReason: %s", ccFile, reason);
 }
 
 /*
@@ -849,8 +841,7 @@ DRAWING
 /* Draws the last few lines of output transparently over the game top. */
 void Con_DrawNotify(void)
 {
-	if (g_console)
-		g_console->DrawNotify();
+	if (g_console) g_console->DrawNotify();
 }
 
 /*	Draws the console with the solid background
@@ -858,8 +849,7 @@ void Con_DrawNotify(void)
 */
 void Con_DrawConsole(bool draw_input)
 {
-	if (g_console)
-		g_console->Draw(draw_input);
+	if (g_console) g_console->Draw(draw_input);
 }
 
 /* TODO: Get rid of these functions, bring more of the engine into C++ land

@@ -281,7 +281,7 @@ void Video_DrawSurface(msurface_t *mSurface,float fAlpha, Material_t *mMaterial,
 	float		*fVert;
 	int			i;
 	
-	drawsurf = (PLVertex*)calloc_or_die(mSurface->polys->numverts, sizeof(PLVertex));
+	drawsurf = (PLVertex*)calloc_or_die((size_t)mSurface->polys->numverts, sizeof(PLVertex));
 
 	fVert = mSurface->polys->verts[0];
 	for (i = 0; i < mSurface->polys->numverts; i++, fVert += VERTEXSIZE)
@@ -295,7 +295,7 @@ void Video_DrawSurface(msurface_t *mSurface,float fAlpha, Material_t *mMaterial,
 		Video_ObjectColour(&drawsurf[i], 1.0f, 1.0f, 1.0f, fAlpha);
 	}
 
-	Video_DrawObject(drawsurf, VL_PRIMITIVE_TRIANGLE_FAN, mSurface->polys->numverts, mMaterial, 0);
+	Video_DrawObject(drawsurf, VL_PRIMITIVE_TRIANGLE_FAN, (PLuint)mSurface->polys->numverts, mMaterial, 0);
 	free(drawsurf);
 
 	rs_brushpasses++;
