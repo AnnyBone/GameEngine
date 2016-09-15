@@ -230,12 +230,12 @@ void Host_WriteConfiguration(void)
 		FILE	*fConfig;
 		char	cString[256];
 
-		sprintf(cString, "%s/config/%s.cfg", com_gamedir, g_state.host_username);
+		sprintf(cString, "%s/config/%s" XENON_CONFIG_EXTENSION, com_gamedir, g_state.host_username);
 
 		fConfig = fopen(cString,"w");
 		if(!fConfig)
 		{
-			Con_Warning("Couldn't write %s.cfg!\n", g_state.host_username);
+			Con_Warning("Couldn't write %s" XENON_CONFIG_EXTENSION "!\n", g_state.host_username);
 			return;
 		}
 

@@ -78,7 +78,10 @@ void menu::Initialize()
 
 	Engine.Cvar_RegisterVariable(&cv_menushow, NULL);
 
+	// temp start
 	debug_logo = Engine.LoadMaterial("debug/debug_logo");
+	debug_logo->flags = MATERIAL_FLAG_PRESERVE;
+	// temp end
 
 	HUD_Initialize();
 }
@@ -110,10 +113,12 @@ void menu::Draw(CoreViewport *viewport)
 		return;
 	}
 
+	// temp start
 	Engine.DrawRectangle(0, 0, 32, 32, pl_red);
 	Engine.DrawRectangle(0, 32, 32, 32, pl_green);
 	Engine.DrawRectangle(0, 64, 32, 32, pl_blue);
 	Engine.DrawMaterialSurface(debug_logo, 0, viewport->GetWidth() - 80, viewport->GetHeight() - 80, 64, 64, 1.0f);
+	// temp end
 
 	if ((iMenuState & MENU_STATE_HUD) && (!(iMenuState & MENU_STATE_SCOREBOARD) && !(iMenuState & MENU_STATE_MENU)))
 		HUD_Draw();

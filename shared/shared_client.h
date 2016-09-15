@@ -119,6 +119,8 @@ typedef struct ConsoleVariable_s
 // Future replacement for cvar, to follow every other naming convention.
 #define cvar_t ConsoleVariable_t
 
+#define XENON_CONFIG_EXTENSION	".config"
+
 typedef struct
 {
 	MathVector3f_t origin,
