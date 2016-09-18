@@ -587,7 +587,7 @@ void draw::Line(plVector3f_t start, plVector3f_t end)
 
 void draw::CoordinateAxes(plVector3f_t position)
 {
-	PLVector3f start = { 0 }, end = { 0 };
+	PLVector3f start = { 0, 0, 0 }, end = { 0, 0, 0 };
 	plVectorCopy(position, start);
 	plVectorCopy(position, end);
 	start[0] += 10;

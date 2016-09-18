@@ -86,7 +86,8 @@ namespace core
 	private:
 		Viewport *_viewport;
 
-		void SimulateFrustum();
+		void SetFrustum(float fovx, float fovy);
+
 		void SimulateBob();
 		void SimulateRoll();
 		void SimulatePunch();

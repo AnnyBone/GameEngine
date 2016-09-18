@@ -78,6 +78,7 @@ using namespace core;
 
 void Sky_LoadCloudTexture(const char *cPath)
 {
+#if 0
 	char				cFileName[PLATFORM_MAX_PATH];
 	unsigned int		iWidth,iHeight;
 	uint8_t				*bData;
@@ -103,6 +104,7 @@ void Sky_LoadCloudTexture(const char *cPath)
 		Con_Warning("Failed to load %s!\n",cFileName);
 		return;
 	}
+#endif
 }
 
 char *suf[6] = {"rt", "bk", "lf", "ft", "up", "dn"};
@@ -272,7 +274,7 @@ void Sky_Init(void)
 void Sky_ProjectPoly (int nump, MathVector3f_t vecs)
 {
 	int				i,j;
-	MathVector3f_t	v, av;
+	MathVector3f_t	v, av = { 0, 0, 0 };
 	float			s, t, dv;
 	int				axis;
 	float			*vp;

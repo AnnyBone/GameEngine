@@ -154,7 +154,7 @@ bool R_BackFaceCull (msurface_t *surf)
 
 void World_CullSurfaces(void)
 {
-	if (!cl.worldmodel || !r_drawworld_cheatsafe)
+	if (!cl.worldmodel /*|| !r_drawworld_cheatsafe*/)
 		return;
 
 	core::Camera *camera = g_cameramanager->GetCurrentCamera();
@@ -350,7 +350,7 @@ void World_DrawWater(void)
 
 void World_Draw(void)
 {
-	if (!cl.worldmodel || !r_drawworld_cheatsafe)
+	if (!cl.worldmodel /*|| !r_drawworld_cheatsafe*/)
 		return;
 
 	texture_t *t;

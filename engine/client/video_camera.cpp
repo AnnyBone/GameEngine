@@ -314,11 +314,6 @@ void Camera::SetupViewMatrix()
 	glRotatef(-_angles[1], 0, 0, 1);
 
 	glTranslatef(-_position[0], -_position[1], -_position[2]);
-
-#if 0
-	// todo, not needed?
-	glGetFloatv(GL_MODELVIEW_MATRIX, r_world_matrix);
-#endif
 #endif
 }
 
@@ -345,32 +340,33 @@ void Camera::DrawViewEntity()
 
 void Camera::Draw()
 {
-	//float fovxx = _fovx, fovyy = _fovy;
-	if (cl.worldmodel) 
+	SetupProjectionMatrix();
+	SetupViewMatrix();
+
+	if (cl.worldmodel)
 	{
 		// Current view leaf.
 		oldleaf = leaf;
 		leaf = Mod_PointInLeaf(_position, cl.worldmodel);
 
-		if (r_waterwarp.value) 
+		float fovxx = _fovx, fovyy = _fovy;
+		if (r_waterwarp.value)
 		{
 			int contents = Mod_PointInLeaf(_position, cl.worldmodel)->contents;
 			if (contents == BSP_CONTENTS_WATER || contents == BSP_CONTENTS_SLIME || contents == BSP_CONTENTS_LAVA)
 			{
-#if 0
 				//variance is a percentage of width, where width = 2 * tan(fov / 2) otherwise the effect is too dramatic at high FOV and too subtle at low FOV.  what a mess!
-				fovxx = atanf(tan(PL_DEG2RAD(_fovx) / 2) * (0.97 + sin(cl.time * 1.5) * 0.03)) * 2 / PL_PI_DIV180;
-				fovyy = atanf(tan(PL_DEG2RAD(_fovy) / 2) * (1.03 - sin(cl.time * 1.5) * 0.03)) * 2 / PL_PI_DIV180;
-#endif
+				fovxx = std::atan(std::tan(PL_DEG2RADf(_fovx) / 2) * (0.97f + std::sin((float)cl.time * 1.5f) * 0.03f)) * 2.0f / PL_PI_DIV180f;
+				fovyy = std::atan(std::tan(PL_DEG2RADf(_fovy) / 2) * (1.03f - std::sin((float)cl.time * 1.5f) * 0.03f)) * 2.0f / PL_PI_DIV180f;
 			}
 		}
-		
+
+		SetFrustum(fovxx, fovyy);
+
 		World_MarkSurfaces();
 		World_CullSurfaces();
 	}
-
-	SetupProjectionMatrix();
-	SetupViewMatrix();
+	else SetFrustum(_fovx, _fovy);
 
 	//Fog_SetupFrame();	// todo, really necessary to call this at the start of every draw call!?
 
@@ -392,6 +388,16 @@ void Camera::Draw()
 	//Fog_DisableGFog();
 	DrawViewEntity();
 	draw::BoundingBoxes();
+
+	if(cv_camera_drawfrustum.value)
+	{
+		PLDraw *draw = vlCreateDraw(VL_PRIMITIVE_POINTS, 0, 0);
+		if(!draw) Sys_Error("Failed to create draw call for frustum!\n");
+
+		vlBeginDraw(draw);
+		//vlDrawVertex3f();
+		vlEndDraw(draw);
+	}
 
 	if ((cl.maxclients <= 1) && !bIsDedicated)
 		Game->Server_Draw();
@@ -664,8 +670,8 @@ void Camera::SimulatePunch()
 
 void Camera::Simulate()
 {
-	SimulateFrustum();
-	//SimulateBob();
+	//SimulateFrustum();
+	SimulateBob();
 	SimulateRoll();
 
 	// Add height (needs to be done after bob).
@@ -679,17 +685,17 @@ void Camera::Simulate()
 	*/
 	plVectorAddf(_position, 1.0f / 32.0f, _position);
 
-#ifdef CAMERA_LEGACY
-	SimulateParentEntity();
-	SimulateViewEntity();
-#endif
-	SimulatePunch();
-
 	if (_angles[PL_PITCH] > cv_camera_maxpitch.value) _angles[PL_PITCH] = cv_camera_maxpitch.value;
 	else if (_angles[PL_PITCH] < cv_camera_minpitch.value) _angles[PL_PITCH] = cv_camera_minpitch.value;
 
 	if (_angles[PL_ROLL] > cv_camera_maxroll.value) _angles[PL_ROLL] = cv_camera_maxroll.value;
 	else if (_angles[PL_ROLL] < cv_camera_minroll.value) _angles[PL_ROLL] = cv_camera_minroll.value;
+
+#ifdef CAMERA_LEGACY
+	SimulateParentEntity();
+	SimulateViewEntity();
+#endif
+	SimulatePunch();
 
 	plAngleVectors(_angles, _forward, _right, _up);
 
@@ -734,13 +740,13 @@ void Camera::SetFOV(float fov)
 
 int SignbitsForPlane(mplane_t *out);
 
-void Camera::SimulateFrustum()
+void Camera::SetFrustum(float fovx, float fovy)
 {
 	// Update the frustum.
-	plTurnVector(_frustum[0].normal, _forward, _right, _fovx / 2 - 90);	// Left plane
-	plTurnVector(_frustum[1].normal, _forward, _right, 90 - _fovx / 2);	// Right plane
-	plTurnVector(_frustum[2].normal, _forward, _up, 90 - _fovy / 2);		// Bottom plane
-	plTurnVector(_frustum[3].normal, _forward, _up, _fovy / 2 - 90);		// Top plane
+	plTurnVector(_frustum[0].normal, _forward, _right, fovx / 2 - 90);	// Left plane
+	plTurnVector(_frustum[1].normal, _forward, _right, 90 - fovx / 2);	// Right plane
+	plTurnVector(_frustum[2].normal, _forward, _up, 90 - fovy / 2);		// Bottom plane
+	plTurnVector(_frustum[3].normal, _forward, _up, fovy / 2 - 90);		// Top plane
 
 	for (int i = 0; i < 4; i++)
 	{

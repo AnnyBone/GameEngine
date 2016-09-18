@@ -26,7 +26,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define PL_PI			3.14159265358979323846
 #define	PL_PI_DIV180	(PL_PI/180.0)
 
-#define PL_PIf 3.14159265358979323846f
+#define PL_PIf 			3.14159265358979323846f
+#define PL_PI_DIV180f	(PL_PIf/180.0f)
+#define PL_DEG2RADf(a)	((a) * PL_PI_DIV180f)
 
 #define PL_EPSILON_ON		0.1						// Point on plane side epsilon.
 #define	PL_EPSILON_EQUAL	0.001
