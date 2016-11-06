@@ -20,14 +20,11 @@
 
 #include "engine_base.h"
 
-#include "platform_filesystem.h"
-#include "platform_image.h"
-
 char loadfilename[PLATFORM_MAX_PATH]; //file scope so that error messages can use it
 
-bool image_pngsupport = false;
+PLbool image_pngsupport = PL_FALSE;
 
-uint8_t *Image_LoadPNG(FILE *fin, unsigned int *width, unsigned int *height);
+uint8_t *Image_LoadPNG(FILE *fin, PLuint *width, PLuint *height);
 
 //#define IMAGE_SUPPORT_KTX
 
@@ -37,15 +34,6 @@ uint8_t *Image_LoadImage(char *name, unsigned int *width, unsigned int *height)
 {
 	uint8_t		*bImage;
 	FILE		*f;
-
-#if defined (IMAGE_SUPPORT_KTX)
-	sprintf(loadfilename, "%s.ktx", name);
-	COM_FOpenFile(loadfilename, &f);
-	if (f)
-	{
-		
-	}
-#endif
 
 	// PNG
 	if (image_pngsupport)
@@ -67,38 +55,6 @@ uint8_t *Image_LoadImage(char *name, unsigned int *width, unsigned int *height)
 	{
 		bImage = Image_LoadTGA(f,width,height);
 		if(bImage)
-			return bImage;
-	}
-
-	// BMP
-#if 0
-	sprintf(loadfilename, "%s.bmp", name);
-	COM_FOpenFile(loadfilename, &f);
-	if (f)
-	{
-		bImage = plLoadBMPImage(f, width, height);
-		if (bImage)
-			return bImage;
-	}
-#endif
-
-	// FTX
-	sprintf(loadfilename, "%s.ftx", name);
-	COM_FOpenFile(loadfilename, &f);
-	if (f)
-	{
-		bImage = plLoadFTXImage(f, width, height);
-		if (bImage)
-			return bImage;
-	}
-
-	// PPM
-	sprintf(loadfilename, "%s.ppm", name);
-	COM_FOpenFile(loadfilename, &f);
-	if (f)
-	{
-		bImage = plLoadPPMImage(f, width, height);
-		if (bImage)
 			return bImage;
 	}
 
@@ -130,7 +86,7 @@ targaheader_t targa_header;
 
 	TODO: support BGRA and BGR formats (since opengl can return them, and we don't have to swap)
 */
-bool Image_WriteTGA(char *name, uint8_t *data,int width,int height,int bpp,bool upsidedown)
+bool Image_WriteTGA(const char *name, uint8_t *data,int width,int height,int bpp,bool upsidedown)
 {
 	int			handle, i, size, temp, bytes;
 	char		pathname[PLATFORM_MAX_PATH];
@@ -171,7 +127,7 @@ bool Image_WriteTGA(char *name, uint8_t *data,int width,int height,int bpp,bool 
 	return true;
 }
 
-uint8_t *Image_LoadTGA (FILE *fin, unsigned int *width, unsigned int *height)
+PLbyte *Image_LoadTGA (FILE *fin, unsigned int *width, unsigned int *height)
 {
 	int	columns,rows,numPixels,row,column,realrow;
 	uint8_t	*pixbuf,*targa_rgba;
@@ -200,7 +156,7 @@ uint8_t *Image_LoadTGA (FILE *fin, unsigned int *width, unsigned int *height)
 	numPixels   = columns * rows;
 	upside_down = !(targa_header.attributes & 0x20); //johnfitz -- fix for upside-down targas
 
-	targa_rgba = (uint8_t*)Hunk_Alloc (numPixels*4);
+	targa_rgba = (PLbyte*)malloc (numPixels*4);
 
 	if (targa_header.id_length != 0)
 		fseek(fin, targa_header.id_length, SEEK_CUR);  // skip TARGA image comment
@@ -340,16 +296,12 @@ uint8_t *Image_LoadTGA (FILE *fin, unsigned int *width, unsigned int *height)
 		}
 	}
 
-	fclose(fin);
-
 	*width = (int)(targa_header.width);
 	*height = (int)(targa_header.height);
 	return targa_rgba;
 }
 
-/*
-	PNG Support
-*/
+/*	PNG Support	*/
 
 // Use a direct path, mainly for Linux's sake.
 #include "../external/lpng1618/png.h"
@@ -371,11 +323,7 @@ static void(*PNG_ReadInfo)(png_structrp png_ptr, png_inforp info_ptr);
 static void(*PNG_SetKeepUnknownChunks)(png_structrp png_ptr, int keep, png_const_bytep chunk_list, int num_chunks);
 static void(*PNG_DestroyReadStruct)(png_structpp png_ptr_ptr, png_infopp info_ptr_ptr, png_infopp end_info_ptr_ptr);
 
-/*
-	Add struct, with function pointer + name, then go through it and assign everything automatically?
-*/
-
-static pModuleFunction_t PNGFunctions[]=
+static PLModuleFunction PNGFunctions[]=
 {
 	{ "png_create_read_struct", (void**)&PNG_CreateReadStruct },
 	{ "png_create_info_struct", (void**)&PNG_CreateInfoStruct },
@@ -390,11 +338,9 @@ static pModuleFunction_t PNGFunctions[]=
 	{ "png_destroy_read_struct", (void**)&PNG_DestroyReadStruct }
 };
 
-#define	IMAGE_PNG_FUNCTION_WARNING(a) Con_Warning("Failed to find libpng function! ("a")\n");
-
 void Image_InitializePNG()
 {
-	iPNGLibraryInstance = plLoadModule("libpng16");
+	iPNGLibraryInstance = plLoadLibrary("libpng16");
 	if (!iPNGLibraryInstance)
 	{
 		Con_Warning("Failed to load libpng!\n");
@@ -405,10 +351,10 @@ void Image_InitializePNG()
 	int i;
 	for (i = 0; i < plArrayElements(PNGFunctions); i++)
 	{
-		*(PNGFunctions[i].Function) = plFindModuleFunction(iPNGLibraryInstance, PNGFunctions[i].ccFunctionName);
+		*(PNGFunctions[i].Function) = plFindLibraryFunction(iPNGLibraryInstance, PNGFunctions[i].name);
 		if (!PNGFunctions[i].Function)
 		{
-			Con_Warning("Failed to find libpng function! (%s)\n", PNGFunctions[i].ccFunctionName);
+			Con_Warning("Failed to find libpng function! (%s)\n", PNGFunctions[i].name);
 			return;
 		}
 	}
@@ -465,7 +411,7 @@ uint8_t *Image_LoadPNG(FILE *fin, unsigned int *width, unsigned int *height)
 
 	/* TODO: Is this a memory leak, or one of the many fragile things upon
 	 * which everything barely balances?
-	*/
+	 */
 	iImageBuffer = (uint8_t*)Hunk_Alloc((iHeight + iWidth) * 4);
 
 	PNG_DestroyReadStruct(&pPNG, &pInfo, NULL);
@@ -480,5 +426,5 @@ uint8_t *Image_LoadPNG(FILE *fin, unsigned int *width, unsigned int *height)
 void Image_Shutdown()
 {
 	if (iPNGLibraryInstance)
-		plUnloadModule(iPNGLibraryInstance);
+		plUnloadLibrary(iPNGLibraryInstance);
 }

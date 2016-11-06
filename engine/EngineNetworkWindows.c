@@ -18,6 +18,8 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#ifdef _WIN32
+
 #include "engine_base.h"
 
 #include "EngineNetworkLoop.h"
@@ -98,3 +100,5 @@ net_landriver_t	net_landrivers[MAX_NET_DRIVERS] =
 };
 
 int net_numlandrivers = 1;
+
+#endif

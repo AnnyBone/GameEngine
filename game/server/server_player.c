@@ -34,7 +34,7 @@
 #define	PLAYER_MAX_HEALTH	cvServerMaxHealth.iValue
 #define	PLAYER_MIN_HEALTH	-20
 
-EntityFrame_t PlayerAnimation_Idle[] =
+ServerEntityFrame_t PlayerAnimation_Idle[] =
 {
 	{	NULL,	0,	0.1f			},
 	{   NULL,	1,	0.1f			},
@@ -48,7 +48,7 @@ EntityFrame_t PlayerAnimation_Idle[] =
 	{   NULL,	9,	0.1f,	true    }
 };
 
-EntityFrame_t PlayerAnimation_Fire[] =
+ServerEntityFrame_t PlayerAnimation_Fire[] =
 {
 	{   NULL,	10, 0.02f			},
 	{   NULL,	11, 0.02f			},
@@ -62,7 +62,7 @@ EntityFrame_t PlayerAnimation_Fire[] =
 	{	NULL,	19,	0.02f,	true	}
 };
 
-EntityFrame_t PlayerAnimation_Walk[] =
+ServerEntityFrame_t PlayerAnimation_Walk[] =
 {
 	{	NULL,	20,	0.02f			},
 	{   NULL,	21, 0.02f			},
@@ -93,7 +93,7 @@ EntityFrame_t PlayerAnimation_Walk[] =
 	{   NULL,	46, 0.02f,	true	}
 };
 
-EntityFrame_t PlayerAnimation_Death1[] =
+ServerEntityFrame_t PlayerAnimation_Death1[] =
 {
 	{   NULL, 56, 0.02f    },
 	{   NULL, 57, 0.02f    },
@@ -120,7 +120,7 @@ EntityFrame_t PlayerAnimation_Death1[] =
 	{   NULL, 78, 0.02f, true    }
 };
 
-EntityFrame_t PlayerAnimation_Death2[] =
+ServerEntityFrame_t PlayerAnimation_Death2[] =
 {
 	{   NULL, 79, 0.02f    },
 	{   NULL, 80, 0.02f    },
@@ -145,7 +145,7 @@ EntityFrame_t PlayerAnimation_Death2[] =
 	{   NULL, 99, 0.02f, true    }
 };
 
-EntityFrame_t PlayerAnimation_Jump[] =
+ServerEntityFrame_t PlayerAnimation_Jump[] =
 {
 	{   NULL, 100, 0.02f    },
 	{   NULL, 101, 0.02f    },
@@ -179,7 +179,7 @@ EntityFrame_t PlayerAnimation_Jump[] =
 	{   NULL, 129, 0.02f, true    }
 };
 
-EntityFrame_t PlayerAnimation_RunJump[] =
+ServerEntityFrame_t PlayerAnimation_RunJump[] =
 {
 	{   NULL, 130, 0.02f    },
 	{   NULL, 131, 0.02f    },
@@ -202,7 +202,7 @@ EntityFrame_t PlayerAnimation_RunJump[] =
 	{   NULL, 148, 0.02f, true    }
 };
 
-EntityFrame_t PlayerAnimation_KatanaIdle[] =
+ServerEntityFrame_t PlayerAnimation_KatanaIdle[] =
 {
 	{   NULL, 150, 0.02f},
 	{   NULL, 151, 0.02f},
@@ -216,7 +216,7 @@ EntityFrame_t PlayerAnimation_KatanaIdle[] =
 	{   NULL, 159, 0.02f,  true    }
 };
 
-EntityFrame_t PlayerAnimation_KatanaAttack1[] =
+ServerEntityFrame_t PlayerAnimation_KatanaAttack1[] =
 {
 	{ NULL, 161, 0.02f },
 	{ NULL, 162, 0.02f },
@@ -249,7 +249,7 @@ EntityFrame_t PlayerAnimation_KatanaAttack1[] =
 	{ NULL, 189, 0.02f, true }
 };
 
-EntityFrame_t PlayerAnimation_KatanaAttack2[] =
+ServerEntityFrame_t PlayerAnimation_KatanaAttack2[] =
 {
 	{ NULL, 191, 0.02f },
 	{ NULL, 192, 0.02f },
@@ -279,7 +279,7 @@ EntityFrame_t PlayerAnimation_KatanaAttack2[] =
 	{ NULL, 216, 0.02f, true }
 };
 
-EntityFrame_t PlayerAnimation_KatanaDeath1[] =
+ServerEntityFrame_t PlayerAnimation_KatanaDeath1[] =
 {
 	{ NULL, 218, 0.02f },
 	{ NULL, 219, 0.02f },
@@ -343,7 +343,7 @@ void Player_CheckFootsteps(ServerEntity_t *player)
 		fForce = vStep[0]+vStep[1];
 
 		// Base this on our velocity.
-		dDelay = Math_Clamp(0.1, (double)(1.0f / (fForce / 100.0f)), 1.0);
+		dDelay = plClamp(0.1, (double)(1.0f / (fForce / 100.0f)), 1.0);
 
 		// TODO: Check if we're in water or not and change this accordingly :)
 		Sound(player, CHAN_BODY, va("physics/concrete%i_footstep.wav", rand() % 4), 150, ATTN_NORM);
@@ -373,6 +373,7 @@ void Player_PostThink(ServerEntity_t *ePlayer)
 	// If round has not started then don't go through this!
 	if ((ePlayer->Monster.state == AI_STATE_DEAD) || !Server.round_started)
 		return;
+#if 0 // todo, rewrite
 	// Check if we're in a vehicle.
 	else if(ePlayer->local.eVehicle)
 	{
@@ -391,6 +392,7 @@ void Player_PostThink(ServerEntity_t *ePlayer)
 		}
 		return;
 	}
+#endif
 
 	Weapon_CheckInput(ePlayer);
 
@@ -475,9 +477,9 @@ void Player_PreThink(ServerEntity_t *ePlayer)
 
 	// ladders only work in ZeroG ~eukara
 	if (ePlayer->local.dZeroGTime < Server.dTime)
-		ePlayer->Physics.fGravity = cvServerGravity.value;
+		ePlayer->Physics.gravity = cvServerGravity.value;
 	else
-		ePlayer->Physics.fGravity = 0;
+		ePlayer->Physics.gravity = 0;
 
 	if(ePlayer->v.waterlevel == 2)
 	{
@@ -593,7 +595,7 @@ void Player_Gib(ServerEntity_t *player)
 	Entity_SetModel(player, "");
 }
 
-void Player_Die(ServerEntity_t *ePlayer, ServerEntity_t *other, ServerDamageType_t type)
+void Player_Die(ServerEntity_t *ePlayer, ServerEntity_t *other, EntityDamageType_t type)
 {
 	char s[32];
 
@@ -612,7 +614,7 @@ void Player_Die(ServerEntity_t *ePlayer, ServerEntity_t *other, ServerDamageType
 
 	ePlayer->Monster.state = AI_STATE_DEAD;
 
-	ePlayer->Physics.iSolid	= SOLID_NOT;
+	ePlayer->Physics.solid	= SOLID_NOT;
 
 #ifdef GAME_OPENKATANA
 	// [15/10/2013] Detonate all C4 bombs we've laid out! ~hogsy
@@ -653,7 +655,7 @@ void Player_Die(ServerEntity_t *ePlayer, ServerEntity_t *other, ServerDamageType
 	}
 }
 
-void Player_Pain(ServerEntity_t *ent, ServerEntity_t *other, ServerDamageType_t type)
+void Player_Pain(ServerEntity_t *ent, ServerEntity_t *other, EntityDamageType_t type)
 {
 	char cSound[24];
 
@@ -716,10 +718,10 @@ void Player_Spawn(ServerEntity_t *ePlayer)
 	ePlayer->v.model = cvServerPlayerModel.string;
 	ePlayer->v.effects = 0;
 
-	ePlayer->Physics.iSolid = SOLID_SLIDEBOX;
-	ePlayer->Physics.fMass = 1.4f;
-	ePlayer->Physics.fGravity = SERVER_GRAVITY;
-	ePlayer->Physics.fFriction = 4.0f;
+	ePlayer->Physics.solid = SOLID_SLIDEBOX;
+	ePlayer->Physics.mass = 1.4f;
+	ePlayer->Physics.gravity = SERVER_GRAVITY;
+	ePlayer->Physics.friction = 4.0f;
 
 	ePlayer->local.iMaxHealth = PLAYER_MAX_HEALTH;				// Set the players default maximum health.
 	ePlayer->local.fSpawnDelay = cvServerRespawnDelay.value;	// Set the delay before we spawn.

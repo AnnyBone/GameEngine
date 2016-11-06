@@ -23,7 +23,7 @@
 
 #define C4VIZATERGO_MAX_RANGE	700
 
-EntityFrame_t C4Animation_Deploy[] =
+ServerEntityFrame_t C4Animation_Deploy[] =
 {
 	{   NULL, 22, 0.08f    },
 	{   NULL, 23, 0.08f    },
@@ -66,7 +66,7 @@ EntityFrame_t C4Animation_Deploy[] =
 	{   NULL, 59, 0.08f, true},
 };
 
-EntityFrame_t C4Animation_Fire1 [] =
+ServerEntityFrame_t C4Animation_Fire1[] =
 {
 	{   NULL, 1, 0.08f    },
 	{   NULL, 2, 0.08f    },
@@ -77,7 +77,7 @@ EntityFrame_t C4Animation_Fire1 [] =
 	{   NULL, 7, 0.08f, true    }
 };
 
-EntityFrame_t C4Animation_Fire2 [] =
+ServerEntityFrame_t C4Animation_Fire2[] =
 {
 	{   NULL, 8, 0.08f    },
 	{   NULL, 9, 0.08f    },
@@ -88,7 +88,7 @@ EntityFrame_t C4Animation_Fire2 [] =
 	{   NULL, 14, 0.08f, true    }
 };
 
-EntityFrame_t C4Animation_Fire3 [] =
+ServerEntityFrame_t C4Animation_Fire3[] =
 {
 	{   NULL, 15, 0.08f    },
 	{   NULL, 16, 0.08f    },
@@ -99,7 +99,7 @@ EntityFrame_t C4Animation_Fire3 [] =
 	{   NULL, 21, 0.08f, true    }
 };
 
-EntityFrame_t C4Animation_Trigger [] =
+ServerEntityFrame_t C4Animation_Trigger[] =
 {
 	{   NULL, 40, 0.08f    },
 	{   NULL, 41, 0.08f    },
@@ -160,7 +160,7 @@ void C4Vizatergo_C4BallTouch(ServerEntity_t *ent,ServerEntity_t *eOther)
 #else	// [12/12/2012] New method. Explode if touches monster / another player. ~hogsy
 	if(	eOther != ent->local.eOwner && eOther->Monster.iType)
 		C4Vizatergo_Explode(ent);
-	else if(eOther->Physics.iSolid == SOLID_BSP && ent->v.movetype != MOVETYPE_NONE)
+	else if(eOther->Physics.solid == SOLID_BSP && ent->v.movetype != MOVETYPE_NONE)
 	{
 		// Play the stick sound!
 		Sound(ent,CHAN_ITEM,"weapons/c4/c4stick.wav",255,ATTN_NORM);
@@ -224,10 +224,10 @@ void C4Vizatergo_PrimaryAttack(ServerEntity_t *eOwner)
 	c4ball->local.eOwner = eOwner;
 
 	// Set the physical properties.
-	c4ball->Physics.iSolid = SOLID_BBOX;
-	c4ball->Physics.fMass = 0.9f;
-	c4ball->Physics.eIgnore = eOwner;
-	c4ball->Physics.fGravity = SERVER_GRAVITY;
+	c4ball->Physics.solid = SOLID_BBOX;
+	c4ball->Physics.mass = 0.9f;
+	c4ball->Physics.ignore = eOwner;
+	c4ball->Physics.gravity = SERVER_GRAVITY;
 
 	Math_MVToVector(Weapon_Aim(eOwner), mvDirection);
 	Math_VectorScale(mvDirection, C4VIZATERGO_MAX_RANGE, c4ball->v.velocity);

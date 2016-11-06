@@ -18,14 +18,12 @@
 
 #include "server_weapon.h"
 
-/*
-	Episode One's shotgun
-*/
+/*	Episode One's shotgun	*/
 
 #include "server_player.h"
 #include "server_effects.h"
 
-EntityFrame_t ShotcyclerAnimation_Deploy [] =
+ServerEntityFrame_t ShotcyclerAnimation_Deploy[] =
 {
 	{ NULL, 31, 0.04f },
 	{ NULL, 32, 0.04f },
@@ -50,7 +48,7 @@ EntityFrame_t ShotcyclerAnimation_Deploy [] =
 	{ NULL, 51, 0.04f, true }
 };
 
-EntityFrame_t ShotcyclerAnimation_Fire [] =
+ServerEntityFrame_t ShotcyclerAnimation_Fire[] =
 {
 	{ NULL, 1, 0.04f },
 	{ NULL, 3, 0.04f },
@@ -64,7 +62,7 @@ EntityFrame_t ShotcyclerAnimation_Fire [] =
 	{ Shotcycler_PrimaryAttack, 19, 0.04f, true }
 };
 
-EntityFrame_t ShotcyclerAnimation_Reload [] =
+ServerEntityFrame_t ShotcyclerAnimation_Reload[] =
 {
 	{ NULL, 21, 0.01f },
 	{ NULL, 22, 0.01f },

@@ -65,7 +65,7 @@ void Midas_PrimaryAttack(ServerEntity_t *ent)
 	cloud->v.cClassname	= "cloud";
 	cloud->v.movetype	= MOVETYPE_FLYMISSILE;
 
-	cloud->Physics.iSolid = SOLID_TRIGGER;
+	cloud->Physics.solid = SOLID_TRIGGER;
 
 	cloud->local.hit	= 10;
 	cloud->local.eOwner = ent;

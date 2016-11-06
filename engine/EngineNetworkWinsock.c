@@ -18,6 +18,8 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#ifdef _WIN32
+
 #include "engine_base.h"
 
 #include "winquake.h"
@@ -125,7 +127,7 @@ int WINS_Init (void)
 
 // initialize the Winsock function vectors (we do this instead of statically linking
 // so we can run on Win 3.1, where there isn't necessarily Winsock)
-	hInst = plLoadModule("wsock32");
+	hInst = plLoadLibrary("wsock32");
 	if (hInst == NULL)
 	{
 		Con_SafePrintf ("Failed to load winsock.dll\n");
@@ -135,19 +137,19 @@ int WINS_Init (void)
 
 	winsock_lib_initialized = true;
 
-	pWSAStartup = (void *)plFindModuleFunction(hInst, "WSAStartup");
-	pWSACleanup = (void *)plFindModuleFunction(hInst, "WSACleanup");
-	pWSAGetLastError = (void *)plFindModuleFunction(hInst, "WSAGetLastError");
-	psocket = (void *)plFindModuleFunction(hInst, "socket");
-	pioctlsocket = (void *)plFindModuleFunction(hInst, "ioctlsocket");
-	psetsockopt = (void *)plFindModuleFunction(hInst, "setsockopt");
-	precvfrom = (void *)plFindModuleFunction(hInst, "recvfrom");
-	psendto = (void *)plFindModuleFunction(hInst, "sendto");
-	pclosesocket = (void *)plFindModuleFunction(hInst, "closesocket");
-	pgethostname = (void *)plFindModuleFunction(hInst, "gethostname");
-	pgethostbyname = (void *)plFindModuleFunction(hInst, "gethostbyname");
-	pgethostbyaddr = (void *)plFindModuleFunction(hInst, "gethostbyaddr");
-	pgetsockname = (void *)plFindModuleFunction(hInst, "getsockname");
+	pWSAStartup = (void *)plFindLibraryFunction(hInst, "WSAStartup");
+	pWSACleanup = (void *)plFindLibraryFunction(hInst, "WSACleanup");
+	pWSAGetLastError = (void *)plFindLibraryFunction(hInst, "WSAGetLastError");
+	psocket = (void *)plFindLibraryFunction(hInst, "socket");
+	pioctlsocket = (void *)plFindLibraryFunction(hInst, "ioctlsocket");
+	psetsockopt = (void *)plFindLibraryFunction(hInst, "setsockopt");
+	precvfrom = (void *)plFindLibraryFunction(hInst, "recvfrom");
+	psendto = (void *)plFindLibraryFunction(hInst, "sendto");
+	pclosesocket = (void *)plFindLibraryFunction(hInst, "closesocket");
+	pgethostname = (void *)plFindLibraryFunction(hInst, "gethostname");
+	pgethostbyname = (void *)plFindLibraryFunction(hInst, "gethostbyname");
+	pgethostbyaddr = (void *)plFindLibraryFunction(hInst, "gethostbyaddr");
+	pgetsockname = (void *)plFindLibraryFunction(hInst, "getsockname");
 
 	if (!pWSAStartup || !pWSACleanup || !pWSAGetLastError ||
 		!psocket || !pioctlsocket || !psetsockopt ||
@@ -572,3 +574,5 @@ int WINS_SetSocketPort (struct qsockaddr *addr, int port)
 }
 
 //=============================================================================
+
+#endif

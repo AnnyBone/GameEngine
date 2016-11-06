@@ -19,6 +19,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "engine_base.h"
 
+#include "video.h"
+
 #include <AL/al.h>
 #include <AL/alc.h>
 #include <AL/alext.h>
@@ -62,7 +64,7 @@ LPALGETAUXILIARYEFFECTSLOTIV alGetAuxiliaryEffectSlotiv;
 LPALGETAUXILIARYEFFECTSLOTF alGetAuxiliaryEffectSlotf;
 LPALGETAUXILIARYEFFECTSLOTFV alGetAuxiliaryEffectSlotfv;
 
-using namespace Core;
+using namespace core;
 
 void Audio_PlaySoundCommand(void);
 void Audio_ListSoundsCommand(void);
@@ -79,7 +81,7 @@ AudioManager::AudioManager()
 
 	ALCdevice *device = alcOpenDevice(NULL);
 	if (!device)
-		throw Core::Exception("Failed to open audio device!\n");
+		throw XException("Failed to open audio device!\n");
 
 	// Check for extensions...
 	if (alcIsExtensionPresent(device, "ALC_EXT_EFX"))
@@ -114,8 +116,8 @@ AudioManager::AudioManager()
 	};
 
 	ALCcontext *context = alcCreateContext(device, attr);
-	if (!context || alcMakeContextCurrent(context) == FALSE)
-		throw Core::Exception("Failed to create audio context!\n");
+	if (!context || alcMakeContextCurrent(context) == PL_FALSE)
+		throw XException("Failed to create audio context!\n");
 
 	if (alIsExtensionPresent("AL_SOFT_buffer_samples"))
 		extensions.soft_buffer_samples = true;
@@ -157,12 +159,12 @@ AudioManager::~AudioManager()
 
 void AudioManager::Frame()
 {
-	plVector3f_t position, orientation, velocity;
+	plVector3f_t position = { 0 }, orientation = { 0 }, velocity = { 0 };
 
-	if (cls.signon == SIGNONS)
+	if (cl.current_camera && (cls.signon == SIGNONS))
 	{
-		plVectorCopy(r_refdef.vieworg, position);
-		plVectorCopy(r_refdef.viewangles, orientation);
+		plVectorCopy(&cl.current_camera->GetPosition()[0], position);
+		plVectorCopy(&cl.current_camera->GetAngles()[0], orientation);
 		plVectorCopy(cl.velocity, velocity);
 	}
 	else
@@ -171,9 +173,9 @@ void AudioManager::Frame()
 		plVectorCopy(pl_origin3f, orientation);
 		plVectorCopy(pl_origin3f, velocity);
 	}
-
+	
 	// Convert orientation to something OpenAL can use.
-	plVector3f_t forward, right, up;
+	plVector3f_t forward = { 0 }, right = { 0 }, up = { 0 };
 	plAngleVectors(orientation, forward, right, up);
 	float lis_orientation[6];
 	lis_orientation[0] = forward[0]; lis_orientation[3] = up[0];
@@ -187,7 +189,7 @@ void AudioManager::Frame()
 	// Check if there's any sounds we can delete.
 	for (unsigned int i = 0; i < sounds.size(); i++)
 	{
-		if ((sounds[i]->preserve == false) && (!IsSoundPlaying(sounds[i]) && !IsSoundPaused(sounds[i])))
+		if (!sounds[i]->preserve && (!IsSoundPlaying(sounds[i]) && !IsSoundPaused(sounds[i])))
 			DeleteSound(sounds[i]);
 #if 0
 		else if (IsSoundPlaying(sounds[i]))
@@ -202,9 +204,6 @@ void AudioManager::Frame()
 AudioSound_t *AudioManager::AddSound()
 {
 	AudioSound_t *sound = new AudioSound_t;
-	if (!sound)
-		throw Core::Exception("Failed to allocate new sound!\n");
-
 	memset(sound, 0, sizeof(AudioSound_t));
 	sounds.push_back(sound);
 
@@ -334,7 +333,7 @@ void AudioManager::LoadSound(AudioSound_t *sound, std::string path)
 		return;
 	}
 	else if (!sound)
-		Sys_Error("Passed invalid sound pointer to LoadSound!\n");
+		throw XException("Passed invalid sound pointer to LoadSound!\n");
 
 	sound->cache = GetSample(path);
 	if (!sound->cache)
@@ -391,7 +390,7 @@ void AudioManager::PauseSound(const AudioSound_t *sound)
 void AudioManager::DeleteSound(AudioSound_t *sound)
 {
 	if (!sound)
-		throw Core::Exception("Attempted to delete an invalid sound!\n");
+		throw XException("Attempted to delete an invalid sound!\n");
 
 	StopSound(sound);
 

@@ -79,8 +79,8 @@ struct
 	byte			data[MAX_DATAGRAM];
 } packetBuffer;
 
-extern int m_return_state;
-extern int m_state;
+//extern int m_return_state;
+//extern int m_state;
 extern bool m_return_onerror;
 extern char m_return_reason[32];
 
@@ -1137,7 +1137,7 @@ static qsocket_t *_Datagram_Connect (char *host)
 	// send the connection request
 	Con_Printf("trying...\n");
 
-	SCR_UpdateScreen();
+	//SCR_UpdateScreen();
 
 	start_time = net_time;
 
@@ -1170,7 +1170,7 @@ static qsocket_t *_Datagram_Connect (char *host)
 					Con_Printf("Expected: %s\n", StrAddr (&sendaddr));
 					Con_Printf("Received: %s\n", StrAddr (&readaddr));
 
-					SCR_UpdateScreen ();
+					//SCR_UpdateScreen ();
 #endif
 					ret = 0;
 					continue;
@@ -1207,7 +1207,7 @@ static qsocket_t *_Datagram_Connect (char *host)
 		while (ret == 0 && (SetNetTime() - start_time) < 2.5);
 		if (ret)
 			break;
-		Con_Printf("still trying...\n"); SCR_UpdateScreen ();
+		//Con_Printf("still trying...\n"); SCR_UpdateScreen ();
 		start_time = SetNetTime();
 	}
 
@@ -1273,7 +1273,7 @@ ErrorReturn2:
 	if (m_return_onerror)
 	{
 		key_dest = key_menu;
-		m_state = m_return_state;
+		//m_state = m_return_state;
 		m_return_onerror = false;
 	}
 	return NULL;

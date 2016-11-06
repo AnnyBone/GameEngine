@@ -1,19 +1,18 @@
-/*	Copyright (C) 2011-2016 OldTimes Software
+/*
+DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+Version 2, December 2004
 
-	This program is free software; you can redistribute it and/or
-	modify it under the terms of the GNU General Public License
-	as published by the Free Software Foundation; either version 2
-	of the License, or (at your option) any later version.
+Copyright (C) 2011-2015 Marco 'eukara' Hladik <eukos@oldtimes-software.com>
+Copyright (C) 2011-2016 Mark E Sowden <markelswo@gmail.com>
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+Everyone is permitted to copy and distribute verbatim or modified
+copies of this license document, and changing it is allowed as long
+as the name is changed.
 
-	See the GNU General Public License for more details.
+DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+0. You just DO WHAT THE FUCK YOU WANT TO.
 */
 
 #include "menu_main.h"
@@ -37,6 +36,7 @@ enum
 	HUD_ICON_ARMORWAVE0,
 };
 
+#if 0
 namespace Menu
 {
 	class HUDPanel : public Panel
@@ -51,6 +51,7 @@ namespace Menu
 	{
 	}
 }
+#endif
 
 void HUD_Initialize()
 {
@@ -62,16 +63,14 @@ void HUD_Initialize()
 	Engine.Cvar_RegisterVariable(&cv_menuhudcrosshair, NULL);
 }
 
-void HUD_DrawNumber(int x, int y, int w, int h, int value)
+void HUD_DrawNumber(int x, int y, PLuint w, PLuint h, PLuint value)
 {
-	if (value < 0)
-		value = 0;
-	if (value > 9)
-		value = 9;
+	if (value < 0)	value = 0;
+	if (value > 9)	value = 9;
 	Engine.DrawMaterialSurface(hud_mnumbers, value, x, y, w, h, 1);
 }
 
-void HUD_DrawNumbers(int x, int y, int value, bool offset)
+void HUD_DrawNumbers(int x, int y, PLuint value, bool offset)
 {
 	if (value >= 100)
 	{
@@ -90,17 +89,15 @@ void HUD_DrawNumbers(int x, int y, int value, bool offset)
 	HUD_DrawNumber(x, y, 32, 32, (value % 10));
 }
 
-void HUD_Draw(void)
+void HUD_Draw()
 {
-	int	armor, health;
-
 	if (!cv_menuhudshow.bValue)
 		return;
 
 	if (cv_menuhudcrosshair.iValue >= 0)
 	{
 		// Ensure it's a valid skin.
-		unsigned int skin = cv_menuhudcrosshair.iValue;
+		unsigned int skin = (PLuint)cv_menuhudcrosshair.iValue;
 		if (skin > (hud_mcrosshairs->num_skins - 1))
 			skin = (hud_mcrosshairs->num_skins - 1);
 
@@ -112,21 +109,19 @@ void HUD_Draw(void)
 	// Draw the rest...
 	Engine.Client_SetMenuCanvas(CANVAS_DEFAULT);
 	
-	health = Engine.Client_GetStat(STAT_HEALTH);
-	if (health < 0)
-		health = 0;
+	int health = Engine.Client_GetStat(STAT_HEALTH);
+	if (health < 0) health = 0;
 
-	armor = Engine.Client_GetStat(STAT_ARMOR);
-	if (armor < 0)
-		armor = 0;
+	int armor = Engine.Client_GetStat(STAT_ARMOR);
+	if (armor < 0) armor = 0;
 
 	// Health
-	Engine.DrawMaterialSurface(hud_micons, HUD_ICON_HEARTWAVE0, 70, g_menuheight - 70, 32, 32, 1.0f);	// TODO: Change depending on health...
-	Engine.DrawMaterialSurface(hud_micons, HUD_ICON_HEALTH, 70, g_menuheight - 70, 32, 32, 1.0f);
-	HUD_DrawNumbers(106, g_menuheight - 70, health, false);
+	Engine.DrawMaterialSurface(hud_micons, HUD_ICON_HEARTWAVE0, 70, menu::height - 70, 32, 32, 1.0f);	// TODO: Change depending on health...
+	Engine.DrawMaterialSurface(hud_micons, HUD_ICON_HEALTH, 70, menu::height - 70, 32, 32, 1.0f);
+	HUD_DrawNumbers(106, menu::height - 70, (PLuint)health, false);
 
 	// Armor
-	Engine.DrawMaterialSurface(hud_micons, HUD_ICON_ARMORWAVE0, 70, g_menuheight - 110, 32, 32, 1.0f);	// TODO: Change depending on armor...
-	Engine.DrawMaterialSurface(hud_micons, HUD_ICON_ARMOR, 70, g_menuheight - 110, 32, 32, 1.0f);
-	HUD_DrawNumbers(106, g_menuheight - 110, armor, false);
+	Engine.DrawMaterialSurface(hud_micons, HUD_ICON_ARMORWAVE0, 70, menu::height - 110, 32, 32, 1.0f);	// TODO: Change depending on armor...
+	Engine.DrawMaterialSurface(hud_micons, HUD_ICON_ARMOR, 70, menu::height - 110, 32, 32, 1.0f);
+	HUD_DrawNumbers(106, menu::height - 110, (PLuint)armor, false);
 }

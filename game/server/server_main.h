@@ -1,19 +1,18 @@
-/*	Copyright (C) 2011-2015 OldTimes Software
+/*
+DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+Version 2, December 2004
 
-	This program is free software; you can redistribute it and/or
-	modify it under the terms of the GNU General Public License
-	as published by the Free Software Foundation; either version 2
-	of the License, or (at your option) any later version.
+Copyright (C) 2011-2015 Marco 'eukara' Hladik <eukos@oldtimes-software.com>
+Copyright (C) 2011-2016 Mark E Sowden <markelswo@gmail.com>
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+Everyone is permitted to copy and distribute verbatim or modified
+copies of this license document, and changing it is allowed as long
+as the name is changed.
 
-	See the GNU General Public License for more details.
+DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+0. You just DO WHAT THE FUCK YOU WANT TO.
 */
 
 #pragma once
@@ -74,7 +73,7 @@ bool Server_SpawnEntity(ServerEntity_t *ent);
 
 ServerEntity_t	*Entity_Spawn(void);
 
-bool Entity_CanDamage(ServerEntity_t *entity, ServerEntity_t *target, ServerDamageType_t type);
+bool Entity_CanDamage(ServerEntity_t *entity, ServerEntity_t *target, EntityDamageType_t type);
 bool Entity_IsPlayer(ServerEntity_t *entity);
 bool Entity_IsMonster(ServerEntity_t *entity);
 bool Entity_IsAnimating(ServerEntity_t *entity);
@@ -93,13 +92,13 @@ void Entity_SetAngles(ServerEntity_t *entity, MathVector3f_t vAngles);
 void Entity_SetModel(ServerEntity_t *entity, char *cModelPath);
 void Entity_SetSizeVector(ServerEntity_t *entity, MathVector3f_t vMin, MathVector3f_t vMax);
 void Entity_SetSize(ServerEntity_t *entity, float fMinA, float fMinB, float fMinC, float fMaxA, float fMaxB, float fMaxC);
-void Entity_SetPhysics(ServerEntity_t *entity, ServerSolidType_t pstSolidType, float fMass, float fFriction);
-void Entity_RadiusDamage(ServerEntity_t *eInflictor, float fRadius, int iDamage, ServerDamageType_t type);
-void Entity_Damage(ServerEntity_t *entity, ServerEntity_t *seInflictor, int damage, ServerDamageType_t type);
+void Entity_SetPhysics(ServerEntity_t *entity, EntitySolidType_t pstSolidType, float fMass, float fFriction);
+void Entity_RadiusDamage(ServerEntity_t *eInflictor, float fRadius, int iDamage, EntityDamageType_t type);
+void Entity_Damage(ServerEntity_t *entity, ServerEntity_t *seInflictor, int damage, EntityDamageType_t type);
 void Entity_Remove(ServerEntity_t *eEntity);
 void Entity_CheckFrames(ServerEntity_t *eEntity);
 void Entity_ResetAnimation(ServerEntity_t *eEntity);
-void Entity_Animate(ServerEntity_t *eEntity, EntityFrame_t *efAnimation);
+void Entity_Animate(ServerEntity_t *eEntity, ServerEntityFrame_t *efAnimation);
 void Entity_Link(ServerEntity_t *eEntity, bool bTouchTriggers);
 void Entity_Unlink(ServerEntity_t *eEntity);
 void Entity_MakeVectors(ServerEntity_t *eEntity);

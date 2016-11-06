@@ -237,8 +237,7 @@ void CL_KeepaliveMessage (void)
 */
 void Client_ParseServerInfo(void)
 {
-	int		i,
-			nummodels, numsounds;
+	int		nummodels, numsounds;
 	char	*str,
 			cModelPrecache[MAX_MODELS][MAX_QPATH],
 			cSoundPrecache[MAX_SOUNDS][MAX_QPATH];
@@ -249,7 +248,7 @@ void Client_ParseServerInfo(void)
 	CL_ClearState();
 
 	// Parse protocol version number
-	i = MSG_ReadLong();
+	int i = MSG_ReadLong();
 	if(i != SERVER_PROTOCOL)
 	{
 		Con_Printf("\n");
@@ -318,8 +317,8 @@ void Client_ParseServerInfo(void)
 	}
 
 	// Precache textures...
-	memset(&gEffectTexture, 0, sizeof(gEffectTexture));
-	for(unsigned int i = 1; ; i++)
+	memset(&g_effecttextures, 0, sizeof(g_effecttextures));
+	for(i = 1; ; i++)
 	{
 		str = MSG_ReadString();
 		if(!str[0])
@@ -637,8 +636,8 @@ void CL_ParseClientdata (void)
 		cl.idealpitch = MSG_ReadChar ();
 	else
 		cl.idealpitch = 0;
-
-	Math_VectorCopy(cl.mvelocity[0],cl.mvelocity[1]);
+	
+	plVectorCopy(cl.mvelocity[0], cl.mvelocity[1]);
 	for (i=0 ; i<3 ; i++)
 	{
 		if (bits & (SU_PUNCH1<<i) )
@@ -655,8 +654,8 @@ void CL_ParseClientdata (void)
 	//johnfitz -- update v_punchangles
 	if (v_punchangles[0][0] != cl.punchangle[0] || v_punchangles[0][1] != cl.punchangle[1] || v_punchangles[0][2] != cl.punchangle[2])
 	{
-		Math_VectorCopy(v_punchangles[0],v_punchangles[1]);
-		Math_VectorCopy(cl.punchangle,v_punchangles[0]);
+		plVectorCopy(v_punchangles[0], v_punchangles[1]);
+		plVectorCopy(cl.punchangle, v_punchangles[0]);
 	}
 	//johnfitz
 
@@ -756,8 +755,8 @@ void CL_ParseStatic (int version) //johnfitz -- added a parameter
 	ent->effects	= ent->baseline.effects;
 	ent->alpha		= ent->baseline.alpha; //johnfitz -- alpha
 
-	Math_VectorCopy (ent->baseline.origin, ent->origin);
-	Math_VectorCopy (ent->baseline.angles, ent->angles);
+	plVectorCopy(ent->baseline.origin, ent->origin);
+	plVectorCopy(ent->baseline.angles, ent->angles);
 
 	R_AddEfrags (ent);
 }
@@ -785,9 +784,6 @@ void CL_ParseStaticSound (int version) //johnfitz -- added argument
 }
 
 #define SHOWNET(x) if(cl_shownet.value==2)Con_Printf ("%3i:%s\n", msg_readcount-1, x);
-
-void Sky_LoadSkyBox(char *name);
-void Sky_ReadCameraPosition(void);
 
 void CL_ParseServerMessage(void)
 {
@@ -831,11 +827,11 @@ void CL_ParseServerMessage(void)
 		SHOWNET(svc_strings[cmd]);
 
 	// other commands
-		switch(cmd)
+		switch (cmd)
 		{
 		default:
 #if 1
-			Host_Error("Illegible server message! (%s) (%i)\n",svc_strings[lastcmd],cmd); //johnfitz -- added svc_strings[lastcmd]
+			Host_Error("Illegible server message! (%s) (%i)\n", svc_strings[lastcmd], cmd); //johnfitz -- added svc_strings[lastcmd]
 #else
 			Game->ParseServerMessage(cmd);
 #endif
@@ -844,15 +840,15 @@ void CL_ParseServerMessage(void)
 			break;
 		case SVC_TIME:
 			cl.mtime[1] = cl.mtime[0];
-			cl.mtime[0] = MSG_ReadFloat ();
+			cl.mtime[0] = MSG_ReadFloat();
 			break;
 		case SVC_CLIENTDATA:
-			CL_ParseClientdata (); //johnfitz -- removed bits parameter, we will read this inside CL_ParseClientdata()
+			CL_ParseClientdata(); //johnfitz -- removed bits parameter, we will read this inside CL_ParseClientdata()
 			break;
 		case SVC_VERSION:
-			i = MSG_ReadLong ();
-			if(i != SERVER_PROTOCOL)
-				Host_Error("Server returned protocol version %i, not %i!\n",i,SERVER_PROTOCOL);
+			i = MSG_ReadLong();
+			if (i != SERVER_PROTOCOL)
+				Host_Error("Server returned protocol version %i, not %i!\n", i, SERVER_PROTOCOL);
 			cl.protocol = i;
 			break;
 		case SVC_DISCONNECT:
@@ -861,32 +857,43 @@ void CL_ParseServerMessage(void)
 
 			Host_EndGame("Server disconnected\n");
 		case SVC_PRINT:
-			Con_Printf ("%s", MSG_ReadString ());
+			Con_Printf("%s", MSG_ReadString());
 			break;
 		case SVC_CENTERPRINT:
 			//johnfitz -- log centerprints to console
-			str = MSG_ReadString ();
-			SCR_CenterPrint (str);
-			Con_LogCenterPrint (str);
+			str = MSG_ReadString();
+			SCR_CenterPrint(str);
+			Con_LogCenterPrint(str);
 			//johnfitz
 			break;
 		case SVC_STUFFTEXT:
-			Cbuf_AddText (MSG_ReadString ());
+			Cbuf_AddText(MSG_ReadString());
 			break;
 		case SVC_DAMAGE:
-			V_ParseDamage ();
+			V_ParseDamage();
 			break;
 		case SVC_SERVERINFO:
 			Client_ParseServerInfo();
-			vid.bRecalcRefDef = true;	// leave intermission full screen
+			//			vid.bRecalcRefDef = true;	// leave intermission full screen
 			break;
 		case SVC_SETANGLE:
-			for (i=0 ; i<3 ; i++)
-				cl.viewangles[i] = MSG_ReadAngle ();
-			break;
+		{
+			plVector3f_t angles = { 0 };
+			for (i = 0; i < 3; i++)
+				angles[i] = MSG_ReadAngle();
+
+			if (cl.current_camera)
+				Camera_SetAngles(cl.current_camera, angles);
+		}
+		break;
 		case SVC_SETVIEW:
-			cl.viewentity = MSG_ReadShort ();
-			break;
+		{
+			cl.viewentity = MSG_ReadShort();
+
+			CameraManager_SetViewEntity(cl.current_camera, &cl.viewent);
+			CameraManager_SetParentEntity(cl.current_camera, &cl_entities[cl.viewentity]);
+		}
+		break;
 		case SVC_LIGHTSTYLE:
 			i = MSG_ReadByte ();
 			if (i >= MAX_LIGHTSTYLES)
@@ -905,7 +912,7 @@ void CL_ParseServerMessage(void)
 				for (j=0; j<cl_lightstyle[i].length; j++)
 				{
 					total += cl_lightstyle[i].cMap[j] - 'a';
-					cl_lightstyle[i].peak = Math_Max(cl_lightstyle[i].peak, cl_lightstyle[i].cMap[j]);
+					cl_lightstyle[i].peak = plMax(cl_lightstyle[i].peak, cl_lightstyle[i].cMap[j]);
 				}
 				
 				cl_lightstyle[i].average = total / cl_lightstyle[i].length + 'a';
@@ -957,9 +964,9 @@ void CL_ParseServerMessage(void)
 			Game->Client_ParseTemporaryEntity();
 			break;
 		case SVC_SETPAUSE:
-			cl.bIsPaused = MSG_ReadByte();
+			cl.paused = MSG_ReadByte();
 
-			if(cl.bIsPaused)
+			if (cl.paused)
 				g_menu->AddState(MENU_STATE_PAUSED);
 			else
 				g_menu->RemoveState(MENU_STATE_PAUSED);
@@ -1003,12 +1010,12 @@ void CL_ParseServerMessage(void)
 		case svc_intermission:
 			cl.intermission = 1;
 			cl.completed_time = cl.time;
-			vid.bRecalcRefDef = true;	// go to full screen
+//			vid.bRecalcRefDef = true;	// go to full screen
 			break;
 		case svc_finale:
 			cl.intermission = 2;
 			cl.completed_time = cl.time;
-			vid.bRecalcRefDef = true;	// go to full screen
+//			vid.bRecalcRefDef = true;	// go to full screen
 			//johnfitz -- log centerprints to console
 			str = MSG_ReadString ();
 			SCR_CenterPrint (str);
@@ -1018,7 +1025,7 @@ void CL_ParseServerMessage(void)
 		case SVC_CUTSCENE:
 			cl.intermission = 3;
 			cl.completed_time = cl.time;
-			vid.bRecalcRefDef = true;	// go to full screen
+//			vid.bRecalcRefDef = true;	// go to full screen
 			//johnfitz -- log centerprints to console
 			str = MSG_ReadString ();
 			SCR_CenterPrint (str);

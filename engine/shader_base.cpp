@@ -20,15 +20,15 @@
 
 #include "client/shader_base.h"
 
-BaseShader::BaseShader() : ShaderProgram("base")
+BaseShader::BaseShader() : ShaderProgram("base"),
+	alpha_test(false)
 {
-	alpha_test	= false;
 }
 
 void BaseShader::Initialize()
 {
-	RegisterShader("base", VL_SHADER_VERTEX);
-	RegisterShader("base", VL_SHADER_FRAGMENT);
+	RegisterShader("base", PL_SHADER_VERTEX);
+	RegisterShader("base", PL_SHADER_FRAGMENT);
 
 	Link();
 

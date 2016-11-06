@@ -1,34 +1,36 @@
-/*	Copyright (C) 1996-2001 Id Software, Inc.
-	Copyright (C) 2002-2009 John Fitzgibbons and others
-	Copyright (C) 2011-2016 OldTimes Software
+/*
+Copyright (C) 1996-2001 Id Software, Inc.
+Copyright (C) 2002-2009 John Fitzgibbons and others
+Copyright (C) 2011-2016 OldTimes Software
 
-	This program is free software; you can redistribute it and/or
-	modify it under the terms of the GNU General Public License
-	as published by the Free Software Foundation; either version 2
-	of the License, or (at your option) any later version.
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-	See the GNU General Public License for more details.
+See the GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
+
+#include "platform_log.h"
+
 #include "engine_base.h"
 
-/*
-	Old platform specific loop shit. Needs to be rewritten.
-*/
+/*	Old platform specific loop shit. Needs to be rewritten.	*/
 
-#include <SDL.h>
+#include <SDL2/SDL.h>
 
 #ifndef _WIN32
-#include <sys/time.h>
-#include <sys/types.h>
-#include <unistd.h>
+#	include <sys/time.h>
+#	include <sys/types.h>
+#	include <unistd.h>
 #endif
 
 // Platform library
@@ -36,16 +38,14 @@
 #include "platform_filesystem.h"
 
 #ifdef _WIN32
-#include "winquake.h"
-#include "conproc.h"
+#	include "winquake.h"
+#	include "conproc.h"
 #endif
 #include "errno.h"
 #include "resource.h"
 
 #include "EngineEditor.h"
 #include "video.h"
-
-#define MAXIMUM_MEMORY		0x8000000	// 128MB
 
 #define CONSOLE_ERROR_TIMEOUT	60.0	// # of seconds to wait on Sys_Error running
 										//  dedicated before exiting
@@ -61,8 +61,6 @@ bool			bIsDedicated;
 static bool		sc_return_on_enter = false;
 HANDLE			hinput, houtput;
 #endif
-
-void Sys_InitFloatTime (void);
 
 volatile int sys_checksum;
 
@@ -190,21 +188,6 @@ int Sys_FileWrite(int handle, void *data, int count)
 	return fwrite(data,1,count,sys_handles[handle]);
 }
 
-int	Sys_FileTime (char *path)
-{
-	FILE	*f;
-
-	f = fopen(path, "rb");
-	if (f)
-	{
-		fclose(f);
-
-		return 1;
-	}
-	else
-		return -1;
-}
-
 /*
 ===============================================================================
 
@@ -299,23 +282,7 @@ void Sys_Quit(void)
 double System_DoubleTime(void)
 {
 	// [19/7/2013] Copied over from QuakeSpasm ~hogsy
-	return SDL_GetTicks()/1000.0;
-}
-
-void Sys_InitFloatTime (void)
-{
-	int		j;
-
-	System_DoubleTime ();
-
-	j = COM_CheckParm("-starttime");
-
-	if (j)
-		curtime = (double)(Q_atof(com_argv[j+1]));
-	else
-		curtime = 0.0;
-
-	lastcurtime = curtime;
+	return SDL_GetTicks() / 1000.0;
 }
 
 char *Sys_ConsoleInput (void)
@@ -454,36 +421,13 @@ char *Sys_ConsoleInput (void)
 	return NULL;
 }
 
-double dTime, oldtime, newtime;
+/*
+double oldtime, newtime;
 
 bool System_Main(int iArgumentCount,char *cArguments[], bool bEmbedded)
 {
 	EngineParameters_t	epParameters;
 	int					t;
-
-#if 0
-#ifdef _WIN32	// TODO: Move this functionality into the platform library.
-	{
-		MEMORYSTATUSEX lpBuffer;
-
-		lpBuffer.dwLength = sizeof(lpBuffer);
-		GlobalMemoryStatusEx (&lpBuffer);
-
-		// take the greater of all the available memory or half the total memory,
-		// but at least 8 Mb and no more than 16 Mb, unless they explicitly
-		// request otherwise
-		epParameters.memsize = lpBuffer.ullAvailPhys;
-		if(epParameters.memsize < MINIMUM_MEMORY)
-			epParameters.memsize = MINIMUM_MEMORY;
-
-		if ((unsigned)epParameters.memsize < (lpBuffer.ullAvailPhys >> 1))
-			epParameters.memsize = lpBuffer.ullAvailPhys >> 1;
-
-		if(epParameters.memsize > MAXIMUM_MEMORY)
-			epParameters.memsize = MAXIMUM_MEMORY;
-	}
-#endif
-#endif
 	
 	epParameters.memsize	= MAXIMUM_MEMORY;
 	epParameters.basedir	= ".";
@@ -543,8 +487,6 @@ bool System_Main(int iArgumentCount,char *cArguments[], bool bEmbedded)
 	}
 #endif
 
-	Sys_InitFloatTime();
-
 	Sys_Printf("Host_Initialize\n");
 
 	Host_Initialize(&epParameters);
@@ -556,17 +498,19 @@ bool System_Main(int iArgumentCount,char *cArguments[], bool bEmbedded)
 
 void System_Loop(void)
 {
+	static double time = 0;
+
 	if (bIsDedicated)
 	{
 		newtime = System_DoubleTime();
-		dTime = newtime - oldtime;
+		time = newtime - oldtime;
 
-		while (dTime < sys_ticrate.value)
+		while (time < sys_ticrate.value)
 		{
 			SDL_Delay(1);
 
 			newtime = System_DoubleTime();
-			dTime = newtime - oldtime;
+			time = newtime - oldtime;
 		}
 	}
 	else
@@ -581,9 +525,10 @@ void System_Loop(void)
 			Video.bSkipUpdate = false;
 
 		newtime = System_DoubleTime();
-		dTime = newtime - oldtime;
+		time = newtime - oldtime;
 	}
 
-	Host_Frame(dTime);
+	Host_Frame(time);
 	oldtime = newtime;
 }
+*/

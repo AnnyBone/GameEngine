@@ -1,54 +1,55 @@
-/*	Copyright (C) 2011-2016 OldTimes Software
+/*
+Copyright (C) 2011-2016 OldTimes Software
 
-	This program is free software; you can redistribute it and/or
-	modify it under the terms of the GNU General Public License
-	as published by the Free Software Foundation; either version 2
-	of the License, or (at your option) any later version.
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-	See the GNU General Public License for more details.
+See the GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "platform.h"
 
 #include "platform_filesystem.h"
 
-/*
-	File System
-*/
+/*	File System	*/
 
-/*	Checks whether a file has been modified or not.
-*/
-bool plIsFileModified(time_t oldtime, const char *path)
+// Checks whether a file has been modified or not.
+PLbool plIsFileModified(time_t oldtime, const PLchar *path)
 {
+	plFunctionStart();
 	if (!oldtime)
 	{
 		plSetError("Invalid time, skipping check!\n");
-		return false;
+		return PL_FALSE;
 	}
 
 	struct stat sAttributes;
 	if (stat(path, &sAttributes) == -1)
 	{
 		plSetError("Failed to get file stats!\n");
-		return false;
+		return PL_FALSE;
 	}
 
 	if (sAttributes.st_mtime > oldtime)
-		return true;
+		return PL_TRUE;
 
-	return false;
+	return PL_FALSE;
+	plFunctionEnd();
 }
 
-time_t plGetFileModifiedTime(const char *path)
+time_t plGetFileModifiedTime(const PLchar *path)
 {
+	plFunctionStart();
 	struct stat sAttributes;
 	if (stat(path, &sAttributes) == -1)
 	{
@@ -56,38 +57,36 @@ time_t plGetFileModifiedTime(const char *path)
 		return 0;
 	}
 	return sAttributes.st_mtime;
+	plFunctionEnd();
 }
 
-void plLowerCasePath(char *out)
+void plLowerCasePath(PLchar *out)
 {
-	pFUNCTION_START
-	int i;
-	for (i = 0; out[i]; i++)
-		out[i] = (char)tolower(out[i]);
-	pFUNCTION_END
+	plFunctionStart();
+	for (int i = 0; out[i]; i++) 
+		out[i] = (PLchar)tolower(out[i]);
+	plFunctionEnd();
 }
 
-/*  Creates a folder at the given path.
-*/
-bool plCreateDirectory(const char *ccPath)
+// Creates a folder at the given path.
+PLbool plCreateDirectory(const PLchar *ccPath)
 {
-	pFUNCTION_START
-		
+	plFunctionStart();
 #ifdef _WIN32
-	if(CreateDirectory(ccPath,NULL) || (GetLastError() == ERROR_ALREADY_EXISTS))
-		return true;
+	if(CreateDirectory(ccPath, NULL) || (GetLastError() == ERROR_ALREADY_EXISTS))
+		return PL_TRUE;
 	else if(GetLastError() == ERROR_PATH_NOT_FOUND)
 		plSetError("Failed to find an intermediate directory! (%s)\n", ccPath);
 	else    // Assume it already exists.
 		plSetError("Unknown error! (%s)\n", ccPath);
-#else	// TODO: Won't the below code work fine on Windows too??
+#else
 	{
 		struct stat ssBuffer;
 
 		if(stat(ccPath,&ssBuffer) == -1)
 		{
 			if(mkdir(ccPath,0777) == 0)
-				return true;
+				return PL_TRUE;
 			else
 			{
 				switch(errno)
@@ -105,26 +104,25 @@ bool plCreateDirectory(const char *ccPath)
 		}
 		else
 			// Path already exists, so this is fine.
-			return true;
+			return PL_TRUE;
 	}
 #endif
 
-	return false;
-
-	pFUNCTION_END
+	return PL_FALSE;
+	plFunctionEnd();
 }
 
-/*	Returns the extension for the file.
-*/
-char *plGetFileExtension(char *dest, const char *in)
+// Returns the extension for the file.
+PLchar *plGetFileExtension(PLchar *dest, const PLchar *in)
 {
+	plFunctionStart();
 	dest = strrchr(in, '.') + 1;
 	return dest;
+	plFunctionEnd();
 }
 
-/*	Strips the extension from the filename.
-*/
-void plStripExtension(char *dest, const char *in)
+// Strips the extension from the filename.
+void plStripExtension(PLchar *dest, const PLchar *in)
 {
 	if (in[0] == ' ')
 	{
@@ -137,11 +135,10 @@ void plStripExtension(char *dest, const char *in)
 	*dest = 0;
 }
 
-/*	Returns a pointer to the last component in the given filename. 
-*/
-const char *plGetFileName(const char *path)
+// Returns a pointer to the last component in the given filename. 
+const PLchar *plGetFileName(const PLchar *path)
 {
-	const char *lslash = strrchr(path, '/');
+	const PLchar *lslash = strrchr(path, '/');
 	if(lslash != NULL) path = lslash + 1;
 	return path;
 }
@@ -150,16 +147,14 @@ const char *plGetFileName(const char *path)
 	TODO:
 		Move this into platform_system
 */
-void plGetUserName(char *out)
+void plGetUserName(PLchar *out)
 {
-	pFUNCTION_START
-
+	plFunctionStart();
 #ifdef _WIN32
-	char	userstring[PL_MAX_USERNAME];
-	DWORD	name;
+	PLchar userstring[PL_MAX_USERNAME];
 
 	// Set these AFTER we update active function.
-	name = sizeof(userstring);
+	DWORD name = sizeof(userstring);
 	if (GetUserName(userstring, &name) == 0)
 		// If it fails, just set it to user.
 		sprintf(userstring, "user");
@@ -183,27 +178,22 @@ void plGetUserName(char *out)
 	}
 
 	//strncpy(out, cUser, sizeof(out));
-
-	pFUNCTION_END
+	plFunctionEnd();
 }
 
 /*	Scans the given directory.
 	On each found file it calls the given function to handle the file.
-	TODO:
-		Better error management.
-		Finish Linux implementation.
 */
-void plScanDirectory(const char *path, const char *extension, void(*Function)(char *filepath))
+void plScanDirectory(const PLchar *path, const PLchar *extension, void(*Function)(PLchar *filepath))
 {
-	pFUNCTION_START
-	char	filestring[PLATFORM_MAX_PATH];
-
+	plFunctionStart();
 	if (path[0] == ' ')
 	{
 		plSetError("Invalid path!\n");
 		return;
 	}
 
+	char filestring[PL_MAX_PATH];
 #ifdef _WIN32
 	{
 		WIN32_FIND_DATA	finddata;
@@ -246,13 +236,13 @@ void plScanDirectory(const char *path, const char *extension, void(*Function)(ch
 		}
 	}
 #endif
-	pFUNCTION_END
+	plFunctionEnd();
 }
 
-void plGetWorkingDirectory(char *out)
+void plGetWorkingDirectory(PLchar *out)
 {
 	pFUNCTION_START
-	if (!getcwd(out, PLATFORM_MAX_PATH))
+	if (!getcwd(out, PL_MAX_PATH))
 	{
 		switch(errno)
 		{
@@ -282,30 +272,27 @@ void plGetWorkingDirectory(char *out)
 	pFUNCTION_END
 }
 
-/*
-	File I/O
-*/
+/*	File I/O	*/
 
-/*	Checks if a file exists or not.
-*/
-bool plFileExists(const char *path)
+// Checks if a file exists or not.
+PLbool plFileExists(const PLchar *path)
 {
 	struct stat buffer;
 	return (stat(path, &buffer) == 0);
 }
 
-int	plGetLittleShort(FILE *fin)
+PLint plGetLittleShort(FILE *fin)
 {
-	int	b1 = fgetc(fin);
-	int	b2 = fgetc(fin);
-	return (short)(b1 + b2 * 256);
+	PLint b1 = fgetc(fin);
+	PLint b2 = fgetc(fin);
+	return (PLshort)(b1 + b2 * 256);
 }
 
-int plGetLittleLong(FILE *fin)
+PLint plGetLittleLong(FILE *fin)
 {
-	int b1 = fgetc(fin);
-	int	b2 = fgetc(fin);
-	int	b3 = fgetc(fin);
-	int	b4 = fgetc(fin);
+	PLint b1 = fgetc(fin);
+	PLint b2 = fgetc(fin);
+	PLint b3 = fgetc(fin);
+	PLint b4 = fgetc(fin);
 	return b1 + (b2 << 8) + (b3 << 16) + (b4 << 24);
 }

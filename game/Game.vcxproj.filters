@@ -79,6 +79,9 @@
       <Filter>Server</Filter>
     </ClInclude>
     <ClInclude Include="game_mode.h" />
+    <ClInclude Include="..\shared\shared_base.h">
+      <Filter>Shared</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Client">

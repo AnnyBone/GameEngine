@@ -22,7 +22,7 @@
 	Main Entry
 */
 
-#include "platform_module.h"
+#include "platform_library.h"
 
 // Client
 #include "client.h"
@@ -56,10 +56,10 @@ char *va(char *format,...)
 	return string;
 }
 
-void SetAngle(ServerEntity_t *ent,MathVector3f_t vAngle)
+void SetAngle(ServerEntity_t *ent, PLVector3f vAngle)
 {
 	// [21/3/2012] Updated ~hogsy
-	Math_VectorCopy(vAngle,ent->v.angles);
+	plVectorCopy(vAngle, ent->v.angles);
 
 	Entity_Link(ent,false);
 }
@@ -104,7 +104,7 @@ void ChangeYaw(ServerEntity_t *ent)
 	also slide box entities	if the
 	tryents flag is set.
 */
-trace_t Traceline(ServerEntity_t *ent, MathVector3f_t vStart, MathVector3f_t vEnd, int type)
+trace_t Traceline(ServerEntity_t *ent, PLVector3f vStart, PLVector3f vEnd, int type)
 {
 	return Engine.Server_Move(vStart, pl_origin3f, pl_origin3f, vEnd, type, ent);
 }
@@ -211,7 +211,7 @@ void	Server_PreFrame(void);	// server_main
 void	Server_SendClientInformation(ServerClient_t *client);
 void	Game_Shutdown(void);
 
-pMODULE_EXPORT GameExport_t *Game_Main(ModuleImport_t *Import)
+PL_MODULE_EXPORT GameExport_t *Game_Main(ModuleImport_t *Import)
 {
 	// Imports...
 

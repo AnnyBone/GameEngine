@@ -17,9 +17,10 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 #include "../engine_base.h"
 
 #include "../video.h"		// TODO: make this a base include
+#include "video_camera.h"
 #include "effect_sprite.h"
 
-using namespace Core;
+using namespace core;
 
 ConsoleVariable_t cv_sprite_debugsize = { "sprite_debugsize", "0", false, false, "If enabled, shows the area that the sprite covers." };
 
@@ -113,7 +114,7 @@ Sprite::Sprite() :
 	plVectorClear(mins);
 	plVectorClear(maxs);
 
-	Math_Vector4Set(1.0f, colour);
+	plVector4Setf(1.0f, colour);
 
 	draw = vlCreateDraw(VL_PRIMITIVE_TRIANGLES, 2, 4);
 }
@@ -131,7 +132,7 @@ void Sprite::SetColour(float r, float g, float b, float a)
 	colour[3] = a;
 }
 
-void Sprite::SetPosition(MathVector3f_t nposition)
+void Sprite::SetPosition(plVector3f_t nposition)
 {
 	// Just use the other func.
 	SetPosition(nposition[0], nposition[1], nposition[2]);
@@ -189,22 +190,30 @@ void Sprite::SetMaterial(Material_t *nmaterial)
 void Sprite::Simulate()
 {
 	// TODO: last bit is a hack, since having the console open doesn't count as being paused...
-	if (!isactive || cl.bIsPaused || ((key_dest == key_console) && (svs.maxclients == 1)))
+	if (!isactive || cl.paused || ((key_dest == key_console) && (svs.maxclients == 1)))
+		return;
+
+	Camera *camera = g_cameramanager->GetCurrentCamera();
+	if (!camera)
 		return;
 
 	isvisible = true;
 
-	if ((colour[3] <= 0))
+	if (colour[3] <= 0)
 		isvisible = false;
 
 	// Ensure it's on screen.
-	MathVector3f_t mvmins, mvmaxs;
+	PLVector3f mvmins, mvmaxs;
 	plVectorAdd3fv(position, mins, mvmins);
 	plVectorAdd3fv(position, maxs, mvmaxs);
-	if (R_CullBox(mvmins, mvmaxs))
+	if (((type == SPRITE_TYPE_FLARE) && camera->IsPointOutsideFrustum(position)) ||
+		camera->IsBoxOutsideFrustum(mvmins, mvmaxs))
 		isvisible = false;
 
-	// Simulation depends on type, nothing complex though.
+	// Not visible.
+	if (!isvisible)	
+		return;
+
 	switch (type)
 	{
 	default:
@@ -216,9 +225,9 @@ void Sprite::Simulate()
 	case SPRITE_TYPE_SCALE:
 		// Scale the sprite, dependant on view position.
 		scale *=
-			(position[0] - r_origin[0]) * vpn[0] +
-			(position[1] - r_origin[1]) * vpn[1] +
-			(position[2] - r_origin[2]) * vpn[2];
+			(position[0] - camera->GetPosition()[0]) * camera->GetForward()[0] +
+			(position[1] - camera->GetPosition()[1]) * camera->GetForward()[1] +
+			(position[2] - camera->GetPosition()[2]) * camera->GetForward()[2];
 		break;
 	}
 }
@@ -226,11 +235,14 @@ void Sprite::Simulate()
 void Sprite::Draw()
 {
 	// Not visible.
-	if (!isvisible)
+	if (!isvisible)	return;
+
+	Camera *camera = g_cameramanager->GetCurrentCamera();
+	if (!camera)
 		return;
 
 	if (colour[3] < 1.0f)
-		vlEnable(VL_CAPABILITY_BLEND);
+		plEnableGraphicsStates(VL_CAPABILITY_BLEND);
 
 	vlBeginDraw(draw);
 	vlDrawVertex3f(-scale, scale, 0);
@@ -239,31 +251,27 @@ void Sprite::Draw()
 	vlDrawVertex3f(-scale, -scale, 0);
 	vlEndDraw(draw);
 
-	vlDraw(draw);
+	plDraw(draw);
 
 	if (colour[3] < 1.0f)
-		vlDisable(VL_CAPABILITY_BLEND);
+		plDisableGraphicsStates(VL_CAPABILITY_BLEND);
 
 	if (cv_sprite_debugsize.bValue)
 	{
 		// We need the size relative to the current position.
-		MathVector3f_t NewMins, NewMaxs;
-		Math_VectorAdd(mins, position, NewMins);
-		Math_VectorAdd(maxs, position, NewMaxs);
-
+		PLVector3f NewMins = { 0 }, NewMaxs = { 0 };
+		plVectorAdd3fv(mins, position, NewMins);
+		plVectorAdd3fv(maxs, position, NewMaxs);
+		
 		// Draw a point representing the current position.
-		Draw_CoordinateAxes(position);
-
+		draw::CoordinateAxes(position);
+		
 		// Draw the bounding box.
-		R_EmitWireBox(NewMins, NewMaxs, 0, 1.0f, 0);
+		draw::WireBox(NewMins, NewMaxs, 0, 1.0f, 0);
 	}
 }
 
-/*
-	C Interface
-*/
-
-// Sprite Manager
+/*	Sprite Manager C Interface	*/
 
 extern "C" void SpriteManager_Simulate(void)
 {
@@ -290,9 +298,9 @@ extern "C" void SpriteManager_Clear(void)
 	g_spritemanager->Clear();
 }
 
-// Sprite
+/*	Sprite C Interface	*/
 
-extern "C" void Sprite_SetPosition(ISprite *sprite, MathVector3f_t position)
+extern "C" void Sprite_SetPosition(ISprite *sprite, plVector3f_t position)
 {
 	sprite->SetPosition(position);
 }

@@ -126,6 +126,8 @@ void Host_Game_f (void)
 	pack_t			*pak;
 	char			pakfile[PLATFORM_MAX_PATH]; //FIXME: it's confusing to use this string for two different things
 
+	Con_Printf("DONT USE ME YOU FOOL!!!\n");
+
 	if(Cmd_Argc() > 1)
 	{
 		if(strstr(Cmd_Argv(1),".."))
@@ -184,7 +186,7 @@ void Host_Game_f (void)
 		if(!bIsDedicated)
 		{
 			// Delete all textures where TEXPREF_PERSIST is unset
-			TextureManager_FreeTextures(0, TEXPREF_PERSIST);
+			//TextureManager_FreeTextures(0, TEXPREF_PERSIST);
 
 			Draw_NewGame();
 
@@ -848,7 +850,7 @@ void Host_SavegameComment (char *text)
 
 	for (i=0 ; i<SAVEGAME_COMMENT_LENGTH ; i++)
 		text[i] = ' ';
-	memcpy(text,cl.levelname,Math_Min(strlen(cl.levelname),22)); //johnfitz -- only copy 22 chars.
+	memcpy(text,cl.levelname, plMin(strlen(cl.levelname),22)); //johnfitz -- only copy 22 chars.
 	sprintf(kills,"kills:%3i/%3i", cl.stats[STAT_MONSTERS], cl.stats[STAT_TOTALMONSTERS]);
 	memcpy(text+22,kills,strlen(kills));
 
@@ -922,7 +924,7 @@ void Host_Savegame_f (void)
 	fprintf (f, "%s\n", comment);
 	for (i=0 ; i<NUM_SPAWN_PARMS ; i++)
 		fprintf (f, "%f\n", svs.clients->spawn_parms[i]);
-	fprintf (f, "%d\n", current_skill);
+	//fprintf (f, "%d\n", current_skill);
 	fprintf (f, "%s\n", sv.name);
 	fprintf (f, "%f\n",sv.time);
 
@@ -986,7 +988,7 @@ void Host_Loadgame_f (void)
 	}
 
 #ifdef _MSC_VER
-#pragma warning(suppress: 6031)
+#	pragma warning(suppress: 6031)
 #endif
 	fscanf (f, "%i\n", &version);
 	if (version != SAVEGAME_VERSION)
@@ -1000,8 +1002,8 @@ void Host_Loadgame_f (void)
 		fscanf (f, "%f\n", &spawn_parms[i]);
 // this silliness is so we can load 1.06 save files, which have float skill values
 	fscanf (f, "%f\n", &tfloat);
-	current_skill = (int)(tfloat + 0.1);
-	Cvar_SetValue ("skill", (float)current_skill);
+	//current_skill = (int)(tfloat + 0.1);
+	//Cvar_SetValue ("skill", (float)current_skill);
 
 	fscanf (f, "%s\n",mapname);
 	fscanf (f, "%f\n",&time);
@@ -1130,7 +1132,7 @@ void Host_Name_f (void)
 
 void Host_Version(void)
 {
-	Con_Printf("Katana (%i) ("PL_NAME""PL_CPU_ID")\n", ENGINE_VERSION_BUILD);
+	Con_Printf("Katana (%i) ("PL_SYSTEM_NAME""PL_SYSTEM_CPU")\n", ENGINE_VERSION_BUILD);
 	Con_Printf("Compiled: "__TIME__" "__DATE__"\n");
 }
 
@@ -1346,7 +1348,7 @@ void Host_PreSpawn_f (void)
 	}
 	else if(host_client->bSpawned)
 	{
-		Con_Printf ("prespawn not valid -- allready spawned\n");
+		Con_Printf ("prespawn not valid -- already spawned\n");
 		return;
 	}
 
@@ -1370,13 +1372,13 @@ void Host_Spawn_f(void)
 	}
 	else if (host_client->bSpawned)
 	{
-		Con_Printf("Spawn not valid -- allready spawned\n");
+		Con_Printf("Spawn not valid -- already spawned\n");
 		return;
 	}
 
 	// Run the entrance script
 	if (sv.loadgame)
-		// loaded games are fully inited allready
+		// loaded games are fully inited already
 		// if this is the last client to be connected, unpause
 		sv.paused = false;
 	else
@@ -1406,7 +1408,7 @@ void Host_Spawn_f(void)
 
 	// send time of update
 	MSG_WriteByte (&host_client->message,SVC_TIME);
-	MSG_WriteFloat (&host_client->message,sv.time);
+	MSG_WriteFloat (&host_client->message,(float)sv.time);
 
 	for (i=0, client = svs.clients ; i<svs.maxclients ; i++, client++)
 	{
@@ -1434,15 +1436,15 @@ void Host_Spawn_f(void)
 //
 	MSG_WriteByte (&host_client->message, SVC_UPDATESTAT);
 	MSG_WriteByte (&host_client->message, STAT_TOTALSECRETS);
-	MSG_WriteLong (&host_client->message, pr_global_struct.total_secrets);
+	MSG_WriteLong (&host_client->message, (int)pr_global_struct.total_secrets);
 
 	MSG_WriteByte (&host_client->message, SVC_UPDATESTAT);
 	MSG_WriteByte (&host_client->message, STAT_TOTALMONSTERS);
-	MSG_WriteLong (&host_client->message, pr_global_struct.total_monsters);
+	MSG_WriteLong (&host_client->message, (int)pr_global_struct.total_monsters);
 
 	MSG_WriteByte (&host_client->message, SVC_UPDATESTAT);
 	MSG_WriteByte (&host_client->message, STAT_SECRETS);
-	MSG_WriteLong (&host_client->message, pr_global_struct.found_secrets);
+	MSG_WriteLong (&host_client->message, (int)pr_global_struct.found_secrets);
 
 	MSG_WriteByte(&host_client->message,SVC_UPDATESTAT);
 	MSG_WriteByte(&host_client->message,STAT_MONSTERS);
@@ -1504,7 +1506,7 @@ void Host_Kick_f (void)
 
 	if(Cmd_Argc() > 2 && strcmp(Cmd_Argv(1), "#") == 0)
 	{
-		i = Q_atof(Cmd_Argv(2)) - 1;
+		i = (PLuint)Q_atof(Cmd_Argv(2)) - 1;
 		if(i < 0 || i >= svs.maxclients)
 			return;
 		else if(!svs.clients[i].active)

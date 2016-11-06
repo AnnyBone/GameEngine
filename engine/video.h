@@ -1,24 +1,25 @@
-/*	Copyright (C) 2011-2016 OldTimes Software
+/*
+Copyright (C) 2011-2016 OldTimes Software
 
-	This program is free software; you can redistribute it and/or
-	modify it under the terms of the GNU General Public License
-	as published by the Free Software Foundation; either version 2
-	of the License, or (at your option) any later version.
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-	See the GNU General Public License for more details.
+See the GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #pragma once
 
-#include "platform_video_layer.h"
+#include "platform_graphics.h"
 
 #define	VIDEO_LIGHTMAP_HACKS
 
@@ -38,6 +39,8 @@ extern ConsoleVariable_t
 	cv_video_lightmapoversample,	// Enable overbrights?
 	cv_video_drawbrushes,			// Draw brush entities?
 	cv_video_clearbuffers,			// Clear buffers?
+
+	cv_video_finish,				// Call vlFinish at end of frame?
 
 	cv_video_shownormals,			// Show vertex normals?
 
@@ -69,14 +72,12 @@ extern ConsoleVariable_t cv_video_drawdetail;	// TODO: Move into EngineMaterial 
 extern ConsoleVariable_t cv_video_drawsky;
 extern ConsoleVariable_t cv_video_detailscale; // TODO: Move into EngineMaterial ?
 
-extern bool	bVideoIgnoreCapabilities;
-
-extern struct gltexture_s *gEffectTexture[MAX_EFFECTS];
+extern struct gltexture_s *g_effecttextures[MAX_EFFECTS];
 
 plEXTERN_C_END
 
 #define	VIDEO_TEXTURE_DIFFUSE		0
-#define	VIDEO_TEXTURE_LIGHT			1
+#define	VIDEO_TEXTURE_LIGHT			1	// currently reserved!
 #define	VIDEO_TEXTURE_FULLBRIGHT	2
 #define	VIDEO_TEXTURE_SPHERE		3
 #define	VIDEO_TEXTURE_DETAIL		4
@@ -94,27 +95,16 @@ typedef struct
 	unsigned int current_texture;
 	unsigned int capabilities;
 
-	vlTextureEnvironmentMode_t current_envmode;
+	PLTextureEnvironmentMode current_envmode;
 } VideoTextureMU_t;
 
 typedef struct
 {
-	bool	fog_coord;
-	bool	vertex_buffer_object;
-	bool	shadow;
-	bool	depth_texture;
 	bool	generate_mipmap;
 } VideoExtensions_t;
 
 typedef struct
 {
-	// Information
-	const char	
-		*gl_vendor,
-		*gl_renderer,
-		*gl_version,
-		*gl_extensions;
-
 	float	
 		fMaxAnisotropy,	// Max anisotropy amount allowed by the hardware.
 		bpp;			// Bits per-pixel.
@@ -124,21 +114,15 @@ typedef struct
 	int					num_textureunits;					// Max number of supported units.
 	unsigned int		current_textureunit;				// Current TMU.
 
-	unsigned int current_program;
-
 	int msaa_samples;
 
-	unsigned int iWidth,iHeight;
-
-	int iFrameCount;	// An alternative to r_framecount, which is slightly more reliable.
+	unsigned int framecount;	// An alternative to r_framecount, which is slightly more reliable.
 
 	bool
 		bInitialized,					// Is the video system started?
-		fullscreen,						// Is the window fullscreen or not?
 		vertical_sync,					// Sync the swap interval to the refresh rate?
 		bActive,						// Is the window active or not?
 		bSkipUpdate,					// Skip screen update.
-		debug_frame,
 		unlocked;						// Can we change the window settings or not?
 
 	VideoExtensions_t	extensions;		// Extensions
@@ -149,32 +133,19 @@ plEXTERN_C_START
 extern Video_t Video;
 
 void Video_Initialize(void);
-void Video_UpdateWindow(void);
 void Video_GenerateSphereCoordinates(void);
 void Video_SetTexture(gltexture_t *gTexture);
-void Video_SetViewportSize(int w, int h);
-void Video_PreFrame(void);
-void Video_PostFrame(void);
-void Video_ClearBuffer(void);
+void Video_SetViewportSize(unsigned int w, unsigned int h);
 void Video_Frame(void);
-void Video_ObjectTexture(vlVertex_t *voObject, unsigned int uiTextureUnit, float S, float T);
-void Video_ObjectVertex(vlVertex_t *voObject, float X, float Y, float Z);
-void Video_ObjectNormal(vlVertex_t *voObject, float X, float Y, float Z);
-void Video_ObjectColour(vlVertex_t *voObject, float R, float G, float B, float A);
-void Video_DrawFill(vlVertex_t *voFill, Material_t *mMaterial, int iSkin);
+void Video_ObjectTexture(PLVertex *voObject, unsigned int uiTextureUnit, float S, float T);
+void Video_ObjectVertex(PLVertex *voObject, float X, float Y, float Z);
+void Video_ObjectNormal(PLVertex *voObject, float X, float Y, float Z);
+void Video_ObjectColour(PLVertex *voObject, float R, float G, float B, float A);
+void Video_DrawFill(PLVertex *voFill, Material_t *mMaterial, int iSkin);
 void Video_DrawSurface(msurface_t *mSurface, float fAlpha, Material_t *mMaterial, unsigned int uiSkin);
-void Video_DrawObject(vlVertex_t *voObject, vlPrimitive_t vpPrimitiveType, unsigned int uiVerts, Material_t *mMaterial, int iSkin);
+void Video_DrawObject(PLVertex *voObject, PLPrimitive vpPrimitiveType, unsigned int uiVerts, Material_t *mMaterial, int iSkin);
 void Video_ShowBoundingBoxes(void);
 void Video_Shutdown(void);
-
-// Temporary
-void DEBUG_FrameBufferInitialization();
-void DEBUG_FrameBufferBind();
-void DEBUG_FrameBufferDraw();
-
-// Legacy
-void R_EmitWireBox(MathVector3f_t mins, MathVector3f_t maxs, float r, float g, float b);
-bool R_CullBox(MathVector3f_t emins, MathVector3f_t emaxs);
 
 // Brush
 void GL_BuildLightmaps();
@@ -185,9 +156,8 @@ MathVector_t Light_GetSample(MathVector3f_t vPoint);
 // Legacy
 extern float r_world_matrix[16], r_base_world_matrix[16];
 void R_SetupGenericView(void);
-void R_SetupScene(void);
 
-plEXTERN_C_END
+PL_EXTERN_C_END
 
 // TODO: Reintroduce tracking functionality.
 #define	VIDEO_FUNCTION_START \
@@ -200,23 +170,21 @@ plEXTERN_C_END
 }
 #define	VIDEO_FUNCTION_END \
 
+#include "client/video_viewport.h"
+#include "client/video_camera.h"
+
 #include "video_layer.h"
 #include "video_object.h"
+
+#include "client/video_draw.h"
+#include "client/video_sky.h"
 
 // Legacy
 #include "EngineVideoAlias.h"
 
-plEXTERN_C_START
+PL_EXTERN_C
 
-/*
-	Sky
-*/
-
-void Sky_Draw(void);
-
-/*
-	Light
-*/
+/*	Light	*/
 
 void Light_Draw(void);
 void Light_Animate(void);
@@ -234,6 +202,11 @@ void R_UploadLightmap(int lmap);
 void World_Draw(void);
 void World_DrawWater(void);
 
+void World_CullSurfaces(void);
+void World_MarkSurfaces(void);
+
+extern bool bVisibilityChanged;
+
 /*
 	Brush
 */
@@ -248,4 +221,4 @@ void DrawGLPoly(glpoly_t *p);
 
 void Surface_DrawWater(glpoly_t *p, Material_t *mCurrent);
 
-plEXTERN_C_END
+PL_EXTERN_C_END

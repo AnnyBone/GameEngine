@@ -25,8 +25,6 @@ Material_t *mat_bloodcloud	= nullptr;
 Material_t *mat_smoke		= nullptr;
 Material_t *mat_spark		= nullptr;
 
-ISprite *spr_debug = NULL;
-
 void ClientEffect_Initialize(void)
 {
 	// Load default set of particles.
@@ -47,7 +45,7 @@ void ClientEffect_Initialize(void)
 /*	Field of particles, useful for forcefields etc.
 	TODO: get entity pointer, so we can do this per-model instead.
 */
-void ClientEffect_ParticleField(MathVector3f_t position, MathVector3f_t mins, MathVector3f_t maxs, float density)
+void ClientEffect_ParticleField(PLVector3f position, PLVector3f mins, PLVector3f maxs, float density)
 {
 	if (density <= 0)
 		return;
@@ -55,21 +53,17 @@ void ClientEffect_ParticleField(MathVector3f_t position, MathVector3f_t mins, Ma
 
 }
 
-void ClientEffect_LavaSplash(MathVector3f_t position)
+void ClientEffect_LavaSplash(PLVector3f position)
 {
-	MathVector3f_t	direction;
-	Particle_t		*part;
-	int				i, j, k;
-	float			velocity;
-
-	for (i = -16; i < 16; i++)
-		for (j = -16; j < 16; j++)
-			for (k = 0; k < 1; k++)
+	for (int i = -16; i < 16; i++)
+		for (int j = -16; j < 16; j++)
+			for (int k = 0; k < 1; k++)
 			{
-				part = Engine.Client_AllocateParticle();
+				Particle_t *part = Engine.Client_AllocateParticle();
 				if (!part)
 					return;
 
+				PLVector3f direction;
 				direction[0] = j*8.0f + (rand() & 7);
 				direction[1] = i*8.0f + (rand() & 7);
 				direction[2] = 256;
@@ -83,28 +77,23 @@ void ClientEffect_LavaSplash(MathVector3f_t position)
 				part->vOrigin[1]	= position[1] + direction[1];
 				part->vOrigin[2]	= position[2] + (rand() & 63);
 
-				velocity = (float)(50 + (rand() & 63));
-
+				float velocity = (float)(50 + (rand() & 63));
 				plVectorNormalize(direction);
 				plVectorScalef(direction, velocity, part->vVelocity);
 			}
 }
 
-void ClientEffect_Teleport(MathVector3f_t position)
+void ClientEffect_Teleport(PLVector3f position)
 {
-	Particle_t		*part;
-	MathVector3f_t	direction;
-	int				i, j, k;
-	float			velocity;
-
-	for (i = -16; i < 16; i += 4)
-		for (j = -16; j < 16; j += 4)
-			for (k = -24; k < 32; k += 4)
+	for (int i = -16; i < 16; i += 4)
+		for (int j = -16; j < 16; j += 4)
+			for (int k = -24; k < 32; k += 4)
 			{
-				part = Engine.Client_AllocateParticle();
+				Particle_t *part = Engine.Client_AllocateParticle();
 				if (!part)
 					return;
 
+				PLVector3f direction;
 				direction[0] = j*8.0f;
 				direction[1] = i*8.0f;
 				direction[2] = k*8.0f;
@@ -118,32 +107,29 @@ void ClientEffect_Teleport(MathVector3f_t position)
 				part->vOrigin[1]	= position[1] + j + (rand() & 3);
 				part->vOrigin[2]	= position[2] + k + (rand() & 3);
 
-				velocity = (float)(50 + (rand() & 63));
+				float velocity = (float)(50 + (rand() & 63));
 
 				plVectorNormalize(direction);
-				Math_VectorScale(direction, velocity, part->vVelocity);
+				plVectorScalef(direction, velocity, part->vVelocity);
 			}
 
 	// TODO: sound
 }
 
-void ClientEffect_BloodPuff(MathVector3f_t position)
+void ClientEffect_BloodPuff(PLVector3f position)
 {
-	int			j;
-	Particle_t	*part;
-
 	// TODO: support for different blood types
 
 	for (int i = 0; i < 4; i++)
 	{
-		part = Engine.Client_AllocateParticle();
+		Particle_t *part = Engine.Client_AllocateParticle();
 		if (!part)
 			break;
 
-		for (j = 0; j < 3; j++)
+		for (int j = 0; j < 3; j++)
 			part->vOrigin[j] = position[j] + ((rand() & 15) - 5.0f);
 
-		for (j = 0; j < 3; j++)
+		for (int j = 0; j < 3; j++)
 			part->vVelocity[j] = (float)((rand() % 512) - 256);
 
 		part->lifetime		= (float)(Client.time + 0.3*(rand() % 5));
@@ -155,7 +141,7 @@ void ClientEffect_BloodPuff(MathVector3f_t position)
 	}
 }
 
-void ClientEffect_BloodCloud(MathVector3f_t position, BloodType_t type)
+void ClientEffect_BloodCloud(PLVector3f position, BloodType_t type)
 {
 	Particle_t *part = g_engine->Client_AllocateParticle();
 	if (!part)
@@ -172,7 +158,7 @@ void ClientEffect_BloodCloud(MathVector3f_t position, BloodType_t type)
 	part->pBehaviour	= PARTICLE_BEHAVIOUR_STATIC;
 }
 
-void ClientEffect_Smoke(MathVector3f_t position)
+void ClientEffect_Smoke(PLVector3f position)
 {
 	if (rand() % 5 == 0)
 	{
@@ -194,15 +180,11 @@ void ClientEffect_Smoke(MathVector3f_t position)
 	}
 }
 
-void ClientEffect_Explosion(MathVector3f_t position)
+void ClientEffect_Explosion(PLVector3f position)
 {
-	int				i, j;
-	Particle_t		*part;
-	DynamicLight_t	*light;	
-
-	for (i = 0; i < 5; i++)
+	for (int i = 0; i < 5; i++)
 	{
-		part = Engine.Client_AllocateParticle();
+		Particle_t *part = Engine.Client_AllocateParticle();
 		if (!part)
 			break;
 
@@ -213,7 +195,7 @@ void ClientEffect_Explosion(MathVector3f_t position)
 		part->fRamp			= (float)(rand() & 3);
 		part->pBehaviour	= PARTICLE_BEHAVIOUR_EXPLODE;
 
-		for (j = 0; j < 3; j++)
+		for (int j = 0; j < 3; j++)
 		{
 			part->vOrigin[j]	= position[j] + (((float)(rand() & 32)) - 16.0f);
 			part->vVelocity[j]	= (float)((rand() % 128) - 256);
@@ -222,11 +204,11 @@ void ClientEffect_Explosion(MathVector3f_t position)
 
 	// TODO: sound
 
-	light = Engine.Client_AllocateDlight(0);
+	DynamicLight_t *light = Engine.Client_AllocateDlight(0);
 	if (!light)
 		return;
 
-	Math_VectorCopy(position, light->origin);
+	plVectorCopy(position, light->origin);
 
 	light->lightmap		= true;
 	light->radius		= 300.0f;
@@ -237,15 +219,15 @@ void ClientEffect_Explosion(MathVector3f_t position)
 	light->die			= (Client.time + 0.5);
 }
 
-void ClientEffect_MuzzleFlash(MathVector3f_t position, MathVector3f_t angles)
+void ClientEffect_MuzzleFlash(PLVector3f position, PLVector3f angles)
 {
 	DynamicLight_t *light = Engine.Client_AllocateDlight(0);
 
-	Math_VectorCopy(position, light->origin);
+	plVectorCopy(position, light->origin);
 
 	light->origin[2] += 16.0f;
 
-	MathVector3f_t f, r, u;
+	PLVector3f f, r, u;
 	plAngleVectors(angles, f, r, u);
 	Math_VectorMA(light->origin, 18, f, light->origin);
 
@@ -259,14 +241,13 @@ void ClientEffect_MuzzleFlash(MathVector3f_t position, MathVector3f_t angles)
 }
 
 #ifdef GAME_OPENKATANA
-void ClientEffect_IonBallTrail(MathVector3f_t position)
-{
-	Particle_t	*part;
-	int			i, j;
+ISprite *spr_debug = NULL;
 
-	for (i = 0; i < 4; i++)
+void ClientEffect_IonBallTrail(PLVector3f position)
+{
+	for (int i = 0; i < 4; i++)
 	{
-		part = Engine.Client_AllocateParticle();
+		Particle_t *part = Engine.Client_AllocateParticle();
 		if (!part)
 			break;
 
@@ -277,7 +258,7 @@ void ClientEffect_IonBallTrail(MathVector3f_t position)
 		part->lifetime		= (Client.time + (double)(rand() % 2));
 		part->pBehaviour	= PARTICLE_BEHAVIOUR_SLOWGRAVITY;
 
-		for (j = 0; j < 3; j++)
+		for (int j = 0; j < 3; j++)
 			part->vOrigin[j] = position[j] + ((rand() & 15) - 5.0f);
 
 		plVectorClear(part->vVelocity);

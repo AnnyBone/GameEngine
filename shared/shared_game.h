@@ -151,21 +151,21 @@ typedef struct
 	Material_t*(*LoadMaterial)(const char *cPath);
 
 	// Memory
-	void*(*Hunk_AllocateName)(int size, char *name);
+	void*(*Hunk_AllocateName)(int size, const char *name);
 	void*(*Hunk_Alloc)(int size);
 
 	// Draw Functions
-	void(*DrawString)(int x, int y, char *msg);
-	void(*DrawRectangle)(int x, int y, int w, int h, plColour_t colour);
+	void(*DrawString)(int x, int y, const char *msg);
+	void(*DrawRectangle)(int x, int y, PLuint w, PLuint h, PLColour colour);
 	void(*DrawLine)(plVector3f_t start, plVector3f_t end);
 	void(*DrawCoordinateAxes)(plVector3f_t position);
-	void(*DrawMaterialSurface)(Material_t *mMaterial, int iSkin, int x, int y, int w, int h, float fAlpha);
+	void(*DrawMaterialSurface)(Material_t *mMaterial, PLuint iSkin, int x, int y, PLuint w, PLuint h, float fAlpha);
 
 	void(*Cvar_RegisterVariable)(ConsoleVariable_t *variable, void(*Function)(void));
 	void(*Cvar_SetValue)(const char *var_name, float value);
 	void(*LightStyle)(int style, char *val);
 
-	void(*Cmd_AddCommand)(char *cmd_name, xcommand_t function);
+	void(*Cmd_AddCommand)(const char *cmd_name, xcommand_t function);
 	char*(*Cmd_Argv)(int arg);
 	int(*Cmd_Argc)(void);
 
@@ -185,7 +185,7 @@ typedef struct
 	void(*MSG_WriteCoord)(sizebuf_t *sb, float f);
 	void(*MSG_WriteAngle)(sizebuf_t *sb, float f);
 
-	void(*ShowCursor)(bool bShow);
+	void(*ShowCursor)(PLbool bShow);
 
 	int(*ReadByte)(void);
 	float(*ReadCoord)(void);

@@ -89,10 +89,10 @@ void *malloc_or_die(size_t size);
 void *calloc_or_die(size_t nmemb, size_t size);
 void *realloc_or_die(void *ptr, size_t new_size);
 
-void Memory_Init (void *buf, int size);
+void Memory_Initialize(void);
 
 void *Hunk_Alloc (int size);		// returns 0 filled memory
-void *Hunk_AllocName (int size, char *name);
+void *Hunk_AllocName (int size, const char *name);
 
 void *Hunk_HighAllocName (int size, char *name);
 

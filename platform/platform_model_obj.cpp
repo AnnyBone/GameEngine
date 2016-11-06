@@ -62,7 +62,7 @@ void _plUnloadOBJModel()
 	normals.shrink_to_fit();
 }
 
-plStaticModel_t *plLoadOBJModel(const char *path)
+PLStaticModel *plLoadOBJModel(const PLchar *path)
 {
 	plSetErrorFunction("plLoadOBJModel");
 
@@ -130,7 +130,7 @@ plStaticModel_t *plLoadOBJModel(const char *path)
 		}
 	}
 
-	plStaticModel_t *model = plCreateStaticModel();
+	PLStaticModel *model = plCreateStaticModel();
 	if (!model)
 	{
 		plSetError("Failed to create static model!\n");

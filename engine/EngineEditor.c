@@ -1,19 +1,20 @@
-/*	Copyright (C) 2011-2016 OldTimes Software
+/*
+Copyright (C) 2011-2016 OldTimes Software
 
-	This program is free software; you can redistribute it and/or
-	modify it under the terms of the GNU General Public License
-	as published by the Free Software Foundation; either version 2
-	of the License, or (at your option) any later version.
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-	See the GNU General Public License for more details.
+See the GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "engine_base.h"
@@ -31,21 +32,12 @@
 	editor in that it shows your map while you work and the
 	editor environment is in-engine which means that what you
 	see is what you'll get (WYSIWYG).
+
 	Preditor supported multiple ways of working, we'll be
 	going for Matt's favourite approach and allowing users
 	to edit the map	from a single window with a realtime preview
 	of the map in view...
 */
-
-ConsoleVariable_t 
-cvEditorLightPreview = { "editor_lightpreview", "0", false, false, "Enables a preview showing the radius of each light." };
-
-/*  Initialization function.
-*/
-void Editor_Initialize(void)
-{
-	Cvar_RegisterVariable(&cvEditorLightPreview,NULL);
-}
 
 /*  Handle input.
 */

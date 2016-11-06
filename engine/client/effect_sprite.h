@@ -1,23 +1,24 @@
-/*	DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
-	Version 2, December 2004
+/*	
+DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+Version 2, December 2004
 
-	Copyright (C) 2011-2016 Mark E Sowden <markelswo@gmail.com>
+Copyright (C) 2011-2016 Mark E Sowden <markelswo@gmail.com>
 
-	Everyone is permitted to copy and distribute verbatim or modified
-	copies of this license document, and changing it is allowed as long
-	as the name is changed.
+Everyone is permitted to copy and distribute verbatim or modified
+copies of this license document, and changing it is allowed as long
+as the name is changed.
 
-	DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
-	TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
+DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
-	0. You just DO WHAT THE FUCK YOU WANT TO.
+0. You just DO WHAT THE FUCK YOU WANT TO.
 */
 
 #pragma once
 
 #ifdef __cplusplus
 
-namespace Core
+namespace core
 {
 	class Sprite : public ISprite
 	{
@@ -49,7 +50,7 @@ namespace Core
 
 		int	ident;
 
-		vlDraw_t *draw;
+		PLDraw *draw;
 
 		bool
 			islit,		// Is the sprite intended to be lit?
@@ -62,7 +63,7 @@ namespace Core
 
 		SpriteType_t type;
 
-		plColour_t colour;
+		PLColour colour;
 
 		Material_t *material;
 	};
@@ -87,7 +88,7 @@ namespace Core
 	};
 }
 
-extern Core::SpriteManager *g_spritemanager;
+extern core::SpriteManager *g_spritemanager;
 
 #else
 

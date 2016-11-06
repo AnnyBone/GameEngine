@@ -18,28 +18,28 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
 #ifdef __cplusplus
 
-namespace Core
+namespace core
 {
 	class Shader : public IShader
 	{
 	public:
-		Shader(vlShaderType_t type);
+		Shader(PLShaderType type);
 		~Shader();
 
 		bool Load(const char *path);
 		bool CheckCompileStatus();
 
 		unsigned int GetInstance() { return instance; }
-		vlShaderType_t GetType() { return type; }
+		PLShaderType GetType() { return type; }
 
 	private:
 		unsigned int instance;
 
-		vlShaderType_t type;
+		PLShaderType type;
 
 		const char	*source;
 		char		source_path[PLATFORM_MAX_PATH];
-		int			source_length;
+		PLuint		source_length;
 	};
 
 	class ShaderProgram : public IShaderProgram
@@ -50,31 +50,31 @@ namespace Core
 
 		virtual void Initialize() = 0;
 
-		void RegisterShader(std::string path, vlShaderType_t type);
+		void RegisterShader(std::string path, PLShaderType type);
 		
 		virtual void RegisterAttributes();
 
-		void Attach(Core::Shader *shader);
+		void Attach(Shader *shader);
 		void Enable();
 		void Disable();
-		void Draw(vlDraw_t *object);
+		void Draw(PLDraw *object);
 		void Link();
 		void Shutdown();
 
-		bool IsActive()	{ return (Video.current_program == instance); }
+		bool IsActive()	{ return (plGetCurrentShaderProgram() == instance); }
 
-		vlUniform_t *RegisterUniform(std::string name, vlUniformType_t type);
+		PLUniform *RegisterUniform(std::string name, PLUniformType type);
 
-		void SetUniformVariable(vlUniform_t *uniform, float x, float y, float z);
-		void SetUniformVariable(vlUniform_t *uniform, plVector3f_t vector);
-		void SetUniformVariable(vlUniform_t *uniform, float x, float y, float z, float a);
-		void SetUniformVariable(vlUniform_t *uniform, int i);
-		void SetUniformVariable(vlUniform_t *uniform, unsigned int i);
-		void SetUniformVariable(vlUniform_t *uniform, float f);
-		void SetUniformVariable(vlUniform_t *uniform, double d);
+		void SetUniformVariable(PLUniform *uniform, float x, float y, float z);
+		void SetUniformVariable(PLUniform *uniform, plVector3f_t vector);
+		void SetUniformVariable(PLUniform *uniform, float x, float y, float z, float a);
+		void SetUniformVariable(PLUniform *uniform, int i);
+		void SetUniformVariable(PLUniform *uniform, unsigned int i);
+		void SetUniformVariable(PLUniform *uniform, float f);
+		void SetUniformVariable(PLUniform *uniform, double d);
 
 		int GetUniformLocation(std::string name);
-		vlUniform_t *GetUniform(std::string name);
+		PLUniform *GetUniform(std::string name);
 
 		void RegisterAttribute(std::string name, int location);
 		void SetAttributeVariable(int location, plVector3f_t vector);
@@ -83,16 +83,16 @@ namespace Core
 		unsigned int GetInstance() { return instance; }
 
 	private:
-		std::vector<Core::Shader*>						shaders;
-		std::unordered_map<std::string, vlAttribute_t>	attributes;
-		std::unordered_map<std::string, vlUniform_t*>	uniforms;
+		std::vector<Shader*>							shaders;
+		std::unordered_map<std::string, PLAttribute>	attributes;
+		std::unordered_map<std::string, PLUniform*>		uniforms;
 
-		std::string name;
+		std::string _name;
 
-		vlShaderProgram_t instance;
+		PLShaderProgram instance;
 	};
 
-	class ShaderManager : public CoreManager
+	class ShaderManager : public XManager
 	{
 	public:
 		ShaderManager();
@@ -110,7 +110,7 @@ namespace Core
 	};
 }
 
-extern Core::ShaderManager *g_shadermanager;
+extern core::ShaderManager *g_shadermanager;
 
 #define	SHADER_REGISTER_UNIFORM(name, type, def)		\
 	{													\

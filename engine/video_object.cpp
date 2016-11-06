@@ -35,7 +35,7 @@ void Draw_StaticEntity(ClientEntity_t *entity)
 	R_RotateForEntity(entity->origin, entity->angles);
 
 	Material_Draw(model->materials, 0, VL_PRIMITIVE_IGNORE, 0, false);
-	vlDraw(model->objects[entity->frame]);
+	plDraw(model->objects[entity->frame]);
 	Material_Draw(model->materials, 0, VL_PRIMITIVE_IGNORE, 0, true);
 
 	vlPopMatrix();
@@ -52,7 +52,7 @@ void Draw_VertexEntity(ClientEntity_t *entity)
 
 	R_RotateForEntity(entity->origin, entity->angles);
 
-	vlDraw(model->objects[entity->frame]);
+	plDraw(model->objects[entity->frame]);
 
 	vlPopMatrix();
 }

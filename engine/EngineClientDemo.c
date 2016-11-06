@@ -36,6 +36,8 @@ read from the demo file.
 ==============================================================================
 */
 
+#define DEMO_EXTENSION ".demo"
+
 /*	Called when a demo file runs out, or the user starts a game
 */
 void CL_StopPlayback (void)
@@ -57,6 +59,7 @@ void CL_StopPlayback (void)
 */
 void CL_WriteDemoMessage (void)
 {
+#if 0 // todo, implement me!
 	int		len,
 			i;
 	float	f;
@@ -70,15 +73,17 @@ void CL_WriteDemoMessage (void)
 	}
 	fwrite (net_message.data, net_message.cursize, 1, cls.demofile);
 	fflush (cls.demofile);
+#endif
 }
 
 /*	Handles recording and playback of demos, on top of NET_ code
 */
 int CL_GetMessage (void)
 {
-	int		r, i;
-	float	f;
+	int		r;
+//	float	f;
 
+#if 0 // todo, implement me!!
 	if	(cls.demoplayback)
 	{
 	// decide if it is time to grab the next message
@@ -107,7 +112,7 @@ int CL_GetMessage (void)
 
 		Math_VectorCopy (cl.mviewangles[0], cl.mviewangles[1]);
 
-		for (i=0 ; i<3 ; i++)
+		for (int i=0 ; i<3 ; i++)
 		{
 			r = fread (&f, 4, 1, cls.demofile);
 			cl.mviewangles[0][i] = LittleFloat (f);
@@ -128,6 +133,7 @@ int CL_GetMessage (void)
 
 		return 1;
 	}
+#endif
 
 	for(;;)
 	{
@@ -226,7 +232,7 @@ void CL_Record_f (void)
 //
 // open the demo file
 //
-	COM_DefaultExtension (name, ".dem");
+	COM_DefaultExtension(name, DEMO_EXTENSION);
 
 	Con_Printf ("recording to %s.\n", name);
 	cls.demofile = fopen (name, "wb");
@@ -268,7 +274,7 @@ void CL_PlayDemo_f (void)
 // open the demo file
 //
 	strcpy(name, Cmd_Argv(1));
-	COM_DefaultExtension (name, ".dem");
+	COM_DefaultExtension(name, DEMO_EXTENSION);
 
 	Con_Printf ("Playing demo from %s.\n", name);
 	COM_FOpenFile (name, &cls.demofile);
@@ -296,7 +302,7 @@ void CL_PlayDemo_f (void)
 void CL_FinishTimeDemo (void)
 {
 	int		frames;
-	float	time;
+	double	time;
 
 	cls.timedemo = false;
 

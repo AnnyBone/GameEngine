@@ -110,7 +110,7 @@ bool ModelU3D_Load(model_t *model)
 	model->numframes		= animheader.frames;
 
 	// Allocate an object for each frame.
-	model->objects = (vlDraw_t**)calloc_or_die(model->numframes, sizeof(*model->objects));
+	model->objects = (PLDraw**)calloc_or_die(model->numframes, sizeof(*model->objects));
 
 	// If it has more than one frame, we're gonna want to interp between
 	// it all later.

@@ -36,8 +36,6 @@ ConsoleVariable_t r_oldwater		= {	"r_oldwater",		"1",	true,	false	};
 ConsoleVariable_t r_waterquality = { "r_waterquality", "8" };
 ConsoleVariable_t r_waterwarp = { "r_waterwarp", "1" };
 
-float load_subdivide_size; //johnfitz -- remember what subdivide_size value was when this map was loaded
-
 float turbsin[] =
 {
 	0, 0.19633, 0.392541, 0.588517, 0.784137, 0.979285, 1.17384, 1.3677,
@@ -141,7 +139,7 @@ void SubdividePolygon (int numverts, float *verts)
 		// wrap cases
 		dist[j] = dist[0];
 		v-=i;
-		Math_VectorCopy (verts, v);
+		plVectorCopy (verts, v);
 
 		f = b = 0;
 		v = verts;
@@ -149,12 +147,12 @@ void SubdividePolygon (int numverts, float *verts)
 		{
 			if (dist[j] >= 0)
 			{
-				Math_VectorCopy (v, front[f]);
+				plVectorCopy(v, front[f]);
 				f++;
 			}
 			if (dist[j] <= 0)
 			{
-				Math_VectorCopy (v, back[b]);
+				plVectorCopy(v, back[b]);
 				b++;
 			}
 			if (dist[j] == 0 || dist[j+1] == 0)
@@ -181,7 +179,7 @@ void SubdividePolygon (int numverts, float *verts)
 	poly->numverts = numverts;
 	for (i=0 ; i<numverts ; i++, verts+= 3)
 	{
-		Math_VectorCopy (verts, poly->verts[i]);
+		plVectorCopy(verts, poly->verts[i]);
 		s = Math_DotProduct (verts, warpface->texinfo->vecs[0]);
 		t = Math_DotProduct (verts, warpface->texinfo->vecs[1]);
 		poly->verts[i][3] = s;
@@ -210,20 +208,20 @@ void GL_SubdivideSurface(msurface_t *fa)
 */
 void Surface_DrawWater(glpoly_t *p, Material_t *material)
 {
-	vlVertex_t *voWaterPoly = calloc(p->numverts, sizeof(vlVertex_t));
+	PLVertex *voWaterPoly = calloc(p->numverts, sizeof(PLVertex));
 	if(!voWaterPoly)
 	{
 		Sys_Error("Failed to allocate water poly!\n");
 		return;
 	}
 
-	float fWaterAlpha = Math_Clamp(0, material->fAlpha, 1.0f);
+	float fWaterAlpha = plClamp(0, material->fAlpha, 1.0f);
 
 	float *vertex = p->verts[0];
 	for (int i = 0; i < p->numverts; i++, vertex += VERTEXSIZE)
 	{
-		MathVector3f_t vWave;
-		Math_VectorCopy(vertex, vWave);
+		PLVector3f vWave;
+		plVectorCopy(vertex, vWave);
 
 		Video_ObjectTexture(&voWaterPoly[i], VIDEO_TEXTURE_DIFFUSE, vertex[3], vertex[4]);
 		//Video_ObjectTexture(&voWaterPoly[i], VIDEO_TEXTURE_DIFFUSE, WARPCALC(fVert[3], fVert[4]), WARPCALC(fVert[4], fVert[3]));
@@ -257,10 +255,10 @@ void R_UpdateWarpTextures (void)
 	int i;
 	float x, y, x2, warptess;
 
-	if (r_oldwater.value || cl.bIsPaused || r_drawflat_cheatsafe || r_lightmap_cheatsafe)
+	if (r_oldwater.value || cl.paused || r_drawflat_cheatsafe || r_lightmap_cheatsafe)
 		return;
 
-	warptess = 128.0f / Math_Clamp(3.0f, floor(r_waterquality.value), 64.0f);
+	warptess = 128.0f / plClamp(3.0f, floor(r_waterquality.value), 64.0f);
 
 	for (i=0; i<cl.worldmodel->numtextures; i++)
 	{
@@ -294,8 +292,5 @@ void R_UpdateWarpTextures (void)
 
 		tx->update_warp = FALSE;
 	}
-
-	//if viewsize is less than 100, we need to redraw the frame around the viewport
-	scr_tileclear_updates = 0;
 #endif
 }

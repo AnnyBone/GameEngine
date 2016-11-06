@@ -7,7 +7,7 @@ void Kineticore_Deploy(ServerEntity_t *ent)
 
 void Kineticore_IceballExplode(ServerEntity_t *ent)
 {
-	vec3_t vel;
+	PLVector3f vel;
 
 	vel[0] = ent->v.velocity[0]*-1;
 	vel[1] = ent->v.velocity[1]*-1;
@@ -23,7 +23,7 @@ void IceballTouch(ServerEntity_t *ent, ServerEntity_t *other)
 {
 	// [26/2/2012] Revised and fixed ~hogsy
 	// [25/6/2012] Revised ~hogsy
-	vec3_t vel;
+	PLVector3f vel;
 
 	// [25/6/2012] Simplified ~hogsy
 	Math_VectorCopy(ent->v.velocity,vel);
@@ -54,7 +54,7 @@ void IceballTouch(ServerEntity_t *ent, ServerEntity_t *other)
 	Entity_Remove(ent);
 }
 
-void projectile_iceball(ServerEntity_t *ent, vec3_t orig)
+void projectile_iceball(ServerEntity_t *ent, PLVector3f orig)
 {
 	// [26/2/2012] Revised and fixed ~hogsy
 	ServerEntity_t *ionball = Entity_Spawn();
@@ -62,7 +62,7 @@ void projectile_iceball(ServerEntity_t *ent, vec3_t orig)
 	ionball->v.cClassname	= "iceball";
 	ionball->v.movetype		= MOVETYPE_FLYBOUNCE;
 
-	ionball->Physics.iSolid	= SOLID_BBOX;
+	ionball->Physics.solid	= SOLID_BBOX;
 
 	ionball->local.eOwner = ent;
 

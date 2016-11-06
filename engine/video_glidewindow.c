@@ -18,11 +18,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "engine_base.h"
 
+#if defined(VL_MODE_GLIDE)
+
 #include "video.h"
 #include "EngineGame.h"
 
-#include <SDL.h>
-#include <SDL_syswm.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_syswm.h>
 
 /*
 	Window Manager
@@ -159,7 +161,7 @@ void Window_Swap(void)
 		(e.g. to another 3D application being scheduled 
 		by the Windows 95 operating system), an application 
 		is required to periodically (typically once per frame)
-		query with grSelectContext() to determine if Glide’s resources 
+		query with grSelectContext() to determine if Glideï¿½s resources 
 		have be reallocated by the system. context is a context 
 		handle returned from a successful call to grWinOpen()."
 	*/
@@ -217,3 +219,5 @@ void Window_Shutdown(void)
 
 	grGlideShutdown();
 }
+
+#endif

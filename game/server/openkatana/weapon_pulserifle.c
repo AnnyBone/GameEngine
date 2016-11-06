@@ -1,24 +1,26 @@
-/*	Copyright (C) 2011-2016 OldTimes Software
+/*
+Copyright (C) 2011-2016 OldTimes Software
 
-	This program is free software; you can redistribute it and/or
-	modify it under the terms of the GNU General Public License
-	as published by the Free Software Foundation; either version 2
-	of the License, or (at your option) any later version.
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-	See the GNU General Public License for more details.
+See the GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "server_weapon.h"
+#include "server_effects.h"
 
-EntityFrame_t efPulseRifleDeploy[] =
+ServerEntityFrame_t efPulseRifleDeploy[] =
 {
 	{ NULL, 1, 0.1f, false },
 	{ NULL, 2, 0.1f, false },
@@ -37,7 +39,7 @@ EntityFrame_t efPulseRifleDeploy[] =
 	{ NULL, 15, 0.1f, true }
 };
 
-EntityFrame_t efPulseRifleAttack[] =
+ServerEntityFrame_t efPulseRifleAttack[] =
 {
 	{ NULL, 16, 0.1f, false },
 	{ NULL, 17, 0.1f, false },
@@ -71,7 +73,7 @@ void PulseRifle_PrimaryAttack(ServerEntity_t *ent)
 	Weapon_Animate(ent,efPulseRifleAttack);
 #endif
 
-	ent->v.effects |= EF_MUZZLEFLASH;
+	ServerEffect_MuzzleFlash(ent->v.origin, ent->v.angles);
 
 	ent->v.iPrimaryAmmo	= ent->local.glock_ammo--;
 	ent->local.glock_ammo2--;
@@ -85,7 +87,7 @@ void PulseRifle_PrimaryAttack(ServerEntity_t *ent)
 // [17/7/2012] Revised ~hogsy
 void CorditeExplode(ServerEntity_t *ent)
 {
-	vec3_t vel;
+	PLVector3f vel;
 
 	// [25/6/2012] Simplified ~hogsy
 	Math_VectorCopy(ent->v.velocity,vel);
@@ -117,7 +119,7 @@ void throw_cordite(ServerEntity_t *ent)
 	greekfire->v.cClassname	= "cordite";
 	greekfire->v.movetype	= MOVETYPE_BOUNCE;
 
-	greekfire->Physics.iSolid	= SOLID_BBOX;
+	greekfire->Physics.solid	= SOLID_BBOX;
 
 	greekfire->local.eOwner = ent;
 

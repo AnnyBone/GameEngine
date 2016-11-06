@@ -15,11 +15,10 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 */
 
 // Platform Library
-#include "platform.h"
-#include "platform_module.h"
+#include "platform_library.h"
+#include "platform_log.h"
+#include "platform_window.h"
 
-// Shared Library
-#include "shared_flags.h"
 #include "shared_engine.h"
 
 /*
@@ -30,63 +29,21 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
 #define	LAUNCHER_LOG "launcher"
 
-EngineExport_t *engine;
-EngineImport_t *launcher;
-
-PL_INSTANCE instance;
-
-/*	TODO:
-		List of things I want access to from the engine...
-			Engine->GetBasePath()				(Returns current base path)
-			Engine->CreateEntity()				(Returns an entity instance)
-			Engine->LoadMap(file)				(Loads the specified level)
-			Engine->CreateBrush(origin,size)	(Creates a brush)
-			Engine->CreateWindow(x,y,w,h)		(Creates a new window... Need to handle different window instances somehow... Sigh)
-*/
-
 int main(int argc,char *argv[])
 {
 	plClearLog(LAUNCHER_LOG);
-	plWriteLog(LAUNCHER_LOG, "Launcher (Interface Version %i)\n", ENGINE_VERSION);
-
-	// Load the module interface for the engine module.
-	engine = (EngineExport_t*)plLoadModuleInterface(
-		instance,
-		"./" ENGINE_MODULE,
-		"Engine_Main",
-		&launcher);
-	// Let us know if it failed to load.
-	if (!engine)
-	{
-		std::string err = plGetError();
-
-		plWriteLog(LAUNCHER_LOG, "Failed to load engine!\n%s", err.c_str());
-		plMessageBox("Launcher", "%s", err.c_str());
-		return -1;
-	}
-	// Also ensure that the engine version hasn't changed.
-	else if (engine->iVersion != ENGINE_VERSION)
-	{
-		plWriteLog(LAUNCHER_LOG, "Launcher is outdated, please rebuild! (%i)\n", engine->iVersion);
-		plMessageBox("Launcher", "Launcher is outdated, please rebuild!");
-		plUnloadModule(instance);
-		return -1;
-	}
+	//plWriteLog(LAUNCHER_LOG, "Launcher (Interface Version %i)\n", ENGINE_VERSION_INTERFACE);
 
 	// Initialize.
-	if (!engine->Initialize(argc, argv, false))
+	if (xenon::Initialize(argc, argv) != PL_RESULT_SUCCESS)
 	{
 		plWriteLog(LAUNCHER_LOG, "Engine failed to initialize, check engine log!\n");
 		plMessageBox("Launcher", "Failed to initialize engine!");
-		plUnloadModule(instance);
 		return -1;
 	}
 
-	while (engine->IsRunning())
-		engine->Loop();
-
-	// Unload once the engine has stopped running.
-	plUnloadModule(instance);
+	while (xenon::IsRunning())
+		xenon::Loop();
 
 	return -1;
 }

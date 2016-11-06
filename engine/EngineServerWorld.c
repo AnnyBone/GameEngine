@@ -139,7 +139,7 @@ hull_t *SV_HullForEntity(ServerEntity_t *ent, MathVector3f_t mins, MathVector3f_
 	hull_t		*hull;
 
 	// Decide which clipping hull to use, based on the size
-	if(ent->Physics.iSolid == SOLID_BSP)
+	if(ent->Physics.solid == SOLID_BSP)
 	{
 		// Explicit hulls in the BSP model
 		if(ent->v.movetype != MOVETYPE_PUSH)
@@ -287,7 +287,7 @@ void SV_TouchLinks ( ServerEntity_t *ent, areanode_t *node )
 		touch = EDICT_FROM_AREA(l);
 		if (touch == ent)
 			continue;
-		if (!touch->v.TouchFunction || touch->Physics.iSolid != SOLID_TRIGGER)
+		if (!touch->v.TouchFunction || touch->Physics.solid != SOLID_TRIGGER)
 			continue;
 		if(ent->v.absmin[0] > touch->v.absmax[0]
 		|| ent->v.absmin[1] > touch->v.absmax[1]
@@ -459,9 +459,9 @@ void SV_LinkEdict(ServerEntity_t *ent,bool touch_triggers)
 	if (ent->v.modelindex)
 		SV_FindTouchedLeafs (ent, sv.worldmodel->nodes);
 
-	if (ent->Physics.iSolid == SOLID_NOT)
+	if (ent->Physics.solid == SOLID_NOT)
 		return;
-	else if((ent->Physics.iSolid == SOLID_BSP) && (ent->v.angles[0] || ent->v.angles[1] || ent->v.angles[2]))
+	else if((ent->Physics.solid == SOLID_BSP) && (ent->v.angles[0] || ent->v.angles[1] || ent->v.angles[2]))
 	{
 		float	fMaximum,fMinimum;
 		int		i;
@@ -501,7 +501,7 @@ void SV_LinkEdict(ServerEntity_t *ent,bool touch_triggers)
 	}
 
 	// link it in
-	if (ent->Physics.iSolid == SOLID_TRIGGER)
+	if (ent->Physics.solid == SOLID_TRIGGER)
 		InsertLinkBefore(&ent->area,&node->trigger_edicts);
 	else
 		InsertLinkBefore(&ent->area,&node->solid_edicts);
@@ -726,7 +726,7 @@ trace_t SV_ClipMoveToEntity(ServerEntity_t *ent, MathVector3f_t start, MathVecto
 	Math_VectorSubtract (end, offset, end_l);
 
 	// Rotate start and end into the models frame of reference
-	if (ent->Physics.iSolid == SOLID_BSP &&
+	if (ent->Physics.solid == SOLID_BSP &&
 		(fabs(ent->v.angles[0]) > 1 || fabs(ent->v.angles[1]) > 1 || fabs(ent->v.angles[2]) > 1) )
 	{
 		MathVector3f_t nforward,nright,nup,ntemp;
@@ -748,7 +748,7 @@ trace_t SV_ClipMoveToEntity(ServerEntity_t *ent, MathVector3f_t start, MathVecto
 	SV_RecursiveHullCheck (hull, hull->firstclipnode, 0, 1, start_l, end_l, &trace);
 
 	// Rotate endpos back to world frame of reference
-	if (ent->Physics.iSolid == SOLID_BSP &&
+	if (ent->Physics.solid == SOLID_BSP &&
 		(fabs(ent->v.angles[0]) > 1 || fabs(ent->v.angles[1]) > 1 || fabs(ent->v.angles[2]) > 1) )
 	{
 		if (trace.fraction != 1)
@@ -793,14 +793,14 @@ void SV_ClipToLinks(areanode_t *node,moveclip_t *clip)
 		next = l->next;
 
 		eTouch = EDICT_FROM_AREA(l);
-		if(eTouch->Physics.iSolid == SOLID_NOT)
+		if(eTouch->Physics.solid == SOLID_NOT)
 			continue;
 		else if(eTouch == clip->passedict)
 			continue;
-		else if(eTouch->Physics.iSolid == SOLID_TRIGGER)
+		else if(eTouch->Physics.solid == SOLID_TRIGGER)
 			Sys_Error ("Trigger in clipping list");
 
-		if(clip->type == MOVE_NOMONSTERS && eTouch->Physics.iSolid != SOLID_BSP)
+		if(clip->type == MOVE_NOMONSTERS && eTouch->Physics.solid != SOLID_BSP)
 			continue;
 
 		if(clip->boxmins[0] > eTouch->v.absmax[0]
@@ -820,11 +820,11 @@ void SV_ClipToLinks(areanode_t *node,moveclip_t *clip)
 
 		// [4/8/2012] Removed upon request ~hogsy
 		// [12/4/2013] Reimplemented to use new eIgnore ~hogsy
-		if(clip->passedict && eTouch->Physics.eIgnore)
+		if(clip->passedict && eTouch->Physics.ignore)
 		{
-			if(eTouch->Physics.eIgnore == clip->passedict)
+			if(eTouch->Physics.ignore == clip->passedict)
 				continue;	// Don't clip against own missiles
-			if(clip->passedict->Physics.eIgnore == eTouch)
+			if(clip->passedict->Physics.ignore == eTouch)
 				continue;	// Don't clip against owner
 		}
 

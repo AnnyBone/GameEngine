@@ -224,7 +224,7 @@ bool ConsoleVariable_GetBoolValue(const char *var_name)
 	return var->bValue;
 }
 
-char *Cvar_VariableString (char *var_name)
+char *Cvar_VariableString (const char *var_name)
 {
 	ConsoleVariable_t *var = Cvar_FindVar (var_name);
 	if (!var)

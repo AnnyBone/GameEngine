@@ -14,13 +14,9 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 0. You just DO WHAT THE FUCK YOU WANT TO.
 */
 
-#include "platform.h"
-
 #include "platform_model.h"
 
-/*
-	PLATFORM MODEL LOADER
-*/
+/*	PLATFORM MODEL LOADER	*/
 
 std::vector<float> plGenerateNormal(plVector3f_t a, plVector3f_t b, plVector3f_t c)
 {
@@ -30,16 +26,16 @@ std::vector<float> plGenerateNormal(plVector3f_t a, plVector3f_t b, plVector3f_t
 
 	plVector3f_t normal;
 	plVectorClear(normal);
-	Math_CrossProduct(x, y, normal);
+	plCrossProduct(x, y, normal);
 	plVectorNormalize(normal);
-
+	
 	std::vector<float> vnorm = { normal[0], normal[1], normal[2] };
 	return vnorm;
 }
 
-void plGenerateStaticModelNormals(plStaticModel_t *model)
+void plGenerateStaticModelNormals(PLStaticModel *model)
 {
-	plModelFrame_t *frame = &model->frame;
+	PLModelFrame *frame = &model->frame;
 #if 0 // per face...
 	for (int i = 0; i < model->num_triangles; i++)
 	{
@@ -72,7 +68,7 @@ void plGenerateAnimatedModelNormals(plAnimatedModel_t *model)
 	// only feasible with skeletal animation formats where we can get the transform
 	// but hell, if there's a way to abstractily grab the direction of a face then
 	// surely we could figure that out.
-	for (plModelFrame_t *frame = &model->frames[0]; frame; ++frame)
+	for (PLModelFrame *frame = &model->frames[0]; frame; ++frame)
 	{
 		for (plVertex_t *vertex = &frame->vertices[0]; vertex; ++vertex)
 		{
@@ -94,21 +90,21 @@ void plGenerateSkeletalModelNormals(plSkeletalModel_t *model)
 	Static Model
 */
 
-plStaticModel_t *plCreateStaticModel(void)
+PLStaticModel *plCreateStaticModel(void)
 {
 	plSetErrorFunction("plCreateStaticModel");
 
-	plStaticModel_t *model = new plStaticModel_t;
+	PLStaticModel *model = new PLStaticModel;
 	if (!model)
 		return nullptr;
 
-	memset(model, 0, sizeof(plStaticModel_t));
+	memset(model, 0, sizeof(PLStaticModel));
 
 	return model;
 }
 
 // Less direct implementation to load a model (less efficient too).
-plStaticModel_t *plLoadStaticModel(const char *path)
+PLStaticModel *plLoadStaticModel(const char *path)
 {
 	if (!path || path[0] == ' ')
 		return nullptr;
@@ -122,7 +118,7 @@ plStaticModel_t *plLoadStaticModel(const char *path)
 	return nullptr;
 }
 
-void plDeleteStaticModel(plStaticModel_t *model)
+void plDeleteStaticModel(PLStaticModel *model)
 {
 	if (!model)
 	{

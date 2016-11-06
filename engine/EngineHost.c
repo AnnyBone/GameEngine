@@ -1,37 +1,32 @@
-/*	Copyright (C) 1996-2001 Id Software, Inc.
-	Copyright (C) 2002-2009 John Fitzgibbons and others
-	Copyright (C) 2011-2016 OldTimes Software
+/*
+Copyright (C) 1996-2001 Id Software, Inc.
+Copyright (C) 2002-2009 John Fitzgibbons and others
+Copyright (C) 2011-2016 OldTimes Software
 
-	This program is free software; you can redistribute it and/or
-	modify it under the terms of the GNU General Public License
-	as published by the Free Software Foundation; either version 2
-	of the License, or (at your option) any later version.
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-	See the GNU General Public License for more details.
+See the GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "engine_base.h"
 
 #include "EngineGame.h"
 #include "EngineMenu.h"
-#include "EngineEditor.h"
 #include "input.h"
 #include "video.h"
 #include "EngineServerPhysics.h"
 #include "engine_client.h"
-#include "EngineVideoParticle.h"
-
-#include "shared_server.h"
-
-#include "platform_filesystem.h"
 
 /*	A server can allways be started, even if the system started out as a client
 	to a remote system.
@@ -41,7 +36,7 @@
 	Memory is cleared / released when a server or client begins, not when they end.
 */
 
-EngineParameters_t host_parms;
+XParameters host_parms;
 
 bool	g_hostinitialized;		// True if into command execution
 
@@ -56,20 +51,20 @@ ServerClient_t	*host_client;			// current client
 
 jmp_buf 	host_abortserver;
 
-cvar_t	host_speeds		= {	"host_speeds",		"0"						};	// Set for running times
-cvar_t	host_maxfps		= {	"host_maxfps",		"300",	true			};	//johnfitz
-cvar_t	host_timescale	= {	"host_timescale",	"0"						};	//johnfitz
-cvar_t	max_edicts		= {	"max_edicts",		"2048",	true			};	//johnfitz
-ConsoleVariable_t	cv_max_dlights = { "max_dlights", "1024", true };
-cvar_t	sys_ticrate		= {	"sys_ticrate",		"0.05"					};	// dedicated server
-cvar_t	serverprofile	= {	"serverprofile",	"0"						};
-cvar_t	teamplay		= {	"teamplay",			"0",	false,	true	};
-cvar_t	skill			= {	"skill",			"1"						};	// 0 - 3
-cvar_t	deathmatch		= {	"deathmatch",		"0"						};	// 0, 1, or 2
-cvar_t	coop			= {	"coop",				"0"						};	// 0 or 1
-cvar_t	pausable		= {	"pausable",			"1"						};
-cvar_t	developer		= {	"developer",		"0"						};
-cvar_t	devstats		= {	"devstats",			"0"						};	//johnfitz -- track developer statistics that vary every frame
+ConsoleVariable_t	host_speeds		= {	"host_speeds",		"0"						};	// Set for running times
+ConsoleVariable_t	host_maxfps		= {	"host_maxfps",		"300",	true			};	//johnfitz
+ConsoleVariable_t	host_timescale	= {	"host_timescale",	"0"						};	//johnfitz
+ConsoleVariable_t	max_edicts		= {	"max_edicts",		"2048",	true			};	//johnfitz
+ConsoleVariable_t	cv_max_dlights	= { "max_dlights",		"1024", true			};
+ConsoleVariable_t	sys_ticrate		= {	"sys_ticrate",		"0.05"					};	// dedicated server
+ConsoleVariable_t	serverprofile	= {	"serverprofile",	"0"						};
+ConsoleVariable_t	teamplay		= {	"teamplay",			"0",	false,	true	};
+ConsoleVariable_t	skill			= {	"skill",			"1"						};	// 0 - 3
+ConsoleVariable_t	deathmatch		= {	"deathmatch",		"0"						};	// 0, 1, or 2
+ConsoleVariable_t	coop			= {	"coop",				"0"						};	// 0 or 1
+ConsoleVariable_t	pausable		= {	"pausable",			"1"						};
+ConsoleVariable_t	developer		= {	"developer",		"0"						};
+ConsoleVariable_t	devstats		= {	"devstats",			"0"						};	//johnfitz -- track developer statistics that vary every frame
 
 void Max_Edicts_f(void)
 {
@@ -159,7 +154,7 @@ void Host_FindMaxClients(void)
 	{
 		cls.state = ca_dedicated;
 		if (i != (com_argc - 1))
-			svs.maxclients = Q_atoi (com_argv[i+1]);
+			svs.maxclients = (unsigned int)Q_atoi (com_argv[i+1]);
 		else
 			svs.maxclients = 8;
 	}
@@ -172,7 +167,7 @@ void Host_FindMaxClients(void)
 		if (cls.state == ca_dedicated)
 			Sys_Error ("Only one of -dedicated or -listen can be specified");
 		if (i != (com_argc - 1))
-			svs.maxclients = Q_atoi(com_argv[i+1]);
+			svs.maxclients = (unsigned int)Q_atoi(com_argv[i+1]);
 		else
 			svs.maxclients = 8;
 	}
@@ -235,12 +230,12 @@ void Host_WriteConfiguration(void)
 		FILE	*fConfig;
 		char	cString[256];
 
-		sprintf(cString, "%s/config/%s.cfg", com_gamedir, g_state.host_username);
+		sprintf(cString, "%s/config/%s" XENON_CONFIG_EXTENSION, com_gamedir, g_state.host_username);
 
 		fConfig = fopen(cString,"w");
 		if(!fConfig)
 		{
-			Con_Warning("Couldn't write %s.cfg!\n", g_state.host_username);
+			Con_Warning("Couldn't write %s" XENON_CONFIG_EXTENSION "!\n", g_state.host_username);
 			return;
 		}
 
@@ -446,25 +441,25 @@ void Host_ClearMemory(void)
 
 /*	Returns false if the time is too short to run a frame
 */
-bool Host_FilterTime(float time)
+bool Host_FilterTime(double time)
 {
 	float fMaxFrameRate; //johnfitz
 
 	realtime += time;
 
 	//johnfitz -- max fps cvar
-	fMaxFrameRate = Math_Clamp(10.0f, host_maxfps.value, 1000.0f);
-	if(!cls.timedemo && realtime-dOldRealTime < 1.0f/fMaxFrameRate)
+	fMaxFrameRate = plClamp(10.0f, host_maxfps.value, 1000.0f);
+	if (!cls.timedemo && realtime - dOldRealTime < 1.0f / fMaxFrameRate)
 		return false; // framerate is too high
 	//johnfitz
 
-	host_frametime	= realtime-dOldRealTime;
+	host_frametime	= realtime - dOldRealTime;
 	dOldRealTime	= realtime;
 
 	if (host_timescale.value > 0)
 		host_frametime *= host_timescale.value;
 	else // Don't allow really long or short frames
-		host_frametime = Math_Clamp(0.001f, host_frametime, 0.1f); //johnfitz -- use CLAMP
+		host_frametime = plClamp(0.001f, host_frametime, 0.1f); //johnfitz -- use CLAMP
 
 	return true;
 }
@@ -539,7 +534,7 @@ void Host_ServerFrame (void)
 		}
 
 		dev_stats.edicts = active;
-		dev_peakstats.edicts = Math_Max(active, dev_peakstats.edicts);
+		dev_peakstats.edicts = plMax(active, dev_peakstats.edicts);
 	}
 //johnfitz
 
@@ -549,7 +544,7 @@ void Host_ServerFrame (void)
 
 /*	Runs all active servers
 */
-void _Host_Frame (float time)
+void _Host_Frame (double time)
 {
 	static double	time1 = 0,
 					time2 = 0,
@@ -603,11 +598,8 @@ void _Host_Frame (float time)
 	{
 		CL_ReadFromServer();
 
-		Particle_Frame(); //johnfitz -- seperated from rendering
 		Client_Simulate();
 	}
-	else if (cls.state == CLIENT_STATE_EDITOR)
-		Editor_Frame();
 
 	if(host_speeds.value)
 		time1 = System_DoubleTime();
@@ -634,7 +626,7 @@ void _Host_Frame (float time)
 	host_framecount++;
 }
 
-void Host_Frame (float time)
+void Host_Frame (double time)
 {
 	double			time1,time2;
 	static	double	timetotal;
@@ -672,64 +664,57 @@ void Host_Frame (float time)
 
 void Host_Version(void);	// [31/3/2013] See host_cmd.c ~hogsy
 
-void Host_Initialize(EngineParameters_t *epParameters)
+void Host_Initialize(XParameters *parms)
 {
 	if(COM_CheckParm("-minmemory"))
-		epParameters->memsize = MINIMUM_MEMORY;
+		parms->memsize = MINIMUM_MEMORY;
 
-	host_parms = *epParameters;
+	host_parms = *parms;
 
-	if(epParameters->memsize < MINIMUM_MEMORY)
-		Sys_Error("Only %4.1f megs of memory available, can't execute game!\n",epParameters->memsize/(float)0x100000);
+	if (parms->memsize < MINIMUM_MEMORY)
+		Sys_Error("Only %4.1f megs of memory available, can't execute game!\n", parms->memsize / (float)0x100000);
 
-	com_argc = epParameters->argc;
-	com_argv = epParameters->argv;
+	com_argc = parms->argc;
+	com_argv = parms->argv;
 
-	Memory_Init(epParameters->membase, epParameters->memsize);
-	Cbuf_Init();
-	Cmd_Init();
-	Cvar_Init(); //johnfitz
-	V_Init();
-	Chase_Init();
+	Memory_Initialize();
+	Cbuf_Init();	// todo, remove?
+	Cmd_Init();		// todo, merge into console
+	Cvar_Init();	// todo, merge into console
 	FileSystem_Initialize();
 	Host_InitLocal();
-	Key_Init();
+	Key_Init();	// todo, merge into input
 	Console_Initialize();
-	Menu_Initialize();
-	Game_Initialize();
-	PR_Init();
-	Model_Initialize();
-	Network_Initialize();
-
-	Game->Server_Initialize();
-	SV_Init();
-
-	Con_Printf("\n");
 
 	Host_Version();
+	Con_Printf("\n%4.1f megabyte heap\n\n", host_parms.memsize / (1024 * 1024.0));
 
-	Con_Printf("\n%4.1f megabyte heap\n\n",epParameters->memsize/(1024*1024.0));
+	Menu_Initialize();
+	Game_Initialize();
+	PR_Init();	// todo, merge into server_initialize
+	Model_Initialize();
+	Network_Initialize();
+	Game->Server_Initialize();
+	SV_Init();	// todo, merge into server_initialize		
 
 	if(cls.state != ca_dedicated)
 	{
+		Window_Initialize();
 		Video_Initialize();
+		Audio_Initialize();
 		Input_Initialize();
 
-		TextureManager_Initialize(); //johnfitz
 		Material_Initialize();
-		Draw_Init();
-		SCR_Init();
+
+		Draw_Init();	// todo, merge into video_initialize
+		SCR_Init();		// todo, merge into video_initialize
 
 		g_menu->Initialize();
 
-		R_Init();
-
-		Audio_Initialize();
+		R_Init();	// todo, merge into video_initialize
 
 		Game->Client_Initialize();
-		CL_Init();
-
-		Editor_Initialize();
+		CL_Init();	// todo, merge into client_initialize
 	}
 
 	Cbuf_InsertText("exec config/katana.rc");
@@ -774,8 +759,6 @@ void Host_Shutdown(void)
 	{
 		Audio_Shutdown();
 		Video_Shutdown();
-
-		TextureManager_Shutdown();
 	}
 }
 

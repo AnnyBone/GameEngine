@@ -21,6 +21,10 @@
 #ifndef __ENGINECLIENTTEMPENTITY__
 #define __ENGINECLIENTTEMPENTITY__
 
+PL_EXTERN_C
+
 entity_t *CL_NewTempEntity(void);
+
+PL_EXTERN_C_END
 
 #endif

@@ -1,29 +1,53 @@
-/*	Copyright (C) 2011-2016 OldTimes Software
+/*
+DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+Version 2, December 2004
 
-	This program is free software; you can redistribute it and/or
-	modify it under the terms of the GNU General Public License
-	as published by the Free Software Foundation; either version 2
-	of the License, or (at your option) any later version.
+Copyright (C) 2011-2016 Mark E Sowden <markelswo@gmail.com>
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+Everyone is permitted to copy and distribute verbatim or modified
+copies of this license document, and changing it is allowed as long
+as the name is changed.
 
-	See the GNU General Public License for more details.
+DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+0. You just DO WHAT THE FUCK YOU WANT TO.
 */
 
-#ifndef PLATFORM_IMAGE_H
-#define	PLATFORM_IMAGE_H
+#pragma once
+
+#include "platform.h"
+#include "platform_graphics.h"
+
+typedef struct PLImage
+{
+	PLbyte *data;
+
+	PLuint x, y;
+	PLuint width, height;
+	PLuint size;
+	PLuint levels;
+
+	PLchar path[PL_MAX_PATH];
+
+	PLTextureFormat format;
+
+	PLuint flags;
+} PLImage;
+
+#define PLIMAGE_EXTENSION_FTX	".ftx"	// Ritual's FTX image format.
+#define PLIMAGE_EXTENSION_DTX	".dtx"	// Lithtech's DTX image format.
+#define PLIMAGE_EXTENSION_PPM	".ppm"	// Portable Pixel Map format.
+#define PLIMAGE_EXTENSION_KTX	".ktx"
+#define PLIMAGE_EXTENSION_TGA	".tga"
+#define PLIMAGE_EXTENSION_PNG	".png"
 
 plEXTERN_C_START
 
-	extern uint8_t *plLoadFTXImage(FILE *fin, unsigned int *width, unsigned int *height);	// Ritual's FTX image format.
-	extern uint8_t *plLoadPPMImage(FILE *fin, unsigned int *width, unsigned int *height);	// Load old PPM image format.
+extern void plFreeImage(PLImage *image);
+
+extern PLresult plLoadFTXImage(FILE *fin, PLImage *out);	// Ritual's FTX image format.
+extern PLresult plLoadPPMImage(FILE *fin, PLImage *out);	// Portable Pixel Map format.
+extern PLresult plLoadDTXImage(FILE *fin, PLImage *out);	// Lithtech's DTX image format.
 
 plEXTERN_C_END
-
-#endif // !PLATFORM_IMAGE_H

@@ -84,7 +84,7 @@ extern VideoFrameBufferManager *g_framebuffermanager;
 class VideoPostProcess : public VideoFrameBuffer
 {
 public:
-	VideoPostProcess(Core::ShaderProgram *PostProcessProgram);
+	VideoPostProcess(core::ShaderProgram *PostProcessProgram);
 	VideoPostProcess(const char *fragpath, const char *vertpath);
 
 	//virtual void Initialize();
@@ -93,6 +93,6 @@ public:
 private:
 	unsigned int uniform_diffuse;
 
-	Core::ShaderProgram *program;
+	core::ShaderProgram *program;
 };
 

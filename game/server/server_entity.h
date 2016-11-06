@@ -1,70 +1,74 @@
-/*	Copyright (C) 2011-2016 OldTimes Software
+/*
+DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+Version 2, December 2004
 
-	This program is free software; you can redistribute it and/or
-	modify it under the terms of the GNU General Public License
-	as published by the Free Software Foundation; either version 2
-	of the License, or (at your option) any later version.
+Copyright (C) 2011-2016 Mark E Sowden <markelswo@gmail.com>
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+Everyone is permitted to copy and distribute verbatim or modified
+copies of this license document, and changing it is allowed as long
+as the name is changed.
 
-	See the GNU General Public License for more details.
+DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+0. You just DO WHAT THE FUCK YOU WANT TO.
 */
 
 #pragma once
 
-class ServerEntity
+namespace game
 {
-public:
-	ServerEntity();
-	~ServerEntity();
-
-	void SetOrigin(MathVector3f_t origin);
-	void SetAngles(MathVector3f_t angles);
-	void SetSize(MathVector3f_t mins, MathVector3f_t maxs);
-	void SetSize(float fMinA, float fMinB, float fMinC, float fMaxA, float fMaxB, float fMaxC);
-	void SetModel(char *path);
-
-	// Effects
-	void AddEffects(int effects);
-	void RemoveEffects(int effects);
-	void ClearEffects();
-
-	// Flags
-	void AddFlags(int flags);
-	void RemoveFlags(int flags);
-	void ClearFlags();
-
-	virtual void Spawn();
-	virtual void Precache() {};
-
-	bool CanDamage(ServerEntity *target, ServerDamageType_t damagetype);
-	void Damage(ServerEntity *inflictor, int damage, ServerDamageType_t damagetype);
-	virtual void Killed(ServerEntity *inflictor)	{};
-	virtual void Damaged(ServerEntity *inflictor) {};
-
-	// Physics
-	bool IsTouching(ServerEntity *other);
-	bool DropToFloor();
-
-	void Link(bool touchtriggers);
-	void Unlink();
-	void Free();
-
-	/*	Returns the current entity reference for this particular entity.
-	*/
-	ServerEntity_t *GetInstance()
+	namespace server
 	{
-		return instance;
-	};
+		class Entity
+		{
+		public:
+			Entity();
+			~Entity();
 
-	ServerEntity *owner;
+			void SetOrigin(plVector3f_t origin);
+			void SetAngles(plVector3f_t angles);
+			void SetSize(plVector3f_t mins, plVector3f_t maxs);
+			void SetSize(float mina, float minb, float minc, float maxa, float maxb, float maxc);
+			void SetModel(char *path);
 
-private:
-	ServerEntity_t *instance;
-};
+			// Effects
+			void AddEffects(int effects);
+			void RemoveEffects(int effects);
+			void ClearEffects();
+
+			// Flags
+			void AddFlags(int flags);
+			void RemoveFlags(int flags);
+			void ClearFlags();
+
+			virtual void Spawn();
+			virtual void Precache() {};
+
+			bool CanDamage(Entity *target, EntityDamageType_t damagetype);
+			void Damage(Entity *inflictor, int damage, EntityDamageType_t damagetype);
+			virtual void Killed(Entity *inflictor)	{};
+			virtual void Damaged(Entity *inflictor) {};
+
+			// Physics
+			bool IsTouching(Entity *other);
+			bool DropToFloor();
+
+			void Link(bool touchtriggers);
+			void Unlink();
+			void Free();
+
+			/*	Returns the current entity reference for this particular entity.
+			*/
+			ServerEntity_t *GetInstance()
+			{
+				return _instance;
+			};
+
+			Entity *owner;
+
+		private:
+			ServerEntity_t *_instance;
+		};
+	}
+}

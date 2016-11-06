@@ -18,12 +18,7 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
 #include "platform_system.h"
 
-/*
-	Generic functions for platform, such as	error handling.
-
-	TODO:
-		Introduce generic return types (e.g. PLATFORM_ERROR_FILENOTFOUND)
-*/
+/*	Generic functions for platform, such as	error handling.	*/
 
 /*	ERROR HANDLING	*/
 
@@ -108,4 +103,27 @@ char *plGetSystemError(void)
 	strcpy(sys_error,dlerror());
 	return sys_error;
 #endif
+}
+
+const PLchar *plGetResultString(PLresult result)
+{
+	switch (result)
+	{
+	case PL_RESULT_SUCCESS:			return "Success";
+
+	// FILE I/O
+	case PL_RESULT_FILEREAD:		return "Failed to read complete file!";
+	case PL_RESULT_FILESIZE:		return "Failed to get valid file size!";
+	case PL_RESULT_FILETYPE:		return "Invalid file type!";
+	case PL_RESULT_FILEVERSION:		return "Unsupported file version!";
+	case PL_RESULT_FILEPATH:		return "Invalid file path!";
+
+	// IMAGE
+	case PL_RESULT_IMAGERESOLUTION:	return "Invalid image resolution!";
+
+	// MEMORY
+	case PL_RESULT_MEMORYALLOC:		return "Failed to allocate memory!";
+
+	default:						return "An unknown error occured!";
+	}
 }

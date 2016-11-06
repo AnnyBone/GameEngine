@@ -260,6 +260,8 @@ extern	double			net_time;
 extern	sizebuf_t		net_message;
 extern	unsigned int	net_active_connections;
 
+PL_EXTERN_C
+
 void		Network_Initialize(void);
 void		NET_Shutdown (void);
 
@@ -301,6 +303,8 @@ void		NET_Close (struct qsocket_s *sock);
 // A netcon_t number will not be reused until this function is called for it
 
 void NET_Poll(void);
+
+PL_EXTERN_C_END
 
 typedef struct _PollProcedure
 {

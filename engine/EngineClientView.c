@@ -84,96 +84,6 @@ float V_CalcRoll(plVector3f_t angles, plVector3f_t velocity)
 
 }
 
-//=============================================================================
-
-cvar_t	v_centermove	= {"v_centermove",	"0.15", false	};
-cvar_t	v_centerspeed	= {"v_centerspeed",	"500"			};
-
-void V_StartPitchDrift(void)
-{
-	if(cl.laststop == cl.time)
-		return;		// something else is keeping it from drifting
-
-	if (cl.bNoDrift || !cl.pitchvel)
-	{
-		cl.pitchvel		= v_centerspeed.value;
-		cl.bNoDrift		= false;
-		cl.driftmove	= 0;
-	}
-}
-
-void V_StopPitchDrift (void)
-{
-	cl.laststop = cl.time;
-	cl.bNoDrift	= true;
-	cl.pitchvel = 0;
-}
-
-/*	Moves the client pitch angle towards cl.idealpitch sent by the server.
-
-	If the user is adjusting pitch manually, either with lookup/lookdown,
-	mlook and mouse, or klook and keyboard, pitch drifting is constantly stopped.
-
-	Drifting is enabled when the center view key is hit, mlook is released and
-	lookspring is non 0, or when
-*/
-void V_DriftPitch (void)
-{
-	float		delta, move;
-
-	if (noclip_anglehack || !cl.bIsOnGround || cls.demoplayback )
-	//FIXME: noclip_anglehack is set on the server, so in a nonlocal game this won't work.
-	{
-		cl.driftmove = 0;
-		cl.pitchvel = 0;
-		return;
-	}
-
-	// Don't count small mouse motion
-	if(cl.bNoDrift)
-	{
-		if ( fabs(cl.cmd.forwardmove) < cl_forwardspeed.value)
-			cl.driftmove = 0;
-		else
-			cl.driftmove += host_frametime;
-
-		if ( cl.driftmove > v_centermove.value)
-			V_StartPitchDrift ();
-		return;
-	}
-
-	delta = cl.idealpitch - cl.viewangles[PITCH];
-	if(!delta)
-	{
-		cl.pitchvel = 0;
-		return;
-	}
-
-	move = host_frametime * cl.pitchvel;
-	cl.pitchvel += host_frametime * v_centerspeed.value;
-
-//Con_Printf ("move: %f (%f)\n", move, host_frametime);
-
-	if (delta > 0)
-	{
-		if (move > delta)
-		{
-			cl.pitchvel = 0;
-			move = delta;
-		}
-		cl.viewangles[PITCH] += move;
-	}
-	else if (delta < 0)
-	{
-		if (move > -delta)
-		{
-			cl.pitchvel = 0;
-			move = -delta;
-		}
-		cl.viewangles[PITCH] -= move;
-	}
-}
-
 /*
 ==============================================================================
 
@@ -187,7 +97,7 @@ cshift_t	cshift_water	= { {	0,		0,	100	},	100	};
 cshift_t	cshift_slime	= { {	0,		25,	5	},	150 };
 cshift_t	cshift_lava		= { {	255,	80,	0	},	150 };
 
-plColour_t vViewBlend = { 0, 0, 0, 255.0f };	// rgba 0.0 - 1.0
+PLColour vViewBlend = { 0, 0, 0, 255.0f };	// rgba 0.0 - 1.0
 
 void V_ParseDamage (void)
 {
@@ -329,7 +239,7 @@ void V_CalcPowerupCshift (void)
 // [26/3/2013] Revised ~hogsy
 void View_CalculateBlend(void)
 {
-	plColour_t	vColour;
+	PLColour	vColour;
 	float		fAlpha;
 	int			j;
 
@@ -406,12 +316,14 @@ void V_UpdateBlend(void)
 
 void View_PolyBlend(void)
 {
+#if 0
 	if (!gl_polyblend.value || !cl.cshifts[CSHIFT_CONTENTS].percent)
 		return;
 
-	vlDisable(VL_CAPABILITY_DEPTH_TEST);
+	plDisableGraphicsStates(VL_CAPABILITY_DEPTH_TEST);
 	Draw_Rectangle(0, 0, Video.iWidth, Video.iHeight, vViewBlend);
-	vlEnable(VL_CAPABILITY_DEPTH_TEST);
+	plEnableGraphicsStates(VL_CAPABILITY_DEPTH_TEST);
+#endif
 }
 
 /*
@@ -421,121 +333,6 @@ void View_PolyBlend(void)
 
 ==============================================================================
 */
-
-float angledelta (float a)
-{
-	a = plAngleMod(a);
-	if (a > 180)
-		a -= 360;
-
-	return a;
-}
-
-void View_ModelAngle(void)
-{
-	int		i;
-	float	fOffsetAmount;
-
-	// Don't bother if we don't have a view model to show!
-	if(!cl.viewent.model)
-		return;
-
-	// Stripped this all down to this, it's all we need. ~hogsy
-	cl.viewent.angles[YAW]		= r_refdef.viewangles[YAW];
-	cl.viewent.angles[PITCH]	= -(r_refdef.viewangles[PITCH]-(sin(cl.time*1.5f)*0.2f));
-	cl.viewent.angles[ROLL]		= -(r_refdef.viewangles[ROLL]-(sin(cl.time*1.5f)*0.2f));
-
-	if(cViewModelPosition.iValue == 0)
-		return;	// We're already centered, so don't bother.
-	else if(cViewModelPosition.iValue == 1)
-		fOffsetAmount = -5.0f;
-	else
-		fOffsetAmount = 5.0f;
-
-	// TODO: Could this be done better? ~hogsy
-	for(i = 0; i < 3; i++)
-		cl.viewent.origin[i] += forward[i]+fOffsetAmount*right[i]+up[i];
-}
-
-void V_BoundOffsets (void)
-{
-	entity_t *eViewEntity;
-
-	eViewEntity = &cl_entities[cl.viewentity];
-	if(eViewEntity)
-	{
-		/*	Absolutely bound refresh reletive to entity clipping hull
-			so the view can never be inside a solid wall.
-		*/
-		if(r_refdef.vieworg[0] < eViewEntity->origin[0]-14.0f)
-			r_refdef.vieworg[0] = eViewEntity->origin[0]-14.0f;
-		else if(r_refdef.vieworg[0] > eViewEntity->origin[0]+14.0f)
-			r_refdef.vieworg[0] = eViewEntity->origin[0]+14.0f;
-
-		if(r_refdef.vieworg[1] < eViewEntity->origin[1]-14.0f)
-			r_refdef.vieworg[1] = eViewEntity->origin[1]-14.0f;
-		else if (r_refdef.vieworg[1] > eViewEntity->origin[1]+14.0f)
-			r_refdef.vieworg[1] = eViewEntity->origin[1]+14.0f;
-
-		if(r_refdef.vieworg[2] < eViewEntity->origin[2]-22.0f)
-			r_refdef.vieworg[2] = eViewEntity->origin[2]-22.0f;
-		else if (r_refdef.vieworg[2] > eViewEntity->origin[2]+30.0f)
-			r_refdef.vieworg[2] = eViewEntity->origin[2]+30.0f;
-	}
-}
-
-/*	Idle swaying
-*/
-void V_AddIdle(void)
-{
-	r_refdef.viewangles[ROLL]	+= v_idlescale.value*sin(cl.time*v_iroll_cycle.value)*v_iroll_level.value;
-	r_refdef.viewangles[PITCH]	+= v_idlescale.value*sin(cl.time*v_ipitch_cycle.value)*v_ipitch_level.value;
-	r_refdef.viewangles[YAW]	+= v_idlescale.value*sin(cl.time*v_iyaw_cycle.value)*v_iyaw_level.value;
-}
-
-/*	Roll is induced by movement and damage
-*/
-void V_CalcViewRoll(void)
-{
-	float		side;
-
-	side = V_CalcRoll (cl_entities[cl.viewentity].angles, cl.velocity);
-	r_refdef.viewangles[ROLL] += side;
-
-	if (v_dmg_time > 0)
-	{
-		r_refdef.viewangles[ROLL] += v_dmg_time/v_kicktime.value*v_dmg_roll;
-		r_refdef.viewangles[PITCH] += v_dmg_time/v_kicktime.value*v_dmg_pitch;
-		v_dmg_time -= host_frametime;
-	}
-
-	if (cl.stats[STAT_HEALTH] <= 0)
-	{
-		r_refdef.viewangles[ROLL] = 80.0f;	// dead view angle
-		return;
-	}
-}
-
-void V_CalcIntermissionRefdef (void)
-{
-	entity_t	*ent, *view;
-	float		old;
-
-// ent is the player model (visible when out of body)
-	ent = &cl_entities[cl.viewentity];
-// view is the weapon model (only visible from inside body)
-	view = &cl.viewent;
-
-	Math_VectorCopy (ent->origin, r_refdef.vieworg);
-	Math_VectorCopy (ent->angles, r_refdef.viewangles);
-	view->model = NULL;
-
-// allways idle in intermission
-	old = v_idlescale.value;
-	v_idlescale.value = 1;
-	V_AddIdle ();
-	v_idlescale.value = old;
-}
 
 /*	Adds a delay to the view model (such as a weapon) in the players view.
 */
@@ -551,7 +348,7 @@ void View_ModelDrift(plVector3f_t vOrigin, plVector3f_t vAngles, plVector3f_t vO
 
 	if(host_frametime != 0.0f)
 	{
-		Math_VectorSubtract(vForward,svLastFacing,vDifference);
+		plVectorSubtract3fv(vForward, svLastFacing, vDifference);
 
 		fSpeed = 3.0f;
 
@@ -575,6 +372,7 @@ void View_ModelDrift(plVector3f_t vOrigin, plVector3f_t vAngles, plVector3f_t vO
 
 void V_CalcRefdef (void)
 {
+#if 0
 	int				i;
 	float			fBob[2],fCycle[2],
 					delta;
@@ -675,9 +473,6 @@ void V_CalcRefdef (void)
 
 	view->origin[2] += fBob[0];
 
-	// [10/5/2013] Implemented Eukos' suggestion ~hogsy
-	View_ModelDrift(view->origin,view->angles,vOldAngles);
-
 	//johnfitz -- removed all gun position fudging code (was used to keep gun from getting covered by sbar)
 
 	view->model	= cl.model_precache[cl.stats[STAT_WEAPON]];
@@ -694,9 +489,9 @@ void V_CalcRefdef (void)
 				// Speed determined by how far we need to lerp in 1/10th of a second
 				delta = (v_punchangles[0][i]-v_punchangles[1][i])*host_frametime*10.0f;
 				if(delta > 0)
-					punch[i] = Math_Min(punch[i]+delta,v_punchangles[0][i]);
+					punch[i] = plMin(punch[i]+delta,v_punchangles[0][i]);
 				else if(delta < 0)
-					punch[i] = Math_Max(punch[i]+delta,v_punchangles[0][i]);
+					punch[i] = plMax(punch[i]+delta,v_punchangles[0][i]);
 			}
 
 		Math_VectorAdd(r_refdef.viewangles,punch,r_refdef.viewangles);
@@ -726,85 +521,5 @@ void V_CalcRefdef (void)
 	}
 	else
 		oldz = ent->origin[2];
-
-	if(chase_active.value)
-		Chase_UpdateForDrawing (); //johnfitz
-}
-
-/*	The player's clipping box goes from (-16 -16 -24) to (16 16 32) from
-	the entity origin, so any view position inside that will be valid
-*/
-extern vrect_t	scr_vrect;
-
-void V_RenderView (void)
-{
-	if (con_forcedup)
-		return;
-
-	if (cl.intermission)
-		V_CalcIntermissionRefdef();
-	else if (!cl.bIsPaused /* && (cl.maxclients > 1 || key_dest == key_game) */)
-	{
-		Game->Client_ViewFrame();
-		V_CalcRefdef();
-	}
-
-	R_RenderView();
-
-	View_PolyBlend(); //johnfitz -- moved here from R_Renderview ();
-}
-
-/*
-==============================================================================
-
-	INIT
-
-==============================================================================
-*/
-
-/*	Forces the pitch to become centered.
-*/
-void View_ForceCenter(void)
-{
-	cl.viewangles[PITCH] = 0;
-}
-
-void V_Init (void)
-{
-	Cmd_AddCommand("v_cshift", V_cshift_f);
-	Cmd_AddCommand("bf", V_BonusFlash_f);
-	Cmd_AddCommand("centerview", V_StartPitchDrift);
-	Cmd_AddCommand("view_forcecenter",View_ForceCenter);
-
-	Cvar_RegisterVariable (&v_centermove, NULL);
-	Cvar_RegisterVariable (&v_centerspeed, NULL);
-
-	Cvar_RegisterVariable (&v_iyaw_cycle, NULL);
-	Cvar_RegisterVariable (&v_iroll_cycle, NULL);
-	Cvar_RegisterVariable (&v_ipitch_cycle, NULL);
-	Cvar_RegisterVariable (&v_iyaw_level, NULL);
-	Cvar_RegisterVariable (&v_iroll_level, NULL);
-	Cvar_RegisterVariable (&v_ipitch_level, NULL);
-
-	Cvar_RegisterVariable (&v_idlescale, NULL);
-	Cvar_RegisterVariable (&gl_cshiftpercent, NULL);
-
-	Cvar_RegisterVariable (&scr_ofsx, NULL);
-	Cvar_RegisterVariable (&scr_ofsy, NULL);
-	Cvar_RegisterVariable (&scr_ofsz, NULL);
-	Cvar_RegisterVariable (&cl_rollspeed, NULL);
-	Cvar_RegisterVariable (&cl_rollangle, NULL);
-	Cvar_RegisterVariable (&cl_bob, NULL);
-	Cvar_RegisterVariable (&cl_bobcycle, NULL);
-	Cvar_RegisterVariable (&cl_bobup, NULL);
-	Cvar_RegisterVariable (&v_kicktime, NULL);
-	Cvar_RegisterVariable (&v_kickroll, NULL);
-	Cvar_RegisterVariable (&v_kickpitch, NULL);
-	Cvar_RegisterVariable (&v_gunkick, NULL); //johnfitz
-
-	Cvar_RegisterVariable(&cSideBob,NULL);
-	Cvar_RegisterVariable(&cSideBobCycle,NULL);
-	Cvar_RegisterVariable(&cSideBobUp,NULL);
-	Cvar_RegisterVariable(&cViewModelLag,NULL);
-	Cvar_RegisterVariable(&cViewModelPosition,NULL);
+#endif
 }

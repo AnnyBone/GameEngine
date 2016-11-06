@@ -1,44 +1,45 @@
-/*	Copyright (C) 2011-2016 OldTimes Software
+/*
+DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+Version 2, December 2004
 
-	This program is free software; you can redistribute it and/or
-	modify it under the terms of the GNU General Public License
-	as published by the Free Software Foundation; either version 2
-	of the License, or (at your option) any later version.
+Copyright (C) 2011-2016 Mark E Sowden <markelswo@gmail.com>
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+Everyone is permitted to copy and distribute verbatim or modified
+copies of this license document, and changing it is allowed as long
+as the name is changed.
 
-	See the GNU General Public License for more details.
+DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+0. You just DO WHAT THE FUCK YOU WANT TO.
 */
 
-#ifndef PLATFORM_FILESYSTEM_H
-#define	PLATFORM_FILESYSTEM_H
+#pragma once
+
+#include "platform.h"
 
 plEXTERN_C_START
 
-extern void	plGetUserName(char *out);
-extern void	plGetWorkingDirectory(char *out);
+extern void	plGetUserName(PLchar *out);
+extern void	plGetWorkingDirectory(PLchar *out);
 
-extern void plStripExtension(char *dest, const char *in);
-extern char *plGetFileExtension(char *dest, const char *in);
-extern const char *plGetFileName(const char *path);
+extern void plStripExtension(PLchar *dest, const PLchar *in);
+extern PLchar *plGetFileExtension(PLchar *dest, const PLchar *in);
+extern const PLchar *plGetFileName(const PLchar *path);
 
-extern void		plScanDirectory(const char *path, const char *extension, void(*Function)(char *filepath));
-extern void		plLowerCasePath(char *out);
-extern bool		plCreateDirectory(const char *path);
+extern void	plScanDirectory(const PLchar *path, const PLchar *extension, void(*Function)(PLchar *filepath));
+extern void	plLowerCasePath(PLchar *out);
 
-// File I/O
-extern bool		plFileExists(const char *path);
-extern bool		plIsFileModified(time_t oldtime, const char *path);
-extern time_t	plGetFileModifiedTime(const char *path);
-extern int		plGetLittleShort(FILE *fin);
-extern int		plGetLittleLong(FILE *fin);
+extern PLbool plCreateDirectory(const PLchar *path);
+
+// File I/O ...
+
+extern PLbool plFileExists(const PLchar *path);
+extern PLbool plIsFileModified(time_t oldtime, const PLchar *path);
+
+extern time_t plGetFileModifiedTime(const PLchar *path);
+
+extern PLint plGetLittleShort(FILE *fin);
+extern PLint plGetLittleLong(FILE *fin);
 
 plEXTERN_C_END
-
-#endif // !PLATFORM_FILESYSTEM_H

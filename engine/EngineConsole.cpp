@@ -19,13 +19,10 @@
 */
 
 #include <algorithm>
-#include <fcntl.h>
 #include <list>
 #include <set>
-#include <time.h>
-#ifndef _MSC_VER
-#include <unistd.h>
-#endif
+
+#include "platform_log.h"
 
 #include "engine_base.h"
 
@@ -41,22 +38,25 @@ float con_cursorspeed = 4;
 
 bool con_forcedup;		// because no entities to refresh
 
-cvar_t		con_notifytime = {"con_notifytime","3"};		//seconds
-cvar_t		con_logcenterprint = {"con_logcenterprint", "1"}; //johnfitz
+ConsoleVariable_t con_notifytime = {"con_notifytime","3"};		//seconds
+ConsoleVariable_t con_logcenterprint = { "con_logcenterprint", "1" }; //johnfitz
 
 char		con_lastcenterstring[1024]; //johnfitz
 
-#define		MAXCMDLINE	256
+#define	MAXCMDLINE	256
+
 extern "C" char				key_lines[32][MAXCMDLINE];
 extern "C" int				edit_line;
 extern "C" unsigned int		key_linepos;
 
 bool g_consoleinitialized;
 
-/* Singleton console instance. */
-Core::Console *con_instance = nullptr;
+using namespace core;
 
-Core::Console::Console():
+/* Singleton console instance. */
+Console *g_console = nullptr;
+
+Console::Console() :
 	cursor_x(0),
 	cursor_y(0),
 	backscroll(0)
@@ -64,7 +64,7 @@ Core::Console::Console():
 	lines.emplace_back("");
 }
 
-void Core::Console::Clear()
+void Console::Clear()
 {
 	cursor_x = 0;
 	cursor_y = 0;
@@ -73,7 +73,7 @@ void Core::Console::Clear()
 	lines.emplace_back("");
 }
 
-void Core::Console::ClearNotify()
+void Console::ClearNotify()
 {
 	for(auto l = lines.begin(); l != lines.end(); ++l)
 	{
@@ -81,7 +81,7 @@ void Core::Console::ClearNotify()
 	}
 }
 
-void Core::Console::Print(const char *text)
+void Console::Print(const char *text)
 {
 	/* A string starting with 0x02 is "coloured" and the characters are
 	 * ORd with 128 so the rendering code highlights them.
@@ -106,12 +106,9 @@ void Core::Console::Print(const char *text)
 		}
 		else{
 			if(lines[cursor_y].text.size() > cursor_x)
-			{
 				lines[cursor_y].text[cursor_x] = (*text | cbit);
-			}
-			else{
+			else
 				lines[cursor_y].text += (*text | cbit);
-			}
 
 			lines[cursor_y].time = time(NULL);
 
@@ -122,28 +119,28 @@ void Core::Console::Print(const char *text)
 	}
 }
 
-void Core::Console::ScrollUp()
+void Console::ScrollUp()
 {
 	++backscroll;
 }
 
-void Core::Console::ScrollDown()
+void Console::ScrollDown()
 {
 	if(backscroll > 0)
 		--backscroll;
 }
 
-void Core::Console::ScrollHome()
+void Console::ScrollHome()
 {
 	backscroll = CONS_BACKLOG;
 }
 
-void Core::Console::ScrollEnd()
+void Console::ScrollEnd()
 {
 	backscroll = 0;
 }
 
-void Core::Console::linefeed()
+void Console::linefeed()
 {
 	lines.emplace_back("");
 
@@ -153,7 +150,7 @@ void Core::Console::linefeed()
 		++cursor_y;
 }
 
-std::list<std::string> Core::Console::prepare_text(unsigned int cols, unsigned int rows)
+std::list<std::string> Console::prepare_text(unsigned int cols, unsigned int rows)
 {
 	std::list<std::string> wrapped_lines;
 
@@ -192,7 +189,7 @@ std::list<std::string> Core::Console::prepare_text(unsigned int cols, unsigned i
 	return wrapped_lines;
 }
 
-std::list<std::string> Core::Console::wrap_line(std::string line, unsigned int cols)
+std::list<std::string> Console::wrap_line(std::string line, unsigned int cols)
 {
 	std::list<std::string> wrapped_line;
 
@@ -219,31 +216,55 @@ std::list<std::string> Core::Console::wrap_line(std::string line, unsigned int c
 	return wrapped_line;
 }
 
-void Core::Console::Draw(bool draw_input)
+void Console::SetSize(unsigned int width, unsigned int height)
 {
-	const unsigned int con_cols   = vid.conwidth / CHAR_WIDTH;
+	assert((width != 0) || (height != 0));
+
+#if 1	// todo, do we need this?
+	vid.conwidth = (scr_conwidth.value > 0) ? (int)scr_conwidth.value : (scr_conscale.value > 0) ? (int)(width / scr_conscale.value) : width;
+	vid.conwidth = plClamp(320, vid.conwidth, width);
+	vid.conwidth &= 0xFFFFFFF8;
+	vid.conheight = vid.conwidth* height / width;
+#endif
+
+	_width	= width & 0xFFFFFFF8;
+	_height = _width * height / width;
+
+	// todo, merge this into here.
+	Screen_SetUpToDrawConsole(width, height);
+}
+
+void Console::Draw(bool draw_input)
+{
+	const unsigned int con_cols   = _width / CHAR_WIDTH;
 	const unsigned int line_width = con_cols - 3;
 
-	// Draw the background
-	Draw_ConsoleBackground();
-
 	GL_SetCanvas(CANVAS_CONSOLE);
+
+	float bgalpha = 0.5f;
+	if (cls.state != ca_connected)
+		bgalpha = 1;
+
+	// Draw the background.
+	PLColour black = { 0, 0, 0, 255 };
+	PLColour lightblack = { 0, 0, 0, bgalpha };
+	draw::GradientFill(0, 0, vid.conwidth, vid.conheight, black, lightblack);
 
 	// Starting from the bottom...
 	int y = vid.conheight - CHAR_HEIGHT;
 
+	Material_Draw(g_mGlobalConChars, NULL, VL_PRIMITIVE_IGNORE, 0, false);
+
 	// ...draw version number in bottom right...
 	{
 		char ver[64];
-		snprintf(ver, sizeof(ver), "Katana (%i)", (int)(ENGINE_VERSION_BUILD));
+		snprintf(ver, sizeof(ver), "Xenon (%i)", (int)(ENGINE_VERSION_BUILD));
 
 		size_t vlen = strlen(ver);
 		size_t x    = con_cols - vlen;
 
 		for(size_t i = 0; i < vlen; ++i, ++x)
-		{
-			Draw_Character(x * CHAR_WIDTH, y, ver[i]);
-		}
+			draw::Character((PLint)x * CHAR_WIDTH, y, ver[i]);
 
 		y -= CHAR_HEIGHT;
 	}
@@ -261,19 +282,18 @@ void Core::Console::Draw(bool draw_input)
 		for(size_t i = 0;; ++i)
 		{
 			if(text[i] != '\0')
+				draw::Character((PLint)(i + 1) * CHAR_WIDTH, y, text[i]);
+			else
 			{
-				Draw_Character((i+1) * CHAR_WIDTH, y, text[i]);
-			}
-			else{
 				// Why is this even necessary?
-				Draw_Character((i+1) * CHAR_WIDTH, y, ' ');
+				draw::Character((PLint)(i + 1) * CHAR_WIDTH, y, ' ');
 				break;
 			}
 		}
 
 		// Draw the blinky cursor
 		if(!((int)((realtime-key_blinktime)*con_cursorspeed) & 1))
-			Draw_Character((key_linepos+1) * CHAR_WIDTH, y, '_');
+			draw::Character((key_linepos + 1) * CHAR_WIDTH, y, '_');
 
 		y -= CHAR_HEIGHT;
 	}
@@ -287,17 +307,17 @@ void Core::Console::Draw(bool draw_input)
 		for(auto line = wrapped_lines.rbegin(); line != wrapped_lines.rend() && y >= 0;)
 		{
 			for(size_t i = 0; i < line->length(); ++i)
-			{
-				Draw_Character((i+1) * CHAR_WIDTH, y, line->at(i));
-			}
+				draw::Character((PLint)(i + 1) * CHAR_WIDTH, y, line->at(i));
 
 			y -= CHAR_HEIGHT;
 			++line;
 		}
 	}
+
+	Material_Draw(g_mGlobalConChars, NULL, VL_PRIMITIVE_IGNORE, 0, true);
 }
 
-void Core::Console::DrawNotify()
+void Console::DrawNotify()
 {
 	const unsigned int cols = (vid.conwidth / CHAR_WIDTH) - 2;
 
@@ -329,16 +349,14 @@ void Core::Console::DrawNotify()
 
 	unsigned int y = vid.conheight;
 
+	Material_Draw(g_mGlobalConChars, NULL, VL_PRIMITIVE_IGNORE, 0, false);
+
 	for(auto l = wrapped_lines.begin(); l != wrapped_lines.end(); ++l)
 	{
 		for(size_t i = 0; i < l->size(); ++i)
-		{
-			Draw_Character(((i + 1) * CHAR_WIDTH), y, (*l)[i]);
-		}
+			draw::Character((PLint)((i + 1) * CHAR_WIDTH), y, (*l)[i]);
 
 		y += CHAR_HEIGHT;
-
-		scr_tileclear_updates = 0; // ???
 	}
 
 	if (key_dest == key_message)
@@ -358,15 +376,15 @@ void Core::Console::DrawNotify()
 		size_t x = 0;
 		while(chat_buffer[x])
 		{
-			Draw_Character((x + plen + 2) * CHAR_WIDTH, y, chat_buffer[x]);
+			draw::Character((PLint)(x + plen + 2) * CHAR_WIDTH, y, chat_buffer[x]);
 			++x;
 		}
 
-		Draw_Character((x + plen + 2) * CHAR_WIDTH, y, 10 + ((int)(realtime*con_cursorspeed)&1));
-		y += CHAR_HEIGHT;
-
-		scr_tileclear_updates = 0; //johnfitz
+		draw::Character((PLint)(x + plen + 2) * CHAR_WIDTH, y, 10 + ((int)(realtime*con_cursorspeed) & 1));
+		//y += CHAR_HEIGHT;
 	}
+
+	Material_Draw(g_mGlobalConChars, NULL, VL_PRIMITIVE_IGNORE, 0, true);
 }
 
 extern "C" void M_Menu_Main_f (void);
@@ -374,15 +392,14 @@ extern "C" void M_Menu_Main_f (void);
 /* Returns a bar of the desired length, but never wider than the console. */
 char *Con_Quakebar (unsigned int len)
 {
-	static char bar[42];
-
 	const unsigned int con_linewidth = (vid.conwidth / CHAR_WIDTH) - 3;
 
-	len = Math_Min(len, sizeof(bar) - 2);
-	len = Math_Min(len, con_linewidth);
-
+	static char bar[42];
+	len = std::min(len, (unsigned int)sizeof(bar) - 2);
+	len = std::min(len, con_linewidth);
+	
 	bar[0] = '\35';
-	memset(bar + 1, '\36', len - 2);
+	std::memset(bar + 1, '\36', len - 2);
 	bar[len-1] = '\37';
 
 	if (len < con_linewidth)
@@ -426,18 +443,14 @@ void Con_ToggleConsole_f (void)
 
 void Con_Clear_f (void)
 {
-	if(con_instance)
-	{
-		con_instance->Clear();
-	}
+	if (g_console)
+		g_console->Clear();
 }
 
 void Con_ClearNotify (void)
 {
-	if(con_instance)
-	{
-		con_instance->ClearNotify();
-	}
+	if (g_console)
+		g_console->ClearNotify();
 }
 
 void Con_MessageMode_f (void)
@@ -459,7 +472,7 @@ void Console_Initialize(void)
 
 	plClearLog(ENGINE_LOG);
 
-	con_instance = new Core::Console();
+	g_console = new Console();
 
 	// register our commands
 	Cvar_RegisterVariable (&con_notifytime, NULL);
@@ -479,10 +492,8 @@ void Console_Initialize(void)
 */
 void Con_Print (char *txt)
 {
-	if(con_instance)
-	{
-		con_instance->Print(txt);
-	}
+	if (g_console)
+		g_console->Print(txt);
 }
 
 #define	MAXPRINTMSG	4096
@@ -504,12 +515,9 @@ void Con_Printf (const char *fmt, ...)
 
 	plWriteLog(ENGINE_LOG, "%s", msg);
 
-	if (g_state.embedded)
-		g_launcher.PrintMessage(msg);
-	else
-	{
-		Con_Print(msg);
-	}
+	if (g_state.embedded) g_launcher.PrintMessage(msg);
+
+	Con_Print(msg);
 }
 
 void Con_Warning (const char *fmt, ...)
@@ -594,14 +602,13 @@ void Con_SafePrintf (const char *fmt, ...)
 {
 	va_list		argptr;
 	char		msg[1024];
-	int			temp;
 
 	va_start(argptr,fmt);
 	vsprintf(msg,fmt,argptr);
 	va_end(argptr);
 
-	temp = scr_disabled_for_loading;
-	scr_disabled_for_loading = true;
+	PLbool temp = scr_disabled_for_loading;
+	scr_disabled_for_loading = PL_TRUE;
 	Con_Printf ("%s", msg);
 	scr_disabled_for_loading = temp;
 }
@@ -613,12 +620,12 @@ void Con_CenterPrintf (unsigned int linewidth, char *fmt, ...)
 	char			line[MAXPRINTMSG]; //one line from the message
 	char			spaces[21]; //buffer for spaces
 	char			*src, *dst;
-	unsigned int	len, s;
 
 	va_start (argptr,fmt);
 	vsprintf (msg,fmt,argptr);
 	va_end (argptr);
 
+	size_t len, s;
 	linewidth = std::min(linewidth, (vid.conwidth / CHAR_WIDTH) - 3);
 	for (src = msg; *src; )
 	{
@@ -663,10 +670,8 @@ void Con_LogCenterPrint (char *str)
 
 void Console_ErrorMessage(bool bCrash, const char *ccFile, const char *reason)
 {
-	if (bCrash)
-		Sys_Error("Failed to load %s\nReason: %s", ccFile, reason);
-	else
-		Con_Error("Failed to load %s\nReason: %s", ccFile, reason);
+	if (bCrash)	Sys_Error("Failed to load %s\nReason: %s", ccFile, reason);
+	else		Con_Error("Failed to load %s\nReason: %s", ccFile, reason);
 }
 
 /*
@@ -836,10 +841,7 @@ DRAWING
 /* Draws the last few lines of output transparently over the game top. */
 void Con_DrawNotify(void)
 {
-	if(con_instance)
-	{
-		con_instance->DrawNotify();
-	}
+	if (g_console) g_console->DrawNotify();
 }
 
 /*	Draws the console with the solid background
@@ -847,10 +849,7 @@ void Con_DrawNotify(void)
 */
 void Con_DrawConsole(bool draw_input)
 {
-	if(con_instance)
-	{
-		con_instance->Draw(draw_input);
-	}
+	if (g_console) g_console->Draw(draw_input);
 }
 
 /* TODO: Get rid of these functions, bring more of the engine into C++ land
@@ -859,32 +858,24 @@ void Con_DrawConsole(bool draw_input)
 
 void Con_ScrollUp(void)
 {
-	if(con_instance)
-	{
-		con_instance->ScrollUp();
-	}
+	if (g_console)
+		g_console->ScrollUp();
 }
 
 void Con_ScrollDown(void)
 {
-	if(con_instance)
-	{
-		con_instance->ScrollDown();
-	}
+	if (g_console)
+		g_console->ScrollDown();
 }
 
 void Con_ScrollHome(void)
 {
-	if(con_instance)
-	{
-		con_instance->ScrollHome();
-	}
+	if (g_console)
+		g_console->ScrollHome();
 }
 
 void Con_ScrollEnd(void)
 {
-	if(con_instance)
-	{
-		con_instance->ScrollEnd();
-	}
+	if (g_console)
+		g_console->ScrollEnd();
 }

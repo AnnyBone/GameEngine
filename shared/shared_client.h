@@ -82,7 +82,7 @@ typedef struct
 	float	upmove;
 } ClientCommand_t;
 
-typedef struct
+typedef struct DynamicLight_s
 {
 	MathVector3f_t	origin;
 	float	radius;
@@ -118,6 +118,8 @@ typedef struct ConsoleVariable_s
 
 // Future replacement for cvar, to follow every other naming convention.
 #define cvar_t ConsoleVariable_t
+
+#define XENON_CONFIG_EXTENSION	".config"
 
 typedef struct
 {
@@ -218,7 +220,7 @@ typedef struct particle_s
 	MathVector3f_t		vOrigin,		// The origin of the particle.
 						vVelocity;		// Velocity of the particle.
 
-	plColour_t		vColour;		// RGBA colour of the particle.
+	PLColour		vColour;		// RGBA colour of the particle.
 
 	int	iFrame;							// Frame of animation.
 

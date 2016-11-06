@@ -65,18 +65,18 @@ char *Server_GetLevelName(void)
 	return sv.name;
 }
 
-ServerEntity_t *Server_FindRadius(MathVector3f_t origin, float radius)
+ServerEntity_t *Server_FindRadius(PLVector3f origin, float radius)
 {
 	unsigned int		i,j;
 	ServerEntity_t		*eEntity, *eChain;
-	MathVector3f_t		eorg;
+	PLVector3f			eorg = { 0 };
 
 	eChain = sv.edicts;
 
-	eEntity = NEXT_EDICT(sv.edicts);
-	for(i = 1; i < sv.num_edicts; i++,eEntity = NEXT_EDICT(eEntity))
+	eEntity = SERVER_ENTITY_NEXT(sv.edicts);
+	for (i = 1; i < sv.num_edicts; i++, eEntity = SERVER_ENTITY_NEXT(eEntity))
 	{
-		if(eEntity->free && eEntity->Physics.iSolid == SOLID_NOT)
+		if(eEntity->free && eEntity->Physics.solid == SOLID_NOT)
 			continue;
 
 		for(j = 0; j < 3; j++)
@@ -129,9 +129,9 @@ void Server_MakeStatic(ServerEntity_t *ent)
 	else
 		MSG_WriteByte(&sv.signon,ent->v.frame);
 
-	MSG_WriteByte(&sv.signon,ent->Model.fScale);
+	MSG_WriteByte(&sv.signon,ent->Model.scale);
 	MSG_WriteByte(&sv.signon,ent->v.colormap);
-	MSG_WriteByte(&sv.signon,ent->Model.iSkin);
+	MSG_WriteByte(&sv.signon,ent->Model.skin);
 	for (i=0 ; i<3 ; i++)
 	{
 		MSG_WriteCoord(&sv.signon, ent->v.origin[i]);
@@ -260,7 +260,7 @@ void Server_Sound(ServerEntity_t *ent, int channel, char *sample, int iVolume, f
 	if(field_mask & SND_VOLUME)
 		MSG_WriteByte(&sv.datagram, iVolume);
 	if(field_mask & SND_ATTENUATION)
-		MSG_WriteByte(&sv.datagram,attenuation*64);
+		MSG_WriteByte(&sv.datagram,(PLbyte)attenuation * 64);
 
 	if(field_mask & SND_LARGEENTITY)
 	{
@@ -276,22 +276,12 @@ void Server_Sound(ServerEntity_t *ent, int channel, char *sample, int iVolume, f
 		MSG_WriteByte(&sv.datagram,sound_num);
 
 	for(i=0 ; i<3 ; i++)
-		MSG_WriteCoord(&sv.datagram,ent->v.origin[i]+0.5*(ent->v.mins[i]+ent->v.maxs[i]));
+		MSG_WriteCoord(&sv.datagram,ent->v.origin[i]+0.5f *(ent->v.mins[i]+ent->v.maxs[i]));
 }
 
-/*
-	Flares
-*/
+/*	Particles	*/
 
-void Server_Flare(MathVector3f_t org,float r,float g,float b,float a,float scale,char *texture)
-{
-}
-
-/*
-	Particles
-*/
-
-void Particle(MathVector3f_t org, MathVector3f_t dir,float scale,char *texture,int count)
+void Particle(PLVector3f org, PLVector3f dir,float scale,char *texture,int count)
 {
 	int	i,v;
 
@@ -317,9 +307,9 @@ void Particle(MathVector3f_t org, MathVector3f_t dir,float scale,char *texture,i
 	MSG_WriteFloat(&sv.datagram,scale);
 
 	for(i = 0; i < MAX_EFFECTS; i++)
-		if(gEffectTexture[i])
+		if (g_effecttextures[i])
 		{
-			if(!strcmp(texture,gEffectTexture[i]->name))
+			if (!strcmp(texture, g_effecttextures[i]->name))
 			{
 				MSG_WriteByte(&sv.datagram,i);
 				break;
@@ -426,16 +416,16 @@ void Game_Initialize(void)
 	ModuleImport_t	Import;
 
 	if(Game)
-		plUnloadModule(hGameInstance);
+		plUnloadLibrary(hGameInstance);
 
 	Import.Con_Printf				= Con_Printf;	// todo: obsolete!
 	Import.Con_DPrintf				= Con_DPrintf;	// todo: obsolete!
 	Import.Con_Warning				= Con_Warning;	// todo: obsolete!
 
-	Import.DrawLine				= Draw_Line;
+	//Import.DrawLine			= Draw_Line;
 	Import.DrawMaterialSurface	= Draw_MaterialSurface;
 	Import.DrawRectangle		= Draw_Rectangle;
-	Import.DrawCoordinateAxes	= Draw_CoordinateAxes;
+	//Import.DrawCoordinateAxes	= Draw_CoordinateAxes;
 	Import.DrawString			= Draw_String;
 
 	Import.Print	= Con_Printf;
@@ -444,7 +434,7 @@ void Game_Initialize(void)
 	Import.Sys_Error				= Sys_Error;
 	Import.SetModel					= Server_SetModel;
 	Import.Particle					= Particle;
-	Import.Flare					= Server_Flare;
+	//Import.Flare					= Server_Flare;
 	Import.Sound					= Server_Sound;
 	Import.UnlinkEntity				= SV_UnlinkEdict;
 	Import.LinkEntity				= SV_LinkEdict;
@@ -526,7 +516,7 @@ void Game_Initialize(void)
 	Import.SetSpriteType		= Sprite_SetType;
 	Import.SetSpriteMaterial	= Sprite_SetMaterial;
 
-	Game = (GameExport_t*)plLoadModuleInterface(hGameInstance, va("%s/%s" GAME_MODULE, com_gamedir, g_state.path_modules), "Game_Main", &Import);
+	Game = (GameExport_t*)plLoadLibraryInterface(hGameInstance, va("%s/%s" GAME_MODULE, com_gamedir, g_state.path_modules), "Game_Main", &Import);
 	if(!Game)
 		Con_Warning(plGetError(), com_gamedir, GAME_MODULE);
 	else if (Game->iVersion != GAME_VERSION)
@@ -536,9 +526,9 @@ void Game_Initialize(void)
 
 	if(!bGameLoaded)
 	{
-		plUnloadModule(hGameInstance);
+		plUnloadLibrary(hGameInstance);
 
 		// Let the user know the module failed to load.
-		Sys_Error("Failed to load %s/%s."PL_CPU_ID""pMODULE_EXTENSION"!\nCheck log for details.\n", com_gamedir, GAME_MODULE);
+		Sys_Error("Failed to load %s/%s."PL_CPU_ID""PL_MODULE_EXTENSION"!\nCheck log for details.\n", com_gamedir, GAME_MODULE);
 	}
 }

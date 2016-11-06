@@ -124,9 +124,9 @@ void Alias_DrawFrame(MD2_t *alias, ClientEntity_t *entity, lerpdata_t lLerpData)
 	if (bShading && !r_showtris.bValue)
 		fAlpha	= ENTALPHA_DECODE(entity->alpha);
 
-	fAlpha = Math_Clamp(0, fAlpha, entity->distance_alpha);
+	fAlpha = plClamp(0, fAlpha, entity->distance_alpha);
 	if (fAlpha < 1.0f)
-		vlEnable(VL_CAPABILITY_BLEND);
+		plEnableGraphicsStates(VL_CAPABILITY_BLEND);
 
 	//new version by muff - fixes bug, easier to read, faster (well slightly)
 	MD2Frame_t *frame1 = (MD2Frame_t*)((uint8_t*)alias + alias->ofs_frames + (alias->framesize*entity->draw_lastpose));
@@ -138,7 +138,7 @@ void Alias_DrawFrame(MD2_t *alias, ClientEntity_t *entity, lerpdata_t lLerpData)
 	int *order = (int*)((uint8_t*)alias + alias->ofs_glcmds);
 
 	// TODO: Stupid stupid stupid temporary shit until we do this properly.
-	vlVertex_t *vertices = (vlVertex_t*)malloc_or_die(sizeof(vlVertex_t) * alias->num_xyz);
+	PLVertex *vertices = (PLVertex*)malloc_or_die(sizeof(PLVertex) * alias->num_xyz);
 	memset(vertices, 0, sizeof(vertices));
 
 	unsigned int uiVerts = 0;
@@ -173,7 +173,7 @@ void Alias_DrawFrame(MD2_t *alias, ClientEntity_t *entity, lerpdata_t lLerpData)
 	}
 
 	if (fAlpha < 1.0f)
-		vlDisable(VL_CAPABILITY_BLEND);
+		plDisableGraphicsStates(VL_CAPABILITY_BLEND);
 
 	free(vertices);
 #endif
@@ -247,9 +247,9 @@ void Alias_SetupEntityTransform(ClientEntity_t *ceEntity, lerpdata_t *lerpdata)
 	if (r_lerpmove.value && ceEntity != &cl.viewent && ceEntity->lerpflags & LERP_MOVESTEP)
 	{
 		if (ceEntity->lerpflags & LERP_FINISH)
-			blend = Math_Clamp(0, (cl.time - ceEntity->movelerpstart) / (ceEntity->lerpfinish - ceEntity->movelerpstart), 1);
+			blend = plClamp(0, (cl.time - ceEntity->movelerpstart) / (ceEntity->lerpfinish - ceEntity->movelerpstart), 1);
 		else
-			blend = Math_Clamp(0, (cl.time - ceEntity->movelerpstart) / 0.1, 1);
+			blend = plClamp(0, (cl.time - ceEntity->movelerpstart) / 0.1, 1);
 
 		//translation
 		Math_VectorSubtract(ceEntity->currentorigin, ceEntity->previousorigin, d);

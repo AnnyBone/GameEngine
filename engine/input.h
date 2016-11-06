@@ -20,11 +20,9 @@
 
 #pragma once
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+PL_EXTERN_C
 
-extern bool bMouseActive;
+extern bool input_mouseactive;
 
 void Input_Initialize(void);
 void Input_Frame(void);
@@ -33,6 +31,4 @@ void Input_ActivateMouse(void);
 void Input_DeactivateMouse(void);
 void Input_Shutdown(void);
 
-#ifdef __cplusplus
-}
-#endif
+PL_EXTERN_C_END

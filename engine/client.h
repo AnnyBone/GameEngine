@@ -1,21 +1,22 @@
-/*	Copyright (C) 1996-2001 Id Software, Inc.
-	Copyright (C) 2002-2009 John Fitzgibbons and others
-	Copyright (C) 2011-2016 OldTimes Software
+/*
+Copyright (C) 1996-2001 Id Software, Inc.
+Copyright (C) 2002-2009 John Fitzgibbons and others
+Copyright (C) 2011-2016 OldTimes Software
 
-	This program is free software; you can redistribute it and/or
-	modify it under the terms of the GNU General Public License
-	as published by the Free Software Foundation; either version 2
-	of the License, or (at your option) any later version.
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-	See the GNU General Public License for more details.
+See the GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 typedef struct
@@ -103,7 +104,7 @@ typedef struct
 	FILE	*demofile;
 	int		td_lastframe;		// to meter out one message a frame
 	int		td_startframe;		// host_framecount at start
-	float	td_starttime;		// realtime at second frame of timedemo
+	double	td_starttime;		// realtime at second frame of timedemo
 
 // connection information
 	int			signon;			// 0 to SIGNONS
@@ -112,12 +113,20 @@ typedef struct
 
 } client_static_t;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+PL_EXTERN_C
 	extern client_static_t	cls;
-#ifdef __cplusplus
+PL_EXTERN_C_END
+
+// This is temporary, but we need it here so that we can
+// keep the camera within the client cl struct here...
+#ifndef __cplusplus
+typedef struct EngineCamera EngineCamera;
+#else
+namespace core
+{
+	class Camera;
 }
+typedef core::Camera EngineCamera;
 #endif
 
 /*	The client_state_t structure is wiped completely at every
@@ -143,13 +152,15 @@ typedef struct
 // sent to the server each frame.  The server sets punchangle when
 // the view is temporarliy offset, and an angle reset commands at the start
 // of each level and after teleporting.
-	plVector3f_t		mviewangles[2];	// during demo playback viewangles is lerped
+//	plVector3f_t		mviewangles[2];	// during demo playback viewangles is lerped
 								// between these
-	plVector3f_t		viewangles;
+//	plVector3f_t		viewangles;
 	plVector3f_t		mvelocity[2];	// update by server, used for lean+bob
 								// (0 is newest)
 	plVector3f_t		velocity;		// lerped between mvelocity[0] and [1]
 	plVector3f_t		punchangle;		// temporary offset
+
+	EngineCamera *current_camera;
 
 // pitch drifting vars
 	float		idealpitch;
@@ -160,7 +171,7 @@ typedef struct
 
 	float		viewheight;
 
-	bool		bIsPaused,			// send over by server
+	bool		paused,			// send over by server
 				bIsOnGround,
 				bIsInWater;
 
@@ -200,6 +211,7 @@ typedef struct
 	unsigned	protocol; //johnfitz
 } client_state_t;
 
+PL_EXTERN_C
 
 //
 // cvars
@@ -229,8 +241,6 @@ extern	cvar_t	m_side;
 #define	MAX_TEMP_ENTITIES	256		//johnfitz -- was 64
 #define	MAX_STATIC_ENTITIES	512		//johnfitz -- was 128
 #define	MAX_VISEDICTS		2048
-
-plEXTERN_C_START
 
 extern	client_state_t	cl;
 
@@ -305,9 +315,6 @@ void CL_ParseServerMessage (void);
 //
 // view
 //
-void V_StartPitchDrift (void);
-void V_StopPitchDrift (void);
-void V_RenderView (void);
 void V_ParseDamage (void);
 void V_SetContentsColor (int contents);
 
@@ -316,4 +323,4 @@ void V_SetContentsColor (int contents);
 //
 void CL_SignonReply (void);
 
-plEXTERN_C_END
+PL_EXTERN_C_END

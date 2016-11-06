@@ -1,38 +1,37 @@
-/*	Copyright (C) 2011-2016 OldTimes Software
+/*
+DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+Version 2, December 2004
 
-	This program is free software; you can redistribute it and/or
-	modify it under the terms of the GNU General Public License
-	as published by the Free Software Foundation; either version 2
-	of the License, or (at your option) any later version.
+Copyright (C) 2011-2016 Mark E Sowden <markelswo@gmail.com>
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+Everyone is permitted to copy and distribute verbatim or modified
+copies of this license document, and changing it is allowed as long
+as the name is changed.
 
-	See the GNU General Public License for more details.
+DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+0. You just DO WHAT THE FUCK YOU WANT TO.
 */
 
 #pragma once
 
 /*
-	Platform Library
-	
-	This library includes standard platform headers,
-	gives you some standard functions to interact with
-	the system and includes defines for basic data-types that
-	you can use in your applications for easier multi-platform
-	support.
+Platform Library
+
+This library includes standard platform headers,
+gives you some standard functions to interact with
+the system and includes defines for basic data-types that
+you can use in your applications for easier multi-platform
+support.
 */
 
 // PL_IGNORE_SHARED_HEADERS
 // PL_IGNORE_PLATFORM_HEADERS
 // PL_IGNORE_STD_HEADERS
+// PL_IGNORE_VIDEO_HEADERS
 
-// PL_INCLUDE_STD_BOOL
+#define PL_INCLUDE_STD_BOOL
 
 // Shared headers
 #ifndef PL_IGNORE_SHARED_HEADERS
@@ -71,6 +70,7 @@
 #			include <unordered_set>
 #			include <map>
 #			include <unordered_map>
+#			include <algorithm>
 
 			// istream
 #			include <fstream>
@@ -91,6 +91,9 @@
 
 #		ifdef PlaySound
 #			undef PlaySound
+#		endif
+#		ifdef LoadImage
+#			undef LoadImage
 #		endif
 
 #		undef min
@@ -123,6 +126,9 @@
 #		endif
 #		ifndef strcasecmp
 #			define	strcasecmp	_stricmp
+#		endif
+#		ifndef mkdir
+#			define	mkdir		_mkdir
 #		endif
 #		ifndef strncasecmp
 #			define	strncasecmp	_str
@@ -161,16 +167,6 @@
 #	define	PL_MAX_USERNAME		32
 #endif
 
-// Other
-#ifndef PL_INSTANCE
-#	define	PL_INSTANCE	void *	// Instance definition.
-#endif
-#ifndef PL_FARPROC
-#	define	PL_FARPROC	void *	// Function pointer.
-#endif
-
-// Set the defaults if nothing's been set for any of these...
-
 #ifndef PL_NAME
 #	define PL_NAME "Unknown"	// Platform name.
 #endif
@@ -178,10 +174,22 @@
 #	define PLATFORM_MAX_PATH 256	// Max path supported on platform.
 #endif
 #ifndef PL_MAX_PATH
-#	define PL_MAX_PATH 256	// Max path supported on platform.
+#	ifdef PLATFORM_MAX_PATH
+#		define PL_MAX_PATH PLATFORM_MAX_PATH
+#	else
+#		define PL_MAX_PATH 256	// Max path supported on platform.
+#	endif
 #endif
 #ifndef PL_MAX_USERNAME
 #	define PL_MAX_USERNAME 256	// Maximum length allowed for a username.
+#endif
+
+// Other
+#ifndef PL_INSTANCE
+#	define	PL_INSTANCE	void *	// Instance definition.
+#endif
+#ifndef PL_FARPROC
+#	define	PL_FARPROC	void *	// Function pointer.
 #endif
 
 #if defined(_MSC_VER)
@@ -196,7 +204,9 @@
 #	define PL_CALL		
 #	define PL_INLINE	inline
 
-#	define PL_FUNCTION	__func__	    // Returns the active function.
+#	define PL_FUNCTION	__FILE__	    // Returns the active function.
+// todo, we'll need to do some weird hacky shit on Linux for this, since __func__ isn't a string literal like it is
+// on MSVC
 #endif
 
 #ifdef __cplusplus
@@ -207,68 +217,78 @@
 #	define	plEXTERN_C_END
 #endif
 
+#define PL_EXTERN_C			plEXTERN_C_START
+#define PL_EXTERN_C_END		plEXTERN_C_END
+
+#include "platform_system.h"
+
 // Helper to allow us to determine the type of CPU; this is used for the module interfaces.
-#if defined(__amd64) || defined(__amd64__)
-#	define PL_CPU_ID   "x64"
-#else
-#	define PL_CPU_ID   "x86"
-#endif
+#define PL_CPU_ID   "x86"
 
 // These are usually expected to be defined already, but in-case they're not then we define them here.
-#ifndef __cplusplus
-#	ifndef BOOL
-#		define BOOL	_Bool
-#	endif
-#	ifndef TRUE
-#		define TRUE 1
-#	endif
-#	ifndef FALSE
-#		define FALSE 0
-#	endif
-
-#	ifndef PL_INCLUDE_STD_BOOL
-#		ifndef bool
-#			define bool BOOL
-#		endif
-#		ifndef true
-#			define true TRUE
-#		endif
-#		ifndef false
-#			define false FALSE
-#		endif
-#	endif
-#else
-#	ifndef BOOL
-#		define BOOL	bool
-#	endif
-#	ifndef TRUE
-#		define TRUE true
-#	endif
-#	ifndef FALSE
-#		define FALSE false
-#	endif
+#ifndef BOOL
+#	define BOOL	bool
+#endif
+#ifndef TRUE
+#	define TRUE true
+#endif
+#ifndef FALSE
+#	define FALSE false
 #endif
 
 #define PL_BOOL		BOOL
 #define PL_TRUE		TRUE
 #define PL_FALSE	FALSE
 
-/**/
-
 #define	plArrayElements(a)	(sizeof(a)/sizeof(*(a)))	// Returns the number of elements within an array.
 
-typedef unsigned int	pl_uint;
-typedef	unsigned char	pl_uchar;
-typedef unsigned char	pl_bool;
+typedef int						PLint;
+typedef char					PLint8;
+typedef short int				PLint16;
+typedef long int				PLint32;
+typedef long long int			PLint64;
+typedef unsigned int			PLuint;
+typedef unsigned char			PLuint8;
+typedef unsigned short int		PLuint16;
+typedef unsigned long int		PLuint32;
+typedef unsigned long long int	PLuint64;
+typedef char					PLchar;
+typedef	unsigned char			PLuchar, PLbyte;
+#ifdef __cplusplus
+typedef bool					PLbool;
+#else
+typedef unsigned char			PLbool;
+#endif
+typedef void					PLvoid;
+typedef float					PLfloat;
+typedef double					PLdouble;
+typedef short					PLshort;
+typedef unsigned short			PLushort;
 
-#include "platform_log.h"
-#include "platform_window.h"
-#include "platform_math.h"
-#include "platform_video_layer.h"
+//////////////////////////////////////////////////////////////////
 
-/*
-	Error Management Functionality
-*/
+/*	Error Management Functionality	*/
+
+typedef enum
+{
+	PL_RESULT_SUCCESS,
+
+	// FILE I/O
+	PL_RESULT_FILEREAD,		// Failed to read file!
+	PL_RESULT_FILETYPE,		// Unexpected file type!
+	PL_RESULT_FILEVERSION,	// Unsupported version!
+	PL_RESULT_FILESIZE,		// Invalid file size!
+	PL_RESULT_FILEPATH,		// Invalid path!
+
+	// GRAPHICS
+	PL_RESULT_GRAPHICSINIT,	// Graphics failed to initialise!
+
+	// IMAGE
+	PL_RESULT_IMAGERESOLUTION,	// Invalid image resolution!
+
+	// MEMORY
+	PL_RESULT_MEMORYALLOC,	// Ran out of memory!
+} PLresult;
 
 //static jmp_buf jbException;
 
@@ -284,16 +304,24 @@ plSetErrorFunction(PL_FUNCTION);
 #endif
 #define pFUNCTION_END 		}
 
+#define plFunctionStart()	\
+	plResetError(); plSetErrorFunction(PL_FUNCTION)
+#define plFunctionEnd()
+
 plEXTERN_C_START
 
-	extern void	plResetError(void);									// Resets the error message to "null", so you can ensure you have the correct message from the library.
-	extern void	plSetError(const char *msg, ...);					// Sets the error message, so we can grab it outside the library.
-	extern void	plSetErrorFunction(const char *function, ...);		// Sets the currently active function, for error reporting.
+extern void	plResetError(void);									// Resets the error message to "null", so you can ensure you have the correct message from the library.
+extern void	plSetError(const char *msg, ...);					// Sets the error message, so we can grab it outside the library.
+extern void	plSetErrorFunction(const char *function, ...);		// Sets the currently active function, for error reporting.
 
-	extern char *plGetSystemError(void);	// Returns the error message currently given by the operating system.
-	extern char	*plGetError(void);			// Returns the last recorded error.
+extern const PLchar *plGetResultString(PLresult result);
+
+extern char *plGetSystemError(void);	// Returns the error message currently given by the operating system.
+extern char	*plGetError(void);			// Returns the last recorded error.
 
 plEXTERN_C_END
+
+//////////////////////////////////////////////////////////////////
 
 /*	Converts string to time.
 	http://stackoverflow.com/questions/1765014/convert-string-from-date-into-a-time-t
@@ -315,4 +343,4 @@ static PL_INLINE time_t plStringToTime(const char *ts)
 	return mktime(&time);
 }
 
-/**/
+//////////////////////////////////////////////////////////////////

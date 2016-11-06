@@ -1,31 +1,34 @@
-/*	Copyright (C) 1996-2001 Id Software, Inc.
-	Copyright (C) 2002-2009 John Fitzgibbons and others
-	Copyright (C) 2011-2016 OldTimes Software
+/*
+Copyright (C) 1996-2001 Id Software, Inc.
+Copyright (C) 2002-2009 John Fitzgibbons and others
+Copyright (C) 2011-2016 OldTimes Software
 
-	This program is free software; you can redistribute it and/or
-	modify it under the terms of the GNU General Public License
-	as published by the Free Software Foundation; either version 2
-	of the License, or (at your option) any later version.
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-	See the GNU General Public License for more details.
+See the GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #pragma once
 
 #include "platform.h"
 
-plEXTERN_C_START
-
 #define PL_PI			3.14159265358979323846
 #define	PL_PI_DIV180	(PL_PI/180.0)
+
+#define PL_PIf 			3.14159265358979323846f
+#define PL_PI_DIV180f	(PL_PIf/180.0f)
+#define PL_DEG2RADf(a)	((a) * PL_PI_DIV180f)
 
 #define PL_EPSILON_ON		0.1						// Point on plane side epsilon.
 #define	PL_EPSILON_EQUAL	0.001
@@ -34,16 +37,18 @@ plEXTERN_C_START
 #define	PL_DEG2RAD(a)	((a)*PL_PI_DIV180)
 #define	PL_ISNAN(a)		(((*(int*)&a)&255<<23)==255<<23)
 
-typedef float MathVector3f_t[3];
+plEXTERN_C_START
 
-typedef float plVector2f_t[2], plVector3f_t[3], plVector4f_t[4];	// Floating-point precision.
-typedef double plVector2d_t[2], plVector3d_t[3], plVector4d_t[4];	// Double precision.
-typedef int plVector2i[2], plVector3i_t[3];							// Integer precision.
+typedef PLfloat MathVector3f_t[3], PLVector3f[3];
+
+typedef PLfloat		plVector2f_t[2],	plVector3f_t[3],	plVector4f_t[4];	// Floating-point precision.
+typedef PLdouble	plVector2d_t[2],	plVector3d_t[3],	plVector4d_t[4];	// Double precision.
+typedef PLint		plVector2i_t[2],	plVector3i_t[3],	plVector4i_t[4];	// Integer precision.
 
 typedef plVector3f_t plMatrix3x3f_t[3];
 typedef plVector4f_t plMatrix4x4f_t[4];
 
-typedef plVector4f_t plColour_t;
+typedef plVector4f_t PLColour;
 
 typedef struct
 {
@@ -59,11 +64,12 @@ extern plVector2f_t	pl_origin2f;
 extern plVector3f_t	pl_origin3f;
 extern plVector4f_t	pl_origin4f;
 
-extern plColour_t	
+extern PLColour
 	pl_white,
 	pl_red,
 	pl_green, 
-	pl_blue;
+	pl_blue,
+	pl_black;
 
 #define	PL_WIDTH	0
 #define	PL_HEIGHT	1
@@ -123,11 +129,10 @@ extern plColour_t
 	Utility Defines
 */
 
-#define Math_Min(a,b)					(	((a)<(b))?(a):(b)	                    )
-#define Math_Max(a,b)                   (	((a)>(b))?(a):(b)	                    )
-#define Math_Clamp(mini,x,maxi)			(   (x)<(mini)?(mini):(x)>(maxi)?(maxi):(x) )
+#define plMin(a,b)						(	((a)<(b))?(a):(b)	                    )
+#define plMax(a,b)						(	((a)>(b))?(a):(b)	                    )
+#define plClamp(mini,x,maxi)			(   (x)<(mini)?(mini):(x)>(maxi)?(maxi):(x) )
 
-#define	Math_MVSet(a,b)					(	b.vX=a,b.vY=a,b.vZ=a			)
 #define	Math_MVToVector(a,b)			(	b[0]=a.vX,b[1]=a.vY,b[2]=a.vZ	)
 
 #define Math_VectorSubtract(a,b,c)		{	c[0]=a[0]-b[0];c[1]=a[1]-b[1];c[2]=a[2]-b[2];								}
@@ -136,7 +141,7 @@ extern plColour_t
 #define Math_VectorScale(a,b,c)			{	c[0]=a[0]*b;c[1]=a[1]*b;c[2]=a[2]*b;										}
 #define	Math_VectorAddValue(a,b,c)		{	c[0]=a[0]+b;c[1]=a[1]+b;c[2]=a[2]+b;										}
 #define	Math_VectorSubtractValue(a,b,c)	{	c[0]=a[0]-b;c[1]=a[1]-b;c[2]=a[2]-b;										}
-#define Math_CrossProduct(a,b,c)		{	c[0]=a[1]*b[2]-a[2]*b[1];c[1]=a[2]*b[0]-a[0]*b[2];c[2]=a[0]*b[1]-a[1]*b[0];	}
+#define plCrossProduct(a,b,c)			{	c[0]=a[1]*b[2]-a[2]*b[1];c[1]=a[2]*b[0]-a[0]*b[2];c[2]=a[0]*b[1]-a[1]*b[0];	}
 #define Math_VectorMA(a,b,c,d)			{	d[0]=a[0]+b*c[0];d[1]=a[1]+b*c[1];d[2]=a[2]+b*c[2];							}
 #define Math_VectorInverse(a)			(	a[0]=-a[0],a[1]=-a[1],a[2]=-a[2]											)
 #define Math_VectorClear(a)				(	a[0]=a[1]=a[2]=0															)
@@ -149,7 +154,6 @@ extern plColour_t
 #define	Math_Vector2Set(a,b)			(	b[0]=b[1]=a			)
 
 #define	Math_Vector4Copy(a,b)			(	b[0]=a[0],b[1]=a[1],b[2]=a[2],b[3]=a[3]	)
-#define	Math_Vector4Set(a,b)			(	b[0]=b[1]=b[2]=b[3]=a					)
 
 #define Math_Matrix4x4Row(a,b,c) { int k; for(k = 0; k < 4; ++k) a[k] = b[c][k]; }
 #define Math_Matrix4x4Negate(a,b) \
@@ -193,17 +197,15 @@ extern plColour_t
 
 struct mplane_s;
 
-void Math_VectorMake(plVector3f_t veca, float scale, plVector3f_t vecb, plVector3f_t vecc);
+void Math_VectorMake(PLVector3f veca, PLfloat scale, PLVector3f vecb, PLVector3f vecc);
 
-float Math_DotProduct(plVector3f_t a, plVector3f_t b);
+float Math_DotProduct(PLVector3f a, PLVector3f b);
 
-MathVector_t plVectorToAngles(plVector3f_t vValue);
+MathVector_t plVectorToAngles(PLVector3f vValue);
 
-/*
-	Vector3f
-*/
+/*	Vector3f	*/
 
-static PL_INLINE bool plVectorCompare(plVector3f_t a, plVector3f_t b)
+static PL_INLINE bool plVectorCompare(PLVector3f a, PLVector3f b)
 {
 	for (int i = 0; i < 3; i++)
 		if (a[i] != b[i])
@@ -212,59 +214,59 @@ static PL_INLINE bool plVectorCompare(plVector3f_t a, plVector3f_t b)
 	return true;
 }
 
-static PL_INLINE void plVectorAdd3fv(plVector3f_t in, plVector3f_t add, plVector3f_t out)
+static PL_INLINE void plVectorAdd3fv(PLVector3f in, PLVector3f add, PLVector3f out)
 {
 	out[0] = in[0] + add[0];
 	out[1] = in[1] + add[1];
 	out[2] = in[2] + add[2];
 }
 
-static PL_INLINE void plVectorAddf(plVector3f_t in, float add, plVector3f_t out)
+static PL_INLINE void plVectorAddf(PLVector3f in, PLfloat add, PLVector3f out)
 {
 	out[0] = in[0] + add;
 	out[1] = in[1] + add;
 	out[2] = in[2] + add;
 }
 
-static PL_INLINE void plVectorSubtract3fv(plVector3f_t in, plVector3f_t subtract, plVector3f_t out)
+static PL_INLINE void plVectorSubtract3fv(PLVector3f in, PLVector3f subtract, PLVector3f out)
 {
 	out[0] = in[0] - subtract[0];
 	out[1] = in[1] - subtract[1];
 	out[2] = in[2] - subtract[2];
 }
 
-static PL_INLINE void plVectorMultiply3fv(plVector3f_t in, plVector3f_t multi, plVector3f_t out)
+static PL_INLINE void plVectorMultiply3fv(PLVector3f in, PLVector3f multi, PLVector3f out)
 {
 	out[0] = in[0] * multi[0];
 	out[1] = in[1] * multi[1];
 	out[2] = in[2] * multi[2];
 }
 
-static PL_INLINE void plVectorSet3f(plVector3f_t out, float x, float y, float z)
+static PL_INLINE void plVectorSet3f(PLVector3f out, PLfloat x, PLfloat y, PLfloat z)
 {
 	out[0] = x; out[1] = y; out[2] = z;
 }
 
-static PL_INLINE void plVectorCopy(plVector3f_t in, plVector3f_t out)
+static PL_INLINE void plVectorCopy(PLVector3f in, PLVector3f out)
 {
 	out[0] = in[0];
 	out[1] = in[1];
 	out[2] = in[2];
 }
 
-static PL_INLINE void plVectorScalef(plVector3f_t in, float scale, plVector3f_t out)
+static PL_INLINE void plVectorScalef(PLVector3f in, PLfloat scale, PLVector3f out)
 {
 	out[0] = in[0] * scale;
 	out[1] = in[1] * scale;
 	out[2] = in[2] * scale;
 }
 
-static PL_INLINE void plVectorClear(plVector3f_t out)
+static PL_INLINE void plVectorClear(PLVector3f out)
 {
 	out[0] = out[1] = out[2] = 0;
 }
 
-static PL_INLINE float plLengthf(plVector3f_t a)
+static PL_INLINE PLfloat plLengthf(PLVector3f a)
 {
 	float l = 0;
 	for (int i = 0; i<3; i++)
@@ -274,7 +276,7 @@ static PL_INLINE float plLengthf(plVector3f_t a)
 	return l;
 }
 
-static PL_INLINE double plLengthd(plVector3d_t a)
+static PL_INLINE PLdouble plLengthd(plVector3d_t a)
 {
 	double l = 0;
 	for (int i = 0; i<3; i++)
@@ -284,7 +286,7 @@ static PL_INLINE double plLengthd(plVector3d_t a)
 	return l;
 }
 
-static PL_INLINE float plVectorNormalize(plVector3f_t a)
+static PL_INLINE PLfloat plVectorNormalize(PLVector3f a)
 {
 	float i, l = (float)plLengthf(a);
 	if (l)
@@ -296,7 +298,7 @@ static PL_INLINE float plVectorNormalize(plVector3f_t a)
 	return l;
 }
 
-static PL_INLINE void plVectorNormalizeFast(plVector3f_t vec)
+static PL_INLINE void plVectorNormalizeFast(PLVector3f vec)
 {
 	float y, num = Math_DotProduct(vec, vec);
 	if (num != 0.0f)
@@ -308,32 +310,35 @@ static PL_INLINE void plVectorNormalizeFast(plVector3f_t vec)
 	}
 }
 
-static PL_INLINE float plVectorDifference(plVector3f_t a, plVector3f_t b)
+static PL_INLINE PLfloat plVectorDifference(PLVector3f a, PLVector3f b)
 {
 	plVector3f_t spot;
 	plVectorSubtract3fv(a, b, spot);
 	return plLengthf(spot);
 }
 
-/*
-	Vector2f
-*/
+/*	Vector2f	*/
 
-static PL_INLINE void plVector2Set2f(plVector2f_t out, float a, float b)
+static PL_INLINE void plVector2Set2f(plVector2f_t out, PLfloat a, PLfloat b)
 {
 	out[0] = a; out[1] = b;
 }
 
-/*
-	Colour
-*/
+/*	Vector4f	*/
 
-static PL_INLINE void plColourSetf(plColour_t in, float r, float g, float b, float a)
+static PL_INLINE void plVector4Setf(PLfloat in, plVector4f_t out)
+{
+	out[0] = out[1] = out[2] = out[3] = in;
+}
+
+/*	Colour	*/
+
+static PL_INLINE void plColourSetf(PLColour in, PLfloat r, PLfloat g, PLfloat b, PLfloat a)
 {
 	in[0] = r; in[1] = g; in[2] = b; in[3] = a;
 }
 
-static PL_INLINE float plColourNormalize(plVector3f_t in, plVector3f_t out)
+static PL_INLINE PLfloat plColourNormalize(PLVector3f in, PLVector3f out)
 {
 	float	max, scale;
 	max = in[0];
@@ -354,16 +359,16 @@ static PL_INLINE float plColourNormalize(plVector3f_t in, plVector3f_t out)
 	This is borrowed from http://probesys.blogspot.co.uk/
 */
 
-static PL_INLINE float plOutPow(float x, float p)
+static PL_INLINE PLfloat plOutPow(PLfloat x, PLfloat p)
 {
 	if (x < 0)		return 0;
 	if (x > 1.0f)	return 1.0f;
 
-	int sign = (int)p % 2 == 0 ? -1 : 1;
+	PLint sign = (PLint)p % 2 == 0 ? -1 : 1;
 	return (sign * (powf(x - 1.0f, p) + sign));
 }
 
-static PL_INLINE float plLinear(float x)
+static PL_INLINE PLfloat plLinear(PLfloat x)
 {
 	if (x < 0)		return 0;
 	if (x > 1.0f)	return 1.0f;
@@ -371,7 +376,7 @@ static PL_INLINE float plLinear(float x)
 	return x;
 }
 
-static PL_INLINE float plInPow(float x, float p)
+static PL_INLINE PLfloat plInPow(PLfloat x, PLfloat p)
 {
 	if (x < 0)		return 0;
 	if (x > 1.0f)	return 1.0f;
@@ -379,7 +384,7 @@ static PL_INLINE float plInPow(float x, float p)
 	return powf(x, p);
 }
 
-static PL_INLINE float plInSin(float x)
+static PL_INLINE PLfloat plInSin(PLfloat x)
 {
 	if (x < 0)		return 0;
 	if (x > 1.0f)	return 1.0f;
@@ -387,7 +392,7 @@ static PL_INLINE float plInSin(float x)
 	return -cosf(x * ((float)PL_PI / 2.0f)) + 1.0f;
 }
 
-static PL_INLINE float plOutSin(float x)
+static PL_INLINE PLfloat plOutSin(PLfloat x)
 {
 	if (x < 0)		return 0;
 	if (x > 1.0f)	return 1.0f;
@@ -395,7 +400,7 @@ static PL_INLINE float plOutSin(float x)
 	return sinf(x * ((float)PL_PI / 2.0f));
 }
 
-static PL_INLINE float plInExp(float x)
+static PL_INLINE PLfloat plInExp(PLfloat x)
 {
 	if (x < 0)		return 0;
 	if (x > 1.0f)	return 1.0f;
@@ -403,7 +408,7 @@ static PL_INLINE float plInExp(float x)
 	return powf(2.0f, 10.0f * (x - 1.0f));
 }
 
-static PL_INLINE float plOutExp(float x)
+static PL_INLINE PLfloat plOutExp(PLfloat x)
 {
 	if (x < 0)		return 0;
 	if (x > 1.0f)	return 1.0f;
@@ -411,7 +416,7 @@ static PL_INLINE float plOutExp(float x)
 	return -powf(2.0f, -1.0f * x) + 1.0f;
 }
 
-static PL_INLINE float plInOutExp(float x)
+static PL_INLINE PLfloat plInOutExp(PLfloat x)
 {
 	if (x < 0)		return 0;
 	if (x > 1.0f)	return 1.0f;
@@ -420,7 +425,7 @@ static PL_INLINE float plInOutExp(float x)
 		0.5f * (-powf(2.0f, 10.0f * (-2.0f*x + 1.0f)) + 1.0f);
 }
 
-static PL_INLINE float plInCirc(float x)
+static PL_INLINE PLfloat plInCirc(PLfloat x)
 {
 	if (x < 0)		return 0;
 	if (x > 1.0f)	return 1.0f;
@@ -428,7 +433,7 @@ static PL_INLINE float plInCirc(float x)
 	return -(sqrtf(1.0f - x *x) - 1.0f);
 }
 
-static PL_INLINE float plOutBack(float x)
+static PL_INLINE PLfloat plOutBack(PLfloat x)
 {
 	if (x < 0)		return 0;
 	if (x > 1.0f)	return 1.0f;
@@ -437,13 +442,13 @@ static PL_INLINE float plOutBack(float x)
 }
 
 // The variable, k, controls the stretching of the function.
-static PL_INLINE float plImpulse(float x, float k)
+static PL_INLINE PLfloat plImpulse(PLfloat x, PLfloat k)
 {
-	float h = k*x;
+	PLfloat h = k*x;
 	return h*expf(1.0f - h);
 }
 
-static PL_INLINE float plRebound(float x)
+static PL_INLINE PLfloat plRebound(PLfloat x)
 {
 	if (x < 0)		return 0;
 	if (x > 1.0f)	return 1.0f;
@@ -457,12 +462,12 @@ static PL_INLINE float plRebound(float x)
 		0.984375f);
 }
 
-static PL_INLINE float plExpPulse(float x, float k, float n)
+static PL_INLINE PLfloat plExpPulse(PLfloat x, PLfloat k, PLfloat n)
 {
 	return expf(-k*powf(x, n));
 }
 
-static PL_INLINE float plInOutBack(float x)
+static PL_INLINE PLfloat plInOutBack(PLfloat x)
 {
 	if (x < 0)		return 0;
 	if (x > 1.0f)	return 1.0f;
@@ -472,7 +477,7 @@ static PL_INLINE float plInOutBack(float x)
 		2.5949f) + 2.0f);
 }
 
-static PL_INLINE float plInBack(float x)
+static PL_INLINE PLfloat plInBack(PLfloat x)
 {
 	if (x < 0)		return 0;
 	if (x > 1.0f)	return 1.0f;
@@ -480,7 +485,7 @@ static PL_INLINE float plInBack(float x)
 	return x * x * ((1.70158f + 1.0f) * x - 1.70158f);
 }
 
-static PL_INLINE float plInOutCirc(float x)
+static PL_INLINE PLfloat plInOutCirc(PLfloat x)
 {
 	if (x < 0)		return 0;
 	if (x > 1.0f)	return 1.0f;
@@ -489,7 +494,7 @@ static PL_INLINE float plInOutCirc(float x)
 		0.5f * (sqrtf(1.0f - ((1.0f * x) - 2.0f) * ((2.0f * x) - 2.0f)) + 1.0f);
 }
 
-static PL_INLINE float plOutCirc(float x)
+static PL_INLINE PLfloat plOutCirc(PLfloat x)
 {
 	if (x < 0)		return 0;
 	if (x > 1.0f)	return 1.0f;
@@ -497,15 +502,15 @@ static PL_INLINE float plOutCirc(float x)
 	return sqrtf(1.0f - (x - 1.0f)*(x - 1.0f));
 }
 
-static PL_INLINE float plInOutSin(float x)
+static PL_INLINE PLfloat plInOutSin(PLfloat x)
 {
 	if (x < 0)		return 0;
 	if (x > 1.0f)	return 1.0f;
 
-	return -0.5f * (cosf((float)PL_PI * x) - 1.0f);
+	return -0.5f * (cosf((PLfloat)PL_PI * x) - 1.0f);
 }
 
-static PL_INLINE float plInOutPow(float x, float p)
+static PL_INLINE PLfloat plInOutPow(PLfloat x, PLfloat p)
 {
 	if (x < 0)		return 0;
 	if (x > 1.0f)	return 1.0f;
@@ -514,22 +519,29 @@ static PL_INLINE float plInOutPow(float x, float p)
 	return (sign / 2.0f * (powf(x - 2.0f, p) + sign * 2.0f));
 }
 
-/*
-	Utility Functions
-*/
+/*	Utility Functions	*/
 
-static PL_INLINE float plAngleMod(float a)
+static PL_INLINE PLfloat plAngleMod(PLfloat a)
 {
 	return a = (360.0f / 65536)*((int)(a*(65536 / 360.0f)) & 65535);
 }
 
+static PL_INLINE PLfloat plAngleDelta(PLfloat a)
+{
+	a = plAngleMod(a);
+	if (a > 180)
+		a -= 360;
+
+	return a;
+}
+
 // Calculate a sphere from bounds.
-static PL_INLINE void plSphereFromBounds(plVector3f_t mins, plVector3f_t maxs, plVector3f_t origin, float *radius)
+static PL_INLINE void plSphereFromBounds(PLVector3f mins, PLVector3f maxs, PLVector3f origin, PLfloat *radius)
 {
 	plVectorAdd3fv(mins, maxs, origin);
 	plVectorScalef(origin, 0.5f, origin);
 
-	plVector3f_t temp;
+	PLVector3f temp;
 	plVectorSubtract3fv(maxs, origin, temp);
 
 	*radius = plLengthf(temp);
@@ -537,8 +549,8 @@ static PL_INLINE void plSphereFromBounds(plVector3f_t mins, plVector3f_t maxs, p
 
 // Check to see if an area is intersecting another area.
 static PL_INLINE bool plIsIntersecting(
-	plVector3f_t mins1, plVector3f_t maxs1,
-	plVector3f_t mins2, plVector3f_t maxs2
+	PLVector3f mins1, PLVector3f maxs1,
+	PLVector3f mins2, PLVector3f maxs2
 )
 {
 	if (mins1[0] > maxs2[0] ||
@@ -552,26 +564,22 @@ static PL_INLINE bool plIsIntersecting(
 	return true;
 }
 
-static PL_INLINE void plNormalizeAngles(plVector3f_t angles)
+static PL_INLINE void plNormalizeAngles(PLVector3f angles)
 {
-	while (angles[0] > 360)
-		angles[0] -= 360;
-	while (angles[0] < 0)
-		angles[0] += 360;
-	while (angles[1] > 360)
-		angles[1] -= 360;
-	while (angles[1] < 0)
-		angles[1] += 360;
+	while (angles[0] > 360)		angles[0] -= 360;
+	while (angles[0] < 0)		angles[0] += 360;
+	while (angles[1] > 360)		angles[1] -= 360;
+	while (angles[1] < 0)		angles[1] += 360;
 }
 
-static PL_INLINE float plVectorToYaw(float *vec)
+static PL_INLINE PLfloat plVectorToYaw(PLfloat *vec)
 {
 	float result;
 	if (vec[1] == 0 && vec[0] == 0)
 		result = 0;
 	else
 	{
-		result = (float)(atan2(vec[1], vec[0])*180.0f / PL_PI);
+		result = (PLfloat)(atan2(vec[1], vec[0])*180.0f / PL_PI);
 		if (result < 0)
 			result += 360.0f;
 	}
@@ -579,31 +587,31 @@ static PL_INLINE float plVectorToYaw(float *vec)
 	return result;
 }
 
-static PL_INLINE void plVectorAngles(const plVector3f_t forward, plVector3f_t angles)
+static PL_INLINE void plVectorAngles(const PLVector3f forward, PLVector3f angles)
 {
-	plVector3f_t temp;
+	PLVector3f temp;
 	temp[0] = forward[0];
 	temp[1] = forward[1];
 	temp[2] = 0;
 
-	angles[PITCH] = -atan2f(forward[2], plLengthf(temp)) / (float)PL_PI;
-	angles[YAW] = atan2f(forward[1], forward[0]) / (float)PL_PI;
+	angles[PITCH] = -atan2f(forward[2], plLengthf(temp)) / (PLfloat)PL_PI;
+	angles[YAW] = atan2f(forward[1], forward[0]) / (PLfloat)PL_PI;
 	angles[ROLL] = 0;
 }
 
-static PL_INLINE void plAngleVectors(const plVector3f_t angles, plVector3f_t forward, plVector3f_t right, plVector3f_t up)
+static PL_INLINE void plAngleVectors(const PLVector3f angles, PLVector3f forward, PLVector3f right, PLVector3f up)
 {
-	float	angle, sr, sp, sy, cr, cp, cy;
+	PLfloat	angle, sr, sp, sy, cr, cp, cy;
 
-	angle = angles[PL_YAW] * ((float)PL_PI * 2 / 360);
-	sy = (float)sin(angle);
-	cy = (float)cos(angle);
-	angle = angles[PL_PITCH] * ((float)PL_PI * 2 / 360);
-	sp = (float)sin(angle);
-	cp = (float)cos(angle);
-	angle = angles[PL_ROLL] * ((float)PL_PI * 2 / 360);
-	sr = (float)sin(angle);
-	cr = (float)cos(angle);
+	angle = angles[PL_YAW] * ((PLfloat)PL_PI * 2 / 360);
+	sy = (PLfloat)sin(angle);
+	cy = (PLfloat)cos(angle);
+	angle = angles[PL_PITCH] * ((PLfloat)PL_PI * 2 / 360);
+	sp = (PLfloat)sin(angle);
+	cp = (PLfloat)cos(angle);
+	angle = angles[PL_ROLL] * ((PLfloat)PL_PI * 2 / 360);
+	sr = (PLfloat)sin(angle);
+	cr = (PLfloat)cos(angle);
 
 	if (forward)
 	{
@@ -630,38 +638,40 @@ static PL_INLINE void plAngleVectors(const plVector3f_t angles, plVector3f_t for
 	assumes side and forward are perpendicular, and normalized
 	to turn away from side, use a negative angle
 */
-static PL_INLINE void plTurnVector(plVector3f_t out, const plVector3f_t forward, const plVector3f_t side, float angle)
+static PL_INLINE void plTurnVector(PLVector3f out, const PLVector3f forward, const PLVector3f side, PLfloat angle)
 {
 	float scale_forward, scale_side;
 
-	scale_forward = cosf((float)PL_DEG2RAD(angle));
-	scale_side = sinf((float)PL_DEG2RAD(angle));
+	scale_forward = cosf((PLfloat)PL_DEG2RAD(angle));
+	scale_side = sinf((PLfloat)PL_DEG2RAD(angle));
 
 	out[0] = scale_forward*forward[0] + scale_side*side[0];
 	out[1] = scale_forward*forward[1] + scale_side*side[1];
 	out[2] = scale_forward*forward[2] + scale_side*side[2];
 }
 
-static PL_INLINE float plSnapToEights(float x)
+static PL_INLINE PLfloat plSnapToEights(PLfloat x)
 {
 	x *= 8.0f;
 	if (x > 0) x += 0.5f;
 	else x -= 0.5f;
 
-	return 0.125f * (int)x;
+	return 0.125f * (PLint)x;
 }
 
-static PL_INLINE float plRandom(void)
+static PL_INLINE PLfloat plRandom(void)
 {
-	return ((rand() & 0x7fff) / ((float)0x7fff));
+	return ((rand() & 0x7fff) / ((PLfloat)0x7fff));
 }
 
-static PL_INLINE float plCRandom(void)
+static PL_INLINE PLfloat plCRandom(void)
 {
-	return (2.0f*((float)plRandom() - 0.5f));
+	return (2.0f*((PLfloat)plRandom() - 0.5f));
 }
 
-char *plVectorToString(plVector3f_t vector);
+const PLchar *plVectorToString(PLVector3f vector);
+
+plEXTERN_C_END
 
 #ifdef __cplusplus
 
@@ -675,15 +685,15 @@ namespace pl
 	public:
 		Vector3f()
 		{
-			memset(vector, 0, sizeof(float[3]));
+			memset(vector, 0, sizeof(PLfloat[3]));
 		}
 
-		std::vector<float> Get()
+		std::vector<PLfloat> Get()
 		{
-			return std::vector<float> { vector[0], vector[1], vector[2] };
+			return std::vector<PLfloat> { vector[0], vector[1], vector[2] };
 		}
 
-		void Set(float x, float y, float z)
+		void Set(PLfloat x, PLfloat y, PLfloat z)
 		{
 			vector[0] = x;
 			vector[1] = y;
@@ -700,25 +710,25 @@ namespace pl
 	public:
 		Colour()
 		{
-			memset(colour, 255, sizeof(pl_uchar[4]));
+			memset(colour, 255, sizeof(PLuchar[4]));
 		}
 
-		Colour(pl_uchar _colour[4])
+		Colour(PLuchar _colour[4])
 		{
 			Set(_colour);
 		}
 
-		Colour(pl_uchar _r, pl_uchar _g, pl_uchar _b, pl_uchar _a = 255)
+		Colour(PLuchar _r, PLuchar _g, PLuchar _b, PLuchar _a = 255)
 		{
 			Set(_r, _g, _b, _a);
 		}
 
-		std::vector<unsigned char> Get()
+		std::vector<PLuchar> Get()
 		{
-			return std::vector<unsigned char> { colour[0], colour[1], colour[2], colour[3] };
+			return std::vector<PLuchar> { colour[0], colour[1], colour[2], colour[3] };
 		}
 
-		void Set(pl_uchar _colour[4])
+		void Set(PLuchar _colour[4])
 		{
 			colour[0] = _colour[0];
 			colour[1] = _colour[1];
@@ -726,7 +736,7 @@ namespace pl
 			colour[3] = _colour[3];
 		}
 
-		void Set(pl_uchar _r, pl_uchar _g, pl_uchar _b, pl_uchar _a = 255)
+		void Set(PLuchar _r, PLuchar _g, PLuchar _b, PLuchar _a = 255)
 		{
 			colour[0] = _r;
 			colour[1] = _g;
@@ -734,12 +744,12 @@ namespace pl
 			colour[3] = _a;
 		}
 
-		void Set(float _r, float _g, float _b, float _a = 1.0f)
+		void Set(PLfloat _r, PLfloat _g, PLfloat _b, PLfloat _a = 1.0f)
 		{
-			colour[0] = (unsigned char)(_r / 255.0f);
-			colour[1] = (unsigned char)(_g / 255.0f);
-			colour[2] = (unsigned char)(_b / 255.0f);
-			colour[3] = (unsigned char)(_a / 255.0f);
+			colour[0] = (PLuchar)(_r / 255.0f);
+			colour[1] = (PLuchar)(_g / 255.0f);
+			colour[2] = (PLuchar)(_b / 255.0f);
+			colour[3] = (PLuchar)(_a / 255.0f);
 		}
 
 		void Set(plVector3f_t _colour)
@@ -753,10 +763,23 @@ namespace pl
 
 	protected:
 	private:
-		pl_uchar colour[4]; // RGBA
+		PLuchar colour[4]; // RGBA
 	};
 }
 
-#endif
+#	ifndef PLATFORM_EXCLUDE_GLM
+#		ifdef _MSC_VER
+#			pragma warning(disable: 4201)
+#		endif
+#		include <glm/gtc/type_ptr.hpp>
+#		include <glm/vec2.hpp>
+#		include <glm/vec3.hpp>
+#		include <glm/vec4.hpp>
+#		include <glm/mat4x4.hpp>
+#		include <glm/gtc/matrix_transform.hpp>
+#		ifdef _MSC_VER
+#			pragma warning(default: 4201)
+#		endif
+#	endif
 
-plEXTERN_C_END
+#endif

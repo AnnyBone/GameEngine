@@ -1,29 +1,30 @@
-/*	Copyright (C) 1996-2001 Id Software, Inc.
-	Copyright (C) 2002-2009 John Fitzgibbons and others
-	Copyright (C) 2011-2016 OldTimes Software
+/*
+Copyright (C) 1996-2001 Id Software, Inc.
+Copyright (C) 2002-2009 John Fitzgibbons and others
+Copyright (C) 2011-2016 OldTimes Software
 
-	This program is free software; you can redistribute it and/or
-	modify it under the terms of the GNU General Public License
-	as published by the Free Software Foundation; either version 2
-	of the License, or (at your option) any later version.
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-	See the GNU General Public License for more details.
+See the GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #pragma once
 
 // Platform Library
-#include "platform.h"
+#include "platform_math.h"
 #include "platform_filesystem.h"
-#include "platform_module.h"
+#include "platform_library.h"
 
 #ifdef _DEBUG
 #	include <assert.h>
@@ -36,11 +37,9 @@
 #	pragma warning(disable:4305)
 #endif
 
-#include "engine_build.h"
+#include "shared_base.h"
 
-#define	ENGINE_LOG	"engine"
-
-#include "shared_flags.h"
+#include "XenonBuild.h"
 
 #define MINIMUM_MEMORY	0x2000000	// 32MB
 
@@ -68,18 +67,7 @@
 #include "sys.h"
 #include "zone.h"
 
-#include "shared_game.h"
-#include "shared_server.h"
-#include "shared_client.h"
-#include "shared_engine.h"
-#include "shared_formats.h"
-
-#ifdef __cplusplus
-#	include "engine_class.h"
-#	include "engine_exception.h"
-#endif
-
-#include "EngineMain.h"
+#include "Xenon.h"
 #include "EngineConsoleVariable.h"
 #include "video_window.h"
 #include "EngineVideoDraw.h"
@@ -97,6 +85,7 @@
 #include "EngineModel.h"
 #include "EngineImage.h" //johnfitz
 #include "EngineVideoTextureManager.h"
+
 #include "world.h"
 #include "keys.h"
 #include "EngineConsole.h"
@@ -104,6 +93,13 @@
 #include "menu.h"
 #include "crc.h"
 #include "glquake.h"
+
+PL_EXTERN_C
+
+// System
+double System_DoubleTime(void);
+
+PL_EXTERN_C_END
 
 #include "material.h"
 
@@ -123,7 +119,7 @@ typedef struct
 	int		memsize;
 
 	char	basepath[MAX_QPATH];	// Base directory for game assets.
-} EngineParameters_t;
+} XParameters;
 
 
 //=============================================================================
@@ -133,7 +129,7 @@ plEXTERN_C_START
 extern bool noclip_anglehack;
 
 // host
-extern EngineParameters_t host_parms;
+extern XParameters host_parms;
 
 extern ConsoleVariable_t sys_ticrate;
 extern ConsoleVariable_t sys_nostdout;
@@ -150,11 +146,11 @@ extern	double		realtime;			// not bounded in any way, changed at
 void Host_ClearMemory(void);
 void Host_ServerFrame(void);
 void Host_InitCommands(void);
-void Host_Initialize(EngineParameters_t *parms);
+void Host_Initialize(XParameters *parms);
 void Host_Shutdown(void);
 void Host_Error(char *error, ...);
 void Host_EndGame(char *message, ...);
-void Host_Frame(float time);
+void Host_Frame(double time);
 void Host_Quit_f(void);
 void Host_ClientCommands(char *fmt, ...);
 void Host_ShutdownServer(bool crash);
@@ -170,9 +166,6 @@ extern bool	bIsDedicated;
 // chase
 extern ConsoleVariable_t chase_active;
 
-void TraceLine(MathVector3f_t start, MathVector3f_t end, MathVector3f_t impact);
-
-void Chase_Init(void);
-void Chase_UpdateForDrawing(void); //johnfitz
+void TraceLine(plVector3f_t start, plVector3f_t end, plVector3f_t impact);
 
 plEXTERN_C_END

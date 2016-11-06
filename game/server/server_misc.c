@@ -110,9 +110,9 @@ void ThrowGib(plVector3f_t origin, plVector3f_t velocity, char *model, float dam
 	gib->v.velocity[2]	= velocity[2]*((damage+rand()%20)/2.0f);
 	gib->v.movetype		= MOVETYPE_BOUNCE;
 
-	gib->Physics.iSolid		= SOLID_NOT;
-	gib->Physics.fGravity	= SERVER_GRAVITY;
-	gib->Physics.fMass		= 1.0f;
+	gib->Physics.solid		= SOLID_NOT;
+	gib->Physics.gravity	= SERVER_GRAVITY;
+	gib->Physics.mass		= 1.0f;
 
 	Math_VectorSet((float)(rand()%10*damage),gib->v.avelocity);
 

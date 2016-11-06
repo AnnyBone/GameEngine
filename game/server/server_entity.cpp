@@ -1,99 +1,101 @@
-/*	Copyright (C) 2011-2016 OldTimes Software
+/*
+Copyright (C) 2011-2016 OldTimes Software
 
-	This program is free software; you can redistribute it and/or
-	modify it under the terms of the GNU General Public License
-	as published by the Free Software Foundation; either version 2
-	of the License, or (at your option) any later version.
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-	See the GNU General Public License for more details.
+See the GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "server_main.h"
 
-/*	Create a new entity instance.
-*/
-ServerEntity::ServerEntity() : instance(0)
+using namespace game::server;
+
+// Create a new entity instance.
+Entity::Entity() : _instance(nullptr)
 {
 }
 
-ServerEntity::~ServerEntity()
+Entity::~Entity()
 {
 	Free();
 }
 
-void ServerEntity::Spawn()
+void Entity::Spawn()
 {
-	if (instance)
+	if (_instance)
 		Free();
 
 	// Set physics properties to their defaults!
-	instance->Physics.fMass		= 1.0f;
-	instance->Physics.fFriction = 1.0f;
-	instance->Physics.fGravity	= SERVER_GRAVITY;
+	_instance->Physics.mass = 1.0f;
+	_instance->Physics.friction = 1.0f;
+	_instance->Physics.gravity = SERVER_GRAVITY;
 
 	// Spawn the entity.
-	instance = Engine.Spawn();
+	_instance = g_engine->Spawn();
 }
 
-void ServerEntity::Free()
+void Entity::Free()
 {
-	if (!instance)
+	if (!_instance)
 		return;
 
-	Engine.FreeEntity(instance);
-	instance = 0;
+	g_engine->FreeEntity(_instance);
+	_instance = 0;
 }
 
-void ServerEntity::Link(bool touchtriggers)
+void Entity::Link(bool touchtriggers)
 {
-	Engine.LinkEntity(instance, touchtriggers);
+	g_engine->LinkEntity(_instance, touchtriggers);
 }
 
-void ServerEntity::Unlink()
+void Entity::Unlink()
 {
-	Engine.UnlinkEntity(instance);
+	g_engine->UnlinkEntity(_instance);
 }
 
-/*	Set the size of the bounding box for the entity.
-	Should be called AFTER setting model!
-*/
-void ServerEntity::SetSize(MathVector3f_t mins, MathVector3f_t maxs)
+/* Set the size of the bounding box for the entity.
+ * Should be called AFTER setting model!
+ */
+void Entity::SetSize(plVector3f_t mins, plVector3f_t maxs)
 {
 	// Ensure the model hasn't already been set.
-	if (!instance->v.model)
-		Engine.Con_Warning("Setting entity size before model! (%s)\n", instance->v.cClassname);
+	if (!_instance->v.model)
+		Engine.Con_Warning("Setting entity size before model! (%s)\n", _instance->v.cClassname);
 
 	// Ensure the mins/maxs are the right way round.
 	for (int i = 0; i < 3; i++)
 		if (mins[i] > maxs[i])
 		{
-			Engine.Con_Warning("Backwards mins/maxs! (%s)\n", instance->v.cClassname);
+			Engine.Con_Warning("Backwards mins/maxs! (%s)\n", _instance->v.cClassname);
 			return;
 		}
 
-	Math_VectorCopy(mins, instance->v.mins);
-	Math_VectorCopy(maxs, instance->v.maxs);
-	Math_VectorSubtract(maxs, mins, instance->v.size);
+	plVectorCopy(mins, _instance->v.mins);
+	plVectorCopy(maxs, _instance->v.maxs);
+	plVectorSubtract3fv(maxs, mins, _instance->v.size);
 
 	Link(false);
 }
 
-/*	Set the size of the bounding box for the entity.
-	Should be called AFTER setting model!
-*/
-void ServerEntity::SetSize(
+/* Set the size of the bounding box for the entity.
+ * Should be called AFTER setting model!
+ */
+void Entity::SetSize(
 	float mina, float minb, float minc,
 	float maxa, float maxb, float maxc)
 {
-	MathVector3f_t mins, maxs;
+	plVector3f_t mins, maxs;
 
 	mins[0] = mina; mins[1] = minb; mins[2] = minc;
 	maxs[0] = maxa; maxs[1] = maxb; maxs[2] = maxc;
@@ -112,74 +114,66 @@ void ServerEntity::SetSize(
 	object is spawned, and then only
 	if it is teleported.
 */
-void ServerEntity::SetOrigin(MathVector3f_t origin)
+void Entity::SetOrigin(plVector3f_t origin)
 {
-	plVectorCopy(origin, instance->v.origin);
+	plVectorCopy(origin, _instance->v.origin);
 
 	Link(false);
 }
 
 /*	Sets the angle of the given entity.
 */
-void ServerEntity::SetAngles(MathVector3f_t angles)
+void Entity::SetAngles(MathVector3f_t angles)
 {
-	plVectorCopy(angles, instance->v.angles);
+	plVectorCopy(angles, _instance->v.angles);
 
 	// TODO: Link?
 }
 
 /*	Sets the model of the given entity.
 */
-void ServerEntity::SetModel(char *path)
+void Entity::SetModel(char *path)
 {
-	g_engine->SetModel(instance, path);
+	g_engine->SetModel(_instance, path);
 }
 
-/*
-	Effects
-	Utility functions for handling entity effects.
-*/
+/*	Effects	*/
 
-void ServerEntity::AddEffects(int effects)
+void Entity::AddEffects(int effects)
 {
-	instance->v.effects |= effects;
+	_instance->v.effects |= effects;
 }
 
-void ServerEntity::ClearEffects()
+void Entity::ClearEffects()
 {
-	instance->v.effects = 0;
+	_instance->v.effects = 0;
 }
 
-void ServerEntity::RemoveEffects(int effects)
+void Entity::RemoveEffects(int effects)
 {
-	instance->v.effects &= ~effects;
+	_instance->v.effects &= ~effects;
 }
 
-/*
-	Flags
-	Utility functions for handling entity flags.
-*/
+/*	Flags	*/
 
-void ServerEntity::AddFlags(int flags)
+void Entity::AddFlags(int flags)
 {
-	instance->v.flags |= flags;
+	_instance->v.flags |= flags;
 }
 
-void ServerEntity::ClearFlags()
+void Entity::ClearFlags()
 {
-	instance->v.flags = 0;
+	_instance->v.flags = 0;
 }
 
-void ServerEntity::RemoveFlags(int flags)
+void Entity::RemoveFlags(int flags)
 {
-	instance->v.flags &= ~flags;
+	_instance->v.flags &= ~flags;
 }
 
-/*
-	Damage
-*/
+/*	Damage	*/
 
-void ServerEntity::Damage(ServerEntity *inflictor, int damage, ServerDamageType_t damagetype)
+void Entity::Damage(Entity *inflictor, int damage, EntityDamageType_t damagetype)
 {
 	// Don't bother if there's no actual damage inflicted.
 	if (damage <= 0)
@@ -189,8 +183,8 @@ void ServerEntity::Damage(ServerEntity *inflictor, int damage, ServerDamageType_
 	if (!CanDamage(inflictor, damagetype))
 		return;
 
-	instance->v.iHealth -= damage;
-	if (instance->v.iHealth <= 0)
+	_instance->v.iHealth -= damage;
+	if (_instance->v.iHealth <= 0)
 	{
 		Killed(inflictor);
 		return;
@@ -200,14 +194,14 @@ void ServerEntity::Damage(ServerEntity *inflictor, int damage, ServerDamageType_
 	Damaged(inflictor);
 }
 
-bool ServerEntity::CanDamage(ServerEntity *target, ServerDamageType_t damagetype)
+bool Entity::CanDamage(Entity *target, EntityDamageType_t damagetype)
 {
 	if (!target->GetInstance()->v.bTakeDamage)
 		return false;
 
 	// Can't damage players on the same team.
 	// Ensure we have an assigned team before checking this!
-	if (instance->local.pTeam && (instance->local.pTeam == instance->local.pTeam))
+	if (_instance->local.pTeam && (_instance->local.pTeam == _instance->local.pTeam))
 		return false;
 
 	// See if we have a supported damage type.
@@ -218,40 +212,40 @@ bool ServerEntity::CanDamage(ServerEntity *target, ServerDamageType_t damagetype
 	return false;
 }
 
-/*
-	Physics
-*/
+/*	Physics	*/
 
-bool ServerEntity::IsTouching(ServerEntity *other)
+/*	Returns true if two entities are intersecting.
+ */
+bool Entity::IsTouching(Entity *other)
 {
-	if (instance->v.mins[0] > other->GetInstance()->v.maxs[0] ||
-		instance->v.mins[1] > other->GetInstance()->v.maxs[1] ||
-		instance->v.mins[2] > other->GetInstance()->v.maxs[2] ||
-		instance->v.maxs[0] < other->GetInstance()->v.mins[0] ||
-		instance->v.maxs[1] < other->GetInstance()->v.mins[1] ||
-		instance->v.maxs[2] < other->GetInstance()->v.mins[2])
+	if (_instance->v.mins[0] > other->GetInstance()->v.maxs[0] ||
+		_instance->v.mins[1] > other->GetInstance()->v.maxs[1] ||
+		_instance->v.mins[2] > other->GetInstance()->v.maxs[2] ||
+		_instance->v.maxs[0] < other->GetInstance()->v.mins[0] ||
+		_instance->v.maxs[1] < other->GetInstance()->v.mins[1] ||
+		_instance->v.maxs[2] < other->GetInstance()->v.mins[2])
 		return false;
 
 	return true;
 }
 
-bool ServerEntity::DropToFloor()
+/*	Attempts to drop the entity to the floor.
+ *	Returns true on success and false on failure.
+ */
+bool Entity::DropToFloor()
 {
-	MathVector3f_t	end;
-	trace_t			ground;
-
-	Math_VectorCopy(instance->v.origin, end);
-
+	plVector3f_t end;
+	plVectorCopy(_instance->v.origin, end);
 	end[2] -= 256;
 
-	ground = Engine.Server_Move(instance->v.origin, instance->v.mins, instance->v.maxs, end, false, instance);
+	trace_t ground = Engine.Server_Move(_instance->v.origin, _instance->v.mins, _instance->v.maxs, end, false, _instance);
 	if ((ground.fraction == 1) || ground.bAllSolid)
 	{
 		Engine.Con_Warning("Entity is stuck in world! (%s) (%i %i %i)\n",
-			instance->v.cClassname,
-			(int)instance->v.origin[0],
-			(int)instance->v.origin[1],
-			(int)instance->v.origin[2]);
+			_instance->v.cClassname,
+			(int)_instance->v.origin[0],
+			(int)_instance->v.origin[1],
+			(int)_instance->v.origin[2]);
 		return false;
 	}
 
@@ -260,7 +254,7 @@ bool ServerEntity::DropToFloor()
 
 	AddFlags(FL_ONGROUND);
 
-	instance->v.groundentity = ground.ent;
+	_instance->v.groundentity = ground.ent;
 
 	return true;
 }

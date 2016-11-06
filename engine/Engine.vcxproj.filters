@@ -99,17 +99,11 @@
     <ClCompile Include="conproc.c">
       <Filter>Legacy</Filter>
     </ClCompile>
-    <ClCompile Include="engine_client.c">
-      <Filter>Legacy\Client</Filter>
-    </ClCompile>
     <ClCompile Include="cmdlib.c">
       <Filter>Legacy</Filter>
     </ClCompile>
     <ClCompile Include="engine_netdgrm.c">
       <Filter>Legacy\Network</Filter>
-    </ClCompile>
-    <ClCompile Include="EngineMaterialEditor.c">
-      <Filter>Legacy\Client\Editor</Filter>
     </ClCompile>
     <ClCompile Include="EngineVideoFog.c">
       <Filter>Legacy\Client\Video</Filter>
@@ -123,13 +117,7 @@
     <ClCompile Include="EngineVideoScreen.c">
       <Filter>Legacy\Client\Video</Filter>
     </ClCompile>
-    <ClCompile Include="EngineVideoSky.c">
-      <Filter>Legacy\Client\Video</Filter>
-    </ClCompile>
     <ClCompile Include="EngineVideoWarp.c">
-      <Filter>Legacy\Client\Video</Filter>
-    </ClCompile>
-    <ClCompile Include="EngineVideoWorld.c">
       <Filter>Legacy\Client\Video</Filter>
     </ClCompile>
     <ClCompile Include="EngineVideoAlias.c">
@@ -149,12 +137,6 @@
     </ClCompile>
     <ClCompile Include="EngineClientChase.c">
       <Filter>Legacy\Client</Filter>
-    </ClCompile>
-    <ClCompile Include="EngineVideoTextureManager.c">
-      <Filter>Legacy\Client\Video</Filter>
-    </ClCompile>
-    <ClCompile Include="EngineVideoParticle.c">
-      <Filter>Legacy\Client\Video</Filter>
     </ClCompile>
     <ClCompile Include="EngineServerEntity.c">
       <Filter>Legacy\Server</Filter>
@@ -179,9 +161,6 @@
     </ClCompile>
     <ClCompile Include="EngineConsoleVariable.c">
       <Filter>Legacy\Console</Filter>
-    </ClCompile>
-    <ClCompile Include="EngineMenu.c">
-      <Filter>Legacy\Modules</Filter>
     </ClCompile>
     <ClCompile Include="EngineEditor.c">
       <Filter>Legacy\Client\Editor</Filter>
@@ -210,13 +189,7 @@
     <ClCompile Include="EngineNetworkWinsock.c">
       <Filter>Legacy\Network\Interfaces</Filter>
     </ClCompile>
-    <ClCompile Include="EngineClientInput.c">
-      <Filter>Legacy\Client</Filter>
-    </ClCompile>
     <ClCompile Include="EngineScript.c">
-      <Filter>Legacy</Filter>
-    </ClCompile>
-    <ClCompile Include="EngineMain.c">
       <Filter>Legacy</Filter>
     </ClCompile>
     <ClCompile Include="EngineHostCommand.c">
@@ -243,14 +216,7 @@
     <ClCompile Include="video_sdlwindow.c">
       <Filter>Client\Video\Interfaces</Filter>
     </ClCompile>
-    <ClCompile Include="engine_exception.cpp" />
-    <ClCompile Include="video_draw.c">
-      <Filter>Client\Video</Filter>
-    </ClCompile>
     <ClCompile Include="video_layer.c">
-      <Filter>Client\Video</Filter>
-    </ClCompile>
-    <ClCompile Include="video_brush.c">
       <Filter>Client\Video</Filter>
     </ClCompile>
     <ClCompile Include="shader_water.cpp">
@@ -289,9 +255,6 @@
     <ClCompile Include="EngineConsole.cpp">
       <Filter>Legacy\Console</Filter>
     </ClCompile>
-    <ClCompile Include="EngineVideoLegacy.c">
-      <Filter>Legacy\Client\Video</Filter>
-    </ClCompile>
     <ClCompile Include="EngineVideoLegacy2.c">
       <Filter>Legacy\Client\Video</Filter>
     </ClCompile>
@@ -304,20 +267,53 @@
     <ClCompile Include="EngineModel.c">
       <Filter>Legacy</Filter>
     </ClCompile>
-    <ClCompile Include="EngineVideoLegacy.c" />
     <ClCompile Include="EngineVideoLegacy2.c" />
     <ClCompile Include="EngineImage.c">
-      <Filter>Client</Filter>
-    </ClCompile>
-    <ClCompile Include="client\mesh.cpp">
       <Filter>Client</Filter>
     </ClCompile>
     <ClCompile Include="model_iqm.cpp">
       <Filter>Client\Resources\Models</Filter>
     </ClCompile>
-    <ClCompile Include="input.c">
+    <ClCompile Include="video_brush.cpp">
+      <Filter>Client\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="video_draw.cpp">
+      <Filter>Client\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineVideoWorld.cpp">
+      <Filter>Legacy\Client\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="client\video_viewport.cpp">
+      <Filter>Client\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineVideoLegacy.cpp">
+      <Filter>Legacy\Client\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineVideoTextureManager.cpp">
+      <Filter>Legacy\Client\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineVideoParticle.cpp">
+      <Filter>Legacy\Client\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="input.cpp">
       <Filter>Client\Input</Filter>
     </ClCompile>
+    <ClCompile Include="EngineMenu.cpp">
+      <Filter>Legacy\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineVideoSky.cpp">
+      <Filter>Legacy\Client\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="engine_client.cpp">
+      <Filter>Legacy\Client</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineClientInput.cpp">
+      <Filter>Legacy\Client</Filter>
+    </ClCompile>
+    <ClCompile Include="Xenon.cpp" />
+    <ClCompile Include="XenonException.cpp" />
+    <ClCompile Include="client\XenonMesh.cpp" />
+    <ClCompile Include="XenonTexture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\shared\shared_client.h">
@@ -449,9 +445,6 @@
     <ClInclude Include="EngineNetworkWinsock.h">
       <Filter>Legacy\Network\Interfaces</Filter>
     </ClInclude>
-    <ClInclude Include="EngineMaterialEditor.h">
-      <Filter>Legacy\Client\Editor</Filter>
-    </ClInclude>
     <ClInclude Include="EngineClientTempEntity.h">
       <Filter>Legacy\Client</Filter>
     </ClInclude>
@@ -462,9 +455,6 @@
       <Filter>Legacy</Filter>
     </ClInclude>
     <ClInclude Include="EngineProtocol.h">
-      <Filter>Legacy</Filter>
-    </ClInclude>
-    <ClInclude Include="EngineMain.h">
       <Filter>Legacy</Filter>
     </ClInclude>
     <ClInclude Include="EngineCommon.h">
@@ -491,9 +481,6 @@
     <ClInclude Include="..\shared\shared_formats.h">
       <Filter>Shared</Filter>
     </ClInclude>
-    <ClInclude Include="engine_exception.h" />
-    <ClInclude Include="engine_base.h" />
-    <ClInclude Include="engine_class.h" />
     <ClInclude Include="..\shared\format_obj.h">
       <Filter>Shared\Formats</Filter>
     </ClInclude>
@@ -560,13 +547,35 @@
     <ClInclude Include="..\shared\shared_client_shader.h">
       <Filter>Shared</Filter>
     </ClInclude>
-    <ClInclude Include="engine_build.h" />
     <ClInclude Include="input.h">
       <Filter>Client\Input</Filter>
     </ClInclude>
     <ClInclude Include="client\video_camera.h">
       <Filter>Client\Video</Filter>
     </ClInclude>
+    <ClInclude Include="client\video_viewport.h">
+      <Filter>Client\Video</Filter>
+    </ClInclude>
+    <ClInclude Include="client\video_draw.h">
+      <Filter>Client\Video</Filter>
+    </ClInclude>
+    <ClInclude Include="client\video_sky.h">
+      <Filter>Client\Video</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\shared_server_entity.h">
+      <Filter>Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\shared_entity.h">
+      <Filter>Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="XenonClass.h" />
+    <ClInclude Include="Xenon.h" />
+    <ClInclude Include="XenonException.h" />
+    <ClInclude Include="XenonTexture.h" />
+    <ClInclude Include="engine_base.h">
+      <Filter>Legacy</Filter>
+    </ClInclude>
+    <ClInclude Include="XenonBuild.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="engine.rc" />

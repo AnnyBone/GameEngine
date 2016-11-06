@@ -18,7 +18,7 @@
 
 #include "server_weapon.h"
 
-EntityFrame_t AxeAnimation_Deploy [] =
+ServerEntityFrame_t AxeAnimation_Deploy[] =
 {
 	{   NULL, 2, 0.1f    },
 	{   NULL, 3, 0.1f    },
@@ -28,7 +28,7 @@ EntityFrame_t AxeAnimation_Deploy [] =
 	{   NULL, 7, 0.1f, true }
 };
 
-EntityFrame_t AxeAnimation_Attack1 [] =
+ServerEntityFrame_t AxeAnimation_Attack1[] =
 {
 	{   NULL, 4, 0.05f    },
 	{   NULL, 5, 0.05f    },
@@ -45,7 +45,7 @@ EntityFrame_t AxeAnimation_Attack1 [] =
 	{   NULL, 16, 0.05f, TRUE    }
 };
 
-EntityFrame_t AxeAnimation_Attack2 [] =
+ServerEntityFrame_t AxeAnimation_Attack2[] =
 {
 	{   NULL, 17, 0.05f    },
 	{   NULL, 18, 0.05f    },
@@ -67,7 +67,7 @@ void Axe_Deploy(ServerEntity_t *ent)
 
 void AxeHit(ServerEntity_t *ent)
 {
-	vec3_t	forward,temp,sndvec,vel;
+	PLVector3f forward,temp,sndvec,vel;
 	trace_t	trace;
 
 	plAngleVectors(ent->v.v_angle, forward, temp, temp);

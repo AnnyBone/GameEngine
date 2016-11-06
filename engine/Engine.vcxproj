@@ -45,7 +45,7 @@
   <PropertyGroup Label="Globals">
     <SccProjectName />
     <SccLocalPath />
-    <ProjectName>Engine</ProjectName>
+    <ProjectName>XEngine</ProjectName>
     <ProjectGuid>{5588B942-90A0-63A2-3369-523F456D79C5}</ProjectGuid>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
@@ -65,7 +65,7 @@
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
     <CLRSupport>false</CLRSupport>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug (Ictus)|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -149,7 +149,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>.\Debug\</OutDir>
+    <OutDir>..\lib\x86\</OutDir>
     <IntDir>.\Debug\</IntDir>
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
@@ -159,10 +159,10 @@
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>.\Release\</OutDir>
-    <IntDir>.\Release\</IntDir>
+    <OutDir>..\lib\x86\</OutDir>
+    <IntDir>.\Release</IntDir>
     <LinkIncremental>false</LinkIncremental>
-    <TargetName>OpenKatana</TargetName>
+    <TargetName>engine</TargetName>
     <IncludePath>$(IncludePath)</IncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
@@ -304,6 +304,7 @@
       <CompileAsManaged>false</CompileAsManaged>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <StringPooling>true</StringPooling>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
     </ClCompile>
     <Midl>
       <TypeLibraryName>.\Release\Fitzquake.tlb</TypeLibraryName>
@@ -613,11 +614,12 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="client\effect_sprite.cpp" />
-    <ClCompile Include="client\mesh.cpp" />
+    <ClCompile Include="client\XenonMesh.cpp" />
     <ClCompile Include="client\video_camera.cpp" />
+    <ClCompile Include="client\video_viewport.cpp" />
     <ClCompile Include="EngineClientChase.c" />
     <ClCompile Include="EngineClientDemo.c" />
-    <ClCompile Include="EngineClientInput.c" />
+    <ClCompile Include="EngineClientInput.cpp" />
     <ClCompile Include="EngineClient.c" />
     <ClCompile Include="EngineClientParse.c" />
     <ClCompile Include="EngineClientTempEntity.c" />
@@ -626,10 +628,11 @@
     <ClCompile Include="conproc.c" />
     <ClCompile Include="crc.c" />
     <ClCompile Include="EngineConsole.cpp" />
-    <ClCompile Include="engine_exception.cpp" />
+    <ClCompile Include="XenonException.cpp" />
     <ClCompile Include="model_iqm.cpp" />
     <ClCompile Include="model_u3d.cpp" />
     <ClCompile Include="shader_water.cpp" />
+    <ClCompile Include="XenonTexture.cpp" />
     <ClCompile Include="video_glidewindow.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
@@ -638,28 +641,27 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="video_framebuffer.cpp" />
-    <ClCompile Include="EngineVideoParticle.c" />
+    <ClCompile Include="EngineVideoParticle.cpp" />
     <ClCompile Include="EngineVideoAlias.c" />
     <ClCompile Include="audio.cpp" />
     <ClCompile Include="video_shader.cpp" />
-    <ClCompile Include="engine_client.c" />
+    <ClCompile Include="engine_client.cpp" />
     <ClCompile Include="EngineConsoleCommand.c" />
     <ClCompile Include="EngineConsoleVariable.c" />
     <ClCompile Include="EngineEditor.c" />
-    <ClCompile Include="EngineMaterialEditor.c" />
     <ClCompile Include="video_layer.c" />
     <ClCompile Include="video_object.cpp" />
     <ClCompile Include="EngineVideoFont.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="EngineGame.c" />
-    <ClCompile Include="input.c" />
+    <ClCompile Include="input.cpp" />
     <ClCompile Include="EngineVideoLights.c" />
-    <ClCompile Include="EngineMain.c" />
+    <ClCompile Include="Xenon.cpp" />
     <ClCompile Include="material.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="EngineMenu.c" />
+    <ClCompile Include="EngineMenu.cpp" />
     <ClCompile Include="EngineNetworkDummy.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (Ictus)|Win32'">true</ExcludedFromBuild>
@@ -670,14 +672,14 @@
     <ClCompile Include="video.cpp" />
     <ClCompile Include="EngineClientView.c" />
     <ClCompile Include="EngineServerWorld.c" />
-    <ClCompile Include="video_draw.c" />
+    <ClCompile Include="video_draw.cpp" />
     <ClCompile Include="EngineVideoFog.c" />
     <ClCompile Include="EngineModel.c" />
     <ClCompile Include="EngineVideoEFrag.c" />
-    <ClCompile Include="EngineVideoLegacy.c" />
+    <ClCompile Include="EngineVideoLegacy.cpp" />
     <ClCompile Include="EngineVideoLegacy2.c" />
-    <ClCompile Include="EngineVideoSky.c" />
-    <ClCompile Include="EngineVideoTextureManager.c" />
+    <ClCompile Include="EngineVideoSky.cpp" />
+    <ClCompile Include="EngineVideoTextureManager.cpp" />
     <ClCompile Include="EngineVideoWarp.c" />
     <ClCompile Include="EngineHost.c" />
     <ClCompile Include="EngineHostCommand.c" />
@@ -691,8 +693,8 @@
     <ClCompile Include="EngineNetworkWindows.c" />
     <ClCompile Include="EngineNetworkWinsock.c" />
     <ClCompile Include="EngineServerEntity.c" />
-    <ClCompile Include="video_brush.c" />
-    <ClCompile Include="EngineVideoWorld.c" />
+    <ClCompile Include="video_brush.cpp" />
+    <ClCompile Include="EngineVideoWorld.cpp" />
     <ClCompile Include="audio_wav.c" />
     <ClCompile Include="EngineServer.c" />
     <ClCompile Include="EngineServerUser.c" />
@@ -710,6 +712,7 @@
     <ClInclude Include="..\shared\shared_client_shader.h" />
     <ClInclude Include="..\shared\shared_editor.h" />
     <ClInclude Include="..\shared\shared_engine.h" />
+    <ClInclude Include="..\shared\shared_entity.h" />
     <ClInclude Include="..\shared\shared_flags.h" />
     <ClInclude Include="..\shared\shared_formats.h" />
     <ClInclude Include="..\shared\shared_game.h" />
@@ -718,6 +721,7 @@
     <ClInclude Include="..\shared\shared_menu.h" />
     <ClInclude Include="..\shared\shared_model.h" />
     <ClInclude Include="..\shared\shared_server.h" />
+    <ClInclude Include="..\shared\shared_server_entity.h" />
     <ClInclude Include="..\shared\shared_texture.h" />
     <ClInclude Include="..\shared\shared_video.h" />
     <ClInclude Include="..\shared\shared_zone.h" />
@@ -726,8 +730,11 @@
     <ClInclude Include="client\effect_sprite.h" />
     <ClInclude Include="client\shader_base.h" />
     <ClInclude Include="client\shader_water.h" />
-    <ClInclude Include="engine_build.h" />
-    <ClInclude Include="engine_class.h" />
+    <ClInclude Include="client\video_draw.h" />
+    <ClInclude Include="client\video_sky.h" />
+    <ClInclude Include="client\video_viewport.h" />
+    <ClInclude Include="XenonBuild.h" />
+    <ClInclude Include="XenonClass.h" />
     <ClInclude Include="EngineClientTempEntity.h" />
     <ClInclude Include="EngineConsoleCommand.h" />
     <ClInclude Include="cmdlib.h" />
@@ -736,8 +743,7 @@
     <ClInclude Include="EngineConsole.h" />
     <ClInclude Include="crc.h" />
     <ClInclude Include="EngineConsoleVariable.h" />
-    <ClInclude Include="engine_exception.h" />
-    <ClInclude Include="EngineMaterialEditor.h" />
+    <ClInclude Include="XenonException.h" />
     <ClInclude Include="EngineVideoDraw.h" />
     <ClInclude Include="audio.h" />
     <ClInclude Include="video_framebuffer.h" />
@@ -753,7 +759,7 @@
     <ClInclude Include="material.h" />
     <ClInclude Include="EngineGame.h" />
     <ClInclude Include="input.h" />
-    <ClInclude Include="EngineMain.h" />
+    <ClInclude Include="Xenon.h" />
     <ClInclude Include="EngineMenu.h" />
     <ClInclude Include="EngineServerPhysics.h" />
     <ClInclude Include="EngineScript.h" />
@@ -786,6 +792,7 @@
     <ClInclude Include="EngineClientView.h" />
     <ClInclude Include="winquake.h" />
     <ClInclude Include="world.h" />
+    <ClInclude Include="XenonTexture.h" />
     <ClInclude Include="zone.h" />
   </ItemGroup>
   <ItemGroup>

@@ -1,19 +1,17 @@
-/*	Copyright (C) 2011-2016 OldTimes Software
+/*
+DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+Version 2, December 2004
 
-	This program is free software; you can redistribute it and/or
-	modify it under the terms of the GNU General Public License
-	as published by the Free Software Foundation; either version 2
-	of the License, or (at your option) any later version.
+Copyright (C) 2011-2016 Mark E Sowden <markelswo@gmail.com>
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+Everyone is permitted to copy and distribute verbatim or modified
+copies of this license document, and changing it is allowed as long
+as the name is changed.
 
-	See the GNU General Public License for more details.
+DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+0. You just DO WHAT THE FUCK YOU WANT TO.
 */
 
 #include "engine_base.h"
@@ -36,6 +34,7 @@ bool material_initialized = false;
 
 Material_t	g_materials[MATERIAL_MAX];	// Global array.
 
+#if 0
 MaterialType_t material_surface_types[]=
 {
 	{ MATERIAL_TYPE_NONE,		"default" },
@@ -50,6 +49,7 @@ MaterialType_t material_surface_types[]=
 	{ MATERIAL_TYPE_SNOW,		"snow" },
 	{ MATERIAL_TYPE_MUD,		"mud" },
 };
+#endif
 
 int	material_count = -1;
 
@@ -62,6 +62,15 @@ Material_t *g_mBlobShadow;
 Material_t *g_mGlobalColour;
 Material_t *g_mGlobalConChars;
 
+// Console Variables
+ConsoleVariable_t cv_material_simplified = {
+				"material_simplified",
+				(char*)"0",
+				true,
+				false,
+				"If enabled, this will result in a very basio render for each surface using a material."
+};
+
 void Material_List(void);
 
 void Material_Initialize(void)
@@ -72,6 +81,8 @@ void Material_Initialize(void)
 	Con_Printf("Initializing material system...\n");
 
 	Cmd_AddCommand("material_list", Material_List);
+
+	Cvar_RegisterVariable(&cv_material_simplified, NULL);
 
 	// Must be set to initialized before anything else.
 	material_initialized = true;
@@ -143,11 +154,13 @@ void Material_ClearSkin(Material_t *material, unsigned int skinnum)
 	if (!skin)
 		Sys_Error("Attempted to clear invalid skin! (%s) (%i)\n", material->cPath, skinnum);
 
+#if 0
 #ifdef _MSC_VER
 #	pragma warning(suppress: 6011)
 #endif
 	for (unsigned int i = 0; i < skin->num_textures; i++)
 		TexMgr_FreeTexture(skin->texture[i].gMap);
+#endif
 }
 
 void Material_Clear(Material_t *material, bool force)
@@ -274,80 +287,48 @@ Material_t *Material_GetByPath(const char *ccPath)
 	return NULL;
 }
 
-gltexture_t *Material_LoadTexture(Material_t *mMaterial, MaterialSkin_t *mCurrentSkin, char *cArg)
+XTexture *Material_LoadTexture(Material_t *material, MaterialSkin_t *mCurrentSkin, char *arg)
 {
 	// Check if it's trying to use a built-in texture.
-	if (cArg[0] == '@')
+	if (arg[0] == '@')
 	{
-		cArg++;
+		arg++;
 
-		if (!strcasecmp(cArg, "notexture"))
-			return notexture;
-		else if (!strcasecmp(cArg, "lightmap"))
+		if (!strcasecmp(arg, "notexture"))
+			return textures::nulltexture;
+		else if (!strcasecmp(arg, "lightmap"))
 		{
-			mMaterial->override_lightmap = true;
+			material->override_lightmap = true;
 			mCurrentSkin->texture[mCurrentSkin->num_textures].mttType = MATERIAL_TEXTURE_LIGHTMAP;
-			return notexture;
+			return textures::nulltexture;
 		}
 		else
 		{
-			Con_Warning("Attempted to set invalid internal texture! (%s)\n", mMaterial->cPath);
-			return notexture;
+			Con_Warning("Attempted to set invalid internal texture! (%s)\n", material->cPath);
+			return textures::nulltexture;
 		}
 	}
 
-	// Ensure we haven't loaded the texture in already...
-	gltexture_t *etex = TexMgr_GetTexture(cArg);
-	if (etex)
-#ifdef _DEBUG	// Debugging
+	PLuint texflags = XTEXTURE_FLAG_ALPHA | XTEXTURE_FLAG_MIPMAP;
+	if (material->flags & MATERIAL_FLAG_PRESERVE)
+		texflags |= XTEXTURE_FLAG_PRESERVE;
+	if (material->flags & MATERIAL_FLAG_NEAREST)
+		texflags |= XTEXTURE_FLAG_NEAREST;
+
+	XTexture *tex = g_texturemanager->CreateTexture(arg, texflags);
+	if (!tex)
 	{
-		Con_DPrintf("Texture already cached (%s) (%s)\n", etex->name, mMaterial->cPath);
-		return etex;
-	}
-#else
-	return etex;
-#endif
-
-	uint8_t *tex = Image_LoadImage(cArg,
-		&mCurrentSkin->texture[mCurrentSkin->num_textures].uiWidth,
-		&mCurrentSkin->texture[mCurrentSkin->num_textures].uiHeight);
-	if (tex)
-	{
-		int	texflags = TEXPREF_ALPHA | TEXPREF_MIPMAP;
-
-		// Warn about incorrect sizes.
-		if ((mCurrentSkin->texture[mCurrentSkin->num_textures].uiWidth % 2) || (mCurrentSkin->texture[mCurrentSkin->num_textures].uiHeight % 2))
-		{
-			Con_Warning("Texture size is not multiple of 2! (%s) (%ix%i)\n", cArg,
-				mCurrentSkin->texture[mCurrentSkin->num_textures].uiWidth,
-				mCurrentSkin->texture[mCurrentSkin->num_textures].uiHeight);
-
-#if 1
-			// Pad the image.
-			texflags |= TEXPREF_PAD;
-#endif
-		}
-
-		if (mMaterial->flags & MATERIAL_FLAG_PRESERVE)
-			texflags |= TEXPREF_PERSIST;
-
-		if (mCurrentSkin->uiFlags & MATERIAL_FLAG_NEAREST)
-			texflags |= TEXPREF_NEAREST;
-
-		return TexMgr_LoadImage(NULL, cArg,
-			mCurrentSkin->texture[mCurrentSkin->num_textures].uiWidth,
-			mCurrentSkin->texture[mCurrentSkin->num_textures].uiHeight,
-			SRC_RGBA, tex, cArg, 0, texflags);
+		Con_Warning("Failed to load texture! (%s) (%s)\n", arg, material->cPath);
+		return textures::nulltexture;
 	}
 
-	Con_Warning("Failed to load texture! (%s) (%s)\n", cArg, mMaterial->cPath);
+	mCurrentSkin->texture[mCurrentSkin->num_textures].uiWidth	= tex->GetWidth();
+	mCurrentSkin->texture[mCurrentSkin->num_textures].uiHeight	= tex->GetHeight();
 
-	return notexture;
+	return tex;
 }
 
-/*
-	Scripting
-*/
+/*	Scripting	*/
 
 typedef enum
 {
@@ -355,7 +336,7 @@ typedef enum
 	MATERIAL_CONTEXT_GLOBAL,		// Material
 	MATERIAL_CONTEXT_SKIN,			// Skin
 	MATERIAL_CONTEXT_TEXTURE,		// Texture
-	MATERIAL_CONTEXT_SHADER,		// Shader
+	//MATERIAL_CONTEXT_SHADER,		// Shader
 } MaterialContext_t;
 MaterialContext_t material_currentcontext;	// Indicates that any settings applied are global.
 
@@ -381,53 +362,59 @@ MaterialTextureTypeX_t material_types[] =
 
 void _Material_SetTextureType(Material_t *mCurrentMaterial, MaterialContext_t mftContext, char *cArg);
 
-void _Material_SetType(Material_t *mCurrentMaterial, MaterialContext_t mftContext, char *cArg)
+void _Material_SetType(Material_t *mCurrentMaterial, MaterialContext_t context, char *cArg)
 {
-	switch (mftContext)
+	switch (context)
 	{
 	case MATERIAL_CONTEXT_SKIN:
 	{
-		int	iMaterialType = Q_atoi(cArg);
+		unsigned int iMaterialType = (unsigned int)Q_atoi(cArg);
 
 		// Ensure that the given type is valid.
-		if ((iMaterialType < MATERIAL_TYPE_NONE) || (iMaterialType >= MATERIAL_TYPE_MAX))
+		if (iMaterialType >= MATERIAL_TYPE_MAX)
 			Con_Warning("Invalid material type! (%i)\n", iMaterialType);
 
 		mCurrentMaterial->skin[mCurrentMaterial->num_skins].uiType = iMaterialType;
 	}
 	break;
 	case MATERIAL_CONTEXT_TEXTURE:
-		_Material_SetTextureType(mCurrentMaterial, mftContext, cArg);
+		_Material_SetTextureType(mCurrentMaterial, context, cArg);
 		break;
 	default:
 		Sys_Error("Invalid context!\n");
 	}
 }
 
-void _Material_SetWireframe(Material_t *mCurrentMaterial, MaterialContext_t mftContext, char *cArg)
+void _Material_SetWireframe(Material_t *mCurrentMaterial, MaterialContext_t context, char *cArg)
 {
+    if(context != MATERIAL_CONTEXT_GLOBAL) return;
 	mCurrentMaterial->override_wireframe = (bool)atoi(cArg);
 }
 
 void _Material_SetLightmap(Material_t *material, MaterialContext_t context, char *arg)
 {
+    if(context != MATERIAL_CONTEXT_GLOBAL) return;
 	material->override_lightmap = (bool)atoi(arg);
 }
 
-void _Material_SetAlpha(Material_t *mCurrentMaterial, MaterialContext_t mftContext, char *cArg)
+void _Material_SetAlpha(Material_t *mCurrentMaterial, MaterialContext_t context, char *cArg)
 {
+    if(context != MATERIAL_CONTEXT_GLOBAL) return;
 	mCurrentMaterial->fAlpha = strtof(cArg, NULL);
 }
 
-void _Material_SetAnimationSpeed(Material_t *mCurrentMaterial, MaterialContext_t mftContext, char *cArg)
+void _Material_SetAnimationSpeed(Material_t *mCurrentMaterial, MaterialContext_t context, char *cArg)
 {
+    if(context != MATERIAL_CONTEXT_GLOBAL) return;
 	mCurrentMaterial->animation_speed = strtof(cArg, NULL);
 }
 
 // Skin Functions...
 
-void _Material_ParseSkin(Material_t *material, MaterialContext_t mftContext, char *args)
+void _Material_ParseSkin(Material_t *material, MaterialContext_t context, char *args)
 {
+    if(context != MATERIAL_CONTEXT_GLOBAL) return;
+
 	MaterialSkin_t *skin = Material_GetSkin(material, material->num_skins);
 
 	CoreShaderProgram *program = nullptr;
@@ -472,7 +459,7 @@ void _Material_ParseSkin(Material_t *material, MaterialContext_t mftContext, cha
 
 				program->Enable();
 
-				vlUniform_t *var = program->GetUniform(cToken + 1);
+                PLUniform *var = program->GetUniform(cToken + 1);
 				if (!var)
 				{
 					Con_Warning("Invalid shader uniform! (%s) (%i)\n", cToken, iScriptLine);
@@ -483,7 +470,7 @@ void _Material_ParseSkin(Material_t *material, MaterialContext_t mftContext, cha
 
 				switch (var->type)
 				{
-				case VL_UNIFORM_DOUBLE:
+				case PL_UNIFORM_DOUBLE:
 					program->SetUniformVariable(var, std::strtod(cToken, NULL));
 					break;
 				case VL_UNIFORM_FLOAT:
@@ -504,17 +491,17 @@ void _Material_ParseSkin(Material_t *material, MaterialContext_t mftContext, cha
 					MaterialTexture_t *texture = &skin->texture[skin->num_textures];
 					memset(texture, 0, sizeof(MaterialTexture_t));
 					if (skin->num_textures > 0) // If we have more textures, use decal mode.
-						texture->env_mode = VIDEO_TEXTUREMODE_DECAL;
+						texture->env_mode = PL_TEXTUREMODE_DECAL;
 					else // By default textures are modulated... Inherited Quake behaviour, yay.
-						texture->env_mode = VIDEO_TEXTUREMODE_MODULATE;
+						texture->env_mode = PL_TEXTUREMODE_MODULATE;
 					texture->scale = 1;
 
-					texture->gMap = Material_LoadTexture(material, skin, cToken);
+					texture->instance = Material_LoadTexture(material, skin, cToken);
 					skin->num_textures++;
 				}
 				case VL_UNIFORM_UINT:
 				{
-					unsigned int _val = std::strtoul(cToken, NULL, 0);
+					unsigned int _val = (unsigned int)std::strtoul(cToken, NULL, 0);
 					program->SetUniformVariable(var, _val);
 				}
 				break;
@@ -561,11 +548,16 @@ void _Material_ParseSkin(Material_t *material, MaterialContext_t mftContext, cha
 
 // Texture Functions...
 
-void _Material_AddTexture(Material_t *material, MaterialContext_t mftContext, char *cArg)
+void _Material_AddTexture(Material_t *material, MaterialContext_t context, char *cArg)
 {
+    if(context != MATERIAL_CONTEXT_SKIN) return;
+
 	MaterialSkin_t *curskin = Material_GetSkin(material, material->num_skins);
 	if (!curskin)
-		Sys_Error("Failed to get skin!\n");
+    {
+        Sys_Error("Failed to get skin!\n");
+        return;
+    }
 
 #ifdef _MSC_VER
 #	pragma warning(suppress: 6011)
@@ -573,9 +565,9 @@ void _Material_AddTexture(Material_t *material, MaterialContext_t mftContext, ch
 	MaterialTexture_t *curtexture = &curskin->texture[curskin->num_textures];
 	memset(curtexture, 0, sizeof(MaterialTexture_t));
 	if (curskin->num_textures > 0) // If we have more textures, use decal mode.
-		curtexture->env_mode = VIDEO_TEXTUREMODE_DECAL;
+		curtexture->env_mode = PL_TEXTUREMODE_DECAL;
 	else // By default textures are modulated... Inherited Quake behaviour, yay.
-		curtexture->env_mode = VIDEO_TEXTUREMODE_MODULATE;
+		curtexture->env_mode = PL_TEXTUREMODE_MODULATE;
 	curtexture->scale = 1;
 
 	char texturepath[MAX_QPATH];
@@ -599,7 +591,7 @@ void _Material_AddTexture(Material_t *material, MaterialContext_t mftContext, ch
 
 			if (cToken[0] == '}')
 			{
-				curtexture->gMap = Material_LoadTexture(material, curskin, texturepath);
+				curtexture->instance = Material_LoadTexture(material, curskin, texturepath);
 				curskin->num_textures++;
 				break;
 			}
@@ -637,6 +629,8 @@ void _Material_AddTexture(Material_t *material, MaterialContext_t mftContext, ch
 
 void _Material_SetTextureType(Material_t *material, MaterialContext_t context, char *arg)
 {
+    if(context != MATERIAL_CONTEXT_TEXTURE) return;
+
 	MaterialSkin_t		*curskin = Material_GetSkin(material, material->num_skins);
 	MaterialTexture_t	*curtex = &curskin->texture[curskin->num_textures];
 
@@ -648,15 +642,16 @@ void _Material_SetTextureType(Material_t *material, MaterialContext_t context, c
 			switch (curtex->mttType)
 			{
 			case MATERIAL_TEXTURE_DETAIL:
-				curtex->env_mode	= VIDEO_TEXTUREMODE_COMBINE;
+				curtex->env_mode	= PL_TEXTUREMODE_COMBINE;
 				curtex->scale		= cv_video_detailscale.value;
 				break;
 			case MATERIAL_TEXTURE_FULLBRIGHT:
-				curtex->env_mode = VIDEO_TEXTUREMODE_ADD;
+				curtex->env_mode = PL_TEXTUREMODE_ADD;
 				break;
 			case MATERIAL_TEXTURE_SPHERE:
-				curtex->env_mode = VIDEO_TEXTUREMODE_COMBINE;
+				curtex->env_mode = PL_TEXTUREMODE_COMBINE;
 				break;
+            default:break;
 			}
 			break;
 		}
@@ -664,16 +659,16 @@ void _Material_SetTextureType(Material_t *material, MaterialContext_t context, c
 
 void _Material_SetTextureScroll(Material_t *material, MaterialContext_t context, char *arg)
 {
-	MaterialSkin_t	*curskin;
-	plVector2f_t	scroll;
+    if(context != MATERIAL_CONTEXT_TEXTURE) return;
 
+	plVector2f_t scroll = { 0 };
 	// Ensure there's the correct number of arguments being given.
 	if (sscanf(arg, "%f %f", &scroll[0], &scroll[1]) != 2)
 		// Otherwise throw us an error.
 		Sys_Error("Invalid arguments! (%s) (%i)", material->cPath, iScriptLine);
 
 	// Get the current skin.
-	curskin = Material_GetSkin(material, material->num_skins);
+	MaterialSkin_t *curskin = Material_GetSkin(material, material->num_skins);
 	// Apply the scroll variables.
 	curskin->texture[curskin->num_textures].scroll[0] = scroll[0];
 	curskin->texture[curskin->num_textures].scroll[1] = scroll[1];
@@ -684,6 +679,7 @@ void _Material_SetTextureScroll(Material_t *material, MaterialContext_t context,
 
 void _Material_SetTextureScale(Material_t *material, MaterialContext_t context, char *arg)
 {
+    if(context != MATERIAL_CONTEXT_TEXTURE) return;
 	MaterialSkin_t *skin = Material_GetSkin(material, material->num_skins);
 	skin->texture[skin->num_textures].scale = strtof(arg, NULL);
 }
@@ -692,24 +688,24 @@ typedef struct
 {
 	const char *name;
 
-	vlTextureEnvironmentMode_t mode;
+	PLTextureEnvironmentMode mode;
 } MaterialTextureEnvironmentModeType_t;
 
 MaterialTextureEnvironmentModeType_t material_textureenvmode[] =
 {
-	{ "add",		VIDEO_TEXTUREMODE_ADD },
-	{ "modulate",	VIDEO_TEXTUREMODE_MODULATE },
-	{ "decal",		VIDEO_TEXTUREMODE_DECAL },
-	{ "blend",		VIDEO_TEXTUREMODE_BLEND },
-	{ "replace",	VIDEO_TEXTUREMODE_REPLACE },
-	{ "combine",	VIDEO_TEXTUREMODE_COMBINE }
+	{ "add",		PL_TEXTUREMODE_ADD },
+	{ "modulate",	PL_TEXTUREMODE_MODULATE },
+	{ "decal",		PL_TEXTUREMODE_DECAL },
+	{ "blend",		PL_TEXTUREMODE_BLEND },
+	{ "replace",	PL_TEXTUREMODE_REPLACE },
+	{ "combine",	PL_TEXTUREMODE_COMBINE }
 };
 
 void _Material_SetTextureEnvironmentMode(Material_t *material, MaterialContext_t context, char *arg)
 {
-	MaterialSkin_t *sCurrentSkin;
-	sCurrentSkin = Material_GetSkin(material, material->num_skins);
-	
+    if(context != MATERIAL_CONTEXT_TEXTURE) return;
+
+	MaterialSkin_t *sCurrentSkin = Material_GetSkin(material, material->num_skins);
 	for (int i = 0; i < plArrayElements(material_textureenvmode); i++)
 		if (!strncmp(material_textureenvmode[i].name, arg, strlen(material_textureenvmode[i].name)))
 		{
@@ -720,12 +716,12 @@ void _Material_SetTextureEnvironmentMode(Material_t *material, MaterialContext_t
 	Con_Warning("Invalid texture environment mode! (%s) (%s)\n", arg, material->cName);
 }
 
-void _Material_SetRotate(Material_t *mCurrentMaterial, MaterialContext_t mftContext, char *cArg)
+void _Material_SetRotate(Material_t *mCurrentMaterial, MaterialContext_t context, char *cArg)
 {
-	MaterialSkin_t	*msSkin;
+    if(context != MATERIAL_CONTEXT_TEXTURE) return;
 
 	// Get the current skin.
-	msSkin = Material_GetSkin(mCurrentMaterial, mCurrentMaterial->num_skins);
+	MaterialSkin_t *msSkin = Material_GetSkin(mCurrentMaterial, mCurrentMaterial->num_skins);
 	// Apply the rotate variable.
 	msSkin->texture[msSkin->num_textures].fRotate = strtof(cArg, NULL);
 
@@ -735,7 +731,9 @@ void _Material_SetRotate(Material_t *mCurrentMaterial, MaterialContext_t mftCont
 
 void _Material_SetAdditive(Material_t *material, MaterialContext_t context, char *arg)
 {
-	if (atoi(arg) == TRUE)
+    if(context != MATERIAL_CONTEXT_SKIN) return;
+
+	if (atoi(arg) == PL_TRUE)
 		material->skin[material->num_skins].uiFlags |= MATERIAL_FLAG_ADDITIVE | MATERIAL_FLAG_BLEND;
 	else
 		material->skin[material->num_skins].uiFlags &= ~MATERIAL_FLAG_ADDITIVE | MATERIAL_FLAG_BLEND;
@@ -743,7 +741,9 @@ void _Material_SetAdditive(Material_t *material, MaterialContext_t context, char
 
 void _Material_SetBlend(Material_t *material, MaterialContext_t context, char *arg)
 {
-	if (atoi(arg) == TRUE)
+    if(context != MATERIAL_CONTEXT_SKIN) return;
+
+	if (atoi(arg) == PL_TRUE)
 		material->skin[material->num_skins].uiFlags |= MATERIAL_FLAG_BLEND;
 	else
 		material->skin[material->num_skins].uiFlags &= ~MATERIAL_FLAG_BLEND;
@@ -751,7 +751,9 @@ void _Material_SetBlend(Material_t *material, MaterialContext_t context, char *a
 
 void _Material_SetAlphaTest(Material_t *material, MaterialContext_t context, char *arg)
 {
-	if (atoi(arg) == TRUE)
+    if(context != MATERIAL_CONTEXT_SKIN) return;
+
+	if (atoi(arg) == PL_TRUE)
 		material->skin[material->num_skins].uiFlags |= MATERIAL_FLAG_ALPHA;
 	else
 		material->skin[material->num_skins].uiFlags &= ~MATERIAL_FLAG_ALPHA;
@@ -759,7 +761,9 @@ void _Material_SetAlphaTest(Material_t *material, MaterialContext_t context, cha
 
 void _Material_SetAlphaTrick(Material_t *material, MaterialContext_t context, char *arg)
 {
-	if (atoi(arg) == TRUE)
+    if(context != MATERIAL_CONTEXT_SKIN) return;
+
+	if (atoi(arg) == PL_TRUE)
 		material->skin[material->num_skins].uiFlags |= MATERIAL_FLAG_ALPHATRICK;
 	else
 		material->skin[material->num_skins].uiFlags &= ~MATERIAL_FLAG_ALPHATRICK;
@@ -831,7 +835,7 @@ void _Material_SetFlags(Material_t *mCurrentMaterial, MaterialContext_t mftConte
 
 typedef struct
 {
-	char *key;
+	const char *key;
 
 	void(*Function)(Material_t *mCurrentMaterial, MaterialContext_t mftContext, char *cArg);
 
@@ -872,10 +876,8 @@ MaterialKey_t material_fixed_functions[]=
 
 void Material_CheckFunctions(Material_t *mNewMaterial)
 {
-	MaterialKey_t *mKey;
-
 	// Find the related function.
-	for (mKey = material_fixed_functions; mKey->key; mKey++)
+	for (MaterialKey_t *mKey = material_fixed_functions; mKey->key; mKey++)
 		// Remain case sensitive.
 		if (!strcasecmp(mKey->key, cToken + 1))
 		{
@@ -894,6 +896,8 @@ void Material_CheckFunctions(Material_t *mNewMaterial)
 
 	Con_Warning("Unknown function! (%s) (%s) (%i)\n", cToken, mNewMaterial->cPath, iScriptLine);
 }
+
+#if 0
 
 typedef struct
 {
@@ -949,12 +953,13 @@ void Material_ParseFunction(Material_t *material)
 	Con_Warning("Unknown function! (%s) (%s) (%i)\n", cToken, material->cPath, iScriptLine);
 }
 
+#endif
+
 /*	Loads and parses material.
 	Returns false on complete failure.
 */
 Material_t *Material_Load(const char *ccPath)
 {
-	Material_t  *mNewMaterial;
 	void        *cData;
 	char		cPath[PLATFORM_MAX_PATH],
 				cMaterialName[64] = { 0 };
@@ -973,7 +978,7 @@ Material_t *Material_Load(const char *ccPath)
 	sprintf(cPath, "%s%s.material", g_state.path_materials, ccPath);
 
 	// Check if it's been cached already...
-	mNewMaterial = Material_GetByPath(cPath);
+	Material_t *mNewMaterial = Material_GetByPath(cPath);
 	if(mNewMaterial)
 		return mNewMaterial;
 
@@ -1093,7 +1098,7 @@ plEXTERN_C_END
 
 /*	TODO: Replace Material_Draw with this!
 */
-void Material_DrawObject(Material_t *material, vlDraw_t *object, bool ispost)
+void Material_DrawObject(Material_t *material, PLDraw *object, bool ispost)
 {
 	bool showwireframe = r_showtris.bValue;
 	if ((material && material->override_wireframe) && (r_showtris.iValue == 1))
@@ -1139,21 +1144,34 @@ void Material_DrawObject(Material_t *material, vlDraw_t *object, bool ispost)
 
 /*	Typically called before an object is drawn.
 */
-void Material_Draw(Material_t *material, vlVertex_t *ObjectVertex, vlPrimitive_t ObjectPrimitive, unsigned int ObjectSize, bool ispost)
+void Material_Draw(Material_t *material, PLVertex *ObjectVertex, PLPrimitive ObjectPrimitive, unsigned int ObjectSize, bool ispost)
 {
-	if (r_drawflat_cheatsafe || !material)
-		return;
-
-	if ((material->override_wireframe && (r_showtris.iValue != 1) || !material->override_wireframe) && (r_lightmap_cheatsafe || r_showtris.bValue))
+	if (!material) return; // todo, handle this better... throw error?
+	else if ((material->override_wireframe && (r_showtris.iValue != 1) || !material->override_wireframe) && (r_lightmap_cheatsafe || r_showtris.bValue))
 	{
 		if (!ispost)
 		{
 			// Select the first TMU.
-			vlActiveTexture(0);
+			plSetTextureUnit(0);
 
 			// Set it as white.
-			Video_SetTexture(g_mGlobalColour->skin[MATERIAL_COLOUR_WHITE].texture->gMap);
+			g_mGlobalColour->skin[MATERIAL_COLOUR_WHITE].texture->instance->Bind();
 		}
+		return;
+	}
+	else if(cv_material_simplified.value == 1)
+	{
+		MaterialSkin_t *skin = Material_GetSkin(material, material->current_skin);
+		if(!skin) { Sys_Error("Failed to get valid skin! (%s)\n", material->cName); return; } // return to keep compiler happy...
+
+		MaterialTexture_t *texture = &skin->texture[0];
+		if(!texture) { Sys_Error("Failed to get valid texture! (%s)\n", material->cName); return; } // return to keep compiler happy...
+		else if(!texture->instance) { Sys_Error("Invalid texture instance! (%s)\n", material->cName); return; } // return to keep compiler happy...
+
+		plSetTextureUnit(0);
+
+		if(!ispost)	texture->instance->Bind();
+		else		texture->instance->Unbind();
 		return;
 	}
 
@@ -1163,7 +1181,10 @@ void Material_Draw(Material_t *material, vlVertex_t *ObjectVertex, vlPrimitive_t
 	else
 		msCurrentSkin = Material_GetSkin(material, material->current_skin);
 	if (!msCurrentSkin)
-		Sys_Error("Failed to get valid skin! (%s)\n", material->cName);
+    {
+        Sys_Error("Failed to get valid skin! (%s)\n", material->cName);
+        return;
+    }
 
 	// Handle any skin effects.
 	if (!ispost)
@@ -1176,15 +1197,15 @@ void Material_Draw(Material_t *material, vlVertex_t *ObjectVertex, vlPrimitive_t
 		{ 
 			vlDepthMask(false);
 
-			vlEnable(VL_CAPABILITY_BLEND);
+			plEnableGraphicsStates(VL_CAPABILITY_BLEND);
 
 			if (msCurrentSkin->uiFlags & MATERIAL_FLAG_ADDITIVE)
 				// Additive blending isn't done by default.
-				vlBlendFunc(VL_BLEND_ADDITIVE);
+				plSetBlendMode(PL_BLEND_ADDITIVE);
 		}
 		// Alpha-testing
 		else if (msCurrentSkin->uiFlags & MATERIAL_FLAG_ALPHA)
-			vlEnable(VL_CAPABILITY_ALPHA_TEST);
+			plEnableGraphicsStates(VL_CAPABILITY_ALPHA_TEST);
 	}
 
 	MaterialTexture_t *texture = &msCurrentSkin->texture[0];
@@ -1192,20 +1213,19 @@ void Material_Draw(Material_t *material, vlVertex_t *ObjectVertex, vlPrimitive_t
 	{
 #ifdef VIDEO_LIGHTMAP_HACKS
 		// Skip the lightmap, since it's manually handled.
-		if (unit == VIDEO_TEXTURE_LIGHT)
-			unit++;
+		if (unit == VIDEO_TEXTURE_LIGHT) unit++;
 #endif
 
 		// Attempt to select the unit (if it's already selected, then it'll just return).
-		vlActiveTexture(unit);
+		plSetTextureUnit(unit);
 
 		if (!ispost)
 		{
 			// Enable it.
-			vlEnable(VL_CAPABILITY_TEXTURE_2D);
+			plEnableGraphicsStates(VL_CAPABILITY_TEXTURE_2D);
 
 			// Bind it.
-			Video_SetTexture(texture->gMap);
+			texture->instance->Bind();
 
 			// Allow us to manipulate the texture.
 			if (texture->matrixmod)
@@ -1216,11 +1236,11 @@ void Material_Draw(Material_t *material, vlVertex_t *ObjectVertex, vlPrimitive_t
 				if ((texture->scroll[0] > 0) || (texture->scroll[0] < 0) ||
 					(texture->scroll[1] > 0) || (texture->scroll[1] < 0))
 					glTranslatef(
-						texture->scroll[0] * cl.time,
-						texture->scroll[1] * cl.time,
+						texture->scroll[0] * (float)cl.time,
+						texture->scroll[1] * (float)cl.time,
 						0);
 				if ((texture->fRotate > 0) || (texture->fRotate < 0))
-					glRotatef(texture->fRotate*cl.time, 0, 0, 1);
+					glRotatef(texture->fRotate * (float)cl.time, 0, 0, 1);
 				glMatrixMode(GL_MODELVIEW);
 #endif
 			}
@@ -1246,7 +1266,7 @@ void Material_Draw(Material_t *material, vlVertex_t *ObjectVertex, vlPrimitive_t
 				}
 			}
 
-			vlSetTextureEnvironmentMode(texture->env_mode);
+            plSetTextureEnvironmentMode(texture->env_mode);
 		}
 
 		switch (texture->mttType)
@@ -1254,7 +1274,7 @@ void Material_Draw(Material_t *material, vlVertex_t *ObjectVertex, vlPrimitive_t
 		case MATERIAL_TEXTURE_LIGHTMAP:
 			if (!ispost)
 			{
-				vlSetTextureEnvironmentMode(VIDEO_TEXTUREMODE_COMBINE);
+                plSetTextureEnvironmentMode(PL_TEXTUREMODE_COMBINE);
 #ifdef VL_MODE_OPENGL
 				glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
 				glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_PREVIOUS);
@@ -1272,7 +1292,7 @@ void Material_Draw(Material_t *material, vlVertex_t *ObjectVertex, vlPrimitive_t
 			{
 				if (!cv_video_drawdetail.bValue)
 				{
-					vlDisable(VL_CAPABILITY_TEXTURE_2D);
+					plDisableGraphicsStates(VL_CAPABILITY_TEXTURE_2D);
 					break;
 				}
 #ifdef VL_MODE_OPENGL
@@ -1290,7 +1310,7 @@ void Material_Draw(Material_t *material, vlVertex_t *ObjectVertex, vlPrimitive_t
 			{
 				if (!gl_fullbrights.bValue)
 				{
-					vlDisable(VL_CAPABILITY_TEXTURE_2D);
+					plDisableGraphicsStates(VL_CAPABILITY_TEXTURE_2D);
 					break;
 				}
 			}
@@ -1300,11 +1320,12 @@ void Material_Draw(Material_t *material, vlVertex_t *ObjectVertex, vlPrimitive_t
 			{
 				Video_GenerateSphereCoordinates();
 
-				vlEnable(VL_CAPABILITY_TEXTURE_GEN_S | VL_CAPABILITY_TEXTURE_GEN_T);
+				plEnableGraphicsStates(VL_CAPABILITY_TEXTURE_GEN_S | VL_CAPABILITY_TEXTURE_GEN_T);
 			}
 			else
-				vlDisable(VL_CAPABILITY_TEXTURE_GEN_S | VL_CAPABILITY_TEXTURE_GEN_T);
+				plDisableGraphicsStates(VL_CAPABILITY_TEXTURE_GEN_S | VL_CAPABILITY_TEXTURE_GEN_T);
 			break;
+        default:break;
 		}
 
 		if (ispost)
@@ -1321,10 +1342,10 @@ void Material_Draw(Material_t *material, vlVertex_t *ObjectVertex, vlPrimitive_t
 #endif
 			}
 
-			vlSetTextureEnvironmentMode(VIDEO_TEXTUREMODE_MODULATE);
+            plSetTextureEnvironmentMode(PL_TEXTUREMODE_MODULATE);
 
 			// Disable the texture.
-			vlDisable(VL_CAPABILITY_TEXTURE_2D);
+			plDisableGraphicsStates(VL_CAPABILITY_TEXTURE_2D);
 		}
 	}
 
@@ -1335,26 +1356,26 @@ void Material_Draw(Material_t *material, vlVertex_t *ObjectVertex, vlPrimitive_t
 		{
 			vlDepthMask(true);
 
-			vlDisable(VL_CAPABILITY_BLEND);
+			plDisableGraphicsStates(VL_CAPABILITY_BLEND);
 
 			if (msCurrentSkin->uiFlags & MATERIAL_FLAG_ADDITIVE)
 				// Return blend mode to its default.
-				vlBlendFunc(VL_BLEND_DEFAULT);
+				plSetBlendMode(PL_BLEND_DEFAULT);
 		}
 		// Alpha-testing
 		else if (msCurrentSkin->uiFlags & MATERIAL_FLAG_ALPHA)
 		{
-			vlDisable(VL_CAPABILITY_ALPHA_TEST);
+			plDisableGraphicsStates(VL_CAPABILITY_ALPHA_TEST);
 
 			if ((msCurrentSkin->uiFlags & MATERIAL_FLAG_ALPHATRICK) && (cv_video_alphatrick.bValue && (ObjectSize > 0)))
 			{
 				vlDepthMask(false);
-				vlEnable(VL_CAPABILITY_BLEND);
+				plEnableGraphicsStates(VL_CAPABILITY_BLEND);
 
 				// Draw the object again (don't bother passing material).
 				Video_DrawObject(ObjectVertex, ObjectPrimitive, ObjectSize, NULL, 0);
 
-				vlDisable(VL_CAPABILITY_BLEND);
+				plDisableGraphicsStates(VL_CAPABILITY_BLEND);
 				vlDepthMask(true);
 			}
 		}
@@ -1362,11 +1383,4 @@ void Material_Draw(Material_t *material, vlVertex_t *ObjectVertex, vlPrimitive_t
 		if (msCurrentSkin->program)
 			msCurrentSkin->program->Disable();
 	}
-}
-
-/**/
-
-void Material_Shutdown(void)
-{
-	Con_Printf("Shutting down material system...\n");
 }

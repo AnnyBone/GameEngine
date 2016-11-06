@@ -1,36 +1,33 @@
-/*	Copyright (C) 1996-2001 Id Software, Inc.
-	Copyright (C) 2002-2009 John Fitzgibbons and others
-	Copyright (C) 2011-2016 OldTimes Software
+/*
+Copyright (C) 1996-2001 Id Software, Inc.
+Copyright (C) 2002-2009 John Fitzgibbons and others
+Copyright (C) 2011-2016 OldTimes Software
 
-	This program is free software; you can redistribute it and/or
-	modify it under the terms of the GNU General Public License
-	as published by the Free Software Foundation; either version 2
-	of the License, or (at your option) any later version.
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-	See the GNU General Public License for more details.
+See the GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #pragma once
 
+// todo, get rid of these... damn it.
 #ifdef _MSC_VER
 #	pragma warning(disable : 4244)     // MIPS
 #	pragma warning(disable : 4136)     // X86
 #	pragma warning(disable : 4051)     // ALPHA
 #endif
 plEXTERN_C_START
-
-void GL_BeginRendering (int *x, int *y, int *width, int *height);
-void GL_EndRendering (void);
-
-extern	int glx, gly, glwidth, glheight;
 
 #define BACKFACE_EPSILON	0.01
 
@@ -43,33 +40,12 @@ extern	MathVector3f_t	modelorg, r_entorigin;
 extern	ClientEntity_t	*currententity;
 extern	int				r_visframecount;	// ??? what difs?
 extern	int				r_framecount;
-extern	mplane_t		frustum[4];
 
-//
-// view origin
-//
-extern	MathVector3f_t	vup;
-extern	MathVector3f_t	vpn;
-extern	MathVector3f_t	vright;
-extern	MathVector3f_t	r_origin;
-
-//
-// screen size info
-//
-extern	refdef_t	r_refdef;
-extern	mleaf_t		*r_viewleaf, *r_oldviewleaf;
-extern	int		d_lightstylevalue[256];	// 8.8 fraction of base light value
-
-#define OFFSET_NONE		0
-#define OFFSET_DECAL	-1
-#define OFFSET_FOG		-2
-#define OFFSET_SHOWTRIS -3
-void GL_PolygonOffset(int);
+extern int d_lightstylevalue[256];	// 8.8 fraction of base light value
 
 //johnfitz -- rendering statistics
 extern int rs_brushpolys, rs_aliaspolys, rs_skypolys, rs_particles, rs_fogpolys;
 extern int rs_dynamiclightmaps, rs_brushpasses, rs_aliaspasses, rs_skypasses;
-extern float rs_megatexels;
 //johnfitz
 
 //johnfitz -- track developer statistics that vary every frame
@@ -98,7 +74,7 @@ extern overflowtimes_t dev_overflows; //this stores the last time overflow messa
 
 //johnfitz -- moved here from r_brush.c
 #define MAX_LIGHTMAPS 512 //johnfitz -- was 64
-extern gltexture_t *lightmap_textures[MAX_LIGHTMAPS]; //johnfitz -- changed to an array
+extern XTexture *lightmap_textures[MAX_LIGHTMAPS]; //johnfitz -- changed to an array
 //johnfitz
 
 extern int gl_warpimagesize; //johnfitz -- for water warp

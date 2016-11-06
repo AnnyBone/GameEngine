@@ -25,8 +25,18 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 	fun toybox stuff.
 */
 
-vlDraw_t *base_draw = nullptr;
+PLDraw *base_draw = nullptr;
 
-void DrawExampleInit()
+void Debug_Initialize()
+{
+	base_draw = vlCreateDraw(VL_PRIMITIVE_TRIANGLE_FAN, 2, 4);
+	if (!base_draw)
+		Sys_Error("Failed to create debug draw object!\n");
+
+	vlBeginDraw(base_draw);
+	vlEndDraw(base_draw);
+}
+
+void Debug_DrawVBO()
 {
 }

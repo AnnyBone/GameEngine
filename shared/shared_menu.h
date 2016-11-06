@@ -16,8 +16,7 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef SHARED_MENU_H
-#define	SHARED_MENU_H
+#pragma once
 
 typedef enum
 {
@@ -41,42 +40,21 @@ typedef enum
 #define	MENU_STATE_MENU			8	// Display the menu.
 #define	MENU_STATE_PAUSED		16	// Display pause menu.
 
-typedef struct Menu_s
-{
-	char			*cName,			// The name of the menu element.
-					*cResource,		// If based on a model/image this is the path of the resource it needs.
-					*cContent;		// Content, meaning the text that could be inside the window.
-
-	struct	Menu_s	*mParent;		// The parent of the element. If an element has a parent and the parent moves then this will move with it.
-
-	int				iPosition[1];	// Position (X & Y) of the element.
-	int				iScale[1];		// Scale (width & height) of the element.
-
-	MenuType_t		mMenuType;		// The type of element.
-
-	bool			bActive,		// Is it active?
-					bMoveable;		// Can the element be moved?
-
-	float			fAlpha;
-} Menu_t;
-
 // Exported functions
 typedef struct
 {
-	int		iVersion;					// Inteface version.
+	int	version;	// Inteface version.
 
-	void	(*Initialize)(void);		// Called when we initialize the module.
-	void	(*Draw)(void);				// Called whenever we draw the menu.
-	void	(*Input)(int iKey);			// Called whenever we press a key while in menu mode.
-	void	(*AddState)(int iState);	// Add onto the current menu state.
-	void	(*RemoveState)(int iState);	// Remove a state from the menus current state set.
-	void	(*SetState)(int iState);	// Forcefully set a new state.
-	void	(*Shutdown)(void);			// Called upon shutdown.
+	void	(*Initialize)(void);				// Called when we initialize the module.
+	void	(*Draw)(CoreViewport *viewport);	// Called whenever we draw the menu.
+	void	(*Input)(int iKey);					// Called whenever we press a key while in menu mode.
+	void	(*AddState)(int iState);			// Add onto the current menu state.
+	void	(*RemoveState)(int iState);			// Remove a state from the menus current state set.
+	void	(*SetState)(int iState);			// Forcefully set a new state.
+	void	(*Shutdown)(void);					// Called upon shutdown.
 
-	int		(*GetState)(void);			// Get the menus current state so we can check it.
+	int		(*GetState)(void);	// Get the menus current state so we can check it.
 } MenuExport_t;
 
 #define MENU_MODULE		"menu"
 #define	MENU_VERSION	(sizeof(MenuExport_t)+sizeof(ModuleImport_t))
-
-#endif

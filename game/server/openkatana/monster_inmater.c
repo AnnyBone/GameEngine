@@ -24,7 +24,7 @@
 	those locked inside in line and under control.
 */
 
-EntityFrame_t efInmaterIdle[]=
+ServerEntityFrame_t efInmaterIdle[] =
 {
 	{ NULL, 1, 0.1f },
 	{ NULL, 1, 0.1f },
@@ -52,7 +52,7 @@ EntityFrame_t efInmaterIdle[]=
 	{ NULL, 23, 0.1f, true }
 };
 
-EntityFrame_t efInmaterDeath[]=
+ServerEntityFrame_t efInmaterDeath[] =
 {
 	{ NULL, 148, 0.1f },
 	{ NULL, 149, 0.1f },
@@ -83,11 +83,11 @@ EntityFrame_t efInmaterDeath[]=
 #define	INMATER_MIN_HEALTH	-35
 #define	INMATER_MIN_BOREDOM	-45
 
-void Inmater_Pain(ServerEntity_t *eInmater, ServerEntity_t *eOther, ServerDamageType_t type)
+void Inmater_Pain(ServerEntity_t *eInmater, ServerEntity_t *eOther, EntityDamageType_t type)
 {
 }
 
-void Inmater_Die(ServerEntity_t *eInmater, ServerEntity_t *eOther, ServerDamageType_t type)
+void Inmater_Die(ServerEntity_t *eInmater, ServerEntity_t *eOther, EntityDamageType_t type)
 {
 	if(eInmater->v.iHealth < INMATER_MIN_HEALTH)
 	{
@@ -107,7 +107,7 @@ void Inmater_Die(ServerEntity_t *eInmater, ServerEntity_t *eOther, ServerDamageT
 				vOrigin[j]	= eInmater->v.origin[j]+((eInmater->v.mins[j]+eInmater->v.maxs[j])*(rand()%10));
 
 			// [26/2/2014] Add some random velocity on top of the velocity that the inmater already has ~hogsy
-			Math_VectorCopy(eInmater->v.velocity,vGibVelocity);
+			plVectorCopy(eInmater->v.velocity,vGibVelocity);
 			Math_VectorAddValue(vGibVelocity,(float)(rand()%5),vGibVelocity);
 
 			PHYSICS_MODEL_METAL(cModel);

@@ -18,7 +18,7 @@
 
 #include "server_weapon.h"
 
-EntityFrame_t BallistaAnimation_Deploy [] =
+ServerEntityFrame_t BallistaAnimation_Deploy[] =
 {
 	{   NULL, 35, 0.1f    },
 	{   NULL, 36, 0.1f    },
@@ -68,7 +68,7 @@ void Ballista_SpawnLogProjectile(ServerEntity_t *ent)
 	log->local.eOwner = ent;
 
 	log->v.movetype = MOVETYPE_FLY;
-	log->Physics.iSolid = SOLID_BBOX;
+	log->Physics.solid = SOLID_BBOX;
 
 	Weapon_Projectile(ent, log, 2000.0f);
 

@@ -19,7 +19,7 @@ void Discus_Catch(ServerEntity_t *ent, ServerEntity_t *discus)
 
 void Discus_Follow(ServerEntity_t *ent)
 {
-	vec3_t	vtemp;
+	PLVector3f	vtemp;
 
 	// [23/5/2012] Quick fix for possible issue ~hogsy
 	if(!ent || !ent->v.enemy)
@@ -45,7 +45,7 @@ void Discus_Follow(ServerEntity_t *ent)
 void Discus_ProjectileTouch(ServerEntity_t *ent,ServerEntity_t *other)
 {
 	char	snd[64];
-	vec3_t	vel;
+	PLVector3f	vel;
 
 	// [4/8/2012] Updated to use owner ~hogsy
 	if(other == ent->local.eOwner)
@@ -94,7 +94,7 @@ void Discus_ProjectileTouch(ServerEntity_t *ent,ServerEntity_t *other)
 }
 
 // [4/7/2012] Renamed to Discus_SpawnProjectile ~hogsy
-void Discus_SpawnProjectile(ServerEntity_t *ent,vec3_t org)
+void Discus_SpawnProjectile(ServerEntity_t *ent,PLVector3f org)
 {
 	ServerEntity_t *eDiscus;
 	MathVector3f_t mvDirection;
@@ -103,7 +103,7 @@ void Discus_SpawnProjectile(ServerEntity_t *ent,vec3_t org)
 
 	eDiscus->v.cClassname = "discus";
 	eDiscus->v.movetype = MOVETYPE_FLYBOUNCE;
-	eDiscus->Physics.iSolid = SOLID_BBOX;
+	eDiscus->Physics.solid = SOLID_BBOX;
 	eDiscus->v.effects = EF_MOTION_ROTATE;
 	eDiscus->v.enemy = ent;
 

@@ -196,8 +196,6 @@ void Key_Console (int key)
 		key_lines[edit_line][0] = ']';
 		key_lines[edit_line][1] = 0; //johnfitz -- otherwise old history items show up in the new edit line
 		key_linepos = 1;
-		if (cls.state == ca_disconnected)
-			SCR_UpdateScreen (); // force an update, because the command may take some time
 		return;
 	case INPUT_KEY_TAB:
 		Con_TabComplete ();
@@ -750,12 +748,10 @@ void Key_Event(int key,bool down)
 	// Allow users to use ALT and ENTER to toggle fullscreen.
 	if((key == INPUT_KEY_ENTER) && keydown[K_ALT])
 	{
-		if (cv_video_fullscreen.value)
-			Cvar_SetValue("video_fullscreen",0);
-		else
-			Cvar_SetValue("video_fullscreen",1);
+		if (cv_video_fullscreen.value)	Cvar_SetValue("video_fullscreen",0);
+		else							Cvar_SetValue("video_fullscreen",1);
 
-		Video_UpdateWindow();
+		Window_Update();
 		return;
 	}
 

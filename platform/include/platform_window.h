@@ -1,23 +1,22 @@
-/*	Copyright (C) 2011-2016 OldTimes Software
+/*
+DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+Version 2, December 2004
 
-	This program is free software; you can redistribute it and/or
-	modify it under the terms of the GNU General Public License
-	as published by the Free Software Foundation; either version 2
-	of the License, or (at your option) any later version.
+Copyright (C) 2011-2016 Mark E Sowden <markelswo@gmail.com>
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+Everyone is permitted to copy and distribute verbatim or modified
+copies of this license document, and changing it is allowed as long
+as the name is changed.
 
-	See the GNU General Public License for more details.
+DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+0. You just DO WHAT THE FUCK YOU WANT TO.
 */
 
-#ifndef PLATFORM_WINDOW_H
-#define PLATFORM_WINDOW_H
+#pragma once
+
+#include "platform.h"
 
 #ifdef _WIN32
 #else	// Linux
@@ -32,32 +31,33 @@ typedef struct
 
 	int		x, y;
 
-	bool	is_active, is_fullscreen;
+	bool is_active, is_fullscreen;
+	bool is_unlocked;
+
+	int vsync_interval;
 
 #ifdef _WIN32
 	HWND	instance;
 	HDC		dc;
 #else	// Linux
-	Window  wInstance;
+	Window  instance;
 #endif
 } plWindow_t;
 
 plEXTERN_C_START
 
-extern void plMessageBox(const char *title, const char *msg, ...);
-extern void plShowCursor(bool show);
-extern void plGetCursorPosition(int *x, int *y);
+PL_EXTERN PLvoid plMessageBox(const char *title, const char *msg, ...);
+PL_EXTERN PLvoid plShowCursor(PLbool show);	// Shows or hides the cursor for the active window.
+PL_EXTERN PLvoid plGetCursorPosition(int *x, int *y);
 
 // Window Management
-extern void plCreateWindow(plWindow_t *window);
+PL_EXTERN PLvoid plCreateWindow(plWindow_t *window);
 
-extern int plGetScreenWidth(void);	// Returns width of current screen.
-extern int plGetScreenHeight(void);	// Returns height of current screen.
-extern int plGetScreenCount(void);	// Returns number of avaliable screens.
+PL_EXTERN PLuint plGetScreenWidth(void);	// Returns width of current screen.
+PL_EXTERN PLuint plGetScreenHeight(void);	// Returns height of current screen.
+PL_EXTERN PLint plGetScreenCount(void);	// Returns number of avaliable screens.
 
 // Rendering
-extern void plSwapBuffers(plWindow_t *window);
+PL_EXTERN PLvoid plSwapBuffers(plWindow_t *window);
 
 plEXTERN_C_END
-
-#endif // !PLATFORM_WINDOW_H

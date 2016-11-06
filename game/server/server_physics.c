@@ -1,10 +1,25 @@
-/*	Copyright (C) 2011-2013 OldTimes Software
+/*
+Copyright (C) 2011-2016 OldTimes Software
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
+
 #include "server_physics.h"
 
-/*
-	Server-Side Physics
-*/
+/*	Server-Side Physics	*/
 
 #define PHYSICS_MAXVELOCITY	2000.0f
 
@@ -14,15 +29,15 @@ void Physics_SetGravity(ServerEntity_t *eEntity)
 {	
 	eEntity->v.velocity[2] -=
 		// Slightly more complex gravity management.
-		(eEntity->Physics.fGravity*cvServerGravityTweak.value)*
+		(eEntity->Physics.gravity * cvServerGravityTweak.value) *
 		// Multiplied by the mass of the entity.
-		eEntity->Physics.fMass*
+		eEntity->Physics.mass *
 		(float)Engine.Server_GetFrameTime();
 }
 
 bool Physics_CheckWater(ServerEntity_t *eEntity)
 {
-	MathVector3f_t point;
+	plVector3f_t point;
 	int	cont;
 
 	point[0] = eEntity->v.origin[0];
@@ -122,8 +137,8 @@ void Physics_WallFriction(ServerEntity_t *eEntity, trace_t *trLine)
 
 	// Cut the tangential velocity.
 	i = Math_DotProduct(trLine->plane.normal, eEntity->v.velocity);
-	Math_VectorScale(trLine->plane.normal, i, into);
-	Math_VectorSubtract(eEntity->v.velocity, into, side);
+	plVectorScalef(trLine->plane.normal, i, into);
+	plVectorSubtract3fv(eEntity->v.velocity, into, side);
 
 	eEntity->v.velocity[0] = side[0] * (1 + d);
 	eEntity->v.velocity[1] = side[1] * (1 + d);
@@ -137,10 +152,10 @@ void Physics_Impact(ServerEntity_t *eEntity,ServerEntity_t *eOther)
 	if (eOther->v.movetype == MOVETYPE_NOCLIP)
 		return;
 
-	if(eEntity->v.TouchFunction && eEntity->Physics.iSolid != SOLID_NOT)
+	if(eEntity->v.TouchFunction && eEntity->Physics.solid != SOLID_NOT)
 		eEntity->v.TouchFunction(eEntity,eOther);
 
-	if(eOther->v.TouchFunction && eOther->Physics.iSolid != SOLID_NOT)
+	if(eOther->v.TouchFunction && eOther->Physics.solid != SOLID_NOT)
 		eOther->v.TouchFunction(eOther,eEntity);
 }
 
@@ -155,17 +170,17 @@ trace_t Physics_PushEntity(ServerEntity_t *eEntity, MathVector3f_t mvPush)
 	trace_t	trace;
 	MathVector3f_t	end;
 
-	Math_VectorAdd(eEntity->v.origin, mvPush, end);
-
+	plVectorAdd3fv(eEntity->v.origin, mvPush, end);
+	
 	if (eEntity->v.movetype == (MOVETYPE_FLYMISSILE || MOVETYPE_FLYBOUNCE))
 		trace = Engine.Server_Move(eEntity->v.origin, eEntity->v.mins, eEntity->v.maxs, end, MOVE_MISSILE, eEntity);
-	else if (eEntity->Physics.iSolid == SOLID_TRIGGER || eEntity->Physics.iSolid == SOLID_NOT)
+	else if (eEntity->Physics.solid == SOLID_TRIGGER || eEntity->Physics.solid == SOLID_NOT)
 		// only clip against bmodels
 		trace = Engine.Server_Move(eEntity->v.origin, eEntity->v.mins, eEntity->v.maxs, end, MOVE_NOMONSTERS, eEntity);
 	else
 		trace = Engine.Server_Move(eEntity->v.origin, eEntity->v.mins, eEntity->v.maxs, end, MOVE_NORMAL, eEntity);
 
-	Math_VectorCopy(trace.endpos, eEntity->v.origin);
+	plVectorCopy(trace.endpos, eEntity->v.origin);
 	Entity_Link(eEntity, true);
 
 	if (trace.ent)

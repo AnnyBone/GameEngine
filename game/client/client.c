@@ -1,19 +1,20 @@
-/*	Copyright (C) 2011-2016 OldTimes Software
+/*
+Copyright (C) 2011-2016 OldTimes Software
 
-	This program is free software; you can redistribute it and/or
-	modify it under the terms of the GNU General Public License
-	as published by the Free Software Foundation; either version 2
-	of the License, or (at your option) any later version.
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-	See the GNU General Public License for more details.
+See the GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "client.h"
@@ -70,16 +71,14 @@ void Client_ParseTemporaryEntity(void)
 	int	type;
 
 	// Set iType, so if the type is missing we can mention it below.
-	type = Engine.ReadByte();
+	type = g_engine->ReadByte();
 	switch (type)
 	{
 		case CTE_EXPLOSION:
 		{
-			int				i;
-			MathVector3f_t	position;
-
-			for(i = 0; i < 3; i++)
-				position[i] = Engine.ReadCoord();
+			PLVector3f	position;
+			for(int i = 0; i < 3; i++)
+				position[i] = g_engine->ReadCoord();
 
 			ClientEffect_Explosion(position);
 		}
@@ -87,10 +86,9 @@ void Client_ParseTemporaryEntity(void)
 
 		case CTE_BLOODPUFF:
 		{
-			MathVector3f_t	position;
-
+			PLVector3f	position;
 			for(int i = 0; i < 3; i++)
-				position[i] = Engine.ReadCoord();
+				position[i] = g_engine->ReadCoord();
 
 			ClientEffect_BloodPuff(position);
 		}
@@ -98,8 +96,7 @@ void Client_ParseTemporaryEntity(void)
 
 		case CTE_BLOODCLOUD:
 		{
-			MathVector3f_t position;
-
+			PLVector3f position;
 			for (int i = 0; i < 3; i++)
 				position[i] = g_engine->ReadCoord();
 
@@ -109,20 +106,19 @@ void Client_ParseTemporaryEntity(void)
 
 		case CTE_PARTICLE_FIELD:
 		{
-			int				i;
-			float			density;
-			MathVector3f_t	position, mins, maxs;
+			PLVector3f position;
+			for (int i = 0; i < 3; i++)
+				position[i] = g_engine->ReadCoord();
 
-			for (i = 0; i < 3; i++)
-				position[i] = Engine.ReadCoord();
+			PLVector3f mins;
+			for (int i = 0; i < 3; i++)
+				mins[i] = g_engine->ReadCoord();
 
-			for (i = 0; i < 3; i++)
-				mins[i] = Engine.ReadCoord();
+			PLVector3f maxs;
+			for (int i = 0; i < 3; i++)
+				maxs[i] = g_engine->ReadCoord();
 
-			for (i = 0; i < 3; i++)
-				maxs[i] = Engine.ReadCoord();
-
-			density = Engine.ReadFloat();
+			float density = g_engine->ReadFloat();
 
 			ClientEffect_ParticleField(position, mins, maxs, density);
 		}
@@ -130,8 +126,7 @@ void Client_ParseTemporaryEntity(void)
 
 		case CTE_MUZZLEFLASH:
 		{
-			MathVector3f_t position, angles;
-
+			PLVector3f position, angles;
 			for (int i = 0; i < 3; i++)
 				position[i] = g_engine->ReadCoord();
 

@@ -169,14 +169,14 @@ void Item_Respawn(ServerEntity_t *ent)
 {
 	Entity_SetModel(ent,ent->local.cOldModel);
 
-	ent->Physics.iSolid = SOLID_TRIGGER;
+	ent->Physics.solid = SOLID_TRIGGER;
 
 	Sound(ent,CHAN_ITEM,"items/respawn.wav",255,ATTN_NORM);
 }
 
 void Item_Touch(ServerEntity_t *eItem,ServerEntity_t *eOther)
 {
-	Item_t	*iItem;
+	Item_t *iItem;
 
 	if (Server.dTime < eItem->local.delay)
 		// TODO: play a little negative sound on fail for client.
@@ -227,7 +227,7 @@ void Item_Touch(ServerEntity_t *eItem,ServerEntity_t *eOther)
 	else
 		eItem->v.model = 0;
 
-	eItem->Physics.iSolid = SOLID_NOT;
+	eItem->Physics.solid = SOLID_NOT;
 
 	switch(iItem->iNumber)
 	{
@@ -358,7 +358,7 @@ void Item_Spawn(ServerEntity_t *eItem)
 	}
 
 	// Start with this so these can be overwritten in a specific entcase
-	eItem->Physics.iSolid	= SOLID_TRIGGER;
+	eItem->Physics.solid	= SOLID_TRIGGER;
 
 	eItem->v.movetype		= MOVETYPE_FLY;
 	eItem->v.TouchFunction	= Item_Touch;

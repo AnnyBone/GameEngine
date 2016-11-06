@@ -102,6 +102,7 @@ VideoFrameBuffer::~VideoFrameBuffer()
 */
 void VideoFrameBuffer::GenerateBuffers()
 {
+#if 0
 	// Colour buffer
 	{
 		// Create a new texture instance and then bind it.
@@ -112,12 +113,13 @@ void VideoFrameBuffer::GenerateBuffers()
 		Video_SetTexture(buf_colour);
 
 		// Set the texture up.
-		vlTexImage2D(VL_TEXTURE_2D, VL_TEXTUREFORMAT_RGB, VL_TEXTUREFORMAT_RGB, width, height, NULL);
-		vlSetTextureFilter(VL_TEXTUREFILTER_LINEAR);
+	//	vlTexImage2D(VL_TEXTUREFORMAT_RGB, VL_TEXTUREFORMAT_RGB, width, height, NULL);
+		vlSetTextureFilter(buf_colour->texnum, VL_TEXTUREFILTER_LINEAR);
 
 		// Attach the texture to this framebuffer.
 		vlAttachFrameBufferTexture(buf_colour);
 	}
+#endif
 
 	// Depth buffer
 #ifdef VL_MODE_OPENGL
@@ -127,7 +129,7 @@ void VideoFrameBuffer::GenerateBuffers()
 	buf_depth->Attach();
 #endif
 
-	vlCheckFrameBufferStatus();
+	vlCheckFrameBufferStatus(PL_FRAMEBUFFER_DEFAULT);
 }
 
 void VideoFrameBuffer::Bind()
@@ -135,7 +137,7 @@ void VideoFrameBuffer::Bind()
 	if (isbound)
 		return;
 
-	vlBindFrameBuffer(VL_FRAMEBUFFER_DEFAULT, instance);
+	vlBindFrameBuffer(PL_FRAMEBUFFER_DEFAULT, instance);
 
 	isbound = true;
 }
@@ -145,7 +147,7 @@ void VideoFrameBuffer::Unbind()
 	if (!isbound)
 		return;
 
-	vlBindFrameBuffer(VL_FRAMEBUFFER_DEFAULT, 0);
+	vlBindFrameBuffer(PL_FRAMEBUFFER_DEFAULT, 0);
 
 	isbound = false;
 }
@@ -161,6 +163,7 @@ void VideoFrameBuffer::Draw()
 	Draw_Rectangle(0, 0, 512, 512, pl_white); //Video.iWidth, Video.iHeight,
 }
 
+#if 0
 VideoFrameBuffer *debug_fbo;
 
 void DEBUG_FrameBufferInitialization()
@@ -180,11 +183,12 @@ void DEBUG_FrameBufferDraw()
 {
 	debug_fbo->Draw();
 }
+#endif
 
 // Post Processing Object
 
 VideoPostProcess::VideoPostProcess(const char *fragpath, const char *vertpath)
-	: VideoFrameBuffer(Video.iWidth, Video.iHeight)
+	: VideoFrameBuffer(0, 0)
 {
 #if 0
 	program = new Core::ShaderProgram();
@@ -206,11 +210,11 @@ VideoPostProcess::VideoPostProcess(const char *fragpath, const char *vertpath)
 #endif
 }
 
-VideoPostProcess::VideoPostProcess(Core::ShaderProgram *PostProcessProgram)
+VideoPostProcess::VideoPostProcess(core::ShaderProgram *PostProcessProgram)
 	: VideoFrameBuffer(512, 512)	//Video.iWidth, Video.iHeight)
 {
 	if (!PostProcessProgram)
-		throw Core::Exception("Invalid shader program!\n");
+		throw XException("Invalid shader program!\n");
 
 	this->program = PostProcessProgram;
 }
@@ -234,6 +238,7 @@ void VideoPostProcess::Draw()
 	program->Disable();
 }
 
+#if 0
 VideoPostProcess *post_bloom;
 
 void DEBUG_PostProcessInitialization()
@@ -254,3 +259,4 @@ void DEBUG_PostProcessBind()
 void VideoPostProcess_Initialize() {}
 void VideoPostProcess_BindFrameBuffer() {}
 void VideoPostProcess_Draw() {}
+#endif

@@ -65,7 +65,7 @@ float	Cvar_VariableValue(const char *var_name);
 
 bool ConsoleVariable_GetBoolValue(const char *var_name);
 
-char	*Cvar_VariableString(char *var_name);
+char	*Cvar_VariableString(const char *var_name);
 // returns an empty string if not defined
 
 bool Cvar_Command(void);

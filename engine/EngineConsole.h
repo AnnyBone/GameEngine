@@ -25,7 +25,7 @@
 #include <list>
 #include <time.h>
 
-namespace Core
+namespace core
 {
 	class Console
 	{
@@ -41,6 +41,8 @@ namespace Core
 			void ScrollDown();
 			void ScrollHome();
 			void ScrollEnd();
+
+			void SetSize(unsigned int width, unsigned int height);
 
 			void Draw(bool draw_input);
 			void DrawNotify();
@@ -58,6 +60,8 @@ namespace Core
 			size_t cursor_x, cursor_y;
 			size_t backscroll;
 
+			unsigned int _width, _height;
+
 			std::deque<Line> lines;
 
 			void linefeed();
@@ -67,7 +71,7 @@ namespace Core
 	};
 }
 
-extern Core::Console *con_instance;
+extern core::Console *g_console;
 #endif
 
 plEXTERN_C_START

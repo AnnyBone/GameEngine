@@ -27,6 +27,8 @@
 #include "winding.h"
 #include "map.h"
 
+#include "platform_log.h"
+
 // the exact bounding box of the brushes is expanded some for the headnode
 // volume.  is this still needed?
 #define	SIDESPACE	24

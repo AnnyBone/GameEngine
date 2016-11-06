@@ -16,6 +16,10 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
 #pragma once
 
+#include "platform.h"
+#include "platform_math.h"
+#include "platform_graphics.h"
+
 enum
 {
 	PL_MODELTYPE_START,
@@ -33,7 +37,7 @@ typedef struct plVertex_s
 
 	plVector2f_t ST;
 
-	plColour_t colour;
+	PLColour colour;
 } plVertex_t;
 
 typedef struct plTriangle_s
@@ -49,19 +53,19 @@ typedef struct plModelFrame_s
 	plVertex_t		*vertices;
 
 	plVector3f_t mins, maxs; // Bounds
-} plModelFrame_t;
+} PLModelFrame;
 
 /*	Static animated mesh.
 */
-typedef struct plStaticModel_s
+typedef struct PLStaticModel
 {
 	unsigned int num_triangles;
 	unsigned int num_vertices;
 
-	vlPrimitive_t primitive;
+	PLPrimitive primitive;
 
-	plModelFrame_t	frame;
-} plStaticModel_t;
+	PLModelFrame	frame;
+} PLStaticModel;
 
 /*	Per-vertex animated mesh.
 */
@@ -71,9 +75,9 @@ typedef struct plAnimatedModel_s
 	unsigned int num_vertices;
 	unsigned int num_frames;
 
-	vlPrimitive_t primitive;
+	PLPrimitive primitive;
 
-	plModelFrame_t *frames;
+	PLModelFrame *frames;
 } plAnimatedModel_t;
 
 /*	Mesh with bone structure.
@@ -83,7 +87,7 @@ typedef struct plSkeletalModel_s
 	unsigned int num_triangles;
 	unsigned int num_vertices;
 
-	vlPrimitive_t primitive;
+	PLPrimitive primitive;
 
 	// Unfinished...
 } plSkeletalModel_t;
@@ -94,9 +98,9 @@ typedef struct plSkeletalModel_s
 plEXTERN_C_START
 
 // Static
-plStaticModel_t *plCreateStaticModel(void);
-plStaticModel_t *plLoadStaticModel(const char *path);
-void plDeleteStaticModel(plStaticModel_t *model);
+PLStaticModel *plCreateStaticModel(void);
+PLStaticModel *plLoadStaticModel(const char *path);
+void plDeleteStaticModel(PLStaticModel *model);
 
 // Animated
 plAnimatedModel_t *plCreateAnimatedModel(void);
@@ -106,7 +110,7 @@ void plDeleteAnimatedModel(plAnimatedModel_t *model);
 plAnimatedModel_t *plLoadU3DModel(const char *path);
 
 // Utility
-void plGenerateStaticModelNormals(plStaticModel_t *model);
+void plGenerateStaticModelNormals(PLStaticModel *model);
 void plGenerateAnimatedModelNormals(plAnimatedModel_t *model);
 void plGenerateSkeletalModelNormals(plSkeletalModel_t *model);
 

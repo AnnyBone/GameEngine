@@ -18,8 +18,7 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef	SHARED_FORMATS_H
-#define	SHARED_FORMATS_H
+#pragma once
 
 typedef enum
 {
@@ -70,5 +69,3 @@ typedef struct miptex_s
 #define	PLANE_ANYX		3
 #define	PLANE_ANYY		4
 #define	PLANE_ANYZ		5
-
-#endif // !SHARED_FORMATS_H

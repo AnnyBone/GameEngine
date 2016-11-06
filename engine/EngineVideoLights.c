@@ -76,8 +76,8 @@ void Light_Draw(void)
 	// Because the count hasn't advanced yet for this frame.
 	r_dlightframecount = r_framecount+1;
 
-	vlEnable(VIDEO_BLEND);
-	vlBlendFunc(VL_BLEND_ONE, VL_BLEND_ONE);
+	plEnableGraphicsStates(VIDEO_BLEND);
+	plSetBlendMode(VL_BLEND_ONE, VL_BLEND_ONE);
 
 	dlLight = cl_dlights;
 	for(i = 0; i < MAX_DLIGHTS; i++,dlLight++)
@@ -92,7 +92,7 @@ void Light_Draw(void)
 			int				j,c = 0;
 			float			a,a2,b,rad;
 			MathVector3f_t	v;
-			vlVertex_t		voLight[17];
+			PLVertex		voLight[17];
 
 			Math_VectorSubtract(dlLight->origin,r_origin,v);
 
@@ -139,8 +139,8 @@ void Light_Draw(void)
 		}
 	}
 
-	vlBlendFunc(VL_BLEND_DEFAULT);
-	vlDisable(VIDEO_BLEND);
+	plSetBlendMode(VL_BLEND_DEFAULT);
+	plDisableGraphicsStates(VIDEO_BLEND);
 #endif
 }
 
@@ -215,7 +215,7 @@ void R_PushDlights(void)
 	int				i;
 	DynamicLight_t	*dLight;
 
-	if (gl_flashblend.value)
+	if (!cl.worldmodel || gl_flashblend.value)
 		return;
 
 	// Because the count hasn't advanced yet for this frame.
@@ -437,7 +437,7 @@ DynamicLight_t *Light_GetDynamic(MathVector3f_t vPoint, bool bCheap)
 	return dlClosestLight;
 }
 
-extern unsigned	blocklights[128*128*3];
+unsigned blocklights[128*128*3];
 
 void R_AddDynamicLights(msurface_t *surf)
 {

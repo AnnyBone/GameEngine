@@ -34,8 +34,6 @@ void Cmd_ForwardToServer(void);
 
 cmdalias_t	*cmd_alias;
 
-int trashtest,*trashspot;
-
 bool bCmdWait;
 
 //=============================================================================
@@ -68,19 +66,15 @@ void Cbuf_Init (void)
 */
 void Cbuf_AddText (const char *text)
 {
-	int		l;
-
-	l = strlen(text);
-
+	size_t l = strlen(text);
 	if (cmd_text.cursize + l >= cmd_text.maxsize)
 	{
 		Con_Printf ("Cbuf_AddText: overflow\n");
 		return;
 	}
 
-	SZ_Write(&cmd_text,(void*)text,strlen(text));
+	SZ_Write(&cmd_text, (void*)text, (int)strlen(text));
 }
-
 
 /*	Adds command text immediately after the current command
 	Adds a \n to the text
@@ -89,10 +83,9 @@ void Cbuf_AddText (const char *text)
 void Cbuf_InsertText (const char *text)
 {
 	char	*temp = NULL;
-	int		templen;
 
 	// Copy off any commands still remaining in the exec buffer
-	templen = cmd_text.cursize;
+	size_t templen = cmd_text.cursize;
 	if (templen)
 	{
 		temp = (char*)malloc_or_die(templen);
@@ -106,16 +99,17 @@ void Cbuf_InsertText (const char *text)
 	// Add the copied off data
 	if (templen)
 	{
-		SZ_Write (&cmd_text, temp, templen);
+		SZ_Write (&cmd_text, temp, (int)templen);
 		free(temp);
 	}
 }
 
 void Cbuf_Execute (void)
 {
-	int		i,quotes;
+	int		quotes;
 	char	*text,line[1024];
 
+	size_t i;
 	while(cmd_text.cursize)
 	{
 		// find a \n or ; line break
@@ -144,7 +138,7 @@ void Cbuf_Execute (void)
 		{
 			i++;
 			cmd_text.cursize -= i;
-			memmove(text, text + i, cmd_text.cursize);
+			memmove(text, text + i, (size_t)cmd_text.cursize);
 		}
 
 		// Execute the command line
@@ -393,7 +387,8 @@ void Cmd_List_f (void)
 {
 	cmd_function_t	*cmd;
 	char 			*partial;
-	int				len, count;
+	int				count;
+	size_t 			len;
 
 	if (Cmd_Argc() > 1)
 	{
@@ -499,7 +494,7 @@ void Cmd_TokenizeString (char *text)
 	}
 }
 
-void Cmd_AddCommand (char *cmd_name, xcommand_t function)
+void Cmd_AddCommand (const char *cmd_name, xcommand_t function)
 {
 	cmd_function_t	*cmd;
 	cmd_function_t	*cursor,*prev; //johnfitz -- sorted list insert
@@ -558,17 +553,14 @@ bool Cmd_Exists (const char *cmd_name)
 	return false;
 }
 
-char *Cmd_CompleteCommand (char *partial)
+const char *Cmd_CompleteCommand (char *partial)
 {
-	cmd_function_t	*cmd;
-	int				iLength;
-
-	iLength = strlen(partial);
+	size_t iLength = strlen(partial);
 	if(!iLength)
 		return NULL;
 
 	// Check functions
-	for (cmd=cmd_functions ; cmd ; cmd=cmd->next)
+	for (cmd_function_t	*cmd=cmd_functions ; cmd ; cmd=cmd->next)
 		if (!strncmp(partial, cmd->name, iLength))
 			return cmd->name;
 
@@ -673,12 +665,10 @@ void Cmd_ForwardToServer (void)
 */
 int Cmd_CheckParm (char *parm)
 {
-	int i;
-
 	if (!parm)
 		Sys_Error ("Cmd_CheckParm: NULL");
 
-	for (i = 1; i < Cmd_Argc (); i++)
+	for (int i = 1; i < Cmd_Argc (); i++)
 		if (!strcasecmp(parm, Cmd_Argv(i)))
 			return i;
 

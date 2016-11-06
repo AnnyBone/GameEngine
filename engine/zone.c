@@ -183,7 +183,7 @@ void Hunk_Print_f (void)
 	Hunk_Print(false);
 }
 
-void *Hunk_AllocName (int size, char *name)
+void *Hunk_AllocName (int size, const char *name)
 {
 	hunk_t	*h;
 
@@ -520,12 +520,6 @@ void Cache_Free(cache_user_t *c,bool freetextures) //johnfitz -- added second ar
 	c->data = NULL;
 
 	Cache_UnlinkLRU (cs);
-
-	//johnfitz -- if a model becomes uncached, free the gltextures.  This only works
-	//becuase the cache_user_t is the last component of the model_t struct.  Should
-	//fail harmlessly if *c is actually part of an sfx_t struct.  I FEEL DIRTY
-	if (freetextures)
-		TexMgr_FreeTexturesForOwner ((model_t *)(c + 1) - 1);
 }
 
 void *Cache_Check (cache_user_t *c)
@@ -580,13 +574,13 @@ void *Cache_Alloc (cache_user_t *c, int size, char *name)
 
 //============================================================================
 
-void Memory_Init (void *buf, int size)
+void Memory_Initialize()
 {
-	hunk_base = (uint8_t*)buf;
-	hunk_size = size;
+	hunk_base = (uint8_t*)host_parms.membase;
+	hunk_size = host_parms.memsize;
 	hunk_low_used = 0;
 	hunk_high_used = 0;
-
+	
 	Cache_Init ();
 
 	Cmd_AddCommand ("hunk_print", Hunk_Print_f); //johnfitz

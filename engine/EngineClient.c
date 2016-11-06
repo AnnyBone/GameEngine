@@ -1,21 +1,22 @@
-/*	Copyright (C) 1996-2001 Id Software, Inc.
-	Copyright (C) 2002-2009 John Fitzgibbons and others
-	Copyright (C) 2011-2016 OldTimes Software
+/*
+Copyright (C) 1996-2001 Id Software, Inc.
+Copyright (C) 2002-2009 John Fitzgibbons and others
+Copyright (C) 2011-2016 OldTimes Software
 
-	This program is free software; you can redistribute it and/or
-	modify it under the terms of the GNU General Public License
-	as published by the Free Software Foundation; either version 2
-	of the License, or (at your option) any later version.
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-	See the GNU General Public License for more details.
+See the GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "engine_base.h"
@@ -23,9 +24,9 @@
 #include "EngineGame.h"
 #include "input.h"
 #include "EngineMenu.h"
-
+#include "EngineVideoParticle.h"
 #include "video_light.h"
-
+#include "client/video_camera.h"
 #include "client/effect_sprite.h"
 
 // we need to declare some mouse variables here, because the menu system
@@ -36,8 +37,6 @@ ConsoleVariable_t	cl_name = { "_cl_name", "player", true };
 ConsoleVariable_t	cl_color = { "_cl_color", "0", true };
 ConsoleVariable_t	cl_shownet = { "cl_shownet", "0" };	// can be 0, 1, or 2
 ConsoleVariable_t	cl_nolerp = { "cl_nolerp", "0" };
-ConsoleVariable_t	cl_maxpitch = { "cl_maxpitch", "90", true }; //johnfitz -- variable pitch clamping
-ConsoleVariable_t	cl_minpitch = { "cl_minpitch", "-90", true }; //johnfitz -- variable pitch clamping
 
 ConsoleVariable_t	lookspring = { "lookspring", "0", true };
 ConsoleVariable_t	lookstrafe = { "lookstrafe", "0", true };
@@ -75,6 +74,10 @@ void CL_ClearState (void)
 // wipe the entire cl structure
 	memset (&cl, 0, sizeof(cl));
 
+	cl.current_camera = CameraManager_GetPrimaryCamera();
+	if (!cl.current_camera)
+		Sys_Error("Invalid primary camera (was one created?)\n");
+
 	SZ_Clear (&cls.message);
 
 	// Clear other arrays
@@ -90,7 +93,7 @@ void CL_ClearState (void)
 	SpriteManager_Clear();
 
 	//johnfitz -- cl_entities is now dynamically allocated
-	cl_max_edicts	= Math_Clamp(MIN_EDICTS, (int)max_edicts.value, MAX_EDICTS);
+	cl_max_edicts	= plClamp(MIN_EDICTS, (int)max_edicts.value, MAX_EDICTS);
 	cl_entities		= (ClientEntity_t*)Hunk_AllocName(cl_max_edicts*sizeof(ClientEntity_t), "cl_entities");
 	//johnfitz
 
@@ -310,7 +313,7 @@ void CL_DecayLights (void)
 {
 	int				i;
 	DynamicLight_t	*dl;
-	float			time;
+	double			time;
 
 	time = cl.time - cl.oldtime;
 
@@ -320,7 +323,7 @@ void CL_DecayLights (void)
 		if(((dl->die < cl.time) && dl->die) || !dl->radius)
 			continue;
 
-		dl->radius -= time*dl->decay;
+		dl->radius -= ((float)time)*dl->decay;
 		if(dl->radius < 0)
 			dl->radius = 0;
 	}
@@ -333,7 +336,7 @@ float CL_LerpPoint(void)
 {
 	float	f, frac;
 
-	f = cl.mtime[0] - cl.mtime[1];
+	f = (float)(cl.mtime[0] - cl.mtime[1]);
 	if(!f || cls.timedemo || sv.active)
 	{
 		cl.time = cl.mtime[0];
@@ -375,7 +378,7 @@ void CL_RelinkEntities (void)
 	float			frac, f, d;
 	plVector3f_t	delta;
 
-	if(cl.bIsPaused)
+	if (cl.paused)
 		return;
 
 	// determine partial update time
@@ -388,6 +391,7 @@ void CL_RelinkEntities (void)
 		cl.velocity[i] = cl.mvelocity[1][i] +
 			frac*(cl.mvelocity[0][i] - cl.mvelocity[1][i]);
 
+#if 0 // todo, reimplement me!
 	if(cls.demoplayback)
 	{
 		// interpolate the angles
@@ -398,14 +402,15 @@ void CL_RelinkEntities (void)
 				d -= 360.0f;
 			else if (d < -180.0f)
 				d += 360.0f;
+
 			cl.viewangles[j] = cl.mviewangles[1][j] + frac*d;
 		}
 	}
+#endif
 
 // start on the entity after the world
 	for (i=1,ent=cl_entities+1 ; i<cl.num_entities ; i++,ent++)
 	{
-#if 1
 		if(!ent->model)
 		{
 			// Empty slot
@@ -413,7 +418,6 @@ void CL_RelinkEntities (void)
 				R_RemoveEfrags (ent);	// just became empty
 			continue;
 		}
-#endif
 
 		// if the object wasn't included in the last packet, remove it
 		if (ent->msgtime != cl.mtime[0])
@@ -513,18 +517,18 @@ int CL_ReadFromServer (void)
 
 	//visedicts
 	dev_stats.visedicts = cl_numvisedicts;
-	dev_peakstats.visedicts = Math_Max(cl_numvisedicts, dev_peakstats.visedicts);
+	dev_peakstats.visedicts = plMax(cl_numvisedicts, dev_peakstats.visedicts);
 
 	//temp entities
 	dev_stats.tempents = num_temp_entities;
-	dev_peakstats.tempents = Math_Max(num_temp_entities, dev_peakstats.tempents);
+	dev_peakstats.tempents = plMax(num_temp_entities, dev_peakstats.tempents);
 
 	//beams
 	for (i=0, b=cl_beams ; i< MAX_BEAMS ; i++, b++)
 		if (b->model && b->endtime >= cl.time)
 			num_beams++;
 	dev_stats.beams		= num_beams;
-	dev_peakstats.beams = Math_Max(num_beams, dev_peakstats.beams);
+	dev_peakstats.beams = plMax(num_beams, dev_peakstats.beams);
 
 	//dlights
 	for(i = 0,l = cl_dlights; i < MAX_DLIGHTS; i++,l++)
@@ -532,7 +536,7 @@ int CL_ReadFromServer (void)
 			num_dlights++;
 
 	dev_stats.dlights		= num_dlights;
-	dev_peakstats.dlights	= Math_Max(num_dlights, dev_peakstats.dlights);
+	dev_peakstats.dlights	= plMax(num_dlights, dev_peakstats.dlights);
 
 //johnfitz
 
@@ -581,26 +585,6 @@ void CL_SendCmd(void)
 	SZ_Clear (&cls.message);
 }
 
-/*	Display impact point of trace along VPN
-*/
-void CL_Tracepos_f (void)
-{
-	plVector3f_t	v, w;
-
-	Math_VectorScale(vpn, 8192.0, v);
-	TraceLine(r_refdef.vieworg, v, w);
-
-	if (plLengthf(w) == 0)
-		Con_Printf ("Tracepos: trace didn't hit anything\n");
-	else
-		Con_Printf ("Tracepos: (%i %i %i)\n", (int)w[0], (int)w[1], (int)w[2]);
-}
-
-void CL_Viewpos_f (void)
-{
-
-}
-
 /*	List all the currently cached models.
 */
 void Client_ListModelCache(void)
@@ -646,8 +630,6 @@ void CL_Init (void)
 	Cvar_RegisterVariable (&m_yaw, NULL);
 	Cvar_RegisterVariable (&m_forward, NULL);
 	Cvar_RegisterVariable (&m_side, NULL);
-	Cvar_RegisterVariable (&cl_maxpitch, NULL); //johnfitz -- variable pitch clamping
-	Cvar_RegisterVariable (&cl_minpitch, NULL); //johnfitz -- variable pitch clamping
 
 	Cmd_AddCommand ("entities", CL_PrintEntities_f);
 	Cmd_AddCommand ("disconnect", CL_Disconnect_f);
@@ -655,17 +637,15 @@ void CL_Init (void)
 	Cmd_AddCommand ("stop", CL_Stop_f);
 	Cmd_AddCommand ("playdemo", CL_PlayDemo_f);
 	Cmd_AddCommand ("timedemo", CL_TimeDemo_f);
-	Cmd_AddCommand ("tracepos", CL_Tracepos_f); //johnfitz
-	Cmd_AddCommand ("viewpos", CL_Viewpos_f); //johnfitz
 	Cmd_AddCommand("client_modelcache", Client_ListModelCache);
 }
 
-/*
-	Client Simulation
-*/
+/*	Client Simulation	*/
 
 void Client_Simulate(void)
 {
+	CameraManager_Simulate();
+	ParticleManager_Simulate();
 	SpriteManager_Simulate();
 }
 
