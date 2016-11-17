@@ -24,10 +24,10 @@
 
 typedef union eval_s
 {
-	string_t		string;
+	int		string;
 	float			_float;
 	float			vector[3];
-	func_t			function;
+	int			function;
 	int				_int;
 	int				edict;
 } eval_t;

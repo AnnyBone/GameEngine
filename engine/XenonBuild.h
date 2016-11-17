@@ -22,7 +22,7 @@ static PL_INLINE PLuint32 GetBuildNumber(void)
 	if (buildnum == 0)
 		buildnum = (PLuint32)-floor(
 			difftime(
-				plStringToTime("Aug 15 2016"),	// Jun 1 2011
+				plStringToTime("Jun 1 2011"),
 				plStringToTime(__DATE__)) / (60 * 60 * 24)
 		);
 	return buildnum;

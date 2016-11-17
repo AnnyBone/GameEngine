@@ -20,11 +20,6 @@
 #ifndef __PRCOMP__
 #define __PRCOMP__
 
-// this file is shared by quake and qcc
-
-typedef int	func_t;
-typedef int	string_t;
-
 typedef struct
 {
 	unsigned short	type;		// if DEF_SAVEGLOBGAL bit is set
