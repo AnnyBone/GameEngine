@@ -20,32 +20,29 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
 /*	Implementation for a water shader.	*/
 
-WaterShader::WaterShader() : ShaderProgram("water")
-{
+WaterShader::WaterShader() : ShaderProgram("water") {
 }
 
-void WaterShader::Initialize()
-{
-	RegisterShader("base", PL_SHADER_VERTEX);
-	RegisterShader("water", PL_SHADER_FRAGMENT);
+void WaterShader::Initialize() {
+  RegisterShader("base", PL_SHADER_VERTEX);
+  RegisterShader("water", PL_SHADER_FRAGMENT);
 
-	Link();
+  Link();
 
-	RegisterAttributes();
+  RegisterAttributes();
 
-	// Textures
-	SHADER_REGISTER_UNIFORM(u_diffusemap, VL_UNIFORM_TEXTURE2D, 0);
-	SHADER_REGISTER_UNIFORM(u_normalmap, VL_UNIFORM_TEXTURE2D, 0);
+  // Textures
+  SHADER_REGISTER_UNIFORM(u_diffusemap, VL_UNIFORM_TEXTURE2D, 0);
+  SHADER_REGISTER_UNIFORM(u_normalmap, VL_UNIFORM_TEXTURE2D, 0);
 
-	SHADER_REGISTER_UNIFORM(u_time, VL_UNIFORM_FLOAT, 0);
+  SHADER_REGISTER_UNIFORM(u_time, VL_UNIFORM_FLOAT, 0);
 }
 
-void WaterShader::SetTime(float curtime)
-{
-	static float time = 0;
-	if (curtime == time)
-		return;
-	SetUniformVariable(u_time, curtime);
-	time = curtime;
+void WaterShader::SetTime(float curtime) {
+  static float time = 0;
+  if (curtime == time)
+	return;
+  SetUniformVariable(u_time, curtime);
+  time = curtime;
 }
 

@@ -16,16 +16,15 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
 #pragma once
 
-static PL_INLINE PLuint32 GetBuildNumber(void)
-{
-	static PLuint32 buildnum = 0;
-	if (buildnum == 0)
-		buildnum = (PLuint32)-floor(
-			difftime(
-				plStringToTime("Jun 1 2011"),
-				plStringToTime(__DATE__)) / (60 * 60 * 24)
-		);
-	return buildnum;
+static PL_INLINE PLuint32 GetBuildNumber(void) {
+  static PLuint32 buildnum = 0;
+  if (buildnum == 0)
+	buildnum = (PLuint32) -floor(
+		difftime(
+			plStringToTime("Jun 1 2011"),
+			plStringToTime(__DATE__)) / (60 * 60 * 24)
+	);
+  return buildnum;
 }
 
 #define ENGINE_VERSION_BUILD GetBuildNumber()
