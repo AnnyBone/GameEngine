@@ -18,11 +18,10 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
 #include "platform.h"
 
-typedef struct PLModuleFunction
-{
-	const char *name;
+typedef struct PLModuleFunction {
+    const char *name;
 
-	void **Function;
+    void **Function;
 } PLModuleFunction;
 
 PL_EXTERN_C
@@ -32,15 +31,16 @@ PL_EXTERN_C
 #	define PL_MODULE_EXPORT		__declspec(dllexport)
 #	define PL_MODULE_IMPORT		__declspec(dllimport)
 #else   // Linux
-#	define PL_MODULE_EXTENSION	".so"
-#	define PL_MODULE_EXPORT		__attribute__((visibility("default")))
-#	define PL_MODULE_IMPORT		__attribute__((visibility("hidden")))
+#	define PL_MODULE_EXTENSION    ".so"
+#	define PL_MODULE_EXPORT        __attribute__((visibility("default")))
+#	define PL_MODULE_IMPORT        __attribute__((visibility("hidden")))
 #endif
 
 PL_EXTERN PL_FARPROC plFindLibraryFunction(PL_INSTANCE instance, const PLchar *function);
 
 PL_EXTERN PLvoid *plLoadLibraryInterface(PL_INSTANCE instance, const PLchar *path, const PLchar *entry, PLvoid *handle);
-PL_INSTANCE plLoadLibrary(const PLchar *path);	// Loads new library instance.
-PL_EXTERN PLvoid plUnloadLibrary(PL_INSTANCE instance);	// Unloads library instance.
+
+PL_INSTANCE plLoadLibrary(const PLchar *path);    // Loads new library instance.
+PL_EXTERN PLvoid plUnloadLibrary(PL_INSTANCE instance);    // Unloads library instance.
 
 PL_EXTERN_C_END

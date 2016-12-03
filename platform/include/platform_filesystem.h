@@ -18,28 +18,33 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
 #include "platform.h"
 
-plEXTERN_C_START
+PL_EXTERN_C
 
-extern void	plGetUserName(PLchar *out);
-extern void	plGetWorkingDirectory(PLchar *out);
+extern void plGetUserName(PLchar *out);
+
+extern void plGetWorkingDirectory(PLchar *out);
 
 extern void plStripExtension(PLchar *dest, const PLchar *in);
-extern PLchar *plGetFileExtension(PLchar *dest, const PLchar *in);
+
+extern const PLchar *plGetFileExtension(const PLchar *in);
 extern const PLchar *plGetFileName(const PLchar *path);
 
-extern void	plScanDirectory(const PLchar *path, const PLchar *extension, void(*Function)(PLchar *filepath));
-extern void	plLowerCasePath(PLchar *out);
+extern void plScanDirectory(const PLchar *path, const PLchar *extension, void(*Function)(PLchar *filepath));
+
+extern void plLowerCasePath(PLchar *out);
 
 extern PLbool plCreateDirectory(const PLchar *path);
 
 // File I/O ...
 
 extern PLbool plFileExists(const PLchar *path);
+
 extern PLbool plIsFileModified(time_t oldtime, const PLchar *path);
 
 extern time_t plGetFileModifiedTime(const PLchar *path);
 
 extern PLint plGetLittleShort(FILE *fin);
+
 extern PLint plGetLittleLong(FILE *fin);
 
-plEXTERN_C_END
+PL_EXTERN_C_END

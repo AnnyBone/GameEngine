@@ -16,8 +16,11 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
 #pragma once
 
-plEXTERN_C_START
+PL_EXTERN_C
 
-PLStaticModel *plLoadOBJModel(const PLchar *path);
+        PLStaticModel
+*
 
-plEXTERN_C_END
+plLoadOBJModel(const PLchar *path);
+
+PL_EXTERN_C_END

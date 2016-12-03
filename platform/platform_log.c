@@ -18,38 +18,35 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
 /*	Log System	*/
 
-#define	LOG_FILE_EXTENSION	".log"
+#define    LOG_FILE_EXTENSION    ".log"
 
-void plWriteLog(const char *path, const char *msg, ...)
-{
-	pFUNCTION_START
+void plWriteLog(const char *path, const char *msg, ...) {
+    pFUNCTION_START
 
-	char newpath[PLATFORM_MAX_PATH];
-	sprintf(newpath, "%s"LOG_FILE_EXTENSION, path);
+        char newpath[PLATFORM_MAX_PATH];
+        sprintf(newpath, "%s"LOG_FILE_EXTENSION, path);
 
-	static char	buffer[1024];
-	va_list	args;
-	va_start(args, msg);
-	vsnprintf(buffer, sizeof(buffer), msg, args);
-	va_end(args);
+        static char buffer[1024];
+        va_list args;
+        va_start(args, msg);
+        vsnprintf(buffer, sizeof(buffer), msg, args);
+        va_end(args);
 
-	unsigned int size = strlen(buffer);
+        size_t size = strlen(buffer);
+        FILE *file = fopen(newpath, "a");
+        if (fwrite(buffer, sizeof(char), size, file) != size)
+            plSetError("Failed to write to log! (%s)", newpath);
+        fclose(file);
 
-	FILE *file = fopen(newpath, "a");
-	if (fwrite(buffer, sizeof(char), size, file) != size)
-		plSetError("Failed to write to log! (%s)", newpath);
-	fclose(file);
-
-	pFUNCTION_END
+    pFUNCTION_END
 }
 
-void plClearLog(const char *path)
-{
-	pFUNCTION_START
+void plClearLog(const char *path) {
+    pFUNCTION_START
 
-	char newpath[PLATFORM_MAX_PATH];
-	sprintf(newpath, "%s"LOG_FILE_EXTENSION, path);
-	unlink(newpath);
+        char newpath[PLATFORM_MAX_PATH];
+        sprintf(newpath, "%s"LOG_FILE_EXTENSION, path);
+        unlink(newpath);
 
-	pFUNCTION_END
+    pFUNCTION_END
 }

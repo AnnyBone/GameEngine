@@ -27,23 +27,21 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 	to also launch the engine directly into editor mode in the future.
 */
 
-#define	LAUNCHER_LOG "launcher"
+#define    LAUNCHER_LOG "launcher"
 
-int main(int argc,char *argv[])
-{
-	plClearLog(LAUNCHER_LOG);
-	//plWriteLog(LAUNCHER_LOG, "Launcher (Interface Version %i)\n", ENGINE_VERSION_INTERFACE);
+int main(int argc, char *argv[]) {
+    plClearLog(LAUNCHER_LOG);
+    //plWriteLog(LAUNCHER_LOG, "Launcher (Interface Version %i)\n", ENGINE_VERSION_INTERFACE);
 
-	// Initialize.
-	if (xenon::Initialize(argc, argv) != PL_RESULT_SUCCESS)
-	{
-		plWriteLog(LAUNCHER_LOG, "Engine failed to initialize, check engine log!\n");
-		plMessageBox("Launcher", "Failed to initialize engine!");
-		return -1;
-	}
+    // Initialize.
+    if (xenon::Initialize(argc, argv) != PL_RESULT_SUCCESS) {
+        plWriteLog(LAUNCHER_LOG, "Engine failed to initialize, check engine log!\n");
+        plMessageBox("Launcher", "Failed to initialize engine!");
+        return -1;
+    }
 
-	while (xenon::IsRunning())
-		xenon::Loop();
+    while (xenon::IsRunning())
+        xenon::Loop();
 
-	return -1;
+    return -1;
 }

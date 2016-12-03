@@ -20,82 +20,67 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 #include "platform_math.h"
 #include "platform_graphics.h"
 
-enum
-{
-	PL_MODELTYPE_START,
+enum {
+    PL_MODELTYPE_START,
 
-	PL_MODELTYPE_STATIC,
-	PL_MODELTYPE_ANIMATED,
-	PL_MODELTYPE_SKELETAL,
+    PL_MODELTYPE_STATIC,
+    PL_MODELTYPE_ANIMATED,
+    PL_MODELTYPE_SKELETAL,
 
-	PL_MODELTYPE_END
+    PL_MODELTYPE_END
 };
 
-typedef struct plVertex_s
-{
-	plVector3f_t position, normal;
+typedef struct PLTriangle {
+    PLVector3D normal;
 
-	plVector2f_t ST;
+    unsigned int indices[3];
+} PLTriangle;
 
-	PLColour colour;
-} plVertex_t;
+typedef struct PLModelFrame {
+    PLTriangle *triangles;
+    PLVertex *vertices;
 
-typedef struct plTriangle_s
-{
-	plVector3f_t normal;
-
-	unsigned int indices[3];
-} plTriangle_t;
-
-typedef struct plModelFrame_s
-{
-	plTriangle_t	*triangles;
-	plVertex_t		*vertices;
-
-	plVector3f_t mins, maxs; // Bounds
+    PLVector3D mins, maxs; // Bounds
 } PLModelFrame;
 
 /*	Static animated mesh.
 */
-typedef struct PLStaticModel
-{
-	unsigned int num_triangles;
-	unsigned int num_vertices;
+typedef struct PLStaticModel {
+    unsigned int num_triangles;
+    unsigned int num_vertices;
 
-	PLPrimitive primitive;
+    PLPrimitive primitive;
 
-	PLModelFrame	frame;
+    PLModelFrame frame;
 } PLStaticModel;
 
 /*	Per-vertex animated mesh.
 */
-typedef struct plAnimatedModel_s
-{
-	unsigned int num_triangles;
-	unsigned int num_vertices;
-	unsigned int num_frames;
+typedef struct PLAnimatedModel {
+    unsigned int num_triangles;
+    unsigned int num_vertices;
+    unsigned int num_frames;
 
-	PLPrimitive primitive;
+    PLPrimitive primitive;
 
-	PLModelFrame *frames;
-} plAnimatedModel_t;
+    PLModelFrame *frames;
+} PLAnimatedModel;
 
 /*	Mesh with bone structure.
 */
-typedef struct plSkeletalModel_s
-{
-	unsigned int num_triangles;
-	unsigned int num_vertices;
+typedef struct PLSkeletalModel {
+    unsigned int num_triangles;
+    unsigned int num_vertices;
 
-	PLPrimitive primitive;
+    PLPrimitive primitive;
 
-	// Unfinished...
-} plSkeletalModel_t;
+    // Unfinished...
+} PLSkeletalModel;
 
 #include "platform_model_u3d.h"
 #include "platform_model_obj.h"
 
-plEXTERN_C_START
+PL_EXTERN_C
 
 // Static
 PLStaticModel *plCreateStaticModel(void);
@@ -103,15 +88,15 @@ PLStaticModel *plLoadStaticModel(const char *path);
 void plDeleteStaticModel(PLStaticModel *model);
 
 // Animated
-plAnimatedModel_t *plCreateAnimatedModel(void);
-plAnimatedModel_t *plLoadAnimatedModel(const char *path);
-void plDeleteAnimatedModel(plAnimatedModel_t *model);
+PLAnimatedModel *plCreateAnimatedModel(void);
+PLAnimatedModel *plLoadAnimatedModel(const char *path);
+void plDeleteAnimatedModel(PLAnimatedModel *model);
 
-plAnimatedModel_t *plLoadU3DModel(const char *path);
+PLAnimatedModel *plLoadU3DModel(const char *path);
 
 // Utility
 void plGenerateStaticModelNormals(PLStaticModel *model);
-void plGenerateAnimatedModelNormals(plAnimatedModel_t *model);
-void plGenerateSkeletalModelNormals(plSkeletalModel_t *model);
+void plGenerateAnimatedModelNormals(PLAnimatedModel *model);
+void plGenerateSkeletalModelNormals(PLSkeletalModel *model);
 
-plEXTERN_C_END
+PL_EXTERN_C_END
