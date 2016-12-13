@@ -4,15 +4,16 @@
 project(engine)
 
 file(GLOB ENGINE_SOURCE_FILES
-        *.cpp *.c *.h
-        ../shared/*.h)
+        *.cpp *.c
+        client/*.cpp client/*.c
+        ../shared/SharedFormats.c)
 
 add_library(engine SHARED ${ENGINE_SOURCE_FILES})
 
 set_target_properties(engine PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/)
 set_target_properties(engine PROPERTIES PREFIX "")
 
-target_compile_definitions(engine PUBLIC "-DENGINE -Wno-write-strings")
+target_compile_definitions(engine PUBLIC "-DKATANA -Wno-write-strings")
 target_include_directories(engine PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${CMAKE_SYSTEM_INCLUDE_PATH}

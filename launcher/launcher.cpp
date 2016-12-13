@@ -14,18 +14,13 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 0. You just DO WHAT THE FUCK YOU WANT TO.
 */
 
-// Platform Library
 #include "platform_library.h"
 #include "platform_log.h"
 #include "platform_window.h"
 
 #include "shared_engine.h"
 
-/*
-	Launches the engine.
-	Currently can only launch the engine in one mode, but this is planned
-	to also launch the engine directly into editor mode in the future.
-*/
+/*  Launcher    */
 
 #define    LAUNCHER_LOG "launcher"
 
@@ -34,14 +29,14 @@ int main(int argc, char *argv[]) {
     //plWriteLog(LAUNCHER_LOG, "Launcher (Interface Version %i)\n", ENGINE_VERSION_INTERFACE);
 
     // Initialize.
-    if (xenon::Initialize(argc, argv) != PL_RESULT_SUCCESS) {
+    if (engine::Initialize(argc, argv) != ENGINE_RESULT_SUCCESS) {
         plWriteLog(LAUNCHER_LOG, "Engine failed to initialize, check engine log!\n");
         plMessageBox("Launcher", "Failed to initialize engine!");
         return -1;
     }
 
-    while (xenon::IsRunning())
-        xenon::Loop();
+    while (engine::IsActive())
+        engine::Loop();
 
-    return -1;
+    return 0;
 }
