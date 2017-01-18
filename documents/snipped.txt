@@ -59,7 +59,7 @@ void Bot_Think(ServerEntity_t *bot)
 	break;
 	case THINK_ATTACKING:
 	{
-		if (eBot->Monster.eTarget->v.iHealth <= 0)
+		if (eBot->Monster.eTarget->v.health <= 0)
 			Monster_SetThink(eBot, THINK_WANDERING);
 
 		wActiveWeapon = Weapon_GetCurrentWeapon(eBot);

@@ -218,7 +218,7 @@ void SV_ClientThink (void)
 	plVectorScalef(sv_player->v.punchangle, fLength, sv_player->v.punchangle);
 
 	// If dead, behave differently
-	if(sv_player->v.iHealth <= 0)
+	if(sv_player->v.health <= 0)
 		return;
 
 	// Show 1/3 the pitch angle and all the roll angle

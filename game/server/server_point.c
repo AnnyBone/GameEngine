@@ -263,7 +263,7 @@ void Point_ParticleEmit(ServerEntity_t *ent)
 	Engine.Particle(ent->v.origin, ent->v.velocity, ent->Model.scale, ent->v.model, ent->local.count);
 
 	ent->v.think		= Point_ParticleEmit;
-	ent->v.dNextThink	= Server.time+ent->local.dAttackFinished;
+	ent->v.nextthink	= Server.time+ent->local.dAttackFinished;
 }
 
 void Point_ParticleTrigger(ServerEntity_t *ent)
@@ -297,7 +297,7 @@ void Point_ParticleSpawn(ServerEntity_t *ent)
 	if(ent->local.dAttackFinished > 0)
 	{
 		ent->v.think		= Point_ParticleEmit;
-		ent->v.dNextThink	= Server.time+ent->local.dAttackFinished;
+		ent->v.nextthink	= Server.time+ent->local.dAttackFinished;
 	}
 	else
 		ent->v.use = Point_ParticleTrigger;
@@ -382,7 +382,7 @@ void Point_DynamicLightThink(ServerEntity_t *ent)
 {
 	ent->v.origin[2] = (float)sin(Server.time*2.0)*10.0f;
 
-	ent->v.dNextThink = Server.time+0.1;
+	ent->v.nextthink = Server.time+0.1;
 }
 
 void Point_DynamicLight(ServerEntity_t *ent)
@@ -392,7 +392,7 @@ void Point_DynamicLight(ServerEntity_t *ent)
 	ent->v.effects = EF_LIGHT_GREEN;
 
 	ent->v.think		= Point_DynamicLightThink;
-	ent->v.dNextThink	= Server.time+0.1;
+	ent->v.nextthink	= Server.time+0.1;
 }
 
 /*
@@ -618,7 +618,7 @@ enum
 
 void Point_MessageLocal(ServerEntity_t *eEntity)
 {
-	if(!eEntity->local.activator || (!Entity_IsPlayer(eEntity) && eEntity->local.activator->v.iHealth <= 0))
+	if(!eEntity->local.activator || (!Entity_IsPlayer(eEntity) && eEntity->local.activator->v.health <= 0))
 		return;
 
 	Engine.Server_SinglePrint(eEntity->local.activator,eEntity->v.message);
@@ -626,7 +626,7 @@ void Point_MessageLocal(ServerEntity_t *eEntity)
 
 void Point_MessageCenter(ServerEntity_t *eEntity)
 {
-	if(!eEntity->local.activator || (!Entity_IsPlayer(eEntity) && eEntity->local.activator->v.iHealth <= 0))
+	if(!eEntity->local.activator || (!Entity_IsPlayer(eEntity) && eEntity->local.activator->v.health <= 0))
 		return;
 
 	Engine.CenterPrint(eEntity->local.activator,eEntity->v.message);
@@ -641,7 +641,7 @@ void Point_InfoMessage(ServerEntity_t *eEntity)
 {
 	if(!eEntity->local.activator)
 		return;
-	else if((eEntity->Monster.iType != MONSTER_PLAYER) && eEntity->local.activator->v.iHealth <= 0)
+	else if((eEntity->Monster.iType != MONSTER_PLAYER) && eEntity->local.activator->v.health <= 0)
 		return;
 
 	Engine.Server_SinglePrint(eEntity->local.activator,"New info message received");
@@ -723,7 +723,7 @@ void Area_BreakableDie(ServerEntity_t *area, ServerEntity_t *other, EntityDamage
 
 void Point_PropTouch(ServerEntity_t *eEntity, ServerEntity_t *eOther)
 {
-	if(!eOther->v.iHealth)
+	if(!eOther->v.health)
 		return;
 
 	plVectorClear(eEntity->v.velocity);
@@ -735,9 +735,9 @@ void Point_PropSpawn(ServerEntity_t *eEntity)
 	if(!eEntity->v.model)
 		Entity_Remove(eEntity);
 
-	eEntity->v.iHealth = 10;
+	eEntity->v.health = 10;
 
-	if(eEntity->v.iHealth)
+	if(eEntity->v.health)
 	{
 		switch(eEntity->local.style)
 		{
@@ -777,7 +777,7 @@ void Point_PropSpawn(ServerEntity_t *eEntity)
 				Engine.Con_Warning("Prop with unknown style! (%i)\n",eEntity->local.style);
 		}
 
-		eEntity->v.bTakeDamage = true;
+		eEntity->v.takedamage = true;
 		eEntity->local.bBleed = false;
 
 		Entity_SetKilledFunction(eEntity, Area_BreakableDie);
@@ -826,12 +826,12 @@ void Point_ShakeThink (ServerEntity_t *eEntity)
 
 	} while(eEnts);
 
-	eEntity->v.dNextThink = Server.time+eEntity->local.delay;
+	eEntity->v.nextthink = Server.time+eEntity->local.delay;
 }
 
 void Point_ShakeUse (ServerEntity_t *eEntity)
 {
-	eEntity->v.dNextThink			= Server.time;
+	eEntity->v.nextthink			= Server.time;
 	eEntity->local.dAttackFinished	= Server.time+eEntity->local.dWait;
 }
 
@@ -936,7 +936,7 @@ void Point_LightstyleUse(ServerEntity_t *eEntity)
 
 	if(eEntity->local.dWait > 0)
 	{
-		eEntity->v.dNextThink	= Server.time+eEntity->local.dWait;
+		eEntity->v.nextthink	= Server.time+eEntity->local.dWait;
 		eEntity->v.think		= Point_LightstyleDie;
 	}
 }
@@ -1036,7 +1036,7 @@ void Point_TimedTriggerThink(ServerEntity_t *eEntity)
 
 void Point_TimedTriggerUse(ServerEntity_t *eEntity)
 {
-	eEntity->v.dNextThink	= Server.time+eEntity->local.dWait;
+	eEntity->v.nextthink	= Server.time+eEntity->local.dWait;
 	eEntity->v.think		= Point_TimedTriggerThink;
 }
 
@@ -1118,7 +1118,7 @@ void Point_LogicThink(ServerEntity_t *eEntity)
 		break;
 	}
 
-	eEntity->v.dNextThink = Server.time+eEntity->local.dWait;
+	eEntity->v.nextthink = Server.time+eEntity->local.dWait;
 }
 
 void Point_LogicSpawn(ServerEntity_t *eEntity)
@@ -1159,5 +1159,5 @@ void Point_LogicSpawn(ServerEntity_t *eEntity)
 	Entity_SetOrigin(eEntity,eEntity->v.origin);
 
 	eEntity->v.think		= Point_LogicThink;
-	eEntity->v.dNextThink	= Server.time+1.0f;
+	eEntity->v.nextthink	= Server.time+1.0f;
 }

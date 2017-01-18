@@ -134,7 +134,7 @@ void SideWinder_Think(ServerEntity_t *eSideWinder)
 		return;
 	}
 
-	eSideWinder->v.dNextThink = Server.time+0.05;
+	eSideWinder->v.nextthink = Server.time+0.05;
 }
 
 void SideWinder_SpawnMissle(ServerEntity_t *ent,float fSpeed,float ox)
@@ -177,7 +177,7 @@ void SideWinder_SpawnMissle(ServerEntity_t *ent,float fSpeed,float ox)
 	eMissile->local.fSpawnDelay = (float)(Server.time+8.0);
 
 	eMissile->v.TouchFunction	= SideWinder_MissileExplode;
-	eMissile->v.dNextThink		= Server.time+0.05;
+	eMissile->v.nextthink		= Server.time+0.05;
 	eMissile->v.think			= SideWinder_Think;
 
 	Entity_Link(eMissile,false);

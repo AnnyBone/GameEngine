@@ -29,7 +29,7 @@ void IceballTouch(ServerEntity_t *ent, ServerEntity_t *other)
 	Math_VectorCopy(ent->v.velocity,vel);
 	Math_VectorInverse(vel);
 
-	if(other->v.bTakeDamage)
+	if(other->v.takedamage)
 		Entity_Damage(other, ent, 50, DAMAGE_TYPE_NONE);
 	else if (ent->local.hit < 9)
 	{
@@ -76,7 +76,7 @@ void projectile_iceball(ServerEntity_t *ent, PLVector3f orig)
 	Entity_SetOrigin(ionball, orig);
 
 	ionball->v.TouchFunction	= IceballTouch;
-	ionball->v.dNextThink		= Server.time+3.0;
+	ionball->v.nextthink		= Server.time+3.0;
 	ionball->v.think			= Kineticore_IceballExplode;
 }
 

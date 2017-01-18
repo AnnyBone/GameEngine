@@ -22,7 +22,7 @@
 	SCAN BOT
 
 	The Scan Bot, is a placeholder name, for the robots that fly around 
-	Mishima’s fortress looking out for intruders. Of course it’s possible 
+	Mishimaï¿½s fortress looking out for intruders. Of course itï¿½s possible 
 	these bots could also roam entire cities in the game world, looking out 
 	for people that might be seeking to go against Mishima or otherwise 
 	looking to break the law.
@@ -46,8 +46,8 @@ void ScanBot_Spawn(ServerEntity_t *entity)
 
 	entity->v.netname		= "Scan Bot";
 	entity->v.movetype		= MOVETYPE_FLY;
-	entity->v.iHealth		= SCANBOT_HEALTH;
-	entity->v.bTakeDamage	= true;
+	entity->v.health		= SCANBOT_HEALTH;
+	entity->v.takedamage	= true;
 
 	Entity_SetPhysics(entity, SOLID_BBOX, SCANBOT_MASS, SCANBOT_FRICTION);
 	Entity_SetModel(entity, SCANBOT_MODEL);

@@ -155,7 +155,7 @@ void C4Vizatergo_C4BallTouch(ServerEntity_t *ent,ServerEntity_t *eOther)
 		ent->v.TouchFunction	= NULL;
 		ent->v.enemy			= other;
 		ent->v.think			= WEAPON_StickThink;
-		ent->v.dNextThink		= Server.time;
+		ent->v.nextthink		= Server.time;
 	}
 #else	// [12/12/2012] New method. Explode if touches monster / another player. ~hogsy
 	if(	eOther != ent->local.eOwner && eOther->Monster.iType)
@@ -191,14 +191,14 @@ void C4Vizatergo_Think(ServerEntity_t *ent)
 	else
 		fDistance = 0;
 
-	ent->v.dNextThink = Server.time+(2.5f*(fDistance/100.0f));
+	ent->v.nextthink = Server.time+(2.5f*(fDistance/100.0f));
 #else
 	Sound(ent, CHAN_AUTO, "weapons/c4/beep.wav", 130, ATTN_IDLE);
 
 	if(!ent->local.eOwner && ent->local.hit)
 		ent->v.movetype = MOVETYPE_BOUNCE;
 
-	ent->v.dNextThink = Server.time+2.5;
+	ent->v.nextthink = Server.time+2.5;
 #endif
 }
 
@@ -239,7 +239,7 @@ void C4Vizatergo_PrimaryAttack(ServerEntity_t *eOwner)
 
 	c4ball->v.TouchFunction = C4Vizatergo_C4BallTouch;
 	c4ball->v.think = C4Vizatergo_Think;
-	c4ball->v.dNextThink = Server.time + 2.5;
+	c4ball->v.nextthink = Server.time + 2.5;
 
 	Entity_SetModel(c4ball,"models/c4ammo.md2");
 	Entity_SetSizeVector(c4ball, pl_origin3f, pl_origin3f);
@@ -260,7 +260,7 @@ void C4Vizatergo_SecondaryAttack(ServerEntity_t *eOwner)
 		if((eExplodable->local.style == AMMO_C4BOMBS) && (eExplodable->local.iC4Ammo == 1) && (eExplodable->local.eOwner == eOwner))
 		{
 			eExplodable->v.think		= C4Vizatergo_Explode;
-			eExplodable->v.dNextThink	= Server.time;
+			eExplodable->v.nextthink	= Server.time;
 		}
 
 		eExplodable = eExplodable->v.chain;

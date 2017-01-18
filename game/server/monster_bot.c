@@ -186,10 +186,10 @@ void Bot_Spawn(ServerEntity_t *eBot)
 	}
 
 	eBot->v.cClassname		= "bot";
-	eBot->v.iHealth			= 100;
+	eBot->v.health			= 100;
 	eBot->local.iMaxHealth = cvServerMaxHealth.iValue;
 	eBot->v.movetype		= MOVETYPE_STEP;
-	eBot->v.bTakeDamage		= true;
+	eBot->v.takedamage		= true;
 
 	Entity_SetPhysics(eBot, SOLID_SLIDEBOX, 1.4f, 4.0f);
 
@@ -280,7 +280,7 @@ void Bot_BroadcastMessage(ServerEntity_t *eBot, ServerEntity_t *other)
 	if(!g_ismultiplayer || rand()%5 == 5)
 		return;
 
-	if(eBot->v.iHealth <= 0)
+	if(eBot->v.health <= 0)
 		cPhrase = BotDeathPhrases[(rand() % plArrayElements(BotDeathPhrases))];
 	else
 	{
@@ -336,7 +336,7 @@ void Bot_Pain(ServerEntity_t *ent, ServerEntity_t *other, EntityDamageType_t typ
 
 #if 0
 	// [16/7/2012] Moved to avoid a situation where we try fleeing without a target ~hogsy
-	if(	(ent->v.enemy && other->v.iHealth > ent->v.enemy->v.iHealth) ||
+	if(	(ent->v.enemy && other->v.health > ent->v.enemy->v.health) ||
 		!ent->v.enemy)
 		// [15/7/2012] Reckless but change our target to this new enemy ~hogsy
 		ent->v.enemy = other;
@@ -457,12 +457,12 @@ void Bot_Die(ServerEntity_t *eBot, ServerEntity_t *eOther, EntityDamageType_t ty
 
 	Sound(eBot,CHAN_VOICE,sound,255,ATTN_NORM);
 
-	if(eBot->v.iHealth < BOT_MIN_HEALTH)
+	if(eBot->v.health < BOT_MIN_HEALTH)
 	{
 		Sound(eBot, CHAN_VOICE, "misc/gib1.wav", 255, ATTN_NORM);
 
-		ThrowGib(eBot->v.origin,eBot->v.velocity,PHYSICS_MODEL_GIB0,(float)(eBot->v.iHealth*-1),true);
-		ThrowGib(eBot->v.origin,eBot->v.velocity,PHYSICS_MODEL_GIB1,(float)(eBot->v.iHealth*-1),true);
-		ThrowGib(eBot->v.origin,eBot->v.velocity,PHYSICS_MODEL_GIB2,(float)(eBot->v.iHealth*-1),true);
+		ThrowGib(eBot->v.origin,eBot->v.velocity,PHYSICS_MODEL_GIB0,(float)(eBot->v.health*-1),true);
+		ThrowGib(eBot->v.origin,eBot->v.velocity,PHYSICS_MODEL_GIB1,(float)(eBot->v.health*-1),true);
+		ThrowGib(eBot->v.origin,eBot->v.velocity,PHYSICS_MODEL_GIB2,(float)(eBot->v.health*-1),true);
 	}
 }

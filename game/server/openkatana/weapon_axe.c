@@ -88,7 +88,7 @@ void AxeHit(ServerEntity_t *ent)
 
 	if(trace.fraction == 1.0f)
 		return;
-	if(trace.ent->v.bTakeDamage)
+	if(trace.ent->v.takedamage)
 	{
 		if(trace.ent->local.bBleed)
 			Engine.Particle(sndvec,vel,10,"blood",30);

@@ -73,7 +73,7 @@ ServerEntityField_t	entity_fields[] =
 	{ "light", SERVER_ENTITY_FIELD(v.vLight), DATA_VECTOR4 },
 	{ "health", SERVER_ENTITY_FIELD(v.iHealth), DATA_INTEGER },
 	{ "spawnflags", SERVER_ENTITY_FIELD(v.spawnflags), DATA_INTEGER },
-	{ "bTakeDamage", SERVER_ENTITY_FIELD(v.bTakeDamage), DATA_BOOLEAN },
+	{ "takedamage", SERVER_ENTITY_FIELD(v.bTakeDamage), DATA_BOOLEAN },
 	{ "takedamage", SERVER_ENTITY_FIELD(v.bTakeDamage), DATA_BOOLEAN },
 	{ "alpha", SERVER_ENTITY_FIELD(alpha), DATA_INTEGER },
 	{ "frame", SERVER_ENTITY_FIELD(v.frame), DATA_INTEGER },
@@ -347,7 +347,7 @@ bool Entity_CanDamage(ServerEntity_t *eEntity, ServerEntity_t *eTarget, EntityDa
 	if(eEntity->local.pTeam && (eEntity->local.pTeam == eTarget->local.pTeam))
 		return false;
 
-	if(eTarget->v.bTakeDamage && (!eTarget->local.iDamageType || (eTarget->local.iDamageType == iDamageType)))
+	if(eTarget->v.takedamage && (!eTarget->local.iDamageType || (eTarget->local.iDamageType == iDamageType)))
 		return true;
 
 	return false;
@@ -372,8 +372,8 @@ void Entity_Damage(ServerEntity_t *seEntity, ServerEntity_t *seInflictor, int iD
 
 	// Otherwise we'll do our own thing here...
 
-	seEntity->v.iHealth -= iDamage;
-	if (seEntity->v.iHealth <= 0)
+	seEntity->v.health -= iDamage;
+	if (seEntity->v.health <= 0)
 	{
 		if (seEntity->local.KilledFunction)
 			seEntity->local.KilledFunction(seEntity, seInflictor, type);
@@ -395,7 +395,7 @@ void Entity_RadiusDamage(ServerEntity_t *eInflictor, float fRadius, int iDamage,
 
 	do
 	{
-		if(eTarget->v.bTakeDamage)
+		if(eTarget->v.takedamage)
 		{
 			for(i = 0; i < 3; i++)
 				vOrigin[i] = eTarget->v.origin[i]+(eTarget->v.mins[i]+eTarget->v.maxs[i])*0.5f;

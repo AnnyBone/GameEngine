@@ -207,7 +207,7 @@ void IonBlaster_PrimaryAttack(ServerEntity_t *ent)
 		Entity_SetOrigin(eIonBall, orig);
 
 		eIonBall->v.TouchFunction	= IonBlaster_IonBallTouch;
-		eIonBall->v.dNextThink		= Server.time+3.0;
+		eIonBall->v.nextthink		= Server.time+3.0;
 		eIonBall->v.think			= IonBlaster_IonBallExplode;
 
 		Entity_Link(eIonBall, false);

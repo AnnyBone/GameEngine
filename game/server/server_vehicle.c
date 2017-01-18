@@ -29,7 +29,7 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 */
 void Vehicle_Kill(ServerEntity_t *eVehicle,ServerEntity_t *eAttacker)
 {
-	if(eVehicle->v.iHealth <= VEHICLE_MAX_DAMAGE)
+	if(eVehicle->v.health <= VEHICLE_MAX_DAMAGE)
 	{
 		// [12/4/2013] TODO: Explode! ~hogsy
 		eVehicle->v.movetype		= MOVETYPE_NONE;
@@ -46,8 +46,8 @@ void Vehicle_Damage(ServerEntity_t *eVehicle,ServerEntity_t *eAttacker,int iDama
 	if(eVehicle->Monster.state == AI_STATE_DEAD)
 		return;
 
-	eVehicle->v.iHealth -= iDamage;
-	if(eVehicle->v.iHealth <= 0)
+	eVehicle->v.health -= iDamage;
+	if(eVehicle->v.health <= 0)
 		Vehicle_Kill(eVehicle,eAttacker);
 }
 
@@ -90,14 +90,14 @@ void Vehicle_Enter(ServerEntity_t *eVehicle,ServerEntity_t *eOther)
 		Engine.Sound(eVehicle,CHAN_AUTO,"misc/deny.wav",255,ATTN_NORM);
 		return;
 	}
-	else if(!eVehicle->v.iHealth)
+	else if(!eVehicle->v.health)
 	{
 		Engine.CenterPrint(eOther,"Vehicle is too damaged.\n");
 		// [27/1/2013] TODO: Change to client-specific sound function ~hogsy
 		Engine.Sound(eVehicle,CHAN_AUTO,"misc/deny.wav",255,ATTN_NORM);
 		return;
 	}
-	else if(!eOther->v.iHealth || eOther->local.eVehicle)
+	else if(!eOther->v.health || eOther->local.eVehicle)
 		return;
 
 #if 0 // todo, rewrite this

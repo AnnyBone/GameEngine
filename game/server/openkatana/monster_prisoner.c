@@ -95,14 +95,14 @@ void Prisoner_Think(ServerEntity_t *ePrisoner)
 void Prisoner_Walk(ServerEntity_t *ePrisoner)
 {
 	// Check our health before we attempt to move!
-	if(ePrisoner->v.iHealth <= 0)
+	if(ePrisoner->v.health <= 0)
 		return;
 }
 
 void Prisoner_Run(ServerEntity_t *ePrisoner)
 {
 	// Check our health before we attempt to move!
-	if(ePrisoner->v.iHealth <= 0)
+	if(ePrisoner->v.health <= 0)
 		return;
 
 //	Monster_MoveToGoal(ePrisoner, ePrisoner->Monster.mvMoveTarget, 20.0f);
@@ -110,7 +110,7 @@ void Prisoner_Run(ServerEntity_t *ePrisoner)
 
 void Prisoner_Pain(ServerEntity_t *ePrisoner, ServerEntity_t *eOther, EntityDamageType_t type)
 {
-	if (ePrisoner->v.iHealth < PRISONER_MIN_HEALTH)
+	if (ePrisoner->v.health < PRISONER_MIN_HEALTH)
 	{
 		bool bSliced = false;
 
@@ -122,14 +122,14 @@ void Prisoner_Pain(ServerEntity_t *ePrisoner, ServerEntity_t *eOther, EntityDama
 
 		if (bSliced)
 		{
-			ThrowGib(ePrisoner->v.origin, ePrisoner->v.velocity, "models/prisoner_torso.md2", (float)ePrisoner->v.iHealth*-1, true);
-			ThrowGib(ePrisoner->v.origin, ePrisoner->v.velocity, "models/prisoner_torsoless.md2", (float)ePrisoner->v.iHealth*-1, true);
+			ThrowGib(ePrisoner->v.origin, ePrisoner->v.velocity, "models/prisoner_torso.md2", (float)ePrisoner->v.health*-1, true);
+			ThrowGib(ePrisoner->v.origin, ePrisoner->v.velocity, "models/prisoner_torsoless.md2", (float)ePrisoner->v.health*-1, true);
 		}
 		else
 		{
-			ThrowGib(ePrisoner->v.origin, ePrisoner->v.velocity, PHYSICS_MODEL_GIB0, (float)ePrisoner->v.iHealth*-1, true);
-			ThrowGib(ePrisoner->v.origin, ePrisoner->v.velocity, PHYSICS_MODEL_GIB1, (float)ePrisoner->v.iHealth*-1, true);
-			ThrowGib(ePrisoner->v.origin, ePrisoner->v.velocity, PHYSICS_MODEL_GIB2, (float)ePrisoner->v.iHealth*-1, true);
+			ThrowGib(ePrisoner->v.origin, ePrisoner->v.velocity, PHYSICS_MODEL_GIB0, (float)ePrisoner->v.health*-1, true);
+			ThrowGib(ePrisoner->v.origin, ePrisoner->v.velocity, PHYSICS_MODEL_GIB1, (float)ePrisoner->v.health*-1, true);
+			ThrowGib(ePrisoner->v.origin, ePrisoner->v.velocity, PHYSICS_MODEL_GIB2, (float)ePrisoner->v.health*-1, true);
 		}
 
 		Engine.Particle(ePrisoner->v.origin, ePrisoner->v.velocity, 10.0f, "blood", 20);
@@ -171,9 +171,9 @@ PRISONER_GENERATEKEY:
 	sprintf(cPrisonerName,"Prisoner %i",rand()%300+1);
 
 	ePrisoner->v.movetype		= MOVETYPE_STEP;
-	ePrisoner->v.iHealth		= PRISONER_MAX_HEALTH;
+	ePrisoner->v.health		= PRISONER_MAX_HEALTH;
 	ePrisoner->local.iMaxHealth = PRISONER_MAX_HEALTH;
-	ePrisoner->v.bTakeDamage	= true;
+	ePrisoner->v.takedamage	= true;
 	ePrisoner->v.netname		= cPrisonerName;
 	ePrisoner->v.frame			= 0;
 

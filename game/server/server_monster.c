@@ -436,7 +436,7 @@ void Monster_Killed(ServerEntity_t *eTarget, ServerEntity_t *eAttacker, EntityDa
 			eAttacker->v.iScore++;
 
 			// Extra points!
-			if(eAttacker->v.iHealth <= 0)
+			if(eAttacker->v.health <= 0)
 			{
 				// TODO: Play sound
 				Engine.CenterPrint(eAttacker,"FROM BEYOND THE GRAVE!\n");
@@ -491,7 +491,7 @@ void Monster_Killed(ServerEntity_t *eTarget, ServerEntity_t *eAttacker, EntityDa
 		Engine.Server_BroadcastPrint(cDeathMessage, eTarget->v.netname, eAttacker->v.netname);
 	}
 	else
-		eTarget->v.bTakeDamage = false;
+		eTarget->v.takedamage = false;
 
 	// Drop the currently equipped item for the player to pick up!
 	Weapon_t *wActive = Weapon_GetCurrentWeapon(eTarget);
@@ -560,18 +560,18 @@ void Monster_Damage(ServerEntity_t *target, ServerEntity_t *inflictor, int iDama
 			iDamage *= 2;
 	}
 
-	target->v.iHealth -= iDamage;
+	target->v.health -= iDamage;
 
 	if (target->local.DamagedFunction)
 		target->local.DamagedFunction(target, inflictor, type);
 
-	if ((target->v.iHealth <= 0) && ((target->Monster.state != AI_STATE_DEAD) || (target->Monster.state != AI_STATE_DYING)))
+	if ((target->v.health <= 0) && ((target->Monster.state != AI_STATE_DEAD) || (target->Monster.state != AI_STATE_DYING)))
 		Monster_Killed(target, inflictor, type);
 }
 
 void MONSTER_WaterMove(ServerEntity_t *ent)
 {
-	if(ent->v.iHealth < 0 || ent->v.movetype == MOVETYPE_NOCLIP)
+	if(ent->v.health < 0 || ent->v.movetype == MOVETYPE_NOCLIP)
 		return;
 
 	if(ent->v.waterlevel != 3)

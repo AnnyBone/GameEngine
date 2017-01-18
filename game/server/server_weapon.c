@@ -238,7 +238,7 @@ MathVector_t Weapon_Aim(ServerEntity_t *eEntity)
 
 	tAimLine = Engine.Server_Move(mvStart, pl_origin3f, pl_origin3f, mvEnd, 0, eEntity);
 	// See if we encountered anything we can damage.
-	if (tAimLine.ent && tAimLine.ent->v.bTakeDamage)
+	if (tAimLine.ent && tAimLine.ent->v.takedamage)
 	{
 		// Check the teams.
 		if ((eEntity->local.pTeam <= TEAM_NEUTRAL) || (eEntity->local.pTeam != tAimLine.ent->local.pTeam))
@@ -264,7 +264,7 @@ MathVector_t Weapon_Aim(ServerEntity_t *eEntity)
 		if (eCheck == eEntity)
 			continue;
 
-		if (eCheck->v.bTakeDamage == false)
+		if (eCheck->v.takedamage == false)
 			continue;
 
 		for (j = 0; j < 3; j++)
@@ -391,7 +391,7 @@ void Weapon_BulletProjectile(ServerEntity_t *eEntity, float fSpread, int iDamage
 	{
 		char	cSmoke[6];
 
-		if(tTrace.ent && tTrace.ent->v.bTakeDamage)
+		if(tTrace.ent && tTrace.ent->v.takedamage)
 			Entity_Damage(tTrace.ent, eEntity, iDamage, DAMAGE_TYPE_NONE);
 		else
 		{
@@ -401,7 +401,7 @@ void Weapon_BulletProjectile(ServerEntity_t *eEntity, float fSpread, int iDamage
 				char cSound[128];
 
 				eSmoke->v.think			= Entity_Remove;
-				eSmoke->v.dNextThink	= Server.time+0.5;
+				eSmoke->v.nextthink	= Server.time+0.5;
 
 				Entity_SetOrigin(eSmoke,tTrace.endpos);
 
@@ -586,7 +586,7 @@ void Weapon_CheckFrames(ServerEntity_t *eEntity)
 	if(!eEntity->local.iWeaponAnimationEnd || Server.time < eEntity->local.fWeaponAnimationTime)
 		return;
 	// Reset the animation in-case we die!
-	else if((eEntity->local.iWeaponAnimationCurrent > eEntity->local.iWeaponAnimationEnd) || (eEntity->v.iHealth <= 0))
+	else if((eEntity->local.iWeaponAnimationCurrent > eEntity->local.iWeaponAnimationEnd) || (eEntity->v.health <= 0))
 	{
 		Weapon_ResetAnimation(eEntity);
 		return;

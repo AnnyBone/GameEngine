@@ -36,7 +36,7 @@ void Area_PushSpawn(ServerEntity_t *area);
 void Area_PushableSpawn(ServerEntity_t *eArea);
 void Area_PlatformSpawn(ServerEntity_t *area);
 void Area_RotateSpawn(ServerEntity_t *area);
-void Area_TriggerSpawn(ServerEntity_t *eArea);
+void Area_TriggerSpawn(ServerEntity_t *area);
 void Area_WallSpawn(ServerEntity_t *eArea);
 void Area_DetailSpawn(ServerEntity_t *eArea);
 void Area_KillSpawn(ServerEntity_t *area);

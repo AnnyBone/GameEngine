@@ -378,6 +378,6 @@ void Server_SendClientInformation(ServerClient_t *client) {
 // Called by the engine.
 void Server_KillClient(ServerEntity_t *entity) {
     if (entity->Monster.state != AI_STATE_DEAD) {
-        Entity_Damage(entity, entity, entity->v.iHealth, DAMAGE_TYPE_NORMAL);
+        Entity_Damage(entity, entity, entity->v.health, DAMAGE_TYPE_NORMAL);
     }
 }

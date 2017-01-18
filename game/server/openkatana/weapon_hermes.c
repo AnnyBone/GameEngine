@@ -40,7 +40,7 @@ void Hermes_CloudThink(ServerEntity_t *ent)
 	Engine.Particle(ent->v.origin,vel,12,"poison",8);
 
 	ent->v.think		= Hermes_CloudThink;
-	ent->v.dNextThink	= Server.time+0.3;
+	ent->v.nextthink	= Server.time+0.3;
 }
 
 void HermesCloudTouch(ServerEntity_t *ent, ServerEntity_t *other)
@@ -48,7 +48,7 @@ void HermesCloudTouch(ServerEntity_t *ent, ServerEntity_t *other)
 	if(other->Monster.iType != MONSTER_PLAYER)
 		return;
 
-	if(other->v.iHealth > 0 && other->v.movetype == MOVETYPE_STEP)
+	if(other->v.health > 0 && other->v.movetype == MOVETYPE_STEP)
 	{
 		Entity_Damage(other, ent, 5, 0);
 		//other->local.poisoned = 1; TODO: MAKE IT WORK
@@ -71,7 +71,7 @@ void Hermes_PrimaryAttack(ServerEntity_t *ent)
 
 	Weapon_Projectile(ent, cloud, 100.0f);
 
-	cloud->v.dNextThink		= Server.time+0.3;
+	cloud->v.nextthink		= Server.time+0.3;
 	cloud->v.think			= Hermes_CloudThink;
 	cloud->v.TouchFunction	= HermesCloudTouch;
 

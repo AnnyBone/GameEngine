@@ -38,7 +38,7 @@ void Discus_Follow(ServerEntity_t *ent)
 	Math_MVToVector(plVectorToAngles(ent->v.velocity), ent->v.angles);
 
 	ent->v.think		= Discus_Follow;
-	ent->v.dNextThink	= Server.time+0.01;
+	ent->v.nextthink	= Server.time+0.01;
 }
 
 // [4/7/2012] Renamed to Discus_ProjectileTouch ~hogsy
@@ -65,7 +65,7 @@ void Discus_ProjectileTouch(ServerEntity_t *ent,ServerEntity_t *other)
 	else
 		ent->local.hit = 1;
 
-	if(other->v.bTakeDamage)
+	if(other->v.takedamage)
 	{
 		Entity_Damage(other, ent, 35, 0);
 
@@ -87,7 +87,7 @@ void Discus_ProjectileTouch(ServerEntity_t *ent,ServerEntity_t *other)
 	if(ent->local.hit == 1)
 	{
 		ent->v.think		= Discus_Follow;
-		ent->v.dNextThink	= Server.time+0.01;
+		ent->v.nextthink	= Server.time+0.01;
 	}
 	else
 		ent->v.think		= NULL;

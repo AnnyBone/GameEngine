@@ -132,7 +132,7 @@ void throw_cordite(ServerEntity_t *ent)
 	Entity_SetSize(greekfire,0,0,0,0,0,0);
 
 	greekfire->v.think			= CorditeExplode;
-	greekfire->v.dNextThink		= Server.time + 3.0;
+	greekfire->v.nextthink		= Server.time + 3.0;
 	greekfire->v.TouchFunction	= CorditeTouch;
 
 	// SetOrigin automatically links.

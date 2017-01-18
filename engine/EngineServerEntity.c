@@ -89,12 +89,12 @@ void ED_Free(ServerEntity_t *ed)
 	ed->free = true;
 
 	ed->v.model			= 0;
-	ed->v.bTakeDamage	= false;
+	ed->v.takedamage	= false;
 	ed->v.modelindex	= 0;
 	ed->v.colormap		= 0;
 	ed->Model.skin		= 0;
 	ed->v.frame			= 0;
-	ed->v.dNextThink	= -1;
+	ed->v.nextthink	= -1;
 	ed->Physics.solid	= SOLID_NOT;
 	ed->Model.scale		= 1.0f;
 	ed->alpha			= ENTALPHA_DEFAULT; //johnfitz -- reset alpha for next entity

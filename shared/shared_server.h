@@ -224,7 +224,7 @@ typedef struct
 	float swim_flag;					// Time before next splash sound.
 	int	hit;
 
-	int	iLocalFlags; // Local entity flags.
+	int	flags; // Local entity flags.
 
 	float			fSpawnDelay;				// Delay before next spawn.
 	PLVector3D	pos1;
@@ -359,7 +359,7 @@ typedef struct ServerEntityBaseVariables_s
 	char *noise;
 	char *model;
 
-	int	iHealth;
+	int	health;
 
 	int	modelindex;
 
@@ -383,7 +383,7 @@ typedef struct ServerEntityBaseVariables_s
 	PLVector3D mins, maxs;
 	PLVector3D size;
 
-	double		dNextThink;
+	double		nextthink;
 
 	ServerEntity_t *groundentity;
 
@@ -396,7 +396,7 @@ typedef struct ServerEntityBaseVariables_s
 
 	PLColour	vLight;
 
-	bool bTakeDamage;		// TODO: Make local.
+	bool takedamage;		// TODO: Make local.
 
 	ServerEntity_t *chain;
 

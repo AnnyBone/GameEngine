@@ -183,7 +183,7 @@ void Item_Touch(ServerEntity_t *eItem,ServerEntity_t *eOther)
 		return;
 
 	// Don't let monsters pick up items, and don't let dead players pick them up either.
-	if(!Entity_IsPlayer(eOther) || eOther->v.iHealth <= 0)
+	if(!Entity_IsPlayer(eOther) || eOther->v.health <= 0)
 		return;
 
 	// Add a minimal delay time before we're allowed to pick up again.
@@ -221,7 +221,7 @@ void Item_Touch(ServerEntity_t *eItem,ServerEntity_t *eOther)
 
 		Entity_SetModel(eItem,"models/blip.md2");
 
-		eItem->v.dNextThink	= Server.time+60.0;
+		eItem->v.nextthink	= Server.time+60.0;
 		eItem->v.think		= Item_Respawn;
 	}
 	else
@@ -263,9 +263,9 @@ void Item_Touch(ServerEntity_t *eItem,ServerEntity_t *eOther)
 		Item_AddInventory(iItem,eOther);
 		break;
 	case ITEM_HEALTHKIT:
-		eOther->v.iHealth += 20;
-		if (eOther->v.iHealth > eOther->local.iMaxHealth)
-			eOther->v.iHealth = eOther->local.iMaxHealth;
+		eOther->v.health += 20;
+		if (eOther->v.health > eOther->local.iMaxHealth)
+			eOther->v.health = eOther->local.iMaxHealth;
 		break;
 	/* Episode 1 */
 	case WEAPON_IONRIFLE:

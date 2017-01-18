@@ -55,26 +55,26 @@ void CTF_FlagReset(ServerEntity_t *ent)
 		ent->local.eOwner = NULL;
 	}
 
-	ent->local.iLocalFlags = STATE_FLAG_IDLE;
+	ent->local.flags = STATE_FLAG_IDLE;
 
 	ent->v.TouchFunction	= CTF_FlagTouch;
 	// Just clear the effects out.
 	ent->v.effects			= 0;
-	ent->v.dNextThink		= Server.time+0.5;
+	ent->v.nextthink		= Server.time+0.5;
 }
 
 void CTF_FlagThink(ServerEntity_t *ent)
 {
-	switch(ent->local.iLocalFlags)
+	switch(ent->local.flags)
 	{
 	case STATE_FLAG_IDLE:
 //		MONSTER_Animate(ent,FALSE,0,9,0.1f,0);
 		break;
 	case STATE_FLAG_CARRIED:
-		if(ent->local.eOwner->v.iHealth <= 0)
+		if(ent->local.eOwner->v.health <= 0)
 		{
 			ent->local.hit = RESPAWN_DELAY;
-			ent->local.iLocalFlags = STATE_FLAG_DROPPED;
+			ent->local.flags = STATE_FLAG_DROPPED;
 //			MONSTER_Animate(ent,FALSE,0,9,0.1f,0);
 			break;
 		}
@@ -121,7 +121,7 @@ void CTF_FlagThink(ServerEntity_t *ent)
 		break;
 	default:
 //		MONSTER_Animate(ent,FALSE,0,9,0.1f,0);
-		Engine.Con_Warning("Unknown flag state (%i)!\n",ent->local.iLocalFlags);
+		Engine.Con_Warning("Unknown flag state (%i)!\n",ent->local.flags);
 	}
 }
 
@@ -129,11 +129,11 @@ void CTF_FlagTouch(ServerEntity_t *ent,ServerEntity_t *other)
 {
 	/*	Don't let us pick this up if we're either not a client
 		or we are dead.											*/
-	if(other->Monster.iType != MONSTER_PLAYER || other->v.iHealth <= 0)
+	if(other->Monster.iType != MONSTER_PLAYER || other->v.health <= 0)
 		return;
 	else if(other->local.flag && other->local.flag->local.style != ent->local.style)
 	{
-		if(other->local.flag->local.iLocalFlags == STATE_FLAG_CAPTURED)
+		if(other->local.flag->local.flags == STATE_FLAG_CAPTURED)
 			return;
 
 		switch(other->local.pTeam)
@@ -160,12 +160,12 @@ void CTF_FlagTouch(ServerEntity_t *ent,ServerEntity_t *other)
 		{
 		}
 
-		other->local.flag->local.iLocalFlags = STATE_FLAG_CAPTURED;
+		other->local.flag->local.flags = STATE_FLAG_CAPTURED;
 	}
 	else if(!other->local.flag && other->local.pTeam != ent->local.style)
 	{
 		other->local.flag					= ent;
-		other->local.flag->local.iLocalFlags = STATE_FLAG_CARRIED;
+		other->local.flag->local.flags = STATE_FLAG_CARRIED;
 		other->local.flag->local.eOwner		= other;
 		other->local.flag->v.TouchFunction	= NULL;
 
@@ -202,7 +202,7 @@ void CTF_FlagSpawn(ServerEntity_t *eFlag)
 
 	eFlag->Physics.solid = SOLID_TRIGGER;
 
-	eFlag->local.iLocalFlags = STATE_FLAG_IDLE;
+	eFlag->local.flags = STATE_FLAG_IDLE;
 
 	switch(eFlag->local.style)
 	{
@@ -243,8 +243,8 @@ void CTF_FlagSpawn(ServerEntity_t *eFlag)
 	Math_VectorCopy(eFlag->v.angles,eFlag->local.pos1);
 	Math_VectorCopy(eFlag->v.angles,eFlag->local.pos2);
 
-	eFlag->v.bTakeDamage	= false;
+	eFlag->v.takedamage	= false;
 	eFlag->v.TouchFunction	= CTF_FlagTouch;
 	eFlag->v.think			= CTF_FlagThink;
-	eFlag->v.dNextThink		= Server.time+0.01;
+	eFlag->v.nextthink		= Server.time+0.01;
 }

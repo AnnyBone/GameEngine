@@ -106,7 +106,7 @@ void LaserGat_Explode(ServerEntity_t *eLaserGat)
 void LaserGat_Die(ServerEntity_t *eLaserGat, ServerEntity_t *eOther, EntityDamageType_t type)
 {
 	eLaserGat->v.think			= LaserGat_Explode;
-	eLaserGat->v.dNextThink		= Server.time + 5.0;
+	eLaserGat->v.nextthink		= Server.time + 5.0;
 }
 
 void LaserGat_Think(ServerEntity_t *eLaserGat)
@@ -145,7 +145,7 @@ void LaserGat_Think(ServerEntity_t *eLaserGat)
 				AI_SetThink(eLaserGat, AI_THINK_IDLE);
 				return;
 			}
-			else if(!eLaserGat->Monster.eEnemy->v.iHealth)
+			else if(!eLaserGat->Monster.eEnemy->v.health)
 			{
 				// [6/4/2013] TODO: Add a delay here until we actually stop shooting? Means we might gib it which would be kewl... ~hogsy
 				eLaserGat->Monster.eEnemy = NULL;
@@ -184,7 +184,7 @@ void LaserGat_BaseDie(ServerEntity_t *eBase, ServerEntity_t *eOther, EntityDamag
 
 		Math_VectorScale(
 			eBase->local.eOwner->v.avelocity,
-			(float)eBase->v.iHealth,
+			(float)eBase->v.health,
 			eBase->local.eOwner->v.avelocity);
 
 		Monster_Killed(eBase->local.eOwner, eOther, type);
@@ -202,8 +202,8 @@ void LaserGat_Spawn(ServerEntity_t *eLaserGat)
 
 	eLaserGat->v.netname		= "Laser Turret";
 	eLaserGat->v.movetype		= MOVETYPE_NONE;
-	eLaserGat->v.iHealth		= 150;
-	eLaserGat->v.bTakeDamage	= true;
+	eLaserGat->v.health		= 150;
+	eLaserGat->v.takedamage	= true;
 
 	Entity_SetKilledFunction(eLaserGat, LaserGat_Die);
 
@@ -231,9 +231,9 @@ void LaserGat_Spawn(ServerEntity_t *eLaserGat)
 	if(eBase)
 	{
 		eBase->v.cClassname		= "lasergat_base";
-		eBase->v.iHealth		= 100;
+		eBase->v.health		= 100;
 		eBase->v.movetype		= MOVETYPE_NONE;
-		eBase->v.bTakeDamage	= true;
+		eBase->v.takedamage	= true;
 
 		// Physical properties
 		eBase->Physics.solid		= SOLID_BBOX;

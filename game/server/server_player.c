@@ -398,7 +398,7 @@ void Player_PostThink(ServerEntity_t *ePlayer)
 
 	if ((ePlayer->local.jump_velocity < -300.0f) &&
 		(ePlayer->v.flags & FL_ONGROUND)			&&
-		(ePlayer->v.iHealth > 0))
+		(ePlayer->v.health > 0))
 	{
 		char snd[32];
 
@@ -585,10 +585,10 @@ void Player_Gib(ServerEntity_t *player)
 	Sound(player, CHAN_VOICE, "misc/gib1.wav", 255, ATTN_NORM);
 
 	// [13/9/2012] Updated paths ~hogsy
-	ThrowGib(player->v.origin, player->v.velocity, PHYSICS_MODEL_GIB0, (float)player->v.iHealth*-1, true);
-	ThrowGib(player->v.origin, player->v.velocity, PHYSICS_MODEL_GIB1, (float)player->v.iHealth*-1, true);
-	ThrowGib(player->v.origin, player->v.velocity, PHYSICS_MODEL_GIB2, (float)player->v.iHealth*-1, true);
-	ThrowGib(player->v.origin, player->v.velocity, PHYSICS_MODEL_GIB3, (float)player->v.iHealth*-1, true);
+	ThrowGib(player->v.origin, player->v.velocity, PHYSICS_MODEL_GIB0, (float)player->v.health*-1, true);
+	ThrowGib(player->v.origin, player->v.velocity, PHYSICS_MODEL_GIB1, (float)player->v.health*-1, true);
+	ThrowGib(player->v.origin, player->v.velocity, PHYSICS_MODEL_GIB2, (float)player->v.health*-1, true);
+	ThrowGib(player->v.origin, player->v.velocity, PHYSICS_MODEL_GIB3, (float)player->v.health*-1, true);
 
 	ServerEffect_BloodCloud(player->v.origin, BLOOD_TYPE_RED);
 	
@@ -712,9 +712,9 @@ void Player_Spawn(ServerEntity_t *ePlayer)
 	ePlayer->Monster.iType = MONSTER_PLAYER;
 
 	ePlayer->v.cClassname = "player";
-	ePlayer->v.iHealth = cvServerDefaultHealth.iValue;
+	ePlayer->v.health = cvServerDefaultHealth.iValue;
 	ePlayer->v.movetype = MOVETYPE_WALK;
-	ePlayer->v.bTakeDamage = true;
+	ePlayer->v.takedamage = true;
 	ePlayer->v.model = cvServerPlayerModel.string;
 	ePlayer->v.effects = 0;
 
@@ -948,7 +948,7 @@ void Player_CheckPowerups(ServerEntity_t *ePlayer)
 			*iAttackBoost,
 			*iAcroBoost;
 
-	if(ePlayer->v.iHealth <= 0)
+	if(ePlayer->v.health <= 0)
 		return;
 
 	iPowerBoost = Item_GetInventory(ITEM_POWERBOOST, ePlayer);
@@ -1089,7 +1089,7 @@ void Player_DeathThink(ServerEntity_t *entity)
 
 void Player_Use(ServerEntity_t *entity)
 {
-	if (entity->v.iHealth <= 0 || entity->local.dAttackFinished > Server.time)
+	if (entity->v.health <= 0 || entity->local.dAttackFinished > Server.time)
 		return;
 
 	// If nothing usable is being aimed at then play sound...
@@ -1122,7 +1122,7 @@ void Player_MoveThink(ServerEntity_t *ePlayer)
 	Math_VectorScale(ePlayer->v.punchangle,fLength,ePlayer->v.punchangle);
 
 	// If dead, behave differently
-	if(!ePlayer->v.iHealth)
+	if(!ePlayer->v.health)
 		return;
 
 #ifdef IMPLEMENT_ME

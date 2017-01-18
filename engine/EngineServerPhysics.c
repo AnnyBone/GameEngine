@@ -76,7 +76,7 @@ bool Server_RunThink(ServerEntity_t *ent)
 {
 	double dThinkTime;
 
-	dThinkTime = ent->v.dNextThink;
+	dThinkTime = ent->v.nextthink;
 	if(dThinkTime <= 0 || dThinkTime > sv.time+host_frametime)
 		return true;
 
@@ -84,7 +84,7 @@ bool Server_RunThink(ServerEntity_t *ent)
 		dThinkTime = sv.time;	// don't let things stay in the past.
 								// it is possible to start that way
 								// by a trigger with a local time.
-	ent->v.dNextThink = 0;
+	ent->v.nextthink = 0;
 
 	if(ent->v.think)
 		ent->v.think(ent);
@@ -583,7 +583,7 @@ void SV_Physics_Pusher (ServerEntity_t *ent)
 
 	oldltime = ent->v.ltime;
 
-	thinktime = ent->v.dNextThink;
+	thinktime = ent->v.nextthink;
 	if (thinktime < ent->v.ltime + host_frametime)
 	{
 		movetime = thinktime-ent->v.ltime;
@@ -604,7 +604,7 @@ void SV_Physics_Pusher (ServerEntity_t *ent)
 
 	if (thinktime > oldltime && thinktime <= ent->v.ltime)
 	{
-		ent->v.dNextThink = 0;
+		ent->v.nextthink = 0;
 
 		if(ent->v.think)
 			ent->v.think(ent);

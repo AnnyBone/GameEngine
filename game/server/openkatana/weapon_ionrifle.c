@@ -102,7 +102,7 @@ void IonRifle_IonBallTouch(ServerEntity_t *eIonBall,ServerEntity_t *eOther)
 		return;
 	}
 
-	if(eOther->v.bTakeDamage)
+	if(eOther->v.takedamage)
 	{
 		if(!eIonBall->local.style)
 			Entity_Damage(eOther, eIonBall->local.eOwner, 25, 0);

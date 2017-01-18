@@ -46,12 +46,12 @@ void Barrel_Think(ServerEntity_t *barrel)
 void Barrel_Killed(ServerEntity_t *barrel, ServerEntity_t *seOther, EntityDamageType_t type)
 {
 	// Don't take damage anymore.
-	barrel->v.bTakeDamage = false;
+	barrel->v.takedamage = false;
 
 	if (barrel->local.style == BARREL_STYLE_EXPLODE)
 	{
 		Entity_SetThinkFunction(barrel, Barrel_Think);
-		barrel->v.dNextThink = Server.time + 0.275;
+		barrel->v.nextthink = Server.time + 0.275;
 	}
 	else
 		Entity_SetModel(barrel, MODEL_DECORATION_BARREL3);
@@ -62,7 +62,7 @@ void Barrel_Damaged(ServerEntity_t *seBarrel, ServerEntity_t *seOther, EntityDam
 	char gibpath[MAX_QPATH];
 	// TODO: play sound, wobble, or react in some way...
 
-	if (seBarrel->v.iHealth < 10)
+	if (seBarrel->v.health < 10)
 	{
 		if (strcmp(seBarrel->v.model, MODEL_DECORATION_BARREL2))
 		{
@@ -74,7 +74,7 @@ void Barrel_Damaged(ServerEntity_t *seBarrel, ServerEntity_t *seOther, EntityDam
 		}
 	}
 	// Health has changed, update model.
-	else if (seBarrel->v.iHealth < 25)
+	else if (seBarrel->v.health < 25)
 	{
 		if (strcmp(seBarrel->v.model, MODEL_DECORATION_BARREL1))
 		{
@@ -94,9 +94,9 @@ void Barrel_Spawn(ServerEntity_t *eBarrel)
 	Server_PrecacheModel(MODEL_DECORATION_BARREL2);
 	Server_PrecacheModel(MODEL_DECORATION_BARREL3);
 
-	eBarrel->v.iHealth = BARREL_MAX_HEALTH;
+	eBarrel->v.health = BARREL_MAX_HEALTH;
 	eBarrel->v.movetype = MOVETYPE_TOSS;
-	eBarrel->v.bTakeDamage = true;
+	eBarrel->v.takedamage = true;
 
 	eBarrel->local.iOldHealth = BARREL_MAX_HEALTH;
 	eBarrel->local.cOldModel = MODEL_DECORATION_BARREL0;

@@ -167,8 +167,8 @@ void Entity::Damage(Entity *inflictor, int damage, EntityDamageType_t damagetype
         return;
     }
 
-    instance_->v.iHealth -= damage;
-    if (instance_->v.iHealth <= 0) {
+    instance_->v.health -= damage;
+    if (instance_->v.health <= 0) {
         Killed(inflictor);
         return;
     }
@@ -178,7 +178,7 @@ void Entity::Damage(Entity *inflictor, int damage, EntityDamageType_t damagetype
 }
 
 bool Entity::CanDamage(Entity *target, EntityDamageType_t damagetype) {
-    if (!target->GetInstance()->v.bTakeDamage) {
+    if (!target->GetInstance()->v.takedamage) {
         return false;
     }
 

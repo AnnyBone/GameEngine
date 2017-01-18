@@ -81,7 +81,7 @@ void ShockLaser_Touch(ServerEntity_t *ent, ServerEntity_t *other)
 	if(!other || (other == ent->local.eOwner))
 		return;
 
-	if(other->v.bTakeDamage)
+	if(other->v.takedamage)
 	{
 		// burning flesh sound
 		cSound = "weapons/shockwave/burn.wav";

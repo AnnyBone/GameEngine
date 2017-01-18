@@ -10,6 +10,7 @@ message(STATUS GAME_PROJECT='${GAME_PROJECT}')
 
 file(GLOB GAME_SOURCE_FILES
         *.cpp *.c *.h
+        ../shared/*.c ../shared/*.h
         server/*.cpp server/*.c server/*.h
         client/*.cpp client/*.c client/*.h
         server/${GAME_PROJECT}/*.cpp server/${GAME_PROJECT}/*.c server/${GAME_PROJECT}/*.h

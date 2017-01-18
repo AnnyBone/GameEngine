@@ -41,7 +41,7 @@ void UseTargets(ServerEntity_t *ent, ServerEntity_t *other)
 		if(t)
 		{
 			t->v.cClassname	= "DelayedUse";
-			t->v.dNextThink	= Server.time+ent->local.delay;
+			t->v.nextthink	= Server.time+ent->local.delay;
 			t->v.think		= Misc_DelayThink;
 			t->v.enemy		= other;
 		}
@@ -76,7 +76,7 @@ void WEAPON_StickThink(ServerEntity_t *ent)
 	ent->v.think			= WEAPON_StickThink;
 	ent->v.TouchFunction	= NULL;
 
-	if(((ent->v.enemy != Server.eWorld) && (ent->v.enemy->v.iHealth > 1)))
+	if(((ent->v.enemy != Server.eWorld) && (ent->v.enemy->v.health > 1)))
 	{
 		Entity_SetOrigin(ent,ent->v.enemy->v.origin);
 		if(!ent->v.velocity)
@@ -85,7 +85,7 @@ void WEAPON_StickThink(ServerEntity_t *ent)
 	else
 		Entity_Remove(ent);
 
-	ent->v.dNextThink = (Server.time+0.100);
+	ent->v.nextthink = (Server.time+0.100);
 }
 
 // [17/7/2012] Renamed to Misc_GibThink ~hogsy
@@ -120,5 +120,5 @@ void ThrowGib(plVector3f_t origin, plVector3f_t velocity, char *model, float dam
 	Entity_SetSizeVector(gib, pl_origin3f, pl_origin3f);
 
 	gib->v.think		= Misc_GibThink;
-	gib->v.dNextThink	= Server.time+20.0f;
+	gib->v.nextthink	= Server.time+20.0f;
 }

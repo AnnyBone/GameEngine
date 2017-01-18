@@ -145,7 +145,7 @@ void Sound(ServerEntity_t *ent, AudioChannel_t channel, char *sound, int volume,
 			SetOrigin(sound,ent->v.origin);
 
 			sound->v.think		= RemoveEntity(ref);
-			sound->v.dNextThink	= (Server.time+0.01)*volume;
+			sound->v.nextthink	= (Server.time+0.01)*volume;
 		}
 		else
 			RemoveEntity(sound);
@@ -187,10 +187,10 @@ bool Game_Init(int state,ServerEntity_t *ent,double dTime)
 		Entity_Remove(ent);
 		break;
 	case SERVER_SETCHANGEPARMS:
-		if(ent->v.iHealth <= 0)
+		if(ent->v.health <= 0)
 			break;
-		else if(ent->v.iHealth < 50)
-			ent->v.iHealth = 50;
+		else if(ent->v.health < 50)
+			ent->v.health = 50;
 
 		// TODO: Set all necessary parms...
 		break;

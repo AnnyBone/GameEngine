@@ -42,7 +42,7 @@ void Health_Spawn(ServerEntity_t *seHealth)
 	// Doesn't move.
 	seHealth->v.movetype = MOVETYPE_NONE;
 
-	seHealth->local.iLocalFlags = 0;
+	seHealth->local.flags = 0;
 
 	Entity_AddFlags(seHealth, FL_ITEM);
 
@@ -60,7 +60,7 @@ void Health_Spawn(ServerEntity_t *seHealth)
 
 void Health_TouchFunction(ServerEntity_t *seHealth, ServerEntity_t *seOther)
 {
-	if (seHealth->local.iLocalFlags & HEALTH_FLAG_OPEN)
+	if (seHealth->local.flags & HEALTH_FLAG_OPEN)
 		return;
 
 	// TODO: Run animation of lil doors opening up.
@@ -73,7 +73,7 @@ void Health_TouchFunction(ServerEntity_t *seHealth, ServerEntity_t *seOther)
 	}
 
 	// Set a flag so we don't come here again.
-	seHealth->local.iLocalFlags &= HEALTH_FLAG_OPEN;
+	seHealth->local.flags &= HEALTH_FLAG_OPEN;
 }
 
 /*

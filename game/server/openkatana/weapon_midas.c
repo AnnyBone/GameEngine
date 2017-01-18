@@ -35,7 +35,7 @@ void Midas_CloudThink(ServerEntity_t *ent)
 
 	Engine.Particle(ent->v.origin, pl_origin3f, 12.0f, "spark", 8);
 
-	ent->v.dNextThink	= Server.time+0.3;
+	ent->v.nextthink	= Server.time+0.3;
 	ent->v.think		= Midas_CloudThink;
 }
 
@@ -44,12 +44,12 @@ void CloudTouch(ServerEntity_t *cloud, ServerEntity_t *other)
 	if(Entity_IsPlayer(other))
 		return;
 
-	if(other->v.iHealth > 0 && other->v.movetype == MOVETYPE_STEP)
+	if(other->v.health > 0 && other->v.movetype == MOVETYPE_STEP)
 	{
 		if(!other->local.hit) // Only play it once
 			Sound(other,CHAN_VOICE,"weapons/midastouch.wav",255,ATTN_NORM);
 
-		other->v.dNextThink = Server.time+15.0;
+		other->v.nextthink = Server.time+15.0;
 
 		other->local.hit = 1;
 	}
@@ -75,7 +75,7 @@ void Midas_PrimaryAttack(ServerEntity_t *ent)
 
 	Weapon_Projectile(ent, cloud, 100.0f);
 
-	cloud->v.dNextThink		= Server.time+0.3;
+	cloud->v.nextthink		= Server.time+0.3;
 	cloud->v.think			= Midas_CloudThink;
 	cloud->v.TouchFunction	= CloudTouch;
 

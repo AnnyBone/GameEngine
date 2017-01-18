@@ -15,7 +15,7 @@ void arrow_touch(ServerEntity_t *ent, ServerEntity_t *other)
 		return;
 
 	// We hit an enemy! Stick with 'em
-	if(other->v.bTakeDamage)
+	if(other->v.takedamage)
 	{
 		// Fleshy sound plz
 		sprintf(snd,"weapons/crossbow/arrowwetimpact%i.wav",rand()%5+1);
@@ -23,7 +23,7 @@ void arrow_touch(ServerEntity_t *ent, ServerEntity_t *other)
 		Entity_Damage(other, ent, 25, 0);
 
 		ent->v.think		= WEAPON_StickThink;
-		ent->v.dNextThink	= Server.time+0.1;
+		ent->v.nextthink	= Server.time+0.1;
 	}
 	// [25/6/2012] Moved so we don't set this before checking what we're hitting ~hogsy
 	else

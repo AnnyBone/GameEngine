@@ -14,7 +14,7 @@ void GreekfireTouch(ServerEntity_t *ent, ServerEntity_t *other)
 	if (other == ent->local.eOwner)
 		return;
 
-	if(other->v.bTakeDamage)
+	if(other->v.takedamage)
 		Entity_Damage(other, ent, 50, 0);
 
 	Math_VectorCopy(ent->v.velocity,vel);

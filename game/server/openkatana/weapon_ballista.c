@@ -40,14 +40,14 @@ void Ballista_LogTouch(ServerEntity_t *ent, ServerEntity_t *other)
 		return;
 
 	// We hit an enemy! Stick with 'em
-	if(other->v.bTakeDamage)
+	if(other->v.takedamage)
 	{
 		sprintf(snd,"weapons/ballista/logwetimpact%i.wav",rand()%4);
 
 		Entity_Damage(other, ent, 25, 0);
 
 		ent->v.think		= WEAPON_StickThink;
-		ent->v.dNextThink	= Server.time+0.1;
+		ent->v.nextthink	= Server.time+0.1;
 	}
 	// We didn't hit anything, so NOW we set up our impact sound.
 	else

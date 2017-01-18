@@ -59,14 +59,14 @@ void Gib_Spawn(MathVector3f_t mvOrigin, const char *cModel)
 		gib->v.movetype			= MOVETYPE_BOUNCE;
 		gib->v.TouchFunction	= Gib_Touch;
 		gib->v.think			= Entity_Remove;
-		gib->v.dNextThink		= Server.time + 20.0f;
+		gib->v.nextthink		= Server.time + 20.0f;
 
 		Entity_SetPhysics(gib, SOLID_TRIGGER, 0.5f, 3.0f);
 
 		for (int j = 0; j < 3; j++)
 		{
 		//	eGib->v.velocity[j] =
-		//		eGib->v.avelocity[j] = (float)(rand() % 5 * eArea->v.iHealth * 5);
+		//		eGib->v.avelocity[j] = (float)(rand() % 5 * eArea->v.health * 5);
 		}
 
 		Entity_SetModel(gib, (char*)cModel);

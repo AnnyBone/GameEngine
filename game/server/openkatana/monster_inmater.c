@@ -89,7 +89,7 @@ void Inmater_Pain(ServerEntity_t *eInmater, ServerEntity_t *eOther, EntityDamage
 
 void Inmater_Die(ServerEntity_t *eInmater, ServerEntity_t *eOther, EntityDamageType_t type)
 {
-	if(eInmater->v.iHealth < INMATER_MIN_HEALTH)
+	if(eInmater->v.health < INMATER_MIN_HEALTH)
 	{
 		int	iGibs = (rand()%5)+5,
 			i;
@@ -112,7 +112,7 @@ void Inmater_Die(ServerEntity_t *eInmater, ServerEntity_t *eOther, EntityDamageT
 
 			PHYSICS_MODEL_METAL(cModel);
 
-			ThrowGib(vOrigin, vGibVelocity, cModel, (float)eInmater->v.iHealth*-1, true);
+			ThrowGib(vOrigin, vGibVelocity, cModel, (float)eInmater->v.health*-1, true);
 		}
 
 		Engine.Particle(eInmater->v.origin,eInmater->v.velocity,10.0f,"blood",20);
@@ -168,9 +168,9 @@ void Inmater_Spawn(ServerEntity_t *eInmater)
 
 	Entity_SetKilledFunction(eInmater, Inmater_Die);
 
-	eInmater->v.bTakeDamage = true;
+	eInmater->v.takedamage = true;
 	eInmater->v.movetype = MOVETYPE_STEP;
-	eInmater->v.iHealth = INMATER_MAX_HEALTH;
+	eInmater->v.health = INMATER_MAX_HEALTH;
 	eInmater->v.netname = "Inmater";
 	eInmater->v.frame = 0;
 	eInmater->local.iMaxHealth = INMATER_MAX_HEALTH;
