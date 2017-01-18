@@ -144,7 +144,7 @@ void IonRifle_PrimaryAttack(ServerEntity_t *eOwner)
 			{
 				plVector3f_t vOrigin;
 
-				eIonBall->v.cClassname = "ionball";
+				eIonBall->v.classname = "ionball";
 				eIonBall->v.movetype = MOVETYPE_FLY;
 				eIonBall->v.effects = EF_LIGHT_GREEN;
 				eIonBall->v.TouchFunction = IonRifle_IonBallTouch;
@@ -213,7 +213,7 @@ void IonRifle_PrimaryAttack(ServerEntity_t *eOwner)
 			{
 				plVector3f_t vOrigin;
 
-				eIonBall->v.cClassname		= "ionball";
+				eIonBall->v.classname		= "ionball";
 				eIonBall->v.movetype		= MOVETYPE_FLY;
 				eIonBall->v.effects			= EF_LIGHT_GREEN;
 				eIonBall->v.TouchFunction	= IonRifle_IonBallTouch;

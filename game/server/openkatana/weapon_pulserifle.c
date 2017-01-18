@@ -116,7 +116,7 @@ void throw_cordite(ServerEntity_t *ent)
 {
 	ServerEntity_t *greekfire = Entity_Spawn();
 
-	greekfire->v.cClassname	= "cordite";
+	greekfire->v.classname	= "cordite";
 	greekfire->v.movetype	= MOVETYPE_BOUNCE;
 
 	greekfire->Physics.solid	= SOLID_BBOX;

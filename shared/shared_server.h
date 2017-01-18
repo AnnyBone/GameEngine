@@ -354,7 +354,7 @@ typedef struct ServerEntityBaseVariables_s
 
 	// Editor
 	char
-		*cClassname,	// The classname of the entity.
+		*classname,	// The classname of the entity.
 		*cName;			// The specified name for the entity.
 	char *noise;
 	char *model;

@@ -59,7 +59,7 @@ void projectile_iceball(ServerEntity_t *ent, PLVector3f orig)
 	// [26/2/2012] Revised and fixed ~hogsy
 	ServerEntity_t *ionball = Entity_Spawn();
 
-	ionball->v.cClassname	= "iceball";
+	ionball->v.classname	= "iceball";
 	ionball->v.movetype		= MOVETYPE_FLYBOUNCE;
 
 	ionball->Physics.solid	= SOLID_BBOX;

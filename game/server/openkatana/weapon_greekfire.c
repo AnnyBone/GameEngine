@@ -31,7 +31,7 @@ void GreekFire_Throw(ServerEntity_t *ent)
 {
 	ServerEntity_t *greekfire = Entity_Spawn();
 
-	greekfire->v.cClassname	= "greekfire";
+	greekfire->v.classname	= "greekfire";
 	greekfire->v.movetype	= MOVETYPE_BOUNCE;
 	greekfire->v.effects	= EF_DIMLIGHT;
 

@@ -55,7 +55,7 @@ void Gib_Spawn(MathVector3f_t mvOrigin, const char *cModel)
 	ServerEntity_t *gib = Entity_Spawn();
 	if (gib)
 	{
-		gib->v.cClassname		= "entity_gib";
+		gib->v.classname		= "entity_gib";
 		gib->v.movetype			= MOVETYPE_BOUNCE;
 		gib->v.TouchFunction	= Gib_Touch;
 		gib->v.think			= Entity_Remove;

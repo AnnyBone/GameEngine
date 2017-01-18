@@ -1055,7 +1055,7 @@ void Physics_ServerFrame(void)
 				Physics_Toss(eEntity);
 				break;
 			default:
-				Con_Warning("Bad movetype set for entity! (%s)",eEntity->v.cClassname);
+				Con_Warning("Bad movetype set for entity! (%s)",eEntity->v.classname);
 			}
 		}
 	}

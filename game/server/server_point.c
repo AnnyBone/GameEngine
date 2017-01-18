@@ -121,24 +121,24 @@ void Point_MonsterSpawn(ServerEntity_t *entity)
 	{
 #ifdef GAME_OPENKATANA
 	case MONSTER_PRISONER:
-		entity->v.cClassname = "monster_prisoner";
+		entity->v.classname = "monster_prisoner";
 		Prisoner_Spawn(entity);
 		break;
 	case MONSTER_LASERGAT:
-		entity->v.cClassname = "monster_lasergat";
+		entity->v.classname = "monster_lasergat";
 		LaserGat_Spawn(entity);
 		break;
 	case MONSTER_INMATER:
-		entity->v.cClassname = "monster_inmater";
+		entity->v.classname = "monster_inmater";
 		Inmater_Spawn(entity);
 		break;
 	case MONSTER_SCANBOT:
-		entity->v.cClassname = "monster_scanbot";
+		entity->v.classname = "monster_scanbot";
 		ScanBot_Spawn(entity);
 		break;
 #elif GAME_ADAMAS
 	case MONSTER_HURLER:
-		entity->v.cClassname = "monster_hurler";
+		entity->v.classname = "monster_hurler";
 		Hurler_Spawn(entity);
 		break;
 #endif
@@ -212,9 +212,9 @@ void Point_Start(ServerEntity_t *ent)
 		}
 
 		if(ent->local.pTeam == TEAM_RED)
-			ent->v.cClassname = "point_start_red";
+			ent->v.classname = "point_start_red";
 		else
-			ent->v.cClassname = "point_start_blue";
+			ent->v.classname = "point_start_blue";
 		break;
 	case MODE_COOPERATIVE:
 		if(	(ent->local.style != INFO_PLAYER_START)		&&
@@ -238,7 +238,7 @@ void Point_Start(ServerEntity_t *ent)
 			return;
 		}
 
-		ent->v.cClassname = "point_start_deathmatch";
+		ent->v.classname = "point_start_deathmatch";
 		break;
 #else
 		break;
@@ -564,7 +564,7 @@ void Point_SoundSpawn(ServerEntity_t *eEntity)
 	if(!eEntity->v.noise)
 	{
 		Engine.Con_Warning("No noise not set for %i (%i %i %i)!\n",
-			eEntity->v.cClassname,
+			eEntity->v.classname,
 			(int)eEntity->v.origin[0],
 			(int)eEntity->v.origin[1],
 			(int)eEntity->v.origin[2]);
@@ -653,7 +653,7 @@ void Point_MessageSpawn(ServerEntity_t *eEntity)
 	if(!eEntity->v.message)
 	{
 		Engine.Con_Warning("Parameter 'message' not set! (%s) (%i %i %i)\n",
-			eEntity->v.cClassname,
+			eEntity->v.classname,
 			(int)eEntity->v.origin[0],
 			(int)eEntity->v.origin[1],
 			(int)eEntity->v.origin[2]);
@@ -680,7 +680,7 @@ void Point_MessageSpawn(ServerEntity_t *eEntity)
 		break;
 	default:
 		Engine.Con_Warning("Parameter 'style' not set! (%s) (%i %i %i)\n",
-			eEntity->v.cClassname,
+			eEntity->v.classname,
 			(int)eEntity->v.origin[0],
 			(int)eEntity->v.origin[1],
 			(int)eEntity->v.origin[2]);

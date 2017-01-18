@@ -101,7 +101,7 @@ void Discus_SpawnProjectile(ServerEntity_t *ent,PLVector3f org)
 
 	eDiscus = Entity_Spawn();
 
-	eDiscus->v.cClassname = "discus";
+	eDiscus->v.classname = "discus";
 	eDiscus->v.movetype = MOVETYPE_FLYBOUNCE;
 	eDiscus->Physics.solid = SOLID_BBOX;
 	eDiscus->v.effects = EF_MOTION_ROTATE;

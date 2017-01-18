@@ -230,7 +230,7 @@ void LaserGat_Spawn(ServerEntity_t *eLaserGat)
 	ServerEntity_t	*eBase = Entity_Spawn();
 	if(eBase)
 	{
-		eBase->v.cClassname		= "lasergat_base";
+		eBase->v.classname		= "lasergat_base";
 		eBase->v.health		= 100;
 		eBase->v.movetype		= MOVETYPE_NONE;
 		eBase->v.takedamage	= true;

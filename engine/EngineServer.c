@@ -202,7 +202,7 @@ void SV_SendServerinfo(ServerClient_t *client)
 			if(eLight->free)
 				continue;
 
-			if(eLight->v.cClassname && !strcmp("light",eLight->v.cClassname))
+			if(eLight->v.classname && !strcmp("light",eLight->v.classname))
 			{
 				int	j;
 
@@ -1234,8 +1234,8 @@ ServerEntity_t *Server_FindEntity(ServerEntity_t *eStartEntity, char *cName, boo
 
 		if (bClassname)
 		{
-			if (eEntity->v.cClassname)
-				if (!strcmp(cName, eEntity->v.cClassname))
+			if (eEntity->v.classname)
+				if (!strcmp(cName, eEntity->v.classname))
 					return eEntity;
 		}
 		else

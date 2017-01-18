@@ -140,7 +140,7 @@ void Sound(ServerEntity_t *ent, AudioChannel_t channel, char *sound, int volume,
 	case SOUND_REFERENCE:
 		if(volume >= 0.5f)
 		{
-			sound->v.cClassname = "sound_reference";
+			sound->v.classname = "sound_reference";
 
 			SetOrigin(sound,ent->v.origin);
 

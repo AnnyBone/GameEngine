@@ -185,7 +185,7 @@ void Bot_Spawn(ServerEntity_t *eBot)
 		return;
 	}
 
-	eBot->v.cClassname		= "bot";
+	eBot->v.classname		= "bot";
 	eBot->v.health			= 100;
 	eBot->local.iMaxHealth = cvServerMaxHealth.iValue;
 	eBot->v.movetype		= MOVETYPE_STEP;

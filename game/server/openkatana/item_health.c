@@ -52,7 +52,7 @@ void Health_Spawn(ServerEntity_t *seHealth)
 
 	if (!Entity_DropToFloor(seHealth))
 	{
-		Engine.Con_Warning("Entity outside of world, removed! (%s)\n", seHealth->v.cClassname);
+		Engine.Con_Warning("Entity outside of world, removed! (%s)\n", seHealth->v.classname);
 		Entity_Remove(seHealth);
 		return;
 	}

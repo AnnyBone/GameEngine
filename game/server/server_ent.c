@@ -242,7 +242,7 @@ void Entity_SetModel(ServerEntity_t *eEntity, const char *modelpath)
 {
 	if (!modelpath)
 	{
-		Engine.Con_Warning("Invalid path for model! (%s)", eEntity->v.cClassname);
+		Engine.Con_Warning("Invalid path for model! (%s)", eEntity->v.classname);
 		return;
 	}
 
@@ -258,12 +258,12 @@ void Entity_SetSizeVector(ServerEntity_t *eEntity, MathVector3f_t vMin, MathVect
 
 	// Check if the model is set yet, if not give us a little warning.
 	if(!eEntity->v.model)
-		Engine.Con_Warning("Setting entity size before model! (%s)\n",eEntity->v.cClassname);
+		Engine.Con_Warning("Setting entity size before model! (%s)\n",eEntity->v.classname);
 
 	for(i = 0; i < 3; i++)
 		if(vMin[i] > vMax[i])
 		{
-			Engine.Con_Warning("Backwards mins/maxs! (%s)\n",eEntity->v.cClassname);
+			Engine.Con_Warning("Backwards mins/maxs! (%s)\n",eEntity->v.classname);
 			return;
 		}
 
@@ -579,7 +579,7 @@ bool Entity_DropToFloor(ServerEntity_t *eEntity)
 	trGround = Engine.Server_Move(eEntity->v.origin, eEntity->v.mins, eEntity->v.maxs, vEnd, false, eEntity);
 	if (trGround.fraction == 1 || trGround.bAllSolid)
 	{
-		Engine.Con_Warning("Entity is stuck in world! (%s) (%i %i %i)\n", eEntity->v.cClassname,
+		Engine.Con_Warning("Entity is stuck in world! (%s) (%i %i %i)\n", eEntity->v.classname,
 			(int)eEntity->v.origin[0],
 			(int)eEntity->v.origin[1],
 			(int)eEntity->v.origin[2]);

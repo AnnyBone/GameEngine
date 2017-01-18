@@ -59,7 +59,7 @@ void Hermes_PrimaryAttack(ServerEntity_t *ent)
 {
 	ServerEntity_t *cloud = Entity_Spawn();
 
-	cloud->v.cClassname = "cloud";
+	cloud->v.classname = "cloud";
 	cloud->v.movetype	= MOVETYPE_FLYMISSILE;
 	cloud->Physics.solid		= SOLID_TRIGGER;
 

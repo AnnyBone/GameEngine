@@ -185,7 +185,7 @@ void IonBlaster_PrimaryAttack(ServerEntity_t *ent)
 	eIonBall = Entity_Spawn();
 	if(eIonBall)
 	{
-		eIonBall->v.cClassname = "ionball";
+		eIonBall->v.classname = "ionball";
 		eIonBall->v.movetype = MOVETYPE_FLYBOUNCE;
 		eIonBall->v.effects = EF_LIGHT_GREEN;
 

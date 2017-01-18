@@ -144,7 +144,7 @@ void SideWinder_SpawnMissle(ServerEntity_t *ent,float fSpeed,float ox)
 
 	// TODO: Spawn a flare at our position too
 
-	eMissile->v.cClassname = "sidewindermissile";
+	eMissile->v.classname = "sidewindermissile";
 	eMissile->v.movetype = MOVETYPE_FLYMISSILE;
 	eMissile->v.effects = EF_PARTICLE_SMOKE | EF_DIMLIGHT;
 

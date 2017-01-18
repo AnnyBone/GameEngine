@@ -328,13 +328,13 @@ void Server_Spawn(ServerEntity_t *entity) {
 
 // Called by the engine.
 bool Server_SpawnEntity(ServerEntity_t *entity) {
-    if (!entity->v.cClassname) {
+    if (!entity->v.classname) {
         Engine.Con_Warning("Failed to get classname!\n");
         return false;
     }
 
     for (SpawnList_t *spawn = SpawnList; spawn->name; spawn++) {
-        if (!strcmp(spawn->name, entity->v.cClassname)) {
+        if (!strcmp(spawn->name, entity->v.classname)) {
             if (spawn->Precache) {
                 spawn->Precache();
             }
@@ -344,7 +344,7 @@ bool Server_SpawnEntity(ServerEntity_t *entity) {
         }
     }
 
-    g_engine->Con_Warning("Entity doesn't have a spawn function! (%s)\n", entity->v.cClassname);
+    g_engine->Con_Warning("Entity doesn't have a spawn function! (%s)\n", entity->v.classname);
     return false;
 }
 

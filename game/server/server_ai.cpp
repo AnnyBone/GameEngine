@@ -42,7 +42,7 @@ void AI_SetThink(ServerEntity_t *entity, unsigned int think) {
     if (entity->ai.current_think == think) {
         return;
     } else if (think <= AI_THINK_START) {
-        g_engine->Con_Printf("Invalid think! (%s) (%i)\n", entity->v.cClassname, think);
+        g_engine->Con_Printf("Invalid think! (%s) (%i)\n", entity->v.classname, think);
         return;
     }
 
@@ -57,7 +57,7 @@ void AI_SetState(ServerEntity_t *entity, unsigned int state)
     if (entity->ai.current_state == state) {
         return;
     } else if (state <= AI_STATE_START) {
-        g_engine->Con_Printf("Invalid state! (%s) (%i)\n", entity->v.cClassname, state);
+        g_engine->Con_Printf("Invalid state! (%s) (%i)\n", entity->v.classname, state);
         return;
     }
 

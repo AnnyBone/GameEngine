@@ -50,7 +50,7 @@ void BarrierFire(ServerEntity_t *ent)
 	sndvec[1] = trace.endpos[1]-forward[1]*4.0f;
 	sndvec[2] = trace.endpos[2]-forward[2]*4.0f;
 
-	bshield->v.cClassname	= "bshield";
+	bshield->v.classname	= "bshield";
 	bshield->v.movetype		= MOVETYPE_NONE;
 	bshield->Physics.iSolid	= SOLID_BBOX;
 

@@ -59,7 +59,7 @@ void Area_SetMoveDirection(PLVector3D &angles, PLVector3D &direction) {
 void Area_CalculateMovementDone(ServerEntity_t *area) {
 	Entity_SetOrigin(area, area->local.finaldest);
 
-	plClearVector3D(&area->v.velocity);
+	area->v.velocity.Clear();
 
 	if(area->local.think1) {
         area->local.think1(area, area);
@@ -121,7 +121,7 @@ void Area_BreakableBounce(ServerEntity_t *gib, ServerEntity_t *other) {
 void Area_CreateGib(ServerEntity_t *area, const char *model) {
 	ServerEntity_t *gib = Entity_Spawn();
 	if (gib) {
-		gib->v.cClassname = "entity_gib";
+		gib->v.classname = "entity_gib";
 		gib->v.movetype = MOVETYPE_BOUNCE;
 		gib->v.TouchFunction = Area_BreakableBounce;
 		gib->v.think = Entity_Remove;
@@ -161,18 +161,21 @@ void Area_BreakableDie(ServerEntity_t *area, ServerEntity_t *other, EntityDamage
 		PHYSICS_SOUND_METAL(sound);
 		PHYSICS_MODEL_METAL(model);
 		break;
+    default: return;
 	}
 
 	Sound(area, CHAN_AUTO, sound, 255, ATTN_STATIC);
 
-	for (int i = 0; i < area->local.count; i++)
-		Area_CreateGib(area, model);
+	for (int i = 0; i < area->local.count; i++) {
+        Area_CreateGib(area, model);
+    }
 
 	// Needs to be set to prevent a recursion.
 	area->v.takedamage = false;
 
-	if (area->v.targetname) // Trigger doors, etc. ~eukos
-		UseTargets(area, other);
+	if (area->v.targetname) { // Trigger doors, etc. ~eukos
+        UseTargets(area, other);
+    }
 
 	Entity_Remove(area);
 }
@@ -574,15 +577,21 @@ void Area_DoorSpawn(ServerEntity_t *door)
 		movedir.z * door->v.size.z -
 		door->local.lip;
 
+#if 0
 	Math_VectorMake(door->local.pos1, movedist, door->v.movedir, door->local.pos2);
+#else
+    door->local.pos2 = door->local.pos1 + (door->v.movedir * movedist);
+#endif
 
 	door->local.flags = STATE_BOTTOM;
 
 	// Set the spawn flags up.
-	if (door->v.spawnflags & DOOR_FLAG_TRIGGERUSE)
-		door->v.use = Area_DoorUse;
-	if (door->v.spawnflags & DOOR_FLAG_TRIGGERTOUCH)
-		door->v.TouchFunction = Area_DoorTouch;
+	if (door->v.spawnflags & DOOR_FLAG_TRIGGERUSE) {
+        door->v.use = Area_DoorUse;
+    }
+	if (door->v.spawnflags & DOOR_FLAG_TRIGGERTOUCH) {
+        door->v.TouchFunction = Area_DoorTouch;
+    }
 	if (door->v.spawnflags & DOOR_FLAG_TRIGGERAUTO) {
 
 	}

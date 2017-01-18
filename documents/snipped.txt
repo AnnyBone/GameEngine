@@ -179,14 +179,14 @@ void Monster_Frame(ServerEntity_t *eMonster)
 			eMonster->Monster.fEmotion[EMOTION_BOREDOM]++;
 			break;
 		default:
-			Engine.Con_Warning("No think was set for %s at spawn!\n",eMonster->v.cClassname);
+			Engine.Con_Warning("No think was set for %s at spawn!\n",eMonster->v.classname);
 
 			Monster_SetThink(eMonster,MONSTER_THINK_IDLE);
 			return;
 		}
 		break;
 	default:
-		Engine.Con_Warning("Unknown state set for monster! (%s)\n",eMonster->v.cClassname);
+		Engine.Con_Warning("Unknown state set for monster! (%s)\n",eMonster->v.classname);
 	}
 
 	// [6/8/2012] Don't let the emotion value get too high or low ~hogsy

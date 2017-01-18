@@ -216,7 +216,7 @@ void C4Vizatergo_PrimaryAttack(ServerEntity_t *eOwner)
 
 	eOwner->v.iPrimaryAmmo = eOwner->local.iC4Ammo -= 1;
 
-	c4ball->v.cClassname	= "c4ball";
+	c4ball->v.classname	= "c4ball";
 	c4ball->v.movetype		= MOVETYPE_BOUNCE;
 
 	c4ball->local.style = AMMO_C4BOMBS;		// Cleaner way to tell if this can explode or not :V ~hogsy

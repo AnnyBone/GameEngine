@@ -208,7 +208,7 @@ void Server_Sound(ServerEntity_t *ent, int channel, char *sample, int iVolume, f
 
 	if(!sample)
 	{
-		Con_Warning("Bad sample name (%s)!\n",ent->v.cClassname);
+		Con_Warning("Bad sample name (%s)!\n",ent->v.classname);
 		return;
 	}
 	else if(iVolume < 0 || iVolume > 255)
@@ -352,7 +352,7 @@ sizebuf_t *Game_MessageOne(ServerEntity_t *seMessage)
 {
 	unsigned int iEntity = NUM_FOR_EDICT(seMessage);
 	if (iEntity < 1 || iEntity > svs.maxclients)
-		Con_Error("Attempted to send message to a non-client! (%i) (%s)", iEntity, seMessage->v.cClassname);
+		Con_Error("Attempted to send message to a non-client! (%i) (%s)", iEntity, seMessage->v.classname);
 
 	return &svs.clients[iEntity - 1].message;
 }

@@ -1682,7 +1682,7 @@ ServerEntity_t	*FindViewthing (void)
 	for (i=0 ; i<sv.num_edicts ; i++)
 	{
 		e = EDICT_NUM(i);
-		if (!strcmp(e->v.cClassname, "viewthing"))
+		if (!strcmp(e->v.classname, "viewthing"))
 			return e;
 	}
 	Con_Printf ("No viewthing on map\n");

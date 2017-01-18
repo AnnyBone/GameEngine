@@ -68,12 +68,12 @@ Should be called AFTER setting model!
 void Entity::SetSize(PLVector3D mins, PLVector3D maxs) {
     // Ensure the model hasn't already been set.
     if (!instance_->v.model) {
-        g_engine->Con_Warning("Setting entity size before model! (%s)\n", instance_->v.cClassname);
+        g_engine->Con_Warning("Setting entity size before model! (%s)\n", instance_->v.classname);
     }
 
     // Ensure the mins/maxs are the right way round.
     if ((mins.x > maxs.x) || (mins.y > maxs.y) || (mins.z > maxs.z)) {
-        g_engine->Con_Warning("Backwards mins/maxs! (%s)\n", instance_->v.cClassname);
+        g_engine->Con_Warning("Backwards mins/maxs! (%s)\n", instance_->v.classname);
         return;
     }
 
@@ -213,7 +213,7 @@ bool Entity::DropToFloor() {
     trace_t ground = g_engine->Server_Move(instance_->v.origin, instance_->v.mins, instance_->v.maxs, end, false, instance_);
     if ((ground.fraction == 1) || ground.bAllSolid) {
         g_engine->Con_Warning("Entity is stuck in world! (%s) (%i %i %i)\n",
-                              instance_->v.cClassname,
+                              instance_->v.classname,
                               (int)instance_->v.origin.x,
                               (int)instance_->v.origin.y,
                               (int)instance_->v.origin.z);

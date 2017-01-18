@@ -40,7 +40,7 @@ void UseTargets(ServerEntity_t *ent, ServerEntity_t *other)
 		t = Entity_Spawn();
 		if(t)
 		{
-			t->v.cClassname	= "DelayedUse";
+			t->v.classname	= "DelayedUse";
 			t->v.nextthink	= Server.time+ent->local.delay;
 			t->v.think		= Misc_DelayThink;
 			t->v.enemy		= other;
@@ -98,7 +98,7 @@ void ThrowGib(plVector3f_t origin, plVector3f_t velocity, char *model, float dam
 {
 	ServerEntity_t *gib = Entity_Spawn();
 
-	gib->v.cClassname	= "gib";
+	gib->v.classname	= "gib";
 
 	Entity_SetOrigin(gib,origin);
 

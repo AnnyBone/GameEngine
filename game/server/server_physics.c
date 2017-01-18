@@ -77,13 +77,13 @@ void Physics_CheckVelocity(ServerEntity_t *eEntity)
 	{
 		if (PL_ISNAN(eEntity->v.velocity[i]))
 		{
-			Engine.Con_DPrintf("Got a NaN velocity on %s\n",eEntity->v.cClassname);
+			Engine.Con_DPrintf("Got a NaN velocity on %s\n",eEntity->v.classname);
 			eEntity->v.velocity[i] = 0;
 		}
 
 		if (PL_ISNAN(eEntity->v.origin[i]))
 		{
-			Engine.Con_DPrintf("Got a NaN origin on %s\n",eEntity->v.cClassname);
+			Engine.Con_DPrintf("Got a NaN origin on %s\n",eEntity->v.classname);
 			eEntity->v.origin[i] = 0;
 		}
 

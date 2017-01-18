@@ -711,7 +711,7 @@ void Player_Spawn(ServerEntity_t *ePlayer)
 
 	ePlayer->Monster.iType = MONSTER_PLAYER;
 
-	ePlayer->v.cClassname = "player";
+	ePlayer->v.classname = "player";
 	ePlayer->v.health = cvServerDefaultHealth.iValue;
 	ePlayer->v.movetype = MOVETYPE_WALK;
 	ePlayer->v.takedamage = true;
