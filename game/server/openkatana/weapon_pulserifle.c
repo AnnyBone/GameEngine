@@ -78,7 +78,7 @@ void PulseRifle_PrimaryAttack(ServerEntity_t *ent)
 	ent->v.iPrimaryAmmo	= ent->local.glock_ammo--;
 	ent->local.glock_ammo2--;
 
-	ent->local.dAttackFinished	= Server.dTime+0.2;
+	ent->local.dAttackFinished	= Server.time+0.2;
 
 	// [23/5/2012] Damage set to 5 due to high rate of fire ~hogsy
 	//Weapon_BulletProjectile(ent,0.5f,5);
@@ -132,7 +132,7 @@ void throw_cordite(ServerEntity_t *ent)
 	Entity_SetSize(greekfire,0,0,0,0,0,0);
 
 	greekfire->v.think			= CorditeExplode;
-	greekfire->v.dNextThink		= Server.dTime + 3.0;
+	greekfire->v.dNextThink		= Server.time + 3.0;
 	greekfire->v.TouchFunction	= CorditeTouch;
 
 	// SetOrigin automatically links.
@@ -145,7 +145,7 @@ void PulseRifle_SecondaryAttack(ServerEntity_t *ent)
 	// [25/6/2012] Revised ~hogsy
 	char *noise;
 
-	if(ent->local.dAttackFinished > Server.dTime)
+	if(ent->local.dAttackFinished > Server.time)
 		return;
 
 	switch(ent->local.iFireMode)
@@ -161,5 +161,5 @@ void PulseRifle_SecondaryAttack(ServerEntity_t *ent)
 
 	Sound(ent,CHAN_WEAPON,noise,255,ATTN_NORM);
 
-	ent->local.dAttackFinished = Server.dTime+1.0;
+	ent->local.dAttackFinished = Server.time+1.0;
 }

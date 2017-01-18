@@ -26,11 +26,11 @@ namespace game
 			Entity();
 			~Entity();
 
-			void SetOrigin(plVector3f_t origin);
-			void SetAngles(plVector3f_t angles);
-			void SetSize(plVector3f_t mins, plVector3f_t maxs);
+			void SetOrigin(PLVector3D origin);
+			void SetAngles(PLVector3D angles);
+			void SetSize(PLVector3D mins, PLVector3D maxs);
 			void SetSize(float mina, float minb, float minc, float maxa, float maxb, float maxc);
-			void SetModel(char *path);
+			void SetModel(const char *path);
 
 			// Effects
 			void AddEffects(int effects);
@@ -62,13 +62,13 @@ namespace game
 			*/
 			ServerEntity_t *GetInstance()
 			{
-				return _instance;
+				return instance_;
 			};
 
 			Entity *owner;
 
 		private:
-			ServerEntity_t *_instance;
+			ServerEntity_t *instance_;
 		};
 	}
 }

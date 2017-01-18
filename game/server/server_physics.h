@@ -1,7 +1,6 @@
-/*	Copyright (C) 2011-2014 OldTimes Software
-*/
-#ifndef __SERVERPHYSICS__
-#define __SERVERPHYSICS__
+//  Copyright (C) 2011-2017 OldTimes Software
+
+#pragma once
 
 #include "server_main.h"
 
@@ -13,6 +12,4 @@ void Physics_Impact(ServerEntity_t *eEntity, ServerEntity_t *eOther);
 
 bool Physics_CheckWater(ServerEntity_t *eEntity);
 
-trace_t Physics_PushEntity(ServerEntity_t *eEntity, MathVector3f_t mvPush);
-
-#endif
+trace_t Physics_PushEntity(ServerEntity_t *eEntity, PLVector3D mvPush);

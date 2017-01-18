@@ -59,9 +59,9 @@ void GreekFire_PrimaryAttack(ServerEntity_t *ent)
 
 	ent->v.iPrimaryAmmo = ent->local.iGreekFireAmmo--;
 
-	if(ent->local.attackb_finished > Server.dTime)	// No attack boost...
-		ent->local.dAttackFinished = Server.dTime+0.75;
+	if(ent->local.attackb_finished > Server.time)	// No attack boost...
+		ent->local.dAttackFinished = Server.time+0.75;
 	else
-		ent->local.dAttackFinished = Server.dTime+1.5;
+		ent->local.dAttackFinished = Server.time+1.5;
 #endif
 }

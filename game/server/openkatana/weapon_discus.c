@@ -38,7 +38,7 @@ void Discus_Follow(ServerEntity_t *ent)
 	Math_MVToVector(plVectorToAngles(ent->v.velocity), ent->v.angles);
 
 	ent->v.think		= Discus_Follow;
-	ent->v.dNextThink	= Server.dTime+0.01;
+	ent->v.dNextThink	= Server.time+0.01;
 }
 
 // [4/7/2012] Renamed to Discus_ProjectileTouch ~hogsy
@@ -87,7 +87,7 @@ void Discus_ProjectileTouch(ServerEntity_t *ent,ServerEntity_t *other)
 	if(ent->local.hit == 1)
 	{
 		ent->v.think		= Discus_Follow;
-		ent->v.dNextThink	= Server.dTime+0.01;
+		ent->v.dNextThink	= Server.time+0.01;
 	}
 	else
 		ent->v.think		= NULL;
@@ -136,8 +136,8 @@ void Discus_PrimaryAttack(ServerEntity_t *ent)
 	// [4/7/2012] Simplified ~hogsy
 	ent->v.iPrimaryAmmo = ent->local.discus_ammo2--;
 
-	if(ent->local.attackb_finished > Server.dTime)	// No attack boost...
-		ent->local.dAttackFinished = Server.dTime+0.35;
+	if(ent->local.attackb_finished > Server.time)	// No attack boost...
+		ent->local.dAttackFinished = Server.time+0.35;
 	else
-		ent->local.dAttackFinished = Server.dTime+0.75;
+		ent->local.dAttackFinished = Server.time+0.75;
 }

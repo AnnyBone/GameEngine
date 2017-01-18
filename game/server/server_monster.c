@@ -414,7 +414,7 @@ void Monster_Killed(ServerEntity_t *eTarget, ServerEntity_t *eAttacker, EntityDa
 		Engine.WriteByte(MSG_ONE,eAttacker->v.iScore);
 #endif
 	}
-	else if(Entity_IsPlayer(eAttacker) && bIsMultiplayer)
+	else if(Entity_IsPlayer(eAttacker) && g_ismultiplayer)
 	{
 		char *cDeathMessage = "%s was killed by %s\n";
 
@@ -424,7 +424,7 @@ void Monster_Killed(ServerEntity_t *eTarget, ServerEntity_t *eAttacker, EntityDa
 
 			eAttacker->v.iScore--;
 		}
-		else if(Entity_IsPlayer(eTarget) && bIsCooperative)
+		else if(Entity_IsPlayer(eTarget) && g_iscooperative)
 		{
 			cDeathMessage = "%s was tk'd by %s (what a dick, huh?)";
 
@@ -544,7 +544,7 @@ void Monster_Damage(ServerEntity_t *target, ServerEntity_t *inflictor, int iDama
 	if(Entity_IsPlayer(inflictor))
 	{
 #ifdef GAME_OPENKATANA
-		if(inflictor->local.power_finished > Server.dTime)
+		if(inflictor->local.power_finished > Server.time)
 			iDamage *= 3;
 #endif
 
@@ -576,10 +576,10 @@ void MONSTER_WaterMove(ServerEntity_t *ent)
 
 	if(ent->v.waterlevel != 3)
 	{
-		ent->local.dAirFinished = Server.dTime+12.0;
+		ent->local.dAirFinished = Server.time+12.0;
 		ent->local.iDamage		= 2;
 	}
-	else if(ent->local.dAirFinished < Server.dTime && ent->local.dPainFinished < Server.dTime)
+	else if(ent->local.dAirFinished < Server.time && ent->local.dPainFinished < Server.time)
 	{
 		ent->local.iDamage += 2;
 		if(ent->local.iDamage > 15)
@@ -587,22 +587,22 @@ void MONSTER_WaterMove(ServerEntity_t *ent)
 
 		Entity_Damage(ent, Server.eWorld, ent->local.iDamage, ent->local.iDamageType);
 
-		ent->local.dPainFinished = Server.dTime+1.0;
+		ent->local.dPainFinished = Server.time+1.0;
 	}
 
-	if ((ent->v.watertype == BSP_CONTENTS_LAVA) && ent->local.dDamageTime < Server.dTime)
+	if ((ent->v.watertype == BSP_CONTENTS_LAVA) && ent->local.dDamageTime < Server.time)
 	{
-		ent->local.dDamageTime = Server.dTime + 0.2;
+		ent->local.dDamageTime = Server.time + 0.2;
 	}
-	else if ((ent->v.watertype == BSP_CONTENTS_SLIME) && ent->local.dDamageTime < Server.dTime)
+	else if ((ent->v.watertype == BSP_CONTENTS_SLIME) && ent->local.dDamageTime < Server.time)
 	{
-		ent->local.dDamageTime = Server.dTime + 1.0;
+		ent->local.dDamageTime = Server.time + 1.0;
 	}
 
 	if(!(ent->v.flags & FL_WATERJUMP))
 	{
 		ent->v.velocity[0] = ent->v.velocity[1] = ent->v.velocity[2] =
-			ent->v.velocity[2]-0.8f*ent->v.waterlevel*((float)Server.dTime)*(ent->v.velocity[0]+ent->v.velocity[1]+ent->v.velocity[2]);
+			ent->v.velocity[2]-0.8f*ent->v.waterlevel*((float)Server.time)*(ent->v.velocity[0]+ent->v.velocity[1]+ent->v.velocity[2]);
 	}
 }
 

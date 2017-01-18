@@ -1,5 +1,7 @@
 /*
-Copyright (C) 2011-2016 OldTimes Software
+Copyright (C) 1996-1997 Id Software, Inc.
+Copyright (C) 2011-2015 Marco 'eukara' Hladik <eukos@oldtimes-software.com>
+Copyright (C) 2011-2017 Mark E Sowden <markelswo@gmail.com>
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -17,6 +19,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#include <shared_game.h>
 #include "server_main.h"
 
 /*
@@ -41,47 +44,44 @@ TODO:
 	area_monsterclip ?	- Blocks ways off for monsters
 */
 
-void Area_SetMoveDirection(MathVector3f_t vAngles, MathVector3f_t vMoveDirection)
-{
-	MathVector3f_t vUp = { 0, -1, 0 };
-	MathVector3f_t vMoveUp = { 0, 0, 1 };
-	MathVector3f_t vDown = { 0, -2, 0 };
-	MathVector3f_t vMoveDown = { 0, 0, -1 };
+void Area_SetMoveDirection(PLVector3D &angles, PLVector3D &direction) {
+	if(angles == PLVector3D(0, -1, 0)) {
+        direction = PLVector3D(0, 0, 1);
+	} else if(angles == PLVector3D(0, -2, 0)) {
+        direction = PLVector3D(0, 0, -1);
+    } else {
+        Math_AngleVectors(angles, &direction, nullptr, nullptr);
+    }
 
-	if (plVectorCompare(vAngles, vUp))
-		plVectorCopy(vMoveUp, vMoveDirection);
-	else if (plVectorCompare(vAngles, vDown))
-		plVectorCopy(vMoveDown, vMoveDirection);
-	else
-		plAngleVectors(vAngles, vMoveDirection, NULL, NULL);
-
-	plVectorClear(vAngles);
+    plClearVector3D(&angles);
 }
 
-void Area_CalculateMovementDone(ServerEntity_t *eArea)
-{
-	Entity_SetOrigin(eArea,eArea->local.finaldest);
+void Area_CalculateMovementDone(ServerEntity_t *area) {
+	Entity_SetOrigin(area, area->local.finaldest);
 
-	plVectorClear(eArea->v.velocity);
+	plClearVector3D(&area->v.velocity);
 
-	if(eArea->local.think1)
-		eArea->local.think1(eArea,eArea);
+	if(area->local.think1) {
+        area->local.think1(area, area);
+    }
 }
 
-void Area_Move(ServerEntity_t *eArea, MathVector3f_t vTDest, float fSpeed, void(*Function)(ServerEntity_t *eArea, ServerEntity_t *eOther))
-{
-	MathVector3f_t	vdestdelta;
+void Area_Move(ServerEntity_t *area, PLVector3D dest, float speed, void(*Function)(ServerEntity_t *entity, ServerEntity_t *other)) {
+    if(speed == 0) {
+        // Very unlikely, but prevent a division by 0...
+        return;
+    }
 
-	plVectorCopy(vTDest, eArea->local.finaldest);
-	plVectorSubtract3fv(vTDest, eArea->v.origin, vdestdelta);
+    area->local.finaldest = dest;
+    PLVector3D delta = dest - area->v.origin;
 
-	float traveltime = plLengthf(vdestdelta) / fSpeed;
-	plVectorScalef(vdestdelta, 1.0f / traveltime, eArea->v.velocity);
+	float traveltime = delta.Length() / speed;
+    area->v.velocity = delta * (1 / traveltime);
 
-	eArea->local.think1	= Function;
+	area->local.think1 = Function;
 
-	eArea->v.think		= Area_CalculateMovementDone;
-	eArea->v.dNextThink = eArea->v.ltime + traveltime;
+	area->v.think = Area_CalculateMovementDone;
+	area->v.dNextThink = area->v.ltime + traveltime;
 }
 
 /*	area_breakable	*/
@@ -91,114 +91,104 @@ void Area_Move(ServerEntity_t *eArea, MathVector3f_t vTDest, float fSpeed, void(
 #define	BREAKABLE_ROCK	2
 #define	BREAKABLE_METAL	3
 
-void Area_BreakableBounce(ServerEntity_t *eGib, ServerEntity_t *eOther)
-{
-	char cSound[128];
+void Area_BreakableBounce(ServerEntity_t *gib, ServerEntity_t *other) {
+	if(gib->v.flags & FL_ONGROUND) {
+        return;
+    }
 
-	if(eGib->v.flags & FL_ONGROUND)
-		return;
-
-	switch(eGib->local.style)
-	{
+    char sound[128] = { 0 };
+	switch(gib->local.style) {
 	case BREAKABLE_GLASS:
-		PHYSICS_SOUND_GLASS(cSound);
+		PHYSICS_SOUND_GLASS(sound);
 		break;
 	case BREAKABLE_WOOD:
-		PHYSICS_SOUND_WOOD(cSound);
+		PHYSICS_SOUND_WOOD(sound);
 		break;
 	case BREAKABLE_ROCK:
-		PHYSICS_SOUND_ROCK(cSound);
+		PHYSICS_SOUND_ROCK(sound);
 		break;
 	case BREAKABLE_METAL:
-		PHYSICS_SOUND_METAL(cSound);
+		PHYSICS_SOUND_METAL(sound);
 		break;
 	default:
-		Engine.Con_Warning("Unknown breakable type! (%i)\n",eGib->local.style);
+		g_engine->Con_Warning("Unknown breakable type! (%i)\n", gib->local.style);
 		return;
 	}
 
-	Sound(eGib,CHAN_AUTO,cSound,30,ATTN_NORM);
+	Sound(gib,CHAN_AUTO,sound,30,ATTN_NORM);
 }
 
-void Area_CreateGib(ServerEntity_t *eArea, const char *cModel)
-{
-	ServerEntity_t *eGib = Entity_Spawn();
-	if (eGib)
-	{
-		eGib->v.cClassname = "entity_gib";
-		eGib->v.movetype = MOVETYPE_BOUNCE;
-		eGib->v.TouchFunction = Area_BreakableBounce;
-		eGib->v.think = Entity_Remove;
-		eGib->v.dNextThink = Server.dTime + 20;
-		eGib->v.bTakeDamage = false;
+void Area_CreateGib(ServerEntity_t *area, const char *model) {
+	ServerEntity_t *gib = Entity_Spawn();
+	if (gib) {
+		gib->v.cClassname = "entity_gib";
+		gib->v.movetype = MOVETYPE_BOUNCE;
+		gib->v.TouchFunction = Area_BreakableBounce;
+		gib->v.think = Entity_Remove;
+		gib->v.dNextThink = Server.time + 20;
+		gib->v.bTakeDamage = false;
 
-		eGib->Physics.solid = SOLID_TRIGGER;
+		gib->Physics.solid = SOLID_TRIGGER;
 
-		eGib->local.style = eArea->local.style;
+		gib->local.style = area->local.style;
 
 		for (int j = 0; j < 3; j++)
 		{
-			eGib->v.velocity[j] =
-				eGib->v.avelocity[j] = (float)(rand() % 5 * eArea->v.iHealth * 5);
+			gib->v.velocity[j] =
+				gib->v.avelocity[j] = (float)(rand() % 5 * area->v.iHealth * 5);
 		}
 
-		Entity_SetModel(eGib, (char*)cModel);
-		Entity_SetOrigin(eGib, eArea->v.oldorigin);
-		Entity_SetSizeVector(eGib, pl_origin3f, pl_origin3f);
+		Entity_SetModel(gib, model);
+		Entity_SetOrigin(gib, area->v.oldorigin);
+		Entity_SetSizeVector(gib, PLVector3D(), PLVector3D());
 	}
 }
 
-void Area_BreakableDie(ServerEntity_t *eArea, ServerEntity_t *eOther, EntityDamageType_t type)
-{
-	int	i;
-	char cSound[128], cModel[PLATFORM_MAX_PATH];
-
-	switch (eArea->local.style)
-	{
+void Area_BreakableDie(ServerEntity_t *area, ServerEntity_t *other, EntityDamageType_t type) {
+	char sound[128], model[PL_SYSTEM_MAX_PATH];
+	switch (area->local.style) {
 	case BREAKABLE_GLASS:
-		PHYSICS_SOUND_GLASS(cSound);
-		PHYSICS_MODEL_GLASS(cModel);
+		PHYSICS_SOUND_GLASS(sound);
+		PHYSICS_MODEL_GLASS(model);
 		break;
 	case BREAKABLE_WOOD:
-		PHYSICS_SOUND_WOOD(cSound);
-		PHYSICS_MODEL_WOOD(cModel);
+		PHYSICS_SOUND_WOOD(sound);
+		PHYSICS_MODEL_WOOD(model);
 		break;
 	case BREAKABLE_ROCK:
-		PHYSICS_SOUND_ROCK(cSound);
-		PHYSICS_MODEL_ROCK(cModel);
+		PHYSICS_SOUND_ROCK(sound);
+		PHYSICS_MODEL_ROCK(model);
 		break;
 	case BREAKABLE_METAL:
-		PHYSICS_SOUND_METAL(cSound);
-		PHYSICS_MODEL_METAL(cModel);
+		PHYSICS_SOUND_METAL(sound);
+		PHYSICS_MODEL_METAL(model);
 		break;
 	}
 
-	Sound(eArea, CHAN_AUTO, cSound, 255, ATTN_STATIC);
+	Sound(area, CHAN_AUTO, sound, 255, ATTN_STATIC);
 
-	for (i = 0; i < eArea->local.count; i++)
-		Area_CreateGib(eArea, cModel);	
+	for (int i = 0; i < area->local.count; i++)
+		Area_CreateGib(area, model);
 
 	// Needs to be set to prevent a recursion.
-	eArea->v.bTakeDamage = false;
+	area->v.bTakeDamage = false;
 
-	if (eArea->v.targetname) // Trigger doors, etc. ~eukos
-		UseTargets(eArea, eOther);
+	if (area->v.targetname) // Trigger doors, etc. ~eukos
+		UseTargets(area, other);
 
-	Entity_Remove(eArea);
+	Entity_Remove(area);
 }
 
-void Area_BreakableUse(ServerEntity_t *eArea)
-{
-	Area_BreakableDie(eArea, eArea->local.activator, DAMAGE_TYPE_NONE);
+void Area_BreakableUse(ServerEntity_t *area) {
+	Area_BreakableDie(area, area->local.activator, DAMAGE_TYPE_NONE);
 }
 
-void Area_BreakableSpawn(ServerEntity_t *eArea)
-{
-	if (eArea->v.iHealth <= 0)
-		eArea->v.iHealth = 1;
+void Area_BreakableSpawn(ServerEntity_t *area) {
+	if (area->v.iHealth <= 0) {
+        area->v.iHealth = 1;
+    }
 
-	switch (eArea->local.style)
-	{
+	switch (area->local.style) {
 	case BREAKABLE_GLASS:
 		Server_PrecacheSound( PHYSICS_SOUND_GLASS0);
 		Server_PrecacheSound( PHYSICS_SOUND_GLASS1);
@@ -232,47 +222,46 @@ void Area_BreakableSpawn(ServerEntity_t *eArea)
 		Server_PrecacheModel(PHYSICS_MODEL_METAL2);
 		break;
 	default:
-		Engine.Con_Warning("area_breakable: Unknown style\n");
+		g_engine->Con_Warning("area_breakable: Unknown style\n");
 	}
 
 	// If we've been given a name, then set our use function.
-	if (eArea->v.cName)
-		eArea->v.use = Area_BreakableUse;
+	if (area->v.cName) {
+        area->v.use = Area_BreakableUse;
+    }
 
-	eArea->Physics.solid = SOLID_BSP;
+	area->Physics.solid = SOLID_BSP;
 
-	eArea->v.movetype = MOVETYPE_PUSH;
-	eArea->v.bTakeDamage = true;
+	area->v.movetype = MOVETYPE_PUSH;
+	area->v.bTakeDamage = true;
 
-	eArea->local.bBleed = false;
+	area->local.bBleed = false;
 
-	Entity_SetKilledFunction(eArea, Area_BreakableDie);
+	Entity_SetKilledFunction(area, Area_BreakableDie);
 
-	Entity_SetModel(eArea, eArea->v.model);
-	Entity_SetOrigin(eArea, eArea->v.origin);
-	Entity_SetSizeVector(eArea, eArea->v.mins, eArea->v.maxs);
+	Entity_SetModel(area, area->v.model);
+	Entity_SetOrigin(area, area->v.origin);
+	Entity_SetSizeVector(area, area->v.mins, area->v.maxs);
 
-	eArea->v.oldorigin[0] = (eArea->v.mins[0] + eArea->v.maxs[0])*0.5f;
-	eArea->v.oldorigin[1] = (eArea->v.mins[1] + eArea->v.maxs[1])*0.5f;
-	eArea->v.oldorigin[2] = (eArea->v.mins[2] + eArea->v.maxs[2])*0.5f;
+	area->v.oldorigin.x = (area->v.mins.x + area->v.maxs.x) * 0.5f;
+	area->v.oldorigin.y = (area->v.mins.y + area->v.maxs.y) * 0.5f;
+	area->v.oldorigin.z = (area->v.mins.z + area->v.maxs.z) * 0.5f;
 }
 
 /*	area_rotate	*/
 
-void Area_RotateBlocked(ServerEntity_t *eArea, ServerEntity_t *eOther)
-{
-	Entity_Damage(eOther, eArea, eArea->local.iDamage, DAMAGE_TYPE_CRUSH);
+void Area_RotateBlocked(ServerEntity_t *area, ServerEntity_t *other) {
+	Entity_Damage(other, area, area->local.iDamage, DAMAGE_TYPE_CRUSH);
 }
 
-void Area_RotateTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
-{
-	if(eArea->local.dMoveFinished > Server.dTime)
-		return;
+void Area_RotateTouch(ServerEntity_t *area, ServerEntity_t *other) {
+	if(area->local.dMoveFinished > Server.time) {
+        return;
+    }
 }
 
-void Area_RotateThink(ServerEntity_t *eArea)
-{
-	eArea->v.dNextThink	= Server.dTime+1000000000.0;
+void Area_RotateThink(ServerEntity_t *eArea) {
+	eArea->v.dNextThink	= Server.time + 1000000000.0;
 }
 
 #define STYLE_ROTATE_DOOR	1
@@ -282,69 +271,72 @@ void Area_RotateThink(ServerEntity_t *eArea)
 #define	SPAWNFLAG_ROTATE_Z			8
 #define	SPAWNFLAG_ROTATE_REVERSE	64
 
-void Area_RotateSpawn(ServerEntity_t *eArea)
-{
-	if(!eArea->local.speed)
-		eArea->local.speed = 100.0f;
+void Area_RotateSpawn(ServerEntity_t *area) {
+	if(!area->local.speed) {
+        area->local.speed = 100;
+    }
 
 #if 0
 	// [26/7/2012] Check our spawn flags ~hogsy
-	if(eArea->local.style == STYLE_ROTATE_DOOR)
+	if(area->local.style == STYLE_ROTATE_DOOR)
 	{
-		if(eArea->v.spawnflags & SPAWNFLAG_ROTATE_REVERSE)
+		if(area->v.spawnflags & SPAWNFLAG_ROTATE_REVERSE)
 		{
 		}
 
-		if(eArea->v.spawnflags & SPAWNFLAG_ROTATE_X)
-			eArea->v.movedir[0] = 1.0f;
-		else if(eArea->v.spawnflags & SPAWNFLAG_ROTATE_Y)
-			eArea->v.movedir[1] = 1.0f;
+		if(area->v.spawnflags & SPAWNFLAG_ROTATE_X)
+			area->v.movedir[0] = 1.0f;
+		else if(area->v.spawnflags & SPAWNFLAG_ROTATE_Y)
+			area->v.movedir[1] = 1.0f;
 		else
-			eArea->v.movedir[2] = 1.0f;
+			area->v.movedir[2] = 1.0f;
 
-		Math_VectorCopy(eArea->v.angles,eArea->local.pos1);
-		eArea->local.pos2[0] = eArea->local.pos1[0]+eArea->v.movedir[0]*eArea->local.distance;
+		Math_VectorCopy(area->v.angles,area->local.pos1);
+		area->local.pos2[0] = area->local.pos1[0]+area->v.movedir[0]*area->local.distance;
 
-		eArea->v.TouchFunction = Area_RotateTouch;
+		area->v.TouchFunction = Area_RotateTouch;
 
-		eArea->local.dMoveFinished = 0;
+		area->local.dMoveFinished = 0;
 	}
 	else
 #endif
 	{
-		if(eArea->v.spawnflags & SPAWNFLAG_ROTATE_REVERSE)
-			eArea->local.speed *= -1;
+		if(area->v.spawnflags & SPAWNFLAG_ROTATE_REVERSE) {
+            area->local.speed *= -1;
+        }
 
-		if(eArea->v.spawnflags & SPAWNFLAG_ROTATE_X)
-			eArea->v.avelocity[0] = eArea->local.speed;
+		if(area->v.spawnflags & SPAWNFLAG_ROTATE_X) {
+            area->v.avelocity.x = area->local.speed;
+        }
 
-		if(eArea->v.spawnflags & SPAWNFLAG_ROTATE_Y)
-			eArea->v.avelocity[1] = eArea->local.speed;
+		if(area->v.spawnflags & SPAWNFLAG_ROTATE_Y) {
+            area->v.avelocity.y = area->local.speed;
+        }
 
-		if(eArea->v.spawnflags & SPAWNFLAG_ROTATE_Z)
-			eArea->v.avelocity[2] = eArea->local.speed;
+		if(area->v.spawnflags & SPAWNFLAG_ROTATE_Z) {
+            area->v.avelocity.z = area->local.speed;
+        }
 	}
 
-	Entity_SetBlockedFunction(eArea, Area_RotateBlocked);
+	Entity_SetBlockedFunction(area, Area_RotateBlocked);
 
-	eArea->v.movetype	= MOVETYPE_PUSH;
-	eArea->v.think		= Area_RotateThink;
-	eArea->v.dNextThink	= Server.dTime+1000000000.0;	// TODO: This is a hack. A dirty filthy hack. Curse it and its family!
+	area->v.movetype    = MOVETYPE_PUSH;
+	area->v.think       = Area_RotateThink;
+	area->v.dNextThink  = Server.time + 1000000000.0;	// TODO: This is a hack. A dirty filthy hack. Curse it and its family!
 
-	eArea->Physics.solid = SOLID_BSP;
+	area->Physics.solid = SOLID_BSP;
 
-	Entity_SetModel(eArea,eArea->v.model);
-	Entity_SetSizeVector(eArea,eArea->v.mins,eArea->v.maxs);
-	Entity_SetOrigin(eArea,eArea->v.origin);
+	Entity_SetModel(area,area->v.model);
+	Entity_SetSizeVector(area,area->v.mins,area->v.maxs);
+	Entity_SetOrigin(area,area->v.origin);
 }
 
 /*	area_triggerfield	*/
 
-ServerEntity_t *Area_SpawnTriggerField(ServerEntity_t *owner, MathVector3f_t mins, MathVector3f_t maxs, void (*TriggerFunction)(ServerEntity_t *entity, ServerEntity_t *other))
-{
-	if (plVectorCompare(pl_origin3f, mins) ||
-		plVectorCompare(pl_origin3f, maxs))
-	{
+ServerEntity_t *Area_SpawnTriggerField(ServerEntity_t *owner,
+                                       PLVector3D mins, PLVector3D maxs,
+                                       void (*TriggerFunction)(ServerEntity_t *entity, ServerEntity_t *other)) {
+	if ((mins == 0) || (maxs == 0)) {
 		g_engine->Con_Warning("Invalid size for trigger field!");
 		return NULL;
 	}
@@ -357,11 +349,9 @@ ServerEntity_t *Area_SpawnTriggerField(ServerEntity_t *owner, MathVector3f_t min
 	Entity_SetPhysics(field, SOLID_TRIGGER, 0, 0);
 	
 	// Set the size of it.
-	MathVector3f_t tmins, tmaxs;
-	Math_VectorCopy(mins, tmins);
-	Math_VectorCopy(maxs, tmaxs);
-	tmins[0] -= 60;	tmins[1] -= 60;	tmins[2] -= 8;
-	tmaxs[0] += 60;	tmaxs[1] += 60;	tmaxs[2] += 8;
+	PLVector3D tmins = mins, tmaxs = maxs;
+	tmins.x -= 60;	tmins.y -= 60;	tmins.z -= 8;
+	tmaxs.x += 60;	tmaxs.y += 60;	tmaxs.z += 8;
 	Entity_SetSizeVector(field, tmins, tmaxs);
 
 	return field;
@@ -382,137 +372,133 @@ ServerEntity_t *Area_SpawnTriggerField(ServerEntity_t *owner, MathVector3f_t min
 #define STATE_UP			2	// Brush is moving up.
 #define STATE_DOWN			3	// Brush is moving down.
 
-void Area_DoorDone(ServerEntity_t *eArea, ServerEntity_t *eOther)
-{
-	if (eArea->local.sound_stop)
-		Sound(eArea, CHAN_VOICE, eArea->local.sound_stop, 255, ATTN_NORM);
+void Area_DoorDone(ServerEntity_t *area, ServerEntity_t *other) {
+	if (area->local.sound_stop) {
+        Sound(area, CHAN_VOICE, area->local.sound_stop, 255, ATTN_NORM);
+    }
 }
 
-void Area_DoorReturn(ServerEntity_t *eArea)
-{
-	eArea->local.iLocalFlags = STATE_DOWN;
+void Area_DoorReturn(ServerEntity_t *area) {
+	area->local.iLocalFlags = STATE_DOWN;
 
-	Area_Move(eArea, eArea->local.pos1, eArea->local.speed, Area_DoorDone);
+	Area_Move(area, area->local.pos1, area->local.speed, Area_DoorDone);
 
-	if(eArea->local.cSoundReturn)
-		Sound(eArea,CHAN_BODY,eArea->local.cSoundReturn,255,ATTN_NORM);
-	if(eArea->local.cSoundMoving)
-		Sound(eArea,CHAN_VOICE,eArea->local.cSoundMoving,255,ATTN_NORM);
+	if(area->local.cSoundReturn) {
+        Sound(area, CHAN_BODY, area->local.cSoundReturn, 255, ATTN_NORM);
+    }
+	if(area->local.cSoundMoving) {
+        Sound(area, CHAN_VOICE, area->local.cSoundMoving, 255, ATTN_NORM);
+    }
 }
 
-void Area_DoorWait(ServerEntity_t *door, ServerEntity_t *eOther)
-{
-	UseTargets(door, eOther);
+void Area_DoorWait(ServerEntity_t *door, ServerEntity_t *other) {
+	UseTargets(door, other);
 
 	door->local.iLocalFlags = STATE_TOP;
 
-	if (door->local.dWait >= 0)
-		door->v.dNextThink = Server.dTime + door->local.dWait;
+	if (door->local.dWait >= 0) {
+        door->v.dNextThink = Server.time + door->local.dWait;
+    }
 
 	door->v.think = Area_DoorReturn;
 
-	if (door->local.sound_stop)
-		Sound(door, CHAN_VOICE, door->local.sound_stop, 255, ATTN_NORM);
+	if (door->local.sound_stop) {
+        Sound(door, CHAN_VOICE, door->local.sound_stop, 255, ATTN_NORM);
+    }
 }
 
-void Area_DoorUse(ServerEntity_t *eArea)
-{
-	if(eArea->local.iLocalFlags == STATE_UP || eArea->local.iLocalFlags == STATE_TOP)
-		return;
+void Area_DoorUse(ServerEntity_t *area) {
+	if(area->local.iLocalFlags == STATE_UP || area->local.iLocalFlags == STATE_TOP) {
+        return;
+    }
 
-	eArea->local.iLocalFlags = STATE_UP;
+	area->local.iLocalFlags = STATE_UP;
 
-	Area_Move(eArea, eArea->local.pos2, eArea->local.speed, Area_DoorWait);
+	Area_Move(area, area->local.pos2, area->local.speed, Area_DoorWait);
 
-	if(eArea->local.cSoundStart)
-		Sound(eArea,CHAN_BODY,eArea->local.cSoundStart,255,ATTN_NORM);
-	if(eArea->local.cSoundMoving)
-		Sound(eArea,CHAN_VOICE,eArea->local.cSoundMoving,255,ATTN_NORM);
+	if(area->local.cSoundStart) {
+        Sound(area, CHAN_BODY, area->local.cSoundStart, 255, ATTN_NORM);
+    }
+	if(area->local.cSoundMoving) {
+        Sound(area, CHAN_VOICE, area->local.cSoundMoving, 255, ATTN_NORM);
+    }
 }
 
-void Area_DoorTouch(ServerEntity_t *door, ServerEntity_t *other)
-{
-	if (door->local.iLocalFlags == STATE_UP || door->local.iLocalFlags == STATE_TOP)
-		return;
-	if ((other->Monster.iType != MONSTER_PLAYER) && other->v.iHealth <= 0)
-		return;
+void Area_DoorTouch(ServerEntity_t *door, ServerEntity_t *other) {
+	if (door->local.iLocalFlags == STATE_UP || door->local.iLocalFlags == STATE_TOP) {
+        return;
+    }
+	if ((other->Monster.iType != MONSTER_PLAYER) && other->v.iHealth <= 0) {
+        return;
+    }
 
 	// Door is linked!
 	if (door->v.spawnflags & DOOR_FLAG_LINK)
 	{
 		ServerEntity_t *linked = door->local.activator;
-		if (linked)
-		{
-			do
-			{
+		if (linked) {
+			do {
 				Area_DoorUse(linked);
 				linked = linked->local.activator;
 			} while (linked);
-		}
-		else
-			g_engine->Con_Warning("No doors linked! (%i %i %i)\n",
-			(int)door->v.origin[0],
-			(int)door->v.origin[1],
-			(int)door->v.origin[2]);
+		} else {
+            g_engine->Con_Warning("No doors linked! (%i %i %i)\n",
+                                  (int) door->v.origin.x,
+                                  (int) door->v.origin.y,
+                                  (int) door->v.origin.z);
+        }
 	}
 
 	door->local.iLocalFlags = STATE_UP;
 	Area_Move(door, door->local.pos2, door->local.speed, Area_DoorWait);
 
-	if (door->local.cSoundStart)
-		Sound(door, CHAN_BODY, door->local.cSoundStart, 255, ATTN_NORM);
-	if (door->local.cSoundMoving)
-		Sound(door, CHAN_VOICE, door->local.cSoundMoving, 255, ATTN_NORM);
+	if (door->local.cSoundStart) {
+        Sound(door, CHAN_BODY, door->local.cSoundStart, 255, ATTN_NORM);
+    }
+	if (door->local.cSoundMoving) {
+        Sound(door, CHAN_VOICE, door->local.cSoundMoving, 255, ATTN_NORM);
+    }
 }
 
-void Area_DoorBlocked(ServerEntity_t *door, ServerEntity_t *other)
-{
+void Area_DoorBlocked(ServerEntity_t *door, ServerEntity_t *other) {
 	Entity_Damage(other, door, door->local.iDamage, DAMAGE_TYPE_CRUSH);
 }
 
-/*	Links doors together into a list.
+/*
+Links doors together into a list.
 
-	This is based on the original QC code; 
-	https://github.com/maikmerten/zernichter/blob/master/id1/src/doors.qc#L316
+This is based on the original QC code;
+https://github.com/maikmerten/zernichter/blob/master/id1/src/doors.qc#L316
 */
-void Area_DoorLink(ServerEntity_t *door)
-{
-	ServerEntity_t	*prev;
-
+void Area_DoorLink(ServerEntity_t *door) {
 	// Don't link if we've already done so.
-	if (door->local.activator)
-		return;
+	if (door->local.activator) {
+        return;
+    }
 
 	// TODO: calculate overall scale of door?
 	ServerEntity_t *link = g_engine->Server_FindRadius(door->v.origin, 700.0f);
-	if (!link)
-		return;
+	if (!link) {
+        return;
+    }
 
 	// We're the master, yo.
-	door->local.activator	= door;
-	prev					= door;
+	door->local.activator   = door;
+    ServerEntity_t *prev    = door;
 
-	MathVector3f_t	smaxs, smins;
-	Math_VectorSet(0, smins);
-	Math_VectorSet(0, smaxs);
-
-	// Copy the size over, which we'll use for the trigger field.
-	plVectorCopy(door->v.mins, smins);
-	plVectorCopy(door->v.maxs, smaxs);
-
-	do
-	{
+    // Copy the size over, which we'll use for the trigger field.
+	PLVector3D smaxs = door->v.maxs, smins = door->v.mins;
+	do {
 		// Only link doors which will support it!
-		if (!(link->v.spawnflags & DOOR_FLAG_LINK))
-			// Skip to the next one.
-			goto SKIP;
+		if (!(link->v.spawnflags & DOOR_FLAG_LINK)) {
+            // Skip to the next one.
+            goto SKIP;
+        }
 
-		if (Entity_IsTouching(prev, link))
-		{
-			if (link->local.activator)
-			{
+		if (Entity_IsTouching(prev, link)) {
+			if (link->local.activator) {
 				g_engine->Con_Warning("Door already has activator assigned! (%i %i %i)\n", 
-					(int)link->v.origin[0], (int)link->v.origin[1], (int)link->v.origin[2]);
+					(int)link->v.origin.x, (int)link->v.origin.y, (int)link->v.origin.z);
 				goto SKIP;
 			}
 
@@ -520,18 +506,25 @@ void Area_DoorLink(ServerEntity_t *door)
 			prev					= link;
 
 			// Update the bounds, which we'll use for the trigger field.
-			if (link->v.mins[0] < smins[0])
-				smins[0] = link->v.mins[0];
-			if (link->v.mins[1] < smins[1])
-				smins[1] = link->v.mins[1];
-			if (link->v.mins[2] < smins[2])
-				smins[2] = link->v.mins[2];
-			if (link->v.maxs[0] > smaxs[0])
-				smaxs[0] = link->v.maxs[0];
-			if (link->v.maxs[1] > smaxs[1])
-				smaxs[1] = link->v.maxs[1];
-			if (link->v.maxs[2] > smaxs[2])
-				smaxs[2] = link->v.maxs[2];
+			if (link->v.mins.x < smins.x) {
+                smins.x = link->v.mins.x;
+            }
+			if (link->v.mins.y < smins.y) {
+                smins.y = link->v.mins.y;
+            }
+			if (link->v.mins.z < smins.z) {
+                smins.z = link->v.mins.z;
+            }
+
+			if (link->v.maxs.x > smaxs.x) {
+                smaxs.x = link->v.maxs.x;
+            }
+			if (link->v.maxs.y > smaxs.y) {
+                smaxs.y = link->v.maxs.y;
+            }
+			if (link->v.maxs.z > smaxs.z) {
+                smaxs.z = link->v.maxs.z;
+            }
 		}
 
 SKIP:
@@ -543,18 +536,20 @@ SKIP:
 
 void Area_DoorSpawn(ServerEntity_t *door)
 {
-	int				i;
-	float			movedist;
-	MathVector3f_t	movedir;
+	PLVector3D	movedir;
 
-	if (door->local.cSoundStart)
-		Server_PrecacheSound(door->local.cSoundStart);
-	if (door->local.sound_stop)
-		Server_PrecacheSound(door->local.sound_stop);
-	if (door->local.cSoundMoving)
-		Server_PrecacheSound(door->local.cSoundMoving);
-	if (door->local.cSoundReturn)
-		Server_PrecacheSound(door->local.cSoundReturn);
+	if (door->local.cSoundStart) {
+        Server_PrecacheSound(door->local.cSoundStart);
+    }
+	if (door->local.sound_stop) {
+        Server_PrecacheSound(door->local.sound_stop);
+    }
+	if (door->local.cSoundMoving) {
+        Server_PrecacheSound(door->local.cSoundMoving);
+    }
+	if (door->local.cSoundReturn) {
+        Server_PrecacheSound(door->local.cSoundReturn);
+    }
 
 	door->v.movetype = MOVETYPE_PUSH;
 
@@ -563,17 +558,18 @@ void Area_DoorSpawn(ServerEntity_t *door)
 	Entity_SetOrigin(door, door->v.origin);
 	Entity_SetSizeVector(door, door->v.mins, door->v.maxs);
 
-	if (door->local.lip == 0)
-		door->local.lip = 4.0f;
+	if (door->local.lip == 0) {
+        door->local.lip = 4;
+    }
 
-	Math_VectorCopy(door->v.origin, door->local.pos1);
+    door->local.pos1 = door->v.origin;
 
 	Area_SetMoveDirection(door->v.angles, door->v.movedir);
 
-	for(i = 0; i < 3; i++)
+	for(int i = 0; i < 3; i++)
 		movedir[i] = (float)fabs(door->v.movedir[i]);
 
-	movedist =
+	float movedist =
 		movedir[0] * door->v.size[0] + 
 		movedir[1] * door->v.size[1] + 
 		movedir[2] * door->v.size[2] - 
@@ -588,23 +584,23 @@ void Area_DoorSpawn(ServerEntity_t *door)
 		door->v.use = Area_DoorUse;
 	if (door->v.spawnflags & DOOR_FLAG_TRIGGERTOUCH)
 		door->v.TouchFunction = Area_DoorTouch;
-	if (door->v.spawnflags & DOOR_FLAG_TRIGGERAUTO)
-	{
+	if (door->v.spawnflags & DOOR_FLAG_TRIGGERAUTO) {
 
 	}
-	if (door->v.spawnflags & DOOR_FLAG_TRIGGERDAMAGE)
-	{
+	if (door->v.spawnflags & DOOR_FLAG_TRIGGERDAMAGE) {
 		// Give it at least one HP.
-		if (!door->v.iHealth)
-			door->v.iHealth = 1;
+		if (!door->v.iHealth) {
+            door->v.iHealth = 1;
+        }
 
 		door->v.bTakeDamage = true;
 		// TODO: add handler for this!
 //		Entity_SetDamagedFunction(door, Area_DoorTouch);
 	}
 
-	if (door->local.iDamage)
-		Entity_SetBlockedFunction(door, Area_DoorBlocked);
+	if (door->local.iDamage) {
+        Entity_SetBlockedFunction(door, Area_DoorBlocked);
+    }
 }
 
 /*	area_changelevel	*/
@@ -620,7 +616,7 @@ void Area_ChangeLevelTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
 	// [2/1/2013] Because we don't want to trigger it multiple times within the delay!!! ~hogsy
 	eArea->v.solid		= SOLID_NOT;
 	eArea->v.think		= Area_ChangelevelStart;
-	eArea->v.dNextThink	= Server.dTime+eArea->local.delay;
+	eArea->v.dNextThink	= Server.time+eArea->local.delay;
 #else
 	eArea->Physics.solid = SOLID_NOT;
 
@@ -629,25 +625,23 @@ void Area_ChangeLevelTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
 #endif
 }
 
-void Area_ChangeLevel(ServerEntity_t *eArea)
-{
-	if(!eArea->v.targetname)
-	{
+void Area_ChangeLevel(ServerEntity_t *area) {
+	if(!area->v.targetname) {
 		Engine.Con_Warning("No targetname set for area_changelevel! (%i %i %i)\n",
-			(int)eArea->v.origin[0],
-			(int)eArea->v.origin[1],
-			(int)eArea->v.origin[2]);
+			(int)area->v.origin[0],
+			(int)area->v.origin[1],
+			(int)area->v.origin[2]);
 		return;
 	}
 
-	eArea->v.TouchFunction	= Area_ChangeLevelTouch;
+	area->v.TouchFunction	= Area_ChangeLevelTouch;
 
-	eArea->Physics.solid = SOLID_TRIGGER;
+	area->Physics.solid = SOLID_TRIGGER;
 
-	Entity_SetModel(eArea,eArea->v.model);
-	Entity_SetOrigin(eArea,eArea->v.origin);
+	Entity_SetModel(area,area->v.model);
+	Entity_SetOrigin(area,area->v.origin);
 
-	eArea->v.model = 0;
+	area->v.model = 0;
 }
 
 /*	area_trigger	*/
@@ -657,7 +651,7 @@ void Area_TriggerTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
 	if(eArea->v.dNextThink || ((eArea->Monster.iType != MONSTER_PLAYER) && eOther->v.iHealth <= 0))
 		return;
 
-	eArea->v.dNextThink = Server.dTime+eArea->local.dWait;
+	eArea->v.dNextThink = Server.time+eArea->local.dWait;
 
 	UseTargets(eArea,eOther);
 
@@ -721,8 +715,8 @@ void Area_PushableThink(ServerEntity_t *eArea)
 void Area_PushableTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
 {
 	float fYaw;
-	MathVector3f_t vMVec;
-	MathVector3f_t vPVec;
+	PLVector3D vMVec;
+	PLVector3D vPVec;
 
 	if (IsOnTopOf(eOther, eArea)) 
 	{
@@ -902,7 +896,7 @@ void Area_ButtonSpawn(ServerEntity_t *eArea)
 {
 	int		i;
 	float	fDist;
-	MathVector3f_t vMoveDir;
+	PLVector3D vMoveDir;
 
 	if(!eArea->v.spawnflags)
 		eArea->v.spawnflags = 0;
@@ -931,7 +925,7 @@ void Area_ButtonSpawn(ServerEntity_t *eArea)
 	Entity_SetOrigin(eArea,eArea->v.origin);
 	Entity_SetSizeVector(eArea,eArea->v.mins,eArea->v.maxs);
 
-	Math_VectorCopy(eArea->v.origin,eArea->local.pos1);
+    eArea->local.pos1 = eArea->v.origin;
 
 	Area_SetMoveDirection(eArea->v.angles,eArea->v.movedir);
 
@@ -1016,236 +1010,235 @@ void Area_PlatformTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
 
 void Area_PlatformUse(ServerEntity_t *eArea)
 {
-	if(eArea->local.iLocalFlags == STATE_UP || eArea->local.iLocalFlags == STATE_TOP)
-		return;
+	if(eArea->local.iLocalFlags == STATE_UP || eArea->local.iLocalFlags == STATE_TOP) {
+        return;
+    }
 
 	eArea->local.iLocalFlags = STATE_UP;
 
 	Area_Move(eArea,eArea->local.pos2,eArea->local.speed,Area_PlatformWait);
 
-	if(eArea->local.cSoundStart)
-		Sound(eArea,CHAN_BODY,eArea->local.cSoundStart,255,ATTN_NORM);
-	if(eArea->local.cSoundMoving)
-		Sound(eArea,CHAN_VOICE,eArea->local.cSoundMoving,255,ATTN_NORM);
+	if(eArea->local.cSoundStart) {
+        Sound(eArea, CHAN_BODY, eArea->local.cSoundStart, 255, ATTN_NORM);
+    }
+	if(eArea->local.cSoundMoving) {
+        Sound(eArea, CHAN_VOICE, eArea->local.cSoundMoving, 255, ATTN_NORM);
+    }
 }
 
-void Area_PlatformBlocked(ServerEntity_t *eArea, ServerEntity_t *eOther)
-{
-	Entity_Damage(eOther, eArea, eArea->local.iDamage, 0);
+void Area_PlatformBlocked(ServerEntity_t *area, ServerEntity_t *other) {
+	Entity_Damage(other, area, area->local.iDamage, DAMAGE_TYPE_CRUSH);
 }
 
-void Area_PlatformSpawn(ServerEntity_t *eArea)
-{
-	float	fDist;
+void Area_PlatformSpawn(ServerEntity_t *area) {
+	if(!area->v.spawnflags) {
+        area->v.spawnflags = 0;
+    }
 
-	if(!eArea->v.spawnflags)
-		eArea->v.spawnflags = 0;
+	if(area->local.cSoundStart) {
+        Server_PrecacheSound(area->local.cSoundStart);
+    }
+	if (area->local.sound_stop) {
+        Server_PrecacheSound(area->local.sound_stop);
+    }
+	if(area->local.cSoundMoving) {
+        Server_PrecacheSound(area->local.cSoundMoving);
+    }
+	if(area->local.cSoundReturn) {
+        Server_PrecacheSound(area->local.cSoundReturn);
+    }
 
-	if(eArea->local.cSoundStart)
-		Server_PrecacheSound(eArea->local.cSoundStart);
-	if (eArea->local.sound_stop)
-		Server_PrecacheSound(eArea->local.sound_stop);
-	if(eArea->local.cSoundMoving)
-		Server_PrecacheSound(eArea->local.cSoundMoving);
-	if(eArea->local.cSoundReturn)
-		Server_PrecacheSound(eArea->local.cSoundReturn);
+	area->v.movetype = MOVETYPE_PUSH;
 
-	eArea->v.movetype = MOVETYPE_PUSH;
+	area->Physics.solid = SOLID_BSP;
 
-	eArea->Physics.solid = SOLID_BSP;
+	if(area->local.count == 0) {
+        area->local.count = 100;
+    }
+	if(area->local.dWait == 0) {
+        area->local.dWait = 3;
+    }
+	if(area->local.iDamage == 0) {
+        area->local.iDamage = 20;
+    }
 
-	if(eArea->local.count == 0)
-		eArea->local.count = 100;
-	if(eArea->local.dWait == 0.0)
-		eArea->local.dWait = 3.0;
-	if(eArea->local.iDamage == 0.0f)
-		eArea->local.iDamage = 20;
+	area->local.iValue = 0;
+	area->local.iLocalFlags = STATE_BOTTOM;
 
-	eArea->local.iValue = 0;
-	eArea->local.iLocalFlags = STATE_BOTTOM;
+	Entity_SetModel(area,area->v.model);
+	Entity_SetOrigin(area,area->v.origin);
+	Entity_SetSizeVector(area,area->v.mins,area->v.maxs);
 
-	Entity_SetModel(eArea,eArea->v.model);
-	Entity_SetOrigin(eArea,eArea->v.origin);
-	Entity_SetSizeVector(eArea,eArea->v.mins,eArea->v.maxs);
+    area->local.pos1 = area->v.origin;
+	Area_SetMoveDirection(area->v.angles, area->v.movedir);
 
-	Math_VectorCopy(eArea->v.origin,eArea->local.pos1);
-	Area_SetMoveDirection(eArea->v.angles, eArea->v.movedir);
+	float dist = (float)area->local.count;
 
-	fDist = (float)eArea->local.count;
+	Math_VectorMake(area->local.pos1, dist, area->v.movedir, area->local.pos2);
 
-	Math_VectorMake(eArea->local.pos1, fDist, eArea->v.movedir, eArea->local.pos2);
+	if(area->v.spawnflags != 32) { // Toggle
+        area->v.TouchFunction = Area_PlatformTouch;
+    }
 
-	if(eArea->v.spawnflags != 32) // Toggle
-		eArea->v.TouchFunction = Area_PlatformTouch;
+	if (area->local.iDamage) {
+        Entity_SetBlockedFunction(area, Area_PlatformBlocked);
+    }
 
-	if (eArea->local.iDamage)
-		Entity_SetBlockedFunction(eArea, Area_PlatformBlocked);
-
-	eArea->v.use = Area_PlatformUse;
+	area->v.use = Area_PlatformUse;
 }
 
 /*	area_climb	*/
 
-void Area_ClimbTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
-{
-	MathVector3f_t vLadVelocity, vPlayerVec, vForward, vRight, vUp;
+void Area_ClimbTouch(ServerEntity_t *area, ServerEntity_t *other) {
+	PLVector3D ladder_velocity, vPlayerVec;
 
-	if ((eOther->local.dLadderJump > Server.dTime) || (eOther->v.waterlevel > 1) || (eOther->v.flags & FL_WATERJUMP))
-		return;
+	if ((other->local.dLadderJump > Server.time) || (other->v.waterlevel > 1) || (other->v.flags & FL_WATERJUMP)) {
+        return;
+    }
 
-	plAngleVectors(eOther->v.angles, vForward, vRight, vUp);
-	Math_VectorCopy(vForward, vPlayerVec);
-	Math_VectorScale(vPlayerVec, 250, vPlayerVec);
+    PLVector3D forward, right, up;
+    Math_AngleVectors(other->v.angles, &forward, &right, &up);
 
-	if (eOther->v.button[2])
- 		Math_VectorCopy(eOther->v.velocity, vPlayerVec);
+    PLVector3D playervec = forward;
+    playervec *= 250;
+
+	if (other->v.button[2]) {
+        playervec = other->v.velocity;
+    }
 
 	// ignore 8 units of the top edge
-	if (eOther->v.origin[2] + eOther->v.mins[2] + 8 >= eArea->v.absmax[2]){
-		if (!(eOther->v.flags & FL_ONGROUND))
-			eOther->v.flags = eOther->v.flags + FL_ONGROUND;
+	if (other->v.origin.z + other->v.mins.z + 8 >= area->v.absmax.z){
+		if (!(other->v.flags & FL_ONGROUND)) {
+            other->v.flags = other->v.flags + FL_ONGROUND;
+        }
 		return;
 	}
 
 	// null out gravity in PreThink
-	eOther->local.dLadderTime = Server.dTime + 0.1;
-	eOther->local.dZeroGTime = Server.dTime + 0.1;
-	eOther->v.velocity[2] = 0;
+	other->local.dLadderTime = Server.time + 0.1;
+	other->local.dZeroGTime = Server.time + 0.1;
+	other->v.velocity.z = 0;
 
-	if (Math_DotProduct(vRight, eOther->v.velocity) > 25) 
-	{
-		plVectorClear(eOther->v.velocity);
-		eOther->v.origin[0] += vRight[0] * 0.5f;
-		eOther->v.origin[1] += vRight[1] * 0.5f;
-		eOther->v.origin[2] += vRight[2] * 0.5f;
+	if (other->v.velocity.DotProduct(right) > 25) {
+        other->v.velocity.Clear();
+
+		other->v.origin[0] += vRight[0] * 0.5f;
+		other->v.origin[1] += vRight[1] * 0.5f;
+		other->v.origin[2] += vRight[2] * 0.5f;
 	//	printf("right  ");
 		return;
-	}
-	else if (Math_DotProduct(vRight, eOther->v.velocity) < -25) 
-	{
-		plVectorClear(eOther->v.velocity);
-		eOther->v.origin[0] -= vRight[0] * 0.5f;
-		eOther->v.origin[1] -= vRight[1] * 0.5f;
-		eOther->v.origin[2] -= vRight[2] * 0.5f;
+	} else if (other->v.velocity.DotProduct(right) < -25) {
+        other->v.velocity.Clear();
+
+		other->v.origin[0] -= vRight[0] * 0.5f;
+		other->v.origin[1] -= vRight[1] * 0.5f;
+		other->v.origin[2] -= vRight[2] * 0.5f;
 	//	printf("left  ");
 		return;
 	}
 
-	float fForwardSpeed = Math_DotProduct(vForward, eOther->v.velocity);
-	plVectorClear(vLadVelocity);
+	float forwardspeed = forward.DotProduct(other->v.velocity);
+	ladder_velocity.Clear();
 
-	// up (facing up/forward)
-	if ((eOther->v.v_angle[0] <= 15) && (fForwardSpeed > 0))
-	{
-		//eOther->v.origin[0] -= eArea->v.movedir[0] * 0.36f;
-		//eOther->v.origin[1] -= eArea->v.movedir[1] * 0.36f;
-		eOther->v.origin[2] -= eArea->v.movedir[2] * 0.36f;
-		vLadVelocity[2] = eOther->v.v_angle[0] * 6; // go faster when facing forward
+	if ((other->v.v_angle.x <= 15) && (forwardspeed > 0)) { // up (facing up/forward)
+		//other->v.origin[0] -= area->v.movedir[0] * 0.36f;
+		//other->v.origin[1] -= area->v.movedir[1] * 0.36f;
+		other->v.origin.z -= area->v.movedir.z * 0.36f;
+		ladder_velocity.z = other->v.v_angle.x * 6; // go faster when facing forward
 		//printf("up (facing up/forward)  ");
 
-		if (vLadVelocity[2] < 90)
-			vLadVelocity[2] = 90; // minimum speed
-	}
-	// up (facing down)
-	else if ((eOther->v.v_angle[0] >= 15) && (fForwardSpeed < 0))
-	{
-		//eOther->v.origin[0] += eArea->v.movedir[0] * 0.36f;
-		//eOther->v.origin[1] += eArea->v.movedir[1] * 0.36f;
-		eOther->v.origin[2] += eArea->v.movedir[2] * 0.36f;
+		if (ladder_velocity.z < 90) {
+            ladder_velocity.z = 90; // minimum speed
+        }
+	} else if ((other->v.v_angle.x >= 15) && (forwardspeed < 0)) { // up (facing down)
+		//other->v.origin[0] += area->v.movedir[0] * 0.36f;
+		//other->v.origin[1] += area->v.movedir[1] * 0.36f;
+		other->v.origin.z += area->v.movedir.z * 0.36f;
 		//printf("up (facing down)  ");
 
-		vLadVelocity[2] = eOther->v.v_angle[0] * 4;
-	}
-	// down (facing up/forward)
-	else if ((eOther->v.v_angle[0] <= 15) && (fForwardSpeed < 0))
-	{
-		//eOther->v.origin[0] += eArea->v.movedir[0] * 0.36f;
-		//eOther->v.origin[1] += eArea->v.movedir[1] * 0.36f;
-		eOther->v.origin[2] += eArea->v.movedir[2] * 0.36f;
+		ladder_velocity.z = other->v.v_angle.x * 4;
+	} else if ((other->v.v_angle.x <= 15) && (forwardspeed < 0)) { // down (facing up/forward)
+		//other->v.origin[0] += area->v.movedir[0] * 0.36f;
+		//other->v.origin[1] += area->v.movedir[1] * 0.36f;
+		other->v.origin.z += area->v.movedir.z * 0.36f;
 
-		vLadVelocity[2] = eOther->v.v_angle[0] * -5;// go faster when facing forward
+		ladder_velocity.z = other->v.v_angle.x * -5;// go faster when facing forward
 		//printf("down (facing up/forward)  ");
 
-		if (vLadVelocity[2] > -80)
-			vLadVelocity[2] = -80;// minimum speed
-	}
-	// down (facing down)
-	else if ((eOther->v.v_angle[0] >= 15) && (fForwardSpeed > 0))
-	{
-		eOther->v.origin[0] -= eArea->v.movedir[0] * 0.36f;
-		eOther->v.origin[1] -= eArea->v.movedir[1] * 0.36f;
-		eOther->v.origin[2] -= eArea->v.movedir[2] * 0.36f;
+		if (ladder_velocity.z > -80) {
+            ladder_velocity.z = -80; // minimum speed
+        }
+	} else if ((other->v.v_angle.x >= 15) && (forwardspeed > 0)) { // down (facing down)
+		other->v.origin[0] -= area->v.movedir[0] * 0.36f;
+		other->v.origin[1] -= area->v.movedir[1] * 0.36f;
+		other->v.origin[2] -= area->v.movedir[2] * 0.36f;
 		//printf("down (facing down)  ");
 
-		vLadVelocity[2] = eOther->v.v_angle[0] * -4;
+		ladder_velocity.z = other->v.v_angle.x * -4;
 	}
 
-	//printf("angle: %i; velo: %i\n", (int)eOther->v.v_angle[0], (int)vLadVelocity[2]);
+	//printf("angle: %i; velo: %i\n", (int)other->v.v_angle[0], (int)ladder_velocity[2]);
 
-	if (vLadVelocity[2] > 100)
-		vLadVelocity[2] = 100;
-	else if (vLadVelocity[2] < -1 * 100)
-		vLadVelocity[2] = -1 * 100;
+	if (ladder_velocity.z > 100) {
+        ladder_velocity.z = 100;
+    } else if (ladder_velocity.z < -1 * 100) {
+        ladder_velocity.z = -1 * 100;
+    }
 
-	// do it manually! VectorCopy won't work with this
-	plVectorCopy(vLadVelocity, eOther->v.velocity);
+	other->v.velocity = ladder_velocity;
 }
 
-void Area_ClimbSpawn(ServerEntity_t *eArea)
-{
-	Area_SetMoveDirection(eArea->v.angles, eArea->v.movedir);
-	eArea->v.TouchFunction = Area_ClimbTouch;
+void Area_ClimbSpawn(ServerEntity_t *area) {
+	Area_SetMoveDirection(area->v.angles, area->v.movedir);
+	area->v.TouchFunction = Area_ClimbTouch;
 
-	eArea->Physics.solid = SOLID_TRIGGER;
+	area->Physics.solid = SOLID_TRIGGER;
 
-	Entity_SetModel(eArea,eArea->v.model);
-	Entity_SetOrigin(eArea,eArea->v.origin);
-	eArea->v.model = 0;
+	Entity_SetModel(area,area->v.model);
+	Entity_SetOrigin(area,area->v.origin);
+	area->v.model = 0;
 }
 
 /*	area_noclip	*/
 
-void Area_NoclipSpawn(ServerEntity_t *eArea)
-{
-	eArea->v.movetype		= MOVETYPE_PUSH;
-	eArea->Physics.solid	= SOLID_NOT;
+void Area_NoclipSpawn(ServerEntity_t *area) {
+	area->v.movetype = MOVETYPE_PUSH;
+	area->Physics.solid	= SOLID_NOT;
 
-	Entity_SetModel(eArea,eArea->v.model);
-	Entity_SetOrigin(eArea,eArea->v.origin);
+	Entity_SetModel(area, area->v.model);
+	Entity_SetOrigin(area, area->v.origin);
 }
 
 /*	area_push	*/
 
-#define PUSH_ONCE 32
+#define AREA_PUSH_ONCE 32
 
-void Area_PushTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
-{
+void Area_PushTouch(ServerEntity_t *area, ServerEntity_t *other) {
 	// [9/12/2013] TODO: Make this optional? Would be cool to throw monsters and other crap around... ~hogsy
-	if(!Entity_IsPlayer(eOther))
+	if(!Entity_IsPlayer(other))
 		return;
 
-	plVectorScalef(eArea->v.movedir, eArea->local.speed * 10, eOther->v.velocity);
+    other->v.velocity = area->v.movedir * (area->local.speed * 10);
 
-	// [9/12/2013] Corrected a mistake that was made here. ~hogsy
-	if(eArea->v.spawnflags & PUSH_ONCE)
-		Entity_Remove(eArea);
+	if(area->v.spawnflags & AREA_PUSH_ONCE) {
+        Entity_Remove(area);
+    }
 }
 
-void Area_PushSpawn(ServerEntity_t *eArea)
-{
-	if(!eArea->local.speed)
-		eArea->local.speed = 500.0f;
+void Area_PushSpawn(ServerEntity_t *area) {
+	if(!area->local.speed)
+		area->local.speed = 500.0f;
 
-	Area_SetMoveDirection(eArea->v.angles, eArea->v.movedir);
+	Area_SetMoveDirection(area->v.angles, area->v.movedir);
 
-	eArea->v.TouchFunction	= Area_PushTouch;
-	eArea->Physics.solid	= SOLID_TRIGGER;
+	area->v.TouchFunction = Area_PushTouch;
+	area->Physics.solid	= SOLID_TRIGGER;
 
-	Entity_SetModel(eArea,eArea->v.model);
-	Entity_SetOrigin(eArea,eArea->v.origin);
-	Entity_SetSizeVector(eArea,eArea->v.mins,eArea->v.maxs);
+	Entity_SetModel(area,area->v.model);
+	Entity_SetOrigin(area,area->v.origin);
+	Entity_SetSizeVector(area,area->v.mins,area->v.maxs);
 
-	eArea->v.model = 0;
+	area->v.model = 0;
 }
 
 /*
@@ -1253,14 +1246,12 @@ void Area_PushSpawn(ServerEntity_t *eArea)
 	Kills anything that enters the area.
 */
 
-void Area_KillTouch(ServerEntity_t *area, ServerEntity_t *other)
-{
+void Area_KillTouch(ServerEntity_t *area, ServerEntity_t *other) {
 	// Damage it, until it gibs and gets removed.
 	Entity_Damage(other, area, other->v.iHealth, DAMAGE_TYPE_NORMAL);
 }
 
-void Area_KillSpawn(ServerEntity_t *area)
-{
+void Area_KillSpawn(ServerEntity_t *area) {
 	area->Physics.solid = SOLID_TRIGGER;
 
 	Entity_SetModel(area, area->v.model);

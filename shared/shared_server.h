@@ -227,12 +227,12 @@ typedef struct
 	int	iLocalFlags; // Local entity flags.
 
 	float			fSpawnDelay;				// Delay before next spawn.
-	MathVector3f_t	pos1;
-	MathVector3f_t	pos2;
+	PLVector3D	pos1;
+	PLVector3D	pos2;
 	char			*deathtype;
 	PlayerTeam_t	pTeam;						// Current active team.
 	void(*think1)(ServerEntity_t *ent, ServerEntity_t *other);
-	MathVector3f_t	finaldest;
+	PLVector3D	finaldest;
 	char			*killtarget;
 	double			delay;			// Delay before doing a task.
 	ServerEntity_t	*trigger_field;
@@ -254,18 +254,18 @@ typedef struct
 	// Door shizz
 
 	// fixed data
-	MathVector3f_t start_origin;
-	MathVector3f_t start_angles;
-	MathVector3f_t end_origin;
-	MathVector3f_t end_angles;
+	PLVector3D start_origin;
+	PLVector3D start_angles;
+	PLVector3D end_origin;
+	PLVector3D end_angles;
 
 	// state data
-	MathVector3f_t		dir;
+	PLVector3D		dir;
 
 	// Angles
-	MathVector3f_t vForward;
-	MathVector3f_t vRight;
-	MathVector3f_t vUp;
+	PLVector3D vForward;
+	PLVector3D vRight;
+	PLVector3D vUp;
 
 	// Vehicles
 	ServerEntity_t *eVehicle;	// Current vehicle.
@@ -305,11 +305,11 @@ typedef enum
 typedef struct waypoint_s
 {
 	const char			*cName;		// The name for the waypoint
-	int					number;		// Each point is assigned it's own number
+	unsigned int		number;		// Each point is assigned it's own number
 	ServerEntity_t		*eEntity;	// The entity currently occupying that waypoint
 	struct	waypoint_s	*next;		// The next point to target.
 	struct	waypoint_s	*last;		// The last point we were at.
-	MathVector3f_t		position;	// The waypoints position.
+	PLVector3D			position;	// The waypoints position.
 	bool				bOpen;		// Check to see if the waypoint currently is occupied.
 	WaypointType_t		wType;		// Type of point (duck, jump, climb etc.)
 } Waypoint_t;
@@ -327,7 +327,7 @@ typedef struct link_s
 
 typedef struct
 {
-	MathVector3f_t	normal;
+	PLVector3D	normal;
 	float	dist;
 } plane_t;
 
@@ -339,7 +339,7 @@ typedef struct
 
 	float	fraction;		// time completed, 1.0 = didn't hit anything
 
-	MathVector3f_t	endpos;			// final position
+	PLVector3D	endpos;			// final position
 
 	plane_t	plane;			// surface normal at impact
 
@@ -363,25 +363,25 @@ typedef struct ServerEntityBaseVariables_s
 
 	int	modelindex;
 
-	MathVector3f_t absmin;
-	MathVector3f_t absmax;
+	PLVector3D absmin;
+	PLVector3D absmax;
 
 	float		ltime;	// Local time for ents.
 
 	int			movetype;
 
-	MathVector3f_t origin;
-	MathVector3f_t oldorigin;
-	MathVector3f_t velocity;
-	MathVector3f_t angles;
-	MathVector3f_t avelocity;
-	MathVector3f_t punchangle;
+	PLVector3D origin;
+	PLVector3D oldorigin;
+	PLVector3D velocity;
+	PLVector3D angles;
+	PLVector3D avelocity;
+	PLVector3D punchangle;
 
 	int			frame;
 	int			effects;
 
-	MathVector3f_t mins, maxs;
-	MathVector3f_t size;
+	PLVector3D mins, maxs;
+	PLVector3D size;
 
 	double		dNextThink;
 
@@ -400,13 +400,13 @@ typedef struct ServerEntityBaseVariables_s
 
 	ServerEntity_t *chain;
 
-	MathVector3f_t view_ofs;
-	MathVector3f_t button;
+	PLVector3D view_ofs;
+	unsigned char button[3];
 
 	int		impulse;
 	bool bFixAngle;
 
-	MathVector3f_t v_angle;
+	PLVector3D v_angle;
 
 	float		idealpitch;
 
@@ -435,7 +435,7 @@ typedef struct ServerEntityBaseVariables_s
 	float		sounds;		// TODO: This is NEVER set!
 
 	// Physics
-	MathVector3f_t movedir;
+	PLVector3D movedir;
 
 	void(*TouchFunction)(ServerEntity_t *seEntity, ServerEntity_t *eOther);		// Called when an entity touches another entity.
 	void(*use)(ServerEntity_t *seEntity);
@@ -514,7 +514,7 @@ typedef struct ServerClient_s
 	struct qsocket_s *netconnection;	// communications handle
 
 	ClientCommand_t		cmd;				// movement
-	MathVector3f_t		wishdir;			// intended motion calced from cmd
+	PLVector3D		wishdir;			// intended motion calced from cmd
 
 	sizebuf_t		message;			// can be added to at any time,
 	// copied and clear once per frame

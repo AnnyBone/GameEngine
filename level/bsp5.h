@@ -217,7 +217,7 @@ extern	bool forcevis;
 extern	bool transwater;
 extern	bool waterlightmap;
 
-extern char wadPath[PLATFORM_MAX_PATH];
+extern char wadPath[PL_SYSTEM_MAX_PATH];
 
 extern	int		subdivide_size;
 

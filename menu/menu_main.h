@@ -37,11 +37,11 @@ namespace menu
 	extern PLint cursor_position[2];
 }
 
-plEXTERN_C_START
+PL_EXTERN_C
 
-extern ModuleImport_t Engine;
+PL_EXTERN ModuleImport_t Engine;
 
-extern int	iMenuState;				// Global menu state.
+PL_EXTERN int	iMenuState;				// Global menu state.
 
 void	Menu_AddState(int iState);
 void	Menu_SetState(int iState);
@@ -49,4 +49,4 @@ void	Menu_RemoveState(int iState);
 
 char *va(char *format,...);	// Temporary convenience function, please don't get comfortable with this :(
 
-plEXTERN_C_END
+PL_EXTERN_C_END

@@ -60,7 +60,7 @@ void CTF_FlagReset(ServerEntity_t *ent)
 	ent->v.TouchFunction	= CTF_FlagTouch;
 	// Just clear the effects out.
 	ent->v.effects			= 0;
-	ent->v.dNextThink		= Server.dTime+0.5;
+	ent->v.dNextThink		= Server.time+0.5;
 }
 
 void CTF_FlagThink(ServerEntity_t *ent)
@@ -246,5 +246,5 @@ void CTF_FlagSpawn(ServerEntity_t *eFlag)
 	eFlag->v.bTakeDamage	= false;
 	eFlag->v.TouchFunction	= CTF_FlagTouch;
 	eFlag->v.think			= CTF_FlagThink;
-	eFlag->v.dNextThink		= Server.dTime+0.01;
+	eFlag->v.dNextThink		= Server.time+0.01;
 }

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2011-2016 OldTimes Software
+Copyright (C) 2011-2017 OldTimes Software
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -38,12 +38,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #	define GAME_NAME	"Katana"
 #endif
 
-plEXTERN_C_START
+PL_EXTERN_C
 
-extern ModuleImport_t Engine;		// TODO: Obsolete!
-extern ModuleImport_t *g_engine;
+PL_EXTERN ModuleImport_t Engine;		// TODO: Obsolete!
+PL_EXTERN ModuleImport_t *g_engine;
 
-plEXTERN_C_END
+PL_EXTERN_C_END
 
 #define	Console_Warning(a) Engine.Con_Warning(a);
 
@@ -52,7 +52,7 @@ typedef struct
 	bool bActive;	// Is the server active?
 
 	double	
-		dTime,					// Server time.
+		time,					// Server time.
 		dHostFrameTime,			// Host time.
 		dWaypointSpawnDelay;	// Delay before spawning another waypoint.
 
@@ -68,8 +68,8 @@ typedef struct
 		iClients,		// Number of connected clients.
 		iMonsters;		// Number of monsters within the level.
 
-	bool			skycam;				// Is the map using a skycam?
-	MathVector3f_t	skycam_position;	// What's its position?
+	bool		skycam;				// Is the map using a skycam?
+	PLVector3D	skycam_position;	// What's its position?
 
 	// Gamemode
 	bool	round_started,			// Has the round started yet?
@@ -83,12 +83,12 @@ typedef struct
 	ClientEntity_t *ent;
 } GameClient_t;
 
-plEXTERN_C_START
+PL_EXTERN_C
 
-extern GameServer_t Server;
-extern GameClient_t Client;
+PL_EXTERN GameServer_t Server;
+PL_EXTERN GameClient_t Client;
 
-plEXTERN_C_END
+PL_EXTERN_C_END
 
 #define	DEAD_NO				0	// Entity isn't dead
 #define DEAD_DEAD			2	// Entity is dead
@@ -145,21 +145,21 @@ typedef enum
 
 extern int	iRedScore, iBlueScore;	// TODO: Move these somewhere else, likely into the gamemode stuff...
 
-plEXTERN_C_START
+PL_EXTERN_C
 
 char *va(char *format,...);
 
-void Flare(MathVector3f_t org,float r,float g,float b,float a,float scale,char *texture);
+void Flare(PLVector3D org,float r,float g,float b,float a,float scale,char *texture);
 
 void Sound(ServerEntity_t *ent, AudioChannel_t channel, char *sound, int volume, float attenuation);
 
-void SetAngle(ServerEntity_t *ent, MathVector3f_t vAngle);
+void SetAngle(ServerEntity_t *ent, PLVector3D vAngle);
 void PutClientInServer(ServerEntity_t *ent);
 void WriteByte(int mode,int c);
 void ChangeYaw(ServerEntity_t *ent);
 
-trace_t Traceline(ServerEntity_t *ent, MathVector3f_t vStart, MathVector3f_t vEnd, int type);
+trace_t Traceline(ServerEntity_t *ent, PLVector3D vStart, PLVector3D vEnd, int type);
 
 void UseTargets(ServerEntity_t *ent, ServerEntity_t *other);
 
-plEXTERN_C_END
+PL_EXTERN_C_END

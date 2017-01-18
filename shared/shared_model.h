@@ -35,7 +35,7 @@ typedef struct efrag_s
 // !!! if this is changed, it must be changed in asm_i386.h too !!!
 typedef struct mplane_s
 {
-	plVector3f_t	normal;
+	PLVector3D		normal;
 	float			dist;
 	uint8_t			type;			// for texture axis selection and fast side tests
 	uint8_t			signbits;		// signx + signy<<1 + signz<<1
@@ -193,15 +193,15 @@ typedef struct
 	int				firstclipnode;
 	int				lastclipnode;
 
-	plVector3f_t	clip_mins;
-	plVector3f_t	clip_maxs;
+	PLVector3D	clip_mins;
+	PLVector3D	clip_maxs;
 } hull_t;
 
 #include "platform_graphics.h"
 
 typedef struct model_s
 {
-	char		name[PLATFORM_MAX_PATH];
+	char		name[PL_SYSTEM_MAX_PATH];
 
 	bool		bNeedLoad;		// bmodels and sprites don't cache normally
 
@@ -212,14 +212,14 @@ typedef struct model_s
 	int			flags;
 
 	// volume occupied by the model graphics
-	plVector3f_t	mins, maxs;
-	plVector3f_t	ymins, ymaxs; //johnfitz -- bounds for entities with nonzero yaw
-	plVector3f_t	rmins, rmaxs; //johnfitz -- bounds for entities with nonzero pitch or roll
+	PLVector3D	mins, maxs;
+	PLVector3D	ymins, ymaxs; //johnfitz -- bounds for entities with nonzero yaw
+	PLVector3D	rmins, rmaxs; //johnfitz -- bounds for entities with nonzero pitch or roll
 	//johnfitz -- removed float radius;
 
 	// solid volume for clipping
 	bool			clipbox;
-	plVector3f_t	clipmins, clipmaxs;
+	PLVector3D	clipmins, clipmaxs;
 
 	// brush model
 	unsigned int	firstmodelsurface, nummodelsurfaces;
@@ -271,7 +271,7 @@ typedef struct model_s
 	// Material System
 	struct Material_s *materials;
 
-	PLDraw			**objects;
+	PLMesh			**objects;
 	unsigned int	numtriangles;	// Static counter for triangles.
 	int				numframes;		// Number of objects / frames.
 } model_t;

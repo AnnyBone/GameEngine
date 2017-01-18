@@ -238,15 +238,15 @@ void Entity_SetAngles(ServerEntity_t *eEntity, MathVector3f_t vAngles)
 
 /*	Sets the model of the given entity.
 */
-void Entity_SetModel(ServerEntity_t *eEntity,char *cModelPath)
+void Entity_SetModel(ServerEntity_t *eEntity, const char *modelpath)
 {
-	if (!cModelPath)
+	if (!modelpath)
 	{
 		Engine.Con_Warning("Invalid path for model! (%s)", eEntity->v.cClassname);
 		return;
 	}
 
-	Engine.SetModel(eEntity,cModelPath);
+	Engine.SetModel(eEntity,modelpath);
 }
 
 /*	Sets the size of the given entity; requires that the model has been applied first.
@@ -453,7 +453,7 @@ void Entity_Remove(ServerEntity_t *eEntity)
 void Entity_CheckFrames(ServerEntity_t *eEntity)
 {
 	// If something isn't active and Animationtime is over
-	if(!eEntity->local.iAnimationEnd || (Server.dTime < eEntity->local.dAnimationTime))
+	if(!eEntity->local.iAnimationEnd || (Server.time < eEntity->local.dAnimationTime))
 		return;
 	else if(eEntity->local.iAnimationCurrent > eEntity->local.iAnimationEnd)
 	{
@@ -463,7 +463,7 @@ void Entity_CheckFrames(ServerEntity_t *eEntity)
 
 	eEntity->v.frame = eEntity->local.iFrames[eEntity->local.iAnimationCurrent].frame;
 
-	eEntity->local.dAnimationTime = Server.dTime+((double)eEntity->local.iFrames[eEntity->local.iAnimationCurrent].speed);
+	eEntity->local.dAnimationTime = Server.time+((double)eEntity->local.iFrames[eEntity->local.iAnimationCurrent].speed);
 
 	if(eEntity->local.iFrames[eEntity->local.iAnimationCurrent].Event)
 		eEntity->local.iFrames[eEntity->local.iAnimationCurrent].Event(eEntity);
@@ -506,7 +506,7 @@ void Entity_Animate(ServerEntity_t *eEntity, ServerEntityFrame_t *efAnimation)
 		i++;
 	}
 
-	eEntity->local.dAnimationTime	= Server.dTime+((double)efAnimation[1].speed);
+	eEntity->local.dAnimationTime	= Server.time+((double)efAnimation[1].speed);
 	eEntity->local.iFrames			= efAnimation;
 }
 
@@ -514,7 +514,7 @@ void Entity_Animate(ServerEntity_t *eEntity, ServerEntityFrame_t *efAnimation)
 */
 bool Entity_IsAnimating(ServerEntity_t *entity)
 {
-	if (!entity->local.iAnimationEnd || (Server.dTime < entity->local.dAnimationTime))
+	if (!entity->local.iAnimationEnd || (Server.time < entity->local.dAnimationTime))
 		return false;
 
 	return true;

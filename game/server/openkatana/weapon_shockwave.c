@@ -142,8 +142,8 @@ void Shockwave_PrimaryAttack(ServerEntity_t *ent)
 
 	Shockwave_SpawnProjectile(ent);
 
-	if(ent->local.attackb_finished > Server.dTime)	// No attack boost...
-		ent->local.dAttackFinished = Server.dTime+0.65;
+	if(ent->local.attackb_finished > Server.time)	// No attack boost...
+		ent->local.dAttackFinished = Server.time+0.65;
 	else
-		ent->local.dAttackFinished = Server.dTime+1.3;
+		ent->local.dAttackFinished = Server.time+1.3;
 }

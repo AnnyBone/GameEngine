@@ -63,7 +63,7 @@ void Deathmatch_Spawn(ServerEntity_t *ePlayer)
 
 void Deathmatch_Frame(void)
 {
-	if(!Server.bActive || (!bIsMultiplayer && !bIsDeathmatch))
+	if(!Server.bActive || (!g_ismultiplayer && !g_isdeathmatch))
 		return;
 	else if ((Server.iClients >= cvServerGameClients.value) && !Server.round_started)
 	{

@@ -207,14 +207,14 @@ void IonBlaster_PrimaryAttack(ServerEntity_t *ent)
 		Entity_SetOrigin(eIonBall, orig);
 
 		eIonBall->v.TouchFunction	= IonBlaster_IonBallTouch;
-		eIonBall->v.dNextThink		= Server.dTime+3.0;
+		eIonBall->v.dNextThink		= Server.time+3.0;
 		eIonBall->v.think			= IonBlaster_IonBallExplode;
 
 		Entity_Link(eIonBall, false);
 	}
 
-	if(ent->local.attackb_finished > Server.dTime)	// No attack boost...
-		ent->local.dAttackFinished = Server.dTime+0.25;
+	if(ent->local.attackb_finished > Server.time)	// No attack boost...
+		ent->local.dAttackFinished = Server.time+0.25;
 	else
-		ent->local.dAttackFinished = Server.dTime+0.5;
+		ent->local.dAttackFinished = Server.time+0.5;
 }

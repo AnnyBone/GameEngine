@@ -30,7 +30,7 @@ namespace core
 
 		virtual unsigned int GetInstance() = 0;
 
-		virtual PLShaderType GetType() = 0;
+		virtual pl::graphics::ShaderType GetType() = 0;
 	};
 
 	class IShaderProgram
@@ -38,19 +38,19 @@ namespace core
 	public:
 		virtual void Initialize() = 0;
 
-		virtual void RegisterShader(std::string, PLShaderType) = 0;
+		virtual void RegisterShader(std::string, pl::graphics::ShaderType) = 0;
 		virtual void RegisterAttributes() = 0;
 		virtual void Link() = 0;
 
-		virtual PLUniform *GetUniform(std::string name) = 0;
+		virtual pl::graphics::ShaderUniform *GetUniform(std::string name) = 0;
 
-		virtual void SetUniformVariable(PLUniform *uniform, float x, float y, float z) = 0;
-		virtual void SetUniformVariable(PLUniform *uniform, plVector3f_t vector) = 0;
-		virtual void SetUniformVariable(PLUniform *uniform, float x, float y, float z, float a) = 0;
-		virtual void SetUniformVariable(PLUniform *uniform, int i) = 0;
-		virtual void SetUniformVariable(PLUniform *uniform, unsigned int i) = 0;
-		virtual void SetUniformVariable(PLUniform *uniform, float f) = 0;
-		virtual void SetUniformVariable(PLUniform *uniform, double d) = 0;
+		virtual void SetUniformVariable(pl::graphics::ShaderUniform *uniform, float x, float y, float z) = 0;
+		virtual void SetUniformVariable(pl::graphics::ShaderUniform *uniform, PLVector3D vector) = 0;
+		virtual void SetUniformVariable(pl::graphics::ShaderUniform *uniform, float x, float y, float z, float a) = 0;
+		virtual void SetUniformVariable(pl::graphics::ShaderUniform *uniform, int i) = 0;
+		virtual void SetUniformVariable(pl::graphics::ShaderUniform *uniform, unsigned int i) = 0;
+		virtual void SetUniformVariable(pl::graphics::ShaderUniform *uniform, float f) = 0;
+		virtual void SetUniformVariable(pl::graphics::ShaderUniform *uniform, double d) = 0;
 
 		virtual void Enable() = 0;
 		virtual void Disable() = 0;

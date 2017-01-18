@@ -77,7 +77,7 @@ typedef struct
 
 	bool	matrixmod;	// Modify texture matrix?
 
-	plVector2f_t	scroll;
+	PLVector2D	scroll;
 
 	float	fRotate, scale;
 
@@ -116,7 +116,7 @@ typedef struct Material_s
 		flags;				// Global material flags, flags that take priority over all additional skins.			
 
 	char	
-		cPath[PLATFORM_MAX_PATH],	// Path of the material.
+		cPath[PL_SYSTEM_MAX_PATH],	// Path of the material.
 		cName[64];					// Name of the material.
 
 	// Skins

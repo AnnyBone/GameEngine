@@ -23,7 +23,7 @@ void arrow_touch(ServerEntity_t *ent, ServerEntity_t *other)
 		Entity_Damage(other, ent, 25, 0);
 
 		ent->v.think		= WEAPON_StickThink;
-		ent->v.dNextThink	= Server.dTime+0.1;
+		ent->v.dNextThink	= Server.time+0.1;
 	}
 	// [25/6/2012] Moved so we don't set this before checking what we're hitting ~hogsy
 	else
@@ -81,8 +81,8 @@ void Crossbow_PrimaryAttack(ServerEntity_t *ent)
 
 	Crossbow_Projectile(ent);
 
-	if(ent->local.attackb_finished > Server.dTime)	// No attack boost...
-		ent->local.dAttackFinished = Server.dTime+1.0;
+	if(ent->local.attackb_finished > Server.time)	// No attack boost...
+		ent->local.dAttackFinished = Server.time+1.0;
 	else
-		ent->local.dAttackFinished = Server.dTime+2.0;
+		ent->local.dAttackFinished = Server.time+2.0;
 }

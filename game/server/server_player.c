@@ -324,7 +324,7 @@ void Player_CheckFootsteps(ServerEntity_t *player)
 	// Also check movetype so we don't do steps while noclipping/flying.
 	if ((player->v.movetype == MOVETYPE_WALK) && player->v.flags & FL_ONGROUND)
 	{
-		if (player->local.dStepTime > Server.dTime)
+		if (player->local.dStepTime > Server.time)
 			return;
 		else if (
 			// Ensure there's enough movement that calls for us to produce a footstep.
@@ -348,7 +348,7 @@ void Player_CheckFootsteps(ServerEntity_t *player)
 		// TODO: Check if we're in water or not and change this accordingly :)
 		Sound(player, CHAN_BODY, va("physics/concrete%i_footstep.wav", rand() % 4), 150, ATTN_NORM);
 
-		player->local.dStepTime = Server.dTime + dDelay;
+		player->local.dStepTime = Server.time + dDelay;
 	}
 }
 
@@ -356,14 +356,14 @@ void Player_CheckWater(ServerEntity_t *ePlayer)
 {
 	// [2/8/2014] Basic Drowning... ~eukos
 	if(ePlayer->v.waterlevel != 3)
-		ePlayer->local.dAirFinished = Server.dTime + 12;
-	else if(ePlayer->local.dAirFinished < Server.dTime)
+		ePlayer->local.dAirFinished = Server.time + 12;
+	else if(ePlayer->local.dAirFinished < Server.time)
 	{
-		if(ePlayer->local.dPainFinished < Server.dTime)
+		if(ePlayer->local.dPainFinished < Server.time)
 		{
 			Entity_Damage(ePlayer, ePlayer, 10, 0);
 
-			ePlayer->local.dPainFinished = Server.dTime + 1;
+			ePlayer->local.dPainFinished = Server.time + 1;
 		}
 	}
 }
@@ -476,7 +476,7 @@ void Player_PreThink(ServerEntity_t *ePlayer)
 	}
 
 	// ladders only work in ZeroG ~eukara
-	if (ePlayer->local.dZeroGTime < Server.dTime)
+	if (ePlayer->local.dZeroGTime < Server.time)
 		ePlayer->Physics.gravity = cvServerGravity.value;
 	else
 		ePlayer->Physics.gravity = 0;
@@ -562,7 +562,7 @@ void Player_PreThink(ServerEntity_t *ePlayer)
 		}
 	}
 
-	if(cvServerWaypointSpawn.value && (Server.dTime >= Server.dWaypointSpawnDelay))
+	if(cvServerWaypointSpawn.value && (Server.time >= Server.dWaypointSpawnDelay))
 	{
 		if(ePlayer->v.movetype != MOVETYPE_WALK)
 			return;
@@ -576,7 +576,7 @@ void Player_PreThink(ServerEntity_t *ePlayer)
 		else if(!(ePlayer->v.flags & FL_ONGROUND))
 			Waypoint_Spawn(ePlayer->v.origin, WAYPOINT_TYPE_JUMP);
 
-		Server.dWaypointSpawnDelay = Server.dTime+((double)cvServerWaypointDelay.value);
+		Server.dWaypointSpawnDelay = Server.time+((double)cvServerWaypointDelay.value);
 	}
 }
 
@@ -745,7 +745,7 @@ void Player_Spawn(ServerEntity_t *ePlayer)
 	// Let the server know that a player has spawned.
 	Server.players_spawned = true;
 
-	if(bIsMultiplayer)
+	if(g_ismultiplayer)
 	{
 #ifdef GAME_OPENKATANA
 		switch(cvServerGameMode.iValue)
@@ -865,12 +865,12 @@ void Player_Jump(ServerEntity_t *ePlayer)
 	char cJumpSound[32];
 
 	// better ladder stuff ~eukara
-	if ((ePlayer->local.dLadderTime > Server.dTime) && (ePlayer->local.dLadderJump < Server.dTime)) {
+	if ((ePlayer->local.dLadderTime > Server.time) && (ePlayer->local.dLadderJump < Server.time)) {
 
 		if (!(ePlayer->v.flags & FL_ONGROUND))
 			ePlayer->v.flags = ePlayer->v.flags + FL_ONGROUND;
 
-		ePlayer->local.dLadderJump = Server.dTime + 0.4;
+		ePlayer->local.dLadderJump = Server.time + 0.4;
 		ePlayer->v.velocity[2] = 0;
 
 		plAngleVectors(ePlayer->v.angles, ePlayer->local.vForward, ePlayer->local.vRight, ePlayer->local.vUp);
@@ -896,9 +896,9 @@ void Player_Jump(ServerEntity_t *ePlayer)
 			ePlayer->v.velocity[2] = 50.0f;
 		}
 
-		if(ePlayer->local.swim_flag < Server.dTime)
+		if(ePlayer->local.swim_flag < Server.time)
 		{
-			ePlayer->local.swim_flag = (float)(Server.dTime+1.0);
+			ePlayer->local.swim_flag = (float)(Server.time+1.0);
 
 			Sound(ePlayer,CHAN_BODY,"player/playerswim1.wav",255,ATTN_NORM);
 		}
@@ -912,7 +912,7 @@ void Player_Jump(ServerEntity_t *ePlayer)
 	ePlayer->v.button[2]	= 0;
 
 #ifdef GAME_OPENKATANA
-	if(ePlayer->local.acro_finished > Server.dTime)
+	if(ePlayer->local.acro_finished > Server.time)
 	{
 		ePlayer->v.velocity[2] += 440.0f;
 
@@ -960,14 +960,14 @@ void Player_CheckPowerups(ServerEntity_t *ePlayer)
 	if(iPowerBoost && ePlayer->local.power_finished)
 	{
 		if(ePlayer->local.power_time == 1)
-			if(ePlayer->local.power_finished < Server.dTime+3.0)
+			if(ePlayer->local.power_finished < Server.time+3.0)
 			{
 				Engine.CenterPrint(ePlayer,"Your power boost is running out.\n");
 
-				ePlayer->local.power_time = Server.dTime+1.0;
+				ePlayer->local.power_time = Server.time+1.0;
 			}
 
-		if(ePlayer->local.power_finished < Server.dTime)
+		if(ePlayer->local.power_finished < Server.time)
 		{
 			Item_RemoveInventory(iPowerBoost,ePlayer);
 
@@ -979,14 +979,14 @@ void Player_CheckPowerups(ServerEntity_t *ePlayer)
 	if(iSpeedBoost && ePlayer->local.speed_finished)
 	{
 		if(ePlayer->local.speed_time == 1)
-			if(ePlayer->local.speed_finished < Server.dTime+3.0)
+			if(ePlayer->local.speed_finished < Server.time+3.0)
 			{
 				Engine.CenterPrint(ePlayer,"Your speed boost is running out.\n");
 
-				ePlayer->local.speed_time = Server.dTime+1.0;
+				ePlayer->local.speed_time = Server.time+1.0;
 			}
 
-		if(ePlayer->local.speed_finished < Server.dTime)
+		if(ePlayer->local.speed_finished < Server.time)
 		{
 			Item_RemoveInventory(iSpeedBoost,ePlayer);
 
@@ -998,15 +998,15 @@ void Player_CheckPowerups(ServerEntity_t *ePlayer)
 	if(iAttackBoost && ePlayer->local.attackb_finished)
 	{
 		if(ePlayer->local.attackb_time == 1.0f)
-			if(ePlayer->local.attackb_finished < Server.dTime+3.0)
+			if(ePlayer->local.attackb_finished < Server.time+3.0)
 			{
 				// [25/8/2012] Updated to use centerprint instead ~hogsy
 				Engine.CenterPrint(ePlayer,"Your attack boost is running out.\n");
 
-				ePlayer->local.attackb_time = Server.dTime+1.0;
+				ePlayer->local.attackb_time = Server.time+1.0;
 			}
 
-		if(ePlayer->local.attackb_finished < Server.dTime)
+		if(ePlayer->local.attackb_finished < Server.time)
 		{
 			Item_RemoveInventory(iAttackBoost,ePlayer);
 
@@ -1018,15 +1018,15 @@ void Player_CheckPowerups(ServerEntity_t *ePlayer)
 	if(iAcroBoost && ePlayer->local.acro_finished)
 	{
 		if(ePlayer->local.acro_time == 1)
-			if(ePlayer->local.acro_finished < Server.dTime+3.0)
+			if(ePlayer->local.acro_finished < Server.time+3.0)
 			{
 				// [25/8/2012] Updated to use centerprint instead ~hogsy
 				Engine.CenterPrint(ePlayer,"Your acro boost is running out.\n");
 
-				ePlayer->local.acro_time = Server.dTime+1.0;
+				ePlayer->local.acro_time = Server.time+1.0;
 			}
 
-		if(ePlayer->local.acro_finished < Server.dTime)
+		if(ePlayer->local.acro_finished < Server.time)
 		{
 			Item_RemoveInventory(iAcroBoost,ePlayer);
 
@@ -1038,15 +1038,15 @@ void Player_CheckPowerups(ServerEntity_t *ePlayer)
 	if(iVitalityBoost && ePlayer->local.vita_finished)
 	{
 		if(ePlayer->local.vita_time == 1)
-			if(ePlayer->local.vita_finished < Server.dTime+3.0)
+			if(ePlayer->local.vita_finished < Server.time+3.0)
 			{
 				// [25/8/2012] Updated to use centerprint instead ~hogsy
 				Engine.CenterPrint(ePlayer,"Your vitality boost is running out.\n");
 
-				ePlayer->local.vita_time = Server.dTime+1.0;
+				ePlayer->local.vita_time = Server.time+1.0;
 			}
 
-		if(ePlayer->local.vita_finished < Server.dTime)
+		if(ePlayer->local.vita_finished < Server.time)
 		{
 			Item_RemoveInventory(iVitalityBoost,ePlayer);
 
@@ -1069,7 +1069,7 @@ void Player_DeathThink(ServerEntity_t *entity)
 		{
 			// [25/8/2012] We don't respawn in singleplayer ~hogsy
 			// [23/3/2013] Oops! Fixed, we were checking for the wrong case here :) ~hogsy
-			if(bIsMultiplayer)
+			if(g_ismultiplayer)
 				// [16/10/2013] Swapped out for the more "correct" Player_Spawn rather than via Monster_Respawn ~hogsy
 				Player_Spawn(entity);
 			else
@@ -1089,14 +1089,14 @@ void Player_DeathThink(ServerEntity_t *entity)
 
 void Player_Use(ServerEntity_t *entity)
 {
-	if (entity->v.iHealth <= 0 || entity->local.dAttackFinished > Server.dTime)
+	if (entity->v.iHealth <= 0 || entity->local.dAttackFinished > Server.time)
 		return;
 
 	// If nothing usable is being aimed at then play sound...
 	// TODO: Find a more appropriate sound :)
 	Sound(entity, CHAN_VOICE, "player/playerpain3.wav", 255, ATTN_NORM);
 
-	entity->local.dAttackFinished = Server.dTime + 0.5;
+	entity->local.dAttackFinished = Server.time + 0.5;
 }
 
 /*

@@ -55,8 +55,8 @@ void Trident_PrimaryAttack(ServerEntity_t *ent)
 		//Weapon_Animate(ent,FALSE,20,29,0.05f,10,19,0,FALSE);
 #endif
 
-	if(ent->local.attackb_finished > Server.dTime)	// No attack boost...
-		ent->local.dAttackFinished = Server.dTime+0.2;
+	if(ent->local.attackb_finished > Server.time)	// No attack boost...
+		ent->local.dAttackFinished = Server.time+0.2;
 	else
-		ent->local.dAttackFinished = Server.dTime+0.4;
+		ent->local.dAttackFinished = Server.time+0.4;
 }

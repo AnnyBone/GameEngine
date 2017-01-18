@@ -3,7 +3,7 @@ DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
 Version 2, December 2004
 
 Copyright (C) 2011-2015 Marco 'eukara' Hladik <eukos@oldtimes-software.com>
-Copyright (C) 2011-2016 Mark E Sowden <markelswo@gmail.com>
+Copyright (C) 2011-2017 Mark E Sowden <markelswo@gmail.com>
 
 Everyone is permitted to copy and distribute verbatim or modified
 copies of this license document, and changing it is allowed as long
@@ -33,7 +33,7 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 #include "server_monster.h"
 #include "server_misc.h"
 
-plEXTERN_C_START
+PL_EXTERN_C
 
 extern	ConsoleVariable_t	cvServerSkill;			// The difficulty level.
 extern	ConsoleVariable_t	cvServerSelfDamage;		// If the player can directly kill themselves or not.
@@ -87,10 +87,10 @@ Material_t *seGetMaterial(ServerEntity_t *entity);
 MaterialSkin_t *seGetCurrentSkin(ServerEntity_t *entity);
 MaterialProperty_t seGetSkinPhysicsProperty(ServerEntity_t *entity, MaterialSkin_t *skin);
 
-void Entity_SetOrigin(ServerEntity_t *entity, MathVector3f_t vOrigin);
-void Entity_SetAngles(ServerEntity_t *entity, MathVector3f_t vAngles);
-void Entity_SetModel(ServerEntity_t *entity, char *cModelPath);
-void Entity_SetSizeVector(ServerEntity_t *entity, MathVector3f_t vMin, MathVector3f_t vMax);
+void Entity_SetOrigin(ServerEntity_t *entity, PLVector3D vOrigin);
+void Entity_SetAngles(ServerEntity_t *entity, PLVector3D vAngles);
+void Entity_SetModel(ServerEntity_t *entity, const char *modelpath);
+void Entity_SetSizeVector(ServerEntity_t *entity, PLVector3D vMin, PLVector3D vMax);
 void Entity_SetSize(ServerEntity_t *entity, float fMinA, float fMinB, float fMinC, float fMaxA, float fMaxB, float fMaxC);
 void Entity_SetPhysics(ServerEntity_t *entity, EntitySolidType_t pstSolidType, float fMass, float fFriction);
 void Entity_RadiusDamage(ServerEntity_t *eInflictor, float fRadius, int iDamage, EntityDamageType_t type);
@@ -115,4 +115,4 @@ void Entity_ClearFlags(ServerEntity_t *entity, int flags);
 #define Entity_SetTouchFunction(a,b)	(a->v.TouchFunction = b)
 #define	Entity_SetThinkFunction(a,b)	(a->v.think = b)
 
-plEXTERN_C_END
+PL_EXTERN_C_END

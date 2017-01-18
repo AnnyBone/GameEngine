@@ -76,7 +76,7 @@ void projectile_iceball(ServerEntity_t *ent, PLVector3f orig)
 	Entity_SetOrigin(ionball, orig);
 
 	ionball->v.TouchFunction	= IceballTouch;
-	ionball->v.dNextThink		= Server.dTime+3.0;
+	ionball->v.dNextThink		= Server.time+3.0;
 	ionball->v.think			= Kineticore_IceballExplode;
 }
 
@@ -85,7 +85,7 @@ void Kineticore_PrimaryAttack(ServerEntity_t *ent)
 	if(!ent->local.kineticore_ammo2)
 	{
 		ent->local.kineticore_ammo2 = 5;
-		ent->local.dAttackFinished = Server.dTime+0.7;
+		ent->local.dAttackFinished = Server.time+0.7;
 		return;
 	}
 
@@ -96,8 +96,8 @@ void Kineticore_PrimaryAttack(ServerEntity_t *ent)
 
 	projectile_iceball(ent, ent->v.origin);
 
-	if(ent->local.attackb_finished > Server.dTime)	// No attack boost...
-		ent->local.dAttackFinished = Server.dTime+0.1;
+	if(ent->local.attackb_finished > Server.time)	// No attack boost...
+		ent->local.dAttackFinished = Server.time+0.1;
 	else
-		ent->local.dAttackFinished = Server.dTime+0.25;
+		ent->local.dAttackFinished = Server.time+0.25;
 }

@@ -112,8 +112,8 @@ void Axe_PrimaryAttack(ServerEntity_t *ent)
 	else
 		Weapon_Animate(ent,AxeAnimation_Attack2);
 
-	if(ent->local.attackb_finished > Server.dTime)	// No attack boost...
-		ent->local.dAttackFinished = Server.dTime+0.25;
+	if(ent->local.attackb_finished > Server.time)	// No attack boost...
+		ent->local.dAttackFinished = Server.time+0.25;
 	else
-		ent->local.dAttackFinished = Server.dTime+0.5;
+		ent->local.dAttackFinished = Server.time+0.5;
 }

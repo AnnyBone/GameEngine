@@ -74,7 +74,7 @@ typedef enum
 
 typedef struct
 {
-	MathVector3f_t	viewangles;
+	PLVector3D	viewangles;
 
 	// intended velocities
 	float	forwardmove;
@@ -84,14 +84,14 @@ typedef struct
 
 typedef struct DynamicLight_s
 {
-	MathVector3f_t	origin;
+	PLVector3D	origin;
 	float	radius;
 	double	die;			// Stop lighting after this time
 	float	decay,			// Drop this each second
 			minlight;		// Don't add when contributing less
 	int		key;
-	MathVector3f_t	color;			//johnfitz -- lit support via lordhavoc
-	MathVector3f_t	transformed;
+	PLVector3D	color;			//johnfitz -- lit support via lordhavoc
+	PLVector3D	transformed;
 
 	bool	lightmap;		// Defines whether this light effects the lightmap.
 } DynamicLight_t;
@@ -123,7 +123,7 @@ typedef struct ConsoleVariable_s
 
 typedef struct
 {
-	MathVector3f_t origin,
+	PLVector3D origin,
 					angles;
 	unsigned short 	modelindex,
 					frame;
@@ -143,12 +143,12 @@ typedef struct ClientEntity_s
 	EntityState_t	baseline;		// to fill in defaults in updates
 	double			msgtime;		// time of last update
 
-	plVector3f_t msg_origins[2];	// last two updates (0 is newest)
-	plVector3f_t origin;
-	plVector3f_t msg_angles[2];		// last two updates (0 is newest)
-	plVector3f_t angles;
+	PLVector3D msg_origins[2];	// last two updates (0 is newest)
+	PLVector3D origin;
+	PLVector3D msg_angles[2];		// last two updates (0 is newest)
+	PLVector3D angles;
 
-	plVector3f_t velocity;		// Velocity of the entity (roughly).
+	PLVector3D velocity;		// Velocity of the entity (roughly).
 
 	int				draw_lastpose,
 					draw_pose;
@@ -180,10 +180,10 @@ typedef struct ClientEntity_s
 	// LOD
 	float distance_alpha;
 
-	plVector3f_t previousorigin;	//johnfitz -- transform lerping
-	plVector3f_t currentorigin;	//johnfitz -- transform lerping
-	plVector3f_t previousangles;	//johnfitz -- transform lerping
-	plVector3f_t currentangles;	//johnfitz -- transform lerping
+	PLVector3D previousorigin;	//johnfitz -- transform lerping
+	PLVector3D currentorigin;	//johnfitz -- transform lerping
+	PLVector3D previousangles;	//johnfitz -- transform lerping
+	PLVector3D currentangles;	//johnfitz -- transform lerping
 
 	float	scale;	// Sets the model scale.
 } ClientEntity_t;
@@ -217,7 +217,7 @@ typedef enum
 // TODO: Update these to new coding standard; e.g. lowercase names
 typedef struct particle_s
 {
-	MathVector3f_t		vOrigin,		// The origin of the particle.
+	PLVector3D		vOrigin,		// The origin of the particle.
 						vVelocity;		// Velocity of the particle.
 
 	PLColour		vColour;		// RGBA colour of the particle.

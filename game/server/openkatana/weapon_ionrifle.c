@@ -171,10 +171,10 @@ void IonRifle_PrimaryAttack(ServerEntity_t *eOwner)
 			}
 		}
 
-		if(eOwner->local.attackb_finished > Server.dTime)
-			eOwner->local.dAttackFinished = Server.dTime+0.10;
+		if(eOwner->local.attackb_finished > Server.time)
+			eOwner->local.dAttackFinished = Server.time+0.10;
 		else
-			eOwner->local.dAttackFinished = Server.dTime+0.5;
+			eOwner->local.dAttackFinished = Server.time+0.5;
 		break;
 	default:	// Simple bursts
 		Sound(eOwner,CHAN_AUTO,"weapons/laser.wav",255,ATTN_NORM);
@@ -240,10 +240,10 @@ void IonRifle_PrimaryAttack(ServerEntity_t *eOwner)
 			}
 		}
 
-		if(eOwner->local.attackb_finished > Server.dTime)
-			eOwner->local.dAttackFinished = Server.dTime+0.5;
+		if(eOwner->local.attackb_finished > Server.time)
+			eOwner->local.dAttackFinished = Server.time+0.5;
 		else
-			eOwner->local.dAttackFinished = Server.dTime+0.3;
+			eOwner->local.dAttackFinished = Server.time+0.3;
 	}
 
 	// [17/11/2013] Update ammo counts... ~hogsy
@@ -269,5 +269,5 @@ void IonRifle_SecondaryAttack(ServerEntity_t *eOwner)
 		eOwner->local.iWeaponIdleFrame	= IONRIFLE_IDLEB_FRAME;
 	}
 
-	eOwner->local.dAttackFinished = Server.dTime+1.2;
+	eOwner->local.dAttackFinished = Server.time+1.2;
 }

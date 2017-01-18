@@ -178,7 +178,7 @@ void Item_Touch(ServerEntity_t *eItem,ServerEntity_t *eOther)
 {
 	Item_t *iItem;
 
-	if (Server.dTime < eItem->local.delay)
+	if (Server.time < eItem->local.delay)
 		// TODO: play a little negative sound on fail for client.
 		return;
 
@@ -187,7 +187,7 @@ void Item_Touch(ServerEntity_t *eItem,ServerEntity_t *eOther)
 		return;
 
 	// Add a minimal delay time before we're allowed to pick up again.
-	eItem->local.delay = Server.dTime + 2;
+	eItem->local.delay = Server.time + 2;
 
 	// Get the item reference.
 	iItem = Item_GetItem(eItem->local.style);
@@ -215,13 +215,13 @@ void Item_Touch(ServerEntity_t *eItem,ServerEntity_t *eOther)
 	Engine.Server_SinglePrint(eOther,"!\n");
 
 	// Check if we're in a multiplayer game, if so we'll respawn items.
-	if(bIsMultiplayer)
+	if(g_ismultiplayer)
 	{
 		eItem->local.cOldModel = eItem->v.model;
 
 		Entity_SetModel(eItem,"models/blip.md2");
 
-		eItem->v.dNextThink	= Server.dTime+60.0;
+		eItem->v.dNextThink	= Server.time+60.0;
 		eItem->v.think		= Item_Respawn;
 	}
 	else
@@ -234,31 +234,31 @@ void Item_Touch(ServerEntity_t *eItem,ServerEntity_t *eOther)
 #ifdef GAME_OPENKATANA
 	case ITEM_POWERBOOST:
 		eOther->local.power_time		= 1.0f;
-		eOther->local.power_finished	= Server.dTime+30.0;
+		eOther->local.power_finished	= Server.time+30.0;
 
 		Item_AddInventory(iItem,eOther);
 		break;
 	case ITEM_ATTACKBOOST:
 		eOther->local.attackb_time		= 1.0;
-		eOther->local.attackb_finished	= Server.dTime+30.0;
+		eOther->local.attackb_finished	= Server.time+30.0;
 
 		Item_AddInventory(iItem,eOther);
 		break;
 	case ITEM_ACROBOOST:
 		eOther->local.acro_time		= 1.0;
-		eOther->local.acro_finished	= Server.dTime+30.0;
+		eOther->local.acro_finished	= Server.time+30.0;
 
 		Item_AddInventory(iItem,eOther);
 		break;
 	case ITEM_VITABOOST:
 		eOther->local.vita_time		= 1.0;
-		eOther->local.vita_finished	= Server.dTime+30.0;
+		eOther->local.vita_finished	= Server.time+30.0;
 
 		Item_AddInventory(iItem,eOther);
 		break;
 	case ITEM_SPEEDBOOST:
 		eOther->local.speed_time		= 1.0;
-		eOther->local.speed_finished	= Server.dTime+30.0;
+		eOther->local.speed_finished	= Server.time+30.0;
 
 		Item_AddInventory(iItem,eOther);
 		break;

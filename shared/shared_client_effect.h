@@ -35,7 +35,7 @@ class ISprite
 {
 public:
 	virtual void SetPosition(float x, float y, float z) = 0;
-	virtual void SetPosition(MathVector3f_t position) = 0;
+	virtual void SetPosition(PLVector3D position) = 0;
 	virtual void SetColour(float r, float g, float b, float a = 1.0f) = 0;
 	virtual void SetType(SpriteType_t type) = 0;
 	virtual void SetActive(bool active) = 0;

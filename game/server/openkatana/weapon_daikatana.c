@@ -156,8 +156,8 @@ void Daikatana_PrimaryAttack(ServerEntity_t *ent)
 		Entity_Animate(ent,PlayerAnimation_KatanaAttack2);
 	}
 
-	if(ent->local.attackb_finished > Server.dTime)	// No attack boost...
-		ent->local.dAttackFinished = Server.dTime+0.5;
+	if(ent->local.attackb_finished > Server.time)	// No attack boost...
+		ent->local.dAttackFinished = Server.time+0.5;
 	else
-		ent->local.dAttackFinished = Server.dTime+1.0;
+		ent->local.dAttackFinished = Server.time+1.0;
 }

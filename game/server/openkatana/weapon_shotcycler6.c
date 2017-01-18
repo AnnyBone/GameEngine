@@ -158,7 +158,7 @@ void Shotcycler_Reload(ServerEntity_t *ent)
 
 	Weapon_Animate(ent,ShotcyclerAnimation_Reload);
 
-	ent->local.dAttackFinished = Server.dTime+2;
+	ent->local.dAttackFinished = Server.time+2;
 }
 
 void Shotcycler_PrimaryAttack(ServerEntity_t *ent)
@@ -189,10 +189,10 @@ void Shotcycler_PrimaryAttack(ServerEntity_t *ent)
 
 	ent->local.iShotCycle--;
 
-	if(ent->local.attackb_finished > Server.dTime)	// No attack boost...
-		ent->local.dAttackFinished = Server.dTime+ 2.5f;
+	if(ent->local.attackb_finished > Server.time)	// No attack boost...
+		ent->local.dAttackFinished = Server.time+ 2.5f;
 	else
-		ent->local.dAttackFinished = Server.dTime+ 5.0f;
+		ent->local.dAttackFinished = Server.time+ 5.0f;
 
 	Weapon_BulletProjectile(ent,5.0f,5,vForward);
 

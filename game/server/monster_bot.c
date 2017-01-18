@@ -146,7 +146,7 @@ void Bot_Spawn(ServerEntity_t *eBot)
 	if(!cvServerBots.value)
 		return;
 
-	plVectorClear(eBot->v.velocity);
+	plClearVector3D(&eBot->v.velocity);
 
 	switch(eBot->local.style)
 	{
@@ -177,9 +177,9 @@ void Bot_Spawn(ServerEntity_t *eBot)
 	default:
 		Engine.Con_Warning("Attempted to spawn unknown bot type! (%i) (%i %i %i)\n",
 			eBot->local.style,
-			(int)eBot->v.origin[0],
-			(int)eBot->v.origin[1],
-			(int)eBot->v.origin[2]);
+			(int)eBot->v.origin.x,
+			(int)eBot->v.origin.y,
+			(int)eBot->v.origin.z);
 
 		Entity_Remove(eBot);
 		return;
@@ -269,6 +269,7 @@ void Bot_Frame(ServerEntity_t *entity)
 		break;
 	case AI_THINK_WANDERING:
 		break;
+    default:break; // todo, idle by default?
 	}
 }
 
@@ -276,7 +277,7 @@ void Bot_BroadcastMessage(ServerEntity_t *eBot, ServerEntity_t *other)
 {
 	char *cPhrase;
 
-	if(!bIsMultiplayer || rand()%5 == 5)
+	if(!g_ismultiplayer || rand()%5 == 5)
 		return;
 
 	if(eBot->v.iHealth <= 0)
@@ -311,22 +312,20 @@ void Bot_BroadcastMessage(ServerEntity_t *eBot, ServerEntity_t *other)
 void Bot_Pain(ServerEntity_t *ent, ServerEntity_t *other, EntityDamageType_t type)
 {
 	char sound[MAX_QPATH];
-	Weapon_t *wMyWeapon, *wHisWeapon;
+	Weapon_t *myweapon, *hisweapon;
 
 	// Let the player know how we're feeling.
 	Bot_BroadcastMessage(ent,other);
 
 	// Get both mine and our enemies weapon.
-	wMyWeapon	= Weapon_GetCurrentWeapon(ent);
-	wHisWeapon	= Weapon_GetCurrentWeapon(other);
-	if(!wMyWeapon || (!Weapon_CheckPrimaryAmmo(wMyWeapon,ent) && wMyWeapon->iPrimaryType != AM_MELEE))
-	{
+	myweapon    = Weapon_GetCurrentWeapon(ent);
+	hisweapon   = Weapon_GetCurrentWeapon(other);
+	if(!myweapon || (!Weapon_CheckPrimaryAmmo(myweapon,ent) && myweapon->iPrimaryType != AM_MELEE)) {
 		AI_SetThink(ent, AI_THINK_FLEEING);
 		return;
 	}
 	// Otherwise check what we can see our enemy having (don't check ammo since it's unrealistic).
-	else if(!wHisWeapon || wHisWeapon->iPrimaryType == AM_MELEE)
-	{
+	else if(!hisweapon || hisweapon->iPrimaryType == AM_MELEE) {
 		// We see you!
 		if(Monster_IsVisible(ent,other))
 		{
@@ -343,7 +342,7 @@ void Bot_Pain(ServerEntity_t *ent, ServerEntity_t *other, EntityDamageType_t typ
 		ent->v.enemy = other;
 
 	mywep	= Weapon_GetCurrentWeapon(ent);
-	wHisWeapon	= Weapon_GetCurrentWeapon(other);
+	hisweapon	= Weapon_GetCurrentWeapon(other);
 
 	// [15/7/2012] Check that I have a weapon and ammo ~hogsy
 	if(!mywep || ent->v.currentammo <= 0)
@@ -379,7 +378,7 @@ POINTCHECK:
 		return;
 	}
 	// [15/7/2012] Okay, he doesn't have a weapon ~hogsy
-	else if(!wHisWeapon)
+	else if(!hisweapon)
 		// [15/7/2012] Since it's probably not even a player ~hogsy
 		return;
 #endif
@@ -414,8 +413,8 @@ POINTCHECK:
 
 void Bot_Walk(ServerEntity_t *eBot)
 {
-	eBot->v.velocity[0] -= 5.0f;
-	eBot->v.velocity[1] -= 10.0f;
+	eBot->v.velocity.x -= 5.0f;
+	eBot->v.velocity.y -= 10.0f;
 }
 
 void Bot_Die(ServerEntity_t *eBot, ServerEntity_t *eOther, EntityDamageType_t type)
@@ -430,7 +429,7 @@ void Bot_Die(ServerEntity_t *eBot, ServerEntity_t *eOther, EntityDamageType_t ty
 
 	eBot->v.movetype	= MOVETYPE_TOSS;
 	eBot->v.flags		-= (eBot->v.flags & FL_ONGROUND);
-	eBot->v.angles[0]	= eBot->v.angles[2] = 0;
+	eBot->v.angles.x	= eBot->v.angles.z = 0;
 
 	eBot->Physics.solid	= SOLID_NOT;
 

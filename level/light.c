@@ -212,17 +212,17 @@ void ParseLightEntities( void )
 				Error("Invalid angles for light, needs to be 3 values! (%.0f %.0f %.0f) (%s)\n", l->origin[0], l->origin[1], l->origin[2], value);
 
 			// This looks awful, but it's similar to how Quake 2 does it.
-			l->spotdir[0] = cosf(vec[YAW] / 180.0f * Q_PI) * cosf(vec[PITCH] / 180.0f * Q_PI);
-			l->spotdir[1] = sinf(vec[YAW] / 180.0f * Q_PI) * cosf(vec[PITCH] / 180.0f * Q_PI);
-			l->spotdir[2] = sinf(vec[PITCH] / 180.0f * Q_PI);
+			l->spotdir[0] = cosf(vec[PL_YAW] / 180.0f * PL_PI) * cos(vec[PL_PITCH] / 180.0f * PL_PI);
+			l->spotdir[1] = sinf(vec[PL_YAW] / 180.0f * PL_PI) * cos(vec[PL_PITCH] / 180.0f * PL_PI);
+			l->spotdir[2] = sinf(vec[PL_PITCH] / 180.0f * PL_PI);
 
 			// Apply spot cone modifier for spotlights.
 			if (is_spotlight)
 			{
 				if (!l->angle)
-					l->spotcone = -cos(20.0f*Q_PI / 180.0f);
+					l->spotcone = -cos(20.0f*PL_PI / 180.0f);
 				else
-					l->spotcone = -cos(l->angle / 2.0f*Q_PI / 180.0f);
+					l->spotcone = -cos(l->angle / 2.0f*PL_PI / 180.0f);
 			}
 		}
 

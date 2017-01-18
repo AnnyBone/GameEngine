@@ -59,8 +59,8 @@ void Zeus_PrimaryAttack(ServerEntity_t *ent)
 {
 	//Weapon_Animate(ent,FALSE,20,35,0.08f,0,0,0,FALSE);
 
-	if(ent->local.attackb_finished > Server.dTime)
-		ent->local.dAttackFinished = Server.dTime+0.6;
+	if(ent->local.attackb_finished > Server.time)
+		ent->local.dAttackFinished = Server.time+0.6;
 	else
-		ent->local.dAttackFinished = Server.dTime+1.2;
+		ent->local.dAttackFinished = Server.time+1.2;
 }

@@ -51,7 +51,7 @@ void Barrel_Killed(ServerEntity_t *barrel, ServerEntity_t *seOther, EntityDamage
 	if (barrel->local.style == BARREL_STYLE_EXPLODE)
 	{
 		Entity_SetThinkFunction(barrel, Barrel_Think);
-		barrel->v.dNextThink = Server.dTime + 0.275;
+		barrel->v.dNextThink = Server.time + 0.275;
 	}
 	else
 		Entity_SetModel(barrel, MODEL_DECORATION_BARREL3);

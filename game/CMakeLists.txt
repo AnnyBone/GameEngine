@@ -9,11 +9,11 @@ set_property(CACHE GAME_PROJECT PROPERTY STRINGS ${GAME_PROJECT_OPTIONS})
 message(STATUS GAME_PROJECT='${GAME_PROJECT}')
 
 file(GLOB GAME_SOURCE_FILES
-        *.cpp *.c
-        server/*.cpp server/*.c
-        client/*.cpp client/*.c
-        server/${GAME_PROJECT}/*.cpp server/${GAME_PROJECT}/*.c
-        client/${GAME_PROJECT}/*.cpp client/${GAME_PROJECT}/*.c)
+        *.cpp *.c *.h
+        server/*.cpp server/*.c server/*.h
+        client/*.cpp client/*.c client/*.h
+        server/${GAME_PROJECT}/*.cpp server/${GAME_PROJECT}/*.c server/${GAME_PROJECT}/*.h
+        client/${GAME_PROJECT}/*.cpp client/${GAME_PROJECT}/*.c client/${GAME_PROJECT}/*.h)
 
 add_library(game MODULE ${GAME_SOURCE_FILES})
 

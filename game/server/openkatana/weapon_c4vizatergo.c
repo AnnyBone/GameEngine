@@ -191,14 +191,14 @@ void C4Vizatergo_Think(ServerEntity_t *ent)
 	else
 		fDistance = 0;
 
-	ent->v.dNextThink = Server.dTime+(2.5f*(fDistance/100.0f));
+	ent->v.dNextThink = Server.time+(2.5f*(fDistance/100.0f));
 #else
 	Sound(ent, CHAN_AUTO, "weapons/c4/beep.wav", 130, ATTN_IDLE);
 
 	if(!ent->local.eOwner && ent->local.hit)
 		ent->v.movetype = MOVETYPE_BOUNCE;
 
-	ent->v.dNextThink = Server.dTime+2.5;
+	ent->v.dNextThink = Server.time+2.5;
 #endif
 }
 
@@ -239,16 +239,16 @@ void C4Vizatergo_PrimaryAttack(ServerEntity_t *eOwner)
 
 	c4ball->v.TouchFunction = C4Vizatergo_C4BallTouch;
 	c4ball->v.think = C4Vizatergo_Think;
-	c4ball->v.dNextThink = Server.dTime + 2.5;
+	c4ball->v.dNextThink = Server.time + 2.5;
 
 	Entity_SetModel(c4ball,"models/c4ammo.md2");
 	Entity_SetSizeVector(c4ball, pl_origin3f, pl_origin3f);
 	Entity_SetOrigin(c4ball,vOrigin);
 
-	if(eOwner->local.attackb_finished > Server.dTime)	// No attack boost...
-		eOwner->local.dAttackFinished = Server.dTime+0.6;
+	if(eOwner->local.attackb_finished > Server.time)	// No attack boost...
+		eOwner->local.dAttackFinished = Server.time+0.6;
 	else
-		eOwner->local.dAttackFinished = Server.dTime+1.2;
+		eOwner->local.dAttackFinished = Server.time+1.2;
 }
 
 void C4Vizatergo_SecondaryAttack(ServerEntity_t *eOwner)
@@ -260,7 +260,7 @@ void C4Vizatergo_SecondaryAttack(ServerEntity_t *eOwner)
 		if((eExplodable->local.style == AMMO_C4BOMBS) && (eExplodable->local.iC4Ammo == 1) && (eExplodable->local.eOwner == eOwner))
 		{
 			eExplodable->v.think		= C4Vizatergo_Explode;
-			eExplodable->v.dNextThink	= Server.dTime;
+			eExplodable->v.dNextThink	= Server.time;
 		}
 
 		eExplodable = eExplodable->v.chain;

@@ -15,25 +15,27 @@ enum
 	INFO_PLAYER_CTF,
 
 	// Companions
+#if defined(GAME_DECAY)
 	INFO_PLAYER_MIKIKO,
 	INFO_PLAYER_SUPERFLY
+#endif
 };
 
 void Bot_Spawn(ServerEntity_t *ent);
 
 void CTF_FlagSpawn(ServerEntity_t *eFlag);
 
-void Area_BreakableSpawn(ServerEntity_t *eArea);
+void Area_BreakableSpawn(ServerEntity_t *area);
 void Area_ButtonSpawn(ServerEntity_t *eArea);
-void Area_ChangeLevel(ServerEntity_t *eArea);
-void Area_ClimbSpawn(ServerEntity_t *eArea);
+void Area_ChangeLevel(ServerEntity_t *area);
+void Area_ClimbSpawn(ServerEntity_t *area);
 void Area_DoorSpawn(ServerEntity_t *eArea);
-void Area_NoclipSpawn(ServerEntity_t *eArea);
+void Area_NoclipSpawn(ServerEntity_t *area);
 void Area_PlatSpawn(ServerEntity_t *eArea);
-void Area_PushSpawn(ServerEntity_t *eArea);
+void Area_PushSpawn(ServerEntity_t *area);
 void Area_PushableSpawn(ServerEntity_t *eArea);
-void Area_PlatformSpawn(ServerEntity_t *eArea);
-void Area_RotateSpawn(ServerEntity_t *eArea);
+void Area_PlatformSpawn(ServerEntity_t *area);
+void Area_RotateSpawn(ServerEntity_t *area);
 void Area_TriggerSpawn(ServerEntity_t *eArea);
 void Area_WallSpawn(ServerEntity_t *eArea);
 void Area_DetailSpawn(ServerEntity_t *eArea);
@@ -68,7 +70,7 @@ void Point_ExplodeSpawn(ServerEntity_t *ePoint);
 // Weapons
 void WEAPON_StickThink(ServerEntity_t *ent);
 
-void ThrowGib(MathVector3f_t origin, MathVector3f_t velocity,char *model,float damage,bool bleed);
+void ThrowGib(PLVector3D origin, PLVector3D velocity,char *model,float damage,bool bleed);
 void Item_Respawn(ServerEntity_t *ent);
 
 void Client_RelinkEntities(entity_t *ent,int i,double dTime);

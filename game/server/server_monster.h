@@ -1,4 +1,4 @@
-/*	Copyright (C) 2011-2015 OldTimes Software
+/*	Copyright (C) 2011-2017 OldTimes Software
 
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License
@@ -57,11 +57,11 @@ bool Monster_IsVisible(ServerEntity_t *entity, ServerEntity_t *target);
 
 int	Monster_GetRelationship(ServerEntity_t *eMonster, ServerEntity_t *eTarget);
 
-float MONSTER_GetRange(ServerEntity_t *ent, MathVector3f_t target);
+float MONSTER_GetRange(ServerEntity_t *ent, PLVector3D target);
 
 void Monster_Damage(ServerEntity_t *target, ServerEntity_t *inflictor, int iDamage, EntityDamageType_t type);
 
-void Monster_MoveToGoal(ServerEntity_t *ent, MathVector3f_t goal, float distance);
+void Monster_MoveToGoal(ServerEntity_t *ent, PLVector3D goal, float distance);
 void AI_RandomMovement(ServerEntity_t *eMonster, float fSpeed);
 
 void Monster_Killed(ServerEntity_t *monster, ServerEntity_t *attacker, EntityDamageType_t type);

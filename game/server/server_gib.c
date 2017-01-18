@@ -59,7 +59,7 @@ void Gib_Spawn(MathVector3f_t mvOrigin, const char *cModel)
 		gib->v.movetype			= MOVETYPE_BOUNCE;
 		gib->v.TouchFunction	= Gib_Touch;
 		gib->v.think			= Entity_Remove;
-		gib->v.dNextThink		= Server.dTime + 20.0f;
+		gib->v.dNextThink		= Server.time + 20.0f;
 
 		Entity_SetPhysics(gib, SOLID_TRIGGER, 0.5f, 3.0f);
 

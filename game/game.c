@@ -56,10 +56,9 @@ char *va(char *format,...)
 	return string;
 }
 
-void SetAngle(ServerEntity_t *ent, PLVector3f vAngle)
+void SetAngle(ServerEntity_t *ent, PLVector3D angle)
 {
-	// [21/3/2012] Updated ~hogsy
-	plVectorCopy(vAngle, ent->v.angles);
+	ent->v.angles = angle;
 
 	Entity_Link(ent,false);
 }
@@ -104,9 +103,9 @@ void ChangeYaw(ServerEntity_t *ent)
 	also slide box entities	if the
 	tryents flag is set.
 */
-trace_t Traceline(ServerEntity_t *ent, PLVector3f vStart, PLVector3f vEnd, int type)
+trace_t Traceline(ServerEntity_t *ent, PLVector3D vStart, PLVector3D vEnd, int type)
 {
-	return Engine.Server_Move(vStart, pl_origin3f, pl_origin3f, vEnd, type, ent);
+	return Engine.Server_Move(vStart, plCreateVector3D(0, 0, 0), plCreateVector3D(0, 0, 0), vEnd, type, ent);
 }
 
 /*	Each entity can have eight
@@ -165,7 +164,7 @@ void WriteByte(int mode,int c)
 // OBSOLETE
 bool Game_Init(int state,ServerEntity_t *ent,double dTime)
 {
-	Server.dTime = dTime;
+	Server.time = dTime;
 
 	switch(state)
 	{
@@ -211,7 +210,7 @@ void	Server_PreFrame(void);	// server_main
 void	Server_SendClientInformation(ServerClient_t *client);
 void	Game_Shutdown(void);
 
-PL_MODULE_EXPORT GameExport_t *Game_Main(ModuleImport_t *Import)
+PL_EXPORT GameExport_t *Game_Main(ModuleImport_t *Import)
 {
 	// Imports...
 

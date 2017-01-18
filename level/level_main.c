@@ -39,7 +39,7 @@ char	filename_map[1024],
 		filename_prt[1024],
 		filename_pts[1024];
 
-char	wadPath[PLATFORM_MAX_PATH];
+char	wadPath[PL_SYSTEM_MAX_PATH];
 
 int		Vis_Main( int argc, char **argv );
 int		Light_Main( int argc, char **argv );

@@ -65,7 +65,7 @@ void BarrierFire(ServerEntity_t *ent)
 	Entity_SetOrigin(bshield, trace.endpos);
 
 	bshield->v.think		= Entity_Remove;
-	bshield->v.dNextThink	= Server.dTime+0.5;
+	bshield->v.dNextThink	= Server.time+0.5;
 }
 
 void Barrier_PrimaryAttack(ServerEntity_t *ent)

@@ -47,7 +47,7 @@ void Ballista_LogTouch(ServerEntity_t *ent, ServerEntity_t *other)
 		Entity_Damage(other, ent, 25, 0);
 
 		ent->v.think		= WEAPON_StickThink;
-		ent->v.dNextThink	= Server.dTime+0.1;
+		ent->v.dNextThink	= Server.time+0.1;
 	}
 	// We didn't hit anything, so NOW we set up our impact sound.
 	else
@@ -96,8 +96,8 @@ void Ballista_PrimaryAttack(ServerEntity_t *ent)
 
 	Ballista_SpawnLogProjectile(ent);
 
-	if(ent->local.attackb_finished > Server.dTime)	// No attack boost...
-		ent->local.dAttackFinished = Server.dTime+1.0;
+	if(ent->local.attackb_finished > Server.time)	// No attack boost...
+		ent->local.dAttackFinished = Server.time+1.0;
 	else
-		ent->local.dAttackFinished = Server.dTime+2.0;
+		ent->local.dAttackFinished = Server.time+2.0;
 }

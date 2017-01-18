@@ -113,7 +113,7 @@ typedef struct
 					iSecondaryAmmoOffset;
 } Weapon_t;
 
-MathVector_t Weapon_Aim(ServerEntity_t *eEntity);
+PLVector3D Weapon_Aim(ServerEntity_t *eEntity);
 
 Weapon_t *Weapon_GetCurrentWeapon(ServerEntity_t *eEntity);
 Weapon_t *Weapon_GetWeapon(int iWeaponID);
@@ -121,7 +121,7 @@ Weapon_t *Weapon_GetWeapon(int iWeaponID);
 void Weapon_Precache(void);
 void Weapon_UpdateCurrentAmmo(Weapon_t *wWeapon, ServerEntity_t *eEntity);
 void Weapon_SetActive(Weapon_t *wWeapon, ServerEntity_t *eEntity, bool bDeploy);
-void Weapon_BulletProjectile(ServerEntity_t *ent, float spread, int damage, MathVector3f_t vVector);
+void Weapon_BulletProjectile(ServerEntity_t *ent, float spread, int damage, PLVector3D vVector);
 void Weapon_Projectile(ServerEntity_t *eOwner, ServerEntity_t *eProjectile, float fVelocity);
 void Weapon_CheckFrames(ServerEntity_t *eEntity);
 void Weapon_Animate(ServerEntity_t *ent, ServerEntityFrame_t *eFrames);

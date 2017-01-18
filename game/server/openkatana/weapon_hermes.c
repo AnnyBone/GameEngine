@@ -40,7 +40,7 @@ void Hermes_CloudThink(ServerEntity_t *ent)
 	Engine.Particle(ent->v.origin,vel,12,"poison",8);
 
 	ent->v.think		= Hermes_CloudThink;
-	ent->v.dNextThink	= Server.dTime+0.3;
+	ent->v.dNextThink	= Server.time+0.3;
 }
 
 void HermesCloudTouch(ServerEntity_t *ent, ServerEntity_t *other)
@@ -71,16 +71,16 @@ void Hermes_PrimaryAttack(ServerEntity_t *ent)
 
 	Weapon_Projectile(ent, cloud, 100.0f);
 
-	cloud->v.dNextThink		= Server.dTime+0.3;
+	cloud->v.dNextThink		= Server.time+0.3;
 	cloud->v.think			= Hermes_CloudThink;
 	cloud->v.TouchFunction	= HermesCloudTouch;
 
 	Math_VectorAddValue(cloud->v.avelocity,300.0f,cloud->v.avelocity);
 
-	if(ent->local.attackb_finished > Server.dTime)	// No attack boost...
-		ent->local.dAttackFinished = Server.dTime+0.35;
+	if(ent->local.attackb_finished > Server.time)	// No attack boost...
+		ent->local.dAttackFinished = Server.time+0.35;
 	else
-		ent->local.dAttackFinished = Server.dTime+0.7;
+		ent->local.dAttackFinished = Server.time+0.7;
 
 #if 0
 	if(rand()%3 == 1)

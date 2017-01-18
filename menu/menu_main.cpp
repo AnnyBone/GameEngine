@@ -97,7 +97,9 @@ void menu::DrawMouse()
 
 void menu::Draw(CoreViewport *viewport)
 {
-	if (!cv_menushow.bValue || !viewport) return;
+	if (!cv_menushow.bValue || !viewport) {
+		return;
+	}
 
 	Engine.Client_SetMenuCanvas(CANVAS_DEFAULT);
 
@@ -114,9 +116,9 @@ void menu::Draw(CoreViewport *viewport)
 	}
 
 	// temp start
-	Engine.DrawRectangle(0, 0, 32, 32, pl_red);
-	Engine.DrawRectangle(0, 32, 32, 32, pl_green);
-	Engine.DrawRectangle(0, 64, 32, 32, pl_blue);
+	Engine.DrawRectangle(0, 0, 32, 32, plCreateColour4b(PL_COLOUR_RED));
+	Engine.DrawRectangle(0, 32, 32, 32, plCreateColour4b(PL_COLOUR_GREEN));
+	Engine.DrawRectangle(0, 64, 32, 32, plCreateColour4b(PL_COLOUR_BLUE));
 	Engine.DrawMaterialSurface(debug_logo, 0, viewport->GetWidth() - 80, viewport->GetHeight() - 80, 64, 64, 1.0f);
 	// temp end
 
@@ -124,7 +126,7 @@ void menu::Draw(CoreViewport *viewport)
 		HUD_Draw();
 	else if(iMenuState & MENU_STATE_MENU)
 	{
-		PLColour col = { 0, 0, 0, 0.8f };
+		PLColour col = { 0, 0, 0, plFloatToByte(.8f) };
 		Engine.DrawRectangle(0, 0, viewport->GetWidth(), viewport->GetHeight(), col);
 		
 		Engine.DrawString(110, 80, ">");
@@ -376,7 +378,7 @@ void Input_Key(int iKey)
 
 }
 
-extern "C" PL_MODULE_EXPORT MenuExport_t *Menu_Main(ModuleImport_t *Import)
+extern "C" PL_EXPORT MenuExport_t *Menu_Main(ModuleImport_t *Import)
 {
 	Engine = *Import;
 

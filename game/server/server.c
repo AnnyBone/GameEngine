@@ -1,19 +1,21 @@
-/*	Copyright (C) 2011-2016 OldTimes Software
+/*
+Copyright (C) 1996-1997 Id Software, Inc.
+Copyright (C) 2011-2017 Mark E Sowden <markelswo@gmail.com>
 
-	This program is free software; you can redistribute it and/or
-	modify it under the terms of the GNU General Public License
-	as published by the Free Software Foundation; either version 2
-	of the License, or (at your option) any later version.
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-	See the GNU General Public License for more details.
+See the GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "server_main.h"
@@ -32,87 +34,84 @@
 	with the main list of entities that's parsed upon spawning a server.
 */
 
-bool	
-	bIsMultiplayer = false,
-	bIsCooperative = false,
-	bIsDeathmatch = false;
+bool g_ismultiplayer = false, g_iscooperative = false, g_isdeathmatch = false;
 
-void Server_Spawn(ServerEntity_t *seEntity);
+void Server_Spawn(ServerEntity_t *entity);
 
 typedef struct
 {
-	char	*name;
+    char *name;
 
-	void(*Spawn)(ServerEntity_t *seEntity);
-	void(*Precache)();
+    void(*Spawn)(ServerEntity_t *seEntity);
+    void(*Precache)();
 } SpawnList_t;
 
 SpawnList_t SpawnList[] =
-{
-	{ "worldspawn", Server_Spawn },
-	{ "light", Point_LightSpawn },	// TODO: This should be made obsolete!
+        {
+                { "worldspawn", Server_Spawn },
+                { "light", Point_LightSpawn },	// TODO: This should be made obsolete!
 
-	// Area/Group Entities
-	{ "area_breakable", Area_BreakableSpawn },
-	{ "area_button", Area_ButtonSpawn },
-	{ "area_changelevel", Area_ChangeLevel },
-	{ "area_climb", Area_ClimbSpawn },
-	{ "area_detail", Area_DetailSpawn },
-	{ "area_door", Area_DoorSpawn },
-	{ "area_door_rotate", Area_DoorSpawn },
-	{ "area_noclip", Area_NoclipSpawn },
-	{ "area_push", Area_PushSpawn },
-	{ "area_debris", Area_PushableSpawn },		// For compatability.
-	{ "area_pushable", Area_PushableSpawn },
-	{ "area_platform", Area_PlatformSpawn },
-	{ "area_rotate", Area_RotateSpawn },
-	{ "area_trigger", Area_TriggerSpawn },
-	{ "area_wall", Area_WallSpawn },
-	{ "area_kill", Area_KillSpawn },
+                // Area/Group Entities
+                { "area_breakable", Area_BreakableSpawn },
+                { "area_button", Area_ButtonSpawn },
+                { "area_changelevel", Area_ChangeLevel },
+                { "area_climb", Area_ClimbSpawn },
+                { "area_detail", Area_DetailSpawn },
+                { "area_door", Area_DoorSpawn },
+                { "area_door_rotate", Area_DoorSpawn },
+                { "area_noclip", Area_NoclipSpawn },
+                { "area_push", Area_PushSpawn },
+                { "area_debris", Area_PushableSpawn },		// For compatability.
+                { "area_pushable", Area_PushableSpawn },
+                { "area_platform", Area_PlatformSpawn },
+                { "area_rotate", Area_RotateSpawn },
+                { "area_trigger", Area_TriggerSpawn },
+                { "area_wall", Area_WallSpawn },
+                { "area_kill", Area_KillSpawn },
 //	{ "area_playerspawn", Area_PlayerSpawn },
 
-	// Point Entities
-	{ "point_light", Point_LightSpawn },
-	{ "point_sprite", Point_SpriteSpawn },
-	{ "point_ambient", Point_AmbientSpawn },
-	{ "point_bot", Bot_Spawn },
-	{ "point_damage", Point_DamageSpawn },
-	{ "point_effect", Point_EffectSpawn },
-	{ "point_flare", Point_FlareSpawn },
-	{ "point_item", Item_Spawn },
-	{ "point_lightstyle", Point_LightstyleSpawn },
-	{ "point_logic", Point_LogicSpawn },
-	{ "point_message", Point_MessageSpawn },
-	{ "point_monster", Point_MonsterSpawn },
-	{ "point_multitrigger", Point_MultiTriggerSpawn },
-	{ "point_vehicle", Point_VehicleSpawn },
-	{ "point_null", Point_NullSpawn },
-	{ "point_skycamera", Point_SkyCameraSpawn },			// Used as reference for 3D skybox.
-	{ "point_particle", Point_ParticleSpawn },
-	{ "point_prop", Point_PropSpawn },
-	{ "point_sound", Point_SoundSpawn },
-	{ "point_start", Point_Start },
-	{ "point_shake", Point_ShakeSpawn },
-	{ "point_teleport", Point_TeleportSpawn },
-	{ "point_timedtrigger", Point_TimedTriggerSpawn },
-	{ "point_waypoint", Point_WaypointSpawn },
-	{ "point_explode", Point_ExplodeSpawn },
-	{ "point_decoration", Point_DecorationSpawn },
+                // Point Entities
+                { "point_light", Point_LightSpawn },
+                { "point_sprite", Point_SpriteSpawn },
+                { "point_ambient", Point_AmbientSpawn },
+                { "point_bot", Bot_Spawn },
+                { "point_damage", Point_DamageSpawn },
+                { "point_effect", Point_EffectSpawn },
+                { "point_flare", Point_FlareSpawn },
+                { "point_item", Item_Spawn },
+                { "point_lightstyle", Point_LightstyleSpawn },
+                { "point_logic", Point_LogicSpawn },
+                { "point_message", Point_MessageSpawn },
+                { "point_monster", Point_MonsterSpawn },
+                { "point_multitrigger", Point_MultiTriggerSpawn },
+                { "point_vehicle", Point_VehicleSpawn },
+                { "point_null", Point_NullSpawn },
+                { "point_skycamera", Point_SkyCameraSpawn },			// Used as reference for 3D skybox.
+                { "point_particle", Point_ParticleSpawn },
+                { "point_prop", Point_PropSpawn },
+                { "point_sound", Point_SoundSpawn },
+                { "point_start", Point_Start },
+                { "point_shake", Point_ShakeSpawn },
+                { "point_teleport", Point_TeleportSpawn },
+                { "point_timedtrigger", Point_TimedTriggerSpawn },
+                { "point_waypoint", Point_WaypointSpawn },
+                { "point_explode", Point_ExplodeSpawn },
+                { "point_decoration", Point_DecorationSpawn },
 
 #ifdef GAME_OPENKATANA
-	{ "decoration_barrel", Barrel_Spawn },
+                { "decoration_barrel", Barrel_Spawn },
 
-	{ "item_health", Health_Spawn },
+                { "item_health", Health_Spawn },
 
-	{ "monster_inmater", Point_MonsterSpawn },
-	{ "monster_lasergat", Point_MonsterSpawn },
-	{ "monster_prisoner", Point_MonsterSpawn },
+                { "monster_inmater", Point_MonsterSpawn },
+                { "monster_lasergat", Point_MonsterSpawn },
+                { "monster_prisoner", Point_MonsterSpawn },
 #elif GAME_ADAMAS
-	{ "monster_roller", Roller_Spawn, Roller_Precache },
+                { "monster_roller", Roller_Spawn, Roller_Precache },
 #endif
 
-	{	NULL	}
-};
+                {	NULL	}
+        };
 
 ConsoleVariable_t cvServerPlayerModel = { "server_playermodel", MODEL_PLAYER, false, true, "Sets the main server-side player model." };
 ConsoleVariable_t cvServerRespawnDelay = { "server_respawndelay", "40", false, true, "Sets the amount of time until a player respawns." };
@@ -138,264 +137,247 @@ ConsoleVariable_t cvServerBots = { "server_bots", "1", false, true, "Can enable 
 ConsoleVariable_t cvServerBots = { "server_bots", "0", false, true, "Can enable and disable bots." };
 #endif
 
-void Server_SetGameMode(void)
-{
-	// Don't continue if we're already using this mode.
-	if(Server.iLastGameMode == cvServerGameMode.iValue)
-		return;
+void Server_SetGameMode(void) {
+    // Don't continue if we're already using this mode.
+    if(Server.iLastGameMode == cvServerGameMode.iValue) {
+        return;
+    }
 
-	if(cvServerGameMode.value >= MODE_NONE || cvServerGameMode.value < MODE_SINGLEPLAYER)
-	{
-		Engine.Con_Warning("Attempted to set unknown game mode! Reverting to singleplayer.\n");
-		Engine.Cvar_SetValue("server_gamemode", MODE_SINGLEPLAYER);
-	}
+    if(cvServerGameMode.value >= MODE_NONE || cvServerGameMode.value < MODE_SINGLEPLAYER) {
+        g_engine->Con_Warning("Attempted to set unknown game mode! Reverting to singleplayer.\n");
+        g_engine->Cvar_SetValue("server_gamemode", MODE_SINGLEPLAYER);
+    }
 
-	if(Server.iLastGameMode != cvServerGameMode.value && Server.bActive)
-		Engine.Con_Printf("Gamemode will be changed on next map.\n");
+    if(Server.iLastGameMode != cvServerGameMode.value && Server.bActive) {
+        g_engine->Con_Printf("Gamemode will be changed on next map.\n");
+    }
 
-	// Keep OldMode up to date!
-	Server.iLastGameMode = cvServerGameMode.iValue;
+    // Keep OldMode up to date!
+    Server.iLastGameMode = cvServerGameMode.iValue;
 }
 
 #ifdef _DEBUG
 
-/*	Teleports server host to given spot.
-*/
-void Server_Teleport(void)
-{
-	if (g_engine->Cmd_Argc() != 2)
-	{
-		g_engine->Con_Warning("Invalid parameter!\n");
-		return;
-	}
+// Teleports server host to given spot.
+void Server_Teleport(void) {
+    if (g_engine->Cmd_Argc() != 2) {
+        g_engine->Con_Warning("Invalid parameter!\n");
+        return;
+    }
 
-	MathVector3f_t origin;
-	sscanf(g_engine->Cmd_Argv(1), "%f %f %f", &origin[0], &origin[1], &origin[2]);
-	Entity_SetOrigin(g_engine->GetHostEntity(), origin);
+    PLVector3D origin;
+    sscanf(g_engine->Cmd_Argv(1), "%f %f %f", &origin.x, &origin.y, &origin.z);
+    Entity_SetOrigin(g_engine->GetHostEntity(), origin);
 }
 
 #endif
 
-/*	Called by the engine.
-*/
-void Server_Initialize(void)
-{
-	Engine.Cvar_RegisterVariable(&cvServerSkill, NULL);
-	Engine.Cvar_RegisterVariable(&cvServerSelfDamage, NULL);
-	Engine.Cvar_RegisterVariable(&cvServerMaxHealth, NULL);
-	Engine.Cvar_RegisterVariable(&cvServerMonsters, NULL);
-	Engine.Cvar_RegisterVariable(&cvServerMaxScore, NULL);
-	Engine.Cvar_RegisterVariable(&cvServerGameMode, Server_SetGameMode);
-	Engine.Cvar_RegisterVariable(&cvServerPlayerModel, NULL);
-	Engine.Cvar_RegisterVariable(&cvServerWaypointDelay, NULL);
-	Engine.Cvar_RegisterVariable(&cvServerWaypointSpawn, NULL);
-	Engine.Cvar_RegisterVariable(&cvServerBots, NULL);
-	Engine.Cvar_RegisterVariable(&cvServerDefaultHealth, NULL);
-	Engine.Cvar_RegisterVariable(&cvServerGameTime, NULL);
-	Engine.Cvar_RegisterVariable(&cvServerGameClients, NULL);
-	Engine.Cvar_RegisterVariable(&cvServerGravityTweak, NULL);
-	Engine.Cvar_RegisterVariable(&cvServerGravity, NULL);
-	Engine.Cvar_RegisterVariable(&cvServerRespawnDelay, NULL);
-	Engine.Cvar_RegisterVariable(&cvServerAim, NULL);
+// Called by the engine.
+void Server_Initialize(void) {
+    g_engine->Cvar_RegisterVariable(&cvServerSkill, NULL);
+    g_engine->Cvar_RegisterVariable(&cvServerSelfDamage, NULL);
+    g_engine->Cvar_RegisterVariable(&cvServerMaxHealth, NULL);
+    g_engine->Cvar_RegisterVariable(&cvServerMonsters, NULL);
+    g_engine->Cvar_RegisterVariable(&cvServerMaxScore, NULL);
+    g_engine->Cvar_RegisterVariable(&cvServerGameMode, Server_SetGameMode);
+    g_engine->Cvar_RegisterVariable(&cvServerPlayerModel, NULL);
+    g_engine->Cvar_RegisterVariable(&cvServerWaypointDelay, NULL);
+    g_engine->Cvar_RegisterVariable(&cvServerWaypointSpawn, NULL);
+    g_engine->Cvar_RegisterVariable(&cvServerBots, NULL);
+    g_engine->Cvar_RegisterVariable(&cvServerDefaultHealth, NULL);
+    g_engine->Cvar_RegisterVariable(&cvServerGameTime, NULL);
+    g_engine->Cvar_RegisterVariable(&cvServerGameClients, NULL);
+    g_engine->Cvar_RegisterVariable(&cvServerGravityTweak, NULL);
+    g_engine->Cvar_RegisterVariable(&cvServerGravity, NULL);
+    g_engine->Cvar_RegisterVariable(&cvServerRespawnDelay, NULL);
+    g_engine->Cvar_RegisterVariable(&cvServerAim, NULL);
 
 #ifdef _DEBUG
-	g_engine->Cmd_AddCommand("server_teleport", Server_Teleport);
+    g_engine->Cmd_AddCommand("server_teleport", Server_Teleport);
 #endif
 
-	Server.bActive = false;							// We're not active when we've only just initialized.
-	Server.iLastGameMode = cvServerGameMode.iValue;	// Last mode is equal to the current mode initially.
+    Server.bActive = false;							// We're not active when we've only just initialized.
+    Server.iLastGameMode = cvServerGameMode.iValue;	// Last mode is equal to the current mode initially.
 }
 
-void Server_Spawn(ServerEntity_t *seEntity)
-{
-	Server.eWorld = seEntity;
+// todo, move into world.c or something, rename to World_Spawn / wtvr
+void Server_Spawn(ServerEntity_t *entity) {
+    Server.eWorld = entity;
 
-	// Set defaults.
-	Server.dWaypointSpawnDelay	= ((double)cvServerWaypointDelay.value);
-	Server.round_started		=
-	Server.players_spawned		= false;
-	Server.iMonsters			= 0;
-	Server.skycam				= false;
+    // Set defaults.
+    Server.dWaypointSpawnDelay  = ((double)cvServerWaypointDelay.value);
+    Server.round_started        =
+    Server.players_spawned      = false;
+    Server.iMonsters            = 0;
+    Server.skycam               = false;
 
-	// Set these to their defaults.
-	bIsDeathmatch	= false;
-	bIsCooperative	= false;
-	bIsMultiplayer	= false;
+    // Set these to their defaults.
+    g_isdeathmatch  = false;
+    g_iscooperative = false;
+    g_ismultiplayer = false;
 
-	if (cvServerGameMode.iValue != MODE_SINGLEPLAYER)
-	{
-		bIsMultiplayer = true;
+    if (cvServerGameMode.iValue != MODE_SINGLEPLAYER) {
+        g_ismultiplayer = true;
 
-		if (cvServerGameMode.iValue == MODE_DEATHMATCH)
-			bIsDeathmatch = true;
-		else if (cvServerGameMode.iValue == MODE_COOPERATIVE)
-			bIsCooperative = true;
-	}
-	else
-		// Round has always immediately started in single player.
-		Server.round_started = true;
+        if (cvServerGameMode.iValue == MODE_DEATHMATCH) {
+            g_isdeathmatch = true;
+        } else if (cvServerGameMode.iValue == MODE_COOPERATIVE) {
+            g_iscooperative = true;
+        }
+    } else {
+        // Round has always immediately started in single player.
+        Server.round_started = true;
+    }
 
-	// Initialize waypoints.
-	Waypoint_Initialize();
+    // Initialize waypoints.
+    Waypoint_Initialize();
 
-	Item_Precache();
-	Weapon_Precache();
+    Item_Precache();
+    Weapon_Precache();
 
-	Server_PrecacheSound("misc/deny.wav");
-	Server_PrecacheSound(BASE_SOUND_TALK0);
-	Server_PrecacheSound(BASE_SOUND_TALK1);
-	Server_PrecacheSound(BASE_SOUND_TALK2);
-	Server_PrecacheSound("misc/gib1.wav");
+    Server_PrecacheSound("misc/deny.wav");
+    Server_PrecacheSound(BASE_SOUND_TALK0);
+    Server_PrecacheSound(BASE_SOUND_TALK1);
+    Server_PrecacheSound(BASE_SOUND_TALK2);
+    Server_PrecacheSound("misc/gib1.wav");
 
-	// Physics
-	Server_PrecacheSound(PHYSICS_SOUND_SPLASH);
-	Server_PrecacheSound(PHYSICS_SOUND_BODY);
+    // Physics
+    Server_PrecacheSound(PHYSICS_SOUND_SPLASH);
+    Server_PrecacheSound(PHYSICS_SOUND_BODY);
 
-	Server_PrecacheSound(PHYSICS_SOUND_RICOCHET0);
-	Server_PrecacheSound(PHYSICS_SOUND_RICOCHET1);
-	Server_PrecacheSound(PHYSICS_SOUND_RICOCHET2);
-	Server_PrecacheSound(PHYSICS_SOUND_RICOCHET3);
-	Server_PrecacheSound(PHYSICS_SOUND_RICOCHET4);
-	Server_PrecacheSound(PHYSICS_SOUND_RICOCHET5);
-	Server_PrecacheSound(PHYSICS_SOUND_RICOCHET6);
+    Server_PrecacheSound(PHYSICS_SOUND_RICOCHET0);
+    Server_PrecacheSound(PHYSICS_SOUND_RICOCHET1);
+    Server_PrecacheSound(PHYSICS_SOUND_RICOCHET2);
+    Server_PrecacheSound(PHYSICS_SOUND_RICOCHET3);
+    Server_PrecacheSound(PHYSICS_SOUND_RICOCHET4);
+    Server_PrecacheSound(PHYSICS_SOUND_RICOCHET5);
+    Server_PrecacheSound(PHYSICS_SOUND_RICOCHET6);
 
-	Server_PrecacheSound("fx/explosion1.wav");
-	Server_PrecacheSound("fx/explosion2.wav");
-	Server_PrecacheSound("fx/explosion3.wav");
-	Server_PrecacheSound("fx/explosion4.wav");
-	Server_PrecacheSound("fx/explosion5.wav");
-	Server_PrecacheSound("fx/explosion6.wav");
+    Server_PrecacheSound("fx/explosion1.wav");
+    Server_PrecacheSound("fx/explosion2.wav");
+    Server_PrecacheSound("fx/explosion3.wav");
+    Server_PrecacheSound("fx/explosion4.wav");
+    Server_PrecacheSound("fx/explosion5.wav");
+    Server_PrecacheSound("fx/explosion6.wav");
 
-	Server_PrecacheSound(PHYSICS_SOUND_CONCRETESTEP0);
-	Server_PrecacheSound(PHYSICS_SOUND_CONCRETESTEP1);
-	Server_PrecacheSound(PHYSICS_SOUND_CONCRETESTEP2);
-	Server_PrecacheSound(PHYSICS_SOUND_CONCRETESTEP3);
+    Server_PrecacheSound(PHYSICS_SOUND_CONCRETESTEP0);
+    Server_PrecacheSound(PHYSICS_SOUND_CONCRETESTEP1);
+    Server_PrecacheSound(PHYSICS_SOUND_CONCRETESTEP2);
+    Server_PrecacheSound(PHYSICS_SOUND_CONCRETESTEP3);
 
-	Server_PrecacheModel(PHYSICS_MODEL_GIB0);
-	Server_PrecacheModel(PHYSICS_MODEL_GIB1);
-	Server_PrecacheModel(PHYSICS_MODEL_GIB2);
-	Server_PrecacheModel(PHYSICS_MODEL_GIB3);
+    Server_PrecacheModel(PHYSICS_MODEL_GIB0);
+    Server_PrecacheModel(PHYSICS_MODEL_GIB1);
+    Server_PrecacheModel(PHYSICS_MODEL_GIB2);
+    Server_PrecacheModel(PHYSICS_MODEL_GIB3);
 
-	// Effects
-	Server_PrecacheSound(SOUND_EXPLODE_UNDERWATER0);
-	Server_PrecacheSound(SOUND_EXPLODE0);
-	Server_PrecacheSound(SOUND_EXPLODE1);
-	Server_PrecacheSound(SOUND_EXPLODE2);
-	
-	// Player
-	Server_PrecacheModel(cvServerPlayerModel.string);
+    // Effects
+    Server_PrecacheSound(SOUND_EXPLODE_UNDERWATER0);
+    Server_PrecacheSound(SOUND_EXPLODE0);
+    Server_PrecacheSound(SOUND_EXPLODE1);
+    Server_PrecacheSound(SOUND_EXPLODE2);
+
+    // Player
+    Server_PrecacheModel(cvServerPlayerModel.string);
 
 #ifdef GAME_OPENKATANA
-	// Player
-	Server_PrecacheSound(PLAYER_SOUND_JUMP0);
-	Server_PrecacheSound(PLAYER_SOUND_JUMP1);
-	Server_PrecacheSound(PLAYER_SOUND_JUMP2);
-	Server_PrecacheSound(PLAYER_SOUND_JUMP3);
-	Server_PrecacheSound(PLAYER_SOUND_PAIN0);
-	Server_PrecacheSound(PLAYER_SOUND_PAIN1);
-	Server_PrecacheSound(PLAYER_SOUND_PAIN2);
-	Server_PrecacheSound(PLAYER_SOUND_PAIN3);
-	Server_PrecacheSound(PLAYER_SOUND_PAIN4);
-	Server_PrecacheSound(PLAYER_SOUND_PAIN5);
-	Server_PrecacheSound(PLAYER_SOUND_PAIN6);
-	Server_PrecacheSound(PLAYER_SOUND_PAIN7);
-	Server_PrecacheSound(PLAYER_SOUND_PAIN8);
-	Server_PrecacheSound(PLAYER_SOUND_PAIN9);
-	Server_PrecacheSound(PLAYER_SOUND_PAIN10);
-	Server_PrecacheSound(PLAYER_SOUND_PAIN11);
-	Server_PrecacheSound(PLAYER_SOUND_DEATH0);
-	Server_PrecacheSound(PLAYER_SOUND_DEATH1);
-	Server_PrecacheSound(PLAYER_SOUND_DEATH2);
+    // Player
+    Server_PrecacheSound(PLAYER_SOUND_JUMP0);
+    Server_PrecacheSound(PLAYER_SOUND_JUMP1);
+    Server_PrecacheSound(PLAYER_SOUND_JUMP2);
+    Server_PrecacheSound(PLAYER_SOUND_JUMP3);
+    Server_PrecacheSound(PLAYER_SOUND_PAIN0);
+    Server_PrecacheSound(PLAYER_SOUND_PAIN1);
+    Server_PrecacheSound(PLAYER_SOUND_PAIN2);
+    Server_PrecacheSound(PLAYER_SOUND_PAIN3);
+    Server_PrecacheSound(PLAYER_SOUND_PAIN4);
+    Server_PrecacheSound(PLAYER_SOUND_PAIN5);
+    Server_PrecacheSound(PLAYER_SOUND_PAIN6);
+    Server_PrecacheSound(PLAYER_SOUND_PAIN7);
+    Server_PrecacheSound(PLAYER_SOUND_PAIN8);
+    Server_PrecacheSound(PLAYER_SOUND_PAIN9);
+    Server_PrecacheSound(PLAYER_SOUND_PAIN10);
+    Server_PrecacheSound(PLAYER_SOUND_PAIN11);
+    Server_PrecacheSound(PLAYER_SOUND_DEATH0);
+    Server_PrecacheSound(PLAYER_SOUND_DEATH1);
+    Server_PrecacheSound(PLAYER_SOUND_DEATH2);
 
-	Server_PrecacheModel("models/blip.md2");
+    Server_PrecacheModel("models/blip.md2");
 #endif
 
-	// Precache any multiplayer content.
-	if(bIsMultiplayer)
-	{
+    // Precache any multiplayer content.
+    if(g_ismultiplayer) {
 #ifdef GAME_OPENKATANA
-		Server_PrecacheSound("items/respawn.wav");
+        Server_PrecacheSound("items/respawn.wav");
 #endif
-	}
+    }
 
-	Server_WorldLightStyle(0, "m");
-	Server_WorldLightStyle(1, "mmnmmommommnonmmonqnmmo");
-	Server_WorldLightStyle(2, "abcdefghijklmnopqrstuvwxyzyxwvutsrqponmlkjihgfedcba");
-	Server_WorldLightStyle(3, "mmmmmaaaaammmmmaaaaaabcdefgabcdefg");
-	Server_WorldLightStyle(4, "mamamamamama");
-	Server_WorldLightStyle(5, "jklmnopqrstuvwxyzyxwvutsrqponmlkj");
-	Server_WorldLightStyle(6, "nmonqnmomnmomomno");
-	Server_WorldLightStyle(7, "mmmaaaabcdefgmmmmaaaammmaamm");
-	Server_WorldLightStyle(8, "mmmaaammmaaammmabcdefaaaammmmabcdefmmmaaaa");
-	Server_WorldLightStyle(9, "aaaaaaaazzzzzzzz");
-	Server_WorldLightStyle(10, "mmamammmmammamamaaamammma");
-	Server_WorldLightStyle(11, "abcdefghijklmnopqrrqponmlkjihgfedcba");
-	Server_WorldLightStyle(32, "a");
+    Server_WorldLightStyle(0, "m");
+    Server_WorldLightStyle(1, "mmnmmommommnonmmonqnmmo");
+    Server_WorldLightStyle(2, "abcdefghijklmnopqrstuvwxyzyxwvutsrqponmlkjihgfedcba");
+    Server_WorldLightStyle(3, "mmmmmaaaaammmmmaaaaaabcdefgabcdefg");
+    Server_WorldLightStyle(4, "mamamamamama");
+    Server_WorldLightStyle(5, "jklmnopqrstuvwxyzyxwvutsrqponmlkj");
+    Server_WorldLightStyle(6, "nmonqnmomnmomomno");
+    Server_WorldLightStyle(7, "mmmaaaabcdefgmmmmaaaammmaamm");
+    Server_WorldLightStyle(8, "mmmaaammmaaammmabcdefaaaammmmabcdefmmmaaaa");
+    Server_WorldLightStyle(9, "aaaaaaaazzzzzzzz");
+    Server_WorldLightStyle(10, "mmamammmmammamamaaamammma");
+    Server_WorldLightStyle(11, "abcdefghijklmnopqrrqponmlkjihgfedcba");
+    Server_WorldLightStyle(32, "a");
 }
 
-/*	Called by the engine.
-*/
-bool Server_SpawnEntity(ServerEntity_t *entity)
-{
-	SpawnList_t *spawn;
+// Called by the engine.
+bool Server_SpawnEntity(ServerEntity_t *entity) {
+    if (!entity->v.cClassname) {
+        Engine.Con_Warning("Failed to get classname!\n");
+        return false;
+    }
 
-	if (!entity->v.cClassname)
-	{
-		Engine.Con_Warning("Failed to get classname!\n");
-		return false;
-	}
+    for (SpawnList_t *spawn = SpawnList; spawn->name; spawn++) {
+        if (!strcmp(spawn->name, entity->v.cClassname)) {
+            if (spawn->Precache) {
+                spawn->Precache();
+            }
 
-	for (spawn = SpawnList; spawn->name; spawn++)
-		if (!strcmp(spawn->name, entity->v.cClassname))
-		{
-			if (spawn->Precache)
-				spawn->Precache();
+            spawn->Spawn(entity);
+            return true;
+        }
+    }
 
-			spawn->Spawn(entity);
-			return true;
-		}
-
-	Engine.Con_Warning("Entity doesn't have a spawn function! (%s)\n", entity->v.cClassname);
-	return false;
+    g_engine->Con_Warning("Entity doesn't have a spawn function! (%s)\n", entity->v.cClassname);
+    return false;
 }
 
-/*	Called by the engine.
-*/
-void Server_PreFrame(void)
-{
-	Waypoint_Frame();
+// Called by the engine.
+void Server_PreFrame(void) {
+    Waypoint_Frame();
 #ifdef GAME_OPENKATANA
-	Deathmatch_Frame();
+    Deathmatch_Frame();
 #endif
 }
 
-/*	Called by the engine.
-	Called per-frame for each entity just before physics.
+/*
+Called by the engine.
+Called per-frame for each entity just before physics.
 */
-void Server_EntityFrame(ServerEntity_t *entity)
-{
-	AI_Frame(entity);
+void Server_EntityFrame(ServerEntity_t *entity) {
+    AI_Frame(entity);
 }
 
-/*	Called by the engine.
-*/
-void Server_SendClientInformation(ServerClient_t *client)
-{
-	g_engine->MSG_WriteByte(&client->message, MESSAGE_SERVER_SKYCAMERA);
-	g_engine->MSG_WriteByte(&client->message, Server.skycam);
-	if (Server.skycam)
-	{
-		g_engine->MSG_WriteCoord(&client->message, Server.skycam_position[0]);
-		g_engine->MSG_WriteCoord(&client->message, Server.skycam_position[1]);
-		g_engine->MSG_WriteCoord(&client->message, Server.skycam_position[2]);
-	}
+// Called by the engine.
+void Server_SendClientInformation(ServerClient_t *client) {
+    g_engine->MSG_WriteByte(&client->message, MESSAGE_SERVER_SKYCAMERA);
+    g_engine->MSG_WriteByte(&client->message, Server.skycam);
+    if (Server.skycam) {
+        g_engine->MSG_WriteCoord(&client->message, Server.skycam_position.x);
+        g_engine->MSG_WriteCoord(&client->message, Server.skycam_position.y);
+        g_engine->MSG_WriteCoord(&client->message, Server.skycam_position.z);
+    }
 }
 
-/*	Called by the engine.
-	Called for the "kill" command.
-*/
-void Server_KillClient(ServerEntity_t *eClient)
-{
-	if (eClient->Monster.state != AI_STATE_DEAD)
-		Entity_Damage(eClient, eClient, eClient->v.iHealth, DAMAGE_TYPE_NORMAL);
+// Called by the engine.
+void Server_KillClient(ServerEntity_t *entity) {
+    if (entity->Monster.state != AI_STATE_DEAD) {
+        Entity_Damage(entity, entity, entity->v.iHealth, DAMAGE_TYPE_NORMAL);
+    }
 }

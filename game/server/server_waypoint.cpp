@@ -1,19 +1,20 @@
-/*	Copyright (C) 2011-2016 OldTimes Software
+/*
+Copyright (C) 2011-2017 Mark E Sowden <markelswo@gmail.com>
 
-	This program is free software; you can redistribute it and/or
-	modify it under the terms of the GNU General Public License
-	as published by the Free Software Foundation; either version 2
-	of the License, or (at your option) any later version.
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-	See the GNU General Public License for more details.
+See the GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "server_main.h"
@@ -26,139 +27,128 @@
 
 namespace game
 {
-	namespace ai
-	{
-		ConsoleVariable_t waypoint_debug = {
-			"waypoint_debug",
+    namespace ai
+    {
+        ConsoleVariable_t waypoint_debug = {
+                "waypoint_debug",
 #if defined(_DEBUG)
-			"1",
+                "1",
 #else
-			"0",
+                "0",
 #endif
-			false, true, "If enabled, waypoints will be drawn for host." 
-		};
+                false, true, "If enabled, waypoints will be drawn for host."
+        };
 
-		class WaypointManager
-		{
-		public:
-			WaypointManager() {};
-			~WaypointManager() {};
+        class WaypointManager
+        {
+        public:
+            WaypointManager() {};
+            ~WaypointManager() {};
 
-			void Initialize();	// Initialization.
-			void Simulate();	// Simulation of the waypoints.
-			void Draw();		// Used for debugging.
-			void Shutdown();	// Shutdown.
+            void Initialize();	// Initialization.
+            void Simulate();	// Simulation of the waypoints.
+            void Draw();		// Used for debugging.
+            void Shutdown();	// Shutdown.
 
-			Waypoint_t *Add();
-			Waypoint_t *Get(std::string name);
-			void Remove(Waypoint_t *waypoint);
-			void Clear();
+            Waypoint_t *Add();
+            Waypoint_t *Get(std::string name);
+            void Remove(Waypoint_t *waypoint);
+            void Clear();
 
-			float GetDistance(Waypoint_t *waypoint, plVector3f_t position);
+            float GetDistance(Waypoint_t *waypoint, PLVector3D position);
 
-			bool IsClear(Waypoint_t *waypoint);
-		protected:
-		private:
-			std::vector<Waypoint_t*> waypoints;
-		};
-	}
+            bool IsClear(Waypoint_t *waypoint);
+        protected:
+        private:
+            std::vector<Waypoint_t*> waypoints;
+        };
+    }
 
-	extern ai::WaypointManager *waypoint_manager;
+    extern ai::WaypointManager *waypoint_manager;
 }
 
 using namespace game;
 
 ai::WaypointManager *waypoint_manager = nullptr;
 
-void ai::WaypointManager::Initialize()
-{
-	g_engine->Con_Printf("Initializing Waypoint Manager...\n");
+void ai::WaypointManager::Initialize() {
+    g_engine->Con_Printf("Initializing Waypoint Manager...\n");
 
-	// Register console variables.
-	g_engine->Cvar_RegisterVariable(&waypoint_debug, nullptr);
+    // Register console variables.
+    g_engine->Cvar_RegisterVariable(&waypoint_debug, nullptr);
 
-	// Base count is left pretty high, since we're
-	// going to be dynamically tracking things.
-	waypoints.reserve(WAYPOINT_MAX_ALLOCATED);
+    // Base count is left pretty high, since we're
+    // going to be dynamically tracking things.
+    waypoints.reserve(WAYPOINT_MAX_ALLOCATED);
 }
 
-Waypoint_t *ai::WaypointManager::Add()
-{
-	Waypoint_t *waypoint = new Waypoint_t;
-	memset(waypoint, 0, sizeof(Waypoint_t));
+Waypoint_t *ai::WaypointManager::Add() {
+    Waypoint_t *waypoint = new Waypoint_t;
+    memset(waypoint, 0, sizeof(Waypoint_t));
 
-	waypoints.push_back(waypoint);
+    waypoints.push_back(waypoint);
 
-	waypoint->number = waypoints.size();
+    waypoint->number = (unsigned int)waypoints.size();
 
-	Waypoint_t *last_waypoint = waypoints[waypoint->number - 1];
-	if (last_waypoint)
-	{
-		waypoint->last = last_waypoint;
-		last_waypoint->next = waypoint;
-	}
+    Waypoint_t *last_waypoint = waypoints[waypoint->number - 1];
+    if (last_waypoint) {
+        waypoint->last = last_waypoint;
+        last_waypoint->next = waypoint;
+    }
 
-	return waypoint;
+    return waypoint;
 }
 
-Waypoint_t *ai::WaypointManager::Get(std::string name)
-{
-	for (auto &point : waypoints)
-		if (std::strcmp(point->cName, name.c_str()))
-			return point;
+Waypoint_t *ai::WaypointManager::Get(std::string name) {
+    for (auto &point : waypoints) {
+        if (strcmp(point->cName, name.c_str())) {
+            return point;
+        }
+    }
 
-	return nullptr;
+    return nullptr;
 }
 
-void ai::WaypointManager::Remove(Waypoint_t *waypoint)
-{
-	for (unsigned int i = 0; i < waypoints.size(); i++)
-	{
-		if (waypoints[i] == waypoint)
-		{
-			waypoints.erase(waypoints.begin() + i);
-			delete waypoint;
-			break;
-		}
-	}
+void ai::WaypointManager::Remove(Waypoint_t *waypoint) {
+    for (unsigned int i = 0; i < waypoints.size(); i++) {
+        if (waypoints[i] == waypoint) {
+            waypoints.erase(waypoints.begin() + i);
+            delete waypoint;
+            break;
+        }
+    }
 }
 
-void ai::WaypointManager::Clear()
-{
-	waypoints.clear();							// Clear the vector.
-	waypoints.shrink_to_fit();					// Clear out mem.
-	waypoints.reserve(WAYPOINT_MAX_ALLOCATED);	// Reserve default amount, again.
+void ai::WaypointManager::Clear() {
+    waypoints.clear();                          // Clear the vector.
+    waypoints.shrink_to_fit();                  // Clear out mem.
+    waypoints.reserve(WAYPOINT_MAX_ALLOCATED);  // Reserve default amount, again.
 }
 
-float ai::WaypointManager::GetDistance(Waypoint_t *waypoint, plVector3f_t position)
-{
-	plVector3f_t vecdist;
-	plVectorSubtract3fv(position, waypoint->position, vecdist);
-	return plLengthf(vecdist);
+float ai::WaypointManager::GetDistance(Waypoint_t *waypoint, PLVector3D position) {
+    return position.Difference(waypoint->position);
 }
 
-void ai::WaypointManager::Simulate()
-{
+void ai::WaypointManager::Simulate() {
 //	for (auto &point : waypoints)
 //	{
 //	}
 }
 
-void ai::WaypointManager::Draw()
-{
-	for (auto &point : waypoints)
-	{
-		if (point->next)
-			g_engine->DrawLine(point->position, point->next->position);
-		if (point->last)
-			g_engine->DrawLine(point->position, point->last->position);
-		core::draw::CoordinateAxes(point->position);
-	}
+void ai::WaypointManager::Draw() {
+    for (auto &point : waypoints) {
+        if (point->next) {
+            g_engine->DrawLine(point->position, point->next->position);
+        }
+        if (point->last) {
+            g_engine->DrawLine(point->position, point->last->position);
+        }
+        core::draw::CoordinateAxes(point->position);
+    }
 }
 
-void ai::WaypointManager::Shutdown()
-{
-	Clear();
+void ai::WaypointManager::Shutdown() {
+    Clear();
 }
 
 /*
@@ -168,23 +158,21 @@ void ai::WaypointManager::Shutdown()
 
 Waypoint_t	wWaypoints[WAYPOINT_MAX_ALLOCATED];
 
-int	waypoint_count;
+unsigned int waypoint_count;
 
 void Waypoint_Shutdown(void);
 
-/*	Called per server spawn to reset waypoints and set everything up.
-*/
-void Waypoint_Initialize(void)
-{
-	memset(wWaypoints, 0, sizeof(wWaypoints));
+// Called per server spawn to reset waypoints and set everything up.
+void Waypoint_Initialize(void) {
+    memset(wWaypoints, 0, sizeof(wWaypoints));
 
-	waypoint_count = 0;
+    waypoint_count = 0;
 }
 
 bool Waypoint_IsSafe(ServerEntity_t *eMonster,Waypoint_t *wPoint)
 {
 #if 0
-	ServerEntity_t *eMonsters;
+    ServerEntity_t *eMonsters;
 
 	eMonsters = Engine.Server_FindRadius(wPoint->position,MONSTER_RANGE_NEAR);
 	while(eMonsters)
@@ -197,140 +185,119 @@ bool Waypoint_IsSafe(ServerEntity_t *eMonster,Waypoint_t *wPoint)
 	}
 #endif
 
-	return true;
+    return true;
 }
 
 /*	Allocate a new waypoint so that we can use it.
 	(Originally relied on dynamic allocation, but not anymore)
 */
-Waypoint_t *Waypoint_Allocate(void)
-{
-	if ((waypoint_count + 1) > WAYPOINT_MAX_ALLOCATED)
-	{
-		Engine.Con_Warning("Failed to allocate waypoint! (%i / %i)\n", waypoint_count, WAYPOINT_MAX_ALLOCATED);
-		return NULL;
-	}
+Waypoint_t *Waypoint_Allocate(void) {
+    if ((waypoint_count + 1) > WAYPOINT_MAX_ALLOCATED) {
+        Engine.Con_Warning("Failed to allocate waypoint! (%i / %i)\n", waypoint_count, WAYPOINT_MAX_ALLOCATED);
+        return NULL;
+    }
 
-	return &wWaypoints[waypoint_count++];
+    return &wWaypoints[waypoint_count++];
 }
 
-void Waypoint_Delete(Waypoint_t *wPoint)
-{
-	if(!wPoint)
-		return;
+void Waypoint_Delete(Waypoint_t *wPoint) {
+    if(!wPoint) {
+        return;
+    }
 
-	memset(wPoint, 0, sizeof(Waypoint_t));
+    memset(wPoint, 0, sizeof(Waypoint_t));
 
-	waypoint_count--;
+    waypoint_count--;
 }
 
-Waypoint_t *Waypoint_GetByVisibility(MathVector3f_t vOrigin)
-{
-	Waypoint_t	*wPoint;
-	trace_t		tTrace;
-
-	for (wPoint = wWaypoints; wPoint->number < waypoint_count; wPoint++)
-	{
-		tTrace = Traceline(NULL,vOrigin,wPoint->position,0);
-		// Given point cannot be in the same place as the given origin.
-		if (plVectorCompare(tTrace.endpos, wPoint->position) &&
-			!plVectorCompare(vOrigin,wPoint->position))
-			return wPoint;
-	}
-	return NULL;
+Waypoint_t *Waypoint_GetByVisibility(PLVector3D vOrigin) {
+    trace_t	tTrace;
+    for (Waypoint_t *wPoint = wWaypoints; wPoint->number < waypoint_count; wPoint++) {
+        tTrace = Traceline(NULL,vOrigin,wPoint->position,0);
+        // Given point cannot be in the same place as the given origin.
+        if ((tTrace.endpos == wPoint->position) && !(vOrigin == wPoint->position))
+            return wPoint;
+    }
+    return NULL;
 }
 
-Waypoint_t *Waypoint_GetByNumber(int iWaypointNumber)
-{
-	Waypoint_t	*wPoint;
+Waypoint_t *Waypoint_GetByNumber(int iWaypointNumber) {
+    for (Waypoint_t	*wPoint = wWaypoints; wPoint->number < waypoint_count; wPoint++) {
+        if (wPoint->number == iWaypointNumber) {
+            return wPoint;
+        }
+    }
 
-	for (wPoint = wWaypoints; wPoint->number < waypoint_count; wPoint++)
-		if(wPoint->number == iWaypointNumber)
-			return wPoint;
-
-	return NULL;
+    return NULL;
 }
 
-Waypoint_t *Waypoint_GetByType(MathVector3f_t position, WaypointType_t type, float distance)
+Waypoint_t *Waypoint_GetByType(PLVector3D position, WaypointType_t type, float distance)
 {
-	Waypoint_t		*point;
-	MathVector3f_t	vecdist;
+    PLVector3D	vecdist;
+    for (Waypoint_t	*point = wWaypoints; point->number < waypoint_count; point++) {
+        if (point->wType == type) {
+            vecdist = position - point->position;
+            if (vecdist.Length() < distance) {
+                return point;
+            }
+        }
+    }
 
-	for (point = wWaypoints; point->number < waypoint_count; point++)
-		if (point->wType == type)
-		{
-			Math_VectorSubtract(position, point->position, vecdist);
-			if (plLengthf(vecdist) < distance)
-				return point;
-		}
-
-	return NULL;
+    return NULL;
 }
 
-Waypoint_t *Waypoint_GetByName(ServerEntity_t *eMonster,char *cName,float fMaxDistance)
-{
-	Waypoint_t			*wPoint;
-	plVector3f_t		vDistance;
+Waypoint_t *Waypoint_GetByName(ServerEntity_t *entity, const char *name, float maxdistance) {
+    for (Waypoint_t	*point = wWaypoints; point->number < waypoint_count; point++) {
+        if (strcmp(point->cName, name)) {
+            if (entity->v.origin.Difference(point->position) < maxdistance) {
+                return point;
+            }
+        }
+    }
 
-	for (wPoint = wWaypoints; wPoint->number < waypoint_count; wPoint++)
-		if(strcmp(wPoint->cName,cName))
-		{
-			Math_VectorSubtract(eMonster->v.origin,wPoint->position,vDistance);
-			if (plLengthf(vDistance) < fMaxDistance)
-				return wPoint;
-		}
-
-	return NULL;
+    return NULL;
 }
 
-void Waypoint_Frame()
-{
-	if (waypoint_count <= 0)
-		return;
+void Waypoint_Frame() {
+    if (waypoint_count <= 0) {
+        return;
+    }
 
-	Waypoint_t *point;
-	for (point = wWaypoints; point->number < waypoint_count; point++)
-	{
-		if (point->next)
-		{
-			trace_t trace = g_engine->Server_Move(point->position, pl_origin3f, pl_origin3f, point->next->position, 0, nullptr);
-			if (!plVectorCompare(point->next->position, trace.endpos))
-			{
+    for (Waypoint_t *point = wWaypoints; point->number < waypoint_count; point++) {
+        if (point->next) {
+            trace_t trace = g_engine->Server_Move(point->position, PLVector3D(0, 0, 0), PLVector3D(0, 0, 0),
+                                                  point->next->position, 0, nullptr);
+            if (!(point->next->position == trace.endpos)) {
 
-			}
-		}
-	}
+            }
+        }
+    }
 }
 
-void Waypoint_Spawn(MathVector3f_t vOrigin,WaypointType_t type)
-{
-	int			iPointContents;
-	Waypoint_t	*wPoint;
+void Waypoint_Spawn(PLVector3D origin, WaypointType_t type) {
+    /*	TODO
+        If we're between two other waypoints
+        and they can be seen then slot ourselves
+        in so that we act as the last waypoint
+        instead.
+    */
 
-	/*	TODO
-		If we're between two other waypoints
-		and they can be seen then slot ourselves
-		in so that we act as the last waypoint
-		instead.
-	*/
-
-	iPointContents = Engine.Server_PointContents(vOrigin);
-	// [17/6/2012] Check that this area is safe ~hogsy
-	if(iPointContents == BSP_CONTENTS_SOLID)
-	{
-		Engine.Con_Warning("Failed to place waypoint, position is within a solid!\n");
-		return;
-	}
+    // Check that this area is safe.
+    int contents = g_engine->Server_PointContents(origin);
+    if(contents == BSP_CONTENTS_SOLID) {
+        g_engine->Con_Warning("Failed to place waypoint, position is within a solid!\n");
+        return;
+    }
 
 #if 0
-	{
-		Waypoint_t *wVisibleWaypoint = Waypoint_GetByVisibility(vOrigin);
+    {
+		Waypoint_t *wVisibleWaypoint = Waypoint_GetByVisibility(origin);
 		// [30/1/2013] Oops! Check we actually have a visible waypoint!! ~hogsy
 		if(wVisibleWaypoint)
 		{
 			MathVector3f_t vDistance;
 
-			Math_VectorSubtract(wVisibleWaypoint->position,vOrigin,vDistance);
+			Math_VectorSubtract(wVisibleWaypoint->position,origin,vDistance);
 			if(plVectorLength(vDistance) < MONSTER_RANGE_MEDIUM)
 			{
 				Engine.Con_Printf("Invalid waypoint position!\n");
@@ -340,86 +307,82 @@ void Waypoint_Spawn(MathVector3f_t vOrigin,WaypointType_t type)
 	}
 #endif
 
-	wPoint = Waypoint_Allocate();
-	if(!wPoint)
-	{
-		Engine.Con_Warning("Failed to allocate waypoint!\n");
-		return;
-	}
+    Waypoint_t *point = Waypoint_Allocate();
+    if(!point) {
+        Engine.Con_Warning("Failed to allocate waypoint!\n");
+        return;
+    }
 
-	plVectorCopy(vOrigin, wPoint->position);
+    point->position = origin;
+    point->number   = waypoint_count;
+    point->bOpen    = false;
+    point->next	    = Waypoint_GetByNumber(point->number+1);
+    point->last	    = Waypoint_GetByNumber(point->number-1);
+    point->wType    = type;
 
-	wPoint->number	= waypoint_count;
-	wPoint->bOpen	= false;
-	wPoint->next	= Waypoint_GetByNumber(wPoint->number+1);
-	wPoint->last	= Waypoint_GetByNumber(wPoint->number-1);
-	wPoint->wType	= type;
+    switch(type)
+    {
+        case WAYPOINT_ITEM:
+            point->cName = "item";
+            break;
+        case WAYPOINT_CLIMB:
+            point->cName = "climb";
+            // TODO: Check that there's a ladder nearby.
+            break;
+        case WAYPOINT_COVER:
+            point->cName = "cover";
+            // [27/12/2012] TODO: Check that this is actually cover ~hogsy
+            break;
+        case WAYPOINT_TYPE_JUMP:
+            point->cName = "jump";
+            // [27/12/2012] TODO: Check if this is actually a jump by tracing out ahead ~hogsy
+            break;
+        case WAYPOINT_TYPE_SWIM:
+            if(contents != BSP_CONTENTS_WATER)
+            {
+                Engine.Con_Warning("Waypoint with type swim not within water contents (%i %i %i)!",
+                                   (int)origin.x,
+                                   (int)origin.y,
+                                   (int)origin.z);
 
-	switch(type)
-	{
-	case WAYPOINT_ITEM:
-		wPoint->cName = "item";
-		break;
-	case WAYPOINT_CLIMB:
-		wPoint->cName = "climb";
-		// TODO: Check that there's a ladder nearby.
-		break;
-	case WAYPOINT_COVER:
-		wPoint->cName = "cover";
-		// [27/12/2012] TODO: Check that this is actually cover ~hogsy
-		break;
-	case WAYPOINT_TYPE_JUMP:
-		wPoint->cName = "jump";
-		// [27/12/2012] TODO: Check if this is actually a jump by tracing out ahead ~hogsy
-		break;
-	case WAYPOINT_TYPE_SWIM:
-		if(iPointContents != BSP_CONTENTS_WATER)
-		{
-			Engine.Con_Warning("Waypoint with type swim not within water contents (%i %i %i)!",
-				(int)vOrigin[0],
-				(int)vOrigin[1],
-				(int)vOrigin[2]);
+                Waypoint_Delete(point);
+                return;
+            }
 
-			Waypoint_Delete(wPoint);
-			return;
-		}
+            point->cName = "swim";
+            break;
+        case WAYPOINT_TYPE_DEFAULT:
+            point->cName = "default";
+            break;
+        case WAYPOINT_SPAWN:
+            point->cName = "spawn";
+            break;
+        default:
+            Engine.Con_Warning("Unknown waypoint type (%i)!\n",type);
 
-		wPoint->cName = "swim";
-		break;
-	case WAYPOINT_TYPE_DEFAULT:
-		wPoint->cName = "default";
-		break;
-	case WAYPOINT_SPAWN:
-		wPoint->cName = "spawn";
-		break;
-	default:
-		Engine.Con_Warning("Unknown waypoint type (%i)!\n",type);
+            Waypoint_Delete(point);
+            return;
+    }
 
-		Waypoint_Delete(wPoint);
-		return;
-	}
-
-	if(!wPoint->last)
-	{
-		wPoint->last = Waypoint_GetByVisibility(vOrigin);
-		if(!wPoint->last)
-		{
-			Engine.Con_Warning("Failed to get another visible waypoint! (%i)\n",wPoint->number);
-			return;
-		}
-	}
-	else if(wPoint->last != wPoint && wPoint->last->next)
-		wPoint->last->next = wPoint;
+    if(!point->last) {
+        point->last = Waypoint_GetByVisibility(origin);
+        if(!point->last) {
+            Engine.Con_Warning("Failed to get another visible waypoint! (%i)\n",point->number);
+            return;
+        }
+    } else if(point->last != point && point->last->next) {
+        point->last->next = point;
+    }
 }
 
-void Waypoint_Draw(void)
-{
-	for (Waypoint_t *point = wWaypoints; point->number < waypoint_count; point++)
-	{
-		if (point->next)
-			g_engine->DrawLine(point->position, point->next->position);
-		if (point->last)
-			g_engine->DrawLine(point->position, point->last->position);
-		g_engine->DrawCoordinateAxes(point->position);
-	}
+void Waypoint_Draw(void) {
+    for (Waypoint_t *point = wWaypoints; point->number < waypoint_count; point++) {
+        if (point->next) {
+            g_engine->DrawLine(point->position, point->next->position);
+        }
+        if (point->last) {
+            g_engine->DrawLine(point->position, point->last->position);
+        }
+        g_engine->DrawCoordinateAxes(point->position);
+    }
 }

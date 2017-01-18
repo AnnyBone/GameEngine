@@ -74,7 +74,7 @@ typedef struct
 typedef struct
 {
 	// Server
-	int(*Server_PointContents)(MathVector3f_t point);
+	int(*Server_PointContents)(PLVector3D point);
 	int(*Server_GetNumEdicts)(void);
 
 	void(*Server_MakeStatic)(ServerEntity_t *ent);
@@ -85,9 +85,9 @@ typedef struct
 	void(*Server_ChangeLevel)(const char *ccNewLevel);													// Changes the level.
 	void(*Server_AmbientSound)(float *vPosition, const char *cPath, int iVolume, int iAttenuation);		// Plays an ambient sound (a constant sound) from the given location.
 
-	trace_t(*Server_Move)(MathVector3f_t start, MathVector3f_t mins, MathVector3f_t maxs, MathVector3f_t end, int type, ServerEntity_t *passedict);
+	trace_t(*Server_Move)(PLVector3D start, PLVector3D mins, PLVector3D maxs, PLVector3D end, int type, ServerEntity_t *passedict);
 
-	ServerEntity_t*(*Server_FindRadius)(MathVector3f_t origin, float radius);												// Finds entities within a specific radius.
+	ServerEntity_t*(*Server_FindRadius)(PLVector3D origin, float radius);												// Finds entities within a specific radius.
 	ServerEntity_t*(*Server_FindEntity)(ServerEntity_t *eStartEntity, char *cName, bool bClassname);						// Finds a specified entity either by classname or by entity name.
 	ServerEntity_t*(*Server_GetEdicts)(void);
 
@@ -110,7 +110,7 @@ typedef struct
 	ISprite*(*AddSprite)(void);
 
 	void(*RemoveSprite)(ISprite *sprite);
-	void(*SetSpritePosition)(ISprite *sprite, MathVector3f_t position);
+	void(*SetSpritePosition)(ISprite *sprite, PLVector3D position);
 	void(*SetSpriteColour)(ISprite *sprite, float r, float g, float b, float a);
 	void(*SetSpriteType)(ISprite *sprite, SpriteType_t type);
 	void(*SetSpriteScale)(ISprite *sprite, float scale);
@@ -125,7 +125,7 @@ typedef struct
 	Particle_t		*(*Client_AllocateParticle)(void);	// Allocate a new particle effect.
 
 	// Global
-	float*(*GetLightSample)(MathVector3f_t vOrigin);	// Gets the current lightmap sample for the specified entity.
+	float*(*GetLightSample)(PLVector3D vOrigin);	// Gets the current lightmap sample for the specified entity.
 
 	bool(*Material_Precache)(const char *path);
 
@@ -140,9 +140,9 @@ typedef struct
 	void(*SetMessageEntity)(ServerEntity_t *ent);
 	void(*CenterPrint)(ServerEntity_t *ent, char *msg);	// Sends a message to the specified client and displays the message at the center of the screen.
 	void(*Sys_Error)(const char *error, ...);
-	void(*SetModel)(ServerEntity_t *ent, char *m);		// Sets the model for the specified entity.
+	void(*SetModel)(ServerEntity_t *ent, const char *m);		// Sets the model for the specified entity.
 	void(*Particle)(float org[3], float dir[3], float scale, char *texture, int count);
-	void(*Flare)(MathVector3f_t org, float r, float g, float b, float a, float scale, char *texture);
+	void(*Flare)(PLVector3D org, float r, float g, float b, float a, float scale, char *texture);
 	void(*Sound)(ServerEntity_t *ent, int channel, char *sample, int volume, float attenuation);
 	void(*LinkEntity)(ServerEntity_t *ent, bool touch_triggers);
 	void(*UnlinkEntity)(ServerEntity_t *ent);
@@ -157,8 +157,8 @@ typedef struct
 	// Draw Functions
 	void(*DrawString)(int x, int y, const char *msg);
 	void(*DrawRectangle)(int x, int y, PLuint w, PLuint h, PLColour colour);
-	void(*DrawLine)(plVector3f_t start, plVector3f_t end);
-	void(*DrawCoordinateAxes)(plVector3f_t position);
+	void(*DrawLine)(PLVector3D start, PLVector3D end);
+	void(*DrawCoordinateAxes)(PLVector3D position);
 	void(*DrawMaterialSurface)(Material_t *mMaterial, PLuint iSkin, int x, int y, PLuint w, PLuint h, float fAlpha);
 
 	void(*Cvar_RegisterVariable)(ConsoleVariable_t *variable, void(*Function)(void));
@@ -224,7 +224,7 @@ typedef struct
 	void(*Server_Draw)(void); // Draw host stuff, for debugging.
 	void(*Server_EntityFrame)(ServerEntity_t *eEntity);
 	void(*Server_KillClient)(ServerEntity_t *eClient);												// Tells the specified client to die.
-	void(*Server_SetSizeVector)(ServerEntity_t *eEntity, MathVector3f_t vMin, MathVector3f_t vMax);	// Set the size of an entity by vector.
+	void(*Server_SetSizeVector)(ServerEntity_t *eEntity, PLVector3D vMin, PLVector3D vMax);	// Set the size of an entity by vector.
 	void(*Server_SpawnPlayer)(ServerEntity_t *ePlayer);												// Spawns the player (SERVER_PUTCLIENTINSERVER).
 	void(*Server_PreFrame)(void);																	// Called at the start of each physics frame.
 	void(*Server_PostFrame)(void);																	// Called at the end of each physics frame.
@@ -239,7 +239,7 @@ typedef struct
 	void(*Physics_WallFriction)(ServerEntity_t *eEntity, trace_t *trLine);
 	void(*Physics_Impact)(ServerEntity_t *eEntity, ServerEntity_t *eOther);
 
-	trace_t(*Physics_PushEntity)(ServerEntity_t *eEntity, MathVector3f_t mvPush);
+	trace_t(*Physics_PushEntity)(ServerEntity_t *eEntity, PLVector3D mvPush);
 
 	bool(*Physics_CheckWater)(ServerEntity_t *eEntity);
 } GameExport_t;

@@ -50,7 +50,7 @@ void Glock_Reload(ServerEntity_t *ent)
 		//Weapon_Animate(ent,FALSE,30,74,0.05f,0,0,0,FALSE);
 
 		ent->local.glock_ammo2		= 20;
-		ent->local.dAttackFinished	= Server.dTime+2.6;
+		ent->local.dAttackFinished	= Server.time+2.6;
 	}
 }
 
@@ -85,8 +85,8 @@ void Glock_PrimaryAttack(ServerEntity_t *ent)
 	// [4/7/2012] Simplified ~hogsy
 	ent->local.glock_ammo2--;
 
-	if(ent->local.attackb_finished > Server.dTime)	// No attack boost...
-		ent->local.dAttackFinished = Server.dTime+0.2;
+	if(ent->local.attackb_finished > Server.time)	// No attack boost...
+		ent->local.dAttackFinished = Server.time+0.2;
 	else
-		ent->local.dAttackFinished = Server.dTime+0.35;
+		ent->local.dAttackFinished = Server.time+0.35;
 }

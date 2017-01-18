@@ -401,7 +401,7 @@ void Weapon_BulletProjectile(ServerEntity_t *eEntity, float fSpread, int iDamage
 				char cSound[128];
 
 				eSmoke->v.think			= Entity_Remove;
-				eSmoke->v.dNextThink	= Server.dTime+0.5;
+				eSmoke->v.dNextThink	= Server.time+0.5;
 
 				Entity_SetOrigin(eSmoke,tTrace.endpos);
 
@@ -583,7 +583,7 @@ void Weapon_ResetAnimation(ServerEntity_t *ent)
 void Weapon_CheckFrames(ServerEntity_t *eEntity)
 {
 	// If something isn't active and Animationtime is over
-	if(!eEntity->local.iWeaponAnimationEnd || Server.dTime < eEntity->local.fWeaponAnimationTime)
+	if(!eEntity->local.iWeaponAnimationEnd || Server.time < eEntity->local.fWeaponAnimationTime)
 		return;
 	// Reset the animation in-case we die!
 	else if((eEntity->local.iWeaponAnimationCurrent > eEntity->local.iWeaponAnimationEnd) || (eEntity->v.iHealth <= 0))
@@ -595,11 +595,11 @@ void Weapon_CheckFrames(ServerEntity_t *eEntity)
 	eEntity->v.iWeaponFrame = eEntity->local.iWeaponFrames[eEntity->local.iWeaponAnimationCurrent].frame;
 
 #ifdef GAME_OPENKATANA
-	if(eEntity->local.attackb_finished > Server.dTime)
-		eEntity->local.fWeaponAnimationTime = ((float)Server.dTime)+eEntity->local.iWeaponFrames[eEntity->local.iWeaponAnimationCurrent].speed * 0.2f;
+	if(eEntity->local.attackb_finished > Server.time)
+		eEntity->local.fWeaponAnimationTime = ((float)Server.time)+eEntity->local.iWeaponFrames[eEntity->local.iWeaponAnimationCurrent].speed * 0.2f;
 	else
 #endif
-		eEntity->local.fWeaponAnimationTime = ((float)Server.dTime)+eEntity->local.iWeaponFrames[eEntity->local.iWeaponAnimationCurrent].speed;
+		eEntity->local.fWeaponAnimationTime = ((float)Server.time)+eEntity->local.iWeaponFrames[eEntity->local.iWeaponAnimationCurrent].speed;
 
 	if(eEntity->local.iWeaponFrames[eEntity->local.iWeaponAnimationCurrent].Event)
 		eEntity->local.iWeaponFrames[eEntity->local.iWeaponAnimationCurrent].Event(eEntity);
@@ -627,18 +627,18 @@ void Weapon_Animate(ServerEntity_t *ent, ServerEntityFrame_t *eFrames)
 	ent->local.iWeaponFrames = eFrames;
 
 #ifdef GAME_OPENKATANA
-	if(ent->local.attackb_finished > Server.dTime)
-		ent->local.fWeaponAnimationTime = ((float)Server.dTime)+eFrames[0].speed*0.5f;
+	if(ent->local.attackb_finished > Server.time)
+		ent->local.fWeaponAnimationTime = ((float)Server.time)+eFrames[0].speed*0.5f;
 	else
 #endif
-		ent->local.fWeaponAnimationTime = ((float)Server.dTime)+eFrames[0].speed;
+		ent->local.fWeaponAnimationTime = ((float)Server.time)+eFrames[0].speed;
 }
 
 /*	Cycle through currently avaliable weapons.
 */
 void Weapon_Cycle(ServerEntity_t *eEntity, bool bForward)
 {
-	if(eEntity->local.dAttackFinished > Server.dTime)
+	if(eEntity->local.dAttackFinished > Server.time)
 		return;
 
 	Weapon_t *cur_weapon = Weapon_GetCurrentWeapon(eEntity);
@@ -699,7 +699,7 @@ void Weapon_Cycle(ServerEntity_t *eEntity, bool bForward)
 void Weapon_PrimaryAttack(ServerEntity_t *eEntity)
 {
 	Weapon_t *wCurrentWeapon = Weapon_GetCurrentWeapon(eEntity);
-	if(!wCurrentWeapon || !Weapon_CheckPrimaryAmmo(wCurrentWeapon,eEntity) || eEntity->local.dAttackFinished > Server.dTime)
+	if(!wCurrentWeapon || !Weapon_CheckPrimaryAmmo(wCurrentWeapon,eEntity) || eEntity->local.dAttackFinished > Server.time)
 		return;
 
 	if(wCurrentWeapon->Primary)
@@ -720,7 +720,7 @@ void Weapon_PrimaryAttack(ServerEntity_t *eEntity)
 void Weapon_SecondaryAttack(ServerEntity_t *eEntity)
 {
 	Weapon_t *wCurrentWeapon = Weapon_GetCurrentWeapon(eEntity);
-	if(!wCurrentWeapon || !Weapon_CheckSecondaryAmmo(wCurrentWeapon,eEntity) || eEntity->local.dAttackFinished > Server.dTime)
+	if(!wCurrentWeapon || !Weapon_CheckSecondaryAmmo(wCurrentWeapon,eEntity) || eEntity->local.dAttackFinished > Server.time)
 		return;
 
 	if(wCurrentWeapon->Secondary)
@@ -763,7 +763,7 @@ void Weapon_CheckInput(ServerEntity_t *eEntity)
 		Item_t      *iItem;
 		Weapon_t	*wWeapon;
 
-		if(eEntity->local.dAttackFinished > Server.dTime)
+		if(eEntity->local.dAttackFinished > Server.time)
 			return;
 
 		switch(eEntity->v.impulse)

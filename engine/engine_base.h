@@ -22,7 +22,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #pragma once
 
 // Platform Library
-#include "platform_math.h"
 #include "platform_filesystem.h"
 #include "platform_library.h"
 

@@ -2,7 +2,7 @@
 DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
 Version 2, December 2004
 
-Copyright (C) 2011-2016 Mark E Sowden <markelswo@gmail.com>
+Copyright (C) 2011-2017 Mark E Sowden <markelswo@gmail.com>
 
 Everyone is permitted to copy and distribute verbatim or modified
 copies of this license document, and changing it is allowed as long
@@ -97,7 +97,7 @@ enum
 	AI_RELATIONSHIP_END
 };
 
-plEXTERN_C_START
+PL_EXTERN_C
 
 void AI_Spawn(ServerEntity_t *entity);
 void AI_Frame(ServerEntity_t *entity);
@@ -113,4 +113,4 @@ void AI_JumpMovement(ServerEntity_t *entity, float velocity);
 void AI_ForwardMovement(ServerEntity_t *entity, float velocity);
 void AI_RandomMovement(ServerEntity_t *entity, float velocity);
 
-plEXTERN_C_END
+PL_EXTERN_C_END

@@ -35,7 +35,7 @@ void Midas_CloudThink(ServerEntity_t *ent)
 
 	Engine.Particle(ent->v.origin, pl_origin3f, 12.0f, "spark", 8);
 
-	ent->v.dNextThink	= Server.dTime+0.3;
+	ent->v.dNextThink	= Server.time+0.3;
 	ent->v.think		= Midas_CloudThink;
 }
 
@@ -49,7 +49,7 @@ void CloudTouch(ServerEntity_t *cloud, ServerEntity_t *other)
 		if(!other->local.hit) // Only play it once
 			Sound(other,CHAN_VOICE,"weapons/midastouch.wav",255,ATTN_NORM);
 
-		other->v.dNextThink = Server.dTime+15.0;
+		other->v.dNextThink = Server.time+15.0;
 
 		other->local.hit = 1;
 	}
@@ -75,16 +75,16 @@ void Midas_PrimaryAttack(ServerEntity_t *ent)
 
 	Weapon_Projectile(ent, cloud, 100.0f);
 
-	cloud->v.dNextThink		= Server.dTime+0.3;
+	cloud->v.dNextThink		= Server.time+0.3;
 	cloud->v.think			= Midas_CloudThink;
 	cloud->v.TouchFunction	= CloudTouch;
 
 	Math_VectorAddValue(cloud->v.avelocity,300.0f,cloud->v.avelocity);
 
-	if(ent->local.attackb_finished > Server.dTime)	// No attack boost...
-		ent->local.dAttackFinished = Server.dTime+0.5;
+	if(ent->local.attackb_finished > Server.time)	// No attack boost...
+		ent->local.dAttackFinished = Server.time+0.5;
 	else
-		ent->local.dAttackFinished = Server.dTime+1.0;
+		ent->local.dAttackFinished = Server.time+1.0;
 
 	//Weapon_Animate(ent,FALSE,8,20,0.5,0,0,0,FALSE);
 }

@@ -77,16 +77,16 @@ namespace core
 
 		virtual std::vector<float> GetPosition() = 0;
 		virtual void SetPosition(float x, float y, float z) = 0;
-		virtual void SetPosition(plVector3f_t position) = 0;
+		virtual void SetPosition(PLVector3D position) = 0;
 		virtual void PrintPosition() = 0;
 
 		virtual IViewport *GetViewport() = 0;
 		virtual void SetViewport(IViewport *viewport) = 0;
 
-		virtual bool IsPointInsideFrustum(plVector3f_t position) = 0;
-		virtual bool IsPointOutsideFrustum(plVector3f_t position) = 0;
-		virtual bool IsBoxInsideFrustum(plVector3f_t mins, plVector3f_t maxs) = 0;
-		virtual bool IsBoxOutsideFrustum(plVector3f_t mins, plVector3f_t maxs) = 0;
+		virtual bool IsPointInsideFrustum(PLVector3D position) = 0;
+		virtual bool IsPointOutsideFrustum(PLVector3D position) = 0;
+		virtual bool IsBoxInsideFrustum(PLVector3D mins, PLVector3D maxs) = 0;
+		virtual bool IsBoxOutsideFrustum(PLVector3D mins, PLVector3D maxs) = 0;
 
 		virtual std::vector<float> GetForward() = 0;
 		virtual std::vector<float> GetRight() = 0;
@@ -108,12 +108,12 @@ namespace core
 		ENGINE_FUNCTION void GradientBackground(PLColour top, PLColour bottom);
 		ENGINE_FUNCTION void GradientFill(int x, int y, PLuint width, PLuint height, PLColour top, PLColour bottom);
 		
-		ENGINE_FUNCTION void WireBox(plVector3f_t mins, plVector3f_t maxs, float r, float g, float b);
-		ENGINE_FUNCTION void CoordinateAxes(plVector3f_t position);
+		ENGINE_FUNCTION void WireBox(PLVector3D mins, PLVector3D maxs, float r, float g, float b);
+		ENGINE_FUNCTION void CoordinateAxes(PLVector3D position);
 		ENGINE_FUNCTION void Character(PLint x, PLint y, PLint num);
 		ENGINE_FUNCTION void String(int x, int y, const char *msg);
-		ENGINE_FUNCTION void Line(plVector3f_t start, plVector3f_t end);
-		ENGINE_FUNCTION void Grid(plVector3f_t position, PLuint grid_size);
+		ENGINE_FUNCTION void Line(PLVector3D start, PLVector3D end);
+		ENGINE_FUNCTION void Grid(PLVector3D position, PLuint grid_size);
 		ENGINE_FUNCTION void Rectangle(PLint x, PLint y, PLuint w, PLuint h, PLColour colour);
 		
 		ENGINE_FUNCTION void ScreenFade();

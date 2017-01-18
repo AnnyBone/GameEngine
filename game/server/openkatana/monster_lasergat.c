@@ -106,7 +106,7 @@ void LaserGat_Explode(ServerEntity_t *eLaserGat)
 void LaserGat_Die(ServerEntity_t *eLaserGat, ServerEntity_t *eOther, EntityDamageType_t type)
 {
 	eLaserGat->v.think			= LaserGat_Explode;
-	eLaserGat->v.dNextThink		= Server.dTime + 5.0;
+	eLaserGat->v.dNextThink		= Server.time + 5.0;
 }
 
 void LaserGat_Think(ServerEntity_t *eLaserGat)

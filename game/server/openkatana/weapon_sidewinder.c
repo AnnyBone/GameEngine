@@ -124,17 +124,17 @@ void SideWinder_Think(ServerEntity_t *eSideWinder)
 	if(eSideWinder->local.count > 12)
 		eSideWinder->local.count = 0;
 
-//	eSideWinder->v.velocity[X]	*= ((float)sin(Server.dTime*1.5f)*5.5f)/10.0f;
-//	eSideWinder->v.velocity[Y]	*= -((float)sin(Server.dTime*1.5f)*5.5f)/10.0f;
+//	eSideWinder->v.velocity[X]	*= ((float)sin(Server.time*1.5f)*5.5f)/10.0f;
+//	eSideWinder->v.velocity[Y]	*= -((float)sin(Server.time*1.5f)*5.5f)/10.0f;
 //	eSideWinder->v.velocity[Z]	*= eSideWinder->v.velocity[X]/eSideWinder->v.velocity[Y];
 
-	if(Server.dTime >= eSideWinder->local.fSpawnDelay)
+	if(Server.time >= eSideWinder->local.fSpawnDelay)
 	{
 		SideWinder_MissileExplode(eSideWinder,NULL);
 		return;
 	}
 
-	eSideWinder->v.dNextThink = Server.dTime+0.05;
+	eSideWinder->v.dNextThink = Server.time+0.05;
 }
 
 void SideWinder_SpawnMissle(ServerEntity_t *ent,float fSpeed,float ox)
@@ -174,10 +174,10 @@ void SideWinder_SpawnMissle(ServerEntity_t *ent,float fSpeed,float ox)
 	Entity_SetOrigin(eMissile,vOrg);
 
 	// Time at which we'll be removed if nothing hit.
-	eMissile->local.fSpawnDelay = (float)(Server.dTime+8.0);
+	eMissile->local.fSpawnDelay = (float)(Server.time+8.0);
 
 	eMissile->v.TouchFunction	= SideWinder_MissileExplode;
-	eMissile->v.dNextThink		= Server.dTime+0.05;
+	eMissile->v.dNextThink		= Server.time+0.05;
 	eMissile->v.think			= SideWinder_Think;
 
 	Entity_Link(eMissile,false);
@@ -209,5 +209,5 @@ void SideWinder_PrimaryAttack(ServerEntity_t *eOwner)
 	SideWinder_SpawnMissle(eOwner,fSpeed,10);
 	SideWinder_SpawnMissle(eOwner,fSpeed,-10);
 
-	eOwner->local.dAttackFinished = Server.dTime+1.2;
+	eOwner->local.dAttackFinished = Server.time+1.2;
 }
