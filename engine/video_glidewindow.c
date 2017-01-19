@@ -121,18 +121,18 @@ void Window_InitializeVideo(void)
 
 void Window_UpdateVideo(void)
 {
-	if (Video.msaa_samples != cv_video_msaasamples.iValue)
+	if (Video.msaa_samples != cv_video_msaasamples.value)
 	{
 		// TODO: Destroy window etc.
 
-		Video.msaa_samples = cv_video_msaasamples.iValue;
+		Video.msaa_samples = cv_video_msaasamples.value;
 	}
 
 	SDL_SetWindowSize(sMainWindow, Video.iWidth, Video.iHeight);
 
 	if (Video.vertical_sync != cv_video_verticlesync.bValue)
 	{
-		SDL_GL_SetSwapInterval(cv_video_verticlesync.iValue);
+		SDL_GL_SetSwapInterval(cv_video_verticlesync.value);
 
 		Video.vertical_sync = cv_video_verticlesync.bValue;
 	}

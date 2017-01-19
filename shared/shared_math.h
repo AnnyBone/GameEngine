@@ -61,6 +61,7 @@ static PL_INLINE float Math_AngleDelta(float a) {
 
 // Calculate a sphere from bounds.
 static PL_INLINE float Math_SphereFromBounds(PLVector3D mins, PLVector3D maxs, PLVector3D origin) {
+    // todo, check this is correct??
     plAddVector3D(&mins, maxs);
     plScaleVector3Df(&mins, 0.5f);
     plSubtractVector3D(&mins, maxs);
@@ -88,6 +89,13 @@ static PL_INLINE void Math_NormalizeAngles(PLVector3D *v) {
     while(v->x < 0) v->x += 360;
     while(v->y > 360) v->y -= 360;
     while(v->y < 0) v->y += 360;
+}
+
+// todo, this should be made obsolete...
+static PL_INLINE void Math_VectorMake(PLVector3D v, float scale, PLVector3D v2, PLVector3D *v3) {
+    v3->x = v.x + scale * v2.x;
+    v3->y = v.y + scale * v2.y;
+    v3->z = v.z + scale * v2.z;
 }
 
 static PL_INLINE float Math_VectorToYaw(PLVector3D v) {

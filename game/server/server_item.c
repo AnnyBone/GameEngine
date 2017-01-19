@@ -167,7 +167,7 @@ void Item_ClearInventory(ServerEntity_t *eEntity)
 
 void Item_Respawn(ServerEntity_t *ent)
 {
-	Entity_SetModel(ent,ent->local.cOldModel);
+	Entity_SetModel(ent,ent->local.oldmodel);
 
 	ent->Physics.solid = SOLID_TRIGGER;
 
@@ -217,7 +217,7 @@ void Item_Touch(ServerEntity_t *eItem,ServerEntity_t *eOther)
 	// Check if we're in a multiplayer game, if so we'll respawn items.
 	if(g_ismultiplayer)
 	{
-		eItem->local.cOldModel = eItem->v.model;
+		eItem->local.oldmodel = eItem->v.model;
 
 		Entity_SetModel(eItem,"models/blip.md2");
 

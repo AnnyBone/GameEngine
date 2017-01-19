@@ -227,7 +227,7 @@ void Area_BreakableSpawn(ServerEntity_t *area) {
 	}
 
 	// If we've been given a name, then set our use function.
-	if (area->v.cName) {
+	if (area->v.name) {
         area->v.use = Area_BreakableUse;
     }
 
@@ -704,129 +704,117 @@ void Area_PushableThink(ServerEntity_t *area) {
 	// TODO: sort the physics stuff out engine side perhaps? BSP physics are hard.
 	// only update when something happens ~eukara
 	if(area->v.velocity != 0) {
-		Math_VectorScale(area->v.velocity, 0.9f, area->v.velocity); // slowly slow it down.
+        area->v.velocity *= 0.9f;
 		area->v.velocity.z = -300;	// fake physics... FIXME
 		area->v.nextthink = area->v.ltime + 0.5f;
 	}
 }
 
-void Area_PushableTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
-{
-	float fYaw;
-	PLVector3D vMVec;
-	PLVector3D vPVec;
-
-	if (_Area_IsOnTop(eOther, eArea))
-	{
+void Area_PushableTouch(ServerEntity_t *area, ServerEntity_t *other) {
+	if (_Area_IsOnTop(other, area)) {
 		// So the player can jump off the object.
-		eOther->v.flags = eOther->v.flags + FL_ONGROUND; 
+        Entity_AddFlags(other, FL_ONGROUND);
 		return;
 	}
 	
-	if (eArea->v.flags & FL_ONGROUND)
-		eArea->v.flags = eArea->v.flags - FL_ONGROUND;
+	if (area->v.flags & FL_ONGROUND) {
+        Entity_RemoveFlags(area, FL_ONGROUND);
+    }
 	
 	// Get the right player angle.
-	Math_MVToVector(plVectorToAngles(eOther->v.velocity), vPVec);
-	fYaw = vPVec[1] * ((float)PL_PI) * 2 / 360;
-	
-	vMVec[0] = cosf(fYaw) * 80.0f;
-	vMVec[1] = sinf(fYaw) * 80.0f;
-	// Don't affect the height when pushing... ever.
-	vMVec[2] = 0; 
+	float yaw = other->v.velocity.y * ((float)PL_PI) * 2 / 360;
 
-	Math_VectorCopy(vMVec, eArea->v.velocity);
-	Math_MVToVector(plVectorToAngles(eArea->v.velocity), eArea->v.avelocity);
-	eArea->v.nextthink = eArea->v.ltime + 0.5f;
+    area->v.velocity.x = std::cos(yaw) * 80.0f;
+    area->v.velocity.y = std::sin(yaw) * 80.0f;
+	// Don't affect the height when pushing... ever.
+    area->v.velocity.z = 0;
+
+    area->v.avelocity = area->v.velocity;
+
+	area->v.nextthink = area->v.ltime + 0.5f;
 }
 
-void Area_PushableSpawn(ServerEntity_t *eArea)
-{
+void Area_PushableSpawn(ServerEntity_t *area) {
 	// TODO: If designed to be breakable, make breakable? ~eukara
-/*	if (eArea->v.health) {
-		Area_BreakableSpawn(eArea);
+/*	if (area->v.health) {
+		Area_BreakableSpawn(area);
 	}
 */
-	//eArea->Physics.fGravity = cvServerGravity.value;
-	plVectorClear(eArea->v.angles);
+	//area->Physics.fGravity = cvServerGravity.value;
+    area->v.angles = 0;
 
-	eArea->Physics.solid = SOLID_SLIDEBOX;
-	eArea->v.movetype = MOVETYPE_STEP;
-	Entity_SetModel(eArea,eArea->v.model);
-	Entity_SetOrigin(eArea,eArea->v.origin);
-	Entity_SetSizeVector(eArea,eArea->v.mins,eArea->v.maxs);
+	area->Physics.solid = SOLID_SLIDEBOX;
+	area->v.movetype = MOVETYPE_STEP;
+	Entity_SetModel(area,area->v.model);
+	Entity_SetOrigin(area,area->v.origin);
+	Entity_SetSizeVector(area,area->v.mins,area->v.maxs);
 
-	eArea->v.TouchFunction = Area_PushableTouch;
-	eArea->v.think = Area_PushableThink;
+	area->v.TouchFunction = Area_PushableTouch;
+	area->v.think = Area_PushableThink;
 }
 
 /*	area_wall	*/
 
-void Area_WallUse(ServerEntity_t *eArea)
-{
-	if(eArea->Physics.solid == SOLID_BSP)
-	{
-		eArea->local.cOldModel	= eArea->v.model;
-		eArea->local.iValue		= 0;
+void Area_WallUse(ServerEntity_t *area) {
+	if(area->Physics.solid == SOLID_BSP) {
+		area->local.oldmodel	= area->v.model;
+		area->local.value		= 0;
 
-		eArea->Physics.solid = SOLID_NOT;
+		area->Physics.solid = SOLID_NOT;
 
-		eArea->v.model = 0;
+		area->v.model = 0;
 		return;
 	}
 
-	eArea->Physics.solid = SOLID_BSP;
-	eArea->local.iValue = 1;
-	Entity_SetModel(eArea,eArea->local.cOldModel);
+	area->Physics.solid = SOLID_BSP;
+	area->local.value = 1;
+	Entity_SetModel(area,area->local.oldmodel);
 }
 
-void Area_WallSpawn(ServerEntity_t *eArea)
-{
-	if(!eArea->v.model)
-	{
-		Engine.Con_Warning("Area entity with no model!\n");
+void Area_WallSpawn(ServerEntity_t *area) {
+	if(!area->v.model) {
+		g_engine->Con_Warning("Area entity with no model!\n");
 
-		Entity_Remove(eArea);
+		Entity_Remove(area);
 		return;
 	}
 
-	if(eArea->v.cName)
-		eArea->v.use = Area_WallUse;
+	if(area->v.name) {
+        area->v.use = Area_WallUse;
+    }
 
-	eArea->v.movetype = MOVETYPE_PUSH;
+	area->v.movetype = MOVETYPE_PUSH;
 
-	eArea->local.iValue = 1;
+	area->local.value = 1;
 
-	Entity_SetModel(eArea,eArea->v.model);
-	Entity_SetOrigin(eArea,eArea->v.origin);
+	Entity_SetModel(area,area->v.model);
+	Entity_SetOrigin(area,area->v.origin);
 }
 
 /*	area_detail	*/
 
 // Just for the compiler ~eukara
-void Area_DetailSpawn(ServerEntity_t *eArea)
-{
-	if(!eArea->v.model)
-	{
-		Engine.Con_Warning("Area entity with no model!\n");
+void Area_DetailSpawn(ServerEntity_t *area) {
+	if(!area->v.model) {
+		g_engine->Con_Warning("Area entity with no model!\n");
 
-		Entity_Remove(eArea);
+		Entity_Remove(area);
 		return;
 	}
 
-	Entity_SetModel(eArea,eArea->v.model);
-	Entity_SetOrigin(eArea,eArea->v.origin);
+	Entity_SetModel(area,area->v.model);
+	Entity_SetOrigin(area,area->v.origin);
 }
 
 /*	area_button	*/
 
-void Area_ButtonDone(ServerEntity_t *eArea, ServerEntity_t *eOther)
-{
+void Area_ButtonDone(ServerEntity_t *eArea, ServerEntity_t *other) {
 	eArea->local.flags = STATE_DOWN;
-	eArea->local.iValue = 0;
+	eArea->local.value = 0;
 
-	if (eArea->local.sound_stop)
-		Sound(eArea, CHAN_VOICE, eArea->local.sound_stop, 255, ATTN_NORM);
+	if (eArea->local.sound_stop) {
+        Sound(eArea, CHAN_VOICE, eArea->local.sound_stop, 255, ATTN_NORM);
+    }
 }
 
 void Area_ButtonReturn(ServerEntity_t *eArea)
@@ -844,7 +832,7 @@ void Area_ButtonWait(ServerEntity_t *eArea, ServerEntity_t *eOther)
 	UseTargets(eArea, eOther);
 
 	eArea->local.flags = STATE_TOP;
-	eArea->local.iValue = 1;
+	eArea->local.value = 1;
 
 	eArea->v.think		= Area_ButtonReturn;
 	eArea->v.nextthink	= eArea->v.ltime + 4;
@@ -889,12 +877,11 @@ void Area_ButtonUse(ServerEntity_t *area) {
 
 void Area_ButtonBlocked(ServerEntity_t *eArea, ServerEntity_t *eOther)
 {
-	Entity_Damage(eOther, eArea, eArea->local.iDamage, 0);
+	Entity_Damage(eOther, eArea, eArea->local.iDamage, DAMAGE_TYPE_CRUSH);
 }
 
 void Area_ButtonSpawn(ServerEntity_t *eArea)
 {
-	int		i;
 	float	fDist;
 	PLVector3D vMoveDir;
 
@@ -915,10 +902,11 @@ void Area_ButtonSpawn(ServerEntity_t *eArea)
 	eArea->Physics.solid = SOLID_BSP;
 
 	// [18/5/2013] Changed to use ! check instead since it's safer here ~hogsy
-	if(eArea->local.lip == 0.0f)
-		eArea->local.lip = 4.0f;
+	if(eArea->local.lip == 0) {
+        eArea->local.lip = 4;
+    }
 
-	eArea->local.iValue = 0;
+	eArea->local.value = 0;
 	eArea->local.flags = STATE_BOTTOM;
 
 	Entity_SetModel(eArea,eArea->v.model);
@@ -929,68 +917,73 @@ void Area_ButtonSpawn(ServerEntity_t *eArea)
 
 	Area_SetMoveDirection(eArea->v.angles,eArea->v.movedir);
 
-	for(i = 0; i < 3; i++)
-		vMoveDir[i] = (float)fabs(eArea->v.movedir[i]);
+    vMoveDir.x = std::fabs(eArea->v.movedir.x);
+    vMoveDir.y = std::fabs(eArea->v.movedir.y);
+    vMoveDir.z = std::fabs(eArea->v.movedir.z);
 
-	fDist = vMoveDir[0]*eArea->v.size[0]+
-			vMoveDir[1]*eArea->v.size[1]+
-			vMoveDir[2]*eArea->v.size[2]-
+	fDist = vMoveDir.x*eArea->v.size.x+
+			vMoveDir.y*eArea->v.size.y+
+			vMoveDir.z*eArea->v.size.z-
 			eArea->local.lip;
 
-	Math_VectorMake(eArea->local.pos1,fDist,eArea->v.movedir,eArea->local.pos2);
+	Math_VectorMake(eArea->local.pos1,fDist,eArea->v.movedir,&eArea->local.pos2);
 
-	if(eArea->v.spawnflags != 32) // Toggle
-		eArea->v.TouchFunction = Area_ButtonTouch;
+	if(eArea->v.spawnflags != 32) { // Toggle
+        eArea->v.TouchFunction = Area_ButtonTouch;
+    }
 
-	if (eArea->local.iDamage)
-		Entity_SetBlockedFunction(eArea, Area_ButtonBlocked);
+	if (eArea->local.iDamage) {
+        Entity_SetBlockedFunction(eArea, Area_ButtonBlocked);
+    }
 
 	eArea->v.use = Area_ButtonUse;
 }
 
 /*	area_platform	*/
 
-void Area_PlatformDone(ServerEntity_t *eArea, ServerEntity_t *eOther)
-{
-	if(eArea->local.dWait >= 0)
-		eArea->v.nextthink = eArea->v.ltime + eArea->local.dWait;
+void Area_PlatformDone(ServerEntity_t *area, ServerEntity_t *other) {
+	if(area->local.dWait >= 0) {
+        area->v.nextthink = area->v.ltime + area->local.dWait;
+    }
 
-	eArea->local.flags = STATE_DOWN;
-	eArea->local.iValue = 0;
-	eArea->v.think	= NULL;
+	area->local.flags = STATE_DOWN;
+	area->local.value = 0;
+	area->v.think	= NULL;
 
-	if (eArea->local.sound_stop)
-		Sound(eArea, CHAN_VOICE, eArea->local.sound_stop, 255, ATTN_NORM);
+	if (area->local.sound_stop) {
+        Sound(area, CHAN_VOICE, area->local.sound_stop, 255, ATTN_NORM);
+    }
 }
 
-void Area_PlatformReturn(ServerEntity_t *eArea)
-{
-	Area_Move(eArea, eArea->local.pos1, eArea->local.speed, Area_PlatformDone);
+void Area_PlatformReturn(ServerEntity_t *area) {
+	Area_Move(area, area->local.pos1, area->local.speed, Area_PlatformDone);
 
-	if(eArea->local.cSoundReturn)
-		Sound(eArea,CHAN_BODY,eArea->local.cSoundReturn,255,ATTN_NORM);
-	if(eArea->local.cSoundMoving)
-		Sound(eArea,CHAN_VOICE,eArea->local.cSoundMoving,255,ATTN_NORM);
+	if(area->local.cSoundReturn) {
+        Sound(area, CHAN_BODY, area->local.cSoundReturn, 255, ATTN_NORM);
+    }
+	if(area->local.cSoundMoving) {
+        Sound(area, CHAN_VOICE, area->local.cSoundMoving, 255, ATTN_NORM);
+    }
 }
 
-void Area_PlatformWait(ServerEntity_t *eArea, ServerEntity_t *eOther)
-{
-	UseTargets(eArea, eOther);
+void Area_PlatformWait(ServerEntity_t *area, ServerEntity_t *other) {
+	UseTargets(area, other);
 
-	eArea->local.flags = STATE_TOP;
-	eArea->local.iValue = 1;
+	area->local.flags = STATE_TOP;
+	area->local.value = 1;
 
-	eArea->v.think		= Area_PlatformReturn;
+	area->v.think = Area_PlatformReturn;
 
-	if(eArea->local.dWait >= 0)
-	eArea->v.nextthink	= eArea->v.ltime + eArea->local.dWait;
+	if(area->local.dWait >= 0) {
+        area->v.nextthink = area->v.ltime + area->local.dWait;
+    }
 
-	if (eArea->local.sound_stop)
-		Sound(eArea, CHAN_VOICE, eArea->local.sound_stop, 255, ATTN_NORM);
+	if (area->local.sound_stop) {
+        Sound(area, CHAN_VOICE, area->local.sound_stop, 255, ATTN_NORM);
+    }
 }
 
-void Area_PlatformTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
-{
+void Area_PlatformTouch(ServerEntity_t *eArea, ServerEntity_t *eOther) {
 	if(eArea->local.flags == STATE_UP || eArea->local.flags == STATE_TOP)
 		return;
 	if((eOther->Monster.iType != MONSTER_PLAYER) && eOther->v.health <= 0)
@@ -1062,7 +1055,7 @@ void Area_PlatformSpawn(ServerEntity_t *area) {
         area->local.iDamage = 20;
     }
 
-	area->local.iValue = 0;
+	area->local.value = 0;
 	area->local.flags = STATE_BOTTOM;
 
 	Entity_SetModel(area,area->v.model);
@@ -1074,7 +1067,7 @@ void Area_PlatformSpawn(ServerEntity_t *area) {
 
 	float dist = (float)area->local.count;
 
-	Math_VectorMake(area->local.pos1, dist, area->v.movedir, area->local.pos2);
+	Math_VectorMake(area->local.pos1, dist, area->v.movedir, &area->local.pos2);
 
 	if(area->v.spawnflags != 32) { // Toggle
         area->v.TouchFunction = Area_PlatformTouch;
@@ -1107,7 +1100,7 @@ void Area_ClimbTouch(ServerEntity_t *area, ServerEntity_t *other) {
     }
 
 	// ignore 8 units of the top edge
-	if (other->v.origin.z + other->v.mins.z + 8 >= area->v.absmax.z){
+	if (other->v.origin.z + other->v.mins.z + 8 >= area->v.absmax.z) {
 		if (!(other->v.flags & FL_ONGROUND)) {
             other->v.flags = other->v.flags + FL_ONGROUND;
         }
@@ -1115,12 +1108,12 @@ void Area_ClimbTouch(ServerEntity_t *area, ServerEntity_t *other) {
 	}
 
 	// null out gravity in PreThink
-	other->local.dLadderTime = Server.time + 0.1;
-	other->local.dZeroGTime = Server.time + 0.1;
+	other->local.laddertime = Server.time + 0.1;
+	other->local.zerogtime = Server.time + 0.1;
 	other->v.velocity.z = 0;
 
 	if (other->v.velocity.DotProduct(right) > 25) {
-        other->v.velocity.Clear();
+        other->v.velocity = 0;
 
 		other->v.origin[0] += vRight[0] * 0.5f;
 		other->v.origin[1] += vRight[1] * 0.5f;
@@ -1128,7 +1121,7 @@ void Area_ClimbTouch(ServerEntity_t *area, ServerEntity_t *other) {
 	//	printf("right  ");
 		return;
 	} else if (other->v.velocity.DotProduct(right) < -25) {
-        other->v.velocity.Clear();
+        other->v.velocity = 0;
 
 		other->v.origin[0] -= vRight[0] * 0.5f;
 		other->v.origin[1] -= vRight[1] * 0.5f;
@@ -1215,8 +1208,9 @@ void Area_NoclipSpawn(ServerEntity_t *area) {
 
 void Area_PushTouch(ServerEntity_t *area, ServerEntity_t *other) {
 	// [9/12/2013] TODO: Make this optional? Would be cool to throw monsters and other crap around... ~hogsy
-	if(!Entity_IsPlayer(other))
-		return;
+	if(!Entity_IsPlayer(other)) {
+        return;
+    }
 
     other->v.velocity = area->v.movedir * (area->local.speed * 10);
 

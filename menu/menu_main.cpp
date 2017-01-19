@@ -192,7 +192,7 @@ void menu::Draw(CoreViewport *viewport)
 			Engine.DrawString(mMenuElements[i].iPosition[X],p,va
 			(
 				"Name: %s",
-				mMenuElements[i].cName
+				mMenuElements[i].name
 			));
 			p += 12;
 			// [27/8/2012] Let us know who the parent is ~hogsy
@@ -201,7 +201,7 @@ void menu::Draw(CoreViewport *viewport)
 				Engine.DrawString((int)mMenuElements[i].iPosition[X],p,va
 				(
 					"Parent: %s",
-					mMenuElements[i].mParent->cName
+					mMenuElements[i].mParent->name
 				));
 				p += 12;
 			}
@@ -210,7 +210,7 @@ void menu::Draw(CoreViewport *viewport)
 				Engine.DrawString(mMenuElements[i].iPosition[X],p,va
 				(
 					"Image: %s",
-					mMenuElements[i].cName
+					mMenuElements[i].name
 				));
 				p += 12;
 			}
@@ -305,7 +305,7 @@ void menu::Draw(CoreViewport *viewport)
 					22,
 					20);
 
-				Engine.DrawString(mMenuElements[i].iPosition[X]+5,mMenuElements[i].iPosition[Y]+5,mMenuElements[i].cName);
+				Engine.DrawString(mMenuElements[i].iPosition[X]+5,mMenuElements[i].iPosition[Y]+5,mMenuElements[i].name);
 
 				// [3/8/2012] Do the fill for the contents ~hogsy
 				Engine.DrawRectangle(
@@ -322,7 +322,7 @@ void menu::Draw(CoreViewport *viewport)
 				if (Menu_IsMouseOver(mMenuElements[i].iPosition, mMenuElements[i].iScale[PL_WIDTH], mMenuElements[i].iScale[PL_HEIGHT]))
 				{}
 			default:
-				Engine.Con_Warning("Unknown menu element type (%i) for %s!\n",mMenuElements[i].mMenuType,mMenuElements[i].cName);
+				Engine.Con_Warning("Unknown menu element type (%i) for %s!\n",mMenuElements[i].mMenuType,mMenuElements[i].name);
 				// [3/8/2012] TODO: This isn't right... Clear it properly! ~hogsy
 				free(mMenuElements);
 				// [3/8/2012] TODO: Don't just return, we should be changing to the next slot ~hogsy

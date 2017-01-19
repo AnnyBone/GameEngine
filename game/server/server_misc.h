@@ -33,12 +33,12 @@ void Area_DoorSpawn(ServerEntity_t *eArea);
 void Area_NoclipSpawn(ServerEntity_t *area);
 void Area_PlatSpawn(ServerEntity_t *eArea);
 void Area_PushSpawn(ServerEntity_t *area);
-void Area_PushableSpawn(ServerEntity_t *eArea);
+void Area_PushableSpawn(ServerEntity_t *area);
 void Area_PlatformSpawn(ServerEntity_t *area);
 void Area_RotateSpawn(ServerEntity_t *area);
 void Area_TriggerSpawn(ServerEntity_t *area);
-void Area_WallSpawn(ServerEntity_t *eArea);
-void Area_DetailSpawn(ServerEntity_t *eArea);
+void Area_WallSpawn(ServerEntity_t *area);
+void Area_DetailSpawn(ServerEntity_t *area);
 void Area_KillSpawn(ServerEntity_t *area);
 
 void Point_AmbientSpawn(ServerEntity_t *eEntity);

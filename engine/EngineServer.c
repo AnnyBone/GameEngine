@@ -1240,8 +1240,8 @@ ServerEntity_t *Server_FindEntity(ServerEntity_t *eStartEntity, char *cName, boo
 		}
 		else
 		{
-			if (eEntity->v.cName)
-				if (!strcmp(cName, eEntity->v.cName))
+			if (eEntity->v.name)
+				if (!strcmp(cName, eEntity->v.name))
 					return eEntity;
 		}
 	}

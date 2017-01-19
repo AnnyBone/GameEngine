@@ -99,7 +99,7 @@ void Barrel_Spawn(ServerEntity_t *eBarrel)
 	eBarrel->v.takedamage = true;
 
 	eBarrel->local.iOldHealth = BARREL_MAX_HEALTH;
-	eBarrel->local.cOldModel = MODEL_DECORATION_BARREL0;
+	eBarrel->local.oldmodel = MODEL_DECORATION_BARREL0;
 
 	Entity_SetModel(eBarrel, MODEL_DECORATION_BARREL0);
 	Entity_SetSize(eBarrel, -16, -16, -15, 16, 16, 10);

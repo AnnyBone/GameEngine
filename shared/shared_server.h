@@ -141,7 +141,7 @@ typedef struct
 	float		speed;
 
 	int	iDamage,	// Amount of damage to inflict.
-		iValue;		// TODO: Make this a little less... Ambiguous?
+		value;		// TODO: Make this a little less... Ambiguous?
 
 	int			volume;		// Volume level for sound.
 	float		lip;
@@ -240,12 +240,12 @@ typedef struct
 
 	ServerEntity_t	*activator;
 
-	char			*cOldModel;		// Last model.
+	char			*oldmodel;		// Last model.
 	char			cOldStyle;
 
-	double 			dLadderTime;
+	double 			laddertime;
 	double 			dLadderJump;
-	double			dZeroGTime;
+	double			zerogtime;
 
 	// CTF states
 	ServerEntity_t		*flag;				// Currently owned flag (if any).
@@ -355,7 +355,7 @@ typedef struct ServerEntityBaseVariables_s
 	// Editor
 	char
 		*classname,	// The classname of the entity.
-		*cName;			// The specified name for the entity.
+		*name;			// The specified name for the entity.
 	char *noise;
 	char *model;
 

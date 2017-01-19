@@ -61,7 +61,7 @@ enum
 void Point_NullSpawn(ServerEntity_t *eEntity)
 {
 	// Remove if there is no name given!
-	if (!eEntity->v.cName || (eEntity->v.cName[0] == ' '))
+	if (!eEntity->v.name || (eEntity->v.name[0] == ' '))
 	{
 		Entity_Remove(eEntity);
 		return;
@@ -1089,32 +1089,32 @@ void Point_LogicThink(ServerEntity_t *eEntity)
 	switch(eEntity->local.style)
 	{
 	case 1:
-		if(eEnt1->local.iValue && eEnt2->local.iValue)
+		if(eEnt1->local.value && eEnt2->local.value)
 		{
-			if(eEntity->v.targetname && !eEntity->local.iValue)
+			if(eEntity->v.targetname && !eEntity->local.value)
 				UseTargets(eEntity,eEntity->local.activator);
 
-			eEntity->local.iValue = 1;
+			eEntity->local.value = 1;
 		}
 		else
-			eEntity->local.iValue = 0;
+			eEntity->local.value = 0;
 		break;
 	case 2:
-		if(eEnt1->local.iValue || eEnt2->local.iValue)
+		if(eEnt1->local.value || eEnt2->local.value)
 		{
-			if(eEntity->v.targetname && eEntity->local.iValue)
+			if(eEntity->v.targetname && eEntity->local.value)
 				UseTargets(eEntity,eEntity->local.activator);
 
-			eEntity->local.iValue = 1;
+			eEntity->local.value = 1;
 		}
 		else
-			eEntity->local.iValue = 0;
+			eEntity->local.value = 0;
 		break;
 	case 3:
-		if(!eEnt1->local.iValue)
-			eEntity->local.iValue = 1;
+		if(!eEnt1->local.value)
+			eEntity->local.value = 1;
 		else
-			eEntity->local.iValue = 0;
+			eEntity->local.value = 0;
 		break;
 	}
 
@@ -1152,9 +1152,9 @@ void Point_LogicSpawn(ServerEntity_t *eEntity)
 		eEntity->local.dWait = 1;
 
 	if(eEntity->local.style != 3)
-		eEntity->local.iValue = 0;
+		eEntity->local.value = 0;
 	else
-		eEntity->local.iValue = 1;
+		eEntity->local.value = 1;
 
 	Entity_SetOrigin(eEntity,eEntity->v.origin);
 

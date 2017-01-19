@@ -476,7 +476,7 @@ void Player_PreThink(ServerEntity_t *ePlayer)
 	}
 
 	// ladders only work in ZeroG ~eukara
-	if (ePlayer->local.dZeroGTime < Server.time)
+	if (ePlayer->local.zerogtime < Server.time)
 		ePlayer->Physics.gravity = cvServerGravity.value;
 	else
 		ePlayer->Physics.gravity = 0;
@@ -865,7 +865,7 @@ void Player_Jump(ServerEntity_t *ePlayer)
 	char cJumpSound[32];
 
 	// better ladder stuff ~eukara
-	if ((ePlayer->local.dLadderTime > Server.time) && (ePlayer->local.dLadderJump < Server.time)) {
+	if ((ePlayer->local.laddertime > Server.time) && (ePlayer->local.dLadderJump < Server.time)) {
 
 		if (!(ePlayer->v.flags & FL_ONGROUND))
 			ePlayer->v.flags = ePlayer->v.flags + FL_ONGROUND;
