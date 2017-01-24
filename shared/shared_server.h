@@ -92,7 +92,7 @@ typedef struct ServerEntity_s ServerEntity_t;
 // Monster specific variables
 typedef struct
 {
-	int	iType;
+	int	type;
 
 	void(*Frame)(ServerEntity_t *entity);	// Called per-frame for the specific handling of states for each monster.
 
@@ -140,7 +140,7 @@ typedef struct
 	char		*sound;
 	float		speed;
 
-	int	iDamage,	// Amount of damage to inflict.
+	int	damage,	// Amount of damage to inflict.
 		value;		// TODO: Make this a little less... Ambiguous?
 
 	int			volume;		// Volume level for sound.
@@ -148,7 +148,7 @@ typedef struct
 	int			distance;
 	int			style;
 
-	double dWait;
+	double wait;
 
 	int			count;
 
@@ -195,8 +195,8 @@ typedef struct
 
 	// Animation
 	int	iAnimationCurrent;				// Current frame of current sequence.
-	int iAnimationEnd;					// Last frame of current sequence.
-	double dAnimationTime;				// The speed of the animation.
+	int animation_end;					// Last frame of current sequence.
+	double animation_time;				// The speed of the animation.
 	ServerEntityFrame_t *iFrames;		// Active frame group.
 	int	iWeaponAnimationCurrent;		// Current frame of current sequence.
 	int iWeaponAnimationEnd;			// Last frame of current sequence.
@@ -206,16 +206,16 @@ typedef struct
 
 	// Misc
 	char			*cInfoMessage;				// see server_point > Point_InfoMessage.
-	bool			bBleed;						// Do we bleed? TODO: Move this into monster struct!
+	bool			bleed;						// Do we bleed? TODO: Move this into monster struct!
 
 	int	iDamageType;	// The type of damage this entity can recieve.
-	int	iMaxHealth;		// An entities maximum health, they can't gain anymore than this.
+	int	maxhealth;		// An entities maximum health, they can't gain anymore than this.
 	int iOldHealth;		// Previous amount of health.
 
 	double			dDamageTime,				// Time between each amount of damage.
-		dStepTime;					// Time between each step.
-	double			dPainFinished,
-		dAirFinished,
+		steptime;					// Time between each step.
+	double			pain_finished,
+		air_finished,
 		dAttackFinished,			// Time before we can attack again.
 		dMoveFinished;
 
@@ -226,11 +226,11 @@ typedef struct
 
 	int	flags; // Local entity flags.
 
-	float			fSpawnDelay;				// Delay before next spawn.
+	float			spawndelay;				// Delay before next spawn.
 	PLVector3D	pos1;
 	PLVector3D	pos2;
-	char			*deathtype;
-	PlayerTeam_t	pTeam;						// Current active team.
+
+	PlayerTeam_t	team;						// Current active team.
 	void(*think1)(ServerEntity_t *ent, ServerEntity_t *other);
 	PLVector3D	finaldest;
 	char			*killtarget;
@@ -240,11 +240,11 @@ typedef struct
 
 	ServerEntity_t	*activator;
 
-	char			*oldmodel;		// Last model.
+	const char  *oldmodel;		// Last model.
 	char			cOldStyle;
 
 	double 			laddertime;
-	double 			dLadderJump;
+	double 			ladderjump;
 	double			zerogtime;
 
 	// CTF states
@@ -263,12 +263,12 @@ typedef struct
 	PLVector3D		dir;
 
 	// Angles
-	PLVector3D vForward;
-	PLVector3D vRight;
+	PLVector3D forward;
+	PLVector3D right;
 	PLVector3D vUp;
 
 	// Vehicles
-	ServerEntity_t *eVehicle;	// Current vehicle.
+	ServerEntity_t *vehicle;	// Current vehicle.
 	int iVehicleSlot;			// Occupied vehicle slot.
 
 	// Weapons
@@ -333,7 +333,7 @@ typedef struct
 
 typedef struct
 {
-	bool	bAllSolid,		// If true, plane is not valid.
+	bool	all_solid,		// If true, plane is not valid.
 			bStartSolid,	// If true, the initial point was in a solid area.
 			bOpen, bWater;
 
@@ -349,15 +349,14 @@ typedef struct
 typedef struct ServerEntityBaseVariables_s
 {
 	// Weapons
-	int			iSecondaryAmmo, iPrimaryAmmo;
+	int			secondary_ammo, primary_ammo;
 	int			iWeaponFrame;
 
 	// Editor
-	char
-		*classname,	// The classname of the entity.
-		*name;			// The specified name for the entity.
+	const char *classname;
+	char *name;			// The specified name for the entity.
 	char *noise;
-	char *model;
+	const char *model;
 
 	int	health;
 

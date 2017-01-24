@@ -209,7 +209,7 @@ void LaserGat_Spawn(ServerEntity_t *eLaserGat)
 
 //	eLaserGat->Monster.PainFunction		= LaserGat_Pain;
 	eLaserGat->Monster.Frame	= LaserGat_Think;
-	eLaserGat->Monster.iType	= MONSTER_LASERGAT;
+	eLaserGat->Monster.type	= MONSTER_LASERGAT;
 
 	// Make this random so not all turrets start looking in the same directions.
 	eLaserGat->Monster.commands[LASERGAT_COMMAND_LOOK_PITCH] = rand() % 2;
@@ -217,7 +217,7 @@ void LaserGat_Spawn(ServerEntity_t *eLaserGat)
 
 	// Set our physical properties.
 	eLaserGat->Physics.solid	= SOLID_BBOX;
-	eLaserGat->Physics.gravity	= cvServerGravity.value;
+	eLaserGat->Physics.gravity	= cv_server_gravity.value;
 	eLaserGat->Physics.mass		= 3.5f;
 
 	Entity_SetModel(eLaserGat, LASERGAT_MODEL_HEAD);

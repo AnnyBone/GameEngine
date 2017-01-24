@@ -75,7 +75,7 @@ void PulseRifle_PrimaryAttack(ServerEntity_t *ent)
 
 	ServerEffect_MuzzleFlash(ent->v.origin, ent->v.angles);
 
-	ent->v.iPrimaryAmmo	= ent->local.glock_ammo--;
+	ent->v.primary_ammo	= ent->local.glock_ammo--;
 	ent->local.glock_ammo2--;
 
 	ent->local.dAttackFinished	= Server.time+0.2;

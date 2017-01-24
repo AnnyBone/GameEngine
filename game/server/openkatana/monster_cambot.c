@@ -54,7 +54,7 @@ void ScanBot_Spawn(ServerEntity_t *entity)
 	Entity_SetSize(entity, -16, -16, -16, 16, 16, 16);
 
 	// todo: redo this, legacy crap.
-	entity->Monster.iType = MONSTER_SCANBOT;
+	entity->Monster.type = MONSTER_SCANBOT;
 
 	entity->ai.current_movement		= AI_MOVEMENT_FLYING;
 	entity->ai.current_movespeed	= 100.0f;

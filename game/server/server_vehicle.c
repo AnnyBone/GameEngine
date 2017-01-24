@@ -60,14 +60,14 @@ void Vehicle_Damage(ServerEntity_t *eVehicle,ServerEntity_t *eAttacker,int iDama
 void Vehicle_Spawn(ServerEntity_t *eVehicle)
 {
 	// Monster variables
-	eVehicle->Monster.iType	= MONSTER_VEHICLE;
+	eVehicle->Monster.type	= MONSTER_VEHICLE;
 	
 	// Physics
 	eVehicle->Physics.solid		= SOLID_SLIDEBOX;
 	eVehicle->v.movetype		= MOVETYPE_BOUNCE;
-	eVehicle->Physics.gravity	= cvServerGravity.value;
+	eVehicle->Physics.gravity	= cv_server_gravity.value;
 
-	//memset(&eVehicle->Vehicle.slots, 0, plArrayElements(eVehicle->Vehicle.slots));
+	//memset(&vehicle->Vehicle.slots, 0, plArrayElements(vehicle->Vehicle.slots));
 }
 
 /*	Checks the current number of passengers, sets up
@@ -97,21 +97,21 @@ void Vehicle_Enter(ServerEntity_t *eVehicle,ServerEntity_t *eOther)
 		Engine.Sound(eVehicle,CHAN_AUTO,"misc/deny.wav",255,ATTN_NORM);
 		return;
 	}
-	else if(!eOther->v.health || eOther->local.eVehicle)
+	else if(!eOther->v.health || eOther->local.vehicle)
 		return;
 
 #if 0 // todo, rewrite this
-	eVehicle->Vehicle.passengers++;
-	if(eVehicle->Vehicle.passengers == SLOT_DRIVER)
+	vehicle->Vehicle.passengers++;
+	if(vehicle->Vehicle.passengers == SLOT_DRIVER)
 	{
-		eVehicle->Vehicle.active = true;
-		eVehicle->Vehicle.iSlot[eVehicle->Vehicle.iPassengers]	= SLOT_DRIVER;
+		vehicle->Vehicle.active = true;
+		vehicle->Vehicle.iSlot[vehicle->Vehicle.iPassengers]	= SLOT_DRIVER;
 	}
 	else
-		eVehicle->Vehicle.iSlot[eVehicle->Vehicle.iPassengers]	= SLOT_PASSENGER;
+		vehicle->Vehicle.iSlot[vehicle->Vehicle.iPassengers]	= SLOT_PASSENGER;
 #endif
 
-	eOther->local.eVehicle		= eVehicle;
+	eOther->local.vehicle		= eVehicle;
 	eOther->local.iVehicleSlot	= eVehicle->Vehicle.passengers;
 
 	if(eVehicle->Vehicle.Enter)
@@ -123,15 +123,15 @@ void Vehicle_Enter(ServerEntity_t *eVehicle,ServerEntity_t *eOther)
 void Vehicle_Exit(ServerEntity_t *eVehicle,ServerEntity_t *eOther)
 {
 #if 0 // todo, rewrite this
-	if(eVehicle->Vehicle.iSlot[eOther->local.iVehicleSlot] == SLOT_DRIVER)
-		eVehicle->Vehicle.bActive = false;
+	if(vehicle->Vehicle.iSlot[eOther->local.iVehicleSlot] == SLOT_DRIVER)
+		vehicle->Vehicle.bActive = false;
 
-	eVehicle->Vehicle.iPassengers--;
-	eVehicle->Vehicle.iSlot[eOther->local.iVehicleSlot] = SLOT_OPEN;
+	vehicle->Vehicle.iPassengers--;
+	vehicle->Vehicle.iSlot[eOther->local.iVehicleSlot] = SLOT_OPEN;
 #endif
 
 	eOther->local.iVehicleSlot	= 0;
-	eOther->local.eVehicle		= NULL;
+	eOther->local.vehicle		= NULL;
 
 	if(eVehicle->Vehicle.Exit)
 		eVehicle->Vehicle.Exit(eVehicle,eOther);

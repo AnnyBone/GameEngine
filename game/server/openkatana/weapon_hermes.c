@@ -45,7 +45,7 @@ void Hermes_CloudThink(ServerEntity_t *ent)
 
 void HermesCloudTouch(ServerEntity_t *ent, ServerEntity_t *other)
 {
-	if(other->Monster.iType != MONSTER_PLAYER)
+	if(other->Monster.type != MONSTER_PLAYER)
 		return;
 
 	if(other->v.health > 0 && other->v.movetype == MOVETYPE_STEP)

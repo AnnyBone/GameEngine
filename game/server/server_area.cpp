@@ -59,7 +59,7 @@ void Area_SetMoveDirection(PLVector3D &angles, PLVector3D &direction) {
 void Area_CalculateMovementDone(ServerEntity_t *area) {
 	Entity_SetOrigin(area, area->local.finaldest);
 
-	area->v.velocity.Clear();
+	area->v.velocity = 0;
 
 	if(area->local.think1) {
         area->local.think1(area, area);
@@ -236,7 +236,7 @@ void Area_BreakableSpawn(ServerEntity_t *area) {
 	area->v.movetype = MOVETYPE_PUSH;
 	area->v.takedamage = true;
 
-	area->local.bBleed = false;
+	area->local.bleed = false;
 
 	Entity_SetKilledFunction(area, Area_BreakableDie);
 
@@ -252,13 +252,13 @@ void Area_BreakableSpawn(ServerEntity_t *area) {
 /*	area_rotate	*/
 
 void Area_RotateBlocked(ServerEntity_t *area, ServerEntity_t *other) {
-	Entity_Damage(other, area, area->local.iDamage, DAMAGE_TYPE_CRUSH);
+	Entity_Damage(other, area, area->local.damage, DAMAGE_TYPE_CRUSH);
 }
 
 void Area_RotateTouch(ServerEntity_t *area, ServerEntity_t *other) {
-	if(area->local.dMoveFinished > Server.time) {
-        return;
-    }
+	if(!other) {
+		return;
+	}
 }
 
 void Area_RotateThink(ServerEntity_t *eArea) {
@@ -397,8 +397,8 @@ void Area_DoorWait(ServerEntity_t *door, ServerEntity_t *other) {
 
 	door->local.flags = STATE_TOP;
 
-	if (door->local.dWait >= 0) {
-        door->v.nextthink = Server.time + door->local.dWait;
+	if (door->local.wait >= 0) {
+        door->v.nextthink = Server.time + door->local.wait;
     }
 
 	door->v.think = Area_DoorReturn;
@@ -429,7 +429,7 @@ void Area_DoorTouch(ServerEntity_t *door, ServerEntity_t *other) {
 	if (door->local.flags == STATE_UP || door->local.flags == STATE_TOP) {
         return;
     }
-	if ((other->Monster.iType != MONSTER_PLAYER) && other->v.health <= 0) {
+	if ((other->Monster.type != MONSTER_PLAYER) && other->v.health <= 0) {
         return;
     }
 
@@ -462,7 +462,7 @@ void Area_DoorTouch(ServerEntity_t *door, ServerEntity_t *other) {
 }
 
 void Area_DoorBlocked(ServerEntity_t *door, ServerEntity_t *other) {
-	Entity_Damage(other, door, door->local.iDamage, DAMAGE_TYPE_CRUSH);
+	Entity_Damage(other, door, door->local.damage, DAMAGE_TYPE_CRUSH);
 }
 
 /*
@@ -606,7 +606,7 @@ void Area_DoorSpawn(ServerEntity_t *door)
 //		Entity_SetDamagedFunction(door, Area_DoorTouch);
 	}
 
-	if (door->local.iDamage) {
+	if (door->local.damage) {
         Entity_SetBlockedFunction(door, Area_DoorBlocked);
     }
 }
@@ -655,15 +655,15 @@ void Area_ChangeLevel(ServerEntity_t *area) {
 /*	area_trigger	*/
 
 void Area_TriggerTouch(ServerEntity_t *area, ServerEntity_t *other) {
-	if(area->v.nextthink || ((area->Monster.iType != MONSTER_PLAYER) && other->v.health <= 0)) {
+	if(area->v.nextthink || ((area->Monster.type != MONSTER_PLAYER) && other->v.health <= 0)) {
         return;
     }
 
-	area->v.nextthink = Server.time + area->local.dWait;
+	area->v.nextthink = Server.time + area->local.wait;
 
 	UseTargets(area,other);
 
-	if(area->local.dWait < 0) {
+	if(area->local.wait < 0) {
         Entity_Remove(area);
     }
 }
@@ -740,7 +740,7 @@ void Area_PushableSpawn(ServerEntity_t *area) {
 		Area_BreakableSpawn(area);
 	}
 */
-	//area->Physics.fGravity = cvServerGravity.value;
+	//area->Physics.fGravity = cv_server_gravity.value;
     area->v.angles = 0;
 
 	area->Physics.solid = SOLID_SLIDEBOX;
@@ -845,7 +845,7 @@ void Area_ButtonTouch(ServerEntity_t *eArea, ServerEntity_t *eOther)
 {
 	if(eArea->local.flags == STATE_UP || eArea->local.flags == STATE_TOP)
 		return;
-	if((eOther->Monster.iType != MONSTER_PLAYER) && eOther->v.health <= 0)
+	if((eOther->Monster.type != MONSTER_PLAYER) && eOther->v.health <= 0)
 		return;
 
 	eArea->local.flags = STATE_UP;
@@ -877,7 +877,7 @@ void Area_ButtonUse(ServerEntity_t *area) {
 
 void Area_ButtonBlocked(ServerEntity_t *eArea, ServerEntity_t *eOther)
 {
-	Entity_Damage(eOther, eArea, eArea->local.iDamage, DAMAGE_TYPE_CRUSH);
+	Entity_Damage(eOther, eArea, eArea->local.damage, DAMAGE_TYPE_CRUSH);
 }
 
 void Area_ButtonSpawn(ServerEntity_t *eArea)
@@ -932,7 +932,7 @@ void Area_ButtonSpawn(ServerEntity_t *eArea)
         eArea->v.TouchFunction = Area_ButtonTouch;
     }
 
-	if (eArea->local.iDamage) {
+	if (eArea->local.damage) {
         Entity_SetBlockedFunction(eArea, Area_ButtonBlocked);
     }
 
@@ -942,8 +942,8 @@ void Area_ButtonSpawn(ServerEntity_t *eArea)
 /*	area_platform	*/
 
 void Area_PlatformDone(ServerEntity_t *area, ServerEntity_t *other) {
-	if(area->local.dWait >= 0) {
-        area->v.nextthink = area->v.ltime + area->local.dWait;
+	if(area->local.wait >= 0) {
+        area->v.nextthink = area->v.ltime + area->local.wait;
     }
 
 	area->local.flags = STATE_DOWN;
@@ -974,8 +974,8 @@ void Area_PlatformWait(ServerEntity_t *area, ServerEntity_t *other) {
 
 	area->v.think = Area_PlatformReturn;
 
-	if(area->local.dWait >= 0) {
-        area->v.nextthink = area->v.ltime + area->local.dWait;
+	if(area->local.wait >= 0) {
+        area->v.nextthink = area->v.ltime + area->local.wait;
     }
 
 	if (area->local.sound_stop) {
@@ -986,7 +986,7 @@ void Area_PlatformWait(ServerEntity_t *area, ServerEntity_t *other) {
 void Area_PlatformTouch(ServerEntity_t *eArea, ServerEntity_t *eOther) {
 	if(eArea->local.flags == STATE_UP || eArea->local.flags == STATE_TOP)
 		return;
-	if((eOther->Monster.iType != MONSTER_PLAYER) && eOther->v.health <= 0)
+	if((eOther->Monster.type != MONSTER_PLAYER) && eOther->v.health <= 0)
 		return;
 	if(eArea->v.nextthink > eArea->v.ltime)
 		return;
@@ -1020,7 +1020,7 @@ void Area_PlatformUse(ServerEntity_t *eArea)
 }
 
 void Area_PlatformBlocked(ServerEntity_t *area, ServerEntity_t *other) {
-	Entity_Damage(other, area, area->local.iDamage, DAMAGE_TYPE_CRUSH);
+	Entity_Damage(other, area, area->local.damage, DAMAGE_TYPE_CRUSH);
 }
 
 void Area_PlatformSpawn(ServerEntity_t *area) {
@@ -1048,11 +1048,11 @@ void Area_PlatformSpawn(ServerEntity_t *area) {
 	if(area->local.count == 0) {
         area->local.count = 100;
     }
-	if(area->local.dWait == 0) {
-        area->local.dWait = 3;
+	if(area->local.wait == 0) {
+        area->local.wait = 3;
     }
-	if(area->local.iDamage == 0) {
-        area->local.iDamage = 20;
+	if(area->local.damage == 0) {
+        area->local.damage = 20;
     }
 
 	area->local.value = 0;
@@ -1073,7 +1073,7 @@ void Area_PlatformSpawn(ServerEntity_t *area) {
         area->v.TouchFunction = Area_PlatformTouch;
     }
 
-	if (area->local.iDamage) {
+	if (area->local.damage) {
         Entity_SetBlockedFunction(area, Area_PlatformBlocked);
     }
 
@@ -1085,7 +1085,7 @@ void Area_PlatformSpawn(ServerEntity_t *area) {
 void Area_ClimbTouch(ServerEntity_t *area, ServerEntity_t *other) {
 	PLVector3D ladder_velocity, vPlayerVec;
 
-	if ((other->local.dLadderJump > Server.time) || (other->v.waterlevel > 1) || (other->v.flags & FL_WATERJUMP)) {
+	if ((other->local.ladderjump > Server.time) || (other->v.waterlevel > 1) || (other->v.flags & FL_WATERJUMP)) {
         return;
     }
 
@@ -1115,23 +1115,23 @@ void Area_ClimbTouch(ServerEntity_t *area, ServerEntity_t *other) {
 	if (other->v.velocity.DotProduct(right) > 25) {
         other->v.velocity = 0;
 
-		other->v.origin[0] += vRight[0] * 0.5f;
-		other->v.origin[1] += vRight[1] * 0.5f;
-		other->v.origin[2] += vRight[2] * 0.5f;
+		other->v.origin.x += right.x * 0.5f;
+		other->v.origin.y += right.y * 0.5f;
+		other->v.origin.z += right.z * 0.5f;
 	//	printf("right  ");
 		return;
 	} else if (other->v.velocity.DotProduct(right) < -25) {
         other->v.velocity = 0;
 
-		other->v.origin[0] -= vRight[0] * 0.5f;
-		other->v.origin[1] -= vRight[1] * 0.5f;
-		other->v.origin[2] -= vRight[2] * 0.5f;
+		other->v.origin.x -= right.x * 0.5f;
+		other->v.origin.y -= right.y * 0.5f;
+		other->v.origin.z -= right.z * 0.5f;
 	//	printf("left  ");
 		return;
 	}
 
 	float forwardspeed = forward.DotProduct(other->v.velocity);
-	ladder_velocity.Clear();
+	ladder_velocity = 0;
 
 	if ((other->v.v_angle.x <= 15) && (forwardspeed > 0)) { // up (facing up/forward)
 		//other->v.origin[0] -= area->v.movedir[0] * 0.36f;
@@ -1162,9 +1162,9 @@ void Area_ClimbTouch(ServerEntity_t *area, ServerEntity_t *other) {
             ladder_velocity.z = -80; // minimum speed
         }
 	} else if ((other->v.v_angle.x >= 15) && (forwardspeed > 0)) { // down (facing down)
-		other->v.origin[0] -= area->v.movedir[0] * 0.36f;
-		other->v.origin[1] -= area->v.movedir[1] * 0.36f;
-		other->v.origin[2] -= area->v.movedir[2] * 0.36f;
+		other->v.origin.x -= area->v.movedir.x * 0.36f;
+		other->v.origin.y -= area->v.movedir.y * 0.36f;
+		other->v.origin.z -= area->v.movedir.z * 0.36f;
 		//printf("down (facing down)  ");
 
 		ladder_velocity.z = other->v.v_angle.x * -4;

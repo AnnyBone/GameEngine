@@ -184,7 +184,7 @@ bool Entity::CanDamage(Entity *target, EntityDamageType_t damagetype) {
 
     // Can't damage players on the same team.
     // Ensure we have an assigned team before checking this!
-    if (instance_->local.pTeam && (instance_->local.pTeam == instance_->local.pTeam)) {
+    if (instance_->local.team && (instance_->local.team == instance_->local.team)) {
         return false;
     }
 
@@ -211,7 +211,7 @@ bool Entity::DropToFloor() {
     end.z -= 256;
 
     trace_t ground = g_engine->Server_Move(instance_->v.origin, instance_->v.mins, instance_->v.maxs, end, false, instance_);
-    if ((ground.fraction == 1) || ground.bAllSolid) {
+    if ((ground.fraction == 1) || ground.all_solid) {
         g_engine->Con_Warning("Entity is stuck in world! (%s) (%i %i %i)\n",
                               instance_->v.classname,
                               (int)instance_->v.origin.x,

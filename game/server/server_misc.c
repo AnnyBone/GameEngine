@@ -51,7 +51,7 @@ void UseTargets(ServerEntity_t *ent, ServerEntity_t *other)
 
 	if (ent->local.killtarget)
 	{
-		t = Engine.Server_FindEntity(Server.eWorld,ent->local.killtarget,FALSE);
+		t = Engine.Server_FindEntity(Server.world,ent->local.killtarget,FALSE);
 		if(!t)
 			return;
 
@@ -60,7 +60,7 @@ void UseTargets(ServerEntity_t *ent, ServerEntity_t *other)
 
 	if(ent->v.targetname)
 	{
-		t = Engine.Server_FindEntity(Server.eWorld,ent->v.targetname,FALSE);
+		t = Engine.Server_FindEntity(Server.world,ent->v.targetname,FALSE);
 		if(t)
 		{
 			t->local.activator = other;
@@ -76,11 +76,13 @@ void WEAPON_StickThink(ServerEntity_t *ent)
 	ent->v.think			= WEAPON_StickThink;
 	ent->v.TouchFunction	= NULL;
 
-	if(((ent->v.enemy != Server.eWorld) && (ent->v.enemy->v.health > 1)))
+	if(((ent->v.enemy != Server.world) && (ent->v.enemy->v.health > 1)))
 	{
 		Entity_SetOrigin(ent,ent->v.enemy->v.origin);
+#if 0
 		if(!ent->v.velocity)
 			plVectorClear(ent->v.avelocity);
+#endif
 	}
 	else
 		Entity_Remove(ent);
@@ -94,7 +96,7 @@ void Misc_GibThink(ServerEntity_t *ent)
 	Entity_Remove(ent);
 }
 
-void ThrowGib(plVector3f_t origin, plVector3f_t velocity, char *model, float damage, bool bleed)
+void ThrowGib(PLVector3D origin, PLVector3D velocity, const char *model, float damage, bool bleed)
 {
 	ServerEntity_t *gib = Entity_Spawn();
 
@@ -105,19 +107,20 @@ void ThrowGib(plVector3f_t origin, plVector3f_t velocity, char *model, float dam
 	if(bleed)
 		gib->v.effects = EF_PARTICLE_BLOOD;
 
-	gib->v.velocity[0]	= velocity[0]*((damage+rand()%20)/2.0f);
-	gib->v.velocity[1]	= velocity[1]*((damage+rand()%20)/2.0f);
-	gib->v.velocity[2]	= velocity[2]*((damage+rand()%20)/2.0f);
+	gib->v.velocity.x	= velocity.x*((damage+rand()%20)/2.0f);
+	gib->v.velocity.y	= velocity.y*((damage+rand()%20)/2.0f);
+	gib->v.velocity.z	= velocity.z*((damage+rand()%20)/2.0f);
 	gib->v.movetype		= MOVETYPE_BOUNCE;
 
 	gib->Physics.solid		= SOLID_NOT;
 	gib->Physics.gravity	= SERVER_GRAVITY;
 	gib->Physics.mass		= 1.0f;
 
-	Math_VectorSet((float)(rand()%10*damage),gib->v.avelocity);
+    float damt = (float)(rand() % 10 * damage);
+    gib->v.avelocity = plCreateVector3D(damt, damt, damt);
 
 	Entity_SetModel(gib,model);
-	Entity_SetSizeVector(gib, pl_origin3f, pl_origin3f);
+	Entity_SetSizeVector(gib, plCreateVector3D(0, 0, 0), plCreateVector3D(0, 0, 0));
 
 	gib->v.think		= Misc_GibThink;
 	gib->v.nextthink	= Server.time+20.0f;

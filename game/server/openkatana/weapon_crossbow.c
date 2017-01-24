@@ -75,7 +75,7 @@ void Crossbow_PrimaryAttack(ServerEntity_t *ent)
 		Sound(ent,CHAN_WEAPON,"weapons/crossbow/cbfire.wav",255,ATTN_NORM);
 
 	ent->v.punchangle[0] -= 5.0f;
-	ent->v.iPrimaryAmmo = ent->local.iCrossbowAmmo -= 1;
+	ent->v.primary_ammo = ent->local.iCrossbowAmmo -= 1;
 
 	//Weapon_Animate(ent,FALSE,1,52,0.043f,10,19,0,FALSE);
 

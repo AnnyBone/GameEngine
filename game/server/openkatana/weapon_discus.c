@@ -10,7 +10,7 @@ void Discus_Deploy(ServerEntity_t *ent)
 void Discus_Catch(ServerEntity_t *ent, ServerEntity_t *discus)
 {
 	// [4/7/2012] Simplified ~hogsy
-	ent->v.iPrimaryAmmo = ent->local.discus_ammo2++;
+	ent->v.primary_ammo = ent->local.discus_ammo2++;
 
 	Sound(ent,CHAN_WEAPON,"weapons/discus/discuscatch.wav",255,ATTN_NORM);
 
@@ -134,7 +134,7 @@ void Discus_PrimaryAttack(ServerEntity_t *ent)
 	Discus_SpawnProjectile(ent,ent->v.origin);
 
 	// [4/7/2012] Simplified ~hogsy
-	ent->v.iPrimaryAmmo = ent->local.discus_ammo2--;
+	ent->v.primary_ammo = ent->local.discus_ammo2--;
 
 	if(ent->local.attackb_finished > Server.time)	// No attack boost...
 		ent->local.dAttackFinished = Server.time+0.35;

@@ -44,8 +44,7 @@ int	iOldGameMode;
 int	iRedScore, iBlueScore;
 
 // [2/8/2012] TODO: Why are we doing this!? Should be using the one from the lib ~hogsy
-char *va(char *format,...)
-{
+char *va(const char *format,...) {
 	va_list		argptr;
 	static char	string[1024];
 
@@ -119,9 +118,9 @@ trace_t Traceline(ServerEntity_t *ent, PLVector3D vStart, PLVector3D vEnd, int t
 	volume everywhere in the level.
 	Larger attenuations will drop off.
 */
-void Sound(ServerEntity_t *ent, AudioChannel_t channel, char *sound, int volume, float attenuation)
+void Sound(ServerEntity_t *ent, AudioChannel_t channel, const char *sound, int volume, float attenuation)
 {
-	Engine.Sound(ent,(int)channel,sound,volume,attenuation);
+	g_engine->Sound(ent,(int)channel,sound,volume,attenuation);
 
 	/* TODO
 	// [21/3/2012] Revised ~hogsy

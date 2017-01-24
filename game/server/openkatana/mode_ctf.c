@@ -129,14 +129,14 @@ void CTF_FlagTouch(ServerEntity_t *ent,ServerEntity_t *other)
 {
 	/*	Don't let us pick this up if we're either not a client
 		or we are dead.											*/
-	if(other->Monster.iType != MONSTER_PLAYER || other->v.health <= 0)
+	if(other->Monster.type != MONSTER_PLAYER || other->v.health <= 0)
 		return;
 	else if(other->local.flag && other->local.flag->local.style != ent->local.style)
 	{
 		if(other->local.flag->local.flags == STATE_FLAG_CAPTURED)
 			return;
 
-		switch(other->local.pTeam)
+		switch(other->local.team)
 		{
 		case TEAM_RED:
 			iRedScore++;
@@ -162,7 +162,7 @@ void CTF_FlagTouch(ServerEntity_t *ent,ServerEntity_t *other)
 
 		other->local.flag->local.flags = STATE_FLAG_CAPTURED;
 	}
-	else if(!other->local.flag && other->local.pTeam != ent->local.style)
+	else if(!other->local.flag && other->local.team != ent->local.style)
 	{
 		other->local.flag					= ent;
 		other->local.flag->local.flags = STATE_FLAG_CARRIED;

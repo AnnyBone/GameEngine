@@ -169,9 +169,9 @@ void AI_ForwardMovement(ServerEntity_t *entity, float velocity) {
 	Entity_MakeVectors(entity);
 
     Math_MAVector3D()
-	Math_VectorMA(entity->v.origin, velocity, entity->local.vForward, end);
+	Math_VectorMA(entity->v.origin, velocity, entity->local.forward, end);
 
-    entity->v.velocity = entity->local.vForward * velocity;
+    entity->v.velocity = entity->local.forward * velocity;
 #endif
 }
 

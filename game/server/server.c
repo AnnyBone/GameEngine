@@ -129,7 +129,7 @@ ConsoleVariable_t cvServerWaypointSpawn = { "server_waypointspawn", "0", false, 
 ConsoleVariable_t cvServerWaypointParse = { "server_waypointparse", "", false, true, "Overrides the default path to load waypoints from." };
 ConsoleVariable_t cvServerAim = { "server_aim", "1.0", false, true, "Enables auto-aim." };
 ConsoleVariable_t cvServerGravityTweak = { "server_gravityamount", "1.0", false, true, "Gravity modifier." };
-ConsoleVariable_t cvServerGravity = { "server_gravity", "600.0", false, true, "Overall gravity." };
+ConsoleVariable_t cv_server_gravity = { "server_gravity", "600.0", false, true, "Overall gravity." };
 #ifdef GAME_OPENKATANA
 // By default bots spawn in OpenKatana for both SP and MP.
 ConsoleVariable_t cvServerBots = { "server_bots", "1", false, true, "Can enable and disable bots." };
@@ -188,7 +188,7 @@ void Server_Initialize(void) {
     g_engine->Cvar_RegisterVariable(&cvServerGameTime, NULL);
     g_engine->Cvar_RegisterVariable(&cvServerGameClients, NULL);
     g_engine->Cvar_RegisterVariable(&cvServerGravityTweak, NULL);
-    g_engine->Cvar_RegisterVariable(&cvServerGravity, NULL);
+    g_engine->Cvar_RegisterVariable(&cv_server_gravity, NULL);
     g_engine->Cvar_RegisterVariable(&cvServerRespawnDelay, NULL);
     g_engine->Cvar_RegisterVariable(&cvServerAim, NULL);
 
@@ -202,10 +202,10 @@ void Server_Initialize(void) {
 
 // todo, move into world.c or something, rename to World_Spawn / wtvr
 void Server_Spawn(ServerEntity_t *entity) {
-    Server.eWorld = entity;
+    Server.world = entity;
 
     // Set defaults.
-    Server.dWaypointSpawnDelay  = ((double)cvServerWaypointDelay.value);
+    Server.waypointspawndelay  = ((double)cvServerWaypointDelay.value);
     Server.round_started        =
     Server.players_spawned      = false;
     Server.iMonsters            = 0;

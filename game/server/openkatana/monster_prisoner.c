@@ -172,7 +172,7 @@ PRISONER_GENERATEKEY:
 
 	ePrisoner->v.movetype		= MOVETYPE_STEP;
 	ePrisoner->v.health		= PRISONER_MAX_HEALTH;
-	ePrisoner->local.iMaxHealth = PRISONER_MAX_HEALTH;
+	ePrisoner->local.maxhealth = PRISONER_MAX_HEALTH;
 	ePrisoner->v.takedamage	= true;
 	ePrisoner->v.netname		= cPrisonerName;
 	ePrisoner->v.frame			= 0;
@@ -180,14 +180,14 @@ PRISONER_GENERATEKEY:
 	// Physics Properties
 	ePrisoner->Physics.solid	= SOLID_SLIDEBOX;
 	ePrisoner->Physics.mass		= 1.2f;						
-	ePrisoner->Physics.gravity	= cvServerGravity.value;
+	ePrisoner->Physics.gravity	= cv_server_gravity.value;
 	ePrisoner->Physics.friction	= 1.5f;
 
 	// Initial Command States
 	ePrisoner->Monster.commands[COMMAND_CHECK_CELL] = true;
 
 	// Monster Properties
-	ePrisoner->Monster.iType = MONSTER_PRISONER;
+	ePrisoner->Monster.type = MONSTER_PRISONER;
 
 	Entity_SetKilledFunction(ePrisoner, Prisoner_Die);
 	Entity_SetDamagedFunction(ePrisoner, Prisoner_Pain);

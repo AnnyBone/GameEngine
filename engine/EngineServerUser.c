@@ -76,7 +76,7 @@ void SV_SetIdealPitch (void)
 		bottom[2] = top[2] - 160;
 
 		tr = SV_Move(top, pl_origin3f, pl_origin3f, bottom, 1, sv_player);
-		if (tr.bAllSolid)
+		if (tr.all_solid)
 			return;	// looking at a wall, leave ideal the way is was
 
 		if (tr.fraction == 1)

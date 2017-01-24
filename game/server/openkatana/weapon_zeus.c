@@ -45,7 +45,7 @@ void Zeus_Hit(ServerEntity_t *ent)
 		{
 			if(trace.ent && trace.ent->v.takedamage)
 			{
-				if(trace.ent->local.bBleed)
+				if(trace.ent->local.bleed)
 					Engine.Particle(trace.endpos,vel,10,"blood",30);
 
 				Entity_Damage(trace.ent, ent, 5, 0);

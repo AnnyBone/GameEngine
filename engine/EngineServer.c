@@ -655,7 +655,7 @@ void SV_WriteClientdataToMessage (ServerEntity_t *ent, sizebuf_t *msg)
 		bits |= SU_WEAPON2;
 	if (ent->v.iArmorValue & 0xFF00)
 		bits |= SU_ARMOR2;
-	if(ent->v.iPrimaryAmmo & 0xFF00)
+	if(ent->v.primary_ammo & 0xFF00)
 		bits |= SU_AMMO2;
 	if (bits & SU_WEAPONFRAME && ent->v.iWeaponFrame & 0xFF00)
 		bits |= SU_WEAPONFRAME2;
@@ -702,7 +702,7 @@ void SV_WriteClientdataToMessage (ServerEntity_t *ent, sizebuf_t *msg)
 		MSG_WriteByte (msg,SV_ModelIndex(ent->v.cViewModel));
 
 	MSG_WriteShort(msg,ent->v.health);
-	MSG_WriteByte(msg,ent->v.iPrimaryAmmo);
+	MSG_WriteByte(msg,ent->v.primary_ammo);
 	MSG_WriteByte(msg,ent->v.iActiveWeapon);
 
 	//johnfitz -- PROTOCOL_FITZQUAKE
@@ -711,7 +711,7 @@ void SV_WriteClientdataToMessage (ServerEntity_t *ent, sizebuf_t *msg)
 	if (bits & SU_ARMOR2)
 		MSG_WriteByte (msg,ent->v.iArmorValue >> 8);
 	if (bits & SU_AMMO2)
-		MSG_WriteByte (msg,ent->v.iPrimaryAmmo >> 8);
+		MSG_WriteByte (msg,ent->v.primary_ammo >> 8);
 	if (bits & SU_WEAPONFRAME2)
 		MSG_WriteByte (msg,ent->v.iWeaponFrame >> 8);
 	if (bits & SU_WEAPONALPHA)

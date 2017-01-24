@@ -180,7 +180,7 @@ void IonBlaster_PrimaryAttack(ServerEntity_t *ent)
 
 	// This fixes the ammo bug ~eukos [05/08/2013]
 	ent->local.ionblaster_ammo--;
-	ent->v.iPrimaryAmmo = ent->local.ionblaster_ammo;
+	ent->v.primary_ammo = ent->local.ionblaster_ammo;
 
 	eIonBall = Entity_Spawn();
 	if(eIonBall)

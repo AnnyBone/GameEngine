@@ -36,7 +36,7 @@ void TridentHit(ServerEntity_t *ent)
 		return;
 	if(trace.ent->v.takedamage)
     {
-		if(trace.ent->local.bBleed)
+		if(trace.ent->local.bleed)
 			Engine.Particle(sndvec,vel,10,"blood",30);
 
 		Entity_Damage(trace.ent,ent,20,0);

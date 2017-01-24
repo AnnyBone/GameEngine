@@ -39,6 +39,7 @@ typedef enum EntityDamageType_s
 	DAMAGE_TYPE_GRAVITY,
 	DAMAGE_TYPE_CRUSH,
 	DAMAGE_TYPE_FALL,
+	DAMAGE_TYPE_DROWN,
 
 	DAMAGE_TYPE_NONE
 } EntityDamageType_t;

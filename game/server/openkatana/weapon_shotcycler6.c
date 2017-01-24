@@ -183,7 +183,7 @@ void Shotcycler_PrimaryAttack(ServerEntity_t *ent)
 	Sound(ent, CHAN_WEAPON, va("weapons/shotcycler6/fire%i.wav", rand() % 2), 130, ATTN_NORM);
 
 	Weapon_ViewPunch(ent, 5, false);
-	ent->v.iPrimaryAmmo = ent->local.shotcycler_ammo -= 2;
+	ent->v.primary_ammo = ent->local.shotcycler_ammo -= 2;
 
 	ServerEffect_MuzzleFlash(ent->v.origin, ent->v.angles);
 

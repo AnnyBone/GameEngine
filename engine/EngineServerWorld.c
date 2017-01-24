@@ -587,7 +587,7 @@ bool SV_RecursiveHullCheck(hull_t *hull, int num, float p1f, float p2f, plVector
 	{
 		if (num != BSP_CONTENTS_SOLID)
 		{
-			trace->bAllSolid = false;
+			trace->all_solid = false;
 
 			if (num == BSP_CONTENTS_EMPTY)
 				trace->bOpen = true;
@@ -664,7 +664,7 @@ bool SV_RecursiveHullCheck(hull_t *hull, int num, float p1f, float p2f, plVector
 // go past the node
 		return SV_RecursiveHullCheck (hull, node->iChildren[side^1], midf, p2f, mid, p2, trace);
 
-	if(trace->bAllSolid)
+	if(trace->all_solid)
 		return false;		// never got out of the solid area
 
 	// The other side of the node is solid, this is the impact point
@@ -716,7 +716,7 @@ trace_t SV_ClipMoveToEntity(ServerEntity_t *ent, MathVector3f_t start, MathVecto
 	// Fill in a default trace
 	memset (&trace, 0, sizeof(trace_t));
 	trace.fraction	= 1;
-	trace.bAllSolid = true;
+	trace.all_solid = true;
 	Math_VectorCopy (end, trace.endpos);
 
 	// Get the clipping hull
@@ -815,7 +815,7 @@ void SV_ClipToLinks(areanode_t *node,moveclip_t *clip)
 			continue;	// points never interact
 
 		// Might intersect, so do an exact clip
-		if(clip->trace.bAllSolid)
+		if(clip->trace.all_solid)
 			return;
 
 		// [4/8/2012] Removed upon request ~hogsy
@@ -829,12 +829,12 @@ void SV_ClipToLinks(areanode_t *node,moveclip_t *clip)
 		}
 
 		// [28/6/2013] Shouldn't really be refering to the monster struct in engine-side code, like we're doing here... ~hogsy
-		if(eTouch->Monster.iType > 2)
+		if(eTouch->Monster.type > 2)
 			trace = SV_ClipMoveToEntity(eTouch,clip->start,clip->mins2,clip->maxs2,clip->end);
 		else
 			trace = SV_ClipMoveToEntity(eTouch, clip->start, clip->mins, clip->maxs, clip->end);
 
-		if(trace.bAllSolid || trace.bStartSolid || trace.fraction < clip->trace.fraction)
+		if(trace.all_solid || trace.bStartSolid || trace.fraction < clip->trace.fraction)
 		{
 			trace.ent = eTouch;
 		 	if (clip->trace.bStartSolid)

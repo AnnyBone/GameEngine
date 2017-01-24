@@ -62,8 +62,8 @@ typedef struct
 
 ServerEntityField_t	entity_fields[] =
 {
-	{ "classname", SERVER_ENTITY_FIELD(v.cClassname), DATA_STRING },
-	{ "name", SERVER_ENTITY_FIELD(v.cName), DATA_STRING },
+	{ "classname", SERVER_ENTITY_FIELD(v.classname), DATA_STRING },
+	{ "name", SERVER_ENTITY_FIELD(v.name), DATA_STRING },
 	{ "model", SERVER_ENTITY_FIELD(v.model), DATA_STRING },
 	{ "targetname", SERVER_ENTITY_FIELD(v.targetname), DATA_STRING },
 	{ "noise", SERVER_ENTITY_FIELD(v.noise), DATA_STRING },
@@ -71,10 +71,9 @@ ServerEntityField_t	entity_fields[] =
 	{ "origin", SERVER_ENTITY_FIELD(v.origin), DATA_VECTOR3 },
 	{ "angles", SERVER_ENTITY_FIELD(v.angles), DATA_VECTOR3 },
 	{ "light", SERVER_ENTITY_FIELD(v.vLight), DATA_VECTOR4 },
-	{ "health", SERVER_ENTITY_FIELD(v.iHealth), DATA_INTEGER },
+	{ "health", SERVER_ENTITY_FIELD(v.health), DATA_INTEGER },
 	{ "spawnflags", SERVER_ENTITY_FIELD(v.spawnflags), DATA_INTEGER },
-	{ "takedamage", SERVER_ENTITY_FIELD(v.bTakeDamage), DATA_BOOLEAN },
-	{ "takedamage", SERVER_ENTITY_FIELD(v.bTakeDamage), DATA_BOOLEAN },
+	{ "takedamage", SERVER_ENTITY_FIELD(v.takedamage), DATA_BOOLEAN },
 	{ "alpha", SERVER_ENTITY_FIELD(alpha), DATA_INTEGER },
 	{ "frame", SERVER_ENTITY_FIELD(v.frame), DATA_INTEGER },
 
@@ -98,12 +97,12 @@ ServerEntityField_t	entity_fields[] =
 	{ "speed", SERVER_ENTITY_FIELD(local.speed), DATA_FLOAT },
 	{ "delay", SERVER_ENTITY_FIELD(local.delay), DATA_FLOAT },
 	{ "lip", SERVER_ENTITY_FIELD(local.lip), DATA_FLOAT },
-	{ "wait", SERVER_ENTITY_FIELD(local.dWait), DATA_DOUBLE },
-	{ "damage", SERVER_ENTITY_FIELD(local.iDamage), DATA_INTEGER },
+	{ "wait", SERVER_ENTITY_FIELD(local.wait), DATA_DOUBLE },
+	{ "damage", SERVER_ENTITY_FIELD(local.damage), DATA_INTEGER },
 	{ "volume", SERVER_ENTITY_FIELD(local.volume), DATA_INTEGER },
 	{ "style", SERVER_ENTITY_FIELD(local.style), DATA_INTEGER },
 	{ "count", SERVER_ENTITY_FIELD(local.count), DATA_INTEGER },
-	{ "pTeam", SERVER_ENTITY_FIELD(local.pTeam), DATA_INTEGER },
+	{ "team", SERVER_ENTITY_FIELD(local.team), DATA_INTEGER },
 	{ "attack_finished", SERVER_ENTITY_FIELD(local.dAttackFinished), DATA_DOUBLE },
 
 	// hacks
@@ -142,19 +141,17 @@ void ServerEntity_ParseField(char *key, char *value, ServerEntity_t *entity)
 				}
 				else
 				{
-					MathVector3f_t vector;
-					Math_VectorSet(0, vector);
-					if (sscanf(value, "%f %f %f", &vector[0], &vector[1], &vector[2]) < 3)
+					PLVector3D vector = { 0, 0, 0 };
+					if (sscanf(value, "%f %f %f", &vector.x, &vector.y, &vector.z) < 3)
 						Engine.Con_Warning("Field did not return expected number of arguments! (%s)\n", value);
-					((float*)((uint8_t*)entity + field->offset))[0] = vector[0];
-					((float*)((uint8_t*)entity + field->offset))[1] = vector[1];
-					((float*)((uint8_t*)entity + field->offset))[2] = vector[2];
+					((float*)((uint8_t*)entity + field->offset))[0] = vector.x;
+					((float*)((uint8_t*)entity + field->offset))[1] = vector.y;
+					((float*)((uint8_t*)entity + field->offset))[2] = vector.z;
 				}
 				break;
 			case DATA_VECTOR4:
 			{
-				plVector4f_t vector;
-				Math_VectorSet(0, vector);
+				float vector[4] = { 0, 0, 0 };
 				if (sscanf(value, "%f %f %f %f", &vector[0], &vector[1], &vector[2], &vector[3]) < 4)
 					Engine.Con_Warning("Field did not return expected number of arguments! (%s)\n", value);
 				((float*)((uint8_t*)entity + field->offset))[0] = vector[0];
@@ -221,18 +218,18 @@ ServerEntity_t *Entity_Spawn(void)
 	object is spawned, and then only
 	if it is teleported.
 */
-void Entity_SetOrigin(ServerEntity_t *eEntity, MathVector3f_t vOrigin)
-{
-	plVectorCopy(vOrigin, eEntity->v.origin);
+void Entity_SetOrigin(ServerEntity_t *eEntity, PLVector3D vOrigin) {
+	eEntity->v.origin = vOrigin;
 
 	Entity_Link(eEntity, false);
 }
 
 /*	Sets the angle of the given entity.
 */
-void Entity_SetAngles(ServerEntity_t *eEntity, MathVector3f_t vAngles)
+void Entity_SetAngles(ServerEntity_t *eEntity, PLVector3D vAngles)
 {
-	plVectorCopy(vAngles, eEntity->v.angles);
+    eEntity->v.angles = vAngles;
+
 	// TODO: Link?
 }
 
@@ -252,24 +249,22 @@ void Entity_SetModel(ServerEntity_t *eEntity, const char *modelpath)
 /*	Sets the size of the given entity; requires that the model has been applied first.
 	Alternative to SetSize.
 */
-void Entity_SetSizeVector(ServerEntity_t *eEntity, MathVector3f_t vMin, MathVector3f_t vMax)
+void Entity_SetSizeVector(ServerEntity_t *eEntity, PLVector3D vMin, PLVector3D vMax)
 {
-	int	i;
-
 	// Check if the model is set yet, if not give us a little warning.
 	if(!eEntity->v.model)
 		Engine.Con_Warning("Setting entity size before model! (%s)\n",eEntity->v.classname);
 
-	for(i = 0; i < 3; i++)
-		if(vMin[i] > vMax[i])
-		{
-			Engine.Con_Warning("Backwards mins/maxs! (%s)\n",eEntity->v.classname);
-			return;
-		}
+    if(vMin.x > vMax.x || vMin.y > vMax.y || vMin.z > vMax.z) {
+        Engine.Con_Warning("Backwards mins/maxs! (%s)\n",eEntity->v.classname);
+        return;
+    }
 
-	plVectorCopy(vMin, eEntity->v.mins);
-	plVectorCopy(vMax, eEntity->v.maxs);
-	Math_VectorSubtract(vMax,vMin,eEntity->v.size);
+    eEntity->v.mins = vMin;
+    eEntity->v.maxs = vMax;
+
+    plSubtractVector3D(&vMin, vMax);
+    eEntity->v.size = vMin;
 
 	Entity_Link(eEntity, false);
 }
@@ -281,10 +276,9 @@ void Entity_SetSize(ServerEntity_t *eEntity,
 	float fMinA,float fMinB,float fMinC,
 	float fMaxA,float fMaxB,float fMaxC)
 {
-	MathVector3f_t	vMin,vMax;
-
-	vMin[0] = fMinA; vMin[1] = fMinB; vMin[2] = fMinC;
-	vMax[0] = fMaxA; vMax[1] = fMaxB; vMax[2] = fMaxC;
+	PLVector3D	vMin,vMax;
+	vMin.x = fMinA; vMin.y = fMinB; vMin.z = fMinC;
+	vMax.x = fMaxA; vMax.y = fMaxB; vMax.z = fMaxC;
 
 	Entity_SetSizeVector(eEntity,vMin,vMax);
 }
@@ -293,8 +287,9 @@ void Entity_SetSize(ServerEntity_t *eEntity,
 */
 void Entity_AddEffects(ServerEntity_t *eEntity,int iEffects)
 {
-	if (eEntity->v.effects & iEffects)
-		return;
+	if (eEntity->v.effects & iEffects) {
+        return;
+    }
 	eEntity->v.effects |= iEffects;
 }
 
@@ -302,8 +297,9 @@ void Entity_AddEffects(ServerEntity_t *eEntity,int iEffects)
 */
 void Entity_RemoveEffects(ServerEntity_t *eEntity,int iEffects)
 {
-	if (!(eEntity->v.effects & iEffects))
-		return;
+	if (!(eEntity->v.effects & iEffects)) {
+        return;
+    }
 	eEntity->v.effects &= ~iEffects;
 }
 
@@ -334,8 +330,7 @@ void Entity_RemoveFlags(ServerEntity_t *eEntity, int iFlags)
 
 /*	Can be used for convenience.
 */
-void Entity_ClearFlags(ServerEntity_t *eEntity, int iFlags)
-{
+void Entity_ClearFlags(ServerEntity_t *eEntity) {
 	eEntity->v.flags = 0;
 }
 
@@ -344,7 +339,7 @@ void Entity_ClearFlags(ServerEntity_t *eEntity, int iFlags)
 bool Entity_CanDamage(ServerEntity_t *eEntity, ServerEntity_t *eTarget, EntityDamageType_t iDamageType)
 {
 	// Can't damage people on the same team.
-	if(eEntity->local.pTeam && (eEntity->local.pTeam == eTarget->local.pTeam))
+	if(eEntity->local.team && (eEntity->local.team == eTarget->local.team))
 		return false;
 
 	if(eTarget->v.takedamage && (!eTarget->local.iDamageType || (eTarget->local.iDamageType == iDamageType)))
@@ -353,60 +348,60 @@ bool Entity_CanDamage(ServerEntity_t *eEntity, ServerEntity_t *eTarget, EntityDa
 	return false;
 }
 
-void Entity_Damage(ServerEntity_t *seEntity, ServerEntity_t *seInflictor, int iDamage, EntityDamageType_t type)
+void Entity_Damage(ServerEntity_t *entity, ServerEntity_t *seInflictor, int iDamage, EntityDamageType_t type)
 {
 	// Don't bother if there's no actual damage inflicted.
 	if (iDamage <= 0)
 		return;
 
 	// Only continue if we can damage the entity.
-	if (!Entity_CanDamage(seInflictor, seEntity, type))
+	if (!Entity_CanDamage(seInflictor, entity, type))
 		return;
 
 	// If it's a monster or player, hand it over to the monster code.
-	if (Entity_IsMonster(seEntity) || Entity_IsPlayer(seEntity))
+	if (Entity_IsMonster(entity) || Entity_IsPlayer(entity))
 	{
-		Monster_Damage(seEntity, seInflictor, iDamage, type);
+		Monster_Damage(entity, seInflictor, iDamage, type);
 		return;
 	}
 
 	// Otherwise we'll do our own thing here...
 
-	seEntity->v.health -= iDamage;
-	if (seEntity->v.health <= 0)
+	entity->v.health -= iDamage;
+	if (entity->v.health <= 0)
 	{
-		if (seEntity->local.KilledFunction)
-			seEntity->local.KilledFunction(seEntity, seInflictor, type);
+		if (entity->local.KilledFunction)
+			entity->local.KilledFunction(entity, seInflictor, type);
 		return;
 	}
 
-	if (seEntity->local.DamagedFunction)
-		seEntity->local.DamagedFunction(seEntity, seInflictor, type);
+	if (entity->local.DamagedFunction)
+		entity->local.DamagedFunction(entity, seInflictor, type);
 }
 
 /*	Damage entities within a specific radius.
 */
 void Entity_RadiusDamage(ServerEntity_t *eInflictor, float fRadius, int iDamage, EntityDamageType_t iDamageType)
 {
-	int		i;
 	float	fDistance;
-	MathVector3f_t	vOrigin;
+	PLVector3D	vOrigin;
 	ServerEntity_t *eTarget = Engine.Server_FindRadius(eInflictor->v.origin, fRadius);
 
 	do
 	{
 		if(eTarget->v.takedamage)
 		{
-			for(i = 0; i < 3; i++)
-				vOrigin[i] = eTarget->v.origin[i]+(eTarget->v.mins[i]+eTarget->v.maxs[i])*0.5f;
+			vOrigin.x = eTarget->v.origin.x+(eTarget->v.mins.x+eTarget->v.maxs.x)*0.5f;
+            vOrigin.y = eTarget->v.origin.y+(eTarget->v.mins.y+eTarget->v.maxs.y)*0.5f;
+            vOrigin.z = eTarget->v.origin.z+(eTarget->v.mins.z+eTarget->v.maxs.z)*0.5f;
 
-			Math_VectorSubtract(eInflictor->v.origin,vOrigin,vOrigin);
+            plSubtractVector3D(&vOrigin, eInflictor->v.origin);
 
-			fDistance = 0.5f*plLengthf(vOrigin);
+			fDistance = 0.5f * plVector3DLength(vOrigin);
 			if(fDistance > 0)
 			{
-				Math_VectorInverse(vOrigin);
-				Math_VectorAdd(eTarget->v.velocity,vOrigin,eTarget->v.velocity);
+                plInverseVector3D(&vOrigin);
+                plAddVector3D(&eTarget->v.velocity, vOrigin);
 
 				// Reduce the damage by distance.
 				fDistance = (float)iDamage-(100.0f/fDistance);
@@ -427,20 +422,17 @@ void Entity_RadiusDamage(ServerEntity_t *eInflictor, float fRadius, int iDamage,
 
 /*	Link an entity.
 */
-void Entity_Link(ServerEntity_t *eEntity,bool bTouchTriggers)
-{
+void Entity_Link(ServerEntity_t *eEntity,bool bTouchTriggers) {
 	Engine.LinkEntity(eEntity, bTouchTriggers);
 }
 
-void Entity_Unlink(ServerEntity_t *eEntity)
-{
+void Entity_Unlink(ServerEntity_t *eEntity) {
 	Engine.UnlinkEntity(eEntity);
 }
 
 /*	Remove an entity from the world.
 */
-void Entity_Remove(ServerEntity_t *eEntity)
-{
+void Entity_Remove(ServerEntity_t *eEntity) {
 	Engine.FreeEntity(eEntity);
 }
 
@@ -453,17 +445,17 @@ void Entity_Remove(ServerEntity_t *eEntity)
 void Entity_CheckFrames(ServerEntity_t *eEntity)
 {
 	// If something isn't active and Animationtime is over
-	if(!eEntity->local.iAnimationEnd || (Server.time < eEntity->local.dAnimationTime))
+	if(!eEntity->local.animation_end || (Server.time < eEntity->local.animation_time))
 		return;
-	else if(eEntity->local.iAnimationCurrent > eEntity->local.iAnimationEnd)
+	else if(eEntity->local.iAnimationCurrent > eEntity->local.animation_end)
 	{
-		eEntity->local.dAnimationTime = 0;
+		eEntity->local.animation_time = 0;
 		return;
 	}
 
 	eEntity->v.frame = eEntity->local.iFrames[eEntity->local.iAnimationCurrent].frame;
 
-	eEntity->local.dAnimationTime = Server.time+((double)eEntity->local.iFrames[eEntity->local.iAnimationCurrent].speed);
+	eEntity->local.animation_time = Server.time+((double)eEntity->local.iFrames[eEntity->local.iAnimationCurrent].speed);
 
 	if(eEntity->local.iFrames[eEntity->local.iAnimationCurrent].Event)
 		eEntity->local.iFrames[eEntity->local.iAnimationCurrent].Event(eEntity);
@@ -477,10 +469,10 @@ void Entity_ResetAnimation(ServerEntity_t *eEntity)
 {
 	eEntity->v.frame					=
 	eEntity->local.iAnimationCurrent	=
-	eEntity->local.iAnimationEnd		= 0;
+	eEntity->local.animation_end		= 0;
 
 	// Reset the animation time.
-	eEntity->local.dAnimationTime = 0;
+	eEntity->local.animation_time = 0;
 }
 
 /*	Start animating the entity.
@@ -499,14 +491,14 @@ void Entity_Animate(ServerEntity_t *eEntity, ServerEntityFrame_t *efAnimation)
 	{
 		if(efAnimation[i].isend)
 		{
-			eEntity->local.iAnimationEnd = i;
+			eEntity->local.animation_end = i;
 			break;
 		}
 
 		i++;
 	}
 
-	eEntity->local.dAnimationTime	= Server.time+((double)efAnimation[1].speed);
+	eEntity->local.animation_time	= Server.time+((double)efAnimation[1].speed);
 	eEntity->local.iFrames			= efAnimation;
 }
 
@@ -514,7 +506,7 @@ void Entity_Animate(ServerEntity_t *eEntity, ServerEntityFrame_t *efAnimation)
 */
 bool Entity_IsAnimating(ServerEntity_t *entity)
 {
-	if (!entity->local.iAnimationEnd || (Server.time < entity->local.dAnimationTime))
+	if (!entity->local.animation_end || (Server.time < entity->local.animation_time))
 		return false;
 
 	return true;
@@ -528,7 +520,7 @@ bool Entity_IsAnimating(ServerEntity_t *entity)
 */
 bool Entity_IsPlayer(ServerEntity_t *eEntity)
 {
-	if(eEntity->Monster.iType == MONSTER_PLAYER)
+	if(eEntity->Monster.type == MONSTER_PLAYER)
 		return true;
 
 	return false;
@@ -538,7 +530,7 @@ bool Entity_IsPlayer(ServerEntity_t *eEntity)
 */
 bool Entity_IsMonster(ServerEntity_t *eEntity)
 {
-	if((eEntity->Monster.iType != MONSTER_PLAYER) && (eEntity->Monster.iType > MONSTER_VEHICLE))
+	if((eEntity->Monster.type != MONSTER_PLAYER) && (eEntity->Monster.type > MONSTER_VEHICLE))
 		return true;
 
 	return false;
@@ -564,25 +556,24 @@ void Entity_SetPhysics(ServerEntity_t *seEntity, EntitySolidType_t pstSolidType,
 
 void Entity_MakeVectors(ServerEntity_t *eEntity)
 {
-	plAngleVectors(eEntity->v.v_angle, eEntity->local.vForward, eEntity->local.vRight, eEntity->local.vUp);
+	Math_AngleVectors(eEntity->v.v_angle, &eEntity->local.forward, &eEntity->local.right, &eEntity->local.vUp);
 }
 
 bool Entity_DropToFloor(ServerEntity_t *eEntity)
 {
-	MathVector3f_t vEnd;
+	PLVector3D vEnd;
 	trace_t	trGround;
 
-	plVectorCopy(eEntity->v.origin, vEnd);
-
-	vEnd[2] -= 256;
+    vEnd = eEntity->v.origin;
+	vEnd.z -= 256;
 
 	trGround = Engine.Server_Move(eEntity->v.origin, eEntity->v.mins, eEntity->v.maxs, vEnd, false, eEntity);
-	if (trGround.fraction == 1 || trGround.bAllSolid)
+	if (trGround.fraction == 1 || trGround.all_solid)
 	{
 		Engine.Con_Warning("Entity is stuck in world! (%s) (%i %i %i)\n", eEntity->v.classname,
-			(int)eEntity->v.origin[0],
-			(int)eEntity->v.origin[1],
-			(int)eEntity->v.origin[2]);
+			(int)eEntity->v.origin.x,
+			(int)eEntity->v.origin.y,
+			(int)eEntity->v.origin.z);
 		return false;
 	}
 
@@ -596,17 +587,9 @@ bool Entity_DropToFloor(ServerEntity_t *eEntity)
 	return true;
 }
 
-bool Entity_IsTouching(ServerEntity_t *eEntity, ServerEntity_t *eOther)
-{
-	if (eEntity->v.mins[0] > eOther->v.maxs[0] ||
-		eEntity->v.mins[1] > eOther->v.maxs[1] ||
-		eEntity->v.mins[2] > eOther->v.maxs[2] ||
-		eEntity->v.maxs[0] < eOther->v.mins[0] ||
-		eEntity->v.maxs[1] < eOther->v.mins[1] ||
-		eEntity->v.maxs[2] < eOther->v.mins[2])
-		return false;
-
-	return true;
+// todo, this wouldn't entirely be true using intersection for our check, so multiply it out a little...
+bool Entity_IsTouching(ServerEntity_t *eEntity, ServerEntity_t *eOther) {
+    return Math_IsIntersecting(eEntity->v.mins, eEntity->v.maxs, eOther->v.mins, eOther->v.maxs);
 }
 
 bool Entity_IsOnGround(ServerEntity_t *entity)
@@ -658,5 +641,5 @@ MaterialProperty_t seGetSkinPhysicsProperty(ServerEntity_t *entity, MaterialSkin
 		return MATERIAL_TYPE_NONE;
 	}
 
-	return skin->uiType;
+	return (MaterialProperty_t)skin->uiType;
 }

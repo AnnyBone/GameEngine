@@ -22,45 +22,50 @@
 
 /*	Simple puff of blood.
 */
-void ServerEffect_BloodPuff(MathVector3f_t position)
+void ServerEffect_BloodPuff(PLVector3D position)
 {
 	g_engine->WriteByte(MSG_BROADCAST, SVC_TEMPENTITY);
 	g_engine->WriteByte(MSG_BROADCAST, CTE_BLOODPUFF);
 
-	for (int i = 0; i < 3; i++)
-		g_engine->WriteCoord(MSG_BROADCAST, position[i]);
+	g_engine->WriteCoord(MSG_BROADCAST, position.x);
+	g_engine->WriteCoord(MSG_BROADCAST, position.y);
+	g_engine->WriteCoord(MSG_BROADCAST, position.z);
 }
 
 /*	Cloud of blood.
 */
-void ServerEffect_BloodCloud(MathVector3f_t position, BloodType_t type)
+void ServerEffect_BloodCloud(PLVector3D position, BloodType_t type)
 {
 	g_engine->WriteByte(MSG_BROADCAST, SVC_TEMPENTITY);
 	g_engine->WriteByte(MSG_BROADCAST, CTE_BLOODCLOUD);
 
-	for (int i = 0; i < 3; i++)
-		g_engine->WriteCoord(MSG_BROADCAST, position[i]);
+    g_engine->WriteCoord(MSG_BROADCAST, position.x);
+    g_engine->WriteCoord(MSG_BROADCAST, position.y);
+    g_engine->WriteCoord(MSG_BROADCAST, position.z);
 
 	g_engine->WriteByte(MSG_BROADCAST, type);
 }
 
-void ServerEffect_Explosion(MathVector3f_t position)
+void ServerEffect_Explosion(PLVector3D position)
 {
 	g_engine->WriteByte(MSG_BROADCAST, SVC_TEMPENTITY);
 	g_engine->WriteByte(MSG_BROADCAST, CTE_EXPLOSION);
 
-	for (int i = 0; i < 3; i++)
-		g_engine->WriteCoord(MSG_BROADCAST, position[i]);
+    g_engine->WriteCoord(MSG_BROADCAST, position.x);
+    g_engine->WriteCoord(MSG_BROADCAST, position.y);
+    g_engine->WriteCoord(MSG_BROADCAST, position.z);
 }
 
-void ServerEffect_MuzzleFlash(MathVector3f_t position, MathVector3f_t angles)
+void ServerEffect_MuzzleFlash(PLVector3D position, PLVector3D angles)
 {
 	g_engine->WriteByte(MSG_BROADCAST, SVC_TEMPENTITY);
 	g_engine->WriteByte(MSG_BROADCAST, CTE_MUZZLEFLASH);
 
-	for (int i = 0; i < 3; i++)
-		g_engine->WriteCoord(MSG_BROADCAST, position[i]);
+    g_engine->WriteCoord(MSG_BROADCAST, position.x);
+    g_engine->WriteCoord(MSG_BROADCAST, position.y);
+    g_engine->WriteCoord(MSG_BROADCAST, position.z);
 
-	for (int i = 0; i < 3; i++)
-		g_engine->WriteAngle(MSG_BROADCAST, angles[i]);
+	g_engine->WriteAngle(MSG_BROADCAST, angles.x);
+    g_engine->WriteAngle(MSG_BROADCAST, angles.y);
+    g_engine->WriteAngle(MSG_BROADCAST, angles.z);
 }

@@ -264,8 +264,8 @@ void Item_Touch(ServerEntity_t *eItem,ServerEntity_t *eOther)
 		break;
 	case ITEM_HEALTHKIT:
 		eOther->v.health += 20;
-		if (eOther->v.health > eOther->local.iMaxHealth)
-			eOther->v.health = eOther->local.iMaxHealth;
+		if (eOther->v.health > eOther->local.maxhealth)
+			eOther->v.health = eOther->local.maxhealth;
 		break;
 	/* Episode 1 */
 	case WEAPON_IONRIFLE:

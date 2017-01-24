@@ -91,7 +91,7 @@ void Kineticore_PrimaryAttack(ServerEntity_t *ent)
 
 	//Weapon_Animate(ent,FALSE,27,37,0.3f,10,19,0,FALSE);
 
-	ent->v.iPrimaryAmmo = ent->local.kineticore_ammo--;
+	ent->v.primary_ammo = ent->local.kineticore_ammo--;
 	ent->local.kineticore_ammo2--;
 
 	projectile_iceball(ent, ent->v.origin);

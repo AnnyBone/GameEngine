@@ -19,9 +19,9 @@
 #ifndef SERVER_EFFECTS_H
 #define	SERVER_EFFECTS_H
 
-void ServerEffect_BloodPuff(MathVector3f_t position);
-void ServerEffect_BloodCloud(MathVector3f_t position, BloodType_t type);
-void ServerEffect_Explosion(MathVector3f_t position);
-void ServerEffect_MuzzleFlash(MathVector3f_t position, MathVector3f_t angles);
+void ServerEffect_BloodPuff(PLVector3D position);
+void ServerEffect_BloodCloud(PLVector3D position, BloodType_t type);
+void ServerEffect_Explosion(PLVector3D position);
+void ServerEffect_MuzzleFlash(PLVector3D position, PLVector3D angles);
 
 #endif // !SERVER_EFFECTS_H

@@ -216,37 +216,37 @@ void Weapon_Precache(void)
 
 /*	Enable automatic aim assitance.
 */
-MathVector_t Weapon_Aim(ServerEntity_t *eEntity)
+PLVector3D Weapon_Aim(ServerEntity_t *entity)
 {
 	int				i, j;
 	float			fDistance, fBestDistance;
 	trace_t			tAimLine;
 	ServerEntity_t	*eCheck, *eBest;
-	MathVector3f_t	mvStart, mvEnd, mvDirection, mvBestDirection;
+	PLVector3D	mvStart, mvEnd, mvDirection, mvBestDirection;
 
 	// Copy the entity's origin as our starting position.
-	plVectorCopy(eEntity->v.origin, mvStart);
+	plVectorCopy(entity->v.origin, mvStart);
 
 	// Move the starting position up a little.
 	mvStart[2] += 20.0f;
 
-	Entity_MakeVectors(eEntity);
+	Entity_MakeVectors(entity);
 
 	// Try tracing straight.
-	plVectorCopy(eEntity->local.vForward, mvDirection);
+	plVectorCopy(entity->local.forward, mvDirection);
 	Math_VectorMA(mvStart, 2048.0f, mvDirection, mvEnd);
 
-	tAimLine = Engine.Server_Move(mvStart, pl_origin3f, pl_origin3f, mvEnd, 0, eEntity);
+	tAimLine = Engine.Server_Move(mvStart, pl_origin3f, pl_origin3f, mvEnd, 0, entity);
 	// See if we encountered anything we can damage.
 	if (tAimLine.ent && tAimLine.ent->v.takedamage)
 	{
 		// Check the teams.
-		if ((eEntity->local.pTeam <= TEAM_NEUTRAL) || (eEntity->local.pTeam != tAimLine.ent->local.pTeam))
+		if ((entity->local.team <= TEAM_NEUTRAL) || (entity->local.team != tAimLine.ent->local.team))
 		{
 			MathVector_t mvResult;
 
 			// Convert to the appropriate vector type.
-			Math_VectorToMV(eEntity->local.vForward, mvResult);
+			Math_VectorToMV(entity->local.forward, mvResult);
 
 			// Return the result.
 			return mvResult;
@@ -261,7 +261,7 @@ MathVector_t Weapon_Aim(ServerEntity_t *eEntity)
 	eCheck = SERVER_ENTITY_NEXT(Engine.Server_GetEdicts());
 	for (i = 1; i < Engine.Server_GetNumEdicts(); i++, eCheck = SERVER_ENTITY_NEXT(eCheck))
 	{
-		if (eCheck == eEntity)
+		if (eCheck == entity)
 			continue;
 
 		if (eCheck->v.takedamage == false)
@@ -273,12 +273,12 @@ MathVector_t Weapon_Aim(ServerEntity_t *eEntity)
 		plVectorSubtract3fv(mvEnd, mvStart, mvDirection);
 		plVectorNormalize(mvDirection);
 
-		fDistance = Math_DotProduct(mvDirection, eEntity->local.vForward);
+		fDistance = Math_DotProduct(mvDirection, entity->local.forward);
 		if (fDistance < fBestDistance)
 			// Too far to turn.
 			continue;
 
-		tAimLine = Engine.Server_Move(mvStart, pl_origin3f, pl_origin3f, mvEnd, 0, eEntity);
+		tAimLine = Engine.Server_Move(mvStart, pl_origin3f, pl_origin3f, mvEnd, 0, entity);
 		if (tAimLine.ent == eCheck)
 		{
 			// Can shoot at this one.
@@ -291,11 +291,11 @@ MathVector_t Weapon_Aim(ServerEntity_t *eEntity)
 
 	if (eBest)
 	{
-		plVectorSubtract3fv(eBest->v.origin, eEntity->v.origin, mvDirection);
+		plVectorSubtract3fv(eBest->v.origin, entity->v.origin, mvDirection);
 
-		fDistance = Math_DotProduct(mvDirection, eEntity->local.vForward);
+		fDistance = Math_DotProduct(mvDirection, entity->local.forward);
 
-		plVectorScalef(eEntity->local.vForward, fDistance, mvEnd);
+		plVectorScalef(entity->local.forward, fDistance, mvEnd);
 
 		mvEnd[2] = mvDirection[2];
 
@@ -308,47 +308,48 @@ MathVector_t Weapon_Aim(ServerEntity_t *eEntity)
 	return mvResult;
 }
 
-/*	Kicks the view a little.
-*/
-void Weapon_ViewPunch(ServerEntity_t *eEntity, float fIntensity, bool bAddition)
-{
-	if(bAddition)
-		eEntity->v.punchangle[PITCH] -= 5.0f + (float)(rand() % 2);
-	else
-		eEntity->v.punchangle[PITCH] = -4.0f + (float)(rand() % 2);
+// Kicks the view a little.
+void Weapon_ViewPunch(ServerEntity_t *entity, float intensity, bool add) {
+	if(add) {
+        entity->v.punchangle[0] -= intensity + (float) (rand() % 2);
+    } else {
+        entity->v.punchangle[0] = -intensity + (float) (rand() % 2);
+    }
 }
 
-MathVector3f_t mvTraceMaxs = { 4, 4, 4 };
-MathVector3f_t mvTraceMins = { -4, -4, -4 };
+PLVector3D mvTraceMaxs = { 4, 4, 4 };
+PLVector3D mvTraceMins = { -4, -4, -4 };
 
 /*	Runs a trace to see if a projectile can be casted.
 */
-bool Weapon_CheckTrace(ServerEntity_t *eOwner)
+bool Weapon_CheckTrace(ServerEntity_t *owner)
 {
 	int i, iTraceContents;
-	MathVector3f_t mvTarget, mvSource;
+	PLVector3D mvTarget, mvSource;
 	trace_t tCheck;
 
 	// Copy over the players origin.
-	plVectorCopy(eOwner->v.origin, mvSource);
+	plVectorCopy(owner->v.origin, mvSource);
 
 	// Update the origin to the correct view offset.
-	mvSource[2] += eOwner->v.view_ofs[2];
+	mvSource[2] += owner->v.view_ofs[2];
 
 	// Apply the distance to the target for the trace.
 	for (i = 0; i < 3; i++)
 		mvTarget[i] = mvSource[i] * 128.0f;
 
 	// Check that there's enough space for projectile.
-	tCheck = Engine.Server_Move(mvSource, mvTraceMins, mvTraceMaxs, mvTarget, MOVE_NOMONSTERS, eOwner);
+	tCheck = Engine.Server_Move(mvSource, mvTraceMins, mvTraceMaxs, mvTarget, MOVE_NOMONSTERS, owner);
 	if (!tCheck.bOpen)
 		return false;
 	
 	// Check to see if there's a target, and it's not the world!
-	if ((tCheck.ent != Server.eWorld) && (tCheck.ent != eOwner))
+	if ((tCheck.ent != Server.world) && (tCheck.ent != owner)) {
 		// Are we intersecting with it?
-		if (plIsIntersecting(mvTraceMins, mvTraceMaxs, tCheck.ent->v.mins, tCheck.ent->v.maxs))
-			return false;
+		if (Math_IsIntersecting(mvTraceMins, mvTraceMaxs, tCheck.ent->v.mins, tCheck.ent->v.maxs)) {
+            return false;
+        }
+	}
 
 	// Ensure that we're not inside the sky or within a solid.
 	iTraceContents = Engine.Server_PointContents(tCheck.endpos);
@@ -362,7 +363,7 @@ bool Weapon_CheckTrace(ServerEntity_t *eOwner)
 */
 void Weapon_Projectile(ServerEntity_t *eOwner, ServerEntity_t *eProjectile, float fVelocity)
 {
-	MathVector3f_t mvDirection;
+	PLVector3D mvDirection;
 
 	// Figure out our aim direction.
 	Math_MVToVector(Weapon_Aim(eOwner), mvDirection);
@@ -371,28 +372,29 @@ void Weapon_Projectile(ServerEntity_t *eOwner, ServerEntity_t *eProjectile, floa
 	plVectorScalef(mvDirection, fVelocity, eProjectile->v.velocity);
 }
 
-void Weapon_BulletProjectile(ServerEntity_t *eEntity, float fSpread, int iDamage, float *vDirection)
+void Weapon_BulletProjectile(ServerEntity_t *owner, float spread, int damage, PLVector3D direction)
 {
-	int	i;
-	MathVector3f_t vSource, vTarg;
-	trace_t	tTrace;
+//	int	i;
+//	PLVector3D source, targ;
+//	trace_t	trace;
 
-	plVectorCopy(eEntity->v.origin,vSource);
+    PLVector3D source = owner->v.origin;
+	source.z += owner->v.view_ofs.z;
 
-	vSource[2] += eEntity->v.view_ofs[2];
+    PLVector3D targ(
+            source.x + (direction.x * 2048.0f) + (spread * plCRandom() * 20.0f),
+            source.y + (direction.y * 2048.0f) + (spread * plCRandom() * 20.0f),
+            source.z + (direction.z * 2048.0f) + (spread * plCRandom() * 20.0f)
+    );
 
-	for(i = 0; i < 3; i++)
-		vTarg[i] = vSource[i]+(vDirection[i]*2048.0f)+(fSpread*plCRandom()*20.0f);
-
-	tTrace = Traceline(eEntity,vSource,vTarg,0);
-	if ((tTrace.fraction == 1.0f) || (Engine.Server_PointContents(tTrace.endpos) == BSP_CONTENTS_SKY))
-		return;
-	else
-	{
+    trace_t trace = Traceline(owner,source,targ,0);
+	if ((trace.fraction == 1.0f) || (Engine.Server_PointContents(trace.endpos) == BSP_CONTENTS_SKY)) {
+        return;
+    } else {
 		char	cSmoke[6];
 
-		if(tTrace.ent && tTrace.ent->v.takedamage)
-			Entity_Damage(tTrace.ent, eEntity, iDamage, DAMAGE_TYPE_NONE);
+		if(trace.ent && trace.ent->v.takedamage)
+			Entity_Damage(trace.ent, owner, damage, DAMAGE_TYPE_NONE);
 		else
 		{
 			ServerEntity_t *eSmoke = Entity_Spawn();
@@ -403,55 +405,54 @@ void Weapon_BulletProjectile(ServerEntity_t *eEntity, float fSpread, int iDamage
 				eSmoke->v.think			= Entity_Remove;
 				eSmoke->v.nextthink	= Server.time+0.5;
 
-				Entity_SetOrigin(eSmoke,tTrace.endpos);
+				Entity_SetOrigin(eSmoke,trace.endpos);
 
 				PHYSICS_SOUND_RICOCHET(cSound);
 				Sound(eSmoke,CHAN_BODY,cSound,255,ATTN_NORM);
 			}
 
 			PARTICLE_SMOKE(cSmoke);
-			Engine.Particle(tTrace.endpos, pl_origin3f, 15, cSmoke, 15);
+			Engine.Particle(trace.endpos, PLVector3D(0, 0, 0), 15, cSmoke, 15);
 		}
 	}
 }
 
 void Weapon_UpdateCurrentAmmo(Weapon_t *wWeapon, ServerEntity_t *eEntity)
 {
-	switch (wWeapon->iPrimaryType)
-	{
+	switch (wWeapon->primary_type) {
 #ifdef GAME_OPENKATANA
 	case AM_IONS:
-		eEntity->v.iPrimaryAmmo = eEntity->local.ionblaster_ammo;
+		eEntity->v.primary_ammo = eEntity->local.ionblaster_ammo;
 		break;
 	case AM_ROCKET:
-		eEntity->v.iPrimaryAmmo = eEntity->local.sidewinder_ammo;
+		eEntity->v.primary_ammo = eEntity->local.sidewinder_ammo;
 		break;
 	case AM_BULLET:
-		eEntity->v.iPrimaryAmmo = eEntity->local.glock_ammo;
+		eEntity->v.primary_ammo = eEntity->local.glock_ammo;
 		break;
 	case AM_SHELL:
-		eEntity->v.iPrimaryAmmo = eEntity->local.shotcycler_ammo;
+		eEntity->v.primary_ammo = eEntity->local.shotcycler_ammo;
 		break;
 	case AM_LASER:
-		eEntity->v.iPrimaryAmmo = eEntity->local.shockwave_ammo;
+		eEntity->v.primary_ammo = eEntity->local.shockwave_ammo;
 		break;
 	case AM_C4BOMB:
-		eEntity->v.iPrimaryAmmo = eEntity->local.iC4Ammo;
+		eEntity->v.primary_ammo = eEntity->local.iC4Ammo;
 		break;
 #elif GAME_ADAMAS
 	case AM_BULLET:
-		eEntity->v.iPrimaryAmmo = eEntity->local.iBulletAmmo;
+		eEntity->v.primary_ammo = eEntity->local.iBulletAmmo;
 		break;
 #endif
 	case AM_MELEE:
 	case AM_SWITCH:
 	case AM_NONE:
-		eEntity->v.iPrimaryAmmo = 1;
+		eEntity->v.primary_ammo = 1;
 		break;
 	default:
-		Engine.Con_Warning("Failed to set primary ammo! (%i)\n", wWeapon->iPrimaryType);
+		Engine.Con_Warning("Failed to set primary ammo! (%i)\n", wWeapon->primary_type);
 
-		eEntity->v.iPrimaryAmmo = 0;
+		eEntity->v.primary_ammo = 0;
 	}
 
 	switch (wWeapon->iSecondaryType)
@@ -459,11 +460,11 @@ void Weapon_UpdateCurrentAmmo(Weapon_t *wWeapon, ServerEntity_t *eEntity)
 	case AM_MELEE:
 	case AM_SWITCH:
 	case AM_NONE:
-		eEntity->v.iSecondaryAmmo = 1;
+		eEntity->v.secondary_ammo = 1;
 		break;
 	default:
 		Engine.Con_Warning("Failed to set secondary ammo! (%i)\n", wWeapon->iSecondaryType);
-		eEntity->v.iSecondaryAmmo = 0;
+		eEntity->v.secondary_ammo = 0;
 	}
 };
 
@@ -475,8 +476,8 @@ void Weapon_SetActive(Weapon_t *wWeapon,ServerEntity_t *eEntity, bool bDeploy)
 
 	// Clear everything out.
 	eEntity->v.cViewModel		= "";
-	eEntity->v.iSecondaryAmmo	=
-	eEntity->v.iPrimaryAmmo		=
+	eEntity->v.secondary_ammo	=
+	eEntity->v.primary_ammo		=
 	eEntity->v.iWeaponFrame		= 0;
 
 	bPrimaryAmmo	= Weapon_CheckPrimaryAmmo(wWeapon,eEntity);
@@ -496,12 +497,9 @@ void Weapon_SetActive(Weapon_t *wWeapon,ServerEntity_t *eEntity, bool bDeploy)
 		wWeapon->Deploy(eEntity);
 }
 
-/*	Checks for primary ammo.
-*/
-bool Weapon_CheckPrimaryAmmo(Weapon_t *wWeapon,ServerEntity_t *eEntity)
-{
-	switch(wWeapon->iPrimaryType)
-	{
+// Checks for primary ammo.
+bool Weapon_CheckPrimaryAmmo(Weapon_t *wWeapon,ServerEntity_t *eEntity) {
+	switch(wWeapon->primary_type) {
 #ifdef GAME_OPENKATANA
 	case AM_IONS:
 		if(eEntity->local.ionblaster_ammo)

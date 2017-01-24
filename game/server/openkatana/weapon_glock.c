@@ -78,9 +78,9 @@ void Glock_PrimaryAttack(ServerEntity_t *ent)
 	ServerEffect_MuzzleFlash(ent->v.origin, ent->v.angles);
 
 	ent->local.glock_ammo--;
-	ent->v.iPrimaryAmmo	= ent->local.glock_ammo;
+	ent->v.primary_ammo	= ent->local.glock_ammo;
 
-	Weapon_BulletProjectile(ent,2.0f,15,ent->local.vForward);
+	Weapon_BulletProjectile(ent,2.0f,15,ent->local.forward);
 
 	// [4/7/2012] Simplified ~hogsy
 	ent->local.glock_ammo2--;

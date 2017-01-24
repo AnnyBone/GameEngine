@@ -158,7 +158,7 @@ void C4Vizatergo_C4BallTouch(ServerEntity_t *ent,ServerEntity_t *eOther)
 		ent->v.nextthink		= Server.time;
 	}
 #else	// [12/12/2012] New method. Explode if touches monster / another player. ~hogsy
-	if(	eOther != ent->local.eOwner && eOther->Monster.iType)
+	if(	eOther != ent->local.eOwner && eOther->Monster.type)
 		C4Vizatergo_Explode(ent);
 	else if(eOther->Physics.solid == SOLID_BSP && ent->v.movetype != MOVETYPE_NONE)
 	{
@@ -214,7 +214,7 @@ void C4Vizatergo_PrimaryAttack(ServerEntity_t *eOwner)
 	Weapon_Animate(eOwner,C4Animation_Fire1);
 	Weapon_ViewPunch(eOwner, 7, true);
 
-	eOwner->v.iPrimaryAmmo = eOwner->local.iC4Ammo -= 1;
+	eOwner->v.primary_ammo = eOwner->local.iC4Ammo -= 1;
 
 	c4ball->v.classname	= "c4ball";
 	c4ball->v.movetype		= MOVETYPE_BOUNCE;

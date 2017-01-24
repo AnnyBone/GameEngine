@@ -30,6 +30,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define MATH_ISNAN(a)   (((*(int*)&a) &255 << 23) == 255 << 23)
 
+#define Math_Clamp(mini,x,maxi) ((x)<(mini)?(mini):(x)>(maxi)?(maxi):(x))
+
 PL_EXTERN_C
 
 static PL_INLINE void Math_MAVector3D(PLVector3D *v, PLVector3D v2, float f) {

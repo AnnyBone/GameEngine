@@ -50,7 +50,7 @@ void Gib_Bounce(ServerEntity_t *entity, ServerEntity_t *other)
 	Sound(entity, CHAN_AUTO, sound, 30, ATTN_NORM);
 }
 
-void Gib_Spawn(MathVector3f_t mvOrigin, const char *cModel)
+void Gib_Spawn(PLVector3D mvOrigin, const char *cModel)
 {
 	ServerEntity_t *gib = Entity_Spawn();
 	if (gib)
@@ -69,9 +69,10 @@ void Gib_Spawn(MathVector3f_t mvOrigin, const char *cModel)
 		//		eGib->v.avelocity[j] = (float)(rand() % 5 * eArea->v.health * 5);
 		}
 
+		PLVector3D origin = { 0, 0, 0 };
 		Entity_SetModel(gib, (char*)cModel);
 		Entity_SetOrigin(gib, mvOrigin);
-		Entity_SetSizeVector(gib, pl_origin3f, pl_origin3f);
+		Entity_SetSizeVector(gib, origin, origin);
 
 		// Get the physics property for this entity.
 		gib->Physics.surface =

@@ -14,9 +14,9 @@ void Bot_Think(ServerEntity_t *bot)
 		{
 			if((	(eBot->v.velocity[0] < -4.0f || eBot->v.velocity[0] > 4.0f)	|| 
 					(eBot->v.velocity[1] < -4.0f || eBot->v.velocity[1] > 4.0f))	&& 
-					(!eBot->local.dAnimationTime || eBot->local.iAnimationEnd == 9))
+					(!eBot->local.animation_time || eBot->local.animation_end == 9))
 				Entity_Animate(eBot,PlayerAnimation_Walk);
-			else if((eBot->v.velocity[0] == 0 || eBot->v.velocity[1] == 0) && (!eBot->local.dAnimationTime || eBot->local.iAnimationEnd > 9))
+			else if((eBot->v.velocity[0] == 0 || eBot->v.velocity[1] == 0) && (!eBot->local.animation_time || eBot->local.animation_end > 9))
 			{
 #ifdef GAME_OPENKATANA
 				if(eBot->v.iActiveWeapon == WEAPON_DAIKATANA)
@@ -88,12 +88,12 @@ void Bot_Think(ServerEntity_t *bot)
 			wMyWeapon = Weapon_GetCurrentWeapon(eBot);
 			if(MONSTER_GetRange(eBot,eBot->v.enemy->v.origin) > 4000)
 				return;
-			else if(wMyWeapon->iPrimaryType == AM_MELEE && MONSTER_GetRange(eBot,eBot->v.enemy->v.origin) > MONSTER_RANGE_MELEE)
+			else if(wMyWeapon->primary_type == AM_MELEE && MONSTER_GetRange(eBot,eBot->v.enemy->v.origin) > MONSTER_RANGE_MELEE)
 				return;
 			else if(Monster_IsVisible(eBot,eBot->v.enemy))
 			{
 				// [5/8/2012] No ammo and it's not a melee weapon? ~hogsy
-				if(!Weapon_CheckPrimaryAmmo(eBot) && wMyWeapon->iPrimaryType != AM_MELEE)
+				if(!Weapon_CheckPrimaryAmmo(eBot) && wMyWeapon->primary_type != AM_MELEE)
 				{
 					// [5/8/2012] Should probably flee ~hogsy
 					Monster_SetThink(eBot,THINK_FLEEING);
@@ -125,7 +125,7 @@ void Monster_Frame(ServerEntity_t *eMonster)
 	int i;
 
 	// [19/2/2013] If it's not a monster then return! ~hogsy
-	if(eMonster->Monster.iType < MONSTER_VEHICLE)
+	if(eMonster->Monster.type < MONSTER_VEHICLE)
 		return;
 
 	Entity_CheckFrames(eMonster);

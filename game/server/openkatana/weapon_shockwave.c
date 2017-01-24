@@ -125,7 +125,7 @@ void Shockwave_SpawnProjectile(ServerEntity_t *ent)
 	}
 
 	ent->local.shockwave_ammo--;
-	ent->v.iPrimaryAmmo = ent->local.shockwave_ammo;
+	ent->v.primary_ammo = ent->local.shockwave_ammo;
 }
 
 void Shockwave_PrimaryAttack(ServerEntity_t *ent)

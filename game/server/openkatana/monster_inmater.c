@@ -142,7 +142,7 @@ void Inmater_Think(ServerEntity_t *eInmater)
 		switch (eInmater->Monster.think)
 		{
 		case AI_THINK_IDLE:
-			if(!eInmater->local.dAnimationTime || (eInmater->local.iAnimationCurrent == eInmater->local.iAnimationEnd))
+			if(!eInmater->local.animation_time || (eInmater->local.iAnimationCurrent == eInmater->local.animation_end))
 				Entity_Animate(eInmater,efInmaterIdle);
 
 			AI_RandomMovement(eInmater, INMATER_MAX_SPEED);
@@ -162,7 +162,7 @@ void Inmater_Spawn(ServerEntity_t *eInmater)
 
 	Entity_SetPhysics(eInmater, SOLID_SLIDEBOX, 3.0f, 4.5f);
 
-	eInmater->Monster.iType = MONSTER_INMATER;
+	eInmater->Monster.type = MONSTER_INMATER;
 	eInmater->Monster.Frame = Inmater_Think;
 	eInmater->Monster.Pain = Inmater_Pain;
 
@@ -173,7 +173,7 @@ void Inmater_Spawn(ServerEntity_t *eInmater)
 	eInmater->v.health = INMATER_MAX_HEALTH;
 	eInmater->v.netname = "Inmater";
 	eInmater->v.frame = 0;
-	eInmater->local.iMaxHealth = INMATER_MAX_HEALTH;
+	eInmater->local.maxhealth = INMATER_MAX_HEALTH;
 
 	AI_SetState(eInmater, AI_STATE_AWAKE);
 	AI_SetThink(eInmater, AI_THINK_IDLE);

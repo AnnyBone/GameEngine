@@ -70,7 +70,7 @@ void Client_ParseTemporaryEntity(void)
 {
 	int	type;
 
-	// Set iType, so if the type is missing we can mention it below.
+	// Set type, so if the type is missing we can mention it below.
 	type = g_engine->ReadByte();
 	switch (type)
 	{

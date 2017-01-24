@@ -51,7 +51,7 @@ extern	ConsoleVariable_t	cvServerWaypointParse;	// File to parse for waypoint po
 extern	ConsoleVariable_t	cvServerGameTime;		// The length of time a round should last.
 extern	ConsoleVariable_t	cvServerGameClients;	// Number of clients needed for a round to start.
 extern	ConsoleVariable_t	cvServerGravityTweak;	// For detailed "tweaking" without touching the absolute amount. Works like mass...
-extern	ConsoleVariable_t	cvServerGravity;		// The absolute gravity amount.
+extern	ConsoleVariable_t	cv_server_gravity;		// The absolute gravity amount.
 extern	ConsoleVariable_t	cvServerAim;			// Auto-aiming.
 
 void Server_Initialize(void);
@@ -107,7 +107,7 @@ void Entity_RemoveEffects(ServerEntity_t *eEntity, int iEffects);
 void Entity_ClearEffects(ServerEntity_t *eEntity);
 void Entity_AddFlags(ServerEntity_t *entity, int flags);
 void Entity_RemoveFlags(ServerEntity_t *entity, int flags);
-void Entity_ClearFlags(ServerEntity_t *entity, int flags);
+void Entity_ClearFlags(ServerEntity_t *entity);
 
 #define Entity_SetKilledFunction(a,b)	(a->local.KilledFunction = b)
 #define Entity_SetDamagedFunction(a,b)	(a->local.DamagedFunction = b)

@@ -76,13 +76,15 @@ void Point_NullSpawn(ServerEntity_t *eEntity)
 
 void Point_SkyCameraSpawn(ServerEntity_t *entity)
 {
-	if (Server.skycam)
-	{
-		Engine.Con_Warning("Multiple sky cameras on level! (%i %i %i)\n", (int)entity->v.origin[0], (int)entity->v.origin[1], (int)entity->v.origin[2]);
+	if (Server.skycam) {
+		Engine.Con_Warning("Multiple sky cameras on level! (%i %i %i)\n",
+                           (int)entity->v.origin.x,
+                           (int)entity->v.origin.y,
+                           (int)entity->v.origin.z);
 		return;
 	}
 
-	Math_VectorCopy(entity->v.origin, Server.skycam_position);
+	Server.skycam_position = entity->v.origin;
 
 	// Enable skycam, which in turn will let us know to inform the client about it.
 	Server.skycam = true;
@@ -162,7 +164,7 @@ void Point_VehicleSpawn(ServerEntity_t *eVehicle)
 	{
 #ifdef GAME_ICTUS
 	case VEHICLE_TYPE_ROVER:
-		Rover_Spawn(eVehicle);
+		Rover_Spawn(vehicle);
 		break;
 #endif
 	default:
@@ -203,7 +205,7 @@ void Point_Start(ServerEntity_t *ent)
 		}
 		break;
 	case MODE_CAPTURETHEFLAG:
-		if((ent->local.style != INFO_PLAYER_CTF) || !ent->local.pTeam)
+		if((ent->local.style != INFO_PLAYER_CTF) || !ent->local.team)
 		{
 			Engine.Con_Warning("Invalid start style! (%i)\n",ent->local.style);
 
@@ -211,7 +213,7 @@ void Point_Start(ServerEntity_t *ent)
 			return;
 		}
 
-		if(ent->local.pTeam == TEAM_RED)
+		if(ent->local.team == TEAM_RED)
 			ent->v.classname = "point_start_red";
 		else
 			ent->v.classname = "point_start_blue";
@@ -258,49 +260,46 @@ void Point_Start(ServerEntity_t *ent)
 	Particle Emitter
 */
 
-void Point_ParticleEmit(ServerEntity_t *ent)
-{
-	Engine.Particle(ent->v.origin, ent->v.velocity, ent->Model.scale, ent->v.model, ent->local.count);
+void Point_ParticleEmit(ServerEntity_t *point) {
+	Engine.Particle(point->v.origin, point->v.velocity, point->Model.scale, point->v.model, point->local.count);
 
-	ent->v.think		= Point_ParticleEmit;
-	ent->v.nextthink	= Server.time+ent->local.dAttackFinished;
+	point->v.think		= Point_ParticleEmit;
+	point->v.nextthink	= Server.time + point->local.dAttackFinished;
 }
 
-void Point_ParticleTrigger(ServerEntity_t *ent)
-{
+void Point_ParticleTrigger(ServerEntity_t *ent) {
 	Engine.Particle(ent->v.origin, ent->v.velocity, ent->Model.scale, ent->v.model, ent->local.count);
 }
 
-void Point_ParticleSpawn(ServerEntity_t *ent)
-{
-	if(ent->local.count <= 0)
-		ent->local.count = 1;
+void Point_ParticleSpawn(ServerEntity_t *point) {
+	if(point->local.count <= 0)
+		point->local.count = 1;
 
-	if (ent->Model.scale <= 0)
-		ent->Model.scale = 7;
+	if (point->Model.scale <= 0)
+		point->Model.scale = 7;
 
-	Engine.Server_PrecacheResource(RESOURCE_SPRITE,ent->v.model);
+	Engine.Server_PrecacheResource(RESOURCE_SPRITE,point->v.model);
 
-	Entity_SetOrigin(ent,ent->v.origin);
+	Entity_SetOrigin(point,point->v.origin);
 
-	switch(ent->local.style)
+	switch(point->local.style)
 	{
 	case PARTICLE_DEFAULT:
 		break;
 	case PARTICLE_STACK:
-		ent->v.velocity[2] += 15.0f;
+		point->v.velocity.z += 15.0f;
 		break;
 	default:
-		Engine.Con_Warning("Unknown particle type (%i)!\n",ent->local.style);
+		Engine.Con_Warning("Unknown particle type (%i)!\n",point->local.style);
 	}
 
-	if(ent->local.dAttackFinished > 0)
+	if(point->local.dAttackFinished > 0)
 	{
-		ent->v.think		= Point_ParticleEmit;
-		ent->v.nextthink	= Server.time+ent->local.dAttackFinished;
+		point->v.think		= Point_ParticleEmit;
+		point->v.nextthink	= Server.time+point->local.dAttackFinished;
 	}
 	else
-		ent->v.use = Point_ParticleTrigger;
+		point->v.use = Point_ParticleTrigger;
 }
 
 /*
@@ -322,40 +321,41 @@ void Point_FlareSpawn(ServerEntity_t *eFlare)
 
 #define LIGHT_OFF	1
 
-void Point_LightUse(ServerEntity_t *eLight)
+void Point_LightUse(ServerEntity_t *point)
 {
-	if(eLight->v.spawnflags & LIGHT_OFF)
-	{
-		if(!eLight->v.message)
-			Engine.LightStyle(eLight->local.style,"m");
-		else
-			Engine.LightStyle(eLight->local.style,eLight->v.message);
+	if(point->v.spawnflags & LIGHT_OFF) {
+		if(!plIsValidString(point->v.message)) {
+            Engine.LightStyle(point->local.style, "m");
+        } else {
+            Engine.LightStyle(point->local.style, point->v.message);
+        }
 
-		eLight->v.spawnflags -= LIGHT_OFF;
-	}
-	else
-	{
-		Engine.LightStyle(eLight->local.style,"a");
+		point->v.spawnflags -= LIGHT_OFF;
+	} else {
+		Engine.LightStyle(point->local.style,"a");
 
-		eLight->v.spawnflags += LIGHT_OFF;
+		point->v.spawnflags += LIGHT_OFF;
 	}
 
-	if(eLight->v.noise)
-		Sound(eLight,CHAN_VOICE,eLight->v.noise,255,ATTN_NORM);
+	if(plIsValidString(point->v.noise)) {
+        Sound(point, CHAN_VOICE, point->v.noise, 255, ATTN_NORM);
+    }
 }
 
-void Point_LightSpawn(ServerEntity_t *eLight)
-{
-	if(eLight->v.noise)
-		Server_PrecacheSound(eLight->v.noise);
+void Point_LightSpawn(ServerEntity_t *point) {
+	if(plIsValidString(point->v.noise)) {
+        Server_PrecacheSound(point->v.noise);
+    }
 
-	if(eLight->v.message)
-		Engine.LightStyle(eLight->local.style,eLight->v.message);
+	if(plIsValidString(point->v.message)) {
+        g_engine->LightStyle(point->local.style, point->v.message);
+    }
 
-	eLight->v.use = Point_LightUse;
+	point->v.use = Point_LightUse;
 
-	if(eLight->v.spawnflags & LIGHT_OFF)
-		Engine.LightStyle(eLight->local.style,"a");
+	if(point->v.spawnflags & LIGHT_OFF) {
+        g_engine->LightStyle(point->local.style, "a");
+    }
 }
 
 /*
@@ -378,21 +378,20 @@ void Point_SpriteSpawn(ServerEntity_t *seSprite)
 	Dynamic Light
 */
 
-void Point_DynamicLightThink(ServerEntity_t *ent)
-{
-	ent->v.origin[2] = (float)sin(Server.time*2.0)*10.0f;
+void Point_DynamicLightThink(ServerEntity_t *point) {
+    // todo, remove this, was probably plopped here for debugging...
+	point->v.origin[2] = (float)std::sin(Server.time * 2.0) * 10.0f;
 
-	ent->v.nextthink = Server.time+0.1;
+	point->v.nextthink = Server.time + 0.1;
 }
 
-void Point_DynamicLight(ServerEntity_t *ent)
-{
-	Entity_SetOrigin(ent,ent->v.origin);
+void Point_DynamicLight(ServerEntity_t *point) {
+	Entity_SetOrigin(point,point->v.origin);
 
-	ent->v.effects = EF_LIGHT_GREEN;
+	point->v.effects = EF_LIGHT_GREEN;
 
-	ent->v.think		= Point_DynamicLightThink;
-	ent->v.nextthink	= Server.time+0.1;
+	point->v.think		= Point_DynamicLightThink;
+	point->v.nextthink	= Server.time + 0.1;
 }
 
 /*
@@ -401,17 +400,18 @@ void Point_DynamicLight(ServerEntity_t *ent)
 
 #define	EXPLODE_FLAG_REMOVE	1	// Remove on use.
 
-void Point_ExplodeUse(ServerEntity_t *ePoint)
-{
-	Entity_RadiusDamage(ePoint, MONSTER_RANGE_NEAR, ePoint->local.iDamage, DAMAGE_TYPE_EXPLODE);
+void Point_ExplodeUse(ServerEntity_t *point) {
+	Entity_RadiusDamage(point, MONSTER_RANGE_NEAR, point->local.damage, DAMAGE_TYPE_EXPLODE);
 
-	if (Engine.Server_PointContents(ePoint->v.origin) <= BSP_CONTENTS_WATER)
-		Sound(ePoint, CHAN_AUTO, SOUND_EXPLODE_UNDERWATER0, 255, ATTN_NORM);
-	else
-		Sound(ePoint, CHAN_AUTO, SOUND_EXPLODE, 255, ATTN_NORM);
+	if (Engine.Server_PointContents(point->v.origin) <= BSP_CONTENTS_WATER) {
+        Sound(point, CHAN_AUTO, SOUND_EXPLODE_UNDERWATER0, 255, ATTN_NORM);
+    } else {
+        Sound(point, CHAN_AUTO, SOUND_EXPLODE, 255, ATTN_NORM);
+    }
 
-	if (ePoint->v.spawnflags & EXPLODE_FLAG_REMOVE)
-		Entity_Remove(ePoint);
+	if (point->v.spawnflags & EXPLODE_FLAG_REMOVE) {
+        Entity_Remove(point);
+    }
 }
 
 void Point_ExplodeSpawn(ServerEntity_t *ePoint)
@@ -509,8 +509,8 @@ void Point_CameraSpawn(ServerEntity_t *eEntity)
 		Engine.WriteAngle(	MSG_ONE,	eEntity->v.angles[1]	);
 		Engine.WriteAngle(	MSG_ONE,	eEntity->v.angles[2]	);
 	}
-	else if(!eEntity->local.dWait)
-		eEntity->local.dWait = 3.0;
+	else if(!eEntity->local.wait)
+		eEntity->local.wait = 3.0;
 
 	Entity_SetOrigin(eEntity,eEntity->v.origin);
 
@@ -641,7 +641,7 @@ void Point_InfoMessage(ServerEntity_t *eEntity)
 {
 	if(!eEntity->local.activator)
 		return;
-	else if((eEntity->Monster.iType != MONSTER_PLAYER) && eEntity->local.activator->v.health <= 0)
+	else if((eEntity->Monster.type != MONSTER_PLAYER) && eEntity->local.activator->v.health <= 0)
 		return;
 
 	Engine.Server_SinglePrint(eEntity->local.activator,"New info message received");
@@ -693,18 +693,16 @@ void Point_MessageSpawn(ServerEntity_t *eEntity)
 	Teleport
 */
 
-void Point_TeleportUse(ServerEntity_t *eEntity)
-{
-	Entity_SetOrigin(eEntity->local.activator,eEntity->v.origin);
+void Point_TeleportUse(ServerEntity_t *point) {
+	Entity_SetOrigin(point->local.activator,point->v.origin);
 
-	Math_VectorCopy(eEntity->v.angles,eEntity->local.activator->v.angles);
+    point->local.activator->v.angles = point->v.angles;
 }
 
-void Point_TeleportSpawn(ServerEntity_t *eEntity)
-{
-	Entity_SetOrigin(eEntity,eEntity->v.origin);
+void Point_TeleportSpawn(ServerEntity_t *point) {
+	Entity_SetOrigin(point, point->v.origin);
 
-	eEntity->v.use = Point_TeleportUse;
+	point->v.use = Point_TeleportUse;
 }
 
 /*
@@ -721,13 +719,13 @@ enum
 
 void Area_BreakableDie(ServerEntity_t *area, ServerEntity_t *other, EntityDamageType_t type);
 
-void Point_PropTouch(ServerEntity_t *eEntity, ServerEntity_t *eOther)
-{
-	if(!eOther->v.health)
-		return;
+void Point_PropTouch(ServerEntity_t *point, ServerEntity_t *other) {
+	if(!other->v.health) {
+        return;
+    }
 
-	plVectorClear(eEntity->v.velocity);
-	Math_VectorScale(eOther->v.velocity,0.25f,eEntity->v.velocity);
+	point->v.velocity = 0;
+    other->v.velocity = point->v.velocity * 0.25f;
 }
 
 void Point_PropSpawn(ServerEntity_t *eEntity)
@@ -778,7 +776,7 @@ void Point_PropSpawn(ServerEntity_t *eEntity)
 		}
 
 		eEntity->v.takedamage = true;
-		eEntity->local.bBleed = false;
+		eEntity->local.bleed = false;
 
 		Entity_SetKilledFunction(eEntity, Area_BreakableDie);
 	}
@@ -789,7 +787,7 @@ void Point_PropSpawn(ServerEntity_t *eEntity)
 	eEntity->v.TouchFunction	= Point_PropTouch;
 
 	eEntity->Physics.solid		= SOLID_BBOX;
-	eEntity->Physics.gravity	= cvServerGravity.value;
+	eEntity->Physics.gravity	= cv_server_gravity.value;
 	eEntity->Physics.mass		= 0.5f;
 
 	Entity_SetModel(eEntity,eEntity->v.model);
@@ -801,86 +799,77 @@ void Point_PropSpawn(ServerEntity_t *eEntity)
 	Shake
 */
 
-void Point_ShakeThink (ServerEntity_t *eEntity)
-{
-	ServerEntity_t *eEnts = Engine.Server_FindRadius(eEntity->v.origin,10000.0f);
+void Point_ShakeThink(ServerEntity_t *point) {
+	if(point->local.dAttackFinished < Server.time) {
+        return;
+    }
 
-	if(eEntity->local.dAttackFinished < Server.time)
-		return;
+    ServerEntity_t *ents = Engine.Server_FindRadius(point->v.origin, 10000.0f);
+	do {
+		if(!(ents->v.movetype == MOVETYPE_NONE) && !(ents->v.movetype == MOVETYPE_FLY)) {
+#if 0 // todo, reimplement CRandom in shared_math
+			ents->v.velocity[0] += plCRandom() * 250;
+			ents->v.velocity[1] += plCRandom() * 250;
 
-	do
-	{
-		if(!(eEnts->v.movetype == MOVETYPE_NONE) && !(eEnts->v.movetype == MOVETYPE_FLY))
-		{
-			eEnts->v.velocity[0] += plCRandom()*250;
-			eEnts->v.velocity[1] += plCRandom() * 250;
+			ents->v.punchangle[0] += plCRandom() * 8;
+			ents->v.punchangle[2] += plCRandom() * 8;
+#endif
 
-			eEnts->v.punchangle[0] += plCRandom() * 8;
-			eEnts->v.punchangle[2] += plCRandom() * 8;
-
-			if(eEnts->v.flags & FL_ONGROUND)
-				eEnts->v.velocity[2] = eEntity->local.speed;
+			if(ents->v.flags & FL_ONGROUND) {
+                ents->v.velocity[2] = point->local.speed;
+            }
 		}
 
-		eEnts = eEnts->v.chain;
+		ents = ents->v.chain;
+	} while(ents);
 
-	} while(eEnts);
-
-	eEntity->v.nextthink = Server.time+eEntity->local.delay;
+	point->v.nextthink = Server.time + point->local.delay;
 }
 
-void Point_ShakeUse (ServerEntity_t *eEntity)
-{
-	eEntity->v.nextthink			= Server.time;
-	eEntity->local.dAttackFinished	= Server.time+eEntity->local.dWait;
+void Point_ShakeUse(ServerEntity_t *point) {
+	point->v.nextthink = Server.time;
+	point->local.dAttackFinished = Server.time + point->local.wait;
 }
 
-void Point_ShakeSpawn (ServerEntity_t *eEntity)
-{
-	if (!eEntity->local.delay)
-		eEntity->local.delay = 0.2f;
+void Point_ShakeSpawn(ServerEntity_t *point) {
+	if (!point->local.speed) {
+        point->local.speed = 300;
+    }
 
-	if (!eEntity->local.speed)
-		eEntity->local.speed = 300;
-
-	if (!eEntity->local.dWait)
-		eEntity->local.dWait = 5.0;
-
-	eEntity->v.use		= Point_ShakeUse;
-	eEntity->v.think	= Point_ShakeThink;
+	point->v.use    = Point_ShakeUse;
+	point->v.think  = Point_ShakeThink;
 }
 
 /*
 	Effect
 */
 
-void Point_EffectUse(ServerEntity_t *eEntity)
-{
-	switch(eEntity->local.style)
-	{
+void Point_EffectUse(ServerEntity_t *point) {
+	switch(point->local.style) {
 		case 1:
-			Entity_RadiusDamage(eEntity,MONSTER_RANGE_MEDIUM,eEntity->local.iDamage, eEntity->local.iDamageType);
+			Entity_RadiusDamage(point,MONSTER_RANGE_MEDIUM,point->local.damage, (EntityDamageType_t)point->local.iDamageType);
 			break;
 		case 2:
 			Engine.WriteByte(MSG_BROADCAST,SVC_TEMPENTITY);
 			Engine.WriteByte(MSG_BROADCAST,CTE_GUNSHOT);
-			Engine.WriteCoord(MSG_BROADCAST,eEntity->v.origin[0]);
-			Engine.WriteCoord(MSG_BROADCAST,eEntity->v.origin[1]);
-			Engine.WriteCoord(MSG_BROADCAST,eEntity->v.origin[2]);
+			Engine.WriteCoord(MSG_BROADCAST,point->v.origin[0]);
+			Engine.WriteCoord(MSG_BROADCAST,point->v.origin[1]);
+			Engine.WriteCoord(MSG_BROADCAST,point->v.origin[2]);
 			break;
 		case 3:
 			Engine.WriteByte(MSG_BROADCAST,SVC_TEMPENTITY);
 			Engine.WriteByte(MSG_BROADCAST,CTE_TELEPORT);
-			Engine.WriteCoord(MSG_BROADCAST,eEntity->v.origin[0]);
-			Engine.WriteCoord(MSG_BROADCAST,eEntity->v.origin[1]);
-			Engine.WriteCoord(MSG_BROADCAST,eEntity->v.origin[2]);
+			Engine.WriteCoord(MSG_BROADCAST,point->v.origin[0]);
+			Engine.WriteCoord(MSG_BROADCAST,point->v.origin[1]);
+			Engine.WriteCoord(MSG_BROADCAST,point->v.origin[2]);
 			break;
 		default:
-			Engine.Con_Warning("Unknown effect style! (%i)\n",eEntity->local.style);
+			Engine.Con_Warning("Unknown effect style! (%i)\n",point->local.style);
 	}
 
-	if(eEntity->v.noise)
-		Sound(eEntity,CHAN_ITEM,eEntity->v.noise,255,ATTN_NORM);
+	if(point->v.noise) {
+        Sound(point, CHAN_ITEM, point->v.noise, 255, ATTN_NORM);
+    }
 }
 
 void Point_EffectSpawn(ServerEntity_t *eEntity)
@@ -897,15 +886,14 @@ void Point_EffectSpawn(ServerEntity_t *eEntity)
 	Damage
 */
 
-void Point_DamageUse(ServerEntity_t *eEntity)
-{
-	Entity_Damage(eEntity->local.activator, eEntity, eEntity->local.iDamage, eEntity->local.style);
+void Point_DamageUse(ServerEntity_t *point) {
+	Entity_Damage(point->local.activator, point, point->local.damage, (EntityDamageType_t)point->local.style);
 }
 
 void Point_DamageSpawn(ServerEntity_t *eEntity)
 {
-	if(!eEntity->local.iDamage)
-		eEntity->local.iDamage = 10;
+	if(!eEntity->local.damage)
+		eEntity->local.damage = 10;
 
 	if(!eEntity->local.style)
 		eEntity->local.style = DAMAGE_TYPE_NORMAL;
@@ -934,9 +922,9 @@ void Point_LightstyleUse(ServerEntity_t *eEntity)
 
 	Engine.LightStyle(eEntity->local.style,eEntity->v.message);
 
-	if(eEntity->local.dWait > 0)
+	if(eEntity->local.wait > 0)
 	{
-		eEntity->v.nextthink	= Server.time+eEntity->local.dWait;
+		eEntity->v.nextthink	= Server.time+eEntity->local.wait;
 		eEntity->v.think		= Point_LightstyleDie;
 	}
 }
@@ -969,60 +957,52 @@ void Point_LightstyleSpawn(ServerEntity_t *eEntity)
 	Multi-Trigger / Random
 */
 
-void Point_MultiTriggerUse(ServerEntity_t *eEntity)
+void Point_MultiTriggerUse(ServerEntity_t *point)
 {
-	int iRand;
-
-	if(eEntity->local.style)
-	{
-		iRand = rand();
-
-		if(iRand < 0.5)
-			UseTargets(eEntity, eEntity);
-		else
-		{
-			strcpy(eEntity->v.targetname, eEntity->v.message);
-			UseTargets(eEntity, eEntity);
+	if(point->local.style) {
+		int random = rand();
+		if(random < 0.5) {
+            UseTargets(point, point);
+        } else {
+			strcpy(point->v.targetname, point->v.message); // todo, not safe!
+			UseTargets(point, point);
 		}
-	}
-	else
-	{
-		UseTargets(eEntity, eEntity);
-		strcpy(eEntity->v.targetname, eEntity->v.message);
-		UseTargets(eEntity, eEntity);
+	} else {
+		UseTargets(point, point);
+		strcpy(point->v.targetname, point->v.message); // todo, not safe!
+		UseTargets(point, point);
 	}
 }
 
-void Point_MultiTriggerSpawn(ServerEntity_t *eEntity)
+void Point_MultiTriggerSpawn(ServerEntity_t *point)
 {
-	if(!eEntity->v.targetname)
-	{
+	if(!point->v.targetname) {
 		Engine.Con_Warning("No targetname set for point_multitrigger! (%i %i %i)\n",
-			(int)eEntity->v.origin[0],
-			(int)eEntity->v.origin[1],
-			(int)eEntity->v.origin[2]);
+			(int)point->v.origin[0],
+			(int)point->v.origin[1],
+			(int)point->v.origin[2]);
 
-		Entity_Remove(eEntity);
+		Entity_Remove(point);
 		return;
 	}
 
-	if(!eEntity->v.message)
+	if(!point->v.message)
 	{
 		Engine.Con_Warning("No message set for point_multitrigger! (%i %i %i)\n",
-			(int)eEntity->v.origin[0],
-			(int)eEntity->v.origin[1],
-			(int)eEntity->v.origin[2]);
+			(int)point->v.origin[0],
+			(int)point->v.origin[1],
+			(int)point->v.origin[2]);
 
-		Entity_Remove(eEntity);
+		Entity_Remove(point);
 		return;
 	}
 
-	if(!eEntity->local.style)
-		eEntity->local.style = 0;
+	if(!point->local.style)
+		point->local.style = 0;
 
-	eEntity->v.use = Point_MultiTriggerUse;
+	point->v.use = Point_MultiTriggerUse;
 
-	Entity_SetOrigin(eEntity,eEntity->v.origin);
+	Entity_SetOrigin(point,point->v.origin);
 }
 
 /*
@@ -1036,7 +1016,7 @@ void Point_TimedTriggerThink(ServerEntity_t *eEntity)
 
 void Point_TimedTriggerUse(ServerEntity_t *eEntity)
 {
-	eEntity->v.nextthink	= Server.time+eEntity->local.dWait;
+	eEntity->v.nextthink	= Server.time+eEntity->local.wait;
 	eEntity->v.think		= Point_TimedTriggerThink;
 }
 
@@ -1069,18 +1049,15 @@ void Point_LogicThink(ServerEntity_t *eEntity)
 {
 	ServerEntity_t *eEnt1, *eEnt2 = NULL;
 
-	eEnt1 = Engine.Server_FindEntity(Server.eWorld,eEntity->local.cTarget1,false);
-	if(!eEnt1)
-	{
+	eEnt1 = Engine.Server_FindEntity(Server.world,eEntity->local.cTarget1,false);
+	if(!eEnt1) {
 		Engine.Con_Warning("Point_Logic: Can't find Target1!\n");
 		return;
 	}
 
-	if(eEntity->local.style < 3)
-	{
-		eEnt2 = Engine.Server_FindEntity(Server.eWorld,eEntity->local.cTarget2,false);
-		if(!eEnt2)
-		{
+	if(eEntity->local.style < 3) {
+		eEnt2 = Engine.Server_FindEntity(Server.world,eEntity->local.cTarget2,false);
+		if(!eEnt2) {
 			Engine.Con_Warning("Point_Logic: Can't find Target2!\n");
 			return;
 		}
@@ -1088,6 +1065,7 @@ void Point_LogicThink(ServerEntity_t *eEntity)
 
 	switch(eEntity->local.style)
 	{
+    default: break;
 	case 1:
 		if(eEnt1->local.value && eEnt2->local.value)
 		{
@@ -1118,46 +1096,47 @@ void Point_LogicThink(ServerEntity_t *eEntity)
 		break;
 	}
 
-	eEntity->v.nextthink = Server.time+eEntity->local.dWait;
+	eEntity->v.nextthink = Server.time+eEntity->local.wait;
 }
 
-void Point_LogicSpawn(ServerEntity_t *eEntity)
-{
-	if(!eEntity->local.cTarget1)
-	{
-		Engine.Con_Warning("No target1 set for point_logic! (%i %i %i)\n",
-			(int)eEntity->v.origin[0],
-			(int)eEntity->v.origin[1],
-			(int)eEntity->v.origin[2]);
+void Point_LogicSpawn(ServerEntity_t *point) {
+	if(!point->local.cTarget1) {
+		g_engine->Con_Warning("No target1 set for point_logic! (%i %i %i)\n",
+			(int)point->v.origin[0],
+			(int)point->v.origin[1],
+			(int)point->v.origin[2]);
 
-		Entity_Remove(eEntity);
+		Entity_Remove(point);
 		return;
 	}
 
-	if(!eEntity->local.cTarget2 && eEntity->local.style != 3)
-	{
-		Engine.Con_Warning("No target2 set for point_logic! (%i %i %i)\n",
-			(int)eEntity->v.origin[0],
-			(int)eEntity->v.origin[1],
-			(int)eEntity->v.origin[2]);
+	if(!point->local.cTarget2 && point->local.style != 3) {
+		g_engine->Con_Warning("No target2 set for point_logic! (%i %i %i)\n",
+			(int)point->v.origin[0],
+			(int)point->v.origin[1],
+			(int)point->v.origin[2]);
 
-		Entity_Remove(eEntity);
+		Entity_Remove(point);
 		return;
 	}
 
-	if(!eEntity->local.style)
-		eEntity->local.style = 1;
+	if(!point->local.style) {
+        point->local.style = 1;
+    }
 
-	if(!eEntity->local.dWait)
-		eEntity->local.dWait = 1;
+	if(!point->local.wait) {
+        point->local.wait = 1;
+    }
 
-	if(eEntity->local.style != 3)
-		eEntity->local.value = 0;
-	else
-		eEntity->local.value = 1;
+    // todo, what is this doing?
+	if(point->local.style != 3) {
+        point->local.value = 0;
+    } else {
+        point->local.value = 1;
+    }
 
-	Entity_SetOrigin(eEntity,eEntity->v.origin);
+	Entity_SetOrigin(point,point->v.origin);
 
-	eEntity->v.think		= Point_LogicThink;
-	eEntity->v.nextthink	= Server.time+1.0f;
+	point->v.think		= Point_LogicThink;
+	point->v.nextthink	= Server.time + 1.0;
 }

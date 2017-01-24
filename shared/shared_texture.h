@@ -63,7 +63,7 @@ typedef struct gltexture_s
 	unsigned int					width;					// Size of image as it exists in opengl
 	unsigned int					height;					// Size of image as it exists in opengl
 	unsigned int					flags;
-	char							source_file[MAX_QPATH]; // Relative filepath to data source, or "" if source is in memory
+	char							source_file[PL_SYSTEM_MAX_PATH]; // Relative filepath to data source, or "" if source is in memory
 	unsigned int					source_offset;			// Byte offset into file, or memory address
 	enum XTextureFormat				source_format;			// Format of pixel data (indexed, lightmap, or rgba)
 	unsigned int					source_width;			// Size of image in source data

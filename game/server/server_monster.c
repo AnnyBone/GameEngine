@@ -115,7 +115,8 @@ MonsterRelationship_t MonsterRelationship[]=
 
 bool Monster_CheckBottom(ServerEntity_t *ent)
 {
-	MathVector3f_t	mins,maxs,start,stop;
+#if 0
+	PLVector3D	mins,maxs,start,stop;
 	trace_t	trace;
 	int		x,y;
 	float	mid,bottom;
@@ -166,9 +167,10 @@ bool Monster_CheckBottom(ServerEntity_t *ent)
 		}
 
 	return true;
+#endif
 }
 
-bool Monster_MoveStep(ServerEntity_t *ent, plVector3f_t move, bool bRelink)
+bool Monster_MoveStep(ServerEntity_t *ent, PLVector3D move, bool bRelink)
 {
 #if 0 // obsolete
 	float			dz;
@@ -221,14 +223,14 @@ bool Monster_MoveStep(ServerEntity_t *ent, plVector3f_t move, bool bRelink)
 	end[2] -= MONSTER_STEPSIZE*2;
 
 	trace = Engine.Server_Move(vNewOrigin,ent->v.mins,ent->v.maxs,end,false,ent);
-	if(trace.bAllSolid)
+	if(trace.all_solid)
 		return false;
 	else if(trace.bStartSolid)
 	{
 		vNewOrigin[2] -= MONSTER_STEPSIZE;
 
 		trace = Engine.Server_Move(vNewOrigin,ent->v.mins,ent->v.maxs,end,false,ent);
-		if(trace.bAllSolid || trace.bStartSolid)
+		if(trace.all_solid || trace.bStartSolid)
 			return false;
 	}
 
@@ -312,15 +314,15 @@ bool Monster_StepDirection(ServerEntity_t *ent,float yaw,float dist)
 	return false;
 }
 
-void Monster_NewChaseDirection(ServerEntity_t *ent, MathVector3f_t target, float dist)
+void Monster_NewChaseDirection(ServerEntity_t *ent, PLVector3D target, float dist)
 {
 	float	deltax,deltay,d[3],tdir,olddir,turnaround;
 
-	olddir = plAngleMod((ent->v.ideal_yaw / 45.0f)*45.0f);
-	turnaround = plAngleMod(olddir-180);
+	olddir = Math_AngleMod((ent->v.ideal_yaw / 45.0f)*45.0f);
+	turnaround = Math_AngleMod(olddir-180);
 
-	deltax	= target[0]-ent->v.origin[0];
-	deltay	= target[1]-ent->v.origin[1];
+	deltax	= target.x-ent->v.origin.x;
+	deltay	= target.y-ent->v.origin.y;
 	if(deltax > 10)
 		d[1] = 0;
 	else if(deltax < -10)
@@ -503,7 +505,7 @@ void Monster_Killed(ServerEntity_t *eTarget, ServerEntity_t *eAttacker, EntityDa
 	{
 		ServerEntity_t *eDroppedItem = Entity_Spawn();
 
-		Math_VectorCopy(eTarget->v.origin,eDroppedItem->v.origin);
+        eDroppedItem->v.origin = eTarget->v.origin;
 
 		eDroppedItem->local.style = wActive->iItem;
 
@@ -530,7 +532,7 @@ void Monster_Damage(ServerEntity_t *target, ServerEntity_t *inflictor, int iDama
 		decrease after sometime.
 	*/
 
-	if (target->local.bBleed)
+	if (target->local.bleed)
 		ServerEffect_BloodPuff(target->v.origin);
 
 	if (Entity_IsMonster(target))
@@ -576,18 +578,18 @@ void MONSTER_WaterMove(ServerEntity_t *ent)
 
 	if(ent->v.waterlevel != 3)
 	{
-		ent->local.dAirFinished = Server.time+12.0;
-		ent->local.iDamage		= 2;
+		ent->local.air_finished = Server.time+12.0;
+		ent->local.damage		= 2;
 	}
-	else if(ent->local.dAirFinished < Server.time && ent->local.dPainFinished < Server.time)
+	else if(ent->local.air_finished < Server.time && ent->local.pain_finished < Server.time)
 	{
-		ent->local.iDamage += 2;
-		if(ent->local.iDamage > 15)
-			ent->local.iDamage = 10;
+		ent->local.damage += 2;
+		if(ent->local.damage > 15)
+			ent->local.damage = 10;
 
-		Entity_Damage(ent, Server.eWorld, ent->local.iDamage, ent->local.iDamageType);
+		Entity_Damage(ent, Server.world, ent->local.damage, DAMAGE_TYPE_DROWN);
 
-		ent->local.dPainFinished = Server.time+1.0;
+		ent->local.pain_finished = Server.time+1.0;
 	}
 
 	if ((ent->v.watertype == BSP_CONTENTS_LAVA) && ent->local.dDamageTime < Server.time)
@@ -601,13 +603,14 @@ void MONSTER_WaterMove(ServerEntity_t *ent)
 
 	if(!(ent->v.flags & FL_WATERJUMP))
 	{
-		ent->v.velocity[0] = ent->v.velocity[1] = ent->v.velocity[2] =
-			ent->v.velocity[2]-0.8f*ent->v.waterlevel*((float)Server.time)*(ent->v.velocity[0]+ent->v.velocity[1]+ent->v.velocity[2]);
+		ent->v.velocity.x = ent->v.velocity.y = ent->v.velocity.z =
+			ent->v.velocity.z-0.8f*ent->v.waterlevel*((float)Server.time)*(ent->v.velocity.x+ent->v.velocity.y+ent->v.velocity.z);
 	}
 }
 
-void Monster_MoveToGoal(ServerEntity_t *ent,MathVector3f_t goal,float distance)
+void Monster_MoveToGoal(ServerEntity_t *ent,PLVector3D goal,float distance)
 {
+#if 0
 	int i;
 
 	if(!(ent->v.flags & (FL_ONGROUND|FL_FLY|FL_SWIM)))
@@ -623,14 +626,16 @@ void Monster_MoveToGoal(ServerEntity_t *ent,MathVector3f_t goal,float distance)
 
 	if((rand()&3) == 1 || !Monster_StepDirection(ent,ent->v.ideal_yaw,distance))
 		Monster_NewChaseDirection(ent,goal,distance);	// Change to goal at some point
+#endif
 }
 
 /*	Returns the range from an entity to a target.
 	TODO: Make this into a util type function.
 */
-float MONSTER_GetRange(ServerEntity_t *ent, plVector3f_t target)
+float MONSTER_GetRange(ServerEntity_t *ent, PLVector3D target)
 {
-	plVector3f_t spot, spot1, spot2;
+#if 0
+	PLVector3D spot, spot1, spot2;
 
 	spot1[0] = ent->v.origin[0]+ent->v.view_ofs[0];
 	spot1[1] = ent->v.origin[1]+ent->v.view_ofs[1];
@@ -642,12 +647,16 @@ float MONSTER_GetRange(ServerEntity_t *ent, plVector3f_t target)
 	Math_VectorSubtract(spot1,spot2,spot);
 
 	return plLengthf(spot);
+#else
+    return 0;
+#endif
 }
 
 bool Monster_IsVisible(ServerEntity_t *ent,ServerEntity_t *target)
 {
+#if 0
 	trace_t	tTrace;
-	MathVector3f_t vStart,vEnd;
+	PLVector3D vStart,vEnd;
 
 	// TODO: Rework for new FOV system
 	Math_VectorAdd(ent->v.origin,ent->v.view_ofs,vStart);
@@ -658,6 +667,9 @@ bool Monster_IsVisible(ServerEntity_t *ent,ServerEntity_t *target)
 		return true;
 
 	return false;
+#else
+    return false;
+#endif
 }
 
 /*	Returns view target.
@@ -674,7 +686,7 @@ ServerEntity_t *Monster_GetTarget(ServerEntity_t *eMonster)
 		if(	(eMonster != eTargets)																&&	// Can't target ourself.
 			(eTargets != eMonster->local.eOwner)												&&	// Can't target owner.
 			(eTargets != eMonster->Monster.eTarget && eTargets != eMonster->Monster.eOldTarget) &&	// Can't target an old target.
-			(eTargets->Monster.iType != MONSTER_NONE))												// Has to be a monster.
+			(eTargets->Monster.type != MONSTER_NONE))												// Has to be a monster.
 			// Quick crap thrown in to check if the target is visible or not...
 			if(Monster_IsVisible(eMonster,eTargets))
 				return eTargets;
@@ -731,7 +743,7 @@ int	Monster_GetRelationship(ServerEntity_t *entity, ServerEntity_t *target)
 {
 	int	i;
 
-	if (!entity->Monster.iType)
+	if (!entity->Monster.type)
 		return AI_RELATIONSHIP_NEUTRAL;
 
 	// Run through the relationship table...
@@ -741,8 +753,8 @@ int	Monster_GetRelationship(ServerEntity_t *entity, ServerEntity_t *target)
 		if (!MonsterRelationship[i].iFirstType)
 			break;
 
-		if ((entity->Monster.iType == MonsterRelationship[i].iFirstType) &&
-			(target->Monster.iType == MonsterRelationship[i].iSecondType))
+		if ((entity->Monster.type == MonsterRelationship[i].iFirstType) &&
+			(target->Monster.type == MonsterRelationship[i].iSecondType))
 			return MonsterRelationship[i].iRelationship;
 	}
 

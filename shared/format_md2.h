@@ -41,8 +41,8 @@ typedef struct
 
 typedef struct
 {
-	PLuchar	v[3];				// scaled byte to fit in frame mins/maxs
-	PLuchar	lightnormalindex;
+	unsigned char	v[3];				// scaled byte to fit in frame mins/maxs
+	unsigned char	lightnormalindex;
 } MD2TriangleVertex_t;
 
 typedef struct

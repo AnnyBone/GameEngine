@@ -156,7 +156,7 @@ void Bot_Spawn(ServerEntity_t *eBot)
 		eBot->v.model = cvServerPlayerModel.string;
 		strncpy(eBot->v.netname, BotNames[(rand() % plArrayElements(BotNames))], 64);
 
-		eBot->Monster.iType	= MONSTER_PLAYER;
+		eBot->Monster.type	= MONSTER_PLAYER;
 		break;
 #ifdef GAME_OPENKATANA
 	case BOT_COMPANION:
@@ -171,7 +171,7 @@ void Bot_Spawn(ServerEntity_t *eBot)
 		eBot->v.model	= "models/sprfly.md2";	// TODO: Placeholder!
 		eBot->v.netname = "Companion Bot";		// TODO: give a proper name??
 
-		eBot->Monster.iType = MONSTER_SUPERFLY;
+		eBot->Monster.type = MONSTER_SUPERFLY;
 		break;
 #endif
 	default:
@@ -187,13 +187,13 @@ void Bot_Spawn(ServerEntity_t *eBot)
 
 	eBot->v.classname		= "bot";
 	eBot->v.health			= 100;
-	eBot->local.iMaxHealth = cvServerMaxHealth.iValue;
+	eBot->local.maxhealth = cvServerMaxHealth.iValue;
 	eBot->v.movetype		= MOVETYPE_STEP;
 	eBot->v.takedamage		= true;
 
 	Entity_SetPhysics(eBot, SOLID_SLIDEBOX, 1.4f, 4.0f);
 
-	eBot->local.bBleed	= true;
+	eBot->local.bleed	= true;
 
 	eBot->Monster.Frame = Bot_Frame;
 	eBot->Monster.Pain	= Bot_Pain;
@@ -320,12 +320,12 @@ void Bot_Pain(ServerEntity_t *ent, ServerEntity_t *other, EntityDamageType_t typ
 	// Get both mine and our enemies weapon.
 	myweapon    = Weapon_GetCurrentWeapon(ent);
 	hisweapon   = Weapon_GetCurrentWeapon(other);
-	if(!myweapon || (!Weapon_CheckPrimaryAmmo(myweapon,ent) && myweapon->iPrimaryType != AM_MELEE)) {
+	if(!myweapon || (!Weapon_CheckPrimaryAmmo(myweapon,ent) && myweapon->primary_type != AM_MELEE)) {
 		AI_SetThink(ent, AI_THINK_FLEEING);
 		return;
 	}
 	// Otherwise check what we can see our enemy having (don't check ammo since it's unrealistic).
-	else if(!hisweapon || hisweapon->iPrimaryType == AM_MELEE) {
+	else if(!hisweapon || hisweapon->primary_type == AM_MELEE) {
 		// We see you!
 		if(Monster_IsVisible(ent,other))
 		{

@@ -92,7 +92,7 @@ void Ballista_PrimaryAttack(ServerEntity_t *ent)
 
 	ent->v.punchangle[0] -= 5.0f;
 
-	ent->v.iPrimaryAmmo	= ent->local.ballista_ammo--;
+	ent->v.primary_ammo	= ent->local.ballista_ammo--;
 
 	Ballista_SpawnLogProjectile(ent);
 

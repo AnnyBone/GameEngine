@@ -163,7 +163,7 @@ int SV_FlyMove (ServerEntity_t *ent, float time, trace_t *steptrace)
 			end[i] = ent->v.origin[i] + time_left * ent->v.velocity[i];
 
 		trace = SV_Move (ent->v.origin, ent->v.mins, ent->v.maxs, end, FALSE, ent);
-		if(trace.bAllSolid)
+		if(trace.all_solid)
 		{
 			// Entity is trapped in another solid
 			Math_VectorCopy(pl_origin3f, ent->v.velocity);

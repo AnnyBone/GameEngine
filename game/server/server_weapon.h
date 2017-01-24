@@ -100,7 +100,7 @@ typedef struct
 
 	void			(*Deploy)(ServerEntity_t *ent);
 
-	WeaponAmmo_t	iPrimaryType;
+	WeaponAmmo_t	primary_type;
 
 	void			(*Primary)(ServerEntity_t *ent);
 
@@ -113,7 +113,7 @@ typedef struct
 					iSecondaryAmmoOffset;
 } Weapon_t;
 
-PLVector3D Weapon_Aim(ServerEntity_t *eEntity);
+PLVector3D Weapon_Aim(ServerEntity_t *entity);
 
 Weapon_t *Weapon_GetCurrentWeapon(ServerEntity_t *eEntity);
 Weapon_t *Weapon_GetWeapon(int iWeaponID);
@@ -127,10 +127,10 @@ void Weapon_CheckFrames(ServerEntity_t *eEntity);
 void Weapon_Animate(ServerEntity_t *ent, ServerEntityFrame_t *eFrames);
 void Weapon_PrimaryAttack(ServerEntity_t *eEntity);
 void Weapon_CheckInput(ServerEntity_t *eEntity);
-void Weapon_ViewPunch(ServerEntity_t *eEntity, float fIntensity, bool bAddition);
+void Weapon_ViewPunch(ServerEntity_t *entity, float intensity, bool add);
 
 bool Weapon_CheckPrimaryAmmo(Weapon_t *wWeapon, ServerEntity_t *eEntity);
 bool Weapon_CheckSecondaryAmmo(Weapon_t *wWeapon, ServerEntity_t *eEntity);
-bool Weapon_CheckTrace(ServerEntity_t *eOwner);
+bool Weapon_CheckTrace(ServerEntity_t *owner);
 
 #endif

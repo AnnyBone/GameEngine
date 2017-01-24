@@ -18,6 +18,9 @@
 
 #pragma once
 
+#include "shared_math.h"
+#include "shared_flags.h"
+
 #include "shared_material.h"
 #include "shared_server.h"
 #include "shared_client_effect.h"
@@ -78,17 +81,17 @@ typedef struct
 	int(*Server_GetNumEdicts)(void);
 
 	void(*Server_MakeStatic)(ServerEntity_t *ent);
-	void(*Server_BroadcastPrint)(char *fmt, ...);														// Sends a message to all clients.
-	void(*Server_SinglePrint)(ServerEntity_t *eEntity, char *cMessage);											// Sends a message to a specified client.
+	void(*Server_BroadcastPrint)(const char *fmt, ...);														// Sends a message to all clients.
+	void(*Server_SinglePrint)(ServerEntity_t *eEntity, const char *cMessage);											// Sends a message to a specified client.
 	void(*Server_PrecacheResource)(int iType, const char *ccResource);									// Precaches the specified resource.
 	void(*Server_Restart)(void);																		// Restarts the server.
 	void(*Server_ChangeLevel)(const char *ccNewLevel);													// Changes the level.
-	void(*Server_AmbientSound)(float *vPosition, const char *cPath, int iVolume, int iAttenuation);		// Plays an ambient sound (a constant sound) from the given location.
+	void(*Server_AmbientSound)(PLVector3D origin, const char *cPath, int iVolume, int iAttenuation);		// Plays an ambient sound (a constant sound) from the given location.
 
 	trace_t(*Server_Move)(PLVector3D start, PLVector3D mins, PLVector3D maxs, PLVector3D end, int type, ServerEntity_t *passedict);
 
 	ServerEntity_t*(*Server_FindRadius)(PLVector3D origin, float radius);												// Finds entities within a specific radius.
-	ServerEntity_t*(*Server_FindEntity)(ServerEntity_t *eStartEntity, char *cName, bool bClassname);						// Finds a specified entity either by classname or by entity name.
+	ServerEntity_t*(*Server_FindEntity)(ServerEntity_t *eStartEntity, const char *cName, bool bClassname);						// Finds a specified entity either by classname or by entity name.
 	ServerEntity_t*(*Server_GetEdicts)(void);
 
 	model_t*(*GetServerEntityModel)(ServerEntity_t *entity);
@@ -102,7 +105,7 @@ typedef struct
 	int(*Client_GetStat)(ClientStat_t csStat);					// Get a client statistic (health etc.)
 
 	void(*Client_PrecacheResource)(int iType, char *cResource);	// Precache a resource client-side.
-	void(*Client_SetMenuCanvas)(VideoCanvasType_t Canvas);		// Set the canvas type that the menu will use.
+	void(*Client_SetMenuCanvas)(unsigned int Canvas);		    // Set the canvas type that the menu will use.
 	void(*Client_AddMenuState)(int iState);						// Adds a new state to the clients menu.
 	void(*Client_RemoveMenuState)(int iState);					// Removes a state from the clients menu.
 
@@ -138,12 +141,12 @@ typedef struct
 	void(*Print)(const char *fmt, ...);		// Appears to client in console. Standard message.
 
 	void(*SetMessageEntity)(ServerEntity_t *ent);
-	void(*CenterPrint)(ServerEntity_t *ent, char *msg);	// Sends a message to the specified client and displays the message at the center of the screen.
+	void(*CenterPrint)(ServerEntity_t *ent, const char *msg);	// Sends a message to the specified client and displays the message at the center of the screen.
 	void(*Sys_Error)(const char *error, ...);
 	void(*SetModel)(ServerEntity_t *ent, const char *m);		// Sets the model for the specified entity.
-	void(*Particle)(float org[3], float dir[3], float scale, char *texture, int count);
+	void(*Particle)(PLVector3D origin, PLVector3D dir, float scale, const char *texture, int count);
 	void(*Flare)(PLVector3D org, float r, float g, float b, float a, float scale, char *texture);
-	void(*Sound)(ServerEntity_t *ent, int channel, char *sample, int volume, float attenuation);
+	void(*Sound)(ServerEntity_t *ent, int channel, const char *sample, int volume, float attenuation);
 	void(*LinkEntity)(ServerEntity_t *ent, bool touch_triggers);
 	void(*UnlinkEntity)(ServerEntity_t *ent);
 	void(*FreeEntity)(ServerEntity_t *ed);
@@ -163,7 +166,7 @@ typedef struct
 
 	void(*Cvar_RegisterVariable)(ConsoleVariable_t *variable, void(*Function)(void));
 	void(*Cvar_SetValue)(const char *var_name, float value);
-	void(*LightStyle)(int style, char *val);
+	void(*LightStyle)(int style, const char *val);
 
 	void(*Cmd_AddCommand)(const char *cmd_name, xcommand_t function);
 	char*(*Cmd_Argv)(int arg);

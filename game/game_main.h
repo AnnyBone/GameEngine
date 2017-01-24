@@ -54,11 +54,11 @@ typedef struct
 	double	
 		time,					// Server time.
 		dHostFrameTime,			// Host time.
-		dWaypointSpawnDelay;	// Delay before spawning another waypoint.
+		waypointspawndelay;	// Delay before spawning another waypoint.
 
 	ServerEntity_t	
 		*eEntity,	// Current player.
-		*eWorld;	// Pointer to entity representing the current level.
+		*world;	// Pointer to entity representing the current level.
 
 	char	
 		*cMapAuthor,	// Map author.
@@ -147,11 +147,11 @@ extern int	iRedScore, iBlueScore;	// TODO: Move these somewhere else, likely int
 
 PL_EXTERN_C
 
-char *va(char *format,...);
+char *va(const char *format,...);
 
 void Flare(PLVector3D org,float r,float g,float b,float a,float scale,char *texture);
 
-void Sound(ServerEntity_t *ent, AudioChannel_t channel, char *sound, int volume, float attenuation);
+void Sound(ServerEntity_t *ent, AudioChannel_t channel, const char *sound, int volume, float attenuation);
 
 void SetAngle(ServerEntity_t *ent, PLVector3D vAngle);
 void PutClientInServer(ServerEntity_t *ent);

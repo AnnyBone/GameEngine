@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #pragma once
 
-int	iPlayerModelIndex;
+int	playermodelindex;
 
 extern	ServerEntityFrame_t	PlayerAnimation_Death1[];
 extern	ServerEntityFrame_t	PlayerAnimation_Death2[];
@@ -32,14 +32,14 @@ extern	ServerEntityFrame_t	PlayerAnimation_KatanaIdle[];
 extern	ServerEntityFrame_t	PlayerAnimation_KatanaAttack1[];
 extern	ServerEntityFrame_t	PlayerAnimation_KatanaAttack2[];
 
-void Player_PostThink(ServerEntity_t *ePlayer);
-void Player_PreThink(ServerEntity_t *ePlayer);
-void Player_Spawn(ServerEntity_t *self);
-void Player_Jump(ServerEntity_t *self);
+void Player_PostThink(ServerEntity_t *player);
+void Player_PreThink(ServerEntity_t *player);
+void Player_Spawn(ServerEntity_t *player);
+void Player_Jump(ServerEntity_t *player);
 #ifdef GAME_OPENKATANA
-void Player_CheckPowerups(ServerEntity_t *self);
+void Player_CheckPowerups(ServerEntity_t *player);
 #endif
-void Player_DeathThink(ServerEntity_t *entity);
+void Player_DeathThink(ServerEntity_t *player);
 void Player_Use(ServerEntity_t *entity);
 
-ServerEntity_t *Player_GetSpawnEntity(ServerEntity_t *entity, int type);
+ServerEntity_t *Player_GetSpawnEntity(ServerEntity_t *player, int type);

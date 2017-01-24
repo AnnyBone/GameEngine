@@ -1188,7 +1188,7 @@ void Host_Say(bool bTeamOnly)
 	{
 		if (!client || !client->active || !client->bSpawned)
 			continue;
-		if (teamplay.value && bTeamOnly && client->edict->local.pTeam != save->edict->local.pTeam)
+		if (teamplay.value && bTeamOnly && client->edict->local.team != save->edict->local.team)
 			continue;
 
 		host_client = client;

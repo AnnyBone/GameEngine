@@ -128,7 +128,7 @@ void SideWinder_Think(ServerEntity_t *eSideWinder)
 //	eSideWinder->v.velocity[Y]	*= -((float)sin(Server.time*1.5f)*5.5f)/10.0f;
 //	eSideWinder->v.velocity[Z]	*= eSideWinder->v.velocity[X]/eSideWinder->v.velocity[Y];
 
-	if(Server.time >= eSideWinder->local.fSpawnDelay)
+	if(Server.time >= eSideWinder->local.spawndelay)
 	{
 		SideWinder_MissileExplode(eSideWinder,NULL);
 		return;
@@ -166,15 +166,15 @@ void SideWinder_SpawnMissle(ServerEntity_t *ent,float fSpeed,float ox)
 
 	Math_VectorCopy(ent->v.origin,vOrg);
 
-	vOrg[0] += eMissile->local.vForward[0] * 8 + eMissile->local.vRight[0] * ox;
-	vOrg[1] += eMissile->local.vForward[1] * 8 + eMissile->local.vRight[1] * ox;
-	vOrg[2] += eMissile->local.vForward[2] * 24;
+	vOrg[0] += eMissile->local.forward[0] * 8 + eMissile->local.right[0] * ox;
+	vOrg[1] += eMissile->local.forward[1] * 8 + eMissile->local.right[1] * ox;
+	vOrg[2] += eMissile->local.forward[2] * 24;
 
 	Entity_SetSizeVector(eMissile, pl_origin3f, pl_origin3f);
 	Entity_SetOrigin(eMissile,vOrg);
 
 	// Time at which we'll be removed if nothing hit.
-	eMissile->local.fSpawnDelay = (float)(Server.time+8.0);
+	eMissile->local.spawndelay = (float)(Server.time+8.0);
 
 	eMissile->v.TouchFunction	= SideWinder_MissileExplode;
 	eMissile->v.nextthink		= Server.time+0.05;
@@ -202,7 +202,7 @@ void SideWinder_PrimaryAttack(ServerEntity_t *eOwner)
 	Weapon_Animate(eOwner,SideWinderAnimation_Fire);
 
 	// [1/10/2012] Readded ~hogsy
-	eOwner->v.iPrimaryAmmo	= eOwner->local.sidewinder_ammo -= 2;
+	eOwner->v.primary_ammo	= eOwner->local.sidewinder_ammo -= 2;
 
 	eOwner->v.punchangle[PITCH] -= (float)(rand()%5+1);
 

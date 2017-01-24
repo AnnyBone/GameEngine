@@ -40,9 +40,9 @@ typedef enum
 	MODEL_NONE
 } ModelType_t;
 
-#include "format_u3d.h"	// UNREAL 3D
-#include "format_obj.h"	// OBJ
-#include "format_iqm.h"	// INTER-QUAKE MODEL
+//#include "format_u3d.h"	// UNREAL 3D
+//#include "format_obj.h"	// OBJ
+//#include "format_iqm.h"	// INTER-QUAKE MODEL
 #include "format_md2.h"	// MD2
 #include "format_bsp.h"	// LEVEL/BSP
 

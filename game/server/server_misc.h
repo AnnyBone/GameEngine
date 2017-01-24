@@ -43,34 +43,34 @@ void Area_KillSpawn(ServerEntity_t *area);
 
 void Point_AmbientSpawn(ServerEntity_t *eEntity);
 void Point_DecorationSpawn(ServerEntity_t *eDecoration);
-void Point_DynamicLight(ServerEntity_t *ent);
+void Point_DynamicLight(ServerEntity_t *point);
 void Point_DamageSpawn(ServerEntity_t *ent);
 void Point_EffectSpawn(ServerEntity_t *eFlare);
 void Point_FlareSpawn(ServerEntity_t *eFlare);
 void Point_MessageSpawn(ServerEntity_t *eEntity);
 void Point_LightstyleSpawn(ServerEntity_t *eEntity);
-void Point_LogicSpawn(ServerEntity_t *eEntity);
+void Point_LogicSpawn(ServerEntity_t *point);
 void Point_VehicleSpawn(ServerEntity_t *eVehicle);
 void Point_MonsterSpawn(ServerEntity_t *eMonster);
-void Point_MultiTriggerSpawn(ServerEntity_t *eEntity);
+void Point_MultiTriggerSpawn(ServerEntity_t *point);
 void Point_NullSpawn(ServerEntity_t *eEntity);
 void Point_SkyCameraSpawn(ServerEntity_t *entity);
-void Point_ParticleSpawn(ServerEntity_t *ent);
+void Point_ParticleSpawn(ServerEntity_t *point);
 void Point_PropSpawn(ServerEntity_t *eEntity);
 void Point_SoundSpawn(ServerEntity_t *eEntity);
 void Point_Start(ServerEntity_t *ent);
-void Point_ShakeSpawn(ServerEntity_t *ent);
-void Point_TeleportSpawn(ServerEntity_t *ent);
+void Point_ShakeSpawn(ServerEntity_t *point);
+void Point_TeleportSpawn(ServerEntity_t *point);
 void Point_TimedTriggerSpawn(ServerEntity_t *eEntity);
 void Point_WaypointSpawn(ServerEntity_t *eEntity);
-void Point_LightSpawn(ServerEntity_t *eLight);
+void Point_LightSpawn(ServerEntity_t *point);
 void Point_SpriteSpawn(ServerEntity_t *seSprite);
 void Point_ExplodeSpawn(ServerEntity_t *ePoint);
 
 // Weapons
 void WEAPON_StickThink(ServerEntity_t *ent);
 
-void ThrowGib(PLVector3D origin, PLVector3D velocity,char *model,float damage,bool bleed);
+void ThrowGib(PLVector3D origin, PLVector3D velocity, const char *model, float damage, bool bleed);
 void Item_Respawn(ServerEntity_t *ent);
 
 void Client_RelinkEntities(entity_t *ent,int i,double dTime);

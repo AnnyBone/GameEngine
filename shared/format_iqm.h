@@ -92,7 +92,6 @@ typedef struct
 {
 	unsigned int	uiName;
 	int				iParent;
-	// [21/8/2012] TODO: Change over to vec3_t etc? ~hogsy
 	float			fTranslate[3], fRotate[4], fScale[3];
 } IQMJoint_t;
 
@@ -123,7 +122,6 @@ typedef struct
 
 typedef struct
 {
-	// [21/8/2012] TODO: Change to vec3_t? ~hogsy
 	float	fBBMin[3], fBBMax[3];
 	float	fXYRadius, fRadius;
 } IQMBounds_t;

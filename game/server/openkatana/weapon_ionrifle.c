@@ -247,7 +247,7 @@ void IonRifle_PrimaryAttack(ServerEntity_t *eOwner)
 	}
 
 	// [17/11/2013] Update ammo counts... ~hogsy
-	eOwner->v.iPrimaryAmmo = eOwner->local.ionblaster_ammo;
+	eOwner->v.primary_ammo = eOwner->local.ionblaster_ammo;
 }
 
 /*	Switch fire modes.
