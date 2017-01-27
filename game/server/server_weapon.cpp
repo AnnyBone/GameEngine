@@ -262,17 +262,17 @@ PLVector3D Weapon_Aim(ServerEntity_t *entity)
 		for (j = 0; j < 3; j++)
 			mvEnd[j] = eCheck->v.origin[j] + 0.5f * (eCheck->v.mins[j] + eCheck->v.maxs[j]);
 
-		plVectorSubtract3fv(mvEnd, start, direction);
-		plVectorNormalize(direction);
+        direction = mvEnd - start;
+        direction.Normalize();
 
 		fDistance = Math_DotProduct(direction, entity->local.forward);
-		if (fDistance < fBestDistance)
-			// Too far to turn.
-			continue;
+		if (fDistance < fBestDistance) {
+            // Too far to turn.
+            continue;
+        }
 
 		tAimLine = Engine.Server_Move(start, pl_origin3f, pl_origin3f, mvEnd, 0, entity);
-		if (tAimLine.ent == eCheck)
-		{
+		if (tAimLine.ent == eCheck) {
 			// Can shoot at this one.
 			fBestDistance = fDistance;
 			eBest = eCheck;
@@ -348,15 +348,10 @@ bool Weapon_CheckTrace(ServerEntity_t *owner)
     return !((iTraceContents == BSP_CONTENTS_SKY) || (iTraceContents == BSP_CONTENTS_SOLID));
 }
 
-/*	Attempts to throw out a projectile.
-*/
-void Weapon_Projectile(ServerEntity_t *eOwner, ServerEntity_t *eProjectile, float fVelocity)
-{
-    // Figure out our aim direction.
-	PLVector3D mvDirection = Weapon_Aim(eOwner);
-
+// Attempts to throw out a projectile.
+void Weapon_Projectile(ServerEntity_t *owner, ServerEntity_t *projectile, float fVelocity) {
 	// Scale with the speed and copy over the angled velocity.
-    eProjectile->v.velocity = mvDirection * fVelocity;
+    projectile->v.velocity = Weapon_Aim(owner) * fVelocity;
 }
 
 void Weapon_BulletProjectile(ServerEntity_t *owner, float spread, int damage, PLVector3D direction) {
@@ -376,16 +371,16 @@ void Weapon_BulletProjectile(ServerEntity_t *owner, float spread, int damage, PL
 		if(trace.ent && trace.ent->v.takedamage) {
             Entity_Damage(trace.ent, owner, damage, DAMAGE_TYPE_NONE);
         } else {
-			ServerEntity_t *eSmoke = Entity_Spawn();
-			if(eSmoke) {
-				eSmoke->v.think			= Entity_Remove;
-				eSmoke->v.nextthink	= Server.time+0.5;
+			ServerEntity_t *puff = Entity_Spawn();
+			if(puff) {
+				puff->v.think       = Entity_Remove;
+				puff->v.nextthink   = Server.time + 0.5;
 
-				Entity_SetOrigin(eSmoke,trace.endpos);
+				Entity_SetOrigin(puff,trace.endpos);
 
                 char sound[128];
 				PHYSICS_SOUND_RICOCHET(sound);
-				Sound(eSmoke,CHAN_BODY,sound,255,ATTN_NORM);
+				Sound(puff,CHAN_BODY,sound,255,ATTN_NORM);
 			}
 
 			char smoke[6];

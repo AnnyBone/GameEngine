@@ -122,7 +122,7 @@ void Weapon_Precache(void);
 void Weapon_UpdateCurrentAmmo(Weapon_t *wWeapon, ServerEntity_t *eEntity);
 void Weapon_SetActive(Weapon_t *wWeapon, ServerEntity_t *eEntity, bool bDeploy);
 void Weapon_BulletProjectile(ServerEntity_t *ent, float spread, int damage, PLVector3D vVector);
-void Weapon_Projectile(ServerEntity_t *eOwner, ServerEntity_t *eProjectile, float fVelocity);
+void Weapon_Projectile(ServerEntity_t *owner, ServerEntity_t *projectile, float fVelocity);
 void Weapon_CheckFrames(ServerEntity_t *eEntity);
 void Weapon_Animate(ServerEntity_t *ent, ServerEntityFrame_t *eFrames);
 void Weapon_PrimaryAttack(ServerEntity_t *eEntity);
