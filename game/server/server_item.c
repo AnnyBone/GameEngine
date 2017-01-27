@@ -274,7 +274,7 @@ void Item_Touch(ServerEntity_t *eItem,ServerEntity_t *eOther)
 		Item_AddInventory(iItem,eOther);
 		break;
 	case WEAPON_C4VIZATERGO:
-		eOther->local.iC4Ammo += 15;
+		eOther->local.c4_ammo += 15;
 
 		Item_AddInventory(iItem,eOther);
 		break;
@@ -301,7 +301,7 @@ void Item_Touch(ServerEntity_t *eItem,ServerEntity_t *eOther)
 		eOther->local.ionblaster_ammo += 15;
 		break;
 	case AMMO_C4BOMBS:
-		eOther->local.iC4Ammo += 5;
+		eOther->local.c4_ammo += 5;
 		break;
 	case AMMO_SLUGS:
 		eOther->local.shotcycler_ammo += 8;

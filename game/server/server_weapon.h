@@ -96,7 +96,7 @@ typedef struct
 {
 	int				iItem;
 
-	char			*model;
+	const char			*model;
 
 	void			(*Deploy)(ServerEntity_t *ent);
 
@@ -129,8 +129,8 @@ void Weapon_PrimaryAttack(ServerEntity_t *eEntity);
 void Weapon_CheckInput(ServerEntity_t *eEntity);
 void Weapon_ViewPunch(ServerEntity_t *entity, float intensity, bool add);
 
-bool Weapon_CheckPrimaryAmmo(Weapon_t *wWeapon, ServerEntity_t *eEntity);
-bool Weapon_CheckSecondaryAmmo(Weapon_t *wWeapon, ServerEntity_t *eEntity);
+bool Weapon_CheckPrimaryAmmo(Weapon_t *weapon, ServerEntity_t *entity);
+bool Weapon_CheckSecondaryAmmo(Weapon_t *weapon, ServerEntity_t *entity);
 bool Weapon_CheckTrace(ServerEntity_t *owner);
 
 #endif

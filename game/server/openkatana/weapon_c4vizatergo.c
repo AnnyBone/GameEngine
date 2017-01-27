@@ -214,13 +214,13 @@ void C4Vizatergo_PrimaryAttack(ServerEntity_t *eOwner)
 	Weapon_Animate(eOwner,C4Animation_Fire1);
 	Weapon_ViewPunch(eOwner, 7, true);
 
-	eOwner->v.primary_ammo = eOwner->local.iC4Ammo -= 1;
+	eOwner->v.primary_ammo = eOwner->local.c4_ammo -= 1;
 
 	c4ball->v.classname	= "c4ball";
 	c4ball->v.movetype		= MOVETYPE_BOUNCE;
 
 	c4ball->local.style = AMMO_C4BOMBS;		// Cleaner way to tell if this can explode or not :V ~hogsy
-	c4ball->local.iC4Ammo = 1;				// [11/8/2013] Since style is used for other shit too LAWL ~hogsy
+	c4ball->local.c4_ammo = 1;				// [11/8/2013] Since style is used for other shit too LAWL ~hogsy
 	c4ball->local.eOwner = eOwner;
 
 	// Set the physical properties.
@@ -257,7 +257,7 @@ void C4Vizatergo_SecondaryAttack(ServerEntity_t *eOwner)
 
 	do
 	{
-		if((eExplodable->local.style == AMMO_C4BOMBS) && (eExplodable->local.iC4Ammo == 1) && (eExplodable->local.eOwner == eOwner))
+		if((eExplodable->local.style == AMMO_C4BOMBS) && (eExplodable->local.c4_ammo == 1) && (eExplodable->local.eOwner == eOwner))
 		{
 			eExplodable->v.think		= C4Vizatergo_Explode;
 			eExplodable->v.nextthink	= Server.time;

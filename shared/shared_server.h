@@ -172,7 +172,7 @@ typedef struct
 		vita_finished, vita_time;		// Vita Boost.
 
 	// Ammo
-	int			iC4Ammo,
+	int			c4_ammo,
 		claw_ammo;
 	int			glock_ammo, glock_ammo2;
 	int			ionblaster_ammo;
