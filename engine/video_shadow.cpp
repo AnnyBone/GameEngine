@@ -27,10 +27,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define	SHADOW_BLOB_SCALE	20.0f	// Default blob scale.
 
-plEXTERN_C_START
+PL_EXTERN_C
 	extern MathVector3f_t lightspot;
 	extern mplane_t	*lightplane;		// Plane underneath the entity.
-plEXTERN_C_END
+PL_EXTERN_C_END
 
 VideoFrameBuffer *shadow_fbo;
 

@@ -24,5 +24,5 @@ add_subdirectory(launcher)
 
 if(XENON_COMPILE_TOOLS)
     add_subdirectory(level)
-    add_subdirectory(editor)
+#    add_subdirectory(editor)
 endif(XENON_COMPILE_TOOLS)

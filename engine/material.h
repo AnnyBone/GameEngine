@@ -18,7 +18,7 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
 #include "shared_material.h"
 
-plEXTERN_C_START
+PL_EXTERN_C
 
 // Global materials
 extern Material_t
@@ -34,7 +34,7 @@ extern int material_count;
 void Material_Initialize(void);
 void Material_ClearAll(void);
 void Material_Clear(Material_t *material, bool force);
-void Material_DrawObject(Material_t *material, PLDraw *object, bool ispost);
+void Material_DrawObject(Material_t *material, PLMesh *object, bool ispost);
 void Material_Draw(Material_t *material, PLVertex *ObjectVertex, PLPrimitive ObjectPrimitive, unsigned int ObjectSize, bool ispost);
 
 bool Material_Precache(const char *path);
@@ -49,4 +49,4 @@ void Material_SetSkin(Material_t *material, unsigned int skin);
 MaterialSkin_t *Material_GetSkin(Material_t *material, unsigned int skin);
 MaterialSkin_t *Material_GetAnimatedSkin(Material_t *material);
 
-plEXTERN_C_END
+PL_EXTERN_C_END

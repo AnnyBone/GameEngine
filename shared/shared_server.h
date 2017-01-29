@@ -388,7 +388,7 @@ typedef struct ServerEntityBaseVariables_s
 
 	int	iScore;
 	int	iActiveWeapon;	// Current active weapon ID
-	char *cViewModel;	// The model that appears in our view, this is traditionally used for weapons.
+	const char *cViewModel;	// The model that appears in our view, this is traditionally used for weapons.
 
 	int	items;
 	int	iInventory[128];

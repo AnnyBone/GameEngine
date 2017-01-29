@@ -74,7 +74,7 @@ namespace core
 extern core::Console *g_console;
 #endif
 
-plEXTERN_C_START
+PL_EXTERN_C
 
 extern	bool	con_forcedup;	// because no entities to refresh
 extern	bool	g_consoleinitialized;
@@ -107,4 +107,4 @@ void Con_ScrollEnd(void);
 char *Con_Quakebar(unsigned int len);
 void Con_LogCenterPrint(char *str);
 
-plEXTERN_C_END
+PL_EXTERN_C_END

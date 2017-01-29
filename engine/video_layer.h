@@ -18,7 +18,7 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
 #include "platform_graphics.h"
 
-plEXTERN_C_START
+PL_EXTERN_C
 
 void vlInit(void);
 
@@ -54,11 +54,6 @@ void vlDrawTexCoord2f(unsigned int target, float s, float t);
 void vlDrawVertexNormals(PLDraw *draw);
 
 //-----------------
-// Lighting
-
-void vlApplyLighting(PLDraw *object, PLLight *light, plVector3f_t position);
-
-//-----------------
 
 // Frame Buffer
 void vlGenerateFrameBuffer(unsigned int *buffer);
@@ -77,4 +72,4 @@ void vlDeleteRenderBuffer(unsigned int *buffer);
 void vlSwapBuffers(void);
 void vlColourMask(bool red, bool green, bool blue, bool alpha);
 
-plEXTERN_C_END
+PL_EXTERN_C_END

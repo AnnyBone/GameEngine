@@ -83,7 +83,7 @@ Zone block
 
 */
 
-plEXTERN_C_START
+PL_EXTERN_C
 
 void *malloc_or_die(size_t size);
 void *calloc_or_die(size_t nmemb, size_t size);
@@ -120,6 +120,6 @@ void *Cache_Alloc(cache_user_t *c,int size,char *name);
 
 void Cache_Report (void);
 
-plEXTERN_C_END
+PL_EXTERN_C_END
 
 #endif // !ZONE_H

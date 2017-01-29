@@ -18,9 +18,9 @@
 
 #pragma once
 
-plEXTERN_C_START
+PL_EXTERN_C
 
 void Draw_StaticEntity(ClientEntity_t *entity);
 void Draw_VertexEntity(ClientEntity_t *entity);
 
-plEXTERN_C_END
+PL_EXTERN_C_END

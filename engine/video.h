@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define	VIDEO_LIGHTMAP_HACKS
 
-plEXTERN_C_START
+PL_EXTERN_C
 
 extern ConsoleVariable_t
 	cv_video_shaders,
@@ -74,17 +74,13 @@ extern ConsoleVariable_t cv_video_detailscale; // TODO: Move into EngineMaterial
 
 extern struct gltexture_s *g_effecttextures[MAX_EFFECTS];
 
-plEXTERN_C_END
+PL_EXTERN_C_END
 
 #define	VIDEO_TEXTURE_DIFFUSE		0
 #define	VIDEO_TEXTURE_LIGHT			1	// currently reserved!
 #define	VIDEO_TEXTURE_FULLBRIGHT	2
 #define	VIDEO_TEXTURE_SPHERE		3
 #define	VIDEO_TEXTURE_DETAIL		4
-
-#define	VIDEO_MAX_FRAMEBUFFFERS	1
-
-#define	VIDEO_LOG	"video"
 
 #include "shared_video.h"
 
@@ -128,7 +124,7 @@ typedef struct
 	VideoExtensions_t	extensions;		// Extensions
 } Video_t;
 
-plEXTERN_C_START
+PL_EXTERN_C
 
 extern Video_t Video;
 
@@ -151,24 +147,13 @@ void Video_Shutdown(void);
 void GL_BuildLightmaps();
 void R_RebuildAllLightmaps();
 
-MathVector_t Light_GetSample(MathVector3f_t vPoint);
+PLVector3D Light_GetSample(PLVector3D vPoint);
 
 // Legacy
 extern float r_world_matrix[16], r_base_world_matrix[16];
 void R_SetupGenericView(void);
 
 PL_EXTERN_C_END
-
-// TODO: Reintroduce tracking functionality.
-#define	VIDEO_FUNCTION_START \
-{ \
-	static unsigned int callnum = 0; \
-	if(Video.debug_frame) \
-	{ \
-		callnum++; \
-	} \
-}
-#define	VIDEO_FUNCTION_END \
 
 #include "client/video_viewport.h"
 #include "client/video_camera.h"
@@ -190,7 +175,7 @@ void Light_Draw(void);
 void Light_Animate(void);
 void Light_MarkLights(DynamicLight_t *light,int bit,mnode_t *node);
 
-DynamicLight_t *Light_GetDynamic(MathVector3f_t vPoint, bool bCheap);
+DynamicLight_t *Light_GetDynamic(PLVector3D vPoint, bool bCheap);
 
 void R_RenderDynamicLightmaps(msurface_t *fa);
 void R_UploadLightmap(int lmap);

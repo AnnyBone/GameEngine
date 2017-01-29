@@ -8,7 +8,7 @@ typedef unsigned char 		byte;
 
 #include "shared_common.h"
 
-plEXTERN_C_START
+PL_EXTERN_C
 
 //============================================================================
 
@@ -112,7 +112,7 @@ char *va(const char *format, ...);
 extern int com_filesize;
 struct cache_user_s;
 
-extern char com_gamedir[PLATFORM_MAX_PATH];
+extern char com_gamedir[PL_SYSTEM_MAX_PATH];
 
 void FileSystem_WriteFile(const char *ccFileName, void *data, int len);
 int COM_OpenFile(const char *filename, int *hndl);
@@ -129,6 +129,6 @@ void    *COM_LoadHeapFile(const char *path);
 void FileSystem_Initialize(void);
 void FileSystem_UpdatePath(char cPath[]);
 
-plEXTERN_C_END
+PL_EXTERN_C_END
 
 #endif	// COMMON_H

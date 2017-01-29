@@ -31,10 +31,10 @@ typedef struct
 	MathVector3f_t origin,angles;
 } lerpdata_t;
 
-plEXTERN_C_START
+PL_EXTERN_C
 
 void Alias_SetupFrame(MD2_t *mModel, ClientEntity_t *ceCurrent, lerpdata_t *ldLerp);
 void Alias_Draw(ClientEntity_t *eEntity);
 void Alias_DrawFrame(MD2_t *mModel, ClientEntity_t *eEntity, lerpdata_t lLerpData);
 
-plEXTERN_C_END
+PL_EXTERN_C_END

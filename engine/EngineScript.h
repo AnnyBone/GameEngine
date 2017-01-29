@@ -26,6 +26,6 @@
 #define SCRIPT_START			'{'
 #define	SCRIPT_END				'}'
 
-plEXTERN_C_START
+PL_EXTERN_C
 bool Script_Load(const char *ccPath);
-plEXTERN_C_END
+PL_EXTERN_C_END

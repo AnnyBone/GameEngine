@@ -64,7 +64,7 @@ typedef struct
 	unsigned int	entity;
 	struct model_s	*model;
 	float			endtime;
-	plVector3f_t	start, end;
+	PLVector3D	start, end;
 } beam_t;
 
 #define	MAX_EFRAGS		2048 //johnfitz -- was 640
@@ -155,10 +155,10 @@ typedef struct
 //	plVector3f_t		mviewangles[2];	// during demo playback viewangles is lerped
 								// between these
 //	plVector3f_t		viewangles;
-	plVector3f_t		mvelocity[2];	// update by server, used for lean+bob
+	PLVector3D		mvelocity[2];	// update by server, used for lean+bob
 								// (0 is newest)
-	plVector3f_t		velocity;		// lerped between mvelocity[0] and [1]
-	plVector3f_t		punchangle;		// temporary offset
+	PLVector3D		velocity;		// lerped between mvelocity[0] and [1]
+	PLVector3D		punchangle;		// temporary offset
 
 	EngineCamera *current_camera;
 

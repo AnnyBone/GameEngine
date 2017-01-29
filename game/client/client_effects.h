@@ -18,7 +18,7 @@
 
 #pragma once
 
-plEXTERN_C_START
+PL_EXTERN_C
 
 void ClientEffect_Initialize(void);
 void ClientEffect_ParticleField(MathVector3f_t position, MathVector3f_t mins, MathVector3f_t maxs, float density);
@@ -31,4 +31,4 @@ void ClientEffect_MuzzleFlash(MathVector3f_t position, MathVector3f_t angles);
 void ClientEffect_IonBallTrail(MathVector3f_t position);
 #endif
 
-plEXTERN_C_END
+PL_EXTERN_C_END

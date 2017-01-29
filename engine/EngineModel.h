@@ -22,7 +22,7 @@
 
 #include "shared_model.h"
 
-plEXTERN_C_START
+PL_EXTERN_C
 
 void	Model_Initialize(void);
 void	Model_ClearAll(void);
@@ -33,11 +33,11 @@ void	Model_Touch(char *cName);
 mleaf_t *Mod_PointInLeaf (float *p, model_t *model);
 uint8_t	*Mod_LeafPVS (mleaf_t *leaf, model_t *model);
 
-MathVector_t Model_GenerateNormal3fv(MathVector3f_t a, MathVector3f_t b, MathVector3f_t c);
-MathVector_t Model_GenerateNormal3f(float aX, float aY, float aZ,float bX, float bY, float bZ,float cX, float cY, float cZ);
+PLVector3D Model_GenerateNormal3fv(PLVector3D a, PLVector3D b, PLVector3D c);
+PLVector3D Model_GenerateNormal3f(float aX, float aY, float aZ,float bX, float bY, float bZ,float cX, float cY, float cZ);
 
 void Model_LoadRelativeMaterial(model_t *model);
 
 bool ModelU3D_Load(model_t *model);
 
-plEXTERN_C_END
+PL_EXTERN_C_END

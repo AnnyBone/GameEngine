@@ -37,7 +37,7 @@ namespace core
 
 		std::vector<float> GetAngles() { return std::vector<float> { _angles[0], _angles[1], _angles[2] }; }
 		void SetAngles(float x, float y, float z);
-		void SetAngles(plVector3f_t angles);
+		void SetAngles(PLVector3D angles);
 		void SetPitch(float pitch) { _angles[PL_PITCH] = pitch; }
 		void SetYaw(float yaw) { _angles[PL_YAW] = yaw; }
 		void SetRoll(float roll) { _angles[PL_ROLL] = roll; }
@@ -51,7 +51,7 @@ namespace core
 
 		std::vector<float> GetPosition() { return std::vector<float> { _position[0], _position[1], _position[2] }; }
 		void SetPosition(float x, float y, float z);
-		void SetPosition(plVector3f_t position);
+		void SetPosition(PLVector3D position);
 		void PrintPosition();
 		void TracePosition();
 
@@ -66,10 +66,10 @@ namespace core
 		IViewport *GetViewport() { return reinterpret_cast<IViewport*>(_viewport); }
 		void SetViewport(IViewport *viewport);
 
-		bool IsPointInsideFrustum(plVector3f_t position);
-		bool IsPointOutsideFrustum(plVector3f_t position);
-		bool IsBoxInsideFrustum(plVector3f_t mins, plVector3f_t maxs);
-		bool IsBoxOutsideFrustum(plVector3f_t mins, plVector3f_t maxs);
+		bool IsPointInsideFrustum(PLVector3D position);
+		bool IsPointOutsideFrustum(PLVector3D position);
+		bool IsBoxInsideFrustum(PLVector3D mins, PLVector3D maxs);
+		bool IsBoxOutsideFrustum(PLVector3D mins, PLVector3D maxs);
 
 		std::vector<float> GetForward() { return std::vector<float> { _forward[0], _forward[1], _forward[2]}; }
 		std::vector<float> GetRight() { return std::vector<float> { _right[0], _right[1], _right[2] }; }
@@ -104,16 +104,16 @@ namespace core
 		ClientEntity_t *_viewmodel, *_parententity;
 #endif
 
-		bool			bobcam;
-		plVector2f_t	bobamount;
+		bool		bobcam;
+		PLVector3D	bobamount;
 
 		mplane_t _frustum[4];
 
 		glm::mat4x4 _matrix_view, _matrix_projection;
 
-		plVector3f_t _forward, _right, _up;
-		plVector3f_t punchangles[2];		//johnfitz -- copied from cl.punchangle.  0 is current, 1 is previous value. never the same unless map just loaded
-		plVector3f_t _angles, _position;
+		PLVector3D _forward, _right, _up;
+		PLVector3D punchangles[2];		//johnfitz -- copied from cl.punchangle.  0 is current, 1 is previous value. never the same unless map just loaded
+		PLVector3D _angles, _position;
 
 		float _fov, _fovx, _fovy;
 
@@ -166,7 +166,7 @@ PL_EXTERN_C
 
 EngineCamera *CameraManager_GetPrimaryCamera(void);
 
-void Camera_SetPosition(EngineCamera *camera, plVector3f_t position);
-void Camera_SetAngles(EngineCamera *camera, plVector3f_t angles);
+void Camera_SetPosition(EngineCamera *camera, PLVector3D position);
+void Camera_SetAngles(EngineCamera *camera, PLVector3D angles);
 
 PL_EXTERN_C_END

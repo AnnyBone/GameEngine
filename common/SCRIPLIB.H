@@ -5,7 +5,7 @@
 
 #define	MAXTOKEN	1024
 
-plEXTERN_C_START
+PL_EXTERN_C
 
 extern	char	cToken[MAXTOKEN];
 extern	int		iScriptLine;
@@ -15,4 +15,4 @@ void Script_StartTokenParsing(char *cData);
 bool	Script_GetToken(bool bCrossline);
 bool	Script_TokenAvaliable(void);
 
-plEXTERN_C_END
+PL_EXTERN_C_END

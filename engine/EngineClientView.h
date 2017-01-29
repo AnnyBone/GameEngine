@@ -24,4 +24,4 @@ extern PLColour vViewBlend;
 
 void View_CalculateBlend(void);
 
-float V_CalcRoll(PLVector3f angles, PLVector3f velocity);
+float V_CalcRoll(PLVector3D angles, PLVector3D velocity);

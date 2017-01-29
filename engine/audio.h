@@ -93,8 +93,8 @@ typedef struct
 
 	const AudioSample_t *cache;
 
-	plVector3f_t current_position;	// Position of the sound.
-	plVector3f_t current_velocity;	// Speed of movement.
+	PLVector3D current_position;	// Position of the sound.
+    PLVector3D current_velocity;	// Speed of movement.
 
 	unsigned int	entity;		// Unique identifier.
 	AudioChannel_t	channel;	// Used for channel overriding.
@@ -128,8 +128,8 @@ namespace core
 		void StopSound(const AudioSound_t *sound);
 		void PauseSound(const AudioSound_t *sound);
 
-		void SetSoundPosition(AudioSound_t *sound, plVector3f_t position);
-		void SetSoundVelocity(AudioSound_t *sound, plVector3f_t velocity);
+		void SetSoundPosition(AudioSound_t *sound, PLVector3D position);
+		void SetSoundVelocity(AudioSound_t *sound, PLVector3D velocity);
 
 		AudioEffect_t *AddEffect();
 		void DeleteEffect(AudioEffect_t *effect);
@@ -168,14 +168,14 @@ namespace core
 
 #endif
 
-plEXTERN_C_START
+PL_EXTERN_C
 
 void Audio_Initialize(void);
 void Audio_Frame(void);
-void Audio_PlayAmbientSound(plVector3f_t position, const char *path, float volume);
-void Audio_PlayTemporarySound(unsigned int ent, AudioChannel_t channel, plVector3f_t position, bool local, const char *path, float volume);
+void Audio_PlayAmbientSound(PLVector3D position, const char *path, float volume);
+void Audio_PlayTemporarySound(unsigned int ent, AudioChannel_t channel, PLVector3D position, bool local, const char *path, float volume);
 void Audio_StopSounds(void);
 void Audio_PrecacheSample(const char *path, bool preserve);
 void Audio_Shutdown(void);
 
-plEXTERN_C_END
+PL_EXTERN_C_END

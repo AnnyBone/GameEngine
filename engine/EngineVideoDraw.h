@@ -29,7 +29,7 @@ typedef struct
 	uint8_t		data[4];			// variably sized
 } qpic_t;
 
-plEXTERN_C_START
+PL_EXTERN_C
 
 extern	qpic_t *draw_disc;	// also used on sbar
 
@@ -44,4 +44,4 @@ qpic_t *Draw_CachePic(char *path);
 
 void GL_SetCanvas(VideoCanvasType_t newcanvas); //johnfitz
 
-plEXTERN_C_END
+PL_EXTERN_C_END

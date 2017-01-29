@@ -123,7 +123,7 @@ typedef struct
 
 //=============================================================================
 
-plEXTERN_C_START
+PL_EXTERN_C
 
 extern bool noclip_anglehack;
 
@@ -165,6 +165,6 @@ extern bool	bIsDedicated;
 // chase
 extern ConsoleVariable_t chase_active;
 
-void TraceLine(plVector3f_t start, plVector3f_t end, plVector3f_t impact);
+void TraceLine(PLVector3D start, PLVector3D end, PLVector3D impact);
 
-plEXTERN_C_END
+PL_EXTERN_C_END

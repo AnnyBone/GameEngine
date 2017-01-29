@@ -98,7 +98,7 @@ typedef struct
 #define ENGINE_VERSION_INTERFACE	(sizeof(XEngineImport)+sizeof(XEngineExport))
 
 #if defined(KATANA)
-#	define ENGINE_FUNCTION PL_MODULE_EXPORT
+#	define ENGINE_FUNCTION PL_EXPORT
 #else
 #	define ENGINE_FUNCTION
 #endif

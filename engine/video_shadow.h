@@ -18,8 +18,8 @@
 
 #pragma once
 
-plEXTERN_C_START
+PL_EXTERN_C
 
 void Shadow_Draw(ClientEntity_t *ent);
 
-plEXTERN_C_END
+PL_EXTERN_C_END

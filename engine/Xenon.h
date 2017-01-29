@@ -42,26 +42,26 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 typedef struct
 {
 	// Host Information
-	char host_username[PL_MAX_USERNAME];	// Current system username.
+	char host_username[PL_SYSTEM_MAX_USERNAME];	// Current system username.
 
 	char	
-		path_materials[PL_MAX_PATH],
-		path_textures[PL_MAX_PATH],
-		path_levels[PL_MAX_PATH],
-		path_screenshots[PL_MAX_PATH],
-		path_modules[PL_MAX_PATH],
-		path_fonts[PL_MAX_PATH],
-		path_shaders[PL_MAX_PATH],
-		path_sounds[PL_MAX_PATH];
+		path_materials[PL_SYSTEM_MAX_PATH],
+		path_textures[PL_SYSTEM_MAX_PATH],
+		path_levels[PL_SYSTEM_MAX_PATH],
+		path_screenshots[PL_SYSTEM_MAX_PATH],
+		path_modules[PL_SYSTEM_MAX_PATH],
+		path_fonts[PL_SYSTEM_MAX_PATH],
+		path_shaders[PL_SYSTEM_MAX_PATH],
+		path_sounds[PL_SYSTEM_MAX_PATH];
 
 	bool embedded;
 
 	double current_time;
 } XGlobal;
 
-plEXTERN_C_START
+PL_EXTERN_C
 
 extern XGlobal			g_state;
 extern XEngineImport	g_launcher;
 
-plEXTERN_C_END
+PL_EXTERN_C_END

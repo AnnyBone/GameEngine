@@ -7,7 +7,7 @@
 #include <errno.h>
 #include <time.h>
 
-plEXTERN_C_START
+PL_EXTERN_C
 
 typedef unsigned char byte;
 
@@ -69,6 +69,6 @@ unsigned short CRC_Value(unsigned short crcvalue);
 extern	bool		archive;
 extern	char		archivedir[1024];
 
-plEXTERN_C_END
+PL_EXTERN_C_END
 
 #endif

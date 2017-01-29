@@ -19,10 +19,10 @@
 #ifndef VIDEO_LIGHT_H
 #define	VIDEO_LIGHT_H
 
-plEXTERN_C_START
+PL_EXTERN_C
 
 void Light_Initialize(void);
 
-plEXTERN_C_END
+PL_EXTERN_C_END
 
 #endif // !VIDEO_LIGHT_H

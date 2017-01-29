@@ -41,8 +41,8 @@ typedef struct
 	int		dataofs;		// chunk starts this many bytes from file start
 } wavinfo_t;
 
-plEXTERN_C_START
+PL_EXTERN_C
 
 wavinfo_t GetWavinfo (const char *name, uint8_t *wav, int wavlength);
 
-plEXTERN_C_END
+PL_EXTERN_C_END

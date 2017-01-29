@@ -46,7 +46,7 @@
 	interface from being ambiguous.
 */
 
-plEXTERN_C_START
+PL_EXTERN_C
 
 void Cvar_Init(void);
 
@@ -83,4 +83,4 @@ ConsoleVariable_t *Cvar_FindVar(const char *var_name);
 
 extern ConsoleVariable_t *cConsoleVariables;
 
-plEXTERN_C_END
+PL_EXTERN_C_END

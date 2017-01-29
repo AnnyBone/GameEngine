@@ -34,6 +34,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 PL_EXTERN_C
 
+PL_INLINE static float Math_CRandom(void) {
+    return 2 * (rand() - 0.5f);
+}
+
 static PL_INLINE void Math_MAVector3D(PLVector3D *v, PLVector3D v2, float f) {
     v->x += f * v2.x; v->y += f * v2.y; v->z += f * v2.z;
 }

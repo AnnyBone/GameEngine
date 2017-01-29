@@ -23,7 +23,7 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 #define WINDOW_MINIMUM_WIDTH	640
 #define WINDOW_MINIMUM_HEIGHT	480
 
-plEXTERN_C_START
+PL_EXTERN_C
 
 void Window_Initialize(void);
 void Window_Update(void);
@@ -41,6 +41,6 @@ void Window_SetVerticalSync(int interval);
 int Window_GetWidth(void);	// todo, this should be unsigned
 int Window_GetHeight(void);	// todo, this should be unsigned
 
-extern plWindow_t g_mainwindow;
+extern PLWindow g_mainwindow;
 
-plEXTERN_C_END
+PL_EXTERN_C_END

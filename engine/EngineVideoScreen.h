@@ -22,7 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef __ENGINEVIDEOSCREEN__
 #define __ENGINEVIDEOSCREEN__
 
-plEXTERN_C_START
+PL_EXTERN_C
 
 void SCR_Init (void);
 void SCR_CenterPrint (char *str);
@@ -49,6 +49,6 @@ extern	cvar_t		scr_conscale;
 extern	cvar_t		scr_crosshairscale;
 //johnfitz
 
-plEXTERN_C_END
+PL_EXTERN_C_END
 
 #endif

@@ -27,7 +27,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #	pragma warning(disable : 4136)     // X86
 #	pragma warning(disable : 4051)     // ALPHA
 #endif
-plEXTERN_C_START
+PL_EXTERN_C
 
 #define BACKFACE_EPSILON	0.01
 
@@ -36,7 +36,7 @@ texture_t *R_TextureAnimation (texture_t *base, int frame);
 
 //====================================================
 
-extern	MathVector3f_t	modelorg, r_entorigin;
+extern	PLVector3D	modelorg, r_entorigin;
 extern	ClientEntity_t	*currententity;
 extern	int				r_visframecount;	// ??? what difs?
 extern	int				r_framecount;
@@ -99,6 +99,6 @@ void Fog_Init (void);
 //johnfitz
 
 bool R_CullModelForEntity(ClientEntity_t *e);
-void R_RotateForEntity(MathVector3f_t origin, MathVector3f_t angles);
+void R_RotateForEntity(PLVector3D origin, PLVector3D angles);
 
-plEXTERN_C_END
+PL_EXTERN_C_END

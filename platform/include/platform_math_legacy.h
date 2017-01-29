@@ -29,7 +29,7 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 #define	PL_DEG2RAD(a)	((a)*PL_PI_DIV180)
 #define	PL_ISNAN(a)		(((*(int*)&a)&255<<23)==255<<23)
 
-plEXTERN_C_START
+PL_EXTERN_C
 
 typedef plVector3f_t PLMatrix3x3f[3];
 typedef plVector4f_t PLMatrix4x4f[4], PLQuaternion;

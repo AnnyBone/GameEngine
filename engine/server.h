@@ -43,7 +43,7 @@ typedef struct
 	unsigned	protocol; //johnfitz
 } Server_t;
 
-plEXTERN_C_START
+PL_EXTERN_C
 
 extern	ConsoleVariable_t	teamplay;
 extern	ConsoleVariable_t	skill;
@@ -59,7 +59,7 @@ extern	jmp_buf 	host_abortserver;
 
 extern	ServerEntity_t		*sv_player;
 
-plEXTERN_C_END
+PL_EXTERN_C_END
 
 //===========================================================
 

@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "platform_image.h"
 
-plEXTERN_C_START
+PL_EXTERN_C
 
 void Image_InitializePNG();
 void Image_Shutdown();
@@ -36,4 +36,4 @@ uint8_t *Image_LoadImage (char *name, unsigned int *width, unsigned int *height)
 
 bool Image_WriteTGA(const char *name, uint8_t *data,int width,int height,int bpp,bool upsidedown);
 
-plEXTERN_C_END
+PL_EXTERN_C_END

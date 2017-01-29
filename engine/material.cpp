@@ -993,11 +993,11 @@ bool Material_Precache(const char *path) {
 	Rendering
 */
 
-plEXTERN_C_START
+PL_EXTERN_C
 
 extern ConsoleVariable_t gl_fullbrights;
 
-plEXTERN_C_END
+PL_EXTERN_C_END
 
 /*	TODO: Replace Material_Draw with this!
 */

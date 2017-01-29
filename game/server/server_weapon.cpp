@@ -219,7 +219,7 @@ void Weapon_Precache(void)
 PLVector3D Weapon_Aim(ServerEntity_t *entity)
 {
 	int				i, j;
-	float			fDistance, fBestDistance;
+	float			distance, fBestDistance;
 	trace_t			tAimLine;
 	ServerEntity_t	*eCheck, *eBest;
 	PLVector3D	mvEnd, mvBestDirection;
@@ -253,11 +253,13 @@ PLVector3D Weapon_Aim(ServerEntity_t *entity)
 	eCheck = SERVER_ENTITY_NEXT(Engine.Server_GetEdicts());
 	for (i = 1; i < Engine.Server_GetNumEdicts(); i++, eCheck = SERVER_ENTITY_NEXT(eCheck))
 	{
-		if (eCheck == entity)
-			continue;
+		if (eCheck == entity) {
+            continue;
+        }
 
-		if (!eCheck->v.takedamage)
-			continue;
+		if (!eCheck->v.takedamage) {
+            continue;
+        }
 
 		for (j = 0; j < 3; j++)
 			mvEnd[j] = eCheck->v.origin[j] + 0.5f * (eCheck->v.mins[j] + eCheck->v.maxs[j]);
@@ -265,39 +267,33 @@ PLVector3D Weapon_Aim(ServerEntity_t *entity)
         direction = mvEnd - start;
         direction.Normalize();
 
-		fDistance = Math_DotProduct(direction, entity->local.forward);
-		if (fDistance < fBestDistance) {
+		distance = entity->local.forward.DotProduct(direction);
+		if (distance < fBestDistance) {
             // Too far to turn.
             continue;
         }
 
-		tAimLine = Engine.Server_Move(start, pl_origin3f, pl_origin3f, mvEnd, 0, entity);
+		tAimLine = Engine.Server_Move(start, PLVector3D(0, 0, 0), PLVector3D(0, 0, 0), mvEnd, 0, entity);
 		if (tAimLine.ent == eCheck) {
 			// Can shoot at this one.
-			fBestDistance = fDistance;
+			fBestDistance = distance;
 			eBest = eCheck;
 		}
 	}
 
-	MathVector_t mvResult;
-
-	if (eBest)
-	{
-		plVectorSubtract3fv(eBest->v.origin, entity->v.origin, direction);
-
-		fDistance = Math_DotProduct(direction, entity->local.forward);
-
-		plVectorScalef(entity->local.forward, fDistance, mvEnd);
-
-		mvEnd[2] = direction[2];
-
-		plVectorNormalize(mvEnd);
-		Math_VectorToMV(mvEnd, mvResult);
+	PLVector3D result;
+	if (eBest) {
+		direction = entity->v.origin - eBest->v.origin;
+		distance = entity->local.forward.DotProduct(direction);
+        result = entity->local.forward * distance;
+        result[2] = direction[2];
+        result.Normalize();
 	}
-	else
-		Math_VectorToMV(mvBestDirection, mvResult);
+	else {
+        result = mvBestDirection;
+    }
 
-	return mvResult;
+	return result;
 }
 
 // Kicks the view a little.
@@ -359,9 +355,9 @@ void Weapon_BulletProjectile(ServerEntity_t *owner, float spread, int damage, PL
 	source.z += owner->v.view_ofs.z;
 
     PLVector3D targ(
-            source.x + (direction.x * 2048.0f) + (spread * plCRandom() * 20.0f),
-            source.y + (direction.y * 2048.0f) + (spread * plCRandom() * 20.0f),
-            source.z + (direction.z * 2048.0f) + (spread * plCRandom() * 20.0f)
+            source.x + (direction.x * 2048.0f) + (spread * Math_CRandom() * 20.0f),
+            source.y + (direction.y * 2048.0f) + (spread * Math_CRandom() * 20.0f),
+            source.z + (direction.z * 2048.0f) + (spread * Math_CRandom() * 20.0f)
     );
 
     trace_t trace = Traceline(owner,source,targ,0);
@@ -472,6 +468,10 @@ void Weapon_SetActive(Weapon_t *wWeapon,ServerEntity_t *eEntity, bool bDeploy)
 
 // Checks for primary ammo.
 bool Weapon_CheckPrimaryAmmo(Weapon_t *weapon,ServerEntity_t *entity) {
+    if(!entity) {
+        return false;
+    }
+
 	switch(weapon->primary_type) {
 #ifdef GAME_OPENKATANA
 	case AM_IONS:
@@ -519,6 +519,10 @@ bool Weapon_CheckPrimaryAmmo(Weapon_t *weapon,ServerEntity_t *entity) {
 /*	Check for secondary ammo.
 */
 bool Weapon_CheckSecondaryAmmo(Weapon_t *weapon,ServerEntity_t *entity) {
+    if(!entity) {
+        return false;
+    }
+
 	switch(weapon->iSecondaryType)
 	{
 	case AM_MELEE:
