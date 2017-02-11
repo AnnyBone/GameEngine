@@ -182,9 +182,12 @@ void Point_Start(ServerEntity_t *ent)
 	switch((int)cvServerGameMode.value)
 	{
 	case MODE_SINGLEPLAYER:
-		if(	(ent->local.style != INFO_PLAYER_START)		&&
-			(ent->local.style != INFO_PLAYER_MIKIKO)	&&
-			(ent->local.style != INFO_PLAYER_SUPERFLY))
+		if(	(ent->local.style != INFO_PLAYER_START)
+#if defined(GAME_DECAY) || defined(GAME_OPENKATANA)
+			   && (ent->local.style != INFO_PLAYER_MIKIKO)
+			   && (ent->local.style != INFO_PLAYER_SUPERFLY)
+#endif
+			)
 		{
 			Engine.Con_Warning("Invalid start style! (%i)\n",ent->local.style);
 

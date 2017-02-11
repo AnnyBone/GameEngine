@@ -68,19 +68,7 @@ extern PLColour
 
 #define	Math_MVToVector(a,b)			(	b[0]=a.vX,b[1]=a.vY,b[2]=a.vZ	)
 
-#define Math_VectorSubtract(a,b,c)		{	c[0]=a[0]-b[0];c[1]=a[1]-b[1];c[2]=a[2]-b[2];								}
-#define Math_VectorAdd(a,b,c)			{	c[0]=a[0]+b[0];c[1]=a[1]+b[1];c[2]=a[2]+b[2];								}
-#define Math_VectorCopy(a,b)			(	b[0]=a[0],b[1]=a[1],b[2]=a[2]												)
-#define Math_VectorScale(a,b,c)			{	c[0]=a[0]*b;c[1]=a[1]*b;c[2]=a[2]*b;										}
-#define	Math_VectorAddValue(a,b,c)		{	c[0]=a[0]+b;c[1]=a[1]+b;c[2]=a[2]+b;										}
-#define	Math_VectorSubtractValue(a,b,c)	{	c[0]=a[0]-b;c[1]=a[1]-b;c[2]=a[2]-b;										}
-#define plCrossProduct(a,b,c)			{	c[0]=a[1]*b[2]-a[2]*b[1];c[1]=a[2]*b[0]-a[0]*b[2];c[2]=a[0]*b[1]-a[1]*b[0];	}
-#define Math_VectorMA(a,b,c,d)			{	d[0]=a[0]+b*c[0];d[1]=a[1]+b*c[1];d[2]=a[2]+b*c[2];							}
-#define Math_VectorInverse(a)			(	a[0]=-a[0],a[1]=-a[1],a[2]=-a[2]											)
-#define Math_VectorClear(a)				(	a[0]=a[1]=a[2]=0															)
-#define Math_VectorNegate(a,b)			(	b[0]=-a[0],b[1]=-a[1],b[2]=-a[2]											)
-#define	Math_VectorSet(a,b)				(	b[0]=b[1]=b[2]=a															)
-#define	Math_VectorDivide(a,b,c)		{	c[0]=a[0]/b;c[1]=a[1]/b;c[2]=a[2]/b;										}
+
 #define	Math_VectorToMV(a,b)			(	b.vX=a[0],b.vY=a[1],b.vZ=a[2]												)
 
 #define	Math_Vector2Copy(a,b)			(	b[0]=a[0],b[1]=a[1]	)
@@ -133,9 +121,6 @@ void Math_VectorMake(PLVector3f veca, PLfloat scale, PLVector3f vecb, PLVector3f
 float Math_DotProduct(PLVector3f a, PLVector3f b);
 
 MathVector_t plVectorToAngles(PLVector3f vValue);
-
-static PL_INLINE PLint plMaxi(const PLint a, const PLint b) 		{ return (a) < (b) ? (b) : (a); }
-static PL_INLINE PLfloat plMaxf(const PLfloat a, const PLfloat b) 	{ return (a) < (b) ? (b) : (a); }
 
 /*	Vector3f	*/
 

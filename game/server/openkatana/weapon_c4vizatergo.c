@@ -204,6 +204,7 @@ void C4Vizatergo_Think(ServerEntity_t *ent)
 
 void C4Vizatergo_PrimaryAttack(ServerEntity_t *eOwner)
 {
+#if 0 // todo
 	MathVector3f_t vOrigin;
 	MathVector3f_t mvDirection;
 	ServerEntity_t *c4ball = Entity_Spawn();
@@ -249,6 +250,7 @@ void C4Vizatergo_PrimaryAttack(ServerEntity_t *eOwner)
 		eOwner->local.dAttackFinished = Server.time+0.6;
 	else
 		eOwner->local.dAttackFinished = Server.time+1.2;
+#endif
 }
 
 void C4Vizatergo_SecondaryAttack(ServerEntity_t *eOwner)

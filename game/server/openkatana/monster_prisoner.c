@@ -50,7 +50,9 @@ bool Prisoner_CheckCell(ServerEntity_t *ePrisoner)
 	if(wCellDoorWaypoint)
 	{
 		// End point set to the waypoints position, meaning we expect it to be inside / in-front of the door.
-		tDoorTrace = Engine.Server_Move(ePrisoner->v.view_ofs, pl_origin3f, pl_origin3f, wCellDoorWaypoint->position, MOVE_NOMONSTERS, ePrisoner);
+		tDoorTrace = Engine.Server_Move(ePrisoner->v.view_ofs,
+										plCreateVector3D(0, 0, 0), plCreateVector3D(0, 0, 0),
+										wCellDoorWaypoint->position, MOVE_NOMONSTERS, ePrisoner);
 		if(tDoorTrace.ent)
 		{
 			// I hate doing shit like this here but if we're not already there, we should be!

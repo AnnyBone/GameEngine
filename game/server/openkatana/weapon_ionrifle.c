@@ -127,6 +127,8 @@ void IonRifle_Deploy(ServerEntity_t *eOwner)
 */
 void IonRifle_PrimaryAttack(ServerEntity_t *eOwner)
 {
+
+#if 0
 	ServerEntity_t	*eIonBall;
 
 	switch(eOwner->local.iFireMode)
@@ -248,6 +250,7 @@ void IonRifle_PrimaryAttack(ServerEntity_t *eOwner)
 
 	// [17/11/2013] Update ammo counts... ~hogsy
 	eOwner->v.primary_ammo = eOwner->local.ionblaster_ammo;
+#endif
 }
 
 /*	Switch fire modes.

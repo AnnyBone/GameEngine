@@ -111,7 +111,7 @@ void Host_EndGame (char *message, ...)
 
 /*	This shuts down both the client and server
 */
-void Host_Error (char *error, ...)
+void Host_Error (const char *error, ...)
 {
 	va_list			argptr;
 	char			string[1024];

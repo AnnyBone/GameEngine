@@ -7,6 +7,7 @@ void Crossbow_Deploy(ServerEntity_t *ent)
 
 void arrow_touch(ServerEntity_t *ent, ServerEntity_t *other)
 {
+#if 0
 	// [25/6/2012] Cleaned up ~hogsy
 	// [7/4/2012] Cleaned up ~hogsy
 	char	snd[64];
@@ -34,12 +35,14 @@ void arrow_touch(ServerEntity_t *ent, ServerEntity_t *other)
 	ent->v.velocity[0] = ent->v.velocity[1] = ent->v.velocity[2] = 0;
 	ent->v.avelocity[0] = ent->v.avelocity[1] = ent->v.avelocity[2] = 0;
 	ent->v.enemy = other;
+#endif
 }
 
 void Crossbow_Projectile(ServerEntity_t *ent)
 {
+#if 0
 	// [11/2/2012] Revised and fixed ~hogsy
-	MathVector3f_t mvDirection;
+	PLVector3D mvDirection;
 	ServerEntity_t *eArrow;
 
 	eArrow = Entity_Spawn();
@@ -65,6 +68,7 @@ void Crossbow_Projectile(ServerEntity_t *ent)
 
 		eArrow->v.TouchFunction = arrow_touch;
 	}
+#endif
 }
 
 void Crossbow_PrimaryAttack(ServerEntity_t *ent)
@@ -74,7 +78,7 @@ void Crossbow_PrimaryAttack(ServerEntity_t *ent)
 	else
 		Sound(ent,CHAN_WEAPON,"weapons/crossbow/cbfire.wav",255,ATTN_NORM);
 
-	ent->v.punchangle[0] -= 5.0f;
+	ent->v.punchangle.x -= 5.0f;
 	ent->v.primary_ammo = ent->local.iCrossbowAmmo -= 1;
 
 	//Weapon_Animate(ent,FALSE,1,52,0.043f,10,19,0,FALSE);

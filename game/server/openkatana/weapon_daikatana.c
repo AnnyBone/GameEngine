@@ -104,6 +104,7 @@ void Daikatana_Deploy(ServerEntity_t *ent)
 
 void Daikatana_Hit(ServerEntity_t *ent)
 {
+#if 0
 	int				i;
 	plVector3f_t	forward, temp, sndvec;
 	trace_t			trace;
@@ -141,6 +142,7 @@ void Daikatana_Hit(ServerEntity_t *ent)
 			Engine.Particle(sndvec,vBounce,10,cSmokeTexture,30);
 		}
 	}
+#endif
 }
 
 void Daikatana_PrimaryAttack(ServerEntity_t *ent)

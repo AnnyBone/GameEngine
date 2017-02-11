@@ -185,7 +185,7 @@ typedef struct
 	double		oldtime;		// previous cl.time, time-oldtime is used
 								// to decay light values and smooth step ups
 
-	float		last_received_message;	// (realtime) for net trouble icon
+	double		last_received_message;	// (realtime) for net trouble icon
 
 	// Information that is static for the entire time connected to a server
 	struct model_s		*model_precache[MAX_MODELS];

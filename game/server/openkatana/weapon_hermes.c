@@ -25,7 +25,7 @@ void Hermes_Deploy(ServerEntity_t *ent)
 
 void Hermes_CloudThink(ServerEntity_t *ent)
 {
-	MathVector3f_t vel;
+	PLVector3D vel;
 
 	if (!ent->local.hit)
 	{
@@ -35,7 +35,7 @@ void Hermes_CloudThink(ServerEntity_t *ent)
 
 	ent->local.hit -= 2;
 
-	Math_VectorClear(vel);
+	plClearVector3D(&vel);
 
 	Engine.Particle(ent->v.origin,vel,12,"poison",8);
 
@@ -50,7 +50,7 @@ void HermesCloudTouch(ServerEntity_t *ent, ServerEntity_t *other)
 
 	if(other->v.health > 0 && other->v.movetype == MOVETYPE_STEP)
 	{
-		Entity_Damage(other, ent, 5, 0);
+		Entity_Damage(other, ent, 5, DAMAGE_TYPE_NORMAL);
 		//other->local.poisoned = 1; TODO: MAKE IT WORK
 	}
 }
@@ -75,7 +75,7 @@ void Hermes_PrimaryAttack(ServerEntity_t *ent)
 	cloud->v.think			= Hermes_CloudThink;
 	cloud->v.TouchFunction	= HermesCloudTouch;
 
-	Math_VectorAddValue(cloud->v.avelocity,300.0f,cloud->v.avelocity);
+    plAddVector3Df(&cloud->v.avelocity, 300);
 
 	if(ent->local.attackb_finished > Server.time)	// No attack boost...
 		ent->local.dAttackFinished = Server.time+0.35;

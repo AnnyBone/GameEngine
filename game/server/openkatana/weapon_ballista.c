@@ -55,14 +55,15 @@ void Ballista_LogTouch(ServerEntity_t *ent, ServerEntity_t *other)
 
 	Sound(ent,CHAN_ITEM,snd,255,ATTN_NORM);
 
-	Math_VectorClear(ent->v.velocity);
-	Math_VectorClear(ent->v.avelocity);
+    plClearVector3D(&ent->v.velocity);
+    plClearVector3D(&ent->v.avelocity);
 
 	ent->v.enemy = other;
 }
 
 void Ballista_SpawnLogProjectile(ServerEntity_t *ent)
 {
+#if 0 // todo
 	ServerEntity_t *log = Entity_Spawn();
 
 	log->local.owner = ent;
@@ -73,14 +74,15 @@ void Ballista_SpawnLogProjectile(ServerEntity_t *ent)
 	Weapon_Projectile(ent, log, 2000.0f);
 
 	Entity_SetModel(log,"models/log.md2");
-	Entity_SetSizeVector(log, pl_origin3f, pl_origin3f);
+	Entity_SetSizeVector(log, plCreateVector3D(0, 0, 0), plCreateVector3D(0, 0, 0));
 
-	Math_VectorCopy(ent->v.origin,log->v.origin);
-	log->v.origin[2] += 15.0f;
+	log->v.origin = ent->v.origin;
+	log->v.origin.z += 15.0f;
 
 	Math_MVToVector(plVectorToAngles(log->v.velocity), log->v.angles);
 
 	log->v.TouchFunction = Ballista_LogTouch;
+#endif
 }
 
 void Ballista_PrimaryAttack(ServerEntity_t *ent)
@@ -90,7 +92,7 @@ void Ballista_PrimaryAttack(ServerEntity_t *ent)
 	//else
 	//	Sound(ent,CHAN_WEAPON,"weapons/ballista/cbfire.wav",255,ATTN_NORM);
 
-	ent->v.punchangle[0] -= 5.0f;
+    Weapon_ViewPunch(ent, 5, true);
 
 	ent->v.primary_ammo	= ent->local.ballista_ammo--;
 

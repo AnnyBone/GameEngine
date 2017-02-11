@@ -19,6 +19,7 @@ void Discus_Catch(ServerEntity_t *ent, ServerEntity_t *discus)
 
 void Discus_Follow(ServerEntity_t *ent)
 {
+#if 0
 	PLVector3f	vtemp;
 
 	// [23/5/2012] Quick fix for possible issue ~hogsy
@@ -39,11 +40,13 @@ void Discus_Follow(ServerEntity_t *ent)
 
 	ent->v.think		= Discus_Follow;
 	ent->v.nextthink	= Server.time+0.01;
+#endif
 }
 
 // [4/7/2012] Renamed to Discus_ProjectileTouch ~hogsy
 void Discus_ProjectileTouch(ServerEntity_t *ent,ServerEntity_t *other)
 {
+#if 0
 	char	snd[64];
 	PLVector3f	vel;
 
@@ -91,11 +94,13 @@ void Discus_ProjectileTouch(ServerEntity_t *ent,ServerEntity_t *other)
 	}
 	else
 		ent->v.think		= NULL;
+#endif
 }
 
 // [4/7/2012] Renamed to Discus_SpawnProjectile ~hogsy
-void Discus_SpawnProjectile(ServerEntity_t *ent,PLVector3f org)
+void Discus_SpawnProjectile(ServerEntity_t *ent, PLVector3D org)
 {
+#if 0
 	ServerEntity_t *eDiscus;
 	MathVector3f_t mvDirection;
 
@@ -124,6 +129,7 @@ void Discus_SpawnProjectile(ServerEntity_t *ent,PLVector3f org)
 	Entity_SetOrigin(eDiscus, org);
 
 	Sound(ent,CHAN_WEAPON,"weapons/discus/discusthrow.wav",255,ATTN_NORM);
+#endif
 }
 
 // [4/7/2012] Renamed to Discus_PrimaryAttack ~hogsy

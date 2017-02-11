@@ -93,7 +93,7 @@ void CL_ClearState (void)
 	SpriteManager_Clear();
 
 	//johnfitz -- cl_entities is now dynamically allocated
-	cl_max_edicts	= Math_Clamp(MIN_EDICTS, (int)max_edicts.value, MAX_EDICTS);
+	cl_max_edicts	= static_cast<unsigned int>(Math_Clamp(MIN_EDICTS, (int)max_edicts.value, MAX_EDICTS));
 	cl_entities		= (ClientEntity_t*)Hunk_AllocName(cl_max_edicts*sizeof(ClientEntity_t), "cl_entities");
 	//johnfitz
 

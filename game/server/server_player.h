@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #pragma once
 
-int	playermodelindex;
+PL_EXTERN_C
 
 extern	ServerEntityFrame_t	PlayerAnimation_Death1[];
 extern	ServerEntityFrame_t	PlayerAnimation_Death2[];
@@ -43,3 +43,5 @@ void Player_DeathThink(ServerEntity_t *player);
 void Player_Use(ServerEntity_t *entity);
 
 ServerEntity_t *Player_GetSpawnEntity(ServerEntity_t *player, int type);
+
+PL_EXTERN_C_END

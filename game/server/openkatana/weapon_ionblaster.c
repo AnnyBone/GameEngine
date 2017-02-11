@@ -98,11 +98,8 @@ void IonBlaster_Deploy(ServerEntity_t *ent)
 
 void IonBlaster_IonBallExplode(ServerEntity_t *ent)
 {
-	MathVector3f_t vel;
-
-	// [18/5/2013] This was the wrong way, fixed now! ~hogsy
-	Math_VectorCopy(ent->v.velocity,vel);
-	Math_VectorInverse(vel);
+	PLVector3D vel = ent->v.velocity;
+	plInverseVector3D(&vel);
 
 	Sound(ent,CHAN_ITEM,"weapons/ionblaster/explode.wav",255,ATTN_NORM);
 
@@ -115,7 +112,7 @@ void IonBlaster_IonBallExplode(ServerEntity_t *ent)
 
 void IonBlaster_IonBallTouch(ServerEntity_t *eIonBall, ServerEntity_t *other)
 {
-	MathVector3f_t vInversed;
+	PLVector3D vInversed;
 
 	// Increment hit count.
 	eIonBall->local.count++;
@@ -139,21 +136,20 @@ void IonBlaster_IonBallTouch(ServerEntity_t *eIonBall, ServerEntity_t *other)
 
 	if (eIonBall->local.count < IONBLASTER_MAX_HITS)
 	{
-		if (Entity_CanDamage(eIonBall, other, DAMAGE_TYPE_NORMAL) && (other != eIonBall->local.owner))
-		{
-			Entity_Damage(other, eIonBall, 15, 0);
+		if (Entity_CanDamage(eIonBall, other, DAMAGE_TYPE_NORMAL) && (other != eIonBall->local.owner)) {
+			Entity_Damage(other, eIonBall, 15, DAMAGE_TYPE_NORMAL);
 			Entity_Remove(eIonBall);
 			return;
 		}
-
+#if 0 // todo
 		Math_VectorCopy(eIonBall->v.velocity, vInversed);
-		Math_VectorInverse(vInversed);
+		plInverseVector3D(&vInversed);
 		Math_MVToVector(plVectorToAngles(eIonBall->v.velocity), eIonBall->v.angles);
 
 		Sound(eIonBall, CHAN_ITEM, "weapons/ionblaster/bounce.wav", 255, ATTN_NORM);
 
 		Engine.Particle(eIonBall->v.origin, vInversed, 5.0f, "spark2", 25);
-
+#endif
 		return;
 	}
 
@@ -163,7 +159,7 @@ void IonBlaster_IonBallTouch(ServerEntity_t *eIonBall, ServerEntity_t *other)
 void IonBlaster_PrimaryAttack(ServerEntity_t *ent)
 {
 	ServerEntity_t	*eIonBall;
-	MathVector3f_t	orig;
+	PLVector3D	orig;
 
 	// Check if there's room to perform the attack.
 	if (!Weapon_CheckTrace(ent))
@@ -197,10 +193,10 @@ void IonBlaster_PrimaryAttack(ServerEntity_t *ent)
 
 		Weapon_Projectile(ent, eIonBall, IONBLASTER_MAX_RANGE);
 
-		plVectorCopy(ent->v.angles,eIonBall->v.angles);
-		plVectorCopy(ent->v.origin, orig);
+        eIonBall->v.angles = ent->v.angles;
+        orig = ent->v.origin;
 
-		orig[2] += 25.0f;
+		orig.z += 25.0f;
 
 		Entity_SetModel(eIonBall,"models/ionball.md2");
 		Entity_SetSize(eIonBall, 0,0,0,0,0,0);

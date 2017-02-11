@@ -44,7 +44,7 @@ ConsoleVariable_t	r_fastsky = { "r_fastsky", "0" },
 
 int	skytexorder[6] = {0,2,1,3,4,5}; //for skybox
 
-MathVector3f_t vSkyClip[6] =
+PLVector3D vSkyClip[6] =
 {
 	{	1,	1,	0	},
 	{	1,	-1,	0	},
@@ -107,7 +107,7 @@ void Sky_LoadCloudTexture(const char *cPath)
 #endif
 }
 
-char *suf[6] = {"rt", "bk", "lf", "ft", "up", "dn"};
+const char *suf[6] = {"rt", "bk", "lf", "ft", "up", "dn"};
 
 void Sky_LoadSkyBox(const char *name)
 {
@@ -175,8 +175,7 @@ void Sky_LoadSkyBox(const char *name)
 #endif
 }
 
-void Sky_NewMap (void)
-{
+void Sky_NewMap (void) {
 	char	key[128],value[4096],
 			*data;
 	int		i;
@@ -271,18 +270,19 @@ void Sky_Init(void)
 
 /*	Update sky bounds
 */
-void Sky_ProjectPoly (int nump, MathVector3f_t vecs)
+void Sky_ProjectPoly (int nump, PLVector3D vecs)
 {
 	int				i,j;
-	MathVector3f_t	v, av = { 0, 0, 0 };
+	PLVector3D		av = { 0, 0, 0 };
 	float			s, t, dv;
 	int				axis;
 	float			*vp;
 
 	// decide which face it maps to
-	Math_VectorCopy(pl_origin3f, v);
-	for (i=0, vp=vecs ; i<nump ; i++, vp+=3)
-		Math_VectorAdd (vp, v, v);
+	PLVector3D v(0, 0, 0);
+	for (i=0, vp=vecs ; i<nump ; i++, vp+=3) {
+        Math_VectorAdd(vp, v, v);
+    }
 
 	av[0] = fabs(v[0]);
 	av[1] = fabs(v[1]);
@@ -293,16 +293,12 @@ void Sky_ProjectPoly (int nump, MathVector3f_t vecs)
 			axis = 1;
 		else
 			axis = 0;
-	}
-	else if (av[1] > av[2] && av[1] > av[0])
-	{
+	} else if (av[1] > av[2] && av[1] > av[0]) {
 		if (v[1] < 0)
 			axis = 3;
 		else
 			axis = 2;
-	}
-	else
-	{
+	} else {
 		if (v[2] < 0)
 			axis = 5;
 		else
@@ -340,7 +336,7 @@ void Sky_ProjectPoly (int nump, MathVector3f_t vecs)
 	}
 }
 
-void Sky_ClipPoly (int nump, MathVector3f_t vecs, int stage)
+void Sky_ClipPoly (int nump, PLVector3D vecs, int stage)
 {
 	bool			bFront	= false,
 					bBack	= false;
@@ -349,7 +345,7 @@ void Sky_ClipPoly (int nump, MathVector3f_t vecs, int stage)
 	int				sides[MAX_CLIP_VERTS],
 					newc[2],
 					i,j;
-	MathVector3f_t	vNew[2][MAX_CLIP_VERTS];
+	PLVector3D	vNew[2][MAX_CLIP_VERTS];
 
 	if(nump > MAX_CLIP_VERTS-2)
 		Sys_Error ("Sky_ClipPoly: MAX_CLIP_VERTS");
@@ -363,7 +359,7 @@ void Sky_ClipPoly (int nump, MathVector3f_t vecs, int stage)
 	for (i=0, v = vecs ; i<nump ; i++, v+=3)
 	{
 		d = Math_DotProduct (v, norm);
-		if (d > PL_EPSILON_ON)
+		if (d > MATH_EPSILON_ON)
 		{
 			bFront = true;
 
@@ -435,7 +431,7 @@ void Sky_ClipPoly (int nump, MathVector3f_t vecs, int stage)
 void Sky_ProcessPoly (glpoly_t	*p)
 {
 	int				i;
-	MathVector3f_t	verts[MAX_CLIP_VERTS];
+	PLVector3D	verts[MAX_CLIP_VERTS];
 
 	// Draw it
 	DrawGLPoly(p);
@@ -485,7 +481,7 @@ void Sky_ProcessEntities(void)
 	ClientEntity_t	*e;
 	msurface_t		*s;
 	glpoly_t		*p;
-	MathVector3f_t	vTemp, forward, right, up;
+	PLVector3D	vTemp, forward, right, up;
 
 	if (!r_drawentities.value)
 		return;
@@ -672,9 +668,9 @@ void Sky_DrawSkyBox (void)
 //
 //==============================================================================
 
-void Sky_SetBoxVert (float s, float t, int axis, MathVector3f_t v)
+void Sky_SetBoxVert (float s, float t, int axis, PLVector3D v)
 {
-	MathVector3f_t	b;
+	PLVector3D	b;
 	int				j, k;
 
 	core::Camera *camera = g_cameramanager->GetCurrentCamera();
@@ -696,9 +692,9 @@ void Sky_SetBoxVert (float s, float t, int axis, MathVector3f_t v)
 	}
 }
 
-void Sky_GetTexCoord(MathVector3f_t v,float speed,float *s,float *t)
+void Sky_GetTexCoord(PLVector3D v,float speed,float *s,float *t)
 {
-	MathVector3f_t	vDirection;
+	PLVector3D	vDirection;
 	float			fLength,fScroll;
 
 	core::Camera *camera = g_cameramanager->GetCurrentCamera();
@@ -778,10 +774,10 @@ void Sky_DrawFaceQuad(glpoly_t *p)
 void Sky_DrawFace (int axis)
 {
 	glpoly_t	*p;
-	MathVector3f_t verts[4];
+	PLVector3D verts[4];
 	int			i, j, start;
 	float		di,qi,dj,qj;
-	MathVector3f_t v_up, v_right, temp, temp2;
+	PLVector3D v_up, v_right, temp, temp2;
 
 	Sky_SetBoxVert(-1.0f,-1.0f,axis,verts[0]);
 	Sky_SetBoxVert(-1.0f,1.0f,axis,verts[1]);

@@ -160,8 +160,8 @@ AudioManager::~AudioManager() {
 void AudioManager::Frame() {
 	PLVector3D position, orientation, velocity;
 	if (cl.current_camera && (cls.signon == SIGNONS)) {
-		plVectorCopy(&cl.current_camera->GetPosition()[0], position);
-		plVectorCopy(&cl.current_camera->GetAngles()[0], orientation);
+        position = cl.current_camera->GetPosition();
+        orientation = cl.current_camera->GetAngles();
         velocity = cl.velocity;
 	} else {
         position = 0;

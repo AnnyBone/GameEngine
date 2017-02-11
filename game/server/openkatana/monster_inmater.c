@@ -109,7 +109,7 @@ void Inmater_Die(ServerEntity_t *eInmater, ServerEntity_t *eOther, EntityDamageT
 
 			// [26/2/2014] Add some random velocity on top of the velocity that the inmater already has ~hogsy
             vGibVelocity = eInmater->v.velocity;
-			Math_VectorAddValue(vGibVelocity,(float)(rand()%5),vGibVelocity);
+			plAddVector3Df(&vGibVelocity, (float)(rand() % 5));
 
 			PHYSICS_MODEL_METAL(cModel);
 

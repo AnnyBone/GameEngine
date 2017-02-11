@@ -9,7 +9,7 @@ PL_EXTERN_C
 int	Client_GetEffect(const char *cPath);
 int Client_GetStat(ClientStat_t csStat);
 
-void Client_PrecacheResource(int iType,char *cResource);
+void Client_PrecacheResource(int type, const char *resource);
 
 double Client_GetTime(void);
 

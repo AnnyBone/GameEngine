@@ -44,20 +44,14 @@ enum
 
 Weapon_t *wLaserWeapon;
 
-void LaserGat_AimTarget(ServerEntity_t *eLaserGat,ServerEntity_t *eTarget)
-{
-	MathVector3f_t	vOrigin;
-
-	Math_VectorSubtract(eLaserGat->v.origin,eTarget->v.origin,vOrigin);
-	plVectorNormalize(vOrigin);
-	Math_MVToVector(plVectorToAngles(vOrigin), eLaserGat->v.angles);
-	Math_VectorInverse(eLaserGat->v.angles);
+void LaserGat_AimTarget(ServerEntity_t *eLaserGat,ServerEntity_t *eTarget) {
+	eLaserGat->v.angles = eLaserGat->v.origin - eTarget->v.origin;
+    eLaserGat->v.angles.Normalize();
 }
 
 void LaserGat_HandleAim(ServerEntity_t *eLaserGat)
 {
-	if (eLaserGat->Monster.think == AI_THINK_IDLE)
-	{
+	if (eLaserGat->Monster.think == AI_THINK_IDLE) {
 		if (!eLaserGat->Monster.eTarget)
 		{
 			if (eLaserGat->Monster.commands[LASERGAT_COMMAND_LOOK_PITCH] == LASERGAT_LOOK_DOWN)

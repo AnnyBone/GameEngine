@@ -68,15 +68,14 @@ extern "C" int Client_GetEffect(const char *cPath)
 
 /*	Precache client-side resources.
 */
-extern "C" void Client_PrecacheResource(int iType, char *cResource)
-{
-	char			cPath[PLATFORM_MAX_PATH];
+extern "C" void Client_PrecacheResource(int type, const char *resource) {
+	char			cPath[PL_SYSTEM_MAX_PATH];
 	int				i;
 	unsigned int    w,h;
 	model_t			*mClientModel;
 	uint8_t			*bData;
 
-	switch(iType)
+	switch(type)
 	{
 	case RESOURCE_FONT:
 		break;
@@ -84,24 +83,24 @@ extern "C" void Client_PrecacheResource(int iType, char *cResource)
 		for(i = 0; i < MAX_MODELS; i++)
 			if(!cl.model_precache[i])
 			{
-				mClientModel = Mod_ForName(cResource);
+				mClientModel = Mod_ForName(resource);
 				if(!mClientModel)
 				{
-					Console_ErrorMessage(false,cResource,"Either the file is corrupt or does not exist.");
+					Console_ErrorMessage(false,resource,"Either the file is corrupt or does not exist.");
 					return;
 				}
 
 				cl.model_precache[i] = mClientModel;
 				return;
 			}
-			else if(!strcmp(cl.model_precache[i]->name,cResource))
+			else if(!strcmp(cl.model_precache[i]->name,resource))
 				return;
 
-		Console_ErrorMessage(false,cResource,"Overflow!");
+		Console_ErrorMessage(false,resource,"Overflow!");
 		break;
 	// [26/1/2013] Precache for effect types ~hogsy
 	case RESOURCE_SPRITE:
-		sprintf(cPath,PATH_SPRITES"%s",cResource);
+		sprintf(cPath,PATH_SPRITES"%s",resource);
 
 		for(i = 0; i < MAX_EFFECTS; i++)
 			if (!g_effecttextures[i])
@@ -113,10 +112,10 @@ extern "C" void Client_PrecacheResource(int iType, char *cResource)
 					return;
 				}
 
-				g_effecttextures[i] = TexMgr_LoadImage(NULL, cResource, w, h, SRC_RGBA, bData, cPath, 0, TEXPREF_ALPHA);
+				g_effecttextures[i] = TexMgr_LoadImage(NULL, resource, w, h, SRC_RGBA, bData, cPath, 0, TEXPREF_ALPHA);
 				return;
 			}
-			else if (!strcmp(g_effecttextures[i]->name, cResource))
+			else if (!strcmp(g_effecttextures[i]->name, resource))
 				return;
 
 		Console_ErrorMessage(false,cPath,"Overflow!");
@@ -127,7 +126,7 @@ extern "C" void Client_PrecacheResource(int iType, char *cResource)
 	case RESOURCE_TEXTURE:
 		break;
 	default:
-		Con_Warning("Attempted to precache an undefined type! (%s)\n",cResource);
+		Con_Warning("Attempted to precache an undefined type! (%s)\n",resource);
 	}
 }
 

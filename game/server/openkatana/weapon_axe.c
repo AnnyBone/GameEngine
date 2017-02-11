@@ -67,36 +67,34 @@ void Axe_Deploy(ServerEntity_t *ent)
 
 void AxeHit(ServerEntity_t *ent)
 {
-	PLVector3f forward,temp,sndvec,vel;
+	PLVector3D forward,sndvec,vel;
 	trace_t	trace;
 
-	plAngleVectors(ent->v.v_angle, forward, temp, temp);
+	Math_AngleVectors(ent->v.v_angle, &forward, NULL, NULL);
 
 	// [18/4/2012] A nice soft bounce ~hogsy
-	vel[0] = vel[1] = 0;
-	vel[2] = 0.5;
+	vel.x = vel.y = 0;
+	vel.z = 0.5f;
 
-	sndvec[0] = ent->v.origin[0]+forward[0]*64;
-	sndvec[1] = ent->v.origin[1]+forward[1]*64;
-	sndvec[2] = ent->v.origin[2]+forward[2]*64;
+	sndvec.x = ent->v.origin.x+forward.x*64;
+	sndvec.y = ent->v.origin.y+forward.y*64;
+	sndvec.z = ent->v.origin.z+forward.z*64;
 
 	trace = Traceline(ent,ent->v.origin,sndvec,0);
 
-	sndvec[0] = trace.endpos[0]-forward[0]*4;
-	sndvec[1] = trace.endpos[1]-forward[1]*4;
-	sndvec[2] = trace.endpos[2]-forward[2]*4;
+	sndvec.x = trace.endpos.x-forward.x * 4;
+	sndvec.y = trace.endpos.y-forward.y * 4;
+	sndvec.z = trace.endpos.z-forward.z * 4;
 
 	if(trace.fraction == 1.0f)
 		return;
-	if(trace.ent->v.takedamage)
-	{
+
+	if(trace.ent->v.takedamage) {
 		if(trace.ent->local.bleed)
 			Engine.Particle(sndvec,vel,10,"blood",30);
 
-		Entity_Damage(trace.ent, ent, 20, 0);
-	}
-	else if(trace.ent)
-	{
+		Entity_Damage(trace.ent, ent, 20, DAMAGE_TYPE_NORMAL);
+	} else if(trace.ent) {
 		Engine.Particle(sndvec,vel,10,"smoke",30);
 	}
 

@@ -3,7 +3,7 @@
 
 project(game)
 
-set(GAME_PROJECT openkatana CACHE STRING "Game project selected for compilation")
+set(GAME_PROJECT ictus CACHE STRING "Game project selected for compilation")
 set(GAME_PROJECT_OPTIONS openkatana;adamas;ictus;planetshift)
 set_property(CACHE GAME_PROJECT PROPERTY STRINGS ${GAME_PROJECT_OPTIONS})
 message(STATUS GAME_PROJECT='${GAME_PROJECT}')

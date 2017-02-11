@@ -37,6 +37,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define	PLAYER_MAX_HEALTH	cvServerMaxHealth.iValue
 #define	PLAYER_MIN_HEALTH	-20
 
+int playermodelindex;
+
 ServerEntityFrame_t PlayerAnimation_Idle[] =
         {
                 {	NULL,	0,	0.1f			},
