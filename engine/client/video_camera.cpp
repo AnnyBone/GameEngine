@@ -18,6 +18,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#include <client.h>
 #include "engine_base.h"
 
 #include "video.h"
@@ -246,26 +247,20 @@ Camera::Camera() :
 	_viewmodel(nullptr),
 	_parententity(nullptr),
 
-	_height(0)
-{
-	plVectorClear(_position);
-	plVectorClear(_angles);
-	plVectorClear(bobamount);
-
-	plAngleVectors(_angles, _forward, _right, _up);
+	_height(0),
+    _position(0, 0, 0), _angles(0, 0, 0), bobamount(0, 0, 0) {
+	Math_AngleVectors(_angles, &_forward, &_right, &_up);
 
 	SetFOV(cv_camera_fov.value);
 }
 
-Camera::Camera(Viewport *viewport) : Camera()
-{
+Camera::Camera(Viewport *viewport) : Camera() {
 	SetViewport(viewport);
 }
 
 ///////////////////////////////////////////////////////////////
 
-void Camera::SetupProjectionMatrix()
-{
+void Camera::SetupProjectionMatrix() {
 #if defined (VL_MODE_OPENGL)
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
@@ -300,8 +295,7 @@ void Camera::SetupProjectionMatrix()
 #endif
 }
 
-void Camera::SetupViewMatrix()
-{
+void Camera::SetupViewMatrix() {
 #if defined (VL_MODE_OPENGL)
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -320,44 +314,40 @@ void Camera::SetupViewMatrix()
 ///////////////////////////////////////////////////////////////
 
 #ifdef CAMERA_LEGACY
-void Camera::DrawViewEntity()
-{
-	if (!r_drawviewmodel.bValue || !_viewmodel || !_viewmodel->model)
-		return;
+void Camera::DrawViewEntity() {
+	if (!r_drawviewmodel.boolean_value || !_viewmodel || !_viewmodel->model) {
+        return;
+    }
 
-#ifdef VL_MODE_OPENGL
+#ifdef PL_MODE_OPENGL
 	// Hack the depth range to prevent view model from poking into walls.
 	glDepthRange(0, 0.3);
 #endif
 
 	draw::Entity(_viewmodel);
 
-#ifdef VL_MODE_OPENGL
+#ifdef PL_MODE_OPENGL
 	glDepthRange(0, 1);
 #endif
 }
 #endif
 
-void Camera::Draw()
-{
+void Camera::Draw() {
 	SetupProjectionMatrix();
 	SetupViewMatrix();
 
-	if (cl.worldmodel)
-	{
+	if (cl.worldmodel) {
 		// Current view leaf.
 		oldleaf = leaf;
 		leaf = Mod_PointInLeaf(_position, cl.worldmodel);
 
 		float fovxx = _fovx, fovyy = _fovy;
-		if (r_waterwarp.value)
-		{
+		if (r_waterwarp.value) {
 			int contents = Mod_PointInLeaf(_position, cl.worldmodel)->contents;
-			if (contents == BSP_CONTENTS_WATER || contents == BSP_CONTENTS_SLIME || contents == BSP_CONTENTS_LAVA)
-			{
+			if (contents == BSP_CONTENTS_WATER || contents == BSP_CONTENTS_SLIME || contents == BSP_CONTENTS_LAVA) {
 				//variance is a percentage of width, where width = 2 * tan(fov / 2) otherwise the effect is too dramatic at high FOV and too subtle at low FOV.  what a mess!
-				fovxx = std::atan(std::tan(PL_DEG2RADf(_fovx) / 2) * (0.97f + std::sin((float)cl.time * 1.5f) * 0.03f)) * 2.0f / PL_PI_DIV180f;
-				fovyy = std::atan(std::tan(PL_DEG2RADf(_fovy) / 2) * (1.03f - std::sin((float)cl.time * 1.5f) * 0.03f)) * 2.0f / PL_PI_DIV180f;
+				fovxx = std::atan(std::tan(((float)MATH_DEG2RAD(_fovx)) / 2) * (0.97f + std::sin((float)cl.time * 1.5f) * 0.03f)) * 2 / ((float)MATH_PI_DIV180);
+				fovyy = std::atan(std::tan(((float)MATH_DEG2RAD(_fovy)) / 2) * (1.03f - std::sin((float)cl.time * 1.5f) * 0.03f)) * 2 / ((float)MATH_PI_DIV180);
 			}
 		}
 
@@ -373,7 +363,7 @@ void Camera::Draw()
 	if(gl_cull.value)	plEnableGraphicsStates(VL_CAPABILITY_CULL_FACE);
 	else				plDisableGraphicsStates(VL_CAPABILITY_CULL_FACE);
 
-	plEnableGraphicsStates(VL_CAPABILITY_DEPTH_TEST);	// is this needed??
+	plEnableGraphicsStates(PL_CAPABILITY_DEPTHTEST);	// is this needed??
 
 	//Fog_EnableGFog();
 	Sky_Draw();
@@ -389,18 +379,22 @@ void Camera::Draw()
 	DrawViewEntity();
 	draw::BoundingBoxes();
 
-	if(cv_camera_drawfrustum.value)
-	{
-		PLDraw *draw = vlCreateDraw(VL_PRIMITIVE_POINTS, 0, 0);
-		if(!draw) Sys_Error("Failed to create draw call for frustum!\n");
+	if(cv_camera_drawfrustum.value) {
+		static PLMesh *draw = plCreateMesh(PL_PRIMITIVE_POINTS, PL_DRAW_DYNAMIC, 0, 0);
+		if(!draw) {
+            Sys_Error("Failed to create draw call for frustum!\n");
+        }
 
-		vlBeginDraw(draw);
-		//vlDrawVertex3f();
-		vlEndDraw(draw);
+        plClearMesh(draw);
+
+        // todo, produce frustum...
+
+        plUploadMesh(draw);
 	}
 
-	if ((cl.maxclients <= 1) && !bIsDedicated)
-		Game->Server_Draw();
+	if ((cl.maxclients <= 1) && !bIsDedicated) {
+        Game->Server_Draw();
+    }
 
 #if 0
 	//johnfitz -- cheat-protect some draw modes
@@ -423,14 +417,12 @@ void Camera::Draw()
 }
 
 #ifdef CAMERA_LEGACY
-void Camera::SetParentEntity(ClientEntity_t *parent)
-{
+void Camera::SetParentEntity(ClientEntity_t *parent) {
 	// Clear it out, not an issue since we
 	// want to support switching between these.
 	_parententity = nullptr;
 
-	if (!parent)
-	{
+	if (!parent) {
 		Con_Warning("Failed to set camera parent entity!\n");
 		return;
 	}
@@ -440,76 +432,73 @@ void Camera::SetParentEntity(ClientEntity_t *parent)
 	_position[2] += _height;
 }
 
-void Camera::SetViewEntity(ClientEntity_t *_child)
-{
+void Camera::SetViewEntity(ClientEntity_t *_child) {
 	// Clear it out, not an issue since we
 	// want to support switching between these.
 	_viewmodel = nullptr;
 
-	if (!_child)
-	{
+	if (!_child) {
 		Con_Warning("Failed to set camera child entity!\n");
 		return;
 	}
 	_viewmodel = _child;
 }
 
-void Camera::SimulateViewEntity()
-{
+void Camera::SimulateViewEntity() {
 	// View is the weapon model (only visible from inside body).
-	if (!_viewmodel)
-		return;
+	if (!_viewmodel) {
+        return;
+    }
 
 	_viewmodel->model = cl.model_precache[cl.stats[STAT_WEAPON]];
 	_viewmodel->frame = cl.stats[STAT_WEAPONFRAME];
 
-	if (!_viewmodel->model)
-		return;
+	if (!_viewmodel->model) {
+        return;
+    }
 
 	// Apply view model angles.
-	PLVector3f oldangles = { 0 };
-	plVectorCopy(_viewmodel->angles, oldangles);
-	plVectorCopy(_angles, _viewmodel->angles);
+	PLVector3D oldangles = _viewmodel->angles;
+    _viewmodel->angles = _angles;
 
 	// Update view model origin.
-	plVectorCopy(_parententity->origin, _viewmodel->origin);
+    _viewmodel->origin = _parententity->origin;
 	_viewmodel->origin[2] += _height;
 
 	// Apply view model bob.
-	if (bobcam)
-	{
-		for (int i = 0; i < 3; i++)
-			_viewmodel->origin[i] +=
-			(_up[i] * bobamount[0] * 0.2f) +
-			(_right[i] * bobamount[1] * 0.3f);
+	if (bobcam) {
+		for (int i = 0; i < 3; i++) {
+            _viewmodel->origin[i] +=
+                    (_up[i] * bobamount[0] * 0.2f) +
+                    (_right[i] * bobamount[1] * 0.3f);
+        }
 
 		_viewmodel->origin[2] += bobamount[0];
 	}
 
 	// Apple the view model drift.
-	if (host_frametime != 0)
-	{
-		static PLVector3f lastforward;
-		PLVector3f difference = { 0, 0, 0 };
-		plVectorSubtract3fv(_forward, lastforward, difference);
+	if (host_frametime != 0) {
+		static PLVector3D lastforward;
+		PLVector3D difference = _forward - lastforward;
 
-		float speed = 3.0f;
-		float diff = plLengthf(difference);
-		if ((diff > cv_camera_modellag.value) && (cv_camera_modellag.value > 0))
-			speed *= diff / cv_camera_modellag.value;
+		float speed = 3;
+		float diff = difference.Length();
+		if ((diff > cv_camera_modellag.value) && (cv_camera_modellag.value > 0)) {
+            speed *= diff / cv_camera_modellag.value;
+        }
 
-		for (int i = 0; i < 3; i++)
-			lastforward[i] += difference[i] * (speed * host_frametime);
+		for (int i = 0; i < 3; i++) {
+            lastforward[i] += difference[i] * (speed * host_frametime);
+        }
 
-		plVectorNormalize(lastforward);
+        lastforward.Normalize();
 
-		for (int i = 0; i < 3; i++)
-		{
+		for (int i = 0; i < 3; i++) {
 			_viewmodel->origin[i] += (difference[i] * -1) * 5;
 
 			// TODO: wait, we're doing this in this loop!? Okay...
 			// This is probably a mistake but I'll wait before I sort this.
-			_viewmodel->angles[ROLL] += difference[YAW];
+			_viewmodel->angles[PL_ROLL] += difference[PL_YAW];
 		}
 	}
 
@@ -519,25 +508,28 @@ void Camera::SimulateViewEntity()
 
 	// Finally, offset!
 	float offset = 0;
-	if (cv_camera_modelposition.iValue == 1)		offset = -5;
-	else if (cv_camera_modelposition.iValue == 2)	offset = 5;
-	else return;
+	if (cv_camera_modelposition.iValue == 1) {
+        offset = -5;
+    } else if (cv_camera_modelposition.iValue == 2) {
+        offset = 5;
+    } else return;
 
-	for (int i = 0; i < 3; i++)
-		_viewmodel->origin[i] += _forward[i] + offset * _right[i] + _up[i];
+	for (int i = 0; i < 3; i++) {
+        _viewmodel->origin[i] += _forward[i] + offset * _right[i] + _up[i];
+    }
 }
 
-void Camera::SimulateParentEntity()
-{
+void Camera::SimulateParentEntity() {
 	// Parent is the player model (visible when out of body).
-	if (!_parententity)
-		return;
+	if (!_parententity) {
+        return;
+    }
 
 	// Transform the view offset by the model's matrix to get the offset from
 	// model origin for the view.
-	_parententity->angles[YAW] = _angles[YAW];
-	_parententity->angles[PITCH] = -_angles[PITCH];
-	_parententity->angles[ROLL] = -_angles[ROLL];
+	_parententity->angles[PL_YAW] = _angles[PL_YAW];
+	_parententity->angles[PL_PITCH] = -_angles[PL_PITCH];
+	_parententity->angles[PL_ROLL] = -_angles[PL_ROLL];
 
 	// Refresh view position.
 	SetPosition(_parententity->origin);
@@ -570,46 +562,50 @@ void Camera::SimulateParentEntity()
 
 /*	Calculate and add view bobbing.
 */
-void Camera::SimulateBob()
-{
-	if (!bobcam) return;
+void Camera::SimulateBob() {
+	if (!bobcam) {
+        return;
+    }
 
-	PLVector3f cycle = { 0, 0, 0 };
+	PLVector3D cycle = { 0, 0, 0 };
 
 	// Forward cycle
 	cycle[0] = ((float)cl.time - (int)(cl.time / cv_camera_forwardcycle.value) * cv_camera_forwardcycle.value) / cv_camera_forwardcycle.value;
 	if (cycle[0] < cv_camera_upcycle.value)
-		cycle[0] = PL_PIf * cycle[0] / cv_camera_upcycle.value;
+		cycle[0] = ((float)PL_PI) * cycle[0] / cv_camera_upcycle.value;
 	else
-		cycle[0] = PL_PIf + PL_PIf * (cycle[0] - cv_camera_upcycle.value) / (1.0f - cv_camera_upcycle.value);
+		cycle[0] = ((float)PL_PI) + ((float)PL_PI) * (cycle[0] - cv_camera_upcycle.value) / (1.0f - cv_camera_upcycle.value);
 
 	// Side cycle
-	cycle[1] = ((float)cl.time - (int)(cl.time / cv_camera_sidecycle.value) * cv_camera_sidecycle.value) / cv_camera_sidecycle.value;
-	if (cycle[1] < cv_camera_upcycle.value)
-		cycle[1] = PL_PIf * cycle[1] / cv_camera_upcycle.value;
-	else
-		cycle[1] = PL_PIf + PL_PIf * (cycle[1] - cv_camera_upcycle.value) / (1.0f - cv_camera_upcycle.value);
+	cycle[1] = ((float)cl.time - (int)(cl.time / cv_camera_sidecycle.value) * cv_camera_sidecycle.value) /
+            cv_camera_sidecycle.value;
+	if (cycle[1] < cv_camera_upcycle.value) {
+        cycle[1] = ((float)PL_PI) * cycle[1] / cv_camera_upcycle.value;
+    } else {
+        cycle[1] = ((float) PL_PI) +
+                   ((float) PL_PI) * (cycle[1] - cv_camera_upcycle.value) / (1.0f - cv_camera_upcycle.value);
+    }
 
-	PLVector3f bob = { 0, 0, 0 };
+	PLVector3D bob = { 0, 0, 0 };
 
 	// Bob is proportional to velocity in the xy plane
 	// (don't count Z, or jumping messes it up)
-	bob[0] = sqrtf(
+	bob[0] = std::sqrt(
 		cl.velocity[0] * cl.velocity[0] +
 		cl.velocity[1] * cl.velocity[1]) *
 		cv_camera_bob.value;
-	bob[1] = sqrtf(
+	bob[1] = std::sqrt(
 		cl.velocity[0] * cl.velocity[0] +
 		cl.velocity[1] * cl.velocity[1]) *
 		cv_camera_sidecycle.value;
 
-	for (int i = 0; i < 2; i++)
-	{
+	for (int i = 0; i < 2; i++) {
 		bob[i] *= bob[i] * 0.7f * sinf(cycle[i]);
-		if (bob[i] > 4.0f)
-			bob[i] = 4.0f;
-		else if (bob[i] < -7.0f)
-			bob[i] = -7.0f;
+		if (bob[i] > 4.0f) {
+            bob[i] = 4.0f;
+        } else if (bob[i] < -7.0f) {
+            bob[i] = -7.0f;
+        }
 	}
 
 	_position[2] += bob[0];
@@ -619,17 +615,17 @@ void Camera::SimulateBob()
 	bobamount[1] = bob[1];
 }
 
-void Camera::SimulateRoll()
-{
-	float side = Math_DotProduct(cl.velocity, _right);
+void Camera::SimulateRoll() {
+	float side = cl.velocity.DotProduct(_right); // Math_DotProduct(cl.velocity, _right);
 	float sign = side < 0 ? -1 : 1;
 	side = fabsf(side);
 
 	float value = cv_camera_rollangle.value;
-	if (side < cv_camera_rollspeed.value)
-		side *= value / cv_camera_rollspeed.value;
-	else
-		side = value;
+	if (side < cv_camera_rollspeed.value) {
+        side *= value / cv_camera_rollspeed.value;
+    } else {
+        side = value;
+    }
 
 	side *= sign;
 	_angles[PL_ROLL] += side;
@@ -647,29 +643,28 @@ void Camera::SimulateRoll()
 #endif
 }
 
-void Camera::SimulatePunch()
-{
+void Camera::SimulatePunch() {
 	// Apply camera punch, if it's enabled.
-	if (!cv_camera_punch.value)
-		return;
+	if (!cv_camera_punch.value) {
+        return;
+    }
 
-	static PLVector3f punch = { 0, 0, 0 };
-	for (int i = 0; i < 3; i++)
-		if (pl_origin3f[i] != punchangles[0][i])
-		{
-			// Speed determined by how far we need to lerp in 1/10th of a second.
-			float delta = (punchangles[0][i] - punchangles[1][i]) * (float)host_frametime * 10.0f;
-			if (delta > 0)
-				punch[i] = std::fminf(punch[i] + delta, punchangles[0][i]);
-			else if (delta < 0)
-				punch[i] = std::fmaxf(punch[i] + delta, punchangles[0][i]);
-		}
+	static PLVector3D punch = { 0, 0, 0 };
+	for (int i = 0; i < 3; i++) {
+        if (punchangles[0][i] != 0) {
+            // Speed determined by how far we need to lerp in 1/10th of a second.
+            float delta = (punchangles[0][i] - punchangles[1][i]) * (float) host_frametime * 10.0f;
+            if (delta > 0)
+                punch[i] = std::fminf(punch[i] + delta, punchangles[0][i]);
+            else if (delta < 0)
+                punch[i] = std::fmaxf(punch[i] + delta, punchangles[0][i]);
+        }
+    }
 
-	plVectorAdd3fv(_angles, punch, _angles);
+    _angles += punch;
 }
 
-void Camera::Simulate()
-{
+void Camera::Simulate() {
 	//SimulateFrustum();
 	SimulateBob();
 	SimulateRoll();
@@ -683,7 +678,7 @@ void Camera::Simulate()
 
 	The server protocol only specifies to 1/16 pixel, so add 1/32 in each axis.
 	*/
-	plVectorAddf(_position, 1.0f / 32.0f, _position);
+    _position += 1 / 32;
 
 	if (_angles[PL_PITCH] > cv_camera_maxpitch.value) _angles[PL_PITCH] = cv_camera_maxpitch.value;
 	else if (_angles[PL_PITCH] < cv_camera_minpitch.value) _angles[PL_PITCH] = cv_camera_minpitch.value;
@@ -697,7 +692,7 @@ void Camera::Simulate()
 #endif
 	SimulatePunch();
 
-	plAngleVectors(_angles, _forward, _right, _up);
+    Math_AngleVectors(_angles, &_forward, &_right, &_up);
 
 	// Simulate camera-specific effects...
 	g_spritemanager->Simulate();
@@ -705,85 +700,75 @@ void Camera::Simulate()
 
 ///////////////////////////////////////////////////////////////
 
-void Camera::Input(ClientCommand_t *cmd, plVector2i_t mpos)
-{
-	_angles[PL_YAW] -= m_yaw.value * mpos[PL_X];
-	_angles[PL_PITCH] += m_pitch.value * mpos[PL_Y];
-
-	plVectorCopy(_angles, cmd->viewangles);
+void Camera::Input(ClientCommand_t *cmd, PLVector2D mpos) {
+	_angles[PL_YAW] -= m_yaw.value * mpos.x;
+	_angles[PL_PITCH] += m_pitch.value * mpos.y;
+    cmd->viewangles = _angles;
 }
 
 /*	Frustum	*/
 
-void Camera::SetFOV(float fov)
-{
+void Camera::SetFOV(float fov) {
 	// Clamp the FOV to ensure we don't
-	// get anything rediculous.
-	plClamp(10, fov, 180.0f);
+	// get anything ridiculous.
+	Math_Clamp(10, fov, 180.0f);
 	
 	_fov = fov;
 	_fovx = _fov;
 
 	unsigned int width = 640, height = 480;
-	if (_viewport)
-	{
+	if (_viewport) {
 		width	= _viewport->GetWidth();
 		height	= _viewport->GetHeight();
 	}
 
 	// Taken from CalcFovy.
-	float x = width * std::tan(_fovx / 360.0f * PL_PIf);
+	float x = width * std::tan(_fovx / 360 * (float)PL_PI);
 	float a = std::atan(height / x);
-	a *= 360.0f / PL_PIf;
+	a *= 360 / (float)PL_PI;
 	_fovy = a;
 }
 
 int SignbitsForPlane(mplane_t *out);
 
-void Camera::SetFrustum(float fovx, float fovy)
-{
+void Camera::SetFrustum(float fovx, float fovy) {
 	// Update the frustum.
 	plTurnVector(_frustum[0].normal, _forward, _right, fovx / 2 - 90);	// Left plane
 	plTurnVector(_frustum[1].normal, _forward, _right, 90 - fovx / 2);	// Right plane
 	plTurnVector(_frustum[2].normal, _forward, _up, 90 - fovy / 2);		// Bottom plane
 	plTurnVector(_frustum[3].normal, _forward, _up, fovy / 2 - 90);		// Top plane
 
-	for (int i = 0; i < 4; i++)
-	{
+	for (int i = 0; i < 4; i++) {
 		_frustum[i].type = PLANE_ANYZ;
-		_frustum[i].dist = Math_DotProduct(_position, _frustum[i].normal); // FIXME: shouldn't this always be zero?
+		_frustum[i].dist = _frustum[i].normal.DotProduct(_position); // Math_DotProduct(_position, _frustum[i].normal); // FIXME: shouldn't this always be zero?
 		_frustum[i].signbits = (uint8_t)SignbitsForPlane(&_frustum[i]);
 	}
 }
 
-bool Camera::IsPointInsideFrustum(plVector3f_t position)
-{
-	for (int i = 0; i < 4; i++)
-	{
+bool Camera::IsPointInsideFrustum(PLVector3D position) {
+	for (int i = 0; i < 4; i++) {
 		mplane_t *p = _frustum + i;
-		if (p->normal[0] * position[0] + p->normal[1] * position[1] + p->normal[2] * position[2] > p->dist)
-			return false;
+		if (p->normal[0] * position[0] + p->normal[1] * position[1] + p->normal[2] * position[2] > p->dist) {
+            return false;
+        }
 	}
 
 	return true;
 }
 
-bool Camera::IsPointOutsideFrustum(plVector3f_t position)
-{
-	for (int i = 0; i < 4; i++)
-	{
+bool Camera::IsPointOutsideFrustum(PLVector3D position) {
+	for (int i = 0; i < 4; i++) {
 		mplane_t *p = _frustum + i;
-		if (p->normal[0] * position[0] + p->normal[1] * position[1] + p->normal[2] * position[2] < p->dist)
-			return false;
+		if (p->normal[0] * position[0] + p->normal[1] * position[1] + p->normal[2] * position[2] < p->dist) {
+            return false;
+        }
 	}
 
 	return true;
 }
 
-bool Camera::IsBoxInsideFrustum(plVector3f_t mins, plVector3f_t maxs)
-{
-	for (int i = 0; i < 4; i++)
-	{
+bool Camera::IsBoxInsideFrustum(PLVector3D mins, PLVector3D maxs) {
+	for (int i = 0; i < 4; i++) {
 		mplane_t *p = _frustum + i;
 		switch (p->signbits)
 		{
@@ -826,13 +811,10 @@ bool Camera::IsBoxInsideFrustum(plVector3f_t mins, plVector3f_t maxs)
 	return false;
 }
 
-bool Camera::IsBoxOutsideFrustum(plVector3f_t mins, plVector3f_t maxs)
-{
-	for (int i = 0; i < 4; i++)
-	{
+bool Camera::IsBoxOutsideFrustum(PLVector3D mins, PLVector3D maxs) {
+	for (int i = 0; i < 4; i++) {
 		mplane_t *p = _frustum + i;
-		switch (p->signbits)
-		{
+		switch (p->signbits) {
 		default:
 		case 0:
 			if (p->normal[0] * maxs[0] + p->normal[1] * maxs[1] + p->normal[2] * maxs[2] < p->dist)
@@ -874,76 +856,56 @@ bool Camera::IsBoxOutsideFrustum(plVector3f_t mins, plVector3f_t maxs)
 
 // Angles
 
-void Camera::SetAngles(float x, float y, float z)
-{
-	plVectorSet3f(_angles, x, y, z);
+void Camera::SetAngles(float x, float y, float z) {
+    _angles.Set(x, y, z);
 }
 
-void Camera::SetAngles(plVector3f_t angles)
-{
-	plVectorCopy(angles, _angles);
+void Camera::SetAngles(PLVector3D angles) {
+    _angles = angles;
 }
 
-void Camera::PrintAngles()
-{
-	Con_Printf("CAMERA ANGLES : %i %i %i\n",
-		(int)_angles[PL_PITCH],
-		(int)_angles[PL_YAW],
-		(int)_angles[PL_ROLL]);
+void Camera::PrintAngles() {
+	Con_Printf("CAMERA ANGLES : %i %i %i\n", (int)_angles[PL_PITCH], (int)_angles[PL_YAW], (int)_angles[PL_ROLL]);
 }
 
 // Position
 
-void Camera::SetPosition(float x, float y, float z)
-{
-	_position[0] = x;
-	_position[1] = y;
-	_position[2] = z;
+void Camera::SetPosition(float x, float y, float z) {
+    _position.Set(x, y, z);
 }
 
-void Camera::SetPosition(plVector3f_t position)
-{
-	plVectorCopy(position, _position);
+void Camera::SetPosition(PLVector3D position) {
+    _position = position;
 }
 
-void Camera::PrintPosition()
-{
+void Camera::PrintPosition() {
 	Con_Printf("CAMERA POSITION : %i %i %i\n",
 		(int)_position[0],
 		(int)_position[1],
 		(int)_position[2]);
 }
 
-void Camera::TracePosition()
-{
-	PLVector3f v = { 0, 0, 0 };
-	plVectorScalef(_forward, 8192.0f, v);
-
-	PLVector3f w = { 0, 0, 0 };
+void Camera::TracePosition() {
+	PLVector3D w, v = _forward * 8192;
 	TraceLine(_position, v, w);
 
-	if (plLengthf(w) == 0)
-	{
+	if (w.Length() == 0) {
 		Con_Printf("Didn't hit anything!\n");
 		return;
 	}
 	
-	Con_Printf("TRACE POSITION : %i %i %i\n",
-		(int)w[0],
-		(int)w[1],
-		(int)w[2]);
+	Con_Printf("TRACE POSITION : %i %i %i\n", (int)w.x, (int)w.y, (int)w.z);
 }
 
 ////////////////////////////////////////////////////
 
-void Camera::SetViewport(IViewport *viewport)
-{
-	if (_viewport && (_viewport == viewport))
-		return;
+void Camera::SetViewport(IViewport *viewport) {
+	if (_viewport && (_viewport == viewport)) {
+        return;
+    }
 
 	_viewport = dynamic_cast<Viewport*>(viewport);
-	if (!_viewport)
-	{
+	if (!_viewport) {
 		Con_Warning("Invalid viewport!\n");
 		return;
 	}
@@ -951,18 +913,19 @@ void Camera::SetViewport(IViewport *viewport)
 
 /*	Camera C Interface	*/
 
-void Camera_SetPosition(Camera *camera, plVector3f_t position)
-{
-	if (!camera)
-		return;
+void Camera_SetPosition(Camera *camera, PLVector3D position) {
+	if (!camera) {
+        return;
+    }
 
 	camera->SetPosition(position);
 }
 
-void Camera_SetAngles(Camera *camera, plVector3f_t angles)
+void Camera_SetAngles(Camera *camera, PLVector3D angles)
 {
-	if (!camera)
-		return;
+	if (!camera) {
+        return;
+    }
 
 	camera->SetAngles(angles);
 }

@@ -344,7 +344,7 @@ ServerEntity_t *Area_SpawnTriggerField(ServerEntity_t *owner,
 
 	ServerEntity_t *field = Entity_Spawn();
 	field->v.movetype		= MOVETYPE_NONE;
-	field->local.eOwner		= owner;
+	field->local.owner		= owner;
 
 	Entity_SetTouchFunction(field, TriggerFunction);
 	Entity_SetPhysics(field, SOLID_TRIGGER, 0, 0);

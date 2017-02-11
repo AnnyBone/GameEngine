@@ -16,6 +16,7 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#include <shared_game.h>
 #include "server_mode.h"
 
 /*	
@@ -49,10 +50,10 @@ void CTF_FlagReset(ServerEntity_t *ent)
 	SetAngle(ent,ent->local.pos2);
 
 	// Make sure our owner no longer thinks he has us.
-	if(ent->local.eOwner)
+	if(ent->local.owner)
 	{
-		ent->local.eOwner->local.flag = NULL;
-		ent->local.eOwner = NULL;
+		ent->local.owner->local.flag = NULL;
+		ent->local.owner = NULL;
 	}
 
 	ent->local.flags = STATE_FLAG_IDLE;
@@ -70,22 +71,21 @@ void CTF_FlagThink(ServerEntity_t *ent)
 	case STATE_FLAG_IDLE:
 //		MONSTER_Animate(ent,FALSE,0,9,0.1f,0);
 		break;
-	case STATE_FLAG_CARRIED:
-		if(ent->local.eOwner->v.health <= 0)
-		{
-			ent->local.hit = RESPAWN_DELAY;
-			ent->local.flags = STATE_FLAG_DROPPED;
+	case STATE_FLAG_CARRIED: {
+        if (ent->local.owner->v.health <= 0) {
+            ent->local.hit = RESPAWN_DELAY;
+            ent->local.flags = STATE_FLAG_DROPPED;
 //			MONSTER_Animate(ent,FALSE,0,9,0.1f,0);
-			break;
-		}
+            break;
+        }
 
-		Math_VectorCopy(ent->local.eOwner->v.origin,ent->v.origin);
+        ent->v.origin = ent->local.owner->v.origin;
 
-		ent->v.angles[0] = ent->local.eOwner->v.angles[0]+20;
-		ent->v.angles[1] = ent->local.eOwner->v.angles[1];
+        ent->v.angles.x = ent->local.owner->v.angles.x + 20;
+        ent->v.angles.y = ent->local.owner->v.angles.y;
 
 //		MONSTER_Animate(ent,FALSE,15,15,0.01f,15);
-		break;
+    } break;
 	case STATE_FLAG_CAPTURED:
 		CTF_FlagReset(ent);
 		break;
@@ -99,11 +99,11 @@ void CTF_FlagThink(ServerEntity_t *ent)
 		{
 			Sound(ent,CHAN_ITEM,"ctf/flagdropped.wav",255,ATTN_NORM);
 
-			ent->local.eOwner->local.flag	= NULL;
-			ent->local.eOwner				= NULL;
+			ent->local.owner->local.flag	= NULL;
+			ent->local.owner				= NULL;
 
-			ent->v.TouchFunction	= CTF_FlagTouch;
-			ent->v.angles[0]		= ent->v.angles[0]+10;
+			ent->v.TouchFunction = CTF_FlagTouch;
+			ent->v.angles.x = ent->v.angles.x + 10;
 			ent->v.effects |= EF_MOTION_ROTATE|EF_MOTION_FLOAT;
 		}
 #if 1
@@ -166,7 +166,7 @@ void CTF_FlagTouch(ServerEntity_t *ent,ServerEntity_t *other)
 	{
 		other->local.flag					= ent;
 		other->local.flag->local.flags = STATE_FLAG_CARRIED;
-		other->local.flag->local.eOwner		= other;
+		other->local.flag->local.owner		= other;
 		other->local.flag->v.TouchFunction	= NULL;
 
 		// Get the flags style and set our effect...
@@ -239,9 +239,9 @@ void CTF_FlagSpawn(ServerEntity_t *eFlag)
 	Entity_SetSize(eFlag,-10,-10,0,10,10,65);
 	Entity_SetOrigin(eFlag,eFlag->v.origin);
 
-	// Save our original position.
-	Math_VectorCopy(eFlag->v.angles,eFlag->local.pos1);
-	Math_VectorCopy(eFlag->v.angles,eFlag->local.pos2);
+	// Save our original position. todo, why are we saving this twice??
+    eFlag->local.pos1 = eFlag->v.angles;
+    eFlag->local.pos2 = eFlag->v.angles;
 
 	eFlag->v.takedamage	= false;
 	eFlag->v.TouchFunction	= CTF_FlagTouch;

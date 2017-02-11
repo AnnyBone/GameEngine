@@ -101,13 +101,14 @@ void Inmater_Die(ServerEntity_t *eInmater, ServerEntity_t *eOther, EntityDamageT
 		{
 			char			cModel[64];
 			int				j;
-			plVector3f_t	vOrigin,vGibVelocity;
+			PLVector3D	vOrigin,vGibVelocity;
 
-			for(j = 0; j < 3; j++)
-				vOrigin[j]	= eInmater->v.origin[j]+((eInmater->v.mins[j]+eInmater->v.maxs[j])*(rand()%10));
+			vOrigin.x = eInmater->v.origin.x + ((eInmater->v.mins.x + eInmater->v.maxs.x) * (rand()%10));
+			vOrigin.y = eInmater->v.origin.y + ((eInmater->v.mins.y + eInmater->v.maxs.y) * (rand()%10));
+			vOrigin.z = eInmater->v.origin.z + ((eInmater->v.mins.z + eInmater->v.maxs.z) * (rand()%10));
 
 			// [26/2/2014] Add some random velocity on top of the velocity that the inmater already has ~hogsy
-			plVectorCopy(eInmater->v.velocity,vGibVelocity);
+            vGibVelocity = eInmater->v.velocity;
 			Math_VectorAddValue(vGibVelocity,(float)(rand()%5),vGibVelocity);
 
 			PHYSICS_MODEL_METAL(cModel);

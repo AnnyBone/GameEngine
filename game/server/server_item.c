@@ -89,7 +89,7 @@ bool Item_CheckInventory(Item_t *iItem,ServerEntity_t *eEntity)
 	int i;
 
 	for (i = 0; i < plArrayElements(Items); i++)
-		if(eEntity->v.iInventory[i] == iItem->iNumber)
+		if(eEntity->v.inventory[i] == iItem->iNumber)
 			return true;
 		
 
@@ -121,13 +121,13 @@ void Item_AddInventory(Item_t *iItem,ServerEntity_t *eEntity)
 	int i;
 
 	for(i = 0; i < sizeof(Items); i++)
-		if(!eEntity->v.iInventory[i])
+		if(!eEntity->v.inventory[i])
 		{
-			eEntity->v.iInventory[i] = iItem->iNumber;
+			eEntity->v.inventory[i] = iItem->iNumber;
 			// [25/6/2013] Oops! Don't forget to return ~hogsy
 			return;
 		}
-		else if(eEntity->v.iInventory[i] == iItem->iNumber)
+		else if(eEntity->v.inventory[i] == iItem->iNumber)
 			return;
 }
 
@@ -141,11 +141,11 @@ void Item_RemoveInventory(Item_t *iItem,ServerEntity_t *eEntity)
 	// [12/5/2013] Go through, remove and reorder the array ~hogsy
 	for(i = 0; i < iLength; i++)
 	{
-		if(eEntity->v.iInventory[i] == iItem->iNumber)
+		if(eEntity->v.inventory[i] == iItem->iNumber)
 		{
 			int j;
 			for(j = i; j < iLength; j++)
-				eEntity->v.iInventory[j] = eEntity->v.iInventory[j+1];
+				eEntity->v.inventory[j] = eEntity->v.inventory[j+1];
 
 			iLength--;
 			i--;
@@ -158,7 +158,7 @@ void Item_RemoveInventory(Item_t *iItem,ServerEntity_t *eEntity)
 void Item_ClearInventory(ServerEntity_t *eEntity)
 {
 	// Clear out the inventory array.
-	memset(&eEntity->v.iInventory[0], 0, sizeof(eEntity->v.iInventory));
+	memset(&eEntity->v.inventory[0], 0, sizeof(eEntity->v.inventory));
 }
 
 /*

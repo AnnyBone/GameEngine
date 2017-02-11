@@ -97,7 +97,7 @@ void menu::DrawMouse()
 
 void menu::Draw(CoreViewport *viewport)
 {
-	if (!cv_menushow.bValue || !viewport) {
+	if (!cv_menushow.boolean_value || !viewport) {
 		return;
 	}
 

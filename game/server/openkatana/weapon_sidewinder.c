@@ -87,7 +87,7 @@ void SideWinder_Deploy(ServerEntity_t *ent)
 
 void SideWinder_MissileExplode(ServerEntity_t *ent,ServerEntity_t *other)
 {
-	if(other && (other == ent->local.eOwner))
+	if(other && (other == ent->local.owner))
 	{
 		SideWinder_Think(ent);
 		return;
@@ -152,7 +152,7 @@ void SideWinder_SpawnMissle(ServerEntity_t *ent,float fSpeed,float ox)
 	eMissile->Physics.ignore = ent;
 
 	eMissile->local.speed	= SIDEWINDER_MAXSPEED;
-	eMissile->local.eOwner	= ent;
+	eMissile->local.owner	= ent;
 	eMissile->local.count	= 0;
 	// Change our speed depending on what contents we're within.
 	eMissile->local.speed	= fSpeed;

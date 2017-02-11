@@ -99,6 +99,7 @@ void _plInitOpenGL() {
 
     // todo, write our own replacement for GLEW
 
+#if !defined(PL_MODE_OPENGL_CORE)
     PLuint err = glewInit();
     if (err != GLEW_OK) {
         plGraphicsLog("Failed to initialize GLEW!\n%s\n", glewGetErrorString(err));
@@ -132,6 +133,7 @@ void _plInitOpenGL() {
             pl_gl_texture_compression_s3tc = PL_TRUE;
         }
     }
+#endif
 
     const PLchar *version = _plGetHWVersion();
     pl_gl_version_major = (unsigned int) atoi(&version[0]);
@@ -325,13 +327,22 @@ typedef struct _PLGraphicsCapabilities {
 
 _PLGraphicsCapabilities graphics_capabilities[] =
         {
-#if defined (PL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
+#if defined (PL_MODE_OPENGL)
+#if defined (PL_MODE_OPENGL_CORE)
+                {PL_CAPABILITY_ALPHA_TEST, 0, "ALPHA_TEST"},
+#else
                 {PL_CAPABILITY_ALPHA_TEST, GL_ALPHA_TEST, "ALPHA_TEST"},
+#endif
                 {PL_CAPABILITY_BLEND, GL_BLEND, "BLEND"},
                 {PL_CAPABILITY_DEPTHTEST, GL_DEPTH_TEST, "DEPTH_TEST"},
                 {PL_CAPABILITY_TEXTURE_2D, GL_TEXTURE_2D, "TEXTURE_2D"},
-                {VL_CAPABILITY_TEXTURE_GEN_S, GL_TEXTURE_GEN_S, "TEXTURE_GEN_S"},
+#if defined (PL_MODE_OPENGL_CORE)
+                {PL_CAPABILITY_TEXTURE_GEN_S, 0, "TEXTURE_GEN_S"},
+                {PL_CAPABILITY_TEXTURE_GEN_T, 0, "TEXTURE_GEN_T"},
+#else
+                {PL_CAPABILITY_TEXTURE_GEN_S, GL_TEXTURE_GEN_S, "TEXTURE_GEN_S"},
                 {PL_CAPABILITY_TEXTURE_GEN_T, GL_TEXTURE_GEN_T, "TEXTURE_GEN_T"},
+#endif
                 {VL_CAPABILITY_CULL_FACE, GL_CULL_FACE, "CULL_FACE"},
                 {VL_CAPABILITY_STENCIL_TEST, GL_STENCIL_TEST, "STENCIL_TEST"},
                 {VL_CAPABILITY_MULTISAMPLE, GL_MULTISAMPLE, "MULTISAMPLE"},
@@ -343,7 +354,7 @@ _PLGraphicsCapabilities graphics_capabilities[] =
         { VL_CAPABILITY_BLEND, 0, "BLEND" },
         { PL_CAPABILITY_DEPTHTEST, 0, "DEPTH_TEST" },
         { VL_CAPABILITY_TEXTURE_2D, 0, "TEXTURE_2D" },
-        { VL_CAPABILITY_TEXTURE_GEN_S, 0, "TEXTURE_GEN_S" },
+        { PL_CAPABILITY_TEXTURE_GEN_S, 0, "TEXTURE_GEN_S" },
         { PL_CAPABILITY_TEXTURE_GEN_T, 0, "TEXTURE_GEN_T" },
         { VL_CAPABILITY_CULL_FACE, 0, "CULL_FACE" },
         { VL_CAPABILITY_STENCIL_TEST, 0, "STENCIL_TEST" },
@@ -387,7 +398,7 @@ void plEnableGraphicsStates(PLuint flags) {
 #endif
 
         if ((flags & graphics_capabilities[i].pl_parm) && (graphics_capabilities[i].to_parm != 0))
-#if defined (PL_MODE_OPENGL) || (VL_MODE_OPENGL_CORE)
+#if defined (PL_MODE_OPENGL)
             glEnable(graphics_capabilities[i].to_parm);
 #elif defined (VL_MODE_GLIDE)
         grEnable(graphics_capabilities[i].to_parm);
@@ -421,7 +432,7 @@ void plDisableGraphicsStates(PLuint flags) {
 #endif
 
         if ((flags & graphics_capabilities[i].pl_parm) && (graphics_capabilities[i].to_parm != 0))
-#if defined (PL_MODE_OPENGL) || (VL_MODE_OPENGL_CORE)
+#if defined (PL_MODE_OPENGL)
             glDisable(graphics_capabilities[i].to_parm);
 #elif defined (VL_MODE_GLIDE)
         grDisable(graphics_capabilities[i].to_parm);
@@ -554,7 +565,7 @@ PLuint _plTranslateTextureTarget(PLTextureTarget target) {
 }
 
 PLuint _plTranslateTextureEnvironmentMode(PLTextureEnvironmentMode mode) {
-#if defined (PL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
+#if defined (PL_MODE_OPENGL) && !defined (VL_MODE_OPENGL_CORE)
     switch (mode) {
         default:
         case PL_TEXTUREMODE_ADD:        return GL_ADD;
@@ -564,6 +575,8 @@ PLuint _plTranslateTextureEnvironmentMode(PLTextureEnvironmentMode mode) {
         case PL_TEXTUREMODE_REPLACE:    return GL_REPLACE;
         case PL_TEXTUREMODE_COMBINE:    return GL_COMBINE;
     }
+#elif defined(PL_MODE_OPENGL_CORE)
+    return 0; // todo
 #elif defined (VL_MODE_GLIDE)
 #elif defined (VL_MODE_DIRECT3D)
 #else
@@ -607,7 +620,7 @@ PLuint _plTranslateTextureFormat(PLImageFormat format) {
         case PL_IMAGEFORMAT_RGB5:         return GL_RGB5;
         case PL_IMAGEFORMAT_RGB5A1:       return GL_RGB5_A1;
         case PL_IMAGEFORMAT_RGB565:       return GL_RGB565;
-        case PL_IMAGEFORMAT_RGB8:         return GL_RGB8;
+        case PL_IMAGEFORMAT_RGB8:         return GL_RGB;
         case PL_IMAGEFORMAT_RGBA8:        return GL_RGBA8;
         case PL_IMAGEFORMAT_RGBA12:       return GL_RGBA12;
         case PL_IMAGEFORMAT_RGBA16:       return GL_RGBA16;
@@ -617,7 +630,9 @@ PLuint _plTranslateTextureFormat(PLImageFormat format) {
         case PL_IMAGEFORMAT_RGB_DXT1:     return GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
         case PL_IMAGEFORMAT_RGBA_DXT3:    return GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
         case PL_IMAGEFORMAT_RGBA_DXT5:    return GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+#if !defined(PL_MODE_OPENGL_CORE)
         case PL_IMAGEFORMAT_RGB_FXT1:     return GL_COMPRESSED_RGB_FXT1_3DFX;
+#endif
     }
 #elif defined (VL_MODE_GLIDE)
 #elif defined (VL_MODE_DIRECT3D)
@@ -685,21 +700,116 @@ void plDeleteTexture(PLTexture *texture, PLbool force) {
     }
 }
 
-#define _PL_TEXTURE_LEVELS  4   // Default number of mipmap levels.
+PLint _plTranslateColourChannel(PLint channel) {
+    _PL_GRAPHICS_TRACK();
+#if defined(PL_MODE_OPENGL)
+    switch(channel) {
+        case PL_RED:    return GL_RED;
+        case PL_GREEN:  return GL_GREEN;
+        case PL_BLUE:   return GL_BLUE;
+        case PL_ALPHA:  return GL_ALPHA;
+    }
+#else
+    return channel;
+#endif
+}
+
+void plSwizzleTexture(PLTexture *texture, PLint r, PLint g, PLint b, PLint a) {
+    _PL_GRAPHICS_TRACK();
+
+    if(!texture) {
+        return;
+    }
+
+    _plSetActiveTexture(texture);
+
+#if defined(PL_MODE_OPENGL)
+    if(PL_GL_VERSION(3,3)) {
+        GLint swizzle[] = {
+                _plTranslateColourChannel(r),
+                _plTranslateColourChannel(g),
+                _plTranslateColourChannel(b),
+                _plTranslateColourChannel(a)
+        };
+        glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzle);
+    } else {
+        // todo, software implementation
+    }
+#elif defined(PL_MODE_SOFTWARE)
+#endif
+}
 
 PLresult plUploadTextureImage(PLTexture *texture, const PLImage *upload) {
     _PL_GRAPHICS_TRACK();
 
-    plSetTexture(texture);
+    _plSetActiveTexture(texture);
 
-#if defined(PL_MODE_OPENGL) || defined(VL_MODE_OPENGL_CORE)
+    texture->width = upload->width;
+    texture->height = upload->height;
+    texture->format = upload->format;
+    texture->size = upload->size;
+
+#if defined(PL_MODE_OPENGL)
     PLuint levels = upload->levels;
-    if(plIsGraphicsStateEnabled(PL_CAPABILITY_GENERATEMIPMAP) && (levels <= 1)) {
-        levels = _PL_TEXTURE_LEVELS;
+    if(!levels) {
+        levels = 1;
     }
 
     PLuint format = _plTranslateTextureFormat(upload->format);
     glTexStorage2D(GL_TEXTURE_2D, levels, format, upload->width, upload->height);
+
+    for(PLuint i = 0; i < levels; i++) {
+        if (_plIsCompressedTextureFormat(upload->format)) {
+            glCompressedTexSubImage2D
+                    (
+                            GL_TEXTURE_2D,
+                            i,
+                            upload->x, upload->y,
+                            upload->width / (PLuint)pow(2, i),
+                            upload->height / (PLuint)pow(2, i),
+                            format,
+                            upload->size,
+                            upload->data[i]
+                    );
+        } else {
+            glTexSubImage2D
+                    (
+                            GL_TEXTURE_2D,
+                            i,
+                            upload->x, upload->y,
+                            upload->width / (PLuint)pow(2, i),
+                            upload->height / (PLuint)pow(2, i),
+                            _plTranslateColourFormat(upload->colour_format),
+                            GL_UNSIGNED_BYTE,
+                            upload->data[i]
+                    );
+        }
+    }
+
+    if(plIsGraphicsStateEnabled(PL_CAPABILITY_GENERATEMIPMAP) && (levels > 1)) {
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+#endif
+
+    return PL_RESULT_SUCCESS;
+}
+
+PLresult plUploadTextureData(PLTexture *texture, const PLTextureInfo *upload) {
+    _PL_GRAPHICS_TRACK();
+
+    _plSetActiveTexture(texture);
+
+#if defined (PL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
+    PLuint storage = _plTranslateTextureStorageFormat(upload->storage_type);
+    PLuint format = _plTranslateTextureFormat(upload->format);
+
+    PLuint levels = upload->levels;
+    if(!levels) {
+        levels = 1;
+    }
+
+    if (upload->initial)
+        glTexStorage2D(GL_TEXTURE_2D, levels, format, upload->width, upload->height);
 
     // Check the format, to see if we're getting a compressed
     // format type.
@@ -721,62 +831,15 @@ PLresult plUploadTextureImage(PLTexture *texture, const PLImage *upload) {
                         0,
                         upload->x, upload->y,
                         upload->width, upload->height,
-                        upload->colour_format,
-                        GL_UNSIGNED_BYTE,
+                        _plTranslateColourFormat(upload->pixel_format),
+                        storage,
                         upload->data
                 );
     }
 
-    if(plIsGraphicsStateEnabled(PL_CAPABILITY_GENERATEMIPMAP) && (upload->levels <= 1))
+    if (plIsGraphicsStateEnabled(PL_CAPABILITY_GENERATEMIPMAP) && (levels > 1)) {
         glGenerateMipmap(GL_TEXTURE_2D);
-#endif
-
-    return PL_RESULT_SUCCESS;
-}
-
-PLresult plUploadTexture(PLTexture *texture, const PLTextureInfo *upload) {
-    _PL_GRAPHICS_TRACK();
-
-    plSetTexture(texture);
-
-#if defined (PL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
-    PLuint storage = _plTranslateTextureStorageFormat(upload->storage_type);
-    PLuint format = _plTranslateTextureFormat(upload->format);
-
-    PLuint levels = upload->levels;
-    if (plIsGraphicsStateEnabled(PL_CAPABILITY_GENERATEMIPMAP))
-        if (levels <= 1) levels = _PL_TEXTURE_LEVELS;
-
-    if (upload->initial)
-        glTexStorage2D(GL_TEXTURE_2D, levels, format, upload->width, upload->height);
-
-    // Check the format, to see if we're getting a compressed
-    // format type.
-    if (_plIsCompressedTextureFormat(upload->format))
-        glCompressedTexSubImage2D
-                (
-                        GL_TEXTURE_2D,
-                        0,
-                        upload->x, upload->y,
-                        upload->width, upload->height,
-                        format,
-                        upload->size,
-                        upload->data
-                );
-    else
-        glTexSubImage2D
-                (
-                        GL_TEXTURE_2D,
-                        0,
-                        upload->x, upload->y,
-                        upload->width, upload->height,
-                        upload->pixel_format,
-                        storage,
-                        upload->data
-                );
-
-    if (plIsGraphicsStateEnabled(PL_CAPABILITY_GENERATEMIPMAP))
-        glGenerateMipmap(GL_TEXTURE_2D);
+    }
 #elif defined (VL_MODE_GLIDE)
 #elif defined (VL_MODE_DIRECT3D)
 #endif
@@ -851,7 +914,7 @@ PLuint plGetMaxTextureAnistropy(void) {
 #   pragma GCC diagnostic pop
 #endif
 
-PLresult plSetTexture(PLTexture *texture) {
+PLresult _plSetActiveTexture(PLTexture *texture) {
     _PL_GRAPHICS_TRACK();
 
     if (texture->id == pl_graphics_state.tmu[plGetCurrentTextureUnit()].current_texture) {
@@ -887,7 +950,7 @@ void plSetTextureUnit(PLuint target) {
 PLresult plSetTextureAnisotropy(PLTexture *texture, PLuint amount) {
     _PL_GRAPHICS_TRACK();
 
-    plSetTexture(texture);
+    _plSetActiveTexture(texture);
 
 #if defined (PL_MODE_OPENGL)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, (PLint) amount);
@@ -899,7 +962,7 @@ PLresult plSetTextureAnisotropy(PLTexture *texture, PLuint amount) {
 PLresult plSetTextureFilter(PLTexture *texture, PLTextureFilter filter) {
     _PL_GRAPHICS_TRACK();
 
-    plSetTexture(texture);
+    _plSetActiveTexture(texture);
 
 #ifdef PL_MODE_OPENGL
     PLuint filtermin, filtermax;
@@ -947,13 +1010,15 @@ void plSetTextureEnvironmentMode(PLTextureEnvironmentMode mode) {
     if (pl_graphics_state.tmu[plGetCurrentTextureUnit()].current_envmode == mode)
         return;
 
-#if defined(PL_MODE_OPENGL)
+#if defined(PL_MODE_OPENGL) && !defined(PL_MODE_OPENGL_CORE)
     glTexEnvi
             (
                     GL_TEXTURE_ENV,
                     GL_TEXTURE_ENV_MODE,
                     _plTranslateTextureEnvironmentMode(mode)
             );
+#elif defined(PL_MODE_OPENGL_CORE)
+    // todo
 #endif
 
     pl_graphics_state.tmu[plGetCurrentTextureUnit()].current_envmode = mode;
@@ -1021,7 +1086,9 @@ void plSetDefaultGraphicsState(void) {
 
 #if defined(PL_MODE_OPENGL)
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+#if !defined(GL_VERSION_3_0)
     glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+#endif
 
     glDepthRange(0, 1);
     glDepthFunc(GL_LEQUAL);

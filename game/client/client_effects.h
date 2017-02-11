@@ -21,14 +21,14 @@
 PL_EXTERN_C
 
 void ClientEffect_Initialize(void);
-void ClientEffect_ParticleField(MathVector3f_t position, MathVector3f_t mins, MathVector3f_t maxs, float density);
-void ClientEffect_BloodPuff(MathVector3f_t position);
-void ClientEffect_BloodCloud(MathVector3f_t position, BloodType_t type);
-void ClientEffect_Smoke(MathVector3f_t position);
-void ClientEffect_Explosion(MathVector3f_t position);
-void ClientEffect_MuzzleFlash(MathVector3f_t position, MathVector3f_t angles);
+void ClientEffect_ParticleField(PLVector3D position, PLVector3D mins, PLVector3D maxs, float density);
+void ClientEffect_BloodPuff(PLVector3D position);
+void ClientEffect_BloodCloud(PLVector3D position, BloodType_t type);
+void ClientEffect_Smoke(PLVector3D position);
+void ClientEffect_Explosion(PLVector3D position);
+void ClientEffect_MuzzleFlash(PLVector3D position, PLVector3D angles);
 #ifdef GAME_OPENKATANA
-void ClientEffect_IonBallTrail(MathVector3f_t position);
+void ClientEffect_IonBallTrail(PLVector3D position);
 #endif
 
 PL_EXTERN_C_END

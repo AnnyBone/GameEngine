@@ -91,7 +91,7 @@ void HUD_DrawNumbers(int x, int y, PLuint value, bool offset)
 
 void HUD_Draw()
 {
-	if (!cv_menuhudshow.bValue)
+	if (!cv_menuhudshow.boolean_value)
 		return;
 
 	if (cv_menuhudcrosshair.iValue >= 0)

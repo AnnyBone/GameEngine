@@ -118,7 +118,7 @@ bool LightFace_DirtTrace(const vec3_t vStart, const vec3_t vStop, const BSPModel
 }
 
 #if 0
-static vec_t LightFace_DirtForSample(const BSPModel_t *bModel, const vec3_t vOrigin, const vec3_t vNormal)
+static vec_t LightFace_DirtForSample(const BSPModel_t *bModel, const vec3_t origin, const vec3_t vNormal)
 {
 	int		i;
 	float	fGatherDirt, fOutDirt, fooDepth;
@@ -156,23 +156,23 @@ static vec_t LightFace_DirtForSample(const BSPModel_t *bModel, const vec3_t vOri
 		vDirection[1] = vMyRt[1] * vDirtVectors[i][0] + vMyUp[1] * vDirtVectors[i][1] + vNormal[1] * vDirtVectors[i][2];
 		vDirection[2] = vMyRt[2] * vDirtVectors[i][0] + vMyUp[2] * vDirtVectors[i][1] + vNormal[2] * vDirtVectors[i][2];
 
-		VectorMA(vOrigin, DIRT_DEPTH, vDirection, vTraceEnd);
+		VectorMA(origin, DIRT_DEPTH, vDirection, vTraceEnd);
 
-		if (LightFace_DirtTrace(vOrigin, vTraceEnd, bModel, vTraceHitPoint))
+		if (LightFace_DirtTrace(origin, vTraceEnd, bModel, vTraceHitPoint))
 		{
-			VectorSubtract(vTraceHitPoint, vOrigin, vDisplacement);
+			VectorSubtract(vTraceHitPoint, origin, vDisplacement);
 
 			fGatherDirt += 1.0f - fooDepth*VectorLength(vDisplacement);
 		}
 	}
 
 	// Direct ray
-	VectorMA(vOrigin, DIRT_DEPTH, vNormal, vTraceEnd);
+	VectorMA(origin, DIRT_DEPTH, vNormal, vTraceEnd);
 
 	// Trace
-	if (LightFace_DirtTrace(vOrigin, vTraceEnd, bModel, vTraceHitPoint))
+	if (LightFace_DirtTrace(origin, vTraceEnd, bModel, vTraceHitPoint))
 	{
-		VectorSubtract(vTraceHitPoint, vOrigin, vDisplacement);
+		VectorSubtract(vTraceHitPoint, origin, vDisplacement);
 
 		fGatherDirt += 1.0f - fooDepth*VectorLength(vDisplacement);
 	}

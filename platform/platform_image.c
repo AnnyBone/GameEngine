@@ -45,19 +45,26 @@ PLresult plLoadImage(const PLchar *path, PLImage *out) {
         return PL_RESULT_FILEREAD;
     }
 
+    if(strrchr(path, ':')) {
+        // Very likely a packaged image.
+        // example/package.wad:myimage
+    }
+
     if(_plDDSFormatCheck(fin)) {
-        result = plLoadDDSImage(fin, out);
+        result = _plLoadDDSImage(fin, out);
     } else if(_plVTFFormatCheck(fin)) {
-        result = plLoadVTFImage(fin, out);
+        result = _plLoadVTFImage(fin, out);
     } else if(_plDTXFormatCheck(fin)) {
-        result = plLoadDTXImage(fin, out);
+        result = _plLoadDTXImage(fin, out);
+    } else if(_plTIFFFormatCheck(fin)) {
+        result = _plLoadTIFFImage(path, out);
     } else {
         const PLchar *extension = plGetFileExtension(path);
         if(plIsValidString(extension)) {
             if (!strncmp(extension, PLIMAGE_EXTENSION_FTX, 3)) {
-                result = plLoadFTXImage(fin, out);
+                result = _plLoadFTXImage(fin, out);
             } else if (!strncmp(extension, PLIMAGE_EXTENSION_PPM, 3)) {
-                result = plLoadPPMImage(fin, out);
+                result = _plLoadPPMImage(fin, out);
             }
         }
     }
@@ -71,7 +78,27 @@ PLresult plLoadImage(const PLchar *path, PLImage *out) {
     return result;
 }
 
+// Returns the number of samples per-pixel depending on the colour format.
+PLuint plGetSamplesPerPixel(PLColourFormat format) {
+    plFunctionStart();
+
+    switch(format) {
+        case PL_COLOURFORMAT_ABGR:
+        case PL_COLOURFORMAT_ARGB:
+        case PL_COLOURFORMAT_BGRA:
+        case PL_COLOURFORMAT_RGBA:
+            return 4;
+        case PL_COLOURFORMAT_BGR:
+        case PL_COLOURFORMAT_RGB:
+            return 3;
+    }
+
+    return 0;
+}
+
 PLuint _plGetImageSize(PLImageFormat format, PLuint width, PLuint height) {
+    plFunctionStart();
+
     switch(format) {
         case PL_IMAGEFORMAT_RGB_DXT1:   return (width * height) >> 1;
         case PL_IMAGEFORMAT_RGBA_DXT1:  return width * height * 4;
@@ -106,8 +133,6 @@ void _plFreeImage(PLImage *image) {
     }
 
     free(image->data);
-
-    plFunctionEnd();
 }
 
 PLbool plIsValidImageSize(PLuint width, PLuint height) {
@@ -120,6 +145,4 @@ PLbool plIsValidImageSize(PLuint width, PLuint height) {
     }
 
     return true;
-
-    plFunctionEnd();
 }

@@ -152,7 +152,7 @@ void Video_Initialize(void)
 	r_notexture_mip2->height = r_notexture_mip2->width = 32;
 	//johnfitz
 
-	Video.vertical_sync = cv_video_verticlesync.bValue;
+	Video.vertical_sync = cv_video_verticlesync.boolean_value;
 
 	draw::SetDefaultState();
 
@@ -349,7 +349,7 @@ void Video_Frame(void)
 		rs_brushpolys = rs_aliaspolys = rs_skypolys = rs_particles = rs_fogpolys =
 			rs_dynamiclightmaps = rs_aliaspasses = rs_skypasses = rs_brushpasses = 0;
 	}
-	else if (cv_video_finish.bValue)
+	else if (cv_video_finish.boolean_value)
 		plFinish();
 
 	video_viewport->Draw();

@@ -112,7 +112,7 @@ typedef struct ConsoleVariable_s
 	void		(*callback)(void);
 
 	// Different variable types.
-	bool bValue;
+	bool boolean_value;
 	int	iValue;
 } ConsoleVariable_t;
 
@@ -217,8 +217,8 @@ typedef enum
 // TODO: Update these to new coding standard; e.g. lowercase names
 typedef struct particle_s
 {
-	PLVector3D		vOrigin,		// The origin of the particle.
-						vVelocity;		// Velocity of the particle.
+	PLVector3D		origin,		// The origin of the particle.
+						velocity;		// Velocity of the particle.
 
 	PLColour		vColour;		// RGBA colour of the particle.
 

@@ -108,6 +108,20 @@ For more information, please refer to <http://unlicense.org>
 #   define PL_SYSTEM_MAX_PATH       256
 #   define PL_SYSTEM_MAX_USERNAME   32
 
+#elif defined(__APPLE__)
+
+#   ifndef PL_IGNORE_SYSTEM_HEADERS
+#       include <zconf.h>
+#       include <dirent.h>
+#       include <dlfcn.h>
+#   endif
+
+#   define PL_SYSTEM_NAME               "macOS"
+#   define PL_SYSTEM_LIBRARY_EXTENSION  ".so"
+
+#   define PL_SYSTEM_MAX_PATH       512
+#   define PL_SYSTEM_MAX_USERNAME   32
+
 #else
 
 #   error "Unsupported system type."

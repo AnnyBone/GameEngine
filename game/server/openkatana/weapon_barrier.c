@@ -54,7 +54,7 @@ void BarrierFire(ServerEntity_t *ent)
 	bshield->v.movetype		= MOVETYPE_NONE;
 	bshield->Physics.iSolid	= SOLID_BBOX;
 
-	bshield->local.eOwner = ent;
+	bshield->local.owner = ent;
 	// [18/5/2012] Removed for now as EF_LIGHT_BLUE isn't defined anywhere on my side! ~hogsy
 //	bshield->v.effects = (int)bshield->v.effects | EF_LIGHT_BLUE;
 

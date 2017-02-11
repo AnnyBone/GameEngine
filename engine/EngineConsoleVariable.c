@@ -190,11 +190,11 @@ void Cvar_UpdateValues(ConsoleVariable_t *cVariable)
 	cVariable->value = Q_atof(cVariable->string);
 	cVariable->iValue = Q_atoi(cVariable->string);
 
-	cVariable->bValue = cVariable->iValue;
-	if(cVariable->bValue < false)
-		cVariable->bValue = false;
-	else if(cVariable->bValue > true)
-		cVariable->bValue = true;
+	cVariable->boolean_value = cVariable->iValue;
+	if(cVariable->boolean_value < false)
+		cVariable->boolean_value = false;
+	else if(cVariable->boolean_value > true)
+		cVariable->boolean_value = true;
 }
 
 ConsoleVariable_t *Cvar_FindVar (const char *var_name)
@@ -221,7 +221,7 @@ bool ConsoleVariable_GetBoolValue(const char *var_name)
 	ConsoleVariable_t *var = Cvar_FindVar(var_name);
 	if (!var)
 		return false;
-	return var->bValue;
+	return var->boolean_value;
 }
 
 char *Cvar_VariableString (const char *var_name)

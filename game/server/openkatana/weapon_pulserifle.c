@@ -104,7 +104,7 @@ void CorditeExplode(ServerEntity_t *ent)
 // [17/7/2012] Revised ~hogsy
 void CorditeTouch(ServerEntity_t *ent, ServerEntity_t *other)
 {
-	if(other == ent->local.eOwner)
+	if(other == ent->local.owner)
 		return;
 
 	CorditeExplode(ent);
@@ -121,7 +121,7 @@ void throw_cordite(ServerEntity_t *ent)
 
 	greekfire->Physics.solid	= SOLID_BBOX;
 
-	greekfire->local.eOwner = ent;
+	greekfire->local.owner = ent;
 
 	Weapon_Projectile(ent, greekfire, 2000.0f);
 

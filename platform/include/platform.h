@@ -210,6 +210,9 @@ void _plShutdownGraphics(void);
 PLresult _plInitIO(void);
 void _plShutdownIO(void);
 
+PLresult _plInitWindow(void);
+void _plShutdownWindow(void);
+
 PL_EXTERN_C_END
 
 #else
@@ -231,8 +234,8 @@ plSetErrorFunction(const char *function, ...);  // Sets the currently active fun
 
 PL_EXTERN const PLchar *plGetResultString(PLresult result);
 
-PL_EXTERN PLchar *plGetSystemError(void);  // Returns the error message currently given by the operating system.
-PL_EXTERN PLchar *plGetError(void);        // Returns the last recorded error.
+PL_EXTERN const PLchar * plGetSystemError(void);  // Returns the error message currently given by the operating system.
+PL_EXTERN const PLchar * plGetError(void);        // Returns the last recorded error.
 
 PL_EXTERN_C_END
 

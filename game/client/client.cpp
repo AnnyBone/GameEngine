@@ -29,8 +29,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 /*	Initialize any client-side specific variables.
 */
-void Client_Initialize(void)
-{
+void Client_Initialize(void) {
 	ClientEffect_Initialize();
 	ClientPlayer_Initialize();
 }
@@ -38,12 +37,10 @@ void Client_Initialize(void)
 /*	Crappy the sticky renderer loop!
 	This lets us draw images and text to the screen... Forcefully.
 */
-void Client_Draw(void)
-{
+void Client_Draw(void) {
 }
 
-typedef struct
-{
+typedef struct {
 	int ident;
 
 	void(*Function)();
@@ -66,8 +63,7 @@ void Client_ParseServerMessage(int cmd)
 
 /*	Parse temporary entity types, useful for particles and other small crap.
 */
-void Client_ParseTemporaryEntity(void)
-{
+void Client_ParseTemporaryEntity(void) {
 	int	type;
 
 	// Set type, so if the type is missing we can mention it below.
@@ -76,7 +72,7 @@ void Client_ParseTemporaryEntity(void)
 	{
 		case CTE_EXPLOSION:
 		{
-			PLVector3f	position;
+			PLVector3D	position;
 			for(int i = 0; i < 3; i++)
 				position[i] = g_engine->ReadCoord();
 
@@ -86,7 +82,7 @@ void Client_ParseTemporaryEntity(void)
 
 		case CTE_BLOODPUFF:
 		{
-			PLVector3f	position;
+			PLVector3D	position;
 			for(int i = 0; i < 3; i++)
 				position[i] = g_engine->ReadCoord();
 
@@ -96,25 +92,25 @@ void Client_ParseTemporaryEntity(void)
 
 		case CTE_BLOODCLOUD:
 		{
-			PLVector3f position;
+			PLVector3D position;
 			for (int i = 0; i < 3; i++)
 				position[i] = g_engine->ReadCoord();
 
-			ClientEffect_BloodCloud(position, g_engine->ReadByte());
+			ClientEffect_BloodCloud(position, (BloodType_t)g_engine->ReadByte());
 		}
 		break;
 
 		case CTE_PARTICLE_FIELD:
 		{
-			PLVector3f position;
+			PLVector3D position;
 			for (int i = 0; i < 3; i++)
 				position[i] = g_engine->ReadCoord();
 
-			PLVector3f mins;
+			PLVector3D mins;
 			for (int i = 0; i < 3; i++)
 				mins[i] = g_engine->ReadCoord();
 
-			PLVector3f maxs;
+			PLVector3D maxs;
 			for (int i = 0; i < 3; i++)
 				maxs[i] = g_engine->ReadCoord();
 
@@ -126,7 +122,7 @@ void Client_ParseTemporaryEntity(void)
 
 		case CTE_MUZZLEFLASH:
 		{
-			PLVector3f position, angles;
+			PLVector3D position, angles;
 			for (int i = 0; i < 3; i++)
 				position[i] = g_engine->ReadCoord();
 
@@ -144,18 +140,17 @@ void Client_ParseTemporaryEntity(void)
 
 /*	Called by the engine.
 */
-void Client_RelinkEntities(ClientEntity_t *entity, int i, double dTime)
-{
+void Client_RelinkEntities(ClientEntity_t *entity, int i, double time) {
 	DynamicLight_t	*light;
 
 	// TODO: Move over to somewhere more appropriate please
-	Client.time = dTime;
+	Client.time = time;
 
 	if (entity->effects & EF_MOTION_FLOAT)
 		entity->origin[2] += ((float)sin(Client.time*2.0f))*5.0f;
 
 	if (entity->effects & EF_MOTION_ROTATE)
-		entity->angles[YAW] = plAngleMod((float)(100.0*Client.time));
+		entity->angles[PL_YAW] = Math_AngleMod((float)(100.0*Client.time));
 
 	if (entity->effects & EF_PARTICLE_SMOKE)
 		ClientEffect_Smoke(entity->origin);
@@ -163,77 +158,58 @@ void Client_RelinkEntities(ClientEntity_t *entity, int i, double dTime)
 	if (entity->effects & EF_PARTICLE_BLOOD)
 		ClientEffect_BloodPuff(entity->origin);
 
-	if (entity->effects & EF_LIGHT_GREEN)
-	{
+	if (entity->effects & EF_LIGHT_GREEN) {
 #ifdef GAME_OPENKATANA
 		light = Engine.Client_AllocateDlight(i);
-
-		Math_VectorCopy(entity->origin, light->origin);
-
-		light->radius		= (float)(rand() % 20) * 10;
-		light->color[RED]	= 0;
-		light->color[GREEN] = 255.0f;
-		light->color[BLUE]	= 0;
-		light->minlight		= 16.0f;
-		light->die			= (float)(Client.time + 0.01);
-		light->lightmap		= true;
+		light->origin 		    = entity->origin;
+		light->radius		    = (float)(rand() % 20) * 10;
+		light->color[PL_RED]	= 0;
+		light->color[PL_GREEN] 	= 255.0f;
+		light->color[PL_BLUE]	= 0;
+		light->minlight		    = 16.0f;
+		light->die			    = (float)(Client.time + 0.01);
+		light->lightmap		    = true;
 
 		ClientEffect_IonBallTrail(entity->origin);
 #endif
 	}
 
-	if (entity->effects & EF_LIGHT_BLUE)
-	{
+	if (entity->effects & EF_LIGHT_BLUE) {
 		light = Engine.Client_AllocateDlight(i);
-
-		Math_VectorCopy(entity->origin, light->origin);
-
+        light->origin           = entity->origin;
 		light->radius			= 120.0f;
-		light->color[RED]		= 0;
-		light->color[GREEN]		= 0;
-		light->color[BLUE]		= 255.0f;
+		light->color[PL_RED]	= 0;
+		light->color[PL_GREEN]	= 0;
+		light->color[PL_BLUE]	= 255.0f;
 		light->minlight			= 32.0f;
 		light->die				= (Client.time+0.01);
 		light->lightmap			= true;
 	}
 
-	if (entity->effects & EF_LIGHT_RED)
-	{
+	if (entity->effects & EF_LIGHT_RED) {
 		light = Engine.Client_AllocateDlight(i);
-
-		Math_VectorCopy(entity->origin, light->origin);
-
+        light->origin           = entity->origin;
 		light->radius			= 120.0f;
-		light->color[RED]		= 255.0f;
-		light->color[GREEN]		= 0;
-		light->color[BLUE]		= 0;
+		light->color		    = PLVector3D(255, 0, 0);
 		light->minlight			= 32.0f;
 		light->die				= Client.time + 0.01;
 		light->lightmap			= true;
 	}
 
-	if (entity->effects & EF_DIMLIGHT)
-	{
+	if (entity->effects & EF_DIMLIGHT) {
 		light = Engine.Client_AllocateDlight(i);
-
-		Math_VectorCopy(entity->origin, light->origin);
-
+        light->origin       = entity->origin;
 		light->radius		= 200.0f;
-		light->color[RED]	= 255.0f;
-		light->color[GREEN] = 255.0f;
-		light->color[BLUE]	= 255.0f;
+		light->color	    = 255.0f;
 		light->minlight		= 32.0f;
 		light->die			= Client.time + 0.01;
 		light->lightmap		= true;
 	}
 
-	if (entity->effects & EF_BRIGHTLIGHT)
-	{
+	if (entity->effects & EF_BRIGHTLIGHT) {
 		light = Engine.Client_AllocateDlight(i);
-
-		Math_VectorCopy(entity->origin, light->origin);
-		Math_VectorSet(255.0f, light->color);
-
+        light->origin       = entity->origin;
+        light->color        = 255;
 		light->origin[2]	+= 16.0f;
 		light->radius		= 300.0f + (rand() & 31);
 		light->minlight		= 32.0f;
@@ -245,12 +221,9 @@ void Client_RelinkEntities(ClientEntity_t *entity, int i, double dTime)
 	{
 		light = Engine.Client_AllocateDlight(i);
 
-		Math_VectorCopy(entity->origin, light->origin);
-
+        light->origin       = entity->origin;
 		light->radius		= (float)sin(Client.time*2.0f)*100.0f;
-		light->color[RED]	= 255.0f;
-		light->color[GREEN] = 0;
-		light->color[BLUE]	= 0;
+		light->color	    = PLVector3D(255, 0, 0);
 		light->minlight		= 16.0f;
 		light->die			= Client.time + 0.01f;
 		light->lightmap		= true;
@@ -275,12 +248,9 @@ void Client_RelinkEntities(ClientEntity_t *entity, int i, double dTime)
 	{
 		light = Engine.Client_AllocateDlight(i);
 
-		Math_VectorCopy(entity->origin, light->origin);
-
+        light->origin       = entity->origin;
 		light->radius		= (float)sin(Client.time*2.0f)*100.0f;
-		light->color[RED]	= 0;
-		light->color[GREEN] = 0;
-		light->color[BLUE]	= 255.0f;
+		light->color        = PLVector3D(0, 0, 255);
 		light->minlight		= 16.0f;
 		light->die			= (Client.time + 0.01);
 		light->lightmap		= true;
@@ -290,9 +260,8 @@ void Client_RelinkEntities(ClientEntity_t *entity, int i, double dTime)
 	{
 		light = Engine.Client_AllocateDlight(i);
 
-		Math_VectorCopy(entity->origin, light->origin);
-		Math_VectorSet(255.0f, light->color);
-
+        light->origin       = entity->origin;
+        light->color        = 255;
 		light->radius		= (float)sin(Client.time*2.0f)*100.0f;
 		light->minlight		= 16.0f;
 		light->die			= (Client.time + 0.01);

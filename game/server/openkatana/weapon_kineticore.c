@@ -64,7 +64,7 @@ void projectile_iceball(ServerEntity_t *ent, PLVector3f orig)
 
 	ionball->Physics.solid	= SOLID_BBOX;
 
-	ionball->local.eOwner = ent;
+	ionball->local.owner = ent;
 
 	Weapon_Projectile(ent, ionball, 2500.0f);
 

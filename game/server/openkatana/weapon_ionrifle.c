@@ -94,7 +94,7 @@ ServerEntityFrame_t	efIonRifleDeploy[] =
 
 void IonRifle_IonBallTouch(ServerEntity_t *eIonBall,ServerEntity_t *eOther)
 {
-	if(eOther == eIonBall->local.eOwner)
+	if(eOther == eIonBall->local.owner)
 		return;	// [29/1/2014] Should never even happen, but it does. Shit. ~hogsy
 	else if (Engine.Server_PointContents(eIonBall->v.origin) == BSP_CONTENTS_SKY)
 	{
@@ -105,9 +105,9 @@ void IonRifle_IonBallTouch(ServerEntity_t *eIonBall,ServerEntity_t *eOther)
 	if(eOther->v.takedamage)
 	{
 		if(!eIonBall->local.style)
-			Entity_Damage(eOther, eIonBall->local.eOwner, 25, 0);
+			Entity_Damage(eOther, eIonBall->local.owner, 25, 0);
 		else
-			Entity_Damage(eOther, eIonBall->local.eOwner, 50, 0);
+			Entity_Damage(eOther, eIonBall->local.owner, 50, 0);
 	}
 
 	Entity_Remove(eIonBall);
@@ -154,7 +154,7 @@ void IonRifle_PrimaryAttack(ServerEntity_t *eOwner)
 				eIonBall->Physics.solid	= SOLID_BBOX;
 				eIonBall->Physics.ignore	= eOwner;
 
-				eIonBall->local.eOwner	= eOwner;
+				eIonBall->local.owner	= eOwner;
 				eIonBall->local.style	= 1;		// [29/1/2014] Preserve our firemode ~hogsy
 
 				Math_VectorCopy(eOwner->v.origin,vOrigin);
@@ -223,7 +223,7 @@ void IonRifle_PrimaryAttack(ServerEntity_t *eOwner)
 				eIonBall->Physics.solid	= SOLID_BBOX;
 				eIonBall->Physics.ignore	= eOwner;
 
-				eIonBall->local.eOwner	= eOwner;
+				eIonBall->local.owner	= eOwner;
 				eIonBall->local.style	= 0;		// [29/1/2014] Preserve our firemode ~hogsy
 
 				plVectorCopy(eOwner->v.origin, vOrigin);

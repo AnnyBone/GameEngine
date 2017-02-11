@@ -256,7 +256,7 @@ void Sprite::Draw()
 	if (colour[3] < 1.0f)
 		plDisableGraphicsStates(VL_CAPABILITY_BLEND);
 
-	if (cv_sprite_debugsize.bValue)
+	if (cv_sprite_debugsize.boolean_value)
 	{
 		// We need the size relative to the current position.
 		PLVector3f NewMins = { 0 }, NewMaxs = { 0 };

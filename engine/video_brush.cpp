@@ -182,7 +182,7 @@ void R_DrawSequentialPoly(msurface_t *s)
 	}
 	else
 	{
-		if (!r_showtris.bValue)
+		if (!r_showtris.boolean_value)
 		{
 			if (alpha < 1)
 			{
@@ -203,7 +203,7 @@ void R_DrawSequentialPoly(msurface_t *s)
 
 		Video_DrawSurface(s, alpha, s->texinfo->texture->material, 0);
 
-		if (!r_showtris.bValue)
+		if (!r_showtris.boolean_value)
 		{
 			if (alpha < 1)
 			{
@@ -230,7 +230,7 @@ void Brush_Draw(ClientEntity_t *e)
 	mplane_t		*pplane;
 	model_t			*clmodel;
 
-	if(R_CullModelForEntity(e) || !cv_video_drawbrushes.bValue)
+	if(R_CullModelForEntity(e) || !cv_video_drawbrushes.boolean_value)
 		return;
 
 	currententity = e;

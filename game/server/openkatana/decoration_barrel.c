@@ -57,38 +57,32 @@ void Barrel_Killed(ServerEntity_t *barrel, ServerEntity_t *seOther, EntityDamage
 		Entity_SetModel(barrel, MODEL_DECORATION_BARREL3);
 }
 
-void Barrel_Damaged(ServerEntity_t *seBarrel, ServerEntity_t *seOther, EntityDamageType_t type)
-{
+void Barrel_Damaged(ServerEntity_t *barrel, ServerEntity_t *seOther, EntityDamageType_t type) {
 	char gibpath[MAX_QPATH];
 	// TODO: play sound, wobble, or react in some way...
 
-	if (seBarrel->v.health < 10)
-	{
-		if (strcmp(seBarrel->v.model, MODEL_DECORATION_BARREL2))
-		{
+	if (barrel->v.health < 10) {
+		if (strcmp(barrel->v.model, MODEL_DECORATION_BARREL2)) {
 			PHYSICS_MODEL_ROCK(gibpath);
-			ThrowGib(seBarrel->v.origin, pl_origin3f, gibpath, 0, false);
+			ThrowGib(barrel->v.origin, plCreateVector3D(0, 0, 0), gibpath, 0, false);
 
-			Entity_SetModel(seBarrel, MODEL_DECORATION_BARREL2);
+			Entity_SetModel(barrel, MODEL_DECORATION_BARREL2);
 			return;
 		}
 	}
 	// Health has changed, update model.
-	else if (seBarrel->v.health < 25)
-	{
-		if (strcmp(seBarrel->v.model, MODEL_DECORATION_BARREL1))
-		{
+	else if (barrel->v.health < 25) {
+		if (strcmp(barrel->v.model, MODEL_DECORATION_BARREL1)) {
 			PHYSICS_MODEL_ROCK(gibpath);
-			ThrowGib(seBarrel->v.origin, pl_origin3f, gibpath, 0, false);
+			ThrowGib(barrel->v.origin, plCreateVector3D(0, 0, 0), gibpath, 0, false);
 
-			Entity_SetModel(seBarrel, MODEL_DECORATION_BARREL1);
+			Entity_SetModel(barrel, MODEL_DECORATION_BARREL1);
 			return;
 		}
 	}
 }
 
-void Barrel_Spawn(ServerEntity_t *eBarrel)
-{
+void Barrel_Spawn(ServerEntity_t *eBarrel) {
 	Server_PrecacheModel(MODEL_DECORATION_BARREL0);
 	Server_PrecacheModel(MODEL_DECORATION_BARREL1);
 	Server_PrecacheModel(MODEL_DECORATION_BARREL2);

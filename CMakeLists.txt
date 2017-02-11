@@ -15,7 +15,10 @@ include_directories("${CMAKE_SOURCE_DIR}/include/")           # Base include dir
 include_directories("${CMAKE_SOURCE_DIR}/platform/include/")  # Platform lib headers get used for everything.
 include_directories("${CMAKE_SOURCE_DIR}/shared/")            # Xenon shared headers.
 
-add_definitions("-std=c++11" "-D_DEBUG")
+add_definitions("-D_DEBUG")
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
+
 add_subdirectory(platform)
 add_subdirectory(menu)
 add_subdirectory(game)

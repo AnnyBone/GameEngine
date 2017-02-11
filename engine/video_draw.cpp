@@ -37,10 +37,8 @@ VideoCanvasType_t currentcanvas = CANVAS_NONE; //johnfitz -- for GL_SetCanvas
 
 using namespace core;
 
-void draw::SetDefaultState()
-{
-	PLColour clear = { 0.5, 0, 0, 1 };
-	plSetClearColour4fv(clear);
+void draw::SetDefaultState() {
+    plSetClearColour(PLColour(125, 0, 0));
 
 	plSetCullMode(VL_CULL_NEGATIVE);
 
@@ -69,12 +67,12 @@ void draw::SetDefaultState()
 #endif
 	plSetTextureUnit(0);
 
-	plEnableGraphicsStates(VL_CAPABILITY_SCISSOR_TEST);
+	plEnableGraphicsStates(PL_CAPABILITY_SCISSORTEST);
 }
 
 void draw::ClearBuffers()
 {
-	if (!cv_video_clearbuffers.bValue)
+	if (!cv_video_clearbuffers.boolean_value)
 		return;
 
 	plClearBuffers(VL_MASK_DEPTH | VL_MASK_COLOUR | VL_MASK_STENCIL);
@@ -86,7 +84,7 @@ void draw::DepthBuffer()
 	static gltexture_t	*depth_texture = NULL;
 	float				*uByte;
 
-	if (!cv_video_drawdepth.bValue)
+	if (!cv_video_drawdepth.boolean_value)
 		return;
 
 	// Allocate the pixel data.
@@ -121,7 +119,7 @@ void draw::DepthBuffer()
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void draw::WireBox(plVector3f_t mins, plVector3f_t maxs, float r, float g, float b)
+void draw::WireBox(PLVector3D mins, PLVector3D maxs, float r, float g, float b)
 {
 	// todo, rewrite this function...
 #if defined (VL_MODE_OPENGL)
@@ -193,8 +191,8 @@ void draw::BoundingBoxes()
 	if (!r_showbboxes.value || (cl.maxclients > 1) || !r_drawentities.value || (!sv.active && !g_state.embedded))
 		return;
 
-	plDisableGraphicsStates(VL_CAPABILITY_DEPTH_TEST | VL_CAPABILITY_TEXTURE_2D);
-	plEnableGraphicsStates(VL_CAPABILITY_BLEND);
+	plDisableGraphicsStates(PL_CAPABILITY_DEPTHTEST | PL_CAPABILITY_TEXTURE_2D);
+	plEnableGraphicsStates(PL_CAPABILITY_BLEND);
 
 	unsigned int i;
 	ServerEntity_t *ed;
@@ -208,20 +206,14 @@ void draw::BoundingBoxes()
 #endif
 
 		draw::CoordinateAxes(ed->v.origin);
-
-		plVector3f_t mins = { 0 }, maxs = { 0 };
-		Math_VectorAdd(ed->v.mins, ed->v.origin, mins);
-		Math_VectorAdd(ed->v.maxs, ed->v.origin, maxs);
-
 #ifdef VL_MODE_OPENGL
 		glColor4f(0, 0.5f, 0, 0.5f);
 #endif
-
-		draw::WireBox(mins, maxs, 1, 1, 1);
+		draw::WireBox(ed->v.mins + ed->v.origin, ed->v.maxs + ed->v.origin, 1, 1, 1);
 	}
 
-	plDisableGraphicsStates(VL_CAPABILITY_BLEND);
-	plEnableGraphicsStates(VL_CAPABILITY_TEXTURE_2D | VL_CAPABILITY_DEPTH_TEST);
+	plDisableGraphicsStates(PL_CAPABILITY_BLEND);
+	plEnableGraphicsStates(PL_CAPABILITY_TEXTURE_2D | PL_CAPABILITY_DEPTHTEST);
 }
 
 void draw::Shadows()
@@ -243,7 +235,7 @@ void draw::Shadows()
 	}
 
 	// Allow us to also render the players own shadow too.
-	if (cv_video_drawplayershadow.bValue)
+	if (cv_video_drawplayershadow.boolean_value)
 		Shadow_Draw(&cl_entities[cl.viewentity]);
 }
 
@@ -388,18 +380,16 @@ void Scrap_Upload (void)
 
 //==================================================================
 
-void draw::MaterialSurface(Material_t *material, int x, int y, unsigned int w, unsigned int h, float alpha)
-{
+void draw::MaterialSurface(Material_t *material, int x, int y, unsigned int w, unsigned int h, float alpha) {
 	// Sloppy, but in the case that there's nothing valid...
-	if (!material)
-	{
+	if (!material) {
 		draw::Rectangle(x, y, w, h, pl_red);
 		draw::String(x, y, "INVALID MATERIAL!");
 		return;
 	}
 
 	// Disable depth testing.
-	plDisableGraphicsStates(VL_CAPABILITY_DEPTH_TEST);
+	plDisableGraphicsStates(PL_CAPABILITY_DEPTHTEST);
 
 	PLVertex vertices[4];
 
@@ -424,7 +414,7 @@ void draw::MaterialSurface(Material_t *material, int x, int y, unsigned int w, u
 	// Throw it off to the rendering pipeline.
 	Video_DrawFill(vertices, material, material->current_skin);
 
-	plEnableGraphicsStates(VL_CAPABILITY_DEPTH_TEST);
+	plEnableGraphicsStates(PL_CAPABILITY_DEPTHTEST);
 }
 
 void Draw_MaterialSurface(Material_t *mMaterial, PLuint skin, int x, int y, PLuint w, PLuint h, float fAlpha)
@@ -495,7 +485,7 @@ void draw::Character(int x, int y, int num)
 	fcol = col*0.0625f;
 	size = 0.0625f;
 
-	plDisableGraphicsStates(VL_CAPABILITY_DEPTH_TEST);
+	plDisableGraphicsStates(PL_CAPABILITY_DEPTHTEST);
 
 	Video_ObjectVertex(&voCharacter[0], x, y, 0);
 	Video_ObjectColour(&voCharacter[0], 1.0f, 1.0f, 1.0f, 1.0f);
@@ -515,35 +505,31 @@ void draw::Character(int x, int y, int num)
 
 	Video_DrawFill(voCharacter, g_mGlobalConChars, 0);
 
-	plEnableGraphicsStates(VL_CAPABILITY_DEPTH_TEST);
+	plEnableGraphicsStates(PL_CAPABILITY_DEPTHTEST);
 }
 
-void draw::String(int x, int y, const char *msg)
-{
+void draw::String(int x, int y, const char *msg) {
 	if (y <= -8)
 		return;
 
-	Material_Draw(g_mGlobalConChars, NULL, VL_PRIMITIVE_IGNORE, 0, false);
+	Material_Draw(g_mGlobalConChars, NULL, PL_PRIMITIVE_IGNORE, 0, false);
 
-	while (*msg)
-	{
+	while (*msg) {
 		draw::Character(x, y, *msg);
 		msg++;
 		x += 8;
 	}
 
-	Material_Draw(g_mGlobalConChars, NULL, VL_PRIMITIVE_IGNORE, 0, true);
+	Material_Draw(g_mGlobalConChars, NULL, PL_PRIMITIVE_IGNORE, 0, true);
 }
 
 /*	Draws a simple string of text on the screen.
 */
-void Draw_String(int x, int y, const char *msg)
-{
+void Draw_String(int x, int y, const char *msg) {
 	draw::String(x, y, msg);
 }
 
-void draw::GradientBackground(PLColour top, PLColour bottom)
-{
+void draw::GradientBackground(PLColour top, PLColour bottom) {
 	Viewport *viewport = GetCurrentViewport();
 	if (!viewport)
 		return;
@@ -573,7 +559,7 @@ void draw::GradientBackground(PLColour top, PLColour bottom)
 	plViewport(0, 0, viewport->GetWidth(), viewport->GetHeight());
 }
 
-void draw::Line(plVector3f_t start, plVector3f_t end)
+void draw::Line(PLVector3D start, PLVector3D end)
 {
 	PLVertex line[2] = { { { 0 } } };
 
@@ -582,35 +568,33 @@ void draw::Line(plVector3f_t start, plVector3f_t end)
 	Video_ObjectVertex(&line[1], end[0], end[1], end[2]);
 	Video_ObjectColour(&line[1], 1.0f, 0, 0, 1.0f);
 
-	Video_DrawObject(line, VL_PRIMITIVE_LINES, 2, NULL, 0);
+	Video_DrawObject(line, PL_PRIMITIVE_LINES, 2, NULL, 0);
 }
 
-void draw::CoordinateAxes(plVector3f_t position)
-{
-	PLVector3f start = { 0, 0, 0 }, end = { 0, 0, 0 };
-	plVectorCopy(position, start);
-	plVectorCopy(position, end);
+void draw::CoordinateAxes(PLVector3D position) {
+    PLVector3D start = position;
+    PLVector3D end = position;
 	start[0] += 10;
 	end[0] -= 10;
 	draw::Line(start, end);
 
-	plVectorCopy(position, start);
-	plVectorCopy(position, end);
+    start = position;
+    end = position;
 	start[1] += 10;
 	end[1] -= 10;
 	draw::Line(start, end);
 
-	plVectorCopy(position, start);
-	plVectorCopy(position, end);
+    start = position;
+    end = position;
 	start[2] += 10;
 	end[2] -= 10;
 	draw::Line(start, end);
 }
 
-void draw::Grid(plVector3f_t position, PLuint grid_size)
+void draw::Grid(PLVector3D position, PLuint grid_size)
 {
-	plEnableGraphicsStates(VL_CAPABILITY_BLEND);
-	plDisableGraphicsStates(VL_CAPABILITY_TEXTURE_2D);
+	plEnableGraphicsStates(PL_CAPABILITY_BLEND);
+	plDisableGraphicsStates(PL_CAPABILITY_TEXTURE_2D);
 
 	plSetBlendMode(PL_BLEND_DEFAULT);
 
@@ -668,8 +652,8 @@ void draw::Grid(plVector3f_t position, PLuint grid_size)
 	glPopMatrix();
 #endif
 
-	plDisableGraphicsStates(VL_CAPABILITY_BLEND);
-	plEnableGraphicsStates(VL_CAPABILITY_TEXTURE_2D);
+	plDisableGraphicsStates(PL_CAPABILITY_BLEND);
+	plEnableGraphicsStates(PL_CAPABILITY_TEXTURE_2D);
 }
 
 void draw::Rectangle(PLint x, PLint y, PLuint w, PLuint h, PLColour colour)
@@ -681,9 +665,10 @@ void draw::Rectangle(PLint x, PLint y, PLuint w, PLuint h, PLColour colour)
 	Math_Vector4Copy(colour, fill[2].colour);
 	Math_Vector4Copy(colour, fill[3].colour);
 
-	if (colour[3] < 1)
-		plEnableGraphicsStates(VL_CAPABILITY_BLEND);
-	plDisableGraphicsStates(VL_CAPABILITY_DEPTH_TEST | VL_CAPABILITY_TEXTURE_2D);
+	if (colour.a < 1) {
+        plEnableGraphicsStates(PL_CAPABILITY_BLEND);
+    }
+	plDisableGraphicsStates(PL_CAPABILITY_DEPTHTEST | PL_CAPABILITY_TEXTURE_2D);
 
 	Video_ObjectVertex(&fill[0], x, y, 0);
 	Video_ObjectTexture(&fill[0], 0, h, w);
@@ -696,53 +681,53 @@ void draw::Rectangle(PLint x, PLint y, PLuint w, PLuint h, PLColour colour)
 
 	Video_DrawFill(fill, NULL, 0);
 
-	if (colour[3] < 1)
-		plDisableGraphicsStates(VL_CAPABILITY_BLEND);
-	plEnableGraphicsStates(VL_CAPABILITY_DEPTH_TEST | VL_CAPABILITY_TEXTURE_2D);
+	if (colour.a < 1) {
+        plDisableGraphicsStates(PL_CAPABILITY_BLEND);
+    }
+	plEnableGraphicsStates(PL_CAPABILITY_DEPTHTEST | PL_CAPABILITY_TEXTURE_2D);
 }
 
 // C wrapper for draw::rectangle
-void Draw_Rectangle(int x, int y, PLuint w, PLuint h, PLColour colour)
-{
+void Draw_Rectangle(int x, int y, PLuint w, PLuint h, PLColour colour) {
 	draw::Rectangle(x, y, w, h, colour);
 }
 
-void draw::GradientFill(int x, int y, PLuint width, PLuint height, PLColour top, PLColour bottom)
-{
+void draw::GradientFill(int x, int y, PLuint width, PLuint height, PLColour top, PLColour bottom) {
 	PLVertex	voFill[4];
 
-	if ((top[3] < 1) || (bottom[3] < 1))
-		plEnableGraphicsStates(VL_CAPABILITY_BLEND);
-	plDisableGraphicsStates(VL_CAPABILITY_DEPTH_TEST | VL_CAPABILITY_TEXTURE_2D);
+	if ((top.a < 1) || (bottom.a < 1)) {
+        plEnableGraphicsStates(PL_CAPABILITY_BLEND);
+    }
+	plDisableGraphicsStates(PL_CAPABILITY_DEPTHTEST | PL_CAPABILITY_TEXTURE_2D);
 
 	Video_ObjectVertex(&voFill[0], x, y, 0);
-	Video_ObjectColour(&voFill[0], top[0], top[1], top[2], top[3]);
+	Video_ObjectColour(&voFill[0], top.r, top.g, top.b, top.a);
 	Video_ObjectVertex(&voFill[1], x + width, y, 0);
-	Video_ObjectColour(&voFill[1], top[0], top[1], top[2], top[3]);
+	Video_ObjectColour(&voFill[1], top.r, top.g, top.b, top.a);
 	Video_ObjectVertex(&voFill[2], x + width, y + height, 0);
-	Video_ObjectColour(&voFill[2], bottom[0], bottom[1], bottom[2], bottom[3]);
+	Video_ObjectColour(&voFill[2], bottom.r, bottom.g, bottom.b, bottom.a);
 	Video_ObjectVertex(&voFill[3], x, y + height, 0);
-	Video_ObjectColour(&voFill[3], bottom[0], bottom[1], bottom[2], bottom[3]);
+	Video_ObjectColour(&voFill[3], bottom.r, bottom.g, bottom.b, bottom.a);
 
 	Video_DrawFill(voFill, NULL, 0);
 
-	if ((top[3] < 1) || (bottom[3] < 1))
-		plDisableGraphicsStates(VL_CAPABILITY_BLEND);
-	plEnableGraphicsStates(VL_CAPABILITY_DEPTH_TEST | VL_CAPABILITY_TEXTURE_2D);
+	if ((top.a < 1) || (bottom.a < 1)) {
+        plDisableGraphicsStates(PL_CAPABILITY_BLEND);
+    }
+	plEnableGraphicsStates(PL_CAPABILITY_DEPTHTEST | PL_CAPABILITY_TEXTURE_2D);
 }
 
-void draw::ScreenFade()
-{
-	PLVertex	voFade[4];
-
+void draw::ScreenFade() {
 	Viewport *viewport = GetCurrentViewport();
-	if (!viewport)
-		return;
+	if (!viewport) {
+        return;
+    }
 
 	GL_SetCanvas(CANVAS_DEFAULT);
 
-	plEnableGraphicsStates(VL_CAPABILITY_BLEND);
+	plEnableGraphicsStates(PL_CAPABILITY_BLEND);
 
+    PLVertex	voFade[4];
 	Video_ObjectVertex(&voFade[0], 0, 0, 0);
 	Video_ObjectColour(&voFade[0], 1.0f, 1.0f, 1.0f, 0.5f);
 
@@ -757,14 +742,13 @@ void draw::ScreenFade()
 
 	Video_DrawFill(voFade, NULL, 0);
 
-	plDisableGraphicsStates(VL_CAPABILITY_BLEND);
+	plDisableGraphicsStates(PL_CAPABILITY_BLEND);
 }
 
 /*	Draws the little blue disc in the corner of the screen.
 	Call before beginning any disc IO.
 */
-void Draw_BeginDisc(void)
-{
+void Draw_BeginDisc(void) {
 #ifdef VL_MODE_OPENGL
 	int	iViewport[4]; //johnfitz
 	VideoCanvasType_t oldcanvas; //johnfitz
@@ -907,82 +891,79 @@ void GL_SetCanvas (VideoCanvasType_t newcanvas)
 #endif
 }
 
-void draw::ResetCanvas()
-{
+void draw::ResetCanvas() {
 	currentcanvas = (VideoCanvasType_t)-1;
-
 	GL_SetCanvas(CANVAS_DEFAULT);
 }
 
 /*	Entities	*/
 
-PL_MODULE_EXPORT void draw::EntityBoundingBox(ClientEntity_t *entity)
-{
-	if (!entity->model || ((entity == &cl_entities[cl.viewentity]) && !chase_active.bValue) || (entity == &cl.viewent))
-		return;
+PL_EXPORT void draw::EntityBoundingBox(ClientEntity_t *entity) {
+	if (!entity->model ||
+            ((entity == &cl_entities[cl.viewentity]) && !chase_active.boolean_value) || (entity == &cl.viewent)) {
+        return;
+    }
 
-	plVector3f_t mins = { 0 }, maxs = { 0 };
-	switch (entity->model->type)
-	{
-	case MODEL_TYPE_LEVEL:
+	switch (entity->model->type) {
+	case MODEL_TYPE_LEVEL: {
 		// Only draw wires for the BSP, since otherwise it's difficult to see anything else.
 #ifdef VL_MODE_OPENGL
 		glColor4f(0, 0, 0, 0);
 #endif
-
-		Math_VectorAdd(entity->model->mins, entity->origin, mins);
-		Math_VectorAdd(entity->model->maxs, entity->origin, maxs);
-		draw::WireBox(mins, maxs, 0, 1, 0);
+		draw::WireBox(
+                entity->model->mins + entity->origin,
+                entity->model->maxs + entity->origin,
+                0, 1, 0
+        );
 		break;
+	}
 	default:
 	{
 #ifdef VL_MODE_OPENGL
 		glColor4f(0.5f, 0, 0, 0.5f);
 #endif
-		Math_VectorAdd(entity->model->rmins, entity->origin, mins);
-		Math_VectorAdd(entity->model->rmaxs, entity->origin, maxs);
-		draw::WireBox(mins, maxs, 1, 0, 0);
-
-		Math_VectorAdd(entity->model->ymins, entity->origin, mins);
-		Math_VectorAdd(entity->model->ymaxs, entity->origin, maxs);
-		draw::WireBox(mins, maxs, 0, 1, 0);
-
-		Math_VectorAdd(entity->model->mins, entity->origin, mins);
-		Math_VectorAdd(entity->model->maxs, entity->origin, maxs);
-		draw::WireBox(mins, maxs, 0, 0, 1);
+		draw::WireBox(
+                entity->model->rmins + entity->origin,
+                entity->model->rmaxs + entity->origin,
+                1, 0, 0
+        );
+		draw::WireBox(
+                entity->model->ymins + entity->origin,
+                entity->model->ymaxs + entity->origin,
+                0, 1, 0
+        );
+		draw::WireBox(
+                entity->model->mins + entity->origin,
+                entity->model->maxs + entity->origin,
+                0, 0, 1
+        );
 	}
 	break;
 	}
 }
 
-PL_MODULE_EXPORT void draw::Entity(ClientEntity_t *entity)
-{
-	if (!entity->model)
-	{
+PL_EXPORT void draw::Entity(ClientEntity_t *entity) {
+	if (!entity->model) {
 		draw::CoordinateAxes(entity->origin);
 		return;
 	}
 
 	entity->distance_alpha = 1.0f;
-	if (cv_video_entity_fade.bValue)
-	{
+	if (cv_video_entity_fade.boolean_value) {
 		Camera *camera = g_cameramanager->GetCurrentCamera();
-		if (camera)
-		{
-			plVector3f_t vdist = { 0 };
-			plVectorSubtract3fv(&camera->GetPosition()[0], entity->origin, vdist);
-			float distance = plLengthf(vdist);
-			if (distance > cv_video_entity_distance.value)
-			{
+		if (camera) {
+			PLVector3D vdist = camera->GetPosition() - entity->origin;
+			float distance = vdist.Length();
+			if (distance > cv_video_entity_distance.value) {
 				entity->distance_alpha = 1.0f - (((distance - cv_video_entity_distance.value) / 100.0f) / 1.0f);
-				if (entity->distance_alpha < 0.01)
-					return;
+				if (entity->distance_alpha < 0.01) {
+                    return;
+                }
 			}
 		}
 	}
 
-	switch (entity->model->type)
-	{
+	switch (entity->model->type) {
 #if 1	// Old legacy draws
 	case MODEL_TYPE_MD2:
 		Alias_Draw(entity);
@@ -1003,10 +984,9 @@ PL_MODULE_EXPORT void draw::Entity(ClientEntity_t *entity)
 		Console_ErrorMessage(false, entity->model->name, "Unrecognised model type.");
 	}
 
-	if (r_showbboxes.bValue)
-	{
-		plEnableGraphicsStates(VL_CAPABILITY_BLEND);
+	if (r_showbboxes.boolean_value) {
+		plEnableGraphicsStates(PL_CAPABILITY_BLEND);
 		draw::EntityBoundingBox(entity);
-		plDisableGraphicsStates(VL_CAPABILITY_BLEND);
+		plDisableGraphicsStates(PL_CAPABILITY_BLEND);
 	}
 }

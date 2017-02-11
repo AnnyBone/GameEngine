@@ -11,7 +11,7 @@ void arrow_touch(ServerEntity_t *ent, ServerEntity_t *other)
 	// [7/4/2012] Cleaned up ~hogsy
 	char	snd[64];
 
-	if(other == ent->local.eOwner)
+	if(other == ent->local.owner)
 		return;
 
 	// We hit an enemy! Stick with 'em
@@ -45,7 +45,7 @@ void Crossbow_Projectile(ServerEntity_t *ent)
 	eArrow = Entity_Spawn();
 	if(eArrow)
 	{
-		eArrow->local.eOwner = ent;
+		eArrow->local.owner = ent;
 
 		eArrow->v.movetype	= MOVETYPE_FLY;
 

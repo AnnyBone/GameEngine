@@ -199,7 +199,7 @@ void Window_Update(void) {
 
   Window_SetSize((PLuint) cv_video_width.iValue, (PLuint) cv_video_height.iValue);
   Window_SetVerticalSync(cv_video_verticlesync.iValue);
-  Window_SetFullscreen(cv_video_fullscreen.bValue);
+  Window_SetFullscreen(cv_video_fullscreen.boolean_value);
 }
 
 void Window_Swap(void) {

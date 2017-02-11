@@ -130,7 +130,7 @@ void IonBlaster_IonBallTouch(ServerEntity_t *eIonBall, ServerEntity_t *other)
 
 #if 0
 	// Don't collide with the owner initially...
-	if((other == eIonBall->local.eOwner) && !eIonBall->local.hit)
+	if((other == eIonBall->local.owner) && !eIonBall->local.hit)
 		return;
 	// If we hit something else, and then hit the owner again, it'll do damage!
 	else
@@ -139,7 +139,7 @@ void IonBlaster_IonBallTouch(ServerEntity_t *eIonBall, ServerEntity_t *other)
 
 	if (eIonBall->local.count < IONBLASTER_MAX_HITS)
 	{
-		if (Entity_CanDamage(eIonBall, other, DAMAGE_TYPE_NORMAL) && (other != eIonBall->local.eOwner))
+		if (Entity_CanDamage(eIonBall, other, DAMAGE_TYPE_NORMAL) && (other != eIonBall->local.owner))
 		{
 			Entity_Damage(other, eIonBall, 15, 0);
 			Entity_Remove(eIonBall);
@@ -192,7 +192,7 @@ void IonBlaster_PrimaryAttack(ServerEntity_t *ent)
 		eIonBall->Physics.solid = SOLID_BBOX;
 
 		eIonBall->local.hit = false;
-		eIonBall->local.eOwner = ent;
+		eIonBall->local.owner = ent;
 		eIonBall->local.count = 0;
 
 		Weapon_Projectile(ent, eIonBall, IONBLASTER_MAX_RANGE);

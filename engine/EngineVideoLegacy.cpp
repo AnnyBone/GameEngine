@@ -27,7 +27,7 @@
 
 #include "client/effect_sprite.h"
 
-plVector3f_t modelorg, r_entorigin;
+PLVector3D modelorg, r_entorigin;
 ClientEntity_t *currententity;
 
 int	r_visframecount,	// bumped when going to a new PVS
@@ -60,37 +60,32 @@ ConsoleVariable_t cv_video_lightmapoversample = { "video_lightmapoversample", "8
 
 cvar_t	r_showtris				= {	"r_showtris",			"0"					};
 
-bool R_CullModelForEntity(ClientEntity_t *e)
-{
-	plVector3f_t mins, maxs;
-
-	if(e == &cl.viewent)
-		return false;
+bool R_CullModelForEntity(ClientEntity_t *e) {
+	if(e == &cl.viewent) {
+        return false;
+    }
 
 	core::Camera *camera = g_cameramanager->GetCurrentCamera();
-	if (!camera)
-		return true;
+	if (!camera) {
+        return true;
+    }
 
-	if(e->angles[PL_PITCH] || e->angles[PL_ROLL])
-	{
-		plVectorAdd3fv(e->origin, e->model->rmins, mins);
-		plVectorAdd3fv(e->origin, e->model->rmaxs, maxs);
-	}
-	else if(e->angles[PL_YAW])
-	{
-		plVectorAdd3fv(e->origin, e->model->ymins, mins);
-		plVectorAdd3fv(e->origin, e->model->ymaxs, maxs);
-	}
-	else //no rotation
-	{
-		plVectorAdd3fv(e->origin, e->model->mins, mins);
-		plVectorAdd3fv(e->origin, e->model->maxs, maxs);
+	PLVector3D mins, maxs;
+	if(e->angles[PL_PITCH] || e->angles[PL_ROLL]) {
+        mins = e->origin + e->model->rmins;
+        maxs = e->origin + e->model->rmaxs;
+	} else if(e->angles[PL_YAW]) {
+        mins = e->origin + e->model->ymins;
+        maxs = e->origin + e->model->ymaxs;
+	} else { // no rotation
+        mins = e->origin + e->model->mins;
+        maxs = e->origin + e->model->maxs;
 	}
 
 	return camera->IsBoxOutsideFrustum(mins, maxs);
 }
 
-void R_RotateForEntity(plVector3f_t origin, plVector3f_t angles)
+void R_RotateForEntity(PLVector3D origin, PLVector3D angles)
 {
 #ifdef VL_MODE_OPENGL
 	glTranslatef(origin[0],origin[1],origin[2]);
@@ -100,15 +95,14 @@ void R_RotateForEntity(plVector3f_t origin, plVector3f_t angles)
 #endif
 }
 
-int SignbitsForPlane (mplane_t *out)
-{
-	int	bits, j;
-
+int SignbitsForPlane (mplane_t *out) {
 	// for fast box on planeside test
-	bits = 0;
-	for (j=0 ; j<3 ; j++)
-		if (out->normal[j] < 0)
-			bits |= 1<<j;
+	int bits = 0;
+	for (int j=0 ; j<3 ; j++) {
+        if (out->normal[j] < 0) {
+            bits |= 1 << j;
+        }
+    }
 
 	return bits;
 }
@@ -116,11 +110,8 @@ int SignbitsForPlane (mplane_t *out)
 void R_RenderScene(void);
 void R_UpdateWarpTextures(void);    // [25/11/2013] See gl_warp.c ~hogsy
 
-void R_RenderScene(void)
-{
+void R_RenderScene(void) {
 	R_PushDlights();
 	Light_Animate();
-
-	
 }
 

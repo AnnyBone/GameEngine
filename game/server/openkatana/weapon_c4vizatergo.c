@@ -142,7 +142,7 @@ void C4Vizatergo_C4BallTouch(ServerEntity_t *ent,ServerEntity_t *eOther)
 {
 #if 0
 	// Don't touch our owner.
-	if(other == ent->local.eOwner)
+	if(other == ent->local.owner)
 		return;
 
 	// Play the stick sound!
@@ -158,7 +158,7 @@ void C4Vizatergo_C4BallTouch(ServerEntity_t *ent,ServerEntity_t *eOther)
 		ent->v.nextthink		= Server.time;
 	}
 #else	// [12/12/2012] New method. Explode if touches monster / another player. ~hogsy
-	if(	eOther != ent->local.eOwner && eOther->Monster.type)
+	if(	eOther != ent->local.owner && eOther->Monster.type)
 		C4Vizatergo_Explode(ent);
 	else if(eOther->Physics.solid == SOLID_BSP && ent->v.movetype != MOVETYPE_NONE)
 	{
@@ -195,7 +195,7 @@ void C4Vizatergo_Think(ServerEntity_t *ent)
 #else
 	Sound(ent, CHAN_AUTO, "weapons/c4/beep.wav", 130, ATTN_IDLE);
 
-	if(!ent->local.eOwner && ent->local.hit)
+	if(!ent->local.owner && ent->local.hit)
 		ent->v.movetype = MOVETYPE_BOUNCE;
 
 	ent->v.nextthink = Server.time+2.5;
@@ -221,7 +221,7 @@ void C4Vizatergo_PrimaryAttack(ServerEntity_t *eOwner)
 
 	c4ball->local.style = AMMO_C4BOMBS;		// Cleaner way to tell if this can explode or not :V ~hogsy
 	c4ball->local.c4_ammo = 1;				// [11/8/2013] Since style is used for other shit too LAWL ~hogsy
-	c4ball->local.eOwner = eOwner;
+	c4ball->local.owner = eOwner;
 
 	// Set the physical properties.
 	c4ball->Physics.solid = SOLID_BBOX;
@@ -257,7 +257,7 @@ void C4Vizatergo_SecondaryAttack(ServerEntity_t *eOwner)
 
 	do
 	{
-		if((eExplodable->local.style == AMMO_C4BOMBS) && (eExplodable->local.c4_ammo == 1) && (eExplodable->local.eOwner == eOwner))
+		if((eExplodable->local.style == AMMO_C4BOMBS) && (eExplodable->local.c4_ammo == 1) && (eExplodable->local.owner == eOwner))
 		{
 			eExplodable->v.think		= C4Vizatergo_Explode;
 			eExplodable->v.nextthink	= Server.time;

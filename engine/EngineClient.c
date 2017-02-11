@@ -93,7 +93,7 @@ void CL_ClearState (void)
 	SpriteManager_Clear();
 
 	//johnfitz -- cl_entities is now dynamically allocated
-	cl_max_edicts	= plClamp(MIN_EDICTS, (int)max_edicts.value, MAX_EDICTS);
+	cl_max_edicts	= Math_Clamp(MIN_EDICTS, (int)max_edicts.value, MAX_EDICTS);
 	cl_entities		= (ClientEntity_t*)Hunk_AllocName(cl_max_edicts*sizeof(ClientEntity_t), "cl_entities");
 	//johnfitz
 
@@ -251,9 +251,9 @@ void CL_PrintEntities_f (void)
 		Con_Printf ("%s:%2i  (%5.1f,%5.1f,%5.1f) [%5.1f %5.1f %5.1f]\n",
 			ent->model->name,
 			ent->frame,
-			ent->origin[0],ent->origin[1],
-			ent->origin[2],ent->angles[0],
-			ent->angles[1],ent->angles[2]);
+			ent->origin.x,ent->origin.y,
+			ent->origin.z,ent->angles.x,
+			ent->angles.y,ent->angles.z);
 	}
 }
 
@@ -274,8 +274,7 @@ DynamicLight_t *Client_AllocDlight(int key)
 
 				dlLight->key		= key;
 				dlLight->lightmap	= true;
-
-				Math_VectorSet(1.0f,dlLight->color);
+				dlLight->color 		= plCreateVector3D(1, 1, 1);
 				return dlLight;
 			}
 		}
@@ -291,8 +290,7 @@ DynamicLight_t *Client_AllocDlight(int key)
 
 			dlLight->key		= key;
 			dlLight->lightmap	= true;
-
-			Math_VectorSet(1.0f,dlLight->color);
+            dlLight->color 		= plCreateVector3D(1, 1, 1);
 			return dlLight;
 		}
 	}
@@ -303,8 +301,7 @@ DynamicLight_t *Client_AllocDlight(int key)
 
 	dlLight->key		= key;
 	dlLight->lightmap	= true;
-
-	Math_VectorSet(1.0f,dlLight->color);
+    dlLight->color 		= plCreateVector3D(1, 1, 1);
 
 	return dlLight;
 }
@@ -376,7 +373,7 @@ void CL_RelinkEntities (void)
 	entity_t		*ent;
 	unsigned int	i, j;
 	float			frac, f, d;
-	plVector3f_t	delta;
+	PLVector3D	delta;
 
 	if (cl.paused)
 		return;
@@ -431,8 +428,8 @@ void CL_RelinkEntities (void)
 		{
 			// the entity was not updated in the last message
 			// so move to the final spot
-			Math_VectorCopy (ent->msg_origins[0], ent->origin);
-			Math_VectorCopy (ent->msg_angles[0], ent->angles);
+            ent->origin = ent->msg_origins[0];
+            ent->angles = ent->msg_angles[0];
 		}
 		else
 		{	// if the delta is large, assume a teleport and don't lerp
@@ -587,15 +584,14 @@ void CL_SendCmd(void)
 
 /*	List all the currently cached models.
 */
-void Client_ListModelCache(void)
-{
-	int i;
-
+void Client_ListModelCache(void) {
 	Con_Printf("Listing cached models...\n");
 
-	for (i = 0; i < plArrayElements(cl.model_precache); i++)
-		if (cl.model_precache[i])
-			Con_Printf(" %s\n", cl.model_precache[i]->name);
+	for (int i = 0; i < plArrayElements(cl.model_precache); i++) {
+        if (cl.model_precache[i]) {
+            Con_Printf(" %s\n", cl.model_precache[i]->name);
+        }
+    }
 }
 
 /* General utility function for getting client time.

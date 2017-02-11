@@ -64,7 +64,7 @@ void Hermes_PrimaryAttack(ServerEntity_t *ent)
 	cloud->Physics.solid		= SOLID_TRIGGER;
 
 	cloud->local.hit	= 10;
-	cloud->local.eOwner	= ent;
+	cloud->local.owner	= ent;
 
 	//SetSize(cloud,-16,-16,-16,16,16,16);
 	Entity_SetOrigin(cloud,ent->v.origin);

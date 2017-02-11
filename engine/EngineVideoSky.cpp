@@ -910,7 +910,7 @@ void Sky_Draw(void)
 	int	i;
 
 	// In these special render modes, the sky faces are handled in the normal world/brush renderer
-	if (r_drawflat_cheatsafe || r_lightmap_cheatsafe || !cv_video_drawsky.bValue)
+	if (r_drawflat_cheatsafe || r_lightmap_cheatsafe || !cv_video_drawsky.boolean_value)
 		return;
 
 	// Reset sky bounds.

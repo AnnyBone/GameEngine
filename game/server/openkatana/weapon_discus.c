@@ -48,7 +48,7 @@ void Discus_ProjectileTouch(ServerEntity_t *ent,ServerEntity_t *other)
 	PLVector3f	vel;
 
 	// [4/8/2012] Updated to use owner ~hogsy
-	if(other == ent->local.eOwner)
+	if(other == ent->local.owner)
 	{
 		// Don't touch the owner while being thrown
 		if(ent->local.hit == 0)
@@ -108,7 +108,7 @@ void Discus_SpawnProjectile(ServerEntity_t *ent,PLVector3f org)
 	eDiscus->v.enemy = ent;
 
 	// [4/8/2012] Updated to use owner instead ~hogsy
-	eDiscus->local.eOwner = ent;
+	eDiscus->local.owner = ent;
 
 	eDiscus->local.hit = 0;
 

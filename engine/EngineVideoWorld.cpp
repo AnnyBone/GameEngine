@@ -214,7 +214,7 @@ void Surface_DrawMirror(msurface_t *surface)
 		return;
 
 	// Prevent recursion...
-	if (!cv_video_drawmirrors.bValue || r_refdef.mode_mirror)
+	if (!cv_video_drawmirrors.boolean_value || r_refdef.mode_mirror)
 		return;
 
 	plVector3f_t oldorigin;
@@ -317,7 +317,7 @@ void World_DrawWater(void)
 		{
 			if (!s->culled)
 			{
-				if (t->material->bind && !r_showtris.bValue)
+				if (t->material->bind && !r_showtris.boolean_value)
 				{
 					plSetTextureUnit(VIDEO_TEXTURE_LIGHT);
 					plEnableGraphicsStates(VL_CAPABILITY_TEXTURE_2D);
@@ -325,7 +325,7 @@ void World_DrawWater(void)
 					t->material->bind = false;
 				}
 
-				if (!r_showtris.bValue)
+				if (!r_showtris.boolean_value)
 				{
 					plSetTextureUnit(VIDEO_TEXTURE_LIGHT);
 
@@ -379,7 +379,7 @@ void World_Draw(void)
 		for(s = t->texturechain; s; s = s->texturechain)
 			if(!s->culled)
 			{
-				if (t->material->bind && !r_showtris.bValue)
+				if (t->material->bind && !r_showtris.boolean_value)
 				{
 					plSetTextureUnit(VIDEO_TEXTURE_LIGHT);
 					plEnableGraphicsStates(VL_CAPABILITY_TEXTURE_2D);
@@ -387,7 +387,7 @@ void World_Draw(void)
 					t->material->bind = false;
 				}
 
-				if (!r_showtris.bValue)
+				if (!r_showtris.boolean_value)
 				{
 					plSetTextureUnit(VIDEO_TEXTURE_LIGHT);
 

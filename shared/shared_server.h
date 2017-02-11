@@ -249,7 +249,7 @@ typedef struct
 
 	// CTF states
 	ServerEntity_t		*flag;				// Currently owned flag (if any).
-	ServerEntity_t		*eOwner;			// Owner entity (we usually don't collide with this guy)
+	ServerEntity_t		*owner;			// Owner entity (we usually don't collide with this guy)
 
 	// Door shizz
 
@@ -391,7 +391,7 @@ typedef struct ServerEntityBaseVariables_s
 	const char *cViewModel;	// The model that appears in our view, this is traditionally used for weapons.
 
 	int	items;
-	int	iInventory[128];
+	int	inventory[128];
 
 	PLColour	vLight;
 

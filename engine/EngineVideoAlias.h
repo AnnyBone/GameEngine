@@ -28,7 +28,7 @@ typedef struct
 
 	float blend;
 
-	MathVector3f_t origin,angles;
+	PLVector3D origin,angles;
 } lerpdata_t;
 
 PL_EXTERN_C

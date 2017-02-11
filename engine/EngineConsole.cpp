@@ -21,6 +21,7 @@
 #include <algorithm>
 #include <list>
 #include <set>
+#include <cstring>
 
 #include "platform_log.h"
 
@@ -222,7 +223,7 @@ void Console::SetSize(unsigned int width, unsigned int height)
 
 #if 1	// todo, do we need this?
 	vid.conwidth = (scr_conwidth.value > 0) ? (int)scr_conwidth.value : (scr_conscale.value > 0) ? (int)(width / scr_conscale.value) : width;
-	vid.conwidth = plClamp(320, vid.conwidth, width);
+	vid.conwidth = Math_Clamp(320, vid.conwidth, width);
 	vid.conwidth &= 0xFFFFFFF8;
 	vid.conheight = vid.conwidth* height / width;
 #endif
@@ -253,7 +254,7 @@ void Console::Draw(bool draw_input)
 	// Starting from the bottom...
 	int y = vid.conheight - CHAR_HEIGHT;
 
-	Material_Draw(g_mGlobalConChars, NULL, VL_PRIMITIVE_IGNORE, 0, false);
+	Material_Draw(g_mGlobalConChars, NULL, PL_PRIMITIVE_IGNORE, 0, false);
 
 	// ...draw version number in bottom right...
 	{
@@ -314,7 +315,7 @@ void Console::Draw(bool draw_input)
 		}
 	}
 
-	Material_Draw(g_mGlobalConChars, NULL, VL_PRIMITIVE_IGNORE, 0, true);
+	Material_Draw(g_mGlobalConChars, NULL, PL_PRIMITIVE_IGNORE, 0, true);
 }
 
 void Console::DrawNotify()
@@ -349,18 +350,16 @@ void Console::DrawNotify()
 
 	unsigned int y = vid.conheight;
 
-	Material_Draw(g_mGlobalConChars, NULL, VL_PRIMITIVE_IGNORE, 0, false);
+	Material_Draw(g_mGlobalConChars, NULL, PL_PRIMITIVE_IGNORE, 0, false);
 
-	for(auto l = wrapped_lines.begin(); l != wrapped_lines.end(); ++l)
-	{
+	for(auto l = wrapped_lines.begin(); l != wrapped_lines.end(); ++l) {
 		for(size_t i = 0; i < l->size(); ++i)
 			draw::Character((PLint)((i + 1) * CHAR_WIDTH), y, (*l)[i]);
 
 		y += CHAR_HEIGHT;
 	}
 
-	if (key_dest == key_message)
-	{
+	if (key_dest == key_message) {
 		const char *say_prompt = team_message ? "Say (team):" : "Say (all):";
 		size_t plen      = strlen(say_prompt);
 
@@ -384,7 +383,7 @@ void Console::DrawNotify()
 		//y += CHAR_HEIGHT;
 	}
 
-	Material_Draw(g_mGlobalConChars, NULL, VL_PRIMITIVE_IGNORE, 0, true);
+	Material_Draw(g_mGlobalConChars, NULL, PL_PRIMITIVE_IGNORE, 0, true);
 }
 
 extern "C" void M_Menu_Main_f (void);
@@ -577,7 +576,7 @@ void Con_DPrintf(const char *fmt,...)
 	va_list	argptr;
 	char	msg[MAXPRINTMSG];
 
-	if (!developer.bValue)
+	if (!developer.boolean_value)
 		return;
 
 	va_start(argptr,fmt);

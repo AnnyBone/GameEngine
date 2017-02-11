@@ -224,13 +224,13 @@ void CL_AdjustAngles(void)
 	if (!(in_strafe.state & 1))
 	{
 		cl.current_camera->SetYaw(
-			cl.current_camera->GetAngles()[YAW] - speed * cl_yawspeed.value * CL_KeyState(&in_right)
+			cl.current_camera->GetAngles()[PL_YAW] - speed * cl_yawspeed.value * CL_KeyState(&in_right)
 		);
 		cl.current_camera->SetYaw(
-			cl.current_camera->GetAngles()[YAW] + speed * cl_yawspeed.value * CL_KeyState(&in_left)
+			cl.current_camera->GetAngles()[PL_YAW] + speed * cl_yawspeed.value * CL_KeyState(&in_left)
 		);
 		cl.current_camera->SetYaw(
-			plAngleMod(cl.current_camera->GetAngles()[YAW])
+			Math_AngleMod(cl.current_camera->GetAngles()[PL_YAW])
 		);
 	}
 
@@ -247,10 +247,10 @@ void CL_AdjustAngles(void)
 	up = CL_KeyState(&in_lookup);
 	down = CL_KeyState(&in_lookdown);
 	cl.current_camera->SetPitch(
-		cl.current_camera->GetAngles()[PITCH] - speed * cl_pitchspeed.value * up
+		cl.current_camera->GetAngles()[PL_PITCH] - speed * cl_pitchspeed.value * up
 	);
 	cl.current_camera->SetPitch(
-		cl.current_camera->GetAngles()[PITCH] + speed * cl_pitchspeed.value * down
+		cl.current_camera->GetAngles()[PL_PITCH] + speed * cl_pitchspeed.value * down
 	);
 }
 

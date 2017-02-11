@@ -22,10 +22,10 @@ namespace core
 {
 	namespace draw
 	{
-		PL_MODULE_EXPORT void Entity(ClientEntity_t *entity);			// Draws a single entity.
-		PL_MODULE_EXPORT void EntityBoundingBox(ClientEntity_t *entity);	// Draws entity bounding box.
+		PL_EXPORT void Entity(ClientEntity_t *entity);			// Draws a single entity.
+		PL_EXPORT void EntityBoundingBox(ClientEntity_t *entity);	// Draws entity bounding box.
 
-		PL_MODULE_EXPORT void MaterialSurface(Material_t *material, int x, int y, unsigned int w, unsigned int h, float alpha);
+		PL_EXPORT void MaterialSurface(Material_t *material, int x, int y, unsigned int w, unsigned int h, float alpha);
 
 		void Entities(bool alphapass);
 		void Shadows();

@@ -73,6 +73,6 @@ void WEAPON_StickThink(ServerEntity_t *ent);
 void ThrowGib(PLVector3D origin, PLVector3D velocity, const char *model, float damage, bool bleed);
 void Item_Respawn(ServerEntity_t *ent);
 
-void Client_RelinkEntities(entity_t *ent,int i,double dTime);
+void Client_RelinkEntities(entity_t *ent, int i, double time);
 
 #endif

@@ -65,7 +65,7 @@ namespace core
 	class ICamera
 	{
 	public:
-		virtual std::vector<float> GetAngles() = 0;
+		virtual PLVector3D GetAngles() = 0;
 		virtual void SetAngles(float x, float y, float z) = 0;
 		virtual void PrintAngles() = 0;
 
@@ -75,7 +75,7 @@ namespace core
 		virtual void SetupProjectionMatrix() = 0;
 		virtual void SetupViewMatrix() = 0;
 
-		virtual std::vector<float> GetPosition() = 0;
+		virtual PLVector3D GetPosition() = 0;
 		virtual void SetPosition(float x, float y, float z) = 0;
 		virtual void SetPosition(PLVector3D position) = 0;
 		virtual void PrintPosition() = 0;

@@ -14,7 +14,7 @@ typedef struct PLTranslatePrimitive {
 } PLTranslatePrimitive;
 
 PLTranslatePrimitive _pl_primitives[] = {
-#if defined (PL_MODE_OPENGL) || (VL_MODE_OPENGL_CORE)
+#if defined (PL_MODE_OPENGL)
         {PL_PRIMITIVE_LINES, GL_LINES, "LINES"},
         {PL_PRIMITIVE_POINTS, GL_POINTS, "POINTS"},
         {PL_PRIMITIVE_TRIANGLES, GL_TRIANGLES, "TRIANGLES"},
@@ -85,6 +85,7 @@ void _plDrawArrays(PLPrimitive mode, PLuint first, PLuint count) {
 
 void _plDrawElements(PLPrimitive mode, PLuint count, PLuint type, const PLvoid *indices) {
     if ((count == 0) || !indices) {
+        plSetError("Invalid number of indices when drawing object!\n");
         return;
     }
 
@@ -116,15 +117,27 @@ PLMesh *plCreateMesh(PLPrimitive primitive, PLDrawMode mode, PLuint num_tris, PL
         return NULL;
     }
 
-    mesh->primitive = primitive;
+    mesh->primitive = mesh->primitive_restore = primitive;
     mesh->numtriangles = num_tris;
     mesh->numverts = num_verts;
     mesh->mode = mode;
 
     if(num_tris > 0) {
         mesh->triangles = (PLTriangle*)calloc(num_tris, sizeof(PLTriangle));
+        if(!mesh->triangles) {
+            plSetError("Failed to allocate triangles for mesh! (%i)\n", num_tris);
+
+            plDeleteMesh(mesh);
+            return NULL;
+        }
     }
     mesh->vertices = (PLVertex*)calloc(num_verts, sizeof(PLVertex));
+    if(!mesh->vertices) {
+        plSetError("Failed to allocate vertices for mesh! (%i)\n", num_verts);
+
+        plDeleteMesh(mesh);
+        return NULL;
+    }
 
 #if defined(PL_MODE_OPENGL) && defined(_PL_USE_VERTEX_BUFFER_OBJECTS)
     glGenBuffers(1, &mesh->id[_PL_MESH_VERTICES]);
@@ -151,25 +164,89 @@ void plDeleteMesh(PLMesh *mesh) {
 }
 
 void plClearMesh(PLMesh *mesh) {
+    plFunctionStart();
+
+    if(!mesh) {
+        plSetError("Invalid mesh!\n");
+        return;
+    }
+
     // Reset the data contained by the mesh, if we're going to begin a new draw.
     memset(mesh->vertices, 0, sizeof(PLVertex) * mesh->numverts);
     memset(mesh->triangles, 0, sizeof(PLTriangle) * mesh->numtriangles);
 }
 
-void plSetMeshVertex(PLMesh *mesh, PLuint index, PLVector3D vector) {
+void plSetMeshVertexPosition(PLMesh *mesh, PLuint index, PLVector3D vector) {
     mesh->vertices[index].position = vector;
 }
 
-void plSetMeshVertex3f(PLMesh *mesh, PLuint index, PLfloat x, PLfloat y, PLfloat z) {
+void plSetMeshVertexPosition3f(PLMesh *mesh, PLuint index, PLfloat x, PLfloat y, PLfloat z) {
     mesh->vertices[index].position = plCreateVector3D(x, y, z);
 }
 
-void plSetMeshColour(PLMesh *mesh, PLuint index, PLColour colour) {
-    plCopyColour(&mesh->vertices[index].colour, colour);
+void plSetMeshVertexPosition2f(PLMesh *mesh, PLuint index, PLfloat x, PLfloat y) {
+    mesh->vertices[index].position = plCreateVector3D(x, y, 0);
+}
+
+void plSetMeshVertexPosition3fv(PLMesh *mesh, PLuint index, PLuint size, const PLfloat *v) {
+    plFunctionStart();
+
+    size += index;
+    if(size > mesh->numverts) {
+        size -= (size - mesh->numverts);
+    }
+
+    for(PLuint i = index; i < size; i++) {
+        mesh->vertices[i].position.x = v[0];
+        mesh->vertices[i].position.y = v[1];
+        mesh->vertices[i].position.z = v[2];
+    }
+}
+
+void plSetMeshVertexST(PLMesh *mesh, PLuint index, PLfloat s, PLfloat t) {
+    plFunctionStart();
+
+    mesh->vertices[index].st[0] = plCreateVector2D(s, t);
+}
+
+void plSetMeshVertexSTv(PLMesh *mesh, PLbyte unit, PLuint index, PLuint size, const PLfloat *st) {
+    plFunctionStart();
+
+    if(!mesh) {
+
+        abort();
+    }
+
+    size += index;
+    if(size > mesh->numverts) {
+        size -= (size - mesh->numverts);
+    }
+
+    for(PLuint i = index; i < size; i++) {
+        mesh->vertices[i].st[unit].x = st[0];
+        mesh->vertices[i].st[unit].y = st[1];
+    }
+}
+
+void plSetMeshVertexColour(PLMesh *mesh, PLuint index, PLColour colour) {
+    plFunctionStart();
+
+    mesh->vertices[index].colour = colour;
 }
 
 void plUploadMesh(PLMesh *mesh) {
+    plFunctionStart();
+
+    if(!mesh) {
+        return;
+    }
+
 #if defined(PL_MODE_OPENGL) && defined(_PL_USE_VERTEX_BUFFER_OBJECTS)
+    if((mesh->mode == PL_DRAW_IMMEDIATE) || (mesh->primitive == PL_PRIMITIVE_QUADS)) {
+        // todo, eventually just convert quad primitives to a triangle strip or something...
+        return;
+    }
+
     // Fill our buffer with data.
     glBindBuffer(GL_ARRAY_BUFFER, mesh->id[_PL_MESH_VERTICES]);
     glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr)sizeof(PLVertex), &mesh->vertices[0].position.x, _plTranslateDrawMode(mesh->mode));
@@ -181,62 +258,74 @@ void plDrawMesh(PLMesh *mesh) {
         return;
     }
 
-#if defined(PL_MODE_OPENGL_CORE) || (defined(PL_MODE_OPENGL) && defined(_PL_USE_VERTEX_BUFFER_OBJECTS))
-    glBindBuffer(GL_ARRAY_BUFFER, mesh->id[_PL_MESH_VERTICES]);
+#if defined(PL_MODE_OPENGL) && (defined(PL_MODE_OPENGL_CORE) || defined(_PL_USE_VERTEX_BUFFER_OBJECTS))
+    if(mesh->primitive != PL_PRIMITIVE_QUADS) {
+        glBindBuffer(GL_ARRAY_BUFFER, mesh->id[_PL_MESH_VERTICES]);
 
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
-    if (mesh->primitive == PL_PRIMITIVE_TRIANGLES) {
-        _plDrawElements(
-                mesh->primitive,
-                mesh->numtriangles * 3,
-                GL_UNSIGNED_BYTE,
-                mesh->indices
-        );
-    } else {
-        _plDrawArrays(mesh->primitive, 0, mesh->numverts);
-    }
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-#elif defined(PL_MODE_OPENGL)
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_COLOR_ARRAY);
-    glEnableClientState(GL_NORMAL_ARRAY);
-
-    PLVertex *vert = &mesh->vertices[0];
-    glVertexPointer(3, GL_FLOAT, sizeof(PLVertex), &vert->position);
-    glColorPointer(4, GL_FLOAT, sizeof(PLVertex), &vert->colour);
-    glNormalPointer(GL_FLOAT, sizeof(PLVertex), &vert->normal);
-    for(PLint i = 0; i < plGetMaxTextureUnits(); i++) {
-        if (pl_graphics_state.tmu[i].active) {
-            glClientActiveTexture((GLenum) GL_TEXTURE0 + i);
-            glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-            glTexCoordPointer(2, GL_FLOAT, sizeof(PLVertex), vert->st);
-        }
-    }
-
-    if(mesh->primitive == PL_PRIMITIVE_TRIANGLES) {
-        _plDrawElements
-            (
+        if (mesh->primitive == PL_PRIMITIVE_TRIANGLES) {
+            _plDrawElements(
                     mesh->primitive,
                     mesh->numtriangles * 3,
                     GL_UNSIGNED_BYTE,
                     mesh->indices
             );
-    } else {
-        _plDrawArrays(mesh->primitive, 0, mesh->numverts);
-    }
-
-    glDisableClientState(GL_COLOR_ARRAY);
-    glDisableClientState(GL_VERTEX_ARRAY);
-    glDisableClientState(GL_NORMAL_ARRAY);
-    for(PLint i = 0; i < plGetMaxTextureUnits(); i++) {
-        if(pl_graphics_state.tmu[i].active) {
-            glClientActiveTexture((GLenum)GL_TEXTURE0 + i);
-            glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+        } else {
+            _plDrawArrays(mesh->primitive, 0, mesh->numverts);
         }
+
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
+#else
+#if 0
+        glBegin(_plTranslatePrimitiveMode(mesh->primitive));
+        for(unsigned int i = 0; i < mesh->numverts; i++) {
+            glVertex3f(mesh->vertices[i].position.x, mesh->vertices[i].position.y, mesh->vertices[i].position.z);
+            glTexCoord2f(mesh->vertices[i].st[0].x, mesh->vertices[i].st[0].y);
+            glColor3ub(mesh->vertices[i].colour.r, mesh->vertices[i].colour.g, mesh->vertices[i].colour.b);
+        }
+        glEnd();
+#else
+        glEnableClientState(GL_VERTEX_ARRAY);
+        glEnableClientState(GL_COLOR_ARRAY);
+        glEnableClientState(GL_NORMAL_ARRAY);
+
+        PLVertex *vert = &mesh->vertices[0];
+        glVertexPointer(3, GL_FLOAT, 0, &vert->position);
+        glColorPointer(4, GL_FLOAT, 0, &vert->colour);
+        glNormalPointer(GL_FLOAT, 0, &vert->normal);
+        for(PLint i = 0; i < plGetMaxTextureUnits(); i++) {
+            if (pl_graphics_state.tmu[i].active) {
+                glClientActiveTexture((GLenum) GL_TEXTURE0 + i);
+                glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+                glTexCoordPointer(2, GL_FLOAT, 0, vert->st);
+            }
+        }
+
+        if(mesh->primitive == PL_PRIMITIVE_TRIANGLES) {
+            _plDrawElements
+                    (
+                            mesh->primitive,
+                            mesh->numtriangles * 3,
+                            GL_UNSIGNED_BYTE,
+                            mesh->indices
+                    );
+        } else {
+            _plDrawArrays(mesh->primitive, 0, mesh->numverts);
+        }
+
+        glDisableClientState(GL_COLOR_ARRAY);
+        glDisableClientState(GL_VERTEX_ARRAY);
+        glDisableClientState(GL_NORMAL_ARRAY);
+        for(PLint i = 0; i < plGetMaxTextureUnits(); i++) {
+            if(pl_graphics_state.tmu[i].active) {
+                glClientActiveTexture((GLenum)GL_TEXTURE0 + i);
+                glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+            }
+        }
+#endif
 #endif
 }
 

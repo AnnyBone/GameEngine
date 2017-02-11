@@ -11,7 +11,7 @@ void GreekfireTouch(ServerEntity_t *ent, ServerEntity_t *other)
 {
 	PLVector3f vel;
 
-	if (other == ent->local.eOwner)
+	if (other == ent->local.owner)
 		return;
 
 	if(other->v.takedamage)
@@ -37,7 +37,7 @@ void GreekFire_Throw(ServerEntity_t *ent)
 
 	greekfire->Physics.solid = SOLID_BBOX;
 
-	greekfire->local.eOwner = ent;
+	greekfire->local.owner = ent;
 
 	Weapon_Projectile(ent,greekfire,800.0f);
 

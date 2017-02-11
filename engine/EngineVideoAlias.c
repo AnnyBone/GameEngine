@@ -38,7 +38,7 @@ void Alias_SetupLighting(ClientEntity_t *entity)
 #if 1
 	Math_VectorSet(1.0f, alias_lightcolour);
 
-	if(!bShading || r_showtris.bValue)
+	if(!bShading || r_showtris.boolean_value)
 		return;
 
 	if (!(entity->effects & EF_FULLBRIGHT))
@@ -121,7 +121,7 @@ void Alias_DrawFrame(MD2_t *alias, ClientEntity_t *entity, lerpdata_t lLerpData)
 #else
 	float fAlpha = 1;
 	float ilerp = 1.0f - lLerpData.blend;
-	if (bShading && !r_showtris.bValue)
+	if (bShading && !r_showtris.boolean_value)
 		fAlpha	= ENTALPHA_DECODE(entity->alpha);
 
 	fAlpha = plClamp(0, fAlpha, entity->distance_alpha);

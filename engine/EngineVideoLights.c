@@ -70,7 +70,7 @@ void Light_Draw(void)
 	int				i;
 	DynamicLight_t	*dlLight;
 
-	if(!gl_flashblend.bValue)
+	if(!gl_flashblend.boolean_value)
 		return;
 
 	// Because the count hasn't advanced yet for this frame.
@@ -82,7 +82,7 @@ void Light_Draw(void)
 	dlLight = cl_dlights;
 	for(i = 0; i < MAX_DLIGHTS; i++,dlLight++)
 	{
-		if (cvEditorLightPreview.bValue && dlLight->lightmap)
+		if (cvEditorLightPreview.boolean_value && dlLight->lightmap)
 			continue;
 		// Ugh rarely some lights are inverted...
 		else if(((dlLight->die < cl.time) && dlLight->die) || !dlLight->radius)
@@ -98,7 +98,7 @@ void Light_Draw(void)
 
 			rad = dlLight->radius*0.35f;
 
-			if(!cvEditorLightPreview.bValue && (plLengthf(v) < rad))
+			if(!cvEditorLightPreview.boolean_value && (plLengthf(v) < rad))
 			{
 				// view is inside the dlight
 				a2 = dlLight->radius*0.0003f;

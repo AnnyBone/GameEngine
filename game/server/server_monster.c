@@ -684,7 +684,7 @@ ServerEntity_t *Monster_GetTarget(ServerEntity_t *eMonster)
 	{
 		// Only return if it's a new target and a monster type!
 		if(	(eMonster != eTargets)																&&	// Can't target ourself.
-			(eTargets != eMonster->local.eOwner)												&&	// Can't target owner.
+			(eTargets != eMonster->local.owner)												&&	// Can't target owner.
 			(eTargets != eMonster->Monster.eTarget && eTargets != eMonster->Monster.eOldTarget) &&	// Can't target an old target.
 			(eTargets->Monster.type != MONSTER_NONE))												// Has to be a monster.
 			// Quick crap thrown in to check if the target is visible or not...

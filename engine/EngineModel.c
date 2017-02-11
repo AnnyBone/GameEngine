@@ -79,14 +79,13 @@ void *Mod_Extradata (model_t *mod)
 	return mod->cache.data;
 }
 
-mleaf_t *Mod_PointInLeaf (PLVector3f p, model_t *model)
+mleaf_t *Mod_PointInLeaf(PLVector3D p, model_t *model)
 {
 	mnode_t		*node;
 	float		d;
 	mplane_t	*plane;
 
-	if (!model || !model->nodes)
-	{
+	if (!model || !model->nodes) {
 		Sys_Error ("Mod_PointInLeaf: bad model");
 		return NULL;
 	}
@@ -97,7 +96,7 @@ mleaf_t *Mod_PointInLeaf (PLVector3f p, model_t *model)
 		if(node->contents < 0) break;
 
 		plane = node->plane;
-		d = Math_DotProduct (p,plane->normal) - plane->dist;
+		d = plVector3DDotProduct (p,plane->normal) - plane->dist;
 		if (d > 0)
 			node = node->children[0];
 		else

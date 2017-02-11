@@ -27,7 +27,7 @@ namespace core
 		virtual ~Sprite();
 
 		void SetPosition(float x, float y, float z);
-		void SetPosition(MathVector3f_t position);
+		void SetPosition(PLVector3D position);
 		void SetColour(float r, float g, float b, float a = 1.0f);
 		void SetType(SpriteType_t type);
 		void SetActive(bool active) { isactive = active; }
@@ -50,14 +50,14 @@ namespace core
 
 		int	ident;
 
-		PLDraw *draw;
+		PLMesh *draw;
 
 		bool
 			islit,		// Is the sprite intended to be lit?
 			isvisible,	// Is the sprite currently visible?
 			isactive;	// Is the sprite considered active?
 
-		MathVector3f_t
+		PLVector3D
 			position,
 			mins, maxs;
 

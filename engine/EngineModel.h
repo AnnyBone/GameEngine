@@ -30,7 +30,7 @@ model_t *Mod_ForName(const char *cName);
 void	*Mod_Extradata (model_t *mod);	// handles caching
 void	Model_Touch(char *cName);
 
-mleaf_t *Mod_PointInLeaf (float *p, model_t *model);
+mleaf_t *Mod_PointInLeaf(PLVector3D p, model_t *model);
 uint8_t	*Mod_LeafPVS (mleaf_t *leaf, model_t *model);
 
 PLVector3D Model_GenerateNormal3fv(PLVector3D a, PLVector3D b, PLVector3D c);

@@ -39,19 +39,17 @@ TraceLine
 TODO: impact on bmodels, monsters
 ==============
 */
-void TraceLine (MathVector3f_t start, MathVector3f_t end, MathVector3f_t impact)
-{
+void TraceLine (PLVector3D start, PLVector3D end, PLVector3D *impact) {
 	trace_t	trace;
 
 	memset (&trace, 0, sizeof(trace));
 	SV_RecursiveHullCheck (cl.worldmodel->hulls, 0, 0, 1, start, end, &trace);
 
-	Math_VectorCopy (trace.endpos, impact);
+	*impact = trace.endpos;
 }
 
 // TODO: stay at least 8 units away from all walls in this leaf
-void Chase_UpdateForDrawing (void)
-{
+void Chase_UpdateForDrawing (void) {
 #if 0
 	int		i;
 	plVector3f_t	forward, up, right;

@@ -46,7 +46,7 @@ void Shadow_Initialize()
 */
 void Shadow_DrawBlob(ClientEntity_t *Entity)
 {
-	if (!cv_video_drawshadowblob.bValue)
+	if (!cv_video_drawshadowblob.boolean_value)
 		return;
 
 	// TODO: We ONLY want the bottom plane! Not the light sample... Simplify this?
@@ -98,7 +98,7 @@ void Shadow_DrawBlob(ClientEntity_t *Entity)
 
 void Shadow_DrawMap(ClientEntity_t *entity)
 {
-	if (!cv_video_drawshadowmap.bValue)
+	if (!cv_video_drawshadowmap.boolean_value)
 		return;
 
 	DynamicLight_t *nearest = Light_GetDynamic(entity->origin, false);

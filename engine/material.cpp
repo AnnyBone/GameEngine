@@ -1002,7 +1002,7 @@ PL_EXTERN_C_END
 /*	TODO: Replace Material_Draw with this!
 */
 void Material_DrawObject(Material_t *material, PLDraw *object, bool ispost) {
-  bool showwireframe = r_showtris.bValue;
+  bool showwireframe = r_showtris.boolean_value;
   if ((material && material->override_wireframe) && (r_showtris.iValue == 1))
 	showwireframe = false;
 
@@ -1045,7 +1045,7 @@ void Material_Draw(Material_t *material,
 				   bool ispost) {
   if (!material) return; // todo, handle this better... throw error?
   else if ((material->override_wireframe && (r_showtris.iValue != 1) || !material->override_wireframe)
-	  && (r_lightmap_cheatsafe || r_showtris.bValue)) {
+	  && (r_lightmap_cheatsafe || r_showtris.boolean_value)) {
 	if (!ispost) {
 	  // Select the first TMU.
 	  plSetTextureUnit(0);
@@ -1181,7 +1181,7 @@ void Material_Draw(Material_t *material,
 		break;
 	  case MATERIAL_TEXTURE_DETAIL:
 		if (!ispost) {
-		  if (!cv_video_drawdetail.bValue) {
+		  if (!cv_video_drawdetail.boolean_value) {
 			plDisableGraphicsStates(VL_CAPABILITY_TEXTURE_2D);
 			break;
 		  }
@@ -1197,7 +1197,7 @@ void Material_Draw(Material_t *material,
 		break;
 	  case MATERIAL_TEXTURE_FULLBRIGHT:
 		if (!ispost) {
-		  if (!gl_fullbrights.bValue) {
+		  if (!gl_fullbrights.boolean_value) {
 			plDisableGraphicsStates(VL_CAPABILITY_TEXTURE_2D);
 			break;
 		  }
@@ -1248,7 +1248,7 @@ void Material_Draw(Material_t *material,
 	else if (msCurrentSkin->uiFlags & MATERIAL_FLAG_ALPHA) {
 	  plDisableGraphicsStates(VL_CAPABILITY_ALPHA_TEST);
 
-	  if ((msCurrentSkin->uiFlags & MATERIAL_FLAG_ALPHATRICK) && (cv_video_alphatrick.bValue && (ObjectSize > 0))) {
+	  if ((msCurrentSkin->uiFlags & MATERIAL_FLAG_ALPHATRICK) && (cv_video_alphatrick.boolean_value && (ObjectSize > 0))) {
 		vlDepthMask(false);
 		plEnableGraphicsStates(VL_CAPABILITY_BLEND);
 

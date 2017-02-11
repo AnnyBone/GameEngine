@@ -78,7 +78,7 @@ void ShockLaser_Touch(ServerEntity_t *ent, ServerEntity_t *other)
 {
 	char	*cSound;
 
-	if(!other || (other == ent->local.eOwner))
+	if(!other || (other == ent->local.owner))
 		return;
 
 	if(other->v.takedamage)
@@ -112,7 +112,7 @@ void Shockwave_SpawnProjectile(ServerEntity_t *ent)
 		Math_VectorCopy(ent->v.origin,eLaser->v.origin);
 		Math_MVToVector(plVectorToAngles(eLaser->v.velocity),eLaser->v.angles);
 
-		eLaser->local.eOwner = ent;
+		eLaser->local.owner = ent;
 
 		eLaser->v.movetype		= MOVETYPE_FLY;
 		eLaser->v.TouchFunction = ShockLaser_Touch;

@@ -33,9 +33,9 @@ namespace core
 		virtual void Draw();
 		virtual void Simulate();
 
-		void Input(ClientCommand_t *cmd, plVector2i_t mpos);
+		void Input(ClientCommand_t *cmd, PLVector2D mpos);
 
-		std::vector<float> GetAngles() { return std::vector<float> { _angles[0], _angles[1], _angles[2] }; }
+		PLVector3D GetAngles() { return _angles; }
 		void SetAngles(float x, float y, float z);
 		void SetAngles(PLVector3D angles);
 		void SetPitch(float pitch) { _angles[PL_PITCH] = pitch; }
@@ -49,7 +49,7 @@ namespace core
 		void SetupProjectionMatrix();
 		void SetupViewMatrix();
 
-		std::vector<float> GetPosition() { return std::vector<float> { _position[0], _position[1], _position[2] }; }
+		PLVector3D GetPosition() { return _position; }
 		void SetPosition(float x, float y, float z);
 		void SetPosition(PLVector3D position);
 		void PrintPosition();

@@ -30,28 +30,20 @@ void vlPopMatrix(void);
 void vlDepthMask(bool mode);
 
 //-----------------
-// Shaders
-
-void vlLinkShaderProgram(PLShaderProgram *program);
-void vlAttachShader(PLShaderProgram program, PLShader shader);
-
-PLAttribute vlGetAttributeLocation(PLShaderProgram *program, const char *name);
-
-//-----------------
 // Drawing
 
-PLDraw *vlCreateDraw(PLPrimitive primitive, uint32_t num_tris, uint32_t num_verts);
-void vlDeleteDraw(PLDraw *draw);
+PLMesh *vlCreateDraw(PLPrimitive primitive, uint32_t num_tris, uint32_t num_verts);
+void vlDeleteDraw(PLMesh *draw);
 
-void vlBeginDraw(PLDraw *draw);
-void vlEndDraw(PLDraw *draw);
+void vlBeginDraw(PLMesh *draw);
+void vlEndDraw(PLMesh *draw);
 void vlDrawVertex3f(float x, float y, float z);
-void vlDrawVertex3fv(plVector3f_t position);
+void vlDrawVertex3fv(PLVector3D position);
 void vlDrawColour4f(float r, float g, float b, float a);
 void vlDrawColour4fv(PLColour rgba);
-void vlDrawNormal3fv(plVector3f_t position);
+void vlDrawNormal3fv(PLVector3D position);
 void vlDrawTexCoord2f(unsigned int target, float s, float t);
-void vlDrawVertexNormals(PLDraw *draw);
+void vlDrawVertexNormals(PLMesh *draw);
 
 //-----------------
 

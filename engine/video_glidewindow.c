@@ -130,16 +130,16 @@ void Window_UpdateVideo(void)
 
 	SDL_SetWindowSize(sMainWindow, Video.iWidth, Video.iHeight);
 
-	if (Video.vertical_sync != cv_video_verticlesync.bValue)
+	if (Video.vertical_sync != cv_video_verticlesync.boolean_value)
 	{
 		SDL_GL_SetSwapInterval(cv_video_verticlesync.value);
 
-		Video.vertical_sync = cv_video_verticlesync.bValue;
+		Video.vertical_sync = cv_video_verticlesync.boolean_value;
 	}
 
-	if (Video.fullscreen != cv_video_fullscreen.bValue)
+	if (Video.fullscreen != cv_video_fullscreen.boolean_value)
 	{
-		if (SDL_SetWindowFullscreen(sMainWindow, (SDL_bool)cv_video_fullscreen.bValue) == -1)
+		if (SDL_SetWindowFullscreen(sMainWindow, (SDL_bool)cv_video_fullscreen.boolean_value) == -1)
 		{
 			Con_Warning("Failed to set window mode!\n%s", SDL_GetError());
 
@@ -147,7 +147,7 @@ void Window_UpdateVideo(void)
 			Cvar_SetValue(cv_video_fullscreen.name, Video.fullscreen);
 		}
 		else
-			Video.fullscreen = cv_video_fullscreen.bValue;
+			Video.fullscreen = cv_video_fullscreen.boolean_value;
 	}
 
 	if (!cv_video_fullscreen.value)

@@ -88,8 +88,8 @@ void Zeus_PrimaryAttack(ServerEntity_t *ent);
 void IonRifle_PrimaryAttack(ServerEntity_t *eOwner);
 void IonRifle_SecondaryAttack(ServerEntity_t *eOwner);
 #elif GAME_ADAMAS
-void Blazer_Deploy(ServerEntity_t *eOwner);
-void Blazer_PrimaryAttack(ServerEntity_t *eOwner);
+void Blazer_Deploy(ServerEntity_t *owner);
+void Blazer_PrimaryAttack(ServerEntity_t *owner);
 #endif
 
 typedef struct

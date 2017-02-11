@@ -394,7 +394,7 @@ void Input_ActivateMouse(void) {
   if (input_mouseactive)
 	return;
 
-  if (cvInputMouseGrab.bValue) {
+  if (cvInputMouseGrab.boolean_value) {
 	SDL_ShowCursor(false);
 	SDL_SetWindowGrab(sdl_mainwindow, SDL_TRUE);
 

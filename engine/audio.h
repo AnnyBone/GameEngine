@@ -173,7 +173,8 @@ PL_EXTERN_C
 void Audio_Initialize(void);
 void Audio_Frame(void);
 void Audio_PlayAmbientSound(PLVector3D position, const char *path, float volume);
-void Audio_PlayTemporarySound(unsigned int ent, AudioChannel_t channel, PLVector3D position, bool local, const char *path, float volume);
+void Audio_PlayTemporarySound(unsigned int ent, AudioChannel_t channel, PLVector3D position, bool local,
+                              const char *path, float volume);
 void Audio_StopSounds(void);
 void Audio_PrecacheSample(const char *path, bool preserve);
 void Audio_Shutdown(void);

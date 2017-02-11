@@ -46,7 +46,7 @@ void Deathmatch_Spawn(ServerEntity_t *ePlayer)
 	}
 
 	// Clear our inventory.
-	memset(ePlayer->v.iInventory,0,sizeof(ePlayer->v.iInventory));
+	memset(ePlayer->v.inventory,0,sizeof(ePlayer->v.inventory));
 
 	// Add the default inventory.
 	Item_AddInventory(Item_GetItem(WEAPON_DAIKATANA),ePlayer);

@@ -251,8 +251,7 @@ PLVector3D Weapon_Aim(ServerEntity_t *entity)
 	eBest = NULL;
 
 	eCheck = SERVER_ENTITY_NEXT(Engine.Server_GetEdicts());
-	for (i = 1; i < Engine.Server_GetNumEdicts(); i++, eCheck = SERVER_ENTITY_NEXT(eCheck))
-	{
+	for (i = 1; i < Engine.Server_GetNumEdicts(); i++, eCheck = SERVER_ENTITY_NEXT(eCheck)) {
 		if (eCheck == entity) {
             continue;
         }

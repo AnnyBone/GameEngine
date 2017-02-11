@@ -36,7 +36,7 @@ void Ballista_LogTouch(ServerEntity_t *ent, ServerEntity_t *other)
 {
 	char snd[64];
 
-	if(other == ent->local.eOwner)
+	if(other == ent->local.owner)
 		return;
 
 	// We hit an enemy! Stick with 'em
@@ -65,7 +65,7 @@ void Ballista_SpawnLogProjectile(ServerEntity_t *ent)
 {
 	ServerEntity_t *log = Entity_Spawn();
 
-	log->local.eOwner = ent;
+	log->local.owner = ent;
 
 	log->v.movetype = MOVETYPE_FLY;
 	log->Physics.solid = SOLID_BBOX;

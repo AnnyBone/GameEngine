@@ -72,8 +72,8 @@ void Menu_Initialize(void)
 		// Unload our module.
 		plUnloadLibrary(hMenuInstance);
 
-		// Let the user know the module failed to load. ~hogsy
-		Sys_Error("Failed to load %s/%s" PL_MODULE_EXTENSION "!\nCheck log for details.\n", com_gamedir, MENU_MODULE);
+		// Let the user know the module failed to load.
+		Sys_Error("Failed to load %s/%s" PL_SYSTEM_LIBRARY_EXTENSION "!\nCheck log for details.\n", com_gamedir, MENU_MODULE);
 	}
 }
 

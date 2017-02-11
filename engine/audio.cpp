@@ -20,6 +20,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "engine_base.h"
 
 #include "video.h"
+#include "audio.h"
+#include "client.h"
 
 #include <AL/al.h>
 #include <AL/alc.h>
@@ -156,32 +158,31 @@ AudioManager::~AudioManager() {
 }
 
 void AudioManager::Frame() {
-	plVector3f_t position = {0}, orientation = {0}, velocity = {0};
-
+	PLVector3D position, orientation, velocity;
 	if (cl.current_camera && (cls.signon == SIGNONS)) {
 		plVectorCopy(&cl.current_camera->GetPosition()[0], position);
 		plVectorCopy(&cl.current_camera->GetAngles()[0], orientation);
-		plVectorCopy(cl.velocity, velocity);
+        velocity = cl.velocity;
 	} else {
-		plVectorCopy(pl_origin3f, position);
-		plVectorCopy(pl_origin3f, orientation);
-		plVectorCopy(pl_origin3f, velocity);
+        position = 0;
+        orientation = 0;
+        velocity = 0;
 	}
 
 	// Convert orientation to something OpenAL can use.
-	plVector3f_t forward = {0}, right = {0}, up = {0};
-	plAngleVectors(orientation, forward, right, up);
+	PLVector3D forward, right, up;
+	Math_AngleVectors(orientation, &forward, &right, &up);
 	float lis_orientation[6];
-	lis_orientation[0] = forward[0];
-	lis_orientation[3] = up[0];
-	lis_orientation[1] = forward[1];
-	lis_orientation[4] = up[1];
-	lis_orientation[2] = forward[2];
-	lis_orientation[5] = up[2];
+	lis_orientation[0] = forward.x;
+	lis_orientation[3] = up.x;
+	lis_orientation[1] = forward.y;
+	lis_orientation[4] = up.y;
+	lis_orientation[2] = forward.z;
+	lis_orientation[5] = up.z;
 
-	alListenerfv(AL_POSITION, position);
+	alListenerfv(AL_POSITION, &position[0]);
 	alListenerfv(AL_ORIENTATION, lis_orientation);
-	alListenerfv(AL_VELOCITY, velocity);
+	alListenerfv(AL_VELOCITY, &velocity[0]);
 
 	// Check if there's any sounds we can delete.
 	for (unsigned int i = 0; i < sounds.size(); i++) {
@@ -238,26 +239,27 @@ AudioSound_t *AudioManager::AddSound() {
 	return sound;
 }
 
-void AudioManager::SetSoundPosition(AudioSound_t *sound, plVector3f_t position) {
+void AudioManager::SetSoundPosition(AudioSound_t *sound, PLVector3D position) {
 	// Check that it's actually moved.
-	if (plVectorCompare(position, sound->current_position))
+	if (position == sound->current_position)
 		return;
 
-	alSourcefv(sound->source, AL_POSITION, position);
+	alSourcefv(sound->source, AL_POSITION, &position[0]);
 
 	// Keep cur position updated.
-	plVectorCopy(position, sound->current_position);
+    sound->current_position = position;
 }
 
-void AudioManager::SetSoundVelocity(AudioSound_t *sound, plVector3f_t velocity) {
+void AudioManager::SetSoundVelocity(AudioSound_t *sound, PLVector3D velocity) {
 	// Check that current velocity has changed.
-	if (plVectorCompare(velocity, sound->current_velocity))
-		return;
+	if (velocity == sound->current_velocity) {
+        return;
+    }
 
-	alSourcefv(sound->source, AL_VELOCITY, velocity);
+	alSourcefv(sound->source, AL_VELOCITY, &velocity[0]);
 
 	// Keep cur velocity updated.
-	plVectorCopy(velocity, sound->current_velocity);
+    sound->current_velocity = velocity;
 }
 
 void AudioManager::PlaySound(const AudioSound_t *sound) {
@@ -391,11 +393,11 @@ void AudioManager::DeleteSound(AudioSound_t *sound) {
 	delete sound;
 }
 
-typedef struct {
+typedef struct AudioReverbEffect {
 	int in;
 
 	EFXEAXREVERBPROPERTIES out;
-} AudioReverbEffect_t;
+} AudioReverbEffect;
 
 // We have to translate this manually, or rather, suffer because
 // we don't want to include any of the OpenAL headers outside
@@ -403,7 +405,7 @@ typedef struct {
 //
 // Why do this? It's mainly if we ever need to switch away from
 // OpenAL in the future.
-AudioReverbEffect_t audio_reverb_effects[] =
+AudioReverbEffect audio_reverb_effects[] =
 		{
 				{AUDIO_REVERB_GENERIC,         EFX_REVERB_PRESET_GENERIC},
 				{AUDIO_REVERB_ALLEY,           EFX_REVERB_PRESET_ALLEY},
@@ -466,22 +468,14 @@ void AudioManager::SetEffectReverb(const AudioEffect_t *effect, AudioEffectRever
 
 bool AudioManager::IsSoundPlaying(const AudioSound_t *sound) {
 	int state;
-
 	alGetSourcei(sound->source, AL_SOURCE_STATE, &state);
-	if (state == AL_PLAYING)
-		return true;
-
-	return false;
+	return (state == AL_PLAYING);
 }
 
 bool AudioManager::IsSoundPaused(const AudioSound_t *sample) {
 	int state;
-
 	alGetSourcei(sample->source, AL_SOURCE_STATE, &state);
-	if (state == AL_PAUSED)
-		return true;
-
-	return false;
+    return (state == AL_PAUSED);
 }
 
 // Effects
@@ -691,16 +685,17 @@ void AudioManager::ListSounds() {
 
 	Con_Printf("\n");
 
-	for (unsigned int i = 0; i < sounds.size(); i++)
-		Con_SafePrintf(" Sound : Volume(%5.1f) Velocity(%i %i %i) Position(%i %i %i) Pitch(%5.1f)\n",
-		               sounds[i]->volume,
-		               (int) sounds[i]->current_velocity[0],
-		               (int) sounds[i]->current_velocity[1],
-		               (int) sounds[i]->current_velocity[2],
-		               (int) sounds[i]->current_position[0],
-		               (int) sounds[i]->current_position[1],
-		               (int) sounds[i]->current_position[2],
-		               sounds[i]->pitch);
+	for (unsigned int i = 0; i < sounds.size(); i++) {
+        Con_SafePrintf(" Sound : Volume(%5.1f) Velocity(%i %i %i) Position(%i %i %i) Pitch(%5.1f)\n",
+                       sounds[i]->volume,
+                       (int) sounds[i]->current_velocity[0],
+                       (int) sounds[i]->current_velocity[1],
+                       (int) sounds[i]->current_velocity[2],
+                       (int) sounds[i]->current_position[0],
+                       (int) sounds[i]->current_position[1],
+                       (int) sounds[i]->current_position[2],
+                       sounds[i]->pitch);
+    }
 
 	Con_Printf("%i samples, %i sounds, %i bytes\n", samples.size(), sounds.size(), mem);
 }
@@ -740,7 +735,7 @@ void Audio_PlayLocalSound(const char *path) {
 	g_audiomanager->PlaySound(path);
 }
 
-void Audio_PlayAmbientSound(plVector3f_t position, const char *path, float volume) {
+void Audio_PlayAmbientSound(PLVector3D position, const char *path, float volume) {
 	AudioSound_t *sound = g_audiomanager->AddSound();
 	sound->volume = volume;
 
@@ -750,16 +745,17 @@ void Audio_PlayAmbientSound(plVector3f_t position, const char *path, float volum
 }
 
 void
-Audio_PlayTemporarySound(unsigned int ent, AudioChannel_t channel, plVector3f_t position, bool local, const char *path,
-                         float volume) {
+Audio_PlayTemporarySound(unsigned int ent, AudioChannel_t channel, PLVector3D position, bool local, const char *path,
+						 float volume) {
 	AudioSound_t *sound = g_audiomanager->AddSound();
 	sound->volume = volume;
 	sound->local = local;
 	sound->pitch = 1.0f - ((rand() % 3) / 10.0f);
 	sound->entity = ent;
 
-	if (!sound->local)
+	if (!sound->local) {
 		g_audiomanager->SetSoundPosition(sound, position);
+	}
 
 	g_audiomanager->LoadSound(sound, path);
 	g_audiomanager->PlaySound(sound);
@@ -777,20 +773,17 @@ void Audio_PrecacheSample(const char *path, bool preserve) {
 	return g_audiomanager->PrecacheSample(path, preserve);
 }
 
-/*	Deletes the sound.
-*/
+// Deletes the sound.
 void Audio_DeleteSound(AudioSound_t *sample) {
 	g_audiomanager->DeleteSound(sample);
 }
 
-/*	Called per-frame to update listener position and more!
-*/
+// Called per-frame to update listener position and more!
 void Audio_Frame(void) {
 	g_audiomanager->Frame();
 }
 
-/*	Called during shutdown.
-*/
+// Called during shutdown.
 void Audio_Shutdown(void) {
 	delete g_audiomanager;
 }

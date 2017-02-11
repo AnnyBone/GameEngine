@@ -174,20 +174,20 @@ void LaserGat_BaseDie(ServerEntity_t *eBase, ServerEntity_t *eOther, EntityDamag
 	Entity_SetModel(eBase,LASERGAT_MODEL_BROKEN);
 
 	// Check that we still have our owner...
-	if(eBase->local.eOwner)
+	if(eBase->local.owner)
 	{
 		// Clear out the owners owner.
-		eBase->local.eOwner->local.eOwner = NULL;
+		eBase->local.owner->local.owner = NULL;
 
-		eBase->local.eOwner->v.movetype			= MOVETYPE_BOUNCE;
-		eBase->local.eOwner->v.TouchFunction	= LaserGat_Touch;
+		eBase->local.owner->v.movetype			= MOVETYPE_BOUNCE;
+		eBase->local.owner->v.TouchFunction	= LaserGat_Touch;
 
 		Math_VectorScale(
-			eBase->local.eOwner->v.avelocity,
+			eBase->local.owner->v.avelocity,
 			(float)eBase->v.health,
-			eBase->local.eOwner->v.avelocity);
+			eBase->local.owner->v.avelocity);
 
-		Monster_Killed(eBase->local.eOwner, eOther, type);
+		Monster_Killed(eBase->local.owner, eOther, type);
 	}
 }
 
@@ -252,7 +252,7 @@ void LaserGat_Spawn(ServerEntity_t *eLaserGat)
 
 		eLaserGat->v.origin[2] -= 30.0f;
 
-		eLaserGat->local.eOwner	= eBase;
-		eBase->local.eOwner		= eLaserGat;
+		eLaserGat->local.owner	= eBase;
+		eBase->local.owner		= eLaserGat;
 	}
 }
