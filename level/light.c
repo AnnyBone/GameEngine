@@ -107,7 +107,7 @@ int LightStyleForTargetname( char *targetname )
 	return numlighttargets - 1 + 32;
 }
 
-#ifndef __linux
+#ifdef _WIN32
 #	include <Windows.h>
 #endif
 
@@ -600,9 +600,10 @@ int Light_Main( int argc, char **argv )
 			i++;
 			if( i >= argc )
 				Error( "no value was given to -defaulttype\n" );
-			defaultlighttype = atoi( argv[i] );
-			if( defaultlighttype < 0 || defaultlighttype >= LIGHTTYPE_TOTAL )
+			int deftype = atoi( argv[i] );
+			if( deftype < 0 || deftype >= LIGHTTYPE_TOTAL )
 				Error( "invalid value given to -defaulttype\n" );
+			defaultlighttype = (lighttype_t)deftype;
 			printf( "defaulting all lights to type %i\n", defaultlighttype);
 		}
 		else if( !strcmp( argv[i],"-overridetypes" ) )

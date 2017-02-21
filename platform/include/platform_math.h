@@ -303,10 +303,6 @@ static PL_INLINE void plAddVector3D(PLVector3D *v, PLVector3D v2) {
     v->x += v2.x; v->y += v2.y; v->z += v2.z;
 }
 
-PL_INLINE static void plAddVector3Df(PLVector3D *v, PLfloat f) {
-    v->x += f; v->y += f; v->z += f;
-}
-
 static PL_INLINE void plSubtractVector3D(PLVector3D *v, PLVector3D v2) {
     v->x -= v2.x; v->y -= v2.y; v->z -= v2.z;
 }
