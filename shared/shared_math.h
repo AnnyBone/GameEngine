@@ -22,6 +22,21 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "platform_math.h"
 
+#ifdef _MSC_VER
+#	pragma warning(disable: 4201)
+#endif
+
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
+#include <glm/mat4x4.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
+#ifdef _MSC_VER
+#	pragma warning(default: 4201)
+#endif
+
 #define MATH_PI_DIV180  (PL_PI / 180)
 
 #define MATH_RINT(a)    ((a) > 0 ? (int)((a) + 0.5) : (int)((a) - 0.5))
@@ -93,18 +108,12 @@ static PL_INLINE float Math_SphereFromBounds(PLVector3D mins, PLVector3D maxs, P
 }
 
 // Check to see if an area is intersecting another area.
+// todo, pretty sure this isn't correct...
 static PL_INLINE bool Math_IsIntersecting(PLVector3D minsa, PLVector3D maxsa, PLVector3D minsb, PLVector3D maxsb) {
-    if(
-        minsa.x > maxsb.x ||
-        minsa.y > maxsb.y ||
-        minsa.z > maxsb.z ||
-        maxsa.x < minsb.x ||
-        maxsa.y < minsb.y ||
-        maxsa.z < minsb.z) {
-        return false;
-    }
-
-    return true;
+    return !(
+            minsa.x > maxsb.x || minsa.y > maxsb.y || minsa.z > maxsb.z ||
+            maxsa.x < minsb.x || maxsa.y < minsb.y || maxsa.z < minsb.z
+    );
 }
 
 static PL_INLINE void Math_NormalizeAngles(PLVector3D *v) {

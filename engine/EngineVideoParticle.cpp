@@ -59,20 +59,20 @@ Particle_t *Particle_Allocate(void)
 	pParticle->next = pActiveParticles;
 	pActiveParticles = pParticle;
 
-	plVector4Setf(1.0f, pParticle->vColour);
+	pParticle->colour = PLColour(PL_COLOUR_WHITE);
 
 	return pParticle;
 }
 
 void Particle_CreateEffect(
-	ParticleType_t pType,
-	ParticleBehaviour_t pBehaviour,
-	MathVector3f_t vOrigin,
-	MathVector3f_t vDirection,
-	float fVelocity,
-	float fScale,
-	int iCount,
-	int iMaterial)
+        ParticleType_t pType,
+        ParticleBehaviour_t pBehaviour,
+        PLVector3D vOrigin,
+        PLVector3D vDirection,
+        float fVelocity,
+        float fScale,
+        int iCount,
+        int iMaterial)
 {
 	Particle_t	*pParticle;
 	int			i, j, k;
@@ -92,7 +92,6 @@ void Particle_CreateEffect(
 					vDirection[1] = ((float)i)*8.0f + (float)(rand() & 7);
 					vDirection[2] = 256.0f;
 
-					// [5/9/2012] Keep this pre-defined? ~hogsy
 					fVelocity = 50.0f + (float)(rand() & 63);
 
 					pParticle->lifetime = cl.time + 2.0f + (rand() & 31)*0.02f;
@@ -100,8 +99,8 @@ void Particle_CreateEffect(
 					//pParticle->iMaterial = iMaterial;
 
 					Math_VectorAdd(vOrigin, vDirection, pParticle->origin);
-					plVectorNormalize(vDirection);
-					plVectorScalef(vDirection, fVelocity, pParticle->velocity);
+                    vDirection.Normalize();
+                    pParticle->velocity = vDirection * fVelocity;
 				}
 		break;
 	case PARTICLE_TYPE_TELEPORTSPLASH:
@@ -125,7 +124,7 @@ void Particle_CreateEffect(
 					pParticle->origin[1] = vOrigin[1] + j + (rand() & 3);
 					pParticle->origin[2] = vOrigin[2] + k + (rand() & 3);
 
-					plVectorNormalize(vDirection);
+                    vDirection.Normalize();
 					Math_VectorScale(vDirection, fVelocity, pParticle->velocity);
 				}
 		break;
@@ -153,9 +152,10 @@ void Particle_CreateEffect(
 	}
 }
 
-void Particle_RocketTrail(plVector3f_t start, plVector3f_t end, int type)
+void Particle_RocketTrail(PLVector3D start, PLVector3D end, int type)
 {
-	plVector3f_t		vec;
+#if 0
+	PLVector3D		vec;
 	float				len;
 	int					j;
 	Particle_t			*p;
@@ -240,11 +240,12 @@ void Particle_RocketTrail(plVector3f_t start, plVector3f_t end, int type)
 
 		Math_VectorAdd(start, vec, start);
 	}
+#endif
 }
 
 void Particle_Parse(void)
 {
-	MathVector3f_t	vOrigin, vDirection;
+	PLVector3D	vOrigin, vDirection;
 	int				i, iCount, iMaterial;
 	float			fScale;
 
@@ -338,14 +339,7 @@ void Particle_ClearAll(void)
 	pParticles[MAX_PARTICLES - 1].next = NULL;
 }
 
-void ParticleManager_Simulate(void)
-{
-	Particle_t	*pParticle, *pKill;
-	float		fFrameTime, fDVelocity,
-				fTime[3],
-				fGravity,fActualGravity,fSlowGravity;
-	int			i;
-
+void ParticleManager_Simulate(void) {
 	// Don't continue if there aren't any active particles.
 	if (!pActiveParticles)
 		return;
@@ -354,46 +348,43 @@ void ParticleManager_Simulate(void)
 	if (cl.paused || ((key_dest == key_console) && (svs.maxclients == 1)))
 		return;
 
-	fFrameTime = cl.time - cl.oldtime;
-
-	fTime[2] = fFrameTime*15.0f;
-	fTime[1] = fFrameTime*10.0f;
-	fTime[0] = fFrameTime*5.0f;
+	double time1 = cl.time - cl.oldtime, time2[3];
+	time2[2] = time1 * 15;
+	time2[1] = time1 * 10;
+	time2[0] = time1 * 5;
 
 	// TODO: Alternative? Both variables are stored in the game module...
-	fActualGravity = (	Cvar_VariableValue("server_gravity")*
-						Cvar_VariableValue("server_gravityamount"));
+	float actual_gravity = (
+            Cvar_VariableValue("server_gravity") *
+		    Cvar_VariableValue("server_gravityamount")
+    );
 
-	fGravity = fFrameTime*fActualGravity;
-	fSlowGravity = fFrameTime*fActualGravity*0.05f;
+	float gravity = ((float)time1) * actual_gravity;
+	float slow_gravity = ((float)time1) * actual_gravity * 0.05f;
+	float velocity = 4 * ((float)time1);
 
-	fDVelocity = 4.0f*fFrameTime;
-
-	for (;;)
-	{
-		pKill = pActiveParticles;
-		if (pKill && (pKill->lifetime < cl.time))
+    Particle_t *kill;
+	for (;;) {
+		kill = pActiveParticles;
+		if (kill && (kill->lifetime < cl.time))
 		{
-			pActiveParticles = pKill->next;
-			pKill->next = pFreeParticles;
-			pFreeParticles = pKill;
+			pActiveParticles = kill->next;
+			kill->next = pFreeParticles;
+			pFreeParticles = kill;
 
 			continue;
 		}
-
 		break;
 	}
 
-	for (pParticle = pActiveParticles; pParticle; pParticle = pParticle->next)
-	{
-		for (;;)
-		{
-			pKill = pParticle->next;
-			if (pKill && (pKill->lifetime < cl.time))
+	for (Particle_t *particle = pActiveParticles; particle; particle = particle->next) {
+		for (;;) {
+			kill = particle->next;
+			if (kill && (kill->lifetime < cl.time))
 			{
-				pParticle->next = pKill->next;
-				pKill->next = pFreeParticles;
-				pFreeParticles = pKill;
+				particle->next = kill->next;
+				kill->next = pFreeParticles;
+				pFreeParticles = kill;
 
 				continue;
 			}
@@ -402,49 +393,49 @@ void ParticleManager_Simulate(void)
 		}
 
 		// Update the particles movement.
-		for (i = 0; i < 3; i++)
-			pParticle->origin[i] += pParticle->velocity[i] * fFrameTime;
+		for (int i = 0; i < 3; i++) {
+            particle->origin[i] += particle->velocity[i] * time1;
+        }
 
 		// Keep the alpha updated.
-		pParticle->vColour[ALPHA] = plClamp(0, pParticle->lifetime - cl.time, 1.0f);
+		particle->colour.a = plFloatToByte(Math_Clamp(0, particle->lifetime - cl.time, 1.0f));
 
-		// Lighting support was here, but for now it's being left out since I want to implement a better solution.
-
-		switch (pParticle->pBehaviour)
+		switch (particle->pBehaviour)
 		{
 		case PARTICLE_BEHAVIOUR_SMOKE:
-			pParticle->fScale += fTime[2];
-			pParticle->velocity[2] += fSlowGravity / 10.0f;
+			particle->fScale += time2[2];
+			particle->velocity[2] += slow_gravity / 10.0f;
 			break;
 		case PARTICLE_BEHAVIOUR_FIRE:
-			pParticle->fRamp += fTime[0];
-			if (pParticle->fRamp >= 6.0f)
-				pParticle->lifetime = -1.0;
+			particle->fRamp += time2[0];
+			if (particle->fRamp >= 6.0f)
+				particle->lifetime = -1.0;
 
-			pParticle->velocity[2] += fGravity;
+			particle->velocity[2] += gravity;
 			break;
 		case PARTICLE_BEHAVIOUR_EXPLODE:
-			pParticle->fRamp += fTime[1];
-			if (pParticle->fRamp >= 8.0f)
-				pParticle->lifetime = -1.0;
+			particle->fRamp += time2[1];
+			if (particle->fRamp >= 8.0f)
+				particle->lifetime = -1.0;
 
-			for (i = 0; i < 3; i++)
-				pParticle->velocity[i] += pParticle->velocity[i] * fDVelocity;
+			for (int i = 0; i < 3; i++)
+				particle->velocity[i] += particle->velocity[i] * velocity;
 
-			pParticle->velocity[2] -= fSlowGravity;
+			particle->velocity[2] -= slow_gravity;
 			break;
 		case PARTICLE_BEHAVIOUR_GRAVITY:
-			pParticle->velocity[2] -= fGravity;
+			particle->velocity[2] -= gravity;
 			break;
 		case PARTICLE_BEHAVIOUR_SLOWGRAVITY:
-			pParticle->velocity[2] -= fSlowGravity;
+			particle->velocity[2] -= slow_gravity;
 			break;
-		case PARTICLE_BLOB:
-			for (i = 0; i < 3; i++)
-				pParticle->velocity[i] += pParticle->velocity[i] * fDVelocity;
+		case PARTICLE_BLOB: {
+            for (int i = 0; i < 3; i++)
+                particle->velocity[i] += particle->velocity[i] * velocity;
 
-			pParticle->velocity[2] -= fGravity;
-			break;
+            particle->velocity[2] -= gravity;
+            break;
+        }
 		case PARTICLE_BEHAVIOUR_STATIC:
 		default:
 			break;
@@ -452,43 +443,36 @@ void ParticleManager_Simulate(void)
 	}
 }
 
-void Particle_Draw(void)
-{
-	Particle_t	*pParticle;
-
-	if (!pActiveParticles || !cv_video_drawparticles.value)
-		return;
+void Particle_Draw(void) {
+	if (!pActiveParticles || !cv_video_drawparticles.value) {
+        return;
+    }
 
 	core::Camera *camera = g_cameramanager->GetCurrentCamera();
-	if (!camera)
-		return;
+	if (!camera) {
+        return;
+    }
 
-	for (pParticle = pActiveParticles; pParticle; pParticle = pParticle->next)
-	{
-		PLVertex	voParticle[4];
+	for (Particle_t *particle = pActiveParticles; particle; particle = particle->next) {
+		PLVertex fill[4] = { 0 };
 
-		Video_ObjectVertex(&voParticle[0],
-			pParticle->origin[0], pParticle->origin[1], pParticle->origin[2]);
-		Video_ObjectColour(&voParticle[0],
-			pParticle->vColour[0], pParticle->vColour[1], pParticle->vColour[2], pParticle->vColour[3]);
-		Video_ObjectTexture(&voParticle[0], 0, 0, 0);
+		Video_ObjectVertex(&fill[0], particle->origin.x, particle->origin.y, particle->origin.z);
+		Video_ObjectColour(&fill[0], particle->colour.r, particle->colour.g, particle->colour.b, particle->colour.a);
+		Video_ObjectTexture(&fill[0], 0, 0, 0);
 
-		Math_VectorMA(pParticle->origin, pParticle->fScale, camera->GetUp(), voParticle[1].position);
-		Video_ObjectColour(&voParticle[1],
-			pParticle->vColour[0], pParticle->vColour[1], pParticle->vColour[2], pParticle->vColour[3]);
-		Video_ObjectTexture(&voParticle[1], 0, 1.0f, 0);
+		Math_VectorMA(particle->origin, particle->fScale, camera->GetUp(), fill[1].position);
+		Video_ObjectColour(&fill[1], particle->colour.r, particle->colour.g, particle->colour.b, particle->colour.a);
+		Video_ObjectTexture(&fill[1], 0, 1.0f, 0);
 
-		Math_VectorMA(voParticle[1].position, pParticle->fScale, camera->GetRight(), voParticle[2].position);
-		Video_ObjectColour(&voParticle[2],
-			pParticle->vColour[0], pParticle->vColour[1], pParticle->vColour[2], pParticle->vColour[3]);
-		Video_ObjectTexture(&voParticle[2], 0, 1.0f, 1.0f);
+		Math_VectorMA(fill[1].position, particle->fScale, camera->GetRight(), fill[2].position);
+		Video_ObjectColour(&fill[2], particle->colour.r, particle->colour.g, particle->colour.b, particle->colour.a);
+		Video_ObjectTexture(&fill[2], 0, 1.0f, 1.0f);
 
-		Math_VectorMA(pParticle->origin, pParticle->fScale, camera->GetRight(), voParticle[3].position);
-		Video_ObjectColour(&voParticle[3],
-			pParticle->vColour[0], pParticle->vColour[1], pParticle->vColour[2], pParticle->vColour[3]);
-		Video_ObjectTexture(&voParticle[3], 0, 0, 1.0f);
+		Math_VectorMA(particle->origin, particle->fScale, camera->GetRight(), fill[3].position);
+		Video_ObjectColour(&fill[3], particle->colour.r, particle->colour.g, particle->colour.b, particle->colour.a);
+		Video_ObjectTexture(&fill[3], 0, 0, 1.0f);
 
-		Video_DrawFill(voParticle, pParticle->material, pParticle->skin);
+		Video_DrawFill(fill, particle->material, particle->skin);
 
 		rs_particles++;
 	}

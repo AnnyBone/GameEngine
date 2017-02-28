@@ -104,10 +104,10 @@ typedef struct
 	int(*Client_GetEffect)(const char *cPath);					// Get an effect index.
 	int(*Client_GetStat)(ClientStat_t csStat);					// Get a client statistic (health etc.)
 
-	void(*Client_PrecacheResource)(int iType, char *cResource);	// Precache a resource client-side.
-	void(*Client_SetMenuCanvas)(unsigned int Canvas);		    // Set the canvas type that the menu will use.
-	void(*Client_AddMenuState)(int iState);						// Adds a new state to the clients menu.
-	void(*Client_RemoveMenuState)(int iState);					// Removes a state from the clients menu.
+	void(*Client_PrecacheResource)(int iType, const char *cResource);	// Precache a resource client-side.
+	void(*Client_SetMenuCanvas)(unsigned int Canvas);		    		// Set the canvas type that the menu will use.
+	void(*Client_AddMenuState)(int iState);								// Adds a new state to the clients menu.
+	void(*Client_RemoveMenuState)(int iState);							// Removes a state from the clients menu.
 
 	// SPRITE START
 	ISprite*(*AddSprite)(void);

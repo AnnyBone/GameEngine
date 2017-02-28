@@ -119,7 +119,7 @@ void Light_Draw(void)
 
 			for(i = 16; i >= 0; i--,c++)
 			{
-				plVector3f_t	vColour;
+				plVector3f_t	colour;
 
 				a = i/16.0f*pMath_PI*2.0f;
 
@@ -127,8 +127,8 @@ void Light_Draw(void)
 					v[j] = dlLight->origin[j]+vright[j]*cos(a)*rad+vup[j]*sin(a)*rad;
 
 				Math_VectorCopy(v,voLight[c].mvPosition);
-				plColourNormalize(dlLight->color, vColour);
-				Math_VectorCopy(vColour,voLight[c].mvColour);
+				plColourNormalize(dlLight->color, colour);
+				Math_VectorCopy(colour,voLight[c].mvColour);
 
 				voLight[c].mvColour[3] = 0.5f;
 			}

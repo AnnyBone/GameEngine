@@ -274,9 +274,9 @@ void Fog_StartAdditive (void)
 #ifdef VL_MODE_OPENGL
 	if (Fog_GetDensity() > 0)
 	{
-		plVector3f_t vColour = { 0, 0, 0 };
+		plVector3f_t colour = { 0, 0, 0 };
 
-		glFogfv(GL_FOG_COLOR,vColour);
+		glFogfv(GL_FOG_COLOR,colour);
 	}
 #endif
 }

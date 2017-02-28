@@ -220,7 +220,7 @@ typedef struct particle_s
 	PLVector3D		origin,		// The origin of the particle.
 						velocity;		// Velocity of the particle.
 
-	PLColour		vColour;		// RGBA colour of the particle.
+	PLColour		colour;		// RGBA colour of the particle.
 
 	int	iFrame;							// Frame of animation.
 
