@@ -222,7 +222,7 @@ void Console::SetSize(unsigned int width, unsigned int height)
 	assert((width != 0) || (height != 0));
 
 #if 1	// todo, do we need this?
-	vid.conwidth = (scr_conwidth.value > 0) ? (int)scr_conwidth.value : (scr_conscale.value > 0) ? (int)(width / scr_conscale.value) : width;
+	vid.conwidth = (scr_conwidth.value > 0) ? (unsigned int)scr_conwidth.value : (scr_conscale.value > 0) ? (unsigned int)(width / scr_conscale.value) : width;
 	vid.conwidth = Math_Clamp(320, vid.conwidth, width);
 	vid.conwidth &= 0xFFFFFFF8;
 	vid.conheight = vid.conwidth* height / width;
@@ -235,21 +235,19 @@ void Console::SetSize(unsigned int width, unsigned int height)
 	Screen_SetUpToDrawConsole(width, height);
 }
 
-void Console::Draw(bool draw_input)
-{
+void Console::Draw(bool draw_input) {
 	const unsigned int con_cols   = _width / CHAR_WIDTH;
 	const unsigned int line_width = con_cols - 3;
 
 	GL_SetCanvas(CANVAS_CONSOLE);
 
-	float bgalpha = 0.5f;
-	if (cls.state != ca_connected)
-		bgalpha = 1;
+	int bgalpha = 125;
+	if (cls.state != ca_connected) {
+		bgalpha = 255;
+	}
 
 	// Draw the background.
-	PLColour black = { 0, 0, 0, 255 };
-	PLColour lightblack = { 0, 0, 0, bgalpha };
-	draw::GradientFill(0, 0, vid.conwidth, vid.conheight, black, lightblack);
+	draw::GradientFill(0, 0, vid.conwidth, vid.conheight, PLColour(PL_COLOUR_BLACK), PLColour(0, 0, 0, bgalpha));
 
 	// Starting from the bottom...
 	int y = vid.conheight - CHAR_HEIGHT;
@@ -514,7 +512,9 @@ void Con_Printf (const char *fmt, ...)
 
 	plWriteLog(ENGINE_LOG, "%s", msg);
 
-	if (g_state.embedded) g_launcher.PrintMessage(msg);
+	if (g_state.embedded) {
+        g_launcher.PrintMessage(msg);
+    }
 
 	Con_Print(msg);
 }
@@ -540,14 +540,15 @@ void Con_Warning (const char *fmt, ...)
 	}
 }
 
-void Con_Error(char *fmt,...)
+void Con_Error(const char *fmt,...)
 {
 	static	bool	bInError = false;
 	va_list			argptr;
 	char 			msg[MAXPRINTMSG];
 
-	if(bInError)
-		Sys_Error("Con_Error: Recursively entered\nCheck log for details.\n");
+	if(bInError) {
+        Sys_Error("Con_Error: Recursively entered\nCheck log for details.\n");
+    }
 	bInError = true;
 
 	va_start(argptr,fmt);
@@ -612,7 +613,7 @@ void Con_SafePrintf (const char *fmt, ...)
 	scr_disabled_for_loading = temp;
 }
 
-void Con_CenterPrintf (unsigned int linewidth, char *fmt, ...)
+void Con_CenterPrintf (unsigned int linewidth, const char *fmt, ...)
 {
 	va_list			argptr;
 	char			msg[MAXPRINTMSG]; //the original message
@@ -818,11 +819,10 @@ void Con_TabComplete(void)
 	snprintf(partial, sizeof(partial), "%s%s", match.c_str(), (key_lines[edit_line] + key_linepos));
 	strcpy(c, partial);
 
-	key_linepos = c - key_lines[edit_line] + match.length(); //set new cursor position
+	key_linepos = (unsigned int) (c - key_lines[edit_line] + match.length()); //set new cursor position
 
 	// if cursor is at end of string, let's append a space to make life easier
-	if (key_lines[edit_line][key_linepos] == 0)
-	{
+	if (key_lines[edit_line][key_linepos] == 0) {
 		key_lines[edit_line][key_linepos] = ' ';
 		key_linepos++;
 		key_lines[edit_line][key_linepos] = 0;

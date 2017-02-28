@@ -61,12 +61,6 @@ public:
 	PLuint GetHeight() const { return _height; }
 	PLuint GetSize() const { return _size; }
 
-	PLuint GetFlags() const { return _flags; }
-	void AddFlags(PLuint flags);
-	void RemoveFlags(PLuint flags);
-	void SetFlags(PLuint flags) { _flags = flags; }
-	void ClearFlags() { _flags = 0; }
-
 	PLushort GetCRC() const { return _crc; }
 	void SetCRC(PLushort crc) { _crc = crc; }
 
@@ -82,7 +76,6 @@ protected:
 private:
 	PLTexture _id;
 
-	PLuint _flags;
 	PLuint _width, _height;
 
 	PLuint _size;

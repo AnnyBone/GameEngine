@@ -205,7 +205,7 @@ typedef struct
 	ServerEntityFrame_t *iWeaponFrames;	// Active weapon frame group.
 
 	// Misc
-	char			*cInfoMessage;				// see server_point > Point_InfoMessage.
+	const char			*info_message;				// see server_point > Point_InfoMessage.
 	bool			bleed;						// Do we bleed? TODO: Move this into monster struct!
 
 	int	iDamageType;	// The type of damage this entity can recieve.
@@ -430,7 +430,7 @@ typedef struct ServerEntityBaseVariables_s
 	float		dmg_save;
 	ServerEntity_t *seDamageInflictor;	// TODO: This is NEVER set!
 
-	char		*message;
+	const char	*message;
 	float		sounds;		// TODO: This is NEVER set!
 
 	// Physics

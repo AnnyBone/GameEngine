@@ -88,7 +88,7 @@ void Con_DrawConsole(bool draw_input);
 void Con_Print(char *txt);
 void Con_Printf(const char *fmt, ...);
 void Con_Warning(const char *fmt, ...); //johnfitz
-void Con_Error(char *fmt, ...);
+void Con_Error(const char *fmt, ...);
 void Con_DPrintf(const char *fmt, ...);
 void Con_SafePrintf(const char *fmt, ...);
 void Con_Clear_f(void);

@@ -30,18 +30,18 @@ extern "C" {
 	// returns the file size
 	// return -1 if file is not present
 	// the file should be in BINARY mode for stupid OSs that care
-	int Sys_FileOpenRead(char *path, int *hndl);
+	long Sys_FileOpenRead(char *path, int *hndl);
 
 	int Sys_FileOpenWrite(char *path);
 	void Sys_FileClose(int handle);
 	void Sys_FileSeek(int handle, int position);
-	int Sys_FileRead(int handle, void *dest, int count);
-	int Sys_FileWrite(int handle, void *data, int count);
+	size_t Sys_FileRead(int handle, void *dest, size_t count);
+	size_t Sys_FileWrite(int handle, void *data, size_t count);
 
 	void Sys_Error(const char *error, ...);
 	// an error will cause the entire program to exit
 
-	void Sys_Printf(char *fmt, ...);
+	void Sys_Printf(const char *fmt, ...);
 	// send text to the console
 
 	void Sys_Quit(void);

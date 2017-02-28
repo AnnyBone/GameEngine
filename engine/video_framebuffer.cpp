@@ -160,7 +160,7 @@ void VideoFrameBuffer::Draw()
 
 	Video_SetTexture(buf_colour);
 
-	Draw_Rectangle(0, 0, 512, 512, pl_white); //Video.iWidth, Video.iHeight,
+	Draw_Rectangle(0, 0, 512, 512, PLColour(PL_COLOUR_WHITE)); //Video.iWidth, Video.iHeight,
 }
 
 #if 0
@@ -233,7 +233,7 @@ void VideoPostProcess::Draw()
 
 	GL_SetCanvas(CANVAS_DEFAULT);
 
-	Draw_Rectangle(0, 0, 512, 512, pl_white); //Video.iWidth, Video.iHeight,
+	Draw_Rectangle(0, 0, 512, 512, PLColour(PL_COLOUR_WHITE)); //Video.iWidth, Video.iHeight,
 
 	program->Disable();
 }

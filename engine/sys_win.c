@@ -47,11 +47,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "EngineEditor.h"
 #include "video.h"
 
-#define CONSOLE_ERROR_TIMEOUT	60.0	// # of seconds to wait on Sys_Error running
-										//  dedicated before exiting
-#define PAUSE_SLEEP		50				// sleep time on pause or minimization
-#define NOT_FOCUS_SLEEP	20				// sleep time when not focus
-
 int	starttime;
 
 static double	curtime = 0.0;
@@ -95,8 +90,7 @@ FILE IO
 #define	MAX_HANDLES		100 //johnfitz -- was 10
 FILE	*sys_handles[MAX_HANDLES];
 
-int	findhandle (void)
-{
+int	findhandle (void) {
 	int		i;
 
 	for(i = 1; i < MAX_HANDLES; i++)
@@ -106,22 +100,19 @@ int	findhandle (void)
 	return -1;
 }
 
-int filelength (FILE *f)
-{
-	int	pos,end;
-
-	pos = ftell (f);
+long filelength (FILE *f) {
+	long pos = ftell (f);
 	fseek (f, 0, SEEK_END);
-	end = ftell (f);
+	long end = ftell (f);
 	fseek (f, pos, SEEK_SET);
 
 	return end;
 }
 
-int Sys_FileOpenRead (char *path, int *hndl)
-{
+long Sys_FileOpenRead (char *path, int *hndl) {
 	FILE	*f;
-	int		i, retval;
+	int		i;
+	long retval;
 
 	i = findhandle ();
 	if(i == -1)
@@ -178,13 +169,11 @@ void Sys_FileSeek (int handle, int position)
 	fseek (sys_handles[handle], position, SEEK_SET);
 }
 
-int Sys_FileRead(int handle, void *dest, int count)
-{
+size_t Sys_FileRead(int handle, void *dest, size_t count) {
 	return fread(dest,1,count,sys_handles[handle]);
 }
 
-int Sys_FileWrite(int handle, void *data, int count)
-{
+size_t Sys_FileWrite(int handle, void *data, size_t count) {
 	return fwrite(data,1,count,sys_handles[handle]);
 }
 
@@ -249,13 +238,12 @@ void Sys_Error(const char *error, ...)
 	exit(1);
 }
 
-void Sys_Printf (char *fmt, ...)
+void Sys_Printf (const char *fmt, ...)
 {
 	va_list	argptr;
 	char	text[1024];
 
-	if(bIsDedicated)
-	{
+	if(bIsDedicated) {
 		va_start(argptr,fmt);
 		vsprintf(text,fmt,argptr);
 		va_end(argptr);
@@ -279,8 +267,7 @@ void Sys_Quit(void)
 	exit(0);
 }
 
-double System_DoubleTime(void)
-{
+double System_DoubleTime(void) {
 	// [19/7/2013] Copied over from QuakeSpasm ~hogsy
 	return SDL_GetTicks() / 1000.0;
 }

@@ -648,7 +648,7 @@ void Point_InfoMessage(ServerEntity_t *eEntity)
 		return;
 
 	Engine.Server_SinglePrint(eEntity->local.activator,"New info message received");
-	eEntity->local.activator->local.cInfoMessage = eEntity->v.message;
+	eEntity->local.activator->local.info_message = eEntity->v.message;
 }
 
 void Point_MessageSpawn(ServerEntity_t *eEntity)

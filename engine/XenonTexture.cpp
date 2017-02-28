@@ -38,8 +38,7 @@ void _PrintMemoryUsage()
 	g_texturemanager->PrintMemoryUsage();
 }
 
-XTextureManager::XTextureManager()
-{
+XTextureManager::XTextureManager() {
 	Con_Printf("Initializing Texture Manager...\n");
 
 	Cvar_RegisterVariable(&cv_texture_anisotropy, NULL);
@@ -60,21 +59,19 @@ XTextureManager::XTextureManager()
 	textures::nulltexture = CreateTexture(
 		"nulltexture",
 		2, 2, 
-		VL_TEXTUREFORMAT_RGB8, 
+		PL_TEXTUREFORMAT_RGB8,
 		notexture_data, sizeof(notexture_data), 
 		XTEXTURE_FLAG_PRESERVE | XTEXTURE_FLAG_NEAREST
 	);
 }
 
-XTextureManager::~XTextureManager()
-{
+XTextureManager::~XTextureManager() {
 	Image_Shutdown();
 }
 
 /*	Utility	*/
 
-void XTextureManager::PrintMemoryUsage()
-{
+void XTextureManager::PrintMemoryUsage() {
 	PLuint texels = 0;
 
 	for(auto tex = _textures.begin(); tex != _textures.end(); ++tex)
@@ -310,16 +307,4 @@ void XTexture::Unbind()
 	// ONLY do this if it's the current bound texture.
 	if(plGetCurrentTexture(plGetCurrentTextureUnit()) == _id)
 		plSetTexture(0);
-}
-
-/*	Flags	*/
-
-void XTexture::AddFlags(PLuint flags)
-{
-	_flags |= flags;
-}
-
-void XTexture::RemoveFlags(PLuint flags)
-{
-	_flags &= ~flags;
 }

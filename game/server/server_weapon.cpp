@@ -607,7 +607,7 @@ void Weapon_Animate(ServerEntity_t *ent, ServerEntityFrame_t *eFrames)
 		ent->local.fWeaponAnimationTime = ((float)Server.time)+eFrames[0].speed;
 }
 
-/*	Cycle through currently avaliable weapons.
+/*	Cycle through currently available weapons.
 */
 void Weapon_Cycle(ServerEntity_t *eEntity, bool bForward)
 {

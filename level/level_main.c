@@ -202,7 +202,7 @@ void Level_Log(LevelMessageType_t msgtype, const char *msg, ...)
 	va_end(args);
 
 	// Print it out to console.
-	printf(buffer);
+	printf("%s", buffer);
 
 	// Write the message to our log too.
 	plWriteLog(LEVEL_LOG, buffer);

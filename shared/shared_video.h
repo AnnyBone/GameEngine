@@ -115,10 +115,8 @@ namespace core
 		ENGINE_FUNCTION void Line(PLVector3D start, PLVector3D end);
 		ENGINE_FUNCTION void Grid(PLVector3D position, PLuint grid_size);
 		ENGINE_FUNCTION void Rectangle(PLint x, PLint y, PLuint w, PLuint h, PLColour colour);
-		
-		ENGINE_FUNCTION void ScreenFade();
 
-		// Canvas
+        // Canvas
 		ENGINE_FUNCTION void ResetCanvas();
 	}
 }

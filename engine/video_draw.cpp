@@ -25,13 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define	BLOCK_WIDTH		256
 #define	BLOCK_HEIGHT	BLOCK_WIDTH
 
-ConsoleVariable_t cvConsoleAlpha = { "screen_consolealpha", "0.7", true, false, "Sets the alpha value for the console background." }; //johnfitz
-
-typedef struct
-{
-	gltexture_t *gltexture;
-	float		sl, tl, sh, th;
-} glpic_t;
+ConsoleVariable_t cvConsoleAlpha = {"screen_consolealpha", (char *) "0.7", true, false, "Sets the alpha value for the console background." }; //johnfitz
 
 VideoCanvasType_t currentcanvas = CANVAS_NONE; //johnfitz -- for GL_SetCanvas
 
@@ -42,7 +36,7 @@ void draw::SetDefaultState() {
 
 	plSetCullMode(VL_CULL_NEGATIVE);
 
-#if defined (VL_MODE_OPENGL)
+#if defined (PL_MODE_OPENGL)
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -59,7 +53,7 @@ void draw::SetDefaultState() {
 	// Overbrights.
 	plSetTextureUnit(VIDEO_TEXTURE_LIGHT);
     plSetTextureEnvironmentMode(PL_TEXTUREMODE_COMBINE);
-#if defined (VL_MODE_OPENGL)
+#if defined (PL_MODE_OPENGL)
 	glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
 	glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_PREVIOUS);
 	glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_TEXTURE);
@@ -122,29 +116,29 @@ void draw::DepthBuffer()
 void draw::WireBox(PLVector3D mins, PLVector3D maxs, float r, float g, float b)
 {
 	// todo, rewrite this function...
-#if defined (VL_MODE_OPENGL)
+#if defined (PL_MODE_OPENGL)
 	glBegin(GL_QUADS);
 	glVertex3f(mins[0], mins[1], maxs[2]);
 	glVertex3f(maxs[0], mins[1], maxs[2]);
-	glVertex3fv(maxs);
+	glVertex3fv(&maxs[0]);
 	glVertex3f(mins[0], maxs[1], maxs[2]);
-	glVertex3fv(mins);
+	glVertex3fv(&mins[0]);
 	glVertex3f(mins[0], maxs[1], mins[2]);
 	glVertex3f(maxs[0], maxs[1], mins[2]);
 	glVertex3f(maxs[0], mins[1], mins[2]);
 	glVertex3f(mins[0], maxs[1], mins[2]);
 	glVertex3f(mins[0], maxs[1], maxs[2]);
-	glVertex3fv(maxs);
+	glVertex3fv(&maxs[0]);
 	glVertex3f(maxs[0], maxs[1], mins[2]);
-	glVertex3fv(mins);
+	glVertex3fv(&mins[0]);
 	glVertex3f(maxs[0], mins[1], mins[2]);
 	glVertex3f(maxs[0], mins[1], maxs[2]);
 	glVertex3f(mins[0], mins[1], maxs[2]);
 	glVertex3f(maxs[0], mins[1], mins[2]);
 	glVertex3f(maxs[0], maxs[1], mins[2]);
-	glVertex3fv(maxs);
+	glVertex3fv(&maxs[0]);
 	glVertex3f(maxs[0], mins[1], maxs[2]);
-	glVertex3fv(mins);
+	glVertex3fv(&mins[0]);
 	glVertex3f(mins[0], mins[1], maxs[2]);
 	glVertex3f(mins[0], maxs[1], maxs[2]);
 	glVertex3f(mins[0], maxs[1], mins[2]);
@@ -153,9 +147,9 @@ void draw::WireBox(PLVector3D mins, PLVector3D maxs, float r, float g, float b)
 	glColor4f(r, g, b, 1.0f);
 
 	glBegin(GL_LINES);
-	glVertex3fv(mins);
+	glVertex3fv(&mins[0]);
 	glVertex3f(maxs[0], mins[1], mins[2]);
-	glVertex3fv(mins);
+	glVertex3fv(&mins[0]);
 	glVertex3f(mins[0], maxs[1], mins[2]);
 	glVertex3f(maxs[0], maxs[1], mins[2]);
 	glVertex3f(maxs[0], mins[1], mins[2]);
@@ -165,14 +159,14 @@ void draw::WireBox(PLVector3D mins, PLVector3D maxs, float r, float g, float b)
 	glVertex3f(maxs[0], mins[1], maxs[2]);
 	glVertex3f(mins[0], mins[1], maxs[2]);
 	glVertex3f(mins[0], maxs[1], maxs[2]);
-	glVertex3fv(maxs);
+	glVertex3fv(&maxs[0]);
 	glVertex3f(maxs[0], mins[1], maxs[2]);
 	glVertex3f(maxs[0], maxs[1], maxs[2]);
 	glVertex3f(mins[0], maxs[1], maxs[2]);
-	glVertex3fv(mins);
+	glVertex3fv(&mins[0]);
 	glVertex3f(mins[0], mins[1], maxs[2]);
 	glVertex3f(maxs[0], maxs[1], mins[2]);
-	glVertex3fv(maxs);
+	glVertex3fv(&maxs[0]);
 	glVertex3f(mins[0], maxs[1], mins[2]);
 	glVertex3f(mins[0], maxs[1], maxs[2]);
 	glVertex3f(maxs[0], mins[1], mins[2]);
@@ -201,12 +195,12 @@ void draw::BoundingBoxes()
 		if (ed == sv_player && !chase_active.value)
 			continue;
 
-#ifdef VL_MODE_OPENGL
+#ifdef PL_MODE_OPENGL
 		glColor3f(1, 1, 1);
 #endif
 
 		draw::CoordinateAxes(ed->v.origin);
-#ifdef VL_MODE_OPENGL
+#ifdef PL_MODE_OPENGL
 		glColor4f(0, 0.5f, 0, 0.5f);
 #endif
 		draw::WireBox(ed->v.mins + ed->v.origin, ed->v.maxs + ed->v.origin, 1, 1, 1);
@@ -239,45 +233,41 @@ void draw::Shadows()
 		Shadow_Draw(&cl_entities[cl.viewentity]);
 }
 
-void draw::Entities(bool alphapass)
-{
-	if (!r_drawentities.value)
-		return;
+void draw::Entities(bool alphapass) {
+	if (!r_drawentities.value) {
+        return;
+    }
 
-#if 1
-	for (unsigned int i = 0; i < cl_numvisedicts; i++)
-	{
-		//johnfitz -- if alphapass is true, draw only alpha entites this time
-		//if alphapass is false, draw only nonalpha entities this time
-		if ((ENTALPHA_DECODE(cl_visedicts[i]->alpha) < 1 && !alphapass) ||
-			(ENTALPHA_DECODE(cl_visedicts[i]->alpha) == 1 && alphapass))
-			continue;
+    if(r_drawentities.value == 1) {
+        for (unsigned int i = 0; i < cl_numvisedicts; i++) {
+            //johnfitz -- if alphapass is true, draw only alpha entites this time
+            //if alphapass is false, draw only nonalpha entities this time
+            if ((ENTALPHA_DECODE(cl_visedicts[i]->alpha) < 1 && !alphapass) ||
+                (ENTALPHA_DECODE(cl_visedicts[i]->alpha) == 1 && alphapass))
+                continue;
 
-		currententity = cl_visedicts[i];	// todo, legacy, needs to go!
-		draw::Entity(cl_visedicts[i]);
-	}
-#else	// Draw per-material
-	for (int i = 0; i < material_count; i++)
-	{
-		for (unsigned int j = 0; j < cl_numvisedicts; j++)
-		{
-			currententity = cl_visedicts[j];
-			if (!currententity->model)
-				continue;
+            currententity = cl_visedicts[i];    // todo, legacy, needs to go!
+            draw::Entity(cl_visedicts[i]);
+        }
+    } else if(r_drawentities.value == 2) {
+        for (int i = 0; i < material_count; i++) {
+            for (unsigned int j = 0; j < cl_numvisedicts; j++) {
+                currententity = cl_visedicts[j];
+                if (!currententity->model) {
+                    continue;
+                }
 
-			if (currententity->model->materials == &g_materials[i])
-			{
-				//johnfitz -- if alphapass is true, draw only alpha entites this time
-				//if alphapass is false, draw only nonalpha entities this time
-				if ((ENTALPHA_DECODE(currententity->alpha) < 1 && !bAlphaPass) ||
-					(ENTALPHA_DECODE(currententity->alpha) == 1 && bAlphaPass))
-					continue;
+                if (currententity->model->materials == &g_materials[i]) {
+                    if ((ENTALPHA_DECODE(currententity->alpha) < 1 && !alphapass) ||
+                        (ENTALPHA_DECODE(currententity->alpha) == 1 && alphapass)) {
+                        continue;
+                    }
 
-				draw::Entity(currententity);
-			}
-		}
-	}
-#endif
+                    draw::Entity(currententity);
+                }
+            }
+        }
+    }
 }
 
 //==============================================================================
@@ -285,17 +275,6 @@ void draw::Entities(bool alphapass)
 //  PIC CACHING
 //
 //==============================================================================
-
-typedef struct cachepic_s
-{
-	char		name[MAX_QPATH];
-	qpic_t		pic;
-	//uint8_t		padding[32];	// for appended glpic
-} cachepic_t;
-
-#define	MAX_CACHED_PICS		128
-cachepic_t	menu_cachepics[MAX_CACHED_PICS];
-int			menu_numcachepics;
 
 //  scrap allocation
 //  Allocate all the little status bar obejcts into a single texture
@@ -383,7 +362,7 @@ void Scrap_Upload (void)
 void draw::MaterialSurface(Material_t *material, int x, int y, unsigned int w, unsigned int h, float alpha) {
 	// Sloppy, but in the case that there's nothing valid...
 	if (!material) {
-		draw::Rectangle(x, y, w, h, pl_red);
+		draw::Rectangle(x, y, w, h, PLColour(PL_COLOUR_RED));
 		draw::String(x, y, "INVALID MATERIAL!");
 		return;
 	}
@@ -391,7 +370,7 @@ void draw::MaterialSurface(Material_t *material, int x, int y, unsigned int w, u
 	// Disable depth testing.
 	plDisableGraphicsStates(PL_CAPABILITY_DEPTHTEST);
 
-	PLVertex vertices[4];
+	PLVertex vertices[4] = { 0 };
 
 	// Set the colour.
 	Video_ObjectColour(&vertices[0], 1.0f, 1.0f, 1.0f, alpha);
@@ -417,8 +396,7 @@ void draw::MaterialSurface(Material_t *material, int x, int y, unsigned int w, u
 	plEnableGraphicsStates(PL_CAPABILITY_DEPTHTEST);
 }
 
-void Draw_MaterialSurface(Material_t *mMaterial, PLuint skin, int x, int y, PLuint w, PLuint h, float fAlpha)
-{
+void Draw_MaterialSurface(Material_t *mMaterial, PLuint skin, int x, int y, PLuint w, PLuint h, float fAlpha) {
 	Material_SetSkin(mMaterial, skin);
 
 	draw::MaterialSurface(mMaterial, x, y, w, h, fAlpha);
@@ -432,31 +410,18 @@ void Draw_MaterialSurface(Material_t *mMaterial, PLuint skin, int x, int y, PLui
 
 extern "C" void Draw_NewGame(void);
 
-void Draw_NewGame (void)
-{
-	cachepic_t	*pic;
-	int			i;
-
+void Draw_NewGame (void) {
 	// Empty scrap and reallocate gltextures
 	memset(&scrap_allocated,0,sizeof(scrap_allocated));
 	memset(&scrap_texels,255,sizeof(scrap_texels));
-
-//	Scrap_Upload (); //creates 2 empty gltextures
-
-	// empty lmp cache
-	for (pic = menu_cachepics, i = 0; i < menu_numcachepics; pic++, i++)
-		pic->name[0] = 0;
-	menu_numcachepics = 0;
 }
 
-void Draw_Init (void)
-{
+void Draw_Init (void) {
 	Cvar_RegisterVariable(&cvConsoleAlpha,NULL);
 
 	// clear scrap and allocate gltextures
 	memset(&scrap_allocated, 0, sizeof(scrap_allocated));
 	memset(&scrap_texels, 255, sizeof(scrap_texels));
-//	Scrap_Upload (); //creates 2 empty textures
 }
 
 //==============================================================================
@@ -465,18 +430,19 @@ void Draw_Init (void)
 //
 //==============================================================================
 
-void draw::Character(int x, int y, int num)
-{
+void draw::Character(int x, int y, int num) {
 	PLVertex		voCharacter[4] = { { { 0 } } };
 	int				row, col;
 	float			frow,fcol,size;
 
-	if(y <= -8)
-		return;			// totally off screen
+	if(y <= -8) {
+        return; // totally off screen
+    }
 
 	num &= 255;
-	if(num == 32)
-		return; //don't waste verts on spaces
+	if(num == 32) {
+        return; //don't waste verts on spaces
+    }
 
 	row = num>>4;
 	col = num&15;
@@ -534,7 +500,7 @@ void draw::GradientBackground(PLColour top, PLColour bottom) {
 	if (!viewport)
 		return;
 
-#if defined (VL_MODE_OPENGL)
+#if defined (PL_MODE_OPENGL)
 	glMatrixMode(GL_PROJECTION);
 	glPushMatrix();
 	glMatrixMode(GL_MODELVIEW);
@@ -549,7 +515,7 @@ void draw::GradientBackground(PLColour top, PLColour bottom) {
 
 	draw::GradientFill(0, 0, viewport->GetWidth(), viewport->GetHeight(), top, bottom);
 
-#if defined (VL_MODE_OPENGL)
+#if defined (PL_MODE_OPENGL)
 	glMatrixMode(GL_PROJECTION);
 	glPopMatrix();
 	glMatrixMode(GL_MODELVIEW);
@@ -591,14 +557,13 @@ void draw::CoordinateAxes(PLVector3D position) {
 	draw::Line(start, end);
 }
 
-void draw::Grid(PLVector3D position, PLuint grid_size)
-{
+void draw::Grid(PLVector3D position, PLuint grid_size) {
 	plEnableGraphicsStates(PL_CAPABILITY_BLEND);
 	plDisableGraphicsStates(PL_CAPABILITY_TEXTURE_2D);
 
 	plSetBlendMode(PL_BLEND_DEFAULT);
 
-#ifdef VL_MODE_OPENGL
+#ifdef PL_MODE_OPENGL
 	glPushMatrix();
 
 	glTranslatef(position[0], position[1], position[2]);
@@ -656,14 +621,14 @@ void draw::Grid(PLVector3D position, PLuint grid_size)
 	plEnableGraphicsStates(PL_CAPABILITY_TEXTURE_2D);
 }
 
-void draw::Rectangle(PLint x, PLint y, PLuint w, PLuint h, PLColour colour)
-{
+void draw::Rectangle(PLint x, PLint y, PLuint w, PLuint h, PLColour colour) {
 	PLVertex fill[4] = { 0 };
-	
+#if 0 // todo
 	Math_Vector4Copy(colour, fill[0].colour);
 	Math_Vector4Copy(colour, fill[1].colour);
 	Math_Vector4Copy(colour, fill[2].colour);
 	Math_Vector4Copy(colour, fill[3].colour);
+#endif
 
 	if (colour.a < 1) {
         plEnableGraphicsStates(PL_CAPABILITY_BLEND);
@@ -693,13 +658,12 @@ void Draw_Rectangle(int x, int y, PLuint w, PLuint h, PLColour colour) {
 }
 
 void draw::GradientFill(int x, int y, PLuint width, PLuint height, PLColour top, PLColour bottom) {
-	PLVertex	voFill[4];
-
 	if ((top.a < 1) || (bottom.a < 1)) {
         plEnableGraphicsStates(PL_CAPABILITY_BLEND);
     }
 	plDisableGraphicsStates(PL_CAPABILITY_DEPTHTEST | PL_CAPABILITY_TEXTURE_2D);
 
+    PLVertex	voFill[4];
 	Video_ObjectVertex(&voFill[0], x, y, 0);
 	Video_ObjectColour(&voFill[0], top.r, top.g, top.b, top.a);
 	Video_ObjectVertex(&voFill[1], x + width, y, 0);
@@ -717,39 +681,11 @@ void draw::GradientFill(int x, int y, PLuint width, PLuint height, PLColour top,
 	plEnableGraphicsStates(PL_CAPABILITY_DEPTHTEST | PL_CAPABILITY_TEXTURE_2D);
 }
 
-void draw::ScreenFade() {
-	Viewport *viewport = GetCurrentViewport();
-	if (!viewport) {
-        return;
-    }
-
-	GL_SetCanvas(CANVAS_DEFAULT);
-
-	plEnableGraphicsStates(PL_CAPABILITY_BLEND);
-
-    PLVertex	voFade[4];
-	Video_ObjectVertex(&voFade[0], 0, 0, 0);
-	Video_ObjectColour(&voFade[0], 1.0f, 1.0f, 1.0f, 0.5f);
-
-	Video_ObjectVertex(&voFade[1], viewport->GetWidth(), 0, 0);
-	Video_ObjectColour(&voFade[1], 1.0f, 1.0f, 1.0f, 0.5f);
-
-	Video_ObjectVertex(&voFade[2], viewport->GetWidth(), viewport->GetHeight(), 0);
-	Video_ObjectColour(&voFade[2], 1.0f, 1.0f, 1.0f, 0.5f);
-
-	Video_ObjectVertex(&voFade[3], 0, viewport->GetHeight(), 0);
-	Video_ObjectColour(&voFade[3], 1.0f, 1.0f, 1.0f, 0.5f);
-
-	Video_DrawFill(voFade, NULL, 0);
-
-	plDisableGraphicsStates(PL_CAPABILITY_BLEND);
-}
-
 /*	Draws the little blue disc in the corner of the screen.
 	Call before beginning any disc IO.
 */
 void Draw_BeginDisc(void) {
-#ifdef VL_MODE_OPENGL
+#ifdef PL_MODE_OPENGL
 	int	iViewport[4]; //johnfitz
 	VideoCanvasType_t oldcanvas; //johnfitz
 
@@ -785,7 +721,7 @@ void Draw_BeginDisc(void) {
 
 void GL_SetCanvas (VideoCanvasType_t newcanvas)
 {
-#ifdef VL_MODE_OPENGL
+#ifdef PL_MODE_OPENGL
 	float s;
 	int	lines;
 
@@ -830,7 +766,7 @@ void GL_SetCanvas (VideoCanvasType_t newcanvas)
 			viewport->GetHeight());
 		break;
 	case CANVAS_SBAR:
-		s = plClamp(1.0f, scr_sbarscale.value, (PLfloat)viewport->GetWidth() / 320.0f);
+		s = Math_Clamp(1.0f, scr_sbarscale.value, (PLfloat)viewport->GetWidth() / 320.0f);
 		glOrtho (0, 320, 48, 0, -99999, 99999);
 		plViewport(
 			viewport->GetPosition()[0] + (viewport->GetWidth() - 320 * (PLint)s) / 2,
@@ -847,7 +783,7 @@ void GL_SetCanvas (VideoCanvasType_t newcanvas)
             (PLuint)gl_warpimagesize);
 		break;
 	case CANVAS_CROSSHAIR: //0,0 is center of viewport
-		s = plClamp(1.0f, scr_crosshairscale.value, 10.0f);
+		s = Math_Clamp(1.0f, scr_crosshairscale.value, 10.0f);
 		glOrtho(viewport->GetWidth() / -2 / s, viewport->GetWidth() / 2 / s, viewport->GetHeight() / 2 / s, viewport->GetHeight() / -2 / s, -99999, 99999);
 		plViewport(
 			viewport->GetPosition()[0], 
@@ -907,7 +843,7 @@ PL_EXPORT void draw::EntityBoundingBox(ClientEntity_t *entity) {
 	switch (entity->model->type) {
 	case MODEL_TYPE_LEVEL: {
 		// Only draw wires for the BSP, since otherwise it's difficult to see anything else.
-#ifdef VL_MODE_OPENGL
+#ifdef PL_MODE_OPENGL
 		glColor4f(0, 0, 0, 0);
 #endif
 		draw::WireBox(
@@ -919,7 +855,7 @@ PL_EXPORT void draw::EntityBoundingBox(ClientEntity_t *entity) {
 	}
 	default:
 	{
-#ifdef VL_MODE_OPENGL
+#ifdef PL_MODE_OPENGL
 		glColor4f(0.5f, 0, 0, 0.5f);
 #endif
 		draw::WireBox(
