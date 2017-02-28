@@ -90,7 +90,7 @@ void CL_ClearState (void)
 	// any existing ones.
 	Light_Initialize();
 
-	SpriteManager_Clear();
+    g_spritemanager->Clear();
 
 	//johnfitz -- cl_entities is now dynamically allocated
 	cl_max_edicts	= static_cast<unsigned int>(Math_Clamp(MIN_EDICTS, (int)max_edicts.value, MAX_EDICTS));
@@ -203,7 +203,8 @@ void CL_SignonReply (void)
 	case 4:
 		SCR_EndLoadingPlaque ();		// allow normal screen updates
 		break;
-	}
+        default:break;
+    }
 }
 
 /*	Called to play the next demo in the demo loop
@@ -346,7 +347,7 @@ float CL_LerpPoint(void)
 		f = 0.1f;
 	}
 
-	frac = (cl.time-cl.mtime[1])/f;
+	frac = ((float)(cl.time - cl.mtime[1])) / f;
 	if(frac < 0)
 	{
 		if (frac < -0.01)
@@ -502,7 +503,7 @@ int CL_ReadFromServer (void)
 
 		cl.last_received_message = realtime;
 		CL_ParseServerMessage();
-	} while (ret && cls.state == ca_connected);
+	} while (cls.state == ca_connected);
 
 	if (cl_shownet.value)
 		Con_Printf ("\n");
@@ -514,18 +515,18 @@ int CL_ReadFromServer (void)
 
 	//visedicts
 	dev_stats.visedicts = cl_numvisedicts;
-	dev_peakstats.visedicts = plMax(cl_numvisedicts, dev_peakstats.visedicts);
+	dev_peakstats.visedicts = mmaxi(cl_numvisedicts, dev_peakstats.visedicts);
 
 	//temp entities
 	dev_stats.tempents = num_temp_entities;
-	dev_peakstats.tempents = plMax(num_temp_entities, dev_peakstats.tempents);
+	dev_peakstats.tempents = mmaxi(num_temp_entities, dev_peakstats.tempents);
 
 	//beams
 	for (i=0, b=cl_beams ; i< MAX_BEAMS ; i++, b++)
 		if (b->model && b->endtime >= cl.time)
 			num_beams++;
 	dev_stats.beams		= num_beams;
-	dev_peakstats.beams = plMax(num_beams, dev_peakstats.beams);
+	dev_peakstats.beams = mmaxi(num_beams, dev_peakstats.beams);
 
 	//dlights
 	for(i = 0,l = cl_dlights; i < MAX_DLIGHTS; i++,l++)
@@ -533,7 +534,7 @@ int CL_ReadFromServer (void)
 			num_dlights++;
 
 	dev_stats.dlights		= num_dlights;
-	dev_peakstats.dlights	= plMax(num_dlights, dev_peakstats.dlights);
+	dev_peakstats.dlights	= mmaxi(num_dlights, dev_peakstats.dlights);
 
 //johnfitz
 
@@ -640,8 +641,8 @@ void CL_Init (void)
 
 void Client_Simulate(void)
 {
-	CameraManager_Simulate();
+	g_cameramanager->Simulate();
 	ParticleManager_Simulate();
-	SpriteManager_Simulate();
+	g_spritemanager->Simulate();
 }
 

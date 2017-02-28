@@ -64,8 +64,8 @@ extern "C" {
 	void TexMgr_ReloadImage(gltexture_t *glt, int shirt, int pants);
 	void TexMgr_ReloadImages(void);
 
-	int TexMgr_Pad(int s);
-	unsigned int TexMgr_SafeTextureSize(int s);
+	unsigned int TexMgr_Pad(unsigned int s);
+	unsigned int TexMgr_SafeTextureSize(unsigned int s);
 	unsigned int TexMgr_PadConditional(unsigned int s);
 
 #ifdef __cplusplus

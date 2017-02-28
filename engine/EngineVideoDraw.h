@@ -42,6 +42,6 @@ void Draw_String(int x, int y, const char *msg);
 
 qpic_t *Draw_CachePic(char *path);
 
-void GL_SetCanvas(VideoCanvasType_t newcanvas); //johnfitz
+void GL_SetCanvas(unsigned int newcanvas); //johnfitz
 
 PL_EXTERN_C_END

@@ -32,7 +32,7 @@ ConsoleVariable_t gl_texture_anisotropy = { "gl_texture_anisotropy", "16", true 
 ConsoleVariable_t gl_max_size = { "gl_max_size", "0" };
 ConsoleVariable_t gl_picmip = { "gl_picmip", "0" };
 
-int	gl_hardware_maxsize;
+unsigned int gl_hardware_maxsize;
 const int gl_solid_format = 3;
 const int gl_alpha_format = 4;
 
@@ -319,21 +319,20 @@ void TextureManager_Initialize(void)
 
 /*  Return smallest power of two greater than or equal to s.
 */
-int TexMgr_Pad (int s)
-{
-	int i;
+unsigned int TexMgr_Pad(unsigned int s) {
+	unsigned int i;
 	for (i = 1; i < s; i<<=1);
 	return i;
 }
 
 /*	Return a size with hardware and user prefs in mind
 */
-unsigned int TexMgr_SafeTextureSize (int s)
+unsigned int TexMgr_SafeTextureSize (unsigned int s)
 {
 	s = TexMgr_Pad(s);
 	if (gl_max_size.iValue > 0)
-		s = plMin(TexMgr_Pad(gl_max_size.iValue), s);
-	s = plMin(gl_hardware_maxsize, s);
+		s = mmin(TexMgr_Pad((unsigned int)gl_max_size.iValue), s);
+	s = mmin(gl_hardware_maxsize, s);
 	return s;
 }
 
@@ -387,7 +386,7 @@ uint8_t *TexMgr_MipMapH(uint8_t *data, int width, int height)
 	return data;
 }
 
-uint8_t *TexMgr_ResampleTexture(uint8_t *in, int inwidth, int inheight, bool alpha)
+uint8_t *TexMgr_ResampleTexture(uint8_t *in, unsigned int inwidth, unsigned int inheight, bool alpha)
 {
 	uint8_t		*nwpx, *nepx, *swpx, *sepx,
 		*dest, *out;
@@ -430,11 +429,14 @@ uint8_t *TexMgr_ResampleTexture(uint8_t *in, int inwidth, int inheight, bool alp
 
 			dest = (uint8_t *)(out + outjump + j);
 
-			dest[0] = (nwpx[0]*imodx*imody + nepx[0]*modx*imody + swpx[0]*imodx*mody + sepx[0]*modx*mody)>>16;
-			dest[1] = (nwpx[1]*imodx*imody + nepx[1]*modx*imody + swpx[1]*imodx*mody + sepx[1]*modx*mody)>>16;
-			dest[2] = (nwpx[2]*imodx*imody + nepx[2]*modx*imody + swpx[2]*imodx*mody + sepx[2]*modx*mody)>>16;
+			dest[0] = (uint8_t) (
+					(nwpx[0] * imodx * imody + nepx[0] * modx * imody + swpx[0] * imodx * mody + sepx[0] * modx * mody) >> 16);
+			dest[1] = (uint8_t) (
+					(nwpx[1] * imodx * imody + nepx[1] * modx * imody + swpx[1] * imodx * mody + sepx[1] * modx * mody) >> 16);
+			dest[2] = (uint8_t) (
+					(nwpx[2] * imodx * imody + nepx[2] * modx * imody + swpx[2] * imodx * mody + sepx[2] * modx * mody) >> 16);
 			if (alpha)
-				dest[3] = (nwpx[3]*imodx*imody + nepx[3]*modx*imody + swpx[3]*imodx*mody + sepx[3]*modx*mody)>>16;
+				dest[3] = (uint8_t) (nwpx[3]*imodx*imody + nepx[3]*modx*imody + swpx[3]*imodx*mody + sepx[3]*modx*mody)>>16;
 			else
 				dest[3] = 255;
 
@@ -498,7 +500,7 @@ void TexMgr_AlphaEdgeFix(uint8_t *data, int width, int height)
 /*	Special case of AlphaEdgeFix for textures that only need it because they were padded.
 	Operates in place on 32bit data, and expects unpadded height and width values.
 */
-void TexMgr_PadEdgeFixW(uint8_t *data, int width, int height)
+void TexMgr_PadEdgeFixW(uint8_t *data, unsigned int width, unsigned int height)
 {
 	uint8_t *src, *dst;
 	int i, padw, padh;
@@ -536,7 +538,7 @@ TexMgr_PadEdgeFixH -- special case of AlphaEdgeFix for textures that only need i
 operates in place on 32bit data, and expects unpadded height and width values
 ===============
 */
-void TexMgr_PadEdgeFixH(uint8_t *data, int width, int height)
+void TexMgr_PadEdgeFixH(uint8_t *data, unsigned int width, unsigned int height)
 {
 	uint8_t *src, *dst;
 	int i, padw, padh;
@@ -641,7 +643,7 @@ void TexMgr_LoadImage32(gltexture_t *glt, uint8_t *data)
 	glt->height = TexMgr_Pad(glt->height);
 
 	// mipmap down
-	picmip = (glt->flags & TEXPREF_NOPICMIP) ? 0 : plMax((int)gl_picmip.value, 0);
+	picmip = (glt->flags & TEXPREF_NOPICMIP) ? 0 : mmaxi((int)gl_picmip.value, 0);
 	mipwidth = TexMgr_SafeTextureSize (glt->width >> picmip);
 	mipheight = TexMgr_SafeTextureSize (glt->height >> picmip);
 	while(glt->width > mipwidth)

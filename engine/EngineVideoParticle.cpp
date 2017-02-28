@@ -454,7 +454,7 @@ void Particle_Draw(void) {
     }
 
 	for (Particle_t *particle = pActiveParticles; particle; particle = particle->next) {
-		PLVertex fill[4] = { 0 };
+		PLVertex fill[4];
 
 		Video_ObjectVertex(&fill[0], particle->origin.x, particle->origin.y, particle->origin.z);
 		Video_ObjectColour(&fill[0], particle->colour.r, particle->colour.g, particle->colour.b, particle->colour.a);

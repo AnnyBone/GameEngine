@@ -61,10 +61,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define	Math_VectorSet(a,b)				(	b[0]=b[1]=b[2]=a															)
 #define	Math_VectorDivide(a,b,c)		{	c[0]=a[0]/b;c[1]=a[1]/b;c[2]=a[2]/b;										}
 
+#define mmax(a, b) ((a) > (b) ? (a) : (b))
+#define mmin(a, b) ((a) < (b) ? (a) : (b))
+#define mbound(a, b, c) ((a) >= (c) ? (a) : (b) < (a) ? (a) : (b) > (c) ? (c) : (b))
+#define mclamp(a, b, c) ((b) >= (c) ? (a)=(b) : (a) < (b) ? (a)=(b) : (a) > (c) ? (a)=(c) : (a))
+
 PL_EXTERN_C
 
-PL_INLINE static PLint mmaxi(const PLint a, const PLint b) 		    { return (a) < (b) ? (b) : (a); }
-PL_INLINE static PLfloat mmaxf(const PLfloat a, const PLfloat b) 	{ return (a) < (b) ? (b) : (a); }
+PL_INLINE static int mmaxi(const int a, const int b) {
+    return (a) > (b) ? (a) : (b);
+}
 
 PL_INLINE static float Math_CRandom(void) {
     return 2 * (rand() - 0.5f);

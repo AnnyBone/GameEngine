@@ -561,7 +561,8 @@ void draw::Grid(PLVector3D position, PLuint grid_size) {
 	plEnableGraphicsStates(PL_CAPABILITY_BLEND);
 	plDisableGraphicsStates(PL_CAPABILITY_TEXTURE_2D);
 
-	plSetBlendMode(PL_BLEND_DEFAULT);
+	// todo
+	//plSetBlendMode(PL_BLEND_DEFAULT);
 
 #ifdef PL_MODE_OPENGL
 	glPushMatrix();
@@ -719,7 +720,7 @@ void Draw_BeginDisc(void) {
 #endif
 }
 
-void GL_SetCanvas (VideoCanvasType_t newcanvas)
+void GL_SetCanvas(unsigned int newcanvas)
 {
 #ifdef PL_MODE_OPENGL
 	float s;
@@ -731,7 +732,7 @@ void GL_SetCanvas (VideoCanvasType_t newcanvas)
 
 	if (newcanvas == currentcanvas)
 		return;
-	currentcanvas = newcanvas;
+	currentcanvas = static_cast<VideoCanvasType_t>(newcanvas);
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity ();

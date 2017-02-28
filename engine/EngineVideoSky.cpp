@@ -508,12 +508,11 @@ void Sky_ProcessEntities(void)
 		{
 			bRotated = true;
 
-			plAngleVectors(e->angles, forward, right, up);
-			Math_VectorCopy(modelorg,vTemp);
-
-			modelorg[0] = Math_DotProduct(vTemp,forward);
-			modelorg[1] = -Math_DotProduct(vTemp,right);
-			modelorg[2] = Math_DotProduct(vTemp,up);
+			Math_AngleVectors(e->angles, &forward, &right, &up);
+			vTemp = modelorg;
+			modelorg.x = forward.DotProduct(vTemp);
+			modelorg.y = -right.DotProduct(vTemp);
+			modelorg.z = up.DotProduct(vTemp);
 		}
 		else
 			bRotated = false;
@@ -786,9 +785,9 @@ void Sky_DrawFace (int axis)
 
 	start = Hunk_LowMark ();
 	p = (glpoly_t*)Hunk_Alloc(sizeof(glpoly_t));
-	
-	plVectorSubtract3fv(verts[2],verts[3], v_up);
-	plVectorSubtract3fv(verts[2],verts[1], v_right);
+
+    v_up = verts[2] - verts[3];
+    v_right = verts[2] - verts[1];
 
 	di = plMax((int)r_sky_quality.value,1);
 	qi = 1.0f/di;
