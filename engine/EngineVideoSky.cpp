@@ -272,6 +272,7 @@ void Sky_Init(void)
 */
 void Sky_ProjectPoly (int nump, PLVector3D vecs)
 {
+#if 0
 	int				i,j;
 	PLVector3D		av = { 0, 0, 0 };
 	float			s, t, dv;
@@ -334,10 +335,12 @@ void Sky_ProjectPoly (int nump, PLVector3D vecs)
 		if (t > skymaxs[1][axis])
 			skymaxs[1][axis] = t;
 	}
+#endif
 }
 
 void Sky_ClipPoly (int nump, PLVector3D vecs, int stage)
 {
+#if 0
 	bool			bFront	= false,
 					bBack	= false;
 	float			*norm,*v,
@@ -426,6 +429,7 @@ void Sky_ClipPoly (int nump, PLVector3D vecs, int stage)
 	// Continue
 	Sky_ClipPoly(newc[0],vNew[0][0],stage+1);
 	Sky_ClipPoly(newc[1],vNew[1][0],stage+1);
+#endif
 }
 
 void Sky_ProcessPoly (glpoly_t	*p)
@@ -477,7 +481,7 @@ void Sky_ProcessEntities(void)
 	int				k,mark;
 	unsigned int	j;
 	float			dot;
-	bool			bRotated;
+	bool			rotated;
 	ClientEntity_t	*e;
 	msurface_t		*s;
 	glpoly_t		*p;
@@ -506,7 +510,7 @@ void Sky_ProcessEntities(void)
 		Math_VectorSubtract (camera->GetPosition(), e->origin, modelorg);
 		if(e->angles[0] || e->angles[1] || e->angles[2])
 		{
-			bRotated = true;
+			rotated = true;
 
 			Math_AngleVectors(e->angles, &forward, &right, &up);
 			vTemp = modelorg;
@@ -515,26 +519,21 @@ void Sky_ProcessEntities(void)
 			modelorg.z = up.DotProduct(vTemp);
 		}
 		else
-			bRotated = false;
+			rotated = false;
 
 		s = &e->model->surfaces[e->model->firstmodelsurface];
 
-		for (j=0 ; j<e->model->nummodelsurfaces ; j++, s++)
-		{
-			if (s->flags & SURF_DRAWSKY)
-			{
-				dot = Math_DotProduct (modelorg, s->plane->normal) - s->plane->dist;
+		for (j=0 ; j<e->model->nummodelsurfaces ; j++, s++) {
+			if (s->flags & SURF_DRAWSKY) {
+				dot = s->plane->normal.DotProduct(modelorg) - s->plane->dist;
 				if (((s->flags & SURF_PLANEBACK) && (dot < -BACKFACE_EPSILON)) ||
-					(!(s->flags & SURF_PLANEBACK) && (dot > BACKFACE_EPSILON)))
-				{
+					(!(s->flags & SURF_PLANEBACK) && (dot > BACKFACE_EPSILON))) {
 					//copy the polygon and translate manually, since Sky_ProcessPoly needs it to be in world space
 					mark = Hunk_LowMark();
 					p = (glpoly_t*)Hunk_Alloc (sizeof(*s->polys)); //FIXME: don't allocate for each poly
 					p->numverts = s->polys->numverts;
-					for (k=0; k<p->numverts; k++)
-					{
-						if(bRotated)
-						{
+					for (k=0; k<p->numverts; k++) {
+						if(rotated) {
 							p->verts[k][0] = e->origin[0] + s->polys->verts[k][0] * forward[0]
 														  - s->polys->verts[k][1] * right[0]
 														  + s->polys->verts[k][2] * up[0];
@@ -544,9 +543,9 @@ void Sky_ProcessEntities(void)
 							p->verts[k][2] = e->origin[2] + s->polys->verts[k][0] * forward[2]
 														  - s->polys->verts[k][1] * right[2]
 														  + s->polys->verts[k][2] * up[2];
-						}
-						else
-							Math_VectorAdd(s->polys->verts[k], e->origin, p->verts[k]);
+						} else {
+                            Math_VectorAdd(s->polys->verts[k], e->origin, p->verts[k]);
+                        }
 					}
 					Sky_ProcessPoly (p);
 					Hunk_FreeToLowMark (mark);
@@ -770,8 +769,8 @@ void Sky_DrawFaceQuad(glpoly_t *p)
 #endif
 }
 
-void Sky_DrawFace (int axis)
-{
+void Sky_DrawFace (int axis) {
+#if 0
 	glpoly_t	*p;
 	PLVector3D verts[4];
 	int			i, j, start;
@@ -789,7 +788,7 @@ void Sky_DrawFace (int axis)
     v_up = verts[2] - verts[3];
     v_right = verts[2] - verts[1];
 
-	di = plMax((int)r_sky_quality.value,1);
+	di = mmax((int)r_sky_quality.value,1);
 	qi = 1.0f/di;
 	dj = (axis < 4) ? di*2 : di; // Subdivide vertically more than horizontally on skybox sides
 	qj = 1.0f/dj;
@@ -821,6 +820,7 @@ void Sky_DrawFace (int axis)
 	}
 
 	Hunk_FreeToLowMark(start);
+#endif
 }
 
 // Sky Camera
@@ -828,13 +828,13 @@ void Sky_DrawFace (int axis)
 bool	sky_cameraenabled = false;
 Camera	*sky_camera = nullptr;
 
-void Sky_ReadCameraPosition(void)
-{
-	sky_cameraenabled = MSG_ReadByte();
-	if (!sky_cameraenabled)
-		return;
+void Sky_ReadCameraPosition(void) {
+	sky_cameraenabled = (bool)MSG_ReadByte();
+	if (!sky_cameraenabled) {
+        return;
+    }
 
-	PLVector3f campos;
+	PLVector3D campos;
 	campos[0] = MSG_ReadCoord();
 	campos[1] = MSG_ReadCoord();
 	campos[2] = MSG_ReadCoord();
@@ -899,18 +899,14 @@ void Sky_Draw3DWorld(void)
 
 /*	Called once per frame before drawing anything else
 */
-void Sky_Draw(void)
-{
-#ifdef VL_MODE_OPENGL
-	int	i;
-
+void Sky_Draw(void) {
 	// In these special render modes, the sky faces are handled in the normal world/brush renderer
-	if (r_drawflat_cheatsafe || r_lightmap_cheatsafe || !cv_video_drawsky.boolean_value)
-		return;
+	if (r_drawflat_cheatsafe || r_lightmap_cheatsafe || !cv_video_drawsky.boolean_value) {
+        return;
+    }
 
 	// Reset sky bounds.
-	for(i = 0; i < 6; i++)
-	{
+	for(int i = 0; i < 6; i++) {
 		skymins[0][i] = skymins[1][i] = 9999;
 		skymaxs[0][i] = skymaxs[1][i] = -9999;
 	}
@@ -918,24 +914,24 @@ void Sky_Draw(void)
 	// Process world and bmodels: draw flat-shaded sky surfs, and update skybounds
 	Fog_DisableGFog();
 
-	plDisableGraphicsStates(VL_CAPABILITY_TEXTURE_2D);
+	plDisableGraphicsStates(PL_CAPABILITY_TEXTURE_2D);
 
-	if(Fog_GetDensity() > 0)
-		glColor3fv(Fog_GetColor());
-	else
-		glColor3fv(skyflatcolor);
+	if(Fog_GetDensity() > 0) {
+        glColor3fv(Fog_GetColor());
+    } else {
+        glColor3fv(skyflatcolor);
+    }
 
 	Sky_ProcessTextureChains();
 	Sky_ProcessEntities();
 
 	glColor3f(1.0f,1.0f,1.0f);
 
-	plEnableGraphicsStates(VL_CAPABILITY_TEXTURE_2D);
+	plEnableGraphicsStates(PL_CAPABILITY_TEXTURE_2D);
 
 	// Render slow sky: cloud layers or skybox
-	if(!r_fastsky.value && !(Fog_GetDensity() > 0 && r_skyfog.value >= 1))
-	{
-		plDisableGraphicsStates(VL_CAPABILITY_DEPTH_TEST);
+	if(!r_fastsky.value && !(Fog_GetDensity() > 0 && r_skyfog.value >= 1)) {
+		plDisableGraphicsStates(PL_CAPABILITY_DEPTHTEST);
 
 		// By default we use a skybox.
 		if(cSkyBoxName[0])
@@ -952,13 +948,13 @@ void Sky_Draw(void)
 #endif
 		}
 
-		plEnableGraphicsStates(VL_CAPABILITY_DEPTH_TEST);
+		plEnableGraphicsStates(PL_CAPABILITY_DEPTHTEST);
 	}
 
 	Fog_EnableGFog();
 
 	// 3D skybox support.
-	if (cl.worldmodel && (cl.worldmodel->flags & MODEL_FLAG_3DSKY))
-		Sky_Draw3DWorld();
-#endif
+	if (cl.worldmodel && (cl.worldmodel->flags & MODEL_FLAG_3DSKY)) {
+        Sky_Draw3DWorld();
+    }
 }

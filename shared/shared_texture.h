@@ -29,26 +29,21 @@ enum XTextureFormat
 	SRC_RGBA
 };
 
-// XTexture Flags
-enum
-{
-	XTEXTURE_FLAG_START = -1,
-
-	XTEXTURE_FLAG_NEAREST	= (1 << 0),
-	XTEXTURE_FLAG_ALPHA		= (1 << 1),
-	XTEXTURE_FLAG_MIPMAP	= (1 << 2),
-	XTEXTURE_FLAG_PRESERVE	= (1 << 3),
-
-	XTEXTURE_FLAG_END
+// Texture Flags
+enum {
+	TEXTURE_FLAG_NEAREST	= (1 << 0),
+	TEXTURE_FLAG_ALPHA		= (1 << 1),
+	TEXTURE_FLAG_MIPMAP	= (1 << 2),
+	TEXTURE_FLAG_PRESERVE	= (1 << 3),
 };
 
 #ifdef __cplusplus
 
-class XTexture;
+class Texture;
 
 #else
 
-typedef struct XTexture XTexture;
+typedef struct Texture Texture;
 
 #endif
 

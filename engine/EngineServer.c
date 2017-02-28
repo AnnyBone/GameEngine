@@ -379,7 +379,7 @@ void SV_AddToFatPVS(plVector3f_t org, mnode_t *node, model_t *worldmodel) //john
 /*	Calculates a PVS that is the inclusive or of all leafs within 8 pixels of the
 	given point.
 */
-byte *SV_FatPVS(plVector3f_t org, model_t *worldmodel) //johnfitz -- added worldmodel as a parameter
+byte *SV_FatPVS(PLVector3D org, model_t *worldmodel) //johnfitz -- added worldmodel as a parameter
 {
 	fatbytes = (worldmodel->numleafs+31)>>3;
 	memset(fatpvs, 0, fatbytes);

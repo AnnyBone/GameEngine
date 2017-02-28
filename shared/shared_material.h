@@ -73,7 +73,7 @@ typedef enum
 
 typedef struct
 {
-	XTexture *instance;
+	Texture *instance;
 
 	bool	matrixmod;	// Modify texture matrix?
 

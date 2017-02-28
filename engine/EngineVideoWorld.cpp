@@ -31,7 +31,7 @@ extern "C" cvar_t gl_fullbrights, r_drawflat, r_oldwater, r_oldskyleaf, r_showtr
 
 extern glpoly_t	*lightmap_polys[MAX_LIGHTMAPS];
 
-extern "C" uint8_t *SV_FatPVS(plVector3f_t org, model_t *worldmodel);
+extern "C" uint8_t *SV_FatPVS(PLVector3D org, model_t *worldmodel);
 extern "C" uint8_t mod_novis[BSP_MAX_LEAFS/8];
 
 bool bVisibilityChanged; //if true, force pvs to be refreshed
@@ -69,7 +69,7 @@ void World_MarkSurfaces(void)
 	if (r_novis.value || camera->leaf->contents == BSP_CONTENTS_SOLID || camera->leaf->contents == BSP_CONTENTS_SKY)
 		vis = &mod_novis[0];
 	else if(nearwaterportal)
-		vis = SV_FatPVS (&camera->GetPosition()[0], cl.worldmodel);
+		vis = SV_FatPVS (camera->GetPosition(), cl.worldmodel);
 	else
 		vis = Mod_LeafPVS (camera->leaf, cl.worldmodel);
 
@@ -142,7 +142,7 @@ bool R_BackFaceCull (msurface_t *surf)
 		dot = camera->GetPosition()[2] - surf->plane->dist;
 		break;
 	default:
-		dot = Math_DotProduct(&camera->GetPosition()[0], surf->plane->normal) - surf->plane->dist;
+		dot = surf->plane->normal.DotProduct(camera->GetPosition()) - surf->plane->dist;
 		break;
 	}
 
@@ -166,7 +166,7 @@ void World_CullSurfaces(void)
 	{
 		if (s->visframe == r_visframecount)
 		{
-			if (camera->IsBoxOutsideFrustum(s->mins, s->maxs) || R_BackFaceCull (s))
+			if (camera->IsBoxOutsideFrustum(PLVector3D(s->mins), PLVector3D(s->maxs)) || R_BackFaceCull (s))
 				s->culled = true;
 			else
 			{
@@ -320,7 +320,7 @@ void World_DrawWater(void)
 				if (t->material->bind && !r_showtris.boolean_value)
 				{
 					plSetTextureUnit(VIDEO_TEXTURE_LIGHT);
-					plEnableGraphicsStates(VL_CAPABILITY_TEXTURE_2D);
+					plEnableGraphicsStates(PL_CAPABILITY_TEXTURE_2D);
 
 					t->material->bind = false;
 				}
@@ -344,7 +344,7 @@ void World_DrawWater(void)
 
 	// Disable light texture
 	plSetTextureUnit(VIDEO_TEXTURE_LIGHT);
-	plDisableGraphicsStates(VL_CAPABILITY_TEXTURE_2D);
+	plDisableGraphicsStates(PL_CAPABILITY_TEXTURE_2D);
 	plSetTextureUnit(0);
 }
 
@@ -382,7 +382,7 @@ void World_Draw(void)
 				if (t->material->bind && !r_showtris.boolean_value)
 				{
 					plSetTextureUnit(VIDEO_TEXTURE_LIGHT);
-					plEnableGraphicsStates(VL_CAPABILITY_TEXTURE_2D);
+					plEnableGraphicsStates(PL_CAPABILITY_TEXTURE_2D);
 
 					t->material->bind = false;
 				}
@@ -411,6 +411,6 @@ void World_Draw(void)
 
 	// Disable light texture
 	plSetTextureUnit(VIDEO_TEXTURE_LIGHT);
-	plDisableGraphicsStates(VL_CAPABILITY_TEXTURE_2D);
+	plDisableGraphicsStates(PL_CAPABILITY_TEXTURE_2D);
 	plSetTextureUnit(0);
 }

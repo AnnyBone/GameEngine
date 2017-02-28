@@ -158,7 +158,7 @@ void Video_Initialize(void)
 
 	Light_Initialize();
 
-	g_texturemanager	= new XTextureManager();
+	g_texturemanager	= new TextureManager();
 	g_shadermanager		= new ShaderManager();
 	g_cameramanager		= new CameraManager();
 	g_spritemanager		= new SpriteManager();

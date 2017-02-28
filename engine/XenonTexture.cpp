@@ -21,16 +21,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "engine_base.h"
 #include "video.h"
-//#include "XenonTexture.h"
+#include "XenonTexture.h"
 
-XTextureManager *g_texturemanager = nullptr;
+TextureManager *g_texturemanager = nullptr;
 
 ConsoleVariable_t cv_texture_anisotropy = { "texture_anisotropy", "16", true };
 
 // Base textures...
 namespace textures
 {
-	XTexture *nulltexture = nullptr;
+	Texture *nulltexture = nullptr;
 }
 
 void _PrintMemoryUsage()
@@ -38,16 +38,16 @@ void _PrintMemoryUsage()
 	g_texturemanager->PrintMemoryUsage();
 }
 
-XTextureManager::XTextureManager() {
+TextureManager::TextureManager() {
 	Con_Printf("Initializing Texture Manager...\n");
 
 	Cvar_RegisterVariable(&cv_texture_anisotropy, NULL);
 
 	Cmd_AddCommand("tm_memoryusage", _PrintMemoryUsage);
 
-	Image_InitializePNG();
+    plInitialize(PL_SUBSYSTEM_IMAGE | PL_SUBSYSTEM_GRAPHICS);
 
-	_max_resolution = plGetMaxTextureSize();
+	max_resolution_ = plGetMaxTextureSize();
 
 	static PLbyte notexture_data[16] =
 	{
@@ -59,61 +59,41 @@ XTextureManager::XTextureManager() {
 	textures::nulltexture = CreateTexture(
 		"nulltexture",
 		2, 2, 
-		PL_TEXTUREFORMAT_RGB8,
+		PL_IMAGEFORMAT_RGB8,
 		notexture_data, sizeof(notexture_data), 
-		XTEXTURE_FLAG_PRESERVE | XTEXTURE_FLAG_NEAREST
+		TEXTURE_FLAG_PRESERVE | TEXTURE_FLAG_NEAREST
 	);
 }
 
-XTextureManager::~XTextureManager() {
-	Image_Shutdown();
+TextureManager::~TextureManager() {
+
 }
 
 /*	Utility	*/
 
-void XTextureManager::PrintMemoryUsage() {
-	PLuint texels = 0;
-
-	for(auto tex = _textures.begin(); tex != _textures.end(); ++tex)
-	{
-		XTexture *texture = tex->second;
+void TextureManager::PrintMemoryUsage() {
+	unsigned int texels = 0;
+	for(auto tex = _textures.begin(); tex != _textures.end(); ++tex) {
+		Texture *texture = tex->second;
 		Con_SafePrintf(" %4i x%4i %s\n", 
 			texture->GetWidth(), 
 			texture->GetHeight(), 
-			texture->path.c_str());
+			texture->path.c_str()
+        );
 
 		// todo, update this crap...
-		if (texture->GetFlags() & XTEXTURE_FLAG_MIPMAP)
-			texels += texture->GetSize() / texture->levels;
-		else
-			texels += (texture->GetWidth() * texture->GetHeight());
+		if (texture->flags & TEXTURE_FLAG_MIPMAP) {
+            texels += texture->GetSize() / texture->levels;
+        } else {
+            texels += (texture->GetWidth() * texture->GetHeight());
+        }
 	}
 
-    // todo, why the hell is bpp a floating-point ????
-	PLuint mb = texels * ((PLuint)Video.bpp / 8) / 0x100000;
+	unsigned int mb = texels * (Video.bpp / 8) / 0x100000;
 	Con_Printf("%i textures %i pixels %1.1f megabytes\n", _textures.size(), texels, mb);
 }
 
-PLbool XTextureManager::IsValidSize(PLuint width, PLuint height)
-{
-	// Check it's not a null size.
-	if ((width == 0) || (height == 0))
-	{
-		Con_Warning("Null width or height! (%i x %i)\n", width, height);
-		return false;
-	}
-	// Check that it's a multiple of two.
-	else if ((width % 2) || (height % 2))
-	{
-		Con_Warning("Resolution isn't a multiple of 2! (%i x %i)\n", width, height);
-		return false;
-	}
-
-	return true;
-}
-
-XTexture *XTextureManager::CreateTexture(std::string path, PLuint flags)
-{
+Texture *TextureManager::CreateTexture(std::string path, PLuint flags) {
 	{
 		auto texture = _textures.find(path);
 		if (texture != _textures.end())
@@ -123,42 +103,15 @@ XTexture *XTextureManager::CreateTexture(std::string path, PLuint flags)
 	FILE *f;
 	PLImage image;
 
-	std::string dtxpath = path + PLIMAGE_EXTENSION_DTX;
-	COM_FOpenFile(dtxpath.c_str(), &f);
-	if (f)
-	{
-		PLresult result = plLoadDTXImage(f, &image);
-
-		fclose(f);
-
-		if (result == PL_RESULT_SUCCESS)
-		{
-			_textures[path] = CreateTexture(&image, flags);
-			free(image.data);
-			return _textures[path];
-		}
-	}
-
-	std::string ftxpath = path + PLIMAGE_EXTENSION_FTX;
-	COM_FOpenFile(ftxpath.c_str(), &f);
-	if (f)
-	{
-		PLresult result = plLoadFTXImage(f, &image);
-
-		fclose(f);
-
-		if (result == PL_RESULT_SUCCESS)
-		{
-			_textures[path] = CreateTexture(&image, flags);
-			free(image.data);
-			return _textures[path];
-		}
-	}
+    if(plLoadImage(path.c_str(), &image) == PL_RESULT_SUCCESS) {
+        _textures[path] = CreateTexture(&image, flags);
+        _plFreeImage(&image);
+        return _textures[path];
+    }
 
 	std::string tgapath = path + PLIMAGE_EXTENSION_TGA;
 	COM_FOpenFile(tgapath.c_str(), &f);
-	if (f)
-	{
+	if (f) {
 		memset(&image, 0, sizeof(PLImage));
 
 		PLuint width, height;
@@ -168,7 +121,7 @@ XTexture *XTextureManager::CreateTexture(std::string path, PLuint flags)
 
 		if (data)
 		{
-			_textures[path] = CreateTexture(path, width, height, VL_TEXTUREFORMAT_RGBA8, data, (width * height * 4), flags);
+			_textures[path] = CreateTexture(path, width, height, PL_IMAGEFORMAT_RGBA8, data, (width * height * 4), flags);
 			free(data);
 			return _textures[path];
 		}
@@ -178,7 +131,7 @@ XTexture *XTextureManager::CreateTexture(std::string path, PLuint flags)
 	return nullptr;
 }
 
-XTexture* XTextureManager::CreateTexture(std::string path, PLuint width, PLuint height, PLTextureFormat format, PLbyte *data, PLuint size, PLuint flags)
+Texture* TextureManager::CreateTexture(std::string path, PLuint width, PLuint height, PLTextureFormat format, PLbyte *data, PLuint size, PLuint flags)
 {
 	PLImage image;
 	memset(&image, 0, sizeof(PLImage));
@@ -192,17 +145,16 @@ XTexture* XTextureManager::CreateTexture(std::string path, PLuint width, PLuint 
 	return CreateTexture(&image, flags);
 }
 
-XTexture *XTextureManager::CreateTexture(PLImage *image, PLuint flags)
+Texture *TextureManager::CreateTexture(PLImage *image, PLuint flags)
 {
 	if (!image || !image->data) throw XException("Invalid image data!\n");
 
 	// Ensure it's a valid size, do we always want to do this?
-	if (!g_texturemanager->IsValidSize(image->width, image->height))
-	{
+	if (!plIsValidImageSize(image->width, image->height)) {
 	}
 
 	// Add the new texture to our manager.
-	XTexture *tex = new XTexture;
+	Texture *tex = new Texture;
 	tex->AddFlags(flags);
 	tex->SetImage(image);
 	tex->SetCRC(CRC_Block(image->data, image->size));
@@ -212,9 +164,9 @@ XTexture *XTextureManager::CreateTexture(PLImage *image, PLuint flags)
 
 /*	Texture Management	*/
 
-void XTextureManager::DeleteTexture(XTexture *texture, PLbool force)
+void TextureManager::DeleteTexture(Texture *texture, PLbool force)
 {
-	if (!texture || ((texture->GetFlags() & XTEXTURE_FLAG_PRESERVE) && !force))
+	if (!texture || ((texture->GetFlags() & TEXTURE_FLAG_PRESERVE) && !force))
 		return;
 
 	// Remove it from the list.
@@ -233,7 +185,7 @@ void XTextureManager::DeleteTexture(XTexture *texture, PLbool force)
 
 //////////////////////////////////////////////////////////////////////////
 
-XTexture::XTexture() :
+Texture::Texture() :
 	_flags(0),
 	_width(8), _height(8),
 	_format(VL_TEXTUREFORMAT_RGBA8),
@@ -242,15 +194,15 @@ XTexture::XTexture() :
 	levels(0),
 	_crc(0)
 {
-	 plCreateTexture(&_id);
+	 plCreateTexture(&instance_);
 }
 
-XTexture::~XTexture()
+Texture::~Texture()
 {
-	plDeleteTexture(&_id);
+	plDeleteTexture(&instance_);
 }
 
-void XTexture::SetImage(PLImage *image)
+void Texture::SetImage(PLImage *image)
 {
 	_width		= image->width;
 	_height		= image->height;
@@ -259,7 +211,7 @@ void XTexture::SetImage(PLImage *image)
 	path		= image->path;
 
 	levels = 1;
-	if (_flags & XTEXTURE_FLAG_MIPMAP)
+	if (_flags & TEXTURE_FLAG_MIPMAP)
 	{
 		plEnableGraphicsStates(VL_CAPABILITY_GENERATEMIPMAP);
 		levels = 4;
@@ -269,7 +221,7 @@ void XTexture::SetImage(PLImage *image)
 	memset(&upload, 0, sizeof(PLTextureInfo));
 	upload.data			= image->data;
 	upload.format		= image->format;
-	if (_flags & XTEXTURE_FLAG_ALPHA)
+	if (_flags & TEXTURE_FLAG_ALPHA)
 		upload.pixel_format = VL_COLOURFORMAT_RGBA;
 	else
 		upload.pixel_format = VL_COLOURFORMAT_RGB;
@@ -279,32 +231,32 @@ void XTexture::SetImage(PLImage *image)
 	upload.initial		= true;
 	upload.levels		= levels;
 
-	plUploadTexture(_id, &upload);
+	plUploadTexture(instance_, &upload);
 	
-	if (_flags & XTEXTURE_FLAG_MIPMAP)
+	if (_flags & TEXTURE_FLAG_MIPMAP)
 		plDisableGraphicsStates(VL_CAPABILITY_GENERATEMIPMAP);
 
 	PLTextureFilter filtermode = PL_TEXTUREFILTER_LINEAR;
-	if (_flags & XTEXTURE_FLAG_MIPMAP)
+	if (_flags & TEXTURE_FLAG_MIPMAP)
 	{
-		if (_flags & XTEXTURE_FLAG_NEAREST)	filtermode = PL_TEXTUREFILTER_MIPMAP_NEAREST;
+		if (_flags & TEXTURE_FLAG_NEAREST)	filtermode = PL_TEXTUREFILTER_MIPMAP_NEAREST;
 		else								filtermode = PL_TEXTUREFILTER_MIPMAP_LINEAR;
 	}
-	else if(_flags & XTEXTURE_FLAG_NEAREST)
+	else if(_flags & TEXTURE_FLAG_NEAREST)
 		filtermode = PL_TEXTUREFILTER_NEAREST;
 
-	plSetTextureFilter(_id, filtermode);
-	plSetTextureAnisotropy(_id, (PLuint)cv_texture_anisotropy.iValue);
+	plSetTextureFilter(instance_, filtermode);
+	plSetTextureAnisotropy(instance_, (PLuint)cv_texture_anisotropy.iValue);
 }
 
-void XTexture::Bind()
+void Texture::Bind()
 {
-	plSetTexture(_id);
+	plSetTexture(instance_);
 }
 
-void XTexture::Unbind()
+void Texture::Unbind()
 {
 	// ONLY do this if it's the current bound texture.
-	if(plGetCurrentTexture(plGetCurrentTextureUnit()) == _id)
+	if(plGetCurrentTexture(plGetCurrentTextureUnit()) == instance_)
 		plSetTexture(0);
 }

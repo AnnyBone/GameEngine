@@ -18,76 +18,76 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
 #include "platform_image.h"
 
-class XTexture;
+class Texture;
 
-class XTextureManager
+class TextureManager
 {
 public:
-	XTextureManager();
-	~XTextureManager();
+	TextureManager();
+	~TextureManager();
 
 	PLbool IsValidSize(PLuint width, PLuint height);
 
-	XTexture *CreateTexture(std::string path, PLuint flags = 0);
-	XTexture *CreateTexture(std::string path, PLuint width, PLuint height, PLImageFormat format, PLbyte *data, PLuint size, PLuint flags = 0);
-	XTexture *CreateTexture(PLImage *image, PLuint flags = 0);
+	Texture *CreateTexture(std::string path, PLuint flags = 0);
+	Texture *CreateTexture(std::string path, PLuint width, PLuint height, PLImageFormat format, PLbyte *data, PLuint size, PLuint flags = 0);
+	Texture *CreateTexture(PLImage *image, PLuint flags = 0);
 
 	void PrintMemoryUsage();
 
 #if 0
-	XTexture *GetTexture(std::string path);
-	XTexture *GetTexture(PLushort crc);
+	Texture *GetTexture(std::string path);
+	Texture *GetTexture(PLushort crc);
 #endif
 
-	void DeleteTexture(XTexture *texture, PLbool force = false);
+	void DeleteTexture(Texture *texture, PLbool force = false);
 
 protected:
 private:
 
-	PLuint _max_resolution; // Maximum supported resolution.
+	PLuint max_resolution_; // Maximum supported resolution.
 
-	std::map<std::string, XTexture*> _textures;
+	std::map<std::string, Texture*> _textures;
 };
 
-class XTexture
+class Texture
 {
 public:
-	XTexture();
-	~XTexture();
+	Texture();
+	~Texture();
 
 	void SetImage(PLImage *image);
 
-	PLuint GetWidth() const { return _width; }
-	PLuint GetHeight() const { return _height; }
-	PLuint GetSize() const { return _size; }
+	unsigned int GetWidth() const { return _width; }
+	unsigned int GetHeight() const { return _height; }
+	unsigned int GetSize() const { return _size; }
 
-	PLushort GetCRC() const { return _crc; }
-	void SetCRC(PLushort crc) { _crc = crc; }
+	unsigned short GetCRC() const { return _crc; }
+	void SetCRC(unsigned short crc) { _crc = crc; }
 
 	void Bind();
 	void Unbind();
 
-	PLuint levels;
+	unsigned int levels;
+    unsigned int flags;
 
 	std::string path;
 
 protected:
 
 private:
-	PLTexture _id;
+    PLTexture instance_;
 
-	PLuint _width, _height;
+	unsigned int _width, _height;
+	unsigned int _size;
 
-	PLuint _size;
-
-	PLushort _crc;
+	unsigned short _crc;
 
 	PLImageFormat _format;
 };
 
 namespace textures
 {
-	extern XTexture *nulltexture;
+	extern Texture *nulltexture;
 }
 
-extern XTextureManager *g_texturemanager;
+extern TextureManager *g_texturemanager;

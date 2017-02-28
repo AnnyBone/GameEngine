@@ -273,7 +273,7 @@ Material_t *Material_GetByPath(const char *ccPath) {
   return NULL;
 }
 
-XTexture *Material_LoadTexture(Material_t *material, MaterialSkin_t *mCurrentSkin, char *arg) {
+Texture *Material_LoadTexture(Material_t *material, MaterialSkin_t *mCurrentSkin, char *arg) {
   // Check if it's trying to use a built-in texture.
   if (arg[0] == '@') {
 	arg++;
@@ -290,13 +290,13 @@ XTexture *Material_LoadTexture(Material_t *material, MaterialSkin_t *mCurrentSki
 	}
   }
 
-  PLuint texflags = XTEXTURE_FLAG_ALPHA | XTEXTURE_FLAG_MIPMAP;
+  PLuint texflags = TEXTURE_FLAG_ALPHA | TEXTURE_FLAG_MIPMAP;
   if (material->flags & MATERIAL_FLAG_PRESERVE)
-	texflags |= XTEXTURE_FLAG_PRESERVE;
+	texflags |= TEXTURE_FLAG_PRESERVE;
   if (material->flags & MATERIAL_FLAG_NEAREST)
-	texflags |= XTEXTURE_FLAG_NEAREST;
+	texflags |= TEXTURE_FLAG_NEAREST;
 
-  XTexture *tex = g_texturemanager->CreateTexture(arg, texflags);
+  Texture *tex = g_texturemanager->CreateTexture(arg, texflags);
   if (!tex) {
 	Con_Warning("Failed to load texture! (%s) (%s)\n", arg, material->cPath);
 	return textures::nulltexture;

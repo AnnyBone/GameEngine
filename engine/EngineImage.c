@@ -20,13 +20,7 @@
 
 #include "engine_base.h"
 
-char loadfilename[PLATFORM_MAX_PATH]; //file scope so that error messages can use it
-
-PLbool image_pngsupport = PL_FALSE;
-
-uint8_t *Image_LoadPNG(FILE *fin, PLuint *width, PLuint *height);
-
-//#define IMAGE_SUPPORT_KTX
+char loadfilename[PL_SYSTEM_MAX_PATH]; //file scope so that error messages can use it
 
 /*	Returns a pointer to hunk allocated RGBA data
 */
@@ -34,19 +28,6 @@ uint8_t *Image_LoadImage(char *name, unsigned int *width, unsigned int *height)
 {
 	uint8_t		*bImage;
 	FILE		*f;
-
-	// PNG
-	if (image_pngsupport)
-	{
-		sprintf(loadfilename, "%s.png", name);
-		COM_FOpenFile(loadfilename, &f);
-		if (f)
-		{
-			bImage = Image_LoadPNG(f, width, height);
-			if (bImage)
-				return bImage;
-		}
-	}
 
 	// TGA
 	sprintf(loadfilename,"%s.tga",name);
@@ -89,7 +70,7 @@ targaheader_t targa_header;
 bool Image_WriteTGA(const char *name, uint8_t *data,int width,int height,int bpp,bool upsidedown)
 {
 	int			handle, i, size, temp, bytes;
-	char		pathname[PLATFORM_MAX_PATH];
+	char		pathname[PL_SYSTEM_MAX_PATH];
 	uint8_t		header[TARGAHEADERSIZE];
 
 	if (!plCreateDirectory(com_gamedir)) //if we've switched to a nonexistant gamedir, create it now so we don't crash
@@ -299,132 +280,4 @@ PLbyte *Image_LoadTGA (FILE *fin, unsigned int *width, unsigned int *height)
 	*width = (int)(targa_header.width);
 	*height = (int)(targa_header.height);
 	return targa_rgba;
-}
-
-/*	PNG Support	*/
-
-// Use a direct path, mainly for Linux's sake.
-#include "../external/lpng1618/png.h"
-
-PL_INSTANCE iPNGLibraryInstance;
-
-static png_structp(*PNG_CreateReadStruct)(png_const_charp user_png_ver, png_voidp error_ptr, png_error_ptr error_fn, png_error_ptr warn_fn);
-
-static png_infop(*PNG_CreateInfoStruct)(png_const_structrp png_ptr);
-
-static png_uint_32(*PNG_AccessVersionNumber)(void);
-static png_uint_32(*PNG_GetImageWidth)(png_const_structrp png_ptr, png_const_inforp info_ptr);
-static png_uint_32(*PNG_GetImageHeight)(png_const_structrp png_ptr, png_const_inforp info_ptr);
-
-static void(*PNG_InitIO)(png_structrp png_ptr, png_FILE_p fp);
-static void(*PNG_SetSigBytes)(png_structrp png_ptr, int num_bytes);
-static void(*PNG_ReadPNG)(png_structrp png_ptr, png_inforp info_ptr, int transforms, png_voidp params);
-static void(*PNG_ReadInfo)(png_structrp png_ptr, png_inforp info_ptr);
-static void(*PNG_SetKeepUnknownChunks)(png_structrp png_ptr, int keep, png_const_bytep chunk_list, int num_chunks);
-static void(*PNG_DestroyReadStruct)(png_structpp png_ptr_ptr, png_infopp info_ptr_ptr, png_infopp end_info_ptr_ptr);
-
-static PLModuleFunction PNGFunctions[]=
-{
-	{ "png_create_read_struct", (void**)&PNG_CreateReadStruct },
-	{ "png_create_info_struct", (void**)&PNG_CreateInfoStruct },
-	{ "png_access_version_number", (void**)&PNG_AccessVersionNumber },
-	{ "png_get_image_width", (void**)&PNG_GetImageWidth },
-	{ "png_get_image_height", (void**)&PNG_GetImageHeight },
-	{ "png_init_io", (void**)&PNG_InitIO },
-	{ "png_set_sig_bytes", (void**)&PNG_SetSigBytes },
-	{ "png_read_png", (void**)&PNG_ReadPNG },
-	{ "png_read_info", (void**)&PNG_ReadInfo },
-	{ "png_set_keep_unknown_chunks", (void**)&PNG_SetKeepUnknownChunks },
-	{ "png_destroy_read_struct", (void**)&PNG_DestroyReadStruct }
-};
-
-void Image_InitializePNG()
-{
-	iPNGLibraryInstance = plLoadLibrary("libpng16");
-	if (!iPNGLibraryInstance)
-	{
-		Con_Warning("Failed to load libpng!\n");
-		return;
-	}
-
-	// TODO: Introduce new Platform functionality to do this itself?
-	int i;
-	for (i = 0; i < plArrayElements(PNGFunctions); i++)
-	{
-		*(PNGFunctions[i].Function) = plFindLibraryFunction(iPNGLibraryInstance, PNGFunctions[i].name);
-		if (!PNGFunctions[i].Function)
-		{
-			Con_Warning("Failed to find libpng function! (%s)\n", PNGFunctions[i].name);
-			return;
-		}
-	}
-
-	image_pngsupport = true;
-}
-
-void Image_PNGError(png_structp pPNG, const char *ccString)
-{
-	Con_Warning("Load error! (%s)\n", ccString);
-}
-
-uint8_t *Image_LoadPNG(FILE *fin, unsigned int *width, unsigned int *height)
-{
-	png_structp pPNG = NULL;
-	png_infop pInfo;
-	uint8_t *iImageBuffer;
-	int iWidth, iHeight;
-	//int iBitDepth, iColourType, iInterlaceType;
-
-	// TEMP: Temporarily commented out to force this to fail!
-//	pPNG = PNG_CreateReadStruct(PNG_LIBPNG_VER_STRING, NULL, Image_PNGError, Image_PNGError);
-	if (!pPNG)
-	{
-		Con_Warning("Failed to create PNG read struct!\n");
-
-		fclose(fin);
-		return NULL;
-	}
-
-	pInfo = PNG_CreateInfoStruct(pPNG);
-	if (!pInfo)
-	{
-		Con_Warning("Failed to create info struct!\n");
-
-		PNG_DestroyReadStruct(&pPNG, &pInfo, NULL);
-
-		fclose(fin);
-		return NULL;
-	}
-
-	PNG_InitIO(pPNG, fin);
-
-	// Ignore unknown chunks.
-	PNG_SetKeepUnknownChunks(pPNG, 0, NULL, 0);
-
-	// Last parameter isn't used, so just passed null.
-	// No transforms are needed here either (though PNG_TRANSFORM_BGR in future????)
-	PNG_ReadPNG(pPNG, pInfo, PNG_TRANSFORM_IDENTITY, NULL);
-
-	// Get the width and height.
-	iWidth = PNG_GetImageWidth(pPNG, pInfo);
-	iHeight = PNG_GetImageHeight(pPNG, pInfo);
-
-	/* TODO: Is this a memory leak, or one of the many fragile things upon
-	 * which everything barely balances?
-	 */
-	iImageBuffer = (uint8_t*)Hunk_Alloc((iHeight + iWidth) * 4);
-
-	PNG_DestroyReadStruct(&pPNG, &pInfo, NULL);
-
-	fclose(fin);
-
-	return NULL;
-}
-
-/**/
-
-void Image_Shutdown()
-{
-	if (iPNGLibraryInstance)
-		plUnloadLibrary(iPNGLibraryInstance);
 }

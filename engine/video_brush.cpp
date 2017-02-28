@@ -43,7 +43,7 @@ glpoly_t	*lightmap_polys[MAX_LIGHTMAPS];
 bool		bLightmapModified[MAX_LIGHTMAPS];
 glRect_t	lightmap_rectchange[MAX_LIGHTMAPS];
 
-XTexture *lightmap_textures[MAX_LIGHTMAPS];
+Texture *lightmap_textures[MAX_LIGHTMAPS];
 
 int	allocated[MAX_LIGHTMAPS][BLOCK_WIDTH];
 
@@ -567,7 +567,7 @@ void GL_BuildLightmaps()
 			BLOCK_WIDTH,BLOCK_HEIGHT,
 			VL_TEXTUREFORMAT_RGB8,	//SRC_LIGHTMAP,
 			data, sizeof(data),
-			XTEXTURE_FLAG_MIPMAP	//TEXPREF_LINEAR|TEXPREF_NOPICMIP
+			TEXTURE_FLAG_MIPMAP	//TEXPREF_LINEAR|TEXPREF_NOPICMIP
 		);
 		//johnfitz
 	}

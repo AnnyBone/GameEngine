@@ -102,8 +102,9 @@ typedef struct
 typedef struct
 {
 	float	
-		fMaxAnisotropy,	// Max anisotropy amount allowed by the hardware.
-		bpp;			// Bits per-pixel.
+		fMaxAnisotropy;	// Max anisotropy amount allowed by the hardware.
+
+	unsigned char bpp;			// Bits per-pixel.
 
 	// Texture Management
 	VideoTextureMU_t	*textureunits;

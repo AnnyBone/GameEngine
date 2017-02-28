@@ -141,7 +141,7 @@ const PLchar *xenon::GetPath(XPath path)
 XEngineImport g_launcher;
 XEngineExport exports;
 
-PL_MODULE_EXPORT XEngineExport *Engine_Main(XEngineImport *mImport)
+PL_EXPORT XEngineExport *Engine_Main(XEngineImport *mImport)
 {
 	// Imports
 	g_launcher.iVersion			= mImport->iVersion;
