@@ -74,7 +74,7 @@ extern overflowtimes_t dev_overflows; //this stores the last time overflow messa
 
 //johnfitz -- moved here from r_brush.c
 #define MAX_LIGHTMAPS 512 //johnfitz -- was 64
-extern XTexture *lightmap_textures[MAX_LIGHTMAPS]; //johnfitz -- changed to an array
+extern Texture *lightmap_textures[MAX_LIGHTMAPS]; //johnfitz -- changed to an array
 //johnfitz
 
 extern int gl_warpimagesize; //johnfitz -- for water warp

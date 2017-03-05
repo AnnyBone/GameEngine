@@ -126,7 +126,7 @@ void menu::Draw(CoreViewport *viewport)
 		HUD_Draw();
 	else if(iMenuState & MENU_STATE_MENU)
 	{
-		PLColour col = { 0, 0, 0, plFloatToByte(.8f) };
+		PLColour col = { (PLbyte)0, (PLbyte)0, (PLbyte)0, plFloatToByte(.8f) };
 		Engine.DrawRectangle(0, 0, viewport->GetWidth(), viewport->GetHeight(), col);
 		
 		Engine.DrawString(110, 80, ">");

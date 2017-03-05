@@ -23,10 +23,10 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 #include "shared_engine.h"
 
 #ifdef __cplusplus
-#	include "XenonClass.h"
-#	include "XenonException.h"
+#	include "base_class.h"
+#	include "exception.h"
 
-#	include "XenonTexture.h"
+#	include "texture.h"
 #endif
 
 #define	ENGINE_LOG	"engine"

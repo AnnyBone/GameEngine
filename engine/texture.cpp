@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "engine_base.h"
 #include "video.h"
-#include "XenonTexture.h"
+#include "texture.h"
 
 TextureManager *g_texturemanager = nullptr;
 
@@ -131,7 +131,8 @@ Texture *TextureManager::CreateTexture(std::string path, PLuint flags) {
 	return nullptr;
 }
 
-Texture* TextureManager::CreateTexture(std::string path, PLuint width, PLuint height, PLTextureFormat format, PLbyte *data, PLuint size, PLuint flags)
+Texture* TextureManager::CreateTexture(std::string path, PLuint width, PLuint height, PLImageFormat format,
+									   PLbyte *data, PLuint size, PLuint flags)
 {
 	PLImage image;
 	memset(&image, 0, sizeof(PLImage));
@@ -164,9 +165,8 @@ Texture *TextureManager::CreateTexture(PLImage *image, PLuint flags)
 
 /*	Texture Management	*/
 
-void TextureManager::DeleteTexture(Texture *texture, PLbool force)
-{
-	if (!texture || ((texture->GetFlags() & TEXTURE_FLAG_PRESERVE) && !force))
+void TextureManager::DeleteTexture(Texture *texture, PLbool force) {
+	if (!texture || ((texture->flags & TEXTURE_FLAG_PRESERVE) && !force))
 		return;
 
 	// Remove it from the list.
@@ -186,20 +186,18 @@ void TextureManager::DeleteTexture(Texture *texture, PLbool force)
 //////////////////////////////////////////////////////////////////////////
 
 Texture::Texture() :
-	_flags(0),
+	flags(0),
 	_width(8), _height(8),
-	_format(VL_TEXTUREFORMAT_RGBA8),
+	_format(PL_IMAGEFORMAT_RGBA8),
 	_size(0),
 	path(""),
 	levels(0),
-	_crc(0)
-{
-	 plCreateTexture(&instance_);
+	_crc(0) {
+	instance_ = plCreateTexture();
 }
 
-Texture::~Texture()
-{
-	plDeleteTexture(&instance_);
+Texture::~Texture() {
+	plDeleteTexture(instance_, true);
 }
 
 void Texture::SetImage(PLImage *image)
@@ -211,7 +209,7 @@ void Texture::SetImage(PLImage *image)
 	path		= image->path;
 
 	levels = 1;
-	if (_flags & TEXTURE_FLAG_MIPMAP)
+	if (flags & TEXTURE_FLAG_MIPMAP)
 	{
 		plEnableGraphicsStates(VL_CAPABILITY_GENERATEMIPMAP);
 		levels = 4;
@@ -247,16 +245,4 @@ void Texture::SetImage(PLImage *image)
 
 	plSetTextureFilter(instance_, filtermode);
 	plSetTextureAnisotropy(instance_, (PLuint)cv_texture_anisotropy.iValue);
-}
-
-void Texture::Bind()
-{
-	plSetTexture(instance_);
-}
-
-void Texture::Unbind()
-{
-	// ONLY do this if it's the current bound texture.
-	if(plGetCurrentTexture(plGetCurrentTextureUnit()) == instance_)
-		plSetTexture(0);
 }

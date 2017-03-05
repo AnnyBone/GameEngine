@@ -75,7 +75,7 @@ public:
 protected:
 
 private:
-    PLTexture instance_;
+    PLTexture *instance_;
 
 	unsigned int _width, _height;
 	unsigned int _size;

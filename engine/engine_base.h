@@ -66,7 +66,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "sys.h"
 #include "zone.h"
 
-#include "Xenon.h"
+#include "engine.h"
 #include "EngineConsoleVariable.h"
 #include "video_window.h"
 #include "EngineVideoDraw.h"

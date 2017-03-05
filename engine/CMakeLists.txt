@@ -19,4 +19,9 @@ target_include_directories(engine PUBLIC
         ${CMAKE_SYSTEM_INCLUDE_PATH}
         client/
         ../)
-target_link_libraries(engine platform dl GL openal GLEW SDL2-2.0)
+if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    target_link_libraries(engine "-framework OpenGL")
+else()
+    target_link_libraries(engine GL GLEW)
+endif()
+target_link_libraries(engine platform dl openal SDL2-2.0)
