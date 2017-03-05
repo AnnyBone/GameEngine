@@ -916,16 +916,20 @@ void Sky_Draw(void) {
 
 	plDisableGraphicsStates(PL_CAPABILITY_TEXTURE_2D);
 
+#if 0
 	if(Fog_GetDensity() > 0) {
         glColor3fv(Fog_GetColor());
     } else {
         glColor3fv(skyflatcolor);
     }
+#endif
 
 	Sky_ProcessTextureChains();
 	Sky_ProcessEntities();
 
+#if 0
 	glColor3f(1.0f,1.0f,1.0f);
+#endif
 
 	plEnableGraphicsStates(PL_CAPABILITY_TEXTURE_2D);
 

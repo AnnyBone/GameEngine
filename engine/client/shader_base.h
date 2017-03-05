@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #pragma once
 
-class BaseShader : public core::ShaderProgram
+class BaseShader : public pl::graphics::ShaderProgram
 {
 public:
 	BaseShader();

@@ -22,12 +22,15 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 #include "client/shader_base.h"
 #include "client/shader_water.h"
 
-using namespace core;
+using namespace xenon::graphics;
 
-ShaderManager *g_shadermanager = nullptr;
+namespace xenon {
+	namespace graphics {
+		ShaderManager *shader_manager = nullptr;
+	}
+}
 
-ShaderManager::ShaderManager()
-{
+ShaderManager::ShaderManager() {
 	Con_Printf("Initializing Shader Manager...\n");
 	
 	programs.reserve(16);
@@ -41,7 +44,7 @@ ShaderManager::~ShaderManager()
 	Clear();
 }
 
-void ShaderManager::Add(ShaderProgram *program, std::string name)
+void ShaderManager::Add(pl::graphics::ShaderProgram *program, std::string name)
 {
 	Con_Printf("Adding new shader: %s\n", name.c_str());
 
@@ -53,15 +56,14 @@ void ShaderManager::Add(ShaderProgram *program, std::string name)
 	programs.emplace(name, program);
 }
 
-void ShaderManager::Delete(ShaderProgram *_program)
-{
-	for (auto program = programs.begin(); program != programs.end(); ++program)
-		if (program->second == _program)
-		{
-			delete program->second;
-			programs.erase(program);
+void ShaderManager::Delete(pl::graphics::ShaderProgram *program) {
+	for (auto cprogram = programs.begin(); cprogram != programs.end(); ++cprogram) {
+		if (cprogram->second == program) {
+			delete cprogram->second;
+			programs.erase(cprogram);
 			break;
 		}
+	}
 }
 
 void ShaderManager::Delete(std::string name)
@@ -82,18 +84,19 @@ void ShaderManager::Clear()
 	programs.clear();
 }
 
-ShaderProgram *ShaderManager::GetProgram(std::string name)
+pl::graphics::ShaderProgram * ShaderManager::GetProgram(std::string name)
 {
 	auto program = programs.find(name);
-	if (program != programs.end())
-		return program->second;
+	if (program != programs.end()) {
+        return program->second;
+    }
 
 	return nullptr;
 }
 
 // Shader
 
-Shader::Shader(PLShaderType type) :
+Shader::Shader(pl::graphics::ShaderType type) :
 	instance(0), 
 	source_length(0), 
 	type(type)
@@ -171,11 +174,6 @@ bool Shader::Load(const char *path)
 #else
 	return false;
 #endif
-}
-
-Shader::~Shader()
-{
-	plDeleteShader(&instance);
 }
 
 // Compilation
@@ -364,81 +362,4 @@ PLUniform *ShaderProgram::GetUniform(std::string name)
 		return uniform->second;
 
 	return nullptr;
-}
-
-void ShaderProgram::SetUniformVariable(PLUniform *uniform, float x, float y, float z)
-{
-	if (!IsActive())
-		Sys_Error("Ensure shader program is enabled before applying variables! (%i) (%i %i %i)\n",
-		uniform->location, (int)x, (int)y, (int)z);
-
-#ifdef VL_MODE_OPENGL	
-	glUniform3f(uniform->location, x, y, z);
-#endif
-}
-
-void ShaderProgram::SetUniformVariable(PLUniform *uniform, plVector3f_t vector)
-{
-	if (!IsActive())
-		Sys_Error("Ensure shader program is enabled before applying variables! (%i) (%i %i %i)\n",
-		uniform->location, (int)vector[0], (int)vector[1], (int)vector[2]);
-
-#ifdef VL_MODE_OPENGL
-	glUniform3f(uniform->location, vector[0], vector[1], vector[2]);
-#endif
-}
-
-void ShaderProgram::SetUniformVariable(PLUniform *uniform, float x, float y, float z, float a)
-{
-	if (!IsActive())
-		Sys_Error("Ensure shader program is enabled before applying variables! (%i) (%i %i %i %i)\n",
-		uniform->location, (int)x, (int)y, (int)z, (int)a);
-
-#ifdef VL_MODE_OPENGL
-	glUniform4f(uniform->location, x, y, z, a);
-#endif
-}
-
-void ShaderProgram::SetUniformVariable(PLUniform *uniform, int i)
-{
-	if (!IsActive())
-		Sys_Error("Ensure shader program is enabled before applying variables! (%i) (%i)\n",
-		uniform->location, i);
-
-#ifdef VL_MODE_OPENGL
-	glUniform1i(uniform->location, i);
-#endif
-}
-
-void ShaderProgram::SetUniformVariable(PLUniform *uniform, unsigned int i)
-{
-	if (!IsActive())
-		Sys_Error("Ensure shader program is enabled before applying variables! (%i) (%i)\n",
-		uniform->location, i);
-
-#ifdef VL_MODE_OPENGL
-	glUniform1ui(uniform->location, i);
-#endif
-}
-
-void ShaderProgram::SetUniformVariable(PLUniform *uniform, float f)
-{
-	if (!IsActive())
-		Sys_Error("Ensure shader program is enabled before applying variables! (%i) (%i)\n",
-		uniform->location, (int)f);
-
-#ifdef VL_MODE_OPENGL
-	glUniform1f(uniform->location, f);
-#endif
-}
-
-void ShaderProgram::SetUniformVariable(PLUniform *uniform, double d)
-{
-	if (!IsActive())
-		Sys_Error("Ensure shader program is enabled before applying variables! (%i) (%i)\n",
-		uniform->location, (int)d);
-
-#ifdef VL_MODE_OPENGL
-	glUniform1d(uniform->location, d);
-#endif
 }

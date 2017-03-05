@@ -18,99 +18,104 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
 #ifdef __cplusplus
 
-namespace core
-{
-	class Shader : public IShader
-	{
-	public:
-		Shader(PLShaderType type);
-		~Shader();
+namespace xenon {
+	namespace graphics {
+#if 0
+        class Shader : public IShader {
+        public:
+            Shader(pl::graphics::ShaderType type);
 
-		bool Load(const char *path);
-		bool CheckCompileStatus();
+            ~Shader();
 
-		unsigned int GetInstance() { return instance; }
-		PLShaderType GetType() { return type; }
+            bool Load(const char *path);
 
-	private:
-		unsigned int instance;
+            bool CheckCompileStatus();
 
-		PLShaderType type;
+            unsigned int GetInstance() { return instance; }
 
-		const char	*source;
-		char		source_path[PLATFORM_MAX_PATH];
-		PLuint		source_length;
-	};
+            PLShaderType GetType() { return type; }
 
-	class ShaderProgram : public IShaderProgram
-	{
-	public:
-		ShaderProgram(std::string name);
-		~ShaderProgram();
+        private:
+            unsigned int instance;
 
-		virtual void Initialize() = 0;
+            PLShaderType type;
 
-		void RegisterShader(std::string path, PLShaderType type);
-		
-		virtual void RegisterAttributes();
+            const char *source;
+            char source_path[PLATFORM_MAX_PATH];
+            PLuint source_length;
+        };
 
-		void Attach(Shader *shader);
-		void Enable();
-		void Disable();
-		void Draw(PLMesh *object);
-		void Link();
-		void Shutdown();
+        class ShaderProgram : public IShaderProgram {
+        public:
+            ShaderProgram(std::string name);
 
-		bool IsActive()	{ return (plGetCurrentShaderProgram() == instance); }
+            ~ShaderProgram();
 
-		PLUniform *RegisterUniform(std::string name, PLUniformType type);
+            virtual void Initialize() = 0;
 
-		void SetUniformVariable(PLUniform *uniform, float x, float y, float z);
-		void SetUniformVariable(PLUniform *uniform, plVector3f_t vector);
-		void SetUniformVariable(PLUniform *uniform, float x, float y, float z, float a);
-		void SetUniformVariable(PLUniform *uniform, int i);
-		void SetUniformVariable(PLUniform *uniform, unsigned int i);
-		void SetUniformVariable(PLUniform *uniform, float f);
-		void SetUniformVariable(PLUniform *uniform, double d);
+            void RegisterShader(std::string path, PLShaderType type);
 
-		int GetUniformLocation(std::string name);
-		PLUniform *GetUniform(std::string name);
+            virtual void RegisterAttributes();
 
-		void RegisterAttribute(std::string name, int location);
-		void SetAttributeVariable(int location, plVector3f_t vector);
-		int GetAttributeLocation(std::string name);
+            void Attach(Shader *shader);
 
-		unsigned int GetInstance() { return instance; }
+            void Enable();
 
-	private:
-		std::vector<Shader*>							shaders;
-		std::unordered_map<std::string, PLAttribute>	attributes;
-		std::unordered_map<std::string, PLUniform*>		uniforms;
+            void Disable();
 
-		std::string _name;
+            void Draw(PLMesh *object);
 
-		PLShaderProgram instance;
-	};
+            void Link();
 
-	class ShaderManager : public XManager
-	{
-	public:
-		ShaderManager();
-		~ShaderManager();
+            void Shutdown();
 
-		void Add(ShaderProgram *program, std::string name);
-		void Delete(ShaderProgram *_program);
-		void Delete(std::string name);
-		void Clear();
+            bool IsActive() { return (plGetCurrentShaderProgram() == instance); }
 
-		ShaderProgram *GetProgram(std::string name);
+            PLUniform *RegisterUniform(std::string name, PLUniformType type);
 
-	private:
-		std::unordered_map<std::string, ShaderProgram*> programs;
-	};
+            int GetUniformLocation(std::string name);
+
+            PLUniform *GetUniform(std::string name);
+
+            void RegisterAttribute(std::string name, int location);
+
+            void SetAttributeVariable(int location, plVector3f_t vector);
+
+            int GetAttributeLocation(std::string name);
+
+        private:
+            std::vector<Shader *> shaders;
+            std::unordered_map<std::string, PLAttribute> attributes;
+            std::unordered_map<std::string, PLUniform *> uniforms;
+
+            std::string _name;
+
+            PLShaderProgram instance;
+        };
+#endif
+
+        class ShaderManager : public XManager {
+        public:
+            ShaderManager();
+
+            ~ShaderManager();
+
+            void Add(pl::graphics::ShaderProgram *program, std::string name);
+
+            void Delete(pl::graphics::ShaderProgram *program);
+            void Delete(std::string name);
+
+            void Clear();
+
+            pl::graphics::ShaderProgram * GetProgram(std::string name);
+
+        private:
+            std::unordered_map<std::string, pl::graphics::ShaderProgram *> programs;
+        };
+
+        extern ShaderManager *shader_manager;
+    }
 }
-
-extern core::ShaderManager *g_shadermanager;
 
 #define	SHADER_REGISTER_UNIFORM(name, type, def)		\
 	{													\

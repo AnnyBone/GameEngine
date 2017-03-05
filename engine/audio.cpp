@@ -320,7 +320,7 @@ void AudioManager::LoadSound(AudioSound_t *sound, std::string path) {
 
 	sound->cache = GetSample(path);
 	if (!sound->cache) {
-		Con_Warning("Failed to load sound, please ensure it's been cached! (%s)\n", path);
+		Con_Warning("Failed to load sound, please ensure it's been cached! (%s)\n", path.c_str());
 		return;
 	}
 
