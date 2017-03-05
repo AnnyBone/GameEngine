@@ -608,7 +608,7 @@ bool Entity_IsOnGround(ServerEntity_t *entity)
 	Host Content
 */
 
-Material_t *seGetMaterial(ServerEntity_t *entity)
+Material *seGetMaterial(ServerEntity_t *entity)
 {
 	// Try to grab the model.
 	model_t *model = g_engine->GetServerEntityModel(entity);
@@ -619,21 +619,21 @@ Material_t *seGetMaterial(ServerEntity_t *entity)
 	return &model->materials[0];
 }
 
-MaterialSkin_t *seGetSkin(ServerEntity_t *entity, unsigned int skin)
+MaterialSkin *seGetSkin(ServerEntity_t *entity, unsigned int skin)
 {
-	Material_t *material = seGetMaterial(entity);
+	Material *material = seGetMaterial(entity);
 	if (!material)
 		return NULL;
 
 	return &material->skin[skin];
 }
 
-MaterialSkin_t *seGetCurrentSkin(ServerEntity_t *entity)
+MaterialSkin *seGetCurrentSkin(ServerEntity_t *entity)
 {
 	return seGetSkin(entity, entity->Model.skin);
 }
 
-MaterialProperty_t seGetSkinPhysicsProperty(ServerEntity_t *entity, MaterialSkin_t *skin)
+MaterialProperty_t seGetSkinPhysicsProperty(ServerEntity_t *entity, MaterialSkin *skin)
 {
 	if (!skin)
 	{

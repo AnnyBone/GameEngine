@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #pragma once
 
-typedef struct Material_s Material_t;
+typedef struct Material Material;
 typedef struct model_s model_t;
 typedef struct DynamicLight_s DynamicLight_t;
 typedef struct ClientEntity_s ClientEntity_t;
@@ -35,9 +35,9 @@ typedef struct EngineExport_e
 
 	void(*SetViewportSize)(unsigned int width, unsigned int height);
 
-	Material_t*(*LoadMaterial)(const char *cPath);
+	Material*(*LoadMaterial)(const char *cPath);
 
-	void(*UnloadMaterial)(Material_t *material, bool force);
+	void(*UnloadMaterial)(Material *material, bool force);
 
 	model_t*(*LoadModel)(const char *path);
 
@@ -75,7 +75,7 @@ typedef struct EngineExport_e
 	//void(*DrawGrid)(float x, float y, float z, int grid_size);
 	//void(*DrawString)(int x, int y, const char *cMsg);
 	//void(*DrawLine)(MathVector3f_t mvStart, MathVector3f_t mvEnd);
-	//void(*DrawMaterialSurface)(Material_t *mMaterial, int iSkin, int x, int y, int w, int h, float fAlpha);
+	//void(*DrawMaterialSurface)(Material *mMaterial, int iSkin, int x, int y, int w, int h, float fAlpha);
 	//void(*DrawEntity)(ClientEntity_t *Entity);
 	//void(*DrawSetCanvas)(VideoCanvasType_t Canvas);
 	//void(*DrawResetCanvas)(void);

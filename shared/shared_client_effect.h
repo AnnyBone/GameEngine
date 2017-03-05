@@ -40,7 +40,7 @@ public:
 	virtual void SetType(SpriteType_t type) = 0;
 	virtual void SetActive(bool active) = 0;
 	virtual void SetScale(float scale) = 0;
-	virtual void SetMaterial(Material_t *material) = 0;
+	virtual void SetMaterial(Material *material) = 0;
 
 	virtual bool IsVisible() = 0;
 	virtual bool IsActive() = 0;

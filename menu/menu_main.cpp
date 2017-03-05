@@ -49,7 +49,7 @@ int	iMenuState = 0;
 ConsoleVariable_t	cv_menushow = { "menu_show", "1", false, false, "Toggle the display of any menu elements." };
 ConsoleVariable_t	cv_menudebug = { "menu_debug", "0", false, false, "Toggle the display of any debugging information." };
 
-Material_t *debug_logo = NULL;
+Material *debug_logo = NULL;
 
 namespace menu
 {

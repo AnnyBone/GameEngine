@@ -268,14 +268,14 @@ void Video_ObjectColour(PLVertex *object, float R, float G, float B, float A)
 
 /*  Draw a simple rectangle.
 */
-void Video_DrawFill(PLVertex *voFill, Material_t *mMaterial, int iSkin)
+void Video_DrawFill(PLVertex *voFill, Material *mMaterial, int iSkin)
 {
 	Video_DrawObject(voFill, VL_PRIMITIVE_TRIANGLE_FAN, 4, mMaterial, iSkin);
 }
 
 /*	Surfaces
 */
-void Video_DrawSurface(msurface_t *mSurface,float fAlpha, Material_t *mMaterial, unsigned int uiSkin)
+void Video_DrawSurface(msurface_t *mSurface,float fAlpha, Material *mMaterial, unsigned int uiSkin)
 {
 	PLVertex	*drawsurf;
 	float		*fVert;
@@ -305,7 +305,7 @@ void Video_DrawSurface(msurface_t *mSurface,float fAlpha, Material_t *mMaterial,
 	TODO: Add support for VBOs ?
 */
 void Video_DrawObject(PLVertex *vobject, PLPrimitive primitive,
-	unsigned int numverts, Material_t *mMaterial, int iSkin)
+	unsigned int numverts, Material *mMaterial, int iSkin)
 {
 	if(numverts == 0)
 		return;

@@ -359,7 +359,7 @@ void Scrap_Upload (void)
 
 //==================================================================
 
-void draw::MaterialSurface(Material_t *material, int x, int y, unsigned int w, unsigned int h, float alpha) {
+void draw::MaterialSurface(Material *material, int x, int y, unsigned int w, unsigned int h, float alpha) {
 	// Sloppy, but in the case that there's nothing valid...
 	if (!material) {
 		draw::Rectangle(x, y, w, h, PLColour(PL_COLOUR_RED));
@@ -396,7 +396,7 @@ void draw::MaterialSurface(Material_t *material, int x, int y, unsigned int w, u
 	plEnableGraphicsStates(PL_CAPABILITY_DEPTHTEST);
 }
 
-void Draw_MaterialSurface(Material_t *mMaterial, PLuint skin, int x, int y, PLuint w, PLuint h, float fAlpha) {
+void Draw_MaterialSurface(Material *mMaterial, PLuint skin, int x, int y, PLuint w, PLuint h, float fAlpha) {
 	Material_SetSkin(mMaterial, skin);
 
 	draw::MaterialSurface(mMaterial, x, y, w, h, fAlpha);

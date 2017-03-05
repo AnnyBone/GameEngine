@@ -35,7 +35,7 @@ extern	qpic_t *draw_disc;	// also used on sbar
 
 void Draw_Init(void);
 void Draw_Pic(int x, int y, qpic_t *pic);
-void Draw_MaterialSurface(Material_t *mMaterial, PLuint skin, int x, int y, PLuint w, PLuint h, float fAlpha);
+void Draw_MaterialSurface(Material *mMaterial, PLuint skin, int x, int y, PLuint w, PLuint h, float fAlpha);
 void Draw_BeginDisc(void);
 void Draw_Rectangle(int x, int y, PLuint w, PLuint h, PLColour colour);
 void Draw_String(int x, int y, const char *msg);

@@ -117,7 +117,7 @@ typedef struct
 	void(*SetSpriteColour)(ISprite *sprite, float r, float g, float b, float a);
 	void(*SetSpriteType)(ISprite *sprite, SpriteType_t type);
 	void(*SetSpriteScale)(ISprite *sprite, float scale);
-	void(*SetSpriteMaterial)(ISprite *sprite, Material_t *material);
+	void(*SetSpriteMaterial)(ISprite *sprite, Material *material);
 	// SPRITE END
 
 	ClientEntity_t		*(*Client_GetViewEntity)(void);		// Returns the entity representing the players view model.
@@ -151,7 +151,7 @@ typedef struct
 	void(*UnlinkEntity)(ServerEntity_t *ent);
 	void(*FreeEntity)(ServerEntity_t *ed);
 
-	Material_t*(*LoadMaterial)(const char *cPath);
+	Material*(*LoadMaterial)(const char *cPath);
 
 	// Memory
 	void*(*Hunk_AllocateName)(int size, const char *name);
@@ -162,7 +162,7 @@ typedef struct
 	void(*DrawRectangle)(int x, int y, PLuint w, PLuint h, PLColour colour);
 	void(*DrawLine)(PLVector3D start, PLVector3D end);
 	void(*DrawCoordinateAxes)(PLVector3D position);
-	void(*DrawMaterialSurface)(Material_t *mMaterial, PLuint iSkin, int x, int y, PLuint w, PLuint h, float fAlpha);
+	void(*DrawMaterialSurface)(Material *mMaterial, PLuint iSkin, int x, int y, PLuint w, PLuint h, float fAlpha);
 
 	void(*Cvar_RegisterVariable)(ConsoleVariable_t *variable, void(*Function)(void));
 	void(*Cvar_SetValue)(const char *var_name, float value);

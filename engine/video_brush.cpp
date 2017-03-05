@@ -149,7 +149,7 @@ void R_DrawSequentialPoly(msurface_t *s)
 	}
 	else if(s->flags & SURF_DRAWTURB)
 	{
-		Material_t *mCurrent = s->texinfo->texture->material;
+		Material *mCurrent = s->texinfo->texture->material;
 		glpoly_t *pBrushPoly;
 
 		if(currententity->alpha == ENTALPHA_DEFAULT)

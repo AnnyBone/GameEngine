@@ -206,7 +206,7 @@ void GL_SubdivideSurface(msurface_t *fa)
 		- Firstly save each iteration of our water, so we can keep track of colour etc.
 		- Recalc colour for different dynamic moving lights.
 */
-void Surface_DrawWater(glpoly_t *p, Material_t *material)
+void Surface_DrawWater(glpoly_t *p, Material *material)
 {
 	PLVertex *voWaterPoly = calloc(p->numverts, sizeof(PLVertex));
 	if(!voWaterPoly)

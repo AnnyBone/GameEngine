@@ -179,7 +179,7 @@ void Sprite::SetScale(float nscale)
 	scale = nscale;
 }
 
-void Sprite::SetMaterial(Material_t *nmaterial)
+void Sprite::SetMaterial(Material *nmaterial)
 {
 	if (!nmaterial)
 		return;
@@ -320,7 +320,7 @@ extern "C" void Sprite_SetScale(ISprite *sprite, float scale)
 	sprite->SetScale(scale);
 }
 
-extern "C" void Sprite_SetMaterial(ISprite *sprite, Material_t *material)
+extern "C" void Sprite_SetMaterial(ISprite *sprite, Material *material)
 {
 	sprite->SetMaterial(material);
 }

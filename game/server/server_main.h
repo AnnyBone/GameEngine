@@ -83,9 +83,9 @@ bool Entity_DropToFloor(ServerEntity_t *entity);
 
 void ServerEntity_ParseField(char *key, char *value, ServerEntity_t *entity);
 
-Material_t *seGetMaterial(ServerEntity_t *entity);
-MaterialSkin_t *seGetCurrentSkin(ServerEntity_t *entity);
-MaterialProperty_t seGetSkinPhysicsProperty(ServerEntity_t *entity, MaterialSkin_t *skin);
+Material *seGetMaterial(ServerEntity_t *entity);
+MaterialSkin *seGetCurrentSkin(ServerEntity_t *entity);
+MaterialProperty_t seGetSkinPhysicsProperty(ServerEntity_t *entity, MaterialSkin *skin);
 
 void Entity_SetOrigin(ServerEntity_t *entity, PLVector3D vOrigin);
 void Entity_SetAngles(ServerEntity_t *entity, PLVector3D vAngles);

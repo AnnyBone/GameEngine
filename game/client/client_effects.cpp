@@ -20,10 +20,10 @@
 
 #include "client_effects.h"
 
-Material_t *mat_blood		= nullptr;
-Material_t *mat_bloodcloud	= nullptr;
-Material_t *mat_smoke		= nullptr;
-Material_t *mat_spark		= nullptr;
+Material *mat_blood		= nullptr;
+Material *mat_bloodcloud	= nullptr;
+Material *mat_smoke		= nullptr;
+Material *mat_spark		= nullptr;
 
 void ClientEffect_Initialize(void)
 {

@@ -66,7 +66,7 @@ typedef struct texture_s
 	unsigned			width, height;
 	struct gltexture_s	*gltexture; //johnfitz -- pointer to gltexture
 
-	struct Material_s	*material;
+	struct Material	*material;
 
 	struct msurface_s	*texturechain;	// for texture chains
 	int					anim_total;				// total tenths in sequence ( 0 = no)

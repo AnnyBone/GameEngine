@@ -23,7 +23,7 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 ConsoleVariable_t	cv_menuhudshow = { "menu_hud_show", "1", false, false, "Toggles the display of the HUD." };
 ConsoleVariable_t	cv_menuhudcrosshair = { "menu_hud_crosshair", "1", true, false, "Sets crosshair to use (set to -1 to hide)." };
 
-Material_t *hud_mnumbers, *hud_micons, *hud_mcrosshairs;
+Material *hud_mnumbers, *hud_micons, *hud_mcrosshairs;
 
 // MUST match with entries in hud\icons.material!
 enum

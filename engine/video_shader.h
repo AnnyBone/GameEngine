@@ -57,7 +57,7 @@ namespace core
 		void Attach(Shader *shader);
 		void Enable();
 		void Disable();
-		void Draw(PLDraw *object);
+		void Draw(PLMesh *object);
 		void Link();
 		void Shutdown();
 

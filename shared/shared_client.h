@@ -224,7 +224,7 @@ typedef struct particle_s
 
 	int	iFrame;							// Frame of animation.
 
-	Material_t *material;
+	Material *material;
 	int	skin;
 
 	ParticleBehaviour_t		pBehaviour;	// Type of behaviour.

@@ -318,7 +318,7 @@ uint8_t	*mod_base;
 void Model_LoadBSPTextures(BSPLump_t *blLump)
 {
 	texture_t		*tTexture;
-	Material_t		*mAssignedMaterial;
+	Material		*mAssignedMaterial;
 	miptex_t		*miptexture;
 	dmiptexlump_t	*mLump = NULL;
 	int				i, iTextures = 0;
@@ -642,7 +642,7 @@ void GL_SubdivideSurface(msurface_t *fa);
 
 void Model_LoadBSPFaces(BSPLump_t *blLump)
 {
-	Material_t	*mMaterial;
+	Material	*mMaterial;
 	BSPFace_t	*in;
 	msurface_t 	*out;
 	int			i, count, surfnum;

@@ -138,9 +138,9 @@ void Video_ObjectTexture(PLVertex *voObject, unsigned int uiTextureUnit, float S
 void Video_ObjectVertex(PLVertex *voObject, float X, float Y, float Z);
 void Video_ObjectNormal(PLVertex *voObject, float X, float Y, float Z);
 void Video_ObjectColour(PLVertex *voObject, float R, float G, float B, float A);
-void Video_DrawFill(PLVertex *voFill, Material_t *mMaterial, int iSkin);
-void Video_DrawSurface(msurface_t *mSurface, float fAlpha, Material_t *mMaterial, unsigned int uiSkin);
-void Video_DrawObject(PLVertex *voObject, PLPrimitive vpPrimitiveType, unsigned int uiVerts, Material_t *mMaterial, int iSkin);
+void Video_DrawFill(PLVertex *voFill, Material *mMaterial, int iSkin);
+void Video_DrawSurface(msurface_t *mSurface, float fAlpha, Material *mMaterial, unsigned int uiSkin);
+void Video_DrawObject(PLVertex *voObject, PLPrimitive vpPrimitiveType, unsigned int uiVerts, Material *mMaterial, int iSkin);
 void Video_ShowBoundingBoxes(void);
 void Video_Shutdown(void);
 
@@ -205,6 +205,6 @@ void DrawGLPoly(glpoly_t *p);
 	Warp
 */
 
-void Surface_DrawWater(glpoly_t *p, Material_t *mCurrent);
+void Surface_DrawWater(glpoly_t *p, Material *mCurrent);
 
 PL_EXTERN_C_END

@@ -20,8 +20,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "engine_base.h"
 
 #include "video.h"
-#include "audio.h"
-#include "client.h"
 
 #include <AL/al.h>
 #include <AL/alc.h>

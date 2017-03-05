@@ -32,7 +32,7 @@ namespace core
 		void SetType(SpriteType_t type);
 		void SetActive(bool active) { isactive = active; }
 		void SetScale(float scale);
-		void SetMaterial(Material_t *material);
+		void SetMaterial(Material *material);
 
 		virtual void Simulate();
 		virtual void Draw();
@@ -65,7 +65,7 @@ namespace core
 
 		PLColour colour;
 
-		Material_t *material;
+		Material *material;
 	};
 
 	class SpriteManager
@@ -102,6 +102,6 @@ void Sprite_SetPosition(ISprite *sprite, MathVector3f_t position);
 void Sprite_SetColour(ISprite *sprite, float r, float g, float b, float a);
 void Sprite_SetType(ISprite *sprite, SpriteType_t type);
 void Sprite_SetScale(ISprite *sprite, float scale);
-void Sprite_SetMaterial(ISprite *sprite, Material_t *material);
+void Sprite_SetMaterial(ISprite *sprite, Material *material);
 
 #endif

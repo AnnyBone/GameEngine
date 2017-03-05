@@ -26,12 +26,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #	pragma warning(disable: 4201)
 #endif
 
-#include <glm/gtc/type_ptr.hpp>
-#include <glm/vec2.hpp>
-#include <glm/vec3.hpp>
-#include <glm/vec4.hpp>
-#include <glm/mat4x4.hpp>
-#include <glm/gtc/matrix_transform.hpp>
+#ifdef __cplusplus
+
+#include <glm/glm.hpp>
+
+#endif
 
 #ifdef _MSC_VER
 #	pragma warning(default: 4201)

@@ -1,25 +1,35 @@
 /*
-DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
-Version 2, December 2004
+This is free and unencumbered software released into the public domain.
 
-Copyright (C) 2011-2016 Mark E Sowden <markelswo@gmail.com>
+Anyone is free to copy, modify, publish, use, compile, sell, or
+distribute this software, either in source code form or as a compiled
+binary, for any purpose, commercial or non-commercial, and by any
+means.
 
-Everyone is permitted to copy and distribute verbatim or modified
-copies of this license document, and changing it is allowed as long
-as the name is changed.
+In jurisdictions that recognize copyright laws, the author or authors
+of this software dedicate any and all copyright interest in the
+software to the public domain. We make this dedication for the benefit
+of the public at large and to the detriment of our heirs and
+successors. We intend this dedication to be an overt act of
+relinquishment in perpetuity of all present and future rights to this
+software under copyright law.
 
-DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
-TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+OTHER DEALINGS IN THE SOFTWARE.
 
-0. You just DO WHAT THE FUCK YOU WANT TO.
+For more information, please refer to <http://unlicense.org>
 */
 
 #pragma once
 
 #include "shared_texture.h"
 
-typedef enum
-{
+typedef enum {
 	MATERIAL_TYPE_NONE,		// No assigned property, used as default.
 	MATERIAL_TYPE_METAL,	// Metal property.
 	MATERIAL_TYPE_GLASS,	// Glass property.
@@ -71,8 +81,7 @@ typedef enum
 	MATERIAL_TEXTURE_MAX
 } MaterialTextureType_t;
 
-typedef struct
-{
+typedef struct MaterialTexture {
 	Texture *instance;
 
 	bool	matrixmod;	// Modify texture matrix?
@@ -87,54 +96,45 @@ typedef struct
 	MaterialTextureType_t mttType;	// Sphere, fullbright, or what have you.
 
 	PLTextureEnvironmentMode env_mode;
-} MaterialTexture_t;
-
-#include "./shared_client_shader.h"
+} MaterialTexture;
 
 #define	MATERIAL_MAX_TEXTURESLOTS	16
 
-typedef struct MaterialSkin_s
-{
+typedef struct MaterialSkin {
 	// todo, this shouldn't be hardcoded size!!!!!
-	MaterialTexture_t texture[MATERIAL_MAX_TEXTURESLOTS];
+	MaterialTexture texture[MATERIAL_MAX_TEXTURESLOTS];
 
-	CoreShaderProgram *program;	// Current shader.
+	PLShaderProgram *program;	// Current shader.
 
 	unsigned int
 		uiFlags,		// Flags assigned for the current skin, affects how it's displayed/loaded.
 		num_textures,	// Num of textures assigned within the skin.
 		uiType;			// Type of surface, e.g. wood, cement etc.
-} MaterialSkin_t;
+} MaterialSkin;
 
 #define	MATERIAL_MAX		2048	// Should ALWAYS be below the maximum texture allowance.
 #define	MATERIAL_MAX_SKINS	128		// These also count as frames for animation.
 
-typedef struct Material_s
-{
-	int
-		id,					// Unique ID for the material.
-		flags;				// Global material flags, flags that take priority over all additional skins.			
+typedef struct Material {
+	int	id,	flags;				// Global material flags, flags that take priority over all additional skins.
 
 	char	
 		cPath[PL_SYSTEM_MAX_PATH],	// Path of the material.
 		cName[64];					// Name of the material.
 
 	// Skins
-	MaterialSkin_t	skin[MATERIAL_MAX_SKINS];
+	MaterialSkin	skin[MATERIAL_MAX_SKINS];
 	unsigned int	num_skins;							// Number of skins provided by this material.
 	unsigned int	current_skin;
 
 	bool bind;	// If true, texture will be bound.
 
 	// Overrides
-	bool
-		override_lightmap,
-		override_wireframe;	// Override tris for this material.
-
-	float fAlpha;	// Alpha override.
+	bool override_lightmap,	override_wireframe;
+	float fAlpha;
 
 	// Animation
 	float			animation_speed;	// Speed to scroll through skins, if animation is enabled.
 	unsigned int	animation_frame;	// Current frame for animation.
 	double			animation_time;		// Time until we animate again.
-} Material_t;
+} Material;
