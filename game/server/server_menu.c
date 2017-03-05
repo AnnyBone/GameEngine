@@ -22,8 +22,7 @@
 
 /*	General function for globally updating the HUD for clients.
 */
-void ServerMenu_UpdateClient(ServerEntity_t *entity, int menustate, bool show)
-{
+void ServerMenu_UpdateClient(ServerEntity_t *entity, int menustate, bool show) {
 	// This is who we're telling to hide/show their HUD.
 	Engine.SetMessageEntity(entity);
 

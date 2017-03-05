@@ -34,8 +34,7 @@ void ServerEffect_BloodPuff(PLVector3D position)
 
 /*	Cloud of blood.
 */
-void ServerEffect_BloodCloud(PLVector3D position, BloodType_t type)
-{
+void ServerEffect_BloodCloud(PLVector3D position, BloodType_t type) {
 	g_engine->WriteByte(MSG_BROADCAST, SVC_TEMPENTITY);
 	g_engine->WriteByte(MSG_BROADCAST, CTE_BLOODCLOUD);
 

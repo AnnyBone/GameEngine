@@ -138,6 +138,8 @@ void Client_ParseTemporaryEntity(void) {
 	}
 }
 
+PL_EXTERN_C
+
 /*	Called by the engine.
 */
 void Client_RelinkEntities(ClientEntity_t *entity, int i, double time) {
@@ -270,3 +272,5 @@ void Client_RelinkEntities(ClientEntity_t *entity, int i, double time) {
 
 	entity->bForceLink = false;
 }
+
+PL_EXTERN_C_END

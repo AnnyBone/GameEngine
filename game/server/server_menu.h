@@ -16,9 +16,10 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef SERVER_MENU_H
-#define	SERVER_MENU_H
+#pragma once
+
+PL_EXTERN_C
 
 void ServerMenu_UpdateClient(ServerEntity_t *entity, int menustate, bool show);
 
-#endif // !SERVER_MENU_H
+PL_EXTERN_C_END

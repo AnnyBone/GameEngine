@@ -155,8 +155,7 @@ void Item_RemoveInventory(Item_t *iItem,ServerEntity_t *eEntity)
 
 /*	Clears out the players current inventory.
 */
-void Item_ClearInventory(ServerEntity_t *eEntity)
-{
+void Item_ClearInventory(ServerEntity_t *eEntity) {
 	// Clear out the inventory array.
 	memset(&eEntity->v.inventory[0], 0, sizeof(eEntity->v.inventory));
 }

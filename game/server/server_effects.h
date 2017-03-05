@@ -16,12 +16,13 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef SERVER_EFFECTS_H
-#define	SERVER_EFFECTS_H
+#pragma once
+
+PL_EXTERN_C
 
 void ServerEffect_BloodPuff(PLVector3D position);
 void ServerEffect_BloodCloud(PLVector3D position, BloodType_t type);
 void ServerEffect_Explosion(PLVector3D position);
 void ServerEffect_MuzzleFlash(PLVector3D position, PLVector3D angles);
 
-#endif // !SERVER_EFFECTS_H
+PL_EXTERN_C_END

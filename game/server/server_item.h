@@ -3,6 +3,8 @@
 
 #include "shared_game.h"
 
+PL_EXTERN_C
+
 typedef struct
 {
 	int		iNumber;	// Our items unique ID
@@ -23,5 +25,7 @@ void Item_AddInventory(Item_t *iItem, ServerEntity_t *eEntity);
 void Item_RemoveInventory(Item_t *iItem, ServerEntity_t *eEntity);
 void Item_ClearInventory(ServerEntity_t *eEntity);
 void Item_Precache(void);
+
+PL_EXTERN_C_END
 
 #endif

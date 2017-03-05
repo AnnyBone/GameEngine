@@ -269,7 +269,7 @@ typedef struct model_s
 	cache_user_t	cache;		// only access through Mod_Extradat
 
 	// Material System
-	struct Material_s *materials;
+	struct Material *materials;
 
 	PLMesh			**objects;
 	unsigned int	numtriangles;	// Static counter for triangles.

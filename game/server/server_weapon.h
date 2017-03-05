@@ -115,6 +115,8 @@ typedef struct
 
 PLVector3D Weapon_Aim(ServerEntity_t *entity);
 
+PL_EXTERN_C
+
 Weapon_t *Weapon_GetCurrentWeapon(ServerEntity_t *eEntity);
 Weapon_t *Weapon_GetWeapon(int iWeaponID);
 
@@ -132,5 +134,7 @@ void Weapon_ViewPunch(ServerEntity_t *entity, float intensity, bool add);
 bool Weapon_CheckPrimaryAmmo(Weapon_t *weapon, ServerEntity_t *entity);
 bool Weapon_CheckSecondaryAmmo(Weapon_t *weapon, ServerEntity_t *entity);
 bool Weapon_CheckTrace(ServerEntity_t *owner);
+
+PL_EXTERN_C_END
 
 #endif

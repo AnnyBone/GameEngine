@@ -167,6 +167,8 @@ bool Monster_CheckBottom(ServerEntity_t *ent)
 		}
 
 	return true;
+#else
+    return false;
 #endif
 }
 
@@ -462,23 +464,31 @@ void Monster_Killed(ServerEntity_t *eTarget, ServerEntity_t *eAttacker, EntityDa
 				switch (type)
 				{
 				case DAMAGE_TYPE_BURN:
-					cDeathMessage = "%s was cooked pretty good by %s\n";
+					cDeathMessage = "%s was cooked pretty good by %s.\n";
 					break;
 				case DAMAGE_TYPE_CRUSH:
-					cDeathMessage = "%s was crushed by %s's fat ass\n";
+					cDeathMessage = "%s was crushed by %s's fat ass.\n";
 					break;
 				case DAMAGE_TYPE_EXPLODE:
-					cDeathMessage = "%s was reduced to a bloody mess by %s\n";
+					cDeathMessage = "%s was reduced to a bloody mess by %s.\n";
 					break;
 				case DAMAGE_TYPE_FALL:
-					cDeathMessage = "%s fell. Probably pushed by the cunning %s\n";
+					cDeathMessage = "%s fell. Probably pushed by the cunning %s.\n";
 					break;
 				case DAMAGE_TYPE_FREEZE:
 					cDeathMessage = "%s is part of the decor, nice job %s!\n";
 					break;
 				case DAMAGE_TYPE_GRAVITY:
-					cDeathMessage = "%s was killed by some gravity-induced weaponised thingy, by %s\n";
+					cDeathMessage = "%s was killed by some gravity-induced weaponised thingy, by %s.\n";
 					break;
+
+				case DAMAGE_TYPE_DROWN: {
+                    cDeathMessage = "%s drowned.\n";
+                    break;
+                }
+
+                case DAMAGE_TYPE_NORMAL:
+				case DAMAGE_TYPE_NONE:break;
 				}
 			}
 		}

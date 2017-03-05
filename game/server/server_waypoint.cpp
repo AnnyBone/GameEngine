@@ -17,6 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#include <shared_game.h>
 #include "server_main.h"
 
 /*
@@ -143,7 +144,7 @@ void ai::WaypointManager::Draw() {
         if (point->last) {
             g_engine->DrawLine(point->position, point->last->position);
         }
-        core::draw::CoordinateAxes(point->position);
+        g_engine->DrawCoordinateAxes(point->position);
     }
 }
 

@@ -21,6 +21,8 @@ enum
 #endif
 };
 
+PL_EXTERN_C
+
 void Bot_Spawn(ServerEntity_t *ent);
 
 void CTF_FlagSpawn(ServerEntity_t *eFlag);
@@ -74,5 +76,7 @@ void ThrowGib(PLVector3D origin, PLVector3D velocity, const char *model, float d
 void Item_Respawn(ServerEntity_t *ent);
 
 void Client_RelinkEntities(entity_t *ent, int i, double time);
+
+PL_EXTERN_C_END
 
 #endif

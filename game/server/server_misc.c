@@ -96,8 +96,7 @@ void Misc_GibThink(ServerEntity_t *ent)
 	Entity_Remove(ent);
 }
 
-void ThrowGib(PLVector3D origin, PLVector3D velocity, const char *model, float damage, bool bleed)
-{
+void ThrowGib(PLVector3D origin, PLVector3D velocity, const char *model, float damage, bool bleed) {
 	ServerEntity_t *gib = Entity_Spawn();
 
 	gib->v.classname	= "gib";
