@@ -1,93 +1,56 @@
 /*
-DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
-Version 2, December 2004
+This is free and unencumbered software released into the public domain.
 
-Copyright (C) 2011-2016 Mark E Sowden <markelswo@gmail.com>
+Anyone is free to copy, modify, publish, use, compile, sell, or
+distribute this software, either in source code form or as a compiled
+binary, for any purpose, commercial or non-commercial, and by any
+means.
 
-Everyone is permitted to copy and distribute verbatim or modified
-copies of this license document, and changing it is allowed as long
-as the name is changed.
+In jurisdictions that recognize copyright laws, the author or authors
+of this software dedicate any and all copyright interest in the
+software to the public domain. We make this dedication for the benefit
+of the public at large and to the detriment of our heirs and
+successors. We intend this dedication to be an overt act of
+relinquishment in perpetuity of all present and future rights to this
+software under copyright law.
 
-DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
-TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+OTHER DEALINGS IN THE SOFTWARE.
 
-0. You just DO WHAT THE FUCK YOU WANT TO.
+For more information, please refer to <http://unlicense.org>
 */
 
 #pragma once
 
 #include "platform_image.h"
 
-class Texture;
+namespace xenon {
+	namespace graphics {
+		class TextureManager {
+		public:
+			TextureManager();
+			~TextureManager();
 
-class TextureManager
-{
-public:
-	TextureManager();
-	~TextureManager();
+            PLTexture *CreateTexture(std::string path, PLuint flags = 0);
+            PLTexture *CreateTexture(std::string path, PLuint width, PLuint height, PLImageFormat format, PLbyte *data, PLuint size, PLuint flags = 0);
+            PLTexture *CreateTexture(PLImage *image, PLuint flags = 0);
 
-	PLbool IsValidSize(PLuint width, PLuint height);
+			void PrintMemoryUsage();
 
-	Texture *CreateTexture(std::string path, PLuint flags = 0);
-	Texture *CreateTexture(std::string path, PLuint width, PLuint height, PLImageFormat format, PLbyte *data, PLuint size, PLuint flags = 0);
-	Texture *CreateTexture(PLImage *image, PLuint flags = 0);
+			void DeleteTexture(PLTexture *texture, PLbool force = false);
 
-	void PrintMemoryUsage();
+		protected:
+		private:
+			std::map<std::string, PLTexture*> textures_;
+		};
 
-#if 0
-	Texture *GetTexture(std::string path);
-	Texture *GetTexture(PLushort crc);
-#endif
+        extern PLTexture *nulltexture;
 
-	void DeleteTexture(Texture *texture, PLbool force = false);
-
-protected:
-private:
-
-	PLuint max_resolution_; // Maximum supported resolution.
-
-	std::map<std::string, Texture*> _textures;
-};
-
-class Texture
-{
-public:
-	Texture();
-	~Texture();
-
-	void SetImage(PLImage *image);
-
-	unsigned int GetWidth() const { return _width; }
-	unsigned int GetHeight() const { return _height; }
-	unsigned int GetSize() const { return _size; }
-
-	unsigned short GetCRC() const { return _crc; }
-	void SetCRC(unsigned short crc) { _crc = crc; }
-
-	void Bind();
-	void Unbind();
-
-	unsigned int levels;
-    unsigned int flags;
-
-	std::string path;
-
-protected:
-
-private:
-    PLTexture *instance_;
-
-	unsigned int _width, _height;
-	unsigned int _size;
-
-	unsigned short _crc;
-
-	PLImageFormat _format;
-};
-
-namespace textures
-{
-	extern Texture *nulltexture;
+        extern TextureManager *texture_manager;
+	}
 }
-
-extern TextureManager *g_texturemanager;

@@ -18,6 +18,10 @@ include_directories("${CMAKE_SOURCE_DIR}/shared/")            # Xenon shared hea
 add_definitions("-D_DEBUG")
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
+#if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
+#    set(CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS} -Wl "-z defs")
+#    set(CMAKE_SHARED_LINKER_FLAGS ${CMAKE_SHARED_LINKER_FLAGS} -Wl "-z defs")
+#endif()
 
 add_subdirectory(platform)
 add_subdirectory(menu)

@@ -37,16 +37,6 @@ enum {
 	TEXTURE_FLAG_PRESERVE	= (1 << 3),
 };
 
-#ifdef __cplusplus
-
-class Texture;
-
-#else
-
-typedef struct Texture Texture;
-
-#endif
-
 typedef struct gltexture_s 
 {
 	//managed by texture manager

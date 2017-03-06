@@ -21,21 +21,23 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "engine_base.h"
 #include "video.h"
-#include "texture.h"
+//#include "texture.h"
 
-TextureManager *g_texturemanager = nullptr;
+using namespace xenon::graphics;
 
 ConsoleVariable_t cv_texture_anisotropy = { "texture_anisotropy", "16", true };
 
-// Base textures...
-namespace textures
-{
-	Texture *nulltexture = nullptr;
+namespace xenon {
+    namespace graphics {
+        TextureManager *texture_manager = nullptr;
+
+        // Base textures...
+        PLTexture *nulltexture = nullptr;
+    }
 }
 
-void _PrintMemoryUsage()
-{
-	g_texturemanager->PrintMemoryUsage();
+void _PrintMemoryUsage() {
+	texture_manager->PrintMemoryUsage();
 }
 
 TextureManager::TextureManager() {
@@ -47,16 +49,13 @@ TextureManager::TextureManager() {
 
     plInitialize(PL_SUBSYSTEM_IMAGE | PL_SUBSYSTEM_GRAPHICS);
 
-	max_resolution_ = plGetMaxTextureSize();
-
-	static PLbyte notexture_data[16] =
-	{
+	static PLbyte notexture_data[16] = {
 		255,  0,255, 255,
 		0,  0,  0, 255,
 		0,  0,  0, 255,
 		255,  0,255, 255
 	};
-	textures::nulltexture = CreateTexture(
+	nulltexture = CreateTexture(
 		"nulltexture",
 		2, 2, 
 		PL_IMAGEFORMAT_RGB8,
@@ -73,40 +72,41 @@ TextureManager::~TextureManager() {
 
 void TextureManager::PrintMemoryUsage() {
 	unsigned int texels = 0;
-	for(auto tex = _textures.begin(); tex != _textures.end(); ++tex) {
-		Texture *texture = tex->second;
+	for(auto tex = textures_.begin(); tex != textures_.end(); ++tex) {
+		PLTexture *texture = tex->second;
 		Con_SafePrintf(" %4i x%4i %s\n", 
-			texture->GetWidth(), 
-			texture->GetHeight(), 
-			texture->path.c_str()
+			texture->width,
+			texture->height,
+			texture->path
         );
 
 		// todo, update this crap...
 		if (texture->flags & TEXTURE_FLAG_MIPMAP) {
-            texels += texture->GetSize() / texture->levels;
+            texels += texture->size / texture->levels;
         } else {
-            texels += (texture->GetWidth() * texture->GetHeight());
+            texels += (texture->width * texture->height);
         }
 	}
 
 	unsigned int mb = texels * (Video.bpp / 8) / 0x100000;
-	Con_Printf("%i textures %i pixels %1.1f megabytes\n", _textures.size(), texels, mb);
+	Con_Printf("%i textures %i pixels %1.1f megabytes\n", textures_.size(), texels, mb);
 }
 
-Texture *TextureManager::CreateTexture(std::string path, PLuint flags) {
+PLTexture *TextureManager::CreateTexture(std::string path, PLuint flags) {
 	{
-		auto texture = _textures.find(path);
-		if (texture != _textures.end())
-			return texture->second;
+		auto texture = textures_.find(path);
+		if (texture != textures_.end()) {
+            return texture->second;
+        }
 	}
 
 	FILE *f;
 	PLImage image;
 
     if(plLoadImage(path.c_str(), &image) == PL_RESULT_SUCCESS) {
-        _textures[path] = CreateTexture(&image, flags);
+        textures_[path] = CreateTexture(&image, flags);
         _plFreeImage(&image);
-        return _textures[path];
+        return textures_[path];
     }
 
 	std::string tgapath = path + PLIMAGE_EXTENSION_TGA;
@@ -119,11 +119,10 @@ Texture *TextureManager::CreateTexture(std::string path, PLuint flags) {
 
 		fclose(f);
 
-		if (data)
-		{
-			_textures[path] = CreateTexture(path, width, height, PL_IMAGEFORMAT_RGBA8, data, (width * height * 4), flags);
+		if (data) {
+			textures_[path] = CreateTexture(path, width, height, PL_IMAGEFORMAT_RGBA8, data, (width * height * 4), flags);
 			free(data);
-			return _textures[path];
+			return textures_[path];
 		}
 	}
 
@@ -131,9 +130,8 @@ Texture *TextureManager::CreateTexture(std::string path, PLuint flags) {
 	return nullptr;
 }
 
-Texture* TextureManager::CreateTexture(std::string path, PLuint width, PLuint height, PLImageFormat format,
-									   PLbyte *data, PLuint size, PLuint flags)
-{
+PLTexture * TextureManager::CreateTexture(std::string path, PLuint width, PLuint height, PLImageFormat format,
+                                          PLbyte *data, PLuint size, PLuint flags) {
 	PLImage image;
 	memset(&image, 0, sizeof(PLImage));
 	image.data		= data;
@@ -146,98 +144,51 @@ Texture* TextureManager::CreateTexture(std::string path, PLuint width, PLuint he
 	return CreateTexture(&image, flags);
 }
 
-Texture *TextureManager::CreateTexture(PLImage *image, PLuint flags)
-{
+PLTexture * TextureManager::CreateTexture(PLImage *image, PLuint flags) {
 	if (!image || !image->data) throw XException("Invalid image data!\n");
 
-	// Ensure it's a valid size, do we always want to do this?
-	if (!plIsValidImageSize(image->width, image->height)) {
-	}
-
 	// Add the new texture to our manager.
-	Texture *tex = new Texture;
-	tex->AddFlags(flags);
+	PLTexture *tex = plCreateTexture();
+	tex->flags = flags;
 	tex->SetImage(image);
-	tex->SetCRC(CRC_Block(image->data, image->size));
+	tex->crc = CRC_Block(image->data[0], image->size);
 
 	return tex;
 }
 
 /*	Texture Management	*/
 
-void TextureManager::DeleteTexture(Texture *texture, PLbool force) {
-	if (!texture || ((texture->flags & TEXTURE_FLAG_PRESERVE) && !force))
-		return;
-
-	// Remove it from the list.
-	auto tex = _textures.begin();
-	while (tex != _textures.end())
-	{
-		if (tex->second == texture)
-		{
-			delete tex->second;
-			_textures.erase(tex);
-			return;
-		}
-		++tex;
-	}
+void TextureManager::DeleteTexture(PLTexture *texture, PLbool force) {
+    plDeleteTexture(texture, force);
 }
 
 //////////////////////////////////////////////////////////////////////////
 
-Texture::Texture() :
-	flags(0),
-	_width(8), _height(8),
-	_format(PL_IMAGEFORMAT_RGBA8),
-	_size(0),
-	path(""),
-	levels(0),
-	_crc(0) {
-	instance_ = plCreateTexture();
-}
-
-Texture::~Texture() {
-	plDeleteTexture(instance_, true);
-}
-
 void Texture::SetImage(PLImage *image)
 {
-	_width		= image->width;
-	_height		= image->height;
-	_format		= image->format;
-	_size		= image->size;
-	path		= image->path;
-
-	levels = 1;
-	if (flags & TEXTURE_FLAG_MIPMAP)
-	{
-		plEnableGraphicsStates(VL_CAPABILITY_GENERATEMIPMAP);
-		levels = 4;
-	}
-	
 	PLTextureInfo upload;
 	memset(&upload, 0, sizeof(PLTextureInfo));
 	upload.data			= image->data;
 	upload.format		= image->format;
-	if (_flags & TEXTURE_FLAG_ALPHA)
-		upload.pixel_format = VL_COLOURFORMAT_RGBA;
+	if (flags & TEXTURE_FLAG_ALPHA)
+		upload.pixel_format = PL_COLOURFORMAT_RGBA;
 	else
-		upload.pixel_format = VL_COLOURFORMAT_RGB;
+		upload.pixel_format = PL_COLOURFORMAT_RGB;
 	upload.width		= image->width;
 	upload.height		= image->height;
 	upload.size			= image->size;
 	upload.initial		= true;
-	upload.levels		= levels;
+	upload.levels		= info_.levels;
 
 	plUploadTexture(instance_, &upload);
 	
-	if (_flags & TEXTURE_FLAG_MIPMAP)
+	if (flags & TEXTURE_FLAG_MIPMAP)
 		plDisableGraphicsStates(VL_CAPABILITY_GENERATEMIPMAP);
 
 	PLTextureFilter filtermode = PL_TEXTUREFILTER_LINEAR;
-	if (_flags & TEXTURE_FLAG_MIPMAP)
+	if (flags & TEXTURE_FLAG_MIPMAP)
 	{
-		if (_flags & TEXTURE_FLAG_NEAREST)	filtermode = PL_TEXTUREFILTER_MIPMAP_NEAREST;
+		if (flags & TEXTURE_FLAG_NEAREST)	filtermode = PL_TEXTUREFILTER_MIPMAP_NEAREST;
 		else								filtermode = PL_TEXTUREFILTER_MIPMAP_LINEAR;
 	}
 	else if(_flags & TEXTURE_FLAG_NEAREST)
