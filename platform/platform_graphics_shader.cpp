@@ -150,6 +150,19 @@ ShaderUniform::ShaderUniform(ShaderProgram *parent, std::string name, ShaderUnif
         throw std::runtime_error("failed to get uniform location");
     }
     id_ = static_cast<unsigned int>(location);
+
+
+}
+
+void ShaderUniform::Set(double x) {
+    if(type_ != UNIFORM_DOUBLE) {
+        plGraphicsLog("Invalid shader uniform type! (%i)", type_);
+        return;
+    }
+
+#if defined(PL_MODE_OPENGL)
+    glUniform1d(id_, x);
+#endif
 }
 
 void ShaderUniform::Set(float x) {
@@ -158,7 +171,9 @@ void ShaderUniform::Set(float x) {
         return;
     }
 
+#if defined(PL_MODE_OPENGL)
     glUniform1f(id_, x);
+#endif
 }
 
 void ShaderUniform::Set(float x, float y) {
@@ -167,7 +182,9 @@ void ShaderUniform::Set(float x, float y) {
         return;
     }
 
+#if defined(PL_MODE_OPENGL)
     glUniform2f(id_, x, y);
+#endif
 }
 
 void ShaderUniform::Set(float x, float y, float z) {
@@ -176,7 +193,9 @@ void ShaderUniform::Set(float x, float y, float z) {
         return;
     }
 
+#if defined(PL_MODE_OPENGL)
     glUniform3f(id_, x, y, z);
+#endif
 }
 
 void ShaderUniform::Set(float x, float y, float z, float w) {
@@ -185,7 +204,35 @@ void ShaderUniform::Set(float x, float y, float z, float w) {
         return;
     }
 
+#if defined(PL_MODE_OPENGL)
     glUniform4f(id_, x, y, z, w);
+#endif
+}
+
+void ShaderUniform::Set(float *x, unsigned int size) {
+    if(size < 1 || size > 4) {
+        throw std::out_of_range("invalid size");
+    }
+
+    switch(size) {
+        default:
+        case 1: {
+            Set(x[0]);
+            break;
+        }
+        case 2: {
+            Set(x[0], x[1]);
+            break;
+        }
+        case 3: {
+            Set(x[0], x[1], x[2]);
+            break;
+        }
+        case 4: {
+            Set(x[0], x[1], x[2], x[3]);
+            break;
+        }
+    }
 }
 
 void ShaderUniform::Set(int x) {
@@ -194,7 +241,9 @@ void ShaderUniform::Set(int x) {
         return;
     }
 
+#if defined(PL_MODE_OPENGL)
     glUniform1i(id_, x);
+#endif
 }
 
 void ShaderUniform::Set(int x, int y) {
@@ -203,7 +252,9 @@ void ShaderUniform::Set(int x, int y) {
         return;
     }
 
+#if defined(PL_MODE_OPENGL)
     glUniform2i(id_, x, y);
+#endif
 }
 
 void ShaderUniform::Set(int x, int y, int z) {
@@ -212,7 +263,20 @@ void ShaderUniform::Set(int x, int y, int z) {
         return;
     }
 
+#if defined(PL_MODE_OPENGL)
     glUniform3i(id_, x, y, z);
+#endif
+}
+
+void ShaderUniform::Set(unsigned int x) {
+    if(type_ != UNIFORM_UINT) {
+        plGraphicsLog("Invalid shader uniform type! (%i)", type_);
+        return;
+    }
+
+#if defined(PL_MODE_OPENGL)
+    glUniform1ui(id_, x);
+#endif
 }
 
 /*===========================
@@ -308,6 +372,10 @@ void ShaderProgram::RegisterUniform(std::string name, ShaderUniformType type) {
     }
 
     uniforms.emplace(name, ShaderUniform(this, name, type));
+}
+
+void ShaderProgram::RegisterUniforms() {
+
 }
 
 void ShaderProgram::RegisterAttribute(std::string name) {

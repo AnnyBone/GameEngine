@@ -69,7 +69,7 @@ typedef struct
 	const char *ccName;
 } MaterialType_t;
 
-typedef enum
+typedef enum MaterialTextureType
 {
 	MATERIAL_TEXTURE_DIFFUSE,		// Basic diffuse layer.
 	MATERIAL_TEXTURE_SPHERE,		// Spherical mapping.
@@ -79,10 +79,10 @@ typedef enum
 	MATERIAL_TEXTURE_LIGHTMAP,
 
 	MATERIAL_TEXTURE_MAX
-} MaterialTextureType_t;
+} MaterialTextureType;
 
 typedef struct MaterialTexture {
-	Texture *instance;
+	PLTexture *instance;
 
 	bool	matrixmod;	// Modify texture matrix?
 
@@ -90,10 +90,9 @@ typedef struct MaterialTexture {
 
 	float	fRotate, scale;
 
-	unsigned int uiWidth, uiHeight;	// Width and height of the texture.
-	unsigned int uiFlags;			// Size of the texture.
+	unsigned int flags;
 
-	MaterialTextureType_t mttType;	// Sphere, fullbright, or what have you.
+	MaterialTextureType mttType;	// Sphere, fullbright, or what have you.
 
 	PLTextureEnvironmentMode env_mode;
 } MaterialTexture;

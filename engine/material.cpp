@@ -284,37 +284,36 @@ Material *Material_GetByPath(const char *ccPath) {
     return NULL;
 }
 
-Texture *Material_LoadTexture(Material *material, MaterialSkin *mCurrentSkin, char *arg) {
+PLTexture *Material_LoadTexture(Material *material, MaterialSkin *mCurrentSkin, char *arg) {
     // Check if it's trying to use a built-in texture.
     if (arg[0] == '@') {
         arg++;
 
         if (!strcasecmp(arg, "notexture"))
-            return textures::nulltexture;
+            return xenon::graphics::nulltexture;
         else if (!strcasecmp(arg, "lightmap")) {
             material->override_lightmap = true;
             mCurrentSkin->texture[mCurrentSkin->num_textures].mttType = MATERIAL_TEXTURE_LIGHTMAP;
-            return textures::nulltexture;
+            return xenon::graphics::nulltexture;
         } else {
             Con_Warning("Attempted to set invalid internal texture! (%s)\n", material->cPath);
-            return textures::nulltexture;
+            return xenon::graphics::nulltexture;
         }
     }
 
     PLuint texflags = TEXTURE_FLAG_ALPHA | TEXTURE_FLAG_MIPMAP;
-    if (material->flags & MATERIAL_FLAG_PRESERVE)
+    if (material->flags & MATERIAL_FLAG_PRESERVE) {
         texflags |= TEXTURE_FLAG_PRESERVE;
-    if (material->flags & MATERIAL_FLAG_NEAREST)
+    }
+    if (material->flags & MATERIAL_FLAG_NEAREST) {
         texflags |= TEXTURE_FLAG_NEAREST;
-
-    Texture *tex = g_texturemanager->CreateTexture(arg, texflags);
-    if (!tex) {
-        Con_Warning("Failed to load texture! (%s) (%s)\n", arg, material->cPath);
-        return textures::nulltexture;
     }
 
-    mCurrentSkin->texture[mCurrentSkin->num_textures].uiWidth = tex->GetWidth();
-    mCurrentSkin->texture[mCurrentSkin->num_textures].uiHeight = tex->GetHeight();
+    PLTexture *tex = xenon::graphics::texture_manager->CreateTexture(arg, texflags);
+    if (!tex) {
+        Con_Warning("Failed to load texture! (%s) (%s)\n", arg, material->cPath);
+        return xenon::graphics::nulltexture;
+    }
 
     return tex;
 }
@@ -337,7 +336,7 @@ void Material_CheckFunctions(Material *mNewMaterial);
 typedef struct {
     const char *name;
 
-    MaterialTextureType_t type;
+    MaterialTextureType type;
 } MaterialTextureTypeX_t;
 
 MaterialTextureTypeX_t material_types[] =
@@ -400,7 +399,7 @@ void _Material_ParseSkin(Material *material, MaterialContext_t context, char *ar
 
     pl::graphics::ShaderProgram *program = nullptr;
     if (args && ((args[0] != '\0') && (args[0] != ' '))) {
-        program = g_shadermanager->GetProgram(args);
+        program = xenon::graphics::shader_manager->GetProgram(args);
         if (!program) {
             Sys_Error("Shader program isn't registered! (%s)\n", args);
         }
@@ -424,12 +423,9 @@ void _Material_ParseSkin(Material *material, MaterialContext_t context, char *ar
             if (cToken[0] == '}') {
                 material->num_skins++;
                 break;
-            }
-                // '$' declares that the following is a function.
-            else if (cToken[0] == SCRIPT_SYMBOL_FUNCTION)
+            } else if (cToken[0] == SCRIPT_SYMBOL_FUNCTION) { // '$' declares that the following is a function.
                 Material_CheckFunctions(material);
-                // '%' declares that the following is a variable.
-            else if (cToken[0] == SCRIPT_SYMBOL_VARIABLE) {
+            } else if (cToken[0] == SCRIPT_SYMBOL_VARIABLE) { // '%' declares that the following is a variable.
                 if (!program) continue;
 
                 program->Enable();
@@ -442,39 +438,47 @@ void _Material_ParseSkin(Material *material, MaterialContext_t context, char *ar
 
                 Script_GetToken(false);
 
-                switch (var->type) {
-                    case pl::graphics::UNIFORM_DOUBLE:
-                        program->SetUniformVariable(var, std::strtod(cToken, NULL));
+                switch (var->GetType()) {
+                    case pl::graphics::UNIFORM_DOUBLE: {
+                        var->Set(std::strtod(cToken, NULL));
                         break;
-                    case pl::graphics::UNIFORM_FLOAT:
-                        program->SetUniformVariable(var, std::strtof(cToken, NULL));
+                    }
+
+                    case pl::graphics::UNIFORM_FLOAT: {
+                        var->Set(std::strtof(cToken, NULL));
                         break;
+                    }
+
                     case pl::graphics::UNIFORM_BOOL:
-                        if (!strncmp(cToken, "true", sizeof(cToken)))
+                        if (!strncmp(cToken, "true", sizeof(cToken))) {
                             strncpy(cToken, "1", sizeof(cToken));
-                        else if (strncmp(cToken, "false", sizeof(cToken)))
+                        } else if (strncmp(cToken, "false", sizeof(cToken))) {
                             strncpy(cToken, "0", sizeof(cToken));
-                    case pl::graphics::UNIFORM_INT:
-                        program->SetUniformVariable(var, std::atoi(cToken));
+                        }
+                    case pl::graphics::UNIFORM_INT: {
+                        var->Set(std::atoi(cToken));
                         break;
-                    case pl::graphics::UNIFORM_TEXTURE2D: {
-                        program->SetUniformVariable(var, skin->num_textures);
+                    }
+
+                    case pl::graphics::UNIFORM_SAMPLER2D: {
+                        var->Set(skin->num_textures);
 
                         MaterialTexture *texture = &skin->texture[skin->num_textures];
                         memset(texture, 0, sizeof(MaterialTexture));
-                        if (skin->num_textures > 0) // If we have more textures, use decal mode.
+                        if (skin->num_textures > 0) { // If we have more textures, use decal mode.
                             texture->env_mode = PL_TEXTUREMODE_DECAL;
-                        else // By default textures are modulated... Inherited Quake behaviour, yay.
+                        } else { // By default textures are modulated... Inherited Quake behaviour, yay.
                             texture->env_mode = PL_TEXTUREMODE_MODULATE;
+                        }
                         texture->scale = 1;
 
                         texture->instance = Material_LoadTexture(material, skin, cToken);
                         skin->num_textures++;
+                        break;
                     }
 
                     case pl::graphics::UNIFORM_UINT: {
-                        unsigned int _val = (unsigned int) std::strtoul(cToken, NULL, 0);
-                        program->SetUniformVariable(var, _val);
+                        var->Set((unsigned int) std::strtoul(cToken, NULL, 0));
                         break;
                     }
 
@@ -485,7 +489,7 @@ void _Material_ParseSkin(Material *material, MaterialContext_t context, char *ar
                                         iScriptLine);
                         }
 
-                        program->SetUniformVariable(var, vec);
+                        var->Set(vec);
                         break;
                     }
 
@@ -496,7 +500,7 @@ void _Material_ParseSkin(Material *material, MaterialContext_t context, char *ar
                                         iScriptLine);
                         }
 
-                        program->SetUniformVariable(var, vec);
+                        var->Set(vec);
                         break;
                     }
 
@@ -507,7 +511,7 @@ void _Material_ParseSkin(Material *material, MaterialContext_t context, char *ar
                                         iScriptLine);
                         }
 
-                        program->SetUniformVariable(var, vec);
+                        var->Set(vec, 4);
                         break;
                     }
 
@@ -520,8 +524,9 @@ void _Material_ParseSkin(Material *material, MaterialContext_t context, char *ar
                 break;
             }
         }
-    } else
+    } else {
         Con_Warning("Invalid skin, no opening brace! (%s) (%i)\n", material->cPath, iScriptLine);
+    }
 }
 
 // Texture Functions...
@@ -769,7 +774,7 @@ void _Material_SetFlags(Material *mCurrentMaterial, MaterialContext_t mftContext
                     break;
                 case MATERIAL_CONTEXT_TEXTURE:
                     mCurrentMaterial->skin[mCurrentMaterial->num_skins].texture
-                    [mCurrentMaterial->skin[mCurrentMaterial->num_skins].num_textures].uiFlags |= mfMaterialFlags[i].flags;
+                    [mCurrentMaterial->skin[mCurrentMaterial->num_skins].num_textures].flags |= mfMaterialFlags[i].flags;
                     break;
                 default:
                     Con_Warning("Invalid context! (%s) (%s) (%i) (%i)\n",
@@ -1070,15 +1075,15 @@ void Material_DrawObject(Material *material, PLMesh *object, bool ispost) {
             );
 }
 
-/*	Typically called before an object is drawn.
-*/
+// Typically called before an object is drawn.
 void Material_Draw(Material *material,
                    PLVertex *ObjectVertex,
                    PLPrimitive ObjectPrimitive,
                    unsigned int ObjectSize,
                    bool ispost) {
-    if (!material) return; // todo, handle this better... throw error?
-    else if ((material->override_wireframe && (r_showtris.iValue != 1) || !material->override_wireframe)
+    if (!material) {
+        return; // todo, handle this better... throw error?
+    } else if ((material->override_wireframe && (r_showtris.iValue != 1) || !material->override_wireframe)
              && (r_lightmap_cheatsafe || r_showtris.boolean_value)) {
         if (!ispost) {
             // Select the first TMU.
@@ -1107,46 +1112,48 @@ void Material_Draw(Material *material,
 
         plSetTextureUnit(0);
 
-        if (!ispost) texture->instance->Bind();
-        else texture->instance->Unbind();
+        if (!ispost) {
+            texture->instance->Bind();
+        }
         return;
     }
 
-    MaterialSkin *msCurrentSkin;
+    MaterialSkin *current_skin;
     if (material->flags & MATERIAL_FLAG_ANIMATED) {
-        msCurrentSkin = Material_GetAnimatedSkin(material);
+        current_skin = Material_GetAnimatedSkin(material);
     } else {
-        msCurrentSkin = Material_GetSkin(material, material->current_skin);
+        current_skin = Material_GetSkin(material, material->current_skin);
     }
-    if (!msCurrentSkin) {
+    if (!current_skin) {
         Sys_Error("Failed to get valid skin! (%s)\n", material->cName);
         return;
     }
 
     // Handle any skin effects.
     if (!ispost) {
-        if (msCurrentSkin->program) {
-            msCurrentSkin->program->Enable();
+        if (current_skin->program) {
+            current_skin->program->Enable();
         }
 
         // Handle any generic blending.
-        if ((msCurrentSkin->uiFlags & MATERIAL_FLAG_BLEND) || (material->fAlpha < 1)) {
+        if ((current_skin->uiFlags & MATERIAL_FLAG_BLEND) || (material->fAlpha < 1)) {
             vlDepthMask(false);
 
             plEnableGraphicsStates(PL_CAPABILITY_BLEND);
 
-            if (msCurrentSkin->uiFlags & MATERIAL_FLAG_ADDITIVE) {
+            if (current_skin->uiFlags & MATERIAL_FLAG_ADDITIVE) {
                 // Additive blending isn't done by default.
                 plSetBlendMode(PL_BLEND_ADDITIVE);
             }
         }
             // Alpha-testing
-        else if (msCurrentSkin->uiFlags & MATERIAL_FLAG_ALPHA)
+        else if (current_skin->uiFlags & MATERIAL_FLAG_ALPHA) {
             plEnableGraphicsStates(PL_CAPABILITY_ALPHA_TEST);
+        }
     }
 
-    MaterialTexture *texture = &msCurrentSkin->texture[0];
-    for (unsigned int unit = 0, i = 0; i < msCurrentSkin->num_textures; i++, texture++, unit++) {
+    MaterialTexture *texture = &current_skin->texture[0];
+    for (unsigned int unit = 0, i = 0; i < current_skin->num_textures; i++, texture++, unit++) {
 #ifdef VIDEO_LIGHTMAP_HACKS
         // Skip the lightmap, since it's manually handled.
         if (unit == VIDEO_TEXTURE_LIGHT) unit++;
@@ -1275,21 +1282,21 @@ void Material_Draw(Material *material,
 
     if (ispost) {
         // Handle any generic blending.
-        if ((msCurrentSkin->uiFlags & MATERIAL_FLAG_BLEND) || (material->fAlpha < 1)) {
+        if ((current_skin->uiFlags & MATERIAL_FLAG_BLEND) || (material->fAlpha < 1)) {
             vlDepthMask(true);
 
             plDisableGraphicsStates(PL_CAPABILITY_BLEND);
 
-            if (msCurrentSkin->uiFlags & MATERIAL_FLAG_ADDITIVE) {
+            if (current_skin->uiFlags & MATERIAL_FLAG_ADDITIVE) {
                 // Return blend mode to its default.
                 plSetBlendMode(PL_BLEND_DEFAULT);
             }
         }
             // Alpha-testing
-        else if (msCurrentSkin->uiFlags & MATERIAL_FLAG_ALPHA) {
+        else if (current_skin->uiFlags & MATERIAL_FLAG_ALPHA) {
             plDisableGraphicsStates(PL_CAPABILITY_ALPHA_TEST);
 
-            if ((msCurrentSkin->uiFlags & MATERIAL_FLAG_ALPHATRICK) &&
+            if ((current_skin->uiFlags & MATERIAL_FLAG_ALPHATRICK) &&
                 (cv_video_alphatrick.boolean_value && (ObjectSize > 0))) {
                 vlDepthMask(false);
                 plEnableGraphicsStates(PL_CAPABILITY_BLEND);
@@ -1302,7 +1309,8 @@ void Material_Draw(Material *material,
             }
         }
 
-        if (msCurrentSkin->program)
-            msCurrentSkin->program->Disable();
+        if (current_skin->program) {
+            current_skin->program->Disable();
+        }
     }
 }

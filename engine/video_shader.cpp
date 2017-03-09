@@ -297,11 +297,6 @@ void ShaderProgram::Draw(PLDraw *object)
 #endif
 }
 
-void ShaderProgram::Link()
-{
-	vlLinkShaderProgram(&instance);
-}
-
 void ShaderProgram::Shutdown()
 {
 	Disable();

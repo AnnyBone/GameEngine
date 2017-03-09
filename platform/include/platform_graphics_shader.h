@@ -92,13 +92,22 @@ namespace pl {
         public:
             ShaderUniform(ShaderProgram *parent, std::string name, ShaderUniformType type);
 
+            void Set(double x);
+
             void Set(float x);
             void Set(float x, float y);
             void Set(float x, float y, float z);
             void Set(float x, float y, float z, float w);
+            void Set(float *x, unsigned int size);
+
             void Set(int x);
             void Set(int x, int y);
             void Set(int x, int y, int z);
+
+            void Set(unsigned int x);
+
+            void Set(PLVector2D x);
+            void Set(PLVector3D x);
 
         protected:
         private:
@@ -135,6 +144,8 @@ namespace pl {
 
             void RegisterUniform(std::string name, ShaderUniformType type);
             void RegisterAttribute(std::string name);
+
+            void RegisterUniforms();
 
             void LoadShaders(std::string vertex, std::string fragment);
 

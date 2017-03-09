@@ -488,7 +488,6 @@ void vlBindFrameBuffer(PLFBOTarget target, unsigned int buffer)
 		Sys_Error("%s\n%s", vlGetErrorString(glerror), errorstring);
 	}
 #endif
-	VIDEO_FUNCTION_END
 }
 
 /*	Deletes the given framebuffer.
