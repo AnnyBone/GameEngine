@@ -27,6 +27,9 @@ For more information, please refer to <http://unlicense.org>
 
 #pragma once
 
+#include <fox-1.6/fx.h>
+#include <fox-1.6/fx3d.h>
+
 #include "platform_log.h"
 #include "platform_window.h"
 

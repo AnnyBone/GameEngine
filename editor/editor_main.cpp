@@ -28,6 +28,8 @@ For more information, please refer to <http://unlicense.org>
 #include "editor_main.h"
 
 int main(int argc,char *argv[]) {
+    plInitialize(PL_SUBSYSTEM_GRAPHICS|PL_SUBSYSTEM_IMAGE|PL_SUBSYSTEM_LOG);
+
     plClearLog(EDITOR_LOG);
     //plWriteLog(LAUNCHER_LOG, "Launcher (Interface Version %i)\n", ENGINE_VERSION_INTERFACE);
 
@@ -38,9 +40,12 @@ int main(int argc,char *argv[]) {
         return -1;
     }
 
-    while (xenon::IsRunning()) {
-        xenon::Loop();
-    }
+    FXApp app(EDITOR_TITLE, "Xenon");
+    app.init(argc, argv);
 
-    return -1;
+    // todo, create windows...
+
+    app.create();
+
+    return app.run();
 }
