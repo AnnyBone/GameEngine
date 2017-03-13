@@ -43,6 +43,8 @@ namespace pl {
             SHADER_COMPUTE,  // GL_COMPUTE_SHADER
         } ShaderType;
 
+        class ShaderProgram;
+
         class PL_DLL Shader {
         public:
             Shader(ShaderType type, std::string path);
@@ -56,6 +58,7 @@ namespace pl {
         private:
             unsigned int id_;
 
+            ShaderProgram *program_;
             ShaderType type_;
         };
 
@@ -85,7 +88,9 @@ namespace pl {
 
             // Matrices
 
-            UNIFORM_MAT3
+            UNIFORM_MAT3,
+
+            UNIFORM_END
         } ShaderUniformType;
 
         class PL_DLL ShaderUniform {
@@ -108,6 +113,8 @@ namespace pl {
 
             void Set(PLVector2D x);
             void Set(PLVector3D x);
+
+            ShaderUniformType GetType() { return type_; }
 
         protected:
         private:

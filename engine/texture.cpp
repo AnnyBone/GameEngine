@@ -130,32 +130,6 @@ PLTexture *TextureManager::CreateTexture(std::string path, PLuint flags) {
 	return nullptr;
 }
 
-PLTexture * TextureManager::CreateTexture(std::string path, PLuint width, PLuint height, PLImageFormat format,
-                                          PLbyte *data, PLuint size, PLuint flags) {
-	PLImage image;
-	memset(&image, 0, sizeof(PLImage));
-	image.data		= data;
-	image.format	= format;
-	image.width		= width;
-	image.height	= height;
-	image.size		= size;
-	strncpy(image.path, path.c_str(), sizeof(image.path));
-
-	return CreateTexture(&image, flags);
-}
-
-PLTexture * TextureManager::CreateTexture(PLImage *image, PLuint flags) {
-	if (!image || !image->data) throw XException("Invalid image data!\n");
-
-	// Add the new texture to our manager.
-	PLTexture *tex = plCreateTexture();
-	tex->flags = flags;
-	tex->SetImage(image);
-	tex->crc = CRC_Block(image->data[0], image->size);
-
-	return tex;
-}
-
 /*	Texture Management	*/
 
 void TextureManager::DeleteTexture(PLTexture *texture, PLbool force) {
@@ -164,6 +138,7 @@ void TextureManager::DeleteTexture(PLTexture *texture, PLbool force) {
 
 //////////////////////////////////////////////////////////////////////////
 
+#if 0
 void Texture::SetImage(PLImage *image)
 {
 	PLTextureInfo upload;
@@ -182,8 +157,9 @@ void Texture::SetImage(PLImage *image)
 
 	plUploadTexture(instance_, &upload);
 	
-	if (flags & TEXTURE_FLAG_MIPMAP)
-		plDisableGraphicsStates(VL_CAPABILITY_GENERATEMIPMAP);
+	if (flags & TEXTURE_FLAG_MIPMAP) {
+        plDisableGraphicsStates(VL_CAPABILITY_GENERATEMIPMAP);
+    }
 
 	PLTextureFilter filtermode = PL_TEXTUREFILTER_LINEAR;
 	if (flags & TEXTURE_FLAG_MIPMAP)
@@ -191,9 +167,11 @@ void Texture::SetImage(PLImage *image)
 		if (flags & TEXTURE_FLAG_NEAREST)	filtermode = PL_TEXTUREFILTER_MIPMAP_NEAREST;
 		else								filtermode = PL_TEXTUREFILTER_MIPMAP_LINEAR;
 	}
-	else if(_flags & TEXTURE_FLAG_NEAREST)
-		filtermode = PL_TEXTUREFILTER_NEAREST;
+	else if(_flags & TEXTURE_FLAG_NEAREST) {
+        filtermode = PL_TEXTUREFILTER_NEAREST;
+    }
 
 	plSetTextureFilter(instance_, filtermode);
 	plSetTextureAnisotropy(instance_, (PLuint)cv_texture_anisotropy.iValue);
 }
+#endif

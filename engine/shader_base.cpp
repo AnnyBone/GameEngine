@@ -32,8 +32,11 @@ For more information, please refer to <http://unlicense.org>
 
 #include "client/shader_base.h"
 
-BaseShader::BaseShader() : ShaderProgram("base"),
-                           alpha_test(false) {
+BaseShader::BaseShader() : pl::graphics::ShaderProgram("base"),
+    alpha_test(false) {
+
+    fragment_ = new PLShader(pl::graphics::ShaderType::SHADER_FRAGMENT, "shaders/base");
+    vertex_ = new PLShader(pl::graphics::ShaderType::SHADER_VERTEX, "shaders/base");
 }
 
 void BaseShader::Initialize() {

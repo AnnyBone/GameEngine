@@ -33,21 +33,23 @@ protected:
 private:
 
 	// Textures
-	PLUniform *u_diffusemap;
-	PLUniform *u_detailmap;
-	PLUniform *u_fullbrightmap;
-	PLUniform *u_spheremap;
+	PLShaderUniform *u_diffusemap;
+	PLShaderUniform *u_detailmap;
+	PLShaderUniform *u_fullbrightmap;
+	PLShaderUniform *u_spheremap;
 
 	// Alpha
-	PLUniform *u_alphaclamp;
-	PLUniform *u_alphatest;
+	PLShaderUniform *u_alphaclamp;
+	PLShaderUniform *u_alphatest;
 
 	// Lighting
-	PLUniform *u_lightcolour;
-	PLUniform *u_lightposition;
+	PLShaderUniform *u_lightcolour;
+	PLShaderUniform *u_lightposition;
 
 	// Vertex scaling
-	PLUniform *u_vertexscale;
+	PLShaderUniform *u_vertexscale;
+
+	PLShader *fragment_, *vertex_;
 
 	bool	alpha_test;
 	float	alpha_clamp;

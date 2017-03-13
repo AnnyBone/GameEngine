@@ -1,4 +1,4 @@
-#[[
+/*
 This is free and unencumbered software released into the public domain.
 
 Anyone is free to copy, modify, publish, use, compile, sell, or
@@ -23,13 +23,24 @@ ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 
 For more information, please refer to <http://unlicense.org>
-]]
+*/
 
-project(EDITOR)
+#include "editor_main.h"
 
-file(GLOB EDITOR_SOURCE_FILES *.cpp *.c)
+int main(int argc,char *argv[]) {
+    plClearLog(EDITOR_LOG);
+    //plWriteLog(LAUNCHER_LOG, "Launcher (Interface Version %i)\n", ENGINE_VERSION_INTERFACE);
 
-add_executable(EDITOR ${EDITOR_SOURCE_FILES})
+    // Initialize.
+    if (xenon::Initialize(argc, argv) != PL_RESULT_SUCCESS)	{
+        plWriteLog(EDITOR_LOG, "Engine failed to initialize, check engine log!\n");
+        plMessageBox("Launcher", "Failed to initialize engine!");
+        return -1;
+    }
 
-target_include_directories(EDITOR PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_SYSTEM_INCLUDE_PATH})
-target_link_libraries(EDITOR platform dl engine FOX-1.6)
+    while (xenon::IsRunning()) {
+        xenon::Loop();
+    }
+
+    return -1;
+}

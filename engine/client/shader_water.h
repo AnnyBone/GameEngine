@@ -27,8 +27,8 @@ public:
 	void SetTime(float curtime);
 
 private:
-	PLUniform	*u_diffusemap;
-	PLUniform	*u_normalmap;
+	PLShaderUniform	*u_diffusemap;
+	PLShaderUniform	*u_normalmap;
 
-	PLUniform	*u_time;
+	PLShaderUniform	*u_time;
 };

@@ -1,4 +1,4 @@
-#[[
+/*
 This is free and unencumbered software released into the public domain.
 
 Anyone is free to copy, modify, publish, use, compile, sell, or
@@ -23,13 +23,14 @@ ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 
 For more information, please refer to <http://unlicense.org>
-]]
+*/
 
-project(EDITOR)
+#pragma once
 
-file(GLOB EDITOR_SOURCE_FILES *.cpp *.c)
+#include "platform_log.h"
+#include "platform_window.h"
 
-add_executable(EDITOR ${EDITOR_SOURCE_FILES})
+#include "shared_engine.h"
 
-target_include_directories(EDITOR PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_SYSTEM_INCLUDE_PATH})
-target_link_libraries(EDITOR platform dl engine FOX-1.6)
+#define EDITOR_TITLE	"XEdit"
+#define EDITOR_LOG		"editor"
