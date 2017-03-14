@@ -72,8 +72,7 @@ typedef enum
 	STAT_NONE
 } ClientStat_t;
 
-typedef struct
-{
+typedef struct {
 	PLVector3D	viewangles;
 
 	// intended velocities
@@ -90,7 +89,7 @@ typedef struct DynamicLight_s
 	float	decay,			// Drop this each second
 			minlight;		// Don't add when contributing less
 	int		key;
-	PLVector3D	color;			//johnfitz -- lit support via lordhavoc
+	PLColour	color;			//johnfitz -- lit support via lordhavoc
 	PLVector3D	transformed;
 
 	bool	lightmap;		// Defines whether this light effects the lightmap.
@@ -169,7 +168,7 @@ typedef struct ClientEntity_s
 									//  that splits bmodel, or NULL if
 									//  not split
 
-	uint8_t			alpha;			//johnfitz -- alpha
+	byte			alpha;			//johnfitz -- alpha
 	uint8_t			lerpflags;		//johnfitz -- lerping
 	float			lerpstart;		//johnfitz -- animation lerping
 	float			lerpfinish;		//johnfitz -- lerping -- server sent us a more accurate interval, use it instead of 0.1

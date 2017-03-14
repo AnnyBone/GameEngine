@@ -1,179 +1,64 @@
 /*
-Copyright (C) 2011-2016 OldTimes Software
+This is free and unencumbered software released into the public domain.
 
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
+Anyone is free to copy, modify, publish, use, compile, sell, or
+distribute this software, either in source code form or as a compiled
+binary, for any purpose, commercial or non-commercial, and by any
+means.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+In jurisdictions that recognize copyright laws, the author or authors
+of this software dedicate any and all copyright interest in the
+software to the public domain. We make this dedication for the benefit
+of the public at large and to the detriment of our heirs and
+successors. We intend this dedication to be an overt act of
+relinquishment in perpetuity of all present and future rights to this
+software under copyright law.
 
-See the GNU General Public License for more details.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+OTHER DEALINGS IN THE SOFTWARE.
 
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+For more information, please refer to <http://unlicense.org>
 */
 
-#include "platform_log.h"
+#include "engine.h"
 
-#include "engine_base.h"
+#include "engine_system.h"
 
-#include "video.h"
-#include "EngineEditor.h"
-#include "engine_client.h"
+using namespace xenon;
 
-XGlobal g_state;
+bool engine::Initialize(int argc, char **argv) {
 
-double oldtime = 0;
-
-PLresult xenon::Initialize(int argc, char *argv[])
-{
-	XParameters	parms;
-	parms.memsize	= 0x8000000;	// 128MB
-	parms.basedir	= ".";
-	parms.cachedir	= NULL;
-	parms.argc		= argc;
-	parms.argv		= argv;
-
-	COM_InitArgv(parms.argc, parms.argv);
-
-	parms.argc = com_argc;
-	parms.argv = com_argv;
-
-	g_state.embedded = (COM_CheckParm("-embedded") != 0);
-
-	if (COM_CheckParm("-heapsize"))
-	{
-		int i = COM_CheckParm("-heapsize") + 1;
-		if (i < com_argc) parms.memsize = atoi(com_argv[i]) * 1024;
-	}
-
-	parms.membase = malloc(parms.memsize);
-	if (!parms.membase)
-	{
-		plWriteLog(ENGINE_LOG, "Not enough memory free (%imb)!\nCheck disk space.\n", parms.memsize);
-		return PL_RESULT_MEMORYALLOC;
-	}
-
-	Host_Initialize(&parms);
-
-	oldtime = System_DoubleTime();
-
-	return PL_RESULT_SUCCESS;
+    return true;
 }
 
-void xenon::Shutdown()
-{
+void engine::Shutdown() {}
 
+void engine::Loop() {
+    static double time, newtime, oldtime = 0;
+
+    newtime = System_DoubleTime();
+    time = newtime - oldtime;
+
+    oldtime = newtime;
 }
 
-void xenon::Loop()
-{
-	static PLdouble time, newtime;
+// Version Information
 
-	newtime = System_DoubleTime();
-	time = newtime - oldtime;
+#include "engine_build.h"
 
-	if (!g_mainwindow.is_active && (cl.maxclients == 1))
-	{
-		// todo, skip updates if window isn't active
-	}
-
-	Host_Frame(time);
-
-	oldtime = newtime;
+uint32_t engine::GetVersion() {
+    return ENGINE_VERSION_BUILD;
 }
 
-/*	Version	*/
-
-PLuint32 xenon::GetVersion()
-{
-	return ENGINE_VERSION_BUILD;
+const char *engine::GetVersionString() {
+    return std::to_string(ENGINE_VERSION_BUILD).c_str();
 }
 
-PLchar *xenon::GetVersionString()
-{
-	return va("%i", ENGINE_VERSION_BUILD);
-}
-
-PLint32 xenon::GetInterfaceVersion()
-{
-	return ENGINE_VERSION_INTERFACE;
-}
-
-/*	State	*/
-
-PLbool xenon::IsRunning()
-{
-	return g_hostinitialized;
-}
-
-/*	Paths	*/
-
-const PLchar *xenon::GetPath(XPath path)
-{
-	if ((path < XPATH_BASE) || (path >= XPATH_END))
-	{
-		Con_Warning("Invalid path selection! (%i)\n", path);
-		return "";
-	}
-
-	switch (path)
-	{
-	case XPATH_BASE:return host_parms.basepath;
-	case XPATH_FONTS:return g_state.path_fonts;
-	case XPATH_LEVELS:return g_state.path_levels;
-	case XPATH_MATERIALS:return g_state.path_materials;
-	case XPATH_SCREENSHOTS:return g_state.path_screenshots;
-	case XPATH_MODULES:return g_state.path_modules;
-	case XPATH_SHADERS:return g_state.path_shaders;
-	case XPATH_SOUNDS:return g_state.path_sounds;
-	}
-	// Unlikely to reach this point.
-	return "";
-}
-
-/*	Legacy...	*/
-
-XEngineImport g_launcher;
-XEngineExport exports;
-
-PL_EXPORT XEngineExport *Engine_Main(XEngineImport *mImport)
-{
-	// Imports
-	g_launcher.iVersion			= mImport->iVersion;
-	g_launcher.PrintError		= mImport->PrintError;
-	g_launcher.PrintMessage		= mImport->PrintMessage;
-	g_launcher.PrintWarning		= mImport->PrintWarning;
-
-	// Client
-	exports.ClientDisconnect = CL_Disconnect;
-	exports.GetClientTime = Client_GetTime;
-	exports.CreateClientEntity = CL_NewTempEntity;
-	exports.CreateDynamicLight = Client_AllocDlight;
-
-	// Server
-	exports.ServerShutdown = Host_ShutdownServer;
-
-	// Material
-	exports.LoadMaterial = Material_Load;
-	exports.UnloadMaterial = Material_Clear;
-
-	// Model
-	exports.LoadModel = Mod_ForName;
-
-	// Console
-	exports.InsertConsoleCommand		= Cbuf_InsertText;
-	exports.RegisterConsoleVariable		= Cvar_RegisterVariable;
-	exports.SetConsoleVariable			= Cvar_Set;
-	exports.ResetConsoleVariable		= Cvar_Reset;
-	exports.GetConsoleVariableValue		= Cvar_VariableValue;
-	exports.GetConsoleVariableBoolValue = ConsoleVariable_GetBoolValue;
-	exports.Print						= Con_Printf;
-	exports.PrintDev					= Con_DPrintf;
-
-	return &exports;
+int32_t engine::GetInterfaceVersion() {
+    return ENGINE_VERSION_INTERFACE;
 }
