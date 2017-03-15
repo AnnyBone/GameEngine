@@ -25,33 +25,29 @@ OTHER DEALINGS IN THE SOFTWARE.
 For more information, please refer to <http://unlicense.org>
 */
 
-#include <platform_image.h>
 #include "Editor.h"
 
 using namespace xenon;
 
 class Editor : public FXMainWindow {
-    FXDECLARE(Editor)
+FXDECLARE(Editor)
 
 public:
     Editor(FXApp *app);
+
     virtual ~Editor();
 
     virtual void create();
 
     void createMenuBar();
-    void createStatusBar();
 
-    void setStatusBarLabel(const char *text, int slot);
 
 protected:
     Editor() {}
 
 private:
-    FXMenuBar *menubar_;
-
-    FXHorizontalFrame *statusbar_;
-    FXLabel *statusbar_label0_, *statusbar_label1_;
+    FXMenuBar *menubar;
+    FXExStatusBar *statusbar;
 };
 
 FXIMPLEMENT(Editor, FXMainWindow, NULL, NULL)
@@ -60,9 +56,33 @@ Editor::Editor(FXApp *app) :
         FXMainWindow(app, EDITOR_TITLE, NULL, NULL, DECOR_ALL, 0, 0, 1024, 768) {
 
     createMenuBar();
-    createStatusBar();
 
-    new FXToolTip(app, 0);
+    FXDockSite *topdock = new FXDockSite(this, DOCKSITE_NO_WRAP | LAYOUT_SIDE_TOP | LAYOUT_FILL_X);
+    FXToolBarShell *shell = new FXToolBarShell(this, FRAME_RAISED);
+    FXMenuBar *toolbar = new FXMenuBar(topdock, shell,
+                                       LAYOUT_DOCK_SAME | LAYOUT_SIDE_TOP | LAYOUT_FILL_X | FRAME_RAISED);
+    new FXToolBarGrip(toolbar, toolbar, FXMenuBar::ID_TOOLBARGRIP, TOOLBARGRIP_DOUBLE);
+
+    FXVerticalFrame *frame = new FXVerticalFrame(this, LAYOUT_SIDE_TOP | LAYOUT_FILL_X | LAYOUT_FILL_Y, 0, 0, 0, 0, 0,
+                                                 0, 0, 0, 4, 4);
+
+    FXMDIClient *mainframe = new FXMDIClient(frame, LAYOUT_FILL_X | LAYOUT_FILL_Y);
+    FXMDIMenu* mdimenu=new FXMDIMenu(this,mainframe);
+    new FXMDIWindowButton(menubar, mdimenu, mainframe, FXMDIClient::ID_MDI_MENUWINDOW, LAYOUT_LEFT | LAYOUT_CENTER_Y);
+    new FXMDIDeleteButton(menubar, mainframe, FXMDIClient::ID_MDI_MENUCLOSE,
+                          FRAME_RAISED | LAYOUT_RIGHT | LAYOUT_CENTER_Y);
+    new FXMDIRestoreButton(menubar, mainframe, FXMDIClient::ID_MDI_MENURESTORE,
+                           FRAME_RAISED | LAYOUT_RIGHT | LAYOUT_CENTER_Y);
+    new FXMDIMinimizeButton(menubar, mainframe, FXMDIClient::ID_MDI_MENUMINIMIZE,
+                            FRAME_RAISED | LAYOUT_RIGHT | LAYOUT_CENTER_Y);
+
+    FXMDIChild *childframe = new FXMDIChild(mainframe, "Penis");
+    childframe->setFocus();
+
+    mainframe->setActiveChild(childframe);
+
+    statusbar = new FXExStatusBar(frame);
+    statusbar->setStatusBarLabel("Initialized...", 0);
 }
 
 Editor::~Editor() {
@@ -76,48 +96,25 @@ void Editor::create() {
 }
 
 void Editor::createMenuBar() {
-    menubar_ = new FXMenuBar(this, FRAME_RAISED|LAYOUT_SIDE_TOP|LAYOUT_FILL_X);
-}
+    menubar = new FXMenuBar(this, FRAME_RAISED | LAYOUT_SIDE_TOP | LAYOUT_FILL_X);
 
-void Editor::createStatusBar() {
-    PLImage image;
-    plLoadImage("", &image);
+    FXMenuPane *menufile = new FXMenuPane(this);
+    new FXMenuTitle(menubar, "&File", NULL, menufile);
 
-    statusbar_ = new FXHorizontalFrame(this, LAYOUT_BOTTOM|JUSTIFY_LEFT|LAYOUT_FILL_X|FRAME_RAISED, 0, 0, 0, 0, 2, 2, 2, 2);
-    FXHorizontalFrame *hframea = new FXHorizontalFrame(statusbar_, LAYOUT_LEFT|JUSTIFY_LEFT|LAYOUT_FILL_X|FRAME_SUNKEN,
-                                                      0, 0, 0, 0, 2, 2, 2, 2);
-    FXHorizontalFrame *hframeb = new FXHorizontalFrame(statusbar_, LAYOUT_LEFT|JUSTIFY_LEFT|LAYOUT_FILL_X|FRAME_SUNKEN,
-                                                      0, 0, 0, 0, 2, 2, 2, 2);
-    FXHorizontalFrame *hframec = new FXHorizontalFrame(statusbar_, LAYOUT_LEFT|JUSTIFY_LEFT|LAYOUT_FILL_X|FRAME_SUNKEN,
-                                                      0, 0, 0, 0, 2, 2, 2, 2);
-    statusbar_label0_ = new FXLabel(hframea, "This is slot a", 0, LAYOUT_LEFT|JUSTIFY_LEFT, 0, 0, 0, 0, 2, 2, 2, 2);
-    statusbar_label1_ = new FXLabel(hframeb, "This is slot b", 0, LAYOUT_LEFT|JUSTIFY_LEFT, 0, 0, 0, 0, 2, 2, 2, 2);
-    new FXBMPIcon(getApp(), image.data[0]);
-}
-
-void Editor::setStatusBarLabel(const char *text, int slot) {
-    switch(slot) {
-        case 0: {
-            statusbar_label0_->setText(text);
-            break;
-        }
-        case 1: {
-            statusbar_label1_->setText(text);
-            break;
-        }
-    }
+    FXMenuPane *menuhelp = new FXMenuPane(this);
+    new FXMenuTitle(menubar, "&Help\tF1", NULL, menuhelp);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////
 
-int main(int argc,char *argv[]) {
-    plInitialize(PL_SUBSYSTEM_GRAPHICS|PL_SUBSYSTEM_IMAGE|PL_SUBSYSTEM_LOG);
+int main(int argc, char *argv[]) {
+    plInitialize(PL_SUBSYSTEM_GRAPHICS | PL_SUBSYSTEM_IMAGE | PL_SUBSYSTEM_LOG);
 
     plClearLog(EDITOR_LOG);
     //plWriteLog(LAUNCHER_LOG, "Launcher (Interface Version %i)\n", ENGINE_VERSION_INTERFACE);
 
     // Initialize.
-    if (!engine::Initialize(argc, argv))	{
+    if (!engine::Initialize(argc, argv)) {
         plWriteLog(EDITOR_LOG, "Engine failed to initialize, check engine log!\n");
         plMessageBox(EDITOR_TITLE, "Failed to initialize engine!");
         return -1;

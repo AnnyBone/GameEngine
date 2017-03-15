@@ -31,9 +31,12 @@ For more information, please refer to <http://unlicense.org>
 #include <fox-1.6/fx3d.h>
 
 #include "platform_log.h"
+#include "platform_image.h"
 #include "platform_window.h"
 
 #include "shared_engine.h"
 
-#define EDITOR_TITLE	"XEdit"
+#include "widgets/FXExStatusBar.h"
+
+#define EDITOR_TITLE	"Xenon Editor"
 #define EDITOR_LOG		"editor"

@@ -27,7 +27,10 @@ For more information, please refer to <http://unlicense.org>
 
 project(EDITOR)
 
-file(GLOB EDITOR_SOURCE_FILES *.cpp *.c)
+file(GLOB EDITOR_SOURCE_FILES
+        *.cpp *.c *.h
+        widgets/*
+        )
 
 add_executable(EDITOR ${EDITOR_SOURCE_FILES})
 
