@@ -25,18 +25,33 @@ OTHER DEALINGS IN THE SOFTWARE.
 For more information, please refer to <http://unlicense.org>
 */
 
-#pragma once
+#include "engine.h"
+#include "video.h"
 
-PL_INLINE static unsigned int Engine_GetBuildNumber(void) {
-    static unsigned int buildnum = 0;
-    if (buildnum == 0) {
-        buildnum = (PLuint32) - floor(
-                difftime(
-                        plStringToTime("Jun 1 2011"),
-                        plStringToTime(__DATE__)) / (60 * 60 * 24)
-        );
+#include <SDL2/SDL.h>
+
+namespace xenon {
+    namespace video {
+
+        SDL_DisplayMode sdl_displaymode;
+
+        void Initialize() {
+            if(SDL_VideoInit(NULL) < 0) {
+                System_Error("Failed to initialize SDL video!\n%s\n", SDL_GetError());
+            }
+
+            if(SDL_GetCurrentDisplayMode(0, &sdl_displaymode)) {
+                System_Error("Failed to get current display information!\n%s\n", SDL_GetError());
+            }
+
+            SDL_DisableScreenSaver();
+        }
+
+        void Shutdown() {
+            SDL_EnableScreenSaver();
+
+            SDL_QuitSubSystem(SDL_INIT_VIDEO);
+        }
+
     }
-    return buildnum;
 }
-
-#define ENGINE_VERSION_BUILD Engine_GetBuildNumber()

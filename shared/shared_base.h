@@ -27,6 +27,9 @@ For more information, please refer to <http://unlicense.org>
 
 #pragma once
 
+#include "platform_log.h"
+#include "platform_window.h"
+
 /*	Shared Base Headers	*/
 
 #include "shared_math.h"

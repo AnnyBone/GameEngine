@@ -27,38 +27,29 @@ For more information, please refer to <http://unlicense.org>
 
 #include "engine.h"
 
-#include "engine_system.h"
+#include "engine_build.h"
 
-using namespace xenon;
-
-bool engine::Initialize(int argc, char **argv) {
-
+bool Engine_Initialize(int argc, char **argv) {
     return true;
 }
 
-void engine::Shutdown() {}
-
-void engine::Loop() {
+void Engine_Loop(void) {
     static double time, newtime, oldtime = 0;
 
-    newtime = System_DoubleTime();
+    newtime = System_GetDoubleTime();
     time = newtime - oldtime;
 
     oldtime = newtime;
 }
 
-// Version Information
+void Engine_Shutdown(void) {
 
-#include "engine_build.h"
+}
 
-uint32_t engine::GetVersion() {
+unsigned int Engine_GetVersion(void) {
     return ENGINE_VERSION_BUILD;
 }
 
-const char *engine::GetVersionString() {
-    return std::to_string(ENGINE_VERSION_BUILD).c_str();
-}
-
-int32_t engine::GetInterfaceVersion() {
+unsigned int Engine_GetInterfaceVersion(void) {
     return ENGINE_VERSION_INTERFACE;
 }

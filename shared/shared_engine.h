@@ -1,119 +1,62 @@
 /*
-Copyright (C) 2011-2016 OldTimes Software
+This is free and unencumbered software released into the public domain.
 
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
+Anyone is free to copy, modify, publish, use, compile, sell, or
+distribute this software, either in source code form or as a compiled
+binary, for any purpose, commercial or non-commercial, and by any
+means.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+In jurisdictions that recognize copyright laws, the author or authors
+of this software dedicate any and all copyright interest in the
+software to the public domain. We make this dedication for the benefit
+of the public at large and to the detriment of our heirs and
+successors. We intend this dedication to be an overt act of
+relinquishment in perpetuity of all present and future rights to this
+software under copyright law.
 
-See the GNU General Public License for more details.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+OTHER DEALINGS IN THE SOFTWARE.
 
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+For more information, please refer to <http://unlicense.org>
 */
 
 #pragma once
 
-typedef struct Material Material;
-typedef struct model_s model_t;
-typedef struct DynamicLight_s DynamicLight_t;
-typedef struct ClientEntity_s ClientEntity_t;
-typedef struct ConsoleVariable_s ConsoleVariable_t;
-
 // Functions exported from the engine.
 typedef struct EngineExport {
-    char *(*GetBasePath)();        // Returns the currently active game path.
-    char *(*GetMaterialPath)();    // Returns the set material path.
-    //char*(*GetModelPath)();	// Returns the set model path.
 
-    void (*SetViewportSize)(unsigned int width, unsigned int height);
-
-    Material *(*LoadMaterial)(const char *cPath);
-
-    void (*UnloadMaterial)(Material *material, bool force);
-
-    model_t *(*LoadModel)(const char *path);
-
-    // Client...
-
-    double (*GetClientTime)();
-
-    ClientEntity_t *(*CreateClientEntity)();    // Creates a "temp" client entity.
-
-    DynamicLight_t *(*CreateDynamicLight)(int Key);
-
-    void (*ClientDisconnect)();
-
-    // Server...
-
-    void (*ServerShutdown)(bool bCrash);
-
-    // Console...
-
-    void (*InsertConsoleCommand)(
-            const char *cCommand);                                        // Sends the given command to the console.
-    void (*RegisterConsoleVariable)(ConsoleVariable_t *cvVariable,
-                                    void(*Function)(void));    // Register a new console variable.
-    void (*SetConsoleVariable)(const char *cVariableName,
-                               char *cValue);                        // Set the value of an existing console variable.
-    void (*ResetConsoleVariable)(
-            const char *cVariableName);                                    // Resets the value of a console variable.
-    void (*Print)(const char *msg,
-                  ...);                                                        // Prints a message to the console.
-    void (*PrintDev)(const char *msg,
-                     ...);                                                    // Prints a developer message to the console.
-
-    float (*GetConsoleVariableValue)(const char *var_name);
-
-    bool (*GetConsoleVariableBoolValue)(const char *var_name);
 } EngineExport;
 
-/*	Functions imported by the engine.
-*/
+// Functions imported by the engine.
 typedef struct EngineImport {
     int version;
 
-    void (*PrintMessage)(char *text);
-
-    void (*PrintWarning)(char *text);
-
-    void (*PrintError)(char *text);
+    void (*PrintMessage)(const char *text);
+    void (*PrintWarning)(const char *text);
+    void (*PrintError)(const char *text);
 } EngineImport;
 
 /////////////////////////////////////////////////////////////////////////////////
 
-#define ENGINE_MODULE                "engine"
+#define ENGINE_MODULE               "engine"
 #define ENGINE_VERSION_INTERFACE    (sizeof(EngineImport) + sizeof(EngineExport))
 
 #if defined(ENGINE_INTERNAL)
-#	define ENGINE_FUNCTION PL_EXPORT
+#	define ENGINE_EXPORT PL_EXPORT
 #else
-#	define ENGINE_FUNCTION
+#	define ENGINE_EXPORT
 #endif
 
-#ifdef __cplusplus
+ENGINE_EXPORT bool Engine_Initialize(int argc, char **argv);
 
-namespace xenon {
-    namespace engine {
-        ENGINE_FUNCTION bool Initialize(int argc, char **argv);
+ENGINE_EXPORT void Engine_Loop(void);
 
-        ENGINE_FUNCTION void Shutdown();
+ENGINE_EXPORT unsigned int Engine_GetVersion(void);
+ENGINE_EXPORT unsigned int Engine_GetInterfaceVersion(void);
 
-        ENGINE_FUNCTION void Loop();
-
-        ENGINE_FUNCTION bool IsRunning();
-
-        ENGINE_FUNCTION uint32_t GetVersion();
-
-        ENGINE_FUNCTION const char *GetVersionString();
-
-        ENGINE_FUNCTION int32_t GetInterfaceVersion();
-    }
-}
-
-#endif
+ENGINE_EXPORT void Engine_Shutdown(void);

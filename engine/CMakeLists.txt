@@ -28,9 +28,9 @@ For more information, please refer to <http://unlicense.org>
 project(engine)
 
 file(GLOB ENGINE_SOURCE_FILES
-        *.cpp *.c
-        client/*.cpp client/*.c
-        ../shared/SharedFormats.c)
+        *.cpp *.c *.h
+        client/*.cpp client/*.c client/*.h
+        )
 
 add_library(engine SHARED ${ENGINE_SOURCE_FILES})
 
