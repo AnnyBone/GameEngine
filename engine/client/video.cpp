@@ -313,12 +313,15 @@ void Video_DrawObject(PLVertex *vobject, PLPrimitive primitive,
 
 // Main rendering loop.
 void Video_Frame(void) {
-#if 1
     if(g_state.embedded || !g_video.initialized) {
         return;
     }
 
     g_video.framecount++;
+    if(g_video.framecount == ((unsigned int) -1)) {
+        g_video.framecount = 0;
+    }
+
     r_framecount++;
 
     if (cv_video_finish.bValue) {
@@ -330,63 +333,14 @@ void Video_Frame(void) {
     if(!g_video.skip_update) {
         Window_Swap();
     }
-#else
-    if (g_state.embedded || !Video.initialized)
-        return;
-
-    // Don't let us exceed a limited count.
-    Video.framecount++;
-    if (Video.framecount == ((unsigned int) -1))
-        Video.framecount = 0;
-
-    r_framecount++;
-
-    double time1 = 0;
-    if (r_speeds.value) {
-        plFinish();
-
-        time1 = System_DoubleTime();
-
-        //johnfitz -- rendering statistics
-        rs_brushpolys = rs_aliaspolys = rs_skypolys = rs_particles = rs_fogpolys =
-        rs_dynamiclightmaps = rs_aliaspasses = rs_skypasses = rs_brushpasses = 0;
-    } else if (cv_video_finish.bValue)
-        plFinish();
-
-    video_viewport->Draw();
-
-    //johnfitz -- modified r_speeds output
-    double time2 = System_DoubleTime();
-    if (r_speeds.value == 2)
-        Con_Printf("%3i ms  %4i/%4i wpoly %4i/%4i epoly %3i lmap %4i/%4i sky %1.1f mtex\n",
-                   (int) ((time2 - time1) * 1000),
-                   rs_brushpolys,
-                   rs_brushpasses,
-                   rs_aliaspolys,
-                   rs_aliaspasses,
-                   rs_dynamiclightmaps,
-                   rs_skypolys,
-                   rs_skypasses,
-                   TexMgr_FrameUsage());
-    else if (r_speeds.value)
-        Con_Printf("%3i ms  %4i wpoly %4i epoly %3i lmap\n",
-                   (int) ((time2 - time1) * 1000),
-                   rs_brushpolys,
-                   rs_aliaspolys,
-                   rs_dynamiclightmaps);
-    //johnfitz
-
-    if (!Video.skip_update)
-        Window_Swap();
-#endif
 }
 
-/*	Shuts down the video sub-system.
-*/
+// Shuts down the video sub-system.
 void Video_Shutdown(void) {
     // Check that the video sub-system is actually initialised.
-    if (!g_video.initialized)
+    if (!g_video.initialized) {
         return;
+    }
 
     // Let us know that we're shutting down the video sub-system.
     Con_Printf("Shutting down video...\n");

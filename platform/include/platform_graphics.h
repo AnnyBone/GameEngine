@@ -62,21 +62,6 @@ typedef enum PLDataFormat
 #endif
 } PLDataFormat;
 
-typedef enum PLBufferMask
-{
-#if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
-	VL_MASK_COLOUR		= GL_COLOR_BUFFER_BIT,
-	VL_MASK_DEPTH		= GL_DEPTH_BUFFER_BIT,
-	VL_MASK_ACCUM		= GL_ACCUM_BUFFER_BIT,
-	VL_MASK_STENCIL		= GL_STENCIL_BUFFER_BIT,
-#else
-	VL_MASK_COLOUR		= (1 << 0),
-	VL_MASK_DEPTH		= (1 << 1),
-	VL_MASK_ACCUM		= (1 << 2),
-	VL_MASK_STENCIL		= (1 << 3),
-#endif
-} PLBufferMask;
-
 typedef enum PLColourFormat
 {
 #if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
@@ -160,12 +145,8 @@ typedef enum PLBlend
 
 typedef enum PLGraphicsCapability
 {
-	VL_CAPABILITY_FOG				= (1 << 0),	// Fog.
-	VL_CAPABILITY_BLEND				= (1 << 2), // Blending.
 	VL_CAPABILITY_TEXTURE_2D		= (1 << 3),	// Enables/disables textures.
 	VL_CAPABILITY_DEPTH_TEST		= (1 << 6),	// Depth-testing.
-	VL_CAPABILITY_STENCIL_TEST		= (1 << 7),	// Stencil-testing.
-	VL_CAPABILITY_SCISSOR_TEST		= (1 << 10), // Scissor test for buffer clear.
 
 	// Texture Generation
 	VL_CAPABILITY_GENERATEMIPMAP	= (1 << 20),
@@ -376,8 +357,6 @@ PL_EXTERN void plSetClearColour3f(PLfloat r, PLfloat g, PLfloat b);
 PL_EXTERN void plSetClearColour4f(PLfloat r, PLfloat g, PLfloat b, PLfloat a);
 PL_EXTERN void plSetClearColour4fv(PLColour rgba);
 
-PL_EXTERN void plClearBuffers(PLuint buffers);
-
 PL_EXTERN_C_END
 
 //-----------------
@@ -467,12 +446,7 @@ typedef struct PLLight
 
 PL_EXTERN_C
 
-PL_EXTERN void plViewport(PLint x, PLint y, PLuint width, PLuint height);
-PL_EXTERN void plScissor(PLint x, PLint y, PLuint width, PLuint height);
-PL_EXTERN void plFinish(void);
-
 // Initialization
 PL_EXTERN PLresult plInitGraphics(void);
-PL_EXTERN void plShutdownGraphics(void);
 
 PL_EXTERN_C_END

@@ -55,14 +55,26 @@ void draw::SetDefaultState() {
     glDepthFunc(GL_LEQUAL);
     glClearStencil(1);
 
-    plEnableGraphicsStates(VL_CAPABILITY_SCISSOR_TEST);
+    // Overbrights.
+    plSetTextureUnit(VIDEO_TEXTURE_LIGHT);
+    plSetTextureEnvironmentMode(PL_TEXTUREMODE_COMBINE);
+    glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
+    glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_PREVIOUS);
+    glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_TEXTURE);
+    glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 4);
+
+    plSetTextureUnit(0);
+    plSetTextureEnvironmentMode(PL_TEXTUREMODE_MODULATE);
+
+    glEnable(GL_SCISSOR_TEST);
 }
 
 void draw::ClearBuffers() {
-    if (!cv_video_clearbuffers.bValue)
+    if (!cv_video_clearbuffers.bValue) {
         return;
+    }
 
-    plClearBuffers(VL_MASK_DEPTH | VL_MASK_COLOUR | VL_MASK_STENCIL);
+    glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 }
 
 void draw::DepthBuffer() {
@@ -393,9 +405,9 @@ void draw::MaterialSurface(Material_t *material, int x, int y, unsigned int w, u
     Video_ObjectVertex(&vertices[3], x, y + h, 0);
 
     // Throw it off to the rendering pipeline.
-    Material_Draw(material, NULL, VL_PRIMITIVE_IGNORE, 0, false);
+    Material_Draw(material, vertices, VL_PRIMITIVE_TRIANGLE_FAN, 4, false);
     Video_DrawFill(vertices, material, material->current_skin);
-    Material_Draw(material, NULL, VL_PRIMITIVE_IGNORE, 0, true);
+    Material_Draw(material, vertices, VL_PRIMITIVE_TRIANGLE_FAN, 4, true);
 
     glEnable(GL_DEPTH_TEST);
 }
@@ -487,7 +499,7 @@ void draw::String(int x, int y, const char *msg) {
     if (y <= -8)
         return;
 
-    plDisableGraphicsStates(VL_CAPABILITY_DEPTH_TEST);
+    glDisable(GL_DEPTH_TEST);
 
     Material_Draw(g_mGlobalConChars, NULL, VL_PRIMITIVE_IGNORE, 0, false);
 
@@ -499,7 +511,7 @@ void draw::String(int x, int y, const char *msg) {
 
     Material_Draw(g_mGlobalConChars, NULL, VL_PRIMITIVE_IGNORE, 0, true);
 
-    plEnableGraphicsStates(VL_CAPABILITY_DEPTH_TEST);
+    glEnable(GL_DEPTH_TEST);
 }
 
 // Draws a simple string of text on the screen.
@@ -534,7 +546,7 @@ void draw::GradientBackground(PLColour top, PLColour bottom) {
     glPopMatrix();
 #endif
 
-    plViewport(0, 0, viewport->GetWidth(), viewport->GetHeight());
+    glViewport(0, 0, viewport->GetWidth(), viewport->GetHeight());
 }
 
 void draw::Line(plVector3f_t start, plVector3f_t end) {
@@ -569,7 +581,7 @@ void draw::CoordinateAxes(plVector3f_t position) {
 }
 
 void draw::Grid(plVector3f_t position, PLuint grid_size) {
-    plEnableGraphicsStates(VL_CAPABILITY_BLEND);
+    glEnable(GL_BLEND);
     plDisableGraphicsStates(VL_CAPABILITY_TEXTURE_2D);
 
     plSetBlendMode(PL_BLEND_DEFAULT);
@@ -624,7 +636,7 @@ void draw::Grid(plVector3f_t position, PLuint grid_size) {
 
     glPopMatrix();
 
-    plDisableGraphicsStates(VL_CAPABILITY_BLEND);
+    glDisable(GL_BLEND);
     plEnableGraphicsStates(VL_CAPABILITY_TEXTURE_2D);
 }
 
@@ -758,7 +770,7 @@ void Draw_BeginDisc(void) {
     glPopMatrix();
     glMatrixMode(GL_MODELVIEW);
     glPopMatrix();
-    plViewport(iViewport[0], iViewport[1], (PLuint) iViewport[2], (PLuint) iViewport[3]);
+    glViewport(iViewport[0], iViewport[1], (PLuint) iViewport[2], (PLuint) iViewport[3]);
     //johnfitz
 #endif
 }
@@ -782,7 +794,7 @@ void GL_SetCanvas(VideoCanvasType_t newcanvas) {
     switch (newcanvas) {
         case CANVAS_DEFAULT:
             glOrtho(0, viewport->GetWidth(), viewport->GetHeight(), 0, -99999, 99999);
-            plViewport(
+            glViewport(
                     viewport->GetPosition()[0],
                     viewport->GetPosition()[1],
                     viewport->GetWidth(),
@@ -791,7 +803,7 @@ void GL_SetCanvas(VideoCanvasType_t newcanvas) {
         case CANVAS_CONSOLE:
             lines = vid.conheight - ((PLint) scr_con_current * vid.conheight / viewport->GetHeight());
             glOrtho(0, vid.conwidth, vid.conheight + lines, lines, -99999, 99999);
-            plViewport(
+            glViewport(
                     viewport->GetPosition()[0],
                     viewport->GetPosition()[1],
                     viewport->GetWidth(),
@@ -801,7 +813,7 @@ void GL_SetCanvas(VideoCanvasType_t newcanvas) {
             //s = std::fminf((float)viewport->GetWidth() / 640.0f, (float)viewport->GetHeight() / 480.0f);
             //s = plClamp(1.0f, scr_menuscale.value, s);
             glOrtho(0, 640, 480, 0, -99999, 99999);
-            plViewport(
+            glViewport(
                     viewport->GetPosition()[0],
                     viewport->GetPosition()[1],
                     viewport->GetWidth(),
@@ -810,7 +822,7 @@ void GL_SetCanvas(VideoCanvasType_t newcanvas) {
         case CANVAS_SBAR:
             s = plClamp(1.0f, scr_sbarscale.value, (PLfloat) viewport->GetWidth() / 320.0f);
             glOrtho(0, 320, 48, 0, -99999, 99999);
-            plViewport(
+            glViewport(
                     viewport->GetPosition()[0] + (viewport->GetWidth() - 320 * (PLint) s) / 2,
                     viewport->GetPosition()[1],
                     320 * (PLuint) s,
@@ -818,7 +830,7 @@ void GL_SetCanvas(VideoCanvasType_t newcanvas) {
             break;
         case CANVAS_WARPIMAGE:
             glOrtho(0, 128, 0, 128, -99999, 99999);
-            plViewport(
+            glViewport(
                     viewport->GetPosition()[0],
                     viewport->GetPosition()[1] + viewport->GetHeight() - gl_warpimagesize,
                     (PLuint) gl_warpimagesize,
@@ -828,7 +840,7 @@ void GL_SetCanvas(VideoCanvasType_t newcanvas) {
             s = plClamp(1.0f, scr_crosshairscale.value, 10.0f);
             glOrtho(viewport->GetWidth() / -2 / s, viewport->GetWidth() / 2 / s, viewport->GetHeight() / 2 / s,
                     viewport->GetHeight() / -2 / s, -99999, 99999);
-            plViewport(
+            glViewport(
                     viewport->GetPosition()[0],
                     viewport->GetHeight() - viewport->GetPosition()[1] - viewport->GetHeight(),
                     viewport->GetWidth() & ~1,
@@ -837,7 +849,7 @@ void GL_SetCanvas(VideoCanvasType_t newcanvas) {
         case CANVAS_BOTTOMLEFT: //used by devstats
             s = (float) viewport->GetWidth() / vid.conwidth; //use console scale
             glOrtho(0, 320, 200, 0, -99999, 99999);
-            plViewport(
+            glViewport(
                     viewport->GetPosition()[0],
                     viewport->GetPosition()[1],
                     320 * (PLuint) s,
@@ -846,7 +858,7 @@ void GL_SetCanvas(VideoCanvasType_t newcanvas) {
         case CANVAS_BOTTOMRIGHT: //used by fps/clock
             s = (float) viewport->GetWidth() / vid.conwidth; //use console scale
             glOrtho(0, 320, 200, 0, -99999, 99999);
-            plViewport(
+            glViewport(
                     viewport->GetPosition()[0] + viewport->GetWidth() - 320 * (PLint) s,
                     viewport->GetPosition()[1],
                     320 * (PLuint) s,
@@ -855,7 +867,7 @@ void GL_SetCanvas(VideoCanvasType_t newcanvas) {
         case CANVAS_TOPRIGHT: //used by disc
             s = 1;
             glOrtho(0, 320, 200, 0, -99999, 99999);
-            plViewport(
+            glViewport(
                     viewport->GetPosition()[0] + viewport->GetWidth() - 320 * (PLint) s,
                     viewport->GetPosition()[1] + viewport->GetHeight() - 200 * (PLint) s,
                     320 * (PLuint) s,

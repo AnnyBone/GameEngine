@@ -92,7 +92,12 @@ void menu::DrawMouse() {
 }
 
 void menu::Draw(CoreViewport *viewport) {
-    if (!cv_menushow.bValue || !viewport) return;
+    if (!cv_menushow.bValue || !viewport) {
+        return;
+    }
+
+    menu::width = viewport->GetWidth();
+    menu::height = viewport->GetHeight();
 
     Engine.Client_SetMenuCanvas(CANVAS_DEFAULT);
 

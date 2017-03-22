@@ -100,7 +100,7 @@ void Viewport::Draw() {
 
     draw::ClearBuffers();
 
-#if 1
+#if 0
     if (_camera && !con_forcedup) {
         // Let the camera manager know we're drawing from this
         // camera.

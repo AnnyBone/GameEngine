@@ -642,7 +642,9 @@ MaterialTextureEnvironmentModeType_t material_textureenvmode[] =
         };
 
 void _Material_SetTextureEnvironmentMode(Material_t *material, MaterialContext_t context, char *arg) {
-    if (context != MATERIAL_CONTEXT_TEXTURE) return;
+    if (context != MATERIAL_CONTEXT_TEXTURE) {
+        return;
+    }
 
     MaterialSkin_t *sCurrentSkin = Material_GetSkin(material, material->num_skins);
     for (int i = 0; i < plArrayElements(material_textureenvmode); i++)
@@ -655,7 +657,9 @@ void _Material_SetTextureEnvironmentMode(Material_t *material, MaterialContext_t
 }
 
 void _Material_SetRotate(Material_t *material, MaterialContext_t context, char *arg) {
-    if (context != MATERIAL_CONTEXT_TEXTURE) return;
+    if (context != MATERIAL_CONTEXT_TEXTURE) {
+        return;
+    }
 
     // Get the current skin.
     MaterialSkin_t *msSkin = Material_GetSkin(material, material->num_skins);
@@ -667,16 +671,21 @@ void _Material_SetRotate(Material_t *material, MaterialContext_t context, char *
 }
 
 void _Material_SetAdditive(Material_t *material, MaterialContext_t context, char *arg) {
-    if (context != MATERIAL_CONTEXT_SKIN) return;
+    if (context != MATERIAL_CONTEXT_SKIN) {
+        return;
+    }
 
-    if (atoi(arg) == PL_TRUE)
+    if (atoi(arg) == PL_TRUE) {
         material->skin[material->num_skins].uiFlags |= MATERIAL_FLAG_ADDITIVE | MATERIAL_FLAG_BLEND;
-    else
+    } else {
         material->skin[material->num_skins].uiFlags &= ~MATERIAL_FLAG_ADDITIVE | MATERIAL_FLAG_BLEND;
+    }
 }
 
 void _Material_SetBlend(Material_t *material, MaterialContext_t context, char *arg) {
-    if (context != MATERIAL_CONTEXT_SKIN) return;
+    if (context != MATERIAL_CONTEXT_SKIN) {
+        return;
+    }
 
     if (atoi(arg) == PL_TRUE)
         material->skin[material->num_skins].uiFlags |= MATERIAL_FLAG_BLEND;
@@ -685,7 +694,9 @@ void _Material_SetBlend(Material_t *material, MaterialContext_t context, char *a
 }
 
 void _Material_SetAlphaTest(Material_t *material, MaterialContext_t context, char *arg) {
-    if (context != MATERIAL_CONTEXT_SKIN) return;
+    if (context != MATERIAL_CONTEXT_SKIN) {
+        return;
+    }
 
     if (atoi(arg) == PL_TRUE)
         material->skin[material->num_skins].uiFlags |= MATERIAL_FLAG_ALPHA;
@@ -694,12 +705,15 @@ void _Material_SetAlphaTest(Material_t *material, MaterialContext_t context, cha
 }
 
 void _Material_SetAlphaTrick(Material_t *material, MaterialContext_t context, char *arg) {
-    if (context != MATERIAL_CONTEXT_SKIN) return;
+    if (context != MATERIAL_CONTEXT_SKIN) {
+        return;
+    }
 
-    if (atoi(arg) == PL_TRUE)
+    if (atoi(arg) == PL_TRUE) {
         material->skin[material->num_skins].uiFlags |= MATERIAL_FLAG_ALPHATRICK;
-    else
+    } else {
         material->skin[material->num_skins].uiFlags &= ~MATERIAL_FLAG_ALPHATRICK;
+    }
 }
 
 // Universal Functions...
@@ -737,19 +751,23 @@ void _Material_SetFlags(Material_t *material, MaterialContext_t context, char *a
                 continue;
 
             switch (context) {
+
                 case MATERIAL_CONTEXT_GLOBAL:
                     if (material_flags[i].flags == MATERIAL_FLAG_ANIMATED)
                         material->animation_time = 0;
 
                     material->flags |= material_flags[i].flags;
                     break;
+
                 case MATERIAL_CONTEXT_SKIN:
                     material->skin[material->num_skins].uiFlags |= material_flags[i].flags;
                     break;
+
                 case MATERIAL_CONTEXT_TEXTURE:
                     material->skin[material->num_skins].texture
                     [material->skin[material->num_skins].num_textures].uiFlags |= material_flags[i].flags;
                     break;
+
                 default:
                     Con_Warning("Invalid context! (%s) (%s) (%i) (%i)\n", material->cName,
                                 material_flags[i].ccName, context, iScriptLine);
@@ -885,7 +903,7 @@ void Material_ParseFunction(Material_t *material)
 	Returns false on complete failure.
 */
 Material_t *Material_Load(const char *path) {
-    char path1[PLATFORM_MAX_PATH], material_name[64] = { 0 };
+    char path1[PLATFORM_MAX_PATH], material_name[64] = {0};
 
     // Ensure that the given material names are correct!
     if (path[0] == ' ')
@@ -979,7 +997,7 @@ Material_t *Material_Load(const char *path) {
             Material_CheckFunctions(material);
     }
 
-    MATERIAL_LOAD_ERROR:
+MATERIAL_LOAD_ERROR:
     free(data);
 
     return NULL;
@@ -995,9 +1013,7 @@ bool Material_Precache(const char *path) {
     return true;
 }
 
-/*
-	Rendering
-*/
+/*	Rendering   */
 
 plEXTERN_C_START
 
@@ -1048,9 +1064,13 @@ void Material_DrawObject(Material_t *material, PLDraw *object, bool ispost) {
 // Typically called before an object is drawn.
 void Material_Draw(Material_t *material, PLVertex *ObjectVertex, PLPrimitive primitive, unsigned int size,
                    bool ispost) {
-    if (!material) return; // todo, handle this better... throw error?
-    else if ((material->override_wireframe && (r_showtris.iValue != 1) || !material->override_wireframe) &&
-             (r_lightmap_cheatsafe || r_showtris.bValue)) {
+
+    if(!material) {
+        return;
+    }
+
+    if ((material->override_wireframe && (r_showtris.iValue != 1) || !material->override_wireframe) &&
+               (r_lightmap_cheatsafe || r_showtris.bValue)) {
         if (!ispost) {
             // Select the first TMU.
             plSetTextureUnit(0);
@@ -1102,8 +1122,7 @@ void Material_Draw(Material_t *material, PLVertex *ObjectVertex, PLPrimitive pri
 
         // Handle any generic blending.
         if ((current_skin->uiFlags & MATERIAL_FLAG_BLEND) || (material->fAlpha < 1)) {
-            vlDepthMask(false);
-
+            glDepthMask(GL_FALSE);
             glEnable(GL_BLEND);
 
             if (current_skin->uiFlags & MATERIAL_FLAG_ADDITIVE) {
@@ -1167,9 +1186,7 @@ void Material_Draw(Material_t *material, PLVertex *ObjectVertex, PLPrimitive pri
                 }
             }
 
-            if(texture->env_mode != PL_TEXTUREMODE_MODULATE) {
-                plSetTextureEnvironmentMode(texture->env_mode);
-            }
+            plSetTextureEnvironmentMode(texture->env_mode);
         }
 
         switch (texture->mttType) {
@@ -1177,17 +1194,15 @@ void Material_Draw(Material_t *material, PLVertex *ObjectVertex, PLPrimitive pri
             case MATERIAL_TEXTURE_LIGHTMAP:
                 if (!ispost) {
                     plSetTextureEnvironmentMode(PL_TEXTUREMODE_COMBINE);
-#ifdef VL_MODE_OPENGL
+
                     glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
                     glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_PREVIOUS);
                     glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_TEXTURE);
                     glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 4);
-#endif
                 }
-#ifdef VL_MODE_OPENGL
-                else
+                else {
                     glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 1);
-#endif
+                }
                 break;
 
             case MATERIAL_TEXTURE_DETAIL:
@@ -1196,15 +1211,12 @@ void Material_Draw(Material_t *material, PLVertex *ObjectVertex, PLPrimitive pri
                         plDisableGraphicsStates(VL_CAPABILITY_TEXTURE_2D);
                         break;
                     }
-#ifdef VL_MODE_OPENGL
+
                     glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
                     glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 2);
-#endif
-                }
-#ifdef VL_MODE_OPENGL
-                else
+                } else {
                     glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 1);
-#endif
+                }
                 break;
 
             case MATERIAL_TEXTURE_FULLBRIGHT:
@@ -1228,19 +1240,18 @@ void Material_Draw(Material_t *material, PLVertex *ObjectVertex, PLPrimitive pri
                 }
                 break;
 
-            default:break;
+            default:
+                break;
         }
 
         if (ispost) {
             // Reset any manipulation within the matrix.
             if (texture->matrixmod) {
-#ifdef VL_MODE_OPENGL
                 glMatrixMode(GL_TEXTURE);
                 glLoadIdentity();
                 glTranslatef(0, 0, 0);
                 glRotatef(0, 0, 0, 0);
                 glMatrixMode(GL_MODELVIEW);
-#endif
             }
 
             plSetTextureEnvironmentMode(PL_TEXTUREMODE_MODULATE);

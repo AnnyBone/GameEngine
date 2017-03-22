@@ -148,7 +148,7 @@ void R_DrawSequentialPoly(msurface_t *s) {
             alpha = plClamp(0.0, ENTALPHA_DECODE(currententity->alpha), 1.0f);
         if (alpha < 1.0f) {
             vlDepthMask(false);
-            plEnableGraphicsStates(VL_CAPABILITY_BLEND);
+            glEnable(GL_BLEND);
         }
 
         Material_Draw(mCurrent, 0, VL_PRIMITIVE_IGNORE, 0, false);
@@ -162,13 +162,13 @@ void R_DrawSequentialPoly(msurface_t *s) {
 
         if (alpha < 1.0f) {
             vlDepthMask(true);
-            plDisableGraphicsStates(VL_CAPABILITY_BLEND);
+            glDisable(GL_BLEND);
         }
     } else {
         if (!r_showtris.bValue) {
             if (alpha < 1) {
                 vlDepthMask(false);
-                plEnableGraphicsStates(VL_CAPABILITY_BLEND);
+                glEnable(GL_BLEND);
             }
 
             plSetTextureUnit(VIDEO_TEXTURE_LIGHT);
@@ -187,7 +187,7 @@ void R_DrawSequentialPoly(msurface_t *s) {
         if (!r_showtris.bValue) {
             if (alpha < 1) {
                 vlDepthMask(true);
-                plDisableGraphicsStates(VL_CAPABILITY_BLEND);
+                glDisable(GL_BLEND);
             }
 
             plSetTextureUnit(VIDEO_TEXTURE_LIGHT);

@@ -354,30 +354,40 @@ void Camera::Draw() {
 
     //Fog_EnableGFog();
  //   Sky_Draw();
-  //  World_Draw();
-  //  draw::Shadows();
+    World_Draw();
+    draw::Shadows();
     draw::Entities(false);
-  //  World_DrawWater();
-  //  draw::Entities(true);
+    World_DrawWater();
+    draw::Entities(true);
     // todo, particles
   //  if (g_spritemanager) g_spritemanager->Draw();
   //  Light_Draw();
     //Fog_DisableGFog();
-   // DrawViewEntity();
-   // draw::BoundingBoxes();
+
+    DrawViewEntity();
 
     if (cv_camera_drawfrustum.value) {
-        PLDraw *draw = vlCreateDraw(VL_PRIMITIVE_POINTS, 0, 0);
-        if (!draw) Sys_Error("Failed to create draw call for frustum!\n");
+        static PLDraw *draw = NULL;
+        if (!draw) {
+            draw = vlCreateDraw(VL_PRIMITIVE_POINTS, 0, 0);
+            if(!draw) {
+                Sys_Error("Failed to create draw object for frustum!\n");
+                return;
+            }
 
-        vlBeginDraw(draw);
-        //vlDrawVertex3f();
-        vlEndDraw(draw);
+            vlBeginDraw(draw);
+            //vlDrawVertex3f();
+            vlEndDraw(draw);
+        }
+
+        plDraw(draw);
     }
 
     if ((cl.maxclients <= 1) && !bIsDedicated) {
         Game->Server_Draw();
     }
+
+    draw::BoundingBoxes();
 
 #if 0
     //johnfitz -- cheat-protect some draw modes

@@ -232,8 +232,9 @@ void Sprite::Draw() {
     if (!camera)
         return;
 
-    if (colour[3] < 1.0f)
-        plEnableGraphicsStates(VL_CAPABILITY_BLEND);
+    if (colour[3] < 1.0f) {
+        glEnable(GL_BLEND);
+    }
 
     vlBeginDraw(draw);
     vlDrawVertex3f(-scale, scale, 0);
@@ -244,8 +245,9 @@ void Sprite::Draw() {
 
     plDraw(draw);
 
-    if (colour[3] < 1.0f)
-        plDisableGraphicsStates(VL_CAPABILITY_BLEND);
+    if (colour[3] < 1.0f) {
+        glDisable(GL_BLEND);
+    }
 
     if (cv_sprite_debugsize.bValue) {
         // We need the size relative to the current position.

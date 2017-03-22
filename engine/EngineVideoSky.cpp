@@ -594,7 +594,7 @@ void Sky_DrawSkyBox(void) {
 
             c = Fog_GetColor();
 
-            plEnableGraphicsStates(VL_CAPABILITY_BLEND);
+            glEnable(GL_BLEND);
             plDisableGraphicsStates(VL_CAPABILITY_TEXTURE_2D);
 
             glColor4f(c[0], c[1], c[2], plClamp(0, r_skyfog.value, 1.0f));
@@ -609,7 +609,7 @@ void Sky_DrawSkyBox(void) {
             glColor3f(1.0f, 1.0f, 1.0f);
 
             plEnableGraphicsStates(VL_CAPABILITY_TEXTURE_2D);
-            plDisableGraphicsStates(VL_CAPABILITY_BLEND);
+            glDisable(GL_BLEND);
 
             rs_skypasses++;
         }
@@ -678,7 +678,7 @@ void Sky_DrawFaceQuad(glpoly_t *p) {
 
     Video_SetTexture(gCloudTexture);
 
-    plEnableGraphicsStates(VL_CAPABILITY_BLEND);
+    glEnable(GL_BLEND);
     plSetBlendMode(VL_BLEND_ONE, VL_BLEND_ONE);
 
     glBegin(GL_QUADS);
@@ -716,7 +716,7 @@ void Sky_DrawFaceQuad(glpoly_t *p) {
         rs_skypasses++;
     }
 
-    plDisableGraphicsStates(VL_CAPABILITY_BLEND);
+    glDisable(GL_BLEND);
 #endif
 }
 
