@@ -25,17 +25,13 @@ OTHER DEALINGS IN THE SOFTWARE.
 For more information, please refer to <http://unlicense.org>
 ]]
 
-project(menu)
+project(kernel)
 
-file(GLOB MENU_SOURCE_FILES
-        *.cpp *.c
-        ${GAME_PROJECT}/*.cpp ${GAME_PROJECT}/*.h ${GAME_PROJECT}/*.h
-        )
+file(GLOB KERNEL_SOURCE_FILES *.cpp *.c *.h)
 
-add_library(menu MODULE ${MENU_SOURCE_FILES})
+add_library(kernel STATIC ${KERNEL_SOURCE_FILES})
 
-set_target_properties(menu PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/${GAME_PROJECT}/)
-set_target_properties(menu PROPERTIES PREFIX "")
+set_target_properties(kernel PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/kernel/lib/)
 
-target_include_directories(menu PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_SYSTEM_INCLUDE_PATH})
-target_link_libraries(menu platform dl)
+target_compile_options(kernel PUBLIC -fPIC)
+target_include_directories(kernel PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_SYSTEM_INCLUDE_PATH})

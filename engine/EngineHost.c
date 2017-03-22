@@ -649,7 +649,7 @@ void Host_Frame (double time)
 	if (timecount < 1000)
 		return;
 
-	m = timetotal*1000/timecount;
+	m = timetotal * 1000 / timecount;
 	timecount = 0;
 	timetotal = 0;
 	c = 0;

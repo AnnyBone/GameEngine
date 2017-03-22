@@ -1,17 +1,28 @@
 /*
-DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
-Version 2, December 2004
+This is free and unencumbered software released into the public domain.
 
-Copyright (C) 2011-2016 Mark E Sowden <markelswo@gmail.com>
+Anyone is free to copy, modify, publish, use, compile, sell, or
+distribute this software, either in source code form or as a compiled
+binary, for any purpose, commercial or non-commercial, and by any
+means.
 
-Everyone is permitted to copy and distribute verbatim or modified
-copies of this license document, and changing it is allowed as long
-as the name is changed.
+In jurisdictions that recognize copyright laws, the author or authors
+of this software dedicate any and all copyright interest in the
+software to the public domain. We make this dedication for the benefit
+of the public at large and to the detriment of our heirs and
+successors. We intend this dedication to be an overt act of
+relinquishment in perpetuity of all present and future rights to this
+software under copyright law.
 
-DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
-TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+OTHER DEALINGS IN THE SOFTWARE.
 
-0. You just DO WHAT THE FUCK YOU WANT TO.
+For more information, please refer to <http://unlicense.org>
 */
 
 #pragma once
@@ -35,12 +46,12 @@ typedef struct
 	bool preserve;	// Allow this to be deleted.
 
 	uint8_t	*data;
-} AudioSample_t;
+} AudioSample;
 
 typedef struct
 {
 	unsigned int id;
-} AudioEffect_t;
+} AudioEffect;
 
 typedef unsigned int AudioAuxiliaryEffect_t;
 typedef unsigned int AudioSource_t;
@@ -82,7 +93,7 @@ typedef enum
 	AUDIO_REVERB_DIZZY,
 	AUDIO_REVERB_PSYCHOTIC,
 	AUDIO_REVERB_CHAPEL
-} AudioEffectReverb_t;
+} AudioEffectReverb;
 
 typedef struct
 {
@@ -91,7 +102,7 @@ typedef struct
 	AudioAuxiliaryEffect_t	effect_slot;
 	AudioSource_t			source;
 
-	const AudioSample_t *cache;
+	const AudioSample *cache;
 
 	plVector3f_t current_position;	// Position of the sound.
 	plVector3f_t current_velocity;	// Speed of movement.
@@ -106,7 +117,7 @@ typedef struct
 	bool local;		// Only played locally.
 
 	bool preserve;
-} AudioSound_t;
+} AudioSound;
 
 #ifdef __cplusplus
 
@@ -118,35 +129,35 @@ namespace core
 		AudioManager();
 		~AudioManager();
 
-		void Frame();
+		void Simulate();
 
-		AudioSound_t *AddSound();
-		void DeleteSound(AudioSound_t *sound);
-		void PlaySound(const AudioSound_t *sound);
+		AudioSound *AddSound();
+		void DeleteSound(AudioSound *sound);
+		void PlaySound(const AudioSound *sound);
 		void PlaySound(const char *path);
-		void LoadSound(AudioSound_t *sound, std::string path);
-		void StopSound(const AudioSound_t *sound);
-		void PauseSound(const AudioSound_t *sound);
+		void LoadSound(AudioSound *sound, std::string path);
+		void StopSound(const AudioSound *sound);
+		void PauseSound(const AudioSound *sound);
 
-		void SetSoundPosition(AudioSound_t *sound, plVector3f_t position);
-		void SetSoundVelocity(AudioSound_t *sound, plVector3f_t velocity);
+		void SetSoundPosition(AudioSound *sound, plVector3f_t position);
+		void SetSoundVelocity(AudioSound *sound, plVector3f_t velocity);
 
-		AudioEffect_t *AddEffect();
-		void DeleteEffect(AudioEffect_t *effect);
-		void SetEffectReverb(const AudioEffect_t *effect, AudioEffectReverb_t mode);
+		AudioEffect *AddEffect();
+		void DeleteEffect(AudioEffect *effect);
+		void SetEffectReverb(const AudioEffect *effect, AudioEffectReverb mode);
 
 		void StopSounds();		// Stops all sounds from playing.
 		void ClearSounds();		// Clears all sounds.
 		void ListSounds();		// Lists all currently active sounds.
 
-		bool IsSoundPlaying(const AudioSound_t *sound);
-		bool IsSoundPaused(const AudioSound_t *sound);
+		bool IsSoundPlaying(const AudioSound *sound);
+		bool IsSoundPaused(const AudioSound *sound);
 
-		AudioSample_t *AddSample(std::string path);
-		void DeleteSample(AudioSample_t *sample, bool force);
-		AudioSample_t *GetSample(std::string path);
+		AudioSample *AddSample(std::string path);
+		void DeleteSample(AudioSample *sample, bool force);
+		AudioSample *GetSample(std::string path);
 		void PrecacheSample(const char *path, bool preserve);
-		void LoadSample(AudioSample_t *cache, const char *path);
+		void LoadSample(AudioSample *cache, const char *path);
 
 		void ClearSamples(bool force);	// Clears all loaded samples.
 	protected:
@@ -158,11 +169,11 @@ namespace core
 		};
 		AudioExtensions extensions;
 
-		AudioEffect_t *effect_global;
+		AudioEffect *effect_global;
 
-		std::vector<AudioSound_t*> sounds;
+		std::vector<AudioSound*> sounds;
 
-		std::unordered_map<std::string, AudioSample_t*> samples;
+		std::unordered_map<std::string, AudioSample*> samples;
 	};
 }
 

@@ -39,7 +39,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "shared_base.h"
 
-#include "XenonBuild.h"
+#include "build.h"
 
 #define MINIMUM_MEMORY	0x2000000	// 32MB
 
