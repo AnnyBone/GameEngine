@@ -26,7 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "EngineMenu.h"
 #include "EngineVideoParticle.h"
 #include "video_light.h"
-#include "client/video_camera.h"
+#include "client/camera.h"
 #include "client/effect_sprite.h"
 
 // we need to declare some mouse variables here, because the menu system

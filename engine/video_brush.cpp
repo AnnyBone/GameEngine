@@ -21,7 +21,7 @@
 #include "engine_base.h"
 
 #include "video.h"
-#include "client/video_camera.h"
+#include "client/camera.h"
 
 /*
 	Brush Model rendering.

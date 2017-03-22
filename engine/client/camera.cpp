@@ -1,6 +1,6 @@
 /*	
 Copyright (C) 1996-2001 Id Software, Inc.
-Copyright (C) 2011-2016 OldTimes Software
+Copyright (C) 2011-2017 OldTimes Software
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -242,11 +242,11 @@ extern "C" ClientEntity_t *CameraManager_GetViewEntity(EngineCamera *camera)
 /*	Camera	*/
 
 Camera::Camera() :
-	_viewport(nullptr),
-	_viewmodel(nullptr),
-	_parententity(nullptr),
+		_viewport(nullptr),
+		_viewmodel(nullptr),
+		_parententity(nullptr),
 
-	_height(0)
+		_height(0)
 {
 	plVectorClear(_position);
 	plVectorClear(_angles);
@@ -314,11 +314,6 @@ void Camera::SetupViewMatrix()
 	glRotatef(-_angles[1], 0, 0, 1);
 
 	glTranslatef(-_position[0], -_position[1], -_position[2]);
-
-#if 0
-	// todo, not needed?
-	glGetFloatv(GL_MODELVIEW_MATRIX, r_world_matrix);
-#endif
 #endif
 }
 
@@ -345,32 +340,33 @@ void Camera::DrawViewEntity()
 
 void Camera::Draw()
 {
-	//float fovxx = _fovx, fovyy = _fovy;
-	if (cl.worldmodel) 
+	SetupProjectionMatrix();
+	SetupViewMatrix();
+
+	if (cl.worldmodel)
 	{
 		// Current view leaf.
 		oldleaf = leaf;
 		leaf = Mod_PointInLeaf(_position, cl.worldmodel);
 
-		if (r_waterwarp.value) 
+		float fovxx = _fovx, fovyy = _fovy;
+		if (r_waterwarp.value)
 		{
 			int contents = Mod_PointInLeaf(_position, cl.worldmodel)->contents;
 			if (contents == BSP_CONTENTS_WATER || contents == BSP_CONTENTS_SLIME || contents == BSP_CONTENTS_LAVA)
 			{
-#if 0
 				//variance is a percentage of width, where width = 2 * tan(fov / 2) otherwise the effect is too dramatic at high FOV and too subtle at low FOV.  what a mess!
-				fovxx = atanf(tan(PL_DEG2RAD(_fovx) / 2) * (0.97 + sin(cl.time * 1.5) * 0.03)) * 2 / PL_PI_DIV180;
-				fovyy = atanf(tan(PL_DEG2RAD(_fovy) / 2) * (1.03 - sin(cl.time * 1.5) * 0.03)) * 2 / PL_PI_DIV180;
-#endif
+				fovxx = std::atan(std::tan(PL_DEG2RAD(_fovx) / 2) * (0.97f + std::sin((float)cl.time * 1.5f) * 0.03f)) * 2.0f / PL_PI_DIV180;
+				fovyy = std::atan(std::tan(PL_DEG2RAD(_fovy) / 2) * (1.03f - std::sin((float)cl.time * 1.5f) * 0.03f)) * 2.0f / PL_PI_DIV180;
 			}
 		}
-		
+
+		SetFrustum(fovxx, fovyy);
+
 		World_MarkSurfaces();
 		World_CullSurfaces();
 	}
-
-	SetupProjectionMatrix();
-	SetupViewMatrix();
+	else SetFrustum(_fovx, _fovy);
 
 	//Fog_SetupFrame();	// todo, really necessary to call this at the start of every draw call!?
 
@@ -392,6 +388,16 @@ void Camera::Draw()
 	//Fog_DisableGFog();
 	DrawViewEntity();
 	draw::BoundingBoxes();
+
+	if(cv_camera_drawfrustum.value)
+	{
+		PLDraw *draw = vlCreateDraw(VL_PRIMITIVE_POINTS, 0, 0);
+		if(!draw) Sys_Error("Failed to create draw call for frustum!\n");
+
+		vlBeginDraw(draw);
+		//vlDrawVertex3f();
+		vlEndDraw(draw);
+	}
 
 	if ((cl.maxclients <= 1) && !bIsDedicated)
 		Game->Server_Draw();
@@ -474,8 +480,8 @@ void Camera::SimulateViewEntity()
 	{
 		for (int i = 0; i < 3; i++)
 			_viewmodel->origin[i] +=
-			(_up[i] * bobamount[0] * 0.2f) +
-			(_right[i] * bobamount[1] * 0.3f);
+					(_up[i] * bobamount[0] * 0.2f) +
+					(_right[i] * bobamount[1] * 0.3f);
 
 		_viewmodel->origin[2] += bobamount[0];
 	}
@@ -589,13 +595,13 @@ void Camera::SimulateBob()
 	// Bob is proportional to velocity in the xy plane
 	// (don't count Z, or jumping messes it up)
 	bob[0] = sqrtf(
-		cl.velocity[0] * cl.velocity[0] +
-		cl.velocity[1] * cl.velocity[1]) *
-		cv_camera_bob.value;
+			cl.velocity[0] * cl.velocity[0] +
+			cl.velocity[1] * cl.velocity[1]) *
+			 cv_camera_bob.value;
 	bob[1] = sqrtf(
-		cl.velocity[0] * cl.velocity[0] +
-		cl.velocity[1] * cl.velocity[1]) *
-		cv_camera_sidecycle.value;
+			cl.velocity[0] * cl.velocity[0] +
+			cl.velocity[1] * cl.velocity[1]) *
+			 cv_camera_sidecycle.value;
 
 	for (int i = 0; i < 2; i++)
 	{
@@ -607,7 +613,7 @@ void Camera::SimulateBob()
 	}
 
 	_position[2] += bob[0];
-	
+
 	// Store the bob amount, so it can be used later.
 	bobamount[0] = bob[0];
 	bobamount[1] = bob[1];
@@ -664,14 +670,14 @@ void Camera::SimulatePunch()
 
 void Camera::Simulate()
 {
-	SimulateFrustum();
-	//SimulateBob();
+	//SimulateFrustum();
+	SimulateBob();
 	SimulateRoll();
 
 	// Add height (needs to be done after bob).
 	_position[2] += _height;
 
-	/*	
+	/*
 	Never let it sit exactly on a node line, because a water plane can
 	dissapear when viewed with the eye exactly on it.
 
@@ -679,17 +685,17 @@ void Camera::Simulate()
 	*/
 	plVectorAddf(_position, 1.0f / 32.0f, _position);
 
-#ifdef CAMERA_LEGACY
-	SimulateParentEntity();
-	SimulateViewEntity();
-#endif
-	SimulatePunch();
-
 	if (_angles[PL_PITCH] > cv_camera_maxpitch.value) _angles[PL_PITCH] = cv_camera_maxpitch.value;
 	else if (_angles[PL_PITCH] < cv_camera_minpitch.value) _angles[PL_PITCH] = cv_camera_minpitch.value;
 
 	if (_angles[PL_ROLL] > cv_camera_maxroll.value) _angles[PL_ROLL] = cv_camera_maxroll.value;
 	else if (_angles[PL_ROLL] < cv_camera_minroll.value) _angles[PL_ROLL] = cv_camera_minroll.value;
+
+#ifdef CAMERA_LEGACY
+	SimulateParentEntity();
+	SimulateViewEntity();
+#endif
+	SimulatePunch();
 
 	plAngleVectors(_angles, _forward, _right, _up);
 
@@ -714,7 +720,7 @@ void Camera::SetFOV(float fov)
 	// Clamp the FOV to ensure we don't
 	// get anything rediculous.
 	plClamp(10, fov, 180.0f);
-	
+
 	_fov = fov;
 	_fovx = _fov;
 
@@ -734,13 +740,13 @@ void Camera::SetFOV(float fov)
 
 int SignbitsForPlane(mplane_t *out);
 
-void Camera::SimulateFrustum()
+void Camera::SetFrustum(float fovx, float fovy)
 {
 	// Update the frustum.
-	plTurnVector(_frustum[0].normal, _forward, _right, _fovx / 2 - 90);	// Left plane
-	plTurnVector(_frustum[1].normal, _forward, _right, 90 - _fovx / 2);	// Right plane
-	plTurnVector(_frustum[2].normal, _forward, _up, 90 - _fovy / 2);		// Bottom plane
-	plTurnVector(_frustum[3].normal, _forward, _up, _fovy / 2 - 90);		// Top plane
+	plTurnVector(_frustum[0].normal, _forward, _right, fovx / 2 - 90);	// Left plane
+	plTurnVector(_frustum[1].normal, _forward, _right, 90 - fovx / 2);	// Right plane
+	plTurnVector(_frustum[2].normal, _forward, _up, 90 - fovy / 2);		// Bottom plane
+	plTurnVector(_frustum[3].normal, _forward, _up, fovy / 2 - 90);		// Top plane
 
 	for (int i = 0; i < 4; i++)
 	{
@@ -781,39 +787,39 @@ bool Camera::IsBoxInsideFrustum(plVector3f_t mins, plVector3f_t maxs)
 		mplane_t *p = _frustum + i;
 		switch (p->signbits)
 		{
-		default:
-		case 0:
-			if (p->normal[0] * maxs[0] + p->normal[1] * maxs[1] + p->normal[2] * maxs[2] > p->dist)
-				return true;
-			break;
-		case 1:
-			if (p->normal[0] * mins[0] + p->normal[1] * maxs[1] + p->normal[2] * maxs[2] > p->dist)
-				return true;
-			break;
-		case 2:
-			if (p->normal[0] * maxs[0] + p->normal[1] * mins[1] + p->normal[2] * maxs[2] > p->dist)
-				return true;
-			break;
-		case 3:
-			if (p->normal[0] * mins[0] + p->normal[1] * mins[1] + p->normal[2] * maxs[2] > p->dist)
-				return true;
-			break;
-		case 4:
-			if (p->normal[0] * maxs[0] + p->normal[1] * maxs[1] + p->normal[2] * mins[2] > p->dist)
-				return true;
-			break;
-		case 5:
-			if (p->normal[0] * mins[0] + p->normal[1] * maxs[1] + p->normal[2] * mins[2] > p->dist)
-				return true;
-			break;
-		case 6:
-			if (p->normal[0] * maxs[0] + p->normal[1] * mins[1] + p->normal[2] * mins[2] > p->dist)
-				return true;
-			break;
-		case 7:
-			if (p->normal[0] * mins[0] + p->normal[1] * mins[1] + p->normal[2] * mins[2] > p->dist)
-				return true;
-			break;
+			default:
+			case 0:
+				if (p->normal[0] * maxs[0] + p->normal[1] * maxs[1] + p->normal[2] * maxs[2] > p->dist)
+					return true;
+				break;
+			case 1:
+				if (p->normal[0] * mins[0] + p->normal[1] * maxs[1] + p->normal[2] * maxs[2] > p->dist)
+					return true;
+				break;
+			case 2:
+				if (p->normal[0] * maxs[0] + p->normal[1] * mins[1] + p->normal[2] * maxs[2] > p->dist)
+					return true;
+				break;
+			case 3:
+				if (p->normal[0] * mins[0] + p->normal[1] * mins[1] + p->normal[2] * maxs[2] > p->dist)
+					return true;
+				break;
+			case 4:
+				if (p->normal[0] * maxs[0] + p->normal[1] * maxs[1] + p->normal[2] * mins[2] > p->dist)
+					return true;
+				break;
+			case 5:
+				if (p->normal[0] * mins[0] + p->normal[1] * maxs[1] + p->normal[2] * mins[2] > p->dist)
+					return true;
+				break;
+			case 6:
+				if (p->normal[0] * maxs[0] + p->normal[1] * mins[1] + p->normal[2] * mins[2] > p->dist)
+					return true;
+				break;
+			case 7:
+				if (p->normal[0] * mins[0] + p->normal[1] * mins[1] + p->normal[2] * mins[2] > p->dist)
+					return true;
+				break;
 		}
 	}
 
@@ -827,39 +833,39 @@ bool Camera::IsBoxOutsideFrustum(plVector3f_t mins, plVector3f_t maxs)
 		mplane_t *p = _frustum + i;
 		switch (p->signbits)
 		{
-		default:
-		case 0:
-			if (p->normal[0] * maxs[0] + p->normal[1] * maxs[1] + p->normal[2] * maxs[2] < p->dist)
-				return true;
-			break;
-		case 1:
-			if (p->normal[0] * mins[0] + p->normal[1] * maxs[1] + p->normal[2] * maxs[2] < p->dist)
-				return true;
-			break;
-		case 2:
-			if (p->normal[0] * maxs[0] + p->normal[1] * mins[1] + p->normal[2] * maxs[2] < p->dist)
-				return true;
-			break;
-		case 3:
-			if (p->normal[0] * mins[0] + p->normal[1] * mins[1] + p->normal[2] * maxs[2] < p->dist)
-				return true;
-			break;
-		case 4:
-			if (p->normal[0] * maxs[0] + p->normal[1] * maxs[1] + p->normal[2] * mins[2] < p->dist)
-				return true;
-			break;
-		case 5:
-			if (p->normal[0] * mins[0] + p->normal[1] * maxs[1] + p->normal[2] * mins[2] < p->dist)
-				return true;
-			break;
-		case 6:
-			if (p->normal[0] * maxs[0] + p->normal[1] * mins[1] + p->normal[2] * mins[2] < p->dist)
-				return true;
-			break;
-		case 7:
-			if (p->normal[0] * mins[0] + p->normal[1] * mins[1] + p->normal[2] * mins[2] < p->dist)
-				return true;
-			break;
+			default:
+			case 0:
+				if (p->normal[0] * maxs[0] + p->normal[1] * maxs[1] + p->normal[2] * maxs[2] < p->dist)
+					return true;
+				break;
+			case 1:
+				if (p->normal[0] * mins[0] + p->normal[1] * maxs[1] + p->normal[2] * maxs[2] < p->dist)
+					return true;
+				break;
+			case 2:
+				if (p->normal[0] * maxs[0] + p->normal[1] * mins[1] + p->normal[2] * maxs[2] < p->dist)
+					return true;
+				break;
+			case 3:
+				if (p->normal[0] * mins[0] + p->normal[1] * mins[1] + p->normal[2] * maxs[2] < p->dist)
+					return true;
+				break;
+			case 4:
+				if (p->normal[0] * maxs[0] + p->normal[1] * maxs[1] + p->normal[2] * mins[2] < p->dist)
+					return true;
+				break;
+			case 5:
+				if (p->normal[0] * mins[0] + p->normal[1] * maxs[1] + p->normal[2] * mins[2] < p->dist)
+					return true;
+				break;
+			case 6:
+				if (p->normal[0] * maxs[0] + p->normal[1] * mins[1] + p->normal[2] * mins[2] < p->dist)
+					return true;
+				break;
+			case 7:
+				if (p->normal[0] * mins[0] + p->normal[1] * mins[1] + p->normal[2] * mins[2] < p->dist)
+					return true;
+				break;
 		}
 	}
 
@@ -881,9 +887,9 @@ void Camera::SetAngles(plVector3f_t angles)
 void Camera::PrintAngles()
 {
 	Con_Printf("CAMERA ANGLES : %i %i %i\n",
-		(int)_angles[PL_PITCH],
-		(int)_angles[PL_YAW],
-		(int)_angles[PL_ROLL]);
+			   (int)_angles[PL_PITCH],
+			   (int)_angles[PL_YAW],
+			   (int)_angles[PL_ROLL]);
 }
 
 // Position
@@ -903,9 +909,9 @@ void Camera::SetPosition(plVector3f_t position)
 void Camera::PrintPosition()
 {
 	Con_Printf("CAMERA POSITION : %i %i %i\n",
-		(int)_position[0],
-		(int)_position[1],
-		(int)_position[2]);
+			   (int)_position[0],
+			   (int)_position[1],
+			   (int)_position[2]);
 }
 
 void Camera::TracePosition()
@@ -921,11 +927,11 @@ void Camera::TracePosition()
 		Con_Printf("Didn't hit anything!\n");
 		return;
 	}
-	
+
 	Con_Printf("TRACE POSITION : %i %i %i\n",
-		(int)w[0],
-		(int)w[1],
-		(int)w[2]);
+			   (int)w[0],
+			   (int)w[1],
+			   (int)w[2]);
 }
 
 ////////////////////////////////////////////////////

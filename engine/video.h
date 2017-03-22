@@ -170,8 +170,8 @@ PL_EXTERN_C_END
 }
 #define	VIDEO_FUNCTION_END \
 
-#include "client/video_viewport.h"
-#include "client/video_camera.h"
+#include "client/viewport.h"
+#include "client/camera.h"
 
 #include "video_layer.h"
 #include "video_object.h"
