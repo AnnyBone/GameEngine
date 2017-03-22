@@ -290,7 +290,7 @@ int _vlTranslateTextureEnvironmentMode(PLTextureEnvironmentMode TextureEnvironme
 void vlSetTextureEnvironmentMode(PLTextureEnvironmentMode TextureEnvironmentMode)
 {
 	// Ensure there's actually been a change.
-	if (Video.textureunits[Video.current_textureunit].current_envmode == TextureEnvironmentMode)
+	if (g_video.textureunits[g_video.current_textureunit].current_envmode == TextureEnvironmentMode)
 		return;
 
 #ifdef VL_MODE_OPENGL
@@ -298,7 +298,7 @@ void vlSetTextureEnvironmentMode(PLTextureEnvironmentMode TextureEnvironmentMode
 		_vlTranslateTextureEnvironmentMode(TextureEnvironmentMode));
 #endif
 
-	Video.textureunits[Video.current_textureunit].current_envmode = TextureEnvironmentMode;
+	g_video.textureunits[g_video.current_textureunit].current_envmode = TextureEnvironmentMode;
 }
 
 /*===========================

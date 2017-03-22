@@ -347,30 +347,12 @@ typedef struct _PLGraphicsCapabilities
 
 _PLGraphicsCapabilities graphics_capabilities[] =
 {
-#if defined (VL_MODE_OPENGL) || defined (VL_MODE_OPENGL_CORE)
-	{ VL_CAPABILITY_ALPHA_TEST, GL_ALPHA_TEST, "ALPHA_TEST" },
-	{ VL_CAPABILITY_BLEND, GL_BLEND, "BLEND" },
 	{ VL_CAPABILITY_DEPTH_TEST, GL_DEPTH_TEST, "DEPTH_TEST" },
 	{ VL_CAPABILITY_TEXTURE_2D, GL_TEXTURE_2D, "TEXTURE_2D" },
-	{ VL_CAPABILITY_TEXTURE_GEN_S, GL_TEXTURE_GEN_S, "TEXTURE_GEN_S" },
-	{ VL_CAPABILITY_TEXTURE_GEN_T, GL_TEXTURE_GEN_T, "TEXTURE_GEN_T" },
-	{ VL_CAPABILITY_CULL_FACE, GL_CULL_FACE, "CULL_FACE" },
 	{ VL_CAPABILITY_STENCIL_TEST, GL_STENCIL_TEST, "STENCIL_TEST" },
-	{ VL_CAPABILITY_MULTISAMPLE, GL_MULTISAMPLE, "MULTISAMPLE" },
 	{ VL_CAPABILITY_SCISSOR_TEST, GL_SCISSOR_TEST, "SCISSOR_TEST" },
 
 	{ VL_CAPABILITY_GENERATEMIPMAP, 0, "GENERATE_MIPMAP" },
-#else
-	{ VL_CAPABILITY_ALPHA_TEST, 0, "ALPHA_TEST" },
-	{ VL_CAPABILITY_BLEND, 0, "BLEND" },
-	{ VL_CAPABILITY_DEPTH_TEST, 0, "DEPTH_TEST" },
-	{ VL_CAPABILITY_TEXTURE_2D, 0, "TEXTURE_2D" },
-	{ VL_CAPABILITY_TEXTURE_GEN_S, 0, "TEXTURE_GEN_S" },
-	{ VL_CAPABILITY_TEXTURE_GEN_T, 0, "TEXTURE_GEN_T" },
-	{ VL_CAPABILITY_CULL_FACE, 0, "CULL_FACE" },
-	{ VL_CAPABILITY_STENCIL_TEST, 0, "STENCIL_TEST" },
-	{ VL_CAPABILITY_MULTISAMPLE, 0, "MULTISAMPLE" },
-#endif
 
 	{ 0 }
 };
@@ -1073,8 +1055,8 @@ void plSetTextureEnvironmentMode(PLTextureEnvironmentMode mode)
 {
     _PL_GRAPHICS_TRACK();
 
-    if(pl_graphics_state.tmu[plGetCurrentTextureUnit()].current_envmode == mode)
-        return;
+ //   if(pl_graphics_state.tmu[plGetCurrentTextureUnit()].current_envmode == mode)
+ //       return;
 
 #if defined(VL_MODE_OPENGL)
     glTexEnvi
@@ -1085,7 +1067,7 @@ void plSetTextureEnvironmentMode(PLTextureEnvironmentMode mode)
     );
 #endif
 
-    pl_graphics_state.tmu[plGetCurrentTextureUnit()].current_envmode = mode;
+  //  pl_graphics_state.tmu[plGetCurrentTextureUnit()].current_envmode = mode;
 }
 
 /*===========================

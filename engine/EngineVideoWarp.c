@@ -235,7 +235,10 @@ void Surface_DrawWater(glpoly_t *p, Material_t *material)
 		Video_ObjectVertex(&voWaterPoly[i], vWave[0], vWave[1], vWave[2]);
 	}
 
+	Material_SetSkin(material, 0);
+	Material_Draw(material, voWaterPoly, VL_PRIMITIVE_TRIANGLE_FAN, p->numverts, false);
 	Video_DrawObject(voWaterPoly, VL_PRIMITIVE_TRIANGLE_FAN, p->numverts, material, 0);
+    Material_Draw(material, voWaterPoly, VL_PRIMITIVE_TRIANGLE_FAN, p->numverts, true);
 
 	free(voWaterPoly);
 }

@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "engine_base.h"
 
 #include "video.h"
-#include "video_shadow.h"
+#include "shadow.h"
 #include "video_framebuffer.h"
 
 #define	SHADOW_MAP_RESOLUTION	512	// TODO: Make this a console variable?

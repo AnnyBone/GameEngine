@@ -125,8 +125,9 @@ void Alias_DrawFrame(MD2_t *alias, ClientEntity_t *entity, lerpdata_t lLerpData)
 		fAlpha	= ENTALPHA_DECODE(entity->alpha);
 
 	fAlpha = plClamp(0, fAlpha, entity->distance_alpha);
-	if (fAlpha < 1.0f)
-		plEnableGraphicsStates(VL_CAPABILITY_BLEND);
+	if (fAlpha < 1.0f) {
+		glEnable(GL_BLEND);
+	}
 
 	//new version by muff - fixes bug, easier to read, faster (well slightly)
 	MD2Frame_t *frame1 = (MD2Frame_t*)((uint8_t*)alias + alias->ofs_frames + (alias->framesize*entity->draw_lastpose));
@@ -169,11 +170,14 @@ void Alias_DrawFrame(MD2_t *alias, ClientEntity_t *entity, lerpdata_t lLerpData)
 			order += 3;
 		} while (--count);
 
+        Material_Draw(entity->model->materials, vertices, VL_PRIMITIVE_TRIANGLE_STRIP, uiVerts, false);
 		Video_DrawObject(vertices, VL_PRIMITIVE_TRIANGLE_STRIP, uiVerts, entity->model->materials, entity->skinnum);
+        Material_Draw(entity->model->materials, vertices, VL_PRIMITIVE_TRIANGLE_STRIP, uiVerts, true);
 	}
 
-	if (fAlpha < 1.0f)
-		plDisableGraphicsStates(VL_CAPABILITY_BLEND);
+	if (fAlpha < 1.0f) {
+        glDisable(GL_BLEND);
+    }
 
 	free(vertices);
 #endif

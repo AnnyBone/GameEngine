@@ -27,7 +27,7 @@ For more information, please refer to <http://unlicense.org>
 
 #include "../engine_base.h"
 
-#include "../video.h"		// TODO: make this a base include
+#include "video.h"
 #include "camera.h"
 #include "effect_sprite.h"
 

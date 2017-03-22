@@ -517,12 +517,12 @@ void System_Loop(void)
 	{
 		if (!Video.bActive && cl.maxclients == 1)
 		{
-			Video.bSkipUpdate = true;
+			Video.skip_update = true;
 
 			SDL_Delay(16);
 		}
 		else
-			Video.bSkipUpdate = false;
+			Video.skip_update = false;
 
 		newtime = System_DoubleTime();
 		time = newtime - oldtime;

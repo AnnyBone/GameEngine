@@ -19,7 +19,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 // Platform library
 #include "platform_library.h"
-
 #include "menu_main.h"
 
 /*

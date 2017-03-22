@@ -26,8 +26,9 @@
 void Draw_StaticEntity(ClientEntity_t *entity)
 {
 	model_t *model = entity->model;
-	if (!model)
+	if (!model) {
 		return;
+	}
 
 	// TODO: TEMPORARY DEBUGGING STUFF!!!!
 	vlPushMatrix();

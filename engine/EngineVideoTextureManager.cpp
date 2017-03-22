@@ -172,7 +172,7 @@ void TexMgr_Anisotropy_f(void)
 #ifdef VL_MODE_OPENGL
 	gltexture_t	*glt;
 
-	Cvar_SetValue("gl_texture_anisotropy", plClamp(1.0f, gl_texture_anisotropy.value, Video.fMaxAnisotropy));
+	Cvar_SetValue("gl_texture_anisotropy", plClamp(1.0f, gl_texture_anisotropy.value, g_video.fMaxAnisotropy));
 
 	for (glt=active_gltextures; glt; glt=glt->next)
 		TexMgr_SetFilterModes(glt);
@@ -196,7 +196,7 @@ void TexMgr_Imagelist_f (void)
 			texels += (glt->width * glt->height);
 	}
 
-	mb = texels * (Video.bpp / 8.0f) / 0x100000;
+	mb = texels * (g_video.bpp / 8.0f) / 0x100000;
 	Con_Printf ("%i textures %i pixels %1.1f megabytes\n", numgltextures, (int)texels, mb);
 }
 
@@ -264,7 +264,7 @@ float TexMgr_FrameUsage (void)
 				texels += (glt->width*glt->height);
 		}
 
-	mb = texels*(Video.bpp / 8.0f) / 0x100000;
+	mb = texels*(g_video.bpp / 8.0f) / 0x100000;
 	return mb;
 }
 
@@ -663,15 +663,15 @@ void TexMgr_LoadImage32(gltexture_t *glt, uint8_t *data)
 	Video_SetTexture(glt);
 	internalformat = (glt->flags & TEXPREF_ALPHA) ? gl_alpha_format : gl_solid_format;
 #ifdef VL_MODE_OPENGL
-	if ((glt->flags & TEXPREF_MIPMAP) && Video.extensions.generate_mipmap)
+	if ((glt->flags & TEXPREF_MIPMAP) && g_video.extensions.generate_mipmap)
 		glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
 	glTexImage2D (GL_TEXTURE_2D, 0, internalformat, glt->width, glt->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-	if ((glt->flags & TEXPREF_MIPMAP) && Video.extensions.generate_mipmap)
+	if ((glt->flags & TEXPREF_MIPMAP) && g_video.extensions.generate_mipmap)
 		glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE);
 #endif
 
 	// upload mipmaps
-	if ((glt->flags & TEXPREF_MIPMAP) && !Video.extensions.generate_mipmap)
+	if ((glt->flags & TEXPREF_MIPMAP) && !g_video.extensions.generate_mipmap)
 	{
 		// Otherwise do it the ol' fasioned way.
 

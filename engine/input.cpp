@@ -288,7 +288,7 @@ void Input_Frame(void)
 				{
 				default:break;
 				case SDL_WINDOWEVENT_FOCUS_GAINED:
-					Video.bActive = true;
+					g_video.bActive = true;
 
 					// Then restore it.
 					if (oldmousestate)
@@ -300,7 +300,7 @@ void Input_Frame(void)
 					Key_ClearStates();
 					break;
 				case SDL_WINDOWEVENT_FOCUS_LOST:
-					Video.bActive = false;
+					g_video.bActive = false;
 
 					// Save our old mouse state.
 					oldmousestate = input_mouseactive;

@@ -119,10 +119,10 @@ typedef struct
 	unsigned int framecount;	// An alternative to r_framecount, which is slightly more reliable.
 
 	bool
-		bInitialized,					// Is the video system started?
+		initialized,					// Is the video system started?
 		vertical_sync,					// Sync the swap interval to the refresh rate?
 		bActive,						// Is the window active or not?
-		bSkipUpdate,					// Skip screen update.
+		skip_update,					// Skip screen update.
 		unlocked;						// Can we change the window settings or not?
 
 	VideoExtensions_t	extensions;		// Extensions
@@ -130,7 +130,7 @@ typedef struct
 
 plEXTERN_C_START
 
-extern Video_t Video;
+extern Video_t g_video;
 
 void Video_Initialize(void);
 void Video_GenerateSphereCoordinates(void);
@@ -141,9 +141,10 @@ void Video_ObjectTexture(PLVertex *voObject, unsigned int uiTextureUnit, float S
 void Video_ObjectVertex(PLVertex *voObject, float X, float Y, float Z);
 void Video_ObjectNormal(PLVertex *voObject, float X, float Y, float Z);
 void Video_ObjectColour(PLVertex *voObject, float R, float G, float B, float A);
-void Video_DrawFill(PLVertex *voFill, Material_t *mMaterial, int iSkin);
+void Video_DrawFill(PLVertex *voFill, Material_t *mMaterial, unsigned int iSkin);
 void Video_DrawSurface(msurface_t *mSurface, float fAlpha, Material_t *mMaterial, unsigned int uiSkin);
-void Video_DrawObject(PLVertex *voObject, PLPrimitive vpPrimitiveType, unsigned int uiVerts, Material_t *mMaterial, int iSkin);
+void Video_DrawObject(PLVertex *voObject, PLPrimitive vpPrimitiveType, unsigned int uiVerts, Material_t *material,
+                      unsigned int skin_num);
 void Video_ShowBoundingBoxes(void);
 void Video_Shutdown(void);
 

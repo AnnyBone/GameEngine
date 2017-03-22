@@ -26,7 +26,7 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 #	include "XenonClass.h"
 #	include "XenonException.h"
 
-#	include "XenonTexture.h"
+#	include "texture.h"
 #endif
 
 #define	ENGINE_LOG	"engine"

@@ -20,11 +20,11 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
 class XTexture;
 
-class XTextureManager
+class TextureManager
 {
 public:
-	XTextureManager();
-	~XTextureManager();
+	TextureManager();
+	~TextureManager();
 
 	PLbool IsValidSize(PLuint width, PLuint height);
 
@@ -97,4 +97,4 @@ namespace textures
 	extern XTexture *nulltexture;
 }
 
-extern XTextureManager *g_texturemanager;
+extern TextureManager *g_texturemanager;

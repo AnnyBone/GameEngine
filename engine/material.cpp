@@ -26,7 +26,6 @@ For more information, please refer to <http://unlicense.org>
 */
 
 #include "engine_base.h"
-
 #include "video.h"
 #include "video_shader.h"
 #include "EngineScript.h"
@@ -66,7 +65,7 @@ Material_t *g_mGlobalConChars;
 // Console Variables
 ConsoleVariable_t cv_material_simplified = {
         "material_simplified",
-        (char *) "1",
+        (char *) "0",
         true,
         false,
         "If enabled, this will result in a very basic render for each surface using a material."
@@ -1085,10 +1084,11 @@ void Material_Draw(Material_t *material, PLVertex *ObjectVertex, PLPrimitive pri
     }
 
     MaterialSkin_t *current_skin;
-    if (material->flags & MATERIAL_FLAG_ANIMATED)
+    if (material->flags & MATERIAL_FLAG_ANIMATED) {
         current_skin = Material_GetAnimatedSkin(material);
-    else
+    } else {
         current_skin = Material_GetSkin(material, material->current_skin);
+    }
     if (!current_skin) {
         Sys_Error("Failed to get valid skin! (%s)\n", material->cName);
         return;
@@ -1096,22 +1096,25 @@ void Material_Draw(Material_t *material, PLVertex *ObjectVertex, PLPrimitive pri
 
     // Handle any skin effects.
     if (!ispost) {
-        if (current_skin->program)
+        if (current_skin->program) {
             current_skin->program->Enable();
+        }
 
         // Handle any generic blending.
         if ((current_skin->uiFlags & MATERIAL_FLAG_BLEND) || (material->fAlpha < 1)) {
             vlDepthMask(false);
 
-            plEnableGraphicsStates(VL_CAPABILITY_BLEND);
+            glEnable(GL_BLEND);
 
-            if (current_skin->uiFlags & MATERIAL_FLAG_ADDITIVE)
+            if (current_skin->uiFlags & MATERIAL_FLAG_ADDITIVE) {
                 // Additive blending isn't done by default.
                 plSetBlendMode(PL_BLEND_ADDITIVE);
+            }
         }
             // Alpha-testing
-        else if (current_skin->uiFlags & MATERIAL_FLAG_ALPHA)
-            plEnableGraphicsStates(VL_CAPABILITY_ALPHA_TEST);
+        else if (current_skin->uiFlags & MATERIAL_FLAG_ALPHA) {
+            glEnable(GL_ALPHA_TEST);
+        }
     }
 
     MaterialTexture_t *texture = &current_skin->texture[0];
@@ -1133,7 +1136,6 @@ void Material_Draw(Material_t *material, PLVertex *ObjectVertex, PLPrimitive pri
 
             // Allow us to manipulate the texture.
             if (texture->matrixmod) {
-#ifdef VL_MODE_OPENGL
                 glMatrixMode(GL_TEXTURE);
                 glLoadIdentity();
                 if ((texture->scroll[0] > 0) || (texture->scroll[0] < 0) ||
@@ -1145,7 +1147,6 @@ void Material_Draw(Material_t *material, PLVertex *ObjectVertex, PLPrimitive pri
                 if ((texture->fRotate > 0) || (texture->fRotate < 0))
                     glRotatef(texture->fRotate * (float) cl.time, 0, 0, 1);
                 glMatrixMode(GL_MODELVIEW);
-#endif
             }
 
             // Anything greater than the first unit, copy the coords.
@@ -1166,10 +1167,13 @@ void Material_Draw(Material_t *material, PLVertex *ObjectVertex, PLPrimitive pri
                 }
             }
 
-            plSetTextureEnvironmentMode(texture->env_mode);
+            if(texture->env_mode != PL_TEXTUREMODE_MODULATE) {
+                plSetTextureEnvironmentMode(texture->env_mode);
+            }
         }
 
         switch (texture->mttType) {
+
             case MATERIAL_TEXTURE_LIGHTMAP:
                 if (!ispost) {
                     plSetTextureEnvironmentMode(PL_TEXTUREMODE_COMBINE);
@@ -1185,6 +1189,7 @@ void Material_Draw(Material_t *material, PLVertex *ObjectVertex, PLPrimitive pri
                     glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 1);
 #endif
                 break;
+
             case MATERIAL_TEXTURE_DETAIL:
                 if (!ispost) {
                     if (!cv_video_drawdetail.bValue) {
@@ -1201,6 +1206,7 @@ void Material_Draw(Material_t *material, PLVertex *ObjectVertex, PLPrimitive pri
                     glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 1);
 #endif
                 break;
+
             case MATERIAL_TEXTURE_FULLBRIGHT:
                 if (!ispost) {
                     if (!gl_fullbrights.bValue) {
@@ -1209,16 +1215,20 @@ void Material_Draw(Material_t *material, PLVertex *ObjectVertex, PLPrimitive pri
                     }
                 }
                 break;
+
             case MATERIAL_TEXTURE_SPHERE:
                 if (!ispost) {
                     Video_GenerateSphereCoordinates();
 
-                    plEnableGraphicsStates(VL_CAPABILITY_TEXTURE_GEN_S | VL_CAPABILITY_TEXTURE_GEN_T);
-                } else
-                    plDisableGraphicsStates(VL_CAPABILITY_TEXTURE_GEN_S | VL_CAPABILITY_TEXTURE_GEN_T);
+                    glEnable(GL_TEXTURE_GEN_S);
+                    glEnable(GL_TEXTURE_GEN_T);
+                } else {
+                    glDisable(GL_TEXTURE_GEN_S);
+                    glDisable(GL_TEXTURE_GEN_T);
+                }
                 break;
-            default:
-                break;
+
+            default:break;
         }
 
         if (ispost) {
@@ -1245,30 +1255,32 @@ void Material_Draw(Material_t *material, PLVertex *ObjectVertex, PLPrimitive pri
         if ((current_skin->uiFlags & MATERIAL_FLAG_BLEND) || (material->fAlpha < 1)) {
             vlDepthMask(true);
 
-            plDisableGraphicsStates(VL_CAPABILITY_BLEND);
+            glDisable(GL_BLEND);
 
-            if (current_skin->uiFlags & MATERIAL_FLAG_ADDITIVE)
+            if (current_skin->uiFlags & MATERIAL_FLAG_ADDITIVE) {
                 // Return blend mode to its default.
                 plSetBlendMode(PL_BLEND_DEFAULT);
+            }
         }
             // Alpha-testing
         else if (current_skin->uiFlags & MATERIAL_FLAG_ALPHA) {
-            plDisableGraphicsStates(VL_CAPABILITY_ALPHA_TEST);
+            glDisable(GL_ALPHA_TEST);
 
             if ((current_skin->uiFlags & MATERIAL_FLAG_ALPHATRICK) &&
                 (cv_video_alphatrick.bValue && (size > 0))) {
                 vlDepthMask(false);
-                plEnableGraphicsStates(VL_CAPABILITY_BLEND);
+                glEnable(GL_BLEND);
 
                 // Draw the object again (don't bother passing material).
                 Video_DrawObject(ObjectVertex, primitive, size, NULL, 0);
 
-                plDisableGraphicsStates(VL_CAPABILITY_BLEND);
+                glDisable(GL_BLEND);
                 vlDepthMask(true);
             }
         }
 
-        if (current_skin->program)
+        if (current_skin->program) {
             current_skin->program->Disable();
+        }
     }
 }

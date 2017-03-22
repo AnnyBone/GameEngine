@@ -23,7 +23,7 @@
 #include "EngineEditor.h"
 #include "video.h"
 #include "EngineVideoParticle.h"
-#include "video_shadow.h"
+#include "shadow.h"
 
 #include "client/effect_sprite.h"
 
