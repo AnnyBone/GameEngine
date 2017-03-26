@@ -29,7 +29,8 @@ project(engine)
 
 file(GLOB ENGINE_SOURCE_FILES
         *.cpp *.c *.h
-        client/*.cpp client/*.c client/*.h
+        client/*.*
+        server/*.*
         ../shared/SharedFormats.c
         )
 

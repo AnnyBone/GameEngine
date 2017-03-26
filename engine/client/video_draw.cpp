@@ -38,8 +38,7 @@ VideoCanvasType_t currentcanvas = CANVAS_NONE; //johnfitz -- for GL_SetCanvas
 using namespace core;
 
 void draw::SetDefaultState() {
-    PLColour clear = {0, 0, 0, 1};
-    plSetClearColour4fv(clear);
+    glClearColor(0, 0, 0, 1.0f);
 
     plSetCullMode(VL_CULL_NEGATIVE);
 
