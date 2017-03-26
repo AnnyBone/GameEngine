@@ -341,7 +341,6 @@ typedef struct _PLGraphicsCapabilities {
 
 _PLGraphicsCapabilities graphics_capabilities[] =
         {
-                {VL_CAPABILITY_DEPTH_TEST, GL_DEPTH_TEST, "DEPTH_TEST"},
                 {VL_CAPABILITY_TEXTURE_2D, GL_TEXTURE_2D, "TEXTURE_2D"},
 
                 {VL_CAPABILITY_GENERATEMIPMAP, 0,         "GENERATE_MIPMAP"},

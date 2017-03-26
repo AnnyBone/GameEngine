@@ -1264,8 +1264,7 @@ void Material_Draw(Material_t *material, PLVertex *ObjectVertex, PLPrimitive pri
     if (ispost) {
         // Handle any generic blending.
         if ((current_skin->uiFlags & MATERIAL_FLAG_BLEND) || (material->fAlpha < 1)) {
-            vlDepthMask(true);
-
+            glDepthMask(GL_TRUE);
             glDisable(GL_BLEND);
 
             if (current_skin->uiFlags & MATERIAL_FLAG_ADDITIVE) {

@@ -357,8 +357,8 @@ void Camera::Draw() {
     World_Draw();
     draw::Shadows();
     draw::Entities(false);
-    World_DrawWater();
-    draw::Entities(true);
+    //World_DrawWater();
+    //draw::Entities(true);
     // todo, particles
   //  if (g_spritemanager) g_spritemanager->Draw();
   //  Light_Draw();

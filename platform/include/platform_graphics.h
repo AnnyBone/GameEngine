@@ -146,7 +146,6 @@ typedef enum PLBlend
 typedef enum PLGraphicsCapability
 {
 	VL_CAPABILITY_TEXTURE_2D		= (1 << 3),	// Enables/disables textures.
-	VL_CAPABILITY_DEPTH_TEST		= (1 << 6),	// Depth-testing.
 
 	// Texture Generation
 	VL_CAPABILITY_GENERATEMIPMAP	= (1 << 20),

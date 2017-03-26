@@ -38,9 +38,8 @@ VideoCanvasType_t currentcanvas = CANVAS_NONE; //johnfitz -- for GL_SetCanvas
 using namespace core;
 
 void draw::SetDefaultState() {
-    glClearColor(0, 0, 0, 1.0f);
-
-    plSetCullMode(VL_CULL_NEGATIVE);
+    glClearColor(0, 0, 0, 1);
+    glCullFace(GL_FRONT);
 
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -73,7 +72,7 @@ void draw::ClearBuffers() {
         return;
     }
 
-    glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 }
 
 void draw::DepthBuffer() {
